@@ -1,0 +1,74 @@
+# config/spyro.main.yaml — splat config for the main EXE (SCUS_942.28).
+#
+# Bootstrapped from `splat create_config disc/orig/SCUS_942.28` (it auto-detected
+# gp, the PSYQ compiler, and the header+code segment layout) then pinned to the
+# exact section boundaries known from config/symbol_addrs.txt:
+#
+#   header  0x0
+#   rodata  0x800   .. 0x2A04   (vram 0x80010000 .. 0x80012204)  switch tables + const
+#   text    0x2A04  .. 0x5C3E0  (vram 0x80012204 .. 0x8006bbe0)  613 functions
+#   data    0x5C3E0 .. 0x66000  (vram 0x8006bbe0 .. 0x80075800)  data + sdata
+#   bss     0x80075800 ..                                        (not in file)
+#
+# `make split` runs this; per-function asm lands in asm/main/.
+name: SCUS_942.28
+sha1: 84e3728ab94720d0873e2514adf4aade4935e0c5
+options:
+  basename: spyro_main
+  target_path: disc/orig/SCUS_942.28
+  elf_path: build/main/spyro_main.elf
+  base_path: .. # repo root (paths below are repo-root-relative)
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build/main
+
+  ld_script_path: config/spyro.main.ld
+  ld_dependencies: True
+
+  # Boundaries are pinned by hand (below)
+  find_file_boundaries: False
+  gp_value: 0x80075264
+
+  o_as_suffix: True
+  use_legacy_include_asm: False
+
+  # The original PSYQ link packs sections contiguously at their natural (4-byte)
+  # alignment: .rodata ends at 0x80012204 and .text begins there with no gap.
+  # splat's default 16-byte section/segment VRAM-end padding would shift .text by
+  # 12 bytes (and everything after). Disable it so the relink stays byte-exact.
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+
+  section_order: [".rodata", ".text", ".data", ".bss"]
+
+  symbol_addrs_path:
+    - config/symbol_addrs.txt
+
+  undefined_funcs_auto_path: config/undefined_funcs_auto.txt
+  undefined_syms_auto_path: config/undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: header
+    type: header
+    start: 0x0
+
+  - name: main
+    type: code
+    start: 0x800
+    vram: 0x80010000
+    bss_size: 0x6000
+    subsegments:
+      - [0x800, rodata, rodata_pre]
+      - [0x2A04, asm, text]
+      - [0x5C3E0, data, data]
+  - [0x66000]
