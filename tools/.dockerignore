@@ -1,0 +1,10 @@
+# Build context is tools/. Keep virtualenvs and Python caches out of the image
+# (the `COPY open-spyro` step would otherwise drag in tools/open-spyro/.venv).
+open-spyro/.venv
+**/.venv
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+**/.ruff_cache
+**/.pytest_cache
+**/.mypy_cache

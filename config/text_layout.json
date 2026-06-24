@@ -1,0 +1,3689 @@
+{
+ "functions": [
+  {
+   "name": "main",
+   "vram": 2147557892,
+   "size": 136
+  },
+  {
+   "name": "func_8001228C",
+   "vram": 2147558028,
+   "size": 28
+  },
+  {
+   "name": "InitGraphicsHardware",
+   "vram": 2147558056,
+   "size": 288
+  },
+  {
+   "name": "InitPadSystem",
+   "vram": 2147558344,
+   "size": 152
+  },
+  {
+   "name": "SpuInit",
+   "vram": 2147558496,
+   "size": 32
+  },
+  {
+   "name": "InitCdSystem",
+   "vram": 2147558528,
+   "size": 140
+  },
+  {
+   "name": "LoadAssetDirectoryFromCd",
+   "vram": 2147558668,
+   "size": 96
+  },
+  {
+   "name": "BuildAudioTrackTable",
+   "vram": 2147558764,
+   "size": 152
+  },
+  {
+   "name": "ResetLevelState",
+   "vram": 2147558916,
+   "size": 376
+  },
+  {
+   "name": "InitNewGameState",
+   "vram": 2147559292,
+   "size": 68
+  },
+  {
+   "name": "Initialize",
+   "vram": 2147559360,
+   "size": 1328
+  },
+  {
+   "name": "RelocateLevelSampleBank",
+   "vram": 2147560688,
+   "size": 104
+  },
+  {
+   "name": "UnpackWorldDataChunks",
+   "vram": 2147560792,
+   "size": 1240
+  },
+  {
+   "name": "RelocateMobActorTable",
+   "vram": 2147562032,
+   "size": 432
+  },
+  {
+   "name": "RelocateActorMeshHeader",
+   "vram": 2147562464,
+   "size": 620
+  },
+  {
+   "name": "BuildLoadedLevelRuntime",
+   "vram": 2147563084,
+   "size": 3708
+  },
+  {
+   "name": "LoadAndStartLevelFromCd",
+   "vram": 2147566792,
+   "size": 156
+  },
+  {
+   "name": "TickWorldBundleLoadStream",
+   "vram": 2147566948,
+   "size": 1548
+  },
+  {
+   "name": "TickGemPickupAssetStream",
+   "vram": 2147568496,
+   "size": 2048
+  },
+  {
+   "name": "TickLevelTransitionStream",
+   "vram": 2147570544,
+   "size": 4212
+  },
+  {
+   "name": "RestartStalledCdRead",
+   "vram": 2147574756,
+   "size": 172
+  },
+  {
+   "name": "func_80016490",
+   "vram": 2147574928,
+   "size": 112
+  },
+  {
+   "name": "CdReadSyncSectors",
+   "vram": 2147575040,
+   "size": 408
+  },
+  {
+   "name": "StartCdReadAsync",
+   "vram": 2147575448,
+   "size": 236
+  },
+  {
+   "name": "LinkOTPrimitives",
+   "vram": 2147575684,
+   "size": 284
+  },
+  {
+   "name": "AddPrimToOTSlot",
+   "vram": 2147575968,
+   "size": 60
+  },
+  {
+   "name": "AddPrimToOT",
+   "vram": 2147576028,
+   "size": 56
+  },
+  {
+   "name": "FillWord",
+   "vram": 2147576084,
+   "size": 28
+  },
+  {
+   "name": "FillBlock16",
+   "vram": 2147576112,
+   "size": 40
+  },
+  {
+   "name": "CopyWords",
+   "vram": 2147576152,
+   "size": 84
+  },
+  {
+   "name": "ArcTan2_8bit",
+   "vram": 2147576236,
+   "size": 264
+  },
+  {
+   "name": "ArcTan2",
+   "vram": 2147576500,
+   "size": 420
+  },
+  {
+   "name": "LookupSine",
+   "vram": 2147576920,
+   "size": 88
+  },
+  {
+   "name": "LookupCosine",
+   "vram": 2147577008,
+   "size": 88
+  },
+  {
+   "name": "CountLeadingZeros",
+   "vram": 2147577096,
+   "size": 36
+  },
+  {
+   "name": "ApplyEulerRotation",
+   "vram": 2147577132,
+   "size": 676
+  },
+  {
+   "name": "func_80016FD0",
+   "vram": 2147577808,
+   "size": 120
+  },
+  {
+   "name": "RotateVectorByMatrix",
+   "vram": 2147577928,
+   "size": 120
+  },
+  {
+   "name": "ApplyActiveGteRotation",
+   "vram": 2147578048,
+   "size": 80
+  },
+  {
+   "name": "WorldToCameraRotate",
+   "vram": 2147578128,
+   "size": 120
+  },
+  {
+   "name": "func_80017188",
+   "vram": 2147578248,
+   "size": 116
+  },
+  {
+   "name": "VectorLength",
+   "vram": 2147578364,
+   "size": 152
+  },
+  {
+   "name": "func_80017294",
+   "vram": 2147578516,
+   "size": 8
+  },
+  {
+   "name": "RefineSqrtEstimate",
+   "vram": 2147578524,
+   "size": 148
+  },
+  {
+   "name": "SetVector3Magnitude",
+   "vram": 2147578672,
+   "size": 240
+  },
+  {
+   "name": "func_80017420",
+   "vram": 2147578912,
+   "size": 8
+  },
+  {
+   "name": "func_80017428",
+   "vram": 2147578920,
+   "size": 288
+  },
+  {
+   "name": "func_80017548",
+   "vram": 2147579208,
+   "size": 112
+  },
+  {
+   "name": "ScaleVector3ByRatio",
+   "vram": 2147579320,
+   "size": 92
+  },
+  {
+   "name": "ScaleVector3Shifted",
+   "vram": 2147579412,
+   "size": 140
+  },
+  {
+   "name": "LShiftVector3",
+   "vram": 2147579552,
+   "size": 40
+  },
+  {
+   "name": "RShiftVector3",
+   "vram": 2147579592,
+   "size": 40
+  },
+  {
+   "name": "ZeroVector",
+   "vram": 2147579632,
+   "size": 16
+  },
+  {
+   "name": "CopyVector",
+   "vram": 2147579648,
+   "size": 28
+  },
+  {
+   "name": "func_8001771C",
+   "vram": 2147579676,
+   "size": 60
+  },
+  {
+   "name": "AddVector",
+   "vram": 2147579736,
+   "size": 52
+  },
+  {
+   "name": "SubtractVector",
+   "vram": 2147579788,
+   "size": 52
+  },
+  {
+   "name": "ScaleVector3Sat",
+   "vram": 2147579840,
+   "size": 56
+  },
+  {
+   "name": "func_800177F8",
+   "vram": 2147579896,
+   "size": 92
+  },
+  {
+   "name": "func_80017854",
+   "vram": 2147579988,
+   "size": 64
+  },
+  {
+   "name": "LerpVectorGTE",
+   "vram": 2147580052,
+   "size": 116
+  },
+  {
+   "name": "AbsAngleDelta8",
+   "vram": 2147580168,
+   "size": 32
+  },
+  {
+   "name": "AbsAngleDelta12",
+   "vram": 2147580200,
+   "size": 32
+  },
+  {
+   "name": "SignedAngleDelta8",
+   "vram": 2147580232,
+   "size": 36
+  },
+  {
+   "name": "SignedAngleDelta12",
+   "vram": 2147580268,
+   "size": 36
+  },
+  {
+   "name": "ApproxDist2D",
+   "vram": 2147580304,
+   "size": 96
+  },
+  {
+   "name": "ApproachAngle8",
+   "vram": 2147580400,
+   "size": 72
+  },
+  {
+   "name": "IntegerSqrt",
+   "vram": 2147580472,
+   "size": 100
+  },
+  {
+   "name": "func_80017A9C",
+   "vram": 2147580572,
+   "size": 8
+  },
+  {
+   "name": "ProjectWorldPointGTEUnscaled",
+   "vram": 2147580580,
+   "size": 164
+  },
+  {
+   "name": "ProjectWorldPointGTE",
+   "vram": 2147580744,
+   "size": 180
+  },
+  {
+   "name": "func_80017BFC",
+   "vram": 2147580924,
+   "size": 40
+  },
+  {
+   "name": "func_80017C24",
+   "vram": 2147580964,
+   "size": 40
+  },
+  {
+   "name": "SVectorToVector",
+   "vram": 2147581004,
+   "size": 28
+  },
+  {
+   "name": "VectorToSVector",
+   "vram": 2147581032,
+   "size": 28
+  },
+  {
+   "name": "func_80017C84",
+   "vram": 2147581060,
+   "size": 52
+  },
+  {
+   "name": "UnpackWorldCollisionTri",
+   "vram": 2147581112,
+   "size": 196
+  },
+  {
+   "name": "func_80017D7C",
+   "vram": 2147581308,
+   "size": 216
+  },
+  {
+   "name": "ComputeDepthCuedColor",
+   "vram": 2147581524,
+   "size": 68
+  },
+  {
+   "name": "ConvertRGB15ToLuma8",
+   "vram": 2147581592,
+   "size": 140
+  },
+  {
+   "name": "AddBiasToColorRuns",
+   "vram": 2147581732,
+   "size": 176
+  },
+  {
+   "name": "func_80017FD4",
+   "vram": 2147581908,
+   "size": 16
+  },
+  {
+   "name": "BuildTextSpriteChain",
+   "vram": 2147581924,
+   "size": 456
+  },
+  {
+   "name": "BuildTextSprites",
+   "vram": 2147582380,
+   "size": 672
+  },
+  {
+   "name": "EmitRadialShadedLine",
+   "vram": 2147583052,
+   "size": 232
+  },
+  {
+   "name": "EnqueueBlinkingMarkerSprite",
+   "vram": 2147583284,
+   "size": 216
+  },
+  {
+   "name": "DrawShadedMenuBox",
+   "vram": 2147583500,
+   "size": 284
+  },
+  {
+   "name": "DrawDragonRescuedBanner",
+   "vram": 2147583784,
+   "size": 336
+  },
+  {
+   "name": "func_80018878",
+   "vram": 2147584120,
+   "size": 8
+  },
+  {
+   "name": "EnqueuePendingSpritePrims",
+   "vram": 2147584128,
+   "size": 136
+  },
+  {
+   "name": "DrawDemoModeOverlay",
+   "vram": 2147584264,
+   "size": 232
+  },
+  {
+   "name": "DrawMotionTrailRibbons",
+   "vram": 2147584496,
+   "size": 1344
+  },
+  {
+   "name": "DrawCinematicLetterbox",
+   "vram": 2147585840,
+   "size": 420
+  },
+  {
+   "name": "DrawFullscreenTint",
+   "vram": 2147586260,
+   "size": 200
+  },
+  {
+   "name": "EmitTexturedQuad",
+   "vram": 2147586460,
+   "size": 356
+  },
+  {
+   "name": "EnqueueLoadingScreenSprites",
+   "vram": 2147586816,
+   "size": 920
+  },
+  {
+   "name": "ComposeFrameScene",
+   "vram": 2147587736,
+   "size": 164
+  },
+  {
+   "name": "DrawLevelTransitionOverlay",
+   "vram": 2147587900,
+   "size": 2324
+  },
+  {
+   "name": "Gamestate01_09_Draw",
+   "vram": 2147590224,
+   "size": 956
+  },
+  {
+   "name": "Gamestate02_03_06_Draw",
+   "vram": 2147591180,
+   "size": 8840
+  },
+  {
+   "name": "Gamestate0A_Draw",
+   "vram": 2147600020,
+   "size": 932
+  },
+  {
+   "name": "RespawnOrGameOver_Draw",
+   "vram": 2147600952,
+   "size": 1444
+  },
+  {
+   "name": "Gamestate08_Draw",
+   "vram": 2147602396,
+   "size": 1852
+  },
+  {
+   "name": "SaveLoadMenu_Draw",
+   "vram": 2147604248,
+   "size": 2868
+  },
+  {
+   "name": "Gamestate0C_Draw",
+   "vram": 2147607116,
+   "size": 1132
+  },
+  {
+   "name": "StoryIntro_Draw",
+   "vram": 2147608248,
+   "size": 784
+  },
+  {
+   "name": "GemCutscene_Draw",
+   "vram": 2147609032,
+   "size": 440
+  },
+  {
+   "name": "ReturningHome_Draw",
+   "vram": 2147609472,
+   "size": 476
+  },
+  {
+   "name": "GamestateDraw",
+   "vram": 2147609948,
+   "size": 1020
+  },
+  {
+   "name": "BuildActorDrawList",
+   "vram": 2147610968,
+   "size": 1600
+  },
+  {
+   "name": "EmitActorDrawList",
+   "vram": 2147612568,
+   "size": 4452
+  },
+  {
+   "name": "BuildSecondaryActorDrawList",
+   "vram": 2147617020,
+   "size": 1592
+  },
+  {
+   "name": "EmitSecondaryActorPrimitives",
+   "vram": 2147618612,
+   "size": 6836
+  },
+  {
+   "name": "func_800229E8",
+   "vram": 2147625448,
+   "size": 68
+  },
+  {
+   "name": "RasterizeSpritePrimQueue",
+   "vram": 2147625516,
+   "size": 4248
+  },
+  {
+   "name": "RasterizePairedActor",
+   "vram": 2147629764,
+   "size": 2036
+  },
+  {
+   "name": "func_800242B8",
+   "vram": 2147631800,
+   "size": 5688
+  },
+  {
+   "name": "RenderWorldChunks",
+   "vram": 2147637488,
+   "size": 19976
+  },
+  {
+   "name": "TickWorldChunkAnimations",
+   "vram": 2147657468,
+   "size": 3220
+  },
+  {
+   "name": "func_8002B390",
+   "vram": 2147660688,
+   "size": 100
+  },
+  {
+   "name": "func_8002B3F4",
+   "vram": 2147660788,
+   "size": 80
+  },
+  {
+   "name": "func_8002B444",
+   "vram": 2147660868,
+   "size": 104
+  },
+  {
+   "name": "ResetWorldChunkAnimations",
+   "vram": 2147660972,
+   "size": 1312
+  },
+  {
+   "name": "SetupFrameOT",
+   "vram": 2147662284,
+   "size": 156
+  },
+  {
+   "name": "func_8002BA68",
+   "vram": 2147662440,
+   "size": 80
+  },
+  {
+   "name": "func_8002BAB8",
+   "vram": 2147662520,
+   "size": 104
+  },
+  {
+   "name": "ComputeInventoryProgressPercent",
+   "vram": 2147662624,
+   "size": 192
+  },
+  {
+   "name": "TickCdMusicStream",
+   "vram": 2147662816,
+   "size": 1024
+  },
+  {
+   "name": "AdvanceGemCutsceneFrame",
+   "vram": 2147663840,
+   "size": 1088
+  },
+  {
+   "name": "EnterPauseMenu",
+   "vram": 2147664928,
+   "size": 276
+  },
+  {
+   "name": "ExitPauseMenuToGame",
+   "vram": 2147665204,
+   "size": 228
+  },
+  {
+   "name": "BeginPauseToMenuTransition",
+   "vram": 2147665432,
+   "size": 76
+  },
+  {
+   "name": "BeginWorldHubReturn",
+   "vram": 2147665508,
+   "size": 176
+  },
+  {
+   "name": "EnterInventoryMenu",
+   "vram": 2147665684,
+   "size": 168
+  },
+  {
+   "name": "ExitSubMenuToTitle",
+   "vram": 2147665852,
+   "size": 160
+  },
+  {
+   "name": "TriggerRespawnOrGameOver",
+   "vram": 2147666012,
+   "size": 72
+  },
+  {
+   "name": "EndRespawnToGameplay",
+   "vram": 2147666084,
+   "size": 112
+  },
+  {
+   "name": "func_8002C914",
+   "vram": 2147666196,
+   "size": 8
+  },
+  {
+   "name": "Gamestate06SubstateStub_Noop",
+   "vram": 2147666204,
+   "size": 8
+  },
+  {
+   "name": "BeginGemPickupOverlay",
+   "vram": 2147666212,
+   "size": 584
+  },
+  {
+   "name": "EndGemPickupToWorld",
+   "vram": 2147666796,
+   "size": 348
+  },
+  {
+   "name": "func_8002CCC8",
+   "vram": 2147667144,
+   "size": 868
+  },
+  {
+   "name": "EndSaveMenuToWorld",
+   "vram": 2147668012,
+   "size": 324
+  },
+  {
+   "name": "BeginStoryIntro",
+   "vram": 2147668336,
+   "size": 184
+  },
+  {
+   "name": "BeginCreditsSequence",
+   "vram": 2147668520,
+   "size": 272
+  },
+  {
+   "name": "BeginGemCutscene",
+   "vram": 2147668792,
+   "size": 264
+  },
+  {
+   "name": "DispatchSpecialCutscene",
+   "vram": 2147669056,
+   "size": 276
+  },
+  {
+   "name": "ClearPadHistoryRing",
+   "vram": 2147669332,
+   "size": 44
+  },
+  {
+   "name": "HandleLevelSelectInput",
+   "vram": 2147669376,
+   "size": 656
+  },
+  {
+   "name": "ApplyCheatCodeEffect",
+   "vram": 2147670032,
+   "size": 220
+  },
+  {
+   "name": "CheckCheatCodeMatch",
+   "vram": 2147670252,
+   "size": 392
+  },
+  {
+   "name": "AnimateGemTallyParticles",
+   "vram": 2147670644,
+   "size": 1320
+  },
+  {
+   "name": "Gamestate01_Update",
+   "vram": 2147671964,
+   "size": 100
+  },
+  {
+   "name": "CameraSettle_Update",
+   "vram": 2147672064,
+   "size": 132
+  },
+  {
+   "name": "SpyroStateDelay_Update",
+   "vram": 2147672196,
+   "size": 168
+  },
+  {
+   "name": "PauseMenu_Update",
+   "vram": 2147672364,
+   "size": 2560
+  },
+  {
+   "name": "SubMenu_Update",
+   "vram": 2147674924,
+   "size": 708
+  },
+  {
+   "name": "RespawnOrGameOver_Update",
+   "vram": 2147675632,
+   "size": 1492
+  },
+  {
+   "name": "Gamestate06_Update",
+   "vram": 2147677124,
+   "size": 32
+  },
+  {
+   "name": "GemPickup_Update",
+   "vram": 2147677156,
+   "size": 8400
+  },
+  {
+   "name": "Gamestate0B_Update",
+   "vram": 2147685556,
+   "size": 4132
+  },
+  {
+   "name": "Gamestate0C_Update",
+   "vram": 2147689688,
+   "size": 1352
+  },
+  {
+   "name": "func_80032A20",
+   "vram": 2147691040,
+   "size": 144
+  },
+  {
+   "name": "func_80032AB0",
+   "vram": 2147691184,
+   "size": 88
+  },
+  {
+   "name": "Gamestate0D_Update",
+   "vram": 2147691272,
+   "size": 1700
+  },
+  {
+   "name": "GemCutscene_Update",
+   "vram": 2147692972,
+   "size": 560
+  },
+  {
+   "name": "Gamestate0F_Update",
+   "vram": 2147693532,
+   "size": 248
+  },
+  {
+   "name": "CheckDeathPlane",
+   "vram": 2147693780,
+   "size": 904
+  },
+  {
+   "name": "GamestateUpdate",
+   "vram": 2147694684,
+   "size": 1012
+  },
+  {
+   "name": "BuildCameraViewMatrix",
+   "vram": 2147695696,
+   "size": 496
+  },
+  {
+   "name": "CheckLineOfSightSegment",
+   "vram": 2147696192,
+   "size": 200
+  },
+  {
+   "name": "ComputeCameraToTargetAngle",
+   "vram": 2147696392,
+   "size": 656
+  },
+  {
+   "name": "LoadCameraTargetAnglesFromMode",
+   "vram": 2147697048,
+   "size": 108
+  },
+  {
+   "name": "ComputeCameraOrbitOffset",
+   "vram": 2147697156,
+   "size": 244
+  },
+  {
+   "name": "UpdateCameraEulerAngles",
+   "vram": 2147697400,
+   "size": 96
+  },
+  {
+   "name": "ResetCameraStateToTarget",
+   "vram": 2147697496,
+   "size": 296
+  },
+  {
+   "name": "UpdateGameplayCamera",
+   "vram": 2147697792,
+   "size": 2052
+  },
+  {
+   "name": "SnapCameraToTarget",
+   "vram": 2147699844,
+   "size": 100
+  },
+  {
+   "name": "AdvanceCameraSpringStep",
+   "vram": 2147699944,
+   "size": 2748
+  },
+  {
+   "name": "SelectCameraMode",
+   "vram": 2147702692,
+   "size": 1972
+  },
+  {
+   "name": "UpdateCameraManualYawInput",
+   "vram": 2147704664,
+   "size": 92
+  },
+  {
+   "name": "UpdateCameraSpringForMode",
+   "vram": 2147704756,
+   "size": 5208
+  },
+  {
+   "name": "UpdateGemPickupPathCamera",
+   "vram": 2147709964,
+   "size": 776
+  },
+  {
+   "name": "ActivateScriptedCameraView",
+   "vram": 2147710740,
+   "size": 148
+  },
+  {
+   "name": "UpdateScriptedCameraView",
+   "vram": 2147710888,
+   "size": 632
+  },
+  {
+   "name": "UpdateLedgeGrabCamera",
+   "vram": 2147711520,
+   "size": 436
+  },
+  {
+   "name": "UpdateCameraFrame",
+   "vram": 2147711956,
+   "size": 708
+  },
+  {
+   "name": "func_80037E98",
+   "vram": 2147712664,
+   "size": 8
+  },
+  {
+   "name": "func_80037EA0",
+   "vram": 2147712672,
+   "size": 112
+  },
+  {
+   "name": "func_80037F10",
+   "vram": 2147712784,
+   "size": 128
+  },
+  {
+   "name": "func_80037F90",
+   "vram": 2147712912,
+   "size": 228
+  },
+  {
+   "name": "func_80038074",
+   "vram": 2147713140,
+   "size": 36
+  },
+  {
+   "name": "func_80038098",
+   "vram": 2147713176,
+   "size": 136
+  },
+  {
+   "name": "func_80038120",
+   "vram": 2147713312,
+   "size": 88
+  },
+  {
+   "name": "func_80038178",
+   "vram": 2147713400,
+   "size": 68
+  },
+  {
+   "name": "func_800381BC",
+   "vram": 2147713468,
+   "size": 44
+  },
+  {
+   "name": "func_800381E8",
+   "vram": 2147713512,
+   "size": 104
+  },
+  {
+   "name": "func_80038250",
+   "vram": 2147713616,
+   "size": 240
+  },
+  {
+   "name": "func_80038340",
+   "vram": 2147713856,
+   "size": 76
+  },
+  {
+   "name": "func_8003838C",
+   "vram": 2147713932,
+   "size": 116
+  },
+  {
+   "name": "func_80038400",
+   "vram": 2147714048,
+   "size": 88
+  },
+  {
+   "name": "func_80038458",
+   "vram": 2147714136,
+   "size": 60
+  },
+  {
+   "name": "func_80038494",
+   "vram": 2147714196,
+   "size": 136
+  },
+  {
+   "name": "func_8003851C",
+   "vram": 2147714332,
+   "size": 160
+  },
+  {
+   "name": "func_800385BC",
+   "vram": 2147714492,
+   "size": 124
+  },
+  {
+   "name": "func_80038638",
+   "vram": 2147714616,
+   "size": 740
+  },
+  {
+   "name": "func_8003891C",
+   "vram": 2147715356,
+   "size": 292
+  },
+  {
+   "name": "func_80038A40",
+   "vram": 2147715648,
+   "size": 188
+  },
+  {
+   "name": "func_80038AFC",
+   "vram": 2147715836,
+   "size": 180
+  },
+  {
+   "name": "func_80038BB0",
+   "vram": 2147716016,
+   "size": 156
+  },
+  {
+   "name": "func_80038C4C",
+   "vram": 2147716172,
+   "size": 264
+  },
+  {
+   "name": "func_80038D54",
+   "vram": 2147716436,
+   "size": 108
+  },
+  {
+   "name": "TrackEntityYawTowardSpyro",
+   "vram": 2147716544,
+   "size": 288
+  },
+  {
+   "name": "func_80038EE0",
+   "vram": 2147716832,
+   "size": 232
+  },
+  {
+   "name": "func_80038FC8",
+   "vram": 2147717064,
+   "size": 608
+  },
+  {
+   "name": "func_80039228",
+   "vram": 2147717672,
+   "size": 368
+  },
+  {
+   "name": "func_80039398",
+   "vram": 2147718040,
+   "size": 752
+  },
+  {
+   "name": "func_80039688",
+   "vram": 2147718792,
+   "size": 648
+  },
+  {
+   "name": "func_80039910",
+   "vram": 2147719440,
+   "size": 408
+  },
+  {
+   "name": "func_80039AA8",
+   "vram": 2147719848,
+   "size": 1004
+  },
+  {
+   "name": "func_80039E94",
+   "vram": 2147720852,
+   "size": 728
+  },
+  {
+   "name": "func_8003A16C",
+   "vram": 2147721580,
+   "size": 692
+  },
+  {
+   "name": "func_8003A420",
+   "vram": 2147722272,
+   "size": 768
+  },
+  {
+   "name": "InitActorRenderDefaults",
+   "vram": 2147723040,
+   "size": 124
+  },
+  {
+   "name": "func_8003A79C",
+   "vram": 2147723164,
+   "size": 180
+  },
+  {
+   "name": "func_8003A850",
+   "vram": 2147723344,
+   "size": 208
+  },
+  {
+   "name": "func_8003A920",
+   "vram": 2147723552,
+   "size": 204
+  },
+  {
+   "name": "func_8003A9EC",
+   "vram": 2147723756,
+   "size": 152
+  },
+  {
+   "name": "func_8003AA84",
+   "vram": 2147723908,
+   "size": 104
+  },
+  {
+   "name": "func_8003AAEC",
+   "vram": 2147724012,
+   "size": 212
+  },
+  {
+   "name": "func_8003ABC0",
+   "vram": 2147724224,
+   "size": 1308
+  },
+  {
+   "name": "func_8003B0DC",
+   "vram": 2147725532,
+   "size": 132
+  },
+  {
+   "name": "func_8003B160",
+   "vram": 2147725664,
+   "size": 136
+  },
+  {
+   "name": "func_8003B1E8",
+   "vram": 2147725800,
+   "size": 172
+  },
+  {
+   "name": "func_8003B294",
+   "vram": 2147725972,
+   "size": 488
+  },
+  {
+   "name": "func_8003B47C",
+   "vram": 2147726460,
+   "size": 188
+  },
+  {
+   "name": "func_8003B538",
+   "vram": 2147726648,
+   "size": 188
+  },
+  {
+   "name": "func_8003B5F4",
+   "vram": 2147726836,
+   "size": 148
+  },
+  {
+   "name": "func_8003B688",
+   "vram": 2147726984,
+   "size": 160
+  },
+  {
+   "name": "func_8003B728",
+   "vram": 2147727144,
+   "size": 152
+  },
+  {
+   "name": "func_8003B7C0",
+   "vram": 2147727296,
+   "size": 148
+  },
+  {
+   "name": "func_8003B854",
+   "vram": 2147727444,
+   "size": 384
+  },
+  {
+   "name": "func_8003B9D4",
+   "vram": 2147727828,
+   "size": 252
+  },
+  {
+   "name": "func_8003BAD0",
+   "vram": 2147728080,
+   "size": 508
+  },
+  {
+   "name": "func_8003BCCC",
+   "vram": 2147728588,
+   "size": 524
+  },
+  {
+   "name": "func_8003BED8",
+   "vram": 2147729112,
+   "size": 232
+  },
+  {
+   "name": "func_8003BFC0",
+   "vram": 2147729344,
+   "size": 920
+  },
+  {
+   "name": "func_8003C358",
+   "vram": 2147730264,
+   "size": 908
+  },
+  {
+   "name": "TickGemPickupBurstEntity",
+   "vram": 2147731172,
+   "size": 376
+  },
+  {
+   "name": "func_8003C85C",
+   "vram": 2147731548,
+   "size": 312
+  },
+  {
+   "name": "func_8003C994",
+   "vram": 2147731860,
+   "size": 304
+  },
+  {
+   "name": "func_8003CAC4",
+   "vram": 2147732164,
+   "size": 96
+  },
+  {
+   "name": "AdvanceSpyroAnimFrame",
+   "vram": 2147732260,
+   "size": 148
+  },
+  {
+   "name": "StepSpyroAnimAndCommitTransition",
+   "vram": 2147732408,
+   "size": 300
+  },
+  {
+   "name": "ApplySpyroStateTransition",
+   "vram": 2147732708,
+   "size": 1200
+  },
+  {
+   "name": "TickSpyroAnimStateMachine",
+   "vram": 2147733908,
+   "size": 548
+  },
+  {
+   "name": "ComputeSpyroMoveTargetFromPad",
+   "vram": 2147734456,
+   "size": 372
+  },
+  {
+   "name": "IntegrateSpyroBodyEuler",
+   "vram": 2147734828,
+   "size": 420
+  },
+  {
+   "name": "TurnSpyroTowardMoveTargetWithLean",
+   "vram": 2147735248,
+   "size": 368
+  },
+  {
+   "name": "ApplyPadInputToSpyroBodyYaw",
+   "vram": 2147735616,
+   "size": 236
+  },
+  {
+   "name": "AdvanceSpyroSpeedTowardTarget",
+   "vram": 2147735852,
+   "size": 76
+  },
+  {
+   "name": "BuildSpyroVelocityFromBodyEuler",
+   "vram": 2147735928,
+   "size": 144
+  },
+  {
+   "name": "DampenSpyroFreeFallAttitude",
+   "vram": 2147736072,
+   "size": 220
+  },
+  {
+   "name": "UpdateSpyroFlightAttitudeNearGround",
+   "vram": 2147736292,
+   "size": 864
+  },
+  {
+   "name": "AlignSpyroBodyToVelocity",
+   "vram": 2147737156,
+   "size": 284
+  },
+  {
+   "name": "func_8003DF60",
+   "vram": 2147737440,
+   "size": 68
+  },
+  {
+   "name": "ResetSpyroLinearMotion",
+   "vram": 2147737508,
+   "size": 72
+  },
+  {
+   "name": "RotateSpyroBodyTowardKnockbackDir",
+   "vram": 2147737580,
+   "size": 200
+  },
+  {
+   "name": "ApplyGravityAlongSpyroSlopeTangent",
+   "vram": 2147737780,
+   "size": 248
+  },
+  {
+   "name": "ApplyGravityAlongSpyroSlopeNormal",
+   "vram": 2147738028,
+   "size": 108
+  },
+  {
+   "name": "ProbeSpyroLedgeForward",
+   "vram": 2147738136,
+   "size": 256
+  },
+  {
+   "name": "ProbeSpyroGroundContact",
+   "vram": 2147738392,
+   "size": 784
+  },
+  {
+   "name": "AverageSpyroPlatformMotion",
+   "vram": 2147739176,
+   "size": 304
+  },
+  {
+   "name": "StepSpyroOntoLocalFloor",
+   "vram": 2147739480,
+   "size": 436
+  },
+  {
+   "name": "NudgeSpyroFromWallProbes",
+   "vram": 2147739916,
+   "size": 348
+  },
+  {
+   "name": "ChangeSpyroState",
+   "vram": 2147740264,
+   "size": 4960
+  },
+  {
+   "name": "RestartSpyroAnimWithState",
+   "vram": 2147745224,
+   "size": 120
+  },
+  {
+   "name": "AdvanceSpyroPhysics",
+   "vram": 2147745344,
+   "size": 4392
+  },
+  {
+   "name": "DispatchSpyroPadStateChanges",
+   "vram": 2147749736,
+   "size": 776
+  },
+  {
+   "name": "DispatchSpyroChargeStateChanges",
+   "vram": 2147750512,
+   "size": 744
+  },
+  {
+   "name": "CycleSpyroIdleAnim",
+   "vram": 2147751256,
+   "size": 280
+  },
+  {
+   "name": "UpdateSpyroStateBehavior",
+   "vram": 2147751536,
+   "size": 10612
+  },
+  {
+   "name": "IntegrateSpyroMotionForSubstep",
+   "vram": 2147762148,
+   "size": 15228
+  },
+  {
+   "name": "DispatchSpyroPhysicsByState",
+   "vram": 2147777376,
+   "size": 3372
+  },
+  {
+   "name": "AdvanceSpyroSubstepState",
+   "vram": 2147780748,
+   "size": 784
+  },
+  {
+   "name": "AdvanceSpyroFrameMotion",
+   "vram": 2147781532,
+   "size": 372
+  },
+  {
+   "name": "TickSpyroAttackEffects",
+   "vram": 2147781904,
+   "size": 2248
+  },
+  {
+   "name": "AdvanceSpyroAnimLayer1Frame",
+   "vram": 2147784152,
+   "size": 136
+  },
+  {
+   "name": "TickSpyroAnimLayer1",
+   "vram": 2147784288,
+   "size": 544
+  },
+  {
+   "name": "SmoothSpyroByteEulerSpring",
+   "vram": 2147784832,
+   "size": 320
+  },
+  {
+   "name": "TickSpyroHornStrikeAttack",
+   "vram": 2147785152,
+   "size": 1084
+  },
+  {
+   "name": "AdvanceSpyroAnimLayer2Frame",
+   "vram": 2147786236,
+   "size": 144
+  },
+  {
+   "name": "TickSpyroAnimLayer2",
+   "vram": 2147786380,
+   "size": 176
+  },
+  {
+   "name": "TickSpyroAnimLayer2GateTimer",
+   "vram": 2147786556,
+   "size": 112
+  },
+  {
+   "name": "SampleSpyroShadowRingHeights",
+   "vram": 2147786668,
+   "size": 596
+  },
+  {
+   "name": "TickSpyroGameplayFrame",
+   "vram": 2147787264,
+   "size": 1516
+  },
+  {
+   "name": "TickSpyroFrameForceJump",
+   "vram": 2147788780,
+   "size": 544
+  },
+  {
+   "name": "TickSpyroFrameNoInput",
+   "vram": 2147789324,
+   "size": 536
+  },
+  {
+   "name": "ResetSpyroEntity",
+   "vram": 2147789860,
+   "size": 532
+  },
+  {
+   "name": "CastRayWorldAndActors",
+   "vram": 2147790392,
+   "size": 4020
+  },
+  {
+   "name": "func_8004BDEC",
+   "vram": 2147794412,
+   "size": 96
+  },
+  {
+   "name": "CollideSphereWithWorldAndActors",
+   "vram": 2147794508,
+   "size": 4240
+  },
+  {
+   "name": "func_8004CEDC",
+   "vram": 2147798748,
+   "size": 1808
+  },
+  {
+   "name": "FindGroundHeightBelow",
+   "vram": 2147800556,
+   "size": 2360
+  },
+  {
+   "name": "FindWorldFloorBelowPoint",
+   "vram": 2147802916,
+   "size": 964
+  },
+  {
+   "name": "func_8004E2E8",
+   "vram": 2147803880,
+   "size": 224
+  },
+  {
+   "name": "DispatchActorContactAtSphere",
+   "vram": 2147804104,
+   "size": 576
+  },
+  {
+   "name": "func_8004E60C",
+   "vram": 2147804684,
+   "size": 1436
+  },
+  {
+   "name": "EmitStaticActorMeshList",
+   "vram": 2147806120,
+   "size": 1112
+  },
+  {
+   "name": "EmitStaticActorMeshListFogged",
+   "vram": 2147807232,
+   "size": 1212
+  },
+  {
+   "name": "EmitDynamicActorMeshScissored",
+   "vram": 2147808444,
+   "size": 812
+  },
+  {
+   "name": "ClipAndEmitActorTriangle",
+   "vram": 2147809256,
+   "size": 260
+  },
+  {
+   "name": "func_8004F8EC",
+   "vram": 2147809516,
+   "size": 1216
+  },
+  {
+   "name": "BlendDepthCuedEdgeColor",
+   "vram": 2147810732,
+   "size": 244
+  },
+  {
+   "name": "EmitDynamicActorMeshFogged",
+   "vram": 2147810976,
+   "size": 240
+  },
+  {
+   "name": "ClipAndEmitFoggedActorTriangle",
+   "vram": 2147811216,
+   "size": 212
+  },
+  {
+   "name": "func_80050068",
+   "vram": 2147811432,
+   "size": 472
+  },
+  {
+   "name": "EmitDynamicActorMeshFogShaded",
+   "vram": 2147811904,
+   "size": 972
+  },
+  {
+   "name": "ClipAndEmitFogShadedActorTriangle",
+   "vram": 2147812876,
+   "size": 260
+  },
+  {
+   "name": "func_80050710",
+   "vram": 2147813136,
+   "size": 1216
+  },
+  {
+   "name": "DrawActors",
+   "vram": 2147814352,
+   "size": 5148
+  },
+  {
+   "name": "func_80051FEC",
+   "vram": 2147819500,
+   "size": 468
+  },
+  {
+   "name": "BuildRenderEntityLists",
+   "vram": 2147819968,
+   "size": 256
+  },
+  {
+   "name": "TickGemCutsceneActorAnims",
+   "vram": 2147820224,
+   "size": 516
+  },
+  {
+   "name": "AllocActorRecordSlot",
+   "vram": 2147820740,
+   "size": 164
+  },
+  {
+   "name": "DespawnActorRecord",
+   "vram": 2147820904,
+   "size": 320
+  },
+  {
+   "name": "InsertActorIntoSpatialGrid",
+   "vram": 2147821224,
+   "size": 804
+  },
+  {
+   "name": "HideActorRenderRecord",
+   "vram": 2147822028,
+   "size": 24
+  },
+  {
+   "name": "func_800529E4",
+   "vram": 2147822052,
+   "size": 896
+  },
+  {
+   "name": "func_80052D64",
+   "vram": 2147822948,
+   "size": 468
+  },
+  {
+   "name": "AccumulateAnimRootMotionDelta",
+   "vram": 2147823416,
+   "size": 392
+  },
+  {
+   "name": "func_800530C0",
+   "vram": 2147823808,
+   "size": 784
+  },
+  {
+   "name": "EncodeCachedVecToActorDirCode",
+   "vram": 2147824592,
+   "size": 416
+  },
+  {
+   "name": "func_80053570",
+   "vram": 2147825008,
+   "size": 152
+  },
+  {
+   "name": "func_80053608",
+   "vram": 2147825160,
+   "size": 156
+  },
+  {
+   "name": "ResetPadFrameSubstepTable",
+   "vram": 2147825316,
+   "size": 100
+  },
+  {
+   "name": "SnapshotPadInputState",
+   "vram": 2147825416,
+   "size": 84
+  },
+  {
+   "name": "ResetPadStickCalibrationDefaults",
+   "vram": 2147825500,
+   "size": 52
+  },
+  {
+   "name": "FinalizePadCalibration",
+   "vram": 2147825552,
+   "size": 432
+  },
+  {
+   "name": "MapPadAxisToCalibratedRange",
+   "vram": 2147825984,
+   "size": 188
+  },
+  {
+   "name": "SamplePadForDeathReplayFrame",
+   "vram": 2147826172,
+   "size": 620
+  },
+  {
+   "name": "PollPadAndDistributeInput",
+   "vram": 2147826792,
+   "size": 1660
+  },
+  {
+   "name": "SetHudCounterDigits",
+   "vram": 2147828452,
+   "size": 284
+  },
+  {
+   "name": "OffsetHudIconRollAxis",
+   "vram": 2147828736,
+   "size": 92
+  },
+  {
+   "name": "OffsetHudDigitRollAxis",
+   "vram": 2147828828,
+   "size": 76
+  },
+  {
+   "name": "CommitHudCounterAnimState",
+   "vram": 2147828904,
+   "size": 208
+  },
+  {
+   "name": "func_80054578",
+   "vram": 2147829112,
+   "size": 136
+  },
+  {
+   "name": "InitHudCounters",
+   "vram": 2147829248,
+   "size": 904
+  },
+  {
+   "name": "UpdateHudCounters",
+   "vram": 2147830152,
+   "size": 3652
+  },
+  {
+   "name": "func_800557CC",
+   "vram": 2147833804,
+   "size": 400
+  },
+  {
+   "name": "InitSoundEngine",
+   "vram": 2147834204,
+   "size": 284
+  },
+  {
+   "name": "PlaySoundEffect",
+   "vram": 2147834488,
+   "size": 1928
+  },
+  {
+   "name": "StopSoundVoiceByIndex",
+   "vram": 2147836416,
+   "size": 164
+  },
+  {
+   "name": "StopSoundVoicesByOwner",
+   "vram": 2147836580,
+   "size": 216
+  },
+  {
+   "name": "TickActiveSoundVoices",
+   "vram": 2147836796,
+   "size": 1144
+  },
+  {
+   "name": "HandleMusicCommand",
+   "vram": 2147837940,
+   "size": 820
+  },
+  {
+   "name": "StopAllSoundExceptMask",
+   "vram": 2147838760,
+   "size": 348
+  },
+  {
+   "name": "ComputeVoicePanAndFalloff",
+   "vram": 2147839108,
+   "size": 320
+  },
+  {
+   "name": "GetSoundVoiceStatusByOwner",
+   "vram": 2147839428,
+   "size": 120
+  },
+  {
+   "name": "SyncSoundVoicesWithHardware",
+   "vram": 2147839548,
+   "size": 152
+  },
+  {
+   "name": "TickSpuPerFrame",
+   "vram": 2147839700,
+   "size": 144
+  },
+  {
+   "name": "DispatchSpyroTriggerEvent",
+   "vram": 2147839844,
+   "size": 1052
+  },
+  {
+   "name": "func_80057380",
+   "vram": 2147840896,
+   "size": 72
+  },
+  {
+   "name": "RasterizeEmitList",
+   "vram": 2147840968,
+   "size": 3372
+  },
+  {
+   "name": "DrawWorldSparkleParticles",
+   "vram": 2147844340,
+   "size": 976
+  },
+  {
+   "name": "DrawWorldRotatingBillboards",
+   "vram": 2147845316,
+   "size": 872
+  },
+  {
+   "name": "func_8005882C",
+   "vram": 2147846188,
+   "size": 56
+  },
+  {
+   "name": "DrawGemPickupAuraStar",
+   "vram": 2147846244,
+   "size": 644
+  },
+  {
+   "name": "func_80058AE8",
+   "vram": 2147846888,
+   "size": 120
+  },
+  {
+   "name": "func_80058B60",
+   "vram": 2147847008,
+   "size": 8
+  },
+  {
+   "name": "ResetWorldParticleTables",
+   "vram": 2147847016,
+   "size": 64
+  },
+  {
+   "name": "DrawWorldParticleEmitters",
+   "vram": 2147847080,
+   "size": 48
+  },
+  {
+   "name": "ComputeBillboardBasisVectors",
+   "vram": 2147847128,
+   "size": 164
+  },
+  {
+   "name": "InitLightVectorConstants",
+   "vram": 2147847292,
+   "size": 68
+  },
+  {
+   "name": "RotateLightVectorXZ",
+   "vram": 2147847360,
+   "size": 164
+  },
+  {
+   "name": "DrawSpyroHornStrikeTrails",
+   "vram": 2147847524,
+   "size": 1808
+  },
+  {
+   "name": "func_80059474",
+   "vram": 2147849332,
+   "size": 248
+  },
+  {
+   "name": "ComputeSaveGameChecksum",
+   "vram": 2147849580,
+   "size": 40
+  },
+  {
+   "name": "func_80059594",
+   "vram": 2147849620,
+   "size": 720
+  },
+  {
+   "name": "BuildSaveGameBuffer",
+   "vram": 2147850340,
+   "size": 484
+  },
+  {
+   "name": "DrawSpyroDropShadow",
+   "vram": 2147850824,
+   "size": 1348
+  },
+  {
+   "name": "DrawEntityDirectionalSpikes",
+   "vram": 2147852172,
+   "size": 1252
+  },
+  {
+   "name": "ApplyPerLevelGlobalsTable",
+   "vram": 2147853424,
+   "size": 4744
+  },
+  {
+   "name": "InitActorMeshScratchRegions",
+   "vram": 2147858168,
+   "size": 224
+  },
+  {
+   "name": "LoadActorMeshTables",
+   "vram": 2147858392,
+   "size": 264
+  },
+  {
+   "name": "start",
+   "vram": 2147858656,
+   "size": 168
+  },
+  {
+   "name": "__main",
+   "vram": 2147858824,
+   "size": 112
+  },
+  {
+   "name": "__do_global_dtors",
+   "vram": 2147858936,
+   "size": 104
+  },
+  {
+   "name": "InitSpu",
+   "vram": 2147859040,
+   "size": 32
+  },
+  {
+   "name": "InitSpuSubsystem",
+   "vram": 2147859072,
+   "size": 248
+  },
+  {
+   "name": "InstallSpuDmaEventHandler",
+   "vram": 2147859320,
+   "size": 124
+  },
+  {
+   "name": "InitSpuHardware",
+   "vram": 2147859444,
+   "size": 660
+  },
+  {
+   "name": "WriteSpuRamPio",
+   "vram": 2147860104,
+   "size": 460
+  },
+  {
+   "name": "func_8005C054",
+   "vram": 2147860564,
+   "size": 192
+  },
+  {
+   "name": "func_8005C114",
+   "vram": 2147860756,
+   "size": 172
+  },
+  {
+   "name": "ControlSpuDmaTransfer",
+   "vram": 2147860928,
+   "size": 656
+  },
+  {
+   "name": "WriteSpuRamInternal",
+   "vram": 2147861584,
+   "size": 136
+  },
+  {
+   "name": "ReadSpuRamDma",
+   "vram": 2147861720,
+   "size": 104
+  },
+  {
+   "name": "WriteSpuRegister",
+   "vram": 2147861824,
+   "size": 72
+  },
+  {
+   "name": "WriteSpuVoiceAddrRegister",
+   "vram": 2147861896,
+   "size": 164
+  },
+  {
+   "name": "func_8005C62C",
+   "vram": 2147862060,
+   "size": 60
+  },
+  {
+   "name": "func_8005C668",
+   "vram": 2147862120,
+   "size": 96
+  },
+  {
+   "name": "SetSpuDmaWriteStateBits",
+   "vram": 2147862216,
+   "size": 44
+  },
+  {
+   "name": "SetSpuDmaReadStateBits",
+   "vram": 2147862260,
+   "size": 44
+  },
+  {
+   "name": "DelaySpuRegisterWrite",
+   "vram": 2147862304,
+   "size": 104
+  },
+  {
+   "name": "InstallSpuDmaCallback",
+   "vram": 2147862408,
+   "size": 36
+  },
+  {
+   "name": "ApplySpuVoiceAttr",
+   "vram": 2147862444,
+   "size": 40
+  },
+  {
+   "name": "SetSpuKeyMask",
+   "vram": 2147862484,
+   "size": 508
+  },
+  {
+   "name": "GetSpuVoiceKeyStatus",
+   "vram": 2147862992,
+   "size": 148
+  },
+  {
+   "name": "ReadSpuRam",
+   "vram": 2147863140,
+   "size": 96
+  },
+  {
+   "name": "WriteSpuRam",
+   "vram": 2147863236,
+   "size": 96
+  },
+  {
+   "name": "SetSpuTransferStartAddr",
+   "vram": 2147863332,
+   "size": 88
+  },
+  {
+   "name": "SetSpuTransferMode",
+   "vram": 2147863420,
+   "size": 52
+  },
+  {
+   "name": "GetSpuTransferStatus",
+   "vram": 2147863472,
+   "size": 168
+  },
+  {
+   "name": "SetSpuCommonAttr",
+   "vram": 2147863640,
+   "size": 916
+  },
+  {
+   "name": "ApplySpuVoiceAttrRange",
+   "vram": 2147864556,
+   "size": 1596
+  },
+  {
+   "name": "func_8005D628",
+   "vram": 2147866152,
+   "size": 144
+  },
+  {
+   "name": "ComputeSpuPitchFromNoteDelta",
+   "vram": 2147866296,
+   "size": 316
+  },
+  {
+   "name": "func_8005D7F4",
+   "vram": 2147866612,
+   "size": 296
+  },
+  {
+   "name": "func_8005D91C",
+   "vram": 2147866908,
+   "size": 208
+  },
+  {
+   "name": "GetAllSpuVoiceKeyStatus",
+   "vram": 2147867116,
+   "size": 136
+  },
+  {
+   "name": "SetSpuVoiceVolumeLR",
+   "vram": 2147867252,
+   "size": 64
+  },
+  {
+   "name": "SpuGetVoiceVolume",
+   "vram": 2147867316,
+   "size": 56
+  },
+  {
+   "name": "S_GVV_OBJ_38",
+   "vram": 2147867372,
+   "size": 32
+  },
+  {
+   "name": "S_GVV_OBJ_58",
+   "vram": 2147867404,
+   "size": 8
+  },
+  {
+   "name": "InitHeap",
+   "vram": 2147867412,
+   "size": 12
+  },
+  {
+   "name": "LoadExec",
+   "vram": 2147867428,
+   "size": 12
+  },
+  {
+   "name": "_96_init",
+   "vram": 2147867444,
+   "size": 12
+  },
+  {
+   "name": "func_8005DB44",
+   "vram": 2147867460,
+   "size": 8
+  },
+  {
+   "name": "Bios96Remove",
+   "vram": 2147867468,
+   "size": 12
+  },
+  {
+   "name": "DeliverEvent",
+   "vram": 2147867492,
+   "size": 12
+  },
+  {
+   "name": "OpenEvent",
+   "vram": 2147867508,
+   "size": 12
+  },
+  {
+   "name": "TestEvent",
+   "vram": 2147867524,
+   "size": 12
+  },
+  {
+   "name": "EnableEvent",
+   "vram": 2147867540,
+   "size": 12
+  },
+  {
+   "name": "EnterCriticalSection",
+   "vram": 2147867556,
+   "size": 16
+  },
+  {
+   "name": "ExitCriticalSection",
+   "vram": 2147867572,
+   "size": 16
+  },
+  {
+   "name": "VSync",
+   "vram": 2147867588,
+   "size": 328
+  },
+  {
+   "name": "WaitForFrameDeadline",
+   "vram": 2147867916,
+   "size": 156
+  },
+  {
+   "name": "ChangeClearPAD",
+   "vram": 2147868072,
+   "size": 12
+  },
+  {
+   "name": "ChangeClearRCnt",
+   "vram": 2147868088,
+   "size": 12
+  },
+  {
+   "name": "FUN_8005ddc8",
+   "vram": 2147868104,
+   "size": 48
+  },
+  {
+   "name": "FUN_8005ddf8",
+   "vram": 2147868152,
+   "size": 48
+  },
+  {
+   "name": "DmaCallback",
+   "vram": 2147868200,
+   "size": 48
+  },
+  {
+   "name": "InstallVSyncCallback",
+   "vram": 2147868248,
+   "size": 52
+  },
+  {
+   "name": "FUN_8005de8c",
+   "vram": 2147868300,
+   "size": 48
+  },
+  {
+   "name": "func_8005DEBC",
+   "vram": 2147868348,
+   "size": 48
+  },
+  {
+   "name": "func_8005DEEC",
+   "vram": 2147868396,
+   "size": 48
+  },
+  {
+   "name": "FUN_8005df1c",
+   "vram": 2147868444,
+   "size": 16
+  },
+  {
+   "name": "func_8005DF2C",
+   "vram": 2147868460,
+   "size": 24
+  },
+  {
+   "name": "SetInterruptMask",
+   "vram": 2147868484,
+   "size": 28
+  },
+  {
+   "name": "ResetCallback",
+   "vram": 2147868512,
+   "size": 220
+  },
+  {
+   "name": "HandleHardwareInterrupt",
+   "vram": 2147868732,
+   "size": 488
+  },
+  {
+   "name": "InstallInterruptCallback",
+   "vram": 2147869220,
+   "size": 340
+  },
+  {
+   "name": "func_8005E378",
+   "vram": 2147869560,
+   "size": 172
+  },
+  {
+   "name": "func_8005E424",
+   "vram": 2147869732,
+   "size": 136
+  },
+  {
+   "name": "FUN_8005e4ac",
+   "vram": 2147869868,
+   "size": 44
+  },
+  {
+   "name": "ReturnFromException",
+   "vram": 2147869912,
+   "size": 12
+  },
+  {
+   "name": "ResetEntryInt",
+   "vram": 2147869928,
+   "size": 12
+  },
+  {
+   "name": "HookEntryInt",
+   "vram": 2147869944,
+   "size": 12
+  },
+  {
+   "name": "InitRootCounterCallbacks",
+   "vram": 2147869960,
+   "size": 88
+  },
+  {
+   "name": "func_8005E560",
+   "vram": 2147870048,
+   "size": 120
+  },
+  {
+   "name": "func_8005E5D8",
+   "vram": 2147870168,
+   "size": 44
+  },
+  {
+   "name": "FUN_8005e604",
+   "vram": 2147870212,
+   "size": 44
+  },
+  {
+   "name": "InitDmaCallbackTable",
+   "vram": 2147870256,
+   "size": 80
+  },
+  {
+   "name": "func_8005E680",
+   "vram": 2147870336,
+   "size": 388
+  },
+  {
+   "name": "func_8005E804",
+   "vram": 2147870724,
+   "size": 168
+  },
+  {
+   "name": "FUN_8005e8ac",
+   "vram": 2147870892,
+   "size": 44
+  },
+  {
+   "name": "func_8005E8D8",
+   "vram": 2147870936,
+   "size": 236
+  },
+  {
+   "name": "func_8005E9C4",
+   "vram": 2147871172,
+   "size": 104
+  },
+  {
+   "name": "func_8005EA2C",
+   "vram": 2147871276,
+   "size": 104
+  },
+  {
+   "name": "InitDefaultDrawEnv",
+   "vram": 2147871380,
+   "size": 184
+  },
+  {
+   "name": "InitDefaultDispEnv",
+   "vram": 2147871564,
+   "size": 60
+  },
+  {
+   "name": "func_8005EB88",
+   "vram": 2147871624,
+   "size": 24
+  },
+  {
+   "name": "GetGraphType",
+   "vram": 2147871648,
+   "size": 16
+  },
+  {
+   "name": "func_8005EBB0",
+   "vram": 2147871664,
+   "size": 60
+  },
+  {
+   "name": "func_8005EBEC",
+   "vram": 2147871724,
+   "size": 24
+  },
+  {
+   "name": "func_8005EC04",
+   "vram": 2147871748,
+   "size": 96
+  },
+  {
+   "name": "DumpClut",
+   "vram": 2147871844,
+   "size": 64
+  },
+  {
+   "name": "func_8005ECA4",
+   "vram": 2147871908,
+   "size": 28
+  },
+  {
+   "name": "func_8005ECC0",
+   "vram": 2147871936,
+   "size": 28
+  },
+  {
+   "name": "func_8005ECDC",
+   "vram": 2147871964,
+   "size": 60
+  },
+  {
+   "name": "func_8005ED18",
+   "vram": 2147872024,
+   "size": 60
+  },
+  {
+   "name": "func_8005ED54",
+   "vram": 2147872084,
+   "size": 36
+  },
+  {
+   "name": "func_8005ED78",
+   "vram": 2147872120,
+   "size": 24
+  },
+  {
+   "name": "func_8005ED90",
+   "vram": 2147872144,
+   "size": 40
+  },
+  {
+   "name": "func_8005EDB8",
+   "vram": 2147872184,
+   "size": 40
+  },
+  {
+   "name": "func_8005EDE0",
+   "vram": 2147872224,
+   "size": 20
+  },
+  {
+   "name": "func_8005EDF4",
+   "vram": 2147872244,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE08",
+   "vram": 2147872264,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE1C",
+   "vram": 2147872284,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE30",
+   "vram": 2147872304,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE44",
+   "vram": 2147872324,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE58",
+   "vram": 2147872344,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE6C",
+   "vram": 2147872364,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE80",
+   "vram": 2147872384,
+   "size": 20
+  },
+  {
+   "name": "func_8005EE94",
+   "vram": 2147872404,
+   "size": 20
+  },
+  {
+   "name": "func_8005EEA8",
+   "vram": 2147872424,
+   "size": 20
+  },
+  {
+   "name": "func_8005EEBC",
+   "vram": 2147872444,
+   "size": 20
+  },
+  {
+   "name": "func_8005EED0",
+   "vram": 2147872464,
+   "size": 20
+  },
+  {
+   "name": "func_8005EEE4",
+   "vram": 2147872484,
+   "size": 20
+  },
+  {
+   "name": "func_8005EEF8",
+   "vram": 2147872504,
+   "size": 20
+  },
+  {
+   "name": "func_8005EF0C",
+   "vram": 2147872524,
+   "size": 20
+  },
+  {
+   "name": "func_8005EF20",
+   "vram": 2147872544,
+   "size": 20
+  },
+  {
+   "name": "SetLineF3",
+   "vram": 2147872564,
+   "size": 32
+  },
+  {
+   "name": "func_8005EF54",
+   "vram": 2147872596,
+   "size": 32
+  },
+  {
+   "name": "SetLineF4",
+   "vram": 2147872628,
+   "size": 32
+  },
+  {
+   "name": "func_8005EF94",
+   "vram": 2147872660,
+   "size": 32
+  },
+  {
+   "name": "func_8005EFB4",
+   "vram": 2147872692,
+   "size": 44
+  },
+  {
+   "name": "SetDrawMove",
+   "vram": 2147872736,
+   "size": 96
+  },
+  {
+   "name": "func_8005F040",
+   "vram": 2147872832,
+   "size": 108
+  },
+  {
+   "name": "func_8005F0AC",
+   "vram": 2147872940,
+   "size": 56
+  },
+  {
+   "name": "func_8005F0E4",
+   "vram": 2147872996,
+   "size": 276
+  },
+  {
+   "name": "func_8005F1F8",
+   "vram": 2147873272,
+   "size": 172
+  },
+  {
+   "name": "ResetGraph",
+   "vram": 2147873444,
+   "size": 388
+  },
+  {
+   "name": "func_8005F428",
+   "vram": 2147873832,
+   "size": 276
+  },
+  {
+   "name": "SetGraphDebug",
+   "vram": 2147874108,
+   "size": 100
+  },
+  {
+   "name": "func_8005F5A0",
+   "vram": 2147874208,
+   "size": 172
+  },
+  {
+   "name": "func_8005F64C",
+   "vram": 2147874380,
+   "size": 16
+  },
+  {
+   "name": "func_8005F65C",
+   "vram": 2147874396,
+   "size": 16
+  },
+  {
+   "name": "func_8005F66C",
+   "vram": 2147874412,
+   "size": 92
+  },
+  {
+   "name": "SetDispMask",
+   "vram": 2147874504,
+   "size": 156
+  },
+  {
+   "name": "DrawSync",
+   "vram": 2147874660,
+   "size": 108
+  },
+  {
+   "name": "ValidateGpuRect",
+   "vram": 2147874768,
+   "size": 296
+  },
+  {
+   "name": "ClearImage",
+   "vram": 2147875064,
+   "size": 148
+  },
+  {
+   "name": "func_8005F98C",
+   "vram": 2147875212,
+   "size": 156
+  },
+  {
+   "name": "LoadImage",
+   "vram": 2147875368,
+   "size": 100
+  },
+  {
+   "name": "StoreImage",
+   "vram": 2147875468,
+   "size": 100
+  },
+  {
+   "name": "MoveImage",
+   "vram": 2147875568,
+   "size": 196
+  },
+  {
+   "name": "func_8005FBB4",
+   "vram": 2147875764,
+   "size": 184
+  },
+  {
+   "name": "func_8005FC6C",
+   "vram": 2147875948,
+   "size": 152
+  },
+  {
+   "name": "func_8005FD04",
+   "vram": 2147876100,
+   "size": 96
+  },
+  {
+   "name": "DrawOTag",
+   "vram": 2147876196,
+   "size": 116
+  },
+  {
+   "name": "PutDrawEnv",
+   "vram": 2147876312,
+   "size": 260
+  },
+  {
+   "name": "func_8005FEDC",
+   "vram": 2147876572,
+   "size": 284
+  },
+  {
+   "name": "func_8005FFF8",
+   "vram": 2147876856,
+   "size": 56
+  },
+  {
+   "name": "PutDispEnv",
+   "vram": 2147876912,
+   "size": 1192
+  },
+  {
+   "name": "func_800604D8",
+   "vram": 2147878104,
+   "size": 56
+  },
+  {
+   "name": "func_80060510",
+   "vram": 2147878160,
+   "size": 48
+  },
+  {
+   "name": "func_80060540",
+   "vram": 2147878208,
+   "size": 60
+  },
+  {
+   "name": "func_8006057C",
+   "vram": 2147878268,
+   "size": 132
+  },
+  {
+   "name": "func_80060600",
+   "vram": 2147878400,
+   "size": 68
+  },
+  {
+   "name": "func_80060644",
+   "vram": 2147878468,
+   "size": 44
+  },
+  {
+   "name": "SetDrawMode",
+   "vram": 2147878512,
+   "size": 88
+  },
+  {
+   "name": "func_800606C8",
+   "vram": 2147878600,
+   "size": 536
+  },
+  {
+   "name": "SetDrawEnv",
+   "vram": 2147879136,
+   "size": 656
+  },
+  {
+   "name": "BuildDrawModeWord",
+   "vram": 2147879792,
+   "size": 88
+  },
+  {
+   "name": "BuildDrawAreaTopLeft",
+   "vram": 2147879880,
+   "size": 204
+  },
+  {
+   "name": "BuildDrawAreaBottomRight",
+   "vram": 2147880084,
+   "size": 204
+  },
+  {
+   "name": "BuildDrawOffsetCommand",
+   "vram": 2147880288,
+   "size": 68
+  },
+  {
+   "name": "BuildTextureWindow",
+   "vram": 2147880356,
+   "size": 132
+  },
+  {
+   "name": "FUN_80060e28",
+   "vram": 2147880488,
+   "size": 176
+  },
+  {
+   "name": "func_80060ED8",
+   "vram": 2147880664,
+   "size": 24
+  },
+  {
+   "name": "func_80060EF0",
+   "vram": 2147880688,
+   "size": 232
+  },
+  {
+   "name": "func_80060FD8",
+   "vram": 2147880920,
+   "size": 604
+  },
+  {
+   "name": "func_80061234",
+   "vram": 2147881524,
+   "size": 572
+  },
+  {
+   "name": "func_80061470",
+   "vram": 2147882096,
+   "size": 644
+  },
+  {
+   "name": "WriteGpuControl",
+   "vram": 2147882740,
+   "size": 40
+  },
+  {
+   "name": "func_8006171C",
+   "vram": 2147882780,
+   "size": 20
+  },
+  {
+   "name": "func_80061730",
+   "vram": 2147882800,
+   "size": 80
+  },
+  {
+   "name": "SendGpuLinkedList",
+   "vram": 2147882880,
+   "size": 76
+  },
+  {
+   "name": "GetGpuInfo",
+   "vram": 2147882956,
+   "size": 48
+  },
+  {
+   "name": "func_800617FC",
+   "vram": 2147883004,
+   "size": 36
+  },
+  {
+   "name": "EnqueueGpuOp",
+   "vram": 2147883040,
+   "size": 736
+  },
+  {
+   "name": "FlushGpuQueue",
+   "vram": 2147883776,
+   "size": 748
+  },
+  {
+   "name": "ResetGraphImpl",
+   "vram": 2147884524,
+   "size": 348
+  },
+  {
+   "name": "DrawSyncImpl",
+   "vram": 2147884872,
+   "size": 328
+  },
+  {
+   "name": "ResetGpuTimeoutDeadline",
+   "vram": 2147885200,
+   "size": 52
+  },
+  {
+   "name": "CheckGpuTimeout",
+   "vram": 2147885252,
+   "size": 364
+  },
+  {
+   "name": "InitDisplayEnv",
+   "vram": 2147885616,
+   "size": 220
+  },
+  {
+   "name": "memset",
+   "vram": 2147885836,
+   "size": 44
+  },
+  {
+   "name": "GPU_cw",
+   "vram": 2147885880,
+   "size": 12
+  },
+  {
+   "name": "func_80062348",
+   "vram": 2147885896,
+   "size": 8
+  },
+  {
+   "name": "InitGeom",
+   "vram": 2147885904,
+   "size": 128
+  },
+  {
+   "name": "MulMatrix0",
+   "vram": 2147886040,
+   "size": 268
+  },
+  {
+   "name": "MulMatrix",
+   "vram": 2147886312,
+   "size": 268
+  },
+  {
+   "name": "SetTransMatrix",
+   "vram": 2147886584,
+   "size": 32
+  },
+  {
+   "name": "SetGeomOffset",
+   "vram": 2147886616,
+   "size": 24
+  },
+  {
+   "name": "SetGeomScreen",
+   "vram": 2147886648,
+   "size": 12
+  },
+  {
+   "name": "FUN_80062648",
+   "vram": 2147886664,
+   "size": 104
+  },
+  {
+   "name": "g_anGteExceptionVectorStub",
+   "vram": 2147886768,
+   "size": 56
+  },
+  {
+   "name": "FlushCache",
+   "vram": 2147886824,
+   "size": 12
+  },
+  {
+   "name": "memcpy",
+   "vram": 2147886840,
+   "size": 52
+  },
+  {
+   "name": "GetRandomU32",
+   "vram": 2147886892,
+   "size": 48
+  },
+  {
+   "name": "srand",
+   "vram": 2147886940,
+   "size": 16
+  },
+  {
+   "name": "strlen",
+   "vram": 2147886956,
+   "size": 48
+  },
+  {
+   "name": "WritePrintf",
+   "vram": 2147887004,
+   "size": 60
+  },
+  {
+   "name": "FormatAndWrite",
+   "vram": 2147887064,
+   "size": 1672
+  },
+  {
+   "name": "func_80062E60",
+   "vram": 2147888736,
+   "size": 96
+  },
+  {
+   "name": "memchr",
+   "vram": 2147888832,
+   "size": 32
+  },
+  {
+   "name": "MEMCHR_OBJ_20",
+   "vram": 2147888864,
+   "size": 40
+  },
+  {
+   "name": "MEMCHR_OBJ_48",
+   "vram": 2147888904,
+   "size": 8
+  },
+  {
+   "name": "WriteChar",
+   "vram": 2147888912,
+   "size": 180
+  },
+  {
+   "name": "write",
+   "vram": 2147889092,
+   "size": 12
+  },
+  {
+   "name": "sprintf",
+   "vram": 2147889108,
+   "size": 2140
+  },
+  {
+   "name": "memmove",
+   "vram": 2147891248,
+   "size": 108
+  },
+  {
+   "name": "WriteString",
+   "vram": 2147891356,
+   "size": 80
+  },
+  {
+   "name": "setjmp",
+   "vram": 2147891436,
+   "size": 60
+  },
+  {
+   "name": "longjmp",
+   "vram": 2147891496,
+   "size": 60
+  },
+  {
+   "name": "exit",
+   "vram": 2147891564,
+   "size": 12
+  },
+  {
+   "name": "CdInit",
+   "vram": 2147891580,
+   "size": 152
+  },
+  {
+   "name": "func_80063A14",
+   "vram": 2147891732,
+   "size": 120
+  },
+  {
+   "name": "CdStatus",
+   "vram": 2147891852,
+   "size": 16
+  },
+  {
+   "name": "FUN_80063a9c",
+   "vram": 2147891868,
+   "size": 16
+  },
+  {
+   "name": "FUN_80063aac",
+   "vram": 2147891884,
+   "size": 16
+  },
+  {
+   "name": "CdLastPos",
+   "vram": 2147891900,
+   "size": 16
+  },
+  {
+   "name": "CdReset",
+   "vram": 2147891916,
+   "size": 108
+  },
+  {
+   "name": "FUN_80063b38",
+   "vram": 2147892024,
+   "size": 32
+  },
+  {
+   "name": "func_80063B58",
+   "vram": 2147892056,
+   "size": 128
+  },
+  {
+   "name": "FUN_80063bd8",
+   "vram": 2147892184,
+   "size": 32
+  },
+  {
+   "name": "func_80063BF8",
+   "vram": 2147892216,
+   "size": 32
+  },
+  {
+   "name": "CdSyncCallback",
+   "vram": 2147892248,
+   "size": 24
+  },
+  {
+   "name": "CdReadyCallback",
+   "vram": 2147892272,
+   "size": 24
+  },
+  {
+   "name": "CdControl",
+   "vram": 2147892296,
+   "size": 312
+  },
+  {
+   "name": "CdControlForce",
+   "vram": 2147892608,
+   "size": 300
+  },
+  {
+   "name": "CdControlBlocking",
+   "vram": 2147892908,
+   "size": 324
+  },
+  {
+   "name": "CdMix",
+   "vram": 2147893232,
+   "size": 32
+  },
+  {
+   "name": "CdGetSector",
+   "vram": 2147893264,
+   "size": 32
+  },
+  {
+   "name": "CdGetSector2",
+   "vram": 2147893296,
+   "size": 32
+  },
+  {
+   "name": "FUN_80064050",
+   "vram": 2147893328,
+   "size": 36
+  },
+  {
+   "name": "FUN_80064074",
+   "vram": 2147893364,
+   "size": 32
+  },
+  {
+   "name": "CdIntToPos",
+   "vram": 2147893396,
+   "size": 260
+  },
+  {
+   "name": "CdPosToInt",
+   "vram": 2147893656,
+   "size": 128
+  },
+  {
+   "name": "CdProcessInterrupt",
+   "vram": 2147893784,
+   "size": 1416
+  },
+  {
+   "name": "CdSync",
+   "vram": 2147895200,
+   "size": 640
+  },
+  {
+   "name": "func_80064A20",
+   "vram": 2147895840,
+   "size": 716
+  },
+  {
+   "name": "CdCommandSync",
+   "vram": 2147896556,
+   "size": 1052
+  },
+  {
+   "name": "FUN_80065108",
+   "vram": 2147897608,
+   "size": 136
+  },
+  {
+   "name": "CdResetController",
+   "vram": 2147897744,
+   "size": 224
+  },
+  {
+   "name": "FUN_80065270",
+   "vram": 2147897968,
+   "size": 244
+  },
+  {
+   "name": "FUN_80065364",
+   "vram": 2147898212,
+   "size": 80
+  },
+  {
+   "name": "CdInitDriver",
+   "vram": 2147898292,
+   "size": 492
+  },
+  {
+   "name": "CdDataSync",
+   "vram": 2147898784,
+   "size": 364
+  },
+  {
+   "name": "FUN_8006570c",
+   "vram": 2147899148,
+   "size": 256
+  },
+  {
+   "name": "FUN_8006580c",
+   "vram": 2147899404,
+   "size": 240
+  },
+  {
+   "name": "func_800658FC",
+   "vram": 2147899644,
+   "size": 1216
+  },
+  {
+   "name": "CdReadStart",
+   "vram": 2147900860,
+   "size": 532
+  },
+  {
+   "name": "func_80065FD0",
+   "vram": 2147901392,
+   "size": 156
+  },
+  {
+   "name": "CdRead",
+   "vram": 2147901548,
+   "size": 260
+  },
+  {
+   "name": "func_80066170",
+   "vram": 2147901808,
+   "size": 204
+  },
+  {
+   "name": "CdReadCallback",
+   "vram": 2147902012,
+   "size": 24
+  },
+  {
+   "name": "FUN_80066254",
+   "vram": 2147902036,
+   "size": 24
+  },
+  {
+   "name": "MemCardReset",
+   "vram": 2147902060,
+   "size": 48
+  },
+  {
+   "name": "func_8006629C",
+   "vram": 2147902108,
+   "size": 32
+  },
+  {
+   "name": "MemCardOpenSession",
+   "vram": 2147902140,
+   "size": 96
+  },
+  {
+   "name": "MemCardCloseSession",
+   "vram": 2147902236,
+   "size": 64
+  },
+  {
+   "name": "func_8006635C",
+   "vram": 2147902300,
+   "size": 604
+  },
+  {
+   "name": "MemCardLoad",
+   "vram": 2147902904,
+   "size": 124
+  },
+  {
+   "name": "func_80066634",
+   "vram": 2147903028,
+   "size": 2036
+  },
+  {
+   "name": "MemCardRead",
+   "vram": 2147905064,
+   "size": 268
+  },
+  {
+   "name": "func_80066F34",
+   "vram": 2147905332,
+   "size": 432
+  },
+  {
+   "name": "MemCardWrite",
+   "vram": 2147905764,
+   "size": 268
+  },
+  {
+   "name": "func_800671F0",
+   "vram": 2147906032,
+   "size": 1060
+  },
+  {
+   "name": "func_80067614",
+   "vram": 2147907092,
+   "size": 20
+  },
+  {
+   "name": "MemCardSync",
+   "vram": 2147907112,
+   "size": 240
+  },
+  {
+   "name": "func_80067718",
+   "vram": 2147907352,
+   "size": 1380
+  },
+  {
+   "name": "MapMemCardAccessCode",
+   "vram": 2147908732,
+   "size": 88
+  },
+  {
+   "name": "func_80067CD4",
+   "vram": 2147908820,
+   "size": 160
+  },
+  {
+   "name": "FormatMemCardPath",
+   "vram": 2147908980,
+   "size": 92
+  },
+  {
+   "name": "FUN_80067dd0",
+   "vram": 2147909072,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067de4",
+   "vram": 2147909092,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067df8",
+   "vram": 2147909112,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067e0c",
+   "vram": 2147909132,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067e20",
+   "vram": 2147909152,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067e34",
+   "vram": 2147909172,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067e48",
+   "vram": 2147909192,
+   "size": 20
+  },
+  {
+   "name": "FUN_80067e5c",
+   "vram": 2147909212,
+   "size": 20
+  },
+  {
+   "name": "MemCardBuInit",
+   "vram": 2147909232,
+   "size": 48
+  },
+  {
+   "name": "MemCardInit",
+   "vram": 2147909280,
+   "size": 484
+  },
+  {
+   "name": "func_80068084",
+   "vram": 2147909764,
+   "size": 32
+  },
+  {
+   "name": "MemCardTeardownEvents",
+   "vram": 2147909796,
+   "size": 184
+  },
+  {
+   "name": "PollMemCardEvents",
+   "vram": 2147909980,
+   "size": 264
+  },
+  {
+   "name": "WaitMemCardEventSlot1",
+   "vram": 2147910244,
+   "size": 220
+  },
+  {
+   "name": "WaitMemCardEventSlot2",
+   "vram": 2147910464,
+   "size": 220
+  },
+  {
+   "name": "GetMemCardEventStatusSlot1",
+   "vram": 2147910684,
+   "size": 60
+  },
+  {
+   "name": "GetMemCardEventStatusSlot2",
+   "vram": 2147910744,
+   "size": 60
+  },
+  {
+   "name": "_bu_init",
+   "vram": 2147910804,
+   "size": 12
+  },
+  {
+   "name": "CloseEvent",
+   "vram": 2147910820,
+   "size": 12
+  },
+  {
+   "name": "open",
+   "vram": 2147910836,
+   "size": 12
+  },
+  {
+   "name": "lseek",
+   "vram": 2147910852,
+   "size": 12
+  },
+  {
+   "name": "read",
+   "vram": 2147910868,
+   "size": 12
+  },
+  {
+   "name": "close",
+   "vram": 2147910884,
+   "size": 12
+  },
+  {
+   "name": "format",
+   "vram": 2147910900,
+   "size": 12
+  },
+  {
+   "name": "nextfile",
+   "vram": 2147910916,
+   "size": 12
+  },
+  {
+   "name": "erase",
+   "vram": 2147910932,
+   "size": 12
+  },
+  {
+   "name": "firstfile",
+   "vram": 2147910948,
+   "size": 208
+  },
+  {
+   "name": "FIRST_OBJ_D0",
+   "vram": 2147911156,
+   "size": 144
+  },
+  {
+   "name": "func_80068688",
+   "vram": 2147911304,
+   "size": 16
+  },
+  {
+   "name": "FIRST_OBJ_174",
+   "vram": 2147911320,
+   "size": 12
+  },
+  {
+   "name": "FIRST_OBJ_180",
+   "vram": 2147911332,
+   "size": 28
+  },
+  {
+   "name": "FIRST_OBJ_19C",
+   "vram": 2147911360,
+   "size": 192
+  },
+  {
+   "name": "FIRST_OBJ_25C",
+   "vram": 2147911552,
+   "size": 64
+  },
+  {
+   "name": "firstfile2",
+   "vram": 2147911620,
+   "size": 12
+  },
+  {
+   "name": "strcat",
+   "vram": 2147911636,
+   "size": 168
+  },
+  {
+   "name": "strcmp",
+   "vram": 2147911804,
+   "size": 100
+  },
+  {
+   "name": "_card_info",
+   "vram": 2147911904,
+   "size": 12
+  },
+  {
+   "name": "_card_load",
+   "vram": 2147911920,
+   "size": 12
+  },
+  {
+   "name": "_card_write",
+   "vram": 2147911936,
+   "size": 12
+  },
+  {
+   "name": "_new_card",
+   "vram": 2147911952,
+   "size": 12
+  },
+  {
+   "name": "MemCardFormatBlocks",
+   "vram": 2147911968,
+   "size": 56
+  },
+  {
+   "name": "MemCardInitCard",
+   "vram": 2147912024,
+   "size": 88
+  },
+  {
+   "name": "MemCardStartCard",
+   "vram": 2147912112,
+   "size": 56
+  },
+  {
+   "name": "func_800689E8",
+   "vram": 2147912168,
+   "size": 40
+  },
+  {
+   "name": "SetInitPadFlag",
+   "vram": 2147912208,
+   "size": 12
+  },
+  {
+   "name": "ReadInitPadFlag",
+   "vram": 2147912220,
+   "size": 16
+  },
+  {
+   "name": "PAD_init",
+   "vram": 2147912236,
+   "size": 144
+  },
+  {
+   "name": "InitPAD",
+   "vram": 2147912380,
+   "size": 144
+  },
+  {
+   "name": "StartPAD",
+   "vram": 2147912524,
+   "size": 48
+  },
+  {
+   "name": "StopPAD",
+   "vram": 2147912572,
+   "size": 56
+  },
+  {
+   "name": "PAD_OBJ_1A4",
+   "vram": 2147912628,
+   "size": 120
+  },
+  {
+   "name": "PAD_OBJ_21C",
+   "vram": 2147912748,
+   "size": 56
+  },
+  {
+   "name": "PAD_OBJ_254",
+   "vram": 2147912804,
+   "size": 104
+  },
+  {
+   "name": "PAD_OBJ_2BC",
+   "vram": 2147912908,
+   "size": 64
+  },
+  {
+   "name": "InitPAD2",
+   "vram": 2147912976,
+   "size": 12
+  },
+  {
+   "name": "StartPAD2",
+   "vram": 2147912992,
+   "size": 12
+  },
+  {
+   "name": "StopPAD2",
+   "vram": 2147913008,
+   "size": 12
+  },
+  {
+   "name": "PAD_init2",
+   "vram": 2147913024,
+   "size": 12
+  },
+  {
+   "name": "SysEnqIntRP",
+   "vram": 2147913040,
+   "size": 12
+  },
+  {
+   "name": "SysDeqIntRP",
+   "vram": 2147913056,
+   "size": 12
+  },
+  {
+   "name": "EnablePAD",
+   "vram": 2147913072,
+   "size": 20
+  },
+  {
+   "name": "DisablePAD",
+   "vram": 2147913092,
+   "size": 20
+  },
+  {
+   "name": "_patch_pad",
+   "vram": 2147913112,
+   "size": 112
+  },
+  {
+   "name": "_remove_ChgclrPAD",
+   "vram": 2147913232,
+   "size": 104
+  },
+  {
+   "name": "InitCARD2",
+   "vram": 2147913344,
+   "size": 12
+  },
+  {
+   "name": "StartCARD2",
+   "vram": 2147913360,
+   "size": 12
+  },
+  {
+   "name": "StopCARD2",
+   "vram": 2147913376,
+   "size": 12
+  },
+  {
+   "name": "func_80068EB0",
+   "vram": 2147913392,
+   "size": 104
+  },
+  {
+   "name": "ResetMemCardEventStack",
+   "vram": 2147913520,
+   "size": 20
+  },
+  {
+   "name": "RegisterMemCardEvent",
+   "vram": 2147913540,
+   "size": 128
+  },
+  {
+   "name": "PopMemCardEventHandler",
+   "vram": 2147913668,
+   "size": 108
+  },
+  {
+   "name": "IsMemCardEventStackEmpty",
+   "vram": 2147913776,
+   "size": 16
+  },
+  {
+   "name": "PadChkVsync",
+   "vram": 2147913792,
+   "size": 32
+  },
+  {
+   "name": "PadStartCom",
+   "vram": 2147913824,
+   "size": 32
+  },
+  {
+   "name": "PadStopCom",
+   "vram": 2147913856,
+   "size": 32
+  },
+  {
+   "name": "PadChkMtap",
+   "vram": 2147913888,
+   "size": 68
+  },
+  {
+   "name": "PADENTRY_OBJ_A4",
+   "vram": 2147913956,
+   "size": 8
+  },
+  {
+   "name": "PadGetState",
+   "vram": 2147913964,
+   "size": 172
+  },
+  {
+   "name": "PADENTRY_OBJ_158",
+   "vram": 2147914136,
+   "size": 4
+  }
+ ]
+}

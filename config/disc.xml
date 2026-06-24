@@ -1,0 +1,32 @@
+<iso_project image_name="mkpsxiso.bin" cue_sheet="mkpsxiso.cue">
+    <track type="data" xa_edc="true" cdvd_style="false">
+        <identifiers system="PLAYSTATION" application="PLAYSTATION" volume="SPYRO" publisher="SCEA" copyright="UIS" creation_date="1998081316560500+36" modification_date="1998081420000000+0"/>
+        <license file="../disc/orig/license_data.dat"/>
+        <default_attributes gmt_offs="36" xa_attrib="32" xa_perm="1365" xa_gid="0" xa_uid="0"/>
+        <directory_tree source="../disc/orig">
+            <file name="SYSTEM.CNF" type="data" date="19980810231656"/>
+            <dummy sectors="13" type="32"/>
+            <file name="WAD.WAD" type="data" date="19980813004632" source="../build/WAD.WAD"/>
+            <file name="SCUS_942.28" type="data" date="19980813004422" source="../build/main/SCUS_942.28"/>
+            <dummy sectors="5921" type="32"/>
+            <file name="PETEXA0.STR" type="mixed" date="19980808215850"/>
+            <file name="PETEXA1.STR" type="mixed" date="19980804162046"/>
+            <file name="PETEXA2.STR" type="mixed" date="19980804162716"/>
+            <file name="PETEXA3.STR" type="mixed" date="19980804163832"/>
+            <file name="PETEXA4.STR" type="mixed" date="19980804164756"/>
+            <file name="PETEXA5.STR" type="mixed" date="19980804165920"/>
+            <dir name="S0" date="19980803110018">
+                <file name="CRASH.EXE" type="data" date="19980805183556"/>
+                <file name="S000000D.NSD" type="data" date="19980806135242"/>
+                <file name="S000000D.NSF" type="data" date="19980806135244"/>
+                <file name="S000003C.NSD" type="data" date="19980806135308"/>
+                <file name="S000003C.NSF" type="data" date="19980806135308"/>
+                <file name="WARP.BIN" type="data" date="19980805183556"/>
+            </dir>
+            <dir name="SOURCE" date="19980811155616">
+                <file name="SOURCE.TRD" type="data" date="19980814165926"/>
+                <dummy sectors="150" type="0"/>
+            </dir>
+        </directory_tree>
+    </track>
+</iso_project>
