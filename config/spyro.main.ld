@@ -27,7 +27,7 @@ SECTIONS
         main_RODATA_END = .;
         main_RODATA_SIZE = ABSOLUTE(main_RODATA_END - main_RODATA_START);
         main_TEXT_START = .;
-        /* Per-function fixed-VMA slots (tools/gen_slots_ld.py). Replaces the old
+        /* Per-function fixed-VMA slots (`open-spyro gen-slots-ld`). Replaces the old
            monolithic text.o(.text) so individual functions can be flipped to C. */
         INCLUDE config/spyro.main.slots.ld
         build/main/asm/text.o(.text);

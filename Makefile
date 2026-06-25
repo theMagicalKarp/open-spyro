@@ -117,7 +117,6 @@ clean: ## Remove all build output + regenerable/untracked artifacts
 	rm -rf build/*
 	rm -f config/spyro.main.d config/spyro.main.slots.ld config/spyro.main.syms.ld
 	rm -f config/*.d
-	rm -f src/asm/overrides.mk
 	rm -f config/overlays/*.yaml config/overlays/*.d
 	rm -f progress.json
 	rm -rf tools/open-spyro/.ruff_cache

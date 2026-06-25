@@ -6,7 +6,7 @@
 # then repacks MODE2/2352 via mkpsxiso into build/SpyrotheDragon.{bin,cue}.
 # WAD.WAD is staged to build/WAD.WAD by tools/wad.sh: a passthrough
 # symlink to the original until overlays are built from our sources, then a
-# byte-faithful wadtool repack. STR/S0/SOURCE pass through unchanged.
+# byte-faithful `open-spyro wad` repack. STR/S0/SOURCE pass through unchanged.
 set -euo pipefail
 
 MKPSXISO=tools/mkpsxiso/build/mkpsxiso
