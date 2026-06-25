@@ -8,11 +8,9 @@
  */
 
 int ComputeSaveGameChecksum(unsigned char *data) {
-  unsigned char *end;
-  int sum;
+  int sum = 0;
+  unsigned char *end = data + 1420;
 
-  sum = 0;
-  end = data + 1420;
   do {
     sum += *data;
     data++;
