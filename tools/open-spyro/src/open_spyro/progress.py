@@ -60,6 +60,60 @@ INSTR_VRAM = re.compile(r"/\*\s*[0-9A-Fa-f]+\s+([0-9A-Fa-f]{8})\s+[0-9A-Fa-f]{8}
 # Any label that means "this function's asm lives in text.s".
 DEFINED = re.compile(r"^\s*(?:glabel|alabel|dlabel|nonmatching)\s+(\S+?)(?:,|\s|$)")
 
+# --- Hand-written-assembly detection -----------------------------------------
+# Insomniac hand-wrote a math/vector/GTE library and the hot render/collision
+# loops directly in assembly; these can never be matched from C, so they are
+# excluded from the percentage (like the stock SDK/libc) and tagged `handwritten`.
+#
+# The authoritative signal is an instruction the gcc 2.7.2 -> aspsx toolchain
+# provably cannot emit: a *data value* computed into, loaded into, or stored from
+# $at. gcc treats $at (the assembler temporary, $1) as a fixed register and never
+# allocates it; aspsx only ever uses it to *hold an address* (`lui $at, %hi` ...
+# `lw $reg, %lo(sym)($at)`). So `add $at, $at, $a3` (signed, into $at) or a plain
+# `lw $at, 0x0($a1)` (data load, no %lo) is hand-written by construction.
+#
+# spimdisasm independently annotates signed add/sub and cop2 ops `handwritten
+# instruction`; we corroborate with that count but do NOT rely on it alone — it
+# over-fires on GTE `cop2` ops that also appear in compiled C via inline-asm
+# macros, and it does not flag a bare `lw $at`. Hence the conservative gate below.
+HW_COMMENT = "handwritten instruction"
+_AT_ARITH = {"add", "addi", "sub", "neg"}  # signed; compiler emits addu/addiu/subu
+_AT_LOADSTORE = {"lw", "lh", "lb", "lhu", "lbu", "sw", "sh", "sb"}
+_RELOC = re.compile(r"%lo|%hi|%gp_rel")
+
+
+def at_is_data(line: str) -> bool:
+    """True if the instruction computes/loads/stores a data value via $at — an
+    encoding gcc->aspsx cannot produce (it only uses $at as a %hi/%lo address)."""
+    body = line.split("*/", 1)[1] if "*/" in line else line  # drop the addr comment
+    body = body.split("/*", 1)[0]  # drop any trailing 'handwritten' comment
+    toks = body.replace(",", " ").split()
+    if len(toks) < 2 or toks[1] != "$at":  # $at must be the destination operand
+        return False
+    if toks[0] in _AT_ARITH:
+        return True
+    return toks[0] in _AT_LOADSTORE and not _RELOC.search(body)
+
+
+def classify_handwritten(strong: int, hw: int, instr: int) -> str:
+    """Map per-function counts to a class:
+
+    'handwritten'  high-confidence, excluded from %: at least one $at-as-data
+                   instruction (impossible from the toolchain) AND >=10% of the
+                   body is impossible/flagged. Catches the dense hand-written math
+                   library and the hot render/collision loops; rejects a big
+                   compiled function with one stray flagged instruction.
+    'asm-hint'     weaker: some handwritten-flagged (e.g. GTE cop2) or a lone
+                   $at-as-data hit, but below the bar. Tagged, but still counted
+                   in the % until confirmed by hand (avoids inflating the number).
+    ''             ordinary compiled code.
+    """
+    if instr and strong >= 1 and (strong + hw) / instr >= 0.10:
+        return "handwritten"
+    if strong >= 1 or hw >= 1:
+        return "asm-hint"
+    return ""
+
 
 def _segments(repo: Path) -> list[dict[str, Any]]:
     """Per-segment descriptors: main + one per overlay.
@@ -124,20 +178,25 @@ def parse_symbol_funcs(path: Path) -> dict[int, tuple[str, int, bool]]:
     return funcs
 
 
-def parse_asm(path: Path) -> tuple[dict[int, tuple[str, int]], set[str]]:
+def parse_asm(
+    path: Path,
+) -> tuple[dict[int, tuple[str, int]], set[str], dict[str, tuple[int, int, int]]]:
     """Parse asm/text.s once.
 
-    Returns (blocks, defined_names) where:
+    Returns (blocks, defined_names, hand) where:
       blocks         addr -> (name, size) for each glabel..endlabel function body
                      (this is where the auto func_xxxxxxxx names come from).
       defined_names  set of every symbol defined in the file as a function label
                      (glabel/alabel/nonmatching/dlabel) — the "asm is still here"
                      test for status.
+      hand           name -> (strong, hw, instr): the hand-written-asm signal
+                     counts per function (see classify_handwritten).
     """
     blocks: dict[int, tuple[str, int]] = {}
     defined: set[str] = set()
+    hand: dict[str, list[int]] = {}
     if not path.exists():
-        return blocks, defined
+        return blocks, defined, {}
     cur: str | None = None
     start: int | None = None
     last: int | None = None
@@ -148,6 +207,13 @@ def parse_asm(path: Path) -> tuple[dict[int, tuple[str, int]], set[str]]:
         iv = INSTR_VRAM.search(line)
         if iv:
             last = int(iv.group(1), 16)
+            if cur is not None:
+                h = hand.setdefault(cur, [0, 0, 0])
+                h[2] += 1  # instr
+                if HW_COMMENT in line:
+                    h[1] += 1  # spimdisasm-flagged
+                if at_is_data(line):
+                    h[0] += 1  # $at-as-data (impossible from the toolchain)
         gm = re.match(r"^glabel\s+(\S+)", line)
         if gm:
             cur = gm.group(1)
@@ -158,7 +224,7 @@ def parse_asm(path: Path) -> tuple[dict[int, tuple[str, int]], set[str]]:
         if em and cur is not None and cur == em.group(1) and start is not None and last is not None:
             blocks[start] = (cur, last + 4 - start)
             cur = None
-    return blocks, defined
+    return blocks, defined, {k: (v[0], v[1], v[2]) for k, v in hand.items()}
 
 
 def load_image(path: Path) -> bytes | None:
@@ -185,7 +251,7 @@ def load_overrides(path: Path | None) -> set[str]:
 
 def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
     sym = parse_symbol_funcs(seg["symbol_addrs"])
-    blocks, defined = parse_asm(seg["asm"])
+    blocks, defined, hand = parse_asm(seg["asm"])
     overrides = load_overrides(seg.get("src_c"))
 
     # Universe: union by address, seeded names/sizes win over auto.
@@ -228,6 +294,9 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
             rb = func_bytes(rebuilt, addr, size, seg["vram_base"], seg["file_base"])
             status = "matched" if (ob is not None and ob == rb) else "wip"
         is_lib = any(lo <= addr < hi for lo, hi in lib_ranges)
+        # Hand-written-asm classification (lib takes precedence — already excluded).
+        strong, hw, ninstr = hand.get(name, (0, 0, 0))
+        hw_class = "" if is_lib else classify_handwritten(strong, hw, ninstr)
         records.append(
             {
                 "addr": f"0x{addr:08x}",
@@ -237,6 +306,8 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
                 "status": status,
                 "matched_bytes": size if status == "matched" else 0,
                 "lib": is_lib,
+                "handwritten": hw_class == "handwritten",
+                "asm_hint": hw_class == "asm-hint",
             }
         )
     return records
@@ -284,15 +355,16 @@ def _blank() -> dict[str, int]:
 
 
 def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, int]]]:
-    """segment -> {"game": counts, "lib": counts}.
+    """segment -> {"game": counts, "lib": counts, "hand": counts}.
 
     The headline / badge are computed over `game` only; `lib` (stock PSY-Q/libc)
-    is tracked separately and excluded.
+    and `hand` (Insomniac's hand-written asm, not C-matchable) are tracked
+    separately and excluded.
     """
     out: dict[str, dict[str, dict[str, int]]] = {}
     for r in records:
-        seg = out.setdefault(r["segment"], {"game": _blank(), "lib": _blank()})
-        s = seg["lib"] if r["lib"] else seg["game"]
+        seg = out.setdefault(r["segment"], {"game": _blank(), "lib": _blank(), "hand": _blank()})
+        s = seg["lib"] if r["lib"] else seg["hand"] if r["handwritten"] else seg["game"]
         s["total"] += 1
         s[r["status"]] += 1
         s["total_bytes"] += r["size"]
@@ -307,6 +379,7 @@ def _pct(s: dict[str, int]) -> float:
 def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[str, int]]]) -> str:
     game = {k: sum(seg["game"][k] for seg in summary.values()) for k in _blank()}
     lib = {k: sum(seg["lib"][k] for seg in summary.values()) for k in _blank()}
+    hand = {k: sum(seg["hand"][k] for seg in summary.values()) for k in _blank()}
     pct = _pct(game)
 
     lines = []
@@ -326,6 +399,16 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
         f"Excluded from the percentage: **{lib['total']} library functions / "
         f"{lib['total_bytes']:,} bytes** of stock PSY-Q SDK + libc statically linked "
         f"into the EXE (tracked for completeness, but not ours to decompile)."
+    )
+    lines.append("")
+    lines.append(
+        f"Also excluded: **{hand['total']} hand-written assembly functions / "
+        f"{hand['total_bytes']:,} bytes** — Insomniac's math/vector/GTE library and "
+        "the hot render/collision loops, written directly in asm (they use `$at` as a "
+        "data register, which the gcc→aspsx toolchain cannot emit). These can never be "
+        "matched from C, so they are tracked but kept out of the denominator. A weaker "
+        "`asm-hint` tag flags functions with some hand-written/GTE instructions that are "
+        "*still counted* (e.g. compiled C using inline-asm GTE macros) pending review."
     )
     lines.append("")
     lines.append("## Per-segment summary (game code)")
@@ -353,12 +436,30 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
             lines.append(f"| {name} | {s['total']} | {s['total_bytes']:,} |")
     lines.append(f"| **all** | {lib['total']} | {lib['total_bytes']:,} |")
     lines.append("")
+    lines.append("## Hand-written assembly (excluded from %)")
+    lines.append("")
+    lines.append("| Segment | Functions | Bytes |")
+    lines.append("|---|--:|--:|")
+    for name in sorted(summary):
+        s = summary[name]["hand"]
+        if s["total"]:
+            lines.append(f"| {name} | {s['total']} | {s['total_bytes']:,} |")
+    lines.append(f"| **all** | {hand['total']} | {hand['total_bytes']:,} |")
+    lines.append("")
     lines.append("## Functions")
     lines.append("")
     lines.append("| Address | Name | Segment | Size | Status | Class |")
     lines.append("|---|---|---|--:|---|---|")
     for r in records:
-        cls = "lib" if r["lib"] else "game"
+        cls = (
+            "lib"
+            if r["lib"]
+            else "handwritten"
+            if r["handwritten"]
+            else "asm-hint"
+            if r["asm_hint"]
+            else "game"
+        )
         lines.append(
             f"| `{r['addr']}` | {r['name']} | {r['segment']} | {r['size']} | "
             f"{r['status']} | {cls} |"
@@ -381,8 +482,9 @@ def run() -> None:
     summary = seg_summary(records)
     # Headline / badge are GAME-only (stock SDK/libc excluded). `total_*` fields
     # below mean game code; library_* report the excluded SDK for full accounting.
-    game = [r for r in records if not r["lib"]]
+    game = [r for r in records if not r["lib"] and not r["handwritten"]]
     lib = [r for r in records if r["lib"]]
+    hand = [r for r in records if r["handwritten"]]
     total_bytes = sum(r["size"] for r in game)
     matched_bytes = sum(r["matched_bytes"] for r in game)
     pct = (matched_bytes / total_bytes * 100) if total_bytes else 0.0
@@ -396,6 +498,8 @@ def run() -> None:
                 "matched_pct": round(pct, 4),
                 "library_functions": len(lib),
                 "library_code_bytes": sum(r["size"] for r in lib),
+                "handwritten_functions": len(hand),
+                "handwritten_code_bytes": sum(r["size"] for r in hand),
                 "all_functions": len(records),
                 "functions": records,
             },
@@ -410,6 +514,7 @@ def run() -> None:
     print(
         f"progress: {len(game)} game functions, "
         f"{matched_bytes:,}/{total_bytes:,} bytes matched ({pct:.2f}%); "
-        f"{len(lib)} library functions excluded ({sum(r['size'] for r in lib):,} bytes)"
+        f"{len(lib)} library functions excluded ({sum(r['size'] for r in lib):,} bytes); "
+        f"{len(hand)} hand-written asm excluded ({sum(r['size'] for r in hand):,} bytes)"
     )
     print(f"  wrote {out_md.relative_to(repo)}, {out_json.relative_to(repo)}")
