@@ -7,7 +7,7 @@
 #   * passthrough (default until any overlay is built from our sources): symlink
 #     build/WAD.WAD -> the original disc/orig/WAD.WAD. No repack, no 110MB copy.
 #   * repack: if build/overlays/*.ovl exist (overlays rebuilt from src/), run
-#     `wadtool pack` with those rebuilt overlays substituted in (others fall back
+#     `open-spyro wad pack` with those rebuilt overlays substituted in (others fall back
 #     to the originals) and write a fresh, byte-faithful build/WAD.WAD.
 #
 # The repack is proven byte-identical to disc/orig/WAD.WAD when no overlay differs

@@ -18,7 +18,7 @@ guarded by ``.ifndef HAVE_C_<name>``:
 
 The fixed-VMA linker fragment (gen-slots-ld) then anchors each section at its
 address, and a C override (src/c/Foo.c) suppresses the asm via
-``--defsym HAVE_C_Foo=1`` (src/asm/overrides.mk) and fills the slot instead.
+``--defsym HAVE_C_Foo=1`` (driven by tools/build_main.sh) and fills the slot instead.
 
 Also writes config/text_layout.json — the ordered (name, vram, size) inventory the
 slot generator consumes. That inventory is captured from the COMPLETE splat output,

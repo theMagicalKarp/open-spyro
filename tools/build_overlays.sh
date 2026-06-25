@@ -13,8 +13,8 @@
 # so splat orders it first and the link reproduces the file byte order. Using
 # splat's ld (rather than a hand-rolled one) means it auto-updates as functions are
 # split out to C. Externals (main-EXE funcs/globals) are PROVIDE()d from
-# splat's per-overlay undefined_{syms,funcs}.auto.txt via the same gen_syms_ld.py
-# the main EXE uses.
+# splat's per-overlay undefined_{syms,funcs}.auto.txt via the same `open-spyro
+# gen-syms-ld` the main EXE uses.
 set -euo pipefail
 
 AS="${AS:-mips-linux-gnu-as}"

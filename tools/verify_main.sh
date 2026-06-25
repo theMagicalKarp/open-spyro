@@ -3,7 +3,7 @@
 # Asserts the full byte-identical set (main EXE + overlays):
 #   * main EXE         build/main/SCUS_942.28   vs config/sha1sums.txt + disc/orig
 #   * 37 overlays      build/overlays/<n>.ovl   vs config/overlays.json  + disc/orig
-#   * WAD.WAD          repack from current parts is byte-identical (wadtool verify)
+#   * WAD.WAD          repack from current parts is byte-identical (`open-spyro wad verify`)
 #
 # Two modes, auto-detected by whether disc/orig is present:
 #   * FULL  (disc/orig present — local dev): byte-for-byte cmp AND SHA-1, plus the
