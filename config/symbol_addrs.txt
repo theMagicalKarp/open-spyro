@@ -1580,6 +1580,7 @@ g_nSaveMenuSubstate = 0x80078d0c; // size:0x4
 g_nSaveMenuXOffset = 0x80078d10; // size:0x4
 g_nSaveSlotSelected = 0x80078d18; // size:0x4
 g_nGamestate0dMode = 0x80078d78; // size:0x4
+g_anGamestate0dBlock = 0x80078d78; // size:0x48
 g_nStoryIntroSubstate = 0x80078d7c; // size:0x4
 g_nStoryIntroTimer = 0x80078d80; // size:0x4
 g_nStoryIntroMessage = 0x80078d94; // size:0x4
