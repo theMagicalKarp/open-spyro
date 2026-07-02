@@ -1263,6 +1263,7 @@ g_pGemPickupMirrorModelData = 0x80076b74; // size:0x4
 g_anCollisionResolvedPos = 0x80076b80; // size:0xc
 g_nCollisionResolvedZ = 0x80076b88;
 g_nCdBaseLba = 0x80076b90; // size:0x4
+g_anCdBaseLbaBlock = 0x80076b90; // size:0x4 alias of g_nCdBaseLba (base-register access form)
 g_nCdReadSectorCount = 0x80076b94; // size:0x4
 g_abCdlLocScratch = 0x80076b98; // size:0x1
 g_pCdReadDstBuffer = 0x80076b9c; // size:0x4
