@@ -57,13 +57,31 @@ asm_objs=(
   asm/data/data.data.s
 )
 
+# Incremental rebuild: skip an object whose inputs are all older than it.
+# Shared deps — the asm pulls include/*.inc; the C overrides pull include/*.h and
+# compile through config/compile.sh. Newest dep file stands in for the whole set.
+# asm/text.s additionally depends on the HAVE_C flag set (a src/c add/remove flips
+# .ifndef guards), tracked via a stamp file. `make clean` resets everything.
+ASM_NEWEST="$(ls -t include/*.inc 2>/dev/null | head -1)"
+C_NEWEST="$(ls -t config/compile.sh include/*.h 2>/dev/null | head -1)"
+TEXT_STAMP="$BUILD/asm/text.havec"
+
 echo "build_main: assembling $(printf '%s ' "${asm_objs[@]}")"
 for s in "${asm_objs[@]}"; do
   o="$BUILD/${s%.s}.o"
   mkdir -p "$(dirname "$o")"
+  if [ -f "$o" ] && [ "$o" -nt "$s" ] && { [ -z "$ASM_NEWEST" ] || [ "$o" -nt "$ASM_NEWEST" ]; }; then
+    if [ "$s" != "asm/text.s" ] ||
+       { [ -f "$TEXT_STAMP" ] && [ "$(cat "$TEXT_STAMP")" = "$HAVE_C_FLAGS" ]; }; then
+      continue
+    fi
+  fi
   # HAVE_C_FLAGS only affects asm/text.s (the only file with .ifndef guards);
   # harmless on the others.
   "$AS" $AS_FLAGS $HAVE_C_FLAGS -o "$o" "$s"
+  if [ "$s" = "asm/text.s" ]; then
+    printf '%s' "$HAVE_C_FLAGS" > "$TEXT_STAMP"
+  fi
 done
 
 # Compile each C override through the canonical cc1 -> maspsx -> as chain. Reject
@@ -76,6 +94,9 @@ for c in "${C_SRCS[@]}"; do
   name="$(basename "$c" .c)"
   o="$BUILD/c/${name}.o"
   mkdir -p "$(dirname "$o")"
+  if [ -f "$o" ] && [ "$o" -nt "$c" ] && { [ -z "$C_NEWEST" ] || [ "$o" -nt "$C_NEWEST" ]; }; then
+    continue  # up to date (the .rodata/.data guard ran when it was built)
+  fi
   echo "build_main: compiling C override $c -> $o"
   bash config/compile.sh main "$c" "$o"
   if "$OBJDUMP" -h "$o" | awk '$2 ~ /^\.(rodata|data|sdata|lit4|lit8)/ && $3 ~ /[1-9a-f]/ {bad=1} END {exit !bad}'; then

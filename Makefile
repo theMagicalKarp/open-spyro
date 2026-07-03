@@ -17,7 +17,7 @@ OPEN_SPYRO := $(UVRUN) -- open-spyro
 CLANG_FORMAT := $(UVRUN) -- clang-format
 CFMT_SRC     := $(wildcard src/c/*.c)
 
-.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check wad iso play progress lint lint-py lint-c fmt fmt-py fmt-c clean
+.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play progress lint lint-py lint-c fmt fmt-py fmt-c clean
 
 help: ## Print this help (default target)
 	@echo "open-spyro — make targets:"
@@ -32,6 +32,7 @@ help: ## Print this help (default target)
 	@echo "  build      Compile + link src/ and asm/ into a byte-identical SCUS_942.28 and overlays"
 	@echo "  verify     Check rebuilt artifacts against the original SHA-1s"
 	@echo "  check      Rebuild then verify (build + verify) — avoids verifying a stale EXE"
+	@echo "  ctx        Generate build/ctx.c — the m2c --context file (types + globals + funcs)"
 	@echo "  wad        Stage build/WAD.WAD from current parts (repack if overlays built, else pass)"
 	@echo "  iso        Repack the rebuilt files into a runnable .bin/.cue"
 	@echo "  play       Boot the rebuilt iso in DuckStation"
@@ -85,6 +86,15 @@ verify: ## Check rebuilt artifacts (main EXE + 37 overlays + WAD.WAD) against or
 	@bash tools/verify_main.sh
 
 check: build verify ## Rebuild then verify — guards against verifying a stale EXE
+
+ctx: ## Generate build/ctx.c — the m2c --context file (types + globals + funcs)
+	@# m2c's pycparser needs one preprocessed, marker-free C file; -P drops line
+	@# markers. Uses the matching image's cpp so the result mirrors what cc1 sees.
+	@mkdir -p build
+	@printf '#include "types.h"\n#include "globals.h"\n#include "funcs.h"\n' > build/ctx_input.c
+	@bash tools/docker_env.sh mips-linux-gnu-cpp -P -nostdinc -undef -Iinclude build/ctx_input.c -o build/ctx.c
+	@rm -f build/ctx_input.c
+	@echo "ctx: wrote build/ctx.c ($$(wc -l < build/ctx.c | tr -d ' ') lines) — pass to m2c as --context build/ctx.c"
 
 wad: ## Stage build/WAD.WAD from current parts (byte-faithful repack via open-spyro wad)
 	@bash tools/wad.sh

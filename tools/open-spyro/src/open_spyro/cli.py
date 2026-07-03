@@ -16,6 +16,7 @@ import typer
 
 from open_spyro import (
     fixup_hasm,
+    funcdiff,
     gen_overlay_yaml,
     gen_slots_ld,
     gen_syms_ld,
@@ -93,6 +94,19 @@ def _gen_slots_ld(
         gen_slots_ld.run()
 
 
+def _diff(
+    name: Annotated[str, typer.Argument(help="function name (main EXE or any split overlay)")],
+    no_build: Annotated[
+        bool, typer.Option("--no-build", help="reuse the existing build output as-is")
+    ] = False,
+    full: Annotated[
+        bool, typer.Option("--full", help="print every instruction, not just diff hunks")
+    ] = False,
+) -> None:
+    """Rebuild, then byte-diff one function at its VMA against disc/orig (exit 1 on mismatch)."""
+    funcdiff.run(name, build=not no_build, full=full)
+
+
 def _fixup_hasm() -> None:
     """De-symbolize hand-asm reloc operands to raw immediates."""
     fixup_hasm.run()
@@ -147,6 +161,7 @@ app.command("sectionize-overlays")(_sectionize_overlays)
 app.command("gen-overlay-yaml")(_gen_overlay_yaml)
 app.command("gen-slots-ld")(_gen_slots_ld)
 app.command("gen-syms-ld")(_gen_syms_ld)
+app.command("diff")(_diff)
 app.command("fixup-hasm")(_fixup_hasm)
 app.command("normalize-binary")(_normalize_binary)
 app.command("list-overlays")(_list_overlays)
