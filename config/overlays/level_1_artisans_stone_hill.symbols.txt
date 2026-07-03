@@ -1,12 +1,12 @@
 // Function boundaries for the level_1_artisans_stone_hill overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
 func_level_1_8007AF50 = 0x8007AF50; // type:func size:0x13C
 func_level_1_8007B08C = 0x8007B08C; // type:func size:0x44
 func_level_1_8007B0D0 = 0x8007B0D0; // type:func size:0x1FA0
 func_level_1_8007D070 = 0x8007D070; // type:func size:0xA08
-func_level_1_8007DA78 = 0x8007DA78; // type:func size:0x9CB4 blob:True
+func_level_1_8007DA78 = 0x8007DA78; // type:func size:0x9CB4
 func_level_1_8008772C = 0x8008772C; // type:func size:0x96C
 func_level_1_80088098 = 0x80088098; // type:func size:0x122C
 func_level_1_800892C4 = 0x800892C4; // type:func size:0x10F4

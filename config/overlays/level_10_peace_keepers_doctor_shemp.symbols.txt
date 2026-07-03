@@ -1,8 +1,8 @@
 // Function boundaries for the level_10_peace_keepers_doctor_shemp overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
-func_level_10_8007AEB8 = 0x8007AEB8; // type:func size:0x9738 blob:True
+func_level_10_8007AEB8 = 0x8007AEB8; // type:func size:0x9738
 func_level_10_800845F0 = 0x800845F0; // type:func size:0x900
 func_level_10_80084EF0 = 0x80084EF0; // type:func size:0x122C
 func_level_10_8008611C = 0x8008611C; // type:func size:0x10F4

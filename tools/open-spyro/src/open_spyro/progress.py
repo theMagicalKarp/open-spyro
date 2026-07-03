@@ -164,14 +164,16 @@ def _segments(repo: Path) -> list[dict[str, Any]]:
     return segments
 
 
-def parse_symbol_funcs(path: Path) -> dict[int, tuple[str, int, bool, bool]]:
-    """addr -> (name, size, explicit_wip, blob) for every `type:func` in symbol_addrs.
+def parse_symbol_funcs(path: Path) -> dict[int, tuple[str, int, bool]]:
+    """addr -> (name, size, explicit_wip) for every `type:func` in symbol_addrs.
 
-    ``blob`` is the `blob:True` marker: a level overlay's monolithic
-    mega-function (the tool-merged moby update state machine, part data-as-code) —
-    excluded from the headline % like `handwritten`.
+    The per-level moby-dispatch megafunctions (one ~30-40 KB `func_level_N_*` per
+    overlay) are ordinary unmatched code — status `asm`, counted in the denominator
+    like everything else. They carry no special tag: they are simply the largest
+    single match targets left. (They were briefly excluded under a `blob:True`/
+    `deferred:True` tag; that was dropped once they were verified to be real code.)
     """
-    funcs: dict[int, tuple[str, int, bool, bool]] = {}
+    funcs: dict[int, tuple[str, int, bool]] = {}
     if not path.exists():
         return funcs
     for line in path.read_text().splitlines():
@@ -180,8 +182,7 @@ def parse_symbol_funcs(path: Path) -> dict[int, tuple[str, int, bool, bool]]:
             continue
         addr = int(m.group(2), 16)
         wip = "status:wip" in line
-        blob = "blob:True" in line
-        funcs[addr] = (m.group(1), int(m.group(3), 16), wip, blob)
+        funcs[addr] = (m.group(1), int(m.group(3), 16), wip)
     return funcs
 
 
@@ -273,9 +274,9 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
     # Universe: union by address, seeded names/sizes win over auto.
     universe: dict[int, list[Any]] = {}
     for addr, (name, size) in blocks.items():
-        universe[addr] = [name, size, False, False]
-    for addr, (name, size, wip, blob) in sym.items():
-        universe[addr] = [name, size, wip, blob]
+        universe[addr] = [name, size, False]
+    for addr, (name, size, wip) in sym.items():
+        universe[addr] = [name, size, wip]
 
     orig = load_image(seg["orig"])
     rebuilt = load_image(seg["rebuilt"])
@@ -291,7 +292,7 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
 
     records = []
     for addr in sorted(universe):
-        name, size, explicit_wip, blob = universe[addr]
+        name, size, explicit_wip = universe[addr]
         if name in overrides:
             # A C override exists: matched iff its rebuilt bytes equal the original
             # (verified). Its guarded asm is still in text.s, so don't treat that as
@@ -325,7 +326,6 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
                 "handwritten": hw_class == "handwritten",
                 "asm_hint": hw_class == "asm-hint",
                 "unsplit": seg_unsplit,
-                "blob": blob,
             }
         )
     return records
@@ -373,14 +373,13 @@ def _blank() -> dict[str, int]:
 
 
 def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, int]]]:
-    """segment -> {"game": counts, "lib": counts, "hand": counts, "unsplit": counts,
-    "blob": counts}.
+    """segment -> {"game": counts, "lib": counts, "hand": counts, "unsplit": counts}.
 
-    The headline / badge are computed over `game` only; `lib` (stock PSY-Q/libc),
-    `hand` (Insomniac's hand-written asm, not C-matchable), `unsplit` (overlay
-    blobs not yet function/data-split), and `blob` (tagged level mega-blobs) are
-    tracked separately and excluded. The explicit `blob:True` tag wins over the
-    heuristic handwritten classifier (data-as-code inside a blob often trips it).
+    The headline / badge are computed over `game` only; `lib` (stock PSY-Q/libc) and
+    `hand` (Insomniac's hand-written asm, not C-matchable) are excluded, and `unsplit`
+    (overlays not yet function/data-split, still mostly level data) is excluded until
+    split. The per-level moby-dispatch megafunctions are ordinary `game` code and count
+    like any other unmatched function.
     """
     out: dict[str, dict[str, dict[str, int]]] = {}
     for r in records:
@@ -391,7 +390,6 @@ def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, 
                 "lib": _blank(),
                 "hand": _blank(),
                 "unsplit": _blank(),
-                "blob": _blank(),
             },
         )
         s = (
@@ -399,8 +397,6 @@ def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, 
             if r["lib"]
             else seg["unsplit"]
             if r.get("unsplit")
-            else seg["blob"]
-            if r.get("blob")
             else seg["hand"]
             if r["handwritten"]
             else seg["game"]
@@ -421,7 +417,6 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     lib = {k: sum(seg["lib"][k] for seg in summary.values()) for k in _blank()}
     hand = {k: sum(seg["hand"][k] for seg in summary.values()) for k in _blank()}
     unsplit = {k: sum(seg["unsplit"][k] for seg in summary.values()) for k in _blank()}
-    blob = {k: sum(seg["blob"][k] for seg in summary.values()) for k in _blank()}
     pct = _pct(game)
 
     lines = []
@@ -463,11 +458,10 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     )
     lines.append("")
     lines.append(
-        f"Also excluded: **{blob['total']} level mega-blobs / {blob['total_bytes']:,} bytes** "
-        "(`blob:True` in the overlay symbol seeds). Each level overlay leads with one monolithic "
-        "pseudo-function — the tool-merged moby update state machine, part embedded data-as-code. "
-        "They are function/data-split and drawn on the map, but kept out of the denominator until "
-        "genuinely sub-split or matched."
+        "Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction "
+        "(`func_level_N_*`) — genuine code (prologue/epilogue, a giant switch on the moby type "
+        "byte). These are ordinary unmatched `asm` counted in the denominator; they are simply the "
+        "largest single match targets remaining (1.31 MB across 35 functions)."
     )
     lines.append("")
     lines.append("## Per-segment summary (game code)")
@@ -517,16 +511,6 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
             lines.append(f"| {name} | {s['total']} | {s['total_bytes']:,} |")
     lines.append(f"| **all** | {unsplit['total']} | {unsplit['total_bytes']:,} |")
     lines.append("")
-    lines.append("## Level mega-blobs (excluded from %)")
-    lines.append("")
-    lines.append("| Segment | Blobs | Bytes |")
-    lines.append("|---|--:|--:|")
-    for name in sorted(summary):
-        s = summary[name]["blob"]
-        if s["total"]:
-            lines.append(f"| {name} | {s['total']} | {s['total_bytes']:,} |")
-    lines.append(f"| **all** | {blob['total']} | {blob['total_bytes']:,} |")
-    lines.append("")
     lines.append("## Functions")
     lines.append("")
     lines.append("| Address | Name | Segment | Size | Status | Class |")
@@ -535,8 +519,6 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
         cls = (
             "lib"
             if r["lib"]
-            else "blob"
-            if r.get("blob")
             else "handwritten"
             if r["handwritten"]
             else "asm-hint"
@@ -565,15 +547,10 @@ def run() -> None:
     summary = seg_summary(records)
     # Headline / badge are GAME-only (stock SDK/libc excluded). `total_*` fields
     # below mean game code; library_* report the excluded SDK for full accounting.
-    game = [
-        r
-        for r in records
-        if not r["lib"] and not r["handwritten"] and not r.get("unsplit") and not r.get("blob")
-    ]
+    game = [r for r in records if not r["lib"] and not r["handwritten"] and not r.get("unsplit")]
     lib = [r for r in records if r["lib"]]
-    hand = [r for r in records if r["handwritten"] and not r.get("blob")]
+    hand = [r for r in records if r["handwritten"]]
     unsplit = [r for r in records if r.get("unsplit")]
-    blob = [r for r in records if r.get("blob")]
     total_bytes = sum(r["size"] for r in game)
     matched_bytes = sum(r["matched_bytes"] for r in game)
     pct = (matched_bytes / total_bytes * 100) if total_bytes else 0.0
@@ -591,8 +568,6 @@ def run() -> None:
                 "handwritten_code_bytes": sum(r["size"] for r in hand),
                 "unsplit_overlay_functions": len(unsplit),
                 "unsplit_overlay_bytes": sum(r["size"] for r in unsplit),
-                "blob_functions": len(blob),
-                "blob_code_bytes": sum(r["size"] for r in blob),
                 "all_functions": len(records),
                 "functions": records,
             },
@@ -610,7 +585,6 @@ def run() -> None:
         f"{len(lib)} library functions excluded ({sum(r['size'] for r in lib):,} bytes); "
         f"{len(hand)} hand-written asm excluded ({sum(r['size'] for r in hand):,} bytes); "
         f"{len(unsplit)} un-split overlay blobs excluded "
-        f"({sum(r['size'] for r in unsplit):,} bytes); "
-        f"{len(blob)} level mega-blobs excluded ({sum(r['size'] for r in blob):,} bytes)"
+        f"({sum(r['size'] for r in unsplit):,} bytes)"
     )
     print(f"  wrote {out_md.relative_to(repo)}, {out_json.relative_to(repo)}")
