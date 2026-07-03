@@ -1,7 +1,9 @@
 # open-spyro
 
 <!-- progress-badge -->
-![matched](https://img.shields.io/badge/matched-0.93%25-orange)
+
+![matched](https://img.shields.io/badge/matched-0.94%25-orange)
+
 <!-- /progress-badge -->
 
 `open-spyro` is a **byte-for-byte matching decompilation** of
@@ -44,8 +46,7 @@ as a name/type dump only).
 - **asm→C:** m2c first pass → asm-differ / decomp-permuter / decomp.me to close
   the match. These three are owned by the `tools/open-spyro` uv project's
   `match` group; invoke them via
-  `uv run --project tools/open-spyro -- m2c|asm-differ ...` (see
-  `steps/12-c-translation-loop.md`).
+  `uv run --project tools/open-spyro -- m2c|asm-differ ...`
 
 ## Quickstart
 
