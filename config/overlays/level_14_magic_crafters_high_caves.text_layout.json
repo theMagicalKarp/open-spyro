@@ -1,0 +1,127 @@
+{
+ "functions": [
+  {
+   "name": "func_level_14_8007B64C",
+   "vram": 2147989068,
+   "size": 53744
+  },
+  {
+   "name": "func_level_14_8008883C",
+   "vram": 2148042812,
+   "size": 3096
+  },
+  {
+   "name": "func_level_14_80089454",
+   "vram": 2148045908,
+   "size": 7260
+  },
+  {
+   "name": "func_level_14_8008B0B0",
+   "vram": 2148053168,
+   "size": 5772
+  },
+  {
+   "name": "func_level_14_8008C73C",
+   "vram": 2148058940,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_14_8007B64C",
+   "size": 1880
+  },
+  {
+   "sym": "jtbl_8007B194",
+   "offset": 1884,
+   "owner": "func_level_14_8007B64C",
+   "size": 248
+  },
+  {
+   "sym": "jtbl_8007B28C",
+   "offset": 2132,
+   "owner": "func_level_14_8007B64C",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2A4",
+   "offset": 2156,
+   "owner": "func_level_14_8007B64C",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2BC",
+   "offset": 2180,
+   "owner": "func_level_14_8007B64C",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B2DC",
+   "offset": 2212,
+   "owner": "func_level_14_8007B64C",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2F4",
+   "offset": 2236,
+   "owner": "func_level_14_8007B64C",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007B31C",
+   "offset": 2276,
+   "owner": "func_level_14_8007B64C",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B334",
+   "offset": 2300,
+   "owner": "func_level_14_8007B64C",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B34C",
+   "offset": 2324,
+   "owner": "func_level_14_8007B64C",
+   "size": 20
+  },
+  {
+   "sym": "jtbl_8007B360",
+   "offset": 2344,
+   "owner": "func_level_14_80089454",
+   "size": 324
+  },
+  {
+   "sym": "jtbl_8007B4A4",
+   "offset": 2668,
+   "owner": "func_level_14_8008B0B0",
+   "size": 328
+  },
+  {
+   "sym": "jtbl_8007B5EC",
+   "offset": 2996,
+   "owner": "func_level_14_8008B0B0",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B60C",
+   "offset": 3028,
+   "owner": "func_level_14_8008B0B0",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B62C",
+   "offset": 3060,
+   "owner": "func_level_14_8008B0B0",
+   "size": 32
+  }
+ ]
+}

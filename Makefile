@@ -71,6 +71,10 @@ split: ## Disassemble into asm/ + config/ via splat
 	@for y in config/overlays/*.yaml; do \
 		$(SPLAT) split "$$y" >/dev/null || exit 1; \
 	done
+	@# Function/data-split overlays (those with a committed .symbols.txt seed) get the
+	@# same per-function flip infra as the main EXE; also re-inserts the slots INCLUDE
+	@# splat just wiped from their generated .ld. Idempotent.
+	$(OPEN_SPYRO) sectionize-overlays
 	@echo "split: disassembled main + $$(ls config/overlays/*.yaml | wc -l | tr -d ' ') overlays"
 
 build: ## Compile + link into a byte-identical SCUS_942.28 + all 37 overlays
@@ -93,6 +97,7 @@ play: ## Boot the rebuilt iso in DuckStation
 
 progress: ## Regenerate the C-match progress report (PROGRESS.md + badge)
 	$(OPEN_SPYRO) progress
+	$(OPEN_SPYRO) progress-treemap
 
 lint: lint-py lint-c ## Lint + type-check everything (Python + C) — mirrors the CI lint job
 

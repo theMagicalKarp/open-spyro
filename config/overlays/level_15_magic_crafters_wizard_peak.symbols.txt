@@ -1,0 +1,9 @@
+// Function boundaries for the level_15_magic_crafters_wizard_peak overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_15_8007B7A8 = 0x8007B7A8; // type:func size:0xB630 blob:True
+func_level_15_80086DD8 = 0x80086DD8; // type:func size:0xD68
+func_level_15_80087B40 = 0x80087B40; // type:func size:0x1910
+func_level_15_80089450 = 0x80089450; // type:func size:0x1450
+func_level_15_8008A8A0 = 0x8008A8A0; // type:func size:0x8

@@ -7,7 +7,7 @@
 # which `make verify` checks against disc/orig + the locked SHA-1.
 #
 # At this stage the whole EXE is original assembly reassembled (no C yet); each
-# unmatched function will later be swapped to INCLUDE_ASM C in the step-12 loop.
+# unmatched function will later be swapped to INCLUDE_ASM C in the match loop.
 set -euo pipefail
 
 AS="${AS:-mips-linux-gnu-as}"
@@ -20,8 +20,8 @@ OBJDUMP="${OBJDUMP:-mips-linux-gnu-objdump}"
 export PYTHONPATH="tools/open-spyro/src${PYTHONPATH:+:$PYTHONPATH}"
 OPEN_SPYRO="${OPEN_SPYRO:-open-spyro}"
 
-# Match the step-02 spike assembler flags. -Iinclude resolves macro.inc /
-# gte_macros.inc; explicit %gp_rel in the asm means -G0 is correct here.
+# -Iinclude resolves macro.inc / gte_macros.inc; explicit %gp_rel in the asm
+# means -G0 is correct here.
 AS_FLAGS="-EL -Iinclude -Iasm -march=r3000 -mtune=r3000 -no-pad-sections -G0 -msoft-float"
 
 BUILD=build/main

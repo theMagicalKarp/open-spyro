@@ -23,6 +23,7 @@ from open_spyro import (
     overlays,
     progress,
     progress_delta,
+    progress_treemap,
     sectionize,
     wad,
 )
@@ -37,6 +38,16 @@ app = typer.Typer(
 def _progress() -> None:
     """Regenerate the C-match progress report (PROGRESS.md + badge)."""
     progress.run()
+
+
+def _progress_treemap(
+    progress_json: Annotated[
+        Path | None, typer.Option("--progress-json", help="freshly generated head progress.json")
+    ] = None,
+    output: Annotated[Path | None, typer.Option("-o", "--output", help="write SVG here")] = None,
+) -> None:
+    """Regenerate the progress svg treemap."""
+    progress_treemap.run(progress_json, output)
 
 
 def _progress_delta(
@@ -59,14 +70,27 @@ def _sectionize() -> None:
     sectionize.run()
 
 
+def _sectionize_overlays() -> None:
+    """Same wrapping for every function/data-split overlay (has a .symbols.txt seed)."""
+    sectionize.run_overlays()
+
+
 def _gen_overlay_yaml() -> None:
     """Emit a splat config per overlay from config/overlays.json."""
     gen_overlay_yaml.run()
 
 
-def _gen_slots_ld() -> None:
-    """Emit the fixed-VMA text-slot fragment (config/spyro.main.slots.ld)."""
-    gen_slots_ld.run()
+def _gen_slots_ld(
+    overlay: Annotated[
+        str,
+        typer.Option("--overlay", help="emit slots for this overlay instead of the main EXE"),
+    ] = "",
+) -> None:
+    """Emit a fixed-VMA text-slot fragment (main EXE, or one overlay with --overlay)."""
+    if overlay:
+        gen_slots_ld.run_overlay(overlay)
+    else:
+        gen_slots_ld.run()
 
 
 def _fixup_hasm() -> None:
@@ -116,8 +140,10 @@ def _verify_overlays(
 
 
 app.command("progress")(_progress)
+app.command("progress-treemap")(_progress_treemap)
 app.command("progress-delta")(_progress_delta)
 app.command("sectionize")(_sectionize)
+app.command("sectionize-overlays")(_sectionize_overlays)
 app.command("gen-overlay-yaml")(_gen_overlay_yaml)
 app.command("gen-slots-ld")(_gen_slots_ld)
 app.command("gen-syms-ld")(_gen_syms_ld)

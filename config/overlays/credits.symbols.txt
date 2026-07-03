@@ -1,0 +1,5 @@
+// Function boundaries for the credits overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+func_credits_8007AA50 = 0x8007AA50; // type:func size:0x1580
+func_credits_8007BFD0 = 0x8007BFD0; // type:func size:0x368
+func_credits_8007C338 = 0x8007C338; // type:func size:0x8

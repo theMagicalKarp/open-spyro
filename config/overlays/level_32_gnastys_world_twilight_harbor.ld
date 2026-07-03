@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_32_gnastys_world_twilight_harbor_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_32_gnastys_world_twilight_harbor`). */
+        INCLUDE config/overlays/level_32_gnastys_world_twilight_harbor.rodata_slots.ld
         build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata);
         build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.rodata);
         level_32_gnastys_world_twilight_harbor_RODATA_END = .;
         level_32_gnastys_world_twilight_harbor_RODATA_SIZE = ABSOLUTE(level_32_gnastys_world_twilight_harbor_RODATA_END - level_32_gnastys_world_twilight_harbor_RODATA_START);
         level_32_gnastys_world_twilight_harbor_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_32_gnastys_world_twilight_harbor`). */
+        INCLUDE config/overlays/level_32_gnastys_world_twilight_harbor.slots.ld
         build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text);
         level_32_gnastys_world_twilight_harbor_TEXT_END = .;
         level_32_gnastys_world_twilight_harbor_TEXT_SIZE = ABSOLUTE(level_32_gnastys_world_twilight_harbor_TEXT_END - level_32_gnastys_world_twilight_harbor_TEXT_START);

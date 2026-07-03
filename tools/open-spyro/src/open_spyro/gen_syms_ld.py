@@ -4,8 +4,8 @@ The all-asm baseline references hundreds of symbols by name that are NOT defined
 in any object: .bss globals (>= 0x80075800, never in the file image), the
 kernel/scratchpad/hardware registers, and BIOS jump-table entries. ld must be told
 their fixed addresses or the link fails (and any wrong address would change an
-emitted %hi/%lo or %gp_rel byte). We PROVIDE *every* symbol we know (the step-04
-corpus + splat's auto-detected undefined lists); PROVIDE is ignored for symbols a
+emitted %hi/%lo or %gp_rel byte). We PROVIDE *every* symbol we know (the imported
+name corpus + splat's auto-detected undefined lists); PROVIDE is ignored for symbols a
 real object already defines, so pinning the superset is safe and guarantees
 correct, byte-stable addresses for the rest.
 

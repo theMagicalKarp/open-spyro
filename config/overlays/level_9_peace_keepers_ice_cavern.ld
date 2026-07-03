@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_9_peace_keepers_ice_cavern_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_9_peace_keepers_ice_cavern`). */
+        INCLUDE config/overlays/level_9_peace_keepers_ice_cavern.rodata_slots.ld
         build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata);
         build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.rodata);
         level_9_peace_keepers_ice_cavern_RODATA_END = .;
         level_9_peace_keepers_ice_cavern_RODATA_SIZE = ABSOLUTE(level_9_peace_keepers_ice_cavern_RODATA_END - level_9_peace_keepers_ice_cavern_RODATA_START);
         level_9_peace_keepers_ice_cavern_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_9_peace_keepers_ice_cavern`). */
+        INCLUDE config/overlays/level_9_peace_keepers_ice_cavern.slots.ld
         build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text);
         level_9_peace_keepers_ice_cavern_TEXT_END = .;
         level_9_peace_keepers_ice_cavern_TEXT_SIZE = ABSOLUTE(level_9_peace_keepers_ice_cavern_TEXT_END - level_9_peace_keepers_ice_cavern_TEXT_START);

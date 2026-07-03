@@ -1,0 +1,13 @@
+// Function boundaries for the level_8_peace_keepers_cliff_town overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_8_8007B718 = 0x8007B718; // type:func size:0x13C
+func_level_8_8007B854 = 0x8007B854; // type:func size:0x44
+func_level_8_8007B898 = 0x8007B898; // type:func size:0x1FA0
+func_level_8_8007D838 = 0x8007D838; // type:func size:0xA08
+func_level_8_8007E240 = 0x8007E240; // type:func size:0xA948 blob:True
+func_level_8_80088B88 = 0x80088B88; // type:func size:0xB8C
+func_level_8_80089714 = 0x80089714; // type:func size:0x1294
+func_level_8_8008A9A8 = 0x8008A9A8; // type:func size:0x1150
+func_level_8_8008BAF8 = 0x8008BAF8; // type:func size:0x8

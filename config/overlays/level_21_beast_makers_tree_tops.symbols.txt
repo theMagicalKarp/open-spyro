@@ -1,0 +1,9 @@
+// Function boundaries for the level_21_beast_makers_tree_tops overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_21_8007B698 = 0x8007B698; // type:func size:0xB4A0 blob:True
+func_level_21_80086B38 = 0x80086B38; // type:func size:0x8C8
+func_level_21_80087400 = 0x80087400; // type:func size:0x129C
+func_level_21_8008869C = 0x8008869C; // type:func size:0x11AC
+func_level_21_80089848 = 0x80089848; // type:func size:0x8

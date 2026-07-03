@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_16_magic_crafters_blowhard_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_16_magic_crafters_blowhard`). */
+        INCLUDE config/overlays/level_16_magic_crafters_blowhard.rodata_slots.ld
         build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata);
         build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.rodata);
         level_16_magic_crafters_blowhard_RODATA_END = .;
         level_16_magic_crafters_blowhard_RODATA_SIZE = ABSOLUTE(level_16_magic_crafters_blowhard_RODATA_END - level_16_magic_crafters_blowhard_RODATA_START);
         level_16_magic_crafters_blowhard_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_16_magic_crafters_blowhard`). */
+        INCLUDE config/overlays/level_16_magic_crafters_blowhard.slots.ld
         build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text);
         level_16_magic_crafters_blowhard_TEXT_END = .;
         level_16_magic_crafters_blowhard_TEXT_SIZE = ABSOLUTE(level_16_magic_crafters_blowhard_TEXT_END - level_16_magic_crafters_blowhard_TEXT_START);

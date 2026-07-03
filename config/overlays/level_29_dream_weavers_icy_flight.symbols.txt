@@ -1,0 +1,14 @@
+// Function boundaries for the level_29_dream_weavers_icy_flight overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_29_8007AE08 = 0x8007AE08; // type:func size:0xD4
+func_level_29_8007AEDC = 0x8007AEDC; // type:func size:0x320
+func_level_29_8007B1FC = 0x8007B1FC; // type:func size:0x2B4
+func_level_29_8007B4B0 = 0x8007B4B0; // type:func size:0x1DC
+func_level_29_8007B68C = 0x8007B68C; // type:func size:0x1928
+func_level_29_8007CFB4 = 0x8007CFB4; // type:func size:0x5074 blob:True
+func_level_29_80082028 = 0x80082028; // type:func size:0xD6C
+func_level_29_80082D94 = 0x80082D94; // type:func size:0xDF8
+func_level_29_80083B8C = 0x80083B8C; // type:func size:0xDA8
+func_level_29_80084934 = 0x80084934; // type:func size:0x8

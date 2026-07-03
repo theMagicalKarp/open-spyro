@@ -2,9 +2,10 @@
 #
 # Built by `make setup` / `make docker` as open-spyro/matchenv:latest.
 # Run with the repo mounted at /work (see docker_env.sh). The gcc 2.7.2 cc1 is
-# BUILT FROM SOURCE in the first stage below (a 32-bit i386 static ELF, same as
-# the historical PSYQ-era community build), so the image targets linux/amd64
-# (use --platform linux/amd64 on Apple Silicon; runs under emulation).
+# the canonical decompals/old-gcc PREBUILT release binary (a 32-bit i386 static
+# ELF — the historical PSYQ-era community build), so the image targets
+# linux/amd64 (use --platform linux/amd64 on Apple Silicon; runs under
+# emulation).
 #
 # Pin everything: an unpinned binutils/maspsx/pip/gcc-source bump can silently
 # change emitted bytes.
@@ -19,49 +20,33 @@ ARG UV_VER=0.11.19
 FROM ghcr.io/astral-sh/uv:${UV_VER} AS uv
 
 # ============================================================================
-# Stage 1 — build gcc 2.7.2 `cc1` from source.
+# Stage 1 — fetch the canonical prebuilt gcc 2.7.2 `cc1`.
 #
-# Source is decompals/mips-gcc-2.7.2: the GPL GNU gcc 2.7.2 tree with the
-# generated lex/yacc files committed (so modern bison/flex never run) and the
-# minimal patches to compile on a modern host. This produces a `cc1` whose
-# *codegen* is byte-identical to the historical community build for this game
-# (proven against the step-02 spike). Pinned to the v0.1 commit.
-#
-# Recipe mirrors the upstream linux CI job (.github/workflows/build.yml):
-#   configure --target=mips-mips-gnu --host/--build=i386-pc-linux
-#   CFLAGS="-static -std=gnu89 -m32"  (hence the 32-bit i386 static binary)
-#   touch c-parse.c  (don't regenerate the committed parser with modern tools)
-# We only need `cc1` — compile.sh calls it directly and never uses the gcc
-# driver, so the driver is not built or shipped.
+# The decompals/old-gcc RELEASE binary (i386 static ELF), not a from-source
+# build. This is the binary the PSX decomp community matches against. A
+# from-source build of the same 2.7.2 tree on a modern host is NOT
+# bit-behavior-identical: we found a stack-temp slot allocation divergence
+# (host-compiler-dependent behavior in the 2.7.2 source) that flips spill
+# slot offsets in large functions (found via func_titlescreen_8007CEE4:
+# `sw $t0,0x24($sp)` vs the original 0x20). The release binary reproduces
+# the original bytes; the from-source one does not. Pinned by tag + sha256.
 # ============================================================================
 FROM ${BASE} AS gcc-builder
 
-ARG GCC272_SRC_URL=https://github.com/decompals/mips-gcc-2.7.2.git
-ARG GCC272_SRC_SHA=e6271f14b095d7d8b2638c2b5e07d0d5cd05bc14
+ARG GCC272_REL_URL=https://github.com/decompals/old-gcc/releases/download/0.17/gcc-2.7.2.tar.gz
+ARG GCC272_CC1_SHA256=fee572bf052e83f7610b77ca776aa8c30d797a534464391b77852a27137805b0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        gcc-multilib \
-        bison \
-        gperf \
-        autoconf \
+        curl \
         file \
-        git \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone "${GCC272_SRC_URL}" /src \
-    && git -C /src checkout "${GCC272_SRC_SHA}"
-
-WORKDIR /src
-RUN ./configure \
-        --target=mips-mips-gnu --prefix=/opt/cross --with-gnu-as \
-        --disable-gprof --disable-gdb --disable-werror \
-        --host=i386-pc-linux --build=i386-pc-linux \
-    && touch c-parse.c \
-    && make CFLAGS="-static -std=gnu89 -m32" cc1 \
-    && test -f cc1 \
-    && file cc1
+RUN curl -fsSL "${GCC272_REL_URL}" -o /tmp/gcc-2.7.2.tar.gz \
+    && mkdir -p /src \
+    && tar xzf /tmp/gcc-2.7.2.tar.gz -C /src \
+    && echo "${GCC272_CC1_SHA256}  /src/cc1" | sha256sum -c - \
+    && file /src/cc1
 
 # ============================================================================
 # Stage 2 — the matching environment.
@@ -70,8 +55,9 @@ FROM ${BASE}
 
 WORKDIR /work
 
-# The from-source gcc 2.7.2 code generator. Lives only in the image (it is a
-# Linux binary; it never runs on the macOS host). compile.sh defaults CC1 here.
+# The canonical prebuilt gcc 2.7.2 code generator (decompals/old-gcc release).
+# Lives only in the image (it is a Linux binary; it never runs on the macOS
+# host). compile.sh defaults CC1 here.
 COPY --from=gcc-builder /src/cc1 /opt/gcc2.7.2/cc1
 
 # Modern MIPS binutils + cpp/gcc driver used for as/ld/objcopy and preprocessing.

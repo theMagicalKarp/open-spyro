@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_22_beast_makers_metalhead_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_22_beast_makers_metalhead`). */
+        INCLUDE config/overlays/level_22_beast_makers_metalhead.rodata_slots.ld
         build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata);
         build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.rodata);
         level_22_beast_makers_metalhead_RODATA_END = .;
         level_22_beast_makers_metalhead_RODATA_SIZE = ABSOLUTE(level_22_beast_makers_metalhead_RODATA_END - level_22_beast_makers_metalhead_RODATA_START);
         level_22_beast_makers_metalhead_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_22_beast_makers_metalhead`). */
+        INCLUDE config/overlays/level_22_beast_makers_metalhead.slots.ld
         build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text);
         level_22_beast_makers_metalhead_TEXT_END = .;
         level_22_beast_makers_metalhead_TEXT_SIZE = ABSOLUTE(level_22_beast_makers_metalhead_TEXT_END - level_22_beast_makers_metalhead_TEXT_START);

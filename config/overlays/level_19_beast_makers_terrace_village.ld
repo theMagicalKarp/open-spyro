@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_19_beast_makers_terrace_village_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_19_beast_makers_terrace_village`). */
+        INCLUDE config/overlays/level_19_beast_makers_terrace_village.rodata_slots.ld
         build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata);
         build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.rodata);
         level_19_beast_makers_terrace_village_RODATA_END = .;
         level_19_beast_makers_terrace_village_RODATA_SIZE = ABSOLUTE(level_19_beast_makers_terrace_village_RODATA_END - level_19_beast_makers_terrace_village_RODATA_START);
         level_19_beast_makers_terrace_village_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_19_beast_makers_terrace_village`). */
+        INCLUDE config/overlays/level_19_beast_makers_terrace_village.slots.ld
         build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text);
         level_19_beast_makers_terrace_village_TEXT_END = .;
         level_19_beast_makers_terrace_village_TEXT_SIZE = ABSOLUTE(level_19_beast_makers_terrace_village_TEXT_END - level_19_beast_makers_terrace_village_TEXT_START);

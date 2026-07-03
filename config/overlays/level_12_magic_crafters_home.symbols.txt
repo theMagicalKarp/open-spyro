@@ -1,0 +1,13 @@
+// Function boundaries for the level_12_magic_crafters_home overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_12_8007B870 = 0x8007B870; // type:func size:0x13C
+func_level_12_8007B9AC = 0x8007B9AC; // type:func size:0x44
+func_level_12_8007B9F0 = 0x8007B9F0; // type:func size:0x1FA0
+func_level_12_8007D990 = 0x8007D990; // type:func size:0xA08
+func_level_12_8007E398 = 0x8007E398; // type:func size:0xCF28 blob:True
+func_level_12_8008B2C0 = 0x8008B2C0; // type:func size:0xBD8
+func_level_12_8008BE98 = 0x8008BE98; // type:func size:0x1438
+func_level_12_8008D2D0 = 0x8008D2D0; // type:func size:0x1338
+func_level_12_8008E608 = 0x8008E608; // type:func size:0x8

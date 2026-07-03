@@ -1,0 +1,153 @@
+{
+ "functions": [
+  {
+   "name": "func_level_30_8007AE10",
+   "vram": 2147986960,
+   "size": 316
+  },
+  {
+   "name": "func_level_30_8007AF4C",
+   "vram": 2147987276,
+   "size": 68
+  },
+  {
+   "name": "func_level_30_8007AF90",
+   "vram": 2147987344,
+   "size": 8096
+  },
+  {
+   "name": "func_level_30_8007CF30",
+   "vram": 2147995440,
+   "size": 2568
+  },
+  {
+   "name": "func_level_30_8007D938",
+   "vram": 2147998008,
+   "size": 23600
+  },
+  {
+   "name": "func_level_30_80083568",
+   "vram": 2148021608,
+   "size": 2416
+  },
+  {
+   "name": "func_level_30_80083ED8",
+   "vram": 2148024024,
+   "size": 4040
+  },
+  {
+   "name": "func_level_30_80084EA0",
+   "vram": 2148028064,
+   "size": 3648
+  },
+  {
+   "name": "func_level_30_80085CE0",
+   "vram": 2148031712,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_30_8007AF90",
+   "size": 32
+  },
+  {
+   "sym": "D_8007AA5C",
+   "offset": 36,
+   "owner": "func_level_30_8007CF30",
+   "size": 20
+  },
+  {
+   "sym": "D_8007AA70",
+   "offset": 56,
+   "owner": "func_level_30_8007CF30",
+   "size": 16
+  },
+  {
+   "sym": "D_8007AA80",
+   "offset": 72,
+   "owner": "func_level_30_8007CF30",
+   "size": 16
+  },
+  {
+   "sym": "D_8007AA90",
+   "offset": 88,
+   "owner": "func_level_30_8007CF30",
+   "size": 20
+  },
+  {
+   "sym": "D_8007AAA4",
+   "offset": 108,
+   "owner": "func_level_30_8007CF30",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AAB0",
+   "offset": 120,
+   "owner": "func_level_30_8007CF30",
+   "size": 24
+  },
+  {
+   "sym": "D_8007AAC8",
+   "offset": 144,
+   "owner": "func_level_30_8007CF30",
+   "size": 24
+  },
+  {
+   "sym": "D_8007AAE0",
+   "offset": 168,
+   "owner": "func_level_30_8007CF30",
+   "size": 12
+  },
+  {
+   "sym": "jtbl_8007AAEC",
+   "offset": 180,
+   "owner": "func_level_30_8007D938",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AB04",
+   "offset": 204,
+   "owner": "func_level_30_8007D938",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AB1C",
+   "offset": 228,
+   "owner": "func_level_30_8007D938",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007AB3C",
+   "offset": 260,
+   "owner": "func_level_30_8007D938",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007AB64",
+   "offset": 300,
+   "owner": "func_level_30_80083ED8",
+   "size": 324
+  },
+  {
+   "sym": "jtbl_8007ACA8",
+   "offset": 624,
+   "owner": "func_level_30_80084EA0",
+   "size": 328
+  },
+  {
+   "sym": "jtbl_8007ADF0",
+   "offset": 952,
+   "owner": "func_level_30_80084EA0",
+   "size": 32
+  }
+ ]
+}

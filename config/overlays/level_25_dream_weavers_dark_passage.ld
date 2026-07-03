@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_25_dream_weavers_dark_passage_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_25_dream_weavers_dark_passage`). */
+        INCLUDE config/overlays/level_25_dream_weavers_dark_passage.rodata_slots.ld
         build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata);
         build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.rodata);
         level_25_dream_weavers_dark_passage_RODATA_END = .;
         level_25_dream_weavers_dark_passage_RODATA_SIZE = ABSOLUTE(level_25_dream_weavers_dark_passage_RODATA_END - level_25_dream_weavers_dark_passage_RODATA_START);
         level_25_dream_weavers_dark_passage_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_25_dream_weavers_dark_passage`). */
+        INCLUDE config/overlays/level_25_dream_weavers_dark_passage.slots.ld
         build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text);
         level_25_dream_weavers_dark_passage_TEXT_END = .;
         level_25_dream_weavers_dark_passage_TEXT_SIZE = ABSOLUTE(level_25_dream_weavers_dark_passage_TEXT_END - level_25_dream_weavers_dark_passage_TEXT_START);

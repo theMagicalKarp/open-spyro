@@ -76,11 +76,13 @@ def _block_info(block: list[str]) -> tuple[str, int, int | None]:
     return name, size, vram
 
 
-def run() -> None:
-    repo = repo_root()
-    text_s = repo / "asm/text.s"
-    layout_path = repo / "config/text_layout.json"
+def _sectionize_file(text_s, layout_path) -> int:
+    """Wrap every function block of one splat text.s; write its layout inventory.
 
+    Shared by the main EXE (asm/text.s) and split overlays (asm/overlays/<n>/text.s):
+    both are splat output with the same ``nonmatching``/``glabel`` block format.
+    Returns the number of functions wrapped.
+    """
     raw = text_s.read_text().splitlines()
     # Idempotency: drop any sectioning/guards a previous run added, and the
     # original single `.section .text, "ax"`, so we wrap a clean blob each time.
@@ -116,7 +118,170 @@ def run() -> None:
             file=sys.stderr,
         )
     layout_path.write_text(json.dumps({"functions": layout}, indent=1) + "\n")
+    return len(blocks)
+
+
+def _patch_main_ld(repo) -> None:
+    """Re-insert the slots INCLUDE into splat's regenerated main ld (idempotent).
+
+    splat rewrites config/spyro.main.ld on every split, wiping the INCLUDE that
+    places the per-function fixed-VMA slots (and the C overrides) — the main-EXE
+    twin of _patch_overlay_ld. Without it every HAVE_C-suppressed function links
+    undefined.
+    """
+    ld_path = repo / "config/spyro.main.ld"
+    target = "build/main/asm/text.o(.text);"
+    insert = (
+        "        /* Per-function fixed-VMA slots (`open-spyro gen-slots-ld`). Replaces the old",
+        "           monolithic text.o(.text) so individual functions can be flipped to C. */",
+        "        INCLUDE config/spyro.main.slots.ld",
+    )
+    lines = ld_path.read_text().splitlines()
+    if any(ln.strip() == insert[-1].strip() for ln in lines):
+        return
+    for i, ln in enumerate(lines):
+        if ln.strip() == target:
+            lines[i:i] = insert
+            break
+    else:
+        raise SystemExit(f"sectionize: no '{target}' line in {ld_path}")
+    ld_path.write_text("\n".join(lines) + "\n")
+
+
+def run() -> None:
+    repo = repo_root()
+    text_s = repo / "asm/text.s"
+    layout_path = repo / "config/text_layout.json"
+    n = _sectionize_file(text_s, layout_path)
+    _patch_main_ld(repo)
     print(
-        f"sectionize: wrapped {len(blocks)} functions -> {text_s.relative_to(repo)}; "
+        f"sectionize: wrapped {n} functions -> {text_s.relative_to(repo)}; "
         f"layout -> {layout_path.relative_to(repo)}"
     )
+
+
+# Offset comments in splat's data dump: `/* <off> <vram8> [<bytes8>] */`. The
+# vram token is required so raw continuation lines (`/* 4241... */`) don't match.
+_RODATA_OFF = re.compile(r"^\s*/\*\s*([0-9A-Fa-f]+)\s+[0-9A-Fa-f]{8}\s")
+# Lines _sectionize_rodata injects — stripped on re-run for idempotency.
+_INJECTED_RO = re.compile(r'^\.section \.rodata\.\S+, "a"$|^\.ifndef HAVE_C_\S+$|^\.endif$')
+
+
+def _sectionize_rodata(rodata_s, text_s, text_end_off: int) -> list[dict]:
+    """Per-piece sectioning of an overlay's rodata dump (jtbl / const-data flips).
+
+    A C override whose function owns rodata (a switch jump table, a static const)
+    emits those bytes in its object's ``.rodata``; the matching asm bytes must be
+    suppressible. Wraps every ``nonmatching <sym>`` block of the splat rodata dump
+    in its own ``.rodata.<sym>`` section, guarded by ``.ifndef HAVE_C_<owner>``
+    where the owner is the (unique) function in text.s that references <sym>.
+    Returns the piece inventory [(sym, offset, size, owner)...] for the slot
+    generator. Idempotent, same as the text sectionizer.
+    """
+    raw = rodata_s.read_text().splitlines()
+    raw = [ln for ln in raw if not _INJECTED_RO.match(ln) and ln.strip() != '.section .rodata, "a"']
+    header, blocks = _parse_blocks(raw)
+
+    text = text_s.read_text()
+    # function name -> block body, from the already-sectionized text.s
+    func_bodies: dict[str, str] = {}
+    for m in re.finditer(r"\.ifndef HAVE_C_(\S+)\n(.*?)\n\.endif", text, re.S):
+        func_bodies[m.group(1)] = m.group(2)
+
+    out = list(header)
+    out.append('.section .rodata, "a"')
+    out.append("")
+
+    pieces: list[dict] = []
+    for block in blocks:
+        m = _NONMATCHING.match(block[0])
+        assert m is not None
+        sym = m.group(1)
+        offs = [int(mm.group(1), 16) for ln in block if (mm := _RODATA_OFF.match(ln))]
+        owner = next((fn for fn, body in func_bodies.items() if f"({sym})" in body), None)
+        pieces.append({"sym": sym, "offset": offs[0] if offs else None, "owner": owner})
+        out.append(f'.section .rodata.{sym}, "a"')
+        if owner:
+            out.append(f".ifndef HAVE_C_{owner}")
+        body = block
+        # Drop trailing `.align` directives (splat emits `.align 3` after each
+        # jump table): in the monolithic .rodata they are no-ops (pad words are
+        # dumped explicitly), but inside a carved piece section they pad the
+        # SECTION size past its fixed-VMA slot anchor — the anchor, not the
+        # directive, owns placement/padding here.
+        while body and (body[-1].strip() == "" or body[-1].strip().startswith(".align")):
+            body = body[:-1]
+        out.extend(body)
+        if owner:
+            out.append(".endif")
+        out.append("")
+
+    # piece sizes from consecutive offsets; the last piece runs to .text start
+    for p, nxt in zip(pieces, pieces[1:] + [{"offset": text_end_off}], strict=True):
+        p["size"] = (
+            nxt["offset"] - p["offset"]
+            if p["offset"] is not None and nxt["offset"] is not None
+            else None
+        )
+    rodata_s.write_text("\n".join(out) + "\n")
+    return pieces
+
+
+def _patch_overlay_ld(repo, name: str) -> None:
+    """Insert the slots INCLUDEs into splat's generated overlay ld (idempotent).
+
+    splat regenerates config/overlays/<name>.ld on every split, wiping the
+    includes; this re-inserts them just before the monolithic rodata/text object
+    placements — the same INCLUDE-before-text pattern as config/spyro.main.ld.
+    """
+    ld_path = repo / "config/overlays" / f"{name}.ld"
+    obj_base = f"build/overlays/{name}/asm/overlays/{name}"
+    inserts = {
+        f"{obj_base}/data/rodata.rodata.o(.rodata);": (
+            "        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld"
+            f" --overlay {name}`). */",
+            f"        INCLUDE config/overlays/{name}.rodata_slots.ld",
+        ),
+        f"{obj_base}/text.o(.text);": (
+            "        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld"
+            f" --overlay {name}`). */",
+            f"        INCLUDE config/overlays/{name}.slots.ld",
+        ),
+    }
+    lines = ld_path.read_text().splitlines()
+    for target, insert in inserts.items():
+        if any(ln.strip() == insert[1].strip() for ln in lines):
+            continue
+        for i, ln in enumerate(lines):
+            if ln.strip() == target:
+                lines[i:i] = insert
+                break
+        else:
+            raise SystemExit(f"sectionize-overlays: no '{target}' line in {ld_path}")
+    ld_path.write_text("\n".join(lines) + "\n")
+
+
+def run_overlays() -> None:
+    """Sectionize every function/data-split overlay (those with a symbols seed).
+
+    Overlays without config/overlays/<name>.symbols.txt are coarse asm blobs —
+    left monolithic (and `unsplit` in the progress metric).
+    """
+    repo = repo_root()
+    overlays = json.loads((repo / "config/overlays.json").read_text())["overlays"]
+    done = []
+    for r in overlays:
+        name = r["name"]
+        if not (repo / "config/overlays" / f"{name}.symbols.txt").exists():
+            continue
+        text_s = repo / "asm/overlays" / name / "text.s"
+        rodata_s = repo / "asm/overlays" / name / "data" / "rodata.rodata.s"
+        layout_path = repo / "config/overlays" / f"{name}.text_layout.json"
+        n = _sectionize_file(text_s, layout_path)
+        pieces = _sectionize_rodata(rodata_s, text_s, r["text_off"])
+        layout = json.loads(layout_path.read_text())
+        layout["rodata"] = pieces
+        layout_path.write_text(json.dumps(layout, indent=1) + "\n")
+        _patch_overlay_ld(repo, name)
+        done.append(f"{name} ({n} funcs, {len(pieces)} rodata pieces)")
+    print(f"sectionize-overlays: {len(done)} overlay(s): {', '.join(done) or 'none'}")

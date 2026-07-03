@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_8_peace_keepers_cliff_town_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_8_peace_keepers_cliff_town`). */
+        INCLUDE config/overlays/level_8_peace_keepers_cliff_town.rodata_slots.ld
         build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata);
         build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.rodata);
         level_8_peace_keepers_cliff_town_RODATA_END = .;
         level_8_peace_keepers_cliff_town_RODATA_SIZE = ABSOLUTE(level_8_peace_keepers_cliff_town_RODATA_END - level_8_peace_keepers_cliff_town_RODATA_START);
         level_8_peace_keepers_cliff_town_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_8_peace_keepers_cliff_town`). */
+        INCLUDE config/overlays/level_8_peace_keepers_cliff_town.slots.ld
         build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text);
         level_8_peace_keepers_cliff_town_TEXT_END = .;
         level_8_peace_keepers_cliff_town_TEXT_SIZE = ABSOLUTE(level_8_peace_keepers_cliff_town_TEXT_END - level_8_peace_keepers_cliff_town_TEXT_START);

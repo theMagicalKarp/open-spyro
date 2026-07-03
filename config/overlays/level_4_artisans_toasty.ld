@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_4_artisans_toasty_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_4_artisans_toasty`). */
+        INCLUDE config/overlays/level_4_artisans_toasty.rodata_slots.ld
         build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata);
         build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.rodata);
         level_4_artisans_toasty_RODATA_END = .;
         level_4_artisans_toasty_RODATA_SIZE = ABSOLUTE(level_4_artisans_toasty_RODATA_END - level_4_artisans_toasty_RODATA_START);
         level_4_artisans_toasty_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_4_artisans_toasty`). */
+        INCLUDE config/overlays/level_4_artisans_toasty.slots.ld
         build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text);
         level_4_artisans_toasty_TEXT_END = .;
         level_4_artisans_toasty_TEXT_SIZE = ABSOLUTE(level_4_artisans_toasty_TEXT_END - level_4_artisans_toasty_TEXT_START);

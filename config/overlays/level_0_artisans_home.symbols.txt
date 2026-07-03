@@ -1,0 +1,13 @@
+// Function boundaries for the level_0_artisans_home overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_0_8007AEA0 = 0x8007AEA0; // type:func size:0x13C
+func_level_0_8007AFDC = 0x8007AFDC; // type:func size:0x44
+func_level_0_8007B020 = 0x8007B020; // type:func size:0x1FA0
+func_level_0_8007CFC0 = 0x8007CFC0; // type:func size:0xA08
+func_level_0_8007D9C8 = 0x8007D9C8; // type:func size:0x7E04 blob:True
+func_level_0_800857CC = 0x800857CC; // type:func size:0x968
+func_level_0_80086134 = 0x80086134; // type:func size:0x12AC
+func_level_0_800873E0 = 0x800873E0; // type:func size:0x1240
+func_level_0_80088620 = 0x80088620; // type:func size:0x8

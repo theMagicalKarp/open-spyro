@@ -1,0 +1,55 @@
+{
+ "functions": [
+  {
+   "name": "func_titlescreen_8007AAD4",
+   "vram": 2147986132,
+   "size": 216
+  },
+  {
+   "name": "func_titlescreen_8007ABAC",
+   "vram": 2147986348,
+   "size": 8588
+  },
+  {
+   "name": "func_titlescreen_8007CD38",
+   "vram": 2147994936,
+   "size": 428
+  },
+  {
+   "name": "func_titlescreen_8007CEE4",
+   "vram": 2147995364,
+   "size": 3844
+  },
+  {
+   "name": "func_titlescreen_8007DDE8",
+   "vram": 2147999208,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA3C",
+   "offset": 4,
+   "owner": "func_titlescreen_8007ABAC",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AA54",
+   "offset": 28,
+   "owner": "func_titlescreen_8007ABAC",
+   "size": 64
+  },
+  {
+   "sym": "jtbl_8007AA94",
+   "offset": 92,
+   "owner": "func_titlescreen_8007CEE4",
+   "size": 64
+  }
+ ]
+}

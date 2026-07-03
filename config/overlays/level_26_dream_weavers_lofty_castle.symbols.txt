@@ -1,0 +1,9 @@
+// Function boundaries for the level_26_dream_weavers_lofty_castle overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_26_8007B4DC = 0x8007B4DC; // type:func size:0x9144 blob:True
+func_level_26_80084620 = 0x80084620; // type:func size:0xA80
+func_level_26_800850A0 = 0x800850A0; // type:func size:0x1398
+func_level_26_80086438 = 0x80086438; // type:func size:0x12E4
+func_level_26_8008771C = 0x8008771C; // type:func size:0x8

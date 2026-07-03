@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_26_dream_weavers_lofty_castle_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_26_dream_weavers_lofty_castle`). */
+        INCLUDE config/overlays/level_26_dream_weavers_lofty_castle.rodata_slots.ld
         build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata);
         build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.rodata);
         level_26_dream_weavers_lofty_castle_RODATA_END = .;
         level_26_dream_weavers_lofty_castle_RODATA_SIZE = ABSOLUTE(level_26_dream_weavers_lofty_castle_RODATA_END - level_26_dream_weavers_lofty_castle_RODATA_START);
         level_26_dream_weavers_lofty_castle_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_26_dream_weavers_lofty_castle`). */
+        INCLUDE config/overlays/level_26_dream_weavers_lofty_castle.slots.ld
         build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text);
         level_26_dream_weavers_lofty_castle_TEXT_END = .;
         level_26_dream_weavers_lofty_castle_TEXT_SIZE = ABSOLUTE(level_26_dream_weavers_lofty_castle_TEXT_END - level_26_dream_weavers_lofty_castle_TEXT_START);

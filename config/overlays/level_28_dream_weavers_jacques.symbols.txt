@@ -1,0 +1,9 @@
+// Function boundaries for the level_28_dream_weavers_jacques overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_28_8007AF50 = 0x8007AF50; // type:func size:0x8758 blob:True
+func_level_28_800836A8 = 0x800836A8; // type:func size:0x980
+func_level_28_80084028 = 0x80084028; // type:func size:0x122C
+func_level_28_80085254 = 0x80085254; // type:func size:0x10F4
+func_level_28_80086348 = 0x80086348; // type:func size:0x8

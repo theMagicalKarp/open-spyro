@@ -1,0 +1,9 @@
+// Function boundaries for the level_32_gnastys_world_twilight_harbor overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_32_8007AE5C = 0x8007AE5C; // type:func size:0x82AC blob:True
+func_level_32_80083108 = 0x80083108; // type:func size:0xA44
+func_level_32_80083B4C = 0x80083B4C; // type:func size:0x1360
+func_level_32_80084EAC = 0x80084EAC; // type:func size:0x1158
+func_level_32_80086004 = 0x80086004; // type:func size:0x8
