@@ -81,7 +81,7 @@ preservation, research, and educational purposes. It is **not affiliated with,
 authorized, sponsored, or endorsed by Sony Interactive Entertainment, Insomniac
 Games, or any of their subsidiaries or affiliates**.
 
-*Spyro the Dragon* and all associated names, characters, and assets are
+_Spyro the Dragon_ and all associated names, characters, and assets are
 trademarks and copyrights of their respective owners. No copyrighted game data
 is distributed with this repository — building requires an original disc that
 you must supply yourself. This project ships only original source code,
