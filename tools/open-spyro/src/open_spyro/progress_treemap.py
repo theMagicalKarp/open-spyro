@@ -9,7 +9,6 @@ and colored by match status:
     handwritten  slate   — hand-authored asm; not C-matchable by design
     library      purple  — PSY-Q / libc leaf; excluded from the match denominator
     unsplit      amber   — un-split overlay blob (mostly level data); excluded until split
-    blob         blue    — tagged level mega-blob (blob:True); split but excluded from the %
 
 The layout is a classic squarified treemap (Bruls/Huizing/van Wijk): tiles keep a
 near-1 aspect ratio so the eye reads relative size honestly. Pure stdlib — no
@@ -37,8 +36,6 @@ COLORS = {
     "handwritten": "#8b949e",
     "library": "#8957e5",
     "unsplit": "#9e6a03",
-    "blob": "#388bfd",
-    # "blob": "#8957e5",
 }
 BG = "#0d1117"
 FG = "#e6edf3"
@@ -51,8 +48,6 @@ def _category(f: dict[str, Any]) -> str:
         return "matched"
     if f.get("unsplit"):
         return "unsplit"
-    if f.get("blob"):
-        return "blob"
     if f.get("handwritten"):
         return "handwritten"
     if f.get("lib"):
@@ -170,9 +165,8 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
 
     pct = data["matched_pct"]  # already in percent units in progress.json
     mb = data["matched_bytes"]
-    tb = data["total_code_bytes"]  # split game code only (denominator)
+    tb = data["total_code_bytes"]  # split game code (denominator)
     unsplit_b = data.get("unsplit_overlay_bytes", 0)
-    blob_b = data.get("blob_code_bytes", 0)
     n_match = sum(1 for f in funcs if f["status"] == "matched")
 
     inner_w = WIDTH - 2 * PAD
@@ -199,11 +193,11 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
     out.append(
         f'<text x="{PAD + 190}" y="66" fill="#8b949e" font-size="16">'
         f"{mb:,} / {tb:,} split-code bytes · {n_match} matched · "
-        f"{unsplit_b + blob_b:,} raw bytes (excluded)</text>"
+        f"{unsplit_b:,} raw bytes (excluded)</text>"
     )
     # Legend.
     lx = WIDTH - PAD
-    for label in ("blob", "unsplit", "library", "handwritten", "asm", "matched"):
+    for label in ("unsplit", "library", "handwritten", "asm", "matched"):
         text = label
         tw = 9 * len(text) + 26
         lx -= tw

@@ -1,8 +1,8 @@
 // Function boundaries for the level_33_gnastys_world_gnasty_gnorc overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
-func_level_33_8007AD64 = 0x8007AD64; // type:func size:0x81C0 blob:True
+func_level_33_8007AD64 = 0x8007AD64; // type:func size:0x81C0
 func_level_33_80082F24 = 0x80082F24; // type:func size:0x7CC
 func_level_33_800836F0 = 0x800836F0; // type:func size:0xF44
 func_level_33_80084634 = 0x80084634; // type:func size:0xE80

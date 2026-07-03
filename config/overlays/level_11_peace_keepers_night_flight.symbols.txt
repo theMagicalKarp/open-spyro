@@ -1,13 +1,13 @@
 // Function boundaries for the level_11_peace_keepers_night_flight overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
 func_level_11_8007AE08 = 0x8007AE08; // type:func size:0xD4
 func_level_11_8007AEDC = 0x8007AEDC; // type:func size:0x320
 func_level_11_8007B1FC = 0x8007B1FC; // type:func size:0x2B4
 func_level_11_8007B4B0 = 0x8007B4B0; // type:func size:0x1DC
 func_level_11_8007B68C = 0x8007B68C; // type:func size:0x1928
-func_level_11_8007CFB4 = 0x8007CFB4; // type:func size:0x4A08 blob:True
+func_level_11_8007CFB4 = 0x8007CFB4; // type:func size:0x4A08
 func_level_11_800819BC = 0x800819BC; // type:func size:0x944
 func_level_11_80082300 = 0x80082300; // type:func size:0xC58
 func_level_11_80082F58 = 0x80082F58; // type:func size:0xC98

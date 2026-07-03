@@ -1,13 +1,13 @@
 // Function boundaries for the level_23_beast_makers_wild_flight overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
 func_level_23_8007AE08 = 0x8007AE08; // type:func size:0xD4
 func_level_23_8007AEDC = 0x8007AEDC; // type:func size:0x320
 func_level_23_8007B1FC = 0x8007B1FC; // type:func size:0x2B4
 func_level_23_8007B4B0 = 0x8007B4B0; // type:func size:0x1DC
 func_level_23_8007B68C = 0x8007B68C; // type:func size:0x1928
-func_level_23_8007CFB4 = 0x8007CFB4; // type:func size:0x5288 blob:True
+func_level_23_8007CFB4 = 0x8007CFB4; // type:func size:0x5288
 func_level_23_8008223C = 0x8008223C; // type:func size:0xD18
 func_level_23_80082F54 = 0x80082F54; // type:func size:0xC58
 func_level_23_80083BAC = 0x80083BAC; // type:func size:0xC98

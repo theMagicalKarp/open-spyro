@@ -1,12 +1,12 @@
 // Function boundaries for the level_3_artisans_town_square overlay.
 // Block starts are splat's own autodetection over the compiled .text region.
-// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
 func_level_3_8007AF2C = 0x8007AF2C; // type:func size:0x13C
 func_level_3_8007B068 = 0x8007B068; // type:func size:0x44
 func_level_3_8007B0AC = 0x8007B0AC; // type:func size:0x1FA0
 func_level_3_8007D04C = 0x8007D04C; // type:func size:0xA08
-func_level_3_8007DA54 = 0x8007DA54; // type:func size:0x9850 blob:True
+func_level_3_8007DA54 = 0x8007DA54; // type:func size:0x9850
 func_level_3_800872A4 = 0x800872A4; // type:func size:0xB7C
 func_level_3_80087E20 = 0x80087E20; // type:func size:0x1148
 func_level_3_80088F68 = 0x80088F68; // type:func size:0xF64
