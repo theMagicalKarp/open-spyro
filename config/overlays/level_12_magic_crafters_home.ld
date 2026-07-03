@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_12_magic_crafters_home_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_12_magic_crafters_home`). */
+        INCLUDE config/overlays/level_12_magic_crafters_home.rodata_slots.ld
         build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata);
         build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.rodata);
         level_12_magic_crafters_home_RODATA_END = .;
         level_12_magic_crafters_home_RODATA_SIZE = ABSOLUTE(level_12_magic_crafters_home_RODATA_END - level_12_magic_crafters_home_RODATA_START);
         level_12_magic_crafters_home_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_12_magic_crafters_home`). */
+        INCLUDE config/overlays/level_12_magic_crafters_home.slots.ld
         build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text);
         level_12_magic_crafters_home_TEXT_END = .;
         level_12_magic_crafters_home_TEXT_SIZE = ABSOLUTE(level_12_magic_crafters_home_TEXT_END - level_12_magic_crafters_home_TEXT_START);

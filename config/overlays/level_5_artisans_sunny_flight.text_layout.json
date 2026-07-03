@@ -1,0 +1,254 @@
+{
+ "functions": [
+  {
+   "name": "func_level_5_8007AE08",
+   "vram": 2147986952,
+   "size": 212
+  },
+  {
+   "name": "func_level_5_8007AEDC",
+   "vram": 2147987164,
+   "size": 800
+  },
+  {
+   "name": "func_level_5_8007B1FC",
+   "vram": 2147987964,
+   "size": 692
+  },
+  {
+   "name": "func_level_5_8007B4B0",
+   "vram": 2147988656,
+   "size": 476
+  },
+  {
+   "name": "func_level_5_8007B68C",
+   "vram": 2147989132,
+   "size": 6440
+  },
+  {
+   "name": "func_level_5_8007CFB4",
+   "vram": 2147995572,
+   "size": 21736
+  },
+  {
+   "name": "func_level_5_8008249C",
+   "vram": 2148017308,
+   "size": 3732
+  },
+  {
+   "name": "func_level_5_80083330",
+   "vram": 2148021040,
+   "size": 3576
+  },
+  {
+   "name": "func_level_5_80084128",
+   "vram": 2148024616,
+   "size": 3496
+  },
+  {
+   "name": "func_level_5_80084ED0",
+   "vram": 2148028112,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_5_8007B4B0",
+   "size": 8
+  },
+  {
+   "sym": "D_8007AA44",
+   "offset": 12,
+   "owner": "func_level_5_8007B4B0",
+   "size": 16
+  },
+  {
+   "sym": "D_8007AA54",
+   "offset": 28,
+   "owner": "func_level_5_8007B4B0",
+   "size": 8
+  },
+  {
+   "sym": "D_8007AA5C",
+   "offset": 36,
+   "owner": "func_level_5_8007B4B0",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA60",
+   "offset": 40,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AA6C",
+   "offset": 52,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA70",
+   "offset": 56,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA74",
+   "offset": 60,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AA80",
+   "offset": 72,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA84",
+   "offset": 76,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA88",
+   "offset": 80,
+   "owner": "func_level_5_8007B68C",
+   "size": 8
+  },
+  {
+   "sym": "D_8007AA90",
+   "offset": 88,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA94",
+   "offset": 92,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA98",
+   "offset": 96,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AA9C",
+   "offset": 100,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AAA8",
+   "offset": 112,
+   "owner": "func_level_5_8007B68C",
+   "size": 8
+  },
+  {
+   "sym": "D_8007AAB0",
+   "offset": 120,
+   "owner": "func_level_5_8007B68C",
+   "size": 20
+  },
+  {
+   "sym": "D_8007AAC4",
+   "offset": 140,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AAC8",
+   "offset": 144,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AAD4",
+   "offset": 156,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AAD8",
+   "offset": 160,
+   "owner": "func_level_5_8007B68C",
+   "size": 4
+  },
+  {
+   "sym": "D_8007AADC",
+   "offset": 164,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AAE8",
+   "offset": 176,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AAF4",
+   "offset": 188,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AB00",
+   "offset": 200,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "D_8007AB0C",
+   "offset": 212,
+   "owner": "func_level_5_8007B68C",
+   "size": 12
+  },
+  {
+   "sym": "jtbl_8007AB18",
+   "offset": 224,
+   "owner": "func_level_5_8007CFB4",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AB30",
+   "offset": 248,
+   "owner": "func_level_5_8007CFB4",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AB48",
+   "offset": 272,
+   "owner": "func_level_5_8007CFB4",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007AB68",
+   "offset": 304,
+   "owner": "func_level_5_80083330",
+   "size": 320
+  },
+  {
+   "sym": "jtbl_8007ACA8",
+   "offset": 624,
+   "owner": "func_level_5_80084128",
+   "size": 320
+  },
+  {
+   "sym": "jtbl_8007ADE8",
+   "offset": 944,
+   "owner": "func_level_5_80084128",
+   "size": 32
+  }
+ ]
+}

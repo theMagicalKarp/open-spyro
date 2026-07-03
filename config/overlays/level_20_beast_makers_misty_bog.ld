@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_20_beast_makers_misty_bog_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_20_beast_makers_misty_bog`). */
+        INCLUDE config/overlays/level_20_beast_makers_misty_bog.rodata_slots.ld
         build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata);
         build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.rodata);
         level_20_beast_makers_misty_bog_RODATA_END = .;
         level_20_beast_makers_misty_bog_RODATA_SIZE = ABSOLUTE(level_20_beast_makers_misty_bog_RODATA_END - level_20_beast_makers_misty_bog_RODATA_START);
         level_20_beast_makers_misty_bog_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_20_beast_makers_misty_bog`). */
+        INCLUDE config/overlays/level_20_beast_makers_misty_bog.slots.ld
         build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text);
         level_20_beast_makers_misty_bog_TEXT_END = .;
         level_20_beast_makers_misty_bog_TEXT_SIZE = ABSOLUTE(level_20_beast_makers_misty_bog_TEXT_END - level_20_beast_makers_misty_bog_TEXT_START);

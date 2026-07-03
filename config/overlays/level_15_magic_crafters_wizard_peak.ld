@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_15_magic_crafters_wizard_peak_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_15_magic_crafters_wizard_peak`). */
+        INCLUDE config/overlays/level_15_magic_crafters_wizard_peak.rodata_slots.ld
         build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata);
         build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.rodata);
         level_15_magic_crafters_wizard_peak_RODATA_END = .;
         level_15_magic_crafters_wizard_peak_RODATA_SIZE = ABSOLUTE(level_15_magic_crafters_wizard_peak_RODATA_END - level_15_magic_crafters_wizard_peak_RODATA_START);
         level_15_magic_crafters_wizard_peak_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_15_magic_crafters_wizard_peak`). */
+        INCLUDE config/overlays/level_15_magic_crafters_wizard_peak.slots.ld
         build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text);
         level_15_magic_crafters_wizard_peak_TEXT_END = .;
         level_15_magic_crafters_wizard_peak_TEXT_SIZE = ABSOLUTE(level_15_magic_crafters_wizard_peak_TEXT_END - level_15_magic_crafters_wizard_peak_TEXT_START);

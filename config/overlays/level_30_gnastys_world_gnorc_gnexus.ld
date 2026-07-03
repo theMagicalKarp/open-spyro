@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_30_gnastys_world_gnorc_gnexus_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_30_gnastys_world_gnorc_gnexus`). */
+        INCLUDE config/overlays/level_30_gnastys_world_gnorc_gnexus.rodata_slots.ld
         build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata);
         build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.rodata);
         level_30_gnastys_world_gnorc_gnexus_RODATA_END = .;
         level_30_gnastys_world_gnorc_gnexus_RODATA_SIZE = ABSOLUTE(level_30_gnastys_world_gnorc_gnexus_RODATA_END - level_30_gnastys_world_gnorc_gnexus_RODATA_START);
         level_30_gnastys_world_gnorc_gnexus_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_30_gnastys_world_gnorc_gnexus`). */
+        INCLUDE config/overlays/level_30_gnastys_world_gnorc_gnexus.slots.ld
         build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text);
         level_30_gnastys_world_gnorc_gnexus_TEXT_END = .;
         level_30_gnastys_world_gnorc_gnexus_TEXT_SIZE = ABSOLUTE(level_30_gnastys_world_gnorc_gnexus_TEXT_END - level_30_gnastys_world_gnorc_gnexus_TEXT_START);

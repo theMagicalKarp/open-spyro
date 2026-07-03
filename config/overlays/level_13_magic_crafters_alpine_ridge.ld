@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_13_magic_crafters_alpine_ridge_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_13_magic_crafters_alpine_ridge`). */
+        INCLUDE config/overlays/level_13_magic_crafters_alpine_ridge.rodata_slots.ld
         build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata);
         build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.rodata);
         level_13_magic_crafters_alpine_ridge_RODATA_END = .;
         level_13_magic_crafters_alpine_ridge_RODATA_SIZE = ABSOLUTE(level_13_magic_crafters_alpine_ridge_RODATA_END - level_13_magic_crafters_alpine_ridge_RODATA_START);
         level_13_magic_crafters_alpine_ridge_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_13_magic_crafters_alpine_ridge`). */
+        INCLUDE config/overlays/level_13_magic_crafters_alpine_ridge.slots.ld
         build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text);
         level_13_magic_crafters_alpine_ridge_TEXT_END = .;
         level_13_magic_crafters_alpine_ridge_TEXT_SIZE = ABSOLUTE(level_13_magic_crafters_alpine_ridge_TEXT_END - level_13_magic_crafters_alpine_ridge_TEXT_START);

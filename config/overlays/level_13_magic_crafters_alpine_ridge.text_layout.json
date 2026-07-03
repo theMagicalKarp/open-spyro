@@ -1,0 +1,133 @@
+{
+ "functions": [
+  {
+   "name": "func_level_13_8007BB00",
+   "vram": 2147990272,
+   "size": 59500
+  },
+  {
+   "name": "func_level_13_8008A36C",
+   "vram": 2148049772,
+   "size": 3048
+  },
+  {
+   "name": "func_level_13_8008AF54",
+   "vram": 2148052820,
+   "size": 6788
+  },
+  {
+   "name": "func_level_13_8008C9D8",
+   "vram": 2148059608,
+   "size": 5352
+  },
+  {
+   "name": "func_level_13_8008DEC0",
+   "vram": 2148064960,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_13_8007BB00",
+   "size": 1880
+  },
+  {
+   "sym": "jtbl_8007B194",
+   "offset": 1884,
+   "owner": "func_level_13_8007BB00",
+   "size": 248
+  },
+  {
+   "sym": "jtbl_8007B28C",
+   "offset": 2132,
+   "owner": "func_level_13_8007BB00",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2A4",
+   "offset": 2156,
+   "owner": "func_level_13_8007BB00",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2BC",
+   "offset": 2180,
+   "owner": "func_level_13_8007BB00",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B2DC",
+   "offset": 2212,
+   "owner": "func_level_13_8007BB00",
+   "size": 408
+  },
+  {
+   "sym": "jtbl_8007B474",
+   "offset": 2620,
+   "owner": "func_level_13_8007BB00",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B48C",
+   "offset": 2644,
+   "owner": "func_level_13_8007BB00",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B4AC",
+   "offset": 2676,
+   "owner": "func_level_13_8007BB00",
+   "size": 408
+  },
+  {
+   "sym": "jtbl_8007B644",
+   "offset": 3084,
+   "owner": "func_level_13_8007BB00",
+   "size": 48
+  },
+  {
+   "sym": "jtbl_8007B674",
+   "offset": 3132,
+   "owner": "func_level_13_8007BB00",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007B69C",
+   "offset": 3172,
+   "owner": "func_level_13_8007BB00",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007B6C4",
+   "offset": 3212,
+   "owner": "func_level_13_8007BB00",
+   "size": 400
+  },
+  {
+   "sym": "jtbl_8007B854",
+   "offset": 3612,
+   "owner": "func_level_13_8008AF54",
+   "size": 324
+  },
+  {
+   "sym": "jtbl_8007B998",
+   "offset": 3936,
+   "owner": "func_level_13_8008C9D8",
+   "size": 328
+  },
+  {
+   "sym": "jtbl_8007BAE0",
+   "offset": 4264,
+   "owner": "func_level_13_8008C9D8",
+   "size": 32
+  }
+ ]
+}

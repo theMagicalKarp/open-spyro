@@ -1,0 +1,9 @@
+// Function boundaries for the level_14_magic_crafters_high_caves overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_14_8007B64C = 0x8007B64C; // type:func size:0xD1F0 blob:True
+func_level_14_8008883C = 0x8008883C; // type:func size:0xC18
+func_level_14_80089454 = 0x80089454; // type:func size:0x1C5C
+func_level_14_8008B0B0 = 0x8008B0B0; // type:func size:0x168C
+func_level_14_8008C73C = 0x8008C73C; // type:func size:0x8

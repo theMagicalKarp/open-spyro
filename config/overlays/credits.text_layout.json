@@ -1,0 +1,33 @@
+{
+ "functions": [
+  {
+   "name": "func_credits_8007AA50",
+   "vram": 2147986000,
+   "size": 5504
+  },
+  {
+   "name": "func_credits_8007BFD0",
+   "vram": 2147991504,
+   "size": 872
+  },
+  {
+   "name": "func_credits_8007C338",
+   "vram": 2147992376,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_credits_8007AA50",
+   "size": 20
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+{
+ "functions": [
+  {
+   "name": "func_level_15_8007B7A8",
+   "vram": 2147989416,
+   "size": 46640
+  },
+  {
+   "name": "func_level_15_80086DD8",
+   "vram": 2148036056,
+   "size": 3432
+  },
+  {
+   "name": "func_level_15_80087B40",
+   "vram": 2148039488,
+   "size": 6416
+  },
+  {
+   "name": "func_level_15_80089450",
+   "vram": 2148045904,
+   "size": 5200
+  },
+  {
+   "name": "func_level_15_8008A8A0",
+   "vram": 2148051104,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_15_8007B7A8",
+   "size": 1880
+  },
+  {
+   "sym": "jtbl_8007B194",
+   "offset": 1884,
+   "owner": "func_level_15_8007B7A8",
+   "size": 248
+  },
+  {
+   "sym": "jtbl_8007B28C",
+   "offset": 2132,
+   "owner": "func_level_15_8007B7A8",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2A4",
+   "offset": 2156,
+   "owner": "func_level_15_8007B7A8",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007B2CC",
+   "offset": 2196,
+   "owner": "func_level_15_8007B7A8",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007B2E4",
+   "offset": 2220,
+   "owner": "func_level_15_8007B7A8",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B304",
+   "offset": 2252,
+   "owner": "func_level_15_8007B7A8",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B324",
+   "offset": 2284,
+   "owner": "func_level_15_8007B7A8",
+   "size": 400
+  },
+  {
+   "sym": "jtbl_8007B4B4",
+   "offset": 2684,
+   "owner": "func_level_15_8007B7A8",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007B4DC",
+   "offset": 2724,
+   "owner": "func_level_15_80087B40",
+   "size": 324
+  },
+  {
+   "sym": "jtbl_8007B620",
+   "offset": 3048,
+   "owner": "func_level_15_80089450",
+   "size": 328
+  },
+  {
+   "sym": "jtbl_8007B768",
+   "offset": 3376,
+   "owner": "func_level_15_80089450",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007B788",
+   "offset": 3408,
+   "owner": "func_level_15_80089450",
+   "size": 32
+  }
+ ]
+}

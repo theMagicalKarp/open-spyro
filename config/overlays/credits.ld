@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         credits_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay credits`). */
+        INCLUDE config/overlays/credits.rodata_slots.ld
         build/overlays/credits/asm/overlays/credits/data/rodata.rodata.o(.rodata);
         build/overlays/credits/asm/overlays/credits/text.o(.rodata);
         credits_RODATA_END = .;
         credits_RODATA_SIZE = ABSOLUTE(credits_RODATA_END - credits_RODATA_START);
         credits_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay credits`). */
+        INCLUDE config/overlays/credits.slots.ld
         build/overlays/credits/asm/overlays/credits/text.o(.text);
         credits_TEXT_END = .;
         credits_TEXT_SIZE = ABSOLUTE(credits_TEXT_END - credits_TEXT_START);

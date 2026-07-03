@@ -1,0 +1,9 @@
+// Function boundaries for the level_27_dream_weavers_haunted_towers overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_27_8007B510 = 0x8007B510; // type:func size:0xA3FC blob:True
+func_level_27_8008590C = 0x8008590C; // type:func size:0xE48
+func_level_27_80086754 = 0x80086754; // type:func size:0x1A84
+func_level_27_800881D8 = 0x800881D8; // type:func size:0x1648
+func_level_27_80089820 = 0x80089820; // type:func size:0x8

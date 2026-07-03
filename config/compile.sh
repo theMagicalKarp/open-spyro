@@ -7,7 +7,9 @@
 # match, so treat edits like a toolchain bump.
 #
 # Toolchain (locked):
-#   cc1      gcc 2.7.2, built from source into the Docker image (/opt/gcc2.7.2/cc1)
+#   cc1      gcc 2.7.2, the decompals/old-gcc prebuilt release binary baked into
+#            the Docker image (/opt/gcc2.7.2/cc1). Must be the prebuilt: a
+#            from-source rebuild diverges in stack-temp slot allocation
 #   maspsx   wrapper that massages cc1 asm output into aspsx-compatible form
 #   as/ld    GNU binutils for mips-linux-gnu (modern, from the Docker image)
 #
@@ -28,8 +30,12 @@ PYTHON="${PYTHON:-python3}"
 
 # --- locked flags -------------------------------------------------------------
 # Main EXE compiles with -G8; overlays override to -G0 (small-data threshold).
+# Overlay mode also drops -g3: the -g3 .L_LC line labels sit between a load and
+# its consumer and make maspsx drop required load-delay nops. The main EXE
+# keeps -g3 (its existing matches were made with it); overlay matching started
+# with no -g3, matching the original debug-info-free overlay builds.
 CC1_FLAGS="-O2 -G8 -g3 -fverbose-asm -mips1 -mcpu=3000 -fgnu-linker -mno-abicalls -mgpopt -msoft-float -quiet -funsigned-char"
-CC1_FLAGS_OVL="-O2 -G0 -g3 -fverbose-asm -mips1 -mcpu=3000 -fgnu-linker -mno-abicalls -mgpopt -msoft-float -quiet -funsigned-char"
+CC1_FLAGS_OVL="-O2 -G0 -fverbose-asm -mips1 -mcpu=3000 -fgnu-linker -mno-abicalls -mgpopt -msoft-float -quiet -funsigned-char"
 
 MASPSX_FLAGS="--aspsx-version 2.56 -G4 --expand-div"
 MASPSX_FLAGS_OVL="--aspsx-version 2.56 -G0 --expand-div"

@@ -1,0 +1,9 @@
+// Function boundaries for the level_34_gnastys_world_gnastys_loot overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_34_8007AD4C = 0x8007AD4C; // type:func size:0x8944 blob:True
+func_level_34_80083690 = 0x80083690; // type:func size:0xA6C
+func_level_34_800840FC = 0x800840FC; // type:func size:0x1134
+func_level_34_80085230 = 0x80085230; // type:func size:0x1034
+func_level_34_80086264 = 0x80086264; // type:func size:0x8

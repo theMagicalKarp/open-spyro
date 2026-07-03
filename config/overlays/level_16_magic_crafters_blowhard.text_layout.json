@@ -1,0 +1,97 @@
+{
+ "functions": [
+  {
+   "name": "func_level_16_8007AF28",
+   "vram": 2147987240,
+   "size": 35724
+  },
+  {
+   "name": "func_level_16_80083AB4",
+   "vram": 2148022964,
+   "size": 3452
+  },
+  {
+   "name": "func_level_16_80084830",
+   "vram": 2148026416,
+   "size": 5904
+  },
+  {
+   "name": "func_level_16_80085F40",
+   "vram": 2148032320,
+   "size": 5468
+  },
+  {
+   "name": "func_level_16_8008749C",
+   "vram": 2148037788,
+   "size": 8
+  }
+ ],
+ "rodata": [
+  {
+   "sym": "D_8007AA38",
+   "offset": 0,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "jtbl_8007AA3C",
+   "offset": 4,
+   "owner": "func_level_16_8007AF28",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AA54",
+   "offset": 28,
+   "owner": "func_level_16_8007AF28",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AA6C",
+   "offset": 52,
+   "owner": "func_level_16_8007AF28",
+   "size": 24
+  },
+  {
+   "sym": "jtbl_8007AA84",
+   "offset": 76,
+   "owner": "func_level_16_8007AF28",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007AAA4",
+   "offset": 108,
+   "owner": "func_level_16_8007AF28",
+   "size": 40
+  },
+  {
+   "sym": "jtbl_8007AACC",
+   "offset": 148,
+   "owner": "func_level_16_8007AF28",
+   "size": 400
+  },
+  {
+   "sym": "jtbl_8007AC5C",
+   "offset": 548,
+   "owner": "func_level_16_80084830",
+   "size": 324
+  },
+  {
+   "sym": "jtbl_8007ADA0",
+   "offset": 872,
+   "owner": "func_level_16_80085F40",
+   "size": 328
+  },
+  {
+   "sym": "jtbl_8007AEE8",
+   "offset": 1200,
+   "owner": "func_level_16_80085F40",
+   "size": 32
+  },
+  {
+   "sym": "jtbl_8007AF08",
+   "offset": 1232,
+   "owner": "func_level_16_80085F40",
+   "size": 32
+  }
+ ]
+}

@@ -23,7 +23,7 @@ set -euo pipefail
 # Bump deliberately — a toolchain change can break every prior byte-match.
 # gcc 2.7.2 cc1 is built from source in the Docker image (tools/Dockerfile) from
 # this pinned commit of the decompals/mips-gcc-2.7.2 tree. Proven codegen-
-# equivalent to the historical community build via the step-02 spike.
+# equivalent via the earliest toolchain spike.
 GCC272_SRC_URL="https://github.com/decompals/mips-gcc-2.7.2.git"
 GCC272_SRC_SHA="e6271f14b095d7d8b2638c2b5e07d0d5cd05bc14"
 

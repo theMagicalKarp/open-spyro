@@ -1,0 +1,9 @@
+// Function boundaries for the level_19_beast_makers_terrace_village overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_19_8007B5DC = 0x8007B5DC; // type:func size:0x9080 blob:True
+func_level_19_8008465C = 0x8008465C; // type:func size:0xD50
+func_level_19_800853AC = 0x800853AC; // type:func size:0x132C
+func_level_19_800866D8 = 0x800866D8; // type:func size:0x126C
+func_level_19_80087944 = 0x80087944; // type:func size:0x8

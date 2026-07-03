@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_11_peace_keepers_night_flight_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_11_peace_keepers_night_flight`). */
+        INCLUDE config/overlays/level_11_peace_keepers_night_flight.rodata_slots.ld
         build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata);
         build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.rodata);
         level_11_peace_keepers_night_flight_RODATA_END = .;
         level_11_peace_keepers_night_flight_RODATA_SIZE = ABSOLUTE(level_11_peace_keepers_night_flight_RODATA_END - level_11_peace_keepers_night_flight_RODATA_START);
         level_11_peace_keepers_night_flight_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_11_peace_keepers_night_flight`). */
+        INCLUDE config/overlays/level_11_peace_keepers_night_flight.slots.ld
         build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text);
         level_11_peace_keepers_night_flight_TEXT_END = .;
         level_11_peace_keepers_night_flight_TEXT_SIZE = ABSOLUTE(level_11_peace_keepers_night_flight_TEXT_END - level_11_peace_keepers_night_flight_TEXT_START);

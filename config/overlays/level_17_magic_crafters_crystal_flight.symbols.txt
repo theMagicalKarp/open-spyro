@@ -1,0 +1,14 @@
+// Function boundaries for the level_17_magic_crafters_crystal_flight overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Blocks >= 0x4000 are `blob:True` — the per-level moby mega-blobs, excluded
+// from the headline match % (tracked separately; see PROGRESS.md).
+func_level_17_8007AE08 = 0x8007AE08; // type:func size:0xD4
+func_level_17_8007AEDC = 0x8007AEDC; // type:func size:0x320
+func_level_17_8007B1FC = 0x8007B1FC; // type:func size:0x2B4
+func_level_17_8007B4B0 = 0x8007B4B0; // type:func size:0x1DC
+func_level_17_8007B68C = 0x8007B68C; // type:func size:0x1928
+func_level_17_8007CFB4 = 0x8007CFB4; // type:func size:0x4F58 blob:True
+func_level_17_80081F0C = 0x80081F0C; // type:func size:0xB94
+func_level_17_80082AA0 = 0x80082AA0; // type:func size:0xC58
+func_level_17_800836F8 = 0x800836F8; // type:func size:0xC98
+func_level_17_80084390 = 0x80084390; // type:func size:0x8

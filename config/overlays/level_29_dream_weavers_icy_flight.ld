@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_29_dream_weavers_icy_flight_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_29_dream_weavers_icy_flight`). */
+        INCLUDE config/overlays/level_29_dream_weavers_icy_flight.rodata_slots.ld
         build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata);
         build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.rodata);
         level_29_dream_weavers_icy_flight_RODATA_END = .;
         level_29_dream_weavers_icy_flight_RODATA_SIZE = ABSOLUTE(level_29_dream_weavers_icy_flight_RODATA_END - level_29_dream_weavers_icy_flight_RODATA_START);
         level_29_dream_weavers_icy_flight_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_29_dream_weavers_icy_flight`). */
+        INCLUDE config/overlays/level_29_dream_weavers_icy_flight.slots.ld
         build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text);
         level_29_dream_weavers_icy_flight_TEXT_END = .;
         level_29_dream_weavers_icy_flight_TEXT_SIZE = ABSOLUTE(level_29_dream_weavers_icy_flight_TEXT_END - level_29_dream_weavers_icy_flight_TEXT_START);

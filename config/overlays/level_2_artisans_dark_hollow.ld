@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_2_artisans_dark_hollow_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_2_artisans_dark_hollow`). */
+        INCLUDE config/overlays/level_2_artisans_dark_hollow.rodata_slots.ld
         build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata);
         build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.rodata);
         level_2_artisans_dark_hollow_RODATA_END = .;
         level_2_artisans_dark_hollow_RODATA_SIZE = ABSOLUTE(level_2_artisans_dark_hollow_RODATA_END - level_2_artisans_dark_hollow_RODATA_START);
         level_2_artisans_dark_hollow_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_2_artisans_dark_hollow`). */
+        INCLUDE config/overlays/level_2_artisans_dark_hollow.slots.ld
         build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text);
         level_2_artisans_dark_hollow_TEXT_END = .;
         level_2_artisans_dark_hollow_TEXT_SIZE = ABSOLUTE(level_2_artisans_dark_hollow_TEXT_END - level_2_artisans_dark_hollow_TEXT_START);

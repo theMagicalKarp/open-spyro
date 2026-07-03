@@ -43,7 +43,7 @@ options:
   ld_script_path: config/overlays/{name}.ld
   undefined_syms_auto_path: config/overlays/{name}.undefined_syms.auto.txt
   undefined_funcs_auto_path: config/overlays/{name}.undefined_funcs.auto.txt
-  find_file_boundaries: False
+{symbol_addrs}  find_file_boundaries: False
   o_as_suffix: True
   use_legacy_include_asm: False
   ld_align_section_vram_end: False
@@ -82,6 +82,18 @@ def run() -> None:
     written: list[str] = []
     for r in data["overlays"]:
         path = out_dir / f"{r['name']}.yaml"
-        path.write_text(TEMPLATE.format(**r))
+        # Overlays that have been function/data-split carry a committed
+        # symbols seed; point splat at it so functions come out named + boundary-true.
+        # (Main-EXE cross-references stay D_/func_ autolabels: splat ignores seeded
+        # symbols outside the overlay segment, so seeding config/symbol_addrs.txt
+        # here has no effect.) Overlays without a seed stay coarse `func_xxxxxxxx`
+        # blobs (and stay `unsplit` in the progress metric).
+        symbols = out_dir / f"{r['name']}.symbols.txt"
+        symbol_addrs = (
+            f"  symbol_addrs_path:\n    - config/overlays/{r['name']}.symbols.txt\n"
+            if symbols.exists()
+            else ""
+        )
+        path.write_text(TEMPLATE.format(**r, symbol_addrs=symbol_addrs))
         written.append(path.name)
     print(f"gen_overlay_yaml: wrote {len(written)} configs -> {out_dir.relative_to(repo)}/")

@@ -1,0 +1,8 @@
+// Function boundaries for the titlescreen overlay.
+// Block starts are splat's own autodetection over the compiled .text region.
+// Having >=1 type:func here is what graduates this overlay out of `unsplit`.
+func_titlescreen_8007AAD4 = 0x8007AAD4; // type:func size:0xD8
+func_titlescreen_8007ABAC = 0x8007ABAC; // type:func size:0x218C
+func_titlescreen_8007CD38 = 0x8007CD38; // type:func size:0x1AC
+func_titlescreen_8007CEE4 = 0x8007CEE4; // type:func size:0xF04
+func_titlescreen_8007DDE8 = 0x8007DDE8; // type:func size:0x8

@@ -7,11 +7,15 @@ SECTIONS
     {
         FILL(0x00000000);
         level_28_dream_weavers_jacques_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld --overlay level_28_dream_weavers_jacques`). */
+        INCLUDE config/overlays/level_28_dream_weavers_jacques.rodata_slots.ld
         build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata);
         build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.rodata);
         level_28_dream_weavers_jacques_RODATA_END = .;
         level_28_dream_weavers_jacques_RODATA_SIZE = ABSOLUTE(level_28_dream_weavers_jacques_RODATA_END - level_28_dream_weavers_jacques_RODATA_START);
         level_28_dream_weavers_jacques_TEXT_START = .;
+        /* Per-function fixed-VMA text slots (`open-spyro gen-slots-ld --overlay level_28_dream_weavers_jacques`). */
+        INCLUDE config/overlays/level_28_dream_weavers_jacques.slots.ld
         build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text);
         level_28_dream_weavers_jacques_TEXT_END = .;
         level_28_dream_weavers_jacques_TEXT_SIZE = ABSOLUTE(level_28_dream_weavers_jacques_TEXT_END - level_28_dream_weavers_jacques_TEXT_START);
