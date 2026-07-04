@@ -776,10 +776,10 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800688f0` | _card_load | main | 12 | asm | lib |
 | `0x80068900` | _card_write | main | 12 | asm | lib |
 | `0x80068910` | _new_card | main | 12 | asm | lib |
-| `0x80068920` | MemCardFormatBlocks | main | 56 | asm | lib |
-| `0x80068958` | MemCardInitCard | main | 88 | asm | lib |
-| `0x800689b0` | MemCardStartCard | main | 56 | asm | lib |
-| `0x800689e8` | func_800689E8 | main | 40 | asm | lib |
+| `0x80068920` | MemCardFormatBlocks | main | 56 | matched | lib |
+| `0x80068958` | MemCardInitCard | main | 88 | matched | lib |
+| `0x800689b0` | MemCardStartCard | main | 56 | matched | lib |
+| `0x800689e8` | func_800689E8 | main | 40 | matched | lib |
 | `0x80068a10` | SetInitPadFlag | main | 12 | asm | lib |
 | `0x80068a1c` | ReadInitPadFlag | main | 16 | asm | lib |
 | `0x80068a2c` | PAD_init | main | 144 | asm | lib |
