@@ -1382,6 +1382,7 @@ g_anPadSubstepRing = 0x800773bc; // size:0x60
 g_anLevelGemsCollected = 0x80077420; // size:0x90
 g_nCurrentMusicTrack = 0x800774b0; // size:0x4
 g_dwMusicStreamStatus = 0x800774b4; // size:0x4
+g_anMusicStreamBlock = 0x800774b4; // allow_duplicated:True alias block — shared-base view (+0 status word, +0x21C CdMix attenuator buffer)
 g_anMusicTrackLbaTable = 0x800774b8; // size:0x100
 g_dwCdMusicReadHead = 0x800776b8; // size:0x4
 g_nLastCdMusicCommand = 0x800776c4; // size:0x4
