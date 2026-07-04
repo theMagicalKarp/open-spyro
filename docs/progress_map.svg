@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.02% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">22,112 / 2,159,608 split-code bytes · 229 matched · 0 raw bytes (excluded)</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.07% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">23,024 / 2,159,608 split-code bytes · 236 matched · 0 raw bytes (excluded)</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
 <rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
@@ -261,7 +261,7 @@
 <rect x="142.94" y="677.57" width="11.79" height="12.05" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitActorTriangle  ·  260 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="689.62" width="11.79" height="12.05" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitFogShadedActorTriangle  ·  260 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="701.67" width="11.79" height="12.05" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>PutDrawEnv  ·  260 bytes  ·  asm</title></rect>
-<rect x="142.94" y="713.72" width="11.79" height="12.05" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdIntToPos  ·  260 bytes  ·  asm</title></rect>
+<rect x="142.94" y="713.72" width="11.79" height="12.05" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdIntToPos  ·  260 bytes  ·  matched</title></rect>
 <rect x="142.94" y="725.77" width="11.79" height="12.05" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdRead  ·  260 bytes  ·  asm</title></rect>
 <rect x="142.94" y="737.82" width="11.79" height="11.86" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ProbeSpyroLedgeForward  ·  256 bytes  ·  asm</title></rect>
 <rect x="142.94" y="749.69" width="11.79" height="11.86" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildRenderEntityLists  ·  256 bytes  ·  handwritten</title></rect>
@@ -426,8 +426,8 @@
 <rect x="204.41" y="715.79" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildTextureWindow  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="724.24" width="8.54" height="8.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80037F10  ·  128 bytes  ·  matched</title></rect>
 <rect x="204.41" y="732.44" width="8.54" height="8.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitGeom  ·  128 bytes  ·  asm</title></rect>
-<rect x="204.41" y="740.63" width="8.54" height="8.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80063B58  ·  128 bytes  ·  asm</title></rect>
-<rect x="204.41" y="748.83" width="8.54" height="8.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdPosToInt  ·  128 bytes  ·  asm</title></rect>
+<rect x="204.41" y="740.63" width="8.54" height="8.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80063B58  ·  128 bytes  ·  matched</title></rect>
+<rect x="204.41" y="748.83" width="8.54" height="8.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdPosToInt  ·  128 bytes  ·  matched</title></rect>
 <rect x="204.41" y="757.02" width="8.54" height="8.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>RegisterMemCardEvent  ·  128 bytes  ·  library</title></rect>
 <rect x="204.41" y="765.22" width="8.54" height="8.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInfoAct  ·  128 bytes  ·  library</title></rect>
 <rect x="212.95" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800385BC  ·  124 bytes  ·  matched</title></rect>
@@ -441,7 +441,7 @@
 <rect x="276.64" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GetSoundVoiceStatusByOwner  ·  120 bytes  ·  matched</title></rect>
 <rect x="284.47" y="664.31" width="7.83" height="8.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80058AE8  ·  120 bytes  ·  asm</title></rect>
 <rect x="292.30" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E560  ·  120 bytes  ·  matched</title></rect>
-<rect x="300.14" y="664.31" width="7.83" height="8.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80063A14  ·  120 bytes  ·  asm</title></rect>
+<rect x="300.14" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80063A14  ·  120 bytes  ·  matched</title></rect>
 <rect x="307.97" y="664.31" width="7.83" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_OBJ_1A4  ·  120 bytes  ·  library</title></rect>
 <rect x="212.95" y="672.69" width="8.03" height="7.89" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017188  ·  116 bytes  ·  handwritten</title></rect>
 <rect x="212.95" y="680.58" width="8.03" height="7.89" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LerpVectorGTE  ·  116 bytes  ·  handwritten</title></rect>
@@ -462,9 +462,9 @@
 <rect x="244.98" y="672.69" width="8.00" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005F040  ·  108 bytes  ·  matched</title></rect>
 <rect x="252.98" y="672.69" width="8.00" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawSync  ·  108 bytes  ·  matched</title></rect>
 <rect x="260.98" y="672.69" width="8.00" height="7.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>memmove  ·  108 bytes  ·  asm</title></rect>
-<rect x="268.98" y="672.69" width="8.00" height="7.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdReset  ·  108 bytes  ·  asm</title></rect>
+<rect x="268.98" y="672.69" width="8.00" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReset  ·  108 bytes  ·  matched</title></rect>
 <rect x="276.98" y="672.69" width="8.00" height="7.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PopMemCardEventHandler  ·  108 bytes  ·  library</title></rect>
-<rect x="284.98" y="672.69" width="7.70" height="7.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>RelocateLevelSampleBank  ·  104 bytes  ·  asm</title></rect>
+<rect x="284.98" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateLevelSampleBank  ·  104 bytes  ·  matched</title></rect>
 <rect x="292.69" y="672.69" width="7.70" height="7.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8002B444  ·  104 bytes  ·  handwritten</title></rect>
 <rect x="300.39" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8002BAB8  ·  104 bytes  ·  matched</title></rect>
 <rect x="308.09" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800381E8  ·  104 bytes  ·  matched</title></rect>
@@ -559,7 +559,7 @@
 <rect x="292.10" y="700.72" width="6.20" height="6.00" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_800698e8  ·  68 bytes  ·  library</title></rect>
 <rect x="298.30" y="700.72" width="5.83" height="6.00" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017854  ·  64 bytes  ·  handwritten</title></rect>
 <rect x="304.13" y="700.72" width="5.83" height="6.00" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetWorldParticleTables  ·  64 bytes  ·  matched</title></rect>
-<rect x="309.97" y="700.72" width="5.83" height="6.00" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>SetSpuVoiceVolumeLR  ·  64 bytes  ·  asm</title></rect>
+<rect x="309.97" y="700.72" width="5.83" height="6.00" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetSpuVoiceVolumeLR  ·  64 bytes  ·  matched</title></rect>
 <rect x="248.73" y="706.71" width="6.03" height="5.80" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DumpClut  ·  64 bytes  ·  matched</title></rect>
 <rect x="248.73" y="712.51" width="6.03" height="5.80" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardCloseSession  ·  64 bytes  ·  matched</title></rect>
 <rect x="248.73" y="718.31" width="6.03" height="5.80" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FIRST_OBJ_25C  ·  64 bytes  ·  library</title></rect>
