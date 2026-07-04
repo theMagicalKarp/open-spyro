@@ -1042,6 +1042,7 @@ g_pfnGpuDebugPrintf = 0x80074a60; // size:0x4
 g_bGpuDebugType = 0x80074a64; // size:0x1
 g_bGpuQueueModeActive = 0x80074a65; // size:0x1
 g_bGpuDebugLevel = 0x80074a66; // size:0x1
+g_abGpuDebugStateBlock = 0x80074a66; // alias of g_bGpuDebugLevel: shared-base block (PutDispEnv cache at +0x6a)
 g_bGpuReverseFlag = 0x80074a67; // size:0x1
 g_nGpuScreenWidth = 0x80074a68; // size:0x2
 g_nGpuScreenHeight = 0x80074a6a; // size:0x2
