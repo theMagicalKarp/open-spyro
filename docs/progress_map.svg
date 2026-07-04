@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.07% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">23,024 / 2,159,608 split-code bytes · 236 matched · 0 raw bytes (excluded)</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.09% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">23,592 / 2,159,608 split-code bytes · 244 matched · 0 raw bytes (excluded)</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
 <rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
@@ -376,7 +376,7 @@
 <rect x="186.19" y="728.66" width="9.43" height="9.04" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005F98C  ·  156 bytes  ·  asm</title></rect>
 <rect x="186.19" y="737.70" width="9.43" height="9.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80065FD0  ·  156 bytes  ·  matched</title></rect>
 <rect x="186.19" y="746.75" width="9.43" height="9.04" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_34  ·  156 bytes  ·  library</title></rect>
-<rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  asm</title></rect>
+<rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  matched</title></rect>
 <rect x="186.19" y="764.60" width="9.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildAudioTrackTable  ·  152 bytes  ·  asm</title></rect>
 <rect x="195.62" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>VectorLength  ·  152 bytes  ·  handwritten</title></rect>
 <rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8003A9EC  ·  152 bytes  ·  asm</title></rect>
@@ -400,13 +400,13 @@
 <rect x="195.62" y="710.72" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80032A20  ·  144 bytes  ·  asm</title></rect>
 <rect x="195.62" y="719.68" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildSpyroVelocityFromBodyEuler  ·  144 bytes  ·  asm</title></rect>
 <rect x="195.62" y="728.64" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimLayer2Frame  ·  144 bytes  ·  asm</title></rect>
-<rect x="195.62" y="737.59" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>TickSpuPerFrame  ·  144 bytes  ·  asm</title></rect>
+<rect x="195.62" y="737.59" width="8.79" height="8.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpuPerFrame  ·  144 bytes  ·  matched</title></rect>
 <rect x="195.62" y="746.55" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005D628  ·  144 bytes  ·  asm</title></rect>
 <rect x="195.62" y="755.50" width="8.79" height="8.96" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FIRST_OBJ_D0  ·  144 bytes  ·  library</title></rect>
 <rect x="195.62" y="764.46" width="8.79" height="8.96" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_init  ·  144 bytes  ·  library</title></rect>
 <rect x="204.41" y="655.50" width="8.93" height="8.81" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InitPAD  ·  144 bytes  ·  library</title></rect>
 <rect x="213.34" y="655.50" width="8.93" height="8.81" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8006a014  ·  144 bytes  ·  library</title></rect>
-<rect x="222.27" y="655.50" width="8.68" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitCdSystem  ·  140 bytes  ·  asm</title></rect>
+<rect x="222.27" y="655.50" width="8.68" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitCdSystem  ·  140 bytes  ·  matched</title></rect>
 <rect x="230.95" y="655.50" width="8.68" height="8.81" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ScaleVector3Shifted  ·  140 bytes  ·  handwritten</title></rect>
 <rect x="239.64" y="655.50" width="8.68" height="8.81" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ConvertRGB15ToLuma8  ·  140 bytes  ·  handwritten</title></rect>
 <rect x="248.32" y="655.50" width="8.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>main  ·  136 bytes  ·  asm</title></rect>
@@ -422,7 +422,7 @@
 <rect x="204.41" y="681.73" width="8.54" height="8.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FUN_80065108  ·  136 bytes  ·  matched</title></rect>
 <rect x="204.41" y="690.43" width="8.54" height="8.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CameraSettle_Update  ·  132 bytes  ·  asm</title></rect>
 <rect x="204.41" y="698.89" width="8.54" height="8.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8003B0DC  ·  132 bytes  ·  asm</title></rect>
-<rect x="204.41" y="707.34" width="8.54" height="8.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8006057C  ·  132 bytes  ·  asm</title></rect>
+<rect x="204.41" y="707.34" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8006057C  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="715.79" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildTextureWindow  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="724.24" width="8.54" height="8.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80037F10  ·  128 bytes  ·  matched</title></rect>
 <rect x="204.41" y="732.44" width="8.54" height="8.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitGeom  ·  128 bytes  ·  asm</title></rect>
@@ -521,7 +521,7 @@
 <rect x="235.62" y="716.26" width="6.58" height="7.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetDrawMode  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="723.57" width="6.58" height="7.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildDrawModeWord  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="730.88" width="6.58" height="7.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MapMemCardAccessCode  ·  88 bytes  ·  matched</title></rect>
-<rect x="235.62" y="738.19" width="6.58" height="7.31" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardInitCard  ·  88 bytes  ·  library</title></rect>
+<rect x="235.62" y="738.19" width="6.58" height="7.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardInitCard  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="745.50" width="6.58" height="7.31" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_4A8  ·  88 bytes  ·  library</title></rect>
 <rect x="235.62" y="752.81" width="6.58" height="6.98" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CopyWords  ·  84 bytes  ·  asm</title></rect>
 <rect x="235.62" y="759.79" width="6.58" height="6.98" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapshotPadInputState  ·  84 bytes  ·  matched</title></rect>
@@ -586,8 +586,8 @@
 <rect x="254.76" y="712.45" width="5.49" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005FFF8  ·  56 bytes  ·  matched</title></rect>
 <rect x="254.76" y="718.02" width="5.49" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800604D8  ·  56 bytes  ·  matched</title></rect>
 <rect x="254.76" y="723.60" width="5.49" height="5.58" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>g_anGteExceptionVectorStub  ·  56 bytes  ·  handwritten</title></rect>
-<rect x="254.76" y="729.18" width="5.49" height="5.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardFormatBlocks  ·  56 bytes  ·  library</title></rect>
-<rect x="254.76" y="734.76" width="5.49" height="5.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardStartCard  ·  56 bytes  ·  library</title></rect>
+<rect x="254.76" y="729.18" width="5.49" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardFormatBlocks  ·  56 bytes  ·  matched</title></rect>
+<rect x="254.76" y="734.76" width="5.49" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardStartCard  ·  56 bytes  ·  matched</title></rect>
 <rect x="254.76" y="740.34" width="5.49" height="5.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>StopPAD  ·  56 bytes  ·  library</title></rect>
 <rect x="254.76" y="745.92" width="5.49" height="5.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_OBJ_21C  ·  56 bytes  ·  library</title></rect>
 <rect x="254.76" y="751.50" width="5.49" height="5.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadSetActAlign  ·  56 bytes  ·  library</title></rect>
@@ -641,7 +641,7 @@
 <rect x="279.19" y="722.72" width="4.58" height="4.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005EDB8  ·  40 bytes  ·  matched</title></rect>
 <rect x="283.77" y="722.72" width="4.58" height="4.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WriteGpuControl  ·  40 bytes  ·  matched</title></rect>
 <rect x="288.34" y="722.72" width="4.58" height="4.78" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>MEMCHR_OBJ_20  ·  40 bytes  ·  asm</title></rect>
-<rect x="292.92" y="722.72" width="4.58" height="4.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_800689E8  ·  40 bytes  ·  library</title></rect>
+<rect x="292.92" y="722.72" width="4.58" height="4.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800689E8  ·  40 bytes  ·  matched</title></rect>
 <rect x="297.49" y="722.72" width="4.58" height="4.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8006a0a4  ·  40 bytes  ·  library</title></rect>
 <rect x="302.07" y="722.72" width="4.58" height="4.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>bzero  ·  40 bytes  ·  library</title></rect>
 <rect x="306.65" y="722.72" width="4.58" height="4.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_D0  ·  40 bytes  ·  library</title></rect>
