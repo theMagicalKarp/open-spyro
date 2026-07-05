@@ -113,10 +113,17 @@ def run_overlay(name: str) -> None:
     for p in pieces:
         if p["offset"] is None:
             continue
+        owner = p.get("owner")
+        # A flipped function that owns several contiguous rodata pieces emits them
+        # all from its single .rodata blob, placed at the FIRST owned piece slot.
+        # The later pieces are subsumed by that blob — skip their `. =` anchor (it
+        # would move the location counter backwards, ld error) and their now-empty
+        # asm piece.
+        if owner in have_c and owner in placed_ro:
+            continue
         ro_lines.append(f"    . = 0x{p['offset']:08x} ;")
         ro_lines.append(f"    {obj_base}/data/rodata.rodata.o(.rodata.{p['sym']})")
-        owner = p.get("owner")
-        if owner in have_c and owner not in placed_ro:
+        if owner in have_c:
             ro_lines.append(f"    build/overlays/{name}/c/{owner}.o(.rodata)")
             placed_ro.add(owner)
     ro_out = repo / "config/overlays" / f"{name}.rodata_slots.ld"

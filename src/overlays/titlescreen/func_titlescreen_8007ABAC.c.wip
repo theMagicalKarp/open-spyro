@@ -10,7 +10,25 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * Verified byte-identical inside the relinked titlescreen.ovl.
+ * STATUS: 99.7% (2140/2147 insns). The old rodata-packing blocker is SOLVED —
+ * gen_slots_ld now skips the subsumed later pieces owned by a flipped function
+ * (the single C .rodata blob covers the string + jtbl contiguously), so the
+ * override links cleanly. Sole residue: a 7-insn register-allocation tie at the
+ * func_80016698 CD-kickoff call (line ~81). The original materializes the
+ * -0x40000 constant into arg reg a1 and keeps the D_800785E8 pointer in a temp
+ * v0 (`addu a1,v0,a1`); our gcc allocates the pointer to a1 and the constant to
+ * v0 (`addu a1,a1,v0`). Root cause: the 5th (stack) arg 600 occupies v0, is
+ * stored, and v0 is recycled — the original reuses it for the LATE-loaded
+ * pointer; our gcc reuses it for the const. Every source form tried (temp hoist,
+ * array-index, int-cast, constant-first `-0x40000 + p`, pointer-const base,
+ * variable offset, named 5th arg, precomputed a0/a3 temps, moved state store,
+ * shared size var) canonicalizes to the identical output. A `register char *bp
+ * asm("$2")` pin fixes the addu but forces an early pointer load -> 9 diffs (net
+ * worse). Permuter: full infra built under build/perm/func_titlescreen_8007ABAC
+ * (persistent-container compile/objdump shims, single-fn asm-built target.o,
+ * base score 3195), ran ~39000 iterations (overnight, -j8) with ZERO sub-floor
+ * results — the randomizer's transform space does not reach this v0-reuse flip.
+ * Genuine permuter-or-never wall; the rest of the function is byte-identical.
  */
 
 #include "titlescreen.h"
