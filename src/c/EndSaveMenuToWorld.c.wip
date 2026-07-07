@@ -1,0 +1,53 @@
+#include "globals.h"
+
+/* Leave the save/load menu back into the world (0x8002d02c, gamestate 0):
+   unblock gameplay, rebuild light constants, zero Spyro's swing-euler target
+   and reset him, re-seed the swing-euler defaults and pad-snapshot countdown,
+   point the camera anchor 0x1A4 below the swing target block, retarget the
+   dynamic camera params (yaw re-biased to Spyro's body yaw, wrapped to 12
+   bits), restore the flame-breath timer, reset the camera and HUD (all five
+   counters hidden), and re-issue the current music track (command 8). */
+extern void InitLightVectorConstants(void);
+extern void ZeroVector();
+extern void ResetSpyroEntity(int param);
+extern void ComputeCameraToTargetAngle(void *params);
+extern void CopyWords(void *dst, void *src, int count);
+extern void ResetCameraStateToTarget(void);
+extern void InitHudCounters(int mode);
+extern void HandleMusicCommand(int track, int cmd);
+extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
+extern int g_anSpyroSwingTargetBlock[]; /* alias of g_nSpyroSwingEulerPitchTarget */
+
+void EndSaveMenuToWorld(void) {
+  int **cam;
+  int *dyn;
+  int timer;
+  g_nGamestate = 0;
+  g_nGameplayBlocked = 0;
+  InitLightVectorConstants();
+  ZeroVector(g_anSpyroSwingTargetBlock);
+  ResetSpyroEntity(1);
+  cam = g_apCameraAnchorBlock;
+  g_anSpyroSwingEulerPrev[1] = 0x100;
+  g_abSpyroSwingByteEuler[1] = 0x10;
+  g_nSpyroPadSnapshotCountdown = 8;
+  timer = g_nSpyroFlameBreathTimerSave;
+  cam[0] = &g_anSpyroSwingTargetBlock[-105];
+  dyn = g_anCameraDynamicTargetParams;
+  g_nCameraCurrentMode = 0;
+  g_nCameraNextMode = 0;
+  g_pCameraTargetParams = dyn;
+  g_nSpyroFlameBreathTimer = timer;
+  g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+  ComputeCameraToTargetAngle((char *)cam - 0xA8);
+  CopyWords(dyn, (char *)cam - 0x40, 0x18);
+  dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+  ResetCameraStateToTarget();
+  InitHudCounters(0);
+  g_abHudCounterDisplayState[0] = 0;
+  g_abHudCounterDisplayState[1] = 0;
+  g_abHudCounterDisplayState[2] = 0;
+  g_abHudCounterDisplayState[3] = 0;
+  g_abHudCounterDisplayState[4] = 0;
+  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+}
