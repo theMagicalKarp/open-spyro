@@ -1588,6 +1588,7 @@ g_nSaveMenuXOffset = 0x80078d10; // size:0x4
 g_nSaveSlotSelected = 0x80078d18; // size:0x4
 g_nGamestate0dMode = 0x80078d78; // allow_duplicated:True size:0x4
 g_anGamestate0dBlock = 0x80078d78; // allow_duplicated:True size:0x48
+D_80078DA8 = 0x80078da8; // allow_duplicated:True alias — memcard sync ring array (index D_80078DA4, entries [4]/[5] used by func_80032A20)
 g_nStoryIntroSubstate = 0x80078d7c; // size:0x4
 g_nStoryIntroTimer = 0x80078d80; // size:0x4
 g_nStoryIntroMessage = 0x80078d94; // size:0x4
