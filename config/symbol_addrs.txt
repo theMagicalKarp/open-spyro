@@ -1251,6 +1251,7 @@ g_nLevelSampleBankCount = 0x80076234; // size:0x4
 g_dwSpuPendingKeyOn = 0x80076238; // size:0x4
 g_anSpuPendingKeyOnBlock = 0x80076238; // allow_duplicated:True alias block — shared-base view for the per-frame flush
 g_dwSpuPendingKeyOff = 0x8007623c; // size:0x4
+g_anSpuPendingKeyOffBlock = 0x8007623c; // allow_duplicated:True alias block — shared-base view for the key-off RMW
 g_nSoundMonoMixFlag = 0x80076240; // size:0x4
 g_nGemPickupAuraStarEnabled = 0x80076248; // size:0x4
 g_anGemPickupAuraStarAnchor = 0x8007624c; // size:0xc
