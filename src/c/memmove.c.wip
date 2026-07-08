@@ -1,0 +1,41 @@
+#include "globals.h"
+
+/* 0x80063830: libc memmove — overlap-safe byte copy. dst < src copies
+   forward (dst walked in place, register a0 clobbered — matches the
+   original's apparent return-value bug on that path); dst >= src copies
+   backward from the tail via a fresh end pointer (dst/a0 stays live for the
+   return). PARKED: 112/108 bytes, one extra `nop` in the initial branch's
+   delay slot — original fills it with `move v0,a2` (a shared copy of `n`
+   read by BOTH branches' n>0 test at v0, not a2 directly); every C form
+   tried (i computed early/late/shared local `cnt=n`, early-return guard)
+   either reproduces this single-nop residue or regresses to a completely
+   different 4-nop layout. Scheduler/delay-slot-fill tie; permuter-or-park. */
+void *memmove(void *dst, void *src, int n) {
+  unsigned char *s = src;
+  unsigned char *d;
+  int i;
+
+  if ((unsigned int)dst >= (unsigned int)s) {
+    if (n > 0) {
+      i = n - 1;
+      d = (unsigned char *)dst + i;
+      s = s + i;
+      do {
+        *d = *s;
+        s -= 1;
+        d -= 1;
+      } while (i-- > 0);
+    }
+  } else {
+    if (n > 0) {
+      i = n - 1;
+      d = dst;
+      do {
+        *d = *s;
+        s += 1;
+        d += 1;
+      } while (i-- > 0);
+    }
+  }
+  return dst;
+}

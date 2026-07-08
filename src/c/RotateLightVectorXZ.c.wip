@@ -1,0 +1,30 @@
+#include "globals.h"
+
+extern volatile int g_nLightSweepAngle;
+
+/* PARKED: 168/164 bytes (1 extra instr pair). Logic fully correct — the
+   shift-expansion constant multiplies (*1983>>11, *6345>>12) transcribe
+   verbatim from the doc's "scaled by 0x7bf/0x18c9", and re-declaring
+   g_nLightSweepAngle `volatile` here reproduces the original's redundant
+   store-then-reload of the wrapped angle. Residue: an unexplained
+   `addiu sp,sp,-8` / `+8` frame pair appears right before the second
+   (Y/sin) multiply chain regardless of temp naming/inlining (tried: named
+   cosv+sinv, cosv only, fully inlined single-expression form — all
+   byte-identical). Likely a register-pressure spill specific to gcc
+   synthesizing the larger 6345 multiplier while a0 (angle<<1) and the
+   sine-lookup base are still live; original avoids it via allocation this
+   session's C forms didn't hit. Permuter-or-park. */
+/* 0x80058cc0: spins the primary light direction vector around the world Y
+   axis. Advances the byte angle accumulator g_nLightSweepAngle by param_1
+   (wraps mod 256), looks up cos/sin from g_anSineLut (quarter-period offset
+   0x40 for cos) scaled by 1983/6345 respectively; Y is pinned at -0x400
+   (flat overhead light). */
+void RotateLightVectorXZ(int param_1) {
+  int angle;
+
+  g_nLightSweepAngle = (g_nLightSweepAngle + param_1) & 0xff;
+  angle = g_nLightSweepAngle;
+  g_anWorldLightDirVec[0] = (g_anSineLut[angle + 0x40] * 1983) >> 11;
+  g_anWorldLightDirVec[2] = -0x400;
+  g_anWorldLightDirVec[1] = (g_anSineLut[angle] * 6345) >> 12;
+}
