@@ -1,0 +1,42 @@
+#include "globals.h"
+
+extern void WriteString(unsigned char *msg);
+extern void ChangeClearPAD(long enable);
+extern void ChangeClearRCnt();
+extern unsigned char D_800115FC[];
+
+/* 0x8005dd0c: PARKED 2026-07-08, 156/156 bytes -- LENGTH matches exactly,
+   logic is 100% correct (verified against asm by hand), but 36/39
+   instructions land in a different ORDER: same instruction multiset, just
+   permuted. Root cause: the guard-check's `g_nRcntAuxState` global load (2
+   insns, real latency) gets scheduled by gcc BEFORE the `budget = param_2 <<
+   15; store to stack` sequence, while the original keeps program order
+   (budget computed+stored first, THEN the RcntAuxState load). This is the
+   §K "independent-load/constant scheduling order" wall from the cookbook --
+   two mutually-independent operations (an expensive global load + an
+   unrelated local computation) get reordered by gcc's scheduler for
+   latency-hiding, and no source-level statement reordering in three
+   documented cases last session moved it. Tried here: `volatile int
+   budget` (matches the original's genuine stack spill + reload each loop
+   iteration, needed to get the LENGTH exact) with both a `do/while` and an
+   explicit `goto`-loop (disables loop.c per §J) -- both give the identical
+   156-byte, permuted-order result. The volatile spill trick is right; only
+   the very first budget-vs-RcntAuxState-load ordering is the residual tie.
+   Permuter candidate: pure scheduling permutation, no logic/length delta. */
+void WaitForFrameDeadline(int param_1, int param_2) {
+  volatile int budget = param_2 << 15;
+
+  if (g_nRcntAuxState < param_1) {
+  loop:
+    budget -= 1;
+    if (budget == -1) {
+      WriteString(D_800115FC);
+      ChangeClearPAD(0);
+      ChangeClearRCnt(3, 0);
+      return;
+    }
+    if (g_nRcntAuxState < param_1) {
+      goto loop;
+    }
+  }
+}

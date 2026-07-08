@@ -1,0 +1,35 @@
+#include "globals.h"
+
+extern void ApplyEulerRotation(signed char *euler, int *vecOut, int flag);
+extern void RotateVectorByMatrix(int *inVec, int *matrix, int *outVec);
+
+/* 0x8003d978: PARKED 2026-07-08, 148/144 bytes (4 bytes / 1 instruction over).
+   Correct logic; original holds &g_nSpyroBodyPitch in s0 across the
+   ApplyEulerRotation call and reaches g_anSpyroVelocity via a single
+   `addiu s0,-0x30` (pitch and velocity are 0x30 bytes apart), reusing s0 for
+   the value load, the address calc, AND the final velocity[0] store (only 1
+   callee-saved reg). Every C form tried (direct globals, a held `int *pitch`
+   pointer, an incomplete-array alias for g_nSpyroBodyPitch with negative
+   indices `g_anSpyroBodyPitchBlock[-12]`) reproduces the pitch-block sharing
+   fine, but our gcc *also* promotes `vel` (the ApplyEulerRotation out-param,
+   reused as RotateVectorByMatrix's in-param) into a second callee-saved reg
+   (s1) instead of leaving it as a cheap recomputed `sp`-relative addiu like
+   the original does -- true even with NO pitch alias in play at all (attempt
+   #1, plain globals throughout, already shows vel in s0 alone). Whatever the
+   original did to make `vel`'s address "not worth holding" wasn't reproduced
+   by any source form tried. Permuter candidate: 1 extra callee-saved
+   push/pop pair, everything else byte-identical. */
+void BuildSpyroVelocityFromBodyEuler(void) {
+  signed char euler[3];
+  int vel[3];
+
+  euler[0] = (signed char)(g_nSpyroBodyPitch >> 4);
+  euler[2] = (signed char)(g_nSpyroBodyYaw >> 4);
+  euler[1] = (signed char)(g_nSpyroBodyRoll >> 4);
+  ApplyEulerRotation(euler, vel, 0);
+
+  g_anSpyroVelocity[1] = 0;
+  g_anSpyroVelocity[2] = 0;
+  g_anSpyroVelocity[0] = g_nSpyroMotionSpeed;
+  RotateVectorByMatrix(vel, g_anSpyroVelocity, g_anSpyroVelocity);
+}
