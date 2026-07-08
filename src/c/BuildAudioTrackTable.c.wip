@@ -1,0 +1,53 @@
+#include "globals.h"
+
+/* 0x8001256c: PARKED 2026-07-08. Correct logic (verified against the asm by
+   hand), right at the edge on length but hasn't hit exactly 152 bytes (38
+   instructions) in any form tried:
+   - Plain nested array indexing (`table[idx*2]`, `table[idx*2+1]`, `lengths
+     [idx]` with no held pointers) strength-reduces the outer bank-base-lba
+     array into a moving pointer (matches original) but does NOT reproduce
+     the inner per-track length array as a moving pointer -- 12 bytes SHORT.
+   - Adding an explicit `int *len` moving pointer for the length array
+     (reset each outer iter, ++ each inner iter) fixes that and also adds the
+     dead 8-byte stack frame the original has (`int pad[2];`) -- but then
+     gcc ALSO hoists `table+4` into its own register (t4) outside the loop
+     (an optimization the original's build did NOT do -- original recomputes
+     a fresh `lui/addu` for the +1 entry on EVERY iteration, no shared base
+     for the two stores) -- 4 bytes OVER.
+   - Replacing the two separate `table[idx*2]`/`table[idx*2+1]` stores with
+     one `int *entry = table + idx*2; entry[0]=..; entry[1]=..;` removes the
+     t4 hoist but goes too far the other way: gcc shares ONE address
+     computation for BOTH stores (2 instructions instead of original's two
+     separate 3-instruction lui+addu sequences) -- 4 bytes SHORT.
+   None of the three forms hit the original's actual shape: per-store
+   address recomputed from scratch (no shared base between the two stores,
+   no t3+4 hoist) while the *outer* bank-base array and the *inner* length
+   array both hold moving pointers. Needs either a source form that
+   convinces gcc NOT to CSE the two stores' base address together while
+   still not hoisting +4, or a permuter pass to find the register/CSE knob.
+   Instruction-accurate reference (asm/text.s @ 0x8001256c) transcribed by
+   hand below for whoever picks this back up; logic is right, only the
+   store-address CSE shape is wrong. */
+int BuildAudioTrackTable(void) {
+  int pad[2];
+  int bank;
+  int track;
+  int idx;
+  int *lengths = g_anCdAudioTrackLengths;
+
+  (void)pad;
+
+  for (bank = 0; bank < 6; bank++) {
+    int *len = lengths;
+    for (track = 0; track < 8; track++) {
+      idx = bank * 8 + track;
+      g_anMusicTrackLbaTable[idx * 2] = g_anCdAudioBankBaseLba[bank];
+      g_anMusicTrackLbaTable[idx * 2 + 1] = g_anCdAudioBankBaseLba[bank] + *len;
+      len += 1;
+    }
+    lengths += 8;
+  }
+
+  g_dwMusicStreamStatus = 0x40;
+  return 1;
+}
