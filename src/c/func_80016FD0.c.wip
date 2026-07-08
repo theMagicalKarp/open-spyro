@@ -1,0 +1,49 @@
+#include "globals.h"
+
+/* 0x80016fd0: 5-word block copy that swaps the low/high halfwords across
+   each adjacent word pair (word0<->word1, word1<->word3, word2<->word3);
+   the 5th word passes through unchanged. PARKED: correct logic, 6.7% match.
+   gcc always hoists the reused 0xFFFF0000 mask's `lui` to the very front of
+   the block (before any of the 5 loads) regardless of source position
+   (tried: literal repeated 3x, named local declared after the loads,
+   combined single-expression form) — original schedules the lui AFTER all
+   5 loads. Independent-instruction scheduling tie (no dependency to peg the
+   lui's position to); permuter-or-never. */
+void func_80016FD0(unsigned int *dst, unsigned int *src) {
+  unsigned int a2, a3, t0, t1, t2;
+  unsigned int hiMask, at, v0;
+
+  a2 = src[0];
+  a3 = src[1];
+  t0 = src[2];
+  t1 = src[3];
+  t2 = src[4];
+
+  hiMask = 0xFFFF0000;
+  at = a2 & hiMask;
+  v0 = a3 & hiMask;
+  a2 = a2 ^ at;
+  a3 = a3 ^ v0;
+  a2 = a2 | v0;
+  a3 = a3 | at;
+
+  at = a3 & 0xFFFF;
+  v0 = t1 & 0xFFFF;
+  a3 = a3 ^ at;
+  t1 = t1 ^ v0;
+  a3 = a3 | v0;
+  t1 = t1 | at;
+
+  at = t0 & hiMask;
+  v0 = t1 & hiMask;
+  t0 = t0 ^ at;
+  t1 = t1 ^ v0;
+  t0 = t0 | v0;
+  t1 = t1 | at;
+
+  dst[0] = a2;
+  dst[1] = a3;
+  dst[2] = t0;
+  dst[3] = t1;
+  dst[4] = t2;
+}
