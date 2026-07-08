@@ -1,0 +1,43 @@
+#include "globals.h"
+
+extern int func_8005882C();
+extern void func_800529E4();
+extern void RotateVectorByMatrix();
+extern void AddVector();
+extern unsigned int GetRandomU32();
+
+extern unsigned char D_80077108[];
+
+/* 0x8003aaec — allocate a particle record (24-byte stride table at
+   0x80077108), seed its color to white, rotate the spawn offset by the
+   actor's matrix into the record, add the actor anchor (+0xC), then fill
+   the lifetime/phase bytes. Returns the record index (or the negative
+   allocation failure). */
+/* PARKED 2026-07-08 at 86.8% (7/53 insns): correct logic + store order;
+   residue is the tail constant-sb block — original holds 0x20 in v1 with
+   its li hoisted above the `3` store, and 0x40's li hoisted above the two
+   0x20 stores. Named local, per-statement locals, and chained assignment
+   all const-prop back to byte-identical per-use v0 materialization
+   (InitActorRenderDefaults constant-sb scheduling class). Permuter
+   candidate. */
+int func_8003AAEC(int *arg0, int *arg1) {
+  unsigned char *rec;
+  int idx;
+
+  idx = func_8005882C();
+  if (idx >= 0) {
+    rec = (unsigned char *)(idx * 24 + (int)D_80077108);
+    rec[0x10] = 0xFF;
+    rec[0x11] = 0xFF;
+    rec[0x12] = 0xFF;
+    func_800529E4(arg0, 4);
+    RotateVectorByMatrix(arg0 + 8, arg1, rec);
+    AddVector(rec, rec, arg0 + 3);
+    rec[0xE] = GetRandomU32();
+    rec[0xF] = 3;
+    rec[0xD] = 0x10;
+    rec[0x14] = rec[0xC] = 0x20;
+    rec[0x15] = 0x40;
+  }
+  return idx;
+}
