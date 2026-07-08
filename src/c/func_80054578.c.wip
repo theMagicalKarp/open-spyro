@@ -1,0 +1,19 @@
+#include "globals.h"
+
+extern void SetHudCounterDigits();
+extern int g_anHudLevelGemCachedBlock[];
+
+void func_80054578(void) {
+  int *pc = g_anHudLevelGemCachedBlock;
+  unsigned char *ps = (unsigned char *)g_anHudLevelGemCachedBlock - 0x20;
+  unsigned char *pr = (unsigned char *)g_anHudLevelGemCachedBlock - 0x1B;
+  unsigned char state;
+  int gems = g_anLevelGemsCollected[g_nLevelIntroIndex];
+  *pc = gems;
+  SetHudCounterDigits(0, 4, gems, 1);
+  state = *ps;
+  if (state == 1 || state == 2 || state == 4) {
+    *ps = 3;
+    *pr = 0xD;
+  }
+}
