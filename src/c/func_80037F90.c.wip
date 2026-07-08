@@ -1,0 +1,59 @@
+#include "globals.h"
+
+extern int D_800756C4;
+
+/* 0x80037f90 — tick a countdown timer of the given byte width (4/2/1)
+   down by the frame step D_800756C4. Returns 0 while still counting,
+   2 on the tick that hits zero, 1 once already expired (or for an
+   unknown width). */
+/* PARKED 2026-07-08 at 82.5% (10/57 insns): correct logic, length, guards
+   and regalloc (per-arm `int step` decl after `v` fixed the a1/v1 swap).
+   Residue is the tail block ORDER: original emits [shared ret-1 block
+   (j+li)] then [arm1 subtract falling into the epilogue]; ours the mirror
+   (subtract j's out, ret-1 falls through), plus the dispatch bne's delay
+   (li v0,1 vs nop). Inverted-guard arm1, non-inverted arm1 (row 30
+   relocation did NOT trigger), and a `width != 1` guard-clause dispatch
+   all fail to swap the two tail blocks. Block-order tie (func_80058AE8
+   class); permuter candidate. */
+int func_80037F90(void *p, int width) {
+  if (width == 4) {
+    int v = *(int *)p;
+    int step = D_800756C4;
+    if (v <= step) {
+      if (v == 0) {
+        return 1;
+      }
+      *(int *)p = 0;
+      return 2;
+    }
+    *(int *)p = v - step;
+    return 0;
+  } else if (width == 2) {
+    short v = *(short *)p;
+    int step = D_800756C4;
+    if (v <= step) {
+      if (v == 0) {
+        return 1;
+      }
+      *(short *)p = 0;
+      return 2;
+    }
+    *(short *)p = v - step;
+    return 0;
+  } else if (width == 1) {
+    unsigned char raw = *(unsigned char *)p;
+    int v = raw;
+    int step = D_800756C4;
+    if (v <= step) {
+      if (v == 0) {
+        return 1;
+      }
+      *(unsigned char *)p = 0;
+      return 2;
+    }
+    *(unsigned char *)p = raw - step;
+    return 0;
+  } else {
+    return 1;
+  }
+}
