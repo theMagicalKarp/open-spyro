@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.57% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">33,964 / 2,159,608 split-code bytes · 298 matched · 0 raw bytes (excluded)</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.58% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">34,176 / 2,159,608 split-code bytes · 299 matched · 0 raw bytes (excluded)</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
 <rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
@@ -303,7 +303,7 @@
 <rect x="231.42" y="615.55" width="10.72" height="11.01" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017D7C  ·  216 bytes  ·  handwritten</title></rect>
 <rect x="242.14" y="615.55" width="10.72" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueueBlinkingMarkerSprite  ·  216 bytes  ·  matched</title></rect>
 <rect x="252.86" y="615.55" width="10.72" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StopSoundVoicesByOwner  ·  216 bytes  ·  matched</title></rect>
-<rect x="263.58" y="615.55" width="10.52" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8003AAEC  ·  212 bytes  ·  asm</title></rect>
+<rect x="263.58" y="615.55" width="10.52" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003AAEC  ·  212 bytes  ·  matched</title></rect>
 <rect x="274.10" y="615.55" width="10.52" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitFoggedActorTriangle  ·  212 bytes  ·  asm</title></rect>
 <rect x="284.63" y="615.55" width="10.52" height="11.01" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_388  ·  212 bytes  ·  library</title></rect>
 <rect x="295.15" y="615.55" width="10.32" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003A850  ·  208 bytes  ·  matched</title></rect>
