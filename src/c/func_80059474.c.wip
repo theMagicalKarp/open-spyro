@@ -1,0 +1,64 @@
+#include "globals.h"
+
+extern void CopyVector(int *dst, int *src);
+extern void CopyWords(void *dst, void *src, int byte_count);
+
+extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */
+extern int g_nLevelSpawnPosZ; /* g_anLevelSpawnPos[2] (see alias) */
+extern int D_8007788C;
+extern int D_80077890;
+extern int D_80077894;
+extern int D_800778E8;
+extern int D_800778EC;
+
+/* 0x80059474 (0xF8) — latch `actor`'s position (+0xC) and facing as the
+   level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
+   the anchor valid, bias spawn Z up 0x164, snapshot the level's rescued/gem
+   tallies into the persistence block, merge the pending block into the
+   committed one (copy 0x20 bytes then OR the 8 words), and carry the spawn
+   flag word across. */
+void func_80059474(unsigned char *actor, int yaw) {
+  int *dst;
+  int *src;
+  int i;
+
+  g_anLevelSpawnYawBlock[0] = (yaw << 4) & 0xFFF;
+  CopyVector((int *)&g_anLevelSpawnYawBlock[-3], (int *)(actor + 0xC));
+  *(volatile int *)&g_nSpawnAnchorValid = 1;
+  dst = &g_anLevelSpawnYawBlock[-19];
+  src = &g_anLevelSpawnYawBlock[-11];
+  *(volatile int *)&g_nLevelSpawnPosZ += 0x164;
+  {
+    int t;
+    t = g_anLevelDragonsRescued[g_nLevelIntroIndex];
+    *(volatile int *)&D_8007788C = t;
+    t = g_anLevelGemsCollected[g_nLevelIntroIndex];
+    *(volatile int *)&D_80077894 = 0;
+    *(volatile int *)&D_80077890 = t;
+  }
+  CopyWords(dst, src, 0x20);
+
+  i = 0;
+  do {
+    int v = *src;
+    *dst = *dst | v;
+    src += 1;
+    i += 1;
+    dst += 1;
+  } while (i < 8);
+
+  D_800778EC = D_800778E8;
+}
+
+/* PARKED 2026-07-10 at ~63% (best form 67.7%) — logic, alias-held base
+ * (g_anLevelSpawnYawBlock), CopyVector/CopyWords calls, OR-merge loop and
+ * tail all correct; the -0x4C/-0x2C/-0xC derivations and the loop are
+ * byte-identical. Residue is the straight-line snapshot run: our sched1
+ * hoists the (non-volatile) dragons/gems array loads above the posZ RMW's
+ * addiu/sw and sinks/hoists the anchor=1 and 894=0 stores; volatile stores
+ * pin store order (67.7%) but loads still float (§K), full-volatile loads
+ * overflow the slot by 8 bytes, and t-serial (row 19) fixes seriality but
+ * regalloc picks a2 over v0. Scalar alias g_nLevelSpawnPosZ needed for the
+ * per-access absolute RMW form (array form CSEs the address into a reg).
+ * Permuter candidate.
+ */
