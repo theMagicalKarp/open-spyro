@@ -1,0 +1,55 @@
+#include "globals.h"
+
+extern void SubtractVector(int *dst, int *a, int *b);
+extern int abs(int n);
+
+extern short g_anCosineLut[];
+
+/* 0x80038c4c (0x108) — rotate the XY delta between `pos` and record `rec`
+   into the record's frame using its yaw angle (+0x14, sine-LUT index), and
+   return whether the rotated point lies inside the record's box extents
+   (+0xC half-width, +0x10 half-depth). The rotated |x|/|y| pair is also
+   written to a scratch pair (never read back). */
+int func_80038C4C(int *pos, int *rec) {
+  volatile int out[4];
+  int delta[3];
+  short *cosp;
+  short *sinp;
+  int angle;
+  int dx;
+  int dy;
+  int rx;
+  int ry;
+  int ay;
+
+  angle = rec[5];
+  SubtractVector(delta, pos, rec);
+  cosp = &g_anCosineLut[angle];
+  sinp = &g_anSineLut[angle];
+  dx = delta[0];
+  dy = delta[1];
+
+  rx = ((dx * *cosp) >> 12) - ((dy * *sinp) >> 12);
+  out[0] = rx;
+  ry = ((dx * *sinp) >> 12) + ((dy * *cosp) >> 12);
+  rx = abs(rx);
+  out[0] = rx;
+  ay = abs(ry);
+  out[1] = ry;
+  out[1] = ay;
+
+  if (rx < rec[3]) {
+    return ay < rec[4];
+  }
+  return 0;
+}
+
+/* PARKED 2026-07-09 at 90.9% (66 insns, 6 differ — pure register renaming).
+   Hard-won structure, all byte-exact: volatile out[4] keeps both dead stores
+   per slot; abs() (not if/ternary) expands via single-insn abssi2 so the ry
+   mult pipeline interleaves across the x-abs + store; ry statement placed
+   between out[0] stores; early-return tail absorbs ret0 into the beqz delay;
+   g_anCosineLut alias (sym at lut+0x80) stops cse deriving the sine base via
+   addiu -0x80. Residue: ay in v1 (ours) vs a1 (original) + the two limit
+   scratches shifted (v0/v0 vs v1/v0). dy-reuse and lim-birth-order both
+   cascade worse. Single-decision local-alloc tie; permuter candidate. */

@@ -1,0 +1,89 @@
+#include "globals.h"
+
+extern void HandleMusicCommand(int a, int b);
+
+extern unsigned int g_adwSpuPendingKeyOffBlock[];
+
+/* 0x80056b28 (0x15c) — stop every active software voice whose bit is NOT set
+   in `mask` (low 24 bits). Each stopped voice is accumulated into the pending
+   hardware key-off word; mode-4 (one-shot) and mode-8 (owner-attached) rows
+   also silence the owner's live sample byte (+0x2A0 / +0x54). The row is then
+   parked idle exactly like StopSoundVoicesByOwner (flags 0x40, owner and
+   sample pointer cleared, priority 0xFF). Finally the pending key-on word is
+   dropped and the music engine is told to stop (command 4). */
+void StopAllSoundExceptMask(int mask) {
+  int i;
+  int off;
+  int one;
+  int eight;
+  int sil;
+  volatile unsigned int *keyoff;
+
+  mask = mask ^ 0xFFFFFF;
+  i = 0;
+  keyoff = g_adwSpuPendingKeyOffBlock;
+  one = 1;
+  eight = 8;
+  sil = 0x7F;
+  off = 0;
+top:
+  if ((*(unsigned short *)((char *)g_abSpuCommonAttr + off + 0x36) & 0x83) !=
+          0 &&
+      ((mask >> i) & 1) != 0) {
+    int bit;
+    int o;
+    int m;
+    int v2;
+    int o2;
+    unsigned char *owner;
+
+    bit = one << i;
+    *keyoff |= bit;
+    o = (i & 0x7F) * 0x1C;
+    m = *(unsigned short *)((char *)g_abSpuCommonAttr + o + 0x36) & 0x1C;
+    if (m == eight) {
+      goto mode8;
+    }
+    if (m < 9) {
+      if (m == 4) {
+        owner = *(unsigned char **)((char *)g_abSpuCommonAttr + o + 0x28);
+        if (owner != 0) {
+          owner[0x2A0] = sil;
+        }
+      }
+    }
+    goto park;
+  mode8:
+    owner = *(unsigned char **)((char *)g_abSpuCommonAttr + o + 0x28);
+    if (owner != 0) {
+      owner[0x54] = sil;
+    }
+  park:
+    v2 = i & 0x7F;
+    o2 = v2 * 0x1C;
+    *(unsigned short *)((char *)g_abSpuCommonAttr + o2 + 0x36) = 0x40;
+    *(int *)((char *)g_abSpuCommonAttr + o2 + 0x28) = 0;
+    *(int *)((char *)g_abSpuCommonAttr + o2 + 0x40) = 0;
+    *(unsigned char *)((char *)g_abSpuCommonAttr + o2 + 0x35) = 0xFF;
+  }
+  i += 1;
+  off += 0x1C;
+  if (i < 0x18) {
+    goto top;
+  }
+
+  g_dwSpuPendingKeyOn = 0;
+  HandleMusicCommand(0, 4);
+}
+
+/* PARKED 2026-07-09, +4 bytes (~95% aligned; tail block + dispatch + loop all
+   byte-exact). Volatile keyoff pointer gets the or/andi/sw placement and
+   keeps the o-recompute chain below the RMW (non-volatile hoists the whole
+   chain above the lw). Residues, both scheduler/RA ties:
+   1) RMW head: original = sllv(in beqz delay); lw; NOP; or — full-barrier
+      volatile scheduling (nothing crosses the volatile lw, shadow unfilled).
+      Ours always hoists the volatile lw above the sllv and fills the shadow
+      (lw; sllv; or). bit-local, |= vs explicit-or operand order: no effect.
+   2) A `move a2,a1` copy of `o` for the taken (mode-8) arm's owner load;
+      original keeps o in a1 for both arms. Survives if/else vs goto dispatch
+      and inlining the v temp. Permuter candidate. */
