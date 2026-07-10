@@ -1,0 +1,130 @@
+#include "globals.h"
+
+/* Enter the save-menu gamestate (0xB) from the world, snapshotting the scene
+   around the interacting actor (0x8002ccc8, 868 bytes). Freezes gameplay,
+   picks the initial cursor (0 when D_80078D14 set, else 2), plays the level's
+   menu sound, resets Spyro, forces anim state 1, then captures the yaw and
+   distance from Spyro to the actor's pickup target, the actor itself, the
+   level-overlay init actor (when present) and the camera into the
+   D_80078D2C..D70 scripted-camera block, and seeds the menu pan targets. */
+extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
+extern void ResetSpyroEntity(int hard);
+extern int ArcTan2(int y, int x, int high_precision);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern unsigned int VectorLength(int *vec, int include_z);
+extern int AbsAngleDelta12(int a, int b);
+
+extern unsigned char g_abSpyroAnimPrevBlock[]; /* alias block — +0 anim-prev,
+                                                  -0x18 g_anSpyroWorldPos */
+extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
+extern int D_80078D14;
+extern int D_80078D2C;
+extern unsigned int D_80078D30;
+extern int D_80078D34;
+extern int D_80078D38;
+extern int D_80078D3C;
+extern int D_80078D40;
+extern int D_80078D44;
+extern unsigned int D_80078D48;
+extern int D_80078D4C;
+extern int D_80078D50;
+extern int D_80078D54;
+extern unsigned int D_80078D58;
+extern int D_80078D5C;
+extern int D_80078D60;
+extern int D_80078D64;
+extern int D_80078D68;
+extern int D_80078D6C;
+extern int D_80078D70;
+extern int D_80078D74;
+
+void func_8002CCC8(int actor) {
+  int vec[3];
+  int t;
+  unsigned char *p;
+  char *rec;
+  int u;
+
+  t = *(int *)actor;
+  g_nGamestate = 0xB;
+  g_nGameplayBlocked = 1;
+  g_nGamePaused = 1;
+  g_nSaveMenuMode = 0;
+  g_nSaveMenuAnimPhase = 0;
+  g_nSaveMenuSubstate = 0;
+  if (D_80078D14 != 0) {
+    g_nSaveMenuCursor = 0;
+  } else {
+    g_nSaveMenuCursor = 2;
+  }
+  D_80078D74 = actor;
+  g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
+  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
+                  0, 0x10, 0);
+  ResetSpyroEntity(1);
+
+  p = g_abSpyroAnimPrevBlock;
+  p[0] = 1;
+  g_bSpyroAnimCurrent = 1;
+  g_bSpyroFramePrev = 0;
+  g_bSpyroAnimFrame = 1;
+  g_bSpyroSubFrameTimer = 0;
+  D_80078D6C = g_nSpyroBodyYaw;
+
+  rec = (char *)(*(int *)(t + 4) * 0x58 + (int)g_pActorListBase);
+  D_80078D70 = ArcTan2(*(int *)(rec + 0xC) - *(int *)(p - 0x18),
+                       *(int *)(rec + 0x10) - g_nSpyroWorldPosY, 1);
+  D_80078D2C = ArcTan2(*(int *)(actor + 0xC) - *(int *)(p - 0x18),
+                       *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
+  t = (int)(p - 0x18);
+  SubtractVector(vec, (int *)(actor + 0xC), (int *)t);
+  D_80078D30 = VectorLength(vec, 0);
+  D_80078D3C = 0x480;
+  D_80078D34 = *(int *)(actor + 0x14);
+  D_80078D38 = D_80078D70;
+  D_80078D40 = *(int *)(p - 0x10) + 0x170;
+
+  if (g_pLevelOverlayInitRecord != 0) {
+    D_80078D44 =
+        ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
+                    *(int *)(p - 0x18),
+                *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
+                    g_nSpyroWorldPosY,
+                1);
+    SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
+                   (int *)t);
+    D_80078D48 = VectorLength(vec, 0);
+    D_80078D50 = 0x600;
+    D_80078D4C = (D_80078D70 + 0x800) & 0xFFF;
+  }
+
+  actor = (int)g_anCameraPos;
+  D_80078D54 = ArcTan2(*(int *)actor - *(int *)(p - 0x18),
+                       g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
+  SubtractVector(vec, (int *)actor, (int *)t);
+  D_80078D58 = VectorLength(vec, 0);
+  g_nSaveMenuXOffset = 0xB0;
+  u = (D_80078D70 + 0x30B) & 0xFFF;
+  D_80078D5C = g_anCameraPos[2];
+  D_80078D60 = u;
+  if (AbsAngleDelta12(D_80078D54, u) > 0x400) {
+    g_nSaveMenuXOffset = 0;
+    D_80078D60 = (D_80078D70 - 0x30B) & 0xFFF;
+  }
+  D_80078D64 = 0x4C9;
+  D_80078D68 = *(int *)(p - 0x10) + 0x56B;
+}
+
+/* PARKED (session 2026-07-10-1): 221/217 insns — 4 over, slot overflow.
+   Logic complete + all structure right (register roles s0/s1/s2 match after
+   variable reuse: t=target->wpos, actor->camera base; scalar alias
+   g_nSpyroWorldPosY fixed the 4 cross-call Y reads). Root cause of the +4:
+   the held AnimPrev base p is a compile-time constant, and the 4 negative-
+   offset accesses (*(p-0x18) x3, *(p-0x10) x1) that sit in the SAME extended
+   basic block as p's assignment get constant-folded by cse to absolute
+   lui+lw(sym-0x18) pairs (+1 insn each); the accesses after a label (X#4 at
+   D54, Z#2 at D68) already come out reg-based (lw -0x18(s1)) like the
+   original. cse's same-ebb constant-address fold can't be defeated from
+   source (volatile array, scalar alias, pointer-arith forms all tried on the
+   sibling walls). Extends the Sec-I BeginStoryIntro negative-offset wall to
+   LOADS, with the ebb boundary as the exact dividing line. */

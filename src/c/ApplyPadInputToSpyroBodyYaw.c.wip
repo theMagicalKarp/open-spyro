@@ -1,0 +1,55 @@
+#include "globals.h"
+
+/* Smooth Spyro's body yaw toward the move-target yaw from analog-stick input
+   (0x8003d840, 236 bytes). When the stick is active (pad word +0x10 set, raw
+   axes +0x14 not centered at 0x7f7f) and its magnitude is under 0x60, steps
+   the target yaw by (magnitude * wrapped-delta) >> 9; a delta over 0x100 also
+   sets the snap flag g_nSpyroStateFlags. Always follows with
+   TurnSpyroTowardMoveTargetWithLean(0). */
+extern unsigned int VectorLength(int *vec, int include_z);
+extern void TurnSpyroTowardMoveTargetWithLean(int param_1);
+extern int abs(int x);
+
+extern volatile int g_anSpyroMoveTargetYawBlock[]; /* alias block — +0 target yaw,
+                                             +0x50 g_nSpyroBodyYaw */
+
+void ApplyPadInputToSpyroBodyYaw(void) {
+  int vec[3];
+  char *pad;
+  int len;
+  int v;
+  int av;
+  int cur;
+  volatile int *p;
+
+  pad = g_pPadSubstepState;
+  if (*(int *)(pad + 0x10) != 0 &&
+      (*(unsigned int *)(pad + 0x14) & 0xFFFF0000) != 0x7F7F0000) {
+    vec[0] = *(unsigned char *)(pad + 0x16) - 0x7F;
+    vec[2] = 0;
+    vec[1] = *(unsigned char *)(pad + 0x17) - 0x7F;
+    len = VectorLength(vec, 0);
+    if (len < 0x60) {
+      p = g_anSpyroMoveTargetYawBlock;
+      cur = p[0x14];
+      v = (p[0] - cur) & 0xFFF;
+      if (v > 0x800) {
+        v -= 0x1000;
+      }
+      av = abs(v);
+      if (av > 0x100) {
+        g_nSpyroStateFlags = 1;
+      }
+      p[0] = (cur + ((len * v) >> 9)) & 0xFFF;
+    }
+  }
+  TurnSpyroTowardMoveTargetWithLean(0);
+}
+
+/* PARKED 71.2% (session 2026-07-10-1): logic + length correct. Sec-B8 wall,
+   new sighting: original holds &g_nSpyroMoveTargetYaw in a0 and does
+   lw 0(a0) / lw 0x50(a0) / sw 0(a0) with NO call to pin the base; our cse
+   always folds the +0x50 access (g_nSpyroBodyYaw) to its own absolute lui/lw
+   pair — plain array alias AND volatile array alias both fold. len lands in
+   a1 vs original a2 downstream of the same knot. Constant-base reg+imm with
+   k != 0 appears unreachable without a call; permuter-or-never. */
