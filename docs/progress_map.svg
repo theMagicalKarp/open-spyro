@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.69% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">36,476 / 2,159,608 split-code bytes · 341 matched · 0 raw bytes (excluded)</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.70% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">36,704 / 2,159,608 split-code bytes · 342 matched · 0 raw bytes (excluded)</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
 <rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
@@ -289,7 +289,7 @@
 <rect x="154.74" y="684.30" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BED8  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="695.66" width="11.16" height="11.36" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80060EF0  ·  232 bytes  ·  asm</title></rect>
 <rect x="154.74" y="707.02" width="11.16" height="11.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ExitPauseMenuToGame  ·  228 bytes  ·  matched</title></rect>
-<rect x="154.74" y="718.18" width="11.16" height="11.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80037F90  ·  228 bytes  ·  asm</title></rect>
+<rect x="154.74" y="718.18" width="11.16" height="11.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80037F90  ·  228 bytes  ·  matched</title></rect>
 <rect x="154.74" y="729.35" width="11.16" height="11.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInfoMode  ·  228 bytes  ·  library</title></rect>
 <rect x="154.74" y="740.51" width="11.16" height="10.97" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004E2E8  ·  224 bytes  ·  handwritten</title></rect>
 <rect x="154.74" y="751.48" width="11.16" height="10.97" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitActorMeshScratchRegions  ·  224 bytes  ·  asm</title></rect>
