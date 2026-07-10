@@ -1,0 +1,53 @@
+#include "globals.h"
+
+extern int ArcTan2_8bit(int x, int y);
+extern int AbsAngleDelta8(int a, int b);
+extern void AddPrimToOT(unsigned char *prim);
+
+extern int g_anLightSweepAngleBlock[];
+
+/* 0x8001844c (0xE8) — build a LINE_G2 prim between two screen points,
+   shading each endpoint by its angular distance from the light-sweep
+   angle (radial highlight), then queue it and bump the prim cursor. */
+void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
+  unsigned char *prim;
+  int d;
+  int shade;
+  int tx;
+  int ty;
+
+  prim = g_pPrimBufferWriteCursor;
+  *(unsigned int *)prim = 0x04000000;
+  prim[7] = 0x50;
+  *(short *)(prim + 0x8) = x0;
+  *(short *)(prim + 0xA) = y0;
+  *(short *)(prim + 0x10) = x1;
+  *(short *)(prim + 0x12) = y1;
+
+  d = AbsAngleDelta8(ArcTan2_8bit(x0 - 0x100, y0 - 0x78),
+                     g_anLightSweepAngleBlock[0]);
+  tx = x1 - 0x100;
+  ty = y1 - 0x78;
+  x1 = 0x80;
+  d = x1 - d;
+  shade = d + 0x60;
+  prim[4] = shade;
+  prim[5] = shade;
+  prim[6] = d;
+
+  x1 = x1 - AbsAngleDelta8(ArcTan2_8bit(tx, ty), g_anLightSweepAngleBlock[0]);
+  shade = x1 + 0x60;
+  prim[0xC] = shade;
+  prim[0xD] = shade;
+  prim[0xE] = x1;
+
+  AddPrimToOT(prim);
+  g_pPrimBufferWriteCursor = prim + 0x14;
+}
+
+/* PARKED 2026-07-09 at 62.1% (correct length, 4 s-regs, x1-role-reuse works).
+   Residue: pure callee-saved ROLE permutation — original x1->s1, sweep->s2,
+   y1->s3; ours sweep->s1, y1->s2, x1->s3 (+1 scheduled ty addiu). Tried:
+   x1-reuse for 0x80/result (fixes length), separate c local (overflows, 5th
+   s-reg), decl reorder, sweep-at-top, direct array reads (all byte-identical).
+   Cookbook &sect;H whole-function regalloc-shift class; permuter candidate. */
