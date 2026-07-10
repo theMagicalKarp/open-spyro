@@ -1244,6 +1244,7 @@ g_dwRandSeed = 0x80075ac0; // size:0x4
 g_anEntitySpikeTexWords = 0x80075ef8; // size:0x8
 g_pEntityListEnd = 0x80075f00; // size:0x4
 g_abSpuCommonAttr = 0x80075f08; // size:0x4c
+g_anSpuCommonVolAttr = 0x80075f0c; // allow_duplicated:True alias — halfword volume/reverb-volume fields of g_abSpuCommonAttr (+0x4); distinct symbol so cse cannot fold the stores onto the held base (InitSoundEngine)
 g_pLevelSampleBankEntries = 0x800761d0; // size:0x4 allow_duplicated:True
 D_800761D0 = 0x800761d0; // allow_duplicated:True alias — volatile view of g_pLevelSampleBankEntries (BeginGemCutscene reloads it per entry-field store)
 g_pLevelSampleBankHeader = 0x800761d4; // size:0x4
