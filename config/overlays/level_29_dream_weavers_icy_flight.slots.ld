@@ -20,3 +20,4 @@
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_80083B8C)
     . = 0x00009efc ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_80084934)
+    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80084934.o(.text)

@@ -10,3 +10,4 @@
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_8008869C)
     . = 0x0000ee10 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_80089848)
+    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_80089848.o(.text)

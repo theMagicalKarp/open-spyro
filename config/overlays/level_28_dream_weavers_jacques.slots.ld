@@ -10,3 +10,4 @@
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_80085254)
     . = 0x0000b910 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_80086348)
+    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80086348.o(.text)

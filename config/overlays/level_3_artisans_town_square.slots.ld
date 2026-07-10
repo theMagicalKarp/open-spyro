@@ -18,3 +18,4 @@
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_80088F68)
     . = 0x0000f494 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_80089ECC)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_80089ECC.o(.text)

@@ -10,3 +10,4 @@
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.func_level_25_80086D38)
     . = 0x0000d69c ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.func_level_25_800880D4)
+    build/overlays/level_25_dream_weavers_dark_passage/c/func_level_25_800880D4.o(.text)

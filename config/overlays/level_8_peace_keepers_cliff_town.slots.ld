@@ -18,3 +18,4 @@
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.func_level_8_8008A9A8)
     . = 0x000110c0 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.func_level_8_8008BAF8)
+    build/overlays/level_8_peace_keepers_cliff_town/c/func_level_8_8008BAF8.o(.text)

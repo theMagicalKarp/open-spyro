@@ -10,3 +10,4 @@
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.func_level_26_80086438)
     . = 0x0000cce4 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.func_level_26_8008771C)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_8008771C.o(.text)

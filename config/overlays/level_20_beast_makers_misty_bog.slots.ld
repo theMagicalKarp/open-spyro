@@ -10,3 +10,4 @@
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_800861CC)
     . = 0x0000c6f8 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_80087130)
+    build/overlays/level_20_beast_makers_misty_bog/c/func_level_20_80087130.o(.text)

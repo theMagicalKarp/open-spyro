@@ -10,3 +10,4 @@
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_8008611C)
     . = 0x0000c7d8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_80087210)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/func_level_10_80087210.o(.text)
