@@ -1534,6 +1534,7 @@ g_anSpyroWallSlideNudgeAccum = 0x80078b10; // size:0xc
 g_nSpyroCliffEdgeHint = 0x80078b1c; // size:0x4
 g_nSpyroSpeedTarget = 0x80078b20; // size:0x4
 g_nSpyroMoveTargetYaw = 0x80078b24; // size:0x4
+g_anSpyroMoveTargetYawBlock = 0x80078b24; // allow_duplicated:True alias block — shared-base view (+0 move-target yaw, +0x50 g_nSpyroBodyYaw) for ApplyPadInputToSpyroBodyYaw
 g_anSpyroCarryMotionVec = 0x80078b40; // size:0xc
 g_anSpyroVelocity = 0x80078b4c; // size:0xc
 g_anSpyroVelocityFp6 = 0x80078b58; // size:0xc
