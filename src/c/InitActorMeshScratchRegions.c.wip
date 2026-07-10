@@ -1,0 +1,58 @@
+#include "globals.h"
+
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+
+/* 0x8005b6f8 (0xE0) — carve the per-frame render scratch regions off the top
+   of the work area: emit list (-0x2000), OT base (-0x6000), prim top
+   (-0x6008), then two prim/region buffers of 0x13000 (split mode) or 0x1C000
+   bytes each below that. Publishes the double-buffer aliases (prim buffer /
+   merged-chain slot / depth-bin base 0+1) from the freshly stored values and
+   zeroes the prim-top slot (8 bytes) and the OT region (0x4000). */
+void InitActorMeshScratchRegions(int split) {
+  char *top;
+  int stride;
+  void *b0;
+  void *b1;
+  void *m;
+  void *ot;
+
+  top = g_pWorkAreaTop;
+  g_pEmitListBuffer = top - 0x2000;
+  g_pRenderScratchOtBase = top - 0x6000;
+  top = top - 0x6008;
+  g_pRenderScratchPrimTop = top;
+
+  if (split) {
+    stride = -0x13000;
+  } else {
+    stride = -0x1C000;
+  }
+  top += stride;
+  g_pRenderScratchPrimBase1 = top;
+  top += stride;
+  g_pRenderScratchRegionBase = top;
+
+  b0 = *(void *volatile *)&g_pRenderScratchRegionBase;
+  b1 = *(void *volatile *)&g_pRenderScratchPrimBase1;
+  m = *(void *volatile *)&g_pRenderScratchPrimTop;
+  ot = *(void *volatile *)&g_pRenderScratchOtBase;
+  g_pFramePrimBufferBase0 = b0;
+  g_pFramePrimBufferBase1 = b1;
+  g_pFrameOtMergedChainSlot0 = m;
+  g_pFrameOtMergedChainSlot1 = m;
+  g_pFrameOtDepthBinBase0 = ot;
+  g_pFrameOtDepthBinBase1 = ot;
+  FillWord(m, 0, 8);
+  FillWord(g_pRenderScratchOtBase, 0, 0x4000);
+}
+
+/* PARKED 2026-07-10 at 57.1% (correct logic, equal length; the volatile-cast
+ * reload block + both FillWord calls + tail are byte-identical). Residue is
+ * §B15-class: the stride constant-select — original materializes it as
+ * beqz; lui-in-delay(shared); j; ori(-0x13000-arm in j delay); ori(-0x1C000)
+ * — while our sched1 hoists the shared lui to the function head and reorg
+ * then lays else-ori in the beqz delay + rematerialized lui/ori inline (no
+ * j). Ternary and if/else forms emit byte-identical output. The hoisted lui
+ * also shifts top/stride register roles (a3/a1 vs v0/v1) and batches the
+ * three head addiu's. Permuter candidate.
+ */

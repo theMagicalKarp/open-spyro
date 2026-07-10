@@ -10,3 +10,4 @@
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_8008747C)
     . = 0x0000dc30 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_80088668)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_80088668.o(.text)

@@ -10,3 +10,4 @@
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.func_level_27_800881D8)
     . = 0x0000ede8 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.func_level_27_80089820)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/func_level_27_80089820.o(.text)

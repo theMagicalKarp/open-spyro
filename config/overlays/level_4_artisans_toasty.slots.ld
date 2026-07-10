@@ -10,3 +10,4 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_8008391C)
     . = 0x00009fd8 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_80084A10)
+    build/overlays/level_4_artisans_toasty/c/func_level_4_80084A10.o(.text)

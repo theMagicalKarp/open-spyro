@@ -18,3 +18,4 @@
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.func_level_30_80084EA0)
     . = 0x0000b2a8 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.func_level_30_80085CE0)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_80085CE0.o(.text)
