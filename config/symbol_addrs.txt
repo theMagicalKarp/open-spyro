@@ -1539,6 +1539,7 @@ g_nSpyroMotionSpeed = 0x80078b70; // size:0x4
 g_nSpyroBodyYaw = 0x80078b74; // size:0x4
 g_nSpyroBodyRoll = 0x80078b78; // size:0x4
 g_nSpyroBodyPitch = 0x80078b7c; // size:0x4
+g_anSpyroBodyPitchBlock = 0x80078b7c; // allow_duplicated:True alias block — shared-base view for DampenSpyroFreeFallAttitude (+0 pitch, -0x4 roll)
 g_nSpyroFrameMotionLength = 0x80078b80; // size:0x4
 g_anSpyroPendingImpulse = 0x80078b84; // size:0xc
 g_nSpyroMoveTargetMag = 0x80078b9c; // size:0x4
