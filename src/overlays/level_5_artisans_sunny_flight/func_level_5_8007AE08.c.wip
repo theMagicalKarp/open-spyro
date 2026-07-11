@@ -1,0 +1,64 @@
+/* func_level_5_8007AE08 (0x8007AE08, level_5_artisans_sunny_flight overlay).
+ *
+ * Flight-level end hook. Once per attempt (guarded by gamestate != 7): enter
+ * gamestate 7, clear the six in-flight progress globals, double the run score
+ * (D_800758F4), and if this level's best-score slot (D_80078618[D_8007595C])
+ * is empty and all four objective counters (D_80078630..3C) sum to 0x20,
+ * record the score there.
+ * Identical body in the five flight-level overlays (level_5/11/17/23/29).
+ *
+ * PARKED at 73.6% (39/53): structure and instruction ORDER are exact (the
+ * serialized `t` reuse pins the lw/sw/sll sequence); residue is a pure
+ * whole-block v0<->v1 role swap (orig: t-chain=v0, five=v1, li 7=v1; ours:
+ * t-chain=v1, five=v0, li 7=a0). Tried: decl-order swap, folding the
+ * gamestate read into t (69.8%), sharing one var for 7+five (66.0%),
+ * separate volatile-pinned locals (slot overflow, +2 insns). Sec-H
+ * whole-block regalloc class; permuter candidate — 5x payoff (1060 bytes
+ * across the five flight overlays).
+ */
+
+extern int D_800757D8; /* g_Gamestate */
+extern int D_800758F4;
+extern int D_8007595C;
+extern int D_80075720;
+extern int D_8007568C;
+extern int D_800758B8;
+extern int D_80075744;
+extern int D_800757CC;
+extern int D_8007569C;
+extern int D_80078618[];
+extern int D_80078630;
+extern int D_80078634;
+extern int D_80078638;
+extern int D_8007863C;
+
+void func_level_5_8007AE08(void) {
+  int five;
+  int t;
+  int ten;
+  int *base;
+  int *slot;
+
+  if (D_800757D8 != 7) {
+    t = D_800758F4;
+    D_800757D8 = 7;
+    five = t * 5;
+    t = D_8007595C;
+    base = D_80078618;
+    D_80075720 = 0;
+    D_8007568C = 0;
+    D_800758B8 = 0;
+    D_80075744 = 0;
+    D_800757CC = 0;
+    D_8007569C = 0;
+    slot = (int *)((t << 2) + (int)base);
+    t = *slot;
+    ten = five << 1;
+    D_800758F4 = ten;
+    if (t == 0) {
+      if (D_80078630 + D_80078634 + D_80078638 + D_8007863C == 0x20) {
+        *slot = ten;
+      }
+    }
+  }
+}

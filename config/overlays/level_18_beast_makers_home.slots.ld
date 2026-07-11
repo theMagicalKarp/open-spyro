@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_18_beast_makers_home.ld. */
     . = 0x00000c2c ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007B664)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007B664.o(.text)
     . = 0x00000d68 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007B7A0)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007B7A0.o(.text)
     . = 0x00000dac ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007B7E4)
     . = 0x00002d4c ;

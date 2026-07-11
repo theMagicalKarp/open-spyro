@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_0_artisans_home.ld. */
     . = 0x00000468 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_8007AEA0)
+    build/overlays/level_0_artisans_home/c/func_level_0_8007AEA0.o(.text)
     . = 0x000005a4 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_8007AFDC)
+    build/overlays/level_0_artisans_home/c/func_level_0_8007AFDC.o(.text)
     . = 0x000005e8 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_8007B020)
     . = 0x00002588 ;

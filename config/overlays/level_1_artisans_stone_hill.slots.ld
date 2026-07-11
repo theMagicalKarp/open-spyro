@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_1_artisans_stone_hill.ld. */
     . = 0x00000518 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007AF50)
+    build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007AF50.o(.text)
     . = 0x00000654 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007B08C)
+    build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007B08C.o(.text)
     . = 0x00000698 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007B0D0)
     . = 0x00002638 ;

@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_24_dream_weavers_home.ld. */
     . = 0x00000e60 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.func_level_24_8007B898)
+    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007B898.o(.text)
     . = 0x00000f9c ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.func_level_24_8007B9D4)
+    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007B9D4.o(.text)
     . = 0x00000fe0 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.func_level_24_8007BA18)
     . = 0x00002f80 ;

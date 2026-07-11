@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_3_artisans_town_square.ld. */
     . = 0x000004f4 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_8007AF2C)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_8007AF2C.o(.text)
     . = 0x00000630 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_8007B068)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_8007B068.o(.text)
     . = 0x00000674 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_8007B0AC)
     . = 0x00002614 ;
