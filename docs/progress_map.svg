@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.12% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">45,820 / 2,159,608 split-code bytes · 378 matched</text>
-<rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
-<text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
-<rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
-<text x="1018" y="32" fill="#e6edf3" font-size="14">library</text>
-<rect x="861" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
-<text x="881" y="32" fill="#e6edf3" font-size="14">handwritten</text>
-<rect x="796" y="20" width="14" height="14" rx="2" fill="#da3633"/>
-<text x="816" y="32" fill="#e6edf3" font-size="14">asm</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.13% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">46,040 / 2,159,608 split-code bytes · 379 matched</text>
+<rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
+<text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
+<rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
+<text x="982" y="32" fill="#e6edf3" font-size="14">handwritten</text>
+<rect x="897" y="20" width="14" height="14" rx="2" fill="#da3633"/>
+<text x="917" y="32" fill="#e6edf3" font-size="14">asm</text>
+<rect x="796" y="20" width="14" height="14" rx="2" fill="#3fb950"/>
+<text x="816" y="32" fill="#e6edf3" font-size="14">matched</text>
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
@@ -295,7 +295,7 @@
 <rect x="165.90" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyCheatCodeEffect  ·  220 bytes  ·  matched</title></rect>
 <rect x="176.82" y="615.55" width="10.92" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>DampenSpyroFreeFallAttitude  ·  220 bytes  ·  asm</title></rect>
 <rect x="187.74" y="615.55" width="10.92" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ResetCallback  ·  220 bytes  ·  asm</title></rect>
-<rect x="198.66" y="615.55" width="10.92" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitDisplayEnv  ·  220 bytes  ·  asm</title></rect>
+<rect x="198.66" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitDisplayEnv  ·  220 bytes  ·  matched</title></rect>
 <rect x="209.58" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WaitMemCardEventSlot1  ·  220 bytes  ·  matched</title></rect>
 <rect x="220.50" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WaitMemCardEventSlot2  ·  220 bytes  ·  matched</title></rect>
 <rect x="231.42" y="615.55" width="10.72" height="11.01" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017D7C  ·  216 bytes  ·  handwritten</title></rect>
