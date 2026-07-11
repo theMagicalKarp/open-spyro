@@ -190,14 +190,15 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
         f'<text x="{PAD}" y="66" fill="{COLORS["matched"]}" font-size="22" '
         f'font-weight="700">{pct:.2f}% matched</text>'
     )
+    unsplit_note = f" · {unsplit_b:,} raw bytes (excluded)" if unsplit_b > 0 else ""
     out.append(
         f'<text x="{PAD + 190}" y="66" fill="#8b949e" font-size="16">'
-        f"{mb:,} / {tb:,} split-code bytes · {n_match} matched · "
-        f"{unsplit_b:,} raw bytes (excluded)</text>"
+        f"{mb:,} / {tb:,} split-code bytes · {n_match} matched"
+        f"{unsplit_note}</text>"
     )
     # Legend.
     lx = WIDTH - PAD
-    for label in ("unsplit", "library", "handwritten", "asm", "matched"):
+    for label in ("unsplit", "library", "handwritten", "asm"):
         text = label
         tw = 9 * len(text) + 26
         lx -= tw

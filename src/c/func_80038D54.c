@@ -9,8 +9,5 @@ int func_80038D54(IVec4 *arg0, IVec4 *arg1) {
   int t[4];
   r = ((arg1->x * arg0->x) + (arg1->y * arg0->y) + (arg1->z * arg0->z)) >> 10;
   r += arg1->w;
-  if (r < 0) {
-    r = -r;
-  }
-  return r;
+  return r >= 0 ? r : -r;
 }
