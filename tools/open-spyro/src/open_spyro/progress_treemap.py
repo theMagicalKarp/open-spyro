@@ -198,7 +198,7 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
     )
     # Legend.
     lx = WIDTH - PAD
-    for label in ("unsplit", "library", "handwritten", "asm"):
+    for label in ("library", "handwritten", "asm", "matched"):
         text = label
         tw = 9 * len(text) + 26
         lx -= tw
