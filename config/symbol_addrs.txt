@@ -1303,6 +1303,7 @@ g_nCameraTargetPitchBias = 0x80076e40; // size:0x4
 g_nCameraTargetYawBias = 0x80076e44; // size:0x4
 g_nCameraSpringYaw = 0x80076e48; // size:0x4
 g_nCameraSpringPitch = 0x80076e4c; // size:0x4
+g_anCameraSpringPitchBlock = 0x80076e4c; // allow_duplicated:True alias — held-base view of g_nCameraSpringPitch (ComputeCameraOrbitOffset reads it 3x through one callee-saved register)
 g_nCameraSpringDistance = 0x80076e50; // size:0x4
 g_nCameraSpringRoll = 0x80076e54; // size:0x4
 g_nCameraSpringPitchBias = 0x80076e58; // size:0x4
