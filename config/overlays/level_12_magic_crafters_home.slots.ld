@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_12_magic_crafters_home.ld. */
     . = 0x00000e38 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.func_level_12_8007B870)
+    build/overlays/level_12_magic_crafters_home/c/func_level_12_8007B870.o(.text)
     . = 0x00000f74 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.func_level_12_8007B9AC)
+    build/overlays/level_12_magic_crafters_home/c/func_level_12_8007B9AC.o(.text)
     . = 0x00000fb8 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.func_level_12_8007B9F0)
     . = 0x00002f58 ;

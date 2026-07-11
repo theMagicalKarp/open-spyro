@@ -2,8 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_6_peace_keepers_home.ld. */
     . = 0x00000e40 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.func_level_6_8007B878)
+    build/overlays/level_6_peace_keepers_home/c/func_level_6_8007B878.o(.text)
     . = 0x00000f7c ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.func_level_6_8007B9B4)
+    build/overlays/level_6_peace_keepers_home/c/func_level_6_8007B9B4.o(.text)
     . = 0x00000fc0 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.func_level_6_8007B9F8)
     . = 0x00002f60 ;

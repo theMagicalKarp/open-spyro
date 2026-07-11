@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">1.80% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">38,880 / 2,159,608 split-code bytes · 347 matched · 0 raw bytes (excluded)</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.04% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">43,964 / 2,159,608 split-code bytes · 372 matched · 0 raw bytes (excluded)</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#9e6a03"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">unsplit</text>
 <rect x="998" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
@@ -16,7 +16,7 @@
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
-<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">9%</text>
+<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">10%</text>
 <rect x="14.00" y="114.00" width="131.59" height="82.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RenderWorldChunks  ·  19976 bytes  ·  handwritten</title></rect>
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  asm</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  asm</title></rect>
@@ -242,7 +242,7 @@
 <rect x="155.59" y="591.70" width="12.65" height="12.27" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>AlignSpyroBodyToVelocity  ·  284 bytes  ·  asm</title></rect>
 <rect x="168.25" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetHudCounterDigits  ·  284 bytes  ·  matched</title></rect>
 <rect x="180.90" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitSoundEngine  ·  284 bytes  ·  matched</title></rect>
-<rect x="193.55" y="591.70" width="12.65" height="12.27" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005FEDC  ·  284 bytes  ·  asm</title></rect>
+<rect x="193.55" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005FEDC  ·  284 bytes  ·  matched</title></rect>
 <rect x="206.20" y="591.70" width="12.47" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CycleSpyroIdleAnim  ·  280 bytes  ·  matched</title></rect>
 <rect x="218.68" y="591.70" width="12.30" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnterPauseMenu  ·  276 bytes  ·  matched</title></rect>
 <rect x="230.97" y="591.70" width="12.30" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpecialCutscene  ·  276 bytes  ·  matched</title></rect>
@@ -268,10 +268,10 @@
 <rect x="142.94" y="761.55" width="11.79" height="11.86" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FUN_8006570c  ·  256 bytes  ·  matched</title></rect>
 <rect x="154.74" y="603.97" width="11.90" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B9D4  ·  252 bytes  ·  matched</title></rect>
 <rect x="166.63" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0F_Update  ·  248 bytes  ·  matched</title></rect>
-<rect x="178.34" y="603.97" width="11.71" height="11.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ApplyGravityAlongSpyroSlopeTangent  ·  248 bytes  ·  asm</title></rect>
+<rect x="178.34" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyGravityAlongSpyroSlopeTangent  ·  248 bytes  ·  matched</title></rect>
 <rect x="190.04" y="603.97" width="11.71" height="11.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80059474  ·  248 bytes  ·  asm</title></rect>
 <rect x="201.75" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitSpuSubsystem  ·  248 bytes  ·  matched</title></rect>
-<rect x="213.46" y="603.97" width="11.52" height="11.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ComputeCameraOrbitOffset  ·  244 bytes  ·  asm</title></rect>
+<rect x="213.46" y="603.97" width="11.52" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComputeCameraOrbitOffset  ·  244 bytes  ·  matched</title></rect>
 <rect x="224.98" y="603.97" width="11.52" height="11.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BlendDepthCuedEdgeColor  ·  244 bytes  ·  asm</title></rect>
 <rect x="236.49" y="603.97" width="11.52" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FUN_80065270  ·  244 bytes  ·  matched</title></rect>
 <rect x="248.01" y="603.97" width="11.33" height="11.58" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>SetVector3Magnitude  ·  240 bytes  ·  handwritten</title></rect>
@@ -281,13 +281,13 @@
 <rect x="293.33" y="603.97" width="11.33" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardSync  ·  240 bytes  ·  matched</title></rect>
 <rect x="304.66" y="603.97" width="11.14" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StartCdReadAsync  ·  236 bytes  ·  matched</title></rect>
 <rect x="154.74" y="615.55" width="11.16" height="11.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ApplyPadInputToSpyroBodyYaw  ·  236 bytes  ·  asm</title></rect>
-<rect x="154.74" y="627.11" width="11.16" height="11.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005E8D8  ·  236 bytes  ·  asm</title></rect>
+<rect x="154.74" y="627.11" width="11.16" height="11.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E8D8  ·  236 bytes  ·  matched</title></rect>
 <rect x="154.74" y="638.67" width="11.16" height="11.56" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_padRecvAtLoadInfo  ·  236 bytes  ·  library</title></rect>
 <rect x="154.74" y="650.22" width="11.16" height="11.36" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>EmitRadialShadedLine  ·  232 bytes  ·  asm</title></rect>
 <rect x="154.74" y="661.58" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawDemoModeOverlay  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="672.94" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038EE0  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="684.30" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BED8  ·  232 bytes  ·  matched</title></rect>
-<rect x="154.74" y="695.66" width="11.16" height="11.36" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80060EF0  ·  232 bytes  ·  asm</title></rect>
+<rect x="154.74" y="695.66" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80060EF0  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="707.02" width="11.16" height="11.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ExitPauseMenuToGame  ·  228 bytes  ·  matched</title></rect>
 <rect x="154.74" y="718.18" width="11.16" height="11.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80037F90  ·  228 bytes  ·  matched</title></rect>
 <rect x="154.74" y="729.35" width="11.16" height="11.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInfoMode  ·  228 bytes  ·  library</title></rect>
@@ -848,15 +848,15 @@
 <rect x="14.00" y="777.41" width="301.80" height="140.10" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="777.41" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="789.41" fill="#e6edf3" font-size="11" font-weight="600">12 · magic_crafters_home</text>
-<text x="312.80" y="789.41" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="312.80" y="789.41" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="14.00" y="793.41" width="207.28" height="124.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007E398  ·  53032 bytes  ·  asm</title></rect>
 <rect x="221.28" y="793.41" width="57.66" height="68.11" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B9F0  ·  8096 bytes  ·  asm</title></rect>
 <rect x="278.94" y="793.41" width="36.86" height="68.11" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008BE98  ·  5176 bytes  ·  asm</title></rect>
 <rect x="221.28" y="861.52" width="42.62" height="56.00" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008D2D0  ·  4920 bytes  ·  asm</title></rect>
 <rect x="263.89" y="861.52" width="51.90" height="28.33" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008B2C0  ·  3032 bytes  ·  asm</title></rect>
 <rect x="263.89" y="889.85" width="45.03" height="27.66" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007D990  ·  2568 bytes  ·  asm</title></rect>
-<rect x="308.92" y="889.85" width="6.87" height="22.30" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B870  ·  316 bytes  ·  asm</title></rect>
-<rect x="308.92" y="912.15" width="6.15" height="5.36" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B9AC  ·  68 bytes  ·  asm</title></rect>
+<rect x="308.92" y="889.85" width="6.87" height="22.30" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B870  ·  316 bytes  ·  matched</title></rect>
+<rect x="308.92" y="912.15" width="6.15" height="5.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B9AC  ·  68 bytes  ·  matched</title></rect>
 <rect x="315.08" y="912.15" width="0.72" height="5.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008E608  ·  8 bytes  ·  matched</title></rect>
 <rect x="14.00" y="921.52" width="301.80" height="135.40" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="921.52" width="301.80" height="16.00" fill="#161b22"/>
@@ -870,28 +870,28 @@
 <rect x="14.00" y="1060.92" width="301.80" height="133.08" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="1060.92" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="1072.92" fill="#e6edf3" font-size="11" font-weight="600">7 · peace_keepers_dry_canyon</text>
-<text x="312.80" y="1072.92" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="312.80" y="1072.92" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="14.00" y="1076.92" width="204.64" height="117.08" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007E240  ·  49808 bytes  ·  asm</title></rect>
 <rect x="218.64" y="1076.92" width="60.10" height="64.80" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007B898  ·  8096 bytes  ·  asm</title></rect>
 <rect x="278.74" y="1076.92" width="37.06" height="64.80" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8008B1C0  ·  4992 bytes  ·  asm</title></rect>
 <rect x="218.64" y="1141.72" width="39.45" height="52.28" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8008C540  ·  4288 bytes  ·  asm</title></rect>
 <rect x="258.09" y="1141.72" width="30.47" height="52.28" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8008A4D0  ·  3312 bytes  ·  asm</title></rect>
 <rect x="288.56" y="1141.72" width="27.23" height="45.36" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007D838  ·  2568 bytes  ·  asm</title></rect>
-<rect x="288.56" y="1187.08" width="21.95" height="6.92" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007B718  ·  316 bytes  ·  asm</title></rect>
-<rect x="310.52" y="1187.08" width="5.28" height="6.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007B854  ·  68 bytes  ·  asm</title></rect>
+<rect x="288.56" y="1187.08" width="21.95" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007B718  ·  316 bytes  ·  matched</title></rect>
+<rect x="310.52" y="1187.08" width="5.28" height="6.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8007B854  ·  68 bytes  ·  matched</title></rect>
 <rect x="310.52" y="1193.27" width="5.28" height="0.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_7_8008D600  ·  8 bytes  ·  matched</title></rect>
 <rect x="319.80" y="98.00" width="222.91" height="175.76" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="98.00" width="222.91" height="16.00" fill="#161b22"/>
 <text x="323.80" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">6 · peace_keepers_home</text>
-<text x="539.71" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="539.71" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="319.80" y="114.00" width="152.27" height="159.76" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007E3A0  ·  48824 bytes  ·  asm</title></rect>
 <rect x="472.07" y="114.00" width="70.64" height="57.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007B9F8  ·  8096 bytes  ·  asm</title></rect>
 <rect x="472.07" y="171.10" width="37.51" height="60.46" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8008AE28  ·  4552 bytes  ·  asm</title></rect>
 <rect x="509.58" y="171.10" width="33.13" height="60.46" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8008BFF0  ·  4020 bytes  ·  asm</title></rect>
 <rect x="472.07" y="231.56" width="35.70" height="42.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8008A258  ·  3024 bytes  ·  asm</title></rect>
 <rect x="507.77" y="231.56" width="34.94" height="36.62" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007D998  ·  2568 bytes  ·  asm</title></rect>
-<rect x="507.77" y="268.17" width="28.17" height="5.59" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007B878  ·  316 bytes  ·  asm</title></rect>
-<rect x="535.94" y="268.17" width="6.06" height="5.59" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007B9B4  ·  68 bytes  ·  asm</title></rect>
+<rect x="507.77" y="268.17" width="28.17" height="5.59" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007B878  ·  316 bytes  ·  matched</title></rect>
+<rect x="535.94" y="268.17" width="6.06" height="5.59" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8007B9B4  ·  68 bytes  ·  matched</title></rect>
 <rect x="542.00" y="268.17" width="0.71" height="5.59" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_6_8008CFA4  ·  8 bytes  ·  matched</title></rect>
 <rect x="546.71" y="98.00" width="217.85" height="175.76" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="546.71" y="98.00" width="217.85" height="16.00" fill="#161b22"/>
@@ -905,54 +905,54 @@
 <rect x="768.56" y="98.00" width="207.23" height="175.76" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="768.56" y="98.00" width="207.23" height="16.00" fill="#161b22"/>
 <text x="772.56" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">8 · peace_keepers_cliff_t…</text>
-<text x="972.79" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="972.79" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="768.56" y="114.00" width="134.97" height="159.76" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007E240  ·  43336 bytes  ·  asm</title></rect>
 <rect x="903.53" y="114.00" width="72.26" height="55.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007B898  ·  8096 bytes  ·  asm</title></rect>
 <rect x="903.53" y="169.75" width="37.40" height="63.27" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_80089714  ·  4756 bytes  ·  asm</title></rect>
 <rect x="940.93" y="169.75" width="34.85" height="63.27" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8008A9A8  ·  4432 bytes  ·  asm</title></rect>
 <rect x="903.53" y="233.02" width="36.10" height="40.74" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_80088B88  ·  2956 bytes  ·  asm</title></rect>
 <rect x="939.63" y="233.02" width="36.15" height="35.34" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007D838  ·  2568 bytes  ·  asm</title></rect>
-<rect x="939.63" y="268.37" width="29.14" height="5.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007B718  ·  316 bytes  ·  asm</title></rect>
-<rect x="968.78" y="268.37" width="6.27" height="5.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007B854  ·  68 bytes  ·  asm</title></rect>
+<rect x="939.63" y="268.37" width="29.14" height="5.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007B718  ·  316 bytes  ·  matched</title></rect>
+<rect x="968.78" y="268.37" width="6.27" height="5.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8007B854  ·  68 bytes  ·  matched</title></rect>
 <rect x="975.05" y="268.37" width="0.74" height="5.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_8_8008BAF8  ·  8 bytes  ·  matched</title></rect>
 <rect x="979.79" y="98.00" width="206.21" height="175.76" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="979.79" y="98.00" width="206.21" height="16.00" fill="#161b22"/>
 <text x="983.79" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">24 · dream_weavers_home</text>
-<text x="1183.00" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="1183.00" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="979.79" y="114.00" width="135.84" height="159.76" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007E3C0  ·  43620 bytes  ·  asm</title></rect>
 <rect x="1115.63" y="114.00" width="70.37" height="57.24" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007BA18  ·  8096 bytes  ·  asm</title></rect>
 <rect x="1115.63" y="171.24" width="36.26" height="63.77" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_800897FC  ·  4648 bytes  ·  asm</title></rect>
 <rect x="1151.89" y="171.24" width="34.11" height="63.77" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8008AA24  ·  4372 bytes  ·  asm</title></rect>
 <rect x="1115.63" y="235.02" width="32.98" height="38.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007D9B8  ·  2568 bytes  ·  asm</title></rect>
 <rect x="1148.61" y="235.02" width="37.39" height="33.53" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_80088E24  ·  2520 bytes  ·  asm</title></rect>
-<rect x="1148.61" y="268.55" width="30.14" height="5.22" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007B898  ·  316 bytes  ·  asm</title></rect>
-<rect x="1178.75" y="268.55" width="6.49" height="5.22" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007B9D4  ·  68 bytes  ·  asm</title></rect>
+<rect x="1148.61" y="268.55" width="30.14" height="5.22" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007B898  ·  316 bytes  ·  matched</title></rect>
+<rect x="1178.75" y="268.55" width="6.49" height="5.22" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8007B9D4  ·  68 bytes  ·  matched</title></rect>
 <rect x="1185.24" y="268.55" width="0.76" height="5.22" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_24_8008BB38  ·  8 bytes  ·  matched</title></rect>
 <rect x="319.80" y="277.76" width="172.35" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="277.76" width="172.35" height="16.00" fill="#161b22"/>
 <text x="323.80" y="289.76" fill="#e6edf3" font-size="11" font-weight="600">18 · beast_makers_ho…</text>
-<text x="489.14" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="489.14" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="319.80" y="293.76" width="172.35" height="117.55" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007E18C  ·  40292 bytes  ·  asm</title></rect>
 <rect x="319.80" y="411.31" width="62.16" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B7E4  ·  8096 bytes  ·  asm</title></rect>
 <rect x="381.96" y="411.31" width="34.89" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_800888F8  ·  4544 bytes  ·  asm</title></rect>
 <rect x="416.84" y="411.31" width="32.86" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_80089AB8  ·  4280 bytes  ·  asm</title></rect>
 <rect x="449.70" y="411.31" width="42.44" height="30.42" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007D784  ·  2568 bytes  ·  asm</title></rect>
 <rect x="449.70" y="441.73" width="36.82" height="35.07" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_80087EF0  ·  2568 bytes  ·  asm</title></rect>
-<rect x="486.52" y="441.73" width="5.62" height="28.27" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B664  ·  316 bytes  ·  asm</title></rect>
-<rect x="486.52" y="470.00" width="5.62" height="6.08" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B7A0  ·  68 bytes  ·  asm</title></rect>
+<rect x="486.52" y="441.73" width="5.62" height="28.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B664  ·  316 bytes  ·  matched</title></rect>
+<rect x="486.52" y="470.00" width="5.62" height="6.08" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B7A0  ·  68 bytes  ·  matched</title></rect>
 <rect x="486.52" y="476.09" width="5.62" height="0.72" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8008AB70  ·  8 bytes  ·  matched</title></rect>
 <rect x="496.14" y="277.76" width="171.88" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="496.14" y="277.76" width="171.88" height="16.00" fill="#161b22"/>
 <text x="500.14" y="289.76" fill="#e6edf3" font-size="11" font-weight="600">1 · artisans_stone_…</text>
-<text x="665.03" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="665.03" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="496.14" y="293.76" width="171.88" height="117.34" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007DA78  ·  40116 bytes  ·  asm</title></rect>
 <rect x="496.14" y="411.10" width="61.96" height="65.70" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007B0D0  ·  8096 bytes  ·  asm</title></rect>
 <rect x="558.10" y="411.10" width="35.60" height="65.70" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_80088098  ·  4652 bytes  ·  asm</title></rect>
 <rect x="593.70" y="411.10" width="33.21" height="65.70" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_800892C4  ·  4340 bytes  ·  asm</title></rect>
 <rect x="626.92" y="411.10" width="41.11" height="31.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007D070  ·  2568 bytes  ·  asm</title></rect>
 <rect x="626.92" y="442.51" width="35.36" height="34.29" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8008772C  ·  2412 bytes  ·  asm</title></rect>
-<rect x="662.28" y="442.51" width="5.75" height="27.64" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007AF50  ·  316 bytes  ·  asm</title></rect>
-<rect x="662.28" y="470.15" width="5.75" height="5.95" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007B08C  ·  68 bytes  ·  asm</title></rect>
+<rect x="662.28" y="442.51" width="5.75" height="27.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007AF50  ·  316 bytes  ·  matched</title></rect>
+<rect x="662.28" y="470.15" width="5.75" height="5.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8007B08C  ·  68 bytes  ·  matched</title></rect>
 <rect x="662.28" y="476.10" width="5.75" height="0.70" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_1_8008A3B8  ·  8 bytes  ·  matched</title></rect>
 <rect x="672.03" y="277.76" width="169.41" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="672.03" y="277.76" width="169.41" height="16.00" fill="#161b22"/>
@@ -966,15 +966,15 @@
 <rect x="845.44" y="277.76" width="168.44" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="845.44" y="277.76" width="168.44" height="16.00" fill="#161b22"/>
 <text x="849.44" y="289.76" fill="#e6edf3" font-size="11" font-weight="600">3 · artisans_town_s…</text>
-<text x="1010.88" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="1010.88" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="845.44" y="293.76" width="168.44" height="116.33" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007DA54  ·  38992 bytes  ·  asm</title></rect>
 <rect x="845.44" y="410.09" width="60.99" height="66.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007B0AC  ·  8096 bytes  ·  asm</title></rect>
 <rect x="906.43" y="410.09" width="33.33" height="66.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_80087E20  ·  4424 bytes  ·  asm</title></rect>
 <rect x="939.75" y="410.09" width="51.83" height="38.20" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_80088F68  ·  3940 bytes  ·  asm</title></rect>
 <rect x="939.75" y="448.29" width="51.83" height="28.51" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_800872A4  ·  2940 bytes  ·  asm</title></rect>
 <rect x="991.58" y="410.09" width="22.30" height="57.87" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007D04C  ·  2568 bytes  ·  asm</title></rect>
-<rect x="991.58" y="467.97" width="17.98" height="8.83" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007AF2C  ·  316 bytes  ·  asm</title></rect>
-<rect x="1009.56" y="467.97" width="4.32" height="7.90" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007B068  ·  68 bytes  ·  asm</title></rect>
+<rect x="991.58" y="467.97" width="17.98" height="8.83" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007AF2C  ·  316 bytes  ·  matched</title></rect>
+<rect x="1009.56" y="467.97" width="4.32" height="7.90" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_8007B068  ·  68 bytes  ·  matched</title></rect>
 <rect x="1009.56" y="475.87" width="4.32" height="0.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_3_80089ECC  ·  8 bytes  ·  matched</title></rect>
 <rect x="1017.88" y="277.76" width="168.12" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="1017.88" y="277.76" width="168.12" height="16.00" fill="#161b22"/>
@@ -1006,15 +1006,15 @@
 <rect x="319.80" y="850.84" width="174.78" height="172.13" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="850.84" width="174.78" height="16.00" fill="#161b22"/>
 <text x="323.80" y="862.84" fill="#e6edf3" font-size="11" font-weight="600">0 · artisans_home</text>
-<text x="491.57" y="862.84" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="491.57" y="862.84" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="319.80" y="866.84" width="102.19" height="156.13" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007D9C8  ·  32260 bytes  ·  asm</title></rect>
 <rect x="421.99" y="866.84" width="72.59" height="55.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007B020  ·  8096 bytes  ·  asm</title></rect>
 <rect x="421.99" y="922.00" width="36.71" height="64.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_80086134  ·  4780 bytes  ·  asm</title></rect>
 <rect x="458.69" y="922.00" width="35.88" height="64.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_800873E0  ·  4672 bytes  ·  asm</title></rect>
 <rect x="421.99" y="986.40" width="34.73" height="36.57" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007CFC0  ·  2568 bytes  ·  asm</title></rect>
 <rect x="456.71" y="986.40" width="32.56" height="36.57" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_800857CC  ·  2408 bytes  ·  asm</title></rect>
-<rect x="489.27" y="986.40" width="5.30" height="29.48" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007AEA0  ·  316 bytes  ·  asm</title></rect>
-<rect x="489.27" y="1015.88" width="5.30" height="6.34" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007AFDC  ·  68 bytes  ·  asm</title></rect>
+<rect x="489.27" y="986.40" width="5.30" height="29.48" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007AEA0  ·  316 bytes  ·  matched</title></rect>
+<rect x="489.27" y="1015.88" width="5.30" height="6.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007AFDC  ·  68 bytes  ·  matched</title></rect>
 <rect x="489.27" y="1022.23" width="5.30" height="0.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_80088620  ·  8 bytes  ·  matched</title></rect>
 <rect x="319.80" y="1026.97" width="174.78" height="167.03" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="1026.97" width="174.78" height="16.00" fill="#161b22"/>
@@ -1109,15 +1109,15 @@
 <rect x="1012.62" y="648.19" width="173.38" height="140.01" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="1012.62" y="648.19" width="173.38" height="16.00" fill="#161b22"/>
 <text x="1016.62" y="660.19" fill="#e6edf3" font-size="11" font-weight="600">30 · gnastys_world_g…</text>
-<text x="1183.00" y="660.19" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="1183.00" y="660.19" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
 <rect x="1012.62" y="664.19" width="91.42" height="124.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007D938  ·  23600 bytes  ·  asm</title></rect>
 <rect x="1104.03" y="664.19" width="81.97" height="47.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007AF90  ·  8096 bytes  ·  asm</title></rect>
 <rect x="1104.03" y="711.63" width="48.24" height="40.23" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_80083ED8  ·  4040 bytes  ·  asm</title></rect>
 <rect x="1104.03" y="751.86" width="48.24" height="36.33" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_80084EA0  ·  3648 bytes  ·  asm</title></rect>
 <rect x="1152.27" y="711.63" width="33.73" height="36.57" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007CF30  ·  2568 bytes  ·  asm</title></rect>
 <rect x="1152.27" y="748.20" width="33.73" height="34.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_80083568  ·  2416 bytes  ·  asm</title></rect>
-<rect x="1152.27" y="782.61" width="27.19" height="5.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007AE10  ·  316 bytes  ·  asm</title></rect>
-<rect x="1179.46" y="782.61" width="5.85" height="5.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007AF4C  ·  68 bytes  ·  asm</title></rect>
+<rect x="1152.27" y="782.61" width="27.19" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007AE10  ·  316 bytes  ·  matched</title></rect>
+<rect x="1179.46" y="782.61" width="5.85" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_8007AF4C  ·  68 bytes  ·  matched</title></rect>
 <rect x="1185.31" y="782.61" width="0.69" height="5.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_30_80085CE0  ·  8 bytes  ·  matched</title></rect>
 <rect x="649.74" y="792.19" width="179.00" height="134.61" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="649.74" y="792.19" width="179.00" height="16.00" fill="#161b22"/>
