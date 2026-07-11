@@ -1,0 +1,72 @@
+#include "globals.h"
+
+/* Snap the spring camera to its per-mode target (0x80034358, 0x128).
+   Loads the target angles for the current mode, copies all six target
+   angles into the spring set, zeroes the spring delta state and the
+   collision/stuck counters, recomputes the eye position (orbit offset +
+   anchor), seats the smoothed position on it, refreshes the euler angles,
+   and clears any camera shake. */
+extern void LoadCameraTargetAnglesFromMode(void);
+extern void ComputeCameraOrbitOffset(int *out);
+extern void AddVector();
+extern void CopyVector(int *dst, int *src);
+extern int ComputeCameraToTargetAngle(int *pos);
+extern void UpdateCameraEulerAngles(void);
+
+extern int g_anCameraSpringYawBlock[];
+
+void ResetCameraStateToTarget(void) {
+  int *yaw;
+  int *eye;
+  int y;
+  int p;
+  int d;
+  int r;
+  int pb;
+  int yb;
+
+  LoadCameraTargetAnglesFromMode();
+  yaw = g_anCameraSpringYawBlock;
+  eye = &yaw[-17];
+  y = *(volatile int *)&g_nCameraTargetYaw;
+  p = *(volatile int *)&g_nCameraTargetPitch;
+  d = *(volatile int *)&g_nCameraTargetDistance;
+  r = *(volatile int *)&g_nCameraTargetRoll;
+  pb = *(volatile int *)&g_nCameraTargetPitchBias;
+  yb = *(volatile int *)&g_nCameraTargetYawBias;
+  g_anCameraSpringDeltaState[0] = 0;
+  g_anCameraSpringDeltaState[1] = 0;
+  g_anCameraSpringDeltaState[2] = 0;
+  g_anCameraSpringDeltaState[3] = 0;
+  g_anCameraSpringDeltaState[4] = 0;
+  g_anCameraSpringDeltaState[5] = 0;
+  g_nCameraCollisionRetries = 0;
+  g_nCameraStuckFrames = 0;
+  *(volatile int *)yaw = y;
+  *(volatile int *)&g_nCameraSpringPitch = p;
+  *(volatile int *)&g_nCameraSpringDistance = d;
+  *(volatile int *)&g_nCameraSpringRoll = r;
+  *(volatile int *)&g_nCameraSpringPitchBias = pb;
+  *(volatile int *)&g_nCameraSpringYawBias = yb;
+  ComputeCameraOrbitOffset(eye);
+  AddVector(eye, eye, g_pCameraAnchorPos);
+  yaw = yaw - 0x14;
+  CopyVector(yaw, eye);
+  g_nCameraTargetInverted = ComputeCameraToTargetAngle(yaw);
+  UpdateCameraEulerAngles();
+  g_nCameraShakeMagnitude = 0;
+  g_nCameraShakeDuration = 0;
+}
+
+/* PARKED 2026-07-11 at 94.6% (70/74). Everything matches except the
+   AddVector call setup: original emits [move a0,s1; lui/lw a2 anchor;
+   jal (delay move a1,s1)]; ours [move a0; move a1; lui/lw; jal (delay
+   addiu s0,-0x50 forward-filled)] — reorg only backward-fills from the
+   immediately-preceding insn, and our sched always parks the anchor lw
+   adjacent to the jal so move a1 can never sit there. Tried: anchor temp
+   (propagated), volatile anchor read, unprototyped extern — byte-identical
+   all three. Sec-I scheduler slot-knot class (EndSaveMenuToWorld family);
+   permuter candidate. Working parts: g_anCameraSpringYawBlock held base
+   with eye = &yaw[-17] (addiu s1,s0,-0x44), in-place yaw -= 0x14 step,
+   Sec-M volatile 6-load batch + volatile spring stores around the plain
+   zero stores. */
