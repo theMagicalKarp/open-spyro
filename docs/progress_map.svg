@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.15% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">46,488 / 2,159,608 split-code bytes · 381 matched</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.16% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">46,748 / 2,159,608 split-code bytes · 382 matched</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -14,7 +14,7 @@
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
-<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">10%</text>
+<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">11%</text>
 <rect x="14.00" y="114.00" width="131.59" height="82.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RenderWorldChunks  ·  19976 bytes  ·  handwritten</title></rect>
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  asm</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  asm</title></rect>
@@ -258,7 +258,7 @@
 <rect x="142.94" y="665.34" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollMemCardEvents  ·  264 bytes  ·  matched</title></rect>
 <rect x="142.94" y="677.57" width="11.79" height="12.05" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitActorTriangle  ·  260 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="689.62" width="11.79" height="12.05" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitFogShadedActorTriangle  ·  260 bytes  ·  handwritten</title></rect>
-<rect x="142.94" y="701.67" width="11.79" height="12.05" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>PutDrawEnv  ·  260 bytes  ·  asm</title></rect>
+<rect x="142.94" y="701.67" width="11.79" height="12.05" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PutDrawEnv  ·  260 bytes  ·  matched</title></rect>
 <rect x="142.94" y="713.72" width="11.79" height="12.05" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdIntToPos  ·  260 bytes  ·  matched</title></rect>
 <rect x="142.94" y="725.77" width="11.79" height="12.05" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdRead  ·  260 bytes  ·  asm</title></rect>
 <rect x="142.94" y="737.82" width="11.79" height="11.86" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ProbeSpyroLedgeForward  ·  256 bytes  ·  asm</title></rect>

@@ -1,0 +1,63 @@
+#include "globals.h"
+
+extern int VSync(int mode);
+extern void WriteString(char *s);
+extern int WritePrintf();
+extern void CdResetController(void);
+
+extern char D_80011DFC[];  /* "CD timeout: " */
+extern char D_80011E0C[];  /* "%s:(%s) Sync=%s, Ready=%s\n" */
+extern char D_80011F04[];  /* "CD_datasync" */
+
+extern int D_80075AE8;         /* VSync deadline stamp */
+extern int D_80075AEC;         /* spin counter */
+extern char *D_80075AF0;       /* op-name string for the timeout message */
+extern int *D_80075140;        /* libcd status word pointer */
+extern int D_80074E5C[];       /* sync-status name table */
+extern int D_80074EDC[];       /* ready-status name table */
+extern unsigned char D_80074E55;  /* sync index */
+extern unsigned char D_80075114;  /* ready index (Sync) */
+extern unsigned char D_80075115;  /* ready index (Ready) */
+
+/* libcd CdDataSync (0x800655a0, 0x16c). Spins up to ~0x3C0 VSyncs (or 0x3C0000
+   iterations) for the data-ready bit (0x1000000) of *D_80075140. On timeout
+   prints "CD timeout: <op>:(<sync>) Sync=.., Ready=.." and resets the drive.
+   Returns 1 = still busy (mode!=0 poll), 0 = ready, -1 = timed out.
+
+   PARKED at +4 bytes (1 insn over, ~98% — otherwise byte-identical). The three
+   table-base pointer locals (readyTbl/readyIdx/syncTbl declared before the loop)
+   correctly force the original's s0/s1/s3 held bases (§N loop-invariant address
+   hoist), and merging result+ret into one `r` reproduces the coalesced-v0 tail
+   in the ghidra decomp (the `r=-1` default lands in the bnez delay slot when r is
+   in v0). Sole residue: our gcc allocates `r` to a0 (adding a trailing
+   `move v0,a0`) instead of v0. The mask test `*D_80075140 & 0x1000000` lives in
+   v0 and gcc won't coalesce r back into v0 after the `beqz`. Declaration order,
+   dropping the redundant `r=0`, and the merged/split-variable forms all leave the
+   move. Pure §H return-reg-coalescing tie; clean permuter candidate (1 insn). */
+int CdDataSync(int mode) {
+  int r;
+  int now;
+  int old;
+  int *readyTbl = D_80074EDC;
+  unsigned char *readyIdx = &D_80075114;
+  int *syncTbl = D_80074E5C;
+
+  D_80075AE8 = VSync(-1) + 0x3C0;
+  D_80075AEC = 0;
+  D_80075AF0 = D_80011F04;
+  do {
+    now = VSync(-1);
+    if (D_80075AE8 < now ||
+        (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
+      WriteString(D_80011DFC);
+      WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
+                  readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
+      CdResetController();
+      r = -1;
+    } else {
+      r = 0;
+    }
+  } while (r == 0 && (r = 0, (*D_80075140 & 0x1000000) != 0) &&
+           (r = 1, mode == 0));
+  return r;
+}

@@ -1,0 +1,68 @@
+#include "globals.h"
+
+extern void *CdSyncCallback(void *func);
+extern void *CdReadyCallback(void *func);
+extern void *FUN_80064050(void *func);
+extern int VSync(int mode);
+extern int CdStatus(void);
+extern int CdControlBlocking(int cmd, void *p1, void *p2);
+extern int CdReadStart(int retry);
+
+extern volatile int D_80075154; /* libcd mode/config word (reloaded) */
+extern int D_80075158;          /* per-sector size code */
+extern int D_80075148;          /* saved sector count */
+extern void *D_8007514C;        /* saved dst buffer */
+extern void *D_8007516C;        /* saved sync callback */
+extern void *D_80075170;        /* saved ready callback */
+extern int D_80075178[];        /* driver mode flags (bit 0 = DMA delivery) */
+extern void *D_80075174;        /* saved DMA completion handler */
+extern int D_80075164;          /* VSync stamp at read kick */
+
+/* libcd CdRead public API (0x8006606c, 0x104). Configures per-sector size
+   (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any
+   in-flight command, then kicks CdReadStart(0). Returns true on success.
+   Sibling logic of the matched func_80065FD0 / CdRead family.
+
+   PARKED (1 insn short, ~18% due to a cascading 1-insn shift). Two interacting
+   ties:
+   (1) §B14 held-base-no-call: the original computes &D_80075148 into a caller-
+       saved reg (v0) and stores `sectors` via `sw a3,0(v0)` while storing `buf`
+       to the ADJACENT D_8007514C via a fresh $at. That extra `addiu` base is the
+       missing instruction. There is no call between the two stores, so neither
+       &scalar, a pointer local, NOR an incomplete-array alias (g_anCdReadSaveBlock
+       @0x80075148) forces the base — all fold to the $at direct form. This also
+       lets the original leave the CdSyncCallback delay slot as a nop (a0=0 hoisted
+       early) whereas our build fills the slot with `move a0,zero` (1 shorter).
+   (2) §H register-role shift: `sel = D_80075154 & 0x30` lands in a0 (ours) vs v1
+       (orig); `code` (the 0x200/0x249/0x246 select) lands in v1 (ours) vs v0
+       (orig). The branch STRUCTURE matches (single value-select store at the merge
+       point via the `code` local + inverted `if (sel != 0)` guard) — only the two
+       register picks differ. Clean permuter candidate once the held base is forced. */
+int CdRead(int sectors, void *buf, unsigned int mode) {
+  int sel;
+  int code;
+  D_80075154 = mode;
+  sel = D_80075154 & 0x30;
+  if (sel != 0) {
+    code = 0x249;
+    if (sel != 0x20) {
+      code = 0x246;
+    }
+  } else {
+    code = 0x200;
+  }
+  D_80075158 = code;
+  D_80075154 = D_80075154 | 0x20;
+  D_8007514C = buf;
+  D_80075148 = sectors;
+  D_8007516C = CdSyncCallback(0);
+  D_80075170 = CdReadyCallback(0);
+  if (D_80075178[0] & 1) {
+    D_80075174 = FUN_80064050(0);
+  }
+  D_80075164 = VSync(-1);
+  if (CdStatus() & 0xE0) {
+    CdControlBlocking(9, 0, 0);
+  }
+  return 0 < CdReadStart(0);
+}
