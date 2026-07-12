@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.16% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">46,748 / 2,159,608 split-code bytes · 382 matched</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.23% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">48,160 / 2,159,608 split-code bytes · 385 matched</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -165,20 +165,20 @@
 <rect x="219.63" y="546.19" width="16.50" height="17.10" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>TickGemCutsceneActorAnims  ·  516 bytes  ·  handwritten</title></rect>
 <rect x="236.13" y="546.19" width="16.24" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BAD0  ·  508 bytes  ·  matched</title></rect>
 <rect x="252.37" y="546.19" width="16.24" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>SetSpuKeyMask  ·  508 bytes  ·  asm</title></rect>
-<rect x="268.61" y="546.19" width="15.86" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildCameraViewMatrix  ·  496 bytes  ·  asm</title></rect>
+<rect x="268.61" y="546.19" width="15.86" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildCameraViewMatrix  ·  496 bytes  ·  matched</title></rect>
 <rect x="284.47" y="546.19" width="15.73" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdInitDriver  ·  492 bytes  ·  asm</title></rect>
 <rect x="300.20" y="546.19" width="15.60" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B294  ·  488 bytes  ·  matched</title></rect>
 <rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  asm</title></rect>
 <rect x="100.19" y="580.26" width="15.71" height="16.84" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildSaveGameBuffer  ·  484 bytes  ·  asm</title></rect>
 <rect x="100.19" y="597.10" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardInit  ·  484 bytes  ·  matched</title></rect>
-<rect x="100.19" y="613.94" width="15.71" height="16.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ReturningHome_Draw  ·  476 bytes  ·  asm</title></rect>
+<rect x="100.19" y="613.94" width="15.71" height="16.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReturningHome_Draw  ·  476 bytes  ·  matched</title></rect>
 <rect x="100.19" y="630.50" width="15.71" height="16.42" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80050068  ·  472 bytes  ·  handwritten</title></rect>
 <rect x="100.19" y="646.92" width="15.71" height="16.42" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80069c08  ·  472 bytes  ·  library</title></rect>
 <rect x="100.19" y="663.34" width="15.71" height="16.28" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80051FEC  ·  468 bytes  ·  handwritten</title></rect>
 <rect x="100.19" y="679.62" width="15.71" height="16.28" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80052D64  ·  468 bytes  ·  handwritten</title></rect>
 <rect x="100.19" y="695.90" width="15.71" height="16.00" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>WriteSpuRamPio  ·  460 bytes  ·  asm</title></rect>
 <rect x="100.19" y="711.91" width="15.71" height="15.86" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildTextSpriteChain  ·  456 bytes  ·  asm</title></rect>
-<rect x="100.19" y="727.77" width="15.71" height="15.31" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>GemCutscene_Draw  ·  440 bytes  ·  asm</title></rect>
+<rect x="100.19" y="727.77" width="15.71" height="15.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemCutscene_Draw  ·  440 bytes  ·  matched</title></rect>
 <rect x="100.19" y="743.08" width="15.71" height="15.17" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateLedgeGrabCamera  ·  436 bytes  ·  asm</title></rect>
 <rect x="100.19" y="758.25" width="15.71" height="15.17" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>StepSpyroOntoLocalFloor  ·  436 bytes  ·  asm</title></rect>
 <rect x="115.90" y="563.29" width="16.05" height="14.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>RelocateMobActorTable  ·  432 bytes  ·  asm</title></rect>
