@@ -1295,6 +1295,7 @@ g_anCameraPos = 0x80076df8; // size:0xc
 g_anCameraEyeTarget = 0x80076e04; // size:0xc
 g_nCameraEulerRoll = 0x80076e1c; // size:0x2
 g_nCameraEulerPitch = 0x80076e1e; // size:0x2
+g_anCameraEulerPitchBlock = 0x80076e1e; // allow_duplicated:True alias — incomplete-array view so &g_nCameraEulerPitch stays in one held base reg (pitch reads + the view/world matrix output addresses reached at -0x3A/-0x4E) instead of per-access lui (BuildCameraViewMatrix)
 g_nCameraEulerYaw = 0x80076e20; // size:0x2
 g_nCameraCurrentMode = 0x80076e28; // size:0x4
 g_nCameraTargetYaw = 0x80076e30; // size:0x4
