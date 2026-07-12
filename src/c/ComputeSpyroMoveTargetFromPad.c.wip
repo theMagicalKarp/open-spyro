@@ -1,0 +1,66 @@
+#include "globals.h"
+
+extern int ArcTan2(int y, int x, int high_precision);
+
+/* D-pad → yaw table (16 entries, stride 2), indexed by the pad button nibble. */
+extern short D_8006C5D0[];
+
+/* Convert this substep's pad input (via g_pPadSubstepState) into a movement
+   target. Analog stick (bytes +0x16/+0x17 centered at 0x7f) → ArcTan2 target
+   yaw + magnitude-scaled speed; d-pad (button nibble 0xf000) → the yaw table;
+   both combined with g_nCameraEulerYaw for camera-relative motion. Neutral
+   input holds the persistent yaw and zeroes speed (0x8003d3b8, 0x174). */
+void ComputeSpyroMoveTargetFromPad(int param_1) {
+  int iVar1;
+  int iVar2;
+  void *pad;
+
+  pad = g_pPadSubstepState;
+  if (*(int *)((int)pad + 0x10) == 0 ||
+      (*(unsigned int *)((int)pad + 0x14) & 0xffff0000) == 0x7f7f0000) {
+    pad = g_pPadSubstepState;
+    if ((*(unsigned int *)((int)pad + 4) & 0xf000) == 0) {
+      g_nSpyroSpeedTarget = 0;
+      g_nSpyroBodyYawStep = 0;
+      g_nSpyroMoveTargetYaw = (unsigned int)g_abSpyroPersistentEuler[2] << 4;
+    } else {
+      g_nSpyroSpeedTarget = param_1;
+      g_nSpyroMoveTargetYaw =
+          *(short *)((char *)D_8006C5D0 +
+                     ((*(int *)((int)pad + 4) >> 0xb) & 0x1e)) +
+              g_nCameraEulerYaw &
+          0xfff;
+    }
+  } else {
+    g_nSpyroMoveTargetYaw =
+        ArcTan2(0x7f - *(unsigned char *)((int)pad + 0x17),
+                0x7f - *(unsigned char *)((int)pad + 0x16), 1);
+    g_nSpyroMoveTargetYaw = (g_nSpyroMoveTargetYaw + g_nCameraEulerYaw) & 0xfff;
+    pad = g_pPadSubstepState;
+    iVar1 = 0x7f - *(unsigned char *)((int)pad + 0x17);
+    if (iVar1 < 0) {
+      iVar1 = -iVar1;
+    }
+    iVar2 = 0x7f - *(unsigned char *)((int)pad + 0x16);
+    if (iVar2 < 0) {
+      iVar2 = -iVar2;
+    }
+    g_nSpyroSpeedTarget = param_1 * (iVar1 + iVar2) >> 7;
+    if (param_1 < g_nSpyroSpeedTarget) {
+      g_nSpyroSpeedTarget = param_1;
+    }
+  }
+}
+
+/* PARKED. Pad→move-target (decomp-faithful form here). Everything but the analog
+   abs-magnitude block matches: the condition dispatch, the double-store of
+   g_nSpyroMoveTargetYaw (raw ArcTan2 then (+yaw)&0xfff via a held &g), the d-pad
+   table lookup, and the ArcTan2-arg batched loads are all byte-correct. Residue
+   = §B13 abs load-batch/schedule tie: the original loads BOTH pad[0x17]/[0x16]
+   first, keeps 0x7f in s0 and REUSES s0 for iVar2 (`subu s0,s0,x; negu s0`), and
+   leaves iVar2's abs-branch delay a NOP. This interleaved source form is +1
+   (gcc speculatively fills iVar2's bgez delay with the `iVar1+iVar2` addu then
+   recomputes it → duplicate addu; iVar1/iVar2 land in v1/a0 not v0/s0).
+   Pre-loading both bytes into locals batches the loads but drops a different
+   insn (-1). Straddles the target by 1; whole-region regalloc (iVar2 reg s0 vs
+   v1) + delay-slot schedule tie. Permuter candidate. */

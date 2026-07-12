@@ -1,0 +1,76 @@
+#include "globals.h"
+
+extern void AddPrimToOT(int prim);
+
+/* Draw two stacked black POLY_F4 cinematic bars (top y=0..h, bottom
+   y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by
+   g_nGameplayBlocked — the "letterbox close"/"open" cutscene transition.
+   Submits both bars via AddPrimToOT (0x80018f30, 0x1a4). */
+void DrawCinematicLetterbox(void) {
+  void *prim;
+  int h;
+
+  if (g_nGameplayBlocked != 0) {
+    if (g_nLetterboxBarHeight < 0x16) {
+      g_nLetterboxBarHeight += g_nFrameStep;
+    }
+    if (g_nLetterboxBarHeight > 0x16) {
+      g_nLetterboxBarHeight = 0x16;
+    }
+  } else {
+    if (g_nLetterboxBarHeight > 0) {
+      g_nLetterboxBarHeight -= g_nFrameStep;
+    }
+    if (g_nLetterboxBarHeight < 0) {
+      g_nLetterboxBarHeight = 0;
+    }
+  }
+
+  prim = g_pPrimBufferWriteCursor;
+  *(unsigned char *)((int)prim + 7) = 0x28;
+  h = g_nLetterboxBarHeight;
+  *(int *)prim = 0x5000000;
+  *(short *)((int)prim + 8) = 0;
+  *(short *)((int)prim + 0xc) = 0x200;
+  *(short *)((int)prim + 0x10) = 0;
+  *(short *)((int)prim + 0x14) = 0x200;
+  *(short *)((int)prim + 0xa) = 0;
+  *(short *)((int)prim + 0xe) = 0;
+  *(unsigned char *)((int)prim + 4) = 0;
+  *(unsigned char *)((int)prim + 5) = 0;
+  *(unsigned char *)((int)prim + 6) = 0;
+  *(short *)((int)prim + 0x12) = h;
+  *(short *)((int)prim + 0x16) = h;
+  AddPrimToOT((int)prim);
+
+  prim = (void *)((int)prim + 0x18);
+  g_pPrimBufferWriteCursor = prim;
+  *(unsigned char *)((int)prim + 7) = 0x28;
+  h = g_nLetterboxBarHeight;
+  *(short *)((int)prim + 0x12) = 0xf0;
+  *(short *)((int)prim + 0x16) = 0xf0;
+  *(int *)prim = 0x5000000;
+  *(short *)((int)prim + 8) = 0;
+  *(short *)((int)prim + 0xc) = 0x200;
+  *(short *)((int)prim + 0x10) = 0;
+  *(short *)((int)prim + 0x14) = 0x200;
+  *(unsigned char *)((int)prim + 4) = 0;
+  *(unsigned char *)((int)prim + 5) = 0;
+  *(unsigned char *)((int)prim + 6) = 0;
+  *(short *)((int)prim + 0xa) = 0xf0 - h;
+  *(short *)((int)prim + 0xe) = 0xf0 - h;
+  AddPrimToOT((int)prim);
+
+  prim = (void *)((int)prim + 0x18);
+  g_pPrimBufferWriteCursor = prim;
+}
+
+/* PARKED 92.4% (8/105, 2 coupled decisions). POLY_F4 letterbox builder, §F vein,
+   logic+structure byte-identical. Residue: reorg fills BOTH clamp exit-branch
+   delay slots with `lui s3` (0x5000000) and puts `li s2` (0x28) at the merge
+   label; my build swaps them (s2 in delay, s3 at merge). This choice is coupled
+   to prim1's cached barHeight landing in v1 vs the original's v0 (prim2's is v1
+   in both). Tried: branch-arm order (fixed the 60%->92% layout), reorder head
+   stores (breaks store order), drop h local / direct-global reads (83.8%),
+   named `code` local for 0x5000000 (const-propagates back, no change). Pure
+   reorg delay-slot-fill order tie; permuter candidate. */
