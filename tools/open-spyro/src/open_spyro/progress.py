@@ -257,10 +257,20 @@ def load_overrides(path: Path | None) -> set[str]:
     return {p.stem for p in Path(path).glob("*.c")}
 
 
+def load_wip_overrides(path: Path | None) -> set[str]:
+    """Set of function names with a parked C attempt (src/c/<name>.c.wip -> <name>)."""
+    if path is None or not Path(path).is_dir():
+        return set()
+    # Path(...).stem strips only the last suffix ("Foo.c.wip" -> "Foo.c"), so peel
+    # the whole ".c.wip" tail off the name instead.
+    return {p.name.removesuffix(".c.wip") for p in Path(path).glob("*.c.wip")}
+
+
 def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
     sym = parse_symbol_funcs(seg["symbol_addrs"])
     blocks, defined, hand = parse_asm(seg["asm"])
     overrides = load_overrides(seg.get("src_c"))
+    wip_overrides = load_wip_overrides(seg.get("src_c"))
 
     # An overlay with no seeded function symbols is not yet function/data-split: its
     # asm/overlays/<name>/text.s is a handful of coarse func_ blobs that are mostly
@@ -310,6 +320,10 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
             ob = func_bytes(orig, addr, size, seg["vram_base"], seg["file_base"])
             rb = func_bytes(rebuilt, addr, size, seg["vram_base"], seg["file_base"])
             status = "matched" if (ob is not None and ob == rb) else "wip"
+        if status == "asm" and name in wip_overrides:
+            # A parked src/c/<name>.c.wip attempt exists (not yet an active override).
+            # Surface it as work-in-progress rather than untouched asm.
+            status = "wip"
         is_lib = any(lo <= addr < hi for lo, hi in lib_ranges)
         # Hand-written-asm classification (lib takes precedence — already excluded).
         strong, hw, ninstr = hand.get(name, (0, 0, 0))

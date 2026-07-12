@@ -16,7 +16,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 
 | Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| main | 581 | 320 | 0 | 261 | 39,536 | 256,924 | 15.39% |
+| main | 581 | 320 | 42 | 219 | 39,536 | 256,924 | 15.39% |
 | ovl/credits | 3 | 1 | 0 | 2 | 8 | 6,384 | 0.13% |
 | ovl/level_0_artisans_home | 9 | 3 | 0 | 6 | 392 | 55,176 | 0.71% |
 | ovl/level_10_peace_keepers_doctor_shemp | 5 | 1 | 0 | 4 | 8 | 50,016 | 0.02% |
@@ -48,13 +48,13 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_34_gnastys_world_gnastys_loot | 5 | 1 | 0 | 4 | 8 | 46,368 | 0.02% |
 | ovl/level_3_artisans_town_square | 9 | 3 | 0 | 6 | 392 | 61,352 | 0.64% |
 | ovl/level_4_artisans_toasty | 5 | 1 | 0 | 4 | 8 | 39,556 | 0.02% |
-| ovl/level_5_artisans_sunny_flight | 10 | 1 | 0 | 9 | 8 | 41,168 | 0.02% |
+| ovl/level_5_artisans_sunny_flight | 10 | 1 | 2 | 7 | 8 | 41,168 | 0.02% |
 | ovl/level_6_peace_keepers_home | 9 | 3 | 0 | 6 | 392 | 71,476 | 0.55% |
 | ovl/level_7_peace_keepers_dry_canyon | 9 | 3 | 0 | 6 | 392 | 73,456 | 0.53% |
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
-| ovl/titlescreen | 5 | 4 | 0 | 1 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 380 | 0 | 449 | 48,160 | 2,159,608 | 2.23% |
+| ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
+| **all** | 829 | 380 | 45 | 404 | 48,160 | 2,159,608 | 2.23% |
 
 ## Library / SDK (excluded from %)
 
@@ -87,7 +87,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80012460` | SpuInit | main | 32 | matched | game |
 | `0x80012480` | InitCdSystem | main | 140 | matched | game |
 | `0x8001250c` | LoadAssetDirectoryFromCd | main | 96 | matched | game |
-| `0x8001256c` | BuildAudioTrackTable | main | 152 | asm | game |
+| `0x8001256c` | BuildAudioTrackTable | main | 152 | wip | game |
 | `0x80012604` | ResetLevelState | main | 376 | matched | game |
 | `0x8001277c` | InitNewGameState | main | 68 | matched | game |
 | `0x800127c0` | Initialize | main | 1328 | asm | game |
@@ -116,7 +116,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80016cb0` | LookupCosine | main | 88 | asm | handwritten |
 | `0x80016d08` | CountLeadingZeros | main | 36 | asm | asm-hint |
 | `0x80016d2c` | ApplyEulerRotation | main | 676 | asm | handwritten |
-| `0x80016fd0` | func_80016FD0 | main | 120 | asm | game |
+| `0x80016fd0` | func_80016FD0 | main | 120 | wip | game |
 | `0x80017048` | RotateVectorByMatrix | main | 120 | asm | handwritten |
 | `0x800170c0` | ApplyActiveGteRotation | main | 80 | asm | handwritten |
 | `0x80017110` | WorldToCameraRotate | main | 120 | asm | handwritten |
@@ -162,9 +162,9 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80017e98` | ConvertRGB15ToLuma8 | main | 140 | asm | handwritten |
 | `0x80017f24` | AddBiasToColorRuns | main | 176 | asm | handwritten |
 | `0x80017fd4` | func_80017FD4 | main | 16 | asm | game |
-| `0x80017fe4` | BuildTextSpriteChain | main | 456 | asm | game |
+| `0x80017fe4` | BuildTextSpriteChain | main | 456 | wip | game |
 | `0x800181ac` | BuildTextSprites | main | 672 | asm | game |
-| `0x8001844c` | EmitRadialShadedLine | main | 232 | asm | game |
+| `0x8001844c` | EmitRadialShadedLine | main | 232 | wip | game |
 | `0x80018534` | EnqueueBlinkingMarkerSprite | main | 216 | matched | game |
 | `0x8001860c` | DrawShadedMenuBox | main | 284 | matched | game |
 | `0x80018728` | DrawDragonRescuedBanner | main | 336 | matched | game |
@@ -172,7 +172,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80018880` | EnqueuePendingSpritePrims | main | 136 | matched | game |
 | `0x80018908` | DrawDemoModeOverlay | main | 232 | matched | game |
 | `0x800189f0` | DrawMotionTrailRibbons | main | 1344 | asm | game |
-| `0x80018f30` | DrawCinematicLetterbox | main | 420 | asm | game |
+| `0x80018f30` | DrawCinematicLetterbox | main | 420 | wip | game |
 | `0x800190d4` | DrawFullscreenTint | main | 200 | matched | game |
 | `0x8001919c` | EmitTexturedQuad | main | 356 | matched | game |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | asm | game |
@@ -221,16 +221,16 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002c91c` | Gamestate06SubstateStub_Noop | main | 8 | matched | game |
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | asm | game |
 | `0x8002cb6c` | EndGemPickupToWorld | main | 348 | asm | game |
-| `0x8002ccc8` | func_8002CCC8 | main | 868 | asm | game |
-| `0x8002d02c` | EndSaveMenuToWorld | main | 324 | asm | game |
-| `0x8002d170` | BeginStoryIntro | main | 184 | asm | game |
+| `0x8002ccc8` | func_8002CCC8 | main | 868 | wip | game |
+| `0x8002d02c` | EndSaveMenuToWorld | main | 324 | wip | game |
+| `0x8002d170` | BeginStoryIntro | main | 184 | wip | game |
 | `0x8002d228` | BeginCreditsSequence | main | 272 | matched | game |
-| `0x8002d338` | BeginGemCutscene | main | 264 | asm | game |
+| `0x8002d338` | BeginGemCutscene | main | 264 | wip | game |
 | `0x8002d440` | DispatchSpecialCutscene | main | 276 | matched | game |
 | `0x8002d554` | ClearPadHistoryRing | main | 44 | matched | game |
 | `0x8002d580` | HandleLevelSelectInput | main | 656 | asm | game |
 | `0x8002d810` | ApplyCheatCodeEffect | main | 220 | matched | game |
-| `0x8002d8ec` | CheckCheatCodeMatch | main | 392 | asm | game |
+| `0x8002d8ec` | CheckCheatCodeMatch | main | 392 | wip | game |
 | `0x8002da74` | AnimateGemTallyParticles | main | 1320 | asm | game |
 | `0x8002df9c` | Gamestate01_Update | main | 100 | matched | game |
 | `0x8002e000` | CameraSettle_Update | main | 132 | asm | game |
@@ -255,7 +255,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80034198` | LoadCameraTargetAnglesFromMode | main | 108 | asm | game |
 | `0x80034204` | ComputeCameraOrbitOffset | main | 244 | matched | game |
 | `0x800342f8` | UpdateCameraEulerAngles | main | 96 | asm | game |
-| `0x80034358` | ResetCameraStateToTarget | main | 296 | asm | game |
+| `0x80034358` | ResetCameraStateToTarget | main | 296 | wip | game |
 | `0x80034480` | UpdateGameplayCamera | main | 2052 | asm | game |
 | `0x80034c84` | SnapCameraToTarget | main | 100 | asm | game |
 | `0x80034ce8` | AdvanceCameraSpringStep | main | 2748 | asm | game |
@@ -290,7 +290,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80038a40` | func_80038A40 | main | 188 | matched | game |
 | `0x80038afc` | func_80038AFC | main | 180 | matched | game |
 | `0x80038bb0` | func_80038BB0 | main | 156 | matched | game |
-| `0x80038c4c` | func_80038C4C | main | 264 | asm | game |
+| `0x80038c4c` | func_80038C4C | main | 264 | wip | game |
 | `0x80038d54` | func_80038D54 | main | 108 | matched | game |
 | `0x80038dc0` | TrackEntityYawTowardSpyro | main | 288 | matched | game |
 | `0x80038ee0` | func_80038EE0 | main | 232 | matched | game |
@@ -321,7 +321,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003b688` | func_8003B688 | main | 160 | matched | game |
 | `0x8003b728` | func_8003B728 | main | 152 | matched | game |
 | `0x8003b7c0` | func_8003B7C0 | main | 148 | matched | game |
-| `0x8003b854` | func_8003B854 | main | 384 | asm | game |
+| `0x8003b854` | func_8003B854 | main | 384 | wip | game |
 | `0x8003b9d4` | func_8003B9D4 | main | 252 | matched | game |
 | `0x8003bad0` | func_8003BAD0 | main | 508 | matched | game |
 | `0x8003bccc` | func_8003BCCC | main | 524 | matched | game |
@@ -333,24 +333,24 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003c994` | func_8003C994 | main | 304 | matched | game |
 | `0x8003cac4` | func_8003CAC4 | main | 96 | matched | game |
 | `0x8003cb24` | AdvanceSpyroAnimFrame | main | 148 | asm | game |
-| `0x8003cbb8` | StepSpyroAnimAndCommitTransition | main | 300 | asm | game |
+| `0x8003cbb8` | StepSpyroAnimAndCommitTransition | main | 300 | wip | game |
 | `0x8003cce4` | ApplySpyroStateTransition | main | 1200 | asm | game |
 | `0x8003d194` | TickSpyroAnimStateMachine | main | 548 | asm | game |
-| `0x8003d3b8` | ComputeSpyroMoveTargetFromPad | main | 372 | asm | game |
+| `0x8003d3b8` | ComputeSpyroMoveTargetFromPad | main | 372 | wip | game |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | asm | game |
 | `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | asm | game |
-| `0x8003d840` | ApplyPadInputToSpyroBodyYaw | main | 236 | asm | game |
+| `0x8003d840` | ApplyPadInputToSpyroBodyYaw | main | 236 | wip | game |
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | asm | game |
-| `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | asm | game |
-| `0x8003da08` | DampenSpyroFreeFallAttitude | main | 220 | asm | game |
+| `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | wip | game |
+| `0x8003da08` | DampenSpyroFreeFallAttitude | main | 220 | wip | game |
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | asm | game |
-| `0x8003de44` | AlignSpyroBodyToVelocity | main | 284 | asm | game |
+| `0x8003de44` | AlignSpyroBodyToVelocity | main | 284 | wip | game |
 | `0x8003df60` | func_8003DF60 | main | 68 | matched | game |
 | `0x8003dfa4` | ResetSpyroLinearMotion | main | 72 | matched | game |
-| `0x8003dfec` | RotateSpyroBodyTowardKnockbackDir | main | 200 | asm | game |
+| `0x8003dfec` | RotateSpyroBodyTowardKnockbackDir | main | 200 | wip | game |
 | `0x8003e0b4` | ApplyGravityAlongSpyroSlopeTangent | main | 248 | matched | game |
 | `0x8003e1ac` | ApplyGravityAlongSpyroSlopeNormal | main | 108 | matched | game |
-| `0x8003e218` | ProbeSpyroLedgeForward | main | 256 | asm | game |
+| `0x8003e218` | ProbeSpyroLedgeForward | main | 256 | wip | game |
 | `0x8003e318` | ProbeSpyroGroundContact | main | 784 | asm | game |
 | `0x8003e628` | AverageSpyroPlatformMotion | main | 304 | matched | game |
 | `0x8003e758` | StepSpyroOntoLocalFloor | main | 436 | asm | game |
@@ -369,7 +369,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | asm | game |
 | `0x800495d8` | AdvanceSpyroAnimLayer1Frame | main | 136 | matched | game |
 | `0x80049660` | TickSpyroAnimLayer1 | main | 544 | asm | game |
-| `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | asm | game |
+| `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | wip | game |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | asm | game |
 | `0x80049dfc` | AdvanceSpyroAnimLayer2Frame | main | 144 | matched | game |
 | `0x80049e8c` | TickSpyroAnimLayer2 | main | 176 | matched | game |
@@ -426,7 +426,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80054400` | OffsetHudIconRollAxis | main | 92 | matched | game |
 | `0x8005445c` | OffsetHudDigitRollAxis | main | 76 | matched | game |
 | `0x800544a8` | CommitHudCounterAnimState | main | 208 | matched | game |
-| `0x80054578` | func_80054578 | main | 136 | asm | game |
+| `0x80054578` | func_80054578 | main | 136 | wip | game |
 | `0x80054600` | InitHudCounters | main | 904 | asm | game |
 | `0x80054988` | UpdateHudCounters | main | 3652 | asm | game |
 | `0x800557cc` | func_800557CC | main | 400 | asm | game |
@@ -436,8 +436,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800562a4` | StopSoundVoicesByOwner | main | 216 | matched | game |
 | `0x8005637c` | TickActiveSoundVoices | main | 1144 | asm | game |
 | `0x800567f4` | HandleMusicCommand | main | 820 | asm | game |
-| `0x80056b28` | StopAllSoundExceptMask | main | 348 | asm | game |
-| `0x80056c84` | ComputeVoicePanAndFalloff | main | 320 | asm | game |
+| `0x80056b28` | StopAllSoundExceptMask | main | 348 | wip | game |
+| `0x80056c84` | ComputeVoicePanAndFalloff | main | 320 | wip | game |
 | `0x80056dc4` | GetSoundVoiceStatusByOwner | main | 120 | matched | game |
 | `0x80056e3c` | SyncSoundVoicesWithHardware | main | 152 | matched | game |
 | `0x80056ed4` | TickSpuPerFrame | main | 144 | matched | game |
@@ -454,17 +454,17 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80058ba8` | DrawWorldParticleEmitters | main | 48 | matched | game |
 | `0x80058bd8` | ComputeBillboardBasisVectors | main | 164 | matched | game |
 | `0x80058c7c` | InitLightVectorConstants | main | 68 | matched | game |
-| `0x80058cc0` | RotateLightVectorXZ | main | 164 | asm | game |
+| `0x80058cc0` | RotateLightVectorXZ | main | 164 | wip | game |
 | `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | asm | handwritten |
-| `0x80059474` | func_80059474 | main | 248 | asm | game |
+| `0x80059474` | func_80059474 | main | 248 | wip | game |
 | `0x8005956c` | ComputeSaveGameChecksum | main | 40 | matched | game |
 | `0x80059594` | func_80059594 | main | 720 | asm | game |
 | `0x80059864` | BuildSaveGameBuffer | main | 484 | asm | game |
 | `0x80059a48` | DrawSpyroDropShadow | main | 1348 | asm | handwritten |
 | `0x80059f8c` | DrawEntityDirectionalSpikes | main | 1252 | asm | handwritten |
 | `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | asm | game |
-| `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | asm | game |
-| `0x8005b7d8` | LoadActorMeshTables | main | 264 | asm | game |
+| `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | wip | game |
+| `0x8005b7d8` | LoadActorMeshTables | main | 264 | wip | game |
 | `0x8005b8e0` | start | main | 168 | asm | asm-hint |
 | `0x8005b988` | __main | main | 112 | asm | game |
 | `0x8005b9f8` | __do_global_dtors | main | 104 | asm | game |
@@ -515,8 +515,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005db94` | EnableEvent | main | 12 | asm | game |
 | `0x8005dba4` | EnterCriticalSection | main | 16 | asm | asm-hint |
 | `0x8005dbb4` | ExitCriticalSection | main | 16 | asm | asm-hint |
-| `0x8005dbc4` | VSync | main | 328 | asm | game |
-| `0x8005dd0c` | WaitForFrameDeadline | main | 156 | asm | game |
+| `0x8005dbc4` | VSync | main | 328 | wip | game |
+| `0x8005dd0c` | WaitForFrameDeadline | main | 156 | wip | game |
 | `0x8005dda8` | ChangeClearPAD | main | 12 | asm | game |
 | `0x8005ddb8` | ChangeClearRCnt | main | 12 | asm | game |
 | `0x8005ddc8` | FUN_8005ddc8 | main | 48 | matched | game |
@@ -531,7 +531,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005df44` | SetInterruptMask | main | 28 | matched | game |
 | `0x8005df60` | ResetCallback | main | 220 | asm | game |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | asm | game |
-| `0x8005e224` | InstallInterruptCallback | main | 340 | asm | game |
+| `0x8005e224` | InstallInterruptCallback | main | 340 | wip | game |
 | `0x8005e378` | func_8005E378 | main | 172 | asm | game |
 | `0x8005e424` | func_8005E424 | main | 136 | matched | game |
 | `0x8005e4ac` | FUN_8005e4ac | main | 44 | matched | game |
@@ -592,7 +592,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005f0ac` | func_8005F0AC | main | 56 | matched | game |
 | `0x8005f0e4` | func_8005F0E4 | main | 276 | matched | game |
 | `0x8005f1f8` | func_8005F1F8 | main | 172 | matched | game |
-| `0x8005f2a4` | ResetGraph | main | 388 | asm | game |
+| `0x8005f2a4` | ResetGraph | main | 388 | wip | game |
 | `0x8005f428` | func_8005F428 | main | 276 | asm | game |
 | `0x8005f53c` | SetGraphDebug | main | 100 | matched | game |
 | `0x8005f5a0` | func_8005F5A0 | main | 172 | matched | game |
@@ -601,13 +601,13 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005f66c` | func_8005F66C | main | 92 | matched | game |
 | `0x8005f6c8` | SetDispMask | main | 156 | matched | game |
 | `0x8005f764` | DrawSync | main | 108 | matched | game |
-| `0x8005f7d0` | ValidateGpuRect | main | 296 | asm | game |
+| `0x8005f7d0` | ValidateGpuRect | main | 296 | wip | game |
 | `0x8005f8f8` | ClearImage | main | 148 | matched | game |
 | `0x8005f98c` | func_8005F98C | main | 156 | asm | game |
 | `0x8005fa28` | LoadImage | main | 100 | matched | game |
 | `0x8005fa8c` | StoreImage | main | 100 | matched | game |
-| `0x8005faf0` | MoveImage | main | 196 | asm | game |
-| `0x8005fbb4` | func_8005FBB4 | main | 184 | asm | game |
+| `0x8005faf0` | MoveImage | main | 196 | wip | game |
+| `0x8005fbb4` | func_8005FBB4 | main | 184 | wip | game |
 | `0x8005fc6c` | func_8005FC6C | main | 152 | asm | game |
 | `0x8005fd04` | func_8005FD04 | main | 96 | matched | game |
 | `0x8005fd64` | DrawOTag | main | 116 | matched | game |
@@ -629,7 +629,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80060c94` | BuildDrawAreaBottomRight | main | 204 | asm | game |
 | `0x80060d60` | BuildDrawOffsetCommand | main | 68 | matched | game |
 | `0x80060da4` | BuildTextureWindow | main | 132 | matched | game |
-| `0x80060e28` | FUN_80060e28 | main | 176 | asm | game |
+| `0x80060e28` | FUN_80060e28 | main | 176 | wip | game |
 | `0x80060ed8` | func_80060ED8 | main | 24 | matched | game |
 | `0x80060ef0` | func_80060EF0 | main | 232 | matched | game |
 | `0x80060fd8` | func_80060FD8 | main | 604 | asm | game |
@@ -644,9 +644,9 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80061820` | EnqueueGpuOp | main | 736 | asm | game |
 | `0x80061b00` | FlushGpuQueue | main | 748 | asm | game |
 | `0x80061dec` | ResetGraphImpl | main | 348 | matched | game |
-| `0x80061f48` | DrawSyncImpl | main | 328 | asm | game |
+| `0x80061f48` | DrawSyncImpl | main | 328 | wip | game |
 | `0x80062090` | ResetGpuTimeoutDeadline | main | 52 | matched | game |
-| `0x800620c4` | CheckGpuTimeout | main | 364 | asm | game |
+| `0x800620c4` | CheckGpuTimeout | main | 364 | wip | game |
 | `0x80062230` | InitDisplayEnv | main | 220 | matched | game |
 | `0x8006230c` | memset | main | 44 | matched | game |
 | `0x80062338` | GPU_cw | main | 12 | asm | game |
@@ -672,7 +672,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80062f10` | WriteChar | main | 180 | matched | game |
 | `0x80062fc4` | write | main | 12 | asm | game |
 | `0x80062fd4` | sprintf | main | 2140 | asm | game |
-| `0x80063830` | memmove | main | 108 | asm | game |
+| `0x80063830` | memmove | main | 108 | wip | game |
 | `0x8006389c` | WriteString | main | 80 | matched | game |
 | `0x800638ec` | setjmp | main | 60 | asm | game |
 | `0x80063928` | longjmp | main | 60 | asm | game |
@@ -709,13 +709,13 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80065270` | FUN_80065270 | main | 244 | matched | game |
 | `0x80065364` | FUN_80065364 | main | 80 | matched | game |
 | `0x800653b4` | CdInitDriver | main | 492 | asm | game |
-| `0x800655a0` | CdDataSync | main | 364 | asm | game |
+| `0x800655a0` | CdDataSync | main | 364 | wip | game |
 | `0x8006570c` | FUN_8006570c | main | 256 | matched | game |
 | `0x8006580c` | FUN_8006580c | main | 240 | matched | game |
 | `0x800658fc` | func_800658FC | main | 1216 | asm | game |
 | `0x80065dbc` | CdReadStart | main | 532 | asm | game |
 | `0x80065fd0` | func_80065FD0 | main | 156 | matched | game |
-| `0x8006606c` | CdRead | main | 260 | asm | game |
+| `0x8006606c` | CdRead | main | 260 | wip | game |
 | `0x80066170` | func_80066170 | main | 204 | matched | game |
 | `0x8006623c` | CdReadCallback | main | 24 | matched | game |
 | `0x80066254` | FUN_80066254 | main | 24 | matched | game |
@@ -910,14 +910,14 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8006bb40` | IsSioTimeoutExpired | main | 160 | asm | lib |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | asm | game |
 | `0x8007aad4` | func_titlescreen_8007AAD4 | ovl/titlescreen | 216 | matched | game |
-| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | asm | game |
+| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | wip | game |
 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | asm | game |
 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | asm | game |
 | `0x8007ae08` | func_level_11_8007AE08 | ovl/level_11_peace_keepers_night_flight | 212 | asm | game |
 | `0x8007ae08` | func_level_17_8007AE08 | ovl/level_17_magic_crafters_crystal_flight | 212 | asm | game |
 | `0x8007ae08` | func_level_23_8007AE08 | ovl/level_23_beast_makers_wild_flight | 212 | asm | game |
 | `0x8007ae08` | func_level_29_8007AE08 | ovl/level_29_dream_weavers_icy_flight | 212 | asm | game |
-| `0x8007ae08` | func_level_5_8007AE08 | ovl/level_5_artisans_sunny_flight | 212 | asm | game |
+| `0x8007ae08` | func_level_5_8007AE08 | ovl/level_5_artisans_sunny_flight | 212 | wip | game |
 | `0x8007ae10` | func_level_30_8007AE10 | ovl/level_30_gnastys_world_gnorc_gnexus | 316 | matched | game |
 | `0x8007ae40` | func_level_2_8007AE40 | ovl/level_2_artisans_dark_hollow | 31520 | asm | game |
 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | asm | game |
@@ -951,7 +951,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8007b4b0` | func_level_17_8007B4B0 | ovl/level_17_magic_crafters_crystal_flight | 476 | asm | game |
 | `0x8007b4b0` | func_level_23_8007B4B0 | ovl/level_23_beast_makers_wild_flight | 476 | asm | game |
 | `0x8007b4b0` | func_level_29_8007B4B0 | ovl/level_29_dream_weavers_icy_flight | 476 | asm | game |
-| `0x8007b4b0` | func_level_5_8007B4B0 | ovl/level_5_artisans_sunny_flight | 476 | asm | game |
+| `0x8007b4b0` | func_level_5_8007B4B0 | ovl/level_5_artisans_sunny_flight | 476 | wip | game |
 | `0x8007b4c8` | func_level_9_8007B4C8 | ovl/level_9_peace_keepers_ice_cavern | 33088 | asm | game |
 | `0x8007b4dc` | func_level_26_8007B4DC | ovl/level_26_dream_weavers_lofty_castle | 37188 | asm | game |
 | `0x8007b4f8` | func_level_25_8007B4F8 | ovl/level_25_dream_weavers_dark_passage | 38556 | asm | game |

@@ -5,6 +5,7 @@ renders one SVG where each function is a rectangle sized by its code-byte count
 and colored by match status:
 
     matched      green   — rebuilt bytes verified identical to the original
+    wip          amber   — a parked src/c/<name>.c.wip attempt exists (in flight)
     asm          red     — still linked in as original assembly (the work left)
     handwritten  slate   — hand-authored asm; not C-matchable by design
     library      purple  — PSY-Q / libc leaf; excluded from the match denominator
@@ -32,6 +33,7 @@ LEGEND_H = 0
 # GitHub-ish palette, matched to the legend categories.
 COLORS = {
     "matched": "#3fb950",
+    "wip": "#d29922",
     "asm": "#da3633",
     "handwritten": "#8b949e",
     "library": "#8957e5",
@@ -46,6 +48,8 @@ def _category(f: dict[str, Any]) -> str:
     """Collapse a function record to one of the legend buckets."""
     if f["status"] == "matched":
         return "matched"
+    if f["status"] == "wip":
+        return "wip"
     if f.get("unsplit"):
         return "unsplit"
     if f.get("handwritten"):
@@ -168,6 +172,7 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
     tb = data["total_code_bytes"]  # split game code (denominator)
     unsplit_b = data.get("unsplit_overlay_bytes", 0)
     n_match = sum(1 for f in funcs if f["status"] == "matched")
+    n_wip = sum(1 for f in funcs if f["status"] == "wip")
 
     inner_w = WIDTH - 2 * PAD
     inner_h = 1100 if grouped else 900
@@ -191,14 +196,15 @@ def render_svg(data: dict[str, Any], grouped: bool = True) -> str:
         f'font-weight="700">{pct:.2f}% matched</text>'
     )
     unsplit_note = f" · {unsplit_b:,} raw bytes (excluded)" if unsplit_b > 0 else ""
+    wip_note = f" · {n_wip} wip" if n_wip > 0 else ""
     out.append(
         f'<text x="{PAD + 190}" y="66" fill="#8b949e" font-size="16">'
         f"{mb:,} / {tb:,} split-code bytes · {n_match} matched"
-        f"{unsplit_note}</text>"
+        f"{wip_note}{unsplit_note}</text>"
     )
     # Legend.
     lx = WIDTH - PAD
-    for label in ("library", "handwritten", "asm", "matched"):
+    for label in ("library", "handwritten", "asm", "wip", "matched"):
         text = label
         tw = 9 * len(text) + 26
         lx -= tw
