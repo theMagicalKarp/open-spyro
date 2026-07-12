@@ -1237,6 +1237,7 @@ g_nGameplayDrawMode = 0x80075940; // size:0x4
 g_bSpyroPadSnapshotReverseFlag = 0x80075944; // size:0x1
 g_nVsyncFramePaceAnchor = 0x80075950; // size:0x4
 g_nVsyncFrameEndCount = 0x80075954; // size:0x4
+g_anVsyncFrameEndBlock = 0x80075954; // allow_duplicated:True alias — held-base view of g_nVsyncFrameEndCount so the pace loop reads g_nVsyncFramePaceAnchor at [-1] via one register while the count store keeps a fresh %hi/%lo (GemCutscene_Draw et al frame-flush tail)
 g_nSpyroPitchRateAccum = 0x80075960; // size:0x4
 g_nLevelIntroIndex = 0x80075964; // size:0x4
 g_nActiveLevelId = 0x8007596c; // size:0x4
