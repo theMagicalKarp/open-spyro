@@ -1,0 +1,72 @@
+#include "globals.h"
+
+extern int VSync(int mode);
+extern int WritePrintf(char *fmt, ...);
+extern int SetInterruptMask(int mask);
+extern unsigned int *D_80074B54; /* DPCR register pointer */
+extern unsigned char D_8001195C[]; /* "GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x,..." */
+extern unsigned char D_80011990[]; /* last-op diagnostic format */
+
+/* libgpu GPU watchdog: called from EnqueueGpuOp when the 64-entry DMA ring is
+   full. Returns 0 if there is still time on the current frame budget
+   (g_nGpuWatchdogDeadline vs VSync(-1), plus g_nGpuWatchdogSpinCount under
+   0xf0000), -1 if the GPU has wedged. On timeout, prints the watchdog
+   diagnostics, hard-resets DMA channel 2 (GPU CHCR=0x401, DPCR bit 0x800),
+   then GP1 reset (0x02000000, 0x01000000), and clears the ring head/tail.
+   (0x800620c4, 364 bytes.)
+
+   PARKED at 360/364 bytes (4 bytes / 1 instr short, 98.9%). Fixed along the
+   way: the spin-count compare uses the PRE-increment value (`spin` captured
+   before `g_nGpuWatchdogSpinCount = spin + 1`, matches the original's v0/v1
+   register split); the early "return 0" needed the result-variable form
+   (row 30) - a literal `return 0;`/`return -1;` split relocates the 0-arm
+   to the tail and the final `return -1;` must stay a fresh literal, NOT the
+   carried `result` var, or `result` gets promoted to a spurious callee-saved
+   s0 (+8 bytes, tried and reverted); the g_nGpuQueueReadIndex re-read after
+   zeroing it needs an explicit `volatile` cast on BOTH the store and the
+   reload or gcc constant-propagates the just-stored 0 instead of emitting
+   the original's real `lw` (proven pattern, cookbook §J extended to a
+   same-var self-read). Sole remaining residue: the second WritePrintf's
+   first arg (g_dwLastGpuOpFunc) compiles as a direct 2-insn lui+lw in our
+   build; the original computes the ADDRESS first (lui+addiu, i.e. `&sym`)
+   then a separate `lw 0(v0)` (3 insns) - an explicit local pointer
+   (`unsigned int *lastFunc = &g_dwLastGpuOpFunc; ...*lastFunc...`) and a
+   allow_duplicated alias symbol at the same address both got folded back to
+   the 2-insn form by cse. Also unfixed: the dead priming read of
+   *g_pGpuStatReg lands in v0 in the original but a0 in ours (register
+   choice only, no byte-length cost). Permuter candidate: single
+   address-vs-value load-form tie. */
+int CheckGpuTimeout(void) {
+  int mask;
+  int depth;
+  int spin;
+  int result;
+
+  if (g_nGpuWatchdogDeadline < VSync(-1)) {
+    result = -1;
+  } else {
+    spin = g_nGpuWatchdogSpinCount;
+    g_nGpuWatchdogSpinCount = spin + 1;
+    result = (0xF0000 < spin) ? -1 : 0;
+  }
+  if (result == 0) {
+    return result;
+  }
+  *(volatile unsigned int *)g_pGpuStatReg;
+  depth = g_nGpuQueueWriteIndex - g_nGpuQueueReadIndex;
+  WritePrintf(D_8001195C, depth & 0x3F, *(volatile unsigned int *)g_pGpuStatReg,
+              *(volatile unsigned int *)g_pDmaGpuChcrReg,
+              *(volatile unsigned int *)g_pDmaGpuMadrReg);
+  WritePrintf(D_80011990, g_dwLastGpuOpFunc, g_dwLastGpuOpArg1,
+              g_dwLastGpuOpArg2);
+  mask = SetInterruptMask(0);
+  *(volatile int *)&g_nGpuQueueReadIndex = 0;
+  g_nGpuQueueWriteIndex = *(volatile int *)&g_nGpuQueueReadIndex;
+  g_nResetGraphSavedIMask = mask;
+  *(volatile unsigned int *)g_pDmaGpuChcrReg = 0x401;
+  *D_80074B54 |= 0x800;
+  *(volatile unsigned int *)g_pGpuStatReg = 0x2000000;
+  *(volatile unsigned int *)g_pGpuStatReg = 0x1000000;
+  SetInterruptMask(g_nResetGraphSavedIMask);
+  return -1;
+}
