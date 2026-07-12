@@ -1,0 +1,76 @@
+#include "globals.h"
+
+extern unsigned char D_80011878[]; /* "%s:bad RECT" */
+extern unsigned char D_80011884[]; /* "(%d,%d)-(%d,%d)\n" */
+extern unsigned char D_80011898[]; /* "%s:" */
+
+/* libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage.
+   Validates that the RECT fits within the framebuffer bounds
+   (g_nGpuScreenWidth/g_nGpuScreenHeight). Prints "<tag>:bad RECT" plus the
+   rect via the debug-printf hook when g_bGpuDebugLevel==1 and the rect is
+   out of bounds, or just "<tag>:" when g_bGpuDebugLevel==2.
+   (0x8005f7d0, 296 bytes.)
+
+   PARKED at +4 bytes (300 built vs 296 target): the switch-dispatch (case
+   1/2/default) and the whole 8-guard bounds-check chain are byte-identical
+   to the original (the switch-lowering fixed the earlier dispatch-order
+   mismatch). Sole residue is the final printf's 4-int-arg call: the last
+   arg (h, spilled to the stack per o32 ABI) is loaded LAST and its store
+   deferred into the jalr delay slot in the original, but our build always
+   loads h FIRST and stores it immediately regardless of source order
+   (locals in x,y,w,h order vs direct rect-> field access both give
+   byte-identical output) - a §K independent-load scheduling tie, not
+   reachable from source. Permuter candidate: 1 store instruction
+   position. */
+void ValidateGpuRect(char *name, RECT *rect) {
+  unsigned char *msg;
+  int w, x, y, h;
+
+  switch (g_bGpuDebugLevel) {
+  case 1:
+    w = rect->w;
+    if (g_nGpuScreenWidth < w) {
+      goto bad_rect;
+    }
+    x = rect->x;
+    if (g_nGpuScreenWidth < w + x) {
+      goto bad_rect;
+    }
+    y = rect->y;
+    if (g_nGpuScreenHeight < y) {
+      goto bad_rect;
+    }
+    h = rect->h;
+    if (g_nGpuScreenHeight < y + h) {
+      goto bad_rect;
+    }
+    if (w <= 0) {
+      goto bad_rect;
+    }
+    if (x < 0) {
+      goto bad_rect;
+    }
+    if (y < 0) {
+      goto bad_rect;
+    }
+    if (h > 0) {
+      return;
+    }
+  bad_rect:
+    msg = D_80011878;
+    break;
+  case 2:
+    msg = D_80011898;
+    break;
+  default:
+    return;
+  }
+  ((void (*)())g_pfnGpuDebugPrintf)(msg, name);
+  {
+    int px = rect->x;
+    int py = rect->y;
+    int pw = rect->w;
+    int ph = rect->h;
+    ((void (*)())g_pfnGpuDebugPrintf)(D_80011884, px, py, pw, ph);
+  }
+}
