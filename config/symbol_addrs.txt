@@ -1641,3 +1641,4 @@ g_nSpyroShadowOtBinBias = 0x8007aa2c; // size:0x4
 g_nSpyroShadowRingIndex = 0x8007aa30; // size:0x4
 g_nSpyroShadowHiddenFlag = 0x8007aa34; // size:0x4
 g_abAssetDirectoryBuffer = 0x8007aa38; // size:0x258
+g_apActorMeshTableBlock = 0x80076378; // allow_duplicated:True alias — incomplete-array view so the mesh-table base materializes as a held register (LoadActorMeshTables)

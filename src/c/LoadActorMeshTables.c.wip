@@ -1,0 +1,59 @@
+#include "globals.h"
+
+/* Loads the actor mesh table from CD into the top of the boot-load region.
+   CdReadSyncSectors pulls the directory (size D_8007A714, sector D_8007A710) into
+   a buffer just below 0x80200000 - g_nCrt0StackSize; the first word gives the
+   payload size copied down to g_pWorkAreaTop, then up to 64 directory entries are
+   walked: each non-empty entry relocates a mesh header and stores the resolved
+   pointer at g_apActorMeshTable[slot]. Finishes by re-init'ing the actor scratch
+   regions. (0x8005b7d8, 264 bytes.) */
+
+extern int D_8007A710;
+extern int D_8007A714;
+extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of g_apActorMeshTable */
+
+extern void CdReadSyncSectors(int lba, void *buf, int size, int sector, int marker);
+extern void CopyWords(void *dst, void *src, int byte_count);
+extern int *RelocateActorMeshHeader(int *header);
+extern void InitActorMeshScratchRegions(int arg);
+
+void LoadActorMeshTables(void) {
+    int *dir;
+    unsigned int top;
+    int i;
+
+    i = 0;
+    top = 0x80200000;
+    dir = (int *)(top - D_8007A714 - D_8007A714 - g_nCrt0StackSize);
+    CdReadSyncSectors(g_nCdBaseLba, dir, D_8007A714, D_8007A710, 0x258);
+    g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - *dir);
+    CopyWords(g_pWorkAreaTop, dir + 0x200, *dir);
+    for (;;) {
+        if (dir[1] == 0) {
+            break;
+        }
+        i++;
+        (&g_apActorMeshTable)[dir[2]] =
+            RelocateActorMeshHeader((int *)((int)g_pWorkAreaTop + dir[1] - 0x800));
+        dir += 2;
+        if (i >= 0x40) {
+            break;
+        }
+    }
+    InitActorMeshScratchRegions(0);
+}
+
+/* PARKED (loop.c biv-selection / peeling tie): logic 100% correct.
+ * - do/while and for(;;) forms hoist &g_apActorMeshTable into s3 (correct) but
+ *   gcc PEELS the leading `if(dir[1]==0)` test and strength-reduces dir -> dir+4
+ *   (giv), coming out +3 insns / slot overflow.
+ * - goto-loop (label + if goto) avoids both the peel and the giv (single dir base
+ *   with 4/8 offsets, matching the original) BUT disables loop.c, so the table
+ *   base is no longer hoisted to a held s3 (per-iteration lui) -> -4 insns short
+ *   even with a pre-loop `void **mesh = g_apActorMeshTableBlock;` held-base local
+ *   (gets to 62/66).
+ * - `volatile int *dir` is LENGTH-EXACT (66/66) but disables the table hoist too,
+ *   rotating the whole callee-saved allocation (dir=s1/top=s0, no s3).
+ * The original wants loop.c ON (table hoisted) + NO peel + dir base (not dir+4) +
+ * table in s3 simultaneously — unreachable from any source form tried. Permuter
+ * candidate (biv-selection). Alias g_apActorMeshTableBlock committed. */

@@ -1,0 +1,64 @@
+#include "globals.h"
+
+/* 3D positional sound pan + distance falloff. out[L,R] gains are derived from the
+   pan byte (0x80 = center; wraps to full-L/full-R via the 0x40/0xbf window), scaled
+   by the falloff fraction (vol<<8)/range applied to the listener-relative baseline,
+   then each channel is clamped to [0,0x3fff]. When the mono-mix flag is set both
+   channels collapse to their average. (0x80056c84, 320 bytes.) */
+
+void ComputeVoicePanAndFalloff(short *out, int vol, int pan,
+                               unsigned int range, short *base) {
+    unsigned int lo;
+    int gainL;
+    int gainR;
+    short bL;
+    short bR;
+    short cur;
+
+    if (range != 0) {
+        if ((unsigned int)((pan - 0x40) & 0xFF) < 0x80) {
+            gainL = -(int)pan & 0xFF;
+            gainR = pan & 0xFF;
+        } else {
+            gainL = (pan + 0x80) & 0xFF;
+            gainR = (0x80 - pan) & 0xFF;
+        }
+        lo = (unsigned int)(vol << 8) / range;
+        bL = base[0];
+        out[0] = (short)((int)(gainL * (short)(bL - ((unsigned int)(lo * bL) >> 8))) >> 7);
+        bR = base[1];
+        out[1] = (short)((int)(gainR * (short)(bR - ((unsigned int)(lo * bR) >> 8))) >> 7);
+        if (out[0] < 0) {
+            out[0] = 0;
+        } else if (out[0] >= 0x4000) {
+            out[0] = 0x3FFF;
+        }
+        if (out[1] < 0) {
+            out[1] = 0;
+        } else if (out[1] >= 0x4000) {
+            out[1] = 0x3FFF;
+        }
+        if (g_nSoundMonoMixFlag != 0) {
+            cur = (short)((unsigned int)(out[1] + out[0]) >> 1);
+            out[0] = cur;
+            out[1] = cur;
+        }
+    }
+}
+
+
+/* PARKED (reorg/regalloc tie, -1 insn / slot underflow): the divide, both channel
+ * computations, BOTH clamp blocks (each reloading out[i] via `lh`) and the mono-mix
+ * are byte-identical. Keys that got it here: compute `lo` AFTER the pan if/else (so
+ * `vol` stays live in a1 through the pan block instead of gcc hoisting `move a0,a1`
+ * into the beqz delay); inline the clamp tests on out[0]/out[1] directly (NOT via a
+ * `short cur` temp — that CSEs the reload into `sll;sra`, and `*(volatile short*)`
+ * gives `lhu`+sll+sra). Residue is ONE instruction: the original keeps a redundant
+ * `addu v1,a2` (param_3 copy) hoisted into the `beqz range` delay slot and reads
+ * gainR from v1; ours reads param_3 straight from a2, so reorg fills that delay slot
+ * with the param_1->t0 copy instead and the param_3 copy never exists (-1).
+ *   - `int p3 = pan;` used for gainR DOES create the copy -> 80 insns, but pins p3 to
+ *     its own register for the whole live range and scrambles the allocation (1.2%).
+ *   - swapping gainR before gainL: -2 (gcc merges harder).
+ * Also a dead 0x20 frame vs our 0x10 (row 45; `int pad[4];(void)pad;` was DCE'd).
+ * Clean permuter candidate: needs the transient param_3 copy in the beqz delay. */
