@@ -1,0 +1,84 @@
+#include "globals.h"
+
+extern void CopyVector(int *dst, int *src);
+extern int PlaySoundEffect(unsigned int id, int owner, unsigned int flags,
+                           unsigned char *pos);
+
+extern int g_anGemPickupBlock[]; /* held-base alias @ g_nGemPickupSubstate */
+
+/* Begins the dragon-rescue statue cutscene overlay (GS_GEM_PICKUP): seeds the
+   cutscene substate/timer globals, bumps both dragon counters (per-level +
+   world total, priming the HUD cache), blocks gameplay, flags the source
+   actor's render record at +0x3c, anchors the aura star, and fires the rescue
+   chime. Special-cases Artisans home (level 10 pickup 1->2) and Gnasty's Loot
+   (level 0x3c key-locked treasure rewrite). (0x8002c924) */
+void BeginGemPickupOverlay(unsigned int *param_1) {
+  unsigned int *puVar1;
+  int idx;
+  int world;
+  int *dragons;
+  int prevDragons;
+
+  puVar1 = (unsigned int *)*param_1;
+  if (g_nActiveLevelId == 0xa && puVar1[6] == 1 &&
+      (g_abLevelGemPercent[1] != 0 || g_abLevelGemPercent[2] != 0 ||
+       g_abLevelGemPercent[3] != 0 || g_abLevelGemPercent[5] != 0)) {
+    puVar1[6] = 2;
+  }
+  if (g_nActiveLevelId == 0x3c) {
+    if (g_abLevelGemPercent[0x21] != 0) {
+      puVar1[6] = 1;
+      puVar1[0xb] = 0xcc8;
+      puVar1[2] = 0x2561;
+      puVar1[3] = 0xffc;
+      puVar1[4] = 0x6a;
+      puVar1[5] = 0xbb;
+      puVar1[0xa] = 0x800;
+      puVar1[0xc] = 0x800;
+      puVar1[0] = 0x134bf;
+      puVar1[1] = 0x13ce9;
+      puVar1[0xe] = 0x10;
+    }
+  }
+  g_nGamestate = 8;
+  world = g_nWorldDragonsRescued;
+  dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
+  g_nHudDragonCachedCount = world;
+  prevDragons = *dragons;
+  g_nGameplayBlocked = 1;
+  g_nGamePaused = 1;
+  *dragons = prevDragons + 1;
+  g_anGemPickupBlock[0] = 0; /* g_nGemPickupSubstate = 0 */
+  g_nGemPickupStreamState = 0;
+  g_nGemPickupTimer = 0;
+  g_nGemPickupSecondaryTimer = 0;
+  g_nGemPickupPadHoldTimer = 0;
+  g_nGemPickupAudioFiredFlag = 0;
+  g_anGemPickupBlock[0x1a] = (int)param_1; /* g_pGemPickupSourceActor = param_1 */
+  g_nWorldDragonsRescued = world + 1;
+  g_nGemPickupTypeSnapshot = puVar1[6];
+  idx = puVar1[8];
+  if (idx != -1) {
+    *(unsigned char *)((char *)g_pActorListBase + idx * 0x58 + 0x3c) = 1;
+  }
+  CopyVector(g_anGemPickupAuraStarAnchor, (int *)(param_1 + 3));
+  g_anGemPickupAuraStarAnchor[2] += 0x40;
+  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x30),
+                  (int)&g_anGemPickupBlock[0x1a], 0x10,
+                  (unsigned char *)((char *)g_anGemPickupBlock[0x1a] + 0x54));
+}
+
+/* PARKED 69.2% (45/146), exact length, logic 100% correct. Solved: the held-base
+   alias g_anGemPickupBlock[0]/[0x1a] for the substate + g_pGemPickupSourceActor
+   stores + PlaySoundEffect owner arg; and the dragon-rescue load-delay fill — the
+   original interleaves the gameplayBlocked/gamePaused stores into the
+   g_anLevelDragonsRescued[idx] load-modify-store, reproduced ONLY by splitting the
+   RMW explicitly (`prevDragons = *dragons; g_nGameplayBlocked=1; g_nGamePaused=1;
+   *dragons = prevDragons+1;`) — the inline `+= 1` or stores-before-RMW forms both
+   hoist the two stores above the whole dragon block and leave a load-delay nop.
+   RESIDUE = three independent §H/§B13/§M register+schedule ties source can't move:
+   (1) the Gnasty-loot block's two big-const regs (a1/a0 vs a0/v1) + the 0x800 reuse
+   reg; (2) the dragon-index / literal-`1` register swap (v1/a0 vs a0/v1); (3) the
+   tail zero-store run scheduled AFTER the source-actor store + world increment
+   instead of before (batch-store scatter, §B13). Multi-cluster permuter candidate.
+   Alias g_anGemPickupBlock @0x80077058 committed. */

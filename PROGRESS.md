@@ -16,7 +16,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 
 | Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| main | 581 | 320 | 42 | 219 | 39,536 | 256,924 | 15.39% |
+| main | 581 | 320 | 44 | 217 | 39,536 | 256,924 | 15.39% |
 | ovl/credits | 3 | 1 | 0 | 2 | 8 | 6,384 | 0.13% |
 | ovl/level_0_artisans_home | 9 | 3 | 0 | 6 | 392 | 55,176 | 0.71% |
 | ovl/level_10_peace_keepers_doctor_shemp | 5 | 1 | 0 | 4 | 8 | 50,016 | 0.02% |
@@ -54,7 +54,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
 | ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 380 | 45 | 404 | 48,160 | 2,159,608 | 2.23% |
+| **all** | 829 | 380 | 47 | 402 | 48,160 | 2,159,608 | 2.23% |
 
 ## Library / SDK (excluded from %)
 
@@ -185,7 +185,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8001cfdc` | Gamestate08_Draw | main | 1852 | asm | game |
 | `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | asm | game |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | asm | game |
-| `0x8001e6b8` | StoryIntro_Draw | main | 784 | asm | game |
+| `0x8001e6b8` | StoryIntro_Draw | main | 784 | wip | game |
 | `0x8001e9c8` | GemCutscene_Draw | main | 440 | matched | game |
 | `0x8001eb80` | ReturningHome_Draw | main | 476 | matched | game |
 | `0x8001ed5c` | GamestateDraw | main | 1020 | asm | game |
@@ -219,7 +219,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002c8a4` | EndRespawnToGameplay | main | 112 | matched | game |
 | `0x8002c914` | func_8002C914 | main | 8 | matched | game |
 | `0x8002c91c` | Gamestate06SubstateStub_Noop | main | 8 | matched | game |
-| `0x8002c924` | BeginGemPickupOverlay | main | 584 | asm | game |
+| `0x8002c924` | BeginGemPickupOverlay | main | 584 | wip | game |
 | `0x8002cb6c` | EndGemPickupToWorld | main | 348 | asm | game |
 | `0x8002ccc8` | func_8002CCC8 | main | 868 | wip | game |
 | `0x8002d02c` | EndSaveMenuToWorld | main | 324 | wip | game |
