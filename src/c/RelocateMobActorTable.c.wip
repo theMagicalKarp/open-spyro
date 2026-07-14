@@ -1,0 +1,106 @@
+#include "globals.h"
+
+/* 0x80013230 — patch the actor-mesh ("moby") table after a level bundle
+   load. Pass 1 zeroes any of the 0x2E per-type mesh-header slots (+0x38)
+   left pointing below the work-area top (or at -1) by the previous level.
+   Pass 2 walks the relocation stream ([type][size][payload]..., type < 0
+   terminates): binds each type's mesh header to its payload, rebases the
+   +0x14/+0x18 offsets by the table's +0x34 load bias, rebases the +0x10
+   pointer past the header's short-count word table, and rewrites each
+   21-bit packed word offset relative to the new payload base.
+
+   PARKED (length-exact 432/432, 3.7% naming match): pure whole-function
+   register permutation — original allocates i->a0 (param homed to a2 via
+   move a2,a0) and loop-1 entry->a1/ptr->v1; ours mirrors (stream keeps a0,
+   i->a2, entry->v1/ptr->a1) and everything downstream renames. Structure is
+   1:1 (verified insn-by-insn): per-iteration table reload in pass 1 (ebb
+   boundary), volatile-pinned per-group table reloads in pass 2, goto-loop
+   outer walk with user-local masks (maskLo first = original lui order),
+   lo-temp for the 21-bit rewrite. Tried: p-copy of the param (coalesced
+   away), goto-loop deweighting of stream refs, register hint on i. Clean
+   permuter candidate — single allocation decision cascades. */
+void RelocateMobActorTable(int *stream) {
+  int pad[2];
+  int maskLo;
+  int maskHi;
+  void **top;
+  int i;
+  int off;
+  int table;
+  int entry;
+  int mesh;
+  unsigned int ptr;
+  int idx;
+  int size;
+  int base;
+  int j;
+  int *w;
+  int word;
+  int lo;
+
+  i = 0;
+  top = &g_pWorkAreaTop;
+  do {
+    entry = i * 4 + (int)g_apActorMeshTable;
+    ptr = *(unsigned int *)(entry + 0x38);
+    if (ptr < (unsigned int)(int)*top || ptr == -1) {
+      *(int *)(entry + 0x38) = 0;
+    }
+    i += 1;
+  } while (i < 0x2E);
+
+  idx = *stream;
+  if (idx < 0) {
+    return;
+  }
+  maskLo = 0x1FFFFF;
+  maskHi = 0xFFE00000;
+  stream += 1;
+next:
+  size = *stream;
+      stream += 1;
+      off = idx * 4;
+
+      entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
+      *(volatile int *)(entry + 0x38) = (int)stream;
+
+      table = (int)*(void *volatile *)&g_apActorMeshTable;
+      entry = off + table;
+      mesh = *(volatile int *)(entry + 0x38);
+      *(volatile int *)(mesh + 0x14) =
+          *(int *)(table + 0x34) + *(volatile int *)(mesh + 0x14);
+
+      table = (int)*(void *volatile *)&g_apActorMeshTable;
+      entry = off + table;
+      mesh = *(volatile int *)(entry + 0x38);
+      *(volatile int *)(mesh + 0x18) =
+          *(int *)(table + 0x34) + *(volatile int *)(mesh + 0x18);
+
+      entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
+      mesh = *(volatile int *)(entry + 0x38);
+      base = (int)((char *)stream + ((*(short *)mesh << 2) + 0x24));
+      *(volatile int *)(mesh + 0x10) = base + *(volatile int *)(mesh + 0x10);
+
+      entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
+      mesh = *(volatile int *)(entry + 0x38);
+      j = 0;
+      w = (int *)(mesh + 0x24);
+      if (*(short *)mesh > 0) {
+        do {
+          word = *w;
+          lo = (word & maskLo) + base;
+          *w = (word & maskHi) + ((lo >> 1) & maskLo);
+          j += 1;
+          w += 1;
+        } while (j < *(short *)*(volatile int *)(
+                         (off + (int)*(void *volatile *)&g_apActorMeshTable) +
+                         0x38));
+      }
+
+  stream = (int *)((char *)stream + size);
+  idx = *stream;
+  stream += 1;
+  if (idx >= 0) {
+    goto next;
+  }
+}
