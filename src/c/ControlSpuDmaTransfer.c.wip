@@ -1,0 +1,123 @@
+#include "globals.h"
+
+extern void SetSpuDmaReadStateBits(void);
+extern void SetSpuDmaWriteStateBits(void);
+
+extern char *D_80073554;
+extern volatile int *D_80073558;
+extern volatile int *D_8007355C;
+extern volatile int *D_80073560;
+extern unsigned short D_8007356C;
+
+/* gcc 2.7.2 stdarg (no system headers in this build): the `...` in the
+   signature triggers the register-save prologue; va_arg is the standard
+   pointer-bump expansion. */
+#define VA_START(ap, last) ((ap) = (char *)__builtin_next_arg(last))
+#define VA_ARG_U32(ap) ((ap) += 4, *(unsigned int *)((ap)-4))
+
+/* 0x8005c1c0 — SPU DMA transfer controller. op 2 = stamp the encoded transfer
+   address shadow into the SPU addr register (+0x1a6); op 1/0 = wait for the
+   addr register to settle then set the SPUCNT (+0x1aa) transfer-mode bits
+   (write 0x20 / read 0x30) and the pending-direction flag; op 3 (madr, size) =
+   wait for the mode bits, fire the state-bit callback, then kick the DMA
+   channel via the MADR/BCR/CHCR shadows. Returns -2 on timeout, else 0.
+
+   PARKED (2 insns short, 162/164): the original has `andi v0,v0,0xFFFF` on the
+   entry wait-test read in cases 1 and 0 (lhu; sw zero->dir; andi; beq). Every
+   C form tried (ushort local, explicit & 0xFFFF, shift-pair, mask-in-var,
+   multi-def cur incl. a srlv def) gets the mask combine-folded into the lhu.
+   Probe result: the andi survives ONLY when the loaded value's def has TWO
+   uses (blocks combine's single-use substitution) — e.g. `int c = load;
+   G = c; if ((unsigned short)c != t)` — but the original has no natural
+   second use of the entry read. Everything else byte-matches at objdump
+   level: the real-varargs prologue (sw a0-a3 pre-frame + sw a0,0x18 homing
+   via (void)&op), the va_arg s0 walk, both guard+do/while waits, the case-3
+   masked while, sltu via the frac local, and the CHCR default+override tail. */
+int ControlSpuDmaTransfer(int op, ...) {
+  char *ap;
+  char *base;
+  int cur;
+  int target;
+  unsigned short want;
+  unsigned int n;
+  unsigned int frac;
+  unsigned int size;
+  int cmd;
+
+  VA_START(ap, op);
+  (void)&op;
+
+  switch (op) {
+  case 2:
+    cur = VA_ARG_U32(ap) >> g_nSpuAddrShift;
+    base = D_80073554;
+    D_8007356C = cur;
+    *(volatile short *)(base + 0x1A6) = cur;
+    return 0;
+  case 1:
+    target = D_8007356C;
+    base = D_80073554;
+    cur = *(volatile unsigned short *)(base + 0x1A6);
+    g_nSpuPendingDmaDirection = 0;
+    if ((cur & 0xFFFF) != target) {
+      n = 0;
+      do {
+        n += 1;
+        if (n >= 0xF01) {
+          return -2;
+        }
+      } while (*(volatile unsigned short *)(base + 0x1A6) != target);
+    }
+    cur = *(volatile unsigned short *)(D_80073554 + 0x1AA);
+    *(volatile unsigned short *)(D_80073554 + 0x1AA) = (cur & 0xFFCF) | 0x20;
+    return 0;
+  case 0:
+    target = D_8007356C;
+    base = D_80073554;
+    cur = *(volatile unsigned short *)(base + 0x1A6);
+    g_nSpuPendingDmaDirection = 1;
+    if ((cur & 0xFFFF) != target) {
+      n = 0;
+      do {
+        n += 1;
+        if (n >= 0xF01) {
+          return -2;
+        }
+      } while (*(volatile unsigned short *)(base + 0x1A6) != target);
+    }
+    cur = *(volatile unsigned short *)(D_80073554 + 0x1AA);
+    *(volatile unsigned short *)(D_80073554 + 0x1AA) = cur | 0x30;
+    return 0;
+  case 3:
+    want = 0x20;
+    if (g_nSpuPendingDmaDirection == 1) {
+      want = 0x30;
+    }
+    base = D_80073554;
+    n = 0;
+    while ((*(volatile unsigned short *)(base + 0x1AA) & 0x30) != want) {
+      n += 1;
+      if (n >= 0xF01) {
+        return -2;
+      }
+    }
+    if (g_nSpuPendingDmaDirection == 1) {
+      SetSpuDmaReadStateBits();
+    } else {
+      SetSpuDmaWriteStateBits();
+    }
+    cmd = 0x1000201;
+    g_dwSpuDmaMadrShadow = VA_ARG_U32(ap);
+    size = VA_ARG_U32(ap);
+    frac = (size & 0x3F) != 0;
+    g_nSpuDmaBcrBlockCount = (size >> 6) + frac;
+    *D_80073558 = *(volatile unsigned int *)&g_dwSpuDmaMadrShadow;
+    *D_8007355C = (*(volatile int *)&g_nSpuDmaBcrBlockCount << 16) | 0x10;
+    if (g_nSpuPendingDmaDirection == 1) {
+      cmd = 0x1000200;
+    }
+    *D_80073560 = cmd;
+    return 0;
+  }
+  return 0;
+}
