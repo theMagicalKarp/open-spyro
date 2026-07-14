@@ -1277,6 +1277,7 @@ g_nCdBaseLba = 0x80076b90; // allow_duplicated:True size:0x4
 g_anCdBaseLbaBlock = 0x80076b90; // allow_duplicated:True size:0x4 alias of g_nCdBaseLba (base-register access form)
 g_nCdReadSectorCount = 0x80076b94; // size:0x4
 g_abCdlLocScratch = 0x80076b98; // size:0x1
+g_abCdlLocScratchBlock = 0x80076b98; // allow_duplicated:True alias — array view of the CdlLOC scratch buffer (CdReadSyncSectors: 36-byte type defeats the sdata-cheap address fold so flag = loc+0x20 stays reg-derived)
 g_pCdReadDstBuffer = 0x80076b9c; // size:0x4
 g_nCdReadInFlight = 0x80076bb8; // size:0x4
 g_anPadHistoryRing = 0x80076bc0; // size:0x40
@@ -1520,6 +1521,7 @@ g_bSpyroFramePrev = 0x80078a76; // size:0x1
 g_bSpyroAnimFrame = 0x80078a77; // size:0x1
 g_bSpyroSubFrameTimer = 0x80078a7c; // size:0x1
 g_abSpyroSubFrameTimerBlock = 0x80078a7c; // allow_duplicated:True alias — held-base view of g_bSpyroSubFrameTimer (StepSpyroAnimAndCommitTransition load + 3 stores through one register)
+g_anSpyroHornStrikeSwingPhaseBlock = 0x80078ab8; // allow_duplicated:True alias — held-base view of g_nSpyroHornStrikeSwingPhase (TickSpyroAnimLayer1 s0: phase[0]/phase[2] load+store across calls)
 g_abSpyroAnimLayer1SubstepBlock = 0x80078a7d; // alias block — shared-base view for AdvanceSpyroAnimLayer1Frame
 g_bSpyroOtBinBias = 0x80078a7f; // size:0x1
 g_abSpyroFxParticleRgba = 0x80078a80; // size:0x4
