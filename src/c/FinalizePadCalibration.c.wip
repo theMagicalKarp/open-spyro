@@ -1,0 +1,103 @@
+#include "globals.h"
+
+extern void ResetPadStickCalibrationDefaults(unsigned char *cal);
+
+/* 0x80053790 — validate and bake the pad-stick calibration block. Each of
+   the four channels must have its center (+0x20) at least 0x30 away from
+   both extremes (+0x24 min / +0x28 max) or the whole block is reset to
+   defaults (returns 0). Then per channel: bake the upper/lower deadzone
+   edges (+0x2c/+0x30) and the 0x4000/0x3f80 fixed-point scale factors
+   (+0x34/+0x3c shorts), and clear the per-frame stick state (history words,
+   repeat flags, four neutral 0x7f bytes, and the six 0x18-byte per-button
+   autorepeat records). Returns 1 when the calibration was accepted.
+
+   PARKED (80.6%, length-exact 108/108 with the goto-scale variant at 72.2%;
+   this do/while variant anchors q). Solved: validation loop byte-identical
+   (for-loop + comma i+=1 inside the || condition fills the bnez delay),
+   volatile deadzone reloads (plain sb + volatile lbu defeats the andi 0xFF
+   store-forward), interleaved statements around the div latency, separate
+   scale counter i2 (frees a1 = i for loop 1; one shared counter spills s1),
+   user-local div numerators. Residues: (1) do/while lets loop.c lift the two
+   sh givs onto an anchored biv (addiu a1,s0,60; sh -8/0) — goto-scale kills
+   the anchor but deweights the numerator consts below ok in global-alloc
+   (ok steals a3); no form found with both right. (2) phase-3/4 fill loops:
+   val/j/fill local-alloc rotation (orig fill->v1, j->a1, val->a0; ours
+   rotated one step). Both single-decision ties; permuter candidate. */
+int FinalizePadCalibration(unsigned char *cal) {
+  int ok;
+  int i;
+  int i2;
+  unsigned char *p;
+  unsigned char *q;
+  unsigned char *fill;
+  unsigned char *fill2;
+  int mid;
+  int hi;
+  int val;
+  int c4000;
+  int c3F80;
+  int val2;
+  int j;
+  int k;
+
+  ok = 1;
+  for (i = 0; i < 4;) {
+    p = cal + i;
+    mid = p[0x20];
+    if (mid + 0x30 >= p[0x28] || (i += 1, p[0x24] >= mid - 0x30)) {
+      ResetPadStickCalibrationDefaults(cal);
+      ok = 0;
+      break;
+    }
+  }
+
+  i2 = 0;
+  c4000 = 0x4000;
+  c3F80 = 0x3F80;
+  q = cal;
+  do {
+    p = cal + i2;
+    p[0x2C] = p[0x20] + 0x30;
+    hi = p[0x28];
+    hi = c4000 / (hi - *(volatile unsigned char *)&p[0x2C]);
+    p[0x30] = p[0x20] - 0x30;
+    *(short *)(q + 0x34) = hi;
+    i2 += 1;
+    *(short *)(q + 0x3C) = c3F80 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
+    q += 2;
+  } while (i2 < 4);
+
+  val = 0x7F;
+  j = 3;
+  fill = cal + 3;
+  *(int *)(cal + 0x0) = 0;
+  *(int *)(cal + 0x4) = 0;
+  *(int *)(cal + 0x8) = 0;
+  *(int *)(cal + 0x18) = 1;
+  *(int *)(cal + 0x1C) = 1;
+  do {
+    fill[0x14] = val;
+    fill -= 1;
+  } while (--j >= 0);
+
+  val2 = 0x7F;
+  p = cal;
+  k = 0;
+blockTop:
+  j = 3;
+  fill2 = p + 3;
+  *(int *)(p + 0x4C) = 0;
+  *(int *)(p + 0x50) = 0;
+  *(int *)(p + 0x48) = 0;
+  do {
+    fill2[0x58] = val2;
+    fill2 -= 1;
+  } while (--j >= 0);
+  k += 0x18;
+  p += 0x18;
+  if (k < 0x60) {
+    goto blockTop;
+  }
+
+  return ok;
+}
