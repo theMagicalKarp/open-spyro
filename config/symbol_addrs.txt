@@ -1596,6 +1596,7 @@ g_nSpyroSwingEulerSpringAccum2 = 0x80078c1c; // allow_duplicated:True scalar ali
 g_anSpyroComposedBodyMtx = 0x80078c20; // size:0x14
 g_nSpyroPadSnapshotCountdown = 0x80078c48; // size:0x4
 g_dwSpyroRequestMask = 0x80078c4c; // size:0x4
+g_adwSpyroRequestMaskBlock = 0x80078c4c; // allow_duplicated:True alias block — shared-base view (mask read + -0x1F4 g_anSpyroWorldPos call arg) for AdvanceSpyroFrameMotion
 g_anSpyroRequestTargetPos = 0x80078c50; // size:0xc
 g_abSpyroRequestEuler = 0x80078c5c; // size:0x3
 g_anSpyroRequestVelocity = 0x80078c60; // size:0xc
