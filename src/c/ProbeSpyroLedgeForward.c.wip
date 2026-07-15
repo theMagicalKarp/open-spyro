@@ -14,7 +14,18 @@
  * from s2 (call args never fold); only the MEM store folds. Tried: pointer
  * local for the base, raw incomplete-array indexing — identical bytes.
  * Same wall as func_8002CCC8 / ApplyPadInputToSpyroBodyYaw.
- */
+ *
+ * 2026-07-14: root-caused against gcc 2.7.2 cse.c (find_best_addr): any
+ * non-REG MEM address is folded via fold_rtx with NO cost check, so a
+ * (plus reg const) store address whose base reg has a same-ebb constant
+ * equivalence ALWAYS folds to the absolute form; only a plain (reg)
+ * address (offset 0) or a label/new-ebb boundary escapes. Also tried:
+ * volatile store (cse still folds the address — volatility guards the MEM,
+ * not its address), distinct truly-incomplete alias symbol direct-indexed
+ * (TickSpyroAnimLayer1's form — its stores survive only because they sit
+ * in switch-case bodies, i.e. after labels). No plausible C form exists;
+ * NOT a permuter candidate (source mutation cannot cross this). See
+ * cookbook Sec-Y. */
 extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void AddVector(int *dst, int *a, int *b);
 extern void ApplyActiveGteRotation(int *src, int *dst);

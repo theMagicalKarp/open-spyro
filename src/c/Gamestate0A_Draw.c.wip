@@ -1,0 +1,190 @@
+#include "globals.h"
+
+extern void PutDrawEnv(void *env);
+extern void LoadImage(RECT *rect, short *pix);
+extern void DrawSync(int mode);
+extern void AddPrimToOTSlot(int prim, int slot);
+extern unsigned long long ComputeDepthCuedColor();
+extern void EmitStaticActorMeshListFogged(void);
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+extern void RasterizePairedActor(void);
+extern void *LinkOTPrimitives(int depth_max);
+extern void DrawOTag(void *ot);
+extern int VSync(int mode);
+extern DISPENV *PutDispEnv(DISPENV *env);
+
+extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
+
+/* Draw gamestate 0xA (pause -> world-map transition, 0x8001c694, 0x3a4).
+   Phase 0: re-darken the frozen gray backdrop by re-loading the CLUT ramp
+   shifted by the idle counter, then draw the 4 backdrop quads (clut 0x3820)
+   plus a black line into OT slot 0x3ff. Phase 1: fog cross-fade — feed
+   (0x20-idle)*0x80 through ComputeDepthCuedColor into the back DRAWENV's
+   r0/g0/b0 and emit the fogged static mesh list. Both phases: OT clear,
+   RasterizePairedActor, DrawOTag, then the standard 2-vblank frame pace.
+
+   PARKED 70.4% (164/233), LENGTH EXACT. What is solved (do not regress):
+   - Head + switch dispatch + whole Sec-V pace tail byte-identical.
+   - Quad loop is a GOTO-LOOP (zero loop.c artifacts in the original) and
+     the prim fields are accessed via 4 ROTATING TEMPS, each temp RELOADED
+     via a VOLATILE cast immediately after its consuming store (WAR chains
+     pin the original's exact load/store interleave). Stores are volatile
+     too (plain stores hoist above volatile loads); temps must be
+     TYPE-MATCHED (u16 for sh copies, u8 for sb copies) or volatile stores
+     grow andi masks; the +0x80 byte-store adds need an int temp
+     (t = a + 0x80; store t) or expand narrows to QImode and the constant
+     canonicalizes to -0x80 (encoding diff vs the original's +0x80).
+   Residue (3 knots, park classes):
+   - Loop head: original's pre-reorg body starts with li a1,0x3FF (reorg
+     dups it into the backedge delay + preheader); ours schedules sll
+     first and the slot li mid-body ('slot' local as first statement did
+     not move it). i++ also hoists to the top. Sec-K scheduling tie.
+   - b/c column register roles (a2/a3 vs a0/a2/t0) follow from the above
+     allocation shift. Sec-H family.
+   - Case 1: the color spill (sw v0,0x18(sp)) schedules below the env
+     compare loads (v1/a1 picked instead of orig v0/a0, +1 move at the
+     PutDrawEnv call). volatile color, volatile active-read and u64-return
+     truncation all failed to pin it. Same knot family as
+     EndSaveMenuToWorld (Sec-I). */
+void Gamestate0A_Draw(void) {
+  RECT rect;
+  int color;
+  unsigned char *p;
+  unsigned char *next;
+  int i;
+  int x0;
+  int tag;
+  int lineCode;
+  int slot;
+  int prog;
+  int a;
+  int d;
+  int t;
+  unsigned short bh;
+  unsigned short ch;
+  unsigned char bq;
+  unsigned char cq;
+
+  g_nPrimBufferOverflowFlag = 0;
+  g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
+  g_pPrimBufferLimit = (char *)g_pRenderScratchRegionBase + 0x1C000;
+  switch (g_nPauseMenuTransitionFrames) {
+  case 0: {
+    DRAWENV *env;
+
+    env = &g_abFrameDrawEnv0;
+    if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
+      env = (DRAWENV *)((char *)env + 0x84);
+    }
+    i = 0;
+    PutDrawEnv(env);
+    rect.y = 0xE0;
+    rect.h = 1;
+    rect.x = g_nPauseMenuIdleFrames + 0x200;
+    rect.w = 0x20 - g_nPauseMenuIdleFrames;
+    LoadImage(&rect, g_anMenuBackdropGrayClut);
+    DrawSync(0);
+  quad:
+    slot = 0x3FF;
+    x0 = i << 7;
+    tag = i + 0x88;
+    p = g_pPrimBufferWriteCursor;
+    *(volatile int *)p = 0x9000000;
+    *(volatile unsigned char *)(p + 0x7) = 0x2C;
+    *(volatile unsigned char *)(p + 0x4) = 0x4C;
+    *(volatile unsigned char *)(p + 0x5) = 0x80;
+    *(volatile short *)(p + 0x8) = x0;
+    *(volatile short *)(p + 0xA) = 8;
+    a = *(volatile unsigned short *)(p + 0x8);
+    bh = *(volatile unsigned short *)(p + 0xA);
+    ch = *(volatile unsigned short *)(p + 0x8);
+    d = *(volatile unsigned short *)(p + 0xA);
+    *(volatile short *)(p + 0x10) = a + 0x80;
+    a = *(volatile unsigned short *)(p + 0x8);
+    *(volatile short *)(p + 0x1A) = d + 0xDF;
+    d = *(volatile unsigned short *)(p + 0xA);
+    i += 1;
+    *(volatile unsigned char *)(p + 0xD) = 0;
+    *(volatile short *)(p + 0x12) = bh;
+    bq = *(volatile unsigned char *)(p + 0xD);
+    lineCode = 0x40;
+    *(volatile unsigned char *)(p + 0xC) = 0;
+    *(volatile short *)(p + 0x18) = ch;
+    cq = *(volatile unsigned char *)(p + 0xC);
+    *(volatile short *)(p + 0x20) = a + 0x80;
+    a = *(volatile unsigned char *)(p + 0xC);
+    *(volatile short *)(p + 0x22) = d + 0xDF;
+    d = *(volatile unsigned char *)(p + 0xD);
+    *(volatile unsigned char *)(p + 0x6) = lineCode;
+    *(volatile unsigned char *)(p + 0x15) = bq;
+    *(volatile unsigned char *)(p + 0x1C) = cq;
+    t = a + 0x80;
+    *(volatile unsigned char *)(p + 0x14) = t;
+    a = *(volatile unsigned char *)(p + 0xC);
+    *(volatile unsigned char *)(p + 0x1D) = d - 0x21;
+    d = *(volatile unsigned char *)(p + 0xD);
+    t = a + 0x80;
+    *(volatile unsigned char *)(p + 0x24) = t;
+    *(volatile unsigned char *)(p + 0x25) = d - 0x21;
+    *(volatile short *)(p + 0xE) = 0x3820;
+    *(short *)(p + 0x16) = tag;
+    AddPrimToOTSlot((int)p, slot);
+    next = p + 0x28;
+    g_pPrimBufferWriteCursor = next;
+    if (i < 4) {
+      goto quad;
+    }
+    *(int *)(p + 0x28) = 0x3000000;
+    p[0x2F] = lineCode;
+    *(short *)(p + 0x30) = 0;
+    *(short *)(p + 0x32) = 0xE7;
+    *(short *)(p + 0x34) = 0x200;
+    *(short *)(p + 0x36) = 0xE7;
+    p[0x2C] = 0;
+    p[0x2D] = 0;
+    p[0x2E] = 0;
+    AddPrimToOTSlot((int)next, 0x3FF);
+    g_pPrimBufferWriteCursor = p + 0x38;
+    break;
+  }
+  case 1: {
+    DRAWENV *env;
+
+    g_dwActorMeshFadeColor = 0;
+    prog = (0x20 - g_nPauseMenuIdleFrames) << 7;
+    g_nFadeProgress = prog;
+    color = ComputeDepthCuedColor(g_dwWorldFogColor, 0, prog);
+    env = &g_abFrameDrawEnv0;
+    if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
+      g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
+      g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
+      g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
+      env = (DRAWENV *)((char *)env + 0x84);
+    } else {
+      g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
+      g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
+      g_abFrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
+    }
+    PutDrawEnv(env);
+    EmitStaticActorMeshListFogged();
+    break;
+  }
+  }
+  FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+  RasterizePairedActor();
+  DrawOTag(LinkOTPrimitives(0x800));
+  DrawSync(0);
+  if (g_nDeathRespawnPending != 0) {
+    VSync(0);
+  }
+  g_nVsyncFrameEndCount = VSync(-1);
+  if (g_nVsyncFrameEndCount - g_nVsyncFramePaceAnchor < 2) {
+    int *end = g_anVsyncFrameEndBlock;
+    do {
+      VSync(0);
+      g_nVsyncFrameEndCount = VSync(-1);
+    } while (g_nVsyncFrameEndCount - end[-1] < 2);
+  }
+  g_nVsyncFramePaceAnchor = VSync(-1);
+  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5C));
+}
