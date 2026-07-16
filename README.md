@@ -1,7 +1,9 @@
 # open-spyro
 
 <!-- progress-badge -->
+
 ![matched](https://img.shields.io/badge/matched-2.90%25-orange)
+
 <!-- /progress-badge -->
 
 `open-spyro` is a **byte-for-byte matching decompilation** of
@@ -181,6 +183,10 @@ time into C that compiles back to the **identical bytes**. A typical loop:
    `src/overlays/<segment>/<Name>.c` _(overlay)_, then run
    `open-spyro diff <Name>` until it prints `MATCH` _(see
    [Comparing a C file against the original](#comparing-a-c-file-against-the-original-the-match-loop))_.
+   Adding the `.c` is the only manual step: every build reruns
+   `open-spyro gen-slots-ld` _(via `build_main.sh` / `build_overlays.sh`)_,
+   which rescans the `.c` files present and routes each function's compiled
+   object into its fixed-VMA slot. **Never hand-edit `config/*.slots.ld`**.
 4. **Format & lint.** `make fmt` then `make lint` _(ruff + clang-format, same as
    CI)_.
 5. **Prove the whole build still matches.** `make check` _(build + verify)_ must
@@ -188,6 +194,10 @@ time into C that compiles back to the **identical bytes**. A typical loop:
 6. **Commit & open a PR.** Use the established subject prefixes: `match:` for a
    function that now rebuilds byte-identical, `park:` for a close-but-incomplete
    attempt saved as a `.wip` for later. _(will accept/merge \*.wip files)_
+   Commit the regenerated `config/spyro.main.slots.ld` /
+   `config/overlays/<name>.slots.ld` _(plus `<name>.rodata_slots.ld` when the
+   overlay function owns a jump table / consts)_ **alongside** the new `.c` —
+   the added `.o(.text)` slot line is expected diff, not a stray change.
 
 ## Legal
 
