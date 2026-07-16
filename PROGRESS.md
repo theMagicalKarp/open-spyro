@@ -16,7 +16,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 
 | Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| main | 581 | 330 | 52 | 199 | 44,548 | 256,924 | 17.34% |
+| main | 581 | 330 | 54 | 197 | 44,548 | 256,924 | 17.34% |
 | ovl/credits | 3 | 1 | 0 | 2 | 8 | 6,384 | 0.13% |
 | ovl/level_0_artisans_home | 9 | 3 | 0 | 6 | 392 | 55,176 | 0.71% |
 | ovl/level_10_peace_keepers_doctor_shemp | 5 | 1 | 0 | 4 | 8 | 50,016 | 0.02% |
@@ -54,7 +54,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
 | ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 390 | 55 | 384 | 53,172 | 2,159,608 | 2.46% |
+| **all** | 829 | 390 | 57 | 382 | 53,172 | 2,159,608 | 2.46% |
 
 ## Library / SDK (excluded from %)
 
@@ -337,8 +337,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003cce4` | ApplySpyroStateTransition | main | 1200 | asm | game |
 | `0x8003d194` | TickSpyroAnimStateMachine | main | 548 | asm | game |
 | `0x8003d3b8` | ComputeSpyroMoveTargetFromPad | main | 372 | wip | game |
-| `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | asm | game |
-| `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | asm | game |
+| `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | wip | game |
+| `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | wip | game |
 | `0x8003d840` | ApplyPadInputToSpyroBodyYaw | main | 236 | wip | game |
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | asm | game |
 | `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | wip | game |

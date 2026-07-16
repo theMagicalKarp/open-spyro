@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">2.46% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">53,172 / 2,159,608 split-code bytes · 395 matched · 55 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">53,172 / 2,159,608 split-code bytes · 395 matched · 57 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -188,7 +188,7 @@
 <rect x="148.00" y="563.29" width="16.05" height="14.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80066F34  ·  432 bytes  ·  asm</title></rect>
 <rect x="164.06" y="563.29" width="15.61" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ArcTan2  ·  420 bytes  ·  handwritten</title></rect>
 <rect x="179.66" y="563.29" width="15.61" height="14.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>DrawCinematicLetterbox  ·  420 bytes  ·  wip</title></rect>
-<rect x="195.27" y="563.29" width="15.61" height="14.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroBodyEuler  ·  420 bytes  ·  asm</title></rect>
+<rect x="195.27" y="563.29" width="15.61" height="14.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroBodyEuler  ·  420 bytes  ·  wip</title></rect>
 <rect x="210.87" y="563.29" width="15.46" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EncodeCachedVecToActorDirCode  ·  416 bytes  ·  handwritten</title></rect>
 <rect x="226.33" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReadSyncSectors  ·  408 bytes  ·  matched</title></rect>
 <rect x="241.49" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039910  ·  408 bytes  ·  matched</title></rect>
@@ -204,7 +204,7 @@
 <rect x="115.90" y="649.96" width="14.52" height="14.00" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>ComputeSpyroMoveTargetFromPad  ·  372 bytes  ·  wip</title></rect>
 <rect x="115.90" y="663.96" width="14.52" height="14.00" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroFrameMotion  ·  372 bytes  ·  matched</title></rect>
 <rect x="115.90" y="677.96" width="14.52" height="13.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039228  ·  368 bytes  ·  matched</title></rect>
-<rect x="115.90" y="691.82" width="14.52" height="13.85" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>TurnSpyroTowardMoveTargetWithLean  ·  368 bytes  ·  asm</title></rect>
+<rect x="115.90" y="691.82" width="14.52" height="13.85" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>TurnSpyroTowardMoveTargetWithLean  ·  368 bytes  ·  wip</title></rect>
 <rect x="115.90" y="705.67" width="14.52" height="13.70" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CheckGpuTimeout  ·  364 bytes  ·  wip</title></rect>
 <rect x="115.90" y="719.37" width="14.52" height="13.70" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdDataSync  ·  364 bytes  ·  wip</title></rect>
 <rect x="115.90" y="733.07" width="14.52" height="13.70" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_1A0  ·  364 bytes  ·  library</title></rect>
