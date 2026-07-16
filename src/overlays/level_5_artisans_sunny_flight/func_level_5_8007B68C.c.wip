@@ -1,0 +1,706 @@
+/* func_level_5_8007B68C (0x8007B68C, level_5_artisans_sunny_flight overlay).
+ *
+ * Flight-level end-of-run results/time-attack screen draw. First frame
+ * (D_800758B8 == 0): runs the render pipeline once, then captures the frame
+ * into VRAM strips (4x MoveImage columns + LoadImage of the backdrop strip
+ * and CLUT row). Later frames: rebuilds the frozen backdrop as 4 POLY_FT4
+ * quads (clut 0x3820) plus a black TILE bar, then draws either the results
+ * board (COMPLETED/QUIT/TIME IS UP/CRASHED headline, four tally rows
+ * revealed by D_80075744, bonus column, TOTAL, PRESS-TO-CONTINUE or
+ * TRY AGAIN?/YES/NO menu) or, at D_80075744 == 0x64, the TIME ATTACK board
+ * (times via the formatter D_800758C4, NEW RECORD, TRY AGAIN/YES/NO).
+ * Selected records get a sine glow on +0x46 from D_8006CC78. Standard
+ * 2-vblank pace tail. Word-identical in all five flight overlays (x5 payoff:
+ * 32,200 bytes).
+ *
+ * PARKED 2026-07-16 at 96.4% content-aligned (masked resync), length
+ * 1611/1610 insns -> overflows the slot, cannot link. Blocker = ONE nop:
+ * the original fills PutDrawEnv's (func_8005FDD8) jal delay slot with
+ * `addiu s3,s0,-8` (img2 = img - 2) because its `la s0,D_800785F0` sits one
+ * call-group earlier; our sched1 canonicalizes all three dep-free la insns
+ * (envBase/img/img2) to fixed later positions - PROBED EXHAUSTIVELY:
+ * statement position (3 spots), register qualifier, goto-loop vs do/while,
+ * comma-embedded assignment in the call arg - ALL produce byte-identical
+ * placement (see cookbook AD: sched1 la-canonicalization wall; RTL dumps
+ * show .rtl/.cse/.loop keep source order, .sched moves them).
+ * Remaining residue besides the +1: quad-loop temp register roles
+ * (a/bh/ch/d land a1/a0/a1/v0 vs orig v0/a1/a2/v1, tpage t0 vs a3),
+ * YES/NO blink blocks (orig holds &pos in s2 across the cse jump-follow
+ * path and loads D_80075720 between the pos stores), publish-loop
+ * slot/r register mirror, init-arm i++/lw ordering. All solved recipes and
+ * the exact orig dataflow are in cookbook AD; everything else - including
+ * all 5 tally stanzas, TOTAL, PRESS block, time-attack board, all string
+ * literals (owned .rodata, emitted in use order), memcpy message copies,
+ * record block, pace tail - is byte-identical.
+ */
+
+extern void func_800521C0(void); /* BuildRenderEntityLists */
+extern void func_80019698(void); /* ComposeFrameScene */
+extern void func_800573C8(void); /* RasterizeEmitList */
+extern void func_80050BD0(void); /* DrawActors */
+extern void func_8002B9CC(void); /* SetupFrameOT */
+extern void func_8005F764();     /* DrawSync */
+extern int func_8005DBC4();      /* VSync */
+extern void func_80060030();     /* PutDispEnv */
+extern void func_8005FDD8();     /* PutDrawEnv */
+extern int func_80016784();      /* LinkOTPrimitives */
+extern void func_8005FD64();     /* DrawOTag */
+extern void func_8005FA8C();     /* MoveImage */
+extern void func_8005FA28();     /* LoadImage */
+extern void func_80017E98();     /* texture-page sync */
+extern void func_800168DC();     /* AddPrimToOT */
+extern void func_80016914();     /* FillWord */
+extern void func_80017FE4();     /* BuildTextSpriteChain */
+extern int func_8006276C();      /* text glyph count */
+extern void func_80062FD4();     /* format string */
+extern void func_8001844C();     /* EmitRadialShadedLine */
+extern void func_80055A78();     /* PlaySoundEffect */
+extern void func_80018880();
+extern void func_80022A2C();
+extern void *memcpy();
+
+extern int D_800758B8;     /* results frame counter */
+extern char *D_80075888;   /* active DRAWENV pair */
+extern char D_80076EE0[];  /* DRAWENV pair 0 */
+extern char *D_800785F0[]; /* level image base; [-2] = D_800785E8 */
+extern char *D_800785E8;
+extern int D_800758B0;
+extern char *D_800757B0; /* prim write cursor */
+extern char *D_80075780;
+extern char *D_800756FC;
+extern char *D_80075710; /* sprite record cursor */
+extern int D_80075784;
+extern int D_80075950;
+extern int D_80075954[];
+extern int D_80075744; /* reveal timer */
+extern int D_80075720; /* menu cursor */
+extern int D_8007568C; /* idle/blink counter */
+extern int D_8007569C; /* reveal sound step */
+extern int D_80075900;
+extern int D_80075908;
+extern int D_8007595C;              /* course index */
+extern int D_800758F4;              /* run clock */
+extern int (*D_800758C4)();         /* time formatter */
+extern unsigned char *D_800761D4;   /* sample bank header */
+extern int D_80077FE4;              /* backdrop bob phase */
+extern char D_80077FEC[];           /* HUD sprite records */
+extern char *D_800720F4[];          /* published record table */
+extern char D_8006F310[];           /* CLUT row */
+extern char D_8006FCF4[];           /* OT depth bins */
+extern unsigned short D_8006CC78[]; /* sine LUT */
+extern int D_80078630;              /* tally: class 0 */
+extern int D_80078634;
+extern int D_80078638;
+extern int D_8007863C;
+extern int D_80078618[];           /* per-course best time */
+extern unsigned char D_80078680[]; /* per-course claim flags */
+extern unsigned char D_80078681[];
+extern unsigned char D_80078682[];
+extern unsigned char D_80078683[];
+extern unsigned char D_80078684[];
+extern int D_8006E920[]; /* per-course bonus table rows */
+extern int D_8006E924[];
+extern int D_8006E928[];
+extern int D_8006E92C[];
+extern int D_8006E930[];
+extern char *D_8006E8C0[]; /* row title string tables */
+extern char *D_8006E8C4[];
+extern char *D_8006E8C8[];
+extern char *D_8006E8CC[];
+extern char D_80078A58[];
+
+void func_level_5_8007B68C(void) {
+  struct {
+    short x, y, w, h;
+  } rect;
+  int buf[8];
+  int pos[3];
+
+  if (D_800758B8 == 0) {
+    int i;
+    int h;
+    int strip;
+    int y;
+    char **img;
+    char **img2;
+    char *im;
+    char *envBase;
+    i = 0;
+    func_800521C0();
+    h = 0xE0;
+    func_80019698();
+    strip = 0x200;
+    func_800573C8();
+    func_80050BD0();
+    func_8002B9CC();
+    func_8005F764(0);
+    func_8005DBC4(0);
+    envBase = D_80076EE0;
+    func_80060030(D_80075888 + 0x5C);
+    img = D_800785F0;
+    func_8005FDD8(D_80075888);
+    img2 = img - 2;
+    func_8005FD64(func_80016784(0x800));
+    func_8005F764(0);
+    func_8005DBC4(0);
+    func_80060030(D_80075888 + 0x5C);
+    rect.x = 0x200;
+    rect.y = 0;
+    rect.w = 0x100;
+    rect.h = 0xE1;
+    func_8005FA8C(&rect, img[0] + 0xFFFE3E00);
+    y = 8;
+    do {
+      rect.x = i << 7;
+      if (D_80075888 != envBase) {
+        y = 0xF8;
+      }
+      i += 1;
+      rect.y = y;
+      rect.w = 0x80;
+      rect.h = h;
+      func_8005FA8C(&rect, img2[0], y);
+      func_8005F764(0);
+      func_80017E98(img2[0], 0x7000);
+      im = img2[0];
+      rect.x = strip;
+      strip += 0x40;
+      rect.y = 0;
+      rect.w = 0x40;
+      rect.h = h;
+      func_8005FA28(&rect, im);
+      y = 8;
+    } while (i < 4);
+    rect.x = 0x200;
+    rect.y = 0xE0;
+    rect.w = 0x20;
+    rect.h = 1;
+    func_8005FA28(&rect, D_8006F310);
+    func_8005F764(0);
+    D_80075950 = func_8005DBC4(-1);
+  } else {
+    char *env;
+    char *cur;
+    char *p;
+    char *fp;
+    char *next;
+    char *tv;
+    int allclear;
+    int bonus;
+    int i;
+    int x;
+    int tpage;
+    int b;
+    int a;
+    int d;
+    int snd;
+    unsigned short bh;
+    unsigned short ch;
+    unsigned char bq;
+    unsigned char cq;
+
+    cur = D_80075888;
+    env = D_80076EE0;
+    allclear = 0;
+    if (cur == env) {
+      env += 0x84;
+    }
+    i = 0;
+    func_8005FDD8(env);
+    D_800758B0 = 0;
+    D_800757B0 = D_800785E8;
+    D_80075780 = D_800785E8 + 0x1C000;
+    tv = D_800785F0[0] + 0xFFFE3E00;
+    D_800756FC = tv;
+    D_80075710 = tv;
+  quad:
+    x = i << 7;
+    tpage = i + 0x88;
+    p = D_800757B0;
+    *(volatile int *)p = 0x9000000;
+    *(volatile unsigned char *)(p + 0x7) = 0x2C;
+    *(volatile unsigned char *)(p + 0x4) = 0x4C;
+    *(volatile unsigned char *)(p + 0x5) = 0x80;
+    *(volatile short *)(p + 0x8) = x;
+    *(volatile short *)(p + 0xA) = 8;
+    a = *(volatile unsigned short *)(p + 0x8);
+    bh = *(volatile unsigned short *)(p + 0xA);
+    ch = *(volatile unsigned short *)(p + 0x8);
+    d = *(volatile unsigned short *)(p + 0xA);
+    *(volatile short *)(p + 0x10) = a + 0x80;
+    a = *(volatile unsigned short *)(p + 0x8);
+    *(volatile short *)(p + 0x1A) = d + 0xDF;
+    d = *(volatile unsigned short *)(p + 0xA);
+    i += 1;
+    *(volatile unsigned char *)(p + 0xD) = 0;
+    *(volatile short *)(p + 0x12) = bh;
+    bq = *(volatile unsigned char *)(p + 0xD);
+    b = 0x40;
+    *(volatile unsigned char *)(p + 0xC) = 0;
+    *(volatile short *)(p + 0x18) = ch;
+    cq = *(volatile unsigned char *)(p + 0xC);
+    *(volatile short *)(p + 0x20) = a + 0x80;
+    a = *(volatile unsigned char *)(p + 0xC);
+    *(volatile short *)(p + 0x22) = d + 0xDF;
+    d = *(volatile unsigned char *)(p + 0xD);
+    *(volatile unsigned char *)(p + 0x6) = b;
+    *(volatile unsigned char *)(p + 0x15) = bq;
+    *(volatile unsigned char *)(p + 0x1C) = cq;
+    *(volatile unsigned char *)(p + 0x14) = a + 0x80;
+    a = *(volatile unsigned char *)(p + 0xC);
+    *(volatile unsigned char *)(p + 0x1D) = d - 0x21;
+    d = *(volatile unsigned char *)(p + 0xD);
+    *(volatile unsigned char *)(p + 0x24) = a + 0x80;
+    *(volatile unsigned char *)(p + 0x25) = d - 0x21;
+    *(volatile short *)(p + 0xE) = 0x3820;
+    *(short *)(p + 0x16) = tpage;
+    func_800168DC(p);
+    next = p + 0x28;
+    D_800757B0 = next;
+    if (i < 4) {
+      goto quad;
+    }
+    *(int *)(p + 0x28) = 0x3000000;
+    *(unsigned char *)(p + 0x2F) = b;
+    *(short *)(p + 0x30) = 0;
+    *(short *)(p + 0x32) = 0xE7;
+    *(short *)(p + 0x34) = 0x200;
+    *(short *)(p + 0x36) = 0xE7;
+    *(unsigned char *)(p + 0x2C) = 0;
+    *(unsigned char *)(p + 0x2D) = 0;
+    *(unsigned char *)(p + 0x2E) = 0;
+    func_800168DC(next);
+    D_800757B0 = p + 0x38;
+    if (D_80075744 < 0x64) {
+      bonus = 0;
+      if (D_80078630 + D_80078634 + D_80078638 + D_8007863C == 0x20) {
+        memcpy(buf, "COMPLETED", 10);
+        allclear = 1;
+      } else if (D_80075900 != 0) {
+        memcpy(buf, "QUIT", 5);
+      } else if (D_80075908 < 0) {
+        memcpy(buf, "TIME IS UP", 11);
+      } else {
+        memcpy(buf, "CRASHED", 8);
+      }
+      pos[0] = 0x10C - func_8006276C(buf) * 0xC;
+      pos[1] = 0x1E;
+      pos[2] = 0xC00;
+      func_80017FE4(buf, pos, 0x18, 0xB);
+      fp = D_80075710 - 0x58;
+      D_80075710 = fp;
+      func_80016914(fp, 0, 0x58);
+      {
+        char *r = D_80075710;
+        *(short *)(r + 0x36) = 0x1D7;
+        *(int *)(r + 0xC) = 0x1CC;
+        *(int *)(r + 0x10) = 0x28;
+        *(int *)(r + 0x14) = 0xC00;
+        *(unsigned char *)(r + 0x45) = (short)D_8006CC78[D_80077FE4] >> 9;
+      }
+      *(unsigned char *)((char *)D_80075710 + 0x46) = D_80077FE4;
+      *(unsigned char *)((char *)D_80075710 + 0x47) = 0x7F;
+      *(unsigned char *)((char *)D_80075710 + 0x4F) = 0xB;
+      *(unsigned char *)((char *)D_80075710 + 0x50) = 0xFF;
+      func_8001844C(0x3C, 0x2E, 0x1C4, 0x2E);
+      pos[0] = 0x64;
+      pos[1] = 0x3C;
+      pos[2] = 0x1100;
+      func_80017FE4(D_8006E8C0[D_8007595C * 4], pos, 0x12, 0xB);
+      if (D_80075744 > 0) {
+        func_80062FD4(buf, "%d/8", D_80078630);
+        pos[0] = 0x140;
+        pos[1] = 0x3C;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+      }
+      if (D_80075744 >= 2) {
+        if (D_80078630 == 8) {
+          int k = D_8007595C * 5;
+          if (D_80078680[k] != 0) {
+            func_80062FD4(buf, "^");
+          } else {
+            func_80062FD4(buf, "%d", D_8006E920[k]);
+            bonus += D_8006E920[D_8007595C * 5];
+          }
+          snd = 0;
+        } else {
+          func_80062FD4(buf, "0");
+          snd = 0x21;
+        }
+        pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+        pos[1] = 0x3C;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+        if (D_8007569C < 2) {
+          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          D_8007569C = 2;
+        }
+      }
+      pos[0] = 0x64;
+      pos[1] = 0x50;
+      pos[2] = 0x1100;
+      func_80017FE4(D_8006E8C4[D_8007595C * 4], pos, 0x12, 0xB);
+      if (D_80075744 >= 3) {
+        func_80062FD4(buf, "%d/8", D_80078634);
+        pos[0] = 0x140;
+        pos[1] = 0x50;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+      }
+      if (D_80075744 >= 4) {
+        if (D_80078634 == 8) {
+          int k = D_8007595C * 5;
+          if (D_80078681[k] != 0) {
+            func_80062FD4(buf, "^");
+          } else {
+            func_80062FD4(buf, "%d", D_8006E924[k]);
+            bonus += D_8006E924[D_8007595C * 5];
+          }
+          snd = 0;
+        } else {
+          func_80062FD4(buf, "0");
+          snd = 0x21;
+        }
+        pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+        pos[1] = 0x50;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+        if (D_8007569C < 4) {
+          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          D_8007569C = 4;
+        }
+      }
+      pos[0] = 0x64;
+      pos[1] = 0x64;
+      pos[2] = 0x1100;
+      func_80017FE4(D_8006E8C8[D_8007595C * 4], pos, 0x12, 0xB);
+      if (D_80075744 >= 5) {
+        func_80062FD4(buf, "%d/8", D_80078638);
+        pos[0] = 0x140;
+        pos[1] = 0x64;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+      }
+      if (D_80075744 >= 6) {
+        if (D_80078638 == 8) {
+          int k = D_8007595C * 5;
+          if (D_80078682[k] != 0) {
+            func_80062FD4(buf, "^");
+          } else {
+            func_80062FD4(buf, "%d", D_8006E928[k]);
+            bonus += D_8006E928[D_8007595C * 5];
+          }
+          snd = 0;
+        } else {
+          func_80062FD4(buf, "0");
+          snd = 0x21;
+        }
+        pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+        pos[1] = 0x64;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+        if (D_8007569C < 6) {
+          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          D_8007569C = 6;
+        }
+      }
+      pos[0] = 0x64;
+      pos[1] = 0x78;
+      pos[2] = 0x1100;
+      func_80017FE4(D_8006E8CC[D_8007595C * 4], pos, 0x12, 0xB);
+      if (D_80075744 >= 7) {
+        func_80062FD4(buf, "%d/8", D_8007863C);
+        pos[0] = 0x140;
+        pos[1] = 0x78;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+      }
+      if (D_80075744 >= 8) {
+        if (D_8007863C == 8) {
+          int k = D_8007595C * 5;
+          if (D_80078683[k] != 0) {
+            func_80062FD4(buf, "^");
+          } else {
+            func_80062FD4(buf, "%d", D_8006E92C[k]);
+            bonus += D_8006E92C[D_8007595C * 5];
+          }
+          snd = 0;
+        } else {
+          func_80062FD4(buf, "0");
+          snd = 0x21;
+        }
+        pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+        pos[1] = 0x78;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+        if (D_8007569C < 8) {
+          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          D_8007569C = 8;
+        }
+      }
+      pos[0] = 0x64;
+      pos[1] = 0x8C;
+      pos[2] = 0x1100;
+      func_80017FE4("ALL IN ONE", pos, 0x12, 0xB);
+      if (D_80075744 >= 9) {
+        if (D_80078630 + D_80078634 + D_80078638 + D_8007863C == 0x20) {
+          int k = D_8007595C * 5;
+          if (D_80078684[k] != 0) {
+            func_80062FD4(buf, "^");
+          } else {
+            func_80062FD4(buf, "%d", D_8006E930[k]);
+            bonus += D_8006E930[D_8007595C * 5];
+          }
+          snd = 0;
+        } else {
+          func_80062FD4(buf, "0");
+          snd = 0x21;
+        }
+        pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+        pos[1] = 0x8C;
+        pos[2] = 0x1100;
+        func_80017FE4(buf, pos, 0x12, 0xB);
+        if (D_8007569C < 9) {
+          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          D_8007569C = 9;
+        }
+      }
+      func_8001844C(0x1A0, 0x96, 0x1D6, 0x96);
+      pos[0] = 0x64;
+      pos[1] = 0xA0;
+      pos[2] = 0x1100;
+      func_80017FE4("TOTAL", pos, 0x12, 0xB);
+      func_80062FD4(buf, "%d", bonus);
+      pos[0] = 0x1E0 - func_8006276C(buf) * 0x12;
+      pos[1] = 0xA0;
+      pos[2] = 0x1100;
+      func_80017FE4(buf, pos, 0x12, 0xB);
+      func_8001844C(0x3C, 0xB0, 0x1C4, 0xB0);
+      if (D_80075744 >= 9) {
+        if (allclear != 0 || D_80078618[D_8007595C] != 0) {
+          pos[0] = 0x50;
+          pos[1] = 0xD2;
+          pos[2] = 0x1100;
+          func_80017FE4("PRESS   TO CONTINUE", pos, 0x12, 0xB);
+          pos[0] = 0xBC;
+          func_80017FE4("X", pos, 0x12, 0xA);
+        } else {
+          char *rec;
+          int count;
+          int blink;
+          pos[0] = 0x8C;
+          pos[1] = 0xBE;
+          pos[2] = 0x1100;
+          func_80017FE4("TRY AGAIN?", pos, 0x12, 0xB);
+          blink = 0;
+          pos[0] = 0x15C;
+          pos[1] = 0xBE;
+          pos[2] = 0x1100;
+          if (D_80075720 == 0) {
+            if (D_8007568C % 0x10 < 6) {
+              blink = 1;
+            }
+          }
+          func_80017FE4("YES", pos, 0x12, blink * 2 + 0xA);
+          count = 3;
+          blink = 0;
+          pos[0] = 0x15C;
+          pos[1] = 0xD2;
+          pos[2] = 0x1100;
+          rec = D_80075710;
+          if (D_80075720 == 1) {
+            if (D_8007568C % 0x10 < 6) {
+              blink = 1;
+            }
+          }
+          func_80017FE4("NO", pos, 0x12, blink * 2 + 0xA);
+          if (D_80075720 != 0) {
+            rec = D_80075710;
+            count = 2;
+          }
+          i = 0;
+          if (count > 0) {
+            int ph = 0;
+            do {
+              i += 1;
+              *(unsigned char *)(rec + 0x46) =
+                  ((short *)D_8006CC78)[(D_800758B8 * 8 + ph) & 0xFF] * 3 >> 9;
+              ph += 0xC;
+              rec += 0x58;
+            } while (i < count);
+          }
+        }
+      }
+      {
+        char **slot;
+        char *r;
+        slot = D_800720F4;
+        i = 0;
+        r = D_80077FEC;
+      pub:
+        *slot = r;
+        slot += 1;
+        i += 1;
+        r += 0x58;
+        if (i < 4) {
+          goto pub;
+        }
+        *slot = 0;
+      }
+    } else {
+      char *rec;
+      int count;
+      int blink;
+      pos[0] = 0x88;
+      pos[1] = 0x28;
+      pos[2] = 0xC00;
+      func_80017FE4("TIME ATTACK", pos, 0x18, 0xB);
+      func_8001844C(0x3C, 0x3D, 0x1C4, 0x3D);
+      pos[0] = 0x140;
+      pos[1] = 0x50;
+      pos[2] = 0x1100;
+      func_80017FE4("BEST TIME", pos, 0x12, 0xB);
+      pos[0] = 0x191;
+      pos[1] = 0x64;
+      pos[2] = 0x1100;
+      D_800758C4(D_80078618[D_8007595C], pos, 0xB);
+      pos[0] = 0x38;
+      pos[1] = 0x50;
+      pos[2] = 0x1100;
+      func_80017FE4("YOUR TIME", pos, 0x12, 0xB);
+      pos[0] = 0x89;
+      pos[1] = 0x64;
+      pos[2] = 0x1100;
+      snd = 0xB;
+      if (D_80078618[D_8007595C] >= D_800758F4) {
+        snd = 8;
+      }
+      if (D_80078630 + D_80078634 + D_80078638 + D_8007863C == 0x20) {
+        count = D_800758C4(D_800758F4, pos, snd);
+        rec = D_80075710;
+        i = 0;
+        if (count > 0) {
+          int ph = 0;
+          do {
+            i += 1;
+            *(unsigned char *)(rec + 0x46) =
+                ((short *)D_8006CC78)[(D_800758B8 * 8 + ph) & 0xFF] * 3 >> 9;
+            ph += 0xC;
+            rec += 0x58;
+          } while (i < count);
+        }
+      } else {
+        D_800758C4(-1, pos, 0xB);
+      }
+      if (D_80078630 + D_80078634 + D_80078638 + D_8007863C < 0x20) {
+        if (D_80075900 != 0) {
+          memcpy(buf, "QUIT", 5);
+        } else {
+          memcpy(buf, "CRASHED", 8);
+        }
+        count = func_8006276C(buf);
+        pos[0] = 0x10C - count * 0xC;
+        pos[1] = 0x96;
+        pos[2] = 0xC00;
+        func_80017FE4(buf, pos, 0x18, 0xB);
+        rec = D_80075710;
+        i = 0;
+        if (count > 0) {
+          int ph = 0;
+          do {
+            i += 1;
+            *(unsigned char *)(rec + 0x46) =
+                ((short *)D_8006CC78)[(D_800758B8 * 8 + ph) & 0xFF] * 3 >> 9;
+            ph += 0xC;
+            rec += 0x58;
+          } while (i < count);
+        }
+      } else if (D_80078618[D_8007595C] >= D_800758F4) {
+        int ph;
+        pos[0] = 0x94;
+        pos[1] = 0x96;
+        pos[2] = 0xC00;
+        func_80017FE4("NEW RECORD", pos, 0x18, 8);
+        count = 0xA;
+        i = 0;
+        ph = 0;
+        rec = D_80075710;
+        do {
+          i += 1;
+          *(unsigned char *)(rec + 0x46) =
+              ((short *)D_8006CC78)[(D_800758B8 * 8 + ph) & 0xFF] * 3 >> 9;
+          ph += 0xC;
+          rec += 0x58;
+        } while (i < count);
+      }
+      func_8001844C(0x3C, 0xAB, 0x1C4, 0xAB);
+      pos[0] = 0x8C;
+      pos[1] = 0xBE;
+      pos[2] = 0x1100;
+      func_80017FE4("TRY AGAIN", pos, 0x12, 0xB);
+      blink = 0;
+      pos[0] = 0x154;
+      pos[1] = 0xBE;
+      pos[2] = 0x1100;
+      if (D_80075720 == 0) {
+        if (D_8007568C % 0x10 < 6) {
+          blink = 1;
+        }
+      }
+      func_80017FE4("YES", pos, 0x12, blink * 2 + 0xA);
+      count = 3;
+      blink = 0;
+      pos[0] = 0x154;
+      pos[1] = 0xD2;
+      pos[2] = 0x1100;
+      rec = D_80075710;
+      if (D_80075720 == 1) {
+        if (D_8007568C % 0x10 < 6) {
+          blink = 1;
+        }
+      }
+      func_80017FE4("NO", pos, 0x12, blink * 2 + 0xA);
+      if (D_80075720 != 0) {
+        rec = D_80075710;
+        count = 2;
+      }
+      i = 0;
+      if (count > 0) {
+        int ph = 0;
+        do {
+          i += 1;
+          *(unsigned char *)(rec + 0x46) =
+              ((short *)D_8006CC78)[(D_800758B8 * 8 + ph) & 0xFF] * 3 >> 9;
+          ph += 0xC;
+          rec += 0x58;
+        } while (i < count);
+      }
+      D_800720F4[0] = 0;
+    }
+  }
+  if (D_800758B8 > 0) {
+    func_80018880();
+    func_80016914(D_8006FCF4, 0, 0x900);
+    func_80022A2C();
+  }
+  func_8005FD64(func_80016784(0));
+  func_8005F764(0);
+  if (D_80075784 != 0) {
+    func_8005DBC4(0);
+  }
+  {
+    int *end;
+    *(end = D_80075954) = func_8005DBC4(-1);
+    if (end[0] - D_80075950 < 2) {
+      int *p2 = end;
+      do {
+        func_8005DBC4(0);
+        p2[0] = func_8005DBC4(-1);
+      } while (p2[0] - p2[-1] < 2);
+    }
+  }
+  D_80075950 = func_8005DBC4(-1);
+  func_80060030(D_80075888 + 0x5C);
+  D_800758B8 += 1;
+}

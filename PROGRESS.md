@@ -48,13 +48,13 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_34_gnastys_world_gnastys_loot | 5 | 1 | 0 | 4 | 8 | 46,368 | 0.02% |
 | ovl/level_3_artisans_town_square | 9 | 3 | 0 | 6 | 392 | 61,352 | 0.64% |
 | ovl/level_4_artisans_toasty | 5 | 1 | 0 | 4 | 8 | 39,556 | 0.02% |
-| ovl/level_5_artisans_sunny_flight | 10 | 4 | 1 | 5 | 1,712 | 41,168 | 4.16% |
+| ovl/level_5_artisans_sunny_flight | 10 | 4 | 2 | 4 | 1,712 | 41,168 | 4.16% |
 | ovl/level_6_peace_keepers_home | 9 | 3 | 0 | 6 | 392 | 71,476 | 0.55% |
 | ovl/level_7_peace_keepers_dry_canyon | 9 | 3 | 0 | 6 | 392 | 73,456 | 0.53% |
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
 | ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 406 | 56 | 367 | 62,564 | 2,159,608 | 2.90% |
+| **all** | 829 | 406 | 57 | 366 | 62,564 | 2,159,608 | 2.90% |
 
 ## Library / SDK (excluded from %)
 
@@ -964,7 +964,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | asm | game |
 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | asm | game |
 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | asm | game |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | asm | game |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | wip | game |
 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | asm | game |
 | `0x8007b718` | func_level_7_8007B718 | ovl/level_7_peace_keepers_dry_canyon | 316 | matched | game |
 | `0x8007b718` | func_level_8_8007B718 | ovl/level_8_peace_keepers_cliff_town | 316 | matched | game |
