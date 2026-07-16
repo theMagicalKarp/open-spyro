@@ -19,6 +19,14 @@
  * addiu into the pos[0] load-delay AFTER the fmt la; ours emits it before
  * the la; source reordering produced identical bytes (Sec-K wall).
  * Permuter candidate — 5x payoff (2380 bytes across the flight overlays).
+ * 2026-07-16-1 re-attempt (2 more forms, both worse): (a) separate chain-input
+ * local (`mul = q600; frac = time/6 - mul*100`) — copy propagated away AND min
+ * coalesced into the a3 arg reg (1 insn short, 31%%); (b) param reassignment
+ * (`time = time/600` after the /6 and /36000 reads) — mult group order follows
+ * SOURCE order (proves the original source starts with the /600 divide), and
+ * the copy vanishes entirely (chain reads a0 directly, 1 short). The move's
+ * direction (copy-in a3 feeding the chain, q600 surviving in a0 for min) is
+ * cse canonical-reg choice, not reachable by source restructure. Permuter.
  */
 
 extern void func_80017FE4(); /* draw text run */
