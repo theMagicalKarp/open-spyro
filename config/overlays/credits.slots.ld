@@ -4,6 +4,7 @@
     build/overlays/credits/asm/overlays/credits/text.o(.text.func_credits_8007AA50)
     . = 0x00001598 ;
     build/overlays/credits/asm/overlays/credits/text.o(.text.func_credits_8007BFD0)
+    build/overlays/credits/c/func_credits_8007BFD0.o(.text)
     . = 0x00001900 ;
     build/overlays/credits/asm/overlays/credits/text.o(.text.func_credits_8007C338)
     build/overlays/credits/c/func_credits_8007C338.o(.text)
