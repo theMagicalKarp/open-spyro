@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import difflib
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -30,6 +31,25 @@ MAIN_VMA_BASE = 0x80010000
 MAIN_FILE_HEADER = 0x800
 
 _INSN_RE = re.compile(r"^\s*([0-9a-f]+):\s+([0-9a-f]{8})\s+(.*)$")
+
+# ANSI SGR codes used in the side-by-side listing.
+_RED = "31"  # original (expected) bytes
+_GREEN = "32"  # rebuilt (actual) bytes
+_BOLD_RED = "1;31"
+_BOLD_GREEN = "1;32"
+
+
+def _want_color(mode: str) -> bool:
+    """Resolve --color=auto/always/never against TTY + the NO_COLOR convention."""
+    if mode == "always":
+        return True
+    if mode == "never":
+        return False
+    return sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+
+
+def _paint(text: str, code: str, on: bool) -> str:
+    return f"\033[{code}m{text}\033[0m" if on else text
 
 
 @dataclass
@@ -126,6 +146,7 @@ def _print_diff(
     orig: list[tuple[int, str, str]],
     built: list[tuple[int, str, str]],
     full: bool,
+    color: bool = False,
 ) -> int:
     """Side-by-side listing; returns the number of differing instructions."""
     rows = list(zip(orig, built, strict=True))
@@ -142,13 +163,20 @@ def _print_diff(
         if i != last + 1:
             print("  ...")
         last = i
-        mark = "!" if a[1] != b[1] else " "
-        right = "" if a[1] == b[1] else f"   | {b[1]}  {b[2]}"
-        print(f" {mark} {a[0]:08x}  {a[1]}  {a[2]:<{width}}{right}")
+        # Pad the left cell before painting so ANSI codes don't skew alignment.
+        left = f"{a[1]}  {a[2]:<{width}}"
+        if a[1] == b[1]:
+            print(f"   {a[0]:08x}  {left}")
+        else:
+            mark = _paint("!", _BOLD_RED, color)
+            left = _paint(left, _RED, color)
+            right = _paint(f"{b[1]}  {b[2]}", _GREEN, color)
+            print(f" {mark} {a[0]:08x}  {left}   | {right}")
     return len(bad)
 
 
-def run(name: str, build: bool = True, full: bool = False) -> None:
+def run(name: str, build: bool = True, full: bool = False, color: str = "auto") -> None:
+    use_color = _want_color(color)
     repo = repo_root()
     t = _locate(repo, name)
     if t is None:
@@ -180,16 +208,17 @@ def run(name: str, build: bool = True, full: bool = False) -> None:
     head = f"{t.name} ({t.segment} @ 0x{t.vma:08x}, {t.size} bytes, {src_note})"
 
     if "@@IDENTICAL@@" in out:
-        print(f"MATCH  {head}")
+        print(f"{_paint('MATCH', _BOLD_GREEN, use_color)}  {head}")
         if not override.is_file():
             print("       (nothing was overridden — this only proves the baseline)")
         return
 
     orig_txt, built_txt = out.split("@@ORIG@@", 1)[1].split("@@BUILT@@", 1)
     orig_i, built_i = _parse_insns(orig_txt), _parse_insns(built_txt)
-    print(f"DIFFER {head}")
-    n_bad = _print_diff(orig_i, built_i, full)
+    print(f"{_paint('DIFFER', _BOLD_RED, use_color)} {head}")
+    n_bad = _print_diff(orig_i, built_i, full, use_color)
     total = len(orig_i)
     pct = 100.0 * (total - n_bad) / total if total else 0.0
-    print(f"DIFFER {n_bad}/{total} instructions differ ({pct:.1f}% match)")
+    tag = _paint("DIFFER", _BOLD_RED, use_color)
+    print(f"{tag} {n_bad}/{total} instructions differ ({pct:.1f}% match)")
     raise SystemExit(1)

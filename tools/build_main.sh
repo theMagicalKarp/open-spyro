@@ -38,8 +38,8 @@ C_SRCS=(src/c/*.c)
 shopt -u nullglob
 HAVE_C_FLAGS=""
 for c in "${C_SRCS[@]}"; do
-  name="$(basename "$c" .c)"
-  HAVE_C_FLAGS+=" --defsym HAVE_C_${name}=1"
+  name="${c##*/}"; name="${name%.c}"   # bash builtins, not basename: a per-file
+  HAVE_C_FLAGS+=" --defsym HAVE_C_${name}=1"   # subprocess costs ~8ms under x86 emulation
 done
 
 LD_SCRIPT=config/spyro.main.ld
@@ -90,10 +90,10 @@ done
 # RAM region (~0x80075640) where it corrupts live state -> hard-to-find hang.
 # (Inherited lesson from the reference project; eliminate via -fno-jump-tables or
 # by referencing original ROM data by address.)
+mkdir -p "$BUILD/c"   # constant dest dir: hoisted out of the loop (was a per-file mkdir spawn)
 for c in "${C_SRCS[@]}"; do
-  name="$(basename "$c" .c)"
+  name="${c##*/}"; name="${name%.c}"   # bash builtins, not basename/dirname (emulated-subprocess cost)
   o="$BUILD/c/${name}.o"
-  mkdir -p "$(dirname "$o")"
   if [ -f "$o" ] && [ "$o" -nt "$c" ] && { [ -z "$C_NEWEST" ] || [ "$o" -nt "$C_NEWEST" ]; }; then
     continue  # up to date (the .rodata/.data guard ran when it was built)
   fi
