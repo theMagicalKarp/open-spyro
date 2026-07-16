@@ -1078,6 +1078,7 @@ g_abSpyroIdleDelayRandTable = 0x80075274; // size:0x8
 g_bCameraLookaheadMotionScale = 0x8007527c; // size:0x1
 g_abGameOverLetterAngle = 0x800752d0; // size:0x8
 g_anGameOverCameraEuler = 0x800752d8; // size:0x8
+g_anGameOverCameraEulerU = 0x800752d8; // allow_duplicated:True alias — unsigned-short (lhu) view for RespawnOrGameOver_Draw
 g_abGameOverLetterDelay = 0x800752e0; // size:0x8
 g_abWorldTitleGlyphCounts = 0x8007555c; // size:0x8
 g_szTitleCardPlaceholderA = 0x80075564; // size:0x2

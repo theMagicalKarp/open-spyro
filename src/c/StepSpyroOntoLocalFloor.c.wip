@@ -1,0 +1,75 @@
+#include "globals.h"
+
+extern void CopyVector(int *dst, int *src);
+extern void AddVector(int *dst, int *a, int *b);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
+extern void ApplyActiveGteRotation(int *src, int *dst);
+extern int CastRayWorldAndActors();
+extern int abs(int n);
+
+/* shared-base view of g_anSpyroBodyMtx (0x80078a8c): the matrix arg, the
+   world position at -0x34 (g_anSpyroWorldPos) and the airborne counter at
+   +0x68 (g_nSpyroAirborneFrames) are all reached off one held register. */
+extern int g_anSpyroBodyMtxBlock[];
+extern int g_anSpyroAirborneFramesBlock[];
+
+/* 0x8003e758 (436 bytes) — snap Spyro onto the floor directly below: cast a
+   ray body-down (from +0x80 above to -0x164 below, rotated through the body
+   matrix), and on a hit nudge the world position by the resolved delta
+   (axis components under 8 units are dropped) and clear the airborne
+   counter; on a miss count another airborne frame. */
+void StepSpyroOntoLocalFloor(void) {
+  int down[3];
+  int fore[3];
+  int aft[3];
+  int *mtx;
+  int *pos;
+
+  down[0] = 0;
+  down[1] = 0;
+  down[2] = -0x164;
+  CopyVector(aft, down);
+  aft[2] -= 0x80;
+  CopyVector(fore, down);
+  fore[2] += 0x80;
+  mtx = g_anSpyroBodyMtxBlock;
+  RotateVectorByMatrix(mtx, aft, aft);
+  pos = &mtx[-13];
+  AddVector(aft, pos, aft);
+  ApplyActiveGteRotation(fore, fore);
+  AddVector(fore, pos, fore);
+  ApplyActiveGteRotation(down, down);
+  AddVector(down, pos, down);
+  if (CastRayWorldAndActors(fore, aft) != 0 && g_anCollisionProbeVec[2] > 0) {
+    SubtractVector(down, g_anCollisionResolvedPos, down);
+    if (abs(down[0]) < 8) {
+      down[0] = 0;
+    }
+    if (abs(down[1]) < 8) {
+      down[1] = 0;
+    }
+    if (abs(down[2]) < 8) {
+      down[2] = 0;
+    }
+    AddVector(pos, pos, down);
+    mtx[26] = 0;
+  } else {
+    int *air = g_anSpyroAirborneFramesBlock;
+    air[0] += 1;
+  }
+}
+
+/* PARKED 2026-07-15 (~98% structural, 6.4% raw due to a 1-insn shift).
+   Sole root cause: the hit-arm airborne clear must be `sw zero,0x68(s3)`
+   through the held g_anSpyroBodyMtxBlock base (s3 live to the end, frame
+   0x58, 4 s-regs). Our gcc always substitutes the store address to the
+   absolute $at form (sw zero,%lo(g_nSpyroAirborneFrames)) and then
+   coalesces mtx into pos (`addiu s1,s1,-52` in place), dropping one s-reg
+   (frame 0x50). Tried: mtx[26]=0 (reg form), plain scalar store,
+   pos=&mtx[-13] to raise mtx's ref count — all byte-identical output.
+   NEW WALL DATA POINT for cookbook §Y rule 1: the nonzero-offset fold
+   happens even POST-LABEL when the base pseudo is single-def from a
+   constant (REG_EQUIV substitution, not the same-ebb cse table — §Y rule 3
+   does not save it). Miss-arm RMW (alias-array pointer) and the entire
+   call chain otherwise match. */

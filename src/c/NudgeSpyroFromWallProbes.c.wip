@@ -1,0 +1,88 @@
+#include "globals.h"
+
+extern void AddVector(int *dst, int *a, int *b);
+extern int CastRayWorldAndActors();
+
+/* cosine view of the LUT (g_anSineLut + 0x80); distinct symbol keeps the
+   post-loop absolute lookup underived from the held sine base. */
+extern short g_anCosineLut[];
+
+/* 0x8003e90c (348 bytes) — cast four horizontal wall probes around Spyro
+   (quarter-turn apart, from chest height down-forward) and collect a
+   4-bit hit mask; the mask selects a nudge heading from
+   g_anSpyroWallNudgeAngleByProbeMask whose sine/cosine (>>4) are added to
+   the pending nudge accumulator at g_anSpyroWorldPos +0xF4/+0xF8. */
+void NudgeSpyroFromWallProbes(void) {
+  int near[3];
+  int far[3];
+  int mask;
+  int idx;
+  int i;
+  int *pos;
+  int *fp;
+  unsigned short *cosCursor;
+  short *lut;
+  int cos;
+  int sin;
+  int off;
+  int angle;
+  int lv;
+
+  mask = 0;
+  idx = 0x20;
+  i = 0;
+  pos = g_anSpyroWorldPos;
+  fp = far;
+  cosCursor = (unsigned short *)((char *)g_anSineLut + 0xC0);
+probe:
+  {
+    cos = (short)cosCursor[0] >> 4;
+    far[0] = cos;
+    near[0] = cos;
+    sin = (short)((unsigned short *)g_anSineLut)[idx] >> 4;
+    near[2] = -0x124;
+    far[2] = -0x1A4;
+    far[1] = sin;
+    near[1] = sin;
+    AddVector(near, near, pos);
+    AddVector(fp, fp, pos);
+    lut = g_anSineLut;
+    if (CastRayWorldAndActors(near, fp) != 0) {
+      mask |= 1 << i;
+    }
+    cosCursor += 0x40;
+    i += 1;
+    idx += 0x40;
+    if (i < 4) {
+      goto probe;
+    }
+  }
+  angle = g_anSpyroWallNudgeAngleByProbeMask[mask];
+  if (angle >= 0) {
+    off = angle << 1;
+    lv = g_anCosineLut[angle];
+    pos[61] += lv >> 4;
+    lv = *(short *)((char *)lut + off);
+    pos[62] += lv >> 4;
+  }
+}
+
+/* PARKED 2026-07-15 (+8 bytes, loop byte-shaped, tail blocked).
+   Two residues:
+   1. NEW WALL CLASS — signed-short LUT load feeding `>> 4`: the original
+      has `lh; sra 4` (2 insns/access); our cc1 always produces
+      `lhu; sll 16; sra 20` (3). Probed: plain short-array index, (short*)
+      cast form, volatile load, int local, shared multi-def temp — all
+      byte-identical. The sign-extend gets funneled through a single-set
+      temp pseudo that combine substitutes into the shift regardless of
+      the named variable's def count. lh DOES come out when the extended
+      value feeds a compare (CommitHudCounterAnimState precedent) — the
+      wall is shift-consumers only. No other matched fn does lh+sra4.
+   2. goto-loop (needed to keep the in-loop lut la + unreduced sine
+      index; do/while hoisted/SR'd both) rotates all 6 callee-saved
+      roles (§P weighting) — would need the declaration-order lever
+      after (1) is solved.
+   Positive finding recorded in §Y refinement: the pos[61]/pos[62]
+   (+0xF4/+0xF8) RMWs through the held many-use base DID survive
+   post-label (lw/sw 0xF4(s6)) — the rule-1 fold only bites weak
+   (few-use) base pseudos via reload's reg_equiv substitution. */
