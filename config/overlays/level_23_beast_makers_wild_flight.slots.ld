@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_23_beast_makers_wild_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.func_level_23_8007AE08)
+    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_8007AE08.o(.text)
     . = 0x000004a4 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.func_level_23_8007AEDC)
     build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_8007AEDC.o(.text)

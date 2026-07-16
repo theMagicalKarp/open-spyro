@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_29_dream_weavers_icy_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_8007AE08)
+    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_8007AE08.o(.text)
     . = 0x000004a4 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_8007AEDC)
     build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_8007AEDC.o(.text)
