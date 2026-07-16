@@ -46,23 +46,90 @@ as a name/type dump only).
   `match` group; invoke them via
   `uv run --project tools/open-spyro -- m2c|asm-differ ...`
 
-## Quickstart
+## Getting started
 
-> You must supply your own original disc — copyrighted game data is never
-> committed. Place the `.bin`/`.cue` where `make extract` expects them.
+### Prerequisites
+
+- **Docker** — hosts the locked matching toolchain (gcc 2.7.2 + binutils +
+  maspsx). `make setup` builds the image; every compile/link/diff runs inside
+  it.
+- **[uv](https://docs.astral.sh/uv/)** — runs the host Python tooling. All the
+  `open-spyro` subcommands (`split`, `progress`, `diff`, …) are invoked through
+  `uv run`; no manual venv is needed.
+- **For `make iso` / `make play`:** the host-native disc tools (`mkpsxiso` +
+  `dumpsxiso`, built by `make setup-iso`) and
+  **[DuckStation](https://www.duckstation.org/)**. On macOS `make play` expects
+  it at `/Applications/DuckStation.app` (see `tools/play.sh`).
+
+### Supplying the disc
+
+You must supply your own original disc, copyrighted game data is never
+committed. Drop your disc image into **`iso/`**: both the **`.cue`** and its
+**`.bin`** are required (the `.cue` is a text index that points at the `.bin`,
+so the `.bin` must sit alongside it). A lone single-track `.bin` also works.
+`make extract` auto-detects the image there, dumps the files into `disc/orig/`
+(gitignored), and asserts the `SCUS_942.28` SHA-1.
+
+The `.cue`/`.bin` hashes themselves vary by dumper and track layout, so they're
+not a useful check. What `make extract` (and `make verify`) pin instead are the
+SHA-1s of the files _inside_ the disc — the two primary matched artifacts, for
+reference:
+
+| File          | SHA-1                                      |
+| ------------- | ------------------------------------------ |
+| `SCUS_942.28` | `84e3728ab94720d0873e2514adf4aade4935e0c5` |
+| `WAD.WAD`     | `ab68001377ea93fb309a5c2a35e772c9d1f57e0b` |
+
+_(The full baseline set, overlays, `.STR` streams, etc. — lives in
+`config/sha1sums.txt`.)_
+
+### Build & run
 
 ```sh
 make setup      # build the matching toolchain (gcc 2.7.2 from source + binutils + maspsx + splat in Docker)
-make extract    # dump the original files from your disc image (gitignored)
+make setup-iso  # build the host-native disc tools (mkpsxiso + dumpsxiso) — needed for iso/play
+make extract    # dump the original files from your disc image in iso/ (-> disc/orig/, gitignored)
 make split      # disassemble into asm/ + config/
 make build      # compile + link into a byte-identical SCUS_942.28 + overlays
 make verify     # check rebuilt artifacts against the original SHA-1s
-make iso        # repack into a runnable .bin/.cue
+make iso        # repack into a runnable .bin/.cue (-> build/SpyrotheDragon.{bin,cue})
 make play       # boot the rebuilt iso in DuckStation
 make progress   # regenerate the C-match progress report
 ```
 
 Run `make` with no target to print the target list.
+
+### Comparing a C file against the original (the match loop)
+
+To check whether a candidate C match rebuilds to the original bytes, use the
+per-function byte-diff — the inner iteration of matching work:
+
+```sh
+uv run --project tools/open-spyro -- open-spyro diff <FunctionName>
+# e.g. open-spyro diff ComputeInventoryProgressPercent
+```
+
+It rebuilds the containing artifact (the main EXE, or the function's overlay),
+slices the function's bytes at its VMA out of both the rebuilt file and
+`disc/orig`, and prints an instruction-level side-by-side plus a match %. Exit
+codes: `0` = byte-identical (`MATCH`), `1` = differs, `2` = cannot run. Useful
+flags: `--no-build` reuses the current build output as-is; `--full` prints every
+instruction rather than just the diff hunks.
+
+To supply a candidate match, add `src/c/<Name>.c` (main EXE) or
+`src/overlays/<segment>/<Name>.c` (overlay), then re-run `diff`. The heavier
+asm→C loop behind this — m2c first pass → asm-differ / decomp-permuter /
+decomp.me — is described under [Matching toolchain](#matching-toolchain).
+
+### Building the ISO
+
+`make iso` writes the runnable disc to the gitignored **`build/`** dir.
+
+- `build/SpyrotheDragon.bin` + `build/SpyrotheDragon.cue` — the repacked disc
+- `build/main/SCUS_942.28` — the rebuilt executable staged into it
+
+`make play` boots `build/SpyrotheDragon.cue` in
+[DuckStation](https://duckstation.org/).
 
 ## Layout
 
@@ -74,7 +141,53 @@ Run `make` with no target to print the target list.
 | `include/` | `types.h`, `funcs.h`, `globals.h` (seeded by the one-time Ghidra import)                                              |
 | `assets/`  | passthrough binaries (WAD, STR, Crash demo, license)                                                                  |
 | `tools/`   | `open-spyro` CLI (uv package: progress, wad, splat-gen helpers), `Dockerfile` (builds gcc 2.7.2 from source) + maspsx |
-| `build/`   | build output (gitignored)                                                                                             |
+| `iso/`     | your source disc image goes here (`.cue`/`.bin`, gitignored)                                                          |
+| `disc/`    | `orig/` — files extracted from your disc (gitignored)                                                                 |
+| `build/`   | build output, incl. rebuilt `SCUS_942.28` + `SpyrotheDragon.{bin,cue}` (gitignored)                                   |
+
+## Contributing
+
+The steady-state work is _matching_: turning one `INCLUDE_ASM` function at a
+time into C that compiles back to the **identical bytes**. A typical loop:
+
+1. **Pick an unmatched function.** [`PROGRESS.md`](PROGRESS.md) lists what's
+   still linked in as assembly.
+2. **Draft the C.** Generate the m2c context file once, then run m2c for a
+   first-pass decompile of the function out of its asm:
+
+   ```sh
+   make ctx   # (re)generate build/ctx.c — the m2c --context file (types + globals + funcs)
+
+   # main EXE (asm/text.s):
+   uv run --project tools/open-spyro -- \
+     m2c --context build/ctx.c asm/text.s -f <FunctionName> > src/c/<FunctionName>.c
+
+   # OR overlay (asm/overlays/<segment>/text.s):
+   uv run --project tools/open-spyro -- \
+     m2c --context build/ctx.c asm/overlays/<segment>/text.s -f <FunctionName> \
+     > src/overlays/<segment>/<FunctionName>.c
+   ```
+
+   That first pass rarely matches, iterate against the original with asm-differ
+   / [decomp.me](https://decomp.me/) (see
+   [Matching toolchain](#matching-toolchain)). Expect to hand-adjust what m2c
+   emits: it defaults to generic stand-in types _(`s32`/`u32`/`void *`, raw
+   `*(s32 *)(x + 0xNN)` field pokes, invented locals)_ that you'll need to
+   replace with the real types, struct fields, and signatures from `include/`,
+   the codegen _(and therefore the match)_ often turns on getting those
+   declarations right.
+
+3. **Drop it in and check.** Add `src/c/<Name>.c` _(main EXE)_ or
+   `src/overlays/<segment>/<Name>.c` _(overlay)_, then run
+   `open-spyro diff <Name>` until it prints `MATCH` (see
+   [Comparing a C file against the original](#comparing-a-c-file-against-the-original-the-match-loop)).
+4. **Format & lint.** `make fmt` then `make lint` _(ruff + clang-format, same as
+   CI)_.
+5. **Prove the whole build still matches.** `make check` _(build + verify)_ must
+   keep every artifact byte-identical.
+6. **Commit & open a PR.** Use the established subject prefixes: `match:` for a
+   function that now rebuilds byte-identical, `park:` for a close-but-incomplete
+   attempt saved as a `.wip` for later. _(will accept/merge \*.wip files)_
 
 ## Legal
 

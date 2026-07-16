@@ -102,9 +102,12 @@ def _diff(
     full: Annotated[
         bool, typer.Option("--full", help="print every instruction, not just diff hunks")
     ] = False,
+    color: Annotated[
+        str, typer.Option("--color", help="colorize output: auto (TTY only), always, or never")
+    ] = "auto",
 ) -> None:
     """Rebuild, then byte-diff one function at its VMA against disc/orig (exit 1 on mismatch)."""
-    funcdiff.run(name, build=not no_build, full=full)
+    funcdiff.run(name, build=not no_build, full=full, color=color)
 
 
 def _fixup_hasm() -> None:
