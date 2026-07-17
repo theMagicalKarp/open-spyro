@@ -1446,6 +1446,7 @@ g_nHudLevelEggCachedCount = 0x80077fd8; // size:0x4
 g_nHudWorldEggRollRequest = 0x80077fdc; // size:0x4
 g_nHudButterflyCachedCount = 0x80077fe0; // size:0x4
 g_dwHudBobSinePhase = 0x80077fe4; // size:0x4
+g_adwHudBobSinePhaseBlock = 0x80077fe4; // allow_duplicated:True alias — incomplete-array view so the load+store share one held base reg (SubMenu_Update)
 g_nHudFrameCycleMod9 = 0x80077fe8; // size:0x4
 g_abHudIconActorRecords = 0x80077fec; // size:0x420
 g_anHudSpriteRects = 0x8007840c; // size:0x100
