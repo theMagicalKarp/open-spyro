@@ -1317,6 +1317,7 @@ g_nCameraSpringPitchBias = 0x80076e58; // size:0x4
 g_nCameraSpringYawBias = 0x80076e5c; // size:0x4
 g_nCameraYaw = 0x80076e60; // size:0x4
 g_nCameraPitch = 0x80076e64; // size:0x4
+g_anCameraPitchBlock = 0x80076e64; // allow_duplicated:True alias — incomplete-array view so the inverted-arm pitch flip load+store share one held base reg (ComputeCameraToTargetAngle)
 g_nCameraDistance = 0x80076e68; // size:0x4
 g_nCameraDraftRoll = 0x80076e6c; // size:0x4
 g_nCameraDraftPitchBias = 0x80076e70; // size:0x4
