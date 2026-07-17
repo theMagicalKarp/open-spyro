@@ -1,0 +1,122 @@
+#include "globals.h"
+
+/* Steer an actor's yaw toward Spyro (0x80038fc8, 0x260). Computes the
+   signed wrap-around delta between the ArcTan2 bearing to Spyro and the
+   tracked yaw at *yawp, picks/holds a turn direction in *dirp (dir 0
+   seeds from the delta sign; an established direction only flips once
+   the opposite-side delta exceeds `thresh`), and advances *yawp by the
+   gamestate-scaled `speed` clamped to the remaining delta. While more
+   than 0x101 off-bearing it swaps the actor's anim pair at +0x3C..+0x41
+   (animId when turning positive, animId+1 otherwise) through
+   func_80037E98. Stores the coarse yaw at +0x46; returns the delta. */
+extern int ArcTan2(int y, int x, int mode);
+extern void func_80037E98(int *actor, int a, int b);
+extern int abs(int);
+
+extern int D_800756C4;
+extern int D_80075794;
+
+int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
+                  int animId) {
+  int ret;
+  int yaw;
+  int d;
+  int d2;
+  int ad;
+  int dir;
+  int next;
+  int t;
+
+  ret = ArcTan2(g_anSpyroWorldPos[0] - actor[3], g_anSpyroWorldPos[1] - actor[4],
+                1);
+  yaw = *yawp;
+  d = (ret - yaw) & 0xFFF;
+  ret -= 0x800;
+  d2 = (ret - yaw) & 0xFFF;
+  if (d >= 0x801) {
+    d -= 0x1000;
+  }
+  if (d2 >= 0x801) {
+    d2 -= 0x1000;
+  }
+  if (D_800756C4 == 3) {
+    speed += speed >> 1;
+  } else if (D_800756C4 == 4) {
+    speed <<= 1;
+  }
+  ad = abs(d);
+  if (ad < speed) {
+    speed = ad;
+  }
+  dir = *dirp;
+  if (dir == 0) {
+    if (d < 0) {
+      *dirp = -1;
+    } else {
+      *dirp = 1;
+    }
+  } else if (d < 0) {
+    if (dir > 0) {
+      if (thresh < abs(d2)) {
+        *dirp = -1;
+      }
+    }
+  } else if (dir < 0 && d > 0) {
+    if (thresh < abs(d2)) {
+      *dirp = 1;
+    }
+  }
+  if (abs(d) >= 0x101) {
+    next = animId + 1;
+    if (*dirp == 1) {
+      if (*((unsigned char *)actor + 0x3D) != animId) {
+        int old;
+        int p3F;
+        D_80075794 = 0;
+        old = *((unsigned char *)actor + 0x3D);
+        p3F = *((unsigned char *)actor + 0x3F);
+        *((unsigned char *)actor + 0x40) = 0x10;
+        *((unsigned char *)actor + 0x41) = 0x10;
+        *((unsigned char *)actor + 0x3D) = animId;
+        *((unsigned char *)actor + 0x3F) = 0;
+        *((unsigned char *)actor + 0x3C) = old;
+        *((unsigned char *)actor + 0x3E) = p3F;
+        func_80037E98(actor, p3F, next);
+      }
+    } else {
+      if (*((unsigned char *)actor + 0x3D) != next) {
+        int old;
+        int p3F;
+        D_80075794 = 0;
+        old = *((unsigned char *)actor + 0x3D);
+        p3F = *((unsigned char *)actor + 0x3F);
+        *((unsigned char *)actor + 0x40) = 0x10;
+        *((unsigned char *)actor + 0x41) = 0x10;
+        *((unsigned char *)actor + 0x3D) = next;
+        *((unsigned char *)actor + 0x3F) = 0;
+        *((unsigned char *)actor + 0x3C) = old;
+        *((unsigned char *)actor + 0x3E) = p3F;
+        func_80037E98(actor, p3F, next);
+      }
+    }
+  }
+  t = *yawp + speed * *dirp;
+  *yawp = t;
+  if (t < 0) {
+    *yawp = t + 0x1000;
+  }
+  *((char *)actor + 0x46) = *yawp >> 4;
+  return d;
+}
+
+/* PARKED at 94.1% (9/152 insns, all one root cause): in each anim arm the
+   original allocates old(lbu 0x3D)=v0 / const16(li 0x10)=v1; ours the mirror.
+   gcc 2.7.2 local-alloc.c qty priority = log2(refs)*refs*size/lifetime: the
+   3-ref const16 temp (0.6) always outranks the 2-ref long-lived old (0.2)
+   and takes v0 first. Probed: block-scoped per-arm locals, compare-reload
+   one-variable form (goes global-alloc, still v1), shared-tail goto form
+   (breaks the per-arm move a0,s0 delay-slot fills — original duplicated the
+   tail per arm and let jump2 cross-jump it, matching everything but the
+   mirror). No source form found that raises old's priority; 1-decision
+   permuter candidate. Everything else byte-identical including the
+   ret-=0x800 in-place fold and the cross-jumped tails. */

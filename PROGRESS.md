@@ -16,7 +16,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 
 | Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| main | 581 | 332 | 55 | 194 | 45,852 | 256,924 | 17.85% |
+| main | 581 | 332 | 56 | 193 | 45,852 | 256,924 | 17.85% |
 | ovl/credits | 3 | 2 | 0 | 1 | 880 | 6,384 | 13.78% |
 | ovl/level_0_artisans_home | 9 | 3 | 0 | 6 | 392 | 55,176 | 0.71% |
 | ovl/level_10_peace_keepers_doctor_shemp | 5 | 1 | 0 | 4 | 8 | 50,016 | 0.02% |
@@ -54,7 +54,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
 | ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 408 | 58 | 363 | 63,868 | 2,159,608 | 2.96% |
+| **all** | 829 | 408 | 59 | 362 | 63,868 | 2,159,608 | 2.96% |
 
 ## Library / SDK (excluded from %)
 
@@ -294,7 +294,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80038d54` | func_80038D54 | main | 108 | matched | game |
 | `0x80038dc0` | TrackEntityYawTowardSpyro | main | 288 | matched | game |
 | `0x80038ee0` | func_80038EE0 | main | 232 | matched | game |
-| `0x80038fc8` | func_80038FC8 | main | 608 | asm | game |
+| `0x80038fc8` | func_80038FC8 | main | 608 | wip | game |
 | `0x80039228` | func_80039228 | main | 368 | matched | game |
 | `0x80039398` | func_80039398 | main | 752 | asm | game |
 | `0x80039688` | func_80039688 | main | 648 | matched | game |
