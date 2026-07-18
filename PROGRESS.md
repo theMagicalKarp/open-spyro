@@ -16,7 +16,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 
 | Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| main | 581 | 338 | 58 | 185 | 49,144 | 256,924 | 19.13% |
+| main | 581 | 338 | 59 | 184 | 49,144 | 256,924 | 19.13% |
 | ovl/credits | 3 | 2 | 0 | 1 | 880 | 6,384 | 13.78% |
 | ovl/level_0_artisans_home | 9 | 3 | 0 | 6 | 392 | 55,176 | 0.71% |
 | ovl/level_10_peace_keepers_doctor_shemp | 5 | 1 | 0 | 4 | 8 | 50,016 | 0.02% |
@@ -54,7 +54,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | ovl/level_8_peace_keepers_cliff_town | 9 | 3 | 0 | 6 | 392 | 66,536 | 0.59% |
 | ovl/level_9_peace_keepers_ice_cavern | 5 | 1 | 0 | 4 | 8 | 44,448 | 0.02% |
 | ovl/titlescreen | 5 | 4 | 1 | 0 | 4,496 | 13,084 | 34.36% |
-| **all** | 829 | 414 | 61 | 354 | 67,160 | 2,159,608 | 3.11% |
+| **all** | 829 | 414 | 62 | 353 | 67,160 | 2,159,608 | 3.11% |
 
 ## Library / SDK (excluded from %)
 
@@ -303,7 +303,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80039e94` | func_80039E94 | main | 728 | wip | game |
 | `0x8003a16c` | func_8003A16C | main | 692 | wip | game |
 | `0x8003a420` | func_8003A420 | main | 768 | asm | game |
-| `0x8003a720` | InitActorRenderDefaults | main | 124 | asm | game |
+| `0x8003a720` | InitActorRenderDefaults | main | 124 | wip | game |
 | `0x8003a79c` | func_8003A79C | main | 180 | matched | game |
 | `0x8003a850` | func_8003A850 | main | 208 | matched | game |
 | `0x8003a920` | func_8003A920 | main | 204 | matched | game |
