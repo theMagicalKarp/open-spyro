@@ -1,0 +1,94 @@
+#include "globals.h"
+
+/* Inventory sub-menu per-frame update (0x8002eb2c, 0x2c4). Advances the
+   HUD bob phase / frame-cycle counters and the pause-menu idle timer,
+   spins the menu light vector, then (once the 5-frame transition is
+   done) either runs level-select input or the normal sub-menu: cheat
+   detection, up/down scrolling between visited levels (0x1C0 fixed-step
+   scroll with cursor wrap), and pause/exit pad handling.
+
+   PARKED 2026-07-17 at 96.6% (171/177 insns, LENGTH EXACT) — §I/§K
+   scheduler slot knot in the 4-statement head. Everything below the
+   head matches byte-identically. The head needs simultaneously:
+   (a) load order [la phase (fills the Mod9 lw delay), lw step, lw idle,
+       lw phase-val] — reached ONLY when the phase RMW statement is
+       written BEFORE the idle += (this form);
+   (b) statement-tail order [addu idle; lui at; sw idle; subu; andi;
+       sw phase] — reached ONLY when the idle store is written between
+       the phase load and store (§W split-RMW: t = phase[0]; idle +=;
+       phase[0] = (t - step) & 0xFF), which flips the head loads to
+       [lw idle, lw step, la] + a Mod9-delay nop (+4, slot overflow).
+   Probed 7 forms: A2 (this one, tails swapped: [lui at; sw idle] emitted
+   after sw-phase/sra instead of between addu and subu), split-RMW ×3
+   (t-load / t-subtract / shared step local), swapped-operand idle
+   (`step + idle` — also +4 and flips the addu operands), embedded
+   `*(phase = block)` (byte-identical to split-RMW). The la/load
+   placement is sched1-canonical per §AD; no source form reached both.
+   6-insn window, single decision — permuter candidate. */
+extern void RotateLightVectorXZ(int mode);
+extern void HandleLevelSelectInput(void);
+extern void CheckCheatCodeMatch(void);
+extern void PlaySoundEffect(int sample, int a, int b, int c);
+extern void EnterPauseMenu(int mode);
+extern void ExitSubMenuToTitle(void);
+
+extern unsigned int g_adwHudBobSinePhaseBlock[]; /* g_dwHudBobSinePhase */
+
+void SubMenu_Update(void) {
+  unsigned int *phase;
+
+  g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
+  phase = g_adwHudBobSinePhaseBlock;
+  phase[0] = (phase[0] - g_nFrameStep) & 0xFF;
+  g_nPauseMenuIdleFrames += g_nFrameStep;
+  RotateLightVectorXZ(3);
+  if (g_nPauseMenuTransitionFrames < 5) {
+    return;
+  }
+  if (g_nLevelSelectModeActive != 0) {
+    HandleLevelSelectInput();
+    return;
+  }
+  CheckCheatCodeMatch();
+  if (g_nSubMenuScrollOffset == 0) {
+    if (g_nSubMenuCursor > 0) {
+      if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
+        if (g_dwPadHeld & 0x8000) {
+          PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38),
+                          0, 0x10, 0);
+          g_nSubMenuScrollDelta = 0x40;
+        }
+      }
+    }
+    if (g_nSubMenuCursor < 5) {
+      if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + 6] != 0) {
+        if (g_dwPadHeld & 0x2000) {
+          PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38),
+                          0, 0x10, 0);
+          g_nSubMenuScrollDelta = -0x40;
+        }
+      }
+    }
+  }
+  if (g_nSubMenuScrollDelta != 0) {
+    g_nSubMenuScrollOffset += g_nSubMenuScrollDelta;
+    if (g_nSubMenuScrollOffset == 0) {
+      g_nSubMenuScrollDelta = 0;
+    } else if (g_nSubMenuScrollOffset == -0x1C0) {
+      g_nSubMenuScrollDelta = -0x40;
+      g_nSubMenuScrollOffset = 0x1C0;
+      g_nSubMenuCursor += 1;
+    } else if (g_nSubMenuScrollOffset == 0x1C0) {
+      g_nSubMenuScrollDelta = 0x40;
+      g_nSubMenuScrollOffset = -0x1C0;
+      g_nSubMenuCursor -= 1;
+    }
+  }
+  if (g_dwPadPressed & 0x810) {
+    EnterPauseMenu(0);
+  } else if (g_dwPadPressed & 0x140) {
+    if (g_nLevelSelectModeActive == 0) {
+      ExitSubMenuToTitle();
+    }
+  }
+}
