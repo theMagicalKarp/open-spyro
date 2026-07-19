@@ -17,7 +17,7 @@ OPEN_SPYRO := $(UVRUN) -- open-spyro
 CLANG_FORMAT := $(UVRUN) -- clang-format
 CFMT_SRC     := $(wildcard src/c/*.c)
 
-.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play progress lint lint-py lint-c fmt fmt-py fmt-c clean
+.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play partial progress lint lint-py lint-c fmt fmt-py fmt-c clean
 
 help: ## Print this help (default target)
 	@echo "open-spyro — make targets:"
@@ -36,6 +36,7 @@ help: ## Print this help (default target)
 	@echo "  wad        Stage build/WAD.WAD from current parts (repack if overlays built, else pass)"
 	@echo "  iso        Repack the rebuilt files into a runnable .bin/.cue"
 	@echo "  play       Boot the rebuilt iso in DuckStation"
+	@echo "  partial    Score parked .c.wip attempts (Docker) -> build/partial.json"
 	@echo "  progress   Regenerate the C-match progress report (PROGRESS.md + badge)"
 	@echo "  lint       Lint + type-check everything: Python (ruff + ty) + C (clang-format), same as CI"
 	@echo "  fmt        Auto-format everything: Python (ruff) + C (clang-format)"
@@ -105,7 +106,10 @@ iso: ## Repack rebuilt files into a runnable disc
 play: ## Boot the rebuilt iso in DuckStation
 	@bash tools/play.sh
 
-progress: ## Regenerate the C-match progress report (PROGRESS.md + badge)
+partial: ## Score parked .c.wip attempts (Docker) -> build/partial.json (instruction-level partial credit)
+	$(OPEN_SPYRO) partial
+
+progress: partial ## Regenerate the C-match progress report (PROGRESS.md + badge)
 	$(OPEN_SPYRO) progress
 	$(OPEN_SPYRO) progress-treemap
 
