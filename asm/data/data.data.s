@@ -1739,6 +1739,11 @@ dlabel g_anSineLut
     /* 5D472 8006CC72 */ .short 0x0FF5
     /* 5D474 8006CC74 */ .short 0x0FFB
     /* 5D476 8006CC76 */ .short 0x0FFF
+enddlabel g_anSineLut
+
+nonmatching g_anCosineLut
+
+dlabel g_anCosineLut
     /* 5D478 8006CC78 */ .short 0x1000
     /* 5D47A 8006CC7A */ .short 0x0FFF
     /* 5D47C 8006CC7C */ .short 0x0FFB
@@ -1771,6 +1776,11 @@ dlabel g_anSineLut
     /* 5D4B2 8006CCB2 */ .short 0x0C1E
     /* 5D4B4 8006CCB4 */ .short 0x0BDB
     /* 5D4B6 8006CCB6 */ .short 0x0B97
+enddlabel g_anCosineLut
+
+nonmatching D_8006CCB8
+
+dlabel D_8006CCB8
     /* 5D4B8 8006CCB8 */ .short 0x0B50
     /* 5D4BA 8006CCBA */ .short 0x0B08
     /* 5D4BC 8006CCBC */ .short 0x0ABF
@@ -1996,7 +2006,7 @@ dlabel g_anSineLut
     /* 5D674 8006CE74 */ .short 0x0FFB
     /* 5D676 8006CE76 */ .short 0x0FFF
     /* 5D678 8006CE78 */ .short 0x1000
-enddlabel g_anSineLut
+enddlabel D_8006CCB8
 
 nonmatching D_8006CE7A
 
