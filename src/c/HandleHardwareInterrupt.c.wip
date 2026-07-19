@@ -1,0 +1,90 @@
+#include "globals.h"
+
+/* Master hardware-interrupt dispatcher hooked at the BIOS exception vector.
+   Reads (I_MASK & enable-mask & I_STAT); for each of up to 11 IRQ sources ACKs
+   the bit in I_STAT and calls g_apfnIrqHandlers[i]. Re-loops while any source
+   remains pending, with a 0x800-cycle watchdog. (0x8005e03c, 488 bytes.) */
+
+extern int WritePrintf();
+extern void ReturnFromException(void);
+extern unsigned short
+    g_anLibapiIrqBlock[]; /* alias @0x80073924: [0]=g_nLibapiCallbackInstalled, +4=g_apfnIrqHandlers */
+extern unsigned char D_80011640[]; /* "unexpected interrupt(%04x)\n" */
+extern unsigned char D_8001165C[]; /* "intr timeout(%04x:%04x)\n" */
+
+void HandleHardwareInterrupt(void) {
+  unsigned short *p;
+  void (**base)();
+  void (**h)();
+  int i;
+  unsigned int mask;
+
+  p = g_anLibapiIrqBlock;
+  if (p[0] == 0) {
+    WritePrintf(D_80011640, *(volatile unsigned short *)g_pIStatReg);
+    ReturnFromException();
+  }
+  g_nInIsrFlag = 1;
+  mask = *(volatile unsigned short *)g_pIMaskReg &
+         ((unsigned int)*(unsigned short *)&g_nIrqEnableMask &
+          *(volatile unsigned short *)g_pIStatReg);
+  if (mask != 0) {
+    base = (void (**)())(p + 2);
+    do {
+      i = 0;
+      if (mask != 0) {
+        h = base;
+        while (1) {
+          if (i >= 0xB) {
+            break;
+          }
+          if (mask & 1) {
+            *(volatile unsigned short *)g_pIStatReg = ~(1 << i);
+            if (*h != 0) {
+              (*h)();
+            }
+          }
+          h++;
+          mask >>= 1;
+          i++;
+          if ((mask & 0xFFFF) == 0) {
+            break;
+          }
+        }
+      }
+      mask = *(volatile unsigned short *)g_pIMaskReg &
+             ((unsigned int)*(unsigned short *)&g_nIrqEnableMask &
+              *(volatile unsigned short *)g_pIStatReg);
+    } while (mask != 0);
+  }
+  if ((*(volatile unsigned short *)g_pIMaskReg &
+       *(volatile unsigned short *)g_pIStatReg) != 0) {
+    int old = g_nIsrTimeoutCounter;
+    g_nIsrTimeoutCounter = old + 1;
+    if (old > 0x800) {
+      WritePrintf(D_8001165C, *(volatile unsigned short *)g_pIStatReg,
+                  *(volatile unsigned short *)g_pIMaskReg);
+      g_nIsrTimeoutCounter = 0;
+      *(volatile unsigned short *)g_pIStatReg = 0;
+    }
+  } else {
+    g_nIsrTimeoutCounter = 0;
+  }
+  g_nInIsrFlag = 0;
+  ReturnFromException();
+}
+
+/* PARKED 2026-07-19 at 78.7% (26/122), LENGTH-EXACT, correct logic. Whole
+   control structure + inner IRQ-dispatch loop + shared-base (handlers at
+   flag+4 via g_anLibapiIrqBlock) + watchdog are byte-identical. Residue is
+   entirely the 3 identical HW-register-read blocks `mask = IMask & (enable &
+   IStat)`:
+     - §K non-volatile POINTER-load order: gcc loads g_pIMaskReg's pointer
+       before g_pIStatReg's; the original loads the IStat pointer first (the
+       volatile VALUE-load order IStat-then-IMask already matches). ×3 blocks.
+     - §V/§H final `and` written straight into s0 instead of computing in v0
+       then `move s0,v0` (which the original folds into the beqz/bnez delay
+       slot). ×2 (initial + reload).
+     - §K `li s3,1` / `addiu s4,s1,4` emission order swapped (2 independent
+       insns). Block-temp reads were WORSE (73%); the inline expression here
+       is the best form. Clean single-shape permuter candidate. */
