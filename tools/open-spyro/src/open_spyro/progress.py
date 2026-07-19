@@ -37,6 +37,15 @@ Seeded names win over auto names at the same address.
   wip      C work in progress: an override exists but its bytes do not (yet) match
            / cannot be verified (no rebuilt EXE), or it is explicitly tagged
            `status:wip` in symbol_addrs.txt.
+
+--- Partial credit -----------------------------------------------------------
+A wip function can carry a `partial_bytes` count: instruction-level credit for a
+parked `.c.wip` attempt that already reproduces part of the function, computed by
+`open-spyro partial` into build/partial.json (a gitignored build artifact). The
+headline % / badge FOLD exact matched bytes with partial bytes; the exact-only
+figure is preserved (`exact_matched_bytes` in progress.json). When
+build/partial.json is absent (a host-only stdlib run), the metric is exact-only —
+so this stays pure-stdlib and disc-free.
 """
 
 from __future__ import annotations
@@ -266,7 +275,26 @@ def load_wip_overrides(path: Path | None) -> set[str]:
     return {p.name.removesuffix(".c.wip") for p in Path(path).glob("*.c.wip")}
 
 
-def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
+def load_partial(repo: Path) -> dict[str, int]:
+    """name -> partial matched-byte count from build/partial.json (`open-spyro partial`).
+
+    A gitignored build artifact: instruction-level credit for parked `.c.wip`
+    attempts that don't yet fully match. Absent (host-only stdlib `progress` run,
+    or before `partial` has run) -> {} -> the metric is exact-only.
+    """
+    path = repo / "build/partial.json"
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return {}
+    return {name: int(rec.get("matched_bytes", 0)) for name, rec in data.items()}
+
+
+def build_segment(
+    seg: dict[str, Any], partial: dict[str, int] | None = None
+) -> list[dict[str, Any]]:
     sym = parse_symbol_funcs(seg["symbol_addrs"])
     blocks, defined, hand = parse_asm(seg["asm"])
     overrides = load_overrides(seg.get("src_c"))
@@ -328,6 +356,14 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
         # Hand-written-asm classification (lib takes precedence — already excluded).
         strong, hw, ninstr = hand.get(name, (0, 0, 0))
         hw_class = "" if is_lib else classify_handwritten(strong, hw, ninstr)
+        # `matched_bytes` stays EXACT (full size iff verified byte-identical, else 0).
+        # `partial_bytes` is the separate instruction-level credit for a wip attempt,
+        # clamped below the full size so it can never masquerade as a real match. The
+        # headline folds the two (see run()); keeping them apart preserves the exact
+        # (provably-correct) figure.
+        partial_bytes = 0
+        if status == "wip" and partial:
+            partial_bytes = min(partial.get(name, 0), max(0, size - 4))
         records.append(
             {
                 "addr": f"0x{addr:08x}",
@@ -336,6 +372,7 @@ def build_segment(seg: dict[str, Any]) -> list[dict[str, Any]]:
                 "size": size,
                 "status": status,
                 "matched_bytes": size if status == "matched" else 0,
+                "partial_bytes": partial_bytes,
                 "lib": is_lib,
                 "handwritten": hw_class == "handwritten",
                 "asm_hint": hw_class == "asm-hint",
@@ -383,7 +420,15 @@ def update_readme_badge(readme: Path, pct: float, color: str) -> None:
 
 
 def _blank() -> dict[str, int]:
-    return {"total": 0, "matched": 0, "wip": 0, "asm": 0, "total_bytes": 0, "matched_bytes": 0}
+    return {
+        "total": 0,
+        "matched": 0,
+        "wip": 0,
+        "asm": 0,
+        "total_bytes": 0,
+        "matched_bytes": 0,  # exact (byte-identical) only
+        "partial_bytes": 0,  # instruction-level wip credit
+    }
 
 
 def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, int]]]:
@@ -419,11 +464,14 @@ def seg_summary(records: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, 
         s[r["status"]] += 1
         s["total_bytes"] += r["size"]
         s["matched_bytes"] += r["matched_bytes"]
+        s["partial_bytes"] += r["partial_bytes"]
     return out
 
 
 def _pct(s: dict[str, int]) -> float:
-    return (s["matched_bytes"] / s["total_bytes"] * 100) if s["total_bytes"] else 0.0
+    """Headline %: exact matched + partial wip credit, folded (see module design)."""
+    credited = s["matched_bytes"] + s["partial_bytes"]
+    return (credited / s["total_bytes"] * 100) if s["total_bytes"] else 0.0
 
 
 def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[str, int]]]) -> str:
@@ -433,17 +481,31 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     unsplit = {k: sum(seg["unsplit"][k] for seg in summary.values()) for k in _blank()}
     pct = _pct(game)
 
+    exact = game["matched_bytes"]
+    partial = game["partial_bytes"]
+    credited = exact + partial
+
     lines = []
     lines.append("# Progress — open-spyro C-match")
     lines.append("")
     lines.append(
-        f"**Game code matched: {game['matched_bytes']:,} / {game['total_bytes']:,} "
+        f"**Game code matched: {credited:,} / {game['total_bytes']:,} "
         f"bytes ({pct:.2f}%)** — generated by `make progress` (`open-spyro progress`)."
     )
     lines.append("")
     lines.append(
+        f"Headline folds **{exact:,} bytes exact** (verified byte-identical) with "
+        f"**{partial:,} bytes partial** — instruction-level credit for parked `.c.wip` "
+        "attempts that don't yet fully match (`open-spyro partial`). Because partial "
+        "credit tracks in-progress C, the headline can move *non-monotonically* (an edit "
+        "or permuter run may lower a partial score while making real progress); the exact "
+        "figure above never regresses without a real loss of a match."
+    )
+    lines.append("")
+    lines.append(
         "Status: `matched` = verified byte-identical from C · "
-        "`wip` = C in progress · `asm` = original assembly (`INCLUDE_ASM`)."
+        "`wip` = C in progress (may carry partial credit) · "
+        "`asm` = original assembly (`INCLUDE_ASM`)."
     )
     lines.append("")
     lines.append(
@@ -480,19 +542,24 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     lines.append("")
     lines.append("## Per-segment summary (game code)")
     lines.append("")
-    lines.append("| Segment | Functions | matched | wip | asm | Bytes matched | Total bytes | % |")
-    lines.append("|---|--:|--:|--:|--:|--:|--:|--:|")
+    lines.append(
+        "| Segment | Functions | matched | wip | asm | Exact bytes | Partial bytes | "
+        "Total bytes | % |"
+    )
+    lines.append("|---|--:|--:|--:|--:|--:|--:|--:|--:|")
     for name in sorted(summary):
         s = summary[name]["game"]
         if not s["total"]:
             continue  # e.g. un-split overlays — no counted game code yet
         lines.append(
             f"| {name} | {s['total']} | {s['matched']} | {s['wip']} | {s['asm']} | "
-            f"{s['matched_bytes']:,} | {s['total_bytes']:,} | {_pct(s):.2f}% |"
+            f"{s['matched_bytes']:,} | {s['partial_bytes']:,} | {s['total_bytes']:,} | "
+            f"{_pct(s):.2f}% |"
         )
     lines.append(
         f"| **all** | {game['total']} | {game['matched']} | {game['wip']} | "
-        f"{game['asm']} | {game['matched_bytes']:,} | {game['total_bytes']:,} | {pct:.2f}% |"
+        f"{game['asm']} | {game['matched_bytes']:,} | {game['partial_bytes']:,} | "
+        f"{game['total_bytes']:,} | {pct:.2f}% |"
     )
     lines.append("")
     lines.append("## Library / SDK (excluded from %)")
@@ -553,9 +620,10 @@ def run() -> None:
     out_md = repo / "PROGRESS.md"
     readme = repo / "README.md"
 
+    partial = load_partial(repo)
     records: list[dict[str, Any]] = []
     for seg in _segments(repo):
-        records.extend(build_segment(seg))
+        records.extend(build_segment(seg, partial))
     records.sort(key=lambda r: (int(r["addr"], 16), r["segment"]))
 
     summary = seg_summary(records)
@@ -566,7 +634,12 @@ def run() -> None:
     hand = [r for r in records if r["handwritten"]]
     unsplit = [r for r in records if r.get("unsplit")]
     total_bytes = sum(r["size"] for r in game)
-    matched_bytes = sum(r["matched_bytes"] for r in game)
+    exact_bytes = sum(r["matched_bytes"] for r in game)
+    partial_bytes = sum(r["partial_bytes"] for r in game)
+    # Headline folds exact (byte-identical) with partial (instruction-level wip
+    # credit); `matched_bytes`/`matched_pct` are the folded figures consumed by the
+    # badge, treemap, and PR delta. The exact-only number is preserved alongside.
+    matched_bytes = exact_bytes + partial_bytes
     pct = (matched_bytes / total_bytes * 100) if total_bytes else 0.0
 
     out_json.write_text(
@@ -575,6 +648,8 @@ def run() -> None:
                 "total_functions": len(game),
                 "total_code_bytes": total_bytes,
                 "matched_bytes": matched_bytes,
+                "exact_matched_bytes": exact_bytes,
+                "partial_matched_bytes": partial_bytes,
                 "matched_pct": round(pct, 4),
                 "library_functions": len(lib),
                 "library_code_bytes": sum(r["size"] for r in lib),
@@ -595,7 +670,8 @@ def run() -> None:
 
     print(
         f"progress: {len(game)} game functions, "
-        f"{matched_bytes:,}/{total_bytes:,} bytes matched ({pct:.2f}%); "
+        f"{matched_bytes:,}/{total_bytes:,} bytes matched ({pct:.2f}%) "
+        f"[{exact_bytes:,} exact + {partial_bytes:,} partial]; "
         f"{len(lib)} library functions excluded ({sum(r['size'] for r in lib):,} bytes); "
         f"{len(hand)} hand-written asm excluded ({sum(r['size'] for r in hand):,} bytes); "
         f"{len(unsplit)} un-split overlay blobs excluded "

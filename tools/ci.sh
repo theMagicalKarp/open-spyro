@@ -45,6 +45,13 @@ echo "::group::verify (SHA mode — no disc)"
 bash tools/verify_main.sh
 echo "::endgroup::"
 
+echo "::group::partial-match scoring (.c.wip)"
+# Instruction-level partial credit for parked .c.wip attempts -> build/partial.json,
+# folded into the progress headline below. We are already inside the matching image,
+# so `partial` assembles/compiles/scores directly (no nested docker).
+$OPEN_SPYRO partial
+echo "::endgroup::"
+
 echo "::group::progress report"
 $OPEN_SPYRO progress
 echo "::endgroup::"

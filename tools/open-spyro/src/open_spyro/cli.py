@@ -22,6 +22,7 @@ from open_spyro import (
     gen_syms_ld,
     normalize_binary,
     overlays,
+    partial,
     progress,
     progress_delta,
     progress_treemap,
@@ -39,6 +40,21 @@ app = typer.Typer(
 def _progress() -> None:
     """Regenerate the C-match progress report (PROGRESS.md + badge)."""
     progress.run()
+
+
+def _partial() -> None:
+    """Score parked `.c.wip` attempts (Docker) -> build/partial.json for `progress`."""
+    partial.run()
+
+
+def _partial_score(
+    manifest: Annotated[
+        Path, typer.Option("--manifest", help="per-function target/candidate objects")
+    ],
+    out: Annotated[Path, typer.Option("--out", help="write per-function matched_bytes here")],
+) -> None:
+    """In-container half of `partial`: objdump-diff each target/candidate object pair."""
+    partial.score_from_manifest(manifest, out)
 
 
 def _progress_treemap(
@@ -157,6 +173,8 @@ def _verify_overlays(
 
 
 app.command("progress")(_progress)
+app.command("partial")(_partial)
+app.command("partial-score")(_partial_score)
 app.command("progress-treemap")(_progress_treemap)
 app.command("progress-delta")(_progress_delta)
 app.command("sectionize")(_sectionize)
