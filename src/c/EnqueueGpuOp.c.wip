@@ -1,0 +1,106 @@
+#include "globals.h"
+
+extern void ResetGpuTimeoutDeadline(void);
+extern int CheckGpuTimeout(void);
+extern int SetInterruptMask(int mask);
+extern void DmaCallback();
+extern unsigned int FlushGpuQueue(void);
+
+/* libgpu DMA-queue enqueue (0x80061820, 736 bytes). If the GPU + DMA + 64-entry
+   ring are all idle, invoke func(args, arg4) immediately; otherwise append the
+   call to the ring for later replay by FlushGpuQueue. The ring head/tail indices
+   are shared with the DMA-completion IRQ handler, hence volatile. */
+
+extern unsigned int g_adwLastGpuOp[];
+extern unsigned char g_abGpuOpArgArea[];
+
+#define WIDX (*(volatile int *)&g_nGpuQueueWriteIndex)
+#define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
+
+unsigned int EnqueueGpuOp(void *func, unsigned int *args, int nbytes, unsigned int arg4) {
+    unsigned int *src;
+    char *slot;
+    int i;
+
+    ResetGpuTimeoutDeadline();
+    while (((WIDX + 1) & 0x3F) == RIDX) {
+        if (CheckGpuTimeout() != 0) {
+            return -1;
+        }
+        FlushGpuQueue();
+    }
+
+    g_nEnqueueGpuSavedIMask = SetInterruptMask(0);
+    g_nGpuQueueCompletionPending = 1;
+    if ((g_bGpuQueueModeActive == 0) ||
+        ((WIDX == RIDX) && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0 &&
+         g_pfnGpuQueueCompletionCallback == 0)) {
+        unsigned int *last;
+        while ((*(unsigned int *)g_pGpuStatReg & 0x04000000) == 0) {
+        }
+        ((void (*)(unsigned int *, unsigned int))func)(args, arg4);
+        last = g_adwLastGpuOp;
+        last[0] = (unsigned int)func;
+        last[1] = (unsigned int)args;
+        last[2] = arg4;
+        SetInterruptMask(g_nEnqueueGpuSavedIMask);
+        return 0;
+    }
+
+    DmaCallback(2, FlushGpuQueue);
+    i = 0;
+    if (nbytes != 0) {
+        src = args;
+        slot = (char *)&g_abGpuOpQueueRing[0xC];
+    lp:
+        if (i < nbytes / 4) {
+            unsigned int v = *src;
+            src += 1;
+            *(unsigned int *)(slot + WIDX * 0x60 + i * 4) = v;
+            i += 1;
+            goto lp;
+        }
+        *(unsigned int *)(&g_abGpuOpQueueRing[4] + WIDX * 0x60) =
+            (unsigned int)(&g_abGpuOpArgArea[0] + WIDX * 0x60);
+    } else {
+        *(unsigned int **)(&g_abGpuOpQueueRing[4] + WIDX * 0x60) = args;
+    }
+    *(unsigned int *)(&g_abGpuOpQueueRing[8] + WIDX * 0x60) = arg4;
+    *(void **)(&g_abGpuOpQueueRing[0] + WIDX * 0x60) = func;
+    g_nGpuQueueWriteIndex = (WIDX + 1) & 0x3F;
+    SetInterruptMask(g_nEnqueueGpuSavedIMask);
+    FlushGpuQueue();
+    return (WIDX - RIDX) & 0x3F;
+}
+
+/*
+ * PARKED 2026-07-19-1 — 182/184 insns, logic complete & correct. Solved keys
+ * (reusable, all verified against the asm):
+ *   - The ring head/tail indices are VOLATILE (shared with the DMA IRQ handler):
+ *     the original double-loads g_nGpuQueueWriteIndex in one expression and
+ *     reloads it before every ring store with no intervening call — only volatile
+ *     reproduces that (WIDX/RIDX macros).
+ *   - DmaCallback is called (2, FlushGpuQueue): it registers FlushGpuQueue as the
+ *     channel-2 DMA-completion callback (a1=&FlushGpuQueue). The ghidra decomp
+ *     dropped the args (register-passthrough); the asm sets a1. (+2 insns.)
+ *   - After the copy loop, the arg-ptr VALUE (&ring[0xC] + idx*0x60) must NOT CSE
+ *     onto the ring+4 store base: a DISTINCT alias symbol g_abGpuOpArgArea
+ *     (=ring+0xC) forces the fresh lui/addiu the original has (§A row 42 / §N).
+ *
+ * Residues (permuter-or-never):
+ *   1. §H whole-function param-regalloc ROTATION: original a0/a1/a2/a3 land in
+ *      s3/s0/s1/s2 (func→s3, bytes→s1, arg4→s2); our gcc gives s2/s0/s3/s1
+ *      (func→s2, bytes→s3, arg4→s1) — a 3-cycle among func/bytes/arg4. args→s0
+ *      matches. No source form dislodges it (this is the dominant byte cost — the
+ *      structure is ~1-insn-aligned but the register fields differ throughout).
+ *   2. §Y held-base fold (+1): original stores g_dwLastGpuOpFunc via a materialized
+ *      base (lui;addiu;sw 0(v0)) and folds Arg1/Arg2 to absolute; our gcc emits the
+ *      2-insn absolute form for all three (a compile-time-constant address that the
+ *      original holds but reload rematerializes+folds — §Y rule 1/2 wall). The
+ *      g_adwLastGpuOp alias + pointer-local can't force the held reg without a call
+ *      between (it then promotes to a callee-saved s-reg, worse).
+ *   3. Minor scheduling swaps: load-delay nop vs lui position (×2), the *0x60
+ *      multiply sll/addu order, and the copy-loop back-edge store-in-delay-slot vs
+ *      store-then-reload-bytes. All §K.
+ * Clean permuter target once the param rotation is forced.
+ */
