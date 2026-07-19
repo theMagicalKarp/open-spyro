@@ -1,0 +1,83 @@
+#include "globals.h"
+
+/* libgpu internal DRAWENV packer (SetDrawEnv variant without the alignment
+   split): packs a DRAWENV (clip RECT + offset + drawmode + texwindow + optional
+   background-fill rect) into the primitive chain at packet. (0x800606c8, 536
+   bytes.) */
+
+extern unsigned int BuildDrawAreaTopLeft(unsigned int x, unsigned int y);
+extern unsigned int BuildDrawAreaBottomRight(unsigned int x, unsigned int y);
+extern unsigned int BuildDrawOffsetCommand(unsigned int x, unsigned int y);
+extern unsigned int BuildDrawModeWord(int tpage, int dtd, unsigned int tw);
+extern unsigned int BuildTextureWindow(unsigned char *tw);
+
+void func_800606C8(int packet, unsigned short *env) {
+  
+  int len;
+
+  *(unsigned int *)(packet + 4) =
+      BuildDrawAreaTopLeft((short)env[0], (short)env[1]);
+  *(unsigned int *)(packet + 8) = BuildDrawAreaBottomRight(
+      (short)(env[2] + env[0] - 1), (short)(env[1] + env[3] - 1));
+  *(unsigned int *)(packet + 0xc) =
+      BuildDrawOffsetCommand((short)env[4], (short)env[5]);
+  *(unsigned int *)(packet + 0x10) =
+      BuildDrawModeWord(((unsigned char *)env)[0x17], ((unsigned char *)env)[0x16], env[0xa]);
+  *(unsigned int *)(packet + 0x14) = BuildTextureWindow((unsigned char *)env + 0xc);
+  *(unsigned int *)(packet + 0x18) = 0xe6000000;
+  len = 7;
+  if (((unsigned char *)env)[0x18] != 0) {
+    unsigned short rect[4];
+    int w;
+    unsigned int color;
+    int cx, cy;
+
+    rect[0] = env[0];
+    rect[1] = env[1];
+    w = env[2];
+    rect[2] = w;
+    rect[3] = env[3];
+    cx = 0;
+    if ((short)w >= 0) {
+      cx = g_nGpuScreenWidth - 1;
+      if (g_nGpuScreenWidth - 1 >= (short)w) {
+        cx = w;
+      }
+    }
+    rect[2] = cx;
+    if ((short)rect[3] >= 0) {
+      cy = g_nGpuScreenHeight - 1;
+      if (g_nGpuScreenHeight - 1 >= (short)rect[3]) {
+        cy = (short)rect[3];
+      }
+    } else {
+      cy = 0;
+    }
+    rect[3] = cy;
+    rect[0] = rect[0] - env[4];
+    rect[1] = rect[1] - env[5];
+    color = (((unsigned char *)env)[0x1b] << 16) | ((((unsigned char *)env)[0x1a] << 8) | 0x60000000) | ((unsigned char *)env)[0x19];
+    *(unsigned int *)(packet + (len << 2)) = color;
+    len++;
+    *(unsigned int *)(packet + (len << 2)) = rect[0];
+    len++;
+    *(unsigned int *)(packet + (len << 2)) = rect[2];
+    rect[0] = rect[0] + env[4];
+    len++;
+    rect[1] = rect[1] + env[5];
+  }
+  *(char *)(packet + 3) = len - 1;
+}
+
+/* PARKED 2026-07-19 at 132/134 (2 short). NOT a §B10 escape: the inline
+   get_cs/get_ce clamp hits the SAME §B10 wall as standalone
+   BuildDrawAreaTopLeft/BuildDrawAreaBottomRight. The original keeps `width`
+   in v1 and RECOMPUTES `width-1` a second time in the bnez branch-delay slot
+   (`addiu v0,v1,-1`); our gcc 2.7.2 CSEs `width-1` into one register and
+   leaves the delay slot a nop -> 1 short per clamp x2 (x + h). Five §B10
+   source forms are documented as canonicalizing back; confirmed again here
+   for the INLINE case. The jal-chain head (5 Build* calls) and the
+   non-bg path match; the fill-store block alignment can't be verified past
+   the 2-insn clamp deficit. Also uses `int w` (raw) for the x in-range value
+   but `(short)rect[3]` (stack reload as lh) for h, matching m2c's asymmetry.
+   §B10 permuter-or-never class. */
