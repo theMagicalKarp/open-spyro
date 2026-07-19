@@ -6,8 +6,8 @@
         <directory_tree source="../disc/orig">
             <file name="SYSTEM.CNF" type="data" date="19980810231656"/>
             <dummy sectors="13" type="32"/>
-            <file name="WAD.WAD" type="data" date="19980813004632" source="../build/WAD.WAD"/>
-            <file name="SCUS_942.28" type="data" date="19980813004422" source="../build/main/SCUS_942.28"/>
+            <file name="WAD.WAD" type="data" date="19980813004632"/>
+            <file name="SCUS_942.28" type="data" date="19980813004422"/>
             <dummy sectors="5921" type="32"/>
             <file name="PETEXA0.STR" type="mixed" date="19980808215850"/>
             <file name="PETEXA1.STR" type="mixed" date="19980804162046"/>

@@ -10,7 +10,7 @@ extern unsigned char D_80078A72;
 extern unsigned char D_80078A73;
 extern unsigned char D_80078A78;
 extern unsigned char D_80078A79;
-extern unsigned char D_80078A7D;
+extern unsigned char g_abSpyroAnimLayer1SubstepBlock;
 
 /* 0x80049660 — per-frame layer-1 (horn-strike overlay) anim driver: phase 0
    tracks the horn-strike state (snapshot the primary anim bytes when idle,
@@ -51,7 +51,7 @@ void TickSpyroAnimLayer1(void) {
         *(volatile unsigned char *)&D_80078A78 = framePrev;
         *(volatile unsigned char *)&D_80078A73 = cur;
         *(volatile unsigned char *)&D_80078A79 = frame;
-        *(volatile unsigned char *)&D_80078A7D = sub;
+        *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = sub;
       } else {
         AdvanceSpyroAnimLayer1Frame(g_nSpyroHornStrikeAnimRate);
       }
@@ -66,7 +66,7 @@ void TickSpyroAnimLayer1(void) {
         *(volatile unsigned char *)&D_80078A78 = oldFrame;
         newAnim = D_80075268[state];
         *(volatile unsigned char *)&D_80078A79 = 0;
-        *(volatile unsigned char *)&D_80078A7D = 4;
+        *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 4;
         g_anSpyroHornStrikeSwingPhaseBlock[2] = state;
         *(volatile unsigned char *)&D_80078A73 = newAnim;
         break;
@@ -76,7 +76,7 @@ void TickSpyroAnimLayer1(void) {
         blendFrame = *(volatile byte *)&D_80078A79;
         blendCur = *(volatile byte *)&g_bSpyroAnimCurrent;
         blendCurFrame = *(volatile byte *)&g_bSpyroAnimFrame;
-        *(volatile unsigned char *)&D_80078A7D = 2;
+        *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 2;
         g_anSpyroHornStrikeSwingPhaseBlock[2] = state;
         *(volatile unsigned char *)&D_80078A72 = blendAnim;
         *(volatile unsigned char *)&D_80078A78 = blendFrame;
@@ -87,16 +87,16 @@ void TickSpyroAnimLayer1(void) {
     }
     break;
   case 2:
-    timer = D_80078A7D + 4;
-    D_80078A7D = timer;
+    timer = g_abSpyroAnimLayer1SubstepBlock + 4;
+    g_abSpyroAnimLayer1SubstepBlock = timer;
     if ((unsigned char)timer >= 0x10) {
       AdvanceSpyroAnimLayer1Frame(0);
       g_anSpyroHornStrikeSwingPhaseBlock[0] = 0;
     }
     break;
   case 1:
-    timer = D_80078A7D + 2;
-    D_80078A7D = timer;
+    timer = g_abSpyroAnimLayer1SubstepBlock + 2;
+    g_abSpyroAnimLayer1SubstepBlock = timer;
     if ((unsigned char)timer >= 0x10) {
       AdvanceSpyroAnimLayer1Frame(0);
       g_anSpyroHornStrikeSwingPhaseBlock[0] = 0;
