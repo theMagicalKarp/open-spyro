@@ -40,21 +40,13 @@ def render(head: dict, base_pct: float, base_bytes: int, base_ref: str) -> str:
     hb = int(head.get("matched_bytes", 0))
     tot = int(head.get("total_code_bytes", 0))
     fn = int(head.get("total_functions", 0))
-    # Headline bytes are folded (exact + partial). Base PROGRESS.md exposes only the
-    # folded figure, so the Δ is folded-vs-folded (consistent). The exact/partial
-    # split of HEAD is shown as a breakdown when any partial credit is present.
-    exact = int(head.get("exact_matched_bytes", hb))
-    partial = int(head.get("partial_matched_bytes", 0))
     dpct = hp - base_pct
     dby = hb - base_bytes
     arrow = "▲" if dby > 0 else ("▼" if dby < 0 else "—")
-    out = (
+    return (
         f"**Match progress:** {hp:.2f}% ({hb:,} / {tot:,} bytes, {fn:,} game functions)  \n"
         f"Δ vs `{base_ref}`: {arrow} {dpct:+.2f}% ({dby:+,} bytes)"
     )
-    if partial:
-        out += f"  \n({exact:,} bytes exact + {partial:,} bytes partial from `.c.wip`)"
-    return out
 
 
 def run(base_ref: str, head_json: Path, base_md: Path) -> None:
