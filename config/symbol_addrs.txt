@@ -1663,3 +1663,6 @@ g_anSpyroShadowRingIndexBlock = 0x8007aa30; // allow_duplicated:True alias block
 g_nSpyroShadowHiddenFlag = 0x8007aa34; // size:0x4
 g_abAssetDirectoryBuffer = 0x8007aa38; // size:0x258
 g_apActorMeshTableBlock = 0x80076378; // allow_duplicated:True alias — incomplete-array view so the mesh-table base materializes as a held register (LoadActorMeshTables)
+g_adwGpuRingFunc = 0x80078ea0; // allow_duplicated:True — distinct word[] view of the ring func slot (ring+0) so FlushGpuQueue re-materializes %hi(ring) fresh per access instead of hoisting one base
+g_adwGpuRingArgs = 0x80078ea4; // allow_duplicated:True — distinct word[] view of the ring args slot (ring+4) for FlushGpuQueue
+g_adwGpuRingArg4 = 0x80078ea8; // allow_duplicated:True — distinct word[] view of the ring arg4 slot (ring+8) for FlushGpuQueue
