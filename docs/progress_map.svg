@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">3.98% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">85,892 / 2,159,608 split-code bytes · 419 matched · 64 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">3.99% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">86,092 / 2,159,608 split-code bytes · 419 matched · 65 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -125,7 +125,7 @@
 <rect x="62.40" y="570.47" width="19.50" height="20.97" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>FlushGpuQueue  ·  748 bytes  ·  asm</title></rect>
 <rect x="62.40" y="591.44" width="19.50" height="20.85" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroChargeStateChanges  ·  744 bytes  ·  asm</title></rect>
 <rect x="62.40" y="612.29" width="19.50" height="20.74" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80038638  ·  740 bytes  ·  asm</title></rect>
-<rect x="62.40" y="633.04" width="19.50" height="20.63" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>EnqueueGpuOp  ·  736 bytes  ·  asm</title></rect>
+<rect x="62.40" y="633.04" width="19.50" height="20.63" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>EnqueueGpuOp  ·  736 bytes  ·  wip</title></rect>
 <rect x="62.40" y="653.67" width="19.50" height="20.41" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80039E94  ·  728 bytes  ·  wip</title></rect>
 <rect x="62.40" y="674.07" width="19.50" height="20.18" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80059594  ·  720 bytes  ·  asm</title></rect>
 <rect x="62.40" y="694.26" width="19.50" height="20.07" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80064A20  ·  716 bytes  ·  asm</title></rect>
