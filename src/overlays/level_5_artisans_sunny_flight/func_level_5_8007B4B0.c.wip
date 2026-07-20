@@ -27,6 +27,30 @@
  * the copy vanishes entirely (chain reads a0 directly, 1 short). The move's
  * direction (copy-in a3 feeding the chain, q600 surviving in a0 for min) is
  * cse canonical-reg choice, not reachable by source restructure. Permuter.
+ *
+ * 2026-07-19-2 root-cause + permuter run. Both knots reduced to their core:
+ * (1) DIV-BLOCK is a shared-`sign(time)` CSE + mfhi caller-saved coin-flip.
+ * The three signed divides (/600 q600, /6, /36000 hr) all reuse ONE
+ * `time >> 31` (sign). The orig parks that sign in v1 and receives hr-raw in
+ * a0 (`sra a0,t1,6`), so q600's mfhi must live in a free caller-saved temp =
+ * t1. Our gcc parks sign in a0 (reusing the dead `time` reg after its last
+ * mult), which frees v1 for q600's mfhi. Both are legal; the choice of which
+ * caller-saved reg holds `sign` vs the surviving q600 mfhi is pure allocator
+ * numbering — no source expression reaches it (confirmed again here).
+ * (2) `len += 1` is a §K independent-schedule tie: orig defers the `addiu s2,1`
+ * into the `lw pos[0]` load-delay slot AFTER the fmt-"." la; ours emits it
+ * before the la. Both knots are independent, so the two must be solved
+ * SIMULTANEOUSLY to reach 0.
+ * PERMUTER HARNESS BUILT (overlay-mode, reusable): build/perm/func_level_5_8007B4B0/
+ * (target.o assembled from asm/overlays/.../text.s lines 485-616 via
+ * `mips-linux-gnu-as -EL -march=r3000 -I asm -I include`; base.c self-contained;
+ * compile.sh + settings.toml cloned from the titlescreen overlay harness;
+ * needs the persistent `spyro_perm` docker container + build/perm/bin objdump
+ * shim on PATH). Ran ~600 iterations of the default randomizer (which includes
+ * perm_temp_for_expr): STUCK at base score 220, best candidate 215 (a nonsense
+ * `volatile long long` return-type mutation, not a real transform). Randomization
+ * alone cannot crack a double reg-permutation knot; a hand-guided permuter with
+ * both knots framed, or hand-asm, is the only path. Still 5x payoff if closed.
  */
 
 extern void func_80017FE4(); /* draw text run */
