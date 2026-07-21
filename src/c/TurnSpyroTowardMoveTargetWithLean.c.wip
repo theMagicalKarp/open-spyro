@@ -7,9 +7,9 @@ extern short D_8006C5F0[];
 extern void IntegrateSpyroBodyEuler(int delta);
 
 /* 0x8003d6d0: Steers Spyro's body yaw toward the move-target yaw using a lean
-   accumulator g_nSpyroBodyYawStep (clamped -6..+6). Picks the turn rate from the
-   2D table (speed bucket param_1 selects the row, lean the column). Resets the
-   lean when the target is overshot or the desired delta falls inside the
+   accumulator g_nSpyroBodyYawStep (clamped -6..+6). Picks the turn rate from
+   the 2D table (speed bucket param_1 selects the row, lean the column). Resets
+   the lean when the target is overshot or the desired delta falls inside the
    table-indexed band, then integrates the chosen angular delta and reports the
    remaining |delta| via AbsAngleDelta12. */
 void TurnSpyroTowardMoveTargetWithLean(int param_1) {
@@ -25,14 +25,18 @@ void TurnSpyroTowardMoveTargetWithLean(int param_1) {
       g_nSpyroBodyYawStep = 1;
     }
     iVar1 = 6;
-    if (g_nSpyroBodyYawStep < 7) goto found;
+    if (g_nSpyroBodyYawStep < 7) {
+      goto found;
+    }
   } else {
     g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + -1;
     if (g_nSpyroBodyYawStep < -6) {
       g_nSpyroBodyYawStep = -6;
     }
     iVar1 = -1;
-    if (g_nSpyroBodyYawStep < 0) goto found;
+    if (g_nSpyroBodyYawStep < 0) {
+      goto found;
+    }
   }
   g_nSpyroBodyYawStep = iVar1;
 found:
@@ -49,13 +53,14 @@ found:
   AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw);
 }
 
-/* PARKED 2026-07-16 (1 insn short / 91-of-92 positional-shift, logic + length-1).
-   Sole residue: the original copies param to a2 at entry (`move a2,a0`) and holds
-   it there through the branch chain to the table lookup, then computes the call
-   arg uVar2 into a0. Our gcc is smarter: param stays in a0, dies after the
-   `param*0x1a` ladder, and a0 is reused for uVar2 -> no move (1 insn short, whole
-   body then shifts by one so a2->a0 in the ladder). §H single-register tie; a
-   `bucket=param_1` copy local, row-hoist, and slti(int uVar3) fixes did not
-   dislodge it (the copy just lands mispositioned). Clean permuter candidate:
-   force param into a2 across its live range. Everything else (goto layout, slti
-   signedness, param*0x1a ladder, lh 0xC table access, reset block) byte-identical. */
+/* PARKED 2026-07-16 (1 insn short / 91-of-92 positional-shift, logic +
+   length-1). Sole residue: the original copies param to a2 at entry (`move
+   a2,a0`) and holds it there through the branch chain to the table lookup, then
+   computes the call arg uVar2 into a0. Our gcc is smarter: param stays in a0,
+   dies after the `param*0x1a` ladder, and a0 is reused for uVar2 -> no move (1
+   insn short, whole body then shifts by one so a2->a0 in the ladder). §H
+   single-register tie; a `bucket=param_1` copy local, row-hoist, and slti(int
+   uVar3) fixes did not dislodge it (the copy just lands mispositioned). Clean
+   permuter candidate: force param into a2 across its live range. Everything
+   else (goto layout, slti signedness, param*0x1a ladder, lh 0xC table access,
+   reset block) byte-identical. */

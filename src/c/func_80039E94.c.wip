@@ -31,7 +31,8 @@ extern int ArcTan2(int x, int y, int mode);
 extern int AbsAngleDelta8(int a, int b);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 extern int func_80038EE0(int *actor, int ang, int step, int lim, int mode);
-extern int func_80039398(int *actor, int speed, int group, int radius, int flags);
+extern int func_80039398(int *actor, int speed, int group, int radius,
+                         int flags);
 extern int abs(int);
 
 extern int D_800756C4;
@@ -95,12 +96,12 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
     if (peer != 0) {
       return ret;
     }
-    *(unsigned char *)((char *)actor + 0x46) =
-        ApproachAngle8(ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
+    *(unsigned char *)((char *)actor + 0x46) = ApproachAngle8(
+        ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
     *(unsigned char *)((char *)actor + 0x49) = 2;
   } else {
-    *(unsigned char *)((char *)actor + 0x46) =
-        ApproachAngle8(ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
+    *(unsigned char *)((char *)actor + 0x46) = ApproachAngle8(
+        ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
   }
   return ret;
 }

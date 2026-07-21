@@ -7,6 +7,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # e.g. CI) works while `make shell` stays interactive.
 tty_flag=""
 [ -t 0 ] && tty_flag="-t"
+# Run as the host user so files written into the mounted repo (build/, config/…)
+# stay host-owned. Default root would create root-owned artifacts that break the
+# host-side steps (e.g. `open-spyro partial` creating build/partial). HOME=/tmp
+# gives any tool that reads $HOME a writable dir (the tools live in /opt + /usr;
+# git's safe.directory is set globally in the image).
 exec docker run --rm -i $tty_flag --platform linux/amd64 \
+  --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -v "$ROOT:/work" -w /work \
   open-spyro/matchenv:latest "${@:-/bin/bash}"

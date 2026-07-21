@@ -13,7 +13,7 @@ extern unsigned short D_8007356C;
    signature triggers the register-save prologue; va_arg is the standard
    pointer-bump expansion. */
 #define VA_START(ap, last) ((ap) = (char *)__builtin_next_arg(last))
-#define VA_ARG_U32(ap) ((ap) += 4, *(unsigned int *)((ap)-4))
+#define VA_ARG_U32(ap) ((ap) += 4, *(unsigned int *)((ap) - 4))
 
 /* 0x8005c1c0 — SPU DMA transfer controller. op 2 = stamp the encoded transfer
    address shadow into the SPU addr register (+0x1a6); op 1/0 = wait for the

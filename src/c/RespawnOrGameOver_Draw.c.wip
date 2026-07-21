@@ -19,8 +19,8 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void EnqueuePendingSpritePrims(void);
 extern void RasterizeSpritePrimQueue(void);
 extern void RasterizePairedActor(void);
-extern void BuildTextSprites(unsigned char *str, int *pos, int *size,
-                             int flags, int slot);
+extern void BuildTextSprites(unsigned char *str, int *pos, int *size, int flags,
+                             int slot);
 extern void BuildCameraViewMatrix(void);
 extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
 
@@ -251,7 +251,8 @@ void RespawnOrGameOver_Draw(void) {
  *  - Sine-wave letter loop (0x8001cd04..) regalloc: split the letter loop's
  *    `k`/`t`/`rec` from the sine loop's counters (sk/st/sc) so the sine vars
  *    land in temp regs a1/v1/a0 (were forced to callee-saved s0/s2 by reuse);
- *    keep `i` shared so it stays s1 across both loops (§H / §Q split-per-block).
+ *    keep `i` shared so it stays s1 across both loops (§H / §Q
+ * split-per-block).
  *  - Both loop preheaders: order the invariant address (ramp / LUT base)
  *    BEFORE the counter zero. Made the sine base explicit
  *    (`sbase = &g_anSineLut[0x40]`) so it hoists to a2 ahead of `sk = 0`.

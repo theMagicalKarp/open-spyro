@@ -85,12 +85,10 @@ void func_8002CCC8(int actor) {
   D_80078D40 = *(int *)(p - 0x10) + 0x170;
 
   if (g_pLevelOverlayInitRecord != 0) {
-    D_80078D44 =
-        ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
-                    *(int *)(p - 0x18),
-                *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
-                    g_nSpyroWorldPosY,
-                1);
+    D_80078D44 = ArcTan2(
+        *(int *)((char *)g_pLevelOverlayInitRecord + 0xC) - *(int *)(p - 0x18),
+        *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) - g_nSpyroWorldPosY,
+        1);
     SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
                    (int *)t);
     D_80078D48 = VectorLength(vec, 0);

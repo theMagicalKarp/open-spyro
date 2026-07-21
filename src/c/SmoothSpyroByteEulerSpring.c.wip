@@ -1,11 +1,35 @@
 #include "globals.h"
 
-/* Spring-smooth Spyro's swing Euler triple toward its targets and publish
-   the byte-euler view (0x80049880, 0x140). Per axis: wrap the 12-bit
-   angular difference to signed, run the critically-damped spring
-   (force = (diff<<7 - accum<<4) >> 6), integrate the accumulator into the
-   smoothed angle, and store angle>>4 as the byte euler. */
-
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nCameraScriptStickRequestY;
+extern int g_nCameraScriptStickRequestX;
 extern int g_nSpyroSwingEulerPrev0;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nSpyroSwingEulerPrev2;
@@ -15,70 +39,69 @@ extern int g_nSpyroSwingEulerSpringAccum2;
 extern unsigned char g_bSpyroSwingByteEuler0;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern unsigned char g_bSpyroSwingByteEuler2;
-
 void SmoothSpyroByteEulerSpring(void) {
   int d0;
   int d1;
   int d2;
+  int *new_var4;
   int f0;
+  int new_var;
   int f1;
+  int new_var2;
+  int new_var3;
   int v;
+  int new_var5;
   int a;
-
-  d0 = (g_nSpyroSwingEulerPitchTarget - g_nSpyroSwingEulerPrev0) & 0xFFF;
+  d0 = 0xFFF & (g_nSpyroSwingEulerPitchTarget - g_nSpyroSwingEulerPrev0);
+  new_var = 7;
   if (d0 > 0x800) {
     d0 -= 0x1000;
   }
-  f0 = d0 << 7;
-
-  d1 = (g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1) & 0xFFF;
+  f0 = d0 << new_var;
+  d0 = g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1;
+  new_var2 = d0 & 0xFFF;
+  d1 = new_var2;
   a = g_nSpyroSwingEulerSpringAccum0;
-  f0 -= a << 4;
+  new_var4 = &g_nCameraScriptStickRequestX;
+  f0 -= (d0 = a << 4);
   f0 >>= 6;
   a += f0;
-  g_nSpyroSwingEulerSpringAccum0 = a;
-  g_nSpyroSwingEulerPrev0 += a >> 6;
-  if (d1 > 0x800) {
-    d1 -= 0x1000;
-  }
-  f1 = d1 << 7;
-
-  d2 = (g_nCameraScriptStickRequestX - g_nSpyroSwingEulerPrev2) & 0xFFF;
-  a = g_nSpyroSwingEulerSpringAccum1;
-  f1 -= a << 4;
-  f1 >>= 6;
-  a += f1;
-  g_nSpyroSwingEulerSpringAccum1 = a;
+  do {
+    new_var3 = a;
+    g_nSpyroSwingEulerSpringAccum0 = a;
+    g_nSpyroSwingEulerPrev0 += new_var3 >> 6;
+    if (d1 > 0x800) {
+      d1 -= 0x1000;
+    }
+    new_var3 = *new_var4;
+    f1 = d1 << new_var;
+    d2 = 0xFFF & (new_var3 - g_nSpyroSwingEulerPrev2);
+    a = g_nSpyroSwingEulerSpringAccum1;
+    f1 -= a << 4;
+    f1 >>= 6;
+    a += f1;
+    new_var3 = a;
+    g_nSpyroSwingEulerSpringAccum1 = new_var3;
+  } while (0);
   v = g_nSpyroSwingEulerPrev1 + (a >> 6);
   g_nSpyroSwingEulerPrev1 = v;
   if (d2 > 0x800) {
     d2 -= 0x1000;
   }
+  new_var5 = v >> 4;
   g_bSpyroSwingByteEuler0 = g_nSpyroSwingEulerPrev0 >> 4;
-  g_bSpyroSwingByteEuler1 = v >> 4;
-  v = d2 << 7;
-  a = g_nSpyroSwingEulerSpringAccum2;
-  v -= a << 4;
-  v >>= 6;
-  a += v;
-  g_nSpyroSwingEulerSpringAccum2 = a;
-  g_nSpyroSwingEulerPrev2 += a >> 6;
+  do {
+    g_bSpyroSwingByteEuler1 = new_var5;
+    new_var3 = g_nSpyroSwingEulerSpringAccum2;
+    v = d2 << new_var;
+    a = new_var3;
+    a = a << 4;
+    v -= a;
+    v >>= 6;
+    a += v;
+  } while (0);
+  new_var3 = a;
+  g_nSpyroSwingEulerSpringAccum2 = new_var3;
+  g_nSpyroSwingEulerPrev2 += new_var3 >> 6;
   g_bSpyroSwingByteEuler2 = g_nSpyroSwingEulerPrev2 >> 4;
 }
-
-/* PARKED 2026-07-11 at 18.8% (links, correct logic, exact length 80 insns).
-   Three-axis 12-bit spring; original uses per-access ABSOLUTE addressing —
-   solved via the 9 scalar alias symbols (g_nSpyroSwingEulerPrev0/1/2,
-   g_nSpyroSwingEulerSpringAccum0/1/2, g_bSpyroSwingByteEuler0/1/2); array
-   indexing gives shared lui/addiu bases (7.5%). Source must be interleaved
-   (axis N+1 diff computed between axis N's wrap-if and spring math; byte0/
-   byte1 stores after axis-2's wrap-if) to reproduce the block structure.
-   Residues tried: (a) separate f0/f1/f2 + no locals -> +1 insn over slot
-   (reorg duplicates axis-2's `d2<<7` into both wrap arms; original fills
-   the delay with byte0's sra and emits one sll after the sbs — pinned in
-   the original by REGISTER reuse: prevnew1 and f2 share v1, accum shares
-   v0 with the byte sras). (b) reusing a C var for prevnew1+f2 (this file)
-   or merging f0/f1 pushes `a` (accum temp) from v0 into a0 and cascades
-   the whole tail (~65/80). Volatile byte stores don't stop the accum2 lw
-   hoist. Register-role tie; permuter candidate (single-decision: keep
-   accum temp in v0). */

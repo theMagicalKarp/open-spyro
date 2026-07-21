@@ -23,6 +23,7 @@ from open_spyro import (
     normalize_binary,
     overlays,
     partial,
+    permuter,
     progress,
     progress_delta,
     progress_treemap,
@@ -55,6 +56,33 @@ def _partial_score(
 ) -> None:
     """In-container half of `partial`: objdump-diff each target/candidate object pair."""
     partial.score_from_manifest(manifest, out)
+
+
+def _permuter(
+    name: Annotated[str, typer.Argument(help="function name (main EXE or any split overlay)")],
+    stage_only: Annotated[
+        bool, typer.Option("--stage-only", "-n", help="stage the dir, don't launch the permuter")
+    ] = False,
+    threads: Annotated[int, typer.Option("-j", "--threads", help="permuter worker threads")] = 4,
+    keep: Annotated[
+        bool, typer.Option("--keep", help="reuse an existing staged dir instead of restaging")
+    ] = False,
+    no_prune: Annotated[
+        bool, typer.Option("--no-prune", help="skip import.py source minimization (parse fallback)")
+    ] = False,
+    no_stop_on_zero: Annotated[
+        bool, typer.Option("--no-stop-on-zero", help="keep permuting after a byte-perfect match")
+    ] = False,
+) -> None:
+    """Stage a decomp-permuter dir for a parked `.c.wip` and launch the permuter (Docker)."""
+    permuter.run(
+        name,
+        stage_only=stage_only,
+        threads=threads,
+        keep=keep,
+        no_prune=no_prune,
+        stop_on_zero=not no_stop_on_zero,
+    )
 
 
 def _progress_treemap(
@@ -175,6 +203,7 @@ def _verify_overlays(
 app.command("progress")(_progress)
 app.command("partial")(_partial)
 app.command("partial-score")(_partial_score)
+app.command("permuter")(_permuter)
 app.command("progress-treemap")(_progress_treemap)
 app.command("progress-delta")(_progress_delta)
 app.command("sectionize")(_sectionize)

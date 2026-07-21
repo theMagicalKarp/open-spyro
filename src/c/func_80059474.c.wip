@@ -4,7 +4,7 @@ extern void CopyVector(int *dst, int *src);
 extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */
-extern int g_nLevelSpawnPosZ; /* g_anLevelSpawnPos[2] (see alias) */
+extern int g_nLevelSpawnPosZ;        /* g_anLevelSpawnPos[2] (see alias) */
 extern int D_8007788C;
 extern int D_80077890;
 extern int D_80077894;

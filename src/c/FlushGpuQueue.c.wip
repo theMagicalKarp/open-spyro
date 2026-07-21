@@ -3,19 +3,22 @@
 extern int SetInterruptMask(int mask);
 extern void DmaCallback();
 
-/* libgpu DMA-queue drain (0x80061b00, 748 bytes). Called whenever the GPU may have
-   completed an op. While DMA channel 2 (GPU CHCR bit 0x1000000) is idle and slots
-   are queued, spins on the GP1 ready bit (0x4000000) and invokes each pending
-   slot's func(args, arg4) in FIFO order until the ring drains or the GPU goes busy
-   again; then, if the ring is empty and a one-shot completion callback is armed,
-   fires it once. Returns the remaining ring depth. The ring head/tail indices are
-   shared with the DMA-completion IRQ handler, hence volatile. */
+/* libgpu DMA-queue drain (0x80061b00, 748 bytes). Called whenever the GPU may
+   have completed an op. While DMA channel 2 (GPU CHCR bit 0x1000000) is idle
+   and slots are queued, spins on the GP1 ready bit (0x4000000) and invokes each
+   pending slot's func(args, arg4) in FIFO order until the ring drains or the
+   GPU goes busy again; then, if the ring is empty and a one-shot completion
+   callback is armed, fires it once. Returns the remaining ring depth. The ring
+   head/tail indices are shared with the DMA-completion IRQ handler, hence
+   volatile. */
 
-extern unsigned int g_adwLastGpuOp[]; /* alias @ g_dwLastGpuOpFunc — held base for the Func store */
+extern unsigned int g_adwLastGpuOp[]; /* alias @ g_dwLastGpuOpFunc — held base
+                                         for the Func store */
 
-/* Distinct word[] views of the three used ring-slot fields (ring+0/+4/+8). Referencing
-   them by distinct symbols keeps cse from hoisting one shared &ring base into a register:
-   each access re-materializes %hi(ring+off) fresh, matching the original. */
+/* Distinct word[] views of the three used ring-slot fields (ring+0/+4/+8).
+   Referencing them by distinct symbols keeps cse from hoisting one shared &ring
+   base into a register: each access re-materializes %hi(ring+off) fresh,
+   matching the original. */
 extern unsigned int g_adwGpuRingFunc[]; /* ring + 0x0 */
 extern unsigned int g_adwGpuRingArgs[]; /* ring + 0x4 */
 extern unsigned int g_adwGpuRingArg4[]; /* ring + 0x8 */
@@ -24,43 +27,44 @@ extern unsigned int g_adwGpuRingArg4[]; /* ring + 0x8 */
 #define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
 
 unsigned int FlushGpuQueue(void) {
-    unsigned int depth;
+  unsigned int depth;
 
-    depth = 1;
-    if ((*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
-        g_nFlushGpuSavedIMask = SetInterruptMask(0);
-        if (WIDX != RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
-            unsigned int *last = g_adwLastGpuOp;
-            volatile unsigned int *stat;
-        drain:
-            if (((RIDX + 1) & 0x3F) == WIDX &&
-                g_pfnGpuQueueCompletionCallback == 0) {
-                DmaCallback(2, 0);
-            }
-            stat = (volatile unsigned int *)g_pGpuStatReg;
-            while ((*stat & 0x04000000) == 0) {
-            }
-            ((void (*)(unsigned int, unsigned int))g_adwGpuRingFunc[RIDX * 0x18])(
-                g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
-            ((volatile unsigned int *)last)[0] = g_adwGpuRingFunc[RIDX * 0x18];
-            *(volatile unsigned int *)&g_dwLastGpuOpArg1 = g_adwGpuRingArgs[RIDX * 0x18];
-            *(volatile unsigned int *)&g_dwLastGpuOpArg2 = g_adwGpuRingArg4[RIDX * 0x18];
-            RIDX = (RIDX + 1) & 0x3F;
-            if (WIDX != RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
-                goto drain;
-            }
-        }
-        SetInterruptMask(g_nFlushGpuSavedIMask);
-        if (WIDX == RIDX &&
-            (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0 &&
-            g_nGpuQueueCompletionPending != 0 &&
-            g_pfnGpuQueueCompletionCallback != 0) {
-            g_nGpuQueueCompletionPending = 0;
-            ((void (*)(void))g_pfnGpuQueueCompletionCallback)();
-        }
-        depth = (WIDX - RIDX) & 0x3F;
+  depth = 1;
+  if ((*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+    g_nFlushGpuSavedIMask = SetInterruptMask(0);
+    if (WIDX != RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+      unsigned int *last = g_adwLastGpuOp;
+      volatile unsigned int *stat;
+    drain:
+      if (((RIDX + 1) & 0x3F) == WIDX && g_pfnGpuQueueCompletionCallback == 0) {
+        DmaCallback(2, 0);
+      }
+      stat = (volatile unsigned int *)g_pGpuStatReg;
+      while ((*stat & 0x04000000) == 0) {
+      }
+      ((void (*)(unsigned int, unsigned int))g_adwGpuRingFunc[RIDX * 0x18])(
+          g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
+      ((volatile unsigned int *)last)[0] = g_adwGpuRingFunc[RIDX * 0x18];
+      *(volatile unsigned int *)&g_dwLastGpuOpArg1 =
+          g_adwGpuRingArgs[RIDX * 0x18];
+      *(volatile unsigned int *)&g_dwLastGpuOpArg2 =
+          g_adwGpuRingArg4[RIDX * 0x18];
+      RIDX = (RIDX + 1) & 0x3F;
+      if (WIDX != RIDX &&
+          (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+        goto drain;
+      }
     }
-    return depth;
+    SetInterruptMask(g_nFlushGpuSavedIMask);
+    if (WIDX == RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0 &&
+        g_nGpuQueueCompletionPending != 0 &&
+        g_pfnGpuQueueCompletionCallback != 0) {
+      g_nGpuQueueCompletionPending = 0;
+      ((void (*)(void))g_pfnGpuQueueCompletionCallback)();
+    }
+    depth = (WIDX - RIDX) & 0x3F;
+  }
+  return depth;
 }
 
 /*
@@ -71,32 +75,36 @@ unsigned int FlushGpuQueue(void) {
  * accesses must each re-materialize %hi(g_abGpuOpQueueRing+off) FRESH. cc1
  * otherwise emits a single `la $16,g_abGpuOpQueueRing` and derives +4/+8 into
  * s1/s2 (cost model: fused (plus reg CONST) addr = mips_address_cost 3 vs held
- * base+addu ~2, so cse hoists for >=2 accesses). Two cooperating fixes force the
- * original's fresh form and drop the function to ONE callee-saved reg (s0, the
- * held g_dwLastGpuOpFunc store base via the g_adwLastGpuOp alias):
+ * base+addu ~2, so cse hoists for >=2 accesses). Two cooperating fixes force
+ * the original's fresh form and drop the function to ONE callee-saved reg (s0,
+ * the held g_dwLastGpuOpFunc store base via the g_adwLastGpuOp alias):
  *   1. Distinct SINGLE-USE alias symbols per ring field (g_adwGpuRingFunc/Args/
  *      Arg4 @ ring+0/+4/+8): with nothing to cse, each access is fused/fresh.
  *   2. The last-op stores (g_dwLastGpuOp{Func,Arg1,Arg2}) must be VOLATILE — a
- *      volatile store keeps program order so the `read = (read+1)&0x3F` volatile
- *      store stays LAST (a non-volatile last-op store lets the read increment
- *      float up into the store block; this alone took it 178->187 length-exact).
- *   Also: the GPU status spin MUST read through a volatile pointer, else cc1
- *   hoists the load out of the loop (infinite-loop + 3 insns short).
+ *      volatile store keeps program order so the `read = (read+1)&0x3F`
+ * volatile store stays LAST (a non-volatile last-op store lets the read
+ * increment float up into the store block; this alone took it 178->187
+ * length-exact). Also: the GPU status spin MUST read through a volatile
+ * pointer, else cc1 hoists the load out of the loop (infinite-loop + 3 insns
+ * short).
  *
- * Residues (all §H/§K regalloc-schedule ties; source-invariant — permuter class):
- *   - `depth` return value: orig keeps it in v0 throughout (li v0,1 in the entry
- *     bnez delay slot; final andi v0 returned direct); our gcc allocs it to v1 and
- *     adds a trailing `move v0,v1` (+ shifts every epilogue-targeting branch by 1).
- *     Pure §H return-reg tie.
- *   - Spin loop: orig copies the stat pointer (move v1,a0) and puts the 0x4000000
- *     mask in a0; ours keeps the pointer in a0 and the mask in v1 (register swap,
- *     no move). §H.
+ * Residues (all §H/§K regalloc-schedule ties; source-invariant — permuter
+ * class):
+ *   - `depth` return value: orig keeps it in v0 throughout (li v0,1 in the
+ * entry bnez delay slot; final andi v0 returned direct); our gcc allocs it to
+ * v1 and adds a trailing `move v0,v1` (+ shifts every epilogue-targeting branch
+ * by 1). Pure §H return-reg tie.
+ *   - Spin loop: orig copies the stat pointer (move v1,a0) and puts the
+ * 0x4000000 mask in a0; ours keeps the pointer in a0 and the mask in v1
+ * (register swap, no move). §H.
  *   - Prologue: orig schedules the g_pDmaGpuChcrReg pointer load BEFORE the sp
  *     adjust; ours after (1-insn shift, ~3 words). §K.
  *   - Dispatch: minor sll/addu index-compute reorder + the 0x1000000 chcr-mask
- *     `lui v1,0x100` lands in a branch delay slot in the original, a nop in ours. §K.
- *   - Frame 0x30 vs 0x18: reload spill reservation from the higher peak pressure
- *     the above ties create — follows from matching them, not a separate fix (§AD).
- * Clean length-exact permuter candidate; the ring-addressing + volatile-order
- * scaffolding is all solved. Aliases committed in config/symbol_addrs.txt.
+ *     `lui v1,0x100` lands in a branch delay slot in the original, a nop in
+ * ours. §K.
+ *   - Frame 0x30 vs 0x18: reload spill reservation from the higher peak
+ * pressure the above ties create — follows from matching them, not a separate
+ * fix (§AD). Clean length-exact permuter candidate; the ring-addressing +
+ * volatile-order scaffolding is all solved. Aliases committed in
+ * config/symbol_addrs.txt.
  */

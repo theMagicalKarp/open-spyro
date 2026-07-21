@@ -22,7 +22,8 @@ unsigned int *func_8005FBB4(unsigned int *arg0, int arg1) {
   unsigned int *p = arg0;
 
   if ((unsigned char)g_bGpuDebugLevel >= 2) {
-    ((void (*)(char *, unsigned int *, int))g_pfnGpuDebugPrintf)(D_800118CC, p, n);
+    ((void (*)(char *, unsigned int *, int))g_pfnGpuDebugPrintf)(D_800118CC, p,
+                                                                 n);
   }
   n = n - 1;
   if (n != 0) {

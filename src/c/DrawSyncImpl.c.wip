@@ -3,7 +3,8 @@
 /* libgpu DrawSync implementation (dispatched via g_pGpuDispatchTable+0x3c).
    param==0 blocks until the 64-entry DMA queue drains and DMA-2 + the GP1
    ready bit are both idle, with the CheckGpuTimeout watchdog aborting to -1;
-   param!=0 returns the current queue depth (0 = idle). (0x80061f48, 328 bytes.) */
+   param!=0 returns the current queue depth (0 = idle). (0x80061f48, 328 bytes.)
+ */
 
 extern void ResetGpuTimeoutDeadline(void);
 extern unsigned int FlushGpuQueue(void);
@@ -58,4 +59,5 @@ unsigned int DrawSyncImpl(int param_1) {
    the `bnez s0` delay slot of the depth-return arm, one as the plain `ready`
    block before the epilogue); our gcc either cross-jumps them (goto+label form
    → 2 insns short) or lays them swapped (&&/nested-if/goto → 6-insn block-order
-   diff). Pure reorg delay-slot-fill / cross-jump tie; clean permuter candidate. */
+   diff). Pure reorg delay-slot-fill / cross-jump tie; clean permuter candidate.
+ */

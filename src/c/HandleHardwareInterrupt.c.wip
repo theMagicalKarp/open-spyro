@@ -8,7 +8,8 @@
 extern int WritePrintf();
 extern void ReturnFromException(void);
 extern unsigned short
-    g_anLibapiIrqBlock[]; /* alias @0x80073924: [0]=g_nLibapiCallbackInstalled, +4=g_apfnIrqHandlers */
+    g_anLibapiIrqBlock[]; /* alias @0x80073924: [0]=g_nLibapiCallbackInstalled,
+                             +4=g_apfnIrqHandlers */
 extern unsigned char D_80011640[]; /* "unexpected interrupt(%04x)\n" */
 extern unsigned char D_8001165C[]; /* "intr timeout(%04x:%04x)\n" */
 

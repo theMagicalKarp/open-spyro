@@ -17,22 +17,24 @@ int FUN_80060e28(unsigned short *param_1) {
   unsigned short t;
 
   switch (g_bGpuDebugType) {
-    case 1: {
-      short f0;
-      if (g_bGpuReverseFlag == 0) goto default_case;
-      f0 = (short)param_1[0];
-      v1 = (short)param_1[2];
-      return (0x400 - v1) - f0;
+  case 1: {
+    short f0;
+    if (g_bGpuReverseFlag == 0) {
+      goto default_case;
     }
-    case 2:
-      if (g_bGpuReverseFlag == 0) {
-        t = param_1[0];
-        return (int)(short)t / 2;
-      }
-      v1 = (short)param_1[2] / 2;
-      return (0x400 - v1) - (short)param_1[0];
-    default:
-    default_case:
-      return (short)param_1[0];
+    f0 = (short)param_1[0];
+    v1 = (short)param_1[2];
+    return (0x400 - v1) - f0;
+  }
+  case 2:
+    if (g_bGpuReverseFlag == 0) {
+      t = param_1[0];
+      return (int)(short)t / 2;
+    }
+    v1 = (short)param_1[2] / 2;
+    return (0x400 - v1) - (short)param_1[0];
+  default:
+  default_case:
+    return (short)param_1[0];
   }
 }

@@ -63,7 +63,8 @@ int FinalizePadCalibration(unsigned char *cal) {
     p[0x30] = p[0x20] - 0x30;
     *(short *)(q + 0x34) = hi;
     i2 += 1;
-    *(short *)(q + 0x3C) = c3F80 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
+    *(short *)(q + 0x3C) =
+        c3F80 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
     q += 2;
   } while (i2 < 4);
 

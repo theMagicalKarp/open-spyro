@@ -4,7 +4,8 @@ extern int VSync(int mode);
 extern int WritePrintf(char *fmt, ...);
 extern int SetInterruptMask(int mask);
 extern unsigned int *D_80074B54; /* DPCR register pointer */
-extern unsigned char D_8001195C[]; /* "GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x,..." */
+extern unsigned char
+    D_8001195C[]; /* "GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x,..." */
 extern unsigned char D_80011990[]; /* last-op diagnostic format */
 
 /* libgpu GPU watchdog: called from EnqueueGpuOp when the 64-entry DMA ring is
