@@ -9,8 +9,9 @@ extern int g_anSpyroBodyPitchBlock[];
 /* 0x8003d52c: Integrates the body-frame angular velocity (delta) into the
    world-frame Euler angles. Reads pitch/roll through the sin/cos LUTs, then
    advances roll by the sin(pitch)-projected component, yaw by the
-   cos(pitch)/cos(roll) component, and pitch by the twist-coupled term. The 12-bit
-   angles are mirrored to the byte snapshots g_abSpyroPersistentEuler[0..2]. */
+   cos(pitch)/cos(roll) component, and pitch by the twist-coupled term. The
+   12-bit angles are mirrored to the byte snapshots
+   g_abSpyroPersistentEuler[0..2]. */
 void IntegrateSpyroBodyEuler(int delta) {
   int cosPitch;
   int sinPitch;
@@ -30,20 +31,23 @@ void IntegrateSpyroBodyEuler(int delta) {
   pitchTwist = (delta * sinRoll) / cosRoll;
   yawDelta = (delta * cosPitch) / cosRoll;
 
-  g_anSpyroBodyPitchBlock[-1] = g_anSpyroBodyPitchBlock[-1] + (delta * sinPitch >> 0xc) & 0xfff;
+  g_anSpyroBodyPitchBlock[-1] =
+      g_anSpyroBodyPitchBlock[-1] + (delta * sinPitch >> 0xc) & 0xfff;
   g_abSpyroPersistentEuler[1] = (byte)(g_anSpyroBodyPitchBlock[-1] >> 4);
   g_nSpyroBodyYaw = g_nSpyroBodyYaw + yawDelta & 0xfff;
   g_abSpyroPersistentEuler[2] = (byte)(g_nSpyroBodyYaw >> 4);
-  g_anSpyroBodyPitchBlock[0] = g_anSpyroBodyPitchBlock[0] + (pitchTwist * cosPitch >> 0xc) & 0xfff;
+  g_anSpyroBodyPitchBlock[0] =
+      g_anSpyroBodyPitchBlock[0] + (pitchTwist * cosPitch >> 0xc) & 0xfff;
   g_abSpyroPersistentEuler[0] = (byte)(g_anSpyroBodyPitchBlock[0] >> 4);
 }
 
 /* PARKED 2026-07-16 (+4 bytes / 1 insn over slot, logic correct).
-   Wall: the roll accesses at g_anSpyroBodyPitchBlock[-1] (nonzero -0x4 offset off
-   the held base) fold to absolute `lui/lw sym-4` per the §Y rule-1 same-ebb fold,
-   whereas the original keeps `-4(s2)` reg-based across the LookupSine/Cosine calls.
-   No source form escapes rule 1 (documented unsolved wall, §Y/§Z/§AA); flipping the
-   alias to base=&roll just moves the fold onto pitch (+4). Compounded by a base
-   register-role permutation (orig s2, ours s4) and the §G lagged-mult dead spills
-   (orig frame 0x38 with 3 dead `sw`s to 0x10/0x14/0x18 to hide mult latency; ours
-   0x28, no spills). Skip-list class, not a permuter candidate. */
+   Wall: the roll accesses at g_anSpyroBodyPitchBlock[-1] (nonzero -0x4 offset
+   off the held base) fold to absolute `lui/lw sym-4` per the §Y rule-1 same-ebb
+   fold, whereas the original keeps `-4(s2)` reg-based across the
+   LookupSine/Cosine calls. No source form escapes rule 1 (documented unsolved
+   wall, §Y/§Z/§AA); flipping the alias to base=&roll just moves the fold onto
+   pitch (+4). Compounded by a base register-role permutation (orig s2, ours s4)
+   and the §G lagged-mult dead spills (orig frame 0x38 with 3 dead `sw`s to
+   0x10/0x14/0x18 to hide mult latency; ours 0x28, no spills). Skip-list class,
+   not a permuter candidate. */

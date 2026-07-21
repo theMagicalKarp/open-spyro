@@ -54,8 +54,9 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor > 0) {
       if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         if (g_dwPadHeld & 0x8000) {
-          PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38),
-                          0, 0x10, 0);
+          PlaySoundEffect(
+              *(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38), 0,
+              0x10, 0);
           g_nSubMenuScrollDelta = 0x40;
         }
       }
@@ -63,8 +64,9 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor < 5) {
       if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + 6] != 0) {
         if (g_dwPadHeld & 0x2000) {
-          PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38),
-                          0, 0x10, 0);
+          PlaySoundEffect(
+              *(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38), 0,
+              0x10, 0);
           g_nSubMenuScrollDelta = -0x40;
         }
       }

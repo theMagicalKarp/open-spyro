@@ -1,83 +1,53 @@
-/* --- Ghidra base-type shims --------------------------------------------------
- * These mirror the builtin types Ghidra used in the dump so the seeded
- * prototypes/declarations below are valid C. Sizes match Ghidra's model; the
- * `undefined*` family marks "type not recovered" and should be replaced with a
- * real type as each function/global is matched. */
-typedef unsigned char undefined;
-typedef unsigned char undefined1;
-typedef unsigned short undefined2;
-typedef unsigned int undefined4;
-typedef unsigned long long undefined8;
-typedef unsigned long long ulonglong;
-typedef long long longlong;
-typedef void func(void); /* Ghidra generic function type */
+
 typedef unsigned char byte;
-typedef unsigned short word;
-typedef unsigned int dword;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
-typedef unsigned int uint;
 typedef unsigned long ulong;
-typedef void *pointer;
-typedef unsigned char bool;
-
-/* --- typedefs (from Ghidra) --- */
-typedef int __jmp_buf[6];
-typedef long __off_t;
-typedef int __ssize_t;
-typedef ulong size_t;
-typedef __ssize_t ssize_t;
 typedef uchar u_char;
 typedef ulong u_long;
 typedef ushort u_short;
-
 typedef struct RECT {
-  short x; /* +0x0 */
-  short y; /* +0x2 */
-  short w; /* +0x4 */
-  short h; /* +0x6 */
+  short x;
+  short y;
+  short w;
+  short h;
 } RECT;
-
 typedef struct DR_ENV {
-  u_long tag;      /* +0x0 */
-  u_long code[15]; /* +0x4 */
+  u_long tag;
+  u_long code[15];
 } DR_ENV;
-
 typedef struct DISPENV {
-  RECT disp;      /* +0x0 */
-  RECT screen;    /* +0x8 */
-  u_char isinter; /* +0x10 */
-  u_char isrgb24; /* +0x11 */
-  u_char pad0;    /* +0x12 */
-  u_char pad1;    /* +0x13 */
+  RECT disp;
+  RECT screen;
+  u_char isinter;
+  u_char isrgb24;
+  u_char pad0;
+  u_char pad1;
 } DISPENV;
-
 typedef struct DRAWENV {
-  RECT clip;     /* +0x0 */
-  short ofs[2];  /* +0x8 */
-  RECT tw;       /* +0xc */
-  u_short tpage; /* +0x14 */
-  u_char dtd;    /* +0x16 */
-  u_char dfe;    /* +0x17 */
-  u_char isbg;   /* +0x18 */
-  u_char r0;     /* +0x19 */
-  u_char g0;     /* +0x1a */
-  u_char b0;     /* +0x1b */
-  DR_ENV dr_env; /* +0x1c */
+  RECT clip;
+  short ofs[2];
+  RECT tw;
+  u_short tpage;
+  u_char dtd;
+  u_char dfe;
+  u_char isbg;
+  u_char r0;
+  u_char g0;
+  u_char b0;
+  DR_ENV dr_env;
 } DRAWENV;
-
-extern int g_nStoryIntroSubstate;        /* 0x80078d7c */
-extern int g_nStoryIntroTimer;           /* 0x80078d80 */
-extern void *g_pSpriteRecordWriteCursor; /* 0x80075710 */
-extern int g_nStoryIntroMessage;         /* 0x80078d94 */
-extern DRAWENV g_abFrameDrawEnv0;        /* 0x80076ee0 */
-extern DRAWENV g_abFrameDrawEnv1;        /* 0x80076f64 */
-extern int *g_pOtActiveDepthSlot;        /* 0x8007581c */
-extern byte g_abLevelVisitedFlag[36];    /* 0x80078e78 */
-extern void *g_apSpritePrimQueue[256];   /* 0x800720f4 */
-extern void *g_pOtDepthBinArrayBase;     /* 0x80075820 */
-extern DRAWENV *g_pActiveFrameDrawEnv;   /* 0x80075888 */
-
+extern int g_nStoryIntroSubstate;
+extern int g_nStoryIntroTimer;
+extern void *g_pSpriteRecordWriteCursor;
+extern int g_nStoryIntroMessage;
+extern DRAWENV g_abFrameDrawEnv0;
+extern DRAWENV g_abFrameDrawEnv1;
+extern int *g_pOtActiveDepthSlot;
+extern byte g_abLevelVisitedFlag[36];
+extern void *g_apSpritePrimQueue[256];
+extern void *g_pOtDepthBinArrayBase;
+extern DRAWENV *g_pActiveFrameDrawEnv;
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *size, int a,
                               int b);
 extern void EnqueuePendingSpritePrims(void);
@@ -90,20 +60,12 @@ extern DISPENV *PutDispEnv(DISPENV *env);
 extern void PutDrawEnv(void *env);
 extern void *LinkOTPrimitives(int depth_max);
 extern void DrawOTag(void *ot);
-
-extern unsigned char D_80010CF0[];     /* "IN THE WORLD OF DRAGONS..." */
-extern unsigned char D_80010D0C[];     /* "THE ADVENTURE CONTINUES..." */
-extern unsigned char D_80010D28[];     /* "THE ADVENTURE BEGINS..." */
-extern unsigned char D_80010D40[];     /* "ENTERING DEMO MODE..." */
-extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
-extern int
-    g_anStoryIntroTimerBlock[]; /* held-base alias @ g_nStoryIntroTimer */
-
-/* Draw gamestate 0xD's story-intro card (substate 2, after the
-   g_nStoryIntroTimer warm-up): fades in one of the message variants selected by
-   g_nStoryIntroMessage, with the per-glyph brightness wave (a linear ramp-in
-   then g_anCosineLut ripple), then flushes the sprite queue and, in substate 2,
-   splices the paired-actor OT before the frame submit (0x8001e6b8). */
+extern unsigned char D_80010CF0[];
+extern unsigned char D_80010D0C[];
+extern unsigned char D_80010D28[];
+extern unsigned char D_80010D40[];
+extern unsigned short g_anCosineLut[];
+extern int g_anStoryIntroTimerBlock[];
 void StoryIntro_Draw(void) {
   int *slot;
   void *binBase;
@@ -114,15 +76,13 @@ void StoryIntro_Draw(void) {
   int size[3];
   int tv;
   int t;
-
-  if (g_nStoryIntroSubstate == 2 && g_nStoryIntroTimer >= 0x8c) {
+  if ((g_nStoryIntroSubstate == 2) && (g_nStoryIntroTimer >= 0x8c)) {
     pos[1] = 0x78;
     pos[2] = 0x1400;
     iVar3 = (int)g_pSpriteRecordWriteCursor;
     size[0] = 0xe;
     size[1] = 1;
     size[2] = 0x1600;
-
     if (g_nStoryIntroMessage == 0) {
       pos[0] = 0x5c;
       BuildTextSprites(D_80010CF0, pos, size, 0x10, 0xb);
@@ -142,39 +102,31 @@ void StoryIntro_Draw(void) {
       BuildTextSprites(D_80010D40, pos, size, 0x10, 0xb);
       msgHold = 0xb2;
     }
-
     if (g_nStoryIntroTimer < msgHold) {
       g_pSpriteRecordWriteCursor =
-          (void *)((int)g_pSpriteRecordWriteCursor +
-                   ((msgHold - g_nStoryIntroTimer) >> 1) * 0x58);
+          (void *)(((int)g_pSpriteRecordWriteCursor) +
+                   (((msgHold - g_nStoryIntroTimer) >> 1) * 0x58));
     }
-
     iVar2 = 0;
     iVar3 -= 0x58;
-
-    if ((int)g_pSpriteRecordWriteCursor <= iVar3) {
+    if (((int)g_pSpriteRecordWriteCursor) <= iVar3) {
       int phase = 0;
       char *p = (char *)(iVar3 + 0x46);
-
       do {
         tv = g_anStoryIntroTimerBlock[0];
-        t = tv - 0x8c - iVar2;
-
+        t = (tv - 0x8c) - iVar2;
         if (t < 0x38) {
           *p = (t << 3) + 0x40;
         } else {
           *p = g_anCosineLut[((tv << 2) + phase) & 0xff] >> 7;
         }
-
         phase += 0xc;
         iVar2 += 1;
-
         p -= 0x58;
         iVar3 -= 0x58;
-      } while ((int)g_pSpriteRecordWriteCursor <= iVar3);
+      } while (((int)g_pSpriteRecordWriteCursor) <= iVar3);
     }
   }
-
   g_abFrameDrawEnv0.r0 = 0;
   g_abFrameDrawEnv0.g0 = 0;
   g_abFrameDrawEnv0.b0 = 0;
@@ -182,27 +134,21 @@ void StoryIntro_Draw(void) {
   g_abFrameDrawEnv1.g0 = 0;
   g_abFrameDrawEnv1.b0 = 0;
   g_apSpritePrimQueue[0] = 0;
-
   EnqueuePendingSpritePrims();
-  FillWord((char *)g_apSpritePrimQueue - 0x2400, 0, 0x900);
+  FillWord(((char *)g_apSpritePrimQueue) - 0x2400, 0, 0x900);
   RasterizeSpritePrimQueue();
-
   if (g_nStoryIntroSubstate == 2) {
     RasterizePairedActor();
     slot = g_pOtActiveDepthSlot;
     binBase = g_pOtDepthBinArrayBase;
-    *(int *)((char *)binBase + 0x100) = slot[0];
-    *(int *)((char *)binBase + 0x104) = slot[1];
-
-    /* 100% MATCH FIX: Direct array offsets break compiler aliasing shortcuts to
-     * force independent loads */
+    *((int *)(((char *)binBase) + 0x100)) = slot[0];
+    *((int *)(((char *)binBase) + 0x104)) = slot[1];
     *g_pOtActiveDepthSlot = 0;
     g_pOtActiveDepthSlot[1] = 0;
   }
-
   DrawSync(0);
   VSync(0);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv((DISPENV *)(((char *)g_pActiveFrameDrawEnv) + 0x5c));
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

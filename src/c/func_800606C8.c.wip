@@ -12,7 +12,7 @@ extern unsigned int BuildDrawModeWord(int tpage, int dtd, unsigned int tw);
 extern unsigned int BuildTextureWindow(unsigned char *tw);
 
 void func_800606C8(int packet, unsigned short *env) {
-  
+
   int len;
 
   *(unsigned int *)(packet + 4) =
@@ -21,9 +21,10 @@ void func_800606C8(int packet, unsigned short *env) {
       (short)(env[2] + env[0] - 1), (short)(env[1] + env[3] - 1));
   *(unsigned int *)(packet + 0xc) =
       BuildDrawOffsetCommand((short)env[4], (short)env[5]);
-  *(unsigned int *)(packet + 0x10) =
-      BuildDrawModeWord(((unsigned char *)env)[0x17], ((unsigned char *)env)[0x16], env[0xa]);
-  *(unsigned int *)(packet + 0x14) = BuildTextureWindow((unsigned char *)env + 0xc);
+  *(unsigned int *)(packet + 0x10) = BuildDrawModeWord(
+      ((unsigned char *)env)[0x17], ((unsigned char *)env)[0x16], env[0xa]);
+  *(unsigned int *)(packet + 0x14) =
+      BuildTextureWindow((unsigned char *)env + 0xc);
   *(unsigned int *)(packet + 0x18) = 0xe6000000;
   len = 7;
   if (((unsigned char *)env)[0x18] != 0) {
@@ -56,7 +57,9 @@ void func_800606C8(int packet, unsigned short *env) {
     rect[3] = cy;
     rect[0] = rect[0] - env[4];
     rect[1] = rect[1] - env[5];
-    color = (((unsigned char *)env)[0x1b] << 16) | ((((unsigned char *)env)[0x1a] << 8) | 0x60000000) | ((unsigned char *)env)[0x19];
+    color = (((unsigned char *)env)[0x1b] << 16) |
+            ((((unsigned char *)env)[0x1a] << 8) | 0x60000000) |
+            ((unsigned char *)env)[0x19];
     *(unsigned int *)(packet + (len << 2)) = color;
     len++;
     *(unsigned int *)(packet + (len << 2)) = rect[0];

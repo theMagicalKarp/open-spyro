@@ -54,7 +54,8 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   g_nGemPickupSecondaryTimer = 0;
   g_nGemPickupPadHoldTimer = 0;
   g_nGemPickupAudioFiredFlag = 0;
-  g_anGemPickupBlock[0x1a] = (int)param_1; /* g_pGemPickupSourceActor = param_1 */
+  g_anGemPickupBlock[0x1a] =
+      (int)param_1; /* g_pGemPickupSourceActor = param_1 */
   g_nWorldDragonsRescued = world + 1;
   g_nGemPickupTypeSnapshot = puVar1[6];
   idx = puVar1[8];
@@ -68,17 +69,18 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
                   (unsigned char *)((char *)g_anGemPickupBlock[0x1a] + 0x54));
 }
 
-/* PARKED 69.2% (45/146), exact length, logic 100% correct. Solved: the held-base
-   alias g_anGemPickupBlock[0]/[0x1a] for the substate + g_pGemPickupSourceActor
-   stores + PlaySoundEffect owner arg; and the dragon-rescue load-delay fill — the
-   original interleaves the gameplayBlocked/gamePaused stores into the
-   g_anLevelDragonsRescued[idx] load-modify-store, reproduced ONLY by splitting the
-   RMW explicitly (`prevDragons = *dragons; g_nGameplayBlocked=1; g_nGamePaused=1;
-   *dragons = prevDragons+1;`) — the inline `+= 1` or stores-before-RMW forms both
-   hoist the two stores above the whole dragon block and leave a load-delay nop.
-   RESIDUE = three independent §H/§B13/§M register+schedule ties source can't move:
-   (1) the Gnasty-loot block's two big-const regs (a1/a0 vs a0/v1) + the 0x800 reuse
-   reg; (2) the dragon-index / literal-`1` register swap (v1/a0 vs a0/v1); (3) the
-   tail zero-store run scheduled AFTER the source-actor store + world increment
-   instead of before (batch-store scatter, §B13). Multi-cluster permuter candidate.
-   Alias g_anGemPickupBlock @0x80077058 committed. */
+/* PARKED 69.2% (45/146), exact length, logic 100% correct. Solved: the
+   held-base alias g_anGemPickupBlock[0]/[0x1a] for the substate +
+   g_pGemPickupSourceActor stores + PlaySoundEffect owner arg; and the
+   dragon-rescue load-delay fill — the original interleaves the
+   gameplayBlocked/gamePaused stores into the g_anLevelDragonsRescued[idx]
+   load-modify-store, reproduced ONLY by splitting the RMW explicitly
+   (`prevDragons = *dragons; g_nGameplayBlocked=1; g_nGamePaused=1; *dragons =
+   prevDragons+1;`) — the inline `+= 1` or stores-before-RMW forms both hoist
+   the two stores above the whole dragon block and leave a load-delay nop.
+   RESIDUE = three independent §H/§B13/§M register+schedule ties source can't
+   move: (1) the Gnasty-loot block's two big-const regs (a1/a0 vs a0/v1) + the
+   0x800 reuse reg; (2) the dragon-index / literal-`1` register swap (v1/a0 vs
+   a0/v1); (3) the tail zero-store run scheduled AFTER the source-actor store +
+   world increment instead of before (batch-store scatter, §B13). Multi-cluster
+   permuter candidate. Alias g_anGemPickupBlock @0x80077058 committed. */

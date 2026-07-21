@@ -10,8 +10,8 @@ extern unsigned int VectorLength(int *vec, int include_z);
 extern void TurnSpyroTowardMoveTargetWithLean(int param_1);
 extern int abs(int x);
 
-extern volatile int g_anSpyroMoveTargetYawBlock[]; /* alias block — +0 target yaw,
-                                             +0x50 g_nSpyroBodyYaw */
+extern volatile int g_anSpyroMoveTargetYawBlock[]; /* alias block — +0 target
+                                             yaw, +0x50 g_nSpyroBodyYaw */
 
 void ApplyPadInputToSpyroBodyYaw(void) {
   int vec[3];

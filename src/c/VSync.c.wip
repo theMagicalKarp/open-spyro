@@ -1,6 +1,7 @@
 #include "globals.h"
 
-extern volatile unsigned int *D_800738BC; /* GPU_STAT-shadow reg ptr (interlace/field bit) */
+extern volatile unsigned int
+    *D_800738BC; /* GPU_STAT-shadow reg ptr (interlace/field bit) */
 extern volatile unsigned int *D_800738C0; /* TMR_HRETRACE_VAL reg ptr */
 extern int WaitForFrameDeadline(int deadline, int mode);
 

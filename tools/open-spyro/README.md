@@ -50,7 +50,18 @@ uv sync --group match                          # m2c + asm-differ (pinned git de
 uv run -- m2c <args>                            # asm → first-pass C
 uv run -- asm-differ <args>                     # byte-diff at the function VMA
 uv run -- python ../decomp-permuter/permuter.py <dir>
+open-spyro permuter <Func>                       # stage a decomp-permuter dir for a .c.wip + launch it
 ```
+
+`open-spyro permuter <Func>` wraps the two lines above: it slices the function's target
+asm, stages a `nonmatchings/<Func>/` dir under `build/permuter/` via decomp-permuter's
+`import.py` (using `config/permuter_settings.toml` to override the tool's N64 defaults for
+this PS1 r3000/gcc-2.7.2 toolchain), then launches the permuter — all inside the match
+image. On a byte-perfect (score-0) result it writes the winning C to `src/c/<Func>.c`,
+verifies it with `open-spyro diff`, and drops the `.c.wip` on MATCH. The written file is
+decomp-permuter's pruned form (stub externs, no `globals.h`), so re-clothe it in the repo's
+`#include "globals.h"` convention afterward. Use `--stage-only` to stop after staging (e.g.
+in CI), `-j N` for worker threads.
 
 `m2c` and `asm-differ` are SHA-pinned git deps (locked in `uv.lock`, used by both
 the host and the Docker image). `decomp-permuter` ships no installable package, so it runs from its clone

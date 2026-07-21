@@ -16,6 +16,7 @@ OPEN_SPYRO := $(UVRUN) -- open-spyro
 # hand-edited, so they are intentionally left out.
 CLANG_FORMAT := $(UVRUN) -- clang-format
 CFMT_SRC     := $(wildcard src/c/*.c)
+CFMT_WIP     := $(wildcard src/c/*.c.wip)
 
 .PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play partial progress lint lint-py lint-c fmt fmt-py fmt-c clean
 
@@ -120,8 +121,8 @@ lint-py: ## Lint + type-check the Python tooling (ruff + ty)
 	cd tools/open-spyro && uv run --group split ruff format --check .
 	cd tools/open-spyro && uv run --group split ty check
 
-lint-c: ## Check matched C formatting (clang-format --dry-run --Werror)
-	$(CLANG_FORMAT) --dry-run --Werror $(CFMT_SRC)
+lint-c: ## Check matched C + parked .c.wip formatting (clang-format --dry-run --Werror)
+	$(CLANG_FORMAT) --dry-run --Werror $(CFMT_SRC) $(CFMT_WIP)
 
 fmt: fmt-py fmt-c ## Auto-format everything (Python ruff + C clang-format)
 
@@ -129,8 +130,8 @@ fmt-py: ## Auto-format + autofix the Python tooling (ruff)
 	cd tools/open-spyro && uv run --group split ruff format .
 	cd tools/open-spyro && uv run --group split ruff check --fix .
 
-fmt-c: ## Auto-format the matched C sources (clang-format -i)
-	$(CLANG_FORMAT) -i $(CFMT_SRC)
+fmt-c: ## Auto-format the matched C sources + parked .c.wip attempts (clang-format -i)
+	$(CLANG_FORMAT) -i $(CFMT_SRC) $(CFMT_WIP)
 
 clean: ## Remove all build output + regenerable/untracked artifacts
 	rm -rf build/*

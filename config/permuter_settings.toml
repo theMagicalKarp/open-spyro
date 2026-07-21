@@ -1,0 +1,26 @@
+# Settings for tools/decomp-permuter/import.py in this repo.
+#
+# decomp-permuter's built-in defaults target N64/vr4300; every command below is
+# overridden for this PS1 r3000 + gcc 2.7.2/maspsx toolchain (see config/compile.sh).
+# `open-spyro permuter <Func>` passes this file via --settings.
+
+compiler_type = "gcc"  # [gcc] randomization profile (decomp-permuter default_weights.toml)
+
+# import.py harvests only -I/-U/-D/-nostdinc from compiler_command for its own cpp
+# preprocessing of base.c; the actual candidate compile is the shim, which routes to
+# config/compile.sh <mode> (mode from $SPYRO_PERM_MODE). Keeping the shim as the
+# compiler also lets import.py's compile_base step produce base.o (a free compile check).
+compiler_command = "bash config/permuter_compile.sh -nostdinc -Iinclude -Iasm"
+
+# Assemble target.s (prelude + the function's glabel block) with the build's EXACT
+# AS_FLAGS (config/compile.sh) so target.o bytes match the real build.
+assembler_command = "mips-linux-gnu-as -EL -Iinclude -Iasm -march=r3000 -mtune=r3000 -no-pad-sections -G0 -ggdb -msoft-float"
+
+asm_prelude_file = "config/permuter_prelude.inc"
+# No objdump_command: decomp-permuter, when given one, uses it verbatim WITHOUT its
+# default disassembly flags. Omitting it lets the tool auto-detect the MIPS arch from
+# the ELF and run its own `mips-linux-gnu-objdump -drz -m mips:4300` for scoring.
+
+# Empty => full macro expansion. The .c.wip attempts only #include "globals.h", so
+# base.c comes out as plain C for pycparser without preserving any function macros.
+[preserve_macros]

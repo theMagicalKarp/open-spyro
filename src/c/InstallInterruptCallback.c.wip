@@ -9,7 +9,8 @@
 
 extern void ChangeClearPAD();
 extern void ChangeClearRCnt();
-extern unsigned char g_abIrqDispatchBlock[]; /* alias view of g_apfnIrqHandlers */
+extern unsigned char
+    g_abIrqDispatchBlock[]; /* alias view of g_apfnIrqHandlers */
 
 int InstallInterruptCallback(unsigned int param_1, int param_2) {
   unsigned char *base;
@@ -33,8 +34,7 @@ int InstallInterruptCallback(unsigned int param_1, int param_2) {
       *slot = (void *)param_2;
       bit = (unsigned short)(1 << param_1);
       imask = imask | bit;
-      *(unsigned short *)&base[0x2c] =
-          *(unsigned short *)&base[0x2c] | bit;
+      *(unsigned short *)&base[0x2c] = *(unsigned short *)&base[0x2c] | bit;
     }
     if (param_1 == 0) {
       ChangeClearPAD(param_2 == 0);

@@ -27,17 +27,19 @@ extern int D_80075164;          /* VSync stamp at read kick */
    ties:
    (1) §B14 held-base-no-call: the original computes &D_80075148 into a caller-
        saved reg (v0) and stores `sectors` via `sw a3,0(v0)` while storing `buf`
-       to the ADJACENT D_8007514C via a fresh $at. That extra `addiu` base is the
-       missing instruction. There is no call between the two stores, so neither
-       &scalar, a pointer local, NOR an incomplete-array alias (g_anCdReadSaveBlock
+       to the ADJACENT D_8007514C via a fresh $at. That extra `addiu` base is
+   the missing instruction. There is no call between the two stores, so neither
+       &scalar, a pointer local, NOR an incomplete-array alias
+   (g_anCdReadSaveBlock
        @0x80075148) forces the base — all fold to the $at direct form. This also
-       lets the original leave the CdSyncCallback delay slot as a nop (a0=0 hoisted
-       early) whereas our build fills the slot with `move a0,zero` (1 shorter).
-   (2) §H register-role shift: `sel = D_80075154 & 0x30` lands in a0 (ours) vs v1
-       (orig); `code` (the 0x200/0x249/0x246 select) lands in v1 (ours) vs v0
-       (orig). The branch STRUCTURE matches (single value-select store at the merge
-       point via the `code` local + inverted `if (sel != 0)` guard) — only the two
-       register picks differ. Clean permuter candidate once the held base is forced. */
+       lets the original leave the CdSyncCallback delay slot as a nop (a0=0
+   hoisted early) whereas our build fills the slot with `move a0,zero` (1
+   shorter). (2) §H register-role shift: `sel = D_80075154 & 0x30` lands in a0
+   (ours) vs v1 (orig); `code` (the 0x200/0x249/0x246 select) lands in v1 (ours)
+   vs v0 (orig). The branch STRUCTURE matches (single value-select store at the
+   merge point via the `code` local + inverted `if (sel != 0)` guard) — only the
+   two register picks differ. Clean permuter candidate once the held base is
+   forced. */
 int CdRead(int sectors, void *buf, unsigned int mode) {
   int sel;
   int code;

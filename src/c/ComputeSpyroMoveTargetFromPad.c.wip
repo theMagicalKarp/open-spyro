@@ -2,7 +2,8 @@
 
 extern int ArcTan2(int y, int x, int high_precision);
 
-/* D-pad → yaw table (16 entries, stride 2), indexed by the pad button nibble. */
+/* D-pad → yaw table (16 entries, stride 2), indexed by the pad button nibble.
+ */
 extern short D_8006C5D0[];
 
 /* Convert this substep's pad input (via g_pPadSubstepState) into a movement
@@ -52,15 +53,16 @@ void ComputeSpyroMoveTargetFromPad(int param_1) {
   }
 }
 
-/* PARKED. Pad→move-target (decomp-faithful form here). Everything but the analog
-   abs-magnitude block matches: the condition dispatch, the double-store of
-   g_nSpyroMoveTargetYaw (raw ArcTan2 then (+yaw)&0xfff via a held &g), the d-pad
-   table lookup, and the ArcTan2-arg batched loads are all byte-correct. Residue
-   = §B13 abs load-batch/schedule tie: the original loads BOTH pad[0x17]/[0x16]
-   first, keeps 0x7f in s0 and REUSES s0 for iVar2 (`subu s0,s0,x; negu s0`), and
-   leaves iVar2's abs-branch delay a NOP. This interleaved source form is +1
-   (gcc speculatively fills iVar2's bgez delay with the `iVar1+iVar2` addu then
-   recomputes it → duplicate addu; iVar1/iVar2 land in v1/a0 not v0/s0).
-   Pre-loading both bytes into locals batches the loads but drops a different
-   insn (-1). Straddles the target by 1; whole-region regalloc (iVar2 reg s0 vs
-   v1) + delay-slot schedule tie. Permuter candidate. */
+/* PARKED. Pad→move-target (decomp-faithful form here). Everything but the
+   analog abs-magnitude block matches: the condition dispatch, the double-store
+   of g_nSpyroMoveTargetYaw (raw ArcTan2 then (+yaw)&0xfff via a held &g), the
+   d-pad table lookup, and the ArcTan2-arg batched loads are all byte-correct.
+   Residue = §B13 abs load-batch/schedule tie: the original loads BOTH
+   pad[0x17]/[0x16] first, keeps 0x7f in s0 and REUSES s0 for iVar2 (`subu
+   s0,s0,x; negu s0`), and leaves iVar2's abs-branch delay a NOP. This
+   interleaved source form is +1 (gcc speculatively fills iVar2's bgez delay
+   with the `iVar1+iVar2` addu then recomputes it → duplicate addu; iVar1/iVar2
+   land in v1/a0 not v0/s0). Pre-loading both bytes into locals batches the
+   loads but drops a different insn (-1). Straddles the target by 1;
+   whole-region regalloc (iVar2 reg s0 vs v1) + delay-slot schedule tie.
+   Permuter candidate. */

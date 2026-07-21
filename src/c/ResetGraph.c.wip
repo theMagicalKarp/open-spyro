@@ -57,12 +57,13 @@ else_block:
   return (*(int (**)())((char *)g_pGpuDispatchTable + 0x34))(1);
 }
 
-/* PARKED 87.6% (85/97). Dispatch ladder, held-base memsets (via g_abGpuDebugBlock
-   alias @0x80074a64), WritePrintf/GPU_cw/ResetGraphImpl calls all byte-perfect.
-   Residue = one ~11-insn window (0x8005f358..f398): the original interleaves the
-   two mode-table lookups (lw HRes; sh Width; lw VRes; sh Height) and stores
-   QueueModeActive=1 EARLY via v1; our -g3 gcc batches both table loads first
-   (extra reg a3) and stores QueueModeActive late via v0. §B13/§K batch-load-then-
-   scatter-store wall — volatile stores, volatile reads (overflows), and source
-   reordering all leave it. Permuter-or-never. NB resuming needs the
-   g_abGpuDebugBlock alias re-added to config/symbol_addrs.txt. */
+/* PARKED 87.6% (85/97). Dispatch ladder, held-base memsets (via
+   g_abGpuDebugBlock alias @0x80074a64), WritePrintf/GPU_cw/ResetGraphImpl calls
+   all byte-perfect. Residue = one ~11-insn window (0x8005f358..f398): the
+   original interleaves the two mode-table lookups (lw HRes; sh Width; lw VRes;
+   sh Height) and stores QueueModeActive=1 EARLY via v1; our -g3 gcc batches
+   both table loads first (extra reg a3) and stores QueueModeActive late via v0.
+   §B13/§K batch-load-then- scatter-store wall — volatile stores, volatile reads
+   (overflows), and source reordering all leave it. Permuter-or-never. NB
+   resuming needs the g_abGpuDebugBlock alias re-added to
+   config/symbol_addrs.txt. */

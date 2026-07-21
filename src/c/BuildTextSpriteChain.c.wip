@@ -65,7 +65,7 @@ void *BuildTextSpriteChain(unsigned char *param_1, int *param_2, int param_3,
    shared `sh v0,0x36(v1)` at 0x8001812c, keeping the case value in v0. My gcc
    allocates the merged uVar2 into a0 (free after the char's last use) and sinks
    the cursor reload to a single spot at the merge -> 105/114 (9 short, shared
-   form here). Duplicating the store into each special arm forces per-arm reloads
-   but gcc does NOT cross-join the 5 sh -> 117/114 (3 over, slot overflow). Pure
-   local-alloc (value reg a0 vs v0) + jump2 cross-join tie; §J/§P class. Permuter
-   candidate. */
+   form here). Duplicating the store into each special arm forces per-arm
+   reloads but gcc does NOT cross-join the 5 sh -> 117/114 (3 over, slot
+   overflow). Pure local-alloc (value reg a0 vs v0) + jump2 cross-join tie;
+   §J/§P class. Permuter candidate. */
