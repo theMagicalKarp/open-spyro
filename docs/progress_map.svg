@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.04% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">87,320 / 2,159,608 split-code bytes · 421 matched · 67 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.05% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">87,364 / 2,159,608 split-code bytes · 421 matched · 69 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -141,8 +141,8 @@
 <rect x="200.52" y="527.86" width="19.57" height="18.32" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>SetDrawEnv  ·  656 bytes  ·  asm</title></rect>
 <rect x="220.09" y="527.86" width="19.33" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039688  ·  648 bytes  ·  matched</title></rect>
 <rect x="239.43" y="527.86" width="19.21" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawGemPickupAuraStar  ·  644 bytes  ·  handwritten</title></rect>
-<rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  asm</title></rect>
-<rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  asm</title></rect>
+<rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  wip</title></rect>
+<rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  wip</title></rect>
 <rect x="296.94" y="527.86" width="18.85" height="18.32" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateScriptedCameraView  ·  632 bytes  ·  asm</title></rect>
 <rect x="81.91" y="546.19" width="18.28" height="18.54" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>RelocateActorMeshHeader  ·  620 bytes  ·  asm</title></rect>
 <rect x="81.91" y="564.72" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SamplePadForDeathReplayFrame  ·  620 bytes  ·  matched</title></rect>

@@ -1,0 +1,103 @@
+#include "globals.h"
+#include "types.h"
+
+extern void ResetGpuTimeoutDeadline(void);
+extern int CheckGpuTimeout(void);
+
+/* libgpu StoreImage (VRAM -> CPU): clamp the source rect to the framebuffer,
+   arm the GPU copy-to-CPU transfer, poll the command/data FIFO ready bits under
+   the GPU-timeout watchdog, drain the leading non-DMA remainder words through
+   the data port, then DMA the aligned 16-word blocks back to `dst`. Returns 0 on
+   success, -1 on an empty rect or a GPU timeout. (0x80061470, 644 bytes.)
+
+   PARKED ~91% (156/161, length-short by 5): the poll-loop + FIFO-drain + DMA
+   body (~100 insns) is byte-identical; the entire residue is the get_cs/get_ce
+   screen clamp + size prep. The original build keeps the clamp inputs/results in
+   distinct registers with explicit `move` copies (`move v1,a1`; `move a0,v0`;
+   `move a0,v1`+`move v1,v0`) and sign-extends the clamped height register for the
+   multiply (`sll;sll;sra` on a0), plus `move v1,s0`/`move s4,v1` around the
+   blocks/rem prep. Our gcc 2.7.2 coalesces every one of those copies and reloads
+   rect->w/rect->h from memory (self-sign-extending `lh`), so the copies + sll/sra
+   never appear. Four source forms probed — `int` locals, `short` locals (adds the
+   sll/sra + copies but globally renames registers, 141/161), a `(short)ch` cast in
+   the multiply (folded away — ch is provably short-ranged), and a distinct
+   input/result variable pair per axis (coalesced back) — none reproduces it.
+   Same §B10/§AH clamp register-copy wall (BuildDrawArea*/func_800606C8). The
+   near-twin sibling func_80061234 (LoadImage) shares the identical clamp, so a
+   permuter fix here pays 2x. Permuter-or-wall. */
+int func_80061470(RECT *rect, int *dst) {
+  int w;
+  int h;
+  int cw;
+  int ch;
+  int size;
+  int half;
+  int blocks;
+  int rem;
+
+  ResetGpuTimeoutDeadline();
+
+  w = rect->w;
+  cw = w;
+  if (w >= 0) {
+    if (g_nGpuScreenWidth < w) {
+      cw = g_nGpuScreenWidth;
+    }
+  } else {
+    cw = 0;
+  }
+  rect->w = cw;
+
+  h = rect->h;
+  ch = h;
+  if (h >= 0) {
+    if (g_nGpuScreenHeight < h) {
+      ch = g_nGpuScreenHeight;
+    }
+  } else {
+    ch = 0;
+  }
+  rect->h = ch;
+
+  size = rect->w * ch + 1;
+  half = size / 2;
+  blocks = size >> 5;
+  if (half <= 0) {
+    return -1;
+  }
+  rem = half - blocks * 16;
+
+  while ((*(volatile int *)g_pGpuStatReg & 0x04000000) == 0) {
+    if (CheckGpuTimeout() != 0) {
+      return -1;
+    }
+  }
+
+  *(volatile int *)g_pGpuStatReg = 0x04000000;
+  *(volatile int *)g_pGpuDataReg = 0x01000000;
+  *(volatile int *)g_pGpuDataReg = 0xC0000000;
+  *(volatile int *)g_pGpuDataReg = *(int *)rect;
+  *(volatile int *)g_pGpuDataReg = *(int *)&rect->w;
+
+  while ((*(volatile int *)g_pGpuStatReg & 0x08000000) == 0) {
+    if (CheckGpuTimeout() != 0) {
+      return -1;
+    }
+  }
+
+  rem -= 1;
+  if (rem != -1) {
+    do {
+      rem -= 1;
+      *dst++ = *(volatile int *)g_pGpuDataReg;
+    } while (rem != -1);
+  }
+
+  if (blocks != 0) {
+    *(volatile int *)g_pGpuStatReg = 0x04000003;
+    *(volatile int *)g_pDmaGpuMadrReg = (int)dst;
+    *(volatile int *)g_pDmaGpuBcrReg = (blocks << 16) | 0x10;
+    *(volatile int *)g_pDmaGpuChcrReg = 0x01000200;
+  }
+  return 0;
+}

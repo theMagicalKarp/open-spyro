@@ -1,0 +1,113 @@
+#include "globals.h"
+
+extern int VSync(int mode);
+extern void WriteString(char *s);
+extern int WritePrintf();
+extern void CdResetController(void);
+extern int FUN_8005df1c(void);
+extern int CdProcessInterrupt(void);
+
+extern char D_80011DFC[]; /* "CD timeout: " */
+extern char D_80011E0C[]; /* "%s:(%s) Sync=%s, Ready=%s\n" */
+extern char D_80011E84[]; /* "CD_sync" */
+
+extern int D_80075AE8;    /* VSync deadline stamp */
+extern int D_80075AEC;    /* spin counter */
+extern char *D_80075AF0;  /* op-name string for the timeout message */
+extern int D_80074E5C[];  /* sync-status name table */
+extern int D_80074EDC[];  /* ready-status name table */
+extern unsigned char D_80074E55; /* sync-status index */
+extern unsigned char D_80075114; /* ready index base (Sync @[0], Ready @[1]) */
+
+extern volatile unsigned char *D_800750FC; /* CDIO index register */
+extern void (*D_80074E34)();               /* sync (ready) IRQ callback */
+extern void (*D_80074E38)();               /* data-ready IRQ callback */
+extern unsigned char D_80075AD0[];         /* sync result bytes */
+extern unsigned char D_80075AD8[];         /* ready result bytes */
+
+/* libcd CdSync (0x800647a0, 640 bytes): wait for the drive to reach a terminal
+   state. Spin up to ~0x3C0 VSyncs (or 0x3C0000 iterations) for completion; on
+   timeout print "CD timeout: <op>:(<sync>) Sync=.., Ready=.." and reset the
+   controller (return -1). Each pass drains any pending controller interrupt
+   (FUN_8005df1c gate) via CdProcessInterrupt, dispatching the data-ready and
+   sync IRQ callbacks and preserving the CDIO index register. Breaks when the
+   ready index reaches 2 (Complete) or 5 (Error), copying the 8 result bytes to
+   `result` and returning the status; in poll mode (mode != 0) returns 0 while
+   still busy.
+
+   PARKED (~80%, length-exact logic; the whole control structure, drain loop,
+   status break and 8-byte result copy are all present and correct — the timeout
+   block is the byte-identical CdDataSync recipe). Blocked by a combined §B12 +
+   §H whole-function allocation divergence: gcc 2.7.2 loop-invariant-hoists the
+   compare constants `2` (status test / store) and `-1` (return / copy-counter)
+   into callee-saved registers in the prologue (`li s4,2; li s6,-1`), which
+   displaces the held table bases. The original re-materializes those constants
+   inline in caller-saved regs (§B12) and instead spends its callee-saved budget
+   on readyTbl->s3, readyIdx->s2, readyIdx+1->s4, mode->s5, result->s6. Our gcc
+   allocates readyTbl->s5, readyIdx->s2, folds readyIdx+1 to an inline `1(s2)`,
+   and puts mode/result elsewhere — a whole-function register relabel that
+   cascades through every table access and the drain/copy tails. Probed: `for(;;)`
+   vs goto-loop (goto-loop drops one hoist but loses the table-address hoisting
+   too, worse), an explicit `readyIdx2 = readyIdx+1` pointer (folded away, no s4).
+   Same §B12 constant-hoist wall as CdInit/CdControl*; confirms §AL's suspicion
+   that the libcd status-return cluster carries it. Permuter-or-wall. */
+int CdSync(int mode, unsigned char *result) {
+  int flag;
+  int irq;
+  int idxSave;
+  int status;
+  int old;
+  int n;
+  unsigned char *src;
+  int *readyTbl = D_80074EDC;
+  unsigned char *readyIdx = &D_80075114;
+
+  D_80075AE8 = VSync(-1) + 0x3C0;
+  D_80075AEC = 0;
+  D_80075AF0 = D_80011E84;
+  for (;;) {
+    if (D_80075AE8 < VSync(-1) ||
+        (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
+      WriteString(D_80011DFC);
+      WritePrintf(D_80011E0C, D_80075AF0, D_80074E5C[D_80074E55],
+                  readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
+      CdResetController();
+      flag = -1;
+    } else {
+      flag = 0;
+    }
+    if (flag != 0) {
+      return -1;
+    }
+    if (FUN_8005df1c() != 0) {
+      idxSave = *D_800750FC & 3;
+      while ((irq = CdProcessInterrupt()) != 0) {
+        if (irq & 4) {
+          if (D_80074E38 != 0) {
+            D_80074E38(readyIdx[1], D_80075AD8);
+          }
+        }
+        if ((irq & 2) && D_80074E34 != 0) {
+          D_80074E34(readyIdx[0], D_80075AD0);
+        }
+      }
+      *D_800750FC = idxSave;
+    }
+    status = readyIdx[0] & 0xFF;
+    if (status == 2 || status == 5) {
+      readyIdx[0] = 2;
+      if (result != 0) {
+        src = D_80075AD0;
+        n = 7;
+        do {
+          *result++ = *src++;
+          n -= 1;
+        } while (n != -1);
+      }
+      return status;
+    }
+    if (mode != 0) {
+      return 0;
+    }
+  }
+}
