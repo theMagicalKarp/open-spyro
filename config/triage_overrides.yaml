@@ -1,0 +1,291 @@
+# Persistent triage verdicts — merged over the auto-heuristics by `open-spyro triage`.
+#
+# One entry per function, append-only from match sessions. Format (constrained
+# YAML subset — keep to exactly this shape, the parser is deliberately small):
+#
+#   FunctionName:
+#     verdict: wall            # wall | parked | attempted | viable
+#     class: "B9 clamp"        # cookbook wall / tie class
+#     date: 2026-07-23
+#     note: "free text"
+#
+# wall      = never attempt (documented toolchain wall); removed from candidates.
+# parked    = a .c.wip exists or the residue is a named tie class; harvest mode.
+# attempted = tried and abandoned without a full wall diagnosis; score penalty.
+# viable    = hand-vouched good candidate; score boost.
+#
+# Auto-detected blockers (%gp_rel, $at literal loads, BIOS trampolines,
+# switchdata jr-tables in main, handwritten tags) need no entry here.
+
+# --- AddPrim mask family (mask constants in swapped arg regs; ccpsx-built) ---
+func_8005ECDC:
+  verdict: wall
+  class: "B4 AddPrim mask"
+  date: 2026-07-10
+func_8005ED18:
+  verdict: wall
+  class: "B4 AddPrim mask"
+  date: 2026-07-10
+func_8005ED54:
+  verdict: wall
+  class: "B4 AddPrim mask"
+  date: 2026-07-10
+
+# --- Split-label functions (need a text_layout.json merge first) ---
+SpuGetVoiceVolume:
+  verdict: wall
+  class: "B5 split-label"
+  date: 2026-07-23
+memchr:
+  verdict: wall
+  class: "B5 split-label"
+  date: 2026-07-23
+
+# --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
+BuildDrawAreaTopLeft:
+  verdict: wall
+  class: "B9 clamp"
+  date: 2026-07-08
+BuildDrawAreaBottomRight:
+  verdict: wall
+  class: "B9 clamp"
+  date: 2026-07-08
+func_800606C8:
+  verdict: wall
+  class: "B9 clamp (inline)"
+  date: 2026-07-19
+SetDrawEnv:
+  verdict: wall
+  class: "B9 clamp (inline)"
+  date: 2026-07-19
+PutDispEnv:
+  verdict: wall
+  class: "B9 clamp (inline)"
+  date: 2026-07-19
+func_80060FD8:
+  verdict: wall
+  class: "B9 clamp (inline)"
+  date: 2026-07-23
+func_80061470:
+  verdict: wall
+  class: "B9 clamp (full-screen variant); DMA body transcribes"
+  date: 2026-07-23
+func_80061234:
+  verdict: wall
+  class: "B9 clamp (full-screen variant, twin of func_80061470)"
+  date: 2026-07-23
+
+# --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
+CdInit:
+  verdict: wall
+  class: "B10 compare-const hoist"
+  date: 2026-07-08
+CdControl:
+  verdict: wall
+  class: "B10 compare-const hoist"
+  date: 2026-07-12
+CdControlForce:
+  verdict: wall
+  class: "B10 compare-const hoist"
+  date: 2026-07-12
+CdControlBlocking:
+  verdict: wall
+  class: "B10 compare-const hoist"
+  date: 2026-07-12
+func_80064A20:
+  verdict: wall
+  class: "B10 compare-const hoist (CdSync sibling)"
+  date: 2026-07-23
+CdCommandSync:
+  verdict: wall
+  class: "B10 compare-const hoist (wait loops)"
+  date: 2026-07-23
+
+# --- Lagged-mult pipeline leaves ---
+func_8005D628:
+  verdict: wall
+  class: "B11 lagged-mult"
+  date: 2026-07-06
+ComputeSpuPitchFromNoteDelta:
+  verdict: wall
+  class: "B11 lagged-mult"
+  date: 2026-07-10
+func_8005D7F4:
+  verdict: wall
+  class: "B11 lagged-mult"
+  date: 2026-07-10
+IntegrateSpyroBodyEuler:
+  verdict: wall
+  class: "B11 lagged-mult + B-i fold"
+  date: 2026-07-16
+
+# --- -g3 batch-read/scatter scheduling (main only) ---
+LoadCameraTargetAnglesFromMode:
+  verdict: wall
+  class: "B12 batch-scatter"
+  date: 2026-07-08
+RestartSpyroAnimWithState:
+  verdict: wall
+  class: "B12 batch-scatter (byte-store variant)"
+  date: 2026-07-08
+
+# --- Held-base fold rule 1 / shared-base-no-call ---
+AdvanceSpyroSpeedTowardTarget:
+  verdict: wall
+  class: "B7 shared-base no-call"
+  date: 2026-07-17
+CameraSettle_Update:
+  verdict: wall
+  class: "B7 shared-base halfword block, no call"
+  date: 2026-07-08
+ProbeSpyroLedgeForward:
+  verdict: wall
+  class: "B-i rule 1 fold (+4)"
+  date: 2026-07-14
+NudgeSpyroFromWallProbes:
+  verdict: wall
+  class: "B13 lh+sra shift-consumer"
+  date: 2026-07-15
+
+# --- Block-layout / constant-hoist ties (source-invariant) ---
+func_80058AE8:
+  verdict: wall
+  class: "B17 free-slot block layout"
+  date: 2026-07-07
+
+# --- Deferred multi-idiom from-scratch targets (not walls; retry when veins dry) ---
+func_800557CC:
+  verdict: attempted
+  class: "B13 lh+sra expected; multi-idiom, no ghidra seed"
+  date: 2026-07-12
+func_8005E680:
+  verdict: attempted
+  class: "DMA-IRQ nested loops; tie-dense, no ghidra seed"
+  date: 2026-07-12
+
+# --- CRT / runtime fragments not producible from C ---
+func_8001228C:
+  verdict: wall
+  class: "main's unreachable epilogue fragment"
+  date: 2026-07-08
+func_80017294:
+  verdict: wall
+  class: "GTE-neighbor epilogue fragment (jr ra; srl v0,t0,12)"
+  date: 2026-07-08
+func_80017A9C:
+  verdict: wall
+  class: "GTE-neighbor epilogue fragment"
+  date: 2026-07-08
+func_800229E8:
+  verdict: wall
+  class: "handwritten register-restore blob"
+  date: 2026-07-08
+setjmp:
+  verdict: wall
+  class: "PSY-Q runtime primitive, not compilable C"
+  date: 2026-07-23
+__do_global_dtors:
+  verdict: wall
+  class: "SN CRT prebuilt object ($t0 scratch, no arg-save area)"
+  date: 2026-07-17
+__main:
+  verdict: wall
+  class: "SN CRT prebuilt object"
+  date: 2026-07-17
+MEMCHR_OBJ_48:
+  verdict: wall
+  class: "B5 split-label (memchr family)"
+  date: 2026-07-23
+
+# --- Parked tie classes with no .c.wip on disk (residue documented in cookbook §F) ---
+UpdateCameraEulerAngles:
+  verdict: parked
+  class: "F2 load-scheduling tie (roll/yaw a0 hold)"
+  date: 2026-07-05
+func_80038494:
+  verdict: parked
+  class: "F1 one-register cascade (ptr a2 vs a1)"
+  date: 2026-07-05
+func_8003A9EC:
+  verdict: parked
+  class: "F1 whole-fn regalloc shift"
+  date: 2026-07-07
+func_8005E378:
+  verdict: parked
+  class: "F1 v0/v1 pointer-value swap"
+  date: 2026-07-06
+func_8005FC6C:
+  verdict: parked
+  class: "F4 return-pointer coalescing"
+  date: 2026-07-06
+func_8005F98C:
+  verdict: parked
+  class: "F2 prologue arg-move scheduling"
+  date: 2026-07-06
+func_8005F428:
+  verdict: parked
+  class: "F1 s0/s1 swap (276b payoff)"
+  date: 2026-07-06
+WriteSpuVoiceAddrRegister:
+  verdict: parked
+  class: "F5 beq-to-tail block layout"
+  date: 2026-07-06
+RotateSpyroBodyTowardKnockbackDir:
+  verdict: parked
+  class: "F4 return-reg coalescing (1 insn, 98.0%)"
+  date: 2026-07-10
+func_80037F90:
+  verdict: parked
+  class: "F5 tail block order + delay-slot li"
+  date: 2026-07-08
+func_8003AAEC:
+  verdict: parked
+  class: "F6 constant-sb li placement"
+  date: 2026-07-08
+SetupFrameOT:
+  verdict: parked
+  class: "B18 constant-hoist layout tie"
+  date: 2026-07-08
+func_8003891C:
+  verdict: parked
+  class: "F5 ret0 block layout"
+  date: 2026-07-09
+# --- Clone siblings blocked on the level_5 template ---
+func_level_11_8007B4B0:
+  verdict: parked
+  class: "F9 double knot; crack func_level_5_8007B4B0 first, then sed-clone"
+  date: 2026-07-19
+func_level_17_8007B4B0:
+  verdict: parked
+  class: "F9 double knot; via level_5 template"
+  date: 2026-07-19
+func_level_23_8007B4B0:
+  verdict: parked
+  class: "F9 double knot; via level_5 template"
+  date: 2026-07-19
+func_level_29_8007B4B0:
+  verdict: parked
+  class: "F9 double knot; via level_5 template"
+  date: 2026-07-19
+
+# --- libgpu bring-up cluster leftovers ---
+ResetCallback:
+  verdict: attempted
+  class: "setjmp/held-base-heavy (libgpu bring-up cluster)"
+  date: 2026-07-11
+FUN_80062648:
+  verdict: wall
+  class: "B3 kernel trampoline (raw jalr $t2, $ra saved to a global)"
+  date: 2026-07-10
+longjmp:
+  verdict: wall
+  class: "PSY-Q runtime primitive, not compilable C"
+  date: 2026-07-23
+ActivateScriptedCameraView:
+  verdict: wall
+  class: "B12 batch-scatter tail"
+  date: 2026-07-08
+func_8005E804:
+  verdict: parked
+  class: "F1 whole-fn regalloc shift (arg copy-up)"
+  date: 2026-07-07

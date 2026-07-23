@@ -114,6 +114,9 @@ progress: partial ## Regenerate the C-match progress report (PROGRESS.md + badge
 	$(OPEN_SPYRO) progress
 	$(OPEN_SPYRO) progress-treemap
 
+triage: ## Rank remaining unmatched functions (TRIAGE.md; verdicts in config/triage_overrides.yaml)
+	$(OPEN_SPYRO) triage
+
 lint: lint-py lint-c ## Lint + type-check everything (Python + C) — mirrors the CI lint job
 
 lint-py: ## Lint + type-check the Python tooling (ruff + ty)
