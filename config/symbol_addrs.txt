@@ -1556,6 +1556,7 @@ g_anSpyroAirborneFramesBlock = 0x80078af4; // allow_duplicated:True alias block 
 g_nSpyroGroundHeightZ = 0x80078af8; // size:0x4
 g_anSpyroGroundNormal = 0x80078afc; // size:0xc
 g_nSpyroGroundSlope = 0x80078b08; // size:0x4
+g_anSpyroGroundSlopeBlock = 0x80078b08; // allow_duplicated:True alias block — held base for the near-ground flight attitude controller (slope[0] + euler/mtx/worldpos at negative offsets)
 g_nSpyroWallSlideContributedFlag = 0x80078b0c; // size:0x4
 g_anSpyroWallSlideNudgeAccum = 0x80078b10; // size:0xc
 g_nSpyroCliffEdgeHint = 0x80078b1c; // size:0x4
