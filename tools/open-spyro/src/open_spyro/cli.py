@@ -28,6 +28,7 @@ from open_spyro import (
     progress_delta,
     progress_treemap,
     sectionize,
+    triage,
     wad,
 )
 
@@ -108,6 +109,13 @@ def _progress_delta(
 ) -> None:
     """Print the CI PR progress-delta comment body (head progress.json vs base PROGRESS.md)."""
     progress_delta.run(base_ref, head_json, base_md)
+
+
+def _triage(
+    top: Annotated[int, typer.Option("--top", help="ranked candidates to print/table")] = 15,
+) -> None:
+    """Rank the remaining unmatched functions (TRIAGE.md + config/triage_overrides.yaml)."""
+    triage.run(top)
 
 
 def _sectionize() -> None:
@@ -206,6 +214,7 @@ app.command("partial-score")(_partial_score)
 app.command("permuter")(_permuter)
 app.command("progress-treemap")(_progress_treemap)
 app.command("progress-delta")(_progress_delta)
+app.command("triage")(_triage)
 app.command("sectionize")(_sectionize)
 app.command("sectionize-overlays")(_sectionize_overlays)
 app.command("gen-overlay-yaml")(_gen_overlay_yaml)
