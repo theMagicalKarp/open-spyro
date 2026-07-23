@@ -22,9 +22,9 @@ The semantic slot layout is transcribed:
 The 36th level entry (slots 79,80) is empty; slots 102..255 are unused.
 
 The 37 overlay slots are identified by matching their TOC offset against the frozen
-overlay table (config/overlays.json). Overlay parts therefore reference the
-already-extracted disc/orig/overlays/<name>.ovl rather than being re-extracted;
-everything else is a data blob written to disc/orig/wad/.
+overlay table (config/overlays.json). Overlay parts are sliced out to
+disc/orig/overlays/<name>.ovl (skipped if already present, e.g. re-extracted by a
+matching build); everything else is a data blob written to disc/orig/wad/.
 
 Subcommands:
   unpack  WAD.WAD -> config/wad.json (committed manifest) + data parts
@@ -215,15 +215,14 @@ def unpack() -> None:
     manifest = _build_manifest(lay, wad)
     lay.parts_dir.mkdir(parents=True, exist_ok=True)
     n_data = 0
+    lay.overlay_dir.mkdir(parents=True, exist_ok=True)
     for s in manifest["slots"]:
         if s["overlay"]:
-            # Overlay bytes are already extracted; just sanity-check.
+            # Overlay bytes live inside WAD.WAD too; slice them out on first run,
+            # then just sanity-check on later ones.
             p = lay.orig / s["part"]
             if not p.exists():
-                _die(
-                    f"overlay part missing: {s['part']} — "
-                    f"run 'make extract' or check config/overlays.json"
-                )
+                p.write_bytes(wad[s["offset"] : s["offset"] + s["size"]])
             if _sha1(p.read_bytes()) != s["sha1"]:
                 _die(f"overlay part {s['part']} SHA-1 disagrees with WAD blob")
             continue

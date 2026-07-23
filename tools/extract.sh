@@ -52,3 +52,7 @@ if [[ "$got" != "$SCUS_SHA1" ]]; then
   exit 1
 fi
 echo "extract: OK — disc/orig/SCUS_942.28 SHA-1 $got matches target."
+
+# Slice WAD.WAD into disc/orig/overlays/ (37 overlays) + disc/orig/wad/ (data
+# blobs) + config/wad.json manifest — split needs the overlays on disk.
+cd "$ROOT/tools/open-spyro" && uv run --group split -- open-spyro wad unpack

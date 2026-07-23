@@ -91181,8 +91181,8 @@ glabel EnqueueGpuOp
     /* 52174 80061974 02000424 */   addiu     $a0, $zero, 0x2
     /* 52178 80061978 2B002012 */  beqz       $s1, .L80061A28
     /* 5217C 8006197C 21300000 */   addu      $a2, $zero, $zero
-    /* 52180 80061980 0880083C */  lui        $t0, %hi(g_abGpuOpQueueRing + 0xC)
-    /* 52184 80061984 AC8E0825 */  addiu      $t0, $t0, %lo(g_abGpuOpQueueRing + 0xC)
+    /* 52180 80061980 0880083C */  lui        $t0, %hi(g_abGpuOpArgArea)
+    /* 52184 80061984 AC8E0825 */  addiu      $t0, $t0, %lo(g_abGpuOpArgArea)
     /* 52188 80061988 21380002 */  addu       $a3, $s0, $zero
     /* 5218C 8006198C 21102002 */  addu       $v0, $s1, $zero
   .L80061990:
@@ -91218,12 +91218,12 @@ glabel EnqueueGpuOp
     /* 521FC 800619FC 40100300 */  sll        $v0, $v1, 1
     /* 52200 80061A00 21104300 */  addu       $v0, $v0, $v1
     /* 52204 80061A04 40110200 */  sll        $v0, $v0, 5
-    /* 52208 80061A08 0880033C */  lui        $v1, %hi(g_abGpuOpQueueRing + 0xC)
-    /* 5220C 80061A0C AC8E6324 */  addiu      $v1, $v1, %lo(g_abGpuOpQueueRing + 0xC)
+    /* 52208 80061A08 0880033C */  lui        $v1, %hi(g_abGpuOpArgArea)
+    /* 5220C 80061A0C AC8E6324 */  addiu      $v1, $v1, %lo(g_abGpuOpArgArea)
     /* 52210 80061A10 21104300 */  addu       $v0, $v0, $v1
-    /* 52214 80061A14 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x4)
+    /* 52214 80061A14 0880013C */  lui        $at, %hi(g_adwGpuRingArgs)
     /* 52218 80061A18 21082400 */  addu       $at, $at, $a0
-    /* 5221C 80061A1C A48E22AC */  sw         $v0, %lo(g_abGpuOpQueueRing + 0x4)($at)
+    /* 5221C 80061A1C A48E22AC */  sw         $v0, %lo(g_adwGpuRingArgs)($at)
     /* 52220 80061A20 93860108 */  j          .L80061A4C
     /* 52224 80061A24 00000000 */   nop
   .L80061A28:
@@ -91233,9 +91233,9 @@ glabel EnqueueGpuOp
     /* 52234 80061A34 40100300 */  sll        $v0, $v1, 1
     /* 52238 80061A38 21104300 */  addu       $v0, $v0, $v1
     /* 5223C 80061A3C 40110200 */  sll        $v0, $v0, 5
-    /* 52240 80061A40 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x4)
+    /* 52240 80061A40 0880013C */  lui        $at, %hi(g_adwGpuRingArgs)
     /* 52244 80061A44 21082200 */  addu       $at, $at, $v0
-    /* 52248 80061A48 A48E30AC */  sw         $s0, %lo(g_abGpuOpQueueRing + 0x4)($at)
+    /* 52248 80061A48 A48E30AC */  sw         $s0, %lo(g_adwGpuRingArgs)($at)
   .L80061A4C:
     /* 5224C 80061A4C 0780033C */  lui        $v1, %hi(g_nGpuQueueWriteIndex)
     /* 52250 80061A50 684B638C */  lw         $v1, %lo(g_nGpuQueueWriteIndex)($v1)
@@ -91243,9 +91243,9 @@ glabel EnqueueGpuOp
     /* 52258 80061A58 40100300 */  sll        $v0, $v1, 1
     /* 5225C 80061A5C 21104300 */  addu       $v0, $v0, $v1
     /* 52260 80061A60 40110200 */  sll        $v0, $v0, 5
-    /* 52264 80061A64 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x8)
+    /* 52264 80061A64 0880013C */  lui        $at, %hi(g_adwGpuRingArg4)
     /* 52268 80061A68 21082200 */  addu       $at, $at, $v0
-    /* 5226C 80061A6C A88E32AC */  sw         $s2, %lo(g_abGpuOpQueueRing + 0x8)($at)
+    /* 5226C 80061A6C A88E32AC */  sw         $s2, %lo(g_adwGpuRingArg4)($at)
     /* 52270 80061A70 0780033C */  lui        $v1, %hi(g_nGpuQueueWriteIndex)
     /* 52274 80061A74 684B638C */  lw         $v1, %lo(g_nGpuQueueWriteIndex)($v1)
     /* 52278 80061A78 00000000 */  nop
@@ -91364,18 +91364,18 @@ glabel FlushGpuQueue
     /* 52408 80061C08 40110200 */  sll        $v0, $v0, 5
     /* 5240C 80061C0C 40180500 */  sll        $v1, $a1, 1
     /* 52410 80061C10 21186500 */  addu       $v1, $v1, $a1
-    /* 52414 80061C14 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x4)
+    /* 52414 80061C14 0880013C */  lui        $at, %hi(g_adwGpuRingArgs)
     /* 52418 80061C18 21082200 */  addu       $at, $at, $v0
-    /* 5241C 80061C1C A48E248C */  lw         $a0, %lo(g_abGpuOpQueueRing + 0x4)($at)
+    /* 5241C 80061C1C A48E248C */  lw         $a0, %lo(g_adwGpuRingArgs)($at)
     /* 52420 80061C20 0780053C */  lui        $a1, %hi(g_nGpuQueueReadIndex)
     /* 52424 80061C24 6C4BA58C */  lw         $a1, %lo(g_nGpuQueueReadIndex)($a1)
     /* 52428 80061C28 40190300 */  sll        $v1, $v1, 5
     /* 5242C 80061C2C 40100500 */  sll        $v0, $a1, 1
     /* 52430 80061C30 21104500 */  addu       $v0, $v0, $a1
     /* 52434 80061C34 40110200 */  sll        $v0, $v0, 5
-    /* 52438 80061C38 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x8)
+    /* 52438 80061C38 0880013C */  lui        $at, %hi(g_adwGpuRingArg4)
     /* 5243C 80061C3C 21082200 */  addu       $at, $at, $v0
-    /* 52440 80061C40 A88E258C */  lw         $a1, %lo(g_abGpuOpQueueRing + 0x8)($at)
+    /* 52440 80061C40 A88E258C */  lw         $a1, %lo(g_adwGpuRingArg4)($at)
     /* 52444 80061C44 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing)
     /* 52448 80061C48 21082300 */  addu       $at, $at, $v1
     /* 5244C 80061C4C A08E228C */  lw         $v0, %lo(g_abGpuOpQueueRing)($at)
@@ -91399,9 +91399,9 @@ glabel FlushGpuQueue
     /* 52494 80061C94 40100300 */  sll        $v0, $v1, 1
     /* 52498 80061C98 21104300 */  addu       $v0, $v0, $v1
     /* 5249C 80061C9C 40110200 */  sll        $v0, $v0, 5
-    /* 524A0 80061CA0 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x4)
+    /* 524A0 80061CA0 0880013C */  lui        $at, %hi(g_adwGpuRingArgs)
     /* 524A4 80061CA4 21082200 */  addu       $at, $at, $v0
-    /* 524A8 80061CA8 A48E228C */  lw         $v0, %lo(g_abGpuOpQueueRing + 0x4)($at)
+    /* 524A8 80061CA8 A48E228C */  lw         $v0, %lo(g_adwGpuRingArgs)($at)
     /* 524AC 80061CAC 0780013C */  lui        $at, %hi(g_dwLastGpuOpArg1)
     /* 524B0 80061CB0 5C4B22AC */  sw         $v0, %lo(g_dwLastGpuOpArg1)($at)
     /* 524B4 80061CB4 0780033C */  lui        $v1, %hi(g_nGpuQueueReadIndex)
@@ -91410,9 +91410,9 @@ glabel FlushGpuQueue
     /* 524C0 80061CC0 40100300 */  sll        $v0, $v1, 1
     /* 524C4 80061CC4 21104300 */  addu       $v0, $v0, $v1
     /* 524C8 80061CC8 40110200 */  sll        $v0, $v0, 5
-    /* 524CC 80061CCC 0880013C */  lui        $at, %hi(g_abGpuOpQueueRing + 0x8)
+    /* 524CC 80061CCC 0880013C */  lui        $at, %hi(g_adwGpuRingArg4)
     /* 524D0 80061CD0 21082200 */  addu       $at, $at, $v0
-    /* 524D4 80061CD4 A88E228C */  lw         $v0, %lo(g_abGpuOpQueueRing + 0x8)($at)
+    /* 524D4 80061CD4 A88E228C */  lw         $v0, %lo(g_adwGpuRingArg4)($at)
     /* 524D8 80061CD8 0780013C */  lui        $at, %hi(g_dwLastGpuOpArg2)
     /* 524DC 80061CDC 604B22AC */  sw         $v0, %lo(g_dwLastGpuOpArg2)($at)
     /* 524E0 80061CE0 0780023C */  lui        $v0, %hi(g_nGpuQueueReadIndex)
