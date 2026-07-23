@@ -1,38 +1,39 @@
 #include "globals.h"
-
-/* 0x80060e28: libgpu display-Y adjuster — converts a RECT's y/h (as signed
-   shorts) into display-line space depending on interlace (g_bGpuReverseFlag)
-   and PAL/NTSC debug type (g_bGpuDebugType). PARKED: 184/176 bytes (2 extra
-   instr). Switch dispatch shape (beq/beq/j-default) matches once written
-   with an explicit `goto default_case;` instead of case1-falls-into-default
-   (switch fallthrough forces an if/else-if lowering instead of the
-   independent-jump dispatch the original uses). Residue: in the case1/case2
-   "reverse" arms, gcc always loads param_1[0] before param_1[2] regardless
-   of source statement order (tried both orders, named temps) — original
-   loads param_1[2] (field +4) first, then param_1[0] (reusing a0). Same
-   independent-load scheduling-order tie seen in func_80016FD0/memmove this
-   session; permuter-or-never. */
+// typedef unsigned char byte;
+// extern byte g_bGpuDebugType;
+// extern byte g_bGpuReverseFlag;
 int FUN_80060e28(unsigned short *param_1) {
+  int new_var3;
+  int new_var;
+  int new_var2;
   int v1;
-  unsigned short t;
-
+  long t;
   switch (g_bGpuDebugType) {
   case 1: {
     short f0;
     if (g_bGpuReverseFlag == 0) {
       goto default_case;
+      new_var2 = 0x400 - ((short)param_1[2]);
     }
+    t = param_1[2];
     f0 = (short)param_1[0];
-    v1 = (short)param_1[2];
-    return (0x400 - v1) - f0;
+    return (unsigned long long)((0x400 - ((short)t)) - f0);
   }
+
   case 2:
-    if (g_bGpuReverseFlag == 0) {
+    t = 0 == g_bGpuReverseFlag;
+    if (t) {
       t = param_1[0];
-      return (int)(short)t / 2;
+      return ((int)(new_var2 = (short)t)) / 2;
     }
-    v1 = (short)param_1[2] / 2;
-    return (0x400 - v1) - (short)param_1[0];
+    t = t;
+    new_var2 = t;
+    v1 = ((short)new_var2) / 2;
+    new_var = 0x400;
+    v1 = (short)param_1[0];
+    new_var3 = (new_var - (((short)new_var2) / 2)) - v1;
+    return new_var3;
+
   default:
   default_case:
     return (short)param_1[0];
