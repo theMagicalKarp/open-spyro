@@ -1,0 +1,113 @@
+#include "globals.h"
+
+extern int WriteString(char *s);
+extern int CdControl(int com, unsigned char *param, unsigned char *result);
+extern int CdControlForce(int cmd, void *param);
+extern int CdStatus(void);
+extern unsigned char *CdLastPos(void);
+extern int CdPosToInt(unsigned char *pos);
+extern void *CdSyncCallback(void *func);
+extern void *CdReadyCallback(void *func);
+extern int VSync(int mode);
+extern void FUN_80063b38(void);
+extern int FUN_80063a9c(void);
+extern void FUN_80064050();
+extern void D_800659F0();          /* sector-ready callback (LAB_800659f0) */
+extern unsigned char D_80065CC0[]; /* DMA delivery config table */
+
+extern char D_80011F28[]; /* "CdRead: Shell open...\n" */
+extern char D_80011F40[]; /* "CdRead: retry...\n" */
+
+extern int D_80075148;          /* saved sector count */
+extern void *D_8007514C;        /* saved dst buffer */
+extern void *D_80075150;        /* committed dst buffer */
+extern volatile int D_80075154; /* libcd mode/config word (reloaded) */
+extern volatile int D_8007515C; /* libcd busy/pending flag */
+extern int D_80075160;          /* VSync stamp at read kick */
+extern int D_80075164;          /* VSync stamp on shell-open */
+extern int D_80075168;          /* head position at read kick */
+extern int D_80075178[];        /* libcd driver mode flags (bit 0 = DMA delivery) */
+
+/* libcd internal read-state-machine kick: disables the sync/ready callbacks,
+   optionally aborts an in-flight read (CdlPause + CdlSetloc) on the retry path,
+   re-issues CdlSetmode, installs the sector-ready callback, then kicks CdlReadN
+   via CdControlForce. On an open shell it reports and bails. Returns the busy
+   flag D_8007515C (-1 on failure). (0x80065dbc, 532 bytes.) */
+int CdReadStart(int param_1) {
+  unsigned char sp10;
+  int cfg;
+
+  CdSyncCallback(0);
+  CdReadyCallback(0);
+  if (D_80075178[0] & 1) {
+    FUN_80064050(0);
+  }
+  if (CdStatus() & 0x10) {
+    if ((VSync(-1) & 0x3f) == 0) {
+      WriteString(D_80011F28);
+    }
+    CdControlForce(1, 0);
+    D_80075164 = VSync(-1);
+    D_8007515C = -1;
+  } else {
+    if (param_1 != 0) {
+      WriteString(D_80011F40);
+      CdControl(9, 0, 0);
+      if (CdControl(2, CdLastPos(), 0) == 0) {
+        D_8007515C = -1;
+        return D_8007515C;
+      }
+    }
+    FUN_80063b38();
+    sp10 = (unsigned char)D_80075154;
+    cfg = D_80075154 & 0xff;
+    if (((cfg == FUN_80063a9c()) && (param_1 == 0)) ||
+        (CdControl(0xe, &sp10, 0) != 0)) {
+      D_80075168 = CdPosToInt(CdLastPos());
+      CdReadyCallback(D_800659F0);
+      if (D_80075178[0] & 1) {
+        FUN_80064050(&D_80065CC0);
+      }
+      D_80075150 = D_8007514C;
+      CdControlForce(6, 0);
+      D_8007515C = D_80075148;
+      D_80075160 = VSync(-1);
+    } else {
+      D_8007515C = -1;
+    }
+  }
+  return D_8007515C;
+}
+
+/* PARKED 2026-07-22 — logic-complete, ~87.6% (117/133 insns aligned), 8 short.
+ * §L libcd jal-chain; sibling of the matched CdInitDriver. Solved this session:
+ *  - branch INVERSION: original places the shell-open arm INLINE (fall-through)
+ *    and the read arm out-of-line — write `if (CdStatus() & 0x10) { shell } else
+ *    { read }` (§M/§S), NOT ghidra's `== 0 -> read` form (that mirrors the layout).
+ *  - first FUN_80064050 needs an explicit a0=0 -> pass FUN_80064050(0); the
+ *    success-path call passes &D_80065CC0 (register-passthrough, §AH — ghidra hides
+ *    both args). Unprototyped `extern void FUN_80064050();` allows the two arities.
+ *  - D_8007515C reload at the shared epilogue confirms it must stay `volatile int`.
+ *
+ * REMAINING RESIDUE (park classes):
+ *  1. DOMINANT — cross-jump of the three inline `D_8007515C = -1` failure stores.
+ *     The original keeps `li -1; sw D_8007515C; j <reload>` INLINE in each of the
+ *     3 failure arms (shell-open / retry-fail / read-fail) and reloads once at the
+ *     shared 0x65fb0 epilogue. Our gcc 2.7.2 CROSS-JUMPS the identical `sw; j` tail
+ *     into ONE shared block (`sw D_8007515C; lw D_8007515C; epilogue`), so each arm
+ *     becomes `li -1; j shared` (8 insns short). This happens EVEN THOUGH the store
+ *     is volatile (the adjacent `sw;lw` in the merged block proves volatile is live)
+ *     — i.e. gcc 2.7.2's jump.c cross-jump merged a volatile-store tail that the
+ *     original build kept separate. No source form found: a single trailing
+ *     `return D_8007515C`, per-arm explicit `return D_8007515C`, and §P
+ *     fallthrough-label all converge to the same merged block (the §P defeat gives
+ *     the MERGED form; the original wants the rarer UN-merged form). Permuter-or-wall.
+ *  2. D_80075178[0] bit-test wants the held-base `lui;addiu;lw 0(reg)` addiu form;
+ *     the incomplete-array `[0]` folds to `lui;lw %lo` (+1 insn). Original holds
+ *     &D_80075178 across both reads.
+ *  3. D_80075154 byte(sp10)+word(cfg) reads want a single held &D_80075154 base;
+ *     ours materializes each separately, and the `& 0xff` (cfg) vs FUN_80063a9c()
+ *     call order needs cfg pinned in s0 across the call (a named local helped but
+ *     the held base did not fully land).
+ *  4. one `move a1,zero` scheduling slot around CdControlForce(6,0).
+ */

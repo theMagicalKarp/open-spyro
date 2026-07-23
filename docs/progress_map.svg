@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.02% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">86,752 / 2,159,608 split-code bytes · 420 matched · 66 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.04% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">87,304 / 2,159,608 split-code bytes · 421 matched · 67 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -161,14 +161,14 @@
 <rect x="117.58" y="546.19" width="17.14" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroFrameNoInput  ·  536 bytes  ·  matched</title></rect>
 <rect x="134.72" y="546.19" width="17.14" height="17.10" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_800606C8  ·  536 bytes  ·  wip</title></rect>
 <rect x="151.85" y="546.19" width="17.01" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ResetSpyroEntity  ·  532 bytes  ·  asm</title></rect>
-<rect x="168.86" y="546.19" width="17.01" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdReadStart  ·  532 bytes  ·  asm</title></rect>
+<rect x="168.86" y="546.19" width="17.01" height="17.10" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdReadStart  ·  532 bytes  ·  wip</title></rect>
 <rect x="185.87" y="546.19" width="17.01" height="17.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8006992c  ·  532 bytes  ·  library</title></rect>
 <rect x="202.88" y="546.19" width="16.75" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BCCC  ·  524 bytes  ·  matched</title></rect>
 <rect x="219.63" y="546.19" width="16.50" height="17.10" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>TickGemCutsceneActorAnims  ·  516 bytes  ·  handwritten</title></rect>
 <rect x="236.13" y="546.19" width="16.24" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BAD0  ·  508 bytes  ·  matched</title></rect>
 <rect x="252.37" y="546.19" width="16.24" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetSpuKeyMask  ·  508 bytes  ·  matched</title></rect>
 <rect x="268.61" y="546.19" width="15.86" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildCameraViewMatrix  ·  496 bytes  ·  matched</title></rect>
-<rect x="284.47" y="546.19" width="15.73" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdInitDriver  ·  492 bytes  ·  asm</title></rect>
+<rect x="284.47" y="546.19" width="15.73" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdInitDriver  ·  492 bytes  ·  matched</title></rect>
 <rect x="300.20" y="546.19" width="15.60" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B294  ·  488 bytes  ·  matched</title></rect>
 <rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  wip</title></rect>
 <rect x="100.19" y="580.26" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildSaveGameBuffer  ·  484 bytes  ·  matched</title></rect>
