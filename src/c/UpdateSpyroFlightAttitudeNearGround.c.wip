@@ -4,7 +4,8 @@ extern int LookupCosine(int angle);
 extern int LookupSine(int angle);
 extern int ArcTan2(int y, int x, int quadrant);
 extern unsigned int IntegerSqrt(unsigned int v);
-extern void ApplyEulerRotation(unsigned int *euler, unsigned int *mtx, unsigned int *out);
+extern void ApplyEulerRotation(unsigned int *euler, unsigned int *mtx,
+                               unsigned int *out);
 extern void RotateVectorByMatrix(int *mtx, int *in, int *out);
 extern void AddVector(int *dst, int *a, int *b);
 extern void DampenSpyroFreeFallAttitude(void);
@@ -21,77 +22,87 @@ extern int g_anSpyroGroundSlopeBlock[];
 /* Per-frame glide/flight attitude controller for the near-ground case
    (g_nSpyroGroundSlope < 0x17). Spring-damps body pitch/roll toward the
    velocity-relative angles derived from the local ground frame, and when both
-   persistent-euler byte snapshots are tilted past 0xc0+0x20, layers a ground-hug
-   position offset onto g_anSpyroWorldPos. Above the altitude threshold it hands
-   off to DampenSpyroFreeFallAttitude. (0x8003dae4, 864 bytes.) */
+   persistent-euler byte snapshots are tilted past 0xc0+0x20, layers a
+   ground-hug position offset onto g_anSpyroWorldPos. Above the altitude
+   threshold it hands off to DampenSpyroFreeFallAttitude. (0x8003dae4, 864
+   bytes.) */
 void UpdateSpyroFlightAttitudeNearGround(void) {
-    int *base = g_anSpyroGroundSlopeBlock;
-    int c, s;
-    int vec[3]; /* vec[0]=local_30, vec[1]=local_2c, vec[2]=local_28 */
-    int dp, dr;
-    unsigned int y;
+  int *base = g_anSpyroGroundSlopeBlock;
+  int c, s;
+  int vec[3]; /* vec[0]=local_30, vec[1]=local_2c, vec[2]=local_28 */
+  int dp, dr;
+  unsigned int y;
 
-    if (base[0] < 0x17) {
-        c = LookupCosine(g_nSpyroBodyYaw);
-        s = LookupSine(g_nSpyroBodyYaw);
-        vec[0] = (g_anSpyroGroundNormal[0] * c + g_anSpyroGroundNormal[1] * s) >> 12;
-        c = LookupCosine(g_nSpyroBodyYaw);
-        s = LookupSine(g_nSpyroBodyYaw);
-        vec[2] = g_anSpyroGroundNormal[2];
-        vec[1] = (g_anSpyroGroundNormal[1] * c - g_anSpyroGroundNormal[0] * s) >> 12;
-        y = IntegerSqrt(vec[0] * vec[0] + g_anSpyroGroundNormal[2] * g_anSpyroGroundNormal[2]);
-        dp = -ArcTan2(y, vec[1], 1);
-        dr = ArcTan2(vec[2], vec[0], 1);
-        dp = (dp - g_nSpyroBodyPitch) & 0xfff;
-        if (0x800 < dp) {
-            dp = dp - 0x1000;
-        }
-        dr = (-g_nSpyroBodyRoll - dr) & 0xfff;
-        if (0x800 < dr) {
-            dr = dr - 0x1000;
-        }
-        D_80078CB0 = D_80078CB0 + (((int)(dp << 2) >> 4) - ((D_80078CB0 << 4) >> 6));
-        D_80078CB4 = D_80078CB4 + (((int)(dr << 2) >> 4) - ((D_80078CB4 << 4) >> 6));
-        dp = D_80078CB0 >> 2;
-        dr = D_80078CB4 >> 2;
-        g_nSpyroBodyPitch = (g_nSpyroBodyPitch + dp) & 0xfff;
-        if (0x800 < g_nSpyroBodyPitch) {
-            g_nSpyroBodyPitch = g_nSpyroBodyPitch - 0x1000;
-        }
-        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + dr) & 0xfff;
-        if (0x800 < g_nSpyroBodyRoll) {
-            g_nSpyroBodyRoll = g_nSpyroBodyRoll - 0x1000;
-        }
-        if (0xc0 < (unsigned char)(((unsigned char *)base)[-0xa4] - 0x20) &&
-            0xc0 < (unsigned char)(((unsigned char *)base)[-0xa3] - 0x20)) {
-            vec[1] = LookupSine(dp) * -0x174 >> 12;
-            vec[0] = LookupSine(dr) * -0x174 >> 12;
-            c = LookupCosine(dr);
-            s = LookupCosine(dp);
-            vec[2] = ((0x2000 - c) - s) * 0x174 >> 12;
-            ApplyEulerRotation((unsigned int *)((char *)base - 0xa4),
-                               (unsigned int *)((char *)base - 0x7c), (unsigned int *)0);
-            RotateVectorByMatrix((int *)((char *)base - 0x7c), vec, vec);
-            AddVector((int *)((char *)base - 0xb0), (int *)((char *)base - 0xb0), vec);
-        }
-    } else {
-        DampenSpyroFreeFallAttitude();
+  if (base[0] < 0x17) {
+    c = LookupCosine(g_nSpyroBodyYaw);
+    s = LookupSine(g_nSpyroBodyYaw);
+    vec[0] =
+        (g_anSpyroGroundNormal[0] * c + g_anSpyroGroundNormal[1] * s) >> 12;
+    c = LookupCosine(g_nSpyroBodyYaw);
+    s = LookupSine(g_nSpyroBodyYaw);
+    vec[2] = g_anSpyroGroundNormal[2];
+    vec[1] =
+        (g_anSpyroGroundNormal[1] * c - g_anSpyroGroundNormal[0] * s) >> 12;
+    y = IntegerSqrt(vec[0] * vec[0] +
+                    g_anSpyroGroundNormal[2] * g_anSpyroGroundNormal[2]);
+    dp = -ArcTan2(y, vec[1], 1);
+    dr = ArcTan2(vec[2], vec[0], 1);
+    dp = (dp - g_nSpyroBodyPitch) & 0xfff;
+    if (0x800 < dp) {
+      dp = dp - 0x1000;
     }
+    dr = (-g_nSpyroBodyRoll - dr) & 0xfff;
+    if (0x800 < dr) {
+      dr = dr - 0x1000;
+    }
+    D_80078CB0 =
+        D_80078CB0 + (((int)(dp << 2) >> 4) - ((D_80078CB0 << 4) >> 6));
+    D_80078CB4 =
+        D_80078CB4 + (((int)(dr << 2) >> 4) - ((D_80078CB4 << 4) >> 6));
+    dp = D_80078CB0 >> 2;
+    dr = D_80078CB4 >> 2;
+    g_nSpyroBodyPitch = (g_nSpyroBodyPitch + dp) & 0xfff;
+    if (0x800 < g_nSpyroBodyPitch) {
+      g_nSpyroBodyPitch = g_nSpyroBodyPitch - 0x1000;
+    }
+    g_nSpyroBodyRoll = (g_nSpyroBodyRoll + dr) & 0xfff;
+    if (0x800 < g_nSpyroBodyRoll) {
+      g_nSpyroBodyRoll = g_nSpyroBodyRoll - 0x1000;
+    }
+    if (0xc0 < (unsigned char)(((unsigned char *)base)[-0xa4] - 0x20) &&
+        0xc0 < (unsigned char)(((unsigned char *)base)[-0xa3] - 0x20)) {
+      vec[1] = LookupSine(dp) * -0x174 >> 12;
+      vec[0] = LookupSine(dr) * -0x174 >> 12;
+      c = LookupCosine(dr);
+      s = LookupCosine(dp);
+      vec[2] = ((0x2000 - c) - s) * 0x174 >> 12;
+      ApplyEulerRotation((unsigned int *)((char *)base - 0xa4),
+                         (unsigned int *)((char *)base - 0x7c),
+                         (unsigned int *)0);
+      RotateVectorByMatrix((int *)((char *)base - 0x7c), vec, vec);
+      AddVector((int *)((char *)base - 0xb0), (int *)((char *)base - 0xb0),
+                vec);
+    }
+  } else {
+    DampenSpyroFreeFallAttitude();
+  }
 }
 
 /* PARKED ~46% (117/216 insns differ). Two documented walls, same as §AB
    IntegrateSpyroBodyEuler:
    (1) §Y rule-1 held-base fold: the original reads the persistent-euler bytes
-       via the held base (`lbu -164(s2)` / -0xA4, -0xA3 off &g_nSpyroGroundSlope),
-       but our gcc folds the nonzero-offset byte LOAD to absolute
+       via the held base (`lbu -164(s2)` / -0xA4, -0xA3 off
+   &g_nSpyroGroundSlope), but our gcc folds the nonzero-offset byte LOAD to
+   absolute
        (`lui;lbu -30108`) via reload's reg_equiv, even post-label — while the
-       call-arg address computations DO keep the reg (`addiu s3,-164`). No source
-       form escapes the load fold (the §Y unsolved wall).
-   (2) §H whole-function regalloc shift: base lands in s3 (orig s2); every temp
-       (LookupSine/Cosine results, dp/dr) shifts by one register, and the original
-       spills dp/dr to sp32/sp36 under the higher pressure our build never reaches.
-   Everything else (the two mult-pair ground-frame reductions, ArcTan2/IntegerSqrt
-   nesting, euler wraps, the `*-0x174>>12` / `(0x2000-c-s)*0x174>>12` shift
-   ladders, the ApplyEulerRotation/RotateVectorByMatrix/AddVector tail) is
-   structurally correct. Held-base alias g_anSpyroGroundSlopeBlock committed.
+       call-arg address computations DO keep the reg (`addiu s3,-164`). No
+   source form escapes the load fold (the §Y unsolved wall). (2) §H
+   whole-function regalloc shift: base lands in s3 (orig s2); every temp
+       (LookupSine/Cosine results, dp/dr) shifts by one register, and the
+   original spills dp/dr to sp32/sp36 under the higher pressure our build never
+   reaches. Everything else (the two mult-pair ground-frame reductions,
+   ArcTan2/IntegerSqrt nesting, euler wraps, the `*-0x174>>12` /
+   `(0x2000-c-s)*0x174>>12` shift ladders, the
+   ApplyEulerRotation/RotateVectorByMatrix/AddVector tail) is structurally
+   correct. Held-base alias g_anSpyroGroundSlopeBlock committed.
    Permuter-or-wall (the §Y load fold is the harder half). */

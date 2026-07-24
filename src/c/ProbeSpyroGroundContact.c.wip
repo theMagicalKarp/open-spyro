@@ -1,0 +1,119 @@
+#include "globals.h"
+
+extern void ZeroVector(int *vec);
+extern void CopyVector(int *dst, int *src);
+extern void AddVector(int *dst, int *a, int *b);
+extern uint VectorLength(int *vec, int include_z);
+extern int ArcTan2(int y, int x, int high_precision);
+extern void RotateVectorByMatrix(int *mtx, int *dst, int *src);
+extern void ApplyActiveGteRotation(int *dst, int *src);
+extern int CastRayWorldAndActors(int *start, int *end);
+extern void UnpackWorldCollisionTri(int chunk, int *verts);
+
+/* The whole Spyro ground/collision state block hangs off one base register:
+   [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,
+   [0x2d] ground-run flag, [0x76] ground chunk id, [0x77..] chunk verts, and the
+   body matrix / world position sit at -0x68 / -0x9c below it. */
+extern int g_anSpyroAirborneFramesBlock[0x200];
+#define BLK g_anSpyroAirborneFramesBlock
+#define MTX (&BLK[-0x1a]) /* g_anSpyroBodyMtx */
+#define POS (&BLK[-0x27]) /* g_anSpyroWorldPos */
+#define NORMAL (&BLK[2])  /* g_anSpyroGroundNormal */
+
+/* Per-frame ground probe. Casts a body-relative ray straight down from Spyro
+   (and, on a shallow hit, a second wider one) through the world + actor
+   collision set; on a hit it caches the contact normal, the slope angle from
+   ArcTan2 and the hit chunk's triangle, and clears the airborne counter when
+   the slope is walkable (< 0x21). A third, purely vertical probe re-runs the
+   test when the first two missed. (0x8003e318, 784 bytes.) */
+void ProbeSpyroGroundContact(void) {
+  int down[4];
+  int out[4];
+  int t;
+
+  BLK[0] = BLK[0] + 1;
+  ZeroVector(NORMAL);
+  g_anSpyroGroundNormal[2] = 0x1000;
+  g_nSpyroGroundSlope = 0;
+  BLK[0xa] = 0;
+  if ((g_dwSpyroRequestMask & 0x4000) == 0) {
+    down[0] = 0;
+    out[0] = 0;
+    down[1] = 0;
+    out[1] = 0;
+    down[2] = -0x104;
+    out[2] = -0x1c4;
+    RotateVectorByMatrix(MTX, down, down);
+    AddVector(down, down, POS);
+    ApplyActiveGteRotation(out, out);
+    AddVector(out, out, POS);
+    if (CastRayWorldAndActors(down, out) != 0) {
+      CopyVector(NORMAL, g_anCollisionProbeVec);
+      t = (signed char)ArcTan2(g_anCollisionProbeVec[2],
+                               VectorLength(g_anCollisionProbeVec, 0), 0);
+      g_nSpyroGroundSlope = t;
+      if (t < 0) {
+        g_nSpyroGroundSlope = 0x400;
+      }
+      BLK[0x76] = g_nLastCollisionHitChunkId;
+      UnpackWorldCollisionTri(g_nLastCollisionHitChunkId, &BLK[0x77]);
+      if (BLK[5] < 0x21) {
+        BLK[0x2d] = BLK[5] >= 0x17;
+        BLK[0] = 0;
+        down[0] = 0x104;
+        down[1] = 0;
+        down[2] = -0x104;
+        out[0] = 0x1c4;
+        out[1] = 0;
+        out[2] = -0x1c4;
+        RotateVectorByMatrix(MTX, down, down);
+        AddVector(down, down, POS);
+        ApplyActiveGteRotation(out, out);
+        AddVector(out, out, POS);
+        if (CastRayWorldAndActors(down, out) == 0) {
+          BLK[0xa] = 1;
+        }
+      }
+    } else {
+      BLK[0x76] = -1;
+    }
+    if (BLK[0] != 0 && g_nSpyroGroundProbeSuspendFlag == 0) {
+      down[0] = 0;
+      down[1] = 0;
+      down[2] = -0x104;
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = -0x1c4;
+      AddVector(down, down, POS);
+      AddVector(out, out, POS);
+      if (CastRayWorldAndActors(down, out) != 0) {
+        CopyVector(NORMAL, g_anCollisionProbeVec);
+        t = (signed char)ArcTan2(g_anSpyroGroundNormal[2],
+                                 VectorLength(NORMAL, 0), 0);
+        g_nSpyroGroundSlope = t;
+        if (t < 0) {
+          g_nSpyroGroundSlope = 0x400;
+        }
+        if (BLK[5] < 0x21) {
+          BLK[0] = 0;
+          BLK[0x2d] = BLK[5] >= 0x17;
+        }
+      }
+    }
+  }
+}
+
+/* PARK 2026-07-24 — §B-i rule 1 (held-base fold), 191/196 insns.
+   Everything transcribes exactly (all 21 call sites, delay slots, the
+   s5/s6 -0x104/-0x1c4 literal hoist per A133, the +0x14 slope reads that link
+   identical through the block alias) except three fall-through-block stores
+   through the held base:
+       BLK[0x76] = g_nLastCollisionHitChunkId;   (sw a0,0x1D8(s2))
+       BLK[0x76] = -1;                           (sw v0,0x1D8(s2))
+       BLK[0x2d] = BLK[5] >= 0x17;               (sw v0,0xB4(s2))
+   each folds to `lui $at; sw ...%lo(sym+off)($at)` = +1 insn (5 over slot).
+   Levers tried and rejected: sized array alias (A22) — no effect; volatile
+   store cast — no effect (+1 more); `int *g = blk;` pointer local — recovers
+   the POST-LABEL 0xB4 site only (B-i rule 3), fall-through sites still fold.
+   Note the anomaly worth chasing: BLK[0] and BLK[0xa] (+0x28) stay reg-based
+   from the same base in the same blocks; only the larger offsets fold. */
