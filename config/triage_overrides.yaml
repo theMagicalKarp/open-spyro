@@ -329,3 +329,13 @@ UpdateScriptedCameraView:
   class: "camera jal-chain vein (§G straight jal chain)"
   date: 2026-07-24
   note: "0x800377a8, 632b. MATCH -> C. Three levers: (1) g_apScriptedCameraViewBlock alias at 0x80076ebc (A20/A25) so the record pointer's address is held once and g_anCameraPos comes out as addiu -0xC4 off it; (2) A3 volatile reload of g_nSpyroState for the g_abSpyroStateCameraMode[] index (the != chain CSEs otherwise); (3) A7 volatile on BOTH sides of the three body-euler field copies to stop gcc batching the 3 loads ahead of the stores. Random index written as two statements (mask, then *3>>12) to land the mask in the result reg."
+ProbeSpyroGroundContact:
+  verdict: wall
+  class: "B-i rule 1 held-base fold (fall-through-block stores)"
+  date: 2026-07-24
+  note: "0x8003e318, 784b. 191/196 insns transcribe exactly via the g_anSpyroAirborneFramesBlock alias (base 0x80078af4: [0] frames, [2] normal, [5] slope, [0xa] cliff hint, [0x2d] run flag, [0x76] chunk id, [0x77] verts, MTX -0x1a, POS -0x27). Three fall-through-block stores (BLK[0x76] x2, BLK[0x2d]) fold to lui $at + %lo absolute = +1 insn each; 5 over the slot so it will not link. A22 sized alias, volatile store casts and a pointer-local base were all tried; the pointer local recovers only the post-label 0xB4 site (B-i rule 3). .c.wip parked."
+RelocateActorMeshHeader:
+  verdict: skip
+  class: "suspected non-gcc TU (t-register-only allocation, dead masked copy in one arm, unused 0x18 frame)"
+  date: 2026-07-24
+  note: "0x800133e0, 620b, zero calls. Uses no callee-saved regs at all and carries a dead `and v0,t1,0x7FFFFFFF` in the bgez-not-taken arm plus redundant addu rX,rY,zero param copies — codegen our gcc 2.7.2 -O2 does not produce. Screen before spending a session on it."
