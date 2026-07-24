@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.15% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">89,552 / 2,159,608 split-code bytes · 422 matched · 73 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">4.16% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">89,940 / 2,159,608 split-code bytes · 423 matched · 73 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -196,7 +196,7 @@
 <rect x="271.81" y="563.29" width="14.86" height="14.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_800557CC  ·  400 bytes  ·  asm</title></rect>
 <rect x="286.67" y="563.29" width="14.56" height="14.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CheckCheatCodeMatch  ·  392 bytes  ·  wip</title></rect>
 <rect x="301.23" y="563.29" width="14.56" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AccumulateAnimRootMotionDelta  ·  392 bytes  ·  handwritten</title></rect>
-<rect x="115.90" y="578.00" width="14.52" height="14.60" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005E680  ·  388 bytes  ·  asm</title></rect>
+<rect x="115.90" y="578.00" width="14.52" height="14.60" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E680  ·  388 bytes  ·  matched</title></rect>
 <rect x="115.90" y="592.60" width="14.52" height="14.60" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>ResetGraph  ·  388 bytes  ·  wip</title></rect>
 <rect x="115.90" y="607.21" width="14.52" height="14.45" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_8003B854  ·  384 bytes  ·  wip</title></rect>
 <rect x="115.90" y="621.66" width="14.52" height="14.15" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetLevelState  ·  376 bytes  ·  matched</title></rect>
