@@ -1337,6 +1337,7 @@ g_nCameraTargetYawBiasFromMode = 0x80076ea4; // size:0x4
 g_pCameraTargetParams = 0x80076ea8; // size:0x4
 g_anCameraScriptStickIntegrator = 0x80076eac; // size:0x8
 g_nCameraTargetInverted = 0x80076eb8; // size:0x4
+g_apScriptedCameraViewBlock = 0x80076ebc; // allow_duplicated:True alias — held-base view of the active scripted-camera record pointer D_80076EBC (UpdateScriptedCameraView reads [0] and derives g_anCameraPos at -0xC4 off the same register)
 g_nCameraSpringSuppressFlag = 0x80076ec0; // size:0x4
 g_anCameraScriptedTargetPos = 0x80076ed0; // size:0xc
 g_abFrameDrawEnv0 = 0x80076ee0; // size:0x5c
