@@ -315,3 +315,10 @@ func_8005E680:
   class: "libgpu DMA IRQ dispatcher; debug-trace + volatile-HW-reg vein (§G)"
   date: 2026-07-24
   note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
+
+# --- actor waypoint-follow step (2026-07-24-1 session) ---
+func_8003A420:
+  verdict: parked
+  class: "F9 double knot (F4 ground v0-coalesce + F1 counter-split) + F-sched negu"
+  date: 2026-07-24
+  note: "0x8003a420, 768b. 94.8% LENGTH-EXACT (10/192), logic verified, .c.wip parked. Clean jal-chain (SubtractVector/VectorLength/ArcTan2/ApplyEulerRotation/RotateVectorByMatrix/AddVector). Inlining (int*)(actor+0xC) per-use (not a held pos local) fixed the arg0/1 s2/s3 + arg2 s7 homing. Residue: ground-probe result wants v1 (dies in-block) vs return counter wants s4 (survives); one shared `ret` -> both s1, split -> counter=s4 OK but call-return coalesces to v0 which cross-jumps the two vec[2] stores (-3 insns). Plus negu v0,v1 vs v0,v0 abs tie. Permuter target (double reg-perm, needs PERM_* macros)."
