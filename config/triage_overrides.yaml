@@ -351,3 +351,15 @@ func_8003C358:
     original out-of-line else + `j`); explicit `if (len > 0) { p = name; do {} }`
     puts the string-cursor copy in the loop preheader; hoisted `skin` temp kills
     a trailing load-delay nop; 8 bytes of unused tail local to reach frame 0x80.
+
+func_80038638:
+  verdict: park
+  class: F1
+  date: 2026-07-24
+  note: >-
+    Actor "steer around the target" step (740 b). Parked at 71.4%,
+    185/185 length-exact, +528 partial bytes. Single F1 register rotation:
+    `deadzone` (5th param) must be the top-priority global allocno (s0) with
+    the slt temp reusing its dying reg; ours ranks it last so every other
+    callee-saved param shifts one. Permuter target — see the .wip header for
+    the levers already tried.

@@ -1,0 +1,122 @@
+/* PARK 71.4% (185/185 length-exact; logic verified against the asm).
+ * Residue is an §F1 whole-function register rotation: every diff is one
+ * callee-saved register off, driven by ONE global-alloc priority tie --
+ * `deadzone` (the 5th param, 2 refs, one `slt`) must be the FIRST allocno
+ * assigned (s0) with the compare temp reusing its dying register; ours ranks
+ * it LAST (s7), so `dir` takes s0 and actor/speed/blockA/tgt/blockB all shift
+ * down one. Everything else (block layout, delay slots, the cross-jumped
+ * +/-3 call arms, the dead `pt[]` stores, the frame) already matches.
+ * Tried, no movement: 4 abs-idiom forms for the early-exit |delta| (in-place
+ * vs two-arm vs pre-negate), 2 tail forms, splitting `na` out of `dir`,
+ * reusing vs not reusing the `face` param for the delta (reusing is required
+ * -- it is what puts the delta in s1 and kills 2 tail moves).
+ * Two 1-insn shape ties ride along and are probably downstream of the same
+ * allocation: the early `negu v0,v0` (ours negates the source `face`, cse
+ * canonicalises the copy away) and the stack-param load order (F2).
+ * Harvest with the permuter; the whole file is 1 register-permutation away.
+ */
+#include "globals.h"
+
+extern int ArcTan2(int y, int x, int high_precision);
+extern int AbsAngleDelta8(int a, int b);
+extern int func_800381BC(int from, int to);
+extern int func_80038074(int angle, int step);
+extern int func_80038EE0(int *actor, int angle, int p2, int p3, int p4);
+extern int func_80039398(int *actor, int speed, int p2, int p3, int p4);
+extern int func_80039688(int *actor, int angle, int speed, int p3, int p4,
+                         int p5);
+
+extern short g_anCosineLut[];
+extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
+
+/* Steers `actor` around a target point instead of straight at it: aims at the
+   point `radius` away from `tgt` on the side the actor is already turning
+   toward, and drives the walk with that heading. Returns the residual angle
+   error (|delta|) when the actor is already lined up (inside `deadzone`) or
+   nothing moved, 0x100 when the approach is refused because the target
+   direction is within 5 of one of the two blocked headings `blockA`/`blockB`
+   on the same side as the turn, and the negated move result otherwise.
+   Camera mode D_800756C4 scales the turn speed by 1.5x / 2x.
+   (0x80038638, 740 bytes.) */
+int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
+                  int speed, int p6, int p7, int blockA, int blockB, int p10,
+                  int p11, int flags) {
+  int pt[3];
+  int dir;
+  int t;
+  int u;
+  int e;
+  int heading;
+  int r;
+
+  dir = ArcTan2(actor[3] - tgt[0], actor[4] - tgt[1], 0);
+  /* `face` carries the signed angle error from here on, `dir` the LUT index
+     of the offset aim point once the side is picked. */
+  face = func_800381BC(face, dir);
+  t = face;
+  if (face < 0) {
+    t = -t;
+  }
+  if (t < deadzone) {
+    return t;
+  }
+
+  if (blockA != 0xff) {
+    if (AbsAngleDelta8(dir, blockA) < 5) {
+      e = func_800381BC(blockA, dir);
+      if (face < 0 && e < 0) {
+        return 0x100;
+      }
+      if (face > 0 && e > 0) {
+        return 0x100;
+      }
+    }
+  }
+  if (blockB != 0xff) {
+    if (AbsAngleDelta8(dir, blockB) < 5) {
+      e = func_800381BC(blockB, dir);
+      if (face < 0 && e < 0) {
+        return 0x100;
+      }
+      if (face > 0 && e > 0) {
+        return 0x100;
+      }
+    }
+  }
+
+  if (face < 0) {
+    dir = func_80038074(dir, 3);
+  } else {
+    dir = func_80038074(dir, -3);
+  }
+  pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
+  pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
+  heading = ArcTan2(pt[0] - actor[3], pt[1] - actor[4], 0);
+
+  if (D_800756C4 == 3) {
+    speed = speed + (speed >> 1);
+  } else if (D_800756C4 == 4) {
+    speed = speed * 2;
+  }
+
+  if (flags & 8) {
+    func_80038EE0(actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6,
+                  0, 0);
+    r = func_80039688(actor, heading, speed, p10, p11, flags);
+  } else {
+    r = func_80038EE0(actor, heading, p6, p7, 1);
+    if (r == 0) {
+      goto stalled;
+    }
+    r = func_80039398(actor, speed, p10, p11, flags);
+  }
+  if (r != 0) {
+    return -r;
+  }
+
+stalled:
+  if (face < 0) {
+    return -face;
+  }
+  return face;
+}
