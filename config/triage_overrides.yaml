@@ -296,3 +296,15 @@ func_80059594:
   class: "F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region"
   date: 2026-07-23
   note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via D_80076228_blk alias (A20). Permuter target."
+
+# --- text-sprite builder (2026-07-23-4 session) ---
+BuildTextSprites:
+  verdict: parked
+  class: "F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot"
+  date: 2026-07-23
+  note: "81.5% LENGTH-EXACT (168/168). .c.wip parked. Sibling of BuildTextSpriteChain. param_1->s1 fixed via shared pen store; s0/s2 pair is a pure live_length tie (equal 6 refs). int-ch classification reload REQUIRED (A115). Permuter candidate (§E main recipe)."
+AddPrimToOT:
+  verdict: wall
+  class: "B6 handwritten ($at-as-data: lw $at then sh/sb through it)"
+  date: 2026-07-23
+  note: "0x800168dc, 56b. Loads g_pOtActiveDepthSlot deref into $at and stores through it; gcc reserves $at for the assembler. Not compilable C."
