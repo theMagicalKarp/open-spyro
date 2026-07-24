@@ -289,3 +289,10 @@ func_8005E804:
   verdict: parked
   class: "F1 whole-fn regalloc shift (arg copy-up)"
   date: 2026-07-07
+
+# --- save-block deserializer (2026-07-23-3 session) ---
+func_80059594:
+  verdict: parked
+  class: "F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region"
+  date: 2026-07-23
+  note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via D_80076228_blk alias (A20). Permuter target."
