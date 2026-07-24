@@ -308,3 +308,10 @@ AddPrimToOT:
   class: "B6 handwritten ($at-as-data: lw $at then sh/sb through it)"
   date: 2026-07-23
   note: "0x800168dc, 56b. Loads g_pOtActiveDepthSlot deref into $at and stores through it; gcc reserves $at for the assembler. Not compilable C."
+
+# --- DMA IRQ dispatcher (2026-07-24 session) ---
+func_8005E680:
+  verdict: matched
+  class: "libgpu DMA IRQ dispatcher; debug-trace + volatile-HW-reg vein (§G)"
+  date: 2026-07-24
+  note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
