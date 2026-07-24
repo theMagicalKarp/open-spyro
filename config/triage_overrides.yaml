@@ -363,3 +363,21 @@ func_80038638:
     the slt temp reusing its dying reg; ours ranks it last so every other
     callee-saved param shifts one. Permuter target — see the .wip header for
     the levers already tried.
+
+ResetSpyroEntity:
+  verdict: skip
+  class: B8
+  date: 2026-07-24
+  note: switchdataD_800112E8 jump table in MAIN (build_main.sh rejects loadable rodata).
+
+TickSpyroAnimStateMachine:
+  verdict: skip
+  class: B8
+  date: 2026-07-24
+  note: switchdataD_80010E58 jump table in MAIN.
+
+DispatchSpyroChargeStateChanges:
+  verdict: skip
+  class: B1
+  date: 2026-07-24
+  note: "%gp_rel(g_pSpyroContactActor) load at 0x80041314."
