@@ -16,9 +16,9 @@ extern void UnpackWorldCollisionTri(int chunk, int *verts);
    body matrix / world position sit at -0x68 / -0x9c below it. */
 extern int g_anSpyroAirborneFramesBlock[0x200];
 #define BLK g_anSpyroAirborneFramesBlock
-#define MTX (&BLK[-0x1a])  /* g_anSpyroBodyMtx */
-#define POS (&BLK[-0x27])  /* g_anSpyroWorldPos */
-#define NORMAL (&BLK[2])   /* g_anSpyroGroundNormal */
+#define MTX (&BLK[-0x1a]) /* g_anSpyroBodyMtx */
+#define POS (&BLK[-0x27]) /* g_anSpyroWorldPos */
+#define NORMAL (&BLK[2])  /* g_anSpyroGroundNormal */
 
 /* Per-frame ground probe. Casts a body-relative ray straight down from Spyro
    (and, on a shallow hit, a second wider one) through the world + actor

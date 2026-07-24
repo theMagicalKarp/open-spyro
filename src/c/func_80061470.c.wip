@@ -23,9 +23,10 @@ extern int CheckGpuTimeout(void);
    the multiply (folded away — ch is provably short-ranged), and a distinct
    input/result variable pair per axis (coalesced back) — none reproduces it.
    Same §B10/§AH clamp register-copy wall (BuildDrawArea*/func_800606C8). The
-   near-twin sibling func_80061234 (LoadImage) shares the identical clamp, so a
-   permuter fix here pays 2x. Permuter-or-wall. */
-int func_80061470(RECT *rect, int *dst) {
+   near-twin sibling func_80061234 (LoadImage)
+shares the identical clamp,
+    so a permuter fix here pays 2x. Permuter - or
+        -wall.*/ int func_80061470(RECT *rect, int *dst) {
   int w;
   int h;
   int cw;

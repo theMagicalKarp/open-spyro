@@ -11,11 +11,11 @@ extern char D_80011DFC[]; /* "CD timeout: " */
 extern char D_80011E0C[]; /* "%s:(%s) Sync=%s, Ready=%s\n" */
 extern char D_80011E84[]; /* "CD_sync" */
 
-extern int D_80075AE8;    /* VSync deadline stamp */
-extern int D_80075AEC;    /* spin counter */
-extern char *D_80075AF0;  /* op-name string for the timeout message */
-extern int D_80074E5C[];  /* sync-status name table */
-extern int D_80074EDC[];  /* ready-status name table */
+extern int D_80075AE8;           /* VSync deadline stamp */
+extern int D_80075AEC;           /* spin counter */
+extern char *D_80075AF0;         /* op-name string for the timeout message */
+extern int D_80074E5C[];         /* sync-status name table */
+extern int D_80074EDC[];         /* ready-status name table */
 extern unsigned char D_80074E55; /* sync-status index */
 extern unsigned char D_80075114; /* ready index base (Sync @[0], Ready @[1]) */
 
@@ -46,11 +46,12 @@ extern unsigned char D_80075AD8[];         /* ready result bytes */
    on readyTbl->s3, readyIdx->s2, readyIdx+1->s4, mode->s5, result->s6. Our gcc
    allocates readyTbl->s5, readyIdx->s2, folds readyIdx+1 to an inline `1(s2)`,
    and puts mode/result elsewhere — a whole-function register relabel that
-   cascades through every table access and the drain/copy tails. Probed: `for(;;)`
-   vs goto-loop (goto-loop drops one hoist but loses the table-address hoisting
-   too, worse), an explicit `readyIdx2 = readyIdx+1` pointer (folded away, no s4).
-   Same §B12 constant-hoist wall as CdInit/CdControl*; confirms §AL's suspicion
-   that the libcd status-return cluster carries it. Permuter-or-wall. */
+   cascades through every table access and the drain/copy tails. Probed:
+   `for(;;)` vs goto-loop (goto-loop drops one hoist but loses the table-address
+   hoisting too, worse), an explicit `readyIdx2 = readyIdx+1` pointer (folded
+   away, no s4). Same §B12 constant-hoist wall as CdInit/CdControl*; confirms
+   §AL's suspicion that the libcd status-return cluster carries it.
+   Permuter-or-wall. */
 int CdSync(int mode, unsigned char *result) {
   int flag;
   int irq;

@@ -40,126 +40,124 @@ extern void (*D_80074E38)();                /* ready (bit 4) callback */
 extern unsigned char D_80075AD0[];          /* sync result buffer */
 extern unsigned char D_80075AD8[];          /* ready result buffer */
 
-extern void (*D_80075144)();  /* read-data callback (CdReadCallback) */
-extern volatile int D_80075150;  /* read dst pointer */
-extern volatile int D_80075158;  /* words per sector */
-extern volatile int D_8007515C;  /* sectors remaining */
-extern volatile int D_80075160;  /* last VSync stamp */
-extern volatile int D_80075164;  /* read-start deadline base */
-extern volatile int D_80075168;  /* expected sector position */
-extern volatile int D_8007516C;  /* saved sync callback */
-extern volatile int D_80075170;  /* saved ready callback */
-extern volatile int D_80075174;  /* saved read-break callback */
-extern volatile int D_80075178;  /* mode flags (bit 0 = streaming) */
-extern volatile int D_8007517C;  /* latched intr result */
+extern void (*D_80075144)();    /* read-data callback (CdReadCallback) */
+extern volatile int D_80075150; /* read dst pointer */
+extern volatile int D_80075158; /* words per sector */
+extern volatile int D_8007515C; /* sectors remaining */
+extern volatile int D_80075160; /* last VSync stamp */
+extern volatile int D_80075164; /* read-start deadline base */
+extern volatile int D_80075168; /* expected sector position */
+extern volatile int D_8007516C; /* saved sync callback */
+extern volatile int D_80075170; /* saved ready callback */
+extern volatile int D_80075174; /* saved read-break callback */
+extern volatile int D_80075178; /* mode flags (bit 0 = streaming) */
+extern volatile int D_8007517C; /* latched intr result */
 
 extern char D_80011F10[]; /* "CdRead: position error" */
 
 void func_80065CC0(void);
 
-void func_800658FC(int arg0) {
-    D_800750E0 = arg0;
-}
+void func_800658FC(int arg0) { D_800750E0 = arg0; }
 
 void func_8006590C(void) {
-    volatile unsigned char *ready = &D_80075115;
-    volatile unsigned char *sync = ready - 1;
-    unsigned char save;
-    int intr;
+  volatile unsigned char *ready = &D_80075115;
+  volatile unsigned char *sync = ready - 1;
+  unsigned char save;
+  int intr;
 
-    save = *D_800750FC & 3;
-    for (;;) {
-        intr = CdProcessInterrupt();
-        if (intr == 0) {
-            break;
-        }
-        if (intr & 4) {
-            if (D_80074E38 != 0) {
-                D_80074E38(ready[0], &D_80075AD8);
-            }
-        }
-        if (intr & 2) {
-            if (D_80074E34 != 0) {
-                D_80074E34(sync[0], &D_80075AD0);
-            }
-        }
+  save = *D_800750FC & 3;
+  for (;;) {
+    intr = CdProcessInterrupt();
+    if (intr == 0) {
+      break;
     }
-    *D_800750FC = save;
+    if (intr & 4) {
+      if (D_80074E38 != 0) {
+        D_80074E38(ready[0], &D_80075AD8);
+      }
+    }
+    if (intr & 2) {
+      if (D_80074E34 != 0) {
+        D_80074E34(sync[0], &D_80075AD0);
+      }
+    }
+  }
+  *D_800750FC = save;
 }
 
 void func_800659F0(int arg0, int arg1) {
-    unsigned char loc[12];
+  unsigned char loc[12];
 
-    D_8007517C = arg1;
-    if ((arg0 & 0xFF) == 1) {
-        if (D_8007515C > 0) {
-            if (D_80075158 == 0x200) {
-                if (D_80075178 & 1) {
-                    FUN_80064050(0);
-                    CdGetSector2((int)loc, 3);
-                    FUN_80064074(0);
-                    FUN_80064050(&func_80065CC0);
-                } else {
-                    CdGetSector((int)loc, 3);
-                }
-                if (CdPosToInt(loc) != D_80075168) {
-                    WriteString(D_80011F10);
-                    D_8007515C = -1;
-                }
-            }
-            if (D_80075178 & 1) {
-                CdGetSector2(D_80075150, D_80075158);
-            } else {
-                CdGetSector(D_80075150, D_80075158);
-                D_80075150 += D_80075158 * 4;
-                D_8007515C -= 1;
-                (void)D_8007515C;
-                D_80075168 += 1;
-                (void)D_80075168;
-            }
-        }
-    } else {
-        D_8007515C = -1;
-    }
-    D_80075160 = VSync(-1);
-    if (D_8007515C < 0) {
-        CdReadStart(1);
-    }
-    if (VSync(-1) > (D_80075164 + 0x4B0)) {
-        D_8007515C = -1;
-    }
-    if ((D_8007515C == 0) || (VSync(-1) > (D_80075164 + 0x4B0))) {
-        CdSyncCallback(D_8007516C);
-        CdReadyCallback(D_80075170);
+  D_8007517C = arg1;
+  if ((arg0 & 0xFF) == 1) {
+    if (D_8007515C > 0) {
+      if (D_80075158 == 0x200) {
         if (D_80075178 & 1) {
-            FUN_80064050(D_80075174);
+          FUN_80064050(0);
+          CdGetSector2((int)loc, 3);
+          FUN_80064074(0);
+          FUN_80064050(&func_80065CC0);
+        } else {
+          CdGetSector((int)loc, 3);
         }
-        CdControlForce(9, 0);
-        if (D_80075144 != 0) {
-            int code = 5;
-            if (D_8007515C == 0) {
-                code = 2;
-            }
-            D_80075144(code, arg1);
+        if (CdPosToInt(loc) != D_80075168) {
+          WriteString(D_80011F10);
+          D_8007515C = -1;
         }
+      }
+      if (D_80075178 & 1) {
+        CdGetSector2(D_80075150, D_80075158);
+      } else {
+        CdGetSector(D_80075150, D_80075158);
+        D_80075150 += D_80075158 * 4;
+        D_8007515C -= 1;
+        (void)D_8007515C;
+        D_80075168 += 1;
+        (void)D_80075168;
+      }
     }
+  } else {
+    D_8007515C = -1;
+  }
+  D_80075160 = VSync(-1);
+  if (D_8007515C < 0) {
+    CdReadStart(1);
+  }
+  if (VSync(-1) > (D_80075164 + 0x4B0)) {
+    D_8007515C = -1;
+  }
+  if ((D_8007515C == 0) || (VSync(-1) > (D_80075164 + 0x4B0))) {
+    CdSyncCallback(D_8007516C);
+    CdReadyCallback(D_80075170);
+    if (D_80075178 & 1) {
+      FUN_80064050(D_80075174);
+    }
+    CdControlForce(9, 0);
+    if (D_80075144 != 0) {
+      int code = 5;
+      if (D_8007515C == 0) {
+        code = 2;
+      }
+      D_80075144(code, arg1);
+    }
+  }
 }
 
 void func_80065CC0(void) {
-    D_80075150 += D_80075158 * 4;
-    D_8007515C -= 1;
-    (void)D_8007515C;
-    D_80075168 += 1;
-    (void)D_80075168;
-    if (D_8007515C == 0) {
-        CdSyncCallback(D_8007516C);
-        CdReadyCallback(D_80075170);
-        if (D_80075178 & 1) {
-            FUN_80064050(D_80075174);
-        }
-        CdControlForce(9, 0);
-        if (D_80075144 != 0) {
-            D_80075144(2, D_8007517C);
-        }
+  D_80075150 += D_80075158 * 4;
+  D_8007515C -= 1;
+  (void)D_8007515C;
+  D_80075168 += 1;
+  (void)D_80075168;
+  if (D_8007515C == 0) {
+    CdSyncCallback(D_8007516C);
+    CdReadyCallback(D_80075170);
+    if (D_80075178 & 1) {
+      FUN_80064050(D_80075174);
     }
+    CdControlForce(9, 0);
+    if (D_80075144 != 0) {
+      D_80075144(2, D_8007517C);
+    }
+  }
 }
