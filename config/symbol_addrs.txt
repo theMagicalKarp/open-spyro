@@ -1256,6 +1256,7 @@ g_pLevelSampleBankEntries = 0x800761d0; // size:0x4 allow_duplicated:True
 D_800761D0 = 0x800761d0; // allow_duplicated:True alias — volatile view of g_pLevelSampleBankEntries (BeginGemCutscene reloads it per entry-field store)
 g_pLevelSampleBankHeader = 0x800761d4; // size:0x4
 g_nMusicVolumeFadeTarget = 0x800761d8; // size:0x4
+D_80076228_blk = 0x80076228; // allow_duplicated:True incomplete-array alias — held-base view so D_80076228 ([0]) and the SpuCommonAttr block at -0x320 share one materialized base instead of the $at fold (func_80059594)
 g_nSoundMasterVolume = 0x8007622c; // size:0x4
 g_nMusicVolumeFadeStep = 0x80076230; // size:0x4
 g_nLevelSampleBankCount = 0x80076234; // size:0x4
