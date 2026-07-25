@@ -39,23 +39,33 @@ extern void func_800529E4();
  * at the 15m budget): best score 290 vs base score 740. No byte-perfect
  * candidate found; still parked.
  */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_8003A16C.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_8003A16C/output-290-1/source.c */
+
 int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
                   int contact, int clamp, int limit, int *yawp) {
   char eul[8];
   int vec[4];
+  int new_var;
   int mtx[8];
+  int new_var2;
   int ret;
-
-  SubtractVector(vec, path + path[1] * 0x10 + 8, actor + 0xC);
+  SubtractVector(vec, (path + (path[1] * 0x10)) + 8, actor + 0xC);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, 0), vec[2], 0);
-  if ((int)VectorLength(vec, 0) < radius) {
+  if (((int)VectorLength(vec, 0)) < radius) {
     eul[2] = *yawp;
   } else {
     int yaw;
     int d;
     d = ArcTan2(vec[0], vec[1], 0);
-    yaw = *yawp;
+    new_var2 = *yawp;
+    yaw = new_var2;
     d = (d - yaw) & 0xFF;
     if (d >= 0x81) {
       d -= 0x100;
@@ -63,14 +73,15 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
     if (limit < abs(d)) {
       speed = 0;
     }
-    if (d < -clamp) {
+    new_var = yaw;
+    if (d < (-clamp)) {
       d = -clamp;
     }
     if (clamp < d) {
       d = clamp;
     }
-    eul[2] = d + yaw;
-    *yawp = (d + yaw) & 0xFF;
+    eul[2] = d + new_var;
+    *yawp = (d + new_var) & 0xFF;
   }
   {
     int len = VectorLength(vec, 1);
@@ -88,8 +99,9 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
     DispatchActorContactAtSphere(vec, contact, 0, 0, actor, 0);
   }
   vec[2] += 0x400;
+  new_var = FindGroundHeightBelow(vec, 0x400);
   {
-    int ground = FindGroundHeightBelow(vec, 0x400);
+    int ground = new_var;
     if (ground != 0) {
       vec[2] = ground;
     } else {
@@ -100,8 +112,8 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
   EncodeCachedVecToActorDirCode(actor);
   func_800529E4(actor, 2);
   ret = 0;
-  SubtractVector(vec, path + path[1] * 0x10 + 8, actor + 0xC);
-  if ((int)VectorLength(vec, 1) < radius) {
+  SubtractVector(vec, (path + (path[1] * 0x10)) + 8, actor + 0xC);
+  if (((int)VectorLength(vec, 1)) < radius) {
     actor[0x49] = 0;
     path[1] += 1;
     if (path[1] == path[0]) {

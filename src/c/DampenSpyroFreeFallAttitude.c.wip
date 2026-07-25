@@ -8,6 +8,15 @@ extern int D_80078CB4;                /* roll damping spring */
    while free-falling: wrap each angle's error into [-0x800,0x800), run it
    through a critically-damped spring (velocity in D_80078CB0/CB4), and apply
    a quarter of the spring velocity to the angle each frame. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/DampenSpyroFreeFallAttitude.c.wip Best candidate:
+   build/permuter/nonmatchings/DampenSpyroFreeFallAttitude/output-245-1/source.c
+ */
+
 void DampenSpyroFreeFallAttitude(void) {
   int e[2];
   int pitch;
@@ -18,27 +27,23 @@ void DampenSpyroFreeFallAttitude(void) {
   int k0;
   int k1;
   int pad[2];
-
+  int new_var;
   e[0] = 0;
   e[1] = 0;
-
   pitch = g_anSpyroBodyPitchBlock[0];
-  v = -pitch & 0xFFF;
+  v = (-pitch) & 0xFFF;
   e[0] = v;
   if (v >= 0x800) {
     e[0] = v - 0x1000;
   }
-
   roll = g_anSpyroBodyPitchBlock[-1];
-  v = -roll & 0xFFF;
+  v = (-roll) & 0xFFF;
   e[1] = v;
   if (v >= 0x800) {
     e[1] = v - 0x1000;
   }
-
   d0 = (e[0] << 2) >> 4;
   d1 = (e[1] << 2) >> 4;
-
   k0 = D_80078CB0;
   d0 = d0 - ((k0 << 4) >> 6);
   k0 = k0 + d0;
@@ -46,15 +51,14 @@ void DampenSpyroFreeFallAttitude(void) {
   k0 = k0 >> 2;
   e[0] = k0;
   k0 = pitch + k0;
-
-  k1 = D_80078CB4;
+  new_var = D_80078CB4;
+  k1 = new_var;
   d1 = d1 - ((k1 << 4) >> 6);
   k1 = k1 + d1;
   D_80078CB4 = k1;
   k1 = k1 >> 2;
   e[1] = k1;
   k1 = roll + k1;
-
   g_anSpyroBodyPitchBlock[0] = k0;
   g_anSpyroBodyPitchBlock[-1] = k1;
 }

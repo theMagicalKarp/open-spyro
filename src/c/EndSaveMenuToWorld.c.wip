@@ -23,7 +23,16 @@ extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
 extern int
     g_anSpyroSwingTargetBlock[]; /* alias of g_nSpyroSwingEulerPitchTarget */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/EndSaveMenuToWorld.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/EndSaveMenuToWorld/output-160-1/source.c */
+
 void EndSaveMenuToWorld(void) {
+  int new_var;
   int **cam;
   int *dyn;
   int timer;
@@ -36,23 +45,24 @@ void EndSaveMenuToWorld(void) {
   g_anSpyroSwingEulerPrev[1] = 0x100;
   g_abSpyroSwingByteEuler[1] = 0x10;
   g_nSpyroPadSnapshotCountdown = 8;
+  new_var = 0;
   timer = g_nSpyroFlameBreathTimerSave;
-  cam[0] = &g_anSpyroSwingTargetBlock[-105];
+  cam[new_var] = &g_anSpyroSwingTargetBlock[-105];
   dyn = g_anCameraDynamicTargetParams;
   g_nCameraCurrentMode = 0;
-  g_nCameraNextMode = 0;
+  g_nCameraNextMode = new_var;
   g_pCameraTargetParams = dyn;
   g_nSpyroFlameBreathTimer = timer;
   g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
-  ComputeCameraToTargetAngle((char *)cam - 0xA8);
-  CopyWords(dyn, (char *)cam - 0x40, 0x18);
+  ComputeCameraToTargetAngle(((char *)cam) - 0xA8);
+  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
   ResetCameraStateToTarget();
   InitHudCounters(0);
-  g_abHudCounterDisplayState[0] = 0;
-  g_abHudCounterDisplayState[1] = 0;
-  g_abHudCounterDisplayState[2] = 0;
-  g_abHudCounterDisplayState[3] = 0;
-  g_abHudCounterDisplayState[4] = 0;
+  g_abHudCounterDisplayState[new_var] = new_var;
+  g_abHudCounterDisplayState[1] = new_var;
+  g_abHudCounterDisplayState[2] = new_var;
+  g_abHudCounterDisplayState[3] = new_var;
+  g_abHudCounterDisplayState[4] = new_var;
   HandleMusicCommand(g_nCurrentMusicTrack, 8);
 }

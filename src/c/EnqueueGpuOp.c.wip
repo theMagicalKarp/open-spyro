@@ -17,62 +17,88 @@ extern unsigned char g_abGpuOpArgArea[];
 #define WIDX (*(volatile int *)&g_nGpuQueueWriteIndex)
 #define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/EnqueueGpuOp.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/EnqueueGpuOp/output-955-1/source.c */
+
 unsigned int EnqueueGpuOp(void *func, unsigned int *args, int nbytes,
                           unsigned int arg4) {
   unsigned int *src;
   char *slot;
   int i;
-
   ResetGpuTimeoutDeadline();
-  while (((WIDX + 1) & 0x3F) == RIDX) {
-    if (CheckGpuTimeout() != 0) {
-      return -1;
+  do {
+    while ((((*((volatile int *)(&g_nGpuQueueWriteIndex))) + 1) & 0x3F) ==
+           (*((volatile int *)(&g_nGpuQueueReadIndex)))) {
+      if (CheckGpuTimeout() != 0) {
+        return -1;
+      }
+      FlushGpuQueue();
     }
-    FlushGpuQueue();
-  }
-
-  g_nEnqueueGpuSavedIMask = SetInterruptMask(0);
-  g_nGpuQueueCompletionPending = 1;
-  if ((g_bGpuQueueModeActive == 0) ||
-      ((WIDX == RIDX) &&
-       (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0 &&
-       g_pfnGpuQueueCompletionCallback == 0)) {
-    unsigned int *last;
-    while ((*(unsigned int *)g_pGpuStatReg & 0x04000000) == 0) {
+    g_nEnqueueGpuSavedIMask = SetInterruptMask(0);
+    g_nGpuQueueCompletionPending = 1;
+    if ((g_bGpuQueueModeActive == 0) ||
+        ((((*((volatile int *)(&g_nGpuQueueWriteIndex))) ==
+           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
+          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) &&
+         (g_pfnGpuQueueCompletionCallback == 0))) {
+      unsigned int *last;
+      while (((*((unsigned int *)g_pGpuStatReg)) & 0x04000000) == 0) {
+      }
+      ((void (*)(unsigned int *, unsigned int))func)(args, arg4);
+      last = g_adwLastGpuOp;
+      last[0] = (unsigned int)func;
+      last[1] = (unsigned int)args;
+      last[2] = arg4;
+      SetInterruptMask(g_nEnqueueGpuSavedIMask);
+      return 0;
     }
-    ((void (*)(unsigned int *, unsigned int))func)(args, arg4);
-    last = g_adwLastGpuOp;
-    last[0] = (unsigned int)func;
-    last[1] = (unsigned int)args;
-    last[2] = arg4;
+    DmaCallback(2, FlushGpuQueue);
+    i = 0;
+    if (nbytes != 0) {
+      src = args;
+      slot = (char *)(&g_abGpuOpQueueRing[0xC]);
+    lp:
+      if (i < (nbytes / 4)) {
+        unsigned int v = *src;
+        src += 1;
+        *((unsigned int *)((slot +
+                            ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
+                             0x60)) +
+                           (i * 4))) = v;
+        i += 1;
+        goto lp;
+      }
+      *((unsigned int *)((&g_abGpuOpQueueRing[4]) +
+                         ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
+                          0x60))) =
+          (unsigned int)((&g_abGpuOpArgArea[0]) +
+                         ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
+                          0x60));
+    } else if (1) {
+      *((unsigned int **)((&g_abGpuOpQueueRing[4]) +
+                          ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
+                           0x60))) = args;
+    }
+    *((unsigned int *)((&g_abGpuOpQueueRing[8]) +
+                       ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
+                        0x60))) = arg4;
+    *((void **)((&g_abGpuOpQueueRing[0]) +
+                ((*((volatile int *)(&g_nGpuQueueWriteIndex))) * 0x60))) = func;
+    g_nGpuQueueWriteIndex =
+        ((*((volatile int *)(&g_nGpuQueueWriteIndex))) + 1) & 0x3F;
     SetInterruptMask(g_nEnqueueGpuSavedIMask);
-    return 0;
-  }
-
-  DmaCallback(2, FlushGpuQueue);
-  i = 0;
-  if (nbytes != 0) {
-    src = args;
-    slot = (char *)&g_abGpuOpQueueRing[0xC];
-  lp:
-    if (i < nbytes / 4) {
-      unsigned int v = *src;
-      src += 1;
-      *(unsigned int *)(slot + WIDX * 0x60 + i * 4) = v;
-      i += 1;
-      goto lp;
-    }
-    *(unsigned int *)(&g_abGpuOpQueueRing[4] + WIDX * 0x60) =
-        (unsigned int)(&g_abGpuOpArgArea[0] + WIDX * 0x60);
-  } else {
-    *(unsigned int **)(&g_abGpuOpQueueRing[4] + WIDX * 0x60) = args;
-  }
-  *(unsigned int *)(&g_abGpuOpQueueRing[8] + WIDX * 0x60) = arg4;
-  *(void **)(&g_abGpuOpQueueRing[0] + WIDX * 0x60) = func;
-  g_nGpuQueueWriteIndex = (WIDX + 1) & 0x3F;
-  SetInterruptMask(g_nEnqueueGpuSavedIMask);
-  FlushGpuQueue();
-  return (WIDX - RIDX) & 0x3F;
+    FlushGpuQueue();
+    return ((*((volatile int *)(&g_nGpuQueueWriteIndex))) -
+            (*((volatile int *)(&g_nGpuQueueReadIndex)))) &
+           0x3F;
+  } while (0);
 }
 
 /*

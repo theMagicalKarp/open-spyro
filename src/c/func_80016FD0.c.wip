@@ -13,38 +13,52 @@
    2026-07-25-1 unattended permuter session (~15m, ~80000 iterations, timed out
    at the 15m budget): best score 220 vs base score 475. No byte-perfect
    candidate found; still PARKED (see above). */
-void func_80016FD0(unsigned int *dst, unsigned int *src) {
-  unsigned int a2, a3, t0, t1, t2;
-  unsigned int hiMask, at, v0;
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/func_80016FD0.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80016FD0/output-220-1/source.c */
 
+void func_80016FD0(unsigned int *dst, unsigned int *src) {
+  unsigned int a2;
+  unsigned int a3;
+  unsigned int t0;
+  unsigned int t1;
+  char pad;
+  unsigned int t2;
+  unsigned int hiMask;
+  unsigned int at;
+  unsigned int v0;
   a2 = src[0];
   a3 = src[1];
   t0 = src[2];
   t1 = src[3];
   t2 = src[4];
-
-  hiMask = 0xFFFF0000;
-  at = a2 & hiMask;
-  v0 = a3 & hiMask;
-  a2 = a2 ^ at;
-  a3 = a3 ^ v0;
-  a2 = a2 | v0;
-  a3 = a3 | at;
-
+  do {
+    hiMask = 0xFFFF0000;
+    at = a2 & hiMask;
+    v0 = a3 & hiMask;
+    a2 = a2 ^ at;
+    a3 = a3 ^ v0;
+    a2 = a2 | v0;
+    a3 = a3 | at;
+  } while (0);
   at = a3 & 0xFFFF;
   v0 = t1 & 0xFFFF;
   a3 = a3 ^ at;
   t1 = t1 ^ v0;
   a3 = a3 | v0;
   t1 = t1 | at;
-
   at = t0 & hiMask;
   v0 = t1 & hiMask;
   t0 = t0 ^ at;
   t1 = t1 ^ v0;
   t0 = t0 | v0;
   t1 = t1 | at;
-
   dst[0] = a2;
   dst[1] = a3;
   dst[2] = t0;

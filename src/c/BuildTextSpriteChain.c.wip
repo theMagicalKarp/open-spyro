@@ -12,50 +12,77 @@ extern void CopyVector(int *dst, int *src);
    map '0'-'9' and 'A'-'Z' (+ specials '/','?','%','^','+') to font tile
    indices, copy the pen position from *param_2 and advance it by param_3
    between glyphs (0x80017fe4, 0x1c8). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/BuildTextSpriteChain.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/BuildTextSpriteChain/output-2020-1/source.c */
+
 void *BuildTextSpriteChain(unsigned char *param_1, int *param_2, int param_3,
                            int param_4) {
   unsigned char bVar1;
   unsigned int uVar3;
+  unsigned char *new_var;
   unsigned short uVar2;
-
   bVar1 = *param_1;
   while (bVar1 != 0) {
     if (bVar1 != 0x20) {
-      CURSOR = (void *)((int)CURSOR - 0x58);
-      FillWord(CURSOR, 0, 0x58);
-      CopyVector((int *)((int)CURSOR + 0xc), param_2);
-      bVar1 = *param_1;
-      uVar3 = (unsigned int)bVar1;
-      if (uVar3 - 0x30 < 10) {
-        *(unsigned short *)((int)CURSOR + 0x36) = bVar1 + 0xd4;
-      } else if (uVar3 - 0x41 < 0x1a) {
-        *(unsigned short *)((int)CURSOR + 0x36) = bVar1 + 0x169;
+      *((void *volatile *)(&g_pSpriteRecordWriteCursor)) =
+          (void *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) -
+                   0x58);
+      FillWord(*((void *volatile *)(&g_pSpriteRecordWriteCursor)), 0, 0x58);
+      CopyVector(
+          (int *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                  0xc),
+          param_2);
+      ;
+      ;
+      if ((((unsigned int)(*param_1)) - 0x30) < 10) {
+        *((unsigned short *)(((int)(*(&g_pSpriteRecordWriteCursor))) + 0x36)) =
+            (*param_1) + 0xd4;
+      } else if ((((unsigned int)(*param_1)) - 0x41) < 0x1a) {
+        *((unsigned short
+               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                  0x36)) = (*param_1) + 0x169;
       } else {
-        if (uVar3 == 0x2f) {
+        if (((unsigned int)(*param_1)) == 0x2f) {
           uVar2 = 0x115;
-        } else if (uVar3 == 0x3f) {
+        } else if (((unsigned int)(*param_1)) == 0x3f) {
           uVar2 = 0x116;
-        } else if (uVar3 == 0x25) {
+        } else if (((unsigned int)(*param_1)) == 0x25) {
           uVar2 = 0x110;
-        } else if (uVar3 == 0x5e) {
+        } else if (((unsigned int)(*param_1)) == 0x5e) {
           uVar2 = 0x141;
         } else {
           uVar2 = 0x147;
-          if (uVar3 == 0x2b) {
+          if (((unsigned int)(*param_1)) == 0x2b) {
             uVar2 = 0x13d;
           }
         }
-        *(unsigned short *)((int)CURSOR + 0x36) = uVar2;
+        *((unsigned short
+               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                  0x36)) = uVar2;
       }
-      *(unsigned char *)((int)CURSOR + 0x47) = 0x7f;
-      *(unsigned char *)((int)CURSOR + 0x4f) = param_4;
-      *(unsigned char *)((int)CURSOR + 0x50) = 0xff;
+      *((unsigned char
+             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                0x47)) = 0x7f;
+      *((unsigned char
+             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                0x4f)) = param_4;
+      new_var =
+          (unsigned char
+               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
+                  0x50);
+      *new_var = 0xff;
     }
     param_1 = param_1 + 1;
-    *param_2 = *param_2 + param_3;
+    *param_2 = (*param_2) + param_3;
     bVar1 = *param_1;
   }
-  return CURSOR;
+
+  return *((void *volatile *)(&g_pSpriteRecordWriteCursor));
 }
 
 /* PARKED. Sprite-record glyph builder, §F-ish vein. Digit + letter arms match

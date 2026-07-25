@@ -17,36 +17,43 @@ extern int D_800778EC;
    tallies into the persistence block, merge the pending block into the
    committed one (copy 0x20 bytes then OR the 8 words), and carry the spawn
    flag word across. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_80059474.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80059474/output-130-1/source.c */
+
 void func_80059474(unsigned char *actor, int yaw) {
+  int *new_var;
   int *dst;
   int *src;
   int i;
-
   g_anLevelSpawnYawBlock[0] = (yaw << 4) & 0xFFF;
-  CopyVector((int *)&g_anLevelSpawnYawBlock[-3], (int *)(actor + 0xC));
-  *(volatile int *)&g_nSpawnAnchorValid = 1;
+  CopyVector((int *)(&g_anLevelSpawnYawBlock[-3]), (int *)(actor + 0xC));
+  *((volatile int *)(&g_nSpawnAnchorValid)) = 1;
   dst = &g_anLevelSpawnYawBlock[-19];
   src = &g_anLevelSpawnYawBlock[-11];
-  *(volatile int *)&g_nLevelSpawnPosZ += 0x164;
+  *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
+  new_var = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   {
     int t;
-    t = g_anLevelDragonsRescued[g_nLevelIntroIndex];
-    *(volatile int *)&D_8007788C = t;
+    t = *new_var;
+    *((volatile int *)(&D_8007788C)) = t;
     t = g_anLevelGemsCollected[g_nLevelIntroIndex];
-    *(volatile int *)&D_80077894 = 0;
-    *(volatile int *)&D_80077890 = t;
+    *(&D_80077894) = 0;
+    *((volatile int *)(&D_80077890)) = t;
   }
   CopyWords(dst, src, 0x20);
-
   i = 0;
   do {
     int v = *src;
-    *dst = *dst | v;
+    *dst = (*dst) | v;
     src += 1;
     i += 1;
     dst += 1;
   } while (i < 8);
-
   D_800778EC = D_800778E8;
 }
 

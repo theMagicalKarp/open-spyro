@@ -21,11 +21,19 @@ extern char D_80074B20[];
    (word = (tag_byte<<24) | next_addr), terminating the chain at the fixed
    address D_80074B20. Debug-traces via g_pfnGpuDebugPrintf when
    g_bGpuDebugLevel >= 2. Returns the last linked packet. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_8005FBB4.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_8005FBB4/output-30-1/source.c */
+
 unsigned int *func_8005FBB4(unsigned int *arg0, int arg1) {
   int n = arg1;
   unsigned int *p = arg0;
-
-  if ((unsigned char)g_bGpuDebugLevel >= 2) {
+  int new_var;
+  if (((unsigned char)g_bGpuDebugLevel) >= 2) {
     ((void (*)(char *, unsigned int *, int))g_pfnGpuDebugPrintf)(D_800118CC, p,
                                                                  n);
   }
@@ -35,13 +43,14 @@ unsigned int *func_8005FBB4(unsigned int *arg0, int arg1) {
       unsigned int next;
       unsigned int old;
       n -= 1;
-      next = (unsigned int)p + 4;
-      *((unsigned char *)p + 3) = 0;
+      next = ((unsigned int)p) + 4;
+      *(((unsigned char *)p) + 3) = 0;
       old = *p;
-      *p = (next & 0xFFFFFF) | (old & 0xFF000000);
+      new_var = 0xFFFFFF;
+      *p = (old & 0xFF000000) | (next & new_var);
       p = (unsigned int *)next;
     } while (n != 0);
   }
-  *p = (unsigned int)D_80074B20 & 0xFFFFFF;
+  *p = ((unsigned int)D_80074B20) & 0xFFFFFF;
   return p;
 }

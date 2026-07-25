@@ -12,28 +12,36 @@ extern int g_anGemPickupBlock[]; /* held-base alias @ g_nGemPickupSubstate */
    actor's render record at +0x3c, anchors the aura star, and fires the rescue
    chime. Special-cases Artisans home (level 10 pickup 1->2) and Gnasty's Loot
    (level 0x3c key-locked treasure rewrite). (0x8002c924) */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/BeginGemPickupOverlay.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/BeginGemPickupOverlay/output-310-1/source.c */
+
 void BeginGemPickupOverlay(unsigned int *param_1) {
   unsigned int *puVar1;
-  int idx;
   int world;
   int *dragons;
   int prevDragons;
-
-  puVar1 = (unsigned int *)*param_1;
-  if (g_nActiveLevelId == 0xa && puVar1[6] == 1 &&
-      (g_abLevelGemPercent[1] != 0 || g_abLevelGemPercent[2] != 0 ||
-       g_abLevelGemPercent[3] != 0 || g_abLevelGemPercent[5] != 0)) {
+  int idx;
+  puVar1 = (unsigned int *)(*param_1);
+  if (((g_nActiveLevelId == 0xa) && (puVar1[6] == 1)) &&
+      ((((g_abLevelGemPercent[1] != 0) || (g_abLevelGemPercent[2] != 0)) ||
+        (g_abLevelGemPercent[3] != 0)) ||
+       (g_abLevelGemPercent[5] != 0))) {
     puVar1[6] = 2;
   }
   if (g_nActiveLevelId == 0x3c) {
     if (g_abLevelGemPercent[0x21] != 0) {
       puVar1[6] = 1;
+      puVar1[0xa] = 0x800;
       puVar1[0xb] = 0xcc8;
       puVar1[2] = 0x2561;
       puVar1[3] = 0xffc;
       puVar1[4] = 0x6a;
       puVar1[5] = 0xbb;
-      puVar1[0xa] = 0x800;
       puVar1[0xc] = 0x800;
       puVar1[0] = 0x134bf;
       puVar1[1] = 0x13ce9;
@@ -48,25 +56,26 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
   *dragons = prevDragons + 1;
-  g_anGemPickupBlock[0] = 0; /* g_nGemPickupSubstate = 0 */
+  g_anGemPickupBlock[0] = 0;
   g_nGemPickupStreamState = 0;
   g_nGemPickupTimer = 0;
   g_nGemPickupSecondaryTimer = 0;
   g_nGemPickupPadHoldTimer = 0;
   g_nGemPickupAudioFiredFlag = 0;
-  g_anGemPickupBlock[0x1a] =
-      (int)param_1; /* g_pGemPickupSourceActor = param_1 */
+  g_anGemPickupBlock[0x1a] = (int)param_1;
   g_nWorldDragonsRescued = world + 1;
   g_nGemPickupTypeSnapshot = puVar1[6];
   idx = puVar1[8];
-  if (idx != -1) {
-    *(unsigned char *)((char *)g_pActorListBase + idx * 0x58 + 0x3c) = 1;
+  if (idx != (-1)) {
+    *((unsigned char *)((((char *)g_pActorListBase) + (idx * 0x58)) + 0x3c)) =
+        1;
   }
   CopyVector(g_anGemPickupAuraStarAnchor, (int *)(param_1 + 3));
   g_anGemPickupAuraStarAnchor[2] += 0x40;
-  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x30),
-                  (int)&g_anGemPickupBlock[0x1a], 0x10,
-                  (unsigned char *)((char *)g_anGemPickupBlock[0x1a] + 0x54));
+  PlaySoundEffect(
+      *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x30)),
+      (int)(&g_anGemPickupBlock[0x1a]), 0x10,
+      (unsigned char *)(((char *)g_anGemPickupBlock[0x1a]) + 0x54));
 }
 
 /* PARKED 69.2% (45/146), exact length, logic 100% correct. Solved: the

@@ -32,26 +32,36 @@
    2026-07-25-1 unattended permuter session (~15m, ~91800 iterations, timed out
    at the 15m budget): best score 905 vs base score 1690. No byte-perfect
    candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/BuildAudioTrackTable.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/BuildAudioTrackTable/output-905-1/source.c */
+
 int BuildAudioTrackTable(void) {
+  int new_var;
   int pad[2];
   int bank;
   int track;
   int idx;
-  int *lengths = g_anCdAudioTrackLengths;
-
+  int *lengths;
   (void)pad;
-
   for (bank = 0; bank < 6; bank++) {
     int *len = lengths;
     for (track = 0; track < 8; track++) {
-      idx = bank * 8 + track;
+      idx = (bank * 8) + track;
       g_anMusicTrackLbaTable[idx * 2] = g_anCdAudioBankBaseLba[bank];
-      g_anMusicTrackLbaTable[idx * 2 + 1] = g_anCdAudioBankBaseLba[bank] + *len;
+      new_var = g_anCdAudioBankBaseLba[bank] + (*len);
+      g_anMusicTrackLbaTable[(idx * 2) + 1] = new_var;
       len += 1;
     }
+
     lengths += 8;
   }
 
   g_dwMusicStreamStatus = 0x40;
+  lengths = g_anCdAudioTrackLengths;
   return 1;
 }

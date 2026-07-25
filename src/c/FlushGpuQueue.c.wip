@@ -26,43 +26,67 @@ extern unsigned int g_adwGpuRingArg4[]; /* ring + 0x8 */
 #define WIDX (*(volatile int *)&g_nGpuQueueWriteIndex)
 #define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
 
-unsigned int FlushGpuQueue(void) {
-  unsigned int depth;
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/FlushGpuQueue.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/FlushGpuQueue/output-1410-1/source.c */
 
+unsigned int FlushGpuQueue(void) {
+  int new_var;
+  unsigned int depth;
   depth = 1;
-  if ((*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+  if (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0) {
     g_nFlushGpuSavedIMask = SetInterruptMask(0);
-    if (WIDX != RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+    if (((*((volatile int *)(&g_nGpuQueueWriteIndex))) !=
+         (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
+        (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) {
       unsigned int *last = g_adwLastGpuOp;
       volatile unsigned int *stat;
     drain:
-      if (((RIDX + 1) & 0x3F) == WIDX && g_pfnGpuQueueCompletionCallback == 0) {
+      if (((((*((volatile int *)(&g_nGpuQueueReadIndex))) + 1) & 0x3F) ==
+           (*((volatile int *)(&g_nGpuQueueWriteIndex)))) &&
+          (g_pfnGpuQueueCompletionCallback == 0)) {
         DmaCallback(2, 0);
       }
-      stat = (volatile unsigned int *)g_pGpuStatReg;
-      while ((*stat & 0x04000000) == 0) {
+
+      ;
+      while (((*((volatile unsigned int *)g_pGpuStatReg)) & 0x04000000) == 0) {
       }
-      ((void (*)(unsigned int, unsigned int))g_adwGpuRingFunc[RIDX * 0x18])(
-          g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
-      ((volatile unsigned int *)last)[0] = g_adwGpuRingFunc[RIDX * 0x18];
-      *(volatile unsigned int *)&g_dwLastGpuOpArg1 =
-          g_adwGpuRingArgs[RIDX * 0x18];
-      *(volatile unsigned int *)&g_dwLastGpuOpArg2 =
-          g_adwGpuRingArg4[RIDX * 0x18];
-      RIDX = (RIDX + 1) & 0x3F;
-      if (WIDX != RIDX &&
-          (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0) {
+
+      new_var = (*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18;
+      ((void (*)(unsigned int, unsigned int))g_adwGpuRingFunc[new_var])(
+          g_adwGpuRingArgs[new_var],
+          g_adwGpuRingArg4[(*((volatile int *)(&g_nGpuQueueReadIndex))) *
+                           0x18]);
+      ((volatile unsigned int *)last)[0] =
+          g_adwGpuRingFunc[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
+      *((volatile unsigned int *)(&g_dwLastGpuOpArg1)) =
+          g_adwGpuRingArgs[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
+      *((volatile unsigned int *)(&g_dwLastGpuOpArg2)) =
+          g_adwGpuRingArg4[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
+      *((volatile int *)(&g_nGpuQueueReadIndex)) =
+          ((*((volatile int *)(&g_nGpuQueueReadIndex))) + 1) & 0x3F;
+      if (((*((volatile int *)(&g_nGpuQueueWriteIndex))) !=
+           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
+          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) {
         goto drain;
       }
     }
     SetInterruptMask(g_nFlushGpuSavedIMask);
-    if (WIDX == RIDX && (*(unsigned int *)g_pDmaGpuChcrReg & 0x01000000) == 0 &&
-        g_nGpuQueueCompletionPending != 0 &&
-        g_pfnGpuQueueCompletionCallback != 0) {
+    if (((((*((volatile int *)(&g_nGpuQueueWriteIndex))) ==
+           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
+          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) &&
+         (g_nGpuQueueCompletionPending != 0)) &&
+        (g_pfnGpuQueueCompletionCallback != 0)) {
       g_nGpuQueueCompletionPending = 0;
       ((void (*)(void))g_pfnGpuQueueCompletionCallback)();
     }
-    depth = (WIDX - RIDX) & 0x3F;
+    depth = ((*((volatile int *)(&g_nGpuQueueWriteIndex))) -
+             (*((volatile int *)(&g_nGpuQueueReadIndex)))) &
+            0x3F;
   }
   return depth;
 }

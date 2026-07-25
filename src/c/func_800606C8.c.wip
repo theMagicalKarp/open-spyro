@@ -11,44 +11,50 @@ extern unsigned int BuildDrawOffsetCommand(unsigned int x, unsigned int y);
 extern unsigned int BuildDrawModeWord(int tpage, int dtd, unsigned int tw);
 extern unsigned int BuildTextureWindow(unsigned char *tw);
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_800606C8.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_800606C8/output-1350-1/source.c */
+
 void func_800606C8(int packet, unsigned short *env) {
-
   int len;
-
-  *(unsigned int *)(packet + 4) =
+  *((unsigned int *)(packet + 4)) =
       BuildDrawAreaTopLeft((short)env[0], (short)env[1]);
-  *(unsigned int *)(packet + 8) = BuildDrawAreaBottomRight(
-      (short)(env[2] + env[0] - 1), (short)(env[1] + env[3] - 1));
-  *(unsigned int *)(packet + 0xc) =
+  *((unsigned int *)(packet + 8)) = BuildDrawAreaBottomRight(
+      (short)((env[2] + env[0]) - 1), (short)((env[1] + env[3]) - 1));
+  *((unsigned int *)(packet + 0xc)) =
       BuildDrawOffsetCommand((short)env[4], (short)env[5]);
-  *(unsigned int *)(packet + 0x10) = BuildDrawModeWord(
+  *((unsigned int *)(packet + 0x10)) = BuildDrawModeWord(
       ((unsigned char *)env)[0x17], ((unsigned char *)env)[0x16], env[0xa]);
-  *(unsigned int *)(packet + 0x14) =
-      BuildTextureWindow((unsigned char *)env + 0xc);
-  *(unsigned int *)(packet + 0x18) = 0xe6000000;
+  *((unsigned int *)(packet + 0x14)) =
+      BuildTextureWindow(((unsigned char *)env) + 0xc);
+  *((unsigned int *)(packet + 0x18)) = 0xe6000000;
   len = 7;
   if (((unsigned char *)env)[0x18] != 0) {
     unsigned short rect[4];
     int w;
     unsigned int color;
-    int cx, cy;
-
+    int cx;
+    int cy;
     rect[0] = env[0];
     rect[1] = env[1];
     w = env[2];
     rect[2] = w;
     rect[3] = env[3];
     cx = 0;
-    if ((short)w >= 0) {
+    if (((short)w) >= 0) {
       cx = g_nGpuScreenWidth - 1;
-      if (g_nGpuScreenWidth - 1 >= (short)w) {
+      if ((g_nGpuScreenWidth - 1) >= ((short)w)) {
         cx = w;
       }
     }
     rect[2] = cx;
-    if ((short)rect[3] >= 0) {
+    if (((short)rect[3]) >= 0) {
       cy = g_nGpuScreenHeight - 1;
-      if (g_nGpuScreenHeight - 1 >= (short)rect[3]) {
+      if ((g_nGpuScreenHeight - 1) >= rect[3]) {
         cy = (short)rect[3];
       }
     } else {
@@ -57,19 +63,19 @@ void func_800606C8(int packet, unsigned short *env) {
     rect[3] = cy;
     rect[0] = rect[0] - env[4];
     rect[1] = rect[1] - env[5];
-    color = (((unsigned char *)env)[0x1b] << 16) |
-            ((((unsigned char *)env)[0x1a] << 8) | 0x60000000) |
-            ((unsigned char *)env)[0x19];
-    *(unsigned int *)(packet + (len << 2)) = color;
+    color = (*((unsigned int *)(packet + (len << 2))) =
+                 ((((unsigned char *)env)[0x1b] << 16) |
+                  ((((unsigned char *)env)[0x1a] << 8) | 0x60000000)) |
+                 ((unsigned char *)env)[0x19]);
     len++;
-    *(unsigned int *)(packet + (len << 2)) = rect[0];
+    *((unsigned int *)(packet + (len << 2))) = rect[0];
     len++;
-    *(unsigned int *)(packet + (len << 2)) = rect[2];
+    *((unsigned int *)(packet + (len << 2))) = rect[2];
     rect[0] = rect[0] + env[4];
     len++;
     rect[1] = rect[1] + env[5];
   }
-  *(char *)(packet + 3) = len - 1;
+  *((char *)(packet + 3)) = len - 1;
 }
 
 /* PARKED 2026-07-19 at 132/134 (2 short). NOT a §B10 escape: the inline

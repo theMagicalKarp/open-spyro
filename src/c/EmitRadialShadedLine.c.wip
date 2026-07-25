@@ -9,38 +9,45 @@ extern int g_anLightSweepAngleBlock[];
 /* 0x8001844c (0xE8) — build a LINE_G2 prim between two screen points,
    shading each endpoint by its angular distance from the light-sweep
    angle (radial highlight), then queue it and bump the prim cursor. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/EmitRadialShadedLine.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/EmitRadialShadedLine/output-125-1/source.c */
+
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
   unsigned char *prim;
   int d;
   int shade;
+  int new_var;
   int tx;
   int ty;
-
   prim = g_pPrimBufferWriteCursor;
-  *(unsigned int *)prim = 0x04000000;
+  *((unsigned int *)prim) = 0x04000000;
   prim[7] = 0x50;
-  *(short *)(prim + 0x8) = x0;
-  *(short *)(prim + 0xA) = y0;
-  *(short *)(prim + 0x10) = x1;
-  *(short *)(prim + 0x12) = y1;
-
-  d = AbsAngleDelta8(ArcTan2_8bit(x0 - 0x100, y0 - 0x78),
+  *((short *)(prim + 0x8)) = x0;
+  *((short *)(prim + 0xA)) = y0;
+  *((short *)(prim + 0x10)) = x1;
+  *((short *)(prim + 0x12)) = y1;
+  shade = x0 - 0x100;
+  new_var = 0x80;
+  d = AbsAngleDelta8(ArcTan2_8bit(shade, y0 - 0x78),
                      g_anLightSweepAngleBlock[0]);
   tx = x1 - 0x100;
   ty = y1 - 0x78;
-  x1 = 0x80;
+  x1 = new_var;
   d = x1 - d;
-  shade = d + 0x60;
-  prim[4] = shade;
-  prim[5] = shade;
+  ;
+  prim[4] = d + 0x60;
+  prim[5] = d + 0x60;
   prim[6] = d;
-
   x1 = x1 - AbsAngleDelta8(ArcTan2_8bit(tx, ty), g_anLightSweepAngleBlock[0]);
   shade = x1 + 0x60;
   prim[0xC] = shade;
   prim[0xD] = shade;
   prim[0xE] = x1;
-
   AddPrimToOT(prim);
   g_pPrimBufferWriteCursor = prim + 0x14;
 }

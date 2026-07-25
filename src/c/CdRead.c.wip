@@ -44,6 +44,15 @@ extern int D_80075164;          /* VSync stamp at read kick */
    2026-07-25-1 unattended permuter session (~15m, ~89200 iterations, timed out
    at the 15m budget): best score 830 vs base score 1165. No byte-perfect
    candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/CdRead.c.wip
+   Best candidate: build/permuter/nonmatchings/CdRead/output-830-1/source.c */
+
 int CdRead(int sectors, void *buf, unsigned int mode) {
   int sel;
   int code;
@@ -58,7 +67,9 @@ int CdRead(int sectors, void *buf, unsigned int mode) {
     code = 0x200;
   }
   D_80075158 = code;
-  D_80075154 = D_80075154 | 0x20;
+  do {
+    D_80075154 = D_80075154 | 0x20;
+  } while (0);
   D_8007514C = buf;
   D_80075148 = sectors;
   D_8007516C = CdSyncCallback(0);

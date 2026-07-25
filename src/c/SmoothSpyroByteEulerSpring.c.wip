@@ -46,6 +46,17 @@ extern int g_nSpyroSwingEulerSpringAccum2;
 extern unsigned char g_bSpyroSwingByteEuler0;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern unsigned char g_bSpyroSwingByteEuler2;
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show
+   HEAD:src/c/SmoothSpyroByteEulerSpring.c.wip Best candidate:
+   build/permuter/nonmatchings/SmoothSpyroByteEulerSpring/output-245-1/source.c
+ */
+
 void SmoothSpyroByteEulerSpring(void) {
   int d0;
   int d1;
@@ -65,12 +76,14 @@ void SmoothSpyroByteEulerSpring(void) {
     d0 -= 0x1000;
   }
   f0 = d0 << new_var;
-  d0 = g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1;
-  new_var2 = d0 & 0xFFF;
-  d1 = new_var2;
-  a = g_nSpyroSwingEulerSpringAccum0;
-  new_var4 = &g_nCameraScriptStickRequestX;
-  f0 -= (d0 = a << 4);
+  do {
+    d0 = g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1;
+    new_var2 = d0 & 0xFFF;
+    d1 = new_var2;
+    a = g_nSpyroSwingEulerSpringAccum0;
+    new_var4 = &g_nCameraScriptStickRequestX;
+    f0 -= (d0 = a << 4);
+  } while (0);
   f0 >>= 6;
   a += f0;
   do {

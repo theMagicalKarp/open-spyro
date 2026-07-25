@@ -38,14 +38,24 @@ extern int D_80078D6C;
 extern int D_80078D70;
 extern int D_80078D74;
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_8002CCC8.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_8002CCC8/output-795-1/source.c */
+
 void func_8002CCC8(int actor) {
   int vec[3];
   int t;
   unsigned char *p;
   char *rec;
+  unsigned char *new_var3;
+  int *new_var;
   int u;
-
-  t = *(int *)actor;
+  int new_var2;
+  t = *((int *)actor);
   g_nGamestate = 0xB;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
@@ -57,12 +67,13 @@ void func_8002CCC8(int actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
+  new_var2 = 0;
   D_80078D74 = actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
-                  0, 0x10, 0);
+  PlaySoundEffect(
+      *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x2C)), 0, 0x10,
+      new_var2);
   ResetSpyroEntity(1);
-
   p = g_abSpyroAnimPrevBlock;
   p[0] = 1;
   g_bSpyroAnimCurrent = 1;
@@ -70,36 +81,38 @@ void func_8002CCC8(int actor) {
   g_bSpyroAnimFrame = 1;
   g_bSpyroSubFrameTimer = 0;
   D_80078D6C = g_nSpyroBodyYaw;
-
-  rec = (char *)(*(int *)(t + 4) * 0x58 + (int)g_pActorListBase);
-  D_80078D70 = ArcTan2(*(int *)(rec + 0xC) - *(int *)(p - 0x18),
-                       *(int *)(rec + 0x10) - g_nSpyroWorldPosY, 1);
-  D_80078D2C = ArcTan2(*(int *)(actor + 0xC) - *(int *)(p - 0x18),
-                       *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
-  t = (int)(p - 0x18);
+  rec = (char *)(((2 * (*((int *)(t + 4)))) * 44) + ((int)g_pActorListBase));
+  new_var3 = p - 0x18;
+  D_80078D70 = ArcTan2((*((int *)(rec + 0xC))) - (*((int *)new_var3)),
+                       (*((int *)(rec + 0x10))) - g_nSpyroWorldPosY, 1);
+  D_80078D2C = ArcTan2((*((int *)(actor + 0xC))) - (*((int *)new_var3)),
+                       (*((int *)(actor + 0x10))) - g_nSpyroWorldPosY, 1);
+  t = (int)new_var3;
   SubtractVector(vec, (int *)(actor + 0xC), (int *)t);
   D_80078D30 = VectorLength(vec, 0);
   D_80078D3C = 0x480;
-  D_80078D34 = *(int *)(actor + 0x14);
+  D_80078D34 = *((int *)(actor + 0x14));
   D_80078D38 = D_80078D70;
-  D_80078D40 = *(int *)(p - 0x10) + 0x170;
-
-  if (g_pLevelOverlayInitRecord != 0) {
-    D_80078D44 = ArcTan2(
-        *(int *)((char *)g_pLevelOverlayInitRecord + 0xC) - *(int *)(p - 0x18),
-        *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) - g_nSpyroWorldPosY,
-        1);
-    SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
+  D_80078D40 = 0x170;
+  D_80078D40 = (*((int *)(p - 0x10))) + D_80078D40;
+  new_var = (int *)t;
+  if (g_pLevelOverlayInitRecord != new_var2) {
+    D_80078D44 =
+        ArcTan2((*((int *)(((char *)g_pLevelOverlayInitRecord) + 0xC))) -
+                    (*((int *)new_var3)),
+                (*((int *)(((char *)g_pLevelOverlayInitRecord) + 0x10))) -
+                    g_nSpyroWorldPosY,
+                1);
+    SubtractVector(vec, (int *)(((char *)g_pLevelOverlayInitRecord) + 0xC),
                    (int *)t);
     D_80078D48 = VectorLength(vec, 0);
     D_80078D50 = 0x600;
     D_80078D4C = (D_80078D70 + 0x800) & 0xFFF;
   }
-
   actor = (int)g_anCameraPos;
-  D_80078D54 = ArcTan2(*(int *)actor - *(int *)(p - 0x18),
+  D_80078D54 = ArcTan2((*((int *)actor)) - (*((int *)new_var3)),
                        g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
-  SubtractVector(vec, (int *)actor, (int *)t);
+  SubtractVector(vec, (int *)actor, new_var);
   D_80078D58 = VectorLength(vec, 0);
   g_nSaveMenuXOffset = 0xB0;
   u = (D_80078D70 + 0x30B) & 0xFFF;
@@ -110,7 +123,7 @@ void func_8002CCC8(int actor) {
     D_80078D60 = (D_80078D70 - 0x30B) & 0xFFF;
   }
   D_80078D64 = 0x4C9;
-  D_80078D68 = *(int *)(p - 0x10) + 0x56B;
+  D_80078D68 = (*((int *)(p - 0x10))) + 0x56B;
 }
 
 /* PARKED (session 2026-07-10-1): 221/217 insns — 4 over, slot overflow.

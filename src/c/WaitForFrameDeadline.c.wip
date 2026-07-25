@@ -30,20 +30,33 @@ extern unsigned char D_800115FC[];
    PARKED. NB its caller VSync matched in this same sweep via nested-block
    scaffolding around a named constant local — a similar trick may apply to the
    budget-vs-load ordering here. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/WaitForFrameDeadline.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/WaitForFrameDeadline/output-60-1/source.c */
+
 void WaitForFrameDeadline(int param_1, int param_2) {
   volatile int budget = param_2 << 15;
-
-  if (g_nRcntAuxState < param_1) {
-  loop:
-    budget -= 1;
-    if (budget == -1) {
-      WriteString(D_800115FC);
-      ChangeClearPAD(0);
-      ChangeClearRCnt(3, 0);
-      return;
-    }
+  int new_var;
+  do {
     if (g_nRcntAuxState < param_1) {
-      goto loop;
+      new_var = -1;
+    loop:
+      budget -= 1;
+      if (budget == new_var) {
+        WriteString(D_800115FC);
+        ChangeClearPAD(0);
+        ChangeClearRCnt(3, 0);
+        return;
+      }
+      if (g_nRcntAuxState < param_1) {
+        goto loop;
+      }
     }
-  }
+  } while (0);
 }

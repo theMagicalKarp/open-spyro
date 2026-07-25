@@ -66,15 +66,23 @@ extern void func_80017FE4(); /* draw text run */
 extern void func_80062FD4(); /* sprintf */
 extern int func_8006276C(); /* strlen */
 
-int func_level_5_8007B4B0(int time, int *pos, int arg2) {
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/overlays/level_5_artisans_sunny_flight/func_level_5_8007B4B0.c.wip
+   Best candidate: build/permuter/nonmatchings/func_level_5_8007B4B0/output-100-1/source.c */
+
+int func_level_5_8007B4B0(int time, int *pos, int arg2)
+{
   char buf[16];
   int q600;
   int hr;
   int min;
   int frac;
   int len;
-
-  if (time < 0) {
+  if (time < 0)
+  {
     pos[0] -= 0x36;
     pos[1] -= 5;
     func_80017FE4("......", pos, 0x12, arg2);
@@ -82,24 +90,28 @@ int func_level_5_8007B4B0(int time, int *pos, int arg2) {
   }
   q600 = time / 600;
   frac = time / 600;
-  frac = time / 6 - frac * 100;
+  frac = (time / 6) - (frac * 100);
   hr = time / 36000;
-  min = q600 - hr * 60;
-  if (hr != 0) {
+  min = q600 - (hr * 60);
+  if (hr != 0)
+  {
     func_80062FD4(buf, "%d %02d.%02d", hr, min, frac);
-  } else {
+  }
+  else
+  {
     func_80062FD4(buf, "%d.%02d", min, frac);
   }
   len = func_8006276C(buf);
   pos[0] -= len * 9;
   func_80017FE4(buf, pos, 0x12, arg2);
-  if (hr != 0) {
+  if (hr != 0)
+  {
     char *fmt = ".";
     pos[0] -= 0x6C;
-    len += 1;
     pos[1] += 1;
     pos[2] = (pos[2] * 3) >> 1;
     func_80017FE4(fmt, pos, 0x12, arg2);
+    len += 1;
     pos[0] -= 0x12;
     pos[1] -= 8;
     func_80017FE4(fmt, pos, 0x12, arg2);

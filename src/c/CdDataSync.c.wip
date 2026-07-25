@@ -39,30 +39,43 @@ extern unsigned char D_80075115; /* ready index (Ready) */
    2026-07-25-1 unattended permuter session (~15m, ~79400 iterations, timed out
    at the 15m budget): best score 1385 vs base score 1825. No byte-perfect
    candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/CdDataSync.c.wip
+   Best candidate: build/permuter/nonmatchings/CdDataSync/output-1385-1/source.c
+ */
+
 int CdDataSync(int mode) {
+  int new_var;
   int r;
   int now;
   int old;
   int *readyTbl = D_80074EDC;
   unsigned char *readyIdx = &D_80075114;
   int *syncTbl = D_80074E5C;
-
-  D_80075AE8 = VSync(-1) + 0x3C0;
-  D_80075AEC = 0;
-  D_80075AF0 = D_80011F04;
+  new_var = VSync(-1) + 0x3C0;
   do {
-    now = VSync(-1);
-    if (D_80075AE8 < now ||
-        (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
-      WriteString(D_80011DFC);
-      WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
-                  readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
-      CdResetController();
-      r = -1;
-    } else {
-      r = 0;
-    }
-  } while (r == 0 && (r = 0, (*D_80075140 & 0x1000000) != 0) &&
-           (r = 1, mode == 0));
+    D_80075AE8 = new_var;
+    D_80075AEC = 0;
+    D_80075AF0 = D_80011F04;
+    do {
+      now = VSync(-1);
+      if ((D_80075AE8 < now) ||
+          ((old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old))) {
+        WriteString(D_80011DFC);
+        WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
+                    readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
+        CdResetController();
+        r = -1;
+      } else {
+        r = 0;
+      }
+    } while (((r == 0) && ((r = 0, ((*D_80075140) & 0x1000000) != 0))) &&
+             ((r = 1, mode == 0)));
+  } while (0);
   return r;
 }

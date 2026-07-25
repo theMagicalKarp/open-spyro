@@ -26,39 +26,52 @@ extern int g_anSpyroGroundSlopeBlock[];
    ground-hug position offset onto g_anSpyroWorldPos. Above the altitude
    threshold it hands off to DampenSpyroFreeFallAttitude. (0x8003dae4, 864
    bytes.) */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/UpdateSpyroFlightAttitudeNearGround.c.wip Best candidate:
+   build/permuter/nonmatchings/UpdateSpyroFlightAttitudeNearGround/output-3390-1/source.c
+ */
+
 void UpdateSpyroFlightAttitudeNearGround(void) {
   int *base = g_anSpyroGroundSlopeBlock;
-  int c, s;
-  int vec[3]; /* vec[0]=local_30, vec[1]=local_2c, vec[2]=local_28 */
-  int dp, dr;
+  int *new_var2;
+  int c;
+  int s;
+  int vec[3];
+  int dp;
+  int dr;
   unsigned int y;
-
-  if (base[0] < 0x17) {
+  int *new_var;
+  if (g_anSpyroGroundSlopeBlock[0] < 0x17) {
     c = LookupCosine(g_nSpyroBodyYaw);
     s = LookupSine(g_nSpyroBodyYaw);
     vec[0] =
-        (g_anSpyroGroundNormal[0] * c + g_anSpyroGroundNormal[1] * s) >> 12;
+        ((g_anSpyroGroundNormal[0] * c) + (g_anSpyroGroundNormal[1] * s)) >> 12;
     c = LookupCosine(g_nSpyroBodyYaw);
     s = LookupSine(g_nSpyroBodyYaw);
     vec[2] = g_anSpyroGroundNormal[2];
     vec[1] =
-        (g_anSpyroGroundNormal[1] * c - g_anSpyroGroundNormal[0] * s) >> 12;
-    y = IntegerSqrt(vec[0] * vec[0] +
-                    g_anSpyroGroundNormal[2] * g_anSpyroGroundNormal[2]);
+        ((g_anSpyroGroundNormal[1] * c) - (g_anSpyroGroundNormal[0] * s)) >> 12;
+    y = IntegerSqrt((vec[0] * vec[0]) +
+                    (g_anSpyroGroundNormal[2] * g_anSpyroGroundNormal[2]));
     dp = -ArcTan2(y, vec[1], 1);
+    new_var2 = &dp;
     dr = ArcTan2(vec[2], vec[0], 1);
     dp = (dp - g_nSpyroBodyPitch) & 0xfff;
     if (0x800 < dp) {
       dp = dp - 0x1000;
     }
-    dr = (-g_nSpyroBodyRoll - dr) & 0xfff;
+    dr = ((-g_nSpyroBodyRoll) - dr) & 0xfff;
     if (0x800 < dr) {
       dr = dr - 0x1000;
     }
     D_80078CB0 =
-        D_80078CB0 + (((int)(dp << 2) >> 4) - ((D_80078CB0 << 4) >> 6));
+        D_80078CB0 + ((((int)(dp << 2)) >> 4) - ((D_80078CB0 << 4) >> 6));
     D_80078CB4 =
-        D_80078CB4 + (((int)(dr << 2) >> 4) - ((D_80078CB4 << 4) >> 6));
+        D_80078CB4 + ((((int)(dr << 2)) >> 4) - ((D_80078CB4 << 4) >> 6));
     dp = D_80078CB0 >> 2;
     dr = D_80078CB4 >> 2;
     g_nSpyroBodyPitch = (g_nSpyroBodyPitch + dp) & 0xfff;
@@ -69,21 +82,26 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
     if (0x800 < g_nSpyroBodyRoll) {
       g_nSpyroBodyRoll = g_nSpyroBodyRoll - 0x1000;
     }
-    if (0xc0 < (unsigned char)(((unsigned char *)base)[-0xa4] - 0x20) &&
-        0xc0 < (unsigned char)(((unsigned char *)base)[-0xa3] - 0x20)) {
-      vec[1] = LookupSine(dp) * -0x174 >> 12;
-      vec[0] = LookupSine(dr) * -0x174 >> 12;
+    if ((0xc0 <
+         ((unsigned char)(((unsigned char *)g_anSpyroGroundSlopeBlock)[-0xa4] -
+                          0x20))) &&
+        (0xc0 <
+         ((unsigned char)(((unsigned char *)g_anSpyroGroundSlopeBlock)[-0xa3] -
+                          0x20)))) {
+      vec[1] = (LookupSine(*new_var2) * (-0x174)) >> 12;
+      vec[0] = (LookupSine(dr) * (-0x174)) >> 12;
       c = LookupCosine(dr);
       s = LookupCosine(dp);
-      vec[2] = ((0x2000 - c) - s) * 0x174 >> 12;
-      ApplyEulerRotation((unsigned int *)((char *)base - 0xa4),
-                         (unsigned int *)((char *)base - 0x7c),
+      vec[2] = (((0x2000 - c) - s) * 0x174) >> 12;
+      ApplyEulerRotation((unsigned int *)(((char *)base) - 0xa4),
+                         (unsigned int *)(((char *)base) - 0x7c),
                          (unsigned int *)0);
-      RotateVectorByMatrix((int *)((char *)base - 0x7c), vec, vec);
-      AddVector((int *)((char *)base - 0xb0), (int *)((char *)base - 0xb0),
-                vec);
+      RotateVectorByMatrix((int *)(((char *)base) - 0x7c), vec, vec);
+      AddVector((int *)(((char *)(new_var = base)) - 0xb0),
+                (int *)(((char *)base) - 0xb0), vec);
     }
   } else {
+    volatile unsigned int pad;
     DampenSpyroFreeFallAttitude();
   }
 }

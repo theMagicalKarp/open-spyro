@@ -39,12 +39,20 @@ extern void ExitSubMenuToTitle(void);
 
 extern unsigned int g_adwHudBobSinePhaseBlock[]; /* g_dwHudBobSinePhase */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/SubMenu_Update.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/SubMenu_Update/output-10-1/source.c */
+
 void SubMenu_Update(void) {
   unsigned int *phase;
-
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
   phase = g_adwHudBobSinePhaseBlock;
-  phase[0] = (phase[0] - g_nFrameStep) & 0xFF;
+  g_adwHudBobSinePhaseBlock[0] =
+      (g_adwHudBobSinePhaseBlock[0] - g_nFrameStep) & 0xFF;
   g_nPauseMenuIdleFrames += g_nFrameStep;
   RotateLightVectorXZ(3);
   if (g_nPauseMenuTransitionFrames < 5) {
@@ -60,18 +68,18 @@ void SubMenu_Update(void) {
       if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         if (g_dwPadHeld & 0x8000) {
           PlaySoundEffect(
-              *(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38), 0,
-              0x10, 0);
+              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
+              0, 0x10, 0);
           g_nSubMenuScrollDelta = 0x40;
         }
       }
     }
     if (g_nSubMenuCursor < 5) {
-      if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + 6] != 0) {
+      if (g_abLevelVisitedFlag[(g_nSubMenuCursor * 6) + 6] != 0) {
         if (g_dwPadHeld & 0x2000) {
           PlaySoundEffect(
-              *(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x38), 0,
-              0x10, 0);
+              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
+              0, 0x10, 0);
           g_nSubMenuScrollDelta = -0x40;
         }
       }
@@ -81,7 +89,7 @@ void SubMenu_Update(void) {
     g_nSubMenuScrollOffset += g_nSubMenuScrollDelta;
     if (g_nSubMenuScrollOffset == 0) {
       g_nSubMenuScrollDelta = 0;
-    } else if (g_nSubMenuScrollOffset == -0x1C0) {
+    } else if (g_nSubMenuScrollOffset == (-0x1C0)) {
       g_nSubMenuScrollDelta = -0x40;
       g_nSubMenuScrollOffset = 0x1C0;
       g_nSubMenuCursor += 1;

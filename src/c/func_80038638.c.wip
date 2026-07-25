@@ -42,6 +42,14 @@ extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
    2026-07-25-1 unattended permuter session (~15m, ~63400 iterations, timed out
    at the 15m budget): best score 290 vs base score 485. No byte-perfect
    candidate found; still parked. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_80038638.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80038638/output-290-1/source.c */
+
 int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
                   int speed, int p6, int p7, int blockA, int blockB, int p10,
                   int p11, int flags) {
@@ -52,26 +60,22 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   int e;
   int heading;
   int r;
-
   dir = ArcTan2(actor[3] - tgt[0], actor[4] - tgt[1], 0);
-  /* `face` carries the signed angle error from here on, `dir` the LUT index
-     of the offset aim point once the side is picked. */
   face = func_800381BC(face, dir);
   t = face;
   if (face < 0) {
     t = -t;
   }
-  if (t < deadzone) {
+  if (heading = t < deadzone) {
     return t;
   }
-
   if (blockA != 0xff) {
     if (AbsAngleDelta8(dir, blockA) < 5) {
       e = func_800381BC(blockA, dir);
-      if (face < 0 && e < 0) {
+      if ((face < 0) && (e < 0)) {
         return 0x100;
       }
-      if (face > 0 && e > 0) {
+      if ((face > 0) && (e > 0)) {
         return 0x100;
       }
     }
@@ -79,15 +83,14 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   if (blockB != 0xff) {
     if (AbsAngleDelta8(dir, blockB) < 5) {
       e = func_800381BC(blockB, dir);
-      if (face < 0 && e < 0) {
+      if ((face < 0) && (e < 0)) {
         return 0x100;
       }
-      if (face > 0 && e > 0) {
+      if ((face > 0) && (e > 0)) {
         return 0x100;
       }
     }
   }
-
   if (face < 0) {
     dir = func_80038074(dir, 3);
   } else {
@@ -96,13 +99,11 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
   pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
   heading = ArcTan2(pt[0] - actor[3], pt[1] - actor[4], 0);
-
   if (D_800756C4 == 3) {
     speed = speed + (speed >> 1);
   } else if (D_800756C4 == 4) {
     speed = speed * 2;
   }
-
   if (flags & 8) {
     func_80038EE0(actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6,
                   0, 0);
@@ -117,10 +118,10 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   if (r != 0) {
     return -r;
   }
-
 stalled:
   if (face < 0) {
     return -face;
   }
+
   return face;
 }

@@ -8,6 +8,14 @@
 extern int *g_pWorkAreaTop;      /* 0x800785fc */
 extern void *g_apActorMeshTable; /* 0x80076378 */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/RelocateMobActorTable.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/RelocateMobActorTable/output-230-1/source.c */
+
 void RelocateMobActorTable(int *stream) {
   int pad[2];
   int maskLo;
@@ -19,63 +27,60 @@ void RelocateMobActorTable(int *stream) {
   int entry;
   int mesh;
   unsigned int ptr;
+  int *new_var2;
   int *idx;
   int size;
   int base;
   int j;
+  short *new_var;
   int *w;
   int word;
   int lo;
   idx = stream;
   i = 0;
+  new_var2 = &(*idx);
   top = &g_pWorkAreaTop;
-
   while (i < 0x2E) {
-
-    ptr = *(unsigned int *)((i * 4 + (int)g_apActorMeshTable) + 0x38);
-    if (ptr < (unsigned int)*top || ptr == -1) {
-      *(int *)((i * 4 + (int)g_apActorMeshTable) + 0x38) = 0;
+    ptr = *((unsigned int *)(((i * 4) + ((int)g_apActorMeshTable)) + 0x38));
+    if ((ptr < ((unsigned int)(*top))) || (ptr == (-1))) {
+      *((int *)(((i * 4) + ((int)g_apActorMeshTable)) + 0x38)) = 0;
     }
     i++;
   }
 
-  if (*idx < 0) {
+  if ((*new_var2) < 0) {
     return;
   }
   maskLo = 0x1FFFFF;
   maskHi = 0xFFE00000;
   stream += 1;
-  // next:
-  while (*idx >= 0) {
+  while ((*new_var2) >= 0) {
     size = *stream;
     stream += 1;
-    off = *idx * 4;
-
-    entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
-    *(volatile int *)(entry + 0x38) = (int)stream;
-
-    table = (int)*(void *volatile *)&g_apActorMeshTable;
+    off = 2 * ((*new_var2) * 2);
+    entry = off + ((int)(*((void *volatile *)(&g_apActorMeshTable))));
+    *((volatile int *)(entry + 0x38)) = (int)stream;
+    table = (int)(*((void *volatile *)(&g_apActorMeshTable)));
     entry = off + table;
-    mesh = *(volatile int *)(entry + 0x38);
-    *(volatile int *)(mesh + 0x14) =
-        *(int *)(table + 0x34) + *(volatile int *)(mesh + 0x14);
-
-    table = (int)*(void *volatile *)&g_apActorMeshTable;
+    mesh = *((volatile int *)(entry + 0x38));
+    *((volatile int *)(mesh + 0x14)) =
+        (*((int *)(table + 0x34))) + (*((volatile int *)(mesh + 0x14)));
+    table = (int)(*((void *volatile *)(&g_apActorMeshTable)));
     entry = off + table;
-    mesh = *(volatile int *)(entry + 0x38);
-    *(volatile int *)(mesh + 0x18) =
-        *(int *)(table + 0x34) + *(volatile int *)(mesh + 0x18);
-
-    entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
-    mesh = *(volatile int *)(entry + 0x38);
-    base = (int)((char *)stream + ((*(short *)mesh << 2) + 0x24));
-    *(volatile int *)(mesh + 0x10) = base + *(volatile int *)(mesh + 0x10);
-
-    entry = off + (int)*(void *volatile *)&g_apActorMeshTable;
-    mesh = *(volatile int *)(entry + 0x38);
+    mesh = *((volatile int *)(entry + 0x38));
+    *((volatile int *)(mesh + 0x18)) =
+        (*((int *)(table + 0x34))) + (*((volatile int *)(mesh + 0x18)));
+    entry = off + ((int)(*((void *volatile *)(&g_apActorMeshTable))));
+    mesh = *((volatile int *)(entry + 0x38));
+    base = (int)(((char *)stream) + (((*((short *)mesh)) << 2) + 0x24));
+    *((volatile int *)(mesh + 0x10)) =
+        base + (*((volatile int *)(mesh + 0x10)));
+    entry = off + ((int)(*((void *volatile *)(&g_apActorMeshTable))));
+    mesh = *((volatile int *)(entry + 0x38));
     j = 0;
+    new_var = (short *)mesh;
     w = (int *)(mesh + 0x24);
-    if (*(short *)mesh > 0) {
+    if ((*new_var) > 0) {
       do {
         word = *w;
         lo = ((word & maskLo) + base) >> 1;
@@ -84,13 +89,13 @@ void RelocateMobActorTable(int *stream) {
         w += 1;
       } while (
           j <
-          *(short *)*(
-              volatile int *)((off +
-                               (int)*(void *volatile *)&g_apActorMeshTable) +
-                              0x38));
+          (*((short *)(*(
+              (volatile int *)((off +
+                                ((int)(*((
+                                    void *volatile *)(&g_apActorMeshTable))))) +
+                               0x38))))));
     }
-
-    stream = (int *)((char *)stream + size);
+    stream = (int *)(((char *)stream) + size);
     idx = stream;
     stream += 1;
   }

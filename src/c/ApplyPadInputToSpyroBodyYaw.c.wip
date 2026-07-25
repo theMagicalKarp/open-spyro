@@ -13,25 +13,39 @@ extern int abs(int x);
 extern volatile int g_anSpyroMoveTargetYawBlock[]; /* alias block — +0 target
                                              yaw, +0x50 g_nSpyroBodyYaw */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show
+   HEAD:src/c/ApplyPadInputToSpyroBodyYaw.c.wip Best candidate:
+   build/permuter/nonmatchings/ApplyPadInputToSpyroBodyYaw/output-90-1/source.c
+ */
+
 void ApplyPadInputToSpyroBodyYaw(void) {
   int vec[3];
+  int new_var;
   char *pad;
   int len;
   int v;
   int av;
   int cur;
   volatile int *p;
-
   pad = g_pPadSubstepState;
-  if (*(int *)(pad + 0x10) != 0 &&
-      (*(unsigned int *)(pad + 0x14) & 0xFFFF0000) != 0x7F7F0000) {
-    vec[0] = *(unsigned char *)(pad + 0x16) - 0x7F;
+  new_var = 0x14;
+  if (((*((int *)(pad + 0x10))) != 0) &&
+      (((*((unsigned int *)(pad + new_var))) & 0xFFFF0000) != 0x7F7F0000)) {
+    do {
+      vec[0] = (*((unsigned char *)(pad + 0x16))) + -0x7F;
+    } while (0);
     vec[2] = 0;
-    vec[1] = *(unsigned char *)(pad + 0x17) - 0x7F;
+    vec[1] = (*((unsigned char *)(pad + 0x17))) - 0x7F;
     len = VectorLength(vec, 0);
     if (len < 0x60) {
       p = g_anSpyroMoveTargetYawBlock;
-      cur = p[0x14];
+      cur = p[new_var];
       v = (p[0] - cur) & 0xFFF;
       if (v > 0x800) {
         v -= 0x1000;

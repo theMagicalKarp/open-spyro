@@ -7,31 +7,42 @@
    the mono-mix flag is set both channels collapse to their average.
    (0x80056c84, 320 bytes.) */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/ComputeVoicePanAndFalloff.c.wip Best candidate:
+   build/permuter/nonmatchings/ComputeVoicePanAndFalloff/output-10-1/source.c */
+
 void ComputeVoicePanAndFalloff(short *out, int vol, int pan, unsigned int range,
                                short *base) {
   unsigned int lo;
+  unsigned char new_var;
   int gainL;
   int gainR;
   short bL;
   short bR;
   short cur;
-
+  new_var = (int)pan;
   if (range != 0) {
-    if ((unsigned int)((pan - 0x40) & 0xFF) < 0x80) {
-      gainL = -(int)pan & 0xFF;
+    if (((unsigned int)((pan - 0x40) & 0xFF)) < 0x80) {
+      gainL = (-new_var) & 0xFF;
       gainR = pan & 0xFF;
     } else {
       gainL = (pan + 0x80) & 0xFF;
       gainR = (0x80 - pan) & 0xFF;
     }
-    lo = (unsigned int)(vol << 8) / range;
+    lo = ((unsigned int)(vol << 8)) / range;
     bL = base[0];
     out[0] =
-        (short)((int)(gainL * (short)(bL - ((unsigned int)(lo * bL) >> 8))) >>
+        (short)(((int)(gainL *
+                       ((short)(bL - (((unsigned int)(lo * bL)) >> 8))))) >>
                 7);
     bR = base[1];
     out[1] =
-        (short)((int)(gainR * (short)(bR - ((unsigned int)(lo * bR) >> 8))) >>
+        (short)(((int)(gainR *
+                       ((short)(bR - (((unsigned int)(lo * bR)) >> 8))))) >>
                 7);
     if (out[0] < 0) {
       out[0] = 0;
@@ -44,7 +55,7 @@ void ComputeVoicePanAndFalloff(short *out, int vol, int pan, unsigned int range,
       out[1] = 0x3FFF;
     }
     if (g_nSoundMonoMixFlag != 0) {
-      cur = (short)((unsigned int)(out[1] + out[0]) >> 1);
+      cur = (short)(((unsigned int)(out[1] + out[0])) >> 1);
       out[0] = cur;
       out[1] = cur;
     }

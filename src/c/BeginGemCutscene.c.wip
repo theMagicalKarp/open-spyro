@@ -18,24 +18,36 @@ extern int D_800761DC;
 extern short D_800761E8;
 extern short D_800761EA;
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/BeginGemCutscene.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/BeginGemCutscene/output-105-1/source.c */
+
 void BeginGemCutscene(void) {
   register int world = g_nCurrentWorldId;
+  int *new_var;
   g_nGamestate = 0xE;
   g_nGenericCountdown = 0;
-  *(int *)g_pPathTableHead = 0;
+  new_var = (int *)g_pPathTableHead;
+  *new_var = 0;
   if (world == 1) {
     g_nLevelStormFlag = 1;
   }
-  D_800761D0 = (char *)D_800778F0;
-  *(int *)D_800761D0 = 0x1010;
-  *(int *)(D_800761D0 + 4) = -1;
-  *(short *)(D_800761D0 + 8) = 0x50;
-  *(short *)(D_800761D0 + 0xA) = (&g_nWorldCutsceneSamplePitch)[world];
-  *(short *)(D_800761D0 + 0xC) = 0;
-  *(short *)(D_800761D0 + 0xE) = 0;
-  *(int *)(D_800761D0 + 0x10) = 0;
+  new_var = D_800778F0;
+  D_800761D0 = (char *)new_var;
+  *((int *)D_800761D0) = 0x1010;
+  *((int *)(D_800761D0 + 4)) = -1;
+  *((short *)(D_800761D0 + 8)) = 0x50;
+  *((short *)(D_800761D0 + 0xA)) = (&g_nWorldCutsceneSamplePitch)[world];
+  *((short *)(D_800761D0 + 0xC)) = 0;
+  *((short *)(D_800761D0 + 0xE)) = 0;
+  *((int *)(D_800761D0 + 0x10)) = 0;
   D_800761DC = 1;
+  world = 0;
   D_800761E8 = 0x3FFF;
   D_800761EA = 0x3FFF;
-  PlaySoundEffect(0, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+  PlaySoundEffect(world, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
 }
