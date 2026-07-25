@@ -52,4 +52,11 @@ int func_80038C4C(int *pos, int *rec) {
    g_anCosineLut alias (sym at lut+0x80) stops cse deriving the sine base via
    addiu -0x80. Residue: ay in v1 (ours) vs a1 (original) + the two limit
    scratches shifted (v0/v0 vs v1/v0). dy-reuse and lim-birth-order both
-   cascade worse. Single-decision local-alloc tie; permuter candidate. */
+   cascade worse. Single-decision local-alloc tie; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~78200 iterations, timed out
+   at the 15m budget): base score 35 — the LOWEST base of the whole sweep — but
+   best score also 35, i.e. the randomizer never found a single improving
+   candidate (2 output dirs). The remaining ay v1-vs-a1 register tie appears to
+   be isolated from anything source mutation perturbs: everything the permuter
+   touches makes it worse, nothing makes it better. Still PARKED. */

@@ -22,7 +22,19 @@ extern void ResetPadStickCalibrationDefaults(unsigned char *cal);
    the anchor but deweights the numerator consts below ok in global-alloc
    (ok steals a3); no form found with both right. (2) phase-3/4 fill loops:
    val/j/fill local-alloc rotation (orig fill->v1, j->a1, val->a0; ours
-   rotated one step). Both single-decision ties; permuter candidate. */
+   rotated one step). Both single-decision ties; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~69100 iterations, timed out
+   at the 15m budget): best score 95 vs base score 345. No byte-perfect
+   candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/FinalizePadCalibration.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/FinalizePadCalibration/output-95-1/source.c */
+
 int FinalizePadCalibration(unsigned char *cal) {
   int ok;
   int i;
@@ -39,12 +51,12 @@ int FinalizePadCalibration(unsigned char *cal) {
   int val2;
   int j;
   int k;
-
   ok = 1;
   for (i = 0; i < 4;) {
     p = cal + i;
     mid = p[0x20];
-    if (mid + 0x30 >= p[0x28] || (i += 1, p[0x24] >= mid - 0x30)) {
+    val = 0x30;
+    if (((mid + 0x30) >= p[0x28]) || ((i += 1, p[0x24] >= (mid - val)))) {
       ResetPadStickCalibrationDefaults(cal);
       ok = 0;
       break;
@@ -59,46 +71,44 @@ int FinalizePadCalibration(unsigned char *cal) {
     p = cal + i2;
     p[0x2C] = p[0x20] + 0x30;
     hi = p[0x28];
-    hi = c4000 / (hi - *(volatile unsigned char *)&p[0x2C]);
+    hi = c4000 / (hi - (*((volatile unsigned char *)(&p[0x2C]))));
     p[0x30] = p[0x20] - 0x30;
-    *(short *)(q + 0x34) = hi;
+    *((short *)(cal + 0x34)) = hi;
     i2 += 1;
-    *(short *)(q + 0x3C) =
-        c3F80 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
+    *((short *)(q + 0x3C)) =
+        c3F80 / ((*((volatile unsigned char *)(&p[0x30]))) - p[0x24]);
     q += 2;
   } while (i2 < 4);
-
   val = 0x7F;
   j = 3;
   fill = cal + 3;
-  *(int *)(cal + 0x0) = 0;
-  *(int *)(cal + 0x4) = 0;
-  *(int *)(cal + 0x8) = 0;
-  *(int *)(cal + 0x18) = 1;
-  *(int *)(cal + 0x1C) = 1;
+  *((int *)(cal + 0x0)) = 0;
+  *((int *)(cal + 0x4)) = 0;
+  *((int *)(cal + 0x8)) = 0;
+  *((int *)(cal + 0x18)) = 1;
+  *((int *)(cal + 0x1C)) = 1;
   do {
     fill[0x14] = val;
     fill -= 1;
-  } while (--j >= 0);
-
+  } while ((--j) >= 0);
   val2 = 0x7F;
   p = cal;
   k = 0;
 blockTop:
   j = 3;
+
   fill2 = p + 3;
-  *(int *)(p + 0x4C) = 0;
-  *(int *)(p + 0x50) = 0;
-  *(int *)(p + 0x48) = 0;
+  *((int *)(p + 0x4C)) = 0;
+  *((int *)(p + 0x50)) = 0;
+  *((int *)(p + 0x48)) = 0;
   do {
     fill2[0x58] = val2;
     fill2 -= 1;
-  } while (--j >= 0);
+  } while ((--j) >= 0);
   k += 0x18;
   p += 0x18;
   if (k < 0x60) {
     goto blockTop;
   }
-
   return ok;
 }

@@ -12,10 +12,19 @@ extern short g_anCosineLut[];
    4-bit hit mask; the mask selects a nudge heading from
    g_anSpyroWallNudgeAngleByProbeMask whose sine/cosine (>>4) are added to
    the pending nudge accumulator at g_anSpyroWorldPos +0xF4/+0xF8. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/NudgeSpyroFromWallProbes.c.wip Best candidate:
+   build/permuter/nonmatchings/NudgeSpyroFromWallProbes/output-435-1/source.c */
+
 void NudgeSpyroFromWallProbes(void) {
   int near[3];
   int far[3];
   int mask;
+  int new_var;
   int idx;
   int i;
   int *pos;
@@ -27,18 +36,18 @@ void NudgeSpyroFromWallProbes(void) {
   int off;
   int angle;
   int lv;
-
   mask = 0;
   idx = 0x20;
   i = 0;
   pos = g_anSpyroWorldPos;
+  new_var = 4;
   fp = far;
-  cosCursor = (unsigned short *)((char *)g_anSineLut + 0xC0);
+  cosCursor = (unsigned short *)(((char *)g_anSineLut) + 0xC0);
 probe: {
-  cos = (short)cosCursor[0] >> 4;
+  cos = ((short)cosCursor[0]) >> 4;
   far[0] = cos;
   near[0] = cos;
-  sin = (short)((unsigned short *)g_anSineLut)[idx] >> 4;
+  sin = ((short)((unsigned short *)g_anSineLut)[idx]) >> 4;
   near[2] = -0x124;
   far[2] = -0x1A4;
   far[1] = sin;
@@ -56,13 +65,15 @@ probe: {
     goto probe;
   }
 }
+
   angle = g_anSpyroWallNudgeAngleByProbeMask[mask];
   if (angle >= 0) {
+    cosCursor = g_anCosineLut;
     off = angle << 1;
-    lv = g_anCosineLut[angle];
+    lv = cosCursor[angle];
     pos[61] += lv >> 4;
-    lv = *(short *)((char *)lut + off);
-    pos[62] += lv >> 4;
+    lv = *((short *)(((char *)lut) + off));
+    pos[62] += lv >> new_var;
   }
 }
 
@@ -84,4 +95,8 @@ probe: {
    Positive finding recorded in §Y refinement: the pos[61]/pos[62]
    (+0xF4/+0xF8) RMWs through the held many-use base DID survive
    post-label (lw/sw 0xF4(s6)) — the rule-1 fold only bites weak
-   (few-use) base pseudos via reload's reg_equiv substitution. */
+   (few-use) base pseudos via reload's reg_equiv substitution.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73800 iterations, timed out
+   at the 15m budget): best score 435 vs base score 800. No byte-perfect
+   candidate found; still PARKED (see above). */

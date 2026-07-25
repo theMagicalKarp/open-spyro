@@ -36,38 +36,55 @@ extern unsigned char D_80011990[]; /* last-op diagnostic format */
    the 2-insn form by cse. Also unfixed: the dead priming read of
    *g_pGpuStatReg lands in v0 in the original but a0 in ours (register
    choice only, no byte-length cost). Permuter candidate: single
-   address-vs-value load-form tie. */
+   address-vs-value load-form tie.
+
+   2026-07-25-1 unattended permuter session (~15m, ~83800 iterations, timed out
+   at the 15m budget): best score 775 vs base score 2290. No byte-perfect
+   candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/CheckGpuTimeout.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/CheckGpuTimeout/output-775-1/source.c */
+
 int CheckGpuTimeout(void) {
   int mask;
   int depth;
   int spin;
   int result;
-
   if (g_nGpuWatchdogDeadline < VSync(-1)) {
     result = -1;
   } else {
     spin = g_nGpuWatchdogSpinCount;
     g_nGpuWatchdogSpinCount = spin + 1;
-    result = (0xF0000 < spin) ? -1 : 0;
+    do {
+    } while (0);
+    result = (0xF0000 < spin) ? (-1) : (0);
   }
   if (result == 0) {
     return result;
   }
-  *(volatile unsigned int *)g_pGpuStatReg;
-  depth = g_nGpuQueueWriteIndex - g_nGpuQueueReadIndex;
-  WritePrintf(D_8001195C, depth & 0x3F, *(volatile unsigned int *)g_pGpuStatReg,
-              *(volatile unsigned int *)g_pDmaGpuChcrReg,
-              *(volatile unsigned int *)g_pDmaGpuMadrReg);
+  *((volatile unsigned int *)g_pGpuStatReg);
+  depth = g_nGpuQueueReadIndex;
+  depth = g_nGpuQueueWriteIndex - depth;
+  WritePrintf(D_8001195C, depth & 0x3F,
+              *((volatile unsigned int *)g_pGpuStatReg),
+              *((volatile unsigned int *)g_pDmaGpuChcrReg),
+              *((volatile unsigned int *)g_pDmaGpuMadrReg));
   WritePrintf(D_80011990, g_dwLastGpuOpFunc, g_dwLastGpuOpArg1,
               g_dwLastGpuOpArg2);
   mask = SetInterruptMask(0);
-  *(volatile int *)&g_nGpuQueueReadIndex = 0;
-  g_nGpuQueueWriteIndex = *(volatile int *)&g_nGpuQueueReadIndex;
+  *((volatile int *)(&g_nGpuQueueReadIndex)) = 0;
+  g_nGpuQueueWriteIndex = *((volatile int *)(&g_nGpuQueueReadIndex));
   g_nResetGraphSavedIMask = mask;
-  *(volatile unsigned int *)g_pDmaGpuChcrReg = 0x401;
+  *((volatile unsigned int *)g_pDmaGpuChcrReg) = 0x401;
   *D_80074B54 |= 0x800;
-  *(volatile unsigned int *)g_pGpuStatReg = 0x2000000;
-  *(volatile unsigned int *)g_pGpuStatReg = 0x1000000;
+  *((volatile unsigned int *)g_pGpuStatReg) = 0x2000000;
+  *((volatile unsigned int *)g_pGpuStatReg) = 0x1000000;
   SetInterruptMask(g_nResetGraphSavedIMask);
   return -1;
 }

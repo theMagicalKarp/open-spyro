@@ -1,4 +1,10 @@
 #include "globals.h"
+
+/* 2026-07-25-1 unattended permuter session (~15m, ~79400 iterations, timed out
+   at the 15m budget): best score 855, unchanged from the base score of 855 —
+   the randomizer found no improving candidate at all (only 2 output dirs).
+   No byte-perfect candidate found; still parked. */
+
 // typedef unsigned char byte;
 // extern byte g_bGpuDebugType;
 // extern byte g_bGpuReverseFlag;

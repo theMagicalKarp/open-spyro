@@ -65,4 +65,8 @@ void ComputeSpyroMoveTargetFromPad(int param_1) {
    land in v1/a0 not v0/s0). Pre-loading both bytes into locals batches the
    loads but drops a different insn (-1). Straddles the target by 1;
    whole-region regalloc (iVar2 reg s0 vs v1) + delay-slot schedule tie.
-   Permuter candidate. */
+   Permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~79500 iterations, timed out
+   at the 15m budget): best score 3100 vs base score 3995. No byte-perfect
+   candidate found; still PARKED (see above). */

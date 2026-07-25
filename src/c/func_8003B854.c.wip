@@ -62,4 +62,8 @@ void func_8003B854(int value, unsigned char *actor) {
  * move; raw-at-birth and post-store-copy forms produce byte-identical output.
  * Tail: our sched sinks the kill-table sw below the sample-bank lw (likely
  * falls in once the arm's extra move restores alignment). Permuter candidate.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~88600 iterations, timed out
+ * at the 15m budget): best score 360 vs base score 425 — only 6 output dirs, a
+ * shallow search. No byte-perfect candidate found; still PARKED.
  */

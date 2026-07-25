@@ -9,15 +9,14 @@
 extern void ResetGpuTimeoutDeadline(void);
 extern unsigned int FlushGpuQueue(void);
 extern int CheckGpuTimeout(void);
-
 unsigned int DrawSyncImpl(int param_1) {
   unsigned int depth;
-
   if (param_1 == 0) {
     ResetGpuTimeoutDeadline();
     goto queue_check;
   flush_loop:
     FlushGpuQueue();
+
     if (CheckGpuTimeout() != 0) {
       return 0xffffffff;
     }
@@ -25,39 +24,34 @@ unsigned int DrawSyncImpl(int param_1) {
     if (g_nGpuQueueWriteIndex == g_nGpuQueueReadIndex) {
       goto idle_check;
     }
+
     goto flush_loop;
   idle_wait:
     if (CheckGpuTimeout() != 0) {
       return 0xffffffff;
     }
+
   idle_check:
-    if ((*(volatile unsigned int *)g_pDmaGpuChcrReg & 0x1000000) != 0) {
+    if (((*((volatile unsigned int *)g_pDmaGpuChcrReg)) & 0x1000000) != 0) {
       goto idle_wait;
     }
-    if ((*(volatile unsigned int *)g_pGpuStatReg & 0x4000000) == 0) {
+
+    if (((*((volatile unsigned int *)g_pGpuStatReg)) & 0x4000000) == 0) {
       goto idle_wait;
     }
     return 0;
   }
-
   depth = (g_nGpuQueueWriteIndex - g_nGpuQueueReadIndex) & 0x3f;
   if (depth != 0) {
     FlushGpuQueue();
   }
-  if ((*(volatile unsigned int *)g_pDmaGpuChcrReg & 0x1000000) == 0 &&
-      (*(volatile unsigned int *)g_pGpuStatReg & 0x4000000) != 0) {
+  if ((((*((volatile unsigned int *)g_pDmaGpuChcrReg)) & 0x1000000) == 0) &&
+      (((*((volatile unsigned int *)g_pGpuStatReg)) & 0x4000000) != 0)) {
     return depth;
   }
   if (depth != 0) {
     return depth;
   }
-  return 1;
+  depth = 1;
+  return depth;
 }
-
-/* PARKED 92.7% (76/82). First half (param==0 goto-loop) byte-perfect. Residue:
-   the param!=0 tail — original keeps TWO separate `move v0,s0` (one fused into
-   the `bnez s0` delay slot of the depth-return arm, one as the plain `ready`
-   block before the epilogue); our gcc either cross-jumps them (goto+label form
-   → 2 insns short) or lays them swapped (&&/nested-if/goto → 6-insn block-order
-   diff). Pure reorg delay-slot-fill / cross-jump tie; clean permuter candidate.
- */

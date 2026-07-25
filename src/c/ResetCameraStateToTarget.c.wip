@@ -15,25 +15,36 @@ extern void UpdateCameraEulerAngles(void);
 
 extern int g_anCameraSpringYawBlock[];
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/ResetCameraStateToTarget.c.wip Best candidate:
+   build/permuter/nonmatchings/ResetCameraStateToTarget/output-10-1/source.c */
+
 void ResetCameraStateToTarget(void) {
   int *yaw;
-  int *eye;
   int y;
   int p;
   int d;
   int r;
   int pb;
+  int *new_var3;
+  int *eye;
   int yb;
-
+  volatile int *new_var2;
+  int *new_var;
+  new_var3 = (new_var = g_anCameraSpringYawBlock);
   LoadCameraTargetAnglesFromMode();
-  yaw = g_anCameraSpringYawBlock;
+  yaw = new_var3;
   eye = &yaw[-17];
-  y = *(volatile int *)&g_nCameraTargetYaw;
-  p = *(volatile int *)&g_nCameraTargetPitch;
-  d = *(volatile int *)&g_nCameraTargetDistance;
-  r = *(volatile int *)&g_nCameraTargetRoll;
-  pb = *(volatile int *)&g_nCameraTargetPitchBias;
-  yb = *(volatile int *)&g_nCameraTargetYawBias;
+  y = *((volatile int *)(&g_nCameraTargetYaw));
+  p = *((volatile int *)(&g_nCameraTargetPitch));
+  d = *((volatile int *)(&g_nCameraTargetDistance));
+  r = *((volatile int *)(&g_nCameraTargetRoll));
+  pb = *((volatile int *)(&g_nCameraTargetPitchBias));
+  yb = *((volatile int *)(&g_nCameraTargetYawBias));
   g_anCameraSpringDeltaState[0] = 0;
   g_anCameraSpringDeltaState[1] = 0;
   g_anCameraSpringDeltaState[2] = 0;
@@ -42,12 +53,13 @@ void ResetCameraStateToTarget(void) {
   g_anCameraSpringDeltaState[5] = 0;
   g_nCameraCollisionRetries = 0;
   g_nCameraStuckFrames = 0;
-  *(volatile int *)yaw = y;
-  *(volatile int *)&g_nCameraSpringPitch = p;
-  *(volatile int *)&g_nCameraSpringDistance = d;
-  *(volatile int *)&g_nCameraSpringRoll = r;
-  *(volatile int *)&g_nCameraSpringPitchBias = pb;
-  *(volatile int *)&g_nCameraSpringYawBias = yb;
+  new_var2 = (volatile int *)(&g_nCameraSpringPitch);
+  *((volatile int *)yaw) = y;
+  *new_var2 = p;
+  *((volatile int *)(&g_nCameraSpringDistance)) = d;
+  *((volatile int *)(&g_nCameraSpringRoll)) = r;
+  *((volatile int *)(&g_nCameraSpringPitchBias)) = pb;
+  *((volatile int *)(&g_nCameraSpringYawBias)) = yb;
   ComputeCameraOrbitOffset(eye);
   AddVector(eye, eye, g_pCameraAnchorPos);
   yaw = yaw - 0x14;
@@ -69,4 +81,8 @@ void ResetCameraStateToTarget(void) {
    permuter candidate. Working parts: g_anCameraSpringYawBlock held base
    with eye = &yaw[-17] (addiu s1,s0,-0x44), in-place yaw -= 0x14 step,
    Sec-M volatile 6-load batch + volatile spring stores around the plain
-   zero stores. */
+   zero stores.
+
+   2026-07-25-1 unattended permuter session (~15m, ~76200 iterations, timed out
+   at the 15m budget): best score 10 vs base score 70 — very close. No
+   byte-perfect candidate found; still PARKED (see above). */

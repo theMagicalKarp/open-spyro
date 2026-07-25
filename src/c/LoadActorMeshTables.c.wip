@@ -19,29 +19,41 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern int *RelocateActorMeshHeader(int *header);
 extern void InitActorMeshScratchRegions(int arg);
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/LoadActorMeshTables.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/LoadActorMeshTables/output-1260-1/source.c */
+
 void LoadActorMeshTables(void) {
   int *dir;
-  unsigned int top;
+  int new_var;
+  int top;
   int i;
-
   i = 0;
   top = 0x80200000;
-  dir = (int *)(top - D_8007A714 - D_8007A714 - g_nCrt0StackSize);
+  dir = (int *)(((top - D_8007A714) - D_8007A714) - g_nCrt0StackSize);
   CdReadSyncSectors(g_nCdBaseLba, dir, D_8007A714, D_8007A710, 0x258);
-  g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - *dir);
+  g_pWorkAreaTop = (void *)((top - g_nCrt0StackSize) - (*dir));
   CopyWords(g_pWorkAreaTop, dir + 0x200, *dir);
   for (;;) {
     if (dir[1] == 0) {
+      if (1) {
+      }
       break;
     }
     i++;
-    (&g_apActorMeshTable)[dir[2]] =
-        RelocateActorMeshHeader((int *)((int)g_pWorkAreaTop + dir[1] - 0x800));
+    new_var = 2;
+    (&g_apActorMeshTable)[dir[new_var]] = RelocateActorMeshHeader(
+        (int *)((((int)g_pWorkAreaTop) + dir[1]) - 0x800));
     dir += 2;
     if (i >= 0x40) {
       break;
     }
   }
+
   InitActorMeshScratchRegions(0);
 }
 
@@ -58,4 +70,8 @@ void LoadActorMeshTables(void) {
  * too, rotating the whole callee-saved allocation (dir=s1/top=s0, no s3). The
  * original wants loop.c ON (table hoisted) + NO peel + dir base (not dir+4) +
  * table in s3 simultaneously — unreachable from any source form tried. Permuter
- * candidate (biv-selection). Alias g_apActorMeshTableBlock committed. */
+ * candidate (biv-selection). Alias g_apActorMeshTableBlock committed.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~86900 iterations, timed out
+ * at the 15m budget): best score 1260 vs base score 2675. No byte-perfect
+ * candidate found; still PARKED (see above). */

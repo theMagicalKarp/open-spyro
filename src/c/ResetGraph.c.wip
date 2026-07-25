@@ -66,4 +66,8 @@ else_block:
    §B13/§K batch-load-then- scatter-store wall — volatile stores, volatile reads
    (overflows), and source reordering all leave it. Permuter-or-never. NB
    resuming needs the g_abGpuDebugBlock alias re-added to
-   config/symbol_addrs.txt. */
+   config/symbol_addrs.txt.
+
+   2026-07-25-1 unattended permuter session (~15m, ~84300 iterations, timed out
+   at the 15m budget): best score 300 vs base score 585. No byte-perfect
+   candidate found; still PARKED (see above). */

@@ -61,4 +61,8 @@ int InstallInterruptCallback(unsigned int param_1, int param_2) {
    (fresh lui each) because no call sits between the accesses to force the
    register — incomplete-array alias and pointer-local both fold per-access
    (+2 insns, overflows the slot). Permuter-or-never. Resuming needs the
-   g_abIrqDispatchBlock alias re-added to config/symbol_addrs.txt. */
+   g_abIrqDispatchBlock alias re-added to config/symbol_addrs.txt.
+
+   2026-07-25-1 unattended permuter session (~15m, ~74400 iterations, timed out
+   at the 15m budget): best score 1625 vs base score 2280. No byte-perfect
+   candidate found; still PARKED (see above). */

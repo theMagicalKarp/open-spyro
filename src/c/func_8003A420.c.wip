@@ -18,7 +18,15 @@
  * direct) vs orig `negu v0,v0` (negate the copy); delta stays live for the
  * clamp so gcc re-negates the source. Testing `absv<0` instead flips bgez
  * v1->v0 (trade). Harvest with the permuter (double reg-permutation -> needs
- * hand-framed PERM_*). */
+ * hand-framed PERM_*).
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~61700 iterations, timed out
+ * at the 15m budget): base score 65, and the run wrote NO output directories —
+ * not one mutation beat the base. This confirms the note above: the plain
+ * randomizer cannot reach a double register-permutation, so the hand-framed
+ * PERM_* macros really are the prerequisite here. Third function in this sweep
+ * with the low-base/zero-progress signature (cf. func_80038C4C,
+ * func_80038FC8). Still PARKED. */
 
 extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);

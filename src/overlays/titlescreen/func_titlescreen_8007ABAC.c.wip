@@ -29,6 +29,13 @@
  * base score 3195), ran ~39000 iterations (overnight, -j8) with ZERO sub-floor
  * results — the randomizer's transform space does not reach this v0-reuse flip.
  * Genuine permuter-or-never wall; the rest of the function is byte-identical.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~9800 iterations via the
+ * standard `open-spyro permuter` path, timed out at the 15m budget): best score
+ * 3195 — identical to the base score, zero sub-floor results, only 2 output
+ * dirs. CORROBORATES the overnight ~39000-iteration finding above: the
+ * randomizer's transform space genuinely does not reach the v0-reuse flip.
+ * Treat as settled; do not spend further unattended permuter time here.
  */
 
 #include "titlescreen.h"

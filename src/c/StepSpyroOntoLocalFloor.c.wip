@@ -19,13 +19,21 @@ extern int g_anSpyroAirborneFramesBlock[];
    matrix), and on a hit nudge the world position by the resolved delta
    (axis components under 8 units are dropped) and clear the airborne
    counter; on a miss count another airborne frame. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/StepSpyroOntoLocalFloor.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/StepSpyroOntoLocalFloor/output-20-1/source.c */
+
 void StepSpyroOntoLocalFloor(void) {
   int down[3];
   int fore[3];
   int aft[3];
+  int new_var;
   int *mtx;
   int *pos;
-
   down[0] = 0;
   down[1] = 0;
   down[2] = -0x164;
@@ -41,8 +49,12 @@ void StepSpyroOntoLocalFloor(void) {
   AddVector(fore, pos, fore);
   ApplyActiveGteRotation(down, down);
   AddVector(down, pos, down);
-  if (CastRayWorldAndActors(fore, aft) != 0 && g_anCollisionProbeVec[2] > 0) {
+  if ((CastRayWorldAndActors(fore, aft) != 0) &&
+      (g_anCollisionProbeVec[2] > 0)) {
+    new_var = 26;
     SubtractVector(down, g_anCollisionResolvedPos, down);
+    if (((!down) && (!down)) && (!down)) {
+    }
     if (abs(down[0]) < 8) {
       down[0] = 0;
     }
@@ -53,7 +65,7 @@ void StepSpyroOntoLocalFloor(void) {
       down[2] = 0;
     }
     AddVector(pos, pos, down);
-    mtx[26] = 0;
+    mtx[new_var] = 0;
   } else {
     int *air = g_anSpyroAirborneFramesBlock;
     air[0] += 1;
@@ -72,4 +84,10 @@ void StepSpyroOntoLocalFloor(void) {
    happens even POST-LABEL when the base pseudo is single-def from a
    constant (REG_EQUIV substitution, not the same-ebb cse table — §Y rule 3
    does not save it). Miss-arm RMW (alias-array pointer) and the entire
-   call chain otherwise match. */
+   call chain otherwise match.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73500 iterations, timed out
+   at the 15m budget): best score 20 vs base score 605 — very close. No
+   byte-perfect candidate found; still PARKED. Another §Y-family function whose
+   sibling ProbeSpyroLedgeForward matched in the same sweep; worth comparing
+   against build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1. */

@@ -9,32 +9,42 @@
    read by BOTH branches' n>0 test at v0, not a2 directly); every C form
    tried (i computed early/late/shared local `cnt=n`, early-return guard)
    either reproduces this single-nop residue or regresses to a completely
-   different 4-nop layout. Scheduler/delay-slot-fill tie; permuter-or-park. */
+   different 4-nop layout. Scheduler/delay-slot-fill tie; permuter-or-park.
+
+   2026-07-25-1 unattended permuter session (~15m, ~92400 iterations, timed out
+   at the 15m budget): best score 250 vs base score 545. No byte-perfect
+   candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/memmove.c.wip
+   Best candidate: build/permuter/nonmatchings/memmove/output-250-1/source.c */
+
 void *memmove(void *dst, void *src, int n) {
   unsigned char *s = src;
   unsigned char *d;
   int i;
-
-  if ((unsigned int)dst >= (unsigned int)s) {
+  if (((unsigned int)dst) >= ((unsigned int)s)) {
     if (n > 0) {
       i = n - 1;
-      d = (unsigned char *)dst + i;
+      d = ((unsigned char *)dst) + i;
       s = s + i;
       do {
         *d = *s;
         s -= 1;
         d -= 1;
-      } while (i-- > 0);
+      } while ((i--) > 0);
     }
   } else {
-    if (n > 0) {
+    {
       i = n - 1;
       d = dst;
       do {
         *d = *s;
         s += 1;
         d += 1;
-      } while (i-- > 0);
+      } while ((i--) > 0);
     }
   }
   return dst;

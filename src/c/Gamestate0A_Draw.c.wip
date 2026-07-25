@@ -45,7 +45,11 @@ extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
      compare loads (v1/a1 picked instead of orig v0/a0, +1 move at the
      PutDrawEnv call). volatile color, volatile active-read and u64-return
      truncation all failed to pin it. Same knot family as
-     EndSaveMenuToWorld (Sec-I). */
+     EndSaveMenuToWorld (Sec-I).
+
+   2026-07-25-1 unattended permuter session (~15m, ~49700 iterations, timed out
+   at the 15m budget): best score 765 vs base score 985. No byte-perfect
+   candidate found; still PARKED (see above). */
 void Gamestate0A_Draw(void) {
   RECT rect;
   int color;

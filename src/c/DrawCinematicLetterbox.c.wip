@@ -6,10 +6,17 @@ extern void AddPrimToOT(int prim);
    y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by
    g_nGameplayBlocked — the "letterbox close"/"open" cutscene transition.
    Submits both bars via AddPrimToOT (0x80018f30, 0x1a4). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/DrawCinematicLetterbox.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/DrawCinematicLetterbox/output-85-1/source.c */
+
 void DrawCinematicLetterbox(void) {
   void *prim;
   int h;
-
   if (g_nGameplayBlocked != 0) {
     if (g_nLetterboxBarHeight < 0x16) {
       g_nLetterboxBarHeight += g_nFrameStep;
@@ -25,43 +32,40 @@ void DrawCinematicLetterbox(void) {
       g_nLetterboxBarHeight = 0;
     }
   }
-
   prim = g_pPrimBufferWriteCursor;
-  *(unsigned char *)((int)prim + 7) = 0x28;
+  *((int *)prim) = 0x5000000;
+  *((unsigned char *)(((int)prim) + 7)) = 0x28;
   h = g_nLetterboxBarHeight;
-  *(int *)prim = 0x5000000;
-  *(short *)((int)prim + 8) = 0;
-  *(short *)((int)prim + 0xc) = 0x200;
-  *(short *)((int)prim + 0x10) = 0;
-  *(short *)((int)prim + 0x14) = 0x200;
-  *(short *)((int)prim + 0xa) = 0;
-  *(short *)((int)prim + 0xe) = 0;
-  *(unsigned char *)((int)prim + 4) = 0;
-  *(unsigned char *)((int)prim + 5) = 0;
-  *(unsigned char *)((int)prim + 6) = 0;
-  *(short *)((int)prim + 0x12) = h;
-  *(short *)((int)prim + 0x16) = h;
+  *((short *)(((int)prim) + 8)) = 0;
+  *((short *)(((int)prim) + 0xc)) = 0x200;
+  *((short *)(((int)prim) + 0x10)) = 0;
+  *((short *)(((int)prim) + 0x14)) = 0x200;
+  *((short *)(((int)prim) + 0xa)) = 0;
+  *((short *)(((int)prim) + 0xe)) = 0;
+  *((unsigned char *)(((int)prim) + 4)) = 0;
+  *((unsigned char *)(((int)prim) + 5)) = 0;
+  *((unsigned char *)(((int)prim) + 6)) = 0;
+  *((short *)(((int)prim) + 0x12)) = h;
+  *((short *)(((int)prim) + 0x16)) = h;
   AddPrimToOT((int)prim);
-
-  prim = (void *)((int)prim + 0x18);
+  prim = (void *)(((int)prim) + 0x18);
   g_pPrimBufferWriteCursor = prim;
-  *(unsigned char *)((int)prim + 7) = 0x28;
+  *((unsigned char *)(((int)prim) + 7)) = 0x28;
   h = g_nLetterboxBarHeight;
-  *(short *)((int)prim + 0x12) = 0xf0;
-  *(short *)((int)prim + 0x16) = 0xf0;
-  *(int *)prim = 0x5000000;
-  *(short *)((int)prim + 8) = 0;
-  *(short *)((int)prim + 0xc) = 0x200;
-  *(short *)((int)prim + 0x10) = 0;
-  *(short *)((int)prim + 0x14) = 0x200;
-  *(unsigned char *)((int)prim + 4) = 0;
-  *(unsigned char *)((int)prim + 5) = 0;
-  *(unsigned char *)((int)prim + 6) = 0;
-  *(short *)((int)prim + 0xa) = 0xf0 - h;
-  *(short *)((int)prim + 0xe) = 0xf0 - h;
+  *((short *)(((int)prim) + 0x12)) = 0xf0;
+  *((short *)(((int)prim) + 0x16)) = 0xf0;
+  *((int *)prim) = 0x5000000;
+  *((short *)(((int)prim) + 8)) = 0;
+  *((short *)(((int)prim) + 0xc)) = 0x200;
+  *((short *)(((int)prim) + 0x10)) = 0;
+  *((short *)(((int)prim) + 0x14)) = 0x200;
+  *((unsigned char *)(((int)prim) + 4)) = 0;
+  *((unsigned char *)(((int)prim) + 5)) = 0;
+  *((unsigned char *)(((int)prim) + 6)) = 0;
+  *((short *)(((int)prim) + 0xa)) = 0xf0 - h;
+  *((short *)(((int)prim) + 0xe)) = 0xf0 - h;
   AddPrimToOT((int)prim);
-
-  prim = (void *)((int)prim + 0x18);
+  prim = (void *)(((int)prim) + 0x18);
   g_pPrimBufferWriteCursor = prim;
 }
 
@@ -73,4 +77,8 @@ void DrawCinematicLetterbox(void) {
    (prim2's is v1 in both). Tried: branch-arm order (fixed the 60%->92% layout),
    reorder head stores (breaks store order), drop h local / direct-global reads
    (83.8%), named `code` local for 0x5000000 (const-propagates back, no change).
-   Pure reorg delay-slot-fill order tie; permuter candidate. */
+   Pure reorg delay-slot-fill order tie; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73300 iterations, timed out
+   at the 15m budget): best score 85 vs base score 265. No byte-perfect
+   candidate found; still PARKED (see above). */

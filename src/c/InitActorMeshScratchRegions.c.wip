@@ -8,6 +8,15 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
    bytes each below that. Publishes the double-buffer aliases (prim buffer /
    merged-chain slot / depth-bin base 0+1) from the freshly stored values and
    zeroes the prim-top slot (8 bytes) and the OT region (0x4000). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/InitActorMeshScratchRegions.c.wip Best candidate:
+   build/permuter/nonmatchings/InitActorMeshScratchRegions/output-375-1/source.c
+ */
+
 void InitActorMeshScratchRegions(int split) {
   char *top;
   int stride;
@@ -15,27 +24,24 @@ void InitActorMeshScratchRegions(int split) {
   void *b1;
   void *m;
   void *ot;
-
   top = g_pWorkAreaTop;
   g_pEmitListBuffer = top - 0x2000;
   g_pRenderScratchOtBase = top - 0x6000;
-  top = top - 0x6008;
   g_pRenderScratchPrimTop = top;
-
   if (split) {
     stride = -0x13000;
   } else {
+    top = top - 0x6008;
     stride = -0x1C000;
   }
   top += stride;
   g_pRenderScratchPrimBase1 = top;
   top += stride;
   g_pRenderScratchRegionBase = top;
-
-  b0 = *(void *volatile *)&g_pRenderScratchRegionBase;
-  b1 = *(void *volatile *)&g_pRenderScratchPrimBase1;
-  m = *(void *volatile *)&g_pRenderScratchPrimTop;
-  ot = *(void *volatile *)&g_pRenderScratchOtBase;
+  b0 = *((void *volatile *)(&g_pRenderScratchRegionBase));
+  b1 = *((void *volatile *)(&g_pRenderScratchPrimBase1));
+  m = *((void *volatile *)(&g_pRenderScratchPrimTop));
+  ot = *((void *volatile *)(&g_pRenderScratchOtBase));
   g_pFramePrimBufferBase0 = b0;
   g_pFramePrimBufferBase1 = b1;
   g_pFrameOtMergedChainSlot0 = m;
@@ -55,4 +61,8 @@ void InitActorMeshScratchRegions(int split) {
  * j). Ternary and if/else forms emit byte-identical output. The hoisted lui
  * also shifts top/stride register roles (a3/a1 vs v0/v1) and batches the
  * three head addiu's. Permuter candidate.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~86700 iterations, timed out
+ * at the 15m budget): best score 375 vs base score 1285. No byte-perfect
+ * candidate found; still PARKED (see above).
  */

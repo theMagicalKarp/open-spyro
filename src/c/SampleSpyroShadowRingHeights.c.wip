@@ -19,8 +19,18 @@ extern int g_anSpyroShadowRingIndexBlock[];
    ring vertex: ground within +/-0x80 of the probe Z stores the scaled height
    (diff * 0xC2 / 0x200), else sets the no-ground flag. probe == 0 clears
    both slots without sampling. Consumed by DrawSpyroDropShadow. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show
+   HEAD:src/c/SampleSpyroShadowRingHeights.c.wip Best candidate:
+   build/permuter/nonmatchings/SampleSpyroShadowRingHeights/output-625-1/source.c
+ */
+
 void SampleSpyroShadowRingHeights(int probe) {
   int v[3];
+  int *new_var;
   unsigned char *mtx;
   int *ring;
   int gz;
@@ -29,9 +39,9 @@ void SampleSpyroShadowRingHeights(int probe) {
   char *flags;
   char *heights;
   int d;
-
   mtx = g_anSpyroBodyMtxBlock;
   v[0] = 0;
+  new_var = &g_anSpyroWorldPos[2];
   v[1] = 0;
   v[2] = -0x164;
   RotateVectorByMatrix(mtx, v, v);
@@ -43,12 +53,13 @@ void SampleSpyroShadowRingHeights(int probe) {
     g_bSpyroOtBinBias = 5;
   }
   g_nSpyroShadowOtBinBias = 3;
-  if (g_anSpyroWorldPos[2] - gz >= 0x365) {
+  heights = mtx + 0x13C;
+  if (((*new_var) - gz) >= 0x365) {
     g_nSpyroShadowOtBinBias = 5;
   }
   g_nSpyroShadowHiddenFlag = 0;
-  if (g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] >= gz ||
-      *(int *)(mtx + 0x13C) != 0) {
+  if ((g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] >= gz) ||
+      ((*((int *)heights)) != 0)) {
     g_nSpyroShadowHiddenFlag = 1;
   }
   ring = g_anSpyroShadowRingIndexBlock;
@@ -56,28 +67,29 @@ void SampleSpyroShadowRingHeights(int probe) {
   ring[0] = idx;
   if (probe != 0) {
     mtx = g_anSpyroBodyMtxBlock;
-    RotateVectorByMatrix(mtx, idx * 12 + (int)g_anSpyroShadowProbeOffsetTable,
-                         v);
+    RotateVectorByMatrix(
+        mtx, (idx * 12) + ((int)g_anSpyroShadowProbeOffsetTable), v);
     AddVector(v, v, (int *)(mtx - 0x34));
     v[2] += 0x200;
     ground = FindGroundHeightBelow(v, 0x400);
     v[2] -= 0x200;
-    flags = (char *)ring - 0x18;
-    if ((unsigned int)(v[2] - ground + 0x80) >= 0x100) {
-      *(unsigned char *)(g_nSpyroShadowRingIndex + (int)flags) = 1;
+    flags = ((char *)ring) - 0x18;
+    if (((unsigned int)((v[2] - ground) + 0x80)) >= 0x100) {
+      *((unsigned char *)(g_nSpyroShadowRingIndex + ((int)flags))) = 1;
     } else {
-      *(unsigned char *)(g_nSpyroShadowRingIndex + (int)flags) = 0;
-      heights = (char *)ring - 0x20;
+      *((unsigned char *)(g_nSpyroShadowRingIndex + ((int)flags))) = 0;
+      heights = ((char *)ring) - 0x20;
       d = (g_anSpyroShadowPos[2] - ground) * 0xC2;
-      *(unsigned char *)(g_nSpyroShadowRingIndex + (int)heights) = d / 0x200;
+      *((unsigned char *)(g_nSpyroShadowRingIndex + ((int)heights))) =
+          d / 0x200;
       return;
     }
   } else {
-    flags = (char *)ring - 0x18;
-    *(unsigned char *)(g_nSpyroShadowRingIndex + (int)flags) = 0;
-  }
-  heights = (char *)ring - 0x20;
-  *(unsigned char *)(g_nSpyroShadowRingIndex + (int)heights) = 0;
+    flags = ((char *)ring) - 0x18;
+    *((unsigned char *)(g_nSpyroShadowRingIndex + ((int)flags))) = 0;
+  };
+  *((unsigned char *)(g_nSpyroShadowRingIndex +
+                      ((int)(((char *)ring) - 0x20)))) = 0;
 }
 
 /* PARK NOTE (2026-07-15-1, 41.6%): blocked by the §Y held-base fold on the
@@ -96,4 +108,12 @@ void SampleSpyroShadowRingHeights(int probe) {
      different basic blocks).
    Same wall as ProbeSpyroLedgeForward (+4). Remaining residue besides this:
    hidden=0 store position (§K load-hoist), flags/ground/heights/d register
-   roles (v1/a0/v0/a0 vs a0/a1/a0/v0), li/addu order in the out-of-range arm. */
+   roles (v1/a0/v0/a0 vs a0/a1/a0/v0), li/addu order in the out-of-range arm.
+
+   2026-07-25-1 unattended permuter session (~15m, ~68000 iterations, timed out
+   at the 15m budget): best score 625 vs base score 1200. No byte-perfect
+   candidate found; still PARKED. NB the "same wall as ProbeSpyroLedgeForward"
+   note above: that sibling MATCHED in this same sweep (iteration 212), so the
+   cse address-fold wall is not actually impassable — see
+   build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1/source.c for
+   the shape that beat it, and consider transplanting it here. */

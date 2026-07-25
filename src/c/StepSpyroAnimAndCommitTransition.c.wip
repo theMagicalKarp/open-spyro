@@ -8,6 +8,17 @@
 extern unsigned char g_abSpyroSubFrameTimerBlock[];
 extern unsigned char g_abSpyroStateTransitionMatrixBlock[45][45];
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show
+   HEAD:src/c/StepSpyroAnimAndCommitTransition.c.wip Best candidate:
+   build/permuter/nonmatchings/StepSpyroAnimAndCommitTransition/output-20-1/source.c
+ */
+
 int StepSpyroAnimAndCommitTransition(int step) {
   unsigned char *timer = g_abSpyroSubFrameTimerBlock;
   unsigned char frame;
@@ -17,32 +28,35 @@ int StepSpyroAnimAndCommitTransition(int step) {
   int prev;
   int sum;
   unsigned char *idx;
-
+  int new_var;
   sum = timer[0] + step;
   timer[0] = sum;
-  if ((unsigned int)(sum & 0xFF) >= 0x10) {
-    timer[0] = sum - 0x10;
-    frame = g_bSpyroAnimFrame;
-    cur = g_bSpyroAnimCurrent;
-    next = frame + 1;
-    g_bSpyroAnimPrev = cur;
+  new_var = 0x10;
+  if (((unsigned int)(sum & 0xFF)) >= new_var) {
+    timer[0] = sum - new_var;
+    do {
+      frame = g_bSpyroAnimFrame;
+      cur = g_bSpyroAnimCurrent;
+      next = frame + 1;
+      g_bSpyroAnimPrev = cur;
+    } while (0);
     cur <<= 2;
     g_bSpyroFramePrev = frame;
     g_bSpyroAnimFrame = next;
-    if ((unsigned int)(next & 0xFF) < g_abSpyroAnimDescTable[cur + 2]) {
+    if (((unsigned int)(next & 0xFF)) < g_abSpyroAnimDescTable[cur + 2]) {
       return 0;
     }
     state = g_nSpyroState;
-    idx = (unsigned char *)(state + (int)g_abSpyroStateAnimIndexMap);
-    *(volatile unsigned char *)&g_bSpyroAnimCurrent = idx[0];
-    prev = *(volatile int *)&g_nSpyroPrevState;
+    idx = (unsigned char *)(state + ((int)g_abSpyroStateAnimIndexMap));
+    *((volatile unsigned char *)(&g_bSpyroAnimCurrent)) = idx[0];
+    prev = *((volatile int *)(&g_nSpyroPrevState));
     if (g_abSpyroStateTransitionMatrixBlock[prev][state] == 0xA) {
       g_bSpyroAnimFrame = g_abSpyroAnimDescTable[idx[0] << 2];
     } else {
       g_bSpyroAnimFrame = 1;
       timer[0] = 4;
     }
-    g_nSpyroPrevState = *(volatile int *)&g_nSpyroState;
+    g_nSpyroPrevState = *((volatile int *)(&g_nSpyroState));
     return 1;
   }
   return 0;
@@ -59,4 +73,10 @@ int StepSpyroAnimAndCommitTransition(int step) {
    the 2D row pseudo existed — one global-alloc decision flips the whole
    head. decl-order, u8 frame, state-volatile on/off, full-volatile run
    (overflows slot +3) all tried; last three runs byte-identical.
-   Clean permuter candidate (single reg-assignment tie). */
+   Clean permuter candidate (single reg-assignment tie).
+
+   2026-07-25-1 unattended permuter session (~15m, ~78200 iterations, timed out
+   at the 15m budget): best score 20 vs base score 530 — one of the closest
+   near-misses of the sweep, consistent with the single-tie diagnosis above. No
+   byte-perfect candidate found; still PARKED. A longer budget looks worthwhile
+   here. */

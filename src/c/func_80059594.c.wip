@@ -29,9 +29,22 @@ extern int D_80076228_blk[];
    wd, or reused wt) DOES equalize the range but cascades register pressure into
    the matched start=buf / g_dwActiveCameraOptions region (-> 88.9%) — a §F9
    double knot. Held-base SpuCommonAttr -0x320 region matches via the
-   D_80076228_blk incomplete-array alias (A20). Permuter target. */
+   D_80076228_blk incomplete-array alias (A20). Permuter target.
+
+   2026-07-25-1 unattended permuter session (~15m, ~63600 iterations, timed out
+   at the 15m budget): best score 120 vs base score 325. No byte-perfect
+   candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_80059594.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80059594/output-120-1/source.c */
+
 int func_80059594(unsigned char *buf) {
   unsigned char *start;
+  int new_var2;
   unsigned char *common;
   int sfx;
   int sm;
@@ -45,6 +58,8 @@ int func_80059594(unsigned char *buf) {
   int *eggs;
   int *gems;
   unsigned char *half;
+  int new_var;
+  unsigned int new_var3;
   int *dragons;
   unsigned char *row;
   unsigned char *row2;
@@ -54,7 +69,6 @@ int func_80059594(unsigned char *buf) {
   int wd;
   int wt;
   int we;
-
   g_nActiveLevelId = buf[0];
   sfx = buf[1];
   sm = (sfx * 0x3FFF) / 10;
@@ -62,24 +76,27 @@ int func_80059594(unsigned char *buf) {
   g_nSfxVolume = sfx;
   g_nSoundMasterVolume = (sm << 0xC) / 16383;
   mv = buf[2];
-  common = (unsigned char *)D_80076228_blk - 0x320;
-  *(int *)common = 0xC0;
+  common = ((unsigned char *)D_80076228_blk) - 0x320;
+  *((int *)common) = 0xC0;
   g_nMusicVolume = mv;
   D_80076224 = mv << 0xB;
   D_80075F18 = mv << 0xB;
   D_80075F1A = mv << 0xB;
   SetSpuCommonAttr(common);
+  new_var3 = *((unsigned int *)(buf + 4));
   g_nOptionVibrationEnabled = buf[3];
-  g_dwActiveCameraOptions = *(unsigned int *)(buf + 4);
+  g_dwActiveCameraOptions = new_var3;
   g_nSoundMonoMixFlag = buf[8];
   D_80075838 = buf[9];
   D_8007583C = buf[0xA];
   g_nExtraLives = buf[0xB];
+  new_var = g_nExtraLives;
   start = buf;
-  if (g_nExtraLives < 4) {
+  if (new_var < 4) {
     g_nExtraLives = 4;
   }
   CopyWords(g_anWorldPersistentFlags, buf + 0x10, 0x14);
+  new_var2 = 0x64;
   w = 0;
   tbl = g_abWorldPerLevelByteTable;
   row = buf;
@@ -88,14 +105,14 @@ int func_80059594(unsigned char *buf) {
     src = row + 0x24;
     end = tbl + 5;
     do {
-      *dst++ = *src++;
-    } while ((int)dst < (int)end);
+      *(dst++) = *(src++);
+    } while (((int)dst) < ((int)end));
     tbl += 5;
     w += 1;
     row += 5;
   } while (w < 5);
   CopyWords(g_abLevelVisitedFlag, buf + 0x40, 0x24);
-  CopyWords(g_abLevelGemPercent, buf + 0x64, 0x24);
+  CopyWords(g_abLevelGemPercent, buf + new_var2, 0x24);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;
@@ -110,7 +127,7 @@ int func_80059594(unsigned char *buf) {
     wd = g_nWorldDragonsRescued;
     wt = g_nWorldTreasureCollected;
     *dragons = d;
-    g = *(short *)(half + 0xAC);
+    g = *((short *)(half + 0xAC));
     g_nWorldDragonsRescued = wd + d;
     *gems = g;
     g_nWorldTreasureCollected = wt + g;
@@ -128,9 +145,9 @@ int func_80059594(unsigned char *buf) {
   } while (i < 0x24);
   i = 0;
   do {
-    g_abSaveOptionsBlock[i] = *(buf + i + 0x106);
+    g_abSaveOptionsBlock[i] = *((buf + i) + 0x106);
     i += 1;
   } while (i < 6);
   CopyWords(g_anLevelKillBitmapTable, buf + 0x10C, 0x480);
-  return *(int *)(buf + 0x58C) == ComputeSaveGameChecksum(start);
+  return (*((int *)(buf + 0x58C))) == ComputeSaveGameChecksum(start);
 }

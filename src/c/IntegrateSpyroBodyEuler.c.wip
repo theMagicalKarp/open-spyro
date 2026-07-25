@@ -12,32 +12,38 @@ extern int g_anSpyroBodyPitchBlock[];
    cos(pitch)/cos(roll) component, and pitch by the twist-coupled term. The
    12-bit angles are mirrored to the byte snapshots
    g_abSpyroPersistentEuler[0..2]. */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/IntegrateSpyroBodyEuler.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/IntegrateSpyroBodyEuler/output-400-1/source.c */
+
 void IntegrateSpyroBodyEuler(int delta) {
+  short new_var;
   int cosPitch;
   int sinPitch;
   int cosRoll;
   int sinRoll;
   int pitchTwist;
   int yawDelta;
-
   cosPitch = LookupCosine(g_anSpyroBodyPitchBlock[0]);
   sinPitch = LookupSine(g_anSpyroBodyPitchBlock[0]);
-  cosRoll = LookupCosine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
+  cosRoll = LookupCosine((-g_anSpyroBodyPitchBlock[-1]) & 0xfff);
   if (cosRoll == 0) {
     cosRoll = 1;
   }
-  sinRoll = LookupSine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
-
+  sinRoll = LookupSine((-g_anSpyroBodyPitchBlock[-1]) & 0xfff);
   pitchTwist = (delta * sinRoll) / cosRoll;
   yawDelta = (delta * cosPitch) / cosRoll;
-
-  g_anSpyroBodyPitchBlock[-1] =
-      g_anSpyroBodyPitchBlock[-1] + (delta * sinPitch >> 0xc) & 0xfff;
+  g_anSpyroBodyPitchBlock[new_var = -1] =
+      (g_anSpyroBodyPitchBlock[new_var] + ((delta * sinPitch) >> 0xc)) & 0xfff;
   g_abSpyroPersistentEuler[1] = (byte)(g_anSpyroBodyPitchBlock[-1] >> 4);
-  g_nSpyroBodyYaw = g_nSpyroBodyYaw + yawDelta & 0xfff;
+  g_nSpyroBodyYaw = (g_nSpyroBodyYaw + yawDelta) & 0xfff;
   g_abSpyroPersistentEuler[2] = (byte)(g_nSpyroBodyYaw >> 4);
   g_anSpyroBodyPitchBlock[0] =
-      g_anSpyroBodyPitchBlock[0] + (pitchTwist * cosPitch >> 0xc) & 0xfff;
+      (g_anSpyroBodyPitchBlock[0] + ((pitchTwist * cosPitch) >> 0xc)) & 0xfff;
   g_abSpyroPersistentEuler[0] = (byte)(g_anSpyroBodyPitchBlock[0] >> 4);
 }
 
@@ -50,4 +56,9 @@ void IntegrateSpyroBodyEuler(int delta) {
    pitch (+4). Compounded by a base register-role permutation (orig s2, ours s4)
    and the §G lagged-mult dead spills (orig frame 0x38 with 3 dead `sw`s to
    0x10/0x14/0x18 to hide mult latency; ours 0x28, no spills). Skip-list class,
-   not a permuter candidate. */
+   not a permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~77000 iterations, timed out
+   at the 15m budget): best score 400 vs base score 1105. Run anyway by the
+   unattended sweep despite the skip-list note above; no byte-perfect candidate
+   found, consistent with that assessment. Still PARKED. */

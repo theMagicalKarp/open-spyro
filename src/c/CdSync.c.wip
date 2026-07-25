@@ -51,7 +51,18 @@ extern unsigned char D_80075AD8[];         /* ready result bytes */
    hoisting too, worse), an explicit `readyIdx2 = readyIdx+1` pointer (folded
    away, no s4). Same §B12 constant-hoist wall as CdInit/CdControl*; confirms
    §AL's suspicion that the libcd status-return cluster carries it.
-   Permuter-or-wall. */
+   Permuter-or-wall.
+
+   2026-07-25-1 unattended permuter session (~15m, ~68700 iterations, timed out
+   at the 15m budget): best score 2040 vs base score 3105. No byte-perfect
+   candidate found; still PARKED (see above). */
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/CdSync.c.wip
+   Best candidate: build/permuter/nonmatchings/CdSync/output-2040-1/source.c */
+
 int CdSync(int mode, unsigned char *result) {
   int flag;
   int irq;
@@ -60,15 +71,14 @@ int CdSync(int mode, unsigned char *result) {
   int old;
   int n;
   unsigned char *src;
-  int *readyTbl = D_80074EDC;
-  unsigned char *readyIdx = &D_80075114;
-
   D_80075AE8 = VSync(-1) + 0x3C0;
   D_80075AEC = 0;
   D_80075AF0 = D_80011E84;
   for (;;) {
-    if (D_80075AE8 < VSync(-1) ||
-        (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
+    unsigned char *readyIdx = &D_80075114;
+    int *readyTbl = D_80074EDC;
+    if ((D_80075AE8 < VSync(-1)) ||
+        ((old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old))) {
       WriteString(D_80011DFC);
       WritePrintf(D_80011E0C, D_80075AF0, D_80074E5C[D_80074E55],
                   readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
@@ -81,29 +91,30 @@ int CdSync(int mode, unsigned char *result) {
       return -1;
     }
     if (FUN_8005df1c() != 0) {
-      idxSave = *D_800750FC & 3;
+      idxSave = (*D_800750FC) & 3;
       while ((irq = CdProcessInterrupt()) != 0) {
         if (irq & 4) {
           if (D_80074E38 != 0) {
             D_80074E38(readyIdx[1], D_80075AD8);
           }
         }
-        if ((irq & 2) && D_80074E34 != 0) {
+        if ((irq & 2) && (D_80074E34 != 0)) {
           D_80074E34(readyIdx[0], D_80075AD0);
         }
       }
+
       *D_800750FC = idxSave;
     }
     status = readyIdx[0] & 0xFF;
-    if (status == 2 || status == 5) {
+    if ((status == 2) || (status == 5)) {
       readyIdx[0] = 2;
       if (result != 0) {
         src = D_80075AD0;
         n = 7;
         do {
-          *result++ = *src++;
+          *(result++) = *(src++);
           n -= 1;
-        } while (n != -1);
+        } while (n != (-1));
       }
       return status;
     }

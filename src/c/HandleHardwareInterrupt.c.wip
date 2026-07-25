@@ -13,22 +13,29 @@ extern unsigned short
 extern unsigned char D_80011640[]; /* "unexpected interrupt(%04x)\n" */
 extern unsigned char D_8001165C[]; /* "intr timeout(%04x:%04x)\n" */
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/HandleHardwareInterrupt.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/HandleHardwareInterrupt/output-650-1/source.c */
+
 void HandleHardwareInterrupt(void) {
   unsigned short *p;
   void (**base)();
   void (**h)();
   int i;
   unsigned int mask;
-
   p = g_anLibapiIrqBlock;
   if (p[0] == 0) {
-    WritePrintf(D_80011640, *(volatile unsigned short *)g_pIStatReg);
+    WritePrintf(D_80011640, *((volatile unsigned short *)g_pIStatReg));
     ReturnFromException();
   }
   g_nInIsrFlag = 1;
-  mask = *(volatile unsigned short *)g_pIMaskReg &
-         ((unsigned int)*(unsigned short *)&g_nIrqEnableMask &
-          *(volatile unsigned short *)g_pIStatReg);
+  mask = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
+         (*((volatile unsigned short *)g_pIStatReg));
+  mask = (*((volatile unsigned short *)g_pIMaskReg)) & mask;
   if (mask != 0) {
     base = (void (**)())(p + 2);
     do {
@@ -40,8 +47,8 @@ void HandleHardwareInterrupt(void) {
             break;
           }
           if (mask & 1) {
-            *(volatile unsigned short *)g_pIStatReg = ~(1 << i);
-            if (*h != 0) {
+            *((volatile unsigned short *)g_pIStatReg) = ~(1 << i);
+            if ((*h) != 0) {
               (*h)();
             }
           }
@@ -53,20 +60,20 @@ void HandleHardwareInterrupt(void) {
           }
         }
       }
-      mask = *(volatile unsigned short *)g_pIMaskReg &
-             ((unsigned int)*(unsigned short *)&g_nIrqEnableMask &
-              *(volatile unsigned short *)g_pIStatReg);
+      mask = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
+             (*((volatile unsigned short *)g_pIStatReg));
+      mask = (*((volatile unsigned short *)g_pIMaskReg)) & mask;
     } while (mask != 0);
   }
-  if ((*(volatile unsigned short *)g_pIMaskReg &
-       *(volatile unsigned short *)g_pIStatReg) != 0) {
+  if (((*((volatile unsigned short *)g_pIMaskReg)) &
+       (*((volatile unsigned short *)g_pIStatReg))) != 0) {
     int old = g_nIsrTimeoutCounter;
     g_nIsrTimeoutCounter = old + 1;
     if (old > 0x800) {
-      WritePrintf(D_8001165C, *(volatile unsigned short *)g_pIStatReg,
-                  *(volatile unsigned short *)g_pIMaskReg);
+      WritePrintf(D_8001165C, *((volatile unsigned short *)g_pIStatReg),
+                  *((volatile unsigned short *)g_pIMaskReg));
       g_nIsrTimeoutCounter = 0;
-      *(volatile unsigned short *)g_pIStatReg = 0;
+      *((volatile unsigned short *)g_pIStatReg) = 0;
     }
   } else {
     g_nIsrTimeoutCounter = 0;
@@ -88,4 +95,8 @@ void HandleHardwareInterrupt(void) {
        slot). ×2 (initial + reload).
      - §K `li s3,1` / `addiu s4,s1,4` emission order swapped (2 independent
        insns). Block-temp reads were WORSE (73%); the inline expression here
-       is the best form. Clean single-shape permuter candidate. */
+       is the best form. Clean single-shape permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~72900 iterations, timed out
+   at the 15m budget): best score 650 vs base score 1490. No byte-perfect
+   candidate found; still PARKED (see above). */

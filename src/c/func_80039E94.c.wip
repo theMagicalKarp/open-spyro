@@ -25,7 +25,11 @@
    When the heading delta to the node exceeds `lim`, turns in place via
    ApproachAngle8 (deferring the turn when another listed actor of the
    same `kind` is already mid-turn); otherwise marks the actor moving
-   and delegates the step to func_80038EE0 + func_80039398. */
+   and delegates the step to func_80038EE0 + func_80039398.
+
+   2026-07-25-1 unattended permuter session (~15m, ~63000 iterations, timed out
+   at the 15m budget): best score 125 vs base score 500. No byte-perfect
+   candidate found; still parked. */
 extern int ApproxDist2D(int *a, int *b);
 extern int ArcTan2(int x, int y, int mode);
 extern int AbsAngleDelta8(int a, int b);
@@ -38,6 +42,14 @@ extern int abs(int);
 extern int D_800756C4;
 extern void *g_apSaveMenuAnimActorListBlock[];
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   Original hand-written body: git show HEAD:src/c/func_80039E94.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80039E94/output-125-1/source.c */
+
 int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
                   int group, int step, int lim, int kind, int flags) {
   int ret;
@@ -47,7 +59,6 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
   int *node;
   void **list;
   unsigned char *peer;
-
   if (D_800756C4 == 3) {
     speed += speed >> 1;
   } else if (D_800756C4 == 4) {
@@ -59,18 +70,18 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
   } else {
     zclose = 1;
   }
-  if (ApproxDist2D(actor + 3, (int *)(path + ((path[1] << 4) + 8))) < thresh &&
-      zclose != 0) {
-    *(unsigned char *)((char *)actor + 0x49) = 0;
-    if (*(short *)(path + 6) == -1) {
+  if ((ApproxDist2D(actor + 3, (int *)(path + ((path[1] << 4) + 8))) <
+       thresh) &&
+      (zclose != 0)) {
+    *((unsigned char *)(((char *)actor) + 0x49)) = 0;
+    if ((*((short *)(path + 6))) == (-1)) {
       t = path[1] + 1;
       path[1] = t;
       if ((t & 0xFF) == path[0]) {
         path[1] = 0;
       }
     } else {
-      t = path[1] - 1;
-      path[1] = t;
+      t = (path[1] = path[1] - 1);
       if ((t & 0xFF) == 0xFF) {
         path[1] = path[0] - 1;
       }
@@ -79,29 +90,31 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
   }
   node = (int *)(path + (path[1] << 4));
   ang = ArcTan2(node[2] - actor[3], node[3] - actor[4], 0);
-  if (AbsAngleDelta8(ang, *(unsigned char *)((char *)actor + 0x46)) <= lim) {
-    *(unsigned char *)((char *)actor + 0x49) = 1;
+  if (AbsAngleDelta8(ang, *((unsigned char *)(((char *)actor) + 0x46))) <=
+      lim) {
+    *((unsigned char *)(((char *)actor) + 0x49)) = 1;
     func_80038EE0(actor, ang, step, lim, 1);
     func_80039398(actor, speed, group, 0, flags);
     return ret;
   }
-  if (*(unsigned char *)((char *)actor + 0x49) == 0 && kind != 0xFF) {
+  if (((*((unsigned char *)(((char *)actor) + 0x49))) == 0) && (kind != 0xFF)) {
     list = g_apSaveMenuAnimActorListBlock;
-    while ((peer = (unsigned char *)*list++) != 0) {
-      if (peer[0x43] == kind && (unsigned int)peer[0x48] < 0x80 &&
-          peer[0x49] == 1) {
+    while ((peer = (unsigned char *)(*(list++))) != 0) {
+      if (((peer[0x43] == kind) && (((unsigned int)peer[0x48]) < 0x80)) &&
+          (peer[0x49] == 1)) {
         break;
       }
     }
+
     if (peer != 0) {
       return ret;
     }
-    *(unsigned char *)((char *)actor + 0x46) = ApproachAngle8(
-        ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
-    *(unsigned char *)((char *)actor + 0x49) = 2;
+    *((unsigned char *)(((char *)actor) + 0x46)) = ApproachAngle8(
+        ang, *((unsigned char *)(((char *)actor) + 0x46)), step, lim);
+    *((unsigned char *)(((char *)actor) + 0x49)) = 2;
   } else {
-    *(unsigned char *)((char *)actor + 0x46) = ApproachAngle8(
-        ang, *(unsigned char *)((char *)actor + 0x46), step, lim);
+    *((unsigned char *)(((char *)actor) + 0x46)) = ApproachAngle8(
+        ang, *((unsigned char *)(((char *)actor) + 0x46)), step, lim);
   }
   return ret;
 }

@@ -1,18 +1,36 @@
 #include "globals.h"
 
+/* 2026-07-25-1 unattended permuter session (~15m, ~94800 iterations, timed out
+   at the 15m budget): best score 10 vs base score 980 across 580 output dirs —
+   by far the largest proportional gain of the sweep, and one of its closest
+   near-misses. No byte-perfect candidate found; still parked, but a longer
+   budget looks very promising here. */
+
 extern void SetHudCounterDigits();
 extern int g_anHudLevelGemCachedBlock[];
 
+/* NOTE: the function body below is decomp-permuter output from the
+   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
+   generated and reads worse than the hand-written form it replaced;
+   the analysis above and below still describes the residue accurately.
+   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
+   them was measured to cost partial bytes; do not 'simplify' them.
+   Original hand-written body: git show HEAD:src/c/func_80054578.c.wip
+   Best candidate:
+   build/permuter/nonmatchings/func_80054578/output-10-1/source.c */
+
 void func_80054578(void) {
   int *pc = g_anHudLevelGemCachedBlock;
-  unsigned char *ps = (unsigned char *)g_anHudLevelGemCachedBlock - 0x20;
-  unsigned char *pr = (unsigned char *)g_anHudLevelGemCachedBlock - 0x1B;
+  unsigned char *ps = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x20;
+  unsigned char *pr = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x1B;
   unsigned char state;
   int gems = g_anLevelGemsCollected[g_nLevelIntroIndex];
   *pc = gems;
   SetHudCounterDigits(0, 4, gems, 1);
-  state = *ps;
-  if (state == 1 || state == 2 || state == 4) {
+  do {
+    state = *ps;
+  } while (0);
+  if (((state == 1) || (state == 2)) || (state == 4)) {
     *ps = 3;
     *pr = 0xD;
   }

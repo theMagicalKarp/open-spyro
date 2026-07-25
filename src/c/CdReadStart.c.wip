@@ -114,4 +114,8 @@ int CdReadStart(int param_1) {
  * FUN_80063a9c() call order needs cfg pinned in s0 across the call (a named
  * local helped but the held base did not fully land).
  *  4. one `move a1,zero` scheduling slot around CdControlForce(6,0).
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~77400 iterations, timed out
+ * at the 15m budget): best score 1355 vs base score 2525. No byte-perfect
+ * candidate found; still PARKED (see above).
  */
