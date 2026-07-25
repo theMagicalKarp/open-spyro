@@ -381,3 +381,46 @@ DispatchSpyroChargeStateChanges:
   class: B1
   date: 2026-07-24
   note: "%gp_rel(g_pSpyroContactActor) load at 0x80041314."
+
+# --- camera/actor vein (2026-07-25-1 session) ---
+UpdateGemPickupPathCamera:
+  verdict: park
+  class: F4
+  date: 2026-07-25
+  note: >-
+    Gem-pickup spline path camera (776 b). Parked at 96.9%, 194/194
+    length-exact, 6 insns / 2 sites. Both are the F4 shape (the original keeps
+    a reg-reg copy ours copy-propagates away): the abs of the dot/span
+    quotient (`mflo v0; bgez v0; move s0,v0` -- testing the QUOTIENT is what
+    stops the following `if (step < 0)` being jump-threaded) and the
+    max-step clamp tail (`move s0,s4; slt v0,v1,s0`, copy filling the lw
+    load-delay). cse.c canon_reg substitutes qty_first_reg for every use, so
+    no source ordering reaches it. Levers banked in the .wip: volatile
+    `PATH` macro for the entry double-load, offset-first pointer
+    parenthesisation, and non-volatile PATHDATA in the tangent arms so the
+    load lands after the a0/sll setup.
+func_8003BFC0:
+  verdict: park
+  class: F10/F7
+  date: 2026-07-25
+  note: >-
+    Actor waypoint sub-step + cross-fade (920 b). Parked at 80.4%, 230/230
+    length-exact. (1) F10 sched1 sinking: the cursor store and the entry
+    `idx = path[1]` lbu have no in-block consumer, so our -g3 sched1 moves
+    them to the end of the block (reorg then eats the store for the delay
+    slot); the original build did not schedule them. A volatile lbu restores
+    the entry order at the cost of one andi. (2) F7 divide-block register
+    rotation (span a2 vs v1). Reusable levers proven here: offset-first
+    `p + (i*0x10 + 8)`, `n = t - 1; span = legs - n` (else gcc reassociates to
+    (legs+1) - *step), and reading dir[0] before span so it fills the *step
+    load-delay.
+UpdateLedgeGrabCamera:
+  verdict: skip
+  class: B1
+  date: 2026-07-25
+  note: "%gp_rel access at 0x80037a20+ (camera block); screened out before any C."
+UpdateCameraFrame:
+  verdict: skip
+  class: B1
+  date: 2026-07-25
+  note: "%gp_rel access (0x80037bd4); the camera-frame driver is in the B1 cluster."
