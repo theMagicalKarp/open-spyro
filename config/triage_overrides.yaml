@@ -339,3 +339,45 @@ RelocateActorMeshHeader:
   class: "suspected non-gcc TU (t-register-only allocation, dead masked copy in one arm, unused 0x18 frame)"
   date: 2026-07-24
   note: "0x800133e0, 620b, zero calls. Uses no callee-saved regs at all and carries a dead `and v0,t1,0x7FFFFFFF` in the bgez-not-taken arm plus redundant addu rX,rY,zero param copies — codegen our gcc 2.7.2 -O2 does not produce. Screen before spending a session on it."
+
+func_8003C358:
+  verdict: matched
+  date: 2026-07-24
+  note: >-
+    Letter-banner builder (908 b). Vein: jal-chain transcription. Levers: split
+    each reused angle into its own short-lived local (a/b/ang/t) so global-alloc
+    hands out s0/s1 in the original order; in-place `x = x + K; x = x * 16;`
+    instead of one fused expression; `ch` reused as the spawn id (gives the
+    original out-of-line else + `j`); explicit `if (len > 0) { p = name; do {} }`
+    puts the string-cursor copy in the loop preheader; hoisted `skin` temp kills
+    a trailing load-delay nop; 8 bytes of unused tail local to reach frame 0x80.
+
+func_80038638:
+  verdict: park
+  class: F1
+  date: 2026-07-24
+  note: >-
+    Actor "steer around the target" step (740 b). Parked at 71.4%,
+    185/185 length-exact, +528 partial bytes. Single F1 register rotation:
+    `deadzone` (5th param) must be the top-priority global allocno (s0) with
+    the slt temp reusing its dying reg; ours ranks it last so every other
+    callee-saved param shifts one. Permuter target — see the .wip header for
+    the levers already tried.
+
+ResetSpyroEntity:
+  verdict: skip
+  class: B8
+  date: 2026-07-24
+  note: switchdataD_800112E8 jump table in MAIN (build_main.sh rejects loadable rodata).
+
+TickSpyroAnimStateMachine:
+  verdict: skip
+  class: B8
+  date: 2026-07-24
+  note: switchdataD_80010E58 jump table in MAIN.
+
+DispatchSpyroChargeStateChanges:
+  verdict: skip
+  class: B1
+  date: 2026-07-24
+  note: "%gp_rel(g_pSpyroContactActor) load at 0x80041314."
