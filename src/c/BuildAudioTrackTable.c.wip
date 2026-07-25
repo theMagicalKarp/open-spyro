@@ -27,7 +27,11 @@
    still not hoisting +4, or a permuter pass to find the register/CSE knob.
    Instruction-accurate reference (asm/text.s @ 0x8001256c) transcribed by
    hand below for whoever picks this back up; logic is right, only the
-   store-address CSE shape is wrong. */
+   store-address CSE shape is wrong.
+
+   2026-07-25-1 unattended permuter session (~15m, ~91800 iterations, timed out
+   at the 15m budget): best score 905 vs base score 1690. No byte-perfect
+   candidate found; still PARKED (see above). */
 int BuildAudioTrackTable(void) {
   int pad[2];
   int bank;

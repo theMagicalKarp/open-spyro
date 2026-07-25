@@ -37,7 +37,11 @@ extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
    direction is within 5 of one of the two blocked headings `blockA`/`blockB`
    on the same side as the turn, and the negated move result otherwise.
    Camera mode D_800756C4 scales the turn speed by 1.5x / 2x.
-   (0x80038638, 740 bytes.) */
+   (0x80038638, 740 bytes.)
+
+   2026-07-25-1 unattended permuter session (~15m, ~63400 iterations, timed out
+   at the 15m budget): best score 290 vs base score 485. No byte-perfect
+   candidate found; still parked. */
 int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
                   int speed, int p6, int p7, int blockA, int blockB, int p10,
                   int p11, int flags) {

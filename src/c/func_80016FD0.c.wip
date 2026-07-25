@@ -8,7 +8,11 @@
    (tried: literal repeated 3x, named local declared after the loads,
    combined single-expression form) — original schedules the lui AFTER all
    5 loads. Independent-instruction scheduling tie (no dependency to peg the
-   lui's position to); permuter-or-never. */
+   lui's position to); permuter-or-never.
+
+   2026-07-25-1 unattended permuter session (~15m, ~80000 iterations, timed out
+   at the 15m budget): best score 220 vs base score 475. No byte-perfect
+   candidate found; still PARKED (see above). */
 void func_80016FD0(unsigned int *dst, unsigned int *src) {
   unsigned int a2, a3, t0, t1, t2;
   unsigned int hiMask, at, v0;

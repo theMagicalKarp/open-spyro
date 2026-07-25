@@ -12,7 +12,11 @@ extern char D_80074B20[];
    word"/a0=scratch; original uses a0="next"/v0="old word"/v1=scratch — a
    full 3-register relabeling that no local reordering, temp naming, or
    type change (pointer vs plain uint) shifted. Same "whole-block regalloc
-   tie" class as cookbook §H; permuter-or-never. */
+   tie" class as cookbook §H; permuter-or-never.
+
+   2026-07-25-1 unattended permuter session (~15m, ~95800 iterations, timed out
+   at the 15m budget): best score 30 vs base score 80 — close, but the
+   3-register relabeling described above survived. Still PARKED. */
 /* 0x8005fbb4: links a run of `count` 4-byte GPU packet tags into an OT chain
    (word = (tag_byte<<24) | next_addr), terminating the chain at the fixed
    address D_80074B20. Debug-traces via g_pfnGpuDebugPrintf when

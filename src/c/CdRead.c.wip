@@ -39,7 +39,11 @@ extern int D_80075164;          /* VSync stamp at read kick */
    vs v0 (orig). The branch STRUCTURE matches (single value-select store at the
    merge point via the `code` local + inverted `if (sel != 0)` guard) — only the
    two register picks differ. Clean permuter candidate once the held base is
-   forced. */
+   forced.
+
+   2026-07-25-1 unattended permuter session (~15m, ~89200 iterations, timed out
+   at the 15m budget): best score 830 vs base score 1165. No byte-perfect
+   candidate found; still PARKED (see above). */
 int CdRead(int sectors, void *buf, unsigned int mode) {
   int sel;
   int code;

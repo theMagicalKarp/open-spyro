@@ -24,7 +24,12 @@
    (`step + idle` — also +4 and flips the addu operands), embedded
    `*(phase = block)` (byte-identical to split-RMW). The la/load
    placement is sched1-canonical per §AD; no source form reached both.
-   6-insn window, single decision — permuter candidate. */
+   6-insn window, single decision — permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~71400 iterations, timed out
+   at the 15m budget): best score 10 vs base score 130 — very close, matching
+   the single-decision diagnosis above. No byte-perfect candidate found; still
+   PARKED. A longer budget looks worthwhile here. */
 extern void RotateLightVectorXZ(int mode);
 extern void HandleLevelSelectInput(void);
 extern void CheckCheatCodeMatch(void);

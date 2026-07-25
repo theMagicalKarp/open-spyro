@@ -100,4 +100,8 @@ void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
      (3) F8 FillWord a2=0x58 delay-slot: the original leaves the post-`lw a0`
          load-delay a nop and fills the `jal FillWord` slot with `li a2,0x58`;
          our sched2 fills the load-delay with the a2 li and nops the jal slot.
-   Permuter candidate (§E main recipe): pure regalloc+schedule, length-exact. */
+   Permuter candidate (§E main recipe): pure regalloc+schedule, length-exact.
+
+   2026-07-25-1 unattended permuter session (~15m, ~57700 iterations, timed out
+   at the 15m budget): best score 360 vs base score 565. No byte-perfect
+   candidate found; still PARKED (see above). */

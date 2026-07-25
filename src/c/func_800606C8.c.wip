@@ -83,4 +83,8 @@ void func_800606C8(int packet, unsigned short *env) {
    non-bg path match; the fill-store block alignment can't be verified past
    the 2-insn clamp deficit. Also uses `int w` (raw) for the x in-range value
    but `(short)rect[3]` (stack reload as lh) for h, matching m2c's asymmetry.
-   §B10 permuter-or-never class. */
+   §B10 permuter-or-never class.
+
+   2026-07-25-1 unattended permuter session (~15m, ~66900 iterations, timed out
+   at the 15m budget): best score 1350 vs base score 2170. No byte-perfect
+   candidate found; still PARKED (see above). */

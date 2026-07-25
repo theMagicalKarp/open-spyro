@@ -36,7 +36,11 @@ extern unsigned char D_80011990[]; /* last-op diagnostic format */
    the 2-insn form by cse. Also unfixed: the dead priming read of
    *g_pGpuStatReg lands in v0 in the original but a0 in ours (register
    choice only, no byte-length cost). Permuter candidate: single
-   address-vs-value load-form tie. */
+   address-vs-value load-form tie.
+
+   2026-07-25-1 unattended permuter session (~15m, ~83800 iterations, timed out
+   at the 15m budget): best score 775 vs base score 2290. No byte-perfect
+   candidate found; still PARKED (see above). */
 int CheckGpuTimeout(void) {
   int mask;
   int depth;

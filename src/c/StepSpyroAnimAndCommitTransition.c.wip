@@ -59,4 +59,10 @@ int StepSpyroAnimAndCommitTransition(int step) {
    the 2D row pseudo existed — one global-alloc decision flips the whole
    head. decl-order, u8 frame, state-volatile on/off, full-volatile run
    (overflows slot +3) all tried; last three runs byte-identical.
-   Clean permuter candidate (single reg-assignment tie). */
+   Clean permuter candidate (single reg-assignment tie).
+
+   2026-07-25-1 unattended permuter session (~15m, ~78200 iterations, timed out
+   at the 15m budget): best score 20 vs base score 530 — one of the closest
+   near-misses of the sweep, consistent with the single-tie diagnosis above. No
+   byte-perfect candidate found; still PARKED. A longer budget looks worthwhile
+   here. */

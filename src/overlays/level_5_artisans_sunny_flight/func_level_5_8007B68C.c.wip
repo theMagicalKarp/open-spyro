@@ -32,6 +32,10 @@
  * all 5 tally stanzas, TOTAL, PRESS block, time-attack board, all string
  * literals (owned .rodata, emitted in use order), memcpy message copies,
  * record block, pace tail - is byte-identical.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~16000 iterations — a slow,
+ * large function — timed out at the 15m budget): best score 3000 vs base score
+ * 3705, across 143 output dirs. No byte-perfect candidate found; still PARKED.
  */
 
 extern void func_800521C0(void); /* BuildRenderEntityLists */

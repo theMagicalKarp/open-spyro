@@ -50,4 +50,8 @@ void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
    y1->s3; ours sweep->s1, y1->s2, x1->s3 (+1 scheduled ty addiu). Tried:
    x1-reuse for 0x80/result (fixes length), separate c local (overflows, 5th
    s-reg), decl reorder, sweep-at-top, direct array reads (all byte-identical).
-   Cookbook &sect;H whole-function regalloc-shift class; permuter candidate. */
+   Cookbook &sect;H whole-function regalloc-shift class; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~84000 iterations, timed out
+   at the 15m budget): best score 125 vs base score 395. No byte-perfect
+   candidate found; still PARKED (see above). */

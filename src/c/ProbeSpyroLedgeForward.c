@@ -5,27 +5,7 @@
    ahead / 0x1A4 up rotated into body space; on a hit whose surface normal is
    steep enough (arctan of z vs horizontal length >= 0x17) latch the
    ledge-grab flag (+0x80 past the body matrix) and stash the contact normal
-   (+0x84).
- *
- * PARKED +4 bytes (65/64 insns): whole function matches except the
- * ledge-flag store — orig `sw v0,0x80(s2)` via the held base; ours folds to
- * absolute `lui $at; sw %lo(sym+0x80)` (Sec-P same-ebb cse fold of a
- * constant-derived pointer). The sibling +0x84 CopyVector ARG does derive
- * from s2 (call args never fold); only the MEM store folds. Tried: pointer
- * local for the base, raw incomplete-array indexing — identical bytes.
- * Same wall as func_8002CCC8 / ApplyPadInputToSpyroBodyYaw.
- *
- * 2026-07-14: root-caused against gcc 2.7.2 cse.c (find_best_addr): any
- * non-REG MEM address is folded via fold_rtx with NO cost check, so a
- * (plus reg const) store address whose base reg has a same-ebb constant
- * equivalence ALWAYS folds to the absolute form; only a plain (reg)
- * address (offset 0) or a label/new-ebb boundary escapes. Also tried:
- * volatile store (cse still folds the address — volatility guards the MEM,
- * not its address), distinct truly-incomplete alias symbol direct-indexed
- * (TickSpyroAnimLayer1's form — its stores survive only because they sit
- * in switch-case bodies, i.e. after labels). No plausible C form exists;
- * NOT a permuter candidate (source mutation cannot cross this). See
- * cookbook Sec-Y. */
+   (+0x84). */
 extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void AddVector(int *dst, int *a, int *b);
 extern void ApplyActiveGteRotation(int *src, int *dst);
@@ -44,7 +24,6 @@ void ProbeSpyroLedgeForward(void) {
   int *tp;
   int *cp;
   unsigned int len;
-
   from[2] = -0x164;
   to[0] = 0x1C4;
   from[1] = 0;
@@ -54,13 +33,15 @@ void ProbeSpyroLedgeForward(void) {
   RotateVectorByMatrix(g_anSpyroBodyMtx, from, from);
   anchor = g_anSpyroBodyMtx - 13;
   AddVector(from, from, anchor);
-  tp = to;
-  ApplyActiveGteRotation(tp, tp);
+  do {
+    tp = to;
+    ApplyActiveGteRotation(tp, tp);
+  } while (0);
   AddVector(tp, tp, anchor);
   if (CastRayWorldAndActors(from, tp) != 0) {
     cp = g_anCollisionProbeVec;
     len = VectorLength(cp, 0);
-    if ((signed char)ArcTan2(g_anCollisionProbeVec[2], len, 0) >= 0x17) {
+    if (((signed char)ArcTan2(g_anCollisionProbeVec[2], len, 0)) >= 0x17) {
       g_anSpyroBodyMtx[32] = 1;
       CopyVector(g_anSpyroBodyMtx + 33, cp);
     }

@@ -73,4 +73,8 @@ void DrawCinematicLetterbox(void) {
    (prim2's is v1 in both). Tried: branch-arm order (fixed the 60%->92% layout),
    reorder head stores (breaks store order), drop h local / direct-global reads
    (83.8%), named `code` local for 0x5000000 (const-propagates back, no change).
-   Pure reorg delay-slot-fill order tie; permuter candidate. */
+   Pure reorg delay-slot-fill order tie; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73300 iterations, timed out
+   at the 15m budget): best score 85 vs base score 265. No byte-perfect
+   candidate found; still PARKED (see above). */

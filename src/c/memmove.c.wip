@@ -9,7 +9,11 @@
    read by BOTH branches' n>0 test at v0, not a2 directly); every C form
    tried (i computed early/late/shared local `cnt=n`, early-return guard)
    either reproduces this single-nop residue or regresses to a completely
-   different 4-nop layout. Scheduler/delay-slot-fill tie; permuter-or-park. */
+   different 4-nop layout. Scheduler/delay-slot-fill tie; permuter-or-park.
+
+   2026-07-25-1 unattended permuter session (~15m, ~92400 iterations, timed out
+   at the 15m budget): best score 250 vs base score 545. No byte-perfect
+   candidate found; still PARKED (see above). */
 void *memmove(void *dst, void *src, int n) {
   unsigned char *s = src;
   unsigned char *d;

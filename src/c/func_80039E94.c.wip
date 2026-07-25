@@ -25,7 +25,11 @@
    When the heading delta to the node exceeds `lim`, turns in place via
    ApproachAngle8 (deferring the turn when another listed actor of the
    same `kind` is already mid-turn); otherwise marks the actor moving
-   and delegates the step to func_80038EE0 + func_80039398. */
+   and delegates the step to func_80038EE0 + func_80039398.
+
+   2026-07-25-1 unattended permuter session (~15m, ~63000 iterations, timed out
+   at the 15m budget): best score 125 vs base score 500. No byte-perfect
+   candidate found; still parked. */
 extern int ApproxDist2D(int *a, int *b);
 extern int ArcTan2(int x, int y, int mode);
 extern int AbsAngleDelta8(int a, int b);

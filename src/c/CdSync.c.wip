@@ -51,7 +51,11 @@ extern unsigned char D_80075AD8[];         /* ready result bytes */
    hoisting too, worse), an explicit `readyIdx2 = readyIdx+1` pointer (folded
    away, no s4). Same §B12 constant-hoist wall as CdInit/CdControl*; confirms
    §AL's suspicion that the libcd status-return cluster carries it.
-   Permuter-or-wall. */
+   Permuter-or-wall.
+
+   2026-07-25-1 unattended permuter session (~15m, ~68700 iterations, timed out
+   at the 15m budget): best score 2040 vs base score 3105. No byte-perfect
+   candidate found; still PARKED (see above). */
 int CdSync(int mode, unsigned char *result) {
   int flag;
   int irq;

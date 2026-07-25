@@ -88,4 +88,8 @@ void HandleHardwareInterrupt(void) {
        slot). ×2 (initial + reload).
      - §K `li s3,1` / `addiu s4,s1,4` emission order swapped (2 independent
        insns). Block-temp reads were WORSE (73%); the inline expression here
-       is the best form. Clean single-shape permuter candidate. */
+       is the best form. Clean single-shape permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~72900 iterations, timed out
+   at the 15m budget): best score 650 vs base score 1490. No byte-perfect
+   candidate found; still PARKED (see above). */

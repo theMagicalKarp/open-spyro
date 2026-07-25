@@ -53,3 +53,7 @@ void ApplyPadInputToSpyroBodyYaw(void) {
    pair — plain array alias AND volatile array alias both fold. len lands in
    a1 vs original a2 downstream of the same knot. Constant-base reg+imm with
    k != 0 appears unreachable without a call; permuter-or-never. */
+
+/* 2026-07-25-1 unattended permuter session (~15m, ~81000 iterations, timed out
+   at the 15m budget): best score 90 vs base score 340. No byte-perfect
+   candidate found; still PARKED (see above). */

@@ -119,4 +119,10 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
    tail per arm and let jump2 cross-jump it, matching everything but the
    mirror). No source form found that raises old's priority; 1-decision
    permuter candidate. Everything else byte-identical including the
-   ret-=0x800 in-place fold and the cross-jumped tails. */
+   ret-=0x800 in-place fold and the cross-jumped tails.
+
+   2026-07-25-1 unattended permuter session (~15m, ~61400 iterations, timed out
+   at the 15m budget): base score 55, and the run wrote NO output directories at
+   all — not one mutation scored better than the base. Same pattern as
+   func_80038C4C: a low base score with an isolated single-register tie the
+   randomizer cannot perturb. Still PARKED. */

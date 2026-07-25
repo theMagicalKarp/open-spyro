@@ -1,5 +1,11 @@
 #include "globals.h"
 
+/* 2026-07-25-1 unattended permuter session (~15m, ~94800 iterations, timed out
+   at the 15m budget): best score 10 vs base score 980 across 580 output dirs —
+   by far the largest proportional gain of the sweep, and one of its closest
+   near-misses. No byte-perfect candidate found; still parked, but a longer
+   budget looks very promising here. */
+
 extern void SetHudCounterDigits();
 extern int g_anHudLevelGemCachedBlock[];
 

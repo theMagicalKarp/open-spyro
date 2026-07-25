@@ -105,4 +105,8 @@ unsigned int EnqueueGpuOp(void *func, unsigned int *args, int nbytes,
  *      multiply sll/addu order, and the copy-loop back-edge store-in-delay-slot
  * vs store-then-reload-bytes. All §K. Clean permuter target once the param
  * rotation is forced.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~68000 iterations, timed out
+ * at the 15m budget): best score 955 vs base score 1205. No byte-perfect
+ * candidate found; still PARKED (see above).
  */

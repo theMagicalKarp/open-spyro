@@ -271,4 +271,12 @@ void RespawnOrGameOver_Draw(void) {
  * ORIGINAL got the reg-based form in a same-ebb no-label position is still
  * open across the whole project (Gamestate0C_Draw head pair, SampleSpyroShadow
  * lw 316(s0) share the mystery). Resume iff that root question is answered.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~46200 iterations, timed out
+ * at the 15m budget): best score 950, unchanged from the base score of 950 —
+ * no improving candidate found at all (3 output dirs). Consistent with the
+ * skip-list assessment above. NB: in the same sweep ProbeSpyroLedgeForward,
+ * parked under the same §Y "not a permuter candidate" reasoning, DID match at
+ * iteration 212 — so §Y's skip-list rule is not universally reliable even
+ * though it held here.
  * ================================================================= */

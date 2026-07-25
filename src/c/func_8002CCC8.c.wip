@@ -125,4 +125,12 @@ void func_8002CCC8(int actor) {
    original. cse's same-ebb constant-address fold can't be defeated from
    source (volatile array, scalar alias, pointer-arith forms all tried on the
    sibling walls). Extends the Sec-I BeginStoryIntro negative-offset wall to
-   LOADS, with the ebb boundary as the exact dividing line. */
+   LOADS, with the ebb boundary as the exact dividing line.
+
+   2026-07-25-1 unattended permuter session (~15m, ~62000 iterations, timed out
+   at the 15m budget): best score 795 vs base score 2310. No byte-perfect
+   candidate found; still PARKED. NB the "can't be defeated from source" claim
+   about cse's same-ebb constant-address fold was disproved elsewhere in this
+   same sweep: ProbeSpyroLedgeForward, parked on exactly that wall, matched at
+   iteration 212 — see
+   build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1/source.c. */

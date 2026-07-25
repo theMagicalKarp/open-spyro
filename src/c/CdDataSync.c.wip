@@ -34,7 +34,11 @@ extern unsigned char D_80075115; /* ready index (Ready) */
    0x1000000` lives in v0 and gcc won't coalesce r back into v0 after the
    `beqz`. Declaration order, dropping the redundant `r=0`, and the
    merged/split-variable forms all leave the move. Pure §H return-reg-coalescing
-   tie; clean permuter candidate (1 insn). */
+   tie; clean permuter candidate (1 insn).
+
+   2026-07-25-1 unattended permuter session (~15m, ~79400 iterations, timed out
+   at the 15m budget): best score 1385 vs base score 1825. No byte-perfect
+   candidate found; still PARKED (see above). */
 int CdDataSync(int mode) {
   int r;
   int now;

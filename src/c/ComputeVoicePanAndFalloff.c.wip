@@ -68,4 +68,8 @@ void ComputeVoicePanAndFalloff(short *out, int vol, int pan, unsigned int range,
  *   - swapping gainR before gainL: -2 (gcc merges harder).
  * Also a dead 0x20 frame vs our 0x10 (row 45; `int pad[4];(void)pad;` was
  * DCE'd). Clean permuter candidate: needs the transient param_3 copy in the
- * beqz delay. */
+ * beqz delay.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~73000 iterations, timed out
+ * at the 15m budget): best score 10 vs base score 115 — very close. No
+ * byte-perfect candidate found; still PARKED (see above). */

@@ -1,4 +1,11 @@
 
+/* 2026-07-25-1 unattended permuter session (~15m, ~64400 iterations, timed out
+   at the 15m budget): best score 380 vs base score 465 — only 4 output dirs, a
+   very flat search. No byte-perfect candidate found; still parked. NB this file
+   carries no post-mortem and still has the pruned-permuter scaffolding (local
+   typedefs and RECT redefinition instead of globals.h); worth re-clothing
+   before the next attempt. */
+
 typedef unsigned char byte;
 typedef unsigned char uchar;
 typedef unsigned short ushort;

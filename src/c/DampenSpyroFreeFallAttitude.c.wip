@@ -68,4 +68,8 @@ void DampenSpyroFreeFallAttitude(void) {
  * cascade (orig k0=a1/base=a2/pitch=t0; ours shifts to a2/a3/t1). Source
  * reorders (d's first vs interleaved, pad placement) produce byte-identical
  * output. Permuter candidate.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~77300 iterations, timed out
+ * at the 15m budget): best score 245 vs base score 1010. No byte-perfect
+ * candidate found; still PARKED (see above).
  */

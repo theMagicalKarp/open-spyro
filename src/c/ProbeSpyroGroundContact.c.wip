@@ -116,4 +116,8 @@ void ProbeSpyroGroundContact(void) {
    store cast — no effect (+1 more); `int *g = blk;` pointer local — recovers
    the POST-LABEL 0xB4 site only (B-i rule 3), fall-through sites still fold.
    Note the anomaly worth chasing: BLK[0] and BLK[0xa] (+0x28) stay reg-based
-   from the same base in the same blocks; only the larger offsets fold. */
+   from the same base in the same blocks; only the larger offsets fold.
+
+   2026-07-25-1 unattended permuter session (~15m, ~61000 iterations, timed out
+   at the 15m budget): best score 350 vs base score 700. No byte-perfect
+   candidate found; still PARKED (see above). */

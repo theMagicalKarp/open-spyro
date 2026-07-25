@@ -18,7 +18,11 @@ extern void RotateVectorByMatrix(int *inVec, int *matrix, int *outVec);
    #1, plain globals throughout, already shows vel in s0 alone). Whatever the
    original did to make `vel`'s address "not worth holding" wasn't reproduced
    by any source form tried. Permuter candidate: 1 extra callee-saved
-   push/pop pair, everything else byte-identical. */
+   push/pop pair, everything else byte-identical.
+
+   2026-07-25-1 unattended permuter session (~15m, ~97600 iterations, timed out
+   at the 15m budget): best score 555 vs base score 885. No byte-perfect
+   candidate found; still PARKED (see above). */
 void BuildSpyroVelocityFromBodyEuler(void) {
   signed char euler[3];
   int vel[3];

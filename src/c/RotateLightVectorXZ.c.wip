@@ -13,7 +13,12 @@ extern volatile int g_nLightSweepAngle;
    byte-identical). Likely a register-pressure spill specific to gcc
    synthesizing the larger 6345 multiplier while a0 (angle<<1) and the
    sine-lookup base are still live; original avoids it via allocation this
-   session's C forms didn't hit. Permuter-or-park. */
+   session's C forms didn't hit. Permuter-or-park.
+
+   2026-07-25-1 unattended permuter session (~15m, ~103500 iterations — the
+   highest iteration count of the sweep, timed out at the 15m budget): best
+   score 350 vs base score 715. No byte-perfect candidate found; still
+   PARKED. */
 /* 0x80058cc0: spins the primary light direction vector around the world Y
    axis. Advances the byte angle accumulator g_nLightSweepAngle by param_1
    (wraps mod 256), looks up cos/sin from g_anSineLut (quarter-period offset

@@ -83,4 +83,8 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
    0x800 reuse reg; (2) the dragon-index / literal-`1` register swap (v1/a0 vs
    a0/v1); (3) the tail zero-store run scheduled AFTER the source-actor store +
    world increment instead of before (batch-store scatter, §B13). Multi-cluster
-   permuter candidate. Alias g_anGemPickupBlock @0x80077058 committed. */
+   permuter candidate. Alias g_anGemPickupBlock @0x80077058 committed.
+
+   2026-07-25-1 unattended permuter session (~15m, ~71100 iterations, timed out
+   at the 15m budget): best score 310 vs base score 565. No byte-perfect
+   candidate found; still PARKED (see above). */

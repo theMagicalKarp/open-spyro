@@ -55,4 +55,8 @@ void InitActorMeshScratchRegions(int split) {
  * j). Ternary and if/else forms emit byte-identical output. The hoisted lui
  * also shifts top/stride register roles (a3/a1 vs v0/v1) and batches the
  * three head addiu's. Permuter candidate.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~86700 iterations, timed out
+ * at the 15m budget): best score 375 vs base score 1285. No byte-perfect
+ * candidate found; still PARKED (see above).
  */

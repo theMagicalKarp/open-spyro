@@ -8,7 +8,6 @@
    idle. */
 extern void ApplyCheatCodeEffect(int code);
 extern void ClearPadHistoryRing(void);
-
 void CheckCheatCodeMatch(void) {
   int pad[2];
   int idx;
@@ -25,7 +24,6 @@ void CheckCheatCodeMatch(void) {
   int i;
   int match;
   int code;
-
   if (g_nCdStreamState < 0) {
     code = g_dwPadPressed;
     if (code != 0) {
@@ -33,12 +31,12 @@ void CheckCheatCodeMatch(void) {
       next = idx + 1;
       off = idx << 2;
       ring = g_anPadHistoryRing;
-      *(int *)((char *)ring + off) = code;
+      *((int *)(((char *)ring) + off)) = code;
       g_nPadHistoryIndex = next;
-      code = 0;
       if (next >= 0x10) {
         g_nPadHistoryIndex = 0;
       }
+      code = 0;
       base = ring;
       seq = g_anCheatCodeSequences;
       do {
@@ -49,7 +47,7 @@ void CheckCheatCodeMatch(void) {
           if (len < 0x10) {
             p += 1;
             len += 1;
-            if (*p != 0) {
+            if ((*p) != 0) {
               goto count_top;
             }
           }
@@ -65,16 +63,17 @@ void CheckCheatCodeMatch(void) {
               start = 0xF;
             }
           }
+
           match = 1;
           i = 0;
           if (len > 0) {
             q = seq;
-            h = (int *)((start << 2) + (int)base);
+            h = (int *)((start << 2) + ((int)base));
             do {
               if (match == 0) {
                 goto advance;
               }
-              if (*h != *q) {
+              if ((*h) != (*q)) {
                 match = 0;
               }
               h += 1;
@@ -95,22 +94,9 @@ void CheckCheatCodeMatch(void) {
         }
       advance:
         code += 1;
+
         seq += 0x10;
       } while (code < 8);
     }
   }
 }
-
-/* PARKED 2026-07-11 at 95.9% (94/98). Everything matches except a 3-insn
-   rotation in the ring-store block: original `sll; addiu(next); [at-macro
-   sw]`, ours `sll; [at-macro sw]; addiu`. Two mutually-exclusive states
-   found: (a) `pressed` as its own local -> block order right but pressed
-   lands in a1 (original a0; RA conflict with code=a0 from sched1 hoisting
-   `move code,0` above the store); (b) merging pressed into `code` (row 19)
-   -> a0 right everywhere, but the new sw->code=0 anti-dep boosts the store
-   above the addiu. off-local, statement orders, volatile store (breaks the
-   $at macro, comes out short) all tried. Single sched1-priority tie;
-   permuter candidate. Key idioms that DID land: ring[idx] store through
-   the pointer local (same-ebb cse folds to $at absolute AND keeps ring
-   2-use so `base = ring` survives to t4); goto-form count loop (blocks
-   rotation); goto advance for the match-break threading; pad[2] frame. */

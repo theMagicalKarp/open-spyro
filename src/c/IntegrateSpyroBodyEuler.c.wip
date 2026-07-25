@@ -50,4 +50,9 @@ void IntegrateSpyroBodyEuler(int delta) {
    pitch (+4). Compounded by a base register-role permutation (orig s2, ours s4)
    and the §G lagged-mult dead spills (orig frame 0x38 with 3 dead `sw`s to
    0x10/0x14/0x18 to hide mult latency; ours 0x28, no spills). Skip-list class,
-   not a permuter candidate. */
+   not a permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~77000 iterations, timed out
+   at the 15m budget): best score 400 vs base score 1105. Run anyway by the
+   unattended sweep despite the skip-list note above; no byte-perfect candidate
+   found, consistent with that assessment. Still PARKED. */

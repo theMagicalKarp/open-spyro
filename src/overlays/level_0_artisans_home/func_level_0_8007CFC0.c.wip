@@ -299,4 +299,11 @@ void func_level_0_8007CFC0(void) {
  * Next: fix the s1->s2 / 7->6 saved-reg allocation first (it dominates the byte cost), then
  * re-carve the byte diff (funcdiff CRASHES on length!=642 — carve overlay off 0x2588, 642
  * words, from build/overlays/<ovl>.ovl vs disc/orig/overlays/<ovl>.ovl and difflib-align).
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~34800 iterations — the
+ * fewest of the sweep, this being the largest function attempted — timed out at
+ * the 15m budget): best score 8430 vs base score 9930, across 417 output dirs.
+ * No byte-perfect candidate found; still PARKED. Consistent with the note
+ * above: the saved-reg allocation needs fixing by hand first; the permuter is
+ * unlikely to cross a whole-function allocation shift of this size unaided.
  */

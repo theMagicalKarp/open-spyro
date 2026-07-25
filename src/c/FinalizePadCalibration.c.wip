@@ -22,7 +22,11 @@ extern void ResetPadStickCalibrationDefaults(unsigned char *cal);
    the anchor but deweights the numerator consts below ok in global-alloc
    (ok steals a3); no form found with both right. (2) phase-3/4 fill loops:
    val/j/fill local-alloc rotation (orig fill->v1, j->a1, val->a0; ours
-   rotated one step). Both single-decision ties; permuter candidate. */
+   rotated one step). Both single-decision ties; permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~69100 iterations, timed out
+   at the 15m budget): best score 95 vs base score 345. No byte-perfect
+   candidate found; still PARKED (see above). */
 int FinalizePadCalibration(unsigned char *cal) {
   int ok;
   int i;

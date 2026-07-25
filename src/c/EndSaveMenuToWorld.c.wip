@@ -6,7 +6,11 @@
    point the camera anchor 0x1A4 below the swing target block, retarget the
    dynamic camera params (yaw re-biased to Spyro's body yaw, wrapped to 12
    bits), restore the flame-breath timer, reset the camera and HUD (all five
-   counters hidden), and re-issue the current music track (command 8). */
+   counters hidden), and re-issue the current music track (command 8).
+
+   2026-07-25-1 unattended permuter session (~15m, ~81100 iterations, timed out
+   at the 15m budget): best score 160 vs base score 315. No byte-perfect
+   candidate found; still parked. */
 extern void InitLightVectorConstants(void);
 extern void ZeroVector();
 extern void ResetSpyroEntity(int param);

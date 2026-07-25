@@ -96,4 +96,12 @@ void SampleSpyroShadowRingHeights(int probe) {
      different basic blocks).
    Same wall as ProbeSpyroLedgeForward (+4). Remaining residue besides this:
    hidden=0 store position (§K load-hoist), flags/ground/heights/d register
-   roles (v1/a0/v0/a0 vs a0/a1/a0/v0), li/addu order in the out-of-range arm. */
+   roles (v1/a0/v0/a0 vs a0/a1/a0/v0), li/addu order in the out-of-range arm.
+
+   2026-07-25-1 unattended permuter session (~15m, ~68000 iterations, timed out
+   at the 15m budget): best score 625 vs base score 1200. No byte-perfect
+   candidate found; still PARKED. NB the "same wall as ProbeSpyroLedgeForward"
+   note above: that sibling MATCHED in this same sweep (iteration 212), so the
+   cse address-fold wall is not actually impassable — see
+   build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1/source.c for
+   the shape that beat it, and consider transplanting it here. */

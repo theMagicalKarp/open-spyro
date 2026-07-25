@@ -58,4 +58,8 @@ void LoadActorMeshTables(void) {
  * too, rotating the whole callee-saved allocation (dir=s1/top=s0, no s3). The
  * original wants loop.c ON (table hoisted) + NO peel + dir base (not dir+4) +
  * table in s3 simultaneously — unreachable from any source form tried. Permuter
- * candidate (biv-selection). Alias g_apActorMeshTableBlock committed. */
+ * candidate (biv-selection). Alias g_apActorMeshTableBlock committed.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~86900 iterations, timed out
+ * at the 15m budget): best score 1260 vs base score 2675. No byte-perfect
+ * candidate found; still PARKED (see above). */

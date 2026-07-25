@@ -16,7 +16,14 @@
    controllable (two-pointer beats single-base beats fold); (2,3) D_80075168 and
    D_80075178 load via `la;lw 0(r)` at their post-jal compare/mask sites but via
    `lui;lw %lo` at every other site — a positional scheduler form no declaration
-   change can flip at one site without breaking the matched ones. */
+   change can flip at one site without breaking the matched ones.
+
+   2026-07-25-1 unattended permuter session (~15m, ~184000 iterations across
+   5203 output dirs — by far the busiest search of the sweep, timed out at the
+   15m budget): best score 27495 vs base score 30000. Note the score scale here
+   is set by the whole 1216-byte four-function section, so the 99.3% figure
+   above is not comparable to the raw score. No byte-perfect candidate found;
+   still PARKED. */
 
 extern int CdProcessInterrupt(void);
 extern int CdGetSector(int buf, unsigned int nword);

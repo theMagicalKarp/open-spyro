@@ -1,3 +1,8 @@
+/* 2026-07-25-1 unattended permuter session (~15m, ~64400 iterations, timed out
+   at the 15m budget): best score 230 vs base score 300 — one of the smallest
+   relative gains of the sweep. No byte-perfect candidate found; still parked.
+ */
+
 // extern void* g_apActorMeshTable;
 // extern u32 g_pWorkAreaTop;
 extern int *g_pWorkAreaTop;      /* 0x800785fc */

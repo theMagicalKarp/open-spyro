@@ -1,5 +1,12 @@
 #include "globals.h"
 
+/* 2026-07-25-1 unattended permuter session (~15m, ~74700 iterations, timed out
+   at the 15m budget): best score 245 vs base score 295 — only 8 output dirs,
+   one of the flattest searches of the sweep. No byte-perfect candidate found;
+   still parked. NB this file carries no post-mortem and its extern block is
+   duplicated many times over (an earlier pruned-permuter artefact); worth a
+   cleanup pass before the next attempt. */
+
 extern int g_nSpyroSwingEulerPitchTarget;
 extern int g_nCameraScriptStickRequestY;
 extern int g_nCameraScriptStickRequestX;

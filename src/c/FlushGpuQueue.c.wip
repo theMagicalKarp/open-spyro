@@ -107,4 +107,8 @@ unsigned int FlushGpuQueue(void) {
  * fix (§AD). Clean length-exact permuter candidate; the ring-addressing +
  * volatile-order scaffolding is all solved. Aliases committed in
  * config/symbol_addrs.txt.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~67200 iterations, timed out
+ * at the 15m budget): best score 1410 vs base score 2005. No byte-perfect
+ * candidate found; still PARKED (see above).
  */

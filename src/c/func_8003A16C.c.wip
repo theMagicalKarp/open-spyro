@@ -34,6 +34,10 @@ extern void func_800529E4();
  * probe of radius `contact`, then snaps to the ground within 0x400 below.
  * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~68600 iterations, timed out
+ * at the 15m budget): best score 290 vs base score 740. No byte-perfect
+ * candidate found; still parked.
  */
 int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
                   int contact, int clamp, int limit, int *yawp) {

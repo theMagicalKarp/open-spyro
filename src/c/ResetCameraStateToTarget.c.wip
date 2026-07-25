@@ -69,4 +69,8 @@ void ResetCameraStateToTarget(void) {
    permuter candidate. Working parts: g_anCameraSpringYawBlock held base
    with eye = &yaw[-17] (addiu s1,s0,-0x44), in-place yaw -= 0x14 step,
    Sec-M volatile 6-load batch + volatile spring stores around the plain
-   zero stores. */
+   zero stores.
+
+   2026-07-25-1 unattended permuter session (~15m, ~76200 iterations, timed out
+   at the 15m budget): best score 10 vs base score 70 — very close. No
+   byte-perfect candidate found; still PARKED (see above). */

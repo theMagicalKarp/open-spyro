@@ -51,6 +51,15 @@
  * `volatile long long` return-type mutation, not a real transform). Randomization
  * alone cannot crack a double reg-permutation knot; a hand-guided permuter with
  * both knots framed, or hand-asm, is the only path. Still 5x payoff if closed.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~76500 iterations via the
+ * standard `open-spyro permuter` path, timed out at the 15m budget): best score
+ * 100 vs base score 220, across 17 output dirs. This PARTLY REVISES the note
+ * above: the earlier ~600-iteration run concluded the randomizer was "STUCK …
+ * best candidate 215"; with two orders of magnitude more iterations it reaches
+ * 100, so plain randomization does make real progress here — it just did not
+ * close the last gap inside 15 minutes. A longer budget is worth trying before
+ * committing to hand-framed PERM_* macros or hand-asm. Still 5x payoff.
  */
 
 extern void func_80017FE4(); /* draw text run */

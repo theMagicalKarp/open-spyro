@@ -22,7 +22,14 @@ extern unsigned char D_800115FC[];
    explicit `goto`-loop (disables loop.c per §J) -- both give the identical
    156-byte, permuted-order result. The volatile spill trick is right; only
    the very first budget-vs-RcntAuxState-load ordering is the residual tie.
-   Permuter candidate: pure scheduling permutation, no logic/length delta. */
+   Permuter candidate: pure scheduling permutation, no logic/length delta.
+
+   2026-07-25-1 unattended permuter session (~15m, ~102300 iterations, timed out
+   at the 15m budget): best score 60 vs base score 555 — close, consistent with
+   the single-ordering-tie diagnosis. No byte-perfect candidate found; still
+   PARKED. NB its caller VSync matched in this same sweep via nested-block
+   scaffolding around a named constant local — a similar trick may apply to the
+   budget-vs-load ordering here. */
 void WaitForFrameDeadline(int param_1, int param_2) {
   volatile int budget = param_2 << 15;
 

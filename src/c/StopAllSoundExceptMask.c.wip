@@ -86,4 +86,8 @@ top:
       (lw; sllv; or). bit-local, |= vs explicit-or operand order: no effect.
    2) A `move a2,a1` copy of `o` for the taken (mode-8) arm's owner load;
       original keeps o in a1 for both arms. Survives if/else vs goto dispatch
-      and inlining the v temp. Permuter candidate. */
+      and inlining the v temp. Permuter candidate.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73000 iterations, timed out
+   at the 15m budget): best score 210 vs base score 710. No byte-perfect
+   candidate found; still PARKED (see above). */

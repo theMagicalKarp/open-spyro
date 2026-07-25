@@ -84,4 +84,8 @@ probe: {
    Positive finding recorded in §Y refinement: the pos[61]/pos[62]
    (+0xF4/+0xF8) RMWs through the held many-use base DID survive
    post-label (lw/sw 0xF4(s6)) — the rule-1 fold only bites weak
-   (few-use) base pseudos via reload's reg_equiv substitution. */
+   (few-use) base pseudos via reload's reg_equiv substitution.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73800 iterations, timed out
+   at the 15m budget): best score 435 vs base score 800. No byte-perfect
+   candidate found; still PARKED (see above). */

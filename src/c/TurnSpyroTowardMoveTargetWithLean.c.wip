@@ -63,4 +63,8 @@ found:
    uVar3) fixes did not dislodge it (the copy just lands mispositioned). Clean
    permuter candidate: force param into a2 across its live range. Everything
    else (goto layout, slti signedness, param*0x1a ladder, lh 0xC table access,
-   reset block) byte-identical. */
+   reset block) byte-identical.
+
+   2026-07-25-1 unattended permuter session (~15m, ~82100 iterations, timed out
+   at the 15m budget): best score 195 vs base score 520. No byte-perfect
+   candidate found; still PARKED (see above). */

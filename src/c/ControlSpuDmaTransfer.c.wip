@@ -32,7 +32,11 @@ extern unsigned short D_8007356C;
    second use of the entry read. Everything else byte-matches at objdump
    level: the real-varargs prologue (sw a0-a3 pre-frame + sw a0,0x18 homing
    via (void)&op), the va_arg s0 walk, both guard+do/while waits, the case-3
-   masked while, sltu via the frac local, and the CHCR default+override tail. */
+   masked while, sltu via the frac local, and the CHCR default+override tail.
+
+   2026-07-25-1 unattended permuter session (~15m, ~64000 iterations, timed out
+   at the 15m budget): best score 1095 vs base score 1620. No byte-perfect
+   candidate found; still PARKED (see above). */
 int ControlSpuDmaTransfer(int op, ...) {
   char *ap;
   char *base;

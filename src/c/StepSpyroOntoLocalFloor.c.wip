@@ -72,4 +72,10 @@ void StepSpyroOntoLocalFloor(void) {
    happens even POST-LABEL when the base pseudo is single-def from a
    constant (REG_EQUIV substitution, not the same-ebb cse table — §Y rule 3
    does not save it). Miss-arm RMW (alias-array pointer) and the entire
-   call chain otherwise match. */
+   call chain otherwise match.
+
+   2026-07-25-1 unattended permuter session (~15m, ~73500 iterations, timed out
+   at the 15m budget): best score 20 vs base score 605 — very close. No
+   byte-perfect candidate found; still PARKED. Another §Y-family function whose
+   sibling ProbeSpyroLedgeForward matched in the same sweep; worth comparing
+   against build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1. */

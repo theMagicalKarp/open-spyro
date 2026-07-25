@@ -105,4 +105,9 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
    `(0x2000-c-s)*0x174>>12` shift ladders, the
    ApplyEulerRotation/RotateVectorByMatrix/AddVector tail) is structurally
    correct. Held-base alias g_anSpyroGroundSlopeBlock committed.
-   Permuter-or-wall (the §Y load fold is the harder half). */
+   Permuter-or-wall (the §Y load fold is the harder half).
+
+   2026-07-25-1 unattended permuter session (~15m, ~59900 iterations, timed out
+   at the 15m budget): best score 3390 vs base score 6105 — the highest base
+   score attempted in the sweep. No byte-perfect candidate found; still
+   PARKED. */

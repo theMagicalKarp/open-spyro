@@ -61,4 +61,9 @@ void func_80059474(unsigned char *actor, int yaw) {
  * regalloc picks a2 over v0. Scalar alias g_nLevelSpawnPosZ needed for the
  * per-access absolute RMW form (array form CSEs the address into a reg).
  * Permuter candidate.
+ *
+ * 2026-07-25-1 unattended permuter session (~15m, ~90000 iterations, timed out
+ * at the 15m budget): best score 130 vs base score 1260 across 829 output dirs
+ * — a large gain. No byte-perfect candidate found; still PARKED. Worth a longer
+ * budget.
  */

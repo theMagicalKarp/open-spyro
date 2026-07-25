@@ -61,3 +61,7 @@ void AlignSpyroBodyToVelocity(void) {
    (v1<->a0) as a consequence. Tried: u-temp between chains (combine merges it
    back), volatile d[1] read (pins but cannot hoist), chain-2 operand-order
    flips. Permuter candidate. */
+
+/* 2026-07-25-1 unattended permuter session (~15m, ~75600 iterations, timed out
+   at the 15m budget): best score 215 vs base score 985. No byte-perfect
+   candidate found; still PARKED (see above). */
