@@ -1613,6 +1613,7 @@ g_nSpyroSwingEulerSpringAccum1 = 0x80078c18; // allow_duplicated:True scalar ali
 g_nSpyroSwingEulerSpringAccum2 = 0x80078c1c; // allow_duplicated:True scalar alias — g_anSpyroSwingEulerSpringAccum[2]
 g_anSpyroComposedBodyMtx = 0x80078c20; // size:0x14
 g_nSpyroPadSnapshotCountdown = 0x80078c48; // size:0x4
+g_anSpyroPadSnapshotBlock = 0x80078c48; // allow_duplicated:True alias block — held-base view of g_nSpyroPadSnapshotCountdown (stores [0] + derives the -0x1F0 g_anSpyroWorldPos camera-anchor address) for EndGemPickupToWorld
 g_dwSpyroRequestMask = 0x80078c4c; // allow_duplicated:True size:0x4
 g_adwSpyroRequestMaskBlock = 0x80078c4c; // allow_duplicated:True alias block — shared-base view (mask read + -0x1F4 g_anSpyroWorldPos call arg) for AdvanceSpyroFrameMotion
 g_anSpyroRequestTargetPos = 0x80078c50; // size:0xc
