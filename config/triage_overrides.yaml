@@ -461,3 +461,28 @@ InitHudCounters:
     hoists the restPos la + the 0x20 constant into two extra callee-saved regs
     = slot overflow), user-local `white = 0xFF`, and the g_anHudIconAnchorBlock
     halfword alias at records+0x196.
+DispatchSpyroTriggerEvent:
+  verdict: skip
+  class: B8
+  date: 2026-07-26
+  note: "0x80056f64, 1052 b: switchdataD_80011380 jr-table in main (build_main.sh rejects loadable rodata); also dispatches through jalr $a2."
+TickCdMusicStream:
+  verdict: skip
+  class: B-i
+  date: 2026-07-26
+  note: "0x8002bbe0, 1024 b: the volume-fade tail holds g_nMusicVolumeFadeTarget in a1 and accesses -0x2C0 (D_80075F18 lh/sh) and +0x58 (g_nMusicVolumeFadeStep lw/sw) off it in fall-through blocks — B-i rule 1 held-base fold, no derived address passed to a call (so the A25 escape does not apply). The CD state-machine head above it transcribes fine; revisit only if the fold is ever cracked."
+EnqueueLoadingScreenSprites:
+  verdict: park
+  class: F2
+  date: 2026-07-26
+  note: >-
+    Loading-screen HUD sprite queue (920 b). Parked at 82.6%, 230/230
+    length-exact. Residues: (1) the gem-digit loop's roll-timer address folds
+    to `lw 0xC(s2)` where the original hoists `addiu a1,s2,0xC` into the
+    preheader (A32 does not reach it and costs an insn); (2) F2 preheader
+    rotation of the divide-magic constant vs the anchor/quad base moves in
+    BOTH quad loops, in opposite directions, source-order invariant; (3) the
+    egg-loop UV address reassociates the +0x108 onto the modulo index. Levers
+    banked in the .wip: seven per-flag-byte aliases, per-block pointer locals,
+    in-place base advance, A86 goto-loops for the 3-iteration record loops,
+    signed cursor compare, 16-byte dead local for the 0x58 frame.
