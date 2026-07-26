@@ -1,0 +1,199 @@
+/* PARK 82.6% (230/230 length-exact, 40 insns; logic verified against the asm).
+ * Three residues, all in the last three loops:
+ *   1) Gem-digit loop: the original hoists the roll-timer ADDRESS into the
+ *      preheader (`addiu a1,s2,0xC` + `lw 0(a1)` per iteration); ours folds it
+ *      to `lw 0xC(s2)` because the block base is a live register, so the
+ *      nonzero-offset MEM never needs its own pseudo. A32 (pointer local
+ *      declared INSIDE the guard, with the loop rewritten guard + do/while)
+ *      does NOT defeat the fold here and costs one insn -> slot overflow.
+ *   2) F2 preheader rotation in BOTH quad loops: the divide-magic constant
+ *      (0x66666667 for /20, 0x38E38E39 for /9) and the anchor/quad base moves
+ *      come out in exactly the opposite order from the original -- in the
+ *      butterfly loop the original is [base][magic lui], ours [magic][base];
+ *      in the egg loop the original is [magic][base], ours [base][magic].
+ *      Source-order invariant (both statement orders tried); A93 does not
+ *      reach it because the magic is compiler-generated, not a user local.
+ *   3) Egg loop UV address: the original computes `addiu a1,s2,0x108` early
+ *      and adds the scaled modulo last (`addu a1,idx,a1`); every source form
+ *      of `anchor + 0x108 + (step % 9) * 8` reassociates the constant onto the
+ *      index (`addiu a1,idx,0x108; addu a1,base,a1`). A separate `uv` pointer
+ *      local is worse: loop.c hoists it into an extra callee-saved reg (+2).
+ * Everything else matches: the queue-tail scan, the five-icon loop, the
+ * sprintf/BuildTextSpriteChain digit block, the dragon/lives/egg record loops
+ * and both EmitTexturedQuad bodies.
+ * Levers already banked here: seven allow_duplicated aliases (one per
+ * g_abHudCounterDisplayState flag byte, two extra views for the blocks that
+ * re-materialize) so each block loads its flag at [0] and derives its record
+ * base off the same register; per-BLOCK pointer locals (one pseudo per block,
+ * not one `hud` reused -- a single local wins one callee-saved reg for the
+ * whole function and rotates everything); advancing the block base in place
+ * (`gems += 0x44; gems += i * 0x58;`) instead of a separate `rec` local; A86
+ * goto-loops for the two 3-iteration record loops (a do/while gets loop-
+ * REVERSED to a `li s0,2` countdown); signed `(int)rec >= (int)cursor` for the
+ * digit-cursor walk (pointer compare gives sltu); and the 16-byte dead local
+ * after `rect` that makes the frame 0x58.
+ */
+#include "globals.h"
+
+/* Rebuilds the HUD sprite-record queue for the loading/inventory screen
+   (0x80019300, 0x398). Appends, to the first free slot of
+   g_apSpritePrimQueue: the five gem-counter icon records (starting at record
+   4 when the counter is in state 4), the gem digit chain built on the fly by
+   sprintf + BuildTextSpriteChain (each digit record gets a cosine bob written
+   to +0x46), then three dragon records, three life records and the level-egg
+   record, terminated with a NULL slot. Skipped wholesale on flight levels.
+
+   Always (flight levels included) the sparx-food butterflies and the world-egg
+   icons are emitted directly as textured quads: the butterflies get a swept
+   cosine shade (one 1/20th-turn phase step per butterfly), the eggs cycle
+   through nine UV pairs. */
+extern int sprintf(char *dst, char *fmt, int a, int b);
+extern void *BuildTextSpriteChain(char *text, int *rect, int width, int flags);
+extern void EmitTexturedQuad(byte *quad, byte *uv, int *color);
+
+extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 (quarter turn) */
+
+/* Distinct incomplete-array views of the five g_abHudCounterDisplayState
+   bytes: each block loads its own flag at [0] and derives its record address
+   off the same base. */
+extern byte g_abHudGemCounterBlock[];      /* +0: icon records at +0x44 */
+extern byte g_abHudGemRollBlock[];         /* +0: roll timer at +0xC */
+extern byte g_abHudDragonCounterBlock[];   /* +1: records at +0x1FB */
+extern byte g_abHudLivesCounterBlock[];    /* +2: records at +0x302 */
+extern byte g_abHudButterflyRingBlock[];   /* +2: butterfly quads at +0x4C2 */
+extern byte g_abHudWorldEggIconBlock[];    /* +3: egg quads at +0x461 */
+extern byte g_abHudLevelEggCounterBlock[]; /* +4: record at +0x408 */
+
+void EnqueueLoadingScreenSprites(void) {
+  void **slot;
+  byte *gems;
+  byte *digits;
+  byte *rec;
+  byte *dragons;
+  byte *lives;
+  byte *eggs;
+  byte *ring;
+  byte *anchor;
+  byte *quad;
+  int i;
+  int phase;
+  int shade;
+  int step;
+  int idx;
+  int scratch[4]; /* sprintf text buffer / EmitTexturedQuad colour triple */
+  int rect[3];
+  int spare[4];
+
+  if (g_nFlightLevelActive == 0) {
+    slot = g_apSpritePrimQueue;
+    if (*slot != 0) {
+      slot += 1;
+      while (*slot != 0) {
+        slot += 1;
+      }
+    }
+    gems = g_abHudGemCounterBlock;
+    if (gems[0] != 0) {
+      i = (gems[0] == 4) * 4;
+      gems += 0x44;
+      if (i < 5) {
+        gems += i * 0x58;
+        do {
+          *slot = gems;
+          slot += 1;
+          i += 1;
+          gems += 0x58;
+        } while (i < 5);
+      }
+      digits = g_abHudGemRollBlock;
+      if (digits[0] == 4) {
+        sprintf((char *)scratch, g_szFmtDSlashD, g_nHudLevelGemCachedCount,
+                g_nHudLevelGemCachedCount);
+        rec = (byte *)g_pSpriteRecordWriteCursor;
+        rect[0] = 0x5A;
+        rect[1] = 0x24;
+        rect[2] = 0xB40;
+        BuildTextSpriteChain((char *)scratch, rect, 0x1C, 0xB);
+        rec -= 0x58;
+        phase = 0;
+        while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
+          rec[0x46] =
+              g_anCosineLut[(*(int *)(digits + 0xC) * 4 + phase) & 0xFF] >> 7;
+          *slot = rec;
+          rec -= 0x58;
+          slot += 1;
+          phase += 0xC;
+        }
+      }
+    }
+    dragons = g_abHudDragonCounterBlock;
+    if (dragons[0] != 0) {
+      dragons += 0x1FB;
+      i = 0;
+    dragon_slot:
+      *slot = dragons;
+      slot += 1;
+      i += 1;
+      dragons += 0x58;
+      if (i < 3) {
+        goto dragon_slot;
+      }
+    }
+    lives = g_abHudLivesCounterBlock;
+    if (lives[0] != 0) {
+      i = 0;
+      lives += 0x302;
+    life_slot:
+      *slot = lives;
+      slot += 1;
+      i += 1;
+      lives += 0x58;
+      if (i < 3) {
+        goto life_slot;
+      }
+    }
+    eggs = g_abHudLevelEggCounterBlock;
+    if (eggs[0] != 0 && g_nHudLevelEggCachedCount == 1) {
+      *slot = eggs + 0x408;
+      slot += 1;
+    }
+    *slot = 0;
+  }
+
+  ring = g_abHudButterflyRingBlock;
+  if (ring[0] != 0) {
+    if (g_nHudButterflyCachedCount > 0) {
+      i = 0;
+      anchor = ring + 0x4C2;
+      quad = anchor;
+      do {
+        shade = ((short)g_anCosineLut[(g_nLightSweepAngle - ((i << 8) / 20)) &
+                                      0xFF] >>
+                 7) +
+                0x80;
+        scratch[0] = shade;
+        scratch[1] = shade;
+        scratch[2] = shade;
+        EmitTexturedQuad(quad, anchor + 0xA0, scratch);
+        quad += 8;
+        i += 1;
+      } while (i < *(int *)(anchor - 0x48C));
+    }
+  }
+
+  ring = g_abHudWorldEggIconBlock;
+  if (ring[0] != 0) {
+    if (g_nHudWorldEggCachedCount > 0) {
+      i = 0;
+      anchor = ring + 0x461;
+      quad = anchor;
+      do {
+        step = *(int *)(anchor - 0x424) + i;
+        idx = (step % 9) * 8;
+        EmitTexturedQuad(quad, idx + (anchor + 0x108), 0);
+        quad += 8;
+        i += 1;
+      } while (i < *(int *)(anchor - 0x438));
+    }
+  }
+}
