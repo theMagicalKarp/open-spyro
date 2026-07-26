@@ -1,0 +1,144 @@
+/* PARK 80.4% (230/230 length-exact, 45 insns; logic verified against the asm).
+ * Two independent residues, both from gcc 2.7.2 sched1 (main, -g3):
+ *   1) Insns with NO in-block consumer get scheduled to the END of their
+ *      block, and reorg then eats them for the branch delay slot. The cursor
+ *      store `path[1] = x` sinks below the `andi/sltu` (original: addiu, sb,
+ *      andi, sltu, bnez, [ret++ in the slot]); ours emits addiu, andi, sltu,
+ *      bnez, [sb in the slot]. Same mechanism swaps the entry pair
+ *      `idx = path[1]; t = *step;` -- the lbu (consumed only in the successor
+ *      blocks) is sunk into the lw's load-delay where the original keeps a
+ *      nop. Tried: ret++ before / after the if (gcc hoists the increment above
+ *      both lbus either way -- see the raw .loc order), volatile store (pins
+ *      nothing, and costs the delay slot), volatile *step read. The volatile
+ *      lbu for `idx` IS load-bearing: it restores the lbu/lw order at the cost
+ *      of one `andi 0xff` where the original has the load-delay nop.
+ *   2) Divide-block register rotation (F7): original allocates
+ *      x=a0, span=a2, y=v1, z=v0; ours x=a0, span=v1, y=a1, z=v1. Tried:
+ *      in-place `y = dir[1]; y = y / span;` (fixes the load/mflo pairing but
+ *      rotates the whole block to a2/a1/a0, 75.2%), in-place `n = n - 1`
+ *      decrement (73.9%), local declaration reordering (no effect).
+ * Everything else matches: the 4-way weight-table select, both cross-jumped
+ * SubtractVector arms, the blend calls, and the whole ArcTan2/AddVector tail.
+ * Levers already banked here: `path + (idx * 0x10 + 8)` (offset-first
+ * parenthesisation, else the pointer load is emitted before the offset),
+ * `n = t - 1; span = legs - n;` (else gcc reassociates to (legs+1) - *step),
+ * and `x = dir[0];` read before span so it fills the *step load-delay.
+ */
+#include "globals.h"
+
+extern void SubtractVector();
+extern void CopyVector();
+extern void ScaleVector3Sat();
+extern void AddVector();
+extern void RShiftVector3();
+extern int VectorLength();
+extern int ArcTan2_8bit(int y, int x);
+extern void func_800529E4();
+
+extern short D_80075280[];
+extern short D_8006CBA4[];
+extern short D_8006CBB4[];
+extern short D_8006CBCC[];
+
+/* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
+   `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
+   +8 + i*0x10) and `step` the sub-step counter within the current leg, which
+   takes `legs` frames. Once the counter reaches the leg length the cursor
+   advances (wrapping to 0, returning 2 instead of 1) and the raw leg vector
+   is published in `prev`. Otherwise the remaining leg is divided into the
+   frames still to run; for the first steps of a leg that share of the new
+   leg is cross-faded with `prev` through the per-length weight table
+   (func_8003A920's tables). Flags bit 2 keeps the vertical component. The
+   step vector is folded into the actor position and its yaw/pitch bytes
+   (+0x46/+0x45) are re-aimed along it. */
+int func_8003BFC0(unsigned char *actor, unsigned char *path, int *prev,
+                  int *step, int legs, int flags) {
+  int dir[4];
+  int blend[4];
+  short *tbl;
+  int *pos;
+  int idx;
+  int t;
+  int lim;
+  unsigned int cnt;
+  int x;
+  int y;
+  int z;
+  int n;
+  int span;
+  int ret;
+
+  ret = 0;
+  if (legs >= 9) {
+    tbl = D_8006CBCC;
+    lim = 7;
+  } else if (legs >= 7) {
+    tbl = D_8006CBB4;
+    lim = 5;
+  } else {
+    lim = 1;
+    if (legs >= 5) {
+      tbl = D_8006CBA4;
+      lim = 3;
+    } else {
+      tbl = D_80075280;
+    }
+  }
+
+  idx = *(volatile unsigned char *)(path + 1);
+  t = *step;
+  if (t >= legs) {
+    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    CopyVector(prev, dir);
+    x = path[1] + 1;
+    cnt = path[0];
+    path[1] = x;
+    if ((x & 0xff) >= cnt) {
+      path[1] = 0;
+      ret++;
+    }
+    ret++;
+    *step = 0;
+  } else if (lim < t) {
+    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    t = *step;
+    x = dir[0];
+    n = t - 1;
+    span = legs - n;
+    x = x / span;
+    y = dir[1] / span;
+    z = dir[2] / span;
+    dir[0] = x;
+    dir[1] = y;
+    dir[2] = z;
+    *step = *step + 1;
+  } else {
+    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    t = *step;
+    x = dir[0];
+    n = t - 1;
+    span = legs - n;
+    x = x / span;
+    y = dir[1] / span;
+    z = dir[2] / span;
+    dir[0] = x;
+    dir[1] = y;
+    dir[2] = z;
+    ScaleVector3Sat(dir, dir, ((short *)((*step << 2) + (int)tbl))[0]);
+    ScaleVector3Sat(blend, prev, ((short *)((*step << 2) + (int)tbl))[1]);
+    AddVector(dir, dir, blend);
+    RShiftVector3(dir, 0xa);
+    *step = *step + 1;
+  }
+
+  if (!(flags & 4)) {
+    dir[2] = 0;
+  }
+  actor[0x46] = ArcTan2_8bit(dir[0], dir[1]);
+  x = ArcTan2_8bit(dir[2], VectorLength(dir, 0));
+  pos = (int *)(actor + 0xc);
+  actor[0x45] = -x + 0x40;
+  AddVector(pos, pos, dir);
+  func_800529E4(actor, 2);
+  return ret;
+}
