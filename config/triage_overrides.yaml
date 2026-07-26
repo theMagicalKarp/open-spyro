@@ -424,3 +424,25 @@ UpdateCameraFrame:
   class: B1
   date: 2026-07-25
   note: "%gp_rel access (0x80037bd4); the camera-frame driver is in the B1 cluster."
+func_8003ABC0:
+  verdict: defer
+  class: "non-reducible flowgraph + indirect dispatch"
+  date: 2026-07-25
+  note: >-
+    Actor drop/spawn placement (1308 b). Screens clean of every B wall, but
+    m2c falls back to gotos-only: the ground-search block is a two-entry
+    rotated loop (a0 += step accumulator entered both at the top and mid-body)
+    and the level-overlay init goes through the g_pfnLevelOverlayInitHook
+    function pointer with a per-arm constant. Real target, but budget it as a
+    1300 b structural puzzle, not a jal-chain — do it with the whole context
+    window free, not as a session's third function.
+DispatchSpyroChargeStateChanges:
+  verdict: skip
+  class: B1
+  date: 2026-07-25
+  note: "%gp_rel access (0x80041270); already named in the cookbook G landscape."
+TickSpyroAnimStateMachine:
+  verdict: skip
+  class: B8
+  date: 2026-07-25
+  note: "switchdata jr-table in main (0x8003d194); build_main.sh rejects loadable rodata."
