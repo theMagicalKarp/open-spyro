@@ -446,3 +446,18 @@ TickSpyroAnimStateMachine:
   class: B8
   date: 2026-07-25
   note: "switchdata jr-table in main (0x8003d194); build_main.sh rejects loadable rodata."
+InitHudCounters:
+  verdict: park
+  class: F2
+  date: 2026-07-26
+  note: >-
+    HUD init (904 b). Parked at 53.1%, 226/226 length-exact. sched1 (main,
+    -g3) hoists the four counter loads (dragons/world eggs/level eggs/sparx
+    food) to the top of the ~75-insn straight-line block; the original keeps
+    them between the display-state byte block and the roll-phase zeros.
+    Proven source-order invariant (moving the loads across the whole block
+    gives byte-identical output; volatile makes it worse and costs an insn).
+    Levers banked in the .wip: A85 goto-loop for the 12-icon loop (a real loop
+    hoists the restPos la + the 0x20 constant into two extra callee-saved regs
+    = slot overflow), user-local `white = 0xFF`, and the g_anHudIconAnchorBlock
+    halfword alias at records+0x196.
