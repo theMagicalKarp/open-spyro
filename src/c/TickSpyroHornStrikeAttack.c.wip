@@ -1,0 +1,184 @@
+#include "globals.h"
+
+/* PARKED 2026-07-26 — structure complete, 272 vs 271 insns (+1, so it does not
+   fit its slot; parked rather than linked). Two residues:
+
+   1. F1 whole-function s0/s1 rotation — the original keeps the horn-strike
+      block pointer in s1 and hands s0 to the short-lived pseudos (the `1`
+      constant in the arm-the-swing arm, the tip-offset base, the &vel pointer,
+      the composed-matrix base); ours allocates the block pointer s0 and shifts
+      everything else up one. Declaration order does not move it (gcc orders by
+      first use, and local-alloc ranks by qty_compare priority, not birth).
+   2. The second tip-offset base costs an extra `lui/addiu` pair where the
+      original reuses the register it already has, and the `a0 = tip+0x18` /
+      `a2 = base-0x198` pair schedules one slot apart.
+
+   Levers already banked here (all verified to move the code the right way):
+   five allow_duplicated alias blocks — state (+0 store, +0xC ZeroVector arg,
+   +0x30 matrix, -0x198 world pos), timer (RMW + ZeroVector at +4), anchor mode,
+   collision-active (slot ages at -0x78 into FillWord, A25) and the composed
+   matrix (world pos at -0x1C8); a DISTINCT tip-offset alias at +0xC (A24) so
+   cse cannot derive it from the first; the variant select written as two
+   complete spawn calls in the two arms so jump.c cross-jumps them into one call
+   (A80) instead of if-converting to `sltu a1,zero,a1`; a separate pointer local
+   in the cancel arm so it takes a caller-saved reg; and the anchor-mode store in
+   the swing arm done through its alias pointer, which is what forces the
+   original's reload of the strike timer after it. */
+
+/* Horn-strike (charge attack) driver, one frame (0x800499C0, 0x43C).
+
+   If the animation currently selected for g_nSpyroState is flagged as a
+   no-strike anim (g_abSpyroAnimDescTable +0xB8), the strike is cancelled: the
+   state word is zeroed and the swing euler target reset.
+
+   Otherwise the strike runs as a two-state machine on g_nSpyroHornStrikeState:
+
+   0 (idle) — a fresh press of the attack button (pad bit 0x20) while the horn
+   is not already live arms the swing: state 1, timer -1, swing phase 0, anim
+   rate from the strike anim descriptor, collision on, segment 0, anchor mode 1,
+   a random ring base, the variant taken from the flame-breath timer, the eight
+   slot ages cleared and the swing euler target zeroed.
+
+   1 (swinging) — the anchor mode drops at timer 0x10. Every 4th frame of the
+   0xC..0x1C window (and only while the CD stream is idle) two spark particles
+   are spawned through the level overlay hook, one off the composed body matrix
+   reached from the state block, one off the matrix itself, each positioned at
+   Spyro's world position plus a rotated tip offset. Outside that window a held
+   button re-arms a second swing from frame 0x2C, and at frame 0x30 the swing
+   ends: collision off, slot ages cleared, back to state 0.
+
+   Every non-cancelled frame ends by ticking the strike timer, and the frame
+   always finishes in SmoothSpyroByteEulerSpring. */
+extern void ZeroVector(int *vec);
+extern void AddVector(int *dst, int *a, int *b);
+extern void RotateVectorByMatrix(int *mtx, int *vec, int *dst);
+extern void ApplyActiveGteRotation(int *vec, int *dst);
+extern void FillWord(void *dst, unsigned int value, int byteCount);
+extern unsigned int GetRandomU32(void);
+extern void SmoothSpyroByteEulerSpring(void);
+
+extern unsigned char D_80075268[];  /* state -> strike anim descriptor index */
+extern unsigned char D_80078A79;    /* anim layer 1 blend flag */
+extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
+
+extern int g_anSpyroHornStrikeStateBlock[];  /* g_nSpyroHornStrikeState */
+extern int g_anSpyroHornStrikeTimerBlock[];  /* g_nSpyroHornStrikeTimer */
+extern int g_anSpyroComposedBodyMtxBlock[];  /* g_anSpyroComposedBodyMtx */
+extern int g_anSpyroHornStrikeTipOffsets2[]; /* g_anSpyroHornStrikeTipOffsets+0xC */
+extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
+extern unsigned char g_abSpyroHornCollisionActiveBlock[];
+
+void TickSpyroHornStrikeAttack(void) {
+  int pos[4];
+  int vel[4];
+  int *tip;
+  int *mtx;
+  int *timer;
+  int *cancel;
+  int *strike;
+  unsigned char *anchor;
+  unsigned char *live;
+
+  if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] + 0xB8] !=
+      0) {
+    cancel = g_anSpyroHornStrikeStateBlock;
+    cancel[0] = 0;
+    ZeroVector(&cancel[3]);
+  } else {
+    strike = g_anSpyroHornStrikeStateBlock;
+    switch (strike[0]) {
+    case 0:
+      anchor = g_abSpyroHornStrikeAnchorModeBlock;
+      anchor[0] = 0;
+      if ((g_dwPadPressed & 0x20) && g_bSpyroHornCollisionActive == 0) {
+        strike[0] = 1;
+        g_nSpyroHornStrikeTimer = -1;
+        g_nSpyroHornStrikeSwingPhase = 0;
+        g_nSpyroHornStrikeAnimRate =
+            g_abSpyroAnimDescTable[D_80075268[g_nSpyroHornStrikeState] * 4 + 3];
+        g_bSpyroHornCollisionActive = 1;
+        g_bSpyroHornStrikeSegmentIdx = 0;
+        anchor[0] = 1;
+        g_bSpyroHornStrikeAnimRingBase = GetRandomU32() & 1;
+        if (g_nSpyroFlameBreathTimer != 0) {
+          g_nSpyroHornStrikeVariant = 1;
+        } else {
+          g_nSpyroHornStrikeVariant = 0;
+        }
+        FillWord(g_abSpyroHornStrikeSlotAge, 0, 8);
+        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+      }
+      break;
+    case 1:
+      if (g_nSpyroHornStrikeTimer == 0x10) {
+        anchor = g_abSpyroHornStrikeAnchorModeBlock;
+        anchor[0] = 0;
+      }
+      if ((g_nSpyroHornStrikeTimer & 3) == 0 &&
+          (unsigned int)(g_nSpyroHornStrikeTimer - 0xC) < 0x11 &&
+          g_nCdStreamState < 0) {
+        tip = g_anSpyroHornStrikeTipOffsets;
+        RotateVectorByMatrix(&strike[0xC], tip, pos);
+        AddVector(pos, pos, (int *)((char *)strike - 0x198));
+        ApplyActiveGteRotation(tip + 6, vel);
+        if (g_nSpyroHornStrikeVariant != 0) {
+          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+              1, 1, pos, vel);
+        } else {
+          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+              1, 0, pos, vel);
+        }
+        mtx = g_anSpyroComposedBodyMtxBlock;
+        tip = g_anSpyroHornStrikeTipOffsets2;
+        RotateVectorByMatrix(mtx, tip, pos);
+        AddVector(pos, pos, (int *)((char *)mtx - 0x1C8));
+        ApplyActiveGteRotation(tip + 6, vel);
+        if (g_nSpyroHornStrikeVariant != 0) {
+          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+              1, 1, pos, vel);
+        } else {
+          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+              1, 0, pos, vel);
+        }
+      } else if ((g_dwPadPressed & 0x20) &&
+                 (timer = g_anSpyroHornStrikeTimerBlock)[0] >= 0x2C) {
+        timer[0] = -1;
+        g_nSpyroHornStrikeSwingPhase = 2;
+        g_abSpyroAnimLayer1SubstepBlock[0] = 4;
+        D_80078A79 = 0;
+        g_bSpyroHornCollisionActive = 1;
+        g_bSpyroHornStrikeSegmentIdx = 0;
+        g_bSpyroHornStrikeAnchorMode = 1;
+        g_bSpyroHornStrikeAnimRingBase = GetRandomU32() & 1;
+        if (g_nSpyroFlameBreathTimer != 0) {
+          g_nSpyroHornStrikeVariant = 1;
+        } else {
+          g_nSpyroHornStrikeVariant = 0;
+        }
+        FillWord(g_abSpyroHornStrikeSlotAge, 0, 8);
+      } else {
+        timer = g_anSpyroHornStrikeTimerBlock;
+        if (timer[0] >= 0x30) {
+          live = g_abSpyroHornCollisionActiveBlock;
+          live[0] = 0;
+          FillWord((char *)live - 0x78, 0, 8);
+          g_nSpyroHornStrikeState = 0;
+          timer[0] = -1;
+          g_nSpyroHornStrikeAnimRate =
+              g_abSpyroAnimDescTable[D_80075268[g_nSpyroHornStrikeState] * 4 +
+                                     3];
+          ZeroVector(&timer[1]);
+        }
+      }
+      break;
+    default:
+      if (g_nCameraCurrentMode != 0x80000009) {
+        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+      }
+      break;
+    }
+    timer = g_anSpyroHornStrikeTimerBlock;
+    timer[0] += 1;
+  }
+  SmoothSpyroByteEulerSpring();
+}

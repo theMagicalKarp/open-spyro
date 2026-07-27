@@ -486,3 +486,53 @@ EnqueueLoadingScreenSprites:
     banked in the .wip: seven per-flag-byte aliases, per-block pointer locals,
     in-place base advance, A86 goto-loops for the 3-iteration record loops,
     signed cursor compare, 16-byte dead local for the 0x58 frame.
+TickActiveSoundVoices:
+  verdict: park
+  class: B16
+  date: 2026-07-26
+  note: >-
+    SPU voice mixer tick (1144 b). Parked at 88.1%, 286/286 length-exact
+    (864/1144 partial bytes). Three residues: (1) B16 x2 — the original
+    materializes the address of g_nCameraEulerYaw (prologue) and of
+    g_nSoundMasterVolume (read twice around a store in the out-of-range
+    halving arm) as `lui;addiu` + `lw 0(reg)`; every alias form (incomplete
+    array, sized [8]/[16] per the A22 sdata probe), volatile alias + volatile
+    pointer local and every placement of the pointer local folds back to
+    `lui;lw %lo`. Diagnosed NOT sdata: the same source built -G0 folds the
+    same way. ~26 of the 34 differing insns. (2) The out-of-range store pair
+    keeps a derived base `addiu a0,s8,-0x2C` + `sh 0x2C/0x2E(a0)`, i.e. the
+    original's canonical row symbol is g_abSpuCommonAttr (0x80075F08, fields
+    +0x28..+0x40 — the SyncSoundVoicesWithHardware view); ours names
+    D_80075F30 (`-4` + `sh 4/6`). Every g_abSpuCommonAttr-based source form
+    makes loop.c strength-reduce the row addresses into pointer givs (whole
+    function rewritten, 231-278 insns); only `D_80075F30[i].field`
+    array-of-struct indexing reproduces the original's giv set (pitch +0x30 /
+    step +0x3C only) plus its $at folds. (3) ~5 insns of F2 load ordering in
+    the ArcTan2 owner block.
+AdvanceSpyroSubstepState:
+  verdict: wall
+  class: "B8 switchdata jr-table (main)"
+  date: 2026-07-26
+  note: "0x8004888c, 784 b. The per-substep state dispatch is a dense
+    switch(g_nSpyroState) through switchdataD_80011230 — loadable .rodata in
+    the main EXE, which build_main.sh rejects. Screened while looking for a
+    fresh 250-900 b main candidate: it and func_80066F34 (memcard family) are
+    the only untriaged ones left in that band, so main at mid size really is
+    exhausted."
+TickSpyroHornStrikeAttack:
+  verdict: park
+  class: F1
+  date: 2026-07-26
+  note: >-
+    Horn-strike (charge attack) frame driver (1084 b). Parked at 760/1084
+    partial bytes, 272 vs 271 insns (+1, so it overflows its slot). Logic and
+    block layout transcribe cleanly from the jal chain; the residue is an F1
+    whole-function s0/s1 rotation (the original holds the strike-state block
+    pointer in s1 and gives s0 to the short-lived pseudos — the `1` constant,
+    the tip-offset base, &vel, the composed-matrix base) plus one extra
+    `lui/addiu` for the second tip-offset base. Banked in the .wip: five
+    allow_duplicated alias blocks (state +0/+0xC/+0x30/-0x198, timer RMW +
+    ZeroVector at +4, anchor mode, collision-active with the slot ages at -0x78
+    into FillWord per A25, composed matrix with world pos at -0x1C8), a distinct
+    tip-offset alias at +0xC (A24), and the two-complete-calls form of the
+    variant select that cross-jumps (A80) instead of if-converting to `sltu`.
