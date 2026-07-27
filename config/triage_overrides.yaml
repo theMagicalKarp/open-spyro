@@ -536,3 +536,37 @@ TickSpyroHornStrikeAttack:
     into FillWord per A25, composed matrix with world pos at -0x1C8), a distinct
     tip-offset alias at +0xC (A24), and the two-complete-calls form of the
     variant select that cross-jumps (A80) instead of if-converting to `sltu`.
+GamestateUpdate:
+  verdict: matched
+  class: ""
+  date: 2026-07-26
+  note: >-
+    0x8003385C, 1012 b, matched in 2 iterations. If-ladder on g_nGamestate with
+    the state-0 gameplay frame as the trailing `else` arm; the only lever was
+    A66b (write the 4/5 arm as two duplicate else-ifs so they cross-jump —
+    `== 4 || == 5` folds to a range test and diverges).
+GamestateDraw:
+  verdict: matched
+  class: ""
+  date: 2026-07-26
+  note: >-
+    0x8001ED5C, 1020 b, matched in 2 iterations. Same ladder shape as
+    GamestateUpdate (duplicate else-if arms for the 1/9, 2/3/6 and 4/5 groups).
+    The frame-env flip derives the second env as `char *env = (char *)
+    &g_abFrameDrawEnv0; if (g_pActiveFrameDrawEnv == env) env += 0x84;` and the
+    +0x70/+0x74/+0x78 cursor republish needs explicit batched load locals in
+    load order (0x74, 0x78, 0x70) — per-store reloads give the B12 shape.
+Gamestate0C_Draw:
+  verdict: park
+  class: "B-i rule 1 (held-base nonzero-offset store fold)"
+  date: 2026-07-26
+  note: >-
+    0x8001E24C, 1132 b. Parked at 281/283 insns (mismatch 2, +1 length). The
+    whole title-card build, divide-magic name lookup, sprite alpha-pulse loop,
+    fade clamp and frame-submit tail match; the residue is the two-store OT bin
+    head/tail init, where the original holds one `la g_pOtDepthBinHead0` and
+    stores at +4 and +0 while our cse folds the +4 store to `lui $at`. New
+    levers banked from this attempt and folded into the cookbook: A18 (volatile
+    CLAMP STORE, plain reads, duplicates the second compare into the delay
+    slot), A20b's volatile-cast addendum, and A66b (duplicate arms / per-arm
+    call sites instead of folded guards and shared tails).

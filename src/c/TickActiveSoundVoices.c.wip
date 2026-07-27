@@ -110,10 +110,10 @@ extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int includeZ);
 extern int ArcTan2(int y, int x, int highPrecision);
 
-extern SPUVOICEROW D_80075F30[];                         /* the 24 mixer rows */
+extern SPUVOICEROW D_80075F30[]; /* the 24 mixer rows */
 extern volatile unsigned short g_anCameraEulerYawBlock[]; /* camera euler yaw */
-extern volatile int g_anSoundMasterVolumeBlock[];  /* g_nSoundMasterVolume */
-extern unsigned int g_adwSpuPendingKeyOffBlock[];  /* g_dwSpuPendingKeyOff */
+extern volatile int g_anSoundMasterVolumeBlock[]; /* g_nSoundMasterVolume */
+extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
 
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;

@@ -60,6 +60,20 @@
  * 100, so plain randomization does make real progress here — it just did not
  * close the last gap inside 15 minutes. A longer budget is worth trying before
  * committing to hand-framed PERM_* macros or hand-asm. Still 5x payoff.
+ *
+ * 2026-07-26-2 unattended permuter session (~26k iterations, ~2h, standard
+ * `open-spyro permuter` path): best score 70 vs base score 100 — a further
+ * step down from the 2026-07-25-1 run's 100, so the randomizer is still making
+ * real progress on this target and a longer budget remains the cheapest lever.
+ * The score-70 body (banked below) differs from the base by ONE thing: the
+ * three signed divides are wrapped in a `do { ... } while (0);` scope. That is
+ * semantically a no-op, so it is direct evidence that knot (1) — the
+ * sign-CSE/mfhi caller-saved coin flip previously written off as "pure
+ * allocator numbering, no source expression reaches it" — IS reachable from
+ * source after all, via block/scope structure rather than expression form.
+ * Next attempt should push on scope shapes around the divide group (nested
+ * blocks, a scoped temp, the divides inside the `if (hr != 0)` arm) rather
+ * than more expression rewrites, and re-check knot (2) afterwards.
  */
 
 extern void func_80017FE4(); /* draw text run */
@@ -88,10 +102,12 @@ int func_level_5_8007B4B0(int time, int *pos, int arg2)
     func_80017FE4("......", pos, 0x12, arg2);
     return 6;
   }
-  q600 = time / 600;
-  frac = time / 600;
-  frac = (time / 6) - (frac * 100);
-  hr = time / 36000;
+  do { /* permuter: this scope is load-bearing, see the 2026-07-26-2 note */
+    q600 = time / 600;
+    frac = time / 600;
+    frac = (time / 6) - (frac * 100);
+    hr = time / 36000;
+  } while (0);
   min = q600 - (hr * 60);
   if (hr != 0)
   {

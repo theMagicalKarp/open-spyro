@@ -167,10 +167,11 @@ void EnqueueLoadingScreenSprites(void) {
       anchor = ring + 0x4C2;
       quad = anchor;
       do {
-        shade = ((short)g_anCosineLut[(g_nLightSweepAngle - ((i << 8) / 20)) &
-                                      0xFF] >>
-                 7) +
-                0x80;
+        shade =
+            ((short)
+                 g_anCosineLut[(g_nLightSweepAngle - ((i << 8) / 20)) & 0xFF] >>
+             7) +
+            0x80;
         scratch[0] = shade;
         scratch[1] = shade;
         scratch[2] = shade;
