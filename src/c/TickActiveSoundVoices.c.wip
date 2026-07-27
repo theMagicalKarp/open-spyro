@@ -1,0 +1,236 @@
+#include "globals.h"
+
+/* PARKED 2026-07-26 — 88.1% (34/286 instructions), LENGTH-EXACT (286 insns,
+   1144 bytes). Logic is believed complete; the residue is three classes:
+
+   1. §B16 x2 — the original materializes a scalar's address (`lui;addiu` then
+      `lw/lhu 0(reg)`) for g_nCameraEulerYaw (prologue) and g_nSoundMasterVolume
+      (the out-of-range halving arm, read twice around a store); ours always
+      folds to `lui;lw %lo`. Levers tried and rejected: allow_duplicated alias
+      symbols (incomplete array AND sized [8]/[16] > 8 bytes, i.e. the A22 sdata
+      probe), volatile alias + volatile pointer local, pointer local seeded at
+      function entry / before the branch / inside the arm (that one moves the
+      `la` but only when it also lands in the wrong block). Diagnostic: the same
+      source compiled -G0 (overlay profile) folds identically, so this is not
+      the sdata cost hijack — it is the B16 backend address-form choice.
+      Accounts for ~26 of the 34 (the prologue hunk is the yaw `la` shifting
+      four register-save pairs).
+
+   2. Row-block base-symbol split (3 insns) — the out-of-range store pair keeps
+      a derived base: original `addiu a0,s8,-0x2C` + `sh 0x2C(a0)/0x2E(a0)`,
+      i.e. its canonical symbol is g_abSpuCommonAttr (0x80075F08) with the row
+      fields at +0x28..+0x40 (the same view SyncSoundVoicesWithHardware uses).
+      Ours names D_80075F30 and emits `addiu a0,s8,-4` + `sh 4/6(a0)`. Every
+      g_abSpuCommonAttr-based form tried (byte offset with an `off` biv, with
+      `i*0x1C`, `&block[k] + i*0x1C`, `&block[i*7]` cast to a padded struct, and
+      a per-iteration struct pointer) makes loop.c strength-reduce the row
+      addresses into pointer givs (231-278 insns, whole function rewritten);
+      only `D_80075F30[i].field` array-of-struct indexing reproduces the
+      original's giv set (pitch +0x30 / pitch-step +0x3C only) and its $at
+      folds. Reaching both at once is the open problem.
+
+   3. ArcTan2 owner block (~5 insns) — the reloaded owner lands in a1 and its
+      two position loads are hoisted above the camera-pos loads (§F2 order).
+
+   Everything else — the flag ladder, the key-status latch, the 4/8/0x10
+   comparison tree and its cross-jumped tails, the kill path, the pitch givs,
+   the ApplySpuVoiceAttr tail and the key-off RMW — is byte-identical. */
+
+/* Per-frame SPU voice mixer tick (0x8005637C, 0x478).
+
+   Walks the 24 software voice rows (stride 0x1C). A row flagged 0x40 is the
+   "just released" marker and is simply cleared. An active row (bit 0x1) is
+   polled against the hardware key status: once the voice has been keyed on
+   (status 1/3) the row latches bit 0x2, and a latched row that reports 3 again
+   has finished playing, so the row is released — the owner's playing byte is
+   stamped 0x7F, the row is blanked and the voice bit is queued into
+   g_dwSpuPendingKeyOff.
+
+   The row's 0x1C flag group selects how the frame's volume pair is produced:
+   4 = flat 0x2000, 0x10 = hold the row's cached pair, 8 = 3D positional. The 3D
+   case reads back the hardware volumes, then compares the camera distance to
+   the owner's range (owner+0x55 << 10, default 0x4000): inside the range
+   ComputeVoicePanAndFalloff pans by the owner's bearing relative to the camera
+   yaw; outside it the pair is halved every frame (and pushed straight to the
+   hardware) until both sides fall under 0x40, at which point the row is
+   released.
+
+   Every path that produces a pair scales it by g_nSoundMasterVolume (>>12),
+   folds the row's pitch step into its running pitch and pushes voice + volume
+   + pitch through ApplySpuVoiceAttr. */
+typedef struct {
+  /* 0x00 */ unsigned char *pOwner;
+  /* 0x04 */ short nVolL;
+  /* 0x06 */ short nVolR;
+  /* 0x08 */ int nPitch;
+  /* 0x0C */ unsigned char unk0C;
+  /* 0x0D */ unsigned char nSampleId;
+  /* 0x0E */ unsigned short nFlags;
+  /* 0x10 */ short anPanCache[2];
+  /* 0x14 */ int nPitchStep;
+  /* 0x18 */ char *pPlaying;
+} SPUVOICEROW;
+
+/* PSY-Q SpuVoiceAttr (0x40) — only voice/mask/volume/pitch are written here. */
+typedef struct {
+  /* 0x00 */ unsigned int voice;
+  /* 0x04 */ unsigned int mask;
+  /* 0x08 */ short volL;
+  /* 0x0A */ short volR;
+  /* 0x0C */ short volmodeL;
+  /* 0x0E */ short volmodeR;
+  /* 0x10 */ short volxL;
+  /* 0x12 */ short volxR;
+  /* 0x14 */ unsigned short pitch;
+  /* 0x16 */ unsigned short note;
+  /* 0x18 */ unsigned short sample_note;
+  /* 0x1A */ short envx;
+  /* 0x1C */ unsigned int addr;
+  /* 0x20 */ unsigned int loop_addr;
+  /* 0x24 */ int a_mode;
+  /* 0x28 */ int s_mode;
+  /* 0x2C */ int r_mode;
+  /* 0x30 */ unsigned short ar;
+  /* 0x32 */ unsigned short dr;
+  /* 0x34 */ unsigned short sr;
+  /* 0x36 */ unsigned short rr;
+  /* 0x38 */ unsigned short sl;
+  /* 0x3A */ unsigned short adsr1;
+  /* 0x3C */ unsigned short adsr2;
+} SPUVOICEATTR;
+
+extern int GetSpuVoiceKeyStatus(unsigned int voiceBit);
+extern void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
+extern void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
+extern void ApplySpuVoiceAttr(unsigned int *attr);
+extern void ComputeVoicePanAndFalloff(short *vol, int dist,
+                                      unsigned char bearing, unsigned int range,
+                                      short *cached);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern unsigned int VectorLength(int *vec, int includeZ);
+extern int ArcTan2(int y, int x, int highPrecision);
+
+extern SPUVOICEROW D_80075F30[];                         /* the 24 mixer rows */
+extern volatile unsigned short g_anCameraEulerYawBlock[]; /* camera euler yaw */
+extern volatile int g_anSoundMasterVolumeBlock[];  /* g_nSoundMasterVolume */
+extern unsigned int g_adwSpuPendingKeyOffBlock[];  /* g_dwSpuPendingKeyOff */
+
+int TickActiveSoundVoices(void) {
+  SPUVOICEATTR attr;
+  int vec[4];
+  unsigned char yaw;
+  int i;
+  int keyOff;
+  int status;
+  int mode;
+  int range;
+  int dist;
+  int vol;
+  volatile int *master;
+  volatile unsigned short *pYaw;
+  short *pVol;
+  unsigned char *owner;
+  char *playing;
+
+  keyOff = 0;
+  master = g_anSoundMasterVolumeBlock;
+  pYaw = g_anCameraEulerYawBlock;
+  yaw = (unsigned char)(pYaw[0] >> 4);
+
+  for (i = 0; i < 24; i++) {
+    if (D_80075F30[i].nFlags & 0x40) {
+      D_80075F30[i].nFlags = 0;
+      continue;
+    }
+    if (!(D_80075F30[i].nFlags & 1)) {
+      continue;
+    }
+
+    status = GetSpuVoiceKeyStatus(1 << i);
+    if (D_80075F30[i].nFlags & 2) {
+      if ((status & 0xFF) == 3) {
+        playing = D_80075F30[i].pPlaying;
+        keyOff |= 1 << i;
+        if (playing != 0) {
+          *playing = 0x7F;
+        }
+        D_80075F30[i].nFlags = 0x40;
+        D_80075F30[i].pPlaying = 0;
+        D_80075F30[i].pOwner = 0;
+        D_80075F30[i].nSampleId = 0xFF;
+        continue;
+      }
+    } else if ((status & 0xFF) == 1 || (status & 0xFF) == 3) {
+      D_80075F30[i].nFlags |= 2;
+    }
+
+    if (!(D_80075F30[i].nFlags & 1)) {
+      continue;
+    }
+
+    mode = D_80075F30[i].nFlags & 0x1C;
+    switch (mode) {
+    case 4:
+      attr.volR = 0x2000;
+      attr.volL = 0x2000;
+      break;
+    case 8:
+      pVol = &D_80075F30[i].nVolL;
+      SpuGetVoiceVolume(i, pVol, pVol + 1);
+      owner = D_80075F30[i].pOwner;
+      range = owner[0x55] << 10;
+      if (range == 0) {
+        range = 0x4000;
+      }
+      SubtractVector(vec, (int *)(owner + 0xC), g_anCameraPos);
+      dist = VectorLength(vec, 1);
+      if (dist >= range) {
+        attr.volR = D_80075F30[i].nVolR = D_80075F30[i].nVolR >> 1;
+        vol = D_80075F30[i].nVolL >> 1;
+        attr.volL = D_80075F30[i].nVolL = vol;
+        if (attr.volR < 0x40 && vol < 0x40) {
+          playing = D_80075F30[i].pPlaying;
+          keyOff |= 1 << i;
+          if (playing != 0) {
+            *playing = 0x7F;
+          }
+          D_80075F30[i].nFlags = 0x40;
+          D_80075F30[i].pPlaying = 0;
+          D_80075F30[i].pOwner = 0;
+          D_80075F30[i].nSampleId = 0xFF;
+        } else {
+          D_80075F30[i].nVolL = (D_80075F30[i].nVolL * master[0]) >> 12;
+          D_80075F30[i].nVolR = (D_80075F30[i].nVolR * master[0]) >> 12;
+          SetSpuVoiceVolumeLR(i, D_80075F30[i].nVolL, D_80075F30[i].nVolR);
+        }
+        continue;
+      }
+      owner = D_80075F30[i].pOwner;
+      ComputeVoicePanAndFalloff(
+          &attr.volL, dist,
+          (unsigned char)(ArcTan2(((int *)(owner + 0xC))[0] - g_anCameraPos[0],
+                                  ((int *)(owner + 0xC))[1] - g_anCameraPos[1],
+                                  0) -
+                          yaw),
+          range, D_80075F30[i].anPanCache);
+      break;
+    case 0x10:
+      attr.volR = D_80075F30[i].nVolR;
+      attr.volL = D_80075F30[i].nVolL;
+      break;
+    }
+
+    attr.mask = 3;
+    attr.voice = 1 << i;
+    attr.volL = (attr.volL * g_nSoundMasterVolume) >> 12;
+    attr.volR = (attr.volR * g_nSoundMasterVolume) >> 12;
+    D_80075F30[i].nPitch += D_80075F30[i].nPitchStep;
+    D_80075F30[i].nPitchStep = 0;
+    attr.mask |= 0x10;
+    attr.pitch = D_80075F30[i].nPitch;
+    ApplySpuVoiceAttr(&attr.voice);
+  }
+
+  g_adwSpuPendingKeyOffBlock[0] |= keyOff;
+  return 0;
+}
