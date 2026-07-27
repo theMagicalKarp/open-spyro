@@ -570,3 +570,46 @@ Gamestate0C_Draw:
     CLAMP STORE, plain reads, duplicates the second compare into the delay
     slot), A20b's volatile-cast addendum, and A66b (duplicate arms / per-arm
     call sites instead of folded guards and shared tails).
+Initialize:
+  verdict: park
+  class: "F7 qty_compare allocation ties (x2) + F10/F8 loop-top increment schedule"
+  date: 2026-07-27
+  note: >-
+    0x800127C0, 1328 b. Parked at 332/332 insns (LENGTH-EXACT), 37 differ,
+    88.9% / 1156 partial bytes. Boot bring-up + four 8-frame AddBiasToColorRuns
+    fades around the four sync CD loads. Everything structural matches: the
+    jal chain, all four fade bodies, both 210-vblank hold loops, the
+    TickWorldBundleLoadStream pump, the ClearImage/LoadImage tail and the
+    isrgb24-derived PutDispEnv arg (`p = &g_abFrameDispEnv0.isrgb24; *p = 0;
+    ... PutDispEnv((DISPENV *)(p + 0x73))`). Three residues remain:
+    (1) F7 tie in the CD-read block — the original holds the literal 600 in s0
+    and `&g_nCdBaseLba` in s1, ours swaps them; measured priorities (cc1 -dl)
+    are 600 = 2*5/47 = 0.213 vs lba = 2*5/38 = 0.263, so lba legitimately wins
+    s0 and no source form reorders it (direct-array access, a named `marker`
+    local and decl-order changes all const-propagate or leave it unchanged);
+    ~10 insns. (2) F10/F8: in the two fade-OUT loops (`-i << 5`) our counter
+    increment is the first insn of the loop-top thread, so reorg copies it into
+    the back-branch delay slot where the original keeps a nop; the original
+    schedules the a0/a1 arg moves first. Embedded `-(j += 1) << 5` / `-(++j)`
+    and moving the statement do not change it; ~8 insns. (3) The fade-1
+    counter/bias inits sit in the 2nd/3rd jal delay slots in the original;
+    hoisting them to the function top costs +1 insn (the s0 prologue save has
+    to precede the init) unless the base register tie in (1) also falls.
+    Banked levers (all in the .wip): the per-loop local rule, the mixed
+    loop-form rule (fade 1 do/while, fades 2-4 goto-loop), block-scoped
+    single-use volatile temps for the CdReadSyncSectors arg order, and the
+    three new symbol_addrs alias blocks.
+DespawnActorRecord:
+  verdict: skip
+  class: B6 handwritten
+  date: 2026-07-27
+  note: >-
+    0x80052568, 320 b. Screened with the rest of the 0x8004E000-0x80053500
+    actor/render band: 27 splat `/* handwritten instruction */` markers (raw
+    `addi`). The whole band is hand-asm — same screen rejected
+    AccumulateAnimRootMotionDelta (0x80052F38, 29 markers),
+    EncodeCachedVecToActorDirCode (0x800533D0, 34), func_80051FEC (41),
+    func_80052D64 (40), func_80050068 (10) and TickGemCutsceneActorAnims
+    (0x800522C0, 20). Confirms the §G landscape claim that main 250-900 b is
+    empty: every remaining function in that size band is either a named §B wall
+    or hand-written.

@@ -1,0 +1,244 @@
+#include "globals.h"
+
+extern void InitGraphicsHardware(void);
+extern void SpuInit(void);
+extern void InitPadSystem(void);
+extern void InitSoundEngine(void);
+extern void InitCdSystem(void);
+extern void BuildAudioTrackTable(void);
+extern void InitGeom(void);
+extern void SetGeomOffset(int x, int y);
+extern void SetGeomScreen(int h);
+extern int VSync(int mode);
+extern void SetDispMask(int on);
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+extern void AddBiasToColorRuns(void *dst, void *src, int bias);
+extern void LoadImage(short *rect, void *data);
+extern void DrawSync(int mode);
+extern DISPENV *PutDispEnv(DISPENV *env);
+extern void ClearImage(short *rect, int r, int g, int b);
+extern void LoadAssetDirectoryFromCd(void);
+extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
+                              int marker);
+extern void CopyWords(void *dst, void *src, int byte_count);
+extern void TickWorldBundleLoadStream(void);
+extern void LoadActorMeshTables(void);
+extern void BeginGemCutscene(void);
+extern void BeginStoryIntro(void);
+
+extern void *D_800113A0; /* shared CD sector buffer pointer */
+extern int D_8007A6E4;   /* title-art chunk byte count */
+extern int D_8007A6E0;   /* title-art byte offset */
+extern int D_8007A6D4;   /* boot-splash chunk byte count */
+extern int D_8007A6D0;   /* boot-splash byte offset */
+extern int D_8007DDE8;   /* draw-buffer sentinel */
+extern int D_800785CC;
+
+extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
+extern void *g_apDrawBufBlock2[]; /* distinct alias, fade-out pass (A23) */
+extern int g_anCdBaseLbaBlock[];  /* alias of g_nCdBaseLba */
+extern int g_anWorldArchiveOffsetBlock[]; /* alias, held across the reads */
+extern int
+    g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
+
+/* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
+   SPU, pad, sound engine, CD and GTE, publishes both draw buffers, then runs
+   the boot presentation as four 8-frame fades driven by AddBiasToColorRuns:
+   the title art fades in and back out around the four sync CD loads, then the
+   splash art (loaded into its own buffer 0x5A000 below the world chunk) fades
+   in while the world bundle streams, each pair separated by a 210-vblank hold.
+   Ends by clearing the screen, blitting the loaded frame back into VRAM,
+   carving the work-area top out of the crt0 stack size and handing off to the
+   story intro.
+
+   Loop forms are NOT uniform and the difference is load-bearing. Fade 1 is a
+   real do/while over the direct alias array: loop.c hoists the invariant
+   `&g_pDrawBufA` into the preheader, which is what gives the original its held
+   s0 base, and the RECT literals still re-materialize per iteration because
+   the inner `if (i == 0)` splits the body. Fades 2/3/4 must be goto-loops --
+   as do/while, loop.c hoists their RECT literals into callee-saved registers
+   (+4 insns each). Each fade also carries its OWN counter/bias/buffer locals:
+   one shared counter lives across the whole body and steals the low
+   callee-saved register the buffer base needs.
+
+   PARKED at 332/332 instructions (length-exact), 37 differ, 88.9%. Three
+   residues, all register-allocation / scheduling ties -- see the .wip note in
+   config/triage_overrides.yaml. */
+void Initialize(void) {
+  void **buf;
+  int i;
+  int bias;
+  int start;
+  void *fill;
+  int *lba;
+  int *archOff;
+  int *timOff;
+  char *top;
+  char *dst;
+  void **buf2;
+  int j;
+  char *src;
+  int k;
+  int bias3;
+  int n;
+  char *src2;
+  unsigned char *isrgb24;
+  short rect[4];
+  short clear[4];
+
+  InitGraphicsHardware();
+  SpuInit();
+  InitPadSystem();
+  InitSoundEngine();
+  InitCdSystem();
+  BuildAudioTrackTable();
+  InitGeom();
+  SetGeomOffset(0x100, 0x78);
+  SetGeomScreen(0x155);
+  g_apDrawBufBlock[0] = &D_8007DDE8;
+  g_pDrawBufB = &D_8007DDE8;
+  start = VSync(-1);
+  SetDispMask(0);
+  fill = g_apDrawBufBlock[0];
+  g_abFrameDispEnv0.isrgb24 = 1;
+  g_abFrameDispEnv1.isrgb24 = 1;
+  FillWord(fill, 0, 0x5A000);
+  do {
+    AddBiasToColorRuns(&g_pOtDepthBinHead0, g_apDrawBufBlock[0], bias);
+    rect[2] = 0x300;
+    rect[0] = 0;
+    rect[1] = 0;
+    rect[3] = 0xF0;
+    LoadImage(rect, g_apDrawBufBlock[0]);
+    DrawSync(0);
+    VSync(0);
+    PutDispEnv(&g_abFrameDispEnv1);
+    if (i == 0) {
+      SetDispMask(1);
+    }
+    bias += 0x20;
+    i += 1;
+  } while (i < 8);
+
+  LoadAssetDirectoryFromCd();
+  lba = g_anCdBaseLbaBlock;
+  archOff = g_anWorldArchiveOffsetBlock;
+  {
+    int lba1 = lba[0];
+    int off1 = *(volatile int *)archOff;
+    CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1, 600);
+  }
+  timOff = g_anWorldTimAudioChunkOffsetBlock;
+  CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
+  top = (char *)0x801C0000 - g_nCrt0StackSize;
+  CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], 600);
+  CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0,
+                    *(volatile int *)&D_8007A6E4, *(volatile int *)&D_8007A6E0,
+                    600);
+  {
+    int cnt4 = *(volatile int *)&D_8007A6D4;
+    int off4 = *(volatile int *)&D_8007A6D0;
+    dst = top - *(volatile int *)&D_8007A6D4;
+    CdReadSyncSectors(lba[0], dst, cnt4, off4, 600);
+  }
+
+hold_title:
+  if (VSync(-1) - start < 0xD2) {
+    VSync(0);
+    goto hold_title;
+  }
+  FillWord(g_apDrawBufBlock2[0], 0, 0x5A000);
+  j = 0;
+  buf2 = g_apDrawBufBlock2;
+fade_out_title:
+  j += 1;
+  AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -j << 5);
+  rect[2] = 0x300;
+  rect[0] = 0;
+  rect[1] = 0;
+  rect[3] = 0xF0;
+  LoadImage(rect, buf2[0]);
+  DrawSync(0);
+  VSync(0);
+  PutDispEnv(&g_abFrameDispEnv1);
+  if (j < 8) {
+    goto fade_out_title;
+  }
+
+  start = VSync(-1);
+  FillWord(dst - 0x5A000, 0, 0x5A000);
+  src = dst - 0x5A000;
+  k = 0;
+  bias3 = -0xE0;
+fade_in_splash:
+  AddBiasToColorRuns(dst, src, bias3);
+  rect[2] = 0x300;
+  rect[0] = 0;
+  rect[1] = 0;
+  rect[3] = 0xF0;
+  LoadImage(rect, src);
+  DrawSync(0);
+  VSync(0);
+  PutDispEnv(&g_abFrameDispEnv1);
+  bias3 += 0x20;
+  k += 1;
+  if (k < 8) {
+    goto fade_in_splash;
+  }
+
+  g_nCdStreamState = 3;
+  g_nCurrentWorldId = 0;
+stream_world:
+  TickWorldBundleLoadStream();
+  if (g_nCdStreamState < 0xA) {
+    goto stream_world;
+  }
+hold_splash:
+  if (VSync(-1) - start < 0xD2) {
+    VSync(0);
+    goto hold_splash;
+  }
+  n = 0;
+  src2 = dst - 0x5A000;
+fade_out_splash:
+  n += 1;
+  AddBiasToColorRuns(dst, src2, -n << 5);
+  rect[2] = 0x300;
+  rect[0] = 0;
+  rect[1] = 0;
+  rect[3] = 0xF0;
+  LoadImage(rect, src2);
+  DrawSync(0);
+  VSync(0);
+  PutDispEnv(&g_abFrameDispEnv1);
+  if (n < 8) {
+    goto fade_out_splash;
+  }
+
+  SetDispMask(0);
+  isrgb24 = &g_abFrameDispEnv0.isrgb24;
+  *isrgb24 = 0;
+  g_abFrameDispEnv1.isrgb24 = 0;
+  PutDispEnv((DISPENV *)(isrgb24 + 0x73));
+  clear[0] = 0;
+  clear[1] = 0;
+  clear[2] = 0x200;
+  clear[3] = 0x1E0;
+  ClearImage(clear, 0, 0, 0);
+  DrawSync(0);
+  SetDispMask(1);
+  rect[0] = 0x200;
+  rect[1] = 0;
+  rect[2] = 0x200;
+  rect[3] = 0x100;
+  LoadImage(rect, top);
+  DrawSync(0);
+  g_pWorkAreaTop = (char *)0x80200000 - g_nCrt0StackSize;
+  LoadActorMeshTables();
+  BeginGemCutscene();
+  g_nGenericCountdown = 0xF;
+  BeginStoryIntro();
+  g_nFrameStep = 2;
+  g_nFrameTicks = 0;
+  D_800785CC = 0x8000;
+}
