@@ -21,8 +21,8 @@
    cse cannot derive it from the first; the variant select written as two
    complete spawn calls in the two arms so jump.c cross-jumps them into one call
    (A80) instead of if-converting to `sltu a1,zero,a1`; a separate pointer local
-   in the cancel arm so it takes a caller-saved reg; and the anchor-mode store in
-   the swing arm done through its alias pointer, which is what forces the
+   in the cancel arm so it takes a caller-saved reg; and the anchor-mode store
+   in the swing arm done through its alias pointer, which is what forces the
    original's reload of the strike timer after it. */
 
 /* Horn-strike (charge attack) driver, one frame (0x800499C0, 0x43C).
@@ -57,14 +57,15 @@ extern void FillWord(void *dst, unsigned int value, int byteCount);
 extern unsigned int GetRandomU32(void);
 extern void SmoothSpyroByteEulerSpring(void);
 
-extern unsigned char D_80075268[];  /* state -> strike anim descriptor index */
-extern unsigned char D_80078A79;    /* anim layer 1 blend flag */
+extern unsigned char D_80075268[]; /* state -> strike anim descriptor index */
+extern unsigned char D_80078A79;   /* anim layer 1 blend flag */
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
 
-extern int g_anSpyroHornStrikeStateBlock[];  /* g_nSpyroHornStrikeState */
-extern int g_anSpyroHornStrikeTimerBlock[];  /* g_nSpyroHornStrikeTimer */
-extern int g_anSpyroComposedBodyMtxBlock[];  /* g_anSpyroComposedBodyMtx */
-extern int g_anSpyroHornStrikeTipOffsets2[]; /* g_anSpyroHornStrikeTipOffsets+0xC */
+extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */
+extern int g_anSpyroHornStrikeTimerBlock[]; /* g_nSpyroHornStrikeTimer */
+extern int g_anSpyroComposedBodyMtxBlock[]; /* g_anSpyroComposedBodyMtx */
+extern int
+    g_anSpyroHornStrikeTipOffsets2[]; /* g_anSpyroHornStrikeTipOffsets+0xC */
 extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
 extern unsigned char g_abSpyroHornCollisionActiveBlock[];
 
@@ -79,8 +80,8 @@ void TickSpyroHornStrikeAttack(void) {
   unsigned char *anchor;
   unsigned char *live;
 
-  if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] + 0xB8] !=
-      0) {
+  if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] +
+                             0xB8] != 0) {
     cancel = g_anSpyroHornStrikeStateBlock;
     cancel[0] = 0;
     ZeroVector(&cancel[3]);
