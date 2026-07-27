@@ -613,3 +613,18 @@ DespawnActorRecord:
     (0x800522C0, 20). Confirms the §G landscape claim that main 250-900 b is
     empty: every remaining function in that size band is either a named §B wall
     or hand-written.
+UnpackWorldDataChunks:
+  verdict: park
+  class: "F1 global-allocation cascade (cursor a2 vs s0 preference knot)"
+  date: 2026-07-27
+  note: >-
+    0x80012d58, 1240 b. Parked at 302/310 insns with all section/loop/tail
+    shapes matching; see the .wip header for the five solved sub-classes
+    (param-as-cursor + block-scoped sects beat the cse held-copy fold;
+    two-statement reloc temp; A22 array externs for pointer-read counts; A12
+    volatile header reloads; dead-init bank promote for the tail). Remaining:
+    cursor gets s0 via the bank-copy preference where orig has cursor=a2 and
+    every sect colored s0 — a global.c find_reg cascade, not source-reachable
+    by any form tried (read order swap trades the tail copy for the a2
+    assignment). Revisit with a fresh window using cc1 -dg preference/conflict
+    dumps against both orderings.
