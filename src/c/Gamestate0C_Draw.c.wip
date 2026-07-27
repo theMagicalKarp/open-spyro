@@ -53,12 +53,12 @@ extern void PutDrawEnv(void *env);
 extern void *LinkOTPrimitives(int depth_max);
 extern void DrawOTag(void *ot);
 
-extern char D_80010CD0[];  /* "%s" */
-extern char D_80010CE4[];  /* "%s" (level form) */
-extern void *D_80077850;   /* OT bin head seed for the title card */
-extern int D_800777EC[];   /* transition fade counter */
-extern int D_800777FC;     /* transition card variant */
-extern void *D_800758D8;   /* substate draw handler */
+extern char D_80010CD0[]; /* "%s" */
+extern char D_80010CE4[]; /* "%s" (level form) */
+extern void *D_80077850;  /* OT bin head seed for the title card */
+extern int D_800777EC[];  /* transition fade counter */
+extern int D_800777FC;    /* transition card variant */
+extern void *D_800758D8;  /* substate draw handler */
 extern unsigned short g_anCosineLut[];
 extern void *g_apOtDepthBinBlock[8]; /* alias @0x8006fcf4: head/tail pair */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
@@ -75,80 +75,80 @@ void Gamestate0C_Draw(void) {
   char *rec;
 
   if (g_nGamestate0cSubstate >= 4) {
-   if (g_nGamestate0cSubstate < 6) {
-    void **ot = g_apOtDepthBinBlock;
-
-    *(void *volatile *)&ot[1] = 0;
-    *(void *volatile *)&ot[0] = D_80077850;
-
-    variant = *(volatile int *)&D_800777FC;
-    if (variant < 5) {
-      sprintf(buf, D_80010CD0, g_apTitleCardNames[g_nCurrentLevelId / 10]);
-    } else if (variant == 5) {
-      sprintf(buf, D_80010CE4, g_apTitleCardNames[g_nCurrentLevelId / 10]);
-    } else {
-      world = g_nCurrentLevelId / 10;
-      level = g_nCurrentLevelId - world * 10;
-      sprintf(buf, D_80010CE4, g_apTitleCardNames[world * 6 + level + 2]);
-    }
-
-    pos[0] = 0x100 - (strlen(buf) - 1) * 7;
-    pos[1] = 0xC8;
-    pos[2] = 0x1400;
-    attr[0] = 0xE;
-    attr[1] = 1;
-    attr[2] = 0x1600;
-    rec = (char *)g_pSpriteRecordWriteCursor;
-    BuildTextSprites(buf, pos, attr, 0x10, 2);
-
-    rec -= 0x58;
-    phase = 0;
-    if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-      int *fade = D_800777EC;
-      unsigned short *cos = g_anCosineLut;
-      do {
-        rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
-        rec -= 0x58;
-        phase += 0xC;
-      } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
-    }
-
-    BuildActorDrawList();
-    FillWord(g_apOtDepthBinBlock, 0, 0x900);
-    EmitActorDrawList();
-    g_apSpritePrimQueue[0] = 0;
-    EnqueuePendingSpritePrims();
-    RasterizeSpritePrimQueue();
-    RasterizePairedActor();
-
     if (g_nGamestate0cSubstate < 6) {
-      g_dwActorMeshFadeColor = 0x401010;
-      if (g_nGamestate0cSubstate == 4) {
-        g_nFadeProgress = D_800777EC[0] * 0x10;
+      void **ot = g_apOtDepthBinBlock;
+
+      *(void *volatile *)&ot[1] = 0;
+      *(void *volatile *)&ot[0] = D_80077850;
+
+      variant = *(volatile int *)&D_800777FC;
+      if (variant < 5) {
+        sprintf(buf, D_80010CD0, g_apTitleCardNames[g_nCurrentLevelId / 10]);
+      } else if (variant == 5) {
+        sprintf(buf, D_80010CE4, g_apTitleCardNames[g_nCurrentLevelId / 10]);
       } else {
-        g_nFadeProgress = (0x100 - D_800777EC[0]) * 0x10;
+        world = g_nCurrentLevelId / 10;
+        level = g_nCurrentLevelId - world * 10;
+        sprintf(buf, D_80010CE4, g_apTitleCardNames[world * 6 + level + 2]);
       }
-      if (g_nFadeProgress < 0) {
-        *(volatile int *)&g_nFadeProgress = 0;
+
+      pos[0] = 0x100 - (strlen(buf) - 1) * 7;
+      pos[1] = 0xC8;
+      pos[2] = 0x1400;
+      attr[0] = 0xE;
+      attr[1] = 1;
+      attr[2] = 0x1600;
+      rec = (char *)g_pSpriteRecordWriteCursor;
+      BuildTextSprites(buf, pos, attr, 0x10, 2);
+
+      rec -= 0x58;
+      phase = 0;
+      if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
+        int *fade = D_800777EC;
+        unsigned short *cos = g_anCosineLut;
+        do {
+          rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          rec -= 0x58;
+          phase += 0xC;
+        } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
       }
-      if (g_nFadeProgress > 0x1000) {
-        g_nFadeProgress = 0x1000;
+
+      BuildActorDrawList();
+      FillWord(g_apOtDepthBinBlock, 0, 0x900);
+      EmitActorDrawList();
+      g_apSpritePrimQueue[0] = 0;
+      EnqueuePendingSpritePrims();
+      RasterizeSpritePrimQueue();
+      RasterizePairedActor();
+
+      if (g_nGamestate0cSubstate < 6) {
+        g_dwActorMeshFadeColor = 0x401010;
+        if (g_nGamestate0cSubstate == 4) {
+          g_nFadeProgress = D_800777EC[0] * 0x10;
+        } else {
+          g_nFadeProgress = (0x100 - D_800777EC[0]) * 0x10;
+        }
+        if (g_nFadeProgress < 0) {
+          *(volatile int *)&g_nFadeProgress = 0;
+        }
+        if (g_nFadeProgress > 0x1000) {
+          g_nFadeProgress = 0x1000;
+        }
+        color = ComputeDepthCuedColor(g_dwWorldFogColor, g_dwActorMeshFadeColor,
+                                      g_nFadeProgress);
+        g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
+        g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
+        g_abFrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
+        g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
+        g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
+        g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
+        if (g_nFadeProgress < 0x1000) {
+          EmitStaticActorMeshListFogged();
+        }
       }
-      color = ComputeDepthCuedColor(g_dwWorldFogColor, g_dwActorMeshFadeColor,
-                                    g_nFadeProgress);
-      g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
-      g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
-      g_abFrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
-      g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
-      g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
-      g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
-      if (g_nFadeProgress < 0x1000) {
-        EmitStaticActorMeshListFogged();
-      }
+    } else {
+      (*(void (*)())D_800758D8)();
     }
-   } else {
-    (*(void (*)())D_800758D8)();
-   }
   } else {
     (*(void (*)())D_800758D8)();
   }
