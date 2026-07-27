@@ -1,0 +1,287 @@
+/* PARKED 2026-07-27 at 302/310 insns, structure aligned, F1 global-allocation
+   cascade remaining. What is SOLVED (do not re-derive):
+   - Real `addiu cursor,cursor,4` increments require the walking pointer to be
+     the cse-canonical reg: walk the PARAM itself and give every section a
+     BLOCK-SCOPED `int *sect = cursor` (each sect dies before cursor's last
+     use, so make_regs_eqv never promotes it; a fn-scope sect outlives cursor
+     -> promoted -> whole head folds to displacement form).
+   - Loop reloc statement must be the two-statement form
+     `int t = *cursor + 4; *cursor = (int)sect + t;` (single-expression forms
+     reassociate (sect+4) into the preheader).
+   - Counts re-read through pointers (pm/pn/pi/pt/ptc) need incomplete-array
+     externs (A22) + fn-scope pm with pc = pm - 7 in the loop preheader.
+   - Collision header: five scoped `int *h = *(int *volatile *)&g_pWorld...`
+     statements (A12) reproduce the per-statement reloads.
+   - Tail: fn-scope `int *bank = 0;` (dead init => early first_uid => the tail
+     copy IS promoted, surviving canon) + count read BEFORE `bank = cursor`
+     gives the exact orig tail (addu a2,..; move s0,a2; lw 0(a2);
+     jal(a0=s0+4); return via s0).
+   REMAINING KNOT: cursor lands in s0 (preference 16 from the bank copy,
+   s0 unblocked because cursor dies pre-copy), while orig has cursor=a2 with
+   all sects colored s0. Swapping to copy-before-read flips cursor->a2 but
+   canon then eats the tail copy. Needs both: cursor->a2 AND tail copy alive;
+   see session notes / cc1 -dl -dg (-dg shows `72 preferences: 16`). */
+/* globals declared locally: the two entry tables are indexed as arrays and
+   the counts that are re-read through held pointers are incomplete arrays
+   (globals.h types them as scalars), so the pointer access keeps its
+   register base instead of folding to the sdata absolute form. */
+extern void *g_pWorldMeshHeaderArray; /* 0x800785c0 */
+extern int g_nWorldMeshCount[];       /* 0x800785c8 */
+extern void *g_pWorldMeshVertexData;  /* 0x800785c4 */
+extern void *g_pWorldChunkArray;      /* 0x800785a8 */
+extern int g_nWorldChunkCount;        /* 0x800785ac */
+extern int D_800785B0;
+extern int D_800785B4[];
+extern void *g_pWorldMeshIndexTable; /* 0x8007778c */
+extern int g_nWorldMeshIndexCount[]; /* 0x80077788 */
+extern void *g_pTriggerRegionTable;  /* 0x800785b8 */
+extern int D_800785BC[];
+extern void *g_pWorldCollisionHeader;   /* 0x800785d4 */
+extern unsigned char D_80077790[];      /* collision header bytes */
+extern void *g_pWorldCollisionTriArray; /* 0x80077784 */
+extern int g_nWorldCollisionTriCount;   /* 0x80077780 */
+extern int g_nScriptedMobCount;         /* 0x800758bc */
+extern int *g_apScriptedMobEntries[];   /* 0x80078640 */
+extern void *g_apMobEntryTable[];       /* 0x80076278 */
+extern int g_nLevelSampleBankCount;     /* 0x80076234 */
+
+extern void RelocateLevelSampleBank(char *bank, int mode);
+
+/* 0x80012d58 — walk the loaded world bundle as a chain of size-prefixed
+   sections (word 0 of each section links to the next), publish each
+   section's table pointer + count globals and patch the relative offsets in
+   each pointer table to absolute addresses (1240 b). flag != 0 unpacks the
+   reduced stream (mesh index / trigger / collision-header and the mob
+   sections are absent). Returns the cursor past the consumed data. */
+void *UnpackWorldDataChunks(int *cursor, int flag) {
+  int *pm;
+  int *bank = 0;
+  int i;
+  int n;
+
+  /* section: mesh headers */
+  {
+    int *sect = cursor;
+    cursor++;
+    n = *cursor;
+    cursor++;
+    pm = g_nWorldMeshCount;
+    g_pWorldMeshHeaderArray = cursor;
+    *pm = n;
+    cursor += n * 4;
+    g_pWorldMeshVertexData = cursor;
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: world chunks */
+  {
+    int *sect = cursor;
+    cursor++;
+    n = *cursor;
+    cursor++;
+    g_pWorldChunkArray = cursor;
+    g_nWorldChunkCount = n;
+    i = 0;
+    if (n > 0) {
+      int *pc = pm - 7;
+      do {
+        int t = *cursor + 4;
+        *cursor = (int)sect + t;
+        i++;
+        cursor++;
+      } while (i < *pc);
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: mesh index tables */
+  if (flag == 0) {
+    int *sect = cursor;
+    if (*sect < 5) {
+      D_800785B4[0] = 0;
+      D_800785B0 = 0;
+      g_pWorldMeshIndexTable = 0;
+    } else {
+      cursor += 2;
+      n = *cursor;
+      cursor++;
+      i = 0;
+      {
+        int *pn = D_800785B4;
+        D_800785B0 = (int)cursor;
+        *pn = n;
+        if (n > 0) {
+          do {
+            int t = *cursor + 4;
+            *cursor = (int)sect + t;
+            i++;
+            cursor++;
+          } while (i < *pn);
+        }
+      }
+      i = 0;
+      {
+        int *pi = g_nWorldMeshIndexCount;
+        cursor = (int *)((char *)sect + (sect[1] + 4));
+        n = *cursor;
+        cursor++;
+        g_pWorldMeshIndexTable = cursor;
+        *pi = n;
+        if (n > 0) {
+          do {
+            int t = *cursor + 4;
+            i++;
+            *cursor = (int)((char *)sect + sect[1]) + t;
+            cursor++;
+          } while (i < *pi);
+        }
+      }
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: trigger regions */
+  if (flag == 0) {
+    int *sect = cursor;
+    cursor++;
+    n = *cursor;
+    cursor++;
+    i = 0;
+    {
+      int *pt = D_800785BC;
+      g_pTriggerRegionTable = cursor;
+      *pt = n;
+      if (n > 0) {
+        do {
+          int t = *cursor + 4;
+          *cursor = (int)sect + t;
+          i++;
+          cursor++;
+        } while (i < *pt);
+      }
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: collision header (five relative offsets made absolute) */
+  if (flag == 0) {
+    int *sect = cursor;
+    cursor++;
+    g_pWorldCollisionHeader = cursor;
+    {
+      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+      h[2] = (int)cursor + h[2];
+    }
+    {
+      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+      h[3] = (int)cursor + h[3];
+    }
+    {
+      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+      h[4] = (int)cursor + h[4];
+    }
+    {
+      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+      h[5] = (int)cursor + h[5];
+    }
+    {
+      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+      h[6] = (int)cursor + h[6];
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: collision tris */
+  {
+    int *sect = cursor;
+    cursor++;
+    {
+      unsigned char *pb = D_80077790;
+      pb[0] = ((unsigned char *)cursor)[0];
+      pb[1] = ((unsigned char *)cursor)[1];
+      pb[2] = ((unsigned char *)cursor)[2];
+      cursor++;
+      n = *cursor;
+      cursor++;
+      g_pWorldCollisionTriArray = cursor;
+      g_nWorldCollisionTriCount = n;
+      i = 0;
+      if (n > 0) {
+        int *ptc = (int *)(pb - 0x10);
+        do {
+          int t = *cursor + 4;
+          *cursor = (int)sect + t;
+          i++;
+          cursor++;
+        } while (i < *ptc);
+      }
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+  if (flag != 0) {
+    return cursor;
+  }
+
+  /* section: scripted mobs */
+  n = *cursor;
+  cursor++;
+  g_nScriptedMobCount = n;
+  i = 0;
+  if (n > 0) {
+    int **p = g_apScriptedMobEntries;
+    do {
+      int *sect;
+      int *old;
+      int k;
+      int j;
+      *p = cursor;
+      k = cursor[1];
+      old = cursor;
+      cursor += k * 3 + 8;
+      *(int **)old = cursor;
+      cursor += 5;
+      sect = cursor;
+      cursor++;
+      ((int *)**p)[4] = *cursor;
+      cursor++;
+      ((int *)**p)[0] = *cursor;
+      cursor++;
+      ((int *)**p)[1] = (int)cursor;
+      j = 0;
+      if (*(int *)**p > 0) {
+        int **q = p;
+        do {
+          int t = *cursor + 4;
+          *cursor = (int)sect + t;
+          j++;
+          cursor++;
+        } while (j < *(int *)**q);
+      }
+      p++;
+      i++;
+      cursor = (int *)((char *)sect + *sect);
+    } while (i < g_nScriptedMobCount);
+  }
+
+  /* section: mob id -> entry lookup */
+  {
+    int *sect = cursor;
+    cursor++;
+    i = *cursor;
+    cursor++;
+    if (i > 0) {
+      do {
+        g_apMobEntryTable[*(short *)cursor] = cursor;
+        i--;
+        cursor = (int *)((char *)cursor + ((short *)cursor)[1] + 4);
+      } while (i > 0);
+    }
+    cursor = (int *)((char *)sect + *sect);
+  }
+
+  /* section: level sample bank */
+  g_nLevelSampleBankCount = *cursor;
+  bank = cursor;
+  RelocateLevelSampleBank((char *)bank + 4, 1);
+  return (char *)bank + *bank;
+}
