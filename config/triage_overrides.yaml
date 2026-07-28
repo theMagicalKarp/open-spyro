@@ -628,3 +628,15 @@ UnpackWorldDataChunks:
     by any form tried (read order swap trades the tail copy for the a2
     assignment). Revisit with a fresh window using cc1 -dg preference/conflict
     dumps against both orderings.
+AnimateGemTallyParticles:
+  verdict: matched
+  class: "matched 2026-07-28 (A106 inner-term naming on the spawn phase)"
+  date: 2026-07-28
+Gamestate08_Draw:
+  verdict: matched
+  class: "matched 2026-07-28 (A36 shared OT block symbol, A86 goto-loops, A3 volatile first read, A127 frame slack)"
+  date: 2026-07-28
+Gamestate0C_Update:
+  verdict: skip
+  class: "B-i rule 1 held-base fold — 4 held-base setups, 22 nonzero-offset accesses off the D_800777EC state base (-0x4/+0x10/+0x34/+0x3C/+0x4C/+0x50/+0x54/+0x64) in fall-through blocks"
+  date: 2026-07-28

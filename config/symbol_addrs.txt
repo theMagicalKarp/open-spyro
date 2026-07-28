@@ -1269,6 +1269,7 @@ g_adwSpuPendingKeyOffBlock = 0x8007623c; // allow_duplicated:True alias — vola
 g_anSpuPendingKeyOffBlock = 0x8007623c; // allow_duplicated:True alias block — shared-base view for the key-off RMW
 g_nSoundMonoMixFlag = 0x80076240; // size:0x4
 g_nGemPickupAuraStarEnabled = 0x80076248; // size:0x4
+g_anGemPickupAuraStarBlock = 0x80076248; // allow_duplicated:True alias — incomplete-array view of the aura-star state block so the enable flag read and the +0x10 matrix / +0x28 euler call args share one register base (Gamestate08_Draw)
 g_anGemPickupAuraStarAnchor = 0x8007624c; // size:0xc
 g_anGemPickupAuraStarMtx = 0x80076258; // size:0x14
 g_nGemPickupAuraStarRadius = 0x8007626c; // size:0x4
