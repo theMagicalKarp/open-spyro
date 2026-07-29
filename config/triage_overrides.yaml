@@ -640,3 +640,15 @@ Gamestate0C_Update:
   verdict: skip
   class: "B-i rule 1 held-base fold — 4 held-base setups, 22 nonzero-offset accesses off the D_800777EC state base (-0x4/+0x10/+0x34/+0x3C/+0x4C/+0x50/+0x54/+0x64) in fall-through blocks"
   date: 2026-07-28
+RespawnOrGameOver_Update:
+  verdict: park
+  class: "F10 sched1 sink, 369/373 length-exact (98.9%) — arg3's volatile size read sinks below the second held base's `la` + the 0x10(sp) stack-arg store; the two size reads off one base require volatile (every non-volatile form cse-merges to 372 insns). See the .wip header for the exhausted lever list"
+  date: 2026-07-28
+Gamestate0D_Update:
+  verdict: matched
+  class: "matched 2026-07-28-1 (A19-free ladder: 3 held-base aliases at offset 0 + distinct Y/Z scalar aliases for the nonzero-offset stores, A81 per-arm Z store)"
+  date: 2026-07-28
+RelocateActorMeshHeader:
+  verdict: skip
+  class: "re-confirmed 2026-07-28-1 from the 2026-07-24 screen (suspected non-gcc TU); do not re-open from the triage ranking"
+  date: 2026-07-28
