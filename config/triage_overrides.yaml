@@ -652,3 +652,19 @@ RelocateActorMeshHeader:
   verdict: skip
   class: "re-confirmed 2026-07-28-1 from the 2026-07-24 screen (suspected non-gcc TU); do not re-open from the triage ranking"
   date: 2026-07-28
+PauseMenu_Update:
+  verdict: skip
+  class: "B8 .rodata switch jump table in MAIN (jr via switchdataD_80010dd0, 6-way substate ladder)"
+  date: 2026-07-29
+SaveLoadMenu_Draw:
+  verdict: skip
+  class: "B8 .rodata switch jump table in MAIN (jr via switchdataD_80010d58, 8-way)"
+  date: 2026-07-29
+Gamestate0B_Update:
+  verdict: skip
+  class: "B8 .rodata switch jump table in MAIN (jr via switchdataD_80010e08, 8-way)"
+  date: 2026-07-29
+DrawLevelTransitionOverlay:
+  verdict: matched
+  class: "matched 2026-07-29 (single scalar reused for the digit-count loop AND the icon index: the merged live range flips the F7 qty_compare cascade so i wins s0 and i*16 takes s1)"
+  date: 2026-07-29
