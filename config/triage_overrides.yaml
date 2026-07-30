@@ -708,3 +708,15 @@ PlaySoundEffect:
   verdict: viable
   class: "screens clean (1 held base, 3 nonzero-offset accesses, 12 calls, 482 insns) - untried, biggest clean main candidate in the sound TU"
   date: 2026-07-29
+PlaySoundEffect:
+  verdict: matched
+  class: "matched 2026-07-29-2 (A142: volatility from the DECLARED types — volatile row nVolL/nVolR/anPanCache fields + volatile override globals — pins the 5 override reloads and their program-order slots while keeping every store fused as lui $at/%lo; plus A145, a third empty `case 0x10` to make the mode ladder a split switch tree)"
+  date: 2026-07-29
+TickActiveSoundVoices:
+  verdict: park
+  class: "94.1% LENGTH-EXACT (was 88.1%) — B16 retired via A142 (inline volatile cast-deref of the block alias, no pointer local). Residues: 9-insn prologue `la` rotation (B14/F10, source-order invariant), the g_abSpuCommonAttr-vs-D_80075F30 base split on the out-of-range halving store pair (byte-offset form overflows the slot via a loop.c giv), and the F2 ArcTan2 owner/camera load order (A120 temps make it worse)"
+  date: 2026-07-29
+func_800658FC:
+  verdict: retry
+  class: "B16 half of its F9 double knot is now crackable — re-try the post-jal `lui;addiu;lw 0(r)` sites with an inline volatile cast-deref of the alias (A142/B16 retirement 2026-07-29-2); the held-base derive is the other half"
+  date: 2026-07-29
