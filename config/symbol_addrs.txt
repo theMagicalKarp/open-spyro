@@ -1404,6 +1404,7 @@ g_dwPadHeld = 0x80077380; // allow_duplicated:True size:0x4
 g_abPadAnalogCalibratedBlock = 0x8007738c; // allow_duplicated:True alias — non-sdata incomplete-array view so the calibrated-stick word store keeps the held base register instead of the sdata $at fold (SamplePadForDeathReplayFrame)
 g_adwPadHeldBlock = 0x80077380; // allow_duplicated:True alias — incomplete-array view so the substep-ring fan-out derives +0x50 off the held base register instead of a fresh absolute lui/addiu (SamplePadForDeathReplayFrame)
 g_nPadType = 0x80077384; // size:0x4
+g_anPadTypeBlock = 0x80077384; // allow_duplicated:True alias block — held-base view of g_nPadType (+0 type read, -0xC calibration-block call arg) for PollPadAndDistributeInput
 g_nPadStickActiveFlag = 0x80077388; // size:0x4
 g_dwPadAnalogCalibrated = 0x8007738c; // allow_duplicated:True size:0x4
 g_nPadAllInputIdleFlag = 0x80077390; // size:0x4

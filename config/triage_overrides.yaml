@@ -720,3 +720,23 @@ func_800658FC:
   verdict: retry
   class: "B16 half of its F9 double knot is now crackable — re-try the post-jal `lui;addiu;lw 0(r)` sites with an inline volatile cast-deref of the alias (A142/B16 retirement 2026-07-29-2); the held-base derive is the other half"
   date: 2026-07-29
+PollPadAndDistributeInput:
+  verdict: park
+  class: >-
+    B-i rule 1 wall, +4 insns (419 vs 415) so it does not even LINK (28 bytes
+    over its slot). Everything else transcribes exactly: the rumble/pad-id
+    ladder, the 3-case switch tree on g_abPadRawReport[1] (0x41/0x53+0x73/
+    default), the Saturn button remap, the stick synthesis, the idle flags and
+    the whole substep-ring fan-out all align (17 of 415 in the masked shape
+    diff, 8 of them this fold). The wall is the g_nFrameTicks!=0 arm's
+    `lw/sw -8(a2)` + `-4(a2)` RMW pair off a2 = &g_dwPadHeld: our cse folds both
+    to absolute. Proven irreducible from the gcc 2.7.2 sources (cse.c fold_rtx
+    `case '2'` returns simplify_binary_operation(const_arg0, const_arg1) with no
+    cost check) and from cc1 -dr/-ds dumps. Swapping the arms so the |= block
+    sits after a CODE_LABEL does NOT help (cse_end_of_basic_block follows
+    conditional jumps under -fcse-follow-jumps); neither does A25 (a derived
+    address off the same alias IS passed to MapPadAxisToCalibratedRange) nor the
+    two-pointer form (update_equiv_regs substitutes the weak pseudo's REG_EQUIV
+    and deletes its def). Park kept at src/c/PollPadAndDistributeInput.c.wip
+    with the full analysis; reopen only if B-i rule 1 is retired.
+  date: 2026-07-30
