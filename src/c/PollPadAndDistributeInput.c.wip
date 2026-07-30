@@ -1,0 +1,260 @@
+/* PARKED — §B-i rule 1 (held-base nonzero-offset fold), +4 insns (419 vs 415).
+   Everything else in the function is byte-shape-exact: the whole rumble/pad-id
+   ladder, the Saturn remap, the stick synthesis, the idle flags and the substep
+   ring fan-out all align (mismatch 17 of 415 in the masked shape diff, of which
+   8 are this fold and 5 are one `mapped` a1-vs-v1 rotation that hangs off it).
+
+   The wall: the g_nFrameTicks!=0 arm is
+       lw v0,-8(a2); lw v1,-4(a2); or; or; sw v0,-8(a2); sw v1,-4(a2)
+   off a2 = &g_dwPadHeld (materialized at .L800540D8 for the offset-0 held
+   read/store). Our cc1 emits the two RMWs absolute (lui+lw / lui+sw each).
+
+   Proven from the gcc 2.7.2 sources + cc1 -dr/-ds dumps, so do NOT re-derive:
+   - cse.c fold_rtx, `case '2'`: after the operand loop declines to substitute
+     (COST(symbol)=12 > COST(pseudo)=1, so `cheap_arg` stays the reg), it still
+     calls simplify_binary_operation with const_arg0 = the reg's qty_const, and
+     RETURNS that folded constant. find_best_addr then accepts it via
+     validate_change. There is no cost check on this path — B-i rule 1 verbatim.
+   - A LABEL does NOT save it: writing the arms the other way round
+     (`if (g_nFrameTicks == 0) {abs} else {|=}`) puts the |= arm after a
+     CODE_LABEL and it STILL folds, because cse_end_of_basic_block follows
+     conditional jumps under -fcse-follow-jumps and carries the equivalence into
+     the target path. (This refines B-i's "only a LABEL flushes the equivalence".)
+   - The A25 escape does not apply: a derived address off the same alias IS
+     passed to a call here (`&stick[-4]` -> MapPadAxisToCalibratedRange) and the
+     RMWs still fold.
+   - The two-pointer form (`pp = pad-2; rp = pad-1; *pp |= ...`) does not help:
+     cc1 -dr shows the `(set 193 (plus (reg141) (const_int -8)))` expand insn,
+     but the pseudo has one use, so update_equiv_regs substitutes its REG_EQUIV
+     constant and deletes the def (B-i rule 3's weak-base fold). Even if it won
+     a hard reg it costs addiu+lw 0(p)+sw 0(p) = +1 insn per field.
+
+   Consequence: the build is 28 bytes over its slot, so this cannot even be
+   committed as a linking park. Reopen only if B-i rule 1 is ever retired.
+
+   Remaining non-fold residue (fix these first if the fold ever falls):
+   - `mapped` (the Saturn remap accumulator) lands in v1; original uses a1.
+
+   The two alias blocks it needs are already in config/symbol_addrs.txt:
+   g_anPadTypeBlock (0x80077384) and g_adwPadHeldBlock (0x80077380, pre-existing
+   from SamplePadForDeathReplayFrame). The stick base is written as
+   &g_adwPadHeldBlock[2] on purpose: %hi/%lo(g_adwPadHeldBlock+8) assembles to
+   the same bytes as %hi/%lo(g_nPadStickActiveFlag) and keeps one symbol_ref so
+   cse's get_related_value can derive the +0x48 ring slot off the live base
+   (A36) — that half of the function matches exactly.
+*/
+#include "globals.h"
+
+/* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
+   InitPadSystem via InstallVSyncCallback. Ticks the vblank/CD watchdog
+   counters, bails out while the death replay owns the pad, then drives the
+   rumble command block, classifies the controller from the raw report id
+   byte, remaps Saturn buttons, synthesizes virtual D-pad bits from the
+   calibrated left stick, edge-detects pressed/released against g_dwPadHeld,
+   maintains the sticky idle flags and fans the sample out into the current
+   g_nFrameTicks slot of the 4-record substep ring. */
+extern int PadGetState(int socket);
+extern void PadSetAct(int socket, unsigned char *table, int len);
+extern int PadSetActAlign(int socket, unsigned char *table);
+extern int PadInfoMode(int socket, int term, int offs);
+extern int PadSetMainMode(int socket, int offs, int lock);
+extern void ResetPadStickCalibrationDefaults(int block);
+extern int FinalizePadCalibration(unsigned int *block);
+extern void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
+
+extern int g_anPadTypeBlock[];           /* g_nPadType as an array view */
+extern unsigned int g_adwPadHeldBlock[]; /* g_dwPadHeld as an array view */
+
+void PollPadAndDistributeInput(void) {
+  unsigned char cal[4];
+  int padState;
+  int padType;
+  int *stick;
+
+  g_nVblankTickCount += 1;
+  if (g_nCdStallMarker != 0) {
+    g_nCdStallWatchdogTicks += 1;
+  }
+  if (g_nDeathState != 0) {
+    return;
+  }
+
+  padState = PadGetState(0);
+  if (padState == 1) {
+    g_nPadActAlignedFlag = 0;
+  }
+  if (g_nPadActAlignedFlag == 0) {
+    PadSetAct(0, g_abPadActCommand, 2);
+    if (padState == 2) {
+      g_nPadActAlignedFlag = 1;
+    } else if (padState == 6 && PadSetActAlign(0, g_abPadActAlignTable) != 0) {
+      g_nPadActAlignedFlag = 1;
+    }
+  }
+
+  if (PadInfoMode(0, 2, 0) != 0) {
+    if (g_nPadSetMainModePending != 0) {
+      if (PadSetMainMode(0, 1, 0) != 0) {
+        g_nPadSetMainModePending = 0;
+      }
+    }
+    g_nPadIsDualshockFlag = 1;
+  } else {
+    g_nPadIsDualshockFlag = 0;
+  }
+
+  if (g_nOptionVibrationEnabled == 0 || g_nPadIsDualshockFlag == 0) {
+    g_nHitRumbleTimer = 0;
+    g_nVibrationLevel = 0;
+    g_nPulseRumbleTimer = 0;
+    g_nPulseRumbleAmount = 0;
+  }
+  if (g_nHitRumbleTimer != 0) {
+    g_abPadActCommand[0] = 1;
+    g_abPadActCommand[1] = 0x78;
+  } else if (g_nVibrationLevel != 0) {
+    g_abPadActCommand[0] = 1;
+    g_abPadActCommand[1] = 0;
+  } else if (g_nPulseRumbleTimer != 0) {
+    g_abPadActCommand[0] = 0;
+    g_abPadActCommand[1] = g_nPulseRumbleAmount;
+  } else {
+    g_abPadActCommand[0] = 0;
+    g_abPadActCommand[1] = 0;
+  }
+
+  g_nHitRumbleTimer -= 1;
+  if (g_nHitRumbleTimer < 0) {
+    g_nHitRumbleTimer = 0;
+  }
+  g_nVibrationLevel -= 1;
+  if (g_nVibrationLevel < 0) {
+    g_nVibrationLevel = 0;
+  }
+  g_nPulseRumbleTimer -= 1;
+  if (g_nPulseRumbleTimer < 0) {
+    g_nPulseRumbleTimer = 0;
+  }
+
+  if (g_abPadRawReport[0] != 0) {
+    g_nPadSetMainModePending = 1;
+    padType = 0;
+  } else {
+    switch (g_abPadRawReport[1]) {
+    case 0x41:
+      padType = 2;
+      break;
+    case 0x53:
+    case 0x73:
+      if (g_anPadTypeBlock[0] != 3) {
+        ResetPadStickCalibrationDefaults((int)&g_anPadTypeBlock[-3]);
+        g_dwPadAnalogRawSnapshot = *(unsigned int *)&g_abPadRawReport[4];
+        FinalizePadCalibration((unsigned int *)&g_anPadTypeBlock[-3]);
+      }
+      padType = 3;
+      break;
+    default:
+      padType = 1;
+      break;
+    }
+  }
+
+  stick = (int *)&g_adwPadHeldBlock[2];
+  stick[0] = 0;
+  if (padType >= 2) {
+    unsigned int buttons;
+    unsigned int pressed;
+    unsigned int released;
+    unsigned int held;
+    unsigned int *pad;
+
+    buttons = ~((g_abPadRawReport[2] << 8) | g_abPadRawReport[3]);
+    if (padType == 3) {
+      *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
+      MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
+      if (g_abPadRawReport[1] == 0x53) {
+        unsigned int mapped = buttons & ~0x9E;
+        if (buttons & 0x80) {
+          mapped |= 2;
+        }
+        if (buttons & 0x10) {
+          mapped |= 8;
+        }
+        if (buttons & 8) {
+          mapped |= 0x10;
+        }
+        if (buttons & 2) {
+          mapped |= 4;
+        }
+        if (buttons & 4) {
+          mapped |= 0x80;
+        }
+        buttons = mapped;
+      }
+      if ((buttons & 0xF000) == 0) {
+        if (cal[2] >= 0xC1) {
+          buttons |= 0x2000;
+        } else if (cal[2] < 0x40) {
+          buttons |= 0x8000;
+        }
+        if (cal[3] >= 0xC1) {
+          buttons |= 0x4000;
+        } else if (cal[3] < 0x40) {
+          buttons |= 0x1000;
+        }
+        if (cal[2] != 0x7F || cal[3] != cal[2]) {
+          g_nPadStickActiveFlag = 1;
+        }
+      }
+    } else {
+      *(unsigned int *)cal = 0x7F7F7F7F;
+    }
+
+    pad = g_adwPadHeldBlock;
+    held = pad[0];
+    pressed = ~held & buttons;
+    released = held & ~buttons;
+    if (*(unsigned char *)&g_nInGameTick != 0) {
+      g_nPadType = padType;
+      pad[0] = buttons;
+      if (g_nFrameTicks != 0) {
+        pad[-2] |= pressed;
+        pad[-1] |= released;
+      } else {
+        g_dwPadPressed = pressed;
+        g_dwPadReleased = released;
+        g_nPadAllInputIdleFlag = 1;
+        g_nPadDirectionalIdleFlag = 1;
+      }
+      g_dwPadAnalogCalibrated = *(unsigned int *)cal;
+      if (g_nPadAllInputIdleFlag != 0) {
+        if ((g_dwPadHeld & 0xF000) != 0 ||
+            (padType == 3 && (cal[2] != 0x7F || cal[3] != cal[2]))) {
+          g_nPadDirectionalIdleFlag = 0;
+        }
+        if (g_nPadDirectionalIdleFlag == 0 || (g_dwPadHeld & 0xF0FF) != 0) {
+          g_nPadAllInputIdleFlag = 0;
+        }
+      }
+    } else if (g_nPadType < 2) {
+      g_nPadType = padType;
+    }
+
+    if (g_nFrameTicks < 4) {
+      int slot = g_nFrameTicks * 0x18;
+      int *analog;
+      int *ring = (int *)&g_adwPadHeldBlock[2];
+      *(int *)((char *)g_anPadSubstepRing + slot) = padType;
+      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 4) = buttons;
+      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 8) = pressed;
+      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 0xC) = released;
+      *(int *)((char *)g_anPadSubstepRing + slot + 0x10) = ring[0];
+      analog = &ring[18];
+      *(unsigned int *)((char *)analog + slot) = g_dwPadAnalogCalibrated;
+    }
+  } else if (*(unsigned char *)&g_nInGameTick != 0) {
+    g_nPadType = padType;
+  }
+
+  g_nFrameTicks += 1;
+}
