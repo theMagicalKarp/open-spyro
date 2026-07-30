@@ -1,0 +1,299 @@
+#include "globals.h"
+
+/* 0x80014564, 1548 bytes — the world-bundle CD streaming state machine.
+   Ticked from Initialize, PauseMenu_Update, GemCutscene_Update,
+   Gamestate0D_Update and CheckDeathPlane; each tick services the stall
+   watchdog, then gates on the drive being idle (no read in flight,
+   CdSync == 2, music stream table built) and runs exactly one stage of
+   g_nCdStreamState:
+
+     0  kick the 0x800-byte world header read into g_pDrawBufA
+     1  copy the header to the chunk-descriptor scratch, kick the TIM chunk
+     2  DMA the TIM chunk from g_pDrawBufA into VRAM at (512, 0)
+     3  kick the remaining TIM/audio bytes above the 0x80000 split
+     4  upload the audio half to SPU RAM, kick the world bundle read
+     5  unpack the bundle, snapshot the section-4 header, kick the ext chunk
+        (world 1 streams it in two parts, everyone else in one)
+     6  waiting for the first half of world 1's ext chunk
+     7  kick the second half of world 1's ext chunk
+     8  relocate every actor mesh header, kick the path-table chunk
+     9  rebase the path table, seed the actor pool defaults, done
+    10  idle — the stream stays here until a caller resets the state
+
+   World id indexes the per-world archive table (8-byte stride) and the
+   per-world header-size table (4-byte stride). */
+
+extern void RestartStalledCdRead(void);
+extern int FUN_80063bd8(); /* CdSync */
+extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
+                             int marker);
+extern void CopyWords(void *dst, void *src, int byte_count);
+extern void LoadImage(RECT *rect, void *data);
+extern int SetSpuTransferStartAddr(unsigned int addr);
+extern unsigned int WriteSpuRam(void *buf, unsigned int size);
+extern long GetSpuTransferStatus(int mode);
+extern int *UnpackWorldDataChunks(int *src, int mode);
+extern int *RelocateActorMeshHeader(int *header);
+extern void InitActorRenderDefaults(int actor);
+
+extern int g_anWorldTimAudioChunkOffsetBlock[]; /* held-base view of the chunk
+                                          scratch at g_nWorldTimAudioChunkOffset */
+extern int g_anActorMeshOffsetBlock[]; /* held-base view of the mesh-offset list;
+                                          [-16] is g_nWorldDataExtChunkOffset */
+extern void *g_apActorMeshTableBlock[];
+extern int g_anCdReadInFlightBlock[];  /* held-base view of g_nCdReadInFlight */
+extern void *g_apDrawBufBlock[];       /* held-base view of g_pDrawBufA */
+extern void *volatile g_apPathTableBufferBlock[]; /* g_pPathTableBuffer, stored
+                                          then reloaded through the same base */
+
+struct SECTION4HDR {
+  int a;
+  int b;
+  int c;
+  int d;
+  int e;
+};
+
+void TickWorldBundleLoadStream(void) {
+  RECT tim;
+  int pad[4];
+  int state;
+  int extSize;
+  int extOffset;
+  int i;
+  int def;
+  int *unpacked;
+  int *list;
+  int *p;
+  int *base;
+  void **mesh;
+  void *volatile *buf;
+  int *ent;
+  int *head;
+  unsigned char *actor;
+
+  RestartStalledCdRead();
+  if (*(volatile int *)g_anCdReadInFlightBlock != 0) {
+    return;
+  }
+  if (FUN_80063bd8(1, 0) != 2) {
+    return;
+  }
+  if ((g_dwMusicStreamStatus & 0x40) == 0) {
+    return;
+  }
+
+  state = g_nCdStreamState;
+  if (state == 0) {
+    int lba = *(volatile int *)&g_nCdBaseLba;
+    int world = *(volatile int *)&g_nCurrentWorldId;
+    void *dst = *(void *volatile *)&g_pDrawBufA;
+    StartCdReadAsync(lba, dst, 0x800, (&g_nWorldArchiveOffset)[world * 2],
+                     0x258);
+    g_nCdStreamState = 1;
+  } else if (state == 1) {
+    int lba;
+    int world;
+    void *dst;
+    CopyWords(g_anWorldTimAudioChunkOffsetBlock, g_apDrawBufBlock[0], 0x1D0);
+    lba = *(volatile int *)&g_nCdBaseLba;
+    world = *(volatile int *)&g_nCurrentWorldId;
+    dst = *(void *volatile *)&g_apDrawBufBlock[0];
+    StartCdReadAsync(lba, dst, (&g_nWorldHeaderChunkSize)[world],
+                     g_anWorldTimAudioChunkOffsetBlock[0] +
+                         (&g_nWorldArchiveOffset)[world * 2],
+                     0x258);
+    g_nCdStreamState = 2;
+    return;
+  } else if (state == 2) {
+    tim.x = 0x200;
+    tim.y = 0;
+    tim.w = 0x200;
+    tim.h = (&g_nWorldHeaderChunkSize)[g_nCurrentWorldId] >> 10;
+    LoadImage(&tim, g_pDrawBufA);
+    g_nCdStreamState = 3;
+  } else if (state == 3) {
+    int lba = *(volatile int *)&g_nCdBaseLba;
+    void *dst = *(void *volatile *)&g_pDrawBufA;
+    int size = *(volatile int *)&g_nWorldTimAudioChunkSize - 0x80000;
+    int world = *(volatile int *)&g_nCurrentWorldId;
+    int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
+    StartCdReadAsync(lba, dst, size,
+                     off + (&g_nWorldArchiveOffset)[world * 2] + 0x80000,
+                     0x258);
+    g_nCdStreamState = 4;
+  } else if (state == 4) {
+    SetSpuTransferStartAddr(0x1010);
+    WriteSpuRam(g_pDrawBufA, 0x7EFF0);
+    while (GetSpuTransferStatus(0) == 0) {
+    }
+    {
+      int lba = *(volatile int *)&g_nCdBaseLba;
+      void *dst = *(void *volatile *)&g_pDrawBufB;
+      int world = *(volatile int *)&g_nCurrentWorldId;
+      int size = *(volatile int *)&g_nWorldBundleChunkSize;
+      int off = *(volatile int *)&g_nWorldBundleChunkOffset;
+      StartCdReadAsync(lba, dst, size,
+                       off + (&g_nWorldArchiveOffset)[world * 2], 0x258);
+    }
+    g_nCdStreamState = 5;
+  } else if (state == 5) {
+    unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
+    *(struct SECTION4HDR *)&g_nWorldRenderMeshChunkCount =
+        *(struct SECTION4HDR *)&g_nWorldCollisionTriCount;
+    g_pWorldUnpackHead = unpacked;
+    if (g_nCurrentWorldId == 1) {
+      g_nCdStreamState = 6;
+      extSize = g_nWorldDataExtChunkSize - 0x60000;
+    } else {
+      extSize = g_nWorldDataExtChunkSize;
+      g_nCdStreamState = 8;
+    }
+    {
+      int lba = *(volatile int *)&g_nCdBaseLba;
+      int world = *(volatile int *)&g_nCurrentWorldId;
+      void *dst = *(void *volatile *)&g_pWorldUnpackHead;
+      int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
+      StartCdReadAsync(lba, dst, extSize,
+                       off + (&g_nWorldArchiveOffset)[world * 2], 0x258);
+    }
+    return;
+  } else if (state == 6) {
+    /* waiting on the first half of world 1's ext chunk */
+  } else if (state == 7) {
+    void *head2 = *(void *volatile *)&g_pWorldUnpackHead;
+    int size = *(volatile int *)&g_nWorldDataExtChunkSize;
+    int lba = *(volatile int *)&g_nCdBaseLba;
+    int world = *(volatile int *)&g_nCurrentWorldId;
+    int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
+    StartCdReadAsync(lba, (char *)head2 + size - 0x60000, 0x60000,
+                     ((&g_nWorldArchiveOffset)[world * 2] - 0x60000) +
+                         (off + size),
+                     0x258);
+    g_nCdStreamState = 8;
+  } else if (state == 8) {
+    if (g_anActorMeshOffsetBlock[0] > 0) {
+      p = g_anActorMeshOffsetBlock;
+      base = g_anActorMeshOffsetBlock;
+      mesh = &g_apActorMeshTableBlock[1];
+      do {
+        *mesh++ = RelocateActorMeshHeader(
+            (int *)((char *)g_pWorldUnpackHead + (*p++ - base[-16])));
+      } while (*p > 0);
+    }
+    {
+      void *head2 = *(void *volatile *)&g_pWorldUnpackHead;
+      int extsz = *(volatile int *)&g_nWorldDataExtChunkSize;
+      int lba = *(volatile int *)&g_nCdBaseLba;
+      int size;
+      int off;
+      int count;
+      int world;
+      void *dst;
+      g_apPathTableBufferBlock[0] = (char *)head2 + extsz;
+      size = *(volatile int *)&g_nLevelArchiveChunkSize;
+      dst = g_apPathTableBufferBlock[0];
+      off = *(volatile int *)&g_nLevelArchiveChunkOffset;
+      g_nLevelArchiveByteSize = size;
+      count = *(volatile int *)&g_nLevelArchiveByteSize;
+      world = *(volatile int *)&g_nCurrentWorldId;
+      g_nLevelArchiveBaseLba = off;
+      StartCdReadAsync(lba, dst, count,
+                       off + (&g_nWorldArchiveOffset)[world * 2], 0x258);
+    }
+    g_nCdStreamState = 9;
+  } else if (state == 9) {
+    i = 0;
+    buf = g_apPathTableBufferBlock;
+    ent = buf[0];
+    g_pPathTableHead = ent;
+    ent[4] = (int)ent + ent[4];
+    if (ent[3] > 0) {
+      head = ent;
+    entry_loop:
+      i += 1;
+      ent[5] += (int)buf[0];
+      ent += 1;
+      if (i < head[3]) {
+        goto entry_loop;
+      }
+    }
+    g_pActorListBase = (char *)g_pPathTableBuffer + g_nLevelArchiveByteSize;
+    if (((int *)g_pPathTableHead)[3] > 0) {
+      i = 0;
+      def = 0x20;
+    actor_loop:
+      InitActorRenderDefaults((int)g_pActorListBase + i * 0x58);
+      actor = (unsigned char *)(i * 0x58 + (int)g_pActorListBase);
+      actor[0x50] = def;
+      *(short *)(actor + 0x36) = i + 1;
+      i += 1;
+      if (i < ((int *)g_pPathTableHead)[3]) {
+        goto actor_loop;
+      }
+    }
+    ((unsigned char *)g_pActorListBase +
+     ((int *)g_pPathTableHead)[3] * 0x58)[0x48] = 0xFF;
+    g_nCdStreamState = 0xA;
+  }
+}
+
+/* PARKED 2026-07-30-1 — LENGTH-EXACT (386/386 insns after the trailing nop),
+ * 64/387 words differ (83.5% match). Logic is complete and every block is
+ * positionally aligned; the residue is register-allocation / delay-slot ties.
+ *
+ * Solved here (all levers already folded into the cookbook):
+ *  - B16/A142: the in-flight gate read is `*(volatile int *)g_anCdReadInFlightBlock`
+ *    (inline volatile cast-deref of the alias, no pointer local) for the
+ *    `lui/addiu/lw 0(r)` form.
+ *  - A20/A22 aliases: g_anWorldTimAudioChunkOffsetBlock (CopyWords dst + value
+ *    read off one base), g_apDrawBufBlock (two reads across the CopyWords call),
+ *    g_apPathTableBufferBlock (A21 store-then-reload through one base),
+ *    g_anActorMeshOffsetBlock with [-16] reaching g_nWorldDataExtChunkOffset
+ *    (A25 negative-offset value off the held base, inside the relocate loop).
+ *  - A4 (volatile arg temps, in the ORIGINAL's load order) fixes every
+ *    StartCdReadAsync arg block: arms 1/3/4/5/7/8 all fell to it. This is the
+ *    single highest-yield lever in this function (61 -> 30 shape mismatches).
+ *  - A85 goto-loops for both arm-9 loops: loop.c otherwise strength-reduces the
+ *    path-entry walker (`addiu a0,a1,20` giv) and the i*0x58 actor offset
+ *    (`addiu s0,s0,88`); the original recomputes both per iteration. The 0x20
+ *    default byte survives as a user local (`def`) only under the goto-loop (F6).
+ *  - A23: g_pPathTableBuffer is re-read ABSOLUTELY after the rebase loop even
+ *    though the held base is still live.
+ *  - `*(short *)(actor + 0x36) = i + 1;` BEFORE `i += 1;` reproduces the
+ *    original's `addiu v1,s1,1 / sh v1 / move s1,v1` (A114).
+ *  - A127: RECT + a dead `int pad[4]` sizes the 0x40 frame (0x18 arg area,
+ *    0x18 of locals, 0x10 of saved regs).
+ *
+ * Residues (all same-length replacements, so positional credit is intact):
+ *  1. STATE-6 ARM, 2 insns, and the only structural miss. The original writes
+ *     `g_nCdStreamState = 6;` in an otherwise empty arm; cse then reuses the
+ *     compare constant (v0) for the store, the tail cross-jumps, and the whole
+ *     arm collapses to `beq v1,v0,<tail store>`. Ours cannot reach it: cse's
+ *     canon_reg rewrites the stored 6 to the STATE register (v1, the older
+ *     quantity from the branch equivalence), so the store does not merge with
+ *     the shared tail and the arm costs 5 insns (+4 = slot overflow, will not
+ *     link). Every source form was tried: `6 == state`, `= state`, a `next`
+ *     local with the single tail store (then `next` loses v0 to the compare
+ *     constants -> `li a0,K` in all ten arm tails), an `int` return type so
+ *     `return next;` gives next a v0 copy-preference (still a0), and A64's
+ *     inverted `state != 6` nesting (+19 insns). The arm is ELIDED here: the
+ *     store is a no-op self-store, so behaviour is identical and the function
+ *     stays length-exact.
+ *  2. F7 la-vs-load allocation swaps, 4 sites: the held-base `la` and a
+ *     neighbouring global load trade registers (arm 8 mesh list v1<->a0, arm 8
+ *     tail a1<->v1, arm 9 head a1<->a2, arm 7 arch v1<->a3). Structure and
+ *     order are identical in every case.
+ *  3. F2 arm-0 arg block: the original materializes `li a2,0x800` FIRST and the
+ *     `li v0,600 / sw 0x10(sp)` stack arg LAST; ours is the reverse. A4 volatile
+ *     temps pin the LOADS but not the two constants; a `int size = 0x800;` user
+ *     local does not move it (arms 1/3/4/5/8 all match, so this is per-block
+ *     sched1 noise, not a source-order effect).
+ *  4. Arm 9 loop 1: the original copies the held base into its own loop register
+ *     (`move a2,a1`) and loads `0(a2)` before `20(a0)`. An explicit second
+ *     pointer local reproduces both (30 mismatches) but costs +1 insn -> slot
+ *     overflow, so the linking form keeps the base uncopied.
+ *
+ * Next step is the §E permuter aimed at residues 2 + 4 (pure regalloc), or a
+ * cracked arm-6 cse-canon story, which would also close residue 1.
+ */
