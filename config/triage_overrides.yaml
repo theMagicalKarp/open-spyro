@@ -763,3 +763,31 @@ TickWorldBundleLoadStream:
     self-store cannot reach the original's `beq -> shared tail` because cse
     canon_reg rewrites the stored constant to the STATE register; the arm is
     elided in the parked form, which is behaviourally identical).
+DispatchSpyroPhysicsByState:
+  verdict: skip
+  class: "B8 switchdata jr-table (main) — switchdataD_80011178 dispatch on g_nSpyroState"
+  date: 2026-07-30
+TickGemPickupAssetStream:
+  verdict: skip
+  class: "B8 switchdata jr-table (main) — switchdataD_80010a70 stream-state dispatch"
+  date: 2026-07-30
+CdProcessInterrupt:
+  verdict: skip
+  class: "B8 switchdata jr-table (main) — switchdataD_80011e70 on the CD interrupt code"
+  date: 2026-07-30
+ApplySpyroStateTransition:
+  verdict: skip
+  class: "B8 switchdata jr-table (main) — switchdataD_80010e28"
+  date: 2026-07-30
+ApplySpuVoiceAttrRange:
+  verdict: skip
+  class: "B-i rule 1 held-base fold — 22 nonzero-offset accesses off the voice-attr base, no held-base setup"
+  date: 2026-07-30
+TickSpyroGameplayFrame:
+  verdict: matched
+  class: "vein: 0x8004xxxx Spyro frame-tick drivers; 5 offset-0 held bases, no gp_rel/switchdata"
+  date: 2026-07-30
+func_80038FC8_retry_2026_07_30:
+  verdict: attempted
+  class: "F7 anim-arm old-vs-const16 v0/v1 mirror: two new levers tried and both FAILED — (a) one function-scope `old` reused for the arm compare (4 refs, floor_log2 jump) drops it to 91.4%; (b) a long-lived `mark = 0x10` local to lower the constant's priority costs +1 insn (slot overflow). Still parked at 94.1%; permuter-only."
+  date: 2026-07-30
