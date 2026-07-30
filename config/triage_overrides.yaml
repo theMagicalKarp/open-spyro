@@ -668,3 +668,43 @@ DrawLevelTransitionOverlay:
   verdict: matched
   class: "matched 2026-07-29 (single scalar reused for the digit-count loop AND the icon index: the merged live range flips the F7 qty_compare cascade so i wins s0 and i*16 takes s1)"
   date: 2026-07-29
+DrawMotionTrailRibbons:
+  verdict: matched
+  class: "matched 2026-07-29-1 (A141: one variable for both the IntegerSqrt ARGUMENT and its result gives that pseudo an a0 copy-preference, which prune_preferences then strips from the competing z-load's pass-0 candidates -> len keeps a0)"
+  date: 2026-07-29
+func_8002B390:
+  verdict: wall
+  class: "B6 handwritten (addi markers + $at as a data register; world-anim keyframe flag walker)"
+  date: 2026-07-29
+func_8002B3F4:
+  verdict: wall
+  class: "B6 handwritten (addi markers + $at as data)"
+  date: 2026-07-29
+func_8002B444:
+  verdict: wall
+  class: "B6 handwritten (addi markers + $at as data)"
+  date: 2026-07-29
+ResetWorldChunkAnimations:
+  verdict: wall
+  class: "B6 handwritten (73 addi markers, 15 $at-as-data accesses over 328 insns)"
+  date: 2026-07-29
+TickWorldChunkAnimations:
+  verdict: wall
+  class: "B6 handwritten (220 addi markers, 63 $at-as-data over 805 insns)"
+  date: 2026-07-29
+BuildActorDrawList:
+  verdict: wall
+  class: "B6 handwritten (159 addi markers, 15 $at-as-data over 400 insns)"
+  date: 2026-07-29
+BuildSecondaryActorDrawList:
+  verdict: wall
+  class: "B6 handwritten (154 addi markers, 12 $at-as-data over 398 insns)"
+  date: 2026-07-29
+PollPadAndDistributeInput:
+  verdict: viable
+  class: "screens clean (1 held base, 1 nonzero-offset access, 8 calls, 415 insns); ~50-branch pad-distribution ladder + a constant 1 held in s1 across the whole body (B10-inverse) - budget it as a full-session target"
+  date: 2026-07-29
+PlaySoundEffect:
+  verdict: viable
+  class: "screens clean (1 held base, 3 nonzero-offset accesses, 12 calls, 482 insns) - untried, biggest clean main candidate in the sound TU"
+  date: 2026-07-29
