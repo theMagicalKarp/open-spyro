@@ -4,6 +4,7 @@
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_8007B698)
     . = 0x0000c100 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_80086B38)
+    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_80086B38.o(.text)
     . = 0x0000c9c8 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_80087400)
     . = 0x0000dc64 ;

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">5.99% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">129,464 / 2,159,608 split-code bytes · 447 matched · 82 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">6.10% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">131,712 / 2,159,608 split-code bytes · 448 matched · 82 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -997,11 +997,11 @@
 <rect x="319.80" y="666.38" width="174.78" height="180.46" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="666.38" width="174.78" height="16.00" fill="#161b22"/>
 <text x="323.80" y="678.38" fill="#e6edf3" font-size="11" font-weight="600">21 · beast_makers_tr…</text>
-<text x="491.57" y="678.38" fill="#8b949e" font-size="10" text-anchor="end">0%</text>
+<text x="491.57" y="678.38" fill="#8b949e" font-size="10" text-anchor="end">4%</text>
 <rect x="319.80" y="682.38" width="139.86" height="164.46" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_8007B698  ·  46240 bytes  ·  asm</title></rect>
 <rect x="459.66" y="682.38" width="34.92" height="67.87" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_80087400  ·  4764 bytes  ·  asm</title></rect>
 <rect x="459.66" y="750.25" width="34.92" height="64.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_8008869C  ·  4524 bytes  ·  asm</title></rect>
-<rect x="459.66" y="814.70" width="34.79" height="32.14" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_80086B38  ·  2248 bytes  ·  asm</title></rect>
+<rect x="459.66" y="814.70" width="34.79" height="32.14" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_80086B38  ·  2248 bytes  ·  matched</title></rect>
 <rect x="494.45" y="814.70" width="0.12" height="32.14" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_21_80089848  ·  8 bytes  ·  matched</title></rect>
 <rect x="319.80" y="850.84" width="174.78" height="172.13" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="850.84" width="174.78" height="16.00" fill="#161b22"/>
