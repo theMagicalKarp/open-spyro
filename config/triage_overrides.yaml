@@ -796,3 +796,26 @@ TickSpyroAttackEffects:
   class: "F7 spill-slot hole + F1 preheader hoist order + F1 arc-path v0/v1 + F10 sfx arg block"
   date: 2026-07-30
   note: "0x80048d10, 2248 b. 562/562 insns, 28 words differ (95.0%, +2,056 partial bytes), every block positionally aligned; the whole flame-breath half (129 insns) is byte-identical. Residues, in size order: (1) the original's spill block is [0x58 empty][0x60 sfxDone][0x68 UNUSED][0x70 burst giv] — no source form makes a 4th spilled pseudo (a constant-equivalent pointer local is deleted by update_equiv_regs; expand-time slots always precede reload's, so a dead local can only pad at 0x58), `int pad[2]` buys the 0xA0 frame at the cost of 5 insns on the two counters; (2) 9-insn preheader hoist order — the original's age/state/pt come after loop.c's hoisted invariants (they are givs off slotAge[i]/slotState[i]) but the giv form costs more elsewhere; (3) 8-insn arc-path table v0/v1 rotation; (4) 5-insn PlaySoundEffect arg order. Levers that got it to 95%: `i = 0` in the merge block (loop.c needs the biv initial value or every giv init is computed generically), A142 volatile on the three pt[-0xf] variant reads (else cse folds them absolute and pt loses s7 to the burst giv by 0.068 vs 0.067 priority — measured with the D-2c probe), &pt[i*3] for the trail cursor (its giv init is then `move s5,s7`), per-arm SPAWN calls for the variant flag (a ternary if-converts to sltu), and `n = 0` before the `if (steps > 0)` guard so reorg gets the blez delay slot."
+func_level_33_80082F24:
+  verdict: matched
+  class: "per-level actor-spawn dispatcher family (see cookbook §G)"
+  date: 2026-07-31
+  note: >-
+    0x80082F24, 1996 b. First member of the family matched. 18-node sparse
+    switch tree over the moby type id. Levers: A151 single exit, A66b
+    duplicated call in both arms of the parent-or-Spyro position copy, A70
+    constant-select per arm, A153 array-declared g_anSpyroVelocity, shared
+    constant materialised at its first use.
+spawn_dispatcher_family:
+  verdict: vein
+  class: "per-level actor-spawn dispatcher (one per level overlay, 2.0-3.7 KB each, ~35 total)"
+  date: 2026-07-31
+  note: >-
+    13 matched 2026-07-31 (levels 33/21/10/9/2/20/0/1/4/18/24/28/30, +30,756
+    exact bytes). Arms are shared verbatim between levels; only the switch case
+    list differs. Rebuild the decoder/matcher/generator per cookbook §G and the
+    remaining members are mostly mechanical. Remaining work: level_32
+    (0x1CA..0x1CB arm), level_31 (0xCA/0xCF arms + a variant mortar), level_11
+    (six new arms), level_34 + level_26 (case decoder needs their root shape),
+    and the 17 larger members at 2.9-3.7 KB (levels 3/5/6/7/8/12/13/14/15/16/
+    17/19/22/23/25/27/29) which were never screened.
