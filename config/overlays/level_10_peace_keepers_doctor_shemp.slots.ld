@@ -4,6 +4,7 @@
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_8007AEB8)
     . = 0x00009bb8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_800845F0)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/func_level_10_800845F0.o(.text)
     . = 0x0000a4b8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_80084EF0)
     . = 0x0000b6e4 ;

@@ -4,6 +4,7 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_8007AF94)
     . = 0x00007370 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_80081DA8)
+    build/overlays/level_4_artisans_toasty/c/func_level_4_80081DA8.o(.text)
     . = 0x00007cb8 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_800826F0)
     . = 0x00008ee4 ;
