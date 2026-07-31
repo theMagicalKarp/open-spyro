@@ -14,6 +14,7 @@
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_8007D9C8)
     . = 0x0000ad94 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_800857CC)
+    build/overlays/level_0_artisans_home/c/func_level_0_800857CC.o(.text)
     . = 0x0000b6fc ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.func_level_0_80086134)
     . = 0x0000c9a8 ;
