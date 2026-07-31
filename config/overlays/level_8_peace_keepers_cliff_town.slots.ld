@@ -14,6 +14,7 @@
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.func_level_8_8007E240)
     . = 0x0000e150 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.func_level_8_80088B88)
+    build/overlays/level_8_peace_keepers_cliff_town/c/func_level_8_80088B88.o(.text)
     . = 0x0000ecdc ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.func_level_8_80089714)
     . = 0x0000ff70 ;
