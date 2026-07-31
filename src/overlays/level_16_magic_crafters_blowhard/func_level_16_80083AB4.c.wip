@@ -1,15 +1,22 @@
-/* PARKED 2026-07-31: 98.8% length-exact (749/758 insns, 9 words).  F1 tie —
- * the `mode` local in the 0x26 arm lands in s4 where the original has it in v0
- * (caller-saved).  Everything else in the function is byte-identical: the 0x26
- * arm's shape (single `*st = mode;` after the if-chain, so gcc shares the store
- * block and jump.c merges only the `li 2` for the two lower arms) reproduces
- * the original's block layout exactly.  Levers already tried: `*st = K;` per
- * arm (+1 insn, no cross-jump of the store), reusing `turn` as the mode local
- * (s0), declaring `mode` last (s2) and first (s4).  Needs the §D 2c allocation
- * probe or the permuter.
+/* PARKED 2026-07-31-2: decoded, 2 insns over (865 vs 863) — B13 wall.  The
+ * 0x25 whirlwind arm reads the unit-circle tables with a SIGNED halfword load
+ * feeding a right shift (`lh v0,%lo(D_8006CC78)($at); sra v0,v0,2`); our cc1
+ * emits `lhu; sll 16; sra 18` for every shift consumer, +1 insn per lookup, so
+ * the override no longer fits its slot.  Tried: the lookup split into an `int`
+ * temp, an explicit `(int)` cast, and the table declared as an array of a
+ * one-short struct — all identical.  (Note B13 was recorded on main/-g3; this
+ * proves it holds in overlays too.  A `short` field feeding a LEFT shift does
+ * come out as `lh` — see the debris arm — so it is specific to `>>`.)
+ *
+ * Everything else is decoded and believed exact: the 0x25 arm's 3-case switch
+ * on parent->unk48 (0x48/0x52/0x5C -> the 0x10/0x04/0x06 state triples, with
+ * gcc's balance_case_nodes compare tree), the 0x27 turret arm (ArcTan2 toward
+ * D_80076DF8/DFC, posZ -= 0x400, owner pointer at state+0x04), the wizard arm
+ * from level_12 and the 0xFB mortar arm from the library.  Unpark by finding a
+ * source form that reaches `lh` + `sra`.
  */
-/* func_level_12_8008B2C0 (0x8008B2C0, level_12_magic_crafters_home
- * overlay, 0xBD8 bytes).
+/* func_level_16_80083AB4 (0x80083AB4, level_16_magic_crafters_blowhard
+ * overlay, 0xD7C bytes).
  *
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
@@ -123,6 +130,23 @@ typedef struct DebrisState {
   int unk10;
 } DebrisState;
 
+/* Whirlwind state block (type 0x25). */
+typedef struct WindState {
+  Actor *owner; /* 0x00 */
+  short unk04;
+  short unk06;
+  int unk08;
+  int unk0C;
+  unsigned char unk10;
+} WindState;
+
+/* Turret-shot state block (type 0x27). */
+typedef struct AimState {
+  int unk00;
+  Actor *owner; /* 0x04 */
+  int unk08;
+} AimState;
+
 /* Thrown-shard state block (types 0x120..0x121). */
 typedef struct ShardState {
   short vel[3]; /* 0x00 */
@@ -151,6 +175,9 @@ extern int func_80016C58(int angle);            /* LookupSine */
 extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
 extern int func_80017990(int *a, int *b);       /* HorizontalDistance */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int D_80076DF8;     /* turret aim target X */
+extern int D_80076DFC;     /* turret aim target Y */
+extern int D_80078A5C;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *D_80075828;  /* g_pActorListBase */
 extern int D_80078A58[];   /* g_anSpyroWorldPos */
@@ -163,8 +190,11 @@ extern unsigned char **D_80076378[];  /* per-type actor asset table */
 extern int D_80078A60;     /* g_anSpyroWorldPos[2] */
 extern void (*D_800758E4)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 extern int D_80078BE0[3];  /* g_anSpyroFirstContactNormal */
+extern int D_80078AF8;     /* g_nSpyroGroundHeight */
+extern short D_8006CC78[]; /* unit-circle x table (8-bit angle) */
+extern short D_8006CBF8[]; /* unit-circle y table (8-bit angle) */
 
-Actor *func_level_12_8008B2C0(int type, Actor *parent) {
+Actor *func_level_16_80083AB4(int type, Actor *parent) {
   Actor *rec;
   int owner;
 
@@ -234,8 +264,49 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
     func_800529CC(rec);
     break;
 
+  case 0x25: {
+    WindState *st = rec->state;
+    int probe[3];
+
+    func_8003A720(rec);
+    rec->unk1C = -1;
+    func_80017700(probe, &rec->posX);
+    probe[2] += 0x400;
+    func_8004D5EC(probe, 0x10000);
+    func_800533D0(rec);
+    switch (parent->unk48) {
+    case 0x48:
+      st->unk10 = 1;
+      st->unk04 = 0x40;
+      st->unk06 = 0xE00;
+      break;
+    case 0x52:
+      st->unk10 = 2;
+      st->unk04 = 0x100;
+      st->unk06 = 0x2000;
+      break;
+    case 0x5C:
+      st->unk10 = 3;
+      st->unk04 = 0x140;
+      st->unk06 = 0x2000;
+      break;
+    }
+    rec->posX = parent->posX + (D_8006CC78[parent->unk46] >> 2);
+    rec->posY = parent->posY + (D_8006CBF8[parent->unk46] >> 2);
+    rec->posZ = parent->posZ;
+    st->owner = parent;
+    st->unk0C = 0;
+    rec->unk48 = 0;
+    rec->unk3C = 0;
+    rec->unk3D = 0;
+    rec->unk3E = 0;
+    rec->unk3F = 0;
+    rec->unk41 = D_80076378[rec->type][0xE][0xC];
+    func_800526A8(rec);
+    break;
+  }
+
   case 0x26: {
-    int mode;
     int *st = rec->state;
     int *pos;
     int turn;
@@ -250,7 +321,7 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
       rec->unk41 = D_80076378[rec->type][0x11][0xC];
       rec->unk3C = 3;
       rec->unk3D = 3;
-      mode = 3;
+      *st = 3;
     } else if (parent->unk3F >= 6) {
       rec->posX += func_80016CB0(parent->unk46 << 4) >> 2;
       rec->posY += func_80016C58(parent->unk46 << 4) >> 2;
@@ -277,6 +348,8 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
       rec->unk3C = 2;
       rec->unk3D = 2;
       D_800758E4(4, 7, pos, 0x10);
+      func_800526A8(rec);
+      break;
     } else {
       if (parent->unk3F >= 2) {
         rec->posZ += 0x12C;
@@ -290,11 +363,25 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
         rec->posZ += 0x180;
         rec->unk46 = parent->unk46;
       }
-      mode = 2;
+      *st = 2;
     }
-    *st = mode;
+    func_800526A8(rec);
     break;
   }
+  case 0x27: {
+    AimState *st = rec->state;
+
+    func_8003A720(rec);
+    func_80017700(&rec->posX, &parent->posX);
+    func_800526A8(rec);
+    rec->unk46 = func_80016AB4(D_80076DF8 - rec->posX, D_80076DFC - rec->posY, 0);
+    rec->posZ -= 0x400;
+    st->unk00 = 0x40;
+    st->owner = parent;
+    st->unk08 = 1;
+    break;
+  }
+
   case 0xE:
   case 0x53 ... 0x57: {
     FlameState *st = rec->state;
@@ -372,10 +459,21 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
     break;
   }
 
+  case 0x98 ... 0x99:
+    func_8003A720(rec);
+    rec->unk50 = 0x20;
+    rec->unk52 = 0xFF;
+    func_800529CC(rec);
+    rec->unk4C = 0;
+    rec->unk4D = 0;
+    rec->unk4E = 0;
+    rec->unk4F = 0xD;
+    break;
+
   case 0x43 ... 0x45:
+  case 0x97:
   case 0xFF ... 0x101:
-  case 0x135 ... 0x137:
-  case 0x1A7 ... 0x1A9: {
+  case 0x135 ... 0x137: {
     DebrisState *st = rec->state;
     int yaw;
     int pitch;
@@ -467,31 +565,6 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
     *st = 0x40;
     break;
   }
-
-  case 0x188:
-    func_8003A720(rec);
-    rec->unk47 = 5;
-    if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
-    } else {
-      func_80017700(&rec->posX, D_80078A58);
-    }
-    func_800526A8(rec);
-    break;
-
-  case 0x18E:
-    func_8003A720(rec);
-    rec->unk50 = 0xFF;
-    rec->posX = 0x1CC;
-    rec->posY = 0x28;
-    rec->posZ = 0x1000;
-    func_800529CC(rec);
-    rec->unk47 = 0x20;
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 0;
-    break;
 
   case 0x195:
   case 0x1DD: {

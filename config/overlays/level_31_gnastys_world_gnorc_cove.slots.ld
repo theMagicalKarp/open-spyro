@@ -4,6 +4,7 @@
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_8007B528)
     . = 0x0000ac2c ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_80085664)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_80085664.o(.text)
     . = 0x0000b70c ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_80086144)
     . = 0x0000ca44 ;
