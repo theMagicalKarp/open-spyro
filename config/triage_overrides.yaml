@@ -819,3 +819,66 @@ spawn_dispatcher_family:
     (six new arms), level_34 + level_26 (case decoder needs their root shape),
     and the 17 larger members at 2.9-3.7 KB (levels 3/5/6/7/8/12/13/14/15/16/
     17/19/22/23/25/27/29) which were never screened.
+func_level_32_80083108:
+  verdict: matched
+  class: "per-level actor-spawn dispatcher family (see cookbook §G)"
+  date: 2026-07-31
+  note: >-
+    0x80083108, 2628 b. First generator-built member: 11 of 12 arms came from
+    the library verbatim, only 0x1CA..0x1CB was new (parent-type-selected
+    random velocity through func_80037EA0 = RandomInRange, cross-jumped third
+    call).
+func_level_8_80088B88:
+  verdict: matched
+  class: "per-level actor-spawn dispatcher family"
+  date: 2026-07-31
+  note: >-
+    0x80088B88, 2956 b. New arm 0x120..0x121 (thrown shard, ShardState block:
+    byte 0xC/0xD + short 0xE + int 0x10). The one residue was a signed/unsigned
+    compare: `(func_8006272C() & 0xFFF) >= 0x800` gives sltiu, the original has
+    slti — cast the roll to `(int)`.
+func_level_7_8008A4D0:
+  verdict: matched
+  class: "per-level actor-spawn dispatcher family"
+  date: 2026-07-31
+  note: >-
+    0x8008A4D0, 3312 b. Pure clone — zero new arms, generated from the library
+    (0x120 from level_8, 0x1CA from level_32) and matched first build.
+func_level_3_800872A4:
+  verdict: matched
+  class: "per-level actor-spawn dispatcher family"
+  date: 2026-07-31
+  note: >-
+    0x800872A4, 2940 b. New arm 0x1F6 (0x120-family variant: unconditional
+    +0x20 lift on vel[2], a 0xFF re-roll gate and a second vel[2] clamp).
+func_level_12_8008B2C0:
+  verdict: parked
+  class: "F1 caller-vs-callee-saved allocation of one arm-local"
+  date: 2026-07-31
+  note: >-
+    0x8008B2C0, 3032 b, 98.8% length-exact (749/758 insns). The 0x26 arm (the
+    Magic Crafters wizard spawn, 140 insns) is decoded and structurally exact;
+    the `mode` local that carries the per-branch state constant to the single
+    `*st = mode;` after the if-chain lands in s4 where the original has it in
+    v0, and the scheduler then hoists its `li` above the three record stores.
+    Tried: per-arm `*st = K;` (+1 insn — gcc does not cross-jump the store),
+    reusing the arm's `turn` local (s0, it crosses calls), declaring `mode`
+    first (s4) and last (s2). Needs the §D 2c allocation probe or the permuter.
+    Everything else in the arm matched once (a) the record stores were ordered
+    unk46, unk48, unk40, unk41, unk3C, unk3D and (b) the two low branches were
+    nested inside one else so the `li 2` is shared by construction.
+func_level_13_8008A36C:
+  verdict: parked
+  class: "F2 independent-load scheduling in one ArcTan2 arg block"
+  date: 2026-07-31
+  note: >-
+    0x8008A36C, 3048 b, 99.3% length-exact (757/762 insns, 5 words). Two new
+    arms decoded (0x127 aimed spawn, 87 insns; 0x13E random drift, 25 insns) —
+    both are also what level_14 and level_15 need, lift them from the .c.wip.
+    Residue: in the first func_80016AB4 call the original loads
+    D_80078A58[0] through the held-base alias BEFORE the lui/lw of
+    D_80078A5C and emits `subu a0` before `subu a1`; every source order,
+    per-arg temp and declaration order we tried gives the other order.
+    The second ArcTan2 block needed `dz = rec->posZ - 0x164;` split out
+    (otherwise gcc re-associates the -0x164 onto the global) plus its own
+    local for the distance (A146).
