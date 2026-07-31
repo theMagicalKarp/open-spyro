@@ -851,22 +851,6 @@ func_level_3_800872A4:
   note: >-
     0x800872A4, 2940 b. New arm 0x1F6 (0x120-family variant: unconditional
     +0x20 lift on vel[2], a 0xFF re-roll gate and a second vel[2] clamp).
-func_level_12_8008B2C0:
-  verdict: parked
-  class: "F1 caller-vs-callee-saved allocation of one arm-local"
-  date: 2026-07-31
-  note: >-
-    0x8008B2C0, 3032 b, 98.8% length-exact (749/758 insns). The 0x26 arm (the
-    Magic Crafters wizard spawn, 140 insns) is decoded and structurally exact;
-    the `mode` local that carries the per-branch state constant to the single
-    `*st = mode;` after the if-chain lands in s4 where the original has it in
-    v0, and the scheduler then hoists its `li` above the three record stores.
-    Tried: per-arm `*st = K;` (+1 insn — gcc does not cross-jump the store),
-    reusing the arm's `turn` local (s0, it crosses calls), declaring `mode`
-    first (s4) and last (s2). Needs the §D 2c allocation probe or the permuter.
-    Everything else in the arm matched once (a) the record stores were ordered
-    unk46, unk48, unk40, unk41, unk3C, unk3D and (b) the two low branches were
-    nested inside one else so the `li 2` is shared by construction.
 func_level_13_8008A36C:
   verdict: parked
   class: "F2 independent-load scheduling in one ArcTan2 arg block"
@@ -882,3 +866,83 @@ func_level_13_8008A36C:
     The second ArcTan2 block needed `dz = rec->posZ - 0x164;` split out
     (otherwise gcc re-associates the -0x164 onto the global) plus its own
     local for the distance (A146).
+func_level_12_8008B2C0:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-2
+  note: >-
+    UNPARKED and MATCHED. The `mode` local was an artifact: the original 0x26
+    arm has no such variable. Its high branch (parent->unk3F >= 6) ends with
+    its own func_800526A8(rec) + break — the asm jumps one insn past the shared
+    block so jump.c folds the `move a0,rec` into the delay slot — and the other
+    two branches store their constant directly (`*st = 3;` / `*st = 2;`).
+    Cross-jumping then merges the shared `sw v0,0(s2); j` tail and leaves the
+    `li v0,K` in the delay slot, which is why the constant lands in v0.
+func_level_15_80086DD8:
+  verdict: parked
+  class: "F2 independent-load scheduling in one ArcTan2 arg block"
+  date: 2026-07-31-2
+  note: >-
+    0x80086DD8, 3432 b, 99.4% length-exact (853/858 insns, 5 words). Same single
+    knot as func_level_13_8008A36C (the 0x127 arm's first ArcTan2 argument
+    block); the 0x26 wizard arm now matches. Levers tried this session, all >= 5
+    words: statement-order swap, both/either arg inlined at the call, posX/posY
+    into locals first, either global load hoisted to the top of the arm, either
+    subtraction moved above the posZ store, positions written through a pointer,
+    a pointer-local alias for D_80078A58, `*D_80078A58`, a literal-address cast
+    for D_80078A5C, and `volatile` on D_80078A5C. gcc 2.7.2 sched.c priority()
+    measures depth from the top of the block, so the two-insn lui/lw address
+    chain always outranks the one-insn held-base load. Permuter or never.
+func_level_34_80083690:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-2
+  note: >-
+    2668 b. Three arms decoded: 0x11 aimed launch (direction byte read once into
+    a local so the first cosine index reuses the stored value while the second
+    reloads rec->unk46; delta normalised via func_800171FC/func_800175B8), and
+    the two debris variants (0x1E1..0x1E3 adds the parent velocity
+    unconditionally and has no 0x135 colour tail; the 0x43.. family keeps both).
+func_level_31_80085664:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-2
+  note: >-
+    2784 b, first-build match. New arms 0xCA/0xCF (homing shot: SeekState with
+    the owner pointer at +0x04, the shared -1 constant, the short type tag at
+    rec+0x38 — needs `short unk38` in the Actor struct — and a ground-probe tail
+    that jump.c cross-joins between the two arms). The 0xFB mortar arm is the
+    library body with different stack offsets: take fuzzy library hits down to
+    ratio ~0.90, the linked diff is the gate.
+func_level_11_800819BC:
+  verdict: parked
+  class: "F7 call-arg copy hoisted above the stores (loses a0 to the third temp)"
+  date: 2026-07-31-2
+  note: >-
+    2372 b, 98.3% length-exact (583/593, the same 5-word tie twice). Four arms
+    decoded (0x159..0x15B slot-guarded spawn-or-release via D_80078618[D_8007595C]
+    with `rec = 0` on the release path, 0x176 and 0x177..0x182 parent-attitude
+    copies, 0x183..0x185/0x1EB fixed-position arm cross-jumped into its
+    neighbour's tail). The attitude copy needs BOTH `signed char` fields at
+    0x44..0x46 AND three int temps (a field-to-field copy is a QImode move and
+    emits `lbu; nop; sb` one at a time). Residue: sched1 (which runs before
+    register allocation) hoists the `move a0,rec` argument copy above the three
+    stores, so the third temp conflicts with a0, takes a1, and the delay slot
+    gets the store instead of the copy. Tried: temp declaration/load/store
+    order, interleaving, register/unsigned/short/signed-char temps, an int[3]
+    temp array, moving the unk4B store into the block. These two arms are shared
+    verbatim by level_17/23/29/5 — one tie gates ~15 KB, the best permuter
+    target in the family.
+func_level_16_80083AB4:
+  verdict: parked
+  class: "B13 signed-short load feeding >> (lh;sra unreachable)"
+  date: 2026-07-31-2
+  note: >-
+    3452 b, decoded but 2 insns over (865 vs 863) so it does not link. The 0x25
+    whirlwind arm reads the unit-circle tables with `lh; sra 2`; our cc1 emits
+    `lhu; sll 16; sra 18` for shift consumers (+1 per lookup). Tried an int temp,
+    an explicit cast and a one-short struct wrapper. B13 was recorded on
+    main/-g3 — this proves it holds in overlays too, and that it is specific to
+    `>>` (a short field feeding a LEFT shift does come out as `lh`). The rest is
+    decoded: the 0x25 3-case switch on parent->unk48 and the 0x27 turret arm
+    (ArcTan2 toward D_80076DF8/DFC, owner pointer at state+0x04).
