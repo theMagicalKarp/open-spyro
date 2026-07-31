@@ -4,6 +4,7 @@
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_8007AFBC)
     . = 0x00009ce0 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_80084718)
+    build/overlays/level_20_beast_makers_misty_bog/c/func_level_20_80084718.o(.text)
     . = 0x0000a64c ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_80085084)
     . = 0x0000b794 ;
