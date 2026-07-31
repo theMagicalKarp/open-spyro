@@ -1,13 +1,3 @@
-/* PARKED 2026-07-31: 98.8% length-exact (749/758 insns, 9 words).  F1 tie —
- * the `mode` local in the 0x26 arm lands in s4 where the original has it in v0
- * (caller-saved).  Everything else in the function is byte-identical: the 0x26
- * arm's shape (single `*st = mode;` after the if-chain, so gcc shares the store
- * block and jump.c merges only the `li 2` for the two lower arms) reproduces
- * the original's block layout exactly.  Levers already tried: `*st = K;` per
- * arm (+1 insn, no cross-jump of the store), reusing `turn` as the mode local
- * (s0), declaring `mode` last (s2) and first (s4).  Needs the §D 2c allocation
- * probe or the permuter.
- */
 /* func_level_12_8008B2C0 (0x8008B2C0, level_12_magic_crafters_home
  * overlay, 0xBD8 bytes).
  *
@@ -235,7 +225,6 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
     break;
 
   case 0x26: {
-    int mode;
     int *st = rec->state;
     int *pos;
     int turn;
@@ -250,7 +239,7 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
       rec->unk41 = D_80076378[rec->type][0x11][0xC];
       rec->unk3C = 3;
       rec->unk3D = 3;
-      mode = 3;
+      *st = 3;
     } else if (parent->unk3F >= 6) {
       rec->posX += func_80016CB0(parent->unk46 << 4) >> 2;
       rec->posY += func_80016C58(parent->unk46 << 4) >> 2;
@@ -277,6 +266,8 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
       rec->unk3C = 2;
       rec->unk3D = 2;
       D_800758E4(4, 7, pos, 0x10);
+      func_800526A8(rec);
+      break;
     } else {
       if (parent->unk3F >= 2) {
         rec->posZ += 0x12C;
@@ -290,9 +281,9 @@ Actor *func_level_12_8008B2C0(int type, Actor *parent) {
         rec->posZ += 0x180;
         rec->unk46 = parent->unk46;
       }
-      mode = 2;
+      *st = 2;
     }
-    *st = mode;
+    func_800526A8(rec);
     break;
   }
   case 0xE:

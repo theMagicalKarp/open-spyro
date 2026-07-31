@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">8.15% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">176,052 / 2,159,608 split-code bytes · 463 matched · 84 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">8.31% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">179,500 / 2,159,608 split-code bytes · 464 matched · 84 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -848,12 +848,12 @@
 <rect x="14.00" y="777.41" width="301.80" height="140.10" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="777.41" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="789.41" fill="#e6edf3" font-size="11" font-weight="600">12 · magic_crafters_home</text>
-<text x="312.80" y="789.41" fill="#8b949e" font-size="10" text-anchor="end">1%</text>
+<text x="312.80" y="789.41" fill="#8b949e" font-size="10" text-anchor="end">4%</text>
 <rect x="14.00" y="793.41" width="207.28" height="124.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007E398  ·  53032 bytes  ·  asm</title></rect>
 <rect x="221.28" y="793.41" width="57.66" height="68.11" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B9F0  ·  8096 bytes  ·  asm</title></rect>
 <rect x="278.94" y="793.41" width="36.86" height="68.11" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008BE98  ·  5176 bytes  ·  asm</title></rect>
 <rect x="221.28" y="861.52" width="42.62" height="56.00" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008D2D0  ·  4920 bytes  ·  asm</title></rect>
-<rect x="263.89" y="861.52" width="51.90" height="28.33" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008B2C0  ·  3032 bytes  ·  wip</title></rect>
+<rect x="263.89" y="861.52" width="51.90" height="28.33" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8008B2C0  ·  3032 bytes  ·  matched</title></rect>
 <rect x="263.89" y="889.85" width="45.03" height="27.66" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007D990  ·  2568 bytes  ·  asm</title></rect>
 <rect x="308.92" y="889.85" width="6.87" height="22.30" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B870  ·  316 bytes  ·  matched</title></rect>
 <rect x="308.92" y="912.15" width="6.15" height="5.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_12_8007B9AC  ·  68 bytes  ·  matched</title></rect>
@@ -961,7 +961,7 @@
 <rect x="672.03" y="293.76" width="169.41" height="138.37" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_8007B7A8  ·  46640 bytes  ·  asm</title></rect>
 <rect x="672.03" y="432.13" width="72.19" height="44.67" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_80087B40  ·  6416 bytes  ·  asm</title></rect>
 <rect x="744.22" y="432.13" width="58.51" height="44.67" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_80089450  ·  5200 bytes  ·  asm</title></rect>
-<rect x="802.73" y="432.13" width="38.71" height="44.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_80086DD8  ·  3432 bytes  ·  asm</title></rect>
+<rect x="802.73" y="432.13" width="38.71" height="44.56" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_80086DD8  ·  3432 bytes  ·  wip</title></rect>
 <rect x="802.73" y="476.70" width="38.71" height="0.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_15_8008A8A0  ·  8 bytes  ·  matched</title></rect>
 <rect x="845.44" y="277.76" width="168.44" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="845.44" y="277.76" width="168.44" height="16.00" fill="#161b22"/>
