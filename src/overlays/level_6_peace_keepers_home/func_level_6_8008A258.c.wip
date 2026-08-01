@@ -1,29 +1,53 @@
-/* PARKED 2026-07-31: 99.3% length-exact (757/762 insns, 5 words).  F2 tie —
- * in the 0x127 arm's first ArcTan2 call the original schedules
- * `lw v1,0(s0)` (the D_80078A58 alias load) ahead of the `lui/lw D_80078A5C`
- * pair and emits `subu a0` before `subu a1`; ours emits the pair first and
- * `subu a1` first.  Pure independent-load scheduling: source-order swap,
- * per-arg temps, temp declaration order and inlining all produce one of the
- * two orders and nothing else moves.  The second ArcTan2 block matched once
- * `dz = rec->posZ - 0x164;` was split out (otherwise gcc re-associates the
- * constant onto the global) and the distance got its own local (A146).
- *
- * The two arms decoded here are new to the family library and are ALSO what
- * level_14 and level_15 need (87-insn 0x127 aimed-spawn, 25-insn 0x13E random
- * drift): lift them from this file when the tie is broken.
+/* PARKED 2026-07-31-3: 99.1% length-exact (749/756 insns, 7 words).  The whole
+ * function including the newly decoded 0x1C6..0x1C8 lobbed-debris arm (71 insns)
+ * is exact apart from two ties inside that arm:
+ *  - F7 move pair: the original hoists `move a0,s3` (the func_8003A720 argument)
+ *    above the `drop = func_80037EA0(...)` result copy and fills the jal delay
+ *    slot with `move s1,v0`; ours does the reverse.  Same shape as the level_11
+ *    flight-family park.
+ *  - F1 coloring on `drop = -drop + 0x640`: the original negates in place
+ *    (`negu s1,s1; addiu s1,s1,0x640`), ours goes through v0.  Writing it split
+ *    (`drop = -drop; drop = drop + 0x640;`) DOES fix that pair in place but
+ *    flips the v0/v1 coloring of the whole `rec->posZ + st->vel[2] * 4 + drop`
+ *    block instead (8 words).  Declaration-order swaps give 8 either way.
+ * Everything else -- the arm's three RandomInRange velocity draws, the two
+ * `* drop >> 10` nudges and the spin draws -- is byte-identical.
  */
-/* func_level_13_8008A36C (0x8008A36C, level_13_magic_crafters_alpine_ridge
- * overlay, 0xBE8 bytes).
+/* func_level_6_8008A258 (0x8008A258, level_6_peace_keepers_home
+ * overlay, 0xBD0 bytes).
  *
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (func_800524C4 = AllocActorRecordSlot), stamps the
- * type into +0x36 and the parent's pool index into +0x56, then runs a per-type
- * init arm: every arm starts from func_8003A720 (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (func_80017700 = CopyVector) and either register it in the spatial grid
- * (func_800526A8) or hide its render record (func_800529CC).  With no parent
- * the position falls back to Spyro's (D_80078A58).
+ * type into +0x36 and the parent's pool index into +0x56 (the 0x58-byte-record
+ * pointer difference, clamped away when it is not a real pool slot), then runs
+ * a per-type init arm. Every arm starts from func_8003A720
+ * (InitActorRenderDefaults) and ends by placing the new actor: most copy the
+ * parent's position (func_80017700 = CopyVector) and either register it in the
+ * spatial grid (func_800526A8) or hide its render record (func_800529CC).
+ *
+ * The interesting arms:
+ *  - 0xE / 0x53..0x57 (flame spawns): fill the flame state block,
+ *    take a ground probe (func_8004D5EC) 0x400 above the spawn point, encode
+ *    the cached direction (func_800533D0) and select the per-type flame
+ *    variant byte at +0x4F.
+ *  - 0x43..0x45 / 0xFF..0x101 / 0x135..0x137 (debris bursts):
+ *    give the fragment a random unit velocity built from a random yaw
+ *    (0xFFF) and pitch (0x7FF) through LookupCosine/LookupSine, add a sixth
+ *    of Spyro's velocity (D_80078B4C..54) when the parent is flagged 0x20000,
+ *    nudge the spawn point along it, and randomise the tumble rates. The
+ *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
+ *    +0x4B bit 7 flag.
+ *  - 0xFB (Metalhead's mortar shot): pick one of eight launch directions from
+ *    the D_8006F3A0/D_8006F3A2 table, rotate it into the parent's orientation
+ *    (func_80017048 = RotateVectorByMatrix), jitter each component by
+ *    +-0x3F, offset the spawn point along it (func_80017758 = AddVector) and
+ *    seed the shot's velocity (func_800176C8 = RShiftVector3) with a further
+ *    +-0x7F of jitter plus randomised spin rates and fuse.
+ *  - 0x16B..0x16C: drop 0x200 and snap to the ground below when it is within
+ *    0x800, otherwise back off by 0x200.
+ *
+ * With no parent the position falls back to Spyro's (D_80078A58).
  */
 
 typedef struct Actor {
@@ -119,18 +143,6 @@ typedef struct DebrisState {
   int unk10;
 } DebrisState;
 
-/* Thrown-shard state block (types 0x120..0x121). */
-typedef struct ShardState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  unsigned char unk0C;
-  unsigned char unk0D;
-  short unk0E;
-  int unk10;
-} ShardState;
-
 extern Actor *func_800524C4(void);              /* AllocActorRecordSlot */
 extern void func_8003A720(Actor *rec);          /* InitActorRenderDefaults */
 extern void func_80017700(int *dst, int *src);  /* CopyVector */
@@ -144,23 +156,16 @@ extern void func_800176C8(int *vec, int shift);          /* RShiftVector3 */
 extern unsigned int func_8006272C(void);        /* GetRandomU32 */
 extern int func_80016CB0(int angle);            /* LookupCosine */
 extern int func_80016C58(int angle);            /* LookupSine */
-extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 
 extern Actor *D_80075828;  /* g_pActorListBase */
-extern int D_80078A58[];   /* g_anSpyroWorldPos */
+extern volatile int D_80078A58[];   /* g_anSpyroWorldPos */
 extern int D_80078B4C[3];  /* g_anSpyroVelocity */
 extern int D_80077058;     /* g_nGemPickupSubstate */
 extern short D_8006F3A0[]; /* launch-direction table, x */
 extern short D_8006F3A2[]; /* launch-direction table, z */
-extern int D_80078BD4[3];  /* g_anSpyroFirstContactPoint */
-extern int D_80078A5C;     /* g_anSpyroWorldPos[1] */
-extern int D_80078AF8;     /* g_nSpyroGroundHeight */
-extern short D_8006CC78[]; /* unit-circle x table (8-bit angle) */
-extern short D_8006CBF8[]; /* unit-circle y table (8-bit angle) */
-extern int D_80078BE0[3];  /* g_anSpyroFirstContactNormal */
+extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 
-Actor *func_level_13_8008A36C(int type, Actor *parent) {
+Actor *func_level_6_8008A258(int type, Actor *parent) {
   Actor *rec;
   int owner;
 
@@ -307,19 +312,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     break;
   }
 
-  case 0x98 ... 0x99:
-    func_8003A720(rec);
-    rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
-    func_800529CC(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 0xD;
-    break;
-
   case 0x43 ... 0x45:
-  case 0x97:
   case 0xFF ... 0x101:
   case 0x135 ... 0x137:
   case 0x1A7 ... 0x1A9: {
@@ -415,72 +408,6 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     break;
   }
 
-  case 0x127: {
-    int *st = rec->state;
-    int turn;
-    int dy;
-    int dx;
-    int dz;
-    int dist;
-
-    func_8003A720(rec);
-    rec->posX = parent->posX + (D_8006CC78[parent->unk46] >> 1);
-    rec->posY = parent->posY + (D_8006CBF8[parent->unk46] >> 1);
-    rec->posZ = parent->posZ + 0x300;
-    dx = D_80078A58[0] - rec->posX;
-    dy = D_80078A5C - rec->posY;
-    turn = (func_80016AB4(dx, dy, 0) - parent->unk46) & 0xFF;
-    if (turn > 0x80) {
-      turn -= 0x100;
-    }
-    if (turn < -0x20) {
-      turn = -0x20;
-    }
-    if (turn > 0x20) {
-      turn = 0x20;
-    }
-    rec->unk46 = parent->unk46 + turn;
-    dist = func_80017990(&rec->posX, D_80078A58);
-    dz = rec->posZ - 0x164;
-    turn = (func_80016AB4(dist, D_80078AF8 - dz, 0) - parent->unk45) & 0xFF;
-    if (turn > 0x80) {
-      turn -= 0x100;
-    }
-    if (turn < -0x30) {
-      turn = -0x30;
-    }
-    if (turn > 0x30) {
-      turn = 0x30;
-    }
-    rec->unk45 = parent->unk45 + turn;
-    st[1] = 0x5A;
-    st[0] = 0;
-    func_800526A8(rec);
-    break;
-  }
-  case 0x13E: {
-    int *st = rec->state;
-
-    func_8003A720(rec);
-    func_80017700(&rec->posX, &parent->posX);
-    st[0] = (func_8006272C() & 0x7E) - 0x3F;
-    st[1] = (func_8006272C() & 0x7E) - 0x3F;
-    st[2] = (func_8006272C() & 0x7E) - 0x10;
-    st[3] = (func_8006272C() & 0x1F) + 0x20;
-    func_800526A8(rec);
-    break;
-  }
-  case 0x188:
-    func_8003A720(rec);
-    rec->unk47 = 5;
-    if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
-    } else {
-      func_80017700(&rec->posX, D_80078A58);
-    }
-    func_800526A8(rec);
-    break;
-
   case 0x18E:
     func_8003A720(rec);
     rec->unk50 = 0xFF;
@@ -495,6 +422,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     rec->unk4F = 0;
     break;
 
+  case 0x16B ... 0x16C:
   case 0x195:
   case 0x1DD: {
     int ground;
@@ -504,7 +432,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     rec->posZ += 0x200;
     ground = func_8004D5EC(&rec->posX, 0x800);
@@ -522,6 +450,32 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     break;
   }
 
+  case 0x1C6 ... 0x1C8: {
+    DebrisState *st;
+    int drop;
+
+    drop = func_80037EA0(-0x960, 0x578);
+    st = rec->state;
+    func_8003A720(rec);
+    func_80017700(&rec->posX, &parent->posX);
+    func_800526A8(rec);
+    func_8006272C();
+    st->vel[0] = func_80037EA0(-0x78, 0x78);
+    st->vel[1] = func_80037EA0(-0x78, 0x78);
+    st->vel[2] = func_80037EA0(0x32, 0xF0);
+    rec->posX += st->vel[0] * 4;
+    rec->posY += st->vel[1] * 4;
+    rec->posZ = rec->posZ + st->vel[2] * 4 + drop;
+    drop = -drop + 0x640;
+    rec->posX += st->vel[0] * drop >> 10;
+    rec->posY += st->vel[1] * drop >> 10;
+    st->spinX = func_8006272C() & 0xF;
+    st->spinY = func_8006272C() & 0xF;
+    st->spinZ = func_8006272C() & 0xF;
+    st->unk0C = 0xA0;
+    break;
+  }
+
   case 0x4C:
   case 0x1AA ... 0x1C3:
     func_8003A720(rec);
@@ -530,12 +484,38 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     func_800529CC(rec);
     break;
 
+  case 0x1CA ... 0x1CB: {
+    DebrisState *st = rec->state;
+
+    func_8003A720(rec);
+    rec->unk50 = 0x20;
+    func_80017700(&rec->posX, &parent->posX);
+    func_800526A8(rec);
+    if (parent->type == 0xB0) {
+      st->vel[0] = func_80037EA0(-0x64, 0x64);
+      st->vel[1] = func_80037EA0(-0x64, 0x64);
+      st->vel[2] = func_80037EA0(-0x3C, 0x6E);
+    } else {
+      st->vel[0] = func_80037EA0(-0x96, 0x96);
+      st->vel[1] = func_80037EA0(-0x96, 0x96);
+      st->vel[2] = func_80037EA0(-0x46, 0x96);
+    }
+    rec->posX += st->vel[0] * 4;
+    rec->posY += st->vel[1] * 4;
+    rec->posZ += st->vel[2] * 4;
+    st->spinX = func_8006272C() & 0xF;
+    st->spinY = func_8006272C() & 0xF;
+    st->spinZ = func_8006272C() & 0xF;
+    st->unk0C = func_80037EA0(0x18, 0x23);
+    break;
+  }
+
   default:
     func_8003A720(rec);
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     func_800526A8(rec);
     break;

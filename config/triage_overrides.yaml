@@ -946,3 +946,85 @@ func_level_16_80083AB4:
     `>>` (a short field feeding a LEFT shift does come out as `lh`). The rest is
     decoded: the 0x25 3-case switch on parent->unk48 and the 0x27 turret arm
     (ArcTan2 toward D_80076DF8/DFC, owner pointer at state+0x04).
+func_level_14_8008883C:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3096 b. One new arm (0x130 homing shot: parent's state block needs its own
+    local so its unk00 loads early, ZeroVector on state+0x08, ground probe at
+    +0x400) plus the A127 frame-hole move (the 8-byte dead local that sizes the
+    frame belongs to the LAST block that declares an array, not the mortar arm).
+    Closed by A154: declaring BOTH ArcTan2 operand globals volatile.
+func_level_13_8008A36C:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3048 b. Unparks the 99.3% F2 tie with A154 (both operand globals volatile);
+    no other change to the parked source.
+func_level_15_80086DD8:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3432 b. Same one-line A154 fix as level_13; the park note's exhausted lever
+    list was correct that volatile on D_80078A5C ALONE gives 5 words — the point
+    is that the other operand's global must be volatile too.
+func_level_26_80084620:
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    2688 b, first-build match once the decoder learned the `beq $s0,$v0` root
+    shape. Its one new arm is 0x37 (aimed shot: horizontal distance + Z delta
+    through ArcTan2 clamped to +-0x10, then a yaw from Spyro's position, state
+    +0x00 = 0x8C).
+func_level_6_8008A258:
+  verdict: parked
+  class: "F7 move-pair (arg copy vs call-result copy) + F1 negate coloring"
+  date: 2026-07-31-3
+  note: >-
+    3024 b, 99.1% length-exact (749/756, 7 words). The 0x1C6..0x1C8 lobbed-debris
+    arm is decoded and everything else is exact. Residues, both in that arm: the
+    original hoists `move a0,rec` above the `drop = RandomInRange(...)` result
+    copy and fills the delay slot with the result copy (same class as level_11);
+    and `drop = -drop + 0x640` colors through v0 where the original negates s1 in
+    place. The split form (`drop = -drop; drop = drop + 0x640;`) fixes the negate
+    but re-colors the whole posZ accumulate block (8 words). Declaration-order
+    swaps give 8 either way.
+func_level_22_800874FC:
+  verdict: candidate
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3196 b, decodes now (equality root). ONE unknown arm: the 186-insn 0x5D
+    spray/debris arm at 0x80087974, which is the same arm level_19 needs at
+    0x80084b44 — decode it once and two levels (6.6 KB with level_19's other two
+    small arms) fall out.
+func_level_27_8008590C:
+  verdict: candidate
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3656 b, decodes now (equality root). ONE unknown arm: 0xD7 at 0x80086010, 66
+    insns — a debris variant whose direction comes from parent->unk45 plus a
+    +-0xF jitter through the D_8006CC78/D_8006CBF8 unit-circle tables, three
+    func_80037F10 spin draws, and a tail that cross-jumps into its own debris
+    arm's colour/flag block. Its first RandomInRange arg is set in the dispatch
+    branch's delay slot, so read a0 from the branch that targets the arm.
+func_level_19_8008465C:
+  verdict: candidate
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3408 b. Three unknown arms: 0x20 (21 insns, func_80052D64 mount + two
+    D_80076E1E/E20 angle bytes), 0x157 (14 insns, owner + two zeroed state words),
+    and the 186-insn 0x5D arm shared with level_22.
+func_level_25_80084B94:
+  verdict: candidate
+  class: ""
+  date: 2026-07-31-3
+  note: >-
+    3176 b. Four unknown arms (49/46/15/65 insns) — the largest remaining decode
+    load of the family's non-flight levels.

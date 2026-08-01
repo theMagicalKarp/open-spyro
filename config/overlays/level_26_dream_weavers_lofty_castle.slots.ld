@@ -4,6 +4,7 @@
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.func_level_26_8007B4DC)
     . = 0x00009be8 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.func_level_26_80084620)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_80084620.o(.text)
     . = 0x0000a668 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.func_level_26_800850A0)
     . = 0x0000ba00 ;

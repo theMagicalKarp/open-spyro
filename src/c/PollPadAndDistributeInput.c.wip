@@ -19,7 +19,8 @@
      (`if (g_nFrameTicks == 0) {abs} else {|=}`) puts the |= arm after a
      CODE_LABEL and it STILL folds, because cse_end_of_basic_block follows
      conditional jumps under -fcse-follow-jumps and carries the equivalence into
-     the target path. (This refines B-i's "only a LABEL flushes the equivalence".)
+     the target path. (This refines B-i's "only a LABEL flushes the
+   equivalence".)
    - The A25 escape does not apply: a derived address off the same alias IS
      passed to a call here (`&stick[-4]` -> MapPadAxisToCalibratedRange) and the
      RMWs still fold.

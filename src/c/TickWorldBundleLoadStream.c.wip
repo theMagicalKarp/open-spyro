@@ -36,13 +36,15 @@ extern int *UnpackWorldDataChunks(int *src, int mode);
 extern int *RelocateActorMeshHeader(int *header);
 extern void InitActorRenderDefaults(int actor);
 
-extern int g_anWorldTimAudioChunkOffsetBlock[]; /* held-base view of the chunk
-                                          scratch at g_nWorldTimAudioChunkOffset */
-extern int g_anActorMeshOffsetBlock[]; /* held-base view of the mesh-offset list;
-                                          [-16] is g_nWorldDataExtChunkOffset */
+extern int
+    g_anWorldTimAudioChunkOffsetBlock[]; /* held-base view of the chunk
+                                   scratch at g_nWorldTimAudioChunkOffset */
+extern int
+    g_anActorMeshOffsetBlock[]; /* held-base view of the mesh-offset list;
+                                   [-16] is g_nWorldDataExtChunkOffset */
 extern void *g_apActorMeshTableBlock[];
-extern int g_anCdReadInFlightBlock[];  /* held-base view of g_nCdReadInFlight */
-extern void *g_apDrawBufBlock[];       /* held-base view of g_pDrawBufA */
+extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
+extern void *g_apDrawBufBlock[];      /* held-base view of g_pDrawBufA */
 extern void *volatile g_apPathTableBufferBlock[]; /* g_pPathTableBuffer, stored
                                           then reloaded through the same base */
 
@@ -166,10 +168,9 @@ void TickWorldBundleLoadStream(void) {
     int lba = *(volatile int *)&g_nCdBaseLba;
     int world = *(volatile int *)&g_nCurrentWorldId;
     int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
-    StartCdReadAsync(lba, (char *)head2 + size - 0x60000, 0x60000,
-                     ((&g_nWorldArchiveOffset)[world * 2] - 0x60000) +
-                         (off + size),
-                     0x258);
+    StartCdReadAsync(
+        lba, (char *)head2 + size - 0x60000, 0x60000,
+        ((&g_nWorldArchiveOffset)[world * 2] - 0x60000) + (off + size), 0x258);
     g_nCdStreamState = 8;
   } else if (state == 8) {
     if (g_anActorMeshOffsetBlock[0] > 0) {
@@ -243,12 +244,12 @@ void TickWorldBundleLoadStream(void) {
  * positionally aligned; the residue is register-allocation / delay-slot ties.
  *
  * Solved here (all levers already folded into the cookbook):
- *  - B16/A142: the in-flight gate read is `*(volatile int *)g_anCdReadInFlightBlock`
- *    (inline volatile cast-deref of the alias, no pointer local) for the
- *    `lui/addiu/lw 0(r)` form.
+ *  - B16/A142: the in-flight gate read is `*(volatile int
+ * *)g_anCdReadInFlightBlock` (inline volatile cast-deref of the alias, no
+ * pointer local) for the `lui/addiu/lw 0(r)` form.
  *  - A20/A22 aliases: g_anWorldTimAudioChunkOffsetBlock (CopyWords dst + value
- *    read off one base), g_apDrawBufBlock (two reads across the CopyWords call),
- *    g_apPathTableBufferBlock (A21 store-then-reload through one base),
+ *    read off one base), g_apDrawBufBlock (two reads across the CopyWords
+ * call), g_apPathTableBufferBlock (A21 store-then-reload through one base),
  *    g_anActorMeshOffsetBlock with [-16] reaching g_nWorldDataExtChunkOffset
  *    (A25 negative-offset value off the held base, inside the relocate loop).
  *  - A4 (volatile arg temps, in the ORIGINAL's load order) fixes every
@@ -257,7 +258,8 @@ void TickWorldBundleLoadStream(void) {
  *  - A85 goto-loops for both arm-9 loops: loop.c otherwise strength-reduces the
  *    path-entry walker (`addiu a0,a1,20` giv) and the i*0x58 actor offset
  *    (`addiu s0,s0,88`); the original recomputes both per iteration. The 0x20
- *    default byte survives as a user local (`def`) only under the goto-loop (F6).
+ *    default byte survives as a user local (`def`) only under the goto-loop
+ * (F6).
  *  - A23: g_pPathTableBuffer is re-read ABSOLUTELY after the rebase loop even
  *    though the held base is still live.
  *  - `*(short *)(actor + 0x36) = i + 1;` BEFORE `i += 1;` reproduces the
@@ -285,11 +287,12 @@ void TickWorldBundleLoadStream(void) {
  *     tail a1<->v1, arm 9 head a1<->a2, arm 7 arch v1<->a3). Structure and
  *     order are identical in every case.
  *  3. F2 arm-0 arg block: the original materializes `li a2,0x800` FIRST and the
- *     `li v0,600 / sw 0x10(sp)` stack arg LAST; ours is the reverse. A4 volatile
- *     temps pin the LOADS but not the two constants; a `int size = 0x800;` user
- *     local does not move it (arms 1/3/4/5/8 all match, so this is per-block
+ *     `li v0,600 / sw 0x10(sp)` stack arg LAST; ours is the reverse. A4
+ * volatile temps pin the LOADS but not the two constants; a `int size = 0x800;`
+ * user local does not move it (arms 1/3/4/5/8 all match, so this is per-block
  *     sched1 noise, not a source-order effect).
- *  4. Arm 9 loop 1: the original copies the held base into its own loop register
+ *  4. Arm 9 loop 1: the original copies the held base into its own loop
+ * register
  *     (`move a2,a1`) and loads `0(a2)` before `20(a0)`. An explicit second
  *     pointer local reproduces both (30 mismatches) but costs +1 insn -> slot
  *     overflow, so the linking form keeps the base uncopied.
