@@ -1074,3 +1074,32 @@ func_level_29_80082028:
     needs an explicit (int) cast on the func_8006272C() roll -- an unsigned index
     makes case 0 type-bounded, so gcc skips the balanced tree's range test and
     emits a linear ladder (4 insns short, `slti` missing).
+
+func_level_11_80082F58:
+  verdict: parked
+  class: F2
+  date: 2026-08-01
+  note: >-
+    3224 b / 806 insns, particle emit-list dispatcher (14 arms + an inner 8-way
+    switch, two owned jump tables). PARKED at 803/806 exact, LENGTH-EXACT (99.6%):
+    the only residue is a loop.c movable emission-ORDER tie in the preheader --
+    loop.c emits hoisted movables in SCAN order, so the invariant `arg3 >> 24`
+    written at the top of the loop body lands ahead of the 0x80 / 0xFF constants
+    that the case-0 / case-9 arms hoist, where the original has it after. Putting
+    it inside the case-0xC arm stops it hoisting entirely (-4 insns); before the
+    loop it lands ahead of the blez; at the end of the body the length changes.
+    Everything else is byte-identical -- see the .c.wip header for the lever list.
+    Word-identical bar branch displacements to func_level_17_800836F8 and
+    func_level_23_80083BAC, so landing this one lands 9,672 bytes across three
+    flight overlays by sed.
+
+func_level_11_80082300:
+  verdict: candidate
+  class: vein
+  date: 2026-08-01
+  note: >-
+    3160 b / 790 insns, the sibling of func_level_11_80082F58 in the same
+    overlay (one owned 80-entry jump table, 24 calls -- more inline arithmetic,
+    fewer call chains). Untried. Word-identical bar branch displacements across
+    levels 11/17/23 (9,480 bytes) and ~86% norm-identical to levels 5/29's
+    894-insn copies at 0x80083330 / 0x80082D94 (a further 7,152 bytes).
