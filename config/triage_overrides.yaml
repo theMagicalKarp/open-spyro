@@ -994,37 +994,76 @@ func_level_6_8008A258:
     but re-colors the whole posZ accumulate block (8 words). Declaration-order
     swaps give 8 either way.
 func_level_22_800874FC:
-  verdict: candidate
+  verdict: matched
   class: ""
-  date: 2026-07-31-3
+  date: 2026-07-31-4
   note: >-
-    3196 b, decodes now (equality root). ONE unknown arm: the 186-insn 0x5D
-    spray/debris arm at 0x80087974, which is the same arm level_19 needs at
-    0x80084b44 — decode it once and two levels (6.6 KB with level_19's other two
-    small arms) fall out.
+    3196 b, MATCHED. The 0x5D arm is the standard debris burst plus an aimed
+    variant taken when parent->type == 0x23: heading from the parent state
+    block's +0xC with a +-0x32 jitter, speed = abs(cos(pitch) >> 4), and an
+    unconditional Spyro-velocity add (the plain debris arm gates that on
+    parent->flags & 0x20000). Spin rates are read back as (unsigned char) of the
+    short state fields.
 func_level_27_8008590C:
-  verdict: candidate
+  verdict: matched
   class: ""
-  date: 2026-07-31-3
+  date: 2026-07-31-4
   note: >-
-    3656 b, decodes now (equality root). ONE unknown arm: 0xD7 at 0x80086010, 66
-    insns — a debris variant whose direction comes from parent->unk45 plus a
-    +-0xF jitter through the D_8006CC78/D_8006CBF8 unit-circle tables, three
-    func_80037F10 spin draws, and a tail that cross-jumps into its own debris
-    arm's colour/flag block. Its first RandomInRange arg is set in the dispatch
-    branch's delay slot, so read a0 from the branch that targets the arm.
+    3656 b, MATCHED. One new arm (0xD7): random speed 0x78..0x96 along a heading
+    of parent->unk45 +-0xF through the unit-circle tables, three func_80037F10
+    spin rolls, an int store at +0x4C plus the cross-jumped rec->unk4B |= 0x80
+    tail, and st->unk10 = parent->posZ - (short)parent->unk38 - 0x40 (needs a
+    short at Actor+0x38, so split the int unk38[3] filler).
 func_level_19_8008465C:
-  verdict: candidate
+  verdict: matched
   class: ""
-  date: 2026-07-31-3
+  date: 2026-07-31-4
   note: >-
-    3408 b. Three unknown arms: 0x20 (21 insns, func_80052D64 mount + two
-    D_80076E1E/E20 angle bytes), 0x157 (14 insns, owner + two zeroed state words),
-    and the 186-insn 0x5D arm shared with level_22.
+    3408 b, MATCHED once level_22 supplied the 186-insn 0x5D arm. The two small
+    arms are 0x20 (func_80052D64 attach point, facing from D_80076E1E and
+    (D_80076E20 + 0x400) >> 4) and 0x157 (owner pointer + two zeroed state
+    words). Both use a TrackState block {Actor *owner; int; int}.
 func_level_25_80084B94:
+  verdict: park
+  class: B19
+  date: 2026-07-31-4
+  note: >-
+    3176 b, PARKED at 99.4% length-exact (5/794). All four arms decoded: 0x38 and
+    0x9B are aim-at-Spyro with the +-0x10 turn clamp (0x9B additionally holds the
+    parent's facing when the delta exceeds 0x10 — needs abs() for the bgez/negu
+    pair and a two-statement mask, since (unsigned char)(rec->unk46 - pdir) in
+    one expression makes gcc drop the field's own 0xFF mask), 0x7C is the
+    attitude copy. The residue is only 0x7C's batched signed-byte copy: B19.
+func_level_17_80081F0C:
+  verdict: park
+  class: B19
+  date: 2026-07-31-4
+  note: >-
+    2964 b, PARKED at 98.7% length-exact (10/741). Case list and every arm
+    decoded (incl. a new 18-insn fixed-position hidden-actor arm). The residue is
+    the two attitude-copy arms (0x176, 0x177..0x182) only: B19. Solving B19 lands
+    this, level_25, level_23, level_5 and the level_11 park.
+func_level_23_8008223C:
+  verdict: candidate
+  class: B19
+  date: 2026-07-31-4
+  note: >-
+    One unknown arm left (83 insns @0x80082B2C, shared with level_5/level_29).
+    Carries the B19 attitude-copy arms at 0x80082D2C/0x80082DA4, so it can only
+    reach a park until B19 is solved.
+func_level_5_8008249C:
+  verdict: candidate
+  class: B19
+  date: 2026-07-31-4
+  note: >-
+    Three unknown arms (4/83/84 insns); the 83 and 84 are shared with
+    level_23/level_29. Carries the B19 attitude-copy arms at
+    0x80083108/0x80083180.
+func_level_29_80082028:
   verdict: candidate
   class: ""
-  date: 2026-07-31-3
+  date: 2026-07-31-4
   note: >-
-    3176 b. Four unknown arms (49/46/15/65 insns) — the largest remaining decode
-    load of the family's non-flight levels.
+    Five unknown arms (4/104/34/83/84). The only remaining flight overlay with NO
+    B19 attitude-copy arm, so it is the one flight dispatcher that can reach a
+    full match on decode work alone.
