@@ -1044,26 +1044,33 @@ func_level_17_80081F0C:
     the two attitude-copy arms (0x176, 0x177..0x182) only: B19. Solving B19 lands
     this, level_25, level_23, level_5 and the level_11 park.
 func_level_23_8008223C:
-  verdict: candidate
+  verdict: park
   class: B19
-  date: 2026-07-31-4
+  date: 2026-08-01
   note: >-
-    One unknown arm left (83 insns @0x80082B2C, shared with level_5/level_29).
-    Carries the B19 attitude-copy arms at 0x80082D2C/0x80082DA4, so it can only
-    reach a park until B19 is solved.
+    3352 b, PARKED at 98.8% length-exact (10/838). Zero unknown arms once
+    level_29 contributed the 0x167..0x169 scatter burst. Residue is the two
+    attitude-copy arms (0x80082D2C/0x80082DA4) only: B19.
 func_level_5_8008249C:
-  verdict: candidate
+  verdict: park
   class: B19
-  date: 2026-07-31-4
+  date: 2026-08-01
   note: >-
-    Three unknown arms (4/83/84 insns); the 83 and 84 are shared with
-    level_23/level_29. Carries the B19 attitude-copy arms at
-    0x80083108/0x80083180.
+    3732 b, PARKED at 98.9% length-exact (10/933). Zero unknown arms once
+    level_29 contributed the 0x167..0x169 and 0x16A arms. Residue is the two
+    attitude-copy arms (0x80083108/0x80083180) only: B19.
 func_level_29_80082028:
-  verdict: candidate
+  verdict: matched
   class: ""
-  date: 2026-07-31-4
+  date: 2026-08-01
   note: >-
-    Five unknown arms (4/104/34/83/84). The only remaining flight overlay with NO
-    B19 attitude-copy arm, so it is the one flight dispatcher that can reach a
-    full match on decode work alone.
+    3436 b, MATCHED on the 2nd iteration. Four new arms decoded into the library:
+    0x4E (bare init straight into the shared grid insert), 0xE8 (spawn 0x400 up,
+    ArcTan2 at Spyro through func_80038178; the `sw $s1` store is the type-0x78
+    compare constant cse-reused, write the literal 0x78), 0x167..0x169 (random
+    8-bit heading out of D_8006CC78/D_8006CBF8 shifted down 7 -- declare the
+    tables `short[]` and use `>>`, B13's lhu;sll;sra IS the original form), and
+    0x16A (four-quadrant launch). The one iteration cost: the inner 4-way switch
+    needs an explicit (int) cast on the func_8006272C() roll -- an unsigned index
+    makes case 0 type-bounded, so gcc skips the balanced tree's range test and
+    emits a linear ladder (4 insns short, `slti` missing).
