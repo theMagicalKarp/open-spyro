@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">9.73% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">210,156 / 2,159,608 split-code bytes · 473 matched · 86 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">9.88% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">213,296 / 2,159,608 split-code bytes · 473 matched · 87 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -1032,7 +1032,7 @@
 <rect x="498.57" y="496.80" width="128.50" height="147.39" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_8007B4F8  ·  38556 bytes  ·  asm</title></rect>
 <rect x="627.07" y="496.80" width="45.46" height="58.74" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_800857FC  ·  5436 bytes  ·  asm</title></rect>
 <rect x="627.07" y="555.54" width="45.46" height="54.24" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_80086D38  ·  5020 bytes  ·  asm</title></rect>
-<rect x="627.07" y="609.78" width="45.34" height="34.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_80084B94  ·  3176 bytes  ·  asm</title></rect>
+<rect x="627.07" y="609.78" width="45.34" height="34.40" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_80084B94  ·  3176 bytes  ·  wip</title></rect>
 <rect x="672.42" y="609.78" width="0.11" height="34.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_25_800880D4  ·  8 bytes  ·  matched</title></rect>
 <rect x="676.53" y="480.80" width="168.37" height="163.39" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="676.53" y="480.80" width="168.37" height="16.00" fill="#161b22"/>
