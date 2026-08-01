@@ -1,17 +1,3 @@
-/* PARKED 2026-07-31: 99.3% length-exact (757/762 insns, 5 words).  F2 tie —
- * in the 0x127 arm's first ArcTan2 call the original schedules
- * `lw v1,0(s0)` (the D_80078A58 alias load) ahead of the `lui/lw D_80078A5C`
- * pair and emits `subu a0` before `subu a1`; ours emits the pair first and
- * `subu a1` first.  Pure independent-load scheduling: source-order swap,
- * per-arg temps, temp declaration order and inlining all produce one of the
- * two orders and nothing else moves.  The second ArcTan2 block matched once
- * `dz = rec->posZ - 0x164;` was split out (otherwise gcc re-associates the
- * constant onto the global) and the distance got its own local (A146).
- *
- * The two arms decoded here are new to the family library and are ALSO what
- * level_14 and level_15 need (87-insn 0x127 aimed-spawn, 25-insn 0x13E random
- * drift): lift them from this file when the tie is broken.
- */
 /* func_level_13_8008A36C (0x8008A36C, level_13_magic_crafters_alpine_ridge
  * overlay, 0xBE8 bytes).
  *
@@ -148,13 +134,13 @@ extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 
 extern Actor *D_80075828;  /* g_pActorListBase */
-extern int D_80078A58[];   /* g_anSpyroWorldPos */
+extern volatile int D_80078A58[];   /* g_anSpyroWorldPos */
 extern int D_80078B4C[3];  /* g_anSpyroVelocity */
 extern int D_80077058;     /* g_nGemPickupSubstate */
 extern short D_8006F3A0[]; /* launch-direction table, x */
 extern short D_8006F3A2[]; /* launch-direction table, z */
 extern int D_80078BD4[3];  /* g_anSpyroFirstContactPoint */
-extern int D_80078A5C;     /* g_anSpyroWorldPos[1] */
+extern volatile int D_80078A5C;     /* g_anSpyroWorldPos[1] */
 extern int D_80078AF8;     /* g_nSpyroGroundHeight */
 extern short D_8006CC78[]; /* unit-circle x table (8-bit angle) */
 extern short D_8006CBF8[]; /* unit-circle y table (8-bit angle) */
@@ -440,7 +426,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
       turn = 0x20;
     }
     rec->unk46 = parent->unk46 + turn;
-    dist = func_80017990(&rec->posX, D_80078A58);
+    dist = func_80017990(&rec->posX, (int *)D_80078A58);
     dz = rec->posZ - 0x164;
     turn = (func_80016AB4(dist, D_80078AF8 - dz, 0) - parent->unk45) & 0xFF;
     if (turn > 0x80) {
@@ -476,7 +462,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     func_800526A8(rec);
     break;
@@ -504,7 +490,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     rec->posZ += 0x200;
     ground = func_8004D5EC(&rec->posX, 0x800);
@@ -535,7 +521,7 @@ Actor *func_level_13_8008A36C(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     func_800526A8(rec);
     break;

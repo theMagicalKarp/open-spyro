@@ -1,25 +1,3 @@
-/* PARKED 2026-07-31-2: 99.4% length-exact (853/858 insns, 5 words).  F2 tie —
- * the 0x127 arm's first ArcTan2 argument block.  The original issues the
- * one-insn `lw v1,0(s0)` (the D_80078A58 held base) ahead of the two-insn
- * `lui/lw %lo(D_80078A5C)` pair and puts `subu a0` before the jal with
- * `subu a1` in the delay slot; ours schedules the deeper lui/lw chain first
- * and swaps the two subus.  Same tie as func_level_13_8008A36C (and it is what
- * level_14 needs too) — one shared knot gates ~9.5 KB.
- *
- * Levers tried and rejected this session (all >= 5 words, most worse):
- * statement-order swap (8), both args inlined at the call (5), each arg
- * inlined separately (5/8), posX/posY read into locals first (12), the
- * D_80078A5C load hoisted to the top of the arm (19), the D_80078A58[0] load
- * hoisted (37), either subtraction moved above the posZ store (13/209), the
- * position writes done through a `pos` pointer (14), a pointer-local alias for
- * D_80078A58 (5), `*D_80078A58` instead of `[0]` (5), a literal-address cast
- * for D_80078A5C (5), and `volatile` on D_80078A5C (5).  gcc 2.7.2 sched.c
- * priority() measures depth from the top of the block, so the two-insn address
- * chain always outranks the one-insn one; no source form reaches it.
- * Everything else in the function -- including the 0x26 wizard arm that was
- * the level_12 park -- is byte-identical.  Next step: E-mode permuter framed
- * on this arm alone.
- */
 /* func_level_15_80086DD8 (0x80086DD8, level_15_magic_crafters_wizard_peak
  * overlay, 0xD68 bytes).
  *
@@ -163,10 +141,10 @@ extern int func_80016C58(int angle);            /* LookupSine */
 extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
 extern int func_80017990(int *a, int *b);       /* HorizontalDistance */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
-extern int D_80078A5C;     /* g_anSpyroWorldPos[1] */
+extern volatile int D_80078A5C;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *D_80075828;  /* g_pActorListBase */
-extern int D_80078A58[];   /* g_anSpyroWorldPos */
+extern volatile int D_80078A58[];   /* g_anSpyroWorldPos */
 extern int D_80078B4C[3];  /* g_anSpyroVelocity */
 extern int D_80077058;     /* g_nGemPickupSubstate */
 extern short D_8006F3A0[]; /* launch-direction table, x */
@@ -271,7 +249,7 @@ Actor *func_level_15_80086DD8(int type, Actor *parent) {
       rec->posY += func_80016C58(parent->unk46 << 4) >> 2;
       rec->posZ += 0x12C;
       rec->unk46 = parent->unk46;
-      turn = (func_80016AB4(func_80017990(pos, D_80078A58), D_80078A60 - rec->posZ,
+      turn = (func_80016AB4(func_80017990(pos, (int *)D_80078A58), D_80078A60 - rec->posZ,
                             0) -
               parent->unk45) &
              0xFF;
@@ -510,7 +488,7 @@ Actor *func_level_15_80086DD8(int type, Actor *parent) {
       turn = 0x20;
     }
     rec->unk46 = parent->unk46 + turn;
-    dist = func_80017990(&rec->posX, D_80078A58);
+    dist = func_80017990(&rec->posX, (int *)D_80078A58);
     dz = rec->posZ - 0x164;
     turn = (func_80016AB4(dist, D_80078AF8 - dz, 0) - parent->unk45) & 0xFF;
     if (turn > 0x80) {
@@ -546,7 +524,7 @@ Actor *func_level_15_80086DD8(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     func_800526A8(rec);
     break;
@@ -560,7 +538,7 @@ Actor *func_level_15_80086DD8(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     rec->posZ += 0x200;
     ground = func_8004D5EC(&rec->posX, 0x800);
@@ -591,7 +569,7 @@ Actor *func_level_15_80086DD8(int type, Actor *parent) {
     if (parent != 0) {
       func_80017700(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      func_80017700(&rec->posX, (int *)D_80078A58);
     }
     func_800526A8(rec);
     break;

@@ -4,6 +4,7 @@
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.func_level_13_8007BB00)
     . = 0x0000f934 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.func_level_13_8008A36C)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8008A36C.o(.text)
     . = 0x0001051c ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.func_level_13_8008AF54)
     . = 0x00011fa0 ;
