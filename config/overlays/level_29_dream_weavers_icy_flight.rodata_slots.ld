@@ -64,5 +64,4 @@
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
     . = 0x00000270 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    . = 0x000003b0 ;
-    build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007ADE8)
+    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80083B8C.o(.rodata)
