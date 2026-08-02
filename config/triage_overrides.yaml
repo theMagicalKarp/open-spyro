@@ -1076,22 +1076,19 @@ func_level_29_80082028:
     emits a linear ladder (4 insns short, `slti` missing).
 
 func_level_11_80082F58:
-  verdict: parked
-  class: F2
-  date: 2026-08-01
+  verdict: matched
+  class: vein
+  date: 2026-08-02
   note: >-
-    3224 b / 806 insns, particle emit-list dispatcher (14 arms + an inner 8-way
-    switch, two owned jump tables). PARKED at 803/806 exact, LENGTH-EXACT (99.6%):
-    the only residue is a loop.c movable emission-ORDER tie in the preheader --
-    loop.c emits hoisted movables in SCAN order, so the invariant `arg3 >> 24`
-    written at the top of the loop body lands ahead of the 0x80 / 0xFF constants
-    that the case-0 / case-9 arms hoist, where the original has it after. Putting
-    it inside the case-0xC arm stops it hoisting entirely (-4 insns); before the
-    loop it lands ahead of the blez; at the end of the body the length changes.
-    Everything else is byte-identical -- see the .c.wip header for the lever list.
-    Word-identical bar branch displacements to func_level_17_800836F8 and
-    func_level_23_80083BAC, so landing this one lands 9,672 bytes across three
-    flight overlays by sed.
+    MATCHED (was parked F2). The preheader movable-order residue was fixed by
+    writing `arg3 >> 24` INLINE at its three case-0xC use sites instead of in a
+    named local: loop.c emits hoisted movables in scan order, and scan_loop only
+    accepts a movable whose set is unconditional (case 1) OR whose dest is not a
+    user variable (case 2). A named local at the top of the loop body is case 1
+    and therefore always lands ahead of the 0x80 / 0xFF colour constants the
+    arms hoist; a compiler temp inside the 0xC arm is case 2 and is scanned
+    after them. Sed-cloned to func_level_17_800836F8 and func_level_23_80083BAC
+    (9,672 exact bytes).
 
 func_level_11_80082300:
   verdict: candidate
@@ -1103,3 +1100,28 @@ func_level_11_80082300:
     fewer call chains). Untried. Word-identical bar branch displacements across
     levels 11/17/23 (9,480 bytes) and ~86% norm-identical to levels 5/29's
     894-insn copies at 0x80083330 / 0x80082D94 (a further 7,152 bytes).
+
+func_level_5_80084128:
+  verdict: matched
+  class: vein
+  date: 2026-08-02
+  note: >-
+    3496 b / 874 insns, the levels 5 / 29 particle emit dispatcher. Same as the
+    levels 11/17/23 copy plus the 0xD ember arm and the 0x13 distance-faded
+    haze arm (func_80017990 gate at 0x7FFF, word velocity at +0x18, grey ramp
+    (0x8000 - d) >> 6 above 0x6000 -- reuse the distance local for the colour to
+    keep it in s0, and make the ramp the if-arm). Cloned to
+    func_level_29_80083B8C.
+
+func_level_3_80088F68:
+  verdict: parked
+  class: F2
+  date: 2026-08-02
+  note: >-
+    3940 b / 985 insns, the town-square / misty-bog particle emit dispatcher.
+    PARKED at 979/985 LENGTH-EXACT (99.4%) with all five new arms (0x15, 0x18,
+    0x46, 0x4C, 0x50) decoded and byte-identical. Residue is a sched1 def-hoist
+    tie in the 0x18 arm alone (the original front-loads `sll v1,i,4` and
+    `li t0,0x2E` ahead of the life/unk11 store pair). See the .c.wip header for
+    the exhausted lever list. Word-identical to func_level_20_800861CC
+    (7,880 bytes for the pair) and the donor for the 1085-insn group.
