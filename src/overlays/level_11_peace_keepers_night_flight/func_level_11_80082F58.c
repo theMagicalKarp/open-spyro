@@ -16,9 +16,20 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
+ * `arg3 >> 24` is written inline at its three use sites rather than hoisted
+ * into a named local: loop.c emits the invariant it lifts out of the loop in
+ * SCAN order, so the shift has to be scanned after the 0x80 / 0xFF colour
+ * constants that the case-0 / case-9 arms hoist.  A user variable can only
+ * become a movable when its set is unconditional (scan_loop case 1), which
+ * would put it at the top of the body; a compiler temp qualifies under case 2
+ * anywhere in the loop.
+ *
  * Word-identical (bar branch displacements) to the copies in
  * level_17_magic_crafters_crystal_flight and
  * level_23_beast_makers_wild_flight.
+ *
+ * Verified byte-identical inside the relinked
+ * level_11_peace_keepers_night_flight.ovl.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -101,12 +112,10 @@ void func_level_11_80082F58(int count, int type, int *pos, int arg3) {
   int v3[3];
   Emit *rec;
   int c;
-  int hi;
   int i;
   int k;
 
   for (i = 0; i < count; i++) {
-    hi = arg3 >> 24;
     k = i * 4;
     switch (type) {
     case 0x0: {
@@ -226,13 +235,13 @@ void func_level_11_80082F58(int count, int type, int *pos, int arg3) {
       if (((Actor *)pos)->kind == 0x22) {
         func_80017700(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
-        if (hi < 6) {
-          func_80017048((int *)((Actor *)pos)->mat, &D_8006E4E0[hi * 3], v1);
+        if ((arg3 >> 24) < 6) {
+          func_80017048((int *)((Actor *)pos)->mat, &D_8006E4E0[(arg3 >> 24) * 3], v1);
           func_80017758(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.unk11 = 0x16;
-          func_80017700(v1, &D_8006E4E0[hi * 3]);
+          func_80017700(v1, &D_8006E4E0[(arg3 >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
         func_80017048((int *)((Actor *)pos)->mat, D_8006E570, v1);
@@ -509,42 +518,3 @@ void func_level_11_80082F58(int count, int type, int *pos, int arg3) {
     }
   }
 }
-
-/* PARKED 2026-08-01 -- 803/806 instructions exact, LENGTH-EXACT (99.6%).
- * Logic and structure fully decoded; the residue is a single loop.c movable
- * emission-ORDER tie in the preheader (F2 class):
- *
- *   orig  li s7,128 ; li s6,255 ; sra t0,s5,0x18 ; sw t0,0x58(sp)
- *   ours  sra t0,s5,0x18 ; sw t0,0x58(sp) ; li s7,128 ; li s6,255
- *
- * loop.c emits hoisted movables in SCAN order, so the invariant `hi` must be
- * scanned after the 0x80 / 0xFF constants -- those first appear inside the
- * case-0 and case-9 arms, i.e. after any statement at the top of the loop
- * body. Exhausted: `hi` inside the case-0xC arm (not hoisted at all, -4
- * insns, and `hi` then takes s8 off the loop counter); `hi` before the loop
- * (lands ahead of the blez); `hi` at the end of the loop body with a
- * pre-loop seed (length changes); swapping `hi` and the `k` giv (identical
- * bytes). Needs the permuter or a loop.c-order lever.
- *
- * Everything else in the function is byte-identical. Levers that got it here,
- * in the order they paid:
- *  - ONE union-typed record pointer for all 14 arms (three separate typed
- *    pointers land in s0/s1/s2 and the shared tails then never cross-jump).
- *  - `k = i * 4;` as the first statement of the loop body: loop.c strength-
- *    reduces it to a giv whose init lands in the preheader AFTER the
- *    movables, which is where the original's `sw zero,0x68(sp)` is. A plain
- *    `k = 0; ... k += 4;` pair puts the init ahead of the loop guard and
- *    steals the blez delay slot.
- *  - `x = x - K + rand()` needs BOTH halves split into their own locals
- *    (`t = rand() & M; u = x - K; x = u + t;`) with a DISTINCT name pair per
- *    site -- fold otherwise re-associates the constant onto the call result,
- *    and shared names lengthen the live ranges out of v0/v1.
- *  - Store order inside an arm is load-bearing: `fx` after the r/g/b stores
- *    (case 1/0x1A/0x21), `life` after pos[2] and pos[2] before the vel zeros
- *    (case 0x42), and the two remaining b[] stores before the colour block
- *    (case 0x47) -- each of those moved 4-18 instructions into place.
- *
- * Word-identical (bar branch displacements) to func_level_17_800836F8 and
- * func_level_23_80083BAC: `sed` the level number once this lands and the same
- * source matches all three overlays (9,672 bytes).
- */
