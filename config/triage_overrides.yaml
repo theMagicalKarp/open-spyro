@@ -1144,16 +1144,17 @@ func_level_1_800892C4:
     Do NOT re-decode; aim a permuter at the 0x18 arm.
 
 func_level_34_80085230:
-  verdict: parked
-  class: shape
-  date: 2026-08-04
+  verdict: matched
+  date: 2026-08-04-1
   note: >-
-    4148 b / 1037 insns, the Gnasty's-loot particle emit dispatcher. Built at
-    1041 insns; the +4 are all in the 0x15 ribbon arm's colour/tail block, every
-    other arm shape-aligns. Fully decoded (new arm 0x4A ember dust; 0x10/0x11/
-    0x46 from func_level_33_80084634, 0x4C from the level_1 park, 0xC in the
-    named-local `arg3 >> 24` form). Drive the last 4 off the compile-only shape
-    diff -- the slot overflows, so the linked diff is stale.
+    4148 b / 1037 insns, the Gnasty's-loot particle emit dispatcher; the second
+    of only two overlays in this family with no 0x18 arm. Landed from the park
+    with two arm-shape fixes: the 0x1A arm must write `arg3 * 8` as three
+    separate expressions (a named local pins the `sll` above the seed store and
+    the tail then no longer cross-jumps into the 0x1C colour block, +4 insns),
+    and the 0x15 ribbon arm wants source order r, g, b, life, fx, unk10 --
+    storing g first leaves the `lw` of the hoisted (arg3 & 0xF) with an
+    unfilled load-delay slot.
 
 func_level_33_80084634:
   verdict: matched
@@ -1164,3 +1165,34 @@ func_level_33_80084634:
     their colour from three ints at arg3, 0x19 = the 0x9 heat spark thresholded
     on pos[6] at 461/401/321) and the 0x50 streak burst rewritten against
     `pos >> 2`. One of only two overlays in this family with no 0x18 arm.
+
+func_level_3_80088F68:
+  verdict: parked
+  class: F14 position solved, F7/F1 register tie remains
+  date: 2026-08-04-1
+  note: >-
+    985 insns / 3940 b, 99.6% length-exact, 4 diffs in the 0x18 arm. The
+    POSITION half of the F14 knot is solved: promote another arm's block-local
+    (arm 0x15's `v`) to function scope and use it for the 0x30 carrier -- two
+    sets means non-birthing, and unlike one shared local it has no WAR chain,
+    so both `li`s hoist ahead of the life/unk11 store pair exactly as the
+    original does (`li v0,48` then comes out exact). What is left is purely
+    which register the 0x2E carrier gets: ours a0, original t0. gcc 2.7.2
+    defines no REG_ALLOC_ORDER for MIPS, so allocation is numeric
+    (v0,v1,a0..a3,t0..), and a carrier that neither crosses a call nor
+    conflicts with a0..a3 cannot reach t0 -- every donor tried (0x15 v, 0x4C w,
+    0x4D t/u, 0x4E u1, 0x4F t4, 0x21 ta, and all block locals promoted at once)
+    lands a0. Sharing one carrier across all six fx=0x2E sites is +2 insns.
+    Next lever: something that puts a0..a3 in global.c's
+    regs_someone_prefers[] for this allocno (a lower-priority conflicting
+    pseudo with an argument-register copy preference).
+
+func_level_1_800892C4:
+  verdict: parked
+  class: F14 position solved, F7/F1 register tie remains
+  date: 2026-08-04-1
+  note: >-
+    1085 insns / 4340 b, same 0x18-arm residue and the same donor-carrier
+    result as func_level_3_80088F68 (verified: positions exact, `li a0,46` vs
+    `li t0,46` left). Heads the five-overlay 1085-insn clone group
+    (levels 1/2/4/10/28 = 21,700 b); level_3 + level_20 add 7,880 b.

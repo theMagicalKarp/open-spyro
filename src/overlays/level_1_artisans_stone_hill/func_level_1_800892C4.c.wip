@@ -778,9 +778,26 @@ void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
  *    (arms 0x15 / 0x4C): re-colours the whole function, 818 diffs.  Any
  *    cross-arm local sharing beyond `z` explodes.
  *  - `k = 0x30` (reusing the loop-top local): changes the length.
- * The remaining knot is a DOUBLE register split (v0 + t0 from two non-birthing
- * pseudos with overlapping live ranges) -- per cookbook SS-E that needs
- * hand-framed PERM_* macros, not blind permutation.
+ * POSITION HALF SOLVED 2026-08-04-1.  The blocker was the WAR chain that one
+ * twice-assigned local creates: `sb <t>,0xA` reads t, so `t = 0x2E` can never
+ * be scheduled above it.  Two DISTINCT locals, each non-birthing, do work --
+ * and a local becomes non-birthing without a second set in this arm by
+ * promoting another arm's block-local to function scope (arm 0x15's `v` is
+ * free: sharing it changes nothing in 0x15).  With
+ *   v = 0x30;  z = i * 16;  <carrier> = 0x2E;  rec->life = v;  ...
+ * `li v0,48`, `sll v1,i,4` and the 0x2E def all land in the original's
+ * positions.  What is left is ONE register: ours a0, the original t0.  gcc
+ * 2.7.2 defines no REG_ALLOC_ORDER for MIPS, so both local- and global-alloc
+ * walk registers numerically (v0, v1, a0..a3, t0..), and a carrier that
+ * neither crosses a call (that would force an s-reg) nor conflicts with
+ * a0..a3 cannot reach t0.  Donors tried, all a0: 0x15 `v`, 0x4C `w` (also -2
+ * insns in its own arm), 0x4D `t`/`u` (s0, call-crossing), 0x4E `u1`, 0x4F
+ * `t4`, 0x21 `ta`, and every block local promoted at once.  One carrier
+ * shared across all six fx = 0x2E sites is +2 insns.  So this is now an
+ * allocation tie (F7/F1), not a scheduling one: the lever to look for is
+ * something that puts a0..a3 into global.c's regs_someone_prefers[] for this
+ * allocno -- a LOWER-priority conflicting pseudo with an argument-register
+ * copy preference that does not itself cross a call.
  *
  * Word-identical (bar branch displacements) to func_level_2_800844A0,
  * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254:
