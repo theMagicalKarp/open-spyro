@@ -1,4 +1,4 @@
-/* func_level_3_80088F68 (0x800892C4, level_1_artisans_stone_hill
+/* func_level_1_800892C4 (0x800892C4, level_1_artisans_stone_hill
  * overlay, 0x10f4 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
@@ -163,7 +163,7 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
+void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -236,6 +236,87 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x6: {
+      int *owner;
+      int t1, t2, t3;
+      int u1, u2, u3;
+      owner = ((Actor *)pos)->owner;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.plume.pos, ((Actor *)pos)->pos);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.plume.pos[0] - 0x3F;
+      rec->u.plume.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.plume.pos[1] - 0x3F;
+      rec->u.plume.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0x1FF;
+      u3 = rec->u.plume.pos[2] - 0x100;
+      rec->u.plume.src = ((Actor *)pos)->pos;
+      rec->u.plume.pos[2] = u3 + t3;
+      rec->u.plume.unk1C = owner[1];
+      rec->u.plume.unk1E = owner[0] >> 6;
+      rec->u.plume.life = 0x20;
+      rec->u.plume.seed = 0x14;
+      if (((Actor *)pos)->flag49 != 0) {
+        switch (func_8006272C() & 7) {
+        case 0:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0;
+          break;
+        case 1:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 2:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 3:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0x80;
+          break;
+        case 4:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 5:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 6:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0;
+          break;
+        case 7:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0x80;
+          break;
+        }
+      } else if (D_8007596C == 0x32) {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0;
+      } else {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0x80;
+      }
+      rec->u.plume.fx = 0x2C;
+      rec->u.plume.unk11 = 0;
+      rec->u.plume.unk10 = 0;
       break;
     }
     case 0x9: {
@@ -657,10 +738,11 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
   }
 }
 
-/* PARKED 2026-08-04 -- 981/985 instructions exact, LENGTH-EXACT (99.6%).
- * Full decode: every arm is byte-identical.  The residue is the same
- * 4-instruction F14 knot that parks func_level_1_800892C4, confined to the
- * 0x18 arm:
+/* PARKED 2026-08-04 -- 1081/1085 instructions exact, LENGTH-EXACT (99.6%).
+ * Full decode: the one arm new to the family here (0x6, the actor-tracking
+ * plume) is byte-identical, and so is every other arm.  The residue is the
+ * same 4-instruction F14 knot that parks func_level_3_80088F68, confined to
+ * the 0x18 arm:
  *
  *   orig  li v0,48 ; sll v1,i,4 ; li t0,46 ; sb v0,0xA ; ... ; sb t0,0xF
  *   ours  li a0,48 ; sll v1,i,4 ; sb a0,0xA ; li a0,46 ; ... ; sb a0,0xF
@@ -700,7 +782,8 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
  * pseudos with overlapping live ranges) -- per cookbook SS-E that needs
  * hand-framed PERM_* macros, not blind permutation.
  *
- * Word-identical (bar branch displacements) to func_level_20_800861CC:
- * landing this one lands 7,880 exact bytes, and the same 4-insn fix lands the
- * five-overlay 1085-insn group headed by func_level_1_800892C4 (21,700 more).
+ * Word-identical (bar branch displacements) to func_level_2_800844A0,
+ * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254:
+ * landing this one lands 21,700 exact bytes, and the same 4-insn fix lands
+ * func_level_3_80088F68 + func_level_20_800861CC (7,880 more).
  */
