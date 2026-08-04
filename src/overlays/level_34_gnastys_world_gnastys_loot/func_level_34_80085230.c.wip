@@ -1,5 +1,5 @@
-/* func_level_3_80088F68 (0x800892C4, level_1_artisans_stone_hill
- * overlay, 0x10f4 bytes).
+/* func_level_34_80085230 (0x80085230, level_34_gnastys_world_gnastys_loot
+ * overlay, 0x1034 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -16,16 +16,20 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * The stone-hill variant: the town-square arm set plus 0x6, the actor-tracking
- * smoke plume (record class 3, which keeps a pointer to the actor's position
- * at +0x18 so the particle follows it).  `arg3 >> 24` is written inline at its
- * three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it out
- * of the loop (scan_loop case 2); a named local would pin it inside the arm.
+ * `arg3 >> 24` is written inline at its three use sites rather than hoisted
+ * into a named local: loop.c emits the invariant it lifts out of the loop in
+ * SCAN order, so the shift has to be scanned after the 0x80 / 0xFF colour
+ * constants that the case-0 / case-9 arms hoist.  A user variable can only
+ * become a movable when its set is unconditional (scan_loop case 1), which
+ * would put it at the top of the body; a compiler temp qualifies under case 2
+ * anywhere in the loop.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254.
+ * The levels 5 / 29 variant of the dispatcher: the levels 11/17/23 case list
+ * plus the 0xD ember arm and the 0x13 distance-faded haze arm.  Word-identical
+ * (bar branch displacements) to func_level_29_80083B8C.
  *
- * PARKED at 99.6% length-exact -- see the note at the end of the file.
+ * Verified byte-identical inside the relinked
+ * level_5_artisans_sunny_flight.ovl.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -58,6 +62,19 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       short vel[3];              /* 0x10 */
     } dust;
+    struct {                     /* class 2 -- haze puff (word velocity) */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char life;        /* 0x0A */
+      unsigned char seed;        /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      unsigned char unk10;       /* 0x10 */
+      unsigned char unk11;       /* 0x11 */
+      short pad[3];              /* 0x12 */
+      int vel;                   /* 0x18 */
+    } puff;
     struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
       short pos[3];              /* 0x04 */
       unsigned char life;        /* 0x0A */
@@ -72,22 +89,6 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char unk18;       /* 0x18 */
       unsigned char unk19;       /* 0x19 */
     } ribbon;
-    struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char unk10;       /* 0x10 */
-      unsigned char unk11;       /* 0x11 */
-      short pos2[3];             /* 0x12 */
-      short unk18;               /* 0x18 */
-      short unk1A;               /* 0x1A */
-      unsigned char unk1C;       /* 0x1C */
-      unsigned char unk1D;       /* 0x1D */
-    } band;
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
       unsigned char life;        /* 0x0A */
@@ -101,21 +102,6 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char unk18;       /* 0x18 */
       unsigned char unk19;       /* 0x19 */
     } smear;
-    struct {                     /* class 3 -- actor-tracking plume */
-      unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char unk10;       /* 0x10 */
-      unsigned char unk11;       /* 0x11 */
-      short pad[3];              /* 0x12 */
-      int *src;                  /* 0x18 the actor position it tracks */
-      short unk1C;               /* 0x1C */
-      short unk1E;               /* 0x1E */
-    } plume;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
@@ -126,16 +112,13 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
 } Emit;
 
 typedef struct Actor {
-  int *owner;   /* 0x00 */
-  char pad04[8];
+  char pad00[0x0C];
   int pos[3];   /* 0x0C */
   char pad18[8];
   short mat[9]; /* 0x20 3x3 rotation matrix */
   short pad32;  /* 0x32 */
   short unk34;  /* 0x34 */
   short kind;   /* 0x36 */
-  char pad38[0x11];
-  unsigned char flag49; /* 0x49 */
 } Actor;
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
@@ -145,9 +128,11 @@ extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
 extern void func_80017048(int *mat, int *v, int *dst);   /* RotateVectorByMatrix */
 extern int func_80016C58(int a);                         /* LookupSine */
 extern int func_80016CB0(int a);                         /* LookupCosine */
+extern int func_80017990(int *a, int *b);                /* HorizontalDistance */
 extern unsigned int func_8006272C(void);                 /* GetRandomU32 */
 
 extern int D_800757D8;            /* g_Gamestate */
+extern int D_80076DF8[];          /* world anchor position */
 extern int D_80078764;
 extern int D_80078A58[];          /* Spyro world position */
 extern unsigned char D_80078A66;
@@ -155,7 +140,6 @@ extern int D_80078A8C[];          /* Spyro orientation matrix (position at -0x34
 extern int D_80078AF8;
 extern int D_80078B70;
 extern int D_80078BBC;
-extern int D_8007596C;
 extern unsigned char D_8006E438[];  /* trail colour table, stride 4 */
 extern unsigned char D_8006E439[];
 extern unsigned char D_8006E43A[];
@@ -163,17 +147,18 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
+void func_level_34_80085230(int count, int type, int *pos, int arg3) {
   int v0[3];
   int v1[3];
   int v2[3];
   int v3[3];
-  int v4[3];
   Emit *rec;
-  int t;
+  int c;
+  int hi;
   int z;
   int i;
   int k;
+  int d;
 
   for (i = 0; i < count; i++) {
     k = i * 4;
@@ -295,13 +280,14 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       if (((Actor *)pos)->kind == 0x22) {
         func_80017700(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
-        if ((arg3 >> 24) < 6) {
-          func_80017048((int *)((Actor *)pos)->mat, &D_8006E4E0[(arg3 >> 24) * 3], v1);
+        hi = arg3 >> 24;
+        if (hi < 6) {
+          func_80017048((int *)((Actor *)pos)->mat, &D_8006E4E0[hi * 3], v1);
           func_80017758(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.unk11 = 0x16;
-          func_80017700(v1, &D_8006E4E0[(arg3 >> 24) * 3]);
+          func_80017700(v1, &D_8006E4E0[hi * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
         func_80017048((int *)((Actor *)pos)->mat, D_8006E570, v1);
@@ -320,6 +306,43 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0x10: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = ((int *)arg3)[0];
+      rec->u.spark.seed = func_8006272C();
+      c = ((int *)arg3)[1] * 8;
+      rec->u.spark.r = c;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      rec->u.spark.g = c;
+      rec->u.spark.b = rec->u.spark.r;
+      break;
+    }
+    case 0x11: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = 0x18;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.r = ((int *)arg3)[0];
+      rec->u.spark.g = ((int *)arg3)[1];
+      rec->u.spark.b = ((int *)arg3)[2];
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x15: {
       int v;
       rec = (Emit *)func_80053570(2);
@@ -334,37 +357,55 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       }
       rec->u.ribbon.unk18 = v;
       rec->u.ribbon.unk19 = 8;
-      rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
       rec->u.ribbon.g = 0xFF;
+      rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
       rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
-      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
-      rec->u.ribbon.unk10 = 0;
-      rec->u.ribbon.seed = arg3 * 2;
       rec->u.ribbon.fx = 0x2E;
+      rec->u.ribbon.unk10 = 0;
+      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
+      rec->u.ribbon.seed = arg3 * 2;
       rec->u.ribbon.unk11 = 2;
       break;
     }
-    case 0x18: {
+    case 0x1A:
       rec = (Emit *)func_80053570(2);
       rec->type = type;
+      rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.band.pos, pos);
-      func_80017BFC(rec->u.band.pos2, pos);
-      t = 0x30;
-      rec->u.band.life = t;
-      z = i * 16;
-      t = 0x2E;
-      rec->u.band.unk11 = 8;
-      rec->u.band.unk18 = i * 32;
-      rec->u.band.r = 0x80;
-      rec->u.band.g = 0x80;
-      rec->u.band.b = 0x80;
-      rec->u.band.seed = z;
-      rec->u.band.fx = t;
-      rec->u.band.unk10 = 0;
-      rec->u.band.unk1A = 0x10;
-      rec->u.band.unk1C = z;
-      rec->u.band.unk1D = i;
+      func_80017BFC(rec->u.spark.pos, pos);
+      rec->u.spark.life = 0xC;
+      rec->u.spark.seed = func_8006272C();
+      c = arg3 * 8;
+      rec->u.spark.r = c;
+      rec->u.spark.g = c;
+      rec->u.spark.b = c;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    case 0x1B: {
+      int w;
+      int q;
+      rec = (Emit *)func_80053570(6);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      rec->u.spark.life = ((arg3 >> 16) * 6) + 0xC;
+      w = D_80078A66 + (func_8006272C() & 7) + 0x1D;
+      q = (arg3 & 0xFFFF) * 8;
+      rec->u.spark.r = q;
+      rec->u.spark.g = q;
+      rec->u.spark.b = q;
+      rec->u.spark.seed = w;
+      if ((func_8006272C() & 7) == 0) {
+        rec->u.spark.r = rec->u.spark.r + 0x10;
+        rec->u.spark.g = rec->u.spark.g + 0x10;
+        rec->u.spark.b = rec->u.spark.b + 0x10;
+      }
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
       break;
     }
     case 0x21: {
@@ -515,6 +556,20 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
+    case 0x4A: {
+      rec = (Emit *)func_80053570(0);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.dust.pos, pos);
+      func_80017BFC(rec->u.dust.vel, (int *)arg3);
+      rec->u.dust.r = 0xFF;
+      rec->u.dust.g = 0xFF;
+      rec->u.dust.b = 0;
+      rec->u.dust.fx = 0x40;
+      rec->u.dust.life = 4;
+      break;
+    }
     case 0x4C: {
       int w;
       rec = (Emit *)func_80053570(0);
@@ -627,80 +682,22 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x50: {
-      rec = (Emit *)func_80053570(1);
-      rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
-      rec->unk03 = 1;
-      func_80017BFC(rec->u.line.a, pos);
-      v4[0] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v4[1] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v4[2] = (arg3 * (int)(func_8006272C() & 0xFFF)) >> 12;
-      rec->u.line.a[0] = rec->u.line.a[0] + v4[0] * 4;
-      rec->u.line.a[1] = rec->u.line.a[1] + v4[1] * 4;
-      rec->u.line.a[2] = rec->u.line.a[2] + v4[2] * 4;
-      rec->u.line.b[0] = rec->u.line.a[0] + v4[0] * 2;
-      rec->u.line.b[1] = rec->u.line.a[1] + v4[1] * 2;
-      z = v4[2];
-      rec->u.line.c1[3] = 2;
-      rec->u.line.c0[0] = 0xE0;
-      rec->u.line.c0[1] = 0xC0;
-      rec->u.line.c0[3] = 0x50;
-      rec->u.line.c0[2] = 0;
-      rec->u.line.c1[0] = 0xFF;
-      rec->u.line.c1[1] = 0xFF;
-      rec->u.line.c1[2] = 0x80;
-      rec->u.line.b[2] = rec->u.line.a[2] + z * 2;
-      break;
-    }
     }
   }
 }
 
-/* PARKED 2026-08-04 -- 981/985 instructions exact, LENGTH-EXACT (99.6%).
- * Full decode: every arm is byte-identical.  The residue is the same
- * 4-instruction F14 knot that parks func_level_1_800892C4, confined to the
- * 0x18 arm:
+/* PARKED 2026-08-04 -- 1041 built insns vs 1037 original (the +4 are all in the
+ * 0x15 ribbon arm's colour/tail block; every other arm shape-aligns).
  *
- *   orig  li v0,48 ; sll v1,i,4 ; li t0,46 ; sb v0,0xA ; ... ; sb t0,0xF
- *   ours  li a0,48 ; sll v1,i,4 ; sb a0,0xA ; li a0,46 ; ... ; sb a0,0xF
+ * Decoded here and reusable: the 0x4A ember-dust arm (class 0, velocity from
+ * arg3, 0xFF/0xFF/0 at fx 0x40, life 4) and the fact that this level keeps
+ * `arg3 >> 24` in a NAMED local (its 0xC arm computes the shift inline instead
+ * of reading the loop-hoisted slot -- the level_3 convention, not level_5's).
+ * Its 0x10 / 0x11 / 0x46 arms come verbatim from func_level_33_80084634 and
+ * its 0x4C from the level_1 park.
  *
- * i.e. the ORDER is now right; what is left is that the two constants must
- * live in two different registers (v0 and t0) and ours share one.
- *
- * F14 -- the birthing-insn hoist (mechanism, read off gcc 2.7.2 sched.c; do
- * not re-derive).  sched1 schedules each basic block BACKWARD (the first insn
- * it picks becomes the block tail).  With every insn at priority 1, ties break
- * on INSN_LUID descending, EXCEPT that `adjust_priority` raises any insn whose
- * `birthing_insn_p` holds -- a SET of a pseudo with `reg_n_sets == 1` -- to
- * max_priority.  A boosted def is therefore picked early in the backward pass
- * and lands LATE in the block, right next to its use; a def whose pseudo is
- * set more than once keeps priority 1 and drifts to the FRONT of the block.
- * (`schedule_select` additionally prefers the insn with the largest potential
- * hazard, which is why stores beat ALU ops at equal priority.)
- * So a "why is this def next to its use instead of hoisted?" diff is a
- * reg_n_sets question, not a source-order one: give the value a local that is
- * assigned twice and the def hoists.
- *
- * That lever is what took this arm from 6 diffs to 4: `z` (already assigned in
- * arms 0x46 and 0x50) carries `i * 16`, and the block-local `t` carries first
- * 0x30 then 0x2E -- two sets, so neither `li` is boosted and both hoist ahead
- * of the life/unk11 store pair, exactly as the original does.
- *
- * Exhausted for the last 4:
- *  - `t` split into two locals: each is then single-set, birthing, and sinks
- *    back to its store (6 diffs).
- *  - `t` = {0x30, 0x10} + 0x2E literal: the 0x10 li hoists to position 4
- *    (the original keeps it at 9, so 0x10 IS birthing in the original) -- 6.
- *  - function-scope locals shared across arms for the 0x2E / 0x40 fx constants
- *    (arms 0x15 / 0x4C): re-colours the whole function, 818 diffs.  Any
- *    cross-arm local sharing beyond `z` explodes.
- *  - `k = 0x30` (reusing the loop-top local): changes the length.
- * The remaining knot is a DOUBLE register split (v0 + t0 from two non-birthing
- * pseudos with overlapping live ranges) -- per cookbook SS-E that needs
- * hand-framed PERM_* macros, not blind permutation.
- *
- * Word-identical (bar branch displacements) to func_level_20_800861CC:
- * landing this one lands 7,880 exact bytes, and the same 4-insn fix lands the
- * five-overlay 1085-insn group headed by func_level_1_800892C4 (21,700 more).
+ * The 0x15 arm's store order here is g, r, b, fx, unk10, life, seed, unk11
+ * (level_1 has r before g and unk10 after life); that reordering removed 3 of
+ * the original 7 residual insns.  Next step is the remaining +4 in that arm's
+ * tail -- drive it off the compile-only shape diff, the slot overflows.
  */

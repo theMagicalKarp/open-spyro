@@ -1115,8 +1115,8 @@ func_level_5_80084128:
 
 func_level_3_80088F68:
   verdict: parked
-  class: F2
-  date: 2026-08-02
+  class: F14
+  date: 2026-08-04
   note: >-
     3940 b / 985 insns, the town-square / misty-bog particle emit dispatcher.
     PARKED at 979/985 LENGTH-EXACT (99.4%) with all five new arms (0x15, 0x18,
@@ -1125,3 +1125,42 @@ func_level_3_80088F68:
     `li t0,0x2E` ahead of the life/unk11 store pair). See the .c.wip header for
     the exhausted lever list. Word-identical to func_level_20_800861CC
     (7,880 bytes for the pair) and the donor for the 1085-insn group.
+    2026-08-04: re-parked at 981/985 (99.6%) -- the F14 birthing-insn lever
+    (`z` for i*16, a twice-set block local `t` for 0x30 then 0x2E) fixed the
+    ORDER; what is left is that the two constants need two different registers
+    (v0 + t0) and one local can only give one. Double knot -> permuter.
+
+func_level_1_800892C4:
+  verdict: parked
+  class: F14
+  date: 2026-08-04
+  note: >-
+    4340 b / 1085 insns, the stone-hill particle emit dispatcher; head of the
+    five-overlay 1085-insn group (levels 1/2/4/10/28 are pure
+    branch-displacement clones, 21,700 bytes). PARKED at 1081/1085 LENGTH-EXACT
+    (99.6%): fully decoded, including the new 0x6 actor-tracking-plume arm
+    (record class 3, pointer to the actor position at +0x18). The residue is the
+    same 4-insn F14 double knot as func_level_3_80088F68, in the 0x18 arm alone.
+    Do NOT re-decode; aim a permuter at the 0x18 arm.
+
+func_level_34_80085230:
+  verdict: parked
+  class: shape
+  date: 2026-08-04
+  note: >-
+    4148 b / 1037 insns, the Gnasty's-loot particle emit dispatcher. Built at
+    1041 insns; the +4 are all in the 0x15 ribbon arm's colour/tail block, every
+    other arm shape-aligns. Fully decoded (new arm 0x4A ember dust; 0x10/0x11/
+    0x46 from func_level_33_80084634, 0x4C from the level_1 park, 0xC in the
+    named-local `arg3 >> 24` form). Drive the last 4 off the compile-only shape
+    diff -- the slot overflows, so the linked diff is stale.
+
+func_level_33_80084634:
+  verdict: matched
+  date: 2026-08-04
+  note: >-
+    3712 b / 928 insns. Generated from the matched level_5 donor + three new
+    arms (0x10 / 0x11 spark bursts taking their velocity from `pos + 3` and
+    their colour from three ints at arg3, 0x19 = the 0x9 heat spark thresholded
+    on pos[6] at 461/401/321) and the 0x50 streak burst rewritten against
+    `pos >> 2`. One of only two overlays in this family with no 0x18 arm.
