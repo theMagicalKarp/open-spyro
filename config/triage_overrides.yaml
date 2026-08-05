@@ -1291,3 +1291,58 @@ func_level_23_80082F54:
     sed-clone of func_level_11_80082300 (norm-identical, branch displacements
     only). Matched first build.
 
+
+# --- emit-list advance pass, 894-insn flight variant (2026-08-05) ---
+func_level_5_80083330:
+  verdict: matched
+  class: "vein — emit-list advance pass (894-insn flight variant)"
+  date: 2026-08-05
+  note: >-
+    MATCHED 2026-08-05 and sed-cloned to func_level_29_80082D94 (+7,152 exact
+    bytes). 3576 b / 894 insns each. The level_11 790-insn decode plus classes
+    0xD and 0x13. Two idioms closed it: write step*4 INLINE (not as a `fade`
+    local) so loop.c hoists 1 / step*2 / step*4 in first-use order, and give
+    each value site in the 0x13 arm its own local (A156).
+func_level_29_80082D94:
+  verdict: matched
+  class: "clone of func_level_5_80083330"
+  date: 2026-08-05
+  note: >-
+    sed-clone of func_level_5_80083330 (norm-identical, branch displacements
+    only). Matched first build.
+
+# --- emit-list advance pass, 1163-insn ground variant (2026-08-05) ---
+func_level_2_80083274:
+  verdict: parked
+  class: "F sched1 chain-priority tie (arms 0x15 / 0x4C)"
+  date: 2026-08-05
+  note: >-
+    PARKED at 95.9%, LENGTH-EXACT 1163/1163 — 47 insns differ, all inside the
+    two unit-circle swirl arms 0x15 and 0x4C. The original schedules the second
+    table lookup + mult right after the first multiply and fills with the
+    D_800756CC*6 advance; we get the reverse. Source-order invariant: 12
+    statement permutations, per-term locals, an index local and both
+    associativity forms of the *6 expression all give the identical schedule.
+    Everything else — head, the 14 arms shared with the flight variant, the
+    ground-only arms 0x6 / 0x18 / 0x46 / 0x50, the tail — is byte-identical.
+    Permuter target. Unparks 4 norm-identical siblings with it (23,260 B).
+func_level_1_80088098:
+  verdict: parked
+  class: "clone of func_level_2_80083274"
+  date: 2026-08-05
+  note: "norm-identical sibling; lands with the level_2 park's F tie."
+func_level_4_800826F0:
+  verdict: parked
+  class: "clone of func_level_2_80083274"
+  date: 2026-08-05
+  note: "norm-identical sibling; lands with the level_2 park's F tie."
+func_level_10_80084EF0:
+  verdict: parked
+  class: "clone of func_level_2_80083274"
+  date: 2026-08-05
+  note: "norm-identical sibling; lands with the level_2 park's F tie."
+func_level_28_80084028:
+  verdict: parked
+  class: "clone of func_level_2_80083274"
+  date: 2026-08-05
+  note: "norm-identical sibling; lands with the level_2 park's F tie."
