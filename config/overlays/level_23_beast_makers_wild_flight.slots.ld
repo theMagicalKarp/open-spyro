@@ -19,6 +19,7 @@
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.func_level_23_8008223C)
     . = 0x0000851c ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.func_level_23_80082F54)
+    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80082F54.o(.text)
     . = 0x00009174 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.func_level_23_80083BAC)
     build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80083BAC.o(.text)

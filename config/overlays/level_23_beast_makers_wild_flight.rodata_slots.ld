@@ -62,6 +62,7 @@
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB48)
     . = 0x00000130 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
+    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80082F54.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
     build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80083BAC.o(.rodata)
