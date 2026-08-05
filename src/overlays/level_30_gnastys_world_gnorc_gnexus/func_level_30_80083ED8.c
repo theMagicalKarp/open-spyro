@@ -1,88 +1,19 @@
-/* PARKED 2026-08-05-1 at 99.0% (1163/1163 insns, LENGTH-EXACT -- 12 insns
- * differ, all inside ONE 12-insn window in arm 0x15).  Was 95.9% / 47 insns.
+/* func_level_30_80083ED8 (0x80083ED8, level_30_gnastys_world_gnorc_gnexus
+ * overlay, 0xfc8 bytes).
  *
- * What closed this session (the F15 park note was WRONG about the cause: the
- * *6-vs-sine order is reachable, it just needs the multiply split off):
- *   - The sine product needs its own local (`s`), assigned where the original
- *     issues the `mult` and consumed in the last statement.  That is what
- *     puts `mult` before the *6 chain while leaving `mflo` in the shared
- *     cross-jumped tail.  Writing the whole expression in one statement forces
- *     mult+mflo to travel together and costs the tail merge (+5 insns).
- *   - Both arms must be re-ordered TOGETHER: they share the 5-insn
- *     `mflo/sra/addu/bnez/sh` tail, so changing one alone breaks the merge.
- *   - Arm 0x4C is now byte-exact, as is arm 0x18 (its last diff was operand
- *     order: `HU(0x16) + 0x20 + HU(0x18)` -- gcc applies the constant to the
- *     FIRST-loaded operand, which is the LAST one written).
- *
- * Remaining residue class: F16 -- a sched1 two-chain lead tie.  Arm 0x15's
- * `rec[0xB] += 4` (lbu/addiu/sb) and its `HU(0x8) += D_800756CC * 6`
- * (lui/lw/sll/addu/lhu/sll/addu/sh) are independent chains in one basic block.
- * The original INTERLEAVES them -- B's `lw` leads, A's `lbu` fills its load
- * delay, B's arithmetic runs, then A's `addiu`+`sb`, then B's `sh` (so A's
- * value needs a third register, `a0`).  Ours always emits A complete-then-B,
- * which needs only v0/v1.  Same insn multiset, same length, 12 insns
- * transposed in place.
- *
- * Measured invariant 2026-08-05-1 -- every one of these gives BYTE-IDENTICAL
- * output in that window: all 7 placements of the `rec[0xB] += 4` statement
- * inside the arm (swept mechanically); `b = rec[0xB]; ...; rec[0xB] = b + 4`;
- * the same with a twice-set `b` (F14 non-birthing recipe); `b = rec[0xB] + 4;
- * ...; rec[0xB] = b`; `b = D_800756CC; ... HU(0x8) += b * 6`;
- * `b = HU(0x8) + D_800756CC * 6; rec[0xB] += 4; HU(0x8) = b`.
- * Ruled out by reading gcc 2.7.2 `sched.c`: it is not an aliasing difference --
- * both accesses are (plus (reg) const) off the same base, so
- * `memrefs_conflict_p` disambiguates them in either build, and volatile cannot
- * express a PARTIAL order (it would force full source order, which is what we
- * already have).
- *
- * ROOT-CAUSED 2026-08-05-2 -- this is a WALL, not a permuter target.  Read
- * straight off the sched1 dump (`cc1 ... -dS` -> <in>.i.sched, basic block
- * 49): `priority()` is the longest path from the block START (LOG_LINKS,
- * insn_cost-1 per edge, so only load=2 / mult=12 latencies count), and
- * `adjust_priority` can only ever BOOST -- its n_deaths switch always hits
- * case 0 because REG_DEAD notes are stripped before sched1 -- raising any
- * single-set REG def to max_priority.  A STORE is never boosted (SET_DEST is
- * a MEM).  Measured: sh HU(0x8) = 16, sb rec[0xB] = 15, and the addu feeding
- * the sh = 16.  At T-8 the ready list is {sh 16, sb 15} -> sh; at T-9 the
- * addu is ready and boosted, so the sb loses.  That one comparison is the
- * whole 12-insn window.
- *
- * It is unreachable: an ALU->store edge costs 1 and contributes 0, so
- * priority(addu) == priority(sh) under ANY source form, and the addu becomes
- * ready the instant the sh is scheduled (cost 1 => straight onto the ready
- * list, never queue_insn).  Picking the sb between them needs
- * priority(addu) < priority(sb) < priority(sh), unsatisfiable while the outer
- * two are equal; and the LUID tie-break is monotone in source order, so it
- * yields sh > addu > sb or sb > sh > addu, never sh > sb > addu.
- * schedule_select's hazard blocking cannot help either -- it only defers
- * memory/imuldiv insns and an addu has no function unit.  General form: no
- * store can be scheduled between a store and the def that feeds it.
- * See cookbook §F16.  Do not reopen without a new mechanism.
- *
- * Unparks four siblings with it: the copies in level_1 (0x80088098), level_4
- * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
- * norm-identical (the jump-table symbol and branch displacements are the only
- * differences), so one fix is 23,260 exact bytes.
- */
-/* func_level_2_80083274 (0x80083274, level_2_artisans_dark_hollow overlay,
- * 0x122c bytes).
- *
- * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn
- * variant of the walk matched in level_11 / level_5.  Walks the 0x20-byte
- * record stream at D_80075824 and ages one record per iteration: integrates
- * its position, fades its colour, ticks its life counter and, when the record
- * has expired (or its alive byte has been cleared), hands it back with
- * func_80053608().  The walk stops at the terminator record, whose class byte
- * at +0x01 is 0xFF.
+ * The emit-list ADVANCE pass -- the Gnorc-Gnexus 1010-insn variant.  Walks
+ * the 0x20-byte record stream at D_80075824 and ages one record per
+ * iteration: integrates its position, fades its colour, ticks its life
+ * counter and, when the record has expired (or its alive byte has been
+ * cleared), hands it back with func_80053608().  The walk stops at the
+ * terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
  * pointers because the arms pass them to func_80017C84() as values, so
  * loop.c strength-reduces each into its own register; every field access is
  * an ADDRESS giv off `rec`, and loop.c picks the last one it scans -- the
  * `rec[1]` terminator test -- as the shared base, which is how the whole
- * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.  Writing
- * the fields against a `rec + 1` pointer local instead costs a fifth
- * induction variable.
+ * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.
  *
  * Field map, in record-relative offsets:
  *   0x00  effect id                0x01  class / terminator
@@ -90,19 +21,17 @@
  *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle (a source pointer in class 0x6, a byte angle pair in
- *         classes 0x15/0x4C)        0x1C  wrap count    0x1E  phase toggle
+ *   0x18  spin angle               0x1C  wrap count    0x1E  phase toggle
  *
- * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
- * and adds 0x6 (the orbiting spark, which reads a world point through the
- * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level D_8007706C), 0x46 and 0x50 (two midpoint-relaxation
- * classes).  Word-identical (bar the jump-table symbol and branch
- * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
+ * Its arm set is the ground-level one minus the three unit-circle classes
+ * 0x6, 0x15 and 0x4C, so every arm transfers verbatim from the level_2
+ * ground decode (0x18, 0x46, 0x50) and the matched level_5 / level_11 flight
+ * copies.  Only `step * 4` is loop-hoisted here -- with the swirl arms gone
+ * the preheader carries one invariant, not four -- which is why `step * 2`
+ * stays written inline at its use sites.
  *
  * Verified byte-identical inside the relinked
- * level_2_artisans_dark_hollow.ovl.
+ * level_30_gnastys_world_gnorc_gnexus.ovl.
  */
 
 #define HS(n) (*(short *)(rec + (n)))
@@ -131,9 +60,8 @@ extern int D_80078AD0;
 extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
 extern int D_80078BBC;
 
-void func_level_2_80083274(int step) {
+void func_level_30_80083ED8(int step) {
   unsigned char *rec = D_80075824;
-  int p[3];
   int v[3];
 
   if (rec[1] == 0xFF) {
@@ -190,30 +118,6 @@ void func_level_2_80083274(int step) {
       }
       break;
 
-    case 0x6: {
-      int ang;
-      int amp;
-      int z;
-
-      func_80017700(p, *(int **)(rec + 0x18));
-      z = p[2] + HS(0x1E) * 0x40;
-      amp = rec[0x2] * 0x40;
-      ang = amp;
-      if (HS(0x1C) < amp) {
-        amp = HS(0x1C);
-      }
-      p[0] += (amp * func_80016CB0(ang)) >> 12;
-      p[1] += (amp * func_80016C58(ang)) >> 12;
-      p[2] = HS(0x8) * 4 + 0x40;
-      if (z < p[2] || rec[0x2] >= 0xC9) {
-        func_80053608(rec);
-      } else {
-        func_80017BFC(POS, p);
-        rec[0x2]++;
-      }
-      break;
-    }
-
     case 0x9:
       func_80017C84(POS, POS, VEL);
       if (HS(0x1E) != 0) {
@@ -269,22 +173,6 @@ void func_level_2_80083274(int step) {
         func_80053608(rec);
       }
       break;
-
-    case 0x15: {
-      int s;
-
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
-      rec[0xB] += 4;
-      HU(0x6) = HU(0x14) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
-      }
-      break;
-    }
 
     case 0x18: {
       int heat;
@@ -502,21 +390,6 @@ void func_level_2_80083274(int step) {
         HS(0xA) = HU(0x4) - d[0] * 2;
         HS(0xC) = HU(0x6) - d[1] * 2;
         HS(0xE) = HU(0x8) - d[2] * 2;
-      }
-      break;
-    }
-
-    case 0x4C: {
-      int s;
-
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x10) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
-      HU(0x6) = HU(0x12) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
       }
       break;
     }

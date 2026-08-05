@@ -1,70 +1,40 @@
-/* PARKED 2026-08-05-1 at 99.0% (1163/1163 insns, LENGTH-EXACT -- 12 insns
- * differ, all inside ONE 12-insn window in arm 0x15).  Was 95.9% / 47 insns.
+/* func_level_18_800888F8 (0x800888F8, level_18_beast_makers_home overlay,
+ * 0x11c0 bytes).
  *
- * What closed this session (the F15 park note was WRONG about the cause: the
- * *6-vs-sine order is reachable, it just needs the multiply split off):
- *   - The sine product needs its own local (`s`), assigned where the original
- *     issues the `mult` and consumed in the last statement.  That is what
- *     puts `mult` before the *6 chain while leaving `mflo` in the shared
- *     cross-jumped tail.  Writing the whole expression in one statement forces
- *     mult+mflo to travel together and costs the tail merge (+5 insns).
- *   - Both arms must be re-ordered TOGETHER: they share the 5-insn
- *     `mflo/sra/addu/bnez/sh` tail, so changing one alone breaks the merge.
- *   - Arm 0x4C is now byte-exact, as is arm 0x18 (its last diff was operand
- *     order: `HU(0x16) + 0x20 + HU(0x18)` -- gcc applies the constant to the
- *     FIRST-loaded operand, which is the LAST one written).
+ * The emit-list ADVANCE pass -- the Beast-Makers-home 1136-insn variant.
+ * Walks the 0x20-byte record stream at D_80075824 and ages one record per
+ * iteration: integrates its position, fades its colour, ticks its life
+ * counter and, when the record has expired (or its alive byte has been
+ * cleared), hands it back with func_80053608().  The walk stops at the
+ * terminator record, whose class byte at +0x01 is 0xFF.
  *
- * Remaining residue class: F16 -- a sched1 two-chain lead tie.  Arm 0x15's
- * `rec[0xB] += 4` (lbu/addiu/sb) and its `HU(0x8) += D_800756CC * 6`
- * (lui/lw/sll/addu/lhu/sll/addu/sh) are independent chains in one basic block.
- * The original INTERLEAVES them -- B's `lw` leads, A's `lbu` fills its load
- * delay, B's arithmetic runs, then A's `addiu`+`sb`, then B's `sh` (so A's
- * value needs a third register, `a0`).  Ours always emits A complete-then-B,
- * which needs only v0/v1.  Same insn multiset, same length, 12 insns
- * transposed in place.
+ * Only `rec` is a real induction variable.  `pos` and `vel` are separate
+ * pointers because the arms pass them to func_80017C84() as values, so
+ * loop.c strength-reduces each into its own register; every field access is
+ * an ADDRESS giv off `rec`, and loop.c picks the last one it scans -- the
+ * `rec[1]` terminator test -- as the shared base, which is how the whole
+ * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.
  *
- * Measured invariant 2026-08-05-1 -- every one of these gives BYTE-IDENTICAL
- * output in that window: all 7 placements of the `rec[0xB] += 4` statement
- * inside the arm (swept mechanically); `b = rec[0xB]; ...; rec[0xB] = b + 4`;
- * the same with a twice-set `b` (F14 non-birthing recipe); `b = rec[0xB] + 4;
- * ...; rec[0xB] = b`; `b = D_800756CC; ... HU(0x8) += b * 6`;
- * `b = HU(0x8) + D_800756CC * 6; rec[0xB] += 4; HU(0x8) = b`.
- * Ruled out by reading gcc 2.7.2 `sched.c`: it is not an aliasing difference --
- * both accesses are (plus (reg) const) off the same base, so
- * `memrefs_conflict_p` disambiguates them in either build, and volatile cannot
- * express a PARTIAL order (it would force full source order, which is what we
- * already have).
+ * Field map, in record-relative offsets:
+ *   0x00  effect id                0x01  class / terminator
+ *   0x02  age                      0x03  alive
+ *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
+ *                                  r/g/b triple for the fading classes)
+ *   0x10..0x16  per-record velocity / colour bytes
+ *   0x18  spin angle (a source pointer in class 0x6)
+ *   0x1C  wrap count                0x1E  phase toggle
  *
- * ROOT-CAUSED 2026-08-05-2 -- this is a WALL, not a permuter target.  Read
- * straight off the sched1 dump (`cc1 ... -dS` -> <in>.i.sched, basic block
- * 49): `priority()` is the longest path from the block START (LOG_LINKS,
- * insn_cost-1 per edge, so only load=2 / mult=12 latencies count), and
- * `adjust_priority` can only ever BOOST -- its n_deaths switch always hits
- * case 0 because REG_DEAD notes are stripped before sched1 -- raising any
- * single-set REG def to max_priority.  A STORE is never boosted (SET_DEST is
- * a MEM).  Measured: sh HU(0x8) = 16, sb rec[0xB] = 15, and the addu feeding
- * the sh = 16.  At T-8 the ready list is {sh 16, sb 15} -> sh; at T-9 the
- * addu is ready and boosted, so the sb loses.  That one comparison is the
- * whole 12-insn window.
+ * Its arm set is the ground-level one minus the two unit-circle swirls
+ * (0x15, 0x4C) plus the two boss-arena ember classes 0x10 and 0x11, so every
+ * arm transfers verbatim from the level_2 ground decode and the matched
+ * level_33 copy.  Twenty arms is one more than the callee-saved file can
+ * hold: `step * 2` loses its register and is spilled to the frame, and the
+ * `1` of the phase toggle stops being hoisted -- both fall out of the
+ * allocator, neither is written differently here.
  *
- * It is unreachable: an ALU->store edge costs 1 and contributes 0, so
- * priority(addu) == priority(sh) under ANY source form, and the addu becomes
- * ready the instant the sh is scheduled (cost 1 => straight onto the ready
- * list, never queue_insn).  Picking the sb between them needs
- * priority(addu) < priority(sb) < priority(sh), unsatisfiable while the outer
- * two are equal; and the LUID tie-break is monotone in source order, so it
- * yields sh > addu > sb or sb > sh > addu, never sh > sb > addu.
- * schedule_select's hazard blocking cannot help either -- it only defers
- * memory/imuldiv insns and an addu has no function unit.  General form: no
- * store can be scheduled between a store and the def that feeds it.
- * See cookbook §F16.  Do not reopen without a new mechanism.
- *
- * Unparks four siblings with it: the copies in level_1 (0x80088098), level_4
- * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
- * norm-identical (the jump-table symbol and branch displacements are the only
- * differences), so one fix is 23,260 exact bytes.
+ * Verified byte-identical inside the relinked level_18_beast_makers_home.ovl.
  */
-/* func_level_2_80083274 (0x80083274, level_2_artisans_dark_hollow overlay,
+/* func_level_18_800888F8 (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
  *
  * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn
@@ -131,7 +101,7 @@ extern int D_80078AD0;
 extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
 extern int D_80078BBC;
 
-void func_level_2_80083274(int step) {
+void func_level_18_800888F8(int step) {
   unsigned char *rec = D_80075824;
   int p[3];
   int v[3];
@@ -270,21 +240,41 @@ void func_level_2_80083274(int step) {
       }
       break;
 
-    case 0x15: {
-      int s;
-
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
-      rec[0xB] += 4;
-      HU(0x6) = HU(0x14) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+    case 0x10:
+      /* Gnasty's cauldron drip: a slow ember that dies when its red
+       * channel bottoms out. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step * 2;
+      rec[0xC] -= 4;
+      rec[0xD] -= 4;
+      rec[0xE] -= 4;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
         func_80053608(rec);
       }
       break;
-    }
+
+    case 0x11:
+      /* The same ember with a late red cut-off at age 9. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step * 2;
+      if (rec[0x2] >= 9) {
+        rec[0xC] -= 0x20;
+      }
+      rec[0xD] -= 8;
+      rec[0xE] -= 4;
+      rec[0x2]++;
+      if (rec[0x2] >= 0xC || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
 
     case 0x18: {
       int heat;
@@ -502,21 +492,6 @@ void func_level_2_80083274(int step) {
         HS(0xA) = HU(0x4) - d[0] * 2;
         HS(0xC) = HU(0x6) - d[1] * 2;
         HS(0xE) = HU(0x8) - d[2] * 2;
-      }
-      break;
-    }
-
-    case 0x4C: {
-      int s;
-
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x10) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
-      HU(0x6) = HU(0x12) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
       }
       break;
     }
