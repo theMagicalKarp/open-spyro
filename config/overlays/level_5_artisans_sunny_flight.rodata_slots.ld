@@ -62,6 +62,7 @@
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB48)
     . = 0x00000130 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
+    build/overlays/level_5_artisans_sunny_flight/c/func_level_5_80083330.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
     build/overlays/level_5_artisans_sunny_flight/c/func_level_5_80084128.o(.rodata)
