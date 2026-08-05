@@ -1090,17 +1090,6 @@ func_level_11_80082F58:
     after them. Sed-cloned to func_level_17_800836F8 and func_level_23_80083BAC
     (9,672 exact bytes).
 
-func_level_11_80082300:
-  verdict: candidate
-  class: vein
-  date: 2026-08-01
-  note: >-
-    3160 b / 790 insns, the sibling of func_level_11_80082F58 in the same
-    overlay (one owned 80-entry jump table, 24 calls -- more inline arithmetic,
-    fewer call chains). Untried. Word-identical bar branch displacements across
-    levels 11/17/23 (9,480 bytes) and ~86% norm-identical to levels 5/29's
-    894-insn copies at 0x80083330 / 0x80082D94 (a further 7,152 bytes).
-
 func_level_5_80084128:
   verdict: matched
   class: vein
@@ -1269,19 +1258,36 @@ overlay_clone_scan:
     overlay match.
 
 func_level_11_80082300:
-  verdict: candidate
-  class: "vein — best remaining clean overlay target"
-  date: 2026-08-04-2
+  verdict: matched
+  class: "vein — emit-list advance pass (flight trio)"
+  date: 2026-08-04-3
   note: >-
-    3160 b / 790 insns, and norm-identical to func_level_17_80082AA0 and
-    func_level_23_80082F54 (verified 2026-08-04-2), so one decode sed-clones to
-    9,480 exact bytes. The emit-list ADVANCE pass: walks the 0x20-byte record
-    stream at D_80075824 with four held bases (rec, rec+1, rec+4, rec+0x18, all
-    advanced by 0x20), switch on rec[0] via jtbl_8007AB68 with 16 live arms
-    (0x0 0x1 0x2 0x9 0xA 0xB 0xC 0x1A 0x1B 0x21 0x42 0x47 0x48 0x4D 0x4E 0x4F),
-    a shared alive/kill tail calling func_80053608(rec), terminator
-    rec[1] == 0xFF. m2c decodes it cleanly once the jump table is handed over as
-    plain `.s`. Structural gotcha: nearly every field access is off the rec+1
-    base, so the 16-bit fields sit at ODD offsets from it -- use
-    `unsigned char *p` + `*(unsigned short *)(p + N)` casts, not a struct.
+    MATCHED 2026-08-04-3 and sed-cloned to func_level_17_80082AA0 and
+    func_level_23_80082F54 (+9,480 exact bytes). 3160 b / 790 insns each.
+    The decode turned on four things: (1) A159 -- only `rec` is a source
+    pointer; pos/vel and the rec+1 field base are all loop.c givs, and the
+    `rec[1] != 0xFF` terminator test is what makes loop.c choose rec+1 as the
+    shared address base (a `p = rec + 1` local costs a fifth induction
+    variable). (2) A156 -- every `x - 1 + (rand & 2)` jitter site needs the
+    three-way split AND its own name pair; the `- 1` must stay int-wide or it
+    narrows to `+ 0xFFFF` and gets hoisted into an s-reg. (3) A157 -- runs of
+    `lbu; addiu -K; sb` chains come out with the pair at positions 1&2 swapped,
+    so write the source with that pair swapped back (keeping each constant with
+    its field). (4) A160 -- `abs()` is a builtin; hand-rolling it costs a move.
+
+func_level_17_80082AA0:
+  verdict: matched
+  class: "clone of func_level_11_80082300"
+  date: 2026-08-04-3
+  note: >-
+    sed-clone of func_level_11_80082300 (norm-identical, branch displacements
+    only). Matched first build.
+
+func_level_23_80082F54:
+  verdict: matched
+  class: "clone of func_level_11_80082300"
+  date: 2026-08-04-3
+  note: >-
+    sed-clone of func_level_11_80082300 (norm-identical, branch displacements
+    only). Matched first build.
 
