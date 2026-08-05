@@ -1,8 +1,17 @@
 # open-spyro
 
 <!-- progress-badge -->
+
 ![matched](https://img.shields.io/badge/matched-11.88%25-orange)
+
 <!-- /progress-badge -->
+
+> [!NOTE]
+>
+> **Phase 1 of 2: don't expect pretty code yet.** Right now the code is written
+> to rebuild the game exactly, byte for byte, not to look nice. Once that hits
+> ~100%, phase 2 cleans it up into readable code without breaking the exact
+> rebuild.
 
 `open-spyro` is a **byte-for-byte matching decompilation** of
 [**Spyro the Dragon**](https://en.wikipedia.org/wiki/Spyro_the_Dragon) _(PS1,
