@@ -1314,18 +1314,23 @@ func_level_29_80082D94:
 # --- emit-list advance pass, 1163-insn ground variant (2026-08-05) ---
 func_level_2_80083274:
   verdict: parked
-  class: "F sched1 chain-priority tie (arms 0x15 / 0x4C)"
+  class: "F16 sched1 two-chain lead tie (arm 0x15 only)"
   date: 2026-08-05
   note: >-
-    PARKED at 95.9%, LENGTH-EXACT 1163/1163 — 47 insns differ, all inside the
-    two unit-circle swirl arms 0x15 and 0x4C. The original schedules the second
-    table lookup + mult right after the first multiply and fills with the
-    D_800756CC*6 advance; we get the reverse. Source-order invariant: 12
-    statement permutations, per-term locals, an index local and both
-    associativity forms of the *6 expression all give the identical schedule.
-    Everything else — head, the 14 arms shared with the flight variant, the
-    ground-only arms 0x6 / 0x18 / 0x46 / 0x50, the tail — is byte-identical.
-    Permuter target. Unparks 4 norm-identical siblings with it (23,260 B).
+    PARKED at 99.0%, LENGTH-EXACT 1163/1163 — 12 insns differ, all inside ONE
+    12-insn window in arm 0x15 (was 95.9% / 47 insns). The old "F15 chain-order"
+    diagnosis was wrong: the *6-vs-sine order IS reachable — the sine product
+    needs its own local so the mult issues early while the mflo stays in the
+    cross-jumped tail (A160), and both swirl arms must be re-shaped together.
+    Arm 0x4C and arm 0x18 are now byte-exact (0x18 needed A161 operand order:
+    HU(0x16) + 0x20 + HU(0x18)). Remaining residue = F16: the original
+    interleaves `rec[0xB] += 4` with the `HU(0x8) += D_800756CC * 6` chain
+    (byte value lives in a0 across the block); ours emits the byte chain
+    complete-then-long. Invariant over 12 source forms incl. all 7 statement
+    placements, load/add/store splits, a twice-set carrier and a step local;
+    NOT an aliasing effect (same base, memrefs_conflict_p disambiguates; volatile
+    can only force a full order). Next lever: permuter aimed at that one arm.
+    Unparks 4 norm-identical siblings with it (23,260 B).
 func_level_1_80088098:
   verdict: parked
   class: "clone of func_level_2_80083274"
