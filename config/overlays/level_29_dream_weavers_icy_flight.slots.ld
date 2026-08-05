@@ -20,6 +20,7 @@
     build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80082028.o(.text)
     . = 0x0000835c ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_80082D94)
+    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80082D94.o(.text)
     . = 0x00009154 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.func_level_29_80083B8C)
     build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80083B8C.o(.text)
