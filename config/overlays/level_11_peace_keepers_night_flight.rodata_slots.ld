@@ -62,6 +62,7 @@
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB48)
     . = 0x00000130 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
+    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082300.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
     build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082F58.o(.rodata)

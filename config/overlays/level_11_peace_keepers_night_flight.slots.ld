@@ -19,6 +19,7 @@
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.func_level_11_800819BC)
     . = 0x000078c8 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.func_level_11_80082300)
+    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082300.o(.text)
     . = 0x00008520 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.func_level_11_80082F58)
     build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082F58.o(.text)

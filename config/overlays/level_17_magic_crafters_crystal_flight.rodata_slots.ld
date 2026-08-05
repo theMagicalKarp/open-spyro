@@ -62,6 +62,7 @@
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB48)
     . = 0x00000130 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/func_level_17_80082AA0.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
     build/overlays/level_17_magic_crafters_crystal_flight/c/func_level_17_800836F8.o(.rodata)
