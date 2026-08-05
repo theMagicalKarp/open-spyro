@@ -16,20 +16,16 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * `arg3 >> 24` is written inline at its three use sites rather than hoisted
- * into a named local: loop.c emits the invariant it lifts out of the loop in
- * SCAN order, so the shift has to be scanned after the 0x80 / 0xFF colour
- * constants that the case-0 / case-9 arms hoist.  A user variable can only
- * become a movable when its set is unconditional (scan_loop case 1), which
- * would put it at the top of the body; a compiler temp qualifies under case 2
- * anywhere in the loop.
+ * The loot variant: the town-square arm set plus 0x4A (the ember dust mote,
+ * class 0, velocity out of arg3 at fx 0x40) and without 0x18, the ribbon arm
+ * the rest of the family parks on.
  *
- * The levels 5 / 29 variant of the dispatcher: the levels 11/17/23 case list
- * plus the 0xD ember arm and the 0x13 distance-faded haze arm.  Word-identical
- * (bar branch displacements) to func_level_29_80083B8C.
- *
- * Verified byte-identical inside the relinked
- * level_5_artisans_sunny_flight.ovl.
+ * Two arm shapes this level needed that the donor levels did not:
+ * the 0x1A arm writes `arg3 * 8` to r/g/b as three separate expressions (a
+ * named local pins the shift above the seed store and the tail then no longer
+ * cross-jumps into the 0x1C arm's colour block), and the 0x15 ribbon arm's
+ * source order is r, g, b, life, fx, unk10 -- storing g first leaves the
+ * `lw` of the hoisted (arg3 & 0xF) with an unfilled load-delay slot.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -357,12 +353,12 @@ void func_level_34_80085230(int count, int type, int *pos, int arg3) {
       }
       rec->u.ribbon.unk18 = v;
       rec->u.ribbon.unk19 = 8;
-      rec->u.ribbon.g = 0xFF;
       rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
+      rec->u.ribbon.g = 0xFF;
       rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
+      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
       rec->u.ribbon.fx = 0x2E;
       rec->u.ribbon.unk10 = 0;
-      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
       rec->u.ribbon.seed = arg3 * 2;
       rec->u.ribbon.unk11 = 2;
       break;
@@ -375,10 +371,9 @@ void func_level_34_80085230(int count, int type, int *pos, int arg3) {
       func_80017BFC(rec->u.spark.pos, pos);
       rec->u.spark.life = 0xC;
       rec->u.spark.seed = func_8006272C();
-      c = arg3 * 8;
-      rec->u.spark.r = c;
-      rec->u.spark.g = c;
-      rec->u.spark.b = c;
+      rec->u.spark.r = arg3 * 8;
+      rec->u.spark.g = arg3 * 8;
+      rec->u.spark.b = arg3 * 8;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
@@ -685,19 +680,3 @@ void func_level_34_80085230(int count, int type, int *pos, int arg3) {
     }
   }
 }
-
-/* PARKED 2026-08-04 -- 1041 built insns vs 1037 original (the +4 are all in the
- * 0x15 ribbon arm's colour/tail block; every other arm shape-aligns).
- *
- * Decoded here and reusable: the 0x4A ember-dust arm (class 0, velocity from
- * arg3, 0xFF/0xFF/0 at fx 0x40, life 4) and the fact that this level keeps
- * `arg3 >> 24` in a NAMED local (its 0xC arm computes the shift inline instead
- * of reading the loop-hoisted slot -- the level_3 convention, not level_5's).
- * Its 0x10 / 0x11 / 0x46 arms come verbatim from func_level_33_80084634 and
- * its 0x4C from the level_1 park.
- *
- * The 0x15 arm's store order here is g, r, b, fx, unk10, life, seed, unk11
- * (level_1 has r before g and unk10 after life); that reordering removed 3 of
- * the original 7 residual insns.  Next step is the remaining +4 in that arm's
- * tail -- drive it off the compile-only shape diff, the slot overflows.
- */

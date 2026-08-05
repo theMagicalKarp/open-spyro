@@ -9,6 +9,7 @@
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.func_level_34_800840FC)
     . = 0x0000a7f8 ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.func_level_34_80085230)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_80085230.o(.text)
     . = 0x0000b82c ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.func_level_34_80086264)
     build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_80086264.o(.text)

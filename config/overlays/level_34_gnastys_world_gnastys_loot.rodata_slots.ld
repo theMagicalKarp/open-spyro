@@ -14,5 +14,4 @@
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007AAAC)
     . = 0x000001b4 ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007ABEC)
-    . = 0x000002f4 ;
-    build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007AD2C)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_80085230.o(.rodata)
