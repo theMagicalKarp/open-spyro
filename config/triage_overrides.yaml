@@ -1351,3 +1351,42 @@ func_level_28_80084028:
   class: "clone of func_level_2_80083274"
   date: 2026-08-05
   note: "norm-identical sibling; lands with the level_2 park's F tie."
+
+# --- session 2026-08-05-2 ---------------------------------------------------
+# F16 root-caused off the sched1 dump and PROVED unreachable: no store can be
+# scheduled between a store and the def that feeds it (priority(def) ==
+# priority(store), the def is ready the instant the store is scheduled, and the
+# LUID tie-break is monotone in source order). See cookbook §F16 and the
+# func_level_2_80083274 .wip header. The five 1163-insn ground advance copies
+# stay parked at 99.0%; do not reopen without a new mechanism.
+#
+# The emit-list ADVANCE pass is a 35-function family (790-1815 insns, ~140 KB),
+# not the 10 previously recorded. F16 gates every variant carrying arm 0x15 --
+# fingerprint base-agnostically: lbu $X,0xA($B) .. addiu $X,$X,0x4 .. sb $X,0xA($B).
+func_level_0_80086134:
+  verdict: candidate
+  class: "advance pass, 1195 insns, F16-free"
+  date: 2026-08-05
+  note: >-
+    Next target. Arms 0x0/1/2/6/9/A/B/C/E/16/18/1E/21/42/46/47/48/4D/4E/4F/50 --
+    all but 0xE, 0x16 and 0x1E have a 0-diff donor (see cookbook §G donor map).
+    jtbl_8007ABD4. 4,780 B.
+func_level_12_8008BE98:
+  verdict: candidate
+  class: "advance pass, 1294 insns, F16-free"
+  date: 2026-08-05
+  note: "Next target after level_0. jtbl_8007B5C4. 5,176 B."
+func_level_3_80087E20:
+  verdict: skip
+  class: "F16 (arm 0x15)"
+  date: 2026-08-05
+  note: >-
+    1106-insn ground advance; norm-identical clone of func_level_20_80085084
+    (8,848 B for one match). Arm set == level_2's minus 0x6, so it decodes
+    almost for free -- but it carries the arm 0x15 F16 window and would park at
+    ~99%. Revisit only if F16 ever falls.
+func_level_20_80085084:
+  verdict: skip
+  class: "F16 (arm 0x15)"
+  date: 2026-08-05
+  note: "norm-identical clone of func_level_3_80087E20; same F16 gate."

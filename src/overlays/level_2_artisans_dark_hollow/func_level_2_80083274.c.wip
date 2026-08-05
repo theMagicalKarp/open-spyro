@@ -35,9 +35,29 @@
  * express a PARTIAL order (it would force full source order, which is what we
  * already have).
  *
- * Next lever: the permuter (§E overlay recipe) aimed at this one arm, or an
- * RTL-level look at why A's 3-insn chain is picked last in the backward pass
- * when it ties B's chain at priority 2.
+ * ROOT-CAUSED 2026-08-05-2 -- this is a WALL, not a permuter target.  Read
+ * straight off the sched1 dump (`cc1 ... -dS` -> <in>.i.sched, basic block
+ * 49): `priority()` is the longest path from the block START (LOG_LINKS,
+ * insn_cost-1 per edge, so only load=2 / mult=12 latencies count), and
+ * `adjust_priority` can only ever BOOST -- its n_deaths switch always hits
+ * case 0 because REG_DEAD notes are stripped before sched1 -- raising any
+ * single-set REG def to max_priority.  A STORE is never boosted (SET_DEST is
+ * a MEM).  Measured: sh HU(0x8) = 16, sb rec[0xB] = 15, and the addu feeding
+ * the sh = 16.  At T-8 the ready list is {sh 16, sb 15} -> sh; at T-9 the
+ * addu is ready and boosted, so the sb loses.  That one comparison is the
+ * whole 12-insn window.
+ *
+ * It is unreachable: an ALU->store edge costs 1 and contributes 0, so
+ * priority(addu) == priority(sh) under ANY source form, and the addu becomes
+ * ready the instant the sh is scheduled (cost 1 => straight onto the ready
+ * list, never queue_insn).  Picking the sb between them needs
+ * priority(addu) < priority(sb) < priority(sh), unsatisfiable while the outer
+ * two are equal; and the LUID tie-break is monotone in source order, so it
+ * yields sh > addu > sb or sb > sh > addu, never sh > sb > addu.
+ * schedule_select's hazard blocking cannot help either -- it only defers
+ * memory/imuldiv insns and an addu has no function unit.  General form: no
+ * store can be scheduled between a store and the def that feeds it.
+ * See cookbook §F16.  Do not reopen without a new mechanism.
  *
  * Unparks four siblings with it: the copies in level_1 (0x80088098), level_4
  * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
