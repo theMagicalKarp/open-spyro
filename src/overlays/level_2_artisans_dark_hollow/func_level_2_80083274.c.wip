@@ -1,25 +1,43 @@
-/* PARKED 2026-08-05 at 95.9% (1163/1163 insns, LENGTH-EXACT -- 47 insns
- * differ, all inside the two unit-circle swirl arms 0x15 and 0x4C).
+/* PARKED 2026-08-05-1 at 99.0% (1163/1163 insns, LENGTH-EXACT -- 12 insns
+ * differ, all inside ONE 12-insn window in arm 0x15).  Was 95.9% / 47 insns.
  *
- * Everything else is byte-identical: the head, the 14 arms shared with the
- * flight variant (matched as func_level_5_80083330), the six ground-only arms
- * 0x6 / 0x18 / 0x46 / 0x50 and the loop tail.  Arms 0x6 and 0x18 were closed
- * this session (see the notes in the body); 0x15 and 0x4C hold the residue.
+ * What closed this session (the F15 park note was WRONG about the cause: the
+ * *6-vs-sine order is reachable, it just needs the multiply split off):
+ *   - The sine product needs its own local (`s`), assigned where the original
+ *     issues the `mult` and consumed in the last statement.  That is what
+ *     puts `mult` before the *6 chain while leaving `mflo` in the shared
+ *     cross-jumped tail.  Writing the whole expression in one statement forces
+ *     mult+mflo to travel together and costs the tail merge (+5 insns).
+ *   - Both arms must be re-ordered TOGETHER: they share the 5-insn
+ *     `mflo/sra/addu/bnez/sh` tail, so changing one alone breaks the merge.
+ *   - Arm 0x4C is now byte-exact, as is arm 0x18 (its last diff was operand
+ *     order: `HU(0x16) + 0x20 + HU(0x18)` -- gcc applies the constant to the
+ *     FIRST-loaded operand, which is the LAST one written).
  *
- * Residue class: F -- a sched1 chain-priority tie.  In each of the two arms the
- * original schedules the SECOND unit-circle lookup (index reload, table `lh`,
- * `mult`) immediately after the first multiply, and fills the remaining slots
- * with the `D_800756CC * 6` position advance; we get the reverse (the *6 chain
- * first, the sine lookup last).  The insn multiset and the block structure are
- * identical, only the order inside the one basic block differs.  Source order
- * does NOT move it: all 12 permutations of the arm's 4 statements, per-term
- * locals (`cs`/`sn`), an index local, and both associativity forms of the *6
- * expression all give the identical schedule (measured 2026-08-05).  The two
- * arms share a cross-jumped 5-insn sine tail, so they always move together.
+ * Remaining residue class: F16 -- a sched1 two-chain lead tie.  Arm 0x15's
+ * `rec[0xB] += 4` (lbu/addiu/sb) and its `HU(0x8) += D_800756CC * 6`
+ * (lui/lw/sll/addu/lhu/sll/addu/sh) are independent chains in one basic block.
+ * The original INTERLEAVES them -- B's `lw` leads, A's `lbu` fills its load
+ * delay, B's arithmetic runs, then A's `addiu`+`sb`, then B's `sh` (so A's
+ * value needs a third register, `a0`).  Ours always emits A complete-then-B,
+ * which needs only v0/v1.  Same insn multiset, same length, 12 insns
+ * transposed in place.
  *
- * Next lever: the permuter (the diff is a pure permutation inside one block),
- * or an RTL-level look at why the *6 chain outranks the mult chain on
- * INSN_PRIORITY here when the original's does not.
+ * Measured invariant 2026-08-05-1 -- every one of these gives BYTE-IDENTICAL
+ * output in that window: all 7 placements of the `rec[0xB] += 4` statement
+ * inside the arm (swept mechanically); `b = rec[0xB]; ...; rec[0xB] = b + 4`;
+ * the same with a twice-set `b` (F14 non-birthing recipe); `b = rec[0xB] + 4;
+ * ...; rec[0xB] = b`; `b = D_800756CC; ... HU(0x8) += b * 6`;
+ * `b = HU(0x8) + D_800756CC * 6; rec[0xB] += 4; HU(0x8) = b`.
+ * Ruled out by reading gcc 2.7.2 `sched.c`: it is not an aliasing difference --
+ * both accesses are (plus (reg) const) off the same base, so
+ * `memrefs_conflict_p` disambiguates them in either build, and volatile cannot
+ * express a PARTIAL order (it would force full source order, which is what we
+ * already have).
+ *
+ * Next lever: the permuter (§E overlay recipe) aimed at this one arm, or an
+ * RTL-level look at why A's 3-insn chain is picked last in the backward pass
+ * when it ties B's chain at priority 2.
  *
  * Unparks four siblings with it: the copies in level_1 (0x80088098), level_4
  * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
@@ -232,17 +250,21 @@ void func_level_2_80083274(int step) {
       }
       break;
 
-    case 0x15:
+    case 0x15: {
+      int s;
+
       rec[0x18] += D_800756CC * 4;
       rec[0x19] += D_800756CC;
       HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
+      s = D_8006CBF8[rec[0x18]] * rec[0x19];
       HU(0x8) += D_800756CC * 6;
-      HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x18]] * rec[0x19]) >> 12);
       rec[0xB] += 4;
+      HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
         func_80053608(rec);
       }
       break;
+    }
 
     case 0x18: {
       int heat;
@@ -265,7 +287,7 @@ void func_level_2_80083274(int step) {
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
       HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x1C]] * HS(0x1A)) >> 12);
       HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x8) = HU(0x18) + 0x20 + HU(0x16);
+      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
 
@@ -464,16 +486,20 @@ void func_level_2_80083274(int step) {
       break;
     }
 
-    case 0x4C:
+    case 0x4C: {
+      int s;
+
       rec[0x18] += D_800756CC * 4;
       rec[0x19] += D_800756CC;
       HU(0x4) = HU(0x10) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
+      s = D_8006CBF8[rec[0x18]] * rec[0x19];
       HU(0x8) += D_800756CC * 6;
-      HU(0x6) = HU(0x12) + ((D_8006CBF8[rec[0x18]] * rec[0x19]) >> 12);
+      HU(0x6) = HU(0x12) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
         func_80053608(rec);
       }
       break;
+    }
 
     case 0x4D: {
       short d[3];
