@@ -1196,3 +1196,92 @@ func_level_1_800892C4:
     result as func_level_3_80088F68 (verified: positions exact, `li a0,46` vs
     `li t0,46` left). Heads the five-overlay 1085-insn clone group
     (levels 1/2/4/10/28 = 21,700 b); level_3 + level_20 add 7,880 b.
+
+func_level_3_80088F68:
+  verdict: wall
+  class: "F14b birthing/allocation mutual exclusion (0x18 arm)"
+  date: 2026-08-04-2
+  note: >-
+    Re-parked, still 981/985 (99.6%) length-exact. The 4-insn 0x18-arm residue
+    is now ROOT-CAUSED and should not be re-attempted: local-alloc only takes a
+    pseudo when reg_n_deaths == 1 (local-alloc.c reg_qty = -2 gate) and only the
+    local path reaches t0 here -- global_alloc cannot, because the whole
+    function has exactly three allocnos with a hard-reg preference and all three
+    are v0/v1 (measured with cc1 -dg), so a0..a3 are never in
+    regs_someone_prefers[], and a hard conflict with a0..a3 would need a 4-arg
+    call (this family's widest is 3, so a3 is never live). Meanwhile sched.c
+    birthing_insn_p boosts a def iff reg_n_sets == 1, so the correct POSITION
+    needs >= 2 sets. In one basic block 2 sets always means 2 deaths, so the two
+    requirements are unsatisfiable together. Measured both ends: plain literals
+    give `li t0,46` (register CORRECT) at the wrong slot, 7 diffs; a twice-set
+    local gives the right slot in a0, 4 diffs. Also disproved this session -- a
+    separate single-set local (swept over six statement positions: the boosted
+    def stays a fixed 7 slots ahead of its store, and it tips loop.c into a
+    third hoisted invariant, +8 frame) and a carrier shared with arm 0x15
+    (same +8 frame, 917 diffs). See cookbook F14b.
+
+func_level_1_800892C4:
+  verdict: wall
+  class: "F14b birthing/allocation mutual exclusion (0x18 arm)"
+  date: 2026-08-04-2
+  note: >-
+    1081/1085 (99.6%) length-exact, same 0x18-arm residue as
+    func_level_3_80088F68 and the same root cause (cookbook F14b). Heads the
+    five-overlay 1085-insn group (levels 1/2/4/10/28 = 21,700 b). Do not
+    re-decode and do not aim a permuter at the 0x18 arm.
+
+func_level_30_80084EA0:
+  verdict: parked
+  class: "mid-decode; ends on the F14b 0x18-arm wall"
+  date: 2026-08-04-2
+  note: >-
+    3648 b / 912 insns, the smallest member of the particle emit dispatcher
+    family (the level_3 arm set minus 0x15 and 0x4C). Parked at 910/912 insns
+    from the level_3 donor with those two arms deleted; 116 divergent. Three
+    things remain before it is length-exact -- one stack vector too many (+8
+    frame, which also drags an extra loop-hoisted `addiu t0,sp,32` into the
+    preheader), its OWN 0xC arm (a three-way sub-case over D_8006E4E0 /
+    D_8006E570 / D_8006E498 at 0x8008527C, not level_3's), and the per-level
+    fx-before-seed store order in arms 0x0/0x1/0x9. After all that it still ends
+    on the 4-insn 0x18 knot (verified in this park), so it is groundwork, not
+    bytes. See the .c.wip header.
+
+emit_dispatcher_family_0x18_screen:
+  verdict: note
+  class: "vein screen"
+  date: 2026-08-04-2
+  note: >-
+    Screened all 27 particle-emit-dispatcher jump tables: EVERY one of the 21
+    remaining unmatched overlays contains arm 0x18. The only members without it
+    are levels 5/29, 33 and 34, all already matched. So the entire ~90 KB
+    remainder of this vein is gated on the F14b wall and caps at 99.6%
+    length-exact. Do not open a new one expecting exact bytes.
+
+overlay_clone_scan:
+  verdict: note
+  class: "clone mode exhausted"
+  date: 2026-08-04-2
+  note: >-
+    Normalised every overlay function body (immediates and labels masked) and
+    grouped by fingerprint: ZERO groups contain both a `matched` member and an
+    `asm` member. Every free sed-clone has already been taken, so clone mode has
+    no targets until a new overlay decode lands. Re-run the scan after each new
+    overlay match.
+
+func_level_11_80082300:
+  verdict: candidate
+  class: "vein — best remaining clean overlay target"
+  date: 2026-08-04-2
+  note: >-
+    3160 b / 790 insns, and norm-identical to func_level_17_80082AA0 and
+    func_level_23_80082F54 (verified 2026-08-04-2), so one decode sed-clones to
+    9,480 exact bytes. The emit-list ADVANCE pass: walks the 0x20-byte record
+    stream at D_80075824 with four held bases (rec, rec+1, rec+4, rec+0x18, all
+    advanced by 0x20), switch on rec[0] via jtbl_8007AB68 with 16 live arms
+    (0x0 0x1 0x2 0x9 0xA 0xB 0xC 0x1A 0x1B 0x21 0x42 0x47 0x48 0x4D 0x4E 0x4F),
+    a shared alive/kill tail calling func_80053608(rec), terminator
+    rec[1] == 0xFF. m2c decodes it cleanly once the jump table is handed over as
+    plain `.s`. Structural gotcha: nearly every field access is off the rec+1
+    base, so the 16-bit fields sit at ODD offsets from it -- use
+    `unsigned char *p` + `*(unsigned short *)(p + N)` casts, not a struct.
+
