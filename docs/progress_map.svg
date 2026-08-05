@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">13.23% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">285,660 / 2,159,608 split-code bytes · 488 matched · 93 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">13.44% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">290,204 / 2,159,608 split-code bytes · 489 matched · 93 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -931,10 +931,10 @@
 <rect x="319.80" y="277.76" width="172.35" height="199.04" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="319.80" y="277.76" width="172.35" height="16.00" fill="#161b22"/>
 <text x="323.80" y="289.76" fill="#e6edf3" font-size="11" font-weight="600">18 · beast_makers_ho…</text>
-<text x="489.14" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">5%</text>
+<text x="489.14" y="289.76" fill="#8b949e" font-size="10" text-anchor="end">12%</text>
 <rect x="319.80" y="293.76" width="172.35" height="117.55" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007E18C  ·  40292 bytes  ·  asm</title></rect>
 <rect x="319.80" y="411.31" width="62.16" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007B7E4  ·  8096 bytes  ·  asm</title></rect>
-<rect x="381.96" y="411.31" width="34.89" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_800888F8  ·  4544 bytes  ·  asm</title></rect>
+<rect x="381.96" y="411.31" width="34.89" height="65.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_800888F8  ·  4544 bytes  ·  matched</title></rect>
 <rect x="416.84" y="411.31" width="32.86" height="65.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_80089AB8  ·  4280 bytes  ·  asm</title></rect>
 <rect x="449.70" y="411.31" width="42.44" height="30.42" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_8007D784  ·  2568 bytes  ·  asm</title></rect>
 <rect x="449.70" y="441.73" width="36.82" height="35.07" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_18_80087EF0  ·  2568 bytes  ·  matched</title></rect>
