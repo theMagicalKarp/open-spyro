@@ -13,17 +13,28 @@
  * 2-vblank pace tail. Word-identical in all five flight overlays (x5 payoff:
  * 32,200 bytes).
  *
- * PARKED 2026-07-16 at 96.4% content-aligned (masked resync), length
- * 1611/1610 insns -> overflows the slot, cannot link. Blocker = ONE nop:
- * the original fills PutDrawEnv's (func_8005FDD8) jal delay slot with
- * `addiu s3,s0,-8` (img2 = img - 2) because its `la s0,D_800785F0` sits one
- * call-group earlier; our sched1 canonicalizes all three dep-free la insns
- * (envBase/img/img2) to fixed later positions - PROBED EXHAUSTIVELY:
- * statement position (3 spots), register qualifier, goto-loop vs do/while,
- * comma-embedded assignment in the call arg - ALL produce byte-identical
- * placement (see cookbook AD: sched1 la-canonicalization wall; RTL dumps
- * show .rtl/.cse/.loop keep source order, .sched moves them).
- * Remaining residue besides the +1: quad-loop temp register roles
+ * B14 RETIRED 2026-08-06-1 — the "+1 nop / cannot link" blocker is GONE and
+ * this now builds LENGTH-EXACT (1610/1610) and LINKS. The old note said sched1
+ * "canonicalizes the three dep-free la insns to fixed positions"; the sched1
+ * dump (`cc1 -dS`, `<in>.i.sched`) says otherwise. All three defs
+ * (`la envBase`, `la img`, `addiu img2`) carry priority == 1 and are ready from
+ * T-1, so they are pure stragglers: they get picked only at scheduling BUBBLES,
+ * and `rank_for_schedule` breaks the priority tie on INSN_LUID **descending**,
+ * i.e. on SOURCE ORDER. Whichever of them has the highest LUID fills the first
+ * bubble. With the original source order (envBase, img, img2) `img2` won the
+ * bubble at T-17 and was placed ~11 insns too late, which left PutDrawEnv's
+ * delay slot empty. Permuting the three assignment statements to
+ * (img, img2, envBase) makes `envBase` take that bubble instead; `img2` then
+ * falls to the next one, which is the slot immediately before the PutDrawEnv
+ * call, and reorg eats it into the delay slot exactly as the original does.
+ * The earlier "statement position" probes moved ONE statement at a time and so
+ * never changed the relative LUID order, which is the only thing that matters.
+ * Remaining residue (content-aligned MISMATCH 78/1610, 95.2%; the linked diff
+ * is positionally phase-shifted by the one insn below and reads far worse than
+ * the function really is): `la envBase` still lands ~20 insns late (it takes
+ * the T-17 bubble; the original has it before the FIRST PutDispEnv), a +8 frame
+ * (A127), the else-arm `move s5,zero` bne delay slot, and the old list -
+ * quad-loop temp register roles
  * (a/bh/ch/d land a1/a0/a1/v0 vs orig v0/a1/a2/v1, tpage t0 vs a3),
  * YES/NO blink blocks (orig holds &pos in s2 across the cse jump-follow
  * path and loads D_80075720 between the pos stores), publish-loop
@@ -151,11 +162,11 @@ void func_level_5_8007B68C(void)
     func_8002B9CC();
     func_8005F764(0);
     func_8005DBC4(0);
-    envBase = D_80076EE0;
-    func_80060030(D_80075888 + 0x5C);
     img = D_800785F0;
-    func_8005FDD8(D_80075888);
+    func_80060030(D_80075888 + 0x5C);
     img2 = img - 2;
+    func_8005FDD8(D_80075888);
+    envBase = D_80076EE0;
     func_8005FD64(func_80016784(0x800));
     func_8005F764(0);
     func_8005DBC4(0);

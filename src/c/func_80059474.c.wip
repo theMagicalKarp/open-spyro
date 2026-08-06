@@ -17,28 +17,30 @@ extern int D_800778EC;
    tallies into the persistence block, merge the pending block into the
    committed one (copy 0x20 bytes then OR the 8 words), and carry the spawn
    flag word across. */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/func_80059474.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/func_80059474/output-130-1/source.c */
+/* Body is decomp-permuter output from the 2026-07-25 sweep (reads worse than
+   the hand-written form it replaced); original hand-written body:
+   git show 46305b0:src/c/func_80059474.c.wip
+   The anchor flag's `1` is carried by `t` (the snapshot temp) on purpose: as a
+   bare literal its pseudo is single-set, so sched.c birthing_insn_p boosts the
+   `li` to max_priority and it lands next to its store; sharing the already
+   twice-set `t` makes it non-birthing and it drifts to the block front where
+   the original has it (F14 carrier, 4 insns -> 2). */
 
 void func_80059474(unsigned char *actor, int yaw) {
   int *new_var;
   int *dst;
   int *src;
   int i;
+  int t;
   g_anLevelSpawnYawBlock[0] = (yaw << 4) & 0xFFF;
   CopyVector((int *)(&g_anLevelSpawnYawBlock[-3]), (int *)(actor + 0xC));
-  *((volatile int *)(&g_nSpawnAnchorValid)) = 1;
+  t = 1;
+  *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = &g_anLevelSpawnYawBlock[-19];
   src = &g_anLevelSpawnYawBlock[-11];
   *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
   new_var = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   {
-    int t;
     t = *new_var;
     *((volatile int *)(&D_8007788C)) = t;
     t = g_anLevelGemsCollected[g_nLevelIntroIndex];
@@ -57,7 +59,17 @@ void func_80059474(unsigned char *actor, int yaw) {
   D_800778EC = D_800778E8;
 }
 
-/* PARKED 2026-07-10 at ~63% (best form 67.7%) — logic, alias-held base
+/* PARKED — 2/62 insns (96.8%, length-exact) as of 2026-08-06-1. The ONLY
+ * residue left is an F2/B19 arg-copy tie: the original emits
+ *   addiu s1,s0,-76 ; move a0,s1 ; addiu s0,s0,-44
+ * and we emit the two addiu's first and the arg copy last. Position-invariant
+ * — moving the `src` derivation to the call site and an embedded-assignment
+ * arg (`CopyWords(dst = ..., src = ..., 0x20)`) both give byte-identical
+ * output; both pointers are already multi-set (the loop increments them), so
+ * the F14 set-count lever has nothing left to move. Permuter or a real basic
+ * block boundary (B19).
+ *
+ * Earlier note (2026-07-10, ~63%; best form 67.7%) — logic, alias-held base
  * (g_anLevelSpawnYawBlock), CopyVector/CopyWords calls, OR-merge loop and
  * tail all correct; the -0x4C/-0x2C/-0xC derivations and the loop are
  * byte-identical. Residue is the straight-line snapshot run: our sched1

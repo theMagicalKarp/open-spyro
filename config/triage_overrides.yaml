@@ -1259,3 +1259,72 @@ func_80054578:
   class: "stale park (B7)"
   date: 2026-08-06
   note: "136 B. Links exact; the do/while(0) state load is load-bearing."
+
+# --- session 2026-08-06-1 (harvest: park sweep + A163/A164/F14e levers) ---
+StopAllSoundExceptMask:
+  verdict: matched
+  class: "A163 guard-block delay-slot fill"
+  date: 2026-08-06
+  note: >-
+    348 B. The sllv that fills the second beqz's delay slot cannot come from
+    inside the if-body (sched1 puts the volatile key-off load first and reorg
+    will not speculate it); splitting the && into nested ifs and computing the
+    row bit between the guards lands it.
+func_level_5_8007B68C:
+  verdict: park
+  class: "B14 RETIRED -> now length-exact (1610/1610), MISMATCH 78 content-aligned"
+  date: 2026-08-06
+  note: >-
+    6440 B, x5 clone payoff 32,200 B. The +1 nop was A164 straggler ordering,
+    not la-canonicalization: permuting the three dep-free defs to
+    (img, img2, envBase) drops `addiu s3,s0,-8` into PutDrawEnv's delay slot.
+    It LINKS now, so drive further work off the linked diff. Next residues:
+    `la envBase` still takes the T-17 bubble (~20 insns late), a +8 frame
+    (A127), the else-arm `move s5,zero` bne delay slot, and the &pos block
+    pointer (original holds it in s2 via a block-scoped `int *pp = pos;` in
+    each of four regions at 0x8007BB20/C010/C5DC/CCEC; we rematerialise
+    `addiu a1,sp,56` per call site).
+func_80059474:
+  verdict: park
+  class: "F2/B19 arg-copy tie, 2/62 length-exact"
+  date: 2026-08-06
+  note: >-
+    248 B. F14e carrier for the anchor-flag `1` took it 4 -> 2. The last 2 are
+    `addiu s1 ; move a0,s1 ; addiu s0` vs our `addiu s1 ; addiu s0 ; move a0,s1`
+    — position-invariant (src moved to the call site and an embedded-assignment
+    arg both byte-identical); both pointers are already multi-set.
+AlignSpyroBodyToVelocity:
+  verdict: park
+  class: "F2 independent-load order, 3/71"
+  date: 2026-08-06
+  note: >-
+    284 B. `lw v1,16(sp)` (d[0] stack reload) vs the g_nSpyroBodyPitch global
+    load, both feeding one subu. Splitting the embedded `pitch = ...` read into
+    its own preceding statement is byte-identical — confirms F2 (independent
+    pure loads are not steerable by source order).
+func_8005FBB4:
+  verdict: park
+  class: "prologue save/param-copy pair order, 4/46"
+  date: 2026-08-06
+  note: >-
+    184 B. Original emits `sw s0 ; move s0,a0 ; sw s1 ; move s1,a1`, we emit the
+    s1 pair first. Swapping the declaration order flips the s0/s1 param mapping
+    instead and costs 13 more insns (17/46) — do not re-try that.
+ComputeVoicePanAndFalloff:
+  verdict: matched
+  class: "A127 frame padding + parameter-vs-copy operand choice"
+  date: 2026-08-06
+  note: >-
+    320 B. `int pad[4]` restores the 0x20 frame (the 5th arg then reloads from
+    0x30(sp)); the wrap arm must negate the PARAMETER and mask the COPY, which
+    is what assigns a2/v1 to the original's roles in the two delay slots.
+EndSaveMenuToWorld:
+  verdict: park
+  class: "F3 head knot, 4/81"
+  date: 2026-08-06
+  note: >-
+    324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
+    we emit the global load pair first. Position-invariant: swapping the two
+    statements and naming the anchor address in its own single-set local both
+    give byte-identical output. Permuter (aim it at the head, not the tail —
+    the shared camera/HUD/music tail is already exact).
