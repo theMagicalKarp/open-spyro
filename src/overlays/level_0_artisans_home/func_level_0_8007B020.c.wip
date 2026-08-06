@@ -41,9 +41,12 @@
  *      fall-through that arm1 branches into). Our jump.c cross-jumps BOTH
  *      pairs, so we are one block (7 insns) short. Tried: swapping the
  *      commutative operands of the `+` (canonicalised away, no effect).
- *      Untried: separate result locals per arm (unmerges BOTH pairs, +7 the
- *      other way), duplicating the `D_80078A66/D_80078AB0` tail into each
- *      branch.
+ *      MEASURED: separate result locals per arm (k / k2) unmerges BOTH pairs
+ *      — 2026 insns (2 OVER, so it will not even link) and MISMATCH 89. So
+ *      the source cannot distinguish the two pairs by variable identity; the
+ *      asymmetry has to come from something that makes only the `+` pair
+ *      differ at jump.c time. Untried: duplicating the
+ *      `D_80078A66 = k >> 4; D_80078AB0 = 8;` tail into each branch.
  *  R2  @8007C954/C984/C9A8, 3 insns — case 5 reads D_80077838 three times
  *      with a fresh `lui;lw` each; ours holds one base because the same
  *      symbol is declared as an incomplete array (needed for the [-6] index
@@ -59,6 +62,11 @@
  *  R5  ~14 sites × 1-2 insns — held-base vs absolute choice on single
  *      load/store pairs of D_800777F0 / D_800777EC / D_800777F4 inside the
  *      case-1 submode ladder, plus sched1 slots. B-i rule 1 / F2 class.
+ *      MEASURED: redeclaring D_800777F0 and D_80077378 as plain scalars (so
+ *      the reference is a bare VAR_DECL and expands to `(mem (symbol_ref))`
+ *      instead of an ARRAY_REF whose address memory_address()-force_regs)
+ *      makes it WORSE — 2013 insns, MISMATCH 100. The array form is right
+ *      for both symbols; do not re-try the scalar spelling.
  *
  * Levers that already paid here (reuse them on the clone levels):
  *  - Direct constant-index access on ONE array symbol instead of a pointer
