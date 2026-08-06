@@ -159,11 +159,12 @@ func_800557CC:
   class: "B13 lh+sra expected; multi-idiom, no ghidra seed"
   date: 2026-07-12
 func_8005E680:
-  verdict: attempted
-  class: "DMA-IRQ nested loops; tie-dense, no ghidra seed"
-  date: 2026-07-12
+  verdict: matched
+  class: "libgpu DMA IRQ dispatcher; debug-trace + volatile-HW-reg vein (§G)"
+  date: 2026-07-24
+  note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
 
-# --- CRT / runtime fragments not producible from C ---
+# --- actor waypoint-follow step (2026-07-24-1 session) ---
 func_8001228C:
   verdict: wall
   class: "main's unreachable epilogue fragment"
@@ -310,13 +311,6 @@ AddPrimToOT:
   note: "0x800168dc, 56b. Loads g_pOtActiveDepthSlot deref into $at and stores through it; gcc reserves $at for the assembler. Not compilable C."
 
 # --- DMA IRQ dispatcher (2026-07-24 session) ---
-func_8005E680:
-  verdict: matched
-  class: "libgpu DMA IRQ dispatcher; debug-trace + volatile-HW-reg vein (§G)"
-  date: 2026-07-24
-  note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
-
-# --- actor waypoint-follow step (2026-07-24-1 session) ---
 func_8003A420:
   verdict: parked
   class: "F9 double knot (F4 ground v0-coalesce + F1 counter-split) + F-sched negu"
@@ -336,10 +330,8 @@ ProbeSpyroGroundContact:
   note: "0x8003e318, 784b. 191/196 insns transcribe exactly via the g_anSpyroAirborneFramesBlock alias (base 0x80078af4: [0] frames, [2] normal, [5] slope, [0xa] cliff hint, [0x2d] run flag, [0x76] chunk id, [0x77] verts, MTX -0x1a, POS -0x27). Three fall-through-block stores (BLK[0x76] x2, BLK[0x2d]) fold to lui $at + %lo absolute = +1 insn each; 5 over the slot so it will not link. A22 sized alias, volatile store casts and a pointer-local base were all tried; the pointer local recovers only the post-label 0xB4 site (B-i rule 3). .c.wip parked."
 RelocateActorMeshHeader:
   verdict: skip
-  class: "suspected non-gcc TU (t-register-only allocation, dead masked copy in one arm, unused 0x18 frame)"
-  date: 2026-07-24
-  note: "0x800133e0, 620b, zero calls. Uses no callee-saved regs at all and carries a dead `and v0,t1,0x7FFFFFFF` in the bgez-not-taken arm plus redundant addu rX,rY,zero param copies — codegen our gcc 2.7.2 -O2 does not produce. Screen before spending a session on it."
-
+  class: "re-confirmed 2026-07-28-1 from the 2026-07-24 screen (suspected non-gcc TU); do not re-open from the triage ranking"
+  date: 2026-07-28
 func_8003C358:
   verdict: matched
   date: 2026-07-24
@@ -351,7 +343,6 @@ func_8003C358:
     original out-of-line else + `j`); explicit `if (len > 0) { p = name; do {} }`
     puts the string-cursor copy in the loop preheader; hoisted `skin` temp kills
     a trailing load-delay nop; 8 bytes of unused tail local to reach frame 0x80.
-
 func_80038638:
   verdict: park
   class: F1
@@ -363,26 +354,21 @@ func_80038638:
     the slt temp reusing its dying reg; ours ranks it last so every other
     callee-saved param shifts one. Permuter target — see the .wip header for
     the levers already tried.
-
 ResetSpyroEntity:
   verdict: skip
   class: B8
   date: 2026-07-24
   note: switchdataD_800112E8 jump table in MAIN (build_main.sh rejects loadable rodata).
-
 TickSpyroAnimStateMachine:
   verdict: skip
   class: B8
-  date: 2026-07-24
-  note: switchdataD_80010E58 jump table in MAIN.
-
+  date: 2026-07-25
+  note: "switchdata jr-table in main (0x8003d194); build_main.sh rejects loadable rodata."
 DispatchSpyroChargeStateChanges:
   verdict: skip
   class: B1
-  date: 2026-07-24
-  note: "%gp_rel(g_pSpyroContactActor) load at 0x80041314."
-
-# --- camera/actor vein (2026-07-25-1 session) ---
+  date: 2026-07-25
+  note: "%gp_rel access (0x80041270); already named in the cookbook G landscape."
 UpdateGemPickupPathCamera:
   verdict: park
   class: F4
@@ -436,16 +422,6 @@ func_8003ABC0:
     function pointer with a per-arm constant. Real target, but budget it as a
     1300 b structural puzzle, not a jal-chain — do it with the whole context
     window free, not as a session's third function.
-DispatchSpyroChargeStateChanges:
-  verdict: skip
-  class: B1
-  date: 2026-07-25
-  note: "%gp_rel access (0x80041270); already named in the cookbook G landscape."
-TickSpyroAnimStateMachine:
-  verdict: skip
-  class: B8
-  date: 2026-07-25
-  note: "switchdata jr-table in main (0x8003d194); build_main.sh rejects loadable rodata."
 InitHudCounters:
   verdict: park
   class: F2
@@ -488,27 +464,8 @@ EnqueueLoadingScreenSprites:
     signed cursor compare, 16-byte dead local for the 0x58 frame.
 TickActiveSoundVoices:
   verdict: park
-  class: B16
-  date: 2026-07-26
-  note: >-
-    SPU voice mixer tick (1144 b). Parked at 88.1%, 286/286 length-exact
-    (864/1144 partial bytes). Three residues: (1) B16 x2 — the original
-    materializes the address of g_nCameraEulerYaw (prologue) and of
-    g_nSoundMasterVolume (read twice around a store in the out-of-range
-    halving arm) as `lui;addiu` + `lw 0(reg)`; every alias form (incomplete
-    array, sized [8]/[16] per the A22 sdata probe), volatile alias + volatile
-    pointer local and every placement of the pointer local folds back to
-    `lui;lw %lo`. Diagnosed NOT sdata: the same source built -G0 folds the
-    same way. ~26 of the 34 differing insns. (2) The out-of-range store pair
-    keeps a derived base `addiu a0,s8,-0x2C` + `sh 0x2C/0x2E(a0)`, i.e. the
-    original's canonical row symbol is g_abSpuCommonAttr (0x80075F08, fields
-    +0x28..+0x40 — the SyncSoundVoicesWithHardware view); ours names
-    D_80075F30 (`-4` + `sh 4/6`). Every g_abSpuCommonAttr-based source form
-    makes loop.c strength-reduce the row addresses into pointer givs (whole
-    function rewritten, 231-278 insns); only `D_80075F30[i].field`
-    array-of-struct indexing reproduces the original's giv set (pitch +0x30 /
-    step +0x3C only) plus its $at folds. (3) ~5 insns of F2 load ordering in
-    the ArcTan2 owner block.
+  class: "94.1% LENGTH-EXACT (was 88.1%) — B16 retired via A142 (inline volatile cast-deref of the block alias, no pointer local). Residues: 9-insn prologue `la` rotation (B14/F10, source-order invariant), the g_abSpuCommonAttr-vs-D_80075F30 base split on the out-of-range halving store pair (byte-offset form overflows the slot via a loop.c giv), and the F2 ArcTan2 owner/camera load order (A120 temps make it worse)"
+  date: 2026-07-29
 AdvanceSpyroSubstepState:
   verdict: wall
   class: "B8 switchdata jr-table (main)"
@@ -648,10 +605,6 @@ Gamestate0D_Update:
   verdict: matched
   class: "matched 2026-07-28-1 (A19-free ladder: 3 held-base aliases at offset 0 + distinct Y/Z scalar aliases for the nonzero-offset stores, A81 per-arm Z store)"
   date: 2026-07-28
-RelocateActorMeshHeader:
-  verdict: skip
-  class: "re-confirmed 2026-07-28-1 from the 2026-07-24 screen (suspected non-gcc TU); do not re-open from the triage ranking"
-  date: 2026-07-28
 PauseMenu_Update:
   verdict: skip
   class: "B8 .rodata switch jump table in MAIN (jr via switchdataD_80010dd0, 6-way substate ladder)"
@@ -701,26 +654,6 @@ BuildSecondaryActorDrawList:
   class: "B6 handwritten (154 addi markers, 12 $at-as-data over 398 insns)"
   date: 2026-07-29
 PollPadAndDistributeInput:
-  verdict: viable
-  class: "screens clean (1 held base, 1 nonzero-offset access, 8 calls, 415 insns); ~50-branch pad-distribution ladder + a constant 1 held in s1 across the whole body (B10-inverse) - budget it as a full-session target"
-  date: 2026-07-29
-PlaySoundEffect:
-  verdict: viable
-  class: "screens clean (1 held base, 3 nonzero-offset accesses, 12 calls, 482 insns) - untried, biggest clean main candidate in the sound TU"
-  date: 2026-07-29
-PlaySoundEffect:
-  verdict: matched
-  class: "matched 2026-07-29-2 (A142: volatility from the DECLARED types — volatile row nVolL/nVolR/anPanCache fields + volatile override globals — pins the 5 override reloads and their program-order slots while keeping every store fused as lui $at/%lo; plus A145, a third empty `case 0x10` to make the mode ladder a split switch tree)"
-  date: 2026-07-29
-TickActiveSoundVoices:
-  verdict: park
-  class: "94.1% LENGTH-EXACT (was 88.1%) — B16 retired via A142 (inline volatile cast-deref of the block alias, no pointer local). Residues: 9-insn prologue `la` rotation (B14/F10, source-order invariant), the g_abSpuCommonAttr-vs-D_80075F30 base split on the out-of-range halving store pair (byte-offset form overflows the slot via a loop.c giv), and the F2 ArcTan2 owner/camera load order (A120 temps make it worse)"
-  date: 2026-07-29
-func_800658FC:
-  verdict: retry
-  class: "B16 half of its F9 double knot is now crackable — re-try the post-jal `lui;addiu;lw 0(r)` sites with an inline volatile cast-deref of the alias (A142/B16 retirement 2026-07-29-2); the held-base derive is the other half"
-  date: 2026-07-29
-PollPadAndDistributeInput:
   verdict: park
   class: >-
     B-i rule 1 wall, +4 insns (419 vs 415) so it does not even LINK (28 bytes
@@ -740,7 +673,14 @@ PollPadAndDistributeInput:
     and deletes its def). Park kept at src/c/PollPadAndDistributeInput.c.wip
     with the full analysis; reopen only if B-i rule 1 is retired.
   date: 2026-07-30
-
+PlaySoundEffect:
+  verdict: matched
+  class: "matched 2026-07-29-2 (A142: volatility from the DECLARED types — volatile row nVolL/nVolR/anPanCache fields + volatile override globals — pins the 5 override reloads and their program-order slots while keeping every store fused as lui $at/%lo; plus A145, a third empty `case 0x10` to make the mode ladder a split switch tree)"
+  date: 2026-07-29
+func_800658FC:
+  verdict: retry
+  class: "B16 half of its F9 double knot is now crackable — re-try the post-jal `lui;addiu;lw 0(r)` sites with an inline volatile cast-deref of the alias (A142/B16 retirement 2026-07-29-2); the held-base derive is the other half"
+  date: 2026-07-29
 TickWorldBundleLoadStream:
   verdict: park
   class: "F7 la-vs-load allocation swaps (x4) + F2 arm-0 constant order + the state-6 cse-canon store register"
@@ -852,20 +792,12 @@ func_level_3_800872A4:
     0x800872A4, 2940 b. New arm 0x1F6 (0x120-family variant: unconditional
     +0x20 lift on vel[2], a 0xFF re-roll gate and a second vel[2] clamp).
 func_level_13_8008A36C:
-  verdict: parked
-  class: "F2 independent-load scheduling in one ArcTan2 arg block"
-  date: 2026-07-31
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
   note: >-
-    0x8008A36C, 3048 b, 99.3% length-exact (757/762 insns, 5 words). Two new
-    arms decoded (0x127 aimed spawn, 87 insns; 0x13E random drift, 25 insns) —
-    both are also what level_14 and level_15 need, lift them from the .c.wip.
-    Residue: in the first func_80016AB4 call the original loads
-    D_80078A58[0] through the held-base alias BEFORE the lui/lw of
-    D_80078A5C and emits `subu a0` before `subu a1`; every source order,
-    per-arg temp and declaration order we tried gives the other order.
-    The second ArcTan2 block needed `dz = rec->posZ - 0x164;` split out
-    (otherwise gcc re-associates the -0x164 onto the global) plus its own
-    local for the distance (A146).
+    3048 b. Unparks the 99.3% F2 tie with A154 (both operand globals volatile);
+    no other change to the parked source.
 func_level_12_8008B2C0:
   verdict: matched
   class: ""
@@ -879,20 +811,13 @@ func_level_12_8008B2C0:
     Cross-jumping then merges the shared `sw v0,0(s2); j` tail and leaves the
     `li v0,K` in the delay slot, which is why the constant lands in v0.
 func_level_15_80086DD8:
-  verdict: parked
-  class: "F2 independent-load scheduling in one ArcTan2 arg block"
-  date: 2026-07-31-2
+  verdict: matched
+  class: ""
+  date: 2026-07-31-3
   note: >-
-    0x80086DD8, 3432 b, 99.4% length-exact (853/858 insns, 5 words). Same single
-    knot as func_level_13_8008A36C (the 0x127 arm's first ArcTan2 argument
-    block); the 0x26 wizard arm now matches. Levers tried this session, all >= 5
-    words: statement-order swap, both/either arg inlined at the call, posX/posY
-    into locals first, either global load hoisted to the top of the arm, either
-    subtraction moved above the posZ store, positions written through a pointer,
-    a pointer-local alias for D_80078A58, `*D_80078A58`, a literal-address cast
-    for D_80078A5C, and `volatile` on D_80078A5C. gcc 2.7.2 sched.c priority()
-    measures depth from the top of the block, so the two-insn lui/lw address
-    chain always outranks the one-insn held-base load. Permuter or never.
+    3432 b. Same one-line A154 fix as level_13; the park note's exhausted lever
+    list was correct that volatile on D_80078A5C ALONE gives 5 words — the point
+    is that the other operand's global must be volatile too.
 func_level_34_80083690:
   verdict: matched
   class: ""
@@ -956,21 +881,6 @@ func_level_14_8008883C:
     +0x400) plus the A127 frame-hole move (the 8-byte dead local that sizes the
     frame belongs to the LAST block that declares an array, not the mortar arm).
     Closed by A154: declaring BOTH ArcTan2 operand globals volatile.
-func_level_13_8008A36C:
-  verdict: matched
-  class: ""
-  date: 2026-07-31-3
-  note: >-
-    3048 b. Unparks the 99.3% F2 tie with A154 (both operand globals volatile);
-    no other change to the parked source.
-func_level_15_80086DD8:
-  verdict: matched
-  class: ""
-  date: 2026-07-31-3
-  note: >-
-    3432 b. Same one-line A154 fix as level_13; the park note's exhausted lever
-    list was correct that volatile on D_80078A5C ALONE gives 5 words — the point
-    is that the other operand's global must be volatile too.
 func_level_26_80084620:
   verdict: matched
   class: ""
@@ -981,18 +891,14 @@ func_level_26_80084620:
     through ArcTan2 clamped to +-0x10, then a yaw from Spyro's position, state
     +0x00 = 0x8C).
 func_level_6_8008A258:
-  verdict: parked
-  class: "F7 move-pair (arg copy vs call-result copy) + F1 negate coloring"
-  date: 2026-07-31-3
+  verdict: matched
+  class: "F14d"
+  date: 2026-08-06
   note: >-
-    3024 b, 99.1% length-exact (749/756, 7 words). The 0x1C6..0x1C8 lobbed-debris
-    arm is decoded and everything else is exact. Residues, both in that arm: the
-    original hoists `move a0,rec` above the `drop = RandomInRange(...)` result
-    copy and fills the delay slot with the result copy (same class as level_11);
-    and `drop = -drop + 0x640` colors through v0 where the original negates s1 in
-    place. The split form (`drop = -drop; drop = drop + 0x640;`) fixes the negate
-    but re-colors the whole posZ accumulate block (8 words). Declaration-order
-    swaps give 8 either way.
+    756-insn level_6 spawn dispatcher, 3,024 B. The 7-word park was one
+    set-count question: splitting the lobbed-debris arm's reused `drop` local
+    into drop + nudge makes the call-result copy single-set, so sched1 boosts
+    it into the func_8003A720 delay slot.
 func_level_22_800874FC:
   verdict: matched
   class: ""
@@ -1074,7 +980,6 @@ func_level_29_80082028:
     needs an explicit (int) cast on the func_8006272C() roll -- an unsigned index
     makes case 0 type-bounded, so gcc skips the balanced tree's range test and
     emits a linear ladder (4 insns short, `slti` missing).
-
 func_level_11_80082F58:
   verdict: matched
   class: vein
@@ -1089,7 +994,6 @@ func_level_11_80082F58:
     arms hoist; a compiler temp inside the 0xC arm is case 2 and is scanned
     after them. Sed-cloned to func_level_17_800836F8 and func_level_23_80083BAC
     (9,672 exact bytes).
-
 func_level_5_80084128:
   verdict: matched
   class: vein
@@ -1101,91 +1005,6 @@ func_level_5_80084128:
     (0x8000 - d) >> 6 above 0x6000 -- reuse the distance local for the colour to
     keep it in s0, and make the ramp the if-arm). Cloned to
     func_level_29_80083B8C.
-
-func_level_3_80088F68:
-  verdict: parked
-  class: F14
-  date: 2026-08-04
-  note: >-
-    3940 b / 985 insns, the town-square / misty-bog particle emit dispatcher.
-    PARKED at 979/985 LENGTH-EXACT (99.4%) with all five new arms (0x15, 0x18,
-    0x46, 0x4C, 0x50) decoded and byte-identical. Residue is a sched1 def-hoist
-    tie in the 0x18 arm alone (the original front-loads `sll v1,i,4` and
-    `li t0,0x2E` ahead of the life/unk11 store pair). See the .c.wip header for
-    the exhausted lever list. Word-identical to func_level_20_800861CC
-    (7,880 bytes for the pair) and the donor for the 1085-insn group.
-    2026-08-04: re-parked at 981/985 (99.6%) -- the F14 birthing-insn lever
-    (`z` for i*16, a twice-set block local `t` for 0x30 then 0x2E) fixed the
-    ORDER; what is left is that the two constants need two different registers
-    (v0 + t0) and one local can only give one. Double knot -> permuter.
-
-func_level_1_800892C4:
-  verdict: parked
-  class: F14
-  date: 2026-08-04
-  note: >-
-    4340 b / 1085 insns, the stone-hill particle emit dispatcher; head of the
-    five-overlay 1085-insn group (levels 1/2/4/10/28 are pure
-    branch-displacement clones, 21,700 bytes). PARKED at 1081/1085 LENGTH-EXACT
-    (99.6%): fully decoded, including the new 0x6 actor-tracking-plume arm
-    (record class 3, pointer to the actor position at +0x18). The residue is the
-    same 4-insn F14 double knot as func_level_3_80088F68, in the 0x18 arm alone.
-    Do NOT re-decode; aim a permuter at the 0x18 arm.
-
-func_level_34_80085230:
-  verdict: matched
-  date: 2026-08-04-1
-  note: >-
-    4148 b / 1037 insns, the Gnasty's-loot particle emit dispatcher; the second
-    of only two overlays in this family with no 0x18 arm. Landed from the park
-    with two arm-shape fixes: the 0x1A arm must write `arg3 * 8` as three
-    separate expressions (a named local pins the `sll` above the seed store and
-    the tail then no longer cross-jumps into the 0x1C colour block, +4 insns),
-    and the 0x15 ribbon arm wants source order r, g, b, life, fx, unk10 --
-    storing g first leaves the `lw` of the hoisted (arg3 & 0xF) with an
-    unfilled load-delay slot.
-
-func_level_33_80084634:
-  verdict: matched
-  date: 2026-08-04
-  note: >-
-    3712 b / 928 insns. Generated from the matched level_5 donor + three new
-    arms (0x10 / 0x11 spark bursts taking their velocity from `pos + 3` and
-    their colour from three ints at arg3, 0x19 = the 0x9 heat spark thresholded
-    on pos[6] at 461/401/321) and the 0x50 streak burst rewritten against
-    `pos >> 2`. One of only two overlays in this family with no 0x18 arm.
-
-func_level_3_80088F68:
-  verdict: parked
-  class: F14 position solved, F7/F1 register tie remains
-  date: 2026-08-04-1
-  note: >-
-    985 insns / 3940 b, 99.6% length-exact, 4 diffs in the 0x18 arm. The
-    POSITION half of the F14 knot is solved: promote another arm's block-local
-    (arm 0x15's `v`) to function scope and use it for the 0x30 carrier -- two
-    sets means non-birthing, and unlike one shared local it has no WAR chain,
-    so both `li`s hoist ahead of the life/unk11 store pair exactly as the
-    original does (`li v0,48` then comes out exact). What is left is purely
-    which register the 0x2E carrier gets: ours a0, original t0. gcc 2.7.2
-    defines no REG_ALLOC_ORDER for MIPS, so allocation is numeric
-    (v0,v1,a0..a3,t0..), and a carrier that neither crosses a call nor
-    conflicts with a0..a3 cannot reach t0 -- every donor tried (0x15 v, 0x4C w,
-    0x4D t/u, 0x4E u1, 0x4F t4, 0x21 ta, and all block locals promoted at once)
-    lands a0. Sharing one carrier across all six fx=0x2E sites is +2 insns.
-    Next lever: something that puts a0..a3 in global.c's
-    regs_someone_prefers[] for this allocno (a lower-priority conflicting
-    pseudo with an argument-register copy preference).
-
-func_level_1_800892C4:
-  verdict: parked
-  class: F14 position solved, F7/F1 register tie remains
-  date: 2026-08-04-1
-  note: >-
-    1085 insns / 4340 b, same 0x18-arm residue and the same donor-carrier
-    result as func_level_3_80088F68 (verified: positions exact, `li a0,46` vs
-    `li t0,46` left). Heads the five-overlay 1085-insn clone group
-    (levels 1/2/4/10/28 = 21,700 b); level_3 + level_20 add 7,880 b.
-
 func_level_3_80088F68:
   verdict: wall
   class: "F14b birthing/allocation mutual exclusion (0x18 arm)"
@@ -1208,7 +1027,6 @@ func_level_3_80088F68:
     def stays a fixed 7 slots ahead of its store, and it tips loop.c into a
     third hoisted invariant, +8 frame) and a carrier shared with arm 0x15
     (same +8 frame, 917 diffs). See cookbook F14b.
-
 func_level_1_800892C4:
   verdict: wall
   class: "F14b birthing/allocation mutual exclusion (0x18 arm)"
@@ -1218,7 +1036,27 @@ func_level_1_800892C4:
     func_level_3_80088F68 and the same root cause (cookbook F14b). Heads the
     five-overlay 1085-insn group (levels 1/2/4/10/28 = 21,700 b). Do not
     re-decode and do not aim a permuter at the 0x18 arm.
-
+func_level_34_80085230:
+  verdict: matched
+  date: 2026-08-04-1
+  note: >-
+    4148 b / 1037 insns, the Gnasty's-loot particle emit dispatcher; the second
+    of only two overlays in this family with no 0x18 arm. Landed from the park
+    with two arm-shape fixes: the 0x1A arm must write `arg3 * 8` as three
+    separate expressions (a named local pins the `sll` above the seed store and
+    the tail then no longer cross-jumps into the 0x1C colour block, +4 insns),
+    and the 0x15 ribbon arm wants source order r, g, b, life, fx, unk10 --
+    storing g first leaves the `lw` of the hoisted (arg3 & 0xF) with an
+    unfilled load-delay slot.
+func_level_33_80084634:
+  verdict: matched
+  date: 2026-08-04
+  note: >-
+    3712 b / 928 insns. Generated from the matched level_5 donor + three new
+    arms (0x10 / 0x11 spark bursts taking their velocity from `pos + 3` and
+    their colour from three ints at arg3, 0x19 = the 0x9 heat spark thresholded
+    on pos[6] at 461/401/321) and the 0x50 streak burst rewritten against
+    `pos >> 2`. One of only two overlays in this family with no 0x18 arm.
 func_level_30_80084EA0:
   verdict: parked
   class: "mid-decode; ends on the F14b 0x18-arm wall"
@@ -1234,7 +1072,6 @@ func_level_30_80084EA0:
     fx-before-seed store order in arms 0x0/0x1/0x9. After all that it still ends
     on the 4-insn 0x18 knot (verified in this park), so it is groundwork, not
     bytes. See the .c.wip header.
-
 emit_dispatcher_family_0x18_screen:
   verdict: note
   class: "vein screen"
@@ -1245,7 +1082,6 @@ emit_dispatcher_family_0x18_screen:
     are levels 5/29, 33 and 34, all already matched. So the entire ~90 KB
     remainder of this vein is gated on the F14b wall and caps at 99.6%
     length-exact. Do not open a new one expecting exact bytes.
-
 overlay_clone_scan:
   verdict: note
   class: "clone mode exhausted"
@@ -1256,7 +1092,6 @@ overlay_clone_scan:
     `asm` member. Every free sed-clone has already been taken, so clone mode has
     no targets until a new overlay decode lands. Re-run the scan after each new
     overlay match.
-
 func_level_11_80082300:
   verdict: matched
   class: "vein — emit-list advance pass (flight trio)"
@@ -1274,7 +1109,6 @@ func_level_11_80082300:
     `lbu; addiu -K; sb` chains come out with the pair at positions 1&2 swapped,
     so write the source with that pair swapped back (keeping each constant with
     its field). (4) A160 -- `abs()` is a builtin; hand-rolling it costs a move.
-
 func_level_17_80082AA0:
   verdict: matched
   class: "clone of func_level_11_80082300"
@@ -1282,7 +1116,6 @@ func_level_17_80082AA0:
   note: >-
     sed-clone of func_level_11_80082300 (norm-identical, branch displacements
     only). Matched first build.
-
 func_level_23_80082F54:
   verdict: matched
   class: "clone of func_level_11_80082300"
@@ -1373,18 +1206,15 @@ func_level_0_80086134:
     else transferred verbatim from level_6 / level_2. The decay pair needs a
     `short` local with in-place a--/a++ (cookbook A162).
 func_level_12_8008BE98:
-  verdict: park
-  class: "loop-hoisted stack-array address, one use rematerialised"
-  date: 2026-08-05-3
+  verdict: matched
+  class: "F17 (retired)"
+  date: 2026-08-06
   note: >-
-    PARKED 99.92% -- 1294/1294 insns, ONE insn differs (0x8008C254: orig
-    `addiu a0,sp,32`, ours `move a0,s7`). Arms 0x7/0x8/0x41 decoded; arm 0x8
-    (the wizard's homing bolt) is the only advance arm that reads the owner
-    actor. The original carries two &v pseudos -- a 5-use one loop.c hoisted
-    into s7 and a singleton reload rematerialised; our cse always unifies
-    them. Six source forms measured invariant, two more reproduce the
-    remat but move the preheader hoist one slot early (see the .wip header).
-    5,176 B ride on that one insn.
+    1294-insn magic-crafters-home advance pass, 5,176 B. The one-insn park fell
+    to A93 ordering: name step * 4 and &v as explicit pre-loop locals in that
+    order, which puts both preheader insns where the original has them and
+    leaves the arm's last call reading v as a single-use frame address that
+    reload rematerialises.
 func_level_3_80087E20:
   verdict: skip
   class: "F16 (arm 0x15)"
@@ -1399,3 +1229,33 @@ func_level_20_80085084:
   class: "F16 (arm 0x15)"
   date: 2026-08-05
   note: "norm-identical clone of func_level_3_80087E20; same F16 gate."
+SubMenu_Update:
+  verdict: matched
+  class: "stale park"
+  date: 2026-08-06
+  note: "708 B. Parked permuter output links exact as-is; the dead local it left behind was not load-bearing."
+ResetCameraStateToTarget:
+  verdict: matched
+  class: "stale park (F3)"
+  date: 2026-08-06
+  note: "296 B. Links exact from the parked source; the double base assignment IS load-bearing."
+StepSpyroOntoLocalFloor:
+  verdict: matched
+  class: "stale park (B-i rule 3)"
+  date: 2026-08-06
+  note: "436 B. Links exact from the parked source — the B-i classification came off a .o-based partial score."
+StepSpyroAnimAndCommitTransition:
+  verdict: matched
+  class: "stale park"
+  date: 2026-08-06
+  note: "300 B. Links exact from the parked source."
+BeginStoryIntro:
+  verdict: matched
+  class: "stale park (B-i)"
+  date: 2026-08-06
+  note: "184 B. Links exact from the parked source."
+func_80054578:
+  verdict: matched
+  class: "stale park (B7)"
+  date: 2026-08-06
+  note: "136 B. Links exact; the do/while(0) state load is load-bearing."

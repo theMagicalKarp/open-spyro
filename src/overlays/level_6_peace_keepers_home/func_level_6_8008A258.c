@@ -1,18 +1,3 @@
-/* PARKED 2026-07-31-3: 99.1% length-exact (749/756 insns, 7 words).  The whole
- * function including the newly decoded 0x1C6..0x1C8 lobbed-debris arm (71 insns)
- * is exact apart from two ties inside that arm:
- *  - F7 move pair: the original hoists `move a0,s3` (the func_8003A720 argument)
- *    above the `drop = func_80037EA0(...)` result copy and fills the jal delay
- *    slot with `move s1,v0`; ours does the reverse.  Same shape as the level_11
- *    flight-family park.
- *  - F1 coloring on `drop = -drop + 0x640`: the original negates in place
- *    (`negu s1,s1; addiu s1,s1,0x640`), ours goes through v0.  Writing it split
- *    (`drop = -drop; drop = drop + 0x640;`) DOES fix that pair in place but
- *    flips the v0/v1 coloring of the whole `rec->posZ + st->vel[2] * 4 + drop`
- *    block instead (8 words).  Declaration-order swaps give 8 either way.
- * Everything else -- the arm's three RandomInRange velocity draws, the two
- * `* drop >> 10` nudges and the spin draws -- is byte-identical.
- */
 /* func_level_6_8008A258 (0x8008A258, level_6_peace_keepers_home
  * overlay, 0xBD0 bytes).
  *
@@ -48,6 +33,12 @@
  *    0x800, otherwise back off by 0x200.
  *
  * With no parent the position falls back to Spyro's (D_80078A58).
+ *
+ * The 0x1C6..0x1C8 lobbed-debris arm needs the ground-drop value and the
+ * `0x640 - drop` nudge in SEPARATE locals: with one local written twice the
+ * result copy is no longer a single-set def, so sched1 stops boosting it and
+ * it drifts to the front of its block instead of filling the
+ * func_8003A720 delay slot (cookbook F14).
  */
 
 typedef struct Actor {
@@ -453,6 +444,7 @@ Actor *func_level_6_8008A258(int type, Actor *parent) {
   case 0x1C6 ... 0x1C8: {
     DebrisState *st;
     int drop;
+    int nudge;
 
     drop = func_80037EA0(-0x960, 0x578);
     st = rec->state;
@@ -466,9 +458,9 @@ Actor *func_level_6_8008A258(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ = rec->posZ + st->vel[2] * 4 + drop;
-    drop = -drop + 0x640;
-    rec->posX += st->vel[0] * drop >> 10;
-    rec->posY += st->vel[1] * drop >> 10;
+    nudge = -drop + 0x640;
+    rec->posX += st->vel[0] * nudge >> 10;
+    rec->posY += st->vel[1] * nudge >> 10;
     st->spinX = func_8006272C() & 0xF;
     st->spinY = func_8006272C() & 0xF;
     st->spinZ = func_8006272C() & 0xF;

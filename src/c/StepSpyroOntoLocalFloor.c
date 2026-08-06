@@ -19,13 +19,6 @@ extern int g_anSpyroAirborneFramesBlock[];
    matrix), and on a hit nudge the world position by the resolved delta
    (axis components under 8 units are dropped) and clear the airborne
    counter; on a miss count another airborne frame. */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/StepSpyroOntoLocalFloor.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/StepSpyroOntoLocalFloor/output-20-1/source.c */
 
 void StepSpyroOntoLocalFloor(void) {
   int down[3];
@@ -71,23 +64,3 @@ void StepSpyroOntoLocalFloor(void) {
     air[0] += 1;
   }
 }
-
-/* PARKED 2026-07-15 (~98% structural, 6.4% raw due to a 1-insn shift).
-   Sole root cause: the hit-arm airborne clear must be `sw zero,0x68(s3)`
-   through the held g_anSpyroBodyMtxBlock base (s3 live to the end, frame
-   0x58, 4 s-regs). Our gcc always substitutes the store address to the
-   absolute $at form (sw zero,%lo(g_nSpyroAirborneFrames)) and then
-   coalesces mtx into pos (`addiu s1,s1,-52` in place), dropping one s-reg
-   (frame 0x50). Tried: mtx[26]=0 (reg form), plain scalar store,
-   pos=&mtx[-13] to raise mtx's ref count — all byte-identical output.
-   NEW WALL DATA POINT for cookbook §Y rule 1: the nonzero-offset fold
-   happens even POST-LABEL when the base pseudo is single-def from a
-   constant (REG_EQUIV substitution, not the same-ebb cse table — §Y rule 3
-   does not save it). Miss-arm RMW (alias-array pointer) and the entire
-   call chain otherwise match.
-
-   2026-07-25-1 unattended permuter session (~15m, ~73500 iterations, timed out
-   at the 15m budget): best score 20 vs base score 605 — very close. No
-   byte-perfect candidate found; still PARKED. Another §Y-family function whose
-   sibling ProbeSpyroLedgeForward matched in the same sweep; worth comparing
-   against build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1. */

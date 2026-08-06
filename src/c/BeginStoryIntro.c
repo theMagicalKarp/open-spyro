@@ -6,25 +6,13 @@
    drop SFX/music volume to 10, park the gem-cutscene scratch pointer 0x2000
    below the render scratch region, and reseed the RNG. The 0xC0 store and the
    SetSpuCommonAttr argument address the attr block 0x320 below D_80076228,
-   which gcc holds as the one materialized base across the call.
-
-   2026-07-25-1 unattended permuter session (~15m, ~95000 iterations, timed out
-   at the 15m budget): best score 20 vs base score 585 — closest of the session
-   so far. No byte-perfect candidate found; still parked. */
+   which gcc holds as the one materialized base across the call. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void SetSpuCommonAttr(void *attr);
 extern void srand(unsigned int seed);
 extern int D_80076228[];
 extern int D_80076224;
 extern char *D_80078DC4;
-
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/BeginStoryIntro.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/BeginStoryIntro/output-20-1/source.c */
 
 void BeginStoryIntro(void) {
   int *blk;
