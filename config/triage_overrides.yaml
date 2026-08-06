@@ -1364,18 +1364,27 @@ func_level_28_80084028:
 # not the 10 previously recorded. F16 gates every variant carrying arm 0x15 --
 # fingerprint base-agnostically: lbu $X,0xA($B) .. addiu $X,$X,0x4 .. sb $X,0xA($B).
 func_level_0_80086134:
-  verdict: candidate
+  verdict: matched
   class: "advance pass, 1195 insns, F16-free"
-  date: 2026-08-05
+  date: 2026-08-05-3
   note: >-
-    Next target. Arms 0x0/1/2/6/9/A/B/C/E/16/18/1E/21/42/46/47/48/4D/4E/4F/50 --
-    all but 0xE, 0x16 and 0x1E have a 0-diff donor (see cookbook §G donor map).
-    jtbl_8007ABD4. 4,780 B.
+    MATCHED (4,780 B). Arms 0xE/0x16 decoded (the whirlwind decay pair) and
+    0x1E (the mote that dies on age alone, no shared kill tail); everything
+    else transferred verbatim from level_6 / level_2. The decay pair needs a
+    `short` local with in-place a--/a++ (cookbook A162).
 func_level_12_8008BE98:
-  verdict: candidate
-  class: "advance pass, 1294 insns, F16-free"
-  date: 2026-08-05
-  note: "Next target after level_0. jtbl_8007B5C4. 5,176 B."
+  verdict: park
+  class: "loop-hoisted stack-array address, one use rematerialised"
+  date: 2026-08-05-3
+  note: >-
+    PARKED 99.92% -- 1294/1294 insns, ONE insn differs (0x8008C254: orig
+    `addiu a0,sp,32`, ours `move a0,s7`). Arms 0x7/0x8/0x41 decoded; arm 0x8
+    (the wizard's homing bolt) is the only advance arm that reads the owner
+    actor. The original carries two &v pseudos -- a 5-use one loop.c hoisted
+    into s7 and a singleton reload rematerialised; our cse always unifies
+    them. Six source forms measured invariant, two more reproduce the
+    remat but move the preheader hoist one slot early (see the .wip header).
+    5,176 B ride on that one insn.
 func_level_3_80087E20:
   verdict: skip
   class: "F16 (arm 0x15)"
