@@ -47,6 +47,64 @@
  * 2026-07-25-1 unattended permuter session (~15m, ~16000 iterations — a slow,
  * large function — timed out at the 15m budget): best score 3000 vs base score
  * 3705, across 143 output dirs. No byte-perfect candidate found; still PARKED.
+ *
+ * 2026-08-06-2 — FULL RESIDUE INVENTORY (content-aligned masked diff, 78/1610).
+ * Drive this park off the content-aligned diff, never the linked one: the
+ * linked diff reads 1341/1610 because the `la envBase` displacement phase-shifts
+ * everything after insn 25. Recipe (~10 s/iteration): `open-spyro diff <fn>`,
+ * then objdump both `build/diff/<fn>.{orig,built}.bin` with
+ * `-b binary -m mips:3000 -EL -D`, anchor register names
+ * (`\b(a[0-3]|v[01]|t[0-9]|s[0-8]|at|gp|sp|fp|ra|zero)\b` -> `R\1`), mask
+ * immediates, and difflib-align. Thirteen INDEPENDENT residues, by orig insn:
+ *   R1  25/26   `la envBase` lands at 45/46 instead of 25/26 (4 insns).
+ *   R2  70      `i += 1` (2).      R3  82-88  rect.x/rect.y store vs `lw a1,0(s3)`
+ *               ordering (6).
+ *   R4  119     else-arm `move s5,zero` in the `bne` delay slot (1-2).
+ *   R5  126     `ori a1,a1,0x3e00` emitted 4 insns late (2).
+ *   R6  144     tpage `addiu a3,s1,136` lands in t0 (1) + the `sll x` position.
+ *   R7  159-200 the quad-loop temp register roles — a/bh/ch/d take a1/a0/a1/v0
+ *               where the orig has v0/a1/a2/v1 (~25 insns, the big one).
+ *   R8  1067-74 v0/v1 mirror + `move a1,s2` position (5).
+ *   R9  1090-1124 `addiu a1,sp,56` (&pos) placement in the YES/NO blink blocks
+ *               and the `move a3,zero` it displaces (5).
+ *   R10 1138-41, R12 1355-58 + 1403-06  `move a0,zero` one slot early (6 total).
+ *   R11 1158-71 publish-loop `la`/cursor register mirror (~10).
+ *   R13 1432-34 orig holds `&pos` in s2 (`addiu s2,sp,56; move a1,s2`); ours
+ *               recomputes `addiu a1,sp,56` per site — this is A26 (a distinct
+ *               SCALAR alias for the cross-call address), untried here.
+ *   +   frame is `addiu sp,-152` vs the orig's `-144`: exactly ONE extra 8-byte
+ *       spill slot (A127; saved-reg region and the 52 B of declared aggregates
+ *       already agree). This is invisible to the masked diff but costs 14
+ *       sp-relative immediates; the other 79 immediate-only diffs are branch
+ *       and `j` targets that fall out with the shape.
+ * Findings this session:
+ *  - **The permuter body's `allclear = 0x15;` hack is LOAD-BEARING.** Replacing
+ *    `*(p + allclear) = bq;` with the literal `*(p + 0x15) = bq;` (and dropping
+ *    the assignment) is the "clean" form and makes it WORSE, 78 -> 85: the
+ *    `li s5,21` is what holds the slot at orig 169 that `addiu s1,s1,1` wants,
+ *    and removing it lets `x = i << 7` sink from 143 to 155 and kills the
+ *    `move s5,zero` delay-slot fill at 119 (it becomes dead, since s5 is then
+ *    unconditionally re-set in the loop). Do not "clean up" R2/R4 in isolation.
+ *  - The hand-written body (git show 46305b0:...) plus the A164 permutation is
+ *    85/1610 — 7 WORSE than this permuter body, and it adds two new residues
+ *    (a second `la D_80076EE0` at 114/115 and the `sll v1,s1,0x7` position).
+ *    The permuter body is the better base; keep it.
+ *  - **R1 is now fully probed: all three legal source orders are known.**
+ *    `img2 = img - 2` cannot precede `img`, so only (envBase,img,img2),
+ *    (img,envBase,img2) and (img,img2,envBase) exist. (envBase,img,img2) =
+ *    +1 insn, cannot link (the old B14 state). (img,envBase,img2) = +1 insn,
+ *    cannot link (NEW, measured 2026-08-06-2). (img,img2,envBase) = current.
+ *    A164 has nothing left to give here; R1 needs a different mechanism.
+ *  - The quad block's u/v byte writes carry a mode residue the masked diff
+ *    HIDES: orig has `addiu v0,v0,128` for `u1 = u0 + 0x80` / `u3 = u0 + 0x80`
+ *    (SImode), ours has `addiu v0,v0,-128` (combine narrowed the `plus` to
+ *    QImode against the `sb`). The neighbouring `v2/v3 = v0coord - 0x21` gives
+ *    `addiu -33` on BOTH sides, so the original's source really does write
+ *    `- 0x21` and `+ 0x80` and keeps both in SImode. Fixing this (A116's
+ *    inverse) is worth 2 more bytes and may be a lever on R7.
+ * Attack order for the next session: R7 first (it is a quarter of the residue
+ * and the block is permuter-mangled, so a clean rewrite has room), then R13
+ * (A26, untried), then the frame slot (A127), then R8/R11.
  */
 
 extern void func_800521C0(void); /* BuildRenderEntityLists */

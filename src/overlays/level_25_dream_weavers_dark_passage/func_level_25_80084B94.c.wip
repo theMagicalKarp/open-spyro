@@ -7,6 +7,24 @@
  * stores' REG_DEP_ANTI (cost 0), hoists it above the store block, and the
  * third temp falls to a1.
  *
+ * 2026-08-06-2 — B19 PROVED UNREACHABLE, park reclassified to WALL. Read off
+ * `cc1 … -dS` (`<in>.i.sched`), basic block 85 (this arm):
+ *   ;; insn[ 887/890/893 (the three sb)]: priority = 2
+ *   ;; insn[ 896 (sw st->owner)]:         priority = 2
+ *   ;; insn[ 899 (move a0,rec)]:          priority = 1
+ *   ;; ready list at T-3: 896 (2) 899 (1), now 896 899
+ *   ;; ready list at T-4: 899 (1) 887 (2) 890 (2) 893 (2), now 893 890 887 899
+ * `priority()` is the longest path from the BLOCK START, so an arg copy whose
+ * operand is live-in scores 1 and a store fed by an in-block `lb` scores 2.
+ * The original's order needs 899 to LOSE at T-3 (to the priority-2 `sw`) and
+ * WIN at T-4 (over the priority-2 stores) — one static priority cannot be both
+ * < 2 and >= 2. rank_for_schedule's class tiebreak (899 IS class 3 there, the
+ * stores are class 2 via REG_DEP_OUTPUT on the `sw`) never runs because the
+ * priorities differ. Probe: `func_800526A8(&rec->posX)` folds the copy into an
+ * `addiu` off the same live-in reg and the priority stays 1. All five positions
+ * of `st->owner = parent;` measured: 5 -> 6/6/6/8/10 insns, every one worse.
+ * Do not aim the permuter at this arm.
+ *
  * Tried here and rejected: routing the arm through `goto place;` with the
  * shared `func_800526A8(rec); return rec;` after the switch.  That DOES place
  * the arm correctly (the call leaves the block, so nothing hoists), but the

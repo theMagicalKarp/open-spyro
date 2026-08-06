@@ -840,7 +840,7 @@ func_level_31_80085664:
     library body with different stack offsets: take fuzzy library hits down to
     ratio ~0.90, the linked diff is the gate.
 func_level_11_800819BC:
-  verdict: parked
+  verdict: wall
   class: "F7 call-arg copy hoisted above the stores (loses a0 to the third temp)"
   date: 2026-07-31-2
   note: >-
@@ -858,6 +858,16 @@ func_level_11_800819BC:
     temp array, moving the unk4B store into the block. These two arms are shared
     verbatim by level_17/23/29/5 — one tie gates ~15 KB, the best permuter
     target in the family.
+    B19 is PROVED UNREACHABLE 2026-08-06-2 (read off `cc1 -dS`, block 85 of
+    func_level_25_80084B94): the arg copy `move a0,rec` has INSN_PRIORITY 1
+    (its operand is live-in to the block) while every `sb` of the batch has 2
+    (fed by an in-block `lb`, latency 2). The original's order needs that one
+    static priority to be < 2 at T-3 (so the `sw st->owner` wins) and >= 2 at
+    T-4 (so the copy beats the stores) — unsatisfiable. Probed:
+    `func_800526A8(&rec->posX)` folds the copy to an `addiu` off the same
+    live-in reg and the priority stays 1; all five positions of
+    `st->owner = parent;` measured (5 -> 6/8/10 insns, all worse). Do NOT aim
+    the permuter at this — the residue is not a tie. Reclassified park -> wall.
 func_level_16_80083AB4:
   verdict: parked
   class: "B13 signed-short load feeding >> (lh;sra unreachable)"
@@ -930,7 +940,7 @@ func_level_19_8008465C:
     (D_80076E20 + 0x400) >> 4) and 0x157 (owner pointer + two zeroed state
     words). Both use a TrackState block {Actor *owner; int; int}.
 func_level_25_80084B94:
-  verdict: park
+  verdict: wall
   class: B19
   date: 2026-07-31-4
   note: >-
@@ -940,8 +950,18 @@ func_level_25_80084B94:
     pair and a two-statement mask, since (unsigned char)(rec->unk46 - pdir) in
     one expression makes gcc drop the field's own 0xFF mask), 0x7C is the
     attitude copy. The residue is only 0x7C's batched signed-byte copy: B19.
+    B19 is PROVED UNREACHABLE 2026-08-06-2 (read off `cc1 -dS`, block 85 of
+    func_level_25_80084B94): the arg copy `move a0,rec` has INSN_PRIORITY 1
+    (its operand is live-in to the block) while every `sb` of the batch has 2
+    (fed by an in-block `lb`, latency 2). The original's order needs that one
+    static priority to be < 2 at T-3 (so the `sw st->owner` wins) and >= 2 at
+    T-4 (so the copy beats the stores) — unsatisfiable. Probed:
+    `func_800526A8(&rec->posX)` folds the copy to an `addiu` off the same
+    live-in reg and the priority stays 1; all five positions of
+    `st->owner = parent;` measured (5 -> 6/8/10 insns, all worse). Do NOT aim
+    the permuter at this — the residue is not a tie. Reclassified park -> wall.
 func_level_17_80081F0C:
-  verdict: park
+  verdict: wall
   class: B19
   date: 2026-07-31-4
   note: >-
@@ -949,22 +969,52 @@ func_level_17_80081F0C:
     decoded (incl. a new 18-insn fixed-position hidden-actor arm). The residue is
     the two attitude-copy arms (0x176, 0x177..0x182) only: B19. Solving B19 lands
     this, level_25, level_23, level_5 and the level_11 park.
+    B19 is PROVED UNREACHABLE 2026-08-06-2 (read off `cc1 -dS`, block 85 of
+    func_level_25_80084B94): the arg copy `move a0,rec` has INSN_PRIORITY 1
+    (its operand is live-in to the block) while every `sb` of the batch has 2
+    (fed by an in-block `lb`, latency 2). The original's order needs that one
+    static priority to be < 2 at T-3 (so the `sw st->owner` wins) and >= 2 at
+    T-4 (so the copy beats the stores) — unsatisfiable. Probed:
+    `func_800526A8(&rec->posX)` folds the copy to an `addiu` off the same
+    live-in reg and the priority stays 1; all five positions of
+    `st->owner = parent;` measured (5 -> 6/8/10 insns, all worse). Do NOT aim
+    the permuter at this — the residue is not a tie. Reclassified park -> wall.
 func_level_23_8008223C:
-  verdict: park
+  verdict: wall
   class: B19
   date: 2026-08-01
   note: >-
     3352 b, PARKED at 98.8% length-exact (10/838). Zero unknown arms once
     level_29 contributed the 0x167..0x169 scatter burst. Residue is the two
     attitude-copy arms (0x80082D2C/0x80082DA4) only: B19.
+    B19 is PROVED UNREACHABLE 2026-08-06-2 (read off `cc1 -dS`, block 85 of
+    func_level_25_80084B94): the arg copy `move a0,rec` has INSN_PRIORITY 1
+    (its operand is live-in to the block) while every `sb` of the batch has 2
+    (fed by an in-block `lb`, latency 2). The original's order needs that one
+    static priority to be < 2 at T-3 (so the `sw st->owner` wins) and >= 2 at
+    T-4 (so the copy beats the stores) — unsatisfiable. Probed:
+    `func_800526A8(&rec->posX)` folds the copy to an `addiu` off the same
+    live-in reg and the priority stays 1; all five positions of
+    `st->owner = parent;` measured (5 -> 6/8/10 insns, all worse). Do NOT aim
+    the permuter at this — the residue is not a tie. Reclassified park -> wall.
 func_level_5_8008249C:
-  verdict: park
+  verdict: wall
   class: B19
   date: 2026-08-01
   note: >-
     3732 b, PARKED at 98.9% length-exact (10/933). Zero unknown arms once
     level_29 contributed the 0x167..0x169 and 0x16A arms. Residue is the two
     attitude-copy arms (0x80083108/0x80083180) only: B19.
+    B19 is PROVED UNREACHABLE 2026-08-06-2 (read off `cc1 -dS`, block 85 of
+    func_level_25_80084B94): the arg copy `move a0,rec` has INSN_PRIORITY 1
+    (its operand is live-in to the block) while every `sb` of the batch has 2
+    (fed by an in-block `lb`, latency 2). The original's order needs that one
+    static priority to be < 2 at T-3 (so the `sw st->owner` wins) and >= 2 at
+    T-4 (so the copy beats the stores) — unsatisfiable. Probed:
+    `func_800526A8(&rec->posX)` folds the copy to an `addiu` off the same
+    live-in reg and the priority stays 1; all five positions of
+    `st->owner = parent;` measured (5 -> 6/8/10 insns, all worse). Do NOT aim
+    the permuter at this — the residue is not a tie. Reclassified park -> wall.
 func_level_29_80082028:
   verdict: matched
   class: ""
@@ -1284,6 +1334,15 @@ func_level_5_8007B68C:
     pointer (original holds it in s2 via a block-scoped `int *pp = pos;` in
     each of four regions at 0x8007BB20/C010/C5DC/CCEC; we rematerialise
     `addiu a1,sp,56` per call site).
+    2026-08-06-2: R1 (`la envBase`) is now FULLY probed — `img2 = img - 2`
+    cannot precede `img`, so only three source orders exist and all three are
+    measured: (envBase,img,img2) +1 insn, (img,envBase,img2) +1 insn (new),
+    (img,img2,envBase) = the current length-exact state. A164 is exhausted here.
+    Full 13-residue inventory with orig insn indices is in the .wip header;
+    work R7 (quad-loop temp registers, ~25 of the 78) first, then R13 (A26
+    scalar alias for &pos, untried), then the one extra 8-byte frame slot.
+    The permuter body's `allclear = 0x15;` is LOAD-BEARING — replacing it with
+    the literal offset is 78 -> 85. The hand-written body + A164 is also 85.
 func_80059474:
   verdict: park
   class: "F2/B19 arg-copy tie, 2/62 length-exact"
@@ -1328,3 +1387,13 @@ EndSaveMenuToWorld:
     statements and naming the anchor address in its own single-set local both
     give byte-identical output. Permuter (aim it at the head, not the tail —
     the shared camera/HUD/music tail is already exact).
+func_level_0_8007CFC0:
+  verdict: park
+  class: "mid-decode, 215/642 content-aligned"
+  date: 2026-08-06-2
+  note: >-
+    2568 B, template for the 642-insn x10 hub balloonist dispatcher (25.7 KB).
+    Measured this session with the content-aligned masked diff: 640 insns built
+    vs 642 orig, MISMATCH 215 — this is a genuine mid-decode, not a tie, and
+    needs a fresh decode session, not permuter time. Do not pick it up expecting
+    a close.
