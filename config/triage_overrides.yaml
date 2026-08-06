@@ -1318,3 +1318,13 @@ ComputeVoicePanAndFalloff:
     320 B. `int pad[4]` restores the 0x20 frame (the 5th arg then reloads from
     0x30(sp)); the wrap arm must negate the PARAMETER and mask the COPY, which
     is what assigns a2/v1 to the original's roles in the two delay slots.
+EndSaveMenuToWorld:
+  verdict: park
+  class: "F3 head knot, 4/81"
+  date: 2026-08-06
+  note: >-
+    324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
+    we emit the global load pair first. Position-invariant: swapping the two
+    statements and naming the anchor address in its own single-set local both
+    give byte-identical output. Permuter (aim it at the head, not the tail —
+    the shared camera/HUD/music tail is already exact).
