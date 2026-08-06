@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.33% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">309,476 / 2,159,608 split-code bytes · 500 matched · 86 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.37% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">310,320 / 2,159,608 split-code bytes · 501 matched · 85 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -212,7 +212,7 @@
 <rect x="115.90" y="760.17" width="14.52" height="13.25" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInitDirect  ·  352 bytes  ·  library</title></rect>
 <rect x="130.43" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EndGemPickupToWorld  ·  348 bytes  ·  matched</title></rect>
 <rect x="144.31" y="578.00" width="13.88" height="13.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>NudgeSpyroFromWallProbes  ·  348 bytes  ·  wip</title></rect>
-<rect x="158.18" y="578.00" width="13.88" height="13.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>StopAllSoundExceptMask  ·  348 bytes  ·  wip</title></rect>
+<rect x="158.18" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StopAllSoundExceptMask  ·  348 bytes  ·  matched</title></rect>
 <rect x="172.06" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetGraphImpl  ·  348 bytes  ·  matched</title></rect>
 <rect x="185.94" y="578.00" width="13.56" height="13.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>InstallInterruptCallback  ·  340 bytes  ·  wip</title></rect>
 <rect x="199.50" y="578.00" width="13.40" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawDragonRescuedBanner  ·  336 bytes  ·  matched</title></rect>
