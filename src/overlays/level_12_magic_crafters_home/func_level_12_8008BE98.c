@@ -1,41 +1,3 @@
-/* PARKED 2026-08-05-3 at 99.92% (1294/1294 insns, LENGTH-EXACT -- ONE insn
- * differs, at 0x8008C254).
- *
- * Everything below is byte-exact except the first argument of the LAST call
- * in arm 0x8:
- *     orig   addiu a0,sp,32       (v's address rematerialised)
- *     mine   move  a0,s7          (v's address read from the loop-hoisted reg)
- *
- * The other five uses of `v` inside arm 0x8 read s7 in BOTH builds, and the
- * preheader hoist (`addiu s7,sp,32`, after `sll s5,s4,2`) is identical.  So
- * the original build carries TWO pseudos for &v -- one with five uses that
- * loop.c hoisted into s7, and a singleton that stayed put and that reload
- * then rematerialised from its frame-address equivalence.  Our cse always
- * unifies them into one.  New residue class: "loop-hoisted stack-array
- * address, one use rematerialised".
- *
- * Measured invariant (every one gives the identical `move a0,s7`):
- *   - `&v[0]`, `(int *)v` and `v + 0` at that call site (all fold);
- *   - a single-use pointer local assigned immediately before the call
- *     (`q = v; func_8001778C(q, ...)`) -- cse copy-propagates it away;
- *   - `q = p + 4` (the same address by a different route) -- cse folds it to
- *     s7 by value;
- *   - an UNPROTOTYPED `extern void func_8001778C();` (A121) -- no change.
- * Two variants reproduce the original's rematerialisation but move the
- * preheader hoist one slot early (2 insns off instead of 1):
- *   - a function-scope `int *q` assigned before the do-loop, used for the
- *     five calls, with `v` written directly at the sixth;
- *   - the same with `q = v;` as the loop body's first statement.
- *   In both, the explicit assignment precedes loop.c's own movables (A93),
- *   so `addiu s7,sp,32` lands BEFORE `sll s5,s4,2`; the original has it
- *   after, i.e. its hoist is a loop.c movable scanned after step*4's first
- *   use.  Naming step*4 to force that order (`step4 = step * 4;` before the
- *   loop) makes gcc drop the preheader `sll` entirely.  Assigning `q` inside
- *   the arm is never hoisted (loop.c refuses a conditional address movable),
- *   and costs 2 insns.
- *
- * Resume here: this is the ONLY thing between the file and 5,176 exact bytes.
- */
 /* func_level_12_8008BE98 (0x8008BE98, level_12_magic_crafters_home overlay,
  * 0x1438 bytes).
  *
@@ -78,6 +40,15 @@
  *
  * Verified byte-identical inside the relinked
  * level_12_magic_crafters_home.ovl.
+ *
+ * Two locals exist only to reproduce the original's preheader order:
+ * `step4` names step * 4 (the amount every fading arm subtracts), so its
+ * `sll s5,s4,2` is an explicit pre-loop insn rather than a loop.c movable,
+ * and `dir` names &v for the five direction-vector calls in arm 0x8, which
+ * puts `addiu s7,sp,32` after it.  Writing them in that order is also what
+ * leaves arm 0x8's LAST call reading `v` directly -- a single-use frame
+ * address that reload rematerialises (`addiu a0,sp,32`) instead of reading
+ * the hoisted register.
  */
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
@@ -119,10 +90,15 @@ void func_level_12_8008BE98(int step) {
   int w[3];
   int c;
   int d;
+  int *dir;
+  int step4;
 
   if (rec[1] == 0xFF) {
     return;
   }
+
+  step4 = step * 4;
+  dir = v;
 
   do {
     switch (rec[0]) {
@@ -133,9 +109,9 @@ void func_level_12_8008BE98(int step) {
       }
       HS(0x1E) = 1 - HU(0x1E);
       rec[0xA] += step * 2;
-      rec[0xC] -= step * 4;
-      rec[0xD] -= step * 4;
-      rec[0xE] -= step * 4;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
         func_80053608(rec);
@@ -148,10 +124,10 @@ void func_level_12_8008BE98(int step) {
         HU(0x1C)++;
       }
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step * 4;
-      rec[0xC] -= step * 4;
-      rec[0xD] -= step * 4;
-      rec[0xE] -= step * 4;
+      rec[0xA] += step4;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
         func_80053608(rec);
@@ -164,10 +140,10 @@ void func_level_12_8008BE98(int step) {
         HU(0x1C)++;
       }
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step * 4;
-      rec[0xC] -= step * 4;
-      rec[0xD] -= step * 4;
-      rec[0xE] -= step * 4;
+      rec[0xA] += step4;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
         func_80053608(rec);
@@ -203,17 +179,17 @@ void func_level_12_8008BE98(int step) {
       if (rec[0x3] == 0) {
         func_80053608(rec);
       } else {
-        func_80017700(v, (int *)(D_80075828 + rec[0x1E] * 0x58 + 0xC));
+        func_80017700(dir, (int *)(D_80075828 + rec[0x1E] * 0x58 + 0xC));
         v[0] += func_80016CB0(rec[0x2] << 7) >> 1;
         v[1] += func_80016C58(rec[0x2] << 7) >> 1;
         v[2] += func_80016CB0((rec[0x2] << 7) - 0x100) >> 2;
-        func_8001778C(v, v, p);
-        len = func_800171FC(v, 1);
+        func_8001778C(dir, dir, p);
+        len = func_800171FC(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
           func_80053608(rec);
         } else {
-          func_800175B8(v, len, 0x80);
-          func_80017758(p, p, v);
+          func_800175B8(dir, len, 0x80);
+          func_80017758(p, p, dir);
           func_80017BFC(POS, p);
           rec[0x2]++;
           func_8001778C(v, p, D_80076DF8);

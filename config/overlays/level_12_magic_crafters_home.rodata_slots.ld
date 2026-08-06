@@ -40,6 +40,7 @@
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B59C)
     . = 0x00000b8c ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B5C4)
+    build/overlays/level_12_magic_crafters_home/c/func_level_12_8008BE98.o(.rodata)
     . = 0x00000cd0 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B708)
     . = 0x00000e18 ;
