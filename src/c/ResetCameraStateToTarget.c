@@ -15,14 +15,9 @@ extern void UpdateCameraEulerAngles(void);
 
 extern int g_anCameraSpringYawBlock[];
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show
-   HEAD:src/c/ResetCameraStateToTarget.c.wip Best candidate:
-   build/permuter/nonmatchings/ResetCameraStateToTarget/output-10-1/source.c */
-
+/* The spring-block base is taken twice (`springBase = (springAlias = ...)`)
+   on purpose: one pseudo alone is copy-propagated into the prologue and the
+   `lui/addiu` pair then lands ahead of the register saves. */
 void ResetCameraStateToTarget(void) {
   int *yaw;
   int y;
@@ -30,14 +25,14 @@ void ResetCameraStateToTarget(void) {
   int d;
   int r;
   int pb;
-  int *new_var3;
+  int *springBase;
   int *eye;
   int yb;
-  volatile int *new_var2;
-  int *new_var;
-  new_var3 = (new_var = g_anCameraSpringYawBlock);
+  volatile int *pSpringPitch;
+  int *springAlias;
+  springBase = (springAlias = g_anCameraSpringYawBlock);
   LoadCameraTargetAnglesFromMode();
-  yaw = new_var3;
+  yaw = springBase;
   eye = &yaw[-17];
   y = *((volatile int *)(&g_nCameraTargetYaw));
   p = *((volatile int *)(&g_nCameraTargetPitch));
@@ -53,9 +48,9 @@ void ResetCameraStateToTarget(void) {
   g_anCameraSpringDeltaState[5] = 0;
   g_nCameraCollisionRetries = 0;
   g_nCameraStuckFrames = 0;
-  new_var2 = (volatile int *)(&g_nCameraSpringPitch);
+  pSpringPitch = (volatile int *)(&g_nCameraSpringPitch);
   *((volatile int *)yaw) = y;
-  *new_var2 = p;
+  *pSpringPitch = p;
   *((volatile int *)(&g_nCameraSpringDistance)) = d;
   *((volatile int *)(&g_nCameraSpringRoll)) = r;
   *((volatile int *)(&g_nCameraSpringPitchBias)) = pb;
@@ -69,20 +64,3 @@ void ResetCameraStateToTarget(void) {
   g_nCameraShakeMagnitude = 0;
   g_nCameraShakeDuration = 0;
 }
-
-/* PARKED 2026-07-11 at 94.6% (70/74). Everything matches except the
-   AddVector call setup: original emits [move a0,s1; lui/lw a2 anchor;
-   jal (delay move a1,s1)]; ours [move a0; move a1; lui/lw; jal (delay
-   addiu s0,-0x50 forward-filled)] — reorg only backward-fills from the
-   immediately-preceding insn, and our sched always parks the anchor lw
-   adjacent to the jal so move a1 can never sit there. Tried: anchor temp
-   (propagated), volatile anchor read, unprototyped extern — byte-identical
-   all three. Sec-I scheduler slot-knot class (EndSaveMenuToWorld family);
-   permuter candidate. Working parts: g_anCameraSpringYawBlock held base
-   with eye = &yaw[-17] (addiu s1,s0,-0x44), in-place yaw -= 0x14 step,
-   Sec-M volatile 6-load batch + volatile spring stores around the plain
-   zero stores.
-
-   2026-07-25-1 unattended permuter session (~15m, ~76200 iterations, timed out
-   at the 15m budget): best score 10 vs base score 70 — very close. No
-   byte-perfect candidate found; still PARKED (see above). */
