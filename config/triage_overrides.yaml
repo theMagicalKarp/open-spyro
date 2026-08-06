@@ -1310,3 +1310,11 @@ func_8005FBB4:
     184 B. Original emits `sw s0 ; move s0,a0 ; sw s1 ; move s1,a1`, we emit the
     s1 pair first. Swapping the declaration order flips the s0/s1 param mapping
     instead and costs 13 more insns (17/46) — do not re-try that.
+ComputeVoicePanAndFalloff:
+  verdict: matched
+  class: "A127 frame padding + parameter-vs-copy operand choice"
+  date: 2026-08-06
+  note: >-
+    320 B. `int pad[4]` restores the 0x20 frame (the 5th arg then reloads from
+    0x30(sp)); the wrap arm must negate the PARAMETER and mask the COPY, which
+    is what assigns a2/v1 to the original's roles in the two delay slots.
