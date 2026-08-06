@@ -5,31 +5,7 @@
    spins the menu light vector, then (once the 5-frame transition is
    done) either runs level-select input or the normal sub-menu: cheat
    detection, up/down scrolling between visited levels (0x1C0 fixed-step
-   scroll with cursor wrap), and pause/exit pad handling.
-
-   PARKED 2026-07-17 at 96.6% (171/177 insns, LENGTH EXACT) — §I/§K
-   scheduler slot knot in the 4-statement head. Everything below the
-   head matches byte-identically. The head needs simultaneously:
-   (a) load order [la phase (fills the Mod9 lw delay), lw step, lw idle,
-       lw phase-val] — reached ONLY when the phase RMW statement is
-       written BEFORE the idle += (this form);
-   (b) statement-tail order [addu idle; lui at; sw idle; subu; andi;
-       sw phase] — reached ONLY when the idle store is written between
-       the phase load and store (§W split-RMW: t = phase[0]; idle +=;
-       phase[0] = (t - step) & 0xFF), which flips the head loads to
-       [lw idle, lw step, la] + a Mod9-delay nop (+4, slot overflow).
-   Probed 7 forms: A2 (this one, tails swapped: [lui at; sw idle] emitted
-   after sw-phase/sra instead of between addu and subu), split-RMW ×3
-   (t-load / t-subtract / shared step local), swapped-operand idle
-   (`step + idle` — also +4 and flips the addu operands), embedded
-   `*(phase = block)` (byte-identical to split-RMW). The la/load
-   placement is sched1-canonical per §AD; no source form reached both.
-   6-insn window, single decision — permuter candidate.
-
-   2026-07-25-1 unattended permuter session (~15m, ~71400 iterations, timed out
-   at the 15m budget): best score 10 vs base score 130 — very close, matching
-   the single-decision diagnosis above. No byte-perfect candidate found; still
-   PARKED. A longer budget looks worthwhile here. */
+   scroll with cursor wrap), and pause/exit pad handling. */
 extern void RotateLightVectorXZ(int mode);
 extern void HandleLevelSelectInput(void);
 extern void CheckCheatCodeMatch(void);
@@ -39,18 +15,8 @@ extern void ExitSubMenuToTitle(void);
 
 extern unsigned int g_adwHudBobSinePhaseBlock[]; /* g_dwHudBobSinePhase */
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/SubMenu_Update.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/SubMenu_Update/output-10-1/source.c */
-
 void SubMenu_Update(void) {
-  unsigned int *phase;
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
-  phase = g_adwHudBobSinePhaseBlock;
   g_adwHudBobSinePhaseBlock[0] =
       (g_adwHudBobSinePhaseBlock[0] - g_nFrameStep) & 0xFF;
   g_nPauseMenuIdleFrames += g_nFrameStep;
