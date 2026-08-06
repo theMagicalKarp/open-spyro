@@ -1397,3 +1397,31 @@ func_level_0_8007CFC0:
     vs 642 orig, MISMATCH 215 — this is a genuine mid-decode, not a tie, and
     needs a fresh decode session, not permuter time. Do not pick it up expecting
     a close.
+func_level_0_8007B020:
+  verdict: park
+  class: "R1 cross-jump asymmetry (7 insns) + 4 addressing/sched ties; 2009/2024, 87 mismatched"
+  date: 2026-08-06-3
+  note: >-
+    8096 B, and the single largest clone prize on the board — word-identical in
+    the SIX hub overlays (level_0/6/12/18/24/30 = 48,576 B) and a near-clone in
+    four more (level_1/3/7/8 = 32,384 B). Decode is COMPLETE this session: all
+    eight arms of the balloonist cutscene tick transcribed and verified against
+    the asm, 95.7% shape-aligned. Screens clean of every B wall (the 316 $at
+    uses are ordinary `lui $at; sw %lo` global stores, not B2). Residues are
+    mapped in the .c.wip header — R1 (the only structural one) is that the
+    original keeps two copies of the `+ lerp` block at B2A8/B470 but shares one
+    `- lerp` block, where our jump.c cross-jumps both pairs. Pick this up as a
+    finish-the-ties session, not a decode session.
+func_level_6_8007B9F8:
+  verdict: clone
+  class: "clone of func_level_0_8007B020 (strict-identical body)"
+  date: 2026-08-06-3
+  note: >-
+    Same for func_level_12_8007B9F0 / func_level_18_8007B7E4 /
+    func_level_24_8007BA18 / func_level_30_8007AF90 — all five are
+    instruction-and-operand identical to func_level_0_8007B020 modulo %hi/%lo
+    symbol names and branch labels (md5 of the masked body agrees). sed-clone
+    them the moment level_0 lands. func_level_1_8007B0D0 /
+    func_level_3_8007B0AC / func_level_7_8007B898 / func_level_8_8007B898 are a
+    second 2024-insn group (also identical among themselves) that differs from
+    the level_0 group in register allocation only.
