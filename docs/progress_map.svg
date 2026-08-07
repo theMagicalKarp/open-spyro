@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.40% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">310,988 / 2,159,608 split-code bytes · 504 matched · 83 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">311,024 / 2,159,608 split-code bytes · 505 matched · 82 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -295,7 +295,7 @@
 <rect x="154.74" y="751.48" width="11.16" height="10.97" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>InitActorMeshScratchRegions  ·  224 bytes  ·  wip</title></rect>
 <rect x="154.74" y="762.45" width="11.16" height="10.97" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdResetController  ·  224 bytes  ·  matched</title></rect>
 <rect x="165.90" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyCheatCodeEffect  ·  220 bytes  ·  matched</title></rect>
-<rect x="176.82" y="615.55" width="10.92" height="11.01" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>DampenSpyroFreeFallAttitude  ·  220 bytes  ·  wip</title></rect>
+<rect x="176.82" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DampenSpyroFreeFallAttitude  ·  220 bytes  ·  matched</title></rect>
 <rect x="187.74" y="615.55" width="10.92" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ResetCallback  ·  220 bytes  ·  asm</title></rect>
 <rect x="198.66" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitDisplayEnv  ·  220 bytes  ·  matched</title></rect>
 <rect x="209.58" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WaitMemCardEventSlot1  ·  220 bytes  ·  matched</title></rect>
