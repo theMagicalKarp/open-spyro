@@ -599,8 +599,19 @@ Gamestate0C_Update:
   date: 2026-07-28
 RespawnOrGameOver_Update:
   verdict: park
-  class: "F10 sched1 sink, 369/373 length-exact (98.9%) — arg3's volatile size read sinks below the second held base's `la` + the 0x10(sp) stack-arg store; the two size reads off one base require volatile (every non-volatile form cse-merges to 372 insns). See the .wip header for the exhausted lever list"
-  date: 2026-07-28
+  class: "F14f/F10 arg-block order, 370/373 length-exact (99.2%) — was 369/373"
+  date: 2026-08-07
+  note: >-
+    1492 B. Routing the volatile size read through the arm's loop counter `i`
+    (already 3 sets) makes it non-birthing, so it no longer sinks below the
+    second held base's `la` and the 0x10(sp) stack-arg store. It now lands one
+    slot too EARLY: `lba` is single-set and therefore boosted to the back, where
+    the original loads it first. Every second-set carrier for lba costs more
+    elsewhere (`count` breaks the mesh-count block by 4; a function-scope
+    carrier written by the mode-1 arm does not clear the boost at all — that
+    load is a rematerialised `lui/lw` into a0, not a block pseudo; pointer
+    carriers and the intro-index/(id/10)*10 routings overflow the slot). See the
+    .wip header.
 Gamestate0D_Update:
   verdict: matched
   class: "matched 2026-07-28-1 (A19-free ladder: 3 held-base aliases at offset 0 + distinct Y/Z scalar aliases for the nonzero-offset stores, A81 per-arm Z store)"
@@ -1344,23 +1355,25 @@ func_level_5_8007B68C:
     The permuter body's `allclear = 0x15;` is LOAD-BEARING — replacing it with
     the literal offset is 78 -> 85. The hand-written body + A164 is also 85.
 func_80059474:
-  verdict: park
-  class: "F2/B19 arg-copy tie, 2/62 length-exact"
-  date: 2026-08-06
+  verdict: matched
+  class: "A170 — inline arg spelling + cursor assigned after the call"
+  date: 2026-08-07
   note: >-
-    248 B. F14e carrier for the anchor-flag `1` took it 4 -> 2. The last 2 are
-    `addiu s1 ; move a0,s1 ; addiu s0` vs our `addiu s1 ; addiu s0 ; move a0,s1`
-    — position-invariant (src moved to the call site and an embedded-assignment
-    arg both byte-identical); both pointers are already multi-set.
+    248 B. The last 2 insns fell to A170: spelling the merge source INLINE at
+    the CopyWords call and assigning the loop cursor `src` AFTER the call keeps
+    the one folded `addiu s0,s0,-44` but at the later insn's position, so
+    `move a0,dst` schedules ahead of it. The F14e carrier for the anchor flag
+    stays load-bearing.
 AlignSpyroBodyToVelocity:
-  verdict: park
-  class: "F2 independent-load order, 3/71"
-  date: 2026-08-06
+  verdict: matched
+  class: "A169 side-effect operand order + A166 statement split"
+  date: 2026-08-07
   note: >-
-    284 B. `lw v1,16(sp)` (d[0] stack reload) vs the g_nSpyroBodyPitch global
-    load, both feeding one subu. Splitting the embedded `pitch = ...` read into
-    its own preceding statement is byte-identical — confirms F2 (independent
-    pure loads are not steerable by source order).
+    284 B. Not F2 after all: the embedded `(pitch = g_nSpyroBodyPitch)` operand
+    has side effects, so expand evaluates it BEFORE the d[0] array read and
+    sched1 hoists the global's lui/lw above the stack reload. Reading d[0] into
+    the local first, then the global, then subtracting and masking in separate
+    statements (A166, which keeps the result in the loaded register) is exact.
 func_8005FBB4:
   verdict: park
   class: "prologue save/param-copy pair order, 4/46"
@@ -1425,3 +1438,36 @@ func_level_6_8007B9F8:
     func_level_3_8007B0AC / func_level_7_8007B898 / func_level_8_8007B898 are a
     second 2024-insn group (also identical among themselves) that differs from
     the level_0 group in register allocation only.
+DampenSpyroFreeFallAttitude:
+  verdict: matched
+  class: "A167 single-set result locals + statement order in the spring section"
+  date: 2026-08-07
+  note: >-
+    220 B, was a 7-insn F2/K park. Three levers: each angle's final sum goes to
+    its own single-set local (`out0`/`out1`), which restores the original's
+    `addu a1,t0,a1` operand order instead of accumulating in place; the chain-1
+    error shift is split (`<< 2` right after chain 0's spring update, `>> 4`
+    after the D_80078CB4 load) so sched1 cannot hoist it to the block head; and
+    the D_80078CB4 load is written ahead of the D_80078CB0 store.
+func_8003A16C:
+  verdict: park
+  class: "F1/F7 two-register exchange + F4 copy register, 10/173 length-exact (was 14/173)"
+  date: 2026-08-07
+  note: >-
+    692 B. A168 fixed both waypoint call sites (`&path[path[1] * 0x10 + 8]`
+    folds the +8 into the index and emits `addiu a1,a1,8; addu a1,s2,a1` like
+    the original; the outer `(path + idx*0x10) + 8` form emits them reversed).
+    Residue: the original keeps `yaw` in a1 and the negated clamp in a0 (ours
+    swaps them, which also renames the two `d + yaw` addus), plus the ground
+    result's copy is `move v1,v0` vs our `move a0,v0`. Declaration order,
+    explicit/block-scoped nclamp locals, a reversed compare, hoisting the
+    negation above the limit test, and a dedicated ground local all leave it at
+    10 or change the length. Permuter class.
+RotateLightVectorXZ:
+  verdict: park
+  class: "slot overflow — the parked wip builds one insn too long (164 B slot)"
+  date: 2026-08-07
+  note: >-
+    Do not enable this wip in a multi-function build: it overflows its text slot
+    (`ld: cannot move location counter backwards ... 80058d68 -> 80058d64`) and
+    every other diff in that build then reads stale bytes.
