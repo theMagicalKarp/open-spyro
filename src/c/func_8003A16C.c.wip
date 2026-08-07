@@ -13,17 +13,24 @@ extern void CopyVector();
 extern void EncodeCachedVecToActorDirCode(char *actor);
 extern void func_800529E4();
 
-/* PARKED 2026-07-16 at ~97% (169/173 masked-aligned; 2 insns short). Solved:
- * yaw loaded AFTER the ArcTan2 call (caller-saved a1, decl-init put it in s0);
- * ret split from speed (merging them flipped the path/speed s2/s3 priority).
- * Residue: (1) Sec-O return-reg coalescing tie on `ground` - the original
- * keeps a real `move v1,v0` copy and stores sw v1 (arm stores differ v1/v0 so
- * jump2 cannot cross-jump them); our gcc always coalesces ground into v0 and
- * then merges both arms' sw (-2 insns, branch inverted). u8 return/local
- * (andi), two-ifs (re-fused), multi-def all failed - permuter class.
- * (2) Both SubtractVector waypoint calls: orig fills the jal delay with the
- * final a1 addu (a0=&vec computed early); ours puts move a0,s0 in the delay.
- * Arg-eval order tie, 0-length. Everything else byte-identical.
+/* PARKED 2026-08-07 at 10/173 insns (94.2%, length-exact; was 14/173).
+ * Fixed this session: the waypoint address is `&path[path[1] * 0x10 + 8]`, so
+ * the +8 is folded into the index before the base add (`addiu a1,a1,8` then
+ * `addu a1,s2,a1`); the outer `(path + idx*0x10) + 8` form emits them the
+ * other way round, 2 insns per call site x2.
+ * Residue is one 2-register exchange plus an F4 copy register, all
+ * length-exact replacements:
+ *   (1) F1/F7 - the original keeps `yaw` (*yawp) in a1 and the negated clamp
+ *       in a0; ours allocates them the other way round, which also renames the
+ *       two `d + yaw` addu's. Declaration order (nclamp before/after new_var,
+ *       block-scoped), reversed compare operands, hoisting the negation above
+ *       the limit test, and dropping the `new_var` carrier all leave it at 10
+ *       (the last two change the insn count).
+ *   (2) F4 - the ground result's copy is `move v1,v0` in the original and
+ *       `move a0,v0` in ours. A dedicated local for the FindGroundHeightBelow
+ *       result (declared first or last) changes the length, so the reuse of
+ *       `new_var` for both yaw and ground is load-bearing.
+ * Permuter class (both are pure register preferences).
  *
  * Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
  * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):
@@ -34,12 +41,7 @@ extern void func_800529E4();
  * probe of radius `contact`, then snaps to the ground within 0x400 below.
  * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
- *
- * 2026-07-25-1 unattended permuter session (~15m, ~68600 iterations, timed out
- * at the 15m budget): best score 290 vs base score 740. No byte-perfect
- * candidate found; still parked.
- */
-/* NOTE: the function body below is decomp-permuter output from the
+ *//* NOTE: the function body below is decomp-permuter output from the
    2026-07-25 sweep, kept for its partial-byte credit. It is machine-
    generated and reads worse than the hand-written form it replaced;
    the analysis above and below still describes the residue accurately.
@@ -55,7 +57,7 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
   int mtx[8];
   int new_var2;
   int ret;
-  SubtractVector(vec, (path + (path[1] * 0x10)) + 8, actor + 0xC);
+  SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, 0), vec[2], 0);
   if (((int)VectorLength(vec, 0)) < radius) {
@@ -112,7 +114,7 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
   EncodeCachedVecToActorDirCode(actor);
   func_800529E4(actor, 2);
   ret = 0;
-  SubtractVector(vec, (path + (path[1] * 0x10)) + 8, actor + 0xC);
+  SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   if (((int)VectorLength(vec, 1)) < radius) {
     actor[0x49] = 0;
     path[1] += 1;

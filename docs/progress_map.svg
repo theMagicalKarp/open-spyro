@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.40% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">310,960 / 2,159,608 split-code bytes · 502 matched · 85 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">311,036 / 2,159,608 split-code bytes · 505 matched · 82 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -239,7 +239,7 @@
 <rect x="130.43" y="748.43" width="12.51" height="12.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TrackEntityYawTowardSpyro  ·  288 bytes  ·  matched</title></rect>
 <rect x="130.43" y="761.01" width="12.51" height="12.41" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LinkOTPrimitives  ·  284 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawShadedMenuBox  ·  284 bytes  ·  matched</title></rect>
-<rect x="155.59" y="591.70" width="12.65" height="12.27" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>AlignSpyroBodyToVelocity  ·  284 bytes  ·  wip</title></rect>
+<rect x="155.59" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AlignSpyroBodyToVelocity  ·  284 bytes  ·  matched</title></rect>
 <rect x="168.25" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetHudCounterDigits  ·  284 bytes  ·  matched</title></rect>
 <rect x="180.90" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitSoundEngine  ·  284 bytes  ·  matched</title></rect>
 <rect x="193.55" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005FEDC  ·  284 bytes  ·  matched</title></rect>
@@ -269,7 +269,7 @@
 <rect x="154.74" y="603.97" width="11.90" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B9D4  ·  252 bytes  ·  matched</title></rect>
 <rect x="166.63" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0F_Update  ·  248 bytes  ·  matched</title></rect>
 <rect x="178.34" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyGravityAlongSpyroSlopeTangent  ·  248 bytes  ·  matched</title></rect>
-<rect x="190.04" y="603.97" width="11.71" height="11.58" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80059474  ·  248 bytes  ·  wip</title></rect>
+<rect x="190.04" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80059474  ·  248 bytes  ·  matched</title></rect>
 <rect x="201.75" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitSpuSubsystem  ·  248 bytes  ·  matched</title></rect>
 <rect x="213.46" y="603.97" width="11.52" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComputeCameraOrbitOffset  ·  244 bytes  ·  matched</title></rect>
 <rect x="224.98" y="603.97" width="11.52" height="11.58" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BlendDepthCuedEdgeColor  ·  244 bytes  ·  asm</title></rect>
@@ -295,7 +295,7 @@
 <rect x="154.74" y="751.48" width="11.16" height="10.97" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>InitActorMeshScratchRegions  ·  224 bytes  ·  wip</title></rect>
 <rect x="154.74" y="762.45" width="11.16" height="10.97" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdResetController  ·  224 bytes  ·  matched</title></rect>
 <rect x="165.90" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyCheatCodeEffect  ·  220 bytes  ·  matched</title></rect>
-<rect x="176.82" y="615.55" width="10.92" height="11.01" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>DampenSpyroFreeFallAttitude  ·  220 bytes  ·  wip</title></rect>
+<rect x="176.82" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DampenSpyroFreeFallAttitude  ·  220 bytes  ·  matched</title></rect>
 <rect x="187.74" y="615.55" width="10.92" height="11.01" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ResetCallback  ·  220 bytes  ·  asm</title></rect>
 <rect x="198.66" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitDisplayEnv  ·  220 bytes  ·  matched</title></rect>
 <rect x="209.58" y="615.55" width="10.92" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WaitMemCardEventSlot1  ·  220 bytes  ·  matched</title></rect>
