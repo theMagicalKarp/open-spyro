@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.44% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">311,928 / 2,159,608 split-code bytes · 512 matched · 79 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.46% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">312,276 / 2,159,608 split-code bytes · 513 matched · 81 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -383,7 +383,7 @@
 <rect x="214.22" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B728  ·  152 bytes  ·  matched</title></rect>
 <rect x="223.52" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80053570  ·  152 bytes  ·  asm</title></rect>
 <rect x="232.82" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SyncSoundVoicesWithHardware  ·  152 bytes  ·  matched</title></rect>
-<rect x="242.13" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005FC6C  ·  152 bytes  ·  asm</title></rect>
+<rect x="242.13" y="646.56" width="9.30" height="8.93" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_8005FC6C  ·  152 bytes  ·  wip</title></rect>
 <rect x="251.43" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdInit  ·  152 bytes  ·  asm</title></rect>
 <rect x="260.73" y="646.56" width="9.30" height="8.93" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_2F8  ·  152 bytes  ·  library</title></rect>
 <rect x="270.03" y="646.56" width="9.30" height="8.93" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_padSetMainMode  ·  152 bytes  ·  library</title></rect>
@@ -412,7 +412,7 @@
 <rect x="248.32" y="655.50" width="8.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>main  ·  136 bytes  ·  asm</title></rect>
 <rect x="256.76" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueuePendingSpritePrims  ·  136 bytes  ·  matched</title></rect>
 <rect x="265.19" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038098  ·  136 bytes  ·  matched</title></rect>
-<rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80038494  ·  136 bytes  ·  asm</title></rect>
+<rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80038494  ·  136 bytes  ·  wip</title></rect>
 <rect x="282.06" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B160  ·  136 bytes  ·  matched</title></rect>
 <rect x="290.49" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimLayer1Frame  ·  136 bytes  ·  matched</title></rect>
 <rect x="298.93" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80054578  ·  136 bytes  ·  matched</title></rect>
@@ -493,7 +493,7 @@
 <rect x="301.46" y="680.07" width="7.32" height="7.47" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_2CC  ·  100 bytes  ·  library</title></rect>
 <rect x="308.77" y="680.07" width="7.02" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LoadAssetDirectoryFromCd  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="687.54" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApproxDist2D  ·  96 bytes  ·  handwritten</title></rect>
-<rect x="228.29" y="694.69" width="7.33" height="7.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraEulerAngles  ·  96 bytes  ·  asm</title></rect>
+<rect x="228.29" y="694.69" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraEulerAngles  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="701.85" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003CAC4  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="709.01" width="7.33" height="7.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8004BDEC  ·  96 bytes  ·  asm</title></rect>
 <rect x="228.29" y="716.16" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005C668  ·  96 bytes  ·  matched</title></rect>
