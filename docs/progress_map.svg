@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.46% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">312,276 / 2,159,608 split-code bytes · 513 matched · 81 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.47% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">312,432 / 2,159,608 split-code bytes · 514 matched · 81 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -373,7 +373,7 @@
 <rect x="186.19" y="701.52" width="9.43" height="9.04" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80053608  ·  156 bytes  ·  handwritten</title></rect>
 <rect x="186.19" y="710.57" width="9.43" height="9.04" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>WaitForFrameDeadline  ·  156 bytes  ·  wip</title></rect>
 <rect x="186.19" y="719.61" width="9.43" height="9.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetDispMask  ·  156 bytes  ·  matched</title></rect>
-<rect x="186.19" y="728.66" width="9.43" height="9.04" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005F98C  ·  156 bytes  ·  asm</title></rect>
+<rect x="186.19" y="728.66" width="9.43" height="9.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005F98C  ·  156 bytes  ·  matched</title></rect>
 <rect x="186.19" y="737.70" width="9.43" height="9.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80065FD0  ·  156 bytes  ·  matched</title></rect>
 <rect x="186.19" y="746.75" width="9.43" height="9.04" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_34  ·  156 bytes  ·  library</title></rect>
 <rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  matched</title></rect>
