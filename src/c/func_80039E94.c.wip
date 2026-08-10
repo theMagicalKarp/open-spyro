@@ -1,20 +1,33 @@
 #include "globals.h"
 
-/* PARKED .wip — structure & logic byte-exact except ONE scheduling insn.
-   Residue: in the backward-wrap branch the original fills the `path[6]==-1`
-   branch's delay slot (0x80039f8c) with `li v1,255` (the `(t&0xFF)==0xFF`
-   comparand), so its backward branch reuses v0 for the andi and needs no
-   separate `li`. Our gcc emits `li v0,255` LATE inside the branch instead
-   (andi->v1, sb, li v0,255, bne v1,v0) = +1 insn (+4 bytes, link overflows
-   the slot). The forward branch already matches exactly; only backward
-   differs because its comparand is a constant, not a load. This +1 then
-   cascades the s-reg rotation (ret gets s4/highest-priority; original puts
-   ret in fp/s8 = allocated LAST). Preheader fold FIXED via
-   g_apSaveMenuAnimActorListBlock alias (see symbol_addrs.txt). This is a
-   pure delay-slot-constant-hoist schedule tie -> permuter candidate; no
-   source form probed (natural order, `0xFF ==` swap, both fail) reproduces
-   the cross-branch hoist. Verified: all 3 returns copy fp->v0; node/ang
-   reuse s0; scan loop body byte-identical. */
+/* PARKED at 10/182 (94.5%) — LENGTH-EXACT and links (was +1 insn / slot
+   overflow). Two of the three parked classes are solved:
+     * the cross-branch `li v1,255` hoist into the 0x80039f8c delay slot is
+       an F14 birthing question, not a schedule one. A bare `0xFF` comparand
+       is a single-set pseudo, so sched.c boosts it to max_priority and it
+       sinks next to its `bne` INSIDE the backward arm (+1 insn). Giving both
+       arms ONE `wrap` comparand local (`wrap = path[0]` / `wrap = 0xFF`)
+       makes it reg_n_sets==2, non-birthing, so it keeps priority 1 and
+       drifts to the FRONT of the backward arm — which is the branch TARGET
+       thread, so reorg lifts it straight into the delay slot. The shared
+       local is also why both arms compare against v1 in the original.
+     * `ret` was taking s4 (allocated first) where the original has fp
+       (allocated last). Three `return ret;` statements make it 5 refs
+       (2 sets + 3 uses, `dies in 3 places`); one exit drops it to 3, and
+       floor_log2(3)*3/92 = 326 falls below every parameter allocno, so it is
+       allocated last and lands fp. jump2 still duplicates the epilogue, so
+       the three `move v0,fp` insns are unchanged.
+   Residue (10 insns, all one tie): `step` (stack param @0x54) and `kind`
+   (@0x5c) exchange s6/s7, which also swaps their two prologue home insns.
+   Measured with -dg: both have 4 refs, but global.c priority is
+   floor_log2(R)*R/live_length, and step is live 202 insns vs kind 182 =>
+   396 vs 439, so kind is allocated first. kind only reaches 4 refs because
+   flow weights its `peer[0x43] == kind` use by loop depth; step's three uses
+   are all straight-line. To flip, kind needs live_length > 202 or 3 refs —
+   its last use is the scan loop and step's is the final else arm, so
+   closing the 20-insn gap needs the arms reordered, which moves the emitted
+   branch layout. Ties break on allocno number (77 step < 79 kind), so an
+   exact live-length tie would also do it. */
 
 /* Waypoint path-follow driver (0x80039e94, 0x2d8). Steers the actor
    toward its current path node (path[1] = node index, 16-byte node
@@ -56,6 +69,7 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
   int zclose;
   int ang;
   int t;
+  int wrap;
   int *node;
   void **list;
   unsigned char *peer;
@@ -75,14 +89,16 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
       (zclose != 0)) {
     *((unsigned char *)(((char *)actor) + 0x49)) = 0;
     if ((*((short *)(path + 6))) == (-1)) {
+      wrap = path[0];
       t = path[1] + 1;
       path[1] = t;
-      if ((t & 0xFF) == path[0]) {
+      if ((t & 0xFF) == wrap) {
         path[1] = 0;
       }
     } else {
+      wrap = 0xFF;
       t = (path[1] = path[1] - 1);
-      if ((t & 0xFF) == 0xFF) {
+      if ((t & 0xFF) == wrap) {
         path[1] = path[0] - 1;
       }
     }
@@ -95,7 +111,7 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
     *((unsigned char *)(((char *)actor) + 0x49)) = 1;
     func_80038EE0(actor, ang, step, lim, 1);
     func_80039398(actor, speed, group, 0, flags);
-    return ret;
+    goto done;
   }
   if (((*((unsigned char *)(((char *)actor) + 0x49))) == 0) && (kind != 0xFF)) {
     list = g_apSaveMenuAnimActorListBlock;
@@ -107,7 +123,7 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
     }
 
     if (peer != 0) {
-      return ret;
+      goto done;
     }
     *((unsigned char *)(((char *)actor) + 0x46)) = ApproachAngle8(
         ang, *((unsigned char *)(((char *)actor) + 0x46)), step, lim);
@@ -116,5 +132,6 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
     *((unsigned char *)(((char *)actor) + 0x46)) = ApproachAngle8(
         ang, *((unsigned char *)(((char *)actor) + 0x46)), step, lim);
   }
+done:
   return ret;
 }
