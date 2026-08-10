@@ -1019,6 +1019,7 @@ g_nSpuReverbEsaDefault = 0x800735bc; // size:0x4
 g_nVsyncPrevHRetraceCount = 0x800738c4; // size:0x4
 g_nVsyncPrevVblankCount = 0x800738c8; // size:0x4
 g_nLibapiCallbackInstalled = 0x80073924; // size:0x2 allow_duplicated:True
+g_anLibapiCallbackStateBlock = 0x80073924; // allow_duplicated:True alias — incomplete-array view so the installed flag keeps one held base across EnterCriticalSection/ResetEntryInt in func_8005E378
 g_anLibapiIrqBlock = 0x80073924; // allow_duplicated:True incomplete-array alias — held-base view shared across the callback-installed flag ([0]) and g_apfnIrqHandlers (+4) walk (HandleHardwareInterrupt)
 g_anLibapiCallbackBlock = 0x80073924; // size:0x68 allow_duplicated:True alias block — +0 installed flag, +0x32 saved I_MASK, +0x34 saved DPCR, +0x38 exception jmp_buf
 g_nInIsrFlag = 0x80073926; // size:0x2

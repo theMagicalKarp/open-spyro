@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.43% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">311,560 / 2,159,608 split-code bytes · 510 matched · 78 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">311,732 / 2,159,608 split-code bytes · 511 matched · 78 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -345,7 +345,7 @@
 <rect x="176.44" y="696.49" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RestartStalledCdRead  ·  172 bytes  ·  matched</title></rect>
 <rect x="176.44" y="706.13" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B1E8  ·  172 bytes  ·  matched</title></rect>
 <rect x="176.44" y="715.78" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005C114  ·  172 bytes  ·  matched</title></rect>
-<rect x="176.44" y="725.42" width="9.75" height="9.64" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005E378  ·  172 bytes  ·  asm</title></rect>
+<rect x="176.44" y="725.42" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E378  ·  172 bytes  ·  matched</title></rect>
 <rect x="176.44" y="735.06" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005F1F8  ·  172 bytes  ·  matched</title></rect>
 <rect x="176.44" y="744.71" width="9.75" height="9.64" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005F5A0  ·  172 bytes  ·  matched</title></rect>
 <rect x="176.44" y="754.35" width="9.75" height="9.64" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadGetState  ·  172 bytes  ·  library</title></rect>
