@@ -200,9 +200,9 @@ MEMCHR_OBJ_48:
 
 # --- Parked tie classes with no .c.wip on disk (residue documented in cookbook §F) ---
 UpdateCameraEulerAngles:
-  verdict: parked
-  class: "F2 load-scheduling tie (roll/yaw a0 hold)"
-  date: 2026-07-05
+  verdict: matched
+  class: "matched 2026-08-10-3 (A146 union allocno: one scratch local carries roll then yaw so both share a0; A161 for the 0x800-A-B reassociation)"
+  date: 2026-08-10
 func_80038494:
   verdict: parked
   class: "F2 sched tie: andi bit-index vs sll bitmap-offset (2/34, length-exact; wip carries the pointer-subtraction and value-temp levers)"
@@ -217,20 +217,20 @@ func_8005E378:
   date: 2026-08-10
 func_8005FC6C:
   verdict: parked
-  class: "F4 return-copy hoist: the `return ot` copy must be live across the terminator computation so cse re-bases the store on v0 (7/38, length-exact; body correct, wip kept)"
+  class: "F4 return-copy hoist (7/38, length-exact). Refined 2026-08-10-3: write the mask on the LEFT (0xFFFFFF & (int)&sym) to get the original's li-before-la order. Residue: the `move v0,ot` copy must sit BETWEEN the mask li and the symbol la (A164 straggler source order), but copy propagation deletes every C form of it; duplicating the tail in both debug-if arms does NOT cross-jump back (+7 insns)"
   date: 2026-08-10
 func_8005F98C:
-  verdict: parked
-  class: "F2 prologue arg-move scheduling"
-  date: 2026-07-06
+  verdict: matched
+  class: "matched 2026-08-10-3 (ClearImage clone + A106: the 0x80000000 needs its own (g<<8)|C temp, declared after the ValidateGpuRect call)"
+  date: 2026-08-10
 func_8005F428:
   verdict: matched
   class: "matched 2026-08-10-2 (sized alias g_abGpuReverseFlagBlock holds the flag base)"
   date: 2026-08-10
 WriteSpuVoiceAddrRegister:
-  verdict: parked
-  class: "F5 beq-to-tail block layout"
-  date: 2026-07-06
+  verdict: matched
+  class: "matched 2026-08-10-3 (A64 asm-order goto transcription of the -2/-1/store ladder; A166 split the round-up RMW)"
+  date: 2026-08-10
 RotateSpyroBodyTowardKnockbackDir:
   verdict: parked
   class: "F4 return-reg coalescing (1 insn, 98.0%)"
@@ -1559,4 +1559,8 @@ func_80039E94:
 func_80038FC8:
   verdict: parked
   class: "F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block"
+  date: 2026-08-10
+FUN_80060e28:
+  verdict: parked
+  class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip"
   date: 2026-08-10

@@ -11,21 +11,34 @@ int *func_8005FC6C(int *ot, int n) {
     ((void (*)(char *, int *, int))g_pfnGpuDebugPrintf)(D_800118E4, ot, n);
   }
   (*(void (**)(int *, int))((char *)g_pGpuDispatchTable + 0x2C))(ot, n);
-  *ot = (int)&D_80074B20 & 0xFFFFFF;
+  *ot = 0xFFFFFF & (int)&D_80074B20;
   return ot;
 }
 
 /* PARKED at 7/38 (length-exact; was the 2026-07-06 "F4 return-pointer
-   coalescing" park, re-derived 2026-08-10-2 — the body above is correct and
-   the whole debug/dispatch head matches).
+   coalescing" park, re-derived 2026-08-10-2, refined 2026-08-10-3 — the body
+   above is correct and the whole debug/dispatch head matches).
 
-   Residue (F4, refined): the original materialises the `return ot` copy
-   BEFORE the terminator computation (`move v0,s0`), so v0 is occupied and the
-   mask/symbol fall to a0/v1 and cse re-bases the store on the copy
-   (`sw v1,0(v0)`). Ours computes into v0/v1 and emits `move v0,s0` after the
-   store. A151 describes exactly this hoist as the thing MULTIPLE `return p;`
-   statements cause — but this function has one path, so there is no second
-   return to create it. Byte-identical from all of: an explicit `ret = ot`
-   local (store via ot or via ret), `ot[0]` + `return &ot[0]`, and a named mask
-   local — every copy coalesces. Needs a lever that makes the return pseudo
-   live across the computation without a second exit. */
+   Refinement 2026-08-10-3: writing the mask on the LEFT
+   (`0xFFFFFF & (int)&D_80074B20`, A106/A178) is what puts the `li` of the mask
+   BEFORE the `la` of the symbol, which is the original's order. Keep it.
+
+   Residue (F4): the original materialises the `return ot` copy BEFORE the
+   terminator computation (`move v0,s0` sits between the mask `li` and the
+   symbol `la`), so v0 is occupied, the mask/symbol fall to a0/v1 and cse
+   re-bases the store on the copy (`sw v1,0(v0)`). Ours emits `move v0,s0`
+   after the store and stores through s0.
+   Mechanism: the three tail insns (mask li, ret copy, symbol la) are all
+   dep-free priority-1 stragglers, so A164 says their order IS source order —
+   the original's source evaluates the return value between the mask and the
+   symbol. But every C form that would emit that copy gets it propagated away:
+   `int *head = ot;` before the store, after the store, storing through `ot` vs
+   through `head`, `ot[0]` + `return &ot[0]`, and a named mask local all give
+   the identical byte (re-tested 2026-08-10-3 with the mask-first form). A171's
+   "dies last" dial does not apply either — copy propagation removes the copy
+   before cse ever builds the equivalence.
+   Also tried 2026-08-10-3 and rejected: duplicating the whole tail in both
+   arms of the debug `if` to manufacture A151's two-exit hoist — jump.c does
+   NOT cross-jump the two copies back (+7 insns, slot overflow).
+   Needs a construct that forces a real register-to-register copy of a
+   parameter to survive copy propagation. */
