@@ -13,26 +13,7 @@ extern void CopyVector();
 extern void EncodeCachedVecToActorDirCode(char *actor);
 extern void func_800529E4();
 
-/* PARKED 2026-08-07 at 10/173 insns (94.2%, length-exact; was 14/173).
- * Fixed this session: the waypoint address is `&path[path[1] * 0x10 + 8]`, so
- * the +8 is folded into the index before the base add (`addiu a1,a1,8` then
- * `addu a1,s2,a1`); the outer `(path + idx*0x10) + 8` form emits them the
- * other way round, 2 insns per call site x2.
- * Residue is one 2-register exchange plus an F4 copy register, all
- * length-exact replacements:
- *   (1) F1/F7 - the original keeps `yaw` (*yawp) in a1 and the negated clamp
- *       in a0; ours allocates them the other way round, which also renames the
- *       two `d + yaw` addu's. Declaration order (nclamp before/after new_var,
- *       block-scoped), reversed compare operands, hoisting the negation above
- *       the limit test, and dropping the `new_var` carrier all leave it at 10
- *       (the last two change the insn count).
- *   (2) F4 - the ground result's copy is `move v1,v0` in the original and
- *       `move a0,v0` in ours. A dedicated local for the FindGroundHeightBelow
- *       result (declared first or last) changes the length, so the reuse of
- *       `new_var` for both yaw and ground is load-bearing.
- * Permuter class (both are pure register preferences).
- *
- * Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
+/* Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
  * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):
  * builds a byte euler {0, pitch-to-waypoint, yaw} where the yaw chases the
  * waypoint bearing, stepped at most +/-`clamp` per tick (movement stalls when
@@ -41,21 +22,13 @@ extern void func_800529E4();
  * probe of radius `contact`, then snaps to the ground within 0x400 below.
  * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
- *//* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/func_8003A16C.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/func_8003A16C/output-290-1/source.c */
-
+ * `d` carries the turn delta and is reused for the ground height. */
 int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
                   int contact, int clamp, int limit, int *yawp) {
   char eul[8];
   int vec[4];
-  int new_var;
+  int d;
   int mtx[8];
-  int new_var2;
   int ret;
   SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   eul[0] = 0;
@@ -64,10 +37,8 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
     eul[2] = *yawp;
   } else {
     int yaw;
-    int d;
     d = ArcTan2(vec[0], vec[1], 0);
-    new_var2 = *yawp;
-    yaw = new_var2;
+    yaw = *yawp;
     d = (d - yaw) & 0xFF;
     if (d >= 0x81) {
       d -= 0x100;
@@ -75,15 +46,14 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
     if (limit < abs(d)) {
       speed = 0;
     }
-    new_var = yaw;
     if (d < (-clamp)) {
       d = -clamp;
     }
     if (clamp < d) {
       d = clamp;
     }
-    eul[2] = d + new_var;
-    *yawp = (d + new_var) & 0xFF;
+    eul[2] = d + yaw;
+    *yawp = (d + yaw) & 0xFF;
   }
   {
     int len = VectorLength(vec, 1);
@@ -101,14 +71,11 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
     DispatchActorContactAtSphere(vec, contact, 0, 0, actor, 0);
   }
   vec[2] += 0x400;
-  new_var = FindGroundHeightBelow(vec, 0x400);
-  {
-    int ground = new_var;
-    if (ground != 0) {
-      vec[2] = ground;
-    } else {
-      vec[2] -= 0x400;
-    }
+  d = FindGroundHeightBelow(vec, 0x400);
+  if (d != 0) {
+    vec[2] = d;
+  } else {
+    vec[2] -= 0x400;
   }
   CopyVector(actor + 0xC, vec);
   EncodeCachedVecToActorDirCode(actor);
