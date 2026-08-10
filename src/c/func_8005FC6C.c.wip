@@ -1,0 +1,31 @@
+#include "globals.h"
+
+extern char D_800118E4[]; /* GPU debug tag */
+extern int D_80074B20;    /* OT terminator sentinel */
+
+/* Reset an ordering table to empty (0x8005fc6c): optionally trace, hand the
+   table to the +0x2C command-table method, then write the terminator link
+   into the head entry. Returns the table. */
+int *func_8005FC6C(int *ot, int n) {
+  if (g_bGpuDebugLevel >= 2) {
+    ((void (*)(char *, int *, int))g_pfnGpuDebugPrintf)(D_800118E4, ot, n);
+  }
+  (*(void (**)(int *, int))((char *)g_pGpuDispatchTable + 0x2C))(ot, n);
+  *ot = (int)&D_80074B20 & 0xFFFFFF;
+  return ot;
+}
+
+/* PARKED at 7/38 (length-exact; was the 2026-07-06 "F4 return-pointer
+   coalescing" park, re-derived 2026-08-10-2 — the body above is correct and
+   the whole debug/dispatch head matches).
+
+   Residue (F4, refined): the original materialises the `return ot` copy
+   BEFORE the terminator computation (`move v0,s0`), so v0 is occupied and the
+   mask/symbol fall to a0/v1 and cse re-bases the store on the copy
+   (`sw v1,0(v0)`). Ours computes into v0/v1 and emits `move v0,s0` after the
+   store. A151 describes exactly this hoist as the thing MULTIPLE `return p;`
+   statements cause — but this function has one path, so there is no second
+   return to create it. Byte-identical from all of: an explicit `ret = ot`
+   local (store via ot or via ret), `ot[0]` + `return &ot[0]`, and a named mask
+   local — every copy coalesces. Needs a lever that makes the return pseudo
+   live across the computation without a second exit. */

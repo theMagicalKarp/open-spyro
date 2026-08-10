@@ -205,28 +205,28 @@ UpdateCameraEulerAngles:
   date: 2026-07-05
 func_80038494:
   verdict: parked
-  class: "F1 one-register cascade (ptr a2 vs a1)"
-  date: 2026-07-05
+  class: "F2 sched tie: andi bit-index vs sll bitmap-offset (2/34, length-exact; wip carries the pointer-subtraction and value-temp levers)"
+  date: 2026-08-10
 func_8003A9EC:
-  verdict: parked
-  class: "F1 whole-fn regalloc shift"
-  date: 2026-07-07
+  verdict: matched
+  class: "matched 2026-08-10-2 (literal 0xA00000 page base, one exit, -n split out of the address sum)"
+  date: 2026-08-10
 func_8005E378:
-  verdict: parked
-  class: "F1 v0/v1 pointer-value swap"
-  date: 2026-07-06
+  verdict: matched
+  class: "matched 2026-08-10-2 (HW-reg pointer locals: the volatile store kills cse's copy of the pointer global)"
+  date: 2026-08-10
 func_8005FC6C:
   verdict: parked
-  class: "F4 return-pointer coalescing"
-  date: 2026-07-06
+  class: "F4 return-copy hoist: the `return ot` copy must be live across the terminator computation so cse re-bases the store on v0 (7/38, length-exact; body correct, wip kept)"
+  date: 2026-08-10
 func_8005F98C:
   verdict: parked
   class: "F2 prologue arg-move scheduling"
   date: 2026-07-06
 func_8005F428:
-  verdict: parked
-  class: "F1 s0/s1 swap (276b payoff)"
-  date: 2026-07-06
+  verdict: matched
+  class: "matched 2026-08-10-2 (sized alias g_abGpuReverseFlagBlock holds the flag base)"
+  date: 2026-08-10
 WriteSpuVoiceAddrRegister:
   verdict: parked
   class: "F5 beq-to-tail block layout"
@@ -288,8 +288,8 @@ ActivateScriptedCameraView:
   date: 2026-07-08
 func_8005E804:
   verdict: parked
-  class: "F1 whole-fn regalloc shift (arg copy-up)"
-  date: 2026-07-07
+  class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
+  date: 2026-08-10
 
 # --- save-block deserializer (2026-07-23-3 session) ---
 func_80059594:
@@ -1552,3 +1552,11 @@ func_80039E94_2026_08_10_1:
     give 396 vs 439 and kind is allocated first; kind only reaches 4 refs via
     flow's loop-depth weighting of its in-loop compare. Needs the arms
     reordered to close the 20-insn gap.
+func_80039E94:
+  verdict: matched
+  class: "matched 2026-08-10-2 (do/while(0) on both turn call sites weights step/lim refs by loop_depth, lifting step over kind in global.c)"
+  date: 2026-08-10
+func_80038FC8:
+  verdict: parked
+  class: "F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block"
+  date: 2026-08-10
