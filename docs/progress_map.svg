@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.40% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">311,036 / 2,159,608 split-code bytes · 505 matched · 82 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.41% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">311,112 / 2,159,608 split-code bytes · 506 matched · 81 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -254,7 +254,7 @@
 <rect x="303.86" y="591.70" width="11.94" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardRead  ·  268 bytes  ·  matched</title></rect>
 <rect x="142.94" y="603.97" width="11.79" height="12.42" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardWrite  ·  268 bytes  ·  matched</title></rect>
 <rect x="142.94" y="616.40" width="11.79" height="12.24" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ArcTan2_8bit  ·  264 bytes  ·  handwritten</title></rect>
-<rect x="142.94" y="628.63" width="11.79" height="12.24" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>BeginGemCutscene  ·  264 bytes  ·  wip</title></rect>
+<rect x="142.94" y="628.63" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginGemCutscene  ·  264 bytes  ·  matched</title></rect>
 <rect x="142.94" y="640.87" width="11.79" height="12.24" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80038C4C  ·  264 bytes  ·  wip</title></rect>
 <rect x="142.94" y="653.10" width="11.79" height="12.24" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>LoadActorMeshTables  ·  264 bytes  ·  wip</title></rect>
 <rect x="142.94" y="665.34" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollMemCardEvents  ·  264 bytes  ·  matched</title></rect>
