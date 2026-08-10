@@ -217,8 +217,8 @@ func_8005E378:
   date: 2026-08-10
 func_8005FC6C:
   verdict: parked
-  class: "F4 return-pointer coalescing"
-  date: 2026-07-06
+  class: "F4 return-copy hoist: the `return ot` copy must be live across the terminator computation so cse re-bases the store on v0 (7/38, length-exact; body correct, wip kept)"
+  date: 2026-08-10
 func_8005F98C:
   verdict: parked
   class: "F2 prologue arg-move scheduling"
