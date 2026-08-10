@@ -26,6 +26,7 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
   int dir;
   int next;
   int t;
+  int c16;
 
   ret = ArcTan2(g_anSpyroWorldPos[0] - actor[3],
                 g_anSpyroWorldPos[1] - actor[4], 1);
@@ -75,8 +76,9 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
         D_80075794 = 0;
         old = *((unsigned char *)actor + 0x3D);
         p3F = *((unsigned char *)actor + 0x3F);
-        *((unsigned char *)actor + 0x40) = 0x10;
-        *((unsigned char *)actor + 0x41) = 0x10;
+        c16 = 0x10;
+        *((unsigned char *)actor + 0x40) = c16;
+        *((unsigned char *)actor + 0x41) = c16;
         *((unsigned char *)actor + 0x3D) = animId;
         *((unsigned char *)actor + 0x3F) = 0;
         *((unsigned char *)actor + 0x3C) = old;
@@ -90,8 +92,9 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
         D_80075794 = 0;
         old = *((unsigned char *)actor + 0x3D);
         p3F = *((unsigned char *)actor + 0x3F);
-        *((unsigned char *)actor + 0x40) = 0x10;
-        *((unsigned char *)actor + 0x41) = 0x10;
+        c16 = 0x10;
+        *((unsigned char *)actor + 0x40) = c16;
+        *((unsigned char *)actor + 0x41) = c16;
         *((unsigned char *)actor + 0x3D) = next;
         *((unsigned char *)actor + 0x3F) = 0;
         *((unsigned char *)actor + 0x3C) = old;
@@ -109,20 +112,38 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
   return d;
 }
 
-/* PARKED at 94.1% (9/152 insns, all one root cause): in each anim arm the
-   original allocates old(lbu 0x3D)=v0 / const16(li 0x10)=v1; ours the mirror.
-   gcc 2.7.2 local-alloc.c qty priority = log2(refs)*refs*size/lifetime: the
-   3-ref const16 temp (0.6) always outranks the 2-ref long-lived old (0.2)
-   and takes v0 first. Probed: block-scoped per-arm locals, compare-reload
-   one-variable form (goes global-alloc, still v1), shared-tail goto form
-   (breaks the per-arm move a0,s0 delay-slot fills — original duplicated the
-   tail per arm and let jump2 cross-jump it, matching everything but the
-   mirror). No source form found that raises old's priority; 1-decision
-   permuter candidate. Everything else byte-identical including the
-   ret-=0x800 in-place fold and the cross-jumped tails.
+/* PARKED at 97.4% (4/152 insns, was 9/152) — length-exact, one root cause per
+   arm. The two anim arms need `old`(lbu 0x3D) in v0, the 0x10 constant in v1,
+   AND the `li v1,16` sitting right before its two `sb`s while the call-arg copy
+   `move a0,s0` drifts to the front (reorg then eats it into the beq delay
+   slot). Those two requirements are the F14b mutual exclusion, measured here:
 
-   2026-07-25-1 unattended permuter session (~15m, ~61400 iterations, timed out
-   at the 15m budget): base score 55, and the run wrote NO output directories at
-   all — not one mutation scored better than the base. Same pattern as
-   func_80038C4C: a low base score with an isolated single-register tie the
-   randomizer cannot perturb. Still PARKED. */
+     - single-set const (a bare 0x10 literal, or a block-scoped local): sched.c
+       birthing_insn_p boosts it -> it sinks next to its stores (POSITION
+   RIGHT), but it is then block-local with reg_n_deaths==1, so local-alloc takes
+   it first — qty priority floor_log2(3)*3/6 = 5000 vs `old`'s floor_log2(2)*2/9
+   = 2222 — and hands it v0 (REGISTER WRONG, 9/152).
+     - function-scope carrier assigned in BOTH arms (this file): reg_n_sets==2
+   => reg_basic_block==-1 => global_alloc, which runs after local-alloc, so
+   `old` takes v0 and the const takes v1 (REGISTER RIGHT). But >=2 sets also
+   kills the birthing boost, so the `li` keeps priority 1 and joins the
+   priority-1 straggler pool, where rank_for_schedule sorts on INSN_LUID
+   descending and the lowest LUID is placed FIRST — the `li` (LUID 235) beats
+   the call-arg copy (LUID 256) to the front of the block and dbr puts IT in the
+   delay slot. 4/152: the delay-slot insn and the position-5 insn, x2 arms.
+
+   Why neither half is reachable from the other:
+     * Register, single-set case: local-alloc priority is computed from the
+       POST-sched1 lifetimes (life_analysis re-runs after sched1 — verified:
+   moving the load/store statements around left `old` at 2 refs/8-9 insns and
+   the const at 3/6 in every variant), so the 2.25x gap cannot be closed by
+   source order. `old` would need 4 refs with one death, and 2 sets in one block
+   always means 2 deaths => global.
+     * Position, multi-set case: A164 says permute the group, but the const's
+   set must precede its uses, which precede the call, so its LUID is
+   structurally below the arg copy's. No C form raises it. Variants measured
+   this session: c16 at the top of the arm / next to its stores / as `unsigned
+   char` (all 4/152); single-set c16 with `old` loaded late and stored
+   immediately (11/152 — the register mirror returns and the two lbus swap).
+   Next idea would have to make the `li` ineligible for the delay slot (its dest
+   live on the taken path) at zero insn cost, or find a 3rd use of `old`. */

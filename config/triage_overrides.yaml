@@ -1461,19 +1461,24 @@ DampenSpyroFreeFallAttitude:
     after the D_80078CB4 load) so sched1 cannot hoist it to the block head; and
     the D_80078CB4 load is written ahead of the D_80078CB0 store.
 func_8003A16C:
-  verdict: park
-  class: "F1/F7 two-register exchange + F4 copy register, 10/173 length-exact (was 14/173)"
-  date: 2026-08-07
+  verdict: matched
+  class: "F14 disjoint-reuse carrier + carrier-free yaw (A146/A151 family)"
+  date: 2026-08-10
   note: >-
-    692 B. A168 fixed both waypoint call sites (`&path[path[1] * 0x10 + 8]`
-    folds the +8 into the index and emits `addiu a1,a1,8; addu a1,s2,a1` like
-    the original; the outer `(path + idx*0x10) + 8` form emits them reversed).
-    Residue: the original keeps `yaw` in a1 and the negated clamp in a0 (ours
-    swaps them, which also renames the two `d + yaw` addus), plus the ground
-    result's copy is `move v1,v0` vs our `move a0,v0`. Declaration order,
-    explicit/block-scoped nclamp locals, a reversed compare, hoisting the
-    negation above the limit test, and a dedicated ground local all leave it at
-    10 or change the length. Permuter class.
+    692 B, was a 10/173 park. Two coupled ties. (1) The permuter's `new_var`/
+    `new_var2` yaw carriers gave the *yawp pseudo 5 refs (2 sets, dies in 2
+    places) => global priority floor_log2(5)*5/12 = 833, above the negated
+    clamp's 3/4 = 750, so yaw took a0 first. Writing the yaw as one plain
+    local drops it to 4 refs and the clamp is allocated first (a0), yaw
+    second (a1) - 7 insns. (2) The FindGroundHeightBelow result needs a
+    carrier or it coalesces with v0 and the `move` disappears (-1 insn), but
+    the carrier must be dead before the following CopyVector/Encode/func_
+    800529E4 calls or it is forced to a callee-saved reg: `ret` and `speed`
+    both cross those calls and land s2 (24/173); the stack param `clamp`
+    lands s1 (5/173); reusing the turn-delta `d` - already multi-set inside
+    the else arm, dead afterwards, and already living in v1 - matches.
+    Generalise: pick a disjoint-reuse carrier by (sets >= 2) AND (dead
+    before the next call) AND (already in the target register class).
 RotateLightVectorXZ:
   verdict: park
   class: "slot overflow — the parked wip builds one insn too long (164 B slot)"
@@ -1512,3 +1517,38 @@ func_80038C4C:
     separate `ay`, and hoisting the limit into its own local score 25/34/18 of
     66. A141's preference lever does not apply (no copy to/from a hard reg in
     range). Permuter-or-never, and note its 78k-iteration sweep found nothing.
+func_80038FC8_2026_08_10_1:
+  verdict: park
+  class: "F14b birthing/allocation mutual exclusion, 9/152 -> 4/152 length-exact"
+  date: 2026-08-10
+  note: >-
+    608 B. The two anim arms need `old` in v0, the 0x10 const in v1, AND the
+    `li` boosted next to its stores while the call-arg copy drifts into the
+    beq delay slot. Single-set const => birthing boost (position right) but
+    block-local, and local-alloc priority floor_log2(3)*3/6 = 5000 beats
+    `old`'s floor_log2(2)*2/9 = 2222 so it takes v0 (9/152). A function-scope
+    carrier written by both arms => reg_n_sets 2 => global_alloc, which runs
+    after local-alloc, so `old` gets v0 and the const v1 (register right) -
+    but >=2 sets also kills the boost, the `li` joins the priority-1
+    straggler pool, and rank_for_schedule's INSN_LUID-descending sort puts
+    the lowest LUID first, so the `li` (LUID 235) beats the arg copy (256) to
+    the block front and reorg eats IT (4/152). Local-alloc lifetimes are
+    measured POST-sched1, so no source order closes the 2.25x priority gap,
+    and the const's set must precede its uses which precede the call, so no
+    source form raises its LUID. See the .wip header for the full variant
+    sweep.
+func_80039E94_2026_08_10_1:
+  verdict: park
+  class: "F1 parameter live-length tie, was +1 insn/cannot-link -> 10/182 length-exact"
+  date: 2026-08-10
+  note: >-
+    728 B. Solved: the cross-branch `li v1,255` delay-slot hoist (one shared
+    `wrap` comparand local across both wrap arms makes it reg_n_sets==2 and
+    therefore non-birthing, so it drifts to the front of the branch-TARGET
+    arm and reorg lifts it into the delay slot) and the `ret` s4-vs-fp
+    rotation (a single exit takes ret from 5 refs to 3, below every parameter
+    allocno, so it is allocated last). Residue: `step`(@0x54) and
+    `kind`(@0x5c) exchange s6/s7 - both 4 refs, but live lengths 202 vs 182
+    give 396 vs 439 and kind is allocated first; kind only reaches 4 refs via
+    flow's loop-depth weighting of its in-loop compare. Needs the arms
+    reordered to close the 20-insn gap.
