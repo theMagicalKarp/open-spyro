@@ -217,7 +217,7 @@ func_8005E378:
   date: 2026-08-10
 func_8005FC6C:
   verdict: parked
-  class: "F4 return-copy hoist: the `return ot` copy must be live across the terminator computation so cse re-bases the store on v0 (7/38, length-exact; body correct, wip kept)"
+  class: "F4 return-copy hoist (7/38, length-exact). Refined 2026-08-10-3: write the mask on the LEFT (0xFFFFFF & (int)&sym) to get the original's li-before-la order. Residue: the `move v0,ot` copy must sit BETWEEN the mask li and the symbol la (A164 straggler source order), but copy propagation deletes every C form of it; duplicating the tail in both debug-if arms does NOT cross-jump back (+7 insns)"
   date: 2026-08-10
 func_8005F98C:
   verdict: matched
