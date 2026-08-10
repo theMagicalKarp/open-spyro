@@ -611,7 +611,11 @@ RespawnOrGameOver_Update:
     carrier written by the mode-1 arm does not clear the boost at all — that
     load is a rematerialised `lui/lw` into a0, not a block pseudo; pointer
     carriers and the intro-index/(id/10)*10 routings overflow the slot). See the
-    .wip header.
+    .wip header. 2026-08-10: LUID cannot break it — `rank_for_schedule` only
+    reaches `INSN_LUID` on a priority TIE, so swapping the two source statements
+    leaves 3/373; making both defs birthing again ties them but costs 4 (`lba`
+    first) or 6 (size first); routing `lba` through the loop counter too
+    overflows the slot (the counter is live later, so the copy survives).
 Gamestate0D_Update:
   verdict: matched
   class: "matched 2026-07-28-1 (A19-free ladder: 3 held-base aliases at offset 0 + distinct Y/Z scalar aliases for the nonzero-offset stores, A81 per-arm Z store)"
@@ -1375,13 +1379,16 @@ AlignSpyroBodyToVelocity:
     the local first, then the global, then subtracting and masking in separate
     statements (A166, which keeps the result in the loaded register) is exact.
 func_8005FBB4:
-  verdict: park
-  class: "prologue save/param-copy pair order, 4/46"
-  date: 2026-08-06
+  verdict: matched
+  class: "A173 — parameters used directly fix the prologue homing ORDER"
+  date: 2026-08-10
   note: >-
-    184 B. Original emits `sw s0 ; move s0,a0 ; sw s1 ; move s1,a1`, we emit the
-    s1 pair first. Swapping the declaration order flips the s0/s1 param mapping
-    instead and costs 13 more insns (17/46) — do not re-try that.
+    184 B, was a 4/46 park. The `p = arg0; n = arg1;` local copies home a1
+    before a0; deleting them and working on the parameters themselves emits the
+    original `sw s0 ; move s0,a0 ; sw s1 ; move s1,a1`. (Declaration order is
+    the separate A40 dial for the s0/s1 MAPPING — swapping it costs 13 insns.)
+    The named 0xFFFFFF `mask` local inside the loop is load-bearing (it fixes
+    the merge-constant materialization order); inlining the literal costs 20.
 ComputeVoicePanAndFalloff:
   verdict: matched
   class: "A127 frame padding + parameter-vs-copy operand choice"
@@ -1393,13 +1400,17 @@ ComputeVoicePanAndFalloff:
 EndSaveMenuToWorld:
   verdict: park
   class: "F3 head knot, 4/81"
-  date: 2026-08-06
+  date: 2026-08-10
   note: >-
     324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
-    we emit the global load pair first. Position-invariant: swapping the two
-    statements and naming the anchor address in its own single-set local both
-    give byte-identical output. Permuter (aim it at the head, not the tail —
-    the shared camera/HUD/music tail is already exact).
+    we emit the global load pair first. Position-invariant, re-confirmed
+    2026-08-10 over five more forms: swapping the two statements, dropping the
+    `timer` local so the load sits at its own store, moving the load below the
+    `dyn` setup, and naming the anchor address in its own single-set local are
+    all byte-identical. A volatile load (the A142 lever) and a plain `*cam`
+    deref in place of `cam[new_var]` both cost insns (build fails / 6 of 81) —
+    the `cam[new_var]` index form is load-bearing. Permuter (aim it at the
+    head, not the tail — the shared camera/HUD/music tail is already exact).
 func_level_0_8007CFC0:
   verdict: park
   class: "mid-decode, 215/642 content-aligned"
@@ -1471,3 +1482,33 @@ RotateLightVectorXZ:
     Do not enable this wip in a multi-function build: it overflows its text slot
     (`ld: cannot move location counter backwards ... 80058d68 -> 80058d64`) and
     every other diff in that build then reads stale bytes.
+BeginGemCutscene:
+  verdict: matched
+  class: "A171 (cse canonicity) + A172 (allocno live-range demotion)"
+  date: 2026-08-10
+  note: >-
+    264 B, was a 4/66 park that survived a 90k-iteration permuter sweep. Two
+    coupled ties, both settled with the -dl/-dg probe: (1) the guarded
+    `g_nLevelStormFlag = 1` store takes whichever of {const 1, world id} cse
+    calls canonical, and the world id only wins that when it outlives the const
+    — so it must NOT be reused as the call's arg0 (A171); (2) with the reuse
+    gone the const (R=4, L=50, pri 1600) outranks the world id (R=3, L=20, pri
+    1500) and steals a0, rotating 9 insns. Writing `D_800761DC = 1;` AFTER the
+    two 0x3FFF volume stores lengthens the const's range past the flip point;
+    sched2 restores the store's position (A172). Reading the world id later
+    also flips the priority (L=16) but empties the branch delay slot — the
+    `*head = 0;` store has to stay adjacent to the `if`.
+func_80038C4C:
+  verdict: park
+  class: "F1 local-alloc ORDER, 6/66 (unchanged)"
+  date: 2026-08-10
+  note: >-
+    264 B. `ay = abs(ry)` lands in v1 where the original has a1, and the
+    `rec[3]` limit then takes v0 where the original has v1. Measured with -dg:
+    ay is global allocno 81 (R=3, L=7, pri 4285), conflicts only {73, v0, a0},
+    so v1 is simply the first free register in reg_alloc_order — the original
+    must have given v1 to the limit load FIRST. Nothing source-side reorders
+    that: an early-return tail, a `&&` return, reusing `ry` instead of a
+    separate `ay`, and hoisting the limit into its own local score 25/34/18 of
+    66. A141's preference lever does not apply (no copy to/from a hard reg in
+    range). Permuter-or-never, and note its 78k-iteration sweep found nothing.
