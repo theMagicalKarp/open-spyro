@@ -1,47 +1,65 @@
 #include "globals.h"
 
-/* 2026-07-25-1 unattended permuter session (~15m, ~79400 iterations, timed out
-   at the 15m budget): best score 855, unchanged from the base score of 855 —
-   the randomizer found no improving candidate at all (only 2 output dirs).
-   No byte-perfect candidate found; still parked. */
+/* PARKED 2026-08-10-3 — 43/44 insns (one short); block layout is EXACT.
+ *
+ * Decoded: map a display RECT's left edge into the debug-overlay coordinate
+ * space. Debug type 1 mirrors about 0x400 when the GPU reverse flag is set,
+ * type 2 does the same at half scale; everything else returns r->x.
+ *
+ * Solved this session (all confirmed against the shape diff):
+ *   - two-case `switch` (A145: 2 nodes stay a chain -> bare beq/beq + j default)
+ *   - case-1 flag-clear arm is `break` falling to the single tail `return r->x`
+ *   - case-2 arm must be written `if (rev != 0) {...} else return r->x / 2;`
+ *     so the mirror path is the inline/fallthrough block (A64)
+ *   - the shared `subu; j; subu` tail lives in CASE 1 and case 2 jumps BACKWARD
+ *     into it. jump.c cross-jumping cannot produce that: its forward walk hits
+ *     case 1's `j end` first and `do_cross_jump` always deletes the insns
+ *     before the jump it is looking at, so the LATER copy survives (+1 insn:
+ *     case 1 gets a `j` whose delay slot re-duplicates `subu v0,v0,v1`).
+ *     An explicit label in case 1 + `goto` from case 2 reproduces the layout.
+ *   - with locals (not global loads) `a - b - c` does NOT reassociate, so the
+ *     accumulator order is written literally: `mirrored - span - left`.
+ *
+ * RESIDUE (F1 register tie, 3 insns + 1 length): the carried accumulator lands
+ * in a1, the original has it in v0 (`li v0,0x400` / `subu v0,v0,v1` /
+ * `subu v0,v0,a0`). Root cause is the goto: `mirrored` becomes a GLOBAL allocno,
+ * and global.c's find_reg prefers the hard reg with the lowest local-allocno
+ * density -- v0/v1 are saturated by the two flag loads, the /2 chain and the
+ * default `lh`, so an untouched a1 always wins. The `move v0,mirrored` copy that
+ * would register a v0 preference is coalesced into the final subu before global
+ * alloc runs, so the preference never exists. Tried and rejected: accumulate-in-
+ * place vs. one expression, all three declaration orders, carrying the partial
+ * sum instead of the constant. Length follows from the same cause: with the
+ * accumulator in a1 the `li a1,0x400` is eligible for case 2's `beqz v0` delay
+ * slot, where the original (li into v0, the branch's own operand) must nop.
+ * Needs either a way to keep the value local across the join, or the real
+ * jump.c lever that flips cross-jump direction without a goto.
+ */
+int FUN_80060e28(RECT *r) {
+  int span;
+  int left;
+  int mirrored;
 
-// typedef unsigned char byte;
-// extern byte g_bGpuDebugType;
-// extern byte g_bGpuReverseFlag;
-int FUN_80060e28(unsigned short *param_1) {
-  int new_var3;
-  int new_var;
-  int new_var2;
-  int v1;
-  long t;
   switch (g_bGpuDebugType) {
-  case 1: {
-    short f0;
+  case 1:
     if (g_bGpuReverseFlag == 0) {
-      goto default_case;
-      new_var2 = 0x400 - ((short)param_1[2]);
+      break;
     }
-    t = param_1[2];
-    f0 = (short)param_1[0];
-    return (unsigned long long)((0x400 - ((short)t)) - f0);
-  }
-
+    span = r->w;
+    left = r->x;
+    mirrored = 0x400;
+  mirror:
+    mirrored -= span;
+    mirrored -= left;
+    return mirrored;
   case 2:
-    t = 0 == g_bGpuReverseFlag;
-    if (t) {
-      t = param_1[0];
-      return ((int)(new_var2 = (short)t)) / 2;
+    if (g_bGpuReverseFlag != 0) {
+      span = r->w / 2;
+      left = r->x;
+      mirrored = 0x400;
+      goto mirror;
     }
-    t = t;
-    new_var2 = t;
-    v1 = ((short)new_var2) / 2;
-    new_var = 0x400;
-    v1 = (short)param_1[0];
-    new_var3 = (new_var - (((short)new_var2) / 2)) - v1;
-    return new_var3;
-
-  default:
-  default_case:
-    return (short)param_1[0];
+    return r->x / 2;
   }
+  return r->x;
 }
