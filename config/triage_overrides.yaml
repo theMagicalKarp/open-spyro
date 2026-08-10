@@ -288,8 +288,8 @@ ActivateScriptedCameraView:
   date: 2026-07-08
 func_8005E804:
   verdict: parked
-  class: "F1 whole-fn regalloc shift (arg copy-up)"
-  date: 2026-07-07
+  class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
+  date: 2026-08-10
 
 # --- save-block deserializer (2026-07-23-3 session) ---
 func_80059594:

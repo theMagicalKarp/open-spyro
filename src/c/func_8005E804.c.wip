@@ -1,0 +1,48 @@
+#include "globals.h"
+
+/* Install (or clear) the DMA completion callback for one channel
+   (0x8005e804): publish it in g_apfnDmaCallbacks[ch] and set/clear the
+   channel's DICR enable bit, keeping the write-1-to-clear flag word intact.
+   Returns the callback it replaced. */
+void *func_8005E804(int ch, void *cb) {
+  void **slot = &g_apfnDmaCallbacks[ch];
+  void *prev = *slot;
+
+  if (cb != prev) {
+    if (cb != 0) {
+      *slot = cb;
+      *(volatile unsigned int *)g_pDmaDicrReg =
+          ((1 << (ch + 0x10)) | 0x800000) |
+          (*(volatile unsigned int *)g_pDmaDicrReg & 0xFFFFFF);
+    } else {
+      *slot = 0;
+      *(volatile unsigned int *)g_pDmaDicrReg =
+          ((*(volatile unsigned int *)g_pDmaDicrReg & 0xFFFFFF) | 0x800000) &
+          ~(1 << (ch + 0x10));
+    }
+  }
+  return prev;
+}
+
+/* PARKED at 31/42 (length-exact, 42/42 insns; was the 2026-07-07 "F1 whole-fn
+   regalloc shift (arg copy-up)" park, re-attempted 2026-08-10-2).
+
+   Solved here:
+     * length — an early `return prev` plus a shared `bit` temp lets cse hoist
+       the `1 << (ch+0x10)` above the branch and cross-jump the arms, coming out
+       2 insns SHORT (the original's two arg copies). Inline the RMW through the
+       global pointer in each arm, no temps, and the length is exact.
+     * the OR grouping — gcc 2.7.2 reassociates `(x & M) | (C | (1<<n))` into
+       `((x & M) | C) | (1<<n)`; writing the shift term as the LHS operand
+       (`((1<<n) | C) | (x & M)`) keeps the original's `or v0,v0,0x800000` then
+       `or a0,a0,v0` order. 38/42 -> 31/42.
+
+   Residue (F1): the original copies BOTH params up (`move a2,a0` ch, `move
+   a0,a1` cb) because local-alloc gives a0 to the DICR *value* temp, whose live
+   range then covers ch's `addiu ch,0x10`; ours gives a0 to the shift-amount
+   pseudo instead, so ch keeps its incoming a0 and both copies vanish (the
+   deleted copies are the 2 insns, which is why the naive form under-runs).
+   Next lever would have to raise the dicr-value temp's local-alloc priority
+   (floor_log2(R)*R/lifetime) above the shift amount's without adding insns —
+   the do/while(0) ref dial (A165) does NOT apply, it perturbs the schedule when
+   it wraps a statement inside a block rather than a whole arm. */

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.43% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">311,732 / 2,159,608 split-code bytes · 511 matched · 78 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.44% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">311,928 / 2,159,608 split-code bytes · 512 matched · 79 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -353,7 +353,7 @@
 <rect x="186.19" y="636.83" width="9.43" height="9.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SpyroStateDelay_Update  ·  168 bytes  ·  matched</title></rect>
 <rect x="195.63" y="636.83" width="9.43" height="9.73" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>start  ·  168 bytes  ·  asm</title></rect>
 <rect x="205.06" y="636.83" width="9.43" height="9.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GetSpuTransferStatus  ·  168 bytes  ·  matched</title></rect>
-<rect x="214.49" y="636.83" width="9.43" height="9.73" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005E804  ·  168 bytes  ·  asm</title></rect>
+<rect x="214.49" y="636.83" width="9.43" height="9.73" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_8005E804  ·  168 bytes  ·  wip</title></rect>
 <rect x="223.93" y="636.83" width="9.43" height="9.73" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>strcat  ·  168 bytes  ·  library</title></rect>
 <rect x="233.36" y="636.83" width="9.21" height="9.73" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ProjectWorldPointGTEUnscaled  ·  164 bytes  ·  handwritten</title></rect>
 <rect x="242.57" y="636.83" width="9.21" height="9.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComposeFrameScene  ·  164 bytes  ·  matched</title></rect>
@@ -379,7 +379,7 @@
 <rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  matched</title></rect>
 <rect x="186.19" y="764.60" width="9.43" height="8.81" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>BuildAudioTrackTable  ·  152 bytes  ·  wip</title></rect>
 <rect x="195.62" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>VectorLength  ·  152 bytes  ·  handwritten</title></rect>
-<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8003A9EC  ·  152 bytes  ·  asm</title></rect>
+<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003A9EC  ·  152 bytes  ·  matched</title></rect>
 <rect x="214.22" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B728  ·  152 bytes  ·  matched</title></rect>
 <rect x="223.52" y="646.56" width="9.30" height="8.93" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80053570  ·  152 bytes  ·  asm</title></rect>
 <rect x="232.82" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SyncSoundVoicesWithHardware  ·  152 bytes  ·  matched</title></rect>
