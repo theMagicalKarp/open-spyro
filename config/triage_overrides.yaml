@@ -1562,7 +1562,7 @@ func_80038FC8:
   date: 2026-08-10
 FUN_80060e28:
   verdict: parked
-  class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip"
+  class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows."
   date: 2026-08-10
 RelocateActorMeshHeader:
   verdict: matched
@@ -1596,3 +1596,20 @@ RelocateMobActorTable:
     two-statement `count<<2 + 0x24` that blocks A46 reassociation. Only the
     register rotation is left: the loop-1 counter must win a0 from the param.
     See the .wip header for the -dg measurement and the four rejected dials.
+
+BuildLoadedLevelRuntime:
+  verdict: parked
+  class: "F2 nudge load hoist + F1 death-replay v0/v1 + F7 loop.c hoist choice in actor pass 2"
+  date: 2026-08-10
+  note: >-
+    3708 b, the whole rest of the 0x80013xxx loader TU. Decoded end-to-end and
+    parked at 923/927 insns, 857 shape-aligned (92.4%), links clean. Everything
+    below the fixed header is register-for-register exact: the sprite-pair
+    goto-loop, all SEVEN chunk-relocation loops, the actor-pool + capacity math,
+    the pickup rebase, the spatial-grid rebase and actor pass 1. Six residues
+    remain, all classed in the .wip header - the biggest are the exit-nudge
+    sine-load hoist (F2), the death-replay index/value register rotation (F1)
+    and the actor-pass-2 loop.c decision to hoist the kill-table symbol instead
+    of the constant 1 (F7). Needed nine new allow_duplicated aliases (seven
+    world-anim count blocks, the spawn anchor, the spawn-pos trio) - they are in
+    symbol_addrs and must stay for the resume.
