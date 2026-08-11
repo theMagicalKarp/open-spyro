@@ -6,17 +6,10 @@ extern void AddPrimToOT(int prim);
    y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by
    g_nGameplayBlocked — the "letterbox close"/"open" cutscene transition.
    Submits both bars via AddPrimToOT (0x80018f30, 0x1a4). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/DrawCinematicLetterbox.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/DrawCinematicLetterbox/output-85-1/source.c */
-
 void DrawCinematicLetterbox(void) {
   void *prim;
   int h;
+  int h2;
   if (g_nGameplayBlocked != 0) {
     if (g_nLetterboxBarHeight < 0x16) {
       g_nLetterboxBarHeight += g_nFrameStep;
@@ -34,8 +27,8 @@ void DrawCinematicLetterbox(void) {
   }
   prim = g_pPrimBufferWriteCursor;
   *((int *)prim) = 0x5000000;
-  *((unsigned char *)(((int)prim) + 7)) = 0x28;
   h = g_nLetterboxBarHeight;
+  *((unsigned char *)(((int)prim) + 7)) = 0x28;
   *((short *)(((int)prim) + 8)) = 0;
   *((short *)(((int)prim) + 0xc)) = 0x200;
   *((short *)(((int)prim) + 0x10)) = 0;
@@ -51,7 +44,7 @@ void DrawCinematicLetterbox(void) {
   prim = (void *)(((int)prim) + 0x18);
   g_pPrimBufferWriteCursor = prim;
   *((unsigned char *)(((int)prim) + 7)) = 0x28;
-  h = g_nLetterboxBarHeight;
+  h2 = g_nLetterboxBarHeight;
   *((short *)(((int)prim) + 0x12)) = 0xf0;
   *((short *)(((int)prim) + 0x16)) = 0xf0;
   *((int *)prim) = 0x5000000;
@@ -62,23 +55,51 @@ void DrawCinematicLetterbox(void) {
   *((unsigned char *)(((int)prim) + 4)) = 0;
   *((unsigned char *)(((int)prim) + 5)) = 0;
   *((unsigned char *)(((int)prim) + 6)) = 0;
-  *((short *)(((int)prim) + 0xa)) = 0xf0 - h;
-  *((short *)(((int)prim) + 0xe)) = 0xf0 - h;
+  *((short *)(((int)prim) + 0xa)) = 0xf0 - h2;
+  *((short *)(((int)prim) + 0xe)) = 0xf0 - h2;
   AddPrimToOT((int)prim);
   prim = (void *)(((int)prim) + 0x18);
   g_pPrimBufferWriteCursor = prim;
 }
 
-/* PARKED 92.4% (8/105, 2 coupled decisions). POLY_F4 letterbox builder, §F
-   vein, logic+structure byte-identical. Residue: reorg fills BOTH clamp
-   exit-branch delay slots with `lui s3` (0x5000000) and puts `li s2` (0x28) at
-   the merge label; my build swaps them (s2 in delay, s3 at merge). This choice
-   is coupled to prim1's cached barHeight landing in v1 vs the original's v0
-   (prim2's is v1 in both). Tried: branch-arm order (fixed the 60%->92% layout),
-   reorder head stores (breaks store order), drop h local / direct-global reads
-   (83.8%), named `code` local for 0x5000000 (const-propagates back, no change).
-   Pure reorg delay-slot-fill order tie; permuter candidate.
+/* PARKED 2026-08-11 at 2/105 (98.1%, length-exact; was 7/105 / 8/105).
+   Class: F14/F8 coupled pair — the shared header constants and the two header
+   stores are ordered by the SAME source decision, and the original needs them
+   opposite.
 
-   2026-07-25-1 unattended permuter session (~15m, ~73300 iterations, timed out
-   at the 15m budget): best score 85 vs base score 265. No byte-perfect
-   candidate found; still PARKED (see above). */
+   Solved this session (all three were part of the old 7-8/105 residue):
+     * `h` must be TWO locals, one per bar. The original reads the bar height
+       into v0 in the top-bar block and v1 in the bottom one, which one shared
+       multi-set local can never produce (one pseudo = one quantity); with a
+       local per block each read is single-set and each gets its own register.
+     * the top bar's `sw 0x5000000` and `sb 0x28` are separated by the height
+       load, and a load cannot cross either store (both are MEMs off the same
+       base, no alias info), so the two stores land in slots 1 and 4 of the
+       block in SOURCE order — writing the tag word after the height load is
+       what puts it after the `move a0` (the hoisted call-arg copy).
+     * everything else in both bars, both AddPrimToOT arg blocks and the clamp
+       head is byte-identical.
+
+   Residue (2 insns, a pure swap): the original emits `sb s2,7(s0)` in slot 1
+   and `sw s3,0(s0)` in slot 4; ours has them the other way round. Reversing
+   the two statements fixes the stores but flips the two hoisted constants in
+   the merge block (`lui s3,0x500` / `li s2,40`), which reorg steals into the
+   two clamp-exit delay slots — so that costs 4 insns instead of 2. Measured
+   both ways this session:
+     - constants come out at the FRONT of the merge block in first-use order
+       (they are ALU defs, so the backward scan picks them last — F14's
+       drift-to-front), and reorg steals them in that order into the `bnez`
+       and the `j` slot;
+     - store order is source order (alias-locked, above).
+     Original needs first-use order [0x5000000, 0x28] AND store order
+     [0x28, 0x5000000]: the two are the same source decision, hence the tie.
+   Tried and rejected: a volatile tag store (does not sink), named `code`/`cb`
+   locals for the two constants (cse const-propagates both and re-creates the
+   defs at first use — the register assignment comes out right, the order does
+   not), reversing the bottom bar's store order (swaps only which constant gets
+   s2 vs s3, +12 insns), and reordering the height load. The escape would be a
+   first use of 0x5000000 that is not its own store; nothing in the block
+   provides one. Permuter candidate (2-insn same-length swap).
+
+   2026-07-25-1 unattended permuter session (~15m, ~73300 iterations) on the
+   OLD body: best score 85 vs base 265, no byte-perfect candidate. */
