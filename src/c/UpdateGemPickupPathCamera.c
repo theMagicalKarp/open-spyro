@@ -1,25 +1,6 @@
-/* PARK 96.9% (194/194 length-exact, 6 insns / 2 sites; logic verified
- * against the asm). Both residues are the SAME class: gcc 2.7.2 copy-prop
- * dissolves a register-to-register copy the original keeps.
- *   1) abs of the dot/span quotient: original is `mflo v0; bgez v0; move
- *      s0,v0 (delay); negu s0,s0` -- the test reads the QUOTIENT and the
- *      copy fills the branch slot, so the following `if (step < 0)` cannot
- *      be jump-threaded away. Ours coalesces quot into step (`mflo s0`)
- *      and threads the second test. Tried: ternary `quot<0?-quot:quot`,
- *      two-local `step=quot; if (quot<0) step=-step;`, both identical.
- *   2) max-step clamp tail: original `move s0,s4; slt v0,v1,s0` (copy fills
- *      the lw load-delay, compare reads the COPY, branch slot stays a nop);
- *      ours compares s4 directly and sinks the copy into the branch slot.
- *      Tried: plain `step = dist; if (max < step)`, A47 embedded assignment
- *      `if (max < (step = dist))`. Identical output.
- * cse.c canon_reg substitutes qty_first_reg (the copy SOURCE) for every use,
- * so no source ordering reaches it -- F4-family (original keeps a copy ours
- * coalesces). Permuter target: length-exact, 2 isolated sites.
- * Everything else matches byte-for-byte, including the entry double-load of
- * the path pointer, both cross-jumped tangent arms and the whole tail.
- */
 #include "globals.h"
 
+extern int abs(int);
 extern void SubtractVector();
 extern int VectorLength();
 extern void ScaleVector3ByRatio();
@@ -98,10 +79,7 @@ void UpdateGemPickupPathCamera(void) {
       quot = (tangent.vx * toPlayer.vx + tangent.vy * toPlayer.vy +
               tangent.vz * toPlayer.vz) /
              span;
-      step = quot;
-      if (quot < 0) {
-        step = -step;
-      }
+      step = abs(quot);
       if (step < 0) {
         step = 0;
       }
@@ -116,7 +94,8 @@ void UpdateGemPickupPathCamera(void) {
     }
   }
 
-  ScaleVector3ByRatio(&toWaypoint, dist, step * g_nFrameStep);
+  span = dist;
+  ScaleVector3ByRatio(&toWaypoint, span, step * g_nFrameStep);
   AddVector(g_anCameraPos, g_anCameraPos, &toWaypoint);
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
   UpdateCameraEulerAngles();
