@@ -204,9 +204,9 @@ UpdateCameraEulerAngles:
   class: "matched 2026-08-10-3 (A146 union allocno: one scratch local carries roll then yaw so both share a0; A161 for the 0x800-A-B reassociation)"
   date: 2026-08-10
 func_80038494:
-  verdict: parked
-  class: "F2 sched tie: andi bit-index vs sll bitmap-offset (2/34, length-exact; wip carries the pointer-subtraction and value-temp levers)"
-  date: 2026-08-10
+  verdict: matched
+  class: "matched 2026-08-11 (the word index and the bit index as two locals, in that order - the two independent index insns follow declaration order, not sched1 path length)"
+  date: 2026-08-11
 func_8003A9EC:
   verdict: matched
   class: "matched 2026-08-10-2 (literal 0xA00000 page base, one exit, -n split out of the address sum)"
@@ -1505,7 +1505,7 @@ BeginGemCutscene:
     `*head = 0;` store has to stay adjacent to the `if`.
 func_80038C4C:
   verdict: park
-  class: "F1 local-alloc ORDER, 6/66 (unchanged)"
+  class: "F1 local-alloc ORDER, 6/66 (unchanged; 2026-08-11: the fresh-local-for-abs split is byte-identical, so the rx quantity does not reach the ay v1-vs-a1 tie)"
   date: 2026-08-10
   note: >-
     264 B. `ay = abs(ry)` lands in v1 where the original has a1, and the
@@ -1613,3 +1613,47 @@ BuildLoadedLevelRuntime:
     of the constant 1 (F7). Needed nine new allow_duplicated aliases (seven
     world-anim count blocks, the spawn anchor, the spawn-pos trio) - they are in
     symbol_addrs and must stay for the resume.
+
+DrawCinematicLetterbox:
+  verdict: parked
+  class: "F14/F8 coupled pair: hoisted-constant first-use order vs alias-locked store order (2/105, length-exact; was 7/105)"
+  date: 2026-08-11
+  note: >-
+    420 B. Advanced 7/105 -> 2/105 this session. Two of the three old residues
+    fell: the bar height needs ONE LOCAL PER BAR (the original reads it into v0
+    in the top bar and v1 in the bottom, unreachable from a shared multi-set
+    local), and the tag-word store must be written AFTER the height load (a load
+    cannot cross either header store, so the two stores land in block slots 1
+    and 4 in source order). Residue is a 2-insn swap of `sb 0x28,7(s0)` and
+    `sw 0x5000000,0(s0)`: reversing the statements fixes the stores but flips
+    the two hoisted constants at the front of the merge block, which reorg
+    steals into the two clamp-exit delay slots (4 insns). Constants come out in
+    first-use order, stores in source order, and the original needs those two
+    orders opposite - one source decision, two consumers. Named constant locals
+    are const-propagated away; a volatile tag store does not sink. Permuter
+    candidate (same-length 2-insn swap).
+
+RespawnOrGameOver_Update_2026_08_11_note:
+  verdict: parked
+  class: "see RespawnOrGameOver_Update - F14 birthing boost, carrier search"
+  date: 2026-08-11
+  note: >-
+    Re-attempted 2026-08-11, still 370/373; no change committed. Mechanism
+    confirmed and narrowed: BOTH the lba load and the size load must be
+    non-birthing (reg_n_sets > 1) for the pair to come out in source order;
+    with only the size routed through `i` the single-set lba load keeps its
+    boost and lands after it. The carrier search is now bounded - a second set
+    AFTER the CdReadSyncSectors call extends the allocno across the call and
+    costs the callee-saved save/restore (that is the real reason the `count`
+    carrier cost 4 insns), and a second set that is a CALL-RESULT COPY (the
+    mode-1 arm `swing`) is coalesced before sched1 so it never raises
+    reg_n_sets. Measured this session: `mode` as the carrier re-colours the
+    whole ladder (+8 frame bytes, 294/373), `p` likewise, and using `i` for the
+    lba while `count` carries the size costs +2 insns. Any fix must add a set
+    BEFORE the call whose own def is not a copy - nothing in the arm provides
+    one, so this is a permuter target on the 3-insn window.
+
+EmitRadialShadedLine:
+  verdict: matched
+  class: "matched 2026-08-11 (fresh local for the far-endpoint shade -> A181 dest-to-source tie; the 2026-07-09 'whole-function regalloc permutation' class was wrong)"
+  date: 2026-08-11

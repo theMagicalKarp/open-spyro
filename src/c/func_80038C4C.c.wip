@@ -59,4 +59,11 @@ int func_80038C4C(int *pos, int *rec) {
    best score also 35, i.e. the randomizer never found a single improving
    candidate (2 output dirs). The remaining ay v1-vs-a1 register tie appears to
    be isolated from anything source mutation perturbs: everything the permuter
-   touches makes it worse, nothing makes it better. Still PARKED. */
+   touches makes it worse, nothing makes it better. Still PARKED.
+
+   2026-08-11: also tried a fresh local for the x-abs (`ax = abs(rx)` instead of
+   reusing `rx`, which makes `rx` single-death and local-allocable) — BYTE-
+   IDENTICAL, so the rx quantity split does not reach the ay tie. The three
+   overlapping short quantities are ay, rec[3] and rec[4]: the original gets
+   rec[3]->v1, rec[4]->v0, ay->a1, ours rec[3]/rec[4]->v0 and ay->v1, i.e. ours
+   lets the two limit loads share v0 where the original does not. */
