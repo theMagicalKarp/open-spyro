@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.49% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">313,004 / 2,159,608 split-code bytes · 516 matched · 81 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.63% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">315,844 / 2,159,608 split-code bytes · 516 matched · 82 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -35,7 +35,7 @@
 <rect x="67.40" y="310.94" width="53.05" height="43.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>TickLevelTransitionStream  ·  4212 bytes  ·  asm</title></rect>
 <rect x="120.44" y="310.94" width="52.04" height="43.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0B_Update  ·  4132 bytes  ·  asm</title></rect>
 <rect x="172.48" y="310.94" width="50.63" height="43.41" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CastRayWorldAndActors  ·  4020 bytes  ·  handwritten</title></rect>
-<rect x="223.11" y="310.94" width="46.70" height="43.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>BuildLoadedLevelRuntime  ·  3708 bytes  ·  asm</title></rect>
+<rect x="223.11" y="310.94" width="46.70" height="43.41" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>BuildLoadedLevelRuntime  ·  3708 bytes  ·  wip</title></rect>
 <rect x="269.81" y="310.94" width="45.99" height="43.41" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateHudCounters  ·  3652 bytes  ·  asm</title></rect>
 <rect x="14.00" y="354.35" width="49.64" height="37.13" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroPhysicsByState  ·  3372 bytes  ·  asm</title></rect>
 <rect x="63.64" y="354.35" width="49.64" height="37.13" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizeEmitList  ·  3372 bytes  ·  handwritten</title></rect>

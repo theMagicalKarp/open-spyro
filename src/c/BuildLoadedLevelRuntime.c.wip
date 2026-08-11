@@ -1,0 +1,575 @@
+/* PARKED 2026-08-10-5 — 923 of 927 insns, 857 shape-aligned (92.4%); links,
+   does not match. Every block below the fixed header is byte-shape-exact:
+   the sprite-pair loop, all SEVEN chunk-relocation loops, the actor-pool /
+   capacity math, the pickup-table rebase, the spatial-grid rebase and actor
+   pass 1 are register-for-register identical. Residues, in order:
+
+     1. exit-nudge block (orig 220..252, ~12 insns) — F2. sched1 hoists the
+        SINE `lhu` above the X store; the original emits cos-load/cos-store
+        then sin-load/sin-store strictly serially. One reused `radial` temp
+        pins the two `sra`s but not the two loads (a store never blocks a load
+        off a different symbol). `short radial` is WORSE (both lhu hoist).
+     2. death-replay restore (orig 661..691, ~12 insns) — F1. Pure v0<->v1
+        rotation: the original keeps the *index* in v1 and the value temp in
+        v0, ours the reverse. Tried: inline `g_nDeathTryIndex`, a named `k`,
+        `dyaw` first/last in the declaration list — all identical. Also the
+        `andi 0xff`/`sb` pair is one slot early. Next: the §D 2c allocation
+        probe on the two quantities.
+     3. `mask = 0` (orig 699..716, 2 insns) — F8/reorg. The original has TWO
+        copies: reorg's fill_slots_from_thread steals the join block's
+        `move s2,zero` into the arm-1 `j` delay slot and retargets past it.
+        Ours emits one copy. Plain if/else + a single `mask = 0` after is the
+        right source shape (a `goto` + duplicated assignment cross-jumps).
+     4. post-pass-1 reload (orig 789..792, 3 insns, we are SHORT) — the
+        original re-loads `g_pActorListBase` in the loop-exit block; ours
+        reuses the value the loop bottom just loaded. cse should not cross the
+        ebb here, so something later deletes it; unexplained.
+     5. actor pass 2 header (orig 796..849, ~14 insns) — F7/loop.c. The
+        original hoists only the constant `1` (s4) and re-materialises
+        `lui/addiu %lo(g_anLevelKillBitmapTable)` INSIDE the loop; ours hoists
+        the symbol into the preheader too. Tried: inline expression (75),
+        two-set `row` to disqualify the loop.c movable (86) — both worse than
+        the current single-set `row` (70). The rest is the v1<->a1 rotation
+        that follows from it.
+     6. committed-bitmap copy (orig 866..869, 2 insns) — the original keeps
+        `move v1,v0` between the symbol pseudo and the walker (A181 tie);
+        ours coalesces.
+
+   Levers already banked here (do not re-derive): A20b aliases for the seven
+   count globals + the spawn anchor + the spawn-pos trio, A104 named bit masks,
+   A149 index-first int arithmetic, A85 goto-loop for the sprite pairs, A164
+   straggler source order for `i = 0`, and the single-reused-temp trick that
+   forces load/store interleaving in the death-replay block. */
+
+/* 0x8001364c — post-CD-stream level finalization driver, the "level-loader
+   meat" (3708 b). Builds every piece of per-level runtime state out of the
+   bundle the CD stream just dropped in g_pPathTableBuffer. Callers:
+   LoadAndStartLevelFromCd and TickLevelTransitionStream (case 0xd);
+   param_1 == 0 is the light path (no chunk-anim reset, no overlay hook).
+
+   The bundle is a chain of self-sizing chunks: word 0 is the chunk's total
+   byte size, word 1 the entry count, and the entries follow. Everything after
+   the fixed header is a run of those chunks, each of which gets its list
+   pointer + count published to a global and its stored offsets rebased onto
+   the chunk itself. */
+
+#include "globals.h"
+
+extern void StopAllSoundExceptMask(unsigned int mask);
+extern void InitLightVectorConstants(void);
+extern void ResetPadFrameSubstepTable(unsigned int *pad);
+extern void CopyVector(int *dst, int *src);
+extern void ResetSpyroEntity();
+extern void ChangeSpyroState();
+extern void ResetCameraStateToTarget(void);
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+extern void InsertActorIntoSpatialGrid(char *rec);
+extern void HideActorRenderRecord(char *rec);
+extern void FindGroundHeightBelow(int *pos, int range);
+extern void EncodeCachedVecToActorDirCode(char *rec);
+extern void DespawnActorRecord(char *rec);
+extern void ResetWorldParticleTables(void);
+extern void ResetWorldChunkAnimations(void);
+extern void InitHudCounters(int full);
+extern int HandleMusicCommand(int track, int arg);
+extern void srand(unsigned int seed);
+
+extern short g_anCosineLut[];
+extern int g_nLevelSpawnPosZ;
+extern int g_nSpyroWorldPosY;
+extern int D_80075698;
+extern int D_80075700;
+extern int D_80078A60;
+extern int D_8006F140[];
+extern int g_anSpawnAnchorBlock[];
+extern int g_anLevelSpawnPosZBlock[];
+extern int g_nLevelSpawnPosX;
+extern int g_nLevelSpawnPosY;
+extern int g_anWorldAnimMeshKeyframeCountBlock[];
+extern int g_anWorldAnimUvCycleCountBlock[];
+extern int g_anWorldAnimColor2CountBlock[];
+extern int g_anWorldAnimColor0CountBlock[];
+extern int g_anWorldAnimVertexMorphCountBlock[];
+extern int g_anWorldAnimColor3CountBlock[];
+extern int g_anWorldAnimColor1CountBlock[];
+
+struct CameraParamBlock {
+  int w[6];
+};
+
+int BuildLoadedLevelRuntime(int fullSetup) {
+  int pos[3];
+  int dyaw;
+  int *p;
+  int *base;
+  int *root;
+  int *dst;
+  int *src;
+  char *rec;
+  char *r;
+  int mask;
+  int off;
+  int i;
+  int yaw;
+  int gidx;
+  int radial;
+  int wi;
+  int bit;
+  int tb;
+  int row;
+  int tbit;
+  int sh;
+  int *pk;
+  int *gd;
+  int *tg;
+  int k;
+  int j;
+  int w;
+  int *pcount;
+  int count;
+  unsigned char type;
+
+  StopAllSoundExceptMask(0);
+  InitLightVectorConstants();
+  p = (int *)g_pPathTableBuffer;
+  g_nVblankTickCount = 0;
+  g_dwGamestateFrames = 0;
+  g_nSpyroDrawSuppressed = 0;
+  g_nMotionTrailRibbonCount = 0;
+  root = p;
+  if (g_nActiveLevelId == 0x40) {
+    g_nLevelEggCount = 0;
+  }
+  D_80075698 = 0;
+  if (g_nActiveLevelId == 0x28 || g_nActiveLevelId == 0x2A) {
+    g_nLevelStormFlag = 1;
+  } else {
+    g_nLevelStormFlag = 0;
+  }
+  ResetPadFrameSubstepTable(&g_dwPadPressed);
+  if (g_nFlightLevelActive == 0) {
+    g_nLevelReadyFlagStash = g_nLevelReadyFlag;
+  }
+  if (g_anSpawnAnchorBlock[0] != 0) {
+    CopyVector(g_anSpyroWorldPos, g_anSpawnAnchorBlock + 20);
+    yaw = g_nLevelSpawnYaw >> 4;
+    g_abSpyroPersistentEuler[2] = yaw;
+  } else if (g_nScriptedMobTag == 0) {
+    g_anLevelSpawnPos[0] = p[0];
+    g_anLevelSpawnPos[1] = p[1];
+    g_nLevelSpawnPosZ = p[2];
+    g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
+    if (g_nScriptedRespawnFlag == 0 && g_nGamestate != 0xC) {
+      if (g_nGamestate == 5 && (unsigned int)(g_nActiveLevelId - 0x28) < 0x14 &&
+          (gidx = g_nGameOverLevelIntroIndex - 0x12,
+           g_anGameOverRespawnPosTable[gidx * 3] != 0)) {
+        CopyVector(g_anSpyroWorldPos,
+                   &D_8006F140[g_nGameOverLevelIntroIndex * 3]);
+        yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIntroIndex];
+      } else {
+        CopyVector(g_anSpyroWorldPos, g_anLevelSpawnPos);
+        yaw = g_nLevelSpawnYaw;
+      }
+      g_abSpyroPersistentEuler[2] = yaw;
+    }
+  }
+  g_nLevelReadyFlag = g_nLevelReadyFlagStash;
+  if (g_nGamestate != 0xC) {
+    ResetSpyroEntity(0);
+    g_nSpyroPadSnapshotCountdown = 0xC;
+  }
+  if (g_nActiveLevelId % 10 == 5) {
+    g_nFlightLevelActive = 1;
+    g_nSpyroFallTrackingFlag = 1;
+    g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
+    g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
+    ChangeSpyroState(0x20);
+    if (g_nScriptedRespawnFlag == 0) {
+      g_nSpyroStateFlags = 0;
+      g_abSpyroPersistentEuler[0] = 0;
+      g_abSpyroPersistentEuler[1] = 0;
+      g_nSpyroBodyRoll = 0;
+      g_nSpyroBodyPitch = 0;
+      g_nSpyroPitchRateAccum = 0;
+      g_nSpyroTurnRateAccum = 0;
+      D_80075700 = 0;
+      D_80078A60 -= 0x400;
+    }
+  } else {
+    g_nFlightLevelActive = 0;
+    g_nSpyroFallTrackingFlag = 0;
+    if (g_nScriptedRespawnFlag != 0) {
+      g_anLevelSpawnPosZBlock[0] +=
+          g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
+      radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
+      g_nLevelSpawnPosX -= radial;
+      radial = g_anSineLut[g_nLevelSpawnYaw] >> 2;
+      g_nLevelSpawnPosY -= radial;
+    }
+  }
+  p += 4;
+  if (g_nActiveLevelId == 0x40) {
+    g_nSpyroFallReferenceZ = 0x3E80;
+    g_nGnastyLootFallRefZCap = 0x4638;
+  }
+  g_nGenericCountdown = 0;
+  if (g_nScriptedRespawnFlag == 0) {
+    if (g_nGamestate == 0xC) {
+      goto emitlist;
+    }
+    *(struct CameraParamBlock *)g_anCameraActiveTargetParams =
+        *(struct CameraParamBlock *)g_anCameraParamMode2Front;
+    g_pCameraAnchorPos = g_anSpyroWorldPos;
+    g_nCameraCurrentMode = 0;
+    g_nCameraNextMode = 0;
+    g_anCameraActiveTargetParams[2] = 0x600;
+    g_pCameraTargetParams = g_anCameraActiveTargetParams;
+    g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+    ResetCameraStateToTarget();
+    g_nGenericCountdown = 0x20;
+  }
+  if (g_nGamestate != 0xC) {
+    g_nGamestate = 0;
+    g_nGamePaused = 1;
+    g_nGameplayBlocked = 0;
+    g_nLetterboxBarHeight = 0;
+  }
+emitlist:
+  FillWord(g_anSpyroHornStrikeAnchorPos, 0, 0x138);
+  g_anSpyroHornStrikeRibbonTexWords[0] = p[0];
+  g_anSpyroHornStrikeRibbonTexWords[1] = p[1];
+  FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
+  p += 2;
+  g_anEntitySpikeTexWords[0] = p[0];
+  g_anEntitySpikeTexWords[1] = p[1];
+  p += 2;
+  g_anLevelSpriteTexWordPairs[0] = p[2];
+  g_anLevelSpriteTexWordPairs[1] = p[3];
+  i = 0;
+sprites:
+  j = i + 1;
+  g_anLevelSpriteTexWordPairs[j * 2] = p[i * 2 + 4];
+  g_anLevelSpriteTexWordPairs[j * 2 + 1] = p[i * 2 + 5];
+  i = j;
+  if (i < 9) {
+    goto sprites;
+  }
+  p += 0x16;
+  i = 0;
+  g_anSpyroHornStrikeRibbonTexWords[2] = p[0];
+  g_anSpyroHornStrikeRibbonTexWords[3] = p[1];
+  p += 2;
+  g_anSecondaryActorTexWords[0] = p[0];
+  g_anSecondaryActorTexWords[1] = p[1];
+  p += 2;
+
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimMeshKeyframeList = p;
+  pcount = g_anWorldAnimMeshKeyframeCountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+    i = 0;
+  }
+
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimUvCycleList = p;
+  pcount = g_anWorldAnimUvCycleCountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+  }
+
+  i = 0;
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimColor2List = p;
+  pcount = g_anWorldAnimColor2CountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+    i = 0;
+  }
+
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimColor0List = p;
+  pcount = g_anWorldAnimColor0CountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+  }
+
+  i = 0;
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimVertexMorphList = p;
+  pcount = g_anWorldAnimVertexMorphCountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+    i = 0;
+  }
+
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimColor3List = p;
+  pcount = g_anWorldAnimColor3CountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+  }
+
+  i = 0;
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  w = *p;
+  p++;
+  g_pWorldAnimColor1List = p;
+  pcount = g_anWorldAnimColor1CountBlock;
+  *pcount = w;
+  if (*pcount > 0) {
+    do {
+      w = *p + 4;
+      *p = (int)base + w;
+      i++;
+      p++;
+    } while (i < *pcount);
+  }
+
+  p = (int *)((char *)base + *base);
+  if (fullSetup != 0) {
+    ResetWorldChunkAnimations();
+  } else {
+    g_nWorldAnimMeshKeyframeCount = 0;
+    g_nWorldAnimUvCycleCount = 0;
+    g_nWorldAnimVertexMorphCount = 0;
+    g_nWorldAnimColor3Count = 0;
+    g_nWorldAnimColor1Count = 0;
+  }
+  base = p;
+  p++;
+  i = *p;
+  p++;
+  g_pActorListBase = p;
+  p = (int *)((char *)base + *base);
+  g_pActorPoolDynBase = (char *)g_pActorListBase + i * 0x58;
+  g_pActorPoolFreeHead = g_pActorPoolDynBase;
+  ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
+  g_nActorPoolLiveCount = 0;
+  g_pActorAuxPoolTop = p;
+  g_pActorAuxPoolFreeHead = p;
+  ((char *)p)[-1] = 0xFF;
+  g_nActorPoolCapacity =
+      (unsigned int)((char *)g_pActorAuxPoolTop - (char *)g_pActorPoolDynBase) /
+      0x70;
+
+  p = (int *)((char *)p + *p);
+  base = p;
+  p++;
+  count = *p;
+  p++;
+  g_pLevelPickupTableEntries = p;
+  g_nLevelPickupTableCount = count;
+  i = count - 1;
+  if (i >= 0) {
+    pk = (int *)(i * 4 + (int)p);
+    do {
+      *pk += (int)base;
+      i--;
+      pk--;
+    } while (i >= 0);
+  }
+
+  p = (int *)((char *)base + *base);
+  base = p;
+  p++;
+  g_pActorSpatialGridBase = p;
+  p = (int *)((char *)base + *base);
+  base = p;
+  i = 0;
+  p++;
+  if (*base > 0) {
+    do {
+      gd = (int *)((char *)root + *p);
+      *gd += (int)root;
+      i++;
+      p++;
+    } while (i < *base);
+  }
+
+  if (g_nDeathState != 0) {
+    srand(1234);
+    k = g_nDeathTryIndex;
+    dyaw = g_anDeathReplaySpawnTable[k * 4];
+    g_anSpyroWorldPos[0] = dyaw;
+    dyaw = g_anDeathReplaySpawnTable[k * 4 + 1];
+    g_nSpyroWorldPosY = dyaw;
+    dyaw = g_anDeathReplaySpawnTable[k * 4 + 2];
+    D_80078A60 = dyaw;
+    dyaw = g_anDeathReplaySpawnTable[k * 4 + 3];
+    g_nDeathRespawnPending = 1;
+    g_abSpyroPersistentEuler[2] = dyaw;
+    g_nSpyroBodyYaw = (dyaw & 0xFF) * 0x10;
+    if (g_nDeathState == 1) {
+      g_pDeathReplayCursor = p;
+    } else {
+      g_pDeathReplayCursor = (void *)0x80600000;
+      FillWord((void *)0x80600000, 0, 0x4000);
+    }
+  }
+  mask = 0;
+
+  rec = (char *)g_pActorListBase;
+  if ((unsigned char)rec[0x48] != 0xFF) {
+    i = 0;
+    off = 0;
+    do {
+      r = (char *)(off + (int)rec);
+      if (((int *)&g_apActorMeshTable)[*(short *)(r + 0x36)] < 0) {
+        InsertActorIntoSpatialGrid(r);
+      } else {
+        HideActorRenderRecord(r);
+      }
+      CopyVector(pos, (int *)((char *)g_pActorListBase + off + 0xC));
+      pos[2] += 0x400;
+      FindGroundHeightBelow(pos, 0x10000);
+      EncodeCachedVecToActorDirCode((char *)g_pActorListBase + off);
+      type = *(unsigned char *)(off + (int)g_pActorListBase + 0x3A);
+      if ((unsigned int)(type & 0x7F) < 0x20) {
+        wi = i >> 5;
+        bit = i & 0x1F;
+        bit = 1 << bit;
+        if ((g_anRunningKillBitmap[wi] & bit) == 0) {
+          mask |= 1 << type;
+        } else {
+          row = (g_nLevelIntroIndex << 5) + (int)g_anLevelKillBitmapTable;
+          if ((*(int *)(wi * 4 + row) & bit) == 0) {
+            mask |= 1 << type;
+          }
+        }
+      }
+      off += 0x58;
+      rec = (char *)g_pActorListBase;
+      i++;
+    } while ((unsigned char)rec[off + 0x48] != 0xFF);
+    rec = (char *)g_pActorListBase;
+  }
+  i = 0;
+  if ((unsigned char)rec[0x48] != 0xFF) {
+    off = 0;
+    do {
+      wi = i >> 5;
+      sh = i & 0x1F;
+      row = (g_nLevelIntroIndex << 5) + (int)g_anLevelKillBitmapTable;
+      bit = 1 << sh;
+      if (*(int *)(wi * 4 + row) & bit) {
+        if ((g_anRunningKillBitmap[wi] & bit) == 0) {
+          r = (char *)(off + (int)rec);
+          if ((*(unsigned char *)(r + 0x3A) & 0x7F) == 0x7D) {
+            DespawnActorRecord(r);
+          } else {
+            r[0x53] = 0xFF;
+          }
+        } else {
+          tb = *(unsigned char *)(off + (int)g_pActorListBase + 0x3A) & 0x7F;
+          if (tb < 0x20) {
+            tbit = 1 << tb;
+            count = (mask & tbit) != 0;
+          } else {
+            count = tb == 0x7E;
+          }
+          if (count != 0) {
+            ((char *)g_pActorListBase + off)[0x53] = 0xFF;
+          } else {
+            DespawnActorRecord((char *)g_pActorListBase + off);
+          }
+        }
+      }
+      rec = (char *)g_pActorListBase;
+      off += 0x58;
+      i++;
+    } while ((unsigned char)rec[off + 0x48] != 0xFF);
+  }
+
+  i = 0;
+  dst = g_anCommittedKillBitmap;
+  src = g_anCommittedKillBitmap;
+  src = dst - 8;
+  do {
+    *dst = *src;
+    src++;
+    i++;
+    dst++;
+  } while (i < 8);
+
+  i = 9;
+  tg = &g_anLevelTriggerStateSlots[9];
+  do {
+    *tg = 0;
+    i--;
+    tg--;
+  } while (i >= 0);
+
+  g_pEmitListBase = g_pEmitListBuffer;
+  g_pEmitListWriteCursor = g_pEmitListBuffer;
+  ((unsigned char *)g_pEmitListBuffer)[1] = 0xFF;
+  ((int *)g_pEmitListBase)[0x800] = -1;
+  ResetWorldParticleTables();
+  if (fullSetup != 0 && g_nFlightLevelActive == 0) {
+    g_pLevelOverlayInitRecord =
+        (*(void *(**)())&g_pfnLevelOverlayInitHook)(0x78, 0);
+    InitHudCounters(1);
+  }
+  return HandleMusicCommand(g_nCurrentMusicTrack, 1);
+}
