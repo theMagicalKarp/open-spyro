@@ -1564,3 +1564,35 @@ FUN_80060e28:
   verdict: parked
   class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip"
   date: 2026-08-10
+RelocateActorMeshHeader:
+  verdict: matched
+  class: "index-form givs + local-alloc tying + for-increment placement"
+  date: 2026-08-10
+  note: >-
+    620 B leaf, first attempt. Three levers, all new: (1) every table access is
+    written as an INDEX off the base (`table[5+i]`, `hdr[14+i]`), never a
+    pointer walker - loop.c reduces the DEST_ADDR giv but splits the constant
+    term into the addressing mode, so the giv init is `move rd,base` with
+    +0x14/+0x38 in the load/store, where `p[5]` + `p++` folds the constant into
+    the init (`addiu rd,base,0x14`) and eliminates the biv. (2) the packed-word
+    chain reuses ONE local (`lo = word & M; ...; lo = ((lo+delta)>>1) & M;`):
+    a pseudo with 2 sets dies twice, so local-alloc's combine_regs bails at
+    `reg_qty[ureg] < 0` and the chain stops being tied to its dying operand,
+    reproducing the original's alternating v0/v1. (3) `w++` moved into the
+    for-increment clause puts `j++` in the exit test's load-delay slot. Frame
+    is 0x18 with ZERO locals - do not add a dead pad before checking.
+RelocateMobActorTable:
+  verdict: parked
+  class: "F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact"
+  date: 2026-08-10
+  note: >-
+    432 B. Re-decoded from scratch (the 2026-07-25 permuter body is at f172dda)
+    and every structural knot is closed: index-form table accesses, volatile
+    MESH_TABLE reads (cse will not invalidate a scalar global at a store to
+    `(plus reg const)`), volatile field STORES (sched.c's true_dependence needs
+    BOTH refs volatile or sched1 fills 13 load-delay nops with the next
+    statement's `lui/lw`), plain field READS (volatile reads cost `lh` ->
+    `lhu;sll;sra`), an end-of-body `mesh` re-fetch in the inner loop, and the
+    two-statement `count<<2 + 0x24` that blocks A46 reassociation. Only the
+    register rotation is left: the loop-1 counter must win a0 from the param.
+    See the .wip header for the -dg measurement and the four rejected dials.
