@@ -14,11 +14,18 @@
  * call return then coalesces into v0 (F4), which lets jump.c cross-jump the two
  *    `vec[2]=..` stores into one -> 189 insns (length-changing, worse partial).
  *    Getting ground into v1 without the coalesce is the unforced move v1,v0.
- *  - F8/negu: |delta| abs at 0x8003a50c emits `negu v0,v1` (negate delta
- * direct) vs orig `negu v0,v0` (negate the copy); delta stays live for the
- * clamp so gcc re-negates the source. Testing `absv<0` instead flips bgez
- * v1->v0 (trade). Harvest with the permuter (double reg-permutation -> needs
- * hand-framed PERM_*).
+ *  - F8/negu: CLOSED 2026-08-11-1 by `absv = abs(delta)` (A160 — the builtin's
+ * abssi2 pattern is `bgez src; move dst,src; negu dst,dst`, which the ternary
+ * and two-local forms never reach because they re-negate the source). 10 -> 9.
+ *  - The remaining 8 are the F9 knot alone. Measured 2026-08-11-1 with the
+ * §D 2c allocation probe on the SPLIT (two-local) form: the ground pseudo comes
+ * out `;; 85 preferences: 2` with `conflicts: 72 73 74 85 29` — the call-result
+ * copy gives it a hard v0 preference and NOTHING conflicts with v0 over its
+ * 4-insn range, so find_reg takes v0, the two `vec[2]=` stores become identical
+ * and jump.c cross-jumps them (-3 insns, 58/192). The original's v1 therefore
+ * needs v0 to be either unpreferred or live across the range; folding the else
+ * arm into the value (`if (g==0) g = vec[2]-0x400; vec[2] = g;`) makes it live
+ * but trades the second store for a move (-1 insn). Not source-reachable yet.
  *
  * 2026-07-25-1 unattended permuter session (~15m, ~61700 iterations, timed out
  * at the 15m budget): base score 65, and the run wrote NO output directories —
@@ -28,6 +35,7 @@
  * with the low-base/zero-progress signature (cf. func_80038C4C,
  * func_80038FC8). Still PARKED. */
 
+extern int abs(int);
 extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int ArcTan2(int y, int x, int high_precision);
@@ -66,10 +74,7 @@ int func_8003A420(char *actor, unsigned char *wp, int arg2, int cap, int arg4,
     if (delta >= 0x81) {
       delta -= 0x100;
     }
-    absv = delta;
-    if (delta < 0) {
-      absv = -absv;
-    }
+    absv = abs(delta);
     if (arg6 < absv) {
       cap = 0;
     }

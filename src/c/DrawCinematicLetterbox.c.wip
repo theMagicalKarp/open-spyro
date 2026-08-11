@@ -93,6 +93,12 @@ void DrawCinematicLetterbox(void) {
      - store order is source order (alias-locked, above).
      Original needs first-use order [0x5000000, 0x28] AND store order
      [0x28, 0x5000000]: the two are the same source decision, hence the tie.
+   Mechanism settled 2026-08-11-1 from the gcc 2.7.2 sched.c source (do not
+   re-derive): schedule_block builds the chain BACKWARD (first picked = placed
+   LAST), priority() walks LOG_LINKS so it is the longest path from the block
+   START and both constant defs come out priority 1, and rank_for_schedule's
+   LUID tiebreak therefore makes the emitted order of a priority-1 pool equal
+   to SOURCE order. Re-confirmed both ways by build this session (see A164).
    Tried and rejected: a volatile tag store (does not sink), named `code`/`cb`
    locals for the two constants (cse const-propagates both and re-creates the
    defs at first use — the register assignment comes out right, the order does
