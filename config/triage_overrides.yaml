@@ -1505,7 +1505,7 @@ BeginGemCutscene:
     `*head = 0;` store has to stay adjacent to the `if`.
 func_80038C4C:
   verdict: park
-  class: "F1 local-alloc ORDER, 6/66 (unchanged)"
+  class: "F1 local-alloc ORDER, 6/66 (unchanged; 2026-08-11: the fresh-local-for-abs split is byte-identical, so the rx quantity does not reach the ay v1-vs-a1 tie)"
   date: 2026-08-10
   note: >-
     264 B. `ay = abs(ry)` lands in v1 where the original has a1, and the
