@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.63% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">315,872 / 2,159,608 split-code bytes · 517 matched · 81 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">315,928 / 2,159,608 split-code bytes · 518 matched · 80 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -283,7 +283,7 @@
 <rect x="154.74" y="615.55" width="11.16" height="11.56" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>ApplyPadInputToSpyroBodyYaw  ·  236 bytes  ·  wip</title></rect>
 <rect x="154.74" y="627.11" width="11.16" height="11.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E8D8  ·  236 bytes  ·  matched</title></rect>
 <rect x="154.74" y="638.67" width="11.16" height="11.56" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_padRecvAtLoadInfo  ·  236 bytes  ·  library</title></rect>
-<rect x="154.74" y="650.22" width="11.16" height="11.36" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>EmitRadialShadedLine  ·  232 bytes  ·  wip</title></rect>
+<rect x="154.74" y="650.22" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EmitRadialShadedLine  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="661.58" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawDemoModeOverlay  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="672.94" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038EE0  ·  232 bytes  ·  matched</title></rect>
 <rect x="154.74" y="684.30" width="11.16" height="11.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003BED8  ·  232 bytes  ·  matched</title></rect>

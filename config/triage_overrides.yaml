@@ -1652,3 +1652,8 @@ RespawnOrGameOver_Update_2026_08_11_note:
     lba while `count` carries the size costs +2 insns. Any fix must add a set
     BEFORE the call whose own def is not a copy - nothing in the arm provides
     one, so this is a permuter target on the 3-insn window.
+
+EmitRadialShadedLine:
+  verdict: matched
+  class: "matched 2026-08-11 (fresh local for the far-endpoint shade -> A181 dest-to-source tie; the 2026-07-09 'whole-function regalloc permutation' class was wrong)"
+  date: 2026-08-11
