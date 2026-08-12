@@ -1,67 +1,71 @@
 #include "globals.h"
 
-/* 0x80016fd0: 5-word block copy that swaps the low/high halfwords across
-   each adjacent word pair (word0<->word1, word1<->word3, word2<->word3);
-   the 5th word passes through unchanged. PARKED: correct logic, 6.7% match.
-   gcc always hoists the reused 0xFFFF0000 mask's `lui` to the very front of
-   the block (before any of the 5 loads) regardless of source position
-   (tried: literal repeated 3x, named local declared after the loads,
-   combined single-expression form) — original schedules the lui AFTER all
-   5 loads. Independent-instruction scheduling tie (no dependency to peg the
-   lui's position to); permuter-or-never.
-
-   2026-07-25-1 unattended permuter session (~15m, ~80000 iterations, timed out
-   at the 15m budget): best score 220 vs base score 475. No byte-perfect
-   candidate found; still PARKED (see above). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
-   them was measured to cost partial bytes; do not 'simplify' them.
-   Original hand-written body: git show HEAD:src/c/func_80016FD0.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/func_80016FD0/output-220-1/source.c */
+/* WALL 2026-08-12 (§B6 hand-written asm) — do NOT attempt again.
+ * The original uses $at as a general-purpose TEMPORARY: `and $at,$a2,$v1`,
+ * `andi $at,$a3,0xffff`, `and $at,$t0,$v1` are three-operand logical ops whose
+ * DESTINATION is $at. gcc never allocates $at (it is in FIXED_REGISTERS) and
+ * gas only writes $at while expanding a macro with an immediate/address — none
+ * of these have one. So this function was not built by our toolchain.
+ * `progress.py`'s at_is_data() misses it: that detector only accepts $at as the
+ * destination of add/addi/sub/neg or of a non-%hi/%lo load/store, so logical
+ * ops writing $at slip through and the function is still in the denominator.
+ *
+ * The body below is a from-scratch re-derivation (2026-08-12) that replaces the
+ * 2026-07-25 permuter spew. It is INSTRUCTION-FOR-INSTRUCTION identical to the
+ * original in opcode and order (30/30) — the three swap stanzas come out
+ * and/and/xor/xor/or/or exactly when each field swap is written as SIX separate
+ * statements with in-place compound assignment (`w0 ^= a; w1 ^= b; w0 |= b;
+ * w1 |= a;`); the single-expression form `w0 = (w0 ^ a) | b;` instead emits
+ * and/and/xor/or/xor/or with a fresh temp per pair. What cannot be reached is
+ * the register assignment: the original's temps are $at/$v0, ours are two
+ * ordinary pseudos, and the 0xFFFF0000 `lui` lands before the five loads
+ * instead of after them (it is a priority-1 straggler whose RTL insn precedes
+ * them; A164 group permutation does not move it — a named mask local, before
+ * or after the loads, is far worse). Still 6.7% linked, same as the spew.
+ *
+ * 0x80016fd0, 120 bytes — transpose the packed 3x3 short matrix at src into
+   dst: three halfword-field swaps (word0<->word1 high halves, word1<->word3
+   low halves, word2<->word3 high halves); the 5th word passes through. */
 
 void func_80016FD0(unsigned int *dst, unsigned int *src) {
-  unsigned int a2;
-  unsigned int a3;
-  unsigned int t0;
-  unsigned int t1;
-  char pad;
-  unsigned int t2;
-  unsigned int hiMask;
-  unsigned int at;
-  unsigned int v0;
-  a2 = src[0];
-  a3 = src[1];
-  t0 = src[2];
-  t1 = src[3];
-  t2 = src[4];
-  do {
-    hiMask = 0xFFFF0000;
-    at = a2 & hiMask;
-    v0 = a3 & hiMask;
-    a2 = a2 ^ at;
-    a3 = a3 ^ v0;
-    a2 = a2 | v0;
-    a3 = a3 | at;
-  } while (0);
-  at = a3 & 0xFFFF;
-  v0 = t1 & 0xFFFF;
-  a3 = a3 ^ at;
-  t1 = t1 ^ v0;
-  a3 = a3 | v0;
-  t1 = t1 | at;
-  at = t0 & hiMask;
-  v0 = t1 & hiMask;
-  t0 = t0 ^ at;
-  t1 = t1 ^ v0;
-  t0 = t0 | v0;
-  t1 = t1 | at;
-  dst[0] = a2;
-  dst[1] = a3;
-  dst[2] = t0;
-  dst[3] = t1;
-  dst[4] = t2;
+    unsigned int w0;
+    unsigned int w1;
+    unsigned int w2;
+    unsigned int w3;
+    unsigned int w4;
+    unsigned int a;
+    unsigned int b;
+
+    w0 = src[0];
+    w1 = src[1];
+    w2 = src[2];
+    w3 = src[3];
+    w4 = src[4];
+
+    a = w0 & 0xFFFF0000;
+    b = w1 & 0xFFFF0000;
+    w0 ^= a;
+    w1 ^= b;
+    w0 |= b;
+    w1 |= a;
+
+    a = w1 & 0xFFFF;
+    b = w3 & 0xFFFF;
+    w1 ^= a;
+    w3 ^= b;
+    w1 |= b;
+    w3 |= a;
+
+    a = w2 & 0xFFFF0000;
+    b = w3 & 0xFFFF0000;
+    w2 ^= a;
+    w3 ^= b;
+    w2 |= b;
+    w3 |= a;
+
+    dst[0] = w0;
+    dst[1] = w1;
+    dst[2] = w2;
+    dst[3] = w3;
+    dst[4] = w4;
 }

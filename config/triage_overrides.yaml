@@ -1080,3 +1080,21 @@ LoadActorMeshTables:
     early, so the held base lands in v0 instead of v1. All 24 permutations of
     the four straggler statements measured identical — the stragglers come from
     expand_call's arg setup, so source order cannot reach them.
+
+func_80016FD0:
+  verdict: wall
+  class: "B6 hand-written asm ($at as a general-purpose temp)"
+  date: 2026-08-12
+  note: >-
+    The 3x3 short-matrix transpose at 0x80016fd0 uses $at as a scratch register
+    for three-operand logical ops (`and $at,$a2,$v1`, `andi $at,$a3,0xffff`,
+    `and $at,$t0,$v1`). gcc has $at in FIXED_REGISTERS and gas only writes it
+    while expanding an immediate/address macro, so this is not our toolchain's
+    output. progress.py's at_is_data() does not catch it — that check only
+    accepts $at as the destination of add/addi/sub/neg or a non-reloc
+    load/store, so logical ops writing $at are missed and the function stays in
+    the denominator. Widening the detector to "any non-lui/addu write of $at"
+    is a project-level call, not a session one. The .wip body is a from-scratch
+    decode that is opcode-for-opcode identical (30/30, the six-statement
+    in-place compound-assignment form per swap stanza); only the $at/$v0 temp
+    pair and the lui placement are unreachable.
