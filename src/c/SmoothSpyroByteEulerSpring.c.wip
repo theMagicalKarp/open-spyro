@@ -1,39 +1,5 @@
 #include "globals.h"
 
-/* 2026-07-25-1 unattended permuter session (~15m, ~74700 iterations, timed out
-   at the 15m budget): best score 245 vs base score 295 — only 8 output dirs,
-   one of the flattest searches of the sweep. No byte-perfect candidate found;
-   still parked. NB this file carries no post-mortem and its extern block is
-   duplicated many times over (an earlier pruned-permuter artefact); worth a
-   cleanup pass before the next attempt. */
-
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
 extern int g_nSpyroSwingEulerPitchTarget;
 extern int g_nCameraScriptStickRequestY;
 extern int g_nCameraScriptStickRequestX;
@@ -43,85 +9,147 @@ extern int g_nSpyroSwingEulerPrev2;
 extern int g_nSpyroSwingEulerSpringAccum0;
 extern int g_nSpyroSwingEulerSpringAccum1;
 extern int g_nSpyroSwingEulerSpringAccum2;
-extern unsigned char g_bSpyroSwingByteEuler0;
-extern unsigned char g_bSpyroSwingByteEuler1;
-extern unsigned char g_bSpyroSwingByteEuler2;
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
-   them was measured to cost partial bytes; do not 'simplify' them.
-   Original hand-written body: git show
-   HEAD:src/c/SmoothSpyroByteEulerSpring.c.wip Best candidate:
-   build/permuter/nonmatchings/SmoothSpyroByteEulerSpring/output-245-1/source.c
- */
 
+/* 0x80049880: critically-damped spring that carries Spyro's three swing euler
+   angles toward their targets and publishes them as byte angles. Per axis: the
+   12-bit signed error drives a velocity accumulator (error*128 minus the
+   current accumulator*16, scaled by 1/64), the accumulator advances the
+   angle by 1/64, and the angle is republished as a byte euler (>> 4). */
+/* PARKED 2026-08-11-3 at 81/80 insns (one insn long), structure-exact except
+   the third guard. Re-derived from scratch; the 2026-07-25 permuter body is
+   gone. What the original's block structure actually is (read off the branch
+   targets, do not re-derive):
+     stanza0 delta+guard, stanza0 spring, stanza1 delta+guard, stanza1 spring,
+     stanza2 delta+guard, THEN the byte-0 and byte-1 publications, then the
+     stanza2 spring, then byte 2.
+   The two byte stores really do sit between the third guard and the third
+   spring — sched1 cannot have moved them there (it is per-basic-block), so it
+   is source order. Writing the three stanzas uniformly (byte published inside
+   its own stanza) costs 124 masked mismatches; this order costs 84.
+
+   A186 REFINEMENT (the load-bearing find): the original's first two guards each
+   show `bnez; sll f,d,7` in the delay slot AND a second `sll f,d,7` after the
+   arm. A186 says write the join insn ONCE — that is only reachable when the
+   join insn's DEST is not the guarded variable's register. Written once, the
+   shift is block-local at the join, local-alloc ties its dest to the dying `d`
+   (both land in v1), and reorg then cannot copy it into the delay slot at all
+   (the arm's `addiu d` would clobber the copy's input), so the slot gets a nop
+   — three nops, +2 insns. Writing `f = d << 7;` BEFORE the guard and again
+   INSIDE the arm makes `f` a cross-block allocno, breaks the tie, and both
+   delay slots come out with the original's duplicate. That fix is in the body
+   below (stanzas 0 and 1).
+
+   SOLE RESIDUE (+1 insn): the third guard. The original fills its delay slot by
+   MOVING the join's first insn (`sra v0,a2,4`, the byte-0 value — the arm does
+   not clobber it, so no duplicate is needed) and computes `f = d << 7` once,
+   seven insns later, in the load-delay bubble after the accum-2 load. Ours has
+   sched1 put that shift first in the join block instead, so reorg duplicates it
+   (+1). Measured, all identical at 81/84: shift after the accum load, shift
+   fused into `(d<<7) - (a<<4)`, per-stanza `f` locals, byte stores written as
+   `g_abSpyroSwingByteEuler[i]` (array-store form, A134) so the accum load
+   cannot hoist over them, a volatile byte-0 store as a scheduling barrier, and
+   the prev/accum accesses in array form rather than through the scalar aliases
+   (that last one is worth recording separately: the two spellings are
+   byte-identical here, so the `distinct symbols keep every access per-use
+   absolute` note on the g_nSpyroSwingEulerPrev0 aliases in symbol_addrs.txt
+   does not bind this source shape).
+   Class: F-sched straggler placement inside one basic block — the shift and the
+   byte-0 sra are both priority-1 and the original's bubble choice is not
+   source-reachable through statement order. Permuter-or-never. */
+/* PARKED 2026-08-11-3 at 21/80 insns (73.8%), LENGTH- AND LAYOUT-EXACT (every
+   branch lands at the original address). Re-derived from scratch; the
+   2026-07-25 permuter body it replaces was structurally wrong.
+
+   The block structure, read off the branch targets — do not re-derive:
+   each stanza is `delta; guard; spring`, but the NEXT stanza's delta is
+   computed BEFORE the current stanza's spring (the original software-pipelines
+   it in source: the delta subu/andi sit in the join block of the previous
+   guard), and the byte-0 and byte-1 publications sit between the THIRD guard
+   and the third spring. Writing three uniform self-contained stanzas costs
+   ~60 insns of scheduling difference; this order made the instruction sequence
+   position-for-position identical.
+
+   Four levers got it here, all measured:
+     - A186 REFINEMENT: the first two guards show `sll f,d,7` in the delay slot
+       AND again after the arm. Writing that join insn ONCE (what A186 says) is
+       only reachable when its dest is not the guarded variable's register:
+       written once it is block-local, local-alloc ties its dest to the dying
+       `d`, both land in one register, and reorg then cannot copy it into the
+       slot at all (the arm's `addiu d` would clobber the copy's input) — three
+       nops, +2 insns, will not link. Writing `f = d << 7;` before the guard AND
+       inside the arm makes `f` cross-block, breaks the tie, and both slots come
+       out with the original's duplicate. The third guard must NOT use that form
+       (it has no dup in the original).
+     - the accumulator must be a PER-STANZA local (A138/A146): as one shared
+       variable it is a cross-block allocno, conflicts with v0 and lands in a0,
+       pushing `d` and `f` one register over each (-dg: 74 = 18 refs/31 insns,
+       priority 2.32, allocated first). Three block-scoped locals let local-alloc
+       give each v0, which is what the original has. 61 -> 39 insns.
+     - `d` is ONE shared variable across all three stanzas (per-stanza `d`s put
+       stanza 0 in v1); 26 -> 21.
+     - the >>6 must be its own statement (`f = f >> 6; acc = acc + f;`, A167):
+       written as `acc = acc + (f >> 6)` gcc makes a fresh temp instead of
+       shifting in place. 29 -> 26.
+
+   RESIDUE (21 insns, two classes):
+   R1 (8 insns) the prev-1 / prev-2 held values swap a3 <-> t0. Both are 3-ref
+      pseudos and the ranges differ by ONE insn (35 vs 34), so ours allocates
+      prev2 first. Reachable only by an A176-style ref bump on prev1, and the
+      only block that isolates its ref also carries two prev2 refs.
+   R2 (13 insns) the stanza-2 tail: sched1 hoists the accum-2 load and the
+      `d << 7` above the byte-1 store, where the original keeps the store first,
+      and `f` then lands in a0 rather than the original's v1. Measured
+      no-ops on R2: array-index byte stores (constant index folds to a fixed
+      address, so A134's array-store barrier does not apply), a volatile accum-2
+      load, a volatile byte-0 store, a separate stanza-2 `f` local (+1 insn,
+      will not link), and the fused vs split `(d<<7) - (a<<4)` spelling.
+   Class: F-sched/F1 pair. Permuter target — the logic and the layout are done. */
 void SmoothSpyroByteEulerSpring(void) {
-  int d0;
-  int d1;
-  int d2;
-  int *new_var4;
-  int f0;
-  int new_var;
-  int f1;
-  int new_var2;
-  int new_var3;
-  int v;
-  int new_var5;
-  int a;
-  d0 = 0xFFF & (g_nSpyroSwingEulerPitchTarget - g_nSpyroSwingEulerPrev0);
-  new_var = 7;
-  if (d0 > 0x800) {
-    d0 -= 0x1000;
+  int d;
+  int f;
+  int acc0;
+  int acc1;
+  int acc2;
+
+  d = (g_nSpyroSwingEulerPitchTarget - g_nSpyroSwingEulerPrev0) & 0xFFF;
+  f = d << 7;
+  if (d > 0x800) {
+    d = d - 0x1000;
+    f = d << 7;
   }
-  f0 = d0 << new_var;
-  do {
-    d0 = g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1;
-    new_var2 = d0 & 0xFFF;
-    d1 = new_var2;
-    a = g_nSpyroSwingEulerSpringAccum0;
-    new_var4 = &g_nCameraScriptStickRequestX;
-    f0 -= (d0 = a << 4);
-  } while (0);
-  f0 >>= 6;
-  a += f0;
-  do {
-    new_var3 = a;
-    g_nSpyroSwingEulerSpringAccum0 = a;
-    g_nSpyroSwingEulerPrev0 += new_var3 >> 6;
-    if (d1 > 0x800) {
-      d1 -= 0x1000;
-    }
-    new_var3 = *new_var4;
-    f1 = d1 << new_var;
-    d2 = 0xFFF & (new_var3 - g_nSpyroSwingEulerPrev2);
-    a = g_nSpyroSwingEulerSpringAccum1;
-    f1 -= a << 4;
-    f1 >>= 6;
-    a += f1;
-    new_var3 = a;
-    g_nSpyroSwingEulerSpringAccum1 = new_var3;
-  } while (0);
-  v = g_nSpyroSwingEulerPrev1 + (a >> 6);
-  g_nSpyroSwingEulerPrev1 = v;
-  if (d2 > 0x800) {
-    d2 -= 0x1000;
+
+  d = (g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1) & 0xFFF;
+  acc0 = g_nSpyroSwingEulerSpringAccum0;
+  f = f - (acc0 << 4);
+  f = f >> 6;
+  acc0 = acc0 + f;
+  g_nSpyroSwingEulerSpringAccum0 = acc0;
+  g_nSpyroSwingEulerPrev0 = g_nSpyroSwingEulerPrev0 + (acc0 >> 6);
+
+  f = d << 7;
+  if (d > 0x800) {
+    d = d - 0x1000;
+    f = d << 7;
   }
-  new_var5 = v >> 4;
-  g_bSpyroSwingByteEuler0 = g_nSpyroSwingEulerPrev0 >> 4;
-  do {
-    g_bSpyroSwingByteEuler1 = new_var5;
-    new_var3 = g_nSpyroSwingEulerSpringAccum2;
-    v = d2 << new_var;
-    a = new_var3;
-    a = a << 4;
-    v -= a;
-    v >>= 6;
-    a += v;
-  } while (0);
-  new_var3 = a;
-  g_nSpyroSwingEulerSpringAccum2 = new_var3;
-  g_nSpyroSwingEulerPrev2 += new_var3 >> 6;
-  g_bSpyroSwingByteEuler2 = g_nSpyroSwingEulerPrev2 >> 4;
+
+  d = (g_nCameraScriptStickRequestX - g_nSpyroSwingEulerPrev2) & 0xFFF;
+  acc1 = g_nSpyroSwingEulerSpringAccum1;
+  f = f - (acc1 << 4);
+  f = f >> 6;
+  acc1 = acc1 + f;
+  g_nSpyroSwingEulerSpringAccum1 = acc1;
+  g_nSpyroSwingEulerPrev1 = g_nSpyroSwingEulerPrev1 + (acc1 >> 6);
+
+  if (d > 0x800) {
+    d = d - 0x1000;
+  }
+  g_abSpyroSwingByteEuler[0] = g_nSpyroSwingEulerPrev0 >> 4;
+  g_abSpyroSwingByteEuler[1] = g_nSpyroSwingEulerPrev1 >> 4;
+  acc2 = g_nSpyroSwingEulerSpringAccum2;
+  f = (d << 7) - (acc2 << 4);
+  f = f >> 6;
+  acc2 = acc2 + f;
+  g_nSpyroSwingEulerSpringAccum2 = acc2;
+  g_nSpyroSwingEulerPrev2 = g_nSpyroSwingEulerPrev2 + (acc2 >> 6);
+  g_abSpyroSwingByteEuler[2] = g_nSpyroSwingEulerPrev2 >> 4;
 }

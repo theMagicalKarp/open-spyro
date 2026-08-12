@@ -1001,3 +1001,64 @@ WaitForFrameDeadline_2026_08_11_2_scope:
     `RegisterMemCardEvent` (32), `AdvanceSpyroSubstepState` (196, B8
     switchdata so skip). For the no-frame-store ones the B20 lever is simply to
     keep the local PLAIN (register-resident) and let reorg fill the slot.
+
+TurnSpyroTowardMoveTargetWithLean_2026_08_11_3:
+  verdict: park
+  class: "F1 local-alloc qty_compare tie (2/92, length- and schedule-exact; was 18/92)"
+  date: 2026-08-11
+  note: >-
+    368 B, re-derived from scratch (the 2026-07-25 permuter body is gone; the
+    park is now clean hand-written source). Three of four residues fell: the
+    shared constant local for the 6/-1 step is an artifact (write the store per
+    arm, cross-jump does the rest); the missing `move a2,a0` is a CONSEQUENCE
+    of the table `la` position, not a register tie (split `base =
+    D_8006C5F0;` into its own statement and the copy appears); and the a1<->a2
+    param/delta swap is an A176 ref dial (wrap the whole step if/else in
+    `do { } while (0)` — delta goes 4 -> 5 refs, priority 0.244 vs the param's
+    0.235). Sole residue: `subu a1,v0,v1; andi a1,a1,0xfff` vs our
+    `subu v0,v0,v1; andi a1,v0,0xfff`. Writing the AND as its own statement
+    puts the subu's dest on the delta pseudo (combine_regs refuses to tie an
+    and's input to a multi-block pseudo) but then loses the LOAD ORDER: with
+    R=2 on both loaded temps, local-alloc.c qty_compare_1
+    (floor_log2(R)*R*size/(death-birth)) always gives v0 to the SECOND load
+    (shorter range). Reachable only at exactly R=3 on the first-loaded temp
+    (the tie then falls through to `*q1 - *q2` = born first), and the A176
+    wrapper that would supply it splits the basic block, evicts `move a2,a0`
+    from the bubble and costs +1 insn (will not link). Permuter-or-never.
+
+SmoothSpyroByteEulerSpring_2026_08_11_3:
+  verdict: park
+  class: "F-sched + F1 pair (21/80, length- and layout-exact; was permuter spew)"
+  date: 2026-08-11
+  note: >-
+    320 B, re-derived from scratch. Block structure recovered from the branch
+    targets: each stanza is delta/guard/spring, the NEXT stanza's delta is
+    computed BEFORE the current spring, and the byte-0/byte-1 publications sit
+    between the third guard and the third spring. Levers, in the order they
+    paid: the A186 double-write of `f = d << 7` (before the guard and inside
+    the arm) for the first two guards only — written once it ties to `d`,
+    reorg cannot fill the slots, +2 insns; per-stanza accumulator locals so
+    local-alloc keeps them in v0 (61 -> 39); ONE shared `d` (26 -> 21); the
+    `>> 6` as its own statement (29 -> 26). Residue: prev1/prev2 swap a3<->t0
+    (3-ref pseudos whose ranges differ by one insn) and the stanza-2 tail,
+    where sched1 hoists the accum-2 load and the shift above the byte-1 store.
+    Full lever list incl. the measured no-ops in the .wip header. Permuter
+    target.
+
+park_rewrite_vein_2026_08_11_3:
+  verdict: note
+  class: "the 31 permuter-spew wips are the live harvest vein, and the ranked sweep does not find them"
+  date: 2026-08-11
+  note: >-
+    `grep -l "decomp-permuter output" src/c/*.c.wip` lists 31 parks whose
+    bodies are 2026-07-25 permuter output. Both targets this session came out
+    of that list and both moved a long way on a FROM-SCRATCH rewrite with the
+    current idiom set (18/80 -> 2/92; unusable -> 21/80 layout-exact). Neither
+    was near the top of the 2026-08-11-1/-2 differing-insn ranking, because
+    that ranking measures the SPEW, not the function: a machine-generated body
+    that scores 18 says nothing about how close a clean decode is. So do not
+    pick harvest targets off that ranking alone — prefer a permuter-spew wip
+    whose asm you can read in one screen, delete the body, and re-derive.
+    Remaining members worth taking next, by size: func_80016FD0 (120 B),
+    BuildAudioTrackTable (152), memmove (108), LoadActorMeshTables (264),
+    CheckGpuTimeout (364), FinalizePadCalibration (432).

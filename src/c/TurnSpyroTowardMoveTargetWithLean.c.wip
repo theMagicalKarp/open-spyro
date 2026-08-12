@@ -5,77 +5,90 @@
 extern short D_8006C5F0[];
 
 extern void IntegrateSpyroBodyEuler(int delta);
+extern int AbsAngleDelta12(int a, int b);
 
 /* 0x8003d6d0: Steers Spyro's body yaw toward the move-target yaw using a lean
    accumulator g_nSpyroBodyYawStep (clamped -6..+6). Picks the turn rate from
-   the 2D table (speed bucket param_1 selects the row, lean the column). Resets
-   the lean when the target is overshot or the desired delta falls inside the
-   table-indexed band, then integrates the chosen angular delta and reports the
-   remaining |delta| via AbsAngleDelta12. */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show
-   HEAD:src/c/TurnSpyroTowardMoveTargetWithLean.c.wip Best candidate:
-   build/permuter/nonmatchings/TurnSpyroTowardMoveTargetWithLean/output-195-1/source.c
- */
+   the 2D table (speed bucket selects the row, the lean the column). Resets the
+   lean when the desired delta falls inside the table-indexed band, then
+   integrates the chosen angular delta and reports the remaining |delta| via
+   AbsAngleDelta12. */
+/* PARKED 2026-08-11-3 at 2/92 (97.8%), length- and schedule-exact — was 18/92.
+   Re-derived from scratch (the 2026-07-25 permuter body is gone); three of the
+   four old residues fell:
+     - the shared `iVar1` constant local was an artifact (§G rule 1): writing
+       `g_nSpyroBodyYawStep = 6;` / `= -1;` per arm and letting jump.c
+       cross-jump the `sw` tail puts the constant in v0 as the original does,
+       and removes the pseudo whose live range conflicted with v0;
+     - the missing `move a2,a0` is NOT a register tie: the param only has to
+       leave a0 because the table `la` is emitted BEFORE the *0x1a ladder.
+       Splitting the base into its own statement (`base = D_8006C5F0;`) moves
+       the la up and the copy appears by itself (A139/A164);
+     - the a1<->a2 role swap between the param copy (4 refs / 34 insns) and
+       `delta` (4 refs / 41 insns) is an A176 ref-count dial: wrapping the whole
+       step if/else in `do { } while (0)` weights delta's compare ref twice
+       (flow.c adds loop_depth per ref), taking it to 5 refs / pri 0.244 vs the
+       param's 0.235, so delta is allocated first and takes a1.
 
-void TurnSpyroTowardMoveTargetWithLean(int param_1) {
-  int iVar1;
-  int uVar2;
-  int uVar3;
+   SOLE RESIDUE (2 insns), and it is a proven local-alloc tie, not a schedule:
+     orig  subu a1,v0,v1 ; andi a1,a1,0xfff
+     ours  subu v0,v0,v1 ; andi a1,v0,0xfff
+   The original's subu writes the `delta` pseudo directly, which only happens
+   when the AND is its own statement (`delta = t - b; delta = delta & 0xFFF;`):
+   local-alloc's combine_regs refuses to tie the and's input to a multi-block
+   pseudo (`reg_qty[sreg] == -1`), so in the one-statement form the subu's temp
+   ties to the first dying input instead and lands in v0.
+   But writing the split form costs the LOAD ORDER (measured, 5/92): with the
+   subu's dest no longer a local temp, the two loaded temps are ranked by
+   local-alloc.c `qty_compare_1` = floor_log2(R)*R*size/(death-birth), and with
+   R=2 each the SECOND load (shorter range: 2 vs 3 insns, the param copy sits
+   between) always wins v0. Declaring the body load first fixes the registers
+   and costs the emitted order instead (4/92, sched1 keeps source order for the
+   pair). The tie is reachable only at exactly R=3 on the first-loaded temp
+   (3/3 == 2/2 → qty_compare_1 falls through to `*q1 - *q2`, lower qty number =
+   born first = the target load), and the only ref dial we have (A176) needs a
+   `do { } while (0)` around that ONE statement, whose loop note splits the
+   basic block, evicts `move a2,a0` from the bubble and costs +1 insn (measured:
+   fails to link). No other source form adds exactly one weighted ref.
+   Class: F1 local-alloc qty_compare tie with a numeric criterion (R=3 on the
+   first-loaded temp) — permuter-or-never; do not re-derive the above. */
+void TurnSpyroTowardMoveTargetWithLean(int bucket) {
+  int delta;
+  int rate;
+  short *base;
   short *row;
-  uVar3 = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xfff;
-  if (uVar3 < 0x800) {
+
+  delta = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
+  do {
+  if (delta < 0x800) {
     g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + 1;
     if (g_nSpyroBodyYawStep < 1) {
       g_nSpyroBodyYawStep = 1;
     }
-    iVar1 = 6;
-    uVar2 = g_nSpyroBodyYawStep < 7;
-    if (uVar2) {
-      goto found;
+    if (g_nSpyroBodyYawStep >= 7) {
+      g_nSpyroBodyYawStep = 6;
     }
   } else {
-    g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + (-1);
-    if (g_nSpyroBodyYawStep < (-6)) {
+    g_nSpyroBodyYawStep = g_nSpyroBodyYawStep - 1;
+    if (g_nSpyroBodyYawStep < -6) {
       g_nSpyroBodyYawStep = -6;
     }
-    iVar1 = -1;
-    if (g_nSpyroBodyYawStep < 0) {
-      goto found;
+    if (g_nSpyroBodyYawStep >= 0) {
+      g_nSpyroBodyYawStep = -1;
     }
   }
-  g_nSpyroBodyYawStep = iVar1;
-found:
-  row = (short *)(((char *)D_8006C5F0) + (param_1 * 0x1a));
+  } while (0);
 
-  uVar2 = (unsigned int)row[g_nSpyroBodyYawStep + 6];
-  if ((((int)uVar3) <= ((int)uVar2)) ||
-      (((int)(uVar2 + 0x1000)) <= ((int)uVar3))) {
-    uVar2 = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xfff;
-    if (0x800 < uVar2) {
-      uVar2 = uVar2 - 0x1000;
+  base = D_8006C5F0;
+  row = (short *)((char *)base + bucket * 0x1a);
+  rate = row[g_nSpyroBodyYawStep + 6];
+  if (rate >= delta || rate + 0x1000 <= delta) {
+    rate = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
+    if (rate > 0x800) {
+      rate = rate - 0x1000;
     }
     g_nSpyroBodyYawStep = 0;
   }
-  IntegrateSpyroBodyEuler(uVar2);
+  IntegrateSpyroBodyEuler(rate);
   AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw);
 }
-
-/* PARKED 2026-07-16 (1 insn short / 91-of-92 positional-shift, logic +
-   length-1). Sole residue: the original copies param to a2 at entry (`move
-   a2,a0`) and holds it there through the branch chain to the table lookup, then
-   computes the call arg uVar2 into a0. Our gcc is smarter: param stays in a0,
-   dies after the `param*0x1a` ladder, and a0 is reused for uVar2 -> no move (1
-   insn short, whole body then shifts by one so a2->a0 in the ladder). §H
-   single-register tie; a `bucket=param_1` copy local, row-hoist, and slti(int
-   uVar3) fixes did not dislodge it (the copy just lands mispositioned). Clean
-   permuter candidate: force param into a2 across its live range. Everything
-   else (goto layout, slti signedness, param*0x1a ladder, lh 0xC table access,
-   reset block) byte-identical.
-
-   2026-07-25-1 unattended permuter session (~15m, ~82100 iterations, timed out
-   at the 15m budget): best score 195 vs base score 520. No byte-perfect
-   candidate found; still PARKED (see above). */
