@@ -3,100 +3,87 @@
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void CopyVector(int *dst, int *src);
 
-/* Read g_pSpriteRecordWriteCursor volatile-ly: the original re-loads the queue
-   tail from the global at every field access (no held base). */
-#define CURSOR (*(void *volatile *)&g_pSpriteRecordWriteCursor)
+/* The queue tail is re-read from the global at every field access. */
+#define CURSOR (*(unsigned char *volatile *)&g_pSpriteRecordWriteCursor)
 
 /* Emit a glyph-sprite chain for a string: per non-space byte allocate a
    0x58-byte SPRT slot at g_pSpriteRecordWriteCursor (queue tail, grows down),
-   map '0'-'9' and 'A'-'Z' (+ specials '/','?','%','^','+') to font tile
-   indices, copy the pen position from *param_2 and advance it by param_3
-   between glyphs (0x80017fe4, 0x1c8). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/BuildTextSpriteChain.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/BuildTextSpriteChain/output-2020-1/source.c */
+   map '0'-'9' and 'A'-'Z' (+ the specials '/', '?', '%', '^', '+') to font
+   tile indices, copy the pen position from *pen and advance it by nAdvance
+   between glyphs (0x80017fe4, 0x1c8).
 
-void *BuildTextSpriteChain(unsigned char *param_1, int *param_2, int param_3,
-                           int param_4) {
-  unsigned char bVar1;
-  unsigned int uVar3;
-  unsigned char *new_var;
-  unsigned short uVar2;
-  bVar1 = *param_1;
-  while (bVar1 != 0) {
-    if (bVar1 != 0x20) {
-      *((void *volatile *)(&g_pSpriteRecordWriteCursor)) =
-          (void *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) -
-                   0x58);
-      FillWord(*((void *volatile *)(&g_pSpriteRecordWriteCursor)), 0, 0x58);
-      CopyVector(
-          (int *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0xc),
-          param_2);
-      ;
-      ;
-      if ((((unsigned int)(*param_1)) - 0x30) < 10) {
-        *((unsigned short *)(((int)(*(&g_pSpriteRecordWriteCursor))) + 0x36)) =
-            (*param_1) + 0xd4;
-      } else if ((((unsigned int)(*param_1)) - 0x41) < 0x1a) {
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = (*param_1) + 0x169;
+   PARKED at 10 differing words / 112 of 113 insns, re-derived from scratch
+   2026-08-12-1 (the 2026-07-25 permuter spew it replaces was 98/114 differing
+   and 9 insns short).  Everything except three scheduling residues is
+   register-for-register exact, including the whole 8-arm tile ladder, the
+   0x47/0x4F/0x50 byte tail and the pen advance.  Solved and load-bearing:
+     - CURSOR must be the volatile-cast macro (14 separate lui/lw reloads); the
+       FillWord argument is the LOCAL `rec`, not a reload, so the allocation is
+       `rec = CURSOR - 0x58; CURSOR = rec;` as two statements.  Writing it as
+       the embedded assignment `FillWord(CURSOR = CURSOR - 0x58, ...)` routes
+       the value through v0 and costs +3 insns.
+     - the range tests are on an `int ch = *pszText;` (a0, unmasked) and the six
+       equality tests on `(unsigned char)ch`, which is what emits the single
+       `andi v1,a0,0xFF` shared by the whole ladder.
+     - per-arm stores, no tile local: a shared `int tile` (function-scope) costs
+       a register (+10 words), and block-scoped per-arm temps are byte-identical
+       to the plain form.
+   Residues, all sched1/reorg or jump.c placement, none source-reachable in ~6
+   measured variants:
+     1. `li a2,0x58` (FillWord's count) fills the lw->addiu load-delay slot in
+        ours; the original leaves that nop and puts the li in the jal delay
+        slot (2 words).
+     2. jump.c cross-jumps the `sh v0,0x36(v1)` of the two RANGE arms into the
+        shared tail as well; the original merges only the six equality arms and
+        keeps a private `sh` in each range arm's `j` delay slot, jumping one
+        insn PAST the shared store.  This is the whole 1-insn length deficit,
+        and it drags the arm's `addiu v0,a0,K` from the top of the arm block
+        (original) to just before the store (ours), which in turn swaps it with
+        the ladder's `andi` (~6 words).  All 8 arms are textually identical in
+        both builds, so the merge asymmetry is a jump.c pass-order effect, not
+        a source difference.
+     3. the default tile constant `li v0,0x147` sits in the default block in
+        ours (filling the shared block's load-delay) instead of the last
+        `bne`'s delay slot (2 words).
+   Permuter candidate: length-off-by-one, three independent single-decision
+   ties. */
+void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
+                           int nPalette) {
+  unsigned char *rec;
+  int ch;
+
+  while (*pszText != 0) {
+    if (*pszText != ' ') {
+      rec = CURSOR - 0x58;
+      CURSOR = rec;
+      FillWord(rec, 0, 0x58);
+      CopyVector((int *)(CURSOR + 0xC), pPen);
+
+      ch = *pszText;
+      if (ch >= '0' && ch <= '9') {
+        *(short *)(CURSOR + 0x36) = ch + 0xD4;
+      } else if (ch >= 'A' && ch <= 'Z') {
+        *(short *)(CURSOR + 0x36) = ch + 0x169;
+      } else if ((unsigned char)ch == '/') {
+        *(short *)(CURSOR + 0x36) = 0x115;
+      } else if ((unsigned char)ch == '?') {
+        *(short *)(CURSOR + 0x36) = 0x116;
+      } else if ((unsigned char)ch == '%') {
+        *(short *)(CURSOR + 0x36) = 0x110;
+      } else if ((unsigned char)ch == '^') {
+        *(short *)(CURSOR + 0x36) = 0x141;
+      } else if ((unsigned char)ch == '+') {
+        *(short *)(CURSOR + 0x36) = 0x13D;
       } else {
-        if (((unsigned int)(*param_1)) == 0x2f) {
-          uVar2 = 0x115;
-        } else if (((unsigned int)(*param_1)) == 0x3f) {
-          uVar2 = 0x116;
-        } else if (((unsigned int)(*param_1)) == 0x25) {
-          uVar2 = 0x110;
-        } else if (((unsigned int)(*param_1)) == 0x5e) {
-          uVar2 = 0x141;
-        } else {
-          uVar2 = 0x147;
-          if (((unsigned int)(*param_1)) == 0x2b) {
-            uVar2 = 0x13d;
-          }
-        }
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = uVar2;
+        *(short *)(CURSOR + 0x36) = 0x147;
       }
-      *((unsigned char
-             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x47)) = 0x7f;
-      *((unsigned char
-             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x4f)) = param_4;
-      new_var =
-          (unsigned char
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x50);
-      *new_var = 0xff;
+
+      CURSOR[0x47] = 0x7F;
+      CURSOR[0x4F] = nPalette;
+      CURSOR[0x50] = 0xFF;
     }
-    param_1 = param_1 + 1;
-    *param_2 = (*param_2) + param_3;
-    bVar1 = *param_1;
+    *pPen += nAdvance;
+    pszText++;
   }
-
-  return *((void *volatile *)(&g_pSpriteRecordWriteCursor));
+  return CURSOR;
 }
-
-/* PARKED. Sprite-record glyph builder, §F-ish vein. Digit + letter arms match
-   byte-identical (per-arm cursor reload via the volatile CURSOR macro + inline
-   sh). Residue is ONLY the special-char (else) block: the original reloads the
-   queue-tail cursor in EACH special arm and cross-joins the 5 stores into one
-   shared `sh v0,0x36(v1)` at 0x8001812c, keeping the case value in v0. My gcc
-   allocates the merged uVar2 into a0 (free after the char's last use) and sinks
-   the cursor reload to a single spot at the merge -> 105/114 (9 short, shared
-   form here). Duplicating the store into each special arm forces per-arm
-   reloads but gcc does NOT cross-join the 5 sh -> 117/114 (3 over, slot
-   overflow). Pure local-alloc (value reg a0 vs v0) + jump2 cross-join tie;
-   §J/§P class. Permuter candidate.
-
-   2026-07-25-1 unattended permuter session (~15m, ~68400 iterations, timed out
-   at the 15m budget): best score 2020 vs base score 2450. No byte-perfect
-   candidate found; still PARKED (see above). */

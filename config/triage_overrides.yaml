@@ -1137,3 +1137,27 @@ CheckGpuTimeout:
     ring indices in the que expression — volatile MEMs only order against each
     other, so that pins the two index loads between the dead status read and
     *madr and the whole 20-insn arg block falls into place.
+
+BuildTextSpriteChain:
+  verdict: parked
+  class: "sched1 straggler + jump.c cross-jump asymmetry (3 ties)"
+  date: 2026-08-12
+  note: >-
+    Re-derived from scratch off the 2026-07-25 permuter spew (98/114 differing,
+    9 insns short) to 10 differing words and 1 insn short — everything except
+    three placement ties is register-for-register exact. Solved (see the .wip
+    header): the volatile CURSOR macro with the FillWord arg taken from the
+    local `rec` (two statements, NOT the embedded assignment, which costs +3);
+    `int ch = *pszText` for the two range tests and `(unsigned char)ch` for the
+    six equality tests, which is what emits the single shared andi; and per-arm
+    stores with no tile local. Residues: (1) `li a2,0x58` fills the load-delay
+    slot instead of the jal delay slot; (2) jump.c cross-jumps the `sh` of the
+    two RANGE arms into the shared tail as well — the original merges only the
+    six equality arms and keeps a private `sh` in each range arm's j delay slot
+    — which is the whole 1-insn deficit and also flips the arm's `addiu
+    v0,a0,K` from the top of the arm block to just before the store; (3) the
+    default tile constant sits in the default block instead of the last bne's
+    delay slot. All 8 arms are textually identical in both builds, so the merge
+    asymmetry is a jump.c pass-order effect. NOTE the wip differ-count (80/114)
+    is POSITIONAL and misleading here — the 1-insn deficit lands at insn 39, so
+    everything after it misaligns; the difflib-realigned shape diff is 10.
