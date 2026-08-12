@@ -5,6 +5,56 @@ extern void ChangeClearPAD(long enable);
 extern void ChangeClearRCnt();
 extern unsigned char D_800115FC[];
 
+/* ====================== RE-CLASSED 2026-08-11-2 ======================
+   The 2026-07-08 diagnosis below is STALE: the budget-vs-RcntAuxState load
+   ordering it blames is already solved in this body. The real state is
+   7/39 (length-exact) and the whole residue is ONE thing — the position of
+   the prologue `sw ra`:
+
+     orig:  addiu sp; sll a1; sw a1,0x10(sp); lui; lw; nop; slt; beqz
+            [delay] sw ra,0x18(sp);  li v1,-1 ...
+     ours:  addiu sp; sll a1; sw ra,0x18(sp); sw a1,0x10(sp); lui; lw; nop;
+            slt; beqz [delay] li v1,-1 ...
+
+   Everything from `li v1,-1` on is byte-identical; the 7 differing insns are
+   just the one-slot shift the misplaced `sw ra` causes.
+
+   Mechanism, measured over seven source variants (compile + objdump head,
+   no link needed):
+   - The prologue ra-save IS a real insn at sched2/reorg time (it does not
+     appear in the sched1 RTL dump, so `-dS` will not show it; it carries the
+     function's opening `.loc` line). reorg CAN pull it into a branch delay
+     slot: with `budget` declared PLAIN (non-volatile) the build emits
+     `slt; beqz; sw ra,0x10(sp); li v1,-1` — the original's exact shape.
+   - But a plain `budget` stays in a register (`addiu a1,a1,-1`), which loses
+     the original's per-iteration `lw/addiu/sw/lw` stack traffic. That traffic
+     needs the volatile.
+   - With `volatile int budget = ...` the init store is a volatile MEM, and
+     the ra-save can never cross it: it is emitted immediately before the
+     FIRST frame-referencing insn in every variant tried (decl/assign split,
+     non-volatile shift temp, do/while(0) vs plain `if`, hoisting the compare
+     load above the init) — so it is pinned above the volatile store and
+     reorg's backward scan cannot reach the slot.
+   - Volatile only on the LOOP accesses (plain init store, `*(volatile int *)
+     &budget`) frees the save, but then the init store is itself the closest
+     eligible filler and reorg steals THAT into the delay slot instead
+     (`beqz; sw a1,0x10(sp)`), and the plain store also lets sched2 hoist the
+     `lui/lw` above it (losing the load-delay nop). A pointer local
+     (`volatile int *bp = &budget`) costs an extra `addiu v1,sp,16`.
+   Net: the save is always emitted before the first frame reference, so it is
+   the closest delay-slot candidate ONLY when nothing else touches the frame
+   before the branch — and this function must touch the frame there.
+   Reaching the original needs a `budget` that is memory-resident with a
+   NON-volatile init store (i.e. a spilled plain local); nothing in our source
+   set produces that in a 39-insn leaf. Recorded as a wall, not a permuter
+   target — a permuter randomizing statements cannot change which insn is
+   first to touch the frame.
+   SCOPE: the wall is the VOLATILE store, not the frame reference. 37 main
+   functions save $ra in a branch delay slot and 28 of them are already
+   matched (some with 1-2 plain frame stores ahead of the save, one with
+   four), so this fingerprint alone is not a reason to skip a function.
+   ======================================================================= */
+
 /* 0x8005dd0c: PARKED 2026-07-08, 156/156 bytes -- LENGTH matches exactly,
    logic is 100% correct (verified against asm by hand), but 36/39
    instructions land in a different ORDER: same instruction multiset, just

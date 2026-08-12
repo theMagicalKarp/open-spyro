@@ -915,3 +915,89 @@ EndSaveMenuToWorld_2026_08_11_1:
     (worse), and moving the cam-store statement above the timer read (no
     change). Consistent with A7 (a plain load hoists over a volatile store)
     and with true_dependence needing BOTH refs volatile. Permuter target.
+
+# --- 2026-08-11-2 harvest session verdicts ---
+
+WaitForFrameDeadline_2026_08_11_2:
+  verdict: wall
+  class: "B20 prologue ra-save vs a volatile frame store (was mis-classed F2 'budget-vs-load scheduling tie')"
+  date: 2026-08-11
+  note: >-
+    156 B, 7/39 length-exact. The 2026-07-08 class is stale — the load/compute
+    ordering it blames is already solved in the parked body. The entire residue
+    is the position of the prologue `sw ra`: the original has it in the beqz
+    delay slot, ours emits it before the volatile init store. Measured over
+    seven source variants (see the .wip header for the full table): the ra-save
+    is a real insn reorg CAN pull into a delay slot (a PLAIN `int budget` build
+    emits `beqz; sw ra,0x10(sp)` — the original's shape exactly), but it is
+    always emitted immediately before the FIRST frame-referencing insn, so a
+    volatile init store pins it above the branch, and a plain init store makes
+    the STORE the closest eligible filler instead (reorg takes it, and sched2
+    then hoists the lui/lw over it, losing the load-delay nop). The original's
+    loop traffic (lw/addiu/sw/lw per iteration) requires the memory-resident
+    budget; the original's ra placement requires a NON-volatile init store.
+    Those two are mutually exclusive in our source set. Not a permuter target:
+    randomizing statements cannot change which insn first touches the frame.
+
+func_level_0_8007B020_2026_08_11_2:
+  verdict: park
+  class: "F1 whole-function allocation rotation (NOT a finish-the-ties target)"
+  date: 2026-08-11
+  note: >-
+    Re-measured with a register-ANCHORED content-aligned diff (immediates
+    masked, register names anchored per cookbook §D 2b's trap note): 2024 orig
+    vs 2013 built insns, MISMATCH 460 across 205 regions. The park's headline
+    "87 mismatched / 95.7%" is the register-MASKED shape figure, i.e. it says
+    the decode is right, not that the function is close. The dominant residue
+    is a function-wide allocation rotation — the two held bases are swapped
+    between the arm-0 and arm-2 blocks (orig s0/s1, ours s1/s0), the loaded
+    substate value sits in a0 where ours takes t0, and the mfhi temp is t1 vs
+    t2 — repeated at every one of the ~14 arm heads. Pick this up as an
+    ALLOCATION-first session (the §D 2c -dl/-dg probe on the two base pseudos),
+    not a tie-closing one; R1..R5 in the .wip header are the residue that
+    remains AFTER the rotation is solved, not the whole gap.
+
+DrawCinematicLetterbox_2026_08_11_2:
+  verdict: park
+  class: "F14/F8 coupled pair (unchanged, 2/105)"
+  date: 2026-08-11
+  note: >-
+    Permuter run this session (6 threads, ~6,700 iterations, base score 120):
+    best candidate scored 60 — it moves `h = g_nLetterboxBarHeight;` one
+    statement later, below the `+7 = 0x28` tag store. Applied to the real wip
+    it REGRESSES the linked diff to 5/105, so the permuter's score is not
+    tracking the residue here (its base.c is the pruned self-contained form).
+    Do not re-apply that transform. Parked state remains the 2-insn store swap
+    at insns 54/58 (`sb s2,7(s0)` / `sw s3,0(s0)`).
+
+park_sweep_2026_08_11_2:
+  verdict: note
+  class: "harvest ranking re-measured"
+  date: 2026-08-11
+  note: >-
+    Swept all 64 main `.c.wip` parks through `open-spyro diff` (~9 min): zero
+    free matches, and the ranking is unchanged from 2026-08-11-1 —
+    DrawCinematicLetterbox 2, func_80038C4C 6, func_80038FC8 6,
+    ApplyPadInputToSpyroBodyYaw 7, func_8005FC6C 7, WaitForFrameDeadline 7
+    (now a wall, above), func_8003A420 9, EndSaveMenuToWorld 12,
+    func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
+    func_80061470's wip does not compile (parse errors), so the sweep reports
+    it as 0 differing insns — that is a build failure, not a match.
+
+WaitForFrameDeadline_2026_08_11_2_scope:
+  verdict: note
+  class: "B20 scope correction — plain frame stores are NOT a blocker"
+  date: 2026-08-11
+  note: >-
+    Scanned asm/text.s for the fingerprint (a `sw $ra` sitting in a branch
+    delay slot): 37 functions have it and 28 are ALREADY MATCHED, several with
+    1-2 frame stores ahead of the save and `func_80039910` with four. So the
+    B20 wall is specifically "an early VOLATILE frame store pins the ra-save
+    above the branch", not "any frame store". Unmatched members of the
+    fingerprint worth a look next session, cheapest first: `CdRead` (65 insns,
+    no frame store before the save), `TurnSpyroTowardMoveTargetWithLean` (92,
+    none), `func_8003B854` (96, two), `func_8005FC6C` (38, two — already a
+    known F4 park); plus three still in asm: `PopMemCardEventHandler` (27),
+    `RegisterMemCardEvent` (32), `AdvanceSpyroSubstepState` (196, B8
+    switchdata so skip). For the no-frame-store ones the B20 lever is simply to
+    keep the local PLAIN (register-resident) and let reorg fill the slot.
