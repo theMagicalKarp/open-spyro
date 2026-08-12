@@ -983,3 +983,21 @@ park_sweep_2026_08_11_2:
     func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
     func_80061470's wip does not compile (parse errors), so the sweep reports
     it as 0 differing insns — that is a build failure, not a match.
+
+WaitForFrameDeadline_2026_08_11_2_scope:
+  verdict: note
+  class: "B20 scope correction — plain frame stores are NOT a blocker"
+  date: 2026-08-11
+  note: >-
+    Scanned asm/text.s for the fingerprint (a `sw $ra` sitting in a branch
+    delay slot): 37 functions have it and 28 are ALREADY MATCHED, several with
+    1-2 frame stores ahead of the save and `func_80039910` with four. So the
+    B20 wall is specifically "an early VOLATILE frame store pins the ra-save
+    above the branch", not "any frame store". Unmatched members of the
+    fingerprint worth a look next session, cheapest first: `CdRead` (65 insns,
+    no frame store before the save), `TurnSpyroTowardMoveTargetWithLean` (92,
+    none), `func_8003B854` (96, two), `func_8005FC6C` (38, two — already a
+    known F4 park); plus three still in asm: `PopMemCardEventHandler` (27),
+    `RegisterMemCardEvent` (32), `AdvanceSpyroSubstepState` (196, B8
+    switchdata so skip). For the no-frame-store ones the B20 lever is simply to
+    keep the local PLAIN (register-resident) and let reorg fill the slot.

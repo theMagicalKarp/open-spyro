@@ -49,6 +49,10 @@ extern unsigned char D_800115FC[];
    set produces that in a 39-insn leaf. Recorded as a wall, not a permuter
    target — a permuter randomizing statements cannot change which insn is
    first to touch the frame.
+   SCOPE: the wall is the VOLATILE store, not the frame reference. 37 main
+   functions save $ra in a branch delay slot and 28 of them are already
+   matched (some with 1-2 plain frame stores ahead of the save, one with
+   four), so this fingerprint alone is not a reason to skip a function.
    ======================================================================= */
 
 /* 0x8005dd0c: PARKED 2026-07-08, 156/156 bytes -- LENGTH matches exactly,
