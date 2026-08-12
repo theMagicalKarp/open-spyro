@@ -1161,3 +1161,46 @@ BuildTextSpriteChain:
     asymmetry is a jump.c pass-order effect. NOTE the wip differ-count (80/114)
     is POSITIONAL and misleading here — the 1-insn deficit lands at insn 39, so
     everything after it misaligns; the difflib-realigned shape diff is 10.
+
+FinalizePadCalibration:
+  verdict: parked
+  class: "F1 local-alloc priority — three independent 2-way register swaps"
+  date: 2026-08-12
+  note: >-
+    Re-derived from scratch off the 2026-07-25 permuter spew (parked then at
+    14/108 with two residues named "no form found with both right"). New state:
+    22/108 differing but LENGTH- AND SHAPE-EXACT — every insn is the right
+    opcode with the right operands and only the register assignment differs, in
+    three swapped pairs (q/axis, neutral/j, k/j2). Both old residues are
+    RETIRED. The levers, now A192/A193: the scale loop's `q` and the record
+    loop's `rec` must be MULT givs (`cal + axis*2`, `cal + k*0x18`) so loop.c
+    reduces them to a base anchored at cal+0 with plain constant offsets — a
+    pointer biv instead gets its MEM uses combined onto a separate reduced base
+    (`addiu a1,a0,72` + a second increment) and a plain `cal + k` add-giv is
+    never reduced at all (benefit 2 - add_cost 2 = 0), costing the preheader
+    `move a0,s0`. Keep the byte-unit counter by putting the mult in the loop
+    TEST (`while (k * 0x18 < 0x60)`), which makes loop.c eliminate the counter
+    biv and re-express the test on the reduced giv (`addiu v1,v1,24; slti 96`).
+    A193 kills the extra `move v0,q` copy: move `axis += 1` after the giv's last
+    use (the emitted order does not change under -g3). Remaining tie measured
+    with the -dg probe: q = 9 refs/22 insns (prio 1.227) vs axis = 9 refs/25
+    (1.08) — needs axis at L<=21 or q at R<=7. Declaration reorder, `q = p +
+    axis`, shared-vs-split counters and literal-vs-local 0x7f all leave it
+    unchanged. Permuter candidate (three independent 2-way swaps).
+
+HandleHardwareInterrupt_2026_08_12_2:
+  verdict: note
+  class: "park-note correction — residue is a register swap + a missing copy"
+  date: 2026-08-12
+  note: >-
+    Still parked at 26/122 length-exact, but the 2026-07-19 note's "gcc loads
+    g_pIMaskReg's pointer first" is WRONG: the load order already matches. The
+    real residue in all three HW-read blocks is (1) a v1<->a0 swap between the
+    IStat pointer/value and the g_nIrqEnableMask value, which also reverses the
+    inner and's operand order, and (2) the original computing the outer and into
+    v0 and copying `move s0,v0` in the branch delay slot (tested value and
+    working mask are different pseudos). Rejected this session: the whole loop
+    as `while ((mask = expr) != 0)` (95/122), embedded assignment in the tests
+    (no change — gcc coalesces the copy), and a separate `pending` temp with
+    `mask = pending` at the top of the body (+1 insn, copy does not sink into a
+    delay slot). See the .wip footer.
