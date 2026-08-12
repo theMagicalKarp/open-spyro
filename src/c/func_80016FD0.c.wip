@@ -28,44 +28,44 @@
    low halves, word2<->word3 high halves); the 5th word passes through. */
 
 void func_80016FD0(unsigned int *dst, unsigned int *src) {
-    unsigned int w0;
-    unsigned int w1;
-    unsigned int w2;
-    unsigned int w3;
-    unsigned int w4;
-    unsigned int a;
-    unsigned int b;
+  unsigned int w0;
+  unsigned int w1;
+  unsigned int w2;
+  unsigned int w3;
+  unsigned int w4;
+  unsigned int a;
+  unsigned int b;
 
-    w0 = src[0];
-    w1 = src[1];
-    w2 = src[2];
-    w3 = src[3];
-    w4 = src[4];
+  w0 = src[0];
+  w1 = src[1];
+  w2 = src[2];
+  w3 = src[3];
+  w4 = src[4];
 
-    a = w0 & 0xFFFF0000;
-    b = w1 & 0xFFFF0000;
-    w0 ^= a;
-    w1 ^= b;
-    w0 |= b;
-    w1 |= a;
+  a = w0 & 0xFFFF0000;
+  b = w1 & 0xFFFF0000;
+  w0 ^= a;
+  w1 ^= b;
+  w0 |= b;
+  w1 |= a;
 
-    a = w1 & 0xFFFF;
-    b = w3 & 0xFFFF;
-    w1 ^= a;
-    w3 ^= b;
-    w1 |= b;
-    w3 |= a;
+  a = w1 & 0xFFFF;
+  b = w3 & 0xFFFF;
+  w1 ^= a;
+  w3 ^= b;
+  w1 |= b;
+  w3 |= a;
 
-    a = w2 & 0xFFFF0000;
-    b = w3 & 0xFFFF0000;
-    w2 ^= a;
-    w3 ^= b;
-    w2 |= b;
-    w3 |= a;
+  a = w2 & 0xFFFF0000;
+  b = w3 & 0xFFFF0000;
+  w2 ^= a;
+  w3 ^= b;
+  w2 |= b;
+  w3 |= a;
 
-    dst[0] = w0;
-    dst[1] = w1;
-    dst[2] = w2;
-    dst[3] = w3;
-    dst[4] = w4;
+  dst[0] = w0;
+  dst[1] = w1;
+  dst[2] = w2;
+  dst[3] = w3;
+  dst[4] = w4;
 }

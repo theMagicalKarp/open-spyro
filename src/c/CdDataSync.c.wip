@@ -22,60 +22,72 @@ extern unsigned char D_80075115; /* ready index (Ready) */
 /* libcd CdDataSync (0x800655a0, 0x16c). Spins up to ~0x3C0 VSyncs (or 0x3C0000
    iterations) for the data-ready bit (0x1000000) of *D_80075140. On timeout
    prints "CD timeout: <op>:(<sync>) Sync=.., Ready=.." and resets the drive.
-   Returns 1 = still busy (mode!=0 poll), 0 = ready, -1 = timed out.
+   Returns 1 = still busy (mode != 0 poll), 0 = ready, -1 = timed out.
 
-   PARKED at +4 bytes (1 insn over, ~98% — otherwise byte-identical). The three
-   table-base pointer locals (readyTbl/readyIdx/syncTbl declared before the
-   loop) correctly force the original's s0/s1/s3 held bases (§N loop-invariant
-   address hoist), and merging result+ret into one `r` reproduces the
-   coalesced-v0 tail in the ghidra decomp (the `r=-1` default lands in the bnez
-   delay slot when r is in v0). Sole residue: our gcc allocates `r` to a0
-   (adding a trailing `move v0,a0`) instead of v0. The mask test `*D_80075140 &
-   0x1000000` lives in v0 and gcc won't coalesce r back into v0 after the
-   `beqz`. Declaration order, dropping the redundant `r=0`, and the
-   merged/split-variable forms all leave the move. Pure §H return-reg-coalescing
-   tie; clean permuter candidate (1 insn).
-
-   2026-07-25-1 unattended permuter session (~15m, ~79400 iterations, timed out
-   at the 15m budget): best score 1385 vs base score 1825. No byte-perfect
-   candidate found; still PARKED (see above). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
-   them was measured to cost partial bytes; do not 'simplify' them.
-   Original hand-written body: git show HEAD:src/c/CdDataSync.c.wip
-   Best candidate: build/permuter/nonmatchings/CdDataSync/output-1385-1/source.c
- */
-
+   PARKED length- AND layout-exact (90/90 insns); the only residue is the
+   WritePrintf argument block. Re-derived from scratch 2026-08-12-1; the
+   2026-07-25 permuter spew it replaces was +1 insn with a different tail.
+   Solved here, and load-bearing — do not "simplify":
+     - the timeout check is the same inlined libcd helper as CheckGpuTimeout:
+       one `||` over the VSync deadline and the post-incremented spin counter,
+       with the arms assigning r = -1 / 0 and a separate `if (r != 0) return
+       -1;`.  That `r`, not a direct `return -1;`, is what produces the
+       original's `j .L800656BC` + second `li -1` in the bnez delay slot.
+     - the loop tail must be `break` out of a `for (;;)` with `return 0` as the
+       FUNCTION tail and `return 1` as the early return inside the loop.  Any
+       arrangement with `return 0` inside the loop (including the do/while
+       (mode == 0) + trailing `return 1` form) leaves the 0-arm as a real block
+       between the loop-back branch and the epilogue, costing `j`/`nop`/`move`
+       (+4 insns): reorg can only fold the constant into the beqz delay slot
+       when nothing sits between that branch and the shared epilogue.
+     - the three table bases are pointer locals ASSIGNED AFTER the first VSync
+       call (assigning them at their declarations hoists all six la insns above
+       the call).  Dropping them and writing D_80074EDC[D_80075114] directly
+       costs 6 insns and two callee-saved regs — loop.c's invariant hoist is
+       not what the original used.  Declaration order fixes the registers
+       (readyIdx -> s1, readyTbl -> s0, syncTbl -> s3); the ASSIGNMENT order is
+       the A164 straggler order for the three la pairs (syncTbl first).
+   Residue: 14 insns, F-class sched1 tie in the one WritePrintf arg block.  The
+   original computes the a3 chain (readyTbl[readyIdx[0]]) FIRST and parks its
+   address in a0 until just before the `jal`, then the stack arg, then
+   syncTbl[D_80074E55]; ours schedules the stack-arg chain first and defers the
+   a3 chain to the end.  Both are the same 16 insns with the same registers
+   otherwise.  Measured identical (no RTL change): block-scoped idx0/idx1
+   locals after WriteString, locals before WriteString (worse - they land in
+   s4/s5 across the call), and *readyIdx vs readyIdx[0].  Permuter candidate:
+   one basic block, length-exact, pure schedule. */
 int CdDataSync(int mode) {
-  int new_var;
+  unsigned char *readyIdx;
+  int *readyTbl;
+  int *syncTbl;
   int r;
-  int now;
-  int old;
-  int *readyTbl = D_80074EDC;
-  unsigned char *readyIdx = &D_80075114;
-  int *syncTbl = D_80074E5C;
-  new_var = VSync(-1) + 0x3C0;
-  do {
-    D_80075AE8 = new_var;
-    D_80075AEC = 0;
-    D_80075AF0 = D_80011F04;
-    do {
-      now = VSync(-1);
-      if ((D_80075AE8 < now) ||
-          ((old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old))) {
-        WriteString(D_80011DFC);
-        WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
-                    readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
-        CdResetController();
-        r = -1;
-      } else {
-        r = 0;
-      }
-    } while (((r == 0) && ((r = 0, ((*D_80075140) & 0x1000000) != 0))) &&
-             ((r = 1, mode == 0)));
-  } while (0);
-  return r;
+
+  D_80075AE8 = VSync(-1) + 0x3C0;
+  syncTbl = D_80074E5C;
+  readyIdx = &D_80075114;
+  readyTbl = D_80074EDC;
+  D_80075AEC = 0;
+  D_80075AF0 = D_80011F04;
+
+  for (;;) {
+    if (VSync(-1) > D_80075AE8 || D_80075AEC++ > 0x3C0000) {
+      WriteString(D_80011DFC);
+      WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
+                  readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
+      CdResetController();
+      r = -1;
+    } else {
+      r = 0;
+    }
+    if (r != 0) {
+      return -1;
+    }
+    if ((*D_80075140 & 0x1000000) == 0) {
+      break;
+    }
+    if (mode != 0) {
+      return 1;
+    }
+  }
+  return 0;
 }

@@ -83,8 +83,8 @@ extern int g_nSpyroSwingEulerSpringAccum2;
      - the accumulator must be a PER-STANZA local (A138/A146): as one shared
        variable it is a cross-block allocno, conflicts with v0 and lands in a0,
        pushing `d` and `f` one register over each (-dg: 74 = 18 refs/31 insns,
-       priority 2.32, allocated first). Three block-scoped locals let local-alloc
-       give each v0, which is what the original has. 61 -> 39 insns.
+       priority 2.32, allocated first). Three block-scoped locals let
+   local-alloc give each v0, which is what the original has. 61 -> 39 insns.
      - `d` is ONE shared variable across all three stanzas (per-stanza `d`s put
        stanza 0 in v1); 26 -> 21.
      - the >>6 must be its own statement (`f = f >> 6; acc = acc + f;`, A167):
@@ -103,7 +103,8 @@ extern int g_nSpyroSwingEulerSpringAccum2;
       address, so A134's array-store barrier does not apply), a volatile accum-2
       load, a volatile byte-0 store, a separate stanza-2 `f` local (+1 insn,
       will not link), and the fused vs split `(d<<7) - (a<<4)` spelling.
-   Class: F-sched/F1 pair. Permuter target — the logic and the layout are done. */
+   Class: F-sched/F1 pair. Permuter target — the logic and the layout are done.
+ */
 void SmoothSpyroByteEulerSpring(void) {
   int d;
   int f;

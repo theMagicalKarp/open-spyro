@@ -7,7 +7,8 @@
  * type 2 does the same at half scale; everything else returns r->x.
  *
  * Solved this session (all confirmed against the shape diff):
- *   - two-case `switch` (A145: 2 nodes stay a chain -> bare beq/beq + j default)
+ *   - two-case `switch` (A145: 2 nodes stay a chain -> bare beq/beq + j
+ * default)
  *   - case-1 flag-clear arm is `break` falling to the single tail `return r->x`
  *   - case-2 arm must be written `if (rev != 0) {...} else return r->x / 2;`
  *     so the mirror path is the inline/fallthrough block (A64)
@@ -22,18 +23,19 @@
  *
  * RESIDUE (F1 register tie, 3 insns + 1 length): the carried accumulator lands
  * in a1, the original has it in v0 (`li v0,0x400` / `subu v0,v0,v1` /
- * `subu v0,v0,a0`). Root cause is the goto: `mirrored` becomes a GLOBAL allocno,
- * and global.c's find_reg prefers the hard reg with the lowest local-allocno
- * density -- v0/v1 are saturated by the two flag loads, the /2 chain and the
- * default `lh`, so an untouched a1 always wins. The `move v0,mirrored` copy that
- * would register a v0 preference is coalesced into the final subu before global
- * alloc runs, so the preference never exists. Tried and rejected: accumulate-in-
- * place vs. one expression, all three declaration orders, carrying the partial
- * sum instead of the constant. Length follows from the same cause: with the
- * accumulator in a1 the `li a1,0x400` is eligible for case 2's `beqz v0` delay
- * slot, where the original (li into v0, the branch's own operand) must nop.
- * Needs either a way to keep the value local across the join, or the real
- * jump.c lever that flips cross-jump direction without a goto.
+ * `subu v0,v0,a0`). Root cause is the goto: `mirrored` becomes a GLOBAL
+ * allocno, and global.c's find_reg prefers the hard reg with the lowest
+ * local-allocno density -- v0/v1 are saturated by the two flag loads, the /2
+ * chain and the default `lh`, so an untouched a1 always wins. The `move
+ * v0,mirrored` copy that would register a v0 preference is coalesced into the
+ * final subu before global alloc runs, so the preference never exists. Tried
+ * and rejected: accumulate-in- place vs. one expression, all three declaration
+ * orders, carrying the partial sum instead of the constant. Length follows from
+ * the same cause: with the accumulator in a1 the `li a1,0x400` is eligible for
+ * case 2's `beqz v0` delay slot, where the original (li into v0, the branch's
+ * own operand) must nop. Needs either a way to keep the value local across the
+ * join, or the real jump.c lever that flips cross-jump direction without a
+ * goto.
  */
 int FUN_80060e28(RECT *r) {
   int span;

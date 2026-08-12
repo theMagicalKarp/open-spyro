@@ -17,47 +17,47 @@ extern void ResetCameraStateToTarget(void);
 extern void InitHudCounters(int mode);
 extern void HandleMusicCommand(int track, int cmd);
 
-extern int *g_apCameraAnchorBlock[];    /* alias of g_pCameraAnchorPos */
-extern int g_anSpyroSwingTargetBlock[]; /* alias of
-                                           g_nSpyroSwingEulerPitchTarget */
-extern int g_nSpyroSwingEulerPrev1;     /* g_anSpyroSwingEulerPrev[1] */
+extern int *g_apCameraAnchorBlock[];          /* alias of g_pCameraAnchorPos */
+extern int g_anSpyroSwingTargetBlock[];       /* alias of
+                                                 g_nSpyroSwingEulerPitchTarget */
+extern int g_nSpyroSwingEulerPrev1;           /* g_anSpyroSwingEulerPrev[1] */
 extern unsigned char g_bSpyroSwingByteEuler1; /* g_abSpyroSwingByteEuler[1] */
 
 void EndSaveMenuToWorld(void) {
-    int *dyn;
+  int *dyn;
 
-    g_nGamestate = 0;
-    g_nGameplayBlocked = 0;
-    InitLightVectorConstants();
-    ZeroVector(g_anSpyroSwingTargetBlock);
-    ResetSpyroEntity(1);
+  g_nGamestate = 0;
+  g_nGameplayBlocked = 0;
+  InitLightVectorConstants();
+  ZeroVector(g_anSpyroSwingTargetBlock);
+  ResetSpyroEntity(1);
 
-    g_nSpyroSwingEulerPrev1 = 0x100;
-    g_bSpyroSwingByteEuler1 = 0x10;
-    g_nSpyroPadSnapshotCountdown = 8;
-    g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
+  g_nSpyroSwingEulerPrev1 = 0x100;
+  g_bSpyroSwingByteEuler1 = 0x10;
+  g_nSpyroPadSnapshotCountdown = 8;
+  g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
 
-    dyn = g_anCameraDynamicTargetParams;
-    g_nCameraCurrentMode = 0;
-    g_nCameraNextMode = 0;
-    g_pCameraTargetParams = dyn;
-    g_nSpyroFlameBreathTimer = g_nSpyroFlameBreathTimerSave;
-    g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+  dyn = g_anCameraDynamicTargetParams;
+  g_nCameraCurrentMode = 0;
+  g_nCameraNextMode = 0;
+  g_pCameraTargetParams = dyn;
+  g_nSpyroFlameBreathTimer = g_nSpyroFlameBreathTimerSave;
+  g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
 
-    ComputeCameraToTargetAngle((char *)g_apCameraAnchorBlock - 0xA8);
-    CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);
-    dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+  ComputeCameraToTargetAngle((char *)g_apCameraAnchorBlock - 0xA8);
+  CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);
+  dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
 
-    ResetCameraStateToTarget();
-    InitHudCounters(0);
+  ResetCameraStateToTarget();
+  InitHudCounters(0);
 
-    g_abHudCounterDisplayState[0] = 0;
-    g_abHudCounterDisplayState[1] = 0;
-    g_abHudCounterDisplayState[2] = 0;
-    g_abHudCounterDisplayState[3] = 0;
-    g_abHudCounterDisplayState[4] = 0;
+  g_abHudCounterDisplayState[0] = 0;
+  g_abHudCounterDisplayState[1] = 0;
+  g_abHudCounterDisplayState[2] = 0;
+  g_abHudCounterDisplayState[3] = 0;
+  g_abHudCounterDisplayState[4] = 0;
 
-    HandleMusicCommand(g_nCurrentMusicTrack, 8);
+  HandleMusicCommand(g_nCurrentMusicTrack, 8);
 }
 
 /* PARKED 2026-08-12 — 77/81 instructions byte-identical (4/81 differ, 95.1%),

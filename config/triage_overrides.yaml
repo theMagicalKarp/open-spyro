@@ -1106,3 +1106,58 @@ func_80016FD0:
     decode that is opcode-for-opcode identical (30/30, the six-statement
     in-place compound-assignment form per swap stanza); only the $at/$v0 temp
     pair and the lui placement are unreachable.
+
+CdDataSync:
+  verdict: parked
+  class: "F-class sched1 tie in one WritePrintf arg block"
+  date: 2026-08-12
+  note: >-
+    Re-derived from the 2026-07-25 permuter spew to length- AND layout-exact
+    (90/90 insns, 16/91 differing words, all inside one basic block). The
+    structure is now fully solved and recorded in the .wip header: the inlined
+    libcd timeout helper as one `||` + an `r = -1/0` pair + `if (r != 0) return
+    -1;` (that is what emits the second `li -1` in the bnez delay slot); the
+    loop tail as `break` out of `for (;;)` with `return 0` as the FUNCTION tail
+    and `return 1` early (any form with `return 0` inside the loop leaves a real
+    block between the loop-back branch and the epilogue: +4 insns); and the
+    three table bases as pointer locals assigned AFTER the first VSync call,
+    with declaration order fixing the s-regs and assignment order fixing the
+    A164 straggler order of the la pairs. Residue: the original computes the a3
+    chain (readyTbl[readyIdx[0]]) first and holds its address in a0 until the
+    jal, ours defers it to the end. Clean single-block permuter candidate.
+
+CheckGpuTimeout:
+  verdict: matched
+  class: ""
+  date: 2026-08-12
+  note: >-
+    MATCHED 2026-08-12-1 (was parked since 2026-07-25 at "sole residue: the
+    lui/addiu + lw 0(v0) address form"). Two levers: A142's g_adwLastGpuOp alias
+    for the second WritePrintf's first arg, and A10 volatile-cast reads of BOTH
+    ring indices in the que expression — volatile MEMs only order against each
+    other, so that pins the two index loads between the dead status read and
+    *madr and the whole 20-insn arg block falls into place.
+
+BuildTextSpriteChain:
+  verdict: parked
+  class: "sched1 straggler + jump.c cross-jump asymmetry (3 ties)"
+  date: 2026-08-12
+  note: >-
+    Re-derived from scratch off the 2026-07-25 permuter spew (98/114 differing,
+    9 insns short) to 10 differing words and 1 insn short — everything except
+    three placement ties is register-for-register exact. Solved (see the .wip
+    header): the volatile CURSOR macro with the FillWord arg taken from the
+    local `rec` (two statements, NOT the embedded assignment, which costs +3);
+    `int ch = *pszText` for the two range tests and `(unsigned char)ch` for the
+    six equality tests, which is what emits the single shared andi; and per-arm
+    stores with no tile local. Residues: (1) `li a2,0x58` fills the load-delay
+    slot instead of the jal delay slot; (2) jump.c cross-jumps the `sh` of the
+    two RANGE arms into the shared tail as well — the original merges only the
+    six equality arms and keeps a private `sh` in each range arm's j delay slot
+    — which is the whole 1-insn deficit and also flips the arm's `addiu
+    v0,a0,K` from the top of the arm block to just before the store; (3) the
+    default tile constant sits in the default block instead of the last bne's
+    delay slot. All 8 arms are textually identical in both builds, so the merge
+    asymmetry is a jump.c pass-order effect. NOTE the wip differ-count (80/114)
+    is POSITIONAL and misleading here — the 1-insn deficit lands at insn 39, so
+    everything after it misaligns; the difflib-realigned shape diff is 10.

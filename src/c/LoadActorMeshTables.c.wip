@@ -20,31 +20,31 @@ extern int *RelocateActorMeshHeader(int *header);
 extern void InitActorMeshScratchRegions(int arg);
 
 void LoadActorMeshTables(void) {
-    volatile int *pdirbytes = D_8007A714;
-    int *dir;
-    int top;
-    int nbytes;
-    int size;
-    int i;
+  volatile int *pdirbytes = D_8007A714;
+  int *dir;
+  int top;
+  int nbytes;
+  int size;
+  int i;
 
-    top = 0x80200000;
-    nbytes = *pdirbytes;
-    size = *pdirbytes;
-    dir = (int *)(top - size - size - g_nCrt0StackSize);
-    CdReadSyncSectors(g_nCdBaseLba, dir, nbytes, D_8007A710, 0x258);
+  top = 0x80200000;
+  nbytes = *pdirbytes;
+  size = *pdirbytes;
+  dir = (int *)(top - size - size - g_nCrt0StackSize);
+  CdReadSyncSectors(g_nCdBaseLba, dir, nbytes, D_8007A710, 0x258);
 
-    g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - dir[0]);
-    CopyWords(g_pWorkAreaTop, dir + 0x200, dir[0]);
+  g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - dir[0]);
+  CopyWords(g_pWorkAreaTop, dir + 0x200, dir[0]);
 
-    for (i = 0; i < 0x40; i++) {
-        if (dir[i * 2 + 1] == 0) {
-            break;
-        }
-        g_apActorMeshTableBlock[dir[i * 2 + 2]] = RelocateActorMeshHeader(
-            (int *)((char *)g_pWorkAreaTop + dir[i * 2 + 1] - 0x800));
+  for (i = 0; i < 0x40; i++) {
+    if (dir[i * 2 + 1] == 0) {
+      break;
     }
+    g_apActorMeshTableBlock[dir[i * 2 + 2]] = RelocateActorMeshHeader(
+        (int *)((char *)g_pWorkAreaTop + dir[i * 2 + 1] - 0x800));
+  }
 
-    InitActorMeshScratchRegions(0);
+  InitActorMeshScratchRegions(0);
 }
 
 /* PARKED 2026-08-12 — LENGTH-EXACT, 55/66 instructions byte-identical (11/66
