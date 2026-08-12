@@ -584,18 +584,26 @@ ComputeVoicePanAndFalloff:
     is what assigns a2/v1 to the original's roles in the two delay slots.
 EndSaveMenuToWorld:
   verdict: park
-  class: "F3 head knot, 4/81"
-  date: 2026-08-10
+  class: "A164 straggler-pair order, 4/81 (was F3 head knot)"
+  date: 2026-08-12
   note: >-
     324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
-    we emit the global load pair first. Position-invariant, re-confirmed
-    2026-08-10 over five more forms: swapping the two statements, dropping the
-    `timer` local so the load sits at its own store, moving the load below the
-    `dyn` setup, and naming the anchor address in its own single-set local are
-    all byte-identical. A volatile load (the A142 lever) and a plain `*cam`
-    deref in place of `cam[new_var]` both cost insns (build fails / 6 of 81) —
-    the `cam[new_var]` index form is load-bearing. Permuter (aim it at the
-    head, not the tail — the shared camera/HUD/music tail is already exact).
+    we emit the global load pair first — a 2-vs-2 tie between priority-1
+    stragglers filling the bubble after the flame-timer load, so it is A164,
+    not an F3 knot. Position-invariant, re-confirmed 2026-08-10 over five forms
+    and again 2026-08-12 over ten more: every position of the anchor store from
+    "first statement after ResetSpyroEntity" down, the yaw statement above it,
+    the anchor split into its own `int *anchor` local at two points, and the
+    flame+anchor+yaw trio hoisted as a group above `dyn = ...`. A volatile READ
+    of the yaw through a volatile-declared alias symbol does NOT pin the load
+    below the store either (gcc 2.7.2 adds no such dependence). Hard constraint:
+    the anchor store must stay ABOVE `dyn = g_anCameraDynamicTargetParams` or
+    s0 is already reloaded and it costs +2 insns.
+    RETIRED from the old note: "the `cam[new_var]` index form is load-bearing"
+    — that was a permuter artifact. The wip was re-derived from scratch
+    2026-08-12 with a plain `g_apCameraAnchorBlock[0] = &block[-105];` and
+    reaches the same 4/81, so the spew body is gone and the source is readable.
+    Permuter (aim it at the head — the camera/HUD/music tail is already exact).
 func_level_0_8007CFC0:
   verdict: park
   class: "mid-decode, 215/642 content-aligned"

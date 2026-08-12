@@ -1,68 +1,85 @@
 #include "globals.h"
 
-/* Leave the save/load menu back into the world (0x8002d02c, gamestate 0):
-   unblock gameplay, rebuild light constants, zero Spyro's swing-euler target
-   and reset him, re-seed the swing-euler defaults and pad-snapshot countdown,
-   point the camera anchor 0x1A4 below the swing target block, retarget the
-   dynamic camera params (yaw re-biased to Spyro's body yaw, wrapped to 12
-   bits), restore the flame-breath timer, reset the camera and HUD (all five
-   counters hidden), and re-issue the current music track (command 8).
+/* 0x8002d02c, 324 bytes — leave the save/load menu back into the world
+   (gamestate 0): unblock gameplay, rebuild the light constants, zero Spyro's
+   swing-euler target and reset him, re-seed the swing-euler defaults and the
+   pad-snapshot countdown, point the camera anchor 0x1A4 below the swing-target
+   block, retarget the dynamic camera params (yaw re-biased to Spyro's body yaw
+   and wrapped to 12 bits), restore the flame-breath timer, reset the camera and
+   the HUD (all five counters hidden), and re-issue the current music track. */
 
-   2026-07-25-1 unattended permuter session (~15m, ~81100 iterations, timed out
-   at the 15m budget): best score 160 vs base score 315. No byte-perfect
-   candidate found; still parked. */
 extern void InitLightVectorConstants(void);
-extern void ZeroVector();
-extern void ResetSpyroEntity(int param);
+extern void ZeroVector(int *v);
+extern void ResetSpyroEntity(int mode);
 extern void ComputeCameraToTargetAngle(void *params);
-extern void CopyWords(void *dst, void *src, int count);
+extern void CopyWords(void *dst, void *src, int byte_count);
 extern void ResetCameraStateToTarget(void);
 extern void InitHudCounters(int mode);
 extern void HandleMusicCommand(int track, int cmd);
-extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
-extern int
-    g_anSpyroSwingTargetBlock[]; /* alias of g_nSpyroSwingEulerPitchTarget */
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/EndSaveMenuToWorld.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/EndSaveMenuToWorld/output-160-1/source.c */
+extern int *g_apCameraAnchorBlock[];    /* alias of g_pCameraAnchorPos */
+extern int g_anSpyroSwingTargetBlock[]; /* alias of
+                                           g_nSpyroSwingEulerPitchTarget */
+extern int g_nSpyroSwingEulerPrev1;     /* g_anSpyroSwingEulerPrev[1] */
+extern unsigned char g_bSpyroSwingByteEuler1; /* g_abSpyroSwingByteEuler[1] */
 
 void EndSaveMenuToWorld(void) {
-  int new_var;
-  int **cam;
-  int *dyn;
-  int timer;
-  g_nGamestate = 0;
-  g_nGameplayBlocked = 0;
-  InitLightVectorConstants();
-  ZeroVector(g_anSpyroSwingTargetBlock);
-  ResetSpyroEntity(1);
-  cam = g_apCameraAnchorBlock;
-  g_anSpyroSwingEulerPrev[1] = 0x100;
-  g_abSpyroSwingByteEuler[1] = 0x10;
-  g_nSpyroPadSnapshotCountdown = 8;
-  new_var = 0;
-  timer = g_nSpyroFlameBreathTimerSave;
-  cam[new_var] = &g_anSpyroSwingTargetBlock[-105];
-  dyn = g_anCameraDynamicTargetParams;
-  g_nCameraCurrentMode = 0;
-  g_nCameraNextMode = new_var;
-  g_pCameraTargetParams = dyn;
-  g_nSpyroFlameBreathTimer = timer;
-  g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
-  ComputeCameraToTargetAngle(((char *)cam) - 0xA8);
-  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);
-  dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
-  ResetCameraStateToTarget();
-  InitHudCounters(0);
-  g_abHudCounterDisplayState[new_var] = new_var;
-  g_abHudCounterDisplayState[1] = new_var;
-  g_abHudCounterDisplayState[2] = new_var;
-  g_abHudCounterDisplayState[3] = new_var;
-  g_abHudCounterDisplayState[4] = new_var;
-  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+    int *dyn;
+
+    g_nGamestate = 0;
+    g_nGameplayBlocked = 0;
+    InitLightVectorConstants();
+    ZeroVector(g_anSpyroSwingTargetBlock);
+    ResetSpyroEntity(1);
+
+    g_nSpyroSwingEulerPrev1 = 0x100;
+    g_bSpyroSwingByteEuler1 = 0x10;
+    g_nSpyroPadSnapshotCountdown = 8;
+    g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
+
+    dyn = g_anCameraDynamicTargetParams;
+    g_nCameraCurrentMode = 0;
+    g_nCameraNextMode = 0;
+    g_pCameraTargetParams = dyn;
+    g_nSpyroFlameBreathTimer = g_nSpyroFlameBreathTimerSave;
+    g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+
+    ComputeCameraToTargetAngle((char *)g_apCameraAnchorBlock - 0xA8);
+    CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);
+    dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+
+    ResetCameraStateToTarget();
+    InitHudCounters(0);
+
+    g_abHudCounterDisplayState[0] = 0;
+    g_abHudCounterDisplayState[1] = 0;
+    g_abHudCounterDisplayState[2] = 0;
+    g_abHudCounterDisplayState[3] = 0;
+    g_abHudCounterDisplayState[4] = 0;
+
+    HandleMusicCommand(g_nCurrentMusicTrack, 8);
 }
+
+/* PARKED 2026-08-12 — 77/81 instructions byte-identical (4/81 differ, 95.1%),
+ * LENGTH-EXACT, re-derived from scratch (the old body was 2026-07-25 permuter
+ * spew and this supersedes its notes). Everything transcribes 1:1 from the asm:
+ * the s1 held base over g_apCameraAnchorBlock with its 0 / -0xA8 / -0x40 uses
+ * (A25), the s0 swing-target base re-used in place for the -0x1A4 anchor, the
+ * `dyn` pointer local, and the five HUD bytes as five separate stores.
+ *
+ * RESIDUE (A164 straggler-pair order, 2 insns swapped with 2):
+ *   orig  addiu s0,s0,-0x1A4 / sw s0,0(s1) / lui v1,%hi(yaw) / lw v1,%lo(yaw)
+ *   ours  lui v1,%hi(yaw) / lw v1,%lo(yaw) / addiu s0,s0,-0x1A4 / sw s0,0(s1)
+ * Both are priority-1 stragglers filling the bubble after the flame-timer load.
+ * MEASURED 2026-08-12, all identical at 4/81: the anchor store written in every
+ * position from "first statement after ResetSpyroEntity" through "immediately
+ * before the yaw statement"; the yaw statement moved above the anchor store;
+ * the anchor pointer split into its own `int *anchor` local computed at two
+ * earlier points; the flame+anchor+yaw trio moved as a group above
+ * `dyn = g_anCameraDynamicTargetParams`. Also measured NOT a fix: reading the
+ * yaw through a volatile-declared alias symbol — gcc 2.7.2's scheduler does not
+ * pin a volatile load below a plain store to a different global, so the pair
+ * still swaps (and the alias was reverted). Moving the anchor store BELOW
+ * `dyn = ...` costs +2 insns because s0 is then already reloaded with the
+ * dynamic-params base — that is the one hard ordering constraint here.
+ * Permuter candidate: a genuine 2-vs-2 ready-list tie, no length change. */
