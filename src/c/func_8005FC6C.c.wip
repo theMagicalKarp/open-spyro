@@ -40,5 +40,15 @@ int *func_8005FC6C(int *ot, int n) {
    Also tried 2026-08-10-3 and rejected: duplicating the whole tail in both
    arms of the debug `if` to manufacture A151's two-exit hoist — jump.c does
    NOT cross-jump the two copies back (+7 insns, slot overflow).
-   Needs a construct that forces a real register-to-register copy of a
-   parameter to survive copy propagation. */
+   MECHANISM NAILED 2026-08-11-1 (read off cse.c `make_regs_eqv`): for a copy
+   `head = ot`, the DEST only becomes cse's canonical reg when
+   `(last_use(head) > cse_basic_block_end || first_use(head) < cse_bb_start)`
+   AND `last_use(head) > last_use(ot)`. In a straight-line TAIL block the first
+   clause is false — the ebb runs to the end of the function — so `ot` stays
+   canonical, every use of `head` is rewritten back to `ot`, and the copy dies.
+   The clause is only satisfiable when the copy sits inside a CONDITIONAL ARM
+   and its uses are past the join (that is exactly how the same class was
+   solved in UpdateGemPickupPathCamera, 2026-08-11-1 — see A187). This tail has
+   no branch after the dispatch call, so the lever cannot be aimed here.
+   `int *mask/head` locals ordered [mask li, copy, symbol la] re-tested
+   2026-08-11-1: byte-identical, as predicted by the rule above. */
