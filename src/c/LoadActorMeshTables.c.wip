@@ -1,17 +1,17 @@
 #include "globals.h"
 
-/* Loads the actor mesh table from CD into the top of the boot-load region.
-   CdReadSyncSectors pulls the directory (size D_8007A714, sector D_8007A710)
-   into a buffer just below 0x80200000 - g_nCrt0StackSize; the first word gives
-   the payload size copied down to g_pWorkAreaTop, then up to 64 directory
-   entries are walked: each non-empty entry relocates a mesh header and stores
-   the resolved pointer at g_apActorMeshTable[slot]. Finishes by re-init'ing the
-   actor scratch regions. (0x8005b7d8, 264 bytes.) */
+/* 0x8005b7d8, 264 bytes — load the actor-mesh directory from CD into the top of
+   the boot-load region. CdReadSyncSectors pulls D_8007A714 bytes from sector
+   D_8007A710 into a buffer just under 0x80200000 - g_nCrt0StackSize; the first
+   word gives the payload size, which is copied down to a fresh g_pWorkAreaTop.
+   Up to 64 directory entries are then walked: each non-empty entry relocates a
+   mesh header and stores the resolved pointer at g_apActorMeshTable[slot]. */
 
 extern int D_8007A710;
-extern int D_8007A714;
-extern void *
-    g_apActorMeshTableBlock[]; /* incomplete-array view of g_apActorMeshTable */
+extern int D_8007A714[4]; /* sized alias (A22): keeps the address in a reg */
+
+extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
+                                           g_apActorMeshTable */
 
 extern void CdReadSyncSectors(int lba, void *buf, int size, int sector,
                               int marker);
@@ -19,59 +19,70 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern int *RelocateActorMeshHeader(int *header);
 extern void InitActorMeshScratchRegions(int arg);
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/LoadActorMeshTables.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/LoadActorMeshTables/output-1260-1/source.c */
-
 void LoadActorMeshTables(void) {
-  int *dir;
-  int new_var;
-  int top;
-  int i;
-  i = 0;
-  top = 0x80200000;
-  dir = (int *)(((top - D_8007A714) - D_8007A714) - g_nCrt0StackSize);
-  CdReadSyncSectors(g_nCdBaseLba, dir, D_8007A714, D_8007A710, 0x258);
-  g_pWorkAreaTop = (void *)((top - g_nCrt0StackSize) - (*dir));
-  CopyWords(g_pWorkAreaTop, dir + 0x200, *dir);
-  for (;;) {
-    if (dir[1] == 0) {
-      if (1) {
-      }
-      break;
-    }
-    i++;
-    new_var = 2;
-    (&g_apActorMeshTable)[dir[new_var]] = RelocateActorMeshHeader(
-        (int *)((((int)g_pWorkAreaTop) + dir[1]) - 0x800));
-    dir += 2;
-    if (i >= 0x40) {
-      break;
-    }
-  }
+    volatile int *pdirbytes = D_8007A714;
+    int *dir;
+    int top;
+    int nbytes;
+    int size;
+    int i;
 
-  InitActorMeshScratchRegions(0);
+    top = 0x80200000;
+    nbytes = *pdirbytes;
+    size = *pdirbytes;
+    dir = (int *)(top - size - size - g_nCrt0StackSize);
+    CdReadSyncSectors(g_nCdBaseLba, dir, nbytes, D_8007A710, 0x258);
+
+    g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - dir[0]);
+    CopyWords(g_pWorkAreaTop, dir + 0x200, dir[0]);
+
+    for (i = 0; i < 0x40; i++) {
+        if (dir[i * 2 + 1] == 0) {
+            break;
+        }
+        g_apActorMeshTableBlock[dir[i * 2 + 2]] = RelocateActorMeshHeader(
+            (int *)((char *)g_pWorkAreaTop + dir[i * 2 + 1] - 0x800));
+    }
+
+    InitActorMeshScratchRegions(0);
 }
 
-/* PARKED (loop.c biv-selection / peeling tie): logic 100% correct.
- * - do/while and for(;;) forms hoist &g_apActorMeshTable into s3 (correct) but
- *   gcc PEELS the leading `if(dir[1]==0)` test and strength-reduces dir ->
- * dir+4 (giv), coming out +3 insns / slot overflow.
- * - goto-loop (label + if goto) avoids both the peel and the giv (single dir
- * base with 4/8 offsets, matching the original) BUT disables loop.c, so the
- * table base is no longer hoisted to a held s3 (per-iteration lui) -> -4 insns
- * short even with a pre-loop `void **mesh = g_apActorMeshTableBlock;` held-base
- * local (gets to 62/66).
- * - `volatile int *dir` is LENGTH-EXACT (66/66) but disables the table hoist
- * too, rotating the whole callee-saved allocation (dir=s1/top=s0, no s3). The
- * original wants loop.c ON (table hoisted) + NO peel + dir base (not dir+4) +
- * table in s3 simultaneously — unreachable from any source form tried. Permuter
- * candidate (biv-selection). Alias g_apActorMeshTableBlock committed.
+/* PARKED 2026-08-12 — LENGTH-EXACT, 55/66 instructions byte-identical (11/66
+ * differ, 83.3%). Re-derived from scratch (the old body was 2026-07-25 permuter
+ * spew); every earlier park claim about this function is superseded:
  *
- * 2026-07-25-1 unattended permuter session (~15m, ~86900 iterations, timed out
- * at the 15m budget): best score 1260 vs base score 2675. No byte-perfect
- * candidate found; still PARKED (see above). */
+ *   - The loop is SOLVED and byte-exact, including the held s3 table base, the
+ *     no-peel entry test and the `4(s0)/8(s0)` offsets. The recipe is A179:
+ *     write the entry fields as an INDEX off a fixed base (`dir[i*2+1]`,
+ *     `dir[i*2+2]`) inside `for (i = 0; i < 0x40; i++)` with the `== 0` test as
+ *     a `break` at the top. loop.c then reduces `dir + i*8` to the giv, SPLITS
+ *     the constant terms off into the addressing mode, and keeps `i` as the biv
+ *     for the count test — which is exactly the original. The old note's
+ *     "loop.c ON + no peel + dir base + table in s3 is unreachable" is WRONG:
+ *     a pointer WALKER (`dir += 2`) is what caused the peel and the dir+4 giv.
+ *   - The two loads of D_8007A714 need BOTH levers together: A142 volatility
+ *     (a `volatile int *` local) for the second load, and A22 (declare the
+ *     symbol as a >8-byte array) so the offset-0 base does not lose the sdata
+ *     cost tie and fold back to `lui/lw %lo` per use. Either one alone gives
+ *     the wrong shape.
+ *
+ * RESIDUE (A164 straggler-order tie, 11 insns, one block, no length change):
+ * the CdReadSyncSectors argument block. The original schedules
+ *   la(&D_8007A714) / lw a0=lba / li v0,600 / [saves] / lw a2 / lui s1 /
+ *   sw v0,0x10(sp) / lw v1
+ * where ours schedules
+ *   lw a0=lba / li v0,600 / sw v0,0x10(sp) / la(&D_8007A714) / lui s1 /
+ *   [saves] / lw a2 / lw v1.
+ * Same insns, same count; the base lands in v0 (reusing the register the 600
+ * died in) instead of v1 purely because our arg5 stack store retires early.
+ * All of these are priority-1 stragglers, so A164 says permute the GROUP —
+ * MEASURED 2026-08-12: all 24 permutations of the four straggler-producing
+ * statements (pdirbytes / top=0x80200000 / lba / sector, hoisted into explicit
+ * leading locals) give the IDENTICAL 11/66 diff. The stragglers here are
+ * created by expand_call's argument setup, not by those statements, so their
+ * LUIDs are fixed by the call's own arg order and no source permutation reaches
+ * them. Also measured no-ops: declaration order of every local, `top` assigned
+ * before/after the reads, `top - stack - size - size` reassociation, and the
+ * two-local vs inline-second-read split (that one IS load-bearing for the load
+ * ORDER — `nbytes` must be read before `size` — but not for the placement).
+ * Permuter candidate only if the harness can reach expand_call's arg order. */

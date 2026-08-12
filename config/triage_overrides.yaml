@@ -1062,3 +1062,21 @@ park_rewrite_vein_2026_08_11_3:
     Remaining members worth taking next, by size: func_80016FD0 (120 B),
     BuildAudioTrackTable (152), memmove (108), LoadActorMeshTables (264),
     CheckGpuTimeout (364), FinalizePadCalibration (432).
+
+LoadActorMeshTables:
+  verdict: parked
+  class: "A164 straggler-order tie in the call-arg block (11/66, length-exact)"
+  date: 2026-08-12
+  note: >-
+    Re-derived from scratch out of the permuter-spew vein: spew -> 55/66
+    byte-identical, length-exact. The whole directory loop is now byte-exact via
+    A179 (index form `dir[i*2+1]`/`dir[i*2+2]` off a FIXED base inside
+    `for (i = 0; i < 0x40; i++)` with the zero test as a top `break`); the
+    2026-07-25 note claiming loop.c-on + no-peel + dir-base + s3-table was
+    unreachable is wrong — the pointer walker (`dir += 2`) was what caused both
+    the peel and the dir+4 giv. The double load of D_8007A714 needs A142
+    (volatile int* local) AND A22 (declare the symbol >8 bytes) together.
+    Residue is the CdReadSyncSectors arg block: our arg5 stack store retires
+    early, so the held base lands in v0 instead of v1. All 24 permutations of
+    the four straggler statements measured identical — the stragglers come from
+    expand_call's arg setup, so source order cannot reach them.
