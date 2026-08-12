@@ -2,113 +2,111 @@
 
 extern void ResetPadStickCalibrationDefaults(unsigned char *cal);
 
-/* 0x80053790 — validate and bake the pad-stick calibration block. Each of
-   the four channels must have its center (+0x20) at least 0x30 away from
-   both extremes (+0x24 min / +0x28 max) or the whole block is reset to
-   defaults (returns 0). Then per channel: bake the upper/lower deadzone
-   edges (+0x2c/+0x30) and the 0x4000/0x3f80 fixed-point scale factors
-   (+0x34/+0x3c shorts), and clear the per-frame stick state (history words,
-   repeat flags, four neutral 0x7f bytes, and the six 0x18-byte per-button
-   autorepeat records). Returns 1 when the calibration was accepted.
+/* 0x80053790, 432 bytes — validate and bake the pad-stick calibration block.
+   Each of the four axes needs its recorded neutral (+0x20) at least 0x30 away
+   from both reported extremes (+0x24 low / +0x28 high), otherwise the whole
+   block falls back to the uncalibrated defaults and the function returns 0.
+   Otherwise each axis gets its two breakpoints (+0x2c neutral+0x30 /
+   +0x30 neutral-0x30) and the two fixed-point scale factors (+0x34 and +0x3c
+   shorts), and the per-frame stick state is cleared: the snapshot head words,
+   its four neutral 0x7f bytes, and the four 0x18-byte autorepeat records. */
 
-   PARKED (80.6%, length-exact 108/108 with the goto-scale variant at 72.2%;
-   this do/while variant anchors q). Solved: validation loop byte-identical
-   (for-loop + comma i+=1 inside the || condition fills the bnez delay),
-   volatile deadzone reloads (plain sb + volatile lbu defeats the andi 0xFF
-   store-forward), interleaved statements around the div latency, separate
-   scale counter i2 (frees a1 = i for loop 1; one shared counter spills s1),
-   user-local div numerators. Residues: (1) do/while lets loop.c lift the two
-   sh givs onto an anchored biv (addiu a1,s0,60; sh -8/0) — goto-scale kills
-   the anchor but deweights the numerator consts below ok in global-alloc
-   (ok steals a3); no form found with both right. (2) phase-3/4 fill loops:
-   val/j/fill local-alloc rotation (orig fill->v1, j->a1, val->a0; ours
-   rotated one step). Both single-decision ties; permuter candidate.
+/* PARKED 2026-08-12-2 at 22/108 differing insns, LENGTH- AND SHAPE-EXACT:
+   every instruction is the right opcode with the right operands; the only
+   residue is local-alloc register assignment, in three swapped PAIRS.
+     (1) loop 2: ours q->a1, axis->a2; original axis->a1, q->a2.
+     (2) phase 3: ours neutral->a1, j->a0; original neutral->a0, j->a1.
+     (3) phase 4: ours k->a1, j2->v1; original k->v1, j2->a1.
+   Measured with the -dg probe (D 2c): the pair-(1) allocnos are
+   q = 9 refs/22 insns (prio floor_log2(9)*9/22 = 1.227) and
+   axis = 9 refs/25 insns (1.08), i.e. ~13% apart, so the flip needs axis at
+   L<=21 or q at R<=7. Tried without moving it: declaration reorder (ties only,
+   these are not ties), `q = p + axis` instead of `cal + axis*2` (identical
+   code), one shared vs two separate loop counters, literal vs local 0x7f.
+   Everything else in this function was SOLVED this session -- see the A-series
+   entries for the giv levers used here (mult-giv base + giv-test counter +
+   increment-after-last-use). Do not re-derive the shape; only the allocation
+   is left. Permuter candidate: three independent 2-way register swaps.
 
-   2026-07-25-1 unattended permuter session (~15m, ~69100 iterations, timed out
-   at the 15m budget): best score 95 vs base score 345. No byte-perfect
-   candidate found; still PARKED (see above). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/FinalizePadCalibration.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/FinalizePadCalibration/output-95-1/source.c */
+   (The 2026-07-25 permuter-spew body this replaced scored 14/108 differing but
+   was machine-generated, wrote *(short*)(cal+0x34) for a q-relative store, and
+   its two named residues -- "loop.c lifts the two sh givs onto an anchored biv"
+   and "phase-3/4 fill loop rotation" -- are both retired: the giv anchor is
+   fixed here, and the fill loops are byte-shape-exact.) */
 
 int FinalizePadCalibration(unsigned char *cal) {
-  int ok;
-  int i;
-  int i2;
   unsigned char *p;
   unsigned char *q;
   unsigned char *fill;
+  unsigned char *rec;
   unsigned char *fill2;
+  int i;
+  int axis;
+  int ok;
+  int j;
+  int j2;
+  int k;
   int mid;
   int hi;
-  int val;
-  int c4000;
-  int c3F80;
-  int val2;
-  int j;
-  int k;
+  int num1;
+  int num2;
+  int neutral;
+  int neutral2;
+
   ok = 1;
   for (i = 0; i < 4;) {
     p = cal + i;
     mid = p[0x20];
-    val = 0x30;
-    if (((mid + 0x30) >= p[0x28]) || ((i += 1, p[0x24] >= (mid - val)))) {
+    if (mid + 0x30 >= p[0x28] || (i += 1, p[0x24] >= mid - 0x30)) {
       ResetPadStickCalibrationDefaults(cal);
       ok = 0;
       break;
     }
   }
 
-  i2 = 0;
-  c4000 = 0x4000;
-  c3F80 = 0x3F80;
-  q = cal;
+  axis = 0;
+  num1 = 0x4000;
+  num2 = 0x3F80;
   do {
-    p = cal + i2;
+    p = cal + axis;
+    q = cal + axis * 2;
     p[0x2C] = p[0x20] + 0x30;
     hi = p[0x28];
-    hi = c4000 / (hi - (*((volatile unsigned char *)(&p[0x2C]))));
+    hi = num1 / (hi - *(volatile unsigned char *)&p[0x2C]);
     p[0x30] = p[0x20] - 0x30;
-    *((short *)(cal + 0x34)) = hi;
-    i2 += 1;
-    *((short *)(q + 0x3C)) =
-        c3F80 / ((*((volatile unsigned char *)(&p[0x30]))) - p[0x24]);
-    q += 2;
-  } while (i2 < 4);
-  val = 0x7F;
+    *(short *)(q + 0x34) = hi;
+    *(short *)(q + 0x3C) = num2 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
+    axis += 1;
+  } while (axis < 4);
+
+  neutral = 0x7F;
   j = 3;
   fill = cal + 3;
-  *((int *)(cal + 0x0)) = 0;
-  *((int *)(cal + 0x4)) = 0;
-  *((int *)(cal + 0x8)) = 0;
-  *((int *)(cal + 0x18)) = 1;
-  *((int *)(cal + 0x1C)) = 1;
+  *(int *)(cal + 0x00) = 0;
+  *(int *)(cal + 0x04) = 0;
+  *(int *)(cal + 0x08) = 0;
+  *(int *)(cal + 0x18) = 1;
+  *(int *)(cal + 0x1C) = 1;
   do {
-    fill[0x14] = val;
+    fill[0x14] = neutral;
     fill -= 1;
-  } while ((--j) >= 0);
-  val2 = 0x7F;
-  p = cal;
-  k = 0;
-blockTop:
-  j = 3;
+  } while (--j >= 0);
 
-  fill2 = p + 3;
-  *((int *)(p + 0x4C)) = 0;
-  *((int *)(p + 0x50)) = 0;
-  *((int *)(p + 0x48)) = 0;
+  neutral2 = 0x7F;
+  k = 0;
   do {
-    fill2[0x58] = val2;
-    fill2 -= 1;
-  } while ((--j) >= 0);
-  k += 0x18;
-  p += 0x18;
-  if (k < 0x60) {
-    goto blockTop;
-  }
+    rec = cal + k * 0x18;
+    j2 = 3;
+    fill2 = rec + 3;
+    *(int *)(rec + 0x4C) = 0;
+    *(int *)(rec + 0x50) = 0;
+    *(int *)(rec + 0x48) = 0;
+    do {
+      fill2[0x58] = neutral2;
+      fill2 -= 1;
+    } while (--j2 >= 0);
+    k += 1;
+  } while (k * 0x18 < 0x60);
+
   return ok;
 }
