@@ -60,23 +60,23 @@ void TurnSpyroTowardMoveTargetWithLean(int bucket) {
 
   delta = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
   do {
-  if (delta < 0x800) {
-    g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + 1;
-    if (g_nSpyroBodyYawStep < 1) {
-      g_nSpyroBodyYawStep = 1;
+    if (delta < 0x800) {
+      g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + 1;
+      if (g_nSpyroBodyYawStep < 1) {
+        g_nSpyroBodyYawStep = 1;
+      }
+      if (g_nSpyroBodyYawStep >= 7) {
+        g_nSpyroBodyYawStep = 6;
+      }
+    } else {
+      g_nSpyroBodyYawStep = g_nSpyroBodyYawStep - 1;
+      if (g_nSpyroBodyYawStep < -6) {
+        g_nSpyroBodyYawStep = -6;
+      }
+      if (g_nSpyroBodyYawStep >= 0) {
+        g_nSpyroBodyYawStep = -1;
+      }
     }
-    if (g_nSpyroBodyYawStep >= 7) {
-      g_nSpyroBodyYawStep = 6;
-    }
-  } else {
-    g_nSpyroBodyYawStep = g_nSpyroBodyYawStep - 1;
-    if (g_nSpyroBodyYawStep < -6) {
-      g_nSpyroBodyYawStep = -6;
-    }
-    if (g_nSpyroBodyYawStep >= 0) {
-      g_nSpyroBodyYawStep = -1;
-    }
-  }
   } while (0);
 
   base = D_8006C5F0;
