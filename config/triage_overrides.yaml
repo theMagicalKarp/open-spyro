@@ -584,18 +584,26 @@ ComputeVoicePanAndFalloff:
     is what assigns a2/v1 to the original's roles in the two delay slots.
 EndSaveMenuToWorld:
   verdict: park
-  class: "F3 head knot, 4/81"
-  date: 2026-08-10
+  class: "A164 straggler-pair order, 4/81 (was F3 head knot)"
+  date: 2026-08-12
   note: >-
     324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
-    we emit the global load pair first. Position-invariant, re-confirmed
-    2026-08-10 over five more forms: swapping the two statements, dropping the
-    `timer` local so the load sits at its own store, moving the load below the
-    `dyn` setup, and naming the anchor address in its own single-set local are
-    all byte-identical. A volatile load (the A142 lever) and a plain `*cam`
-    deref in place of `cam[new_var]` both cost insns (build fails / 6 of 81) —
-    the `cam[new_var]` index form is load-bearing. Permuter (aim it at the
-    head, not the tail — the shared camera/HUD/music tail is already exact).
+    we emit the global load pair first — a 2-vs-2 tie between priority-1
+    stragglers filling the bubble after the flame-timer load, so it is A164,
+    not an F3 knot. Position-invariant, re-confirmed 2026-08-10 over five forms
+    and again 2026-08-12 over ten more: every position of the anchor store from
+    "first statement after ResetSpyroEntity" down, the yaw statement above it,
+    the anchor split into its own `int *anchor` local at two points, and the
+    flame+anchor+yaw trio hoisted as a group above `dyn = ...`. A volatile READ
+    of the yaw through a volatile-declared alias symbol does NOT pin the load
+    below the store either (gcc 2.7.2 adds no such dependence). Hard constraint:
+    the anchor store must stay ABOVE `dyn = g_anCameraDynamicTargetParams` or
+    s0 is already reloaded and it costs +2 insns.
+    RETIRED from the old note: "the `cam[new_var]` index form is load-bearing"
+    — that was a permuter artifact. The wip was re-derived from scratch
+    2026-08-12 with a plain `g_apCameraAnchorBlock[0] = &block[-105];` and
+    reaches the same 4/81, so the spew body is gone and the source is readable.
+    Permuter (aim it at the head — the camera/HUD/music tail is already exact).
 func_level_0_8007CFC0:
   verdict: park
   class: "mid-decode, 215/642 content-aligned"
@@ -1062,3 +1070,39 @@ park_rewrite_vein_2026_08_11_3:
     Remaining members worth taking next, by size: func_80016FD0 (120 B),
     BuildAudioTrackTable (152), memmove (108), LoadActorMeshTables (264),
     CheckGpuTimeout (364), FinalizePadCalibration (432).
+
+LoadActorMeshTables:
+  verdict: parked
+  class: "A164 straggler-order tie in the call-arg block (11/66, length-exact)"
+  date: 2026-08-12
+  note: >-
+    Re-derived from scratch out of the permuter-spew vein: spew -> 55/66
+    byte-identical, length-exact. The whole directory loop is now byte-exact via
+    A179 (index form `dir[i*2+1]`/`dir[i*2+2]` off a FIXED base inside
+    `for (i = 0; i < 0x40; i++)` with the zero test as a top `break`); the
+    2026-07-25 note claiming loop.c-on + no-peel + dir-base + s3-table was
+    unreachable is wrong — the pointer walker (`dir += 2`) was what caused both
+    the peel and the dir+4 giv. The double load of D_8007A714 needs A142
+    (volatile int* local) AND A22 (declare the symbol >8 bytes) together.
+    Residue is the CdReadSyncSectors arg block: our arg5 stack store retires
+    early, so the held base lands in v0 instead of v1. All 24 permutations of
+    the four straggler statements measured identical — the stragglers come from
+    expand_call's arg setup, so source order cannot reach them.
+
+func_80016FD0:
+  verdict: wall
+  class: "B6 hand-written asm ($at as a general-purpose temp)"
+  date: 2026-08-12
+  note: >-
+    The 3x3 short-matrix transpose at 0x80016fd0 uses $at as a scratch register
+    for three-operand logical ops (`and $at,$a2,$v1`, `andi $at,$a3,0xffff`,
+    `and $at,$t0,$v1`). gcc has $at in FIXED_REGISTERS and gas only writes it
+    while expanding an immediate/address macro, so this is not our toolchain's
+    output. progress.py's at_is_data() does not catch it — that check only
+    accepts $at as the destination of add/addi/sub/neg or a non-reloc
+    load/store, so logical ops writing $at are missed and the function stays in
+    the denominator. Widening the detector to "any non-lui/addu write of $at"
+    is a project-level call, not a session one. The .wip body is a from-scratch
+    decode that is opcode-for-opcode identical (30/30, the six-statement
+    in-place compound-assignment form per swap stanza); only the $at/$v0 temp
+    pair and the lui placement are unreachable.
