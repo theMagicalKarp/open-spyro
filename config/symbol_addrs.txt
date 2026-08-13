@@ -1056,6 +1056,7 @@ g_abGpuReverseFlagBlock = 0x80074a67; // allow_duplicated:True alias — incompl
 g_nGpuScreenWidth = 0x80074a68; // size:0x2
 g_nGpuScreenHeight = 0x80074a6a; // size:0x2
 g_nGpuQueueCompletionPending = 0x80074a6c; // size:0x4
+g_anGpuQueueCompletionPending = 0x80074a6c; // allow_duplicated:True — incomplete-array view of the pending flag so its read+clear share one materialized base (FlushGpuQueue)
 g_pfnGpuQueueCompletionCallback = 0x80074a70; // size:0x4
 g_abPutDrawEnvCache = 0x80074a74; // size:0x5c
 g_abPutDispEnvCache = 0x80074ad0; // size:0x14

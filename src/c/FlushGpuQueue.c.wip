@@ -23,116 +23,101 @@ extern unsigned int g_adwGpuRingFunc[]; /* ring + 0x0 */
 extern unsigned int g_adwGpuRingArgs[]; /* ring + 0x4 */
 extern unsigned int g_adwGpuRingArg4[]; /* ring + 0x8 */
 
+/* Incomplete-array view of the pending flag: the read and the clear share one
+   materialized base in the original (addiu v1,%lo(); lw 0(v1) … sw zero,0(v1)),
+   which a plain 4-byte extern loses to the sdata cost tie. */
+extern int g_anGpuQueueCompletionPending[];
+
 #define WIDX (*(volatile int *)&g_nGpuQueueWriteIndex)
 #define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
-
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/FlushGpuQueue.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/FlushGpuQueue/output-1410-1/source.c */
+#define CHCR (*(volatile unsigned int *)g_pDmaGpuChcrReg)
 
 unsigned int FlushGpuQueue(void) {
-  int new_var;
-  unsigned int depth;
-  depth = 1;
-  if (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0) {
-    g_nFlushGpuSavedIMask = SetInterruptMask(0);
-    if (((*((volatile int *)(&g_nGpuQueueWriteIndex))) !=
-         (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
-        (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) {
-      unsigned int *last = g_adwLastGpuOp;
-      volatile unsigned int *stat;
-    drain:
-      if (((((*((volatile int *)(&g_nGpuQueueReadIndex))) + 1) & 0x3F) ==
-           (*((volatile int *)(&g_nGpuQueueWriteIndex)))) &&
-          (g_pfnGpuQueueCompletionCallback == 0)) {
-        DmaCallback(2, 0);
-      }
+  volatile unsigned int *last;
 
-      ;
-      while (((*((volatile unsigned int *)g_pGpuStatReg)) & 0x04000000) == 0) {
-      }
-
-      new_var = (*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18;
-      ((void (*)(unsigned int, unsigned int))g_adwGpuRingFunc[new_var])(
-          g_adwGpuRingArgs[new_var],
-          g_adwGpuRingArg4[(*((volatile int *)(&g_nGpuQueueReadIndex))) *
-                           0x18]);
-      ((volatile unsigned int *)last)[0] =
-          g_adwGpuRingFunc[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
-      *((volatile unsigned int *)(&g_dwLastGpuOpArg1)) =
-          g_adwGpuRingArgs[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
-      *((volatile unsigned int *)(&g_dwLastGpuOpArg2)) =
-          g_adwGpuRingArg4[(*((volatile int *)(&g_nGpuQueueReadIndex))) * 0x18];
-      *((volatile int *)(&g_nGpuQueueReadIndex)) =
-          ((*((volatile int *)(&g_nGpuQueueReadIndex))) + 1) & 0x3F;
-      if (((*((volatile int *)(&g_nGpuQueueWriteIndex))) !=
-           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
-          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) {
-        goto drain;
-      }
-    }
-    SetInterruptMask(g_nFlushGpuSavedIMask);
-    if (((((*((volatile int *)(&g_nGpuQueueWriteIndex))) ==
-           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
-          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) &&
-         (g_nGpuQueueCompletionPending != 0)) &&
-        (g_pfnGpuQueueCompletionCallback != 0)) {
-      g_nGpuQueueCompletionPending = 0;
-      ((void (*)(void))g_pfnGpuQueueCompletionCallback)();
-    }
-    depth = ((*((volatile int *)(&g_nGpuQueueWriteIndex))) -
-             (*((volatile int *)(&g_nGpuQueueReadIndex)))) &
-            0x3F;
+  if ((CHCR & 0x1000000) != 0) {
+    return 1;
   }
-  return depth;
+  g_nFlushGpuSavedIMask = SetInterruptMask(0);
+  if (WIDX != RIDX && (CHCR & 0x1000000) == 0) {
+    last = (volatile unsigned int *)g_adwLastGpuOp;
+  drain:
+    if (((RIDX + 1) & 0x3F) == WIDX && g_pfnGpuQueueCompletionCallback == 0) {
+      DmaCallback(2, 0);
+    }
+    while ((*(volatile unsigned int *)g_pGpuStatReg & 0x4000000) == 0) {
+      ;
+    }
+    (*(void (**)(unsigned int, unsigned int))&g_abGpuOpQueueRing[RIDX * 0x60])(
+        g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
+    last[0] = g_adwGpuRingFunc[RIDX * 0x18];
+    *(volatile unsigned int *)&g_dwLastGpuOpArg1 =
+        g_adwGpuRingArgs[RIDX * 0x18];
+    *(volatile unsigned int *)&g_dwLastGpuOpArg2 =
+        g_adwGpuRingArg4[RIDX * 0x18];
+    RIDX = (RIDX + 1) & 0x3F;
+    if (WIDX != RIDX && (CHCR & 0x1000000) == 0) {
+      goto drain;
+    }
+  }
+  SetInterruptMask(g_nFlushGpuSavedIMask);
+  if (WIDX == RIDX && (CHCR & 0x1000000) == 0 &&
+      g_anGpuQueueCompletionPending[0] != 0 &&
+      g_pfnGpuQueueCompletionCallback != 0) {
+    *(volatile int *)g_anGpuQueueCompletionPending = 0;
+    (*(void (*)(void))g_pfnGpuQueueCompletionCallback)();
+  }
+  return (WIDX - RIDX) & 0x3F;
 }
 
 /*
- * PARKED 2026-07-20 — LENGTH-EXACT (187/187 insns), logic complete & correct.
- * Sibling of the parked EnqueueGpuOp; `void` so NO param-regalloc rotation.
+ * PARKED 2026-08-13 — LENGTH-EXACT (187/187), 20/187 words differ (89.3%),
+ * re-derived from scratch (the 2026-07-25 permuter spew that used to live here
+ * was 182 insns / 59 shape-differing; this body is hand-written and readable).
+ * FOUR residues from the old note are RETIRED, all by ordinary idioms:
+ *   - Ring bases hoisted into s1/s2/s3: the drain loop must be an A86
+ * GOTO-loop. As a real do/while it is a loop.c loop, and loop.c hoists
+ * %hi(ring+off) into callee-saved regs no matter how many distinct alias
+ * symbols you give the fields. The three g_adwGpuRing* aliases are still needed
+ * on top.
+ *   - `depth` in v1 + a trailing `move v0,v1`: write the entry test as an EARLY
+ *     `return 1;` and the tail as a direct `return (WIDX - RIDX) & 0x3F;`. A
+ *     `depth` local initialised before the `if` costs 3 insns; the two-return
+ *     form also lands the g_pDmaGpuChcrReg load ahead of the `addiu sp` (the
+ *     old note's separate "prologue" residue - it was the same cause).
+ *   - `sw zero,0(v1)` for the pending clear needs BOTH the incomplete-array
+ *     alias g_anGpuQueueCompletionPending (held base, A22 / B-i rule 2) and a
+ *     volatile cast on the store (else reorg eats it for the jalr delay slot).
+ *   - The chcr-mask `lui v1,0x100` landing in a branch delay slot (§F8, this
+ *     function is the named member) is fixed by making the CHCR read VOLATILE:
+ *     reorg will not speculate past a volatile MEM into the fall-through, so
+ *     the slot stays a nop and the lui falls into the load shadow, as in the
+ *     original. Both sites, 4 insns.
  *
- * BIG WIN (new reusable idiom — see cookbook §AJ): the 6 per-iteration ring
- * accesses must each re-materialize %hi(g_abGpuOpQueueRing+off) FRESH. cc1
- * otherwise emits a single `la $16,g_abGpuOpQueueRing` and derives +4/+8 into
- * s1/s2 (cost model: fused (plus reg CONST) addr = mips_address_cost 3 vs held
- * base+addu ~2, so cse hoists for >=2 accesses). Two cooperating fixes force
- * the original's fresh form and drop the function to ONE callee-saved reg (s0,
- * the held g_dwLastGpuOpFunc store base via the g_adwLastGpuOp alias):
- *   1. Distinct SINGLE-USE alias symbols per ring field (g_adwGpuRingFunc/Args/
- *      Arg4 @ ring+0/+4/+8): with nothing to cse, each access is fused/fresh.
- *   2. The last-op stores (g_dwLastGpuOp{Func,Arg1,Arg2}) must be VOLATILE — a
- *      volatile store keeps program order so the `read = (read+1)&0x3F`
- * volatile store stays LAST (a non-volatile last-op store lets the read
- * increment float up into the store block; this alone took it 178->187
- * length-exact). Also: the GPU status spin MUST read through a volatile
- * pointer, else cc1 hoists the load out of the loop (infinite-loop + 3 insns
- * short).
- *
- * Residues (all §H/§K regalloc-schedule ties; source-invariant — permuter
- * class):
- *   - `depth` return value: orig keeps it in v0 throughout (li v0,1 in the
- * entry bnez delay slot; final andi v0 returned direct); our gcc allocs it to
- * v1 and adds a trailing `move v0,v1` (+ shifts every epilogue-targeting branch
- * by 1). Pure §H return-reg tie.
- *   - Spin loop: orig copies the stat pointer (move v1,a0) and puts the
- * 0x4000000 mask in a0; ours keeps the pointer in a0 and the mask in v1
- * (register swap, no move). §H.
- *   - Prologue: orig schedules the g_pDmaGpuChcrReg pointer load BEFORE the sp
- *     adjust; ours after (1-insn shift, ~3 words). §K.
- *   - Dispatch: minor sll/addu index-compute reorder + the 0x1000000 chcr-mask
- *     `lui v1,0x100` lands in a branch delay slot in the original, a nop in
- * ours. §K.
- *   - Frame 0x30 vs 0x18: reload spill reservation from the higher peak
- * pressure the above ties create — follows from matching them, not a separate
- * fix (§AD). Clean length-exact permuter candidate; the ring-addressing +
- * volatile-order scaffolding is all solved. Aliases committed in
- * config/symbol_addrs.txt.
- *
- * 2026-07-25-1 unattended permuter session (~15m, ~67200 iterations, timed out
- * at the 15m budget): best score 1410 vs base score 2005. No byte-perfect
- * candidate found; still PARKED (see above).
+ * SOLE REMAINING RESIDUE (13 insns, one sched1 decision, + the frame it costs):
+ *   In the dispatch block the original's memory-op order is
+ *       RIDX(L1), RIDX(L2), lw args, RIDX(L3), lw arg4, lw func
+ *   and ours is
+ *       RIDX(L1), RIDX(L2), RIDX(L3), lw args, lw arg4, lw func
+ *   i.e. sched1 hoists the THIRD volatile RIDX read above the (non-volatile)
+ *   ring `args` read — gcc 2.7.2 orders volatile MEMs only against each other,
+ *   not against plain ones. Consequences, all downstream of that one move:
+ *   the original interleaves L1's `sll;addu` before the args load and finishes
+ *   it with `sll ..,5` after (keeping 3*L1 live in v1), while ours defers L1's
+ *   whole chain to the end and keeps L1 raw alive in a2 (hence a2-vs-a1), and
+ *   the extra pressure reserves stack vars (0x28 frame vs 0x18; nothing is
+ *   ever stored there).
+ *   NOT source-steerable — measured 2026-08-13, all byte-identical output:
+ *   func-pointer hoisted to a local; all three slot reads split into separate
+ *   statements; an index temp for the func slot; `slot = RIDX * 3` + `slot * 8`
+ *   (combine re-fuses it); byte-scaled `&ring[RIDX*0x60]` vs word-scaled
+ *   `ring[RIDX*0x18]` (identical schedule, but it IS worth keeping: it drops
+ *   the frame from 0x30 to 0x28).
+ *   Levers that pin the order but cost more than they buy: volatile on the
+ *   `args` ring read alone pins L3 below it but adds +1 insn and forces a held
+ *   base (26 differing); volatile on all three ring reads costs +4 insns
+ *   (191/187, 56 differing).
+ *   CLASS: §F8-adjacent sched1 tie (volatile-vs-plain MEM ordering in a
+ * call-arg block). Clean permuter target — the logic, the CFG, the length and
+ * every other block are exact; only this one block's insn order is in play.
  */
