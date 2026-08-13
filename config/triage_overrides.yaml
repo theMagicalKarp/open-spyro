@@ -1245,3 +1245,49 @@ EnqueueGpuOp_2026_08_13:
     filled (-2). Volatile ring stores DO pin the tail (184/184) but force a held
     base instead of the fused `%lo(sym)(at)` address (B16) — 61/184, not the way
     in.
+
+FinalizePadCalibration_2026_08_13_1:
+  verdict: matched
+  class: "A195 do-while(0) ref dial + A196 shared counter + A197 giv-init order"
+  date: 2026-08-13
+  note: >-
+    432 B, MATCHED. All three parked "register swap" pairs were allocation
+    PRIORITY, not ties: flow.c weights refs by basic-block loop depth, so
+    nested dummy do{}while(0) wrappers buy refs with no insn (A195). Loop 2
+    needed +2 refs on `axis` (9/25 vs q 9/22); the phase-3 fill loop needed +6
+    on `fill` (7/11 vs the counter). Merging the two fill-loop counters into
+    ONE variable (A196) makes it live across the phase-4 giv init, whose a0
+    preference then keeps it out of a0 and frees a0/v1 for `neutral`/`k`. The
+    last residue was the phase-4 preheader init ORDER: loop.c emits giv inits
+    in reverse discovery order (A197), so the pointer had to become an explicit
+    pre-loop biv, with its three head stores cast volatile to stop loop.c
+    reducing them into a second induction register (+2 insns otherwise).
+RelocateMobActorTable_2026_08_13_1:
+  verdict: skip
+  class: "B21 — param a0 preference blocks every conflicting allocno (leaf)"
+  date: 2026-08-13
+  note: >-
+    432 B, 108/108 length- and schedule-exact, sole residue the a0<->a2
+    rotation. Re-measured with the -dg probe and traced through global.c:
+    `stream`'s allocno prefers a0 (set_preference on the entry copy),
+    prune_preferences puts a0 into regs_someone_prefers of every lower-priority
+    conflicting allocno, and find_reg pass 0 (which excludes them) only fails
+    when all 13+ call-used regs conflict. A separate walker local coalesces and
+    inherits the preference (measured). No priority or live-range dial reaches
+    it; the escapes are a call (copy preference) or a call-crossing param
+    (preference pruned), neither available in a leaf. NOT a permuter target.
+func_80038638_2026_08_13_1:
+  verdict: park
+  class: "F4/A187 abs copy-canonicality, straight-line sub-case (3/185)"
+  date: 2026-08-13
+  note: >-
+    740 B. Advanced 18/185 -> 3/185. The parked "F1 whole-function callee-saved
+    rotation" is RETIRED: two A195 ref dials (7 levels on the `deadzone`
+    compare -> s0, 9 on the abs block -> `face` wins s1) fix every register.
+    What is left is the |delta| idiom at two sites: the original copies then
+    negates in place (`move v0,s1; negu v0,v0`), ours negates the copy SOURCE,
+    which is A187's unreachable sub-case (the copy is in a straight-line block,
+    so condition 1 cannot hold). Tried: compare on the copy, abs() (A160, much
+    worse), copy duplicated into both arms (+1 insn, not cross-jumped). The
+    body is still 2026-07-25 permuter spew — re-derive it by hand if the abs
+    residue ever falls.
