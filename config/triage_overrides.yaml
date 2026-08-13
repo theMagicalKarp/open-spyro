@@ -1291,3 +1291,15 @@ func_80038638_2026_08_13_1:
     worse), copy duplicated into both arms (+1 insn, not cross-jumped). The
     body is still 2026-07-25 permuter spew — re-derive it by hand if the abs
     residue ever falls.
+func_80038C4C_2026_08_13_1:
+  verdict: park
+  class: "local-alloc qty_compare tie, unchanged at 6/66 — the A195 ref dial does NOT reach it"
+  date: 2026-08-13
+  note: >-
+    264 B. Re-tested with the new dial: local-alloc's qty_compare uses the same
+    floor_log2(refs)*refs/span formula as global.c, but wrapping the straight-
+    line `ay = abs(ry);` in 1/2/3 nested do{}while(0) leaves every -dl ref count
+    byte-identical — the wrapper only moves refs when the wrapped region
+    contains a control-flow split or is already inside a loop. Residue is
+    unchanged from 2026-07-09: ay in v1 (ours) vs a1, and the two limit loads
+    sharing v0 where the original keeps v1/v0.
