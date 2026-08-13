@@ -1,19 +1,37 @@
-/* PARK 71.4% (185/185 length-exact; logic verified against the asm).
- * Residue is an §F1 whole-function register rotation: every diff is one
- * callee-saved register off, driven by ONE global-alloc priority tie --
- * `deadzone` (the 5th param, 2 refs, one `slt`) must be the FIRST allocno
- * assigned (s0) with the compare temp reusing its dying register; ours ranks
- * it LAST (s7), so `dir` takes s0 and actor/speed/blockA/tgt/blockB all shift
- * down one. Everything else (block layout, delay slots, the cross-jumped
- * +/-3 call arms, the dead `pt[]` stores, the frame) already matches.
- * Tried, no movement: 4 abs-idiom forms for the early-exit |delta| (in-place
- * vs two-arm vs pre-negate), 2 tail forms, splitting `na` out of `dir`,
- * reusing vs not reusing the `face` param for the delta (reusing is required
- * -- it is what puts the delta in s1 and kills 2 tail moves).
- * Two 1-insn shape ties ride along and are probably downstream of the same
- * allocation: the early `negu v0,v0` (ours negates the source `face`, cse
- * canonicalises the copy away) and the stack-param load order (F2).
- * Harvest with the permuter; the whole file is 1 register-permutation away.
+/* PARK 3/185 differing insns (98.4%), length-, layout- AND register-exact
+ * except for one repeated abs idiom (2026-08-13-1; was 18/185, an §F1
+ * whole-function callee-saved rotation).
+ *
+ * THE ROTATION IS RETIRED. It was allocno_compare arithmetic, not a tie:
+ * global.c ranks allocnos by floor_log2(refs)*refs/live_length and flow.c
+ * weights every mention by its basic block's loop depth, so nested dummy
+ * `do { } while (0)` wrappers buy references without emitting an insn (they
+ * only leave NOTE_INSN_LOOP_BEG/END for flow to count). Two dials, both
+ * measured with the §D 2c -dl/-dg probe:
+ *   - `deadzone` (5th param) must be the first CALL-CROSSING allocno so it
+ *     takes s0. At 2 refs / 36 insns it ranked 14th (prio 0.055) against
+ *     `dir` at 11/47 (0.70); the 7-deep wrapper takes it to 9 refs (0.75)
+ *     and it is allocated 5th, which lands the whole s-register file except
+ *     one pair.
+ *   - `face` must then win s1 from `dir`: 14 refs / 138 insns (0.30) vs
+ *     dir's 0.70, so the abs block carries a 9-deep wrapper (+2 refs per
+ *     level, 32 refs -> 1.16).
+ * Both wrapper depths are the measured minimum-ish; N and N+4 give the same
+ * bytes, so treat them as "enough", not exact.
+ *
+ * REMAINING RESIDUE (2 sites, 3 insns): the early-exit |delta|. The original
+ * copies first and negates in place (`move v0,s1` / `negu v0,v0`); ours
+ * negates the copy's SOURCE (`negu v0,s1`) because cse keeps the copy source
+ * canonical -- §F4 / A187, and this is A187's unreachable sub-case: the copy
+ * sits in a STRAIGHT-LINE block, so condition 1 (copy inside a conditional
+ * arm, uses past the join) cannot be satisfied. Tried this session: the
+ * compare on `t` instead of `face` (identical), `abs()` (A160 -- 24/185,
+ * much worse), and the two-arm form with the copy duplicated into both arms
+ * (+1 insn, jump.c does not cross-jump it back).
+ *
+ * NOTE: the body below is still 2026-07-25 decomp-permuter output, kept for
+ * its partial-byte credit; only the two wrappers were added. If the abs
+ * residue ever falls, re-derive the body by hand before committing.
  */
 #include "globals.h"
 
@@ -62,13 +80,45 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   int r;
   dir = ArcTan2(actor[3] - tgt[0], actor[4] - tgt[1], 0);
   face = func_800381BC(face, dir);
+do {
+do {
+do {
+do {
+do {
+do {
+do {
+do {
+do {
   t = face;
   if (face < 0) {
     t = -t;
   }
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+do {
+do {
+do {
+do {
+do {
+do {
+do {
   if (heading = t < deadzone) {
     return t;
   }
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
+} while (0);
   if (blockA != 0xff) {
     if (AbsAngleDelta8(dir, blockA) < 5) {
       e = func_800381BC(blockA, dir);
