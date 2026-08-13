@@ -1204,3 +1204,44 @@ HandleHardwareInterrupt_2026_08_12_2:
     (no change — gcc coalesces the copy), and a separate `pending` temp with
     `mask = pending` at the top of the body (+1 insn, copy does not sink into a
     delay slot). See the .wip footer.
+
+FlushGpuQueue_2026_08_13:
+  verdict: park
+  class: "F8-adjacent sched1 tie — volatile-vs-plain MEM order in a call-arg block"
+  date: 2026-08-13
+  note: >-
+    Re-derived from scratch (was 2026-07-25 permuter spew, 182 insns / 59 shape
+    diffs). Now LENGTH-EXACT 187/187, 20/187 linked words differ (89.3%), of
+    which 13 are one sched1 decision and the rest are the frame it costs.
+    Retired four of the old note's residues: ring bases hoisted into s1/s2/s3
+    (fix = A85 goto-loop; the distinct field aliases alone are not enough —
+    loop.c hoists them out of a real do/while); `depth` in v1 + `move v0,v1`
+    (fix = early `return 1;` + a direct `return (WIDX-RIDX)&0x3F;`, which also
+    lands the chcr load ahead of `addiu sp`); the pending-flag clear (needs an
+    incomplete-array alias for the held base AND a volatile store or reorg eats
+    it for the jalr slot); and the chcr-mask `lui v1,0x100` in a branch delay
+    slot (fix = A163b, volatile CHCR reads). Sole residue: sched1 hoists the
+    THIRD volatile g_nGpuQueueReadIndex read above the plain ring `args` read,
+    where the original keeps it after. Not source-steerable (six forms measured,
+    all byte-identical output); pinning it with a volatile ring read costs more
+    than it buys. Clean permuter target.
+
+EnqueueGpuOp_2026_08_13:
+  verdict: park
+  class: "divide-block shape (-1 insn) + its A186 back-edge slot + 2 tail nops"
+  date: 2026-08-13
+  note: >-
+    Re-derived from scratch; 181/184 insns, 28 register-anchored shape diffs.
+    The old note's residue #1 ("whole-function param-regalloc ROTATION, no
+    source form dislodges it") is RETIRED — it was a ref-count problem, see
+    A194: nbytes needs a 4th reference to clear floor_log2's step, and only
+    `n = (nbytes < 0 ? nbytes + 3 : nbytes) >> 2;` survives cse with two reads.
+    Residue #2 (the g_dwLastGpuOpFunc held base) is retired by the A142
+    g_adwLastGpuOp alias. What is left: gcc puts the positive arm's `sra` in the
+    bgez delay slot instead of copying nbytes to the scratch reg first (-1
+    insn), which in turn leaves the copy loop's `j` delay slot empty where the
+    original steals its loop-top `move v0,s1` (A186, -1); and the three tail
+    WIDX reads are hoisted above the ring stores so their load-delay nops get
+    filled (-2). Volatile ring stores DO pin the tail (184/184) but force a held
+    base instead of the fused `%lo(sym)(at)` address (B16) — 61/184, not the way
+    in.

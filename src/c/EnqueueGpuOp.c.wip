@@ -11,128 +11,135 @@ extern unsigned int FlushGpuQueue(void);
    call to the ring for later replay by FlushGpuQueue. The ring head/tail
    indices are shared with the DMA-completion IRQ handler, hence volatile. */
 
-extern unsigned int g_adwLastGpuOp[];
-extern unsigned char g_abGpuOpArgArea[];
+extern unsigned int g_adwLastGpuOp[]; /* alias @ g_dwLastGpuOpFunc — held base
+                                         for the Func store */
+
+/* Distinct word[] views of the three used ring-slot fields (ring+0/+4/+8) and
+   of the inline-args area (ring+0xC); see FlushGpuQueue for why each field
+   needs its own symbol. */
+extern unsigned int g_adwGpuRingFunc[];  /* ring + 0x0 */
+extern unsigned int g_adwGpuRingArgs[];  /* ring + 0x4 */
+extern unsigned int g_adwGpuRingArg4[];  /* ring + 0x8 */
+extern unsigned char g_abGpuOpArgArea[]; /* ring + 0xC */
 
 #define WIDX (*(volatile int *)&g_nGpuQueueWriteIndex)
 #define RIDX (*(volatile int *)&g_nGpuQueueReadIndex)
-
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   The `do { ... } while (0)` wrapper(s) are LOAD-BEARING - removing
-   them was measured to cost partial bytes; do not 'simplify' them.
-   Original hand-written body: git show HEAD:src/c/EnqueueGpuOp.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/EnqueueGpuOp/output-955-1/source.c */
+#define CHCR (*(volatile unsigned int *)g_pDmaGpuChcrReg)
 
 unsigned int EnqueueGpuOp(void *func, unsigned int *args, int nbytes,
                           unsigned int arg4) {
   unsigned int *src;
-  char *slot;
+  char *area;
   int i;
+  int n;
+
   ResetGpuTimeoutDeadline();
-  do {
-    while ((((*((volatile int *)(&g_nGpuQueueWriteIndex))) + 1) & 0x3F) ==
-           (*((volatile int *)(&g_nGpuQueueReadIndex)))) {
-      if (CheckGpuTimeout() != 0) {
-        return -1;
-      }
-      FlushGpuQueue();
+  while (((WIDX + 1) & 0x3F) == RIDX) {
+    if (CheckGpuTimeout() != 0) {
+      return -1;
     }
-    g_nEnqueueGpuSavedIMask = SetInterruptMask(0);
-    g_nGpuQueueCompletionPending = 1;
-    if ((g_bGpuQueueModeActive == 0) ||
-        ((((*((volatile int *)(&g_nGpuQueueWriteIndex))) ==
-           (*((volatile int *)(&g_nGpuQueueReadIndex)))) &&
-          (((*((unsigned int *)g_pDmaGpuChcrReg)) & 0x01000000) == 0)) &&
-         (g_pfnGpuQueueCompletionCallback == 0))) {
-      unsigned int *last;
-      while (((*((unsigned int *)g_pGpuStatReg)) & 0x04000000) == 0) {
-      }
-      ((void (*)(unsigned int *, unsigned int))func)(args, arg4);
-      last = g_adwLastGpuOp;
-      last[0] = (unsigned int)func;
-      last[1] = (unsigned int)args;
-      last[2] = arg4;
-      SetInterruptMask(g_nEnqueueGpuSavedIMask);
-      return 0;
-    }
-    DmaCallback(2, FlushGpuQueue);
-    i = 0;
-    if (nbytes != 0) {
-      src = args;
-      slot = (char *)(&g_abGpuOpQueueRing[0xC]);
-    lp:
-      if (i < (nbytes / 4)) {
-        unsigned int v = *src;
-        src += 1;
-        *((unsigned int *)((slot +
-                            ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
-                             0x60)) +
-                           (i * 4))) = v;
-        i += 1;
-        goto lp;
-      }
-      *((unsigned int *)((&g_abGpuOpQueueRing[4]) +
-                         ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
-                          0x60))) =
-          (unsigned int)((&g_abGpuOpArgArea[0]) +
-                         ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
-                          0x60));
-    } else if (1) {
-      *((unsigned int **)((&g_abGpuOpQueueRing[4]) +
-                          ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
-                           0x60))) = args;
-    }
-    *((unsigned int *)((&g_abGpuOpQueueRing[8]) +
-                       ((*((volatile int *)(&g_nGpuQueueWriteIndex))) *
-                        0x60))) = arg4;
-    *((void **)((&g_abGpuOpQueueRing[0]) +
-                ((*((volatile int *)(&g_nGpuQueueWriteIndex))) * 0x60))) = func;
-    g_nGpuQueueWriteIndex =
-        ((*((volatile int *)(&g_nGpuQueueWriteIndex))) + 1) & 0x3F;
-    SetInterruptMask(g_nEnqueueGpuSavedIMask);
     FlushGpuQueue();
-    return ((*((volatile int *)(&g_nGpuQueueWriteIndex))) -
-            (*((volatile int *)(&g_nGpuQueueReadIndex)))) &
-           0x3F;
-  } while (0);
+  }
+  g_nEnqueueGpuSavedIMask = SetInterruptMask(0);
+  g_nGpuQueueCompletionPending = 1;
+  if (g_bGpuQueueModeActive == 0 || (WIDX == RIDX && (CHCR & 0x1000000) == 0 &&
+                                     g_pfnGpuQueueCompletionCallback == 0)) {
+    while ((*(volatile unsigned int *)g_pGpuStatReg & 0x4000000) == 0) {
+      ;
+    }
+    ((void (*)(unsigned int *, unsigned int))func)(args, arg4);
+    *(volatile unsigned int *)g_adwLastGpuOp = (unsigned int)func;
+    *(volatile unsigned int *)&g_dwLastGpuOpArg1 = (unsigned int)args;
+    *(volatile unsigned int *)&g_dwLastGpuOpArg2 = arg4;
+    SetInterruptMask(g_nEnqueueGpuSavedIMask);
+    return 0;
+  }
+  DmaCallback(2, FlushGpuQueue);
+  if (nbytes != 0) {
+    i = 0;
+    area = (char *)g_abGpuOpArgArea;
+    src = args;
+  copy:
+    /* `nbytes / 4` written out by hand: the inline ternary is the ONLY form
+       that survives cse as two separate reads of nbytes, which is what buys
+       nbytes its 4th ref and therefore s1 — see the park note. */
+    n = (nbytes < 0 ? nbytes + 3 : nbytes) >> 2;
+    if (i < n) {
+      *(volatile unsigned int *)((area + WIDX * 0x60) + i * 4) = *src++;
+      i++;
+      goto copy;
+    }
+    g_adwGpuRingArgs[WIDX * 0x18] =
+        (unsigned int)((char *)g_abGpuOpArgArea + WIDX * 0x60);
+  } else {
+    g_adwGpuRingArgs[WIDX * 0x18] = (unsigned int)args;
+  }
+  g_adwGpuRingArg4[WIDX * 0x18] = arg4;
+  g_adwGpuRingFunc[WIDX * 0x18] = (unsigned int)func;
+  WIDX = (WIDX + 1) & 0x3F;
+  SetInterruptMask(g_nEnqueueGpuSavedIMask);
+  FlushGpuQueue();
+  return (WIDX - RIDX) & 0x3F;
 }
 
 /*
- * PARKED 2026-07-19-1 — 182/184 insns, logic complete & correct. Solved keys
- * (reusable, all verified against the asm):
- *   - The ring head/tail indices are VOLATILE (shared with the DMA IRQ
- * handler): the original double-loads g_nGpuQueueWriteIndex in one expression
- * and reloads it before every ring store with no intervening call — only
- * volatile reproduces that (WIDX/RIDX macros).
- *   - DmaCallback is called (2, FlushGpuQueue): it registers FlushGpuQueue as
- * the channel-2 DMA-completion callback (a1=&FlushGpuQueue). The ghidra decomp
- *     dropped the args (register-passthrough); the asm sets a1. (+2 insns.)
- *   - After the copy loop, the arg-ptr VALUE (&ring[0xC] + idx*0x60) must NOT
- * CSE onto the ring+4 store base: a DISTINCT alias symbol g_abGpuOpArgArea
- *     (=ring+0xC) forces the fresh lui/addiu the original has (§A row 42 / §N).
+ * PARKED 2026-08-13 — 181/184 insns (3 short), 28 register-anchored shape
+ * diffs, re-derived from scratch (the 2026-07-25 permuter spew that used to
+ * live here was 182/184 with the parameter rotation unsolved).
  *
- * Residues (permuter-or-never):
- *   1. §H whole-function param-regalloc ROTATION: original a0/a1/a2/a3 land in
- *      s3/s0/s1/s2 (func→s3, bytes→s1, arg4→s2); our gcc gives s2/s0/s3/s1
- *      (func→s2, bytes→s3, arg4→s1) — a 3-cycle among func/bytes/arg4. args→s0
- *      matches. No source form dislodges it (this is the dominant byte cost —
- * the structure is ~1-insn-aligned but the register fields differ throughout).
- *   2. §Y held-base fold (+1): original stores g_dwLastGpuOpFunc via a
- * materialized base (lui;addiu;sw 0(v0)) and folds Arg1/Arg2 to absolute; our
- * gcc emits the 2-insn absolute form for all three (a compile-time-constant
- * address that the original holds but reload rematerializes+folds — §Y rule 1/2
- * wall). The g_adwLastGpuOp alias + pointer-local can't force the held reg
- * without a call between (it then promotes to a callee-saved s-reg, worse).
- *   3. Minor scheduling swaps: load-delay nop vs lui position (×2), the *0x60
- *      multiply sll/addu order, and the copy-loop back-edge store-in-delay-slot
- * vs store-then-reload-bytes. All §K. Clean permuter target once the param
- * rotation is forced.
+ * RESIDUE #1 OF THE OLD NOTE — "§H whole-function param-regalloc ROTATION,
+ * no source form dislodges it" — is RETIRED. It is not a tie at all, it is
+ * global.c arithmetic, and the `-dl`/`-dg` probe (§D 2c) reads it straight off:
+ *   allocno_compare priority = floor_log2(R) * R / L, highest gets s0.
+ *   Measured with the naive `nbytes / 4`:
+ *     73 args   R=5 L=55 -> 0.182   -> s0   (correct)
+ *     75 arg4   R=4 L=93 -> 0.086   -> s1   (want s2)
+ *     72 func   R=4 L=96 -> 0.083   -> s2   (want s3)
+ *     74 nbytes R=3 L=56 -> 0.054   -> s3   (want s1)
+ *   nbytes needs ONE more reference: floor_log2 is a step function, so R 3->4
+ *   doubles its priority (0.054 -> 0.143) and lands it between args and arg4 —
+ *   exactly the original's s0/s1/s2/s3 assignment. Every "natural" way to write
+ *   the signed divide gives R=3, because cse rewrites the second read of
+ *   `nbytes` into the copy it already made:
+ *     n = nbytes; if (n < 0) n += 3; n >>= 2;              -> R=3
+ *     n = nbytes; if (nbytes < 0) n = nbytes + 3;          -> R=3 (folded)
+ *     if (nbytes < 0) n = nbytes + 3; else n = nbytes;     -> R=3 (folded)
+ *     n = nbytes < 0 ? nbytes + 3 : nbytes; ... (n >> 2)   -> R=3 (folded back
+ *                                                             to a plain div)
+ *   The one form cse leaves alone is the ternary WITH the shift inside it and
+ *   the result in a named temp:
+ *     n = (nbytes < 0 ? nbytes + 3 : nbytes) >> 2;
+ *   That is what this body uses, and it fixes the whole rotation (~12 words).
+ *   Written INSIDE the compare instead (`if (i < ((...) >> 2))`) it also fixes
+ *   the rotation but gcc then threads the `sra/slt/beqz` into both arms: +3
+ *   insns, 187/184.
  *
- * 2026-07-25-1 unattended permuter session (~15m, ~68000 iterations, timed out
- * at the 15m budget): best score 955 vs base score 1205. No byte-perfect
- * candidate found; still PARKED (see above).
+ * REMAINING RESIDUES (3 insns short, 28 shape diffs):
+ *   1. Divide block, -1 insn. Original: `move v0,s1; bgez v0; nop;
+ *      addiu v0,v0,3; sra v0,v0,2` (5). Ours: `bgez s1; sra v0,s1,2 (delay);
+ *      addiu v0,s1,3; sra v0,v0,2` (4) — gcc puts the positive arm's shift in
+ *      the delay slot instead of copying nbytes into the scratch first.
+ *   2. Copy-loop back edge, -1 insn. Because of (1) the loop's first insn is
+ *      the `bgez`, so reorg has nothing to steal into the `j` delay slot and
+ *      leaves a nop; the original steals its loop-top `move v0,s1` (A186) and
+ *      redirects the jump past it. (1) and (2) are ONE problem: get the copy
+ *      back and both close.
+ *   3. Tail, -2 insns. The three `WIDX` reads that index the arg4/func/wp
+ *      stores are hoisted to the top of the block in ours, so their load-delay
+ *      nops get filled; the original keeps each read AFTER the preceding ring
+ *      store (3 x `lw; nop`). gcc 2.7.2 orders volatile MEMs only against other
+ *      volatile MEMs, so a plain ring store does not pin them. Making the ring
+ *      stores volatile DOES pin them and gives 184/184 — but it costs more than
+ *      it buys: a volatile store stops cse folding the address back to
+ *      `lui at; addu at,at,rN; sw v,%lo(sym)(at)` and materializes a held base
+ *      instead (B16), 61/184 differing. Not the way in.
+ *   4. A pure register swap in the copy loop (`i*4` in a0 vs v1, the WIDX load
+ *      in v1 vs a0) — F1, likely downstream of (1).
+ *
+ * Other levers proved here (keep them): the copy loop must be an A86 goto-loop
+ * (a real `for`/`while` lets loop.c hoist `nbytes/4` and the argarea base out);
+ * the copy-loop STORE must be volatile (A1) or reorg takes it for the `j` delay
+ * slot instead of the loop-top insn; the after-loop args value must name
+ * g_abGpuOpArgArea directly while the in-loop base is a pointer local, or the
+ * two share one materialized base.
  */
