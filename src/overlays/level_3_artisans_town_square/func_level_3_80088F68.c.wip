@@ -720,4 +720,23 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
  * Word-identical (bar branch displacements) to func_level_20_800861CC:
  * landing this one lands 7,880 exact bytes, and the same 4-insn fix lands the
  * five-overlay 1085-insn group headed by func_level_1_800892C4 (21,700 more).
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~20000 iterations, timed out
+ * at the 15m budget): best score 210 vs first-iteration score 215, with the
+ * next two candidates both at 215. Essentially flat -- a 2% drop, the smallest
+ * proportional movement of any improving function this session.
+ *
+ * That is the expected result and it is informative rather than disappointing:
+ * at 99.6% with 4 instructions differing there is almost no range left, and the
+ * residue is the shared 4-insn 0x18-arm knot (§F14) described above, whose two
+ * halves are documented as mutually exclusive. A randomizer cannot satisfy a
+ * mutually-exclusive pair by chance. func_level_1_800892C4 (the head of the
+ * 1085-insn group) was run in this same session and behaved the same way
+ * (215 -> 185, ~20100 iterations), which is consistent with both being held by
+ * the one knot. Still PARKED (see above).
+ *
+ * Combined leverage of that single 4-insn fix, per the byte counts above and in
+ * the level_1 file: 7,880 bytes here + 21,700 in the level_1 group = 29,580.
+ * This is the highest-value unsolved problem the campaign identified, and it
+ * needs a targeted §F14 attack, not more unattended permuter budget.
  */

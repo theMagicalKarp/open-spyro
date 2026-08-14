@@ -31,7 +31,11 @@
    camera on the fixed game-over shot and resets Spyro's inventory/anim state.
    Mode 1 plays the presentation: frames 0xb4..0x174 sweep Spyro around the
    dragon on a cosine path, then he lands and the "press start" window opens.
-   Mode 2 waits out the level-transition stream and returns to gameplay. */
+   Mode 2 waits out the level-transition stream and returns to gameplay.
+
+   2026-08-14-1 unattended permuter session (~15m, ~52900 iterations, timed out
+   at the 15m budget): best score 110 vs first-iteration score 200. No
+   byte-perfect candidate found; still PARKED (see above). */
 extern void StopAllSoundExceptMask(int owner_key);
 extern void RotateLightVectorXZ(int steps);
 extern void EndRespawnToGameplay(void);
@@ -54,16 +58,22 @@ extern volatile int g_anGameOverSceneBlock[]; /* g_nGameOverSceneByteSize */
 extern unsigned char
     *g_apRenderScratchRegionBlock[]; /* g_pRenderScratchRegionBase */
 
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/RespawnOrGameOver_Update.c.wip`; this body came
+   from
+   build/permuter/nonmatchings/RespawnOrGameOver_Update/output-110-1/source.c.
+ */
 void RespawnOrGameOver_Update(void) {
   int unused[8];
   int mode;
-
   if (g_nGameplayDrawFrame == 0) {
     StopAllSoundExceptMask(0);
   }
   g_nGameplayDrawFrame += 1;
   RotateLightVectorXZ(3);
-
   mode = g_nGameplayDrawMode;
   if (mode == 0) {
     if (g_nGameplayDrawFrame >= 0x10) {
@@ -75,18 +85,16 @@ void RespawnOrGameOver_Update(void) {
         int lba;
         unsigned char *scene;
         unsigned char *p;
-        unsigned char *fog;
         int count;
+        unsigned char *fog;
         int n;
         int i;
-
         lba = g_nCdBaseLba;
         i = *size;
-        CdReadSyncSectors(lba, g_apRenderScratchRegionBlock[0] - *size, i,
+        CdReadSyncSectors(lba, g_apRenderScratchRegionBlock[0] - (*size), i,
                           g_nGameOverSceneSectorOffset, 0x258);
-
-        p = g_apRenderScratchRegionBlock[0] - *size;
-        fog = (unsigned char *)&g_anWorldRenderMeshBlock[4];
+        p = g_apRenderScratchRegionBlock[0] - (*size);
+        fog = (unsigned char *)(&g_anWorldRenderMeshBlock[4]);
         fog[0] = p[0];
         fog[1] = p[1];
         fog[2] = p[2];
@@ -97,14 +105,13 @@ void RespawnOrGameOver_Update(void) {
         g_abFrameDrawEnv1.g0 = fog[1];
         g_abFrameDrawEnv0.b0 = fog[2];
         g_abFrameDrawEnv1.b0 = fog[2];
-
         p += 4;
-        count = *(int *)p;
+        count = *((int *)p);
         p += 4;
         g_anWorldRenderMeshBlock[1] = (int)p;
         g_anWorldRenderMeshBlock[0] = count;
         for (i = 0; i < g_anWorldRenderMeshBlock[0]; i++) {
-          *(int *)p = (int)scene + *(int *)p;
+          *((int *)p) = ((int)scene) + (*((int *)p));
           p += 4;
         }
 
@@ -115,7 +122,6 @@ void RespawnOrGameOver_Update(void) {
         g_nCameraEulerPitch = g_anGameOverCameraEuler[0];
         g_nCameraEulerYaw = g_anGameOverCameraEuler[1];
         ResetSpyroEntity(1);
-
         g_bSpyroAnimPrev = 0x10;
         g_bSpyroAnimCurrent = 0x10;
         g_bSpyroAnimFrame = 1;
@@ -126,8 +132,7 @@ void RespawnOrGameOver_Update(void) {
         g_nScriptedMobTag = 0;
         g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
-
-        if (g_nActiveLevelId != (g_nActiveLevelId / 10) * 10) {
+        if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
           g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;
           g_nCdStreamState = 2;
           g_nPreserveMobIdx = -1;
@@ -140,19 +145,16 @@ void RespawnOrGameOver_Update(void) {
     }
   } else if (mode == 1) {
     int t = g_nGameplayDrawFrame - 0xb4;
-
-    if ((unsigned int)t < 0xc0) {
+    if (((unsigned int)t) < 0xc0) {
       int angle = ((t * 16) + 0xe00) & 0xfff;
       int swing = LookupCosine(angle);
       int radius = 0x87c - ((t * 1086) / 192);
-
       g_anSpyroWorldPos[0] = ((swing * radius) >> 12) + 0x2a00;
       g_anSpyroWorldPos[1] = ((LookupSine(angle) * radius) >> 12) + 0xc00;
       g_anSpyroWorldPos[2] = 0xb44 - (t * 6);
       g_abSpyroPersistentEuler[2] = (angle + 0x400) >> 4;
       g_abSpyroPersistentEuler[1] = 0;
       g_abSpyroPersistentEuler[0] = (t / 12) - 0x20;
-
       if (g_nGameplayDrawFrame < 0x164) {
         AdvanceSpyroAnimFrame(3);
       } else {
@@ -166,7 +168,6 @@ void RespawnOrGameOver_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
     }
-
     if (g_nGameplayDrawFrame >= 0x174) {
       if (g_nGameplayDrawFrame == 0x174) {
         g_bSpyroAnimPrev = 0xe;
@@ -185,10 +186,10 @@ void RespawnOrGameOver_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
     }
-
     if (g_nCdStreamState < 0xb) {
       TickLevelTransitionStream(1);
-    } else if (g_nGameplayDrawFrame >= 0x169 && (g_dwPadHeld & 0x800) != 0) {
+    } else if ((g_nGameplayDrawFrame >= 0x169) &&
+               ((g_dwPadHeld & 0x800) != 0)) {
       RestartSpyroAnimWithState(0);
       g_nGameplayDrawMode = 2;
       g_nGameplayDrawFrame = 0;

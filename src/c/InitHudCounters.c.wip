@@ -26,6 +26,11 @@
  * (the original holds it in s5 while materializing 0x20/0x0B inline); the
  * g_anHudIconAnchorBlock alias (halfword view of records+0x196) for the held
  * base that also derives the icon-10 screen position at +0x1E6.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~56200 iterations, timed out
+ * at the 15m budget): best score 1150 vs first-iteration score 3590 -- a large
+ * drop, the biggest proportional gain of the session so far, but no
+ * byte-perfect candidate. Worth a longer budget. Still PARKED (see above).
  */
 #include "globals.h"
 
@@ -49,6 +54,12 @@ extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 
 extern short g_anHudIconAnchorBlock[]; /* &g_abHudIconActorRecords[0x196] */
 
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/InitHudCounters.c.wip`; this body came from
+   build/permuter/nonmatchings/InitHudCounters/output-1150-1/source.c. */
 void InitHudCounters(int layout_butterflies) {
   short *anchor;
   int *icon;
@@ -64,10 +75,10 @@ void InitHudCounters(int layout_butterflies) {
   int idx;
   int gems;
   int lives;
+  int new_var;
   int dragons;
   int worldEggs;
   int levelEggs;
-
   FillWord(g_abHudIconActorRecords, 0, 0x420);
   i = 0;
   white = 0xFF;
@@ -77,8 +88,9 @@ void InitHudCounters(int layout_butterflies) {
   vec = 0;
 icon_slot:
   HideActorRenderRecord((int)rec);
-  CopyVector(pos, (int *)((char *)g_anHudIconRestPos + vec));
-  pos = (int *)((char *)pos + 0x58);
+
+  CopyVector(pos, (int *)(((char *)g_anHudIconRestPos) + vec));
+  pos = (int *)(((char *)pos) + 0x58);
   rec += 0x58;
   g_abHudIconActorRecords[off + 0x47] = 0x20;
   g_abHudIconActorRecords[off + 0x50] = white;
@@ -90,27 +102,25 @@ icon_slot:
   if (i < 12) {
     goto icon_slot;
   }
-
   FillWord(g_anHudSpriteRects, 0, 0x100);
   rect = 0;
   do {
-    *(short *)((char *)g_anHudSpriteRects + rect) =
-        *(short *)((char *)g_anHudDigitRestRects + rect);
-    *(short *)((char *)g_anHudSpriteRects + rect + 2) =
-        *(short *)((char *)g_anHudDigitRestRects + rect + 2);
-    *(short *)((char *)g_anHudSpriteRects + rect + 4) =
-        *(short *)((char *)g_anHudDigitRestRects + rect + 4);
-    *(short *)((char *)g_anHudSpriteRects + rect + 6) =
-        *(short *)((char *)g_anHudDigitRestRects + rect + 6);
+    *((short *)(((char *)g_anHudSpriteRects) + rect)) =
+        *((short *)(((char *)g_anHudDigitRestRects) + rect));
+    *((short *)((((char *)g_anHudSpriteRects) + rect) + 2)) =
+        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 2));
+    *((short *)((((char *)g_anHudSpriteRects) + rect) + 4)) =
+        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 4));
+    *((short *)((((char *)g_anHudSpriteRects) + rect) + 6)) =
+        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 6));
     rect += 8;
   } while (rect < 0x60);
-
   anchor = g_anHudIconAnchorBlock;
   idx = g_nLevelIntroIndex;
   anchor[0] = 0x1D7;
-  *(short *)&g_abHudIconActorRecords[0x29E] = 0x1FA;
-  *(short *)&g_abHudIconActorRecords[0x3A6] = 0x3A;
-  *(short *)&g_abHudIconActorRecords[0x3FE] = 0xAD;
+  *((short *)(&g_abHudIconActorRecords[0x29E])) = 0x1FA;
+  *((short *)(&g_abHudIconActorRecords[0x3A6])) = 0x3A;
+  *((short *)(&g_abHudIconActorRecords[0x3FE])) = 0xAD;
   g_abHudIconActorRecords[0x40E] = 0x40;
   g_abHudCounterDisplayState[0] = 1;
   g_abHudCounterDisplayState[1] = 1;
@@ -142,23 +152,22 @@ icon_slot:
   SetHudCounterDigits(0, 4, gems, 1);
   SetHudCounterDigits(5, 2, g_nHudDragonCachedCount, 1);
   SetHudCounterDigits(8, 2, g_nHudLivesCachedCount, 1);
-
   if (layout_butterflies != 0) {
     g_nHudWorldEggRollRequest = 0;
     i = 0;
     food = g_nSparxFoodCount;
     if (food > 0) {
-      icon = (int *)(anchor + 0xF3); /* records + 0x37C: icon 10 screen pos */
+      icon = (int *)(anchor + 0xF3);
       ring = 0;
       rect = 0x60;
       do {
         i += 1;
-        *(short *)((char *)g_anHudSpriteRects + rect) =
+        *((short *)(((char *)g_anHudSpriteRects) + rect)) =
             (g_abHudButterflyRingXY[ring] + icon[0]) - 0x1D;
-        *(short *)((char *)g_anHudSpriteRects + rect + 4) = 8;
-        *(short *)((char *)g_anHudSpriteRects + rect + 6) = 8;
-        *(short *)((char *)g_anHudSpriteRects + rect + 2) =
-            (g_abHudButterflyRingXY[ring + 1] + icon[1]) - 0x1C;
+        new_var = (g_abHudButterflyRingXY[ring + 1] + icon[1]) - 0x1C;
+        *((short *)((((char *)g_anHudSpriteRects) + rect) + 4)) = 8;
+        *((short *)((((char *)g_anHudSpriteRects) + rect) + 6)) = 8;
+        *((short *)((((char *)g_anHudSpriteRects) + rect) + 2)) = new_var;
         ring += 2;
         rect += 8;
       } while (i < food);

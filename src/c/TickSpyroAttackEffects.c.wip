@@ -70,7 +70,11 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    measured with the §D 2c allocation probe: pt 9 refs/402 insns = 0.067 vs the
    giv 7/206 = 0.068), `&pt[i * 3]` for the trail cursor so its giv init comes
    out as `move s5,s7`, and per-arm SPAWN calls for the variant flag (a ternary
-   if-converts to sltu).  Restore by renaming back to .c. */
+   if-converts to sltu).  Restore by renaming back to .c.
+
+   2026-08-14-1 unattended permuter session (~15m, ~36900 iterations, timed out
+   at the 15m budget): best score 655 vs first-iteration score 855. No
+   byte-perfect candidate found; still PARKED (see above). */
 
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Flame breath: while the breath timer
@@ -86,6 +90,12 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    end-of-arc burst when the slot runs off the end of its path.  param steps =
    frame delta.  Clears g_bSpyroHornCollisionActive once all 8 slots are idle.
  */
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/TickSpyroAttackEffects.c.wip`; this body came from
+   build/permuter/nonmatchings/TickSpyroAttackEffects/output-655-1/source.c. */
 void TickSpyroAttackEffects(int steps) {
   int flame[3];
   int anchor[3];
@@ -93,8 +103,7 @@ void TickSpyroAttackEffects(int steps) {
   int dir[3];
   int empty;
   int sfxDone;
-  int pad[2]; /* frame slack: the original's spill block has a hole (see header)
-               */
+  int pad[2];
   int *wp;
   unsigned char *seg;
   unsigned char *map;
@@ -111,25 +120,25 @@ void TickSpyroAttackEffects(int steps) {
   int mask;
   int n;
   int i;
-
   empty = 0;
   sfxDone = 0;
   if (g_anSpyroFlameBreathTimerBlock[0] != 0) {
     flame[0] = (GetRandomU32() & 0x1ff) - 0x160;
     flame[1] = (GetRandomU32() & 0x7f) - 0x40;
-    flame[2] = (flame[0] >> 1) + (GetRandomU32() & 0x3f) - 0x60;
+    flame[2] = ((flame[0] >> 1) + (GetRandomU32() & 0x3f)) - 0x60;
     RotateVectorByMatrix(g_anSpyroBodyMtxBlock, flame, flame);
     AddVector(flame, flame, &g_anSpyroBodyMtxBlock[-13]);
-    SPAWN(1, 0x1e, flame, 0);
+    ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+        1, 0x1e, flame, 0);
     g_abSpyroFxParticleRgba[0] = 0x90;
     g_abSpyroFxParticleRgba[1] = 0x20;
     g_abSpyroFxParticleRgba[2] = 0x10;
-    if (g_anSpyroFlameBreathTimerBlock[0] < 0x78 &&
-        g_anSpyroFlameBreathTimerBlock[0] % 24 >= 0xe) {
+    if ((g_anSpyroFlameBreathTimerBlock[0] < 0x78) &&
+        ((g_anSpyroFlameBreathTimerBlock[0] % 24) >= 0xe)) {
       g_abSpyroFxParticleRgba[3] = 0;
     } else {
       g_abSpyroFxParticleRgba[3] =
-          LookupSine(g_nSpyroFlameBreathTimer << 7) / 256 - 0x28;
+          (LookupSine(g_nSpyroFlameBreathTimer << 7) / 256) - 0x28;
     }
     g_anSpyroFlameBreathTimerBlock[0] -= g_nFrameStep;
     if (g_anSpyroFlameBreathTimerBlock[0] <= 0) {
@@ -137,54 +146,51 @@ void TickSpyroAttackEffects(int steps) {
       g_abSpyroFxParticleRgba[3] = 0;
     }
   }
-
   if (g_bSpyroHornCollisionActive != 0) {
     wp = g_anSpyroWorldPos;
-    if (g_nSpyroAirborneFrames == 0 &&
-        g_abSpyroPersistentEulerBlock[1] >= 0x81) {
+    if ((g_nSpyroAirborneFrames == 0) &&
+        (g_abSpyroPersistentEulerBlock[1] >= 0x81)) {
       g_nCameraScriptStickRequestY =
           (0x100 - g_abSpyroPersistentEulerBlock[1]) * 8;
     } else {
       g_nCameraScriptStickRequestY = 0;
     }
-
-    /* Arm one trail slot per elapsed frame, in ring-permutation order. */
     n = 0;
     if (steps > 0) {
       seg = g_abSpyroHornStrikeSegmentBlock;
       map = g_abSpyroHornStrikeSlotMap;
       do {
         if (seg[0] < 8) {
-          g_abSpyroHornStrikeSlotAge[(map + seg[2] * 8)[seg[0]]] = steps - n;
-          g_abSpyroHornStrikeSlotEndAge[(map + seg[2] * 8)[seg[0]]] = 0x20;
-          g_abSpyroHornStrikeSlotState[(map + seg[2] * 8)[seg[0]]] = 0;
+          g_abSpyroHornStrikeSlotAge[(map + (seg[2] * 8))[seg[0]]] = steps - n;
+          g_abSpyroHornStrikeSlotEndAge[(map + (seg[2] * 8))[seg[0]]] = 0x20;
+          g_abSpyroHornStrikeSlotState[(map + (seg[2] * 8))[seg[0]]] = 0;
         }
         seg[0]++;
-      } while (++n < steps);
+      } while ((++n) < steps);
     }
-    if (g_bSpyroHornStrikeSegmentIdx < 0x1e &&
-        (*(int *)&g_bSpyroAnimPrev & 0xffff0000) == 0x07070000 &&
-        D_80078A78 == 4) {
+    if (((g_bSpyroHornStrikeSegmentIdx < 0x1e) &&
+         (((*((int *)(&g_bSpyroAnimPrev))) & 0xffff0000) == 0x07070000)) &&
+        (D_80078A78 == 4)) {
       g_abSpyroAnimLayer1SubstepBlock[0] = 0;
     }
-
     if (g_abSpyroHornStrikeAnchorModeBlock[0] != 0) {
       g_abSpyroHornStrikeAnchorEuler[0] = g_abSpyroPersistentEulerBlock[0];
       g_abSpyroHornStrikeAnchorEuler[1] = g_abSpyroPersistentEulerBlock[1];
       g_abSpyroHornStrikeAnchorEuler[2] = g_abSpyroPersistentEulerBlock[2];
       CopyWords(&g_abSpyroHornStrikeAnchorModeBlock[0xa],
                 &g_abSpyroPersistentEulerBlock[0x1bc], 0x14);
-      rec = (int *)(g_bSpyroFramePrev * 4 +
-                    *(int *)(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable +
-                             0x38));
+      rec = (int *)((g_bSpyroFramePrev * 4) +
+                    (*((int *)(((g_bSpyroAnimPrev * 4) +
+                                ((int)g_apActorMeshTable)) +
+                               0x38))));
       n = ((int *)((rec[9] & 0x1fffff) * 2))[4];
       anchor[0] = n >> 21;
       anchor[1] = (n << 11) >> 21;
       anchor[2] = (n << 22) >> 21;
-      RotateVectorByMatrix((int *)&g_abSpyroPersistentEulerBlock[0x28], anchor,
-                           anchor);
-      AddVector((int *)&g_abSpyroHornStrikeAnchorModeBlock[-0x9a], anchor,
-                (int *)&g_abSpyroPersistentEulerBlock[-0xc]);
+      RotateVectorByMatrix((int *)(&g_abSpyroPersistentEulerBlock[0x28]),
+                           anchor, anchor);
+      AddVector((int *)(&g_abSpyroHornStrikeAnchorModeBlock[-0x9a]), anchor,
+                (int *)(&g_abSpyroPersistentEulerBlock[-0xc]));
       if (g_bSpyroHornStrikeSegmentIdx < 8) {
         CopyVector(anchor, &g_anSpyroHornStrikeWindupAnchorOffsets
                                [(g_bSpyroHornStrikeSegmentIdx >> 1) * 3]);
@@ -196,18 +202,16 @@ void TickSpyroAttackEffects(int steps) {
       AddVector(&amtx[-0x29], &amtx[-0x29], anchor);
       SubtractVector(&amtx[0xa], &amtx[-0x29], wp);
     } else {
-      AddVector((int *)&g_abSpyroHornStrikeAnchorModeBlock[-0x9a], wp,
-                (int *)&g_abSpyroHornStrikeAnchorModeBlock[0x32]);
+      AddVector((int *)(&g_abSpyroHornStrikeAnchorModeBlock[-0x9a]), wp,
+                (int *)(&g_abSpyroHornStrikeAnchorModeBlock[0x32]));
     }
-
-    /* Advance each live trail slot along its arc and probe for a hit. */
     i = 0;
     mtx = g_anSpyroHornStrikeAnchorMtxBlock;
-    age = (unsigned char *)&mtx[-0x21];
-    state = (unsigned char *)&mtx[-0x1d];
+    age = (unsigned char *)(&mtx[-0x21]);
+    state = (unsigned char *)(&mtx[-0x1d]);
     pt = &mtx[0xd];
     do {
-      if (*age != 0) {
+      if ((*age) != 0) {
         if (i < 4) {
           count = 0x18;
           limit = 0x20;
@@ -215,12 +219,12 @@ void TickSpyroAttackEffects(int steps) {
           count = 0x20;
           limit = 0x28;
         }
-        if (*state != 0) {
+        if ((*state) != 0) {
           *age += steps;
         }
-        if (*age >= limit) {
+        if ((*age) >= limit) {
           *age = 0;
-        } else if (*state != 2) {
+        } else if ((*state) != 2) {
           if (i < 4) {
             n = i * count;
             path = g_anSpyroHornStrikeArcPathsShort;
@@ -229,11 +233,11 @@ void TickSpyroAttackEffects(int steps) {
             path = g_anSpyroHornStrikeArcPathsLong;
           }
           path += n * 4;
-          if (*age < count - 1) {
-            SVectorToVector(tip, &path[(*age + 1) * 4]);
+          if ((*age) < (count - 1)) {
+            SVectorToVector(tip, &path[((*age) + 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);
-            if (*state == 0) {
+            if ((*state) == 0) {
               CopyVector(dir, wp);
               *state = 1;
             } else {
@@ -241,11 +245,11 @@ void TickSpyroAttackEffects(int steps) {
             }
             CopyVector(&pt[i * 3], tip);
             mask = 0x10000;
-            if (*(volatile int *)&pt[-0xf] != 0) {
+            if ((*((volatile int *)(&pt[-0xf]))) != 0) {
               mask = 0x90000;
             }
-            if (DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0, 0) != 0 ||
-                CastRayWorldAndActors(dir, tip) != 0) {
+            if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0, 0) != 0) ||
+                (CastRayWorldAndActors(dir, tip) != 0)) {
               *state = 2;
               g_abSpyroHornStrikeSlotEndAge[i] = *age;
               dir[0] = -0x10;
@@ -253,38 +257,49 @@ void TickSpyroAttackEffects(int steps) {
               dir[2] = 0;
               RotateVectorByMatrix(&pt[-0xd], dir, dir);
               dir[2] = 0;
-              SPAWN(1, 1, tip, dir);
-              if (*(volatile int *)&pt[-0xf] == 0) {
-                SPAWN(4, 0x4e, tip, 0);
+              ((void (*)(int, int, int *,
+                         int *))g_pfnLevelOverlayParticleSpawn)(1, 1, tip, dir);
+              if ((*((volatile int *)(&pt[-0xf]))) == 0) {
+                ((void (*)(int, int, int *,
+                           int *))g_pfnLevelOverlayParticleSpawn)(4, 0x4e, tip,
+                                                                  0);
               }
               dir[0] = 0x30;
               dir[1] = 0;
               dir[2] = 0;
               ApplyActiveGteRotation(dir, dir);
-              SPAWN(*(volatile int *)&pt[-0xf] * 5 + 5, 0x4f, tip, dir);
+              ((void (*)(int, int, int *,
+                         int *))g_pfnLevelOverlayParticleSpawn)(
+                  ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
               if (sfxDone == 0) {
-                sfxDone = 1;
                 PlaySoundEffect(
-                    *(unsigned char *)((int)g_pLevelSampleBankHeader + 0x28),
+                    *((unsigned char *)(((int)g_pLevelSampleBankHeader) +
+                                        0x28)),
                     wp, 4, 0);
+                sfxDone = 1;
               }
             }
-          } else if (count < *age && count + steps >= *age) {
+          } else if ((count < (*age)) && ((count + steps) >= (*age))) {
             SVectorToVector(tip, &path[(count - 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);
             ZeroVector(dir);
             if (g_nSpyroHornStrikeVariant != 0) {
-              SPAWN(1, 1, tip, dir);
+              ((void (*)(int, int, int *,
+                         int *))g_pfnLevelOverlayParticleSpawn)(1, 1, tip, dir);
             } else {
-              SPAWN(1, 0, tip, dir);
+              ((void (*)(int, int, int *,
+                         int *))g_pfnLevelOverlayParticleSpawn)(1, 0, tip, dir);
             }
             if (g_nSpyroHornStrikeVariant == 0) {
-              SPAWN(4, 0x4e, tip, 0);
+              ((void (*)(int, int, int *,
+                         int *))g_pfnLevelOverlayParticleSpawn)(4, 0x4e, tip,
+                                                                0);
             }
             ApplyActiveGteRotation(&g_anSpyroHornStrikeEndBurstDirs[i * 3],
                                    dir);
-            SPAWN(g_nSpyroHornStrikeVariant * 5 + 5, 0x4f, tip, dir);
+            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+                (g_nSpyroHornStrikeVariant * 5) + 5, 0x4f, tip, dir);
           }
         }
       } else {
@@ -292,8 +307,7 @@ void TickSpyroAttackEffects(int steps) {
       }
       age++;
       state++;
-    } while (++i < 8);
-
+    } while ((++i) < 8);
     if (empty == 8) {
       g_bSpyroHornCollisionActive = 0;
     }

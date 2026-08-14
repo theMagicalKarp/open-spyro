@@ -20,7 +20,13 @@
    s0 unblocked because cursor dies pre-copy), while orig has cursor=a2 with
    all sects colored s0. Swapping to copy-before-read flips cursor->a2 but
    canon then eats the tail copy. Needs both: cursor->a2 AND tail copy alive;
-   see session notes / cc1 -dl -dg (-dg shows `72 preferences: 16`). */
+   see session notes / cc1 -dl -dg (-dg shows `72 preferences: 16`).
+
+   2026-08-14-1 unattended permuter session (~15m, ~49800 iterations, timed out
+   at the 15m budget): best score 2875 vs first-iteration score 4160. No
+   byte-perfect candidate found; still PARKED (see above). The remaining knot
+   above needs cursor->a2 AND the tail copy kept alive simultaneously, which is
+   a two-part constraint the randomizer is unlikely to hit by chance. */
 /* globals declared locally: the two entry tables are indexed as arrays and
    the counts that are re-read through held pointers are incomplete arrays
    (globals.h types them as scalars), so the pointer access keeps its
@@ -53,13 +59,18 @@ extern void RelocateLevelSampleBank(char *bank, int mode);
    each pointer table to absolute addresses (1240 b). flag != 0 unpacks the
    reduced stream (mesh index / trigger / collision-header and the mob
    sections are absent). Returns the cursor past the consumed data. */
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/UnpackWorldDataChunks.c.wip`; this body came from
+   build/permuter/nonmatchings/UnpackWorldDataChunks/output-2875-1/source.c. */
 void *UnpackWorldDataChunks(int *cursor, int flag) {
   int *pm;
   int *bank = 0;
   int i;
   int n;
-
-  /* section: mesh headers */
+  int *volatile *new_var;
   {
     int *sect = cursor;
     cursor++;
@@ -70,10 +81,8 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
     *pm = n;
     cursor += n * 4;
     g_pWorldMeshVertexData = cursor;
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: world chunks */
   {
     int *sect = cursor;
     cursor++;
@@ -85,19 +94,17 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
     if (n > 0) {
       int *pc = pm - 7;
       do {
-        int t = *cursor + 4;
-        *cursor = (int)sect + t;
+        int t = (*cursor) + 4;
+        *cursor = ((int)sect) + t;
         i++;
         cursor++;
-      } while (i < *pc);
+      } while (i < (*pc));
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: mesh index tables */
   if (flag == 0) {
     int *sect = cursor;
-    if (*sect < 5) {
+    if ((*sect) < 5) {
       D_800785B4[0] = 0;
       D_800785B0 = 0;
       g_pWorldMeshIndexTable = 0;
@@ -112,86 +119,82 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
         *pn = n;
         if (n > 0) {
           do {
-            int t = *cursor + 4;
-            *cursor = (int)sect + t;
+            int t = (*cursor) + 4;
+            *cursor = ((int)sect) + t;
             i++;
             cursor++;
-          } while (i < *pn);
+          } while (i < (*pn));
         }
       }
       i = 0;
       {
         int *pi = g_nWorldMeshIndexCount;
-        cursor = (int *)((char *)sect + (sect[1] + 4));
+        cursor = (int *)(((char *)sect) + (sect[1] + 4));
         n = *cursor;
         cursor++;
         g_pWorldMeshIndexTable = cursor;
         *pi = n;
         if (n > 0) {
           do {
-            int t = *cursor + 4;
+            int t = (*cursor) + 4;
             i++;
-            *cursor = (int)((char *)sect + sect[1]) + t;
+            *cursor = ((int)(((char *)sect) + sect[1])) + t;
             cursor++;
-          } while (i < *pi);
+          } while (i < (*pi));
         }
       }
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: trigger regions */
+  new_var = &(*((int *volatile *)(&g_pWorldCollisionHeader)));
   if (flag == 0) {
     int *sect = cursor;
     cursor++;
     n = *cursor;
+    bank = D_800785BC;
     cursor++;
     i = 0;
     {
-      int *pt = D_800785BC;
+      int *pt = bank;
       g_pTriggerRegionTable = cursor;
       *pt = n;
       if (n > 0) {
         do {
-          int t = *cursor + 4;
-          *cursor = (int)sect + t;
+          int t = (*cursor) + 4;
+          *cursor = ((int)sect) + t;
           i++;
           cursor++;
-        } while (i < *pt);
+        } while (i < (*pt));
       }
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: collision header (five relative offsets made absolute) */
   if (flag == 0) {
     int *sect = cursor;
     cursor++;
     g_pWorldCollisionHeader = cursor;
     {
-      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
-      h[2] = (int)cursor + h[2];
+      int *h = *((int *volatile *)(&g_pWorldCollisionHeader));
+      h[2] = ((int)cursor) + h[2];
     }
     {
-      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
-      h[3] = (int)cursor + h[3];
+      int *h = *new_var;
+      h[3] = ((int)cursor) + h[3];
     }
     {
-      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
-      h[4] = (int)cursor + h[4];
+      int *h = *new_var;
+      h[4] = ((int)cursor) + h[4];
     }
     {
-      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
-      h[5] = (int)cursor + h[5];
+      int *h = *new_var;
+      h[5] = ((int)cursor) + h[5];
     }
     {
-      int *h = *(int *volatile *)&g_pWorldCollisionHeader;
-      h[6] = (int)cursor + h[6];
+      int *h = *new_var;
+      h[6] = ((int)cursor) + h[6];
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: collision tris */
   {
     int *sect = cursor;
     cursor++;
@@ -209,20 +212,18 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
       if (n > 0) {
         int *ptc = (int *)(pb - 0x10);
         do {
-          int t = *cursor + 4;
-          *cursor = (int)sect + t;
+          int t = (*cursor) + 4;
+          *cursor = ((int)sect) + t;
           i++;
           cursor++;
-        } while (i < *ptc);
+        } while (i < (*ptc));
       }
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
   if (flag != 0) {
     return cursor;
   }
-
-  /* section: scripted mobs */
   n = *cursor;
   cursor++;
   g_nScriptedMobCount = n;
@@ -237,33 +238,31 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
       *p = cursor;
       k = cursor[1];
       old = cursor;
-      cursor += k * 3 + 8;
-      *(int **)old = cursor;
+      cursor += (k * 3) + 8;
+      *((int **)old) = cursor;
       cursor += 5;
       sect = cursor;
       cursor++;
-      ((int *)**p)[4] = *cursor;
+      ((int *)(*(*p)))[4] = *cursor;
       cursor++;
-      ((int *)**p)[0] = *cursor;
+      ((int *)(*(*p)))[0] = *cursor;
       cursor++;
-      ((int *)**p)[1] = (int)cursor;
+      ((int *)(*(*p)))[1] = (int)cursor;
       j = 0;
-      if (*(int *)**p > 0) {
+      if ((*((int *)(*(*p)))) > 0) {
         int **q = p;
         do {
-          int t = *cursor + 4;
-          *cursor = (int)sect + t;
+          int t = (*cursor) + 4;
+          *cursor = ((int)sect) + t;
           j++;
           cursor++;
-        } while (j < *(int *)**q);
+        } while (j < (*((int *)(*(*q)))));
       }
       p++;
       i++;
-      cursor = (int *)((char *)sect + *sect);
+      cursor = (int *)(((char *)sect) + (*sect));
     } while (i < g_nScriptedMobCount);
   }
-
-  /* section: mob id -> entry lookup */
   {
     int *sect = cursor;
     cursor++;
@@ -271,17 +270,15 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
     cursor++;
     if (i > 0) {
       do {
-        g_apMobEntryTable[*(short *)cursor] = cursor;
+        g_apMobEntryTable[*((short *)cursor)] = cursor;
         i--;
-        cursor = (int *)((char *)cursor + ((short *)cursor)[1] + 4);
+        cursor = (int *)((((char *)cursor) + ((short *)cursor)[1]) + 4);
       } while (i > 0);
     }
-    cursor = (int *)((char *)sect + *sect);
+    cursor = (int *)(((char *)sect) + (*sect));
   }
-
-  /* section: level sample bank */
   g_nLevelSampleBankCount = *cursor;
   bank = cursor;
-  RelocateLevelSampleBank((char *)bank + 4, 1);
-  return (char *)bank + *bank;
+  RelocateLevelSampleBank(((char *)bank) + 4, 1);
+  return ((char *)bank) + (*bank);
 }

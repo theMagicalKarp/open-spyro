@@ -37,6 +37,15 @@
  * the bgez/negu pair; a ternary expands to a branch chain) and the delta mask
  * must be two statements -- `(unsigned char)(rec->unk46 - pdir)` in one
  * expression makes gcc drop the field's own 0xFF mask.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~31300 iterations, timed out
+ * at the 15m budget): base score 90, and the randomizer produced exactly ONE
+ * output dir, at score 90 -- a tie, not an improvement. Nothing beat the base
+ * in the whole run. Together with Gamestate0C_Draw (zero dirs at base 140) this
+ * is one of only two demonstrated walls of the session. At 99.4% with 5 insns
+ * differing there is very little room left for random permutation to work in;
+ * the remaining residue needs the targeted source forms described above rather
+ * than more unattended budget. Still PARKED (see above).
  */
 /* func_level_25_80084B94 (0x80084B94, level_25_dream_weavers_dark_passage
  * overlay, 0xc68 bytes).

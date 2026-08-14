@@ -803,4 +803,17 @@ void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
  * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254:
  * landing this one lands 21,700 exact bytes, and the same 4-insn fix lands
  * func_level_3_80088F68 + func_level_20_800861CC (7,880 more).
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~20100 iterations, timed out
+ * at the 15m budget): best score 185 vs first-iteration score 215, next
+ * candidates 210 and 215. No byte-perfect candidate; still PARKED (see above).
+ * Two things temper the small drop: the function is already at 99.6% with only
+ * 4 instructions differing, so the absolute score range is narrow to begin
+ * with; and at 1085 instructions it managed only ~20100 iterations, one of the
+ * thinnest samples of the session. This is NOT a demonstrated wall.
+ *
+ * By the byte arithmetic above this is the single highest-leverage parked
+ * function in the repo -- ~29,580 bytes across seven functions hang on one
+ * 4-insn fix. It warrants a dedicated long-budget run well before any of the
+ * lower-leverage targets.
  */

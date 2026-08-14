@@ -34,7 +34,13 @@
    through expand's `memory_address()` force_reg; a pointer local (what this
    file used before) is a plain register whose symbol equivalence cse folds back
    to `lui;lw %lo`. That single change took the function from 88.1% to 94.1% and
-   removed 26 of the 34 residual instructions. */
+   removed 26 of the 34 residual instructions.
+
+   2026-08-14-1 unattended permuter session (~15m, ~51800 iterations, timed out
+   at the 15m budget): best score 655 vs first-iteration score 760 -- only a
+   14% drop, the flattest curve of the session so far, consistent with the
+   remaining 17 instructions being a tight tie rather than a source-shape
+   problem. No byte-perfect candidate found; still PARKED (see above). */
 
 /* Per-frame SPU voice mixer tick (0x8005637C, 0x478).
 
@@ -115,6 +121,12 @@ extern unsigned short g_anCameraEulerYawBlock[];  /* camera euler yaw */
 extern int g_anSoundMasterVolumeBlock[];          /* g_nSoundMasterVolume */
 extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
 
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/TickActiveSoundVoices.c.wip`; this body came from
+   build/permuter/nonmatchings/TickActiveSoundVoices/output-655-1/source.c. */
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;
   int vec[4];
@@ -129,12 +141,10 @@ int TickActiveSoundVoices(void) {
   short *pVol;
   unsigned char *owner;
   char *playing;
-
   keyOff = 0;
-  yaw = (unsigned char)(*(volatile unsigned short *)(char *)
-                            g_anCameraEulerYawBlock >>
+  yaw = (unsigned char)((*((volatile unsigned short *)((
+                            char *)g_anCameraEulerYawBlock))) >>
                         4);
-
   for (i = 0; i < 24; i++) {
     if (D_80075F30[i].nFlags & 0x40) {
       D_80075F30[i].nFlags = 0;
@@ -143,7 +153,6 @@ int TickActiveSoundVoices(void) {
     if (!(D_80075F30[i].nFlags & 1)) {
       continue;
     }
-
     status = GetSpuVoiceKeyStatus(1 << i);
     if (D_80075F30[i].nFlags & 2) {
       if ((status & 0xFF) == 3) {
@@ -158,20 +167,19 @@ int TickActiveSoundVoices(void) {
         D_80075F30[i].nSampleId = 0xFF;
         continue;
       }
-    } else if ((status & 0xFF) == 1 || (status & 0xFF) == 3) {
+    } else if (((status & 0xFF) == 1) || ((status & 0xFF) == 3)) {
       D_80075F30[i].nFlags |= 2;
     }
-
     if (!(D_80075F30[i].nFlags & 1)) {
       continue;
     }
-
     mode = D_80075F30[i].nFlags & 0x1C;
     switch (mode) {
     case 4:
       attr.volR = 0x2000;
       attr.volL = 0x2000;
       break;
+
     case 8:
       pVol = &D_80075F30[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
@@ -183,10 +191,10 @@ int TickActiveSoundVoices(void) {
       SubtractVector(vec, (int *)(owner + 0xC), g_anCameraPos);
       dist = VectorLength(vec, 1);
       if (dist >= range) {
-        attr.volR = D_80075F30[i].nVolR = D_80075F30[i].nVolR >> 1;
+        attr.volR = (D_80075F30[i].nVolR = D_80075F30[i].nVolR >> 1);
         vol = D_80075F30[i].nVolL >> 1;
-        attr.volL = D_80075F30[i].nVolL = vol;
-        if (attr.volR < 0x40 && vol < 0x40) {
+        attr.volL = (D_80075F30[i].nVolL = vol);
+        if ((attr.volR < 0x40) && (vol < 0x40)) {
           playing = D_80075F30[i].pPlaying;
           keyOff |= 1 << i;
           if (playing != 0) {
@@ -199,25 +207,27 @@ int TickActiveSoundVoices(void) {
         } else {
           D_80075F30[i].nVolL =
               (D_80075F30[i].nVolL *
-               (*(volatile int *)(char *)g_anSoundMasterVolumeBlock)) >>
+               (*((volatile int *)((char *)g_anSoundMasterVolumeBlock)))) >>
               12;
           D_80075F30[i].nVolR =
               (D_80075F30[i].nVolR *
-               (*(volatile int *)(char *)g_anSoundMasterVolumeBlock)) >>
+               (*((volatile int *)((char *)g_anSoundMasterVolumeBlock)))) >>
               12;
           SetSpuVoiceVolumeLR(i, D_80075F30[i].nVolL, D_80075F30[i].nVolR);
         }
         continue;
-      }
-      owner = D_80075F30[i].pOwner;
+      };
       ComputeVoicePanAndFalloff(
           &attr.volL, dist,
-          (unsigned char)(ArcTan2(((int *)(owner + 0xC))[0] - g_anCameraPos[0],
-                                  ((int *)(owner + 0xC))[1] - g_anCameraPos[1],
+          (unsigned char)(ArcTan2(((int *)(D_80075F30[i].pOwner + 0xC))[0] -
+                                      g_anCameraPos[0],
+                                  ((int *)(D_80075F30[i].pOwner + 0xC))[1] -
+                                      g_anCameraPos[1],
                                   0) -
                           yaw),
           range, D_80075F30[i].anPanCache);
       break;
+
     case 0x10:
       attr.volR = D_80075F30[i].nVolR;
       attr.volL = D_80075F30[i].nVolL;

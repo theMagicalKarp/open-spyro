@@ -23,7 +23,11 @@
    (A80) instead of if-converting to `sltu a1,zero,a1`; a separate pointer local
    in the cancel arm so it takes a caller-saved reg; and the anchor-mode store
    in the swing arm done through its alias pointer, which is what forces the
-   original's reload of the strike timer after it. */
+   original's reload of the strike timer after it.
+
+   2026-08-14-1 unattended permuter session (~15m, ~55600 iterations, timed out
+   at the 15m budget): best score 285 vs first-iteration score 565. No
+   byte-perfect candidate found; still PARKED (see above). */
 
 /* Horn-strike (charge attack) driver, one frame (0x800499C0, 0x43C).
 
@@ -69,6 +73,14 @@ extern int
 extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
 extern unsigned char g_abSpyroHornCollisionActiveBlock[];
 
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/TickSpyroHornStrikeAttack.c.wip`; this body came
+   from
+   build/permuter/nonmatchings/TickSpyroHornStrikeAttack/output-285-1/source.c.
+ */
 void TickSpyroHornStrikeAttack(void) {
   int pos[4];
   int vel[4];
@@ -79,7 +91,6 @@ void TickSpyroHornStrikeAttack(void) {
   int *strike;
   unsigned char *anchor;
   unsigned char *live;
-
   if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] +
                              0xB8] != 0) {
     cancel = g_anSpyroHornStrikeStateBlock;
@@ -91,12 +102,13 @@ void TickSpyroHornStrikeAttack(void) {
     case 0:
       anchor = g_abSpyroHornStrikeAnchorModeBlock;
       anchor[0] = 0;
-      if ((g_dwPadPressed & 0x20) && g_bSpyroHornCollisionActive == 0) {
+      if ((g_dwPadPressed & 0x20) && (g_bSpyroHornCollisionActive == 0)) {
         strike[0] = 1;
         g_nSpyroHornStrikeTimer = -1;
         g_nSpyroHornStrikeSwingPhase = 0;
         g_nSpyroHornStrikeAnimRate =
-            g_abSpyroAnimDescTable[D_80075268[g_nSpyroHornStrikeState] * 4 + 3];
+            g_abSpyroAnimDescTable[(D_80075268[g_nSpyroHornStrikeState] * 4) +
+                                   3];
         g_bSpyroHornCollisionActive = 1;
         g_bSpyroHornStrikeSegmentIdx = 0;
         anchor[0] = 1;
@@ -110,17 +122,18 @@ void TickSpyroHornStrikeAttack(void) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
       }
       break;
+
     case 1:
       if (g_nSpyroHornStrikeTimer == 0x10) {
         anchor = g_abSpyroHornStrikeAnchorModeBlock;
         anchor[0] = 0;
       }
-      if ((g_nSpyroHornStrikeTimer & 3) == 0 &&
-          (unsigned int)(g_nSpyroHornStrikeTimer - 0xC) < 0x11 &&
-          g_nCdStreamState < 0) {
+      if ((((g_nSpyroHornStrikeTimer & 3) == 0) &&
+           (((unsigned int)(g_nSpyroHornStrikeTimer - 0xC)) < 0x11)) &&
+          (g_nCdStreamState < 0)) {
         tip = g_anSpyroHornStrikeTipOffsets;
         RotateVectorByMatrix(&strike[0xC], tip, pos);
-        AddVector(pos, pos, (int *)((char *)strike - 0x198));
+        AddVector(pos, pos, (int *)(((char *)strike) - 0x198));
         ApplyActiveGteRotation(tip + 6, vel);
         if (g_nSpyroHornStrikeVariant != 0) {
           ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
@@ -132,7 +145,7 @@ void TickSpyroHornStrikeAttack(void) {
         mtx = g_anSpyroComposedBodyMtxBlock;
         tip = g_anSpyroHornStrikeTipOffsets2;
         RotateVectorByMatrix(mtx, tip, pos);
-        AddVector(pos, pos, (int *)((char *)mtx - 0x1C8));
+        AddVector(pos, pos, (int *)(((char *)mtx) - 0x1C8));
         ApplyActiveGteRotation(tip + 6, vel);
         if (g_nSpyroHornStrikeVariant != 0) {
           ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
@@ -142,7 +155,7 @@ void TickSpyroHornStrikeAttack(void) {
               1, 0, pos, vel);
         }
       } else if ((g_dwPadPressed & 0x20) &&
-                 (timer = g_anSpyroHornStrikeTimerBlock)[0] >= 0x2C) {
+                 ((timer = g_anSpyroHornStrikeTimerBlock)[0] >= 0x2C)) {
         timer[0] = -1;
         g_nSpyroHornStrikeSwingPhase = 2;
         g_abSpyroAnimLayer1SubstepBlock[0] = 4;
@@ -158,26 +171,28 @@ void TickSpyroHornStrikeAttack(void) {
         }
         FillWord(g_abSpyroHornStrikeSlotAge, 0, 8);
       } else {
-        timer = g_anSpyroHornStrikeTimerBlock;
-        if (timer[0] >= 0x30) {
+        ;
+        if (g_anSpyroHornStrikeTimerBlock[0] >= 0x30) {
           live = g_abSpyroHornCollisionActiveBlock;
           live[0] = 0;
-          FillWord((char *)live - 0x78, 0, 8);
+          FillWord(((char *)live) - 0x78, 0, 8);
           g_nSpyroHornStrikeState = 0;
-          timer[0] = -1;
+          g_anSpyroHornStrikeTimerBlock[0] = -1;
           g_nSpyroHornStrikeAnimRate =
-              g_abSpyroAnimDescTable[D_80075268[g_nSpyroHornStrikeState] * 4 +
+              g_abSpyroAnimDescTable[(D_80075268[g_nSpyroHornStrikeState] * 4) +
                                      3];
-          ZeroVector(&timer[1]);
+          ZeroVector(&g_anSpyroHornStrikeTimerBlock[1]);
         }
       }
       break;
+
     default:
       if (g_nCameraCurrentMode != 0x80000009) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
       }
       break;
     }
+
     timer = g_anSpyroHornStrikeTimerBlock;
     timer[0] += 1;
   }

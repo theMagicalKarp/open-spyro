@@ -32,6 +32,12 @@
    source store-order swap (mismatch 3). A25's "escaped base keeps the
    negative-offset store unfolded" does not apply: the address FillWord needs
    IS the base at offset 0, not a derived address.
+
+   2026-08-14-1 unattended permuter session (~15m, ~56500 iterations, timed out
+   at the 15m budget): base score 140, and NOT ONE improving candidate was
+   produced — the randomizer wrote zero output dirs. This looks like a wall
+   rather than a slow climb; plain unattended permutation is not the tool for
+   the remaining tie. Still PARKED (see above).
  */
 extern int sprintf();
 extern int strlen(const char *s);
