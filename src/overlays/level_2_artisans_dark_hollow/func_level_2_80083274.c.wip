@@ -63,6 +63,18 @@
  * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
  * norm-identical (the jump-table symbol and branch displacements are the only
  * differences), so one fix is 23,260 exact bytes.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~17700 iterations, timed out
+ * at the 15m budget): best score 625 vs first-iteration score 735. No
+ * byte-perfect candidate; still PARKED (see above).
+ *
+ * This run does NOT count against the "do not reopen without a new mechanism"
+ * note above -- a plain unattended permuter run is not a new mechanism, so the
+ * negative result is expected and changes nothing about the §F16 conclusion.
+ * It was attempted only because this campaign sweeps every parked .wip once.
+ * At 1163 instructions it also drew one of the thinnest samples of the session
+ * (~17700 iterations). Recording it so a future session knows the box has been
+ * ticked and need not re-tick it.
  */
 /* func_level_2_80083274 (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).

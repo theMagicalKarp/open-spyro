@@ -39,7 +39,11 @@
    count globals + the spawn anchor + the spawn-pos trio, A104 named bit masks,
    A149 index-first int arithmetic, A85 goto-loop for the sprite pairs, A164
    straggler source order for `i = 0`, and the single-reused-temp trick that
-   forces load/store interleaving in the death-replay block. */
+   forces load/store interleaving in the death-replay block.
+
+   2026-08-14-1 unattended permuter session (~15m, ~27200 iterations, timed out
+   at the 15m budget): best score 1640 vs first-iteration score 2520. No
+   byte-perfect candidate found; still PARKED (see above). */
 
 /* 0x8001364c — post-CD-stream level finalization driver, the "level-loader
    meat" (3708 b). Builds every piece of per-level runtime state out of the
@@ -97,6 +101,13 @@ struct CameraParamBlock {
   int w[6];
 };
 
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/BuildLoadedLevelRuntime.c.wip`; this body came from
+   build/permuter/nonmatchings/BuildLoadedLevelRuntime/output-1640-1/source.c.
+ */
 int BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int dyaw;
@@ -117,6 +128,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
   int bit;
   int tb;
   int row;
+  short *new_var;
   int tbit;
   int sh;
   int *pk;
@@ -128,7 +140,6 @@ int BuildLoadedLevelRuntime(int fullSetup) {
   int *pcount;
   int count;
   unsigned char type;
-
   StopAllSoundExceptMask(0);
   InitLightVectorConstants();
   p = (int *)g_pPathTableBuffer;
@@ -141,7 +152,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
     g_nLevelEggCount = 0;
   }
   D_80075698 = 0;
-  if (g_nActiveLevelId == 0x28 || g_nActiveLevelId == 0x2A) {
+  if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {
     g_nLevelStormFlag = 1;
   } else {
     g_nLevelStormFlag = 0;
@@ -159,10 +170,11 @@ int BuildLoadedLevelRuntime(int fullSetup) {
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];
     g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
-    if (g_nScriptedRespawnFlag == 0 && g_nGamestate != 0xC) {
-      if (g_nGamestate == 5 && (unsigned int)(g_nActiveLevelId - 0x28) < 0x14 &&
-          (gidx = g_nGameOverLevelIntroIndex - 0x12,
-           g_anGameOverRespawnPosTable[gidx * 3] != 0)) {
+    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != 0xC)) {
+      if (((g_nGamestate == 5) &&
+           (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
+          ((gidx = g_nGameOverLevelIntroIndex - 0x12,
+            g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
         CopyVector(g_anSpyroWorldPos,
                    &D_8006F140[g_nGameOverLevelIntroIndex * 3]);
         yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIntroIndex];
@@ -178,7 +190,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
     ResetSpyroEntity(0);
     g_nSpyroPadSnapshotCountdown = 0xC;
   }
-  if (g_nActiveLevelId % 10 == 5) {
+  if ((g_nActiveLevelId % 10) == 5) {
     g_nFlightLevelActive = 1;
     g_nSpyroFallTrackingFlag = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
@@ -201,9 +213,10 @@ int BuildLoadedLevelRuntime(int fullSetup) {
     if (g_nScriptedRespawnFlag != 0) {
       g_anLevelSpawnPosZBlock[0] +=
           g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
+      new_var = &g_anSineLut[g_nLevelSpawnYaw];
       radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
       g_nLevelSpawnPosX -= radial;
-      radial = g_anSineLut[g_nLevelSpawnYaw] >> 2;
+      radial = (*new_var) >> 2;
       g_nLevelSpawnPosY -= radial;
     }
   }
@@ -217,8 +230,8 @@ int BuildLoadedLevelRuntime(int fullSetup) {
     if (g_nGamestate == 0xC) {
       goto emitlist;
     }
-    *(struct CameraParamBlock *)g_anCameraActiveTargetParams =
-        *(struct CameraParamBlock *)g_anCameraParamMode2Front;
+    *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
+        *((struct CameraParamBlock *)g_anCameraParamMode2Front);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = 0;
     g_nCameraNextMode = 0;
@@ -236,6 +249,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
   }
 emitlist:
   FillWord(g_anSpyroHornStrikeAnchorPos, 0, 0x138);
+
   g_anSpyroHornStrikeRibbonTexWords[0] = p[0];
   g_anSpyroHornStrikeRibbonTexWords[1] = p[1];
   FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
@@ -248,8 +262,9 @@ emitlist:
   i = 0;
 sprites:
   j = i + 1;
-  g_anLevelSpriteTexWordPairs[j * 2] = p[i * 2 + 4];
-  g_anLevelSpriteTexWordPairs[j * 2 + 1] = p[i * 2 + 5];
+
+  g_anLevelSpriteTexWordPairs[j * 2] = p[(i * 2) + 4];
+  g_anLevelSpriteTexWordPairs[(j * 2) + 1] = p[(i * 2) + 5];
   i = j;
   if (i < 9) {
     goto sprites;
@@ -262,7 +277,6 @@ sprites:
   g_anSecondaryActorTexWords[0] = p[0];
   g_anSecondaryActorTexWords[1] = p[1];
   p += 2;
-
   base = p;
   p++;
   w = *p;
@@ -270,17 +284,16 @@ sprites:
   g_pWorldAnimMeshKeyframeList = p;
   pcount = g_anWorldAnimMeshKeyframeCountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
     i = 0;
   }
-
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -288,17 +301,16 @@ sprites:
   g_pWorldAnimUvCycleList = p;
   pcount = g_anWorldAnimUvCycleCountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
   }
-
   i = 0;
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -306,17 +318,16 @@ sprites:
   g_pWorldAnimColor2List = p;
   pcount = g_anWorldAnimColor2CountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
     i = 0;
   }
-
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -324,17 +335,16 @@ sprites:
   g_pWorldAnimColor0List = p;
   pcount = g_anWorldAnimColor0CountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
   }
-
   i = 0;
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -342,17 +352,16 @@ sprites:
   g_pWorldAnimVertexMorphList = p;
   pcount = g_anWorldAnimVertexMorphCountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
     i = 0;
   }
-
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -360,17 +369,16 @@ sprites:
   g_pWorldAnimColor3List = p;
   pcount = g_anWorldAnimColor3CountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
   }
-
   i = 0;
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   w = *p;
@@ -378,16 +386,15 @@ sprites:
   g_pWorldAnimColor1List = p;
   pcount = g_anWorldAnimColor1CountBlock;
   *pcount = w;
-  if (*pcount > 0) {
+  if ((*pcount) > 0) {
     do {
-      w = *p + 4;
-      *p = (int)base + w;
+      w = (*p) + 4;
+      *p = ((int)base) + w;
       i++;
       p++;
-    } while (i < *pcount);
+    } while (i < (*pcount));
   }
-
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   if (fullSetup != 0) {
     ResetWorldChunkAnimations();
   } else {
@@ -402,19 +409,18 @@ sprites:
   i = *p;
   p++;
   g_pActorListBase = p;
-  p = (int *)((char *)base + *base);
-  g_pActorPoolDynBase = (char *)g_pActorListBase + i * 0x58;
+  p = (int *)(((char *)base) + (*base));
+  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * 0x58);
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
   ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
   g_nActorPoolLiveCount = 0;
   g_pActorAuxPoolTop = p;
   g_pActorAuxPoolFreeHead = p;
   ((char *)p)[-1] = 0xFF;
-  g_nActorPoolCapacity =
-      (unsigned int)((char *)g_pActorAuxPoolTop - (char *)g_pActorPoolDynBase) /
-      0x70;
-
-  p = (int *)((char *)p + *p);
+  g_nActorPoolCapacity = ((unsigned int)(((char *)g_pActorAuxPoolTop) -
+                                         ((char *)g_pActorPoolDynBase))) /
+                         0x70;
+  p = (int *)(((char *)p) + (*p));
   base = p;
   p++;
   count = *p;
@@ -423,41 +429,39 @@ sprites:
   g_nLevelPickupTableCount = count;
   i = count - 1;
   if (i >= 0) {
-    pk = (int *)(i * 4 + (int)p);
+    pk = (int *)((i * 4) + ((int)p));
     do {
       *pk += (int)base;
       i--;
       pk--;
     } while (i >= 0);
   }
-
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   p++;
   g_pActorSpatialGridBase = p;
-  p = (int *)((char *)base + *base);
+  p = (int *)(((char *)base) + (*base));
   base = p;
   i = 0;
   p++;
-  if (*base > 0) {
+  if ((*base) > 0) {
     do {
-      gd = (int *)((char *)root + *p);
+      gd = (int *)(((char *)root) + (*p));
       *gd += (int)root;
       i++;
       p++;
-    } while (i < *base);
+    } while (i < (*base));
   }
-
   if (g_nDeathState != 0) {
     srand(1234);
     k = g_nDeathTryIndex;
     dyaw = g_anDeathReplaySpawnTable[k * 4];
     g_anSpyroWorldPos[0] = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[k * 4 + 1];
+    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 1];
     g_nSpyroWorldPosY = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[k * 4 + 2];
+    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 2];
     D_80078A60 = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[k * 4 + 3];
+    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 3];
     g_nDeathRespawnPending = 1;
     g_abSpyroPersistentEuler[2] = dyaw;
     g_nSpyroBodyYaw = (dyaw & 0xFF) * 0x10;
@@ -469,32 +473,31 @@ sprites:
     }
   }
   mask = 0;
-
   rec = (char *)g_pActorListBase;
-  if ((unsigned char)rec[0x48] != 0xFF) {
+  if (((unsigned char)rec[0x48]) != 0xFF) {
     i = 0;
     off = 0;
     do {
-      r = (char *)(off + (int)rec);
-      if (((int *)&g_apActorMeshTable)[*(short *)(r + 0x36)] < 0) {
+      r = (char *)(off + ((int)rec));
+      if (((int *)(&g_apActorMeshTable))[*((short *)(r + 0x36))] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, (int *)((char *)g_pActorListBase + off + 0xC));
+      CopyVector(pos, (int *)((((char *)g_pActorListBase) + off) + 0xC));
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode((char *)g_pActorListBase + off);
-      type = *(unsigned char *)(off + (int)g_pActorListBase + 0x3A);
-      if ((unsigned int)(type & 0x7F) < 0x20) {
+      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) + off);
+      type = *((unsigned char *)((off + ((int)g_pActorListBase)) + 0x3A));
+      if (((unsigned int)(type & 0x7F)) < 0x20) {
         wi = i >> 5;
         bit = i & 0x1F;
         bit = 1 << bit;
         if ((g_anRunningKillBitmap[wi] & bit) == 0) {
           mask |= 1 << type;
         } else {
-          row = (g_nLevelIntroIndex << 5) + (int)g_anLevelKillBitmapTable;
-          if ((*(int *)(wi * 4 + row) & bit) == 0) {
+          row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
+          if (((*((int *)((wi * 4) + row))) & bit) == 0) {
             mask |= 1 << type;
           }
         }
@@ -502,27 +505,28 @@ sprites:
       off += 0x58;
       rec = (char *)g_pActorListBase;
       i++;
-    } while ((unsigned char)rec[off + 0x48] != 0xFF);
+    } while (((unsigned char)rec[off + 0x48]) != 0xFF);
     rec = (char *)g_pActorListBase;
   }
   i = 0;
-  if ((unsigned char)rec[0x48] != 0xFF) {
+  if (((unsigned char)rec[0x48]) != 0xFF) {
     off = 0;
     do {
       wi = i >> 5;
       sh = i & 0x1F;
-      row = (g_nLevelIntroIndex << 5) + (int)g_anLevelKillBitmapTable;
+      row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
       bit = 1 << sh;
-      if (*(int *)(wi * 4 + row) & bit) {
+      if ((*((int *)((wi * 4) + row))) & bit) {
         if ((g_anRunningKillBitmap[wi] & bit) == 0) {
-          r = (char *)(off + (int)rec);
-          if ((*(unsigned char *)(r + 0x3A) & 0x7F) == 0x7D) {
+          r = (char *)(off + ((int)rec));
+          if (((*((unsigned char *)(r + 0x3A))) & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
             r[0x53] = 0xFF;
           }
         } else {
-          tb = *(unsigned char *)(off + (int)g_pActorListBase + 0x3A) & 0x7F;
+          tb = (*((unsigned char *)((off + ((int)g_pActorListBase)) + 0x3A))) &
+               0x7F;
           if (tb < 0x20) {
             tbit = 1 << tb;
             count = (mask & tbit) != 0;
@@ -530,18 +534,17 @@ sprites:
             count = tb == 0x7E;
           }
           if (count != 0) {
-            ((char *)g_pActorListBase + off)[0x53] = 0xFF;
+            (((char *)g_pActorListBase) + off)[0x53] = 0xFF;
           } else {
-            DespawnActorRecord((char *)g_pActorListBase + off);
+            DespawnActorRecord(((char *)g_pActorListBase) + off);
           }
         }
       }
       rec = (char *)g_pActorListBase;
       off += 0x58;
       i++;
-    } while ((unsigned char)rec[off + 0x48] != 0xFF);
+    } while (((unsigned char)rec[off + 0x48]) != 0xFF);
   }
-
   i = 0;
   dst = g_anCommittedKillBitmap;
   src = g_anCommittedKillBitmap;
@@ -552,7 +555,6 @@ sprites:
     i++;
     dst++;
   } while (i < 8);
-
   i = 9;
   tg = &g_anLevelTriggerStateSlots[9];
   do {
@@ -560,15 +562,14 @@ sprites:
     i--;
     tg--;
   } while (i >= 0);
-
   g_pEmitListBase = g_pEmitListBuffer;
   g_pEmitListWriteCursor = g_pEmitListBuffer;
   ((unsigned char *)g_pEmitListBuffer)[1] = 0xFF;
   ((int *)g_pEmitListBase)[0x800] = -1;
   ResetWorldParticleTables();
-  if (fullSetup != 0 && g_nFlightLevelActive == 0) {
+  if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
     g_pLevelOverlayInitRecord =
-        (*(void *(**)())&g_pfnLevelOverlayInitHook)(0x78, 0);
+        (*((void *(**)())(&g_pfnLevelOverlayInitHook)))(0x78, 0);
     InitHudCounters(1);
   }
   return HandleMusicCommand(g_nCurrentMusicTrack, 1);

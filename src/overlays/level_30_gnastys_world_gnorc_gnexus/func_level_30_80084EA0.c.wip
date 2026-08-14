@@ -40,6 +40,26 @@
  * from the jump tables), so landing this decode is groundwork, not bytes,
  * until that knot falls.  See the cookbook §F14 entry for why the two halves
  * of the knot are mutually exclusive.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~703000 iterations -- by far
+ * the largest sample of the session, timed out at the 15m budget): best score
+ * 210 vs first-iteration score 3065, a 93% drop.
+ *
+ * DO NOT READ THAT AS PROGRESS TOWARD A MATCH, and do NOT splice the candidate
+ * in. This function is PARKED MID-DECODE (see above): the source is the level_3
+ * donor with two arms removed, the frame is still 176 vs 168, and the length
+ * does not yet align. The base score is high because the decode is unfinished,
+ * not because of a tie, which is also why the randomizer had so much slack to
+ * work with and why it churned ~703k iterations. A permuted body here would
+ * overwrite the in-progress hand decode that items 1-3 above are written
+ * against, and no permutation can finish a decode. This function was therefore
+ * EXCLUDED from the session's partial-byte salvage pass by hand.
+ *
+ * The genuine blocker remains the shared 4-insn 0x18-arm knot (§F14), which
+ * also parks func_level_1_800892C4 (run separately in this same session, still
+ * parked) and func_level_3_80088F68. With 21 overlays in the family carrying
+ * arm 0x18, that one knot is the single largest structural bottleneck visible
+ * from this campaign.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */

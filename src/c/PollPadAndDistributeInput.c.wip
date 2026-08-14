@@ -43,6 +43,10 @@
    the same bytes as %hi/%lo(g_nPadStickActiveFlag) and keeps one symbol_ref so
    cse's get_related_value can derive the +0x48 ring slot off the live base
    (A36) — that half of the function matches exactly.
+
+   2026-08-14-1 unattended permuter session (~15m, ~49500 iterations, timed out
+   at the 15m budget): best score 475 vs first-iteration score 860. No
+   byte-perfect candidate found; still PARKED (see above).
 */
 #include "globals.h"
 

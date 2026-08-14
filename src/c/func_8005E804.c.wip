@@ -4,21 +4,28 @@
    (0x8005e804): publish it in g_apfnDmaCallbacks[ch] and set/clear the
    channel's DICR enable bit, keeping the write-1-to-clear flag word intact.
    Returns the callback it replaced. */
+/* NOTE: the function body below is decomp-permuter output, spliced in
+   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
+   gain only. It reads worse than the hand-written form it replaced and
+   its inline comments are lost. The hand-written original is recoverable
+   with `git show HEAD:src/c/func_8005E804.c.wip`; this body came from
+   build/permuter/nonmatchings/func_8005E804/output-30-1/source.c. */
 void *func_8005E804(int ch, void *cb) {
-  void **slot = &g_apfnDmaCallbacks[ch];
-  void *prev = *slot;
-
+  void **slot;
+  int new_var;
+  void *prev = *(&g_apfnDmaCallbacks[ch]);
   if (cb != prev) {
     if (cb != 0) {
-      *slot = cb;
-      *(volatile unsigned int *)g_pDmaDicrReg =
-          ((1 << (ch + 0x10)) | 0x800000) |
-          (*(volatile unsigned int *)g_pDmaDicrReg & 0xFFFFFF);
+      *(&g_apfnDmaCallbacks[ch]) = cb;
+      new_var = (*((volatile unsigned int *)g_pDmaDicrReg)) & 0xFFFFFF;
+      *((volatile unsigned int *)g_pDmaDicrReg) =
+          ((1 << (ch + 0x10)) | 0x800000) | new_var;
     } else {
-      *slot = 0;
-      *(volatile unsigned int *)g_pDmaDicrReg =
-          ((*(volatile unsigned int *)g_pDmaDicrReg & 0xFFFFFF) | 0x800000) &
-          ~(1 << (ch + 0x10));
+      *(&g_apfnDmaCallbacks[ch]) = 0;
+      *((volatile unsigned int *)g_pDmaDicrReg) =
+          (((*((volatile unsigned int *)g_pDmaDicrReg)) & 0xFFFFFF) |
+           0x800000) &
+          (~(1 << (ch + 0x10)));
     }
   }
   return prev;
@@ -45,4 +52,13 @@ void *func_8005E804(int ch, void *cb) {
    Next lever would have to raise the dicr-value temp's local-alloc priority
    (floor_log2(R)*R/lifetime) above the shift amount's without adding insns —
    the do/while(0) ref dial (A165) does NOT apply, it perturbs the schedule when
-   it wraps a statement inside a block rather than a whole arm. */
+   it wraps a statement inside a block rather than a whole arm.
+
+   2026-08-14-1 unattended permuter session (~15m, ~94800 iterations -- by far
+   the highest count of the session, this being a 42-insn function, timed out at
+   the 15m budget): best score 30 vs first-iteration score 1470, a 98% drop and
+   the strongest result of the session by a wide margin. Still no byte-perfect
+   candidate, but score 30 on a 42-insn function is CLOSE -- the next-best
+   candidate is 245, so the 30 is an isolated find rather than a plateau. This
+   is the top priority for a longer follow-up budget, and the best salvage
+   candidate of the session. Still PARKED (see above). */

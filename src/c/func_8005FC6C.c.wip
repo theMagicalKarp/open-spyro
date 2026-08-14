@@ -51,4 +51,12 @@ int *func_8005FC6C(int *ot, int n) {
    solved in UpdateGemPickupPathCamera, 2026-08-11-1 — see A187). This tail has
    no branch after the dispatch call, so the lever cannot be aimed here.
    `int *mask/head` locals ordered [mask li, copy, symbol la] re-tested
-   2026-08-11-1: byte-identical, as predicted by the rule above. */
+   2026-08-11-1: byte-identical, as predicted by the rule above.
+
+   2026-08-14-1 unattended permuter session (~15m, ~116400 iterations -- the
+   highest count of the session, this being a 38-insn function, timed out at the
+   15m budget): best score 95 vs first-iteration score 115, with the next
+   candidate at 100. A very flat curve over a very large sample, which supports
+   the analysis above: the A187 lever is genuinely unaimable here (no branch
+   after the dispatch call), so random permutation has nothing to find. Treat as
+   settled for unattended runs. Still PARKED (see above). */

@@ -63,7 +63,11 @@ extern int
 
    PARKED at 332/332 instructions (length-exact), 37 differ, 88.9%. Three
    residues, all register-allocation / scheduling ties -- see the .wip note in
-   config/triage_overrides.yaml. */
+   config/triage_overrides.yaml.
+
+   2026-08-14-1 unattended permuter session (~15m, ~52100 iterations, timed out
+   at the 15m budget): best score 945 vs first-iteration score 1150. No
+   byte-perfect candidate found; still PARKED (see above). */
 void Initialize(void) {
   void **buf;
   int i;

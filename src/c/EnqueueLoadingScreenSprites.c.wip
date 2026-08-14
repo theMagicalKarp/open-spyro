@@ -32,6 +32,10 @@
  * REVERSED to a `li s0,2` countdown); signed `(int)rec >= (int)cursor` for the
  * digit-cursor walk (pointer compare gives sltu); and the 16-byte dead local
  * after `rect` that makes the frame 0x58.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~58200 iterations, timed out
+ * at the 15m budget): best score 705 vs first-iteration score 865. No
+ * byte-perfect candidate found; still PARKED (see above).
  */
 #include "globals.h"
 

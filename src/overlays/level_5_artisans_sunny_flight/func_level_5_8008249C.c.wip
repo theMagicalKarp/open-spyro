@@ -11,6 +11,31 @@
  * before the call.  Every other arm in this dispatcher is byte-identical.
  *
  * Unparks together with levels 5/11/17/23 the moment B19 falls.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~29400 iterations, timed out
+ * at the 15m budget): best score 350 vs first-iteration score 610, next
+ * candidates 490 and 525. No byte-perfect candidate; still PARKED (see above).
+ *
+ * This completes the family sweep: ALL FOUR members were run independently in
+ * this session, from four separate random seeds, and every one landed on the
+ * same shelf --
+ *
+ *     level_5  610 -> 350  (~29400 iters)
+ *     level_11 590 -> 305  (~40200 iters)
+ *     level_17 610 -> 325  (~35000 iters)
+ *     level_23 610 -> 325  (~32000 iters)
+ *
+ * Same start, same floor within ~13%, same shape. That is about as clean an
+ * empirical confirmation of the shared-residue claim above as this method can
+ * produce, and it locates the floor as a property of the B19 lever rather than
+ * of any one seed. Random permutation reaches the shelf in a few thousand
+ * iterations and then stops, exactly as predicted by the note above that the
+ * only known escape is a real basic-block boundary before the call -- a
+ * structural source change, which permutation cannot synthesise.
+ *
+ * Conclusion for future sessions: do NOT spend further unattended budget on any
+ * member of this family. Aim one targeted B19 attempt at a single member; all
+ * four land together when it falls.
  */
 /* func_level_5_8008249C (0x8008249C, level_5_artisans_sunny_flight overlay,
  * 0xe94 bytes).

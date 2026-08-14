@@ -23,6 +23,11 @@
  * parenthesisation, else the pointer load is emitted before the offset),
  * `n = t - 1; span = legs - n;` (else gcc reassociates to (legs+1) - *step),
  * and `x = dir[0];` read before span so it fills the *step load-delay.
+ *
+ * 2026-08-14-1 unattended permuter session (~15m, ~61200 iterations -- the
+ * highest iteration count of the session, timed out at the 15m budget): best
+ * score 370 vs first-iteration score 670. No byte-perfect candidate found;
+ * still PARKed (see above).
  */
 #include "globals.h"
 
