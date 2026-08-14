@@ -1385,3 +1385,67 @@ func_80038FC8_2026_08_14:
     Both defs have the same source, so the copy coalesces and the arg setup is
     re-created at the call. A198 pins the position of a MATERIALISATION (a
     constant), not of a copy of an already-live value.
+
+# --- libmcrd file-op block (0x80067718..0x80067c7c) — ONE 1380 B label, four functions ---
+# `glabel func_80067718` ... `endlabel` covers all four; the siblings have no
+# glabel of their own, so HAVE_C_func_80067718 suppresses the whole block and
+# all four must be C before ANY of them can be committed. asmdiff needs explicit
+# ranges for the siblings, diffs misalign if an earlier one is the wrong length,
+# and the linker rejects an overlong candidate with "cannot move location
+# counter backwards" rather than a byte diff.
+func_80067718:
+  verdict: matched
+  class: "matched 2026-08-14-1 (A20 is TWO base locals, not one; address-taken `result` for the 0x30(sp) slot; pointer local for the spin base)"
+  date: 2026-08-14
+  note: >-
+    0x80067718, 560 B. `int *rp = &result;` declared and never used is what
+    parks result in the frame: address-taken sets TREE_ADDRESSABLE at parse
+    time, expand_decl commits the decl to a MEM, and 2.7.2 has no pass that
+    promotes it back — the store/reload-at-join plus one load feeding four
+    compares is the fingerprint (a volatile would reload for each). Two locals
+    p/q both = D_80075B50 give the `move s0,s3` copy and free s3 for the
+    hoisted constant 2; one local is one allocno for its whole range and costs
+    a sixth callee-saved reg. The spin needs a real pointer local
+    (`volatile int *done = &D_80075B58`): loop.c can hoist a `high` but cannot
+    rewrite a folded %lo MEM into 0(reg), so a volatile global can never
+    produce the original la + lw form. Out-of-line `busy:` return-7 stub ahead
+    of the preheader, reached by the backward branch, with `goto start`
+    threaded into the bltz; `ok:` last so it falls into the epilogue.
+func_80067948:
+  verdict: matched
+  class: "matched 2026-08-14-1 (for(;;) not do/while: the loop construct decides which side of the top label a hoisted invariant lands on)"
+  date: 2026-08-14
+  note: >-
+    0x80067948, 480 B. Same shape as func_80067718 minus the exists-check.
+    After porting the p/q split it came down to one insn: loop.c inserts
+    movables immediately before NOTE_INSN_LOOP_BEG, and do/while puts that note
+    AFTER the loop's top label, so the hoisted `li s2,2` landed inside the loop
+    (our back-edge targeted the li, the original's targeted `jal erase`).
+    Rewriting `do {...} while (result == 3 || tries < 0x10)` as the same
+    for(;;) + break ladder as func_80067718 matched it outright. New dial,
+    applies to any loop whose invariant hoist lands one insn late.
+func_80067B28:
+  verdict: matched
+  class: "matched 2026-08-14-1 (declaration volatility: `volatile int D_80075B4C` pins the arg setup ahead of the mask store)"
+  date: 2026-08-14
+  note: >-
+    0x80067b28, 152 B. Last residue was a single instruction — `addiu a1,sp,0x10`
+    before the mask store vs in the jal delay slot. Fixed by declaring
+    D_80075B4C volatile, copied from src/c/func_8006635C.c which was already
+    matched and declares the same global volatile; `a |= b` vs `a = a | b`
+    makes no difference (isolated by rebuild). Check matched neighbours for a
+    global's volatility BEFORE theorising about scheduler ties: the luid/tie
+    theory cost an experiment that added a `move` and overflowed the block.
+func_80067BC0:
+  verdict: matched
+  class: "matched 2026-08-14-1 (name the fill constant to pin its li; ++i in the loop condition for the branch delay slot)"
+  date: 2026-08-14
+  note: >-
+    0x80067bc0, 188 B. Three levers: the `return 0` stub is the same
+    out-of-line-before-the-loop idiom as `busy:` in func_80067718; `fill = 0xFF`
+    as a named local emits the li at its source position ahead of the induction
+    -variable inits instead of being hoisted to the END of the preheader; and
+    `while (++i < 0xF)` puts the increment in the BRANCH delay slot (dbr pulls
+    it from the fall-through) where a separate `i += 1;` statement lands in the
+    CALL's slot instead. The nop after `jal WaitMemCardEventSlot2` is not a
+    residue — a `sw <sym>` macro is length 8 and can never fill a delay slot.
