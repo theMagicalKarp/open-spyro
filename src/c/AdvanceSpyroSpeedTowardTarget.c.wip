@@ -4,27 +4,54 @@
    [0x14] (+0x50) is g_nSpyroMotionSpeed. */
 extern int g_anSpyroSpeedBlock[];
 
-/* PARKED 2026-08-15 at 21/19 insns (2 over, so it does not link) — a fresh
-   decode, and the §B7 "shared-base, multiple offsets, NO call" wall is now
-   HALF retired. With the alias reached as an INCOMPLETE int array (no pointer
-   local) plus an empty `do { } while (0);` after the first access, both arm
-   stores come out `sw v1,0x50(a3)` like the original; only the post-join clamp
-   store still folds to `lui $at; sw %lo(sym+0x50)($at)` (+1), and a fresh
-   destination local for the stepped speed (A167) fills the branch delay slot
-   but costs a `move a3,a0` param copy (+1). Levers already ruled out here:
-   pointer local for the whole block (reload's update_equiv_regs substitutes
-   its REG_EQUIV constant function-globally — no cse barrier reaches it), a
-   sized alias (A22), a second break before or inside the clamp `if`, a
-   pointer local scoped to the clamp arm, and declaration-order permutation.
-   Next idea: the clamp store is a JOIN block; find a form where the base is
-   re-referenced there (B-i rule 3 wants ~9 refs to keep a base register).
+/* PARKED 2026-08-15-1 at 20/19 insns (was 21/19). The §B7 / §B-i fold is now
+   FULLY retired here — every one of the four accesses, including the clamp
+   store, comes out `lw/sw off(a3)` off a base in a3, and the base/target
+   registers are the original's. Two changes did it:
+     - the clamp store is written PER ARM (`if (target < stepped) blk[0x14] =
+       target;` inside both arms) instead of once in a join block. A join block
+       starts a fresh cse ebb, so the store expands as a constant address and
+       nothing converts it back; inside the arms the base equivalence is live
+       and `find_best_addr` picks the cheaper reg+offset form. jump.c's
+       cross-jump pass then merges the two identical tails back into exactly
+       the original layout (`j` with the `slt` in its delay slot), so the
+       duplicated source costs nothing.  [see A201]
+     - A195 depth 2 on `stepped = speed + accel;`, which lifts `stepped` over
+       `speed`/`target` and hands out v0 / a2 / a3 as the original does.
+   THE WHOLE RESIDUE IS ONE `move v1,a0`: a pure a0<->v1 two-register swap
+   between the `accel` parameter and the loaded `speed`. Written as
+   `accel + speed` (below) even the `addu $v0,$v1,$a0` word is byte-identical;
+   only the three insns that name speed/accel the other way round differ.
+   Measured with the §D 2c probe (post-sched1 numbers, N = A195 depth on the
+   arm-1 statement):
+     74 stepped R=6+N L=6 · 76 speed R=4+N L=5 · 72 accel R=2+N L=6
+     75 target R=6 L=14 · 77 base R=7 L=30 · 73 decel R=2 L=6
+   allocation order at N=2 is 74 76 72 75 77 73, and `find_reg` gives 76 a0
+   because 76 carries `;; 76 preferences: 4` — a hard-reg preference for a0
+   that is NOT explained by any copy insn in the RTL (the only a0 copy is
+   `(set (reg 72) (reg a0))` in the prologue; see the .lreg dump). To match,
+   72 must be allocated BEFORE 76 so it takes a0 by its own preference and 76
+   falls through reg_alloc_order to v1. That needs
+   `floor_log2(R72)*R72/6 > floor_log2(R76)*R76/5`, and the A195 dial cannot
+   deliver it: every wrapper that mentions `accel` also mentions `speed`
+   (they are operands of the same add), so N feeds both and 76 keeps a
+   2-refs lead forever (N=2: 1.33 vs 2.4; N=6: 4.0 vs 6.0; N=14: 10.7 vs 14.4).
+   Ruled out this session, all 20 insns with the same `move`: A195 depths
+   0..6 on the arm-1 statement, on the arm-1 block, on the arm-2 block and on
+   the inner clamp `if` (arm-2 and clamp wrappers move NOTHING); all six
+   declaration orders of the three locals; `accel + speed` vs `speed + accel`;
+   `stepped = speed; stepped += accel;` (combine merges it back into the
+   wrapped insn); loading speed before target (re-anchors the base at +0x50).
+   NEXT IDEA: find where 76's a0 preference comes from (read `set_preference`
+   /`prune_preferences` in the 2.7.2 global.c against the -dg dump) — if it is
+   an artifact of the load rather than a real copy preference, a different
+   load form may drop it and the function matches as written.
 
    0x8003d92c (76 bytes) — move the motion speed one substep toward the target:
    accelerate by `accel` while under it, decelerate by `decel` while over it,
    and clamp to the target on the step that crosses it. */
 void AdvanceSpyroSpeedTowardTarget(int accel, int decel) {
   int stepped;
-  int crossed;
   int target;
   int speed;
 
@@ -33,16 +60,20 @@ void AdvanceSpyroSpeedTowardTarget(int accel, int decel) {
   } while (0);
   speed = g_anSpyroSpeedBlock[0x14];
   if (speed < target) {
-    stepped = speed + accel;
+    do {
+      do {
+        stepped = accel + speed;
+      } while (0);
+    } while (0);
     g_anSpyroSpeedBlock[0x14] = stepped;
-    crossed = target < stepped;
+    if (target < stepped) {
+      g_anSpyroSpeedBlock[0x14] = target;
+    }
   } else {
     stepped = speed - decel;
     g_anSpyroSpeedBlock[0x14] = stepped;
-    crossed = stepped < target;
-  }
-  if (crossed) {
-    int *q = g_anSpyroSpeedBlock;
-    q[0x14] = target;
+    if (stepped < target) {
+      g_anSpyroSpeedBlock[0x14] = target;
+    }
   }
 }
