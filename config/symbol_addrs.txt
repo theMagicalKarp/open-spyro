@@ -1399,6 +1399,7 @@ g_pGemPickupSourceActor = 0x800770c0; // size:0x4
 g_anWorldLightDirVec = 0x800770c8; // size:0x18
 g_abBillboardBasisVectors = 0x800770e0; // size:0x12
 g_nLightSweepAngle = 0x800770f4; // size:0x4 allow_duplicated:True
+g_anLightSweepAngleBlock = 0x800770f4; // allow_duplicated:True alias — sized-array view so the accumulator RMW keeps one held base (lui/addiu + lw/sw 0(r)) instead of two $at absolutes (RotateLightVectorXZ)
 g_anLightSweepAngleBlock = 0x800770f4; // allow_duplicated:True alias block — shared-base view for EmitRadialShadedLine (address held across the two ArcTan2 calls)
 g_abWorldRotatingBillboardTable = 0x80077114; // size:0x80
 g_anLevelDragonsRescued = 0x800772d8; // size:0x90

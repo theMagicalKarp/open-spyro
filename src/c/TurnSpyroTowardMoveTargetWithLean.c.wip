@@ -51,7 +51,25 @@ extern int AbsAngleDelta12(int a, int b);
    basic block, evicts `move a2,a0` from the bubble and costs +1 insn (measured:
    fails to link). No other source form adds exactly one weighted ref.
    Class: F1 local-alloc qty_compare tie with a numeric criterion (R=3 on the
-   first-loaded temp) — permuter-or-never; do not re-derive the above. */
+   first-loaded temp) — permuter-or-never; do not re-derive the above.
+
+   Re-tested 2026-08-14, seven more forms, all confirming the above:
+     - `t = t - b; delta = t & 0xFFF;` (subu into the loaded temp), a
+       block-scoped `m` for the masked value (`m = (t-b) & 0xFFF; delta = m;`)
+       and its split variant (`m = t-b; m = m & 0xFFF; delta = m;`) are all
+       BYTE-IDENTICAL to the one-statement form: combine_regs ties the subu's
+       dest to the first dying input regardless of whether the mask's dest is
+       block-local, so making `delta` single-block does not reach it.
+     - `b = t - b; delta = b & 0xFFF;` is 6/92 and `delta = tgt; delta -= body;
+       delta &= 0xFFF;` is 9/92 (both worse).
+     - the split form plus a `do { } while (0)` ref dial on EITHER load costs
+       the length (92/92, +1 insn) exactly as predicted — the loop note splits
+       the block and evicts the `move a2,a0` bubble-filler. Wrapping BOTH loads
+       is useless by construction (the ratio is what decides, and both refs
+       scale together).
+   The live lengths make this unreachable by range dials too: the first-loaded
+   temp's range is strictly longer than the second's, so any insn added between
+   the second load and the subu lengthens both. R is the only free variable. */
 void TurnSpyroTowardMoveTargetWithLean(int bucket) {
   int delta;
   int rate;
