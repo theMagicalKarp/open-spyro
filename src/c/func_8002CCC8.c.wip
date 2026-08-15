@@ -14,8 +14,9 @@ extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int AbsAngleDelta12(int a, int b);
 
-/* alias block as an INT array — +0 anim-prev byte, -6 words g_anSpyroWorldPos[0],
-   -4 words g_anSpyroWorldPos[2]; the whole block must come off one held base. */
+/* alias block as an INT array — +0 anim-prev byte, -6 words
+   g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must
+   come off one held base. */
 extern int g_abSpyroAnimPrevBlock[];
 extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
 extern int D_80078D14;
@@ -38,7 +39,6 @@ extern int D_80078D68;
 extern int D_80078D6C;
 extern int D_80078D70;
 extern int D_80078D74;
-
 
 /* PARKED 2026-08-15-1 at 217/217 — LENGTH-EXACT (was 222/217, unlinkable), 31
    differing insns, from a full re-derive off the asm (the permuter-spew body is
@@ -98,8 +98,8 @@ void func_8002CCC8(int actor) {
   }
   D_80078D74 = actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C), 0,
-                  0x10, 0);
+  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
+                  0, 0x10, 0);
   ResetSpyroEntity(1);
   *(unsigned char *)g_abSpyroAnimPrevBlock = 1;
   g_bSpyroAnimCurrent = 1;
@@ -121,12 +121,11 @@ void func_8002CCC8(int actor) {
   D_80078D38 = D_80078D70;
   D_80078D40 = g_abSpyroAnimPrevBlock[-4] + 0x170;
   if (g_pLevelOverlayInitRecord != 0) {
-    D_80078D44 =
-        ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
-                    g_abSpyroAnimPrevBlock[-6],
-                *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
-                    g_nSpyroWorldPosY,
-                1);
+    D_80078D44 = ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
+                             g_abSpyroAnimPrevBlock[-6],
+                         *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
+                             g_nSpyroWorldPosY,
+                         1);
     SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
                    &g_abSpyroAnimPrevBlock[-6]);
     D_80078D48 = VectorLength(vec, 0);
