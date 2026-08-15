@@ -1,0 +1,97 @@
+# Posts the CI match-progress delta as a sticky PR comment.
+#
+# Why this is a separate workflow: a `pull_request` run from a FORK gets a
+# read-only GITHUB_TOKEN, and a job's `permissions:` block can only narrow that
+# ceiling, never raise it — so ci.yml physically cannot comment on fork PRs.
+#
+# `workflow_run` splits the trusted and untrusted halves:
+#
+#   ci.yml       builds the PR's code (untrusted) with a read-only token and
+#                uploads the rendered comment body as an artifact.
+#   this file    runs from the DEFAULT BRANCH — a fork PR cannot edit it — with
+#                a write token, and posts that body.
+#
+# The security property that makes this safe, and distinguishes it from
+# `pull_request_target`: the job holding the write token never checks out or
+# executes any PR code. It only reads a text file.
+#
+# Two rules keep it that way; do not relax them without thinking it through:
+#
+#   1. Never add a checkout of the PR's ref, and never run anything from the
+#      downloaded artifact. It is attacker-controlled bytes.
+#   2. The body text is attacker-controlled (a fork can make progress-delta emit
+#      anything), so it is read into a JS variable with fs.readFileSync and is
+#      never interpolated into a `run:` block or a `${{ }}` expression. Worst
+#      case it renders as arbitrary markdown in a comment on the fork's own PR —
+#      something the author could already do by typing one.
+#
+# NOTE: workflow_run only fires for the copy of this file on the default branch.
+# Changes here have no effect until merged to main.
+
+name: PR progress comment
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+jobs:
+  comment:
+    # workflow_run fires on CI failure too, not just success. A CI run that died
+    # before the upload leaves no artifact, so the download step is marked
+    # continue-on-error and the post is gated on its outcome — a build failure
+    # stays a build failure in ci.yml rather than also reddening this workflow.
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # read the artifact from the triggering CI run
+      pull-requests: write # post/update the comment
+    steps:
+      - name: Download progress delta
+        id: download
+        continue-on-error: true # CI failed before uploading -> nothing to post
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: progress-delta
+          path: /tmp/delta
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post sticky comment
+        if: steps.download.outcome == 'success'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- open-spyro-progress -->';
+            const {owner, repo} = context.repo;
+
+            // Resolve the target PR from the head SHA rather than trusting a
+            // number carried in the artifact: workflow_run.pull_requests is
+            // empty for forked PRs, and letting the artifact name its own
+            // target would let a fork comment on any PR in the repo.
+            const {data: prs} =
+              await github.rest.repos.listPullRequestsAssociatedWithCommit(
+                {owner, repo, commit_sha: process.env.HEAD_SHA});
+            const pr = prs.find(p => p.state === 'open');
+            if (!pr) {
+              core.info(`no open PR for ${process.env.HEAD_SHA}; nothing to do`);
+              return;
+            }
+            const issue_number = pr.number;
+
+            // Untrusted text: read as data, never interpolated into a shell.
+            const body = `${marker}\n${fs.readFileSync('/tmp/delta/body.md', 'utf8')}`;
+
+            const comments = await github.paginate(
+              github.rest.issues.listComments, {owner, repo, issue_number});
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment(
+                {owner, repo, comment_id: existing.id, body});
+            } else {
+              await github.rest.issues.createComment(
+                {owner, repo, issue_number, body});
+            }
