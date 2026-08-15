@@ -39,24 +39,52 @@ extern int D_80078D6C;
 extern int D_80078D70;
 extern int D_80078D74;
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/func_8002CCC8.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/func_8002CCC8/output-795-1/source.c */
 
+/* PARKED 2026-08-15-1 at 217/217 — LENGTH-EXACT (was 222/217, unlinkable), 31
+   differing insns, from a full re-derive off the asm (the permuter-spew body is
+   gone).  The B-i rule 1 fold is beaten with the A200 recipe: incomplete INT
+   array alias (never a pointer local — one was measured again this session and
+   costs +4 insns) plus an empty `do { } while (0);` between the `sb 0(s1)` that
+   materialises the base and the first `lw -24(s1)`.
+
+   THE WHOLE RESIDUE IS THE BARRIER'S OWN COST, and it looks structural.
+   Measured behaviour: no insn was ever observed crossing the dummy loop's
+   notes, i.e. the barrier acts as a scheduling boundary, and it lands in
+   exactly the region the original interleaves:
+   the original hoists `lui a1/lw a1` (g_nSpyroWorldPosY), `li a2,1` and
+   `lw a0,-24(s1)` up INTO the five-byte-store block and fills the
+   `lw v1,4(s2)` load-delay slot with them.  Nothing can cross the note, so the
+   arg group and the store block stay in whichever order the barrier fixes.
+   Measured (linked diff, differing insns / 217) for every legal barrier
+   position between the base def and the first -24 access:
+     after g_bSpyroSubFrameTimer = 0   31   <- best, the form below
+     after g_bSpyroAnimCurrent / the first sb / g_bSpyroFramePrev / AnimFrame 34
+     after D_80078D6C                  35
+     before the ArcTan2 (old wip pos)  30 but 218 insns, does not link
+   Also ruled out: `rec = idx*88 + base` vs `base + idx*88` (gcc canonicalises
+   the commutative operands, no change), hoisting the -24 read into its own
+   local before or after the rec computation (+2 insns), and inlining
+   `&g_abSpyroAnimPrevBlock[-6]` at the three call sites instead of a local
+   (identical).
+   NEXT IDEA: an ebb break that is NOT a loop note — the barrier only has to
+   stop cse, and the scheduler must be able to move across it.  Anything that
+   ends `cse_end_of_basic_block` without emitting NOTE_INSN_LOOP_BEG would
+   close this function and probably several other A200 users. */
+
+/* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,
+   snapshotting the scene around the actor the player interacted with.  Freezes
+   gameplay, picks the initial cursor (0 when D_80078D14 is set, else 2), plays
+   the level's menu sound, resets Spyro and forces anim state 1, then captures
+   the yaw and distance from Spyro to the actor's pickup target, to the actor
+   itself, to the level-overlay init actor (when present) and to the camera into
+   the D_80078D2C..D70 scripted-camera block, and seeds the menu pan targets. */
 void func_8002CCC8(int actor) {
   int vec[3];
-  int t;
-  unsigned char *p;
+  int owner;
   char *rec;
-  unsigned char *new_var3;
-  int *new_var;
-  int u;
-  int new_var2;
-  t = *((int *)actor);
+  int camYaw;
+
+  owner = *(int *)actor;
   g_nGamestate = 0xB;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
@@ -68,78 +96,55 @@ void func_8002CCC8(int actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
-  new_var2 = 0;
   D_80078D74 = actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(
-      *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x2C)), 0, 0x10,
-      new_var2);
+  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C), 0,
+                  0x10, 0);
   ResetSpyroEntity(1);
-  *((unsigned char *)g_abSpyroAnimPrevBlock) = 1;
+  *(unsigned char *)g_abSpyroAnimPrevBlock = 1;
   g_bSpyroAnimCurrent = 1;
   g_bSpyroFramePrev = 0;
   g_bSpyroAnimFrame = 1;
   g_bSpyroSubFrameTimer = 0;
-  D_80078D6C = g_nSpyroBodyYaw;
-  rec = (char *)(((2 * (*((int *)(t + 4)))) * 44) + ((int)g_pActorListBase));
   do {
   } while (0);
-  D_80078D70 = ArcTan2((*((int *)(rec + 0xC))) - g_abSpyroAnimPrevBlock[-6],
-                       (*((int *)(rec + 0x10))) - g_nSpyroWorldPosY, 1);
-  D_80078D2C = ArcTan2((*((int *)(actor + 0xC))) - g_abSpyroAnimPrevBlock[-6],
-                       (*((int *)(actor + 0x10))) - g_nSpyroWorldPosY, 1);
-  t = (int)&g_abSpyroAnimPrevBlock[-6];
-  SubtractVector(vec, (int *)(actor + 0xC), (int *)t);
+  D_80078D6C = g_nSpyroBodyYaw;
+  rec = *(int *)(owner + 4) * 88 + (char *)g_pActorListBase;
+  D_80078D70 = ArcTan2(*(int *)(rec + 0xC) - g_abSpyroAnimPrevBlock[-6],
+                       *(int *)(rec + 0x10) - g_nSpyroWorldPosY, 1);
+  D_80078D2C = ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
+                       *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
+  SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
   D_80078D30 = VectorLength(vec, 0);
   D_80078D3C = 0x480;
-  D_80078D34 = *((int *)(actor + 0x14));
+  D_80078D34 = *(int *)(actor + 0x14);
   D_80078D38 = D_80078D70;
-  D_80078D40 = 0x170;
-  D_80078D40 = g_abSpyroAnimPrevBlock[-4] + D_80078D40;
-  new_var = (int *)t;
-  if (g_pLevelOverlayInitRecord != new_var2) {
+  D_80078D40 = g_abSpyroAnimPrevBlock[-4] + 0x170;
+  if (g_pLevelOverlayInitRecord != 0) {
     D_80078D44 =
-        ArcTan2((*((int *)(((char *)g_pLevelOverlayInitRecord) + 0xC))) -
+        ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
                     g_abSpyroAnimPrevBlock[-6],
-                (*((int *)(((char *)g_pLevelOverlayInitRecord) + 0x10))) -
+                *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
                     g_nSpyroWorldPosY,
                 1);
-    SubtractVector(vec, (int *)(((char *)g_pLevelOverlayInitRecord) + 0xC),
-                   (int *)t);
+    SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
+                   &g_abSpyroAnimPrevBlock[-6]);
     D_80078D48 = VectorLength(vec, 0);
     D_80078D50 = 0x600;
     D_80078D4C = (D_80078D70 + 0x800) & 0xFFF;
   }
-  actor = (int)g_anCameraPos;
-  D_80078D54 = ArcTan2((*((int *)actor)) - g_abSpyroAnimPrevBlock[-6],
+  D_80078D54 = ArcTan2(g_anCameraPos[0] - g_abSpyroAnimPrevBlock[-6],
                        g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
-  SubtractVector(vec, (int *)actor, new_var);
+  SubtractVector(vec, g_anCameraPos, &g_abSpyroAnimPrevBlock[-6]);
   D_80078D58 = VectorLength(vec, 0);
   g_nSaveMenuXOffset = 0xB0;
-  u = (D_80078D70 + 0x30B) & 0xFFF;
   D_80078D5C = g_anCameraPos[2];
-  D_80078D60 = u;
-  if (AbsAngleDelta12(D_80078D54, u) > 0x400) {
+  camYaw = (D_80078D70 + 0x30B) & 0xFFF;
+  D_80078D60 = camYaw;
+  if (AbsAngleDelta12(D_80078D54, camYaw) > 0x400) {
     g_nSaveMenuXOffset = 0;
     D_80078D60 = (D_80078D70 - 0x30B) & 0xFFF;
   }
   D_80078D64 = 0x4C9;
   D_80078D68 = g_abSpyroAnimPrevBlock[-4] + 0x56B;
 }
-
-/* PARKED 2026-08-15: 222/217 insns — still 5 over, but the B-i rule 1 fold that
-   parked it is GONE. The two negative-offset reads now come out `lw a0,-24(s1)`
-   / `lw v0,-16(s1)` like the original, via this session's recipe: reach the
-   block through the alias as an INT ARRAY with word indices (no pointer local —
-   reload's update_equiv_regs substitutes a pointer local's REG_EQUIV constant
-   function-globally, which no cse-level barrier can undo) plus an empty
-   `do { } while (0);` before the block, whose NOTE_INSN_LOOP_BEG ends cse's
-   extended basic block. Same recipe matched SampleSpyroShadowRingHeights and
-   ProbeSpyroGroundContact this session.
-
-   What is left is ordinary decode work on a permuter-spew body, NOT a wall:
-   an extra `addiu v1,s1,-24` + `move s2,v1` pair where the original keeps the
-   ArcTan2 argument in place, the `li a2,1` (the ArcTan2 high-precision flag)
-   sitting one slot late at three call sites, and one extra `lui/lw` in the
-   0x170 offset block. Re-derive the body from the asm before touching the
-   register roles — the note below is from the spew era. */
