@@ -3,11 +3,11 @@
 extern void SetSpuDmaReadStateBits(void);
 extern void SetSpuDmaWriteStateBits(void);
 
-extern char *D_80073554;
-extern volatile int *D_80073558;
-extern volatile int *D_8007355C;
-extern volatile int *D_80073560;
-extern unsigned short D_8007356C;
+extern char *D_80073554;          /* SPU hardware register block base */
+extern volatile int *D_80073558;  /* SPU DMA channel MADR register */
+extern volatile int *D_8007355C;  /* SPU DMA channel BCR register */
+extern volatile int *D_80073560;  /* SPU DMA channel CHCR register */
+extern unsigned short D_8007356C; /* encoded SPU transfer address shadow */
 
 /* gcc 2.7.2 stdarg (no system headers in this build): the `...` in the
    signature triggers the register-save prologue; va_arg is the standard
@@ -15,36 +15,44 @@ extern unsigned short D_8007356C;
 #define VA_START(ap, last) ((ap) = (char *)__builtin_next_arg(last))
 #define VA_ARG_U32(ap) ((ap) += 4, *(unsigned int *)((ap) - 4))
 
-/* 0x8005c1c0 — SPU DMA transfer controller. op 2 = stamp the encoded transfer
-   address shadow into the SPU addr register (+0x1a6); op 1/0 = wait for the
-   addr register to settle then set the SPUCNT (+0x1aa) transfer-mode bits
-   (write 0x20 / read 0x30) and the pending-direction flag; op 3 (madr, size) =
-   wait for the mode bits, fire the state-bit callback, then kick the DMA
-   channel via the MADR/BCR/CHCR shadows. Returns -2 on timeout, else 0.
+/* 0x8005c1c0 (656 bytes) — SPU DMA transfer controller. op 2 (addr) stamps the
+   encoded transfer address into the SPU address register (+0x1a6); op 1 / op 0
+   wait for that register to settle, then set the SPUCNT (+0x1aa) transfer-mode
+   bits (write 0x20 / read 0x30) and the pending-direction flag; op 3
+   (madr, size) waits for the mode bits, fires the direction's state-bit
+   callback, then kicks the DMA channel through the MADR/BCR/CHCR shadows.
+   Returns -2 if any wait spins past 0xF00 iterations, else 0.
 
-   PARKED (2 insns short, 162/164): the original has `andi v0,v0,0xFFFF` on the
-   entry wait-test read in cases 1 and 0 (lhu; sw zero->dir; andi; beq). Every
-   C form tried (ushort local, explicit & 0xFFFF, shift-pair, mask-in-var,
-   multi-def cur incl. a srlv def) gets the mask combine-folded into the lhu.
-   Probe result: the andi survives ONLY when the loaded value's def has TWO
-   uses (blocks combine's single-use substitution) — e.g. `int c = load;
-   G = c; if ((unsigned short)c != t)` — but the original has no natural
-   second use of the entry read. Everything else byte-matches at objdump
-   level: the real-varargs prologue (sw a0-a3 pre-frame + sw a0,0x18 homing
-   via (void)&op), the va_arg s0 walk, both guard+do/while waits, the case-3
-   masked while, sltu via the frac local, and the CHCR default+override tail.
+   PARKED 2026-08-15 — re-derived from the asm (the 2026-07-25 permuter body is
+   gone). 162/164 insns; the whole case-3 tail from the SetSpuDma*StateBits call
+   pair to the epilogue is insn-for-insn exact, and the `break` + one shared
+   trailing `return 0` is what puts `move v0,zero` AFTER the CHCR store (reorg
+   then steals a copy of it into each arm's `j` delay slot — A186).
 
-   2026-07-25-1 unattended permuter session (~15m, ~64000 iterations, timed out
-   at the 15m budget): best score 1095 vs base score 1620. No byte-perfect
-   candidate found; still PARKED (see above). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/ControlSpuDmaTransfer.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/ControlSpuDmaTransfer/output-1095-1/source.c */
+   Residue #1 (the 2 missing insns, now a WALL — see §B22): the original masks
+   the ENTRY wait-test read in cases 1 and 0 with `andi v0,v0,0xFFFF` after an
+   `lhu`, and the loop's re-read is NOT masked. gcc 2.7.2's combine always
+   deletes a redundant 0xFFFF mask on a zero-extending load whose def has ONE
+   use. Measured over 20 source forms in three probe batches (2026-08-15), all
+   folded: explicit `& 0xFFFF`, `(unsigned short)` cast on either operand,
+   `unsigned short` local (PROMOTE_MODE ⇒ no AND at all), signed `lh` + unsigned
+   cast, non-volatile load, `(c ^ t) & 0xFFFF`, guard+do/while vs while-form,
+   two defs of `cur`, a 16-bit bitfield in an int container (both halves), a
+   `volatile unsigned short : 16` struct field, and a volatile-declared HW
+   global. Making the intervening `g_nSpuPendingDmaDirection` store volatile
+   does NOT block it either (tried via an allow_duplicated alias; `can_combine_p`
+   only scans for intervening volatiles when the SOURCE is volatile-and-asm-ish,
+   not here). The ONLY thing that keeps the mask is a second use of the loaded
+   pseudo (probe v3) — and the original's data flow has none to give, so any
+   spelling that reaches it costs +1 insn elsewhere. Not a permuter target.
 
+   Residue #2: a whole-function caller-saved rotation that rides on #1 —
+   hoisted constant 1 in a2 (ours v1, shared with the counter), base/target a1/a0
+   (ours a0/a1) in cases 1 and 0, want/base a0/a1 (ours a1/a0) in case 3.
+   Residue #3: in the case-3 kick block the original fills the `lw size` load
+   bubble with the D_80073558 pointer load and sinks the g_dwSpuDmaMadrShadow
+   reload down to the sltu/addu pair; ours does the reverse (2 insns, A164
+   straggler order). */
 int ControlSpuDmaTransfer(int op, ...) {
   char *ap;
   char *base;
@@ -52,54 +60,61 @@ int ControlSpuDmaTransfer(int op, ...) {
   int target;
   unsigned short want;
   unsigned int n;
-  unsigned int frac;
   unsigned int size;
+  unsigned int blocks;
+  unsigned int frac;
   int cmd;
-  ap = (char *)__builtin_next_arg(op);
+
+  VA_START(ap, op);
   (void)(&op);
+
   switch (op) {
   case 2:
-    cur = ((ap += 4, *((unsigned int *)(ap - 4)))) >> g_nSpuAddrShift;
+    cur = VA_ARG_U32(ap) >> g_nSpuAddrShift;
     base = D_80073554;
     D_8007356C = cur;
-    *((volatile short *)(base + 0x1A6)) = cur;
-    return 0;
+    *(volatile short *)(base + 0x1A6) = cur;
+    break;
 
   case 1:
-    target = D_8007356C;
     base = D_80073554;
-    cur = *((volatile unsigned short *)(base + 0x1A6));
+    target = D_8007356C;
+    cur = *(volatile unsigned short *)(base + 0x1A6);
     g_nSpuPendingDmaDirection = 0;
-    if ((cur & 0xFFFF) != target) {
+    if ((unsigned short)cur != target) {
       n = 0;
       do {
         n += 1;
         if (n >= 0xF01) {
           return -2;
         }
-      } while ((*((volatile unsigned short *)(base + 0x1A6))) != target);
+        cur = *(volatile unsigned short *)(base + 0x1A6);
+      } while (cur != target);
     }
-    cur = *((volatile unsigned short *)(D_80073554 + 0x1AA));
-    *((volatile unsigned short *)(D_80073554 + 0x1AA)) = (cur & 0xFFCF) | 0x20;
-    return 0;
+    base = D_80073554;
+    cur = *(volatile unsigned short *)(base + 0x1AA);
+    *(volatile unsigned short *)(base + 0x1AA) = (cur & 0xFFCF) | 0x20;
+    break;
 
   case 0:
-    target = D_8007356C;
     base = D_80073554;
-    cur = *((volatile unsigned short *)(base + 0x1A6));
+    target = D_8007356C;
+    cur = *(volatile unsigned short *)(base + 0x1A6);
     g_nSpuPendingDmaDirection = 1;
-    if ((cur & 0xFFFF) != target) {
+    if ((unsigned short)cur != target) {
       n = 0;
       do {
         n += 1;
         if (n >= 0xF01) {
           return -2;
         }
-      } while ((*((volatile unsigned short *)(base + 0x1A6))) != target);
+        cur = *(volatile unsigned short *)(base + 0x1A6);
+      } while (cur != target);
     }
-    cur = *((volatile unsigned short *)(D_80073554 + 0x1AA));
-    *((volatile unsigned short *)(D_80073554 + 0x1AA)) = cur | 0x30;
-    return 0;
+    base = D_80073554;
+    cur = *(volatile unsigned short *)(base + 0x1AA);
+    *(volatile unsigned short *)(base + 0x1AA) = cur | 0x30;
+    break;
 
   case 3:
     want = 0x20;
@@ -108,7 +123,7 @@ int ControlSpuDmaTransfer(int op, ...) {
     }
     base = D_80073554;
     n = 0;
-    while (((*((volatile unsigned short *)(base + 0x1AA))) & 0x30) != want) {
+    while ((*(volatile unsigned short *)(base + 0x1AA) & 0x30) != want) {
       n += 1;
       if (n >= 0xF01) {
         return -2;
@@ -121,18 +136,18 @@ int ControlSpuDmaTransfer(int op, ...) {
       SetSpuDmaWriteStateBits();
     }
     cmd = 0x1000201;
-    g_dwSpuDmaMadrShadow = (ap += 4, *((unsigned int *)(ap - 4)));
-    target = (ap += 4, *((unsigned int *)(ap - 4)));
-    size = target;
+    g_dwSpuDmaMadrShadow = VA_ARG_U32(ap);
+    size = VA_ARG_U32(ap);
+    blocks = size >> 6;
     frac = (size & 0x3F) != 0;
-    g_nSpuDmaBcrBlockCount = (size >> 6) + frac;
-    *D_80073558 = *((volatile unsigned int *)(&g_dwSpuDmaMadrShadow));
-    *D_8007355C = ((*((volatile int *)(&g_nSpuDmaBcrBlockCount))) << 16) | 0x10;
+    g_nSpuDmaBcrBlockCount = blocks + frac;
+    *D_80073558 = *(volatile unsigned int *)(&g_dwSpuDmaMadrShadow);
+    *D_8007355C = ((*(volatile int *)(&g_nSpuDmaBcrBlockCount)) << 16) | 0x10;
     if (g_nSpuPendingDmaDirection == 1) {
       cmd = 0x1000200;
     }
     *D_80073560 = cmd;
-    return 0;
+    break;
   }
 
   return 0;
