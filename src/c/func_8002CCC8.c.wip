@@ -14,8 +14,9 @@ extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int AbsAngleDelta12(int a, int b);
 
-extern unsigned char g_abSpyroAnimPrevBlock[]; /* alias block — +0 anim-prev,
-                                                  -0x18 g_anSpyroWorldPos */
+/* alias block as an INT array — +0 anim-prev byte, -6 words g_anSpyroWorldPos[0],
+   -4 words g_anSpyroWorldPos[2]; the whole block must come off one held base. */
+extern int g_abSpyroAnimPrevBlock[];
 extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
 extern int D_80078D14;
 extern int D_80078D2C;
@@ -74,32 +75,32 @@ void func_8002CCC8(int actor) {
       *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x2C)), 0, 0x10,
       new_var2);
   ResetSpyroEntity(1);
-  p = g_abSpyroAnimPrevBlock;
-  p[0] = 1;
+  *((unsigned char *)g_abSpyroAnimPrevBlock) = 1;
   g_bSpyroAnimCurrent = 1;
   g_bSpyroFramePrev = 0;
   g_bSpyroAnimFrame = 1;
   g_bSpyroSubFrameTimer = 0;
   D_80078D6C = g_nSpyroBodyYaw;
   rec = (char *)(((2 * (*((int *)(t + 4)))) * 44) + ((int)g_pActorListBase));
-  new_var3 = p - 0x18;
-  D_80078D70 = ArcTan2((*((int *)(rec + 0xC))) - (*((int *)new_var3)),
+  do {
+  } while (0);
+  D_80078D70 = ArcTan2((*((int *)(rec + 0xC))) - g_abSpyroAnimPrevBlock[-6],
                        (*((int *)(rec + 0x10))) - g_nSpyroWorldPosY, 1);
-  D_80078D2C = ArcTan2((*((int *)(actor + 0xC))) - (*((int *)new_var3)),
+  D_80078D2C = ArcTan2((*((int *)(actor + 0xC))) - g_abSpyroAnimPrevBlock[-6],
                        (*((int *)(actor + 0x10))) - g_nSpyroWorldPosY, 1);
-  t = (int)new_var3;
+  t = (int)&g_abSpyroAnimPrevBlock[-6];
   SubtractVector(vec, (int *)(actor + 0xC), (int *)t);
   D_80078D30 = VectorLength(vec, 0);
   D_80078D3C = 0x480;
   D_80078D34 = *((int *)(actor + 0x14));
   D_80078D38 = D_80078D70;
   D_80078D40 = 0x170;
-  D_80078D40 = (*((int *)(p - 0x10))) + D_80078D40;
+  D_80078D40 = g_abSpyroAnimPrevBlock[-4] + D_80078D40;
   new_var = (int *)t;
   if (g_pLevelOverlayInitRecord != new_var2) {
     D_80078D44 =
         ArcTan2((*((int *)(((char *)g_pLevelOverlayInitRecord) + 0xC))) -
-                    (*((int *)new_var3)),
+                    g_abSpyroAnimPrevBlock[-6],
                 (*((int *)(((char *)g_pLevelOverlayInitRecord) + 0x10))) -
                     g_nSpyroWorldPosY,
                 1);
@@ -110,7 +111,7 @@ void func_8002CCC8(int actor) {
     D_80078D4C = (D_80078D70 + 0x800) & 0xFFF;
   }
   actor = (int)g_anCameraPos;
-  D_80078D54 = ArcTan2((*((int *)actor)) - (*((int *)new_var3)),
+  D_80078D54 = ArcTan2((*((int *)actor)) - g_abSpyroAnimPrevBlock[-6],
                        g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, (int *)actor, new_var);
   D_80078D58 = VectorLength(vec, 0);
@@ -123,27 +124,22 @@ void func_8002CCC8(int actor) {
     D_80078D60 = (D_80078D70 - 0x30B) & 0xFFF;
   }
   D_80078D64 = 0x4C9;
-  D_80078D68 = (*((int *)(p - 0x10))) + 0x56B;
+  D_80078D68 = g_abSpyroAnimPrevBlock[-4] + 0x56B;
 }
 
-/* PARKED (session 2026-07-10-1): 221/217 insns — 4 over, slot overflow.
-   Logic complete + all structure right (register roles s0/s1/s2 match after
-   variable reuse: t=target->wpos, actor->camera base; scalar alias
-   g_nSpyroWorldPosY fixed the 4 cross-call Y reads). Root cause of the +4:
-   the held AnimPrev base p is a compile-time constant, and the 4 negative-
-   offset accesses (*(p-0x18) x3, *(p-0x10) x1) that sit in the SAME extended
-   basic block as p's assignment get constant-folded by cse to absolute
-   lui+lw(sym-0x18) pairs (+1 insn each); the accesses after a label (X#4 at
-   D54, Z#2 at D68) already come out reg-based (lw -0x18(s1)) like the
-   original. cse's same-ebb constant-address fold can't be defeated from
-   source (volatile array, scalar alias, pointer-arith forms all tried on the
-   sibling walls). Extends the Sec-I BeginStoryIntro negative-offset wall to
-   LOADS, with the ebb boundary as the exact dividing line.
+/* PARKED 2026-08-15: 222/217 insns — still 5 over, but the B-i rule 1 fold that
+   parked it is GONE. The two negative-offset reads now come out `lw a0,-24(s1)`
+   / `lw v0,-16(s1)` like the original, via this session's recipe: reach the
+   block through the alias as an INT ARRAY with word indices (no pointer local —
+   reload's update_equiv_regs substitutes a pointer local's REG_EQUIV constant
+   function-globally, which no cse-level barrier can undo) plus an empty
+   `do { } while (0);` before the block, whose NOTE_INSN_LOOP_BEG ends cse's
+   extended basic block. Same recipe matched SampleSpyroShadowRingHeights and
+   ProbeSpyroGroundContact this session.
 
-   2026-07-25-1 unattended permuter session (~15m, ~62000 iterations, timed out
-   at the 15m budget): best score 795 vs base score 2310. No byte-perfect
-   candidate found; still PARKED. NB the "can't be defeated from source" claim
-   about cse's same-ebb constant-address fold was disproved elsewhere in this
-   same sweep: ProbeSpyroLedgeForward, parked on exactly that wall, matched at
-   iteration 212 — see
-   build/permuter/nonmatchings/ProbeSpyroLedgeForward/output-0-1/source.c. */
+   What is left is ordinary decode work on a permuter-spew body, NOT a wall:
+   an extra `addiu v1,s1,-24` + `move s2,v1` pair where the original keeps the
+   ArcTan2 argument in place, the `li a2,1` (the ArcTan2 high-precision flag)
+   sitting one slot late at three call sites, and one extra `lui/lw` in the
+   0x170 offset block. Re-derive the body from the asm before touching the
+   register roles — the note below is from the spew era. */

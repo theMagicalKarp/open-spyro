@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.86% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">320,960 / 2,159,608 split-code bytes · 530 matched · 69 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.85% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">320,748 / 2,159,608 split-code bytes · 530 matched · 70 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -534,7 +534,7 @@
 <rect x="276.43" y="694.33" width="6.85" height="6.39" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FUN_80065364  ·  80 bytes  ·  matched</title></rect>
 <rect x="283.28" y="694.33" width="6.50" height="6.39" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginPauseToMenuTransition  ·  76 bytes  ·  matched</title></rect>
 <rect x="289.78" y="694.33" width="6.50" height="6.39" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038340  ·  76 bytes  ·  matched</title></rect>
-<rect x="296.29" y="694.33" width="6.50" height="6.39" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroSpeedTowardTarget  ·  76 bytes  ·  asm</title></rect>
+<rect x="296.29" y="694.33" width="6.50" height="6.39" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroSpeedTowardTarget  ·  76 bytes  ·  wip</title></rect>
 <rect x="302.79" y="694.33" width="6.50" height="6.39" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OffsetHudDigitRollAxis  ·  76 bytes  ·  matched</title></rect>
 <rect x="309.29" y="694.33" width="6.50" height="6.39" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SendGpuLinkedList  ·  76 bytes  ·  matched</title></rect>
 <rect x="242.20" y="700.72" width="6.53" height="6.37" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_7F8  ·  76 bytes  ·  library</title></rect>
