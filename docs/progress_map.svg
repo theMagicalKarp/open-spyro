@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.87% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">321,220 / 2,159,608 split-code bytes · 533 matched · 68 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.88% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">321,340 / 2,159,608 split-code bytes · 534 matched · 67 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -58,7 +58,7 @@
 <rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroHornStrikeTrails  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0D_Update  ·  1700 bytes  ·  matched</title></rect>
 <rect x="142.49" y="425.50" width="29.97" height="30.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>FormatAndWrite  ·  1672 bytes  ·  asm</title></rect>
-<rect x="172.46" y="425.50" width="29.76" height="30.49" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>PollPadAndDistributeInput  ·  1660 bytes  ·  wip</title></rect>
+<rect x="172.46" y="425.50" width="29.76" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollPadAndDistributeInput  ·  1660 bytes  ·  matched</title></rect>
 <rect x="202.22" y="425.50" width="28.68" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildActorDrawList  ·  1600 bytes  ·  handwritten</title></rect>
 <rect x="230.90" y="425.50" width="28.61" height="30.49" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ApplySpuVoiceAttrRange  ·  1596 bytes  ·  asm</title></rect>
 <rect x="259.51" y="425.50" width="28.54" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildSecondaryActorDrawList  ·  1592 bytes  ·  handwritten</title></rect>
