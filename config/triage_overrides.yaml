@@ -131,9 +131,10 @@ RestartSpyroAnimWithState:
 
 # --- Held-base fold rule 1 / shared-base-no-call ---
 AdvanceSpyroSpeedTowardTarget:
-  verdict: wall
-  class: "B7 shared-base no-call"
-  date: 2026-07-17
+  verdict: parked
+  class: "hard-reg preference: the loaded `speed` allocno carries `;; preferences: 4` and takes a0 ahead of the accel param"
+  date: 2026-08-15
+  note: "20/19 (was 21/19). A201 (clamp store written per arm, cross-jumped back) retired the JOIN-block fold, and A195 depth 2 fixed base/target/stepped. The whole residue is one `move v1,a0`; the A195 dial cannot reorder speed vs accel because every wrapper that mentions accel also mentions speed."
 CameraSettle_Update:
   verdict: wall
   class: "B7 shared-base halfword block, no call"
@@ -1462,15 +1463,15 @@ ProbeSpyroGroundContact:
   date: 2026-08-15
   note: "B-i rule 1 member; matched with A200. The FIRST slope test must stay the plain scalar g_nSpyroGroundSlope (the original folds there), only the third probe gets the ebb break."
 PollPadAndDistributeInput:
-  verdict: parked
-  class: "F1 whole-function caller-saved rotation (mapped v1-vs-a1 + base/pressed a1/a2)"
+  verdict: viable
+  class: "MATCHED 2026-08-15-1"
   date: 2026-08-15
-  note: "20/415 LENGTH-EXACT (was +4 insns / could not link). A200 retired the fold. Residue is one allocation rotation: `mapped` is the highest-priority global allocno so no ref dial can reorder it; needs a regs_someone_prefers exclusion (B21) to keep v1 away from it."
+  note: "the F1 rotation its park called unreachable was A196: the original serves BOTH the Saturn remap accumulator and `pressed` from a1 (disjoint ranges), so giving them the SAME C variable closed all 20 insns in one build."
 func_8002CCC8:
   verdict: parked
-  class: "decode residue (not the fold any more): stray addiu/move pair + li a2,1 placement"
+  class: "A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave"
   date: 2026-08-15
-  note: "222/217. A200 + the int-array alias form retired the B-i fold (both -0x18/-0x10 reads now lw off(s1)). What is left is ordinary decode on a permuter-spew body — re-derive from asm."
+  note: "217/217 LENGTH-EXACT (was 222/217), 31 differing, re-derived from asm. The original hoists the ArcTan2 arg loads (g_nSpyroWorldPosY, li a2,1, lw -24(s1)) into the five-byte-store block; no insn crosses the barrier, so they cannot. Every legal barrier position measured in the .wip header. Needs an ebb break that is not a loop note."
 AdvanceSpyroSpeedTowardTarget:
   verdict: parked
   class: "B-i fold in a JOIN block + A167 param copy"
@@ -1491,3 +1492,28 @@ BeginGemPickupOverlay:
   class: "F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6)"
   date: 2026-08-15
   note: "9/146 LENGTH-EXACT, was 24/146. Closed by routing the five cutscene-state zeroes through the SAME alias symbol (ordering) and writing g_nGemPickupTypeSnapshot as g_anGemPickupBlock[-1] (A134 array lvalue blocks the actor-index load hoist)."
+ApplyPadInputToSpyroBodyYaw:
+  verdict: viable
+  class: "MATCHED 2026-08-15-1"
+  date: 2026-08-15
+  note: "B-i rule 1 member parked 2026-07-10 as permuter-or-never. A200 (int-array alias + empty do/while(0) between the [0] read and the +0x50 read) gave 2/59 on the FIRST build; the last two insns were a fresh destination local for the loaded target yaw."
+CameraSettle_Update:
+  verdict: viable
+  class: "MATCHED 2026-08-15-1"
+  date: 2026-08-15
+  note: "listed under B7 but every access is at offset 0, so the plain `extern short g_anCameraEulerPitchBlock[]` alias holds the base with no volatile and no barrier. First build."
+InstallInterruptCallback:
+  verdict: viable
+  class: "MATCHED 2026-08-15-1"
+  date: 2026-08-15
+  note: "B7 park (permuter-or-never). A200 holds -4 and +0x2c on the base; the two missing insns were A202 (the original's andi 0xFFFF is the zero-extend of a VOLATILE HImode load that combine cannot merge across the intervening I_MASK=0 store). Closers: `char *base` as its own statement, in-place `bit = 1; bit = bit << irq;`, and a separate local for the inverted mask."
+RespawnOrGameOver_Update:
+  verdict: viable
+  class: "MATCHED 2026-08-15-1"
+  date: 2026-08-15
+  note: "was already building byte-exact — the park's F10/F14 verdict was object-level (§C). Found by re-running the LINKED wip sweep. Permuter body kept (the volatile size read routed through the loop counter is load-bearing), journal stripped."
+TickCdMusicStream:
+  verdict: parked
+  class: "F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order"
+  date: 2026-08-15
+  note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > D_800776CC (A120 load order, 4 insns)."
