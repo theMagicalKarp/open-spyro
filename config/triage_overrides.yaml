@@ -1303,3 +1303,85 @@ func_80038C4C_2026_08_13_1:
     contains a control-flow split or is already inside a loop. Residue is
     unchanged from 2026-07-09: ay in v1 (ours) vs a1, and the two limit loads
     sharing v0 where the original keeps v1/v0.
+
+# --- 2026-08-14 harvest session ---
+func_80038638_2026_08_14:
+  verdict: matched
+  class: "MATCHED — A160 abs() + a re-tuned A195 depth"
+  date: 2026-08-14
+  note: >-
+    740 B. The 3/185 "A187 unreachable straight-line copy" verdict was wrong:
+    ABS_EXPR's expander emits the copy/compare/negate-in-place template itself,
+    so both |face| sites are literally abs(face). abs(x) mentions x ONCE per
+    do{}while(0) wrapper level where the hand-rolled form mentions it twice, so
+    the ref dial that wins s1 for `face` goes 9 levels -> 16 (15 is the measured
+    minimum). The earlier "abs() is much worse (24/185)" reading was the
+    un-retuned dial, not the substitution.
+DrawCinematicLetterbox_2026_08_14:
+  verdict: matched
+  class: "MATCHED — A198 multi-set constant locals"
+  date: 2026-08-14
+  note: >-
+    420 B. The 2/105 F14/F8 "coupled pair" is retired. Assigning each shared
+    header constant to a local in EVERY arm of the preceding clamp if/else gives
+    it two reaching definitions, so cse cannot const-propagate it and re-create
+    the def at first use; the def order and the store order become independent
+    source decisions.
+func_8005E804_2026_08_14:
+  verdict: matched
+  class: "MATCHED — A199 block-scoped local pins an OR grouping"
+  date: 2026-08-14
+  note: >-
+    168 B. fold reassociates (1<<n | C) | (x & M) from either written order; a
+    block-scoped `bit` local puts a statement boundary fold cannot cross, and
+    `dicr | bit` (dying temp on the LEFT) puts it in the final OR's destination.
+RotateLightVectorXZ_2026_08_14:
+  verdict: matched
+  class: "MATCHED — three decode errors, never a spill"
+  date: 2026-08-14
+  note: >-
+    164 B. The parked "unexplained addiu sp,-8/+8 frame pair, likely a register-
+    pressure spill" was: (1) the X term reads g_anCosineLut[angle], not
+    g_anSineLut[angle+0x40]; (2) the accumulator RMW needs a VOLATILE sized-array
+    alias (g_anLightSweepAngleBlock) so both halves share one held base and the
+    volatile reload cannot hoist above the store; (3) the vector stores must be
+    written X, Y, Z so the Z constant fills the sine load's delay bubble. The
+    frame pair went away with them.
+TurnSpyroTowardMoveTargetWithLean_2026_08_14:
+  verdict: parked
+  class: "F1 local-alloc qty_compare tie (2/92), numeric criterion re-confirmed"
+  date: 2026-08-14
+  note: >-
+    368 B. Seven more forms measured, all confirming the 2026-08-11-3 analysis.
+    Byte-identical to the base: subu-into-the-loaded-temp, a block-scoped `m` for
+    the masked value, and its split variant — combine_regs ties the subu's dest
+    to the first dying input regardless of whether the mask's dest is block-local.
+    Worse: subu-into-b (6/92), delta-chain (9/92). The split form that fixes the
+    subu/andi pair costs the two loads' registers (5/92), and a do{}while(0) ref
+    dial on either load costs the length (+1 insn). The first-loaded temp's live
+    range is strictly longer than the second's, so range dials cannot equalise
+    them either — R is the only free variable. Permuter-or-never.
+EndSaveMenuToWorld_2026_08_14:
+  verdict: parked
+  class: "F2 sched1 ready-list placement (4 real diffs / 81)"
+  date: 2026-08-14
+  note: >-
+    324 B. Four of the eight diffs the object differ reports are reloc-addend
+    false positives on the alias bases. The real residue is the camera-anchor
+    store and the yaw-bias load interleaved the other way. The A164 source-order
+    dial does NOT reach it: explicit load temps placed at exactly the original's
+    emitted positions, decoupling each load's LUID from its store's, give a
+    BYTE-IDENTICAL residue — the loads are placed by ready-time and priority, not
+    by where the source reads them. Also measured: yaw before anchor 14/81,
+    flame/yaw swapped 14/81, anchor after flame 76/81, anchor after dyn 8/81.
+func_80038FC8_2026_08_14:
+  verdict: parked
+  class: "F14b mutual exclusion (4 real diffs / 152) — A198 does not reach it"
+  date: 2026-08-14
+  note: >-
+    608 B. Re-tested the multi-set-local lever (A198) as a way to give the call-arg
+    copy `move a0,s0` a lower LUID than the arm's `li v1,16`: a function-scope
+    `rec` assigned in BOTH anim arms and passed to func_80037E98 is BYTE-IDENTICAL.
+    Both defs have the same source, so the copy coalesces and the arg setup is
+    re-created at the call. A198 pins the position of a MATERIALISATION (a
+    constant), not of a copy of an already-live value.
