@@ -13,30 +13,28 @@ extern unsigned short
 extern unsigned char D_80011640[]; /* "unexpected interrupt(%04x)\n" */
 extern unsigned char D_8001165C[]; /* "intr timeout(%04x:%04x)\n" */
 
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/HandleHardwareInterrupt.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/HandleHardwareInterrupt/output-650-1/source.c */
-
 void HandleHardwareInterrupt(void) {
   unsigned short *p;
   void (**base)();
   void (**h)();
   int i;
+  int bit;
   unsigned int mask;
+  unsigned int pend;
+  unsigned int stat;
+
   p = g_anLibapiIrqBlock;
   if (p[0] == 0) {
     WritePrintf(D_80011640, *((volatile unsigned short *)g_pIStatReg));
     ReturnFromException();
   }
   g_nInIsrFlag = 1;
-  mask = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
+  stat = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
          (*((volatile unsigned short *)g_pIStatReg));
-  mask = (*((volatile unsigned short *)g_pIMaskReg)) & mask;
-  if (mask != 0) {
+  pend = (*((volatile unsigned short *)g_pIMaskReg)) & stat;
+  mask = pend;
+  if (pend != 0) {
+    bit = 1;
     base = (void (**)())(p + 2);
     do {
       i = 0;
@@ -47,7 +45,7 @@ void HandleHardwareInterrupt(void) {
             break;
           }
           if (mask & 1) {
-            *((volatile unsigned short *)g_pIStatReg) = ~(1 << i);
+            *((volatile unsigned short *)g_pIStatReg) = ~(bit << i);
             if ((*h) != 0) {
               (*h)();
             }
@@ -60,13 +58,14 @@ void HandleHardwareInterrupt(void) {
           }
         }
       }
-      mask = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
+      stat = ((unsigned int)(*((unsigned short *)(&g_nIrqEnableMask)))) &
              (*((volatile unsigned short *)g_pIStatReg));
-      mask = (*((volatile unsigned short *)g_pIMaskReg)) & mask;
-    } while (mask != 0);
+      pend = (*((volatile unsigned short *)g_pIMaskReg)) & stat;
+      mask = pend;
+    } while (pend != 0);
   }
-  if (((*((volatile unsigned short *)g_pIMaskReg)) &
-       (*((volatile unsigned short *)g_pIStatReg))) != 0) {
+  if (((*((volatile unsigned short *)g_pIStatReg)) &
+       (*((volatile unsigned short *)g_pIMaskReg))) != 0) {
     int old = g_nIsrTimeoutCounter;
     g_nIsrTimeoutCounter = old + 1;
     if (old > 0x800) {
@@ -82,46 +81,40 @@ void HandleHardwareInterrupt(void) {
   ReturnFromException();
 }
 
-/* PARKED 2026-07-19 at 78.7% (26/122), LENGTH-EXACT, correct logic. Whole
-   control structure + inner IRQ-dispatch loop + shared-base (handlers at
-   flag+4 via g_anLibapiIrqBlock) + watchdog are byte-identical. Residue is
-   entirely the 3 identical HW-register-read blocks `mask = IMask & (enable &
-   IStat)`:
-     - §K non-volatile POINTER-load order: gcc loads g_pIMaskReg's pointer
-       before g_pIStatReg's; the original loads the IStat pointer first (the
-       volatile VALUE-load order IStat-then-IMask already matches). ×3 blocks.
-     - §V/§H final `and` written straight into s0 instead of computing in v0
-       then `move s0,v0` (which the original folds into the beqz/bnez delay
-       slot). ×2 (initial + reload).
-     - §K `li s3,1` / `addiu s4,s1,4` emission order swapped (2 independent
-       insns). Block-temp reads were WORSE (73%); the inline expression here
-       is the best form. Clean single-shape permuter candidate.
+/* PARKED 2026-08-15 at 91.8% (10/122), LENGTH-EXACT — was 26/122. The
+   2026-07-25 permuter body is gone; this is a from-scratch decode. Three of the
+   four residues in the 2026-08-12-2 note are now CLOSED:
+     - the `move s0,v0` copy in both branch delay slots: the tested value and
+       the working mask are different variables AND the copy must sit
+       immediately before the test (`pend = <expr>; mask = pend; if (pend)`),
+       once before the loop and once at the end of the body. Putting `mask =
+       pend;` at the TOP of the body (tried 2026-08-12-2) leaves the copy
+       stranded — reorg only reaches it from the insn adjacent to the branch.
+     - `and v0,v0,v1` (the outer AND writing the imask value's register): the
+       intermediate needs its OWN local (`stat`), not a reuse of `pend`. With
+       one variable for both ANDs the second AND ties its dest to the
+       intermediate instead of the imask load.
+     - the tail's `lw a1(I_STAT)` / `lw a2(I_MASK)` order: write the final guard
+       `I_STAT & I_MASK`, not `I_MASK & I_STAT` — the first-expanded operand's
+       pointer load is emitted first (the AND encodes identically either way,
+       so this reads as a no-op change but moves 6 insns).
+     - `li s3,1` before `addiu s4,s1,4`: make the shift constant an explicit
+       local (`bit = 1;`) written BEFORE `base = ...`. As a loop.c hoist of the
+       literal it is emitted after the source statement, i.e. the wrong way
+       round; hoisting `base` instead (writing `h = (void(**)())(p+2)` inside
+       the loop) does NOT work — loop.c leaves it in the loop as
+       `addiu s2,s4,4` and the function comes out one insn short.
 
-   2026-07-25-1 unattended permuter session (~15m, ~72900 iterations, timed out
-   at the 15m budget): best score 650 vs base score 1490. No byte-perfect
-   candidate found; still PARKED (see above). */
-
-/* 2026-08-12-2 park-note CORRECTION (re-read the linked diff, 26/122 unchanged).
-   The 2026-07-19 diagnosis "gcc loads g_pIMaskReg's pointer before
-   g_pIStatReg's" is WRONG — the load ORDER already matches the original
-   (IStat ptr, enable, the g_nInIsrFlag store, IMask ptr, IStat value, IMask
-   value). What actually differs, in all three blocks, is only:
-     (1) a two-register swap: ours puts the IStat pointer/value in v1 and the
-         g_nIrqEnableMask value in a0; the original has them the other way
-         round, which also flips the inner `and`'s operand order
-         (orig `and v1,v1(enable),a0(istat)`, ours `and s0,v1(istat),a0(enable)`)
-         — i.e. our RTL carries the commutative operands reversed w.r.t. the
-         source, so plain source-operand swapping is not obviously the dial;
-     (2) the original computes the outer `and` into v0 and copies it into s0
-         (`move s0,v0`) in the branch's delay slot, where ours writes s0
-         directly — so the original's tested value and the working `mask` are
-         DIFFERENT pseudos.
-   Tried and rejected this session: `while ((mask = expr) != 0)` as the whole
-   loop (95/122 — gcc restructures the rotated loop); an embedded assignment in
-   the `if`/`while` tests (byte-identical to the current body — gcc coalesces
-   the copy away); and a separate `pending` temp with `mask = pending;` at the
-   top of the body (+1 insn: the copy does NOT sink into either delay slot, and
-   the extra allocno flips the s0/s1 prologue order).
-   Next idea for (2): find a form where the tested value is naturally live past
-   the assignment (e.g. the value also feeding the 11-way shift loop's initial
-   test) rather than a plain copy statement. */
+   REMAINING (10 insns, 5 per recompute block, ×2): a 2-register swap between
+   the g_pIStatReg POINTER (orig a0, ours v1) and the g_nIrqEnableMask VALUE
+   (orig v1, ours a0). The emitted ORDER is already identical, so this is purely
+   local-alloc priority (`qty_compare` = floor_log2(refs)*refs*size/live_length)
+   on two block-local qtys. §D 2c probe on this body: reg 88 (the pointer)
+   2 refs / 8 insns, reg 89 (the enable value) 2 refs / 10 insns — the pointer
+   wins on the shorter range and takes v1 (v1 precedes a0 in reg_alloc_order).
+   To flip it the enable needs 3 refs at that length, or a range under 8.
+   Everything tried costs +1 insn and overflows the slot: operand-swapping the
+   inner AND, splitting it (`stat = enable; stat &= *I_STAT;`), a `statval`
+   temp for the I_STAT deref, and A195's `do {} while (0)` ref dial around the
+   enable read (that one makes `en` a cross-block allocno: 24/122). Swapping the
+   OUTER AND's operands is a true no-op (10/122 either way). */

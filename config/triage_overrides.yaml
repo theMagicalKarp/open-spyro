@@ -1449,3 +1449,45 @@ func_80067BC0:
     it from the fall-through) where a separate `i += 1;` statement lands in the
     CALL's slot instead. The nop after `jal WaitMemCardEventSlot2` is not a
     residue — a `sw <sym>` macro is length 8 and can never fill a delay slot.
+
+# --- session 2026-08-15: the B-i held-base fold breached (A200 cse ebb break) ---
+SampleSpyroShadowRingHeights:
+  verdict: viable
+  class: "MATCHED 2026-08-15"
+  date: 2026-08-15
+  note: "was a B-i fold park since 2026-07-19; matched with A200 (empty do/while(0) ebb break) + the raw g_anSpyroBodyMtx array form + A134's sized-array store for the hidden flag."
+ProbeSpyroGroundContact:
+  verdict: viable
+  class: "MATCHED 2026-08-15"
+  date: 2026-08-15
+  note: "B-i rule 1 member; matched with A200. The FIRST slope test must stay the plain scalar g_nSpyroGroundSlope (the original folds there), only the third probe gets the ebb break."
+PollPadAndDistributeInput:
+  verdict: parked
+  class: "F1 whole-function caller-saved rotation (mapped v1-vs-a1 + base/pressed a1/a2)"
+  date: 2026-08-15
+  note: "20/415 LENGTH-EXACT (was +4 insns / could not link). A200 retired the fold. Residue is one allocation rotation: `mapped` is the highest-priority global allocno so no ref dial can reorder it; needs a regs_someone_prefers exclusion (B21) to keep v1 away from it."
+func_8002CCC8:
+  verdict: parked
+  class: "decode residue (not the fold any more): stray addiu/move pair + li a2,1 placement"
+  date: 2026-08-15
+  note: "222/217. A200 + the int-array alias form retired the B-i fold (both -0x18/-0x10 reads now lw off(s1)). What is left is ordinary decode on a permuter-spew body — re-derive from asm."
+AdvanceSpyroSpeedTowardTarget:
+  verdict: parked
+  class: "B-i fold in a JOIN block + A167 param copy"
+  date: 2026-08-15
+  note: "21/19 with a fresh decode; A200 fixed both arm stores, the post-join clamp store still folds (reload weak-base substitution, B-i rule 3). .c.wip parked."
+ControlSpuDmaTransfer:
+  verdict: wall
+  class: "B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load"
+  date: 2026-08-15
+  note: "162/164, re-derived from scratch. The original masks the ENTRY wait-test read in cases 1 and 0; 20 source forms measured, only a second use of the loaded pseudo keeps the mask and that costs an insn. Everything else (break + one shared return 0) is exact."
+HandleHardwareInterrupt:
+  verdict: parked
+  class: "F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie)"
+  date: 2026-08-15
+  note: "10/122 LENGTH-EXACT, was 26/122. Three of four residues closed (pend/mask copy pair, separate stat temp, I_STAT-first tail guard, explicit bit=1 local). Probe: ptr 2 refs/8 insns beats enable 2 refs/10."
+BeginGemPickupOverlay:
+  verdict: parked
+  class: "F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6)"
+  date: 2026-08-15
+  note: "9/146 LENGTH-EXACT, was 24/146. Closed by routing the five cutscene-state zeroes through the SAME alias symbol (ordering) and writing g_nGemPickupTypeSnapshot as g_anGemPickupBlock[-1] (A134 array lvalue blocks the actor-index load hoist)."

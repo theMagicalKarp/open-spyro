@@ -12,14 +12,6 @@ extern int g_anGemPickupBlock[]; /* held-base alias @ g_nGemPickupSubstate */
    actor's render record at +0x3c, anchors the aura star, and fires the rescue
    chime. Special-cases Artisans home (level 10 pickup 1->2) and Gnasty's Loot
    (level 0x3c key-locked treasure rewrite). (0x8002c924) */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/BeginGemPickupOverlay.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/BeginGemPickupOverlay/output-310-1/source.c */
-
 void BeginGemPickupOverlay(unsigned int *param_1) {
   unsigned int *puVar1;
   int world;
@@ -50,25 +42,24 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   }
   g_nGamestate = 8;
   world = g_nWorldDragonsRescued;
-  dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   g_nHudDragonCachedCount = world;
+  dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   prevDragons = *dragons;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
   *dragons = prevDragons + 1;
   g_anGemPickupBlock[0] = 0;
-  g_nGemPickupStreamState = 0;
-  g_nGemPickupTimer = 0;
-  g_nGemPickupSecondaryTimer = 0;
-  g_nGemPickupPadHoldTimer = 0;
-  g_nGemPickupAudioFiredFlag = 0;
+  g_anGemPickupBlock[1] = 0;  /* g_nGemPickupStreamState */
+  g_anGemPickupBlock[5] = 0;  /* g_nGemPickupTimer */
+  g_anGemPickupBlock[10] = 0; /* g_nGemPickupSecondaryTimer */
+  g_anGemPickupBlock[13] = 0; /* g_nGemPickupPadHoldTimer */
+  g_anGemPickupBlock[12] = 0; /* g_nGemPickupAudioFiredFlag */
   g_anGemPickupBlock[0x1a] = (int)param_1;
   g_nWorldDragonsRescued = world + 1;
-  g_nGemPickupTypeSnapshot = puVar1[6];
-  idx = puVar1[8];
-  if (idx != (-1)) {
-    *((unsigned char *)((((char *)g_pActorListBase) + (idx * 0x58)) + 0x3c)) =
-        1;
+  g_anGemPickupBlock[-1] = puVar1[6]; /* g_nGemPickupTypeSnapshot */
+  if (puVar1[8] != (-1)) {
+    *((unsigned char *)((((char *)g_pActorListBase) + (puVar1[8] * 0x58)) +
+                        0x3c)) = 1;
   }
   CopyVector(g_anGemPickupAuraStarAnchor, (int *)(param_1 + 3));
   g_anGemPickupAuraStarAnchor[2] += 0x40;
@@ -78,22 +69,40 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
       (unsigned char *)(((char *)g_anGemPickupBlock[0x1a]) + 0x54));
 }
 
-/* PARKED 69.2% (45/146), exact length, logic 100% correct. Solved: the
-   held-base alias g_anGemPickupBlock[0]/[0x1a] for the substate +
-   g_pGemPickupSourceActor stores + PlaySoundEffect owner arg; and the
-   dragon-rescue load-delay fill — the original interleaves the
-   gameplayBlocked/gamePaused stores into the g_anLevelDragonsRescued[idx]
-   load-modify-store, reproduced ONLY by splitting the RMW explicitly
-   (`prevDragons = *dragons; g_nGameplayBlocked=1; g_nGamePaused=1; *dragons =
-   prevDragons+1;`) — the inline `+= 1` or stores-before-RMW forms both hoist
-   the two stores above the whole dragon block and leave a load-delay nop.
-   RESIDUE = three independent §H/§B13/§M register+schedule ties source can't
-   move: (1) the Gnasty-loot block's two big-const regs (a1/a0 vs a0/v1) + the
-   0x800 reuse reg; (2) the dragon-index / literal-`1` register swap (v1/a0 vs
-   a0/v1); (3) the tail zero-store run scheduled AFTER the source-actor store +
-   world increment instead of before (batch-store scatter, §B13). Multi-cluster
-   permuter candidate. Alias g_anGemPickupBlock @0x80077058 committed.
+/* PARKED 2026-08-15 at 93.8% (9/146), LENGTH-EXACT — was 24/146 at the start of
+   the session (and 45/146 when the 2026-07-19 note below was written; that
+   note's residue list is superseded). The permuter body is gone. Closed here:
+     - the tail zero-store run scheduled AFTER the source-actor store (the
+       2026-07-19 note's residue 3): write the five cutscene-state zeroes
+       THROUGH THE SAME ALIAS as the +0/+0x68 stores (g_anGemPickupBlock[1]/[5]/
+       [10]/[13]/[12]) instead of as their own extern scalars. Different base
+       SYMBOLS let 2.7.2 alias analysis reorder the group; one symbol pins it.
+       The emitted addressing is unchanged (nonzero offsets still fold to
+       `lui at; sw %lo(sym+K)(at)` — B-i rule 1). 24 -> 15 diffs.
+     - `lw v1,0x20(a2)` (the actor-index load) hoisting above the two scalar
+       global stores that precede it: A134/A153 — a store to a plain extern
+       scalar does not block a pointer load, an ARRAY store does. Writing
+       g_nGemPickupTypeSnapshot as `g_anGemPickupBlock[-1]` (it sits 4 bytes
+       below the alias base) sets MEM_IN_STRUCT_P and the load stays put.
+       15 -> 9 diffs.
 
-   2026-07-25-1 unattended permuter session (~15m, ~71100 iterations, timed out
-   at the 15m budget): best score 310 vs base score 565. No byte-perfect
-   candidate found; still PARKED (see above). */
+   REMAINING (9 insns, one class): in the dragon-rescue block the original puts
+   the shared literal `1` in a0 and the `dragons` pointer in v1; ours has them
+   swapped. §D 2c probe: reg 116 (the constant, 3 refs / 6 insns, priority
+   floor_log2(3)*3/6 = 0.50) beats reg 75 (`dragons`, 3 refs / 7 insns, 0.43),
+   so it is allocated first and takes v1 (v1 precedes a0 in reg_alloc_order).
+   Flipping it needs `dragons` at 4 refs, or its live range at <=6 (a tie then
+   goes to the earlier birth, which is `dragons`). Everything tried either does
+   not move the counts or costs an insn: A181's second set (`dragons =
+   g_anLevelDragonsRescued; dragons += g_nLevelIntroIndex;` — flips the index
+   to v1 but ties `dragons` to the BASE's register and hoists the `la` two
+   slots, 22/146), a `dst = dragons;` copy before the store (cse deletes it),
+   A179's index form (16/146 — the HudDragonCachedCount store sinks below the
+   two flag stores), moving the increment or one flag store between the pair
+   (sched1 puts them back, 9/146 unchanged), `*dragons = prevDragons + 1` before
+   the flag stores (+1 insn, the load-delay nop the 2026-07-19 note describes),
+   a long-lived `one = 1` local (cse re-materializes it, 9/146), and A176/A195's
+   do/while(0) ref dial in every placement (31-38/146 — this is straight-line
+   code, so the wrapper only splits the basic block and wrecks sched1, exactly
+   A195's documented caveat). Not a permuter target: it is one local-alloc
+   priority comparison, and the numerator cannot be bought without an insn. */
