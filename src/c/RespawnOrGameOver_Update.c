@@ -1,28 +1,6 @@
 #include "globals.h"
 
-/* PARKED 2026-08-07 at 370/373 (99.2%, length-exact, 3-insn window; was
-   369/373). Class: F10/F14 sched1 order in the CdReadSyncSectors arg block.
-   The size global must be read TWICE off one held base (cse merges the two
-   reads in every non-volatile form — the merged variants come out 372 insns),
-   so the arg3 read has to be a volatile load. Fixed this session: routing that
-   read through `i` — the loop counter, already set 3 times — makes the load
-   NON-birthing (sched.c `birthing_insn_p` only boosts a dest whose
-   `reg_n_sets == 1` to max_priority, and a boosted insn is picked first in the
-   backward scan, i.e. placed LAST), so it no longer sinks below the second
-   held base's `la` and the 0x10(sp) stack-arg store. It now lands one position
-   too EARLY: the original is
-     lui a0 ; lw a0 (lba) ; lw a2 (size)
-   and we emit the size load first, because `lba` is still single-set and so is
-   itself boosted to the back.
-   Every carrier tried for lba's second set fails elsewhere: `count` (the mesh
-   count) fixes this window but costs 4 insns in the mesh-count block (its load
-   wants to stay birthing); a second set in the mode-1 arm (`swing`) does not
-   clear the boost at all; `p`/`scene` (pointer carriers) and the
-   `g_nLevelIntroIndex`/`(id/10)*10` routings overflow the slot or cost 100+.
-   Next lever if resumed: any second set of `lba` that neither adds an insn nor
-   moves a birthing load of its own — or the §E permuter on this window.
-
-   Update for gamestate 5 (GS_GAME_OVER, 0x8002edf0, 0x5d4).
+/* 0x8002edf0 (1492 bytes) — update for gamestate 5 (GS_GAME_OVER).
 
    Three arms on g_nGameplayDrawMode. Mode 0 is the load frame: after 16 frames
    it either hands straight back to gameplay (when the death happened outside a
@@ -33,9 +11,11 @@
    dragon on a cosine path, then he lands and the "press start" window opens.
    Mode 2 waits out the level-transition stream and returns to gameplay.
 
-   2026-08-14-1 unattended permuter session (~15m, ~52900 iterations, timed out
-   at the 15m budget): best score 110 vs first-iteration score 200. No
-   byte-perfect candidate found; still PARKED (see above). */
+   The game-over scene's byte size is read TWICE off one held base for the
+   CdReadSyncSectors call, and the second read must be a VOLATILE load routed
+   through the loop counter `i`: cse merges the two reads in every non-volatile
+   form, and a single-set destination would be boosted to max priority by
+   sched.c's birthing_insn_p and sink below the second base's `la`. */
 extern void StopAllSoundExceptMask(int owner_key);
 extern void RotateLightVectorXZ(int steps);
 extern void EndRespawnToGameplay(void);
@@ -58,14 +38,6 @@ extern volatile int g_anGameOverSceneBlock[]; /* g_nGameOverSceneByteSize */
 extern unsigned char
     *g_apRenderScratchRegionBlock[]; /* g_pRenderScratchRegionBase */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/RespawnOrGameOver_Update.c.wip`; this body came
-   from
-   build/permuter/nonmatchings/RespawnOrGameOver_Update/output-110-1/source.c.
- */
 void RespawnOrGameOver_Update(void) {
   int unused[8];
   int mode;

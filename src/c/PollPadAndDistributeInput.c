@@ -1,31 +1,3 @@
-/* PARKED 2026-08-15 at 95.2% (20/415), LENGTH-EXACT. Previously this could not
-   even LINK (+4..+6 insns over the slot) because of the §B-i rule 1 held-base
-   fold on the `g_dwPadPressed/Released |=` pair. THE FOLD IS ESCAPABLE: put an
-   empty `do { } while (0);` between the base's materialisation and the
-   nonzero-offset accesses AND reach the block through the alias ARRAY, not
-   through a pointer local. The dummy loop's NOTE_INSN_LOOP_BEG survives jump.c
-   and ends cse's extended basic block, so `find_best_addr`/`fold_rtx` no longer
-   sees a constant equivalence for the base and `lw/sw -8(a2)` stays
-   register-based. A pointer local (`pad = g_adwPadHeldBlock; pad[-2] |= x;`)
-   does NOT work even with the note — reload's `update_equiv_regs` substitutes
-   its REG_EQUIV constant function-globally, which no cse-level barrier can
-   reach. Same recipe matched SampleSpyroShadowRingHeights in this session.
-
-   REMAINING (20 insns, one whole-function rotation in two clusters, and the
-   §D 2c probe says they are one root cause):
-     - `mapped`, the Saturn remap accumulator (12 refs / 17 insns) is the
-       HIGHEST-priority global allocno in the function, so it is allocated
-       first: ours takes v1, the original takes a1 (8 insns).
-     - the g_adwPadHeldBlock base (7 refs / 36, priority 11th) and `pressed`
-       (4 refs / 54) then land a1/a2 where the original has a2/a1 (12 insns).
-   In the original a1 serves BOTH `mapped` and `pressed` (disjoint ranges), so
-   the fix is whatever keeps v1 out of `mapped`'s pass-0 candidate set — a
-   `regs_someone_prefers` exclusion from a lower-priority conflicting allocno
-   (§B21), not a ref-count dial: `mapped` is already allocated first, so A194/
-   A195 arithmetic cannot reorder anything. Next idea: find which allocno holds
-   v1 across mapped's range in the original by giving one of the neighbouring
-   locals a hard-reg copy preference.
-*/
 #include "globals.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
@@ -156,23 +128,26 @@ void PollPadAndDistributeInput(void) {
       *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
       MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
       if (g_abPadRawReport[1] == 0x53) {
-        unsigned int mapped = buttons & ~0x9E;
+        /* the Saturn remap accumulator deliberately reuses `pressed`: the
+           original serves both from one register (their ranges are disjoint,
+           A196), and a separate local rotates the whole function. */
+        pressed = buttons & ~0x9E;
         if (buttons & 0x80) {
-          mapped |= 2;
+          pressed |= 2;
         }
         if (buttons & 0x10) {
-          mapped |= 8;
+          pressed |= 8;
         }
         if (buttons & 8) {
-          mapped |= 0x10;
+          pressed |= 0x10;
         }
         if (buttons & 2) {
-          mapped |= 4;
+          pressed |= 4;
         }
         if (buttons & 4) {
-          mapped |= 0x80;
+          pressed |= 0x80;
         }
-        buttons = mapped;
+        buttons = pressed;
       }
       if ((buttons & 0xF000) == 0) {
         if (cal[2] >= 0xC1) {
