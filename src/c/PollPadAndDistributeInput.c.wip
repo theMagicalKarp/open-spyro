@@ -1,52 +1,30 @@
-/* PARKED — §B-i rule 1 (held-base nonzero-offset fold), +4 insns (419 vs 415).
-   Everything else in the function is byte-shape-exact: the whole rumble/pad-id
-   ladder, the Saturn remap, the stick synthesis, the idle flags and the substep
-   ring fan-out all align (mismatch 17 of 415 in the masked shape diff, of which
-   8 are this fold and 5 are one `mapped` a1-vs-v1 rotation that hangs off it).
+/* PARKED 2026-08-15 at 95.2% (20/415), LENGTH-EXACT. Previously this could not
+   even LINK (+4..+6 insns over the slot) because of the §B-i rule 1 held-base
+   fold on the `g_dwPadPressed/Released |=` pair. THE FOLD IS ESCAPABLE: put an
+   empty `do { } while (0);` between the base's materialisation and the
+   nonzero-offset accesses AND reach the block through the alias ARRAY, not
+   through a pointer local. The dummy loop's NOTE_INSN_LOOP_BEG survives jump.c
+   and ends cse's extended basic block, so `find_best_addr`/`fold_rtx` no longer
+   sees a constant equivalence for the base and `lw/sw -8(a2)` stays
+   register-based. A pointer local (`pad = g_adwPadHeldBlock; pad[-2] |= x;`)
+   does NOT work even with the note — reload's `update_equiv_regs` substitutes
+   its REG_EQUIV constant function-globally, which no cse-level barrier can
+   reach. Same recipe matched SampleSpyroShadowRingHeights in this session.
 
-   The wall: the g_nFrameTicks!=0 arm is
-       lw v0,-8(a2); lw v1,-4(a2); or; or; sw v0,-8(a2); sw v1,-4(a2)
-   off a2 = &g_dwPadHeld (materialized at .L800540D8 for the offset-0 held
-   read/store). Our cc1 emits the two RMWs absolute (lui+lw / lui+sw each).
-
-   Proven from the gcc 2.7.2 sources + cc1 -dr/-ds dumps, so do NOT re-derive:
-   - cse.c fold_rtx, `case '2'`: after the operand loop declines to substitute
-     (COST(symbol)=12 > COST(pseudo)=1, so `cheap_arg` stays the reg), it still
-     calls simplify_binary_operation with const_arg0 = the reg's qty_const, and
-     RETURNS that folded constant. find_best_addr then accepts it via
-     validate_change. There is no cost check on this path — B-i rule 1 verbatim.
-   - A LABEL does NOT save it: writing the arms the other way round
-     (`if (g_nFrameTicks == 0) {abs} else {|=}`) puts the |= arm after a
-     CODE_LABEL and it STILL folds, because cse_end_of_basic_block follows
-     conditional jumps under -fcse-follow-jumps and carries the equivalence into
-     the target path. (This refines B-i's "only a LABEL flushes the
-   equivalence".)
-   - The A25 escape does not apply: a derived address off the same alias IS
-     passed to a call here (`&stick[-4]` -> MapPadAxisToCalibratedRange) and the
-     RMWs still fold.
-   - The two-pointer form (`pp = pad-2; rp = pad-1; *pp |= ...`) does not help:
-     cc1 -dr shows the `(set 193 (plus (reg141) (const_int -8)))` expand insn,
-     but the pseudo has one use, so update_equiv_regs substitutes its REG_EQUIV
-     constant and deletes the def (B-i rule 3's weak-base fold). Even if it won
-     a hard reg it costs addiu+lw 0(p)+sw 0(p) = +1 insn per field.
-
-   Consequence: the build is 28 bytes over its slot, so this cannot even be
-   committed as a linking park. Reopen only if B-i rule 1 is ever retired.
-
-   Remaining non-fold residue (fix these first if the fold ever falls):
-   - `mapped` (the Saturn remap accumulator) lands in v1; original uses a1.
-
-   The two alias blocks it needs are already in config/symbol_addrs.txt:
-   g_anPadTypeBlock (0x80077384) and g_adwPadHeldBlock (0x80077380, pre-existing
-   from SamplePadForDeathReplayFrame). The stick base is written as
-   &g_adwPadHeldBlock[2] on purpose: %hi/%lo(g_adwPadHeldBlock+8) assembles to
-   the same bytes as %hi/%lo(g_nPadStickActiveFlag) and keeps one symbol_ref so
-   cse's get_related_value can derive the +0x48 ring slot off the live base
-   (A36) — that half of the function matches exactly.
-
-   2026-08-14-1 unattended permuter session (~15m, ~49500 iterations, timed out
-   at the 15m budget): best score 475 vs first-iteration score 860. No
-   byte-perfect candidate found; still PARKED (see above).
+   REMAINING (20 insns, one whole-function rotation in two clusters, and the
+   §D 2c probe says they are one root cause):
+     - `mapped`, the Saturn remap accumulator (12 refs / 17 insns) is the
+       HIGHEST-priority global allocno in the function, so it is allocated
+       first: ours takes v1, the original takes a1 (8 insns).
+     - the g_adwPadHeldBlock base (7 refs / 36, priority 11th) and `pressed`
+       (4 refs / 54) then land a1/a2 where the original has a2/a1 (12 insns).
+   In the original a1 serves BOTH `mapped` and `pressed` (disjoint ranges), so
+   the fix is whatever keeps v1 out of `mapped`'s pass-0 candidate set — a
+   `regs_someone_prefers` exclusion from a lower-priority conflicting allocno
+   (§B21), not a ref-count dial: `mapped` is already allocated first, so A194/
+   A195 arithmetic cannot reorder anything. Next idea: find which allocno holds
+   v1 across mapped's range in the original by giving one of the neighbouring
+   locals a hard-reg copy preference.
 */
 #include "globals.h"
 
@@ -215,16 +193,17 @@ void PollPadAndDistributeInput(void) {
       *(unsigned int *)cal = 0x7F7F7F7F;
     }
 
-    pad = g_adwPadHeldBlock;
-    held = pad[0];
+    held = g_adwPadHeldBlock[0];
     pressed = ~held & buttons;
     released = held & ~buttons;
     if (*(unsigned char *)&g_nInGameTick != 0) {
       g_nPadType = padType;
-      pad[0] = buttons;
+      g_adwPadHeldBlock[0] = buttons;
       if (g_nFrameTicks != 0) {
-        pad[-2] |= pressed;
-        pad[-1] |= released;
+        do {
+        } while (0);
+        g_adwPadHeldBlock[-2] |= pressed;
+        g_adwPadHeldBlock[-1] |= released;
       } else {
         g_dwPadPressed = pressed;
         g_dwPadReleased = released;

@@ -26,14 +26,6 @@ extern int g_anSpyroAirborneFramesBlock[0x200];
    ArcTan2 and the hit chunk's triangle, and clears the airborne counter when
    the slope is walkable (< 0x21). A third, purely vertical probe re-runs the
    test when the first two missed. (0x8003e318, 784 bytes.) */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/ProbeSpyroGroundContact.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/ProbeSpyroGroundContact/output-350-1/source.c */
-
 void ProbeSpyroGroundContact(void) {
   int down[4];
   int out[4];
@@ -67,9 +59,8 @@ void ProbeSpyroGroundContact(void) {
       g_anSpyroAirborneFramesBlock[0x76] = g_nLastCollisionHitChunkId;
       UnpackWorldCollisionTri(g_nLastCollisionHitChunkId,
                               &g_anSpyroAirborneFramesBlock[0x77]);
-      if (g_anSpyroAirborneFramesBlock[5] < 0x21) {
-        g_anSpyroAirborneFramesBlock[0x2d] =
-            g_anSpyroAirborneFramesBlock[5] >= 0x17;
+      if (g_nSpyroGroundSlope < 0x21) {
+        g_anSpyroAirborneFramesBlock[0x2d] = g_nSpyroGroundSlope >= 0x17;
         g_anSpyroAirborneFramesBlock[0] = 0;
         down[0] = 0x104;
         down[1] = 0;
@@ -107,6 +98,15 @@ void ProbeSpyroGroundContact(void) {
         if (t < 0) {
           g_nSpyroGroundSlope = 0x400;
         }
+        /* The empty loop is load-bearing: its NOTE_INSN_LOOP_BEG ends cse's
+           extended basic block, so the held block base below has no constant
+           equivalence and the +0x14 / +0xB4 accesses keep their `off(s2)`
+           register form instead of folding to absolute (cookbook §B-i). The
+           first probe's slope test is spelled as the plain scalar
+           g_nSpyroGroundSlope precisely because there the original DOES
+           fold. */
+        do {
+        } while (0);
         if (g_anSpyroAirborneFramesBlock[5] < 0x21) {
           g_anSpyroAirborneFramesBlock[0] = 0;
           g_anSpyroAirborneFramesBlock[0x2d] =
@@ -116,22 +116,3 @@ void ProbeSpyroGroundContact(void) {
     }
   }
 }
-
-/* PARK 2026-07-24 — §B-i rule 1 (held-base fold), 191/196 insns.
-   Everything transcribes exactly (all 21 call sites, delay slots, the
-   s5/s6 -0x104/-0x1c4 literal hoist per A133, the +0x14 slope reads that link
-   identical through the block alias) except three fall-through-block stores
-   through the held base:
-       BLK[0x76] = g_nLastCollisionHitChunkId;   (sw a0,0x1D8(s2))
-       BLK[0x76] = -1;                           (sw v0,0x1D8(s2))
-       BLK[0x2d] = BLK[5] >= 0x17;               (sw v0,0xB4(s2))
-   each folds to `lui $at; sw ...%lo(sym+off)($at)` = +1 insn (5 over slot).
-   Levers tried and rejected: sized array alias (A22) — no effect; volatile
-   store cast — no effect (+1 more); `int *g = blk;` pointer local — recovers
-   the POST-LABEL 0xB4 site only (B-i rule 3), fall-through sites still fold.
-   Note the anomaly worth chasing: BLK[0] and BLK[0xa] (+0x28) stay reg-based
-   from the same base in the same blocks; only the larger offsets fold.
-
-   2026-07-25-1 unattended permuter session (~15m, ~61000 iterations, timed out
-   at the 15m budget): best score 350 vs base score 700. No byte-perfect
-   candidate found; still PARKED (see above). */
