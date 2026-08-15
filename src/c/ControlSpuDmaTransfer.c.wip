@@ -40,15 +40,16 @@ extern unsigned short D_8007356C; /* encoded SPU transfer address shadow */
    two defs of `cur`, a 16-bit bitfield in an int container (both halves), a
    `volatile unsigned short : 16` struct field, and a volatile-declared HW
    global. Making the intervening `g_nSpuPendingDmaDirection` store volatile
-   does NOT block it either (tried via an allow_duplicated alias; `can_combine_p`
-   only scans for intervening volatiles when the SOURCE is volatile-and-asm-ish,
-   not here). The ONLY thing that keeps the mask is a second use of the loaded
-   pseudo (probe v3) — and the original's data flow has none to give, so any
-   spelling that reaches it costs +1 insn elsewhere. Not a permuter target.
+   does NOT block it either (tried via an allow_duplicated alias;
+   `can_combine_p` only scans for intervening volatiles when the SOURCE is
+   volatile-and-asm-ish, not here). The ONLY thing that keeps the mask is a
+   second use of the loaded pseudo (probe v3) — and the original's data flow has
+   none to give, so any spelling that reaches it costs +1 insn elsewhere. Not a
+   permuter target.
 
    Residue #2: a whole-function caller-saved rotation that rides on #1 —
-   hoisted constant 1 in a2 (ours v1, shared with the counter), base/target a1/a0
-   (ours a0/a1) in cases 1 and 0, want/base a0/a1 (ours a1/a0) in case 3.
+   hoisted constant 1 in a2 (ours v1, shared with the counter), base/target
+   a1/a0 (ours a0/a1) in cases 1 and 0, want/base a0/a1 (ours a1/a0) in case 3.
    Residue #3: in the case-3 kick block the original fills the `lw size` load
    bubble with the D_80073558 pointer load and sinks the g_dwSpuDmaMadrShadow
    reload down to the sltu/addu pair; ours does the reverse (2 insns, A164
