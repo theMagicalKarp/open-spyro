@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.85% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">320,780 / 2,159,608 split-code bytes · 531 matched · 69 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">14.86% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">320,912 / 2,159,608 split-code bytes · 532 matched · 69 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -420,7 +420,7 @@
 <rect x="204.41" y="664.31" width="8.54" height="8.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GetAllSpuVoiceKeyStatus  ·  136 bytes  ·  matched</title></rect>
 <rect x="204.41" y="673.02" width="8.54" height="8.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005E424  ·  136 bytes  ·  matched</title></rect>
 <rect x="204.41" y="681.73" width="8.54" height="8.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FUN_80065108  ·  136 bytes  ·  matched</title></rect>
-<rect x="204.41" y="690.43" width="8.54" height="8.45" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CameraSettle_Update  ·  132 bytes  ·  asm</title></rect>
+<rect x="204.41" y="690.43" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CameraSettle_Update  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="698.89" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B0DC  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="707.34" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8006057C  ·  132 bytes  ·  matched</title></rect>
 <rect x="204.41" y="715.79" width="8.54" height="8.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildTextureWindow  ·  132 bytes  ·  matched</title></rect>
