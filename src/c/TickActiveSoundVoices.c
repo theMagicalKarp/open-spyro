@@ -1,46 +1,25 @@
 #include "globals.h"
 
-/* PARKED — 94.1% (17/286 instructions), LENGTH-EXACT (286 insns, 1144 bytes).
-   Logic is complete; three residues remain, none of them §B16 any more:
-
-   1. Prologue `la` position (9 insns, pure rotation) — the original emits the
-      yaw address `lui/addiu` pair BEFORE the three row-base la's (s8 = row+4,
-      s4 = +8, s6 = +0x14); ours emits it after them, so the whole
-      save/init interleave shifts by two slots. Same nine instructions on both
-      sides. Source-order invariant (statement moved above/below `keyOff = 0`
-      with byte-identical output) — §B14/§F10 sched1 la placement.
-
-   2. Row-block base-symbol split (3 insns) — the out-of-range halving pair
-      keeps a derived base: original `addiu a0,s8,-0x2C` + `sh
-   0x2C(a0)/0x2E(a0)` (canonical symbol g_abSpuCommonAttr, 0x80075F08), ours
-   `addiu a0,s8,-4` + `sh 4(a0)/6(a0)` off D_80075F30. Writing just those two
-   stores as
-      `(char *)g_abSpuCommonAttr + i * 0x1C + 0x2C` overflows the slot: loop.c
-      strength-reduces the byte-offset address into a new pointer giv. Only
-      `D_80075F30[i].field` array-of-struct indexing reproduces the original's
-      giv set (pitch +0x30 / pitch-step +0x3C only). Reaching both at once is
-      the open problem.
-
-   3. ArcTan2 owner block (5 insns, §F2 order) — the reloaded owner lands in a1
-      and its two position loads are hoisted above the second camera-pos load;
-      the original keeps owner in v0 and loads both camera components first.
-      Explicit `cx`/`cy` temps for the camera reads (A120) make it worse (21
-      diffs — the subu operands rotate).
-
-   §B16 RETIRED here 2026-07-29-2: the original's `lui;addiu;lw/lhu 0(reg)`
-   address form for g_nCameraEulerYaw and g_nSoundMasterVolume comes from an
-   INLINE volatile cast-deref of the block symbol
-   (`*(volatile unsigned short *)(char *)g_anCameraEulerYawBlock`), which routes
-   through expand's `memory_address()` force_reg; a pointer local (what this
-   file used before) is a plain register whose symbol equivalence cse folds back
-   to `lui;lw %lo`. That single change took the function from 88.1% to 94.1% and
-   removed 26 of the 34 residual instructions.
-
-   2026-08-14-1 unattended permuter session (~15m, ~51800 iterations, timed out
-   at the 15m budget): best score 655 vs first-iteration score 760 -- only a
-   14% drop, the flattest curve of the session so far, consistent with the
-   remaining 17 instructions being a tight tie rather than a source-shape
-   problem. No byte-perfect candidate found; still PARKED (see above). */
+/* Matching notes (0x8005637C, 1144 B — the levers, so the shape is not lost):
+   - The yaw read is an INLINE volatile cast-deref of the block symbol so the
+     address stays in a register (`lui/addiu` + `lhu 0(reg)`, B16/A142); a plain
+     pointer local is folded back to `lui;lw %lo` by cse.
+   - That address must NOT be a single-set pseudo: sched.c's `birthing_insn_p`
+     boosts a single-set def to LAUNCH_PRIORITY and drags it next to its
+     consumer, nine slots late (F14). `yc` is the F14b DONOR — it also carries
+     the flat 0x2000 volume pair in the `case 4` arm, so `reg_n_sets == 2`, the
+     boost is gone, and its second range is short enough not to conflict with
+     v0 (every other candidate carrier in this function does: playing/owner/
+     status/mode -> v1, vol -> a1).
+   - Position is then LUID order, and loop.c's hoists always outrank pre-loop
+     statements, so the `1` of `1 << i` has to be demoted to an explicit
+     pre-loop local (`bit`, A93) with the `for` init split out (`i = 0;`) for
+     `move s5,zero; move s3,zero; li s7,1; lui v0` to come out in that order.
+   - The out-of-range halving pair stores through `far`, a view of the row
+     0x28 BELOW the array so cse derives the shared base off the live row base
+     (`addiu a0,s8,-44`) — spelling it as the neighbouring g_abSpuCommonAttr
+     symbol costs a whole `lui/addiu`, and a byte-offset form folds the field
+     offset into the base and buys a second pointer giv (A204). */
 
 /* Per-frame SPU voice mixer tick (0x8005637C, 0x478).
 
@@ -116,17 +95,17 @@ extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int includeZ);
 extern int ArcTan2(int y, int x, int highPrecision);
 
+typedef struct {
+  /* 0x00 */ char pad[0x2C];
+  /* 0x2C */ short nVolL;
+  /* 0x2E */ short nVolR;
+} SPUFARROW;
+
 extern SPUVOICEROW D_80075F30[];                  /* the 24 mixer rows */
 extern unsigned short g_anCameraEulerYawBlock[];  /* camera euler yaw */
 extern int g_anSoundMasterVolumeBlock[];          /* g_nSoundMasterVolume */
 extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/TickActiveSoundVoices.c.wip`; this body came from
-   build/permuter/nonmatchings/TickActiveSoundVoices/output-655-1/source.c. */
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;
   int vec[4];
@@ -141,11 +120,15 @@ int TickActiveSoundVoices(void) {
   short *pVol;
   unsigned char *owner;
   char *playing;
+  int yc;
+  unsigned int bit;
+  SPUFARROW *far;
   keyOff = 0;
-  yaw = (unsigned char)((*((volatile unsigned short *)((
-                            char *)g_anCameraEulerYawBlock))) >>
-                        4);
-  for (i = 0; i < 24; i++) {
+  i = 0;
+  bit = 1;
+  yc = (int)g_anCameraEulerYawBlock;
+  yaw = (unsigned char)((*((volatile unsigned short *)yc)) >> 4);
+  for (; i < 24; i++) {
     if (D_80075F30[i].nFlags & 0x40) {
       D_80075F30[i].nFlags = 0;
       continue;
@@ -153,11 +136,11 @@ int TickActiveSoundVoices(void) {
     if (!(D_80075F30[i].nFlags & 1)) {
       continue;
     }
-    status = GetSpuVoiceKeyStatus(1 << i);
+    status = GetSpuVoiceKeyStatus(bit << i);
     if (D_80075F30[i].nFlags & 2) {
       if ((status & 0xFF) == 3) {
         playing = D_80075F30[i].pPlaying;
-        keyOff |= 1 << i;
+        keyOff |= bit << i;
         if (playing != 0) {
           *playing = 0x7F;
         }
@@ -167,7 +150,7 @@ int TickActiveSoundVoices(void) {
         D_80075F30[i].nSampleId = 0xFF;
         continue;
       }
-    } else if (((status & 0xFF) == 1) || ((status & 0xFF) == 3)) {
+    } else if (((status & 0xFF) == bit) || ((status & 0xFF) == 3)) {
       D_80075F30[i].nFlags |= 2;
     }
     if (!(D_80075F30[i].nFlags & 1)) {
@@ -176,8 +159,9 @@ int TickActiveSoundVoices(void) {
     mode = D_80075F30[i].nFlags & 0x1C;
     switch (mode) {
     case 4:
-      attr.volR = 0x2000;
-      attr.volL = 0x2000;
+      yc = 0x2000;
+      attr.volR = yc;
+      attr.volL = yc;
       break;
 
     case 8:
@@ -191,12 +175,13 @@ int TickActiveSoundVoices(void) {
       SubtractVector(vec, (int *)(owner + 0xC), g_anCameraPos);
       dist = VectorLength(vec, 1);
       if (dist >= range) {
-        attr.volR = (D_80075F30[i].nVolR = D_80075F30[i].nVolR >> 1);
+        far = (SPUFARROW *)((char *)D_80075F30 - 0x28 + i * 0x1C);
+        attr.volR = (far->nVolR = D_80075F30[i].nVolR >> 1);
         vol = D_80075F30[i].nVolL >> 1;
-        attr.volL = (D_80075F30[i].nVolL = vol);
+        attr.volL = (far->nVolL = vol);
         if ((attr.volR < 0x40) && (vol < 0x40)) {
           playing = D_80075F30[i].pPlaying;
-          keyOff |= 1 << i;
+          keyOff |= bit << i;
           if (playing != 0) {
             *playing = 0x7F;
           }
@@ -235,7 +220,7 @@ int TickActiveSoundVoices(void) {
     }
 
     attr.mask = 3;
-    attr.voice = 1 << i;
+    attr.voice = bit << i;
     attr.volL = (attr.volL * g_nSoundMasterVolume) >> 12;
     attr.volR = (attr.volR * g_nSoundMasterVolume) >> 12;
     D_80075F30[i].nPitch += D_80075F30[i].nPitchStep;

@@ -1517,3 +1517,55 @@ TickCdMusicStream:
   class: "F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order"
   date: 2026-08-15
   note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > D_800776CC (A120 load order, 4 insns)."
+
+TickActiveSoundVoices_2026_08_16:
+  verdict: viable
+  class: "MATCHED 2026-08-16 (was 17/286; four levers)"
+  date: 2026-08-16
+  note: >-
+    1144 B, the second-largest sound-TU match. Four levers, all previously
+    mis-classed. (1) The halving pair's shared store base is `rows - 0x28` and
+    only comes out as the original's `addiu a0,s8,-44` when spelled as a
+    NEGATIVE offset off the SAME symbol (cse cannot derive across symbol_refs)
+    AND reached through a struct FIELD — a byte-offset form folds the constant
+    into the base and loop.c adds a second pointer giv, +3 insns (A204).
+    (2) The 9-insn prologue `la` rotation was never A164/B14/F10: it is F14's
+    birthing boost. (3) The carrier that kills it must have >= 2 sets AND not
+    conflict with v0 — F14b's DONOR: `yc` holds the yaw address and the flat
+    0x2000 volume pair in the `case 4` arm. Every single-role carrier lands
+    elsewhere (playing/owner/status/mode -> v1, vol -> a1). (4) Position is then
+    LUID order and loop.c's hoists always outrank pre-loop statements, so the
+    `1` of `1 << i` had to be demoted to an explicit pre-loop local (A93) with
+    the `for` init split out.
+
+LoadActorMeshTables_2026_08_16:
+  verdict: parked
+  class: "F14 anti-dep boost glues the two dirbytes loads (10/66, length-exact)"
+  date: 2026-08-16
+  note: >-
+    264 B, was 11/66. The 2026-08-12 "A164 straggler tie, expand_call fixes the
+    LUIDs" verdict was wrong for the `la` of D_8007A714: it was F14's birthing
+    boost. `size = (int)D_8007A714; nbytes = *(volatile int *)size;
+    size = *(volatile int *)size;` gives the carrier two sets (and reproduces
+    `lw v1,0(v1)`), and A93's explicit `i = 0;` + `table =
+    g_apActorMeshTableBlock;` pre-loop locals put the two insns the original
+    emits before it in place — the prologue through `addiu v1,v1,-22764` is now
+    byte-identical. RESIDUE: the arg-1 lba load position (naming it as an early
+    local is propagated away), and the two dirbytes loads are adjacent where the
+    original separates them — the nbytes load is anti-dependent on the size load
+    (cost 0) and, being single-set, inherits LAUNCH_PRIORITY in front of it.
+    A second set on `nbytes` does not unstick it (CopyWords arg 10/66,
+    g_pWorkAreaTop term 12/66); needs a base carrier with two sets that is not
+    one of the loaded values.
+
+BeginGemPickupOverlay_2026_08_16:
+  verdict: parked
+  class: "F1 local-alloc priority, re-confirmed at 9/146 — not a boost/scheduling issue"
+  date: 2026-08-16
+  note: >-
+    Re-opened with the F14/sched1 model and it does NOT apply: the emitted
+    schedule already equals the original's, so both builds give `dragons` 3
+    refs/7 insns and the literal 1 3 refs/6, and qty_compare's
+    floor_log2(refs)*refs/span picks the constant first (0.50 vs 0.43). The only
+    exits are 4 refs on `dragons` or a 6-insn span, and neither is buyable
+    without an insn (the whole layout is already exact). Leave parked.
