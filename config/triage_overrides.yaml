@@ -2215,3 +2215,54 @@ func_80038FC8:
     both per-arm `move a0,s0` copies into the shared tail (7/152). Every
     use-site nesting depth is bit-identical — the dial saturates. Park stays on
     the 4/152 multi-set body.
+Gamestate0C_Update:
+  verdict: matched
+  class: "matched 2026-08-22 (B-i held-base fold retired: cse2 is what folds a held base, and two empty do/while dials stop it)"
+  date: 2026-08-22
+  note: >-
+    0x800324d8, 1352 B, 338 insns. The B-i held-base fold on this block is not a
+    source-shape problem and never was — settled by dumping cc1's rtl (-da) with
+    the locked flags. Pass by pass, base-register uses vs absolute constants:
+    rtl/jump 0/31, cse 14/2, loop 14/2, cse2 3/14, combine 2/13, greg 0/23. cse
+    gets it RIGHT and cse2 — the rerun after loop, enabled by -O2 via
+    -frerun-cse-after-loop — folds it back. Recompiling the same .i gives 14
+    symbol refs with the locked flags and 2 with -fno-rerun-cse-after-loop.
+    Mechanism, for reuse elsewhere: expand force_regs every constant address
+    (explow.c:396 memory_address), cse rewrites those SETs to (plus base K), and
+    cse2 refolds them wherever it still knows the base pseudo's constant value
+    IN THE CURRENT BLOCK. cse.c:2637 find_best_addr returns unconditionally on
+    CONSTANT_ADDRESS_P, so an address that reaches it already constant can never
+    become base+offset. Isolated on a 6-line test case, only offset 0 keeps the
+    base; every nonzero offset folds, negative as well as positive. THE FIX,
+    four levers, 352 -> 338. (1) read D_80077850 directly at every use in both
+    arms — the original reloads it into a caller-saved temp each time because
+    every use is behind a jal, and a `rec` local emitted it twice and cost a
+    callee-saved register; direct reads reproduce all 7. (2)/(3) two empty
+    do/while(0) dials, one before the substate test and one as the first
+    statement of the handoff arm — the established §B-i ebb break, not a new
+    tool; new here is only that this function needs TWO, at those exact points:
+    352 -> 340, 14
+    %hi(D_800777EC) -> 4, and the frame returns to 0x50 with s0-s3. Placement is
+    exact — the same dial before the approach arm gives 354. (4) two named
+    locals, `lvl` and `face`, a SEPARATE mechanism: their reads were never
+    force_reg'd by expand at all (address inline in the MEM), so they never
+    reached cse's rewrite and no dial helps; reading the value in its own
+    statement puts it back on the force_reg path. Spelling the access
+    differently does not work — A[i + 3], (&A[i])[3] and *(A + i + 3) parse to
+    one tree and give byte-identical output. `face` additionally pins the
+    D_80077850 load ahead of the g_anCameraPos reads so the latter fills its
+    shadow and the lbu needs no nop. RETIRED BY MECHANISM, all previously
+    measured as no-ops or regressions: block-scoped pointer local
+    (const-propagates), sizing the array, source reordering, naming the
+    CopyVector args, a struct view with t->field, an address-of pin, volatile on
+    the arm's stores or the whole block, a held table-base local. Each produces
+    a pseudo whose constant value cse2 can see. The 2026-08-15 permuter run had
+    found the do/while dial blind (147 improving candidates, 3970 -> 2400) and it
+    was worth ~12 insns with no explanation until the rtl dump; its best
+    candidate still overshot to 6 SHORT, so permuter score is not this repo's
+    metric — always re-measure with open-spyro diff. SIBLING: Gamestate0C_Draw
+    is parked on the same fold over the same block and its permuter run produced
+    nothing, which now reads as expected rather than discouraging. Try, in
+    order: count its %hi(D_800777EC) against the original (difference times one
+    is usually the whole residue), place a dial on whichever arm folds, then
+    look for reads expand never force_regs.
