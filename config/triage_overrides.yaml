@@ -1655,3 +1655,22 @@ SmoothSpyroByteEulerSpring_2026_08_16_1:
     insns of live length on 90; both values are read exactly twice from source
     (delta + accumulate) and the schedule is already exact, so neither is
     buyable. R2 (13 insns, the stanza-2 tail) is untouched.
+
+HandleHardwareInterrupt_2026_08_17:
+  verdict: parked
+  class: "F1 local-alloc tie — the two SPAN exits are now proved closed, only the ref dial is live"
+  date: 2026-08-17
+  note: >-
+    Still 10/122 length-exact. qty_compare_1 is
+    floor_log2(refs)*refs*qty_size/(death-birth) with qty_size in WORDS, so the
+    "2 bytes" printed for the enable value does not discount it: the comparison
+    is 0.25 (ptr 2 refs/8) vs 0.20 (enable 2 refs/10). Of the three exits,
+    shrinking the enable span or growing the ptr span are unreachable BY
+    CONSTRUCTION — qty_birth/death are POST-sched1 and this body's schedule
+    already equals the original's, so moving a span moves the schedule off the
+    match. Measured: a block-scoped `volatile unsigned short *is = g_pIStatReg;`
+    hoisted above the g_nInIsrFlag store is byte-identical and leaves the ptr
+    span at exactly 8; `stat` as a 2-set enable carrier gives 21/122; swapping
+    the inner AND's operands is +1 insn (slot overflow). Only a block-local
+    3rd-ref carrier that adds no insn would work, and neither recompute block
+    contains a second value that could donate one.

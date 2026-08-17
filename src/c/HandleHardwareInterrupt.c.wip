@@ -117,4 +117,29 @@ void HandleHardwareInterrupt(void) {
    inner AND, splitting it (`stat = enable; stat &= *I_STAT;`), a `statval`
    temp for the I_STAT deref, and A195's `do {} while (0)` ref dial around the
    enable read (that one makes `en` a cross-block allocno: 24/122). Swapping the
-   OUTER AND's operands is a true no-op (10/122 either way). */
+   OUTER AND's operands is a true no-op (10/122 either way).
+
+   2026-08-17 — the two SPAN exits are now PROVED CLOSED; only the ref dial is
+   left. `qty_compare_1` is floor_log2(refs)*refs*qty_size/(death-birth) and
+   `qty_size` is in WORDS, so the "2 bytes" the `-dl` dump prints for the enable
+   value does NOT discount it (both qtys are size 1): the comparison really is
+   0.25 (ptr 2/8) vs 0.20 (enable 2/10). That leaves three arithmetic exits —
+   (a) 3 refs on the enable, (b) enable span <= 7, (c) ptr span >= 11 — and
+   (b)/(c) are unreachable BY CONSTRUCTION, not just untried: qty_birth/death
+   are measured POST-sched1, and the emitted schedule here is already identical
+   to the original, so any source change that moves a span necessarily moves the
+   schedule off the match. Measured: hoisting the I_STAT pointer into its own
+   block-scoped `volatile unsigned short *is = g_pIStatReg;` ahead of the
+   `g_nInIsrFlag = 1` store is BYTE-IDENTICAL and leaves the ptr span at exactly
+   8 (re-probed) — the local is folded and sched1 re-places the load regardless.
+   Making `stat` itself the enable carrier (`stat = enable; stat = stat & *is;`)
+   to buy refs via a 2-set carrier hoists the enable load to the head of the
+   block instead: 21/122.
+   So the ONLY live exit is a 3rd ref on the enable value from a carrier that
+   stays BLOCK-LOCAL (the 24/122 attempt used one shared `en` across both
+   recompute blocks, which makes it a global allocno) and that does not add an
+   insn — i.e. a separate block-scoped carrier per recompute site whose second
+   set is already-emitted work. Nothing in either block qualifies: the only
+   other value there is the `1` stored to g_nInIsrFlag, and merging it would put
+   the constant and the enable in one register (the original keeps them in v0
+   and v1). Treat as a genuine tie unless a new set-count idiom appears. */
