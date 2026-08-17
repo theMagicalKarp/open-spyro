@@ -36,6 +36,15 @@ match sessions. A constrained YAML subset parsed here without a YAML dep:
 ``wall`` removes the function from the candidate list permanently; ``parked``
 routes it to the harvest inventory; ``attempted`` keeps it listed with a score
 penalty; ``viable`` boosts it (a human vouched for it).
+
+--- Segment yield ------------------------------------------------------------
+Every candidate also carries a bonus scaled by how *unmatched* its containing
+segment still is. main is ~44% matched while most level overlays sit under 10%,
+so the untouched byte mass is overwhelmingly in the overlays — but main's high
+match rate is exactly what keeps handing its functions the matched-neighbour
+bonus, which biased the ranking back toward the segment with the least left to
+win. The yield term counteracts that pull; it is deliberately smaller than the
+clone bonus, which remains the strongest predictor of payoff.
 """
 
 from __future__ import annotations
@@ -68,10 +77,25 @@ class Body:
     trampoline: bool = False
     jr_table: bool = False
     words: list[str] = field(default_factory=list)
+    mnemonics: list[str] = field(default_factory=list)
 
     @property
     def fingerprint(self) -> str:
+        """Exact: identical encodings. Only fires on true byte-clones."""
         return hashlib.md5(" ".join(self.words).encode()).hexdigest()[:10]
+
+    @property
+    def loose_fingerprint(self) -> str:
+        """Opcode sequence only, immediates and reloc operands dropped.
+
+        The same routine compiled into two level overlays differs in every
+        relocated address and immediate, so the exact fingerprint above misses
+        the cross-overlay clone families entirely — which is why the +40 clone
+        bonus almost never fired and past sessions had to fingerprint families
+        by hand. Matching on the opcode sequence recovers them; it is a
+        structural hint, so a hit still has to be confirmed against the asm.
+        """
+        return hashlib.md5(" ".join(self.mnemonics).encode()).hexdigest()[:10]
 
 
 def parse_bodies(path: Path) -> dict[str, Body]:
@@ -97,6 +121,7 @@ def parse_bodies(path: Path) -> dict[str, Body]:
         ops = ops.split("/*", 1)[0].strip()  # drop trailing comments
         cur.n_instr += 1
         cur.words.append(word)
+        cur.mnemonics.append(mnem)
         if "%gp_rel" in ops:
             cur.gp_rel = True
         if mnem == "lui" and ops.startswith("$at") and "%hi" not in ops:
@@ -156,20 +181,31 @@ def _blockers(rec: dict[str, Any], body: Body | None) -> list[str]:
 
 
 def _score(
-    rec: dict[str, Any], body: Body | None, ov: dict[str, str], clone: str
+    rec: dict[str, Any], body: Body | None, ov: dict[str, str], clone: tuple[str, int]
 ) -> tuple[int, list[str]]:
     """Heuristic viability score (higher = attempt sooner) + human-readable reasons."""
     why: list[str] = []
-    score = 100 - min(rec["size"], 4000) // 50
+    kind, family = clone
+    # Size is a cost, but a clone recipe amortises it across the whole family:
+    # the largest byte wins on record came from ~900-2000 instruction overlay
+    # routines that the flat penalty below had ranked near the bottom.
+    size_penalty = min(rec["size"], 4000) // 50
+    if kind:
+        size_penalty //= 2
+    score = 100 - size_penalty
     if rec["segment"] != "main":
         score += 10
         why.append("overlay (no -g3)")
-    if clone == "matched":
+    seg_pct = rec.get("segment_pct")
+    if seg_pct is not None:
+        score += round((100.0 - seg_pct) / 2)
+        why.append(f"segment {seg_pct:.1f}% matched")
+    if kind == "matched":
         score += 40
-        why.append("clone of a MATCHED function")
-    elif clone == "family":
-        score += 15
-        why.append("clone family ≥3 (one recipe pays N×)")
+        why.append(f"clone of a MATCHED function (family of {family})")
+    elif kind == "family":
+        score += min(40, 8 * family)
+        why.append(f"clone family of {family} (one recipe pays {family}×)")
     if rec.get("neighbor_matched"):
         score += 15
         why.append("matched neighbor in segment")
@@ -198,7 +234,7 @@ def _score(
 
 
 def collect(repo: Path) -> tuple[list[dict[str, Any]], dict[str, Body]]:
-    """All progress records + parsed bodies, with clone/neighbor annotations."""
+    """All progress records + parsed bodies, with clone/neighbor/segment annotations."""
     partial = progress.load_partial(repo)
     records: list[dict[str, Any]] = []
     bodies: dict[str, Body] = {}
@@ -210,23 +246,48 @@ def collect(repo: Path) -> tuple[list[dict[str, Any]], dict[str, Body]]:
         for i, r in enumerate(ordered):
             near = ordered[max(0, i - 1) : i] + ordered[i + 1 : i + 2]
             r["neighbor_matched"] = any(n["status"] == "matched" for n in near)
+        # Segment yield, over the same game-code denominator PROGRESS.md uses
+        # (lib + handwritten excluded) so the figure reads against that table.
+        game = [r for r in seg_records if not r["lib"] and not r["handwritten"]]
+        seg_total = sum(r["size"] for r in game)
+        seg_done = sum(r["matched_bytes"] for r in game)
+        seg_pct = (seg_done / seg_total * 100.0) if seg_total else 100.0
+        for r in seg_records:
+            r["segment_pct"] = seg_pct
         records.extend(seg_records)
         bodies.update(seg_bodies)
     return records, bodies
 
 
 def clone_class(
-    rec: dict[str, Any], body: Body | None, fp_index: dict[str, list[dict[str, Any]]]
-) -> str:
-    """'' | 'matched' (a byte-identical sibling is matched) | 'family' (≥3 unmatched clones)."""
+    rec: dict[str, Any],
+    body: Body | None,
+    fp_index: dict[str, list[dict[str, Any]]],
+    loose_index: dict[str, list[dict[str, Any]]] | None = None,
+) -> tuple[str, int]:
+    """(kind, family_size) for one candidate.
+
+    kind is '' | 'matched' (a sibling is already matched — clone its source
+    shape) | 'family' (>=3 unmatched siblings, so one recipe pays N times).
+    Exact encodings win; the opcode-sequence index is the fallback that finds
+    the cross-overlay families (see Body.loose_fingerprint).
+    """
     if body is None or body.n_instr < 8:  # tiny stubs fingerprint-collide meaninglessly
-        return ""
+        return "", 0
     group = fp_index.get(body.fingerprint, [])
     if any(g["status"] == "matched" and g is not rec for g in group):
-        return "matched"
+        return "matched", len(group)
+    # The opcode sequence is weaker evidence than an exact encoding match, so it
+    # needs more of a body behind it: short routines share prologue/epilogue
+    # shapes and collide by the dozen (2-instruction stubs all hash alike).
+    loose = (loose_index or {}).get(body.loose_fingerprint, []) if body.n_instr >= 16 else []
+    if any(g["status"] == "matched" and g is not rec for g in loose):
+        return "matched", len(loose)
     if len(group) >= 3:
-        return "family"
-    return ""
+        return "family", len(group)
+    if len(loose) >= 3:
+        return "family", len(loose)
+    return "", 0
 
 
 def run(top: int = 15) -> None:
@@ -234,12 +295,15 @@ def run(top: int = 15) -> None:
     overrides = parse_overrides(repo / "config/triage_overrides.yaml")
     records, bodies = collect(repo)
 
-    # Fingerprint index across every function that has an asm body.
+    # Fingerprint indices across every function that has an asm body: exact
+    # encodings, plus the opcode-sequence index that finds cross-overlay clones.
     fp_index: dict[str, list[dict[str, Any]]] = {}
+    loose_index: dict[str, list[dict[str, Any]]] = {}
     for r in records:
         b = bodies.get(r["name"])
         if b is not None and b.n_instr:
             fp_index.setdefault(b.fingerprint, []).append(r)
+            loose_index.setdefault(b.loose_fingerprint, []).append(r)
 
     candidates: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
@@ -262,7 +326,8 @@ def run(top: int = 15) -> None:
             r["skip_classes"] = sorted(set(classes))
             skipped.append(r)
             continue
-        clone = clone_class(r, body, fp_index)
+        clone = clone_class(r, body, fp_index, loose_index)
+        r["clone"] = clone[0]
         r["score"], r["why"] = _score(r, body, ov, clone)
         candidates.append(r)
 
@@ -270,10 +335,13 @@ def run(top: int = 15) -> None:
     harvest.sort(key=lambda r: (-r["partial_bytes"], int(r["addr"], 16)))
     skipped.sort(key=lambda r: (r["skip_classes"][0], int(r["addr"], 16)))
 
-    out = render_md(candidates, harvest, skipped, top)
+    vein_ready = [r for r in candidates if r["segment"] != "main" and r["clone"]]
+
+    out = render_md(candidates, harvest, skipped, top, vein_ready)
     (repo / "TRIAGE.md").write_text(out)
 
     print(f"triage: {len(candidates)} viable, {len(harvest)} parked/wip, {len(skipped)} walls")
+    print(f"  vein-ready overlay candidates (clone/vein mode gate): {len(vein_ready)}")
     for r in candidates[:top]:
         print(
             f"  {r['score']:4d}  {r['addr']}  {r['name']}  ({r['segment']}, {r['size']}b)  "
@@ -287,6 +355,7 @@ def render_md(
     harvest: list[dict[str, Any]],
     skipped: list[dict[str, Any]],
     top: int,
+    vein_ready: list[dict[str, Any]] | None = None,
 ) -> str:
     lines: list[str] = []
     lines.append("# Triage — ranked match candidates")
@@ -298,6 +367,21 @@ def render_md(
         "skip list / tie classes."
     )
     lines.append("")
+    if vein_ready is not None:
+        n = len(vein_ready)
+        segs = sorted({r["segment"] for r in vein_ready})
+        lines.append("## Mode gate")
+        lines.append("")
+        lines.append(
+            f"**{n} vein-ready overlay candidates** (overlay segment + a clone signal). "
+            "The session prompt runs clone/vein while this is >= 3; harvest is the fallback "
+            "below that, not the default — overlay clone families have historically paid "
+            "5-20x a park sweep."
+        )
+        lines.append("")
+        if segs:
+            lines.append(f"Segments in play: {', '.join(segs)}")
+            lines.append("")
     lines.append(f"## Top {top} candidates (vein / clone modes)")
     lines.append("")
     lines.append("| # | Address | Function | Segment | Size | Score | Why |")
