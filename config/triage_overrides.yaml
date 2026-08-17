@@ -253,21 +253,40 @@ func_8003891C:
   class: "F5 ret0 block layout"
   date: 2026-07-09
 # --- Clone siblings blocked on the level_5 template ---
+func_level_5_8007B4B0:
+  verdict: parked
+  class: "F1 divide-block register rotation (was 'F9 double knot' - RETIRED)"
+  date: 2026-08-17
+  note: >-
+    476 B, 13/119 differing, LENGTH- and SHAPE-exact: every insn is the right
+    opcode in the right position, residue is a 5-register rotation in the
+    divide block. The 2026-07 notes' "double knot" is one knot and it is not a
+    tie. Knot (2) (the deferred `len += 1`) is gone. Knot (1) was the order of
+    the /600 post-shift vs the shared `time >> 31`: expand_divmod always emits
+    the post-shift first, and sched.c's adjust_priority rewrites BOTH insns'
+    priority to max_priority (birthing_insn_p holds for any single-set temp),
+    erasing the real 12-vs-1 and falling through to the INSN_LUID tiebreak,
+    which places the later-created sign last. Fixed from source by carrying the
+    sign in a local whose second set is the early-return arm's `return 6` (a
+    bare dead `sign = time>>31` is deleted by jump.c before cse can use it).
+    Remaining: sign wants v1 but gets a0 because our /600 mfhi quantity takes
+    v1; qty_compare_1 arithmetic (A194/A195), not a permuter target. Full
+    measurement table in the .c.wip header.
 func_level_11_8007B4B0:
   verdict: parked
-  class: "F9 double knot; crack func_level_5_8007B4B0 first, then sed-clone"
-  date: 2026-07-19
+  class: "F1 divide-block register rotation; crack func_level_5_8007B4B0 first, then sed-clone"
+  date: 2026-08-17
 func_level_17_8007B4B0:
   verdict: parked
-  class: "F9 double knot; via level_5 template"
+  class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
 func_level_23_8007B4B0:
   verdict: parked
-  class: "F9 double knot; via level_5 template"
+  class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
 func_level_29_8007B4B0:
   verdict: parked
-  class: "F9 double knot; via level_5 template"
+  class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
 
 # --- libgpu bring-up cluster leftovers ---
