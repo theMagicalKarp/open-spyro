@@ -1569,3 +1569,70 @@ BeginGemPickupOverlay_2026_08_16:
     floor_log2(refs)*refs/span picks the constant first (0.50 vs 0.43). The only
     exits are 4 refs on `dragons` or a 6-insn span, and neither is buyable
     without an insn (the whole layout is already exact). Leave parked.
+
+LoadActorMeshTables_2026_08_16_1:
+  verdict: matched
+  class: "MATCHED — the 2026-08-16 'anti-dependence between the two dirbytes loads' verdict was wrong"
+  date: 2026-08-16
+  note: >-
+    264 B, 10/66 -> MATCHED. The real blocker was NOT an anti-dependence between
+    the loads: it was alias analysis. `init_alias_analysis` records
+    `reg_known_value` only for a REG_EQUAL note with `reg_n_sets == 1`, so the
+    multi-set address carrier (needed to keep the `la` at the head of the block)
+    made the base opaque and the arg-5 stack store anti-dependent on the load —
+    the original's order was not even representable. Three dials closed it:
+    (A205) the arg-1 read must be `lba = *(volatile int *)&g_nCdBaseLba;` placed
+    before the two dirbytes reads, because a plain local is propagated back to
+    the call; (A206) the size read must be `*(const int *)`, since
+    `anti_dependence` returns 0 outright on an RTX_UNCHANGING_P pending read;
+    and `nbytes` needs a SURVIVING second set so it is not birthing-boosted —
+    the CopyWords count must be spelled `*(volatile int *)dir`, because a plain
+    `nbytes = dir[0];` is merged into the argument copy by combine and the set
+    disappears.
+
+EndSaveMenuToWorld_2026_08_16_1:
+  verdict: parked
+  class: "half-solved: the yaw-load order is reachable via A208, the flame-load position is not"
+  date: 2026-08-16
+  note: >-
+    324 B, still 4/81 as parked, but re-classed. NEW: gcc 2.7.2 orders two
+    accesses to different globals iff BOTH MEMs are volatile
+    (`MEM_VOLATILE_P (x) && MEM_VOLATILE_P (mem)` in true_/anti_dependence), so
+    writing the camera-anchor store and the yaw read volatile pins
+    `lw v1,%lo(yaw)` below `sw s0,0(s1)` exactly as the original has it — half
+    the residue, previously called unreachable. It scores 6/81 because the
+    anchor store then floats above the flame-timer load, whose position is not
+    source-controlled (identical at 6/81 with the flame statement moved above
+    the anchor store, with an `int *anchor` local, and with the pad-countdown
+    store volatile). Making the flame load volatile too reproduces the
+    original's block order insn-for-insn but costs +1: sched2 then hoists
+    `addiu a0,s1,-168` 26 insns above its jal and reorg leaves a nop in the
+    delay slot (and v0/v1 swap between the flame and yaw values).
+
+func_80038FC8_2026_08_16_1:
+  verdict: parked
+  class: "F14b mutual exclusion CONFIRMED — the single-set/multi-block escape does not exist"
+  date: 2026-08-16
+  note: >-
+    608 B, 4/152. local-alloc's gate is
+    `reg_basic_block[i] >= 0 && reg_n_deaths[i] == 1`, so in principle a
+    SINGLE-set pseudo referenced from more than one basic block also falls to
+    global_alloc and would get the boost AND the global register. Measured both
+    placements of one dominating `c16 = 0x10;`: gcc does not rematerialise the
+    constant per arm, it leaves one `li` in the dominator, and the function comes
+    out a word short (will not link). Mutual exclusion stands.
+
+SmoothSpyroByteEulerSpring_2026_08_16_1:
+  verdict: parked
+  class: "R1 re-measured with the -dg probe: 3 refs/29 vs 3 refs/28, priorities 1034 vs 1071"
+  date: 2026-08-16
+  note: >-
+    320 B, 21/80, length- and layout-exact. R1 (the a3<->t0 swap on the two held
+    prev values) is exactly one allocno_compare comparison: pseudo 82 (the
+    -29684 read) is 3 refs across 29 insns and pseudo 90 (-29680) is 3 refs
+    across 28, so 90 is allocated first and takes a3 (MIPS has no
+    REG_ALLOC_ORDER, so registers go out numerically and a3 precedes t0). The
+    exits are a 4th ref on 82 (floor_log2 3->4 doubles the priority) or two more
+    insns of live length on 90; both values are read exactly twice from source
+    (delta + accumulate) and the schedule is already exact, so neither is
+    buyable. R2 (13 insns, the stanza-2 tail) is untouched.
