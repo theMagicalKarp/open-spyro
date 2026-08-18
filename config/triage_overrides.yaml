@@ -1674,3 +1674,46 @@ HandleHardwareInterrupt_2026_08_17:
     the inner AND's operands is +1 insn (slot overflow). Only a block-local
     3rd-ref carrier that adds no insn would work, and neither recompute block
     contains a second value that could donate one.
+
+# --- session 2026-08-18 ---
+func_level_0_8007CFC0:
+  verdict: parked
+  class: "decode-incomplete (NOT the claimed allocation shift)"
+  date: 2026-08-18
+  note: >-
+    Balloonist DRAW half, 2568 B, clone family of 10 (25,680 B). The park's
+    "638/642 insns, ~68% word-aligned" is a register-MASKED figure. Re-measured
+    with registers anchored: 641 vs 639 insns, MISMATCH 215 over 102 regions;
+    with register names masked ENTIRELY it is still 209 over 100, so a third of
+    the body is a genuinely different instruction sequence. This is decode work,
+    not the "steer the base from s1 to s2 / shed a callee-saved" job the note
+    promises. Budget it as a fresh decode, not an allocation session.
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R9/R13 SOLVED (A26 pointer-local); 12 residues left, time-attack carrier is +1 insn"
+  date: 2026-08-18
+  note: >-
+    Flight-end results board, 6440 B, word-identical x5 (32,200 B). 78/1610 ->
+    75/1610, 46 regions. The a1 = &pos setup the original places two blocks
+    ahead of each call is the DEF of an explicit pointer local written between
+    the pos[] stores and the blink `if`; both YES/NO blocks of the RESULTS board
+    now match. The TIME-ATTACK board wants a SECOND carrier established at its
+    "TRY AGAIN" call (orig 1432 `addiu s2,sp,56; move a1,s2`), but every
+    spelling of it compiles to 1611 insns and cannot link -- exactly +1, so it
+    has to be paid for by fixing R10/R11/R12 in the same pass. Drive that with
+    the compile-only insn count, not the linked diff.
+func_80038C4C:
+  verdict: attempted
+  class: "F1 local-alloc tie (ay v1-vs-a1) — six more source forms measured, all 6/66"
+  date: 2026-08-18
+  note: >-
+    Re-opened with the A210 quantity-split lever that closed
+    func_level_5_8007B4B0; it does not reach here. Root cause is narrower than
+    the note said: `ay` (abs(ry)) spans the abssi2 branch so it is a GLOBAL
+    allocno, while the `rec[3]` limit load is block-LOCAL, and whichever is
+    allocated first takes v1. Ours gives the limit v0 and ay v1; the original
+    has the limit in v1 and ay in a1, i.e. v0 is excluded for the limit in the
+    original and we cannot see why. Measured byte-identical at 6/66: reversed
+    compare operands, `return` through a named local, the limit through a named
+    local, `ry` reused as its own abs (31/66), an early-return inversion (slot
+    overflow) and the store/abs order swap (31/66).

@@ -364,6 +364,17 @@ void func_level_0_8007CFC0(void)
  * re-carve the byte diff (funcdiff CRASHES on length!=642 — carve overlay off 0x2588, 642
  * words, from build/overlays/<ovl>.ovl vs disc/orig/overlays/<ovl>.ovl and difflib-align).
  *
+ * 2026-08-18 — RE-MEASURED, and the park note above is WRONG about the
+ * distance. "638/642 insns, ~68% word-aligned" is a register-MASKED figure
+ * (cookbook SS C): it answers "is the decode right?", not "is it close?".
+ * With registers ANCHORED the content-aligned diff is 641 vs 639 insns,
+ * MISMATCH 215 over 102 regions -- and re-running the same diff with register
+ * names masked ENTIRELY still gives 209 over 100. So the residue is NOT the
+ * "whole-function s1-vs-s2 / 7-vs-6 saved-reg shift" claimed in item 1 below:
+ * a third of the function is a genuinely different instruction sequence and
+ * this is decode work, not finish-the-ties work. Do not pick it up as an
+ * allocation session. (Same trap as func_level_0_8007B020, 2026-08-11-2.)
+ *
  * 2026-07-25-1 unattended permuter session (~15m, ~34800 iterations — the
  * fewest of the sweep, this being the largest function attempted — timed out at
  * the 15m budget): best score 8430 vs base score 9930, across 417 output dirs.

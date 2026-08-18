@@ -4,12 +4,7 @@
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    . = 0x0000000c ;
-    build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA44)
-    . = 0x0000001c ;
-    build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA54)
-    . = 0x00000024 ;
-    build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA5C)
+    build/overlays/level_5_artisans_sunny_flight/c/func_level_5_8007B4B0.o(.rodata)
     . = 0x00000028 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA60)
     . = 0x00000034 ;

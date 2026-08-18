@@ -66,7 +66,6 @@ Segments in play: ovl/level_10_peace_keepers_doctor_shemp, ovl/level_11_peace_ke
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 492 | F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6) |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie) |
-| `0x8007b4b0` | func_level_5_8007B4B0 | ovl/level_5_artisans_sunny_flight | 476 | 392 | F1 divide-block register rotation (was 'F9 double knot' - RETIRED) |
 | `0x8007cfc0` | func_level_0_8007CFC0 | ovl/level_0_artisans_home | 2568 | 368 | mid-decode, 215/642 content-aligned |
 | `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | 360 |  |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 |  |
@@ -100,10 +99,6 @@ Segments in play: ovl/level_10_peace_keepers_doctor_shemp, ovl/level_11_peace_ke
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | B9 clamp (full-screen variant); DMA body transcribes |
-| `0x8007b4b0` | func_level_11_8007B4B0 | ovl/level_11_peace_keepers_night_flight | 476 | 0 | F1 divide-block register rotation; crack func_level_5_8007B4B0 first, then sed-clone |
-| `0x8007b4b0` | func_level_17_8007B4B0 | ovl/level_17_magic_crafters_crystal_flight | 476 | 0 | F1 divide-block register rotation; via level_5 template |
-| `0x8007b4b0` | func_level_23_8007B4B0 | ovl/level_23_beast_makers_wild_flight | 476 | 0 | F1 divide-block register rotation; via level_5 template |
-| `0x8007b4b0` | func_level_29_8007B4B0 | ovl/level_29_dream_weavers_icy_flight | 476 | 0 | F1 divide-block register rotation; via level_5 template |
 | `0x800826f0` | func_level_4_800826F0 | ovl/level_4_artisans_toasty | 4652 | 0 | clone of func_level_2_80083274 |
 | `0x80084028` | func_level_28_80084028 | ovl/level_28_dream_weavers_jacques | 4652 | 0 | clone of func_level_2_80083274 |
 | `0x80084ef0` | func_level_10_80084EF0 | ovl/level_10_peace_keepers_doctor_shemp | 4652 | 0 | clone of func_level_2_80083274 |
