@@ -67,6 +67,26 @@ extern int AbsAngleDelta12(int a, int b);
        the block and evicts the `move a2,a0` bubble-filler. Wrapping BOTH loads
        is useless by construction (the ratio is what decides, and both refs
        scale together).
+   Re-confirmed 2026-08-18-1 with the real `-dl` numbers (do not re-measure):
+   in the split/target-first form the two loaded temps are `b` = 2 refs / 4
+   insns (priority 1*2/4 = 0.5, wins v0) and `t` = 2 refs / 6 insns (0.333).
+   R=3 on `t` gives 3/6 = 0.5, an exact tie that `qty_compare_1` breaks on qty
+   number -- and `t` is born first, so it wins.  The A176 dial around the target
+   load ALONE was re-run: still +1 insn (fails to link), same eviction.
+   NEW this session, and also a dead end -- the "both global" route.  Giving
+   BOTH loads a second set (reusing them for the in-`if` recomputation) moves
+   them out of local-alloc, and then:
+     - only `t` multi-set: the emitted ORDER comes out right (a de-boosted def
+       drifts to the front of the block) and the subu's dest is right, but `b`
+       is still block-local so local-alloc hands it v0 first -> 10/92;
+     - both multi-set, target first in source: order right in BOTH blocks, subu
+       dest right, and the entire residue is the v0/v1 swap -> 10/92. global.c
+       `allocno_compare` is the same floor_log2(R)*R/live_length formula, and
+       `t` is 4 refs / 6 vs `b` 4 refs / 4, so `b` wins again.
+   The invariant behind all of it: whichever temp is EMITTED first is BORN
+   first, so its live range is always the longer one, so at equal ref counts it
+   always loses.  R is the only free variable in either allocator, which is why
+   the R=3 criterion below is the whole problem.
    The live lengths make this unreachable by range dials too: the first-loaded
    temp's range is strictly longer than the second's, so any insn added between
    the second load and the subu lengthens both. R is the only free variable. */

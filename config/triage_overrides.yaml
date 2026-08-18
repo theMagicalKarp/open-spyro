@@ -1717,3 +1717,108 @@ func_80038C4C:
     compare operands, `return` through a named local, the limit through a named
     local, `ry` reused as its own abs (31/66), an early-return inversion (slot
     overflow) and the store/abs order swap (31/66).
+
+# --- session 2026-08-18-1 ---------------------------------------------------
+# Mode: clone/vein (gate 26). Two long-standing family heads root-caused, one
+# park improved, one wall claim retired. No new bytes.
+#
+# The full .c.wip sweep through the LINKED path was re-run over all 64 wips
+# (§C "cheapest bytes on the board"): ZERO free matches, same as 2026-08-06-1.
+# Closest parks, in order: TurnSpyroTowardMoveTargetWithLean 2/92,
+# EndSaveMenuToWorld 4/81, func_80038FC8 4/152, func_level_1_800892C4 4/1085,
+# func_level_3_80088F68 4/985, func_level_11_800819BC 5/593,
+# func_level_17_80081F0C 5/741, func_level_23_8008223C 5/838,
+# func_level_25_80084B94 5/794 (the last four are B19-gated).
+
+func_level_1_800892C4_2026_08_18_1:
+  verdict: parked
+  class: "F14b mutual exclusion — register half CLOSED by construction"
+  date: 2026-08-18
+  note: >-
+    4/1085, and the 4 is now decomposed. POSITION half is solved and free: two
+    donors written as `v = 0x30; z = i * 16; t = 0x2E; rec->u.band.life = v;`
+    puts all three defs in the original's slots, leaving a 2-insn residue that
+    is purely the register. REGISTER half is unreachable: for the carrier to
+    land t0, find_reg must have 2,3,4,5,6,7 all excluded, and `a3` can never be
+    — the function's widest call takes THREE arguments, so a3 is never live (no
+    hard conflict) and nothing is ever copied into it (no allocno can prefer
+    it). Confirmed on -dg: three hard-reg preferences in the whole function, all
+    v0/v1, and no allocno disposed to reg 6 or 7 anywhere. Also measured and
+    rejected: one shared carrier across all EIGHT `fx = 0x2E` sites is +2 insns
+    (slot overflow), and one across the three non-cross-jumped arms
+    (0xC/0x15/0x18) is 815/1085. The original's multi-set-ness is compiler-made
+    (jump.c cross-jumps three arms into the shared tail at 0x80089b08). ONLY
+    remaining attack: make the carrier LOSE its hard register — `-dg` prints
+    `Spilling reg 8.` and every other t0 in the original is spill traffic, so t0
+    is this function's reload spill register and an unallocated pseudo
+    rematerialised by reload would land there, positioned by sched2 not sched1.
+    Do NOT spend another session on donor selection. 21,700 B across
+    levels 1/2/4/10/28 plus 7,880 B in the 985 group hang on this.
+func_level_2_800844A0:
+  verdict: parked
+  class: "clone of func_level_1_800892C4"
+  date: 2026-08-18
+  note: "branch-displacement clone; lands with the level_1 head."
+func_level_4_8008391C:
+  verdict: parked
+  class: "clone of func_level_1_800892C4"
+  date: 2026-08-18
+  note: "branch-displacement clone; lands with the level_1 head."
+func_level_10_8008611C:
+  verdict: parked
+  class: "clone of func_level_1_800892C4"
+  date: 2026-08-18
+  note: "branch-displacement clone; lands with the level_1 head."
+func_level_28_80085254:
+  verdict: parked
+  class: "clone of func_level_1_800892C4"
+  date: 2026-08-18
+  note: "branch-displacement clone; lands with the level_1 head."
+
+func_level_2_80083274_2026_08_18_1:
+  verdict: parked
+  class: "F16 — one sched1 priority point; the 2026-08-05-2 wall claim is RETIRED"
+  date: 2026-08-18
+  note: >-
+    Improved 12/1163 -> 8/1163 and the residue is now named exactly. Every data
+    edge costs 1 and every anti edge 0, so a priority is dependence depth: the
+    long chain's `lw D_800756CC` is 15 (anti-dependent on the arm's earlier
+    rec[...] stores), so its *6 chain and the `sh` are 16, while the byte `sb`
+    inherits only 15 through its own anti-dep on that same load. The gap is ONE
+    data edge. De-boosting the sh's feeder is necessary (the original's addu is
+    provably non-birthing) but not sufficient — a function-scope carrier donated
+    by arm 0x4C, `b = HU(0x8) + D_800756CC * 6; rec[0xB] += 4; HU(0x8) = b;`, is
+    byte-identical, because at 16 vs 15 rank_for_schedule never reaches LUID.
+    Writing the byte RMW volatile gives its load the same anti-dependence set,
+    lifts the sb to 16, and INVERTS the lead tie (the long chain's lui/lw now
+    lead exactly as the original) — proof the window is movable. It cannot
+    finish because a volatile MEM is not folded onto the held record base (B16):
+    `11(s4)` instead of `10(s1)`, 2 insns, plus 2 more from the pinned load.
+    Open question, narrow and named: how does the original's byte load reach
+    dependence depth 14 WITHOUT volatile? The old generalisation ("no store can
+    be scheduled between a store and the def that feeds it") is wrong as stated;
+    it describes the equal-priority case only. 23,260 B across levels
+    1/2/4/10/28, and F16 gates every ground advance-pass variant carrying
+    arm 0x15.
+
+TurnSpyroTowardMoveTargetWithLean_2026_08_18_1:
+  verdict: parked
+  class: "F1 local-alloc qty_compare tie (2/92) — numeric criterion, both allocators"
+  date: 2026-08-18
+  note: >-
+    Real -dl numbers, do not re-measure: in the split/target-first form the two
+    loaded temps are `b` = 2 refs / 4 insns (priority 1*2/4 = 0.5, wins v0) and
+    `t` = 2 refs / 6 insns (0.333). R=3 on `t` gives an exact tie that
+    qty_compare_1 breaks on qty number, which `t` wins by being born first — and
+    the A176 dial around the target load alone is still +1 insn (re-run this
+    session, fails to link). NEW and also dead: the "both global" route. Giving
+    both loads a second set moves them out of local-alloc; with only `t`
+    multi-set the emitted ORDER and the subu dest both come out right but `b` is
+    still block-local and local-alloc hands it v0 first (10/92); with both
+    multi-set and target first in source, the order is right in BOTH blocks, the
+    subu dest is right, and the entire residue is the v0/v1 swap (10/92) —
+    global.c allocno_compare is the same floor_log2(R)*R/live_length formula and
+    `t` is 4 refs / 6 vs `b` 4 refs / 4. Invariant behind all of it: whichever
+    temp is EMITTED first is BORN first, so its range is always the longer one,
+    so at equal ref counts it always loses. R is the only free variable in
+    either allocator. Permuter-or-never.

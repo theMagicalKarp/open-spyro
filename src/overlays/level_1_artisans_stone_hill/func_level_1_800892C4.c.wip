@@ -816,4 +816,41 @@ void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
  * function in the repo -- ~29,580 bytes across seven functions hang on one
  * 4-insn fix. It warrants a dedicated long-budget run well before any of the
  * lower-leverage targets.
+ * ===== 2026-08-18-1: THE REGISTER HALF IS CLOSED BY CONSTRUCTION =====
+ * Stop hunting donors.  For the 0x2E carrier to land `t0` (reg 8), global.c
+ * find_reg's numeric scan must find 2,3,4,5,6,7 all in
+ * `hard_reg_conflicts | regs_someone_prefers`.  `a3` (reg 7) can be in NEITHER:
+ * the widest call in this function takes THREE arguments, so `a3` is never live
+ * (no hard conflict is possible) and nothing is ever copied into it, so no
+ * allocno can prefer it and `expand_preferences` has nothing to propagate.
+ * Confirmed on `-dg`: the whole function has exactly three allocnos with any
+ * hard-reg preference and they are all v0/v1, and NO allocno anywhere in the
+ * function is disposed to reg 6 or 7.  The local-alloc route stays closed by
+ * F14b's mutual exclusion (non-birthing needs >=2 sets; 2 sets in one block =>
+ * 2 deaths => `reg_qty = -2` gate fails => global_alloc).
+ *
+ * The POSITION half is fully solved and free.  Two donors, in this order:
+ *     v = 0x30;  z = i * 16;  t = 0x2E;  rec->u.band.life = v;  ...
+ * with `v` = arm 0x15's local promoted to function scope and `t` given a second
+ * set from any other arm.  Measured this session: all three defs land in the
+ * original's slots and the entire residue is the ONE register, in 2 insns.
+ * (This file is left in the older 4-diff state on purpose -- it is the smaller
+ * positional-credit number; the 2-insn state is one edit away, see above.)
+ *
+ * Why the original has a multi-set pseudo there at all: its `li t0,46` is one
+ * of SEVEN in the function, and three of them feed a CROSS-JUMPED shared tail
+ * (`j 0x80089b08`, where `sb t0,0xF(s2)` / `sb v0,0x11(s2)` live) that jump.c
+ * built out of plain literals.  The multi-set-ness is compiler-made.  Trying to
+ * re-create it from source does not work, both measured this session:
+ *   - one carrier across all EIGHT `fx = 0x2E` sites: +2 insns (slot overflow);
+ *   - one carrier across just the three arms whose fx store is NOT cross-jumped
+ *     (0xC / 0x15 / 0x18): 815/1085 -- it re-colours the whole function.
+ *
+ * The ONE attack left is the opposite of every donor attempt: make the carrier
+ * LOSE its hard register.  `-dg` on our own build prints `Spilling reg 8.`, and
+ * every other `t0` in the original is spill traffic (`lw t0,104(sp)`,
+ * `sra t0,s4,0x18`, `mflo t0`) -- t0 is this function's reload SPILL register.
+ * An unallocated pseudo rematerialised by reload would land there, and its
+ * position would then be set by sched2 (which schedules reload's own insns
+ * freely) rather than by sched1's birthing boost.  Aim at that.
  */

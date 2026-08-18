@@ -35,6 +35,45 @@
  * express a PARTIAL order (it would force full source order, which is what we
  * already have).
  *
+ * ===== 2026-08-18-1: NOT A WALL.  The park is 8/1163, and here is why. =====
+ * Every data edge costs 1 and every anti/output edge 0, so a sched1 priority is
+ * just dependence depth.  Measured on `-dS`, basic block 49:
+ *   - `lw D_800756CC` = 15.  It is ANTI-dependent on the arm's earlier
+ *     `rec[...]` stores (a store through the record's `unsigned char *` may
+ *     alias the global -- which is also why the original re-loads it here), so
+ *     its `*6` chain and the `sh` come out at 16.
+ *   - the byte `sb` = 15 as well, but only through its OWN anti-dep on that
+ *     same `lw`; its data chain (`lbu` 1 -> `addiu` 2 -> `sb` 3) contributes
+ *     nothing, because a constant-offset load off the shared base is
+ *     disambiguated from every store in the arm.
+ * So the residue is exactly ONE data edge, and two things follow:
+ *
+ * 1. De-boosting the `sh`'s feeder is NECESSARY but NOT SUFFICIENT.  The
+ *    original's `addu` is provably non-birthing (a boosted def lands
+ *    immediately before its store; this one sits 3 insns earlier), so the F14
+ *    carrier is right:
+ *      b = HU(0x8) + D_800756CC * 6;  rec[0xB] += 4;  HU(0x8) = b;
+ *    with `b` at function scope and a second set donated by arm 0x4C (which
+ *    carries the identical chain and no byte RMW, so it costs nothing there).
+ *    Result: BYTE-IDENTICAL.  At 16 vs 15 the `addu` still wins on priority and
+ *    `rank_for_schedule` never reaches the LUID tie-break.
+ *
+ * 2. Give the byte chain the same anti-dependence set and the tie INVERTS.
+ *      *(volatile unsigned char *)(rec + 0xB) += 4;
+ *    lifts the `sb` to 16 and takes the arm from 12/1163 to 8/1163: the lead
+ *    tie flips and the long chain's `lui/lw` lead exactly as the original does.
+ *    It cannot finish, for two reasons that are both about the volatile and not
+ *    about the schedule: a volatile MEM is not folded onto the held record base
+ *    (cookbook B16), so the access comes out `11(s4)` instead of `10(s1)`
+ *    (2 insns), and the volatile pins the load's position (2 more).
+ *
+ * So the open question is narrow and named: HOW DOES THE ORIGINAL'S BYTE LOAD
+ * REACH DEPENDENCE DEPTH 14 WITHOUT VOLATILE?  Constant-offset accesses off one
+ * base are always disambiguated, so no source-order or aliasing dial found so
+ * far reaches it.  Also note the generalisation in the 2026-08-05-2 text below
+ * ("no store can be scheduled between a store and the def that feeds it") is
+ * WRONG as stated -- it describes the equal-priority case only.
+ *
  * ROOT-CAUSED 2026-08-05-2 -- this is a WALL, not a permuter target.  Read
  * straight off the sched1 dump (`cc1 ... -dS` -> <in>.i.sched, basic block
  * 49): `priority()` is the longest path from the block START (LOG_LINKS,
