@@ -29,7 +29,7 @@
  * call, and reorg eats it into the delay slot exactly as the original does.
  * The earlier "statement position" probes moved ONE statement at a time and so
  * never changed the relative LUID order, which is the only thing that matters.
- * Remaining residue (content-aligned MISMATCH 78/1610, 95.2%; the linked diff
+ * Remaining residue (content-aligned MISMATCH 75/1610 as of 2026-08-18; the linked diff
  * is positionally phase-shifted by the one insn below and reads far worse than
  * the function really is): `la envBase` still lands ~20 insns late (it takes
  * the T-17 bubble; the original has it before the FIRST PutDispEnv), a +8 frame
@@ -102,9 +102,32 @@
  *    `addiu -33` on BOTH sides, so the original's source really does write
  *    `- 0x21` and `+ 0x80` and keeps both in SImode. Fixing this (A116's
  *    inverse) is worth 2 more bytes and may be a lever on R7.
- * Attack order for the next session: R7 first (it is a quarter of the residue
- * and the block is permuter-mangled, so a clean rewrite has room), then R13
- * (A26, untried), then the frame slot (A127), then R8/R11.
+ * 2026-08-18 — R9/R13 SOLVED for the results board; 78/1610 -> 75/1610
+ * (46 regions). The a1 = &pos arg setup that ours rematerialised in the block
+ * immediately before each `func_80017FE4` call is, in the original, the DEF of
+ * an explicit pointer local written between the pos[] stores and the blink
+ * `if`. Writing `int *pp; ... pos[0]=..; pos[1]=..; pos[2]=..; pp = pos;
+ * if (blink test) ...; func_80017FE4("YES", pp, ...)` puts the copy where the
+ * original has it (`move a1,s2` at orig 1071) and lets the NO block's
+ * rematerialised `addiu a1,sp,56` fall into the `bne` delay slot at orig 1108.
+ * Both YES/NO blocks of the RESULTS board now match; the pointer local costs
+ * nothing there because `pos` is already carried in s2.
+ * The TIME-ATTACK board wants the same shape and it is now measured, not
+ * guessed: orig 1432 opens it with `addiu s2,sp,56; move a1,s2` (a FRESH
+ * carrier established at the "TRY AGAIN" call, then reused by `move a1,s2` at
+ * 1448 and rematerialised at 1485), i.e. a second pointer local scoped to that
+ * branch. Every spelling of that (`int *pp` block-local, `int *pp` at else
+ * scope, reusing the dead `fp`, and each of TRY-AGAIN/YES/NO alone) compiles to
+ * 1611 insns and CANNOT LINK — exactly +1. Use the compile-only insn count
+ * (`config/compile.sh ovl <src> /tmp/g.o` + `objdump -d | grep -c` = 1610 for a
+ * linkable body) to iterate there; the +1 has to be paid back by fixing one of
+ * R10/R11/R12 in the same pass, so do NOT attempt the time-attack carrier on
+ * its own.
+ *
+ * Attack order for the next session: the TIME-ATTACK carrier together with
+ * R10/R11/R12 (they must net to zero insns), then R7 (a quarter of the residue,
+ * and the block is permuter-mangled so a clean rewrite has room), then the
+ * frame slot (A127), then R1.
  */
 
 extern void func_800521C0(void); /* BuildRenderEntityLists */
@@ -640,6 +663,7 @@ void func_level_5_8007B68C(void)
           char *rec;
           int count;
           int blink;
+          int *pp;
           pos[0] = 0x8C;
           pos[1] = 0xBE;
           pos[2] = 0x1100;
@@ -648,6 +672,7 @@ void func_level_5_8007B68C(void)
           pos[0] = 0x15C;
           pos[1] = 0xBE;
           pos[2] = 0x1100;
+          pp = pos;
           if (D_80075720 == 0)
           {
             if ((D_8007568C % 0x10) < 6)
@@ -655,13 +680,14 @@ void func_level_5_8007B68C(void)
               blink = 1;
             }
           }
-          func_80017FE4("YES", pos, 0x12, (blink * 2) + 0xA);
+          func_80017FE4("YES", pp, 0x12, (blink * 2) + 0xA);
           count = 3;
           blink = 0;
           pos[0] = 0x15C;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
           rec = D_80075710;
+          pp = pos;
           if (D_80075720 == 1)
           {
             if ((D_8007568C % 0x10) < 6)
@@ -669,7 +695,7 @@ void func_level_5_8007B68C(void)
               blink = 1;
             }
           }
-          func_80017FE4("NO", pos, 0x12, (blink * 2) + 0xA);
+          func_80017FE4("NO", pp, 0x12, (blink * 2) + 0xA);
           if (D_80075720 != 0)
           {
             rec = D_80075710;
