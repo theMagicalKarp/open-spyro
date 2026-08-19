@@ -1822,3 +1822,38 @@ TurnSpyroTowardMoveTargetWithLean_2026_08_18_1:
     temp is EMITTED first is BORN first, so its range is always the longer one,
     so at equal ref counts it always loses. R is the only free variable in
     either allocator. Permuter-or-never.
+
+# --- Emit-list ADVANCE pass campaign, 2026-08-19 (F16 retired) -------------
+# The F16 gate fell to A206: the arm's third D_800756CC read is TRUE-dependent
+# on the preceding rec store, which lifts the *6 chain one dependence edge
+# above the byte RMW; a const-qualified deref at that one site drops it and the
+# original's interleave falls out.  13 variants matched this session.
+func_level_16_80084830:
+  verdict: parked
+  class: "cse EBB: two breaks needed in one arm, only one is free"
+  date: 2026-08-19
+  note: "1/1476, length-exact, fully decoded (4 stack vectors + an A200 barrier in arm 0x8). Residue is the arm's LAST vector use, which must rematerialise but shares the barrier's EBB; six second-barrier placements all cost >=1 insn."
+func_level_9_80083F2C:
+  verdict: viable
+  class: "advance pass, 2 new arms (0xF 22 insns, 0x4B 44 insns)"
+  date: 2026-08-19
+  note: "Decoded the arm pair: 0xF and 0x4B are the same body cross-jumped at .L80084C34, differing only in which stack vectors they take (0x20/0x30 vs 0x40/0x58). Needs a 4+ vector frame layout worked out like level_16's."
+func_level_15_80087B40:
+  verdict: viable
+  class: "advance pass, 2 new arms (0x4 ~180 insns, 0x5 ~40)"
+  date: 2026-08-19
+  note: "Arm 0x4 is the wizard projectile with three sub-states; 0x5 is the short spawn/drift. Decoding both also unlocks level_13 (same two) and half of level_14."
+func_level_13_8008AF54:
+  verdict: viable
+  class: "advance pass, needs arms 0x4 + 0x5"
+  date: 2026-08-19
+  note: "Same two new arms as level_15; everything else is in the donor library."
+func_level_27_80086754:
+  verdict: viable
+  class: "advance pass, needs arms 0x1D + 0x1F"
+  date: 2026-08-19
+func_level_14_80089454:
+  verdict: viable
+  class: "advance pass, needs arms 0x4/0x5/0x1F/0x45/0x49"
+  date: 2026-08-19
+  note: "Do it last: three of its five new arms come free once level_15 and level_27 land."
