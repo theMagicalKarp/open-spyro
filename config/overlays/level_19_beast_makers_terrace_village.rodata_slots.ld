@@ -18,6 +18,7 @@
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B2E4)
     . = 0x000008d8 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B310)
+    build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_800853AC.o(.rodata)
     . = 0x00000a1c ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B454)
     . = 0x00000b64 ;

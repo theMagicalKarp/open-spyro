@@ -20,6 +20,7 @@
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007B39C)
     . = 0x00000994 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007B3CC)
+    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_80087400.o(.rodata)
     . = 0x00000ad8 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007B510)
     . = 0x00000c20 ;
