@@ -28,12 +28,13 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 14 | `0x8007d990` | func_level_12_8007D990 | ovl/level_12_magic_crafters_home | 2568 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
 | 15 | `0x8007d998` | func_level_6_8007D998 | ovl/level_6_peace_keepers_home | 2568 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
 
-(80 viable candidates total; the full ranking is regenerable.)
+(76 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
+| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 birthing boost on one byte load; no free non-birthing carrier in the arm |
 | `0x80084830` | func_level_16_80084830 | ovl/level_16_magic_crafters_blowhard | 5904 | 5816 | cse EBB: two breaks needed in one arm, only one is free |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 |  |
 | `0x800892c4` | func_level_1_800892C4 | ovl/level_1_artisans_stone_hill | 4340 | 4252 |  |
@@ -63,6 +64,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
+| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 520 | 4 missing `li a3,3` remats + one rec/POS allocno_compare tie |
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 492 | F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6) |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie) |
