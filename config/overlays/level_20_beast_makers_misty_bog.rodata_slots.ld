@@ -20,6 +20,7 @@
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007ACFC)
     . = 0x000002d8 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007AD10)
+    build/overlays/level_20_beast_makers_misty_bog/c/func_level_20_80085084.o(.rodata)
     . = 0x0000041c ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007AE54)
     . = 0x00000564 ;
