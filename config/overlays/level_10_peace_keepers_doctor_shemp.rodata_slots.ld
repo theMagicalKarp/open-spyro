@@ -16,6 +16,7 @@
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007AB34)
     . = 0x000001b4 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007ABEC)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/func_level_10_80084EF0.o(.rodata)
     . = 0x000002f8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007AD30)
     . = 0x00000440 ;

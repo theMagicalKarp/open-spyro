@@ -7,6 +7,7 @@
     build/overlays/level_28_dream_weavers_jacques/c/func_level_28_800836A8.o(.text)
     . = 0x000095f0 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_80084028)
+    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80084028.o(.text)
     . = 0x0000a81c ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_80085254)
     . = 0x0000b910 ;
