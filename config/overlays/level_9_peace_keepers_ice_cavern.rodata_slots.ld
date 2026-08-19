@@ -22,6 +22,7 @@
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B1F4)
     . = 0x000007e4 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B21C)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80083F2C.o(.rodata)
     . = 0x00000928 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B360)
     . = 0x00000a70 ;

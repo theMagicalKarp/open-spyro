@@ -1839,19 +1839,50 @@ func_level_9_80083F2C:
   date: 2026-08-19
   note: "Decoded the arm pair: 0xF and 0x4B are the same body cross-jumped at .L80084C34, differing only in which stack vectors they take (0x20/0x30 vs 0x40/0x58). Needs a 4+ vector frame layout worked out like level_16's."
 func_level_15_80087B40:
-  verdict: viable
-  class: "advance pass, 2 new arms (0x4 ~180 insns, 0x5 ~40)"
-  date: 2026-08-19
-  note: "Arm 0x4 is the wizard projectile with three sub-states; 0x5 is the short spawn/drift. Decoding both also unlocks level_13 (same two) and half of level_14."
+  verdict: matched
+  class: "advance pass, arms 0x4 + 0x5 decoded"
+  date: 2026-08-19-1
+  note: >-
+    MATCHED, 6416 B. Three decisions: the owner handle at +0x18 is a DOUBLE
+    indirection; `step4` must be a named pre-loop local (inline `step * 4` lets
+    loop.c hoist it AFTER `dir = dv`, and it then wins the callee-saved register
+    that belongs to dir); and arm 0x4's shared `func_80017BFC(POS, pt);
+    rec[0x2]++;` tail must be written ONCE behind a goto label -- inline in each
+    sub-state, sched1 pulls the arg setup into the pt[] load-stall slots before
+    cross-jumping runs and the merge lands one insn short plus a nop.
 func_level_13_8008AF54:
-  verdict: viable
-  class: "advance pass, needs arms 0x4 + 0x5"
-  date: 2026-08-19
-  note: "Same two new arms as level_15; everything else is in the donor library."
+  verdict: parked
+  class: "4 missing `li a3,3` remats + one rec/POS allocno_compare tie"
+  date: 2026-08-19-1
+  note: >-
+    .c.wip at 1693/1696 insns, MISMATCH 47 over 29 regions register-anchored;
+    fully decoded (arms 0x4/0x5 lifted from the matched level_15). PROVEN HERE:
+    loop.c HOISTS a stack vector's address into the preheader and spills it as
+    soon as the array NAME is used 3+ times in the loop (<=2 uses: no hoist);
+    block-scoping the arrays does not change it; a MULTI-SET pointer carrier
+    defeats it (a single-set carrier is still hoisted). `dir` is INERT in this
+    variant -- loop.c hoists &dv by itself. The shared constant 3 must be a
+    NAMED local (A100): two arms compare/store rec[0x1] against it, and as a
+    literal the function comes out 5 insns short (134/70 -> 89/50). Two levers
+    found after that: an A200b `do { } while (0);` barrier after arm 0x8's first
+    vector use is worth 21 (89 -> 68), and writing `dir = dv;` BEFORE
+    `step4 = step * 4;` puts step4 in $s7 and dir in $fp as the original has them
+    (68 -> 47) -- the two are a priority tie decided by one insn of live length,
+    and the one defined LATER wins. See the .wip header before touching it.
 func_level_27_80086754:
-  verdict: viable
-  class: "advance pass, needs arms 0x1D + 0x1F"
-  date: 2026-08-19
+  verdict: parked
+  class: "F14 birthing boost on one byte load; no free non-birthing carrier in the arm"
+  date: 2026-08-19-1
+  note: >-
+    .c.wip at 9/1697 differing insns (99.5%), LENGTH-EXACT and LINKING. Arms
+    0x1D and 0x1F fully decoded. The residue is one load: the original emits
+    `lbu a2,24(s1)` (rec[0x19]) before the *0x58 actor chain, ours seven insns
+    later, swapping two register names over eight insns. `cc1 -dS` shows the
+    load carrying 0x7f000001, F14's birthing boost, so the original's carrier
+    has reg_n_sets > 1; every non-birthing carrier available in the arm (jx, jy,
+    len, a re-used idx, a second A200 barrier) costs +1 insn. Permuter target.
+    The rest of the function is byte-exact and the .wip header lists the six
+    source decisions that got it there -- read it before touching anything.
 func_level_14_80089454:
   verdict: viable
   class: "advance pass, needs arms 0x4/0x5/0x1F/0x45/0x49"

@@ -1,0 +1,893 @@
+/* PARKED 2026-08-19-1 at 9/1697 differing instructions (99.5%), LENGTH-EXACT and
+ * LINKING.  The whole residue is one scheduling decision in arm 0x1D's patrol
+ * block: the original loads rec[0x19] (`lbu a2,24(s1)`) BEFORE the * 0x58 actor
+ * chain; ours emits it seven insns later, which swaps two register names across
+ * the following eight insns.  Nothing else in the function differs.
+ *
+ * ROOT CAUSE, read off `cc1 -dS` (do not re-derive).  The trace says
+ *   ;; insn[2234]: priority = 1, ref_count = 2
+ *   ;; ready list at T-55: 2283 (1) 2251 (2) 2234 (7f000001), now 2234 2251 2283
+ * so the load carries F14's BIRTHING BOOST (0x7f000001): its destination is a
+ * single-set pseudo with an in-block consumer (the `sll ..,2`), so
+ * `adjust_priority` raises it to max_priority, sched1's backward pass picks it
+ * first and it lands LATEST.  The original's copy is not boosted, i.e. its
+ * carrier has reg_n_sets > 1.
+ *
+ * Every non-birthing carrier reachable in this arm costs +1 insn (F14i's
+ * "if no such carrier exists in the arm, it is a permuter target"):
+ *   - `jx` / `jy` (the twice-set jitter locals from the bit-3 sub-state): the
+ *     load DOES move to the front, but the `func_80017C24(hold, POS)` argument
+ *     loses its branch delay slot and comes back as a separate `move a1,s5`
+ *     (1698/1696, 11 mismatches).
+ *   - `len` (multi-set via the two func_800171FC results): +1.
+ *   - `idx = rec[0x18]; actor = .. idx * 0x58; idx = rec[0x19];` — combine folds
+ *     the first set into the multiply, reg_n_sets stays 1, output unchanged.
+ *   - `idx = node[8]` as the second set: 15 diffs.
+ *   - a second A200 `do { } while (0);` barrier before the chain: +1 insn,
+ *     exactly A200b's "one free break per arm".
+ *   - calling func_80017C24(hold, POS) first: +1.
+ *
+ * WHAT IS ALREADY RIGHT (do not disturb):
+ *  - Arms 0x1D and 0x1F are freshly decoded here; everything else is donor C.
+ *  - `aim` names &dv and `hold` names &pt.  Both are needed and their ORDER is
+ *    load-bearing three times over: `step2 = ..; aim = dv; step4 = ..` puts
+ *    aim's def between the two shifts so step4 keeps $fp and aim spills (a
+ *    one-instruction live-length difference decides it -- see the note below);
+ *    declaring step2/step4 BEFORE aim gives aim the higher spill slot (0x70 vs
+ *    0x78 follows pseudo number); and `func_80017C24(dv, VEL)` must use the
+ *    ARRAY name so that one site rematerialises instead of reloading.
+ *  - The empty `do { } while (0);` after the arm-top `func_80017C24(pt, POS)`
+ *    is an A200b barrier and is worth 2 insns: without it the arm-top and the
+ *    bit-3 `func_80017BFC(POS, pt)` share one CSE'd `addiu s0,sp,48`.
+ *  - `func_800175B8` is written in BOTH branches and `func_80017758` only once
+ *    behind `shove:`.  That exact split is what makes step4 win $fp: with both
+ *    calls inline &dv has one ref too many (4*23/1551 beats 4*23/1554) and it
+ *    takes the register instead, costing an `lw` per arm across the function.
+ */
+/* func_level_27_80086754 (0x80086754, level_27_dream_weavers_haunted_towers
+ * overlay, 0x1a84 bytes).
+ *
+ * The emit-list ADVANCE pass -- the 1697-insn haunted-towers variant of the
+ * walk matched in level_10 / level_15.  Walks the 0x20-byte record stream at
+ * D_80075824 and ages one record per iteration: integrates its position, fades
+ * its colour, ticks its life counter and, when the record has expired (or its
+ * alive byte has been cleared), hands it back with func_80053608().  The walk
+ * stops at the terminator record, whose class byte at +0x01 is 0xFF.
+ *
+ * Field map, in record-relative offsets:
+ *   0x00  effect id                0x01  class / terminator
+ *   0x02  age                      0x03  alive
+ *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
+ *                                  r/g/b triple for the fading classes)
+ *   0x10..0x16  per-record velocity / colour bytes
+ *   0x18  actor id (class 0x1D) / spin angle / source pointer
+ *   0x19  patrol node index        0x1A  waypoint index (class 0x1D)
+ *   0x1C  wrap count               0x1E  phase toggle / flag bits
+ *
+ * Beyond the shared ground-level arm set this variant adds 0x1D (the ghost,
+ * a three-sub-state patrol) and 0x1F (a long-lived plain drifter), and takes
+ * 0xD from level_5, 0x10 / 0x11 from level_18, 0x1E from level_0 and
+ * 0x7 / 0x41 from level_15.
+ *
+ * FOUR stack vectors, and the declaration order IS the frame order: arm 0x6
+ * takes the first, arm 0xA the second and arm 0x1D the third and fourth.
+ * Arm 0x1D addresses its pair by NAME: it uses each more than twice, so
+ * loop.c hoists both addresses into the preheader and spills them, which is
+ * what the original does (`addiu $t0,$sp,0x40; sw $t0,0x70($sp)`).
+ */
+
+#define HS(n) (*(short *)(rec + (n)))
+#define HU(n) (*(unsigned short *)(rec + (n)))
+#define W(n) (*(int *)(rec + (n)))
+#define POS ((short *)(rec + 4))
+#define VEL ((short *)(rec + 0x18))
+
+extern void func_80017C84(short *dst, short *src, short *delta);
+extern void func_80017BFC(short *dst, int *src);
+extern void func_80017C24(int *dst, short *src);
+extern void func_80017700(int *dst, int *src);       /* CopyVector */
+extern void func_80017758(int *dst, int *a, int *b); /* AddVector */
+extern void func_8001778C(int *dst, int *a, int *b); /* SubVector */
+extern int func_800171FC(int *v, int mode);          /* VectorLength */
+extern void func_800175B8(int *v, int len, int scale);
+extern int func_80016C58(int a);         /* LookupSine */
+extern int func_80016CB0(int a);         /* LookupCosine */
+extern unsigned int func_8006272C(void); /* GetRandomU32 */
+extern int abs(int n);
+extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
+
+extern unsigned char *D_80075824; /* g_pEmitListBase */
+extern char *D_80075828;          /* g_pActorListBase */
+extern int D_80075814;            /* g_nSpyroDrawSuppressed */
+extern int D_800756CC;            /* per-frame step count */
+extern short D_8006CBF8[];        /* sine table */
+extern short D_8006CC78[];        /* cosine table */
+extern short D_80076E20;
+extern int D_8007706C;
+extern int D_80078AD0;
+extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
+extern int D_80078BBC;
+
+void func_level_27_80086754(int step) {
+  unsigned char *rec = D_80075824;
+  int p[3];
+  int v[3];
+  int pt[3];
+  int dv[3];
+  int step2;
+  int step4;
+  int *aim;
+  int *hold;
+
+  if (rec[1] == 0xFF) {
+    return;
+  }
+
+  step2 = step * 2;
+  step4 = step * 4;
+  aim = dv;
+  hold = pt;
+
+  do {
+    switch (rec[0]) {
+    case 0x0:  /* <- func_level_10_80084EF0 */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step2;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x1:  /* <- func_level_10_80084EF0 */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step4;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x2:  /* <- func_level_10_80084EF0 */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step4;
+      rec[0xC] -= step4;
+      rec[0xD] -= step4;
+      rec[0xE] -= step4;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x6:  /* <- func_level_10_80084EF0 */
+    {
+      int ang;
+      int amp;
+      int z;
+
+      func_80017700(p, *(int **)(rec + 0x18));
+      z = p[2] + HS(0x1E) * 0x40;
+      amp = rec[0x2] * 0x40;
+      ang = amp;
+      if (HS(0x1C) < amp) {
+        amp = HS(0x1C);
+      }
+      p[0] += (amp * func_80016CB0(ang)) >> 12;
+      p[1] += (amp * func_80016C58(ang)) >> 12;
+      p[2] = HS(0x8) * 4 + 0x40;
+      if (z < p[2] || rec[0x2] >= 0xC9) {
+        func_80053608(rec);
+      } else {
+        func_80017BFC(POS, p);
+        rec[0x2]++;
+      }
+      break;
+    }
+
+    case 0x7:  /* <- func_level_15_80087B40 */
+    /* <- func_level_12_8008BE98 */
+      /* The rune orbit: it rises and falls on a triangular ramp keyed to the
+       * age byte and drifts by its own per-axis velocity words. */
+      if (rec[0x2] >= 0x19 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        rec[0xB] += rec[0x1E];
+        if (rec[0x2] >= 0xD) {
+          rec[0xA] = (0x18 - rec[0x2]) * 4;
+        } else {
+          rec[0xA] = rec[0x2] * 4;
+        }
+        HU(0x4) += HU(0x18);
+        HU(0x6) += HU(0x1A);
+        HU(0x8) += HU(0x1C);
+        rec[0x2]++;
+      }
+      break;
+
+    case 0x9:  /* <- func_level_10_80084EF0 */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step2;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0xa:  /* <- func_level_10_80084EF0 */
+      /* The homing sparkle: it only lives while Spyro is on screen. */
+      if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
+          D_80078BB8[0] <= 0) {
+        func_80053608(rec);
+      } else {
+        func_80017700(v, D_80078BB8 - 0x58);
+        v[0] += func_80016CB0(HS(0x18)) >> 4;
+        v[1] += func_80016C58(HS(0x18)) >> 4;
+        v[2] += 0x100;
+        func_80017BFC(POS, v);
+        HS(0x18) = HU(0x18) + 0x40;
+        rec[0xA] = abs(func_80016CB0((HS(0x18) - D_80076E20) & 0xFFF)) / 170;
+      }
+      break;
+
+    case 0xb:  /* <- func_level_10_80084EF0 */
+      func_80017C84(POS, POS, (short *)(rec + 0x12));
+      rec[0xC] -= 8;
+      rec[0xD] -= 8;
+      rec[0xE] -= 8;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0xc:  /* <- func_level_10_80084EF0 */
+      rec[0xB] += 8;
+      rec[0xA] += 2;
+      if (rec[0xC] != 0) {
+        rec[0xC] -= 8;
+      }
+      if (rec[0xD] != 0) {
+        rec[0xD] -= 8;
+      }
+      if (rec[0xE] != 0) {
+        rec[0xE] -= 8;
+      }
+      if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0xd:  /* <- func_level_5_80083330 */
+    {
+      int c;
+
+      if (rec[0x2] >= 0x1C || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        func_80017C84(POS, POS, VEL);
+        if (HS(0x1E) != 0) {
+          HU(0x1C)++;
+        }
+        HS(0x1E) = 1 - HU(0x1E);
+        rec[0xA] += step2;
+        if (rec[0x2] >= 0xD) {
+          c = 0x80 - (rec[0x2] - 0xC) * 8;
+          if (c < 0) {
+            c = 0;
+          }
+          rec[0xC] = c;
+          c = 0x40 - (rec[0x2] - 0xC) * 4;
+          if (c < 0) {
+            c = 0;
+          }
+          rec[0xD] = c;
+          rec[0xE] = 0;
+        } else if (rec[0x2] >= 5) {
+          rec[0xC] = 0x80;
+          rec[0xE] = 0;
+          rec[0xD] = -0x80 - (rec[0x2] - 4) * 8;
+        } else {
+          rec[0xC] = 0x80;
+          rec[0xD] = 0x80;
+          c = 0x80 - rec[0x2] * 32;
+          if (c < 0) {
+            c = 0;
+          }
+          rec[0xE] = c;
+        }
+        rec[0x2] += step;
+      }
+      break;
+    }
+
+    case 0x10:  /* <- func_level_18_800888F8 */
+      /* Gnasty's cauldron drip: a slow ember that dies when its red
+       * channel bottoms out. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step2;
+      rec[0xC] -= 4;
+      rec[0xD] -= 4;
+      rec[0xE] -= 4;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x11:  /* <- func_level_18_800888F8 */
+      /* The same ember with a late red cut-off at age 9. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step2;
+      if (rec[0x2] >= 9) {
+        rec[0xC] -= 0x20;
+      }
+      rec[0xD] -= 8;
+      rec[0xE] -= 4;
+      rec[0x2]++;
+      if (rec[0x2] >= 0xC || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x15:  /* <- func_level_10_80084EF0 */
+    {
+      int s;
+
+      rec[0x18] += D_800756CC * 4;
+      rec[0x19] += D_800756CC;
+      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
+      s = D_8006CBF8[rec[0x18]] * rec[0x19];
+      HU(0x8) += *(const int *)&D_800756CC * 6;
+      rec[0xB] += 4;
+      HU(0x6) = HU(0x14) + (s >> 12);
+      if (rec[0x19] >= 0xC1) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x18:  /* <- func_level_10_80084EF0 */
+    {
+      int heat;
+
+      if (rec[0xC] < 0xF0) {
+        rec[0xC] += 4;
+      }
+      if (rec[0xD] < 0xF0) {
+        rec[0xD] += 4;
+      }
+      if (rec[0xE] < 0xF0) {
+        rec[0xE] += 4;
+      }
+      rec[0x1C] += D_800756CC * 8;
+      heat = 0x3F;
+      if (D_8007706C < 0x40) {
+        heat = D_8007706C;
+      }
+      HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
+      HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
+      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
+      break;
+    }
+
+    case 0x1D: {
+      int len;
+      int spin;
+      int rx;
+      int ry;
+      int jx;
+      int jy;
+      int *node;
+      char *wp;
+      char *actor;
+      int idx;
+
+      /* The haunted-towers ghost.  Three sub-states, selected by the flag
+       * halfword at +0x1E: bit 3 = the free-flying trail, bit 0 = the spiral
+       * orbit around its own drift point, and neither = the patrol run, which
+       * walks a waypoint list hung off the actor named by +0x18 and, on
+       * reaching the last waypoint, wakes the actor named by the node's +0x20
+       * and re-arms itself as a trail.
+       */
+      func_80017C24(pt, POS);
+      do {
+      } while (0);
+      if (HU(0x1E) & 8) {
+        if (rec[0x2] >= 0x18) {
+          func_80053608(rec);
+          break;
+        }
+        rx = func_8006272C();
+        jx = HU(0x18) - 3;
+        jx += rx & 6;
+        HU(0x18) = jx;
+        ry = func_8006272C();
+        jy = HU(0x1A) - 3;
+        jy += ry & 6;
+        HU(0x1A) = jy;
+        HU(0x1C)++;
+        if (HS(0x1C) >= 0x11) {
+          HU(0x1C) = 0x10;
+        }
+        pt[0] += HS(0x18);
+        pt[1] += HS(0x1A);
+        pt[2] -= HS(0x1C);
+        func_80017BFC(POS, pt);
+        rec[0x2]++;
+      } else if (HU(0x1E) & 1) {
+        if (rec[0x2] >= 0x18) {
+          rec[0x2] = 0;
+          HS(0x18) = (func_8006272C() & 6) - 3;
+          HS(0x1A) = (func_8006272C() & 6) - 3;
+          HU(0x1C) = 0;
+          HS(0x1E) = 8;
+        } else {
+          func_80017C24(dv, VEL);
+          if (HU(0x1E) & 2) {
+            dv[0] += (rec[0x2] * func_80016CB0(rec[0x2] << 7)) >> 7;
+          } else {
+            dv[0] -= (rec[0x2] * func_80016CB0(rec[0x2] << 7)) >> 7;
+          }
+          if (HU(0x1E) & 4) {
+            dv[1] += (rec[0x2] * func_80016C58(rec[0x2] << 7)) >> 7;
+          } else {
+            dv[1] -= (rec[0x2] * func_80016C58(rec[0x2] << 7)) >> 7;
+          }
+          dv[2] += rec[0x2] << 5;
+          func_8001778C(aim, aim, hold);
+          len = func_800171FC(aim, 1);
+          if (len >= 0x81) {
+            func_800175B8(aim, len, 0x80);
+          }
+          goto shove;
+        }
+      } else {
+        idx = rec[0x19];
+        actor = D_80075828 + rec[0x18] * 0x58;
+        node = *(int **)actor + idx;
+        wp = (char *)node[1];
+        actor = D_80075828 + node[8] * 0x58;
+        func_80017C24(hold, POS);
+        func_80017700(aim, (int *)(wp + (rec[0x1A] * 0x10 + 8)));
+        dv[0] += func_80016CB0(rec[0x2] << 7) >> 2;
+        dv[1] += func_80016C58(rec[0x2] << 7) >> 2;
+        dv[2] += func_80016CB0((rec[0x2] << 7) + 0x200) >> 2;
+        func_8001778C(aim, aim, hold);
+        len = func_800171FC(aim, 1);
+        if (len < 0x401) {
+          rec[0x1A]++;
+          if (rec[0x1A] >= *(unsigned char *)wp) {
+            actor[0x49] = 1;
+            HS(0x1E) = (func_8006272C() & 6) + 1;
+            func_80017BFC(VEL, (int *)(actor + 0xC));
+            spin = func_8006272C() & 0x7F;
+            rec[0x2] = 0;
+            HU(0x1C) += spin;
+            break;
+          }
+        }
+        func_800175B8(aim, len, 0x100);
+      shove:
+        func_80017758(hold, hold, aim);
+        func_80017BFC(POS, hold);
+        rec[0x2]++;
+      }
+      break;
+    }
+
+    case 0x1e:  /* <- func_level_0_80086134 */
+      HU(0x8) += HU(0x1E);
+      rec[0xA]++;
+      rec[0xC] -= step2;
+      rec[0xD] -= step2;
+      rec[0xE] -= step2;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x20) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x1F:
+      /* A plain drifter with a long life. */
+      func_80017C84(POS, POS, VEL);
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x40 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x21:  /* <- func_level_10_80084EF0 */
+    {
+      int c;
+
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      c = rec[0xC] - step;
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step2;
+      if (c < 0) {
+        c = 0;
+      }
+      rec[0xC] = c;
+      c = rec[0xD] - step;
+      if (c < 0) {
+        c = 0;
+      }
+      rec[0xD] = c;
+      c = rec[0xE] - step;
+      if (c < 0) {
+        c = 0;
+      }
+      rec[0xE] = c;
+      rec[0x2] += step;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x41:  /* <- func_level_15_80087B40 */
+    /* <- func_level_12_8008BE98 */
+    {
+      unsigned short d[3];
+      int j;
+      int r;
+
+      /* A short-lived midpoint relaxation -- the 0x46 shape without the
+       * third jitter and without the colour ramp. */
+      d[0] = (HS(0xA) - HS(0x4)) >> 1;
+      d[1] = (HS(0xC) - HS(0x6)) >> 1;
+      d[2] = (HS(0xE) - HS(0x8)) >> 1;
+      HU(0x4) += d[0];
+      HU(0x6) += d[1];
+      HU(0x8) += d[2];
+      r = func_8006272C();
+      j = d[0] - 1;
+      j += r & 2;
+      d[0] = j;
+      r = func_8006272C();
+      j = d[1] - 1;
+      j += r & 2;
+      d[1] = j;
+      HU(0xA) += d[0];
+      HU(0xC) += d[1];
+      HU(0xE) += d[2];
+      rec[0x2]++;
+      if (rec[0x2] >= 0x8 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x42:  /* <- func_level_10_80084EF0 */
+    {
+      int i;
+      int j;
+      int r;
+
+      for (i = 0; i < step; i++) {
+        if (rec[0x2] & 1) {
+          HU(0x4) += HU(0x10);
+          HU(0x6) += HU(0x12);
+          HU(0x8) += HU(0x14);
+          if (rec[0x2] & 2) {
+            /* the `- 1` has to stay int-wide: folded into the unsigned short
+             * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
+             * hoisted out of the loop as a constant in a callee-saved reg. */
+            r = func_8006272C();
+            j = HU(0x10) - 1;
+            j += r & 2;
+            HU(0x10) = j;
+            r = func_8006272C();
+            j = HU(0x12) - 1;
+            j += r & 2;
+            HU(0x12) = j;
+            r = func_8006272C();
+            j = HU(0x14) - 1;
+            j += r & 2;
+            HU(0x14) = j;
+          }
+        }
+        rec[0x2]++;
+      }
+      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x46:  /* <- func_level_10_80084EF0 */
+    {
+      unsigned short d[3];
+      int j;
+      int r;
+
+      d[0] = (HS(0xA) - HS(0x4)) >> 1;
+      d[1] = (HS(0xC) - HS(0x6)) >> 1;
+      d[2] = (HS(0xE) - HS(0x8)) >> 1;
+      HU(0x4) += d[0];
+      HU(0x6) += d[1];
+      HU(0x8) += d[2];
+      r = func_8006272C();
+      j = d[0] - 1;
+      j += r & 2;
+      d[0] = j;
+      r = func_8006272C();
+      j = d[1] - 1;
+      j += r & 2;
+      d[1] = j;
+      if (rec[0x2] & 1) {
+        d[2]--;
+      }
+      HU(0xA) += d[0];
+      HU(0xC) += d[1];
+      HU(0xE) += d[2];
+      rec[0x2]++;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        rec[0x10] -= 3;
+        if (rec[0x10] < 0x80) {
+          rec[0x10] = 0x80;
+        }
+        rec[0x11] -= 4;
+        if (rec[0x11] < 0x60) {
+          rec[0x11] = 0x60;
+        }
+        rec[0x12] = 0;
+        rec[0x14] -= 3;
+        if (rec[0x14] < 0xC0) {
+          rec[0x14] = 0xC0;
+        }
+        rec[0x15] -= 4;
+        if (rec[0x15] < 0x80) {
+          rec[0x15] = 0x80;
+        }
+        rec[0x16] -= 6;
+        if (rec[0x16] < 0x20) {
+          rec[0x16] = 0x20;
+        }
+      }
+      break;
+    }
+
+    case 0x47:  /* <- func_level_10_80084EF0 */
+    {
+      int d[3];
+      int j;
+      int r;
+
+      rec[0x2]++;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        d[0] = HS(0xA) - HS(0x4);
+        d[1] = HS(0xC) - HS(0x6);
+        d[2] = HS(0xE) - HS(0x8);
+        r = func_8006272C();
+        j = d[0] - 1;
+        j += r & 2;
+        d[0] = j;
+        r = func_8006272C();
+        j = d[1] - 1;
+        j += r & 2;
+        d[1] = j;
+        r = func_8006272C();
+        j = d[2] - 1;
+        j += r & 2;
+        d[2] = j;
+        HS(0xA) = HU(0xA) + d[0];
+        HS(0xC) = HU(0xC) + d[1];
+        HS(0xE) = HU(0xE) + d[2];
+        HU(0x4) = HU(0xA) - d[0];
+        HU(0x6) = HU(0xC) - d[1];
+        HU(0x8) = HU(0xE) - d[2];
+        rec[0x14] -= 2;
+        rec[0x15] -= 2;
+        rec[0x16] -= 4;
+        rec[0x10] -= 3;
+        rec[0x11] -= 3;
+        rec[0x12] -= 3;
+      }
+      break;
+    }
+
+    case 0x48:  /* <- func_level_10_80084EF0 */
+    {
+      int d[3];
+      int j;
+      int r;
+
+      rec[0x2]++;
+      if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        d[0] = (HS(0x4) - HS(0xA)) >> 1;
+        d[1] = (HS(0x6) - HS(0xC)) >> 1;
+        d[2] = (HS(0x8) - HS(0xE)) >> 1;
+        r = func_8006272C();
+        j = d[0] - 2;
+        j += r & 4;
+        d[0] = j;
+        r = func_8006272C();
+        j = d[1] - 2;
+        j += r & 4;
+        d[1] = j;
+        r = func_8006272C();
+        j = d[2] - 1;
+        j += r & 2;
+        d[2] = j;
+        HU(0x4) += d[0];
+        HU(0x6) += d[1];
+        HU(0x8) += d[2];
+        HS(0xA) = HU(0x4) - d[0] * 2;
+        HS(0xC) = HU(0x6) - d[1] * 2;
+        HS(0xE) = HU(0x8) - d[2] * 2;
+      }
+      break;
+    }
+
+    case 0x4c:  /* <- func_level_10_80084EF0 */
+    {
+      int s;
+
+      rec[0x18] += D_800756CC * 4;
+      rec[0x19] += D_800756CC;
+      HU(0x4) = HU(0x10) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
+      s = D_8006CBF8[rec[0x18]] * rec[0x19];
+      HU(0x8) += D_800756CC * 6;
+      HU(0x6) = HU(0x12) + (s >> 12);
+      if (rec[0x19] >= 0xC1) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x4d:  /* <- func_level_10_80084EF0 */
+    {
+      short d[3];
+
+      d[0] = (HS(0xA) - HS(0x4)) >> 1;
+      d[1] = (HS(0xC) - HS(0x6)) >> 1;
+      d[2] = (HS(0xE) - HS(0x8)) >> 1;
+      HU(0x4) += d[0];
+      HU(0x6) += d[1];
+      HU(0x8) += d[2];
+      d[1]++;
+      HU(0xA) += d[0];
+      HU(0xC) += d[1];
+      HU(0xE) += d[2];
+      rec[0x2]++;
+      if (rec[0x2] >= 0x20) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    case 0x4e:  /* <- func_level_10_80084EF0 */
+    {
+      int j;
+      int k;
+      int r;
+
+      rec[0x2]++;
+      if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        HU(0x4) += HU(0x10);
+        HU(0x6) += HU(0x12);
+        HU(0x8) += HU(0x14);
+        r = func_8006272C();
+        j = HU(0x10) - 1;
+        j += r & 2;
+        HU(0x10) = j;
+        r = func_8006272C();
+        j = HU(0x12) - 1;
+        j += r & 2;
+        HU(0x12) = j;
+        r = func_8006272C();
+        k = HU(0x14) - 1;
+        k += r & 2;
+        HU(0x14) = k;
+        if (HS(0x14) >= 3) {
+          HU(0x14) = 2;
+        }
+        if (HS(0x14) < -4) {
+          HS(0x14) = -4;
+        }
+        rec[0xC] -= 2;
+        rec[0xD] -= 2;
+        rec[0xE] -= 1;
+      }
+      break;
+    }
+
+    case 0x4f:  /* <- func_level_10_80084EF0 */
+    {
+      short d[3];
+
+      d[0] = (HS(0xA) - HS(0x4)) >> 1;
+      d[1] = (HS(0xC) - HS(0x6)) >> 1;
+      d[2] = (HS(0xE) - HS(0x8)) >> 1;
+      HU(0x4) += d[0];
+      HU(0x6) += d[1];
+      HU(0x8) += d[2];
+      HU(0xA) += d[0];
+      HU(0xC) += d[1];
+      HU(0xE) += d[2];
+      rec[0x2]++;
+      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+        func_80053608(rec);
+      } else {
+        rec[0x10] -= 3;
+        rec[0x11] -= 4;
+        rec[0x14] -= 3;
+        rec[0x15] -= 4;
+        if (rec[0x16] >= 6) {
+          rec[0x16] -= 6;
+        }
+      }
+      break;
+    }
+
+    case 0x50:  /* <- func_level_10_80084EF0 */
+    {
+      short d[3];
+
+      d[0] = HU(0xA) - HU(0x4);
+      d[1] = HU(0xC) - HU(0x6);
+      d[2] = HU(0xE) - HU(0x8);
+      HU(0x4) += d[0];
+      HU(0x6) += d[1];
+      HU(0x8) += d[2];
+      d[2]--;
+      HU(0xA) += d[0];
+      HU(0xC) += d[1];
+      HU(0xE) += d[2];
+      rec[0x2]++;
+      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+    }
+
+    default:
+      break;
+    }
+
+    rec += 0x20;
+  } while (rec[1] != 0xFF);
+}
