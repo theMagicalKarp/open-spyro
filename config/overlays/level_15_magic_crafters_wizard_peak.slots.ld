@@ -7,6 +7,7 @@
     build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80086DD8.o(.text)
     . = 0x0000d108 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.func_level_15_80087B40)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80087B40.o(.text)
     . = 0x0000ea18 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.func_level_15_80089450)
     . = 0x0000fe68 ;

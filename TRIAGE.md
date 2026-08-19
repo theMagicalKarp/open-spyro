@@ -12,30 +12,30 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 
 | # | Address | Function | Segment | Size | Score | Why |
 |--:|---|---|---|--:|--:|---|
-| 1 | `0x8007b0d0` | func_level_1_8007B0D0 | ovl/level_1_artisans_stone_hill | 8096 | 143 | overlay (no -g3); segment 4.5% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 2 | `0x8007d070` | func_level_1_8007D070 | ovl/level_1_artisans_stone_hill | 2568 | 143 | overlay (no -g3); segment 4.5% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
-| 3 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 142 | overlay (no -g3); segment 5.4% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 4 | `0x8007b898` | func_level_7_8007B898 | ovl/level_7_peace_keepers_dry_canyon | 8096 | 142 | overlay (no -g3); segment 5.0% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 5 | `0x8007b898` | func_level_8_8007B898 | ovl/level_8_peace_keepers_cliff_town | 8096 | 142 | overlay (no -g3); segment 5.0% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 6 | `0x8007d04c` | func_level_3_8007D04C | ovl/level_3_artisans_town_square | 2568 | 142 | overlay (no -g3); segment 5.4% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
-| 7 | `0x8007d838` | func_level_7_8007D838 | ovl/level_7_peace_keepers_dry_canyon | 2568 | 142 | overlay (no -g3); segment 5.0% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
-| 8 | `0x8007d838` | func_level_8_8007D838 | ovl/level_8_peace_keepers_cliff_town | 2568 | 142 | overlay (no -g3); segment 5.0% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
-| 9 | `0x8007b7e4` | func_level_18_8007B7E4 | ovl/level_18_beast_makers_home | 8096 | 139 | overlay (no -g3); segment 12.0% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8007b9f0` | func_level_12_8007B9F0 | ovl/level_12_magic_crafters_home | 8096 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007b9f8` | func_level_6_8007B9F8 | ovl/level_6_peace_keepers_home | 8096 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007ba18` | func_level_24_8007BA18 | ovl/level_24_dream_weavers_home | 8096 | 139 | overlay (no -g3); segment 11.4% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007d784` | func_level_18_8007D784 | ovl/level_18_beast_makers_home | 2568 | 139 | overlay (no -g3); segment 12.0% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
+| 1 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 139 | overlay (no -g3); segment 12.6% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 2 | `0x8007b0d0` | func_level_1_8007B0D0 | ovl/level_1_artisans_stone_hill | 8096 | 139 | overlay (no -g3); segment 11.9% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 3 | `0x8007b7e4` | func_level_18_8007B7E4 | ovl/level_18_beast_makers_home | 8096 | 139 | overlay (no -g3); segment 12.0% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 4 | `0x8007b898` | func_level_7_8007B898 | ovl/level_7_peace_keepers_dry_canyon | 8096 | 139 | overlay (no -g3); segment 11.8% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 5 | `0x8007b898` | func_level_8_8007B898 | ovl/level_8_peace_keepers_cliff_town | 8096 | 139 | overlay (no -g3); segment 12.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 6 | `0x8007b9f0` | func_level_12_8007B9F0 | ovl/level_12_magic_crafters_home | 8096 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 7 | `0x8007b9f8` | func_level_6_8007B9F8 | ovl/level_6_peace_keepers_home | 8096 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 8 | `0x8007ba18` | func_level_24_8007BA18 | ovl/level_24_dream_weavers_home | 8096 | 139 | overlay (no -g3); segment 11.4% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007d04c` | func_level_3_8007D04C | ovl/level_3_artisans_town_square | 2568 | 139 | overlay (no -g3); segment 12.6% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
+| 10 | `0x8007d070` | func_level_1_8007D070 | ovl/level_1_artisans_stone_hill | 2568 | 139 | overlay (no -g3); segment 11.9% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
+| 11 | `0x8007d784` | func_level_18_8007D784 | ovl/level_18_beast_makers_home | 2568 | 139 | overlay (no -g3); segment 12.0% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
+| 12 | `0x8007d838` | func_level_7_8007D838 | ovl/level_7_peace_keepers_dry_canyon | 2568 | 139 | overlay (no -g3); segment 11.8% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
+| 13 | `0x8007d838` | func_level_8_8007D838 | ovl/level_8_peace_keepers_cliff_town | 2568 | 139 | overlay (no -g3); segment 12.2% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
 | 14 | `0x8007d990` | func_level_12_8007D990 | ovl/level_12_magic_crafters_home | 2568 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
 | 15 | `0x8007d998` | func_level_6_8007D998 | ovl/level_6_peace_keepers_home | 2568 | 139 | overlay (no -g3); segment 11.1% matched; clone family of 10 (one recipe pays 10×); megafunction (all-or-nothing) |
 
-(93 viable candidates total; the full ranking is regenerable.)
+(80 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
+| `0x80084830` | func_level_16_80084830 | ovl/level_16_magic_crafters_blowhard | 5904 | 5816 | cse EBB: two breaks needed in one arm, only one is free |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 |  |
-| `0x80083274` | func_level_2_80083274 | ovl/level_2_artisans_dark_hollow | 4652 | 4540 | F16 sched1 two-chain lead tie (arm 0x15 only) |
 | `0x800892c4` | func_level_1_800892C4 | ovl/level_1_artisans_stone_hill | 4340 | 4252 |  |
 | `0x80088f68` | func_level_3_80088F68 | ovl/level_3_artisans_town_square | 3940 | 3864 |  |
 | `0x8008249c` | func_level_5_8008249C | ovl/level_5_artisans_sunny_flight | 3732 | 3660 |  |
@@ -99,14 +99,10 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | B9 clamp (full-screen variant); DMA body transcribes |
-| `0x800826f0` | func_level_4_800826F0 | ovl/level_4_artisans_toasty | 4652 | 0 | clone of func_level_2_80083274 |
 | `0x8008391c` | func_level_4_8008391C | ovl/level_4_artisans_toasty | 4340 | 0 | clone of func_level_1_800892C4 |
-| `0x80084028` | func_level_28_80084028 | ovl/level_28_dream_weavers_jacques | 4652 | 0 | clone of func_level_2_80083274 |
 | `0x800844a0` | func_level_2_800844A0 | ovl/level_2_artisans_dark_hollow | 4340 | 0 | clone of func_level_1_800892C4 |
-| `0x80084ef0` | func_level_10_80084EF0 | ovl/level_10_peace_keepers_doctor_shemp | 4652 | 0 | clone of func_level_2_80083274 |
 | `0x80085254` | func_level_28_80085254 | ovl/level_28_dream_weavers_jacques | 4340 | 0 | clone of func_level_1_800892C4 |
 | `0x8008611c` | func_level_10_8008611C | ovl/level_10_peace_keepers_doctor_shemp | 4340 | 0 | clone of func_level_1_800892C4 |
-| `0x80088098` | func_level_1_80088098 | ovl/level_1_artisans_stone_hill | 4652 | 0 | clone of func_level_2_80083274 |
 
 ## Auto-skipped (walls)
 
