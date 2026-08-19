@@ -1829,10 +1829,17 @@ TurnSpyroTowardMoveTargetWithLean_2026_08_18_1:
 # above the byte RMW; a const-qualified deref at that one site drops it and the
 # original's interleave falls out.  13 variants matched this session.
 func_level_16_80084830:
-  verdict: parked
-  class: "cse EBB: two breaks needed in one arm, only one is free"
-  date: 2026-08-19
-  note: "1/1476, length-exact, fully decoded (4 stack vectors + an A200 barrier in arm 0x8). Residue is the arm's LAST vector use, which must rematerialise but shares the barrier's EBB; six second-barrier placements all cost >=1 insn."
+  verdict: matched
+  class: "A214: free multi-set carrier kills the cse address equivalence"
+  date: 2026-08-19-2
+  note: >-
+    MATCHED. The "two EBB breaks, only one is free" class was wrong: the second
+    break was never needed. Arm 0x8's middle group reads p2 through a `hold`
+    carrier and the last statement reassigns `hold = D_80076DF8;` -- the very
+    argument the following call needs in a2 -- so the reassignment costs
+    nothing, and a multi-set pointer has no constant equivalence for cse to
+    fold, which turns the last use of p2 from `move a1,s0` into a fresh
+    `addiu a1,sp,0x20`. That one insn was the whole residue. See A214.
 func_level_9_80083F2C:
   verdict: viable
   class: "advance pass, 2 new arms (0xF 22 insns, 0x4B 44 insns)"

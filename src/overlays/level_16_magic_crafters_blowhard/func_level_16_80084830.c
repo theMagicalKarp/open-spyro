@@ -1,86 +1,42 @@
-/* PARKED at 1/1476 (99.93%), LENGTH-EXACT.  Fully decoded: 25 arms, all from
- * the matched donor library (head + arms 0x7/0x8/0x41 from level_12, the
- * ground classes from level_2, 0x10/0x11 from level_33, the rest shared).
+/* func_level_16_80084830 (0x80084830, level_16_magic_crafters_blowhard
+ * overlay, 0x1710 bytes).
  *
- * Two per-level decisions this variant needed, both now proven:
- *   - FOUR stack vectors, not three.  Arm 0x6 gets its own (frame 0x10) and
- *     arm 0x8's position vector is a separate one (0x20); `dir` still names
- *     &v (0x30) and arm 0xA has 0x40.  Declaration order IS frame order, so
- *     the split has to be declared in that sequence or every sp-relative
- *     offset in the function shifts by 16 (that was 134/1476).
- *   - An A200 cse barrier (`do { } while (0);`) between arm 0x8's first
- *     `func_80017C24(p2, POS)` and the direction-vector group.  Without it
- *     the whole arm shares ONE address pseudo: gcc either hoists it to the
- *     loop preheader and spills it (+2 insns) or holds it in s0 from the
- *     first use, where the original rematerialises `addiu a0,sp,0x20` there
- *     and only takes s0 for the middle four uses.  The barrier ends cse's
- *     extended basic block so the first use is its own single-use pseudo,
- *     which reload rematerialises.  Barrier position inside the arm is not
- *     critical (before v[0], v[1] or v[2] all give 1/1476).
+ * The emit-list ADVANCE pass -- the 1476-insn Blowhard variant, 25 classes.
+ * Walks the 0x20-byte record stream at D_80075824 and ages one record per
+ * iteration: integrates its position, fades its colour, ticks its life
+ * counter and, when the record has expired (or its alive byte has been
+ * cleared), hands it back with func_80053608().  The walk stops at the
+ * terminator record, whose class byte at +0x01 is 0xFF.
  *
- * Residue (ONE insn, 0x80084cd4): the arm's LAST use of that vector,
- * `func_8001778C(v, p2, D_80076DF8)`, must be a fresh `addiu a1,sp,0x20`
- * too -- the original's s0 dies after `func_80017BFC(POS, p2)` -- but it
- * sits in the same cse EBB as the middle group, so it reads `move a1,s0`.
- * A second barrier is the obvious fix and costs an insn wherever it goes:
- * measured before the call (+1, slot overflow), before `rec[0x2]++`
- * (6/1476), before func_800175B8 / func_80017758 (25/1476 each), before
- * func_80017BFC (+1), and with the late barrier alone (+1).  Swapping the
- * last two statements also overflows.  So the class is: TWO EBB breaks are
- * needed in one arm and only one is free.  Needs a zero-cost way to end a
- * cse EBB, or a source form that makes that one argument a distinct object.
- */
-/* func_level_12_8008BE98 (0x8008BE98, level_12_magic_crafters_home overlay,
- * 0x1438 bytes).
+ * Head and arms 0x7/0x8/0x41 come from func_level_12_8008BE98, the ground
+ * classes from level_2, 0x10/0x11 from level_33, the rest are shared.
  *
- * The emit-list ADVANCE pass -- the Magic-Crafters-home 1294-insn variant,
- * the largest F16-free copy in the family.  Walks the 0x20-byte record
- * stream at D_80075824 and ages one record per iteration: integrates its
- * position, fades its colour, ticks its life counter and, when the record
- * has expired (or its alive byte has been cleared), hands it back with
- * func_80053608().  The walk stops at the terminator record, whose class
- * byte at +0x01 is 0xFF.
+ * Three per-level decisions this variant needed:
+ *  - FOUR stack vectors, not three.  Arm 0x6 gets its own (frame 0x10) and
+ *    arm 0x8's position vector is a separate one (0x20); `dir` still names
+ *    &v (0x30) and arm 0xA has 0x40.  Declaration order IS frame order, so
+ *    the split has to be declared in that sequence or every sp-relative
+ *    offset in the function shifts by 16.
+ *  - An A200 cse barrier (`do { } while (0);`) between arm 0x8's first
+ *    func_80017C24(p2, POS) and the direction-vector group.  Without it the
+ *    whole arm shares ONE address pseudo: gcc either hoists it to the loop
+ *    preheader and spills it or holds it in s0 from the first use, where the
+ *    original rematerialises `addiu a0,sp,0x20` there and only takes s0 for
+ *    the middle four uses.
+ *  - Arm 0x8's `hold` carrier is MULTI-SET on purpose (A214).  The middle
+ *    group reads p2 through it and the last statement reassigns it to
+ *    D_80076DF8 -- the very argument the following call needs in a2 -- so
+ *    the reassignment is free, and a multi-set pointer has no constant
+ *    equivalence for cse to fold, which is what makes the last use of p2
+ *    come out as a fresh `addiu a1,sp,0x20` instead of `move a1,s0`.
+ *    That single instruction was the whole residue.
  *
- * Only `rec` is a real induction variable.  `pos` and `vel` are separate
- * pointers because the arms pass them to func_80017C84() as values, so
- * loop.c strength-reduces each into its own register; every field access is
- * an ADDRESS giv off `rec`, and loop.c picks the last one it scans -- the
- * `rec[1]` terminator test -- as the shared base, which is how the whole
- * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.
- *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  alive
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle                0x1C  wrap count    0x1E  phase toggle
- *
- * Eighteen arms transfer verbatim from the matched level_0 hub copy (which
- * in turn carries the level_6 / level_2 donors).  Three are new:
- *   0x7   the rune orbit -- a triangular height ramp off the age byte;
- *   0x8   the wizard's homing bolt, the only arm in the family that reads
- *         the owner ACTOR (D_80075828 + owner * 0x58) and spirals around
- *         the line to it, switching to its burst state (class byte 3) once
- *         it closes inside 0x2800;
- *   0x41  a short-lived midpoint relaxation -- the 0x46 shape with only two
- *         jitter draws and no colour ramp.
- *
- * Arm 0x8 is what puts the `v` vector's address in a callee-saved register
- * (it is passed to five calls inside one arm) and what makes this variant
- * 0x98 bytes of frame; both fall out of the arm, not out of the source.
+ * Only `rec` is a real induction variable; every field access is an ADDRESS
+ * giv off it, which is how the whole record ends up addressed off `rec + 1`
+ * with offsets 0x00..0x1D.
  *
  * Verified byte-identical inside the relinked
- * level_12_magic_crafters_home.ovl.
- *
- * Two locals exist only to reproduce the original's preheader order:
- * `step4` names step * 4 (the amount every fading arm subtracts), so its
- * `sll s5,s4,2` is an explicit pre-loop insn rather than a loop.c movable,
- * and `dir` names &v for the five direction-vector calls in arm 0x8, which
- * puts `addiu s7,sp,32` after it.  Writing them in that order is also what
- * leaves arm 0x8's LAST call reading `v` directly -- a single-use frame
- * address that reload rematerialises (`addiu a0,sp,32`) instead of reading
- * the hoisted register.
+ * level_16_magic_crafters_blowhard.ovl.
  */
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
@@ -228,6 +184,7 @@ void func_level_16_80084830(int step) {
 
     case 0x8: {
       int len;
+      int *hold;
 
       /* The wizard's homing bolt: it spirals around the line to its owner
        * actor (D_80075828 + owner * 0x58), and switches to its burst state
@@ -242,16 +199,18 @@ void func_level_16_80084830(int step) {
         v[0] += func_80016CB0(rec[0x2] << 7) >> 1;
         v[1] += func_80016C58(rec[0x2] << 7) >> 1;
         v[2] += func_80016CB0((rec[0x2] << 7) - 0x100) >> 2;
-        func_8001778C(dir, dir, p2);
+        hold = p2;
+        func_8001778C(dir, dir, hold);
         len = func_800171FC(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
           func_80053608(rec);
         } else {
           func_800175B8(dir, len, 0x80);
-          func_80017758(p2, p2, dir);
-          func_80017BFC(POS, p2);
+          func_80017758(hold, hold, dir);
+          func_80017BFC(POS, hold);
           rec[0x2]++;
-          func_8001778C(v, p2, D_80076DF8);
+          hold = D_80076DF8;
+          func_8001778C(v, p2, hold);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
           if (rec[0x1] == 3) {
