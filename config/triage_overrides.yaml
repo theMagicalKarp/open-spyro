@@ -1884,7 +1884,24 @@ func_level_27_80086754:
     The rest of the function is byte-exact and the .wip header lists the six
     source decisions that got it there -- read it before touching anything.
 func_level_14_80089454:
-  verdict: viable
-  class: "advance pass, needs arms 0x4/0x5/0x1F/0x45/0x49"
-  date: 2026-08-19
-  note: "Do it last: three of its five new arms come free once level_15 and level_27 land."
+  verdict: parked
+  class: "dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie"
+  date: 2026-08-19-2
+  note: >-
+    .c.wip at 1811/1815 insns, MISMATCH 57 over 30 regions register-anchored;
+    with the whole-function s4<->s5 rotation cancelled it is 14 over 13, so it
+    is fully decoded -- arms 0x45 and 0x49 were decoded this session and are
+    byte-exact. The 4-insn deficit is four DEAD `li a3,3` materialisations the
+    original emits at the tops of arms 0x4/0x8 and at each arm's commit block;
+    nothing reads them ($a3 is caller-saved and the next insn is a call).
+    Proved unreachable from C off the gcc 2.7.2 source this session:
+    local-alloc's update_equiv_regs puts a REG_EQUIV on the single-set constant
+    and doubles reg_live_length, reload1.c:1918 deletes the init insn whenever
+    the pseudo won no hard register, and caller-save.c only ever emits MEMORY
+    saves, never a `li`. Five multi-set spellings all lose reg_equiv_constant,
+    move the value to a callee-saved register and re-colour the function
+    (1809 insns, 75-82 mismatch). Same class parks func_level_13_8008AF54;
+    level_16's copy of arm 0x8 has the ordinary two-`li` $v0 form, so it is a
+    whole-function reload artefact, not an arm. .wip header lists the four
+    load-bearing source decisions (A213 preheader order, arm 0x45's two
+    swapped multi-set carriers, A168 index fold, the nine-vector frame).
