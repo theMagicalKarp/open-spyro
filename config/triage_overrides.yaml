@@ -1829,10 +1829,17 @@ TurnSpyroTowardMoveTargetWithLean_2026_08_18_1:
 # above the byte RMW; a const-qualified deref at that one site drops it and the
 # original's interleave falls out.  13 variants matched this session.
 func_level_16_80084830:
-  verdict: parked
-  class: "cse EBB: two breaks needed in one arm, only one is free"
-  date: 2026-08-19
-  note: "1/1476, length-exact, fully decoded (4 stack vectors + an A200 barrier in arm 0x8). Residue is the arm's LAST vector use, which must rematerialise but shares the barrier's EBB; six second-barrier placements all cost >=1 insn."
+  verdict: matched
+  class: "A214: free multi-set carrier kills the cse address equivalence"
+  date: 2026-08-19-2
+  note: >-
+    MATCHED. The "two EBB breaks, only one is free" class was wrong: the second
+    break was never needed. Arm 0x8's middle group reads p2 through a `hold`
+    carrier and the last statement reassigns `hold = D_80076DF8;` -- the very
+    argument the following call needs in a2 -- so the reassignment costs
+    nothing, and a multi-set pointer has no constant equivalence for cse to
+    fold, which turns the last use of p2 from `move a1,s0` into a fresh
+    `addiu a1,sp,0x20`. That one insn was the whole residue. See A214.
 func_level_9_80083F2C:
   verdict: viable
   class: "advance pass, 2 new arms (0xF 22 insns, 0x4B 44 insns)"
@@ -1884,7 +1891,63 @@ func_level_27_80086754:
     The rest of the function is byte-exact and the .wip header lists the six
     source decisions that got it there -- read it before touching anything.
 func_level_14_80089454:
-  verdict: viable
-  class: "advance pass, needs arms 0x4/0x5/0x1F/0x45/0x49"
-  date: 2026-08-19
-  note: "Do it last: three of its five new arms come free once level_15 and level_27 land."
+  verdict: parked
+  class: "dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie"
+  date: 2026-08-19-2
+  note: >-
+    .c.wip at 1811/1815 insns, MISMATCH 57 over 30 regions register-anchored;
+    with the whole-function s4<->s5 rotation cancelled it is 14 over 13, so it
+    is fully decoded -- arms 0x45 and 0x49 were decoded this session and are
+    byte-exact. The 4-insn deficit is four DEAD `li a3,3` materialisations the
+    original emits at the tops of arms 0x4/0x8 and at each arm's commit block;
+    nothing reads them ($a3 is caller-saved and the next insn is a call).
+    Proved unreachable from C off the gcc 2.7.2 source this session:
+    local-alloc's update_equiv_regs puts a REG_EQUIV on the single-set constant
+    and doubles reg_live_length, reload1.c:1918 deletes the init insn whenever
+    the pseudo won no hard register, and caller-save.c only ever emits MEMORY
+    saves, never a `li`. Five multi-set spellings all lose reg_equiv_constant,
+    move the value to a callee-saved register and re-colour the function
+    (1809 insns, 75-82 mismatch). Same class parks func_level_13_8008AF54;
+    level_16's copy of arm 0x8 has the ordinary two-`li` $v0 form, so it is a
+    whole-function reload artefact, not an arm. .wip header lists the four
+    load-bearing source decisions (A213 preheader order, arm 0x45's two
+    swapped multi-set carriers, A168 index fold, the nine-vector frame).
+func_level_1_800892C4:
+  verdict: parked
+  class: "reload-insn LUID: the original's spill remat sits two statements above its consumer"
+  date: 2026-08-19-2
+  note: >-
+    .c.wip at 1080/1085, LENGTH-EXACT. The whole residue is ONE instruction in
+    arm 0x18's store block, four slots late. The 2026-08-04 park's headline
+    claim -- "the residue is one register, ours a0 vs the original t0, an
+    allocation tie" -- is RETIRED: `cc1 -dg` prints `Spilling reg 8.` for that
+    store, so `li t0,46` is a RELOAD insn and t0 is the function's spill
+    register. Writing the constant as a plain literal gets the register for
+    free (all seven `li ?,46` then match); it was the multi-set carrier that
+    forced a0, because two sets kill reg_equiv_constant and turn it into an
+    ordinary allocno. Remaining question is reload's INSERTION POINT: ours is
+    before the fx store (source statement 8) and sched2 hoists it as a
+    priority-1 straggler in LUID order; the original's has a LUID two
+    statements earlier, so some insn there already needed the constant. Nine
+    more source forms measured this session, all worse -- see the .wip header.
+    Worth 21,700 B (word-identical to level_2/4/10/28) and the same residue
+    parks func_level_3_80088F68 (3,940 B).
+func_level_3_80088F68:
+  verdict: parked
+  class: "same as func_level_1_800892C4 (reload-insn LUID in arm 0x18)"
+  date: 2026-08-19-2
+  note: >-
+    4/985, length-exact, the identical 4-insn residue as func_level_1_800892C4.
+    Apply that park's `v` promotion (arm 0x15's block local to function scope,
+    carrying 0x30) plus a plain `0x2E` literal to get the register right, then
+    the same one reload-insn placement question is all that is left.
+func_level_16_80084830_sweep_note:
+  verdict: attempted
+  class: "B19 call-arg copy before a store batch"
+  date: 2026-08-19-2
+  note: >-
+    Bookkeeping from the 2026-08-19-2 wip sweep: func_level_11_800819BC (5/593),
+    func_level_17_80081F0C (5/741) and func_level_23_8008223C (5/838) all show
+    the IDENTICAL residue and it is B19 verbatim (`lb/lb/lb; sb/sb/sb; move
+    a0,rec`), which is proved unreachable. Do not re-open them. The sweep found
+    zero already-matching parks across all 66 wips.
