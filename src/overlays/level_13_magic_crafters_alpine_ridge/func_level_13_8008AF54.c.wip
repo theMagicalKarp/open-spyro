@@ -1,41 +1,41 @@
-/* PARKED 2026-08-19-1 at 1693/1696 insns, MISMATCH 89 over 50 regions with
- * registers anchored (compile-only shape diff -- it does not link, 3 insns short).
+/* PARKED 2026-08-19-1 at 1693/1696 insns, MISMATCH 47 over 29 regions with
+ * registers anchored (compile-only shape diff; it does not link, 3 insns short).
+ * Fully decoded -- arms 0x4/0x5 are lifted verbatim from the MATCHED
+ * func_level_15_80087B40, 0x8/0x16 from level_12, 0x10/0x11 from level_18.
  *
- * Fully decoded; every arm is byte-plausible.  What is left is two allocation
- * rotations and three missing constant remats:
+ * TWO THINGS LEFT, both named:
+ *  1. Four missing `li a3,3` rematerialisations (that is the whole length
+ *     deficit).  The original materialises the constant 3 SEVEN times -- at the
+ *     top of arms 0x4 and 0x8 and again after every call in their colour-swap
+ *     tails -- which is a pseudo holding 3 in a CALLER-SAVED register being
+ *     restored by rematerialisation.  Ours constant-propagates `burst` into each
+ *     use (3 sites).  Making `burst` multi-set (a second `burst = 3;` at the top
+ *     of each arm) removes reg_equiv_constant, forces a callee-saved register
+ *     and re-colours the function: 120/85.  Dropping the local entirely is worse
+ *     still (the function comes out 5 short).
+ *  2. rec lands in $s3 and POS in $s4; the original has rec in $s4, POS in $s3.
+ *     A global.c allocno_compare tie between the biv and its first giv.
  *
- *  1. rec lands in $s3 / POS in $s4; the original has rec in $s4 and POS in $s3.
- *     Same shape one level up: step4 in $s8 / dir in $s7 where the original has
- *     step4 in $s7 and dir in $s8($fp).  Both are global.c allocno_compare ties.
- *  2. arm 0x8's two frame vectors land home->$s1 / bolt->$s0; the original has
- *     p->$s0 / v->$s1.  Shortening `home`'s live range (dropping the first
- *     `home = p`) costs more than it buys (95/52).  Swapping the declaration
- *     order does nothing -- the numbering is post-sched1 (cookbook D 2c).
- *  3. the original remats `li a3,3` about 8 times (arm 0x4 entry, both arms'
- *     colour-swap tails); ours does ~5.
- *
- * PROVEN HERE, do not re-derive:
- *  - loop.c HOISTS a stack vector's address into the preheader (and then spills
- *    it) as soon as the array NAME is used 3+ times in the loop; at <=2 uses it
- *    does not.  The original hoists exactly one address (arm 0x4's dv, $fp).
- *    Arm 0x8 uses its two vectors 6 times each, so the plain array form costs
- *    +4 preheader insns (2 addiu + 2 sw) and rotates the whole function.
- *    Block-scoping the arrays inside `case 0x8:` does NOT change this (93/54,
- *    identical to the function-scope form), so it is not a scope effect.
- *  - A MULTI-SET pointer carrier defeats it: `home` assigned twice is not a
- *    loop.c movable, and the preheader then comes out exactly right.  A
- *    SINGLE-set carrier is still hoisted (that was the first attempt).
- *  - `dir` is INERT in this variant (unlike level_15): with the local removed
- *    loop.c hoists &dv by itself and the output is byte-identical either way.
- *  - The shared constant 3 must be a NAMED local (`burst`, cookbook A100).
- *    Two arms compare/store `rec[0x1]` against 3 here; as a literal gcc folds it
- *    into per-site immediates and the function comes out 5 insns short
- *    (134/70 -> 89/50 with the local).  level_15 needs no such local because
- *    only one arm uses the constant.
- *
- * Arms 0x4 and 0x5 are lifted verbatim from the MATCHED func_level_15_80087B40,
- * so they are not suspect; 0x8 / 0x16 come from level_12 and 0x10 / 0x11 from
- * level_18.
+ * FOUR THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
+ *  - `dir = dv;` must be written BEFORE `step4 = step * 4;`.  The two are a
+ *    priority tie decided by ONE instruction of live length (both cross every
+ *    call, both ~23 refs), and whichever is defined LATER has the shorter range
+ *    and takes $s7.  Ordering dir first put step4 in $s7 and dir in $s8($fp) as
+ *    the original has them: 68 -> 47.  The two preheader insns are still
+ *    emitted in the opposite order, which is the +1/-1 pair at orig[17].
+ *  - Arm 0x8 addresses its two vectors as: ARRAY NAME at the first use, an
+ *    empty `do { } while (0);` A200b barrier, then multi-set `home`/`bolt`
+ *    carriers for the middle run, and array names again at the last call.  The
+ *    barrier is worth 21 mismatches (89 -> 68) and the carriers are what stop
+ *    loop.c hoisting both addresses into the preheader.
+ *  - PROVEN: loop.c hoists a stack vector's address into the preheader (and
+ *    spills it) as soon as the ARRAY NAME is used 3+ times in the loop; at <=2
+ *    uses it does not.  Block-scoping the arrays inside `case 0x8:` changes
+ *    nothing (93/54, identical to function scope), so it is not a scope effect.
+ *    A MULTI-SET pointer carrier defeats the hoist; a single-set one does not.
+ *  - The shared constant 3 must be a NAMED local at all (A100): two arms
+ *    compare and store rec[0x1] against it, and as a bare literal the function
+ *    comes out 5 insns short (134/70 -> 89/50 with the local).
  */
 /* func_level_13_8008AF54 (0x8008af54, level_13_magic_crafters_alpine_ridge
  * overlay, 0x1a84 bytes).
@@ -116,6 +116,7 @@ void func_level_13_8008AF54(int step) {
   int p[3];
   int v[3];
   int w[3];
+  int *dir;
   int burst;
   int c;
   int d;
@@ -125,6 +126,7 @@ void func_level_13_8008AF54(int step) {
     return;
   }
 
+  dir = dv;
   step4 = step * 4;
   burst = 3;
 
@@ -241,21 +243,21 @@ void func_level_13_8008AF54(int step) {
             dv[1] -= (rec[0x2] * func_80016C58(rec[0x2] << 7)) >> 7;
           }
           dv[2] += rec[0x2] << 5;
-          func_8001778C(dv, dv, pt);
-          len = func_800171FC(dv, 1);
+          func_8001778C(dir, dir, pt);
+          len = func_800171FC(dir, 1);
           if (len >= 0x81) {
-            func_800175B8(dv, len, 0x80);
+            func_800175B8(dir, len, 0x80);
           }
-          func_80017758(pt, pt, dv);
+          func_80017758(pt, pt, dir);
           goto commit;
         }
       } else {
-        func_80017700(dv, (int *)(W(0x18) + 0xC));
+        func_80017700(dir, (int *)(W(0x18) + 0xC));
         dv[0] += func_80016CB0(rec[0x2] << 7) >> 2;
         dv[1] += func_80016C58(rec[0x2] << 7) >> 2;
         dv[2] += func_80016CB0((rec[0x2] << 7) + 0x200) >> 2;
-        func_8001778C(dv, dv, pt);
-        len = func_800171FC(dv, 1);
+        func_8001778C(dir, dir, pt);
+        len = func_800171FC(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
           int *owner = **(int ***)(rec + 0x18);
 
@@ -270,8 +272,8 @@ void func_level_13_8008AF54(int step) {
           HU(0x1C) += spin;
           goto measure;
         }
-        func_800175B8(dv, len, 0x100);
-        func_80017758(pt, pt, dv);
+        func_800175B8(dir, len, 0x100);
+        func_80017758(pt, pt, dir);
       }
     commit:
       func_80017BFC(POS, pt);
@@ -345,8 +347,9 @@ void func_level_13_8008AF54(int step) {
       /* The wizard's homing bolt: it spirals around the line to its owner
        * actor (D_80075828 + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
-      home = p;
-      func_80017C24(home, POS);
+      func_80017C24(p, POS);
+      do {
+      } while (0);
       if (rec[0x3] == 0) {
         func_80053608(rec);
       } else {

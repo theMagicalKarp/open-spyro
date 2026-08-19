@@ -1852,10 +1852,10 @@ func_level_15_80087B40:
     cross-jumping runs and the merge lands one insn short plus a nop.
 func_level_13_8008AF54:
   verdict: parked
-  class: "F1/F7 allocno_compare rotations (rec/POS and step4/dir) + 3 missing constant remats"
+  class: "4 missing `li a3,3` remats + one rec/POS allocno_compare tie"
   date: 2026-08-19-1
   note: >-
-    .c.wip at 1693/1696 insns, MISMATCH 89 over 50 regions register-anchored;
+    .c.wip at 1693/1696 insns, MISMATCH 47 over 29 regions register-anchored;
     fully decoded (arms 0x4/0x5 lifted from the matched level_15). PROVEN HERE:
     loop.c HOISTS a stack vector's address into the preheader and spills it as
     soon as the array NAME is used 3+ times in the loop (<=2 uses: no hoist);
@@ -1863,7 +1863,12 @@ func_level_13_8008AF54:
     defeats it (a single-set carrier is still hoisted). `dir` is INERT in this
     variant -- loop.c hoists &dv by itself. The shared constant 3 must be a
     NAMED local (A100): two arms compare/store rec[0x1] against it, and as a
-    literal the function comes out 5 insns short (134/70 -> 89/50).
+    literal the function comes out 5 insns short (134/70 -> 89/50). Two levers
+    found after that: an A200b `do { } while (0);` barrier after arm 0x8's first
+    vector use is worth 21 (89 -> 68), and writing `dir = dv;` BEFORE
+    `step4 = step * 4;` puts step4 in $s7 and dir in $fp as the original has them
+    (68 -> 47) -- the two are a priority tie decided by one insn of live length,
+    and the one defined LATER wins. See the .wip header before touching it.
 func_level_27_80086754:
   verdict: parked
   class: "F14 birthing boost on one byte load; no free non-birthing carrier in the arm"
