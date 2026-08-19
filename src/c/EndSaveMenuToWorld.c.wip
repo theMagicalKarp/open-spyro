@@ -68,27 +68,28 @@ void EndSaveMenuToWorld(void) {
  * volatile-alias experiment failed, and A164's limit (b) should be read as
  * "one side is not enough", not "no dependence exists").
  * Writing BOTH the anchor store and the yaw read volatile
- *     *(int *volatile *)g_apCameraAnchorBlock = &g_anSpyroSwingTargetBlock[-105];
- *     g_nCameraTargetYawBiasFromMode = *(volatile int *)&g_nSpyroBodyYaw;
- * pins `lw v1,%lo(yaw)` BELOW `sw s0,0(s1)` exactly as the original has it —
- * the half of the residue every previous session called unreachable.
- * It scores 6/81, not 2/81, because the anchor store then floats ABOVE the
- * flame-timer load (orig: pad store / flame load / addiu s0 / anchor store).
- * The flame load is plain, so nothing orders it against the volatile store,
- * and its position is NOT source-controlled: measured identical at 6/81 with
- * the flame statement moved above the anchor store, with the anchor address in
- * its own `int *anchor` local, and with the pad-countdown store volatile too.
- * Making the FLAME load volatile as well DOES reproduce the original's block
- * order insn-for-insn (verified by objdump: pad store / flame load / addiu s0 /
- * anchor store / yaw load / dyn base / three stores / flame store / yaw store)
- * but costs +1 insn and cannot link: the volatile load re-times the block so
- * that sched2 hoists `addiu a0,s1,-168` (the ComputeCameraToTargetAngle arg) 26
- * insns up to just after `addiu s1`, leaving reorg a `nop` in that jal's delay
- * slot; the same variant also swaps v0/v1 between the flame and yaw values.
- * NEXT LEVER: keep all three volatile and find the form that keeps the
- * ComputeCameraToTargetAngle arg copy next to its jal (this is a B19-shaped
- * arg-copy drift, but with only ONE call in the window, so B19's proof does not
- * cover it). Everything else in the function is byte-identical in every variant.
+ *     *(int *volatile *)g_apCameraAnchorBlock =
+ * &g_anSpyroSwingTargetBlock[-105]; g_nCameraTargetYawBiasFromMode = *(volatile
+ * int *)&g_nSpyroBodyYaw; pins `lw v1,%lo(yaw)` BELOW `sw s0,0(s1)` exactly as
+ * the original has it — the half of the residue every previous session called
+ * unreachable. It scores 6/81, not 2/81, because the anchor store then floats
+ * ABOVE the flame-timer load (orig: pad store / flame load / addiu s0 / anchor
+ * store). The flame load is plain, so nothing orders it against the volatile
+ * store, and its position is NOT source-controlled: measured identical at 6/81
+ * with the flame statement moved above the anchor store, with the anchor
+ * address in its own `int *anchor` local, and with the pad-countdown store
+ * volatile too. Making the FLAME load volatile as well DOES reproduce the
+ * original's block order insn-for-insn (verified by objdump: pad store / flame
+ * load / addiu s0 / anchor store / yaw load / dyn base / three stores / flame
+ * store / yaw store) but costs +1 insn and cannot link: the volatile load
+ * re-times the block so that sched2 hoists `addiu a0,s1,-168` (the
+ * ComputeCameraToTargetAngle arg) 26 insns up to just after `addiu s1`, leaving
+ * reorg a `nop` in that jal's delay slot; the same variant also swaps v0/v1
+ * between the flame and yaw values. NEXT LEVER: keep all three volatile and
+ * find the form that keeps the ComputeCameraToTargetAngle arg copy next to its
+ * jal (this is a B19-shaped arg-copy drift, but with only ONE call in the
+ * window, so B19's proof does not cover it). Everything else in the function is
+ * byte-identical in every variant.
  *
  */
 

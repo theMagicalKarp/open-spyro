@@ -18,6 +18,7 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007ACA4)
     . = 0x00000290 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007ACC8)
+    build/overlays/level_4_artisans_toasty/c/func_level_4_800826F0.o(.rodata)
     . = 0x000003d4 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AE0C)
     . = 0x0000051c ;

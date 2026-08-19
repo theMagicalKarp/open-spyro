@@ -34,6 +34,7 @@
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC5C)
     . = 0x00000248 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC80)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_80087E20.o(.rodata)
     . = 0x0000038c ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007ADC4)
     . = 0x000004d4 ;

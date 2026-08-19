@@ -7,6 +7,7 @@
     build/overlays/level_22_beast_makers_metalhead/c/func_level_22_800874FC.o(.text)
     . = 0x0000d740 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.func_level_22_80088178)
+    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_80088178.o(.text)
     . = 0x0000ea78 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.func_level_22_800894B0)
     . = 0x0000fc64 ;

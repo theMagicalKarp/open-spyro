@@ -6,6 +6,7 @@
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.func_level_25_80084B94)
     . = 0x0000adc4 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.func_level_25_800857FC)
+    build/overlays/level_25_dream_weavers_dark_passage/c/func_level_25_800857FC.o(.text)
     . = 0x0000c300 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.func_level_25_80086D38)
     . = 0x0000d69c ;

@@ -113,14 +113,14 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
 }
 
 /* 2026-08-16-1 — one more escape from the mutual exclusion RULED OUT. The note
-   below assumes global_alloc needs `reg_n_sets >= 2`; it does not — local-alloc's
-   gate is `reg_basic_block[i] >= 0 && reg_n_deaths[i] == 1`, so a SINGLE-set
-   pseudo referenced from more than one basic block also falls to global_alloc
-   and would get both halves (boost + v1). Measured both placements of a single
-   `c16 = 0x10;` dominating the two arms (top of the `abs(d) >= 0x101` block,
-   and above that `if`): gcc does NOT rematerialise the constant per arm — it
-   leaves ONE `li` in the dominator block, so the function comes out a word
-   short and will not link. The mutual exclusion stands. */
+   below assumes global_alloc needs `reg_n_sets >= 2`; it does not —
+   local-alloc's gate is `reg_basic_block[i] >= 0 && reg_n_deaths[i] == 1`, so a
+   SINGLE-set pseudo referenced from more than one basic block also falls to
+   global_alloc and would get both halves (boost + v1). Measured both placements
+   of a single `c16 = 0x10;` dominating the two arms (top of the `abs(d) >=
+   0x101` block, and above that `if`): gcc does NOT rematerialise the constant
+   per arm — it leaves ONE `li` in the dominator block, so the function comes
+   out a word short and will not link. The mutual exclusion stands. */
 
 /* PARKED at 97.4% (4/152 insns, was 9/152) — length-exact, one root cause per
    arm. The two anim arms need `old`(lbu 0x3D) in v0, the 0x10 constant in v1,

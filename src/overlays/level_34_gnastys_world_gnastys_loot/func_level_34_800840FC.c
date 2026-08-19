@@ -1,120 +1,3 @@
-/* PARKED 2026-08-05-1 at 99.0% (1163/1163 insns, LENGTH-EXACT -- 12 insns
- * differ, all inside ONE 12-insn window in arm 0x15).  Was 95.9% / 47 insns.
- *
- * What closed this session (the F15 park note was WRONG about the cause: the
- * *6-vs-sine order is reachable, it just needs the multiply split off):
- *   - The sine product needs its own local (`s`), assigned where the original
- *     issues the `mult` and consumed in the last statement.  That is what
- *     puts `mult` before the *6 chain while leaving `mflo` in the shared
- *     cross-jumped tail.  Writing the whole expression in one statement forces
- *     mult+mflo to travel together and costs the tail merge (+5 insns).
- *   - Both arms must be re-ordered TOGETHER: they share the 5-insn
- *     `mflo/sra/addu/bnez/sh` tail, so changing one alone breaks the merge.
- *   - Arm 0x4C is now byte-exact, as is arm 0x18 (its last diff was operand
- *     order: `HU(0x16) + 0x20 + HU(0x18)` -- gcc applies the constant to the
- *     FIRST-loaded operand, which is the LAST one written).
- *
- * Remaining residue class: F16 -- a sched1 two-chain lead tie.  Arm 0x15's
- * `rec[0xB] += 4` (lbu/addiu/sb) and its `HU(0x8) += D_800756CC * 6`
- * (lui/lw/sll/addu/lhu/sll/addu/sh) are independent chains in one basic block.
- * The original INTERLEAVES them -- B's `lw` leads, A's `lbu` fills its load
- * delay, B's arithmetic runs, then A's `addiu`+`sb`, then B's `sh` (so A's
- * value needs a third register, `a0`).  Ours always emits A complete-then-B,
- * which needs only v0/v1.  Same insn multiset, same length, 12 insns
- * transposed in place.
- *
- * Measured invariant 2026-08-05-1 -- every one of these gives BYTE-IDENTICAL
- * output in that window: all 7 placements of the `rec[0xB] += 4` statement
- * inside the arm (swept mechanically); `b = rec[0xB]; ...; rec[0xB] = b + 4`;
- * the same with a twice-set `b` (F14 non-birthing recipe); `b = rec[0xB] + 4;
- * ...; rec[0xB] = b`; `b = D_800756CC; ... HU(0x8) += b * 6`;
- * `b = HU(0x8) + D_800756CC * 6; rec[0xB] += 4; HU(0x8) = b`.
- * Ruled out by reading gcc 2.7.2 `sched.c`: it is not an aliasing difference --
- * both accesses are (plus (reg) const) off the same base, so
- * `memrefs_conflict_p` disambiguates them in either build, and volatile cannot
- * express a PARTIAL order (it would force full source order, which is what we
- * already have).
- *
- * ===== 2026-08-18-1: NOT A WALL.  The park is 8/1163, and here is why. =====
- * Every data edge costs 1 and every anti/output edge 0, so a sched1 priority is
- * just dependence depth.  Measured on `-dS`, basic block 49:
- *   - `lw D_800756CC` = 15.  It is ANTI-dependent on the arm's earlier
- *     `rec[...]` stores (a store through the record's `unsigned char *` may
- *     alias the global -- which is also why the original re-loads it here), so
- *     its `*6` chain and the `sh` come out at 16.
- *   - the byte `sb` = 15 as well, but only through its OWN anti-dep on that
- *     same `lw`; its data chain (`lbu` 1 -> `addiu` 2 -> `sb` 3) contributes
- *     nothing, because a constant-offset load off the shared base is
- *     disambiguated from every store in the arm.
- * So the residue is exactly ONE data edge, and two things follow:
- *
- * 1. De-boosting the `sh`'s feeder is NECESSARY but NOT SUFFICIENT.  The
- *    original's `addu` is provably non-birthing (a boosted def lands
- *    immediately before its store; this one sits 3 insns earlier), so the F14
- *    carrier is right:
- *      b = HU(0x8) + D_800756CC * 6;  rec[0xB] += 4;  HU(0x8) = b;
- *    with `b` at function scope and a second set donated by arm 0x4C (which
- *    carries the identical chain and no byte RMW, so it costs nothing there).
- *    Result: BYTE-IDENTICAL.  At 16 vs 15 the `addu` still wins on priority and
- *    `rank_for_schedule` never reaches the LUID tie-break.
- *
- * 2. Give the byte chain the same anti-dependence set and the tie INVERTS.
- *      *(volatile unsigned char *)(rec + 0xB) += 4;
- *    lifts the `sb` to 16 and takes the arm from 12/1163 to 8/1163: the lead
- *    tie flips and the long chain's `lui/lw` lead exactly as the original does.
- *    It cannot finish, for two reasons that are both about the volatile and not
- *    about the schedule: a volatile MEM is not folded onto the held record base
- *    (cookbook B16), so the access comes out `11(s4)` instead of `10(s1)`
- *    (2 insns), and the volatile pins the load's position (2 more).
- *
- * So the open question is narrow and named: HOW DOES THE ORIGINAL'S BYTE LOAD
- * REACH DEPENDENCE DEPTH 14 WITHOUT VOLATILE?  Constant-offset accesses off one
- * base are always disambiguated, so no source-order or aliasing dial found so
- * far reaches it.  Also note the generalisation in the 2026-08-05-2 text below
- * ("no store can be scheduled between a store and the def that feeds it") is
- * WRONG as stated -- it describes the equal-priority case only.
- *
- * ROOT-CAUSED 2026-08-05-2 -- this is a WALL, not a permuter target.  Read
- * straight off the sched1 dump (`cc1 ... -dS` -> <in>.i.sched, basic block
- * 49): `priority()` is the longest path from the block START (LOG_LINKS,
- * insn_cost-1 per edge, so only load=2 / mult=12 latencies count), and
- * `adjust_priority` can only ever BOOST -- its n_deaths switch always hits
- * case 0 because REG_DEAD notes are stripped before sched1 -- raising any
- * single-set REG def to max_priority.  A STORE is never boosted (SET_DEST is
- * a MEM).  Measured: sh HU(0x8) = 16, sb rec[0xB] = 15, and the addu feeding
- * the sh = 16.  At T-8 the ready list is {sh 16, sb 15} -> sh; at T-9 the
- * addu is ready and boosted, so the sb loses.  That one comparison is the
- * whole 12-insn window.
- *
- * It is unreachable: an ALU->store edge costs 1 and contributes 0, so
- * priority(addu) == priority(sh) under ANY source form, and the addu becomes
- * ready the instant the sh is scheduled (cost 1 => straight onto the ready
- * list, never queue_insn).  Picking the sb between them needs
- * priority(addu) < priority(sb) < priority(sh), unsatisfiable while the outer
- * two are equal; and the LUID tie-break is monotone in source order, so it
- * yields sh > addu > sb or sb > sh > addu, never sh > sb > addu.
- * schedule_select's hazard blocking cannot help either -- it only defers
- * memory/imuldiv insns and an addu has no function unit.  General form: no
- * store can be scheduled between a store and the def that feeds it.
- * See cookbook §F16.  Do not reopen without a new mechanism.
- *
- * Unparks four siblings with it: the copies in level_1 (0x80088098), level_4
- * (0x800826F0), level_10 (0x80084EF0) and level_28 (0x80084028) are
- * norm-identical (the jump-table symbol and branch displacements are the only
- * differences), so one fix is 23,260 exact bytes.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~17700 iterations, timed out
- * at the 15m budget): best score 625 vs first-iteration score 735. No
- * byte-perfect candidate; still PARKED (see above).
- *
- * This run does NOT count against the "do not reopen without a new mechanism"
- * note above -- a plain unattended permuter run is not a new mechanism, so the
- * negative result is expected and changes nothing about the §F16 conclusion.
- * It was attempted only because this campaign sweeps every parked .wip once.
- * At 1163 instructions it also drew one of the thinnest samples of the session
- * (~17700 iterations). Recording it so a future session knows the box has been
- * ticked and need not re-tick it.
- */
 /* func_level_2_80083274 (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
  *
@@ -152,6 +35,16 @@
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *
+ * Arm 0x15's third read of D_800756CC goes through a const-qualified deref.
+ * That is load-bearing, not decoration: without it sched1 makes the load
+ * TRUE-dependent on the `HU(0x4)` store three statements above (a store
+ * through `rec` may alias the global), which lifts the whole `* 6` chain to
+ * dependence depth 16 -- one above the `rec[0xB] += 4` byte store -- and the
+ * two independent chains come out complete-then-complete instead of the
+ * original's interleave.  `true_dependence()` returns 0 outright for an
+ * unchanging read, so the const drops the chain to depth 2 and the byte
+ * store leads.  The same read stays plain at its other two use sites.
+ *
  * Verified byte-identical inside the relinked
  * level_2_artisans_dark_hollow.ovl.
  */
@@ -181,10 +74,16 @@ extern int D_8007706C;
 extern int D_80078AD0;
 extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
 extern int D_80078BBC;
+extern void func_80017C24(int *dst, short *src);
+extern void func_80017758(int *dst, int *a, int *b); /* AddVector */
+extern void func_8001778C(int *dst, int *a, int *b); /* SubVector */
+extern int func_800171FC(int *v, int mode);          /* VectorLength */
+extern void func_800175B8(int *v, int len, int scale);
+extern char *D_80075828;          /* g_pActorListBase */
+extern int D_80076DF8[];
 
-void func_level_2_80083274(int step) {
+void func_level_34_800840FC(int step) {
   unsigned char *rec = D_80075824;
-  int p[3];
   int v[3];
 
   if (rec[1] == 0xFF) {
@@ -240,30 +139,6 @@ void func_level_2_80083274(int step) {
         func_80053608(rec);
       }
       break;
-
-    case 0x6: {
-      int ang;
-      int amp;
-      int z;
-
-      func_80017700(p, *(int **)(rec + 0x18));
-      z = p[2] + HS(0x1E) * 0x40;
-      amp = rec[0x2] * 0x40;
-      ang = amp;
-      if (HS(0x1C) < amp) {
-        amp = HS(0x1C);
-      }
-      p[0] += (amp * func_80016CB0(ang)) >> 12;
-      p[1] += (amp * func_80016C58(ang)) >> 12;
-      p[2] = HS(0x8) * 4 + 0x40;
-      if (z < p[2] || rec[0x2] >= 0xC9) {
-        func_80053608(rec);
-      } else {
-        func_80017BFC(POS, p);
-        rec[0x2]++;
-      }
-      break;
-    }
 
     case 0x9:
       func_80017C84(POS, POS, VEL);
@@ -321,6 +196,42 @@ void func_level_2_80083274(int step) {
       }
       break;
 
+    case 0x10:
+      /* Gnasty's cauldron drip: a slow ember that dies when its red
+       * channel bottoms out. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step * 2;
+      rec[0xC] -= 4;
+      rec[0xD] -= 4;
+      rec[0xE] -= 4;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
+    case 0x11:
+      /* The same ember with a late red cut-off at age 9. */
+      func_80017C84(POS, POS, VEL);
+      if (HS(0x1E) != 0) {
+        HU(0x1C)++;
+      }
+      HS(0x1E) = 1 - HU(0x1E);
+      rec[0xA] += step * 2;
+      if (rec[0x2] >= 9) {
+        rec[0xC] -= 0x20;
+      }
+      rec[0xD] -= 8;
+      rec[0xE] -= 4;
+      rec[0x2]++;
+      if (rec[0x2] >= 0xC || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
+
     case 0x15: {
       int s;
 
@@ -328,7 +239,7 @@ void func_level_2_80083274(int step) {
       rec[0x19] += D_800756CC;
       HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
       s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
+      HU(0x8) += *(const int *)&D_800756CC * 6;
       rec[0xB] += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
@@ -337,30 +248,24 @@ void func_level_2_80083274(int step) {
       break;
     }
 
-    case 0x18: {
-      int heat;
-
-      if (rec[0xC] < 0xF0) {
-        rec[0xC] += 4;
+    case 0x1A:
+      rec[0xC] -= 8;
+      rec[0xD] -= 8;
+      rec[0xE] -= 8;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
       }
-      if (rec[0xD] < 0xF0) {
-        rec[0xD] += 4;
-      }
-      if (rec[0xE] < 0xF0) {
-        rec[0xE] += 4;
-      }
-      rec[0x1C] += D_800756CC * 8;
-      heat = 0x3F;
-      if (D_8007706C < 0x40) {
-        heat = D_8007706C;
-      }
-      HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
-    }
+
+    case 0x1B:
+      rec[0xC] -= 8;
+      rec[0xD] -= 8;
+      rec[0xE] -= 8;
+      rec[0xA] += 0xC;
+      if (rec[0xC] == 0 || rec[0x3] == 0) {
+        func_80053608(rec);
+      }
+      break;
 
     case 0x21: {
       int c;
@@ -557,6 +462,18 @@ void func_level_2_80083274(int step) {
       break;
     }
 
+    case 0x4A:
+      /* The drifting mote: no colour ramp, dies on the alive byte first. */
+      HU(0x4) += HU(0x10);
+      HU(0x6) += HU(0x12);
+      HU(0x8) += HU(0x14);
+      rec[0xD] -= 0xF;
+      rec[0x2]++;
+      if (rec[0x3] == 0 || rec[0x2] >= 0x11) {
+        func_80053608(rec);
+      }
+      break;
+
     case 0x4C: {
       int s;
 
@@ -652,26 +569,6 @@ void func_level_2_80083274(int step) {
         if (rec[0x16] >= 6) {
           rec[0x16] -= 6;
         }
-      }
-      break;
-    }
-
-    case 0x50: {
-      short d[3];
-
-      d[0] = HU(0xA) - HU(0x4);
-      d[1] = HU(0xC) - HU(0x6);
-      d[2] = HU(0xE) - HU(0x8);
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
-      d[2]--;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
       }
       break;
     }

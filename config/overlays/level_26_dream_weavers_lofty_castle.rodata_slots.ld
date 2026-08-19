@@ -16,6 +16,7 @@
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007B1F4)
     . = 0x000007d8 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007B210)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_800850A0.o(.rodata)
     . = 0x0000091c ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007B354)
     . = 0x00000a64 ;
