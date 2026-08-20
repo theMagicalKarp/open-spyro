@@ -69,15 +69,25 @@ jobs:
             const {owner, repo} = context.repo;
 
             // Resolve the target PR from the head SHA rather than trusting a
-            // number carried in the artifact: workflow_run.pull_requests is
-            // empty for forked PRs, and letting the artifact name its own
+            // number carried in the artifact: letting the artifact name its own
             // target would let a fork comment on any PR in the repo.
-            const {data: prs} =
-              await github.rest.repos.listPullRequestsAssociatedWithCommit(
-                {owner, repo, commit_sha: process.env.HEAD_SHA});
-            const pr = prs.find(p => p.state === 'open');
+            //
+            // This must be a scan of the open-PR list matched on head.sha.
+            // The two more obvious routes are both empty for forked PRs:
+            //   - workflow_run.pull_requests
+            //   - repos.listPullRequestsAssociatedWithCommit (that endpoint
+            //     does not index fork-PR head commits, only same-repo and
+            //     already-merged ones)
+            // Both silently return [] rather than erroring, which is how fork
+            // PRs went uncommented while CI itself stayed green.
+            const sha = process.env.HEAD_SHA;
+            const openPrs = await github.paginate(
+              github.rest.pulls.list, {owner, repo, state: 'open', per_page: 100});
+            const pr = openPrs.find(p => p.head.sha === sha);
             if (!pr) {
-              core.info(`no open PR for ${process.env.HEAD_SHA}; nothing to do`);
+              // Also the normal no-op when the PR was pushed again while CI ran:
+              // the newer run posts the fresher delta.
+              core.info(`no open PR whose head is ${sha}; nothing to do`);
               return;
             }
             const issue_number = pr.number;
