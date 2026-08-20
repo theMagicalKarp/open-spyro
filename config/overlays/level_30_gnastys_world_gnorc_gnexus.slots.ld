@@ -10,6 +10,7 @@
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.func_level_30_8007AF90)
     . = 0x000024f8 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.func_level_30_8007CF30)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007CF30.o(.text)
     . = 0x00002f00 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.func_level_30_8007D938)
     . = 0x00008b30 ;

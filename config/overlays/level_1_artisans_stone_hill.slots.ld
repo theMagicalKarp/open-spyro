@@ -10,6 +10,7 @@
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007B0D0)
     . = 0x00002638 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007D070)
+    build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007D070.o(.text)
     . = 0x00003040 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.func_level_1_8007DA78)
     . = 0x0000ccf4 ;
