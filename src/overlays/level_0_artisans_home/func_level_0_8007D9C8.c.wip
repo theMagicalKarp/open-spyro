@@ -1,0 +1,3923 @@
+/* Actor record, 0x58 bytes. Layout carried over verbatim from the matched
+ * func_level_0_800857CC.c, with ONE refinement: that file spans 0x38..0x43 as
+ * `int unk38[3]`, but this function reads a flags BYTE at +0x42, so the tail
+ * of that span is split out here. Same layout, finer grain -- if these two
+ * files are ever merged into a level_0.h, keep this split. */
+typedef struct Actor {
+  void *state;         /* 0x00 per-type state block */
+  int unk04;           /* 0x04 */
+  int unk08;           /* 0x08 */
+  int posX;            /* 0x0C */
+  int posY;            /* 0x10 */
+  int posZ;            /* 0x14 */
+  int flags;           /* 0x18 */
+  int unk1C;           /* 0x1C */
+  int unk20[5];        /* 0x20 */
+  short unk34;         /* 0x34 */
+  short type;          /* 0x36 outer switch discriminant */
+  short unk38;         /* 0x38 read as a SIGNED halfword by case 16 */
+  unsigned char unk3A; /* 0x3A case 323 masks this as a BYTE (&= 0x7F), so the
+                        * short the sibling file spans here is split. Same kind
+                        * of refinement as the 0x42 one above; nothing else in
+                        * either file reads 0x3A or 0x3B. */
+  unsigned char unk3B;
+  unsigned char unk3C; /* 0x3C */
+  unsigned char unk3D; /* 0x3D anim/pose request; 0 or 1 */
+  unsigned char unk3E; /* 0x3E */
+  unsigned char unk3F; /* 0x3F */
+  unsigned char unk40; /* 0x40 */
+  unsigned char unk41;
+  unsigned char unk42; /* 0x42 flags byte: bit0 and bit1 are published */
+  unsigned char unk43;
+  unsigned char unk44; /* 0x44 */
+  unsigned char unk45;
+  unsigned char unk46;
+  unsigned char unk47;
+  unsigned char unk48; /* 0x48 state byte; 4 of the 6 inner switches use it */
+  unsigned char unk49; /* 0x49 second state byte; inner switch B uses it */
+  unsigned char unk4A;
+  unsigned char unk4B; /* 0x4B */
+  unsigned char unk4C; /* 0x4C */
+  unsigned char unk4D;
+  unsigned char unk4E;
+  unsigned char unk4F;
+  unsigned char unk50; /* 0x50 */
+  unsigned char unk51;
+  unsigned char unk52; /* 0x52 */
+  unsigned char unk53;
+  unsigned char unk54;
+  unsigned char unk55;
+  unsigned char unk56; /* 0x56 owner pool index */
+  unsigned char unk57;
+} Actor; /* 0x58 */
+
+extern Actor *D_800700F4[]; /* live actor list, NULL-terminated */
+extern int D_800756CC;      /* global step / level phase */
+extern int D_800756C4;      /* published copy of D_800756CC */
+extern int D_80075794;      /* published (actor->unk42 & 2) */
+extern int D_800757F4;      /* published (actor->unk42 & 1) */
+extern void *D_80076378[];  /* per-type descriptor table, indexed by ->type */
+extern Actor *D_80075898;   /* current-actor cursor used by the main loop */
+
+extern int D_80076DF8;
+extern int D_80076DFC;
+
+typedef struct PathState {
+  int unk00;
+  int unk04;
+  int unk08;
+  unsigned char *path;
+  int unk10;
+  int unk14;
+  int unk18;
+  int heading;
+  int unk20;
+  int unk24;
+  int unk28;
+  int unk2C;
+  int unk30;
+} PathState;
+
+#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
+#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
+#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
+#define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
+
+typedef struct RoamState {
+  int mode;
+  int unk04;
+  unsigned char *path;
+  int timer;
+  int sub;
+  int unk14;
+  int vel[3];
+  int count;
+} RoamState;
+
+extern int func_80017D7C(int *from, int *to, int *vel, int a);
+
+#define TYPE_DESC(a, off)                                                      \
+  (((unsigned char *)*(void **)((char *)D_80076378[(a)->type] + (off)))[0xC])
+
+typedef struct ShotState {
+  void *unk00;
+  short from[3];
+  short to[3];
+  short speed;
+  unsigned char phase;
+  unsigned char heading;
+} ShotState;
+
+typedef struct SwitchState {
+  int shift;
+  int idx;
+} SwitchState;
+
+typedef struct ChaseState {
+  int dir;
+  int tgtX;
+  int tgtY;
+  int unk0C;
+  unsigned char vz;
+  unsigned char heading;
+  unsigned char t12;
+  unsigned char t13;
+  unsigned char t14;
+} ChaseState;
+
+typedef struct ChaserState {
+  int timer;
+  int unk04;
+  int unk08;
+  int unk0C;
+  Actor *owner;
+} ChaserState;
+
+extern int D_80078A58;
+extern int D_80078A5C;
+extern int D_80078A60;
+
+extern void func_80051FEC(void);
+extern void func_800522C0(Actor **list, int mode);
+extern void func_80038458(Actor *actor);
+extern Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
+extern void func_8003B7C0(Actor *actor);
+extern void func_80037E98(Actor *actor);
+extern int func_80037EA0(int lo, int hi);
+extern int func_80037F10(int a, int b);
+extern int func_80037F90(void *timer, int step);
+extern int func_80038074(int a, int b);
+extern int func_800381BC(int a, int b);
+extern int func_80038EE0(Actor *actor, int heading, int a, int b, int c);
+extern int func_80039398(Actor *actor, int a, int b, int c, int d);
+extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
+extern void func_800529E4(Actor *actor, int mode);
+extern void func_80052568(Actor *actor);
+extern unsigned int func_8006272C(void);
+
+extern void (*D_800758E4)(int a, int effect, int *pos, void *c);
+
+extern int D_80078BBC;
+extern unsigned char D_80078A66;
+extern Actor *(*D_800758CC)(int type, Actor *parent);
+
+extern Actor *D_80075828;
+extern Actor *D_80075890;
+extern int D_80077AE8;
+extern unsigned char *D_800761D0;
+extern unsigned char *D_800761D4;
+extern int D_800761DC;
+extern struct {
+  short v;
+} D_800761F4;
+extern unsigned short D_80073094[];
+
+extern int D_80078AD0;
+extern int D_80078C4C;
+extern int D_8007570C;
+extern int D_80077FDC;
+extern int D_80077378;
+extern int D_80078BFC;
+extern int D_80075964;
+extern int D_80076FE8[];
+extern int D_80075810;
+
+extern void func_8003C85C(int *pos);
+extern int func_800169AC(int dx, int dy);
+extern int func_80016C58(int a);
+extern int func_80016CB0(int a);
+extern void func_80017700(int *d, int *s);
+extern void func_80017110(int *d, int *s);
+extern void func_80017758(int *d, int *a, int *b);
+extern void func_8001778C(int *d, int *a, int *b);
+extern void func_800176C8(int *d, int n);
+extern void func_800176F0(int *v);
+extern void func_800177C0(int *d, int *s, int k);
+extern void func_80017BFC(short *d, int *s);
+extern void func_80017C24(int *d, short *s);
+extern void func_8003B854(int a, void *b);
+
+extern void func_80055A78(int a, Actor *actor, int b, void *c);
+extern void func_8003851C(Actor *actor, int a, int b);
+extern int func_80038340(Actor *actor);
+extern void func_80038638(Actor *actor, int *target, int a, int heading, int b,
+                          int c, int d, int e, int f, int g, int h, int i,
+                          int j);
+extern int func_80017990(int *pos, int *target);
+extern int func_80016AB4(int dx, int dy, int z);
+extern int func_80017908(int a, int b);
+extern void func_8003C358(Actor *actor, int mode);
+
+typedef struct AnimState {
+  int handle;
+  int started;
+  int idx;
+} AnimState;
+
+extern unsigned char D_80078E7C;
+
+extern unsigned char D_8007A6A9;
+extern unsigned char D_8007A6AA;
+extern unsigned char D_8007A6AB;
+extern unsigned char D_8007A6AC;
+
+extern void func_8002B390(int handle, int a, int b);
+extern void func_8002B444(int handle, int a, int b);
+extern int func_8002B3F4(int handle);
+extern void func_800562A4(Actor *actor, int mode);
+
+typedef struct SparkState {
+  short vel[3];
+  unsigned char spin0;
+  unsigned char pad07;
+  unsigned char spin1;
+  unsigned char pad09;
+  unsigned char spin2;
+  unsigned char pad0B;
+  int life;
+} SparkState;
+
+typedef struct DebrisState {
+  int life;
+  int unk04;
+  int vel[3];
+} DebrisState;
+
+extern int D_80077368;
+extern int D_8007736C;
+extern int D_80077370;
+
+extern int func_8004BE4C(int *pos, int a, int b);
+extern void func_80017330(int *v, int k);
+extern void func_800175B8(int *v, int k, int n);
+
+typedef struct PickupState {
+  int vel[3];
+  short unk0C;
+  unsigned char sub;
+  unsigned char timer;
+  unsigned char count;
+  unsigned char pitch;
+  unsigned char yaw;
+  unsigned char roll;
+  unsigned char anim;
+} PickupState;
+
+typedef struct AnimNode {
+  int pos[3];
+  unsigned char flag;
+  unsigned char pad[11];
+} AnimNode;
+
+extern AnimNode D_80077108[];
+
+extern int D_8006E5A0;
+extern int D_8006E5B8;
+extern int D_8006E5AC;
+
+typedef struct SpinState {
+  short timer;
+  unsigned char angle;
+  unsigned char anim;
+} SpinState;
+
+extern int D_80075830;
+
+extern int D_80075750;
+extern unsigned char D_800758D1;
+extern int D_800777F4;
+extern int D_800777F8;
+extern void func_8003DFA4(void);
+extern void (*D_800757A0)(Actor *actor);
+
+extern int D_800756A4;
+extern int D_800756A8;
+
+typedef struct BreakState {
+  int unk00;
+  int unk04;
+} BreakState;
+
+typedef struct RideState {
+  int unk00[6];
+  int unk18;
+  int unk1C;
+  int unk20;
+  int unk24;
+  int unk28[7];
+  int unk44;
+  int unk48;
+  int unk4C;
+  int unk50;
+} RideState;
+
+#define RIDE_STEP(st) ((((st)->unk44 - 0xC0) >> 1))
+
+typedef struct AngPair {
+  unsigned char a;
+  unsigned char b;
+} AngPair;
+
+extern AngPair D_8006E638[];
+
+typedef struct LiftState {
+  Actor *unk00;
+  int unk04;
+  int unk08;
+  int unk0C;
+  int unk10;
+  int unk14;
+} LiftState;
+
+#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
+
+extern int D_80078C60;
+extern unsigned char D_80078C5E;
+extern unsigned char D_80078A7F;
+extern int D_80078C9C;
+extern int D_80078CA0;
+
+extern int D_80075718;
+extern unsigned char **D_800785B8;
+extern int D_80076E90;
+extern int D_80075864;
+extern int D_800756AC;
+extern int D_800756B0;
+extern int D_8007579C;
+extern int D_800757D8;
+extern int D_80075858;
+extern int D_80078B74;
+extern int D_800758FC;
+extern int D_80075910;
+
+typedef struct Xform {
+  int v[6];
+} Xform;
+
+extern Xform D_80076E48;
+extern Xform D_80076E60;
+extern Xform D_8006CA24[];
+extern Xform *D_80076EA8;
+
+extern void func_80033F08(void);
+extern void func_80034204(void);
+extern void func_800342F8(void);
+
+typedef struct PortalDesc {
+  unsigned char count;
+  unsigned char index;
+  unsigned char unk02[6];
+  int posA[3];
+  int unk14;
+  int posB[3];
+} PortalDesc;
+
+extern PortalDesc *D_80078C98;
+
+typedef struct PortalState {
+  PortalDesc *desc;
+  int offset[3];
+  int unk10;
+  int unk14;
+  int unk18;
+} PortalState;
+
+extern int D_8006E57C;
+extern int D_8006E588;
+extern int D_8006E594;
+
+extern int D_800772D8[];
+extern int D_80078B64;
+extern int D_80078B68;
+extern int D_80078B6C;
+extern int D_80078C60;
+extern int D_80078C64;
+extern int D_80078C68;
+extern int D_80078C70;
+
+typedef struct Xform6 {
+  int w[6];
+} Xform6;
+extern Xform6 D_80078668;
+extern Xform6 D_8006C934;
+extern int D_80078A84;
+extern int D_80078C58;
+extern int *D_80078C74;
+extern void *D_80078C78;
+extern Actor *D_80078C7C;
+
+#define SPYRO_FIRST_CONTACT_POINT ((int *)((char *)&D_80078A58 + 0x17C))
+
+typedef struct TriggerState {
+  int unk00;
+  int unk04;
+  int flags;
+  int timer;
+  int idx;
+} TriggerState;
+
+typedef struct RespawnState {
+  int type;
+  int timer;
+  int period;
+} RespawnState;
+
+extern void func_800526A8(Actor *actor);
+
+extern void func_8002C914(int script, int a);
+extern void func_8002C924(Actor *actor);
+extern void func_80059474(Actor *actor, int heading);
+
+extern void func_8003C6E4(Actor *actor);
+
+extern int D_80076B80;
+extern int D_80076B84;
+extern int D_80076B88;
+extern int D_80075808;
+extern int D_80078AF4;
+extern int D_8007582C;
+extern int D_800758E8;
+extern short D_800761E8;
+extern short D_800761EA;
+
+extern short D_8006CBF8[];
+extern short D_8006CC78[];
+
+extern void func_80017048(int *dst, int *tbl, int *out);
+extern int func_8003AAEC(Actor *actor, int *tbl);
+extern void func_800533D0(Actor *actor);
+extern void func_80017CB8(int a, int *out);
+extern int func_8004D5EC(int *v, int k);
+extern int func_800171FC(int *v, int mode);
+extern int func_80017A38(int x);
+extern int func_80057380(int *pos);
+extern void func_8003B9D4(Actor *actor);
+extern int func_80033E40(int *a, int *b);
+extern int func_80056DC4(Actor *actor, int a);
+extern int func_80017428(int *v, int *n, int *out);
+
+typedef struct PoleState {
+  int idxA;
+  int idxB;
+  int timer;
+  int baseZ;
+  int tgt[3];
+  int angle;
+  int t20;
+  int flag24;
+} PoleState;
+
+extern int D_80078AD8;
+
+extern int func_80017948(int a, int b);
+extern void func_8002CCC8(Actor *actor);
+
+typedef struct WalkerState {
+  unsigned char *path;
+  int timer;
+  int tgtIdx;
+  int heading;
+  int unk10;
+  int unk14;
+} WalkerState;
+
+extern Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
+extern void func_80038DC0(Actor *actor, int a, int b, int c);
+extern void func_800385BC(Actor *actor, int a);
+extern int func_80038178(int ang, int facing, int a, int b);
+extern int func_80039910(Actor *actor, int *a, int heading, int *b, int c,
+                         int d);
+
+typedef struct FxNode {
+  int kind;
+  void *desc;
+  int *anchor;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+  unsigned char pad0F;
+  int size;
+  int unk14;
+  int unk18;
+  int unk1C;
+} FxNode;
+
+typedef struct FlierState {
+  int timer;
+  short vx;
+  short vy;
+  short vz;
+  FxNode *fx;
+  Actor *rider;
+} FlierState;
+
+extern int D_80078B70;
+extern int D_80076E28;
+extern short D_80076E20;
+extern int D_80078A8C;
+extern int D_8006E390;
+extern void *D_8006E490;
+extern void *D_8006E494;
+extern void *D_8006E330[];
+
+extern void func_800170C0(int *d, int *s);
+extern FxNode *func_80058AE8(void);
+extern void func_80058B60(FxNode *node);
+extern int func_80038098(int a, int b, int c);
+
+typedef struct FlockState {
+  int unk00;
+  int unk04;
+  unsigned char *path;
+  int unk0C;
+  int chainA;
+  int chainB;
+  int slots[16][3];
+} FlockState;
+
+typedef struct PatchRideState {
+  int handle;
+  int offset[3];
+} PatchRideState;
+
+extern int D_8007572C;
+extern int func_8004AE38(int *a, int *b);
+
+typedef struct PropAnimState {
+  int anim;
+  int timer;
+  int primed;
+} PropAnimState;
+
+extern unsigned char D_80078E7D;
+
+typedef struct OrbitState {
+  Actor *owner;
+  short unk04;
+  short unk06;
+} OrbitState;
+
+extern void func_800176A0(int *d, int n);
+
+typedef struct TumbleState {
+  short vel[3];
+  short spin[3];
+  int life;
+  int floorZ;
+} TumbleState;
+
+#define ENTER_POSE(a, n)                                                       \
+  do {                                                                         \
+    poseFrom = (a)->unk3D;                                                     \
+    (a)->unk48 = (n);                                                          \
+    if (poseFrom == (n)) {                                                     \
+      goto next;                                                               \
+    }                                                                          \
+    poseFrom = (a)->unk3D;                                                     \
+    poseFlag = (a)->unk3F;                                                     \
+    (a)->unk40 = 0x10;                                                         \
+    (a)->unk41 = 0x10;                                                         \
+    (a)->unk3D = (n);                                                          \
+    (a)->unk3F = 0;                                                            \
+    (a)->unk3C = poseFrom;                                                     \
+    (a)->unk3E = poseFlag;                                                     \
+    func_80037E98(a);                                                          \
+    goto next;                                                                 \
+  } while (0)
+
+void func_level_0_8007D9C8(void) {
+  Actor **it;
+  Actor *actor;
+  int poseByte;
+  int poseVal;
+  int poseFrom;
+  int poseFlag;
+  int flag1;
+
+  func_80051FEC();
+  func_800522C0(D_800700F4, 0);
+
+  if (D_800756CC >= 3) {
+    func_800522C0(D_800700F4, D_800756CC == 3 ? 0x80000001 : 0x80000000);
+  }
+
+  it = D_800700F4;
+  actor = *it++;
+  if (actor == 0) {
+    return;
+  }
+
+  do {
+    if (actor->unk48 >= 0x80) {
+      goto next;
+    }
+
+    D_80075794 = actor->unk42 & 2;
+    flag1 = actor->unk42 & 1;
+    D_800756C4 = D_800756CC;
+    D_800757F4 = flag1;
+
+    switch (actor->type) {
+    case 1: {
+      int dist;
+      int ang;
+      int changed;
+
+      dist = func_80017990(&actor->posX, &D_80076DF8);
+
+      if (actor->unk48 != 0) {
+        if (dist >= 0x3000) {
+          actor->unk48 = 0;
+          break;
+        }
+      } else if (dist >= 0x2C00) {
+        goto c10_deactivate;
+      }
+
+      changed = (actor->unk48 == 0);
+      actor->unk48 = 1;
+
+      ang = func_80017908(
+          actor->unk46,
+          func_80016AB4(D_80076DF8 - actor->posX, D_80076DFC - actor->posY, 0));
+
+      if (ang < 0x39) {
+        if (actor->unk49 == 1) {
+          changed = 1;
+        }
+        actor->unk49 = 0;
+      } else if (ang >= 0x48) {
+        if (actor->unk49 == 0) {
+          changed = 1;
+        }
+        actor->unk49 = 1;
+      } else {
+        actor->unk48 = 0;
+      }
+
+      if (actor->unk48 != 0 && changed) {
+        func_8003C358(actor, 1);
+      }
+      break;
+    }
+
+    case 10: {
+      PathState *st;
+      PathState *ost;
+      Actor **scan;
+      Actor *other;
+      int dist;
+      int d;
+      int ang;
+      int angNext;
+      int angPrev;
+      int angSpyro;
+      int angAway;
+      int deltaNext;
+      int deltaPrev;
+      int count;
+      int idx;
+      int back;
+      int nextIdx;
+      int prevIdx;
+      int jitter;
+      int delta;
+      int step;
+      unsigned char savedD;
+      unsigned char savedF;
+      int *fl;
+
+      st = (PathState *)actor->state;
+
+      if ((actor->flags & 0xB0000) != 0 && actor->unk48 != 3) {
+        fl = &actor->flags;
+        *fl = 0;
+        st->heading = func_80016AB4(actor->posX - D_80078A58,
+                                    actor->posY - D_80078A5C, 0);
+        st->unk20 = ((actor->flags & 0x10000) == 0) ? 0x190 : 0xC8;
+        func_8003ABC0(actor, 3, 0, 0);
+        func_8003B7C0(actor);
+        goto tail_80084510;
+      }
+
+      switch (actor->unk48) {
+      case 0:
+        func_80038458(actor);
+        dist = func_80017990(&actor->posX, &D_80078A58);
+        if (dist < 0x1400) {
+          d = actor->posZ - D_80078A60;
+          if (d > 0) {
+            if (d < 0x400) {
+              goto wake;
+            }
+          } else if (D_80078A60 - actor->posZ < 0x400) {
+            goto wake;
+          }
+        }
+        goto sleep;
+
+      wake:
+        if (actor->unk43 == 0xFF) {
+          goto tail_80083C04;
+        }
+        scan = D_800700F4;
+        while ((other = *scan++) != 0) {
+          ost = (PathState *)other->state;
+          if (other->unk43 != actor->unk43) {
+            continue;
+          }
+          if (other->unk48 != 0) {
+            continue;
+          }
+          if (ost->path[1] != st->path[1]) {
+            continue;
+          }
+          other->unk48 = 1;
+          ost->unk30 = func_80037EA0(6, 0x28);
+        }
+        actor->unk48 = 1;
+        break;
+
+      sleep:
+        if (actor->unk3D == 0) {
+          goto tail_800819D0;
+        }
+        D_80075794 = 0;
+        savedD = actor->unk3D;
+        savedF = actor->unk3F;
+        actor->unk40 = 0x10;
+        actor->unk41 = 0x10;
+        actor->unk3D = 0;
+        actor->unk3F = 0;
+        actor->unk3C = savedD;
+        actor->unk3E = savedF;
+        func_80037E98(actor);
+        goto tail_800819D4;
+
+      case 1:
+        angSpyro = func_80016AB4(D_80078A58 - actor->posX,
+                                 D_80078A5C - actor->posY, 0);
+        count = st->path[0];
+        idx = st->path[1];
+        nextIdx = (idx + 1) % count;
+        back = count - 1;
+        prevIdx = (idx + back) % count;
+
+        {
+          int nx = PATH_X(st->path, nextIdx);
+          int ny = PATH_Y(st->path, nextIdx);
+          angNext = func_80016AB4(nx - actor->posX, ny - actor->posY, 0);
+        }
+        angPrev = func_80016AB4(PATH_X(st->path, prevIdx) - actor->posX,
+                                PATH_Y(st->path, prevIdx) - actor->posY, 0);
+        deltaNext = func_80017908(angSpyro, angNext);
+        deltaPrev = func_80017908(angSpyro, angPrev);
+        if (deltaPrev < deltaNext) {
+          st->path[1] = nextIdx;
+        } else {
+          st->path[1] = prevIdx;
+        }
+
+        angSpyro =
+            func_80016AB4(PATH_X(st->path, st->path[1]) - actor->posX,
+                          PATH_Y(st->path, st->path[1]) - actor->posY, 0);
+        jitter = (angSpyro + func_80037EA0(-0x20, 0x20)) & 0xFF;
+        angAway = func_80016AB4(actor->posX - D_80078A58,
+                                actor->posY - D_80078A5C, 0);
+        {
+          int scale = 0x6C;
+          st->heading =
+              (angAway + ((func_800381BC(angAway, jitter) * scale) >> 7)) &
+              0xFF;
+        }
+        st->unk24 = func_80037EA0(0x6E, 0xA0);
+        st->unk20 = 0;
+        {
+          int off = (st->path[1] << 4) + 8;
+          dist = func_80017990(&actor->posX, (int *)(st->path + off));
+        }
+        st->unk28 = (dist / st->unk24) >> 1;
+        if (st->unk28 >= 0x5B) {
+          st->unk28 = 0x5A;
+        }
+        actor->unk48 = 2;
+        break;
+
+      case 2:
+        {
+          int off = (st->path[1] << 4) + 8;
+          dist = func_80017990(&actor->posX, (int *)(st->path + off));
+        }
+        if (func_80037F90(&st->unk30, 4) == 0) {
+          goto tail_800819D4;
+        }
+        if (st->unk20 < st->unk24) {
+          st->unk20 = st->unk20 + 0xA;
+        }
+        if (actor->unk3D != 1) {
+          D_80075794 = 0;
+          savedD = actor->unk3D;
+          savedF = actor->unk3F;
+          actor->unk40 = 0x10;
+          actor->unk41 = 0x10;
+          actor->unk3D = 1;
+          actor->unk3F = 0;
+          actor->unk3C = savedD;
+          actor->unk3E = savedF;
+          func_80037E98(actor);
+        }
+        if (func_80037F90(&st->unk28, 4) != 0) {
+          ang = func_80016AB4(PATH_X(st->path, st->path[1]) - actor->posX,
+                              PATH_Y(st->path, st->path[1]) - actor->posY, 0);
+          delta = func_800381BC(ang, st->heading);
+          step = ((delta >= 0 ? delta : -delta) >= 0x1F) ? 2 : 1;
+          if (delta > 0) {
+            st->heading = (st->heading - step) & 0xFF;
+          } else if (delta < 0) {
+            st->heading = (st->heading + step) & 0xFF;
+          }
+        }
+        if (func_80038EE0(actor, st->heading, 6, 0x14, 1) != 0) {
+          if (func_80039398(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
+            st->unk2C = st->unk2C + 1;
+          } else {
+            st->unk2C = 0;
+          }
+          if (st->unk2C >= 4 && D_80075794 != 0) {
+            if (dist < 0x1400) {
+              actor->unk48 = 0;
+              break;
+            }
+            st->heading = func_80038074(st->heading, func_80037F10(0x3C, 0x64));
+          }
+        }
+        if (dist >= 0xC00 || D_80075794 == 0) {
+          goto tail_800819D4;
+        }
+      c10_deactivate:
+        actor->unk48 = 0;
+        break;
+
+      case 3:
+        if (st->unk20 >= 0x10) {
+          st->unk20 = st->unk20 - 0xF;
+          func_80039688(actor, st->heading, st->unk20, 0, 0x2BC, 5);
+        }
+        if (D_80075794 != 0) {
+          goto tail_80085438;
+        }
+        goto tail_800819D4;
+
+      default:
+        goto tail_800819D4;
+      }
+      break;
+    }
+
+    case 11: {
+      int *st;
+
+      st = (int *)actor->state;
+      if (func_80037F90(st, 4) == 0) {
+        break;
+      }
+      D_800758E4(1, 0x16, &actor->posX, 0);
+      *st = func_8006272C() & 0xE;
+      break;
+    }
+
+    case 16: {
+      ChaseState *st;
+      ChaserState *cs;
+      Actor *chaser;
+      int dz;
+      int ang;
+      int delta;
+      int d;
+      int r1;
+      int r2;
+      int drop;
+      unsigned char vz;
+
+      st = (ChaseState *)actor->state;
+
+      {
+        int *gate = &D_80078BBC;
+        if (*gate >= 3) {
+          goto c16_update;
+        }
+        if (func_80017990(&actor->posX, (int *)((char *)gate - 0x164)) >=
+            0x960) {
+          goto c16_update;
+        }
+      }
+      dz = (actor->posZ - actor->unk38) - D_80078A60;
+      if (dz > 0) {
+        if (dz < 0x708) {
+          goto c16_chase;
+        }
+        goto c16_update;
+      } else {
+        if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x708) {
+          goto c16_update;
+        }
+      }
+
+    c16_chase:
+      chaser = D_80075898;
+      if (chaser == 0) {
+        if (D_80078BBC < 0) {
+          goto c16_update;
+        }
+        chaser = D_800758CC(0x78, actor);
+        D_80075898 = chaser;
+        func_8003851C(chaser, 0, 0);
+        D_80078BBC = 1;
+        func_80052568(actor);
+        break;
+      }
+      if (chaser->unk49 == 0x63) {
+        goto c16_update;
+      }
+      cs = (ChaserState *)chaser->state;
+      if (cs->owner != 0) {
+        goto c16_update;
+      }
+      ang =
+          func_80016AB4(actor->posX - D_80078A58, actor->posY - D_80078A5C, 0);
+      delta = func_800381BC(D_80078A66, ang);
+      st->dir = (delta < 0) ? 1 : -1;
+      D_80075898->unk49 = 0;
+      cs->owner = actor;
+      cs->timer = func_80037EA0(0x96, 0xD2);
+      actor->unk48 = 1;
+
+    c16_update:
+      if ((actor->unk50 & 0x80) != 0) {
+        break;
+      }
+
+      switch (actor->unk48) {
+      case 0:
+        if (func_80037F90(&st->t14, 2) != 0 && actor->unk51 == 0) {
+          goto tail_80085438;
+        }
+        if (func_80037F90(&st->t12, 1) != 0) {
+          d = func_80037F10(0x1E, 0x5A);
+          if ((func_8006272C() & 1) != 0) {
+            d = -d;
+          }
+          st->heading = func_80038074(st->heading, d);
+          st->t12 = func_80037EA0(0x3C, 0x8C);
+        }
+        if (func_80037F90(&st->t13, 1) != 0) {
+          st->vz = func_80037F10(0xA, 0x19);
+          st->t13 = func_80037EA0(0x50, 0x8C);
+        }
+        vz = st->vz;
+        if (vz >= 0x80) {
+          actor->posZ = actor->posZ - 0x100 + vz;
+        } else {
+          actor->posZ = actor->posZ + vz;
+        }
+        drop = actor->posZ - func_80038340(actor);
+        if (drop < 0x12C) {
+          st->vz = func_80037EA0(0xA, 0x19);
+          st->t13 = func_80037EA0(0x50, 0x8C);
+        }
+        if (drop > 0x400 && drop < 0x800) {
+          st->vz = -func_80037EA0(0xA, 0x19);
+          st->t13 = func_80037EA0(0x50, 0x8C);
+        }
+        r1 = func_80038EE0(actor, st->heading, 4, 0xA, 1);
+        r2 = func_80039398(actor, 0x1E, 0, 0x32, 1);
+        if (r1 != 0 && r2 != 0) {
+          st->heading = func_80038074(st->heading, func_80037EA0(0x62, 0x9E));
+          st->t12 = func_80037EA0(0x1E, 0x50);
+        }
+        if (func_80017990(&actor->posX, &st->tgtX) < 0x7D1) {
+          break;
+        }
+        st->heading =
+            func_80016AB4(st->tgtX - actor->posX, st->tgtY - actor->posY, 0);
+        st->t12 = 0x28;
+        break;
+
+      case 1:
+        ang = func_80016AB4(actor->posX - D_80078A58,
+                            actor->posY - D_80078A5C, 0);
+        func_80038638(actor, &D_80078A58, 0x320,
+                      func_80038074(ang, st->dir << 3), 8, 0x82, 0xE, 0x80,
+                      0xFF, 0xFF, 0, 0, 0);
+        if (D_80075898 == 0 || D_80075898->unk49 == 0x63) {
+          actor->unk48 = 0;
+          break;
+        }
+        if (func_80037F90(&st->t13, 1) != 0) {
+          st->vz = func_80037F10(5, 0x14);
+          st->t13 = func_80037EA0(0x28, 0x50);
+        }
+        vz = st->vz;
+        if (vz >= 0x80) {
+          actor->posZ = actor->posZ - 0x100 + vz;
+        } else {
+          actor->posZ = actor->posZ + vz;
+        }
+        drop = actor->posZ - func_80038340(actor);
+        if (drop < 0xC8) {
+          st->vz = func_80037EA0(5, 0x14);
+          st->t13 = func_80037EA0(0x28, 0x50);
+        }
+        if (drop > 0x3E8 && drop < 0x800) {
+          st->vz = -func_80037EA0(5, 0x14);
+          st->t13 = func_80037EA0(0x28, 0x50);
+        }
+        break;
+      }
+      break;
+    }
+
+    case 18: {
+      SwitchState *st;
+      Actor *tgt;
+      int gate;
+      int dz;
+      int bits;
+      unsigned char tgt48;
+
+      gate = D_80077AE8 & 1;
+      st = (SwitchState *)actor->state;
+
+      switch (actor->unk49) {
+      case 0:
+        if (func_80017990(&actor->posX, &D_80078A58) < 0x500) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz < 0x280) {
+              goto c18_toggle;
+            }
+            goto c18_common;
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x280) {
+              goto c18_common;
+            }
+          }
+        c18_toggle:
+          tgt = &D_80075828[st->idx];
+          bits = tgt->unk49;
+          if (((bits >> st->shift) & 1) != 0) {
+            tgt->unk49 = 0;
+          } else {
+            tgt->unk49 = bits | (1 << st->shift);
+          }
+          actor->unk49 = 1;
+        }
+        break;
+
+      case 1:
+        if (func_80017990(&actor->posX, &D_80078A58) < 0x601) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz >= 0x2C1) {
+              goto c18_clear;
+            }
+            goto c18_common;
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) < 0x2C1) {
+              goto c18_common;
+            }
+          }
+        }
+      c18_clear:
+        actor->unk49 = 0;
+        break;
+      }
+
+    c18_common:
+      tgt = &D_80075828[st->idx];
+      tgt48 = tgt->unk48;
+
+      if (tgt48 == 0xA) {
+        if ((actor->unk48 & 1) != 0) {
+          break;
+        }
+        actor->unk48 = 1;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x3C);
+        actor->unk3C = 1;
+        actor->unk3D = 1;
+        goto tail_80084550;
+      }
+      if (tgt48 == 0xB) {
+        if ((actor->unk48 & 1) == 0) {
+          break;
+        }
+        actor->unk48 = 0;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x38);
+        actor->unk3C = 0;
+        actor->unk3D = 0;
+        goto tail_80084550;
+      }
+
+      if (((tgt->unk49 >> st->shift) & 1) != 0 && gate != 0 && tgt48 < 0x63) {
+        if ((actor->unk48 & 1) == 0) {
+          D_800761DC = 2;
+          D_800761F4.v =
+              *(unsigned short *)(D_800761D0 + D_800761D4[0x37] * 20 + 0xA) +
+              D_80073094[st->shift];
+          func_80055A78(((unsigned char *)D_80076378[actor->type])[4], actor, 8,
+                        &actor->unk54);
+        }
+        actor->unk48 = 1;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x3C);
+        actor->unk3C = 1;
+        actor->unk3D = 1;
+        goto tail_80084550;
+      }
+
+      if ((actor->unk48 & 1) == 0) {
+        break;
+      }
+      actor->unk48 = 0;
+      actor->unk40 = 0;
+      poseByte = TYPE_DESC(actor, 0x38);
+      actor->unk3C = 0;
+      actor->unk3D = 0;
+      goto tail_80084550;
+    }
+
+    case 34: {
+      ShotState *st;
+      int tmpA[3];
+      int tmpB[3];
+      int tmpC[3];
+      int step;
+      int s;
+      int c;
+      int sr;
+      int cr;
+
+      st = (ShotState *)actor->state;
+
+      if (actor->unk48 != 0 && actor->unk48 < 5) {
+        D_80078C4C = 0x80002000;
+        if (D_80078AD0 != 0 && D_80078AD0 != 0xC) {
+          actor->unk48 = 5;
+        }
+      }
+      if ((unsigned int)(actor->unk48 - 2) < 3) {
+        func_8003C85C(&actor->posX);
+        D_800758E4(1, 0xC, (int *)actor, (void *)0x602080);
+      }
+
+      switch (actor->unk48) {
+      case 1:
+        D_8007570C = 1;
+        func_80017BFC(st->from, &actor->posX);
+        st->heading =
+            func_800169AC(actor->posX - D_80078A58, actor->posY - D_80078A5C) +
+            0x40;
+        st->speed = 0;
+        st->phase = 0;
+        D_80077FDC = 1;
+        actor->unk44 = 0;
+        actor->unk45 = 8;
+        actor->unk48 = actor->unk48 + 1;
+        break;
+
+      case 2:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x80) {
+          step = D_800756CC << 2;
+          st->speed = st->speed + step;
+          st->heading = st->heading + step;
+          func_80017C24(&actor->posX, st->from);
+          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          actor->unk46 = actor->unk46 + (D_800756CC << 2);
+          actor->posZ = actor->posZ - (st->phase << 3);
+        } else {
+          func_80017700(tmpA, &D_80078A58);
+          c = func_80016CB0(D_80078A66 << 4);
+          s = func_80016C58(D_80078A66 << 4);
+          sr = s * 724;
+          cr = c * 724;
+          tmpA[0] = tmpA[0] + ((sr + cr) >> 12);
+          s = func_80016C58(D_80078A66 << 4);
+          c = func_80016CB0(D_80078A66 << 4);
+          sr = s * 724;
+          cr = c * 724;
+          tmpA[1] = tmpA[1] + ((sr - cr) >> 12);
+          tmpA[2] = tmpA[2] + 0x300;
+          func_80017BFC(st->to, tmpA);
+          func_80017BFC(st->from, &actor->posX);
+          st->phase = 0;
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 3:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x40) {
+          func_80017C24(tmpB, st->from);
+          func_80017C24(tmpC, st->to);
+          func_8001778C(tmpC, tmpC, tmpB);
+          func_800177C0(tmpC, tmpC, st->phase);
+          func_800176C8(tmpC, 6);
+          func_80017758(&actor->posX, tmpB, tmpC);
+          actor->unk46 = actor->unk46 + (D_800756CC << 2);
+        } else {
+          func_80017700(tmpA, &D_80078A58);
+          tmpA[0] = tmpA[0] + (func_80016CB0(D_80078A66 << 4) >> 3);
+          tmpA[1] = tmpA[1] + (func_80016C58(D_80078A66 << 4) >> 3);
+          tmpA[2] = tmpA[2] + 0x300;
+          func_80017BFC(st->from, tmpA);
+          st->speed = 0x200;
+          st->phase = 0;
+          st->heading = D_80078A66 - 0x40;
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 4:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x80) {
+          step = D_800756CC << 2;
+          st->speed = st->speed - step;
+          st->heading = st->heading - step;
+          func_80017C24(&actor->posX, st->from);
+          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          actor->unk46 = actor->unk46 + (D_800756CC << 2);
+          actor->posZ = actor->posZ - (st->phase << 2);
+        } else {
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 5:
+        func_8001778C(tmpA, &actor->posX, &D_80076DF8);
+        func_80017110(tmpA, tmpA);
+        D_800758E4(0x10, 0x4D, tmpA, 0);
+        D_8007570C = 0;
+        func_800176F0(&D_80078BFC);
+        func_8003B854(0, st->unk00);
+        D_80075810 = D_80075810 + 1;
+        D_80076FE8[D_80075964] += 1;
+        D_80077FDC = 0;
+        func_80052568(actor);
+        break;
+
+      default:
+        break;
+      }
+      break;
+    }
+
+    case 49: {
+      AnimState *st = actor->state;
+      int marker;
+
+      if (st->started == 0) {
+        if (D_80078E7C != 0) {
+          func_8002B390(st->handle, 0xFC, 0);
+          func_8002B444(st->handle, 0x3B, 0);
+        }
+        st->started = 1;
+      }
+
+      marker = (func_8002B3F4(st->handle) >> 8) & 0xFF;
+
+      switch (marker) {
+      case 0:
+        if (D_8007A6A9 || D_8007A6AA || D_8007A6AB || D_8007A6AC) {
+          if (D_80075828[st->idx].unk48 >= 0x80 &&
+              func_80017990(&actor->posX, &D_80078A58) < 0x4000) {
+            func_8002B390(st->handle, 0xFC, 0);
+            actor->unk55 = 0x30;
+            func_80055A78(D_800761D4[0x41], actor, 8, &actor->unk54);
+          }
+        }
+        break;
+
+      case 0x3C:
+        func_800562A4(actor, 1);
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x4801) {
+          func_8002B390(st->handle, 0xFC, 0);
+        }
+        break;
+      }
+      break;
+    }
+
+    case 255:
+    case 256:
+    case 423:
+    case 424: {
+      SparkState *st = actor->state;
+
+      if (st->life <= 0 || actor->unk51 == 0) {
+        goto c255_expired;
+      }
+
+      if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+        int *nrm = &D_80077368;
+        int dot;
+
+        func_80017330(nrm, 0x1000);
+        dot = st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
+              st->vel[2] * D_80077370;
+
+        if ((dot >> 11) < 0) {
+          func_800175B8(nrm, 0x1000, (dot >> 13) - (dot >> 11));
+          st->vel[0] += nrm[0];
+          st->vel[1] += D_8007736C;
+          st->vel[2] += D_80077370;
+        }
+      }
+
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
+      }
+      actor->posZ += st->vel[2];
+
+      actor->unk44 += st->spin0;
+      actor->unk45 += st->spin1;
+      actor->unk46 += st->spin2;
+
+      if ((st->life & 3) == 0) {
+        int burst[3];
+
+        burst[0] = func_8006272C() & 3;
+        burst[1] = func_8006272C() & 3;
+        burst[2] = 0x14;
+        D_800758E4(1, 1, &actor->posX, burst);
+      }
+
+      st->life -= 1;
+      break;
+
+    c255_expired:
+      D_800758E4(8, 0x46, &actor->posX, (void *)0x10);
+      goto tail_80085438;
+    }
+
+    case 257:
+    case 425: {
+      TumbleState *st = actor->state;
+
+      if (st->life == 0) {
+        goto tail_80085438;
+      }
+      if (actor->unk51 == 0) {
+        goto tail_80085438;
+      }
+      if (st->floorZ >= actor->posZ) {
+        goto tail_80085438;
+      }
+
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
+      }
+      actor->posZ += st->vel[2];
+
+      actor->unk44 += st->spin[0];
+      actor->unk45 += st->spin[1];
+      actor->unk46 += st->spin[2];
+
+      st->life -= 1;
+      break;
+    }
+
+    case 14:
+    case 15:
+    case 83:
+    case 84:
+    case 85:
+    case 86:
+    case 87: {
+      PickupState *st;
+      int dist;
+      int ang;
+      int len;
+      int tmp[3];
+      int hit[3];
+      int acc[3];
+      int inA[3];
+      int inB[3];
+
+      st = (PickupState *)actor->state;
+      dist = func_80017990(&actor->posX, &D_80078A58);
+
+      if (st->timer < 0xFA) {
+        st->timer = st->timer + D_800756CC;
+      }
+
+      if (actor->type != 0xF) {
+        if (st->anim != 0xFF) {
+          func_800529E4(actor, 4);
+          if (actor->type == 0xE) {
+            func_80017048(actor->unk20, &D_8006E5B8, D_80077108[st->anim].pos);
+          } else {
+            func_80017048(actor->unk20, &D_8006E5A0, D_80077108[st->anim].pos);
+          }
+          func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+                        &actor->posX);
+          if (D_80077108[st->anim].flag < 5) {
+            st->anim = 0xFF;
+          }
+        } else if (st->timer >= 0xF8) {
+          ang = func_8003AAEC(actor, &D_8006E5A0);
+          if (ang >= 0 && dist < 0x4000) {
+            st->anim = ang;
+          }
+          st->timer = (func_8006272C() & 0x1F) + 0x21;
+        }
+      }
+
+      if (actor->unk51 == 0 && dist > 0x2000 && actor->unk49 == 1 &&
+          st->sub == 0) {
+        goto next;
+      }
+
+      switch (actor->unk49) {
+      case 0:
+        func_80017700(tmp, &actor->posX);
+        tmp[2] += 0x400;
+        func_8004D5EC(tmp, 0x10000);
+        len = func_80017A38(D_80077368 * D_80077368 + D_80077370 * D_80077370);
+        st->pitch = -func_800169AC(len, D_8007736C);
+        st->yaw = -func_800169AC(D_80077370, D_80077368);
+        if ((*(int *)&st->count & 0xFFFF00) != 0) {
+          actor->unk46 = 0;
+        }
+        actor->unk49 = 1;
+        break;
+
+      case 1:
+        if (st->sub != 0) {
+          if (st->sub == 1) {
+            func_80038458(actor);
+            func_800533D0(actor);
+            if (actor->type >= 0x53) {
+              len = func_80017A38(D_80077368 * D_80077368 +
+                                  D_80077370 * D_80077370);
+              st->pitch = -func_800169AC(len, D_8007736C);
+              st->yaw = -func_800169AC(D_80077370, D_80077368);
+            }
+          } else if (st->sub == 2) {
+            func_80017CB8(st->unk0C, acc);
+            func_80017758(acc, acc, inA);
+            func_80017758(acc, acc, inB);
+            actor->posX = acc[0] / 3;
+            actor->posY = acc[1] / 3;
+            actor->posZ = acc[2] / 3;
+            func_800529E4(actor, 2);
+            func_80038458(actor);
+            func_800533D0(actor);
+          } else if (st->sub == 3) {
+            func_80017700(tmp, &actor->posX);
+            tmp[2] += 0x400;
+            func_800529E4(actor, 2);
+            if (func_8004D5EC(tmp, 0x1000) > 0) {
+              st->sub = 2;
+              st->unk0C = D_80075808;
+            }
+          }
+        }
+
+        if (dist < 0x59A) {
+          int dz;
+
+          dz = D_80078A60 - (actor->posZ + 0x164);
+          if (dz < 0) {
+            dz = -dz;
+          }
+          if (dz < 0x200 && D_80075898 != 0 && D_80078AF4 == 0 &&
+              func_80033E40(&D_80075898->posX, &actor->posX) != 0) {
+            goto claim;
+          }
+        }
+        break;
+
+      case 2:
+        func_800177C0(tmp, st->vel, D_800756CC);
+        func_800176C8(tmp, 1);
+        len = func_800171FC(tmp, 1);
+        if (len >= 0xDD) {
+          func_800175B8(tmp, len, 0xDC);
+        }
+        func_80017758(&actor->posX, &actor->posX, tmp);
+
+        if (st->vel[2] >= -0xDB) {
+          st->vel[2] = st->vel[2] - D_800756CC * 5;
+        }
+
+        if (tmp[2] >= 0) {
+          tmp[2] += 0xF0;
+          if (func_8004BE4C(tmp, 0xF0, 0xF0) == 0) {
+            tmp[2] -= 0xF0;
+            func_80017700(&actor->posX, tmp);
+            func_8004D5EC(tmp, 0x10000);
+            func_800533D0(actor);
+            goto c1415_gate2;
+          }
+          if (func_80057380(&actor->posX) != 0) {
+            goto c1415_bounce;
+          }
+        }
+
+        if ((unsigned int)((unsigned short)actor->type - 0xE) < 2) {
+          goto tail_80085438;
+        }
+
+      c1415_retire_misc:
+        func_8003B9D4(actor);
+        goto tail_80085438;
+
+      c1415_bounce:
+        func_80017700(hit, &D_80077368);
+        func_80017700(&actor->posX, &D_80076B80);
+        actor->posZ -= 0xF0;
+
+        if (st->count == 0) {
+          int landed;
+
+          landed = func_8004D5EC(tmp, 0x400);
+          ang = (signed char)func_800169AC(hit[2], func_800171FC(hit, 0));
+
+          if (tmp[2] - 0x190 < landed && ang < 0x18) {
+            actor->unk49 = 1;
+            func_80017700(&actor->posX, tmp);
+            actor->posZ = landed;
+            if (actor->type != 0xF) {
+              len = func_80017A38(hit[0] * hit[0] + hit[2] * hit[2]);
+              st->pitch = -func_800169AC(len, hit[1]);
+              st->yaw = -func_800169AC(hit[2], hit[0]);
+              if ((*(int *)&st->count & 0xFFFF00) != 0) {
+                actor->unk46 = 0;
+              }
+            }
+            func_800533D0(actor);
+          } else {
+            st->count = st->count + 1;
+          }
+
+          if (st->count == 0) {
+            goto c1415_gate2;
+          }
+        }
+
+        D_800761DC = 1;
+        D_800761E8 = 0x3CCC >> (3 - st->count);
+        D_800761EA = 0x3CCC >> (3 - st->count);
+        func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+
+        if (func_80017428(st->vel, hit, st->vel) != 0) {
+          st->count = st->count - 1;
+          st->vel[0] = (st->vel[0] >> 3) + (func_8006272C() & 0x3F) - 0x20;
+          st->vel[1] = (st->vel[1] >> 3) + (func_8006272C() & 0x3F) - 0x20;
+          st->vel[2] = (st->vel[2] >> 2) + (func_8006272C() & 0xF);
+        }
+
+      c1415_gate2:
+        if (dist < 0x59A) {
+          int dz;
+
+          dz = D_80078A60 - (actor->posZ + 0x164);
+          if (dz < 0) {
+            dz = -dz;
+          }
+          if (dz < 0x200 && D_80075898 != 0 && D_80078AF4 == 0 &&
+              st->count < 3) {
+          claim:
+            if (((ChaserState *)D_80075898->state)->owner == 0) {
+              if (func_80056DC4(
+                      D_80075898,
+                      ((unsigned char *)D_80076378[D_80075898->type])[4]) ==
+                  0) {
+                D_800761DC = 1;
+                D_800761EA = 0x2000;
+                D_800761E8 = 0x2000;
+                func_8003851C(D_80075898, 0, 0);
+              }
+              D_80075898->unk49 = 4;
+              ((ChaserState *)D_80075898->state)->owner = actor;
+            }
+          }
+        }
+        break;
+
+      case 3:
+        if (st->timer >= 0x20) {
+          func_80017700(&actor->posX, &D_80078A58);
+        } else {
+          func_8001778C(tmp, &D_80078A58, st->vel);
+          func_800176C8(tmp, 5);
+          if (func_800171FC(tmp, 1) >= 0x1E1) {
+            func_80017700(&actor->posX, &D_80078A58);
+            st->timer = 0x20;
+          } else {
+            func_800177C0(tmp, tmp, st->timer);
+            func_80017758(&actor->posX, st->vel, tmp);
+            actor->posZ += (short)((short)D_8006CBF8[st->timer * 4] / 12);
+          }
+        }
+        actor->unk44 = actor->unk44 + (st->pitch + 0xF9);
+        actor->unk45 = actor->unk45 + (st->yaw + 0xF9);
+        actor->unk46 = actor->unk46 + (st->roll + 0xF9);
+        break;
+
+      case 4:
+        goto next;
+      }
+
+      if (actor->unk49 < 3) {
+        if (actor->type == 0xE) {
+          actor->unk44 = ((short)D_8006CC78[st->roll] >> 9) + st->pitch;
+          actor->unk45 = ((short)D_8006CBF8[st->roll] >> 9) + st->yaw;
+          st->roll = st->roll + D_800756CC * 2;
+        } else if (actor->type == 0xF) {
+          actor->unk46 = actor->unk46 + 8;
+          actor->unk45 = actor->unk45 - 6;
+        } else {
+          actor->unk44 = ((short)D_8006CC78[st->roll] >> 7) + st->pitch;
+          actor->unk45 = ((short)D_8006CBF8[st->roll] >> 7) + st->yaw;
+          st->roll = st->roll + D_800756CC * 2;
+        }
+      }
+
+      if (!(st->timer >= 0x21 && dist < 0x200 &&
+            (unsigned int)(D_80078A60 - actor->posZ + 0x17F) < 0x37F)) {
+        if (actor->unk49 != 3 || st->timer < 0x41) {
+          goto next;
+        }
+      }
+
+      if (D_80075898 != 0 &&
+          ((ChaserState *)D_80075898->state)->owner == actor) {
+        ((ChaserState *)D_80075898->state)->owner = 0;
+      }
+
+      if (actor->type == 0xE) {
+        func_80055A78(D_800761D4[0], actor, 0x10, 0);
+        func_800529E4(actor, 4);
+        D_800758E4(0x10, 0x46, &actor->posX, (void *)8);
+        D_800758E4(0x10, 0x46, &actor->posX, (void *)0x10);
+        if (D_8007582C < 0x63) {
+          D_8007582C = D_8007582C + 1;
+        }
+        func_8003B854(0, actor);
+        goto tail_80085438;
+      }
+      if (actor->type != 0xF) {
+        goto c1415_retire_misc;
+      }
+      func_80055A78(D_800761D4[0], actor, 0x10, 0);
+      D_800758E8 = D_800758E8 + 1;
+      func_80052568(actor);
+      break;
+    }
+
+    case 110: {
+      PoleState *st;
+      Actor *tgtA;
+      Actor *tgtB;
+      int dz;
+      int ang;
+      int speed;
+      int swing;
+      int denom;
+      int delta;
+      int near;
+      int rel[3];
+
+      st = (PoleState *)actor->state;
+      tgtA = &D_80075828[st->idxA];
+      tgtB = &D_80075828[st->idxB];
+
+      switch (actor->unk48) {
+      case 0:
+        actor->unk08 = 0;
+        if (func_80017990(&tgtB->posX, &D_80078A58) >= 0xA01) {
+          goto tail_80083C04;
+        }
+        break;
+
+      case 1:
+        if (tgtA->unk48 < 0x80) {
+          break;
+        }
+        actor->unk48 = 2;
+        st->timer = 0x10;
+        st->baseZ = actor->posZ;
+        break;
+
+      case 2:
+        if (st->timer != 0) {
+          st->timer = st->timer - 1;
+          break;
+        }
+        actor->unk08 = 0;
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x2000) {
+          break;
+        }
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0) {
+          if (dz < 0x800) {
+            goto c110_near;
+          }
+          break;
+        } else {
+          if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x800) {
+            break;
+          }
+        }
+      c110_near:
+        if (st->flag24 != 0 && tgtB->unk48 != 1) {
+          break;
+        }
+
+        st->flag24 = 0;
+        actor->posZ = st->baseZ + 0x80;
+        actor->unk46 = func_80016AB4(D_80078A58 - actor->posX,
+                                     D_80078A5C - actor->posY, 0) -
+                       0x80;
+        actor->unk50 = 0x20;
+        actor->unk48 = 3;
+        actor->unk57 = 0x60;
+        D_800758E4(0x18, 0x50, &actor->posX, (void *)0xC);
+        func_800529E4(actor, 1);
+        func_8004D5EC(&actor->posX, 0x1000);
+        func_800533D0(actor);
+        actor->unk1C |= 0x80000000;
+        break;
+
+      case 3:
+        if (actor->unk57 >= 0x21) {
+          actor->unk57 = actor->unk57 - 4;
+          actor->unk46 = actor->unk46 + 8;
+          break;
+        }
+        actor->unk48 = 4;
+        st->timer = 0;
+        st->t20 = 0x1E;
+        break;
+
+      case 4:
+        st->timer = st->timer + 1;
+        actor->posZ = st->baseZ + (func_80016CB0(st->timer << 7) >> 6);
+
+        if ((tgtB->unk48 == 0 || (tgtB->unk48 == 2 && tgtB->unk49 >= 0x10)) &&
+            func_80017990(&tgtB->posX, &D_80078A58) < 0x400) {
+          dz = (tgtB->posZ - tgtB->unk38) - D_80078A60;
+          if (dz > 0 ? dz < 0x200
+                     : D_80078A60 - (tgtB->posZ - tgtB->unk38) < 0x200) {
+            if ((D_80078AD0 == 0 || D_80078AD0 == 0xD) && D_80078AD8 > 0) {
+              actor->unk48 = 6;
+              st->flag24 = 1;
+              func_8002CCC8(actor);
+              break;
+            }
+          }
+        }
+
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x2401) {
+          actor->unk48 = 6;
+          break;
+        }
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0) {
+          near = dz < 0xC01;
+        } else {
+          near = D_80078A60 - (actor->posZ - actor->unk38) < 0xC01;
+        }
+        if (!near) {
+          actor->unk48 = 6;
+          break;
+        }
+
+        st->t20 = st->t20 - 1;
+        if (st->t20 != 0) {
+          break;
+        }
+
+        speed = (func_8006272C() & 0x3F) + 0x140;
+        ang =
+            func_80016AB4(D_80078A58 - tgtB->posX, D_80078A5C - tgtB->posY, 0);
+        ang = ang + (func_8006272C() & 0xF) - 8;
+        func_80017700(st->tgt, &tgtB->posX);
+        ang = (ang & 0xFF) << 4;
+        actor->unk48 = 5;
+        st->tgt[0] = st->tgt[0] - ((func_80016CB0(ang) * speed) >> 12);
+        st->tgt[1] = st->tgt[1] - ((func_80016C58(ang) * speed) >> 12);
+        st->angle =
+            func_80016AB4(D_80078A58 - st->tgt[0], D_80078A5C - st->tgt[1], 0);
+        st->t20 = 0;
+        break;
+
+      case 5:
+        st->timer = st->timer + 1;
+        actor->posZ = st->baseZ + (func_80016CB0(st->timer << 7) >> 6);
+
+        if ((tgtB->unk48 == 0 || (tgtB->unk48 == 2 && tgtB->unk49 >= 0x10)) &&
+            func_80017990(&tgtB->posX, &D_80078A58) < 0x400) {
+          dz = (tgtB->posZ - tgtB->unk38) - D_80078A60;
+          if (dz > 0 ? dz < 0x200
+                     : D_80078A60 - (tgtB->posZ - tgtB->unk38) < 0x200) {
+            if ((D_80078AD0 == 0 || D_80078AD0 == 0xD) && D_80078AD8 > 0) {
+              actor->unk48 = 6;
+              st->flag24 = 1;
+              func_8002CCC8(actor);
+              break;
+            }
+          }
+        }
+
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x2801) {
+          actor->unk48 = 6;
+          break;
+        }
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0) {
+          if (dz >= 0xC01) {
+            actor->unk48 = 6;
+            break;
+          }
+        } else {
+          if (D_80078A60 - (actor->posZ - actor->unk38) >= 0xC01) {
+            actor->unk48 = 6;
+            break;
+          }
+        }
+
+        st->t20 = st->t20 + 1;
+        func_8001778C(rel, st->tgt, &actor->posX);
+        delta = func_80017948(st->angle, actor->unk46);
+        swing = func_80016CB0((st->t20 - 1) << 7) - func_80016CB0(st->t20 << 7);
+        denom = func_80016CB0((st->t20 - 1) << 7) + 0x1000;
+
+        actor->posX += rel[0] * swing / denom;
+        actor->unk46 = actor->unk46 + delta * swing / denom;
+        actor->posY += rel[1] * swing / denom;
+
+        func_8004D5EC(&actor->posX, 0x1000);
+        func_800533D0(actor);
+
+        if (st->t20 != 0x10) {
+          break;
+        }
+        actor->unk48 = 4;
+        st->t20 = (func_8006272C() & 0x1F) + 0x1E;
+        break;
+
+      case 6:
+        if (actor->unk57 < 0x60) {
+          actor->unk57 = actor->unk57 + 4;
+          actor->unk46 = actor->unk46 + 8;
+          break;
+        }
+        actor->unk50 = 0;
+        actor->unk51 = 0;
+        actor->unk48 = 2;
+        st->timer = 0x10;
+        D_800758E4(0x18, 0x50, &actor->posX, (void *)0xC);
+        actor->unk1C &= 0x7FFFFFFF;
+        break;
+      }
+      break;
+    }
+
+    case 114: {
+      WalkerState *st;
+      Actor *tgt;
+      unsigned char *p;
+      int dx;
+      int dy;
+      int dh;
+      int dz;
+      int ang;
+      int turn;
+
+      st = (WalkerState *)actor->state;
+
+      if ((actor->flags & 0xB0000) != 0 &&
+          (unsigned int)(actor->unk48 - 7) >= 3) {
+        func_8003ABC0(actor, 3, 0, 0);
+        func_8003B7C0(actor);
+
+        if ((actor->flags & 0x20000) != 0) {
+          st->unk10 = 0x190;
+          st->unk14 = 0x46;
+          ang = func_80016AB4(actor->posX - D_80078A58,
+                              actor->posY - D_80078A5C, 0);
+          st->heading = func_80038178(ang, D_80078A66, 0x28, 0x80);
+          ENTER_POSE(actor, 8);
+        }
+        func_80055A78(D_800761D4[0x27], actor, 8, &actor->unk54);
+        st->unk14 = 0xB4;
+        st->unk10 = 0x118;
+        ang = func_80016AB4(actor->posX - D_80078A58, actor->posY - D_80078A5C,
+                            0);
+        st->heading = func_80038178(ang, D_80078A66, 0x20, 0x40);
+        ENTER_POSE(actor, 7);
+      }
+
+      if (st->tgtIdx >= 0 && D_80075828[st->tgtIdx].unk48 >= 0x80) {
+        st->tgtIdx = -1;
+      }
+
+      switch (actor->unk48) {
+      case 0:
+        dx = D_80078A58 - actor->posX;
+        dy = D_80078A5C - actor->posY;
+        if (dx < 0) {
+          dx = -dx;
+        }
+        if (dy < 0) {
+          dy = -dy;
+        }
+        dh = D_80078A60 - actor->posZ;
+        if (dh < 0) {
+          dh = -dh;
+        }
+        if (dx + dy + dh < 0x4000 &&
+            func_80017990(&actor->posX, &D_80078A58) < 0x2800) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz < 0x800) {
+              goto c114s0_pose;
+            }
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) < 0x800) {
+              goto c114s0_pose;
+            }
+          }
+          goto c114s0_cont;
+
+        c114s0_pose:
+          ENTER_POSE(actor, 4);
+
+        c114s0_cont:;
+        }
+
+        if (st->tgtIdx >= 0 && func_80037F90(&st->timer, 4) != 0) {
+          if (func_80017990(&actor->posX, &D_80075828[st->tgtIdx].posX) <
+              0x1000) {
+            ENTER_POSE(actor, 2);
+          }
+          ENTER_POSE(actor, 1);
+        }
+        goto c114_land;
+
+      case 1:
+        tgt = &D_80075828[st->tgtIdx];
+        dx = tgt->posX - actor->posX;
+        if (dx < 0) {
+          dx = -dx;
+        }
+        dy = tgt->posY - actor->posY;
+        if (dy < 0) {
+          dy = -dy;
+        }
+        dh = tgt->posZ - actor->posZ;
+        if (dh < 0) {
+          dh = -dh;
+        }
+        if (dx + dy + dh < 0x1800 &&
+            func_80017990(&actor->posX, &tgt->posX) < 0x1000) {
+          ENTER_POSE(actor, 2);
+        }
+
+        if (D_80075794 == 0) {
+          goto c114_land;
+        }
+        st->timer = (func_8006272C() & 0x3F) + 0x20;
+        ENTER_POSE(actor, 0);
+
+      case 2:
+        dx = D_80078A58 - actor->posX;
+        dy = D_80078A5C - actor->posY;
+        if (dx < 0) {
+          dx = -dx;
+        }
+        if (dy < 0) {
+          dy = -dy;
+        }
+        dh = D_80078A60 - actor->posZ;
+        if (dh < 0) {
+          dh = -dh;
+        }
+        if (dx + dy + dh < 0x4000 &&
+            func_80017990(&actor->posX, &D_80078A58) < 0x2800) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz < 0x800) {
+              goto c114s2_pose;
+            }
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) < 0x800) {
+              goto c114s2_pose;
+            }
+          }
+          goto c114s2_cont;
+
+        c114s2_pose:
+          ENTER_POSE(actor, 4);
+
+        c114s2_cont:;
+        }
+
+        tgt = &D_80075828[st->tgtIdx];
+        ang =
+            func_80016AB4(tgt->posX - actor->posX, tgt->posY - actor->posY, 0);
+        func_80038EE0(actor, ang, 8, 0x10, 1);
+        if (D_80075794 == 0) {
+          goto c114_land;
+        }
+        st->timer = (func_8006272C() & 0x3F) + 0x20;
+        ENTER_POSE(actor, 0);
+
+      c114_land:
+        func_80038458(actor);
+        goto tail_800819D4;
+
+      case 3:
+        dx = D_80078A58 - actor->posX;
+        dy = D_80078A5C - actor->posY;
+        if (dx < 0) {
+          dx = -dx;
+        }
+        if (dy < 0) {
+          dy = -dy;
+        }
+        dh = D_80078A60 - actor->posZ;
+        if (dh < 0) {
+          dh = -dh;
+        }
+        if (dx + dy + dh < 0x4000 &&
+            func_80017990(&actor->posX, &D_80078A58) < 0x2800) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0 ? dz < 0x800
+                     : D_80078A60 - (actor->posZ - actor->unk38) < 0x800) {
+            p = st->path;
+            if (p[1] < p[0] - 1) {
+              p[1] = p[1] + 1;
+            }
+            ENTER_POSE(actor, 4);
+          }
+        }
+
+        p = st->path;
+        if (func_80017990(&actor->posX, PATH_PT(p, p[1])) < 0x200) {
+          p = st->path;
+          if (p[1] == 0) {
+            ENTER_POSE(actor, 0);
+          }
+          p[1] = p[1] - 1;
+        }
+
+        p = st->path;
+        ang = func_80016AB4(PATH_X(p, p[1]) - actor->posX,
+                            PATH_Y(p, p[1]) - actor->posY, 0);
+        turn = (ang - actor->unk46) & 0xFF;
+        if (turn >= 0x81) {
+          turn = turn - 0x100;
+        }
+        if ((turn >= 0 ? turn : -turn) < 0x20) {
+          func_80039398(actor, 0x40, 0x200, 0x200, 0x27);
+        }
+        if (turn < -8) {
+          turn = -8;
+        }
+        if (turn >= 9) {
+          turn = 8;
+        }
+        actor->unk46 = actor->unk46 + turn;
+        goto tail_800819D0;
+
+      case 4:
+        if (D_80075794 == 0) {
+          goto c114s4_stop;
+        }
+        if (D_80078AD0 == 0xB || D_80078AD0 == 0x14) {
+          if (actor->unk3C != 6) {
+            D_80075794 = 0;
+            actor->unk40 = 0;
+            poseByte = TYPE_DESC(actor, 0x50);
+            actor->unk3C = 6;
+            actor->unk3D = 6;
+            actor->unk3E = 0;
+            actor->unk3F = 1;
+            actor->unk41 = poseByte;
+          }
+          actor->unk48 = 0x14;
+          break;
+        }
+        ENTER_POSE(actor, 5);
+
+      c114s4_stop:
+        func_80038DC0(actor, 8, 0x10, 1);
+        goto tail_800819D4;
+
+      case 5:
+        p = st->path;
+        if (func_80017990(&actor->posX, PATH_PT(p, p[1])) < 0x200) {
+          p = st->path;
+          if (p[1] < p[0] - 1) {
+            p[1] = p[1] + 1;
+          } else {
+            st->timer = 0x78;
+            ENTER_POSE(actor, 6);
+          }
+        }
+
+        p = st->path;
+        ang = func_80016AB4(PATH_X(p, p[1]) - actor->posX,
+                            PATH_Y(p, p[1]) - actor->posY, 0);
+        turn = (ang - actor->unk46) & 0xFF;
+        if (turn >= 0x81) {
+          turn = turn - 0x100;
+        }
+        if ((turn >= 0 ? turn : -turn) < 0x20) {
+          func_80039398(actor, 0x82, 0x200, 0x200, 0x27);
+        }
+        if (turn < -8) {
+          turn = -8;
+        }
+        if (turn >= 9) {
+          turn = 8;
+        }
+        actor->unk46 = actor->unk46 + turn;
+        goto tail_800819D0;
+
+      case 6:
+        dx = D_80078A58 - actor->posX;
+        dy = D_80078A5C - actor->posY;
+        if (dx < 0) {
+          dx = -dx;
+        }
+        if (dy < 0) {
+          dy = -dy;
+        }
+        dh = D_80078A60 - actor->posZ;
+        if (dh < 0) {
+          dh = -dh;
+        }
+        if (dx + dy + dh < 0x4000 &&
+            func_80017990(&actor->posX, &D_80078A58) < 0x2800) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0 ? dz < 0x800
+                     : D_80078A60 - (actor->posZ - actor->unk38) < 0x800) {
+            func_80038DC0(actor, 8, 0x10, 1);
+            st->timer = 0x78;
+            goto tail_800819D0;
+          }
+        }
+
+        if (func_80037F90(&st->timer, 4) == 0) {
+          goto tail_800819D0;
+        }
+        p = st->path;
+        p[1] = p[0] - 1;
+        ENTER_POSE(actor, 3);
+
+      case 7:
+        if (D_80075794 != 0) {
+          ENTER_POSE(actor, 9);
+        }
+        actor->unk45 = actor->unk45 + 4;
+        func_80038EE0(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
+        goto tail_800819D4;
+
+      case 8:
+        if (D_80075794 != 0) {
+          func_800529E4(actor, 4);
+          func_800385BC(actor, 0x1C);
+          goto tail_80085438;
+        }
+        func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
+        goto c114_drift;
+
+      case 9:
+        if (func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC,
+                          0x10) == 3) {
+          func_800529E4(actor, 4);
+          func_800385BC(actor, 0x10);
+          goto tail_80085438;
+        }
+      c114_drift:
+        func_80038EE0(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        goto tail_800819D4;
+
+      case 20:
+        func_80038DC0(actor, 4, 0, 0);
+        if (D_80078AD0 == 0xB || D_80078AD0 == 0x14) {
+          goto tail_800819D0;
+        }
+        ENTER_POSE(actor, 5);
+
+      default:
+        goto tail_800819D0;
+      }
+      break;
+
+    tail_800819D0:
+    tail_800819D4:
+      func_800529E4(actor, 1);
+      goto next;
+    }
+
+    case 120: {
+      FlierState *st;
+      PickupState *rst;
+      int tmp[3];
+      int vec[3];
+      int len;
+      int ang;
+      int lim;
+      int step;
+      int slow;
+
+      st = (FlierState *)actor->state;
+
+      if (D_80078BBC >= 2) {
+        tmp[0] = 0;
+        tmp[1] = 0x64;
+        tmp[2] = 0;
+        func_80017048(actor->unk20, tmp, tmp);
+        func_80017758(tmp, tmp, &actor->posX);
+        D_800758E4(2, 0x42, tmp, 0);
+
+        tmp[0] = 0;
+        tmp[1] = -0x64;
+        tmp[2] = 0;
+        func_800170C0(tmp, tmp);
+        func_80017758(tmp, tmp, &actor->posX);
+        D_800758E4(2, 0x42, tmp, 0);
+      }
+
+      if (D_80078BBC >= 3) {
+        if (st->fx == 0) {
+          st->fx = func_80058AE8();
+          if (st->fx != 0) {
+            st->fx->anchor = &actor->posX;
+            st->fx->size = 0x40;
+            st->fx->unk14 = 0;
+            st->fx->unk18 = 0;
+            st->fx->unk1C = 0;
+            st->fx->r = 0xC0;
+            st->fx->g = 0xC0;
+            st->fx->b = 0x60;
+            st->fx->kind = 9;
+            st->fx->desc = &D_8006E390;
+          }
+        } else {
+          st->fx->size = st->fx->size + 0x20;
+          if (st->fx->size >= 0x401) {
+            st->fx->size = 0x400;
+          }
+        }
+      } else if (st->fx != 0) {
+        func_80058B60(st->fx);
+        st->fx = 0;
+      }
+
+      if (D_80078BBC <= 0) {
+        if (st->rider != 0 && st->rider->type == 0x10) {
+          st->rider->unk48 = 0;
+        }
+        D_80075898 = 0;
+        goto tail_80085438;
+      }
+
+      if (st->rider != 0 && func_80017990(&actor->posX, &D_80078A58) > 0x2000) {
+        st->timer = 0;
+      }
+
+      if (actor->unk49 == 0x63) {
+        break;
+      }
+      if (st->rider == 0) {
+        goto c120_free;
+      }
+
+      switch (actor->unk49) {
+      case 0:
+        rst = (PickupState *)st->rider->state;
+        func_80017700(vec, &st->rider->posX);
+        slow = actor->unk3D & 1;
+
+        if (slow == 0) {
+          vec[0] -= (short)D_8006CC78[st->rider->unk46] >> 4;
+          vec[1] -= (short)D_8006CBF8[st->rider->unk46] >> 4;
+        } else {
+          vec[0] -= (short)D_8006CC78[st->rider->unk46] >> 6;
+          vec[1] -= (short)D_8006CBF8[st->rider->unk46] >> 6;
+        }
+
+        if (slow != 0) {
+          if (actor->unk3F >= 7) {
+            actor->unk49 = actor->unk49 + 1;
+          }
+          if ((unsigned char)(actor->unk45 - 3) < 0xFB) {
+            step = -actor->unk45;
+            if (step >= 3) {
+              step = 2;
+            }
+            if (step < -2) {
+              step = -2;
+            }
+            actor->unk45 = actor->unk45 + step;
+          }
+        }
+
+        func_8001778C(vec, vec, &actor->posX);
+        len = func_800171FC(vec, 1);
+
+        if (slow == 0 &&
+            (func_80037F90(st, 4) != 0 ||
+             (st->timer < 0x50 &&
+              func_80017908((actor->unk46 + rst->vel[0] * 110) & 0xFF,
+                            (((short)D_80076E20 >> 4) + 0x80) & 0xFF) < 8))) {
+          if (actor->unk3D != actor->unk3D + 1) {
+            D_80075794 = 0;
+            poseFrom = actor->unk3D;
+            poseFlag = actor->unk3F;
+            actor->unk40 = 0x10;
+            actor->unk41 = 0x10;
+            actor->unk3F = 0;
+            actor->unk3C = poseFrom;
+            actor->unk3D = poseFrom + 1;
+            actor->unk3E = poseFlag;
+            func_80037E98(actor);
+          }
+        }
+
+        lim = slow != 0 ? 0x96 : 0x82;
+        if (len > lim + 5) {
+          func_800175B8(vec, len, lim + 5);
+        } else {
+          func_800175B8(vec, len, lim - 5);
+        }
+        func_80017758(&actor->posX, &actor->posX, vec);
+        func_80038EE0(actor, func_80016AB4(vec[0], vec[1], 0), 0xA, 0, 0);
+        ang = func_80016AB4(func_800171FC(vec, 0), vec[2], 0);
+        actor->unk45 = ang;
+        actor->unk45 = func_80038098(ang & 0xFF, 0, 0x30);
+        goto c120_pose_done;
+
+      case 1:
+        D_80078BBC = D_80078BBC + 1;
+        func_80055A78(D_800761D4[0], actor, 0x10, 0);
+        actor->unk49 = actor->unk49 + 1;
+        func_80052568(st->rider);
+        goto c120_done;
+
+      case 2:
+        if (D_80075794 == 0) {
+          goto c120_done;
+        }
+        if (actor->unk3D != actor->unk3D - 1) {
+          D_80075794 = 0;
+          poseFrom = actor->unk3D;
+          poseFlag = actor->unk3F;
+          actor->unk40 = 0x10;
+          actor->unk41 = 0x10;
+          actor->unk3F = 0;
+          actor->unk3C = poseFrom;
+          actor->unk3D = poseFrom - 1;
+          actor->unk3E = poseFlag;
+          func_80037E98(actor);
+        }
+        st->rider = 0;
+        actor->unk49 = 0;
+        goto c120_pose_done;
+
+      case 4:
+        rst = (PickupState *)st->rider->state;
+        func_8001778C(vec, &st->rider->posX, &actor->posX);
+        len = func_800171FC(vec, 1);
+
+        if (len < 0x200) {
+          rst->timer = 0;
+          rst->pitch = func_8006272C() & 0xE;
+          rst->yaw = func_8006272C() & 0xE;
+          rst->roll = func_8006272C() & 0xE;
+          func_80017700(rst->vel, &st->rider->posX);
+          st->rider->unk49 = 3;
+
+          if (st->rider->type == 0xE) {
+            D_800758E4(1, 0xC, (int *)actor, D_8006E494);
+          } else if (st->rider->type == 0xF) {
+            D_800758E4(1, 0xC, (int *)actor, D_8006E490);
+          } else {
+            D_800758E4(1, 0xC, (int *)actor, D_8006E330[st->rider->type]);
+          }
+
+          st->rider = 0;
+          if (func_80056DC4(actor, D_800761D4[0x2F]) != 0) {
+            goto c120_done;
+          }
+          D_800761DC = 1;
+          D_800761EA = 0x3600;
+          D_800761E8 = 0x3600;
+          func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+          goto c120_done;
+        }
+
+        func_800175B8(vec, len, len > 0x136 ? 0x136 : 0x122);
+        func_80017758(&actor->posX, &actor->posX, vec);
+        func_80038EE0(actor, func_80016AB4(vec[0], vec[1], 0), 0xA, 0, 0);
+        ang = func_80016AB4(func_800171FC(vec, 0), vec[2], 0);
+        actor->unk45 = ang;
+        actor->unk45 = func_80038098(ang & 0xFF, 0, 0x30);
+        goto c120_pose_done;
+
+      default:
+        goto c120_done;
+      }
+
+    c120_free:
+      actor->unk50 = 0x10;
+      if (st->timer <= 0) {
+        tmp[0] = -0x258;
+        tmp[1] = (func_8006272C() & 0x310) - 0x188;
+        if (D_80076E28 == 3) {
+          tmp[2] = (func_8006272C() & 0x7F) + 0x64;
+        } else {
+          tmp[2] = (func_8006272C() & 0x1FF) - 0xC8;
+        }
+        st->vx = tmp[0];
+        st->vy = tmp[1];
+        st->vz = tmp[2];
+        st->timer = func_8006272C() & 0x7B;
+      } else {
+        st->timer = st->timer - D_800756CC;
+
+        if (D_80076E28 == 3) {
+          tmp[0] = st->vx + (D_80078B70 >> 2);
+          tmp[1] = st->vy;
+          tmp[2] = st->vz;
+          if (tmp[2] < 0x64) {
+            tmp[2] = 0x64;
+          }
+        } else if (D_80076E28 == 0x80000009) {
+          tmp[0] = st->vx - 0x200;
+          tmp[1] = st->vy;
+          tmp[2] = st->vz;
+        } else {
+          tmp[0] = st->vx;
+          tmp[1] = st->vy;
+          tmp[2] = st->vz;
+        }
+
+        func_80017048(&D_80078A8C, tmp, tmp);
+        func_80017758(tmp, tmp, &D_80078A58);
+        func_8001778C(tmp, tmp, &actor->posX);
+        func_800176C8(tmp, 2);
+        func_80017758(&actor->posX, &actor->posX, tmp);
+
+        if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+          func_80017700(&actor->posX, &D_80076B80);
+        }
+        if (tmp[2] >= 0x21) {
+          tmp[2] = 0x20;
+        }
+        if (tmp[2] < -0x20) {
+          tmp[2] = -0x20;
+        }
+        actor->unk44 = 0;
+        actor->unk45 = tmp[2];
+        func_80038EE0(actor, D_80078A66, 4, 0, 0);
+      }
+
+      switch (D_80078BBC) {
+      case 1:
+        if (actor->unk3D == 0 || actor->unk3C == 0) {
+          goto c120_done;
+        }
+        D_80075794 = 0;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x38);
+        actor->unk3C = 0;
+        actor->unk3D = 0;
+        break;
+
+      case 2:
+        if (actor->unk3D == 2 || actor->unk3C == 2) {
+          goto c120_done;
+        }
+        D_80075794 = 0;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x40);
+        actor->unk3C = 2;
+        actor->unk3D = 2;
+        break;
+
+      case 3:
+        if (actor->unk3D == 4 || actor->unk3C == 4) {
+          goto c120_done;
+        }
+        D_80075794 = 0;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x48);
+        actor->unk3C = 4;
+        actor->unk3D = 4;
+        break;
+
+      default:
+        goto c120_done;
+      }
+
+      actor->unk3E = 0;
+      actor->unk3F = 1;
+      actor->unk41 = poseByte;
+
+    c120_pose_done:
+    c120_done:
+      func_800529E4(actor, 4);
+      break;
+    }
+
+    case 173: {
+      SpinState *st;
+      int dz;
+      int ang;
+      int i;
+      unsigned long packed;
+
+      st = (SpinState *)actor->state;
+      if (actor->unk49 != 0) {
+        goto next;
+      }
+
+      actor->unk44 = (unsigned short)D_8006CC78[st->angle] >> 7;
+      actor->unk45 = (unsigned short)D_8006CBF8[st->angle] >> 7;
+      st->angle = st->angle + D_800756CC * 2;
+
+      if (func_80017990(&actor->posX, &D_80078A58) < 0x200) {
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0 ? dz < 0x200
+                   : D_80078A60 - (actor->posZ - actor->unk38) < 0x200) {
+          func_80055A78(D_800761D4[0], actor, 0x10, 0);
+          func_800529E4(actor, 4);
+
+          packed = 0x8080;
+          for (i = 0; i < 6; i++) {
+            D_800758E4(1, 0xC, (int *)actor, (void *)packed);
+            packed += 0x1000000;
+          }
+
+          D_80075830 = 1;
+          actor->unk57 = 0x40;
+          actor->unk50 = 0;
+          actor->unk52 = 0;
+          actor->unk51 = 0;
+          actor->unk1C = 0;
+          actor->unk4A = 0xFF;
+          actor->unk49 = 2;
+        }
+      }
+
+      if (st->anim != 0xFF) {
+        func_800529E4(actor, 4);
+        func_80017048(actor->unk20, &D_8006E5AC, D_80077108[st->anim].pos);
+        func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+                      &actor->posX);
+        if (D_80077108[st->anim].flag < 5) {
+          st->anim = 0xFF;
+        }
+      } else if (st->timer >= 0xF8) {
+        ang = func_8003AAEC(actor, &D_8006E5AC);
+        if (ang >= 0 && func_80017990(&actor->posX, &D_80078A58) < 0x4000) {
+          st->anim = ang;
+        }
+        st->timer = (func_8006272C() & 0x3F) + 0x18;
+      }
+
+      st->timer = st->timer + D_800756CC;
+      goto next;
+    }
+
+    case 187:
+      if (actor->unk48 == 0) {
+        if (func_80017990(&actor->posX, &D_80078A58) < 0x1000) {
+          goto next;
+        }
+        actor->unk48 = 1;
+        goto next;
+      }
+
+      if (!((unsigned int)D_80078AD0 < 2 || D_80078AD0 == 0x15 ||
+            D_80078AD0 == 2 || D_80078AD0 == 0xB)) {
+        goto next;
+      }
+
+      if (func_80017990(&actor->posX, &D_80078A58) >= 0x780) {
+        goto next;
+      }
+      if (func_80017908(D_80078A66,
+                        func_80016AB4(actor->posX - D_80078A58,
+                                      actor->posY - D_80078A5C, 0)) >= 0x20) {
+        goto next;
+      }
+      if (func_80017908(actor->unk46,
+                        func_80016AB4(D_80078A58 - actor->posX,
+                                      D_80078A5C - actor->posY, 0)) >= 0x28) {
+        goto next;
+      }
+
+      actor->unk48 = 0;
+      D_80078C4C = 0x80002000;
+      func_8003DFA4();
+      func_800176F0(&D_80078BFC);
+      D_800757A0(actor);
+
+      if (D_80075750 < 0xA) {
+        unsigned char *latch = &D_800758D1;
+
+        if (*latch == 0) {
+          D_800777F4 = 0;
+          *latch = 1;
+        } else {
+          D_800777F4 = 2;
+        }
+      } else if (D_800758D1 < 2) {
+        if (D_800758D1 == 0) {
+          D_800777F4 = 3;
+        } else {
+          D_800777F4 = 4;
+        }
+        D_800758D1 = 2;
+      } else {
+        D_800777F4 = 0x1E;
+        D_800777F8 = (int)func_8006272C() % 3;
+      }
+      goto next;
+
+    case 194: {
+      BreakState *st;
+      int i;
+
+      st = (BreakState *)actor->state;
+      if (st->unk04 != 0) {
+        func_80038458(actor);
+      }
+      if ((actor->flags & 0xB0000) == 0) {
+        goto next;
+      }
+
+      actor->unk55 = 0x20;
+      func_8003851C(actor, 0, 0);
+
+      for (i = 0; i < 2; i++) {
+        if (D_800756A8 - D_800756A4 < 0x15) {
+          break;
+        }
+        D_800758CC(0xFF, actor);
+        D_800758CC(0x100, actor);
+      }
+      for (i = 0; i < 6; i++) {
+        if (D_800756A8 - D_800756A4 < 0x15) {
+          break;
+        }
+        D_800758CC(0x101, actor);
+      }
+
+      D_800758E4(5, 2, &actor->posX, 0);
+      D_800758E4(0x10, 0x46, &actor->posX, (void *)0x20);
+      func_8003ABC0(actor, 3, 0, 0);
+      func_8003B7C0(actor);
+      goto tail_80085438;
+    }
+
+    case 250: {
+      RideState *st;
+      int vec[3];
+      int heading;
+      int a;
+      int b;
+
+      st = (RideState *)actor->state;
+
+      if (actor->unk48 == 0) {
+        if (st->unk20 != -1) {
+          D_80075828[st->unk20].unk48 = 3;
+        }
+        actor->unk48 = 1;
+        st->unk48 = actor->unk44;
+        st->unk4C = actor->unk45;
+        st->unk50 = actor->posZ;
+        goto next;
+      }
+
+      if (actor->unk48 != 1) {
+        goto c250_stop;
+      }
+
+      st->unk44 = st->unk44 + D_800756CC;
+
+      if (st->unk44 > 0x100) {
+        st->unk44 = 0;
+        actor->unk44 = st->unk48;
+        actor->unk45 = st->unk4C;
+        actor->flags = 0;
+        actor->posZ = st->unk50;
+        func_800562A4(actor, 1);
+      } else if (st->unk44 >= 0xC0) {
+        if (func_80056DC4(actor,
+                          ((unsigned char *)D_80076378[actor->type])[4]) == 0) {
+          func_8003851C(actor, 0, 0);
+        }
+        actor->unk44 = D_8006E638[RIDE_STEP(st)].a + st->unk48;
+        actor->unk45 = D_8006E638[RIDE_STEP(st)].b + st->unk4C;
+        a = (signed char)D_8006E638[RIDE_STEP(st)].a;
+        b = (signed char)D_8006E638[RIDE_STEP(st)].b;
+        if (a < 0) {
+          a = -a;
+        }
+        if (b < 0) {
+          b = -b;
+        }
+        actor->posZ = st->unk50 + (a + b) * 6;
+      } else if (st->unk44 >= 0xBC) {
+        st->unk48 = actor->unk44;
+        st->unk4C = actor->unk45;
+        st->unk50 = actor->posZ;
+      } else if (actor->flags != 0) {
+        st->unk44 = 0xBC;
+        func_800562A4(actor, 1);
+      } else if (st->unk44 >> 1 == 0x10 && (func_8006272C() & 3) == 0) {
+        func_8003AAEC(actor, &D_8006E57C);
+      } else if (st->unk44 >> 1 == 0x30 && (func_8006272C() & 3) == 0) {
+        func_8003AAEC(actor, &D_8006E588);
+      } else if (st->unk44 >> 1 == 0x50 && (func_8006272C() & 3) == 0) {
+        func_8003AAEC(actor, &D_8006E594);
+      }
+
+      if (func_80017990(&actor->posX, &D_80078A58) >= 0x800) {
+        goto next;
+      }
+      func_8001778C(vec, &actor->posX, &D_80078A58);
+      vec[2] = vec[2] * 3 >> 2;
+      if (func_800171FC(vec, 1) >= 0x440) {
+        goto next;
+      }
+
+      if (st->unk20 != -1) {
+        heading = D_80075828[st->unk20].unk46;
+      } else {
+        heading = st->unk1C;
+      }
+      func_8003B854(0, actor);
+      func_80059474(actor, heading);
+
+      if (st->unk24 != -1) {
+        D_800772D8[D_80075964] += 1;
+        D_80075750 = D_80075750 + 1;
+        func_8002C914(st->unk24, 0);
+        if (st->unk20 != -1) {
+          D_80075828[st->unk20].unk48 = 1;
+        }
+        goto tail_80085438;
+      }
+
+      if (st->unk18 == -1) {
+        D_800772D8[D_80075964] += 1;
+        D_80075750 = D_80075750 + 1;
+        if (st->unk20 != -1) {
+          D_80075828[st->unk20].unk48 = 1;
+        }
+        goto tail_80085438;
+      }
+
+      actor->unk48 = 2;
+      actor->unk44 = st->unk48;
+      actor->unk45 = st->unk4C;
+      actor->posZ = st->unk50;
+      func_8002C924(actor);
+      func_800176F0(&D_80078BFC);
+      D_80078C4C = 0x80002147;
+
+      if (D_80078AF4 != 0) {
+        D_80078C70 = 6;
+        D_80078C60 = D_80078B64 >> 8;
+        D_80078C64 = D_80078B68 >> 8;
+        if (D_80078B6C > 0) {
+          D_80078C68 = 0;
+        } else {
+          D_80078C68 = D_80078B6C >> 6;
+        }
+        goto next;
+      }
+
+      D_80078C70 = 3;
+      func_80017700(&D_80078C60, &D_80078B64);
+      func_800176C8(&D_80078C60, 6);
+      D_80078C68 = 0;
+      if (D_80078C60 != 0 || D_80078C64 != 0) {
+        func_800175B8(&D_80078C60, func_800171FC(&D_80078C60, 0), 0x60);
+        D_80078C68 = 0;
+      }
+      goto next;
+
+    c250_stop:
+      D_80078C4C = 0x80002000;
+      goto next;
+    }
+
+    case 251:
+      func_8003C6E4(actor);
+      break;
+
+    case 260:
+    case 261:
+    case 262:
+    case 263:
+    case 264:
+    case 265:
+    case 266:
+    case 267:
+    case 268:
+    case 269: {
+      DebrisState *st = actor->state;
+
+      if ((actor->unk50 & 0x80) || actor->unk50 == 0) {
+        break;
+      }
+
+      if (st->life <= 0) {
+        goto c260_expired;
+      }
+
+      actor->unk46 += 1;
+
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
+      }
+
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+      actor->posZ += st->vel[2];
+
+      if (actor->posZ < 0x400) {
+        goto tail_80085438;
+      }
+
+      if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+        int *nrm = &D_80077368;
+        int dot;
+
+        actor->posX = D_80076B80;
+        actor->posY = D_80076B84;
+        actor->posZ = D_80076B88;
+        func_80017330(nrm, 0x1000);
+
+        dot = (st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
+               st->vel[2] * D_80077370) >>
+              11;
+
+        if (dot < 0) {
+          func_800175B8(nrm, 0x1000, -dot);
+          st->vel[0] += nrm[0];
+          st->vel[1] += D_8007736C;
+          st->vel[2] += D_80077370;
+        }
+      }
+
+      st->life -= 1;
+      break;
+
+    c260_expired:
+      D_800758E4(0xA, 0x47, &actor->posX, 0);
+      goto tail_80085438;
+    }
+
+    case 286: {
+      RoamState *st = actor->state;
+      int snd;
+
+      actor->unk55 = st->unk04;
+      snd = -1;
+
+      switch (st->mode) {
+      case 0:
+        snd = 6;
+        break;
+
+      case 1:
+        if (func_80037F90(&st->timer, 4) != 0) {
+          st->timer = 0x258 - (func_8006272C() & 0x7F);
+          snd = (func_8006272C() & 7) + 7;
+        }
+        break;
+
+      case 2:
+        switch (st->sub) {
+        case 0:
+          if (func_80037F90(&st->timer, 4) != 0) {
+            st->timer = 0x200 - (func_8006272C() & 0x7F);
+            snd = (func_8006272C() & 1) + 0xD;
+            st->sub = 1;
+          }
+          break;
+
+        case 1:
+          if (st->count-- > 0) {
+            actor->posX += st->vel[0];
+            actor->posY += st->vel[1];
+            actor->posZ += st->vel[2];
+          } else {
+            actor->posX = PATH_X(st->path, (st->path[1] + 1) % st->path[0]);
+            actor->posY = PATH_Y(st->path, (st->path[1] + 1) % st->path[0]);
+            actor->posZ = PATH_Z(st->path, (st->path[1] + 1) % st->path[0]);
+            st->sub = 0;
+            st->path[1] = (st->path[1] + 1) % st->path[0];
+            st->count = func_80017D7C(
+                &PATH_X(st->path, st->path[1]),
+                &PATH_X(st->path, (st->path[1] + 1) % st->path[0]), st->vel,
+                st->unk14);
+          }
+
+          if (actor->unk54 == 0x7F && st->count % 48 == 0) {
+            snd = 0xE;
+          }
+          break;
+        }
+        break;
+
+      case 3:
+        if (func_80037F90(&st->timer, 4) != 0) {
+          st->timer = 0x270 - (func_8006272C() & 0x7F);
+          snd = (func_8006272C() & 1) + 0xF;
+        }
+        break;
+
+      case 4:
+        if (func_80037F90(&st->timer, 4) != 0) {
+          st->timer = 0x258 - (func_8006272C() & 0x7F);
+          snd = (int)func_8006272C() % 4 + 0x15;
+        }
+        break;
+
+      case 5:
+        snd = 0x18;
+        break;
+
+      case 6:
+        snd = 0x19;
+        break;
+
+      case 7:
+        snd = 0x12;
+        break;
+
+      case 8:
+        snd = 0x1A;
+        break;
+
+      case 9:
+        snd = 0x36;
+        break;
+      }
+
+      if (snd < 0) {
+        break;
+      }
+      func_80055A78(D_800761D4[snd], actor, 8, &actor->unk54);
+      break;
+    }
+
+    case 300: {
+      TriggerState *st = actor->state;
+      int vec[3];
+      int dz;
+
+      if ((st->flags & 8) != 0) {
+        Actor *owner = &D_80075828[st->idx];
+
+        if (owner->type == 0xAD) {
+          if (owner->unk49 == 0) {
+            break;
+          }
+          if (func_80017990(&actor->posX, &D_80078A58) >= 0x1C01) {
+            break;
+          }
+        } else if (owner->type == 0xFA || owner->type == 0x53) {
+          if (owner->unk48 < 0x80) {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+
+      if ((st->flags & 2) != 0) {
+        if (st->timer != 0) {
+          if (func_80037F90(&st->timer, 4) != 0) {
+            st->flags = (st->flags & ~2) | 4;
+          }
+          break;
+        }
+
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x1000) {
+          break;
+        }
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0) {
+          if (dz < 0x400) {
+            goto c300_rearm;
+          }
+          break;
+        } else {
+          if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x400) {
+            break;
+          }
+        }
+      c300_rearm:
+        st->timer = 0xB4;
+        break;
+      }
+
+      if ((st->flags & 0x10) != 0) {
+        actor->unk49 = 1;
+      }
+      func_80055A78(D_800761D4[0x36], actor, 8, &actor->unk54);
+      if ((func_8006272C() & 1) == 0) {
+        D_800758E4(1, 6, (int *)actor, 0);
+      }
+
+      func_8001778C(vec, &D_80078A58, &actor->posX);
+      if (func_800171FC(vec, 0) < st->unk04 && vec[2] >= -0x3FF &&
+          vec[2] < st->unk00 &&
+          (D_80078AD0 == 0x11 ||
+           D_80078A60 + 0xC00 < actor->posZ + st->unk00)) {
+        D_80078C4C = 0x80000000;
+        D_80078C7C = actor;
+        D_80078A84 |= 0x800;
+        D_80078C58 = actor->posZ + st->unk00;
+        func_80017700(SPYRO_FIRST_CONTACT_POINT, &actor->posX);
+
+        if ((st->flags & 1) != 0) {
+          D_80078C4C |= 0x8000;
+        } else {
+          D_80078668 = D_8006C934;
+          D_80078C74 = &D_80078A58;
+          D_80078C78 = &D_80078668;
+          D_80078C4C |= 0x200;
+          D_80078668.w[0] = ((0x80 - actor->unk46) << 4) & 0xFFF;
+        }
+
+        st->timer = 0x78;
+        break;
+      }
+
+      if ((st->flags & ~2) == 4 && st->timer != 0 &&
+          func_80037F90(&st->timer, 4) != 0) {
+        st->flags = (st->flags & ~4) | 2;
+      }
+      break;
+    }
+
+    case 323: {
+      RespawnState *st = actor->state;
+      Actor *p;
+
+      func_80017700(&actor->posX, &D_80078A58);
+      if (func_80037F90(&st->timer, 4) == 0) {
+        break;
+      }
+      st->timer = st->period;
+
+      for (p = D_80075828; p < D_80075890; p++) {
+        if (p->type != st->type) {
+          continue;
+        }
+        if (p->unk48 < 0x80) {
+          continue;
+        }
+        if (func_80017990(&D_80078A58, p->state) < 0x6001) {
+          continue;
+        }
+
+        func_80017700(&p->posX, p->state);
+        func_800526A8(p);
+        p->unk3A &= 0x7F;
+        p->flags = 0;
+        p->unk48 = 0;
+        p->unk40 = 0;
+        p->unk3C = 0;
+        p->unk3D = 0;
+        p->unk3E = 0;
+        p->unk3F = 1;
+        p->unk41 = TYPE_DESC(p, 0x38);
+      }
+      break;
+    }
+
+    case 331:
+      switch (actor->unk48) {
+      case 0:
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0xA01) {
+          actor->unk48 = 1;
+        }
+        break;
+
+      case 1: {
+        int dz;
+
+        if (func_80017990(&actor->posX, &D_80078A58) >= 0x380) {
+          break;
+        }
+        dz = (actor->posZ - actor->unk38) - D_80078A60;
+        if (dz > 0) {
+          if (dz < 0x200) {
+            goto c331_close;
+          }
+          break;
+        } else {
+          if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x200) {
+            break;
+          }
+        }
+      c331_close:
+        func_80059474(actor, actor->unk46);
+        actor->unk48 = 2;
+        actor->unk3C = 1;
+        actor->unk49 = 0;
+        break;
+      }
+
+      case 2:
+        actor->unk49 += D_800756CC;
+        if (actor->unk49 >= 0x30) {
+          actor->unk48 = 0;
+          actor->unk3C = 0;
+        }
+        break;
+      }
+      break;
+
+    case 336:
+    case 342:
+      if (D_80075794 != 0) {
+        actor->unk41 =
+            TYPE_DESC(actor, actor->unk3D * 4 + 0x38) + func_80037EA0(-4, 4);
+      }
+
+      if ((actor->flags & 0x10000) != 0 && actor->unk3D == 0) {
+        if (actor->unk3C == 1) {
+          break;
+        }
+        D_80075794 = 0;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x3C);
+        actor->unk3C = 1;
+        actor->unk3D = 1;
+        goto tail_80084550;
+      }
+
+      if (actor->unk3D != 1) {
+        break;
+      }
+      func_800529E4(actor, 1);
+      if (D_80075794 == 0) {
+        break;
+      }
+      if (actor->unk3C == 2) {
+        break;
+      }
+      D_80075794 = 0;
+      actor->unk40 = 0;
+      poseByte = TYPE_DESC(actor, 0x40);
+      poseVal = 2;
+      goto tail_80084548;
+
+    case 339: {
+      FlockState *st = actor->state;
+      int n;
+      int diff;
+      int turn;
+      int adiff;
+
+      if ((actor->flags & 0xB0000) != 0 && actor->unk48 < 4) {
+        while (st->chainA >= 0) {
+          Actor *p = &D_80075828[st->chainA];
+
+          if (p->unk48 < 0x80) {
+            break;
+          }
+          st->chainA = *(int *)p->state;
+        }
+
+        if (st->chainA >= 0) {
+          Actor *p = &D_80075828[st->chainA];
+          int *link = p->state;
+
+          func_80017700(&p->posX, &actor->posX);
+          func_8003ABC0(p, 1, 0, 0);
+          func_8003B7C0(p);
+          st->chainA = *link;
+          func_80052568(p);
+
+          actor->flags = 0;
+          ENTER_POSE(actor, 4);
+        }
+
+        n = 0;
+        while (st->chainB >= 0) {
+          Actor *p = &D_80075828[st->chainB];
+          int *link = p->state;
+
+          if (p->unk48 < 0x80) {
+            func_80017700(&p->posX, &actor->posX);
+            st->slots[n][0] = actor->posX + (func_80016CB0(n * 0x555) >> 2);
+            st->slots[n][1] = actor->posY + (func_80016C58(n * 0x555) >> 2);
+            st->slots[n][2] = actor->posZ;
+            func_8003ABC0(p, 2, 0, st->slots[n]);
+            func_8003B7C0(p);
+            func_80052568(p);
+            n++;
+          }
+
+          st->chainB = *link;
+        }
+
+        st->slots[n][0] = actor->posX + (func_80016CB0(n * 0x555) >> 2);
+        st->slots[n][1] = actor->posY + (func_80016C58(n * 0x555) >> 2);
+        st->slots[n][2] = actor->posZ;
+        func_8003ABC0(actor, 2, 0, st->slots[n]);
+        func_8003B7C0(actor);
+
+        st->unk04 = 0x118;
+        st->unk00 = func_80038178(func_80016AB4(actor->posX - D_80078A58,
+                                                actor->posY - D_80078A5C, 0),
+                                  D_80078A66, 0x20, 0x40);
+
+        actor->unk48 = 5;
+        actor->unk40 = 0;
+        actor->unk3C = 5;
+        actor->unk3D = 5;
+        actor->unk3E = 0;
+        actor->unk3F = 1;
+        actor->unk41 = TYPE_DESC(actor, 0x4C);
+        break;
+      }
+
+      switch (actor->unk48) {
+      case 0: {
+        int dist = func_80017990(&actor->posX, &D_80078A58);
+        int dz;
+
+        if (dist < 0x1400) {
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz < 0x400) {
+              goto c339s0_pose;
+            }
+            goto c339s0_wide;
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) >= 0x400) {
+              goto c339s0_wide;
+            }
+          }
+        c339s0_pose:
+          ENTER_POSE(actor, 1);
+        }
+
+      c339s0_wide:
+        if (dist < 0x2800) {
+          func_80038DC0(actor, 8, 0x10, 1);
+        }
+        break;
+      }
+
+      case 1:
+        func_80038DC0(actor, 8, 0x10, 1);
+        if (D_80075794 == 0) {
+          break;
+        }
+        ENTER_POSE(actor, 2);
+
+      case 2:
+      case 3:
+      case 4:
+        if (actor->unk48 == 4) {
+          actor->flags = 0;
+        }
+
+        if (func_80017990(&actor->posX, PATH_PT(st->path, st->path[1])) <
+            0x400) {
+          int dz;
+
+          if (func_80017990(&actor->posX, &D_80078A58) > 0x1400) {
+            goto c339_pose0;
+          }
+          dz = (actor->posZ - actor->unk38) - D_80078A60;
+          if (dz > 0) {
+            if (dz > 0x800) {
+              goto c339_pose0;
+            }
+          } else {
+            if (D_80078A60 - (actor->posZ - actor->unk38) > 0x800) {
+              goto c339_pose0;
+            }
+          }
+          goto c339_arrived;
+
+        c339_pose0:
+          ENTER_POSE(actor, 0);
+
+        c339_arrived:
+
+          {
+            int ang = func_80016AB4(D_80078A58 - actor->posX,
+                                    D_80078A5C - actor->posY, 0);
+            int next = (st->path[1] + 1) % st->path[0];
+            int prev = (st->path[1] + st->path[0] - 1) % st->path[0];
+            int aNext = func_80016AB4(PATH_X(st->path, next) - actor->posX,
+                                      PATH_Y(st->path, next) - actor->posY, 0);
+            int aPrev = func_80016AB4(PATH_X(st->path, prev) - actor->posX,
+                                      PATH_Y(st->path, prev) - actor->posY, 0);
+
+            if (func_80017908(ang, aPrev) < func_80017908(ang, aNext)) {
+              st->path[1] = next;
+            } else {
+              st->path[1] = prev;
+            }
+          }
+        }
+
+        diff = (func_80016AB4(PATH_X(st->path, st->path[1]) - actor->posX,
+                              PATH_Y(st->path, st->path[1]) - actor->posY, 0) -
+                actor->unk46) &
+               0xFF;
+        if (diff > 0x80) {
+          diff -= 0x100;
+        }
+        turn = diff;
+        if (turn > 8) {
+          turn = 8;
+        }
+        if (turn < -8) {
+          turn = -8;
+        }
+        actor->unk46 += turn;
+
+        adiff = diff;
+        if (adiff < 0) {
+          adiff = -adiff;
+        }
+        if (adiff < 0x20) {
+          if (actor->unk48 == 4) {
+            func_80039398(actor, 0xD2, 0x200, 0x200, 0x27);
+          } else {
+            func_80039398(actor, 0x60, 0x200, 0x200, 0x27);
+          }
+        }
+
+        if (D_80075794 == 0) {
+          break;
+        }
+        if (actor->unk48 != 2) {
+          goto c339_pose2;
+        }
+
+      tail_80084510:
+        actor->unk48 = 3;
+        actor->unk40 = 0;
+        poseByte = TYPE_DESC(actor, 0x44);
+        poseVal = 3;
+      tail_80084548:
+        actor->unk3C = poseVal;
+        actor->unk3D = poseVal;
+      tail_80084550:
+        actor->unk3E = 0;
+        actor->unk3F = 1;
+        actor->unk41 = poseByte;
+        goto next;
+
+      c339_pose2:
+        ENTER_POSE(actor, 2);
+
+      case 5:
+        func_800529E4(actor, 1);
+        if (D_80075794 != 0) {
+          func_800529E4(actor, 4);
+          func_800385BC(actor, 0x20);
+          goto tail_80085438;
+        }
+        func_80039910(actor, &st->unk04, st->unk00, 0, 0xC, 0);
+        break;
+      }
+      break;
+    }
+
+    case 350: {
+      PropAnimState *st = actor->state;
+
+      if (st->primed == 0) {
+        if (D_80078E7D != 0) {
+          func_8002B390(st->anim, 0xFC, 0);
+          func_8002B444(st->anim, 0x77, 0);
+          actor->unk48 = 0x63;
+        }
+        st->primed = 1;
+      }
+
+      switch (actor->unk48) {
+      case 0:
+        if (actor->unk49 == 0x1F) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 5:
+        func_8002B390(st->anim, 0xFC, 0);
+        actor->unk48 = 0xA;
+        st->timer = 0x1E;
+        actor->unk55 = 0x30;
+        func_80055A78(D_800761D4[0x41], actor, 8, &actor->unk54);
+        break;
+
+      case 0xA:
+        if ((func_8002B3F4(st->anim) & 2) != 0) {
+          actor->unk48 = 0x63;
+          break;
+        }
+        if (func_80037F90(&st->timer, 4) == 0) {
+          break;
+        }
+        actor->unk48 = 0xB;
+        st->timer = 0x1E;
+        break;
+
+      case 0xB:
+        if ((func_8002B3F4(st->anim) & 2) != 0) {
+          actor->unk48 = 0x63;
+          break;
+        }
+        if (func_80037F90(&st->timer, 4) == 0) {
+          break;
+        }
+        actor->unk48 = 0xA;
+        st->timer = 0x1E;
+        break;
+
+      case 0x63:
+        func_800562A4(actor, 1);
+        break;
+      }
+      break;
+    }
+
+    case 405:
+    case 477:
+      if (D_80075794 == 0) {
+        break;
+      }
+      goto tail_80085438;
+
+    case 391: {
+      PatchRideState *st = actor->state;
+      int tri[3][3];
+
+      if (st->handle < 0) {
+        tri[0][0] = (short)D_8006CC78[actor->unk46] >> 1;
+        tri[0][1] = (short)D_8006CBF8[actor->unk46] >> 1;
+        tri[0][2] = 0;
+        func_80017758(tri[0], tri[0], &actor->posX);
+
+        if (func_8004AE38(tri[0], &actor->posX) == 0) {
+          break;
+        }
+
+        st->handle = D_80075808;
+        func_80017CB8(st->handle, tri[0]);
+        func_80017758(tri[0], tri[0], tri[1]);
+        func_80017758(tri[0], tri[0], tri[2]);
+        tri[0][0] /= 3;
+        tri[0][1] /= 3;
+        tri[0][2] /= 3;
+        func_8001778C(st->offset, &actor->posX, tri[0]);
+        break;
+      }
+
+      func_80017CB8(st->handle, tri[0]);
+      func_80017758(tri[0], tri[0], tri[1]);
+      func_80017758(tri[0], tri[0], tri[2]);
+      tri[0][0] /= 3;
+      tri[0][1] /= 3;
+      tri[0][2] /= 3;
+      func_80017758(&actor->posX, tri[0], st->offset);
+
+      if ((D_8007572C & 3) != 0) {
+        break;
+      }
+      tri[0][0] = (short)D_8006CC78[actor->unk46] >> 5;
+      tri[0][1] = (short)D_8006CBF8[actor->unk46] >> 5;
+      tri[0][2] = 0x20;
+      D_800758E4(1, 0xE, &actor->posX, tri[0]);
+      break;
+    }
+
+    case 398: {
+      PortalState *st = actor->state;
+      int vec[3];
+      int len;
+      int more;
+
+      switch (actor->unk48) {
+      case 1: {
+        D_80078C4C = 0x80006147;
+        D_80078CA0 = actor->unk49;
+        D_80078C9C = 0x60;
+        D_80078C70 = 5;
+        D_80078A7F = 0x7F;
+        D_80078C98 = st->desc;
+
+        func_80017758(vec, st->desc->posA, st->desc->posB);
+        func_800176C8(vec, 1);
+        func_8001778C(&D_80078C60, vec, &D_80078A58);
+        func_80017758(&D_80078C60, &D_80078C60, st->offset);
+        len = func_800171FC(&D_80078C60, 1);
+
+        if (len >= 0x81) {
+          func_800175B8(&D_80078C60, len, 0x80);
+        } else {
+          if (actor->unk49 != 0) {
+            more = st->desc->index < st->desc->count - 1;
+          } else {
+            more = st->desc->index;
+          }
+          if (more != 0) {
+            actor->unk48 = 2;
+          }
+        }
+
+        if (func_8004BE4C(&D_80076DF8, 0x300, 0x300) != 0 &&
+            (D_80075718 & 0x3F) < 0x3F && D_800785B8[D_80075718][0] == 6) {
+          actor->unk48 = 0;
+          D_80076E90 = 0x80000012;
+          D_80078C70 = 0xF;
+          D_80075864 = 0;
+          D_800756B0 = 1;
+          D_800756AC = 0;
+          D_800757D8 = 1;
+          D_8007579C = 1;
+          D_80078C5E = st->unk14;
+          func_80033F08();
+
+          D_80076E60.v[0] += D_80078B74;
+          D_80076E48 = D_80076E60;
+          D_80078B74 += D_80075858;
+          D_80078A66 = D_80078B74 >> 4;
+          D_80076E48.v[0] -= *(volatile unsigned char *)&D_80078A66 << 4;
+
+          func_80034204();
+          func_80017758(&D_80076DF8, &D_80076DF8, &D_80078A58);
+          func_800342F8();
+          D_80075910 = D_800758FC;
+
+          if (st->unk18 >= 0) {
+            D_80076EA8 = &D_8006CA24[st->unk18];
+          } else {
+            D_80076EA8 = 0;
+          }
+          break;
+        }
+
+        D_80078C4C |= 0x400;
+        break;
+      }
+
+      case 2: {
+        D_80078C4C = 0x80006100;
+        D_80078C9C = 0x60;
+        D_80078C70 = 0xF;
+        D_80078A7F = 0x7F;
+        D_80078C98 = st->desc;
+
+        if (func_8004BE4C(&D_80076DF8, 0x300, 0x300) != 0 &&
+            (D_80075718 & 0x3F) < 0x3F && D_800785B8[D_80075718][0] == 6) {
+          actor->unk48 = 0;
+          D_80076E90 = 0x80000012;
+          D_80075864 = 0;
+          D_800756B0 = 1;
+          D_800756AC = 0;
+          D_800757D8 = 1;
+          D_8007579C = 1;
+          D_80078C5E = st->unk14;
+          func_80033F08();
+
+          D_80076E60.v[0] += D_80078B74;
+          D_80076E48 = D_80076E60;
+          D_80078B74 += D_80075858;
+          D_80078A66 = D_80078B74 >> 4;
+          D_80076E48.v[0] -= *(volatile unsigned char *)&D_80078A66 << 4;
+
+          func_80034204();
+          func_80017758(&D_80076DF8, &D_80076DF8, &D_80078A58);
+          func_800342F8();
+          D_80075910 = D_800758FC;
+
+          if (st->unk18 >= 0) {
+            D_80076EA8 = &D_8006CA24[st->unk18];
+          } else {
+            D_80076EA8 = 0;
+          }
+          break;
+        }
+
+        D_80078C4C |= 0x400;
+        break;
+      }
+      }
+      break;
+    }
+
+    case 416: {
+      int *base = actor->state;
+
+      if (actor->unk48 == 0) {
+        *base = actor->posZ;
+        goto tail_80083C04;
+      }
+
+      actor->posZ = *base + ((short)D_8006CBF8[actor->unk49] >> 4);
+      actor->unk49 += D_800756CC;
+      break;
+    }
+
+    case 421: {
+      LiftState *st = actor->state;
+      Actor *rider;
+      int vec[3];
+      int i;
+      int a;
+      int b;
+
+      if (st->unk14 == 1) {
+        func_80038458(actor);
+        func_800533D0(actor);
+      }
+
+      if (actor->unk48 == 0) {
+        st->unk04 += D_800756CC;
+
+        if (st->unk04 >= 0x1E1) {
+          st->unk04 = 0;
+          actor->unk44 = st->unk08;
+          actor->unk45 = st->unk0C;
+          actor->unk48 = 1;
+          actor->unk40 = 8;
+          actor->unk41 = 8;
+          actor->unk3D = 1;
+          actor->posZ = st->unk10;
+
+          st->unk00 = D_800758CC(0x1A6, actor);
+          st->unk00->unk44 = actor->unk44;
+          st->unk00->unk45 = actor->unk45;
+          st->unk00->unk46 = actor->unk46;
+          st->unk00->unk41 = 0x10;
+          st->unk00->unk52 = 0;
+          st->unk00->unk50 = 0;
+          st->unk00->unk51 = 0;
+          st->unk00->unk47 = 5;
+
+          func_8003851C(actor, 0, 0);
+        } else if (st->unk04 >= 0x1A0) {
+          actor->unk44 = D_8006E638[LIFT_STEP(st)].a + st->unk08;
+          actor->unk45 = D_8006E638[LIFT_STEP(st)].b + st->unk0C;
+          a = (signed char)D_8006E638[LIFT_STEP(st)].a;
+          b = (signed char)D_8006E638[LIFT_STEP(st)].b;
+          if (a < 0) {
+            a = -a;
+          }
+          if (b < 0) {
+            b = -b;
+          }
+          actor->posZ = st->unk10 + (a + b) * 6;
+
+          if (actor->unk54 == 0x7F) {
+            func_8003851C(actor, 3, 0);
+          }
+        } else if (st->unk04 >= 0x19C) {
+          st->unk08 = actor->unk44;
+          st->unk0C = actor->unk45;
+          st->unk10 = actor->posZ;
+          if (st->unk14 == 1) {
+            st->unk04 = 0;
+          }
+        }
+      } else {
+        if (actor->unk3C == 1) {
+          st->unk04 += D_800756CC;
+          st->unk00->unk50 = 0x10;
+          st->unk00->unk52 = 0xFF;
+        }
+
+        if (st->unk04 >= 0xE6) {
+          func_80052568(st->unk00);
+          st->unk04 = func_8006272C() & 0xFF;
+          actor->unk40 = 8;
+          actor->unk41 = 8;
+          actor->unk48 = 0;
+          actor->unk3D = 0;
+          if (actor->unk54 == 0x7F) {
+            func_8003851C(actor, 3, 0);
+          }
+        }
+      }
+
+      if ((actor->flags & 0xB0000) == 0) {
+        break;
+      }
+
+      rider = func_8003ABC0(actor, 5, 0, 0);
+      if (st->unk14 == 1) {
+        ((unsigned char *)rider->state)[0xE] = 1;
+      }
+
+      actor->unk55 = 0x20;
+      func_8003851C(actor, 4, 0);
+
+      for (i = 0; i < 2; i++) {
+        if (D_800756A8 - D_800756A4 < 0x15) {
+          break;
+        }
+        D_800758CC(0x1A7, actor);
+        D_800758CC(0x1A8, actor);
+      }
+
+      for (i = 0; i < 6; i++) {
+        if (D_800756A8 - D_800756A4 < 0x15) {
+          break;
+        }
+        D_800758CC(0x1A9, actor);
+      }
+
+      for (i = 0; i < 8; i++) {
+        vec[0] = ((short)D_8006CC78[i * 32] >> 8) * 3;
+        vec[1] = ((short)D_8006CBF8[i * 32] >> 8) * 3;
+        vec[2] = 0x18;
+        D_800758E4(1, 0, &actor->posX, vec);
+      }
+
+      D_800758E4(0x10, 0x46, &actor->posX, (void *)0x18);
+
+      if (actor->unk48 == 1) {
+        func_80052568(st->unk00);
+      }
+
+      func_80055A78(((unsigned char *)D_80076378[actor->type])[6], actor, 8,
+                    (void *)(long)actor->unk54);
+      goto tail_80085438;
+    }
+
+    case 76:
+    case 426:
+    case 427:
+    case 428:
+    case 429:
+    case 430:
+    case 431:
+    case 432:
+    case 433:
+    case 434:
+    case 435:
+    case 436:
+    case 437:
+    case 438:
+    case 439:
+    case 440:
+    case 441:
+    case 442:
+    case 443:
+    case 444:
+    case 445:
+    case 446:
+    case 447:
+    case 448:
+    case 449:
+    case 450:
+    case 451: {
+      OrbitState *st = actor->state;
+      Actor *owner = st->owner;
+      int ang;
+      int slot;
+      int base;
+      int vecA[3];
+      int vecB[3];
+      int vecC[3];
+      int vecD[3];
+
+      if (owner->unk48 == 0) {
+        goto tail_80085438;
+      }
+      if (owner->unk49 == actor->unk48) {
+        goto c76_owner_ok;
+      }
+
+    tail_80085438:
+      func_80052568(actor);
+      goto next;
+
+    c76_owner_ok:
+      if (owner->type != 9) {
+        goto c76_no_ring;
+      }
+
+      if (func_80017990(&owner->posX, &D_80078A58) < 0x400) {
+        int prev = actor->unk49;
+        int fromPrev;
+
+        fromPrev = (short)D_8006CC78[prev] * 3 >> 9;
+
+        actor->unk49 = prev + 8;
+        actor->unk46 = actor->unk46 - fromPrev +
+                       ((short)D_8006CC78[actor->unk49] * 3 >> 9);
+        break;
+      }
+
+      actor->unk49 += 8;
+      ang =
+          func_80016AB4(D_80078A58 - owner->posX, D_80078A5C - owner->posY, 0);
+
+      vecA[0] = (short)D_8006CC78[ang] * 3 >> 4;
+      vecA[1] = (short)D_8006CBF8[ang] * 3 >> 4;
+      vecA[2] = 0;
+
+      vecB[0] = (short)D_8006CC78[(ang + 0x40) & 0xFF] >> 5;
+      vecB[1] = (short)D_8006CBF8[(ang + 0x40) & 0xFF] >> 5;
+      vecB[2] = 0;
+
+      actor->unk46 =
+          ((ang + 0x80) & 0xFF) + ((short)D_8006CC78[actor->unk49] * 3 >> 9);
+
+      func_800177C0(vecC, vecB, st->unk04 - 1);
+      func_800176A0(vecB, 1);
+
+      base = st->unk04 - 1;
+      vecC[2] += (short)D_8006CC78[base * 2] * 3 >> 3;
+
+      vecD[0] = vecA[0] * (short)D_8006CC78[base * 2];
+      vecD[1] = vecA[1] * (short)D_8006CC78[base * 2];
+      vecD[2] = 0;
+
+      slot = (base * 2 - st->unk06 * 4) & 0xFF;
+
+      func_800177C0(vecB, vecB, st->unk06);
+      func_8001778C(vecC, vecC, vecB);
+      actor->posX = vecA[0] * (short)D_8006CC78[slot];
+      actor->posY = vecA[1] * (short)D_8006CC78[slot];
+      actor->posZ = 0;
+      func_8001778C(&actor->posX, &actor->posX, vecD);
+      func_800176C8(&actor->posX, 0xA);
+      func_80017758(&actor->posX, &actor->posX, vecA);
+      func_80017758(&actor->posX, &actor->posX, &owner->posX);
+      func_8001778C(&actor->posX, &actor->posX, vecC);
+      actor->posZ += ((short)D_8006CC78[slot] * 3 >> 3) + 0x600;
+      break;
+
+    c76_no_ring:
+      actor->unk49 += 8;
+      actor->unk46 = actor->unk38 + ((short)D_8006CC78[actor->unk49] * 3 >> 9);
+      break;
+    }
+
+    default:
+      break;
+    }
+    goto next;
+
+  tail_80083C04:
+    actor->unk48 = 1;
+    goto next;
+
+  next:
+    actor = *it++;
+  } while (actor != 0);
+}

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">20.88% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">450,964 / 2,159,608 split-code bytes · 572 matched · 65 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">21.09% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">455,356 / 2,159,608 split-code bytes · 572 matched · 66 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -1007,7 +1007,7 @@
 <rect x="319.80" y="850.84" width="174.78" height="16.00" fill="#161b22"/>
 <text x="323.80" y="862.84" fill="#e6edf3" font-size="11" font-weight="600">0 · artisans_home</text>
 <text x="491.57" y="862.84" fill="#8b949e" font-size="10" text-anchor="end">18%</text>
-<rect x="319.80" y="866.84" width="102.19" height="156.13" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007D9C8  ·  32260 bytes  ·  asm</title></rect>
+<rect x="319.80" y="866.84" width="102.19" height="156.13" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007D9C8  ·  32260 bytes  ·  wip</title></rect>
 <rect x="421.99" y="866.84" width="72.59" height="55.16" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_8007B020  ·  8096 bytes  ·  wip</title></rect>
 <rect x="421.99" y="922.00" width="36.71" height="64.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_80086134  ·  4780 bytes  ·  matched</title></rect>
 <rect x="458.69" y="922.00" width="35.88" height="64.40" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_level_0_800873E0  ·  4672 bytes  ·  asm</title></rect>
