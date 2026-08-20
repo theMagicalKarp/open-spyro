@@ -636,19 +636,23 @@ func_level_0_8007CFC0:
     a close.
 func_level_0_8007B020:
   verdict: park
-  class: "R1 cross-jump asymmetry (7 insns) + 4 addressing/sched ties; 2009/2024, 87 mismatched"
-  date: 2026-08-06-3
+  class: "R1 cross-jump asymmetry + addressing/sched ties; 230 mismatched over 114 regions"
+  date: 2026-08-20
   note: >-
-    8096 B, and the single largest clone prize on the board — word-identical in
+    8096 B, and the single largest clone prize on the board -- word-identical in
     the SIX hub overlays (level_0/6/12/18/24/30 = 48,576 B) and a near-clone in
-    four more (level_1/3/7/8 = 32,384 B). Decode is COMPLETE this session: all
+    four more (level_1/3/7/8 = 32,384 B). Decode is COMPLETE (2026-08-06-3): all
     eight arms of the balloonist cutscene tick transcribed and verified against
-    the asm, 95.7% shape-aligned. Screens clean of every B wall (the 316 $at
-    uses are ordinary `lui $at; sw %lo` global stores, not B2). Residues are
-    mapped in the .c.wip header — R1 (the only structural one) is that the
-    original keeps two copies of the `+ lerp` block at B2A8/B470 but shares one
-    `- lerp` block, where our jump.c cross-jumps both pairs. Pick this up as a
-    finish-the-ties session, not a decode session.
+    the asm. Screens clean of every B wall (the 316 $at uses are ordinary
+    `lui $at; sw %lo` global stores, not B2). R1 (the only structural residue) is
+    that the original keeps two copies of the `+ lerp` block at B2A8/B470 but
+    shares one `- lerp` block, where our jump.c cross-jumps both pairs.
+    RE-MEASURED 2026-08-20 with registers anchored: orig 2020 insns, mine 2008,
+    114 mismatch regions, MISMATCH 230. This supersedes both the header's
+    register-MASKED "87 mismatched" and the cookbook C-section's "460 over 205
+    regions" (measured 2026-08-11-2, before the 08-18/08-19 work). Still ~4x
+    further out than func_level_5_8007B68C, so finish the x5 head first.
+
 func_level_6_8007B9F8:
   verdict: clone
   class: "clone of func_level_0_8007B020 (strict-identical body)"
@@ -1690,18 +1694,24 @@ func_level_0_8007CFC0:
     promises. Budget it as a fresh decode, not an allocation session.
 func_level_5_8007B68C:
   verdict: parked
-  class: "R9/R13 SOLVED (A26 pointer-local); 12 residues left, time-attack carrier is +1 insn"
-  date: 2026-08-18
+  class: "R10/R11/R12 SOLVED (A93 preheader order + A195 ref dial); R7+R6 is the remaining half"
+  date: 2026-08-20
   note: >-
-    Flight-end results board, 6440 B, word-identical x5 (32,200 B). 78/1610 ->
-    75/1610, 46 regions. The a1 = &pos setup the original places two blocks
-    ahead of each call is the DEF of an explicit pointer local written between
-    the pos[] stores and the blink `if`; both YES/NO blocks of the RESULTS board
-    now match. The TIME-ATTACK board wants a SECOND carrier established at its
-    "TRY AGAIN" call (orig 1432 `addiu s2,sp,56; move a1,s2`), but every
-    spelling of it compiles to 1611 insns and cannot link -- exactly +1, so it
-    has to be paid for by fixing R10/R11/R12 in the same pass. Drive that with
-    the compile-only insn count, not the linked diff.
+    Flight-end results board, 6440 B, word-identical x5 (32,200 B). 75/1610 ->
+    58/1610, 46 -> 33 regions, still length-exact and linking. R10/R12 (5 glow
+    loops, 10 insns) was A93: loop.c hoists the D_8006CC78 base into the
+    preheader AFTER the explicit `ph = 0`, so give the LUT its own pre-loop
+    local assigned immediately above `ph`. R11 (9 insns) was local-alloc
+    density, closed by two nested do/while(0) wrappers on `slot += 1` --
+    A195's ref dial reaches qty_compare, not just allocno_compare. What is
+    left is dominated by R7+R6 (~26 insns, ONE problem): bh/ch/bq/cq are 4
+    pseudos of 2 refs each landing a0/a1/a3/a2 where the original reuses just
+    a1 and a2 across the disjoint pairs, which is what frees a3 for tpage.
+    A146's source merge is ruled out in all three types (+4/+2/+2, redundant
+    andi truncations -- a merged variable is multi-set and combine only folds
+    a zero-extend into a single-set destination). R5 and R8 were re-probed and
+    are unchanged; every lever tried is recorded in the .c.wip header.
+
 func_80038C4C:
   verdict: attempted
   class: "F1 local-alloc tie (ay v1-vs-a1) — six more source forms measured, all 6/66"
@@ -2003,3 +2013,17 @@ overlay_size_band_exhausted:
     in that size band, so the remaining overlay bytes are the two hub
     megafunction families (8007B020 x10 = 80,960 B, 8007B68C x5 = 32,200 B),
     the gated dispatcher arms, and the blob-tagged moby megafunctions.
+
+func_level_0_8007D9C8:
+  verdict: parked
+  class: "full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded"
+  date: 2026-08-20
+  note: >-
+    32,260 B level_0 moby megafunction, parked by session 2026-08-19 (PR #163)
+    with a complete 3,923-line decode but no measurement and no ledger entry.
+    Measured 2026-08-20: it builds and LINKS, but the linked diff is
+    length-changing (zip() error). Register-anchored content-aligned resync:
+    orig 8059 insns, mine 7997, 562 mismatch regions, MISMATCH 1292 (88%
+    aligned). That is a multi-session finish, not a tie sweep -- treat it as
+    decode-complete/verify-pending, and drive it off the masked resync diff,
+    never the linked one.

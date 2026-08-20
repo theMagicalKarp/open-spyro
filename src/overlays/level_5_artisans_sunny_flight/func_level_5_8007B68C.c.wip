@@ -124,10 +124,101 @@
  * R10/R11/R12 in the same pass, so do NOT attempt the time-attack carrier on
  * its own.
  *
- * Attack order for the next session: the TIME-ATTACK carrier together with
- * R10/R11/R12 (they must net to zero insns), then R7 (a quarter of the residue,
- * and the block is permuter-mangled so a clean rewrite has room), then the
- * frame slot (A127), then R1.
+ * 2026-08-20 — R10, R11 and R12 ALL SOLVED; 75/1610 -> 58/1610 (46 -> 33
+ * regions), still length-exact and linking. Three separate mechanisms, none of
+ * them a tie:
+ *   R10/R12 (5 sites, 10 insns) was A93, not scheduling. Each glow loop reads
+ *     `((short *) D_8006CC78)[...]` and loop.c hoists that base into the
+ *     preheader, where hoisted movables are inserted just before loop_start,
+ *     i.e. AFTER any explicit preheader assignment — so our `int ph = 0;`
+ *     always emitted first and the original has the `la` first. Fix: give the
+ *     LUT its OWN pre-loop local (`short *lut = (short *) D_8006CC78;`)
+ *     DECLARED/assigned immediately above `ph`, and index `lut[...]` in the
+ *     body. Both are then ordinary user insns and emit in source order. This
+ *     is the same recipe at all five sites (four inside `if (count > 0)`
+ *     blocks, one — NEW RECORD — with `lut` assigned between `i = 0;` and
+ *     `ph = 0;`). Zero insn-count change.
+ *   R11 (9 insns) was a local-alloc DENSITY decision, not a canonicalization.
+ *     The publish loop's `slot`/`r` roles were mirrored (ours slot->a0, r->v1;
+ *     orig slot->v1, r->a0) because qty_compare ranks on n_refs/live_length and
+ *     `r` (4 refs / ~7 insns) beat `slot` (5 refs / ~12). Two nested
+ *     `do { } while (0)` wrappers around `slot += 1;` buy slot two refs and
+ *     flip it, with no emitted code — i.e. **A195's ref dial reaches
+ *     local-alloc's qty_compare, not just global.c's allocno_compare**.
+ *
+ * Residues remaining (content-aligned, 58/1610 over 33 regions, 2026-08-20).
+ * The old R-numbers still apply; R10/R11/R12 are gone:
+ *   R1  25/26   `la envBase` lands at 45/46 (4). All three legal source orders
+ *               probed 2026-08-06-2; A164 has nothing left. Needs a new
+ *               mechanism.
+ *   R2  70      `i += 1` (2)   — entangled with R4/R6, see the warning below.
+ *   R3  82-88   rect.x/rect.y store vs `lw a1,0(s3)` ordering (6).
+ *   R4  119     else-arm `move s5,zero` in the `bne` delay slot (1).
+ *   R5  126     `ori a1,a1,0x3e00` emitted 4 insns late (2). PROBED
+ *               2026-08-20: a named `int bias = 0xFFFE3E00;` local declared
+ *               above the store block makes it WORSE (58 -> 60). The `ori`
+ *               is filling the load-delay bubble after `lw v0,-31248(v0)`
+ *               that the original gives to `lui at`; it is a sched1 priority
+ *               decision, not an A137/A164 source-order one.
+ *   R6  144     tpage `addiu a3,s1,136` lands in t0 (1).
+ *   R7  159-200 the quad-loop temp register roles (~25, now HALF the residue
+ *               and the only large block left). Measured properly this session
+ *               with the §D 2c probe: bh/ch/bq/cq are pseudos 120/121/122/123,
+ *               each **2 refs**, live 12/15/14/11 insns, and they land
+ *               a0/a1/a3/a2 where the original uses only **two** hard regs —
+ *               bh and bq share a1, ch and cq share a2 (their ranges are
+ *               disjoint: bh dies at `sh a1,18(s0)`, bq is born at the next
+ *               insn), which is what frees a3 for `tpage` (R6). So R6 and R7
+ *               are ONE problem: we need one fewer live temp, not a rotation.
+ *               RULED OUT this session:
+ *                 - A146 source merge of the pairs into one variable. It
+ *                   works semantically but costs insns in every type:
+ *                   `int` +4, `unsigned short` +2, `unsigned char` +2 — the
+ *                   cost is redundant `andi 0xff`/`andi 0xffff` truncations,
+ *                   because a merged variable is MULTI-SET and combine can
+ *                   only fold a zero-extend into its load when the destination
+ *                   pseudo is single-set. (Generalised as an idiom — see the
+ *                   cookbook.)
+ *                 - Inlining the byte read into its store (`p[0x15] = p[0xD]`)
+ *                   to kill the temp: illegal here, both are volatile, so the
+ *                   read would move down past the intervening volatile stores
+ *                   instead of staying at orig 171.
+ *               What the original's map actually requires is that **a0 be
+ *               unavailable** to bh/ch (ours takes a0 because it is the lowest
+ *               free reg and bh dies long before the `move a0,s0` call-arg
+ *               copy at 182). No source form found that occupies a0 across
+ *               bh's range without paying an insn. Next idea worth a probe:
+ *               something that makes the `func_800168DC(p)` argument live
+ *               earlier (its copy is at 182 in BOTH builds).
+ *   R8  1067-74 + 1444-50 (two sites, ~6): `move a1,s2` scheduled ABOVE the
+ *               pos[] store block where the original interleaves it between
+ *               `sw pos[0]` and `sw pos[1]`, plus the v0/v1 mirror that
+ *               follows from it. PROBED 2026-08-20: hoisting the global into a
+ *               named `int sel = D_80075720;` local above `pp = pos;` is
+ *               byte-identical (no change); moving `pp = pos;` BELOW the blink
+ *               `if` is +1 and cannot link; an A195 wrapper on `pp = pos;` is
+ *               +1 and cannot link.
+ *   R13 1432-34 the TIME-ATTACK `&pos` carrier (see the 2026-08-18 note): +1
+ *               in every spelling, must be paid back in the same pass.
+ *   +   frame is `addiu sp,-152` vs `-144` (A127), invisible to the masked
+ *       diff but 14 sp-relative immediates.
+ *
+ * **Do not clean up R2/R4/R6 in isolation** — they are all entangled with the
+ * permuter body's `allclear = 0x15;` hack, which is load-bearing (see the
+ * 2026-08-06-2 finding above); the `li s5,21` it emits is what holds the slot
+ * at orig 169 that `addiu s1,s1,1` wants.
+ *
+ * Park score: 912 partial bytes (was 900 at the 2026-08-18 state). NOTE the
+ * first `make progress` of the session reported this park at 0 — that was a
+ * STALE-BUILD artifact, not a regression: `open-spyro partial` was run right
+ * after `git checkout -- config/overlays/` reverted the slot files while the
+ * build tree still held objects from an override build. Re-run it from a
+ * clean tree before believing a partial number.
+ *
+ * Attack order for the next session: R7+R6 together (half the residue, and the
+ * one place where a single insn saved fixes two residues), then R3, then the
+ * TIME-ATTACK carrier paid back against R8, then the frame slot (A127), then
+ * R1.
  */
 
 extern void func_800521C0(void); /* BuildRenderEntityLists */
@@ -704,11 +795,12 @@ void func_level_5_8007B68C(void)
           i = 0;
           if (count > 0)
           {
+            short *lut = (short *) D_8006CC78;
             int ph = 0;
             do
             {
               i += 1;
-              *((unsigned char *) (rec + 0x46)) = (((short *) D_8006CC78)[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+              *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
               rec += 0x58;
             }
@@ -725,7 +817,7 @@ void func_level_5_8007B68C(void)
         pub:
         *slot = r;
 
-        slot += 1;
+        do { do { slot += 1; } while (0); } while (0);
         i += 1;
         r += 0x58;
         if (i < 4)
@@ -772,11 +864,12 @@ void func_level_5_8007B68C(void)
         i = 0;
         if (count > 0)
         {
+          short *lut = (short *) D_8006CC78;
           int ph = 0;
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (((short *) D_8006CC78)[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+            *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec += 0x58;
           }
@@ -806,11 +899,12 @@ void func_level_5_8007B68C(void)
         i = 0;
         if (count > 0)
         {
+          short *lut = (short *) D_8006CC78;
           int ph = 0;
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (((short *) D_8006CC78)[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+            *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec += 0x58;
           }
@@ -821,18 +915,20 @@ void func_level_5_8007B68C(void)
         if (D_80078618[D_8007595C] >= D_800758F4)
       {
         int ph;
+        short *lut;
         pos[0] = 0x94;
         pos[1] = 0x96;
         pos[2] = 0xC00;
         func_80017FE4("NEW RECORD", pos, 0x18, 8);
         count = 0xA;
         i = 0;
+        lut = (short *) D_8006CC78;
         ph = 0;
         rec = D_80075710;
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (((short *) D_8006CC78)[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+          *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec += 0x58;
         }
@@ -877,11 +973,12 @@ void func_level_5_8007B68C(void)
       i = 0;
       if (count > 0)
       {
+        short *lut = (short *) D_8006CC78;
         int ph = 0;
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (((short *) D_8006CC78)[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+          *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec += 0x58;
         }
