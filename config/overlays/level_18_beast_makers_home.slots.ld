@@ -10,6 +10,7 @@
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007B7E4)
     . = 0x00002d4c ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007D784)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007D784.o(.text)
     . = 0x00003754 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007E18C)
     . = 0x0000d4b8 ;

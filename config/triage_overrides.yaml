@@ -1951,3 +1951,55 @@ func_level_16_80084830_sweep_note:
     the IDENTICAL residue and it is B19 verbatim (`lb/lb/lb; sb/sb/sb; move
     a0,rec`), which is proved unreachable. Do not re-open them. The sweep found
     zero already-matching parks across all 66 wips.
+func_level_0_8007CFC0_family:
+  verdict: viable
+  class: "clone family head — MATCHED 2026-08-19-3"
+  date: 2026-08-19-3
+  note: >-
+    The 642-insn x10 hub balloonist DRAW family is DONE (+25,680 B): level_0's
+    copy matched from a fresh decode and sed-cloned to levels 1/3/6/7/8/12/18/
+    24/30. The bodies are word-identical apart from local labels, and the only
+    per-overlay difference is the three filler bytes after the "GO TO %s" blob
+    (read them out of the .ovl at rodata offset 0xA8). The old park note's
+    "decode-incomplete, do not pick it up" verdict was about a permuter body
+    that had replaced the hand-written one; a fresh m2c decode closed it in
+    eight iterations. See cookbook A215/A216/A217 for the three levers.
+func_level_0_8007B020_remeasure:
+  verdict: parked
+  class: "R1 cross-jump asymmetry + ~20 per-site held-base choices + a0/v1 rotations"
+  date: 2026-08-19-3
+  note: >-
+    Re-measured register-ANCHORED: 230 over 114 regions (67 over 45 with
+    registers masked), 2008 vs 2020 insns — not the "460 over 205, budget a
+    fresh decode" the 2026-08-18 note recorded. Three fixes this session got it
+    there: PSY-Q VECTOR/SVECTOR frame sizing (int v[4] / short v[4], plus a dead
+    short pad[4] for the 0x68 hole), per-arm braced blocks with their own
+    scalars (473 -> 251 on its own), and the 0x80076E1C triple as scalars with
+    `#define D_80076E1E (*(short *)((char *)&D_80076E1C + 2))` (the array form
+    holds a base where the original re-emits `lui;lh %lo(sym+K)`; the old wip
+    also did not link, it referenced an undefined D_80076E1E). 80,960 B behind
+    it. Pick it up as an addressing-per-site session, not a decode session.
+func_level_5_8007B68C_remeasure:
+  verdict: parked
+  class: "13 independent scheduling/allocation residues (see the wip's R1..R13)"
+  date: 2026-08-19-3
+  note: >-
+    Re-measured with the anchored shape diff: length-exact 1610/1610, MISMATCH
+    75 over 46 regions (41 over 31 with registers masked). Confirms the wip
+    header. Sample residue at 0x8007C740: our `move a1,s2; lui/lw D_800770E0`
+    pair is emitted three insns early and lands in v1 instead of v0. The body is
+    permuter output, which is what makes each residue expensive to steer — a
+    rewrite from clean source with per-site locals (cookbook A215) is probably
+    cheaper than another permuter run. 32,200 B across the five flight overlays.
+overlay_size_band_exhausted:
+  verdict: attempted
+  class: "inventory note, not a function"
+  date: 2026-08-19-3
+  note: >-
+    Swept every unmatched overlay function of 600..4000 bytes (2026-08-19-3):
+    ALL of them are members of a known gated family — 3 emit dispatchers
+    (`jal func_80053570`, gated by arm 0x18 / F14b) and 6 spawn dispatchers
+    (`jal func_800524C4`, gated by B19). There is no ungated overlay work left
+    in that size band, so the remaining overlay bytes are the two hub
+    megafunction families (8007B020 x10 = 80,960 B, 8007B68C x5 = 32,200 B),
+    the gated dispatcher arms, and the blob-tagged moby megafunctions.
