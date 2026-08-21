@@ -1,5 +1,5 @@
-/* func_level_30_80084EA0 (0x80084EA0, level_30_gnastys_world_gnorc_gnexus
- * overlay, 0xe40 bytes / 912 insns).
+/* func_level_24_8008AA24 (0x8008AA24, level_24_dream_weavers_home
+ * overlay, 0x10f4 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -11,55 +11,20 @@
  * +0x10) and 1/4 are streaks (two short endpoints at +4 / +0xA and two RGBA
  * quads at +0x10 / +0x14).
  *
- * The gnorc-gnexus variant is the SMALLEST member of this family: the
- * town-square (level_3) arm set minus 0x15 and 0x4C.  This file is the
- * level_3 donor with those two arms deleted -- 910 of 912 instructions, so
- * the structure transfers -- and is PARKED mid-decode.  Remaining work,
- * in the order the resync diff reports it (cookbook §C masked-resync recipe;
- * the length differs so `open-spyro diff` cannot align it yet):
+ * `pos` is the emitter position (an int 3-vector) for every effect except
+ * 0xC, where it is the source actor and the offset is rotated out of the
+ * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
+ * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- *  1. Frame is 176 vs the original 168: one stack vector too many.  Arms
- *     0x15/0x4C are gone, so not every v0..v4 array is still live; prune the
- *     dead ones and re-check which arm owns which (cookbook: arms reuse one
- *     array where their live ranges do not overlap).  The +8 also drags an
- *     extra loop-hoisted `addiu t0,sp,32` invariant into the preheader that
- *     the original keeps inside the 0xC arm as `addiu s0,sp,0x20`.
- *  2. Arm 0xC is NOT the level_3 arm: gnorc-gnexus has a three-way sub-case
- *     over D_8006E4E0 / D_8006E570 / D_8006E498 (see 0x8008527C..0x800852FC),
- *     ending in func_80017048(v,v,v) + func_80017758(v,v,rec+0xC).  Decode it
- *     off the asm rather than transplanting level_3's.
- *  3. Per-level store ORDER: in arms 0x0, 0x1, 0x9 and the 0xC tail the
- *     original writes fx (+0xF) BEFORE seed (+0xB) / b (+0xE); the level_3
- *     donor writes them the other way round.  Read the offsets off the asm
- *     per arm (this is the documented family rule).
+ * GENERATED from the matched donor library (cookbook A219 / the emit-spawn
+ * generator): the arms below are lifted verbatim from the donors that already
+ * carry them, emitted in jump-table ADDRESS order, which is source order.
+ * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x9, 0xA, 0xC, 0x10, 0x11, 0x18, 0x21, 0x42, 0x46, 0x47, 0x4A, 0x4D, 0x4E, 0x4F, 0x50.
  *
- * After all of that this function still ends on the SAME 4-insn 0x18-arm knot
- * as func_level_3_80088F68 / func_level_1_800892C4 -- verified in this park's
- * diff (`li v0,48 / li t0,46` vs our `li a0,48 / li a0,46`).  Every one of the
- * 21 remaining overlays in this family carries arm 0x18 (screened 2026-08-04-2
- * from the jump tables), so landing this decode is groundwork, not bytes,
- * until that knot falls.  See the cookbook §F14 entry for why the two halves
- * of the knot are mutually exclusive.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~703000 iterations -- by far
- * the largest sample of the session, timed out at the 15m budget): best score
- * 210 vs first-iteration score 3065, a 93% drop.
- *
- * DO NOT READ THAT AS PROGRESS TOWARD A MATCH, and do NOT splice the candidate
- * in. This function is PARKED MID-DECODE (see above): the source is the level_3
- * donor with two arms removed, the frame is still 176 vs 168, and the length
- * does not yet align. The base score is high because the decode is unfinished,
- * not because of a tie, which is also why the randomizer had so much slack to
- * work with and why it churned ~703k iterations. A permuted body here would
- * overwrite the in-progress hand decode that items 1-3 above are written
- * against, and no permutation can finish a decode. This function was therefore
- * EXCLUDED from the session's partial-byte salvage pass by hand.
- *
- * The genuine blocker remains the shared 4-insn 0x18-arm knot (§F14), which
- * also parks func_level_1_800892C4 (run separately in this same session, still
- * parked) and func_level_3_80088F68. With 21 overlays in the family carrying
- * arm 0x18, that one knot is the single largest structural bottleneck visible
- * from this campaign.
+ * Arm 0x18 is the family's one per-variant knob: `fx = 0x2E` must be a plain
+ * literal, `unk11`/`unk18` must be written after it, and the 0x30 carrier must
+ * be MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
+ * Here that carrier is `ta` (arm 0x21's local promoted to function scope, because this variant has no 0x15).
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -197,7 +162,7 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
+void func_level_24_8008AA24(int count, int type, int *pos, int arg3) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -208,6 +173,10 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
   int z;
   int i;
   int k;
+  int v;
+  int c;
+  int ta, tb;
+  int ua, ub;
 
   for (i = 0; i < count; i++) {
     k = i * 4;
@@ -270,6 +239,87 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x6: {
+      int *owner;
+      int t1, t2, t3;
+      int u1, u2, u3;
+      owner = ((Actor *)pos)->owner;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.plume.pos, ((Actor *)pos)->pos);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.plume.pos[0] - 0x3F;
+      rec->u.plume.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.plume.pos[1] - 0x3F;
+      rec->u.plume.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0x1FF;
+      u3 = rec->u.plume.pos[2] - 0x100;
+      rec->u.plume.src = ((Actor *)pos)->pos;
+      rec->u.plume.pos[2] = u3 + t3;
+      rec->u.plume.unk1C = owner[1];
+      rec->u.plume.unk1E = owner[0] >> 6;
+      rec->u.plume.life = 0x20;
+      rec->u.plume.seed = 0x14;
+      if (((Actor *)pos)->flag49 != 0) {
+        switch (func_8006272C() & 7) {
+        case 0:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0;
+          break;
+        case 1:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 2:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 3:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0x80;
+          break;
+        case 4:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 5:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 6:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0;
+          break;
+        case 7:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0x80;
+          break;
+        }
+      } else if (D_8007596C == 0x32) {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0;
+      } else {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0x80;
+      }
+      rec->u.plume.fx = 0x2C;
+      rec->u.plume.unk11 = 0;
+      rec->u.plume.unk10 = 0;
       break;
     }
     case 0x9: {
@@ -354,23 +404,59 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0x10: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = ((int *)arg3)[0];
+      rec->u.spark.seed = func_8006272C();
+      c = ((int *)arg3)[1] * 8;
+      rec->u.spark.r = c;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      rec->u.spark.g = c;
+      rec->u.spark.b = rec->u.spark.r;
+      break;
+    }
+    case 0x11: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = 0x18;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.r = ((int *)arg3)[0];
+      rec->u.spark.g = ((int *)arg3)[1];
+      rec->u.spark.b = ((int *)arg3)[2];
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x18: {
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->unk03 = 1;
       func_80017BFC(rec->u.band.pos, pos);
       func_80017BFC(rec->u.band.pos2, pos);
-      t = 0x30;
-      rec->u.band.life = t;
+      ta = 0x30;
       z = i * 16;
-      t = 0x2E;
-      rec->u.band.unk11 = 8;
-      rec->u.band.unk18 = i * 32;
+      rec->u.band.life = ta;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
       rec->u.band.seed = z;
-      rec->u.band.fx = t;
+      rec->u.band.fx = 0x2E;
+      rec->u.band.unk11 = 8;
+      rec->u.band.unk18 = i * 32;
       rec->u.band.unk10 = 0;
       rec->u.band.unk1A = 0x10;
       rec->u.band.unk1C = z;
@@ -378,8 +464,6 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x21: {
-      int ta, tb;
-      int ua, ub;
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->phase = 0;
@@ -525,6 +609,20 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
+    case 0x4A: {
+      rec = (Emit *)func_80053570(0);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.dust.pos, pos);
+      func_80017BFC(rec->u.dust.vel, (int *)arg3);
+      rec->u.dust.r = 0xFF;
+      rec->u.dust.g = 0xFF;
+      rec->u.dust.b = 0;
+      rec->u.dust.fx = 0x40;
+      rec->u.dust.life = 4;
+      break;
+    }
     case 0x4D: {
       int t;
       int u;
@@ -645,3 +743,39 @@ void func_level_30_80084EA0(int count, int type, int *pos, int arg3) {
     }
   }
 }
+
+/* MATCHED 2026-08-19-2 park closed 2026-08-20-1.  The residue was ONE
+ * instruction -- the `li t0,46` that reload emits for arm 0x18's
+ * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
+ * statement order.
+ *
+ * The mechanism, and it generalises (cookbook A219): a constant stored to a
+ * field with no register of its own is rematerialised by reload IMMEDIATELY
+ * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
+ * it as a low-priority straggler, and stragglers come out in LUID order, so
+ * the `li` can never be emitted above a straggler belonging to an EARLIER
+ * source statement.  Moving the fx store up does move the `li` up -- but it
+ * drags the store with it (stores of equal priority also come out in source
+ * order), so the store then lands four slots early instead.  The two are one
+ * dial with two ends and neither end alone reaches the original.
+ *
+ * What breaks the tie is that `unk11 = 8` / `unk18 = i * 32` are NOT free
+ * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
+ * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
+ * same relative slots no matter where the statements sit in the source.
+ * Writing those two statements AFTER the fx store therefore raises their
+ * LUIDs above the `li t0,46` -- putting the reload third in the straggler
+ * sequence, exactly where the original has it -- while their stores stay put.
+ * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
+ * never both ends at once; moving unk11/unk18 below fx gives MATCH.
+ *
+ * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
+ * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier
+ * gives the constant two sets, which kills `reg_equiv_constant` and hands the
+ * value a0 instead of leaving it to reload's spill register t0.
+ *
+ * Word-identical (bar branch displacements) to func_level_2_800844A0,
+ * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
+ * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * 985-insn variant of the same walk and carries the same arm 0x18.
+ */

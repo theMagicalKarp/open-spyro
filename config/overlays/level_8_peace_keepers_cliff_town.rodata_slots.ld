@@ -26,7 +26,4 @@
     build/overlays/level_8_peace_keepers_cliff_town/c/func_level_8_80089714.o(.rodata)
     . = 0x00000b58 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007B590)
-    . = 0x00000ca0 ;
-    build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007B6D8)
-    . = 0x00000cc0 ;
-    build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007B6F8)
+    build/overlays/level_8_peace_keepers_cliff_town/c/func_level_8_8008A9A8.o(.rodata)

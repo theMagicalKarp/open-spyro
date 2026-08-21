@@ -10,6 +10,7 @@
     build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_80083B4C.o(.text)
     . = 0x0000a474 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.func_level_32_80084EAC)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_80084EAC.o(.text)
     . = 0x0000b5cc ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.func_level_32_80086004)
     build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_80086004.o(.text)
