@@ -1,4 +1,4 @@
-/* func_level_13_8008C9D8 (0x8008C9D8, level_13_magic_crafters_alpine_ridge
+/* func_level_16_80085F40 (0x80085F40, level_16_magic_crafters_blowhard
  * overlay, 0x10f4 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
@@ -16,16 +16,25 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * PARKED 2026-08-20-1 -- GENERATED SKELETON, not yet a match.
- * Every arm below is a verbatim lift from the matched donor library; what is
- * missing is arm 0x4 / arm 0x5 / arm 0x8 / arm 0x16, which no matched variant carries yet.
- * Decode them off the asm at 0x4 -> .L8008CBA8, 0x5 -> .L8008CC68, 0x8 -> .L8008CD2C, 0x16 -> .L8008D328 and drop them into the switch in
- * jump-table ADDRESS order (== source order), then apply the family's two
- * standing knobs: arm 0x18's `fx = 0x2E` stays a plain literal with
- * `unk11`/`unk18` written after it, and the 0x30 carrier must be multi-set
- * (arm 0x15's `v`, or arm 0x21's `ta` promoted to function scope when the
- * variant has no 0x15).  See cookbook A220 and the emit-spawn generator
- * section in G.
+ * MATCHED 2026-08-21.  Generated from the donor library with two arms newly
+ * decoded here: 0x8 (an owner-tracked spark whose +0x1E byte is the actor's
+ * pool INDEX -- a real pointer difference against `D_80075828`, which is why
+ * the arm carries gcc's exact-division-by-0x58 magic) and 0x41 (a streak).
+ *
+ * Three knobs this variant needed, all reusable across the family:
+ *   - arm 0x15's tail: `unk11` must be written BEFORE `unk10` so the arm's
+ *     last two stores match the shared `sb t0,0x11; sb zero,0x10` block and
+ *     jump.c cross-jumps them away.  The donor order (unk10 first) leaves both
+ *     inline and the function 2 insns long -- it does not link.
+ *   - arm 0x8's colour switch is over a SIGNED index (`slti` + the `bltz`
+ *     low-bound test), so the `& 3` has to be cast back to `int`.
+ *   - arm 0x41: the a[2] read and the three tail-colour stores are BOTH
+ *     volatile (A208).  Nothing else orders them: with plain MEMs sched1
+ *     drains the `li v1,192` group before the load, the load then reuses v1,
+ *     and sched2 can no longer hoist it into the store block.  One volatile
+ *     side is not enough -- measured over ~30 statement permutations, five
+ *     multi-set carriers and three declaration orders, all byte-identical at
+ *     13 masked mismatches.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -116,6 +125,21 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short unk1C;               /* 0x1C */
       short unk1E;               /* 0x1E */
     } plume;
+    struct {                     /* class 3 -- owner-tracked spark */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char life;        /* 0x0A */
+      unsigned char seed;        /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      unsigned char unk10;       /* 0x10 */
+      unsigned char unk11;       /* 0x11 */
+      short pad[3];              /* 0x12 */
+      short vel[3];              /* 0x18 */
+      unsigned char owner;       /* 0x1E actor index into the pool */
+      unsigned char unk1F;       /* 0x1F */
+    } track;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
@@ -136,6 +160,7 @@ typedef struct Actor {
   short kind;   /* 0x36 */
   char pad38[0x11];
   unsigned char flag49; /* 0x49 */
+  char pad4A[0xE];      /* 0x4A -- the pool stride is 0x58 */
 } Actor;
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
@@ -143,6 +168,9 @@ extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >
 extern void func_80017700(int *dst, int *src);           /* CopyVector */
 extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
 extern void func_80017048(int *mat, int *v, int *dst);   /* RotateVectorByMatrix */
+extern void func_8001778C(int *dst, int *a, int *b);     /* SubVector */
+extern void func_80017330(int *v, int k);                /* ScaleVectorToLength */
+extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
 extern int func_80016C58(int a);                         /* LookupSine */
 extern int func_80016CB0(int a);                         /* LookupCosine */
 extern unsigned int func_8006272C(void);
@@ -150,6 +178,7 @@ extern unsigned int func_8006272C(void);
 extern short D_8006CC78[];        /* cosine table */
 extern short D_8006CBF8[];        /* sine table */                 /* GetRandomU32 */
 
+extern Actor *D_80075828;         /* g_pActorListBase */
 extern int D_800757D8;            /* g_Gamestate */
 extern int D_80078764;
 extern int D_80078A58[];          /* Spyro world position */
@@ -166,8 +195,9 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_13_8008C9D8(int count, int type, int *pos, int arg3) {
+void func_level_16_80085F40(int count, int type, int *pos, int arg3) {
   int v0[3];
+  int vt[3];
   int v1[3];
   int v2[3];
   int v3[3];
@@ -241,6 +271,161 @@ void func_level_13_8008C9D8(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x6: {
+      int *owner;
+      int t1, t2, t3;
+      int u1, u2, u3;
+      owner = ((Actor *)pos)->owner;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.plume.pos, ((Actor *)pos)->pos);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.plume.pos[0] - 0x3F;
+      rec->u.plume.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.plume.pos[1] - 0x3F;
+      rec->u.plume.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0x1FF;
+      u3 = rec->u.plume.pos[2] - 0x100;
+      rec->u.plume.src = ((Actor *)pos)->pos;
+      rec->u.plume.pos[2] = u3 + t3;
+      rec->u.plume.unk1C = owner[1];
+      rec->u.plume.unk1E = owner[0] >> 6;
+      rec->u.plume.life = 0x20;
+      rec->u.plume.seed = 0x14;
+      if (((Actor *)pos)->flag49 != 0) {
+        switch (func_8006272C() & 7) {
+        case 0:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0;
+          break;
+        case 1:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 2:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0;
+          break;
+        case 3:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x80;
+          rec->u.plume.b = 0x80;
+          break;
+        case 4:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 5:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0;
+          rec->u.plume.b = 0x80;
+          break;
+        case 6:
+          rec->u.plume.r = 0x80;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0;
+          break;
+        case 7:
+          rec->u.plume.r = 0;
+          rec->u.plume.g = 0x40;
+          rec->u.plume.b = 0x80;
+          break;
+        }
+      } else if (D_8007596C == 0x32) {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0;
+      } else {
+        rec->u.plume.r = 0x80;
+        rec->u.plume.g = 0x80;
+        rec->u.plume.b = 0x80;
+      }
+      rec->u.plume.fx = 0x2C;
+      rec->u.plume.unk11 = 0;
+      rec->u.plume.unk10 = 0;
+      break;
+    }
+    case 0x7: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      if (arg3 != 0) {
+        rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[2] = rec->u.spark.pos[2] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x30)) >> 8);
+      }
+      rec->u.spark.life = rec->phase * 4;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.vel[0] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.vel[1] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.vel[2] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.unk1E = (func_8006272C() & 0xF) + 6;
+      rec->u.spark.r = 0x80;
+      rec->u.spark.g = 0x80;
+      rec->u.spark.b = 0x80;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x8: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 3;
+      rec->unk03 = 1;
+      func_80052D64((Actor *)pos, func_8006272C() & 1, vt);
+      func_80017BFC(rec->u.track.pos, vt);
+      t1 = func_8006272C() & 0xE;
+      u1 = rec->u.track.pos[0] - 7;
+      rec->u.track.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0xE;
+      u2 = rec->u.track.pos[1] - 7;
+      rec->u.track.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0xE;
+      u3 = rec->u.track.pos[2] - 7;
+      rec->u.track.pos[2] = u3 + t3;
+      func_8001778C(vt, vt, ((Actor *)pos)->pos);
+      vt[2] = vt[2] - 0x384;
+      func_80017330(vt, 0x80);
+      func_80017BFC(rec->u.track.vel, vt);
+      rec->u.track.owner = (Actor *)arg3 - D_80075828;
+      rec->u.track.unk1F = 0;
+      rec->u.track.life = (func_8006272C() & 0xF) + 0x18;
+      rec->u.track.seed = (func_8006272C() & 7) + 0xF;
+      rec->u.track.fx = 0x2C;
+      rec->u.track.unk11 = 4;
+      rec->u.track.unk10 = 0;
+      switch ((int)(func_8006272C() & 3)) {
+      case 0:
+      case 1:
+        rec->u.track.r = 0x7F;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x20;
+        break;
+      case 2:
+        rec->u.track.r = 0x40;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x40;
+        break;
+      case 3:
+        rec->u.track.r = 0x7F;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x7F;
+        break;
+      }
       break;
     }
     case 0x9: {
@@ -379,10 +564,10 @@ void func_level_13_8008C9D8(int count, int type, int *pos, int arg3) {
       rec->u.ribbon.g = 0xFF;
       rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
       rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
-      rec->u.ribbon.unk10 = 0;
       rec->u.ribbon.seed = arg3 * 2;
       rec->u.ribbon.fx = 0x2E;
       rec->u.ribbon.unk11 = 2;
+      rec->u.ribbon.unk10 = 0;
       break;
     }
     case 0x18: {
@@ -441,6 +626,36 @@ void func_level_13_8008C9D8(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x41: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(1);
+      rec->type = type;
+      rec->phase = func_8006272C() & 3;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.line.a, pos + 3);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.line.a[0] - 0x3F;
+      rec->u.line.a[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.line.a[1] - 0x3F;
+      rec->u.line.a[1] = u2 + t2;
+      t3 = func_8006272C() & 0xF;
+      u3 = *(volatile unsigned short *)&rec->u.line.a[2] + 0x136;
+      rec->u.line.c1[3] = 0;
+      rec->u.line.c0[0] = 0x80;
+      rec->u.line.c0[1] = 0x80;
+      rec->u.line.c0[2] = 0x80;
+      *(volatile unsigned char *)&rec->u.line.c1[0] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[1] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[2] = 0xC0;
+      rec->u.line.a[2] = u3 + t3;
+      rec->u.line.c0[3] = 0x50;
+      rec->u.line.b[0] = rec->u.line.a[0];
+      rec->u.line.b[1] = rec->u.line.a[1];
+      rec->u.line.b[2] = rec->u.line.a[2] - 0x20;
       break;
     }
     case 0x42: {
@@ -697,38 +912,8 @@ void func_level_13_8008C9D8(int count, int type, int *pos, int arg3) {
   }
 }
 
-/* MATCHED 2026-08-19-2 park closed 2026-08-20-1.  The residue was ONE
- * instruction -- the `li t0,46` that reload emits for arm 0x18's
- * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
- * statement order.
- *
- * The mechanism, and it generalises (cookbook A220): a constant stored to a
- * field with no register of its own is rematerialised by reload IMMEDIATELY
- * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
- * it as a low-priority straggler, and stragglers come out in LUID order, so
- * the `li` can never be emitted above a straggler belonging to an EARLIER
- * source statement.  Moving the fx store up does move the `li` up -- but it
- * drags the store with it (stores of equal priority also come out in source
- * order), so the store then lands four slots early instead.  The two are one
- * dial with two ends and neither end alone reaches the original.
- *
- * What breaks the tie is that `unk11 = 8` / `unk18 = i * 32` are NOT free
- * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
- * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
- * same relative slots no matter where the statements sit in the source.
- * Writing those two statements AFTER the fx store therefore raises their
- * LUIDs above the `li t0,46` -- putting the reload third in the straggler
- * sequence, exactly where the original has it -- while their stores stay put.
- * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving unk11/unk18 below fx gives MATCH.
- *
- * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
- * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier
- * gives the constant two sets, which kills `reg_equiv_constant` and hands the
- * value a0 instead of leaving it to reload's spill register t0.
- *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
- * 985-insn variant of the same walk and carries the same arm 0x18.
+/* Arm 0x18 still carries the family's A220 knob unchanged (plain-literal
+ * `fx = 0x2E` with `unk11`/`unk18` written below it, and arm 0x15's `v`
+ * promoted to function scope as the multi-set 0x30 carrier); see the emit-
+ * SPAWN generator section in the cookbook's G.
  */

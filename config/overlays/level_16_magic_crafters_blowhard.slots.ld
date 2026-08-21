@@ -9,6 +9,7 @@
     build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80084830.o(.text)
     . = 0x0000b508 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.func_level_16_80085F40)
+    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80085F40.o(.text)
     . = 0x0000ca64 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.func_level_16_8008749C)
     build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_8008749C.o(.text)

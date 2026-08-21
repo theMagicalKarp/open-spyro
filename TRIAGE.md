@@ -12,7 +12,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 
 | # | Address | Function | Segment | Size | Score | Why |
 |--:|---|---|---|--:|--:|---|
-| 1 | `0x8007b9f0` | func_level_12_8007B9F0 | ovl/level_12_magic_crafters_home | 8096 | 138 | overlay (no -g3); segment 14.5% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 1 | `0x8007b9f0` | func_level_12_8007B9F0 | ovl/level_12_magic_crafters_home | 8096 | 135 | overlay (no -g3); segment 20.8% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 2 | `0x8007b9f8` | func_level_6_8007B9F8 | ovl/level_6_peace_keepers_home | 8096 | 135 | overlay (no -g3); segment 20.4% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 3 | `0x8007b0d0` | func_level_1_8007B0D0 | ovl/level_1_artisans_stone_hill | 8096 | 134 | overlay (no -g3); segment 23.0% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 4 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 134 | overlay (no -g3); segment 22.4% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
@@ -42,10 +42,9 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80084b94` | func_level_25_80084B94 | ovl/level_25_dream_weavers_dark_passage | 3176 | 3140 |  |
 | `0x80081f0c` | func_level_17_80081F0C | ovl/level_17_magic_crafters_crystal_flight | 2964 | 2912 |  |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | F2 nudge load hoist + F1 death-replay v0/v1 + F7 loop.c hoist choice in actor pass 2 |
-| `0x800881d8` | func_level_27_800881D8 | ovl/level_27_dream_weavers_haunted_towers | 5704 | 2436 |  |
+| `0x800881d8` | func_level_27_800881D8 | ovl/level_27_dream_weavers_haunted_towers | 5704 | 2860 | B13 (lh; sra unreachable) -- 2 insns, will not link |
 | `0x800819bc` | func_level_11_800819BC | ovl/level_11_peace_keepers_night_flight | 2372 | 2336 |  |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
-| `0x800873e0` | func_level_0_800873E0 | ovl/level_0_artisans_home | 4672 | 1440 |  |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1236 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
@@ -60,7 +59,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80059594` | func_80059594 | main | 720 | 668 | F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 |  |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 644 |  |
-| `0x8008d2d0` | func_level_12_8008D2D0 | ovl/level_12_magic_crafters_home | 4920 | 644 |  |
 | `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 cross-jump asymmetry + addressing/sched ties; 230 mismatched over 114 regions |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
@@ -83,15 +81,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003e90c` | NudgeSpyroFromWallProbes | main | 348 | 208 | B13 lh+sra shift-consumer |
 | `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | 196 |  |
 | `0x800647a0` | CdSync | main | 640 | 196 |  |
-| `0x80085f40` | func_level_16_80085F40 | ovl/level_16_magic_crafters_blowhard | 5468 | 176 |  |
 | `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | 140 |  |
 | `0x80017fe4` | BuildTextSpriteChain | main | 456 | 136 | sched1 straggler + jump.c cross-jump asymmetry (3 ties) |
 | `0x8005dd0c` | WaitForFrameDeadline | main | 156 | 128 |  |
-| `0x8008b0b0` | func_level_14_8008B0B0 | ovl/level_14_magic_crafters_high_caves | 5772 | 128 |  |
+| `0x8008b0b0` | func_level_14_8008B0B0 | ovl/level_14_magic_crafters_high_caves | 5772 | 128 | B13 via arm 0x1F, plus arms 0x45 / 0x49 still undecoded |
 | `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F4 return-copy hoist (7/38, length-exact). Refined 2026-08-10-3: write the mask on the LEFT (0xFFFFFF & (int)&sym) to get the original's li-before-la order. Residue: the `move v0,ot` copy must sit BETWEEN the mask li and the symbol la (A164 straggler source order), but copy propagation deletes every C form of it; duplicating the tail in both debug-if arms does NOT cross-jump back (+7 insns) |
-| `0x8008c9d8` | func_level_13_8008C9D8 | ovl/level_13_magic_crafters_alpine_ridge | 5352 | 120 |  |
 | `0x8005c1c0` | ControlSpuDmaTransfer | main | 656 | 112 | B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load |
-| `0x80089450` | func_level_15_80089450 | ovl/level_15_magic_crafters_wizard_peak | 5200 | 96 |  |
 | `0x80060e28` | FUN_80060e28 | main | 176 | 88 | F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows. |
 | `0x800658fc` | func_800658FC | main | 1216 | 84 |  |
 | `0x8006606c` | CdRead | main | 260 | 72 |  |

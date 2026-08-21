@@ -2055,14 +2055,16 @@ func_level_27_80086754:
     actor-table base. Do NOT re-attempt the carrier list already measured.
 emit_spawn_dispatcher_family:
   verdict: viable
-  class: "generator vein, 8 skeletons parked"
-  date: 2026-08-20-1
+  class: "generator vein, 2 skeletons left"
+  date: 2026-08-21
   note: >-
-    36 overlay functions calling func_80053570; 28 matched 2026-08-20-1
-    (+96,032 B this session). The eight left are committed as generated
-    `.c.wip` skeletons with every shared arm already lifted; 31,416 B behind 13
-    arm decodes (0x4, 0x5, 0x8, 0xE, 0x16, 0x1D, 0x1E, 0x1F, 0x41, 0x45, 0x49).
-    Decode 0x8 and 0x41 first -- four variants each. Recipe in cookbook G,
+    36 overlay functions calling func_80053570; 33 matched (28 on 2026-08-20-1,
+    then level_16/12/15/13/0 on 2026-08-21 for +25,612 B). Arms 0x4, 0x5, 0x8,
+    0xE, 0x16, 0x1D, 0x1E, 0x1F and 0x41 are all decoded now and live in the
+    matched sources. The two left are `level_27` (5,704 B, fully decoded,
+    parked on B13 in arm 0x1F) and `level_14` (6,264 B, same B13 plus arms 0x45
+    and 0x49 still undecoded). B13 is the single gate on both; there is no
+    decode work left worth doing until it has an answer. Recipe in cookbook G,
     "The per-level emit-SPAWN dispatcher family".
 func_level_13_8008AF54_and_14_80089454:
   verdict: parked
@@ -2076,3 +2078,76 @@ func_level_13_8008AF54_and_14_80089454:
     none of which is 4-arg, and against level_16, whose copy of the same arm has
     the ordinary two-`li $v0` form. 14,048 B behind one mechanism; not attempted
     this session.
+
+# --- 2026-08-21 session: five emit-spawn dispatchers landed, six arms decoded ---
+func_level_16_80085F40:
+  verdict: viable
+  class: "MATCHED 2026-08-21"
+  date: 2026-08-21
+  note: >-
+    5,468 B. Arms 0x8 (owner-tracked spark; the +0x1E byte is a real Actor
+    pointer difference, hence the exact-division-by-0x58 magic) and 0x41
+    (streak) decoded here. Three knobs, all now in the cookbook: arm 0x15's
+    unk11 must be written before unk10 or the shared `sb t0,0x11; sb zero,0x10`
+    tail does not cross-jump (+2 insns, will not link); arm 0x8's colour switch
+    is over a SIGNED index (slti + bltz); arm 0x41 needs BOTH the a[2] read and
+    the three tail-colour stores volatile (A208) -- ~30 statement permutations,
+    five multi-set carriers, three declaration orders and one-sided volatile all
+    gave the identical 13-insn residue.
+func_level_12_8008D2D0:
+  verdict: viable
+  class: "MATCHED 2026-08-21, first build"
+  date: 2026-08-21
+  note: >-
+    4,920 B. Arm 0x16 decoded (camera range check via func_80017990, arg3 walked
+    as an 8-bit angle across iterations, velocity from the sin/cos tables as
+    tbl[arg3]*7>>11, brightness from the same distance with a >= guard so the
+    constant arm lands out of line). Arms 0x8/0x41 lifted from level_16.
+func_level_15_80089450:
+  verdict: viable
+  class: "MATCHED 2026-08-21"
+  date: 2026-08-21
+  note: >-
+    5,200 B. Arms 0x4 (plume keeping the emitter actor at +0x18, +-0x3F jitter)
+    and 0x5 (static puff, zeroed velocity, +-0x1F jitter) decoded here. Arm
+    0x15's unk10/unk11 order needed the same per-variant fix as level_16.
+func_level_13_8008C9D8:
+  verdict: viable
+  class: "MATCHED 2026-08-21"
+  date: 2026-08-21
+  note: >-
+    5,352 B. Arms 0x4/0x5 (level_15), 0x8 (level_16), 0x16 (level_12) all
+    transferred verbatim; only arm 0x15's store order was local work.
+func_level_0_800873E0:
+  verdict: viable
+  class: "MATCHED 2026-08-21"
+  date: 2026-08-21
+  note: >-
+    4,672 B. Arm 0xE decoded (camera-range-limited puff, brightness re-uses the
+    distance). The knot was arm 0x1E: reload's `li` for a constant field store
+    inherits ITS STORE's LUID and the `li`s come out in SOURCE order while the
+    stores are re-ordered by priority, so the colour stores must be written
+    BEFORE the fx store. New A164 corollary, now in the cookbook.
+func_level_27_800881D8:
+  verdict: parked
+  class: "B13 (lh; sra unreachable) -- 2 insns, will not link"
+  date: 2026-08-21
+  note: >-
+    5,704 B, FULLY DECODED as a .c.wip: arms 0x1D, 0x1E, 0x1F decoded here and
+    0x41 lifted; every other arm byte-identical; arm 0x1E closed with the A164
+    remat-order fix. Only arm 0x1F's two unit-circle reads remain: the original
+    has `lh; sra 10`, our cc1 folds the sign-extend into the shift and emits
+    `lhu; sll 16; sra 26`. Measured and identical: plain, (int) cast, short
+    local, short local shifted in place, function-scope multi-set int carrier
+    (the copy is deleted by copy propagation -- BYTE-IDENTICAL to plain), an
+    in-place `c >>= 10` on that carrier, and a volatile short load (which also
+    loses the fused $at addressing). Do not re-derive; solve B13 or leave it.
+func_level_14_8008B0B0:
+  verdict: parked
+  class: "B13 via arm 0x1F, plus arms 0x45 / 0x49 still undecoded"
+  date: 2026-08-21
+  note: >-
+    Screened only. Arms 0x4/0x5/0x8/0x1E are now in the decode library and 0x1F
+    is the same B13 shape as level_27's, so this variant cannot link even once
+    0x45 and 0x49 are decoded. Decode 0x45 (.L8008BDCC) and 0x49 (.L8008C0BC)
+    only after B13 has an answer.

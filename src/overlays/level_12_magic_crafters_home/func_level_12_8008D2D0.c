@@ -16,16 +16,18 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * PARKED 2026-08-20-1 -- GENERATED SKELETON, not yet a match.
- * Every arm below is a verbatim lift from the matched donor library; what is
- * missing is arm 0x8 / arm 0x16 / arm 0x41, which no matched variant carries yet.
- * Decode them off the asm at 0x8 -> .L8008D5BC, 0x16 -> .L8008DA2C, 0x41 -> .L8008DD24 and drop them into the switch in
- * jump-table ADDRESS order (== source order), then apply the family's two
- * standing knobs: arm 0x18's `fx = 0x2E` stays a plain literal with
- * `unk11`/`unk18` written after it, and the 0x30 carrier must be multi-set
- * (arm 0x15's `v`, or arm 0x21's `ta` promoted to function scope when the
- * variant has no 0x15).  See cookbook A220 and the emit-spawn generator
- * section in G.
+ * MATCHED 2026-08-21, first build.  Arms 0x8 and 0x41 are verbatim lifts from
+ * func_level_16_80085F40 (decoded there the same session); arm 0x16 is new
+ * here: a wind-blown mote that first range-checks the emitter against the
+ * camera (`func_80017990(pos, D_80076DF8) > 0x7FFF` skips the record), walks
+ * `arg3` as an 8-bit ANGLE across the loop iterations
+ * (`arg3 = (arg3 + (rand & 0x1E) - 0xF) & 0xFF`) and reads its velocity out of
+ * the sin/cos tables as `tbl[arg3] * 7 >> 11`.  Its brightness is the same
+ * distance value re-used: `d >= 0x6001 ? (0x8000 - d) >> 7 : 0x40`, written
+ * with the >= guard so the 0x40 arm lands OUT OF LINE (A64).
+ *
+ * This variant has no arm 0x15, so the family's 0x30 carrier is arm 0x21's
+ * `ta` promoted to function scope (see the level_30 donor).
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -116,6 +118,21 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short unk1C;               /* 0x1C */
       short unk1E;               /* 0x1E */
     } plume;
+    struct {                     /* class 3 -- owner-tracked spark */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char life;        /* 0x0A */
+      unsigned char seed;        /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      unsigned char unk10;       /* 0x10 */
+      unsigned char unk11;       /* 0x11 */
+      short pad[3];              /* 0x12 */
+      short vel[3];              /* 0x18 */
+      unsigned char owner;       /* 0x1E actor index into the pool */
+      unsigned char unk1F;       /* 0x1F */
+    } track;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
@@ -136,6 +153,7 @@ typedef struct Actor {
   short kind;   /* 0x36 */
   char pad38[0x11];
   unsigned char flag49; /* 0x49 */
+  char pad4A[0xE];      /* 0x4A -- the pool stride is 0x58 */
 } Actor;
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
@@ -143,10 +161,18 @@ extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >
 extern void func_80017700(int *dst, int *src);           /* CopyVector */
 extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
 extern void func_80017048(int *mat, int *v, int *dst);   /* RotateVectorByMatrix */
+extern void func_8001778C(int *dst, int *a, int *b);     /* SubVector */
+extern void func_80017330(int *v, int k);                /* ScaleVectorToLength */
+extern int func_80017990(int *a, int *b);                /* VectorDistance */
+extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
 extern int func_80016C58(int a);                         /* LookupSine */
 extern int func_80016CB0(int a);                         /* LookupCosine */
 extern unsigned int func_8006272C(void);                 /* GetRandomU32 */
 
+extern Actor *D_80075828;         /* g_pActorListBase */
+extern int D_80076DF8[];          /* camera world position */
+extern short D_8006CC78[];        /* cosine table */
+extern short D_8006CBF8[];        /* sine table */
 extern int D_800757D8;            /* g_Gamestate */
 extern int D_80078764;
 extern int D_80078A58[];          /* Spyro world position */
@@ -165,6 +191,7 @@ extern int D_8006E570[];
 
 void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
   int v0[3];
+  int vt[3];
   int v1[3];
   int v2[3];
   int v3[3];
@@ -175,6 +202,8 @@ void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
   int i;
   int k;
   int v;
+  int ta, tb;
+  int ua, ub;
 
   for (i = 0; i < count; i++) {
     k = i * 4;
@@ -264,6 +293,55 @@ void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0x8: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 3;
+      rec->unk03 = 1;
+      func_80052D64((Actor *)pos, func_8006272C() & 1, vt);
+      func_80017BFC(rec->u.track.pos, vt);
+      t1 = func_8006272C() & 0xE;
+      u1 = rec->u.track.pos[0] - 7;
+      rec->u.track.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0xE;
+      u2 = rec->u.track.pos[1] - 7;
+      rec->u.track.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0xE;
+      u3 = rec->u.track.pos[2] - 7;
+      rec->u.track.pos[2] = u3 + t3;
+      func_8001778C(vt, vt, ((Actor *)pos)->pos);
+      vt[2] = vt[2] - 0x384;
+      func_80017330(vt, 0x80);
+      func_80017BFC(rec->u.track.vel, vt);
+      rec->u.track.owner = (Actor *)arg3 - D_80075828;
+      rec->u.track.unk1F = 0;
+      rec->u.track.life = (func_8006272C() & 0xF) + 0x18;
+      rec->u.track.seed = (func_8006272C() & 7) + 0xF;
+      rec->u.track.fx = 0x2C;
+      rec->u.track.unk11 = 4;
+      rec->u.track.unk10 = 0;
+      switch ((int)(func_8006272C() & 3)) {
+      case 0:
+      case 1:
+        rec->u.track.r = 0x7F;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x20;
+        break;
+      case 2:
+        rec->u.track.r = 0x40;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x40;
+        break;
+      case 3:
+        rec->u.track.r = 0x7F;
+        rec->u.track.g = 0x7F;
+        rec->u.track.b = 0x7F;
+        break;
+      }
+      break;
+    }
     case 0x9: {
       rec = (Emit *)func_80053570(2);
       rec->type = type;
@@ -346,15 +424,48 @@ void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0x16: {
+      int d;
+      d = func_80017990(pos, D_80076DF8);
+      if (d > 0x7FFF) {
+        break;
+      }
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((((int)(func_8006272C() & 0xFFF) - 0x7FF) * 300) >> 12);
+      rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((((int)(func_8006272C() & 0xFFF) - 0x7FF) * 300) >> 12);
+      arg3 = (arg3 + (int)(func_8006272C() & 0x1E) - 0xF) & 0xFF;
+      rec->u.spark.vel[0] = (D_8006CC78[arg3] * 7) >> 11;
+      rec->u.spark.vel[1] = (D_8006CBF8[arg3] * 7) >> 11;
+      rec->u.spark.vel[2] = 8;
+      rec->u.spark.unk1E = (func_8006272C() & 2) - 1;
+      rec->u.spark.life = 0xE0;
+      rec->u.spark.seed = func_8006272C();
+      if (d >= 0x6001) {
+        d = (0x8000 - d) >> 7;
+      } else {
+        d = 0x40;
+      }
+      rec->u.spark.r = d >> 1;
+      rec->u.spark.g = d >> 1;
+      rec->u.spark.b = d;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 0xC;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x18: {
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->unk03 = 1;
       func_80017BFC(rec->u.band.pos, pos);
       func_80017BFC(rec->u.band.pos2, pos);
-      v = 0x30;
+      ta = 0x30;
       z = i * 16;
-      rec->u.band.life = v;
+      rec->u.band.life = ta;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
@@ -369,8 +480,6 @@ void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x21: {
-      int ta, tb;
-      int ua, ub;
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->phase = 0;
@@ -402,6 +511,36 @@ void func_level_12_8008D2D0(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x41: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(1);
+      rec->type = type;
+      rec->phase = func_8006272C() & 3;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.line.a, pos + 3);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.line.a[0] - 0x3F;
+      rec->u.line.a[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.line.a[1] - 0x3F;
+      rec->u.line.a[1] = u2 + t2;
+      t3 = func_8006272C() & 0xF;
+      u3 = *(volatile unsigned short *)&rec->u.line.a[2] + 0x136;
+      rec->u.line.c1[3] = 0;
+      rec->u.line.c0[0] = 0x80;
+      rec->u.line.c0[1] = 0x80;
+      rec->u.line.c0[2] = 0x80;
+      *(volatile unsigned char *)&rec->u.line.c1[0] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[1] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[2] = 0xC0;
+      rec->u.line.a[2] = u3 + t3;
+      rec->u.line.c0[3] = 0x50;
+      rec->u.line.b[0] = rec->u.line.a[0];
+      rec->u.line.b[1] = rec->u.line.a[1];
+      rec->u.line.b[2] = rec->u.line.a[2] - 0x20;
       break;
     }
     case 0x42: {

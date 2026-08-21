@@ -19,7 +19,4 @@
     build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80084830.o(.rodata)
     . = 0x00000368 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007ADA0)
-    . = 0x000004b0 ;
-    build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007AEE8)
-    . = 0x000004d0 ;
-    build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007AF08)
+    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80085F40.o(.rodata)

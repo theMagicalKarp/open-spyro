@@ -25,7 +25,4 @@
     build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80087B40.o(.rodata)
     . = 0x00000be8 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B620)
-    . = 0x00000d30 ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B768)
-    . = 0x00000d50 ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B788)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80089450.o(.rodata)

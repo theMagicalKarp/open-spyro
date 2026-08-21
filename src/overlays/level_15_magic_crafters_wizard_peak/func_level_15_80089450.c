@@ -1,4 +1,4 @@
-/* func_level_0_800873E0 (0x800873E0, level_0_artisans_home
+/* func_level_15_80089450 (0x80089450, level_15_magic_crafters_wizard_peak
  * overlay, 0x10f4 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
@@ -16,17 +16,17 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * PARKED 2026-08-20-1 -- GENERATED SKELETON, not yet a match.
- * Every arm below is a verbatim lift from the matched donor library; what is
- * missing is arm 0xE / arm 0x16 / arm 0x1E, which no matched variant carries yet.
- * Decode them off the asm at 0xE -> .L80087A00, 0x16 -> .L80087AA4, 0x1E -> .L80087C98 and drop them into the switch in
- * jump-table ADDRESS order (== source order), then apply the family's two
- * standing knobs: arm 0x18's `fx = 0x2E` stays a plain literal with
- * `unk11`/`unk18` written after it, and the 0x30 carrier must be multi-set
- * (arm 0x15's `v`, or arm 0x21's `ta` promoted to function scope when the
- * variant has no 0x15).  See cookbook A220 and the emit-spawn generator
- * section in G.
+ * MATCHED 2026-08-21.  Arms 0x4 and 0x5 decoded here (both class 3: 0x4 is a
+ * plume that keeps the emitter ACTOR at +0x18 and jitters +-0x3F, 0x5 is a
+ * static puff that zeroes the velocity and jitters +-0x1F); arm 0x41 lifted
+ * from func_level_16_80085F40.
+ *
+ * Arm 0x15's `unk10 = 0` had to move BELOW `unk11` -- the donor order puts the
+ * unk10 store above the fx store and the arm's last three stores come out
+ * rotated.  Same fix as level_16; treat it as a per-variant check, not a donor
+ * invariant.
  */
+
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -116,6 +116,21 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short unk1C;               /* 0x1C */
       short unk1E;               /* 0x1E */
     } plume;
+    struct {                     /* class 3 -- owner-tracked spark */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char life;        /* 0x0A */
+      unsigned char seed;        /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      unsigned char unk10;       /* 0x10 */
+      unsigned char unk11;       /* 0x11 */
+      short pad[3];              /* 0x12 */
+      short vel[3];              /* 0x18 */
+      unsigned char owner;       /* 0x1E actor index into the pool */
+      unsigned char unk1F;       /* 0x1F */
+    } track;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
@@ -163,7 +178,7 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
+void func_level_15_80089450(int count, int type, int *pos, int arg3) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -237,6 +252,65 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x4: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 7;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.plume.pos, pos);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.plume.pos[0] - 0x3F;
+      rec->u.plume.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.plume.pos[1] - 0x3F;
+      rec->u.plume.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0x7E;
+      u3 = rec->u.plume.pos[2] - 0x3F;
+      rec->u.plume.src = (int *)arg3;
+      rec->u.plume.unk1E = 0;
+      rec->u.plume.pos[2] = u3 + t3;
+      rec->u.plume.life = (func_8006272C() & 0xF) + 0x18;
+      rec->u.plume.seed = (func_8006272C() & 7) + 0xF;
+      rec->u.plume.r = 0x80;
+      rec->u.plume.g = 0x80;
+      rec->u.plume.b = 0x80;
+      rec->u.plume.fx = 0x2C;
+      rec->u.plume.unk11 = 4;
+      rec->u.plume.unk10 = 0;
+      break;
+    }
+    case 0x5: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(3);
+      rec->type = type;
+      rec->phase = func_8006272C() & 7;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.track.pos, pos);
+      t1 = func_8006272C() & 0x3E;
+      u1 = rec->u.track.pos[0] - 0x1F;
+      rec->u.track.pos[0] = u1 + t1;
+      t2 = func_8006272C() & 0x3E;
+      u2 = rec->u.track.pos[1] - 0x1F;
+      rec->u.track.pos[1] = u2 + t2;
+      t3 = func_8006272C() & 0x3E;
+      u3 = rec->u.track.pos[2] - 0x1F;
+      rec->u.track.vel[0] = 0;
+      rec->u.track.vel[1] = 0;
+      rec->u.track.vel[2] = 0;
+      rec->u.track.pos[2] = u3 + t3;
+      rec->u.track.life = (func_8006272C() & 7) + 0xC;
+      rec->u.track.seed = (func_8006272C() & 7) + 0xA;
+      rec->u.track.r = 0x80;
+      rec->u.track.g = 0x80;
+      rec->u.track.b = 0x80;
+      rec->u.track.fx = 0x2C;
+      rec->u.track.unk11 = 4;
+      rec->u.track.unk10 = 0;
       break;
     }
     case 0x6: {
@@ -318,6 +392,31 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.plume.fx = 0x2C;
       rec->u.plume.unk11 = 0;
       rec->u.plume.unk10 = 0;
+      break;
+    }
+    case 0x7: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      if (arg3 != 0) {
+        rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[2] = rec->u.spark.pos[2] + ((arg3 * ((int)(func_8006272C() & 0xFE) - 0x30)) >> 8);
+      }
+      rec->u.spark.life = rec->phase * 4;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.vel[0] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.vel[1] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.vel[2] = (func_8006272C() & 0xE) - 7;
+      rec->u.spark.unk1E = (func_8006272C() & 0xF) + 6;
+      rec->u.spark.r = 0x80;
+      rec->u.spark.g = 0x80;
+      rec->u.spark.b = 0x80;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
       break;
     }
     case 0x9: {
@@ -402,6 +501,29 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0x15: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.ribbon.pos, pos);
+      func_80017BFC(rec->u.ribbon.pos2, pos);
+      if ((arg3 & 0x1F) < 0x10) {
+        v = arg3 * 2;
+      } else {
+        v = arg3 * 2 - 0x80;
+      }
+      rec->u.ribbon.unk18 = v;
+      rec->u.ribbon.unk19 = 8;
+      rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
+      rec->u.ribbon.g = 0xFF;
+      rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
+      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
+      rec->u.ribbon.seed = arg3 * 2;
+      rec->u.ribbon.fx = 0x2E;
+      rec->u.ribbon.unk11 = 2;
+      rec->u.ribbon.unk10 = 0;
+      break;
+    }
     case 0x18: {
       rec = (Emit *)func_80053570(2);
       rec->type = type;
@@ -458,6 +580,36 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.unk11 = 4;
       rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x41: {
+      int t1, t2, t3;
+      int u1, u2, u3;
+      rec = (Emit *)func_80053570(1);
+      rec->type = type;
+      rec->phase = func_8006272C() & 3;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.line.a, pos + 3);
+      t1 = func_8006272C() & 0x7E;
+      u1 = rec->u.line.a[0] - 0x3F;
+      rec->u.line.a[0] = u1 + t1;
+      t2 = func_8006272C() & 0x7E;
+      u2 = rec->u.line.a[1] - 0x3F;
+      rec->u.line.a[1] = u2 + t2;
+      t3 = func_8006272C() & 0xF;
+      u3 = *(volatile unsigned short *)&rec->u.line.a[2] + 0x136;
+      rec->u.line.c1[3] = 0;
+      rec->u.line.c0[0] = 0x80;
+      rec->u.line.c0[1] = 0x80;
+      rec->u.line.c0[2] = 0x80;
+      *(volatile unsigned char *)&rec->u.line.c1[0] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[1] = 0xC0;
+      *(volatile unsigned char *)&rec->u.line.c1[2] = 0xC0;
+      rec->u.line.a[2] = u3 + t3;
+      rec->u.line.c0[3] = 0x50;
+      rec->u.line.b[0] = rec->u.line.a[0];
+      rec->u.line.b[1] = rec->u.line.a[1];
+      rec->u.line.b[2] = rec->u.line.a[2] - 0x20;
       break;
     }
     case 0x42: {
@@ -570,6 +722,27 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.line.c1[1] = 0xFF;
       rec->u.line.c1[2] = 0xFF;
       rec->u.line.c0[3] = 0x50;
+      break;
+    }
+    case 0x4C: {
+      int w;
+      rec = (Emit *)func_80053570(0);
+      rec->type = type;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.smear.pos, pos);
+      func_80017BFC(rec->u.smear.pos2, pos);
+      if ((arg3 & 0x1F) < 0x10) {
+        w = arg3 * 2;
+      } else {
+        w = arg3 * 2 - 0x80;
+      }
+      rec->u.smear.unk18 = w;
+      rec->u.smear.unk19 = 8;
+      rec->u.smear.r = ~((arg3 & 0xF) << 4);
+      rec->u.smear.g = 0xFF;
+      rec->u.smear.b = -0x80 - ((arg3 & 0xF) << 3);
+      rec->u.smear.fx = 0x40;
+      rec->u.smear.life = 2;
       break;
     }
     case 0x4D: {
