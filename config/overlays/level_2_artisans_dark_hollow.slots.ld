@@ -10,6 +10,7 @@
     build/overlays/level_2_artisans_dark_hollow/c/func_level_2_80083274.o(.text)
     . = 0x00009a68 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.func_level_2_800844A0)
+    build/overlays/level_2_artisans_dark_hollow/c/func_level_2_800844A0.o(.text)
     . = 0x0000ab5c ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.func_level_2_80085594)
     build/overlays/level_2_artisans_dark_hollow/c/func_level_2_80085594.o(.text)
