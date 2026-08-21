@@ -25,7 +25,9 @@
  * Word-identical (bar branch displacements) to func_level_2_800844A0,
  * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254.
  *
- * PARKED at 99.5% length-exact -- see the note at the end of the file.
+ * Arm 0x18's store order is load-bearing: `unk11 = 8` and `unk18 = i * 32`
+ * are written AFTER `fx = 0x2E`, which is what puts the fx constant's reload
+ * (`li t0,46`) ahead of them in LUID order -- see the note at the end.
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -434,13 +436,13 @@ void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
       v = 0x30;
       z = i * 16;
       rec->u.band.life = v;
-      rec->u.band.unk11 = 8;
-      rec->u.band.unk18 = i * 32;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
       rec->u.band.seed = z;
       rec->u.band.fx = 0x2E;
+      rec->u.band.unk11 = 8;
+      rec->u.band.unk18 = i * 32;
       rec->u.band.unk10 = 0;
       rec->u.band.unk1A = 0x10;
       rec->u.band.unk1C = z;
@@ -737,57 +739,38 @@ void func_level_1_800892C4(int count, int type, int *pos, int arg3) {
   }
 }
 
-/* PARKED 2026-08-19-2 -- 1080/1085 instructions exact, LENGTH-EXACT (99.5%).
- * The ENTIRE residue is ONE instruction in arm 0x18's store block: the original
- * puts `li t0,46` (the class-0x2E fx constant) at block slot 2, between
- * `sll v1,i,4` and `sb v0,10(s2)`; ours puts the identical instruction at slot 6,
- * between `sll v0,i,5` and `sh v0,24(s2)`. Nothing else in the function differs,
- * and the 4-slot shift is what the differ reports as 5 lines.
+/* MATCHED 2026-08-19-2 park closed 2026-08-20-1.  The residue was ONE
+ * instruction -- the `li t0,46` that reload emits for arm 0x18's
+ * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
+ * statement order.
  *
- * TWO CLAIMS FROM THE 2026-08-04 PARK ARE RETIRED (2026-08-19-2):
- *  1. "The residue is ONE register: ours a0, the original t0 -- an allocation
- *     tie (F7/F1); the lever is something that puts a0..a3 into global.c's
- *     regs_someone_prefers[]." WRONG, and it sent that session hunting donors
- *     that cannot exist. `t0` is not allocated to anything: `cc1 -dg` on the
- *     source below prints `Spilling reg 8.` for the fx store's insn, so the
- *     `li t0,46` is a RELOAD insn and t0 is this function's spill register.
- *     Write the constant as a PLAIN LITERAL (`rec->u.band.fx = 0x2E;`) and the
- *     register is right for free -- all SEVEN `li ?,46` in the function then
- *     match the original exactly. It was the multi-set carrier that FORCED a0:
- *     two sets kill `reg_equiv_constant`, the pseudo becomes an ordinary
- *     allocno and global_alloc hands it a0 (see A214 for the same mechanism
- *     used in the useful direction).
- *  2. The `v` half is genuinely solved and is kept below: arm 0x15's block
- *     local promoted to function scope carries 0x30, so `li v0,48` and
- *     `sll v1,i,4` land in the original's slots 0 and 1.
+ * The mechanism, and it generalises (cookbook A219): a constant stored to a
+ * field with no register of its own is rematerialised by reload IMMEDIATELY
+ * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
+ * it as a low-priority straggler, and stragglers come out in LUID order, so
+ * the `li` can never be emitted above a straggler belonging to an EARLIER
+ * source statement.  Moving the fx store up does move the `li` up -- but it
+ * drags the store with it (stores of equal priority also come out in source
+ * order), so the store then lands four slots early instead.  The two are one
+ * dial with two ends and neither end alone reaches the original.
  *
- * WHAT THE RESIDUE ACTUALLY IS: reload inserts the `li` immediately before the
- * insn that needs it (the `sb ..,0xF(s2)` fx store, source statement 8 of the
- * block), and sched2 then hoists it as a priority-1 straggler into the first
- * bubble it can reach. Priority-1 insns come out in LUID order (A164), and
- * ours lands correctly BY THAT RULE -- the emitted priority-1 sequence is
- * li48, sll v1, li 8, sll v0, li t0, li 16, exactly source order. The ORIGINAL's
- * sequence is li48, sll v1, li t0, li 8, sll v0, li 16, i.e. its `li t0,46` has
- * a LUID between `z = i * 16;` and `unk11 = 8` -- two statements EARLIER than
- * the store that consumes it. So the original's reload was inserted at a point
- * where some insn already needed the constant. Find that insn; do not chase the
- * register.
+ * What breaks the tie is that `unk11 = 8` / `unk18 = i * 32` are NOT free
+ * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
+ * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
+ * same relative slots no matter where the statements sit in the source.
+ * Writing those two statements AFTER the fx store therefore raises their
+ * LUIDs above the `li t0,46` -- putting the reload third in the straggler
+ * sequence, exactly where the original has it -- while their stores stay put.
+ * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
+ * never both ends at once; moving unk11/unk18 below fx gives MATCH.
  *
- * Measured this session on top of the `v` promotion, all worse:
- *  - the fx STORE moved to each of source positions 1..7 (5,5,8,10,9,8,7
- *    diffs): position is not free, the store order is pinned to source order,
- *    so moving the statement moves the store too.
- *  - a function-scope 2-reference carrier assigned before the loop (which makes
- *    `update_equiv_regs` delete the pseudo outright, `local-alloc.c` reg_n_refs
- *    == 2 + reg_basic_block < 0): identical output to the plain literal, 5.
- *  - a second set for the carrier from `unk1A = 0x10` (the only other constant
- *    in the arm): the store hoists out of order and the register goes to a0.
- *  - carriers shared with arm 0x15 (817 diffs), arm 0x4C (+1 insn), the loop
- *    locals `k` (length change), `z` (643), `i` (+1).
- *  - `v` carrying 0x2E with 0x30 left a literal: +1 insn.
+ * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
+ * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier
+ * gives the constant two sets, which kills `reg_equiv_constant` and hands the
+ * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical to func_level_2_800844A0, func_level_4_8008391C,
- * func_level_10_8008611C and func_level_28_80085254, so this one insn is worth
- * 21,700 bytes; func_level_3_80088F68 (3,940 B) has the SAME residue and the
- * same fix applies to it.
+ * Word-identical (bar branch displacements) to func_level_2_800844A0,
+ * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
+ * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * 985-insn variant of the same walk and carries the same arm 0x18.
  */
