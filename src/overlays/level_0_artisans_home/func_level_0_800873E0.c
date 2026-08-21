@@ -16,17 +16,24 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * PARKED 2026-08-20-1 -- GENERATED SKELETON, not yet a match.
- * Every arm below is a verbatim lift from the matched donor library; what is
- * missing is arm 0xE / arm 0x16 / arm 0x1E, which no matched variant carries yet.
- * Decode them off the asm at 0xE -> .L80087A00, 0x16 -> .L80087AA4, 0x1E -> .L80087C98 and drop them into the switch in
- * jump-table ADDRESS order (== source order), then apply the family's two
- * standing knobs: arm 0x18's `fx = 0x2E` stays a plain literal with
- * `unk11`/`unk18` written after it, and the 0x30 carrier must be multi-set
- * (arm 0x15's `v`, or arm 0x21's `ta` promoted to function scope when the
- * variant has no 0x15).  See cookbook A220 and the emit-spawn generator
- * section in G.
+ * MATCHED 2026-08-21.  Arm 0xE decoded here (a camera-range-limited puff that
+ * re-uses the distance as its brightness, `d >= 0x6001 ? (0x8000 - d) >> 6 :
+ * 0x80`, with the >= guard so the constant arm lands out of line -- A64);
+ * arms 0x16 and 0x1E are lifts from func_level_12_8008D2D0 and the level_27
+ * decode.
+ *
+ * Arm 0x1E's colour stores are written BEFORE the `fx = 0x2E` store even
+ * though the emitted store order is the reverse.  That is A164 acting on
+ * reload's rematerialised constants: the `li` for a constant field store
+ * inherits ITS STORE's LUID and the `li`s come out in source order, while the
+ * stores themselves are re-ordered by priority.  With `fx` written first, its
+ * `li t0,46` sinks into the bubble after the seed call, the arm's tail then
+ * differs from arm 0x21's by that one insn, jump.c cross-jumps one insn less
+ * and the overlay is a word too long to link.
+ *
+ * No arm 0x15 here, so the 0x30 carrier is arm 0x21's `ta` at function scope.
  */
+
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -143,10 +150,14 @@ extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >
 extern void func_80017700(int *dst, int *src);           /* CopyVector */
 extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
 extern void func_80017048(int *mat, int *v, int *dst);   /* RotateVectorByMatrix */
+extern int func_80017990(int *a, int *b);                /* VectorDistance */
 extern int func_80016C58(int a);                         /* LookupSine */
 extern int func_80016CB0(int a);                         /* LookupCosine */
 extern unsigned int func_8006272C(void);                 /* GetRandomU32 */
 
+extern int D_80076DF8[];          /* camera world position */
+extern short D_8006CC78[];        /* cosine table */
+extern short D_8006CBF8[];        /* sine table */
 extern int D_800757D8;            /* g_Gamestate */
 extern int D_80078764;
 extern int D_80078A58[];          /* Spyro world position */
@@ -175,6 +186,8 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
   int i;
   int k;
   int v;
+  int ta, tb;
+  int ua, ub;
 
   for (i = 0; i < count; i++) {
     k = i * 4;
@@ -402,15 +415,76 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0xE: {
+      int d;
+      d = func_80017990(pos, D_80076DF8);
+      if (d > 0x7FFF) {
+        break;
+      }
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = 0x40;
+      rec->u.spark.seed = func_8006272C();
+      if (d >= 0x6001) {
+        d = (0x8000 - d) >> 6;
+      } else {
+        d = 0x80;
+      }
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.r = d;
+      rec->u.spark.g = d;
+      rec->u.spark.b = d;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x16: {
+      int d;
+      d = func_80017990(pos, D_80076DF8);
+      if (d > 0x7FFF) {
+        break;
+      }
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = func_8006272C() & 0xF;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((((int)(func_8006272C() & 0xFFF) - 0x7FF) * 300) >> 12);
+      rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((((int)(func_8006272C() & 0xFFF) - 0x7FF) * 300) >> 12);
+      arg3 = (arg3 + (int)(func_8006272C() & 0x1E) - 0xF) & 0xFF;
+      rec->u.spark.vel[0] = (D_8006CC78[arg3] * 7) >> 11;
+      rec->u.spark.vel[1] = (D_8006CBF8[arg3] * 7) >> 11;
+      rec->u.spark.vel[2] = 8;
+      rec->u.spark.unk1E = (func_8006272C() & 2) - 1;
+      rec->u.spark.life = 0xE0;
+      rec->u.spark.seed = func_8006272C();
+      if (d >= 0x6001) {
+        d = (0x8000 - d) >> 7;
+      } else {
+        d = 0x40;
+      }
+      rec->u.spark.r = d >> 1;
+      rec->u.spark.g = d >> 1;
+      rec->u.spark.b = d;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 0xC;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x18: {
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->unk03 = 1;
       func_80017BFC(rec->u.band.pos, pos);
       func_80017BFC(rec->u.band.pos2, pos);
-      v = 0x30;
+      ta = 0x30;
       z = i * 16;
-      rec->u.band.life = v;
+      rec->u.band.life = ta;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
@@ -424,9 +498,24 @@ void func_level_0_800873E0(int count, int type, int *pos, int arg3) {
       rec->u.band.unk1D = i;
       break;
     }
+    case 0x1E: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      rec->u.spark.unk1E = (int)func_8006272C() % 2 + 1;
+      rec->u.spark.life = 8;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.r = 0x40;
+      rec->u.spark.g = 0x40;
+      rec->u.spark.b = 0x40;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x21: {
-      int ta, tb;
-      int ua, ub;
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->phase = 0;
