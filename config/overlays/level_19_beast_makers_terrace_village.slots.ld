@@ -10,6 +10,7 @@
     build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_800853AC.o(.text)
     . = 0x0000bca0 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.func_level_19_800866D8)
+    build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_800866D8.o(.text)
     . = 0x0000cf0c ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.func_level_19_80087944)
     build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_80087944.o(.text)
