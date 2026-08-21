@@ -35,7 +35,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | reload gives the index v0, which pins it against the *0x58 chain at sched2 |
-| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 |  |
+| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | local-alloc combine_regs tie: operand 1 wins the destination hard reg |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
 | `0x8008249c` | func_level_5_8008249C | ovl/level_5_artisans_sunny_flight | 3732 | 3660 |  |
 | `0x8008223c` | func_level_23_8008223C | ovl/level_23_beast_makers_wild_flight | 3352 | 3300 |  |
@@ -60,7 +60,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 |  |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 644 |  |
 | `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 cross-jump asymmetry + addressing/sched ties; 230 mismatched over 114 regions |
-| `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block |
+| `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion — REGISTER half retired, cross-jump now the blocker |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 532 | dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie |

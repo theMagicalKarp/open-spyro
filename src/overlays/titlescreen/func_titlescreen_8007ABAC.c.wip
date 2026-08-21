@@ -36,6 +36,57 @@
  * dirs. CORROBORATES the overnight ~39000-iteration finding above: the
  * randomizer's transform space genuinely does not reach the v0-reuse flip.
  * Treat as settled; do not spend further unattended permuter time here.
+ *
+ * 2026-08-21-1 — THE "EVERY SOURCE FORM CANONICALIZES" CLAIM IS RETIRED, and
+ * the root cause above is wrong in a way that matters.  Do not re-run the
+ * permuter here: the residue is not a scheduling tie at all.
+ *
+ * WHAT IT ACTUALLY IS.  The block is
+ *   (set (reg P) (mem D_800785E8))      ; the pointer
+ *   (set (reg C) (const_int -262144))   ; the constant
+ *   (set (reg:SI 5 a1) (plus (reg P) (reg C)))
+ * and `local-alloc.c block_alloc` walks the insn's operands `for (i = 1; ...)`
+ * calling `combine_regs (operand_i, operand_0)` and BREAKING ON THE FIRST WIN.
+ * Operand 1 is P, so P gets TIED to the destination hard reg a1 and C falls to
+ * find_reg, which hands it the recycled v0 -> `addu a1,a1,v0`.  The original
+ * has the tie land on operand 2 instead (`addu a1,v0,a1`).  So this is a
+ * combine_regs TIE question, not a scheduler or a qty_compare question, and
+ * that is why every scheduling-flavoured probe in the note above came back
+ * byte-identical.  Verified with the SD-2c probe: dispositions are
+ * `134 in 5` (P -> a1) and `136 in 2` (C -> v0); both are priority-1 stragglers
+ * at sched1 (`cc1 -dS` prints priority = 1 for all six insns of the block, no
+ * birthing boost on any of them).
+ *
+ * A SOURCE FORM THAT DOES FLIP IT (this is the new fact).  An A195 ref dial on
+ * the constant — `int off; do { off = -0x40000; } while (0);` with the call
+ * written `D_800785E8 + off` — is LENGTH-EXACT (2147) and emits
+ * **`addu a1,v0,a1`, exactly the original**.  It is the only form found that
+ * moves this insn at all.
+ * WHY IT IS NOT A MATCH YET: the do/while is also an A200 cse barrier, and the
+ * barrier lets cse merge D_80076B90 with the symbol 40 bytes below it into one
+ * held base, so `lui v0/addiu v0/lw v0,0(v0)` at orig 117-119 becomes
+ * `lui s3/addiu s3/lw v0,0(s3)` and the a0 load at the call site becomes
+ * `lw a0,-40(s3)`.  That saves an insn there and the saving is spent
+ * reshuffling the call-site block.  Net 14 aligned vs the baseline 6.
+ * The open question is therefore narrow and named: **raise the constant's
+ * reg_n_refs without ending cse's ebb.**  flow.c's `loop_depth` weighting is
+ * the only mechanism that raises reg_n_refs, which is why every non-loop
+ * spelling is inert.
+ *
+ * MEASURED THIS SESSION (aligned score; baseline 6 over 3 regions — note the
+ * LINKED count is 7, use the content-aligned one to drive this park):
+ *   6   baseline; a plain `int off = -0x40000;` named temp (inert, as the
+ *       note above says); `n = 600` named 5th arg; `n` shared with the
+ *       adjacent `D_80078D78.unk_0x10 = 1;` store (the constant store is
+ *       rematerialised by reload per A220, so the second set is deleted and
+ *       reg_n_sets never rises — the same F14i trap as level_27's `rx`).
+ *   14  the A195 dial at the call site (addu CORRECT, cse barrier costs more).
+ *   16  a shared `vram` pointer local across the two arms.
+ *   18/25  the dial hoisted above the CD poll / to the top of the case — both
+ *       come out SHORT (2145 / 2142) and will not link.
+ * Also measured: making the pointer multi-block does NOT reach the call site —
+ * gcc keeps a fresh block-local pseudo there because the load carries a
+ * REG_EQUIV, so `reg_qty < 0` never holds for the operand that matters.
  */
 
 #include "titlescreen.h"

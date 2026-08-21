@@ -157,3 +157,40 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
    immediately (11/152 — the register mirror returns and the two lbus swap).
    Next idea would have to make the `li` ineligible for the delay slot (its dest
    live on the taken path) at zero insn cost, or find a 3rd use of `old`. */
+
+/* 2026-08-21-1 — THE REGISTER HALF OF THE MUTUAL EXCLUSION IS RETIRED.  The
+   note above says a single-set c16 is unreachable because local-alloc "takes it
+   first ... and hands it v0 (REGISTER WRONG)".  That is only true at `old`'s
+   default ref count.  `qty_compare`'s priority is
+   `floor_log2(n_refs) * n_refs * qty_size / (death - birth)` (read off
+   local-alloc.c) and it is dialable through **A195, which raises `reg_n_refs`
+   because flow.c weights every ref by `loop_depth`** — so a `do { } while (0);`
+   around a statement adds one ref per reference in it, at zero emitted code.
+   Measured with the SD-2c probe (`cc1 -dl`), per arm block:
+     baseline single-set c16 (E1): old 2 refs / 9 insns = 2222, c16 3/6 = 5000.
+     wrap `old`'s DEF only:        old 3/11 = 2727.  Still loses.
+     wrap `old`'s USE only:        old 3/8  = 3750.  Still loses.
+     wrap BOTH def and use:        old **4/8 = 10000**, c16 3/6 = 5000 -> old
+                                   takes v0 and c16 takes v1.  **REGISTER RIGHT
+                                   WITH c16 SINGLE-SET**, which the note above
+                                   calls impossible.
+   Note `floor_log2` is a step function: 3 refs is still floor_log2 == 1, so the
+   dial does nothing until it reaches 4.  That is why the one-sided wraps look
+   like failures and why an earlier session concluded the gap "cannot be closed".
+
+   WHAT BLOCKS IT NOW is a different, cheaper-looking problem: the do/while is
+   also an A200 cse/block barrier, and the barrier at the USE site lets jump.c
+   CROSS-JUMP the two arms' identical `func_80037E98(actor, p3F, next)` tails.
+   Both per-arm `move a0,s0` copies then collapse into one in the shared tail
+   (ours at 125, the original has one per arm at 101 and 114), and the `li`
+   drifts to the front again.  Score 7/152 aligned (49 linked) for every
+   use-site spelling measured: 1x, 2x and 3x nesting on the use, and def+use
+   together, are all BIT-IDENTICAL to each other — the dial saturates.
+   So the open question is no longer "can c16 be single-set" (yes) but
+   **"can `old` reach 4 refs without a barrier at its use"**.  flow.c's
+   loop_depth is the only mechanism that raises reg_n_refs, and a real third
+   reference costs an insn, so this needs either a loop-shaped construct that
+   jump.c deletes before cross-jumping runs, or something that keeps the two
+   arms' tails distinct so cross-jumping cannot fire.
+   Park state UNCHANGED at 4/152 (the multi-set c16 body below) — it is still
+   the best score; E1's single-set body is 9/152 and the E5 dial body is 7. */
