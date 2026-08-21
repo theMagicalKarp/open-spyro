@@ -26,7 +26,4 @@
     build/overlays/level_18_beast_makers_home/c/func_level_18_800888F8.o(.rodata)
     . = 0x00000aa4 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B4DC)
-    . = 0x00000bec ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B624)
-    . = 0x00000c0c ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B644)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_80089AB8.o(.rodata)

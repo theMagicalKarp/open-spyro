@@ -21,7 +21,4 @@
     build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80084028.o(.rodata)
     . = 0x00000390 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007ADC8)
-    . = 0x000004d8 ;
-    build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007AF10)
-    . = 0x000004f8 ;
-    build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007AF30)
+    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80085254.o(.rodata)

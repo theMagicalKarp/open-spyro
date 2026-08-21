@@ -1,4 +1,4 @@
-/* func_level_3_80088F68 (0x800892C4, level_1_artisans_stone_hill
+/* func_level_7_8008C540 (0x8008C540, level_7_peace_keepers_dry_canyon
  * overlay, 0x10f4 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
@@ -16,16 +16,15 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * The stone-hill variant: the town-square arm set plus 0x6, the actor-tracking
- * smoke plume (record class 3, which keeps a pointer to the actor's position
- * at +0x18 so the particle follows it).  `arg3 >> 24` is written inline at its
- * three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it out
- * of the loop (scan_loop case 2); a named local would pin it inside the arm.
+ * GENERATED from the matched donor library (cookbook A220 / the emit-spawn
+ * generator): the arms below are lifted verbatim from the donors that already
+ * carry them, emitted in jump-table ADDRESS order, which is source order.
+ * This variant's classes: 0x0, 0x1, 0x2, 0x9, 0xA, 0xC, 0xD, 0x10, 0x11, 0x15, 0x18, 0x21, 0x42, 0x46, 0x47, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254.
- *
- * PARKED at 99.6% length-exact -- see the note at the end of the file.
+ * Arm 0x18 is the family's one per-variant knob: `fx = 0x2E` must be a plain
+ * literal, `unk11`/`unk18` must be written after it, and the 0x30 carrier must
+ * be MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
+ * Here that carrier is `v` (arm 0x15's local promoted to function scope).
  */
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -163,7 +162,7 @@ extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
 extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
-void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
+void func_level_7_8008C540(int count, int type, int *pos, int arg3) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -174,6 +173,8 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
   int z;
   int i;
   int k;
+  int v;
+  int c;
 
   for (i = 0; i < count; i++) {
     k = i * 4;
@@ -320,8 +321,62 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     }
+    case 0xD: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = 0x18;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.r = 0xFF;
+      rec->u.spark.g = 0xFF;
+      rec->u.spark.b = 0;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
+    case 0x10: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = ((int *)arg3)[0];
+      rec->u.spark.seed = func_8006272C();
+      c = ((int *)arg3)[1] * 8;
+      rec->u.spark.r = c;
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      rec->u.spark.g = c;
+      rec->u.spark.b = rec->u.spark.r;
+      break;
+    }
+    case 0x11: {
+      rec = (Emit *)func_80053570(2);
+      rec->type = type;
+      rec->phase = 0;
+      rec->unk03 = 1;
+      func_80017BFC(rec->u.spark.pos, pos);
+      func_80017BFC(rec->u.spark.vel, pos + 3);
+      rec->u.spark.unk1E = 0;
+      rec->u.spark.life = 0x18;
+      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.r = ((int *)arg3)[0];
+      rec->u.spark.g = ((int *)arg3)[1];
+      rec->u.spark.b = ((int *)arg3)[2];
+      rec->u.spark.fx = 0x2E;
+      rec->u.spark.unk11 = 4;
+      rec->u.spark.unk10 = 0;
+      break;
+    }
     case 0x15: {
-      int v;
       rec = (Emit *)func_80053570(2);
       rec->type = type;
       rec->unk03 = 1;
@@ -350,17 +405,16 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
       rec->unk03 = 1;
       func_80017BFC(rec->u.band.pos, pos);
       func_80017BFC(rec->u.band.pos2, pos);
-      t = 0x30;
-      rec->u.band.life = t;
+      v = 0x30;
       z = i * 16;
-      t = 0x2E;
-      rec->u.band.unk11 = 8;
-      rec->u.band.unk18 = i * 32;
+      rec->u.band.life = v;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
       rec->u.band.seed = z;
-      rec->u.band.fx = t;
+      rec->u.band.fx = 0x2E;
+      rec->u.band.unk11 = 8;
+      rec->u.band.unk18 = i * 32;
       rec->u.band.unk10 = 0;
       rec->u.band.unk1A = 0x10;
       rec->u.band.unk1C = z;
@@ -657,86 +711,38 @@ void func_level_3_80088F68(int count, int type, int *pos, int arg3) {
   }
 }
 
-/* PARKED 2026-08-04 -- 981/985 instructions exact, LENGTH-EXACT (99.6%).
- * Full decode: every arm is byte-identical.  The residue is the same
- * 4-instruction F14 knot that parks func_level_1_800892C4, confined to the
- * 0x18 arm:
+/* MATCHED 2026-08-19-2 park closed 2026-08-20-1.  The residue was ONE
+ * instruction -- the `li t0,46` that reload emits for arm 0x18's
+ * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
+ * statement order.
  *
- *   orig  li v0,48 ; sll v1,i,4 ; li t0,46 ; sb v0,0xA ; ... ; sb t0,0xF
- *   ours  li a0,48 ; sll v1,i,4 ; sb a0,0xA ; li a0,46 ; ... ; sb a0,0xF
+ * The mechanism, and it generalises (cookbook A220): a constant stored to a
+ * field with no register of its own is rematerialised by reload IMMEDIATELY
+ * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
+ * it as a low-priority straggler, and stragglers come out in LUID order, so
+ * the `li` can never be emitted above a straggler belonging to an EARLIER
+ * source statement.  Moving the fx store up does move the `li` up -- but it
+ * drags the store with it (stores of equal priority also come out in source
+ * order), so the store then lands four slots early instead.  The two are one
+ * dial with two ends and neither end alone reaches the original.
  *
- * i.e. the ORDER is now right; what is left is that the two constants must
- * live in two different registers (v0 and t0) and ours share one.
+ * What breaks the tie is that `unk11 = 8` / `unk18 = i * 32` are NOT free
+ * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
+ * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
+ * same relative slots no matter where the statements sit in the source.
+ * Writing those two statements AFTER the fx store therefore raises their
+ * LUIDs above the `li t0,46` -- putting the reload third in the straggler
+ * sequence, exactly where the original has it -- while their stores stay put.
+ * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
+ * never both ends at once; moving unk11/unk18 below fx gives MATCH.
  *
- * F14 -- the birthing-insn hoist (mechanism, read off gcc 2.7.2 sched.c; do
- * not re-derive).  sched1 schedules each basic block BACKWARD (the first insn
- * it picks becomes the block tail).  With every insn at priority 1, ties break
- * on INSN_LUID descending, EXCEPT that `adjust_priority` raises any insn whose
- * `birthing_insn_p` holds -- a SET of a pseudo with `reg_n_sets == 1` -- to
- * max_priority.  A boosted def is therefore picked early in the backward pass
- * and lands LATE in the block, right next to its use; a def whose pseudo is
- * set more than once keeps priority 1 and drifts to the FRONT of the block.
- * (`schedule_select` additionally prefers the insn with the largest potential
- * hazard, which is why stores beat ALU ops at equal priority.)
- * So a "why is this def next to its use instead of hoisted?" diff is a
- * reg_n_sets question, not a source-order one: give the value a local that is
- * assigned twice and the def hoists.
+ * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
+ * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier
+ * gives the constant two sets, which kills `reg_equiv_constant` and hands the
+ * value a0 instead of leaving it to reload's spill register t0.
  *
- * That lever is what took this arm from 6 diffs to 4: `z` (already assigned in
- * arms 0x46 and 0x50) carries `i * 16`, and the block-local `t` carries first
- * 0x30 then 0x2E -- two sets, so neither `li` is boosted and both hoist ahead
- * of the life/unk11 store pair, exactly as the original does.
- *
- * Exhausted for the last 4:
- *  - `t` split into two locals: each is then single-set, birthing, and sinks
- *    back to its store (6 diffs).
- *  - `t` = {0x30, 0x10} + 0x2E literal: the 0x10 li hoists to position 4
- *    (the original keeps it at 9, so 0x10 IS birthing in the original) -- 6.
- *  - function-scope locals shared across arms for the 0x2E / 0x40 fx constants
- *    (arms 0x15 / 0x4C): re-colours the whole function, 818 diffs.  Any
- *    cross-arm local sharing beyond `z` explodes.
- *  - `k = 0x30` (reusing the loop-top local): changes the length.
- * POSITION HALF SOLVED 2026-08-04-1.  The blocker was the WAR chain that one
- * twice-assigned local creates: `sb <t>,0xA` reads t, so `t = 0x2E` can never
- * be scheduled above it.  Two DISTINCT locals, each non-birthing, do work --
- * and a local becomes non-birthing without a second set in this arm by
- * promoting another arm's block-local to function scope (arm 0x15's `v` is
- * free: sharing it changes nothing in 0x15).  With
- *   v = 0x30;  z = i * 16;  <carrier> = 0x2E;  rec->life = v;  ...
- * `li v0,48`, `sll v1,i,4` and the 0x2E def all land in the original's
- * positions.  What is left is ONE register: ours a0, the original t0.  gcc
- * 2.7.2 defines no REG_ALLOC_ORDER for MIPS, so both local- and global-alloc
- * walk registers numerically (v0, v1, a0..a3, t0..), and a carrier that
- * neither crosses a call (that would force an s-reg) nor conflicts with
- * a0..a3 cannot reach t0.  Donors tried, all a0: 0x15 `v`, 0x4C `w` (also -2
- * insns in its own arm), 0x4D `t`/`u` (s0, call-crossing), 0x4E `u1`, 0x4F
- * `t4`, 0x21 `ta`, and every block local promoted at once.  One carrier
- * shared across all six fx = 0x2E sites is +2 insns.  So this is now an
- * allocation tie (F7/F1), not a scheduling one: the lever to look for is
- * something that puts a0..a3 into global.c's regs_someone_prefers[] for this
- * allocno -- a LOWER-priority conflicting pseudo with an argument-register
- * copy preference that does not itself cross a call.
- *
- * Word-identical (bar branch displacements) to func_level_20_800861CC:
- * landing this one lands 7,880 exact bytes, and the same 4-insn fix lands the
- * five-overlay 1085-insn group headed by func_level_1_800892C4 (21,700 more).
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~20000 iterations, timed out
- * at the 15m budget): best score 210 vs first-iteration score 215, with the
- * next two candidates both at 215. Essentially flat -- a 2% drop, the smallest
- * proportional movement of any improving function this session.
- *
- * That is the expected result and it is informative rather than disappointing:
- * at 99.6% with 4 instructions differing there is almost no range left, and the
- * residue is the shared 4-insn 0x18-arm knot (§F14) described above, whose two
- * halves are documented as mutually exclusive. A randomizer cannot satisfy a
- * mutually-exclusive pair by chance. func_level_1_800892C4 (the head of the
- * 1085-insn group) was run in this same session and behaved the same way
- * (215 -> 185, ~20100 iterations), which is consistent with both being held by
- * the one knot. Still PARKED (see above).
- *
- * Combined leverage of that single 4-insn fix, per the byte counts above and in
- * the level_1 file: 7,880 bytes here + 21,700 in the level_1 group = 29,580.
- * This is the highest-value unsolved problem the campaign identified, and it
- * needs a targeted §F14 attack, not more unattended permuter budget.
+ * Word-identical (bar branch displacements) to func_level_2_800844A0,
+ * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
+ * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * 985-insn variant of the same walk and carries the same arm 0x18.
  */

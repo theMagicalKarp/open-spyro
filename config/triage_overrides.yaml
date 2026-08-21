@@ -2027,3 +2027,52 @@ func_level_0_8007D9C8:
     aligned). That is a multi-session finish, not a tie sweep -- treat it as
     decode-complete/verify-pending, and drive it off the masked resync diff,
     never the linked one.
+
+func_level_1_800892C4_family:
+  verdict: viable
+  class: "A220 straggler LUID + multi-set 0x30 carrier"
+  date: 2026-08-20-1
+  note: >-
+    MATCHED and closed. The 4-insn arm-0x18 knot that had gated 29,580 B since
+    2026-08-04 was two source decisions: `fx = 0x2E` a plain literal (a carrier
+    kills reg_equiv_constant and hands it a0 instead of reload's t0), and
+    `unk11`/`unk18` written BELOW the fx store so their LUIDs rise above the
+    reload's. See cookbook A220. Landed level_1 + its four clones, level_3 +
+    level_20, and unblocked the whole 36-overlay emit-spawn family.
+func_level_27_80086754:
+  verdict: parked
+  class: "reload gives the index v0, which pins it against the *0x58 chain at sched2"
+  date: 2026-08-20-1
+  note: >-
+    6,788 B, 9/1697, LINKS. Re-diagnosed: the F14 boost is only the first link
+    -- it shortens the load's live range, reload therefore gives it v0 (the
+    multiply chain's register), and the resulting output/anti dependence is what
+    sched2 cannot move. NEW LEVER (reusable): two assignments of one variable,
+    each a single-use load feeding a multiply, mutually block combine
+    (REG_N_SETS != 1), so the variable stays multi-set at zero insn cost --
+    `idx` carrying rec[0x18] and node[8] fixes the head order. Variant table in
+    the wip header; what is left is a2<->a3 between the index quantity and the
+    actor-table base. Do NOT re-attempt the carrier list already measured.
+emit_spawn_dispatcher_family:
+  verdict: viable
+  class: "generator vein, 8 skeletons parked"
+  date: 2026-08-20-1
+  note: >-
+    36 overlay functions calling func_80053570; 28 matched 2026-08-20-1
+    (+96,032 B this session). The eight left are committed as generated
+    `.c.wip` skeletons with every shared arm already lifted; 31,416 B behind 13
+    arm decodes (0x4, 0x5, 0x8, 0xE, 0x16, 0x1D, 0x1E, 0x1F, 0x41, 0x45, 0x49).
+    Decode 0x8 and 0x41 first -- four variants each. Recipe in cookbook G,
+    "The per-level emit-SPAWN dispatcher family".
+func_level_13_8008AF54_and_14_80089454:
+  verdict: parked
+  class: "four dead `li a3,3` remats in the advance-pass arms 0x4/0x8"
+  date: 2026-08-20-1
+  note: >-
+    Re-screened only. The four extra `li a3,3` are genuinely dead (each is
+    immediately clobbered by a following jal) and sit at block heads / merge
+    labels, so they are reload artefacts, not call arguments -- checked against
+    every matched call site of func_80017C24 / func_80017BFC / func_8001778C,
+    none of which is 4-arg, and against level_16, whose copy of the same arm has
+    the ordinary two-`li $v0` form. 14,048 B behind one mechanism; not attempted
+    this session.

@@ -10,6 +10,7 @@
     build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80083F2C.o(.text)
     . = 0x0000a74c ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.func_level_9_80085184)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80085184.o(.text)
     . = 0x0000b828 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.func_level_9_80086260)
     build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80086260.o(.text)

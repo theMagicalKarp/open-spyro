@@ -21,7 +21,4 @@
     build/overlays/level_25_dream_weavers_dark_passage/c/func_level_25_800857FC.o(.rodata)
     . = 0x00000938 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007B370)
-    . = 0x00000a80 ;
-    build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007B4B8)
-    . = 0x00000aa0 ;
-    build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007B4D8)
+    build/overlays/level_25_dream_weavers_dark_passage/c/func_level_25_80086D38.o(.rodata)

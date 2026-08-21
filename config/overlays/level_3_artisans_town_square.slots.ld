@@ -21,6 +21,7 @@
     build/overlays/level_3_artisans_town_square/c/func_level_3_80087E20.o(.text)
     . = 0x0000e530 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_80088F68)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_80088F68.o(.text)
     . = 0x0000f494 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_80089ECC)
     build/overlays/level_3_artisans_town_square/c/func_level_3_80089ECC.o(.text)

@@ -21,6 +21,7 @@
     build/overlays/level_6_peace_keepers_home/c/func_level_6_8008AE28.o(.text)
     . = 0x000115b8 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.func_level_6_8008BFF0)
+    build/overlays/level_6_peace_keepers_home/c/func_level_6_8008BFF0.o(.text)
     . = 0x0001256c ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.func_level_6_8008CFA4)
     build/overlays/level_6_peace_keepers_home/c/func_level_6_8008CFA4.o(.text)
