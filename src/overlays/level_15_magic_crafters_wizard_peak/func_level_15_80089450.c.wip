@@ -24,7 +24,7 @@
  * standing knobs: arm 0x18's `fx = 0x2E` stays a plain literal with
  * `unk11`/`unk18` written after it, and the 0x30 carrier must be multi-set
  * (arm 0x15's `v`, or arm 0x21's `ta` promoted to function scope when the
- * variant has no 0x15).  See cookbook A219 and the emit-spawn generator
+ * variant has no 0x15).  See cookbook A220 and the emit-spawn generator
  * section in G.
  */
 
@@ -767,7 +767,7 @@ void func_level_15_80089450(int count, int type, int *pos, int arg3) {
  * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
  * statement order.
  *
- * The mechanism, and it generalises (cookbook A219): a constant stored to a
+ * The mechanism, and it generalises (cookbook A220): a constant stored to a
  * field with no register of its own is rematerialised by reload IMMEDIATELY
  * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
  * it as a low-priority straggler, and stragglers come out in LUID order, so

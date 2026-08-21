@@ -1,38 +1,55 @@
-/* PARKED 2026-08-19-1 at 9/1697 differing instructions (99.5%), LENGTH-EXACT and
- * LINKING.  The whole residue is one scheduling decision in arm 0x1D's patrol
+/* PARKED, re-diagnosed 2026-08-20-1.  Still 9/1697 differing instructions
+ * (99.5%), LENGTH-EXACT and LINKING.  The whole residue is arm 0x1D's patrol
  * block: the original loads rec[0x19] (`lbu a2,24(s1)`) BEFORE the * 0x58 actor
- * chain; ours emits it seven insns later, which swaps two register names across
- * the following eight insns.  Nothing else in the function differs.
+ * chain and keeps the index in `a2`; ours emits it seven insns later in `v0`,
+ * which swaps two register names across the following eight insns.
  *
- * ROOT CAUSE, read off `cc1 -dS` (do not re-derive).  The trace says
- *   ;; insn[2234]: priority = 1, ref_count = 2
- *   ;; ready list at T-55: 2283 (1) 2251 (2) 2234 (7f000001), now 2234 2251 2283
- * so the load carries F14's BIRTHING BOOST (0x7f000001): its destination is a
- * single-set pseudo with an in-block consumer (the `sll ..,2`), so
- * `adjust_priority` raises it to max_priority, sched1's backward pass picks it
- * first and it lands LATEST.  The original's copy is not boosted, i.e. its
- * carrier has reg_n_sets > 1.
+ * WHAT THIS ACTUALLY IS (the 2026-08-19-1 "F14 birthing boost, needs a
+ * non-birthing carrier" reading is only the first link in a three-step chain,
+ * and it sent a session hunting carriers that all cost an insn):
+ *   1. sched1 boosts the load (single-set pseudo with an in-block consumer), so
+ *      it is placed right next to its use.
+ *   2. That makes its live range short, so local-alloc ranks it high and reload
+ *      gives it `v0` -- the same register the `* 0x58` multiply chain uses.
+ *   3. The resulting REG_DEP_OUTPUT/ANTI edge against that chain is what pins
+ *      it at sched2.  The original has the index in `a2`, so ITS sched2 is free
+ *      to hoist the load to slot 5.  Aim at the register, not the boost.
  *
- * Every non-birthing carrier reachable in this arm costs +1 insn (F14i's
- * "if no such carrier exists in the arm, it is a permuter target"):
- *   - `jx` / `jy` (the twice-set jitter locals from the bit-3 sub-state): the
- *     load DOES move to the front, but the `func_80017C24(hold, POS)` argument
- *     loses its branch delay slot and comes back as a separate `move a1,s5`
- *     (1698/1696, 11 mismatches).
- *   - `len` (multi-set via the two func_800171FC results): +1.
- *   - `idx = rec[0x18]; actor = .. idx * 0x58; idx = rec[0x19];` — combine folds
- *     the first set into the multiply, reg_n_sets stays 1, output unchanged.
- *   - `idx = node[8]` as the second set: 15 diffs.
- *   - a second A200 `do { } while (0);` barrier before the chain: +1 insn,
- *     exactly A200b's "one free break per arm".
- *   - calling func_80017C24(hold, POS) first: +1.
+ * NEW LEVER, and it is the reusable part: **two assignments of the SAME
+ * variable, each a single-use load feeding a multiply, mutually protect each
+ * other from combine** -- neither fold fires because `try_combine` requires
+ * `REG_N_SETS == 1` -- so the variable stays multi-set (no boost) at ZERO insn
+ * cost.  `idx` carrying both `rec[0x18]` and `node[8]` is the working instance.
+ *
+ * MEASURED VARIANT TABLE (all length-exact and linking; the block is
+ * 800873a4..800873c4):
+ *   9   baseline (below): head order right, lbu 6 slots late, 3 regs rotated.
+ *   15  `idx = rec[0x19]` + `idx = node[8]`: chain order and the lbu's own slot
+ *       correct, but the head comes out [arg, lbu23, lbu24, lui, lw] instead of
+ *       [lbu23, arg, lui, lw, lbu24].
+ *   19  `idx` carrying rec[0x18]+node[8], a single-set local for rec[0x19]:
+ *       head EXACTLY right, lbu falls to slot 10 (still boosted).
+ *   12  as 15 but with `node` as the rec[0x19] carrier (`node = (int *)rec[0x19];`
+ *       then `node = *(int **)actor + (int)node;`): chain + `v1` correct,
+ *       head still swapped.  Best structural state; kept only in this note.
+ *   +1  every carrier whose second set is in ANOTHER basic block (`spin`,
+ *       a fresh `n` set from `rec[0x1A]`, `rx`/`ry`, `len`).
+ *   +2  an A195 `do { } while (0)` ref dial at any depth -- the arm's one free
+ *       A200b barrier is already spent on the arm-top address split.
+ *   =9  `rx` as the rec[0x19] carrier: its only other set is a call-result copy,
+ *       which is coalesced before sched1, so reg_n_sets never rises (F14i).
+ *
+ * WHAT IS LEFT is one allocation question: the index/node quantity must take
+ * `a2` and the actor-table base `a3`; ours is the other way round.  qty_compare
+ * ranks them n_refs/live_length and they are close, but the A195 dial cannot
+ * reach this block (see above), so the next idea has to change the ref counts
+ * without a wrapper.
  *
  * WHAT IS ALREADY RIGHT (do not disturb):
  *  - Arms 0x1D and 0x1F are freshly decoded here; everything else is donor C.
  *  - `aim` names &dv and `hold` names &pt.  Both are needed and their ORDER is
  *    load-bearing three times over: `step2 = ..; aim = dv; step4 = ..` puts
- *    aim's def between the two shifts so step4 keeps $fp and aim spills (a
- *    one-instruction live-length difference decides it -- see the note below);
+ *    aim's def between the two shifts so step4 keeps $fp and aim spills;
  *    declaring step2/step4 BEFORE aim gives aim the higher spill slot (0x70 vs
  *    0x78 follows pseudo number); and `func_80017C24(dv, VEL)` must use the
  *    ARRAY name so that one site rematerialises instead of reloading.

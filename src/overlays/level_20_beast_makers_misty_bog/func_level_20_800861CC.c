@@ -674,7 +674,7 @@ void func_level_20_800861CC(int count, int type, int *pos, int arg3) {
  *    priority stores also come out in source order).  unk11/unk18 are the way
  *    out because their `li v0,8` / `sll v0,i,5` producers are chained to
  *    `li v0,48` by v0 reuse, so sched2 holds those stores in place however the
- *    statements are ordered.  See cookbook A219.
+ *    statements are ordered.  See cookbook A220.
  *  - Arm 0x15's `v` is promoted to function scope and carries 0x30 here, which
  *    is what puts `li v0,48` and `sll v1,i,4` in the original's first two
  *    slots.  With a single-set carrier (`t` used only in this arm) the `li` is

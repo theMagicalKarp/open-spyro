@@ -16,7 +16,7 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * GENERATED from the matched donor library (cookbook A219 / the emit-spawn
+ * GENERATED from the matched donor library (cookbook A220 / the emit-spawn
  * generator): arms lifted verbatim from the donors that already carry them,
  * emitted in jump-table ADDRESS order, which is source order.
  * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x9, 0xA, 0xC, 0xD, 0x10, 0x11, 0x15, 0x18, 0x1C, 0x21, 0x42, 0x46, 0x47, 0x4A, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
@@ -844,7 +844,7 @@ void func_level_25_80086D38(int count, int type, int *pos, int arg3) {
  * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
  * statement order.
  *
- * The mechanism, and it generalises (cookbook A219): a constant stored to a
+ * The mechanism, and it generalises (cookbook A220): a constant stored to a
  * field with no register of its own is rematerialised by reload IMMEDIATELY
  * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
  * it as a low-priority straggler, and stragglers come out in LUID order, so

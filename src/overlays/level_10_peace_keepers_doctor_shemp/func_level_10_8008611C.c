@@ -747,7 +747,7 @@ void func_level_10_8008611C(int count, int type, int *pos, int arg3) {
  * `fx = 0x2E` store -- sitting four slots too late, and the fix is pure
  * statement order.
  *
- * The mechanism, and it generalises (cookbook A219): a constant stored to a
+ * The mechanism, and it generalises (cookbook A220): a constant stored to a
  * field with no register of its own is rematerialised by reload IMMEDIATELY
  * BEFORE its store, so the `li` inherits the store's LUID.  sched2 then hoists
  * it as a low-priority straggler, and stragglers come out in LUID order, so

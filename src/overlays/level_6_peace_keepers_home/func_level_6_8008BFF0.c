@@ -674,7 +674,7 @@ void func_level_6_8008BFF0(int count, int type, int *pos, int arg3) {
 /* MATCHED 2026-08-20-1, first-generation build + two fixes.  Two things are
  * load-bearing and are the per-variant knobs for the rest of this family:
  *
- *  - Arm 0x18 (cookbook A219): `fx = 0x2E` is a PLAIN LITERAL, and
+ *  - Arm 0x18 (cookbook A220): `fx = 0x2E` is a PLAIN LITERAL, and
  *    `unk11 = 8` / `unk18 = i * 32` are written AFTER it.  Reload emits the
  *    `li t0,46` immediately before the fx store, so the `li` inherits the
  *    store's LUID and sched2 emits stragglers in LUID order; moving the store
