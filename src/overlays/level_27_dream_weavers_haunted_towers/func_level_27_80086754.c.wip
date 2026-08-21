@@ -1,5 +1,8 @@
-/* PARKED, re-diagnosed 2026-08-20-1.  Still 9/1697 differing instructions
- * (99.5%), LENGTH-EXACT and LINKING.  The whole residue is arm 0x1D's patrol
+/* PARKED, re-diagnosed 2026-08-20-1, carrier search CLOSED 2026-08-21-1.
+ * Still 9/1697 differing instructions (99.5%), LENGTH-EXACT and LINKING.
+ * Drive this park off the CONTENT-ALIGNED diff, not the linked one: the linked
+ * count is 9 but the register-anchored aligned diff is **4 over 2 regions**
+ * (the lbu's displacement phase-shifts the positional zip).  The whole residue is arm 0x1D's patrol
  * block: the original loads rec[0x19] (`lbu a2,24(s1)`) BEFORE the * 0x58 actor
  * chain and keeps the index in `a2`; ours emits it seven insns later in `v0`,
  * which swaps two register names across the following eight insns.
@@ -38,6 +41,60 @@
  *       A200b barrier is already spent on the arm-top address split.
  *   =9  `rx` as the rec[0x19] carrier: its only other set is a call-result copy,
  *       which is coalesced before sched1, so reg_n_sets never rises (F14i).
+ *
+ * CARRIER SEARCH CLOSED 2026-08-21-1 -- 26 measured variants, and they fall
+ * into exactly three classes with NO fourth option left.  Do not hunt carriers
+ * again; the aligned score is in parentheses (baseline 4).
+ *   (a) **Second set folded away -> no effect at all (4, byte-identical).**
+ *       F14i is broader than "call-result copy": ANY second set that is a
+ *       single-use temp feeding one expression is deleted before sched1, so
+ *       reg_n_sets stays 1.  Measured inert: `idx` carrying the x0x58 PRODUCT
+ *       (`idx = node[8] * 0x58; actor = D_80075828 + idx;`), the same on the
+ *       first product, a named `star = *(int **)actor;` local, `idx` as the
+ *       waypoint arg `(rec[0x2] << 7) + 0x200`, and `idx = spin;`.
+ *   (b) **Second set in a call-containing region -> callee-saved reg, whole-arm
+ *       rotation (12-67).**  The allocno becomes call-crossing, reload hands it
+ *       `s0`, and every register in the block shifts.  Measured: a function-
+ *       scope carrier donated by another switch arm (0x6 `amp` = 12, 0x42 `i` =
+ *       12, and the lbu does hoist but lands in `s0`), and sibling-branch
+ *       carriers inside arm 0x1D (`dv[2] += rec[0x2] << 5` = 67, `pt[2] -=
+ *       HS(0x1C)` = 67, `HS(0x1E) = (rand & 6) + 1` = 68).
+ *   (c) **Both sets inside the call-free patrol block -> boost dies cleanly,
+ *       register stays caller-saved, but the head straggler order breaks (12).**
+ *       This is the best structural state and it is a whole FAMILY, not one
+ *       spelling: `idx` holding the index AND the sum
+ *       (`idx = rec[0x19]; idx = (int)(*(int **)actor + idx); node = (int *)idx;`),
+ *       the same with the `node` local elided and the two derefs cast inline,
+ *       and the `idx = idx * 4 + *(int *)actor;` spelling ALL give bit-identical
+ *       output at 12 -- as does the note's `node`-as-carrier row above.  The lbu
+ *       hoists to slot 3 in `a3` and the head comes out [arg, lbu23, lbu24, lui,
+ *       lw] where the original has [lbu23, arg, lui, lw, lbu24].
+ *
+ * WHY (c) CANNOT BE FINISHED FROM SOURCE, measured this session:
+ *  - The head is four priority-1 STRAGGLERS and their order is settled by
+ *    `rank_for_schedule`'s INSN_LUID tiebreak and `schedule_select`'s
+ *    `potential_hazard` override -- the trace prints
+ *    `;; insn N has a greater potential hazard` on exactly this comparison, and
+ *    a load ALWAYS outranks the spilled-arg `move`, which is why the arg copy
+ *    sinks to the front of the block whenever a fourth straggler appears.
+ *  - **Statement permutation is inert here** -- proved three independent ways
+ *    (swapping `idx = rec[0x19]` with the `actor = ...` line on the baseline, on
+ *    the (c) body, and with the base load's first use moved).  All three are
+ *    BIT-IDENTICAL to their unpermuted form, which is F14's "never statement
+ *    permutation" rule holding exactly.
+ *  - Un-boosting is what ADDS the fourth straggler, so (c)'s head damage is not
+ *    a separate bug to fix on top -- it is the same edit.  The original needs
+ *    the index unboosted AND only three stragglers, which no source form gives.
+ *
+ * CORRECTION to the "+2, the A195 dial cannot reach this block" row above: it
+ * can.  `do { do { star = *(int **)actor; } while (0); } while (0);` is
+ * LENGTH-EXACT (1697) and moves the schedule (aligned 7, up from 4) -- the dial
+ * reaches local-alloc here, it just does not point the right way.  The +2 cost
+ * applies to a wrapper on the rec[0x19] load itself, not to every site.
+ *
+ * Screening recipe for any future attempt (~20 s/variant, no link needed):
+ * `config/compile.sh ovl <src> /tmp/g.o` + `objdump -d | grep -c` == **1697**
+ * for a linkable body; anything else is a cost, reject before diffing.
  *
  * WHAT IS LEFT is one allocation question: the index/node quantity must take
  * `a2` and the actor-table base `a3`; ours is the other way round.  qty_compare

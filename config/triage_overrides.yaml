@@ -2151,3 +2151,67 @@ func_level_14_8008B0B0:
     is the same B13 shape as level_27's, so this variant cannot link even once
     0x45 and 0x49 are decoded. Decode 0x45 (.L8008BDCC) and 0x49 (.L8008C0BC)
     only after B13 has an answer.
+
+# --- session 2026-08-21-1: carrier/ref-dial sweep over three near-match parks ---
+func_level_27_80086754_2026_08_21_1:
+  verdict: parked
+  class: "F14 boost <-> head straggler order; carrier search CLOSED (26 variants, 3 classes)"
+  date: 2026-08-21
+  note: >-
+    6,788 B, 1697/1697 length-exact and linking; content-aligned 4 over 2
+    regions (the LINKED 9 is a phase-shift artefact — drive it off the aligned
+    diff). Arm 0x1D's `lbu rec[0x19]` is birthing-boosted so it lands next to
+    its use in v0; the original has it unboosted in a2 six slots earlier. Every
+    second set of `idx` falls in exactly one of three classes and there is no
+    fourth: (a) single-use temp carriers are DELETED before sched1 so
+    reg_n_sets stays 1 and the output is byte-identical (the x0x58 products, a
+    named `star` local, `idx = spin`, the waypoint arg) — F14i is broader than
+    "call-result copy"; (b) carriers whose second set sits in a call-containing
+    region make the allocno call-crossing, reload gives it s0 and the whole arm
+    rotates (cross-arm donors 0x6/0x42 = 12, sibling-branch = 67); (c) both sets
+    inside the call-free patrol block kills the boost cleanly and keeps the reg
+    caller-saved, but adds a fourth priority-1 straggler to the block head,
+    which schedule_select's potential_hazard override then mis-orders (12, and
+    ALL spellings of it are bit-identical). Statement permutation is inert here,
+    proved three ways. Correction to the older note: the A195 dial DOES reach
+    this block (a wrapper on the `*(int **)actor` load is length-exact and
+    scores 7); it just does not point the right way. Full detail in the .wip.
+
+func_titlescreen_8007ABAC:
+  verdict: parked
+  class: "local-alloc combine_regs tie: operand 1 wins the destination hard reg"
+  date: 2026-08-21
+  note: >-
+    8,588 B, 2147/2147 and linking; content-aligned 6 over 3 regions. The old
+    "permuter-or-never / every source form canonicalizes" verdict is RETIRED and
+    the old root cause was wrong: this is not a scheduling tie (cc1 -dS shows
+    all six insns of the block at priority 1 with no birthing boost), it is
+    local-alloc's block_alloc walking the addu's operands from i=1 and breaking
+    on the first combine_regs win — so the POINTER (operand 1) is tied to a1 and
+    the constant falls to the recycled v0, where the original has it the other
+    way. An A195 ref dial on the constant (`do { off = -0x40000; } while (0);`)
+    is length-exact and emits `addu a1,v0,a1`, exactly the original — the only
+    form found that moves the insn at all. It is not a match because the
+    do/while is also an A200 cse barrier that merges two globals 40 bytes apart
+    into one held base (orig 117-119 goes s3-based) and the saving reshuffles
+    the call site: 14 vs 6. Open question, now narrow: raise the constant's
+    reg_n_refs without ending cse's ebb. DO NOT spend more permuter time.
+
+func_80038FC8:
+  verdict: parked
+  class: "F14b mutual exclusion — REGISTER half retired, cross-jump now the blocker"
+  date: 2026-08-21
+  note: >-
+    608 B, 152/152 and linking; 4 aligned over 4 regions (two arms x
+    `move a0,s0` <-> `li v1,16`). The note's claim that a single-set c16 is
+    unreachable because local-alloc "hands it v0" is RETIRED: qty_compare is
+    floor_log2(n_refs)*n_refs*size/(death-birth) and A195 dials n_refs because
+    flow.c weights each ref by loop_depth. Measured with cc1 -dl per arm:
+    old 2/9 = 2222 vs c16 3/6 = 5000 baseline; wrapping old's def only 3/11,
+    its use only 3/8 (both still lose — floor_log2 is a STEP function, 3 refs
+    is still 1); wrapping BOTH gives old 4/8 = 10000 and it takes v0 with c16
+    single-set and in v1. What blocks it now is that the use-site barrier lets
+    jump.c cross-jump the two arms' identical func_80037E98 tails, collapsing
+    both per-arm `move a0,s0` copies into the shared tail (7/152). Every
+    use-site nesting depth is bit-identical — the dial saturates. Park stays on
+    the 4/152 multi-set body.
