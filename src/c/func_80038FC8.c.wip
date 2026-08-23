@@ -194,3 +194,54 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
    arms' tails distinct so cross-jumping cannot fire.
    Park state UNCHANGED at 4/152 (the multi-set c16 body below) — it is still
    the best score; E1's single-set body is 9/152 and the E5 dial body is 7. */
+
+/* 2026-08-23 — THE RESIDUE IS NOT A CROSS-JUMP PROBLEM, AND THE 2026-08-21-1
+   "next step" was aimed at the wrong pass.  Re-measured from the LINKED diff
+   (4/152, unchanged) and the sched1 trace (SD 2d, `cc1 -dS`):
+
+   WHAT THE FOUR INSNS ACTUALLY ARE.  Per arm, exactly two insns are SWAPPED:
+     orig  8003915c/80039190  move a0,s0   (in the guard `beq`'s delay slot)
+     orig  80039170/800391a4  li   v1,16   (immediately before its two `sb`s)
+   ours has the same two insns in the same block with the positions exchanged.
+   Both builds cross-jump the arms IDENTICALLY — the original's shared tail is
+   .L800391B4 (`sb zero,3F / sb v0,3C / jal / sb a1,3E`, 4 insns) and the
+   per-arm `move a0,s0` sits above the differing `sb ?,0x3D`, which is what
+   keeps it out of the merge in BOTH builds.  So "make the tails textually
+   distinct so cross-jumping cannot fire" is not the goal; nothing about the
+   merge differs.
+
+   WHY THE SWAP HAPPENS (measured, do not re-derive).  In the arm's block both
+   insns are priority-1 stragglers with no in-block operands, so they are placed
+   at the block's two scheduling bubbles (head, and the slot before the `sb`
+   batch).  The sched1 trace ends:
+     ;; ready list at T-14: 256 (1) 235 (1), now 256 235   -> 256 picked
+     ;; ready list at T-15: 235 (1), now 235
+   insn 256 is `(set (reg a0) (reg 72))`, insn 235 is `(set (reg 86) 16)`.
+   `rank_for_schedule` breaks the priority tie on INSN_LUID DESCENDING and
+   sched.c schedules backward, so the HIGHER-LUID insn is placed LATER.  The
+   call's argument copy is emitted by expand_call at the call, i.e. at the very
+   end of the arm, so its LUID is structurally above any user statement's — it
+   can never lose this tie.  (sched2 then re-runs the same comparison on the
+   sched1 order and reproduces it; the final asm's slot-5 insn is whichever one
+   sched1 put second.)
+
+   WHAT THE ORIGINAL MUST THEREFORE BE.  For `move a0,s0` to take the head, the
+   `li v1,16` has to be ABSENT from the sched1 block and re-appear immediately
+   before `sb v1,0x40` — which is exactly A215/A220's reload REMATERIALISATION
+   insertion point.  That needs `local-alloc.c update_equiv_regs` to delete the
+   constant pseudo, whose gate is `reg_n_refs == 2 && reg_basic_block < 0`
+   (one set, one use, in DIFFERENT basic blocks).  Here the constant has two
+   uses (`sb 0x40`, `sb 0x41`) that cse shares into one pseudo in one block, so
+   refs == 3 and the pseudo always survives to be scheduled.
+   THE OPEN QUESTION IS THEREFORE: can the 0x10 constant reach the two `sb`s
+   with one set and one use per block?  Everything on the register axis
+   (A195 ref dials on `old`, carrier vs literal, qty_compare arithmetic) is a
+   consequence of the pseudo existing at all, and is the wrong axis.
+
+   Measured this session, all against the 4/152 baseline:
+     bare literals, no carrier          9/152 (as recorded 2026-08-16-1)
+     `int *ap = actor;` at the arm top, call through `ap`   4/152 (copy
+       propagation deletes it — no LUID change, as expected from the above)
+     `sb ?,0x3D` moved ABOVE the c16 pair (A221 reorder)    length CHANGES
+       (`zip() argument 2 is shorter`) — the merge grows; strictly worse.
+*/
