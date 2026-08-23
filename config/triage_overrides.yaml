@@ -2266,3 +2266,100 @@ Gamestate0C_Update:
     order: count its %hi(D_800777EC) against the original (difference times one
     is usually the whole residue), place a dial on whichever arm folds, then
     look for reads expand never force_regs.
+
+func_8003ABC0:
+  verdict: matched
+  class: "jal-chain + one held-base alias; B-i rule 2 (offset-0 sdata cost) and A106c"
+  date: 2026-08-23
+  note: >-
+    1308 B, matched in 4 iterations from the m2c decode. The landscape's
+    "budget it as a 1300 b target, not a jal-chain" was right about the size and
+    wrong about the difficulty: m2c's non-reducible flowgraph is one rotated
+    ballistic loop that reads back as a plain
+    `while (v > 0 || ground < z) { z += v; v -= 10; n++; }` (the second test's
+    branch targets the SECOND insn of the body because reorg copied the first
+    into its delay slot). The four real levers are in the commit message.
+
+AdvanceSpyroSubstepState:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (jr through switchdataD_80011230)"
+  date: 2026-08-23
+  note: >-
+    784 B, 195 insns, screened only. Clean of every other wall class (no
+    %gp_rel, no bare `lui $at`, no hand-written markers, no lh;sra) — the sole
+    blocker is that build_main.sh rejects loadable rodata, so the dense-switch
+    table gcc emits cannot be placed. Re-open the moment main gets the rodata
+    slot placement that overlays already have.
+
+DispatchSpyroTriggerEvent:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_80011380)"
+  date: 2026-08-23
+  note: "1052 B, 262 insns. Screened clean of all other classes; B8 only."
+
+ApplySpyroStateTransition:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_80010e28)"
+  date: 2026-08-23
+  note: "1200 B, 299 insns. Screened clean of all other classes; B8 only."
+
+TickGemPickupAssetStream:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_80010a70)"
+  date: 2026-08-23
+  note: "2048 B, 511 insns. Screened clean of all other classes; B8 only."
+
+PauseMenu_Update:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_80010dd0)"
+  date: 2026-08-23
+  note: "2560 B, 639 insns. Screened clean of all other classes; B8 only."
+
+ApplySpuVoiceAttrRange:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_800115bc)"
+  date: 2026-08-23
+  note: >-
+    1596 B, 398 insns. The SPU TU is otherwise a live vein (cookbook G), so
+    this one is worth re-opening first if main ever gets rodata slots.
+
+func_800671F0:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN (switchdataD_80012144)"
+  date: 2026-08-23
+  note: "1060 B, 107 insns. Already named in B8's memcard handler family."
+
+SelectCameraMode:
+  verdict: wall
+  class: "B1 %gp_rel global access (6 sites)"
+  date: 2026-08-23
+  note: "1972 B. Same cluster as UpdateCameraFrame / UpdateLedgeGrabCamera."
+
+UpdateGameplayCamera:
+  verdict: wall
+  class: "B1 %gp_rel global access (2 sites)"
+  date: 2026-08-23
+  note: "2052 B. Same cluster as SelectCameraMode."
+
+CdProcessInterrupt:
+  verdict: wall
+  class: "B8 .rodata switch jump table in MAIN"
+  date: 2026-08-23
+  note: "1416 B, 353 insns; libcd, also carries B10 wait-loop risk."
+
+func_80038FC8:
+  verdict: parked
+  class: "sched1 priority-1 straggler LUID tie: call-arg a0 copy vs the constant's li"
+  date: 2026-08-23
+  note: >-
+    608 B, 4/152 linked (unchanged). Re-diagnosed: it is NOT the jump.c
+    cross-jump the 2026-08-21-1 note blamed — both builds cross-jump the arms
+    identically (shared tail .L800391B4, 4 insns). The four insns are a pure
+    swap of `move a0,s0` and `li v1,16` between the block's two scheduling
+    bubbles, decided by rank_for_schedule's INSN_LUID-descending tiebreak,
+    which the call-arg copy can never lose. The original's `li` must be a
+    reload remat (A215/A220), which needs update_equiv_regs to delete the
+    constant pseudo (refs == 2, set and use in different blocks) — blocked by
+    the constant having two uses in one block. Full trace in the .wip header.
+    Do NOT spend more time on the register axis (A195 dials, carrier vs
+    literal); it is downstream of the pseudo existing at all.
