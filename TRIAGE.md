@@ -21,14 +21,14 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 7 | `0x8007b898` | func_level_7_8007B898 | ovl/level_7_peace_keepers_dry_canyon | 8096 | 134 | overlay (no -g3); segment 21.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 8 | `0x8007b898` | func_level_8_8007B898 | ovl/level_8_peace_keepers_cliff_town | 8096 | 134 | overlay (no -g3); segment 22.7% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 9 | `0x8007ba18` | func_level_24_8007BA18 | ovl/level_24_dream_weavers_home | 8096 | 134 | overlay (no -g3); segment 21.9% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8005df60` | ResetCallback | main | 220 | 133 | segment 35.6% matched; matched neighbor in segment; jal-chain shape (8 calls); previously attempted (2026-07-11: setjmp/held-base-heavy (libgpu bring-up cluster)) |
+| 10 | `0x8005df60` | ResetCallback | main | 220 | 133 | segment 36.1% matched; matched neighbor in segment; jal-chain shape (8 calls); previously attempted (2026-07-11: setjmp/held-base-heavy (libgpu bring-up cluster)) |
 | 11 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 133 | overlay (no -g3); segment 23.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 12 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 133 | overlay (no -g3); segment 23.6% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 13 | `0x8007af90` | func_level_30_8007AF90 | ovl/level_30_gnastys_world_gnorc_gnexus | 8096 | 130 | overlay (no -g3); segment 29.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 14 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8005dbb4` | ExitCriticalSection | main | 16 | 122 | segment 35.6% matched; matched neighbor in segment; asm-hint (GTE/handwritten fragments) |
+| 15 | `0x8005dbb4` | ExitCriticalSection | main | 16 | 122 | segment 36.1% matched; matched neighbor in segment; asm-hint (GTE/handwritten fragments) |
 
-(45 viable candidates total; the full ranking is regenerable.)
+(44 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
