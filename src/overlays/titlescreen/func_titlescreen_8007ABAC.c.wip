@@ -10,68 +10,59 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * STATUS 2026-08-23-1: length-exact (2147/2147), links, **2137/2147 words
- * byte-identical, 4 content-aligned mismatches over 4 regions** (was 6 over 3
- * at 2140/2147). The park is 12 partial bytes cheaper than the old body and a
- * great deal closer: **the `addu` wall that stood since 2026-07 is GONE.**
+ * STATUS 2026-08-24: length-exact (2147/2147), links, **2140/2147 words
+ * byte-identical, 7 differing instructions** (was 10 on 2026-08-23-1). All 7
+ * are ONE call block — the `func_80016698` CD-read at 0x8007ADD8..0x8007AE00 —
+ * and the whole residue is now root-caused to a single register decision.
  *
- * ---- THE addu WALL IS RETIRED (this is the headline) ----------------------
- * The old note called the `addu a1,a1,v0` vs `addu a1,v0,a1` residue
- * "permuter-or-never" after ~39,000 iterations and a wide source sweep. It is
- * neither a scheduling tie nor a `combine_regs` tie. Read off local-alloc.c:
- * the insn is `(set (reg:SI 5 a1) (plus P C))` with a HARD-REG destination, so
- * `combine_regs` takes its `sreg < FIRST_PSEUDO_REGISTER` early-out for BOTH
- * operands — it records a1 in `qty_phys_sugg[]` for each and returns 0, so
- * nothing is ever tied. Which of P and C actually gets a1 is decided by the
- * SUGGESTION pass (`block_alloc`'s first `find_free_reg` loop, ordered by
- * `qty_sugg_compare`): equal suggestion counts, then priority
- * `floor_log2(n_refs)*n_refs*size / (death-birth)` DESCENDING. Measured with
- * the §D 2c probe on the old body: P (the D_800785E8 load) is 2 refs / 6 insns
- * = 3333, C (the -0x40000 constant) is 2 refs / 8 insns = 2500, so P wins a1.
- * **The fix is anything that lifts C's priority above P's**, and an A195 dial
- * on the constant (`int off; do { off = -0x40000; } while (0);` with the call
- * written `D_800785E8 + off`) does exactly that.
+ * ---- BOTH A195 DIALS ARE REMOVED, AND THAT IS THE IMPROVEMENT --------------
+ * The 2026-08-23-1 body carried two `do { x = K; } while (0);` dials (on the
+ * -0x40000 and on the 600). They cost more than they bought. A dial's
+ * NOTE_INSN_LOOP_BEG/END makes sched.c attach the loop-note barrier to the
+ * NEXT insn, which here is the `D_800785E8` load — and a barrier insn is a
+ * full REG_DEP_TRUE producer for everything after it. Measured with the §D 2d
+ * probe on the dialled body: that gives the outgoing stack-arg store
+ * (`sw 600,16(sp)`) a latency-2 edge, so `priority()` puts it at 3, tied with
+ * the `addu`, and `schedule_select`'s potential_hazard tiebreak (sched.c:2657 —
+ * within one priority GROUP the largest-hazard insn is picked first, and
+ * scheduling is BACKWARD, so picked-first == placed-LAST) hands the store the
+ * final slot. Reorg then gives the jal delay slot to the `sw` instead of the
+ * `addu`. Dropping both dials drops the store to priority 1 and the `li 600`
+ * lands in the right place (10 -> 7). Do not re-add them.
  *
- * ---- WHAT THE DIAL COSTS, AND HOW TO PAY FOR IT ---------------------------
- * The dial is also an A200 cse barrier, and on its own it lets cse merge
- * `D_80076B90.unk_0x28` (the CD poll, orig 117-119) with `D_80076B90.unk_0x00`
- * (the call's a0) into ONE held base: `lw a0,-40(s3)` replaces `lui a0; lw a0`
- * and the function comes out 2146 insns (one SHORT — the linker pads the slot,
- * so `open-spyro diff` does NOT print "cannot move"; always check the
- * compile-only insn count too). The fix is to read the a0 argument through a
- * form cse cannot fold onto that base:
- *     int cd = *((volatile int *) &D_80076B90.unk_0x00);
- * A plain `int cd = D_80076B90.unk_0x00;` temp also restores 2147 but leaves
- * the `lui a2,0x4` mis-ordered (8 vs 5); the volatile read is what keeps
- * orig 117-119 byte-identical AND restores the length.
- * A second A195 dial on the 5th argument (`int n; do { n = 600; } while (0);`)
- * then takes it from 5 to 4. Statement ORDER inside the arm matters and is
- * saturated at (cd, off-dial, n-dial) — every other permutation of the three,
- * with `n` at function or block scope, is 5-15 (measured, 12 permutations).
+ * ---- THE REMAINING 7 ARE ONE REGISTER SWAP --------------------------------
+ *     orig  li v0,600 | lui a0/lw a0 (cd) | lui a1,0xfffc | sw v0,16(sp) |
+ *           lui v0/lw v0 (D_800785E8) | lui a3/lw a3 | jal | addu a1,v0,a1
+ *     ours  li v0,600 | sw v0,16(sp) | lui v0,0xfffc | lui a0/lw a0 |
+ *           lui a1/lw a1 (D_800785E8) | lui a3/lw a3 | addu a1,a1,v0 | jal(sw)
+ * i.e. the original gives **a1 to the -0x40000 constant and v0 to the pointer**
+ * (reusing v0 after the `sw` kills the 600); we do the opposite. The store's
+ * position is a CONSEQUENCE, not a separate bug: with the constant in v0 there
+ * is a WAR chain `li v0,600 -> sw v0 -> v0 = -262144`, which pins the store
+ * immediately before the constant. Fix the register and the store floats.
  *
- * ---- THE REMAINING 4 (all one class) --------------------------------------
- * The 5th (stack) argument's `li 600` / `sw 600,16(sp)` pair:
- *     orig  138 lui a2,0x4 | 139 li v0,600 | 140/141 a0 | 142 lui a1,0xfffc |
- *           143 sw v0,16(sp) | 144/145 pointer | 146/147 a3 | 148 jal |
- *           149 addu a1,v0,a1   <-- the addu is the DELAY SLOT
- *     ours  ... 142 li v1,600 ... 147 addu a1,v0,a1 | 148 jal |
- *           149 sw v1,16(sp)    <-- the sw takes the slot instead
- * i.e. the `li` is three slots late (and lands v1, not v0) and the outgoing-arg
- * store is scheduled LAST, so reorg gives the delay slot to the `sw` rather
- * than the `addu`. Everything else in the call block, including `lui a2,0x4`,
- * both `%hi/%lo` pairs and the a3 load, is byte-identical.
- * All arg setups are priority-1 stragglers, so this is an A164 INSN_LUID
- * question — but the `sw` of a stack argument is emitted by `expand_call`, not
- * by a source statement, so its LUID is not directly source-addressable. Tried
- * and rejected: a donor carrier for the 600 (arms writing 6/9/7/1/2/3/5 — all
- * inert, the second set is rematerialised away per F14i/A220; the `20` donor
- * costs its own arm 6 insns), `register`/`volatile` on `n`, dial depths 1-3 on
- * both dials (saturated), hoisting the a1 value into a `ptr` temp (6), and
- * temps for the a2/a3 arguments in all 120 orders (best 7).
- * **Next idea worth a probe: make the `sw` schedule earlier rather than the
- * `li` later** — e.g. a 5th argument whose value comes from an in-block LOAD
- * (priority 2 instead of 1, see §D 2d), or find why our `expand_call` puts the
- * stack-arg store after the register setups when the original's is before.
+ * Why the swap happens (A225's suggestion pass, measured on this body):
+ * insn 262 is `(set (reg a1) (plus P C))` with a hard-reg dest, so combine_regs
+ * early-outs on both operands and `qty_sugg_compare` decides — equal suggestion
+ * counts, then `floor_log2(refs)*refs*size/(death-birth)` DESCENDING, i.e. the
+ * SHORTER live range wins a1. In our sched1 output the constant is born before
+ * the pointer (range 4 vs 3), so the pointer wins. **The lever would be making
+ * sched1 emit the pointer load BEFORE the constant** — and that is exactly what
+ * `schedule_select` refuses to do: at sched1 T-7 both are ready and both carry
+ * the F14 birthing boost (0x7f000001), so they are one priority group, and the
+ * potential_hazard tiebreak always prefers the LOAD, placing it later.
+ * Breaking that needs them in different priority groups, i.e. a second consumer
+ * for one of them scheduled at a different step. No source form found.
+ *
+ * Measured this session and all EXACTLY 7 (do not re-run): no dials; `off` as a
+ * plain local before/after the `cd` read; `off` at function scope; `register`
+ * `off`; a double set of `off`; `600` as a literal / a plain local / a local set
+ * first; a `base = D_800785E8;` temp before or after the `cd` read; the whole
+ * sum precomputed into `p`; `-0x40000 + D_800785E8`; a non-volatile `cd` read;
+ * an `int tbl = D_8007A6D8;` temp. Worse: any dial (9-10); an empty
+ * `do { } while (0);` barrier (10); a volatile `D_800785E8` read (overflows the
+ * slot); every statement order that does not put the `cd` read FIRST (2019-2020
+ * — the volatile read is the block head and moving it relocates the function).
  *
  * ---- Historical (still true) ---------------------------------------------
  * The rodata-packing blocker is SOLVED — gen_slots_ld skips the subsumed later
@@ -146,14 +137,10 @@ void func_titlescreen_8007ABAC(void) {
 
       if (D_80078D78.unk_0x10 == 0) {
         /* kick off loading titlescreen data from the CD */
-        int off;
         int cd;
-        int n;
         cd = *((volatile int *) &D_80076B90.unk_0x00);
-        do { off = -0x40000; } while (0);
-        do { n = 600; } while (0);
-        func_80016698(cd, D_800785E8 + off, 0x40000,
-                      D_8007A6D8, n);
+        func_80016698(cd, D_800785E8 - 0x40000, 0x40000,
+                      D_8007A6D8, 600);
         D_80078D78.unk_0x10 = 1;
       } else if (D_80078D78.unk_0x10 == 1) {
         /* once loaded, initialize music and upload the sprite sheet to vram */

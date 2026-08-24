@@ -7,23 +7,30 @@
    The CD state globals (D_800750E0..D_8007517C) are shared with the IRQ, so
    they are volatile — the asm reloads every one fresh on each access.
 
-   PARKED at 99.3% (304/304 insns, length-exact; 3 residual instructions).
-   Solved: held-base dispatcher pointers, (void)-forced dead volatile reloads
-   after each advance ++/--, and the VSync(-1)>deadline comparison-order swap.
-   Residue (all permuter-class, positional): (1) dispatcher `sync = ready - 1`
-   re-materializes &D_80075114 fresh (lui;addiu) instead of deriving it from
-   the ready register (`addiu s3,s1,-1`) — a gcc allocation choice, not source-
-   controllable (two-pointer beats single-base beats fold); (2,3) D_80075168 and
-   D_80075178 load via `la;lw 0(r)` at their post-jal compare/mask sites but via
-   `lui;lw %lo` at every other site — a positional scheduler form no declaration
-   change can flip at one site without breaking the matched ones.
+   MATCHED 2026-08-24. Two levers closed a park that had stood since
+   2026-07-25 (and survived ~184,000 permuter iterations):
 
-   2026-07-25-1 unattended permuter session (~15m, ~184000 iterations across
-   5203 output dirs — by far the busiest search of the sweep, timed out at the
-   15m budget): best score 27495 vs base score 30000. Note the score scale here
-   is set by the whole 1216-byte four-function section, so the 99.3% figure
-   above is not comparable to the raw score. No byte-perfect candidate found;
-   still PARKED. */
+   1. The dispatcher's `sync = ready - 1` (`addiu s3,s1,-1`) needs the two
+      adjacent result bytes reached as ONE incomplete ARRAY with constant
+      indices, `D_80075115[0]` and `D_80075115[-1]`, written inline. The old
+      two-pointer form (`p = &D_80075115; q = p - 1;`) cannot work: §B-i rule 1
+      folds the nonzero-offset address to an absolute `lui;addiu` because the
+      base pseudo has a constant equivalence, and a POINTER LOCAL is folded by
+      reload's update_equiv_regs, which no cse barrier reaches. The array form
+      is the only shape cse's related_value can derive the sibling from. This
+      alone took the section from 282 of 304 insns differing to 2.
+
+   2. The last two (retired §B16, exactly as the cookbook predicted for this
+      function): D_80075168 and D_80075178 load via `la; lw 0(r)` at their
+      post-jal compare/mask sites and via `lui; lw %lo` everywhere else. A
+      volatile-declared SCALAR does not reach it — expand never force_regs a
+      DECL's address, so the read comes out with the address inline and cse
+      never sees it. It needs an INLINE volatile cast-deref of a block ALIAS
+      (g_anCdExpectedPosBlock / g_anCdReadModeBlock, added to symbol_addrs at
+      the same addresses), with no pointer local: expand's memory_address()
+      force_regs the constant address and the volatile stops cse folding it
+      back. Applied at those two sites only; every other site keeps the plain
+      scalar and stays absolute. */
 
 extern int CdProcessInterrupt(void);
 extern int CdGetSector(int buf, unsigned int nword);
@@ -40,8 +47,7 @@ extern void FUN_80064074(int arg);
 
 extern volatile int D_800750E0;             /* set by func_800658FC */
 extern volatile unsigned char *D_800750FC;  /* CDIO index register */
-extern volatile unsigned char D_80075114[]; /* sync intr result byte */
-extern volatile unsigned char D_80075115;   /* ready intr result byte */
+extern volatile unsigned char D_80075115[]; /* +0 ready, -1 sync intr result */
 extern void (*D_80074E34)();                /* sync (bit 2) callback */
 extern void (*D_80074E38)();                /* ready (bit 4) callback */
 extern unsigned char D_80075AD0[];          /* sync result buffer */
@@ -54,9 +60,11 @@ extern volatile int D_8007515C; /* sectors remaining */
 extern volatile int D_80075160; /* last VSync stamp */
 extern volatile int D_80075164; /* read-start deadline base */
 extern volatile int D_80075168; /* expected sector position */
-extern volatile int D_8007516C; /* saved sync callback */
-extern volatile int D_80075170; /* saved ready callback */
-extern volatile int D_80075174; /* saved read-break callback */
+extern volatile int g_anCdExpectedPosBlock[]; /* block view of D_80075168 */
+extern volatile int g_anCdReadModeBlock[];    /* block view of D_80075178 */
+extern volatile int D_8007516C;               /* saved sync callback */
+extern volatile int D_80075170;               /* saved ready callback */
+extern volatile int D_80075174;               /* saved read-break callback */
 extern volatile int D_80075178; /* mode flags (bit 0 = streaming) */
 extern volatile int D_8007517C; /* latched intr result */
 
@@ -67,8 +75,6 @@ void func_80065CC0(void);
 void func_800658FC(int arg0) { D_800750E0 = arg0; }
 
 void func_8006590C(void) {
-  volatile unsigned char *ready = &D_80075115;
-  volatile unsigned char *sync = ready - 1;
   unsigned char save;
   int intr;
 
@@ -80,12 +86,12 @@ void func_8006590C(void) {
     }
     if (intr & 4) {
       if (D_80074E38 != 0) {
-        D_80074E38(ready[0], &D_80075AD8);
+        D_80074E38(D_80075115[0], &D_80075AD8);
       }
     }
     if (intr & 2) {
       if (D_80074E34 != 0) {
-        D_80074E34(sync[0], &D_80075AD0);
+        D_80074E34(D_80075115[-1], &D_80075AD0);
       }
     }
   }
@@ -107,12 +113,13 @@ void func_800659F0(int arg0, int arg1) {
         } else {
           CdGetSector((int)loc, 3);
         }
-        if (CdPosToInt(loc) != D_80075168) {
+        if (CdPosToInt(loc) !=
+            *(volatile int *)(char *)g_anCdExpectedPosBlock) {
           WriteString(D_80011F10);
           D_8007515C = -1;
         }
       }
-      if (D_80075178 & 1) {
+      if (*(volatile int *)(char *)g_anCdReadModeBlock & 1) {
         CdGetSector2(D_80075150, D_80075158);
       } else {
         CdGetSector(D_80075150, D_80075158);
