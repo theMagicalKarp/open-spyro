@@ -21,12 +21,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 7 | `0x8007b898` | func_level_7_8007B898 | ovl/level_7_peace_keepers_dry_canyon | 8096 | 134 | overlay (no -g3); segment 21.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 8 | `0x8007b898` | func_level_8_8007B898 | ovl/level_8_peace_keepers_cliff_town | 8096 | 134 | overlay (no -g3); segment 22.7% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 9 | `0x8007ba18` | func_level_24_8007BA18 | ovl/level_24_dream_weavers_home | 8096 | 134 | overlay (no -g3); segment 21.9% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8005df60` | ResetCallback | main | 220 | 133 | segment 36.6% matched; matched neighbor in segment; jal-chain shape (8 calls); previously attempted (2026-07-11: setjmp/held-base-heavy (libgpu bring-up cluster)) |
-| 11 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 133 | overlay (no -g3); segment 23.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 133 | overlay (no -g3); segment 23.6% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 133 | overlay (no -g3); segment 23.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 11 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 133 | overlay (no -g3); segment 23.6% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8005df60` | ResetCallback | main | 220 | 132 | segment 37.5% matched; matched neighbor in segment; jal-chain shape (8 calls); previously attempted (2026-07-11: setjmp/held-base-heavy (libgpu bring-up cluster)) |
 | 13 | `0x8007af90` | func_level_30_8007AF90 | ovl/level_30_gnastys_world_gnorc_gnexus | 8096 | 130 | overlay (no -g3); segment 29.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 14 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8005dbb4` | ExitCriticalSection | main | 16 | 122 | segment 36.6% matched; matched neighbor in segment; asm-hint (GTE/handwritten fragments) |
+| 15 | `0x8005dbb4` | ExitCriticalSection | main | 16 | 121 | segment 37.5% matched; matched neighbor in segment; asm-hint (GTE/handwritten fragments) |
 
 (43 viable candidates total; the full ranking is regenerable.)
 
@@ -35,7 +35,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | reload gives the index v0, which pins it against the *0x58 chain at sched2 |
-| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5780 | A164 stack-arg li/sw placement (4 insns) — the addu wall is RETIRED |
+| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | A225 suggestion-pass register swap (a1 to the constant vs to the pointer), gated by schedule_select's potential_hazard tiebreak |
 | `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 5668 | R10/R11/R12 SOLVED (A93 preheader order + A195 ref dial); R7+R6 is the remaining half |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
 | `0x8008249c` | func_level_5_8008249C | ovl/level_5_artisans_sunny_flight | 3732 | 3660 |  |
@@ -54,12 +54,11 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x8002ccc8` | func_8002CCC8 | main | 868 | 732 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 double knot (F4 ground v0-coalesce + F1 counter-split) + F-sched negu |
-| `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 |  |
-| `0x8001e6b8` | StoryIntro_Draw | main | 784 | 668 |  |
+| `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80059594` | func_80059594 | main | 720 | 668 | F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region |
-| `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 |  |
+| `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 644 |  |
-| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 cross-jump asymmetry + addressing/sched ties; 230 mismatched over 114 regions |
+| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 jump.c cross-jump asymmetry (label identity, not block content) + ~20 B16 per-site addressing + caller-saved rotations |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | sched1 priority-1 straggler LUID tie: call-arg a0 copy vs the constant's li |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
@@ -72,7 +71,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 |  |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
-| `0x8002d02c` | EndSaveMenuToWorld | main | 324 | 292 | A164 straggler-pair order, 4/81 (was F3 head knot) |
 | `0x80038c4c` | func_80038C4C | main | 264 | 240 | F1 local-alloc tie (ay v1-vs-a1) — six more source forms measured, all 6/66 |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | 232 | B11 lagged-mult + B-i fold |
@@ -88,7 +86,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F4 return-copy hoist (7/38, length-exact). Refined 2026-08-10-3: write the mask on the LEFT (0xFFFFFF & (int)&sym) to get the original's li-before-la order. Residue: the `move v0,ot` copy must sit BETWEEN the mask li and the symbol la (A164 straggler source order), but copy propagation deletes every C form of it; duplicating the tail in both debug-if arms does NOT cross-jump back (+7 insns) |
 | `0x8005c1c0` | ControlSpuDmaTransfer | main | 656 | 112 | B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load |
 | `0x80060e28` | FUN_80060e28 | main | 176 | 88 | F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows. |
-| `0x800658fc` | func_800658FC | main | 1216 | 84 |  |
 | `0x8006606c` | CdRead | main | 260 | 72 |  |
 | `0x80013230` | RelocateMobActorTable | main | 432 | 64 | F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact |
 | `0x80065dbc` | CdReadStart | main | 532 | 60 |  |
@@ -104,6 +101,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 ## Auto-skipped (walls)
 
 - B1 %gp_rel: 14
+- B1 %gp_rel global access: 3
 - B1 %gp_rel global access (2 sites): 1
 - B1 %gp_rel global access (6 sites): 1
 - B10 compare-const hoist: 4
@@ -123,7 +121,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 - B5 split-label fragment: 4
 - B6 handwritten: 92
 - B6 handwritten ($at-as-data: lw $at then sh/sb through it): 1
-- B8 .rodata switch jump table in MAIN: 1
+- B8 .rodata switch jump table in MAIN: 4
 - B8 .rodata switch jump table in MAIN (jr through switchdataD_80011230): 1
 - B8 .rodata switch jump table in MAIN (switchdataD_80010a70): 1
 - B8 .rodata switch jump table in MAIN (switchdataD_80010dd0): 1
@@ -148,12 +146,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80012204` | main | main | 136 | B1 %gp_rel |
 | `0x80034480` | UpdateGameplayCamera | main | 2052 | B1 %gp_rel, B1 %gp_rel global access (2 sites), B2 $at literal HW load |
 | `0x80034c84` | SnapCameraToTarget | main | 100 | B1 %gp_rel |
-| `0x80034ce8` | AdvanceCameraSpringStep | main | 2748 | B1 %gp_rel |
+| `0x80034ce8` | AdvanceCameraSpringStep | main | 2748 | B1 %gp_rel, B1 %gp_rel global access |
 | `0x800357a4` | SelectCameraMode | main | 1972 | B1 %gp_rel, B1 %gp_rel global access (6 sites) |
 | `0x80035f58` | UpdateCameraManualYawInput | main | 92 | B1 %gp_rel |
 | `0x80035fb4` | UpdateCameraSpringForMode | main | 5208 | B1 %gp_rel |
-| `0x80037a20` | UpdateLedgeGrabCamera | main | 436 | B1 %gp_rel |
-| `0x80037bd4` | UpdateCameraFrame | main | 708 | B1 %gp_rel, B2 $at literal HW load |
+| `0x80037a20` | UpdateLedgeGrabCamera | main | 436 | B1 %gp_rel, B1 %gp_rel global access |
+| `0x80037bd4` | UpdateCameraFrame | main | 708 | B1 %gp_rel, B1 %gp_rel global access, B2 $at literal HW load |
 | `0x8003ea68` | ChangeSpyroState | main | 4960 | B1 %gp_rel, B8 jr-table switch (main) |
 | `0x8003fe40` | AdvanceSpyroPhysics | main | 4392 | B1 %gp_rel, B2 $at literal HW load |
 | `0x80041270` | DispatchSpyroChargeStateChanges | main | 744 | B1 %gp_rel |
@@ -326,6 +324,9 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | B6 handwritten |
 | `0x800626b0` | g_anGteExceptionVectorStub | main | 56 | B6 handwritten |
 | `0x800168dc` | AddPrimToOT | main | 56 | B6 handwritten ($at-as-data: lw $at then sh/sb through it) |
+| `0x80015370` | TickLevelTransitionStream | main | 4212 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
+| `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
+| `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x80064218` | CdProcessInterrupt | main | 1416 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x8004888c` | AdvanceSpyroSubstepState | main | 784 | B8 .rodata switch jump table in MAIN (jr through switchdataD_80011230), B8 jr-table switch (main) |
 | `0x80014b70` | TickGemPickupAssetStream | main | 2048 | B8 .rodata switch jump table in MAIN (switchdataD_80010a70), B8 jr-table switch (main) |
@@ -334,15 +335,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80056f64` | DispatchSpyroTriggerEvent | main | 1052 | B8 .rodata switch jump table in MAIN (switchdataD_80011380), B8 jr-table switch (main) |
 | `0x8005cfec` | ApplySpuVoiceAttrRange | main | 1596 | B8 .rodata switch jump table in MAIN (switchdataD_800115bc), B8 jr-table switch (main) |
 | `0x800671f0` | func_800671F0 | main | 1060 | B8 .rodata switch jump table in MAIN (switchdataD_80012144), B8 jr-table switch (main) |
-| `0x80015370` | TickLevelTransitionStream | main | 4212 | B8 jr-table switch (main) |
-| `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | B8 jr-table switch (main) |
 | `0x800314b4` | Gamestate0B_Update | main | 4132 | B8 jr-table switch (main) |
 | `0x8003d194` | TickSpyroAnimStateMachine | main | 548 | B8 jr-table switch (main) |
 | `0x80047b60` | DispatchSpyroPhysicsByState | main | 3372 | B8 jr-table switch (main) |
 | `0x8004ac24` | ResetSpyroEntity | main | 532 | B8 jr-table switch (main) |
 | `0x8004ff90` | ClipAndEmitFoggedActorTriangle | main | 212 | B8 jr-table switch (main) |
 | `0x80053570` | func_80053570 | main | 152 | B8 jr-table switch (main) |
-| `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | B8 jr-table switch (main) |
 | `0x8005cc58` | SetSpuCommonAttr | main | 916 | B8 jr-table switch (main) |
 | `0x800627d8` | FormatAndWrite | main | 1672 | B8 jr-table switch (main) |
 | `0x80062fd4` | sprintf | main | 2140 | B8 jr-table switch (main) |

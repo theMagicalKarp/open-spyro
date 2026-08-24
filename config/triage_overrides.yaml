@@ -621,27 +621,19 @@ ComputeVoicePanAndFalloff:
     0x30(sp)); the wrap arm must negate the PARAMETER and mask the COPY, which
     is what assigns a2/v1 to the original's roles in the two delay slots.
 EndSaveMenuToWorld:
-  verdict: park
-  class: "A164 straggler-pair order, 4/81 (was F3 head knot)"
-  date: 2026-08-12
+  verdict: viable
+  class: "MATCHED 2026-08-24 (A226)"
+  date: 2026-08-24
   note: >-
-    324 B. Original emits `addiu s0,s0,-420 ; sw s0,0(s1) ; lui v1 ; lw v1` and
-    we emit the global load pair first — a 2-vs-2 tie between priority-1
-    stragglers filling the bubble after the flame-timer load, so it is A164,
-    not an F3 knot. Position-invariant, re-confirmed 2026-08-10 over five forms
-    and again 2026-08-12 over ten more: every position of the anchor store from
-    "first statement after ResetSpyroEntity" down, the yaw statement above it,
-    the anchor split into its own `int *anchor` local at two points, and the
-    flame+anchor+yaw trio hoisted as a group above `dyn = ...`. A volatile READ
-    of the yaw through a volatile-declared alias symbol does NOT pin the load
-    below the store either (gcc 2.7.2 adds no such dependence). Hard constraint:
-    the anchor store must stay ABOVE `dyn = g_anCameraDynamicTargetParams` or
-    s0 is already reloaded and it costs +2 insns.
-    RETIRED from the old note: "the `cam[new_var]` index form is load-bearing"
-    — that was a permuter artifact. The wip was re-derived from scratch
-    2026-08-12 with a plain `g_apCameraAnchorBlock[0] = &block[-105];` and
-    reaches the same 4/81, so the spew body is gone and the source is readable.
-    Permuter (aim it at the head — the camera/HUD/music tail is already exact).
+    324 B, MATCHED. The four-session A164/F2 "straggler-pair order" diagnosis
+    was wrong: it is not a scheduling tie at all. gcc 2.7.2's true_dependence
+    DROPS the dependence when one MEM is MEM_IN_STRUCT_P with a varying address
+    and the other is neither, so the camera-anchor store `(mem/s (reg s1))` did
+    not block a plain scalar-symbol read of g_nSpyroBodyYaw and the load floated
+    above it. Reading the same address as an ARRAY_REF through the existing
+    g_anSpyroMoveTargetYawBlock alias (+0x50, same reloc, identical bytes) sets
+    MEM_IN_STRUCT_P on the load and pins it below the store. One line.
+
 func_level_0_8007CFC0:
   verdict: park
   class: "mid-decode, 215/642 content-aligned"
@@ -2503,3 +2495,56 @@ AdvanceCameraSpringStep:
   class: "B1 %gp_rel global access"
   date: 2026-08-24
   note: "2748 B; four %gp_rel accesses. Leaf (no jal), so otherwise the shape would have been attractive."
+
+StoryIntro_Draw:
+  verdict: viable
+  class: "MATCHED 2026-08-24 (fresh re-derive + A93)"
+  date: 2026-08-24
+  note: >-
+    784 B, MATCHED. The park was raw 2026-07-25 permuter output with no
+    post-mortem; a fresh m2c decode reached length-exact in four steps. The
+    residue was A93: loop.c inserts hoisted invariants just before loop_start,
+    i.e. AFTER every explicit preheader assignment, so both loop bases have to
+    be explicit pre-loop pointer locals declared in the original's order or the
+    timer base and the glyph cursor conflict and the base is pushed off a1.
+
+func_800658FC:
+  verdict: viable
+  class: "MATCHED 2026-08-24 (A228 + retired B16)"
+  date: 2026-08-24
+  note: >-
+    1216 B (the whole libcd interrupt section, four functions). Two levers: the
+    adjacent result bytes reached as ONE incomplete array with constant indices
+    (D_80075115[0] / [-1]) so cse's related_value emits `addiu s3,s1,-1` — the
+    two-pointer form cannot work because reload's update_equiv_regs re-folds a
+    pointer local; and an inline volatile cast-deref of a NEW block alias at the
+    two post-jal sites that want `la; lw 0(r)` (a volatile-declared scalar does
+    not reach it — expand never force_regs a DECL's address).
+
+EnqueueLoadingScreenSprites:
+  verdict: parked
+  class: "runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation"
+  date: 2026-08-24
+  note: >-
+    920 B, 40/230 linked, length-exact. Residue 1 re-tested 2026-08-24 against
+    the retired-B16 lever and it does NOT apply: the base is a runtime pointer,
+    not a symbol, so `(plus reg const)` is already a legitimate MIPS address,
+    memory_address never force_regs it and volatile has nothing to protect. An
+    inline volatile cast-deref is a no-op (40/230 unchanged) and an explicit
+    pre-loop pointer local overflows the slot. Residues 2 and 3 are unchanged.
+
+Gamestate0A_Draw:
+  verdict: parked
+  class: "sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group"
+  date: 2026-08-24
+  note: >-
+    932 B, 69/233 linked, length-exact. The dominant residue is a pure EXCHANGE
+    of `li a1,1023` (the AddPrimToOTSlot slot argument) and `addiu s1,s1,1`
+    between position 0 and position 28 of the quad-loop body; the b/c column
+    register roles follow from it. Re-measured 2026-08-24: an A195 dial on the
+    `slot` local and moving `i += 1` to immediately before the call are both
+    byte-identical at 69/233 — the constant is const-propagated into the call
+    arg either way, so the `li` keeps expand_call's high LUID. The Case-1 knot
+    is NOT the same class as EndSaveMenuToWorld after all (A226 needs a
+    register-address MEM on one side; this one is a stack spill vs global
+    loads), so the old "same knot family" cross-reference is retired.
