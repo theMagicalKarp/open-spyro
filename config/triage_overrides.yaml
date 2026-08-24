@@ -2197,9 +2197,31 @@ func_level_27_80086754_2026_08_21_1:
 
 func_titlescreen_8007ABAC:
   verdict: parked
-  class: "local-alloc combine_regs tie: operand 1 wins the destination hard reg"
-  date: 2026-08-21
+  class: "A164 stack-arg li/sw placement (4 insns) — the addu wall is RETIRED"
+  date: 2026-08-23
   note: >-
+    2026-08-23-1: the `addu a1,a1,v0` residue that stood since 2026-07 is
+    SOLVED. It is neither a scheduling tie nor a combine_regs tie: the insn's
+    destination is a HARD reg, so combine_regs takes its
+    `sreg < FIRST_PSEUDO_REGISTER` early-out for both operands and only records
+    a1 in `qty_phys_sugg[]`; the winner is chosen by the SUGGESTION pass, whose
+    `qty_sugg_compare` ranks equal-suggestion qtys on
+    floor_log2(refs)*refs/live_length DESCENDING. P (the pointer) is 2/6 =
+    3333 and C (the -0x40000 constant) is 2/8 = 2500, so P takes a1. An A195
+    dial on the constant lifts C over P and emits the original's
+    `addu a1,v0,a1`. Paying for the dial's A200 cse barrier (which otherwise
+    merges D_80076B90.unk_0x28 with .unk_0x00 into one held base and comes out
+    one insn SHORT) needs the a0 argument read as
+    `int cd = *((volatile int *) &D_80076B90.unk_0x00);`. A second dial on the
+    600 takes it to 4. Now 2137/2147 words identical (park 5,792 -> 5,780
+    bytes; 12 bytes cheaper, far closer). Residue: the stack argument's
+    `li 600`/`sw 600,16(sp)` pair is three slots late and the `sw` steals the
+    jal delay slot the original gives to the `addu` — one A164 class. DO NOT
+    re-run the permuter (39,000 + 9,800 iterations, zero sub-floor; we now know
+    the residue was never in its transform space). Full recipe and the rejected
+    list (donor carriers, register/volatile n, dial depths 1-3, ptr temp, 120
+    arg-temp orders) are in the .c.wip header.
+    ---- earlier (2026-08-21) ----
     8,588 B, 2147/2147 and linking; content-aligned 6 over 3 regions. The old
     "permuter-or-never / every source form canonicalizes" verdict is RETIRED and
     the old root cause was wrong: this is not a scheduling tie (cc1 -dS shows
