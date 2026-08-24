@@ -542,9 +542,27 @@ StopAllSoundExceptMask:
     row bit between the guards lands it.
 func_level_5_8007B68C:
   verdict: park
-  class: "B14 RETIRED -> now length-exact (1610/1610), MISMATCH 78 content-aligned"
-  date: 2026-08-06
+  class: "R8 sched1 arg-copy (B19 class, 16 insns) + R1 straggler + A127 frame"
+  date: 2026-08-23
   note: >-
+    2026-08-23-1: 228/1610 -> 1501/1610 words byte-identical (93.2% linked,
+    park score 912 -> 5,668 partial bytes); 31 content-aligned mismatches over
+    19 regions, still length-exact and linking. Four levers, all recorded in
+    the .c.wip header: (1) per-ACCESS `volatile` relaxation in the quad loop
+    (drop it from `bq`/`cq`'s byte read-backs and the `p+0x12` store) re-tiles
+    the register map onto the original and closes old R6+R7 (~26 insns);
+    (2) `allclear = 0;` above `env = D_80076EE0;` closes a +1 positional
+    offset that was zeroing partial credit for 1,287 insns; (3) the permuter's
+    `allclear = 0x15;` hack is RETIRED (the literal is strictly better now);
+    (4) the TIME-ATTACK `&pos` carrier is free once (3) sheds its insn.
+    What is left: R8 is HALF the residue and is one class (the D_80075720
+    load / `move a1,s2` arg-copy order at four YES/NO blink sites; statement
+    permutation proven not to reach it — B19's class, aim `cc1 -dS` there),
+    then R1 (+1, cannot link in all three legal orders), R3'/R5/quad-tail
+    (2-4 each), and the A127 frame (vars=104 vs 96) whose trigger is now
+    localised to passing the long-lived local `bonus` as an argument to the
+    TOTAL-column sprintf.
+    ---- earlier (2026-08-06) ----
     6440 B, x5 clone payoff 32,200 B. The +1 nop was A164 straggler ordering,
     not la-canonicalization: permuting the three dep-free defs to
     (img, img2, envBase) drops `addiu s3,s0,-8` into PutDrawEnv's delay slot.
