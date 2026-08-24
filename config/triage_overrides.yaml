@@ -793,8 +793,30 @@ func_80039E94:
   date: 2026-08-10
 func_80038FC8:
   verdict: parked
-  class: "F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block"
-  date: 2026-08-10
+  class: "coupled schedule/register pair (4/152): bare literals give the exact schedule with a v0/v1 rotation, an A195 dial fixes the rotation and reverts the schedule"
+  date: 2026-08-23
+  note: >-
+    2026-08-23-1: the two halves are now separately reachable, which
+    contradicts the older "the register axis is the wrong axis" reading.
+    BARE LITERALS for the two 0x10 stores (no carrier at all) reproduce the
+    original schedule EXACTLY — `move a0,s0` in both `beq` delay slots and
+    `li ?,16` adjacent to its `sb`s — leaving a pure v0/v1 rotation (9/152 over
+    5 regions): the constant is 3 refs / 3 insns = 10000 and takes v0 first,
+    while `old` is 2 refs / 21 and is a GLOBAL allocno (it spans the `j` into
+    the cross-jumped tail), so it is assigned after local-alloc has taken v0.
+    A 3-deep A195 dial on the `old` load fixes the registers and reverts the
+    schedule (back to the same 4). Depths 1/2 = 11, 3/4 = 4; a dial on the
+    `*(actor+0x3C) = old;` store is 7. Open question, now exact: make v0
+    unavailable to the constant over orig 106-108 WITHOUT a loop note — or get
+    the constant deleted by local-alloc.c `update_equiv_regs` (gate
+    `reg_n_refs == 2 && reg_basic_block < 0`), which alone would explain the
+    delay slot, the position and the register. Rejected this session: outer-
+    block constant carriers (1/2/4 of them — all 150 insns, the arms lose two)
+    and per-arm block-scoped `int c16 = 0x10;` (byte-identical to the shared
+    carrier).
+    ---- earlier (2026-08-10) ----
+    F14b mutual exclusion; the do/while(0) ref dial only behaves when it wraps
+    a whole block.
 FUN_80060e28:
   verdict: parked
   class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows."

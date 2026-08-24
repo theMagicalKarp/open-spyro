@@ -245,3 +245,41 @@ int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
      `sb ?,0x3D` moved ABOVE the c16 pair (A221 reorder)    length CHANGES
        (`zip() argument 2 is shorter`) — the merge grows; strictly worse.
 */
+
+/* 2026-08-23-1 — THE SCHEDULE AND THE REGISTERS ARE TWO SEPARATE STATES, AND
+   EACH IS INDIVIDUALLY REACHABLE.  This sharpens (and partly contradicts) the
+   note above: the register axis is NOT "a consequence of the pseudo existing".
+
+   Writing the two stores as BARE LITERALS (`*(actor+0x40) = 0x10;` etc., no
+   carrier at all) gives the ORIGINAL'S SCHEDULE EXACTLY: `move a0,s0` takes
+   both `beq` delay slots (orig 101/114) and the `li ?,16` lands at orig
+   106/119, adjacent to its `sb`s.  The whole 4-insn schedule residue is gone.
+   What is left in that state is a pure v0/v1 ROTATION, 9 insns over 5 regions:
+   the constant takes v0 and `old` (the `lbu ?,61(s0)` at 104 that survives to
+   `sb ?,60(s0)` at 124 in the cross-jumped tail) takes v1, where the original
+   has them the other way round.  Arithmetic: the constant is 3 refs (one set,
+   two uses) over 3 insns = 10000, `old` is 2 refs over 21 = 952, so local-alloc
+   allocates the constant first and it takes the lowest free reg.  `old` spans
+   the `j` into the shared tail, so it is a GLOBAL allocno and is assigned after
+   local-alloc has already taken v0.
+
+   AND AN A195 DIAL ON `old` FIXES THE REGISTERS — but reverts the schedule.
+   `do { do { do { old = *((unsigned char *)actor + 0x3D); } while (0); }
+   while (0); } while (0);` on the bare-literal body gives `li v1,16` (correct
+   register) and comes back to 4/152 — but they are the SAME 4 as the baseline,
+   i.e. the delay slots go back to `li v1,16`.  Depths measured on the
+   bare-literal body: x1/x2 = 11, x3/x4 = 4, and a dial on the `*(actor+0x3C) =
+   old;` store is 7 (and wrecks 103 words).  The two states are coupled by the
+   dummy loop's NOTE, which is also what perturbs sched1.
+
+   SO THE OPEN QUESTION IS NOW EXACT: **make v0 unavailable to the constant
+   over orig 106-108 without introducing a loop note.**  Either lower the
+   constant's local-alloc priority below `old`'s 952 (its range is pinned at 3
+   insns by the two adjacent `sb`s, so this needs a different shape), or make
+   `old` block-local AND higher priority, or get the constant deleted by
+   `update_equiv_regs` as the note above describes (still the cleanest story:
+   one deletion explains the delay slot, the position AND the register).
+   Also measured and rejected this session: outer-block constant carriers
+   (one, two per arm, four — all 150 insns, the arms lose two), and per-arm
+   block-scoped `int c16 = 0x10;` (byte-identical to the shared carrier).
+*/
