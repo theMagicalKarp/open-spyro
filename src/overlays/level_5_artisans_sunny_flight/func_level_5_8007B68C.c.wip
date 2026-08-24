@@ -10,215 +10,136 @@
  * TRY AGAIN?/YES/NO menu) or, at D_80075744 == 0x64, the TIME ATTACK board
  * (times via the formatter D_800758C4, NEW RECORD, TRY AGAIN/YES/NO).
  * Selected records get a sine glow on +0x46 from D_8006CC78. Standard
- * 2-vblank pace tail. Word-identical in all five flight overlays (x5 payoff:
- * 32,200 bytes).
+ * 2-vblank pace tail. Word-identical in all five flight overlays
+ * (5/11/17/23/29 -- x5 payoff: 32,200 bytes; fingerprint md5 confirmed
+ * 2026-08-23-1).
  *
- * B14 RETIRED 2026-08-06-1 — the "+1 nop / cannot link" blocker is GONE and
- * this now builds LENGTH-EXACT (1610/1610) and LINKS. The old note said sched1
- * "canonicalizes the three dep-free la insns to fixed positions"; the sched1
- * dump (`cc1 -dS`, `<in>.i.sched`) says otherwise. All three defs
- * (`la envBase`, `la img`, `addiu img2`) carry priority == 1 and are ready from
- * T-1, so they are pure stragglers: they get picked only at scheduling BUBBLES,
- * and `rank_for_schedule` breaks the priority tie on INSN_LUID **descending**,
- * i.e. on SOURCE ORDER. Whichever of them has the highest LUID fills the first
- * bubble. With the original source order (envBase, img, img2) `img2` won the
- * bubble at T-17 and was placed ~11 insns too late, which left PutDrawEnv's
- * delay slot empty. Permuting the three assignment statements to
- * (img, img2, envBase) makes `envBase` take that bubble instead; `img2` then
- * falls to the next one, which is the slot immediately before the PutDrawEnv
- * call, and reorg eats it into the delay slot exactly as the original does.
- * The earlier "statement position" probes moved ONE statement at a time and so
- * never changed the relative LUID order, which is the only thing that matters.
- * Remaining residue (content-aligned MISMATCH 75/1610 as of 2026-08-18; the linked diff
- * is positionally phase-shifted by the one insn below and reads far worse than
- * the function really is): `la envBase` still lands ~20 insns late (it takes
- * the T-17 bubble; the original has it before the FIRST PutDispEnv), a +8 frame
- * (A127), the else-arm `move s5,zero` bne delay slot, and the old list -
- * quad-loop temp register roles
- * (a/bh/ch/d land a1/a0/a1/v0 vs orig v0/a1/a2/v1, tpage t0 vs a3),
- * YES/NO blink blocks (orig holds &pos in s2 across the cse jump-follow
- * path and loads D_80075720 between the pos stores), publish-loop
- * slot/r register mirror, init-arm i++/lw ordering. All solved recipes and
- * the exact orig dataflow are in cookbook AD; everything else - including
- * all 5 tally stanzas, TOTAL, PRESS block, time-attack board, all string
- * literals (owned .rodata, emitted in use order), memcpy message copies,
- * record block, pace tail - is byte-identical.
+ * STATE 2026-08-23-1: length-exact (1610/1610), LINKS, and the linked diff is
+ * **1501/1610 words byte-identical (93.2%)**, up from 228/1610 (912 partial
+ * bytes) at the start of that session. Residue: **31 content-aligned
+ * mismatches over 19 regions**, plus the frame (below). Drive this park off
+ * BOTH numbers -- the masked mismatch count AND the identical-word count --
+ * because they can move in opposite directions (see "the positional trap").
  *
- * 2026-07-25-1 unattended permuter session (~15m, ~16000 iterations — a slow,
- * large function — timed out at the 15m budget): best score 3000 vs base score
- * 3705, across 143 output dirs. No byte-perfect candidate found; still PARKED.
+ * ---- Measuring this park (do this first, it is the whole game) -------------
+ *   uv run --project tools/open-spyro --group split -- open-spyro diff \
+ *       func_level_5_8007B68C          # ~10 s, writes build/diff/*.{orig,built}.bin
+ * then objdump BOTH bins with `-b binary -m mips:3000 -EL -D`, anchor register
+ * names (`\b(a[0-3]|v[01]|t[0-9]|s[0-8]|at|gp|sp|fp|ra|zero)\b` -> `R\1`),
+ * mask immediates, and difflib-align. Print the RUNNING OFFSET per opcode
+ * region ((j2-j1)-(i2-i1) accumulated) and the count of byte-identical words.
+ * A compile-only variant of the same diff (config/compile.sh ovl + objdump of
+ * the .o, `<...>` symbol suffixes stripped before masking) runs without a link
+ * and is the fast inner loop; finish on the linked one.
  *
- * 2026-08-06-2 — FULL RESIDUE INVENTORY (content-aligned masked diff, 78/1610).
- * Drive this park off the content-aligned diff, never the linked one: the
- * linked diff reads 1341/1610 because the `la envBase` displacement phase-shifts
- * everything after insn 25. Recipe (~10 s/iteration): `open-spyro diff <fn>`,
- * then objdump both `build/diff/<fn>.{orig,built}.bin` with
- * `-b binary -m mips:3000 -EL -D`, anchor register names
- * (`\b(a[0-3]|v[01]|t[0-9]|s[0-8]|at|gp|sp|fp|ra|zero)\b` -> `R\1`), mask
- * immediates, and difflib-align. Thirteen INDEPENDENT residues, by orig insn:
- *   R1  25/26   `la envBase` lands at 45/46 instead of 25/26 (4 insns).
- *   R2  70      `i += 1` (2).      R3  82-88  rect.x/rect.y store vs `lw a1,0(s3)`
- *               ordering (6).
- *   R4  119     else-arm `move s5,zero` in the `bne` delay slot (1-2).
- *   R5  126     `ori a1,a1,0x3e00` emitted 4 insns late (2).
- *   R6  144     tpage `addiu a3,s1,136` lands in t0 (1) + the `sll x` position.
- *   R7  159-200 the quad-loop temp register roles — a/bh/ch/d take a1/a0/a1/v0
- *               where the orig has v0/a1/a2/v1 (~25 insns, the big one).
- *   R8  1067-74 v0/v1 mirror + `move a1,s2` position (5).
- *   R9  1090-1124 `addiu a1,sp,56` (&pos) placement in the YES/NO blink blocks
- *               and the `move a3,zero` it displaces (5).
- *   R10 1138-41, R12 1355-58 + 1403-06  `move a0,zero` one slot early (6 total).
- *   R11 1158-71 publish-loop `la`/cursor register mirror (~10).
- *   R13 1432-34 orig holds `&pos` in s2 (`addiu s2,sp,56; move a1,s2`); ours
- *               recomputes `addiu a1,sp,56` per site — this is A26 (a distinct
- *               SCALAR alias for the cross-call address), untried here.
- *   +   frame is `addiu sp,-152` vs the orig's `-144`: exactly ONE extra 8-byte
- *       spill slot (A127; saved-reg region and the 52 B of declared aggregates
- *       already agree). This is invisible to the masked diff but costs 14
- *       sp-relative immediates; the other 79 immediate-only diffs are branch
- *       and `j` targets that fall out with the shape.
- * Findings this session:
- *  - **The permuter body's `allclear = 0x15;` hack is LOAD-BEARING.** Replacing
- *    `*(p + allclear) = bq;` with the literal `*(p + 0x15) = bq;` (and dropping
- *    the assignment) is the "clean" form and makes it WORSE, 78 -> 85: the
- *    `li s5,21` is what holds the slot at orig 169 that `addiu s1,s1,1` wants,
- *    and removing it lets `x = i << 7` sink from 143 to 155 and kills the
- *    `move s5,zero` delay-slot fill at 119 (it becomes dead, since s5 is then
- *    unconditionally re-set in the loop). Do not "clean up" R2/R4 in isolation.
- *  - The hand-written body (git show 46305b0:...) plus the A164 permutation is
- *    85/1610 — 7 WORSE than this permuter body, and it adds two new residues
- *    (a second `la D_80076EE0` at 114/115 and the `sll v1,s1,0x7` position).
- *    The permuter body is the better base; keep it.
- *  - **R1 is now fully probed: all three legal source orders are known.**
- *    `img2 = img - 2` cannot precede `img`, so only (envBase,img,img2),
- *    (img,envBase,img2) and (img,img2,envBase) exist. (envBase,img,img2) =
- *    +1 insn, cannot link (the old B14 state). (img,envBase,img2) = +1 insn,
- *    cannot link (NEW, measured 2026-08-06-2). (img,img2,envBase) = current.
- *    A164 has nothing left to give here; R1 needs a different mechanism.
- *  - The quad block's u/v byte writes carry a mode residue the masked diff
- *    HIDES: orig has `addiu v0,v0,128` for `u1 = u0 + 0x80` / `u3 = u0 + 0x80`
- *    (SImode), ours has `addiu v0,v0,-128` (combine narrowed the `plus` to
- *    QImode against the `sb`). The neighbouring `v2/v3 = v0coord - 0x21` gives
- *    `addiu -33` on BOTH sides, so the original's source really does write
- *    `- 0x21` and `+ 0x80` and keeps both in SImode. Fixing this (A116's
- *    inverse) is worth 2 more bytes and may be a lever on R7.
- * 2026-08-18 — R9/R13 SOLVED for the results board; 78/1610 -> 75/1610
- * (46 regions). The a1 = &pos arg setup that ours rematerialised in the block
- * immediately before each `func_80017FE4` call is, in the original, the DEF of
- * an explicit pointer local written between the pos[] stores and the blink
- * `if`. Writing `int *pp; ... pos[0]=..; pos[1]=..; pos[2]=..; pp = pos;
- * if (blink test) ...; func_80017FE4("YES", pp, ...)` puts the copy where the
- * original has it (`move a1,s2` at orig 1071) and lets the NO block's
- * rematerialised `addiu a1,sp,56` fall into the `bne` delay slot at orig 1108.
- * Both YES/NO blocks of the RESULTS board now match; the pointer local costs
- * nothing there because `pos` is already carried in s2.
- * The TIME-ATTACK board wants the same shape and it is now measured, not
- * guessed: orig 1432 opens it with `addiu s2,sp,56; move a1,s2` (a FRESH
- * carrier established at the "TRY AGAIN" call, then reused by `move a1,s2` at
- * 1448 and rematerialised at 1485), i.e. a second pointer local scoped to that
- * branch. Every spelling of that (`int *pp` block-local, `int *pp` at else
- * scope, reusing the dead `fp`, and each of TRY-AGAIN/YES/NO alone) compiles to
- * 1611 insns and CANNOT LINK — exactly +1. Use the compile-only insn count
- * (`config/compile.sh ovl <src> /tmp/g.o` + `objdump -d | grep -c` = 1610 for a
- * linkable body) to iterate there; the +1 has to be paid back by fixing one of
- * R10/R11/R12 in the same pass, so do NOT attempt the time-attack carrier on
- * its own.
+ * **The positional trap (cost this park ~5,000 bytes of credit for months).**
+ * `open-spyro partial` credit is positional, so ONE unbalanced insert inside
+ * the quad loop pushed the running offset to +1 for insns 145..1432 -- 1,287
+ * words -- and every one of them scored zero even though the content was
+ * right. The masked mismatch count did not show it (34 vs 37 either way).
+ * ALWAYS check the running offset before optimising the mismatch count: a
+ * source form with MORE mismatches but a ZERO offset is worth 5x more.
  *
- * 2026-08-20 — R10, R11 and R12 ALL SOLVED; 75/1610 -> 58/1610 (46 -> 33
- * regions), still length-exact and linking. Three separate mechanisms, none of
- * them a tie:
- *   R10/R12 (5 sites, 10 insns) was A93, not scheduling. Each glow loop reads
- *     `((short *) D_8006CC78)[...]` and loop.c hoists that base into the
- *     preheader, where hoisted movables are inserted just before loop_start,
- *     i.e. AFTER any explicit preheader assignment — so our `int ph = 0;`
- *     always emitted first and the original has the `la` first. Fix: give the
- *     LUT its OWN pre-loop local (`short *lut = (short *) D_8006CC78;`)
- *     DECLARED/assigned immediately above `ph`, and index `lut[...]` in the
- *     body. Both are then ordinary user insns and emit in source order. This
- *     is the same recipe at all five sites (four inside `if (count > 0)`
- *     blocks, one — NEW RECORD — with `lut` assigned between `i = 0;` and
- *     `ph = 0;`). Zero insn-count change.
- *   R11 (9 insns) was a local-alloc DENSITY decision, not a canonicalization.
- *     The publish loop's `slot`/`r` roles were mirrored (ours slot->a0, r->v1;
- *     orig slot->v1, r->a0) because qty_compare ranks on n_refs/live_length and
- *     `r` (4 refs / ~7 insns) beat `slot` (5 refs / ~12). Two nested
- *     `do { } while (0)` wrappers around `slot += 1;` buy slot two refs and
- *     flip it, with no emitted code — i.e. **A195's ref dial reaches
- *     local-alloc's qty_compare, not just global.c's allocno_compare**.
+ * ---- The four levers that took it 228 -> 1501 (2026-08-23-1) ---------------
+ * 1. **Per-access `volatile` is an allocation/scheduling dial.** The quad loop
+ *    writes a POLY_FT4 through `p` and reads fields back; every access was
+ *    volatile to stop cse folding. Dropping `volatile` from just TWO of the
+ *    ~30 accesses -- `bq = *(p + 0xD)` and `cq = *(p + 0xC)`, the two byte
+ *    copy-reads -- and from `*(p + 0x12) = bh`, re-tiled the whole loop's
+ *    register map onto the original's (bh/ch a1/a2, bq/cq reusing them, tpage
+ *    a3 instead of t0) and closed R6 + R7 (~26 insns) outright. Sweep it
+ *    per-OCCURRENCE, greedily, one `volatile ` deletion at a time (a
+ *    per-offset sweep merges the store and the read-back of the same field and
+ *    hides the win).
+ * 2. **`allclear = 0;` above `env = D_80076EE0;`** (else-branch head). Both are
+ *    priority-1 stragglers; with `env` first, its `la` won the bubble before
+ *    the `lw cur`, leaving a load-delay `nop` and pushing the `bne` one slot
+ *    late -- which is what created the +1 offset for the next 1,300 insns.
+ *    This single statement swap took the park 215 -> 1382 identical words.
+ * 3. **The permuter's `allclear = 0x15;` hack is RETIRED.** It was load-bearing
+ *    only against the OLD register map; with lever 1 in place the literal
+ *    `p + 0x15` is strictly better (it restores `move s5,zero` in the `bne`
+ *    delay slot at orig 119 -- old R4 -- and puts `addiu s1,s1,1` back at orig
+ *    168). Do not reintroduce it.
+ * 4. **The TIME-ATTACK `&pos` carrier is now free** (old R13, "+1 in every
+ *    spelling, must be paid back"): the payback is exactly the insn that
+ *    lever 3 removed. `int *pp; pp = pos;` before the TRY AGAIN call, passed
+ *    to TRY AGAIN and YES (NO rematerialises `addiu a1,sp,56`) reproduces the
+ *    original's `addiu s2,sp,56; move a1,s2` carrier.
+ * Also folded in this session: `i += 1` moved below the MoveImage call in the
+ * capture loop (old R2), `img2[0]` inlined into the LoadImage call instead of
+ * an `im` temp (half of old R3), the clut store `*(p + 0xE) = 0x3820` made
+ * NON-volatile and moved above the `p + 0x25` store (this is what puts
+ * `li v0,14368` in the orig-195 slot, which is load-bearing for the v0/v1
+ * tiling of the u/v chains), and `a + 0x80U` instead of `a + 0x80` at the two
+ * byte stores (see A-new below).
  *
- * Residues remaining (content-aligned, 58/1610 over 33 regions, 2026-08-20).
- * The old R-numbers still apply; R10/R11/R12 are gone:
+ * ---- Residue remaining (31 over 19 regions, 2026-08-23-1) ------------------
  *   R1  25/26   `la envBase` lands at 45/46 (4). All three legal source orders
- *               probed 2026-08-06-2; A164 has nothing left. Needs a new
- *               mechanism.
- *   R2  70      `i += 1` (2)   — entangled with R4/R6, see the warning below.
- *   R3  82-88   rect.x/rect.y store vs `lw a1,0(s3)` ordering (6).
- *   R4  119     else-arm `move s5,zero` in the `bne` delay slot (1).
- *   R5  126     `ori a1,a1,0x3e00` emitted 4 insns late (2). PROBED
- *               2026-08-20: a named `int bias = 0xFFFE3E00;` local declared
- *               above the store block makes it WORSE (58 -> 60). The `ori`
- *               is filling the load-delay bubble after `lw v0,-31248(v0)`
- *               that the original gives to `lui at`; it is a sched1 priority
- *               decision, not an A137/A164 source-order one.
- *   R6  144     tpage `addiu a3,s1,136` lands in t0 (1).
- *   R7  159-200 the quad-loop temp register roles (~25, now HALF the residue
- *               and the only large block left). Measured properly this session
- *               with the §D 2c probe: bh/ch/bq/cq are pseudos 120/121/122/123,
- *               each **2 refs**, live 12/15/14/11 insns, and they land
- *               a0/a1/a3/a2 where the original uses only **two** hard regs —
- *               bh and bq share a1, ch and cq share a2 (their ranges are
- *               disjoint: bh dies at `sh a1,18(s0)`, bq is born at the next
- *               insn), which is what frees a3 for `tpage` (R6). So R6 and R7
- *               are ONE problem: we need one fewer live temp, not a rotation.
- *               RULED OUT this session:
- *                 - A146 source merge of the pairs into one variable. It
- *                   works semantically but costs insns in every type:
- *                   `int` +4, `unsigned short` +2, `unsigned char` +2 — the
- *                   cost is redundant `andi 0xff`/`andi 0xffff` truncations,
- *                   because a merged variable is MULTI-SET and combine can
- *                   only fold a zero-extend into its load when the destination
- *                   pseudo is single-set. (Generalised as an idiom — see the
- *                   cookbook.)
- *                 - Inlining the byte read into its store (`p[0x15] = p[0xD]`)
- *                   to kill the temp: illegal here, both are volatile, so the
- *                   read would move down past the intervening volatile stores
- *                   instead of staying at orig 171.
- *               What the original's map actually requires is that **a0 be
- *               unavailable** to bh/ch (ours takes a0 because it is the lowest
- *               free reg and bh dies long before the `move a0,s0` call-arg
- *               copy at 182). No source form found that occupies a0 across
- *               bh's range without paying an insn. Next idea worth a probe:
- *               something that makes the `func_800168DC(p)` argument live
- *               earlier (its copy is at 182 in BOTH builds).
- *   R8  1067-74 + 1444-50 (two sites, ~6): `move a1,s2` scheduled ABOVE the
- *               pos[] store block where the original interleaves it between
- *               `sw pos[0]` and `sw pos[1]`, plus the v0/v1 mirror that
- *               follows from it. PROBED 2026-08-20: hoisting the global into a
- *               named `int sel = D_80075720;` local above `pp = pos;` is
- *               byte-identical (no change); moving `pp = pos;` BELOW the blink
- *               `if` is +1 and cannot link; an A195 wrapper on `pp = pos;` is
- *               +1 and cannot link.
- *   R13 1432-34 the TIME-ATTACK `&pos` carrier (see the 2026-08-18 note): +1
- *               in every spelling, must be paid back in the same pass.
- *   +   frame is `addiu sp,-152` vs `-144` (A127), invisible to the masked
- *       diff but 14 sp-relative immediates.
+ *               re-probed on this base: every one is +1 insn and CANNOT LINK.
+ *               A164 has nothing left; needs a different mechanism, and it
+ *               needs an insn shed elsewhere to pay for itself.
+ *   R3' 82-85   `lw a1,0(s3)` / `addiu a0,sp,16` arg-setup order in the
+ *               LoadImage call (4). Reintroducing an `im` temp at any position
+ *               is worse; this is the sched1 arg-copy class (B19-adjacent).
+ *   R5  126/131 `ori a1,a1,0x3e00` four insns late (2). Probed again: named
+ *               `bias` local, `-0x1C200` spelling, and all four orderings of
+ *               the four statements in that block are byte-identical or worse.
+ *               It is a sched1 load-delay-bubble fill, not a source-order call.
+ *   Rq  193-198 quad tail: ours emits `addiu v1,-33; sh v0,14; sb v1,37` where
+ *               the orig has `addiu v1,-33; sb v0,36; li v0,14368; sb v1,37;
+ *               sh v0,14` (3). Consequence of moving the clut store above the
+ *               0x25 store; putting it back (volatile or not) costs 12.
+ *   R8  1067-73 + 1444-50 + 1466-1500 (16, HALF the residue and now the only
+ *               large block): at each of the four YES/NO blink sites the orig
+ *               emits `lui v0; lw v0,D_80075720; move a1,s2` and ours emits
+ *               `move a1,s2; lui v1; lw v1` -- the call-arg copy is scheduled
+ *               above the load, which forces the load off v0 onto v1 (the
+ *               `li v0,348` constant is still live) and shifts the `sw pos[0]`
+ *               pair. **Statement permutation does not reach it** -- measured
+ *               over `pp = pos` at all four positions among the pos[] stores,
+ *               a hoisted `sel = D_80075720` local, and passing `pos` directly:
+ *               all byte-identical or +1. This is B19's class (a call-arg copy
+ *               of a block-live pointer is a priority-1 straggler and is picked
+ *               LAST in the backward pass, i.e. placed FIRST); B19's only known
+ *               escape is a real basic-block boundary. Aim the next session's
+ *               `cc1 -dS` probe here -- 16 insns in one class.
+ *   +   frame `addiu sp,-152` vs the orig's `-144` (A127), invisible to the
+ *       masked diff but 16 sp-relative immediates. **Root cause LOCALISED
+ *       2026-08-23-1**: `.frame` says `vars= 104` vs the orig's 96, and the
+ *       delta is triggered by ONE statement --
+ *       `func_80062FD4(buf, "%d", bonus);` (the TOTAL column's sprintf).
+ *       Replacing its third argument with a literal, or replacing the whole
+ *       call with `bonus += 1;`, drops vars from 104 to **64**; the callee
+ *       identity does not matter and the earlier sprintf calls in the same
+ *       block do not do it. So it is passing the long-lived local `bonus`
+ *       (s4 in BOTH builds -- the emitted code around the call is already
+ *       byte-identical) as a call argument that makes reload reserve the
+ *       extra slots. Nothing is actually spilled (`i.i.greg` has zero
+ *       unallocated allocnos) and NOTHING references sp+68..120 in either
+ *       build, so this is reserved-but-unused stack. Next step: read
+ *       reload1.c's caller-save / `setup_save_areas` path with
+ *       `CALLER_SAVE_PROFITABLE` in mind (local-alloc.c's `find_free_reg`
+ *       sets `caller_save_needed` on the accept_call_clobbered retry).
  *
- * **Do not clean up R2/R4/R6 in isolation** — they are all entangled with the
- * permuter body's `allclear = 0x15;` hack, which is load-bearing (see the
- * 2026-08-06-2 finding above); the `li s5,21` it emits is what holds the slot
- * at orig 169 that `addiu s1,s1,1` wants.
+ * ---- Older diagnoses that are still true ----------------------------------
+ * B14 RETIRED 2026-08-06-1 (the "+1 nop / cannot link" blocker is gone): the
+ * three dep-free defs (`la envBase`, `la img`, `addiu img2`) are priority-1
+ * stragglers and `rank_for_schedule` breaks the tie on INSN_LUID DESCENDING,
+ * i.e. source order; the current order (img, img2, envBase) is the only one of
+ * the three legal orders that links.
+ * R10/R11/R12 SOLVED 2026-08-20 and their recipes are still in the body: the
+ * glow LUT gets its OWN pre-loop local (`short *lut = (short *) D_8006CC78;`)
+ * declared immediately above `ph` so loop.c cannot hoist its `la` past the
+ * preheader assignment (A93), and two nested `do { } while (0)` wrappers around
+ * the publish loop's `slot += 1;` buy `slot` two refs and flip its qty_compare
+ * priority against `r` (A195 reaches local-alloc's qty_compare).
+ * **A195 wrappers do NOT work inside the quad loop** (re-measured
+ * 2026-08-23-1, five depths on both `bq` statements): the dummy loops' NOTEs
+ * split the block and cost 20-45 mismatches.
  *
- * Park score: 912 partial bytes (was 900 at the 2026-08-18 state). NOTE the
- * first `make progress` of the session reported this park at 0 — that was a
- * STALE-BUILD artifact, not a regression: `open-spyro partial` was run right
- * after `git checkout -- config/overlays/` reverted the slot files while the
- * build tree still held objects from an override build. Re-run it from a
- * clean tree before believing a partial number.
- *
- * Attack order for the next session: R7+R6 together (half the residue, and the
- * one place where a single insn saved fixes two residues), then R3, then the
- * TIME-ATTACK carrier paid back against R8, then the frame slot (A127), then
- * R1.
+ * NOTE: the body below is descended from the 2026-07-25 decomp-permuter output
+ * but every construct that survives is now accounted for above.
  */
 
 extern void func_800521C0(void); /* BuildRenderEntityLists */
@@ -356,20 +277,19 @@ void func_level_5_8007B68C(void)
       {
         y = 0xF8;
       }
-      i += 1;
       rect.y = y;
       rect.w = 0x80;
       rect.h = h;
       func_8005FA8C(&rect, img2[0], y);
+      i += 1;
       func_8005F764(0);
       func_80017E98(img2[0], 0x7000);
-      im = img2[0];
       rect.x = strip;
       strip += 0x40;
       rect.y = 0;
       rect.w = 0x40;
       rect.h = h;
-      func_8005FA28(&rect, im);
+      func_8005FA28(&rect, img2[0]);
       y = 8;
     }
     while (i < 4);
@@ -403,8 +323,8 @@ void func_level_5_8007B68C(void)
     unsigned char bq;
     unsigned char cq;
     cur = D_80075888;
-    env = D_80076EE0;
     allclear = 0;
+    env = D_80076EE0;
     if (cur == env)
     {
       env += 0x84;
@@ -438,27 +358,26 @@ void func_level_5_8007B68C(void)
     d = *((volatile unsigned short *) (p + 0xA));
     i += 1;
     *((volatile unsigned char *) (p + 0xD)) = 0;
-    *((volatile short *) (p + 0x12)) = bh;
-    bq = *((volatile unsigned char *) (p + 0xD));
-    allclear = 0x15;
+    *((short *) (p + 0x12)) = bh;
+    bq = *((unsigned char *) (p + 0xD));
     b = 0x40;
     *((volatile unsigned char *) (p + 0xC)) = 0;
     *((volatile short *) (p + 0x18)) = ch;
-    cq = *((volatile unsigned char *) (p + 0xC));
+    cq = *((unsigned char *) (p + 0xC));
     *((volatile short *) (p + 0x20)) = a + 0x80;
     a = *((volatile unsigned char *) (p + 0xC));
     *((volatile short *) (p + 0x22)) = d + 0xDF;
     d = *((volatile unsigned char *) (p + 0xD));
     *((volatile unsigned char *) (p + 0x6)) = b;
-    *((volatile unsigned char *) (p + allclear)) = bq;
+    *((volatile unsigned char *) (p + 0x15)) = bq;
     *((volatile unsigned char *) (p + 0x1C)) = cq;
-    *((volatile unsigned char *) (p + 0x14)) = a + 0x80;
+    *((volatile unsigned char *) (p + 0x14)) = a + 0x80U;
     a = *((volatile unsigned char *) (p + 0xC));
     *((volatile unsigned char *) (p + 0x1D)) = d - 0x21;
     d = *((volatile unsigned char *) (p + 0xD));
-    *((volatile unsigned char *) (p + 0x24)) = a + 0x80;
+    *((volatile unsigned char *) (p + 0x24)) = a + 0x80U;
+    *((short *) (p + 0xE)) = 0x3820;
     *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
-    *((volatile short *) (p + 0xE)) = 0x3820;
     *((short *) (p + 0x16)) = tpage;
     func_800168DC(p);
     next = p + 0x28;
@@ -832,6 +751,7 @@ void func_level_5_8007B68C(void)
       char *rec;
       int count;
       int blink;
+      int *pp;
       pos[0] = 0x88;
       pos[1] = 0x28;
       pos[2] = 0xC00;
@@ -938,7 +858,8 @@ void func_level_5_8007B68C(void)
       pos[0] = 0x8C;
       pos[1] = 0xBE;
       pos[2] = 0x1100;
-      func_80017FE4("TRY AGAIN", pos, 0x12, 0xB);
+      pp = pos;
+      func_80017FE4("TRY AGAIN", pp, 0x12, 0xB);
       blink = 0;
       pos[0] = 0x154;
       pos[1] = 0xBE;
@@ -950,7 +871,7 @@ void func_level_5_8007B68C(void)
           blink = 1;
         }
       }
-      func_80017FE4("YES", pos, 0x12, (blink * 2) + 0xA);
+      func_80017FE4("YES", pp, 0x12, (blink * 2) + 0xA);
       count = 3;
       blink = 0;
       pos[0] = 0x154;

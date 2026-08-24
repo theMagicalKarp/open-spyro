@@ -10,83 +10,75 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * STATUS: 99.7% (2140/2147 insns). The old rodata-packing blocker is SOLVED —
- * gen_slots_ld now skips the subsumed later pieces owned by a flipped function
- * (the single C .rodata blob covers the string + jtbl contiguously), so the
- * override links cleanly. Sole residue: a 7-insn register-allocation tie at the
- * func_80016698 CD-kickoff call (line ~81). The original materializes the
- * -0x40000 constant into arg reg a1 and keeps the D_800785E8 pointer in a temp
- * v0 (`addu a1,v0,a1`); our gcc allocates the pointer to a1 and the constant to
- * v0 (`addu a1,a1,v0`). Root cause: the 5th (stack) arg 600 occupies v0, is
- * stored, and v0 is recycled — the original reuses it for the LATE-loaded
- * pointer; our gcc reuses it for the const. Every source form tried (temp hoist,
- * array-index, int-cast, constant-first `-0x40000 + p`, pointer-const base,
- * variable offset, named 5th arg, precomputed a0/a3 temps, moved state store,
- * shared size var) canonicalizes to the identical output. A `register char *bp
- * asm("$2")` pin fixes the addu but forces an early pointer load -> 9 diffs (net
- * worse). Permuter: full infra built under build/perm/func_titlescreen_8007ABAC
- * (persistent-container compile/objdump shims, single-fn asm-built target.o,
- * base score 3195), ran ~39000 iterations (overnight, -j8) with ZERO sub-floor
- * results — the randomizer's transform space does not reach this v0-reuse flip.
- * Genuine permuter-or-never wall; the rest of the function is byte-identical.
+ * STATUS 2026-08-23-1: length-exact (2147/2147), links, **2137/2147 words
+ * byte-identical, 4 content-aligned mismatches over 4 regions** (was 6 over 3
+ * at 2140/2147). The park is 12 partial bytes cheaper than the old body and a
+ * great deal closer: **the `addu` wall that stood since 2026-07 is GONE.**
  *
- * 2026-07-25-1 unattended permuter session (~15m, ~9800 iterations via the
- * standard `open-spyro permuter` path, timed out at the 15m budget): best score
- * 3195 — identical to the base score, zero sub-floor results, only 2 output
- * dirs. CORROBORATES the overnight ~39000-iteration finding above: the
- * randomizer's transform space genuinely does not reach the v0-reuse flip.
- * Treat as settled; do not spend further unattended permuter time here.
+ * ---- THE addu WALL IS RETIRED (this is the headline) ----------------------
+ * The old note called the `addu a1,a1,v0` vs `addu a1,v0,a1` residue
+ * "permuter-or-never" after ~39,000 iterations and a wide source sweep. It is
+ * neither a scheduling tie nor a `combine_regs` tie. Read off local-alloc.c:
+ * the insn is `(set (reg:SI 5 a1) (plus P C))` with a HARD-REG destination, so
+ * `combine_regs` takes its `sreg < FIRST_PSEUDO_REGISTER` early-out for BOTH
+ * operands — it records a1 in `qty_phys_sugg[]` for each and returns 0, so
+ * nothing is ever tied. Which of P and C actually gets a1 is decided by the
+ * SUGGESTION pass (`block_alloc`'s first `find_free_reg` loop, ordered by
+ * `qty_sugg_compare`): equal suggestion counts, then priority
+ * `floor_log2(n_refs)*n_refs*size / (death-birth)` DESCENDING. Measured with
+ * the §D 2c probe on the old body: P (the D_800785E8 load) is 2 refs / 6 insns
+ * = 3333, C (the -0x40000 constant) is 2 refs / 8 insns = 2500, so P wins a1.
+ * **The fix is anything that lifts C's priority above P's**, and an A195 dial
+ * on the constant (`int off; do { off = -0x40000; } while (0);` with the call
+ * written `D_800785E8 + off`) does exactly that.
  *
- * 2026-08-21-1 — THE "EVERY SOURCE FORM CANONICALIZES" CLAIM IS RETIRED, and
- * the root cause above is wrong in a way that matters.  Do not re-run the
- * permuter here: the residue is not a scheduling tie at all.
+ * ---- WHAT THE DIAL COSTS, AND HOW TO PAY FOR IT ---------------------------
+ * The dial is also an A200 cse barrier, and on its own it lets cse merge
+ * `D_80076B90.unk_0x28` (the CD poll, orig 117-119) with `D_80076B90.unk_0x00`
+ * (the call's a0) into ONE held base: `lw a0,-40(s3)` replaces `lui a0; lw a0`
+ * and the function comes out 2146 insns (one SHORT — the linker pads the slot,
+ * so `open-spyro diff` does NOT print "cannot move"; always check the
+ * compile-only insn count too). The fix is to read the a0 argument through a
+ * form cse cannot fold onto that base:
+ *     int cd = *((volatile int *) &D_80076B90.unk_0x00);
+ * A plain `int cd = D_80076B90.unk_0x00;` temp also restores 2147 but leaves
+ * the `lui a2,0x4` mis-ordered (8 vs 5); the volatile read is what keeps
+ * orig 117-119 byte-identical AND restores the length.
+ * A second A195 dial on the 5th argument (`int n; do { n = 600; } while (0);`)
+ * then takes it from 5 to 4. Statement ORDER inside the arm matters and is
+ * saturated at (cd, off-dial, n-dial) — every other permutation of the three,
+ * with `n` at function or block scope, is 5-15 (measured, 12 permutations).
  *
- * WHAT IT ACTUALLY IS.  The block is
- *   (set (reg P) (mem D_800785E8))      ; the pointer
- *   (set (reg C) (const_int -262144))   ; the constant
- *   (set (reg:SI 5 a1) (plus (reg P) (reg C)))
- * and `local-alloc.c block_alloc` walks the insn's operands `for (i = 1; ...)`
- * calling `combine_regs (operand_i, operand_0)` and BREAKING ON THE FIRST WIN.
- * Operand 1 is P, so P gets TIED to the destination hard reg a1 and C falls to
- * find_reg, which hands it the recycled v0 -> `addu a1,a1,v0`.  The original
- * has the tie land on operand 2 instead (`addu a1,v0,a1`).  So this is a
- * combine_regs TIE question, not a scheduler or a qty_compare question, and
- * that is why every scheduling-flavoured probe in the note above came back
- * byte-identical.  Verified with the SD-2c probe: dispositions are
- * `134 in 5` (P -> a1) and `136 in 2` (C -> v0); both are priority-1 stragglers
- * at sched1 (`cc1 -dS` prints priority = 1 for all six insns of the block, no
- * birthing boost on any of them).
+ * ---- THE REMAINING 4 (all one class) --------------------------------------
+ * The 5th (stack) argument's `li 600` / `sw 600,16(sp)` pair:
+ *     orig  138 lui a2,0x4 | 139 li v0,600 | 140/141 a0 | 142 lui a1,0xfffc |
+ *           143 sw v0,16(sp) | 144/145 pointer | 146/147 a3 | 148 jal |
+ *           149 addu a1,v0,a1   <-- the addu is the DELAY SLOT
+ *     ours  ... 142 li v1,600 ... 147 addu a1,v0,a1 | 148 jal |
+ *           149 sw v1,16(sp)    <-- the sw takes the slot instead
+ * i.e. the `li` is three slots late (and lands v1, not v0) and the outgoing-arg
+ * store is scheduled LAST, so reorg gives the delay slot to the `sw` rather
+ * than the `addu`. Everything else in the call block, including `lui a2,0x4`,
+ * both `%hi/%lo` pairs and the a3 load, is byte-identical.
+ * All arg setups are priority-1 stragglers, so this is an A164 INSN_LUID
+ * question — but the `sw` of a stack argument is emitted by `expand_call`, not
+ * by a source statement, so its LUID is not directly source-addressable. Tried
+ * and rejected: a donor carrier for the 600 (arms writing 6/9/7/1/2/3/5 — all
+ * inert, the second set is rematerialised away per F14i/A220; the `20` donor
+ * costs its own arm 6 insns), `register`/`volatile` on `n`, dial depths 1-3 on
+ * both dials (saturated), hoisting the a1 value into a `ptr` temp (6), and
+ * temps for the a2/a3 arguments in all 120 orders (best 7).
+ * **Next idea worth a probe: make the `sw` schedule earlier rather than the
+ * `li` later** — e.g. a 5th argument whose value comes from an in-block LOAD
+ * (priority 2 instead of 1, see §D 2d), or find why our `expand_call` puts the
+ * stack-arg store after the register setups when the original's is before.
  *
- * A SOURCE FORM THAT DOES FLIP IT (this is the new fact).  An A195 ref dial on
- * the constant — `int off; do { off = -0x40000; } while (0);` with the call
- * written `D_800785E8 + off` — is LENGTH-EXACT (2147) and emits
- * **`addu a1,v0,a1`, exactly the original**.  It is the only form found that
- * moves this insn at all.
- * WHY IT IS NOT A MATCH YET: the do/while is also an A200 cse barrier, and the
- * barrier lets cse merge D_80076B90 with the symbol 40 bytes below it into one
- * held base, so `lui v0/addiu v0/lw v0,0(v0)` at orig 117-119 becomes
- * `lui s3/addiu s3/lw v0,0(s3)` and the a0 load at the call site becomes
- * `lw a0,-40(s3)`.  That saves an insn there and the saving is spent
- * reshuffling the call-site block.  Net 14 aligned vs the baseline 6.
- * The open question is therefore narrow and named: **raise the constant's
- * reg_n_refs without ending cse's ebb.**  flow.c's `loop_depth` weighting is
- * the only mechanism that raises reg_n_refs, which is why every non-loop
- * spelling is inert.
- *
- * MEASURED THIS SESSION (aligned score; baseline 6 over 3 regions — note the
- * LINKED count is 7, use the content-aligned one to drive this park):
- *   6   baseline; a plain `int off = -0x40000;` named temp (inert, as the
- *       note above says); `n = 600` named 5th arg; `n` shared with the
- *       adjacent `D_80078D78.unk_0x10 = 1;` store (the constant store is
- *       rematerialised by reload per A220, so the second set is deleted and
- *       reg_n_sets never rises — the same F14i trap as level_27's `rx`).
- *   14  the A195 dial at the call site (addu CORRECT, cse barrier costs more).
- *   16  a shared `vram` pointer local across the two arms.
- *   18/25  the dial hoisted above the CD poll / to the top of the case — both
- *       come out SHORT (2145 / 2142) and will not link.
- * Also measured: making the pointer multi-block does NOT reach the call site —
- * gcc keeps a fresh block-local pseudo there because the load carries a
- * REG_EQUIV, so `reg_qty < 0` never holds for the operand that matters.
+ * ---- Historical (still true) ---------------------------------------------
+ * The rodata-packing blocker is SOLVED — gen_slots_ld skips the subsumed later
+ * pieces owned by a flipped function, so the override links cleanly.
+ * Do NOT re-run the permuter here: ~39,000 iterations (overnight) plus a 15 m
+ * standard `open-spyro permuter` run both returned ZERO sub-floor results, and
+ * we now know why — the residue was never in the randomizer's transform space.
  */
 
 #include "titlescreen.h"
@@ -154,8 +146,14 @@ void func_titlescreen_8007ABAC(void) {
 
       if (D_80078D78.unk_0x10 == 0) {
         /* kick off loading titlescreen data from the CD */
-        func_80016698(D_80076B90.unk_0x00, D_800785E8 - 0x40000, 0x40000,
-                      D_8007A6D8, 600);
+        int off;
+        int cd;
+        int n;
+        cd = *((volatile int *) &D_80076B90.unk_0x00);
+        do { off = -0x40000; } while (0);
+        do { n = 600; } while (0);
+        func_80016698(cd, D_800785E8 + off, 0x40000,
+                      D_8007A6D8, n);
         D_80078D78.unk_0x10 = 1;
       } else if (D_80078D78.unk_0x10 == 1) {
         /* once loaded, initialize music and upload the sprite sheet to vram */

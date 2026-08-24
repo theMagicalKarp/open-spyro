@@ -542,9 +542,27 @@ StopAllSoundExceptMask:
     row bit between the guards lands it.
 func_level_5_8007B68C:
   verdict: park
-  class: "B14 RETIRED -> now length-exact (1610/1610), MISMATCH 78 content-aligned"
-  date: 2026-08-06
+  class: "R8 sched1 arg-copy (B19 class, 16 insns) + R1 straggler + A127 frame"
+  date: 2026-08-23
   note: >-
+    2026-08-23-1: 228/1610 -> 1501/1610 words byte-identical (93.2% linked,
+    park score 912 -> 5,668 partial bytes); 31 content-aligned mismatches over
+    19 regions, still length-exact and linking. Four levers, all recorded in
+    the .c.wip header: (1) per-ACCESS `volatile` relaxation in the quad loop
+    (drop it from `bq`/`cq`'s byte read-backs and the `p+0x12` store) re-tiles
+    the register map onto the original and closes old R6+R7 (~26 insns);
+    (2) `allclear = 0;` above `env = D_80076EE0;` closes a +1 positional
+    offset that was zeroing partial credit for 1,287 insns; (3) the permuter's
+    `allclear = 0x15;` hack is RETIRED (the literal is strictly better now);
+    (4) the TIME-ATTACK `&pos` carrier is free once (3) sheds its insn.
+    What is left: R8 is HALF the residue and is one class (the D_80075720
+    load / `move a1,s2` arg-copy order at four YES/NO blink sites; statement
+    permutation proven not to reach it — B19's class, aim `cc1 -dS` there),
+    then R1 (+1, cannot link in all three legal orders), R3'/R5/quad-tail
+    (2-4 each), and the A127 frame (vars=104 vs 96) whose trigger is now
+    localised to passing the long-lived local `bonus` as an argument to the
+    TOTAL-column sprintf.
+    ---- earlier (2026-08-06) ----
     6440 B, x5 clone payoff 32,200 B. The +1 nop was A164 straggler ordering,
     not la-canonicalization: permuting the three dep-free defs to
     (img, img2, envBase) drops `addiu s3,s0,-8` into PutDrawEnv's delay slot.
@@ -775,8 +793,30 @@ func_80039E94:
   date: 2026-08-10
 func_80038FC8:
   verdict: parked
-  class: "F14b mutual exclusion (4/152) — the do/while(0) ref dial does NOT reach it: wrapping a statement inside the arm perturbs sched1 (11/152 wrapping the load, 49/152 wrapping the store); the dial only behaves when it wraps a whole block"
-  date: 2026-08-10
+  class: "coupled schedule/register pair (4/152): bare literals give the exact schedule with a v0/v1 rotation, an A195 dial fixes the rotation and reverts the schedule"
+  date: 2026-08-23
+  note: >-
+    2026-08-23-1: the two halves are now separately reachable, which
+    contradicts the older "the register axis is the wrong axis" reading.
+    BARE LITERALS for the two 0x10 stores (no carrier at all) reproduce the
+    original schedule EXACTLY — `move a0,s0` in both `beq` delay slots and
+    `li ?,16` adjacent to its `sb`s — leaving a pure v0/v1 rotation (9/152 over
+    5 regions): the constant is 3 refs / 3 insns = 10000 and takes v0 first,
+    while `old` is 2 refs / 21 and is a GLOBAL allocno (it spans the `j` into
+    the cross-jumped tail), so it is assigned after local-alloc has taken v0.
+    A 3-deep A195 dial on the `old` load fixes the registers and reverts the
+    schedule (back to the same 4). Depths 1/2 = 11, 3/4 = 4; a dial on the
+    `*(actor+0x3C) = old;` store is 7. Open question, now exact: make v0
+    unavailable to the constant over orig 106-108 WITHOUT a loop note — or get
+    the constant deleted by local-alloc.c `update_equiv_regs` (gate
+    `reg_n_refs == 2 && reg_basic_block < 0`), which alone would explain the
+    delay slot, the position and the register. Rejected this session: outer-
+    block constant carriers (1/2/4 of them — all 150 insns, the arms lose two)
+    and per-arm block-scoped `int c16 = 0x10;` (byte-identical to the shared
+    carrier).
+    ---- earlier (2026-08-10) ----
+    F14b mutual exclusion; the do/while(0) ref dial only behaves when it wraps
+    a whole block.
 FUN_80060e28:
   verdict: parked
   class: "F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows."
@@ -2179,9 +2219,31 @@ func_level_27_80086754_2026_08_21_1:
 
 func_titlescreen_8007ABAC:
   verdict: parked
-  class: "local-alloc combine_regs tie: operand 1 wins the destination hard reg"
-  date: 2026-08-21
+  class: "A164 stack-arg li/sw placement (4 insns) — the addu wall is RETIRED"
+  date: 2026-08-23
   note: >-
+    2026-08-23-1: the `addu a1,a1,v0` residue that stood since 2026-07 is
+    SOLVED. It is neither a scheduling tie nor a combine_regs tie: the insn's
+    destination is a HARD reg, so combine_regs takes its
+    `sreg < FIRST_PSEUDO_REGISTER` early-out for both operands and only records
+    a1 in `qty_phys_sugg[]`; the winner is chosen by the SUGGESTION pass, whose
+    `qty_sugg_compare` ranks equal-suggestion qtys on
+    floor_log2(refs)*refs/live_length DESCENDING. P (the pointer) is 2/6 =
+    3333 and C (the -0x40000 constant) is 2/8 = 2500, so P takes a1. An A195
+    dial on the constant lifts C over P and emits the original's
+    `addu a1,v0,a1`. Paying for the dial's A200 cse barrier (which otherwise
+    merges D_80076B90.unk_0x28 with .unk_0x00 into one held base and comes out
+    one insn SHORT) needs the a0 argument read as
+    `int cd = *((volatile int *) &D_80076B90.unk_0x00);`. A second dial on the
+    600 takes it to 4. Now 2137/2147 words identical (park 5,792 -> 5,780
+    bytes; 12 bytes cheaper, far closer). Residue: the stack argument's
+    `li 600`/`sw 600,16(sp)` pair is three slots late and the `sw` steals the
+    jal delay slot the original gives to the `addu` — one A164 class. DO NOT
+    re-run the permuter (39,000 + 9,800 iterations, zero sub-floor; we now know
+    the residue was never in its transform space). Full recipe and the rejected
+    list (donor carriers, register/volatile n, dial depths 1-3, ptr temp, 120
+    arg-temp orders) are in the .c.wip header.
+    ---- earlier (2026-08-21) ----
     8,588 B, 2147/2147 and linking; content-aligned 6 over 3 regions. The old
     "permuter-or-never / every source form canonicalizes" verdict is RETIRED and
     the old root cause was wrong: this is not a scheduling tie (cc1 -dS shows
