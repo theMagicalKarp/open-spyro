@@ -1737,3 +1737,5 @@ g_anSpyroHornStrikeAnchorMtxBlock = 0x8007876c; // allow_duplicated:True alias b
 g_anMusicFadeBlock = 0x800761d8; // allow_duplicated:True incomplete-array alias — held-base view over g_nMusicVolumeFadeTarget ([0]), g_nMusicVolumeFadeStep (+0x58) and the SPU master-volume shorts at -0x2C0 (TickCdMusicStream)
 g_adwMusicStreamBlock = 0x800774b4; // allow_duplicated:True incomplete-array alias — g_dwMusicStreamStatus held-base view; +0x20D reaches the CdlLOC bytes at 0x800776C1 (TickCdMusicStream)
 g_anMusicTrackEndLbaTable = 0x800774bc; // allow_duplicated:True alias — the end-LBA half of the {start,end} pairs in g_anMusicTrackLbaTable, so cse cannot relate the two halves through one base (TickCdMusicStream)
+g_anCdExpectedPosBlock = 0x80075168; // allow_duplicated:True incomplete-array alias of D_80075168 — block view so the post-jal compare site loads via la;lw 0(r) (retired §B16) while every other site stays absolute (func_800658FC)
+g_anCdReadModeBlock = 0x80075178; // allow_duplicated:True incomplete-array alias of D_80075178 — block view for the post-jal mask site (retired §B16)
