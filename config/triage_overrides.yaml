@@ -2697,3 +2697,23 @@ EmitDynamicActorMeshFogged:
   class: "B6 hand-written asm (`addi` / splat handwritten marker)"
   date: 2026-08-25
   note: "240 B; 60 insns, 6 `addi` markers, 2 jals."
+
+func_80059594:
+  verdict: parked
+  class: "qty_compare live-range tie on the accumulator loop's d/g pair, pinned at both ends by rank_for_schedule's class test and an unresolvable load/store alias"
+  date: 2026-08-25
+  note: >-
+    720 B, improved 11/180 -> 6/180 this session (the header's old "15/180" was
+    stale). Five insns fell to plain A164 straggler order in the world-table
+    copy loop: declare `row = buf;` before `tbl = g_abWorldPerLevelByteTable;`
+    and increment `row += 5;` before `tbl += 5;` (neither half alone works, 8
+    and 9). The remaining 6 are one allocation decision, all positions correct:
+    d is 6 refs/6 insns (priority 20000) and g is 6 refs/5 (24000), so g is
+    allocated first and takes a0 where the original has d. Unreachable in this
+    ordering because d's birth is fixed by rank_for_schedule's CLASS test (the
+    d load is the store's only DATA producer, so it is always picked last in
+    its ready group and placed first) and g's birth is fixed by a load/store
+    alias dependence that A226 cannot break (both MEMs are register-addressed).
+    Moving the g load above the dragons store DOES flip the registers, at
+    7/180, because the store then sinks below both addus (F19). Full measured
+    variant table in the .wip header - do not re-derive.

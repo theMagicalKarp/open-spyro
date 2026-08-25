@@ -18,29 +18,67 @@ extern int D_80076228_blk[];
    tallies with recomputed world totals, kill bitmaps) and returns whether the
    stored checksum at +0x58C matches.
 
-   PARKED 91.7%, LENGTH-EXACT (15/180). Everything matches except a single
-   symmetric a0/a1 register swap in the world-totals accumulator loop:
-   original puts d (dragon byte) in a0 and g (gem short) in a1; ours swaps
-   them. Root cause (§F7 qty_compare): in the original, g's live range EQUALS
-   d's because gems[i] is stored AFTER the treasure add (add/store split), so
-   the tie breaks on birth order (d first -> a0). Ours stores gems[i] before
-   the treasure add, giving g the shorter (nested) range and thus a0. Splitting
-   the treasure add from its store to delay the gems store (fresh temp, reused
-   wd, or reused wt) DOES equalize the range but cascades register pressure into
-   the matched start=buf / g_dwActiveCameraOptions region (-> 88.9%) — a §F9
-   double knot. Held-base SpuCommonAttr -0x320 region matches via the
-   D_80076228_blk incomplete-array alias (A20). Permuter target.
+PARKED 96.7%, LENGTH-EXACT (6/180) -- was 11/180 (and the old header's
+   "15/180" was already stale; re-measure before believing any park figure).
+   Held-base SpuCommonAttr -0x320 region matches via the D_80076228_blk
+   incomplete-array alias (A20).
+
+   SOLVED 2026-08-25 (5 insns, do not regress): the world-table copy loop's
+   preheader and increments are pure A164 straggler order.  The original's
+   preheader is [move a3,s0 (row)] then [la a1 (tbl)] and its increments are
+   [addiu a3,5 (row)] ... [addiu a1,5 (tbl)] in the backedge delay slot; ours
+   had both the other way round.  Writing `row = buf;` BEFORE
+   `tbl = g_abWorldPerLevelByteTable;` and `row += 5;` BEFORE `tbl += 5;` fixes
+   all five insns (11 -> 6).  Neither half works alone (8 and 9).
+
+   SOLE RESIDUE (6 insns): the symmetric a0/a1 swap of d (dragon byte) and g
+   (gem short) in the world-totals accumulator loop -- the original has d in a0,
+   we have g there.  Every position is correct; it is one allocation decision.
+   MEASURED (cc1 -dl and -dS, basic block 7) -- do not re-derive:
+     d = reg93, 6 refs (3 x loop_depth 2) across 6 insns
+                -> qty_compare priority floor_log2(6)*6/6 = 20000
+     g = reg94, 6 refs across 5 insns -> 2*6/5 = 24000, so g is allocated first
+                and takes the lowest free reg (a0); v0/v1 are already held by
+                the two `plus` temps (149 -> v0, 150 -> v1) and the wd/wt loads.
+   Both of g's range endpoints and d's birth are STRUCTURALLY pinned, which is
+   why 20+ source forms are inert:
+     * d is born at the block's first load and cannot be moved later.  Swapping
+       the three loads in source DOES change their LUIDs, but rank_for_schedule
+       runs its CLASS test before LUID: the d load is the only DATA producer of
+       the dragons store (class 1) while the wd/wt loads are ANTI (class 2), so
+       d is always picked LAST in that ready group and therefore placed FIRST.
+       Verified in the sched1 trace for both source orders.
+     * g is born immediately after the dragons store because sched1 gives the
+       `lh` a LOG_LINK to it -- gcc cannot disambiguate two register-addressed
+       MEMs.  A226 does not reach this: its true_dependence exclusion needs one
+       side to have a NON-varying (symbol) address, and both of these vary.
+     * g dies at the later of its store and its add, and nothing can be
+       scheduled between them -- the only other insn in that window is the
+       `slti`, which is boosted and is launched only at T-2 by the branch.
+   THE ONE FORM THAT FLIPS THE REGISTERS is moving the g load ABOVE the dragons
+   store (assign g before `*dragons = d;`): the alias dependence reverses, g is
+   born one insn earlier, the two ranges tie at 6, and the lower qty (d, born
+   first) wins a0.  That state is 7/180 WITH THE REGISTERS CORRECT -- but the
+   store then depends on the load and, being a store (F19: the biggest
+   potential_hazard in its priority group), it is placed LAST and sinks three
+   slots below the two `addu`s.  Registers-right and positions-right are
+   mutually exclusive here; 6/180 is the better park (all six are same-position
+   replacements, so positional partial credit is not disturbed).
+   Also measured, all inert or worse against the 6/180 baseline: A195 dials on
+   d's def / store / add at depths 1-3 (11-17); every reordering of the wd/wt/d
+   loads (6, 6); `dragons[0]` / `gems[0]` ARRAY_REF forms and the
+   `((short *)half)[0x56]` form (all 6); `unsigned char d` (6); `short g`
+   (length change); splitting the treasure add from its store with a reused or a
+   fresh temp (11); `+=` on the two world globals instead of the wd/wt temps
+   (+2 insns, will not link); moving the gems store past the egg `if` (27).
 
    2026-07-25-1 unattended permuter session (~15m, ~63600 iterations, timed out
    at the 15m budget): best score 120 vs base score 325. No byte-perfect
    candidate found; still PARKED (see above). */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show HEAD:src/c/func_80059594.c.wip
-   Best candidate:
-   build/permuter/nonmatchings/func_80059594/output-120-1/source.c */
+/* NOTE: the body below still carries the 2026-07-25 permuter sweep's variable
+   naming (new_var/new_var2/new_var3), but the two edits above are hand-made and
+   the analysis describes the current residue exactly. A full re-derive is the
+   obvious next step if the a0/a1 knot is ever re-opened. */
 
 int func_80059594(unsigned char *buf) {
   unsigned char *start;
@@ -98,8 +136,8 @@ int func_80059594(unsigned char *buf) {
   CopyWords(g_anWorldPersistentFlags, buf + 0x10, 0x14);
   new_var2 = 0x64;
   w = 0;
-  tbl = g_abWorldPerLevelByteTable;
   row = buf;
+  tbl = g_abWorldPerLevelByteTable;
   do {
     dst = tbl;
     src = row + 0x24;
@@ -107,9 +145,9 @@ int func_80059594(unsigned char *buf) {
     do {
       *(dst++) = *(src++);
     } while (((int)dst) < ((int)end));
-    tbl += 5;
-    w += 1;
     row += 5;
+    w += 1;
+    tbl += 5;
   } while (w < 5);
   CopyWords(g_abLevelVisitedFlag, buf + 0x40, 0x24);
   CopyWords(g_abLevelGemPercent, buf + new_var2, 0x24);
