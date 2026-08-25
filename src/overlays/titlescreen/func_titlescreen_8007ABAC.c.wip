@@ -64,6 +64,83 @@
  * slot); every statement order that does not put the `cd` read FIRST (2019-2020
  * — the volatile read is the block head and moving it relocates the function).
  *
+ * ---- 2026-08-25: THE MECHANISM IS FULLY READ OFF THE sched1 TRACE ---------
+ * Do not re-derive any of this.  `cc1 -dS` on the park body, basic block 26
+ * (`grep -n "basic block number 26" -A 32 <in>.i.sched`) gives the whole story:
+ *
+ *   ;; ready list at T-7: 250 (7f000001) ... 248 (7f000001), now 250 248 ...
+ *   ;; insn 248 has a greater potential hazard, now 248 250 ...
+ *
+ * 250 is the `-0x40000` lui, 248 the `D_800785E8` load.  `rank_for_schedule`
+ * ALREADY puts the const first (equal boosted priority, then class, then LUID);
+ * `schedule_select` then overrides it because `potential_hazard` is 0 for a lui
+ * (no function unit) and >0 for a load (mips.md "memory" unit).  The load is
+ * therefore picked first, i.e. placed LAST, i.e. born last, i.e. has the SHORTER
+ * live range -- and `qty_sugg_compare` (both qtys carry the same single a1
+ * suggestion from `(set (reg a1) (plus P C))`) then allocates the shorter-lived
+ * one first, so the POINTER takes a1.  Numbers from `-dl`: 135(ptr) 2 refs/6,
+ * 137(const) 2 refs/8 => 3333 vs 2500.
+ *
+ * WHY ARM 2 (`func_8005FA28`, same `ptr - 0x40000`) MATCHES: its block has no
+ * third boosted load, so the const is ready at T-5 and the ptr at T-6 -- one per
+ * cycle, no collision -- and the ptr is born first there.  Arm 1's extra load is
+ * the `D_8007A6D8` a3 argument: its consumer (the a3 arg copy) is scheduled at
+ * T-4 (highest LUID of the priority-2 arg-copy group -- expand_call emits the
+ * copies in a0,a1,a2,a3 order, so the addu can never win that tie), so the a3
+ * load is ready at T-6, takes T-6 from the const, and pushes const+ptr into the
+ * same T-7 group.  **Confirmed by construction**: replacing the a3 argument with
+ * a literal 0 gives `lui a1,0xfffc` / `lui v0,lw v0` / `addu a1,v0,a1` -- the
+ * original's exact register assignment -- on the first build.
+ *
+ * SO THERE ARE EXACTLY TWO LEVERS, AND BOTH ARE MEASURED AND BOTH COST MORE
+ * THAN THEY BUY:
+ *  (1) `floor_log2(R)*R/range`: R=3 on the const beats the ptr (3/8 > 2/6).
+ *      A195's `do { off = -0x40000; } while (0);` reaches it and the REGISTERS
+ *      COME OUT RIGHT -- but **any** loop note in this block sinks the 600/`sw`
+ *      pair to the end (10-11/2147).  Root cause, and it is structural: the
+ *      loop-note insn gets a dependence on everything before it (sched.c
+ *      `if (loop_notes)` sets `reg_pending_sets_all`), so it inherits priority 2
+ *      from the block's loads, and every insn after it inherits >=2 -- which
+ *      lifts the outgoing stack-arg store out of the priority-1 pool into the
+ *      top group, where `potential_hazard` (a store outranks everything) hands
+ *      it the LAST slot.  Measured at 10-11 for: dial before the call, dial
+ *      after a `p = D_800785E8;` hoist, dial before the `cd` read (14 -- also
+ *      breaks a held base in the preceding block), dial with cd/p/tbl hoisted
+ *      above it, dial with cd/p/tbl/600 all hoisted, and a dial around the
+ *      `q = D_800785E8 + off;` use (that one weights the ptr too, 10).
+ *      **Conclusion: the A195 dial is unusable in any block that passes a stack
+ *      argument.**
+ *  (2) Un-boost the a3 load (F14: a second set => `reg_n_sets != 1`), which
+ *      frees T-6 for the const.  Registers come out right; but an un-boosted def
+ *      drifts to the FRONT of its block, so the a3 load and the `cd` load swap
+ *      places (orig has cd at 0x8007ADDC and a3 at 0x8007ADF4).  Best state:
+ *      **7/2147 with a DIFFERENT residue** -- 4 insns in arm 1 (pure a0/a3 load
+ *      swap, everything else including `addu a1,v0,a1` byte-identical) plus 3 in
+ *      arm 2 from the donor.  Donor rules learned here: a donor whose second set
+ *      is a CONSTANT ARGUMENT is deleted by copy/constant propagation and the
+ *      carrier silently stays single-set (`tbl = 0; f(&rc,0,0,tbl)` at the
+ *      `func_8005F8F8` site => back to the baseline 7); a donor whose second set
+ *      is `tbl = K; <global> = tbl;` survives.  Both surviving donors cost their
+ *      own arm 3-6 insns because the carrier is one global allocno and arm 1
+ *      pins it to a3.  Declaring `tbl` before vs after the `cd` read is a no-op
+ *      (the a3 load drifts to the front either way).
+ *
+ * WHAT WOULD ACTUALLY CLOSE IT (nothing else is left):
+ *   - a THIRD real reference to the -0x40000 pseudo, with no loop note.  `-off`
+ *     as the a2 argument does not work (cse folds it back to a constant and the
+ *     ref disappears); `size`/`-size` sharing gives `subu`, not `addu`.
+ *   - or a copy suggestion: `qty_sugg_compare` sorts on `qty_phys_num_copy_sugg`
+ *     BEFORE priority, so a pseudo reached by a plain reg-to-reg move into a
+ *     hard reg jumps the queue.  Neither operand of an `addu` can get one
+ *     (`may_save_copy` needs `SET_SRC == the operand`, or a match-0 constraint,
+ *     which MIPS `addsi3` does not have).
+ *   - or two hard-reg suggestions on the POINTER (sugg count sorts before
+ *     priority, and MORE suggestions sorts LATER), which needs the pointer to be
+ *     an operand of a second hard-reg set in the same block.
+ * Also retired here: "the residue needs sched1 to emit the pointer before the
+ * constant, no source form found" -- there IS one (lever 2), it just relocates
+ * the a3 load.
+ *
  * ---- Historical (still true) ---------------------------------------------
  * The rodata-packing blocker is SOLVED — gen_slots_ld skips the subsumed later
  * pieces owned by a flipped function, so the override links cleanly.

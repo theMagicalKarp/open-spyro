@@ -2445,20 +2445,34 @@ func_level_0_8007B020:
 
 func_titlescreen_8007ABAC:
   verdict: parked
-  class: "A225 suggestion-pass register swap (a1 to the constant vs to the pointer), gated by schedule_select's potential_hazard tiebreak"
-  date: 2026-08-24
+  class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6"
+  date: 2026-08-25
   note: >-
-    8588 B, improved 10/2147 -> 7/2147 linked this session by REMOVING both
-    A195 dials (their NOTE_INSN_LOOP_BEG/END attach sched.c's barrier to the
-    D_800785E8 load, which then gives the outgoing stack-arg store a latency-2
-    edge, priority 3, and the potential_hazard tiebreak places it last, stealing
-    the jal delay slot from the addu). The remaining 7 are one register
-    decision: the original puts -0x40000 in a1 and the pointer in v0; we do the
-    reverse, and the store's position follows from the resulting WAR chain on
-    v0. Blocked because flipping it needs sched1 to emit the pointer load BEFORE
-    the constant, and at sched1 T-7 both carry the F14 birthing boost so they
-    are one priority group where potential_hazard always prefers the load.
-    13 source forms measured, all exactly 7 — the list is in the .wip header.
+    8588 B, 7/2147 linked. FULL MECHANISM READ OFF `cc1 -dS` THIS SESSION (see
+    the .wip header; do not re-derive). rank_for_schedule already ranks the
+    -0x40000 lui ahead of the D_800785E8 load at T-7; schedule_select overrides
+    it because potential_hazard is 0 for a lui and >0 for a load, so the load is
+    placed last, born last, has the shorter live range, and qty_sugg_compare
+    (equal single a1 suggestions) hands IT a1. Arm 2 of the same expression
+    matches because its block has no third boosted load; arm 1's is the
+    D_8007A6D8 a3 argument, whose arg copy always wins the T-4 LUID tie (
+    expand_call emits arg copies a0..a3 in order). Proved by construction:
+    passing a literal 0 for a3 reproduces the original's registers first build.
+    Two levers reach the right registers and both cost more than they buy:
+    (1) A195 R=3 on the const — any loop note in this block lifts the outgoing
+    stack-arg store into the top priority group (loop_notes sets
+    reg_pending_sets_all, so the note insn and everything after inherit priority
+    >=2) where potential_hazard gives a store the last slot: 10-11/2147 over six
+    placements. GENERAL RULE: no A195 dial is usable in a block that passes a
+    stack argument. (2) F14 un-boost of the a3 load via a multi-set carrier —
+    7/2147 with only a 4-insn a0/a3 load swap left in arm 1 plus 3 in the donor
+    arm, but an un-boosted def always drifts to the block front, so the swap is
+    structural. Donor rule learned: a second set that is a CONSTANT ARGUMENT is
+    deleted by copy propagation (carrier stays single-set, silently); `tbl = K;
+    <global> = tbl;` survives. RETIRED: "no source form makes sched1 emit the
+    pointer before the constant" — lever 2 does. Still open: a third real
+    reference to the const with no loop note, or a copy suggestion / second hard
+    reg suggestion (qty_sugg_compare sorts on suggestion counts before priority).
 
 SaveLoadMenu_Draw:
   verdict: wall
@@ -2548,3 +2562,138 @@ Gamestate0A_Draw:
     is NOT the same class as EndSaveMenuToWorld after all (A226 needs a
     register-address MEM on one side; this one is a stack spill vs global
     loads), so the old "same knot family" cross-reference is retired.
+
+# --- 2026-08-25: main's whole remaining `viable` tail is hand-written asm ------
+# Swept every main function in the triage viable list that had NO ledger entry
+# (21 of them, 1,900 B total). All carry splat's `/* handwritten instruction */
+# marker on at least one `addi` — and gcc never emits trapping `addi`, only
+# `addiu` — so every one is B6. This closes the last fresh main candidates and
+# confirms 2026-08-23's "main is finished at tractable sizes". Note they are
+# still in triage's viable list and in progress.py's denominator: widening the
+# handwritten detector to accept the `addi` marker is a project-level call.
+
+start:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "168 B; CRT entry stub; 2 `addi` markers."
+
+FillWord:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "28 B; 7 insns, 3 `addi` markers."
+
+FillBlock16:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "40 B; 10 insns, 3 `addi` markers."
+
+CountLeadingZeros:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "36 B; 9 insns, 5 `addi` markers + 2 GTE ops."
+
+AbsAngleDelta8:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "32 B; 8 insns, 5 `addi` markers."
+
+AbsAngleDelta12:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "32 B; 8 insns, 5 `addi` markers."
+
+SignedAngleDelta8:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "36 B; 9 insns, 4 `addi` markers."
+
+SignedAngleDelta12:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "36 B; 9 insns, 4 `addi` markers."
+
+EnterCriticalSection:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "16 B; BIOS syscall trampoline (B3) + 1 `addi` marker."
+
+ExitCriticalSection:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "16 B; BIOS syscall trampoline (B3) + 1 `addi` marker."
+
+SetTransMatrix:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "32 B; 3 `addi` markers + 3 GTE ops."
+
+SetGeomOffset:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "24 B; 2 `addi` markers + 2 GTE ops."
+
+SetGeomScreen:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "12 B; 1 `addi` marker + 1 GTE op."
+
+CopyWords:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "84 B; 21 insns, 7 `addi` markers — unrolled 4-word copy loop."
+
+ScaleVector3Sat:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "56 B; 14 insns, 6 `addi` markers + 10 GTE ops."
+
+ComputeDepthCuedColor:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "68 B; 17 insns, 6 `addi` markers + 6 GTE ops."
+
+func_8004BDEC:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "96 B; 24 insns, 5 `addi` markers."
+
+InitGeom:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "128 B; 9 `addi` markers + 7 GTE ops."
+
+AllocActorRecordSlot:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "164 B; 41 insns, 10 `addi` markers."
+
+BlendDepthCuedEdgeColor:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "244 B; 61 insns, 20 `addi` markers + 12 GTE ops; also uses $at for `sll/sra/or`."
+
+EmitDynamicActorMeshFogged:
+  verdict: wall
+  class: "B6 hand-written asm (`addi` / splat handwritten marker)"
+  date: 2026-08-25
+  note: "240 B; 60 insns, 6 `addi` markers, 2 jals."
