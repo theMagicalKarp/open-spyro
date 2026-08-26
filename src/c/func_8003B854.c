@@ -7,6 +7,18 @@ struct Actor58 {
   char _pad[0x58];
 };
 
+/* The sample-bank global is the head of the level's per-sound pointer table
+   (the level overlays index the same object as a pointer array). Reading it
+   as a RECORD MEMBER, not as a plain scalar, is load-bearing here: sched.c's
+   true_dependence() drops the dependence between a MEM_IN_STRUCT store at a
+   varying address (the kill-bitmap `row[word]` below) and a non-MEM_IN_STRUCT
+   load at a fixed address, which lets the scheduler hoist the bank load above
+   the store. A COMPONENT_REF sets MEM_IN_STRUCT_P on the load, the dependence
+   holds, and the store keeps the original's position. */
+struct SampleBankRef {
+  unsigned char *head;
+};
+
 /* 0x8003b854 (0x180) — commit a kill/pickup for `actor` worth `value` gems:
    bank the gems (per-level tally + world treasure, with a low-health jingle
    check on the actor's +0x14 field), set the actor's bit in the committed-kill
@@ -16,7 +28,6 @@ struct Actor58 {
 void func_8003B854(int value, unsigned char *actor) {
   int id;
   int word;
-  int bit;
 
   if (value != 0) {
     int *gems;
@@ -34,11 +45,12 @@ void func_8003B854(int value, unsigned char *actor) {
 
   if ((unsigned int)actor >= (unsigned int)g_pActorListBase &&
       (unsigned int)actor < (unsigned int)g_pActorPoolDynBase) {
-    int idx = (struct Actor58 *)actor - (struct Actor58 *)g_pActorListBase;
-    int raw = idx;
-    word = idx >> 5;
-    idx = idx & 0x1F;
-    g_anCommittedKillBitmap[word] |= 1 << idx;
+    int raw;
+    id = (struct Actor58 *)actor - (struct Actor58 *)g_pActorListBase;
+    word = id >> 5;
+    raw = id;
+    id = id & 0x1F;
+    g_anCommittedKillBitmap[word] |= 1 << id;
     id = raw;
   } else {
     id = actor[0x56];
@@ -50,20 +62,6 @@ void func_8003B854(int value, unsigned char *actor) {
     int *row = &g_anLevelKillBitmapTable[g_nLevelIntroIndex * 8];
     row[word] |= 1 << id;
   }
-  PlaySoundEffect(*(unsigned char *)g_pLevelSampleBankHeader, (int)actor, 0x10,
-                  0);
+  PlaySoundEffect(*((struct SampleBankRef *)&g_pLevelSampleBankHeader)->head,
+                  (int)actor, 0x10, 0);
 }
-
-/* PARKED 2026-07-10 at 56.2% (length + control flow + join all correct).
- * Residue: pool-index arm copy knot — original: sra a2(idx); sra a0(word);
- * move a1,a2 (raw=idx); andi a2,a2 (mask in place); ... move a2,a1 (id=raw,
- * in the lw delay before or). Our gcc cse-propagates id=raw -> id=idx, hoists
- * it (move a2,v0 right after the sras) and renames the mask to a1, saving one
- * move; raw-at-birth and post-store-copy forms produce byte-identical output.
- * Tail: our sched sinks the kill-table sw below the sample-bank lw (likely
- * falls in once the arm's extra move restores alignment). Permuter candidate.
- *
- * 2026-07-25-1 unattended permuter session (~15m, ~88600 iterations, timed out
- * at the 15m budget): best score 360 vs base score 425 — only 6 output dirs, a
- * shallow search. No byte-perfect candidate found; still PARKED.
- */
