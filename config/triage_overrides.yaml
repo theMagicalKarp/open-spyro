@@ -2721,3 +2721,19 @@ func_8005FC6C:
     pointer copy `move v0,s0` BEFORE the la/and/sw chain; ours puts the mask in
     v1 and the pointer copy last. Straight-line block, no branch, so A229 does
     not apply; this is the B4-adjacent AddPrim mask shape in a store wrapper.
+func_8003B854:
+  verdict: matched
+  class: ""
+  date: 2026-08-26
+  note: >-
+    384 B. Re-derived from the 2026-07-10 park (42/96) to MATCH in two steps.
+    (1) The pool-index arm must be written on the JOIN variable itself
+    (`id = idx; word = id >> 5; raw = id; id &= 0x1F; ...; id = raw;`): `id` is
+    multi-block, so local-alloc cannot coalesce `raw` into it and the original's
+    two copies reappear. Every spelling with a separate `idx` local is
+    byte-identical at 42/96. (2) The tail needed cookbook A230: sched.c
+    `true_dependence()` drops the store->load edge when the store is
+    MEM_IN_STRUCT_P at a varying address and the load is a plain scalar at a
+    fixed address, so our scheduler hoisted the `g_pLevelSampleBankHeader` load
+    above the kill-bitmap store. Reading the bank pointer through a one-member
+    struct (a COMPONENT_REF sets MEM_IN_STRUCT_P) restores the dependence.
