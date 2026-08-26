@@ -148,23 +148,48 @@
  *   +   frame `addiu sp,-152` vs the orig's `-144` (A127) = 16 insns (the 8
  *       prologue saves + 8 epilogue restores; every other sp offset already
  *       matches, because the locals sit at the BOTTOM of the frame).
- *       **ROOT CAUSE SETTLED 2026-08-26 -- it is CALLER-SAVE SLOTS, not a
- *       spill.** Locals are rect(8)+buf(32)+pos(12) = 52 bytes at sp+16..67;
- *       `.frame` reports `vars= 104` against the original's 96, and NOTHING in
- *       either build references sp+68..119. `caller-save.c setup_save_areas()`
- *       allocates one `assign_stack_local` slot per CALL-USED hard register that
- *       holds a pseudo with `reg_n_calls_crossed > 0`, and emits the save/restore
- *       only where actually needed -- so the slots are legitimately reserved and
- *       unreferenced. 52 bytes of temps = 13 such registers; the original has 44
- *       = 11. Probes: `int buf[4]` moves vars 104 -> 88 (locals are linear, the
- *       temp region does not move), and replacing the third argument of
- *       `func_80062FD4(buf, "%d", bonus)` with a literal drops vars to 64 (10
- *       registers' worth) because it kills the long-lived accumulator's
- *       call-crossing live range. **So the frame is a SYMPTOM of allocation, not
- *       a separately dialable knob** -- do not hunt for a "spilled pseudo you can
- *       see" (`i.i.greg` has zero unallocated allocnos). Expect it to move only
- *       when R1 or a register-pressure change lands; the target is exactly two
- *       fewer call-used registers holding call-crossing pseudos.
+ *       **ROOT CAUSE, 2026-08-26 (this supersedes an earlier caller-save guess
+ *       made the same day and PROVED WRONG by probe: `-fcaller-saves` and
+ *       `-fno-caller-saves` both give vars=104, so `setup_save_areas` is not
+ *       involved).** Locals are rect(8)+buf(32)+pos(12) = 52 bytes at
+ *       sp+16..67, and NOTHING in either build references sp+68..119 -- the
+ *       excess is a run of **8-byte, BLKmode-aligned slots** of the shape
+ *       `reload1.c alter_reg -> assign_stack_local (mode, total_size, -1)`
+ *       (align == -1 forces BLKmode + BIGGEST_ALIGNMENT = 8 on MIPS, which is
+ *       why a 4-byte pseudo costs 8). They are allocated but never referenced,
+ *       so they are pseudos reload un-allocates DURING reload (`spill_hard_reg`)
+ *       -- `cc1 -dg` is printed BEFORE reload and shows all 507 pseudos
+ *       allocated, which is why "no spills" reads true and is not.
+ *       **The slot count is EXACTLY SIX, one per statement, and the list is
+ *       complete (bisected by deleting brace-balanced blocks and reading
+ *       `.frame`):** vars = 56 (locals rounded) + 8 x nslots.
+ *         56 + 6*8 = 104 (ours)   56 + 5*8 = 96 (the original)
+ *       The six owners, each worth exactly 8 bytes -- delete any ONE and
+ *       `.frame` reads 96 with `regs= 7/0`:
+ *         1-5. the five `bonus += D_8006E9xx[D_8007595C * 5];` tally
+ *              accumulates (lines ~509/552/595/638/673);
+ *         6.   `if (D_80078618[D_8007595C] >= D_800758F4) { snd = 8; }` in the
+ *              TIME-ATTACK block (~line 823).
+ *       Characterisation (do not re-derive): the cost is (a long-lived
+ *       accumulator) + (an SImode ARRAY load). `bonus += D_8007595C;` (scalar),
+ *       `bonus += k;`, `bonus += D_80078680[0];` (unsigned char array) and
+ *       `snd += D_8006E920[0];` (short-lived target) are all FREE; `[0]`,
+ *       `*(base + i)`, an `(int)`/`(short)`/unsigned cast, `bonus = bonus + x`,
+ *       a hoisted `int z` temp, `register int bonus`, a ternary and sized
+ *       `extern int D_8006E9xx[64]` decls are all still 8. Substituting the
+ *       in-scope `k` for the recomputed `D_8007595C * 5` DOES drop a slot but
+ *       costs 7 insns (`orig 1610 mine 1603`), so it is not what the original
+ *       does. Hoisting the twice-read `D_80078618[D_8007595C]` into a local
+ *       reaches **vars= 96** but takes an 8th callee-saved register and is
+ *       -4 insns overall -- proof the target is reachable, not the recipe.
+ *       NEXT SESSION: one of those six statements is written differently in the
+ *       original in a way that costs no insn. Require BOTH `vars= 96` and
+ *       `regs= 7/0`. The ~5 s probe (no link, no assemble) is:
+ *         tools/docker_env.sh bash -c "mips-linux-gnu-cpp -nostdinc -undef \
+ *           -Iinclude -Iasm <src> -o /tmp/i.i && (cd build && /opt/gcc2.7.2/cc1 \
+ *           -O2 -G0 -fverbose-asm -mips1 -mcpu=3000 -fgnu-linker -mno-abicalls \
+ *           -mgpopt -msoft-float -quiet -funsigned-char /tmp/i.i -o /tmp/o.s) \
+ *           && grep -m1 '.frame' /tmp/o.s"
  * ---- Older diagnoses that are still true ----------------------------------
  * B14 RETIRED 2026-08-06-1 (the "+1 nop / cannot link" blocker is gone): the
  * three dep-free defs (`la envBase`, `la img`, `addiu img2`) are priority-1

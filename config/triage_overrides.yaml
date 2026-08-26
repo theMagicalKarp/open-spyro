@@ -542,45 +542,28 @@ StopAllSoundExceptMask:
     row bit between the guards lands it.
 func_level_5_8007B68C:
   verdict: park
-  class: "R8 sched1 arg-copy (B19 class, 16 insns) + R1 straggler + A127 frame"
-  date: 2026-08-23
+  class: "R1 sched1 straggler-hole (21) + A127 frame slot count (16) + three small ties (14)"
+  date: 2026-08-26
   note: >-
-    2026-08-23-1: 228/1610 -> 1501/1610 words byte-identical (93.2% linked,
-    park score 912 -> 5,668 partial bytes); 31 content-aligned mismatches over
-    19 regions, still length-exact and linking. Four levers, all recorded in
-    the .c.wip header: (1) per-ACCESS `volatile` relaxation in the quad loop
-    (drop it from `bq`/`cq`'s byte read-backs and the `p+0x12` store) re-tiles
-    the register map onto the original and closes old R6+R7 (~26 insns);
-    (2) `allclear = 0;` above `env = D_80076EE0;` closes a +1 positional
-    offset that was zeroing partial credit for 1,287 insns; (3) the permuter's
-    `allclear = 0x15;` hack is RETIRED (the literal is strictly better now);
-    (4) the TIME-ATTACK `&pos` carrier is free once (3) sheds its insn.
-    What is left: R8 is HALF the residue and is one class (the D_80075720
-    load / `move a1,s2` arg-copy order at four YES/NO blink sites; statement
-    permutation proven not to reach it — B19's class, aim `cc1 -dS` there),
-    then R1 (+1, cannot link in all three legal orders), R3'/R5/quad-tail
-    (2-4 each), and the A127 frame (vars=104 vs 96) whose trigger is now
-    localised to passing the long-lived local `bonus` as an argument to the
-    TOTAL-column sprintf.
-    ---- earlier (2026-08-06) ----
-    6440 B, x5 clone payoff 32,200 B. The +1 nop was A164 straggler ordering,
-    not la-canonicalization: permuting the three dep-free defs to
-    (img, img2, envBase) drops `addiu s3,s0,-8` into PutDrawEnv's delay slot.
-    It LINKS now, so drive further work off the linked diff. Next residues:
-    `la envBase` still takes the T-17 bubble (~20 insns late), a +8 frame
-    (A127), the else-arm `move s5,zero` bne delay slot, and the &pos block
-    pointer (original holds it in s2 via a block-scoped `int *pp = pos;` in
-    each of four regions at 0x8007BB20/C010/C5DC/CCEC; we rematerialise
-    `addiu a1,sp,56` per call site).
-    2026-08-06-2: R1 (`la envBase`) is now FULLY probed — `img2 = img - 2`
-    cannot precede `img`, so only three source orders exist and all three are
-    measured: (envBase,img,img2) +1 insn, (img,envBase,img2) +1 insn (new),
-    (img,img2,envBase) = the current length-exact state. A164 is exhausted here.
-    Full 13-residue inventory with orig insn indices is in the .wip header;
-    work R7 (quad-loop temp registers, ~25 of the 78) first, then R13 (A26
-    scalar alias for &pos, untried), then the one extra 8-byte frame slot.
-    The permuter body's `allclear = 0x15;` is LOAD-BEARING — replacing it with
-    the literal offset is 78 -> 85. The hand-written body + A164 is also 85.
+    109/1610 -> 51/1610 differing insns (1501 -> 1559 words byte-identical,
+    93.2% -> 96.8%), still length-exact and linking; x5 flight overlays =
+    32,200 B on a full match. The whole R8 class (58 insns, four YES/NO
+    call sites) fell to a NEW lever, cookbook A229: a fresh pointer local used
+    exactly once, assigned immediately before the guarding `if` and passed to
+    the call in the merge block, puts the call-arg setup in the pre-branch
+    block at zero insn cost. This retires the old "statement permutation does
+    not reach it / B19 class" note for this shape -- B19 needs a store batch
+    with no branch. Remaining, all root-caused in the .c.wip header:
+    R1 (21) is NOT straggler order -- the sched1 trace shows `la envBase`
+    (insn 72, priority 1, ref_count 0) is taken at the T-17 HOLE because it is
+    the highest-LUID ready straggler; seven source positions were probed and
+    every one gives the right order at the wrong holes plus a nop (+1 insn,
+    cannot link). A127 frame (16) is 6 x 8-byte `alter_reg` slots vs the
+    original's 5, and the six owning statements are enumerated in the header
+    (five `bonus += D_8006E9xx[D_8007595C * 5]` plus one array compare); the
+    earlier same-day caller-save explanation is DISPROVED
+    (-fcaller-saves/-fno-caller-saves both give vars=104). R3'/R5/Rq (14)
+    unchanged.
 func_80059474:
   verdict: matched
   class: "A170 — inline arg spelling + cursor assigned after the call"
@@ -1724,26 +1707,6 @@ func_level_0_8007CFC0:
     the body is a genuinely different instruction sequence. This is decode work,
     not the "steer the base from s1 to s2 / shed a callee-saved" job the note
     promises. Budget it as a fresh decode, not an allocation session.
-func_level_5_8007B68C:
-  verdict: parked
-  class: "R10/R11/R12 SOLVED (A93 preheader order + A195 ref dial); R7+R6 is the remaining half"
-  date: 2026-08-20
-  note: >-
-    Flight-end results board, 6440 B, word-identical x5 (32,200 B). 75/1610 ->
-    58/1610, 46 -> 33 regions, still length-exact and linking. R10/R12 (5 glow
-    loops, 10 insns) was A93: loop.c hoists the D_8006CC78 base into the
-    preheader AFTER the explicit `ph = 0`, so give the LUT its own pre-loop
-    local assigned immediately above `ph`. R11 (9 insns) was local-alloc
-    density, closed by two nested do/while(0) wrappers on `slot += 1` --
-    A195's ref dial reaches qty_compare, not just allocno_compare. What is
-    left is dominated by R7+R6 (~26 insns, ONE problem): bh/ch/bq/cq are 4
-    pseudos of 2 refs each landing a0/a1/a3/a2 where the original reuses just
-    a1 and a2 across the disjoint pairs, which is what frees a3 for tpage.
-    A146's source merge is ruled out in all three types (+4/+2/+2, redundant
-    andi truncations -- a merged variable is multi-set and combine only folds
-    a zero-extend into a single-set destination). R5 and R8 were re-probed and
-    are unchanged; every lever tried is recorded in the .c.wip header.
-
 func_80038C4C:
   verdict: attempted
   class: "F1 local-alloc tie (ay v1-vs-a1) — six more source forms measured, all 6/66"
@@ -2717,3 +2680,44 @@ func_80059594:
     Moving the g load above the dragons store DOES flip the registers, at
     7/180, because the store then sinks below both addus (F19). Full measured
     variant table in the .wip header - do not re-derive.
+
+# --- 2026-08-26 session: re-screened for the A229 carrier shape ---------------
+TurnSpyroTowardMoveTargetWithLean:
+  verdict: park
+  class: "F1 local-alloc qty_compare tie needing exactly R=3 on the first-loaded temp"
+  date: 2026-08-26
+  note: >-
+    368 B, 2/92 -- the closest park on the board and still the closest. Opened
+    and screened this session against the new A229 carrier lever: it does NOT
+    apply (the residue is `subu a1,v0,v1; andi a1` vs `subu v0,v0,v1; andi a1,v0`,
+    a pure allocation tie with no call-arg copy and no branch involved). The
+    .c.wip header's numeric criterion still stands; permuter-or-never.
+func_80038FC8:
+  verdict: park
+  class: "F14b mutual exclusion: li-const position vs old/const v0 rotation"
+  date: 2026-08-26
+  note: >-
+    608 B, 4/152 (unchanged). Re-diffed and re-screened against the new A229
+    carrier lever this session: NOT applicable. The two swapped insns are
+    `move a0,s0` (a call-arg copy) and `li v1,16`, and both are priority-1
+    stragglers in the SAME basic block as the call -- A229 needs an `if`
+    between the def and the call so there is an earlier block to place the
+    def in. The .c.wip header's open question ("make v0 unavailable to the
+    constant over orig 106-108 without a loop note") is unchanged.
+func_80038C4C:
+  verdict: park
+  class: "F1 register rotation (a1 vs v1) around a negu/store pair"
+  date: 2026-08-26
+  note: >-
+    6/66. Re-diffed this session; the residue is `move a1,v0; negu a1,a1` vs
+    `move v1,v0; negu v1,v1` plus the v0/v1 follow-on -- a pure allocation
+    rotation, no call-arg copy and no branch, so A229 does not reach it.
+func_8005FC6C:
+  verdict: park
+  class: "F1 rotation + a `move v0,s0` placed after the masked store"
+  date: 2026-08-26
+  note: >-
+    7/38. Re-diffed this session. Orig builds the 0xffffff mask in a0 and the
+    pointer copy `move v0,s0` BEFORE the la/and/sw chain; ours puts the mask in
+    v1 and the pointer copy last. Straight-line block, no branch, so A229 does
+    not apply; this is the B4-adjacent AddPrim mask shape in a store wrapper.
