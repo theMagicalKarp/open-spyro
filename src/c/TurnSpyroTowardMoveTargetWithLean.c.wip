@@ -89,7 +89,16 @@ extern int AbsAngleDelta12(int a, int b);
    the R=3 criterion below is the whole problem.
    The live lengths make this unreachable by range dials too: the first-loaded
    temp's range is strictly longer than the second's, so any insn added between
-   the second load and the subu lengthens both. R is the only free variable. */
+   the second load and the subu lengthens both. R is the only free variable.
+
+   Screened 2026-08-27 against A231 (the base-symbol alias ref dial that closed
+   two frames the same session) and it does NOT reach this: A231 works by giving
+   two reads of one location DIFFERENT base symbols so cse stops value-numbering
+   them, which SPLITS a pseudo and can only LOWER R. The criterion here needs
+   R RAISED to exactly 3 on the first-loaded temp, so aliasing is the wrong
+   direction; and the merge direction (aliasing the body global in the in-`if`
+   recomputation so only `t` picks up the third ref) is the "only `t` multi-set"
+   case already measured above at 10/92. Still permuter-or-never. */
 void TurnSpyroTowardMoveTargetWithLean(int bucket) {
   int delta;
   int rate;
