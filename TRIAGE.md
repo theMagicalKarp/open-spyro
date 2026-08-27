@@ -35,7 +35,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | reload gives the index v0, which pins it against the *0x58 chain at sched2 |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 5884 | R1 sched1 straggler-hole (21) + A127 frame slot count (16) + three small ties (14) |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 5940 | R1 sched2 priority (unreachable) + 3 small ties |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6 |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
 | `0x8008249c` | func_level_5_8008249C | ovl/level_5_artisans_sunny_flight | 3732 | 3660 |  |
@@ -46,10 +46,9 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x800881d8` | func_level_27_800881D8 | ovl/level_27_dream_weavers_haunted_towers | 5704 | 2860 | B13 (lh; sra unreachable) -- 2 insns, will not link |
 | `0x800819bc` | func_level_11_800819BC | ovl/level_11_peace_keepers_night_flight | 2372 | 2336 |  |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
-| `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 |  |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
+| `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1236 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
-| `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1092 |  |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
 | `0x80083ab4` | func_level_16_80083AB4 | ovl/level_16_magic_crafters_blowhard | 3452 | 908 |  |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
@@ -57,8 +56,8 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 double knot (F4 ground v0-coalesce + F1 counter-split) + F-sched negu |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80059594` | func_80059594 | main | 720 | 688 | qty_compare live-range tie on the accumulator loop's d/g pair, pinned at both ends by rank_for_schedule's class test and an unresolvable load/store alias |
+| `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 volatile-vs-plain MEM ordering |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
-| `0x80061b00` | FlushGpuQueue | main | 748 | 644 |  |
 | `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 jump.c cross-jump asymmetry (label identity, not block content) + ~20 B16 per-site addressing + caller-saved rotations |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion: li-const position vs old/const v0 rotation |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
@@ -68,11 +67,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 492 | F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6) |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie) |
-| `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | 360 | F1 local-alloc qty_compare tie needing exactly R=3 on the first-loaded temp |
+| `0x8003d6d0` | TurnSpyroTowardMoveTargetWithLean | main | 368 | 360 | F1 local-alloc qty_compare tie, numeric criterion R=3 |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 |  |
+| `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
 | `0x80038c4c` | func_80038C4C | main | 264 | 240 | F1 register rotation (a1 vs v1) around a negu/store pair |
-| `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order |
+| `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | decode incomplete |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | 232 | B11 lagged-mult + B-i fold |
 | `0x800606c8` | func_800606C8 | main | 536 | 228 | B9 clamp (inline) |
 | `0x8003e90c` | NudgeSpyroFromWallProbes | main | 348 | 208 | B13 lh+sra shift-consumer |
@@ -89,12 +89,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80013230` | RelocateMobActorTable | main | 432 | 64 | F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact |
 | `0x80065dbc` | CdReadStart | main | 532 | 60 |  |
 | `0x8003d3b8` | ComputeSpyroMoveTargetFromPad | main | 372 | 56 |  |
+| `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 44 |  |
 | `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | 16 |  |
 | `0x80016fd0` | func_80016FD0 | main | 120 | 8 | B6 hand-written asm ($at as a general-purpose temp) |
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | 8 |  |
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
-| `0x8005f2a4` | ResetGraph | main | 388 | 0 |  |
 | `0x80061470` | func_80061470 | main | 644 | 0 | B9 clamp (full-screen variant); DMA body transcribes |
 
 ## Auto-skipped (walls)
