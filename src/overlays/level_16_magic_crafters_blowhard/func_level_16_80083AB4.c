@@ -1,26 +1,24 @@
-/* PARKED 2026-07-31-2: decoded, 2 insns over (865 vs 863) — B13 wall.  The
- * 0x25 whirlwind arm reads the unit-circle tables with a SIGNED halfword load
- * feeding a right shift (`lh v0,%lo(D_8006CC78)($at); sra v0,v0,2`); our cc1
- * emits `lhu; sll 16; sra 18` for every shift consumer, +1 insn per lookup, so
- * the override no longer fits its slot.  Tried: the lookup split into an `int`
- * temp, an explicit `(int)` cast, and the table declared as an array of a
- * one-short struct — all identical.  (Note B13 was recorded on main/-g3; this
- * proves it holds in overlays too.  A `short` field feeding a LEFT shift does
- * come out as `lh` — see the debris arm — so it is specific to `>>`.)
+/* MATCHED 2026-08-27-1. This was the last WALL in the 36-overlay spawn-
+ * dispatcher vein, and both of its blockers turned out to be source forms.
  *
- * Everything else is decoded and believed exact: the 0x25 arm's 3-case switch
- * on parent->unk48 (0x48/0x52/0x5C -> the 0x10/0x04/0x06 state triples, with
- * gcc's balance_case_nodes compare tree), the 0x27 turret arm (ArcTan2 toward
- * D_80076DF8/DFC, posZ -= 0x400, owner pointer at state+0x04), the wizard arm
- * from level_12 and the 0xFB mortar arm from the library.  Unpark by finding a
- * source form that reaches `lh` + `sra`.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~30100 iterations, timed out
- * at the 15m budget): best score 815 vs first-iteration score 1120, next
- * candidates 900 and 1005. No byte-perfect candidate; still PARKED (see above).
- * The unpark condition above is a specific source form reaching `lh` + `sra`,
- * which is a targeted rewrite rather than something random permutation is
- * likely to stumble into -- consistent with the modest ~27% drop here.
+ * 1. B13 (`lh` + `sra` unreachable) is RETIRED for the `>>` case. Writing
+ *    `table[i] >> 2` with a LITERAL shift count lets combine fuse the
+ *    sign-extension into the shift, so cc1 emits `lhu; sll 16; sra 18` -- one
+ *    insn over, which is what made the override overflow its slot. Routing the
+ *    count through a plain `int` local assigned `2` earlier in the same arm
+ *    (`n = 2; ... table[i] >> n;`) leaves the extension as its own insn and cc1
+ *    emits `lh; sra 2`. The local costs nothing (it is constant-propagated) but
+ *    it must be a SEPARATE local per shift site: one local feeding two shifts
+ *    stays in a register and degrades both to `srav`.
+ * 2. The arm-0x25 tail needed the `D_80076378[type][0xE][0xC]` lookup hoisted
+ *    into an `anim` temp above the four `rec->unk3C..3F = 0` stores (which are
+ *    themselves in original order 3D, 3C, 3F, 3E), so the load chain schedules
+ *    ahead of the store batch and `sb anim,65(rec)` still lands in the `j`
+ *    delay slot.
+ * 3. Arm 0x26's `if (parent->type == type)` must compare against the LITERAL
+ *    0x26. Comparing against the `type` parameter keeps it live in `s0` across
+ *    the arm and rotates s0/s1/s2 through 10 insns; the literal rematerialises
+ *    as `li v0,38` exactly as the original does.
  */
 /* func_level_16_80083AB4 (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
@@ -212,6 +210,7 @@ Actor *func_level_16_80083AB4(int type, Actor *parent)
   Actor *rec;
   int owner;
   int new_var;
+  int new_var2;
   rec = func_800524C4();
   rec->type = type;
   if ((parent == 0) || (((unsigned int) (owner = parent - D_80075828)) >= 0x100))
@@ -285,7 +284,9 @@ Actor *func_level_16_80083AB4(int type, Actor *parent)
     {
       WindState *st = rec->state;
       int probe[3];
+      int anim;
       new_var = 2;
+      new_var2 = 2;
       func_8003A720(rec);
       rec->unk1C = -1;
       func_80017700(probe, &rec->posX);
@@ -315,16 +316,17 @@ Actor *func_level_16_80083AB4(int type, Actor *parent)
       }
 
       rec->posX = parent->posX + (D_8006CC78[parent->unk46] >> new_var);
-      rec->posY = parent->posY + (D_8006CBF8[parent->unk46] >> 2);
+      rec->posY = parent->posY + (D_8006CBF8[parent->unk46] >> new_var2);
       rec->posZ = parent->posZ;
       st->owner = parent;
       st->unk0C = 0;
       rec->unk48 = 0;
-      rec->unk3C = 0;
+      anim = D_80076378[rec->type][0xE][0xC];
       rec->unk3D = 0;
-      rec->unk3E = 0;
+      rec->unk3C = 0;
       rec->unk3F = 0;
-      rec->unk41 = D_80076378[rec->type][0xE][0xC];
+      rec->unk3E = 0;
+      rec->unk41 = anim;
       func_800526A8(rec);
       break;
     }
@@ -337,7 +339,7 @@ Actor *func_level_16_80083AB4(int type, Actor *parent)
       func_8003A720(rec);
       pos = &rec->posX;
       func_80017700(pos, &parent->posX);
-      if (parent->type == type)
+      if (parent->type == 0x26)
       {
         rec->unk46 = parent->unk46;
         rec->unk48 = 3;
