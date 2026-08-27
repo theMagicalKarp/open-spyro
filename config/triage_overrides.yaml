@@ -2790,3 +2790,115 @@ TickCdMusicStream:
     slot). Not worth the lever: the park is 198/256 with one extra instruction,
     i.e. the body is not decoded, not a residue. Needs a re-derive before any
     allocation work.
+
+# --- session 2026-08-27-1 ---------------------------------------------------
+# Mode: clone/vein (gate 13). Two named WALLS retired (B19 by A232, B13 by
+# A233) and seven functions matched, +27,348 exact bytes. The spawn-dispatcher
+# vein is 35/36 and the emit-spawn vein is 36/36 (CLOSED).
+
+func_level_5_8008249C:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A232 retires B19)"
+  date: 2026-08-27
+  note: >-
+    3,732 B. do { rec->unk44=dx; rec->unk45=dy; rec->unk46=dz; } while (0);
+    before func_800526A8(rec) -- the real basic-block boundary B19's own note
+    named as the only escape. MATCH on the first build.
+func_level_11_800819BC:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  date: 2026-08-27
+  note: "2,372 B. Same one-line barrier, one site."
+func_level_17_80081F0C:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  date: 2026-08-27
+  note: "2,964 B. Same one-line barrier, one site."
+func_level_23_8008223C:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  date: 2026-08-27
+  note: "3,352 B. Same one-line barrier, one site."
+func_level_25_80084B94_2026_08_27_1:
+  verdict: parked
+  class: "B19 site whose call block is TAIL-SHARED"
+  date: 2026-08-27
+  note: >-
+    3,176 B, 5/794 -> 4/794. The A232 store-batch barrier makes {move a0,rec;
+    jal} byte-identical to the head of the shared tail at 0x800857C8, so jump.c
+    cross-jumps it away and the function is one insn short (404/794). Measured
+    at 404-407: barrier on the stores, on stores+st->owner, on st->owner alone,
+    stores-barrier with st->owner hoisted. A volatile st->owner store stops the
+    cross-jump but deletes the arg copy instead (13). What DOES help is a
+    barrier on the LOAD batch (5 -> 4). Next idea: stop the cross-jump, not the
+    hoist.
+func_level_16_80083AB4:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A233 retires B13; last wall in the spawn vein)"
+  date: 2026-08-27
+  note: >-
+    3,452 B. Three fixes: a per-site int local for the >> count (lh; sra 2
+    instead of lhu; sll 16; sra 18, which is what overflowed the slot), an
+    `anim` temp hoisting the D_80076378 lookup above the four unk3C..3F zero
+    stores (written 3D, 3C, 3F, 3E), and arm 0x26 comparing parent->type
+    against the LITERAL 0x26 instead of the `type` parameter.
+func_level_27_800881D8:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (A233)"
+  date: 2026-08-27
+  note: >-
+    5,704 B. sh0 = 10; sh1 = 10; in the for-loop preheader for arm 0x1F's two
+    unit-circle shifts. The block boundary is what matters: the same locals
+    assigned inside the arm, or inside a do/while(0), leave both sites at lhu.
+func_level_14_8008B0B0:
+  verdict: viable
+  class: "MATCHED 2026-08-27-1 (last member of the emit-spawn family)"
+  date: 2026-08-27
+  note: >-
+    5,772 B. Generated from level_13 + level_27's 0x1E/0x1F; arms 0x45 and 0x49
+    decoded here (dust vs track layouts sharing one cross-jumped 8-way colour
+    switch); arm 0x1F unblocked by A233; arm 0x4D wants c0[0]=0x80 first.
+func_level_5_8007B68C_2026_08_27_1:
+  verdict: parked
+  class: "R5 sched1 load-delay fill + Rq store-order/tiling coupling"
+  date: 2026-08-27
+  note: >-
+    32,200 B on a match, now 10/1610 (was 35). A232 closed R1 (21 insns), the
+    h/strip delay-slot pair and the img la; moving `strip += 0x40` below the
+    LoadImage call closed R3'. R5 is solvable in isolation (both constants in a
+    barrier block) but costs an 8-insn v0/v1 allocation flip that 60 statement
+    permutations and A195 ref dials do not reach; Rq needs the original's
+    0x24/0x25/0xE store order, which re-tiles 24 insns of the quad loop (best
+    30, greedy volatile toggle bottoms at 24). Standing hypothesis in the .wip:
+    the permuter-era volatile scaffolding is the thing that is wrong -- the next
+    serious attempt should rewrite the quad loop against a real POLY_FT4 struct.
+func_titlescreen_8007ABAC_2026_08_27_1:
+  verdict: attempted
+  class: "qty_sugg_compare live-range tie (unchanged at 7/2147)"
+  date: 2026-08-27
+  note: >-
+    8,588 B. Screened against this session's two new levers. A233's cross-block
+    carrier is the one thing the park's escape list had not tried, and it is
+    much worse: `int off = -0x40000;` at function scope makes the constant a
+    global allocno live across the whole function (156/2147 used at both sites,
+    2017 declared inside case Mode_0x00). A232 is already ruled out by B23 (any
+    loop note in a block that passes a stack argument).
+func_80038FC8_2026_08_27_1:
+  verdict: parked
+  class: "F14b mutual exclusion (unchanged at 4/152)"
+  date: 2026-08-27
+  note: >-
+    608 B. Screened against A232 and rejected on the mechanism: its residue is
+    the INVERSE of B19 -- the original hoists `move a0,s0` to the head of the
+    block and ours does not, so a barrier (which only ever reduces hoisting)
+    cannot reach it. The open question in the .wip is unchanged.
+ComputeSpyroMoveTargetFromPad_2026_08_27_1:
+  verdict: attempted
+  class: "B13-adjacent abs load-batch tie, +1 insn (will not link)"
+  date: 2026-08-27
+  note: >-
+    372 B. Screened against A233 and it does not apply -- this is not a short
+    load feeding a shift, it is reorg speculatively filling iVar2's bgez delay
+    with the `iVar1+iVar2` addu and then recomputing it. Note the shape diff
+    mis-aligns here (the two arms come out in the opposite branch sense), so
+    measure it with the linked path once a variant links.

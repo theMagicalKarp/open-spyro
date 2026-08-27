@@ -211,8 +211,16 @@
  *               rejected: `bias` at 3 positions without the barrier (13),
  *               a barrier per constant (16), `D_800756FC` re-read instead of
  *               `tv` (15), an `e8` int carrier (15), lengthening Q1 / short-
- *               ening Q2 (16-20). Next thing to try is a REF-COUNT dial on Q2
- *               (A195-style dummy wrappers to buy `tv` a ref), not an order.
+ *               ening Q2 (16-20). The A195 REF-COUNT dial on Q2 was tried and
+ *               is INERT here: one and two nested `do { } while (0)` wrappers
+ *               on `D_800756FC = tv;`, and one on `D_800757B0 = D_800785E8;`,
+ *               all give 13 -- the wrappers do not change qty_sugg_compare's
+ *               inputs for a quantity whose refs are already in one block.
+ *               Nothing on the ORDER or REF side is left; what has not been
+ *               tried is making one of the two loads arrive from a different
+ *               BASIC BLOCK (the lever that retired B13 -- see
+ *               func_level_27_800881D8), which is the only remaining way to
+ *               change a live range without changing the insn count.
  *   Rq  193-198 quad tail: ours emits `sb v0,36; li v0,14368; addiu v1,-33;
  *               sh v0,14; sb v1,37` where the orig has `addiu v1,-33;
  *               sb v0,36; li v0,14368; sb v1,37; sh v0,14`.
