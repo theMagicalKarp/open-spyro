@@ -2737,3 +2737,56 @@ func_8003B854:
     fixed address, so our scheduler hoisted the `g_pLevelSampleBankHeader` load
     above the kill-bitmap store. Reading the bank pointer through a one-member
     struct (a COMPONENT_REF sets MEM_IN_STRUCT_P) restores the dependence.
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R1 sched2 priority (unreachable) + 3 small ties"
+  date: 2026-08-27
+  note: >-
+    6440 B x5 flight overlays. 51/1610 -> 35/1610 (97.8%). The A127 frame
+    residue (16 insns) is CLOSED by cookbook A231: the five tally arms read
+    their bonus cell twice across a call under one base symbol, so cse
+    value-numbered each pair into a pseudo that reload spilled to an 8-byte
+    BLKmode slot; re-spelling ONE accumulate against a neighbouring column of
+    the same stride-5 row table (D_8006E920[k+1] == D_8006E924[k]) frees exactly
+    one slot at zero insn cost and gives the original's vars= 96, regs= 7/0.
+    R1 (21 insns, the `la envBase` pair) re-root-caused off `cc1 -dR`: it is a
+    sched2 PRIORITY decision, not the sched1 straggler LUID tie the old note
+    described. Its priority-3 comes from an unconditional REG_DEP_ANTI on the
+    preceding call -- a gcc 2.7.2 bug in `sched_analyze_1` (tests
+    `call_used_regs[i]` with the nregs loop counter, not `regno + i`, so it
+    always reads `$zero` and is always true). Not removable, and priority 1
+    would land it at insn 29 anyway, not the original's 25. Remaining: R1 (21),
+    R3' (4), R5 (5), Rq (5).
+FlushGpuQueue:
+  verdict: parked
+  class: "F8-adjacent sched1 volatile-vs-plain MEM ordering"
+  date: 2026-08-27
+  note: >-
+    748 B. 20/187 -> 14/187 (92.5%). The frame delta was A231, not the
+    scheduling pressure the old header blamed: the dispatch block reads the ring
+    args/arg4 slots twice each straddling the call under one base symbol, so
+    each pair became a pseudo live across the call that reload spilled (two
+    pairs = vars= 16 = the whole 0x28-vs-0x18 delta, slots never referenced).
+    Post-call aliases g_adwGpuRingArgsPost / g_adwGpuRingArg4Post close it.
+    The remaining 14 are the known sched1 residue, re-measured at the corrected
+    frame: volatile on the pre-call args read 21, on arg4 20, and an A230
+    COMPONENT_REF on RIDX byte-identical. A230 does not reach it. Permuter.
+TurnSpyroTowardMoveTargetWithLean:
+  verdict: parked
+  class: "F1 local-alloc qty_compare tie, numeric criterion R=3"
+  date: 2026-08-27
+  note: >-
+    368 B, still 2/92 -- the closest thing on the board. Re-diffed and screened
+    against A231 this session: A231 splits value numbers and can therefore only
+    LOWER a ref count, while this tie needs R RAISED to exactly 3 on the
+    first-loaded temp. The merge direction is the "only `t` multi-set" variant
+    already measured at 10/92. Unchanged: permuter-or-never.
+TickCdMusicStream:
+  verdict: attempted
+  class: "decode incomplete"
+  date: 2026-08-27
+  note: >-
+    1024 B. Screened only because its frame is +8 over the original (one A231
+    slot). Not worth the lever: the park is 198/256 with one extra instruction,
+    i.e. the body is not decoded, not a residue. Needs a re-derive before any
+    allocation work.

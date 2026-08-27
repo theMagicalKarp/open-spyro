@@ -14,13 +14,14 @@
  * (5/11/17/23/29 -- x5 payoff: 32,200 bytes; fingerprint md5 confirmed
  * 2026-08-23-1).
  *
- * STATE 2026-08-26: length-exact (1610/1610), LINKS, and the linked diff is
- * **1559/1610 words byte-identical (96.8%)**, up from 1501/1610 (93.2%).
- * Residue: **51 differing insns over 7 regions** (was 109). The whole R8 class
- * (58 insns, four YES/NO call sites) fell to the CARRIER lever below; what is
- * left is R1 (21), the frame (16) and three small ties (14). Drive this park
- * off BOTH the masked mismatch count AND the identical-word count -- they can
- * move in opposite directions (see "the positional trap").
+ * STATE 2026-08-27: length-exact (1610/1610), LINKS, and the linked diff is
+ * **35 differing insns over 4 regions (97.8%)**, down from 51 over 7 (96.8%)
+ * and from 109 the session before. The FRAME is now exact (`vars= 96,
+ * regs= 7/0`, `addiu sp,-144`) -- see LEVER 6. What is left is R1 (21, now
+ * re-root-caused off the sched2 trace) and three small ties (R3' 4, R5 5,
+ * Rq 5). Drive this park off BOTH the masked mismatch count AND the
+ * identical-word count -- they can move in opposite directions (see "the
+ * positional trap").
  *
  * ---- Measuring this park (do this first, it is the whole game) -------------
  *   uv run --project tools/open-spyro --group split -- open-spyro diff \
@@ -103,93 +104,121 @@
  * which puts the address back in the call block. A frame address has no
  * REG_EQUIV note, which is why the carrier survives here.
  *
- * ---- Residue remaining (51 insns over 7 regions, 2026-08-26) ---------------
- *   R1  25/46   `la envBase` lands at 45/46 instead of 25/26 (21 -- the whole
- *               region is the ONE `lui/addiu` pair in the wrong place; every
- *               other insn in 25..46 is a consequence of the shift).
- *               **Root-caused off `cc1 -dS` this session, do not re-derive:**
- *               in sched1 block 1 (`insn 16..136`) the six priority-1
- *               ref_count-0 stragglers are `i=0`(16), `h=0xE0`(22),
- *               `strip=0x200`(28), `la img`(50), `img2=img-2`(62),
- *               `la envBase`(72). They sit in the ready list from T-1 and are
- *               taken only in the HOLES where nothing higher-priority is ready;
- *               `rank_for_schedule` sorts the tie on INSN_LUID DESCENDING, so
- *               the highest-uid straggler is picked FIRST and therefore placed
- *               LAST. Ours: img@29, img2@34, envBase@45 (uid order img, img2,
- *               envBase). Orig: envBase@25, img@31, img2@36, i.e. uid order
- *               envBase, img, img2 -- but writing that source order (probed at
- *               SEVEN positions: before `i=0`, and after each of lines
- *               `func_800521C0`..`func_8005DBC4`, plus loop-body assignment and
- *               a fully inlined `D_80076EE0` in the loop test) gives the right
- *               ORDER at the WRONG HOLES (envBase@31, img@43, img2@47) and a
- *               `nop` at 34 because `img2` can no longer reach the `jal 5fdd8`
- *               delay slot -- always +1 insn, CANNOT LINK. The loop-body variant
- *               is byte-identical to the current state (loop.c re-hoists it).
- *               So the residue is NOT the straggler ORDER (solved) but WHICH
- *               HOLES exist: orig's three la's take the three EARLIEST holes,
- *               ours take the three latest. The holes come from the priority-4/5
- *               chain (insns 100..136, the `rect` setup + `func_8005FA8C` call)
- *               running out at T-17. Next probe: change that chain's length or
- *               dependence structure so the T-17 hole disappears, or add a
- *               seventh straggler with a uid ABOVE `envBase` to soak up the last
- *               hole. Do NOT re-probe source order for the three la's.
+ * ---- LEVER 6, the closer for the FRAME (2026-08-27): two reads of the SAME
+ *      array element straddling a call cost one 8-byte reload slot ----------
+ * The five tally arms each read their bonus cell TWICE -- once for the printf,
+ * once for the accumulate -- with a call in between:
+ *      func_80062FD4(buf, "%d", D_8006E924[k]);
+ *      bonus += D_8006E924[D_8007595C * 5];
+ * Because both spellings name the SAME base symbol, cse gives them one value
+ * number; the pseudo is live across the call, reload un-allocates it and
+ * `alter_reg` -> `assign_stack_local (mode, total_size, -1)` buys it an 8-byte
+ * BLKmode slot (A127). Five such pairs + the TIME-ATTACK `D_80078618[...]`
+ * pair = six slots = `vars= 104`. The original wants FIVE (`vars= 96`).
+ * **The fix is to make ONE pair name two DIFFERENT base symbols.** D_8006E920,
+ * 924, 928, 92C, 930 are the five int COLUMNS of one stride-5 row table (and
+ * D_80078680..84 are its byte claim-flag columns), so `D_8006E924[k]` and
+ * `D_8006E920[k + 1]` are the same address by two symbol names. Spelling the
+ * ACCUMULATE against the neighbouring column's base:
+ *      bonus += D_8006E920[D_8007595C * 5 + 1];   (== D_8006E924[k])
+ * defeats the value numbering, frees exactly one slot, and costs ZERO insns
+ * (1610 either way) -- `.frame` reads `vars= 96, regs= 7/0`, the target.
+ *   - Which of the five arms carries it is ARBITRARY: all four of the possible
+ *     single re-spellings give vars= 96 and the SAME 35/1610 linked diff (two
+ *     of the four are byte-identical objects). Column 0 is used here.
+ *   - Do NOT re-spell all five: that is 2 slots (`vars= 72`), a 4-slot
+ *     overshoot. And do NOT make the printf read use the row base too -- with
+ *     both sides on one base the pair is value-numbered again and the slot
+ *     comes back (`vars= 104`).
+ *   - This retires the old note's conclusion that the frame was unreachable
+ *     without an 8th callee-saved register. Everything that list ruled out
+ *     (`[0]`, `*(base+i)`, casts, `bonus = bonus + x`, hoisted temps,
+ *     `register`, ternaries, sized decls) varies the INDEX spelling, which cse
+ *     folds; only changing the BASE SYMBOL reaches it.
+ * Worth 16 insns: 51 -> 35.
+ *
+ * ---- Residue remaining (35 insns over 4 regions, 2026-08-27) ---------------
+ *   R1  25/46   `la envBase` (`lui/addiu s5`, 0x80076EE0) lands at 45/46
+ *               instead of 25/26 (21 -- the whole region is that ONE pair in
+ *               the wrong place; every other insn in 25..46 is a 2-insn shift
+ *               consequence).
+ *               **RE-ROOT-CAUSED 2026-08-27 off `cc1 -dR` (sched2). The old
+ *               sched1 diagnosis below is WRONG about the mechanism and the
+ *               old "do not re-probe source order" advice is right for the
+ *               wrong reason.** Positions are decided by sched2, not sched1
+ *               (cookbook D 2d), and in the sched2 trace for basic block 1
+ *               (RTL 55..136, total time 45) the la is `insn 72` with
+ *               **priority = 3, ref_count = 0** -- NOT a priority-1 straggler.
+ *               It sits in the ready list from T-1 and is taken at **T-17**,
+ *               where it is the sole member of the top priority group (the
+ *               priority-4/5 chain has just run out at T-16 with insn 100).
+ *               So this is a PRIORITY decision, not a LUID tie, and no amount
+ *               of statement permutation among the three `la`s reaches it --
+ *               which is why all seven probed source positions failed.
+ *               Its priority 3 comes from ONE `LOG_LINKS` edge:
+ *               `(insn_list:REG_DEP_ANTI 93 ...)`, where insn 93 is the
+ *               `func_8005DBC4(0)` (VSync) call_insn at source line 325, and
+ *               priority(72) = priority(93) + cost - 1 = 3.
+ *               Block position p = 46 - T, and block position 1 is function
+ *               insn 17; ours is T-17 = p29 = insn 45, the original wants
+ *               p9 = insn 25 = **T-37**.
+ *               **That anti-dep is UNCONDITIONAL and cannot be removed -- it is
+ *               a gcc 2.7.2 BUG, read straight off `sched.c sched_analyze_1`
+ *               (the hard-register branch, ~line 1704):**
+ *                   i = HARD_REGNO_NREGS (regno, GET_MODE (dest));
+ *                   while (--i >= 0) {
+ *                     ...
+ *                     if ((call_used_regs[i] || global_regs[i])
+ *                         && last_function_call)
+ *                       add_dependence (insn, last_function_call,
+ *                                       REG_DEP_ANTI);
+ *                   }
+ *               The subscript is the nregs loop counter **`i`, not
+ *               `regno + i`**. For any single-word set `i == 0` on the only
+ *               iteration, so the test is `call_used_regs[0]` -- `$zero`, which
+ *               is fixed and therefore call-used -- and is ALWAYS true. So at
+ *               sched2 (where every reg is hard) EVERY register set in a block
+ *               carries an anti-dep on the preceding call, and its priority is
+ *               pinned to `priority(last_function_call) + 1 - 1`. This is why
+ *               the la's priority tracks its position in the call chain and
+ *               nothing else: it is not about s5, and there is no register
+ *               choice or aliasing trick that detaches it.
+ *               **And priority 1 would not be enough anyway.** Working the
+ *               trace: a priority-1, ref_count-0 insn with LUID 72 first
+ *               reaches the top priority group at T-33 (T-28..T-32 are the
+ *               priority-2 insns 62/67/50/59/57) and wins that group on LUID
+ *               descending, so it lands at p13 = function insn 29 -- still 4
+ *               early of the original's 25. Reaching 25 needs T-37, and the
+ *               only insns picked at T-34..T-42 are just-launched flow insns
+ *               whose LUIDs are all BELOW 72, so a LUID-72 straggler can never
+ *               lose to them. Lowering the LUID below 16 (i.e. writing the
+ *               assignment first in the block) sends it the other way, to
+ *               T-45 = p1 = insn 17.
+ *               Conclusion: R1 is NOT reachable by moving, re-registering or
+ *               re-spelling the `envBase` assignment. What is left to try is
+ *               changing the CALL CHAIN this block schedules against -- the
+ *               priority bands are the chain depth, so a different arrangement
+ *               of the nine calls in source lines 324..334 moves every band at
+ *               once. That is the only untried dial.
+ *               Re-confirmed dead ends: all three source orders of the la's
+ *               (the two non-current ones add a load-delay nop -- 1611 insns,
+ *               cannot link; re-measured at vars= 96 this session, so the frame
+ *               fix did NOT reopen them).
  *   R3' 82-85   `lw a1,0(s3)` / `addiu a0,sp,16` arg-setup order in the
  *               LoadImage call (4). Reintroducing an `im` temp at any position
  *               is worse; this is the sched1 arg-copy class (B19-adjacent).
  *               Lever 5 does not apply -- there is no branch in this block.
- *   R5  126/131 `ori a1,a1,0x3e00` four insns late (2). Probed again: named
- *               `bias` local, `-0x1C200` spelling, and all four orderings of
- *               the four statements in that block are byte-identical or worse.
- *               It is a sched1 load-delay-bubble fill, not a source-order call.
- *   Rq  193-198 quad tail: ours emits `addiu v1,-33; sh v0,14; sb v1,37` where
- *               the orig has `addiu v1,-33; sb v0,36; li v0,14368; sb v1,37;
- *               sh v0,14` (3). Consequence of moving the clut store above the
- *               0x25 store; putting it back (volatile or not) costs 12.
- *   +   frame `addiu sp,-152` vs the orig's `-144` (A127) = 16 insns (the 8
- *       prologue saves + 8 epilogue restores; every other sp offset already
- *       matches, because the locals sit at the BOTTOM of the frame).
- *       **ROOT CAUSE, 2026-08-26 (this supersedes an earlier caller-save guess
- *       made the same day and PROVED WRONG by probe: `-fcaller-saves` and
- *       `-fno-caller-saves` both give vars=104, so `setup_save_areas` is not
- *       involved).** Locals are rect(8)+buf(32)+pos(12) = 52 bytes at
- *       sp+16..67, and NOTHING in either build references sp+68..119 -- the
- *       excess is a run of **8-byte, BLKmode-aligned slots** of the shape
- *       `reload1.c alter_reg -> assign_stack_local (mode, total_size, -1)`
- *       (align == -1 forces BLKmode + BIGGEST_ALIGNMENT = 8 on MIPS, which is
- *       why a 4-byte pseudo costs 8). They are allocated but never referenced,
- *       so they are pseudos reload un-allocates DURING reload (`spill_hard_reg`)
- *       -- `cc1 -dg` is printed BEFORE reload and shows all 507 pseudos
- *       allocated, which is why "no spills" reads true and is not.
- *       **The slot count is EXACTLY SIX, one per statement, and the list is
- *       complete (bisected by deleting brace-balanced blocks and reading
- *       `.frame`):** vars = 56 (locals rounded) + 8 x nslots.
- *         56 + 6*8 = 104 (ours)   56 + 5*8 = 96 (the original)
- *       The six owners, each worth exactly 8 bytes -- delete any ONE and
- *       `.frame` reads 96 with `regs= 7/0`:
- *         1-5. the five `bonus += D_8006E9xx[D_8007595C * 5];` tally
- *              accumulates (lines ~509/552/595/638/673);
- *         6.   `if (D_80078618[D_8007595C] >= D_800758F4) { snd = 8; }` in the
- *              TIME-ATTACK block (~line 823).
- *       Characterisation (do not re-derive): the cost is (a long-lived
- *       accumulator) + (an SImode ARRAY load). `bonus += D_8007595C;` (scalar),
- *       `bonus += k;`, `bonus += D_80078680[0];` (unsigned char array) and
- *       `snd += D_8006E920[0];` (short-lived target) are all FREE; `[0]`,
- *       `*(base + i)`, an `(int)`/`(short)`/unsigned cast, `bonus = bonus + x`,
- *       a hoisted `int z` temp, `register int bonus`, a ternary and sized
- *       `extern int D_8006E9xx[64]` decls are all still 8. Substituting the
- *       in-scope `k` for the recomputed `D_8007595C * 5` DOES drop a slot but
- *       costs 7 insns (`orig 1610 mine 1603`), so it is not what the original
- *       does. Hoisting the twice-read `D_80078618[D_8007595C]` into a local
- *       reaches **vars= 96** but takes an 8th callee-saved register and is
- *       -4 insns overall -- proof the target is reachable, not the recipe.
- *       NEXT SESSION: one of those six statements is written differently in the
- *       original in a way that costs no insn. Require BOTH `vars= 96` and
- *       `regs= 7/0`. The ~5 s probe (no link, no assemble) is:
- *         tools/docker_env.sh bash -c "mips-linux-gnu-cpp -nostdinc -undef \
- *           -Iinclude -Iasm <src> -o /tmp/i.i && (cd build && /opt/gcc2.7.2/cc1 \
- *           -O2 -G0 -fverbose-asm -mips1 -mcpu=3000 -fgnu-linker -mno-abicalls \
- *           -mgpopt -msoft-float -quiet -funsigned-char /tmp/i.i -o /tmp/o.s) \
- *           && grep -m1 '.frame' /tmp/o.s"
+ *   R5  126/131 `ori a1,a1,0x3e00` four insns late (5). Probed: named `bias`
+ *               local, `-0x1C200` spelling, and all four orderings of the four
+ *               statements in that block are byte-identical or worse. It is a
+ *               sched1 load-delay-bubble fill, not a source-order call.
+ *   Rq  193-198 quad tail: ours emits `sb v0,36; li v0,14368; addiu v1,-33;
+ *               sh v0,14; sb v1,37` where the orig has `addiu v1,-33;
+ *               sb v0,36; li v0,14368; sb v1,37; sh v0,14` (5). Consequence of
+ *               moving the clut store above the 0x25 store; putting it back
+ *               (volatile or not) costs 12.
+ *   The frame is CLOSED (was +16): `.frame $sp,144 # vars= 96, regs= 7/0`,
+ *   matching the original's `addiu sp,-144`. See LEVER 6 above.
  * ---- Older diagnoses that are still true ----------------------------------
  * B14 RETIRED 2026-08-06-1 (the "+1 nop / cannot link" blocker is gone): the
  * three dep-free defs (`la envBase`, `la img`, `addiu img2`) are priority-1
@@ -574,7 +603,7 @@ void func_level_5_8007B68C(void)
           else
           {
             func_80062FD4(buf, "%d", D_8006E924[k]);
-            bonus += D_8006E924[D_8007595C * 5];
+            bonus += D_8006E920[D_8007595C * 5 + 1];
           }
           snd = 0;
         }

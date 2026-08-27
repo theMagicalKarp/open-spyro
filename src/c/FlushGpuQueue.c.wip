@@ -23,6 +23,15 @@ extern unsigned int g_adwGpuRingFunc[]; /* ring + 0x0 */
 extern unsigned int g_adwGpuRingArgs[]; /* ring + 0x4 */
 extern unsigned int g_adwGpuRingArg4[]; /* ring + 0x8 */
 
+/* Second views of the same two slots, for the POST-call re-reads. Naming them
+   with a different base symbol stops cse value-numbering each pair into one
+   pseudo; a shared pseudo would be live across the dispatch call, reload would
+   un-allocate it and alter_reg would buy it an 8-byte BLKmode frame slot
+   (two pairs = vars= 16). With distinct bases the frame is vars= 0, the
+   original's. */
+extern unsigned int g_adwGpuRingArgsPost[]; /* ring + 0x4 */
+extern unsigned int g_adwGpuRingArg4Post[]; /* ring + 0x8 */
+
 /* Incomplete-array view of the pending flag: the read and the clear share one
    materialized base in the original (addiu v1,%lo(); lw 0(v1) … sw zero,0(v1)),
    which a plain 4-byte extern loses to the sdata cost tie. */
@@ -52,9 +61,9 @@ unsigned int FlushGpuQueue(void) {
         g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
     last[0] = g_adwGpuRingFunc[RIDX * 0x18];
     *(volatile unsigned int *)&g_dwLastGpuOpArg1 =
-        g_adwGpuRingArgs[RIDX * 0x18];
+        g_adwGpuRingArgsPost[RIDX * 0x18];
     *(volatile unsigned int *)&g_dwLastGpuOpArg2 =
-        g_adwGpuRingArg4[RIDX * 0x18];
+        g_adwGpuRingArg4Post[RIDX * 0x18];
     RIDX = (RIDX + 1) & 0x3F;
     if (WIDX != RIDX && (CHCR & 0x1000000) == 0) {
       goto drain;
@@ -94,7 +103,23 @@ unsigned int FlushGpuQueue(void) {
  *     the slot stays a nop and the lui falls into the load shadow, as in the
  *     original. Both sites, 4 insns.
  *
- * SOLE REMAINING RESIDUE (13 insns, one sched1 decision, + the frame it costs):
+ * FRAME CLOSED 2026-08-27 (20/187 -> 14/187, 92.5%): the old note blamed the
+ * 0x28-vs-0x18 frame on "the extra pressure" from the sched1 decision below.
+ * It is not a consequence of anything -- it is A231. The dispatch block reads
+ * `g_adwGpuRingArgs[RIDX*0x18]` and `g_adwGpuRingArg4[RIDX*0x18]` TWICE each,
+ * once as a call argument and once after the call for the g_dwLastGpuOpArg*
+ * store. Each pair names one base symbol, so cse value-numbers it into a single
+ * pseudo that is live ACROSS the dispatch call; reload un-allocates it and
+ * `alter_reg -> assign_stack_local (mode, total_size, -1)` buys it an 8-byte
+ * BLKmode slot. Two pairs = `vars= 16` = the whole 16-byte frame delta, and the
+ * slots are never referenced (which is why the old note said "nothing is ever
+ * stored there"). Fix: give the POST-call re-reads their own base symbols --
+ * g_adwGpuRingArgsPost / g_adwGpuRingArg4Post, same addresses,
+ * allow_duplicated:True. `vars= 16 -> 0`, six insns (3 prologue + 3 epilogue).
+ * This is the same lever that closed func_level_5_8007B68C's frame the same
+ * session; see cookbook A231.
+ *
+ * SOLE REMAINING RESIDUE (14 insns, one sched1 decision):
  *   In the dispatch block the original's memory-op order is
  *       RIDX(L1), RIDX(L2), lw args, RIDX(L3), lw arg4, lw func
  *   and ours is
@@ -104,9 +129,7 @@ unsigned int FlushGpuQueue(void) {
  *   not against plain ones. Consequences, all downstream of that one move:
  *   the original interleaves L1's `sll;addu` before the args load and finishes
  *   it with `sll ..,5` after (keeping 3*L1 live in v1), while ours defers L1's
- *   whole chain to the end and keeps L1 raw alive in a2 (hence a2-vs-a1), and
- *   the extra pressure reserves stack vars (0x28 frame vs 0x18; nothing is
- *   ever stored there).
+ *   whole chain to the end and keeps L1 raw alive in a2 (hence a2-vs-a1).
  *   NOT source-steerable — measured 2026-08-13, all byte-identical output:
  *   func-pointer hoisted to a local; all three slot reads split into separate
  *   statements; an index temp for the func slot; `slot = RIDX * 3` + `slot * 8`
@@ -117,6 +140,14 @@ unsigned int FlushGpuQueue(void) {
  *   `args` ring read alone pins L3 below it but adds +1 insn and forces a held
  *   base (26 differing); volatile on all three ring reads costs +4 insns
  *   (191/187, 56 differing).
+ *   RE-MEASURED 2026-08-27 at the corrected frame (the A231 fix changes the
+ *   allocation, so the old numbers could not be trusted -- they still hold):
+ *   volatile on the pre-call `args` read 21/187, volatile on the pre-call
+ *   `arg4` read 20/187, both worse than the 14/187 baseline. Also tried and
+ *   byte-identical: reading RIDX through a one-member volatile struct
+ *   (an A230 COMPONENT_REF, aimed at restoring the true_dependence edge that
+ *   lets the volatile RIDX read hoist past the plain aggregate ring read).
+ *   A230 does NOT reach this residue.
  *   CLASS: §F8-adjacent sched1 tie (volatile-vs-plain MEM ordering in a
  * call-arg block). Clean permuter target — the logic, the CFG, the length and
  * every other block are exact; only this one block's insn order is in play.
