@@ -26,9 +26,4 @@
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B360)
     . = 0x00000a6c ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B4A4)
-    . = 0x00000bb4 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B5EC)
-    . = 0x00000bd4 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B60C)
-    . = 0x00000bf4 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B62C)
+    build/overlays/level_14_magic_crafters_high_caves/c/func_level_14_8008B0B0.o(.rodata)

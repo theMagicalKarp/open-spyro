@@ -9,6 +9,7 @@
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.func_level_14_80089454)
     . = 0x00010678 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.func_level_14_8008B0B0)
+    build/overlays/level_14_magic_crafters_high_caves/c/func_level_14_8008B0B0.o(.text)
     . = 0x00011d04 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.func_level_14_8008C73C)
     build/overlays/level_14_magic_crafters_high_caves/c/func_level_14_8008C73C.o(.text)
