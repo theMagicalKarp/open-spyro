@@ -1,39 +1,13 @@
-/* PARKED 2026-07-31-4 at 98.7% (10/741 insns, length-exact).
- *
- * Residue: the 0x176 and 0x177..0x182 "attitude-copy" arms only.  The original
- * batches the 0x44..0x46 signed-byte copy into v0/v1/a0 and puts the
- * `addu a0,rec,zero` arg copy for func_800526A8 in the jal's delay slot; we get
- * v0/v1/a1 with the arg copy hoisted between the loads and the stores.
- *
- * Root cause (read off the -dS RTL dump, do not re-derive): sched1 gives the
- * call-arg copy `(set (reg a0) (reg rec))` a TRUE dependence on the call (cost 1)
- * while every store->call dependence is REG_DEP_ANTI (cost 0), so the arg copy
- * outranks the whole store block on INSN_PRIORITY and is scheduled first among
- * them.  a0 is then live across the copy block and the third temp lands in a1.
- * The only escape would be a basic-block boundary between the stores and the
- * call (cf. the level_0 0x22 arm, where an `if` supplies one) -- an explicit
- * goto/label is deleted by jump.c before sched1 and does not work.
- *
- * Exhausted levers: decl order, reverse/interleaved store order, 2-temps +
- * direct third, no temps (casts inline), signed char temps, an int[3], a
- * signed char * source pointer, a leading dead int, volatile loads, volatile
- * stores (overflows the slot), goto/label boundary.
- *
- * This is F7 and it gates the whole flight family: the same arm is in
- * level_5 (0x80083108/0x80083180), level_11 (0x800820AC/0x80082124, already
- * parked on it) and level_23 (0x80082D2C/0x80082DA4).  Solve it once and four
- * overlays land.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~35000 iterations, timed out
- * at the 15m budget): best score 325 vs first-iteration score 610, with a
- * second candidate also at 325. No byte-perfect candidate; still PARKED.
- * The level_11 sibling was run in the same session and produced a near-identical
- * curve (590 -> 305 over ~40200 iterations), which is what the shared-arm claim
- * above predicts -- the two are converging on the same residue from the same
- * distance, so neither run is an outlier. Given this arm gates four overlays,
- * it is the highest-leverage target in the parked set; 15 minutes is plainly
- * too short for it and a multi-hour budget aimed at ONE member of the family
- * (then propagated) is the efficient play.
+/* MATCHED 2026-08-27-1, with level_5_8008249C / level_17_80081F0C /
+ * level_23_8008223C. Wall B19 (the call-arg copy hoisted into a same-block
+ * store batch) is RETIRED: the "real basic-block boundary between the stores
+ * and the call" the old park note asked for is a plain `do { ... } while (0);`
+ * around the store batch -- its loop notes split the block, so the arg copy's
+ * cost-1 TRUE dependence on the call can no longer outrank the stores' cost-0
+ * REG_DEP_ANTI edges, and `move a0,rec` falls back into the jal delay slot with
+ * the 0x44..0x46 copy batched into v0/v1/a0. An explicit goto/label does not
+ * work (jump.c deletes it before sched1); tens of thousands of permuter
+ * iterations did not, because permutation cannot synthesise a block boundary.
  */
 /* func_level_17_80081F0C (0x80081F0C, level_17_magic_crafters_crystal_flight
  * overlay, 0xb94 bytes).
@@ -521,9 +495,11 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       dx = (signed char) parent->unk44;
       dy = (signed char) parent->unk45;
       dz = (signed char) parent->unk46;
+      do {
       rec->unk44 = dx;
       rec->unk45 = dy;
       rec->unk46 = dz;
+      } while (0);
       func_800526A8(rec);
       rec->unk4B = 0xBF;
       rec->unk4C = parent->unk4C;
