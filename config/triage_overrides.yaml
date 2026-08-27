@@ -2902,3 +2902,17 @@ ComputeSpyroMoveTargetFromPad_2026_08_27_1:
     with the `iVar1+iVar2` addu and then recomputing it. Note the shape diff
     mis-aligns here (the two arms come out in the opposite branch sense), so
     measure it with the linked path once a variant links.
+func_800557CC:
+  verdict: parked
+  class: "B13 (A233 not free here) + a 5-insn st->place schedule"
+  date: 2026-08-27
+  note: >-
+    400 B, fresh decode this session now that B13 is retired. 102 vs 100 insns
+    (will not link), 9 mismatched insns over 7 regions. The +2 is the two
+    unit-circle `>> 4` sites; A233 reaches them but costs +4 here because the
+    count pseudos need callee-saved registers in a low-pressure function (a
+    shared local is +1 and gives `srav`). Two decode points worth keeping: the
+    overlay init hook takes TWO arguments (m2c reads the divide's `mfhi $a2` as
+    a third), and the digit split must be `d = value % 10; q = value / 10;` in
+    that order -- the other spelling loses the original's `move s0,s1`. See the
+    .c.wip header.
