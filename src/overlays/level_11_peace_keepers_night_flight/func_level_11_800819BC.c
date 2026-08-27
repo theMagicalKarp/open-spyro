@@ -1,42 +1,16 @@
-/* PARKED 2026-07-31-4 at 98.7% (10/741 insns, length-exact).
- *
- * Residue: the 0x176 and 0x177..0x182 "attitude-copy" arms only.  The original
- * batches the 0x44..0x46 signed-byte copy into v0/v1/a0 and puts the
- * `addu a0,rec,zero` arg copy for func_800526A8 in the jal's delay slot; we get
- * v0/v1/a1 with the arg copy hoisted between the loads and the stores.
- *
- * Root cause (read off the -dS RTL dump, do not re-derive): sched1 gives the
- * call-arg copy `(set (reg a0) (reg rec))` a TRUE dependence on the call (cost 1)
- * while every store->call dependence is REG_DEP_ANTI (cost 0), so the arg copy
- * outranks the whole store block on INSN_PRIORITY and is scheduled first among
- * them.  a0 is then live across the copy block and the third temp lands in a1.
- * The only escape would be a basic-block boundary between the stores and the
- * call (cf. the level_0 0x22 arm, where an `if` supplies one) -- an explicit
- * goto/label is deleted by jump.c before sched1 and does not work.
- *
- * Exhausted levers: decl order, reverse/interleaved store order, 2-temps +
- * direct third, no temps (casts inline), signed char temps, an int[3], a
- * signed char * source pointer, a leading dead int, volatile loads, volatile
- * stores (overflows the slot), goto/label boundary.
- *
- * This is F7 and it gates the whole flight family: the same arm is in
- * level_5 (0x80083108/0x80083180), level_11 (0x800820AC/0x80082124, already
- * parked on it) and level_23 (0x80082D2C/0x80082DA4).  Solve it once and four
- * overlays land.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~35000 iterations, timed out
- * at the 15m budget): best score 325 vs first-iteration score 610, with a
- * second candidate also at 325. No byte-perfect candidate; still PARKED.
- * The level_11 sibling was run in the same session and produced a near-identical
- * curve (590 -> 305 over ~40200 iterations), which is what the shared-arm claim
- * above predicts -- the two are converging on the same residue from the same
- * distance, so neither run is an outlier. Given this arm gates four overlays,
- * it is the highest-leverage target in the parked set; 15 minutes is plainly
- * too short for it and a multi-hour budget aimed at ONE member of the family
- * (then propagated) is the efficient play.
+/* MATCHED 2026-08-27-1, with level_5_8008249C / level_17_80081F0C /
+ * level_23_8008223C. Wall B19 (the call-arg copy hoisted into a same-block
+ * store batch) is RETIRED: the "real basic-block boundary between the stores
+ * and the call" the old park note asked for is a plain `do { ... } while (0);`
+ * around the store batch -- its loop notes split the block, so the arg copy's
+ * cost-1 TRUE dependence on the call can no longer outrank the stores' cost-0
+ * REG_DEP_ANTI edges, and `move a0,rec` falls back into the jal delay slot with
+ * the 0x44..0x46 copy batched into v0/v1/a0. An explicit goto/label does not
+ * work (jump.c deletes it before sched1); tens of thousands of permuter
+ * iterations did not, because permutation cannot synthesise a block boundary.
  */
-/* func_level_17_80081F0C (0x80081F0C, level_17_magic_crafters_crystal_flight
- * overlay, 0xb94 bytes).
+/* func_level_11_800819BC (0x800819BC, level_11_peace_keepers_night_flight
+ * overlay, 0x944 bytes).
  *
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
@@ -70,9 +44,9 @@ typedef struct Actor {
   unsigned char unk41;
   unsigned char unk42;
   unsigned char unk43;
-  unsigned char unk44; /* 0x44 */
-  unsigned char unk45;
-  unsigned char unk46;
+  signed char unk44;   /* 0x44 */
+  signed char unk45;
+  signed char unk46;
   unsigned char unk47;
   unsigned char unk48;
   unsigned char unk49; /* 0x49 */
@@ -177,9 +151,10 @@ extern int func_80016CB0(int angle);            /* LookupCosine */
 extern int func_80016C58(int angle);            /* LookupSine */
 extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
 extern int func_80017990(int *a, int *b);       /* HorizontalDistance */
-extern int func_800171FC(int *v, int mode);     /* VectorLength */
-extern void func_800175B8(int *v, int len, int scale);  /* ScaleVectorToLength */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern void func_80052568(Actor *rec);          /* ReleaseActorRecordSlot */
+extern int D_8007595C;     /* active flight-race slot index */
+extern int D_80078618[];   /* per-slot flight-race object table */
 extern int D_80078A5C;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *D_80075828;  /* g_pActorListBase */
@@ -196,17 +171,14 @@ extern int D_80078BE0[3];  /* g_anSpyroFirstContactNormal */
 extern int D_80078AF8;     /* g_nSpyroGroundHeight */
 extern short D_8006CC78[]; /* unit-circle x table (8-bit angle) */
 extern short D_8006CBF8[]; /* unit-circle y table (8-bit angle) */
-extern int D_8007595C;     /* active flight-race slot index */
-extern int D_80078618[];   /* per-slot flight-race object table */
-extern void func_80052568(Actor *rec);          /* ReleaseActorRecordSlot */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
    gain only. It reads worse than the hand-written form it replaced and
    its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_17_magic_crafters_crystal_flight/func_level_17_80081F0C.c.wip`; this body came from
-   build/permuter/nonmatchings/func_level_17_80081F0C/output-325-1/source.c. */
-Actor *func_level_17_80081F0C(int type, Actor *parent)
+   with `git show HEAD:src/overlays/level_11_peace_keepers_night_flight/func_level_11_800819BC.c.wip`; this body came from
+   build/permuter/nonmatchings/func_level_11_800819BC/output-305-1/source.c. */
+Actor *func_level_11_800819BC(int type, Actor *parent)
 {
   Actor *rec;
   int owner;
@@ -265,28 +237,6 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       st->unk13 = 0;
       st->unk12 = 0;
       st->unk14 = 0x708;
-      break;
-    }
-
-    case 0x11:
-    {
-      int *st;
-      int dir;
-      int d[3];
-      func_8003A720(rec);
-      dir = parent->unk46;
-      rec->unk46 = dir;
-      rec->posX = parent->posX + (D_8006CC78[dir] >> 4);
-      rec->posY = parent->posY + (D_8006CBF8[rec->unk46] >> 4);
-      rec->posZ = parent->posZ;
-      d[0] = D_80078A58[0] - rec->posX;
-      d[1] = D_80078A5C - rec->posY;
-      d[2] = D_80078A60 - rec->posZ;
-      func_800175B8(d, func_800171FC(d, 1), 0xA0);
-      func_800526A8(rec);
-      st = rec->state;
-      func_80017700(st, d);
-      st[3] = 0x50;
       break;
     }
 
@@ -425,34 +375,6 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       break;
     }
 
-    case 0x1E1 ... 0x1E3:
-    {
-      DebrisState *st = rec->state;
-      int yaw;
-      int pitch;
-      func_8003A720(rec);
-      rec->unk50 = 0x20;
-      func_80017700(&rec->posX, &parent->posX);
-      func_800526A8(rec);
-      yaw = func_8006272C() & 0xFFF;
-      pitch = func_8006272C() & 0x7FF;
-      st->vel[0] = ((func_80016CB0(pitch) >> 5) * func_80016CB0(yaw)) >> 12;
-      st->vel[1] = ((func_80016CB0(pitch) >> 5) * func_80016C58(yaw)) >> 12;
-      st->vel[2] = func_80016C58(pitch) >> 5;
-      st->vel[0] += D_80078B4C[0] >> 6;
-      st->vel[1] += D_80078B4C[1] >> 6;
-      st->vel[2] += D_80078B4C[2] >> 6;
-      rec->posX += st->vel[0] * 4;
-      rec->posY += st->vel[1] * 4;
-      rec->posZ += st->vel[2] * 4;
-      st->spinX = func_8006272C() & 0xF;
-      st->spinY = func_8006272C() & 0xF;
-      st->spinZ = func_8006272C() & 0xF;
-      st->unk10 = parent->posZ - 0x40;
-      st->unk0C = 0x40 - (func_8006272C() & 0xF);
-      break;
-    }
-
     case 0x104 ... 0x10D:
 
     case 0x115:
@@ -500,13 +422,20 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       int dz;
       func_8003A720(rec);
       func_80017700(&rec->posX, &parent->posX);
-      dx = (signed char) parent->unk44;
-      dy = (signed char) parent->unk45;
-      dz = (signed char) parent->unk46;
+      dx = parent->unk44;
+      dy = parent->unk45;
+      dz = parent->unk46;
+      do {
       rec->unk44 = dx;
       rec->unk45 = dy;
       rec->unk46 = dz;
- do { func_800526A8(rec); rec->unk4B = 0xBF; rec->unk4C = parent->unk4C; rec->unk4D = parent->unk4D; rec->unk4E = parent->unk4E; rec->unk4F = parent->unk4F; } while (0);
+      } while (0);
+      func_800526A8(rec);
+      rec->unk4B = 0xBF;
+      rec->unk4C = parent->unk4C;
+      rec->unk4D = parent->unk4D;
+      rec->unk4E = parent->unk4E;
+      rec->unk4F = parent->unk4F;
       rec->unk50 = parent->unk50;
       break;
     }
@@ -518,16 +447,13 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       int dz;
       func_8003A720(rec);
       func_80017700(&rec->posX, &parent->posX);
-      dx = (signed char) parent->unk44;
-      dy = (signed char) parent->unk45;
-      dz = (signed char) parent->unk46;
+      dx = parent->unk44;
+      dy = parent->unk45;
+      dz = parent->unk46;
       rec->unk44 = dx;
       rec->unk45 = dy;
       rec->unk46 = dz;
-      func_800526A8(rec);
-      rec->unk4B = 0xBF;
-      rec->unk4C = parent->unk4C;
-      rec->unk4D = parent->unk4D;
+ do { func_800526A8(rec); rec->unk4B = 0xBF; rec->unk4C = parent->unk4C; rec->unk4D = parent->unk4D; } while (0);
       rec->unk4E = parent->unk4E;
       rec->unk4F = parent->unk4F;
       break;
@@ -535,11 +461,11 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
 
     case 0x183 ... 0x185:
 
-    case 0x189:
+    case 0x1EB:
       func_8003A720(rec);
+      rec->unk50 = 0;
       rec->posX = -0x64;
       rec->posY = 0x1E;
-      rec->unk50 = 0;
       rec->posZ = 0x1000;
       func_800529CC(rec);
       rec->unk47 = 0x20;
@@ -549,7 +475,19 @@ Actor *func_level_17_80081F0C(int type, Actor *parent)
       rec->unk4F = 0;
       break;
 
-    case 0x190:
+    case 0x18F:
+      func_8003A720(rec);
+      rec->unk50 = 0xFF;
+      rec->posX = 0x1CC;
+      rec->posY = 0x28;
+      rec->posZ = 0x1000;
+      func_800529CC(rec);
+      rec->unk47 = 0x20;
+      rec->unk4C = 0;
+      rec->unk4D = 0;
+      rec->unk4E = 0;
+      rec->unk4F = 0;
+      break;
 
     case 0x195:
 

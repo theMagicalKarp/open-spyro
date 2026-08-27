@@ -1,41 +1,13 @@
-/* PARKED 2026-08-01 at 98.9% (933/933 insns, length-exact -- 10 insns differ).
- *
- * Residue: the two "attitude-copy" arms (0x80083108 / 0x80083180) ONLY -- wall B19.
- * The original batches the 0x44..0x46 signed-byte copy into v0/v1/a0 and puts
- * the `addu a0,rec,zero` arg copy for func_800526A8 in the jal's delay slot; we
- * get v0/v1/a1 with the arg copy hoisted between the loads and the stores.
- * sched1 gives the call-arg copy a TRUE dependence on the call (cost 1) while
- * every store->call dependence is REG_DEP_ANTI (cost 0), so the arg copy
- * outranks the whole store block on INSN_PRIORITY.  See cookbook B19 for the
- * exhausted lever list; the only known escape is a real basic-block boundary
- * before the call.  Every other arm in this dispatcher is byte-identical.
- *
- * Unparks together with levels 5/11/17/23 the moment B19 falls.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~29400 iterations, timed out
- * at the 15m budget): best score 350 vs first-iteration score 610, next
- * candidates 490 and 525. No byte-perfect candidate; still PARKED (see above).
- *
- * This completes the family sweep: ALL FOUR members were run independently in
- * this session, from four separate random seeds, and every one landed on the
- * same shelf --
- *
- *     level_5  610 -> 350  (~29400 iters)
- *     level_11 590 -> 305  (~40200 iters)
- *     level_17 610 -> 325  (~35000 iters)
- *     level_23 610 -> 325  (~32000 iters)
- *
- * Same start, same floor within ~13%, same shape. That is about as clean an
- * empirical confirmation of the shared-residue claim above as this method can
- * produce, and it locates the floor as a property of the B19 lever rather than
- * of any one seed. Random permutation reaches the shelf in a few thousand
- * iterations and then stops, exactly as predicted by the note above that the
- * only known escape is a real basic-block boundary before the call -- a
- * structural source change, which permutation cannot synthesise.
- *
- * Conclusion for future sessions: do NOT spend further unattended budget on any
- * member of this family. Aim one targeted B19 attempt at a single member; all
- * four land together when it falls.
+/* MATCHED 2026-08-27-1. B19 (the call-arg copy hoisted into a same-block store
+ * batch) is RETIRED: the escape the old park note called for -- "a real basic
+ * block boundary before the call" -- is a plain `do { ... } while (0);` around
+ * the store batch. The loop notes split the block, so sched1 can no longer let
+ * the arg copy's cost-1 TRUE dependence on the call outrank the stores'
+ * cost-0 REG_DEP_ANTI edges, and `move a0,s4` drops back into the jal's delay
+ * slot with the 0x44..0x46 copy batched into v0/v1/a0. Applied at the two
+ * attitude-copy arms (0x176 and 0x177..0x182) only; ~29,000 permuter
+ * iterations per family member had bottomed out on this same shelf because
+ * permutation cannot synthesise a block boundary.
  */
 /* func_level_5_8008249C (0x8008249C, level_5_artisans_sunny_flight overlay,
  * 0xe94 bytes).
@@ -565,9 +537,11 @@ Actor *func_level_5_8008249C(int type, Actor *parent) {
     dx = (signed char)parent->unk44;
     dy = (signed char)parent->unk45;
     dz = (signed char)parent->unk46;
+    do {
     rec->unk44 = dx;
     rec->unk45 = dy;
     rec->unk46 = dz;
+    } while (0);
     func_800526A8(rec);
     rec->unk4B = 0xBF;
     rec->unk4C = parent->unk4C;
@@ -588,9 +562,11 @@ Actor *func_level_5_8008249C(int type, Actor *parent) {
     dx = (signed char)parent->unk44;
     dy = (signed char)parent->unk45;
     dz = (signed char)parent->unk46;
+    do {
     rec->unk44 = dx;
     rec->unk45 = dy;
     rec->unk46 = dz;
+    } while (0);
     func_800526A8(rec);
     rec->unk4B = 0xBF;
     rec->unk4C = parent->unk4C;

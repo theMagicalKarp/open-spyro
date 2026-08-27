@@ -18,6 +18,7 @@
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.func_level_17_8007CFB4)
     . = 0x000074d4 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.func_level_17_80081F0C)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/func_level_17_80081F0C.o(.text)
     . = 0x00008068 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.func_level_17_80082AA0)
     build/overlays/level_17_magic_crafters_crystal_flight/c/func_level_17_80082AA0.o(.text)

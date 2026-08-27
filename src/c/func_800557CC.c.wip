@@ -1,0 +1,112 @@
+#include "globals.h"
+
+extern short g_anCosineLut[];            /* 0x8006cc78 */
+extern short g_anCameraEulerYawBlock[];  /* g_nCameraEulerYaw, held-base view */
+
+extern int LookupSine(unsigned int angle_12_4);
+extern int LookupCosine(unsigned int angle_12_4);
+
+/* The per-digit sub-record hung off a digit actor's +0x00 pointer. */
+struct Digit {
+  char pad00[4];
+  int place; /* 0x04 digit value scaled by its decimal place */
+  int dir[3]; /* 0x08 camera-facing unit direction */
+};
+
+struct DigitActor {
+  struct Digit *digit; /* 0x00 */
+  char pad04[8];       /* 0x04 */
+  int pos[3];          /* 0x0c */
+  char pad18[0x2c];    /* 0x18 */
+  unsigned char unk44; /* 0x44 */
+  unsigned char unk45; /* 0x45 */
+  unsigned char yaw;   /* 0x46 coarse camera yaw */
+};
+
+/* PARKED 2026-08-27-1 -- FRESH DECODE, 102 vs 100 insns (will not link), and
+ * the content diff is **9 mismatched insns over 7 regions**. Two residues:
+ *
+ *  - **B13 (+2, the whole length delta).** `g_anSineLut[a] >> 4` /
+ *    `g_anCosineLut[a] >> 4` come out `lhu; sll 16; sra 20` where the original
+ *    has `lh; sra 4`. A233's fix (route the count through an int local whose
+ *    def is in a different basic block) DOES produce `lh` here but is NOT free
+ *    in this function: the two pseudos are live from the loop preheader across
+ *    the call into the loop body, so reload gives them callee-saved registers
+ *    and the two `li` + two save/restore pairs cost +4 net (106 insns, 13
+ *    mismatches). One shared local for both sites costs +1 and degrades both to
+ *    `srav` (103/10). This is the first measured case where A233 costs more
+ *    than it buys -- it is free only where register pressure already forces
+ *    rematerialisation (level_16 / level_27, both 20+ live values).
+ *    Everything that varies the LOAD is inert here too: `*(short *)((char *)tbl
+ *    + a * 2)`, `*(tbl + a)`, a `short` temp, an `int` temp, `>> 4U`, and
+ *    `x += -(...)` all give the identical 101/102-insn build.
+ *  - **~5 insns of scheduling around `st->place`**: the original issues
+ *    `lw v1,0x14(src)` and `mult d,place` together and keeps the loaded z in
+ *    v1; ours splits them and uses a0. Probed: a `prod = d * place;` temp
+ *    hoisted to the top of the body (9, byte-identical), the z temp written
+ *    after the unk44/45 stores (14), both together (14).
+ *
+ * Two decode points that were worth the whole session's difference here, both
+ * off the shape diff: the overlay init hook takes **TWO** arguments, not three
+ * (m2c reads the divide's `mfhi $a2` as a third argument -- compare
+ * func_8003ABC0, which calls it as `hook(id, src)`), and the digit split must
+ * be written `d = value % 10; q = value / 10;` in that order. Writing
+ * `q = value / 10; d = value - q * 10;` loses the original's `move s0,s1`
+ * (18 mismatches); the reverse order gives gcc the divmod temp AND the
+ * quotient as two pseudos, which is what that copy is.
+ *
+ * Spawn one floating digit actor (id 0x104 + digit) per decimal digit of
+   `value`, least significant first, walking away from `src` along the camera
+   yaw so the digits read left to right on screen. Each digit carries the
+   camera-facing direction (cos/sin of yaw - 0x400, plus a 0x80 z that steps
+   down 0x10 per digit) and its own decimal place. 0x800557cc, 0x190. */
+void func_800557CC(int value, struct DigitActor *src) {
+  short rot[3];
+  struct DigitActor *rec;
+  struct Digit *st;
+  int x;
+  int y;
+  int place;
+  int d;
+  int a;
+  int z;
+  short *cam;
+  int sx;
+  int cx;
+  cam = g_anCameraEulerYawBlock;
+  place = 1;
+  x = src->pos[0];
+  y = src->pos[1];
+  rot[0] = LookupCosine(cam[0] - 0x400) >> 8;
+  rot[1] = LookupSine(cam[0] - 0x400) >> 8;
+  rot[2] = 0x80;
+  if (value != 0) {
+    do {
+      int q;
+      d = value % 10;
+      q = value / 10;
+      rec = (*(struct DigitActor * (*)(int, int))
+                 g_pfnLevelOverlayInitHook)(d + 0x104, 0);
+      rec->pos[0] = x;
+      rec->pos[1] = y;
+      z = src->pos[2];
+      rec->unk44 = 0;
+      rec->unk45 = 0;
+      rec->pos[2] = z;
+      st = rec->digit;
+      rec->yaw = (unsigned short)g_nCameraEulerYaw >> 4;
+      st->dir[0] = rot[0];
+      st->dir[1] = rot[1];
+      st->dir[2] = rot[2];
+      value = q;
+      st->place = d * place;
+      place *= 10;
+      a = rec->yaw;
+      sx = g_anSineLut[a];
+      cx = g_anCosineLut[a];
+      rot[2] -= 0x10;
+      x -= sx >> 4;
+      y += cx >> 4;
+    } while (value != 0);
+  }
+}

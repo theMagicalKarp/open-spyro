@@ -1,31 +1,13 @@
-/* PARKED 2026-08-01 at 98.8% (838/838 insns, length-exact -- 10 insns differ).
- *
- * Residue: the two "attitude-copy" arms (0x80082D2C / 0x80082DA4) ONLY -- wall B19.
- * The original batches the 0x44..0x46 signed-byte copy into v0/v1/a0 and puts
- * the `addu a0,rec,zero` arg copy for func_800526A8 in the jal's delay slot; we
- * get v0/v1/a1 with the arg copy hoisted between the loads and the stores.
- * sched1 gives the call-arg copy a TRUE dependence on the call (cost 1) while
- * every store->call dependence is REG_DEP_ANTI (cost 0), so the arg copy
- * outranks the whole store block on INSN_PRIORITY.  See cookbook B19 for the
- * exhausted lever list; the only known escape is a real basic-block boundary
- * before the call.  Every other arm in this dispatcher is byte-identical.
- *
- * Unparks together with levels 5/11/17/23 the moment B19 falls.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~32000 iterations, timed out
- * at the 15m budget): best score 325 vs first-iteration score 610, second
- * candidate also 325. No byte-perfect candidate; still PARKED (see above).
- *
- * Three of the four family members were run independently this session and the
- * curves are near-identical: level_17 610 -> 325 (~35000 iters), level_23
- * 610 -> 325 (~32000 iters), level_11 590 -> 305 (~40200 iters). Same start,
- * same floor, same shape from three separate random seeds -- strong empirical
- * confirmation that these really are one shared residue, and that the floor at
- * ~325 is the B19 lever itself rather than a seed artifact. Random permutation
- * reaches that floor quickly and then stops, which matches the note above that
- * the only known escape is a real basic-block boundary before the call: a
- * structural source change, not a permutation. Aim a targeted B19 attempt at
- * ONE member rather than spending further unattended budget on any of them.
+/* MATCHED 2026-08-27-1, with level_5_8008249C / level_17_80081F0C /
+ * level_23_8008223C. Wall B19 (the call-arg copy hoisted into a same-block
+ * store batch) is RETIRED: the "real basic-block boundary between the stores
+ * and the call" the old park note asked for is a plain `do { ... } while (0);`
+ * around the store batch -- its loop notes split the block, so the arg copy's
+ * cost-1 TRUE dependence on the call can no longer outrank the stores' cost-0
+ * REG_DEP_ANTI edges, and `move a0,rec` falls back into the jal delay slot with
+ * the 0x44..0x46 copy batched into v0/v1/a0. An explicit goto/label does not
+ * work (jump.c deletes it before sched1); tens of thousands of permuter
+ * iterations did not, because permutation cannot synthesise a block boundary.
  */
 /* func_level_23_8008223C (0x8008223C, level_23_beast_makers_wild_flight
  * overlay, 0xd18 bytes).
@@ -535,9 +517,11 @@ Actor *func_level_23_8008223C(int type, Actor *parent)
       dx = (signed char) parent->unk44;
       dy = (signed char) parent->unk45;
       dz = (signed char) parent->unk46;
+      do {
       rec->unk44 = dx;
       rec->unk45 = dy;
       rec->unk46 = dz;
+      } while (0);
       func_800526A8(rec);
       rec->unk4B = 0xBF;
       rec->unk4C = parent->unk4C;

@@ -16,26 +16,26 @@
  * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * PARKED 2026-08-21 -- FULLY DECODED, blocked on B13 (+3 insns, will not link).
- * Arms 0x1D, 0x1E and 0x1F are decoded here and 0x41 is lifted from
- * func_level_16_80085F40; every other arm is byte-identical.  Two residues:
- *
- *  - **arm 0x1F is a B13 wall** (2 of the 3 extra insns).  The original reads
- *    the unit-circle tables as `lh; sra 10`; our cc1 folds the sign-extend
- *    into the shift and emits `lhu; sll 16; sra 26` (+1 insn per site).
- *    Measured spellings, all identical: a plain `tbl[w] >> 10`, an `(int)`
- *    cast, a `short` local, a `short` local shifted IN PLACE, a function-scope
- *    `int` carrier with many sets (A219's multi-set lever -- the copy is
- *    deleted by copy propagation and the build is BYTE-IDENTICAL to the plain
- *    form), an in-place `c >>= 10` on that carrier, and a
- *    `*(volatile short *)` load (which also loses the fused `$at` addressing,
- *    +7).  This is B13's "the original has lh; sra" direction, i.e. the wall,
- *    not the target.  level_14's copy of arm 0x1F carries it too.
- *  - arm 0x1E is CLOSED: its colour stores are written before the `fx` store
- *    so reload's `li t0,46` keeps its place (A164 on rematerialised
- *    constants -- see func_level_0_800873E0's header).  Only the two B13
- *    insns remain.
- */
+ * MATCHED 2026-08-27-1. B13's `lh; sra` IS reachable: route the shift COUNT
+ * through an `int` local whose assignment lives in a DIFFERENT BASIC BLOCK
+ * from the shift (here `sh0 = 10; sh1 = 10;` in the `for` loop's preheader).
+ * With a literal count, cse1 has the constant in hand when combine runs, so
+ * combine fuses the sign-extension into the shift and cc1 emits
+ * `lhu; sll 16; sra 26`; with the count arriving across a real control-flow
+ * edge combine cannot fuse, the extension stays its own insn (`lh`), and
+ * cse2/cprop still folds the count back to a literal (`sra 10`) so the local
+ * costs ZERO instructions. Two rules, both measured here:
+ *   - it must be a REAL block boundary. A `do { sh = 10; } while (0);` does
+ *     not work (its NOTEs do not break cse1's extended basic block), and
+ *     neither does an assignment earlier in the same block.
+ *   - ONE local per shift site. A single local feeding two shifts stays live
+ *     in a register and degrades both to `srav`.
+ * Everything the old park note listed as "measured, all identical" varied the
+ * LOAD or the destination (an `(int)` cast, a `short` local, in-place `>>=`,
+ * a multi-set carrier, a volatile read); the dial is the shift count.
+ * arm 0x1E was already CLOSED: its colour stores are written before the `fx`
+ * store so reload's `li t0,46` keeps its place (A164 on rematerialised
+ * constants -- see func_level_0_800873E0's header). */
 
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
@@ -211,7 +211,11 @@ void func_level_27_800881D8(int count, int type, int *pos, int arg3) {
   int k;
   int v;
   int c;
+  int sh0;
+  int sh1;
 
+  sh0 = 10;
+  sh1 = 10;
   for (i = 0; i < count; i++) {
     k = i * 4;
     switch (type) {
@@ -621,8 +625,8 @@ void func_level_27_800881D8(int count, int type, int *pos, int arg3) {
       rec->phase = func_8006272C() & 0xF;
       rec->unk03 = 1;
       func_80017BFC(rec->u.spark.pos, pos);
-      rec->u.spark.vel[0] = D_8006CC78[w] >> 10;
-      rec->u.spark.vel[1] = D_8006CBF8[w] >> 10;
+      rec->u.spark.vel[0] = D_8006CC78[w] >> sh0;
+      rec->u.spark.vel[1] = D_8006CBF8[w] >> sh1;
       rec->u.spark.vel[2] = 6;
       w = (func_8006272C() & 7) + 0x10;
       rec->u.spark.seed = (w * 5) >> 3;
