@@ -18,6 +18,7 @@
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.func_level_5_8007CFB4)
     . = 0x00007a64 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.func_level_5_8008249C)
+    build/overlays/level_5_artisans_sunny_flight/c/func_level_5_8008249C.o(.text)
     . = 0x000088f8 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.func_level_5_80083330)
     build/overlays/level_5_artisans_sunny_flight/c/func_level_5_80083330.o(.text)
