@@ -162,16 +162,48 @@
  *               Block position p = 46 - T, and block position 1 is function
  *               insn 17; ours is T-17 = p29 = insn 45, the original wants
  *               p9 = insn 25 = **T-37**.
- *               **NEXT PROBE (the only one with a mechanism behind it): kill
- *               the anti-dep on the VSync call so priority(72) drops to 1.**
- *               The edge is `72 sets s5` vs `last use of s5`; if `envBase`
- *               landed in a register that is not live into this block the edge
- *               attaches elsewhere. Note that at priority 1 the trace predicts
- *               T-33 (p13, insn 29) on LUID, not T-37, so the cascade has to
- *               be measured, not reasoned about. Re-confirmed dead ends: all
- *               three source orders of the la's (the two non-current ones add
- *               a load-delay nop -- 1611 insns, cannot link; re-measured at
- *               vars= 96 this session, so the frame fix did NOT reopen them).
+ *               **That anti-dep is UNCONDITIONAL and cannot be removed -- it is
+ *               a gcc 2.7.2 BUG, read straight off `sched.c sched_analyze_1`
+ *               (the hard-register branch, ~line 1704):**
+ *                   i = HARD_REGNO_NREGS (regno, GET_MODE (dest));
+ *                   while (--i >= 0) {
+ *                     ...
+ *                     if ((call_used_regs[i] || global_regs[i])
+ *                         && last_function_call)
+ *                       add_dependence (insn, last_function_call,
+ *                                       REG_DEP_ANTI);
+ *                   }
+ *               The subscript is the nregs loop counter **`i`, not
+ *               `regno + i`**. For any single-word set `i == 0` on the only
+ *               iteration, so the test is `call_used_regs[0]` -- `$zero`, which
+ *               is fixed and therefore call-used -- and is ALWAYS true. So at
+ *               sched2 (where every reg is hard) EVERY register set in a block
+ *               carries an anti-dep on the preceding call, and its priority is
+ *               pinned to `priority(last_function_call) + 1 - 1`. This is why
+ *               the la's priority tracks its position in the call chain and
+ *               nothing else: it is not about s5, and there is no register
+ *               choice or aliasing trick that detaches it.
+ *               **And priority 1 would not be enough anyway.** Working the
+ *               trace: a priority-1, ref_count-0 insn with LUID 72 first
+ *               reaches the top priority group at T-33 (T-28..T-32 are the
+ *               priority-2 insns 62/67/50/59/57) and wins that group on LUID
+ *               descending, so it lands at p13 = function insn 29 -- still 4
+ *               early of the original's 25. Reaching 25 needs T-37, and the
+ *               only insns picked at T-34..T-42 are just-launched flow insns
+ *               whose LUIDs are all BELOW 72, so a LUID-72 straggler can never
+ *               lose to them. Lowering the LUID below 16 (i.e. writing the
+ *               assignment first in the block) sends it the other way, to
+ *               T-45 = p1 = insn 17.
+ *               Conclusion: R1 is NOT reachable by moving, re-registering or
+ *               re-spelling the `envBase` assignment. What is left to try is
+ *               changing the CALL CHAIN this block schedules against -- the
+ *               priority bands are the chain depth, so a different arrangement
+ *               of the nine calls in source lines 324..334 moves every band at
+ *               once. That is the only untried dial.
+ *               Re-confirmed dead ends: all three source orders of the la's
+ *               (the two non-current ones add a load-delay nop -- 1611 insns,
+ *               cannot link; re-measured at vars= 96 this session, so the frame
+ *               fix did NOT reopen them).
  *   R3' 82-85   `lw a1,0(s3)` / `addiu a0,sp,16` arg-setup order in the
  *               LoadImage call (4). Reintroducing an `im` temp at any position
  *               is worse; this is the sched1 arg-copy class (B19-adjacent).
