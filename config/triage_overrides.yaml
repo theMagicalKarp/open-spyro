@@ -2916,3 +2916,66 @@ func_800557CC:
     a third), and the digit split must be `d = value % 10; q = value / 10;` in
     that order -- the other spelling loses the original's `move s0,s1`. See the
     .c.wip header.
+
+# --- 2026-08-28 session ---
+func_level_25_80084B94_matched:
+  verdict: matched
+  class: "matched 2026-08-28 (A232 boundary INSIDE the store batch, not around it)"
+  date: 2026-08-28
+  note: >-
+    0x80084B94, 3,176 B — the last of the 36 spawn dispatchers and the last
+    standing B19 site. Whole-batch barrier leaves {move a0,rec; jal}, which
+    jump.c cross-jumps into the shared tail at 0x800857C8 (404/794, one insn
+    short). Wrapping only the FIRST TWO of the three 0x44..0x46 stores puts the
+    boundary between store 2 and store 3: store 3's value arrives from the
+    previous block so it is a priority-1 straggler like the arg copy, and
+    rank_for_schedule's LUID-descending tiebreak emits them in source order.
+    Found by a mechanical barrier sweep (every contiguous 1-4 statement run
+    wrapped and scored with the compile-only shape diff, ~80 builds), not by
+    hand-picking — three hand-picked placements had already been measured and
+    all were worse.
+
+func_level_5_8007B68C_2026_08_28:
+  verdict: parked
+  class: "R5 sched2 store-blocks-load hole (1 insn) + Rd tpage/clut delay-slot swap (1 insn)"
+  date: 2026-08-28
+  note: >-
+    6,440 B x5 flight overlays = 32,200 B. 10/1610 -> 8/1610 (99.5%),
+    length-exact and linking. Rq (the 0x24/0x25/0xE store-order knot) is CLOSED
+    by A234: put the TPAGE store between the 0x24 and 0x25 stores and the
+    original's `addiu v1,-33` hoist and `li v0,14368` slot both come back.
+    Exhausted this session, do not re-derive: (a) all 240 legal statement orders
+    of the six-statement R5 block are byte-identical to the baseline — sched2
+    places by priority then LUID and LUIDs come from sched1's output, so source
+    order is inert there; (b) the same 240 orders with an A232 barrier around
+    the two constants fix `ori a1` exactly but re-tile the 9-insn block, best 12
+    vs 6; (c) all 24 orders x 16 volatility masks of the four quad-tail stores
+    (384 builds) — only two length-exact states reach the minimum and a greedy
+    volatile toggle over all 35 loop accesses is a local minimum at the checked-in
+    one, so the per-access volatile map is exhausted; (d) a full do{}while(0)
+    barrier sweep over every contiguous 1-2 statement run in the function.
+    R5's mechanism is now arithmetic (see §D 2d): two consecutive stores block
+    both loads for two cycles and the split constant's `ori` takes the hole.
+
+func_level_27_80086754_2026_08_28:
+  verdict: parked
+  class: "F14 birthing boost on the rec[0x18] load (unchanged); barrier sweep negative"
+  date: 2026-08-28
+  note: >-
+    6,788 B, 4/1697 content-aligned. Re-measured and swept: a do{}while(0)
+    barrier around every contiguous 1-4 statement run of the 0x1D arm's
+    patrol block (79 builds) leaves the score at 4 — the residue is not a
+    block-boundary problem, it is the allocation consequence of the boost, as
+    the 2026-08-21 note says. Still permuter-or-never.
+
+barrier_sweep_negative_2026_08_28:
+  verdict: attempted
+  class: "A232 barrier sweep found nothing on four main parks"
+  date: 2026-08-28
+  note: >-
+    Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
+    with the compile-only shape diff) run over func_80038FC8 (4/152),
+    func_80059594 (6/180), func_80038C4C (6/66) and func_8005FC6C: no variant
+    beat the baseline on any of them. Consistent with the cookbook's read that
+    these four are register-allocation rotations, not block-boundary problems —
+    the sweep is a cheap way to CONFIRM that rather than assume it.
