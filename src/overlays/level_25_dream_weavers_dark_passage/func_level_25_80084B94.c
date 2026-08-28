@@ -1,68 +1,23 @@
-/* 2026-08-27-1: 5/794 -> 4/794. B19 fell everywhere ELSE in this family (the
- * four flight overlays matched with a `do { ... } while (0);` around the
- * 0x44..0x46 STORE batch), but this arm cannot take that form: with a block
- * boundary before `func_800526A8(rec)` the call block becomes {move a0,rec;
- * jal} which is byte-identical to the head of the shared tail at 0x800857C8,
- * so jump.c CROSS-JUMPS it away and the function comes out one insn short
- * (404/794, every later branch target off by 4). Measured: barrier on the
- * stores, on the stores+`st->owner`, on `st->owner` alone, and stores-barrier
- * with `st->owner` hoisted -- all 404-407.
- * What DOES help here is the barrier on the LOAD batch instead (checked in
- * below): it puts the three `lb`s in their own block and buys one insn,
- * 5 -> 4. Nesting it deeper is a no-op.
- * Residue: `lb a1,70(s5)` should be `lb a0`, and `move a0,s3` still sits
- * between the first and second store instead of after the third. Next idea is
- * to stop the cross-jump rather than to stop the hoist -- this arm is the only
- * B19 site in the codebase whose call block is tail-shared.
- */
-/* PARKED 2026-07-31-4 at 99.4% (5/794 insns, length-exact).
+/* MATCHED 2026-08-28 — the last of the 36 spawn dispatchers, and the last
+ * standing §B19 site. The residue (4/794: the 0x7C arm's `move a0,rec` sat
+ * between the first and second byte store, and the third temp fell to a1) fell
+ * to a NEW placement of the A232 block splitter: a `do { } while (0);` around
+ * the FIRST TWO stores of the batch, so the block boundary lands BETWEEN store
+ * 2 and store 3 — not around the whole batch.
  *
- * Residue: the 0x7C arm's batched 0x44..0x46 signed-byte copy only -- the same
- * sched1 call-arg hoist that parks level_17 (see that .wip header and cookbook
- * B19).  The original keeps the third temp in a0 and puts `addu a0,rec,zero`
- * last; sched1 gives the arg copy a true dep on the call (cost 1) against the
- * stores' REG_DEP_ANTI (cost 0), hoists it above the store block, and the
- * third temp falls to a1.
+ * Why the whole-batch barrier failed here and this one works. Wrapping all
+ * three stores leaves the call block as `{move a0,rec; jal}`, which is
+ * byte-identical to the head of the shared tail at 0x800857C8, so jump.c
+ * cross-jumps it away and the function comes out one insn short (404/794).
+ * Splitting after store 2 leaves `{sb 0x46, sw st->owner, move a0,rec, j}`:
+ * store 3's value now arrives from the PREVIOUS block, so it is a priority-1
+ * straggler exactly like the arg copy, and rank_for_schedule's LUID-descending
+ * tiebreak emits the two in source order — the original's order. The block is
+ * three insns long, so there is no tail for jump.c to merge.
  *
- * 2026-08-06-2 — B19 PROVED UNREACHABLE, park reclassified to WALL. Read off
- * `cc1 … -dS` (`<in>.i.sched`), basic block 85 (this arm):
- *   ;; insn[ 887/890/893 (the three sb)]: priority = 2
- *   ;; insn[ 896 (sw st->owner)]:         priority = 2
- *   ;; insn[ 899 (move a0,rec)]:          priority = 1
- *   ;; ready list at T-3: 896 (2) 899 (1), now 896 899
- *   ;; ready list at T-4: 899 (1) 887 (2) 890 (2) 893 (2), now 893 890 887 899
- * `priority()` is the longest path from the BLOCK START, so an arg copy whose
- * operand is live-in scores 1 and a store fed by an in-block `lb` scores 2.
- * The original's order needs 899 to LOSE at T-3 (to the priority-2 `sw`) and
- * WIN at T-4 (over the priority-2 stores) — one static priority cannot be both
- * < 2 and >= 2. rank_for_schedule's class tiebreak (899 IS class 3 there, the
- * stores are class 2 via REG_DEP_OUTPUT on the `sw`) never runs because the
- * priorities differ. Probe: `func_800526A8(&rec->posX)` folds the copy into an
- * `addiu` off the same live-in reg and the priority stays 1. All five positions
- * of `st->owner = parent;` measured: 5 -> 6/6/6/8/10 insns, every one worse.
- * Do not aim the permuter at this arm.
- *
- * Tried here and rejected: routing the arm through `goto place;` with the
- * shared `func_800526A8(rec); return rec;` after the switch.  That DOES place
- * the arm correctly (the call leaves the block, so nothing hoists), but the
- * arg copy then lives in the shared block instead of in each predecessor --
- * one insn short overall, which destroys the length and the positional credit.
- *
- * Everything else in the function is exact, including the three new arms
- * decoded this session (0x38 / 0x9B aim-at-Spyro with the +-0x10 turn clamp,
- * 0x7C attitude copy).  The 0x9B facing guard needs `abs()` (the builtin gives
- * the bgez/negu pair; a ternary expands to a branch chain) and the delta mask
- * must be two statements -- `(unsigned char)(rec->unk46 - pdir)` in one
- * expression makes gcc drop the field's own 0xFF mask.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~31300 iterations, timed out
- * at the 15m budget): base score 90, and the randomizer produced exactly ONE
- * output dir, at score 90 -- a tie, not an improvement. Nothing beat the base
- * in the whole run. Together with Gamestate0C_Draw (zero dirs at base 140) this
- * is one of only two demonstrated walls of the session. At 99.4% with 5 insns
- * differing there is very little room left for random permutation to work in;
- * the remaining residue needs the targeted source forms described above rather
- * than more unattended budget. Still PARKED (see above).
+ * Generalises to: when a whole-batch A232 barrier over-merges into a shared
+ * tail, move the boundary INTO the batch. Leaving one store behind gives the
+ * following block a same-priority straggler to lose to, at zero insn cost.
  */
 /* func_level_25_80084B94 (0x80084B94, level_25_dream_weavers_dark_passage
  * overlay, 0xc68 bytes).
@@ -437,13 +392,13 @@ Actor *func_level_25_80084B94(int type, Actor *parent) {
 
     func_8003A720(rec);
     func_80017700(&rec->posX, &parent->posX);
-    do {
     dx = (signed char)parent->unk44;
     dy = (signed char)parent->unk45;
     dz = (signed char)parent->unk46;
+    do {
+      rec->unk44 = dx;
+      rec->unk45 = dy;
     } while (0);
-    rec->unk44 = dx;
-    rec->unk45 = dy;
     rec->unk46 = dz;
     st->owner = parent;
     func_800526A8(rec);
