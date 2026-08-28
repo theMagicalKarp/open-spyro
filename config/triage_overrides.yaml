@@ -2975,7 +2975,39 @@ barrier_sweep_negative_2026_08_28:
   note: >-
     Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
     with the compile-only shape diff) run over func_80038FC8 (4/152),
-    func_80059594 (6/180), func_80038C4C (6/66) and func_8005FC6C: no variant
-    beat the baseline on any of them. Consistent with the cookbook's read that
-    these four are register-allocation rotations, not block-boundary problems —
-    the sweep is a cheap way to CONFIRM that rather than assume it.
+    func_80059594 (6/180), func_80038C4C (6/66), func_8005FC6C (38 insns),
+    HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
+    func_8003A420 (9/192), func_level_27_80086754's 0x1D arm and
+    func_level_5_8007B68C (735 placements): no variant beat the baseline on any
+    of them once confirmed against the LINKED diff. Consistent with the
+    cookbook's read that these are register-allocation rotations, not
+    block-boundary problems — the sweep is a cheap way to CONFIRM that rather
+    than assume it. One trap found: func_8003A420 scored 9 -> 8 on the masked
+    shape diff from a barrier around `ret = 0;` but 9 -> 14 on the LINKED diff
+    (difflib collapses a displacement the positional diff charges in full), so
+    every sweep hit has to be re-scored linked before it is believed.
+    Also re-tested and byte-identical: an A200 cse-barrier between the copy and
+    its use in func_8005FC6C (six spellings) — the `head = ot` copy is deleted
+    by copy propagation before cse builds an equivalence, so no ebb barrier
+    reaches it; the wip's A187 diagnosis stands.
+
+func_level_0_8007B020_2026_08_28:
+  verdict: parked
+  class: "R1 cross-jump of the two identical then-blocks (7 insns) holds the running offset at -7 for 1,840 insns"
+  date: 2026-08-28
+  note: >-
+    8,096 B x10 = 80,960 B. Re-measured with the anchored shape diff: 2024 orig
+    vs 2008 built insns, MISMATCH 230 over 114 regions — the 2026-08-19-3 figure
+    is confirmed, this is not a tie sweep. The offset profile names the work
+    exactly: of the 44 length-changing regions, ONE (orig[164:171], the arm-1
+    `then` computation `mult/lui/lw/mflo/sra/j/addu`) is a clean -7 and pins the
+    running offset negative for the remaining 1,840 insns, which is why the park
+    scores only 171/2020 words. NEW negative this session: restructuring the
+    arms so the two `then` blocks jump to two DISTINCT source labels placed at
+    the same address (`goto joinA` / `goto joinB` with `joinA: joinB:` before the
+    shared tail, plus `goto afterk` out of arm 2) is BYTE-IDENTICAL to the
+    baseline — gcc's jump optimiser tensions the labels back together, so the
+    "different label rtx" escape the 2026-08-24 analysis identified is not
+    reachable from source. Duplicating the tail per branch is also worse
+    (arm1 234/2022, arm3 234/2022, both 257/2023): it stops the merge but keeps
+    the tail, turning -7 into +7.
