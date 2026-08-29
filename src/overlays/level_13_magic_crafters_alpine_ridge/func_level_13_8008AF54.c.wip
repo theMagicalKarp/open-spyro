@@ -1,51 +1,66 @@
-/* PARKED 2026-08-19-1 at 1693/1696 insns, MISMATCH 47 over 29 regions with
- * registers anchored (compile-only shape diff; it does not link, 3 insns short).
- * Fully decoded -- arms 0x4/0x5 are lifted verbatim from the MATCHED
- * func_level_15_80087B40, 0x8/0x16 from level_12, 0x10/0x11 from level_18.
+/* PARKED 2026-08-29-1 at 1693/1697 insns, 24 mismatched instructions over 23
+ * regions with immediates AND registers live -- and 18 of those 24 are the
+ * unlinked object's relocation placeholders (`lw v0,0(at)` for the original's
+ * `%lo`).  **The real residue is SIX instructions**, both classes shared with
+ * `func_level_14_80089454.c.wip`.  Was 63 at the start of that session.
  *
- * TWO THINGS LEFT, both named:
- *  1. Four missing `li a3,3` rematerialisations (that is the whole length
- *     deficit).  The original materialises the constant 3 SEVEN times -- at the
- *     top of arms 0x4 and 0x8 and again after every call in their colour-swap
- *     tails -- which is a pseudo holding 3 in a CALLER-SAVED register being
- *     restored by rematerialisation.
- *     **RECLASSIFIED 2026-08-29 -- same class as
- *     `func_level_14_80089454.c.wip` item 1 (read its long note); it is a
- *     DECODE gap, not a rematerialisation.** In level_14 both length-deficit
- *     sites are `li a3,3` as the FIRST insn of a switch-arm block whose own
- *     `jal` and a0/a1 setup follow immediately: argument shape. gcc cannot
- *     emit a dead `li` (the reload/update_equiv_regs proof already in these
- *     notes establishes exactly that), so these are extra call arguments to
- *     2-arg hand-written leaves. Blocker (the missing `$a2` setup) and the
- *     search plan are in the level_14 note. 14,048 B across the two.
- *     Ours constant-propagates `burst` into each
- *     use (3 sites).  Making `burst` multi-set (a second `burst = 3;` at the top
- *     of each arm) removes reg_equiv_constant, forces a callee-saved register
- *     and re-colours the function: 120/85.  Dropping the local entirely is worse
- *     still (the function comes out 5 short).
- *  2. rec lands in $s3 and POS in $s4; the original has rec in $s4, POS in $s3.
- *     A global.c allocno_compare tie between the biv and its first giv.
+ * THE TWO LEVERS THAT MOVED IT (63 -> 47 -> 24), both allocation dials:
+ *  A. The ten expire sites whose `if` arm is followed by an `else` are written
+ *     `goto expire;` against ONE shared `expire: func_80053608(rec);` block at
+ *     the bottom of the loop body.  The emitted code is unchanged -- jump.c
+ *     cross-jumps all 26 inline call sites down to the single
+ *     `jal func_80053608` anyway -- but each inline site is one more
+ *     `(set (reg a0) (reg rec))` in the pre-reload RTL, so `rec`'s
+ *     `reg_n_refs` falls and global.c allocno_compare stops ranking the biv
+ *     above its own rec+4 giv.  rec goes to $s4 and POS to $s3, as the original
+ *     has them.  See the level_14 header for the full arithmetic and for the
+ *     window at both ends (too few conversions does nothing; all of them cost
+ *     rec its register outright).
+ *  B. `int step4;` is DECLARED BEFORE `int *dir;`.  Their priorities are an
+ *     exact INTEGER tie -- both 23 refs, live lengths 1521 vs 1522, and
+ *     allocno_compare truncates `floor_log2(R)*R/L * 10000 * size` to an int,
+ *     so both score 604 -- and the tie-break is `v1 - v2` on the ALLOCNO
+ *     number, i.e. the lower pseudo wins.  Pseudos are numbered in DECLARATION
+ *     order, so moving `step4` above `dir` hands it $s7 and pushes `dir` to
+ *     $s8, which is the original's pairing: 47 -> 24.  (The old note claimed
+ *     the dial was the ASSIGNMENT order -- `dir = dv;` before
+ *     `step4 = step * 4;`.  It is not: swapping the two statements changes
+ *     which of the two preheader insns is emitted first but not the register
+ *     map, measured at 47/42 either way.  The assignment order that matches is
+ *     `step4` first.)
  *
- * FOUR THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
- *  - `dir = dv;` must be written BEFORE `step4 = step * 4;`.  The two are a
- *    priority tie decided by ONE instruction of live length (both cross every
- *    call, both ~23 refs), and whichever is defined LATER has the shorter range
- *    and takes $s7.  Ordering dir first put step4 in $s7 and dir in $s8($fp) as
- *    the original has them: 68 -> 47.  The two preheader insns are still
- *    emitted in the opposite order, which is the +1/-1 pair at orig[17].
+ * THE SIX REAL INSTRUCTIONS LEFT:
+ *  1. FOUR missing `li a3,3` (orig[136]/[360]/[464]/[530]) -- the whole -4
+ *     length deficit, and the same class as level_14's item 1.  **The
+ *     2026-08-29 "these are call-site 4th ARGUMENTS" reading (cookbook B25) is
+ *     REFUTED** -- see the level_14 header for the two measurements (only 2 of
+ *     6 `func_80017C24` sites and 2 of 5 `func_80017BFC` sites carry it, so it
+ *     is not a prototype; and one site is a jump-table arm head with no
+ *     possible `$a2` producer, while the measured 4-argument spelling costs
+ *     two insns, not one).  Note the original emits EIGHT `li a3,3` and we emit
+ *     FOUR: the extra four sit at block heads on the path to a real use, not at
+ *     the uses.
+ *  2. `func_8001778C(v, p, D_80076DF8)` comes out `move a0,s1 / move a1,s0`
+ *     where the original re-materialises `addiu a0,sp,96 / addiu a1,sp,80`.
+ *     This is cse holding `bolt == &v` / `home == &p` and preferring the
+ *     register (COST 1) over `(plus sp K)`; it is the B-i fold wanted in
+ *     REVERSE.  An A200b barrier in front of the call does not break it and
+ *     costs 2 insns elsewhere.
+ *
+ * OTHER THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
  *  - Arm 0x8 addresses its two vectors as: ARRAY NAME at the first use, an
  *    empty `do { } while (0);` A200b barrier, then multi-set `home`/`bolt`
  *    carriers for the middle run, and array names again at the last call.  The
- *    barrier is worth 21 mismatches (89 -> 68) and the carriers are what stop
- *    loop.c hoisting both addresses into the preheader.
+ *    barrier is worth 21 mismatches and the carriers are what stop loop.c
+ *    hoisting both addresses into the preheader.
  *  - PROVEN: loop.c hoists a stack vector's address into the preheader (and
  *    spills it) as soon as the ARRAY NAME is used 3+ times in the loop; at <=2
  *    uses it does not.  Block-scoping the arrays inside `case 0x8:` changes
- *    nothing (93/54, identical to function scope), so it is not a scope effect.
- *    A MULTI-SET pointer carrier defeats the hoist; a single-set one does not.
+ *    nothing, so it is not a scope effect.  A MULTI-SET pointer carrier defeats
+ *    the hoist; a single-set one does not.
  *  - The shared constant 3 must be a NAMED local at all (A100): two arms
  *    compare and store rec[0x1] against it, and as a bare literal the function
- *    comes out 5 insns short (134/70 -> 89/50 with the local).
+ *    comes out 5 insns short.
  */
 /* func_level_13_8008AF54 (0x8008af54, level_13_magic_crafters_alpine_ridge
  * overlay, 0x1a84 bytes).
@@ -126,18 +141,18 @@ void func_level_13_8008AF54(int step) {
   int p[3];
   int v[3];
   int w[3];
+  int step4;
   int *dir;
   int burst;
   int c;
   int d;
-  int step4;
 
   if (rec[1] == 0xFF) {
     return;
   }
 
-  dir = dv;
   step4 = step * 4;
+  dir = dv;
   burst = 3;
 
   do {
@@ -326,7 +341,7 @@ void func_level_13_8008AF54(int step) {
       /* The short spawn drift: the record walks along its own jittered
        * velocity, plus a quarter of the record velocity vector. */
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         func_80017C24(qa, POS);
         rq = func_8006272C();
@@ -361,7 +376,7 @@ void func_level_13_8008AF54(int step) {
       do {
       } while (0);
       if (rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         bolt = v;
         func_80017700(bolt, (int *)(D_80075828 + rec[0x1E] * 0x58 + 0xC));
@@ -372,7 +387,7 @@ void func_level_13_8008AF54(int step) {
         func_8001778C(bolt, bolt, home);
         len = func_800171FC(bolt, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
-          func_80053608(rec);
+          goto expire;
         } else {
           func_800175B8(bolt, len, 0x80);
           func_80017758(home, home, bolt);
@@ -427,7 +442,7 @@ void func_level_13_8008AF54(int step) {
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
           D_80078BB8[0] <= 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         func_80017700(w, D_80078BB8 - 0x58);
         w[0] += func_80016CB0(HS(0x18)) >> 4;
@@ -546,7 +561,7 @@ void func_level_13_8008AF54(int step) {
       rec[0xB] += rec[0x1E];
       d = rec[0xE] - D_800756CC;
       if (d <= 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         rec[0xC] = d >> 1;
         rec[0xD] = d >> 1;
@@ -686,7 +701,7 @@ void func_level_13_8008AF54(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         rec[0x10] -= 3;
         if (rec[0x10] < 0x80) {
@@ -722,7 +737,7 @@ void func_level_13_8008AF54(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
@@ -764,7 +779,7 @@ void func_level_13_8008AF54(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
@@ -839,7 +854,7 @@ void func_level_13_8008AF54(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
@@ -885,7 +900,7 @@ void func_level_13_8008AF54(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         rec[0x10] -= 3;
         rec[0x11] -= 4;
@@ -923,7 +938,12 @@ void func_level_13_8008AF54(int step) {
     default:
       break;
     }
+    goto next;
 
+  expire:
+    func_80053608(rec);
+
+  next:
     rec += 0x20;
   } while (rec[1] != 0xFF);
 }
