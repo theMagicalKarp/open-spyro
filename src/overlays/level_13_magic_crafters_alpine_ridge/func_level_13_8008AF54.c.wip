@@ -39,7 +39,13 @@
  *     possible `$a2` producer, while the measured 4-argument spelling costs
  *     two insns, not one).  Note the original emits EIGHT `li a3,3` and we emit
  *     FOUR: the extra four sit at block heads on the path to a real use, not at
- *     the uses.
+ *     the uses.  SWEPT 2026-08-29-1 over ten spellings of `burst`, all of which
+ *     leave the count at FOUR and the residue at 24/-4: an initialiser instead
+ *     of an assignment (47), `register`, `short`, `unsigned char`, declared
+ *     first, declared last, and the assignment moved below the early return
+ *     (all byte-identical to the baseline), `const int burst = 3` (61, -6, and
+ *     it loses all four `li`), `volatile` (164, +1).  So the residue is not a
+ *     property of how the constant local is declared.
  *  2. `func_8001778C(v, p, D_80076DF8)` comes out `move a0,s1 / move a1,s0`
  *     where the original re-materialises `addiu a0,sp,96 / addiu a1,sp,80`.
  *     This is cse holding `bolt == &v` / `home == &p` and preferring the
