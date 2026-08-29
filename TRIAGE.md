@@ -26,19 +26,18 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 12 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 13 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 14 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x800557cc` | func_800557CC | main | 400 | 118 | segment 37.6% matched; matched neighbor in segment; previously attempted (2026-07-12: B13 lh+sra expected; multi-idiom, no ghidra seed) |
+| 15 | `0x8007cfb4` | func_level_11_8007CFB4 | ovl/level_11_peace_keepers_night_flight | 18952 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(22 viable candidates total; the full ranking is regenerable.)
+(21 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | reload gives the index v0, which pins it against the *0x58 chain at sched2 |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6040 | R1 sched2 priority (unreachable) + 3 small ties |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R1 sched2 priority (unreachable) + 3 small ties |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6 |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
-| `0x80084b94` | func_level_25_80084B94 | ovl/level_25_dream_weavers_dark_passage | 3176 | 3144 |  |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | F2 nudge load hoist + F1 death-replay v0/v1 + F7 loop.c hoist choice in actor pass 2 |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
@@ -65,6 +64,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 |  |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
+| `0x800557cc` | func_800557CC | main | 400 | 288 | B13 (A233 not free here) + a 5-insn st->place schedule |
 | `0x80038c4c` | func_80038C4C | main | 264 | 240 | F1 register rotation (a1 vs v1) around a negu/store pair |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | decode incomplete |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | 232 | B11 lagged-mult + B-i fold |

@@ -14,9 +14,9 @@
  * (5/11/17/23/29 -- x5 payoff: 32,200 bytes; fingerprint md5 confirmed
  * 2026-08-23-1).
  *
- * STATE 2026-08-27-1: length-exact (1610/1610), LINKS, and the linked diff is
- * **10 differing insns over 2 regions (99.4%)**, down from 35 over 4 (97.8%),
- * 51, then 109 in the three sessions before. The FRAME is exact (`vars= 96,
+ * STATE 2026-08-28: length-exact (1610/1610), LINKS, and the linked diff is
+ * **8 differing insns over 2 regions (99.5%)**, down from 10, 35, 51, then 109
+ * in the four sessions before. The FRAME is exact (`vars= 96,
  * regs= 7/0`). R1 (21 insns), the h/strip delay-slot pair, the `img` la and
  * R3' all fell to ONE new lever this session -- LEVER 7, the do/while(0)
  * BLOCK SPLIT. What is left is R5 (5) and Rq (5), and both now have a named
@@ -186,68 +186,89 @@
  *     Same finding as A195's wrappers -- the notes break the `goto quad` loop.
  *   - Applied here at exactly two sites (source lines ~349 and ~358).
  *
- * ---- Residue remaining (10 insns over 2 regions, 2026-08-27-1) ------------
+ * ---- Residue remaining (8 insns over 2 regions, 2026-08-28) ---------------
+ * The masked compile-only shape diff (see above) reads this state as
+ * **4 mismatches over 4 regions, final offset 0** -- 2 for R5, 2 for Rd.
+ *
  *   R5  126/131 `ori a1,a1,0x3e00` (the second half of the 0xFFFE3E00
- *               constant) sinks 4 insns, into the `lw v0,D_800785F0` load
- *               delay slot, in the block after `func_8005FDD8(env)`.
- *               **SOLVED in isolation, at a price -- read this before
- *               re-deriving.** LEVER 7 reaches it: hoist BOTH constants into
- *               their own barrier block, which forces the four constant insns
- *               into the four slots the original uses:
- *                   int off, bias;
- *                   do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
- *                   ... D_80075780 = D_800785E8 + off;
- *                   ... tv = D_800785F0[0] + bias;
- *               `ori a1` then lands byte-exact. The cost is that the two loads
- *               swap registers: the original puts `D_800785E8` in v1 and
- *               `D_800785F0[0]`/`tv` in v0, ours the other way, which repaints
- *               8 insns (b888..b8c4). Net 10 -> 13, so it is NOT checked in.
- *               The swap is a local-alloc qty_compare tie between two
- *               quantities of equal ref count (Q1 = {e8, e8+off} 5 refs,
- *               Q2 = {f0, tv} 5 refs) decided by live length, and it is NOT
- *               reachable by statement order: a full permutation sweep of the
- *               five statements in that block (60 legal orders, all built)
- *               bottoms out at 13 and never flips the pair. Also probed and
- *               rejected: `bias` at 3 positions without the barrier (13),
- *               a barrier per constant (16), `D_800756FC` re-read instead of
- *               `tv` (15), an `e8` int carrier (15), lengthening Q1 / short-
- *               ening Q2 (16-20). The A195 REF-COUNT dial on Q2 was tried and
- *               is INERT here: one and two nested `do { } while (0)` wrappers
- *               on `D_800756FC = tv;`, and one on `D_800757B0 = D_800785E8;`,
- *               all give 13 -- the wrappers do not change qty_sugg_compare's
- *               inputs for a quantity whose refs are already in one block.
- *               Nothing on the ORDER or REF side is left; what has not been
- *               tried is making one of the two loads arrive from a different
- *               BASIC BLOCK (the lever that retired B13 -- see
- *               func_level_27_800881D8), which is the only remaining way to
- *               change a live range without changing the insn count.
- *   Rq  193-198 quad tail: ours emits `sb v0,36; li v0,14368; addiu v1,-33;
- *               sh v0,14; sb v1,37` where the orig has `addiu v1,-33;
- *               sb v0,36; li v0,14368; sb v1,37; sh v0,14`.
- *               **Root cause is now settled: the original's SOURCE ORDER for
- *               the three stores is 0x24, 0x25, 0xE -- not 0x24, 0xE, 0x25.**
- *               Proof: our `sh 0xE` is non-volatile and sits between two
- *               volatile stores, and a volatile MEM flushes sched's pending
- *               lists, so the non-volatile store can never be scheduled past
- *               `sb 0x25`; the emitted store order is therefore exactly the
- *               source order, in both spellings. Writing the source in the
- *               original's order ("clut-last") DOES put `sh v0,14(s0)` at
- *               b9a0 byte-exact -- and re-tiles v0/v1/a1 across the preceding
- *               24 insns (b934..b99c), for a net 10 -> 30.
- *               That re-tiling is what the whole per-access `volatile` map
- *               (LEVER 1) is currently tuned against. Searched and exhausted
- *               this session: single-removal sweep over all 30 `volatile`s
- *               (best 24), greedy multi-round removal (stops at 24), greedy
- *               ADD-or-REMOVE toggle over every access in the loop (stops at
- *               24), and `clut` hoisted to its own `li` statement (30).
- *               **Read this as the standing hypothesis: the permuter-era
- *               `volatile` scaffolding is the thing that is wrong.** The real
- *               source is almost certainly a plain POLY_FT4 struct filled
- *               field by field with no `volatile` anywhere; the scaffolding
- *               reproduces the ORDER by brute force and then cannot express
- *               the original's order here. The next serious attempt on this
- *               function should be a clean rewrite of the quad loop against a
- *               real struct, not another volatile permutation.
+ *               constant) sinks 4 insns, below the two `lw`s, in the block
+ *               after `func_8005FDD8(env)`.
+ *               **PROVED UNREACHABLE WITHIN THE BLOCK 2026-08-28 -- do not
+ *               re-derive; the mechanism is arithmetic, not a tie.** Read off
+ *               `cc1 ... -dR` (`<in>.i.sched2`), basic block 8. The block is
+ *               15 insns; every insn but the four `sw`/`addu` chains has
+ *               priority 1, and the schedule agrees with the original at
+ *               every T except T-10/T-9/T-8. What happens there:
+ *                 T-6 = 345 (`sw D_800757B0`)  -> store
+ *                 T-7 = 340 (`sw D_800758B0`)  -> store; the T-6 store had
+ *                       already blocked the load 359 for 1 cycle
+ *                 T-8 = both loads (343, 359) blocked AGAIN by the T-7 store
+ *                       (`;; blocking insn 359 for 1 cycles`), so the only
+ *                       survivors are the ALU stragglers {3829, 3827, 332}
+ *                       and `ori a1` (3829) takes the slot on LUID.
+ *               Two consecutive stores block the loads for two consecutive
+ *               cycles, and any dep-free ALU insn in the block will fall into
+ *               the hole. The original CANNOT have had that hole: its T-8 is a
+ *               load, which is only legal if the ready list held nothing else
+ *               -- i.e. **the original's four constant insns were in an
+ *               EARLIER BASIC BLOCK**, leaving a 9-insn load/store block that
+ *               stalls instead of filling.
+ *               Exhausted this session, all with the compile-only shape diff:
+ *                 - **all 240 legal statement orders** of the six statements
+ *                   (`D_800758B0=0`, `D_800757B0=e8`, `D_80075780=e8+K`,
+ *                   `tv=f0+K2`, `D_800756FC=tv`, `D_80075710=tv`): every one
+ *                   scores 6, the baseline. Statement order is INERT here --
+ *                   sched2 places by priority and by LUID, and the LUIDs come
+ *                   from sched1's output, not from the source.
+ *                 - **the same 240 orders with the A232 barrier** (`int off,
+ *                   bias; do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);`
+ *                   after the call): the barrier DOES put `ori a1` byte-exact
+ *                   at 126, but the 9-insn block it creates re-tiles -- best
+ *                   12 vs 6, and the best members still carry the v0/v1
+ *                   allocation swap (Q1={e8,e8+off} and Q2={f0,tv} both have
+ *                   5 refs, so qty_compare decides on live length and the
+ *                   barrier changes it). Everything the 2026-08-27-1 note
+ *                   listed (bias at 3 positions, a barrier per constant, an
+ *                   `e8` carrier, A195 wrappers) is still true.
+ *               So R5 costs 1 insn and the only known escape costs 6+. It is
+ *               a WALL for this source shape; the one thing never tried is a
+ *               form in which the two constants reach the block from a real
+ *               control-flow edge that already exists (the `if (cur == env)`
+ *               above it) without moving the stores.
+ *   Rd  196/199 tpage-vs-clut across the `jal func_800168DC` delay slot.
+ *               NEW 2026-08-28, and it REPLACES the old Rq (the 0x24/0x25/0xE
+ *               store-order knot), which is now CLOSED. Ours emits
+ *               `sh a3,22; sb v1,37; jal; sh v0,14(delay)`; the original has
+ *               `sb v1,37; sh v0,14; jal; sh a3,22(delay)`. Everything from
+ *               192 to 195 (`addiu v0,128; addiu v1,-33; sb v0,36;
+ *               li v0,14368`) is now byte-exact, which it was not before.
+ *               **The lever that closed Rq: put the TPAGE store between the
+ *               0x24 and 0x25 stores.** Source order 0x24, 0x16, 0x25, 0xE
+ *               (checked in) reproduces the original's `addiu v1,v1,-33`
+ *               hoist and its `li v0,14368` slot, where the old order
+ *               0x24, 0xE, 0x25, 0x16 sank both. Worth 10 -> 8 linked.
+ *               Measured exhaustively this session: **all 24 orders x all 16
+ *               volatility masks of the four tail stores (384 builds)**. Only
+ *               two states are length-exact at the minimum: the checked-in
+ *               one and the old baseline, both 6 masked; the true original
+ *               order (0x24, 0x25, 0xE, 0x16) scores 18 because the clut
+ *               store sitting between 0x25 and the tpage store re-tiles
+ *               insns 175-197, and a 4-round greedy volatile toggle over all
+ *               35 cast-derefs in the loop only takes that to 11. A greedy
+ *               toggle from the checked-in state does not move it at all --
+ *               6 is a local minimum, so the per-access `volatile` map is
+ *               EXHAUSTED as a dial and the standing "rewrite the loop
+ *               against a real POLY_FT4 struct" hypothesis is the only idea
+ *               left. Note that a plain struct cannot be it: gcc 2.7.2's cse
+ *               disambiguates two constant offsets off one base pseudo, so
+ *               the original's three reloads of `p->x0` require volatile.
+ *               Why the delay slot cannot be fixed from here: reorg fills the
+ *               `jal`'s slot with the CLOSEST eligible preceding insn, so the
+ *               tpage store only lands there if it is the last statement --
+ *               which is the 18-scoring order. Making the clut store volatile
+ *               makes it ineligible and reorg then emits a `nop` (1611 insns,
+ *               will not link) rather than reaching past it.
+ *   The frame is CLOSED (was +16): `.frame $sp,144 # vars= 96, regs= 7/0`,
  *   The frame is CLOSED (was +16): `.frame $sp,144 # vars= 96, regs= 7/0`,
  *   matching the original's `addiu sp,-144`. See LEVER 6 above.
  *   CLOSED this session by LEVER 7 (all four were "unreachable" before):
@@ -521,9 +542,9 @@ void func_level_5_8007B68C(void)
     *((volatile unsigned char *) (p + 0x1D)) = d - 0x21;
     d = *((volatile unsigned char *) (p + 0xD));
     *((volatile unsigned char *) (p + 0x24)) = a + 0x80U;
-    *((short *) (p + 0xE)) = 0x3820;
-    *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
     *((short *) (p + 0x16)) = tpage;
+    *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
+    *((short *) (p + 0xE)) = 0x3820;
     func_800168DC(p);
     next = p + 0x28;
     D_800757B0 = next;
