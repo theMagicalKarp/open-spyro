@@ -231,10 +231,20 @@
  *                   listed (bias at 3 positions, a barrier per constant, an
  *                   `e8` carrier, A195 wrappers) is still true.
  *               So R5 costs 1 insn and the only known escape costs 6+. It is
- *               a WALL for this source shape; the one thing never tried is a
- *               form in which the two constants reach the block from a real
- *               control-flow edge that already exists (the `if (cur == env)`
- *               above it) without moving the stores.
+ *               a WALL for this source shape.
+ *               **The last untried idea is now RULED OUT (2026-08-29), by
+ *               construction rather than by measurement -- do not spend a build
+ *               on it.** That idea was "let the two constants reach the block
+ *               from the real control-flow edge that already exists
+ *               (`if (cur == env)`) without moving the stores". It cannot
+ *               work: `jal func_8005FDD8(env)` sits BETWEEN that `if` and the
+ *               block, and the original holds both constants in `$a0`/`$a1`
+ *               (0x8007B878..0x8007B884) -- caller-saved. A value materialised
+ *               above the call cannot be in a0/a1 after it, so the original's
+ *               four constant insns are unambiguously INSIDE the post-call
+ *               block, and the "earlier basic block" hypothesis above is
+ *               wrong. R5 is a straight sched2 arithmetic wall: 1 insn, no
+ *               escape under 6.
  *   Rd  196/199 tpage-vs-clut across the `jal func_800168DC` delay slot.
  *               NEW 2026-08-28, and it REPLACES the old Rq (the 0x24/0x25/0xE
  *               store-order knot), which is now CLOSED. Ours emits

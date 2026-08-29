@@ -3011,3 +3011,74 @@ func_level_0_8007B020_2026_08_28:
     reachable from source. Duplicating the tail per branch is also worse
     (arm1 234/2022, arm3 234/2022, both 257/2023): it stops the merge but keeps
     the tail, turning -7 into +7.
+
+func_level_0_8007B020_2026_08_29:
+  verdict: parked
+  class: "R1 is content-based cross-jumping, not label identity — reframed as an allocation (R3) problem"
+  date: 2026-08-29
+  note: >-
+    8,096 B x10 = 80,960 B. Root-caused R1 off the gcc 2.7.2 source rather than
+    re-measuring it. cross_jump runs exactly once (toplev.c:3142, after reload),
+    so every label do_cross_jump creates is new; jump.c:1985 gates the
+    jump_chain pairing of two jumps to the SAME label on
+    `INSN_UID (JUMP_LABEL (insn)) < max_uid`, but get_label_before REUSES the
+    inner if/else join label from expand, which is old — that is why the pairing
+    still fires here, and why the 2026-08-28 "distinct source labels" attempt
+    was byte-identical (tensioning puts both jumps back on one old label).
+    find_cross_jump merges as soon as `minimum` (2 for that path, 1 for the
+    label-predecessor path) reaches 0, so differentiating any insn more than two
+    back from the jump cannot stop a merge — which also rules out the untried
+    equal-address alias idea (`(&D_80077814)[1]` for D_80077818: byte-identical
+    reloc, but the mismatch lands 4 insns back and a 3-insn tail still merges).
+    POSITIVE result: a block-scoped `int k;` in the `t >= 0x48` branch makes
+    arm3's accumulator a separate pseudo, it wins a0 instead of v0, the two
+    then-blocks stop being register-identical and the merge DISAPPEARS —
+    orig[162..170] come out inline and correct, running offset -7 -> 0 there.
+    It costs the ELSE merge (which needs the arms register-identical), so net
+    230/-12 -> 237/+5, 102 -> 118 byte-identical words; symmetric splits are
+    byte-identical to it. So the objective is now exact and narrow: the two THEN
+    blocks must differ while the two ELSE blocks stay register-identical, which
+    means arm3's k must reach v0 while staying a distinct pseudo. That is R3
+    (the baseline already has arm3's k in a0 and sn in s1 against the original's
+    v0/s0), so R3 has to be fixed before R1 — they are one problem, not two.
+
+func_level_5_8007B68C_2026_08_29:
+  verdict: parked
+  class: "R5 sched2 store/load hazard hole (1 insn) — last untried escape ruled out by construction"
+  date: 2026-08-29
+  note: >-
+    32,200 B x5, unchanged at 8/1610 (99.5%). The park's only remaining R5 idea
+    — let the two constants reach the block from the existing `if (cur == env)`
+    edge — cannot work: `jal func_8005FDD8(env)` sits between that `if` and the
+    block, and the original holds both constants in a0/a1 (0x8007B878..B884),
+    which are caller-saved, so the original's four constant insns are inside the
+    post-call block and the "earlier basic block" hypothesis in the wip header
+    is wrong. R5 is a 1-insn sched2 wall with no escape under 6 insns. Rd
+    (tpage/clut across the jal delay slot) re-measured: writing the true
+    original store order 0x24/0x25/0xE/0x16 gives the right delay slot but
+    re-tiles insns 175-197 into a whole-loop v0/v1/a1 rotation, 30/1610 against
+    the checked-in 8 — confirming the wip's 384-build order x volatility sweep.
+    Both residues are walls for this source shape; the function stays parked at
+    its best-known state.
+
+func_level_14_80089454_2026_08_29:
+  verdict: parked
+  class: "the four `li a3,3` are call-site 4th ARGUMENTS, not dead constants — decode gap, not a reload wall"
+  date: 2026-08-29
+  note: >-
+    7,260 B here + 6,788 B in func_level_13_8008AF54 = 14,048 B, previously
+    recorded as proved-unreachable. The park's own gcc-source proof (gcc can
+    never emit a dead `li`) refutes its own "DEAD" reading. Compile-only shape
+    diff: MISMATCH 48 over 31 regions, offset -4; the two length-deficit sites
+    are orig[143] and orig[466] and BOTH read
+    `li a3,3 ; addiu a0,sp,0x10 ; jal func_80017C24 ; move a1,s4(delay)` —
+    a caller-saved register given a constant as the first insn of a switch-arm
+    block with that block's own call setup right after, which is argument shape
+    and nothing else. func_80017C24 is a hand-written 2-arg leaf that ignores
+    a2/a3, so the extra argument is invisible at run time (ordinary
+    prototype-mismatch C); this function itself takes four parameters
+    (`sw $a3,0xC0($sp)` in the prologue). Blocker: a 4-arg call also emits an
+    `$a2` setup the original lacks, so the third argument must be a value whose
+    pseudo already sits in a2 at the arm head — a2 is untouched between the `jr`
+    dispatch at 0x800894DC and the arm head, so read what the original leaves in
+    a2 across the dispatch and pass that. Bounded decode search, not a wall.

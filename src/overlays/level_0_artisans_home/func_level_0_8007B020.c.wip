@@ -48,8 +48,51 @@
  *    NB the old wip did not even LINK -- it referenced an undefined D_80076E1E.
  *
  * What is left, biggest first:
- *  R1  @8007B2B0, 7 insns - the cross-jump asymmetry described below (the only
- *      structural residue; untried idea: duplicate the shared tail per branch).
+ *  R1  @8007B2B0, 7 insns - the cross-jump asymmetry. **Root-caused off the
+ *      gcc 2.7.2 source 2026-08-29, and the old "no source form addresses this"
+ *      verdict is WRONG: the merge is CONTENT-based and a source dial removes
+ *      it. Do not re-derive any of this.**
+ *      MECHANISM. `cross_jump` runs exactly ONCE (toplev.c:3142,
+ *      `jump_optimize (insns, 1, 1, 0)`, after reload -- the other four calls
+ *      pass cross_jump=0), so every label `do_cross_jump` creates is NEW.
+ *      Two merge paths, and only one of them is uid-gated:
+ *        (a) jump.c:1985 `if (INSN_UID (JUMP_LABEL (insn)) < max_uid)` guards
+ *            the jump_chain walk that pairs TWO JUMPS TO THE SAME LABEL
+ *            (`find_cross_jump (insn, target, 2, ...)`), so a label born in
+ *            this pass can never pair two jumps; but
+ *            `get_label_before` REUSES a pre-existing label when one already
+ *            sits there, and the inner if/else join label from expand does sit
+ *            there -- which is why our build still gets path (a).
+ *        (b) jump.c:1978 `find_cross_jump (insn, JUMP_LABEL (insn), 1, ...)`
+ *            compares the block with the insns BEFORE the target label. No uid
+ *            gate. This is the path that legitimately merges the two ELSE
+ *            blocks (arm1's `j` -> the `subu` run that falls into the join),
+ *            and it is the merge the ORIGINAL has.
+ *      `find_cross_jump` scans backward, decrementing `minimum` per matching
+ *      insn (2 for path (a), 1 for path (b)) and merging when it reaches 0, so
+ *      differentiating an insn 3+ back from the jump does NOT stop a merge --
+ *      only the last one or two insns count, and those are `addu v0,v0,v1` /
+ *      `sra v1,t1,0xd`, which cannot be respelled.
+ *      MEASURED DIAL (2026-08-29, compile-only shape diff): a block-scoped
+ *      `int k;` inside the `t >= 0x48` branch makes arm3's accumulator a
+ *      SEPARATE pseudo, it wins `a0` instead of `v0`, the two then-blocks stop
+ *      being register-identical and **the merge disappears -- orig[162..170]
+ *      come out inline and correct** (running offset at that point goes
+ *      -7 -> 0). Cost: the ELSE blocks stop being identical too, so path (b)
+ *      dies with it (+10 insns) -- net 230/-12 -> 237/+5, byte-identical words
+ *      102 -> 118. Symmetric splits (both branches) are byte-identical to that.
+ *      SO THE OBJECTIVE IS EXACT: make the two THEN blocks differ while the two
+ *      ELSE blocks stay register-identical. Since with one shared `k` both
+ *      pairs are identical, that needs arm3's `k` to reach `v0` (the original's
+ *      register) while still being a distinct pseudo -- i.e. this is now an
+ *      ALLOCATION problem (R3), not a structural one, and R3 must be fixed
+ *      first. Note the baseline ALREADY has arm3's k in `a0` (0x454
+ *      `addu a0,v0,v1`) against the original's `v0`, and `sn` in s1 against
+ *      s0, so the arm's whole quantity map is off before R1 is even reached.
+ *      RULED OUT and not worth re-testing: differentiating the `lw D_80077818`
+ *      by an equal-address alias symbol (`(&D_80077814)[1]`, byte-identical
+ *      reloc) -- the mismatch lands 4 insns back, `minimum` is already 0 by
+ *      then and a 3-insn tail still merges.
  *  R2  ~20 sites x 1 insn - held-base vs absolute addressing on D_800777EC /
  *      D_800777F0 / D_800777F4 / D_80077800 / D_80077838. NOT a per-symbol
  *      declaration choice: the original uses BOTH forms for every one of them

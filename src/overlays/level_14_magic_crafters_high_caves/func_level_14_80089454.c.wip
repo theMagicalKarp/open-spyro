@@ -24,6 +24,33 @@
  *     `burst` spelled into the four `- 3` jitter sites are both NEUTRAL (57).
  *     level_16's copy of arm 0x8 (parked 1/1476) has the ORDINARY two-`li`
  *     form in $v0, so this is a whole-function reload artefact, not an arm.
+ *     **RECLASSIFIED 2026-08-29 -- the "DEAD" reading above is self-refuting
+ *     and the class is a DECODE gap, not a reload artefact.** The paragraph
+ *     proves from the 2.7.2 source that gcc can never emit a dead `li`; the
+ *     conclusion to draw is therefore that these four are NOT dead. Measured
+ *     placement (compile-only shape diff, this file at MISMATCH 48 / 31
+ *     regions / offset -4): the two length-deficit sites are
+ *     `orig[143]` and `orig[466]`, and BOTH read
+ *         li a3,3 ; addiu a0,sp,0x10 ; jal func_80017C24 ; move a1,s4(delay)
+ *     i.e. `$a3` is loaded with a constant as the FIRST insn of a switch-arm
+ *     block and the very next insns are that call's own a0/a1 setup. That is
+ *     argument-setup shape, and it is the ONLY shape gcc emits for a
+ *     caller-saved register immediately ahead of a `jal`. `func_80017C24` is a
+ *     hand-written 2-arg leaf (`lhu 0/2/4($a1)` -> `sw 0/4/8($a0)`, uses `$at`)
+ *     that ignores a2/a3, so the extra argument is harmless at run time and
+ *     invisible in the callee -- exactly the prototype-mismatch pattern this
+ *     era of C is full of. Note this function itself takes FOUR parameters
+ *     (`sw $a3,0xC0($sp)` in the prologue, reloaded at orig[125]), so a 4-arg
+ *     call convention is in use here.
+ *     THE ONE THING BLOCKING IT: writing `func_80017C24(pt, POS, X, 3)` also
+ *     emits an `$a2` setup, which the original does NOT have -- so the third
+ *     argument has to be a value whose pseudo ALREADY sits in `$a2` at the arm
+ *     head, and the copy then coalesces away. `$a2` is not written anywhere
+ *     between the `jr` dispatch (0x800894DC) and the arm head, so the candidate
+ *     is a value computed BEFORE the switch and still live: find it by reading
+ *     what the original leaves in `$a2` across the dispatch, then pass it.
+ *     Worth 7,260 B here + 6,788 B in level_13 = 14,048 B, and it is now a
+ *     decode question with a bounded search, not a proved-unreachable wall.
  *  2. rec lands in $s4 and POS in $s5; the original has rec in $s5, POS in $s4
  *     -- the same global.c allocno_compare tie as level_13, and it accounts for
  *     43 of the 57 mismatches on its own.  The three givs (rec+1, rec+4,
