@@ -8,7 +8,17 @@
  *     deficit).  The original materialises the constant 3 SEVEN times -- at the
  *     top of arms 0x4 and 0x8 and again after every call in their colour-swap
  *     tails -- which is a pseudo holding 3 in a CALLER-SAVED register being
- *     restored by rematerialisation.  Ours constant-propagates `burst` into each
+ *     restored by rematerialisation.
+ *     **RECLASSIFIED 2026-08-29 -- same class as
+ *     `func_level_14_80089454.c.wip` item 1 (read its long note); it is a
+ *     DECODE gap, not a rematerialisation.** In level_14 both length-deficit
+ *     sites are `li a3,3` as the FIRST insn of a switch-arm block whose own
+ *     `jal` and a0/a1 setup follow immediately: argument shape. gcc cannot
+ *     emit a dead `li` (the reload/update_equiv_regs proof already in these
+ *     notes establishes exactly that), so these are extra call arguments to
+ *     2-arg hand-written leaves. Blocker (the missing `$a2` setup) and the
+ *     search plan are in the level_14 note. 14,048 B across the two.
+ *     Ours constant-propagates `burst` into each
  *     use (3 sites).  Making `burst` multi-set (a second `burst = 3;` at the top
  *     of each arm) removes reg_equiv_constant, forces a callee-saved register
  *     and re-colours the function: 120/85.  Dropping the local entirely is worse
