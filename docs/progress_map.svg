@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">27.23% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">588,120 / 2,159,608 split-code bytes · 612 matched · 54 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">27.24% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">588,244 / 2,159,608 split-code bytes · 612 matched · 54 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>

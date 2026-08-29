@@ -3082,3 +3082,63 @@ func_level_14_80089454_2026_08_29:
     pseudo already sits in a2 at the arm head — a2 is untouched between the `jr`
     dispatch at 0x800894DC and the arm head, so read what the original leaves in
     a2 across the dispatch and pass that. Bounded decode search, not a wall.
+
+func_level_14_80089454_2026_08_29_1:
+  verdict: parked
+  class: "6 real insns left across the level_13/14 pair: 4x `li a3,3` (B25 RETRACTED) + one cse-held frame-address pair"
+  date: 2026-08-29-1
+  note: >-
+    144 -> 36 mismatched instructions (immediates AND registers live; the old
+    "57" was an immediate-masked number that hid a ten-site step*2/step*4 frame
+    slot swap). The lever is A235: nine of the 28 inline `func_80053608(rec)`
+    call sites rewritten as `goto expire;` against one shared block. jump.c
+    already cross-jumps all 28 down to a single `jal`, so the emitted code is
+    unchanged -- but each inline site is 2 more pre-reload refs of `rec`, and
+    at 69 refs the biv outranks its own rec+4 giv in global.c allocno_compare
+    (6*69/1653 = 0.2504 vs 5*59/1644 = 0.1794), taking $s4 where the original
+    has $s5. Nine gotos put rec at 51 refs and the pair swaps. Window measured
+    at both ends: <5 conversions does nothing, all 28 costs rec its register
+    (spilled, 169 mismatches), 6..16 are equivalent. Still -4 on the four
+    `li a3,3`; B25's "4th argument" reading REFUTED here (2 of 6 and 2 of 5
+    call sites carry it, and orig[143] is an arm head with no possible $a2
+    producer; the 4-arg spelling costs two insns, not one). Remaining knots
+    are listed in the .c.wip header, with the measured-and-worse list for the
+    step*2/step*4 slot swap.
+func_level_13_8008AF54_2026_08_29_1:
+  verdict: parked
+  class: "same two classes as level_14; 24 mismatches of which 18 are unlinked-object relocation placeholders"
+  date: 2026-08-29-1
+  note: >-
+    63 -> 47 on A235 (ten `goto expire` sites; rec -> $s4, POS -> $s3), then
+    47 -> 24 on a corrected A213: the `step4`/`dir` priorities are an EXACT
+    integer tie (both 23 refs, live lengths 1521/1522, both truncate to 604),
+    so allocno_compare falls through to the allocno number and DECLARATION
+    order is the dial, not assignment order -- `int step4;` above `int *dir;`
+    hands step4 $s7 and dir $s8 as the original has them. Swapping the two
+    assignments is a no-op (47 either way). Real residue is SIX instructions:
+    the four `li a3,3` and `func_8001778C(v, p, D_80076DF8)` coming out
+    `move a0,s1 / move a1,s0` where the original re-materialises
+    `addiu a0,sp,96 / addiu a1,sp,80` (cse holding `bolt == &v`, the B-i fold
+    wanted in reverse; an A200b barrier does not break it and costs 2 insns
+    elsewhere). Closing the `li a3,3` class MATCHES this function.
+func_level_13_and_14_li_a3_3_class_2026_08_29_1:
+  verdict: attempted
+  class: "the four extra `li a3,3` are neither a call argument (B25 retracted) nor a spelling of the constant local"
+  date: 2026-08-29-1
+  note: >-
+    Negative result, recorded so it is not re-derived. The original emits EIGHT
+    `li a3,3` in each of func_level_13_8008AF54 / func_level_14_80089454 and we
+    emit FOUR; the extra four sit at basic-block heads (and one mid-block
+    between two calls) on the path to a real use, each immediately killed by the
+    following `jal`. Ruled out this session: (1) a 4-argument prototype -- only
+    2 of 6 `jal func_80017C24` and 2 of 5 `jal func_80017BFC` sites carry it;
+    (2) a per-site 4-argument call -- one site is a jump-table arm head with no
+    possible `$a2` producer anywhere in its CFG predecessors, and the measured
+    4-arg spelling costs two insns (`move a2,X` + `li a3,3`) where the original
+    has one, while a 3-arg call gives `li a2,3` and an uninitialised third
+    argument gives `lw a2,192(sp)`; (3) the declaration of the constant local --
+    ten spellings swept (initialiser, const, register, short, unsigned char,
+    declared first/last, assignment moved, volatile) and none changes the count
+    from four. The only post-flow pass that can introduce an insn nothing reads
+    is reload, so the next experiment belongs in a `-dr`/reload dump, not at the
+    call site. Worth 6,788 B (level_13 MATCHES if this closes) + 7,260 B.
