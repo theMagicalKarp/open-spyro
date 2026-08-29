@@ -1,82 +1,78 @@
-/* PARKED 2026-08-19-2 at 1811/1815 insns, MISMATCH 57 over 30 regions with
- * registers anchored.  With the whole-function s4<->s5 rotation cancelled the
- * residue is only 14 insns over 13 regions, so this is fully decoded: arms
- * 0x45 and 0x49 were new this session and are byte-exact.
+/* PARKED 2026-08-29-1 at 1811/1815 insns, 36 mismatched instructions over 33
+ * regions with immediates and registers BOTH live (the previous header's "57"
+ * was an immediate-MASKED number and hid a ten-site frame-slot swap; see the
+ * step*2/step*4 note below).  Was 144/53 at the start of that session.
  *
- * THREE THINGS LEFT, all named:
- *  1. FOUR missing `li a3,3` -- the entire length deficit, and the SAME class
- *     that parks func_level_13_8008AF54.  The original materialises 3 eight
- *     times; four of them (arm 0x4 top, the `commit:` block head, arm 0x8 top,
- *     and the head of arm 0x8's own commit block) are DEAD: $a3 is caller-saved
- *     and the next instruction is a call, so nothing reads them.  The other four
- *     sit at the real uses (`rec[0x1] == burst` / `rec[0x1] = burst` in each
- *     arm) and we emit exactly those.  Read off the gcc 2.7.2 source this
- *     session: `local-alloc.c update_equiv_regs` puts a REG_EQUIV on the
- *     single-set constant and DOUBLES `reg_live_length`, `reload1.c:1918`
- *     deletes the init insn whenever the pseudo won no hard register, and
- *     `caller-save.c insert_save_restore` only ever emits MEMORY saves -- never
- *     a `li`.  So no dead constant materialisation is reachable from C, and
- *     every multi-set spelling loses the `reg_equiv_constant`, moves the value
- *     to a callee-saved register and re-colours the function.  Measured this
- *     session: preheader init + 4 arm re-assignments -> `li s3,3` x3, 1809/79;
- *     per-arm block-scoped `int burst;` -> 1809/82; the four assignments with
- *     no preheader init -> 1809/75; `int burst = 3;` at the declaration and
- *     `burst` spelled into the four `- 3` jitter sites are both NEUTRAL (57).
- *     level_16's copy of arm 0x8 (parked 1/1476) has the ORDINARY two-`li`
- *     form in $v0, so this is a whole-function reload artefact, not an arm.
- *     **RECLASSIFIED 2026-08-29 -- the "DEAD" reading above is self-refuting
- *     and the class is a DECODE gap, not a reload artefact.** The paragraph
- *     proves from the 2.7.2 source that gcc can never emit a dead `li`; the
- *     conclusion to draw is therefore that these four are NOT dead. Measured
- *     placement (compile-only shape diff, this file at MISMATCH 48 / 31
- *     regions / offset -4): the two length-deficit sites are
- *     `orig[143]` and `orig[466]`, and BOTH read
- *         li a3,3 ; addiu a0,sp,0x10 ; jal func_80017C24 ; move a1,s4(delay)
- *     i.e. `$a3` is loaded with a constant as the FIRST insn of a switch-arm
- *     block and the very next insns are that call's own a0/a1 setup. That is
- *     argument-setup shape, and it is the ONLY shape gcc emits for a
- *     caller-saved register immediately ahead of a `jal`. `func_80017C24` is a
- *     hand-written 2-arg leaf (`lhu 0/2/4($a1)` -> `sw 0/4/8($a0)`, uses `$at`)
- *     that ignores a2/a3, so the extra argument is harmless at run time and
- *     invisible in the callee -- exactly the prototype-mismatch pattern this
- *     era of C is full of. Note this function itself takes FOUR parameters
- *     (`sw $a3,0xC0($sp)` in the prologue, reloaded at orig[125]), so a 4-arg
- *     call convention is in use here.
- *     THE ONE THING BLOCKING IT: writing `func_80017C24(pt, POS, X, 3)` also
- *     emits an `$a2` setup, which the original does NOT have -- so the third
- *     argument has to be a value whose pseudo ALREADY sits in `$a2` at the arm
- *     head, and the copy then coalesces away. `$a2` is not written anywhere
- *     between the `jr` dispatch (0x800894DC) and the arm head, so the candidate
- *     is a value computed BEFORE the switch and still live: find it by reading
- *     what the original leaves in `$a2` across the dispatch, then pass it.
- *     Worth 7,260 B here + 6,788 B in level_13 = 14,048 B, and it is now a
- *     decode question with a bounded search, not a proved-unreachable wall.
- *  2. rec lands in $s4 and POS in $s5; the original has rec in $s5, POS in $s4
- *     -- the same global.c allocno_compare tie as level_13, and it accounts for
- *     43 of the 57 mismatches on its own.  The three givs (rec+1, rec+4,
- *     rec+0x18) are emitted in the right order; only which of the biv and its
- *     first giv wins the lower regno differs.
+ * THE LEVER THAT MOVED IT (144 -> 36): the nine expire sites whose `if` arm is
+ * followed by an `else` are written `goto expire;` against ONE shared
+ *     expire: func_80053608(rec);
+ * block at the bottom of the loop body.  This is a REGISTER-ALLOCATION dial,
+ * not a control-flow one -- the emitted code is identical either way because
+ * jump.c cross-jumps all 28 inline call sites down to the single
+ * `jal func_80053608` at 0x8008B058 anyway.  What changes is `reg_n_refs`:
+ *   - `rec` (the biv) is referenced 69 times, `POS` (its rec+4 giv) 59 times.
+ *   - global.c allocno_compare priority = floor_log2(R)*R/L, so
+ *     rec = 6*69/1653 = 0.2504 beats POS = 5*59/1644 = 0.1794 and rec takes
+ *     $s4 with POS pushed to $s5.  The ORIGINAL has rec in $s5 and POS in $s4.
+ *   - every inline `func_80053608(rec)` is one more `(set (reg a0) (reg rec))`
+ *     in the pre-reload RTL, i.e. 2 refs each (loop_depth weighting).  Nine
+ *     `goto`s take rec to 69-18 = 51 -> 5*51/1653 = 0.154 < POS, the pair
+ *     swaps, and ~40 mismatches vanish at once.
+ *   The window is narrow at BOTH ends and was measured: fewer than 5 sites
+ *   converted leaves rec ahead (63 refs still scores 0.1905); ALL 28 converted
+ *   drops rec to 13 refs / 0.0236, below `step` (0.0677) and `dir` (0.0558),
+ *   and rec loses its register entirely (spilled to 184(sp), 169 mismatches).
+ *   Any 6..16-site subset lands in the window; the `else` nine were chosen
+ *   because they are the sites where an early-exit `goto` is the natural C.
+ *
+ * THREE THINGS LEFT:
+ *  1. FOUR missing `li a3,3` (orig[143]/[367]/[466]/[532]) -- the whole -4
+ *     length deficit.  **The 2026-08-29 "these are call-site 4th ARGUMENTS"
+ *     reading (cookbook B25) is REFUTED by two measurements taken here:**
+ *      (a) it is not a prototype.  Of the SIX `jal func_80017C24` sites in this
+ *          function only TWO carry `li a3,3`, and of the FIVE `jal func_80017BFC`
+ *          sites only TWO do.  A 4-argument declaration would put it on all of
+ *          them.
+ *      (b) it is not a per-site 4-argument call either.  orig[143] is a
+ *          jump-table ARM HEAD: no predecessor block can reach it by
+ *          fall-through, and nothing in the arm writes `$a2`.  o32 has no
+ *          argument shape that fills a3 while leaving a2 untouched, and the
+ *          measured 4-arg spelling costs TWO insns, not one
+ *          (`move a2,s8` + `li a3,3`, and the `li` lands in the jal delay slot
+ *          where the original has `move a0,s4`).  Also measured: a 3-argument
+ *          call gives `li a2,3` in the delay slot; an uninitialised third
+ *          argument gives `lw a2,192(sp)`.
+ *     So the four are a reload/local-alloc artefact of however `burst` was
+ *     spelled, and the open question is what makes gcc keep a constant
+ *     materialisation that the following `jal` immediately clobbers.  Note the
+ *     original has EIGHT `li a3,3` and we emit FOUR, and its extra four sit at
+ *     block heads on the path to a real use (arm 0x4 head -> `commit:` head ->
+ *     `measure:` -> `bne v0,a3`), which is the shape of a value being made
+ *     available per-block rather than per-use.
+ *  2. `step * 2` and `step * 4` occupy each other's frame slots: the original
+ *     spills step*2 to 184(sp) and step*4 to 192(sp), we do the reverse, and
+ *     that shows up at ~10 `lw a3,...` sites plus the head pair
+ *     `sll a3,s6,1 / sw a3,184(sp)` vs `sll a3,s6,2 / sw a3,184(sp)`.  loop.c
+ *     hoists them in creation order and our explicit preheader `step4` is
+ *     created first.  MEASURED AND WORSE, do not retry: naming `step2` before
+ *     or after `step4` (139/56, -6), inlining `step * 4` and letting loop.c
+ *     hoist both (91/61, -7), and `dir = dv;` above `step4` (38/33).
  *  3. Arm 0x8's last call takes `move a0,s1 / move a1,s0` where the original
  *     re-materialises `addiu a0,sp,96 / addiu a1,sp,80`: cse holds the
  *     `bolt == v` / `home == p` equivalence.  An A200b `do { } while (0);`
  *     barrier in front of that call does NOT break it and costs 2 insns
- *     elsewhere (63/31).  Same cost either way -- 2 mismatches, no length.
+ *     elsewhere.  Same cost either way -- 2 mismatches, no length.
  *
  * FOUR THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
  *  - `step4 = step * 4;` must be written BEFORE `dir = dv;` (A213).  This
  *     variant spills BOTH step*2 and step*4 to the frame and gives $s8 to
  *     `dir`; the later-assigned pseudo has the shorter range and takes the
- *     register, so ordering dir LAST is what puts it in $s8: 189 -> 78.
- *     Dropping the `step4` name entirely (inline `step * 4`, letting loop.c
- *     hoist it) puts `dir` first in the preheader and spills it instead.
+ *     register, so ordering dir LAST is what puts it in $s8.
  *  - Arm 0x45 needs TWO multi-set pointer carriers, and group 2 must swap
  *     which carrier holds which array (`base = adv; ... hop = cur;`).  Single-
- *     set carriers (four of them) re-trigger loop.c's A212 preheader hoist of
- *     both stack-vector addresses and rotate the whole function (216/52); one
- *     carrier per array keeps cur/adv in the same registers in both groups,
- *     which lets arm 0x5's `func_80017758` cross-jump into arm 0x45's and
- *     costs 6 insns (61 -> ...).  The swap reproduces the original's
- *     s1=cur/s0=adv then s1=adv/s0=cur pairing: 78 -> 61.
+ *     set carriers re-trigger loop.c's A212 preheader hoist of both stack-vector
+ *     addresses and rotate the whole function; one carrier per array keeps
+ *     cur/adv in the same registers in both groups.
  *  - Arm 0x45's stream address is `(int *)&path[W(0x1C) * 0x10 + 8]`, not
  *     `(int *)(path + W(0x1C) * 0x10 + 8)` -- the latter is left-associative
  *     and folds the +8 onto the base, which swaps the `addiu`/`addu` pair
@@ -350,7 +346,7 @@ void func_level_14_80089454(int step) {
       /* The short spawn drift: the record walks along its own jittered
        * velocity, plus a quarter of the record velocity vector. */
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         func_80017C24(qa, POS);
         rq = func_8006272C();
@@ -385,7 +381,7 @@ void func_level_14_80089454(int step) {
       do {
       } while (0);
       if (rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         bolt = v;
         func_80017700(bolt, (int *)(D_80075828 + rec[0x1E] * 0x58 + 0xC));
@@ -396,7 +392,7 @@ void func_level_14_80089454(int step) {
         func_8001778C(bolt, bolt, home);
         len = func_800171FC(bolt, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
-          func_80053608(rec);
+          goto expire;
         } else {
           func_800175B8(bolt, len, 0x80);
           func_80017758(home, home, bolt);
@@ -450,7 +446,7 @@ void func_level_14_80089454(int step) {
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
           D_80078BB8[0] <= 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         func_80017700(w, D_80078BB8 - 0x58);
         w[0] += func_80016CB0(HS(0x18)) >> 4;
@@ -719,7 +715,7 @@ void func_level_14_80089454(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         rec[0x10] -= 3;
         if (rec[0x10] < 0x80) {
@@ -754,7 +750,7 @@ void func_level_14_80089454(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
@@ -795,7 +791,7 @@ void func_level_14_80089454(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
@@ -881,7 +877,7 @@ void func_level_14_80089454(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
@@ -926,7 +922,7 @@ void func_level_14_80089454(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        goto expire;
       } else {
         rec[0x10] -= 3;
         rec[0x11] -= 4;
@@ -963,7 +959,12 @@ void func_level_14_80089454(int step) {
     default:
       break;
     }
+    goto next;
 
+  expire:
+    func_80053608(rec);
+
+  next:
     rec += 0x20;
   } while (rec[1] != 0xFF);
 }
