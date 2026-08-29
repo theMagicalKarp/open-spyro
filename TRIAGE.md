@@ -20,15 +20,15 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 6 | `0x8007b898` | func_level_8_8007B898 | ovl/level_8_peace_keepers_cliff_town | 8096 | 134 | overlay (no -g3); segment 22.7% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 7 | `0x8007ba18` | func_level_24_8007BA18 | ovl/level_24_dream_weavers_home | 8096 | 134 | overlay (no -g3); segment 21.9% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 8 | `0x8007b0ac` | func_level_3_8007B0AC | ovl/level_3_artisans_town_square | 8096 | 133 | overlay (no -g3); segment 23.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 9 | `0x8005df60` | ResetCallback | main | 220 | 132 | segment 37.6% matched; matched neighbor in segment; jal-chain shape (8 calls); previously attempted (2026-07-11: setjmp/held-base-heavy (libgpu bring-up cluster)) |
-| 10 | `0x8007af90` | func_level_30_8007AF90 | ovl/level_30_gnastys_world_gnorc_gnexus | 8096 | 130 | overlay (no -g3); segment 29.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007cfb4` | func_level_11_8007CFB4 | ovl/level_11_peace_keepers_night_flight | 18952 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007af90` | func_level_30_8007AF90 | ovl/level_30_gnastys_world_gnorc_gnexus | 8096 | 130 | overlay (no -g3); segment 29.2% matched; clone family of 10 (one recipe pays 10×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 11 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 13 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007cfb4` | func_level_11_8007CFB4 | ovl/level_11_peace_keepers_night_flight | 18952 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007cfb4` | func_level_17_8007CFB4 | ovl/level_17_magic_crafters_crystal_flight | 20312 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(21 viable candidates total; the full ranking is regenerable.)
+(20 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -52,11 +52,11 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 volatile-vs-plain MEM ordering |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
 | `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 jump.c cross-jump asymmetry (label identity, not block content) + ~20 B16 per-site addressing + caller-saved rotations |
+| `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion: li-const position vs old/const v0 rotation |
+| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | 4 missing `li a3,3` remats + one rec/POS allocno_compare tie |
 | `0x800181ac` | BuildTextSprites | main | 672 | 568 | F1/F7 param_2<->flag live-length s0/s2 swap + F8 andi placement + F8 FillWord a2 delay-slot |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
-| `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 532 | dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie |
-| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 520 | 4 missing `li a3,3` remats + one rec/POS allocno_compare tie |
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 492 | F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6) |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie) |
