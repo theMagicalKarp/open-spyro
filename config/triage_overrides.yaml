@@ -3142,3 +3142,83 @@ func_level_13_and_14_li_a3_3_class_2026_08_29_1:
     from four. The only post-flow pass that can introduce an insn nothing reads
     is reload, so the next experiment belongs in a `-dr`/reload dump, not at the
     call site. Worth 6,788 B (level_13 MATCHES if this closes) + 7,260 B.
+func_level_13_and_14_li_a3_3_class_2026_08_29_2:
+  verdict: attempted
+  class: "the four extra `li a3,3` are provably DEAD insns; no source form of the constant reaches them"
+  date: 2026-08-29-2
+  note: >-
+    Second negative result on the same class, narrowing it hard. (1) The
+    argument reading is now closed on the CALLEE side too, not just the
+    call-site side: all four extras sit immediately before a `jal
+    func_80017C24` or `jal func_80017BFC`, and both callees are hand-written
+    2-argument leaves whose whole body reads only `$a0`/`$a1` (3 loads off a1,
+    3 shifts, 3 stores to a0) -- so the "invisible extra argument to a
+    hand-written leaf" escape B25 hung its hope on does not exist here either.
+    `$a2` is never live across the jump-table dispatch (its delay slot is a
+    `nop`), so the two arm-head sites have no third-argument value in scope.
+    (2) POSITION: all four extras are the first insn of a block that starts
+    with a LABEL (two jump-table arm heads, the `commit:` join label, and one
+    just after a `jal` return); the four LIVE ones are one block-head at
+    `measure:` and one branch delay slot. The `measure:` one is at a block head
+    only because the three `abs()` chains between it and its `bne` are
+    single multi-insn RTL templates (`bgez/nop/negu` from mips.md), so that
+    whole run is ONE basic block and sched2 hoists the dep-free `li` to its top
+    (D 2d's REG_DEP_ANTI note). That is why 4 of the 8 look like the reload
+    remats they are and 4 do not.
+    (3) Three source mechanisms measured directly with probe compiles under the
+    locked overlay flags (`build/probe/p1..p3.c`), all refuted:
+    a multi-set constant local whose sets are all live -> the sets DO survive
+    but land in a CALLEE-SAVED reg ($17), never `$a3`; a multi-set constant
+    local with dead-before-call sets -> cse collapses the lot and reload emits
+    exactly ONE `li` at the use; a single-set constant live across two calls ->
+    ONE `li` at the use. So there is no C spelling that yields a dead `li` in a
+    caller-saved register ahead of a call.
+    (4) Where that leaves it: gcc 2.7.2 runs NO life_analysis after reload
+    (toplev.c:3105 goes straight from thread_prologue_and_epilogue_insns to
+    schedule_insns), so a dead insn survives only if it is created or orphaned
+    after the last flow pass. Reload only materialises a reg_equiv constant AT a
+    use (reload1.c:1917 deletes the init when the pseudo wins no hard reg), and
+    jump.c `cross_jump` -- the one pass that CAN orphan a live insn (B24) --
+    runs at toplev.c:3142, i.e. AFTER sched2, and can only orphan insns at a
+    block's TAIL, not at its head. So no known 2.7.2 pass produces this shape.
+    RECOMMENDATION for the next session: stop attacking it from the constant.
+    Either dump `-dr` on a probe that reproduces the block shape, or treat the
+    -4 as evidence that the SURROUNDING source shape differs (the extras are a
+    symptom, not the cause) and re-derive the two arms from m2c rather than
+    editing the park.
+ResetCallback:
+  verdict: matched
+  class: "A236 copy-to-hard-reg suggestion + A237 volatile pointer-global reload"
+  date: 2026-08-29-2
+  note: >-
+    MATCHED in four builds (220 B), retiring the 2026-07-11 "setjmp/held-base-heavy"
+    verdict and closing main's last tractable candidate. Two levers, both new:
+    (1) the I_MASK/I_STAT pointer globals hoisted into `volatile short *` locals --
+    a volatile store through `*(volatile short *)g_pIMaskReg` makes cse reload the
+    POINTER GLOBAL as well, costing a `lui/lw` pair per extra access, and the locals
+    also fix the pointer-load order (declaration order = the original's
+    g_pIStatReg-before-g_pIMaskReg); (2) the second `g_pLibapiSysVtable` load had to
+    land in $a0 where find_free_reg gives it $v1, and passing it to the following
+    argument-ignoring BIOS `_96_remove` trampoline (`Bios96Remove(g_pLibapiSysVtable)`)
+    gives its pseudo a copy suggestion, which local-alloc consults before priority.
+    The load must stay INLINE at the call: a named local moves it above the previous
+    call, cse merges the two vtable reads, and the single pseudo goes callee-saved.
+A236_screening_2026_08_29_2:
+  verdict: attempted
+  class: "A236 does not reach four obvious-looking argument-register residues"
+  date: 2026-08-29-2
+  note: >-
+    Screened the harvest inventory for the A236 signature ("the original has value X
+    in an argument register, ours picks the next free caller-saved reg") and recorded
+    why each fails, so the next session does not re-screen them.
+    `RelocateMobActorTable` (B21, a0<->a2): ZERO `jal`s -- a leaf has nothing to hang
+    the argument copy on. `HandleHardwareInterrupt` (10/122, the g_pIStatReg POINTER
+    wants $a0): the recompute block contains no call. `func_8003BFC0` (span wants
+    $a2): the a2 assignment is a live-range consequence -- span is live across all
+    three divides so it must avoid v0/v1/a0, and a2 is simply the lowest free reg,
+    not a suggestion. `func_80038FC8` (the 0x10 constant must vacate $v0 for `old`):
+    A236 would move the constant to $a3 via the spare argument slot of
+    func_80037E98, but the original has it in $v1, so it trades one wrong register
+    for another. The general precondition is therefore: a call in the SAME basic
+    block, a callee that provably ignores the slot, and the wanted register being one
+    of $a0..$a3.
