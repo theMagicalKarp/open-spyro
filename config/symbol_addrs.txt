@@ -1028,6 +1028,7 @@ g_nIrqEnableMask = 0x80073954; // size:0x2
 g_nLibapiSavedIMask = 0x80073956; // size:0x2
 g_dwLibapiSavedDmaDpcr = 0x80073958; // size:0x4
 g_pBiosExceptionPatch = 0x80073960; // size:0x4
+g_abLibapiPatchBlock = 0x80073960; // allow_duplicated:True incomplete-array alias — held base for the exception-patch pointer ([0]) and the negative-offset back-references into the callback state block (ResetCallback)
 g_apfnLibapiSysCallbacks = 0x8007498c; // size:0x20
 g_pLibapiSysVtable = 0x800749ac; // size:0x4
 g_pIStatReg = 0x800749b0; // size:0x4
