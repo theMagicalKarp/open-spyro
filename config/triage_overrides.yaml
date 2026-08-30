@@ -3246,3 +3246,41 @@ TurnSpyroTowardMoveTargetWithLean:
     "only b multi-set" gives the right registers but the wrong load order
     (8/92) -- it is the complement of the previously measured "only t
     multi-set" (10/92).
+
+func_80038C4C_2026_08_30:
+  verdict: parked
+  class: "F1 register tie; ay->a1 IS now reachable, rec[3] needs to stop being block-local"
+  date: 2026-08-30
+  note: >-
+    264 B, baseline 6/66 unchanged. First real movement since 2026-07-09:
+    writing the tail with an explicit shared result
+    (`inside = 0; if (rx < rec[3]) inside = ay < rec[4]; return inside;`)
+    instead of the early-return form puts `ay` in a1 -- the original's
+    register, which 78k permuter iterations and three sessions never reached.
+    It costs +1 insn and two other registers: `inside` becomes a global
+    allocno, takes v1, and needs a closing `move v0,v1`, while rec[3] keeps v0
+    (12/66, will not link). So the residue is now exactly localised: the
+    original's rec[3] load does NOT get v0 from local-alloc, i.e. in the
+    original that loaded value is not a block-local quantity (or v0 is
+    occupied over its range). Everything else about the tail is a consequence.
+    Next move is a decode question -- what makes rec[3] span blocks -- not
+    another allocation dial.
+func_80059594_2026_08_30:
+  verdict: parked
+  class: "F7 a0/a1 qty tie; registers and positions each reachable now, still mutually exclusive"
+  date: 2026-08-30
+  note: >-
+    720 B, baseline 6/180 (same-position replacements) kept as the park.
+    A232 reaches this knot, which the 2026-08-25 analysis had not tried:
+    moving the `g` load ABOVE `*dragons = d;` and wrapping the store in
+    `do { } while (0);` gives 6/180 with the REGISTERS CORRECT (previously
+    registers-right cost 7/180) -- the barrier makes both d and g global
+    allocnos, so allocno_compare replaces the local-alloc qty tie and d, born
+    first, wins a0. Cost: the `lh` is emitted before the `sw` (the alias
+    dependence that ordered them is gone) and the treasure `addu` hoists.
+    Wrapping BOTH the store and the g load in one barrier restores the exact
+    original ORDER (the lh regains its dependence on the sw) but rotates three
+    globals (d->a1, wt->a0, g->v1) -> 12/180. Double-nesting the barrier on
+    the store to raise d to 8 refs (the A238 dial) is 17/180. Read it as:
+    order and registers are still mutually exclusive here, but both halves are
+    now individually source-reachable, which they were not before.
