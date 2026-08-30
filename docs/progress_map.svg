@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">27.31% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">589,736 / 2,159,608 split-code bytes · 614 matched · 53 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">589,764 / 2,159,608 split-code bytes · 615 matched · 52 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -133,7 +133,7 @@
 <rect x="62.40" y="734.17" width="19.50" height="19.85" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraFrame  ·  708 bytes  ·  asm</title></rect>
 <rect x="62.40" y="754.02" width="19.50" height="19.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003A16C  ·  692 bytes  ·  matched</title></rect>
 <rect x="81.91" y="527.86" width="20.17" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApplyEulerRotation  ·  676 bytes  ·  handwritten</title></rect>
-<rect x="102.07" y="527.86" width="20.05" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>BuildTextSprites  ·  672 bytes  ·  wip</title></rect>
+<rect x="102.07" y="527.86" width="20.05" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildTextSprites  ·  672 bytes  ·  matched</title></rect>
 <rect x="122.12" y="527.86" width="19.69" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitSpuHardware  ·  660 bytes  ·  matched</title></rect>
 <rect x="141.81" y="527.86" width="19.57" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>HandleLevelSelectInput  ·  656 bytes  ·  matched</title></rect>
 <rect x="161.38" y="527.86" width="19.57" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComputeCameraToTargetAngle  ·  656 bytes  ·  matched</title></rect>

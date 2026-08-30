@@ -3382,8 +3382,8 @@ func_80059594:
     and removing that barrier costs 4 insns elsewhere. Full measured variant
     table in the .wip header.
 BuildTextSprites:
-  verdict: parked
-  class: "F8 x2 reorg delay-slot fills (FillWord a2 li, and the ladder andi stolen into the letter beqz slot)"
+  verdict: matched
+  class: "MATCHED 2026-08-30-1 (A238 ref dial + A201 per-arm store + selective volatile on the cursor reads)"
   date: 2026-08-30-1
   note: >-
     672 B, 26/168 -> 7/168. Three of the four recorded residues closed. The
@@ -3395,8 +3395,12 @@ BuildTextSprites:
     `*param_2 = adv;`. The pen-advance v0/v1 rotation is A201 (write the join
     store once per arm with a block-scoped temp; cross-jumping merges it back)
     and the digit-flag pair wants a block-scoped subtraction temp. What is left
-    is two reorg decisions, both measured inert against barriers and ladder
-    restructuring; see the .wip header for the numbers.
+    was two reorg delay-slot decisions, and BOTH fell to the same third lever:
+    a VOLATILE cursor read is pinned in sched2's order, so it forces the
+    two-instruction symbol load to the head of its block, where reorg's
+    fill_slots_from_thread stops (an 8-byte insn is not delay-slot eligible)
+    and takes the other thread's insn instead. Making the letter arm's read and
+    the allocation write-back plain closed 7 -> 2 -> 0. MATCHED, 672 B.
 func_titlescreen_8007ABAC:
   verdict: parked
   class: "qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local"
