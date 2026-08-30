@@ -141,6 +141,30 @@
  * constant, no source form found" -- there IS one (lever 2), it just relocates
  * the a3 load.
  *
+ * ---- 2026-08-30-1: THE A238 SECOND-SET DIAL REACHES a1, AND STRANDS THE
+ * POINTER. Do not re-run this; it is the third of the three levers and it is
+ * measured. -----------------------------------------------------------------
+ * A238's step 1 (a second SET moves a pseudo out of local-alloc) is the one
+ * note-free dial this park had not seen, and it works on the POINTER: a
+ * function-scope `base` set from `D_800785E8` in BOTH arms makes it a global
+ * allocno, local-alloc's suggestion pass is then left with only the constant,
+ * and `addu a1,<ptr>,a1` comes out with **a1 holding the -0x40000 constant** --
+ * the half this park has been trying to reach for four sessions. It does not
+ * close, because a global allocno cannot have v0: the original reuses v0 for
+ * the pointer immediately after `sw v0,16(sp)` kills the 600, and a global
+ * allocno's conflicts are computed over its whole (two-arm) range, so it takes
+ * t0 and both arms' loads drift to the block head (17/2147).
+ * So the target is now exact and provably narrow: **the pointer has to be
+ * LOCAL (for v0) while the constant wins the a1 suggestion (which needs the
+ * pointer to be non-local, or the constant to have 3 refs).** The only escape
+ * left is still lever 1's third reference to the constant with no loop note.
+ * Also measured and INERT (byte-identical 7/2147): a block-scoped `base` with a
+ * second set INSIDE arm 1 (`base = 1; D_80078D78.unk_0x10 = base;`), with the
+ * load declared before and after the `cd` read. Constant propagation deletes
+ * that second set even though the header's donor rule says a
+ * `tbl = K; <global> = tbl;` donor survives -- it does NOT when the destination
+ * is a struct field, so the carrier stays single-set.
+ *
  * ---- Historical (still true) ---------------------------------------------
  * The rodata-packing blocker is SOLVED — gen_slots_ld skips the subsumed later
  * pieces owned by a flipped function, so the override links cleanly.

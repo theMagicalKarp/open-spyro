@@ -3362,3 +3362,158 @@ func_80061470:
     `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh
     m2c re-derive before any allocation work, and it is the cheapest 644
     partial bytes on the board once decoded.
+
+# --- 2026-08-30-1 session: the A238 ref dial applied to the harvest inventory ---
+func_80059594:
+  verdict: parked
+  class: "F19 store-vs-compare position swap + an alias-order/allocation conflict (R1)"
+  date: 2026-08-30-1
+  note: >-
+    720 B, 6/180 -> 4/180 and the a0/a1 register class is CLOSED. A238's
+    ref-count dial applies here in a two-edit form: hoist the g load above the
+    dragons store (g's local-alloc live length 5 -> 6) and wrap the store in a
+    single `do { } while (0)` (d's loop-depth-weighted refs 6 -> 7), which takes
+    qty_compare_1 from d 80000 < g 96000 to d 93333 > g 80000. A double nest
+    over-shoots (floor_log2 steps at 8 refs, d takes v0, 13/180). What is left
+    is 2 + 2 insns: R1 is the store/load pair, whose emitted order IS the source
+    order because gcc cannot disambiguate the two register-addressed MEMs -- so
+    R1 and the allocation are one degree of freedom; R2 is the second barrier's
+    B23 cost (the egg-guard slti cannot precede the note-carrying gems store),
+    and removing that barrier costs 4 insns elsewhere. Full measured variant
+    table in the .wip header.
+BuildTextSprites:
+  verdict: matched
+  class: "MATCHED 2026-08-30-1 (A238 ref dial + A201 per-arm store + selective volatile on the cursor reads)"
+  date: 2026-08-30-1
+  note: >-
+    672 B, 26/168 -> 7/168. Three of the four recorded residues closed. The
+    headline one, the "unbreakable" param_2/flag live-length inversion, is an
+    A238 ref dial with a three-way target: flag 15 refs/109 = 1.65 beats
+    param_1 14/118 = 1.42 beats param_2 13/118 = 1.32, so BOTH params have to
+    be lifted over flag and floor_log2's step puts the targets at 16 and 17
+    weighted refs -- a 2-deep nest on `param_1 += 1;` and a 6-deep nest on
+    `*param_2 = adv;`. The pen-advance v0/v1 rotation is A201 (write the join
+    store once per arm with a block-scoped temp; cross-jumping merges it back)
+    and the digit-flag pair wants a block-scoped subtraction temp. What is left
+    was two reorg delay-slot decisions, and BOTH fell to the same third lever:
+    a VOLATILE cursor read is pinned in sched2's order, so it forces the
+    two-instruction symbol load to the head of its block, where reorg's
+    fill_slots_from_thread stops (an 8-byte insn is not delay-slot eligible)
+    and takes the other thread's insn instead. Making the letter arm's read and
+    the allocation write-back plain closed 7 -> 2 -> 0. MATCHED, 672 B.
+func_titlescreen_8007ABAC:
+  verdict: parked
+  class: "qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local"
+  date: 2026-08-30-1
+  note: >-
+    8,588 B, still 7/2147, but the third lever is now measured. A238's second-set
+    dial applied to the POINTER (a function-scope carrier read from D_800785E8 in
+    both arms) does reach the goal half -- local-alloc's suggestion pass is left
+    with only the constant and a1 gets the -0x40000 -- and then strands the
+    pointer in t0 with both loads drifted to the block head (17/2147), because a
+    global allocno cannot reuse v0 after the `sw v0,16(sp)` that kills the 600.
+    An in-block double set (`base = 1; D_80078D78.unk_0x10 = base;`) is deleted
+    by constant propagation and is byte-identical to the baseline -- the header's
+    donor rule does not hold when the second set's destination is a struct field.
+    So the objective is now exactly: the pointer must be LOCAL (to get v0) while
+    the constant wins the a1 suggestion, i.e. lever 1's third reference to the
+    constant with no loop note is the only thing left.
+func_80038FC8:
+  verdict: parked
+  class: "F14b straggler LUID tie (li v1,16 vs the call-arg copy) — now reachable from two different allocation routes"
+  date: 2026-08-30-1
+  note: >-
+    608 B, still 4/152. Screened against A238 and the result is a genuinely new
+    route to the same state, which narrows the park: hoisting `old` to function
+    scope so BOTH it and the c16 carrier are multi-set puts the pair in
+    global-alloc, where c16 (6 refs/16 insns = 3.0) still beats old (4/18 =
+    1.78) and the registers invert (11/152) -- but a 4-deep do/while(0) nest on
+    ONE of old's two loads takes it to 8 refs (5.33) and the registers come out
+    right at 4/152, with the SAME residue as the committed single-carrier body.
+    So the register half is now reachable two ways and the F14b mutual
+    exclusion the park describes is really only about the LUID tie. Depth 3 is
+    not enough (11/152) and the arm the nest sits in does not matter (arm 1 or
+    arm 2, both 4/152). Statement permutation on the both-global body is still
+    inert or worse (c16 folded into its first store, 10/152). The committed body
+    is unchanged -- the new route is not better, it is just a second door onto
+    the same last insn.
+HandleHardwareInterrupt:
+  verdict: parked
+  class: "F7 qty_compare tie (I_STAT pointer vs the enable value) — the only exit needs a 3rd ref that a statement split cannot buy"
+  date: 2026-08-30-1
+  note: >-
+    488 B, still 10/122. Screened against A238, which is exactly the lever the
+    park's own note asks for ("a 3rd ref on the enable value from a carrier that
+    stays BLOCK-LOCAL and that does not add an insn"), and it does not reach:
+    the nest has to CONTAIN the enable read, which means splitting
+    `stat = enable & *I_STAT;` into a block-scoped `en` temp first, and that
+    split alone -- with NO nest -- is already 21/122. So the cost is the split,
+    not the dial. Nesting the whole combined statement instead is provably inert:
+    it weights the pointer and the enable equally, and qty_compare_1 is a ratio
+    (ptr 3/8 = 0.375 vs enable 3/10 = 0.30 at depth 1, 1.0 vs 0.8 at depth 2),
+    so the order never changes. Depths 1 and 2 on the split form: 24/122. This
+    closes the last exit the park listed; treat it as a genuine tie.
+BuildTextSpriteChain:
+  verdict: matched
+  class: "MATCHED 2026-08-30-1 (selective volatile on the cursor reads — the same lever as BuildTextSprites)"
+  date: 2026-08-30-1
+  note: >-
+    456 B, 10/113 -> 0. Sibling of BuildTextSprites and it fell to that
+    function's lever in four builds. A VOLATILE read is a sched2 ORDER pin, so
+    it forces its two-instruction symbol load to the head of its block, and
+    reorg's fill_slots_from_thread stops there (an 8-byte insn is not
+    delay-slot eligible). Reading the cursor PLAINLY at the four sites whose
+    value insn has to reach a delay slot -- the allocation write-back and the
+    digit / letter / default arms -- fixes all three recorded residues at once:
+    `li a2,0x58` sinks into the jal slot, each arm's `addiu v0,a0,K` leads its
+    thread, and jump.c stops cross-jumping those three `sh`s into the shared
+    tail (which was the whole one-insn length deficit). The six equality arms
+    keep the volatile read and stay merged. Order of discovery: `w` alone is
+    length-short, `w2` 78/114, `w12` 7/114, `w12d` MATCH.
+
+# --- 2026-08-30-1: parks screened against the new selective-volatile lever ----
+RespawnOrGameOver_Draw:
+  verdict: parked
+  class: "A200 barrier cost (a) — the DrawSync arg copy cannot reach the guard bne's delay slot"
+  date: 2026-08-30-1
+  note: >-
+    1,444 B, still 5/361. Screened against this session's selective-volatile
+    lever and it does not apply: the insn reorg steals into the slot
+    (`li v0,1`) is not a load, so there is no volatile pin to drop. The block
+    head is fixed by the A200 barrier, not by a MEM's ordering. The park's own
+    diagnosis stands -- it needs a cse ebb-break with no NOTE_INSN_LOOP_BEG.
+FlushGpuQueue:
+  verdict: parked
+  class: "sched1 volatile-vs-plain MEM ordering — the third RIDX read hoists above the plain ring read"
+  date: 2026-08-30-1
+  note: >-
+    748 B, 14/187. Screened against the selective-volatile lever in its REMOVE
+    direction (make the third RIDX read plain so it stops out-ordering the ring
+    read) and it is unusable here: the three RIDX reads are reads of ONE global,
+    so dropping volatile lets cse merge them and the original's three separate
+    loads disappear. Would need three allow_duplicated aliases, and different
+    symbol_refs give no dependence against the plain ring read either, so the
+    pin still would not exist. The park's ADD-volatile measurements (21/187,
+    20/187) stand.
+EnqueueGpuOp:
+  verdict: parked
+  class: "divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist"
+  date: 2026-08-30-1
+  note: >-
+    Screened against the selective-volatile lever: not applicable. Its residue 3
+    wants the volatile WIDX reads PINNED (the park already measured that the pin
+    costs a held base, B16, 61/184); this session's lever removes a pin, which
+    is the wrong direction, and the three reads share one global so they would
+    be cse-merged anyway.
+func_8003A420:
+  verdict: parked
+  class: "F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with"
+  date: 2026-08-30-1
+  note: >-
+    768 B, 9/192. Screened against A238: the dial has nothing to aim at. The
+    residue is global.c's hard_reg_preference from the call-result copy, and
+    `prune_preferences` only clears it if the allocno crosses a call (it does
+    not, 4-insn range) or if a HIGHER-priority conflicting allocno also prefers
+    v0 -- the probe's conflict list is three s-reg pointers and none of them
+    prefers v0, so there is no allocno whose refs could be dialled up to take
+    v0 first.

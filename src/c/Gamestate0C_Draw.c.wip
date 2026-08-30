@@ -74,7 +74,7 @@ extern int D_800777EC[];  /* transition fade counter */
 extern int D_800777FC;    /* transition card variant */
 extern void *D_800758D8;  /* substate draw handler */
 extern unsigned short g_anCosineLut[];
-extern void *g_apOtDepthBinBlock[]; /* alias @0x8006fcf4: head/tail pair */
+extern void *g_apOtDepthBinBlock[];  /* alias @0x8006fcf4: head/tail pair */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 void Gamestate0C_Draw(void) {
