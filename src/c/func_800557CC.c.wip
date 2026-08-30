@@ -1,7 +1,7 @@
 #include "globals.h"
 
-extern short g_anCosineLut[];            /* 0x8006cc78 */
-extern short g_anCameraEulerYawBlock[];  /* g_nCameraEulerYaw, held-base view */
+extern short g_anCosineLut[];           /* 0x8006cc78 */
+extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
 
 extern int LookupSine(unsigned int angle_12_4);
 extern int LookupCosine(unsigned int angle_12_4);
@@ -9,7 +9,7 @@ extern int LookupCosine(unsigned int angle_12_4);
 /* The per-digit sub-record hung off a digit actor's +0x00 pointer. */
 struct Digit {
   char pad00[4];
-  int place; /* 0x04 digit value scaled by its decimal place */
+  int place;  /* 0x04 digit value scaled by its decimal place */
   int dir[3]; /* 0x08 camera-facing unit direction */
 };
 

@@ -3222,3 +3222,27 @@ A236_screening_2026_08_29_2:
     for another. The general precondition is therefore: a call in the SAME basic
     block, a callee that provably ignores the slot, and the wanted register being one
     of $a0..$a3.
+
+# --- session 2026-08-30 -----------------------------------------------------
+# Mode: harvest (gate read 13, all clones of parked heads -- SS1's mode-switch
+# rule fires immediately per the standing note in cookbook SSG).
+
+TurnSpyroTowardMoveTargetWithLean:
+  verdict: matched
+  class: "MATCHED 2026-08-30 (A238: nested do/while(0) ref dial in global.c)"
+  date: 2026-08-30
+  note: >-
+    368 B, was the closest park on the board at 2/92 since 2026-08-11-3. The
+    two-horn dilemma the old note called permuter-or-never is real but has a
+    third horn: make BOTH yaw reads multi-set (kills sched1's birthing boost on
+    the target read, so the emitted load order comes out right) and then win
+    global.c's allocno_compare instead of local-alloc's qty_compare. A nested
+    do { do { targetYaw = g_nSpyroMoveTargetYaw; } while (0); } while (0);
+    around the recompute arm's target read weights that ref by loop_depth 3,
+    taking it to 6 refs / 6 insns == the body read's 4 / 4; the exact tie falls
+    to the lower allocno number, which is the target read. MATCH.
+    Also measured and refuted here: `volatile` on either read is NOT a sched1
+    ordering barrier in 2.7.2 (byte-identical to the non-volatile form), and
+    "only b multi-set" gives the right registers but the wrong load order
+    (8/92) -- it is the complement of the previously measured "only t
+    multi-set" (10/92).
