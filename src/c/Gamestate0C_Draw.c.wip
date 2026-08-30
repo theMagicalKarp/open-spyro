@@ -18,20 +18,28 @@
    fogged static mesh is re-emitted until the fade completes. Ends with the
    standard 2-vblank frame submit.
 
-   PARKED at 281/283 instructions (mismatch 2, +1 length): everything but the
-   OT bin-head init matches. Residue is a single §B-i rule-1 held-base fold —
-   the original keeps ONE `la g_pOtDepthBinHead0` and stores through it at both
-   +4 (tail) and +0 (head); our cse folds the NONZERO-offset store to an
-   absolute `lui $at`, costing the extra instruction. Volatile-casting both
-   stores is what buys the +0 store its register base (without it BOTH fold and
-   the D_800777FC load also hoists above the pair, going 282/mismatch 8).
-   Tried and rejected: incomplete-array alias plain and sized [8]; a pointer
-   local seeded from the alias; escaping the base by passing `ot` to FillWord
-   (base then lives in s1 across every call, +2 insns); a tail-based alias with
-   the head at [-1] (symmetric — the -4 store folds instead, same mismatch 2);
-   source store-order swap (mismatch 3). A25's "escaped base keeps the
-   negative-offset store unfolded" does not apply: the address FillWord needs
-   IS the base at offset 0, not a derived address.
+   PARKED at 277/283 (6 insns), LENGTH-EXACT and LINKING -- was +1 insn and
+   unlinkable (partial credit 44 -> ~1,100 B). The old "unfixable B-i rule-1
+   fold" reading predates A200: the OT bin-head init is an ordinary A200 case
+   and takes the standard recipe -- the alias declared as an INCOMPLETE array
+   (g_apOtDepthBinBlock[]), reached with ELEMENT INDICES (no pointer local, no
+   volatile casts), plus an empty do { } while (0); between the two stores.
+
+   THE FORM IS FORCED AND SWEPT, do not re-run: with the barrier between them
+   the two stores are in different basic blocks, so their order is the SOURCE
+   order and nothing can swap it. `[0] = D_80077850;` must come FIRST because
+   the offset-0 access is what materialises the base in a register (an
+   offset-4-first spelling emits an absolute `lui $at` store instead, +1 insn:
+   variant A scores 273/283, barrier-before-both 270, no barrier 270).
+
+   THE REMAINING 6 ARE THE STORE ORDER: the original writes the tail (+4)
+   before the head (+0) and we write them the other way, which also swaps the
+   v0/v1 pair that feeds them. Since the required barrier sits between the two
+   stores, order and no-fold are mutually exclusive here -- the same standing
+   A200 open question as RespawnOrGameOver_Draw: a cse ebb-break that emits no
+   NOTE_INSN_LOOP_BEG. The original's shape (base held in a register, tail
+   store first) is not reachable with the loop-note barrier at all, so the
+   original almost certainly broke the ebb some other way.
 
    2026-08-14-1 unattended permuter session (~15m, ~56500 iterations, timed out
    at the 15m budget): base score 140, and NOT ONE improving candidate was
@@ -66,7 +74,7 @@ extern int D_800777EC[];  /* transition fade counter */
 extern int D_800777FC;    /* transition card variant */
 extern void *D_800758D8;  /* substate draw handler */
 extern unsigned short g_anCosineLut[];
-extern void *g_apOtDepthBinBlock[8]; /* alias @0x8006fcf4: head/tail pair */
+extern void *g_apOtDepthBinBlock[]; /* alias @0x8006fcf4: head/tail pair */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 void Gamestate0C_Draw(void) {
@@ -82,10 +90,10 @@ void Gamestate0C_Draw(void) {
 
   if (g_nGamestate0cSubstate >= 4) {
     if (g_nGamestate0cSubstate < 6) {
-      void **ot = g_apOtDepthBinBlock;
-
-      *(void *volatile *)&ot[1] = 0;
-      *(void *volatile *)&ot[0] = D_80077850;
+      g_apOtDepthBinBlock[0] = D_80077850;
+      do {
+      } while (0);
+      g_apOtDepthBinBlock[1] = 0;
 
       variant = *(volatile int *)&D_800777FC;
       if (variant < 5) {

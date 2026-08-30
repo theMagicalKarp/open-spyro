@@ -1354,6 +1354,7 @@ g_nCameraSpringSuppressFlag = 0x80076ec0; // size:0x4
 g_anCameraScriptedTargetPos = 0x80076ed0; // size:0xc
 g_abFrameDrawEnv0 = 0x80076ee0; // size:0x5c
 g_abFrameDispEnv0 = 0x80076f3c; // size:0x14
+g_abFrameDrawEnvIsbgBlock = 0x80076ef8; // allow_duplicated:True incomplete-array alias — held-base view of g_abFrameDrawEnv0.isbg ([0]) so env1's r0/g0/b0 at +0x85..+0x87 store through one register base instead of the $at fold (RespawnOrGameOver_Draw)
 g_pFramePrimBufferBase0 = 0x80076f50; // size:0x4
 g_pFrameOtDepthBinBase0 = 0x80076f54; // size:0x4
 g_pFrameOtMergedChainSlot0 = 0x80076f58; // size:0x4

@@ -29,6 +29,7 @@ extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
 extern short g_anCameraEulerPitchBlock[];
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 extern unsigned short g_anGameOverCameraEulerU[];
+extern unsigned char g_abFrameDrawEnvIsbgBlock[];
 extern unsigned char D_8006F304[]; /* GAMEOVER letter glyph indices */
 extern unsigned char D_80010B9C[]; /* "PRESS X..." prompt string */
 
@@ -101,14 +102,20 @@ void RespawnOrGameOver_Draw(void) {
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {
-        g_abFrameDrawEnv0.isbg = 1;
+        g_abFrameDrawEnvIsbgBlock[0] = 1;
+        do {
+        } while (0);
         g_abFrameDrawEnv1.isbg = 1;
+
         g_abFrameDrawEnv0.r0 = 0;
+
         g_abFrameDrawEnv0.g0 = 0;
+
         g_abFrameDrawEnv0.b0 = 0;
-        g_abFrameDrawEnv1.r0 = 0;
-        g_abFrameDrawEnv1.g0 = 0;
-        g_abFrameDrawEnv1.b0 = 0;
+
+        g_abFrameDrawEnvIsbgBlock[0x85] = 0;
+        g_abFrameDrawEnvIsbgBlock[0x86] = 0;
+        g_abFrameDrawEnvIsbgBlock[0x87] = 0;
         DrawSync(0);
         VSync(0);
         rect[2] = 0x200;
@@ -222,14 +229,20 @@ void RespawnOrGameOver_Draw(void) {
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {
-        g_abFrameDrawEnv0.isbg = 1;
+        g_abFrameDrawEnvIsbgBlock[0] = 1;
+        do {
+        } while (0);
         g_abFrameDrawEnv1.isbg = 1;
+
         g_abFrameDrawEnv0.r0 = 0;
+
         g_abFrameDrawEnv0.g0 = 0;
+
         g_abFrameDrawEnv0.b0 = 0;
-        g_abFrameDrawEnv1.r0 = 0;
-        g_abFrameDrawEnv1.g0 = 0;
-        g_abFrameDrawEnv1.b0 = 0;
+
+        g_abFrameDrawEnvIsbgBlock[0x85] = 0;
+        g_abFrameDrawEnvIsbgBlock[0x86] = 0;
+        g_abFrameDrawEnvIsbgBlock[0x87] = 0;
         DrawSync(0);
         VSync(0);
         rect[2] = 0x200;
@@ -243,40 +256,35 @@ void RespawnOrGameOver_Draw(void) {
 }
 
 /* ============================ PARK NOTE ============================
- * Status: 359/361 insns byte-identical; +2 insn length overflow (slot
- * ld error "cannot move location counter backwards 8001cfe4->8001cfdc").
- * The ONLY residue is the frame-15 DRAWENV store block (0x8001cf44..cf84).
+ * 5/361 (98.6%), LENGTH-EXACT and LINKING. The old "+2 insns, unlinkable,
+ * unfixable held-base fold" note is retired: the frame-15 DRAWENV block is an
+ * A200 case, and the recipe is the standard one -- the alias declared as an
+ * INCOMPLETE ARRAY (g_abFrameDrawEnvIsbgBlock at g_abFrameDrawEnv0+0x18),
+ * reached with element indices ([0] for env0.isbg, [0x85]..[0x87] for env1's
+ * r0/g0/b0) while env1.isbg and env0.r0/g0/b0 stay absolute, plus an empty
+ * do { } while (0); between the base's materialisation and the offset stores.
  *
- * Solved this session (were still open in fable's draft):
- *  - Sine-wave letter loop (0x8001cd04..) regalloc: split the letter loop's
- *    `k`/`t`/`rec` from the sine loop's counters (sk/st/sc) so the sine vars
- *    land in temp regs a1/v1/a0 (were forced to callee-saved s0/s2 by reuse);
- *    keep `i` shared so it stays s1 across both loops (§H / §Q
- * split-per-block).
- *  - Both loop preheaders: order the invariant address (ramp / LUT base)
- *    BEFORE the counter zero. Made the sine base explicit
- *    (`sbase = &g_anSineLut[0x40]`) so it hoists to a2 ahead of `sk = 0`.
+ * BARRIER POSITION IS SWEPT, do not re-run: the five legal slots (after each
+ * of the five stores between [0] and [0x85]) score 5 / 7 / 40 / 9 / 12.
+ * Slot 0 -- immediately after `g_abFrameDrawEnvIsbgBlock[0] = 1;` -- is the
+ * one below.
  *
- * The wall (frame-15): original holds a base reg v1 = &g_abFrameDrawEnv0.isbg
- * (env0+0x18) and stores through it at +0 (env0.isbg), +0x85/86/87
- * (env1.r0/g0/b0), while env1.isbg + env0.r0/g0/b0 are absolute — saving the
- * 2 luis we overflow by. This is the §Y rule-1 cse fold: any nonzero-offset
- * MEM address off a constant-address pointer folds to absolute in a
- * straight-line, no-label ebb, with NO cost check. Verified unreachable:
- * pointer-local with 4 uses AND with all 8 stores routed through it both fold
- * every access to absolute (base never wins a hard reg because cse eliminates
- * its reg uses before global allocation). Per §Z, reg-based nonzero-offset
- * survives only POST-LABEL (loop bodies / switch cases); this block has no
- * label. Not a permuter candidate (cookbook §Y: skip-list class). How the
- * ORIGINAL got the reg-based form in a same-ebb no-label position is still
- * open across the whole project (Gamestate0C_Draw head pair, SampleSpyroShadow
- * lw 316(s0) share the mystery). Resume iff that root question is answered.
+ * THE REMAINING 5 ARE ONE INSTRUCTION: `move a0,zero`, the DrawSync(0)
+ * argument copy. The original hoists it to the head of the fall-through block,
+ * where reorg then steals it into the guard `bne`'s delay slot at 0x8001cf44;
+ * ours lands it four insns later, immediately after the barrier, and reorg
+ * takes `li v0,1` instead. This is A200's own cost signature (a): the
+ * note-carrying insn depends on every preceding set plus reg_pending_sets_all,
+ * so nothing after the barrier can be scheduled before it, and the arg copy is
+ * necessarily after it -- expand_call emits the copy at the call, which is
+ * after all eight stores. Closing it needs a cse ebb-break that emits no
+ * NOTE_INSN_LOOP_BEG (A200's standing open question), not another placement.
  *
- * 2026-07-25-1 unattended permuter session (~15m, ~46200 iterations, timed out
- * at the 15m budget): best score 950, unchanged from the base score of 950 —
- * no improving candidate found at all (3 output dirs). Consistent with the
- * skip-list assessment above. NB: in the same sweep ProbeSpyroLedgeForward,
- * parked under the same §Y "not a permuter candidate" reasoning, DID match at
- * iteration 212 — so §Y's skip-list rule is not universally reliable even
- * though it held here.
+ * Solved earlier and still load-bearing (do not undo): the sine-wave letter
+ * loop's k/t/rec split from the sine loop's sk/st/sc; both loop preheaders
+ * order the invariant address before the counter zero, with the sine base as
+ * an explicit `sbase = &g_anSineLut[0x40]`.
+ *
+ * 2026-07-25-1 permuter (~46,200 iterations) found nothing, which is expected:
+ * the residue was never in the randomizer's transform space.
  * ================================================================= */

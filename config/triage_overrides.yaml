@@ -3222,3 +3222,143 @@ A236_screening_2026_08_29_2:
     for another. The general precondition is therefore: a call in the SAME basic
     block, a callee that provably ignores the slot, and the wanted register being one
     of $a0..$a3.
+
+# --- session 2026-08-30 -----------------------------------------------------
+# Mode: harvest (gate read 13, all clones of parked heads -- SS1's mode-switch
+# rule fires immediately per the standing note in cookbook SSG).
+
+TurnSpyroTowardMoveTargetWithLean:
+  verdict: matched
+  class: "MATCHED 2026-08-30 (A238: nested do/while(0) ref dial in global.c)"
+  date: 2026-08-30
+  note: >-
+    368 B, was the closest park on the board at 2/92 since 2026-08-11-3. The
+    two-horn dilemma the old note called permuter-or-never is real but has a
+    third horn: make BOTH yaw reads multi-set (kills sched1's birthing boost on
+    the target read, so the emitted load order comes out right) and then win
+    global.c's allocno_compare instead of local-alloc's qty_compare. A nested
+    do { do { targetYaw = g_nSpyroMoveTargetYaw; } while (0); } while (0);
+    around the recompute arm's target read weights that ref by loop_depth 3,
+    taking it to 6 refs / 6 insns == the body read's 4 / 4; the exact tie falls
+    to the lower allocno number, which is the target read. MATCH.
+    Also measured and refuted here: `volatile` on either read is NOT a sched1
+    ordering barrier in 2.7.2 (byte-identical to the non-volatile form), and
+    "only b multi-set" gives the right registers but the wrong load order
+    (8/92) -- it is the complement of the previously measured "only t
+    multi-set" (10/92).
+
+func_80038C4C_2026_08_30:
+  verdict: parked
+  class: "F1 register tie; ay->a1 IS now reachable, rec[3] needs to stop being block-local"
+  date: 2026-08-30
+  note: >-
+    264 B, baseline 6/66 unchanged. First real movement since 2026-07-09:
+    writing the tail with an explicit shared result
+    (`inside = 0; if (rx < rec[3]) inside = ay < rec[4]; return inside;`)
+    instead of the early-return form puts `ay` in a1 -- the original's
+    register, which 78k permuter iterations and three sessions never reached.
+    It costs +1 insn and two other registers: `inside` becomes a global
+    allocno, takes v1, and needs a closing `move v0,v1`, while rec[3] keeps v0
+    (12/66, will not link). So the residue is now exactly localised: the
+    original's rec[3] load does NOT get v0 from local-alloc, i.e. in the
+    original that loaded value is not a block-local quantity (or v0 is
+    occupied over its range). Everything else about the tail is a consequence.
+    Next move is a decode question -- what makes rec[3] span blocks -- not
+    another allocation dial.
+func_80059594_2026_08_30:
+  verdict: parked
+  class: "F7 a0/a1 qty tie; registers and positions each reachable now, still mutually exclusive"
+  date: 2026-08-30
+  note: >-
+    720 B, baseline 6/180 (same-position replacements) kept as the park.
+    A232 reaches this knot, which the 2026-08-25 analysis had not tried:
+    moving the `g` load ABOVE `*dragons = d;` and wrapping the store in
+    `do { } while (0);` gives 6/180 with the REGISTERS CORRECT (previously
+    registers-right cost 7/180) -- the barrier makes both d and g global
+    allocnos, so allocno_compare replaces the local-alloc qty tie and d, born
+    first, wins a0. Cost: the `lh` is emitted before the `sw` (the alias
+    dependence that ordered them is gone) and the treasure `addu` hoists.
+    Wrapping BOTH the store and the g load in one barrier restores the exact
+    original ORDER (the lh regains its dependence on the sw) but rotates three
+    globals (d->a1, wt->a0, g->v1) -> 12/180. Double-nesting the barrier on
+    the store to raise d to 8 refs (the A238 dial) is 17/180. Read it as:
+    order and registers are still mutually exclusive here, but both halves are
+    now individually source-reachable, which they were not before.
+
+RespawnOrGameOver_Draw:
+  verdict: parked
+  class: "A200 barrier cost (a): the DrawSync arg copy cannot reach the guard bne's delay slot"
+  date: 2026-08-30
+  note: >-
+    1,444 B. Was an UNLINKABLE +2-insn park carrying a stale "unfixable
+    held-base fold" note that predated A200; the 2026-08-26 rework that took it
+    to 356/361 was never committed, so it was re-derived here. Now 5/361,
+    length-exact and LINKING (partial credit 1236 -> 1368 B). Recipe: the
+    incomplete-array alias g_abFrameDrawEnvIsbgBlock at g_abFrameDrawEnv0+0x18
+    with element indices [0] / [0x85..0x87], env1.isbg and env0.r0/g0/b0 left
+    absolute, plus an empty do { } while (0); at slot 0. Barrier sweep is
+    recorded in the .wip header and reproduces A200's 5/7/40/9/12 exactly --
+    do not re-run it. The 5 are one insn: `move a0,zero` (DrawSync's argument)
+    is trapped below the barrier, so reorg steals `li v0,1` into the guard
+    bne's delay slot instead. Needs a cse ebb-break with no NOTE_INSN_LOOP_BEG.
+
+Gamestate0C_Draw_2026_08_30:
+  verdict: parked
+  class: "A200 barrier pins the store ORDER (the offset-0 access must materialise the base)"
+  date: 2026-08-30
+  note: >-
+    1,132 B. Same stale-note story as RespawnOrGameOver_Draw: the "unfixable
+    B-i rule-1 fold" reading predated A200 and the 2026-08-26 rework was never
+    committed. Re-derived to 6/283, length-exact and LINKING (partial 44 ->
+    1,092 B) with the incomplete-array alias + element indices + one empty
+    do { } while (0) between the two stores. Form sweep (do not re-run):
+    [0]-then-barrier-then-[1] = 6; [1]-then-barrier-then-[0] = 273;
+    barrier-before-both = 270; no barrier = 270 (all three are +1 insn).
+    Residue is the store order itself and it is structural -- see the A200
+    corollary added this session.
+func_80038FC8_2026_08_30:
+  verdict: attempted
+  class: "A238 does not reach it: the 0x10 constant is block-local, so local-alloc pre-empts any global priority dial"
+  date: 2026-08-30
+  note: >-
+    608 B, unchanged at 4/152. Screened against A238. The lever needs BOTH
+    competing quantities in global.c; here the bare-literal constant is
+    block-local (3 refs / 3 insns) and local_alloc runs first, so it takes v0
+    before `old` is ever considered, whatever `old`'s global priority. Making
+    the constant global needs reg_n_sets >= 2, which is the already-measured
+    carrier that kills F14's boost and costs the schedule, and a single-set
+    pseudo used in two blocks is undone by update_equiv_regs remat (constants
+    always carry REG_EQUIV). The .wip's open question is unchanged.
+func_titlescreen_8007ABAC_2026_08_30:
+  verdict: attempted
+  class: "A238 blocked by B23; A236 has no ignorable argument slot"
+  date: 2026-08-30
+  note: >-
+    8,588 B, unchanged at 7/2147. Screened against both of the last two
+    sessions' new levers without building. A238 is a loop-note dial and B23
+    rules out any loop note in this block (it passes a stack argument) -- the
+    park already measured six placements at 10-14. A236 needs an
+    argument-IGNORING callee slot to hang a copy suggestion on; the only call
+    in the block is func_80016698 and all five of its argument slots carry live
+    values, so there is nowhere to put one. The park's own escape list (a third
+    real reference to the -0x40000 pseudo with no loop note, or a second
+    hard-reg suggestion on the pointer) is unchanged.
+UpdateSpyroFlightAttitudeNearGround:
+  verdict: parked
+  class: "decode gap, not a tie -- 76 masked mismatches over 28 regions"
+  date: 2026-08-30
+  note: >-
+    864 B. Opened because it is the worst partial scorer on the board (8/864 =
+    0.9%), on the theory that a near-zero score meant one early positional
+    offset. It does not: the compile-only shape diff is 76 mismatches over 28
+    regions and the build is several insns short. This is a re-derive, not a
+    residue; the 0.9% is honest.
+func_80061470:
+  verdict: parked
+  class: "raw permuter output -- the .wip does not compile"
+  date: 2026-08-30
+  note: >-
+    644 B, partial 0/644. The .wip is unfinished permuter spew (parse errors on
+    `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh
+    m2c re-derive before any allocation work, and it is the cheapest 644
+    partial bytes on the board once decoded.
