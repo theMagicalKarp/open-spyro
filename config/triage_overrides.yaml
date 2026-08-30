@@ -3453,3 +3453,20 @@ HandleHardwareInterrupt:
     (ptr 3/8 = 0.375 vs enable 3/10 = 0.30 at depth 1, 1.0 vs 0.8 at depth 2),
     so the order never changes. Depths 1 and 2 on the split form: 24/122. This
     closes the last exit the park listed; treat it as a genuine tie.
+BuildTextSpriteChain:
+  verdict: matched
+  class: "MATCHED 2026-08-30-1 (selective volatile on the cursor reads — the same lever as BuildTextSprites)"
+  date: 2026-08-30-1
+  note: >-
+    456 B, 10/113 -> 0. Sibling of BuildTextSprites and it fell to that
+    function's lever in four builds. A VOLATILE read is a sched2 ORDER pin, so
+    it forces its two-instruction symbol load to the head of its block, and
+    reorg's fill_slots_from_thread stops there (an 8-byte insn is not
+    delay-slot eligible). Reading the cursor PLAINLY at the four sites whose
+    value insn has to reach a delay slot -- the allocation write-back and the
+    digit / letter / default arms -- fixes all three recorded residues at once:
+    `li a2,0x58` sinks into the jal slot, each arm's `addiu v0,a0,K` leads its
+    thread, and jump.c stops cross-jumping those three `sh`s into the shared
+    tail (which was the whole one-insn length deficit). The six equality arms
+    keep the volatile read and stay merged. Order of discovery: `w` alone is
+    length-short, `w2` 78/114, `w12` 7/114, `w12d` MATCH.
