@@ -3433,3 +3433,19 @@ func_80038FC8:
     inert or worse (c16 folded into its first store, 10/152). The committed body
     is unchanged -- the new route is not better, it is just a second door onto
     the same last insn.
+HandleHardwareInterrupt:
+  verdict: parked
+  class: "F7 qty_compare tie (I_STAT pointer vs the enable value) — the only exit needs a 3rd ref that a statement split cannot buy"
+  date: 2026-08-30-1
+  note: >-
+    488 B, still 10/122. Screened against A238, which is exactly the lever the
+    park's own note asks for ("a 3rd ref on the enable value from a carrier that
+    stays BLOCK-LOCAL and that does not add an insn"), and it does not reach:
+    the nest has to CONTAIN the enable read, which means splitting
+    `stat = enable & *I_STAT;` into a block-scoped `en` temp first, and that
+    split alone -- with NO nest -- is already 21/122. So the cost is the split,
+    not the dial. Nesting the whole combined statement instead is provably inert:
+    it weights the pointer and the enable equally, and qty_compare_1 is a ratio
+    (ptr 3/8 = 0.375 vs enable 3/10 = 0.30 at depth 1, 1.0 vs 0.8 at depth 2),
+    so the order never changes. Depths 1 and 2 on the split form: 24/122. This
+    closes the last exit the park listed; treat it as a genuine tie.
