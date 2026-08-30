@@ -18,8 +18,9 @@ extern int D_80076228_blk[];
    tallies with recomputed world totals, kill bitmaps) and returns whether the
    stored checksum at +0x58C matches.
 
-PARKED 96.7%, LENGTH-EXACT (6/180) -- was 11/180 (and the old header's
-   "15/180" was already stale; re-measure before believing any park figure).
+PARKED 97.8%, LENGTH-EXACT (4/180) -- was 6/180 (2026-08-30-1), and the
+   older "15/180" / "11/180" figures in this header's history were already
+   stale when written; re-measure before believing any park figure.
    Held-base SpuCommonAttr -0x320 region matches via the D_80076228_blk
    incomplete-array alias (A20).
 
@@ -31,46 +32,52 @@ PARKED 96.7%, LENGTH-EXACT (6/180) -- was 11/180 (and the old header's
    `tbl = g_abWorldPerLevelByteTable;` and `row += 5;` BEFORE `tbl += 5;` fixes
    all five insns (11 -> 6).  Neither half works alone (8 and 9).
 
-   SOLE RESIDUE (6 insns): the symmetric a0/a1 swap of d (dragon byte) and g
-   (gem short) in the world-totals accumulator loop -- the original has d in a0,
-   we have g there.  Every position is correct; it is one allocation decision.
-   MEASURED (cc1 -dl and -dS, basic block 7) -- do not re-derive:
-     d = reg93, 6 refs (3 x loop_depth 2) across 6 insns
-                -> qty_compare priority floor_log2(6)*6/6 = 20000
-     g = reg94, 6 refs across 5 insns -> 2*6/5 = 24000, so g is allocated first
-                and takes the lowest free reg (a0); v0/v1 are already held by
-                the two `plus` temps (149 -> v0, 150 -> v1) and the wd/wt loads.
-   Both of g's range endpoints and d's birth are STRUCTURALLY pinned, which is
-   why 20+ source forms are inert:
-     * d is born at the block's first load and cannot be moved later.  Swapping
-       the three loads in source DOES change their LUIDs, but rank_for_schedule
-       runs its CLASS test before LUID: the d load is the only DATA producer of
-       the dragons store (class 1) while the wd/wt loads are ANTI (class 2), so
-       d is always picked LAST in that ready group and therefore placed FIRST.
-       Verified in the sched1 trace for both source orders.
-     * g is born immediately after the dragons store because sched1 gives the
-       `lh` a LOG_LINK to it -- gcc cannot disambiguate two register-addressed
-       MEMs.  A226 does not reach this: its true_dependence exclusion needs one
-       side to have a NON-varying (symbol) address, and both of these vary.
-     * g dies at the later of its store and its add, and nothing can be
-       scheduled between them -- the only other insn in that window is the
-       `slti`, which is boosted and is launched only at T-2 by the branch.
-   THE ONE FORM THAT FLIPS THE REGISTERS is moving the g load ABOVE the dragons
-   store (assign g before `*dragons = d;`): the alias dependence reverses, g is
-   born one insn earlier, the two ranges tie at 6, and the lower qty (d, born
-   first) wins a0.  That state is 7/180 WITH THE REGISTERS CORRECT -- but the
-   store then depends on the load and, being a store (F19: the biggest
-   potential_hazard in its priority group), it is placed LAST and sinks three
-   slots below the two `addu`s.  Registers-right and positions-right are
-   mutually exclusive here; 6/180 is the better park (all six are same-position
-   replacements, so positional partial credit is not disturbed).
-   Also measured, all inert or worse against the 6/180 baseline: A195 dials on
-   d's def / store / add at depths 1-3 (11-17); every reordering of the wd/wt/d
-   loads (6, 6); `dragons[0]` / `gems[0]` ARRAY_REF forms and the
-   `((short *)half)[0x56]` form (all 6); `unsigned char d` (6); `short g`
-   (length change); splitting the treasure add from its store with a reused or a
-   fresh temp (11); `+=` on the two world globals instead of the wd/wt temps
-   (+2 insns, will not link); moving the gems store past the egg `if` (27).
+   SOLVED 2026-08-30-1 (the a0/a1 knot, 6 register diffs -> 0): the world-totals
+   accumulator loop is an A238 shape and the dial is TWO source edits, both in
+   the block above:
+     * `g = *((short *)(half + 0xAC));` is hoisted ABOVE `*dragons = d;`.  That
+       makes g born one insn earlier, so its local-alloc live length goes 5 -> 6.
+     * `*dragons = d;` is wrapped in `do { ... } while (0);`.  flow.c weights
+       REG_N_REFS by loop depth, so that one reference of d counts 3 instead of
+       2 and d goes 6 refs -> 7.
+   qty_compare_1 is floor_log2(R)*R*size/(death-birth), so this moves the pair
+   from d 2*6*4/6 = 80000 < g 2*6*4/5 = 96000 to d 2*7*4/6 = 93333 > g
+   2*6*4/6 = 80000, and d takes a0.  Every register in the block is now correct
+   (a0=d, a1=g, v0=wd, v1=wt).  MEASURED with cc1 -dl at each step; do not
+   re-derive.  Two calibration facts worth keeping: a DOUBLE nest here is an
+   over-shoot (8 refs -> floor_log2 steps to 3 -> 160000, d out-ranks the wd/wt
+   pair and takes v0, 13/180), and the ref dial does NOT work in the original
+   store-before-load source order (d tops out at 93333 against g's 96000, X/AB
+   variants, 7 and 9).
+
+   RESIDUE (4 insns, two same-position swaps):
+   R1 `sw a0,0(t0)` <-> `lh a1,172(t1)`.  The original stores *dragons before
+      loading g; we load g first.  This is FORCED by the fix above and is not a
+      scheduling tie: gcc cannot disambiguate the two register-addressed MEMs,
+      so whichever comes first in source gets the dependence edge and the
+      emitted order is source order (with the A200 barrier between them it is
+      source order by construction).  So R1 and the allocation are the SAME
+      degree of freedom -- closing R1 needs a dial that gives d the higher
+      qty_compare priority WITHOUT hoisting the g load.  Measured and inert in
+      that order: the store nest alone (7), a nest on `wd + d` as well (9),
+      re-reading `*dragons` to buy a cse ref (6, cse substitutes the pseudo so
+      the ref count does not move), and both together (9).
+   R2 `slti v0,a2,18` <-> `sw a1,0(t2)`.  Caused by the SECOND barrier: per B23
+      the insn that carries the loop notes gets reg_pending_sets_all, so
+      everything after it -- including the egg-guard compare -- depends on it,
+      and `*gems = g` cannot be scheduled after the slti.  Without that barrier
+      `addu v1,v1,a1` floats three slots early instead (6/180), so the barrier
+      is a 4-insn-for-2 trade, not a fix.  Measured, all 4 or worse: barrier
+      after `*gems` (4), barrier at the top of the if body (4), barrier around
+      the treasure total (6), barrier before the if (6), a hoisted `cond`
+      local (6 / 37), swapping the gems store past the treasure total (50).
+   Also measured earlier, all inert or worse: A195 dials on d's def / store /
+   add at depths 1-3 (11-17); every reordering of the wd/wt/d loads (6, 6);
+   `dragons[0]` / `gems[0]` ARRAY_REF forms and the `((short *)half)[0x56]` form
+   (all 6); `unsigned char d` (6); `short g` (length change); splitting the
+   treasure add from its store with a reused or a fresh temp (11); `+=` on the
+   two world globals instead of the wd/wt temps (+2 insns, will not link);
+   moving the gems store past the egg `if` (27).
 
    2026-07-25-1 unattended permuter session (~15m, ~63600 iterations, timed out
    at the 15m budget): best score 120 vs base score 325. No byte-perfect
@@ -164,9 +171,13 @@ int func_80059594(unsigned char *buf) {
     d = row2[0x88];
     wd = g_nWorldDragonsRescued;
     wt = g_nWorldTreasureCollected;
-    *dragons = d;
     g = *((short *)(half + 0xAC));
+    do {
+      *dragons = d;
+    } while (0);
     g_nWorldDragonsRescued = wd + d;
+    do {
+    } while (0);
     *gems = g;
     g_nWorldTreasureCollected = wt + g;
     if (i < 0x12) {

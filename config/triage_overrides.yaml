@@ -3362,3 +3362,22 @@ func_80061470:
     `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh
     m2c re-derive before any allocation work, and it is the cheapest 644
     partial bytes on the board once decoded.
+
+# --- 2026-08-30-1 session: the A238 ref dial applied to the harvest inventory ---
+func_80059594:
+  verdict: parked
+  class: "F19 store-vs-compare position swap + an alias-order/allocation conflict (R1)"
+  date: 2026-08-30-1
+  note: >-
+    720 B, 6/180 -> 4/180 and the a0/a1 register class is CLOSED. A238's
+    ref-count dial applies here in a two-edit form: hoist the g load above the
+    dragons store (g's local-alloc live length 5 -> 6) and wrap the store in a
+    single `do { } while (0)` (d's loop-depth-weighted refs 6 -> 7), which takes
+    qty_compare_1 from d 80000 < g 96000 to d 93333 > g 80000. A double nest
+    over-shoots (floor_log2 steps at 8 refs, d takes v0, 13/180). What is left
+    is 2 + 2 insns: R1 is the store/load pair, whose emitted order IS the source
+    order because gcc cannot disambiguate the two register-addressed MEMs -- so
+    R1 and the allocation are one degree of freedom; R2 is the second barrier's
+    B23 cost (the egg-guard slti cannot precede the note-carrying gems store),
+    and removing that barrier costs 4 insns elsewhere. Full measured variant
+    table in the .wip header.
