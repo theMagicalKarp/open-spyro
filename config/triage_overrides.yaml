@@ -3414,3 +3414,22 @@ func_titlescreen_8007ABAC:
     So the objective is now exactly: the pointer must be LOCAL (to get v0) while
     the constant wins the a1 suggestion, i.e. lever 1's third reference to the
     constant with no loop note is the only thing left.
+func_80038FC8:
+  verdict: parked
+  class: "F14b straggler LUID tie (li v1,16 vs the call-arg copy) — now reachable from two different allocation routes"
+  date: 2026-08-30-1
+  note: >-
+    608 B, still 4/152. Screened against A238 and the result is a genuinely new
+    route to the same state, which narrows the park: hoisting `old` to function
+    scope so BOTH it and the c16 carrier are multi-set puts the pair in
+    global-alloc, where c16 (6 refs/16 insns = 3.0) still beats old (4/18 =
+    1.78) and the registers invert (11/152) -- but a 4-deep do/while(0) nest on
+    ONE of old's two loads takes it to 8 refs (5.33) and the registers come out
+    right at 4/152, with the SAME residue as the committed single-carrier body.
+    So the register half is now reachable two ways and the F14b mutual
+    exclusion the park describes is really only about the LUID tie. Depth 3 is
+    not enough (11/152) and the arm the nest sits in does not matter (arm 1 or
+    arm 2, both 4/152). Statement permutation on the both-global body is still
+    inert or worse (c16 folded into its first store, 10/152). The committed body
+    is unchanged -- the new route is not better, it is just a second door onto
+    the same last insn.
