@@ -3470,3 +3470,50 @@ BuildTextSpriteChain:
     tail (which was the whole one-insn length deficit). The six equality arms
     keep the volatile read and stay merged. Order of discovery: `w` alone is
     length-short, `w2` 78/114, `w12` 7/114, `w12d` MATCH.
+
+# --- 2026-08-30-1: parks screened against the new selective-volatile lever ----
+RespawnOrGameOver_Draw:
+  verdict: parked
+  class: "A200 barrier cost (a) — the DrawSync arg copy cannot reach the guard bne's delay slot"
+  date: 2026-08-30-1
+  note: >-
+    1,444 B, still 5/361. Screened against this session's selective-volatile
+    lever and it does not apply: the insn reorg steals into the slot
+    (`li v0,1`) is not a load, so there is no volatile pin to drop. The block
+    head is fixed by the A200 barrier, not by a MEM's ordering. The park's own
+    diagnosis stands -- it needs a cse ebb-break with no NOTE_INSN_LOOP_BEG.
+FlushGpuQueue:
+  verdict: parked
+  class: "sched1 volatile-vs-plain MEM ordering — the third RIDX read hoists above the plain ring read"
+  date: 2026-08-30-1
+  note: >-
+    748 B, 14/187. Screened against the selective-volatile lever in its REMOVE
+    direction (make the third RIDX read plain so it stops out-ordering the ring
+    read) and it is unusable here: the three RIDX reads are reads of ONE global,
+    so dropping volatile lets cse merge them and the original's three separate
+    loads disappear. Would need three allow_duplicated aliases, and different
+    symbol_refs give no dependence against the plain ring read either, so the
+    pin still would not exist. The park's ADD-volatile measurements (21/187,
+    20/187) stand.
+EnqueueGpuOp:
+  verdict: parked
+  class: "divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist"
+  date: 2026-08-30-1
+  note: >-
+    Screened against the selective-volatile lever: not applicable. Its residue 3
+    wants the volatile WIDX reads PINNED (the park already measured that the pin
+    costs a held base, B16, 61/184); this session's lever removes a pin, which
+    is the wrong direction, and the three reads share one global so they would
+    be cse-merged anyway.
+func_8003A420:
+  verdict: parked
+  class: "F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with"
+  date: 2026-08-30-1
+  note: >-
+    768 B, 9/192. Screened against A238: the dial has nothing to aim at. The
+    residue is global.c's hard_reg_preference from the call-result copy, and
+    `prune_preferences` only clears it if the allocno crosses a call (it does
+    not, 4-insn range) or if a HIGHER-priority conflicting allocno also prefers
+    v0 -- the probe's conflict list is three s-reg pointers and none of them
+    prefers v0, so there is no allocno whose refs could be dialled up to take
+    v0 first.
