@@ -3301,3 +3301,64 @@ RespawnOrGameOver_Draw:
     do not re-run it. The 5 are one insn: `move a0,zero` (DrawSync's argument)
     is trapped below the barrier, so reorg steals `li v0,1` into the guard
     bne's delay slot instead. Needs a cse ebb-break with no NOTE_INSN_LOOP_BEG.
+
+Gamestate0C_Draw_2026_08_30:
+  verdict: parked
+  class: "A200 barrier pins the store ORDER (the offset-0 access must materialise the base)"
+  date: 2026-08-30
+  note: >-
+    1,132 B. Same stale-note story as RespawnOrGameOver_Draw: the "unfixable
+    B-i rule-1 fold" reading predated A200 and the 2026-08-26 rework was never
+    committed. Re-derived to 6/283, length-exact and LINKING (partial 44 ->
+    1,092 B) with the incomplete-array alias + element indices + one empty
+    do { } while (0) between the two stores. Form sweep (do not re-run):
+    [0]-then-barrier-then-[1] = 6; [1]-then-barrier-then-[0] = 273;
+    barrier-before-both = 270; no barrier = 270 (all three are +1 insn).
+    Residue is the store order itself and it is structural -- see the A200
+    corollary added this session.
+func_80038FC8_2026_08_30:
+  verdict: attempted
+  class: "A238 does not reach it: the 0x10 constant is block-local, so local-alloc pre-empts any global priority dial"
+  date: 2026-08-30
+  note: >-
+    608 B, unchanged at 4/152. Screened against A238. The lever needs BOTH
+    competing quantities in global.c; here the bare-literal constant is
+    block-local (3 refs / 3 insns) and local_alloc runs first, so it takes v0
+    before `old` is ever considered, whatever `old`'s global priority. Making
+    the constant global needs reg_n_sets >= 2, which is the already-measured
+    carrier that kills F14's boost and costs the schedule, and a single-set
+    pseudo used in two blocks is undone by update_equiv_regs remat (constants
+    always carry REG_EQUIV). The .wip's open question is unchanged.
+func_titlescreen_8007ABAC_2026_08_30:
+  verdict: attempted
+  class: "A238 blocked by B23; A236 has no ignorable argument slot"
+  date: 2026-08-30
+  note: >-
+    8,588 B, unchanged at 7/2147. Screened against both of the last two
+    sessions' new levers without building. A238 is a loop-note dial and B23
+    rules out any loop note in this block (it passes a stack argument) -- the
+    park already measured six placements at 10-14. A236 needs an
+    argument-IGNORING callee slot to hang a copy suggestion on; the only call
+    in the block is func_80016698 and all five of its argument slots carry live
+    values, so there is nowhere to put one. The park's own escape list (a third
+    real reference to the -0x40000 pseudo with no loop note, or a second
+    hard-reg suggestion on the pointer) is unchanged.
+UpdateSpyroFlightAttitudeNearGround:
+  verdict: parked
+  class: "decode gap, not a tie -- 76 masked mismatches over 28 regions"
+  date: 2026-08-30
+  note: >-
+    864 B. Opened because it is the worst partial scorer on the board (8/864 =
+    0.9%), on the theory that a near-zero score meant one early positional
+    offset. It does not: the compile-only shape diff is 76 mismatches over 28
+    regions and the build is several insns short. This is a re-derive, not a
+    residue; the 0.9% is honest.
+func_80061470:
+  verdict: parked
+  class: "raw permuter output -- the .wip does not compile"
+  date: 2026-08-30
+  note: >-
+    644 B, partial 0/644. The .wip is unfinished permuter spew (parse errors on
+    `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh
+    m2c re-derive before any allocation work, and it is the cheapest 644
+    partial bytes on the board once decoded.
