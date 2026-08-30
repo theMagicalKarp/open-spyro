@@ -3381,3 +3381,19 @@ func_80059594:
     B23 cost (the egg-guard slti cannot precede the note-carrying gems store),
     and removing that barrier costs 4 insns elsewhere. Full measured variant
     table in the .wip header.
+BuildTextSprites:
+  verdict: parked
+  class: "F8 x2 reorg delay-slot fills (FillWord a2 li, and the ladder andi stolen into the letter beqz slot)"
+  date: 2026-08-30-1
+  note: >-
+    672 B, 26/168 -> 7/168. Three of the four recorded residues closed. The
+    headline one, the "unbreakable" param_2/flag live-length inversion, is an
+    A238 ref dial with a three-way target: flag 15 refs/109 = 1.65 beats
+    param_1 14/118 = 1.42 beats param_2 13/118 = 1.32, so BOTH params have to
+    be lifted over flag and floor_log2's step puts the targets at 16 and 17
+    weighted refs -- a 2-deep nest on `param_1 += 1;` and a 6-deep nest on
+    `*param_2 = adv;`. The pen-advance v0/v1 rotation is A201 (write the join
+    store once per arm with a block-scoped temp; cross-jumping merges it back)
+    and the digit-flag pair wants a block-scoped subtraction temp. What is left
+    is two reorg decisions, both measured inert against barriers and ladder
+    restructuring; see the .wip header for the numbers.
