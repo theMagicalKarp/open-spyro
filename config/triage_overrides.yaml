@@ -3397,3 +3397,20 @@ BuildTextSprites:
     and the digit-flag pair wants a block-scoped subtraction temp. What is left
     is two reorg decisions, both measured inert against barriers and ladder
     restructuring; see the .wip header for the numbers.
+func_titlescreen_8007ABAC:
+  verdict: parked
+  class: "qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local"
+  date: 2026-08-30-1
+  note: >-
+    8,588 B, still 7/2147, but the third lever is now measured. A238's second-set
+    dial applied to the POINTER (a function-scope carrier read from D_800785E8 in
+    both arms) does reach the goal half -- local-alloc's suggestion pass is left
+    with only the constant and a1 gets the -0x40000 -- and then strands the
+    pointer in t0 with both loads drifted to the block head (17/2147), because a
+    global allocno cannot reuse v0 after the `sw v0,16(sp)` that kills the 600.
+    An in-block double set (`base = 1; D_80078D78.unk_0x10 = base;`) is deleted
+    by constant propagation and is byte-identical to the baseline -- the header's
+    donor rule does not hold when the second set's destination is a struct field.
+    So the objective is now exactly: the pointer must be LOCAL (to get v0) while
+    the constant wins the a1 suggestion, i.e. lever 1's third reference to the
+    constant with no loop note is the only thing left.
