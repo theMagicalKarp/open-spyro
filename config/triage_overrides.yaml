@@ -3284,3 +3284,20 @@ func_80059594_2026_08_30:
     the store to raise d to 8 refs (the A238 dial) is 17/180. Read it as:
     order and registers are still mutually exclusive here, but both halves are
     now individually source-reachable, which they were not before.
+
+RespawnOrGameOver_Draw:
+  verdict: parked
+  class: "A200 barrier cost (a): the DrawSync arg copy cannot reach the guard bne's delay slot"
+  date: 2026-08-30
+  note: >-
+    1,444 B. Was an UNLINKABLE +2-insn park carrying a stale "unfixable
+    held-base fold" note that predated A200; the 2026-08-26 rework that took it
+    to 356/361 was never committed, so it was re-derived here. Now 5/361,
+    length-exact and LINKING (partial credit 1236 -> 1368 B). Recipe: the
+    incomplete-array alias g_abFrameDrawEnvIsbgBlock at g_abFrameDrawEnv0+0x18
+    with element indices [0] / [0x85..0x87], env1.isbg and env0.r0/g0/b0 left
+    absolute, plus an empty do { } while (0); at slot 0. Barrier sweep is
+    recorded in the .wip header and reproduces A200's 5/7/40/9/12 exactly --
+    do not re-run it. The 5 are one insn: `move a0,zero` (DrawSync's argument)
+    is trapped below the barrier, so reorg steals `li v0,1` into the guard
+    bne's delay slot instead. Needs a cse ebb-break with no NOTE_INSN_LOOP_BEG.
