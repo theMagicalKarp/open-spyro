@@ -18,6 +18,8 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   int *dragons;
   int prevDragons;
   int idx;
+  int one; /* the shared `1`, re-used as the world-counter carrier: see the
+            park note -- the second SET is what de-boosts it */
   puVar1 = (unsigned int *)(*param_1);
   if (((g_nActiveLevelId == 0xa) && (puVar1[6] == 1)) &&
       ((((g_abLevelGemPercent[1] != 0) || (g_abLevelGemPercent[2] != 0)) ||
@@ -45,8 +47,9 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   g_nHudDragonCachedCount = world;
   dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   prevDragons = *dragons;
-  g_nGameplayBlocked = 1;
-  g_nGamePaused = 1;
+  one = 1;
+  g_nGameplayBlocked = one;
+  g_nGamePaused = one;
   *dragons = prevDragons + 1;
   g_anGemPickupBlock[0] = 0;
   g_anGemPickupBlock[1] = 0;  /* g_nGemPickupStreamState */
@@ -55,7 +58,8 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
   g_anGemPickupBlock[13] = 0; /* g_nGemPickupPadHoldTimer */
   g_anGemPickupBlock[12] = 0; /* g_nGemPickupAudioFiredFlag */
   g_anGemPickupBlock[0x1a] = (int)param_1;
-  g_nWorldDragonsRescued = world + 1;
+  one = world + 1;
+  g_nWorldDragonsRescued = one;
   g_anGemPickupBlock[-1] = puVar1[6]; /* g_nGemPickupTypeSnapshot */
   if (puVar1[8] != (-1)) {
     *((unsigned char *)((((char *)g_pActorListBase) + (puVar1[8] * 0x58)) +
@@ -69,7 +73,64 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
       (unsigned char *)(((char *)g_anGemPickupBlock[0x1a]) + 0x54));
 }
 
-/* PARKED 2026-08-15 at 93.8% (9/146), LENGTH-EXACT — was 24/146 at the start of
+/* PARKED 2026-08-31 at 95.2% (7/146), LENGTH-EXACT -- was 9/146 for three
+   sessions.  The residue is now ONE register decision, not a chain rotation.
+
+   WHAT MOVED IT (9 -> 7), and it is the reusable finding: the 2026-08-15 note
+   below diagnosed the residue as "the shared literal 1 beats the `dragons`
+   pointer in local-alloc's qty_compare, and the numerator cannot be bought
+   without an insn".  The numerator is not the dial -- **F14's birthing boost
+   is**.  The literal's pseudo is single-set, so sched1 places its `li` right
+   next to its first use, which makes its live range 3 insns, which is what
+   wins it $v1 over the `dragons` giv.  Give that pseudo a SECOND SET
+   (A238 step 1) and the whole dragons chain comes back byte-exact:
+   `lw g_nLevelIntroIndex` / `sll 2` / `addu` / `lw 0(v1)` / `sw 0(v1)` all
+   land in $v1 as the original has them, closing 6 of the 9.
+   The second set has to be a value that already needs a register in the SAME
+   basic block; `one = world + 1;` (the g_nWorldDragonsRescued increment) is
+   the cheapest one and is what is checked in.
+
+   WHAT IS LEFT (7 insns, one decision): `one` and `world` are allocated the
+   WRONG WAY ROUND -- ours puts `world` in $a0 and the constant in $a1, the
+   original has `li a0,1` and `world` in $a1.  Six of the seven are that swap
+   (`li`, the `lui/lw` pair, the HUD store, and the two flag stores); the
+   seventh is `addiu a1,a0,1` where the original has `addiu a1,a1,1`, which is
+   inherent to using the increment as the carrier (the original's increment
+   writes into world's own register, so the carrier can never be the constant).
+   **So this shape caps at 2 even with the swap fixed** -- a de-boost carrier
+   that is NOT the world increment is needed for a real match, and $a0 is used
+   by nothing else in that basic block, which is why every other carrier site
+   couples a second register.
+   MEASURED 2026-08-31, all length-exact unless noted (baseline 9):
+     7   `one = world + 1` carrier (checked in).
+     7   the same with `one` declared first / declared before `puVar1` /
+         `one = 1` hoisted to the top of the block or below the HUD store /
+         `one = world; one = one + 1;` -- statement and declaration order are
+         INERT here, exactly as the 2026-08-15 note found.
+     9   carriers whose second set is a COPY and is deleted before sched1
+         (`one = (int)param_1;`), with or without `world = world + 1;`:
+         reg_n_sets stays 1, the boost survives, nothing moves.  Same for a
+         plain `world = world + 1;` with no carrier at all.
+     13  `one = puVar1[6]` (snapshot) carrier: fixes the chain, but the
+         snapshot store then schedules ABOVE the world store.  Also 13 for the
+         actor-index carrier (`one = puVar1[8]`) at two positions, and for
+         `one = 2; puVar1[6] = one;` in the first `if`.
+     33  `one` shared with the actor `+0x3c` store: fixes the chain AND is one
+         insn SHORT -- the original re-materialises `li v1,1` there, so the two
+         are separate pseudos in the original.
+     38  `one = 1` shared with `puVar1[6] = 1` in the 0x3c block.
+     19-38 every `do { } while (0)` ref dial (A238), at depth 1 and 2, on the
+         `dragons` def / the load / the store / the carrier's first or second
+         set.  This is straight-line code, so the dummy loop's NOTEs only split
+         the basic block and wreck sched1 -- confirmed again, and the two
+         depth-1/depth-2 pairs that do link change nothing between them.
+     34  both flag stores through `*(volatile int *)`.
+     LENGTH-DIFF: a nest around `one = world + 1;` at either depth.
+   The next idea has to be a way to give the constant's pseudo a second set
+   whose value is DEAD or already lives in $a0 -- neither exists in this block.
+
+   ---- the 2026-08-15 note, whose closing residue list is superseded ----
+   PARKED 2026-08-15 at 93.8% (9/146), LENGTH-EXACT — was 24/146 at the start of
    the session (and 45/146 when the 2026-07-19 note below was written; that
    note's residue list is superseded). The permuter body is gone. Closed here:
      - the tail zero-store run scheduled AFTER the source-actor store (the
@@ -86,7 +147,7 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
        below the alias base) sets MEM_IN_STRUCT_P and the load stays put.
        15 -> 9 diffs.
 
-   REMAINING (9 insns, one class): in the dragon-rescue block the original puts
+   (2026-08-15) REMAINING (9 insns, one class): in the dragon-rescue block the original puts
    the shared literal `1` in a0 and the `dragons` pointer in v1; ours has them
    swapped. §D 2c probe: reg 116 (the constant, 3 refs / 6 insns, priority
    floor_log2(3)*3/6 = 0.50) beats reg 75 (`dragons`, 3 refs / 7 insns, 0.43),
