@@ -18,7 +18,8 @@ extern int D_80076228_blk[];
    tallies with recomputed world totals, kill bitmaps) and returns whether the
    stored checksum at +0x58C matches.
 
-PARKED 97.8%, LENGTH-EXACT (4/180) -- was 6/180 (2026-08-30-1), and the
+PARKED 97.8%, LENGTH-EXACT (4/180) -- re-measured 2026-08-31; was 6/180 as
+   written 2026-08-30-1, and the
    older "15/180" / "11/180" figures in this header's history were already
    stale when written; re-measure before believing any park figure.
    Held-base SpuCommonAttr -0x320 region matches via the D_80076228_blk
@@ -50,6 +51,38 @@ PARKED 97.8%, LENGTH-EXACT (4/180) -- was 6/180 (2026-08-30-1), and the
    pair and takes v0, 13/180), and the ref dial does NOT work in the original
    store-before-load source order (d tops out at 93333 against g's 96000, X/AB
    variants, 7 and 9).
+
+   R1 IS REACHABLE AFTER ALL (2026-08-31) -- the "FORCED by the fix" reading
+   below is wrong about the DIAL, right about the arithmetic.  What pins the
+   `g` load above the `*dragons` store is not source order at all: `g` is
+   single-set, so sched1's F14 birthing boost puts its `lh` right next to its
+   first use, which is what makes its local-alloc live length 5 and hence its
+   priority 96000.  **A second SET on `g` (A238 step 1) de-boosts it, its live
+   length grows, and `d` wins $a0 in the ORIGINAL store-before-load source
+   order** -- R1 closes outright.  Measured (store-first order + the existing
+   `*dragons` nest, all length-exact):
+     4   `g` carries the trailing options loop's byte
+         (`g = *((buf + i) + 0x106); g_abSaveOptionsBlock[i] = g;`):
+         **R1 CLOSED**, R2 unchanged, and the ONLY new residue is 2 insns of
+         register naming in that loop -- the original re-uses $v0 there for
+         BOTH the address temp and the loaded byte, which a named carrier can
+         never do.  Net 4, i.e. exactly the same score as the checked-in body,
+         so it is recorded here rather than checked in.
+     5   `g` carries the egg block's `e` (either statement order): R1 closed,
+         3 insns of naming in the egg block ($a1 where the original has $v1).
+     7   `g = e;` as a plain copy (deleted, no de-boost); store-first with no
+         carrier at all.
+     12  the egg carrier in the LOAD-first order (the two dials fight).
+     28  `g` carries `sm`, the early SPU volume (`(sfx * 0x3FFF) / 10`) -- the
+         one other place the original has a live value in $a1.  The span from
+         the volume block to the tally loop re-colours the whole function.
+   So R1's real gate is "a second-set site for `g` whose ORIGINAL register is
+   also $a1", and the function has exactly one ($sm), which is unusable.
+   Everything else in the function that would serve is $v0 or $v1.
+   Also re-measured and inert in store-first order: `wt` or `wd` moved below
+   the `g` load (6, LINKFAIL), the `d` load moved last (LINKFAIL), the A200
+   barrier moved above the `g` load or duplicated (9, 7), and a nest on the
+   `g` load itself (10).
 
    RESIDUE (4 insns, two same-position swaps):
    R1 `sw a0,0(t0)` <-> `lh a1,172(t1)`.  The original stores *dragons before

@@ -59,4 +59,18 @@ int *func_8005FC6C(int *ot, int n) {
    candidate at 100. A very flat curve over a very large sample, which supports
    the analysis above: the A187 lever is genuinely unaimable here (no branch
    after the dispatch call), so random permutation has nothing to find. Treat as
-   settled for unattended runs. Still PARKED (see above). */
+   settled for unattended runs. Still PARKED (see above).
+
+   2026-08-31 — A238's second-set lever does not rescue it either.  The
+   mechanism note above is confirmed by the shape of the original: `move v0,s0`
+   is not a scheduled return copy, it is the store's own base pseudo, which won
+   $2 from `may_save_copy`'s return-value copy suggestion (A236) — so the
+   original really does have a distinct pointer pseudo and we really do not.
+   Three more spellings measured, all 7/38 or worse: the copy hoisted to the
+   FIRST statement (before the debug `if`, so that cse's
+   `first_use(head) < cse_bb_start` clause could fire) — byte-identical;
+   `head = ot;` in BOTH arms of the debug `if` (to make it multi-set and
+   un-propagatable) — byte-identical; and a single re-assignment inside the
+   debug arm only — 20/38.  The A187 clause needs the copy's USES past a join
+   AND its def inside an arm, which this tail's shape cannot supply.
+*/
