@@ -34,37 +34,37 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
-| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | reload gives the index v0, which pins it against the *0x58 chain at sched2 |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R1 sched2 priority (unreachable) + 3 small ties |
+| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin on the *0x58 chain; carrier search closed (26 variants) |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole + Rd tpage/clut delay slot |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
-| `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | F2 nudge load hoist + F1 death-replay v0/v1 + F7 loop.c hoist choice in actor pass 2 |
+| `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
-| `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 barrier cost (a) — the DrawSync arg copy cannot reach the guard bne's delay slot |
+| `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1092 |  |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
+| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 744 | R1 cross-jump asymmetry + R6 shared-s0 held base + R3 caller-saved rotations |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x8002ccc8` | func_8002CCC8 | main | 868 | 732 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
-| `0x80059594` | func_80059594 | main | 720 | 696 | F19 store-vs-compare position swap + an alias-order/allocation conflict (R1) |
+| `0x80059594` | func_80059594 | main | 720 | 696 | R2 barrier-vs-slti trade (R1 now shown reachable but only at equal cost) |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | sched1 volatile-vs-plain MEM ordering — the third RIDX read hoists above the plain ring read |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
-| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 636 | R1 jump.c cross-jump asymmetry (label identity, not block content) + ~20 B16 per-site addressing + caller-saved rotations |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie |
-| `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b straggler LUID tie (li v1,16 vs the call-arg copy) — now reachable from two different allocation routes |
-| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | 4 missing `li a3,3` remats + one rec/POS allocno_compare tie |
+| `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (schedule XOR register) — needs update_equiv_regs to delete the 0x10 pseudo |
+| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` remat — origin narrowed, still unexplained |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
-| `0x8002c924` | BeginGemPickupOverlay | main | 584 | 492 | F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6) |
+| `0x8002c924` | BeginGemPickupOverlay | main | 584 | 500 | local-alloc a0/a1 pair: the de-boost carrier and the world counter |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
-| `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F7 qty_compare tie (I_STAT pointer vs the enable value) — the only exit needs a 3rd ref that a statement split cannot buy |
+| `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1/F7 register rotation |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 | divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
 | `0x800557cc` | func_800557CC | main | 400 | 288 | B13 (A233 not free here) + a 5-insn st->place schedule |
-| `0x80038c4c` | func_80038C4C | main | 264 | 240 | F1 register rotation (a1 vs v1) around a negu/store pair |
+| `0x80038c4c` | func_80038C4C | main | 264 | 240 | three-way: rec[3]/rec[4] share v0 in local-alloc because hard reg $2 is not yet live |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | decode incomplete |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | 232 | B11 lagged-mult + B-i fold |
 | `0x800606c8` | func_800606C8 | main | 536 | 228 | B9 clamp (inline) |
@@ -73,7 +73,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x800647a0` | CdSync | main | 640 | 196 |  |
 | `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | 140 |  |
 | `0x8005dd0c` | WaitForFrameDeadline | main | 156 | 128 |  |
-| `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F1 rotation + a `move v0,s0` placed after the masked store |
+| `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F4/A187 return-pointer copy propagation — no branch after the dispatch call |
 | `0x8005c1c0` | ControlSpuDmaTransfer | main | 656 | 112 | B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load |
 | `0x80060e28` | FUN_80060e28 | main | 176 | 88 | F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows. |
 | `0x8006606c` | CdRead | main | 260 | 72 |  |

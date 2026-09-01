@@ -94,6 +94,7 @@ D_80076DF8 = 0x80076DF8;
 D_80076DFC = 0x80076DFC;
 D_80076E00 = 0x80076E00;
 D_80076E1C = 0x80076E1C;
+D_80076E1E = 0x80076E1E;
 D_80076E20 = 0x80076E20;
 D_80076E28 = 0x80076E28;
 D_80076E48 = 0x80076E48;
@@ -204,3 +205,11 @@ D_8007A6A9 = 0x8007A6A9;
 D_8007A6AA = 0x8007A6AA;
 D_8007A6AB = 0x8007A6AB;
 D_8007A6AC = 0x8007A6AC;
+
+// Scalar aliases (same address, `int` DECL not an incomplete array) so a site can
+// pick the absolute `lui %hi / lw %lo` form the original uses at that site while
+// the array name keeps the held-base form elsewhere (cookbook B16, per-site).
+D_800777EC_s = 0x800777EC;
+D_800777F0_s = 0x800777F0;
+D_800777F4_s = 0x800777F4;
+D_80077838_s = 0x80077838;
