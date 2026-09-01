@@ -1,7 +1,21 @@
-/* PARKED 2026-08-29-1 at 1811/1815 insns, 36 mismatched instructions over 33
- * regions with immediates and registers BOTH live (the previous header's "57"
- * was an immediate-MASKED number and hid a ten-site frame-slot swap; see the
- * step*2/step*4 note below).  Was 144/53 at the start of that session.
+/* PARKED 2026-09-01-1 at 1810/1814 insns.  On the LINKED bins with registers
+ * anchored and immediates masked, difflib-aligned: **6 mismatches over 6
+ * regions, offset -4** -- the four dead `li a3,3` plus the one-insn
+ * `addiu s8,sp,32` preheader permutation.  Immediates are masked there, so the
+ * step*2/step*4 frame-slot swap (residue 2) is NOT counted in that 6; run the
+ * same diff with immediates live to see it.  Was 8/7 at the start of
+ * 2026-09-01-1 (36/33 as the 2026-08-29-1 header counted it).
+ *
+ * 2026-09-01-1 CLOSED residue 3 with **A214 CHAINED** -- the identical fix and
+ * the identical arm as `func_level_13_8008AF54.c.wip`, where the full note
+ * lives.  Two carriers (`bolt == v`, `home == p`) both have to lose their cse
+ * equivalence and only one free value is available, so chain them off the
+ * call's own third argument:
+ *     home = (int *)D_80076DF8;
+ *     bolt = home;
+ *     func_8001778C(v, p, D_80076DF8);
+ * Zero insn cost (1810 either way), and `home` must be the one that takes the
+ * live value -- the other order re-tiles the arm.
  *
  * THE LEVER THAT MOVED IT (144 -> 36): the nine expire sites whose `if` arm is
  * followed by an `else` are written `goto expire;` against ONE shared
@@ -49,6 +63,15 @@
  *     block heads on the path to a real use (arm 0x4 head -> `commit:` head ->
  *     `measure:` -> `bne v0,a3`), which is the shape of a value being made
  *     available per-block rather than per-use.
+ *     **2026-09-01-1: bounded by arithmetic in the level_13 park header -- read
+ *     that note before spending another session here.**  `.i.greg` (dumped
+ *     after reload in 2.7.2) shows our `burst` is a `reg_equiv_constant` pseudo
+ *     with no hard register, so reload emits exactly ONE `li` per REFERENCE,
+ *     adjacent to it.  The original therefore had EIGHT references, four of
+ *     which left only the reload behind.  Caller-save is ruled out from the
+ *     2.7.2 source (memory only, no constant path) and per-arm block scoping is
+ *     ruled out by measurement.  The only late-enough deleter is `final`'s
+ *     no-op-move skip.
  *  2. `step * 2` and `step * 4` occupy each other's frame slots: the original
  *     spills step*2 to 184(sp) and step*4 to 192(sp), we do the reverse, and
  *     that shows up at ~10 `lw a3,...` sites plus the head pair
@@ -57,11 +80,10 @@
  *     created first.  MEASURED AND WORSE, do not retry: naming `step2` before
  *     or after `step4` (139/56, -6), inlining `step * 4` and letting loop.c
  *     hoist both (91/61, -7), and `dir = dv;` above `step4` (38/33).
- *  3. Arm 0x8's last call takes `move a0,s1 / move a1,s0` where the original
- *     re-materialises `addiu a0,sp,96 / addiu a1,sp,80`: cse holds the
- *     `bolt == v` / `home == p` equivalence.  An A200b `do { } while (0);`
- *     barrier in front of that call does NOT break it and costs 2 insns
- *     elsewhere.  Same cost either way -- 2 mismatches, no length.
+ *  3. CLOSED 2026-09-01-1 by A214 chained (see the top of this header and the
+ *     level_13 park for the mechanism).  The old note was right that an A200b
+ *     barrier does not break a register-to-register equivalence -- what breaks
+ *     it is giving each carrier a SECOND SET, and the second sets are free.
  *
  * FOUR THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
  *  - `step4 = step * 4;` must be written BEFORE `dir = dv;` (A213).  This
@@ -398,6 +420,8 @@ void func_level_14_80089454(int step) {
           func_80017758(home, home, bolt);
           func_80017BFC(POS, home);
           rec[0x2]++;
+          home = (int *)D_80076DF8;
+          bolt = home;
           func_8001778C(v, p, D_80076DF8);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
