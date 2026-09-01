@@ -96,11 +96,42 @@
  * `config/compile.sh ovl <src> /tmp/g.o` + `objdump -d | grep -c` == **1697**
  * for a linkable body; anything else is a cost, reject before diffing.
  *
- * WHAT IS LEFT is one allocation question: the index/node quantity must take
- * `a2` and the actor-table base `a3`; ours is the other way round.  qty_compare
- * ranks them n_refs/live_length and they are close, but the A195 dial cannot
- * reach this block (see above), so the next idea has to change the ref counts
- * without a wrapper.
+ * WHAT IS LEFT is one allocation question: `idx` (the `lbu`) must take `a2` and
+ * the `*(int **)actor` deref must take `v0`; ours is the other way round.
+ * qty_compare ranks them n_refs/live_length and they are close, but the A195
+ * dial cannot reach this block (see above), so the next idea has to change the
+ * ref counts without a wrapper.
+ *
+ * 2026-09-01-1 -- THE TWO NEWEST IDIOMS BOTH MEASURED AND BOTH REJECTED.  Both
+ * postdate the 2026-08-21-1 carrier search, so they were the obvious re-screen
+ * (§G says to re-screen every allocation-tie park against the newest idioms);
+ * they are recorded here so nobody re-runs them.  Baseline is 4 aligned /
+ * 9 linked, all length-exact at 1696:
+ *   - **A238 ("de-boost BOTH competing temps") -- 14 and 17, worse than the
+ *     baseline 4.**  A238's step 1 is exactly class (c) applied to both sides,
+ *     so it looked like the missing half of the carrier search.  Measured with
+ *     a named multi-set `int star;` carrying `*(int *)actor` and then `node[8]`:
+ *       star multi-set, idx single-set            14 aligned / 4 regions
+ *       star multi-set, idx multi-set (class (c)) 17 aligned / 6 regions
+ *     De-boosting the deref costs more than the boost on `idx` does, i.e. this
+ *     pair is NOT A238's shape: A238 needs the two temps to be two loads of the
+ *     same kind in one block whose ranges nest, and here one of them is the
+ *     consumer of the other.
+ *   - **A236 (an extra argument to an argument-IGNORING callee as a HARD-
+ *     REGISTER dial) -- 71 aligned over 50 regions.**  This one looked like the
+ *     exact tool: `qty_phys_copy_sugg` is consulted BEFORE priority, the
+ *     following statement is already `func_80017C24(hold, POS)`, that callee is
+ *     a hand-written leaf that reads only `$a0`/`$a1` (verified in
+ *     asm/text.s:6744 -- `lhu $at,0($a1) … sw $v1,8($a0); jr $ra`), and the
+ *     THIRD argument register IS `$a2`, the register `idx` has to reach.  It
+ *     does move the target region, but the copy does NOT coalesce here: the arg
+ *     pseudo becomes a real allocno and every `$t0` in the function rotates to
+ *     `$t1` (35 regions of pure t0/t1 rename plus a worse target block).
+ *     Isolated: the K&R `extern void func_80017C24();` declaration needed to
+ *     spell it is INERT on its own (4/2, byte-identical), so the cost is the
+ *     argument, not the declaration.  **A236's "the copy coalesces to nothing"
+ *     precondition is not automatic -- check the whole-function register map,
+ *     not just the target block.**
  *
  * WHAT IS ALREADY RIGHT (do not disturb):
  *  - Arms 0x1D and 0x1F are freshly decoded here; everything else is donor C.

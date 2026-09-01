@@ -3659,3 +3659,53 @@ func_level_5_8007B68C:
     Re-measured on the linked diff, still 8/1610 (99.5%). No new lever; both
     residues carry full mechanism write-ups and R5's only escape is priced at
     6+ insns. Not opened further this session.
+
+# --- session 2026-09-01-1: A214 chained closes the level_13/level_14 carrier knot ---
+func_level_13_8008AF54:
+  verdict: parked
+  class: "reload reg_equiv_constant remat: the original has 8 references, we have 4"
+  date: 2026-09-01
+  note: >-
+    Now 4 differing instructions over 4 regions (was 6 over 5), offset -4, and
+    ALL FOUR are the dead `li a3,3`. The carrier knot
+    (`func_8001778C(v, p, D_80076DF8)` emitting `move a0,s1 / move a1,s0`) is
+    CLOSED by A214 chained: home = (int *)D_80076DF8; bolt = home; before the
+    call, at zero insn cost - two carriers, one free value, so the second
+    carrier's second set is a dead copy from the first. Order is load-bearing
+    (home-then-bolt 4, home alone 5, bolt-then-home 16, bolt alone 17). The a3
+    class is now bounded by arithmetic, not by sweep - `.i.greg` is post-reload
+    in 2.7.2, our burst is a reg_equiv_constant pseudo with no hard register, so
+    reload emits one `li` per REFERENCE and the original must have had eight.
+    Ruled out this session with reasons: an argument at any arity (all four
+    sites leave $a2 untouched and $a3 is never READ before its next write),
+    caller-save (2.7.2 caller-save.c emits memory only, no constant path), and
+    per-arm block-scoped `int burst = 3;` (still four, and it re-tiles s6/s7).
+    Only `final`'s no-op-move skip deletes an insn late enough to leave a
+    reload behind.
+func_level_14_80089454:
+  verdict: parked
+  class: "same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap"
+  date: 2026-09-01
+  note: >-
+    A214 chained (identical edit and identical arm to level_13) closed residue 3
+    here too: 8 masked mismatches over 7 regions -> 6 over 6, length unchanged at
+    1810/1814. What is left is the four dead `li a3,3` (shared class, see
+    level_13), the one-insn `addiu s8,sp,32` preheader permutation, and residue
+    2 (the step*2/step*4 frame-slot swap, which an immediate-masked diff hides -
+    re-run with immediates live to see it).
+func_level_27_80086754:
+  verdict: parked
+  class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin; A238 and A236 now both ruled out"
+  date: 2026-09-01
+  note: >-
+    Re-screened against the two idioms that postdate its closed carrier search,
+    both rejected with numbers (baseline 4 aligned / 9 linked, 1696 insns).
+    A238 "de-boost BOTH competing temps": a multi-set `star` carrying
+    `*(int *)actor` then `node[8]` scores 14, and with `idx` multi-set as well
+    17 - this pair is not A238's shape, because one temp is the consumer of the
+    other rather than a sibling load. A236 "extra argument to an
+    argument-ignoring callee": the following `func_80017C24(hold, POS)` is a
+    verified a0/a1-only hand-written leaf and its third argument register IS the
+    $a2 that `idx` needs, but the copy does not coalesce - the arg pseudo becomes
+    a real allocno and every $t0 rotates to $t1, 4 -> 71 over 50 regions. The
+    K&R declaration needed to spell it is inert on its own.

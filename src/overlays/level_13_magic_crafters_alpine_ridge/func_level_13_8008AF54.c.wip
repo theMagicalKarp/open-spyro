@@ -1,8 +1,13 @@
-/* PARKED 2026-08-29-1 at 1693/1697 insns, 24 mismatched instructions over 23
- * regions with immediates AND registers live -- and 18 of those 24 are the
- * unlinked object's relocation placeholders (`lw v0,0(at)` for the original's
- * `%lo`).  **The real residue is SIX instructions**, both classes shared with
- * `func_level_14_80089454.c.wip`.  Was 63 at the start of that session.
+/* PARKED 2026-09-01-1 at 1692/1696 insns.  Measured on the LINKED bins
+ * (build/diff/*.{orig,built}.bin) with registers anchored and immediates
+ * masked, difflib-aligned: **4 mismatches over 4 regions, offset -4**, and all
+ * four are the SAME instruction -- the dead `li a3,3` class shared with
+ * `func_level_14_80089454.c.wip`.  Every other residue this function ever had
+ * is now closed.  Was 6 (over 5 regions) at the start of 2026-09-01-1.
+ *
+ * 2026-09-01-1 CLOSED old residue 2 (the `func_8001778C(v, p, D_80076DF8)`
+ * carrier pair) with **A214, chained** -- see the note below.  Zero insn cost:
+ * 1692 insns either way.
  *
  * THE TWO LEVERS THAT MOVED IT (63 -> 47 -> 24), both allocation dials:
  *  A. The ten expire sites whose `if` arm is followed by an `else` are written
@@ -46,12 +51,65 @@
  *     (all byte-identical to the baseline), `const int burst = 3` (61, -6, and
  *     it loses all four `li`), `volatile` (164, +1).  So the residue is not a
  *     property of how the constant local is declared.
- *  2. `func_8001778C(v, p, D_80076DF8)` comes out `move a0,s1 / move a1,s0`
- *     where the original re-materialises `addiu a0,sp,96 / addiu a1,sp,80`.
- *     This is cse holding `bolt == &v` / `home == &p` and preferring the
- *     register (COST 1) over `(plus sp K)`; it is the B-i fold wanted in
- *     REVERSE.  An A200b barrier in front of the call does not break it and
- *     costs 2 insns elsewhere.
+ *     **2026-09-01-1 -- the class is now bounded by ARITHMETIC, and the whole
+ *     argument family is refuted for good.**  Read off `<in>.i.greg` (which in
+ *     2.7.2 is dumped AFTER reload, because `global_alloc` calls `reload`):
+ *     our `burst` is a `reg_equiv_constant` pseudo that won no hard register,
+ *     so reload emits `(set (reg:SI 7 a3) (const_int 3)) -1 (nil)` -- an insn
+ *     with no insn-code, i.e. reload's own -- IMMEDIATELY BEFORE each of its
+ *     four references (uid 4723 feeds the `bne v0,a3`, 4729 the second arm's).
+ *     That is the whole model: **one `li` per REFERENCE, adjacent to it.**  So
+ *     the original's RTL carried EIGHT references and four of them left only
+ *     the reload behind.  What that rules out, arithmetically rather than by
+ *     sweep:
+ *       - Not an argument, at any arity.  o32 fills a0..a3 in order; there is
+ *         no argument shape that writes a3 and leaves a2 untouched, and all
+ *         four sites leave a2 untouched (verified on the original: a3 is not
+ *         READ anywhere between each dead `li` and the next WRITE of a3 --
+ *         `mflo $a3` at 0x8008B2CC after site 1, and the next `li a3,3` after
+ *         each of the other three).  These are provably dead instructions.
+ *       - Not caller-save.  `caller-save.c insert_save_restore` emits only
+ *         `(set (mem regno_save_mem) (reg))` / the reverse; there is no
+ *         constant path in the 2.7.2 file at all (grepped).
+ *       - Not block-scoping.  `int burst = 3;` declared per-arm (shadowing, in
+ *         both 0x4 and 0x8) still emits FOUR: 62/52, offset still -4.  The
+ *         extra pseudos also re-tile s6/s7 and cost lever B.
+ *     So the open question is precisely: **what source form gives a constant
+ *     pseudo a reference whose insn survives flow but leaves nothing but its
+ *     input reload after reload?**  The only gcc mechanism that deletes an
+ *     insn that late is `final`'s no-op-move skip, which needs
+ *     `(set (reg X) (reg X))` -- i.e. a copy of `burst` into a pseudo that
+ *     reload also places in $a3.  That pseudo has to be live (or flow deletes
+ *     the copy) yet is dead across the very next `jal`, which is the
+ *     contradiction the next session has to break.  Suggested next probe: a
+ *     `-dR` (`<in>.i.sched2`) trace of an ARTIFICIAL 4-argument spelling to see
+ *     where reload puts the `li` when it IS a reference, then work backwards.
+ *  2. CLOSED 2026-09-01-1 -- **A214 CHAINED, and this is the general form of
+ *     that idiom when TWO carriers must die and only ONE free value exists.**
+ *     `func_8001778C(v, p, D_80076DF8)` came out `move a0,s1 / move a1,s0`
+ *     where the original re-materialises `addiu a0,sp,96 / addiu a1,sp,80`:
+ *     cse holds `bolt == &v` AND `home == &p` and prefers the register
+ *     (COST 1) over `(plus sp K)`.  A214's single second-set only kills one of
+ *     the two.  The fix is to CHAIN them off the one free value the call needs
+ *     anyway -- its own third argument:
+ *         home = (int *)D_80076DF8;
+ *         bolt = home;                 <- dead copy, flow deletes it
+ *         func_8001778C(v, p, D_80076DF8);
+ *     `home`'s second set is the very `lui/addiu` the call needs in a2;
+ *     `bolt`'s second set is a register copy that is dead on arrival and costs
+ *     nothing.  Both carriers are now multi-set, cse has no address to
+ *     substitute, and BOTH frame addresses rematerialise: 6 -> 4, 1692 insns
+ *     either way.
+ *       - ORDER MATTERS and is not symmetric.  Measured, all four spellings
+ *         from the same baseline (masked mismatch / regions):
+ *           home = D_80076DF8; bolt = home;   ->  4/4   <- checked in
+ *           home = D_80076DF8;  (alone)       ->  5/5
+ *           bolt = D_80076DF8; home = bolt;   -> 16/10  (s0/s1 swap the arm)
+ *           bolt = D_80076DF8;  (alone)       -> 17/11
+ *         The carrier that takes the LIVE value must be the one the original
+ *         kills LAST (`home`, whose last real use is `func_80017BFC(POS,
+ *         home)`); giving it to the other one re-tiles the arm's whole
+ *         register map.
  *
  * OTHER THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
  *  - Arm 0x8 addresses its two vectors as: ARRAY NAME at the first use, an
@@ -399,6 +457,8 @@ void func_level_13_8008AF54(int step) {
           func_80017758(home, home, bolt);
           func_80017BFC(POS, home);
           rec[0x2]++;
+          home = (int *)D_80076DF8;
+          bolt = home;
           func_8001778C(v, p, D_80076DF8);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
