@@ -66,4 +66,23 @@ int func_80038C4C(int *pos, int *rec) {
    IDENTICAL, so the rx quantity split does not reach the ay tie. The three
    overlapping short quantities are ay, rec[3] and rec[4]: the original gets
    rec[3]->v1, rec[4]->v0, ay->a1, ours rec[3]/rec[4]->v0 and ay->v1, i.e. ours
-   lets the two limit loads share v0 where the original does not. */
+   lets the two limit loads share v0 where the original does not.
+
+   2026-08-31 — THE TIE IS THREE-WAY AND ITS GATE IS HARD-REG $2, NOT `ay`.
+   `cc1 -dl` says `ay` is reg 81, "3 times across 7 insns" with NO block tag,
+   i.e. it is already a GLOBAL allocno (it spans the `beqz`), so it is assigned
+   AFTER local-alloc — and local-alloc has by then given rec[3] (2 refs/2 insns,
+   block 0) and rec[4] (2/2, block 2) the SAME register, $v0, because the two
+   are in different blocks and do not conflict.  `ay` then takes the lowest
+   register left over its range, $v1.  For the original's map (rec[3] $v1,
+   rec[4] $v0, ay $a1) local-alloc has to find $v0 UNAVAILABLE to rec[3], and
+   the only thing in this function that can occupy $v0 there is the return
+   value: `return 0;` expands straight into hard reg $2, so its live range
+   starts at whatever position sched1 leaves the `move v0,zero` in.  So the
+   objective is "make $2 live across the rec[3] load", not "re-rank ay".
+   Measured and rejected 2026-08-31: routing the result through a pseudo
+   (`r = 0; if (...) r = ay < rec[4]; return r;` and the if/else form) both
+   LINKFAIL — the pseudo costs a `move` that the two-exit form does not; and
+   re-using a dead local as the limit carrier to push it into global_alloc
+   (`dx = rec[3]` 6/66 unchanged, `dy = rec[3]` 14, `dx = rec[4]` 7).
+*/

@@ -3517,3 +3517,82 @@ func_8003A420:
     v0 -- the probe's conflict list is three s-reg pointers and none of them
     prefers v0, so there is no allocno whose refs could be dialled up to take
     v0 first.
+BeginGemPickupOverlay:
+  verdict: parked
+  class: "local-alloc a0/a1 pair: the de-boost carrier and the world counter"
+  date: 2026-08-31
+  note: >-
+    584 B, 9/146 -> 7/146. F14's birthing boost, not qty_compare's numerator,
+    is what wins the shared literal 1 its $v1; a second SET on that pseudo
+    (A238 step 1) de-boosts it and brings the whole g_anLevelDragonsRescued giv
+    chain back byte-exact. The residue is now one $a0/$a1 decision between the
+    carrier and `world`, and the shape caps at 2 because the increment carrier
+    can never be the constant. Full variant table in the park header.
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole (proved unreachable under 6 insns) + Rd tpage/clut delay slot"
+  date: 2026-08-31
+  note: >-
+    Re-measured this session at 8/1610 (99.5%), NOT the 35/1610 the cookbook's
+    landscape section still records -- the 2026-08-28 park work is better than
+    its own summary. Both residues carry full mechanism write-ups in the wip
+    header; no new lever this session. Head of the x5 flight-results clone
+    family (32,200 B).
+func_level_27_80086754:
+  verdict: parked
+  class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin on the *0x58 chain; carrier search closed (26 variants)"
+  date: 2026-08-31
+  note: >-
+    Re-confirmed at 9/1697. Opened first this session as the clone/vein gate's
+    top non-balloonist entry; its arm-0x1D residue is a single a2/v0 rotation
+    with a closed 26-variant carrier search and a proved-unreachable head
+    straggler order. Nothing in A236-A239 aims at it.
+func_80059594:
+  verdict: parked
+  class: "R2 barrier-vs-slti trade (R1 now shown reachable but only at equal cost)"
+  date: 2026-08-31
+  note: >-
+    720 B, re-measured 4/180 (the header said 6). R1 IS reachable: a second SET
+    on `g` de-boosts its load and lets `d` win $a0 in the ORIGINAL
+    store-before-load order. Every available carrier site costs 2-3 insns of
+    register naming elsewhere because the original re-uses $v0 at each of them,
+    so the net is still 4. Measured table added to the wip header.
+func_8005FC6C:
+  verdict: parked
+  class: "F4/A187 return-pointer copy propagation — no branch after the dispatch call"
+  date: 2026-08-31
+  note: >-
+    152 B, 7/38. Re-screened against A236/A238: the original's `move v0,s0` is
+    the STORE's base pseudo winning $2 from the return-value copy suggestion,
+    so we would need the copy to survive. Three more spellings (hoisted to the
+    first statement, assigned in both arms of the debug if, assigned inside the
+    arm) are byte-identical or worse. Settled.
+func_80038C4C:
+  verdict: parked
+  class: "three-way: rec[3]/rec[4] share v0 in local-alloc because hard reg $2 is not yet live"
+  date: 2026-08-31
+  note: >-
+    264 B, 6/66. Re-diagnosed with `cc1 -dl`: `ay` is already a GLOBAL allocno,
+    so the tie is not about it -- local-alloc gives both limit loads $v0 and
+    `ay` takes what is left. The objective is to make hard reg $2 (the
+    `return 0` value) live across the rec[3] load; routing the result through a
+    pseudo costs a `move` and will not link, and dead-local limit carriers are
+    6/14/7.
+func_80038FC8:
+  verdict: parked
+  class: "F14b mutual exclusion (schedule XOR register) — needs update_equiv_regs to delete the 0x10 pseudo"
+  date: 2026-08-31
+  note: >-
+    608 B, re-confirmed 4/152. Read but not re-attempted this session: its open
+    question ("can the 0x10 constant reach the two sb's with one set and one use
+    per block") is a rematerialisation question, and this session's de-boost
+    lever is the opposite direction (it ADDS sets). Recorded so the next session
+    does not re-open it for the register axis.
+HandleHardwareInterrupt:
+  verdict: parked
+  class: "F1/F7 register rotation"
+  date: 2026-08-31
+  note: >-
+    Re-measured 10/122, unchanged. Not opened further; A238's own notes already
+    record that splitting its combined statement to host a nest is 21/122
+    against a 10/122 baseline.
