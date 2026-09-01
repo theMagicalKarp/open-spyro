@@ -3596,3 +3596,25 @@ HandleHardwareInterrupt:
     Re-measured 10/122, unchanged. Not opened further; A238's own notes already
     record that splitting its combined statement to host a nest is 21/122
     against a 10/122 baseline.
+RespawnOrGameOver_Draw:
+  verdict: parked
+  class: "A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG"
+  date: 2026-08-31
+  note: >-
+    1,444 B, re-confirmed 5/361. Re-screened against A239 (the delay-slot
+    lever): not applicable -- both competing insns are single ALU ops, so
+    eligible_for_delay is not the discriminator; reorg simply takes the first
+    insn of the thread and the barrier's reg_pending_sets_all is what puts the
+    arg copy sixth. Two more barrier shapes measured (a second one at the top of
+    the block, and a nested one at slot 0) are both 5/361; the top-only barrier
+    LINKFAILs.
+BuildLoadedLevelRuntime:
+  verdict: parked
+  class: "six independent residues, 4-insn length deficit"
+  date: 2026-08-31
+  note: >-
+    3,708 B. Opened and left alone: the park is 923/927 insns, so the linked
+    differ cannot be used positionally, and its residue 2 (the F1 v0/v1 death-
+    replay rotation) is the only one this session's de-boost lever aims at --
+    closing one of six does not make it a match. Drive it off the compile-only
+    shape diff if it is re-opened.

@@ -287,4 +287,15 @@ void RespawnOrGameOver_Draw(void) {
  *
  * 2026-07-25-1 permuter (~46,200 iterations) found nothing, which is expected:
  * the residue was never in the randomizer's transform space.
+ * 2026-08-31 -- two more barrier shapes measured, both 5/361 (identical to
+ * the checked-in one): a SECOND empty do { } while (0); added at the top of
+ * the frame-15 block, and a NESTED do { do { } while (0); } while (0); at
+ * slot 0.  The barrier at the top ALONE is LINKFAIL (it does not split the
+ * base from the offsets, so the fold returns).  So the placement axis really
+ * is exhausted and the residue is the A200 open question verbatim: a cse
+ * ebb-break that emits no NOTE_INSN_LOOP_BEG.  Also worth recording for
+ * whoever tries reorg instead: reorg's `fill_slots_from_thread` takes the
+ * FIRST eligible insn of the fall-through thread, and ours is `li v0,1` (the
+ * shared constant for the two `sb`s) -- so the alternative objective, "make
+ * the block lead with the arg copy", is the same problem, not a second door.
  * ================================================================= */
