@@ -43,7 +43,7 @@
  *  - 0x80076E1C..0x80076E20 is THREE scalars, not an array: the array form gives
  *    a held base (`addiu s0,s0,28188`) where the original re-emits `lui;lh
  *    %lo(sym+K)` at all nine sites. The missing splat symbol at +2 is reachable
- *    as `#define D_80076E1E (*(short *)((char *)&D_80076E1C + 2))` (the linker
+ *    as `extern short D_80076E1E;` (the linker
  *    then gets D_80076E1C+2, byte-identical to the original reloc).
  *    NB the old wip did not even LINK -- it referenced an undefined D_80076E1E.
  *
@@ -93,14 +93,82 @@
  *      by an equal-address alias symbol (`(&D_80077814)[1]`, byte-identical
  *      reloc) -- the mismatch lands 4 insns back, `minimum` is already 0 by
  *      then and a 3-insn tail still merges.
- *  R2  ~20 sites x 1 insn - held-base vs absolute addressing on D_800777EC /
- *      D_800777F0 / D_800777F4 / D_80077800 / D_80077838. NOT a per-symbol
- *      declaration choice: the original uses BOTH forms for every one of them
- *      (D_800777EC: 8 base materialisations vs 11 absolute accesses), so it is
- *      per-site cse and needs the §B16 inline-cast lever site by site.
+ *  R2  held-base vs absolute addressing on D_800777EC / D_800777F0 /
+ *      D_800777F4 / D_80077838. LARGELY CLOSED 2026-09-01 -- see the SCALAR
+ *      ALIAS entry below; what is left of it is the shared-s0 cluster (R6).
  *  R3  a0<->v1 / v0<->v1 caller-saved rotations inside arms (44+38+20+17 sites).
  *  Budget it as one more focused session; the byte prize is 8,096 B x 6 hub
  *  overlays plus the level_1/3/7/8 near-clones = 80,960 B.
+ *
+ * ---- 2026-09-01: 230/114/offset -12  ->  161 over 85 regions, offset +6 ----
+ * (register-anchored, immediate-masked compile-only shape diff, §D 2b.  All
+ *  four levers are one-liners; none of them needed a permuter.)
+ *
+ *  LEVER A -- THE SCALAR ALIAS, and it is the general form of §B16 REVERSED.
+ *      B16 says an incomplete-array alias cast-deref buys the REGISTER form.
+ *      The complement is what this function needed: a plain `extern int X;`
+ *      DECL is a `(mem (symbol_ref))` with the address inline, so it always
+ *      comes out `lui %hi / lw %lo` and cse can never hold a base for it.  Two
+ *      C names at ONE address therefore give the two forms per site, which is
+ *      exactly what "the original uses BOTH forms for every one of these
+ *      symbols" needs.  Declare the alias in the overlay's
+ *      `config/overlays/<ovl>.undefined_syms.auto.txt` (a plain
+ *      `NAME = 0xADDR;` line; `gen-syms-ld` PROVIDEs it, so an unused alias
+ *      costs nothing) -- the main-EXE equivalent is symbol_addrs.txt with
+ *      `allow_duplicated:True`.  Measured, each from the same baseline:
+ *        D_800777F4 scalar      230 -> 210/107, offset -12 -> -3
+ *        D_80077838 scalar      230 -> 215/107, offset -9
+ *        both together          230 -> 195/100, **offset 0** (length-exact)
+ *        D_800777F0 scalar      makes it WORSE except at one site (see below)
+ *        D_800777EC scalar      blanket is much worse (325/150); per-arm only
+ *      So it is per-SITE, and the cheap way to find the sites is to bisect the
+ *      swap over source LINE RANGES against the shape diff, not to reason about
+ *      it: three bisections (F4 reverted in lines 575-600, F0 scalar at exactly
+ *      one line, EC scalar in lines 370-430) were worth another 195 -> 170.
+ *  LEVER B -- D_80076E1E deserves a REAL SYMBOL.  The old
+ *      `#define D_80076E1E (*(short *)((char *)&D_80076E1C + 2))` is an
+ *      INDIRECT_REF, so it force_regs a base and cse holds it; the original
+ *      re-emits `lui/lh %lo` at all nine sites.  Adding `D_80076E1E =
+ *      0x80076E1E;` to the overlay's undefined_syms and declaring
+ *      `extern short D_80076E1E;` is worth 195/100 -> 186/96.  General rule:
+ *      a missing splat symbol reached by pointer arithmetic is a HELD BASE in
+ *      disguise -- add the symbol rather than the cast.
+ *  LEVER C -- the loop compare constant is HOISTED by the original.  The
+ *      `D_800758D0[i] == 2` scan loop has `li a0,2` in the ORIGINAL's preheader
+ *      and re-materialises nothing inside; ours emitted `li v0,2` per
+ *      iteration.  Assigning it to one of the function's shared int locals
+ *      (`k = 2;` above the loop, then `== k`) reproduces the hoist: 170 -> 165.
+ *      This is §B10 in reverse -- there the ORIGINAL re-materialises inline and
+ *      we hoist; check the direction before calling it a wall.
+ *  LEVER D -- `if (a && b) ... else if (c && d)` vs a nested inner `if`.
+ *      The five-arm `k == N` / global-test chain that picks the 0x21..0x25
+ *      submode: the original branches BOTH failing conditions to the NEXT arm's
+ *      compare and fills each branch delay slot with that arm's compare
+ *      constant.  A nested `if (k == N) { if (g == 0) ... }` threads the inner
+ *      failure straight to the join instead and leaves four `nop`s; a flat
+ *      sequential `if` chain re-tests every arm (offset +14).  Only the
+ *      `&&` spelling reproduces it: 165 -> 161.
+ *
+ * ---- What is left (161 insns over 85 regions) ----------------------------
+ *  R1  unchanged -- the cross-jump asymmetry above, still -7 for ~1,850 insns.
+ *  R6  THE SHARED s0 BASE, and it is now the single biggest structural item
+ *      (11 sites x 1 insn).  The original materialises `s0 = &D_800777F4` ONCE
+ *      (orig[569] `lui s0,0x8007; addiu s0,s0,30708`) and then reads and writes
+ *      the whole D_800777EC/F0/F4 triple through it across several switch arms
+ *      as `0(s0)`, `-4(s0)`, `-8(s0)` -- i.e. a callee-saved base with NONZERO
+ *      offsets, which is precisely the §B-i rule 1 fold NOT happening.  Ours
+ *      emits a fresh `lui/addiu` per derived address (`D_800777F4[-1]` gives
+ *      `lui a0; addiu a0,a0,-4; lw v0,0(a0)`).  RULED OUT this session:
+ *      respelling the triple as one array everywhere (`EC[0]` -> `F4[-2]`,
+ *      `F0[0]` -> `F4[-1]`, scalar -> `F4[0]`) is 218/114/+8, much worse --
+ *      gcc does not share the base just because the source names one array.
+ *      The untried idea is A200's empty `do { } while (0)` barrier between the
+ *      base's first use and the offset accesses, which is the only known way to
+ *      stop the constant equivalence that folds `(plus base K)`.
+ *  R3  the caller-saved rotations, unchanged and still the bulk of the count.
+ *  Sites still worth a look, from the region list: orig[103]/[105] (a 2-insn
+ *  D_8007784C read scheduled 2 early), orig[1369-1388] and orig[1737-1749]
+ *  (store/load position shuffles), orig[1974-1982] (`sw s0,0(s1)` position).
  */
 
 extern void func_80015370();
@@ -161,7 +229,7 @@ extern int D_80076DF8[];
 extern int D_80076DFC;
 extern int D_80076E00;
 extern short D_80076E1C;
-#define D_80076E1E (*(short *)((char *)&D_80076E1C + 2))
+extern short D_80076E1E;
 extern short D_80076E20;
 extern int D_80076E28;
 extern int D_80076E90;
@@ -176,8 +244,11 @@ extern int D_80077024;
 extern int D_80077378[];
 extern int D_800777E8[];
 extern int D_800777EC[];
+extern int D_800777EC_s;
 extern int D_800777F0[];
+extern int D_800777F0_s;
 extern int D_800777F4[];
+extern int D_800777F4_s; /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int D_800777F8;
 extern int D_800777FC;
 extern int D_80077800[];
@@ -195,6 +266,7 @@ extern int D_8007782C;
 extern int D_80077830;
 extern int D_80077834;
 extern int D_80077838[];
+extern int D_80077838_s; /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int D_8007783C;
 extern int D_80077840;
 extern int D_80077844;
@@ -352,13 +424,13 @@ void func_level_0_8007B020(void)
         func_80016D2C((int *) (&D_80078A64[0]), (int *) (&D_80078A64[0x28]), 0);
         func_80049FAC(1);
         func_80048D10(D_800756CC);
-        if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
+        if (((D_80077838_s - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
         D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
@@ -370,14 +442,14 @@ void func_level_0_8007B020(void)
         func_80017048(D_8007784C + 0x20, vecA, vecA);
         func_80017758(vecA, vecA, (int *) (D_8007784C + 0xC));
         func_8001778C(vecA, vecA, D_80076DF8);
-        if (D_800777EC[0] < 0x20)
+        if (D_800777EC_s < 0x20)
         {
           ang[0] = 0;
           ang[1] = func_80016AB4(func_800171FC(vecA, 0), -vecA[2], 1);
           ang[2] = func_80016AB4(vecA[0], vecA[1], 1);
-          D_80076E1C = (((unsigned short) D_80076E1C) + ((func_8001796C(ang[0], D_80076E1C) * D_800777EC[0]) >> 5)) & 0xFFF;
-          D_80076E1E = (((unsigned short) D_80076E1E) + ((func_8001796C(ang[1], D_80076E1E) * D_800777EC[0]) >> 5)) & 0xFFF;
-          D_80076E20 = (((unsigned short) D_80076E20) + ((func_8001796C(ang[2], D_80076E20) * D_800777EC[0]) >> 5)) & 0xFFF;
+          D_80076E1C = (((unsigned short) D_80076E1C) + ((func_8001796C(ang[0], D_80076E1C) * D_800777EC_s) >> 5)) & 0xFFF;
+          D_80076E1E = (((unsigned short) D_80076E1E) + ((func_8001796C(ang[1], D_80076E1E) * D_800777EC_s) >> 5)) & 0xFFF;
+          D_80076E20 = (((unsigned short) D_80076E20) + ((func_8001796C(ang[2], D_80076E20) * D_800777EC_s) >> 5)) & 0xFFF;
         }
         else
         {
@@ -390,8 +462,8 @@ void func_level_0_8007B020(void)
       }
       else
       {
-        D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(D_80077838[0]) * D_8007783C) >> 12);
-        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((func_80016C58(D_80077838[0]) * D_8007783C) >> 12);
+        D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(D_80077838_s) * D_8007783C) >> 12);
+        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((func_80016C58(D_80077838_s) * D_8007783C) >> 12);
         D_80076E00 = D_80077840;
         func_80017700(D_80078A58, &D_800777EC[8]);
         n = D_80078A77;
@@ -400,7 +472,7 @@ void func_level_0_8007B020(void)
         D_80078A77 = 0;
         D_80078A7C = 0;
         D_800777E8[0] = 1;
-        D_800777EC[0] = 0;
+        D_800777EC_s = 0;
         D_80078A66 = D_8007781C >> 4;
         D_80078A76 = n;
       }
@@ -414,15 +486,15 @@ void func_level_0_8007B020(void)
       int k;
       int i;
 
-        t = D_800777F4[0];
+        t = D_800777F4_s;
         if (t < 0x1E)
       {
-        if ((D_80077378[0] & 0x6840) && (D_800777EC[0] >= 0x51))
+        if ((D_80077378[0] & 0x6840) && (D_800777EC_s >= 0x51))
         {
           n = t % 6;
           if (n == 0)
           {
-            D_800777F4[0] = t + 1;
+            D_800777F4_s = t + 1;
           }
           else
             if (n < 3)
@@ -437,47 +509,32 @@ void func_level_0_8007B020(void)
               do
               {
                 k = ((int) func_8006272C()) % 5;
-                if (k == 0)
+                if ((k == 0) && (D_80076FEC == 0))
                 {
-                  if (D_80076FEC == 0)
-                  {
-                    D_800777F4[0] = 0x21;
-                  }
+                  D_800777F4_s = 0x21;
                 }
                 else
-                  if (k == 1)
+                  if ((k == 1) && (D_80077004 == 0))
                 {
-                  if (D_80077004 == 0)
-                  {
-                    D_800777F4[0] = 0x22;
-                  }
+                  D_800777F4_s = 0x22;
                 }
                 else
-                  if (k == 2)
+                  if ((k == 2) && (D_80077008 == 0))
                 {
-                  if (D_80077008 == 0)
-                  {
-                    D_800777F4[0] = 0x23;
-                  }
+                  D_800777F4_s = 0x23;
                 }
                 else
-                  if (k == 3)
+                  if ((k == 3) && (D_80077018 >= 2))
                 {
-                  if (D_80077018 >= 2)
-                  {
-                    D_800777F4[0] = 0x24;
-                  }
+                  D_800777F4_s = 0x24;
                 }
                 else
-                  if (k == 4)
+                  if ((k == 4) && (D_80077024 == 0))
                 {
-                  if (D_80077024 == 0)
-                  {
-                    D_800777F4[0] = 0x25;
-                  }
+                  D_800777F4_s = 0x25;
                 }
               }
-              while (D_800777F4[0] == 0xE);
+              while (D_800777F4_s == 0xE);
             }
             else
             {
@@ -487,16 +544,16 @@ void func_level_0_8007B020(void)
           else
             if (n == 3)
           {
-            D_800777F4[0] = t + 2;
+            D_800777F4_s = t + 2;
           }
           else
             if (n == 4)
           {
-            D_800777F4[0] = t + 1;
+            D_800777F4_s = t + 1;
           }
           else
           {
-            D_800777F4[0] = 0x1F;
+            D_800777F4_s = 0x1F;
           }
           D_800777EC[0] = 0;
         }
@@ -505,8 +562,9 @@ void func_level_0_8007B020(void)
         if (t == 0x1E)
       {
         i = 1;
+        k = 2;
         scan:
-        if (D_800758D0[i] == 2)
+        if (D_800758D0[i] == k)
         {
           i++;
           if (i < 6)
@@ -565,7 +623,7 @@ void func_level_0_8007B020(void)
         if (D_80077378[0] & 0x5000)
         {
           D_800777EC[0] = 0x20;
-          D_800777F0[0] = 1 - D_800777F0[0];
+          D_800777F0_s = 1 - D_800777F0_s;
           func_80055A78(D_800761D4[0x2D], 0, 0x10, 0);
         }
         if ((D_80077378[0] & 0x840) == 0)
@@ -602,14 +660,14 @@ void func_level_0_8007B020(void)
       {
         if ((t == 0x24) || (t == 0x26))
         {
-          D_800777F4[0] = 0x1E;
+          D_800777F4_s = 0x1E;
           D_800777F0[0] = 0;
           D_800777F8 = 1;
           return;
         }
         if (t == 0x25)
         {
-          D_800777F4[0] = 0x26;
+          D_800777F4_s = 0x26;
           D_800777F4[-2] = 0;
           return;
         }
@@ -627,8 +685,8 @@ void func_level_0_8007B020(void)
         {
           D_800758B4 = 0x16;
         }
-        n = D_800777F4[0];
-        D_800777F4[0] = 0x20;
+        n = D_800777F4_s;
+        D_800777F4_s = 0x20;
         D_800777EC[0] = 0;
         D_800777FC = n - 0x1B;
       }
@@ -659,7 +717,7 @@ void func_level_0_8007B020(void)
           D_80077834 = D_80076E20;
           n = D_80077850[0x46];
           D_8007783C = 0xE00;
-          D_80077838[0] = ((n * 0x10) - 0x480) & 0xFFF;
+          D_80077838_s = ((n * 0x10) - 0x480) & 0xFFF;
           D_80077840 = ((int *) (D_80077850 + 0x14))[0] + 0x200;
           D_80077844 = ((int *) (D_80077850 + 0x14))[0];
           D_80077848 = ((int *) (D_8007784C + 0x14))[0] + 0x488;
@@ -706,13 +764,13 @@ void func_level_0_8007B020(void)
             D_80078A60 = D_80077808 + (func_80016C58(t << 5) >> 2);
           }
         }
-        if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
+        if (((D_80077838_s - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
         D_80076DF8[0] = ((int *) (D_80077850 + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
@@ -791,7 +849,7 @@ void func_level_0_8007B020(void)
         D_8007576C = -1;
         D_800756D0 = 0;
         D_800758AC = 0;
-        D_80077838[0] = ((n * 0x10) + 0x390) & 0xFFF;
+        D_80077838_s = ((n * 0x10) + 0x390) & 0xFFF;
         z = ((int *) (D_80077850 + 0x14))[0];
         D_800777E8[0] = 4;
         D_800777EC[0] = 0;
@@ -836,13 +894,13 @@ void func_level_0_8007B020(void)
         if (t < 0x100)
       {
         cn = func_80016C58(((t << 11) >> 8) - 0x400) + 0x1000;
-        if (((D_80077820 - D_80077838[0]) & 0xFFF) < 0x801)
+        if (((D_80077820 - D_80077838_s) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[0] + ((func_80017928(D_80077820, D_80077838[0]) * cn) >> 13);
+          yaw = D_80077838_s + ((func_80017928(D_80077820, D_80077838_s) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[0] - ((func_80017928(D_80077820, D_80077838[0]) * cn) >> 13);
+          yaw = D_80077838_s - ((func_80017928(D_80077820, D_80077838_s) * cn) >> 13);
         }
         cz = D_8007783C + (((D_80077824 - D_8007783C) * cn) >> 13);
         D_80076DF8[0] = ((int *) (D_80077850 + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);

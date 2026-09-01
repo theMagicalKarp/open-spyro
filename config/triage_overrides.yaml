@@ -3618,3 +3618,44 @@ BuildLoadedLevelRuntime:
     replay rotation) is the only one this session's de-boost lever aims at --
     closing one of six does not make it a match. Drive it off the compile-only
     shape diff if it is re-opened.
+func_level_0_8007B020:
+  verdict: parked
+  class: "R1 cross-jump asymmetry + R6 shared-s0 held base + R3 caller-saved rotations"
+  date: 2026-09-01
+  note: >-
+    8,096 B, head of the ×10 balloonist UPDATE family (80,960 B). Took it from
+    230 mismatches / 114 regions / offset -12 to 161 / 85 / +6 with four
+    one-line levers: per-site scalar aliases for D_800777F4 / D_80077838 /
+    D_800777EC / D_800777F0 (the §B16 register-form lever run in reverse — a
+    plain `extern int X;` DECL is always `lui %hi / lw %lo`), a real symbol for
+    D_80076E1E instead of a cast-deref macro, hoisting the D_800758D0 scan
+    loop's compare constant into a shared local, and spelling the five-arm
+    submode chain as `if (k == N && g == 0) ... else if`. Still parked: R1
+    (unchanged, -7 for ~1,850 insns), R6 (11 sites, the original holds
+    `s0 = &D_800777F4` across arms and uses -4/-8 offsets — A200 barrier
+    untried) and R3.
+func_level_13_8008AF54:
+  verdict: parked
+  class: "B25 dead `li a3,3` remat — origin narrowed, still unexplained"
+  date: 2026-09-01
+  note: >-
+    Opened for the B25 re-derive and closed three more escapes without editing
+    the park. New facts: the shape `addiu $a3,$zero,3` immediately before a
+    `jal` to a 2-argument leaf exists NOWHERE else in the game — a whole-tree
+    grep finds it only in this function and func_level_14_80089454; both callees
+    (func_80017C24 / func_80017BFC, the SVECTOR<->VECTOR <<2 / >>2 pair) are
+    ten-instruction hand-written leaves that read only $a0/$a1; and all four
+    dead sites sit at a BLOCK HEAD (two are jump-table arm heads, .L8008B174 and
+    .L8008B694; two are join labels). Since $a3 is call-clobbered, gcc cannot
+    hold a live value there across the `jal`, so the insn is dead by
+    construction and — with no life_analysis after reload — can only have been
+    created by reload or orphaned by cross_jump (§B24), neither of which has a
+    known path here. Do not re-attack it from the constant's spelling.
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole + Rd tpage/clut delay slot"
+  date: 2026-09-01
+  note: >-
+    Re-measured on the linked diff, still 8/1610 (99.5%). No new lever; both
+    residues carry full mechanism write-ups and R5's only escape is priced at
+    6+ insns. Not opened further this session.
