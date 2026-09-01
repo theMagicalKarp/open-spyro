@@ -34,7 +34,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
-| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin on the *0x58 chain; carrier search closed (26 variants) |
+| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin; A238 and A236 now both ruled out |
 | `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole + Rd tpage/clut delay slot |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
@@ -53,9 +53,9 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80059594` | func_80059594 | main | 720 | 696 | R2 barrier-vs-slti trade (R1 now shown reachable but only at equal cost) |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | sched1 volatile-vs-plain MEM ordering — the third RIDX read hoists above the plain ring read |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
-| `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie |
+| `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (schedule XOR register) — needs update_equiv_regs to delete the 0x10 pseudo |
-| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` remat — origin narrowed, still unexplained |
+| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | reload reg_equiv_constant remat: the original has 8 references, we have 4 |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 500 | local-alloc a0/a1 pair: the de-boost carrier and the world counter |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
