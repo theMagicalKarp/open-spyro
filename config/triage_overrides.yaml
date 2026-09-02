@@ -3709,3 +3709,24 @@ func_level_27_80086754:
     $a2 that `idx` needs, but the copy does not coalesce - the arg pseudo becomes
     a real allocno and every $t0 rotates to $t1, 4 -> 71 over 50 regions. The
     K&R declaration needed to spell it is inert on its own.
+func_credits_8007AA50:
+  verdict: parked
+  class: "fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode"
+  date: 2026-09-02
+  note: >-
+    Opened 2026-09-02 as a FRESH vein target after finding that `make triage`
+    auto-skipped it as a B2 wall by mistake (every `$at` here is a gas macro
+    expansion; the detector now keys off the memory operand - see triage.py).
+    One session took it from a first m2c decode (588 masked mismatches, offset
+    -40, would not link) to length-exact 1372/1372, frame-exact (`addiu sp,-136`,
+    vars= 72), running offset 0, 587 byte-identical words and 252 masked
+    mismatches over 123 regions. The seven levers are written up in the .c.wip
+    header and folded into the cookbook (local struct for a frame-resident int
+    group, noreturn on the pool-overflow callee, volatile as the only cse
+    store-forward stopper, stack-temp slot reuse as a source-scope dial, the
+    counter-test-as-loop-condition form, a shared counter decl as a global.c
+    priority dial, and negation placement). What is left is six residues, all
+    named in the header: an s3/s4 priority tie on cur/upper, a non-source
+    `addu` operand order, one argument-load position in the setup block, a
+    straggler `li a2,2048`, one jump.c cross-jump ours makes and the original
+    does not, and a handful of one-insn sched2 slots.

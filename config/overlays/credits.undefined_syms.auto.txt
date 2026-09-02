@@ -52,6 +52,7 @@ D_800778F0 = 0x800778F0;
 D_800785D0 = 0x800785D0;
 D_800785D8 = 0x800785D8;
 D_800785DC = 0x800785DC;
+D_800785DC_BLK = 0x800785DC; // alias - incomplete-array view so the base materializes as a register (lui/addiu + lw 0(r)) instead of the per-site $at fold (func_credits_8007AA50 setup block)
 D_800785E0 = 0x800785E0;
 D_800785E4 = 0x800785E4;
 D_80078600 = 0x80078600;

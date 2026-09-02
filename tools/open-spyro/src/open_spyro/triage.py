@@ -124,7 +124,13 @@ def parse_bodies(path: Path) -> dict[str, Body]:
         cur.mnemonics.append(mnem)
         if "%gp_rel" in ops:
             cur.gp_rel = True
-        if mnem == "lui" and ops.startswith("$at") and "%hi" not in ops:
+        # B2 is a *literal-address* HW access: `lui $at,<imm>` feeding a
+        # load/store whose displacement is a bare constant. A bare `lui $at`
+        # on its own is also how gas expands an immediate COMPARE
+        # (`bne $r,0x80000000,L`) and how it reaches an indexed global
+        # (`lui $at; addu $at,$at,$i; lw $r,%lo(sym)($at)`), neither of which
+        # is a wall -- so key off the memory operand, not the `lui`.
+        if "($at)" in ops and "%lo" not in ops and mnem not in ("addu", "addiu"):
             cur.at_literal = True
         if mnem == "jr":
             if _JR_TRAMPOLINE.match(ops.lstrip()):
