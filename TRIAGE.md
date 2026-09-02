@@ -25,10 +25,10 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 11 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 12 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 13 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007cfb4` | func_level_11_8007CFB4 | ovl/level_11_peace_keepers_night_flight | 18952 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007cfb4` | func_level_17_8007CFB4 | ovl/level_17_magic_crafters_crystal_flight | 20312 | 50 | overlay (no -g3); segment 30.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x800623d8` | MulMatrix0 | main | 268 | 101 | segment 38.3% matched; asm-hint (GTE/handwritten fragments) |
+| 15 | `0x800624e8` | MulMatrix | main | 268 | 101 | segment 38.3% matched; asm-hint (GTE/handwritten fragments) |
 
-(20 viable candidates total; the full ranking is regenerable.)
+(52 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -86,6 +86,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | raw permuter output -- the .wip does not compile |
+| `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 0 |  |
 
 ## Auto-skipped (walls)
 
@@ -101,7 +102,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 - B12 batch-scatter (byte-store variant): 1
 - B12 batch-scatter tail: 1
 - B17 free-slot block layout: 1
-- B2 $at literal HW load: 56
+- B2 $at literal HW load: 53
 - B3 BIOS trampoline: 21
 - B3 kernel trampoline (raw jalr $t2, $ra saved to a global): 1
 - B4 AddPrim mask: 2
@@ -134,19 +135,19 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | Address | Function | Segment | Size | Classes |
 |---|---|---|--:|---|
 | `0x80012204` | main | main | 136 | B1 %gp_rel |
-| `0x80034480` | UpdateGameplayCamera | main | 2052 | B1 %gp_rel, B1 %gp_rel global access (2 sites), B2 $at literal HW load |
+| `0x80034480` | UpdateGameplayCamera | main | 2052 | B1 %gp_rel, B1 %gp_rel global access (2 sites) |
 | `0x80034c84` | SnapCameraToTarget | main | 100 | B1 %gp_rel |
 | `0x80034ce8` | AdvanceCameraSpringStep | main | 2748 | B1 %gp_rel, B1 %gp_rel global access |
 | `0x800357a4` | SelectCameraMode | main | 1972 | B1 %gp_rel, B1 %gp_rel global access (6 sites) |
 | `0x80035f58` | UpdateCameraManualYawInput | main | 92 | B1 %gp_rel |
 | `0x80035fb4` | UpdateCameraSpringForMode | main | 5208 | B1 %gp_rel |
 | `0x80037a20` | UpdateLedgeGrabCamera | main | 436 | B1 %gp_rel, B1 %gp_rel global access |
-| `0x80037bd4` | UpdateCameraFrame | main | 708 | B1 %gp_rel, B1 %gp_rel global access, B2 $at literal HW load |
+| `0x80037bd4` | UpdateCameraFrame | main | 708 | B1 %gp_rel, B1 %gp_rel global access |
 | `0x8003ea68` | ChangeSpyroState | main | 4960 | B1 %gp_rel, B8 jr-table switch (main) |
-| `0x8003fe40` | AdvanceSpyroPhysics | main | 4392 | B1 %gp_rel, B2 $at literal HW load |
+| `0x8003fe40` | AdvanceSpyroPhysics | main | 4392 | B1 %gp_rel |
 | `0x80041270` | DispatchSpyroChargeStateChanges | main | 744 | B1 %gp_rel |
-| `0x80041670` | UpdateSpyroStateBehavior | main | 10612 | B1 %gp_rel, B2 $at literal HW load, B8 jr-table switch (main) |
-| `0x80043fe4` | IntegrateSpyroMotionForSubstep | main | 15228 | B1 %gp_rel, B2 $at literal HW load, B8 jr-table switch (main) |
+| `0x80041670` | UpdateSpyroStateBehavior | main | 10612 | B1 %gp_rel, B8 jr-table switch (main) |
+| `0x80043fe4` | IntegrateSpyroMotionForSubstep | main | 15228 | B1 %gp_rel, B8 jr-table switch (main) |
 | `0x8006397c` | CdInit | main | 152 | B10 compare-const hoist |
 | `0x80063c48` | CdControl | main | 312 | B10 compare-const hoist |
 | `0x80063d80` | CdControlForce | main | 300 | B10 compare-const hoist |
@@ -160,58 +161,59 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003fdc8` | RestartSpyroAnimWithState | main | 120 | B12 batch-scatter (byte-store variant) |
 | `0x80037714` | ActivateScriptedCameraView | main | 148 | B12 batch-scatter tail |
 | `0x80058ae8` | func_80058AE8 | main | 120 | B17 free-slot block layout |
-| `0x800177f8` | func_800177F8 | main | 92 | B2 $at literal HW load, B6 handwritten |
+| `0x80016784` | LinkOTPrimitives | main | 284 | B2 $at literal HW load, B6 handwritten |
+| `0x800168a0` | AddPrimToOTSlot | main | 60 | B2 $at literal HW load, B6 handwritten |
+| `0x800168dc` | AddPrimToOT | main | 56 | B2 $at literal HW load, B6 handwritten ($at-as-data: lw $at then sh/sb through it) |
+| `0x80017110` | WorldToCameraRotate | main | 120 | B2 $at literal HW load, B6 handwritten |
+| `0x80017cb8` | UnpackWorldCollisionTri | main | 196 | B2 $at literal HW load, B6 handwritten |
 | `0x80017fd4` | func_80017FD4 | main | 16 | B2 $at literal HW load |
+| `0x8001f158` | BuildActorDrawList | main | 1600 | B2 $at literal HW load, B6 handwritten |
 | `0x8001f798` | EmitActorDrawList | main | 4452 | B2 $at literal HW load, B6 handwritten |
+| `0x800208fc` | BuildSecondaryActorDrawList | main | 1592 | B2 $at literal HW load, B6 handwritten |
 | `0x80020f34` | EmitSecondaryActorPrimitives | main | 6836 | B2 $at literal HW load, B3 BIOS trampoline, B6 handwritten |
+| `0x800229e8` | func_800229E8 | main | 68 | B2 $at literal HW load, handwritten register-restore blob |
 | `0x80022a2c` | RasterizeSpritePrimQueue | main | 4248 | B2 $at literal HW load, B6 handwritten |
 | `0x80023ac4` | RasterizePairedActor | main | 2036 | B2 $at literal HW load, B6 handwritten |
 | `0x800242b8` | func_800242B8 | main | 5688 | B2 $at literal HW load, B3 BIOS trampoline, B6 handwritten |
 | `0x800258f0` | RenderWorldChunks | main | 19976 | B2 $at literal HW load, B6 handwritten |
-| `0x8002f3e4` | GemPickup_Update | main | 8400 | B2 $at literal HW load, B8 jr-table switch (main) |
+| `0x8002a6fc` | TickWorldChunkAnimations | main | 3220 | B2 $at literal HW load, B6 handwritten |
+| `0x8002b4ac` | ResetWorldChunkAnimations | main | 1312 | B2 $at literal HW load, B6 handwritten |
 | `0x8004ae38` | CastRayWorldAndActors | main | 4020 | B2 $at literal HW load, B6 handwritten, B8 jr-table switch (main) |
+| `0x8004bdec` | func_8004BDEC | main | 96 | B2 $at literal HW load, B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8004be4c` | CollideSphereWithWorldAndActors | main | 4240 | B2 $at literal HW load, B6 handwritten, B8 jr-table switch (main) |
+| `0x8004cedc` | func_8004CEDC | main | 1808 | B2 $at literal HW load, B6 handwritten, B8 jr-table switch (main) |
 | `0x8004d5ec` | FindGroundHeightBelow | main | 2360 | B2 $at literal HW load, B6 handwritten |
-| `0x80050bd0` | DrawActors | main | 5148 | B2 $at literal HW load |
+| `0x8004df24` | FindWorldFloorBelowPoint | main | 964 | B2 $at literal HW load, B6 handwritten |
+| `0x8004e3c8` | DispatchActorContactAtSphere | main | 576 | B2 $at literal HW load, B3 BIOS trampoline, B6 handwritten |
+| `0x8004e60c` | func_8004E60C | main | 1436 | B2 $at literal HW load, B6 handwritten |
+| `0x8004eba8` | EmitStaticActorMeshList | main | 1112 | B2 $at literal HW load, B6 handwritten |
+| `0x8004f000` | EmitStaticActorMeshListFogged | main | 1212 | B2 $at literal HW load, B6 handwritten |
+| `0x8004f4bc` | EmitDynamicActorMeshScissored | main | 812 | B2 $at literal HW load, B6 handwritten |
+| `0x8004f8ec` | func_8004F8EC | main | 1216 | B2 $at literal HW load, B6 handwritten |
+| `0x8004fea0` | EmitDynamicActorMeshFogged | main | 240 | B2 $at literal HW load, B6 hand-written asm (`addi` / splat handwritten marker) |
+| `0x80050068` | func_80050068 | main | 472 | B2 $at literal HW load, B6 handwritten |
+| `0x80050240` | EmitDynamicActorMeshFogShaded | main | 972 | B2 $at literal HW load, B6 handwritten |
+| `0x80050710` | func_80050710 | main | 1216 | B2 $at literal HW load, B6 handwritten |
+| `0x80051fec` | func_80051FEC | main | 468 | B2 $at literal HW load, B6 handwritten |
+| `0x800521c0` | BuildRenderEntityLists | main | 256 | B2 $at literal HW load, B6 handwritten |
+| `0x800522c0` | TickGemCutsceneActorAnims | main | 516 | B2 $at literal HW load, B6 handwritten |
+| `0x800524c4` | AllocActorRecordSlot | main | 164 | B2 $at literal HW load, B6 hand-written asm (`addi` / splat handwritten marker) |
+| `0x80052568` | DespawnActorRecord | main | 320 | B2 $at literal HW load, B6 handwritten |
+| `0x800526a8` | InsertActorIntoSpatialGrid | main | 804 | B2 $at literal HW load, B6 handwritten |
+| `0x800529e4` | func_800529E4 | main | 896 | B2 $at literal HW load, B6 handwritten |
+| `0x80052d64` | func_80052D64 | main | 468 | B2 $at literal HW load, B6 handwritten |
+| `0x80052f38` | AccumulateAnimRootMotionDelta | main | 392 | B2 $at literal HW load, B6 handwritten |
 | `0x800530c0` | func_800530C0 | main | 784 | B2 $at literal HW load, B3 BIOS trampoline, B6 handwritten |
+| `0x80053570` | func_80053570 | main | 152 | B2 $at literal HW load, B8 jr-table switch (main) |
+| `0x80053608` | func_80053608 | main | 156 | B2 $at literal HW load, B6 handwritten |
 | `0x800573c8` | RasterizeEmitList | main | 3372 | B2 $at literal HW load, B6 handwritten |
+| `0x800580f4` | DrawWorldSparkleParticles | main | 976 | B2 $at literal HW load, B6 handwritten |
 | `0x800584c4` | DrawWorldRotatingBillboards | main | 872 | B2 $at literal HW load, B6 handwritten |
+| `0x8005882c` | func_8005882C | main | 56 | B2 $at literal HW load, B6 handwritten |
 | `0x80058864` | DrawGemPickupAuraStar | main | 644 | B2 $at literal HW load, B6 handwritten |
+| `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | B2 $at literal HW load, B6 handwritten |
 | `0x80059a48` | DrawSpyroDropShadow | main | 1348 | B2 $at literal HW load, B6 handwritten |
 | `0x80059f8c` | DrawEntityDirectionalSpikes | main | 1252 | B2 $at literal HW load, B6 handwritten |
-| `0x800623d8` | MulMatrix0 | main | 268 | B2 $at literal HW load |
-| `0x800624e8` | MulMatrix | main | 268 | B2 $at literal HW load |
-| `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | B2 $at literal HW load |
-| `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | B2 $at literal HW load |
-| `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | B2 $at literal HW load |
-| `0x8007ae40` | func_level_2_8007AE40 | ovl/level_2_artisans_dark_hollow | 31520 | B2 $at literal HW load |
-| `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | B2 $at literal HW load |
-| `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | B2 $at literal HW load |
-| `0x8007af28` | func_level_16_8007AF28 | ovl/level_16_magic_crafters_blowhard | 35724 | B2 $at literal HW load |
-| `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | B2 $at literal HW load |
-| `0x8007af94` | func_level_4_8007AF94 | ovl/level_4_artisans_toasty | 28180 | B2 $at literal HW load |
-| `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | B2 $at literal HW load |
-| `0x8007b4c8` | func_level_9_8007B4C8 | ovl/level_9_peace_keepers_ice_cavern | 33088 | B2 $at literal HW load |
-| `0x8007b4dc` | func_level_26_8007B4DC | ovl/level_26_dream_weavers_lofty_castle | 37188 | B2 $at literal HW load |
-| `0x8007b4f8` | func_level_25_8007B4F8 | ovl/level_25_dream_weavers_dark_passage | 38556 | B2 $at literal HW load |
-| `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | B2 $at literal HW load |
-| `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | B2 $at literal HW load |
-| `0x8007b5dc` | func_level_19_8007B5DC | ovl/level_19_beast_makers_terrace_village | 36992 | B2 $at literal HW load |
-| `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | B2 $at literal HW load |
-| `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | B2 $at literal HW load |
-| `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | B2 $at literal HW load |
-| `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | B2 $at literal HW load |
-| `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | B2 $at literal HW load |
-| `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | B2 $at literal HW load |
-| `0x8007da54` | func_level_3_8007DA54 | ovl/level_3_artisans_town_square | 38992 | B2 $at literal HW load |
-| `0x8007da78` | func_level_1_8007DA78 | ovl/level_1_artisans_stone_hill | 40116 | B2 $at literal HW load |
-| `0x8007e18c` | func_level_18_8007E18C | ovl/level_18_beast_makers_home | 40292 | B2 $at literal HW load |
-| `0x8007e240` | func_level_7_8007E240 | ovl/level_7_peace_keepers_dry_canyon | 49808 | B2 $at literal HW load |
-| `0x8007e240` | func_level_8_8007E240 | ovl/level_8_peace_keepers_cliff_town | 43336 | B2 $at literal HW load |
-| `0x8007e398` | func_level_12_8007E398 | ovl/level_12_magic_crafters_home | 53032 | B2 $at literal HW load |
-| `0x8007e3a0` | func_level_6_8007E3A0 | ovl/level_6_peace_keepers_home | 48824 | B2 $at literal HW load |
-| `0x8007e3c0` | func_level_24_8007E3C0 | ovl/level_24_dream_weavers_home | 43620 | B2 $at literal HW load |
-| `0x8004e3c8` | DispatchActorContactAtSphere | main | 576 | B3 BIOS trampoline, B6 handwritten |
 | `0x8005db14` | InitHeap | main | 12 | B3 BIOS trampoline |
 | `0x8005db24` | LoadExec | main | 12 | B3 BIOS trampoline |
 | `0x8005db34` | _96_init | main | 12 | B3 BIOS trampoline |
@@ -248,10 +250,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80017948` | SignedAngleDelta8 | main | 36 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8001796c` | SignedAngleDelta12 | main | 36 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x80017e54` | ComputeDepthCuedColor | main | 68 | B6 hand-written asm (`addi` / splat handwritten marker) |
-| `0x8004bdec` | func_8004BDEC | main | 96 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8004fdac` | BlendDepthCuedEdgeColor | main | 244 | B6 hand-written asm (`addi` / splat handwritten marker) |
-| `0x8004fea0` | EmitDynamicActorMeshFogged | main | 240 | B6 hand-written asm (`addi` / splat handwritten marker) |
-| `0x800524c4` | AllocActorRecordSlot | main | 164 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8005b8e0` | start | main | 168 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8005dba4` | EnterCriticalSection | main | 16 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x8005dbb4` | ExitCriticalSection | main | 16 | B6 hand-written asm (`addi` / splat handwritten marker) |
@@ -259,8 +258,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x800625f8` | SetTransMatrix | main | 32 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x80062618` | SetGeomOffset | main | 24 | B6 hand-written asm (`addi` / splat handwritten marker) |
 | `0x80062638` | SetGeomScreen | main | 12 | B6 hand-written asm (`addi` / splat handwritten marker) |
-| `0x80016784` | LinkOTPrimitives | main | 284 | B6 handwritten |
-| `0x800168a0` | AddPrimToOTSlot | main | 60 | B6 handwritten |
 | `0x800169ac` | ArcTan2_8bit | main | 264 | B6 handwritten |
 | `0x80016ab4` | ArcTan2 | main | 420 | B6 handwritten |
 | `0x80016c58` | LookupSine | main | 88 | B6 handwritten |
@@ -268,7 +265,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80016d2c` | ApplyEulerRotation | main | 676 | B6 handwritten |
 | `0x80017048` | RotateVectorByMatrix | main | 120 | B6 handwritten |
 | `0x800170c0` | ApplyActiveGteRotation | main | 80 | B6 handwritten |
-| `0x80017110` | WorldToCameraRotate | main | 120 | B6 handwritten |
 | `0x80017188` | func_80017188 | main | 116 | B6 handwritten |
 | `0x800171fc` | VectorLength | main | 152 | B6 handwritten |
 | `0x8001729c` | RefineSqrtEstimate | main | 148 | B6 handwritten |
@@ -283,6 +279,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8001771c` | func_8001771C | main | 60 | B6 handwritten |
 | `0x80017758` | AddVector | main | 52 | B6 handwritten |
 | `0x8001778c` | SubtractVector | main | 52 | B6 handwritten |
+| `0x800177f8` | func_800177F8 | main | 92 | B6 handwritten |
 | `0x80017854` | func_80017854 | main | 64 | B6 handwritten |
 | `0x80017894` | LerpVectorGTE | main | 116 | B6 handwritten |
 | `0x80017990` | ApproxDist2D | main | 96 | B6 handwritten |
@@ -295,46 +292,18 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80017c4c` | SVectorToVector | main | 28 | B6 handwritten |
 | `0x80017c68` | VectorToSVector | main | 28 | B6 handwritten |
 | `0x80017c84` | func_80017C84 | main | 52 | B6 handwritten |
-| `0x80017cb8` | UnpackWorldCollisionTri | main | 196 | B6 handwritten |
 | `0x80017d7c` | func_80017D7C | main | 216 | B6 handwritten |
 | `0x80017e98` | ConvertRGB15ToLuma8 | main | 140 | B6 handwritten |
 | `0x80017f24` | AddBiasToColorRuns | main | 176 | B6 handwritten |
-| `0x8001f158` | BuildActorDrawList | main | 1600 | B6 handwritten |
-| `0x800208fc` | BuildSecondaryActorDrawList | main | 1592 | B6 handwritten |
-| `0x8002a6fc` | TickWorldChunkAnimations | main | 3220 | B6 handwritten |
 | `0x8002b390` | func_8002B390 | main | 100 | B6 handwritten |
 | `0x8002b3f4` | func_8002B3F4 | main | 80 | B6 handwritten |
 | `0x8002b444` | func_8002B444 | main | 104 | B6 handwritten |
-| `0x8002b4ac` | ResetWorldChunkAnimations | main | 1312 | B6 handwritten |
-| `0x8004cedc` | func_8004CEDC | main | 1808 | B6 handwritten, B8 jr-table switch (main) |
-| `0x8004df24` | FindWorldFloorBelowPoint | main | 964 | B6 handwritten |
 | `0x8004e2e8` | func_8004E2E8 | main | 224 | B6 handwritten |
-| `0x8004e60c` | func_8004E60C | main | 1436 | B6 handwritten |
-| `0x8004eba8` | EmitStaticActorMeshList | main | 1112 | B6 handwritten |
-| `0x8004f000` | EmitStaticActorMeshListFogged | main | 1212 | B6 handwritten |
-| `0x8004f4bc` | EmitDynamicActorMeshScissored | main | 812 | B6 handwritten |
 | `0x8004f7e8` | ClipAndEmitActorTriangle | main | 260 | B6 handwritten, B8 jr-table switch (main) |
-| `0x8004f8ec` | func_8004F8EC | main | 1216 | B6 handwritten |
-| `0x80050068` | func_80050068 | main | 472 | B6 handwritten |
-| `0x80050240` | EmitDynamicActorMeshFogShaded | main | 972 | B6 handwritten |
 | `0x8005060c` | ClipAndEmitFogShadedActorTriangle | main | 260 | B6 handwritten, B8 jr-table switch (main) |
-| `0x80050710` | func_80050710 | main | 1216 | B6 handwritten |
-| `0x80051fec` | func_80051FEC | main | 468 | B6 handwritten |
-| `0x800521c0` | BuildRenderEntityLists | main | 256 | B6 handwritten |
-| `0x800522c0` | TickGemCutsceneActorAnims | main | 516 | B6 handwritten |
-| `0x80052568` | DespawnActorRecord | main | 320 | B6 handwritten |
-| `0x800526a8` | InsertActorIntoSpatialGrid | main | 804 | B6 handwritten |
 | `0x800529cc` | HideActorRenderRecord | main | 24 | B6 handwritten |
-| `0x800529e4` | func_800529E4 | main | 896 | B6 handwritten |
-| `0x80052d64` | func_80052D64 | main | 468 | B6 handwritten |
-| `0x80052f38` | AccumulateAnimRootMotionDelta | main | 392 | B6 handwritten |
 | `0x800533d0` | EncodeCachedVecToActorDirCode | main | 416 | B6 handwritten |
-| `0x80053608` | func_80053608 | main | 156 | B6 handwritten |
-| `0x800580f4` | DrawWorldSparkleParticles | main | 976 | B6 handwritten |
-| `0x8005882c` | func_8005882C | main | 56 | B6 handwritten |
-| `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | B6 handwritten |
 | `0x800626b0` | g_anGteExceptionVectorStub | main | 56 | B6 handwritten |
-| `0x800168dc` | AddPrimToOT | main | 56 | B6 handwritten ($at-as-data: lw $at then sh/sb through it) |
 | `0x80015370` | TickLevelTransitionStream | main | 4212 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
@@ -346,12 +315,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80056f64` | DispatchSpyroTriggerEvent | main | 1052 | B8 .rodata switch jump table in MAIN (switchdataD_80011380), B8 jr-table switch (main) |
 | `0x8005cfec` | ApplySpuVoiceAttrRange | main | 1596 | B8 .rodata switch jump table in MAIN (switchdataD_800115bc), B8 jr-table switch (main) |
 | `0x800671f0` | func_800671F0 | main | 1060 | B8 .rodata switch jump table in MAIN (switchdataD_80012144), B8 jr-table switch (main) |
+| `0x8002f3e4` | GemPickup_Update | main | 8400 | B8 jr-table switch (main) |
 | `0x800314b4` | Gamestate0B_Update | main | 4132 | B8 jr-table switch (main) |
 | `0x8003d194` | TickSpyroAnimStateMachine | main | 548 | B8 jr-table switch (main) |
 | `0x80047b60` | DispatchSpyroPhysicsByState | main | 3372 | B8 jr-table switch (main) |
 | `0x8004ac24` | ResetSpyroEntity | main | 532 | B8 jr-table switch (main) |
 | `0x8004ff90` | ClipAndEmitFoggedActorTriangle | main | 212 | B8 jr-table switch (main) |
-| `0x80053570` | func_80053570 | main | 152 | B8 jr-table switch (main) |
 | `0x8005cc58` | SetSpuCommonAttr | main | 916 | B8 jr-table switch (main) |
 | `0x800627d8` | FormatAndWrite | main | 1672 | B8 jr-table switch (main) |
 | `0x80062fd4` | sprintf | main | 2140 | B8 jr-table switch (main) |
@@ -369,5 +338,4 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80063928` | longjmp | main | 60 | PSY-Q runtime primitive, not compilable C |
 | `0x8005b988` | __main | main | 112 | SN CRT prebuilt object |
 | `0x8005b9f8` | __do_global_dtors | main | 104 | SN CRT prebuilt object ($t0 scratch, no arg-save area) |
-| `0x800229e8` | func_800229E8 | main | 68 | handwritten register-restore blob |
 | `0x8001228c` | func_8001228C | main | 28 | main's unreachable epilogue fragment |

@@ -147,19 +147,19 @@ void BeginGemPickupOverlay(unsigned int *param_1) {
        below the alias base) sets MEM_IN_STRUCT_P and the load stays put.
        15 -> 9 diffs.
 
-   (2026-08-15) REMAINING (9 insns, one class): in the dragon-rescue block the original puts
-   the shared literal `1` in a0 and the `dragons` pointer in v1; ours has them
-   swapped. §D 2c probe: reg 116 (the constant, 3 refs / 6 insns, priority
-   floor_log2(3)*3/6 = 0.50) beats reg 75 (`dragons`, 3 refs / 7 insns, 0.43),
-   so it is allocated first and takes v1 (v1 precedes a0 in reg_alloc_order).
-   Flipping it needs `dragons` at 4 refs, or its live range at <=6 (a tie then
-   goes to the earlier birth, which is `dragons`). Everything tried either does
-   not move the counts or costs an insn: A181's second set (`dragons =
-   g_anLevelDragonsRescued; dragons += g_nLevelIntroIndex;` — flips the index
-   to v1 but ties `dragons` to the BASE's register and hoists the `la` two
-   slots, 22/146), a `dst = dragons;` copy before the store (cse deletes it),
-   A179's index form (16/146 — the HudDragonCachedCount store sinks below the
-   two flag stores), moving the increment or one flag store between the pair
+   (2026-08-15) REMAINING (9 insns, one class): in the dragon-rescue block the
+   original puts the shared literal `1` in a0 and the `dragons` pointer in v1;
+   ours has them swapped. §D 2c probe: reg 116 (the constant, 3 refs / 6 insns,
+   priority floor_log2(3)*3/6 = 0.50) beats reg 75 (`dragons`, 3 refs / 7 insns,
+   0.43), so it is allocated first and takes v1 (v1 precedes a0 in
+   reg_alloc_order). Flipping it needs `dragons` at 4 refs, or its live range at
+   <=6 (a tie then goes to the earlier birth, which is `dragons`). Everything
+   tried either does not move the counts or costs an insn: A181's second set
+   (`dragons = g_anLevelDragonsRescued; dragons += g_nLevelIntroIndex;` — flips
+   the index to v1 but ties `dragons` to the BASE's register and hoists the `la`
+   two slots, 22/146), a `dst = dragons;` copy before the store (cse deletes
+   it), A179's index form (16/146 — the HudDragonCachedCount store sinks below
+   the two flag stores), moving the increment or one flag store between the pair
    (sched1 puts them back, 9/146 unchanged), `*dragons = prevDragons + 1` before
    the flag stores (+1 insn, the load-delay nop the 2026-07-19 note describes),
    a long-lived `one = 1` local (cse re-materializes it, 9/146), and A176/A195's
