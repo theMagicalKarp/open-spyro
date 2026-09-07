@@ -39,6 +39,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
+| `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
@@ -86,7 +87,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | raw permuter output -- the .wip does not compile |
-| `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 0 |  |
 
 ## Auto-skipped (walls)
 

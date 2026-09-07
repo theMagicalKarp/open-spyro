@@ -3730,3 +3730,86 @@ func_credits_8007AA50:
     `addu` operand order, one argument-load position in the setup block, a
     straggler `li a2,2048`, one jump.c cross-jump ours makes and the original
     does not, and a handful of one-insn sched2 slots.
+
+UpdateHudCounters:
+  verdict: parked
+  class: "sched2 store-sinking (potential_hazard, §D 2d) x6 sites + one extra callee-saved reg"
+  date: 2026-09-07
+  note: >-
+    Opened 2026-09-07 as a fresh vein target - one of the three main functions
+    §B8 names as clean of every wall and that had no ledger entry. Screened
+    clean by eye first: no `handwritten instruction` marker, no %gp_rel, no
+    `switchdata`, and every `$at` is a gas address/compare macro (the corrected
+    B2 rule). One session took it from a first m2c decode (300 masked / 110
+    regions / offset +18, would not link) to 912 vs 913 insns, 203 masked over
+    89 regions, final offset -1, LINKING. Levers, all in the .c.wip header: the
+    A200 barrier (its POSITION is worth 43 - three legal slots score 231/241/274
+    and the earliest wins), the alias reached as an array not a pointer local,
+    a byte-offset sprite-rect walk (A179/A35), a named decrement carrier in the
+    five roll-out arms (A164), and a hoisted cosine load. Dominant residue is
+    one class at six sites: our byte-global stores sink below the andi/sll/lh
+    chain that re-reads them. Ruled out there: a comma-operator hoist of the
+    decrement above the test (byte-identical) and volatile-pinning the stores
+    (makes it length-exact at 913/913 offset 0 but re-tiles from orig[229] on
+    and drops linked credit 244 -> 148 B). Next probe is the `-dR` sched2 trace
+    of one roll-out block.
+
+Gamestate02_03_06_Draw:
+  verdict: viable
+  class: "fresh - screened clean of every named wall 2026-09-07, never opened"
+  date: 2026-09-07
+  note: >-
+    8,840 B, main. Screened this session alongside UpdateHudCounters: zero
+    `handwritten instruction` markers, zero %gp_rel, zero `switchdata` jr
+    tables, and all 37 `lui $at` are gas address macros (`%lo(sym)($at)` or
+    `addu $at,$at,rX` indexed globals), not B2. The original uses the absolute
+    `lui $at / %lo` form throughout, which is what a plain `extern` decl gives
+    us (A240), so it is NOT §B-i-bound either. Biggest un-opened main target.
+
+DrawActors:
+  verdict: viable
+  class: "fresh - screened clean of every named wall 2026-09-07, never opened"
+  date: 2026-09-07
+  note: >-
+    5,148 B, main. Same screen as Gamestate02_03_06_Draw: no handwritten
+    markers, no %gp_rel, no switchdata, and all 85 `lui $at` are gas macros.
+    Note it is render-pipeline stage 4 and calls ComputeDepthCuedColor (itself
+    hand-written), so expect GTE-shaped argument setup, but the function body
+    is ordinary compiled C.
+
+MulMatrix:
+  verdict: wall
+  class: "B6 handwritten asm (19 `handwritten instruction` markers)"
+  date: 2026-09-07
+  note: >-
+    268 B. `make triage` ranks it 14th because it is small and its segment is
+    38% matched, but the glabel body carries 19 splat `/* handwritten
+    instruction */` markers - gcc never emits trapping `addi`. Same for
+    MulMatrix0. Do not open either.
+
+MulMatrix0:
+  verdict: wall
+  class: "B6 handwritten asm (19 `handwritten instruction` markers)"
+  date: 2026-09-07
+  note: >-
+    268 B, the SetRotMatrix-less variant of MulMatrix. Identical screen: 19
+    handwritten markers. Ranked 15th by triage for the same reason.
+
+func_level_13_8008AF54:
+  verdict: parked
+  class: "B25 dead `li a3,3` x4 - the class survives a fresh read of the asm"
+  date: 2026-09-07
+  note: >-
+    Re-screened 2026-09-07 (not edited). Two things confirmed by reading the
+    original rather than the park: (a) both callees really are 2-argument
+    hand-written leaves - func_80017BFC is `lw/lw/lw; sra 2 x3; sh/sh/sh` and
+    func_80017C24 the `lhu x3; sll 2 x3; sw x3` mirror, neither touches $a2/$a3,
+    so the "invisible 4th argument" reading stays refuted; (b) the eight `li
+    a3,3` sites fall into a POSITIONAL pattern the park does not record - per
+    jump-table arm, the constant is materialised at the arm HEAD (before a `jal
+    func_80017C24`), again mid-arm (before a `jal func_80017BFC`), and again at
+    the real use, i.e. once per basic block on the path from the arm to the use,
+    with the two live uses being `bne v0,a3` (a threshold compare against
+    rec[0]) and `sb a3,0(s2)` (rec[0] = 3). Two arms x (head + mid + use) = the
+    eight. Recorded so the next session attacks the PER-BLOCK materialisation
+    pattern rather than another spelling of the constant local.
