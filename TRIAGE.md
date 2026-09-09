@@ -25,10 +25,10 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 11 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 12 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 13 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x800623d8` | MulMatrix0 | main | 268 | 101 | segment 38.3% matched; asm-hint (GTE/handwritten fragments) |
-| 15 | `0x800624e8` | MulMatrix | main | 268 | 101 | segment 38.3% matched; asm-hint (GTE/handwritten fragments) |
+| 14 | `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 61 | segment 38.3% matched; matched neighbor in segment; megafunction (all-or-nothing); hand-marked viable: >- |
+| 15 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(52 viable candidates total; the full ranking is regenerable.)
+(49 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -56,7 +56,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap |
 | `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b mutual exclusion (schedule XOR register) — needs update_equiv_regs to delete the 0x10 pseudo |
-| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | reload reg_equiv_constant remat: the original has 8 references, we have 4 |
+| `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` x4 - the class survives a fresh read of the asm |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
 | `0x8002c924` | BeginGemPickupOverlay | main | 584 | 500 | local-alloc a0/a1 pair: the de-boost carrier and the world counter |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
@@ -72,6 +72,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x8003e90c` | NudgeSpyroFromWallProbes | main | 348 | 208 | B13 lh+sra shift-consumer |
 | `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | 196 |  |
 | `0x800647a0` | CdSync | main | 640 | 196 |  |
+| `0x80054988` | UpdateHudCounters | main | 3652 | 188 | sched2 store-sinking (potential_hazard, §D 2d) x6 sites + one extra callee-saved reg |
 | `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | 140 |  |
 | `0x8005dd0c` | WaitForFrameDeadline | main | 156 | 128 |  |
 | `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F4/A187 return-pointer copy propagation — no branch after the dispatch call |
@@ -112,6 +113,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 - B6 hand-written asm (`addi` / splat handwritten marker): 21
 - B6 handwritten: 92
 - B6 handwritten ($at-as-data: lw $at then sh/sb through it): 1
+- B6 handwritten asm (19 `handwritten instruction` markers): 2
 - B8 .rodata switch jump table in MAIN: 4
 - B8 .rodata switch jump table in MAIN (jr through switchdataD_80011230): 1
 - B8 .rodata switch jump table in MAIN (switchdataD_80010a70): 1
@@ -304,6 +306,8 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x800529cc` | HideActorRenderRecord | main | 24 | B6 handwritten |
 | `0x800533d0` | EncodeCachedVecToActorDirCode | main | 416 | B6 handwritten |
 | `0x800626b0` | g_anGteExceptionVectorStub | main | 56 | B6 handwritten |
+| `0x800623d8` | MulMatrix0 | main | 268 | B6 handwritten asm (19 `handwritten instruction` markers) |
+| `0x800624e8` | MulMatrix | main | 268 | B6 handwritten asm (19 `handwritten instruction` markers) |
 | `0x80015370` | TickLevelTransitionStream | main | 4212 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |
 | `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | B8 .rodata switch jump table in MAIN, B8 jr-table switch (main) |

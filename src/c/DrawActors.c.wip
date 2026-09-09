@@ -1,0 +1,608 @@
+#include "types.h"
+
+/* PARKED 2026-09-09 (fresh vein target - never opened before this session).
+   State: 1291 vs 1287 insns (+4), 132 masked mismatches over 86 regions,
+   register-anchored, final positional offset +4. Does NOT link (over slot).
+
+   What is already exact:
+   - The whole matrix head (insns 0..190) is instruction-for-instruction and
+     register-for-register identical.
+   - The USER-LOCAL frame map is exact: sp+0x10/0x30 matrices, 0x50/0x60
+     vectors, 0x70/0x80/0x90/0x98 the first dot-product block, 0xb8 color,
+     0xc0/0xd0/0xe0/0xe8 the second dot-product block.
+   - The callee-saved map is exact: s1=flags, s2=j, s3=nEdges, s4=maxX,
+     s5=mob cursor, s6=minY, s7=maxY, s8=minX.
+   - Zero content/structural diffs remain: every one of the 132 masked
+     mismatches is a register rename, and 55 of them are ONE a1<->a2 pair.
+
+   Four levers are load-bearing; do not "clean" them up.
+   1. A35 typed array-of-struct indexing. `ScreenPt D_80078DD8[]` (stride 0xc)
+      and `EdgeRec D_80077EA0[]` (stride 0x18) are what keep every access on
+      the original's `lui $at / addu $at,idx / lw %lo(sym+K)($at)` fold. Flat
+      `int D_80078DD8[]` + `[k*3+1]` indexing hands loop.c a pointer giv per
+      field instead and costs 19 insns (505 masked -> 232 in one edit).
+   2. The two dot-product blocks are BLOCK-SCOPED, and that is what puts
+      `color` at sp+0xb8. `color` is a plain scalar, so expand_decl gives it a
+      pseudo and the slot only appears when `&color` is taken - i.e. between
+      the first block`s decls and the second`s. Declared at function scope
+      alongside them it lands at sp+0x100 and the whole spill region shifts.
+   3. A195/A176 ref dials, tuned against the -dl probe, are what produce the
+      callee-saved map. Targets (R/live_length, priority = 5R/L):
+      flags 38/447 = .4250 > nEdges 38/479 = .3967 > maxX 37/479 = .3862 >
+      minY = maxY 36/476 = .3782 > minX 36/491 = .3666.
+      The two-level wrapper on the first-half `if (flags == 2 ...)` block buys
+      flags +4 (it is the only splittable region that mentions flags and none
+      of the extents); the INNER wrapper `if (maxX < xk) { do { maxX = xk; }
+      while (0); }` buys maxX exactly +1 - the ordinary outer form gives +2,
+      which ties nEdges and, on the lower allocno, steals its register.
+      Do NOT wrap the big extents condition: it mentions minX/minY/maxX/maxY
+      twice each and lifts all six uniformly (229 -> 294 masked).
+   4. A146: the storm-fade clamp reuses `j`, the loop counter, rather than its
+      own local. Merging those two disjoint lifetimes into one allocno is
+      worth 35 masked diffs (167 -> 132) and is what finally hands j s2 and
+      nEdges s3.
+
+   The two open residues, both one class:
+   R1 (dominant, 55 of 132 + the only real +3 of the length): local-alloc puts
+      `k` in a2 and the `k*3<<2` index temp in a1; the original is the other
+      way round. Because the original`s index temp lives in a2 it survives the
+      four-arm extents test and is still live at the edge-record block, where
+      ours has to recompute it (`sll/addu/sll`, +3 insns at orig[539]). One
+      A195 wrapper on the whole k-selection if/else was measured:
+   byte-identical, so the refs did not move - the next probe is `-dl` on the
+   anonymous index quantity, not another wrapper depth. R2 (frame): our frame is
+   400, the original 416 - we are TWO 8-byte reload slots SHORT (the A231
+   direction nobody has had to fix yet, since every recorded case had a
+   surplus). Because of it every spill offset from insn ~191 on is 8-16 bytes
+   low, which is what keeps the byte-identical word count down even though the
+   content is right. Two more long-lived spilled pseudos are missing; the +1
+   load-delay nops at orig[810] and orig[1229] (the original fills them with the
+   `color` reload) are the same shortfall showing up as schedule.
+
+   Frame: 0x1a0. VMA 0x80050bd0, 5148 bytes. */
+
+extern int abs(int x);
+
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+extern void CopyWords(void *dst, void *src, int byte_count);
+extern void SetTransMatrix(MATRIX *m);
+extern void MulMatrix(MATRIX *a, MATRIX *b);
+extern int LookupSine(unsigned int angle);
+extern int LookupCosine(unsigned int angle);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern void AddVector(int *dst, int *a, int *b);
+extern void ZeroVector(int *v);
+extern void RShiftVector3(int *v, unsigned int bits);
+extern unsigned int VectorLength(int *v, int with_z);
+extern int CountLeadingZeros(int x);
+extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
+                                          unsigned int t);
+extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int shift);
+extern void ApplyEulerRotation(unsigned char *euler, MATRIX *m, MATRIX *p);
+extern void RotateVectorByMatrix(MATRIX *m, int *src, int *dst);
+extern void EmitDynamicActorMeshFogged(unsigned int *color);
+extern void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx,
+                                          MATRIX *outMtx);
+extern void EmitDynamicActorMeshFogShaded(int *mesh, MATRIX *viewMtx,
+                                          MATRIX *outMtx);
+extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
+
+/* One scripted-mob mesh header; only the tint word at +0x10 is read here. */
+typedef struct ScriptedMobMesh {
+  int unk0;
+  int unk4;
+  int unk8;
+  int unkC;
+  unsigned int color; /* +0x10 */
+} ScriptedMobMesh;
+
+/* A scripted "mob" billboard: a convex ring of world-space points that gets
+   projected to screen space and stroked as an outline. */
+typedef struct ScriptedMob {
+  ScriptedMobMesh *pMesh; /* +0x00 */
+  int nPoints;            /* +0x04 */
+  int nx;                 /* +0x08 */
+  int ny;                 /* +0x0c */
+  int nz;                 /* +0x10 */
+  int nGateIndex;         /* +0x14 */
+  int unk18;
+  int unk1c;
+  int pts[8][3]; /* +0x20 */
+} ScriptedMob;
+
+extern int g_nScriptedMobViewYawSpin;
+extern int g_nScriptedMobViewPitchTilt;
+extern int g_nScriptedMobCount;
+extern ScriptedMob *g_apScriptedMobEntries[];
+extern short g_nCameraEulerRoll;
+extern short g_nCameraEulerPitch;
+extern short g_nCameraEulerYaw;
+extern int g_anCameraPos[3];
+extern int g_nVblankTickCount;
+extern int g_nLevelStormFlag;
+extern unsigned int g_dwWorldFogColor;
+extern int g_nActorMeshOtDepthBin;
+extern int g_anActorDeferredTriStack[64];
+extern int *g_pActorDeferredTriStackTop;
+extern int g_anActorScissorRect[4];
+extern int g_nFadeProgress;
+extern unsigned int g_dwActorMeshFadeColor;
+
+/* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
+extern short g_anCameraEulerPitchBlock[];
+
+/* One projected ring point: screen x/y plus the OT depth term. */
+typedef struct ScreenPt {
+  int x;
+  int y;
+  int z;
+} ScreenPt;
+
+/* One silhouette edge: live flag, the two packed endpoints, the edge normal
+   and its constant term (the half-plane test the rasterizer clips against). */
+typedef struct EdgeRec {
+  int live;
+  int p0;
+  int p1;
+  int nx;
+  int ny;
+  int c;
+} EdgeRec;
+
+extern unsigned char D_800771C8[]; /* per-mob visibility gate bytes */
+extern EdgeRec D_80077EA0[];       /* silhouette edge records */
+extern ScreenPt D_80078DD8[];      /* projected ring points */
+extern int D_80076E24[];           /* [-0x10] view mtx, [-0x15] world mtx */
+extern int D_800785B4;             /* static-mesh LOD cutoff */
+
+/* Render stage 4: draw the scripted-mob billboards, then the static actor
+   mesh list. The camera-relative view matrix is rebuilt every frame from the
+   camera euler angles plus a slow spin/tilt (g_nScriptedMobViewYawSpin /
+   ...PitchTilt, both advanced 2/frame here) and squashed to 5/8 on the middle
+   row. Each live mob is projected point-by-point into D_80078DD8, depth-cued
+   (and fog-blended during storms), then walked twice: once to accumulate the
+   centroid, screen extents and silhouette edges of the ring as-is, and — when
+   the mob is nearer than 0x4000 — once more with every point pushed 2 px away
+   from the centroid, giving the fattened outline pass. A pass is emitted only
+   when its extents fall inside the 512x240 frame and the ring faces the
+   camera. (0x80050bd0, 5148 bytes.) */
+void DrawActors(void) {
+  MATRIX viewMtx; /* sp+0x10 */
+  MATRIX outMtx;  /* sp+0x30 */
+  int vDelta[3];  /* sp+0x50 */
+  int vCenter[3]; /* sp+0x60 */
+  unsigned int color;
+  int iVar1;
+  int i;
+  int j;
+  int k;
+  int n;
+  int shift;
+  int dist;
+  int sumX;
+  int sumY;
+  int facing;
+  int minX;
+  int maxX;
+  int minY;
+  int maxY;
+  int flags;
+  int nEdges;
+  int xk;
+  int yk;
+  int dx;
+  int dy;
+  int flagX;
+  int flagY;
+  int lod;
+
+  g_nScriptedMobViewYawSpin = (g_nScriptedMobViewYawSpin + 2) & 0xfff;
+  g_nScriptedMobViewPitchTilt = (g_nScriptedMobViewPitchTilt + 2) & 0xfff;
+  if (g_nScriptedMobViewPitchTilt >= 0x801) {
+    g_nScriptedMobViewPitchTilt -= 0x1000;
+  }
+  if (g_nScriptedMobViewPitchTilt >= 0x81) {
+    g_nScriptedMobViewPitchTilt = 0x80;
+  }
+
+  FillWord(&viewMtx, 0, 0x20);
+  SetTransMatrix(&viewMtx);
+  viewMtx.m[0][0] = 0x1000;
+  iVar1 =
+      LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[1][1] = iVar1;
+  iVar1 =
+      LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[2][1] = iVar1;
+  iVar1 =
+      LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[1][2] = -iVar1;
+  iVar1 =
+      LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[2][2] = iVar1;
+
+  FillWord(&outMtx, 0, 0x20);
+  iVar1 = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[0][0] = iVar1;
+  iVar1 = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[2][0] = -iVar1;
+  outMtx.m[1][1] = 0x1000;
+  iVar1 = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[0][2] = iVar1;
+  iVar1 = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[2][2] = iVar1;
+  MulMatrix(&viewMtx, &outMtx);
+
+  FillWord(&outMtx, 0, 0x20);
+  iVar1 = LookupCosine(g_nCameraEulerRoll);
+  outMtx.m[0][0] = iVar1;
+  iVar1 = LookupSine(g_nCameraEulerRoll);
+  outMtx.m[1][0] = -iVar1;
+  iVar1 = LookupSine(g_nCameraEulerRoll);
+  outMtx.m[0][1] = iVar1;
+  iVar1 = LookupCosine(g_nCameraEulerRoll);
+  outMtx.m[1][1] = iVar1;
+  outMtx.m[2][2] = 0x1000;
+  MulMatrix(&viewMtx, &outMtx);
+
+  CopyWords(&outMtx, &viewMtx, 0x14);
+  iVar1 = viewMtx.m[1][0] * 0x140;
+  if (iVar1 < 0) {
+    iVar1 += 0x1ff;
+  }
+  outMtx.m[1][0] = iVar1 >> 9;
+  iVar1 = viewMtx.m[1][1] * 0x140;
+  if (iVar1 < 0) {
+    iVar1 += 0x1ff;
+  }
+  outMtx.m[1][1] = iVar1 >> 9;
+  iVar1 = viewMtx.m[1][2] * 0x140;
+  if (iVar1 < 0) {
+    iVar1 += 0x1ff;
+  }
+  outMtx.m[1][2] = iVar1 >> 9;
+
+  for (i = 0; i < g_nScriptedMobCount; i++) {
+    if (g_apScriptedMobEntries[i]->nGateIndex < 0 ||
+        D_800771C8[g_apScriptedMobEntries[i]->nGateIndex] != 0) {
+      flagY = 1;
+      flagX = 1;
+      n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
+      color = abs(n) >> 1;
+      color = ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
+                                    0xffffff, color);
+      SubtractVector(vDelta, g_apScriptedMobEntries[i]->pts[0], g_anCameraPos);
+      n = CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
+      shift = n >> 1;
+      if (n >= 0xf) {
+        RShiftVector3(vDelta, shift);
+        dist = VectorLength(vDelta, 1) << shift;
+      } else {
+        dist = VectorLength(vDelta, 1);
+      }
+      shift = CountLeadingZeros(dist) - 0xd;
+      if (shift < 0) {
+        shift = 0;
+      }
+      if (g_nLevelStormFlag != 0 && dist >= 0x4001) {
+        j = (0x8000 - dist) >> 2;
+        if (j < 0) {
+          j = 0;
+        }
+        if (j >= 0x1001) {
+          j = 0x1000;
+        }
+        color = ComputeDepthCuedColor(g_dwWorldFogColor, color, j);
+      }
+
+      ZeroVector(vCenter);
+      for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+        ProjectWorldPointGTE((int *)&D_80078DD8[j],
+                             g_apScriptedMobEntries[i]->pts[j], shift);
+        AddVector(vCenter, vCenter, g_apScriptedMobEntries[i]->pts[j]);
+      }
+      vCenter[0] /= g_apScriptedMobEntries[i]->nPoints;
+      vCenter[1] /= g_apScriptedMobEntries[i]->nPoints;
+      vCenter[2] /= g_apScriptedMobEntries[i]->nPoints;
+      SubtractVector(vDelta, g_anCameraPos, g_apScriptedMobEntries[i]->pts[1]);
+      RShiftVector3(vDelta, shift);
+
+      minX = 0x13f8;
+      minY = 0xf0;
+      maxY = 0;
+      flags = 0;
+      nEdges = 0;
+      maxX = 0;
+      g_nActorMeshOtDepthBin = 0;
+      sumX = 0;
+      sumY = 0;
+      g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
+      facing = -vDelta[0] * g_apScriptedMobEntries[i]->nx -
+               vDelta[1] * g_apScriptedMobEntries[i]->ny -
+               vDelta[2] * g_apScriptedMobEntries[i]->nz;
+
+      for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+        if (facing > 0) {
+          k = j + 1;
+          if (k == g_apScriptedMobEntries[i]->nPoints) {
+            k = 0;
+          }
+        } else {
+          k = j - 1;
+          if (k < 0) {
+            k = g_apScriptedMobEntries[i]->nPoints - 1;
+          }
+        }
+        sumX += D_80078DD8[k].x;
+        sumY += D_80078DD8[k].y;
+        g_nActorMeshOtDepthBin += D_80078DD8[k].z;
+        if ((unsigned int)(D_80078DD8[k].x - 1) < 0x1ff &&
+            (unsigned int)(D_80078DD8[k].y - 1) < 0xef && D_80078DD8[k].z > 0) {
+          flags = 1;
+        }
+        xk = D_80078DD8[k].x;
+        if (maxX < xk) {
+          do {
+            maxX = xk;
+          } while (0);
+        }
+        if (xk < minX) {
+          minX = xk;
+        }
+        yk = D_80078DD8[k].y;
+        if (maxY < yk) {
+          maxY = yk;
+        }
+        if (yk < minY) {
+          minY = yk;
+        }
+        if ((D_80078DD8[j].x < 0x200 || xk < 0x200) &&
+            (D_80078DD8[j].x > 0 || xk > 0) &&
+            (D_80078DD8[j].y < 0xf0 || yk < 0xf0) &&
+            (D_80078DD8[j].y > 0 || yk > 0)) {
+          dx = D_80078DD8[j].x - xk;
+          if (dx < 0) {
+            dx = -dx;
+          }
+          if (dx >= 3) {
+            flagX = 0;
+          }
+          dy = D_80078DD8[j].y - yk;
+          if (dy < 0) {
+            dy = -dy;
+          }
+          if (dy >= 3) {
+            flagY = 0;
+          }
+          D_80077EA0[nEdges].live = 1;
+          D_80077EA0[nEdges].p0 =
+              (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
+          D_80077EA0[nEdges].p1 =
+              (D_80078DD8[k].y << 16) | (unsigned short)D_80078DD8[k].x;
+          D_80077EA0[nEdges].nx = D_80078DD8[j].y - D_80078DD8[k].y;
+          D_80077EA0[nEdges].ny = D_80078DD8[k].x - D_80078DD8[j].x;
+          D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
+                                 D_80077EA0[nEdges].ny * D_80078DD8[j].y;
+          nEdges++;
+        }
+      }
+
+      if ((flagX == 0 && flagY == 0) || nEdges == 0) {
+        n = g_apScriptedMobEntries[i]->nPoints;
+        sumX /= n;
+        g_nActorMeshOtDepthBin = (g_nActorMeshOtDepthBin / n) >> 7;
+        sumY /= n;
+        if (g_nActorMeshOtDepthBin >= 0x100) {
+          g_nActorMeshOtDepthBin += 0x40;
+        }
+        if (g_nActorMeshOtDepthBin >= 0x800) {
+          g_nActorMeshOtDepthBin = 0x7ff;
+        }
+        if ((minX < 0x200 && minY < 0xf0 && maxX > 0 && maxY > 0 &&
+             g_nActorMeshOtDepthBin > 0 && nEdges != 0) ||
+            (minX <= 0 && minY <= 0 && maxX >= 0x200 && maxY >= 0xf0 &&
+             g_nActorMeshOtDepthBin > 0)) {
+          flags |= 2;
+        } else {
+          flags = 0;
+        }
+        do {
+          do {
+            if (flags == 2 && dist < 0x1000) {
+              int vAxis[3];           /* sp+0x70 */
+              int vRel[3];            /* sp+0x80 */
+              unsigned char euler[3]; /* sp+0x90 */
+              MATRIX eulerMtx;        /* sp+0x98 */
+
+              SubtractVector(vRel, vCenter, g_anCameraPos);
+              vAxis[0] = 0x1000;
+              vAxis[1] = 0;
+              vAxis[2] = 0;
+              euler[0] = (unsigned short)g_nCameraEulerRoll >> 4;
+              euler[1] = (unsigned short)g_nCameraEulerPitch >> 4;
+              euler[2] = (unsigned short)g_nCameraEulerYaw >> 4;
+              ApplyEulerRotation(euler, &eulerMtx, 0);
+              RotateVectorByMatrix(&eulerMtx, vAxis, vAxis);
+              if (vAxis[0] * vRel[0] + vAxis[1] * vRel[1] + vAxis[2] * vRel[2] <
+                  0) {
+                flags = 0;
+              }
+            }
+          } while (0);
+        } while (0);
+        if (flags != 0) {
+          if (minX < 0) {
+            minX = 0;
+          }
+          if (minY < 0) {
+            minY = 0;
+          }
+          if (maxX >= 0x201) {
+            maxX = 0x200;
+          }
+          if (maxY >= 0xf1) {
+            maxY = 0xf0;
+          }
+          g_anActorScissorRect[0] = minY << 16;
+          g_anActorScissorRect[1] = maxY << 16;
+          g_anActorScissorRect[2] = maxX << 16;
+          g_anActorScissorRect[3] = minX << 16;
+          D_80077EA0[nEdges].live = 0;
+          if (dist < 0x4000) {
+            if (dist >= 0x3001) {
+              g_nFadeProgress = dist - 0x3000;
+              g_dwActorMeshFadeColor =
+                  ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
+                                        color, dist - 0x3000);
+              EmitDynamicActorMeshFogged(&g_dwActorMeshFadeColor);
+            } else {
+              EmitDynamicActorMeshFogged(
+                  &g_apScriptedMobEntries[i]->pMesh->color);
+            }
+          } else {
+            EmitDynamicActorMeshFogged(&color);
+          }
+        }
+
+        if (dist < 0x4000) {
+          minX = 0x200;
+          maxX = 0;
+          minY = 0xf0;
+          maxY = 0;
+          flags = 0;
+          g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
+          nEdges = 0;
+          for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+            xk = D_80078DD8[j].x;
+            if (sumX < xk) {
+              D_80078DD8[j].x = xk + 2;
+            } else if (xk < sumX) {
+              D_80078DD8[j].x = xk - 2;
+            }
+            yk = D_80078DD8[j].y;
+            if (sumY < yk) {
+              D_80078DD8[j].y = yk + 2;
+            } else if (yk < sumY) {
+              D_80078DD8[j].y = yk - 2;
+            }
+            xk = D_80078DD8[j].x;
+            if (maxX < xk) {
+              maxX = xk;
+            }
+            if (xk < minX) {
+              minX = xk;
+            }
+            yk = D_80078DD8[j].y;
+            if (maxY < yk) {
+              maxY = yk;
+            }
+            if (yk < minY) {
+              minY = yk;
+            }
+          }
+
+          for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+            if (facing > 0) {
+              k = j + 1;
+              if (k == g_apScriptedMobEntries[i]->nPoints) {
+                k = 0;
+              }
+            } else {
+              k = j - 1;
+              if (k < 0) {
+                k = g_apScriptedMobEntries[i]->nPoints - 1;
+              }
+            }
+            if ((unsigned int)(D_80078DD8[k].x - 1) < 0x1ff &&
+                (unsigned int)(D_80078DD8[k].y - 1) < 0xef &&
+                D_80078DD8[k].z > 0) {
+              flags = 1;
+            }
+            if ((D_80078DD8[j].x < 0x200 || D_80078DD8[k].x < 0x200) &&
+                (D_80078DD8[j].x > 0 || D_80078DD8[k].x > 0) &&
+                (D_80078DD8[j].y < 0xf0 || D_80078DD8[k].y < 0xf0) &&
+                (D_80078DD8[j].y > 0 || D_80078DD8[k].y > 0)) {
+              D_80077EA0[nEdges].live = 1;
+              D_80077EA0[nEdges].p0 =
+                  (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
+              D_80077EA0[nEdges].p1 =
+                  (D_80078DD8[k].y << 16) | (unsigned short)D_80078DD8[k].x;
+              D_80077EA0[nEdges].nx = D_80078DD8[j].y - D_80078DD8[k].y;
+              D_80077EA0[nEdges].ny = D_80078DD8[k].x - D_80078DD8[j].x;
+              D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
+                                     D_80077EA0[nEdges].ny * D_80078DD8[j].y;
+              nEdges++;
+            }
+          }
+
+          if ((minX < 0x200 && minY < 0xf0 && maxX > 0 && maxY > 0 &&
+               g_nActorMeshOtDepthBin > 0 && nEdges != 0) ||
+              (minX <= 0 && minY <= 0 && maxX >= 0x200 && maxY >= 0xf0 &&
+               g_nActorMeshOtDepthBin > 0)) {
+            flags |= 2;
+          } else {
+            flags = 0;
+          }
+          if (flags == 2 && dist < 0x1000) {
+            int vAxis2[3];           /* sp+0xc0 */
+            int vRel2[3];            /* sp+0xd0 */
+            unsigned char euler2[3]; /* sp+0xe0 */
+            MATRIX eulerMtx2;        /* sp+0xe8 */
+
+            SubtractVector(vRel2, vCenter, g_anCameraPos);
+            vAxis2[0] = 0x1000;
+            vAxis2[1] = 0;
+            vAxis2[2] = 0;
+            euler2[0] = (unsigned short)g_nCameraEulerRoll >> 4;
+            euler2[1] = (unsigned short)g_nCameraEulerPitch >> 4;
+            euler2[2] = (unsigned short)g_nCameraEulerYaw >> 4;
+            ApplyEulerRotation(euler2, &eulerMtx2, 0);
+            RotateVectorByMatrix(&eulerMtx2, vAxis2, vAxis2);
+            if (vAxis2[0] * vRel2[0] + vAxis2[1] * vRel2[1] +
+                    vAxis2[2] * vRel2[2] <
+                0) {
+              flags = 0;
+            }
+          }
+          if (flags != 0) {
+            if (minX < 0) {
+              minX = 0;
+            }
+            if (minY < 0) {
+              minY = 0;
+            }
+            if (maxX >= 0x201) {
+              maxX = 0x200;
+            }
+            if (maxY >= 0xf1) {
+              maxY = 0xf0;
+            }
+            g_anActorScissorRect[0] = minY << 16;
+            g_anActorScissorRect[1] = maxY << 16;
+            g_anActorScissorRect[2] = maxX << 16;
+            g_anActorScissorRect[3] = minX << 16;
+            D_80077EA0[nEdges].live = 0;
+            if (dist >= 0x3001) {
+              g_nFadeProgress = dist - 0x3000;
+              g_dwActorMeshFadeColor =
+                  ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
+                                        color, dist - 0x3000);
+              EmitDynamicActorMeshFogShaded(
+                  (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
+            } else {
+              EmitDynamicActorMeshScissored(
+                  (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  lod = D_80076E24[0];
+  if (lod >= D_800785B4) {
+    lod = -1;
+  }
+  EmitStaticActorMeshList(lod, (MATRIX *)&D_80076E24[-0x10],
+                          (MATRIX *)&D_80076E24[-0x15]);
+}

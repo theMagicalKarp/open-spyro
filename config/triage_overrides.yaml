@@ -3767,15 +3767,36 @@ Gamestate02_03_06_Draw:
     us (A240), so it is NOT §B-i-bound either. Biggest un-opened main target.
 
 DrawActors:
-  verdict: viable
-  class: "fresh - screened clean of every named wall 2026-09-07, never opened"
-  date: 2026-09-07
+  verdict: parked
+  class: "local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall"
+  date: 2026-09-09
   note: >-
-    5,148 B, main. Same screen as Gamestate02_03_06_Draw: no handwritten
-    markers, no %gp_rel, no switchdata, and all 85 `lui $at` are gas macros.
-    Note it is render-pipeline stage 4 and calls ComputeDepthCuedColor (itself
-    hand-written), so expect GTE-shaped argument setup, but the function body
-    is ordinary compiled C.
+    5,148 B, main. Opened 2026-09-09 as the second of the three fresh
+    wall-free main functions; the 2026-09-07 screen held up (0 handwritten
+    markers, 0 %gp_rel, 0 switchdata, all 85 `lui $at` are gas macros). One
+    session took it from a first m2c decode (1268 vs 1287 insns, 505 masked
+    over 174 regions, offset -19) to 1291 vs 1287, 132 masked over 86 regions,
+    offset +4. Every content/structural diff is gone - all 132 residues are
+    register renames, 55 of them one a1<->a2 pair. Four levers, all in the
+    .c.wip header: A35 typed array-of-struct views for the stride-0xc and
+    stride-0x18 splat word arrays (worth 273 masked in one edit), A251
+    block-scoping the two dot-product arms so `color` takes sp+0xb8 and the
+    whole user-local frame map lands exact, A195 ref dials tuned off the -dl
+    probe for the callee-saved map (flags s1 / j s2 / nEdges s3 / maxX s4 /
+    minY s6 / maxY s7 / minX s8), and A146 merging the storm-fade clamp into
+    the loop counter `j` (167 -> 132). Two residues left. R1: local-alloc
+    hands `k` a2 and the `k*3<<2` index temp a1, the reverse of the original;
+    because the original's index lives in a2 it survives the four-arm extents
+    test and is still live at the edge-record block, where ours recomputes it
+    (+3 insns at orig[539], the only real length delta). One A195 wrapper on
+    the k-selection if/else was measured byte-identical, so the refs did not
+    move - probe the anonymous index quantity with -dl next, do not reach for
+    more depth. R2: our frame is 400, the original 416 - we are TWO 8-byte
+    reload slots SHORT, the opposite of A231's usual direction, which is why
+    every spill offset from insn ~191 on is 8-16 bytes low and the partial
+    credit is only 1,488 B despite the content being right; the +1 load-delay
+    nops at orig[810]/orig[1229] are the same shortfall showing as schedule.
+    Does not link (over slot) - drive it off the compile-only shape diff.
 
 MulMatrix:
   verdict: wall
