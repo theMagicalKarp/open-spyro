@@ -28,19 +28,20 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 14 | `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 61 | segment 38.3% matched; matched neighbor in segment; megafunction (all-or-nothing); hand-marked viable: >- |
 | 15 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(49 viable candidates total; the full ranking is regenerable.)
+(48 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin; A238 and A236 now both ruled out |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole + Rd tpage/clut delay slot |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole (ALL axes now closed) + Rd re-classed and largely solved: 8/1610 open-tail vs 17/1610 Rd-closed |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8007d9c8` | func_level_0_8007D9C8 | ovl/level_0_artisans_home | 32260 | 4432 | full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
+| `0x80050bd0` | DrawActors | main | 5148 | 1488 | local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |

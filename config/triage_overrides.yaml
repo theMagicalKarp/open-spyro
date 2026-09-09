@@ -3834,3 +3834,43 @@ func_level_13_8008AF54:
     rec[0]) and `sb a3,0(s2)` (rec[0] = 3). Two arms x (head + mid + use) = the
     eight. Recorded so the next session attacks the PER-BLOCK materialisation
     pattern rather than another spelling of the constant local.
+
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole (ALL axes now closed) + Rd re-classed and largely solved: 8/1610 open-tail vs 17/1610 Rd-closed"
+  date: 2026-09-09
+  note: >-
+    Head of the x5 flight-results clone family (32,200 B). TWO results, both
+    changing the park's shape.
+    (1) **Rd is NOT a delay-slot wall.** The true tail order
+    (0x24, 0x25, 0xE, 0x16) CLOSES it: 0x8007B98C onward is byte-exact
+    INCLUDING `sh a3,0x16` in the `jal` delay slot. The 2026-08-28 note had
+    measured that order ("scores 18") on the MASKED SHAPE diff and never
+    checked WHAT it fixed. Re-measured on the LINKED metric: all 24 tail orders
+    ranked (true order best, SETTLED); then 30 -> 24 by greedy per-access
+    volatile, -> 19 by a PAIRWISE sweep, -> 17 by a second greedy round. At 17
+    the whole 0x8007B934..0x8007B988 read-back block is byte-exact, i.e. the
+    19-insn knot the reorder created is GONE. Residue = R5 (5) + 12 insns in
+    the loop HEAD, a clean `a`/`d` v0<->v1 swap.
+    **The volatile map is a JOINT dial**: greedy single-toggle stalls at 24,
+    and the pair that escapes is both accesses on the chain of the misplaced
+    variable (`d = *(p+0xA)` and `*(p+0x22) = d + 0xDF`). Sweep pairs on the
+    wrong-register variable's own chain, not sites one at a time.
+    The loop-head swap does NOT yield to volatility: **all 256 combinations**
+    of the eight cast-derefs in lines 527-534 were built, best is 17 with five
+    ties and everything else 26+. It needs an allocation dial (A181/A187/
+    per-site carriers; A195/A200/A232 wrappers break the `goto quad` loop).
+    Also ruled out: statement order in the read-back block is INERT (8 orders,
+    all 24), and the A146/A196 bh/bq merge is REJECTED (40; 43 for both pairs).
+    (2) **R5's last untried axis is closed.** Prior work swept statement order
+    (240) and the A232 barrier but never VOLATILITY. All 8 single toggles and 5
+    pairs report `ld: cannot move location counter backwards` -- a
+    `*((volatile T *) &D_x)` on a bare extern scalar loses the fused
+    `lui $at; sw %lo` addressing and costs insns, so no volatile form there can
+    link.
+    NET: one axis-complete wall (R5) + one 12-insn allocation swap, not two
+    walls. Checked-in body stays the 8/1610 state (better positional partial
+    credit); the exact recipe to switch to the Rd-closed 17/1610 state is in
+    the wip header. **Do not take this function again for bytes until R5 has a
+    new tool** -- closing the swap still leaves R5, and R5 gates the whole
+    x5 payoff. Next probe for R5 is a `-dR` sched2 dump of its block.
