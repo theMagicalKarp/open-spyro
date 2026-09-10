@@ -3927,3 +3927,81 @@ func_80059594:
     identical four insns), a wrapper widened over gems+total+egg-if (13), five
     loop-body orders (4/7/7/9/LINKFAIL). Both residues are store-vs-neighbour
     swaps in one basic block; every barrier and order axis is closed.
+
+func_8005FC6C:
+  verdict: wall
+  class: "F4/A187 return-pointer copy: no branch after the dispatch call"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 7/38, unchanged. The park's mechanism note is read off
+    cse.c make_regs_eqv and is correct: the A187 clause needs the copy's def
+    inside a conditional arm and its uses past the join, and this tail has no
+    branch after the dispatch call. 116k permuter iterations on a 38-insn
+    function found nothing. Do not re-open without a new class.
+
+func_80038FC8:
+  verdict: parked
+  class: "F14b schedule-XOR-register; needs update_equiv_regs to delete the 0x10 pseudo"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 4/152. Re-confirmed the bare-literal body + a DEPTH SWEEP on
+    `old`'s def alone (0/1/2/3/4 = 9/11/11/4/4): depth 3 buys the correct
+    register and lands on the SAME 4 insns as the multi-set baseline, exactly as
+    the 2026-08-23-1 note predicts. Both halves of the mutual exclusion are
+    individually reachable and neither composes. The open question is unchanged
+    and is NOT a ref-dial question.
+
+BeginGemPickupOverlay:
+  verdict: parked
+  class: "local-alloc qty_compare: the de-boost carrier must be `world + 1`"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 7/146 (TRIAGE said 9). Eight new carrier spellings, all
+    worse: `world` incremented IN PLACE as the multi-set side (9, and the
+    constant falls back to v1 -- the de-boost is lost), `world += 1` (9),
+    `world = world + one` (9), `one` taking its second set from the dragons
+    increment `prevDragons + 1` instead (9/10), and `one = world` after the
+    in-place increment (9). The `one = world + 1` carrier is the unique working
+    spelling; the residue is the a0/a1 order of `one` vs `world`, and the
+    original's `addiu a1,a1,1` shows it increments world in place, which that
+    carrier cannot reproduce. Caps at 2 even if the order flips.
+
+func_level_27_80086754:
+  verdict: parked
+  class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin (idx must take a2, the deref v0)"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 9/1697 (4 aligned / 2 regions), unchanged. Re-screened
+    against this session's A195 chain/widen findings: neither applies. The
+    chain rule needs a second rival allocno to bump and there is only one; the
+    widen rule needs the residue to be a note boundary, and here the open
+    question is explicitly "change the ref counts WITHOUT a wrapper" (the arm's
+    one free A200b barrier is spent). 26-variant carrier search stays closed.
+
+InitActorMeshScratchRegions:
+  verdict: parked
+  class: "B18 constant-hoist branch-layout tie"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 21/56, unchanged. Named in B18 as a member (shared-upper-half
+    if/else constants: the original hoists the shared lui above the condition
+    with the else value in the delay slot). Not re-opened this session.
+
+HandleHardwareInterrupt:
+  verdict: parked
+  class: "F1/F7 pure register rotation"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 10/122, unchanged. Screened as a pure register rotation (the
+    2026-08-24 ranking's own note), so nothing to aim a schedule dial at; not
+    re-opened this session.
+
+func_80038C4C:
+  verdict: parked
+  class: "three-way local-alloc: rec[3]/rec[4] share v0 before $2 is live"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 6/66, unchanged. A195 is already recorded as inert here (the
+    `-dl` ref counts come back byte-identical at depths 1-3 because the
+    surrounding block's loop_depth is fixed before the notes), so this
+    session's chain rule has no dial to chain. Not re-opened.
