@@ -3874,3 +3874,24 @@ func_level_5_8007B68C:
     the wip header. **Do not take this function again for bytes until R5 has a
     new tool** -- closing the swap still leaves R5, and R5 gates the whole
     x5 payoff. Next probe for R5 is a `-dR` sched2 dump of its block.
+
+Gamestate0C_Draw:
+  verdict: parked
+  class: "A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break)"
+  date: 2026-09-10
+  note: >-
+    277/283 -> 279/283, length-exact and linking. Moved the A200 barrier BELOW
+    both OT bin-head stores and flipped the source order to the original's
+    (tail +4 first, head +0 second): that buys the original's ORDER and keeps
+    the load-delay nop after the following `lw D_800777FC`, at the price of the
+    held base (ours `lui $at; sw %lo` twice, orig `la v1,sym; sw 4(v1); sw
+    0(v1)` -- both four insns, so a pure form residue). The trade is now
+    exhaustive: barrier between = held base + wrong order (6); barrier below =
+    right order + absolute (4); barrier above/none = one insn short (13).
+    Five held-base spellings all collapse to the absolute pair: pointer local +
+    barrier (reload's update_equiv_regs folds the REG_EQUIV), the same with an
+    A214 second set off the later FillWord argument (cse propagates the symbol
+    into the arg and the set dies), and B16 inline volatile cast-derefs on
+    either/both stores (the addresses are `sym+K`, already legitimate, so
+    memory_address never force_regs them). Needs the standing open question: a
+    cse ebb-break with no NOTE_INSN_LOOP_BEG.
