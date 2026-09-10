@@ -4005,3 +4005,17 @@ func_80038C4C:
     `-dl` ref counts come back byte-identical at depths 1-3 because the
     surrounding block's loop_depth is fixed before the notes), so this
     session's chain rule has no dial to chain. Not re-opened.
+
+FlushGpuQueue:
+  verdict: parked
+  class: "F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 14/187 (TRIAGE/ranking still said 20 -- the 2026-08-27 A231
+    frame fix moved it). New negative: the A200/A232 barrier lever does not
+    reach it. Splitting the dispatch call into fn/arg0/arg1 locals is
+    byte-identical; an empty do/while between the arg0 and arg1 reads (to pin
+    the third volatile RIDX read below the plain args load) scores 128/187, and
+    wrapping the arg0 read is +1 insn and will not link. Per A200c there is no
+    cheaper boundary: cse and sched both break only at a CODE_LABEL or a loop
+    note and both are full block boundaries. Remains a clean permuter target.

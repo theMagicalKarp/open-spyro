@@ -148,6 +148,15 @@ unsigned int FlushGpuQueue(void) {
  *   (an A230 COMPONENT_REF, aimed at restoring the true_dependence edge that
  *   lets the volatile RIDX read hoist past the plain aggregate ring read).
  *   A230 does NOT reach this residue.
+ *   2026-09-10: the A200/A232 BARRIER lever is now measured here too, and it is
+ *   the last obvious one. Splitting the call into `fn`/`arg0`/`arg1` locals is
+ *   byte-identical (14/187, as the note above says); adding an empty
+ *   `do { } while (0);` between the `arg0` and `arg1` reads to pin L3 below the
+ *   plain args load scores 128/187 (the two call-argument values now have to be
+ *   held across a real region boundary and the whole block re-colours), and
+ *   wrapping the `arg0` read itself is +1 insn and will not link. Per A200c
+ *   there is no cheaper ebb/schedule boundary to try: cse and sched both break
+ *   only at a CODE_LABEL or a loop note, and both are full block boundaries.
  *   CLASS: §F8-adjacent sched1 tie (volatile-vs-plain MEM ordering in a
  * call-arg block). Clean permuter target — the logic, the CFG, the length and
  * every other block are exact; only this one block's insn order is in play.
