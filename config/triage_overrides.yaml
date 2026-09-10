@@ -3895,3 +3895,19 @@ Gamestate0C_Draw:
     either/both stores (the addresses are `sym+K`, already legitimate, so
     memory_address never force_regs them). Needs the standing open question: a
     cse ebb-break with no NOTE_INSN_LOOP_BEG.
+
+SmoothSpyroByteEulerSpring:
+  verdict: viable
+  class: ""
+  date: 2026-09-10
+  note: >-
+    MATCHED (320 B). 21 -> 13 -> 8 -> 3 -> 0 in one session off a park that had
+    been sitting at 21/80 since 2026-08-11-3 with "permuter target" as its
+    verdict. Four A195/A200 do/while dials: an empty barrier after the byte-1
+    store (stops sched1 hoisting the accum-2 load above it), an A195 ref bump on
+    the prev0 delta + on the prev1 update (3 -> 4 refs crosses the floor_log2
+    step in global.c's priority, flipping the a3/t0 allocation the park called
+    unreachable), a block-scoped stanza-2 `f2`, and an A195 bump on stanza 0's
+    `f >>= 6` pair to keep `f` above `d`. The last 3 insns were the dial's OWN
+    barrier cost and fell by WIDENING the prev1 wrapper to swallow the
+    stanza-2 guard `if`.
