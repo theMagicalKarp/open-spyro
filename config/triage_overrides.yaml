@@ -3911,3 +3911,19 @@ SmoothSpyroByteEulerSpring:
     `f >>= 6` pair to keep `f` above `d`. The last 3 insns were the dial's OWN
     barrier cost and fell by WIDENING the prev1 wrapper to swallow the
     stanza-2 guard `if`.
+
+func_80059594:
+  verdict: parked
+  class: "F19 potential_hazard: store vs neighbour inside one priority group"
+  date: 2026-09-10
+  note: >-
+    Re-measured at 4/180 (TRIAGE still said 6). The widened-wrapper lever that
+    closed SmoothSpyroByteEulerSpring's identical-looking barrier-vs-slti
+    residue does NOT transfer: there the slti sat below the closing loop note,
+    here it is already in the store's own scheduling region, so R2 is a
+    potential_hazard decision (store beats ALU in one priority group, D 2d) with
+    no source dial. Twelve more builds today -- one-wrapper dragons-store + g
+    load (10, order-inert), the ref bump moved to the world-total add (4,
+    identical four insns), a wrapper widened over gems+total+egg-if (13), five
+    loop-body orders (4/7/7/9/LINKFAIL). Both residues are store-vs-neighbour
+    swaps in one basic block; every barrier and order axis is closed.

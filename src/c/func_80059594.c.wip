@@ -105,6 +105,22 @@ PARKED 97.8%, LENGTH-EXACT (4/180) -- re-measured 2026-08-31; was 6/180 as
       after `*gems` (4), barrier at the top of the if body (4), barrier around
       the treasure total (6), barrier before the if (6), a hoisted `cond`
       local (6 / 37), swapping the gems store past the treasure total (50).
+   2026-09-10: the WIDENED-WRAPPER lever that closed SmoothSpyroByteEulerSpring's
+   identical-looking "barrier vs slti" residue does NOT transfer here, and that
+   is diagnostic. There the slti was in the block BELOW the closing loop note, so
+   swallowing the guard `if` into the wrapper put it back in the store's own
+   region and the tie resolved. Here the slti and `*gems = g` are ALREADY in one
+   region and the order still comes out wrong, so R2 is not a note-placement
+   problem at all -- it is a `potential_hazard` decision between a store and an
+   ALU op in one priority group (§D 2d), which has no source dial. Re-measured
+   today: `*dragons = d` + the `g` load inside ONE wrapper (10, either internal
+   order -- the region is one scheduling unit so statement order is inert),
+   the ref bump moved from `*dragons = d` to `g_nWorldDragonsRescued = wd + d`
+   (4, the identical four insns), a wrapper widened over the gems store + the
+   treasure total + the egg `if` (13), and five more loop-body statement orders
+   (4, 7, 7, 9, LINKFAIL). Both R1 and R2 are now store-vs-neighbour swaps
+   inside one basic block with every barrier and order axis closed.
+
    Also measured earlier, all inert or worse: A195 dials on d's def / store /
    add at depths 1-3 (11-17); every reordering of the wd/wt/d loads (6, 6);
    `dragons[0]` / `gems[0]` ARRAY_REF forms and the `((short *)half)[0x56]` form
