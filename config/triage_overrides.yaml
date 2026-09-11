@@ -3755,16 +3755,27 @@ UpdateHudCounters:
     of one roll-out block.
 
 Gamestate02_03_06_Draw:
-  verdict: viable
-  class: "fresh - screened clean of every named wall 2026-09-07, never opened"
-  date: 2026-09-07
+  verdict: parked
+  class: "positional: a 4-insn head knot at orig[28..50] zeroes all partial credit; then A133 constant-in-callee-saved allocation"
+  date: 2026-09-10
   note: >-
-    8,840 B, main. Screened this session alongside UpdateHudCounters: zero
-    `handwritten instruction` markers, zero %gp_rel, zero `switchdata` jr
-    tables, and all 37 `lui $at` are gas address macros (`%lo(sym)($at)` or
-    `addu $at,$at,rX` indexed globals), not B2. The original uses the absolute
-    `lui $at / %lo` form throughout, which is what a plain `extern` decl gives
-    us (A240), so it is NOT §B-i-bound either. Biggest un-opened main target.
+    8,840 B / 2,210 insns, main. Opened 2026-09-10 as the third and last of the
+    fresh wall-free main functions; the 2026-09-07 screen held up exactly (0
+    handwritten markers, 0 %gp_rel, 0 switchdata, 0 non-$ra jr, 0 bare-constant
+    ($at) displacements). One session took it from a first m2c decode (2,202
+    insns, 827 reg-anchored / 247 structure over 149 regions, offset -8) to
+    2,193 insns, 725 reg-anchored / 191 structure over 126 regions, offset -17,
+    COMPILING AND LINKING in its slot. Scores 344/8,840 partial bytes, and that
+    number is positional noise, not distance: the offset leaves zero at orig[29]
+    and is back to 0 by orig[33], but everything after insn 29 therefore scores
+    nothing. Next move is R1 in the .c.wip header - the 4-insn head knot where
+    the original materialises &g_abFrameDrawEnv0 at insn 28 and
+    &g_pRenderScratchPrimTop at insn 34 (with addiu s2,s0,-8 in PutDrawEnv's
+    delay slot) and we emit both one call later; worth ~5,000 partial bytes
+    because the first 1,270 instructions are otherwise offset-neutral. Six new
+    allow_duplicated aliases were added for it (g_apRenderScratchPrimTopBlock,
+    g_anHudFrameCycleBlock, g_abLevelTotalDragonsBlock, g_abLevelTotalEggsBlock,
+    g_anLevelGemsBlock, g_abWorldTitleGlyphBlock); make check stays green.
 
 DrawActors:
   verdict: parked

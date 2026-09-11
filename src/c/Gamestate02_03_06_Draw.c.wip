@@ -1,0 +1,1073 @@
+/* PARKED 2026-09-10 — first opening of main's last un-opened wall-free
+   function (8,840 B / 2,210 insns).  Screen re-confirmed: 0 `handwritten
+   instruction` markers, 0 %gp_rel, 0 `switchdata`, 0 non-$ra `jr` (no jump
+   tables at all), and 0 bare-constant `($at)` displacements — every $at use is
+   a gas address/compare macro.  It COMPILES and LINKS in its slot.
+
+   State (compile-only masked shape diff, §D 2b; registers anchored for the
+   "reg" figure, masked for the "structure" figure):
+
+     first m2c decode   2202 insns, 827 reg / 247 structure over 149 regions, off -8
+     now                2193 insns, 725 reg / 191 structure over 126 regions, off -17
+
+   `make progress` scores it 344 / 8,840 partial bytes.  That number is NOT a
+   measure of distance: partial credit is positional (§C), and the running
+   offset leaves zero at orig[29] — the very first excursion — so every word
+   after insn 29 scores nothing even though the offset is back to 0 by insn 33
+   and stays within +-5 of zero for the next 1,270 instructions.
+
+   THE HIGHEST-VALUE NEXT MOVE is therefore not the biggest region, it is the
+   4-insn head knot at orig[28..50]: the original materialises `env0`
+   (&g_abFrameDrawEnv0, s5) at insn 28 — between `VSync(0)` and the first
+   PutDispEnv's argument load — and the scratch base (&g_pRenderScratchPrimTop,
+   s0) at insn 34, with `addiu s2,s0,-8` filling PutDrawEnv's delay slot at 39.
+   Ours emits both one call later.  Closing that alone is worth roughly 1,270
+   words == ~5,000 partial bytes, because the whole first half is otherwise
+   offset-neutral.
+
+   Levers already applied (each measured; do not undo one without re-measuring):
+     * A186 — `nGlyphs = K;` inside the cursor arm and `n = nGlyphs;` AFTER the
+       `if`.  The original's `andi rX,rX,0xff` is a one-insn JOIN block that
+       reorg duplicates into the `bne` delay slot; reading the count before the
+       arm gives one `andi` instead of two.  Five sites.
+     * A228 — two incomplete-array aliases carry the held-base pairs the
+       original derives with an `addiu`:
+         g_apRenderScratchPrimTopBlock (0x800785f0) -> [-2] is
+           g_pRenderScratchRegionBase (`addiu s2,s0,-8`), and
+         g_anHudFrameCycleBlock (0x80077fe8) -> [0x14b] is
+           &g_anLevelSpriteTexWordPairs[2] (`addiu s8,s2,1324`),
+         plus g_adwHudBobSinePhaseBlock (0x80077fe4) for the world-egg loop,
+         whose preheader forms BOTH `s6 = s5+4` and `s5 = s5+1328`.
+       The alias must be used INLINE — an intermediate pointer local (`top = …;
+       top[-2]`) folds the -8 into the addressing mode and loses the `addiu`.
+     * A240 per-site held bases — g_abLevelTotalDragonsBlock,
+       g_abLevelTotalEggsBlock, g_anLevelGemsBlock, g_abWorldTitleGlyphBlock.
+       The original addresses the SAME egg-count table absolutely at the `> 0`
+       guard (`lui $at; addu $at,$at,v0; lbu v0,-2944($at)`) and off a held base
+       at the `== 1` test and the loop condition, so the sized `extern` from
+       globals.h and the incomplete-array alias are both in use, per site.
+     * A113 — the cosine LUT is read `lh` in the eight glyph-wave loops but
+       `lhu` at the two bob sites (`lhu; sll 16; sra 25` and `lhu; srl 8`);
+       ((unsigned short *)g_anCosineLut)[…] buys the second form.
+     * A158 — the fourth menu-border EmitRadialShadedLine is written with
+       LITERALS in both substate arms; jump.c cross-jumps the shared `jal`.
+       Routing it through shared x/y/n locals instead cost 3 `move`s.
+     * A52 / A217 — every region got its own block-scoped scalars.  This is
+       what removed the `bias` spill (it now lives in s8, the original uses s7)
+       and took the register-anchored count 793 -> 734 in one edit.
+     * A137 — `bx = bias + K;` named temps.  `scroll + (bias + K)` is
+       reassociated by fold to `(scroll + K) + bias`; the original is
+       `addiu v1,s7,K; addu v0,v0,v1`.  Five sites, 212 -> 204.
+     * The two volume-bar loops read g_nPauseMenuCursor into a local BEFORE the
+       four sprite-record field stores; the guard's load cannot hoist over
+       stores through the record pointer, so source order decides it.
+
+   Named residues, largest first (offsets are into the original's insn stream):
+     R1  orig[28..50] — the head-knot above.  Positional only, 4 insns, but it
+         owns ~5,000 partial bytes.  Not yet attacked.
+     R2  orig[2012..2017] (-5) and orig[1900..1904] (-4) — the original
+         RE-COMPUTES `g_nSubMenuCursor * 6 + i` from a fresh `lw` of the global
+         inside the egg loop where we keep one cse'd address in a register
+         (`move s2,v1`).  m2c's decode already says so: some sites read the
+         global inline and some read a temp.  Needs the inline/temp split
+         copied exactly, site by site, not a blanket temp.
+     R3  orig[1700..1705] (-5), orig[1588..1591] (-3), orig[1472..1475] (-3) —
+         same family: held-base/absolute choices inside the row loop that have
+         not been walked site by site yet.
+     R4  orig[150], orig[1317], orig[1428], orig[1646], orig[1688] (+3 each) —
+         we emit three insns the original does not.  Unexamined.
+     R5  the register map.  725 anchored vs 191 structure means ~530 of the
+         residue is allocation.  The original keeps the repeated sprite-record
+         store literals (0x7f, 0x0b, 0xff, 0x2e, 0x20, 0x18, 0x40) in
+         callee-saved registers across the whole function (A133) — s0..s8 are
+         mostly CONSTANTS in the original, which is the single biggest
+         difference from our map.  Named locals for those literals is the
+         obvious next experiment and has not been tried.
+
+   Not a decode problem: there are no unresolved control-flow or content
+   questions left in the body.  m2c's only complaint is the varargs $a3 artifact
+   on the seven sprintf calls, which is expected. */
+
+#include "globals.h"
+
+extern void BuildRenderEntityLists(void);
+extern void ComposeFrameScene(void);
+extern void RasterizeEmitList(void);
+extern void DrawActors(void);
+extern void SetupFrameOT(void);
+extern void DrawSync(int mode);
+extern int VSync(int mode);
+extern DISPENV *PutDispEnv(DISPENV *env);
+extern void PutDrawEnv(void *env);
+extern void *LinkOTPrimitives(int depth_max);
+extern void DrawOTag(void *ot);
+extern void StoreImage(RECT *r, void *dst);
+extern void LoadImage(RECT *r, void *src);
+extern void ConvertRGB15ToLuma8(void *buf, int count);
+extern void AddPrimToOT(int prim);
+extern void SetDrawMode(int prim, int dfe, int dtd, unsigned int tpage, RECT *tw);
+extern void FillWord(void *dst, unsigned int value, int byte_count);
+extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
+extern void EmitTexturedQuad(short *rect, int *uv, int *rgb);
+extern void EnqueueBlinkingMarkerSprite(int *pos, unsigned int phase, int dir);
+extern void EnqueuePendingSpritePrims(void);
+extern void RasterizeSpritePrimQueue(void);
+extern void EnqueueLoadingScreenSprites(void);
+extern void *BuildTextSpriteChain(char *text, int *pos, int step, int flags);
+extern void *BuildTextSprites(char *text, int *pos, int *style, int step, int flags);
+extern int ComputeInventoryProgressPercent(void);
+extern int strlen(char *s);
+extern int sprintf(char *buf, char *fmt, ...);
+
+/* Held-base alias for g_pRenderScratchPrimTop (0x800785f0);
+   [-2] is g_pRenderScratchRegionBase. */
+extern void *g_apRenderScratchPrimTopBlock[];
+/* Held-base view of g_nVsyncFrameEndCount; [-1] = g_nVsyncFramePaceAnchor. */
+extern int g_anVsyncFrameEndBlock[];
+/* cosine view of the sine LUT (g_anSineLut + 0x80). */
+extern short g_anCosineLut[];
+/* Held-base alias for g_dwHudBobSinePhase (0x80077fe4): [1] is the mod-9 HUD
+   frame counter and [0x14c] is &g_anLevelSpriteTexWordPairs[2]. */
+extern int g_adwHudBobSinePhaseBlock[];
+/* Same block seen from g_nHudFrameCycleMod9 (0x80077fe8): [0x14b] is
+   &g_anLevelSpriteTexWordPairs[2]. */
+extern int g_anHudFrameCycleBlock[];
+/* Held-base (incomplete-array) views of four tables the inventory row loop
+   keeps in one register each; the plain sized decls in globals.h stay in use
+   at the sites the original addresses absolutely (A240). */
+extern unsigned char g_abLevelTotalDragonsBlock[];
+extern unsigned char g_abLevelTotalEggsBlock[];
+extern int g_anLevelGemsBlock[];
+extern unsigned char g_abWorldTitleGlyphBlock[];
+/* menu label blobs that have no friendly name yet. */
+extern char D_80010B24[]; /* "QUIT GAME?"  */
+extern char D_80010B30[]; /* "SOUND FX"    */
+extern char D_80010B40[]; /* "MUSIC"       */
+extern char D_80010B50[]; /* "SOUND"       */
+extern char D_80010B60[]; /* "VIBRATION"   */
+extern char D_80010B6C[]; /* "CONTINUE"    */
+extern char D_80010B78[]; /* "INVENTORY"   */
+extern char D_80010B84[]; /* "EXIT LEVEL"  */
+extern char D_80010B90[]; /* "EXIT WORLD"  */
+
+/* Draw for gamestates 2 (pause menu), 3 (inventory) and 6 (dialog overlay)
+   — 0x8001a40c, 8840 bytes.
+
+   On the entry frame (g_nPauseMenuTransitionFrames == 0) it renders one last
+   full gameplay scene, then freezes it: StoreImage pulls the frame back out
+   of VRAM, ConvertRGB15ToLuma8 packs it to 8bpp luma four 0x80-wide strips at
+   a time, each strip is re-uploaded at x=0x200 and the gray CLUT is loaded at
+   (0x200,0xe0).  Every later frame re-draws that backdrop as four textured
+   quads, draws the menu on top, and submits the frame with the shared
+   two-vblank pacing tail. */
+void Gamestate02_03_06_Draw(void) {
+  RECT rect;        /* sp18 */
+  char buf[0x20];   /* sp20 */
+  int pos[3];       /* sp40 */
+  int styA[3];      /* sp50 */
+  int styB[3];      /* sp60 */
+  int styC[3];      /* sp70 */
+  short quad[4];    /* sp80 */
+  short quad2[4];   /* sp88 */
+  int styD[3];      /* sp90 */
+  unsigned char rows; /* spA0 */
+
+  if (g_nPauseMenuTransitionFrames == 0) {
+    DRAWENV *env0;
+    int i;
+    int x;
+    int y;
+    int h;
+    i = 0;
+    BuildRenderEntityLists();
+    h = 0xe0;
+    ComposeFrameScene();
+    x = 0x200;
+    RasterizeEmitList();
+    DrawActors();
+    SetupFrameOT();
+    DrawSync(0);
+    VSync(0);
+    env0 = &g_abFrameDrawEnv0;
+    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDrawEnv(g_pActiveFrameDrawEnv);
+    DrawOTag(LinkOTPrimitives(0x800));
+    DrawSync(0);
+    VSync(0);
+    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    rect.x = 0x200;
+    rect.y = 0;
+    rect.w = 0x100;
+    rect.h = 0xe1;
+    StoreImage(&rect,
+               (void *)((char *)g_apRenderScratchPrimTopBlock[0] - 0x1c200));
+    do {
+      y = 8;
+      rect.x = i << 7;
+      if (g_pActiveFrameDrawEnv != env0) {
+        y = 0xf8;
+      }
+      i++;
+      rect.y = y;
+      rect.w = 0x80;
+      rect.h = h;
+      StoreImage(&rect, g_apRenderScratchPrimTopBlock[-2]);
+      DrawSync(0);
+      ConvertRGB15ToLuma8(g_apRenderScratchPrimTopBlock[-2], 0x7000);
+      rect.x = x;
+      x += 0x40;
+      rect.y = 0;
+      rect.w = 0x40;
+      rect.h = h;
+      LoadImage(&rect, g_apRenderScratchPrimTopBlock[-2]);
+    } while (i < 4);
+    rect.x = 0x200;
+    rect.y = 0xe0;
+    rect.w = 0x20;
+    rect.h = 1;
+    LoadImage(&rect, g_anMenuBackdropGrayClut);
+    DrawSync(0);
+    g_nVsyncFramePaceAnchor = VSync(-1);
+  } else {
+    void *prim;
+    int i;
+    int x;
+    int h;
+    void *env = &g_abFrameDrawEnv0;
+    if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
+      env = (void *)((char *)env + 0x84);
+    }
+    i = 0;
+    PutDrawEnv(env);
+    g_nPrimBufferOverflowFlag = 0;
+    g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
+    g_pPrimBufferLimit = (void *)((char *)g_pRenderScratchRegionBase + 0x1c000);
+    g_pSpriteRecordBufferTop = (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
+    g_pSpriteRecordWriteCursor = (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
+    x = i << 7;
+    do {
+      int clut = i + 0x88;
+      prim = g_pPrimBufferWriteCursor;
+      *((int *)prim) = 0x9000000;
+      *((unsigned char *)((int)prim + 7)) = 0x2c;
+      *((unsigned char *)((int)prim + 4)) = 0x4c;
+      *((unsigned char *)((int)prim + 5)) = 0x80;
+      *((short *)((int)prim + 8)) = x;
+      *((short *)((int)prim + 0xa)) = 8;
+      *((short *)((int)prim + 0x10)) =
+          *((unsigned short *)((int)prim + 8)) + 0x80;
+      *((short *)((int)prim + 0x1a)) =
+          *((unsigned short *)((int)prim + 0xa)) + 0xdf;
+      i++;
+      *((unsigned char *)((int)prim + 0xd)) = 0;
+      *((short *)((int)prim + 0x12)) = *((unsigned short *)((int)prim + 0xa));
+      h = 0x40;
+      *((unsigned char *)((int)prim + 0xc)) = 0;
+      *((short *)((int)prim + 0x18)) = *((unsigned short *)((int)prim + 8));
+      *((short *)((int)prim + 0x20)) =
+          *((unsigned short *)((int)prim + 8)) + 0x80;
+      *((short *)((int)prim + 0x22)) =
+          *((unsigned short *)((int)prim + 0xa)) + 0xdf;
+      *((unsigned char *)((int)prim + 6)) = h;
+      *((unsigned char *)((int)prim + 0x15)) =
+          *((unsigned char *)((int)prim + 0xd));
+      *((unsigned char *)((int)prim + 0x1c)) =
+          *((unsigned char *)((int)prim + 0xc));
+      *((unsigned char *)((int)prim + 0x14)) =
+          *((unsigned char *)((int)prim + 0xc)) + 0x80;
+      *((unsigned char *)((int)prim + 0x1d)) =
+          *((unsigned char *)((int)prim + 0xd)) - 0x21;
+      *((unsigned char *)((int)prim + 0x24)) =
+          *((unsigned char *)((int)prim + 0xc)) + 0x80;
+      *((unsigned char *)((int)prim + 0x25)) =
+          *((unsigned char *)((int)prim + 0xd)) - 0x21;
+      *((short *)((int)prim + 0xe)) = 0x3820;
+      *((short *)((int)prim + 0x16)) = clut;
+      AddPrimToOT((int)prim);
+      g_pPrimBufferWriteCursor = (void *)((int)prim + 0x28);
+      x = i << 7;
+    } while (i < 4);
+    *((int *)((int)prim + 0x28)) = 0x3000000;
+    *((unsigned char *)((int)prim + 0x2f)) = h;
+    *((short *)((int)prim + 0x30)) = 0;
+    *((short *)((int)prim + 0x32)) = 0xe7;
+    *((short *)((int)prim + 0x34)) = 0x200;
+    *((short *)((int)prim + 0x36)) = 0xe7;
+    *((unsigned char *)((int)prim + 0x2c)) = 0;
+    *((unsigned char *)((int)prim + 0x2d)) = 0;
+    *((unsigned char *)((int)prim + 0x2e)) = 0;
+    AddPrimToOT((int)prim + 0x28);
+    g_pPrimBufferWriteCursor = (void *)((int)prim + 0x38);
+    if (g_nGamestate == 2) {
+      unsigned char *rec;
+      short *lut;
+      unsigned char nGlyphs;
+      int cur;
+      int n;
+      int phase;
+      int v;
+      int y;
+      void *box = (void *)((int)prim + 0x38);
+      SetDrawMode((int)box, 1, 0, 0x40, (RECT *)0);
+      AddPrimToOT((int)box);
+      *((int *)((int)prim + 0x44)) = 0x5000000;
+      *((unsigned char *)((int)prim + 0x4b)) = 0x2a;
+      *((unsigned char *)((int)prim + 0x48)) = h;
+      *((unsigned char *)((int)prim + 0x49)) = h;
+      *((unsigned char *)((int)prim + 0x4a)) = h;
+      *((short *)((int)prim + 0x4e)) = 0x43;
+      *((short *)((int)prim + 0x52)) = 0x43;
+      box = (void *)((int)prim + 0x44);
+      if (g_nPauseMenuSubstate == 1) {
+        *((short *)((int)prim + 0x4c)) = 0x54;
+        *((short *)((int)prim + 0x50)) = 0x1ac;
+        rows = g_nPadIsDualshockFlag != 0;
+        y = rows * 0x10 + 0xb6;
+      } else {
+        rows = 1;
+        *((short *)((int)prim + 0x4c)) = 0x8c;
+        *((short *)((int)prim + 0x50)) = 0x174;
+        y = 0xb0;
+      }
+      *((short *)((int)prim + 0x56)) = y;
+      *((short *)((int)prim + 0x5a)) = y;
+      *((short *)((int)box + 0x10)) = *((unsigned short *)((int)box + 8));
+      *((short *)((int)box + 0x14)) = *((unsigned short *)((int)box + 0xc));
+      AddPrimToOT((int)box);
+      g_pPrimBufferWriteCursor = (void *)((int)box + 0x18);
+      EmitRadialShadedLine(0xe0, 0x61, 0x120, 0x61);
+      if (g_nPauseMenuSubstate == 1) {
+        EmitRadialShadedLine(0x54, 0x43, 0x1ac, 0x43);
+        v = rows * 0x10 + 0xb6;
+        EmitRadialShadedLine(0x1ac, 0x43, 0x1ac, v);
+        EmitRadialShadedLine(0x1ac, v, 0x54, v);
+        EmitRadialShadedLine(0x54, v, 0x54, 0x43);
+      } else {
+        EmitRadialShadedLine(0x8c, 0x43, 0x174, 0x43);
+        v = rows * 0x12 + 0x9e;
+        EmitRadialShadedLine(0x174, 0x43, 0x174, v);
+        EmitRadialShadedLine(0x174, v, 0x8c, v);
+        EmitRadialShadedLine(0x8c, v, 0x8c, 0x43);
+      }
+      pos[0] = 0xba;
+      pos[1] = 0x52;
+      pos[2] = 0xc00;
+      BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, 0xb);
+      if (g_nPauseMenuSubstate == 2) {
+        styA[0] = 0x10;
+        styA[2] = 0x1400;
+        pos[0] = 0xb7;
+        styA[1] = 1;
+        pos[1] = 0x77;
+        pos[2] = 0x1100;
+        BuildTextSprites(D_80010B24, pos, styA, 0x12, 0xb);
+        pos[0] = 0xc0;
+        pos[1] = 0x94;
+        pos[2] = 0x1100;
+        BuildTextSprites(g_szUiYes, pos, styA, 0x12, 0xb);
+        if (g_nPauseMenuCursor == 0) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 3;
+        }
+        pos[0] = 0x128;
+        pos[1] = 0x94;
+        pos[2] = 0x1100;
+        BuildTextSprites(g_szUiNo, pos, styA, 0x12, 0xb);
+        if (g_nPauseMenuCursor == 1) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 2;
+        }
+        n = nGlyphs;
+        i = 0;
+        if (n > 0) {
+          lut = g_anCosineLut;
+          phase = 0;
+          do {
+            i++;
+            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+            phase += 0xc;
+            rec[0x46] = v * 3 >> 9;
+            rec += 0x58;
+          } while (i < n);
+        }
+      } else if (g_nPauseMenuSubstate == 1) {
+        styB[0] = 0xf;
+        styB[2] = 0x1600;
+        styB[1] = 1;
+        pos[0] = 0x6b;
+        pos[1] = 0x6c;
+        pos[2] = 0x1400;
+        BuildTextSprites(D_80010B30, pos, styB, 0x10, 0xb);
+        if (g_nPauseMenuCursor == 0) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 0xb;
+        }
+        pos[0] = 0x79;
+        pos[1] = 0x7c;
+        pos[2] = 0x1400;
+        BuildTextSprites(D_80010B40, pos, styB, 0x10, 0xb);
+        if (g_nPauseMenuCursor == 1) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 0xb;
+        }
+        pos[0] = 0x6b;
+        pos[1] = 0x8c;
+        pos[2] = 0x1400;
+        BuildTextSprites(D_80010B50, pos, styB, 0x10, 0xb);
+        if (g_nPauseMenuCursor == 2) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 0xc;
+        }
+        if (g_nPadIsDualshockFlag != 0) {
+          pos[0] = 0xa3;
+          pos[1] = 0x9c;
+          pos[2] = 0x1400;
+          BuildTextSprites(D_80010B60, pos, styB, 0x10, 0xb);
+          if (g_nPauseMenuCursor == 3) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            nGlyphs = 9;
+          }
+        }
+        pos[0] = 0xd0;
+        pos[2] = 0x1100;
+        v = rows * 0x10;
+        pos[1] = v + 0x9c;
+        BuildTextSprites(g_szUiCamera, pos, styB, 0x10, 0xb);
+        if (g_nPauseMenuCursor == 4) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 6;
+        }
+        pos[0] = 0xee;
+        pos[1] = v + 0xac;
+        pos[2] = 0x1100;
+        BuildTextSprites(g_szUiDone, pos, styB, 0x10, 0xb);
+        if (g_nPauseMenuCursor == 5) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 4;
+        }
+        n = nGlyphs;
+        i = 0;
+        if (n > 0) {
+          lut = g_anCosineLut;
+          phase = 0;
+          do {
+            i++;
+            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+            phase += 0xc;
+            rec[0x46] = v * 3 >> 9;
+            rec += 0x58;
+          } while (i < n);
+        }
+        if (g_nSfxVolume == 0) {
+          pos[0] = 0x142;
+          pos[1] = 0x6c;
+          pos[2] = 0x1400;
+          BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+          phase = 0;
+          if (g_nPauseMenuCursor == 0) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            i = 0;
+            do {
+              i++;
+              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+              phase += 0xc;
+              rec[0x46] = v * 3 >> 9;
+              rec += 0x58;
+            } while (i < 3);
+          }
+        } else {
+          i = 0;
+          if (g_nSfxVolume > 0) {
+            phase = 0;
+            x = 0x140;
+            do {
+              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              g_pSpriteRecordWriteCursor = rec;
+              FillWord(rec, 0, 0x58);
+              cur = g_nPauseMenuCursor;
+              *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6d;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = x;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x1400;
+              if (cur == 0) {
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] * 3 >>
+                    9;
+              } else {
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = 0;
+              }
+              phase += 0xc;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+              i++;
+              x += 0xa;
+            } while (i < g_nSfxVolume);
+          }
+        }
+        if (g_nMusicVolume == 0) {
+          pos[0] = 0x142;
+          pos[1] = 0x7c;
+          pos[2] = 0x1400;
+          BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+          phase = 0;
+          if (g_nPauseMenuCursor == 1) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            i = 0;
+            do {
+              i++;
+              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+              phase += 0xc;
+              rec[0x46] = v * 3 >> 9;
+              rec += 0x58;
+            } while (i < 3);
+          }
+        } else {
+          i = 0;
+          if (g_nMusicVolume > 0) {
+            phase = 0;
+            x = 0x140;
+            do {
+              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              g_pSpriteRecordWriteCursor = rec;
+              FillWord(rec, 0, 0x58);
+              cur = g_nPauseMenuCursor;
+              *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x7d;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x1400;
+              *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = x;
+              if (cur == 1) {
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] * 3 >>
+                    9;
+              } else {
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = 0;
+              }
+              phase += 0xc;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+              i++;
+              x += 0xa;
+            } while (i < g_nMusicVolume);
+          }
+        }
+        pos[0] = 0x142;
+        pos[1] = 0x8c;
+        pos[2] = 0x1400;
+        if (g_nSoundMonoMixFlag != 0) {
+          BuildTextSprites(g_szUiMono, pos, styB, 0x10, 0xb);
+          n = 4;
+        } else {
+          BuildTextSprites(g_szUiStereo, pos, styB, 0x10, 0xb);
+          n = 6;
+        }
+        if (g_nPauseMenuCursor == 2) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          i = 0;
+          if (n != 0) {
+            phase = 0;
+            do {
+              i++;
+              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+              phase += 0xc;
+              rec[0x46] = v * 3 >> 9;
+              rec += 0x58;
+            } while (i < n);
+          }
+        }
+        if (g_nPadIsDualshockFlag != 0) {
+          pos[0] = 0x142;
+          pos[1] = 0x9c;
+          pos[2] = 0x1400;
+          if (g_nOptionVibrationEnabled != 0) {
+            BuildTextSprites(g_szUiOn, pos, styB, 0x10, 0xb);
+            n = 2;
+          } else {
+            BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+            n = 3;
+          }
+          if (g_nPauseMenuCursor == 3) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            i = 0;
+            if (n != 0) {
+              phase = 0;
+              do {
+                i++;
+                v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+                phase += 0xc;
+                rec[0x46] = v * 3 >> 9;
+                rec += 0x58;
+              } while (i < n);
+            }
+          }
+        }
+        pos[0] = 0x142;
+        pos[1] = rows * 0x10 + 0x9c;
+        pos[2] = 0x1400;
+        if (g_dwActiveCameraOptions == 2) {
+          BuildTextSprites(g_szUiActive, pos, styB, 0x10, 0xb);
+          n = 6;
+        } else {
+          BuildTextSprites(g_szUiPassive, pos, styB, 0x10, 0xb);
+          n = 7;
+        }
+        if (g_nPauseMenuCursor == 4) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          i = 0;
+          if (n != 0) {
+            phase = 0;
+            do {
+              i++;
+              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+              phase += 0xc;
+              rec[0x46] = v * 3 >> 9;
+              rec += 0x58;
+            } while (i < n);
+          }
+        }
+      } else {
+        styC[0] = 0x10;
+        styC[2] = 0x1400;
+        pos[0] = 0xc7;
+        styC[1] = 1;
+        pos[1] = 0x6e;
+        pos[2] = 0x1100;
+        BuildTextSprites(D_80010B6C, pos, styC, 0x12, 0xb);
+        if (g_nPauseMenuCursor == 0) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 8;
+        }
+        pos[0] = 0xcf;
+        pos[1] = 0x80;
+        pos[2] = 0x1100;
+        BuildTextSprites(g_szUiOptions, pos, styC, 0x12, 0xb);
+        if (g_nPauseMenuCursor == 1) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 7;
+        }
+        pos[0] = 0xbf;
+        pos[1] = 0x92;
+        pos[2] = 0x1100;
+        BuildTextSprites(D_80010B78, pos, styC, 0x12, 0xb);
+        if (g_nPauseMenuCursor == 2) {
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+          nGlyphs = 9;
+        }
+        if (g_nFlightLevelActive != 0) {
+          pos[0] = 0xe7;
+          pos[1] = 0xa4;
+          pos[2] = 0x1100;
+          BuildTextSprites(g_szUiQuit, pos, styC, 0x12, 0xb);
+          if (g_nPauseMenuCursor == 3) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            nGlyphs = 4;
+          }
+          n = nGlyphs;
+        } else if (g_nActiveLevelId != g_nActiveLevelId / 10 * 10) {
+          pos[0] = 0xb7;
+          pos[1] = 0xa4;
+          pos[2] = 0x1100;
+          BuildTextSprites(D_80010B84, pos, styC, 0x12, 0xb);
+          if (g_nPauseMenuCursor == 3) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            nGlyphs = 9;
+          }
+          n = nGlyphs;
+        } else {
+          pos[0] = 0xbf;
+          pos[1] = 0xa4;
+          pos[2] = 0x1100;
+          BuildTextSprites(D_80010B90, pos, styC, 0x12, 0xb);
+          if (g_nPauseMenuCursor == 3) {
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+            nGlyphs = 8;
+          }
+          n = nGlyphs;
+        }
+        i = 0;
+        if (n > 0) {
+          lut = g_anCosineLut;
+          phase = 0;
+          do {
+            i++;
+            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
+            phase += 0xc;
+            rec[0x46] = v * 3 >> 9;
+            rec += 0x58;
+          } while (i < n);
+        }
+      }
+    } else if (g_nGamestate == 3) {
+      unsigned char *rec;
+      int n;
+      int phase;
+      int v;
+      int y;
+      int bx;
+      int bx2;
+      int pct = ComputeInventoryProgressPercent();
+      int bias;
+      pos[0] = 0x1b8;
+      pos[1] = 0x2c;
+      pos[2] = 0x900;
+      if (pct >= 0xa) {
+        pos[0] = 0x196;
+      }
+      if (pct >= 0x64) {
+        pos[0] -= 0x22;
+      }
+      sprintf(buf, g_szFmtPercentD, pct);
+      BuildTextSpriteChain(buf, pos, 0x22, 2);
+      pos[0] = 0x1de;
+      buf[0] = '%';
+      buf[1] = 0;
+      BuildTextSpriteChain(buf, pos, 0x22, 2);
+      pos[0] = 0x5a;
+      pos[1] = 0x24;
+      pos[2] = 0xb40;
+      sprintf(buf, g_szFmtPercentD, g_nWorldTreasureCollected);
+      BuildTextSpriteChain(buf, pos, 0x1b, 2);
+      pos[0] = 0x14d;
+      pos[1] = 0x24;
+      pos[2] = 0xb40;
+      if (g_nWorldDragonsRescued >= 0xa) {
+        pos[0] = 0x132;
+      }
+      sprintf(buf, g_szFmtPercentD, g_nWorldDragonsRescued);
+      BuildTextSpriteChain(buf, pos, 0x1b, 2);
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor = rec;
+      FillWord(rec, 0, 0x58);
+      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x2e;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
+          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >> 0x19;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+          g_dwHudBobSinePhase;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor = rec;
+      FillWord(rec, 0, 0x58);
+      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x12c;
+      if (g_nWorldDragonsRescued >= 0xa) {
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x111;
+      }
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+          ((unsigned short *)g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 &
+                                             0x1f0) >>
+                                            1] >>
+          8;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      x = 0x24;
+      if (g_nWorldEggsRecovered > 0) {
+        i = 0;
+        y = 0x18;
+        do {
+          int *uv;
+          int *rgb;
+          quad[1] = 0x32;
+          quad[2] = 0x18;
+          quad[0] = y;
+          quad[3] = 0x10;
+          if (i >= g_nWorldEggsRecovered) {
+            pos[1] = 0x3a;
+            pos[0] = x;
+            pos[2] = 0x1800;
+            BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+            uv = &g_anLevelSpriteTexWordPairs[2];
+            rgb = pos;
+            pos[0] = 0x20;
+            pos[1] = 0x20;
+            pos[2] = 0x20;
+          } else {
+            rgb = (int *)0;
+            uv = &g_adwHudBobSinePhaseBlock[0x14c] +
+                 (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2;
+          }
+          x += 0x1b;
+          EmitTexturedQuad(quad, uv, rgb);
+          i++;
+          y += 0x1b;
+        } while (i < 0xc);
+      }
+      EmitRadialShadedLine(0x40, 0x45, 0x1c0, 0x45);
+      prim = g_pPrimBufferWriteCursor;
+      SetDrawMode((int)prim, 1, 0, 0x40, (RECT *)0);
+      AddPrimToOT((int)prim);
+      *((int *)((int)prim + 0xc)) = 0x5000000;
+      *((unsigned char *)((int)prim + 0x13)) = 0x2a;
+      *((unsigned char *)((int)prim + 0x10)) = 0x60;
+      *((unsigned char *)((int)prim + 0x11)) = 0x60;
+      *((unsigned char *)((int)prim + 0x12)) = 0x60;
+      *((short *)((int)prim + 0x16)) = 0x46;
+      *((short *)((int)prim + 0x1a)) = 0x46;
+      *((short *)((int)prim + 0x14)) = 0x40;
+      *((short *)((int)prim + 0x18)) = 0x1c0;
+      *((short *)((int)prim + 0x1c)) = 0x40;
+      *((short *)((int)prim + 0x1e)) = 0x47;
+      *((short *)((int)prim + 0x20)) = 0x1c0;
+      *((short *)((int)prim + 0x22)) = 0x47;
+      AddPrimToOT((int)prim + 0xc);
+      g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
+      EmitRadialShadedLine(0x40, 0x47, 0x1c0, 0x47);
+      n = g_nSubMenuCursor;
+      if (n > 0 && g_abLevelVisitedFlagVirtualBase[n * 6] != 0) {
+        pos[0] = 0x28;
+        pos[1] = 0x48;
+        pos[2] = 0x1100;
+        EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 1);
+      }
+      if (n < 5 && (&g_abLevelVisitedFlag[6])[n * 6] != 0) {
+        pos[0] = 0x1d7;
+        pos[1] = 0x48;
+        pos[2] = 0x1100;
+        EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 0);
+      }
+      i = 0;
+      bias = (g_nSubMenuCursor < 3) * 8;
+      v = strlen((&g_apTitleCardNames[1])[g_nSubMenuCursor]);
+      pos[1] = 0x5c;
+      pos[2] = 0xe00;
+      styD[0] = 0x14;
+      styD[2] = 0x1000;
+      styD[1] = 2;
+      pos[0] = g_nSubMenuScrollOffset - ((v - 1) * 0xa - 0x9e);
+      BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD, 0x17,
+                       2);
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+      phase = 0;
+      if ((int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor] > 0) {
+        do {
+          i++;
+          rec[0x46] =
+              g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                  3 >>
+              9;
+          phase += 0xc;
+          rec += 0x58;
+        } while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]);
+      }
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor = rec;
+      FillWord(rec, 0, 0x58);
+      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
+      bx = bias + 0x15a;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+          g_nSubMenuScrollOffset + bx;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
+          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >> 0x19;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+          g_dwHudBobSinePhase;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor = rec;
+      FillWord(rec, 0, 0x58);
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+          g_nSubMenuScrollOffset + 0x1d1;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
+      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+          ((unsigned short *)g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 &
+                                             0x1f0) >>
+                                            1] >>
+          8;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+      i = 0;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+      y = 0x7b;
+      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      do {
+        if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + i] != 0) {
+          unsigned char *first;
+          int *gems;
+          int row;
+          prim = g_pPrimBufferWriteCursor;
+          SetDrawMode((int)prim, 1, 0, 0x40, (RECT *)0);
+          AddPrimToOT((int)prim);
+          *((int *)((int)prim + 0xc)) = 0x5000000;
+          *((unsigned char *)((int)prim + 0x13)) = 0x2a;
+          *((unsigned char *)((int)prim + 0x10)) = 0x28;
+          *((unsigned char *)((int)prim + 0x11)) = 0x28;
+          *((unsigned char *)((int)prim + 0x12)) = 0x28;
+          v = y - 0xa;
+          *((short *)((int)prim + 0x16)) = v;
+          *((short *)((int)prim + 0x1a)) = v;
+          v = y + 9;
+          *((short *)((int)prim + 0x1e)) = v;
+          *((short *)((int)prim + 0x22)) = v;
+          v = g_nSubMenuScrollOffset + 0x1ff;
+          *((short *)((int)prim + 0x14)) = g_nSubMenuScrollOffset;
+          *((short *)((int)prim + 0x18)) = v;
+          *((short *)((int)prim + 0x1c)) = g_nSubMenuScrollOffset;
+          *((short *)((int)prim + 0x20)) = v;
+          AddPrimToOT((int)prim + 0xc);
+          h = y - 0xb;
+          g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, h,
+                               g_nSubMenuScrollOffset + 0xd0, h);
+          bx = bias + 0x13a;
+          bx2 = bias + 0x17a;
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + bx, h,
+                               g_nSubMenuScrollOffset + bx2, h);
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, h,
+                               g_nSubMenuScrollOffset + 0x1ee, h);
+          styD[0] = 0x10;
+          styD[1] = 1;
+          styD[2] = 0x1400;
+          pos[0] = g_nSubMenuScrollOffset + 0x24;
+          pos[1] = y;
+          pos[2] = 0x1100;
+          first = (unsigned char *)g_pSpriteRecordWriteCursor;
+          BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
+                           styD, 0x12, 2);
+          bx = bias + 0x113;
+          x = g_nSubMenuScrollOffset + bx;
+          gems = &g_anLevelGemsBlock[g_nSubMenuCursor * 6 + i];
+          pos[0] = x;
+          if (*gems < 0x3e8) {
+            pos[0] = x + 0x12;
+          }
+          if (*gems < 0x64) {
+            pos[0] += 0x12;
+          }
+          if (*gems < 0xa) {
+            pos[0] += 0x12;
+          }
+          sprintf(buf, g_szFmtPercentD, *gems);
+          BuildTextSpriteChain(buf, pos, 0x12, 2);
+          pos[2] = 0x1800;
+          bx = bias + 0x15a;
+          pos[0] = g_nSubMenuScrollOffset + bx;
+          BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+          pos[2] = 0x1100;
+          bx = bias + 0x16b;
+          pos[0] = g_nSubMenuScrollOffset + bx;
+          sprintf(buf, g_szFmtPercentD,
+                  g_anLevelTotalGemsTable[g_nSubMenuCursor * 6 + i]);
+          BuildTextSpriteChain(buf, pos, 0x12, 2);
+          row = g_nSubMenuCursor * 6 + i;
+          if (g_abLevelTotalDragonsBlock[row] != 0) {
+            pos[0] = g_nSubMenuScrollOffset + 0x1bd;
+            sprintf(buf, g_szFmtPercentD, g_anLevelDragonsRescued[row]);
+            BuildTextSpriteChain(buf, pos, 0x12, 2);
+            pos[2] = 0x1800;
+            pos[0] = g_nSubMenuScrollOffset + 0x1ce;
+            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+            pos[2] = 0x1100;
+            pos[0] = g_nSubMenuScrollOffset + 0x1df;
+            sprintf(buf, g_szFmtPercentD,
+                    g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i]);
+            BuildTextSpriteChain(buf, pos, 0x12, 2);
+          } else {
+            pos[2] = 0x1800;
+            pos[0] = g_nSubMenuScrollOffset + 0x1ce;
+            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+            *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x44)) = 0x29;
+          }
+          if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
+            rec = first - 0x58;
+            if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
+              phase = 0;
+              do {
+                rec[0x46] =
+                    g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) &
+                                  0xff] *
+                        3 >>
+                    9;
+                rec -= 0x58;
+                phase += 0xc;
+              } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
+            }
+          }
+          if (g_nWorldEggsRecovered > 0) {
+            n = g_nSubMenuCursor;
+            if (n < 3) {
+              int e = 0;
+              if ((int)g_abLevelTotalEggsTable[n * 6 + i] > 0) {
+                int ex = 0;
+                do {
+                  int *uv;
+                  int *rgb;
+                  int gx = g_nSubMenuScrollOffset + 0xe8 + ex;
+                  int gx2 = gx;
+                  if (g_abLevelTotalEggsBlock[n * 6 + i] == 1) {
+                    gx2 = gx + 0x18;
+                  }
+                  quad2[1] = y - 8;
+                  quad2[2] = 0x18;
+                  quad2[0] = gx2;
+                  quad2[3] = 0x10;
+                  if (e >= g_anLevelEggsRecovered[g_nSubMenuCursor * 6 + i]) {
+                    pos[0] = gx2 + 0xc;
+                    pos[1] = y;
+                    pos[2] = 0x1800;
+                    BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+                    uv = &g_anLevelSpriteTexWordPairs[2];
+                    rgb = pos;
+                    pos[0] = 0x20;
+                    pos[1] = 0x20;
+                    pos[2] = 0x20;
+                  } else {
+                    rgb = (int *)0;
+                    uv = &g_anHudFrameCycleBlock[0x14b] +
+                         (g_anHudFrameCycleBlock[0] + i) % 9 * 2;
+                  }
+                  ex += 0x18;
+                  EmitTexturedQuad(quad2, uv, rgb);
+                  e++;
+                } while (e < (int)g_abLevelTotalEggsBlock[g_nSubMenuCursor * 6 + i]);
+              }
+            }
+          }
+          y += 0x13;
+        }
+        i++;
+        h = y - 0xb;
+      } while (i < 6);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, h,
+                           g_nSubMenuScrollOffset + 0xd0, h);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x140, h,
+                           g_nSubMenuScrollOffset + 0x180, h);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, h,
+                           g_nSubMenuScrollOffset + 0x1ee, h);
+    }
+    g_apSpritePrimQueue[0] = (void *)0;
+    if (g_nGamestate == 2 && g_nFlightLevelActive == 0) {
+      EnqueueLoadingScreenSprites();
+    }
+    EnqueuePendingSpritePrims();
+    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    RasterizeSpritePrimQueue();
+    DrawOTag(LinkOTPrimitives(0));
+    DrawSync(0);
+    if (g_nDeathRespawnPending != 0) {
+      VSync(0);
+    }
+    g_nVsyncFrameEndCount = VSync(-1);
+    if (g_nVsyncFrameEndCount - g_nVsyncFramePaceAnchor < 2) {
+      int *end = g_anVsyncFrameEndBlock;
+      do {
+        VSync(0);
+        g_nVsyncFrameEndCount = VSync(-1);
+      } while (g_nVsyncFrameEndCount - end[-1] < 2);
+    }
+    g_nVsyncFramePaceAnchor = VSync(-1);
+    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  }
+  g_nPauseMenuTransitionFrames++;
+}
