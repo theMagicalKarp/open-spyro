@@ -25,150 +25,67 @@
  * back to absolute. Dropping the pointer locals for direct constant-index
  * access on the SAME symbol was worth 42 insns on its own.
  *
- * ============================ PARK 2026-08-19-3 ============================
- * DECODE COMPLETE and much closer than the 2026-08-06-3/2026-08-18 notes said.
- * Re-measured with the register-ANCHORED shape diff (§C: a masked figure only
- * answers "is the decode right?"):
- *      2020 orig insns vs 2008 built, MISMATCH 230 over 114 regions anchored,
- *      67 over 45 with register names masked entirely.
- * So ~163 of the 230 are pure register naming, and 38 regions change length.
- * Three things fixed this session (they took it from 473/201 anchored):
- *  - FRAME: the stack vectors are PSY-Q VECTOR/SVECTOR (16/8 bytes), not int[3].
- *    int vecA[4] / short ang[4] x6 + a dead short pad[4] reproduces sp-0x88
- *    exactly (0x10,0x20,0x28,0x38,0x48,0x58 with the 0x68 hole).
- *  - PER-ARM LOCALS: every switch arm gets its own braced block with its own
- *    scalars (t/n/k/sn/cn/cz/yaw/z/i/step). One shared set across seven arms is
- *    what produced the whole-function rotation the old note blamed on the held
- *    bases: 473 -> 251 anchored from this change alone.
- *  - 0x80076E1C..0x80076E20 is THREE scalars, not an array: the array form gives
- *    a held base (`addiu s0,s0,28188`) where the original re-emits `lui;lh
- *    %lo(sym+K)` at all nine sites. The missing splat symbol at +2 is reachable
- *    as `extern short D_80076E1E;` (the linker
- *    then gets D_80076E1C+2, byte-identical to the original reloc).
- *    NB the old wip did not even LINK -- it referenced an undefined D_80076E1E.
+ * ================ PARK 2026-09-13: 33/2020 linked, 1991/2024 words ==========
+ * Masked shape diff 9 insns over 7 regions, length- and frame-exact, offset 0
+ * everywhere (was 161 / 85 regions / offset +6).  Read the levers before
+ * editing -- several statements look odd and every one is load-bearing.
  *
- * What is left, biggest first:
- *  R1  @8007B2B0, 7 insns - the cross-jump asymmetry. **Root-caused off the
- *      gcc 2.7.2 source 2026-08-29, and the old "no source form addresses this"
- *      verdict is WRONG: the merge is CONTENT-based and a source dial removes
- *      it. Do not re-derive any of this.**
- *      MECHANISM. `cross_jump` runs exactly ONCE (toplev.c:3142,
- *      `jump_optimize (insns, 1, 1, 0)`, after reload -- the other four calls
- *      pass cross_jump=0), so every label `do_cross_jump` creates is NEW.
- *      Two merge paths, and only one of them is uid-gated:
- *        (a) jump.c:1985 `if (INSN_UID (JUMP_LABEL (insn)) < max_uid)` guards
- *            the jump_chain walk that pairs TWO JUMPS TO THE SAME LABEL
- *            (`find_cross_jump (insn, target, 2, ...)`), so a label born in
- *            this pass can never pair two jumps; but
- *            `get_label_before` REUSES a pre-existing label when one already
- *            sits there, and the inner if/else join label from expand does sit
- *            there -- which is why our build still gets path (a).
- *        (b) jump.c:1978 `find_cross_jump (insn, JUMP_LABEL (insn), 1, ...)`
- *            compares the block with the insns BEFORE the target label. No uid
- *            gate. This is the path that legitimately merges the two ELSE
- *            blocks (arm1's `j` -> the `subu` run that falls into the join),
- *            and it is the merge the ORIGINAL has.
- *      `find_cross_jump` scans backward, decrementing `minimum` per matching
- *      insn (2 for path (a), 1 for path (b)) and merging when it reaches 0, so
- *      differentiating an insn 3+ back from the jump does NOT stop a merge --
- *      only the last one or two insns count, and those are `addu v0,v0,v1` /
- *      `sra v1,t1,0xd`, which cannot be respelled.
- *      MEASURED DIAL (2026-08-29, compile-only shape diff): a block-scoped
- *      `int k;` inside the `t >= 0x48` branch makes arm3's accumulator a
- *      SEPARATE pseudo, it wins `a0` instead of `v0`, the two then-blocks stop
- *      being register-identical and **the merge disappears -- orig[162..170]
- *      come out inline and correct** (running offset at that point goes
- *      -7 -> 0). Cost: the ELSE blocks stop being identical too, so path (b)
- *      dies with it (+10 insns) -- net 230/-12 -> 237/+5, byte-identical words
- *      102 -> 118. Symmetric splits (both branches) are byte-identical to that.
- *      SO THE OBJECTIVE IS EXACT: make the two THEN blocks differ while the two
- *      ELSE blocks stay register-identical. Since with one shared `k` both
- *      pairs are identical, that needs arm3's `k` to reach `v0` (the original's
- *      register) while still being a distinct pseudo -- i.e. this is now an
- *      ALLOCATION problem (R3), not a structural one, and R3 must be fixed
- *      first. Note the baseline ALREADY has arm3's k in `a0` (0x454
- *      `addu a0,v0,v1`) against the original's `v0`, and `sn` in s1 against
- *      s0, so the arm's whole quantity map is off before R1 is even reached.
- *      RULED OUT and not worth re-testing: differentiating the `lw D_80077818`
- *      by an equal-address alias symbol (`(&D_80077814)[1]`, byte-identical
- *      reloc) -- the mismatch lands 4 insns back, `minimum` is already 0 by
- *      then and a 3-insn tail still merges.
- *  R2  held-base vs absolute addressing on D_800777EC / D_800777F0 /
- *      D_800777F4 / D_80077838. LARGELY CLOSED 2026-09-01 -- see the SCALAR
- *      ALIAS entry below; what is left of it is the shared-s0 cluster (R6).
- *  R3  a0<->v1 / v0<->v1 caller-saved rotations inside arms (44+38+20+17 sites).
- *  Budget it as one more focused session; the byte prize is 8,096 B x 6 hub
- *  overlays plus the level_1/3/7/8 near-clones = 80,960 B.
+ * LEVERS (in the order they fell):
+ *  L1  R6 shared s0 base.  `t = D_800777F4[0]` (ARRAY form) at the arm-1 head
+ *      materialises s0 = &D_800777F4 and cse follow-jumps carries it into the
+ *      0x1F / 0x6840 arms, so `D_800777F4[-1]`/`[-2]` come out -4(s0)/-8(s0).
+ *      Every store to F4 in arm 1 is `D_800777F4[0] = ...`; the EC reads/writes
+ *      in the 0x1F arm are the `_s` scalar (absolute).
+ *  L2  MEM_IN_STRUCT alias dial (sched anti-dependence).  A scalar store and
+ *      an in_struct load at a varying address "cannot alias", so sched moves
+ *      the load across the store.  Where the original keeps the load BELOW a
+ *      store, spell the store so it CAN alias: array form `D_800777EC[0] = 0`
+ *      (arm 1), `*((int *) ((char *) D_80077800 + 12)) = 0x4A0`, and
+ *      `*((int *) ((char *) D_80076EA0)) = ...` (the char* cast matters).
+ *  L3  R1 cross-jump -- SOLVED, and not by registers.  Arm 3 (t >= 0x48) writes
+ *      its `D_80078A66 = k >> 4; D_80078AB0 = 8;` tail INSIDE both branches,
+ *      each preceded by an empty do/while(0) (so sched keeps the tail order);
+ *      arm 1 keeps its tail after the join.  jump.c then merges arm 3's
+ *      branch tails into a label it CREATES (uid >= max_uid), so path (b) can
+ *      never pair arm 1's then-jump with arm 3's -- exactly the original's
+ *      "identical but unmerged then-blocks, merged else-blocks".
+ *  L4  k register in the arm-1/arm-3 accumulators: arm 3 uses a block-local
+ *      `int k` per branch (local-alloc ties k to the dying load -> v0); arm 1
+ *      keeps a shared k but routes the shifted term through `int m` declared
+ *      at the arm-1 block (used in both branches => GLOBAL, so the load wins v0
+ *      in local-alloc and m falls to v1).
+ *  L5  Per-arm sn: arm 2 has its own `int sn` (local => local-alloc gives it
+ *      s0 before &EC[5]'s pseudo), so base = s1, sn = s0 across case 0.
+ *  L6  Block-local temps for the D_80078A77 -> D_80078A76 copy (`int m`) and
+ *      for `n` / `z` in the arm-3 re-seed and case-5 else blocks: a shared
+ *      case-level variable is GLOBAL and loses every local-alloc race.
+ *  L7  `k = D_800777EC[0];` after the `t == n` block in case 6 reproduces the
+ *      original's `move v1,a0` join copy; `n -= 0x1B; D_800777FC = n;` and
+ *      `vecD[2] += 0x200; vecD[2] -= cn >> 4;` are in-place forms.
+ *  L8  DECODE fixes: `(k == 3) && (D_80077018 < 2)` (was >= 2); the arm-1
+ *      mode tests are `D_800777F4[0] == 0xE` / `D_800777F4[0] = 0x1E` (were
+ *      F0 -- invisible to an immediate-masked diff, found by the linked diff);
+ *      `D_80077838[0]` (array) in both yaw conditions AND call args.
  *
- * ---- 2026-09-01: 230/114/offset -12  ->  161 over 85 regions, offset +6 ----
- * (register-anchored, immediate-masked compile-only shape diff, §D 2b.  All
- *  four levers are one-liners; none of them needed a permuter.)
- *
- *  LEVER A -- THE SCALAR ALIAS, and it is the general form of §B16 REVERSED.
- *      B16 says an incomplete-array alias cast-deref buys the REGISTER form.
- *      The complement is what this function needed: a plain `extern int X;`
- *      DECL is a `(mem (symbol_ref))` with the address inline, so it always
- *      comes out `lui %hi / lw %lo` and cse can never hold a base for it.  Two
- *      C names at ONE address therefore give the two forms per site, which is
- *      exactly what "the original uses BOTH forms for every one of these
- *      symbols" needs.  Declare the alias in the overlay's
- *      `config/overlays/<ovl>.undefined_syms.auto.txt` (a plain
- *      `NAME = 0xADDR;` line; `gen-syms-ld` PROVIDEs it, so an unused alias
- *      costs nothing) -- the main-EXE equivalent is symbol_addrs.txt with
- *      `allow_duplicated:True`.  Measured, each from the same baseline:
- *        D_800777F4 scalar      230 -> 210/107, offset -12 -> -3
- *        D_80077838 scalar      230 -> 215/107, offset -9
- *        both together          230 -> 195/100, **offset 0** (length-exact)
- *        D_800777F0 scalar      makes it WORSE except at one site (see below)
- *        D_800777EC scalar      blanket is much worse (325/150); per-arm only
- *      So it is per-SITE, and the cheap way to find the sites is to bisect the
- *      swap over source LINE RANGES against the shape diff, not to reason about
- *      it: three bisections (F4 reverted in lines 575-600, F0 scalar at exactly
- *      one line, EC scalar in lines 370-430) were worth another 195 -> 170.
- *  LEVER B -- D_80076E1E deserves a REAL SYMBOL.  The old
- *      `#define D_80076E1E (*(short *)((char *)&D_80076E1C + 2))` is an
- *      INDIRECT_REF, so it force_regs a base and cse holds it; the original
- *      re-emits `lui/lh %lo` at all nine sites.  Adding `D_80076E1E =
- *      0x80076E1E;` to the overlay's undefined_syms and declaring
- *      `extern short D_80076E1E;` is worth 195/100 -> 186/96.  General rule:
- *      a missing splat symbol reached by pointer arithmetic is a HELD BASE in
- *      disguise -- add the symbol rather than the cast.
- *  LEVER C -- the loop compare constant is HOISTED by the original.  The
- *      `D_800758D0[i] == 2` scan loop has `li a0,2` in the ORIGINAL's preheader
- *      and re-materialises nothing inside; ours emitted `li v0,2` per
- *      iteration.  Assigning it to one of the function's shared int locals
- *      (`k = 2;` above the loop, then `== k`) reproduces the hoist: 170 -> 165.
- *      This is §B10 in reverse -- there the ORIGINAL re-materialises inline and
- *      we hoist; check the direction before calling it a wall.
- *  LEVER D -- `if (a && b) ... else if (c && d)` vs a nested inner `if`.
- *      The five-arm `k == N` / global-test chain that picks the 0x21..0x25
- *      submode: the original branches BOTH failing conditions to the NEXT arm's
- *      compare and fills each branch delay slot with that arm's compare
- *      constant.  A nested `if (k == N) { if (g == 0) ... }` threads the inner
- *      failure straight to the join instead and leaves four `nop`s; a flat
- *      sequential `if` chain re-tests every arm (offset +14).  Only the
- *      `&&` spelling reproduces it: 165 -> 161.
- *
- * ---- What is left (161 insns over 85 regions) ----------------------------
- *  R1  unchanged -- the cross-jump asymmetry above, still -7 for ~1,850 insns.
- *  R6  THE SHARED s0 BASE, and it is now the single biggest structural item
- *      (11 sites x 1 insn).  The original materialises `s0 = &D_800777F4` ONCE
- *      (orig[569] `lui s0,0x8007; addiu s0,s0,30708`) and then reads and writes
- *      the whole D_800777EC/F0/F4 triple through it across several switch arms
- *      as `0(s0)`, `-4(s0)`, `-8(s0)` -- i.e. a callee-saved base with NONZERO
- *      offsets, which is precisely the §B-i rule 1 fold NOT happening.  Ours
- *      emits a fresh `lui/addiu` per derived address (`D_800777F4[-1]` gives
- *      `lui a0; addiu a0,a0,-4; lw v0,0(a0)`).  RULED OUT this session:
- *      respelling the triple as one array everywhere (`EC[0]` -> `F4[-2]`,
- *      `F0[0]` -> `F4[-1]`, scalar -> `F4[0]`) is 218/114/+8, much worse --
- *      gcc does not share the base just because the source names one array.
- *      The untried idea is A200's empty `do { } while (0)` barrier between the
- *      base's first use and the offset accesses, which is the only known way to
- *      stop the constant equivalence that folds `(plus base K)`.
- *  R3  the caller-saved rotations, unchanged and still the bulk of the count.
- *  Sites still worth a look, from the region list: orig[103]/[105] (a 2-insn
- *  D_8007784C read scheduled 2 early), orig[1369-1388] and orig[1737-1749]
- *  (store/load position shuffles), orig[1974-1982] (`sw s0,0(s1)` position).
+ * WHAT IS LEFT (linked):
+ *  KA  @8007C584, 6 insns: a1<->a2 between the D_80077850 pointer and `z` in
+ *      case 5's head block.  local-alloc qty_compare: ptr 3 refs / 10 = 0.30
+ *      loses to z 2 / 6 = 0.333 by one position of life.  Moving the
+ *      `D_80077844 = z` store after the yaw re-read fixes the registers but
+ *      then sched keeps the store late (+).  Ruled out: z block-local, a `p`
+ *      pointer local, volatile z read, A195 wrap on either deref, reordering
+ *      the A58/7828/A5C statements (the A58 position after 7828 IS load-bearing,
+ *      it fixed the 780C/E00 load order).
+ *  KB  @8007CB70, 4 real insns (27 linked by position): case 6's else arm.
+ *      The original's `t << 4` uses t (a0) while `k < 0x40` and `k - n` use the
+ *      copy (v1); ours canonicalises all three to k because cse follow-jumps
+ *      carries the join's k==t equivalence into the else (k is canonical: its
+ *      last use is in case 6's outer else).  With a0 dead in the else, reorg
+ *      fills the join's beqz slot from the fall-through instead of the target.
+ *      Needs the else NOT in the join's cse path; no construct found yet
+ *      (then-arm ends in a jump + BARRIER, else label has one use).
+ *  Siblings: level_6/12/18/24/30 (+ near-clones 1/3/7/8) are untouched; clone
+ *  them only once this matches.
  */
 
 extern void func_80015370();
@@ -293,12 +210,6 @@ extern int D_80078AF8;
 extern int D_80078B74;
 extern int D_80078C48;
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_0_artisans_home/func_level_0_8007B020.c.wip`; this body came from
-   build/permuter/nonmatchings/func_level_0_8007B020/output-8245-1/source.c. */
 void func_level_0_8007B020(void)
 {
   int vecA[4];  /* sp+0x10 (PSX VECTOR: 16 bytes) */
@@ -350,7 +261,7 @@ void func_level_0_8007B020(void)
           D_80078A71 = 1;
           D_80078A77 = 1;
           func_80017700(D_80077800, &D_80078A70[-0x18]);
-          D_80077800[3] = 0x4A0;
+          *((int *) ((char *) D_80077800 + 12)) = 0x4A0;
           D_80077810 = 0;
           D_80077814 = 0x164;
           func_80017048(D_8007784C + 0x20, &D_80077800[3], &D_80077800[3]);
@@ -362,14 +273,15 @@ void func_level_0_8007B020(void)
         t = D_800777EC[0];
         if (t < 0x18)
         {
+          int m;
           sn = func_80016C58(((t << 11) / 24) - 0x400) + 0x1000;
           if (((D_8007781C - D_80077818) & 0xFFF) < 0x801)
           {
-            k = D_80077818 + ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            m = (func_80017928(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 + m;
           }
           else
           {
-            k = D_80077818 - ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            m = (func_80017928(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 - m;
           }
           D_80078A66 = k >> 4;
           D_80078AB0 = 8;
@@ -377,6 +289,7 @@ void func_level_0_8007B020(void)
         else
           if (t < 0x48)
         {
+          int sn;
           sn = func_80016C58((((t - 0x18) << 11) / 48) - 0x400) + 0x1000;
           func_8001778C(vecA, &D_800777EC[8], &D_800777EC[5]);
           func_800177C0(vecA, vecA, sn);
@@ -397,11 +310,13 @@ void func_level_0_8007B020(void)
           sn = func_80016C58((((t - 0x48) << 11) / 24) - 0x400) + 0x1000;
           if ((D_800777EC[0] - D_800756CC) < 0x48)
           {
+            int m;
+            int n;
             D_80077818 = D_80078A66 * 0x10;
             n = D_8007784C[0x46];
-            k = D_80078A77;
+            m = D_80078A77;
             D_80078A71 = 3;
-            D_80078A76 = k;
+            D_80078A76 = m;
             D_80078A77 = 0;
             D_80078A7C = 0;
             D_80078AB0 = 8;
@@ -409,14 +324,18 @@ void func_level_0_8007B020(void)
           }
           if (((D_8007781C - D_80077818) & 0xFFF) < 0x801)
           {
-            k = ((func_80017928(D_8007781C, D_80077818) * sn) >> 13) + D_80077818;
+            int k; k = D_80077818 + ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            do { } while (0);
+            D_80078A66 = k >> 4;
+            D_80078AB0 = 8;
           }
           else
           {
-            k = D_80077818 - ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            int k; k = D_80077818 - ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            do { } while (0);
+            D_80078A66 = k >> 4;
+            D_80078AB0 = 8;
           }
-          D_80078A66 = k >> 4;
-          D_80078AB0 = 8;
         }
         D_80078A64[0] = 0;
         D_80078A65 = 0;
@@ -424,13 +343,13 @@ void func_level_0_8007B020(void)
         func_80016D2C((int *) (&D_80078A64[0]), (int *) (&D_80078A64[0x28]), 0);
         func_80049FAC(1);
         func_80048D10(D_800756CC);
-        if (((D_80077838_s - D_80077838[-6]) & 0xFFF) < 0x801)
+        if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
         D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
@@ -472,7 +391,7 @@ void func_level_0_8007B020(void)
         D_80078A77 = 0;
         D_80078A7C = 0;
         D_800777E8[0] = 1;
-        D_800777EC_s = 0;
+        D_800777EC[0] = 0;
         D_80078A66 = D_8007781C >> 4;
         D_80078A76 = n;
       }
@@ -486,7 +405,7 @@ void func_level_0_8007B020(void)
       int k;
       int i;
 
-        t = D_800777F4_s;
+        t = D_800777F4[0];
         if (t < 0x1E)
       {
         if ((D_80077378[0] & 0x6840) && (D_800777EC_s >= 0x51))
@@ -494,7 +413,7 @@ void func_level_0_8007B020(void)
           n = t % 6;
           if (n == 0)
           {
-            D_800777F4_s = t + 1;
+            D_800777F4[0] = t + 1;
           }
           else
             if (n < 3)
@@ -504,7 +423,7 @@ void func_level_0_8007B020(void)
               D_800758A8();
             }
             else
-              if (D_800777F0[0] == 0xE)
+              if (D_800777F4[0] == 0xE)
             {
               do
               {
@@ -524,7 +443,7 @@ void func_level_0_8007B020(void)
                   D_800777F4_s = 0x23;
                 }
                 else
-                  if ((k == 3) && (D_80077018 >= 2))
+                  if ((k == 3) && (D_80077018 < 2))
                 {
                   D_800777F4_s = 0x24;
                 }
@@ -538,22 +457,22 @@ void func_level_0_8007B020(void)
             }
             else
             {
-              D_800777F0[0] = 0x1E;
+              D_800777F4[0] = 0x1E;
             }
           }
           else
             if (n == 3)
           {
-            D_800777F4_s = t + 2;
+            D_800777F4[0] = t + 2;
           }
           else
             if (n == 4)
           {
-            D_800777F4_s = t + 1;
+            D_800777F4[0] = t + 1;
           }
           else
           {
-            D_800777F4_s = 0x1F;
+            D_800777F4[0] = 0x1F;
           }
           D_800777EC[0] = 0;
         }
@@ -566,7 +485,7 @@ void func_level_0_8007B020(void)
         scan:
         if (D_800758D0[i] == k)
         {
-          i++;
+          do { i++; } while (0);
           if (i < 6)
           {
             goto scan;
@@ -622,7 +541,7 @@ void func_level_0_8007B020(void)
       {
         if (D_80077378[0] & 0x5000)
         {
-          D_800777EC[0] = 0x20;
+          D_800777EC_s = 0x20;
           D_800777F0_s = 1 - D_800777F0_s;
           func_80055A78(D_800761D4[0x2D], 0, 0x10, 0);
         }
@@ -630,7 +549,7 @@ void func_level_0_8007B020(void)
         {
           return;
         }
-        if (D_800777EC[0] < 0x1F)
+        if (D_800777EC_s < 0x1F)
         {
           return;
         }
@@ -660,14 +579,14 @@ void func_level_0_8007B020(void)
       {
         if ((t == 0x24) || (t == 0x26))
         {
-          D_800777F4_s = 0x1E;
+          D_800777F4[0] = 0x1E;
           D_800777F0[0] = 0;
           D_800777F8 = 1;
           return;
         }
         if (t == 0x25)
         {
-          D_800777F4_s = 0x26;
+          D_800777F4[0] = 0x26;
           D_800777F4[-2] = 0;
           return;
         }
@@ -688,7 +607,8 @@ void func_level_0_8007B020(void)
         n = D_800777F4_s;
         D_800777F4_s = 0x20;
         D_800777EC[0] = 0;
-        D_800777FC = n - 0x1B;
+        n -= 0x1B;
+        D_800777FC = n;
       }
         break;
     }
@@ -723,12 +643,15 @@ void func_level_0_8007B020(void)
           D_80077848 = ((int *) (D_8007784C + 0x14))[0] + 0x488;
           func_80017700(&D_800777EC[5], D_80078A58);
           func_80017700(&D_800777EC[8], D_8007784C + 0xC);
-          n = D_80078A77;
+          {
+            int m;
+          m = D_80078A77;
           D_80078A71 = 5;
           D_80078A77 = 0;
           D_80078A7C = 0;
           D_80078AB0 = 7;
-          D_80078A76 = n;
+          D_80078A76 = m;
+          }
         }
         t = D_800777EC[0];
         if (t < 0x30)
@@ -748,11 +671,14 @@ void func_level_0_8007B020(void)
             D_80077804 = D_80077810;
             D_80077808 = D_80077808 + 0x325;
             func_80017700(&D_800777EC[8], D_80077850 + 0xC);
-            n = D_80078A77;
+            {
+              int m;
+            m = D_80078A77;
             D_80078A77 = 0;
             D_80078A7C = 0;
             D_80078AB0 = 4;
-            D_80078A76 = n;
+            D_80078A76 = m;
+            }
           }
           t = D_800777EC[0];
           if ((t - D_800756CC) >= 0x36)
@@ -764,13 +690,13 @@ void func_level_0_8007B020(void)
             D_80078A60 = D_80077808 + (func_80016C58(t << 5) >> 2);
           }
         }
-        if (((D_80077838_s - D_80077838[-6]) & 0xFFF) < 0x801)
+        if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838_s, D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
         D_80076DF8[0] = ((int *) (D_80077850 + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
@@ -807,9 +733,9 @@ void func_level_0_8007B020(void)
         if (D_800777EC[0] == D_800756CC)
         {
           z = ((int *) (D_80077850 + 0x14))[0];
-          D_80078A58[0] = D_8007780C;
           k = D_80078A77;
           D_80077828 = D_80076E00;
+          D_80078A58[0] = D_8007780C;
           D_80078A5C = D_80077810;
           D_80077844 = z;
           yaw = ((int *) (D_80077850 + 0x14))[0];
@@ -850,10 +776,13 @@ void func_level_0_8007B020(void)
         D_800756D0 = 0;
         D_800758AC = 0;
         D_80077838_s = ((n * 0x10) + 0x390) & 0xFFF;
-        z = ((int *) (D_80077850 + 0x14))[0];
+        {
+          int m;
+        m = ((int *) (D_80077850 + 0x14))[0];
         D_800777E8[0] = 4;
         D_800777EC[0] = 0;
-        D_80077840 = z + 0x200;
+        D_80077840 = m + 0x200;
+        }
         func_80015370(1);
         func_80016958(D_80071E9C, D_80077850, 0x58);
         D_80077850 = (unsigned char *) D_80071E9C;
@@ -907,7 +836,7 @@ void func_level_0_8007B020(void)
         D_80076DFC = ((int *) (D_80077850 + 0x10))[0] + ((func_80016C58(yaw) * cz) >> 12);
         D_80076E00 = D_80077840 + (((D_80077828 - D_80077840) * cn) >> 13);
         func_8001778C(vecD, (int *) (D_80077850 + 0xC), D_80076DF8);
-        vecD[2] = (vecD[2] + 0x200) - (cn >> 4);
+        vecD[2] += 0x200; vecD[2] -= cn >> 4;
         D_80076E1E = func_80016AB4(func_800171FC(vecD, 0), -vecD[2], 1);
         D_80076E20 = func_80016AB4(vecD[0], vecD[1], 1);
       }
@@ -933,21 +862,24 @@ void func_level_0_8007B020(void)
         n = D_800756CC;
         if (t == n)
         {
+          int z;
+          z = ((int *) (D_80077850 + 0x14))[0];
           D_80077828 = D_80076E00;
-          D_80077844 = ((int *) (D_80077850 + 0x14))[0];
+          D_80077844 = z;
         }
-        if (t < 0x40)
+        k = D_800777EC[0];
+        if (k < 0x40)
         {
           ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] - (n * 0x4B);
           D_80076E00 = D_80077828 + ((func_80016C58((-D_800777EC[0]) << 4) * 3) >> 2);
         }
         else
         {
-          if ((t - n) < 0x40)
+          if ((k - n) < 0x40)
           {
             D_80077844 = ((int *) (D_80077850 + 0x14))[0] - 0x4B;
           }
-          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((func_80016C58(0x400 - (t << 4)) * 3) >> 2);
+          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((func_80016C58(0x400 - (k << 4)) * 3) >> 2);
         }
         func_8001778C(vecE, (int *) (D_80077850 + 0xC), D_80076DF8);
         D_80076E1E = func_80016AB4(func_800171FC(vecE, 0), -vecE[2], 1);
@@ -960,9 +892,12 @@ void func_level_0_8007B020(void)
         D_800777E8[0] = 7;
         D_800777EC[0] = 0;
         func_80017700(&D_800777EC[5], D_80078A58);
-        n = D_800777FC * 8;
-        D_800777EC[8] = *((int *) (((char *) D_8006EADC) + n));
-        k = *((int *) (((char *) D_8006EAE0) + n));
+        {
+          int m;
+        m = D_800777FC * 8;
+        D_800777EC[8] = *((int *) (((char *) D_8006EADC) + m));
+        k = *((int *) (((char *) D_8006EAE0) + m));
+        }
         D_80077814 = D_80078A60;
         D_80077810 = k;
         D_80077814 = func_8004D5EC(&D_800777EC[8], 0x10000) + 0x164;
@@ -999,7 +934,7 @@ void func_level_0_8007B020(void)
         func_80017700(D_80078A58, &D_800777EC[8]);
         func_8004AC24(1);
         D_80078C48 = 0x10;
-        D_80076EA0[0] = (int) D_80078A58;
+        *((int *) ((char *) D_80076EA0)) = (int) D_80078A58;
         D_80076E28 = 0;
         D_80076E90 = 0;
         D_80076EA8 = (int) D_8006C8BC;

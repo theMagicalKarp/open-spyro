@@ -4030,3 +4030,17 @@ FlushGpuQueue:
     wrapping the arg0 read is +1 insn and will not link. Per A200c there is no
     cheaper boundary: cse and sched both break only at a CODE_LABEL or a loop
     note and both are full block boundaries. Remains a clean permuter target.
+
+# --- session 2026-09-13: balloonist update head, 161 masked -> 9 masked / 33 linked ---
+func_level_0_8007B020:
+  verdict: parked
+  class: "KA local-alloc qty_compare life tie (ptr vs z, one insn of life) + KB cse follow-jumps carries the join copy into case 6's else"
+  date: 2026-09-13
+  note: >-
+    161 masked / 85 regions / offset +6 -> 9 masked / 7 regions / offset 0,
+    33/2020 linked, 1991/2024 words byte-identical. R1 (the 7-insn cross-jump)
+    and R6 (shared s0 base) are SOLVED, plus two real decode errors
+    (`D_80077018 < 2`; the arm-1 mode tests are F4 not F0 -- hidden by the
+    immediate-masked diff). Levers L1..L8 are in the .wip header. Two knots
+    left, both allocation/cse, both with the mechanism written up (KA, KB).
+    Clone to level_6/12/18/24/30 (+1/3/7/8) the moment it matches.

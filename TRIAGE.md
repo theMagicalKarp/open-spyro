@@ -25,15 +25,16 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | 11 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 12 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 13 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 61 | segment 38.4% matched; matched neighbor in segment; megafunction (all-or-nothing); hand-marked viable: >- |
-| 15 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(48 viable candidates total; the full ranking is regenerable.)
+(47 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
+| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 7612 | KA local-alloc qty_compare life tie (ptr vs z, one insn of life) + KB cse follow-jumps carries the join copy into case 6's else |
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin (idx must take a2, the deref v0) |
 | `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole (ALL axes now closed) + Rd re-classed and largely solved: 8/1610 open-tail vs 17/1610 Rd-closed |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
@@ -47,7 +48,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
-| `0x8007b020` | func_level_0_8007B020 | ovl/level_0_artisans_home | 8096 | 744 | R1 cross-jump asymmetry + R6 shared-s0 held base + R3 caller-saved rotations |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x8002ccc8` | func_8002CCC8 | main | 868 | 732 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with |
@@ -63,6 +63,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_12_magic_cr
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1/F7 pure register rotation |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 | divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist |
+| `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 344 | positional: a 4-insn head knot at orig[28..50] zeroes all partial credit; then A133 constant-in-callee-saved allocation |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
 | `0x800557cc` | func_800557CC | main | 400 | 288 | B13 (A233 not free here) + a 5-insn st->place schedule |
