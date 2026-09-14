@@ -4,6 +4,7 @@
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007AF90.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA5C)
     build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007CF30.o(.rodata)

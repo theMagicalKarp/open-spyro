@@ -4,6 +4,7 @@
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007B898.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.D_8007AA5C)
     build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007D838.o(.rodata)

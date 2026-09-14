@@ -8,6 +8,7 @@
     build/overlays/level_3_artisans_town_square/c/func_level_3_8007B068.o(.text)
     . = 0x00000674 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_8007B0AC)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_8007B0AC.o(.text)
     . = 0x00002614 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.func_level_3_8007D04C)
     build/overlays/level_3_artisans_town_square/c/func_level_3_8007D04C.o(.text)

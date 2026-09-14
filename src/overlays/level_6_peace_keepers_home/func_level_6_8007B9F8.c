@@ -1,4 +1,4 @@
-/* func_level_0_8007B020 (0x8007B020, level_0_artisans_home overlay).
+/* func_level_6_8007B9F8 (0x8007B9F8, level_6_peace_keepers_home overlay).
  *
  * Balloonist cutscene tick — the per-frame update half of gamestate 0xC
  * (func_level_0_8007CFC0 is the draw half). Dispatches on the substate word
@@ -25,10 +25,8 @@
  * back to absolute. Dropping the pointer locals for direct constant-index
  * access on the SAME symbol was worth 42 insns on its own.
  *
- * ================ PARK 2026-09-13: 33/2020 linked, 1991/2024 words ==========
- * Masked shape diff 9 insns over 7 regions, length- and frame-exact, offset 0
- * everywhere (was 161 / 85 regions / offset +6).  Read the levers before
- * editing -- several statements look odd and every one is load-bearing.
+ * Clone of func_level_0_8007B020 (matched 2026-09-14, 8,096 B).  Read the levers before editing -- several
+ * statements look odd and every one is load-bearing.
  *
  * LEVERS (in the order they fell):
  *  L1  R6 shared s0 base.  `t = D_800777F4[0]` (ARRAY form) at the arm-1 head
@@ -66,26 +64,17 @@
  *      mode tests are `D_800777F4[0] == 0xE` / `D_800777F4[0] = 0x1E` (were
  *      F0 -- invisible to an immediate-masked diff, found by the linked diff);
  *      `D_80077838[0]` (array) in both yaw conditions AND call args.
- *
- * WHAT IS LEFT (linked):
- *  KA  @8007C584, 6 insns: a1<->a2 between the D_80077850 pointer and `z` in
- *      case 5's head block.  local-alloc qty_compare: ptr 3 refs / 10 = 0.30
- *      loses to z 2 / 6 = 0.333 by one position of life.  Moving the
- *      `D_80077844 = z` store after the yaw re-read fixes the registers but
- *      then sched keeps the store late (+).  Ruled out: z block-local, a `p`
- *      pointer local, volatile z read, A195 wrap on either deref, reordering
- *      the A58/7828/A5C statements (the A58 position after 7828 IS load-bearing,
- *      it fixed the 780C/E00 load order).
- *  KB  @8007CB70, 4 real insns (27 linked by position): case 6's else arm.
- *      The original's `t << 4` uses t (a0) while `k < 0x40` and `k - n` use the
- *      copy (v1); ours canonicalises all three to k because cse follow-jumps
- *      carries the join's k==t equivalence into the else (k is canonical: its
- *      last use is in case 6's outer else).  With a0 dead in the else, reorg
- *      fills the join's beqz slot from the fall-through instead of the target.
- *      Needs the else NOT in the join's cse path; no construct found yet
- *      (then-arm ends in a jump + BARRIER, else label has one use).
- *  Siblings: level_6/12/18/24/30 (+ near-clones 1/3/7/8) are untouched; clone
- *  them only once this matches.
+ *  L9  Case 6's else arm (`k >= 0x40`): the original's `0x400 - (t << 4)` reads
+ *      t while `k - n` reads the k copy.  cse1 path variants that include the
+ *      inner join pick t as canonical only if k's LAST use lies inside that
+ *      path, so the outer else gets its own block-local `int k`, the else head
+ *      gets an empty do/while(0) (cse1 barrier), and a dead `if (k < 0x40)`
+ *      after the store gives k a last use past the join that only cse2 (which
+ *      knows k >= 0x40 on that path) folds away.
+ *  L10 Case 3's `t == n` block: `yaw` is set twice (`yaw += 0x2D4;
+ *      D_80078A60 = yaw;`).  A single-set yaw gets sched1's birthing boost and
+ *      lands after the A77 load, which gives the D_80077850 pointer one insn
+ *      too much life and loses it a1 to `z` in local-alloc.
  */
 
 extern void func_80015370();
@@ -210,7 +199,7 @@ extern int D_80078AF8;
 extern int D_80078B74;
 extern int D_80078C48;
 
-void func_level_0_8007B020(void)
+void func_level_6_8007B9F8(void)
 {
   int vecA[4];  /* sp+0x10 (PSX VECTOR: 16 bytes) */
   short ang[4]; /* sp+0x20 (SVECTOR: 8 bytes) */
@@ -745,7 +734,8 @@ void func_level_0_8007B020(void)
           D_80078A77 = 0;
           D_80078A7C = 0;
           D_80078A7F = 3;
-          D_80078A60 = yaw + 0x2D4;
+          yaw += 0x2D4;
+          D_80078A60 = yaw;
         }
         t = D_800777EC[0];
         if (t < 0x40)
@@ -875,11 +865,19 @@ void func_level_0_8007B020(void)
         }
         else
         {
+          do
+          {
+          }
+          while (0);
           if ((k - n) < 0x40)
           {
             D_80077844 = ((int *) (D_80077850 + 0x14))[0] - 0x4B;
           }
-          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((func_80016C58(0x400 - (k << 4)) * 3) >> 2);
+          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((func_80016C58(0x400 - (t << 4)) * 3) >> 2);
+          if (k < 0x40) /* L9: dead; cse2 folds it */
+          {
+            D_80077844 = 0;
+          }
         }
         func_8001778C(vecE, (int *) (D_80077850 + 0xC), D_80076DF8);
         D_80076E1E = func_80016AB4(func_800171FC(vecE, 0), -vecE[2], 1);
@@ -894,10 +892,10 @@ void func_level_0_8007B020(void)
         func_80017700(&D_800777EC[5], D_80078A58);
         {
           int m;
+          int k;
         m = D_800777FC * 8;
         D_800777EC[8] = *((int *) (((char *) D_8006EADC) + m));
         k = *((int *) (((char *) D_8006EAE0) + m));
-        }
         D_80077814 = D_80078A60;
         D_80077810 = k;
         D_80077814 = func_8004D5EC(&D_800777EC[8], 0x10000) + 0x164;
@@ -907,6 +905,7 @@ void func_level_0_8007B020(void)
         D_80078A7C = 0;
         D_80078AB0 = 6;
         D_80078A76 = k;
+        }
       }
         break;
     }

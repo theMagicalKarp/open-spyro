@@ -4044,3 +4044,45 @@ func_level_0_8007B020:
     immediate-masked diff). Levers L1..L8 are in the .wip header. Two knots
     left, both allocation/cse, both with the mechanism written up (KA, KB).
     Clone to level_6/12/18/24/30 (+1/3/7/8) the moment it matches.
+
+# --- session 2026-09-14: balloonist update family closed (x10, +80,960 B) ---
+func_level_0_8007B020:
+  verdict: matched
+  class: "MATCHED 2026-09-14 (cse canonical-register path dial for KB + two-set de-boost for KA)"
+  date: 2026-09-14
+  note: >-
+    KB: cse picks the canonical register per PATH VARIANT (make_regs_eqv compares
+    the new reg's last use against the variant's cuid range), so a dead
+    `if (k < 0x40)` after case 6's inner join -- folded away only by cse2 --
+    plus a block-local k in the outer else and an empty do/while at the else
+    head leaves t at `t << 4` and k at `k - n`. KA: `yaw += 0x2D4;
+    D_80078A60 = yaw;` makes yaw two-set, which removes sched1's birthing boost
+    on the re-read, shortens the D_80077850 pointer's life by one insn and wins
+    it a1 over z. Found via a PERM_RANDOMIZE-restricted permuter hint
+    (`t = ...; yaw = t;`), then cleaned to the in-place form. Siblings
+    level_6/12/18/24/30 and 1/3/7/8 sed-clone with no source change beyond the
+    name; each overlay's undefined_syms needs the head's D_800777EC_s /
+    D_800777F0_s / D_800777F4_s / D_80077838_s aliases and D_80076E1E.
+func_level_5_8007B68C:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged)"
+  date: 2026-09-14
+  note: >-
+    Re-traced the post-func_8005FDD8 block with -dR: at T-8 both loads are
+    blocked by the T-7 `sw zero,D_800758B0`, and 332 (`i = 0`) plus the two
+    ori halves are always ready, so no schedule of this block content can put
+    a load at T-8 as the original does. The two-set de-boost lever does not
+    apply (sched2 has no birthing boost). Linked 8/1610 reproduced.
+func_level_30_8007D938:
+  verdict: viable
+  class: "actor-update megafunction, same skeleton as matched func_level_0_8007D9C8"
+  date: 2026-09-14
+  note: >-
+    23,600 B, the smallest per-level actor update megafunction. 68% of its
+    opcode 12-grams occur in func_level_0_8007D9C8 (matched upstream, #193);
+    every other level's megafunction shares 38-58%. Same preamble and actor
+    loop, same compare-tree dispatch on actor->type, but the callee-saved map
+    differs (s5 = 1, fp = 2, s7 = &D_80078BBC - 0x164 held base) and only
+    ~318 of 5,874 arm insns are identical after symbol normalisation, so it
+    is a transplant-and-reallocate job over the whole function, not a
+    sed-clone. Candidate start for the megafunction vein.
