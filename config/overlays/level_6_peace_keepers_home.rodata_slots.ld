@@ -4,6 +4,7 @@
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
+    build/overlays/level_6_peace_keepers_home/c/func_level_6_8007B9F8.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
     build/overlays/level_6_peace_keepers_home/c/func_level_6_8007D998.o(.rodata)
