@@ -9,16 +9,7 @@
     build/overlays/level_0_artisans_home/c/func_level_0_8007CFC0.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x000000cc ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AB04)
-    . = 0x000000e4 ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AB1C)
-    . = 0x00000104 ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AB3C)
-    . = 0x0000015c ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AB94)
-    . = 0x00000184 ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007ABBC)
+    build/overlays/level_0_artisans_home/c/func_level_0_8007D9C8.o(.rodata)
     . = 0x0000019c ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007ABD4)
     build/overlays/level_0_artisans_home/c/func_level_0_80086134.o(.rodata)

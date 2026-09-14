@@ -92,9 +92,26 @@ for name in "${names[@]}"; do
   # splat's generated ld + undefined symbol lists are committed under config/overlays/
   # (see gen_overlay_yaml.py) so CI relinks from committed asm with no disc. The
   # PROVIDE() syms.ld is regenerated here each build, so it stays under build/.
+  #
+  # config/symbol_addrs.txt is passed too, LAST, so that overlay C can reach the
+  # named main-EXE symbols the main EXE already links against -- in particular the
+  # `allow_duplicated:True alias` entries, which exist precisely to give one
+  # address two symbol identities so cse cannot derive one from the other
+  # (g_anSineLut/g_anCosineLut is the worked example). Without this an overlay had
+  # only the D_xxxxxxxx autolabels splat emits, one per address, and that lever was
+  # unreachable from any overlay.
+  #
+  # LAST because gen-syms-ld is first-definition-wins: the overlay's own auto lists
+  # stay authoritative for its segment. Nothing actually collides today (checked:
+  # zero names shared at a different address across all 37 overlays), and every
+  # symbol_addrs.txt address is <= 0x8007AA38, the address the overlays load at --
+  # the single entry there, g_abAssetDirectoryBuffer, is referenced by no overlay,
+  # and PROVIDE for an unreferenced name defines nothing. So this is additive: it
+  # cannot move a byte until some overlay C names one of the new symbols.
   $OPEN_SPYRO gen-syms-ld "$OVL_DIR/$name.syms.ld" \
     "config/overlays/$name.undefined_syms.auto.txt" \
-    "config/overlays/$name.undefined_funcs.auto.txt"
+    "config/overlays/$name.undefined_funcs.auto.txt" \
+    config/symbol_addrs.txt
 
   # link (splat's ld + our externals) + objcopy to raw overlay image
   elf="$OVL_DIR/$name.elf"
