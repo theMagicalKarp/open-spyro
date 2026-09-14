@@ -4,6 +4,7 @@
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
+    build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007B0D0.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.D_8007AA5C)
     build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007D070.o(.rodata)
