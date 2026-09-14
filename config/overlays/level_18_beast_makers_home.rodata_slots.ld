@@ -4,6 +4,7 @@
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007B7E4.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
     build/overlays/level_18_beast_makers_home/c/func_level_18_8007D784.o(.rodata)
