@@ -4086,3 +4086,115 @@ func_level_30_8007D938:
     ~318 of 5,874 arm insns are identical after symbol normalisation, so it
     is a transplant-and-reallocate job over the whole function, not a
     sed-clone. Candidate start for the megafunction vein.
+
+func_level_5_8007B68C_2026_09_15:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole — the statement-order axis is now closed on the LINKED metric too"
+  date: 2026-09-15
+  note: >-
+    Head of the x5 flight-results clone family (32,200 B). Reproduced at
+    8/1610 (99.5%): R5 (5 insns) + Rd (3). Two axes re-measured, 253 builds,
+    no improvement, but the record was WRONG in a way worth fixing.
+    (1) The 2026-08-28 sweep of all 240 legal statement orders of the six
+    post-func_8005FDD8 statements was scored on the MASKED shape diff and
+    recorded as "every one scores 6, statement order is INERT here". Re-ranked
+    on the LINKED diff it is not inert at all: the orders span 8..18+. The
+    floor is 8 and exactly SIX orders reach it — the checked-in order plus the
+    five that differ only in where `D_800758B0 = 0;` sits, i.e. that one
+    statement's position is the only free axis and it is worth nothing.
+    Everything that moves `tv` or either load off the checked-in order costs
+    2 to 10 insns. So the axis is genuinely exhausted, but "inert" was an
+    artifact of the masked metric (see cookbook C's own warning).
+    (2) Twelve NON-permutation source forms, also on the linked metric, all
+    >= 8: splitting `tv = D_800785F0[0] + K` into a load then a `+=` (17, the
+    worst), a `bias` local for the constant (11), an `off`+`bias` pair (8), an
+    `e8` local for the shared load (8), an `f0` local for the second load at
+    two positions (8), both loads hoisted into locals (8), `tv` spelled as a
+    cast (8), `tv = D_800785F0[0] - 0x1C200` (8), and
+    `D_80075780 = D_800785E8 - 0xFFFE4000` (8). Nine of the twelve are
+    byte-identical plateau states.
+    NEW MECHANISM DETAIL worth keeping: cc1 emits the 0xFFFE3E00 constant as
+    TWO separate insns from expand (`li $5,-131072` + `ori $5,$5,0x3e00`, both
+    visible in the .s), not as one `li` macro, which is why the `ori` half can
+    drift at all; at the function's OTHER use of the same constant
+    (`func_8005FA8C(&rect, img[0] + 0xFFFE3E00)`) the pair comes out adjacent.
+    The whole R5 defect is that one `ori` sinking 2 slots below the two `lw`s;
+    all 13 other insns in the block are byte-exact.
+    VERDICT: R5 is closed on statement order, on volatility (2026-09-09), on
+    A232 barriers (2026-08-28) and now on constant/load carrier spelling. Do
+    not re-open it from source. The only untried direction left is the one the
+    2026-09-14 trace implies: the block CONTENT must change, and no C form
+    measured so far changes it.
+
+func_80038FC8_2026_09_15:
+  verdict: parked
+  class: "F14b schedule-XOR-register mutual exclusion — the bare-literal body's register axis is order-insensitive"
+  date: 2026-09-15
+  note: >-
+    608 B, reproduced at 4/152. The park's open question is "make v0
+    unavailable to the constant over orig 106-108 without introducing a loop
+    note". Measured seven more bodies on the linked metric, none better than
+    the checked-in 4: bare literals 9 (the known schedule-right /
+    register-wrong state), bare literals with the 0x40/0x41 stores swapped 9,
+    bare literals with an `unsigned char` carrier for `old` 9, bare literals
+    with `old` read after the constant pair 11, bare literals with `p3F` read
+    first 11, and two forms that change LENGTH and will not link (the 0x3D
+    store hoisted above the constant pair, and the constant pair sunk to just
+    before the call). Reading: on the bare-literal body the constant-vs-`old`
+    v0/v1 rotation is INSENSITIVE to statement order — every order that links
+    gives the same 9 — which is consistent with local-alloc scoring
+    POST-sched1 lifetimes. The register axis needs a priority dial, not a
+    reorder, and A195 is still the only known one (and it reverts the
+    schedule). Unchanged at 4/152.
+
+harvest_inventory_staleness_2026_09_15:
+  verdict: attempted
+  class: "cookbook C's harvest ranking has aged out"
+  date: 2026-09-15
+  note: >-
+    Seven of the seventeen parks named in cookbook C's 2026-08-24/08-25
+    rankings no longer have a `.c.wip` at all — `TurnSpyroTowardMoveTargetWithLean`
+    (listed there as "2/92, the closest thing on the board"), `func_8005FBB4`,
+    `func_80059474`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
+    `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
+    re-measure of the ten that remain, 2026-09-15: func_80038FC8 4/152,
+    func_80059594 4/180, func_80038C4C 6/66, BeginGemPickupOverlay 7/146,
+    func_8005FC6C 7/38, func_titlescreen_8007ABAC 7/2147,
+    func_8003A420 9/192, func_level_27_80086754 9/1697,
+    HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
+    is still func_titlescreen_8007ABAC (8,588 B at 7 insns), then
+    func_level_27_80086754 (6,788 B at 9).
+
+Gamestate0C_Draw_2026_09_15:
+  verdict: parked
+  class: "B-i held-base inversion — the A195 loop-depth ref dial does NOT reach a pointer local"
+  date: 2026-09-15
+  note: >-
+    1,132 B, reproduced at 4/283 (98.6%). The whole residue is four insns of
+    ADDRESSING FORM with no length or schedule cost: the original holds the
+    base (`lui v1,0x8007 / addiu v1,v1,-780 / sw zero,4(v1) / sw v0,0(v1)`)
+    where we emit the absolute pair (`lui at / sw zero,-776(at) / lui at /
+    sw v0,-780(at)`). The park had already closed the A200 barrier, the A214
+    second set and all three B16 volatile spellings. Closed a FOURTH axis this
+    session: **A195 / loop-depth ref-count inflation on a pointer local**,
+    which B-i rule 3 predicts should work ("reachable iff the pointer has
+    enough refs to win global allocation"). Twenty builds — nesting depth
+    0,1,2,3,4 x trailing-barrier kept/dropped x seed from the incomplete-array
+    alias / from `&g_pOtDepthBinHead0` — and EVERY depth >= 1 scores exactly 4,
+    byte-identical to the baseline. The dial saturates at depth 1 and never
+    moves the addressing form, because the pointer's def is a plain copy of a
+    constant address and is deleted before allocation, so the inflated
+    reg_n_refs never reaches local/global alloc at all. Corollary worth
+    keeping: A195 raises reg_n_refs only for a pseudo that SURVIVES to
+    life_analysis — it is not a lever on any pseudo whose def copy
+    propagation or reg_equiv substitution removes first.
+    One genuinely useful side result: `depth 0 / no trailing barrier` scores
+    270/283 (one insn short — the head store fills the load-delay slot after
+    `lw D_800777FC`) while `depth 1 / no trailing barrier` scores 4, i.e. a
+    dummy `do { } while (0);` wrapped AROUND the two stores preserves that
+    `nop` exactly as the trailing empty barrier does. The two are
+    interchangeable for the nop; neither buys the base.
+    STANDING OPEN QUESTION, now shared by three of the closest main parks
+    (this one, RespawnOrGameOver_Draw 5/361 and func_8002CCC8 31/217): a cse
+    ebb-break that emits NO NOTE_INSN_LOOP_BEG. Every barrier we have is a
+    dummy loop, and its notes are what perturb sched1.

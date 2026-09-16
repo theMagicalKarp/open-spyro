@@ -16,17 +16,17 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 2 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 3 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 4 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 5 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 6 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 7 | `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 57 | overlay (no -g3); segment 16.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 8 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 9 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 5 | `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 66 | overlay (no -g3); segment 47.3% matched; matched neighbor in segment; megafunction (all-or-nothing); hand-marked viable: >- |
+| 6 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 7 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 8 | `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 57 | overlay (no -g3); segment 16.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 11 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 13 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
 (38 viable candidates total; the full ranking is regenerable.)
 
@@ -35,7 +35,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
 | `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin (idx must take a2, the deref v0) |
-| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole (ALL axes now closed) + Rd re-classed and largely solved: 8/1610 open-tail vs 17/1610 Rd-closed |
+| `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged) |
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
