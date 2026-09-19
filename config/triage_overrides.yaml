@@ -4198,3 +4198,36 @@ Gamestate0C_Draw_2026_09_15:
     (this one, RespawnOrGameOver_Draw 5/361 and func_8002CCC8 31/217): a cse
     ebb-break that emits NO NOTE_INSN_LOOP_BEG. Every barrier we have is a
     dummy loop, and its notes are what perturb sched1.
+
+func_level_30_8007D938_2026_09_17:
+  verdict: parked
+  class: "first decode: links, 45-insn deficit, 53.4% masked-aligned; one ~500-insn hole after case 34"
+  date: 2026-09-17
+  note: >-
+    23,600 B level_30 actor-update megafunction, the megafunction vein's
+    designated start (viable entry 2026-09-14). Decoded from scratch this
+    session on the matched func_level_0_8007D9C8 scaffold (its types, anim
+    macros, CAM/SPY aggregates and callee decls all transfer verbatim; only
+    the per-class state blocks and the arms are new). Now compiles and LINKS
+    at orig 5,894 / mine 5,849 insns. Parked as a .c.wip; make check is green.
+    MEASUREMENT (use this, not `open-spyro diff` -- the linked diff is
+    length-changing and raises the zip() error): register-anchored masked
+    resync, 3,148 / 5,894 aligned (53.4%), 1,043 regions.
+    TWO THINGS SETTLED THAT COST THE SESSION AND SHOULD NEVER BE REDERIVED:
+    (1) The case list is NOT readable off m2c. m2c renders the compare tree
+    as three nested switches each with its own `default:`; those defaults are
+    the tree's interior nodes. Read the tree at 0x8007DA1C instead. The real
+    default target is .L8008351C, the loop-continue, so the source switch has
+    no `default:` label at all, and the generic-enemy arm is the explicit set
+    14/15/83..87 (exactly as in level_0). Full list in the .c.wip header.
+    (2) The source case ORDER is the ascending order of the arms' block
+    addresses. Writing the cases in m2c's presentation order scored 22.5%
+    masked / 469 regions; reordering them to block-address order scored
+    53.4% / 1,043 regions on the identical source text. That one edit is
+    worth more than any content fix on a megafunction -- see cookbook A241.
+    NEXT: the deficit is one contiguous ~500-insn hole at orig[1561:2054],
+    in the arms just after case 34. Everything else is <= 209 insns and looks
+    like ordinary content/regalloc work.
+    Open class carried over: s7 = &SPY is built as `&D_80078BBC - 0x164`
+    (R6 shared base) and our `extern SpyroObj` form materialises &SPY
+    directly.
