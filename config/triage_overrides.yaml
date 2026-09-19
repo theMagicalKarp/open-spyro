@@ -4231,3 +4231,35 @@ func_level_30_8007D938_2026_09_17:
     Open class carried over: s7 = &SPY is built as `&D_80078BBC - 0x164`
     (R6 shared base) and our `extern SpyroObj` form materialises &SPY
     directly.
+
+func_level_30_8007D938_2026_09_18:
+  verdict: parked
+  class: "register map (t1->t7 x81, s5->s6 x43, s1->s0 x43) — block order is now closed"
+  date: 2026-09-18
+  note: >-
+    23,600 B, the level_30 actor-update megafunction. Second pass. Masked
+    register-anchored resync 70.3% -> 79.3% (4,145 -> 4,673 of 5,894 aligned),
+    536 -> 620 regions, 45-insn deficit unchanged. Five edits, all read off the
+    asm rather than guessed. (1) A250 generalises INSIDE an arm: a goto-target
+    block, a shared tail behind a label and an early-exit `if` are each emitted
+    in source order, so each has a determinable position that the branch
+    targets name. The 14/15/83..87 arm's order is case 0, 1, 2, `enemy_grab`,
+    case 3, `default:/enemy_pose` — `enemy_grab` is a standalone labelled block
+    between case 2 and case 3 (reached by `j .L8007F7A8` at orig[1713]) and
+    `enemy_pose` is the LAST block of the inner switch; that one arm was two
+    ~490-insn holes. (2) case 310/311 writes its `st->life <= 0` exit as the
+    arm's LAST block (`if (st->life > 0) { body; break; }`), closing a 130-insn
+    hole. (3) `D_80076E48 = D_80076E60;` — both are `Xform` (int v[6]) and the
+    original copies them with move_by_pieces (a held base EACH side, then
+    lw;lw;sw;sw x3); six element assignments instead emit six absolute
+    lui;lw / lui;sw pairs into t1..t6. (4) At the two case-398 camera sites
+    bodyRotZ is the absolute `D_80078A66` form for BOTH the store and the
+    read-back, which is also why the read-back is a real `lbu` and not an
+    `andi` of the stored register; through `spy->` it goes via the held s7 base
+    and cse folds the reload. Per-site, every other bodyRotZ site stays on
+    `spy->`. Residue is now allocation only: nothing above 22 insns is left that
+    is not one of the three substitution classes above. Next move is the
+    -dl/-dg probe, not another decode. NOTE the positional partial score falls
+    1,136 -> 700 B: `open-spyro partial` zeroes credit after every shift point
+    and the running offset wanders +/-45 over ~300 small regions, so on this
+    function it measures alignment of positions, not closeness.
