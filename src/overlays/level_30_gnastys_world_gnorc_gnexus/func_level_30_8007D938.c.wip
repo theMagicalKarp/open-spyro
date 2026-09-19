@@ -1,16 +1,23 @@
-/* PARKED 2026-09-18 -- second pass on the level_30 actor-update megafunction.
+/* PARKED 2026-09-18-1 -- third pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles, links, 45-insn deficit (orig 5,894 / mine 5,849).
- * Register-anchored masked resync: 4,673 / 5,894 aligned (79.3%), 620 regions
- * (was 3,148 / 53.4% under the 2026-09-17 metric; re-measured on the same
- * script this session's baseline read 70.3% / 536 regions, so the session
- * delta is +9.0 points on a like-for-like metric).
+ * STATE: compiles, links, 42-insn deficit (orig 5,894 / mine 5,852).
+ * Register-anchored masked resync: 4,678 / 5,894 aligned (79.4%), 634 regions.
+ *
+ * METRIC CORRECTION (read this before comparing to the 2026-09-18 numbers).
+ * The resync script's register anchor was written as `\$(a[0-3]|v[01]|...)`,
+ * but this objdump prints registers WITHOUT the `$`, so the anchor never fired
+ * and the immediate mask then ate `a0`..`a3` (they are pure hex strings -- the
+ * exact trap cookbook S C warns about). Anchoring with an optional `$` drops
+ * the same tree from 79.3% to 78.4%: a-register rotations were being scored as
+ * matches. Every number in this header is on the FIXED metric, so the
+ * session delta is 78.4% -> 79.4% and is like-for-like.
+ *
  * Do NOT drive this off the linked diff -- it is length-changing, so
  * `open-spyro diff` raises a zip() error. Drive it off a compile-only
  * register-anchored resync (cookbook S D 2b): carve the ROM bytes with
  * `dd skip=$((0x8007D938-0x8007AA38)) count=23600` out of
  * disc/orig/overlays/level_30_*.ovl, objdump both sides, anchor register
- * names BEFORE masking immediates, then difflib-align.
+ * names (with an OPTIONAL `$`) BEFORE masking immediates, then difflib-align.
  *
  * WHAT IS ALREADY SETTLED (do not re-derive):
  *   - The full case list, recovered from the asm compare tree at 0x8007DA1C
@@ -25,59 +32,86 @@
  *     source order. Reordering the case blocks to it took the masked
  *     alignment from 22.5% to 53.4% in one edit -- do this FIRST on any
  *     megafunction, before chasing any content diff.
- *   - THE SAME RULE APPLIES *INSIDE* AN ARM, and that is what this session
- *     bought (cookbook A250b). A goto-target block, a shared tail behind a
- *     label, and an early-exit `if` are all emitted in SOURCE order too, so
- *     every one of them has a determinable position in the original. Read the
- *     positions straight off the branch targets, then write the source in that
- *     order. Three sites, +6.0 points of alignment and two ~130-insn holes
- *     closed:
- *       * 14/15/83..87 arm -- the original's block order is
- *         case 0, case 1, case 2, `enemy_grab`, case 3, `default:/enemy_pose`.
- *         `enemy_grab` is a standalone labelled block BETWEEN case 2 and
- *         case 3 (the original reaches it by `j .L8007F7A8` from case 1, at
- *         orig[1713]); `enemy_pose` is the LAST block in the switch, not a
- *         block sitting between case 0 and case 1.
+ *   - THE SAME RULE APPLIES *INSIDE* AN ARM (cookbook A250b): a goto-target
+ *     block, a shared tail behind a label and an early-exit `if` are all
+ *     emitted in SOURCE order, so each has a determinable position that is
+ *     readable straight off the branch targets. Sites closed so far:
+ *       * 14/15/83..87 arm -- block order is case 0, case 1, case 2,
+ *         `enemy_grab` (a standalone labelled block reached by `j .L8007F7A8`
+ *         from case 1), case 3, `default:/enemy_pose` (the LAST block).
  *       * case 310/311 -- the `st->life <= 0` early exit is the LAST block of
- *         the arm, not the first: the original writes the arm as
- *         `if (st->life > 0) { ...body...; break; }` with the life<=0 tail
- *         falling out below (`blez` forward to 0x800829D8).
- *   - A WHOLE-STRUCT ASSIGNMENT, NOT SIX ELEMENT STORES. `D_80076E48` and
- *     `D_80076E60` are both `Xform` (int v[6]); the original copies them with
- *     gcc's move_by_pieces -- `lui/addiu` a held base for EACH side, then
- *     `lw;lw;sw;sw` three times. Six `.v[i] = .v[i]` statements instead emit
- *     six absolute `lui;lw` / `lui;sw` pairs into t1..t6. Write `a = b;`.
- *     (Residue: we hold only the SOURCE base and leave the destination
- *     absolute, 24 insns vs the original's 13 -- the remaining knot in both
- *     copies of the case-398 camera block.)
+ *         the arm: `if (st->life > 0) { ...body...; break; }` with the tail
+ *         falling out below.
+ *       * case 331 (2026-09-18-1) -- AND THE INNER SWITCH HAS NO `default:`.
+ *         The dispatch is `beq 1 / slti 2 / beqz 0 / beq 2`, i.e. a tree over
+ *         {0,1,2} whose fall-out is the loop-continue; a real `default:` label
+ *         compiles to a 2-compare chain with the arm inline, which is what we
+ *         had. Writing it as explicit `case 0:` first (block order 0, 1, 2)
+ *         closed a 42-insn dislocation. Same arm: the drop test is two nested
+ *         `if`s (`if (drop > 0) { if (drop >= 0x200) continue; } else if
+ *         (SPY.posZ - height >= 0x200) break;`) -- a single `||` of two
+ *         ranges is folded to an unsigned `(unsigned)(drop-1) < 511` test --
+ *         and the cooldown compare is `(unsigned char)tick < 0x30` (orig has
+ *         `sltiu`, a plain `int` compare gives `slti`).
+ *   - A WHOLE-AGGREGATE ASSIGNMENT, NOT ELEMENT STORES, AT BOTH SIZE CLASSES.
+ *     `D_80076E48 = D_80076E60;` (Xform, `int v[6]`) is gcc's move_by_pieces:
+ *     a held base per side, then `lw;lw;sw;sw` x3. AND (2026-09-18-1) the
+ *     follower arm's 88-byte Actor take-over is `*actor = *parent;` -- 88 B is
+ *     over MOVE_RATIO, so gcc emits mips.c's block_move_loop: `move a3,dst;
+ *     move a2,src; addiu t0,a2,80;` then a 4-load/4-store/`bne` loop and two
+ *     leftover words. A hand-rolled 4-word do/while gives interleaved givs and
+ *     extra base pointers no matter how the temps are spelled (plain, one
+ *     hoisted temp, four hoisted temps all measured); the struct assignment is
+ *     18 insns exact on the first build.
  *   - `spy->bodyRotZ` vs `D_80078A66` IS A PER-SITE CHOICE AND IT MATTERS
  *     (cookbook A240 / B16). At the two case-398 camera sites the original
  *     uses the ABSOLUTE form for both the store and the read-back, which is
  *     also why the read-back is a genuine `lbu` and not an `andi` of the
- *     stored register. Written through the `spy` pointer it goes through the
- *     held s7 base and cse folds the reload. Every other bodyRotZ site in the
- *     function stays on `spy->`.
+ *     stored register. Every other bodyRotZ site stays on `spy->`.
  *   - `s7` is `&SPY` built as `&D_80078BBC - 0x164`, i.e. the balloon-stage
  *     counter at 0x80078BBC and the Spyro object share one base register.
  *     The natural `extern SpyroObj` form materialises &SPY directly instead;
  *     this is the R6 shared-base class and is still open here.
- *   - The `s5 = 1` / `fp = 2` preamble constants are carried as the `one` /
- *     `two` locals; they have not been shown to be load-bearing yet.
  *
- * THE RESIDUE IS NOW A REGISTER MAP, NOT BLOCK ORDER. Over the length-exact
- * replace regions the whole-function substitution census is:
- *     t1 -> t7  81 sites     s5 -> s6  43     s1 -> s0  43
- *     s1 -> s2  31           s0 -> s1  19     v0 -> v1  18
- * t1->t7 is one decision replicated: the original holds `&D_8006CC78` in t1
- * across the animation-table reads (see 0x800832A8 ff.) and we land it in t7.
- * s5->s6 is the `1` constant carrier (A133: the original parks its repeated
- * store literals in the callee-saved set). Nothing above 22 insns is left that
- * is NOT one of these -- so the next session's work is allocation, and the
- * -dl/-dg probe (cookbook S D 2c) is the right first move, not another decode.
+ * THE RESIDUE IS A REGISTER MAP, AND THE ALLOCATION ARITHMETIC IS NOW DONE.
+ * Whole-function register census (orig vs ours), which is what the 634 regions
+ * are made of -- most regions are 1-2 insns differing only in a register:
+ *     s5  58/5     s6  15/60     s8  33/19     t1 135/179     t2/t3/t4 0/16
+ * Orig parks the constant **1** in `s5` (56 uses) and the constant **2** in
+ * `s8/fp` (32 uses). We park 1 in `s6` and have NO carrier for 2 at all -- it
+ * is re-materialised as `li t1,2` at ~16 sites, each costing an insn and
+ * breaking the surrounding alignment (e.g. the five `D_800758D1..D5 = 2`
+ * stores at orig[3664:3673]).
+ *   - A USER VARIABLE DOES NOT BUY THE CARRIER. Spelling those five stores
+ *     `D_800758D1 = two;` off the existing `two` local produces a
+ *     BYTE-IDENTICAL object: cse folds the copy back to the literal
+ *     (cookbook A133 / A219's trap). `one`/`two` are dead stores today and can
+ *     be deleted; they are NOT what puts 1 in a register -- gcc's own
+ *     loop-invariant hoist is.
+ *   - THE FLIP IS ONE REF-COUNT AWAY, measured off `-dl`/`-dg` (cookbook
+ *     S D 2c). Our callee-saved tail is allocated in the order
+ *     [3316 -> s5, 3537 -> s6, 74 -> s7, 1052 -> fp]:
+ *         3316  R=6   L=119   floor_log2(6)*6/119  = 0.1008   (= `&p->posX`,
+ *                                                 a plus-12 address pseudo)
+ *         3537  R=122 L=9442  floor_log2(122)*122/9442 = 0.0775  (const 1)
+ *         74    R=87  L=9444  = 0.0553   (the SPY pointer, already s7)
+ *         1052  R=33  L=4716  = 0.0350
+ *     `allocno_compare` breaks ties toward the LOWER allocno, and 3316 < 3537,
+ *     so 3537 must beat 3316 outright. Two reachable dials: drop 3316 to R<=4
+ *     (2*4/119 = 0.0672 < 0.0775) by not carrying `&p->posX` in a local across
+ *     that arm's calls, or lift the const-1 carrier to R>=140
+ *     (7*140/9442 = 0.1038). Note floor_log2 is a step function: 122 -> 128
+ *     alone is not enough (0.0949).
+ *     The missing const-2 carrier is a separate question and is the bigger
+ *     prize (16 `li t1,2` sites + the s8 map).
  *
  * LARGEST REMAINING REGIONS (orig insn index, from the resync):
- *   [5735:5757] 22  [5759:5779] 20  [296:296] +22  [4291:4309] 18
- *   [3802:3819] 17  [5446:5459] 13/24  [5567:5580] 13/24
+ *   [5724:5801] the case-398 tail: our stack-temp offsets and the order of the
+ *       shake-table fills differ (sp+184.. vs sp+304..) -- a frame-layout /
+ *       statement-order knot, the biggest single structural item left
+ *   [5443:5459] + [5564:5580] the two Xform copies: we hold only the SOURCE
+ *       base and leave the destination absolute, 12 insns vs the original's 16
+ *   [4291:4309] 18   [3802:3819] 17   [2760:2776] 16 (delete)
  */
 /* func_level_30_8007D938 -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -1127,8 +1161,6 @@ void func_level_30_8007D938(void) {
   Actor **actorList;
   Actor *actor;
   SpyroObj *spy;
-  int one;
-  int two;
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -1159,8 +1191,6 @@ void func_level_30_8007D938(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    one = 1;
-    two = 2;
     spy = (SpyroObj *)((char *)&D_80078BBC - 0x164);
 
     if (actor->unk48 >= 0x80) {
@@ -1228,9 +1258,6 @@ void func_level_30_8007D938(void) {
 
         if (st->active != 0 &&
             (parent->unk48 >= 0x80 || (parent->unk53 & 0x80))) {
-          Actor *src;
-          Actor *dst;
-          Actor *end;
           Actor *scan;
           int self;
 
@@ -1241,23 +1268,8 @@ void func_level_30_8007D938(void) {
             func_80052568(parent);
           }
 
-          /* Take the parent's whole record over, four words at a time. */
-          dst = actor;
-          src = parent;
-          end = (Actor *)((char *)src + 0x50);
-          do {
-            int w3 = ((int *)src)[3];
-
-            ((int *)dst)[0] = ((int *)src)[0];
-            ((int *)dst)[1] = ((int *)src)[1];
-            ((int *)dst)[2] = ((int *)src)[2];
-            ((int *)dst)[3] = w3;
-            src = (Actor *)((char *)src + 0x10);
-            dst = (Actor *)((char *)dst + 0x10);
-          } while (src != end);
-
-          ((int *)dst)[0] = ((int *)src)[0];
-          ((int *)dst)[1] = ((int *)src)[1];
+          /* Take the parent's whole record over (gcc's block_move_loop). */
+          *actor = *parent;
           func_800526A8(actor);
 
           actor->unk51 = 1;
@@ -3328,39 +3340,50 @@ void func_level_30_8007D938(void) {
     /* Whirlwind pad: a short spin-up before the ride, then a cooldown. */
     case 331:
       switch (actor->unk48) {
-      case 1:
-        if (func_80017990(&actor->posX, &spy->posX) < 0x380) {
-          int height = actor->posZ - actor->unk38;
-          int drop = height - SPY.posZ;
-
-          if ((drop > 0 && drop < 0x200) ||
-              (drop <= 0 && (SPY.posZ - height) < 0x200)) {
-            func_80059474(actor, actor->unk46);
-            actor->unk48 = 2;
-            actor->unk3C = 1;
-            actor->unk49 = 0;
-          }
+      case 0:
+        if (func_80017990(&actor->posX, &SPY.posX) < 0xA01) {
+          break;
         }
-        break;
+        actor->unk48 = 1;
+        continue;
+
+      case 1: {
+        int height;
+        int drop;
+
+        if (func_80017990(&actor->posX, &spy->posX) >= 0x380) {
+          break;
+        }
+
+        height = actor->posZ - actor->unk38;
+        drop = height - SPY.posZ;
+
+        if (drop > 0) {
+          if (drop >= 0x200) {
+            continue;
+          }
+        } else if (SPY.posZ - height >= 0x200) {
+          break;
+        }
+
+        func_80059474(actor, actor->unk46);
+        actor->unk48 = 2;
+        actor->unk3C = 1;
+        actor->unk49 = 0;
+        continue;
+      }
 
       case 2: {
         int tick = actor->unk49 + D_800756CC;
 
         actor->unk49 = tick;
-        if ((tick & 0xFF) >= 0x30) {
-          actor->unk48 = 0;
-          actor->unk3C = 0;
+        if ((unsigned char)tick < 0x30) {
+          break;
         }
-        break;
+        actor->unk48 = 0;
+        actor->unk3C = 0;
+        continue;
       }
-
-      default:
-        if (actor->unk48 == 0) {
-          if (func_80017990(&actor->posX, &SPY.posX) >= 0xA01) {
-            actor->unk48 = 1;
-          }
-        }
-        break;
       }
       break;
 

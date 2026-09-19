@@ -4263,3 +4263,99 @@ func_level_30_8007D938_2026_09_18:
     1,136 -> 700 B: `open-spyro partial` zeroes credit after every shift point
     and the running offset wanders +/-45 over ~300 small regions, so on this
     function it measures alignment of positions, not closeness.
+
+func_level_30_8007D938_2026_09_18_1:
+  verdict: parked
+  class: "register map: const-1 carrier is one ref-count off s5, and there is no const-2 carrier at all"
+  date: 2026-09-18
+  note: >-
+    23,600 B, the level_30 actor-update megafunction. Third pass, +1.0 point of
+    alignment and 45 -> 42 insn deficit, but the session's real product is that
+    the residue is now arithmetic rather than a census. FIRST, a metric
+    correction that changes every earlier number here: the resync script's
+    register anchor matched `\$(a[0-3]|v[01]|...)`, and this objdump prints
+    registers WITHOUT the `$`, so the anchor never fired and the immediate mask
+    then ate a0..a3 (cookbook S C names exactly this trap). With an optional
+    `$` the 2026-09-18 tree scores 78.4%, not 79.3% — a-register rotations were
+    being counted as matches. On the fixed metric this session is 78.4% ->
+    79.4% (4,678 / 5,894), 634 regions. TWO structural fixes, both read off the
+    asm. (1) case 331's inner switch has NO `default:` — its dispatch is
+    `beq 1 / slti 2 / beqz 0 / beq 2`, a tree over {0,1,2} whose fall-out is the
+    loop-continue, whereas a real `default:` label compiles to a 2-compare chain
+    with the arm inline. Writing it as an explicit `case 0:` first (block order
+    0, 1, 2) closed a 42-insn dislocation; the same arm also wanted two nested
+    `if`s for the drop test (one `||` of two ranges folds to an unsigned
+    `(unsigned)(drop-1) < 511`) and `(unsigned char)tick < 0x30` for the
+    cooldown compare (a plain int compare gives `slti`, the original has
+    `sltiu`). (2) The follower arm's 88-byte Actor take-over is `*actor =
+    *parent;` — over MOVE_RATIO, so gcc emits mips.c's block_move_loop
+    (4 loads, 4 stores, `bne`, two leftover words) and it is 18 insns exact on
+    the first build. A hand-rolled 4-word do/while gives interleaved givs and
+    extra base pointers in every spelling measured (plain, one hoisted temp,
+    four hoisted temps). This is the same "whole aggregate, not elements" rule
+    the Xform copies wanted, at the larger size class. THE ALLOCATION
+    ARITHMETIC, off -dl/-dg (cookbook S D 2c): the original parks the constant
+    1 in s5 (56 uses) and the constant 2 in s8/fp (32 uses); we park 1 in s6 and
+    have no carrier for 2 at all (~16 `li t1,2`, one extra insn each). Our
+    callee-saved tail allocates [3316 -> s5, 3537 -> s6, 74 -> s7, 1052 -> fp]
+    with priorities 0.1008 / 0.0775 / 0.0553 / 0.0350, where 3316 is a
+    `&p->posX` plus-12 address pseudo (R=6, L=119) and 3537 is the const-1
+    carrier (R=122, L=9442). allocno_compare breaks ties toward the LOWER
+    allocno and 3316 < 3537, so the const must win outright: either drop 3316 to
+    R<=4 (0.0672) by not carrying that address in a local across the arm's
+    calls, or lift the const carrier to R>=140 (0.1038; 128 is not enough at
+    0.0949, floor_log2 being a step function). RULED OUT this session: spelling
+    the literal stores off a `two` local is BYTE-IDENTICAL — cse folds the copy
+    back (A133 / A219's trap) — and the pre-existing `one`/`two` locals were
+    dead stores contributing nothing (deleted, object unchanged). Biggest
+    structural item left is the case-398 tail at orig[5724:5801], where our
+    stack-temp offsets and shake-table fill order differ.
+
+func_level_5_8007B68C_2026_09_18_1:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole — the A232 BARRIER axis is now closed on the LINKED metric too"
+  date: 2026-09-18
+  note: >-
+    Head of the x5 flight-results clone family (32,200 B), reproduced at 8/1610
+    (99.5%): R5 (5 insns, the `ori a1,a1,0x3e00` sinking below the two `lw`s)
+    plus Rd (3, the tail store order). One axis re-measured, 22 builds, no
+    improvement — but it is the axis cookbook S C's own re-rank rule points at.
+    The 2026-08-28 note recorded the A232 barrier over the post-func_8005FDD8
+    block as "the barrier DOES put `ori a1` byte-exact, but the 9-insn block it
+    creates re-tiles: best 12 vs 6" — scored on the MASKED shape diff, never on
+    the linked one. Re-ranked on the LINKED diff, all 21 contiguous barrier
+    placements over the block's six statements (every [lo:hi) subrange) are
+    13, 18 or 19 against the baseline's 8, except three that merely tie at 8
+    ([4:5], [4:6], [5:6] — barriers below the last store, i.e. plateau states).
+    So unlike the statement-order axis, where the masked metric hid a real 8..18
+    spread, here the masked metric UNDERSTATED how bad the barrier is: it is not
+    "6 vs 12", it is "8 vs 13+". Both directions of C's warning are now on
+    record for this function. R5 is closed on statement order (2026-09-15),
+    volatility (2026-09-09), constant/load carrier spelling (2026-09-15) and now
+    barriers on the linked metric. Do not re-open it from source; the park's own
+    verdict stands — this function is worth another session only when R5 has a
+    new TOOL, and the next probe belongs at a -dR sched2 dump of that block.
+
+Gamestate0C_Draw_2026_09_18_1:
+  verdict: parked
+  class: "held-base OT-bin init: the pointer carrier cannot win a hard register, so reload re-substitutes the constant"
+  date: 2026-09-18
+  note: >-
+    1,132 B, reproduced at 4/283 (98.6%), length-exact and linking. The only
+    residue is the addressing FORM of the two-word OT bin-head init: the
+    original holds `la v1,sym-780` and stores 4(v1)/0(v1); we emit the absolute
+    `lui at; sw %lo` pair twice. One new escape measured and closed this
+    session (8 builds): give the pointer local a THIRD reference by passing it
+    to the later `FillWord(g_apOtDepthBinBlock, 0, 0x900)` call, so it is no
+    longer a 2-ref pseudo that `update_equiv_regs` can delete — with and
+    without an ebb-breaking `do {} while (0)` between the init and the stores,
+    and with the decl at both positions. Every `FillWord(p, ...)` variant is
+    LENGTH-LONG (`ld: cannot move location counter backwards`); every variant
+    without it folds back to the checked-in 4/283. So the third-ref dial is not
+    free here, which is the same wall the 2026-09-10 A214 second-set attempt
+    hit from the other side. The standing open question is unchanged and is
+    shared with RespawnOrGameOver_Draw (5/361) and func_8002CCC8 (31/217): a
+    cse ebb-break that emits no NOTE_INSN_LOOP_BEG, or any other way to make a
+    constant-valued pointer pseudo win a hard register so reload keeps its init.
+    Those three are 3,444 B behind ONE mechanism and are the best class-level
+    target left in the main harvest inventory.
