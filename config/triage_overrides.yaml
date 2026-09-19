@@ -4263,3 +4263,50 @@ func_level_30_8007D938_2026_09_18:
     1,136 -> 700 B: `open-spyro partial` zeroes credit after every shift point
     and the running offset wanders +/-45 over ~300 small regions, so on this
     function it measures alignment of positions, not closeness.
+
+func_level_30_8007D938_2026_09_18_1:
+  verdict: parked
+  class: "register map: const-1 carrier is one ref-count off s5, and there is no const-2 carrier at all"
+  date: 2026-09-18
+  note: >-
+    23,600 B, the level_30 actor-update megafunction. Third pass, +1.0 point of
+    alignment and 45 -> 42 insn deficit, but the session's real product is that
+    the residue is now arithmetic rather than a census. FIRST, a metric
+    correction that changes every earlier number here: the resync script's
+    register anchor matched `\$(a[0-3]|v[01]|...)`, and this objdump prints
+    registers WITHOUT the `$`, so the anchor never fired and the immediate mask
+    then ate a0..a3 (cookbook S C names exactly this trap). With an optional
+    `$` the 2026-09-18 tree scores 78.4%, not 79.3% — a-register rotations were
+    being counted as matches. On the fixed metric this session is 78.4% ->
+    79.4% (4,678 / 5,894), 634 regions. TWO structural fixes, both read off the
+    asm. (1) case 331's inner switch has NO `default:` — its dispatch is
+    `beq 1 / slti 2 / beqz 0 / beq 2`, a tree over {0,1,2} whose fall-out is the
+    loop-continue, whereas a real `default:` label compiles to a 2-compare chain
+    with the arm inline. Writing it as an explicit `case 0:` first (block order
+    0, 1, 2) closed a 42-insn dislocation; the same arm also wanted two nested
+    `if`s for the drop test (one `||` of two ranges folds to an unsigned
+    `(unsigned)(drop-1) < 511`) and `(unsigned char)tick < 0x30` for the
+    cooldown compare (a plain int compare gives `slti`, the original has
+    `sltiu`). (2) The follower arm's 88-byte Actor take-over is `*actor =
+    *parent;` — over MOVE_RATIO, so gcc emits mips.c's block_move_loop
+    (4 loads, 4 stores, `bne`, two leftover words) and it is 18 insns exact on
+    the first build. A hand-rolled 4-word do/while gives interleaved givs and
+    extra base pointers in every spelling measured (plain, one hoisted temp,
+    four hoisted temps). This is the same "whole aggregate, not elements" rule
+    the Xform copies wanted, at the larger size class. THE ALLOCATION
+    ARITHMETIC, off -dl/-dg (cookbook S D 2c): the original parks the constant
+    1 in s5 (56 uses) and the constant 2 in s8/fp (32 uses); we park 1 in s6 and
+    have no carrier for 2 at all (~16 `li t1,2`, one extra insn each). Our
+    callee-saved tail allocates [3316 -> s5, 3537 -> s6, 74 -> s7, 1052 -> fp]
+    with priorities 0.1008 / 0.0775 / 0.0553 / 0.0350, where 3316 is a
+    `&p->posX` plus-12 address pseudo (R=6, L=119) and 3537 is the const-1
+    carrier (R=122, L=9442). allocno_compare breaks ties toward the LOWER
+    allocno and 3316 < 3537, so the const must win outright: either drop 3316 to
+    R<=4 (0.0672) by not carrying that address in a local across the arm's
+    calls, or lift the const carrier to R>=140 (0.1038; 128 is not enough at
+    0.0949, floor_log2 being a step function). RULED OUT this session: spelling
+    the literal stores off a `two` local is BYTE-IDENTICAL — cse folds the copy
+    back (A133 / A219's trap) — and the pre-existing `one`/`two` locals were
+    dead stores contributing nothing (deleted, object unchanged). Biggest
+    structural item left is the case-398 tail at orig[5724:5801], where our
+    stack-temp offsets and shake-table fill order differ.
