@@ -1,9 +1,16 @@
-/* PARKED 2026-09-17 -- first decode of the level_30 actor-update megafunction.
+/* PARKED 2026-09-18 -- second pass on the level_30 actor-update megafunction.
  *
  * STATE: compiles, links, 45-insn deficit (orig 5,894 / mine 5,849).
- * Masked register-anchored resync: 3,148 / 5,894 aligned (53.4%), 1,043
- * regions. Do NOT drive this off the linked diff -- it is length-changing, so
- * `open-spyro diff` raises a zip() error; use the resync in the ledger entry.
+ * Register-anchored masked resync: 4,673 / 5,894 aligned (79.3%), 620 regions
+ * (was 3,148 / 53.4% under the 2026-09-17 metric; re-measured on the same
+ * script this session's baseline read 70.3% / 536 regions, so the session
+ * delta is +9.0 points on a like-for-like metric).
+ * Do NOT drive this off the linked diff -- it is length-changing, so
+ * `open-spyro diff` raises a zip() error. Drive it off a compile-only
+ * register-anchored resync (cookbook S D 2b): carve the ROM bytes with
+ * `dd skip=$((0x8007D938-0x8007AA38)) count=23600` out of
+ * disc/orig/overlays/level_30_*.ovl, objdump both sides, anchor register
+ * names BEFORE masking immediates, then difflib-align.
  *
  * WHAT IS ALREADY SETTLED (do not re-derive):
  *   - The full case list, recovered from the asm compare tree at 0x8007DA1C
@@ -18,6 +25,38 @@
  *     source order. Reordering the case blocks to it took the masked
  *     alignment from 22.5% to 53.4% in one edit -- do this FIRST on any
  *     megafunction, before chasing any content diff.
+ *   - THE SAME RULE APPLIES *INSIDE* AN ARM, and that is what this session
+ *     bought (cookbook A250b). A goto-target block, a shared tail behind a
+ *     label, and an early-exit `if` are all emitted in SOURCE order too, so
+ *     every one of them has a determinable position in the original. Read the
+ *     positions straight off the branch targets, then write the source in that
+ *     order. Three sites, +6.0 points of alignment and two ~130-insn holes
+ *     closed:
+ *       * 14/15/83..87 arm -- the original's block order is
+ *         case 0, case 1, case 2, `enemy_grab`, case 3, `default:/enemy_pose`.
+ *         `enemy_grab` is a standalone labelled block BETWEEN case 2 and
+ *         case 3 (the original reaches it by `j .L8007F7A8` from case 1, at
+ *         orig[1713]); `enemy_pose` is the LAST block in the switch, not a
+ *         block sitting between case 0 and case 1.
+ *       * case 310/311 -- the `st->life <= 0` early exit is the LAST block of
+ *         the arm, not the first: the original writes the arm as
+ *         `if (st->life > 0) { ...body...; break; }` with the life<=0 tail
+ *         falling out below (`blez` forward to 0x800829D8).
+ *   - A WHOLE-STRUCT ASSIGNMENT, NOT SIX ELEMENT STORES. `D_80076E48` and
+ *     `D_80076E60` are both `Xform` (int v[6]); the original copies them with
+ *     gcc's move_by_pieces -- `lui/addiu` a held base for EACH side, then
+ *     `lw;lw;sw;sw` three times. Six `.v[i] = .v[i]` statements instead emit
+ *     six absolute `lui;lw` / `lui;sw` pairs into t1..t6. Write `a = b;`.
+ *     (Residue: we hold only the SOURCE base and leave the destination
+ *     absolute, 24 insns vs the original's 13 -- the remaining knot in both
+ *     copies of the case-398 camera block.)
+ *   - `spy->bodyRotZ` vs `D_80078A66` IS A PER-SITE CHOICE AND IT MATTERS
+ *     (cookbook A240 / B16). At the two case-398 camera sites the original
+ *     uses the ABSOLUTE form for both the store and the read-back, which is
+ *     also why the read-back is a genuine `lbu` and not an `andi` of the
+ *     stored register. Written through the `spy` pointer it goes through the
+ *     held s7 base and cse folds the reload. Every other bodyRotZ site in the
+ *     function stays on `spy->`.
  *   - `s7` is `&SPY` built as `&D_80078BBC - 0x164`, i.e. the balloon-stage
  *     counter at 0x80078BBC and the Spyro object share one base register.
  *     The natural `extern SpyroObj` form materialises &SPY directly instead;
@@ -25,12 +64,20 @@
  *   - The `s5 = 1` / `fp = 2` preamble constants are carried as the `one` /
  *     `two` locals; they have not been shown to be load-bearing yet.
  *
+ * THE RESIDUE IS NOW A REGISTER MAP, NOT BLOCK ORDER. Over the length-exact
+ * replace regions the whole-function substitution census is:
+ *     t1 -> t7  81 sites     s5 -> s6  43     s1 -> s0  43
+ *     s1 -> s2  31           s0 -> s1  19     v0 -> v1  18
+ * t1->t7 is one decision replicated: the original holds `&D_8006CC78` in t1
+ * across the animation-table reads (see 0x800832A8 ff.) and we land it in t7.
+ * s5->s6 is the `1` constant carrier (A133: the original parks its repeated
+ * store literals in the callee-saved set). Nothing above 22 insns is left that
+ * is NOT one of these -- so the next session's work is allocation, and the
+ * -dl/-dg probe (cookbook S D 2c) is the right first move, not another decode.
+ *
  * LARGEST REMAINING REGIONS (orig insn index, from the resync):
- *   [1845:2054] 209   [604:765] 161   [1698:1830] 132   [5026:5157] 131
- *   [5488:5610] 122   [1605:1696]  91   [1561:1603] 42 (pure deficit)
- * The 1561..2054 cluster is one contiguous ~500-insn hole in the arms that
- * follow case 34 -- that is where the deficit lives and where the next
- * session should start.
+ *   [5735:5757] 22  [5759:5779] 20  [296:296] +22  [4291:4309] 18
+ *   [3802:3819] 17  [5446:5459] 13/24  [5567:5580] 13/24
  */
 /* func_level_30_8007D938 -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -1048,6 +1095,7 @@ extern int D_80078B68;
 extern int D_80078B6C;
 extern int D_80078B70;
 extern int D_80078B74; /* camera yaw accumulator */
+extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
 extern int D_80078BBC; /* balloon sequence stage (== SPY.u164) */
 extern int D_80078BFC;
 
@@ -1739,64 +1787,6 @@ void func_level_30_8007D938(void) {
           actor->unk49 = 1;
           goto enemy_pose;
 
-        default:
-        enemy_pose:
-          if (actor->unk49 < 3) {
-            if (actor->type == 14) {
-              actor->unk44 =
-                  ((short)D_8006CC78[st->spin] << 16 >> 25) + st->lean;
-              actor->unk45 =
-                  ((short)D_8006CBF8[st->spin] << 16 >> 25) + st->roll;
-              st->spin += D_800756CC * 2;
-            } else if (actor->type == 15) {
-              actor->unk46 += 8;
-              actor->unk45 -= 6;
-            } else {
-              actor->unk44 =
-                  ((short)D_8006CC78[st->spin] << 16 >> 23) + st->lean;
-              actor->unk45 =
-                  ((short)D_8006CBF8[st->spin] << 16 >> 23) + st->roll;
-              st->spin += D_800756CC * 2;
-            }
-          }
-
-          if ((st->timer >= 0x21 && toSpyro < 0x200 &&
-               (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
-              (actor->unk49 == 3 && st->timer >= 0x41)) {
-            if (D_80075898 != 0) {
-              BalloonState *bal = D_80075898->state;
-
-              if (bal->gnorc == actor) {
-                bal->gnorc = 0;
-              }
-            }
-
-            if (actor->type == 14) {
-              func_80055A78(D_800761D4[0], actor, 0x10, 0);
-              func_800529E4(actor, 4);
-              D_800758E4(0x10, 0x46, &actor->posX, (int *)8);
-              D_800758E4(0x10, 0x46, &actor->posX, (int *)0x10);
-              if (D_8007582C < 0x63) {
-                D_8007582C += 1;
-              }
-              func_8003B854(0, actor);
-              func_80052568(actor);
-              continue;
-            }
-
-            if (actor->type == 15) {
-              func_80055A78(D_800761D4[0], actor, 0x10, 0);
-              D_800758E8 += 1;
-              func_80052568(actor);
-            } else {
-            enemy_pop:
-              func_8003B9D4(actor);
-              func_80052568(actor);
-              continue;
-            }
-          }
-          break;
-
         case 1: {
           int near;
 
@@ -1852,22 +1842,7 @@ void func_level_30_8007D938(void) {
 
             if (dz < 0x200 && D_80075898 != 0 && D_80078AF4 == 0 &&
                 func_80033E40(&D_80075898->posX, &actor->posX) != 0) {
-            enemy_grab: {
-              BalloonState *bal = D_80075898->state;
-
-              if (bal->gnorc == 0) {
-                if (func_80056DC4(D_80075898,
-                                  D_80076378[D_80075898->type]->m_Sounds[0]) ==
-                    0) {
-                  D_800761DC = 1;
-                  D_800761EA = 0x2000;
-                  D_800761E8 = 0x2000;
-                  func_8003851C(D_80075898, 0, 0);
-                }
-                D_80075898->unk49 = 4;
-                bal->gnorc = actor;
-              }
-            }
+              goto enemy_grab;
             }
           }
           goto enemy_pose;
@@ -1980,7 +1955,26 @@ void func_level_30_8007D938(void) {
             }
           }
           goto enemy_pose;
+
         }
+
+        enemy_grab: {
+          BalloonState *bal = D_80075898->state;
+
+          if (bal->gnorc == 0) {
+            if (func_80056DC4(D_80075898,
+                              D_80076378[D_80075898->type]->m_Sounds[0]) ==
+                0) {
+              D_800761DC = 1;
+              D_800761EA = 0x2000;
+              D_800761E8 = 0x2000;
+              func_8003851C(D_80075898, 0, 0);
+            }
+            D_80075898->unk49 = 4;
+            bal->gnorc = actor;
+          }
+        }
+          goto enemy_pose;
 
         case 3:
           /* Carried by the balloonist: pulled toward Spyro, then dropped. */
@@ -2004,6 +1998,64 @@ void func_level_30_8007D938(void) {
           actor->unk45 += st->roll - 7;
           actor->unk46 += st->spin - 7;
           goto enemy_pose;
+
+        default:
+        enemy_pose:
+          if (actor->unk49 < 3) {
+            if (actor->type == 14) {
+              actor->unk44 =
+                  ((short)D_8006CC78[st->spin] << 16 >> 25) + st->lean;
+              actor->unk45 =
+                  ((short)D_8006CBF8[st->spin] << 16 >> 25) + st->roll;
+              st->spin += D_800756CC * 2;
+            } else if (actor->type == 15) {
+              actor->unk46 += 8;
+              actor->unk45 -= 6;
+            } else {
+              actor->unk44 =
+                  ((short)D_8006CC78[st->spin] << 16 >> 23) + st->lean;
+              actor->unk45 =
+                  ((short)D_8006CBF8[st->spin] << 16 >> 23) + st->roll;
+              st->spin += D_800756CC * 2;
+            }
+          }
+
+          if ((st->timer >= 0x21 && toSpyro < 0x200 &&
+               (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
+              (actor->unk49 == 3 && st->timer >= 0x41)) {
+            if (D_80075898 != 0) {
+              BalloonState *bal = D_80075898->state;
+
+              if (bal->gnorc == actor) {
+                bal->gnorc = 0;
+              }
+            }
+
+            if (actor->type == 14) {
+              func_80055A78(D_800761D4[0], actor, 0x10, 0);
+              func_800529E4(actor, 4);
+              D_800758E4(0x10, 0x46, &actor->posX, (int *)8);
+              D_800758E4(0x10, 0x46, &actor->posX, (int *)0x10);
+              if (D_8007582C < 0x63) {
+                D_8007582C += 1;
+              }
+              func_8003B854(0, actor);
+              func_80052568(actor);
+              continue;
+            }
+
+            if (actor->type == 15) {
+              func_80055A78(D_800761D4[0], actor, 0x10, 0);
+              D_800758E8 += 1;
+              func_80052568(actor);
+            } else {
+            enemy_pop:
+              func_8003B9D4(actor);
+              func_80052568(actor);
+              continue;
+            }
+          }
+          break;
         }
       }
 
@@ -3183,62 +3235,62 @@ void func_level_30_8007D938(void) {
     case 311: {
       ShardState *st = actor->state;
 
-      if (st->life <= 0) {
-        if (actor->unk51 != 0) {
-          D_800758E4(8, 0x46, &actor->posX, (int *)0x10);
+      if (st->life > 0) {
+        if (actor->unk51 == 0) {
+          func_80052568(actor);
+          continue;
         }
-        func_80052568(actor);
-        continue;
-      }
 
-      if (actor->unk51 == 0) {
-        func_80052568(actor);
-        continue;
-      }
+        if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+          int along;
+          int push;
 
-      if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
-        int along;
-        int push;
+          func_80017330(&D_80077368, 0x1000);
+          along = (st->vel[0] * D_80077368) + (st->vel[1] * D_8007736C) +
+                  (st->vel[2] * D_80077370);
+          push = along >> 11;
 
-        func_80017330(&D_80077368, 0x1000);
-        along = (st->vel[0] * D_80077368) + (st->vel[1] * D_8007736C) +
-                (st->vel[2] * D_80077370);
-        push = along >> 11;
-
-        if (push < 0) {
-          func_800175B8(&D_80077368, 0x1000, (along >> 13) - push);
-          st->vel[0] += D_80077368;
-          st->vel[1] += D_8007736C;
-          st->vel[2] += D_80077370;
+          if (push < 0) {
+            func_800175B8(&D_80077368, 0x1000, (along >> 13) - push);
+            st->vel[0] += D_80077368;
+            st->vel[1] += D_8007736C;
+            st->vel[2] += D_80077370;
+          }
         }
+
+        actor->posX += st->vel[0];
+        actor->posY += st->vel[1];
+        st->vel[2] -= 6;
+        if (st->vel[2] < -0x80) {
+          st->vel[2] = -0x80;
+        }
+        actor->posZ += st->vel[2];
+        actor->unk44 += st->spin[0];
+        {
+          int i = 0;
+
+          actor->unk45 += st->spin[1];
+          actor->unk46 += st->spin[2];
+
+          do {
+            i += 1;
+            svH[0] = (func_8006272C() & 0xFE) - 0x7F;
+            svH[1] = (func_8006272C() & 0xFE) - 0x7F;
+            svH[2] = (func_8006272C() & 0xFE) - 0x40;
+            func_80017758(svH, svH, &actor->posX);
+            D_800758E4(1, 0x42, svH, (int *)1);
+          } while (i < 3);
+        }
+
+        ((ShardState *)actor->state)->life -= 1;
+        break;
       }
 
-      actor->posX += st->vel[0];
-      actor->posY += st->vel[1];
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
+      if (actor->unk51 != 0) {
+        D_800758E4(8, 0x46, &actor->posX, (int *)0x10);
       }
-      actor->posZ += st->vel[2];
-      actor->unk44 += st->spin[0];
-      {
-        int i = 0;
-
-        actor->unk45 += st->spin[1];
-        actor->unk46 += st->spin[2];
-
-        do {
-          i += 1;
-          svH[0] = (func_8006272C() & 0xFE) - 0x7F;
-          svH[1] = (func_8006272C() & 0xFE) - 0x7F;
-          svH[2] = (func_8006272C() & 0xFE) - 0x40;
-          func_80017758(svH, svH, &actor->posX);
-          D_800758E4(1, 0x42, svH, (int *)1);
-        } while (i < 3);
-      }
-
-      ((ShardState *)actor->state)->life -= 1;
-      break;
+      func_80052568(actor);
+      continue;
     }
 
     /* Respawn warden (WardenState): puts its group back once Spyro has left. */
@@ -3372,15 +3424,10 @@ void func_level_30_8007D938(void) {
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
           D_80076E60.v[0] += D_80078B74;
-          D_80076E48.v[0] = D_80076E60.v[0];
-          D_80076E48.v[1] = D_80076E60.v[1];
-          D_80076E48.v[2] = D_80076E60.v[2];
-          D_80076E48.v[3] = D_80076E60.v[3];
-          D_80076E48.v[4] = D_80076E60.v[4];
-          D_80076E48.v[5] = D_80076E60.v[5];
+          D_80076E48 = D_80076E60;
           D_80078B74 += D_80075858;
-          spy->bodyRotZ = D_80078B74 >> 4;
-          D_80076E48.v[0] -= spy->bodyRotZ * 0x10;
+          D_80078A66 = D_80078B74 >> 4;
+          D_80076E48.v[0] -= D_80078A66 * 0x10;
           func_80034204(&CAM.posX, D_80076E60.v[4], D_80076E60.v[5],
                         &D_80076E48);
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
@@ -3412,15 +3459,10 @@ void func_level_30_8007D938(void) {
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
           D_80076E60.v[0] += D_80078B74;
-          D_80076E48.v[0] = D_80076E60.v[0];
-          D_80076E48.v[1] = D_80076E60.v[1];
-          D_80076E48.v[2] = D_80076E60.v[2];
-          D_80076E48.v[3] = D_80076E60.v[3];
-          D_80076E48.v[4] = D_80076E60.v[4];
-          D_80076E48.v[5] = D_80076E60.v[5];
+          D_80076E48 = D_80076E60;
           D_80078B74 += D_80075858;
-          spy->bodyRotZ = D_80078B74 >> 4;
-          D_80076E48.v[0] -= spy->bodyRotZ * 0x10;
+          D_80078A66 = D_80078B74 >> 4;
+          D_80076E48.v[0] -= D_80078A66 * 0x10;
           func_80034204(&CAM.posX, D_80076E60.v[4], D_80076E60.v[5],
                         &D_80076E48);
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
