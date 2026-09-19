@@ -4310,3 +4310,52 @@ func_level_30_8007D938_2026_09_18_1:
     dead stores contributing nothing (deleted, object unchanged). Biggest
     structural item left is the case-398 tail at orig[5724:5801], where our
     stack-temp offsets and shake-table fill order differ.
+
+func_level_5_8007B68C_2026_09_18_1:
+  verdict: parked
+  class: "R5 sched2 store/store load-block hole — the A232 BARRIER axis is now closed on the LINKED metric too"
+  date: 2026-09-18
+  note: >-
+    Head of the x5 flight-results clone family (32,200 B), reproduced at 8/1610
+    (99.5%): R5 (5 insns, the `ori a1,a1,0x3e00` sinking below the two `lw`s)
+    plus Rd (3, the tail store order). One axis re-measured, 22 builds, no
+    improvement — but it is the axis cookbook S C's own re-rank rule points at.
+    The 2026-08-28 note recorded the A232 barrier over the post-func_8005FDD8
+    block as "the barrier DOES put `ori a1` byte-exact, but the 9-insn block it
+    creates re-tiles: best 12 vs 6" — scored on the MASKED shape diff, never on
+    the linked one. Re-ranked on the LINKED diff, all 21 contiguous barrier
+    placements over the block's six statements (every [lo:hi) subrange) are
+    13, 18 or 19 against the baseline's 8, except three that merely tie at 8
+    ([4:5], [4:6], [5:6] — barriers below the last store, i.e. plateau states).
+    So unlike the statement-order axis, where the masked metric hid a real 8..18
+    spread, here the masked metric UNDERSTATED how bad the barrier is: it is not
+    "6 vs 12", it is "8 vs 13+". Both directions of C's warning are now on
+    record for this function. R5 is closed on statement order (2026-09-15),
+    volatility (2026-09-09), constant/load carrier spelling (2026-09-15) and now
+    barriers on the linked metric. Do not re-open it from source; the park's own
+    verdict stands — this function is worth another session only when R5 has a
+    new TOOL, and the next probe belongs at a -dR sched2 dump of that block.
+
+Gamestate0C_Draw_2026_09_18_1:
+  verdict: parked
+  class: "held-base OT-bin init: the pointer carrier cannot win a hard register, so reload re-substitutes the constant"
+  date: 2026-09-18
+  note: >-
+    1,132 B, reproduced at 4/283 (98.6%), length-exact and linking. The only
+    residue is the addressing FORM of the two-word OT bin-head init: the
+    original holds `la v1,sym-780` and stores 4(v1)/0(v1); we emit the absolute
+    `lui at; sw %lo` pair twice. One new escape measured and closed this
+    session (8 builds): give the pointer local a THIRD reference by passing it
+    to the later `FillWord(g_apOtDepthBinBlock, 0, 0x900)` call, so it is no
+    longer a 2-ref pseudo that `update_equiv_regs` can delete — with and
+    without an ebb-breaking `do {} while (0)` between the init and the stores,
+    and with the decl at both positions. Every `FillWord(p, ...)` variant is
+    LENGTH-LONG (`ld: cannot move location counter backwards`); every variant
+    without it folds back to the checked-in 4/283. So the third-ref dial is not
+    free here, which is the same wall the 2026-09-10 A214 second-set attempt
+    hit from the other side. The standing open question is unchanged and is
+    shared with RespawnOrGameOver_Draw (5/361) and func_8002CCC8 (31/217): a
+    cse ebb-break that emits no NOTE_INSN_LOOP_BEG, or any other way to make a
+    constant-valued pointer pseudo win a hard register so reload keeps its init.
+    Those three are 3,444 B behind ONE mechanism and are the best class-level
+    target left in the main harvest inventory.
