@@ -16,19 +16,19 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 2 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 3 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 4 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 5 | `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 66 | overlay (no -g3); segment 47.3% matched; matched neighbor in segment; megafunction (all-or-nothing); hand-marked viable: >- |
-| 6 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 7 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 8 | `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 57 | overlay (no -g3); segment 16.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 9 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 5 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 6 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 7 | `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 57 | overlay (no -g3); segment 16.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 8 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 11 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 13 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(38 viable candidates total; the full ranking is regenerable.)
+(37 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -46,6 +46,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
+| `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 768 | actor-update megafunction, same skeleton as matched func_level_0_8007D9C8 |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x8002ccc8` | func_8002CCC8 | main | 868 | 732 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with |

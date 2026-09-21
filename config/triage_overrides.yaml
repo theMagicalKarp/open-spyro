@@ -4359,3 +4359,97 @@ Gamestate0C_Draw_2026_09_18_1:
     constant-valued pointer pseudo win a hard register so reload keeps its init.
     Those three are 3,444 B behind ONE mechanism and are the best class-level
     target left in the main harvest inventory.
+
+func_level_5_8007B68C_2026_09_20:
+  verdict: wall
+  class: "sched2 memory-unit hazard: the original's load-at-T-8 next to a store at T-7 is not emittable by this machine model"
+  date: 2026-09-20
+  note: >-
+    Head of the x5 flight-results family (32,200 B), reproduced at 8/1610
+    (99.5%). The `-dR` sched2 probe the 2026-09-18 park named as "the next
+    tool" was RUN, and it closes R5 by construction rather than by another
+    sweep. Basic block 8 holds the same 15 insns in both builds and the
+    schedules agree at every slot but three: orig T-10/T-9/T-8 =
+    `ori a1` / `lw v1` / `lw v0`, ours = `lw v1` / `lw v0` / `ori a1`;
+    T-7 (`sw D_800758B0`), T-6 (`sw D_800757B0`) and everything below are
+    identical. The trace line is
+    `;; ready list at T-8: 3829 (1) 3827 (1) 332 (1) 359 (1) 343 (1) /
+    ;; blocking insn 359 for 1 cycles / ;; blocking insn 343 for 1 cycles`:
+    `actual_hazard` charges a memory op 1 cycle when the following slot is
+    also a memory op, so with a store at T-7 neither load may take T-8 and
+    the slot falls to the highest-LUID dep-free ALU insn (3829 > 3827 > 332).
+    The original's block is `lw; sw; sw` in three consecutive slots, which
+    this machine model will not emit for this insn set. The only escape is to
+    lift the two loads out of the all-priority-1 first group, because
+    schedule_select looks at that group alone and would then stall instead of
+    filling; priority in this pass is depth-from-block-start with only
+    load->consumer edges costing anything (verified against all 15 printed
+    priorities), and both loads read absolute, fully disambiguated symbols
+    with no in-block producer. Buying one costs an instruction -- the same
+    "escape costs 6+" the 2026-08-28 note measured from the other side.
+    Both states of the park (checked-in 8/1610 and the Rd-closed 17/1610)
+    carry R5, so the family cannot reach 0 from C. CLOSED -- do not re-open;
+    the four `func_level_{11,17,23,29}_8007B68C` rows that make up the whole
+    clone/vein mode gate are siblings of this head and are closed with it.
+
+func_80059594_2026_09_20:
+  verdict: parked
+  class: "LOG_LINK 338->341 pins store-before-add; the park's potential_hazard attribution names the WRONG pair"
+  date: 2026-09-20
+  note: >-
+    720 B, reproduced at 4/180. The `-dR` sched2 trace of the loop block
+    (basic block 7) CORRECTS the 2026-09-10 class. What the trace actually
+    says, with the insn map read off the RTL (307 = `sw a0,0(t0)`,
+    300 = `lh a1,172(t1)`, 320/322 = the dragons add+store, 338 = `sw a1,0(t2)`
+    i.e. `*gems = g`, 341 = `addu v1,v1,a1`, 343 = `sw v1,
+    g_nWorldTreasureCollected`, 346 = the `slti`, 347 = the branch):
+    the only `potential_hazard` override in the block is
+    `;; ready list at T-2: 343 (2) 346 (2) ... insn 343 has a greater potential
+    hazard`, which is the 343/346 pair -- NOT the R2 pair. R2 (346 vs 338) is
+    decided earlier and by a DEPENDENCE: 341's LOG_LINKS are `(insn_list 338
+    (insn_list 295 ...))`, so our RTL makes the accumulator add depend on the
+    register-addressed store and 338 must precede 341, while the original emits
+    341 before 338 (`slti / addu v1,v1,a1 / sw a1,0(t2)` at 0x800597a0..a8).
+    So the original's RTL did not carry that link, and R2 is an aliasing/
+    dependence question, not a scheduler tie with "no source dial". Measured
+    this session and REJECTED: swapping the two source statements
+    (`g_nWorldTreasureCollected = wt + g;` above `*gems = g;`) removes the link
+    but re-tiles the whole loop, 4/180 -> 50/180. The aimable objective is now
+    exactly "emit 341 without a LOG_LINK on 338 while keeping the register
+    map", and the next probe is where that link comes from -- 341 has no MEM in
+    its pattern, only a `REG_EQUIV (mem (symbol_ref g_nWorldTreasureCollected))`
+    note, so read `sched_analyze_insn`'s note handling before trying more
+    spellings. R1 (307 vs 300) is unchanged and is still the store/load pair
+    whose emitted order is the source order.
+
+func_level_13_8008AF54_2026_09_20:
+  verdict: parked
+  class: "B25 dead `li a3,3`: four extra REFERENCES, all four immediately before a converter `jal`"
+  date: 2026-09-20
+  note: >-
+    6,788 B. Does not link (4 insns SHORT -- `zip() argument 2 is shorter`),
+    which is exactly the four missing `li a3,3`; drive it off the masked shape
+    diff, not the linked one. The eight original sites are now classified
+    individually, which the earlier notes never did -- do not re-derive:
+    LIVE (ours, one reload per reference, matching the 2026-09-01-1
+    arithmetic): 0x8008B568 `bne v0,a3` fed from 0x8008B4F4+0x34 (block head
+    above the abs chains), 0x8008B5C8 `sb a3,0(s2)` fed from the 0x8008B5A8
+    branch delay slot, 0x8008B80C `bne v0,a3` fed from 0x8008B7CC, and
+    0x8008B87C `sb a3,0(s2)` fed from 0x8008B878. So the four real references
+    are two `bne`s and two byte stores of the constant.
+    DEAD (the four we do not emit): 0x8008B174, 0x8008B4F4, 0x8008B694,
+    0x8008B79C. **All four sit immediately before a `jal func_80017C24` or
+    `jal func_80017BFC`** -- the two hand-written 2-argument SVECTOR<->VECTOR
+    converters -- with that call's `a0` and `a1` setup around them and `$a2`
+    never written. Two of the four (0x8008B4F4, 0x8008B79C) additionally sit
+    directly AFTER a `jal func_80017758` whose own delay slot sets `$a2`, i.e.
+    the shape is `jal A (a2 set in the slot) / li a3,3 / jal B`, which reads
+    like a caller-save restore that the next call immediately re-clobbers --
+    but 2.7.2's caller-save.c has no constant path (memory only), so that
+    origin stays closed. The other two are jump-table arm heads. The B25
+    argument reading is re-confirmed dead here on the ABI ground (o32 cannot
+    fill a3 while leaving a2 unwritten), so the surviving objective is
+    unchanged and now precise: FOUR more references to the constant whose
+    consuming insns emit nothing, and the only 2.7.2 pass that drops an insn
+    that late is `final`'s no-op-move skip. Next probe: a reference whose
+    consumer reloads to `(set (reg a3) (reg a3))`.
