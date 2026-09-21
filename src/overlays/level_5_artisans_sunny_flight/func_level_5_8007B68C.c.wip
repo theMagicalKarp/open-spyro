@@ -361,9 +361,53 @@
  * link. Together with the 2026-08-28 sched2 arithmetic (the store/store
  * load-block hole) and the 2026-08-29 caller-saved a0/a1 argument, R5 now has
  * no remaining source axis and is the single wall between this function and
- * 32,200 bytes. **Nothing else in this function is worth another session until
- * R5 has a new tool** (the next probe belongs at a `-dR` sched2 dump of that
- * block, not at any source spelling).
+ * 32,200 bytes.
+ *
+ * ---- 2026-09-20: the `-dR` probe was run. **R5 IS A MACHINE-MODEL WALL, NOT A
+ *      TIE. CLOSE THIS FUNCTION.** -------------------------------------------
+ * The named next step (a `-dR` sched2 dump of that block) is DONE, and it
+ * settles R5 by construction. sched2's own trace for basic block 8 (15 insns,
+ * `total time = 15`, no stalls) -- read it straight out of `<in>.i.sched2`:
+ *
+ *   ;; ready list at T-8: 3829 (1) 3827 (1) 332 (1) 359 (1) 343 (1)
+ *   ;; blocking insn 359 for 1 cycles
+ *   ;; blocking insn 343 for 1 cycles, now 3829 3827 332
+ *   ;; insn 3829 has a greater potential hazard, now 3829 3827 332
+ *
+ * Read with the backward scan (T-1 = the block's LAST insn), ours and the
+ * original agree at EVERY slot except three, and they hold the same 15 insns:
+ *   orig  T-10 3829 (`ori a1`) · T-9 343 (`lw v1`) · T-8 359 (`lw v0`)
+ *   ours  T-10 343            · T-9 359           · T-8 3829
+ * T-7 (340 `sw D_800758B0`), T-6 (345 `sw D_800757B0`) and everything below
+ * are IDENTICAL in both. So the whole residue is one question: why can our
+ * sched2 not put a LOAD at T-8?
+ * **Because T-7 already holds a store.** `actual_hazard` charges 1 cycle for a
+ * memory op whose successor slot is another memory op, so with 340 at T-7 both
+ * loads are queued out of T-8 and the slot falls to whatever dep-free ALU insn
+ * ranks highest -- `rank_for_schedule` breaks the all-priority-1 tie on INSN_LUID
+ * DESCENDING, and 3829 > 3827 > 332. The original's block has `lw(T-8);
+ * sw(T-7); sw(T-6)`, i.e. three memory ops in consecutive slots, which this
+ * machine model will not emit for this insn set at all.
+ * **Why no source form reaches it, in one line: the escape needs the loads to
+ * out-PRIORITISE the ALU stragglers, and priority in this pass is depth from
+ * the block start with only load->consumer edges costing anything.** Verified
+ * against every printed priority in the block (332/337/3826/3828/343/359/340
+ * = 1; 345/352/354/363/366/369 = 2, each exactly one load-edge below a load).
+ * If the loads had priority 2 the T-8 first-priority group would hold nothing
+ * BUT the two blocked loads, schedule_select would stall, and the next cycle
+ * would place 359 at T-8 -- the original's order exactly. But both loads read
+ * absolute symbols (`D_800785E8`, `D_800785F0`), so they have no in-block
+ * producer, and the only edge that lifts a priority is a LOAD producer: buying
+ * one costs an instruction, which is the same "escape costs 6+" the 2026-08-28
+ * note measured from the other side. Nothing in the source can add a
+ * dependence edge here without adding an insn -- the two loads are of
+ * different, fully disambiguated globals, so no ordering of the six statements
+ * creates a memory dep between them either (343's dep list is `REG_DEP_ANTI
+ * 337` and nothing else).
+ * **VERDICT: R5 is the machine description, not a register tie and not a
+ * schedule tie. Both of this function's states (the checked-in 8/1610 and the
+ * Rd-closed 17/1610) carry it, so the x5 flight family cannot reach 0 from any
+ * C source under the locked toolchain. Do not open this function again.**
  * ---- Older diagnoses that are still true ----------------------------------
  * B14 RETIRED 2026-08-06-1 (the "+1 nop / cannot link" blocker is gone): the
  * three dep-free defs (`la envBase`, `la img`, `addiu img2`) are priority-1
