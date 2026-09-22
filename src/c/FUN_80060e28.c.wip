@@ -1,5 +1,22 @@
 #include "globals.h"
 
+/* 2026-09-22: 21 -> 2/44, LENGTH-EXACT now (was one insn short).  The
+ * accumulator's missing $v0 was a CONFLICT, not a missing preference: global.c
+ * mark_reg_store already gives `mirrored` a v0 preference from the final
+ * `(set (reg v0) (minus mirrored left))`, but sched1 hoisted case 2's
+ * `mirrored = 0x400` above the `r->w / 2` chain, whose temps live in v0, so
+ * find_reg's `used` set removed it.  An empty do/while between `left = r->x;`
+ * and `mirrored = 0x400;` pins the li below the chain (B23 used in reverse),
+ * v0 is free, and the li drops into the `j`'s delay slot as in the original.
+ * `return r->x / 2` written through `span` (`span = r->x; return span / 2;`)
+ * then puts the sign-extended value in span's $v1.
+ * LEFT (2 insns): that path's `addu v1,v1,v0` / `sra v0,v1,1` come out
+ * `addu v0,v1,v0` / `sra v0,v0,1` -- the sum pseudo is local and carries the
+ * v0 suggestion from the return set; the original ties it to span's $v1.
+ * span is a global allocno here (goto), so combine_regs cannot tie them.
+ * Inert/worse: a block-local `h` (6), `span /= 2` (2), `span = span / 2` (2),
+ * the explicit shift form (length change), `left` as the carrier (3). */
+
 /* PARKED 2026-08-10-3 — 43/44 insns (one short); block layout is EXACT.
  *
  * Decoded: map a display RECT's left edge into the debug-overlay coordinate
@@ -58,10 +75,13 @@ int FUN_80060e28(RECT *r) {
     if (g_bGpuReverseFlag != 0) {
       span = r->w / 2;
       left = r->x;
+      do {
+      } while (0);
       mirrored = 0x400;
       goto mirror;
     }
-    return r->x / 2;
+    span = r->x;
+    return span / 2;
   }
   return r->x;
 }

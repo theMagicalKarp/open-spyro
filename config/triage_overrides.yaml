@@ -4527,3 +4527,52 @@ func_titlescreen_8007ABAC_2026_09_22:
   class: "unchanged — B23 stack-arg block; the hoist lever cannot help a block that passes a stack argument"
   date: 2026-09-22
   note: "Re-diffed 7/2147; screened only."
+
+AdvanceSpyroSpeedTowardTarget_2026_09_22:
+  verdict: viable
+  class: "MATCHED — global.c expand_preferences merged accel's a0 into speed via a shared `stepped`"
+  date: 2026-09-22
+  note: >-
+    76 B, 20/19 -> MATCH. The unexplained `76 preferences: 4` is
+    expand_preferences: every insn whose dest is an allocno and in which
+    another allocno dies merges their preferences, so `stepped = accel + speed`
+    gave stepped a0 and `stepped = speed - decel` passed it on to speed. A
+    separate `down` local for the decelerate arm plus `speed + accel` operand
+    order matched.
+
+FUN_80060e28_2026_09_22:
+  verdict: parked
+  class: "F1: return-path sum pseudo is local with a v0 suggestion; original ties it to span's $v1"
+  date: 2026-09-22
+  note: >-
+    43/44 (one short) -> 2/44 length-exact. The accumulator's v0 was blocked by
+    a CONFLICT (sched1 hoisted case 2's `mirrored = 0x400` above the v0 /2
+    chain); an empty do/while before that assignment pins it late and the
+    mark_reg_store v0 preference wins. `span = r->x; return span / 2;` put the
+    sign-extended value in $v1. Last two insns: see the .wip header.
+
+RelocateMobActorTable_2026_09_22:
+  verdict: parked
+  class: "B21 unchanged — parameter reused as the first loop's counter lands the counter in $a1"
+  date: 2026-09-22
+  note: "`void f(int arg) { int *stream = (int *)arg; for (arg = 0; ...) }` (one or both loops): 92/108, counter in a1, stream stays a0."
+
+BeginGemPickupOverlay_2026_09_22:
+  verdict: parked
+  class: "unchanged — local-alloc (not global) so expand_preferences does not reach it"
+  date: 2026-09-22
+  note: "Re-diffed 7/146; screened only."
+
+HandleHardwareInterrupt_2026_09_22:
+  verdict: parked
+  class: "F1/F7 unchanged"
+  date: 2026-09-22
+  note: >-
+    10/122. Swapping the AND operands, or reading the IStat value into a
+    local first: +1 insn (LINKFAIL); an enable-mask local: 21.
+
+func_8003A420_2026_09_22:
+  verdict: parked
+  class: "F9 unchanged"
+  date: 2026-09-22
+  note: "9/192. Block-scoped ground local (either branch order): length-short, cross-jump; `g = ret` copy: 9."
