@@ -40,6 +40,23 @@ extern int D_80078D6C;
 extern int D_80078D70;
 extern int D_80078D74;
 
+/* 2026-09-22: 31 -> 16/217 linked, still length-exact, on the lever that
+   matched func_80059594 -- the barrier's loop notes land on the first insn
+   after it and sched1 makes everything later depend on it (B23), so a value
+   the original emits ABOVE that point has to be computed above it in source.
+   (1) `yaw = g_nSpyroBodyYaw;` before the byte-store block puts the yaw load
+   back in its slot.  (2) Knot 2 (D34/D38 vs D40) CLOSED: the actor+0x14 and
+   D_80078D70 reads go into locals above the three stores (batch read), and a
+   second empty do/while ahead of `D_80078D40 = ...` keeps the -16(s1) read
+   below them.  LEFT (16 insns, one knot): the original loads posY into $a1
+   and `li a2,1` right after the first `sb 0(s1)`; ours puts posY in $a3 and
+   the pair after the last sb.  Loading posY above the barrier (any of three
+   positions) hoists it to the top of the region and costs 4 more; the
+   in-place `py = rec[0x10] - py` is byte-identical (copy-propagated).
+   The $a1 tie is the subu's dest tied to its SECOND operand, which local-alloc
+   only does when the first operand's tie fails -- next probe is -dl on the
+   ArcTan2 block. */
+
 /* PARKED 2026-08-15-1 at 217/217 — LENGTH-EXACT (was 222/217, unlinkable), 31
    differing insns, from a full re-derive off the asm (the permuter-spew body is
    gone).  The B-i rule 1 fold is beaten with the A200 recipe: incomplete INT
@@ -83,6 +100,10 @@ void func_8002CCC8(int actor) {
   int owner;
   char *rec;
   int camYaw;
+  int yaw;
+  int py;
+  int z;
+  int yw;
 
   owner = *(int *)actor;
   g_nGamestate = 0xB;
@@ -101,6 +122,7 @@ void func_8002CCC8(int actor) {
   PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
                   0, 0x10, 0);
   ResetSpyroEntity(1);
+  yaw = g_nSpyroBodyYaw;
   *(unsigned char *)g_abSpyroAnimPrevBlock = 1;
   g_bSpyroAnimCurrent = 1;
   g_bSpyroFramePrev = 0;
@@ -108,17 +130,22 @@ void func_8002CCC8(int actor) {
   g_bSpyroSubFrameTimer = 0;
   do {
   } while (0);
-  D_80078D6C = g_nSpyroBodyYaw;
+  py = g_nSpyroWorldPosY;
+  D_80078D6C = yaw;
   rec = *(int *)(owner + 4) * 88 + (char *)g_pActorListBase;
   D_80078D70 = ArcTan2(*(int *)(rec + 0xC) - g_abSpyroAnimPrevBlock[-6],
-                       *(int *)(rec + 0x10) - g_nSpyroWorldPosY, 1);
+                       *(int *)(rec + 0x10) - py, 1);
   D_80078D2C = ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
                        *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
   D_80078D30 = VectorLength(vec, 0);
+  z = *(int *)(actor + 0x14);
+  yw = D_80078D70;
   D_80078D3C = 0x480;
-  D_80078D34 = *(int *)(actor + 0x14);
-  D_80078D38 = D_80078D70;
+  D_80078D34 = z;
+  D_80078D38 = yw;
+  do {
+  } while (0);
   D_80078D40 = g_abSpyroAnimPrevBlock[-4] + 0x170;
   if (g_pLevelOverlayInitRecord != 0) {
     D_80078D44 = ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
