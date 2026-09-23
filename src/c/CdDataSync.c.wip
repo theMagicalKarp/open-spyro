@@ -47,6 +47,14 @@ extern unsigned char D_80075115; /* ready index (Ready) */
        not what the original used.  Declaration order fixes the registers
        (readyIdx -> s1, readyTbl -> s0, syncTbl -> s3); the ASSIGNMENT order is
        the A164 straggler order for the three la pairs (syncTbl first).
+   2026-09-22: 16 -> 12/91 by taking the a3 argument's ADDRESS into a
+   block-scoped pointer local (`int *p = &readyTbl[readyIdx[0]];`, then `*p`
+   in the call): the idx0 load now leads the block as in the original.  Every
+   spelling of that address (&a[i], a + i, (i << 2) + (int)a, a hoisted index
+   local) and a hoisted stack-arg value `y` give the same 12; hoisting the a2
+   value or an unsigned-char index local goes back to 16.  Left: p lands in
+   $v1 where the original parks it in $a0, and the stack-arg `sw` issues
+   before the D_80074E55 chain instead of after it.
    Residue: 14 insns, F-class sched1 tie in the one WritePrintf arg block.  The
    original computes the a3 chain (readyTbl[readyIdx[0]]) FIRST and parks its
    address in a0 until just before the `jal`, then the stack arg, then
@@ -72,8 +80,11 @@ int CdDataSync(int mode) {
   for (;;) {
     if (VSync(-1) > D_80075AE8 || D_80075AEC++ > 0x3C0000) {
       WriteString(D_80011DFC);
-      WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55],
-                  readyTbl[readyIdx[0]], readyTbl[readyIdx[1]]);
+      {
+        int *p = &readyTbl[readyIdx[0]];
+        WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55], *p,
+                    readyTbl[readyIdx[1]]);
+      }
       CdResetController();
       r = -1;
     } else {

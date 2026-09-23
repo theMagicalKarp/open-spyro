@@ -4453,3 +4453,126 @@ func_level_13_8008AF54_2026_09_20:
     consuming insns emit nothing, and the only 2.7.2 pass that drops an insn
     that late is `final`'s no-op-move skip. Next probe: a reference whose
     consumer reloads to `(set (reg a3) (reg a3))`.
+
+func_80059594_2026_09_22:
+  verdict: viable
+  class: "MATCHED — B23 hoist: values the original emits before a barrier-carrying store are computed above the barrier"
+  date: 2026-09-22
+  note: >-
+    720 B, 4/180 -> MATCH. The 2026-09-20 LOG_LINK 338->341 is the second empty
+    do/while's loop notes (they attach to the `*gems` store, B23
+    reg_pending_sets_all), not aliasing. Computing the egg-guard compare
+    `c = i < 0x12` and `t = wt + g` ABOVE the barrier closed R2; with that
+    in place R1 closed by writing `*dragons = d;` (no wrapper) BEFORE the g
+    load. The barrier is still required (6/180 without it).
+
+Gamestate0C_Draw_2026_09_22:
+  verdict: parked
+  class: "held-base fold is cse2's: cse_end_of_basic_block honours NOTE_INSN_LOOP_END only when !after_loop"
+  date: 2026-09-22
+  note: >-
+    4/283 unchanged. -da trace of a pointer-local + barrier body: cse1 keeps
+    the base (5 refs), cse2 folds the +4 store to sym+4 and combine folds the
+    +0 store. cse.c:8054 breaks the ebb on LOOP_END only before loop.c, so an
+    A200 barrier can never protect against cse2; only a live CODE_LABEL ends a
+    cse2 ebb. Also measured and all identical (4): a `register ... asm("$3")`
+    local, a static __inline__ helper taking the base as a parameter, and a
+    `switch (sub) { case 4: case 5: }` dispatch (label deleted by jump; 8).
+
+RespawnOrGameOver_Draw_2026_09_22:
+  verdict: parked
+  class: "A200 arg-copy cost; alias-indexed [0x85..0x87] stores are load-bearing for the reg-based [0] store"
+  date: 2026-09-22
+  note: >-
+    5/361 unchanged. Without the barrier, writing env1.r0/g0/b0 as struct
+    fields (absolute) and [0] plain or via a B16 volatile cast-deref: +2 / +4
+    insns (both frame-15 copies must change together or the cross-jump is
+    lost, +46). The B23 hoist lever does not reach it: the stuck insn is the
+    DrawSync arg copy, which expand_call emits at the call.
+
+func_8002CCC8_2026_09_22:
+  verdict: parked
+  class: "one knot left: posY must be $a1 and load right after the first sb; local-alloc ties the subu dest to its SECOND operand"
+  date: 2026-09-22
+  note: >-
+    31 -> 16/217 on the B23 hoist lever: `yaw` load above the byte-store block,
+    knot 2 closed by batch-reading actor+0x14/D_80078D70 into locals above
+    the D3C/D34/D38 stores plus a second barrier before `D_80078D40 = ...`.
+    posY above the barrier (3 positions) = 20; in-place `py = rec[0x10] - py`
+    byte-identical. Next: -dl on the ArcTan2 block.
+
+CdDataSync_2026_09_22:
+  verdict: parked
+  class: "arg-evaluation order in a 5-arg call: a3 address must be in $a0, stack sw after the a2 chain"
+  date: 2026-09-22
+  note: >-
+    16 -> 12/91 with `int *p = &readyTbl[readyIdx[0]];` and `*p` as the a3
+    argument. Five spellings of the address and a hoisted stack-arg value are
+    all 12; hoisting the a2 value or a u8 index local is 16.
+
+func_80038FC8_2026_09_22:
+  verdict: parked
+  class: "arg-copy vs li LUID straggler tie (no barrier in the block, B23 lever does not apply)"
+  date: 2026-09-22
+  note: "Re-diffed 4/152; screened only."
+
+func_level_27_80086754_2026_09_22:
+  verdict: parked
+  class: "unchanged — allocation knot in arm 0x1D, not the barrier class"
+  date: 2026-09-22
+  note: "Re-diffed 9/1697; screened only."
+
+func_titlescreen_8007ABAC_2026_09_22:
+  verdict: parked
+  class: "unchanged — B23 stack-arg block; the hoist lever cannot help a block that passes a stack argument"
+  date: 2026-09-22
+  note: "Re-diffed 7/2147; screened only."
+
+AdvanceSpyroSpeedTowardTarget_2026_09_22:
+  verdict: viable
+  class: "MATCHED — global.c expand_preferences merged accel's a0 into speed via a shared `stepped`"
+  date: 2026-09-22
+  note: >-
+    76 B, 20/19 -> MATCH. The unexplained `76 preferences: 4` is
+    expand_preferences: every insn whose dest is an allocno and in which
+    another allocno dies merges their preferences, so `stepped = accel + speed`
+    gave stepped a0 and `stepped = speed - decel` passed it on to speed. A
+    separate `down` local for the decelerate arm plus `speed + accel` operand
+    order matched.
+
+FUN_80060e28_2026_09_22:
+  verdict: parked
+  class: "F1: return-path sum pseudo is local with a v0 suggestion; original ties it to span's $v1"
+  date: 2026-09-22
+  note: >-
+    43/44 (one short) -> 2/44 length-exact. The accumulator's v0 was blocked by
+    a CONFLICT (sched1 hoisted case 2's `mirrored = 0x400` above the v0 /2
+    chain); an empty do/while before that assignment pins it late and the
+    mark_reg_store v0 preference wins. `span = r->x; return span / 2;` put the
+    sign-extended value in $v1. Last two insns: see the .wip header.
+
+RelocateMobActorTable_2026_09_22:
+  verdict: parked
+  class: "B21 unchanged — parameter reused as the first loop's counter lands the counter in $a1"
+  date: 2026-09-22
+  note: "`void f(int arg) { int *stream = (int *)arg; for (arg = 0; ...) }` (one or both loops): 92/108, counter in a1, stream stays a0."
+
+BeginGemPickupOverlay_2026_09_22:
+  verdict: parked
+  class: "unchanged — local-alloc (not global) so expand_preferences does not reach it"
+  date: 2026-09-22
+  note: "Re-diffed 7/146; screened only."
+
+HandleHardwareInterrupt_2026_09_22:
+  verdict: parked
+  class: "F1/F7 unchanged"
+  date: 2026-09-22
+  note: >-
+    10/122. Swapping the AND operands, or reading the IStat value into a
+    local first: +1 insn (LINKFAIL); an enable-mask local: 21.
+
+func_8003A420_2026_09_22:
+  verdict: parked
+  class: "F9 unchanged"
+  date: 2026-09-22
+  note: "9/192. Block-scoped ground local (either branch order): length-short, cross-jump; `g = ret` copy: 9."
