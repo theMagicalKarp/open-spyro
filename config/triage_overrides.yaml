@@ -4606,3 +4606,32 @@ func_80038FC8_2026_09_23:
   verdict: matched
   class: "F14b mutual exclusion closed: bare 0x10 literals keep the schedule, `old` as a `$2` register local fixes the v0/v1 rotation without a loop note"
   date: 2026-09-23
+func_8005FC6C_2026_09_23:
+  verdict: parked
+  class: "A187 copy-canonical: the original stores through the return copy in v0; cse keeps the parameter canonical"
+  date: 2026-09-23
+  note: "7 -> 5/38 with the mask as a `$4` register local. `r = ot` spellings (plain and `$2`-pinned) are propagated away."
+func_80038C4C_2026_09_23:
+  verdict: parked
+  class: "hard-reg pin unusable: `register int ay asm(\"$5\")` (function or block scope) rewires the entry `move v0,a0 / move a1,v0` param copy, 63/66"
+  date: 2026-09-23
+Gamestate0C_Draw_2026_09_23:
+  verdict: parked
+  class: "B-i fold: a `$3` register local for the OT base is still folded to absolute (inert, 4/283)"
+  date: 2026-09-23
+RespawnOrGameOver_Draw_2026_09_23:
+  verdict: parked
+  class: "DrawSync arg copy: a `$4` register local set above the guard grows the function 35 words (function or block scope)"
+  date: 2026-09-23
+WaitForFrameDeadline_2026_09_23:
+  verdict: wall
+  class: "B20: prologue `sw ra` vs the volatile budget init store (re-screened, unchanged 7/39)"
+  date: 2026-09-23
+CdDataSync_2026_09_23:
+  verdict: parked
+  class: "arg-evaluation order in a 5-arg call; a `$4` register local for the `&readyTbl[idx0]` pointer is propagated through the deref (13/91) or grows the function at wider scope"
+  date: 2026-09-23
+TickSpyroHornStrikeAttack_2026_09_23:
+  verdict: parked
+  class: "s0/s1 rotation; `register int *strike asm(\"$17\")` at function scope costs +2 insns"
+  date: 2026-09-23

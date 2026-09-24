@@ -6,71 +6,19 @@ extern int D_80074B20;    /* OT terminator sentinel */
 /* Reset an ordering table to empty (0x8005fc6c): optionally trace, hand the
    table to the +0x2C command-table method, then write the terminator link
    into the head entry. Returns the table. */
+/* 2026-09-23: 7 -> 5/38.  The 0xFFFFFF mask as a `$4` register local puts it
+   in a0 as the original has it.  LEFT: the original stores through the RETURN
+   copy (`move v0,s0` above the `sw ..,0(v0)`) with the symbol in v1; ours
+   stores through s0 and emits the copy last.  cse keeps the parameter canonical
+   for any `r = ot` spelling, including a `$2` register local (propagated away). */
 int *func_8005FC6C(int *ot, int n) {
+  register int m asm("$4");
+
   if (g_bGpuDebugLevel >= 2) {
     ((void (*)(char *, int *, int))g_pfnGpuDebugPrintf)(D_800118E4, ot, n);
   }
   (*(void (**)(int *, int))((char *)g_pGpuDispatchTable + 0x2C))(ot, n);
-  *ot = 0xFFFFFF & (int)&D_80074B20;
+  m = 0xFFFFFF;
+  *ot = (int)&D_80074B20 & m;
   return ot;
 }
-
-/* PARKED at 7/38 (length-exact; was the 2026-07-06 "F4 return-pointer
-   coalescing" park, re-derived 2026-08-10-2, refined 2026-08-10-3 — the body
-   above is correct and the whole debug/dispatch head matches).
-
-   Refinement 2026-08-10-3: writing the mask on the LEFT
-   (`0xFFFFFF & (int)&D_80074B20`, A106/A178) is what puts the `li` of the mask
-   BEFORE the `la` of the symbol, which is the original's order. Keep it.
-
-   Residue (F4): the original materialises the `return ot` copy BEFORE the
-   terminator computation (`move v0,s0` sits between the mask `li` and the
-   symbol `la`), so v0 is occupied, the mask/symbol fall to a0/v1 and cse
-   re-bases the store on the copy (`sw v1,0(v0)`). Ours emits `move v0,s0`
-   after the store and stores through s0.
-   Mechanism: the three tail insns (mask li, ret copy, symbol la) are all
-   dep-free priority-1 stragglers, so A164 says their order IS source order —
-   the original's source evaluates the return value between the mask and the
-   symbol. But every C form that would emit that copy gets it propagated away:
-   `int *head = ot;` before the store, after the store, storing through `ot` vs
-   through `head`, `ot[0]` + `return &ot[0]`, and a named mask local all give
-   the identical byte (re-tested 2026-08-10-3 with the mask-first form). A171's
-   "dies last" dial does not apply either — copy propagation removes the copy
-   before cse ever builds the equivalence.
-   Also tried 2026-08-10-3 and rejected: duplicating the whole tail in both
-   arms of the debug `if` to manufacture A151's two-exit hoist — jump.c does
-   NOT cross-jump the two copies back (+7 insns, slot overflow).
-   MECHANISM NAILED 2026-08-11-1 (read off cse.c `make_regs_eqv`): for a copy
-   `head = ot`, the DEST only becomes cse's canonical reg when
-   `(last_use(head) > cse_basic_block_end || first_use(head) < cse_bb_start)`
-   AND `last_use(head) > last_use(ot)`. In a straight-line TAIL block the first
-   clause is false — the ebb runs to the end of the function — so `ot` stays
-   canonical, every use of `head` is rewritten back to `ot`, and the copy dies.
-   The clause is only satisfiable when the copy sits inside a CONDITIONAL ARM
-   and its uses are past the join (that is exactly how the same class was
-   solved in UpdateGemPickupPathCamera, 2026-08-11-1 — see A187). This tail has
-   no branch after the dispatch call, so the lever cannot be aimed here.
-   `int *mask/head` locals ordered [mask li, copy, symbol la] re-tested
-   2026-08-11-1: byte-identical, as predicted by the rule above.
-
-   2026-08-14-1 unattended permuter session (~15m, ~116400 iterations -- the
-   highest count of the session, this being a 38-insn function, timed out at the
-   15m budget): best score 95 vs first-iteration score 115, with the next
-   candidate at 100. A very flat curve over a very large sample, which supports
-   the analysis above: the A187 lever is genuinely unaimable here (no branch
-   after the dispatch call), so random permutation has nothing to find. Treat as
-   settled for unattended runs. Still PARKED (see above).
-
-   2026-08-31 — A238's second-set lever does not rescue it either.  The
-   mechanism note above is confirmed by the shape of the original: `move v0,s0`
-   is not a scheduled return copy, it is the store's own base pseudo, which won
-   $2 from `may_save_copy`'s return-value copy suggestion (A236) — so the
-   original really does have a distinct pointer pseudo and we really do not.
-   Three more spellings measured, all 7/38 or worse: the copy hoisted to the
-   FIRST statement (before the debug `if`, so that cse's
-   `first_use(head) < cse_bb_start` clause could fire) — byte-identical;
-   `head = ot;` in BOTH arms of the debug `if` (to make it multi-set and
-   un-propagatable) — byte-identical; and a single re-assignment inside the
-   debug arm only — 20/38.  The A187 clause needs the copy's USES past a join
-   AND its def inside an arm, which this tail's shape cannot supply.
-*/
