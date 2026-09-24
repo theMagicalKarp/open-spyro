@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">32.60% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">704,108 / 2,159,608 split-code bytes · 635 matched · 46 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">704,132 / 2,159,608 split-code bytes · 636 matched · 45 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -146,7 +146,7 @@
 <rect x="296.94" y="527.86" width="18.85" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateScriptedCameraView  ·  632 bytes  ·  matched</title></rect>
 <rect x="81.91" y="546.19" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateActorMeshHeader  ·  620 bytes  ·  matched</title></rect>
 <rect x="81.91" y="564.72" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SamplePadForDeathReplayFrame  ·  620 bytes  ·  matched</title></rect>
-<rect x="81.91" y="583.26" width="18.28" height="18.18" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80038FC8  ·  608 bytes  ·  wip</title></rect>
+<rect x="81.91" y="583.26" width="18.28" height="18.18" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038FC8  ·  608 bytes  ·  matched</title></rect>
 <rect x="81.91" y="601.44" width="18.28" height="18.06" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80060FD8  ·  604 bytes  ·  asm</title></rect>
 <rect x="81.91" y="619.50" width="18.28" height="18.06" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8006635C  ·  604 bytes  ·  matched</title></rect>
 <rect x="81.91" y="637.56" width="18.28" height="17.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SampleSpyroShadowRingHeights  ·  596 bytes  ·  matched</title></rect>
