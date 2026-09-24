@@ -4580,3 +4580,8 @@ FUN_80060e28_2026_09_23:
   verdict: matched
   class: "F1 closed: route every non-mirror return through one `result` variable joined at a label, so result is a global allocno that takes v0 and the r->x / 2 chain loses its v0 suggestion"
   date: 2026-09-23
+func_8002CCC8_2026_09_23:
+  verdict: matched
+  class: "barrier moved to the EARLIEST slot (right after the offset-0 sb) + volatile byte-store batch + int-arith rec (A149) + a `$2` register local for rec+0x10 so the subu's dest ties to posY instead"
+  date: 2026-09-23
+  note: "16 -> 12 (barrier position) -> 7 (volatile stores) -> 4 (int arith) -> 0 (hard-reg carrier). A181 reused-local carriers (z, yw, yaw) do move the tie to posY but become global allocnos that land in a3."
