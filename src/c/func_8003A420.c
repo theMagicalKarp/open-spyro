@@ -4,36 +4,12 @@
  * resolves ground contact, then advances to the next waypoint when close
  * enough.
  *
- * PARK 94.8% length-exact (10/192), logic verified. Residue is an F9 double
- * knot
- * + 1 F-class scheduling tie, none source-fixable:
- *  - F9 knot: the ground-probe result (FindGroundHeightBelow) wants v1 (caller-
- *    saved, dies in-block) while the return counter wants s4 (callee-saved, set
- * 0 at 0x8003a680, survives). Sharing one `ret` local puts BOTH in s1 (9 diffs,
- *    length-exact). Splitting into two locals fixes the counter->s4 but the
- * call return then coalesces into v0 (F4), which lets jump.c cross-jump the two
- *    `vec[2]=..` stores into one -> 189 insns (length-changing, worse partial).
- *    Getting ground into v1 without the coalesce is the unforced move v1,v0.
- *  - F8/negu: CLOSED 2026-08-11-1 by `absv = abs(delta)` (A160 — the builtin's
- * abssi2 pattern is `bgez src; move dst,src; negu dst,dst`, which the ternary
- * and two-local forms never reach because they re-negate the source). 10 -> 9.
- *  - The remaining 8 are the F9 knot alone. Measured 2026-08-11-1 with the
- * §D 2c allocation probe on the SPLIT (two-local) form: the ground pseudo comes
- * out `;; 85 preferences: 2` with `conflicts: 72 73 74 85 29` — the call-result
- * copy gives it a hard v0 preference and NOTHING conflicts with v0 over its
- * 4-insn range, so find_reg takes v0, the two `vec[2]=` stores become identical
- * and jump.c cross-jumps them (-3 insns, 58/192). The original's v1 therefore
- * needs v0 to be either unpreferred or live across the range; folding the else
- * arm into the value (`if (g==0) g = vec[2]-0x400; vec[2] = g;`) makes it live
- * but trades the second store for a move (-1 insn). Not source-reachable yet.
- *
- * 2026-07-25-1 unattended permuter session (~15m, ~61700 iterations, timed out
- * at the 15m budget): base score 65, and the run wrote NO output directories —
- * not one mutation beat the base. This confirms the note above: the plain
- * randomizer cannot reach a double register-permutation, so the hand-framed
- * PERM_* macros really are the prerequisite here. Third function in this sweep
- * with the low-base/zero-progress signature (cf. func_80038C4C,
- * func_80038FC8). Still PARKED. */
+ * The ground-probe result is a `$3` register local: as a pseudo its call-result
+ * copy gives it a hard v0 preference, find_reg takes v0, and jump.c then
+ * cross-jumps the two `vec[2] =` stores (-3 insns).  `ret = 0` sits ABOVE the
+ * last SubtractVector so ret's range overlaps arg2's and it takes a fresh
+ * callee-saved (s4) instead of sharing arg2's s1.  `abs()` is the builtin
+ * (A160). */
 
 extern int abs(int);
 extern void SubtractVector(int *dst, int *a, int *b);
@@ -109,17 +85,20 @@ int func_8003A420(char *actor, unsigned char *wp, int arg2, int cap, int arg4,
     DispatchActorContactAtSphere(vec, arg4, 0, 0, (int)actor, 0);
   }
   vec[2] += 0x400;
-  ret = FindGroundHeightBelow(vec, 0x400);
-  if (ret != 0) {
-    vec[2] = ret;
-  } else {
-    vec[2] -= 0x400;
+  {
+    register int ground asm("$3");
+    ground = FindGroundHeightBelow(vec, 0x400);
+    if (ground != 0) {
+      vec[2] = ground;
+    } else {
+      vec[2] -= 0x400;
+    }
   }
   CopyVector((int *)(actor + 0xC), vec);
   EncodeCachedVecToActorDirCode((int)actor);
   func_800529E4(actor, 2);
-  SubtractVector(vec, (int *)(wp + ((wp[1] << 4) + 8)), (int *)(actor + 0xC));
   ret = 0;
+  SubtractVector(vec, (int *)(wp + ((wp[1] << 4) + 8)), (int *)(actor + 0xC));
   if ((int)VectorLength(vec, 1) < arg2) {
     actor[0x49] = 0;
     wp[1] = wp[1] + 1;
