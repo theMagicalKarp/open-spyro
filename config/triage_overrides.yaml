@@ -4593,3 +4593,8 @@ func_level_27_80086754_2026_09_23:
   verdict: matched
   class: "A149: the arm-0x1D node sum in INT arithmetic (`idx * 4 + *(int *)actor`) keeps idx*4 as the addu's first operand, so the sum ties to idx's $a2 and the deref takes $v0 — the 'allocation question' was an operand-order question"
   date: 2026-09-23
+func_titlescreen_8007ABAC_2026_09_23:
+  verdict: parked
+  class: "sched2 rank tie: pinned `lui a1` const vs `li v0,600` (true-dep producer of the stack-arg sw) at T-8, all priority 1"
+  date: 2026-09-23
+  note: "7 -> 3/2147 length-exact via `register int off asm(\"$5\")` (the a1 race is gone). The const now sits at block top and fills the bnez delay slot where the original has `lui a2,0x4`. Set position, in-arg set, cd pinned to $4 all inert; pointer pin 9, sum pin 6, barrier +1 insn."
