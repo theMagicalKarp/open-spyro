@@ -1,139 +1,4 @@
-/* PARKED, re-diagnosed 2026-08-20-1, carrier search CLOSED 2026-08-21-1.
- * Still 9/1697 differing instructions (99.5%), LENGTH-EXACT and LINKING.
- * Drive this park off the CONTENT-ALIGNED diff, not the linked one: the linked
- * count is 9 but the register-anchored aligned diff is **4 over 2 regions**
- * (the lbu's displacement phase-shifts the positional zip).  The whole residue is arm 0x1D's patrol
- * block: the original loads rec[0x19] (`lbu a2,24(s1)`) BEFORE the * 0x58 actor
- * chain and keeps the index in `a2`; ours emits it seven insns later in `v0`,
- * which swaps two register names across the following eight insns.
- *
- * WHAT THIS ACTUALLY IS (the 2026-08-19-1 "F14 birthing boost, needs a
- * non-birthing carrier" reading is only the first link in a three-step chain,
- * and it sent a session hunting carriers that all cost an insn):
- *   1. sched1 boosts the load (single-set pseudo with an in-block consumer), so
- *      it is placed right next to its use.
- *   2. That makes its live range short, so local-alloc ranks it high and reload
- *      gives it `v0` -- the same register the `* 0x58` multiply chain uses.
- *   3. The resulting REG_DEP_OUTPUT/ANTI edge against that chain is what pins
- *      it at sched2.  The original has the index in `a2`, so ITS sched2 is free
- *      to hoist the load to slot 5.  Aim at the register, not the boost.
- *
- * NEW LEVER, and it is the reusable part: **two assignments of the SAME
- * variable, each a single-use load feeding a multiply, mutually protect each
- * other from combine** -- neither fold fires because `try_combine` requires
- * `REG_N_SETS == 1` -- so the variable stays multi-set (no boost) at ZERO insn
- * cost.  `idx` carrying both `rec[0x18]` and `node[8]` is the working instance.
- *
- * MEASURED VARIANT TABLE (all length-exact and linking; the block is
- * 800873a4..800873c4):
- *   9   baseline (below): head order right, lbu 6 slots late, 3 regs rotated.
- *   15  `idx = rec[0x19]` + `idx = node[8]`: chain order and the lbu's own slot
- *       correct, but the head comes out [arg, lbu23, lbu24, lui, lw] instead of
- *       [lbu23, arg, lui, lw, lbu24].
- *   19  `idx` carrying rec[0x18]+node[8], a single-set local for rec[0x19]:
- *       head EXACTLY right, lbu falls to slot 10 (still boosted).
- *   12  as 15 but with `node` as the rec[0x19] carrier (`node = (int *)rec[0x19];`
- *       then `node = *(int **)actor + (int)node;`): chain + `v1` correct,
- *       head still swapped.  Best structural state; kept only in this note.
- *   +1  every carrier whose second set is in ANOTHER basic block (`spin`,
- *       a fresh `n` set from `rec[0x1A]`, `rx`/`ry`, `len`).
- *   +2  an A195 `do { } while (0)` ref dial at any depth -- the arm's one free
- *       A200b barrier is already spent on the arm-top address split.
- *   =9  `rx` as the rec[0x19] carrier: its only other set is a call-result copy,
- *       which is coalesced before sched1, so reg_n_sets never rises (F14i).
- *
- * CARRIER SEARCH CLOSED 2026-08-21-1 -- 26 measured variants, and they fall
- * into exactly three classes with NO fourth option left.  Do not hunt carriers
- * again; the aligned score is in parentheses (baseline 4).
- *   (a) **Second set folded away -> no effect at all (4, byte-identical).**
- *       F14i is broader than "call-result copy": ANY second set that is a
- *       single-use temp feeding one expression is deleted before sched1, so
- *       reg_n_sets stays 1.  Measured inert: `idx` carrying the x0x58 PRODUCT
- *       (`idx = node[8] * 0x58; actor = D_80075828 + idx;`), the same on the
- *       first product, a named `star = *(int **)actor;` local, `idx` as the
- *       waypoint arg `(rec[0x2] << 7) + 0x200`, and `idx = spin;`.
- *   (b) **Second set in a call-containing region -> callee-saved reg, whole-arm
- *       rotation (12-67).**  The allocno becomes call-crossing, reload hands it
- *       `s0`, and every register in the block shifts.  Measured: a function-
- *       scope carrier donated by another switch arm (0x6 `amp` = 12, 0x42 `i` =
- *       12, and the lbu does hoist but lands in `s0`), and sibling-branch
- *       carriers inside arm 0x1D (`dv[2] += rec[0x2] << 5` = 67, `pt[2] -=
- *       HS(0x1C)` = 67, `HS(0x1E) = (rand & 6) + 1` = 68).
- *   (c) **Both sets inside the call-free patrol block -> boost dies cleanly,
- *       register stays caller-saved, but the head straggler order breaks (12).**
- *       This is the best structural state and it is a whole FAMILY, not one
- *       spelling: `idx` holding the index AND the sum
- *       (`idx = rec[0x19]; idx = (int)(*(int **)actor + idx); node = (int *)idx;`),
- *       the same with the `node` local elided and the two derefs cast inline,
- *       and the `idx = idx * 4 + *(int *)actor;` spelling ALL give bit-identical
- *       output at 12 -- as does the note's `node`-as-carrier row above.  The lbu
- *       hoists to slot 3 in `a3` and the head comes out [arg, lbu23, lbu24, lui,
- *       lw] where the original has [lbu23, arg, lui, lw, lbu24].
- *
- * WHY (c) CANNOT BE FINISHED FROM SOURCE, measured this session:
- *  - The head is four priority-1 STRAGGLERS and their order is settled by
- *    `rank_for_schedule`'s INSN_LUID tiebreak and `schedule_select`'s
- *    `potential_hazard` override -- the trace prints
- *    `;; insn N has a greater potential hazard` on exactly this comparison, and
- *    a load ALWAYS outranks the spilled-arg `move`, which is why the arg copy
- *    sinks to the front of the block whenever a fourth straggler appears.
- *  - **Statement permutation is inert here** -- proved three independent ways
- *    (swapping `idx = rec[0x19]` with the `actor = ...` line on the baseline, on
- *    the (c) body, and with the base load's first use moved).  All three are
- *    BIT-IDENTICAL to their unpermuted form, which is F14's "never statement
- *    permutation" rule holding exactly.
- *  - Un-boosting is what ADDS the fourth straggler, so (c)'s head damage is not
- *    a separate bug to fix on top -- it is the same edit.  The original needs
- *    the index unboosted AND only three stragglers, which no source form gives.
- *
- * CORRECTION to the "+2, the A195 dial cannot reach this block" row above: it
- * can.  `do { do { star = *(int **)actor; } while (0); } while (0);` is
- * LENGTH-EXACT (1697) and moves the schedule (aligned 7, up from 4) -- the dial
- * reaches local-alloc here, it just does not point the right way.  The +2 cost
- * applies to a wrapper on the rec[0x19] load itself, not to every site.
- *
- * Screening recipe for any future attempt (~20 s/variant, no link needed):
- * `config/compile.sh ovl <src> /tmp/g.o` + `objdump -d | grep -c` == **1697**
- * for a linkable body; anything else is a cost, reject before diffing.
- *
- * WHAT IS LEFT is one allocation question: `idx` (the `lbu`) must take `a2` and
- * the `*(int **)actor` deref must take `v0`; ours is the other way round.
- * qty_compare ranks them n_refs/live_length and they are close, but the A195
- * dial cannot reach this block (see above), so the next idea has to change the
- * ref counts without a wrapper.
- *
- * 2026-09-01-1 -- THE TWO NEWEST IDIOMS BOTH MEASURED AND BOTH REJECTED.  Both
- * postdate the 2026-08-21-1 carrier search, so they were the obvious re-screen
- * (§G says to re-screen every allocation-tie park against the newest idioms);
- * they are recorded here so nobody re-runs them.  Baseline is 4 aligned /
- * 9 linked, all length-exact at 1696:
- *   - **A238 ("de-boost BOTH competing temps") -- 14 and 17, worse than the
- *     baseline 4.**  A238's step 1 is exactly class (c) applied to both sides,
- *     so it looked like the missing half of the carrier search.  Measured with
- *     a named multi-set `int star;` carrying `*(int *)actor` and then `node[8]`:
- *       star multi-set, idx single-set            14 aligned / 4 regions
- *       star multi-set, idx multi-set (class (c)) 17 aligned / 6 regions
- *     De-boosting the deref costs more than the boost on `idx` does, i.e. this
- *     pair is NOT A238's shape: A238 needs the two temps to be two loads of the
- *     same kind in one block whose ranges nest, and here one of them is the
- *     consumer of the other.
- *   - **A236 (an extra argument to an argument-IGNORING callee as a HARD-
- *     REGISTER dial) -- 71 aligned over 50 regions.**  This one looked like the
- *     exact tool: `qty_phys_copy_sugg` is consulted BEFORE priority, the
- *     following statement is already `func_80017C24(hold, POS)`, that callee is
- *     a hand-written leaf that reads only `$a0`/`$a1` (verified in
- *     asm/text.s:6744 -- `lhu $at,0($a1) … sw $v1,8($a0); jr $ra`), and the
- *     THIRD argument register IS `$a2`, the register `idx` has to reach.  It
- *     does move the target region, but the copy does NOT coalesce here: the arg
- *     pseudo becomes a real allocno and every `$t0` in the function rotates to
- *     `$t1` (35 regions of pure t0/t1 rename plus a worse target block).
- *     Isolated: the K&R `extern void func_80017C24();` declaration needed to
- *     spell it is INERT on its own (4/2, byte-identical), so the cost is the
- *     argument, not the declaration.  **A236's "the copy coalesces to nothing"
- *     precondition is not automatic -- check the whole-function register map,
- *     not just the target block.**
- *
- * WHAT IS ALREADY RIGHT (do not disturb):
+/* Matching notes.
  *  - Arms 0x1D and 0x1F are freshly decoded here; everything else is donor C.
  *  - `aim` names &dv and `hold` names &pt.  Both are needed and their ORDER is
  *    load-bearing three times over: `step2 = ..; aim = dv; step4 = ..` puts
@@ -148,6 +13,10 @@
  *    behind `shove:`.  That exact split is what makes step4 win $fp: with both
  *    calls inline &dv has one ref too many (4*23/1551 beats 4*23/1554) and it
  *    takes the register instead, costing an `lw` per arm across the function.
+ *  - Arm 0x1D's patrol node is `(int *)(idx * 4 + *(int *)actor)` in INT
+ *    arithmetic (A149): the pointer form canonicalises the addu to put the
+ *    deref first, which ties the sum to the deref's register instead of
+ *    idx's and swaps the lbu between $v0 and $a2.
  */
 /* func_level_27_80086754 (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -580,7 +449,7 @@ void func_level_27_80086754(int step) {
       } else {
         idx = rec[0x19];
         actor = D_80075828 + rec[0x18] * 0x58;
-        node = *(int **)actor + idx;
+        node = (int *)(idx * 4 + *(int *)actor);
         wp = (char *)node[1];
         actor = D_80075828 + node[8] * 0x58;
         func_80017C24(hold, POS);
