@@ -4576,3 +4576,62 @@ func_8003A420_2026_09_22:
   class: "F9 unchanged"
   date: 2026-09-22
   note: "9/192. Block-scoped ground local (either branch order): length-short, cross-jump; `g = ret` copy: 9."
+FUN_80060e28_2026_09_23:
+  verdict: matched
+  class: "F1 closed: route every non-mirror return through one `result` variable joined at a label, so result is a global allocno that takes v0 and the r->x / 2 chain loses its v0 suggestion"
+  date: 2026-09-23
+func_8002CCC8_2026_09_23:
+  verdict: matched
+  class: "barrier moved to the EARLIEST slot (right after the offset-0 sb) + volatile byte-store batch + int-arith rec (A149) + a `$2` register local for rec+0x10 so the subu's dest ties to posY instead"
+  date: 2026-09-23
+  note: "16 -> 12 (barrier position) -> 7 (volatile stores) -> 4 (int arith) -> 0 (hard-reg carrier). A181 reused-local carriers (z, yw, yaw) do move the tie to posY but become global allocnos that land in a3."
+BeginGemPickupOverlay_2026_09_23:
+  verdict: matched
+  class: "hard-register lever: the shared literal 1 as `register int one asm(\"$4\")` removes it from local-alloc's qty_compare, so `dragons` takes $v1 and world takes $a1"
+  date: 2026-09-23
+func_level_27_80086754_2026_09_23:
+  verdict: matched
+  class: "A149: the arm-0x1D node sum in INT arithmetic (`idx * 4 + *(int *)actor`) keeps idx*4 as the addu's first operand, so the sum ties to idx's $a2 and the deref takes $v0 — the 'allocation question' was an operand-order question"
+  date: 2026-09-23
+func_titlescreen_8007ABAC_2026_09_23:
+  verdict: parked
+  class: "sched2 rank tie: pinned `lui a1` const vs `li v0,600` (true-dep producer of the stack-arg sw) at T-8, all priority 1"
+  date: 2026-09-23
+  note: "7 -> 3/2147 length-exact via `register int off asm(\"$5\")` (the a1 race is gone). The const now sits at block top and fills the bnez delay slot where the original has `lui a2,0x4`. Set position, in-arg set, cd pinned to $4 all inert; pointer pin 9, sum pin 6, barrier +1 insn."
+func_8003A420_2026_09_23:
+  verdict: matched
+  class: "F9 closed: ground-probe result as a `$3` register local (kills the v0 preference + cross-jump), and `ret = 0` hoisted above the last call so ret overlaps arg2 and takes s4"
+  date: 2026-09-23
+func_80038FC8_2026_09_23:
+  verdict: matched
+  class: "F14b mutual exclusion closed: bare 0x10 literals keep the schedule, `old` as a `$2` register local fixes the v0/v1 rotation without a loop note"
+  date: 2026-09-23
+func_8005FC6C_2026_09_23:
+  verdict: parked
+  class: "A187 copy-canonical: the original stores through the return copy in v0; cse keeps the parameter canonical"
+  date: 2026-09-23
+  note: "7 -> 5/38 with the mask as a `$4` register local. `r = ot` spellings (plain and `$2`-pinned) are propagated away."
+func_80038C4C_2026_09_23:
+  verdict: parked
+  class: "hard-reg pin unusable: `register int ay asm(\"$5\")` (function or block scope) rewires the entry `move v0,a0 / move a1,v0` param copy, 63/66"
+  date: 2026-09-23
+Gamestate0C_Draw_2026_09_23:
+  verdict: parked
+  class: "B-i fold: a `$3` register local for the OT base is still folded to absolute (inert, 4/283)"
+  date: 2026-09-23
+RespawnOrGameOver_Draw_2026_09_23:
+  verdict: parked
+  class: "DrawSync arg copy: a `$4` register local set above the guard grows the function 35 words (function or block scope)"
+  date: 2026-09-23
+WaitForFrameDeadline_2026_09_23:
+  verdict: wall
+  class: "B20: prologue `sw ra` vs the volatile budget init store (re-screened, unchanged 7/39)"
+  date: 2026-09-23
+CdDataSync_2026_09_23:
+  verdict: parked
+  class: "arg-evaluation order in a 5-arg call; a `$4` register local for the `&readyTbl[idx0]` pointer is propagated through the deref (13/91) or grows the function at wider scope"
+  date: 2026-09-23
+TickSpyroHornStrikeAttack_2026_09_23:
+  verdict: parked
+  class: "s0/s1 rotation; `register int *strike asm(\"$17\")` at function scope costs +2 insns"
+  date: 2026-09-23

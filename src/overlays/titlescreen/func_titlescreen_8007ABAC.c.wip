@@ -10,6 +10,21 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
+ * 2026-09-23: 7 -> 3/2147, still length-exact.  The a1 race is gone: the
+ * -0x40000 goes through a `register int off asm("$5")` local, which takes the
+ * constant out of local-alloc's qty_sugg_compare entirely.  LEFT (3 insns):
+ * the `lui a1,0xfffc` is now scheduled at the TOP of the block and reorg puts
+ * it in the `bnez` delay slot, where the original has `lui a2,0x4`.  The
+ * sched2 trace (-dR) for block 26 shows every insn in the arg group at
+ * priority 1; at T-8 the stack-arg `sw` was just scheduled, the cd load is
+ * blocked (store->load hazard), and rank_for_schedule then prefers `li v0,600`
+ * because it is the sw's TRUE-dep producer (class 1), so the const drifts to
+ * T-11.  The original places the const at T-8, i.e. its const had priority 2
+ * (a producer edge) or the 600 was not ready.  Inert: the set before / after
+ * the cd read, inside the argument, cd also pinned to $4.  Worse: pinning the
+ * pointer to $v0 (9), pinning the SUM to $a1 (6, cd read sinks), a barrier
+ * before the set (+1 insn).
+ *
  * STATUS 2026-08-24: length-exact (2147/2147), links, **2140/2147 words
  * byte-identical, 7 differing instructions** (was 10 on 2026-08-23-1). All 7
  * are ONE call block — the `func_80016698` CD-read at 0x8007ADD8..0x8007AE00 —
@@ -239,8 +254,10 @@ void func_titlescreen_8007ABAC(void) {
       if (D_80078D78.unk_0x10 == 0) {
         /* kick off loading titlescreen data from the CD */
         int cd;
+        register int off asm("$5");
         cd = *((volatile int *) &D_80076B90.unk_0x00);
-        func_80016698(cd, D_800785E8 - 0x40000, 0x40000,
+        off = -0x40000;
+        func_80016698(cd, D_800785E8 + off, 0x40000,
                       D_8007A6D8, 600);
         D_80078D78.unk_0x10 = 1;
       } else if (D_80078D78.unk_0x10 == 1) {
