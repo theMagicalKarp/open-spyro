@@ -4576,3 +4576,7 @@ func_8003A420_2026_09_22:
   class: "F9 unchanged"
   date: 2026-09-22
   note: "9/192. Block-scoped ground local (either branch order): length-short, cross-jump; `g = ret` copy: 9."
+FUN_80060e28_2026_09_23:
+  verdict: matched
+  class: "F1 closed: route every non-mirror return through one `result` variable joined at a label, so result is a global allocno that takes v0 and the r->x / 2 chain loses its v0 suggestion"
+  date: 2026-09-23
