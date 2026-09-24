@@ -1,0 +1,3091 @@
+/* PARKED 2026-09-24 -- first pass on the flight-level actor-update megafunction
+ * (func_level_{5,11,17,23,29}_8007CFB4; this is the smallest, 18,952 B).
+ *
+ * STATE: compiles and links; 4,733 of 4,738 insns (-5). Register-anchored
+ * masked resync 4,689 / 4,738 aligned (99.0%) over 36 regions. The 0x1C0
+ * frame, every stack offset and every linked address are exact (checked on
+ * the linked overlay bytes, not just the masked shape). Arms 0x10, 0x22,
+ * 0x1E0, 0xAD, 0x154, 0x161, 0x183, 0x18D, 0x195, 0x177..0x182 and
+ * 0x4C/0x1AA..0x1C3 are clean.
+ *
+ * HOW IT WAS BUILT (redo this for the four siblings). The case list and order
+ * come off the compare tree (ascending arm addresses = source order, A250):
+ *   16, 34, 478/479, 480, 14/15/83..87, 120, 173, 260..269, 299, 340,
+ *   345..347, 353, 358, 405/477, 375..386, 387..389/491, 397/399, 76/426..451
+ * with no `default:`. Every arm that shares a behaviour with matched
+ * func_level_0_8007D9C8 was spliced from it (level_0's 0xff/0x100 arm is
+ * 478/479 here, 0x101 is 480, 0xc2 is 299), then re-pointed per site:
+ * SPY.x -> spy->x wherever the original addresses Spyro through $fp, and
+ * SPY.bodyRotZ -> D_80078A66 / nrm[0] -> D_80077368 wherever it is absolute
+ * (A240). 340, 345..347, 353, 358, 375.., 387.. and 397/399 are new decodes.
+ * The preamble is level_30's; the local list is level_0's plus svT..svW.
+ *
+ * LEVERS THAT CLOSED WHOLE BLOCKS (each is in the cookbook):
+ *   - `spy`: `base = (char *)&D_80078BBC` before the loop, `spy = base -
+ *     0x164` at the loop top, and one in-loop `*(int *)base` read (0x78 arm)
+ *     so `base` lives across calls, spills, and reload rebuilds it through
+ *     the spill reg: `lui t0; addiu t0; addiu fp,t0,-0x164`, as the original.
+ *   - One variable, not two, wherever the original reuses a callee-saved reg:
+ *     the HUD arm's `prev`/`t` (s0) and loop counter/`n` (s2). Merging them
+ *     took the arm from 221 to 187 and fixed the t0/t1 spill-reg swap.
+ *   - The HUD init's icon loop indexes `D_80077FEC[i].field` directly with a
+ *     separate `y` counter; a `Actor *a = &D_80077FEC[i]` local is fully
+ *     strength-reduced and costs ~150 aligned insns of register map (187->28).
+ *   - 0x183's `>> 6` on a short table read: A233's count local must be set
+ *     ABOVE THE ACTOR LOOP (`sh6`) so it crosses calls, spills and is
+ *     rematerialised as an immediate; set at the arm head it stays in a2
+ *     (`srav`).
+ *   - The 0x154/0x161 height test is `drop > 0 ? drop < K : SPY.posZ -
+ *     height < K`, not nested ifs (the ternary gives the orig's `j` block).
+ *
+ * RESIDUES (orig insn index; 49 insns in total):
+ *   [34..37]  preheader order: orig hoists `s7 = 1` before the spy triple.
+ *             Spy must stay at the loop top (anywhere later it is not
+ *             hoisted at all); a dead `one = 1` ahead of it is deleted
+ *             before loop.c runs. Open.
+ *   0x1DE [870..903], 0x104 [2802..2842]: `&D_80077368` is cse-held in s1
+ *             across two calls; the original rematerialises it per call.
+ *             loop.c does not hoist it here (2 movables, savings 2, life 45:
+ *             under threshold). Restoring level_0's `nrm` pointer is worse.
+ *   0xE [1649], 0x78 [2485], 0x166 [3642..3656]: the constant 32 IS hoisted
+ *             out of the actor loop here (5 movables, savings 7, life 53)
+ *             and rematerialised through t0; the original materialises it
+ *             in place. Mirror image of the D_80077368 knot -- the next
+ *             probe is to find which 32-set the original does not have.
+ *   0x12B [2960..2975]: the original holds &D_80076378 (model table) in s0
+ *             across the func_80056DC4 call; we index it absolutely.
+ *   0x166 [3555..3567]: `D_8006E3E4[i] = st->unk84[i]` -- orig keeps a
+ *             4*i giv and stores `sw v0,D_8006E3E4(v1)`; we reduce the
+ *             destination to a pointer. Declaration shape is inert.
+ *   0x166 [3917..3930], [3970], [4049..4051]: sched order of the 0x10 arg
+ *             and the icon-loop init.
+ *   0xE [1401]: func_80057380's arg lands in both the beqz delay slot and
+ *             the jal delay slot.
+ *
+ * MEASURING: `open-spyro diff` cannot show it (length differs). Compile-only:
+ * carve 18,952 B at 0x8007CFB4-0x8007AA38 from disc/orig/overlays/
+ * level_11_*.ovl, objdump both sides with -M no-aliases, anchor register
+ * names BEFORE masking immediates, difflib-align. To check addresses, link
+ * it (copy to .c, `open-spyro diff`, then compare the linked overlay bytes)
+ * and restore the two generated level_11 *.slots.ld files afterwards.
+ *
+ * The level_30-specific declarations below (FollowState etc.) are unused
+ * splice leftovers.
+ */
+/* func_level_11_8007CFB4 -- per-frame actor update for level 11 (Night Flight).
+ *
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class: a small
+ * state machine over the actor's state byte (->unk48), often with a sub-state
+ * (->unk49), and usually a class-specific state block behind ->state.
+ *
+ * Layout of this file:
+ *   Core records      Actor, the per-type Model table, waypoint paths
+ *   Per-class blocks  one state struct per actor class, each followed by the
+ *                     globals and callees its case uses, in roughly case order
+ *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
+ *                     aggregate over its whole address range
+ *   Helper macros     absolute value and the three animation idioms
+ *   The function      update-list preamble, then the per-class dispatch
+ *
+ * ==== Core records ====
+ *
+ * Actor record (0x58 bytes), shared by every actor class. ->type picks the
+ * behaviour, ->state points at the class's own block, and 0x3C..0x42 hold
+ * the animation state driven by the macros further down. */
+typedef struct Actor {
+  void *state;         /* 0x00 class-specific state block */
+  int unk04;           /* 0x04 */
+  int unk08;           /* 0x08 collision group */
+  int posX;            /* 0x0C position */
+  int posY;            /* 0x10 */
+  int posZ;            /* 0x14 */
+  int flags;           /* 0x18 damage flags */
+  int unk1C;           /* 0x1C shadow distance */
+  int unk20[5];        /* 0x20 rotation matrix */
+  short unk34;         /* 0x34 collision region */
+  short type;          /* 0x36 actor class */
+  short unk38;         /* 0x38 floor distance */
+  unsigned char unk3A; /* 0x3A dropped flag */
+  unsigned char unk3B; /* 0x3B */
+  unsigned char unk3C; /* 0x3C current animation */
+  unsigned char unk3D; /* 0x3D next animation */
+  unsigned char unk3E; /* 0x3E current frame */
+  unsigned char unk3F; /* 0x3F next frame */
+  unsigned char unk40; /* 0x40 frame progress */
+  unsigned char unk41; /* 0x41 progress per frame */
+  unsigned char unk42; /* 0x42 anim flags: bit 1 done, bit 0 new frame */
+  unsigned char unk43; /* 0x43 pod (actor group) */
+  unsigned char unk44; /* 0x44 rotation x */
+  unsigned char unk45; /* 0x45 rotation y */
+  unsigned char unk46; /* 0x46 rotation z */
+  unsigned char unk47; /* 0x47 depth offset */
+  unsigned char unk48; /* 0x48 state; >= 0x80 means dormant */
+  unsigned char unk49; /* 0x49 sub-state */
+  unsigned char unk4A; /* 0x4A sector index */
+  unsigned char unk4B; /* 0x4B renderer */
+  unsigned char unk4C; /* 0x4C */
+  unsigned char unk4D;
+  unsigned char unk4E;
+  unsigned char unk4F;
+  unsigned char unk50; /* 0x50 render radius */
+  unsigned char unk51; /* 0x51 was drawn last frame */
+  unsigned char unk52; /* 0x52 update distance */
+  unsigned char unk53;
+  unsigned char unk54; /* 0x54 sound channel */
+  unsigned char unk55; /* 0x55 sound distance */
+  unsigned char unk56; /* 0x56 actor index */
+  unsigned char unk57; /* 0x57 scale override */
+} Actor;               /* 0x58 */
+
+/* The update list, and the per-actor values the loop publishes before it
+ * dispatches. */
+extern Actor *D_800700F4[]; /* live actor list, 0-terminated */
+extern int D_800756CC;      /* frame delta in ticks */
+extern int D_800756C4;      /* frame delta, as seen by the callees */
+extern int D_80075794;      /* current actor's animation finished */
+extern int D_800757F4;      /* current actor's new-frame flag */
+
+/* Model table entry, indexed by actor->type: sound ids and one header per
+ * animation. */
+typedef struct AnimationHeader {
+  short m_NumFrames;                /* 0x00 */
+  unsigned short m_NumColors;       /* 0x02 */
+  unsigned char m_IsSpyroAnimation; /* 0x04 */
+  unsigned char m_Scale;
+  unsigned char m_ShortEncodeShift;
+  unsigned char m_Radius;
+  unsigned char m_VertCountHigh; /* 0x08 */
+  unsigned char m_VertCountLow;
+  unsigned char m_Padding2;
+  unsigned char m_DepthScale;
+  unsigned char m_ProgressPerTick; /* 0x0C -- the byte TYPE_DESC reads */
+  unsigned char m_Padding3;
+  unsigned short m_Padding4;
+  void *m_AnimationVertices; /* 0x10 */
+  void *m_Faces;
+  void *m_Colors;
+  void *m_LpFaces;
+  void *m_LpColors; /* 0x20 */
+} AnimationHeader;
+
+typedef struct Model {
+  int m_NumAnimations;              /* 0x00 */
+  unsigned char m_Sounds[16];       /* 0x04 */
+  void *m_CollisionModels[8];       /* 0x14 */
+  void *m_Data;                     /* 0x34 */
+  AnimationHeader *m_Animations[1]; /* 0x38 */
+} Model;
+
+extern Model *D_80076378[]; /* per-type model table, indexed by ->type */
+extern Actor *D_80075898;   /* Sparx, or null when absent */
+
+/* ==== Per-class state blocks ====
+ *
+ * Every actor class keeps its private state behind actor->state. The blocks
+ * below sit next to the globals and callees their case needs.
+ *
+ * Waypoint path used by the path-following classes (10, 114, 339): node
+ * count, current node, then 0x10-byte nodes that begin with a position. */
+typedef struct PathData {
+  unsigned char count; /* 0x00 */
+  unsigned char cur;   /* 0x01 */
+  char unk02[4];
+  short reversed; /* 0x06 */
+  struct {
+    int x;
+    int y;
+    int z;
+    int unk0C;
+  } nodes[1]; /* 0x08 */
+} PathData;
+
+/* Type 10: path patroller. */
+typedef struct PathState {
+  int unk00;
+  int unk04;
+  int unk08;
+  PathData *path; /* 0x0C */
+  int unk10;
+  int unk14;
+  int unk18;
+  int heading; /* 0x1C */
+  int unk20;   /* 0x20 */
+  int unk24;   /* 0x24 divisor, random 0x6E..0xA0 */
+  int unk28;   /* 0x28 clamped to <= 0x5A */
+  int unk2C;   /* 0x2C consecutive-success counter */
+  int unk30;   /* 0x30 */
+} PathState;
+
+/* Node accessors for paths held as byte pointers (type 286). */
+#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
+#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
+#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
+
+/* Type 286: ambient sound source; mode 2 also coasts along a path. */
+typedef struct RoamState {
+  int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
+  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
+  int timer;           /* 0x0C */
+  int sub;             /* 0x10 sub-state inside mode 2 */
+  int unk14;           /* 0x14 4th argument to func_80017D7C */
+  int vel[3];          /* 0x18 current leg velocity, written by func_80017D7C */
+  int count;           /* 0x24 frames left on the current leg */
+} RoamState;
+
+extern int func_80017D7C(int *from, int *to, int *vel, int a);
+
+/* Progress-per-tick byte of animation `anim` in the actor's model. */
+#define TYPE_DESC(a, anim)                                                     \
+  (D_80076378[(a)->type]->m_Animations[(anim)]->m_ProgressPerTick)
+
+/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
+typedef struct ShotState {
+  void *unk00;           /* 0x00 egg index */
+  short from[3];         /* 0x04 launch point */
+  short to[3];           /* 0x0A destination */
+  short speed;           /* 0x10 */
+  unsigned char phase;   /* 0x12 timer */
+  unsigned char heading; /* 0x13 */
+} ShotState;
+
+/* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
+typedef struct SwitchState {
+  int shift; /* 0x00 bit position within the target's 0x49 mask */
+  int idx;   /* 0x04 index into the actor pool at D_80075828 */
+} SwitchState;
+
+/* Type 16: butterfly. Flutters around an anchor until Sparx fetches it. */
+typedef struct ChaseState {
+  int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
+  int tgtX;              /* 0x04 */
+  int tgtY;              /* 0x08 */
+  int unk0C;             /* 0x0C */
+  unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
+  unsigned char heading; /* 0x11 */
+  unsigned char t12;     /* 0x12 heading-change timer */
+  unsigned char t13;     /* 0x13 vertical-change timer */
+  unsigned char t14;     /* 0x14 */
+} ChaseState;
+
+/* Sparx's state block, as seen by the actors that send him fetching. */
+typedef struct ChaserState {
+  int timer; /* 0x00 */
+  int unk04;
+  int unk08;
+  int unk0C;
+  Actor *owner; /* 0x10 actor being fetched, or null */
+} ChaserState;
+
+/* Engine callees shared by most behaviours: update list, collision and
+ * movement helpers, random numbers and angle arithmetic. */
+extern void func_80051FEC(void);
+extern void func_800522C0(Actor **list, int mode);
+extern void func_80038458(Actor *actor);
+extern Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
+extern void func_8003B7C0(Actor *actor);
+extern void func_80037E98(Actor *actor);
+extern int func_80037EA0(int lo, int hi); /* random in [lo, hi] */
+extern int func_80037F10(int a, int b);
+
+/* Step a countdown timer; non-zero when it fires. */
+extern int func_80037F90(void *timer, int step);
+extern int func_80038074(int a, int b);
+extern int func_800381BC(int a, int b); /* signed angle delta */
+extern int func_80038EE0(Actor *actor, int heading, int a, int b, int c);
+extern int func_80039398(Actor *actor, int a, int b, int c, int d);
+extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
+extern void func_800529E4(Actor *actor, int mode);
+extern void func_80052568(Actor *actor);
+extern unsigned int func_8006272C(void); /* GetRandomU32 */
+
+/* Particle spawn hook. The last argument is either a packed parameter word
+ * or a pointer to a velocity vector, depending on the effect. */
+extern void (*D_800758E4)(int a, int effect, int *pos, void *c);
+
+/* Actor spawn hook: (type, parent) -> new actor. */
+extern Actor *(*D_800758CC)(int type, Actor *parent);
+
+/* Level actor pool, switch flags, and the sound tables and override
+ * globals used when a behaviour plays a sound. */
+extern Actor *D_80075828;         /* level actor pool */
+extern Actor *D_80075890;         /* end of the level actor pool */
+extern int D_80077AE8;            /* bit 0: switch sounds enabled */
+extern unsigned char *D_800761D0; /* sound definitions, 20 bytes each */
+extern unsigned char *D_800761D4; /* sound id table */
+extern int D_800761DC;
+extern struct {
+  short v;
+} D_800761F4;
+extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
+
+/* Egg sequence flags, then the vector library: copy, add, subtract, scale,
+ * shift, sine and cosine. */
+extern int D_8007570C;
+extern struct {
+  int v;
+} D_80077FDC;
+extern int D_80077378; /* pad buttons pressed; 0x40 skips the egg */
+extern int D_80075964;
+extern int D_80076FE8[];
+extern int D_80075810;
+
+extern void func_8003C85C(int *pos);
+extern int func_800169AC(int dx, int dy);
+extern int func_80016C58(int a);           /* LookupSine */
+extern int func_80016CB0(int a);           /* LookupCosine */
+extern void func_80017700(int *d, int *s); /* CopyVector */
+extern void func_80017110(int *d, int *s);
+extern void func_80017758(int *d, int *a, int *b); /* AddVector */
+extern void func_8001778C(int *d, int *a, int *b); /* SubVector */
+extern void func_800176C8(int *d, int n);          /* RShiftVector3 */
+extern void func_800176F0(int *v);
+extern void func_800177C0(int *d, int *s, int k); /* ScaleVector3Sat */
+extern void func_80017BFC(short *d, int *s);
+extern void func_80017C24(int *d, int *s);
+
+/* Mark an item collected; the second argument is the actor or its id. */
+extern void func_8003B854(int a, void *b);
+
+extern void func_80055A78(int a, Actor *actor, int b, void *c);
+extern void func_8003851C(Actor *actor, int a, int b);
+extern int func_80038340(Actor *actor); /* ground height under the actor */
+extern void func_80038638(Actor *actor, int *target, int a, int heading, int b,
+                          int c, int d, int e, int f, int g, int h, int i,
+                          int j);
+extern int func_80017990(int *pos, int *target); /* planar distance */
+extern int func_80016AB4(int dx, int dy, int z); /* Atan2 */
+extern int func_80017908(int a, int b);          /* AbsAngleDelta8 */
+extern void func_8003C358(Actor *actor, int mode);
+
+/* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
+ * exit vortex flag is set and its linked actor is dormant. */
+typedef struct AnimState {
+  int handle;  /* 0x00 */
+  int started; /* 0x04 one-shot init latch */
+  int idx;     /* 0x08 pool index of the actor this one watches */
+} AnimState;
+
+extern unsigned char D_80078E7C; /* visited flag, read once */
+
+extern unsigned char D_8007A6A9;
+extern unsigned char D_8007A6AA;
+extern unsigned char D_8007A6AB;
+extern unsigned char D_8007A6AC;
+
+extern void func_8002B390(int handle, int a, int b);
+extern void func_8002B444(int handle, int a, int b);
+extern int func_8002B3F4(int handle); /* bits 8..15 are the anim marker */
+extern void func_800562A4(Actor *actor, int mode);
+
+/* Types 255/256/423/424: chest fragments that bounce, reflecting their
+ * velocity about the surface normal. */
+typedef struct SparkState {
+  short vel[3];        /* 0x00 */
+  unsigned char spin0; /* 0x06 */
+  unsigned char pad07;
+  unsigned char spin1; /* 0x08 */
+  unsigned char pad09;
+  unsigned char spin2; /* 0x0A */
+  unsigned char pad0B;
+  int life; /* 0x0C */
+} SparkState;
+
+/* Types 260..269: floating digits. Same bounce, different layout. */
+typedef struct DebrisState {
+  int life;   /* 0x00 */
+  int unk04;  /* 0x04 */
+  int vel[3]; /* 0x08 */
+} DebrisState;
+
+/* Surface normal produced by the collision probes. */
+extern int D_80077368;
+extern int D_8007736C;
+extern int D_80077370;
+
+/* Single-field views for reading a scalar symbol through a struct type. */
+typedef struct {
+  int v;
+} I32;
+#define AS_I32(sym) (((I32 *)&(sym))->v)
+
+typedef struct {
+  unsigned char *v;
+} PtrU8;
+#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
+
+extern int func_8004BE4C(int *pos, int a, int b); /* ground/wall probe */
+extern void func_80017330(int *v, int k);         /* normalise to k */
+extern void func_800175B8(int *v, int k, int n);
+
+/* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
+ * doubles as the pickup origin once Sparx has fetched the item. */
+typedef struct PickupState {
+  int vel[3];          /* 0x00 */
+  short unk0C;         /* 0x0C */
+  unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
+  unsigned char timer; /* 0x0F */
+  unsigned char count; /* 0x10 bounces left */
+  unsigned char pitch; /* 0x11 */
+  unsigned char yaw;   /* 0x12 */
+  unsigned char roll;  /* 0x13 */
+  unsigned char anim;  /* 0x14 0xFF == none */
+} PickupState;
+
+/* Sparkle nodes spawned around items. */
+typedef struct AnimNode {
+  int pos[3];         /* 0x00 */
+  unsigned char flag; /* 0x0C */
+  unsigned char pad[11];
+} AnimNode;
+
+extern AnimNode D_80077108[];
+
+/* Sparkle anchor offsets per model family. */
+extern int D_8006E5A0;
+extern int D_8006E5B8;
+extern int D_8006E5AC;
+
+/* Type 173: key. Rocks in place, sparkles, and is collected on contact. */
+typedef struct SpinState {
+  short timer;         /* 0x00 */
+  unsigned char angle; /* 0x02 */
+  unsigned char anim;  /* 0x03 0xFF == none */
+} SpinState;
+
+extern int D_80075830; /* key collected */
+
+/* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
+ * in the save-options block. */
+extern int D_80075750;
+extern unsigned char D_800758D0[]; /* save-options block; [1] is the latch */
+extern int D_800777F4;
+extern int D_800777F8;
+extern void func_8003DFA4(void);
+extern void (*D_800757A0)(Actor *actor);
+
+/* Dynamic actor pool counters; the difference is the free slot count. */
+extern int D_800756A4;
+extern int D_800756A8;
+
+/* Type 194: wooden chest. Breaks into fragments when damaged. */
+typedef struct BreakState {
+  int unk00; /* 0x00 */
+  int unk04; /* 0x04 */
+} BreakState;
+
+/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
+ * saves a checkpoint and starts the rescue. */
+typedef struct RideState {
+  int unk00[6]; /* 0x00 */
+  int unk18;    /* 0x18 */
+  int unk1C;    /* 0x1C fallback heading when ->unk20 is unset */
+  int unk20;    /* 0x20 index into D_80075828, -1 for none */
+  int unk24;    /* 0x24 script id handed to func_8002C914, -1 for none */
+  int unk28[7]; /* 0x28 */
+  int unk44;    /* 0x44 phase counter, 0 .. 0x100 */
+  int unk48;    /* 0x48 saved actor->unk44 */
+  int unk4C;    /* 0x4C saved actor->unk45 */
+  int unk50;    /* 0x50 saved actor->posZ */
+} RideState;
+
+/* Shake table: x/y rotation offsets, one row per two ticks. */
+typedef struct AngPair {
+  unsigned char a; /* 0x00 */
+  unsigned char b; /* 0x01 */
+} AngPair;
+
+extern AngPair D_8006E638[];
+
+/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
+ * child actor; breaks into fragments when damaged. */
+typedef struct LiftState {
+  Actor *unk00; /* 0x00 the spawned passenger, valid once ->unk48 is 1 */
+  int unk04;    /* 0x04 phase */
+  int unk08;    /* 0x08 saved actor->unk44 */
+  int unk0C;    /* 0x0C saved actor->unk45 */
+  int unk10;    /* 0x10 saved actor->posZ */
+  int unk14;    /* 0x14 mode; 1 selects the extra tick and the rearm */
+} LiftState;
+
+#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
+
+/* Type 398: exit vortex. Surface-below flags and the level transition
+ * globals. */
+extern int D_80075718;             /* index of the surface under the probe */
+extern unsigned char **D_800785B8; /* surface records, indexed by the above */
+extern int D_80075864;
+extern int D_800756AC;
+extern int D_800756B0;
+extern int D_8007579C;
+extern int D_800757D8;
+extern int D_80075858;
+extern int D_800758FC;
+extern int D_80075910;
+
+/* 0x18-byte spherical camera coordinates; D_8006CA24 holds the presets. */
+typedef struct Xform {
+  int v[6];
+} Xform;
+
+/* ==== Shared objects ====
+ *
+ * The camera as one object at 0x80076DD0, with the fields this function
+ * touches. */
+typedef struct {
+  char pad000[0x28];
+  int posX; /* 0x28 m_Position */
+  int posY; /* 0x2C */
+  int posZ; /* 0x30 */
+  char pad034[0x18];
+  short rotX;         /* 0x4C m_Rotation */
+  short rotY;         /* 0x4E */
+  short rotZ;         /* 0x50 */
+  short unk52;        /* 0x52 */
+  int occlusion;      /* 0x54 */
+  unsigned int state; /* 0x58 m_State */
+  int unk5C;          /* 0x5C */
+  Xform lastSim;      /* 0x60 */
+  Xform sphere;       /* 0x78 m_Sphere */
+  Xform sim;          /* 0x90 m_Simulation */
+  Xform unkA8;        /* 0xA8 */
+  int unkC0;          /* 0xC0 */
+  char padC4[0x14];
+  Xform *preset; /* 0xD8 m_SphericalPreset */
+} CamObj;
+extern CamObj g_anWorldToCameraRotMtx;
+#define CAM g_anWorldToCameraRotMtx
+
+extern Xform D_8006CA24[];
+
+extern void func_80033F08(int *out);
+extern void func_80034204(int *out, int a, int b, Xform *x);
+extern void func_800342F8(void);
+
+/* Vortex path: node count and current node, then the two anchor positions
+ * whose midpoint Spyro is pulled toward. */
+typedef struct PortalDesc {
+  unsigned char count;    /* 0x00 */
+  unsigned char index;    /* 0x01 */
+  unsigned char unk02[6]; /* 0x02 */
+  int posA[3];            /* 0x08 */
+  int unk14;              /* 0x14 */
+  int posB[3];            /* 0x18 */
+} PortalDesc;
+
+/* Type 398 state block. */
+typedef struct PortalState {
+  PortalDesc *desc; /* 0x00 */
+  int offset[3];    /* 0x04 nudge applied to the homing vector */
+  int unk10;        /* 0x10 */
+  int unk14;        /* 0x14 published to SPY.u206 as a byte */
+  int unk18;        /* 0x18 index into D_8006CA24; negative selects none */
+} PortalState;
+
+/* Crystal dragon sparkle anchors, one per sparkle phase. */
+extern int D_8006E57C;
+extern int D_8006E588;
+extern int D_8006E594;
+
+extern int D_800772D8[]; /* per-D_80075964 completion counters */
+
+/* Type 300: camera trigger volume. Live camera sphere and its template. */
+typedef struct Xform6 {
+  int w[6];
+} Xform6;
+extern Xform6 D_80078668; /* live camera transform */
+extern Xform6 D_8006C934; /* template it is seeded from */
+
+/* Type 300 state block: activation box, mode flags, timer, linked actor. */
+typedef struct TriggerState {
+  int unk00; /* 0x00 vertical span; also the offset added to the target Z */
+  int unk04; /* 0x04 horizontal radius */
+  int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
+              * bit4 also stamps actor->unk49 */
+  int timer; /* 0x0C */
+  int idx;   /* 0x10 index into the actor pool at D_80075828 */
+} TriggerState;
+
+/* Type 323: respawner. Revives dormant actors of one class out of view. */
+typedef struct RespawnState {
+  int type;   /* 0x00 the actor type this manager owns */
+  int timer;  /* 0x04 */
+  int period; /* 0x08 reload for ->timer */
+} RespawnState;
+
+/* Actor reset, dialogue, cutscene and checkpoint callees. */
+extern void func_800526A8(Actor *actor);
+
+extern void func_8002C914(int script, int a);
+extern void func_8002C924(Actor *actor);
+extern void func_80059474(Actor *actor, int heading);
+
+extern void func_8003C6E4(Actor *actor); /* the whole of case 251 */
+
+/* Collision contact point, pickup counters and sound volume override. */
+extern int D_80076B80;   /* collision contact point */
+extern int D_80076B84;   /* ..y */
+extern int D_80076B88;   /* ..z */
+extern int D_80075808;   /* collision triangle index */
+extern int D_8007582C;   /* life count, capped at 99 */
+extern int D_800758E8;   /* life orb count */
+extern short D_800761E8; /* sound volume override, left/right */
+extern short D_800761EA;
+
+/* 256-entry sine and cosine tables. */
+extern short D_8006CBF8[];
+extern short D_8006CC78[];
+
+/* Callees used by the collectible and fairy behaviours. */
+extern void func_80017048(int *dst, int *tbl, int *out);
+extern int func_8003AAEC(Actor *actor, int *tbl);
+extern void func_800533D0(Actor *actor);
+extern void func_80017CB8(int a, int *out);
+extern int func_8004D5EC(int *v, int k);
+extern int func_800171FC(int *v, int mode);
+extern int func_80017A38(int x); /* SquareRoot */
+extern int func_80057380(int *pos);
+extern void func_8003B9D4(Actor *actor);
+extern int func_80033E40(int *a, int *b);
+extern int func_80056DC4(Actor *actor, int a);
+extern int func_80017428(int *v, int *n, int *out);
+
+/* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
+ * fairy cutscene when Spyro stands still on the pad. */
+typedef struct PoleState {
+  int idxA;   /* 0x00 the actor that arms this one */
+  int idxB;   /* 0x04 the actor it reaches for */
+  int timer;  /* 0x08 */
+  int baseZ;  /* 0x0C rest height, restored each cycle */
+  int tgt[3]; /* 0x10 */
+  int angle;  /* 0x1C */
+  int t20;    /* 0x20 */
+  int flag24; /* 0x24 */
+} PoleState;
+
+extern int func_80017948(int a, int b); /* signed angle delta, byte-wrapped */
+extern void func_8002CCC8(Actor *actor);
+
+/* Type 114: path-following enemy that runs from Spyro and can be knocked
+ * back. */
+typedef struct WalkerState {
+  PathData *path; /* 0x00 */
+  int timer;      /* 0x04 */
+  int tgtIdx;     /* 0x08 index into D_80075828, -1 when unclaimed */
+  int heading;    /* 0x0C */
+  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk14;      /* 0x14 likewise */
+} WalkerState;
+
+extern void func_80038DC0(Actor *actor, int a, int b, int c);
+extern void func_800385BC(Actor *actor, int a);
+extern int func_80038178(int ang, int facing, int a, int b);
+extern int func_80039910(Actor *actor, int *a, int heading, int *b, int c,
+                         int d);
+
+/* Glow node owned by Sparx; follows its anchor position. */
+typedef struct FxNode {
+  int kind;            /* 0x00 */
+  void *desc;          /* 0x04 */
+  int *anchor;         /* 0x08 */
+  unsigned char r;     /* 0x0C */
+  unsigned char g;     /* 0x0D */
+  unsigned char b;     /* 0x0E */
+  unsigned char pad0F; /* 0x0F */
+  int size;            /* 0x10 grows 0x20/frame, clamped at 0x400 */
+  int unk14;           /* 0x14 */
+  int unk18;           /* 0x18 */
+  int unk1C;           /* 0x1C */
+} FxNode;
+
+/* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
+ * fetching. */
+typedef struct FlierState {
+  int timer;    /* 0x00 idle / fetch timer */
+  short vx;     /* 0x04 */
+  short vy;     /* 0x06 */
+  short vz;     /* 0x08 */
+  FxNode *fx;   /* 0x0C */
+  Actor *rider; /* 0x10 */
+} FlierState;
+
+extern int D_8006E390;
+extern void *D_8006E490;
+extern void *D_8006E494;
+extern void *D_8006E330[];
+
+extern void func_800170C0(int *d, int *s);
+extern FxNode *func_80058AE8(void);
+extern void func_80058B60(FxNode *node);
+extern int func_80038098(int a, int b, int c);
+
+/* Type 339: flock leader. Two linked chains of follower actors, a path, and
+ * one formation slot per follower plus one for the leader. */
+typedef struct FlockState {
+  int unk00;      /* 0x00 knockback angle */
+  int unk04;      /* 0x04 knockback speed */
+  PathData *path; /* 0x08 */
+  int unk0C;
+  int chainA;       /* 0x10 */
+  int chainB;       /* 0x14 */
+  int slots[16][3]; /* 0x18 */
+} FlockState;
+
+/* Type 391: rides a collision triangle, holding its offset from the
+ * triangle's centroid. */
+typedef struct PatchRideState {
+  int handle;    /* 0x00 */
+  int offset[3]; /* 0x04 actor position relative to the centroid */
+} PatchRideState;
+
+extern int D_8007572C; /* frame counter; the arm acts on every 4th frame */
+extern int func_8004AE38(int *a, int *b);
+
+/* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
+typedef struct PropAnimState {
+  int anim;   /* 0x00 handle for func_8002B390 / B3F4 / B444 */
+  int timer;  /* 0x04 */
+  int primed; /* 0x08 */
+} PropAnimState;
+
+extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
+
+/* Types 76/426..451: letters of a floating word, placed relative to their
+ * parent actor. */
+typedef struct OrbitState {
+  Actor *owner; /* 0x00 */
+  short unk04;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
+  short unk06;  /* 0x06 phase offset within the ring */
+} OrbitState;
+
+/* Shift a vector left by n. */
+extern void func_800176A0(int *d, int n);
+
+/* Types 257/425: falling chest fragments. Integrate until life, visibility
+ * or the floor runs out. */
+typedef struct TumbleState {
+  short vel[3];  /* 0x00 */
+  short spin[3]; /* 0x06 per-frame delta for ->unk44/45/46 */
+  int life;      /* 0x0C ticks remaining */
+  int floorZ;    /* 0x10 retire once the actor sinks to this height */
+} TumbleState;
+
+/* ==== Helper macros ====
+ *
+ * Absolute value. The two forms differ only at zero; both occur. */
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
+#define ABS2(x) ((x) > 0 ? (x) : -(x))
+
+/* Animation state: current/next animation (0x3C/0x3D), current/next frame
+ * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
+ *
+ * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
+#define ANIM_RESET(a, anim)                                                    \
+  (a)->unk40 = 0;                                                              \
+  (a)->unk41 = TYPE_DESC(a, anim);                                             \
+  (a)->unk3C = (anim);                                                         \
+  (a)->unk3D = (anim);                                                         \
+  (a)->unk3E = 0;                                                              \
+  (a)->unk3F = 1;
+
+/* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
+#define ANIM_ADVANCE(a, next)                                                  \
+  (a)->unk40 = 0x10;                                                           \
+  (a)->unk41 = 0x10;                                                           \
+  (a)->unk3C = (a)->unk3D;                                                     \
+  (a)->unk3D = (next);                                                         \
+  (a)->unk3E = (a)->unk3F;                                                     \
+  (a)->unk3F = 0;                                                              \
+  func_80037E98(a);
+
+/* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
+ * is already queued, and moves on to the next actor. It ends in a bare
+ * `continue`, so use it only inside braces. */
+#define ENTER_POSE(a, n)                                                       \
+  (a)->unk48 = (n);                                                            \
+  if ((a)->unk3D != (n)) {                                                     \
+    (a)->unk40 = 0x10;                                                         \
+    (a)->unk41 = 0x10;                                                         \
+    (a)->unk3C = (a)->unk3D;                                                   \
+    (a)->unk3D = (n);                                                          \
+    (a)->unk3E = (a)->unk3F;                                                   \
+    (a)->unk3F = 0;                                                            \
+    func_80037E98(a);                                                          \
+  }                                                                            \
+  continue
+
+/* Spyro as one object at 0x80078A58, with the fields this function touches. */
+typedef struct {
+  int posX; /* 0x000 */
+  int posY; /* 0x004 */
+  int posZ; /* 0x008 */
+  char pad00C[0x2];
+  unsigned char bodyRotZ; /* 0x00E */
+  char pad00F[0x18];
+  unsigned char u027; /* 0x027 */
+  char pad028[0x4];
+  int damageFlags; /* 0x02C */
+  char pad030[0x4];
+  int u034; /* 0x034 */
+  char pad038[0x40];
+  int state; /* 0x078 */
+  char pad07C[0x4];
+  int u080; /* 0x080 */
+  char pad084[0x18];
+  int u09C; /* 0x09C */
+  char pad0A0[0x6C];
+  int u10C; /* 0x10C */
+  int u110; /* 0x110 */
+  int u114; /* 0x114 */
+  int u118; /* 0x118 */
+  int u11C; /* 0x11C */
+  char pad120[0x44];
+  int u164; /* 0x164 */
+  char pad168[0x14];
+  int contact; /* 0x17C */
+  char pad180[0x24];
+  int headLook; /* 0x1A4 */
+  char pad1A8[0x4C];
+  int controlFlags; /* 0x1F4 */
+  char pad1F8[0x8];
+  int u200; /* 0x200 */
+  char pad204[0x2];
+  unsigned char u206; /* 0x206 */
+  char pad207[0x1];
+  int u208; /* 0x208 */
+  int u20C; /* 0x20C */
+  int u210; /* 0x210 */
+  char pad214[0x4];
+  int u218;              /* 0x218 */
+  int *pCamAnchor;       /* 0x21C */
+  void *pCamTarget;      /* 0x220 */
+  Actor *pScriptedActor; /* 0x224 */
+  char pad228[0x18];
+  PortalDesc *pPortal; /* 0x240 */
+  int u244;            /* 0x244 */
+  int u248;            /* 0x248 */
+} SpyroObj;
+extern SpyroObj g_anSpyroWorldPosBlock;
+#define SPY g_anSpyroWorldPosBlock
+
+/* ==== level_30 per-class state blocks (splice leftovers) ====
+ *
+ * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
+ * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
+ * block below is the ->state record of one actor class, named after the case
+ * that uses it. */
+
+/* Case 13 — tethered follower: rides a parent actor (by table index) and,
+ * once released, re-points every other follower at the same parent. */
+typedef struct FollowState {
+  int parent;   /* 0x00 parent actor index into D_80075828 */
+  int pos[3];   /* 0x04 carried world position */
+  int detached; /* 0x10 set once the parent slot has gone dormant */
+  int active;   /* 0x14 */
+  int trackPos; /* 0x18 copy the parent's position each frame */
+  int release;  /* 0x1C release countdown, 0 while held */
+  int count;    /* 0x20 number of followers sharing this parent */
+  int unk24;    /* 0x24 */
+} FollowState;
+
+/* Case 16 — the balloonist's gnorc: wanders until the balloonist is up, then
+ * hands itself to the flight cutscene. */
+typedef struct WanderState {
+  int turn;              /* 0x00 turn direction, +1 / -1 */
+  int home[3];           /* 0x04 spawn position it stays near */
+  unsigned char speed;   /* 0x10 forward speed, signed when >= 0x80 */
+  unsigned char heading; /* 0x11 */
+  unsigned char reTurn;  /* 0x12 frames until the next heading change */
+  unsigned char reStep;  /* 0x13 frames until the next speed change */
+  unsigned char unk14;   /* 0x14 */
+} WanderState;
+
+/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
+typedef struct VortexState {
+  int idx;               /* 0x00 */
+  int centre[3];         /* 0x04 pad centre */
+  int apex[3];           /* 0x0A (short-aligned) rise target */
+  unsigned short radius; /* 0x10 */
+  unsigned char phase;   /* 0x12 */
+  unsigned char angle;   /* 0x13 */
+} VortexState;
+
+/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
+ * -back state machine driven by ->unk49. */
+typedef struct EnemyState {
+  int vel[3];           /* 0x00 velocity, also read as a vector */
+  short node;           /* 0x0C current path node */
+  unsigned char mode;   /* 0x0E sub-mode within ->unk49 */
+  unsigned char timer;  /* 0x0F */
+  signed char bounce;   /* 0x10 remaining knock-back bounces */
+  signed char lean;     /* 0x11 body pitch */
+  signed char roll;     /* 0x12 */
+  unsigned char spin;   /* 0x13 */
+  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
+} EnemyState;
+
+/* Case 110 — the lift plate that rises when its trigger actor is cleared. */
+typedef struct PlateState {
+  int trigger; /* 0x00 actor index that arms the plate */
+  int rider;   /* 0x04 actor index carried on top */
+  int timer;   /* 0x08 */
+  int baseZ;   /* 0x0C rest height */
+  int from[3]; /* 0x10 interpolation start */
+  int yaw;     /* 0x1C */
+  int step;    /* 0x20 */
+  int locked;  /* 0x24 */
+} PlateState;
+
+/* Case 120 — the balloonist himself: owns the smoke emitter and the gnorc he
+ * is waiting on. */
+typedef struct BalloonState {
+  int timer;      /* 0x00 puff countdown */
+  short drift[3]; /* 0x04 wind drift, x/y/z */
+  char pad0A[0x2];
+  FxNode *smoke; /* 0x0C particle emitter */
+  Actor *gnorc;  /* 0x10 */
+} BalloonState;
+
+/* Case 173 — ambient flyer: circles, and pops when Spyro reaches it. */
+typedef struct FlyState {
+  short timer;          /* 0x00 */
+  unsigned char angle;  /* 0x02 */
+  unsigned char attach; /* 0x03 attached spark handle, 0xFF = none */
+} FlyState;
+
+/* Case 194 — breakable chest: one hit spawns its gem shower. */
+typedef struct ChestState {
+  int unk0;
+  int shake; /* 0x04 */
+} ChestState;
+
+/* Case 195 — the same chest with a wobble pose played before it breaks. */
+typedef struct WobbleState {
+  int phase;  /* 0x00 wobble phase, 0 when at rest */
+  int rotX;   /* 0x04 rest pose */
+  int rotY;   /* 0x08 */
+  int restZ;  /* 0x0C */
+  int unk10;  /* 0x10 */
+  int handle; /* 0x14 */
+} WobbleState;
+
+/* Case 208 — the hub's music/voice trigger. */
+typedef struct MusicState {
+  int started; /* 0x00 */
+} MusicState;
+
+/* Case 236 — the charging gnorc: winds up, dashes, recovers. */
+typedef struct ChargeState {
+  char pad00[0x20];
+  int speed;   /* 0x20 */
+  int heading; /* 0x24 */
+  char pad28[0x4];
+  int rest; /* 0x2C frames before the next charge */
+} ChargeState;
+
+/* Cases 76 and 426..451 — the orbiting satellite: rides a parent actor at a
+ * fixed radius, or falls back to a plain spin when the parent is not a
+ * spinner. */
+typedef struct SatState {
+  Actor *parent; /* 0x00 */
+  short radius;  /* 0x04 */
+  short phase;   /* 0x06 */
+} SatState;
+
+/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
+typedef struct ShardState {
+  short vel[3];        /* 0x00 */
+  signed char spin[3]; /* 0x06 pitch / yaw / roll per frame */
+  char pad09[0x3];
+  int life;  /* 0x0C */
+  int floor; /* 0x10 */
+} ShardState;
+
+/* Cases 260..269 — the thrown projectile: flies until it lands. */
+typedef struct ShotState30 {
+  int life; /* 0x00 */
+  char pad04[0x4];
+  int vel[2]; /* 0x08 */
+  int velZ;   /* 0x10 */
+} ShotState30;
+
+/* Case 286 — the supercharge/flight path rider, stepping a waypoint ring. */
+typedef struct RideState30 {
+  int pose;       /* 0x00 which voice/pose the rider is in */
+  int volume;     /* 0x04 */
+  PathData *path; /* 0x08 */
+  int wait;       /* 0x0C */
+  int leg;        /* 0x10 */
+  int speed;      /* 0x14 */
+  int step[3];    /* 0x18 per-frame step along the leg */
+  int left;       /* 0x24 frames left on this leg */
+} RideState30;
+
+/* Case 323 — the respawn warden: puts every dormant actor of its group back
+ * once Spyro is far enough away. */
+typedef struct WardenState {
+  int group;  /* 0x00 */
+  int timer;  /* 0x04 */
+  int period; /* 0x08 */
+} WardenState;
+
+/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
+ * game over to the world map. */
+typedef struct ExitState {
+  PortalDesc *portal; /* 0x00 */
+  int centre[3];      /* 0x04 */
+  int dest;           /* 0x14 */
+  int preset;         /* 0x18 */
+} ExitState;
+
+/* Case 416 — the bobbing platform. */
+typedef struct BobState {
+  int restZ; /* 0x00 */
+} BobState;
+
+/* Case 250 — the boss-door gnorc: opens the door, then leaves the level. */
+typedef struct DoorState {
+  char pad00[0x18];
+  int unk18;   /* 0x18 */
+  int unk1C;   /* 0x1C */
+  int partner; /* 0x20 actor index of the other door half, -1 = none */
+  int reward;  /* 0x24 */
+  char pad28[0x1C];
+  int phase; /* 0x44 open animation phase */
+  int rotX;  /* 0x48 rest pose */
+  int rotY;  /* 0x4C */
+  int restZ; /* 0x50 */
+} DoorState;
+
+/* ==== level_30 globals ====
+ *
+ * The hub's own state: which stage of the balloon sequence the world is in,
+ * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
+extern int D_80075860;           /* gem total shown on the balloon */
+extern unsigned char D_800758D1; /* per-world "seen it" flags */
+extern unsigned char D_800758D2;
+extern unsigned char D_800758D3;
+extern unsigned char D_800758D4;
+extern unsigned char D_800758D5;
+extern int D_80077350;
+
+extern short D_80076E20; /* camera yaw, as the balloonist reads it */
+extern int D_80076E28;   /* camera mode */
+extern Xform D_80076E48; /* camera spherical target */
+extern Xform D_80076E60; /* camera spherical current */
+extern int D_80076E90;
+extern Xform *D_80076EA8; /* active camera preset, or null */
+
+extern unsigned char D_80078A7F;
+extern int D_80078A8C[]; /* wind basis matrix */
+extern int D_80078AD0;   /* Spyro's state */
+extern int D_80078AD4;
+extern int D_80078AD8;
+extern int D_80078AF4;
+extern int D_80078B64; /* look-at offset */
+extern int D_80078B68;
+extern int D_80078B6C;
+extern int D_80078B70;
+extern int D_80078B74; /* camera yaw accumulator */
+extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
+extern int D_80078BBC; /* balloon sequence stage (== SPY.u164) */
+extern int D_80078BFC;
+
+extern int D_80078C4C;         /* scripted camera control word */
+extern signed char D_80078C5E; /* destination level */
+extern int D_80078C60;         /* scripted camera look-at */
+extern int D_80078C64;
+extern int D_80078C68;
+extern int D_80078C70; /* scripted camera mode */
+extern PortalDesc *D_80078C98;
+extern int D_80078C9C;
+extern int D_80078CA0;
+
+extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char D_80078E99;
+extern unsigned char D_80078E9A;
+extern unsigned char D_8007A6C7;
+extern unsigned char D_8007A6C8;
+
+extern void func_8002B390(int ch, int vol, int a);
+extern void func_8002B444(int ch, int n, int a);
+extern int func_8002B3F4(int ch);
+extern int func_80017D7C(int *from, int *to, int *step, int speed);
+extern void func_80039AA8(Actor *actor, void *st);
+extern int func_800381BC(int a, int b);
+
+
+/* ==== Flight-level classes ==== */
+
+/* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
+ * sound to play when Spyro flies through. */
+typedef struct TargetState {
+  int unk00;
+  int unk04;
+  int unk08;
+  int unk0C;
+  Actor *helper;  /* 0x10 */
+  int helperType; /* 0x14, spawned as helperType + 0x158 */
+  int sound;      /* 0x18 */
+} TargetState;
+
+/* Particle burst shards spawned by the 0x161 target. */
+typedef struct BurstState {
+  int posX, posY, posZ; /* 0x00 velocity */
+  signed char spinX;    /* 0x0C */
+  signed char spinY;
+  signed char spinZ;
+  char pad0F;
+  int life;             /* 0x10 */
+} BurstState;
+
+extern int D_80078618[];  /* per-mode "time attack" flag */
+extern int D_8007595C;    /* current mode index */
+extern int D_80075908;    /* time bonus accumulator */
+extern int D_80075840;    /* time remaining */
+extern int D_800758C8;    /* frame counter */
+extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
+extern int func_80038D54(int *pos, void *st);
+extern void func_8003CAC4(int sound);
+extern void func_80017AA4(int *d, int *s);
+
+/* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
+ * swept phase. */
+typedef struct TallyState {
+  int x;        /* 0x00 pivot */
+  int y;        /* 0x04 */
+  int z;        /* 0x08 */
+  short radius; /* 0x0C */
+  short angle;  /* 0x0E */
+  short phase;  /* 0x10 */
+} TallyState;
+
+extern int D_800757C4;      /* tally slot index */
+extern short D_8006CBF8[];  /* HUD slot layout rows, 64 shorts each */
+extern short D_8006CC78[];
+
+/* Flight HUD controller (0x166): clock digits, the per-class tally icons,
+ * icons being spent into a slot, and the four finish slots. */
+typedef struct HudState {
+  int time;         /* 0x00 starting clock, in ticks */
+  Actor *digit[8];  /* 0x04 clock digits; 4..7 only in time attack */
+  Actor *icon[8];   /* 0x24 tally row */
+  Actor *spent[8];  /* 0x44 a completed row flying to its slot */
+  Actor *slot[4];   /* 0x64 finish slots */
+  int types[4];     /* 0x74 icon actor type per class */
+  int unk84[4];     /* 0x84 */
+  int timer;        /* 0x94 */
+  int count;        /* 0x98 icons still to spend */
+  int hurry;        /* 0x9C under a minute left */
+} HudState;
+
+extern int D_800758F4;      /* elapsed time (time attack) */
+extern int D_80075900;
+extern int D_800770F8[];    /* tally shown, per class */
+extern int D_80078630[];    /* tally collected, per class */
+extern int D_80078608;      /* pending tally-class queue, 4 deep */
+extern int D_8007860C;
+extern int D_80078610;
+extern int D_80078614;
+extern int D_800758F8;      /* tally class being shown */
+extern int D_8006E3E4[];
+extern Actor D_80077FEC[];  /* the four HUD class icons */
+extern int D_800756A0;
+extern void (*D_80075694)(void); /* out-of-time handler */
+extern void func_8003EA68(int a);
+extern void func_8003A720(Actor *actor);
+extern void func_800529CC(Actor *actor);
+extern unsigned char *D_80076824; /* level sound ids */
+
+/* ==== The function ==== */
+void func_level_11_8007CFB4(void) {
+  Actor **actorList;
+  Actor *actor;
+  SpyroObj *spy;
+  char *base;
+
+  /* Scratch vectors shared by several cases. */
+  int svA[3];
+  int svB[3];
+  int svC[3];
+  int svD[3];
+  int svE[3];
+  int svF[3];
+  int acc[3][3];
+  int svG[3];
+  int svH[3];
+  int svI[3];
+  int svJ[3];
+  int svT[3];
+  int svU[3];
+  int svV[3];
+  int svW[3];
+  int sh6;
+
+  /* Build this frame's update list. A long frame (delta >= 3) gets an extra
+   * pass. */
+  func_80051FEC();
+  func_800522C0(D_800700F4, 0);
+
+  if (D_800756CC >= 3) {
+    func_800522C0(D_800700F4, D_800756CC == 3 ? 0x80000001 : 0x80000000);
+  }
+
+  actorList = D_800700F4;
+  sh6 = 6;
+  base = (char *)&D_80078BBC;
+
+  /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
+  while (actor = *actorList++) {
+    spy = (SpyroObj *)(base - 0x164);
+
+    if (actor->unk48 >= 0x80) {
+      continue;
+    }
+
+    D_80075794 = actor->unk42 & 2;
+    D_800756C4 = D_800756CC;
+    D_800757F4 = actor->unk42 & 1;
+
+    switch (actor->type) {
+    /* Butterfly (ChaseState). */
+    case 16: {
+      ChaseState *st = (ChaseState *)actor->state;
+
+      if (SPY.u164 < 3 && func_80017990(&actor->posX, &SPY.posX) < 2400) {
+        int actorZ = actor->posZ - actor->unk38;
+
+        if (ABS2(actorZ - SPY.posZ) < 1800) {
+          if (D_80075898 == 0) {
+            if (SPY.u164 >= 0) {
+              D_80075898 = D_800758CC(120, actor);
+
+              func_8003851C(D_80075898, 0, 0);
+
+              SPY.u164 = 1;
+
+              func_80052568(actor);
+              break;
+            }
+          } else if (D_80075898->unk49 != 99) {
+            ChaserState *cs = (ChaserState *)D_80075898->state;
+
+            if (cs->owner == 0) {
+              if (func_800381BC(spy->bodyRotZ,
+                                func_80016AB4(actor->posX - spy->posX,
+                                              actor->posY - spy->posY, 0)) < 0) {
+                st->dir = 1;
+              } else {
+                st->dir = -1;
+              }
+
+              D_80075898->unk49 = 0;
+              cs->owner = actor;
+              cs->timer = func_80037EA0(150, 210);
+
+              actor->unk48 = 1;
+            }
+          }
+        }
+      }
+
+      if (actor->unk50 & 0x80)
+        break;
+
+      switch (actor->unk48) {
+      case 0: {
+        if (func_80037F90(&st->t14, 2) == 0 || actor->unk51) {
+          int refHeight, rotated, moved;
+
+          if (func_80037F90(&st->t12, 1) != 0) {
+            int r = func_80037F10(30, 90);
+            if (func_8006272C() & 1) {
+              r = -r;
+            }
+
+            st->heading = func_80038074(st->heading, r);
+            st->t12 = func_80037EA0(60, 140);
+          }
+
+          if (func_80037F90(&st->t13, 1) != 0) {
+            st->vz = func_80037F10(10, 25);
+            st->t13 = func_80037EA0(80, 140);
+          }
+
+          if (st->vz >= 128) {
+            actor->posZ = actor->posZ + (st->vz - 256);
+          } else {
+            actor->posZ = actor->posZ + st->vz;
+          }
+
+          refHeight = actor->posZ - func_80038340(actor);
+
+          if (refHeight < 300) {
+            st->vz = func_80037EA0(10, 25);
+            st->t13 = func_80037EA0(80, 140);
+          }
+
+          if (1024 < refHeight && refHeight < 2048) {
+            st->vz = -func_80037EA0(10, 25);
+            st->t13 = func_80037EA0(80, 140);
+          }
+
+          rotated = func_80038EE0(actor, st->heading, 4, 0xA, 1);
+          moved = func_80039398(actor, 30, 0, 50, 1);
+
+          if (rotated && moved) {
+            st->heading = func_80038074(st->heading, func_80037EA0(98, 158));
+            st->t12 = func_80037EA0(30, 80);
+          }
+
+          if (func_80017990(&actor->posX, &st->tgtX) > 2000) {
+            int angle = func_80016AB4(st->tgtX - actor->posX,
+                                      st->tgtY - actor->posY, 0);
+
+            st->heading = angle;
+            st->t12 = 40;
+          }
+        } else {
+          func_80052568(actor);
+          continue;
+        }
+        break;
+      }
+      case 1: {
+        func_80038638(actor, &spy->posX, 0x320,
+                      func_80038074(func_80016AB4(actor->posX - spy->posX,
+                                                  actor->posY - spy->posY, 0),
+                                    st->dir * 8),
+                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+
+        if (D_80075898 == 0 || D_80075898->unk49 == 99) {
+          actor->unk48 = 0;
+        } else {
+          int refHeight;
+
+          if (func_80037F90(&st->t13, 1)) {
+            st->vz = func_80037F10(5, 20);
+            st->t13 = func_80037EA0(40, 80);
+          }
+
+          if (st->vz >= 128) {
+            actor->posZ = (actor->posZ) + (st->vz - 256);
+          } else {
+            actor->posZ = actor->posZ + st->vz;
+          }
+
+          refHeight = actor->posZ - func_80038340(actor);
+
+          if (refHeight < 200) {
+            st->vz = func_80037EA0(5, 20);
+            st->t13 = func_80037EA0(40, 80);
+          }
+
+          if (1000 < refHeight && refHeight < 2048) {
+            st->vz = -func_80037EA0(5, 20);
+            st->t13 = func_80037EA0(40, 80);
+          }
+        }
+        break;
+      }
+      }
+
+      break;
+    }
+
+    /* Dragon egg (ShotState). */
+    case 34: {
+      ShotState *st;
+
+      st = (ShotState *)actor->state;
+
+      if (actor->unk48 != 0 && actor->unk48 < 5) {
+        SPY.controlFlags = 0x80002000;
+        if (SPY.state != 0 && SPY.state != 0xC) {
+          actor->unk48 = 5;
+        }
+      }
+      if ((unsigned int)(actor->unk48 - 2) < 3) {
+        func_8003C85C(&actor->posX);
+        D_800758E4(1, 0xC, (int *)actor, (void *)0x602080);
+      }
+
+      switch (actor->unk48) {
+      case 1:
+        D_8007570C = 1;
+        func_80017BFC(st->from, &actor->posX);
+        st->heading =
+            func_800169AC(actor->posX - spy->posX, actor->posY - spy->posY) +
+            0x40;
+        st->speed = 0;
+        st->phase = 0;
+        D_80077FDC.v = 1;
+        actor->unk44 = 0;
+        actor->unk45 = 8;
+        actor->unk48 = actor->unk48 + 1;
+        break;
+
+      case 2:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x80) {
+          int step = D_800756CC << 2;
+          st->speed = st->speed + step;
+          st->heading = st->heading + step;
+          func_80017C24(&actor->posX, st->from);
+          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          {
+            int ph = st->phase;
+            actor->unk46 = actor->unk46 + (D_800756CC << 2);
+            actor->posZ = actor->posZ - (ph << 3);
+          }
+        } else {
+          func_80017700(svA, &spy->posX);
+          {
+            int c = func_80016CB0(D_80078A66 << 4);
+            int s = func_80016C58(D_80078A66 << 4);
+            int cr = c * 724;
+            int sr = s * 724;
+            svA[0] = svA[0] + ((sr + cr) >> 12);
+          }
+          {
+            int s = func_80016C58(D_80078A66 << 4);
+            int c = func_80016CB0(D_80078A66 << 4);
+            int sr = s * 724;
+            int cr = c * 724;
+            svA[1] = svA[1] + ((sr - cr) >> 12);
+          }
+          svA[2] = svA[2] + 0x300;
+          func_80017BFC(st->to, svA);
+          func_80017BFC(st->from, &actor->posX);
+          st->phase = 0;
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 3:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x40) {
+          func_80017C24(svB, st->from);
+          func_80017C24(svC, st->to);
+          func_8001778C(svC, svC, svB);
+          func_800177C0(svC, svC, st->phase);
+          func_800176C8(svC, 6);
+          func_80017758(&actor->posX, svB, svC);
+          actor->unk46 = actor->unk46 + (D_800756CC << 2);
+        } else {
+          func_80017700(svD, &spy->posX);
+          svD[0] = svD[0] + (func_80016CB0(D_80078A66 << 4) >> 3);
+          svD[1] = svD[1] + (func_80016C58(D_80078A66 << 4) >> 3);
+          svD[2] = svD[2] + 0x300;
+          func_80017BFC(st->from, svD);
+          st->heading = D_80078A66 - 0x40;
+          st->speed = 0x200;
+          st->phase = 0;
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 4:
+        st->phase = st->phase + D_800756CC;
+        if (st->phase < 0x80) {
+          int step = D_800756CC << 2;
+          st->speed = st->speed - step;
+          st->heading = st->heading - step;
+          func_80017C24(&actor->posX, st->from);
+          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          {
+            int ph = st->phase;
+            actor->unk46 = actor->unk46 + (D_800756CC << 2);
+            actor->posZ = actor->posZ - (ph << 2);
+          }
+        } else {
+          actor->unk48 = actor->unk48 + 1;
+        }
+        if ((D_80077378 & 0x40) != 0) {
+          actor->unk48 = 5;
+        }
+        break;
+
+      case 5:
+        func_8001778C(svE, &actor->posX, &CAM.posX);
+        func_80017110(svE, svE);
+        D_800758E4(0x10, 0x4D, svE, 0);
+        D_8007570C = 0;
+        func_800176F0(&SPY.headLook);
+        func_8003B854(0, st->unk00);
+        D_80075810 = D_80075810 + 1;
+        D_80076FE8[D_80075964] += 1;
+        D_80077FDC.v = 0;
+        func_80052568(actor);
+        break;
+
+      default:
+        break;
+      }
+      break;
+    }
+
+    /* Bouncing chest fragments (SparkState). */
+    case 478:
+    case 479: {
+      SparkState *st = actor->state;
+
+      if (st->life > 0 && actor->unk51) {
+        if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
+          
+          int dot;
+
+          func_80017330(&D_80077368, 0x1000);
+          dot = st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
+                    st->vel[2] * D_80077370 >>
+                11;
+          if (dot < 0) {
+            func_800175B8(&D_80077368, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += D_80077368;
+            st->vel[1] += AS_I32(D_8007736C);
+            st->vel[2] += AS_I32(D_80077370);
+          }
+        }
+
+        actor->posX += st->vel[0];
+        actor->posY += st->vel[1];
+        st->vel[2] -= 6;
+        if (st->vel[2] < -128)
+          st->vel[2] = -128;
+        actor->posZ += st->vel[2];
+
+        actor->unk44 += st->spin0;
+        actor->unk45 += st->spin1;
+        actor->unk46 += st->spin2;
+        if ((st->life & 3) == 0) {
+
+          svD[0] = func_8006272C() & 3;
+          svD[1] = func_8006272C() & 3;
+          svD[2] = 0x14;
+          D_800758E4(1, 1, &actor->posX, svD);
+        }
+        st->life--;
+      } else {
+        D_800758E4(8, 0x46, &actor->posX, (void *)0x10);
+        func_80052568(actor);
+        continue;
+      }
+      break;
+    }
+
+    /* Falling chest fragments (TumbleState). */
+    case 480: {
+      TumbleState *st = actor->state;
+
+      /* Retire when out of life, no longer drawn, or sunk to the floor. */
+      if (st->life == 0) {
+        func_80052568(actor);
+        continue;
+      }
+      if (actor->unk51 == 0) {
+        func_80052568(actor);
+        continue;
+      }
+      if (actor->posZ <= st->floorZ) {
+        func_80052568(actor);
+        continue;
+      }
+
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
+      }
+      actor->posZ += st->vel[2];
+
+      actor->unk44 += st->spin[0];
+      actor->unk45 += st->spin[1];
+      actor->unk46 += st->spin[2];
+
+      st->life -= 1;
+      break;
+    }
+
+    /* Collectibles: life statue, life orb, gems (PickupState). */
+    case 14:
+    case 15:
+    case 83:
+    case 84:
+    case 85:
+    case 86:
+    case 87: {
+      PickupState *st = (PickupState *)actor->state;
+
+      int dist = func_80017990(&actor->posX, &SPY.posX);
+
+      if (st->timer < 0xFA) {
+        st->timer += D_800756CC;
+      }
+
+      if (actor->type != 15) {
+
+        if (st->anim != 255) {
+          func_800529E4(actor, 4);
+
+          if (actor->type == 14) {
+            func_80017048(actor->unk20, &D_8006E5B8, D_80077108[st->anim].pos);
+          } else {
+            func_80017048(actor->unk20, &D_8006E5A0, D_80077108[st->anim].pos);
+          }
+
+          func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+                        &actor->posX);
+
+          if (D_80077108[st->anim].flag < 5) {
+            st->anim = 255;
+          }
+        } else {
+          if (st->timer > 0xf7) {
+            int handle = func_8003AAEC(actor, &D_8006E5A0);
+            if (handle >= 0 && dist < 0x4000) {
+              st->anim = handle;
+            }
+
+            st->timer = (func_8006272C() & 0x1F) + 33;
+          }
+        }
+      }
+
+      if (!actor->unk51 && dist > 0x2000 && actor->unk49 == 1 && st->sub == 0) {
+        break;
+      }
+
+      switch (actor->unk49) {
+      case 0: {
+        func_80017700(svA, &actor->posX);
+        svA[2] += 0x400;
+        func_8004D5EC(svA, 0x10000);
+        st->pitch = -func_800169AC(
+            func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+            D_8007736C);
+        st->yaw = -func_800169AC(D_80077370, D_80077368);
+
+        if (st->pitch != 0 || st->yaw != 0) {
+          actor->unk46 = 0;
+        }
+
+        actor->unk49 = 1;
+        break;
+      }
+      case 1: {
+        if (st->sub != 0) {
+
+          if (st->sub == 1) {
+            func_80038458(actor);
+            func_800533D0(actor);
+            if (actor->type >= 83) {
+              st->pitch = -func_800169AC(
+                  func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+                  D_8007736C);
+              st->yaw = -func_800169AC(D_80077370, D_80077368);
+            }
+
+          } else if (st->sub == 2) {
+
+            func_80017CB8(st->unk0C, acc[0]);
+
+            func_80017758(acc[0], acc[0], acc[1]);
+            func_80017758(acc[0], acc[0], acc[2]);
+
+            actor->posX = acc[0][0] / 3;
+            actor->posY = acc[0][1] / 3;
+            actor->posZ = acc[0][2] / 3;
+
+            func_800529E4(actor, 2);
+            func_80038458(actor);
+            func_800533D0(actor);
+
+          } else if (st->sub == 3) {
+            int colIndex;
+
+            func_80017700(svF, &actor->posX);
+            svF[2] += 0x400;
+
+            func_800529E4(actor, 2);
+
+            if (func_8004D5EC(svF, 0x1000) > 0) {
+              colIndex = D_80075808;
+              st->sub = 2;
+              st->unk0C = colIndex;
+            }
+          }
+        }
+
+        if (dist < 1434) {
+          int zDist = (SPY.posZ - 356) - actor->posZ;
+
+          if (ABS2(zDist) < 512) {
+
+            if (D_80075898 != 0) {
+
+              if (SPY.u09C == 0) {
+
+                int res = func_80033E40(&D_80075898->posX, &actor->posX);
+
+                if (res) {
+                  ChaserState *cs = (ChaserState *)D_80075898->state;
+
+                  if (cs->owner == 0) {
+                    if (!func_80056DC4(D_80075898,
+                                       D_80076378[D_80075898->type]->m_Sounds[0])) {
+                      D_800761DC = 1;
+                      D_800761EA = 0x2000;
+                      D_800761E8 = 0x2000;
+                      func_8003851C(D_80075898, 0, 0);
+                    }
+
+                    D_80075898->unk49 = 4;
+                    cs->owner = actor;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        break;
+      }
+      case 2: {
+        int speed;
+
+        func_800177C0(svG, st->vel, D_800756CC);
+        func_800176C8(svG, 1);
+
+        speed = func_800171FC(svG, 1);
+
+        if (220 < speed) {
+          func_800175B8(svG, speed, 220);
+        }
+
+        func_80017758(svG, &actor->posX, svG);
+
+        if (-220 < st->vel[2]) {
+          st->vel[2] -= D_800756CC * 5;
+        }
+
+        if (svG[2] < 0) {
+          if (actor->type != 14 && actor->type != 15) {
+            func_8003B9D4(actor);
+          }
+          func_80052568(actor);
+          continue;
+        } else {
+          svG[2] += 240;
+
+          if (func_8004BE4C(svG, 240, 240)) {
+            if (func_80057380(&actor->posX) == 0) {
+              if (actor->type != 14 && actor->type != 15) {
+                func_8003B9D4(actor);
+              }
+              func_80052568(actor);
+              continue;
+            }
+
+            func_80017700(svH, &D_80077368);
+            func_80017700(&actor->posX, &D_80076B80);
+            actor->posZ -= 0xF0;
+
+            if (st->count == 0) {
+              int groundHeight = func_8004D5EC(svG, 0x400);
+              int groundAngle =
+                  (signed char)func_800169AC(svH[2], func_800171FC(svH, 0));
+
+              if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
+                actor->unk49 = 1;
+                func_80017700(&actor->posX, svG);
+                actor->posZ = groundHeight;
+
+                if (actor->type != 0xF) {
+
+                  st->pitch = -func_800169AC(
+                      func_80017A38((svH[0] * svH[0]) + (svH[2] * svH[2])),
+                      svH[1]);
+                  st->yaw = -func_800169AC(svH[2], svH[0]);
+
+                  if (st->pitch != 0 || st->yaw != 0) {
+                    actor->unk46 = 0;
+                  }
+                }
+
+                func_800533D0(actor);
+              } else {
+                st->count++;
+              }
+            }
+
+            if (st->count != 0) {
+              D_800761DC = 1;
+              D_800761E8 = 0x3CCC >> (3 - st->count);
+              D_800761EA = 0x3CCC >> (3 - st->count);
+
+              func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+
+              if (func_80017428(st->vel, svH, st->vel)) {
+                st->count--;
+
+                st->vel[0] = (st->vel[0] >> 3) + (func_8006272C() & 0x3F) - 32;
+                st->vel[1] = (st->vel[1] >> 3) + (func_8006272C() & 0x3F) - 32;
+                st->vel[2] = (st->vel[2] >> 2) + (func_8006272C() & 0xF);
+              }
+            }
+
+          } else {
+            svG[2] -= 240;
+            func_80017700(&actor->posX, svG);
+            func_8004D5EC(svG, 0x10000);
+            func_800533D0(actor);
+          }
+        }
+
+        if (dist < 1434) {
+          int zDist = (((int *)&SPY.posX)[2] - 356) - actor->posZ;
+
+          if (ABS2(zDist) < 512) {
+
+            if (D_80075898 != 0) {
+
+              if (SPY.u09C == 0 && st->count < 3) {
+
+                ChaserState *cs = (ChaserState *)D_80075898->state;
+
+                if (cs->owner == 0) {
+                  if (!func_80056DC4(D_80075898,
+                                     D_80076378[D_80075898->type]->m_Sounds[0])) {
+                    D_800761DC = 1;
+                    D_800761EA = 0x2000;
+                    D_800761E8 = 0x2000;
+                    func_8003851C(D_80075898, 0, 0);
+                  }
+
+                  D_80075898->unk49 = 4;
+                  cs->owner = actor;
+                }
+              }
+            }
+          }
+        }
+
+        break;
+      }
+      case 3: {
+        if (st->timer >= 32) {
+          func_80017700(&actor->posX, &SPY.posX);
+        } else {
+
+          func_8001778C(svI, &spy->posX, st->vel);
+          func_800176C8(svI, 5);
+
+          if (func_800171FC(svI, 1) > 480) {
+            func_80017700(&actor->posX, &spy->posX);
+            st->timer = 32;
+          } else {
+            func_800177C0(svI, svI, st->timer);
+            func_80017758(&actor->posX, st->vel, svI);
+            actor->posZ += D_8006CBF8[st->timer * 4] / 12;
+          }
+        }
+
+        actor->unk44 = actor->unk44 - 7 + st->pitch;
+        actor->unk45 = actor->unk45 - 7 + st->yaw;
+        actor->unk46 = actor->unk46 - 7 + st->roll;
+        break;
+      }
+
+      case 4: {
+        continue;
+      }
+      }
+      if (actor->unk49 < 3) {
+        if (actor->type == 14) {
+          actor->unk44 = (D_8006CC78[st->roll] >> 9) + st->pitch;
+          actor->unk45 = (D_8006CBF8[st->roll] >> 9) + st->yaw;
+          st->roll += D_800756CC << 1;
+        } else if (actor->type == 15) {
+          actor->unk46 += 8;
+          actor->unk45 -= 6;
+        } else {
+          actor->unk44 = (D_8006CC78[st->roll] >> 7) + st->pitch;
+          actor->unk45 = (D_8006CBF8[st->roll] >> 7) + st->yaw;
+          st->roll += D_800756CC << 1;
+        }
+      }
+      if ((st->timer > 32 && dist < 512 && (-384 < (SPY.posZ - actor->posZ)) &&
+           ((SPY.posZ - actor->posZ) < 512)) ||
+          (actor->unk49 == 3 && st->timer > 64)) {
+
+        if (D_80075898 != 0) {
+          ChaserState *cs = (ChaserState *)D_80075898->state;
+
+          if (cs->owner == actor) {
+            cs->owner = 0;
+          }
+        }
+
+        if (actor->type == 14) {
+          func_80055A78(D_800761D4[0], actor, 16, 0);
+          func_800529E4(actor, 4);
+          D_800758E4(16, 70, &actor->posX, (void *)8);
+          D_800758E4(16, 70, &actor->posX, (void *)0x10);
+
+          if (D_8007582C < 99) {
+            D_8007582C++;
+          }
+
+          func_8003B854(0, actor);
+          func_80052568(actor);
+          continue;
+        } else if (actor->type == 15) {
+          func_80055A78(D_800761D4[0], actor, 16, 0);
+          D_800758E8++;
+
+          func_80052568(actor);
+        } else {
+          func_8003B9D4(actor);
+          func_80052568(actor);
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    /* Sparx (FlierState). */
+    case 120: {
+      FlierState *st = (FlierState *)actor->state;
+      char pitchAngle;
+
+      if (*(int *)base >= 2) {
+
+        svF[0] = 0;
+        svF[1] = 0x64;
+        svF[2] = 0;
+        func_80017048(actor->unk20, svF, svF);
+        func_80017758(svF, svF, &actor->posX);
+        D_800758E4(2, 0x42, svF, 0);
+
+        svF[0] = 0;
+        svF[1] = -0x64;
+        svF[2] = 0;
+        func_800170C0(svF, svF);
+        func_80017758(svF, svF, &actor->posX);
+        D_800758E4(2, 0x42, svF, 0);
+      }
+
+      if (SPY.u164 >= 3) {
+        if (st->fx == 0) {
+          FxNode *g = func_80058AE8();
+          st->fx = g;
+          if (g != 0) {
+            g->anchor = &actor->posX;
+            st->fx->size = 0x40;
+            st->fx->unk14 = 0;
+            st->fx->unk18 = 0;
+            st->fx->unk1C = 0;
+            st->fx->r = 0xC0;
+            st->fx->g = 0xC0;
+            st->fx->b = 0x60;
+            st->fx->kind = 9;
+            st->fx->desc = &D_8006E390;
+          }
+        } else {
+          st->fx->size += 0x20;
+          if (st->fx->size > 0x400) {
+            st->fx->size = 0x400;
+          }
+        }
+      } else {
+        if (st->fx != 0) {
+          func_80058B60(st->fx);
+          st->fx = 0;
+        }
+      }
+
+      if (SPY.u164 <= 0) {
+        Actor *target = st->rider;
+        if (target != 0 && target->type == 16) {
+          target->unk48 = 0;
+        }
+        D_80075898 = 0;
+        func_80052568(actor);
+        break;
+      }
+
+      if (st->rider != 0 && func_80017990(&actor->posX, &SPY.posX) > 8192) {
+        st->timer = 0;
+      }
+
+      if (actor->unk49 == 99)
+        break;
+
+      if (st->rider != 0) {
+        switch (actor->unk49) {
+        case 0: {
+          Actor *target = st->rider;
+          ChaseState *bp = target->state;
+          int isPickupAnimPhase = actor->unk3D & 1;
+          int dist;
+          int targetSpeed;
+
+          func_80017700(svA, &target->posX);
+          if (isPickupAnimPhase == 0) {
+            svA[0] -= D_8006CC78[st->rider->unk46] >> 4;
+            svA[1] -= D_8006CBF8[st->rider->unk46] >> 4;
+          } else {
+            svA[0] -= D_8006CC78[st->rider->unk46] >> 6;
+            svA[1] -= D_8006CBF8[st->rider->unk46] >> 6;
+          }
+
+          if (isPickupAnimPhase) {
+            int delta;
+            if (actor->unk3F >= 7) {
+              actor->unk49++;
+            }
+
+            if (2 < actor->unk45 && actor->unk45 < 254) {
+              delta = -actor->unk45;
+              if (delta > 2) {
+                delta = 2;
+              }
+              if (delta < -2) {
+                delta = -2;
+              }
+              actor->unk45 = actor->unk45 + delta;
+            }
+          }
+
+          func_8001778C(svA, svA, &actor->posX);
+          dist = func_800171FC(svA, 1);
+
+          if (isPickupAnimPhase == 0) {
+            if (func_80037F90(st, 4) != 0 ||
+                (st->timer < 80 &&
+                 func_80017908((actor->unk46 + (bp->dir * 110)) & 0xFF,
+                               ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
+              if (actor->unk3D != actor->unk3D + 1) {
+                D_80075794 = 0;
+                ANIM_ADVANCE(actor, actor->unk3D + 1);
+              }
+            }
+          }
+          targetSpeed = isPickupAnimPhase ? 150 : 130;
+          if (targetSpeed + 5 < dist) {
+            func_800175B8(svA, dist, targetSpeed + 5);
+          } else {
+            func_800175B8(svA, dist, targetSpeed - 5);
+          }
+          func_80017758(&actor->posX, &actor->posX, svA);
+          func_80038EE0(actor, func_80016AB4(svA[0], svA[1], 0), 0xA, 0, 0);
+          pitchAngle = func_80016AB4(func_800171FC(svA, 0), svA[2], 0);
+          actor->unk45 = pitchAngle;
+          actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
+          break;
+        }
+        case 1: {
+          SPY.u164++;
+          func_80055A78(D_800761D4[0], actor, 0x10, 0);
+          actor->unk49++;
+          func_80052568(st->rider);
+          break;
+        }
+        case 2: {
+          if (D_80075794 != 0) {
+            if (actor->unk3D != actor->unk3D - 1) {
+              D_80075794 = 0;
+              ANIM_ADVANCE(actor, actor->unk3D - 1);
+            }
+            st->rider = 0;
+            actor->unk49 = 0;
+          }
+          break;
+        }
+        case 4: {
+          PickupState *cp = st->rider->state;
+          int dist;
+
+          func_8001778C(svJ, &st->rider->posX, &actor->posX);
+          dist = func_800171FC(svJ, 1);
+
+          if (dist < 512) {
+            cp->timer = 0;
+            cp->pitch = func_8006272C() & 0xE;
+            cp->yaw = func_8006272C() & 0xE;
+            cp->roll = func_8006272C() & 0xE;
+
+            func_80017700(cp->vel, &st->rider->posX);
+            st->rider->unk49 = 3;
+
+            if (st->rider->type == 14)
+              D_800758E4(1, 0xC, (int *)actor, D_8006E494);
+            else if (st->rider->type == 15)
+              D_800758E4(1, 0xC, (int *)actor, D_8006E490);
+            else
+              D_800758E4(1, 0xC, (int *)actor, D_8006E330[st->rider->type]);
+
+            st->rider = 0;
+            if (!func_80056DC4(actor, AS_PTRU8(D_800761D4)[0x2F])) {
+              D_800761DC = 1;
+              D_800761EA = 0x3600;
+              D_800761E8 = 0x3600;
+              func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+            }
+          } else {
+            int dcheck = 310;
+
+            if (dcheck < dist)
+              func_800175B8(svJ, dist, 310);
+            else
+              func_800175B8(svJ, dist, 290);
+
+            func_80017758(&actor->posX, &actor->posX, svJ);
+            func_80038EE0(actor, func_80016AB4(svJ[0], svJ[1], 0), 0xA, 0, 0);
+            pitchAngle = func_80016AB4(func_800171FC(svJ, 0), svJ[2], 0);
+            actor->unk45 = pitchAngle;
+            actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
+          }
+          break;
+        }
+        }
+      } else {
+
+        actor->unk50 = 0x10;
+        if (st->timer <= 0) {
+
+          svF[0] = -0x258;
+          svF[1] = (func_8006272C() & 0x310) - 0x188;
+          if (CAM.state == 3) {
+            svF[2] = (func_8006272C() & 0x7F) + 0x64;
+          } else {
+            svF[2] = (func_8006272C() & 0x1FF) - 0xC8;
+          }
+          st->vx = svF[0];
+          st->vy = svF[1];
+          st->vz = svF[2];
+          st->timer = func_8006272C() & 0x7B;
+        } else {
+          st->timer -= D_800756CC;
+          if (CAM.state == 3) {
+            svF[0] = st->vx + (SPY.u118 >> 2);
+            svF[1] = st->vy;
+            svF[2] = st->vz;
+            if (svF[2] < 0x64)
+              svF[2] = 0x64;
+          } else {
+            if (CAM.state == 0x80000009)
+              svF[0] = st->vx - 512;
+            else {
+              svF[0] = st->vx;
+            }
+            svF[1] = st->vy;
+            svF[2] = st->vz;
+          }
+          func_80017048(&SPY.u034, svF, svF);
+          func_80017758(svF, svF, &SPY.posX);
+          func_8001778C(svF, svF, &actor->posX);
+          func_800176C8(svF, 2);
+          func_80017758(&actor->posX, &actor->posX, svF);
+
+          if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
+            func_80017700(&actor->posX, &D_80076B80);
+          }
+
+          if (svF[2] > 32)
+            svF[2] = 32;
+          if (svF[2] < -32)
+            svF[2] = -32;
+          actor->unk44 = 0;
+          actor->unk45 = svF[2];
+          func_80038EE0(actor, SPY.bodyRotZ, 4, 0, 0);
+        }
+
+        switch (SPY.u164) {
+        case 1:
+          if (actor->unk3D != 0) {
+            if (actor->unk3C != 0) {
+              D_80075794 = 0;
+              ANIM_RESET(actor, 0);
+            }
+          }
+          break;
+        case 2:
+          if (actor->unk3D != 2) {
+            if (actor->unk3C != 2) {
+              D_80075794 = 0;
+              ANIM_RESET(actor, 2);
+            }
+          }
+
+          break;
+        case 3:
+          if (actor->unk3D != 4) {
+            if (actor->unk3C != 4) {
+              D_80075794 = 0;
+              ANIM_RESET(actor, 4);
+            }
+          }
+          break;
+        }
+      }
+      func_800529E4(actor, 4);
+      break;
+    }
+
+    /* Key (SpinState). */
+    case 173: {
+      SpinState *st;
+      int dz;
+      int ang;
+      int i;
+
+      st = (SpinState *)actor->state;
+      if (actor->unk49 != 0) {
+        continue;
+      }
+
+      actor->unk44 = (unsigned short)D_8006CC78[st->angle] >> 7;
+      actor->unk45 = (unsigned short)D_8006CBF8[st->angle] >> 7;
+      st->angle = st->angle + D_800756CC * 2;
+
+      if (func_80017990(&actor->posX, &spy->posX) < 0x200) {
+        dz = (actor->posZ - actor->unk38) - SPY.posZ;
+        if (dz > 0 ? dz < 0x200
+                   : SPY.posZ - (actor->posZ - actor->unk38) < 0x200) {
+          func_80055A78(D_800761D4[0], actor, 0x10, 0);
+          func_800529E4(actor, 4);
+
+          for (i = 0; i < 6; i++) {
+            D_800758E4(1, 0xC, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
+          }
+
+          D_80075830 = 1;
+          actor->unk57 = 0x40;
+          actor->unk50 = 0;
+          actor->unk52 = 0;
+          actor->unk51 = 0;
+          actor->unk1C = 0;
+          actor->unk4A = 0xFF;
+          actor->unk49 = 2;
+        }
+      }
+
+      if (st->anim != 0xFF) {
+        func_800529E4(actor, 4);
+        func_80017048(actor->unk20, &D_8006E5AC, D_80077108[st->anim].pos);
+        func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+                      &actor->posX);
+        if (D_80077108[st->anim].flag < 5) {
+          st->anim = 0xFF;
+        }
+      } else if (st->timer >= 0xF8) {
+        ang = func_8003AAEC(actor, &D_8006E5AC);
+        if (ang >= 0 && func_80017990(&actor->posX, &SPY.posX) < 0x4000) {
+          st->anim = ang;
+        }
+        st->timer = (func_8006272C() & 0x3F) + 0x18;
+      }
+
+      st->timer = st->timer + D_800756CC;
+      continue;
+    }
+
+    /* Floating digits (DebrisState). */
+    case 260:
+    case 261:
+    case 262:
+    case 263:
+    case 264:
+    case 265:
+    case 266:
+    case 267:
+    case 268:
+    case 269: {
+      DebrisState *st = actor->state;
+
+      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+
+        if (st->life >= 1) {
+
+          actor->unk46 += 1;
+
+          st->vel[2] -= 6;
+          if (st->vel[2] < -0x80) {
+            st->vel[2] = -0x80;
+          }
+
+          actor->posX += st->vel[0];
+          actor->posY += st->vel[1];
+          actor->posZ += st->vel[2];
+
+          if (actor->posZ > 1023) {
+            if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
+              
+              int dot;
+
+              actor->posX = D_80076B80;
+              actor->posY = AS_I32(D_80076B84);
+              actor->posZ = AS_I32(D_80076B88);
+
+              func_80017330(&D_80077368, 0x1000);
+
+              dot = (st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
+                     st->vel[2] * D_80077370) >>
+                    11;
+
+              if (dot < 0) {
+                func_800175B8(&D_80077368, 0x1000, -dot);
+                st->vel[0] += D_80077368;
+                st->vel[1] += AS_I32(D_8007736C);
+                st->vel[2] += AS_I32(D_80077370);
+              }
+            }
+            st->life--;
+          } else {
+            func_80052568(actor);
+          }
+        } else {
+          D_800758E4(10, 0x47, &actor->posX, 0);
+          func_80052568(actor);
+        }
+      }
+      break;
+    }
+
+    /* Flight-level chest: flaming or charging it frees its reward and
+     * scatters shards; otherwise it hums its ambient sound. */
+    case 299: {
+      int *st = actor->state;
+      int i;
+
+      if (actor->flags & 0xB0000) {
+        Actor *reward;
+
+        func_8003851C(actor, 0, 0);
+        func_8003CAC4(st[1]);
+        reward = D_800758CC(st[0] + 0x158, actor);
+        if (reward != 0) {
+          reward->unk48 = 1;
+        }
+
+        for (i = 0; i < 2; i++) {
+          if (D_800756A8 - D_800756A4 < 0x15) {
+            break;
+          }
+          D_800758CC(0x1DE, actor);
+          D_800758CC(0x1DF, actor);
+        }
+        for (i = 0; i < 6; i++) {
+          if (D_800756A8 - D_800756A4 < 0x15) {
+            break;
+          }
+          D_800758CC(0x1E0, actor);
+        }
+
+        D_800758E4(5, 2, &actor->posX, 0);
+        D_800758E4(0x10, 0x46, &actor->posX, (void *)0x20);
+        func_80052568(actor);
+        break;
+      }
+
+      if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
+        func_80055A78(D_80076378[actor->type]->m_Sounds[1], actor, 8,
+                      &actor->unk54);
+      }
+      break;
+    }
+    /* Flight-level target (ring/chest) that hands a helper to its owner and
+     * pays out when Spyro flies through it. */
+    case 0x154: {
+      TargetState *st = actor->state;
+
+      if (D_80078618[D_8007595C] == 0 && st->helper == 0) {
+        st->helper = D_800758CC(st->helperType + 0x158, actor);
+        actor->unk44 = -actor->unk3C << 6;
+      }
+
+      actor->unk44 = func_80038074(actor->unk44, 8);
+      if ((actor->unk44) < 8) {
+        func_8003851C(actor, 0, 0);
+      }
+
+      func_800529E4(actor, 4);
+
+      if (func_80017990(&actor->posX, &spy->posX) < 3000) {
+        int height = actor->posZ - actor->unk38;
+        int drop = height - SPY.posZ;
+
+        if (drop > 0 ? drop < 3000 : SPY.posZ - height < 3000) {
+          func_8001778C(svT, &actor->posX, &spy->posX);
+          if (func_800171FC(svT, 1) < 2500 &&
+              func_80038D54(&spy->posX, st) < 0x200) {
+            func_8003CAC4(st->sound);
+            if (st->helper != 0) {
+              st->helper->unk48 = 1;
+            } else {
+              func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
+            }
+            func_80052568(actor);
+          }
+        }
+      }
+      break;
+    }
+    /* Time-bonus pickup: turns to face Spyro, then flies to the HUD corner
+     * and adds (type - 0x158) seconds when it arrives. */
+    case 0x159:
+    case 0x15A:
+    case 0x15B: {
+      int *st = actor->state;
+
+      switch (actor->unk48) {
+      case 0:
+        if (D_80078618[D_8007595C] != 0) {
+          func_80052568(actor);
+          break;
+        }
+        func_80038EE0(actor,
+                      func_80038074(func_80016AB4(spy->posX - actor->posX,
+                                                  spy->posY - actor->posY, 0),
+                                    0x40),
+                      4, 0, 0);
+        break;
+      case 1:
+        D_80075908 += (actor->type - 0x158) * 60;
+        func_80017AA4(&actor->posX, &actor->posX);
+        actor->unk46 = 0xC0;
+        actor->unk47 = 0x20;
+        actor->unk44 = 0;
+        actor->unk45 = 0;
+        actor->unk50 = 0xFF;
+        actor->unk48 = 2;
+        func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
+        break;
+      case 2: {
+        int d;
+
+        svU[0] = 0x1A4;
+        svU[1] = 0x30;
+        svU[2] = 0x157C;
+        func_8001778C(svU, svU, &actor->posX);
+        d = func_800171FC(svU, 1);
+        if (d < 0x20) {
+          actor->unk48 = 3;
+          actor->posX = 0x1A4;
+          actor->posY = 0x30;
+          actor->posZ = 0x157C;
+          *st = 0x1E;
+        } else {
+          if (d > 0x80) {
+            func_800175B8(svU, d, 0x80);
+          }
+          func_80017758(&actor->posX, &actor->posX, svU);
+        }
+        break;
+      }
+      case 3:
+        if (func_80037F90(st, 4) != 0) {
+          D_80075840 += (actor->type - 0x158) * 60;
+          func_80055A78(D_800761D4[0x22], actor, 0x10, 0);
+          func_80052568(actor);
+        }
+        break;
+      }
+      break;
+    }
+    /* Breakable flight target: bursts into 12 shards when Spyro flies
+     * through, and otherwise pulses its glow with the frame counter. */
+    case 0x161: {
+      TargetState *st = actor->state;
+
+      if (D_80078618[D_8007595C] == 0 && st->helper == 0) {
+        st->helper = D_800758CC(st->helperType + 0x158, actor);
+      }
+
+      if (func_80017990(&actor->posX, &spy->posX) < 3000) {
+        int height = actor->posZ - actor->unk38;
+        int drop = height - SPY.posZ;
+
+        if (drop > 0 ? drop < 4000 : SPY.posZ - height < 4000) {
+          func_8001778C(svV, &actor->posX, &spy->posX);
+          svW[2] = (svV[2] - 0xC0) * 4;
+          svV[2] = (svW[2] - svV[2]) >> 2;
+          if (func_800171FC(svV, 1) < 0x578 &&
+              func_80038D54(&spy->posX, st) < 0x200) {
+            int i;
+
+            func_8003CAC4(st->sound);
+            if (st->helper != 0) {
+              st->helper->unk48 = 1;
+            }
+
+            for (i = 0; i < 13; i++) {
+              Actor *shard;
+              BurstState *ss;
+
+              if (D_800756A8 - D_800756A4 < 0x15) {
+                break;
+              }
+              shard = D_800758CC(i + 0x176, actor);
+              ss = shard->state;
+              func_80017048(actor->unk20, &D_8006E824[i * 3], svV);
+              func_80017758(&shard->posX, &actor->posX, svV);
+              func_800176C8(svV, 5);
+              svW[0] = (func_8006272C() & 0x7E) - 0x3F;
+              svW[1] = (func_8006272C() & 0x7E) - 0x3F;
+              svW[2] = (func_8006272C() & 0x7E) - 0x3F;
+              func_80017758(&ss->posX, svV, svW);
+              func_80017758(&shard->posX, &shard->posX, &ss->posX);
+              ss->spinX = (func_8006272C() & 2) - 1;
+              ss->spinY = (func_8006272C() & 2) - 1;
+              ss->spinZ = (func_8006272C() & 2) - 1;
+              ss->life = 0x3C;
+            }
+
+            func_8003851C(actor, 0, 0);
+            func_80052568(actor);
+            break;
+          }
+        }
+      }
+
+      {
+        int c = func_80016CB0(D_800758C8 << 4);
+
+        c = (ABS(c) << 4) >> 12;
+        if (c >= 0x40) {
+          c = 0x3F;
+        }
+        *(int *)&actor->unk4C = (c << 6) | 0xA00000;
+      }
+      break;
+    }
+    /* Flight-level HUD controller: the countdown / time-attack clock digits,
+     * the per-target-class collection tally, and the four tally slots that
+     * finish the level once they are all filled (HudState). */
+    case 0x166: {
+      HudState *st = actor->state;
+      int i;
+      int prevMin;
+      int prevTenth;
+      int t;
+      int y;
+
+      func_80017700(&actor->posX, &SPY.posX);
+
+      if (st->icon[0] == 0) {
+        D_80075908 = st->time;
+        D_80075840 = st->time;
+        D_800758F4 = 0;
+        D_80075900 = 0;
+        D_800770F8[0] = 0;
+        D_80078630[0] = 0;
+        D_800770F8[1] = 0;
+        D_80078630[1] = 0;
+        D_800770F8[2] = 0;
+        D_80078630[2] = 0;
+        D_800770F8[3] = 0;
+        D_80078630[3] = 0;
+        D_80078614 = -1;
+        D_80078610 = -1;
+        D_8007860C = -1;
+        D_80078608 = -1;
+        D_800757C4 = -1;
+        D_800758F8 = -1;
+
+        for (i = 3; i >= 0; i--) {
+          st->digit[i] = D_800758CC(0x147, actor);
+          st->digit[i]->unk50 = 0xFF;
+          st->digit[i]->unk47 = 0x20;
+          st->digit[i]->posZ = 0x1000;
+          st->digit[i]->unk46 = 0;
+        }
+        st->digit[0]->posX = 0x190;
+        st->digit[0]->posY = 0x1E;
+        st->digit[1]->posX = 0x1A4;
+        st->digit[1]->posY = 0x1E;
+        st->digit[2]->posX = 0x1B4;
+        st->digit[2]->posY = 0x1E;
+        st->digit[3]->posX = 0x1C4;
+        st->digit[3]->posY = 0x1E;
+
+        if (D_80078618[D_8007595C] != 0) {
+          for (i = 4; i < 8; i++) {
+            st->digit[i] = D_800758CC(0x147, actor);
+            st->digit[i]->unk50 = 0xFF;
+            st->digit[i]->unk47 = 0x20;
+            st->digit[i]->unk46 = 0;
+          }
+          st->digit[4]->posX = 0x180;
+          st->digit[4]->posY = 0x1F;
+          st->digit[4]->posZ = 0x1800;
+          st->digit[5]->posX = 0x180;
+          st->digit[5]->posY = 0x18;
+          st->digit[5]->posZ = 0x1800;
+          st->digit[6]->posX = 0x170;
+          st->digit[6]->posY = 0x1E;
+          st->digit[6]->posZ = 0x1000;
+          st->digit[7]->posX = 0x1D4;
+          st->digit[7]->posY = 0x1E;
+          st->digit[7]->posZ = 0x1000;
+        }
+
+        for (i = 0; i < 8; i++) {
+          st->icon[i] = D_800758CC(st->types[0], actor);
+        }
+
+        for (i = 0; i < 4; i++) {
+          D_8006E3E4[i] = st->unk84[i];
+        }
+
+        y = 0x3C;
+        for (i = 0; i < 4; i++) {
+          D_80077FEC[i].type = st->types[i];
+          func_8003A720(&D_80077FEC[i]);
+          func_800529CC(&D_80077FEC[i]);
+          D_80077FEC[i].posY = y;
+          y += 0x14;
+          D_80077FEC[i].unk47 = 0x20;
+          D_80077FEC[i].posX = 0x3C;
+          D_80077FEC[i].posZ = 0x1000;
+          D_80077FEC[i].unk50 = 0xFF;
+          D_80077FEC[i].unk4F = i + 3;
+        }
+      }
+
+      if (D_80078618[D_8007595C] != 0) {
+        t = D_800758F4;
+      } else {
+        t = D_80075840;
+      }
+      if (t < 0) {
+        t = 0;
+      }
+      prevMin = t / 60;
+      prevTenth = t / 6;
+
+      if (D_80078630[0] + D_80078630[1] + D_80078630[2] + D_80078630[3] !=
+          0x20) {
+        if (D_800756A0 == 0 && D_80078AD4 < 8 &&
+            D_80078618[D_8007595C] == 0) {
+          D_80075908 -= D_800756CC;
+          D_80075840 -= D_800756CC;
+          if (D_80075908 < 0) {
+            D_80075694();
+          }
+        }
+        D_800758F4 += D_800756CC;
+        if (D_800758F4 > 0x8C9F) {
+          D_800758F4 = 0x8C9F;
+        }
+      } else {
+        func_8003EA68(0x20);
+        D_80078AD4 = 3;
+        D_80078C4C = 0x80004000;
+      }
+
+      if (D_80078618[D_8007595C] != 0) {
+        t = D_800758F4;
+        i = t / 3600;
+        if (i != 0) {
+          st->digit[6]->type = i + 0x104;
+          st->digit[4]->unk50 = 0xFF;
+          st->digit[5]->unk50 = 0xFF;
+          st->digit[6]->unk50 = 0xFF;
+        } else {
+          st->digit[4]->unk50 = 0;
+          st->digit[5]->unk50 = 0;
+          st->digit[6]->unk50 = 0;
+        }
+        i = t * 10 / 6 % 10;
+        st->digit[7]->type = i + 0x104;
+        st->digit[7]->unk50 = 0xFF;
+      } else {
+        t = D_80075840;
+        if (t < 0) {
+          t = 0;
+        }
+      }
+
+      i = t / 600;
+      if (i != 0) {
+        i = i % 6;
+        st->digit[0]->type = i + 0x104;
+        st->digit[0]->unk50 = 0xFF;
+      } else {
+        st->digit[0]->unk50 = 0;
+      }
+
+      {
+        int min = t / 60;
+
+        i = min % 10;
+        st->digit[1]->type = i + 0x104;
+        i = t / 6 - min * 10;
+        st->digit[3]->type = i + 0x104;
+
+        if (D_80078618[D_8007595C] == 0) {
+          i = min;
+          if (i < prevMin) {
+            if (i < 6) {
+              st->hurry = 1;
+            } else {
+              st->hurry = 0;
+            }
+            if (i < 10) {
+              func_80055A78(D_800761D4[0x21], actor, 0x10, 0);
+            }
+          }
+          if (st->hurry != 0) {
+            i = t / 6;
+            if (i < prevTenth) {
+              func_80055A78(D_800761D4[0x25], actor, 0x10, 0);
+            }
+          }
+        }
+      }
+
+      if (st->spent[0] != 0) {
+        if (st->count != 0 && func_80037F90(&st->timer, 4) != 0) {
+          st->count--;
+          st->spent[st->count]->unk48 = 2;
+          st->timer = 0x10;
+          func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+        }
+        for (i = 0; i < 8; i++) {
+          Actor *a = st->spent[i];
+
+          if (a != 0 && a->unk48 == 4) {
+            if (st->slot[D_800757C4] == 0) {
+              st->slot[D_800757C4] = a;
+              a->posX = D_800757C4 * 50 + 0x1E;
+              st->slot[D_800757C4]->posY = 0xC8;
+              st->slot[D_800757C4]->posZ = 0x1000;
+              st->slot[D_800757C4]->unk48 = 1;
+            } else {
+              func_80052568(a);
+            }
+            st->spent[i] = 0;
+            func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+          }
+        }
+      } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&
+                 st->slot[3] != 0) {
+        int s = st->slot[0]->unk48;
+
+        if (s == 4 || (D_80077378 & 0x40)) {
+          D_80075694();
+        } else if (s == 1) {
+          for (i = 0; i < 4; i++) {
+            st->slot[i]->unk49 = i;
+            st->slot[i]->unk48 = 5;
+          }
+        }
+      } else {
+        if (D_80078608 >= 0) {
+          D_800758F8 = D_80078608;
+          if (D_80078630[D_800758F8] != D_800770F8[D_800758F8]) {
+            int x = 0x1E;
+
+            for (i = 0; i < 8; i++) {
+              st->icon[i]->type = st->types[D_800758F8];
+              if (D_80078630[D_800758F8] < i + 1) {
+                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->posX = x;
+                st->icon[i]->unk4F = 0;
+                st->icon[i]->unk46 = 0;
+                st->icon[i]->unk48 = 0;
+              } else {
+                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->posX = x;
+                st->icon[i]->unk4F = D_800758F8 + 3;
+                st->icon[i]->unk48 = 1;
+              }
+              x += 0x1E;
+            }
+
+            D_800770F8[D_800758F8] = D_80078630[D_800758F8];
+            if (D_80078630[D_800758F8] == 8) {
+              for (i = 0; i < 8; i++) {
+                st->spent[i] = st->icon[i];
+                st->icon[i] = D_800758CC(st->types[0], actor);
+              }
+              st->timer = 0;
+              st->count = 8;
+              D_800757C4 = D_800758F8;
+            }
+          }
+          D_80078608 = D_8007860C;
+          D_8007860C = D_80078610;
+          D_80078610 = D_80078614;
+          D_80078614 = -1;
+        }
+        D_800758F8 = -1;
+      }
+
+      if (D_800757D8 == 7) {
+        for (i = 0; i < 8; i++) {
+          if (st->icon[i] != 0) {
+            st->icon[i]->unk50 = 0;
+          }
+          if (st->spent[i] != 0) {
+            st->spent[i]->unk50 = 0;
+          }
+        }
+        for (i = 0; i < 8; i++) {
+          if (st->digit[i] != 0) {
+            st->digit[i]->unk50 = 0;
+          }
+          if (st->slot[i] != 0) {
+            st->slot[i]->unk50 = 0;
+          }
+        }
+      }
+      break;
+    }
+    /* Fade-out props: removed as soon as their animation finishes. */
+    case 405:
+    case 477:
+      if (D_80075794 == 0) {
+        break;
+      }
+      func_80052568(actor);
+      continue;
+
+    /* A 0x161 burst shard: drifts and tumbles until its life runs out or it
+     * leaves the screen. */
+    case 0x177:
+    case 0x178:
+    case 0x179:
+    case 0x17A:
+    case 0x17B:
+    case 0x17C:
+    case 0x17D:
+    case 0x17E:
+    case 0x17F:
+    case 0x180:
+    case 0x181:
+    case 0x182: {
+      BurstState *ss = actor->state;
+
+      if (actor->unk51 != 0 && func_80037F90(&ss->life, 4) == 0) {
+        func_80017758(&actor->posX, &actor->posX, &ss->posX);
+        actor->unk44 += ss->spinX;
+        actor->unk45 += ss->spinY;
+        actor->unk46 += ss->spinZ;
+      } else {
+        func_80052568(actor);
+      }
+      break;
+    }
+    /* HUD collectible icon: swings from where it was picked up onto its
+     * slot in the flight tally, spinning all the way (TallyState). */
+    case 0x183:
+    case 0x184:
+    case 0x185:
+    case 0x1EB: {
+      TallyState *st = actor->state;
+
+      switch (actor->unk48) {
+      case 0:
+        break;
+      case 1:
+        actor->unk46 += 8;
+        break;
+      case 2:
+        svW[0] = D_800757C4 * 50 + 0x1E;
+        svW[1] = 0xC8;
+        svW[2] = 0x1000;
+        func_80017758(&st->x, svW, &actor->posX);
+        func_800176C8(&st->x, 1);
+        func_8001778C(svW, &st->x, &actor->posX);
+        st->radius = func_800171FC(svW, 0);
+        st->angle =
+            func_80016AB4(actor->posX - st->x, st->y - actor->posY, 1);
+        st->phase = 0x800;
+        actor->unk48 = 3;
+        actor->unk46 += 8;
+        break;
+      case 3:
+        st->phase -= 0x40;
+        actor->posX =
+            st->x - ((st->radius * func_80016CB0(st->angle + st->phase)) >> 12);
+        actor->posY =
+            st->y + ((st->radius * func_80016C58(st->angle + st->phase)) >> 12);
+        actor->unk46 += 8;
+        if (st->phase <= 0) {
+          actor->unk48 = 4;
+        }
+        break;
+      case 5:
+        svW[0] = (D_8006CC78[actor->unk49 * 64] >> sh6) + 0x100;
+        svW[1] = ((D_8006CBF8[actor->unk49 * 64] * 5) >> 9) + 0x78;
+        svW[2] = 0x1000;
+        func_80017758(&st->x, svW, &actor->posX);
+        func_800176C8(&st->x, 1);
+        func_8001778C(svW, &st->x, &actor->posX);
+        st->radius = func_800171FC(svW, 0);
+        st->angle =
+            func_80016AB4(actor->posX - st->x, st->y - actor->posY, 1);
+        st->phase = 0x800;
+        actor->unk48 = 6;
+        actor->unk46 += 8;
+        break;
+      case 6:
+        st->phase -= 0x40;
+        actor->posX =
+            st->x - ((st->radius * func_80016CB0(st->angle + st->phase)) >> 12);
+        actor->posY =
+            st->y + ((st->radius * func_80016C58(st->angle + st->phase)) >> 12);
+        actor->unk46 += 8;
+        if (st->phase <= 0) {
+          st->angle =
+              func_80016AB4(actor->posX - 0x100, actor->posY - 0x78, 1);
+          st->phase = -0x3000;
+          st->radius = 0x40;
+          actor->unk48 = 7;
+        }
+        break;
+      case 7:
+        st->phase += 0x80;
+        st->radius -= 2;
+        actor->posX =
+            ((st->radius * (func_80016CB0(st->angle + st->phase) << 6)) >> 18) +
+            0x100;
+        {
+          int s = func_80016C58(st->angle + st->phase) * 40;
+
+          actor->posY = ((st->radius * s) >> 18) + 0x78;
+        }
+        actor->unk46 += 8;
+        if (st->phase >= 0) {
+          actor->unk48 = 4;
+        }
+        break;
+      }
+      break;
+    }
+    /* Flight trigger: when hit, plays its sound, spawns its reward and
+     * retires itself as type 0x18F. */
+    case 0x18D:
+    case 0x18F: {
+      int *st = actor->state;
+
+      if (actor->type == 0x18D && (actor->flags & 0x10000)) {
+        Actor *reward;
+
+        func_8003CAC4(st[0]);
+        reward = D_800758CC(st[1] + 0x158, actor);
+        if (reward != 0) {
+          reward->unk48 = 1;
+        }
+        if (st[2] >= 0) {
+          func_8002B390(st[2], 0xFC, 0);
+        }
+        actor->type = 0x18F;
+      }
+      break;
+    }
+    /* Floating-word letters (OrbitState). */
+    case 76:
+    case 426:
+    case 427:
+    case 428:
+    case 429:
+    case 430:
+    case 431:
+    case 432:
+    case 433:
+    case 434:
+    case 435:
+    case 436:
+    case 437:
+    case 438:
+    case 439:
+    case 440:
+    case 441:
+    case 442:
+    case 443:
+    case 444:
+    case 445:
+    case 446:
+    case 447:
+    case 448:
+    case 449:
+    case 450:
+    case 451: {
+      OrbitState *st = actor->state;
+
+      if (st->owner->unk48 == 0 || st->owner->unk49 != actor->unk48) {
+        func_80052568(actor);
+      } else if (st->owner->type == 9) {
+        if (func_80017990(&st->owner->posX, &spy->posX) < 0x400) {
+          int oldval;
+          oldval = D_8006CC78[actor->unk49];
+          actor->unk49 += 8;
+          actor->unk46 = actor->unk46 - (oldval * 3 >> 9) +
+                         (D_8006CC78[actor->unk49] * 3 >> 9);
+        } else {
+          int anglespyro;
+          int vecA[3];
+          int vecB[3];
+          int vecC[3];
+          int vecD[3];
+
+          actor->unk49 += 8;
+          anglespyro = func_80016AB4(spy->posX - st->owner->posX,
+                                     SPY.posY - st->owner->posY, 0);
+          vecA[0] = D_8006CC78[anglespyro] * 3 >> 4;
+          vecA[1] = D_8006CBF8[anglespyro] * 3 >> 4;
+          vecA[2] = 0;
+          vecB[0] = D_8006CC78[anglespyro + 64 & 0xFF] >> 5;
+          vecB[1] = D_8006CBF8[(anglespyro + 64) & 0xFF] >> 5;
+          vecB[2] = 0;
+          anglespyro = (anglespyro + 0x80) & 0xFF;
+          actor->unk46 = anglespyro + (D_8006CC78[actor->unk49] * 3 >> 9);
+          func_800177C0(vecC, vecB, st->unk04 - 1);
+          func_800176A0(vecB, 1);
+          anglespyro = 2;
+          anglespyro = (st->unk04 - 1) * anglespyro;
+          vecC[2] += D_8006CC78[anglespyro] * 3 >> 3;
+          vecD[0] = vecA[0] * D_8006CC78[anglespyro];
+          vecD[1] = vecA[1] * D_8006CC78[anglespyro];
+          vecD[2] = 0;
+          anglespyro = ((anglespyro - st->unk06 * 4)) & 0xFF;
+          func_800177C0(vecB, vecB, st->unk06);
+          func_8001778C(vecC, vecC, vecB);
+          actor->posX = vecA[0] * D_8006CC78[anglespyro];
+          actor->posY = vecA[1] * D_8006CC78[anglespyro];
+          actor->posZ = 0;
+          func_8001778C(&actor->posX, &actor->posX, vecD);
+          func_800176C8(&actor->posX, 10);
+          func_80017758(&actor->posX, &actor->posX, vecA);
+          func_80017758(&actor->posX, &actor->posX, &st->owner->posX);
+          func_8001778C(&actor->posX, &actor->posX, vecC);
+          actor->posZ = actor->posZ + (D_8006CC78[anglespyro] * 3 >> 3) + 0x600;
+        }
+      } else {
+        actor->unk49 += 8;
+        actor->unk46 = actor->unk38 + (D_8006CC78[actor->unk49] * 3 >> 9);
+      }
+    }
+    break;
+
+    default: /* 77..82, 88..109, 258..259 and everything unlisted */
+      break;
+    }
+  }
+}

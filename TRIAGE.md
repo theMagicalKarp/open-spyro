@@ -18,15 +18,15 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 4 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 5 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 6 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 7 | `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 57 | overlay (no -g3); segment 16.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 8 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 9 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 7 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 8 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 11 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 13 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
 (37 viable candidates total; the full ranking is regenerable.)
 
@@ -34,9 +34,8 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 
 | Address | Function | Segment | Size | Partial bytes | Class / note |
 |---|---|---|--:|--:|---|
-| `0x80086754` | func_level_27_80086754 | ovl/level_27_dream_weavers_haunted_towers | 6788 | 6668 | F14 boost -> v0 -> REG_DEP_OUTPUT pin (idx must take a2, the deref v0) |
 | `0x8007b68c` | func_level_5_8007B68C | ovl/level_5_artisans_sunny_flight | 6440 | 6048 | R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged) |
-| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5792 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
+| `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5808 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
@@ -46,18 +45,14 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
-| `0x8002ccc8` | func_8002CCC8 | main | 868 | 796 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 768 | actor-update megafunction, same skeleton as matched func_level_0_8007D9C8 |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
-| `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap |
-| `0x80038fc8` | func_80038FC8 | main | 608 | 584 | F14b schedule-XOR-register; needs update_equiv_regs to delete the 0x10 pseudo |
 | `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` x4 - the class survives a fresh read of the asm |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
-| `0x8002c924` | BeginGemPickupOverlay | main | 584 | 500 | local-alloc qty_compare: the de-boost carrier must be `world + 1` |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
 | `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1/F7 pure register rotation |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 | divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist |
@@ -73,10 +68,9 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x800647a0` | CdSync | main | 640 | 196 |  |
 | `0x80054988` | UpdateHudCounters | main | 3652 | 188 | sched2 store-sinking (potential_hazard, §D 2d) x6 sites + one extra callee-saved reg |
 | `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | 140 | B18 constant-hoist branch-layout tie |
+| `0x8005fc6c` | func_8005FC6C | main | 152 | 132 | F4/A187 return-pointer copy: no branch after the dispatch call |
 | `0x8005dd0c` | WaitForFrameDeadline | main | 156 | 128 |  |
-| `0x8005fc6c` | func_8005FC6C | main | 152 | 124 | F4/A187 return-pointer copy: no branch after the dispatch call |
 | `0x8005c1c0` | ControlSpuDmaTransfer | main | 656 | 112 | B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load |
-| `0x80060e28` | FUN_80060e28 | main | 176 | 88 | F1 carried-accumulator register (43/44, block layout EXACT): the shared subu tail must live in CASE 1 with case 2 jumping backward into it, which only an explicit label+goto produces (jump.c's forward walk always keeps the LATER copy). The goto makes the 0x400 accumulator a GLOBAL allocno and global.c's find_reg picks the lowest local-density hard reg (a1) over the original's v0; the coalesced return copy leaves no v0 preference. Full residue map in src/c/FUN_80060e28.c.wip. 2026-08-10-5: the LENGTH is a pure consequence of the register, not a separate residue - with the accumulator in v0 the `li v0,0x400` cannot fill case 2's `beqz v0` delay slot (v0 is the branch's own operand) so reorg pushes it into the backward `j 0x80060e68` delay slot instead; with a1 it fills the beqz slot and the arm comes out one insn short. Also tried and REJECTED this session: hoisting `mirrored = 0x400` into the shared tail (one `li` instead of two) - 24/44 differ, far worse. Fix the register and the length follows. |
 | `0x8006606c` | CdRead | main | 260 | 72 |  |
 | `0x80013230` | RelocateMobActorTable | main | 432 | 64 | F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact |
 | `0x80065dbc` | CdReadStart | main | 532 | 60 |  |
