@@ -46,12 +46,11 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
+| `0x8002ccc8` | func_8002CCC8 | main | 868 | 796 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 768 | actor-update megafunction, same skeleton as matched func_level_0_8007D9C8 |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
-| `0x8002ccc8` | func_8002CCC8 | main | 868 | 732 | A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave |
 | `0x8003a420` | func_8003A420 | main | 768 | 732 | F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
-| `0x80059594` | func_80059594 | main | 720 | 696 | F19 potential_hazard: store vs neighbour inside one priority group |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap |
@@ -64,7 +63,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 | divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist |
 | `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 344 | positional: a 4-insn head knot at orig[28..50] zeroes all partial credit; then A133 constant-in-callee-saved allocation |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
-| `0x800655a0` | CdDataSync | main | 364 | 300 | F-class sched1 tie in one WritePrintf arg block |
+| `0x800655a0` | CdDataSync | main | 364 | 316 | F-class sched1 tie in one WritePrintf arg block |
 | `0x800557cc` | func_800557CC | main | 400 | 288 | B13 (A233 not free here) + a 5-insn st->place schedule |
 | `0x80038c4c` | func_80038C4C | main | 264 | 240 | three-way local-alloc: rec[3]/rec[4] share v0 before $2 is live |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | decode incomplete |
@@ -85,7 +84,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | 16 |  |
 | `0x80016fd0` | func_80016FD0 | main | 120 | 8 | B6 hand-written asm ($at as a general-purpose temp) |
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | 8 | decode gap, not a tie -- 76 masked mismatches over 28 regions |
-| `0x8003d92c` | AdvanceSpyroSpeedTowardTarget | main | 76 | 4 | B-i fold in a JOIN block + A167 param copy |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | raw permuter output -- the .wip does not compile |
 
