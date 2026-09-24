@@ -4635,3 +4635,38 @@ TickSpyroHornStrikeAttack_2026_09_23:
   verdict: parked
   class: "s0/s1 rotation; `register int *strike asm(\"$17\")` at function scope costs +2 insns"
   date: 2026-09-23
+func_level_11_8007CFB4:
+  verdict: parked
+  class: "loop-invariant hoist mirror (32 hoisted here, &D_80077368 not) + preheader movable order; 99.0% masked, -5 insns"
+  date: 2026-09-24
+  note: >-
+    18,952 B flight-level actor-update megafunction, head of the x5
+    8007CFB4 family. First pass: spliced from matched func_level_0_8007D9C8
+    arms (by behaviour, retyped) + level_30's preamble + 9 fresh arms.
+    Compiles and links at 4,733/4,738, 4,689 aligned over 36 regions, frame
+    and every linked address exact. Residues are listed in the .c.wip header.
+func_level_17_8007CFB4:
+  verdict: viable
+  class: "clone family of func_level_11_8007CFB4 (90.7% register-exact vs the head)"
+  date: 2026-09-24
+  note: "20,312 B. Same arms as level_11 plus extras; template from the level_11 park once it matches."
+func_level_23_8007CFB4:
+  verdict: viable
+  class: "clone family of func_level_11_8007CFB4 (84.8% register-exact vs the head)"
+  date: 2026-09-24
+  note: "21,128 B. 92.2% vs level_17, 90.7% vs level_5."
+func_level_29_8007CFB4:
+  verdict: viable
+  class: "clone family of func_level_11_8007CFB4 (82.8% register-exact vs the head)"
+  date: 2026-09-24
+  note: "20,596 B."
+func_level_5_8007CFB4:
+  verdict: viable
+  class: "clone family of func_level_11_8007CFB4 (83.4% register-exact vs the head)"
+  date: 2026-09-24
+  note: "21,736 B, the largest member."
+func_level_30_8007D938_2026_09_24:
+  verdict: parked
+  class: "R6 shared spy base CLOSED (A257 spilled base); preheader hoist order + register map remain"
+  date: 2026-09-24
+  note: "Applied the level_11 lever: -42 -> -39 insns, 4,678 -> 4,683 aligned (79.5%)."
