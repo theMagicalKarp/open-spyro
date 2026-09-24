@@ -4665,3 +4665,8 @@ func_level_5_8007CFB4:
   class: "clone family of func_level_11_8007CFB4 (83.4% register-exact vs the head)"
   date: 2026-09-24
   note: "21,736 B, the largest member."
+func_level_30_8007D938_2026_09_24:
+  verdict: parked
+  class: "R6 shared spy base CLOSED (A257 spilled base); preheader hoist order + register map remain"
+  date: 2026-09-24
+  note: "Applied the level_11 lever: -42 -> -39 insns, 4,678 -> 4,683 aligned (79.5%)."

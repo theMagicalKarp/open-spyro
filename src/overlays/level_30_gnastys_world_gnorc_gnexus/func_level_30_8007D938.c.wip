@@ -68,10 +68,13 @@
  *     uses the ABSOLUTE form for both the store and the read-back, which is
  *     also why the read-back is a genuine `lbu` and not an `andi` of the
  *     stored register. Every other bodyRotZ site stays on `spy->`.
- *   - `s7` is `&SPY` built as `&D_80078BBC - 0x164`, i.e. the balloon-stage
- *     counter at 0x80078BBC and the Spyro object share one base register.
- *     The natural `extern SpyroObj` form materialises &SPY directly instead;
- *     this is the R6 shared-base class and is still open here.
+ *   - `s7` is `&SPY` built as `&D_80078BBC - 0x164`: CLOSED 2026-09-24 (from
+ *     the level_11 flight head). `base = (char *)&D_80078BBC` above the loop,
+ *     `spy = base - 0x164` at the loop top, and one in-loop `*(int *)base`
+ *     read (case 120) so `base` crosses calls, spills, and reload rebuilds it
+ *     through t1: the orig's `lui t1; addiu t1; addiu s7,t1,-0x164` exactly.
+ *     -42 -> -39 insns, 4,678 -> 4,683 aligned. Only the `s5 = 1` / `s8 = 2`
+ *     hoist ORDER is left in the preheader.
  *
  * THE RESIDUE IS A REGISTER MAP, AND THE ALLOCATION ARITHMETIC IS NOW DONE.
  * Whole-function register census (orig vs ours), which is what the 634 regions
@@ -1161,6 +1164,7 @@ void func_level_30_8007D938(void) {
   Actor **actorList;
   Actor *actor;
   SpyroObj *spy;
+  char *base;
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -1188,10 +1192,11 @@ void func_level_30_8007D938(void) {
   }
 
   actorList = D_800700F4;
+  base = (char *)&D_80078BBC;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    spy = (SpyroObj *)((char *)&D_80078BBC - 0x164);
+    spy = (SpyroObj *)(base - 0x164);
 
     if (actor->unk48 >= 0x80) {
       continue;
@@ -2288,7 +2293,7 @@ void func_level_30_8007D938(void) {
     case 120: {
       BalloonState *st = actor->state;
 
-      if (SPY.u164 >= 2) {
+      if (*(int *)base >= 2) {
         svD[0] = 0;
         svD[1] = 0x64;
         svD[2] = 0;
