@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,895 vs 5,900 insns (-5). Linked-at-VMA shape diff
+ * STATE: compiles; 5,893 vs 5,900 insns (-7). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 432 imm-kept / 397 masked
+ * sides, difflib on mnemonics+registers): 419 imm-kept / 384 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -3231,7 +3231,7 @@ void func_level_30_8007D938(void) {
         svK[2] = (func_8006272C() & 0xFE) - 0x40;
         func_80017758(svK, svK, &actor->posX);
         D_800758E4(1, 0x42, svK, (int *)1);
-        ((ShardState *)actor->state)->life -= 1;
+        st->life -= 1;
       } else {
         func_80052568(actor);
         continue;
