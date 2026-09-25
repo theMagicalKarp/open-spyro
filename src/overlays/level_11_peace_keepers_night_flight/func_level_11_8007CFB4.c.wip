@@ -1230,6 +1230,7 @@ void func_level_11_8007CFB4(void) {
   Actor **actorList;
   Actor *actor;
   SpyroObj *spy;
+  int one;
   char *base;
 
   /* Scratch vectors shared by several cases. */
@@ -1265,6 +1266,7 @@ void func_level_11_8007CFB4(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
+    one = 1;
     spy = (SpyroObj *)(base - 0x164);
 
     if (actor->unk48 >= 0x80) {
@@ -1290,7 +1292,7 @@ void func_level_11_8007CFB4(void) {
 
               func_8003851C(D_80075898, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.u164 = one;
 
               func_80052568(actor);
               break;
@@ -2501,11 +2503,11 @@ void func_level_11_8007CFB4(void) {
       case 1:
         D_80075908 += (actor->type - 0x158) * 60;
         func_80017AA4(&actor->posX, &actor->posX);
-        actor->unk46 = 0xC0;
         actor->unk47 = 0x20;
         actor->unk44 = 0;
         actor->unk45 = 0;
         actor->unk50 = 0xFF;
+        actor->unk46 = 0xC0;
         actor->unk48 = 2;
         func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
         break;
@@ -2695,9 +2697,9 @@ void func_level_11_8007CFB4(void) {
           D_80077FEC[i].posY = y;
           y += 0x14;
           D_80077FEC[i].unk47 = 0x20;
+          D_80077FEC[i].unk50 = 0xFF;
           D_80077FEC[i].posX = 0x3C;
           D_80077FEC[i].posZ = 0x1000;
-          D_80077FEC[i].unk50 = 0xFF;
           D_80077FEC[i].unk4F = i + 3;
         }
       }
@@ -2834,11 +2836,12 @@ void func_level_11_8007CFB4(void) {
         if (D_80078608 >= 0) {
           D_800758F8 = D_80078608;
           if (D_80078630[D_800758F8] != D_800770F8[D_800758F8]) {
-            int x = 0x1E;
+            int *cnt = D_80078630;
+            int x;
 
-            for (i = 0; i < 8; i++) {
+            for (i = 0, x = 0x1E; i < 8; i++) {
               st->icon[i]->type = st->types[D_800758F8];
-              if (D_80078630[D_800758F8] < i + 1) {
+              if (cnt[D_800758F8] < i + 1) {
                 st->icon[i]->unk50 = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = 0;
