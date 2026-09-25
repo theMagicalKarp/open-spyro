@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
+ * STATE: compiles; 5,889 vs 5,900 insns (-11). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 582 imm-kept / 535 masked
+ * sides, difflib on mnemonics+registers): 522 imm-kept / 475 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1387,12 +1387,12 @@ void func_level_30_8007D938(void) {
 
         if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
           if (D_80075898 == 0) {
-            if (SPY.u164 >= 0) {
+            if (D_80078BBC >= 0) {
               Actor *puff = D_800758CC(0x78, actor);
 
               D_80075898 = puff;
               func_8003851C(puff, 0, 0);
-              SPY.u164 = 1;
+              D_80078BBC = 1;
               func_80052568(actor);
               goto wander_body;
             }
@@ -1421,14 +1421,14 @@ void func_level_30_8007D938(void) {
       if (!(actor->unk50 & 0x80)) {
         switch (actor->unk48) {
         case 0:
-          if (func_80037F90(&st->reTurn, 2) == 0 || actor->unk51 != 0) {
+          if (func_80037F90(&st->unk14, 2) == 0 || actor->unk51 != 0) {
             int moved;
             int blocked;
             int step;
             int *at;
 
-            if (func_80037F90(&st->reStep, 1) != 0) {
-              unsigned char turn = func_80037F10(0x1E, 0x5A);
+            if (func_80037F90(&st->reTurn, 1) != 0) {
+              int turn = func_80037F10(0x1E, 0x5A);
 
               if (func_8006272C() & 1) {
                 turn = -turn;
@@ -1442,9 +1442,11 @@ void func_level_30_8007D938(void) {
               st->reStep = func_80037EA0(0x50, 0x8C);
             }
 
-            actor->posZ =
-                (st->speed >= 0x80 ? actor->posZ - 0x100 : actor->posZ) +
-                st->speed;
+            if (st->speed >= 0x80) {
+              actor->posZ = actor->posZ - 0x100 + st->speed;
+            } else {
+              actor->posZ = actor->posZ + st->speed;
+            }
             step = actor->posZ - func_80038340(actor);
 
             if (step < 0x12C) {
@@ -1501,9 +1503,11 @@ void func_level_30_8007D938(void) {
           {
             int step;
 
-            actor->posZ =
-                (st->speed >= 0x80 ? actor->posZ - 0x100 : actor->posZ) +
-                st->speed;
+            if (st->speed >= 0x80) {
+              actor->posZ = actor->posZ - 0x100 + st->speed;
+            } else {
+              actor->posZ = actor->posZ + st->speed;
+            }
             step = actor->posZ - func_80038340(actor);
 
             if (step < 0xC8) {
