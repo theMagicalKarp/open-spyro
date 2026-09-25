@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,866 vs 5,900 insns (-34). Linked-at-VMA shape diff
+ * STATE: compiles; 5,873 vs 5,900 insns (-27). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 847 imm-kept / 786 masked
+ * sides, difflib on mnemonics+registers): 770 imm-kept / 713 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1692,19 +1692,20 @@ void func_level_30_8007D938(void) {
       }
 
       if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+        int *nrm = &D_80077368;
         int along;
         int push;
 
-        func_80017330(&D_80077368, 0x1000);
-        along = (st->vel[0] * D_80077368) + (st->vel[1] * D_8007736C) +
+        func_80017330(nrm, 0x1000);
+        along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
                 (st->vel[2] * D_80077370);
         push = along >> 11;
 
         if (push < 0) {
-          func_800175B8(&D_80077368, 0x1000, (along >> 13) - push);
-          st->vel[0] += D_80077368;
-          st->vel[1] += D_8007736C;
-          st->vel[2] += D_80077370;
+          func_800175B8(nrm, 0x1000, (along >> 13) - push);
+          st->vel[0] += nrm[0];
+          st->vel[1] += AS_I32(D_8007736C);
+          st->vel[2] += AS_I32(D_80077370);
         }
       }
 
@@ -2382,7 +2383,11 @@ void func_level_30_8007D938(void) {
 
             reach = high != 0 ? 0x96 : 0x82;
             limit = reach + 5;
-            func_800175B8(svA, dist, limit < dist ? limit : reach - 5);
+            if (limit < dist) {
+              func_800175B8(svA, dist, limit);
+            } else {
+              func_800175B8(svA, dist, reach - 5);
+            }
             func_80017758(&actor->posX, &actor->posX, svA);
             func_80038EE0(actor, func_80016AB4(svA[0], svA[1], 0), 0xA, 0, 0);
             actor->unk45 = func_80016AB4(func_800171FC(svA, 0), svA[2], 0);
@@ -2415,8 +2420,6 @@ void func_level_30_8007D938(void) {
             dist = func_800171FC(svJ, 1);
 
             if (dist < 0x200) {
-              int *tint;
-
               ge->timer = 0;
               ge->lean = func_8006272C() & 0xE;
               ge->roll = func_8006272C() & 0xE;
@@ -2425,14 +2428,12 @@ void func_level_30_8007D938(void) {
               st->gnorc->unk49 = 3;
 
               if (st->gnorc->type == 14) {
-                tint = D_8006E494;
+                D_800758E4(1, 0xC, actor, D_8006E494);
               } else if (st->gnorc->type == 15) {
-                tint = D_8006E490;
+                D_800758E4(1, 0xC, actor, D_8006E490);
               } else {
-                tint = D_8006E330[st->gnorc->type];
+                D_800758E4(1, 0xC, actor, D_8006E330[st->gnorc->type]);
               }
-
-              D_800758E4(1, 0xC, actor, tint);
               st->gnorc = 0;
 
               if (func_80056DC4(actor, D_800761D4[0x2F]) == 0) {
@@ -3046,21 +3047,22 @@ void func_level_30_8007D938(void) {
 
           if (z >= 0x400) {
             if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+              int *nrm = &D_80077368;
               int along;
 
               actor->posX = D_80076B80;
-              actor->posY = D_80076B84;
-              actor->posZ = D_80076B88;
-              func_80017330(&D_80077368, 0x1000);
-              along = ((st->vel[0] * D_80077368) + (st->vel[1] * D_8007736C) +
+              actor->posY = AS_I32(D_80076B84);
+              actor->posZ = AS_I32(D_80076B88);
+              func_80017330(nrm, 0x1000);
+              along = ((st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
                        (st->velZ * D_80077370)) >>
                       11;
 
               if (along < 0) {
-                func_800175B8(&D_80077368, 0x1000, -along);
-                st->vel[0] += D_80077368;
-                st->vel[1] += D_8007736C;
-                st->velZ += D_80077370;
+                func_800175B8(nrm, 0x1000, -along);
+                st->vel[0] += nrm[0];
+                st->vel[1] += AS_I32(D_8007736C);
+                st->velZ += AS_I32(D_80077370);
               }
             }
             st->life -= 1;
