@@ -1,12 +1,11 @@
 /* PARKED 2026-09-24 -- first pass on the flight-level actor-update megafunction
  * (func_level_{5,11,17,23,29}_8007CFB4; this is the smallest, 18,952 B).
  *
- * STATE: compiles and links; 4,733 of 4,738 insns (-5). Register-anchored
- * masked resync 4,689 / 4,738 aligned (99.0%) over 36 regions. The 0x1C0
- * frame, every stack offset and every linked address are exact (checked on
- * the linked overlay bytes, not just the masked shape). Arms 0x10, 0x22,
- * 0x1E0, 0xAD, 0x154, 0x161, 0x183, 0x18D, 0x195, 0x177..0x182 and
- * 0x4C/0x1AA..0x1C3 are clean.
+ * STATE (2026-09-24-1): compiles and links; 4,737 of 4,738 insns (-1).
+ * Register-anchored masked resync: 23 mismatched over 14 regions (was 70 /
+ * 36 / -5). The 0x1C0 frame, every stack offset and every linked address
+ * are exact. The one missing insn is the 0x166 copy loop (orig 3555), so the
+ * LINKED diff is positional-shifted by one from there on (1276/4738 differ).
  *
  * HOW IT WAS BUILT (redo this for the four siblings). The case list and order
  * come off the compare tree (ascending arm addresses = source order, A250):
@@ -21,7 +20,23 @@
  * The preamble is level_30's; the local list is level_0's plus svT..svW.
  *
  * LEVERS THAT CLOSED WHOLE BLOCKS (each is in the cookbook):
- *   - `spy`: `base = (char *)&D_80078BBC` before the loop, `spy = base -
+ *   - loop.c's hoist THRESHOLD is shared state (2026-09-24-1): threshold =
+ *     1 + n_non_fixed_regs = 29 for this loop, minus 3 per movable already
+ *     moved, and a movable moves iff threshold * savings * life >= insn_count
+ *     (4,696). The 32 group (7 x 53 = 371) moved at threshold 14 (5,194) and
+ *     would not at 11. Writing the two yaw sites of arm 14/15 as level_0's
+ *     `int *nrm = &D_80077368; ... nrm[0]` makes the &D_80077368 group move
+ *     first (unallocated, so reload rematerialises it per call -- exactly the
+ *     original's per-call `lui a0; addiu a0`), which drops the threshold by 3
+ *     and un-hoists the 32. Both knots closed by one edit (70 -> 39). Keep the
+ *     two dot arms absolute: nrm there too is worse (78/-9).
+ *   - 0x12B: `Model **models = D_80076378;` in a block around the
+ *     func_80056DC4 test holds the table in s0 across the call (-> 34).
+ *   - Loop-top stores in the order 0x42&2, 0x42&1, then D_800756C4 (-> 32).
+ *   - 0x166 sound ids: `AS_PTRU8(D_800761D4)[0x24]` at both 0x24 sites. The
+ *     struct view makes the load MEM_IN_STRUCT, so sched keeps it below the
+ *     st->timer / st->spent[i] stores as in the original (-> 23, -1 insn).
+   - `spy`: `base = (char *)&D_80078BBC` before the loop, `spy = base -
  *     0x164` at the loop top, and one in-loop `*(int *)base` read (0x78 arm)
  *     so `base` lives across calls, spills, and reload rebuilds it through
  *     the spill reg: `lui t0; addiu t0; addiu fp,t0,-0x164`, as the original.
@@ -38,29 +53,29 @@
  *   - The 0x154/0x161 height test is `drop > 0 ? drop < K : SPY.posZ -
  *     height < K`, not nested ifs (the ternary gives the orig's `j` block).
  *
- * RESIDUES (orig insn index; 49 insns in total):
- *   [34..37]  preheader order: orig hoists `s7 = 1` before the spy triple.
- *             Spy must stay at the loop top (anywhere later it is not
- *             hoisted at all); a dead `one = 1` ahead of it is deleted
- *             before loop.c runs. Open.
- *   0x1DE [870..903], 0x104 [2802..2842]: `&D_80077368` is cse-held in s1
- *             across two calls; the original rematerialises it per call.
- *             loop.c does not hoist it here (2 movables, savings 2, life 45:
- *             under threshold). Restoring level_0's `nrm` pointer is worse.
- *   0xE [1649], 0x78 [2485], 0x166 [3642..3656]: the constant 32 IS hoisted
- *             out of the actor loop here (5 movables, savings 7, life 53)
- *             and rematerialised through t0; the original materialises it
- *             in place. Mirror image of the D_80077368 knot -- the next
- *             probe is to find which 32-set the original does not have.
- *   0x12B [2960..2975]: the original holds &D_80076378 (model table) in s0
- *             across the func_80056DC4 call; we index it absolutely.
- *   0x166 [3555..3567]: `D_8006E3E4[i] = st->unk84[i]` -- orig keeps a
- *             4*i giv and stores `sw v0,D_8006E3E4(v1)`; we reduce the
- *             destination to a pointer. Declaration shape is inert.
- *   0x166 [3917..3930], [3970], [4049..4051]: sched order of the 0x10 arg
- *             and the icon-loop init.
- *   0xE [1401]: func_80057380's arg lands in both the beqz delay slot and
- *             the jal delay slot.
+ * RESIDUES (orig insn index; 23 masked insns):
+ *   [34..37]  preheader order: orig puts `li s7,1` before the spy triple.
+ *             sched tie on LUID: the const-1 movable is emitted after spy's
+ *             because spy's set is first in the loop body. Open.
+ *   0xE [1401]: reorg fills beqz's slot from the TARGET (the else arm's
+ *             `move a0,s4`) and puts the fallthrough's copy in the jal slot;
+ *             the original fills from the fallthrough and leaves a nop.
+ *             Branch-sense spellings are inert (same RTL).
+ *   case 1 [3138], icon loop [3587]: the rematerialised `li t0,255` lands
+ *             later than the original's; unk50 store position is inert.
+ *   0x166 copy loop [3555..3567], the -1: the original's giv set is
+ *             `*(int *)((char *)D_8006E3E4 + (i << 2))` (dest sym folded into
+ *             the address, 4*i giv in v1, src pointer giv in a0) -- that form
+ *             reproduces the loop body exactly -- BUT with i kept as a biv.
+ *             Ours then eliminates the biv (all givs reduced, so
+ *             all_reduced == 1), which is -2. The original must have had one
+ *             giv of i that was "not worth while" (benefit - add_cost <= 0)
+ *             and dead afterwards, to hold all_reduced at 0. `i * 4` (MULT)
+ *             instead of `i << 2` breaks the symbol out at expand and gives
+ *             the current -1 shape. 25 forms tried (pointer locals, k temps,
+ *             volatile, sized decl, do/while, while, <=). Open.
+ *   0x166 [4049..4051]: preheader order of `move a3,a0` / `li a2,30`; x/i
+ *             init order is inert.
  *
  * MEASURING: `open-spyro diff` cannot show it (length differs). Compile-only:
  * carve 18,952 B at 0x8007CFB4-0x8007AA38 from disc/orig/overlays/
@@ -1245,8 +1260,8 @@ void func_level_11_8007CFB4(void) {
     }
 
     D_80075794 = actor->unk42 & 2;
-    D_800756C4 = D_800756CC;
     D_800757F4 = actor->unk42 & 1;
+    D_800756C4 = D_800756CC;
 
     switch (actor->type) {
     /* Butterfly (ChaseState). */
@@ -1668,13 +1683,15 @@ void func_level_11_8007CFB4(void) {
 
       switch (actor->unk49) {
       case 0: {
+        int *nrm = &D_80077368;
+
         func_80017700(svA, &actor->posX);
         svA[2] += 0x400;
         func_8004D5EC(svA, 0x10000);
         st->pitch = -func_800169AC(
-            func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+            func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
             D_8007736C);
-        st->yaw = -func_800169AC(D_80077370, D_80077368);
+        st->yaw = -func_800169AC(D_80077370, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->unk46 = 0;
@@ -1690,10 +1707,12 @@ void func_level_11_8007CFB4(void) {
             func_80038458(actor);
             func_800533D0(actor);
             if (actor->type >= 83) {
+              int *nrm = &D_80077368;
+
               st->pitch = -func_800169AC(
-                  func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+                  func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
                   D_8007736C);
-              st->yaw = -func_800169AC(D_80077370, D_80077368);
+              st->yaw = -func_800169AC(D_80077370, nrm[0]);
             }
 
           } else if (st->sub == 2) {
@@ -2401,9 +2420,13 @@ void func_level_11_8007CFB4(void) {
         break;
       }
 
-      if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
-        func_80055A78(D_80076378[actor->type]->m_Sounds[1], actor, 8,
-                      &actor->unk54);
+      {
+        Model **models = D_80076378;
+
+        if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
+          func_80055A78(models[actor->type]->m_Sounds[1], actor, 8,
+                        &actor->unk54);
+        }
       }
       break;
     }
@@ -2763,7 +2786,7 @@ void func_level_11_8007CFB4(void) {
           st->count--;
           st->spent[st->count]->unk48 = 2;
           st->timer = 0x10;
-          func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+          func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -2779,7 +2802,7 @@ void func_level_11_8007CFB4(void) {
               func_80052568(a);
             }
             st->spent[i] = 0;
-            func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+            func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&

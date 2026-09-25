@@ -4637,14 +4637,18 @@ TickSpyroHornStrikeAttack_2026_09_23:
   date: 2026-09-23
 func_level_11_8007CFB4:
   verdict: parked
-  class: "loop-invariant hoist mirror (32 hoisted here, &D_80077368 not) + preheader movable order; 99.0% masked, -5 insns"
+  class: "F-class biv-elimination tie in the 0x166 copy loop (-1 insn); 23 masked over 14 regions, rest are sched/reorg ties"
   date: 2026-09-24
   note: >-
     18,952 B flight-level actor-update megafunction, head of the x5
-    8007CFB4 family. First pass: spliced from matched func_level_0_8007D9C8
-    arms (by behaviour, retyped) + level_30's preamble + 9 fresh arms.
-    Compiles and links at 4,733/4,738, 4,689 aligned over 36 regions, frame
-    and every linked address exact. Residues are listed in the .c.wip header.
+    8007CFB4 family. 2026-09-24-1: 70/36/-5 -> 23/14/-1. The 32 hoist and
+    the &D_80077368 rematerialisation were ONE loop.c threshold knot (nrm
+    pointer at the two yaw sites hoists &D_80077368 first and drops the
+    threshold under the 32 group); held model table, loop-top store order
+    and a struct-view sound-id load closed three more. The last length
+    residue is the D_8006E3E4 copy loop: the `(char *)D + (i << 2)` form
+    gives the exact giv set, but gcc then eliminates the biv (-2). See the
+    .c.wip header.
 func_level_17_8007CFB4:
   verdict: viable
   class: "clone family of func_level_11_8007CFB4 (90.7% register-exact vs the head)"
