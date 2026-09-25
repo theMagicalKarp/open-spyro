@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,873 vs 5,900 insns (-27). Linked-at-VMA shape diff
+ * STATE: compiles; 5,881 vs 5,900 insns (-19). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 770 imm-kept / 713 masked
+ * sides, difflib on mnemonics+registers): 749 imm-kept / 692 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1288,7 +1288,7 @@ void func_level_30_8007D938(void) {
           func_800526A8(actor);
 
           actor->unk51 = 1;
-          self = -(actor - D_80075828);
+          self = D_80075828 - actor;
 
           for (scan = D_80075828; scan < D_80075890; scan++) {
             if (scan != actor && scan->unk48 < 0x80 && scan->type == 13) {
@@ -1327,7 +1327,7 @@ void func_level_30_8007D938(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->count != 0) {
+            if (st->unk24 != 0) {
               landed = 4;
               hit = 0;
             } else if (func_8004D5EC(st->pos, 0x1400) != 0) {
@@ -2377,8 +2377,10 @@ void func_level_30_8007D938(void) {
                   func_80017908((actor->unk46 + (ge->vel[0] * 0x6E)) & 0xFF,
                                 (((short)D_80076E20 << 16 >> 20) + 0x80) &
                                     0xFF) < 8))) {
-              D_80075794 = 0;
-              ANIM_ADVANCE(actor, actor->unk3D + 1);
+              if (actor->unk3D != actor->unk3D + 1) {
+                D_80075794 = 0;
+                ANIM_ADVANCE(actor, actor->unk3D + 1);
+              }
             }
 
             reach = high != 0 ? 0x96 : 0x82;
@@ -2404,8 +2406,10 @@ void func_level_30_8007D938(void) {
 
           case 2:
             if (D_80075794 != 0) {
-              D_80075794 = 0;
-              ANIM_ADVANCE(actor, actor->unk3D - 1);
+              if (actor->unk3D != actor->unk3D - 1) {
+                D_80075794 = 0;
+                ANIM_ADVANCE(actor, actor->unk3D - 1);
+              }
               st->gnorc = 0;
               actor->unk49 = 0;
             }
@@ -2880,133 +2884,133 @@ void func_level_30_8007D938(void) {
         break;
       }
 
-      if (actor->unk48 != 1) {
-        D_80078C4C = 0x80002000;
-        break;
-      }
+      if (actor->unk48 == 1) {
+        st->phase += D_800756CC;
 
-      st->phase += D_800756CC;
-
-      if (st->phase >= 0x101) {
-        st->phase = 0;
-        actor->unk44 = st->rotX;
-        actor->unk45 = st->rotY;
-        actor->flags = 0;
-        actor->posZ = st->restZ;
-        func_800562A4(actor, 1);
-        at = &actor->posX;
-      } else if (st->phase >= 0xC0) {
-        int dx;
-        int dy;
-
-        if (func_80056DC4(actor, D_80076378[actor->type]->m_Sounds[0]) == 0) {
-          func_8003851C(actor, 0, 0);
-        }
-
-        actor->unk44 = D_8006E638[(st->phase - 0xC0) >> 1].a + st->rotX;
-        actor->unk45 = D_8006E638[(st->phase - 0xC0) >> 1].b + st->rotY;
-
-        dx = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].a;
-        dy = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].b;
-        if (dx < 0) {
-          dx = -dx;
-        }
-        if (dy < 0) {
-          dy = -dy;
-        }
-        actor->posZ = st->restZ + ((dx + dy) * 6);
-        at = &actor->posX;
-      } else if (st->phase >= 0xBC) {
-        st->rotX = actor->unk44;
-        st->rotY = actor->unk45;
-        st->restZ = actor->posZ;
-        at = &actor->posX;
-      } else if (actor->flags != 0) {
-        st->phase = 0xBC;
-        func_800562A4(actor, 1);
-        at = &actor->posX;
-      } else if ((st->phase >> 1) == 0x10 && !(func_8006272C() & 3)) {
-        func_8003AAEC(actor, &D_8006E57C);
-        at = &actor->posX;
-      } else if ((st->phase >> 1) == 0x30 && !(func_8006272C() & 3)) {
-        func_8003AAEC(actor, &D_8006E588);
-        at = &actor->posX;
-      } else if ((st->phase >> 1) == 0x50 && !(func_8006272C() & 3)) {
-        func_8003AAEC(actor, &D_8006E594);
-        at = &actor->posX;
-      } else {
-        at = &actor->posX;
-      }
-
-      if (func_80017990(at, &spy->posX) < 0x800) {
-        func_8001778C(svK, &actor->posX, &spy->posX);
-        svK[2] = (svK[2] * 3) >> 2;
-
-        if (func_800171FC(svK, 1) < 0x440) {
-          unsigned char facing;
-          int *tally;
-
-          facing =
-              st->partner != -1 ? D_80075828[st->partner].unk46 : st->unk1C;
-          func_8003B854(0, actor);
-          func_80059474(actor, facing);
-
-          if (st->reward != -1) {
-            tally = &D_800772D8[D_80075964];
-            *tally += 1;
-            D_80075750 += 1;
-            func_8002C914(st->reward, 0);
-
-            if (st->partner != -1) {
-              D_80075828[st->partner].unk48 = 1;
-            }
-            func_80052568(actor);
-            continue;
-          }
-
-          if (st->unk18 == st->reward) {
-            tally = &D_800772D8[D_80075964];
-            *tally += 1;
-            D_80075750 += 1;
-
-            if (st->partner != st->unk18) {
-              D_80075828[st->partner].unk48 = 1;
-            }
-            func_80052568(actor);
-            continue;
-          }
-
-          actor->unk48 = 2;
+        if (st->phase >= 0x101) {
+          st->phase = 0;
           actor->unk44 = st->rotX;
           actor->unk45 = st->rotY;
+          actor->flags = 0;
           actor->posZ = st->restZ;
-          func_8002C924(actor);
-          func_800176F0(&D_80078BFC);
-          D_80078C4C = 0x80002147;
+          func_800562A4(actor, 1);
+          at = &actor->posX;
+        } else if (st->phase >= 0xC0) {
+          int dx;
+          int dy;
 
-          if (D_80078AF4 != 0) {
-            D_80078C70 = 6;
-            D_80078C60 = D_80078B64 >> 8;
-            D_80078C64 = D_80078B68 >> 8;
-            if (D_80078B6C <= 0) {
-              D_80078C68 = D_80078B6C >> 6;
-            } else {
-              D_80078C68 = 0;
+          if (func_80056DC4(actor, D_80076378[actor->type]->m_Sounds[0]) == 0) {
+            func_8003851C(actor, 0, 0);
+          }
+
+          actor->unk44 = D_8006E638[(st->phase - 0xC0) >> 1].a + st->rotX;
+          actor->unk45 = D_8006E638[(st->phase - 0xC0) >> 1].b + st->rotY;
+
+          dx = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].a;
+          dy = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].b;
+          if (dx < 0) {
+            dx = -dx;
+          }
+          if (dy < 0) {
+            dy = -dy;
+          }
+          actor->posZ = st->restZ + ((dx + dy) * 6);
+          at = &actor->posX;
+        } else if (st->phase >= 0xBC) {
+          st->rotX = actor->unk44;
+          st->rotY = actor->unk45;
+          st->restZ = actor->posZ;
+          at = &actor->posX;
+        } else if (actor->flags != 0) {
+          st->phase = 0xBC;
+          func_800562A4(actor, 1);
+          at = &actor->posX;
+        } else if ((st->phase >> 1) == 0x10 && !(func_8006272C() & 3)) {
+          func_8003AAEC(actor, &D_8006E57C);
+          at = &actor->posX;
+        } else if ((st->phase >> 1) == 0x30 && !(func_8006272C() & 3)) {
+          func_8003AAEC(actor, &D_8006E588);
+          at = &actor->posX;
+        } else if ((st->phase >> 1) == 0x50 && !(func_8006272C() & 3)) {
+          func_8003AAEC(actor, &D_8006E594);
+          at = &actor->posX;
+        } else {
+          at = &actor->posX;
+        }
+
+        if (func_80017990(at, &spy->posX) < 0x800) {
+          func_8001778C(svK, &actor->posX, &spy->posX);
+          svK[2] = (svK[2] * 3) >> 2;
+
+          if (func_800171FC(svK, 1) < 0x440) {
+            unsigned char facing;
+            int *tally;
+
+            facing =
+                st->partner != -1 ? D_80075828[st->partner].unk46 : st->unk1C;
+            func_8003B854(0, actor);
+            func_80059474(actor, facing);
+
+            if (st->reward != -1) {
+              tally = &D_800772D8[D_80075964];
+              *tally += 1;
+              D_80075750 += 1;
+              func_8002C914(st->reward, 0);
+
+              if (st->partner != -1) {
+                D_80075828[st->partner].unk48 = 1;
+              }
+              func_80052568(actor);
+              continue;
             }
-          } else {
-            int *look = &D_80078C60;
 
-            D_80078C70 = 3;
-            func_80017700(look, &D_80078B64);
-            func_800176C8(look, 6);
-            D_80078C68 = 0;
+            if (st->unk18 == st->reward) {
+              tally = &D_800772D8[D_80075964];
+              *tally += 1;
+              D_80075750 += 1;
 
-            if (D_80078C60 != 0 || D_80078C64 != 0) {
-              func_800175B8(look, func_800171FC(look, 0), 0x60);
+              if (st->partner != st->unk18) {
+                D_80075828[st->partner].unk48 = 1;
+              }
+              func_80052568(actor);
+              continue;
+            }
+
+            actor->unk48 = 2;
+            actor->unk44 = st->rotX;
+            actor->unk45 = st->rotY;
+            actor->posZ = st->restZ;
+            func_8002C924(actor);
+            func_800176F0(&D_80078BFC);
+            D_80078C4C = 0x80002147;
+
+            if (D_80078AF4 != 0) {
+              D_80078C70 = 6;
+              D_80078C60 = D_80078B64 >> 8;
+              D_80078C64 = D_80078B68 >> 8;
+              if (D_80078B6C <= 0) {
+                D_80078C68 = D_80078B6C >> 6;
+              } else {
+                D_80078C68 = 0;
+              }
+            } else {
+              int *look = &D_80078C60;
+
+              D_80078C70 = 3;
+              func_80017700(look, &D_80078B64);
+              func_800176C8(look, 6);
               D_80078C68 = 0;
+
+              if (D_80078C60 != 0 || D_80078C64 != 0) {
+                func_800175B8(look, func_800171FC(look, 0), 0x60);
+                D_80078C68 = 0;
+              }
             }
           }
         }
+
+      } else {
+        D_80078C4C = 0x80002000;
       }
 
       break;
