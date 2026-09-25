@@ -2,7 +2,7 @@
  *
  * STATE: compiles; 5,889 vs 5,900 insns (-11). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 522 imm-kept / 475 masked
+ * sides, difflib on mnemonics+registers): 471 imm-kept / 420 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1288,11 +1288,13 @@ void func_level_30_8007D938(void) {
           func_800526A8(actor);
 
           actor->unk51 = 1;
-          self = D_80075828 - actor;
+          parent = D_80075828;
+          self = -(actor - parent);
 
-          for (scan = D_80075828; scan < D_80075890; scan++) {
-            if (scan != actor && scan->unk48 < 0x80 && scan->type == 13) {
-              FollowState *other = scan->state;
+          for (; parent < D_80075890; parent++) {
+            if (parent != actor && parent->unk48 < 0x80 &&
+                parent->type == 13) {
+              FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
                 other->parent = self;
