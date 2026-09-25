@@ -1,78 +1,20 @@
-/* PARKED 2026-09-24 -- first pass on the flight-level actor-update megafunction
- * (func_level_{5,11,17,23,29}_8007CFB4; this is the smallest, 18,952 B).
+/* func_level_23_8007CFB4 (0x8007CFB4, 21,128 B) -- matching notes.
  *
- * STATE: compiles and links; 4,733 of 4,738 insns (-5). Register-anchored
- * masked resync 4,689 / 4,738 aligned (99.0%) over 36 regions. The 0x1C0
- * frame, every stack offset and every linked address are exact (checked on
- * the linked overlay bytes, not just the masked shape). Arms 0x10, 0x22,
- * 0x1E0, 0xAD, 0x154, 0x161, 0x183, 0x18D, 0x195, 0x177..0x182 and
- * 0x4C/0x1AA..0x1C3 are clean.
- *
- * HOW IT WAS BUILT (redo this for the four siblings). The case list and order
- * come off the compare tree (ascending arm addresses = source order, A250):
- *   16, 34, 478/479, 480, 14/15/83..87, 120, 173, 260..269, 299, 340,
- *   345..347, 353, 358, 405/477, 375..386, 387..389/491, 397/399, 76/426..451
- * with no `default:`. Every arm that shares a behaviour with matched
- * func_level_0_8007D9C8 was spliced from it (level_0's 0xff/0x100 arm is
- * 478/479 here, 0x101 is 480, 0xc2 is 299), then re-pointed per site:
- * SPY.x -> spy->x wherever the original addresses Spyro through $fp, and
- * SPY.bodyRotZ -> D_80078A66 / nrm[0] -> D_80077368 wherever it is absolute
- * (A240). 340, 345..347, 353, 358, 375.., 387.. and 397/399 are new decodes.
- * The preamble is level_30's; the local list is level_0's plus svT..svW.
- *
- * LEVERS THAT CLOSED WHOLE BLOCKS (each is in the cookbook):
- *   - `spy`: `base = (char *)&D_80078BBC` before the loop, `spy = base -
- *     0x164` at the loop top, and one in-loop `*(int *)base` read (0x78 arm)
- *     so `base` lives across calls, spills, and reload rebuilds it through
- *     the spill reg: `lui t0; addiu t0; addiu fp,t0,-0x164`, as the original.
- *   - One variable, not two, wherever the original reuses a callee-saved reg:
- *     the HUD arm's `prev`/`t` (s0) and loop counter/`n` (s2). Merging them
- *     took the arm from 221 to 187 and fixed the t0/t1 spill-reg swap.
- *   - The HUD init's icon loop indexes `D_80077FEC[i].field` directly with a
- *     separate `y` counter; a `Actor *a = &D_80077FEC[i]` local is fully
- *     strength-reduced and costs ~150 aligned insns of register map (187->28).
- *   - 0x183's `>> 6` on a short table read: A233's count local must be set
- *     ABOVE THE ACTOR LOOP (`sh6`) so it crosses calls, spills and is
- *     rematerialised as an immediate; set at the arm head it stays in a2
- *     (`srav`).
- *   - The 0x154/0x161 height test is `drop > 0 ? drop < K : SPY.posZ -
- *     height < K`, not nested ifs (the ternary gives the orig's `j` block).
- *
- * RESIDUES (orig insn index; 49 insns in total):
- *   [34..37]  preheader order: orig hoists `s7 = 1` before the spy triple.
- *             Spy must stay at the loop top (anywhere later it is not
- *             hoisted at all); a dead `one = 1` ahead of it is deleted
- *             before loop.c runs. Open.
- *   0x1DE [870..903], 0x104 [2802..2842]: `&D_80077368` is cse-held in s1
- *             across two calls; the original rematerialises it per call.
- *             loop.c does not hoist it here (2 movables, savings 2, life 45:
- *             under threshold). Restoring level_0's `nrm` pointer is worse.
- *   0xE [1649], 0x78 [2485], 0x166 [3642..3656]: the constant 32 IS hoisted
- *             out of the actor loop here (5 movables, savings 7, life 53)
- *             and rematerialised through t0; the original materialises it
- *             in place. Mirror image of the D_80077368 knot -- the next
- *             probe is to find which 32-set the original does not have.
- *   0x12B [2960..2975]: the original holds &D_80076378 (model table) in s0
- *             across the func_80056DC4 call; we index it absolutely.
- *   0x166 [3555..3567]: `D_8006E3E4[i] = st->unk84[i]` -- orig keeps a
- *             4*i giv and stores `sw v0,D_8006E3E4(v1)`; we reduce the
- *             destination to a pointer. Declaration shape is inert.
- *   0x166 [3917..3930], [3970], [4049..4051]: sched order of the 0x10 arg
- *             and the icon-loop init.
- *   0xE [1401]: func_80057380's arg lands in both the beqz delay slot and
- *             the jal delay slot.
- *
- * MEASURING: `open-spyro diff` cannot show it (length differs). Compile-only:
- * carve 18,952 B at 0x8007CFB4-0x8007AA38 from disc/orig/overlays/
- * level_11_*.ovl, objdump both sides with -M no-aliases, anchor register
- * names BEFORE masking immediates, difflib-align. To check addresses, link
- * it (copy to .c, `open-spyro diff`, then compare the linked overlay bytes)
- * and restore the two generated level_11 *.slots.ld files afterwards.
- *
- * The level_30-specific declarations below (FollowState etc.) are unused
- * splice leftovers.
+ * Sibling of func_level_11_8007CFB4 (the flight actor-update family head),
+ * templated from the matched level_5 copy. See the level_11 file for the
+ * load-bearing source forms shared by the whole family. Differences from
+ * level_5:
+ *   - new arm 0xA2 (a roller cycling over four paths); no 0x4E, 0x16A,
+ *     0x197 or 0x198; 0x18C (not 0x1EA) joins the 0x183 arm.
+ *   - scratch vectors as level_17 minus `svT`; no extra array in 0x4C.
+ *   - the &D_80077368 group must be hoisted by loop.c (the original
+ *     rematerialises it per call). This overlay's loop is long enough that
+ *     4 x life 92 x threshold 14 falls short, so the 0x1DE arm carries two
+ *     empty scopes between its uses: each block note adds two luids of
+ *     lifetime (92 -> 96), and the group moves. No code is emitted for them.
+ *   - 0x183's retire block stores unk57 after unk1C.
  */
-/* func_level_11_8007CFB4 -- per-frame actor update for level 11 (Night Flight).
+/* func_level_23_8007CFB4 -- per-frame actor update for level 11 (Night Flight).
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class: a small
@@ -1199,13 +1141,98 @@ extern void func_800529CC(Actor *actor);
 extern unsigned char *D_80076824; /* level sound ids */
 
 /* ==== The function ==== */
-void func_level_11_8007CFB4(void) {
+/* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or
+ * it hits something. */
+typedef struct DriftState {
+  int vel[3]; /* 0x00 */
+  int timer;  /* 0x0C */
+} DriftState;
+
+/* Type 0x134: a path walker that rolls with its turns and, when flamed,
+ * spawns its reward and three embers and runs off. */
+typedef struct RollerState {
+  unsigned char *path; /* 0x00 [0]=node count, [1]=nearest node */
+  int reward;          /* 0x04 reward actor type - 0x158 */
+  int tally;           /* 0x08 */
+  int roll;            /* 0x0C */
+  int rollVel;         /* 0x10 */
+  int unk14;           /* 0x14 passed by address to func_80039910 */
+  int heading;         /* 0x18 */
+  int unk1C;           /* 0x1C passed by address to func_80039910 */
+  int unk20[3];        /* 0x20 */
+  int unk2C;           /* 0x2C */
+  int ready;           /* 0x30 nearest node found */
+} RollerState;
+
+extern int D_8007596C;
+extern int D_800756A8;
+extern int D_800756A4;
+extern int func_8003BFC0(Actor *actor, unsigned char *path, int *a, int *b,
+                          int c, int d);
+extern int func_8004AE38(int *pos, int *to);
+extern int func_8004E2E8(int *pos, int a, int b);
+
+/* Types 0x1E1..0x1E3: the walker's embers. */
+typedef struct EmberState {
+  short vel[3];  /* 0x00 */
+  short spin[3]; /* 0x06 */
+  int life;      /* 0x0C */
+} EmberState;
+
+/* Type 0x4E: a rider that sits on its host actor; when hit it pays out,
+ * bursts and retires. */
+typedef struct Rot3 {
+  unsigned char r[3];
+} Rot3;
+
+typedef struct RiderState {
+  int reward; /* 0x00 reward actor type - 0x158 */
+  int tally;  /* 0x04 */
+  int host;   /* 0x08 index into the actor array */
+  int timer;  /* 0x0C */
+} RiderState;
+
+/* Types 0x197/0x198: a smoking walker. */
+typedef struct SmokerState {
+  unsigned char *path; /* 0x00 */
+  int unk04;           /* 0x04 */
+  int unk08[3];        /* 0x08 */
+  int timer;           /* 0x14 */
+} SmokerState;
+
+extern int D_80078AD4;
+extern int D_8007572C;
+extern void func_80052D64(void *actor, int a, int *out);
+extern void func_8004E3C8(int *pos, int a, int b, int c, Actor *actor, int d);
+
+/* Type 0xA2: a roller that cycles over four paths. */
+typedef struct CyclerState {
+  unsigned char *path;     /* 0x00 current path */
+  unsigned char *paths[4]; /* 0x04 */
+  int pathIdx;             /* 0x14 */
+  int reward;              /* 0x18 */
+  int tally;               /* 0x1C */
+  int roll;                /* 0x20 */
+  int rollVel;             /* 0x24 */
+  int unk28;               /* 0x28 */
+  int heading;             /* 0x2C */
+  int unk30;               /* 0x30 */
+  int unk34[3];            /* 0x34 */
+  int unk40;               /* 0x40 */
+} CyclerState;
+
+extern void func_800176F0(int *v);
+extern void func_80038DC0(Actor *actor, int a, int b, int c);
+
+void func_level_23_8007CFB4(void) {
   Actor **actorList;
   Actor *actor;
   SpyroObj *spy;
+  int one;
   char *base;
 
   /* Scratch vectors shared by several cases. */
+  int svX[3];
   int svA[3];
   int svB[3];
   int svC[3];
@@ -1217,7 +1244,6 @@ void func_level_11_8007CFB4(void) {
   int svH[3];
   int svI[3];
   int svJ[3];
-  int svT[3];
   int svU[3];
   int svV[3];
   int svW[3];
@@ -1238,6 +1264,7 @@ void func_level_11_8007CFB4(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
+    one = 1;
     spy = (SpyroObj *)(base - 0x164);
 
     if (actor->unk48 >= 0x80) {
@@ -1245,8 +1272,8 @@ void func_level_11_8007CFB4(void) {
     }
 
     D_80075794 = actor->unk42 & 2;
-    D_800756C4 = D_800756CC;
     D_800757F4 = actor->unk42 & 1;
+    D_800756C4 = D_800756CC;
 
     switch (actor->type) {
     /* Butterfly (ChaseState). */
@@ -1263,7 +1290,7 @@ void func_level_11_8007CFB4(void) {
 
               func_8003851C(D_80075898, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.u164 = one;
 
               func_80052568(actor);
               break;
@@ -1392,6 +1419,20 @@ void func_level_11_8007CFB4(void) {
       }
 
       break;
+    }
+    case 0x11: {
+      DriftState *st = actor->state;
+
+      if (func_80037F90(&st->timer, 4) == 0) {
+        func_80017758(svX, &actor->posX, st->vel);
+        if (func_8004AE38(&actor->posX, svX) == 0 &&
+            func_8004E2E8(&actor->posX, 0, 1) == 0) {
+          func_80017700(&actor->posX, svX);
+          break;
+        }
+      }
+      func_80052568(actor);
+      continue;
     }
 
     /* Dragon egg (ShotState). */
@@ -1545,6 +1586,7 @@ void func_level_11_8007CFB4(void) {
           int dot;
 
           func_80017330(&D_80077368, 0x1000);
+          { int pad0; { int pad1; } } /* see header: loop.c lifetime dial */
           dot = st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
                     st->vel[2] * D_80077370 >>
                 11;
@@ -1586,34 +1628,25 @@ void func_level_11_8007CFB4(void) {
     case 480: {
       TumbleState *st = actor->state;
 
-      /* Retire when out of life, no longer drawn, or sunk to the floor. */
-      if (st->life == 0) {
+      if (st->life != 0 && actor->unk51 && actor->posZ > st->floorZ) {
+        actor->posX += st->vel[0];
+        actor->posY += st->vel[1];
+
+        st->vel[2] -= 6;
+        if (st->vel[2] < -0x80) {
+          st->vel[2] = -0x80;
+        }
+        actor->posZ += st->vel[2];
+
+        actor->unk44 += st->spin[0];
+        actor->unk45 += st->spin[1];
+        actor->unk46 += st->spin[2];
+
+        st->life -= 1;
+      } else {
         func_80052568(actor);
         continue;
       }
-      if (actor->unk51 == 0) {
-        func_80052568(actor);
-        continue;
-      }
-      if (actor->posZ <= st->floorZ) {
-        func_80052568(actor);
-        continue;
-      }
-
-      actor->posX += st->vel[0];
-      actor->posY += st->vel[1];
-
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
-      }
-      actor->posZ += st->vel[2];
-
-      actor->unk44 += st->spin[0];
-      actor->unk45 += st->spin[1];
-      actor->unk46 += st->spin[2];
-
-      st->life -= 1;
       break;
     }
 
@@ -1668,13 +1701,15 @@ void func_level_11_8007CFB4(void) {
 
       switch (actor->unk49) {
       case 0: {
+        int *nrm = &D_80077368;
+
         func_80017700(svA, &actor->posX);
         svA[2] += 0x400;
         func_8004D5EC(svA, 0x10000);
         st->pitch = -func_800169AC(
-            func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+            func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
             D_8007736C);
-        st->yaw = -func_800169AC(D_80077370, D_80077368);
+        st->yaw = -func_800169AC(D_80077370, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->unk46 = 0;
@@ -1690,10 +1725,12 @@ void func_level_11_8007CFB4(void) {
             func_80038458(actor);
             func_800533D0(actor);
             if (actor->type >= 83) {
+              int *nrm = &D_80077368;
+
               st->pitch = -func_800169AC(
-                  func_80017A38((D_80077368 * D_80077368) + (D_80077370 * D_80077370)),
+                  func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
                   D_8007736C);
-              st->yaw = -func_800169AC(D_80077370, D_80077368);
+              st->yaw = -func_800169AC(D_80077370, nrm[0]);
             }
 
           } else if (st->sub == 2) {
@@ -1786,10 +1823,15 @@ void func_level_11_8007CFB4(void) {
           func_80052568(actor);
           continue;
         } else {
+          int r;
+          register int *pos asm("$4");
+
           svG[2] += 240;
 
-          if (func_8004BE4C(svG, 240, 240)) {
-            if (func_80057380(&actor->posX) == 0) {
+          r = func_8004BE4C(svG, 240, 240);
+          pos = &actor->posX;
+          if (r) {
+            if (func_80057380(pos) == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 func_8003B9D4(actor);
               }
@@ -1847,7 +1889,7 @@ void func_level_11_8007CFB4(void) {
 
           } else {
             svG[2] -= 240;
-            func_80017700(&actor->posX, svG);
+            func_80017700(pos, svG);
             func_8004D5EC(svG, 0x10000);
             func_800533D0(actor);
           }
@@ -2245,6 +2287,114 @@ void func_level_11_8007CFB4(void) {
       break;
     }
 
+    case 0xA2: {
+      CyclerState *st = actor->state;
+
+      if ((actor->flags & 0x90000) && actor->unk48 == 0) {
+        Actor *reward;
+        int i;
+
+        reward = D_800758CC(st->reward + 0x158, actor);
+        if (reward != 0) {
+          reward->unk48 = 1;
+        }
+        func_8003CAC4(st->tally);
+        st->unk28 = 0xC8;
+        st->unk30 = 0x15E;
+        st->heading = func_80038178(
+            func_80016AB4(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            spy->bodyRotZ, 0x28, 0x40);
+        for (i = 0; i < 3; i++) {
+          if (D_800756A8 - D_800756A4 < 0x15) {
+            break;
+          }
+          D_800758CC(0x167, actor);
+          D_800758CC(0x168, actor);
+          D_800758CC(0x169, actor);
+        }
+        func_8003851C(actor, 0, 0);
+        actor->unk48 = 1;
+        ANIM_RESET(actor, 1);
+        break;
+      }
+
+      switch (actor->unk48) {
+      case 0: {
+        int d;
+
+        if (st->unk40 == 0xFF) {
+          st->path[1]++;
+          if (st->path[1] >= st->path[0]) {
+            st->path[1] = 0;
+          }
+          st->unk40 = 0;
+          func_800176F0(st->unk34);
+        }
+        d = actor->unk46;
+        if (D_80078AD4 < 8 &&
+            func_8003BFC0(actor, st->path, st->unk34, &st->unk40, 0xA, 4) == 2) {
+          st->pathIdx = (st->pathIdx + 1) & 3;
+          switch (st->pathIdx) {
+          case 0:
+            st->path = st->paths[0];
+            break;
+          case 1:
+            st->path = st->paths[1];
+            break;
+          case 2:
+            st->path = st->paths[2];
+            break;
+          case 3:
+            st->path = st->paths[3];
+            break;
+          }
+          st->path[1] = 0;
+        }
+        d = (actor->unk46 - d) & 0xFF;
+        if (d > 0x80) {
+          d -= 0x100;
+        }
+        st->rollVel += ((-d * 0xC0) - (st->rollVel << 3) - st->roll) >> 6;
+        st->roll = (st->roll + st->rollVel) & 0xFFF;
+        if (st->roll > 0x800) {
+          st->roll -= 0x1000;
+        }
+        if (st->roll < -0x140) {
+          st->roll = -0x140;
+        }
+        if (st->roll > 0x140) {
+          st->roll = 0x140;
+        }
+        actor->unk44 = st->roll >> 4;
+        break;
+      }
+      case 1:
+        if (D_80075794 != 0) {
+          actor->unk48 = 2;
+          if (actor->unk3D != 2) {
+            actor->unk40 = 0x10;
+            actor->unk41 = 0x10;
+            actor->unk3D = 2;
+            actor->unk3F = 0;
+            func_80037E98(actor);
+          }
+          continue;
+        }
+        /* fall through */
+      case 2:
+        func_80038DC0(actor, 4, 0, 0);
+        if (func_80039910(actor, &st->unk30, st->heading, &st->unk28, 0xC,
+                          0xC) == 3) {
+          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
+          D_800758CC(0x190, actor);
+          func_80052568(actor);
+          continue;
+        }
+        break;
+      }
+      func_800529E4(actor, 1);
+      break;
+    }
     /* Key (SpinState). */
     case 173: {
       SpinState *st;
@@ -2273,11 +2423,11 @@ void func_level_11_8007CFB4(void) {
           }
 
           D_80075830 = 1;
-          actor->unk57 = 0x40;
           actor->unk50 = 0;
           actor->unk52 = 0;
           actor->unk51 = 0;
           actor->unk1C = 0;
+          actor->unk57 = 0x40;
           actor->unk4A = 0xFF;
           actor->unk49 = 2;
         }
@@ -2401,46 +2551,111 @@ void func_level_11_8007CFB4(void) {
         break;
       }
 
-      if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
-        func_80055A78(D_80076378[actor->type]->m_Sounds[1], actor, 8,
-                      &actor->unk54);
+      {
+        Model **models = D_80076378;
+
+        if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
+          func_80055A78(models[actor->type]->m_Sounds[1], actor, 8,
+                        &actor->unk54);
+        }
       }
       break;
     }
-    /* Flight-level target (ring/chest) that hands a helper to its owner and
-     * pays out when Spyro flies through it. */
-    case 0x154: {
-      TargetState *st = actor->state;
+    case 0x134: {
+      RollerState *st = actor->state;
 
-      if (D_80078618[D_8007595C] == 0 && st->helper == 0) {
-        st->helper = D_800758CC(st->helperType + 0x158, actor);
-        actor->unk44 = -actor->unk3C << 6;
-      }
+      if (st->ready == 0) {
+        int best = 30000;
+        int i;
 
-      actor->unk44 = func_80038074(actor->unk44, 8);
-      if ((actor->unk44) < 8) {
-        func_8003851C(actor, 0, 0);
-      }
+        for (i = 0; i < st->path[0]; i++) {
+          int d = func_80017990(&actor->posX, (int *)(st->path + ((i << 4) + 8)));
 
-      func_800529E4(actor, 4);
-
-      if (func_80017990(&actor->posX, &spy->posX) < 3000) {
-        int height = actor->posZ - actor->unk38;
-        int drop = height - SPY.posZ;
-
-        if (drop > 0 ? drop < 3000 : SPY.posZ - height < 3000) {
-          func_8001778C(svT, &actor->posX, &spy->posX);
-          if (func_800171FC(svT, 1) < 2500 &&
-              func_80038D54(&spy->posX, st) < 0x200) {
-            func_8003CAC4(st->sound);
-            if (st->helper != 0) {
-              st->helper->unk48 = 1;
-            } else {
-              func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
-            }
-            func_80052568(actor);
+          if (d < best) {
+            best = d;
+            st->path[1] = i;
           }
         }
+        st->ready = 1;
+      }
+
+      if ((actor->flags & 0x90000) && actor->unk48 == 0) {
+        Actor *reward;
+        int i;
+
+        reward = D_800758CC(st->reward + 0x158, actor);
+        if (reward != 0) {
+          reward->unk48 = 1;
+        }
+        func_8003CAC4(st->tally);
+        st->unk14 = 0;
+        st->unk1C = 0x15E;
+        st->heading = func_80038178(
+            func_80016AB4(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            spy->bodyRotZ, 0x28, 0x40);
+        for (i = 0; i < 3; i++) {
+          if (D_800756A8 - D_800756A4 < 0x15) {
+            break;
+          }
+          D_800758CC(0x1E1, actor);
+          D_800758CC(0x1E2, actor);
+          D_800758CC(0x1E3, actor);
+        }
+        func_8003851C(actor, 0, 0);
+        actor->unk48 = 1;
+        ANIM_RESET(actor, 1);
+        break;
+      }
+
+      switch (actor->unk48) {
+      case 0: {
+        int d = actor->unk46;
+
+        if (D_8007596C == 0xF || D_8007596C == 0x2D) {
+          func_8003BFC0(actor, st->path, st->unk20, &st->unk2C, 0xC, 4);
+        } else {
+          func_8003BFC0(actor, st->path, st->unk20, &st->unk2C, 0x16, 0);
+        }
+        d = (actor->unk46 - d) & 0xFF;
+        if (d > 0x80) {
+          d -= 0x100;
+        }
+        st->rollVel += ((-d << 8) - (st->rollVel << 3) - st->roll) >> 6;
+        st->roll = (st->roll + st->rollVel) & 0xFFF;
+        if (st->roll > 0x800) {
+          st->roll -= 0x1000;
+        }
+        if (st->roll < -0x200) {
+          st->roll = -0x200;
+        }
+        if (st->roll > 0x200) {
+          st->roll = 0x200;
+        }
+        actor->unk44 = st->roll >> 4;
+        break;
+      }
+      case 1:
+        if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+                          0xC) == 3) {
+          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
+          D_800758CC(0x190, actor);
+          func_80052568(actor);
+          continue;
+        }
+        if (D_80075794 != 0) {
+          actor->unk48 = 2;
+          ANIM_RESET(actor, 2);
+        }
+        break;
+      case 2:
+        if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+                          0xC) == 3) {
+          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
+          D_800758CC(0x190, actor);
+          func_80052568(actor);
+          continue;
+        }
+        break;
       }
       break;
     }
@@ -2457,6 +2672,8 @@ void func_level_11_8007CFB4(void) {
           func_80052568(actor);
           break;
         }
+        do {
+        } while (0);
         func_80038EE0(actor,
                       func_80038074(func_80016AB4(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
@@ -2466,11 +2683,11 @@ void func_level_11_8007CFB4(void) {
       case 1:
         D_80075908 += (actor->type - 0x158) * 60;
         func_80017AA4(&actor->posX, &actor->posX);
-        actor->unk46 = 0xC0;
-        actor->unk47 = 0x20;
         actor->unk44 = 0;
         actor->unk45 = 0;
+        actor->unk46 = 0xC0;
         actor->unk50 = 0xFF;
+        actor->unk47 = 0x20;
         actor->unk48 = 2;
         func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
         break;
@@ -2647,21 +2864,27 @@ void func_level_11_8007CFB4(void) {
           st->icon[i] = D_800758CC(st->types[0], actor);
         }
 
-        for (i = 0; i < 4; i++) {
-          D_8006E3E4[i] = st->unk84[i];
+        {
+          int *src;
+          int off;
+
+          for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
+            *(int *)((char *)D_8006E3E4 + off) = src[0x21];
+            src++;
+            off += 4;
+          }
         }
 
-        y = 0x3C;
-        for (i = 0; i < 4; i++) {
+        for (i = 0, y = 0x3C; i < 4; i++) {
           D_80077FEC[i].type = st->types[i];
           func_8003A720(&D_80077FEC[i]);
           func_800529CC(&D_80077FEC[i]);
           D_80077FEC[i].posY = y;
           y += 0x14;
           D_80077FEC[i].unk47 = 0x20;
+          D_80077FEC[i].unk50 = 0xFF;
           D_80077FEC[i].posX = 0x3C;
           D_80077FEC[i].posZ = 0x1000;
-          D_80077FEC[i].unk50 = 0xFF;
           D_80077FEC[i].unk4F = i + 3;
         }
       }
@@ -2763,7 +2986,7 @@ void func_level_11_8007CFB4(void) {
           st->count--;
           st->spent[st->count]->unk48 = 2;
           st->timer = 0x10;
-          func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+          func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -2779,7 +3002,7 @@ void func_level_11_8007CFB4(void) {
               func_80052568(a);
             }
             st->spent[i] = 0;
-            func_80055A78(D_800761D4[0x24], actor, 0x10, 0);
+            func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&
@@ -2798,11 +3021,12 @@ void func_level_11_8007CFB4(void) {
         if (D_80078608 >= 0) {
           D_800758F8 = D_80078608;
           if (D_80078630[D_800758F8] != D_800770F8[D_800758F8]) {
-            int x = 0x1E;
+            int *cnt = D_80078630;
+            int x;
 
-            for (i = 0; i < 8; i++) {
+            for (i = 0, x = 0x1E; i < 8; i++) {
               st->icon[i]->type = st->types[D_800758F8];
-              if (D_80078630[D_800758F8] < i + 1) {
+              if (cnt[D_800758F8] < i + 1) {
                 st->icon[i]->unk50 = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = 0;
@@ -2856,7 +3080,33 @@ void func_level_11_8007CFB4(void) {
       }
       break;
     }
-    /* Fade-out props: removed as soon as their animation finishes. */
+    case 0x167:
+    case 0x168:
+    case 0x169: {
+      TumbleState *st = actor->state;
+
+      if (st->life > 0 && actor->unk51) {
+        actor->posX += st->vel[0];
+        actor->posY += st->vel[1];
+
+        st->vel[2] -= 6;
+        if (st->vel[2] < -0x80) {
+          st->vel[2] = -0x80;
+        }
+        actor->posZ += st->vel[2];
+
+        actor->unk44 += st->spin[0];
+        actor->unk45 += st->spin[1];
+        actor->unk46 += st->spin[2];
+
+        st->life -= 1;
+      } else {
+        func_80052568(actor);
+        continue;
+      }
+      break;
+    }
+    case 0x190:
     case 405:
     case 477:
       if (D_80075794 == 0) {
@@ -2896,7 +3146,8 @@ void func_level_11_8007CFB4(void) {
     case 0x183:
     case 0x184:
     case 0x185:
-    case 0x1EB: {
+    case 0x189:
+    case 0x18C: {
       TallyState *st = actor->state;
 
       switch (actor->unk48) {
@@ -2978,28 +3229,6 @@ void func_level_11_8007CFB4(void) {
       }
       break;
     }
-    /* Flight trigger: when hit, plays its sound, spawns its reward and
-     * retires itself as type 0x18F. */
-    case 0x18D:
-    case 0x18F: {
-      int *st = actor->state;
-
-      if (actor->type == 0x18D && (actor->flags & 0x10000)) {
-        Actor *reward;
-
-        func_8003CAC4(st[0]);
-        reward = D_800758CC(st[1] + 0x158, actor);
-        if (reward != 0) {
-          reward->unk48 = 1;
-        }
-        if (st[2] >= 0) {
-          func_8002B390(st[2], 0xFC, 0);
-        }
-        actor->type = 0x18F;
-      }
-      break;
-    }
-    /* Floating-word letters (OrbitState). */
     case 76:
     case 426:
     case 427:
@@ -3083,6 +3312,38 @@ void func_level_11_8007CFB4(void) {
       }
     }
     break;
+
+    case 0x1E1:
+    case 0x1E2:
+    case 0x1E3: {
+      EmberState *st = actor->state;
+      int trail[3];
+
+      if (st->life > 0 && actor->unk51) {
+        actor->posX += st->vel[0];
+        actor->posY += st->vel[1];
+        st->vel[2] -= 6;
+        if (st->vel[2] < -128)
+          st->vel[2] = -128;
+        actor->posZ += st->vel[2];
+
+        actor->unk44 += st->spin[0];
+        actor->unk45 += st->spin[1];
+        actor->unk46 += st->spin[2];
+        if ((st->life & 3) == 0) {
+          trail[0] = func_8006272C() & 3;
+          trail[1] = func_8006272C() & 3;
+          trail[2] = 0x14;
+          D_800758E4(1, 1, &actor->posX, trail);
+        }
+        st->life--;
+      } else {
+        D_800758E4(8, 0x46, &actor->posX, (void *)0x10);
+        func_80052568(actor);
+        continue;
+      }
+      break;
+    }
 
     default: /* 77..82, 88..109, 258..259 and everything unlisted */
       break;
