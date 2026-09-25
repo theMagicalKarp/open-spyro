@@ -72,8 +72,13 @@
  *             giv of i that was "not worth while" (benefit - add_cost <= 0)
  *             and dead afterwards, to hold all_reduced at 0. `i * 4` (MULT)
  *             instead of `i << 2` breaks the symbol out at expand and gives
- *             the current -1 shape. 25 forms tried (pointer locals, k temps,
- *             volatile, sized decl, do/while, while, <=). Open.
+ *             the current -1 shape. 30 forms tried (pointer locals, k temps,
+ *             volatile, sized/struct/2-D decls, do/while, while, <=). The
+ *             mechanism is confirmed: a src of `*(int *)((char *)st +
+ *             ((i + 0x21) << 2))` leaves a dead `i + 33` giv "not worth
+ *             while" and s2 survives -- but that form also re-bases the src
+ *             giv (st + v1, not a0 = st). The open question is which dead
+ *             giv the original had that leaves the other three alone.
  *   0x166 [4049..4051]: preheader order of `move a3,a0` / `li a2,30`; x/i
  *             init order is inert.
  *
