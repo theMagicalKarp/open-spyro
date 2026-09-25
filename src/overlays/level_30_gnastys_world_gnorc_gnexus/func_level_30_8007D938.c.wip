@@ -1,23 +1,34 @@
-/* PARKED 2026-09-18-1 -- third pass on the level_30 actor-update megafunction.
+/* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles, links, 42-insn deficit (orig 5,894 / mine 5,852).
- * Register-anchored masked resync: 4,678 / 5,894 aligned (79.4%), 634 regions.
+ * STATE: compiles; 5,852 vs 5,900 insns (-48). Linked-at-VMA shape diff
+ * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
+ * sides, difflib on mnemonics+registers): 1,677 imm-kept / 1,531 masked
+ * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
- * METRIC CORRECTION (read this before comparing to the 2026-09-18 numbers).
- * The resync script's register anchor was written as `\$(a[0-3]|v[01]|...)`,
- * but this objdump prints registers WITHOUT the `$`, so the anchor never fired
- * and the immediate mask then ate `a0`..`a3` (they are pure hex strings -- the
- * exact trap cookbook S C warns about). Anchoring with an optional `$` drops
- * the same tree from 79.3% to 78.4%: a-register rotations were being scored as
- * matches. Every number in this header is on the FIXED metric, so the
- * session delta is 78.4% -> 79.4% and is like-for-like.
+ * CLOSED 2026-09-25 (do not re-derive):
+ *   - THE FRAME. The original has 15 distinct 16-byte scratch arrays plus an
+ *     `int acc[3][3]` (424-byte frame); we had 14 arrays reused across arms
+ *     (336). Mapping every orig N(sp) through the alignment to our source
+ *     lines gave the declaration order: svA..svE, svF (the 14/15/83..87
+ *     default arm, 0x10A and 0x1A0 arms), acc (case 2's node average), svG,
+ *     svH, svI, svJ, svK, svL, svM, then case 398's four (svN..svQ). Case
+ *     398's old `svL[2] +=` was really the third array's [2] (sp+344).
+ *   - THE CONSTANT CARRIERS. `one = 1; two = 2;` as user vars set at the
+ *     loop top AHEAD of `spy` (the level_11 flight lever): loop.c then moves
+ *     them first, so the preheader is `li 1; li 2; la; addiu s7` like the
+ *     original, and the const-2 group finally gets a register. `two` needs
+ *     >= 64 weighted refs to beat the hoisted frame address for $fp; it gets
+ *     them from `D_800758D1 = two; D_800758D2 = two;`.
+ *   - Case 426..451's closing `&host->posX` is `&st->parent->posX` (the
+ *     original reloads st->parent after the calls; holding host put a
+ *     6-ref pseudo in s5 ahead of the const-1 group).
  *
- * Do NOT drive this off the linked diff -- it is length-changing, so
- * `open-spyro diff` raises a zip() error. Drive it off a compile-only
- * register-anchored resync (cookbook S D 2b): carve the ROM bytes with
- * `dd skip=$((0x8007D938-0x8007AA38)) count=23600` out of
- * disc/orig/overlays/level_30_*.ovl, objdump both sides, anchor register
- * names (with an OPTIONAL `$`) BEFORE masking immediates, then difflib-align.
+ * OPEN: `one` sits in s6 and `toSpyro` (14/15/83..87 arm, pseudo 868) in s5;
+ * the original is the reverse. toSpyro outranks `one` in allocno order either
+ * way, so this is find_reg's pass 0 (reuse an already-used hard reg before a
+ * fresh one), i.e. what was allocated before toSpyro, not a priority tie.
+ * Remaining census (orig/ours): s1 296/220, s0 385/422, s2 159/188,
+ * t2..t4 0/16, a3 105/83.
  *
  * WHAT IS ALREADY SETTLED (do not re-derive):
  *   - The full case list, recovered from the asm compare tree at 0x8007DA1C
@@ -76,45 +87,10 @@
  *     -42 -> -39 insns, 4,678 -> 4,683 aligned. Only the `s5 = 1` / `s8 = 2`
  *     hoist ORDER is left in the preheader.
  *
- * THE RESIDUE IS A REGISTER MAP, AND THE ALLOCATION ARITHMETIC IS NOW DONE.
- * Whole-function register census (orig vs ours), which is what the 634 regions
- * are made of -- most regions are 1-2 insns differing only in a register:
- *     s5  58/5     s6  15/60     s8  33/19     t1 135/179     t2/t3/t4 0/16
- * Orig parks the constant **1** in `s5` (56 uses) and the constant **2** in
- * `s8/fp` (32 uses). We park 1 in `s6` and have NO carrier for 2 at all -- it
- * is re-materialised as `li t1,2` at ~16 sites, each costing an insn and
- * breaking the surrounding alignment (e.g. the five `D_800758D1..D5 = 2`
- * stores at orig[3664:3673]).
- *   - A USER VARIABLE DOES NOT BUY THE CARRIER. Spelling those five stores
- *     `D_800758D1 = two;` off the existing `two` local produces a
- *     BYTE-IDENTICAL object: cse folds the copy back to the literal
- *     (cookbook A133 / A219's trap). `one`/`two` are dead stores today and can
- *     be deleted; they are NOT what puts 1 in a register -- gcc's own
- *     loop-invariant hoist is.
- *   - THE FLIP IS ONE REF-COUNT AWAY, measured off `-dl`/`-dg` (cookbook
- *     S D 2c). Our callee-saved tail is allocated in the order
- *     [3316 -> s5, 3537 -> s6, 74 -> s7, 1052 -> fp]:
- *         3316  R=6   L=119   floor_log2(6)*6/119  = 0.1008   (= `&p->posX`,
- *                                                 a plus-12 address pseudo)
- *         3537  R=122 L=9442  floor_log2(122)*122/9442 = 0.0775  (const 1)
- *         74    R=87  L=9444  = 0.0553   (the SPY pointer, already s7)
- *         1052  R=33  L=4716  = 0.0350
- *     `allocno_compare` breaks ties toward the LOWER allocno, and 3316 < 3537,
- *     so 3537 must beat 3316 outright. Two reachable dials: drop 3316 to R<=4
- *     (2*4/119 = 0.0672 < 0.0775) by not carrying `&p->posX` in a local across
- *     that arm's calls, or lift the const-1 carrier to R>=140
- *     (7*140/9442 = 0.1038). Note floor_log2 is a step function: 122 -> 128
- *     alone is not enough (0.0949).
- *     The missing const-2 carrier is a separate question and is the bigger
- *     prize (16 `li t1,2` sites + the s8 map).
+ * (2026-09-18's register-map notes are superseded by the 2026-09-25 block
+ * above: a loop-top user var DOES buy the carrier once it is set ahead of
+ * spy, and the 3316 `&p->posX` pseudo is gone.)
  *
- * LARGEST REMAINING REGIONS (orig insn index, from the resync):
- *   [5724:5801] the case-398 tail: our stack-temp offsets and the order of the
- *       shake-table fills differ (sp+184.. vs sp+304..) -- a frame-layout /
- *       statement-order knot, the biggest single structural item left
- *   [5443:5459] + [5564:5580] the two Xform copies: we hold only the SOURCE
- *       base and leave the destination absolute, 12 insns vs the original's 16
- *   [4291:4309] 18   [3802:3819] 17   [2760:2776] 16 (delete)
  */
 /* func_level_30_8007D938 -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -1164,6 +1140,8 @@ void func_level_30_8007D938(void) {
   Actor **actorList;
   Actor *actor;
   SpyroObj *spy;
+  int one;
+  int two;
   char *base;
 
   /* Scratch vectors shared by several cases. */
@@ -1173,6 +1151,7 @@ void func_level_30_8007D938(void) {
   int svD[3];
   int svE[3];
   int svF[3];
+  int acc[3][3];
   int svG[3];
   int svH[3];
   int svI[3];
@@ -1181,6 +1160,9 @@ void func_level_30_8007D938(void) {
   int svL[3];
   int svM[3];
   int svN[3];
+  int svO[3];
+  int svP[3];
+  int svQ[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
@@ -1196,6 +1178,8 @@ void func_level_30_8007D938(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
+    one = 1;
+    two = 2;
     spy = (SpyroObj *)(base - 0x164);
 
     if (actor->unk48 >= 0x80) {
@@ -1216,7 +1200,7 @@ void func_level_30_8007D938(void) {
       if (distance < (actor->unk48 ? 12 : 11) * 1024) {
         shouldSpawnText = actor->unk48 == 0;
 
-        actor->unk48 = 1;
+        actor->unk48 = one;
 
         cameraAngleDiff = func_80017908(
             actor->unk46,
@@ -1824,12 +1808,12 @@ void func_level_30_8007D938(void) {
             break;
 
           case 2:
-            func_80017CB8(st->node, svF);
-            func_80017758(svF, svF, svG);
-            func_80017758(svF, svF, svH);
-            actor->posX = svF[0] / 3;
-            actor->posY = svF[1] / 3;
-            actor->posZ = svF[2] / 3;
+            func_80017CB8(st->node, acc[0]);
+            func_80017758(acc[0], acc[0], acc[1]);
+            func_80017758(acc[0], acc[0], acc[2]);
+            actor->posX = acc[0][0] / 3;
+            actor->posY = acc[0][1] / 3;
+            actor->posZ = acc[0][2] / 3;
             func_800529E4(actor, 2);
             func_80038458(actor);
             func_800533D0(actor);
@@ -1837,10 +1821,10 @@ void func_level_30_8007D938(void) {
 
           default:
             if (st->mode == 3) {
-              func_80017700(svI, &actor->posX);
-              svI[2] += 0x400;
+              func_80017700(svF, &actor->posX);
+              svF[2] += 0x400;
               func_800529E4(actor, 2);
-              if (func_8004D5EC(svI, 0x1000) > 0) {
+              if (func_8004D5EC(svF, 0x1000) > 0) {
                 st->mode = 2;
                 st->node = D_80075808;
               }
@@ -1871,22 +1855,22 @@ void func_level_30_8007D938(void) {
           int dist;
           int near;
 
-          func_800177C0(svJ, (int *)st, D_800756CC);
-          func_800176C8(svJ, 1);
-          dist = func_800171FC(svJ, 1);
+          func_800177C0(svG, (int *)st, D_800756CC);
+          func_800176C8(svG, 1);
+          dist = func_800171FC(svG, 1);
 
           if (dist >= 0xDD) {
-            func_800175B8(svJ, dist, 0xDC);
+            func_800175B8(svG, dist, 0xDC);
           }
 
           at = &actor->posX;
-          func_80017758(svJ, at, svJ);
+          func_80017758(svG, at, svG);
 
           if (st->vel[2] >= -0xDB) {
             st->vel[2] -= D_800756CC * 5;
           }
 
-          if (svJ[2] < 0) {
+          if (svG[2] < 0) {
             if ((unsigned short)actor->type - 14 >= 2) {
               goto enemy_pop;
             }
@@ -1894,9 +1878,9 @@ void func_level_30_8007D938(void) {
             continue;
           }
 
-          svJ[2] += 0xF0;
+          svG[2] += 0xF0;
 
-          if (func_8004BE4C(svJ, 0xF0, 0xF0) != 0) {
+          if (func_8004BE4C(svG, 0xF0, 0xF0) != 0) {
             if (func_80057380(at) == 0) {
               if ((unsigned short)actor->type - 14 >= 2) {
                 goto enemy_pop;
@@ -1905,23 +1889,23 @@ void func_level_30_8007D938(void) {
               continue;
             }
 
-            func_80017700(svK, &D_80077368);
+            func_80017700(svH, &D_80077368);
             func_80017700(at, &D_80076B80);
             actor->posZ -= 0xF0;
 
             if (st->bounce == 0) {
-              int floor = func_8004D5EC(svJ, 0x400);
-              int slope = func_800169AC(svK[2], func_800171FC(svK, 0));
+              int floor = func_8004D5EC(svG, 0x400);
+              int slope = func_800169AC(svH[2], func_800171FC(svH, 0));
 
-              if ((svJ[2] - 0x190) < floor && slope < 0x18) {
+              if ((svG[2] - 0x190) < floor && slope < 0x18) {
                 actor->unk49 = 1;
-                func_80017700(at, svJ);
+                func_80017700(at, svG);
                 actor->posZ = floor;
                 if (actor->type != 15) {
                   st->lean = -func_800169AC(
-                      func_80017A38((svK[0] * svK[0]) + (svK[2] * svK[2])),
-                      svK[1]);
-                  st->roll = -func_800169AC(svK[2], svK[0]);
+                      func_80017A38((svH[0] * svH[0]) + (svH[2] * svH[2])),
+                      svH[1]);
+                  st->roll = -func_800169AC(svH[2], svH[0]);
                   if (st->bounce & 0xFFFF00) {
                     actor->unk46 = 0;
                   }
@@ -1944,16 +1928,16 @@ void func_level_30_8007D938(void) {
             func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
             near = toSpyro < 0x59A;
 
-            if (func_80017428((int *)st, svK, (int *)st) != 0) {
+            if (func_80017428((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (func_8006272C() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (func_8006272C() & 0x3F) - 0x20;
               st->vel[2] = (st->vel[2] >> 2) + (func_8006272C() & 0xF);
             }
           } else {
-            svJ[2] -= 0xF0;
-            func_80017700(at, svJ);
-            func_8004D5EC(svJ, 0x10000);
+            svG[2] -= 0xF0;
+            func_80017700(at, svG);
+            func_8004D5EC(svG, 0x10000);
             func_800533D0(actor);
             near = toSpyro < 0x59A;
           }
@@ -1998,15 +1982,15 @@ void func_level_30_8007D938(void) {
           if (st->timer >= 0x20) {
             func_80017700(&actor->posX, &SPY.posX);
           } else {
-            func_8001778C(svL, &spy->posX, (int *)st);
-            func_800176C8(svL, 5);
+            func_8001778C(svI, &spy->posX, (int *)st);
+            func_800176C8(svI, 5);
 
-            if (func_800171FC(svL, 1) >= 0x1E1) {
+            if (func_800171FC(svI, 1) >= 0x1E1) {
               func_80017700(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
-              func_800177C0(svL, svL, st->timer);
-              func_80017758(&actor->posX, (int *)st, svL);
+              func_800177C0(svI, svI, st->timer);
+              func_80017758(&actor->posX, (int *)st, svI);
               actor->posZ += (short)(D_8006CBF8[st->timer * 4] / 12);
             }
           }
@@ -2247,14 +2231,14 @@ void func_level_30_8007D938(void) {
             int wDen;
 
             st->step += 1;
-            func_8001778C(svI, st->from, here);
+            func_8001778C(svF, st->from, here);
             turn = func_80017948(st->yaw, actor->unk46);
             w0 = func_80016CB0((st->step - 1) << 7);
             wSpan = w0 - func_80016CB0(st->step << 7);
             wDen = func_80016CB0((st->step - 1) << 7) + 0x1000;
-            actor->posX += (svI[0] * wSpan) / wDen;
+            actor->posX += (svF[0] * wSpan) / wDen;
             actor->unk46 += (turn * wSpan) / wDen;
-            actor->posY += (svI[1] * wSpan) / wDen;
+            actor->posY += (svF[1] * wSpan) / wDen;
             func_8004D5EC(here, 0x1000);
             func_800533D0(actor);
 
@@ -2294,18 +2278,18 @@ void func_level_30_8007D938(void) {
       BalloonState *st = actor->state;
 
       if (*(int *)base >= 2) {
-        svD[0] = 0;
-        svD[1] = 0x64;
-        svD[2] = 0;
-        func_80017048(&actor->unk20[0], svD, svD);
-        func_80017758(svD, svD, &actor->posX);
-        D_800758E4(2, 0x42, svD, 0);
-        svD[0] = 0;
-        svD[1] = -0x64;
-        svD[2] = 0;
-        func_800170C0(svD, svD);
-        func_80017758(svD, svD, &actor->posX);
-        D_800758E4(2, 0x42, svD, 0);
+        svF[0] = 0;
+        svF[1] = 0x64;
+        svF[2] = 0;
+        func_80017048(&actor->unk20[0], svF, svF);
+        func_80017758(svF, svF, &actor->posX);
+        D_800758E4(2, 0x42, svF, 0);
+        svF[0] = 0;
+        svF[1] = -0x64;
+        svF[2] = 0;
+        func_800170C0(svF, svF);
+        func_80017758(svF, svF, &actor->posX);
+        D_800758E4(2, 0x42, svF, 0);
       }
 
       if (SPY.u164 >= 3) {
@@ -2434,8 +2418,8 @@ void func_level_30_8007D938(void) {
             EnemyState *ge = st->gnorc->state;
             int dist;
 
-            func_8001778C(svF, &st->gnorc->posX, &actor->posX);
-            dist = func_800171FC(svF, 1);
+            func_8001778C(svJ, &st->gnorc->posX, &actor->posX);
+            dist = func_800171FC(svJ, 1);
 
             if (dist < 0x200) {
               int *tint;
@@ -2465,10 +2449,10 @@ void func_level_30_8007D938(void) {
                 func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
               }
             } else {
-              func_800175B8(svF, dist, dist > 0x136 ? 0x136 : 0x122);
-              func_80017758(&actor->posX, &actor->posX, svF);
-              func_80038EE0(actor, func_80016AB4(svF[0], svF[1], 0), 0xA, 0, 0);
-              actor->unk45 = func_80016AB4(func_800171FC(svF, 0), svF[2], 0);
+              func_800175B8(svJ, dist, dist > 0x136 ? 0x136 : 0x122);
+              func_80017758(&actor->posX, &actor->posX, svJ);
+              func_80038EE0(actor, func_80016AB4(svJ[0], svJ[1], 0), 0xA, 0, 0);
+              actor->unk45 = func_80016AB4(func_800171FC(svJ, 0), svJ[2], 0);
               actor->unk45 = func_80038098(actor->unk45 & 0xFF, 0, 0x30);
             }
             break;
@@ -2479,13 +2463,13 @@ void func_level_30_8007D938(void) {
           actor->unk50 = 0x10;
 
           if (st->timer <= 0) {
-            svD[0] = -0x258;
-            svD[1] = (func_8006272C() & 0x310) - 0x188;
-            svD[2] = D_80076E28 == 3 ? (func_8006272C() & 0x7F) + 0x64
+            svF[0] = -0x258;
+            svF[1] = (func_8006272C() & 0x310) - 0x188;
+            svF[2] = D_80076E28 == 3 ? (func_8006272C() & 0x7F) + 0x64
                                      : (func_8006272C() & 0x1FF) - 0xC8;
-            st->drift[0] = svD[0];
-            st->drift[1] = svD[1];
-            st->drift[2] = svD[2];
+            st->drift[0] = svF[0];
+            st->drift[1] = svF[1];
+            st->drift[2] = svF[2];
             st->timer = func_8006272C() & 0x7B;
           } else {
             int *at;
@@ -2493,39 +2477,39 @@ void func_level_30_8007D938(void) {
             st->timer -= D_800756CC;
 
             if (D_80076E28 == 3) {
-              svD[0] = st->drift[0] + (D_80078B70 >> 2);
-              svD[1] = st->drift[1];
-              svD[2] = st->drift[2];
+              svF[0] = st->drift[0] + (D_80078B70 >> 2);
+              svF[1] = st->drift[1];
+              svF[2] = st->drift[2];
               if (st->drift[2] < 0x64) {
-                svD[2] = 0x64;
+                svF[2] = 0x64;
               }
             } else {
-              svD[0] = D_80076E28 == 0x80000009 ? st->drift[0] - 0x200
+              svF[0] = D_80076E28 == 0x80000009 ? st->drift[0] - 0x200
                                                 : st->drift[0];
-              svD[1] = st->drift[1];
-              svD[2] = st->drift[2];
+              svF[1] = st->drift[1];
+              svF[2] = st->drift[2];
             }
 
-            func_80017048(&D_80078A8C, svD, svD);
-            func_80017758(svD, svD, &SPY.posX);
+            func_80017048(&D_80078A8C, svF, svF);
+            func_80017758(svF, svF, &SPY.posX);
             at = &actor->posX;
-            func_8001778C(svD, svD, at);
-            func_800176C8(svD, 2);
-            func_80017758(at, at, svD);
+            func_8001778C(svF, svF, at);
+            func_800176C8(svF, 2);
+            func_80017758(at, at, svF);
 
             if (func_8004BE4C(at, 0x100, 0x100) != 0) {
               func_80017700(at, &D_80076B80);
             }
 
-            if (svD[2] >= 0x21) {
-              svD[2] = 0x20;
+            if (svF[2] >= 0x21) {
+              svF[2] = 0x20;
             }
-            if (svD[2] < -0x20) {
-              svD[2] = -0x20;
+            if (svF[2] < -0x20) {
+              svF[2] = -0x20;
             }
 
             actor->unk44 = 0;
-            actor->unk45 = svD[2];
+            actor->unk45 = svF[2];
             func_80038EE0(actor, spy->bodyRotZ, 4, 0, 0);
           }
 
@@ -2646,8 +2630,8 @@ void func_level_30_8007D938(void) {
         func_800176F0(&SPY.headLook);
         D_800757A0(actor);
         D_800777F4 = 0x1E;
-        D_800758D1 = 2;
-        D_800758D2 = 2;
+        D_800758D1 = two;
+        D_800758D2 = two;
         D_800758D3 = 2;
         D_800758D4 = 2;
         D_800758D5 = 2;
@@ -2968,10 +2952,10 @@ void func_level_30_8007D938(void) {
       }
 
       if (func_80017990(at, &spy->posX) < 0x800) {
-        func_8001778C(svG, &actor->posX, &spy->posX);
-        svG[2] = (svG[2] * 3) >> 2;
+        func_8001778C(svK, &actor->posX, &spy->posX);
+        svK[2] = (svK[2] * 3) >> 2;
 
-        if (func_800171FC(svG, 1) < 0x440) {
+        if (func_800171FC(svK, 1) < 0x440) {
           unsigned char facing;
           int *tally;
 
@@ -3233,11 +3217,11 @@ void func_level_30_8007D938(void) {
         actor->unk45 += st->spin[1];
         actor->unk46 += st->spin[2];
 
-        svG[0] = (func_8006272C() & 0xFE) - 0x7F;
-        svG[1] = (func_8006272C() & 0xFE) - 0x7F;
-        svG[2] = (func_8006272C() & 0xFE) - 0x40;
-        func_80017758(svG, svG, &actor->posX);
-        D_800758E4(1, 0x42, svG, (int *)1);
+        svK[0] = (func_8006272C() & 0xFE) - 0x7F;
+        svK[1] = (func_8006272C() & 0xFE) - 0x7F;
+        svK[2] = (func_8006272C() & 0xFE) - 0x40;
+        func_80017758(svK, svK, &actor->posX);
+        D_800758E4(1, 0x42, svK, (int *)1);
         ((ShardState *)actor->state)->life -= 1;
       } else {
         func_80052568(actor);
@@ -3291,11 +3275,11 @@ void func_level_30_8007D938(void) {
 
           do {
             i += 1;
-            svH[0] = (func_8006272C() & 0xFE) - 0x7F;
-            svH[1] = (func_8006272C() & 0xFE) - 0x7F;
-            svH[2] = (func_8006272C() & 0xFE) - 0x40;
-            func_80017758(svH, svH, &actor->posX);
-            D_800758E4(1, 0x42, svH, (int *)1);
+            svL[0] = (func_8006272C() & 0xFE) - 0x7F;
+            svL[1] = (func_8006272C() & 0xFE) - 0x7F;
+            svL[2] = (func_8006272C() & 0xFE) - 0x40;
+            func_80017758(svL, svL, &actor->posX);
+            D_800758E4(1, 0x42, svL, (int *)1);
           } while (i < 3);
         }
 
@@ -3417,10 +3401,10 @@ void func_level_30_8007D938(void) {
         D_80078C70 = 5;
         D_80078A7F = 0x7F;
         D_80078C98 = st->portal;
-        func_80017758(svN, st->portal->posA, st->portal->posB);
-        func_800176C8(svN, 1);
+        func_80017758(svM, st->portal->posA, st->portal->posB);
+        func_800176C8(svM, 1);
         aim = &D_80078C60;
-        func_8001778C(aim, svN, &CAM.posX);
+        func_8001778C(aim, svM, &CAM.posX);
         func_80017758(aim, aim, st->centre);
         span = func_800171FC(aim, 1);
 
@@ -3577,33 +3561,33 @@ void func_level_30_8007D938(void) {
           actor->unk49 += 8;
           bearing =
               func_80016AB4(spy->posX - host->posX, spy->posY - host->posY, 0);
-          svI[0] = (D_8006CC78[bearing] * 3) >> 4;
-          svI[1] = (D_8006CBF8[bearing] * 3) >> 4;
-          svI[2] = 0;
-          svJ[0] = (short)D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svJ[1] = (short)D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svJ[2] = 0;
+          svN[0] = (D_8006CC78[bearing] * 3) >> 4;
+          svN[1] = (D_8006CBF8[bearing] * 3) >> 4;
+          svN[2] = 0;
+          svO[0] = (short)D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[1] = (short)D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[2] = 0;
           actor->unk46 =
               ((bearing + 0x80) & 0xFF) + ((D_8006CC78[actor->unk49] * 3) >> 9);
-          func_800177C0(svK, svJ, st->radius - 1);
-          func_800176A0(svJ, 1);
+          func_800177C0(svP, svO, st->radius - 1);
+          func_800176A0(svO, 1);
           arm = st->radius - 1;
           phase = D_8006CC78[arm * 2];
-          svL[2] += (phase * 3) >> 3;
-          svM[0] = svI[0] * phase;
-          svM[2] = 0;
-          svM[1] = svI[1] * phase;
-          func_800177C0(svJ, svJ, st->phase);
-          func_8001778C(svK, svK, svJ);
+          svP[2] += (phase * 3) >> 3;
+          svQ[0] = svN[0] * phase;
+          svQ[2] = 0;
+          svQ[1] = svN[1] * phase;
+          func_800177C0(svO, svO, st->phase);
+          func_8001778C(svP, svP, svO);
           swing = &D_8006CC78[((arm * 2) - (st->phase * 4)) & 0xFF];
-          actor->posX = svI[0] * *swing;
+          actor->posX = svN[0] * *swing;
           actor->posZ = 0;
-          actor->posY = svI[1] * *swing;
-          func_8001778C(&actor->posX, &actor->posX, svM);
+          actor->posY = svN[1] * *swing;
+          func_8001778C(&actor->posX, &actor->posX, svQ);
           func_800176C8(&actor->posX, 0xA);
-          func_80017758(&actor->posX, &actor->posX, svI);
-          func_80017758(&actor->posX, &actor->posX, &host->posX);
-          func_8001778C(&actor->posX, &actor->posX, svK);
+          func_80017758(&actor->posX, &actor->posX, svN);
+          func_80017758(&actor->posX, &actor->posX, &st->parent->posX);
+          func_8001778C(&actor->posX, &actor->posX, svP);
           actor->posZ += ((*swing * 3) >> 3) + 0x600;
         }
       } else {
