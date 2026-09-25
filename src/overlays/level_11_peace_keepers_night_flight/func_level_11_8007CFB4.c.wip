@@ -2503,11 +2503,11 @@ void func_level_11_8007CFB4(void) {
       case 1:
         D_80075908 += (actor->type - 0x158) * 60;
         func_80017AA4(&actor->posX, &actor->posX);
-        actor->unk47 = 0x20;
         actor->unk44 = 0;
         actor->unk45 = 0;
-        actor->unk50 = 0xFF;
         actor->unk46 = 0xC0;
+        actor->unk50 = 0xFF;
+        actor->unk47 = 0x20;
         actor->unk48 = 2;
         func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
         break;
