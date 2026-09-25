@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,877 vs 5,900 insns (-23). Linked-at-VMA shape diff
+ * STATE: compiles; 5,875 vs 5,900 insns (-25). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 1,023 imm-kept / 969 masked
+ * sides, difflib on mnemonics+registers): 991 imm-kept / 937 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -25,9 +25,9 @@
  *     `host`/`phase` locals, reads SPY.posY absolute, and its `<<16>>21`
  *     loads have no (short) cast (the original's lhu).
  *   - Content fixes by arm: VortexState's centre/apex are short[3] (apex at
- *     0x0A, radius 0x10); the vortex arm's `if (D_80077378 & 0x40)` is ONE
- *     tail after the inner switch (case 5 `continue`s) and its tick compares
- *     are unsigned; the two phase-table arms (0x10x and 195) re-read
+ *     0x0A, radius 0x10); the vortex arm's `if (D_80077378 & 0x40)` ends
+ *     each of cases 1..4 (cross-jumped into case 4's copy, which is why the
+ *     shared tail sits before case 5) and its tick compares are unsigned; the two phase-table arms (0x10x and 195) re-read
  *     D_8006E638 after the sound call instead of holding dx/dy; the smoke fx
  *     init re-reads st->smoke per store; the two gem-spawn loops are
  *     `for (i = 0; i < N; ...)` with the diff test as a leading break (a
@@ -1554,6 +1554,9 @@ void func_level_30_8007D938(void) {
         actor->unk44 = 0;
         actor->unk45 = 8;
         actor->unk48 += 1;
+        if (D_80077378 & 0x40) {
+          actor->unk48 = 5;
+        }
         break;
 
       case 2: {
@@ -1589,6 +1592,9 @@ void func_level_30_8007D938(void) {
           st->phase = 0;
           actor->unk48 += 1;
         }
+        if (D_80077378 & 0x40) {
+          actor->unk48 = 5;
+        }
         break;
       }
 
@@ -1616,6 +1622,9 @@ void func_level_30_8007D938(void) {
           st->angle = D_80078A66 - 0x40;
           actor->unk48 += 1;
         }
+        if (D_80077378 & 0x40) {
+          actor->unk48 = 5;
+        }
         break;
       }
 
@@ -1639,30 +1648,27 @@ void func_level_30_8007D938(void) {
         } else {
           actor->unk48 += 1;
         }
+        if (D_80077378 & 0x40) {
+          actor->unk48 = 5;
+        }
         break;
       }
 
       case 5: {
-        int *tally;
-
         func_8001778C(svE, &actor->posX, &CAM.posX);
         func_80017110(svE, svE);
         D_800758E4(0x10, 0x4D, svE, 0);
         D_8007570C = 0;
         func_800176F0(&D_80078BFC);
         func_8003B854(0, st->idx);
-        tally = &D_80076FE8[D_80075964];
         D_80075810 += 1;
-        *tally += 1;
+        D_80076FE8[D_80075964] += 1;
         D_80077FDC.v = 0;
         func_80052568(actor);
         continue;
       }
       }
 
-      if (D_80077378 & 0x40) {
-        actor->unk48 = 5;
-      }
       break;
     }
 
