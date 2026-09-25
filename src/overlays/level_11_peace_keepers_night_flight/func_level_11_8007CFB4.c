@@ -1,103 +1,33 @@
-/* PARKED 2026-09-24 -- first pass on the flight-level actor-update megafunction
- * (func_level_{5,11,17,23,29}_8007CFB4; this is the smallest, 18,952 B).
+/* func_level_11_8007CFB4 (0x8007CFB4, 18,952 B) -- matching notes.
  *
- * STATE (2026-09-24-1): compiles and links LENGTH-EXACT (4,738 insns).
- * LINKED diff 49/4738; register-anchored masked resync 18 over 12 regions
- * (was 70 / 36 / -5 at the start of the session).
- *
- * !! The 0x166 copy loop below (`int k = ((i + 1) << 2) - 4;`) is a
- * !! POSITIONAL PLACEHOLDER, not the original's source. It kills the loop's
- * !! strength reduction outright, which happens to give the original's 12-insn
- * !! length (so everything after orig 3555 lines up for partial credit), but
- * !! its body is wrong and `k` costs one 8-byte reload slot: the frame is
- * !! 0x1C8, not 0x1C0 (22 prologue/epilogue words). The natural
- * !! `D_8006E3E4[i] = st->unk84[i];` is 4,737 insns (-1), 23 masked, frame
- * !! exact -- restore it (or the real form) before chasing the last ties.
- *
- * HOW IT WAS BUILT (redo this for the four siblings). The case list and order
- * come off the compare tree (ascending arm addresses = source order, A250):
- *   16, 34, 478/479, 480, 14/15/83..87, 120, 173, 260..269, 299, 340,
- *   345..347, 353, 358, 405/477, 375..386, 387..389/491, 397/399, 76/426..451
- * with no `default:`. Every arm that shares a behaviour with matched
- * func_level_0_8007D9C8 was spliced from it (level_0's 0xff/0x100 arm is
- * 478/479 here, 0x101 is 480, 0xc2 is 299), then re-pointed per site:
- * SPY.x -> spy->x wherever the original addresses Spyro through $fp, and
- * SPY.bodyRotZ -> D_80078A66 / nrm[0] -> D_80077368 wherever it is absolute
- * (A240). 340, 345..347, 353, 358, 375.., 387.. and 397/399 are new decodes.
- * The preamble is level_30's; the local list is level_0's plus svT..svW.
- *
- * LEVERS THAT CLOSED WHOLE BLOCKS (each is in the cookbook):
- *   - loop.c's hoist THRESHOLD is shared state (2026-09-24-1): threshold =
- *     1 + n_non_fixed_regs = 29 for this loop, minus 3 per movable already
- *     moved, and a movable moves iff threshold * savings * life >= insn_count
- *     (4,696). The 32 group (7 x 53 = 371) moved at threshold 14 (5,194) and
- *     would not at 11. Writing the two yaw sites of arm 14/15 as level_0's
- *     `int *nrm = &D_80077368; ... nrm[0]` makes the &D_80077368 group move
- *     first (unallocated, so reload rematerialises it per call -- exactly the
- *     original's per-call `lui a0; addiu a0`), which drops the threshold by 3
- *     and un-hoists the 32. Both knots closed by one edit (70 -> 39). Keep the
- *     two dot arms absolute: nrm there too is worse (78/-9).
- *   - 0x12B: `Model **models = D_80076378;` in a block around the
- *     func_80056DC4 test holds the table in s0 across the call (-> 34).
- *   - Loop-top stores in the order 0x42&2, 0x42&1, then D_800756C4 (-> 32).
- *   - 0x166 sound ids: `AS_PTRU8(D_800761D4)[0x24]` at both 0x24 sites. The
- *     struct view makes the load MEM_IN_STRUCT, so sched keeps it below the
- *     st->timer / st->spent[i] stores as in the original (-> 23, -1 insn).
-   - `spy`: `base = (char *)&D_80078BBC` before the loop, `spy = base -
- *     0x164` at the loop top, and one in-loop `*(int *)base` read (0x78 arm)
- *     so `base` lives across calls, spills, and reload rebuilds it through
- *     the spill reg: `lui t0; addiu t0; addiu fp,t0,-0x164`, as the original.
- *   - One variable, not two, wherever the original reuses a callee-saved reg:
- *     the HUD arm's `prev`/`t` (s0) and loop counter/`n` (s2). Merging them
- *     took the arm from 221 to 187 and fixed the t0/t1 spill-reg swap.
- *   - The HUD init's icon loop indexes `D_80077FEC[i].field` directly with a
- *     separate `y` counter; a `Actor *a = &D_80077FEC[i]` local is fully
- *     strength-reduced and costs ~150 aligned insns of register map (187->28).
- *   - 0x183's `>> 6` on a short table read: A233's count local must be set
- *     ABOVE THE ACTOR LOOP (`sh6`) so it crosses calls, spills and is
- *     rematerialised as an immediate; set at the arm head it stays in a2
- *     (`srav`).
- *   - The 0x154/0x161 height test is `drop > 0 ? drop < K : SPY.posZ -
- *     height < K`, not nested ifs (the ternary gives the orig's `j` block).
- *
- * RESIDUES (orig insn index; 23 masked insns):
- *   [34..37]  preheader order: orig puts `li s7,1` before the spy triple.
- *             sched tie on LUID: the const-1 movable is emitted after spy's
- *             because spy's set is first in the loop body. Open.
- *   0xE [1401]: reorg fills beqz's slot from the TARGET (the else arm's
- *             `move a0,s4`) and puts the fallthrough's copy in the jal slot;
- *             the original fills from the fallthrough and leaves a nop.
- *             Branch-sense spellings are inert (same RTL).
- *   case 1 [3138], icon loop [3587]: the rematerialised `li t0,255` lands
- *             later than the original's; unk50 store position is inert.
- *   0x166 copy loop [3555..3567], the -1: the original's giv set is
- *             `*(int *)((char *)D_8006E3E4 + (i << 2))` (dest sym folded into
- *             the address, 4*i giv in v1, src pointer giv in a0) -- that form
- *             reproduces the loop body exactly -- BUT with i kept as a biv.
- *             Ours then eliminates the biv (all givs reduced, so
- *             all_reduced == 1), which is -2. The original must have had one
- *             giv of i that was "not worth while" (benefit - add_cost <= 0)
- *             and dead afterwards, to hold all_reduced at 0. `i * 4` (MULT)
- *             instead of `i << 2` breaks the symbol out at expand and gives
- *             the current -1 shape. 30 forms tried (pointer locals, k temps,
- *             volatile, sized/struct/2-D decls, do/while, while, <=). The
- *             mechanism is confirmed: a src of `*(int *)((char *)st +
- *             ((i + 0x21) << 2))` leaves a dead `i + 33` giv "not worth
- *             while" and s2 survives -- but that form also re-bases the src
- *             giv (st + v1, not a0 = st). The open question is which dead
- *             giv the original had that leaves the other three alone.
- *   0x166 [4049..4051]: preheader order of `move a3,a0` / `li a2,30`; x/i
- *             init order is inert.
- *
- * MEASURING: `open-spyro diff` cannot show it (length differs). Compile-only:
- * carve 18,952 B at 0x8007CFB4-0x8007AA38 from disc/orig/overlays/
- * level_11_*.ovl, objdump both sides with -M no-aliases, anchor register
- * names BEFORE masking immediates, difflib-align. To check addresses, link
- * it (copy to .c, `open-spyro diff`, then compare the linked overlay bytes)
- * and restore the two generated level_11 *.slots.ld files afterwards.
- *
- * The level_30-specific declarations below (FollowState etc.) are unused
- * splice leftovers.
+ * Head of the flight-level actor-update family (func_level_{5,11,17,23,29}_
+ * 8007CFB4). The arms that share a behaviour with func_level_0_8007D9C8 were
+ * spliced from it (level_0's 0xff/0x100 arm is 478/479 here, 0x101 is 480,
+ * 0xc2 is 299); the case order is the ascending order of the arm addresses.
+ * The source forms below are load-bearing -- each one was measured, and the
+ * siblings need the same ones:
+ *   - `base = &D_80078BBC` above the loop, `spy = base - 0x164` at the loop
+ *     top, and one in-loop `*(int *)base` read: reload rebuilds the spilled
+ *     base as `lui t0; addiu t0; addiu fp,t0,-0x164`.
+ *   - `one = 1` ahead of `spy` at the loop top (and used once): the constant
+ *     1 is then the first movable loop.c hoists, so `li s7,1` leads the
+ *     preheader.
+ *   - `int *nrm = &D_80077368` at the two arm-14/15 yaw sites (the dot arms
+ *     stay absolute). It makes the &D_80077368 group the first to hoist,
+ *     unallocated, so reload rematerialises it per call; the move also drops
+ *     loop.c's threshold by 3, which keeps the constant 32 in place.
+ *   - `Model **models = D_80076378` around the 0x12B func_80056DC4 test
+ *     (held in s0 across the call).
+ *   - `AS_PTRU8(D_800761D4)[0x24]` at both 0x166 sound calls: the struct
+ *     view keeps the load below the st->timer / st->spent[i] stores.
+ *   - arm 14/15: `pos` pinned to $4 between func_8004BE4C and the branch, so
+ *     the argument is set once ahead of the beqz (fills its delay slot) and
+ *     the func_80057380 jal keeps a nop.
+ *   - 0x166 copy loop: explicit `src` / `off` pointers, initialised in the
+ *     for-header after `i = 0`. The indexed spelling either strength-reduces
+ *     the destination or eliminates the counter.
+ *   - Store orders inside the case-1 block, the icon loop and the loop top
+ *     are the original's sched2 orders; `for (i = 0, y = 0x3C; ...)`.
  */
 /* func_level_11_8007CFB4 -- per-frame actor update for level 11 (Night Flight).
  *
@@ -2689,13 +2619,18 @@ void func_level_11_8007CFB4(void) {
           st->icon[i] = D_800758CC(st->types[0], actor);
         }
 
-        for (i = 0; i < 4; i++) {
-          int k = ((i + 1) << 2) - 4;
-          *(int *)((char *)D_8006E3E4 + k) = st->unk84[i];
+        {
+          int *src;
+          int off;
+
+          for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
+            *(int *)((char *)D_8006E3E4 + off) = src[0x21];
+            src++;
+            off += 4;
+          }
         }
 
-        y = 0x3C;
-        for (i = 0; i < 4; i++) {
+        for (i = 0, y = 0x3C; i < 4; i++) {
           D_80077FEC[i].type = st->types[i];
           func_8003A720(&D_80077FEC[i]);
           func_800529CC(&D_80077FEC[i]);
