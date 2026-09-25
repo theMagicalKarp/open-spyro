@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,893 vs 5,900 insns (-7). Linked-at-VMA shape diff
+ * STATE: compiles; 5,891 vs 5,900 insns (-9). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 419 imm-kept / 384 masked
+ * sides, difflib on mnemonics+registers): 406 imm-kept / 371 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -2571,17 +2571,14 @@ void func_level_30_8007D938(void) {
           int drop = height - SPY.posZ;
 
           if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
-            int i = 0;
-            int *tint = (int *)0x8080;
+            int i;
 
             func_80055A78(D_800761D4[0], actor, 0x10, 0);
             func_800529E4(actor, 4);
 
-            do {
-              i += 1;
-              D_800758E4(1, 0xC, actor, tint);
-              tint = (int *)((char *)tint + 0x01000000);
-            } while (i < 6);
+            for (i = 0; i < 6; i++) {
+              D_800758E4(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
+            }
 
             D_80075830 = 1;
             actor->unk57 = 0x40;
