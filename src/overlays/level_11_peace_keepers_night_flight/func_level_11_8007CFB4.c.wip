@@ -1819,10 +1819,15 @@ void func_level_11_8007CFB4(void) {
           func_80052568(actor);
           continue;
         } else {
+          int r;
+          register int *pos asm("$4");
+
           svG[2] += 240;
 
-          if (func_8004BE4C(svG, 240, 240)) {
-            if (func_80057380(&actor->posX) == 0) {
+          r = func_8004BE4C(svG, 240, 240);
+          pos = &actor->posX;
+          if (r) {
+            if (func_80057380(pos) == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 func_8003B9D4(actor);
               }
@@ -1880,7 +1885,7 @@ void func_level_11_8007CFB4(void) {
 
           } else {
             svG[2] -= 240;
-            func_80017700(&actor->posX, svG);
+            func_80017700(pos, svG);
             func_8004D5EC(svG, 0x10000);
             func_800533D0(actor);
           }
