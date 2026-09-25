@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,889 vs 5,900 insns (-11). Linked-at-VMA shape diff
+ * STATE: compiles; 5,895 vs 5,900 insns (-5). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 467 imm-kept / 420 masked
+ * sides, difflib on mnemonics+registers): 432 imm-kept / 397 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1780,15 +1780,18 @@ void func_level_30_8007D938(void) {
 
       if (actor->type != 15) {
         if (st->attach != 0xFF) {
-          int *anchor;
-
           func_800529E4(actor, 4);
-          anchor = actor->type == 14 ? &D_8006E5B8 : &D_8006E5A0;
-          func_80017048(&actor->unk20[0], anchor, &D_80077108[st->attach * 6]);
-          func_80017758(&D_80077108[st->attach * 6],
-                        &D_80077108[st->attach * 6], &actor->posX);
+          if (actor->type == 14) {
+            func_80017048(&actor->unk20[0], &D_8006E5B8,
+                          D_80077108[st->attach].pos);
+          } else {
+            func_80017048(&actor->unk20[0], &D_8006E5A0,
+                          D_80077108[st->attach].pos);
+          }
+          func_80017758(D_80077108[st->attach].pos,
+                        D_80077108[st->attach].pos, &actor->posX);
 
-          if (*(unsigned char *)&D_80077108[st->attach * 6 + 3] < 5) {
+          if (D_80077108[st->attach].flag < 5) {
             st->attach = 0xFF;
           }
         } else if (st->timer >= 0xF8) {
@@ -2594,10 +2597,10 @@ void func_level_30_8007D938(void) {
         if (st->attach != 0xFF) {
           func_800529E4(actor, 4);
           func_80017048(&actor->unk20[0], &D_8006E5AC,
-                        &D_80077108[st->attach * 6]);
-          func_80017758(&D_80077108[st->attach * 6],
-                        &D_80077108[st->attach * 6], &actor->posX);
-          if (*(unsigned char *)&D_80077108[st->attach * 6 + 3] < 5) {
+                        D_80077108[st->attach].pos);
+          func_80017758(D_80077108[st->attach].pos,
+                        D_80077108[st->attach].pos, &actor->posX);
+          if (D_80077108[st->attach].flag < 5) {
             st->attach = 0xFF;
           }
         } else if (st->timer >= 0xF8) {
