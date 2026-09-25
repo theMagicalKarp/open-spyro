@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,883 vs 5,900 insns (-17). Linked-at-VMA shape diff
+ * STATE: compiles; 5,885 vs 5,900 insns (-15). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 694 imm-kept / 637 masked
+ * sides, difflib on mnemonics+registers): 656 imm-kept / 602 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1385,8 +1385,7 @@ void func_level_30_8007D938(void) {
         int height = actor->posZ - actor->unk38;
         int drop = height - SPY.posZ;
 
-        if ((drop > 0 && drop < 0x708) ||
-            (drop <= 0 && (SPY.posZ - height) < 0x708)) {
+        if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
           if (D_80075898 == 0) {
             if (SPY.u164 >= 0) {
               Actor *puff = D_800758CC(0x78, actor);
@@ -2117,8 +2116,7 @@ void func_level_30_8007D938(void) {
             int height = actor->posZ - actor->unk38;
             int drop = height - SPY.posZ;
 
-            if ((drop > 0 && drop < 0x800) ||
-                (drop <= 0 && (SPY.posZ - height) < 0x800)) {
+            if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
               if (st->locked == 0 || rider->unk48 == 1) {
                 int *at = &actor->posX;
 
@@ -2555,8 +2553,7 @@ void func_level_30_8007D938(void) {
           int height = actor->posZ - actor->unk38;
           int drop = height - SPY.posZ;
 
-          if ((drop > 0 && drop < 0x200) ||
-              (drop <= 0 && (SPY.posZ - height) < 0x200)) {
+          if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
             int i = 0;
             int *tint = (int *)0x8080;
 
