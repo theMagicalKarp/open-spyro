@@ -12,10 +12,10 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 
 | # | Address | Function | Segment | Size | Score | Why |
 |--:|---|---|---|--:|--:|---|
-| 1 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 2 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 130 | overlay (no -g3); segment 30.1% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 3 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 130 | overlay (no -g3); segment 30.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
-| 4 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 1 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 129 | overlay (no -g3); segment 32.0% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 2 | `0x8007b68c` | func_level_11_8007B68C | ovl/level_11_peace_keepers_night_flight | 6440 | 104 | overlay (no -g3); segment 82.3% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 3 | `0x8007b68c` | func_level_17_8007B68C | ovl/level_17_magic_crafters_crystal_flight | 6440 | 103 | overlay (no -g3); segment 83.2% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
+| 4 | `0x8007b68c` | func_level_23_8007B68C | ovl/level_23_beast_makers_wild_flight | 6440 | 103 | overlay (no -g3); segment 83.7% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 5 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 6 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 7 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
@@ -28,7 +28,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 14 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 15 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(37 viable candidates total; the full ranking is regenerable.)
+(32 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -39,17 +39,18 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
+| `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 1676 | actor-update megafunction, same skeleton as matched func_level_0_8007D9C8 |
 | `0x80050bd0` | DrawActors | main | 5148 | 1488 | local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1156 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
-| `0x8007d938` | func_level_30_8007D938 | ovl/level_30_gnastys_world_gnorc_gnexus | 23600 | 768 | actor-update megafunction, same skeleton as matched func_level_0_8007D9C8 |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block |
 | `0x8001c694` | Gamestate0A_Draw | main | 932 | 648 | sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group |
+| `0x8007cfb4` | func_level_29_8007CFB4 | ovl/level_29_dream_weavers_icy_flight | 20596 | 608 | global.c priority tie: hoisted 255 (42 refs) beats hoisted &D_80077368 (21) for $fp; original the reverse |
 | `0x80089454` | func_level_14_80089454 | ovl/level_14_magic_crafters_high_caves | 7260 | 592 | same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap |
 | `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` x4 - the class survives a fresh read of the asm |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
