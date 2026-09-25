@@ -2,7 +2,7 @@
  *
  * STATE: compiles; 5,889 vs 5,900 insns (-11). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 471 imm-kept / 420 masked
+ * sides, difflib on mnemonics+registers): 467 imm-kept / 420 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1041,8 +1041,7 @@ typedef struct SatState {
 /* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
 typedef struct ShardState {
   short vel[3];        /* 0x00 */
-  signed char spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  char pad09[0x3];
+  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
   int life;  /* 0x0C */
   int floor; /* 0x10 */
 } ShardState;
