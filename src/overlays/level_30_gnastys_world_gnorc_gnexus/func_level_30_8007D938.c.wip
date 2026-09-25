@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
+ * STATE: compiles; 5,875 vs 5,900 insns (-25). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 1,291 imm-kept / 1,237 masked
+ * sides, difflib on mnemonics+registers): 1,183 imm-kept / 1,129 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -32,6 +32,17 @@
  *     init re-reads st->smoke per store; the two gem-spawn loops are
  *     `for (i = 0; i < N; ...)` with the diff test as a leading break (a
  *     while/do loop gets its exit test rotated to the bottom).
+ *   - Case 398's camera blocks: func_80034204 is ComputeCameraOrbitOffset
+ *     and takes ONE argument (a1..a3 at the call are leftovers from the
+ *     copy). D_80076E60/D_80076E48's word 0 is a scalar `int` global and the
+ *     24-byte copy is `*(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;`: with
+ *     the +=/-= no longer sharing the address pseudo, combine folds the
+ *     constant into the movstr, and output_block_move spends two scratch
+ *     regs on `la t0`/`la a3`, leaving a1/a2 -- the original's pairs.
+ *     SPY.u218 / SPY.controlFlags / SPY.u208 are written through SPY so cse
+ *     holds one SPY-relative base (s0/s1) and derives &SPY.posX from it;
+ *     func_8001778C's third arg there is &SPY.posX, not &CAM.posX; ExitState
+ *     has a word at 0x10 (dest 0x14, preset 0x18).
  *   - fold()'s (A*C)+(B*C) -> (A+B)*C factoring: the vortex arm's 0xB5
  *     products are NOT factored in the original. operand_equal_p refuses
  *     constants of different signedness, so one side is written `* 0xB5U`
@@ -594,7 +605,7 @@ extern CamObj g_anWorldToCameraRotMtx;
 extern Xform D_8006CA24[];
 
 extern void func_80033F08(int *out);
-extern void func_80034204(int *out, int a, int b, Xform *x);
+extern void func_80034204(int *out);
 extern void func_800342F8(void);
 
 /* Vortex path: node count and current node, then the two anchor positions
@@ -1069,6 +1080,7 @@ typedef struct WardenState {
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
+  int unk10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -1106,8 +1118,8 @@ extern int D_80077350;
 
 extern short D_80076E20; /* camera yaw, as the balloonist reads it */
 extern int D_80076E28;   /* camera mode */
-extern Xform D_80076E48; /* camera spherical target */
-extern Xform D_80076E60; /* camera spherical current */
+extern int D_80076E48; /* camera spherical target */
+extern int D_80076E60; /* camera spherical current */
 extern int D_80076E90;
 extern Xform *D_80076EA8; /* active camera preset, or null */
 
@@ -2730,23 +2742,19 @@ void func_level_30_8007D938(void) {
         actor->unk55 = 0x20;
         func_8003851C(actor, 0, 0);
 
-        i = 0;
-        while ((D_800756A8 - D_800756A4) >= 0x15) {
-          i += 1;
+        for (i = 0; i < 2; i++) {
+          if ((D_800756A8 - D_800756A4) < 0x15) {
+            break;
+          }
           D_800758CC(0x136, actor);
           D_800758CC(0x137, actor);
-          if (i >= 2) {
-            break;
-          }
         }
 
-        i = 0;
-        while ((D_800756A8 - D_800756A4) >= 0x15) {
-          i += 1;
-          D_800758CC(0x135, actor);
-          if (i >= 6) {
+        for (i = 0; i < 6; i++) {
+          if ((D_800756A8 - D_800756A4) < 0x15) {
             break;
           }
+          D_800758CC(0x135, actor);
         }
 
         D_800758E4(0x10, 0x46, &actor->posX, (int *)0x18);
@@ -3401,7 +3409,7 @@ void func_level_30_8007D938(void) {
         int *aim;
         int span;
 
-        D_80078C4C = 0x80006147;
+        SPY.controlFlags = 0x80006147;
         D_80078CA0 = actor->unk49;
         D_80078C9C = 0x60;
         D_80078C70 = 5;
@@ -3409,8 +3417,8 @@ void func_level_30_8007D938(void) {
         D_80078C98 = st->portal;
         func_80017758(svM, st->portal->posA, st->portal->posB);
         func_800176C8(svM, 1);
-        aim = &D_80078C60;
-        func_8001778C(aim, svM, &CAM.posX);
+        aim = &SPY.u208;
+        func_8001778C(aim, svM, &SPY.posX);
         func_80017758(aim, aim, st->centre);
         span = func_800171FC(aim, 1);
 
@@ -3420,7 +3428,7 @@ void func_level_30_8007D938(void) {
           int more;
 
           if (actor->unk49 != 0) {
-            more = st->portal->index < (st->portal->count - 1);
+            more = (st->portal->count - 1) > st->portal->index;
           } else {
             more = st->portal->index;
           }
@@ -3433,7 +3441,7 @@ void func_level_30_8007D938(void) {
             (D_80075718 & 0x3F) < 0x3F && *D_800785B8[D_80075718] == 6) {
           actor->unk48 = 0;
           D_80076E90 = 0x80000012;
-          D_80078C70 = 0xF;
+          SPY.u218 = 0xF;
           D_80075864 = 0;
           D_800756B0 = 1;
           D_800756AC = 0;
@@ -3441,13 +3449,12 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60.v[0] += D_80078B74;
-          D_80076E48 = D_80076E60;
+          D_80076E60 += D_80078B74;
+          *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
           D_80078B74 += D_80075858;
           D_80078A66 = D_80078B74 >> 4;
-          D_80076E48.v[0] -= D_80078A66 * 0x10;
-          func_80034204(&CAM.posX, D_80076E60.v[4], D_80076E60.v[5],
-                        &D_80076E48);
+          D_80076E48 -= D_80078A66 * 0x10;
+          func_80034204(&CAM.posX);
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
           func_800342F8();
           D_80075910 = D_800758FC;
@@ -3461,7 +3468,7 @@ void func_level_30_8007D938(void) {
       case 2:
         D_80078C4C = 0x80006100;
         D_80078C9C = 0x60;
-        D_80078C70 = 0xF;
+        SPY.u218 = 0xF;
         D_80078A7F = 0x7F;
         D_80078C98 = st->portal;
 
@@ -3476,13 +3483,12 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60.v[0] += D_80078B74;
-          D_80076E48 = D_80076E60;
+          D_80076E60 += D_80078B74;
+          *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
           D_80078B74 += D_80075858;
           D_80078A66 = D_80078B74 >> 4;
-          D_80076E48.v[0] -= D_80078A66 * 0x10;
-          func_80034204(&CAM.posX, D_80076E60.v[4], D_80076E60.v[5],
-                        &D_80076E48);
+          D_80076E48 -= D_80078A66 * 0x10;
+          func_80034204(&CAM.posX);
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
           func_800342F8();
           D_80075910 = D_800758FC;
