@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,852 vs 5,900 insns (-48). Linked-at-VMA shape diff
+ * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 1,677 imm-kept / 1,531 masked
+ * sides, difflib on mnemonics+registers): 1,291 imm-kept / 1,237 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -21,7 +21,21 @@
  *     them from `D_800758D1 = two; D_800758D2 = two;`.
  *   - Case 426..451's closing `&host->posX` is `&st->parent->posX` (the
  *     original reloads st->parent after the calls; holding host put a
- *     6-ref pseudo in s5 ahead of the const-1 group).
+ *     6-ref pseudo in s5 ahead of the const-1 group). Its else-branch has no
+ *     `host`/`phase` locals, reads SPY.posY absolute, and its `<<16>>21`
+ *     loads have no (short) cast (the original's lhu).
+ *   - Content fixes by arm: VortexState's centre/apex are short[3] (apex at
+ *     0x0A, radius 0x10); the vortex arm's `if (D_80077378 & 0x40)` is ONE
+ *     tail after the inner switch (case 5 `continue`s) and its tick compares
+ *     are unsigned; the two phase-table arms (0x10x and 195) re-read
+ *     D_8006E638 after the sound call instead of holding dx/dy; the smoke fx
+ *     init re-reads st->smoke per store; the two gem-spawn loops are
+ *     `for (i = 0; i < N; ...)` with the diff test as a leading break (a
+ *     while/do loop gets its exit test rotated to the bottom).
+ *   - fold()'s (A*C)+(B*C) -> (A+B)*C factoring: the vortex arm's 0xB5
+ *     products are NOT factored in the original. operand_equal_p refuses
+ *     constants of different signedness, so one side is written `* 0xB5U`
+ *     under an (int) cast -- same bits, two separate 181-products.
  *
  * OPEN: `one` sits in s6 and `toSpyro` (14/15/83..87 arm, pseudo 868) in s5;
  * the original is the reverse. toSpyro outranks `one` in allocno order either
@@ -924,8 +938,8 @@ typedef struct WanderState {
 /* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
 typedef struct VortexState {
   int idx;               /* 0x00 */
-  int centre[3];         /* 0x04 pad centre */
-  int apex[3];           /* 0x0A (short-aligned) rise target */
+  short centre[3];       /* 0x04 pad centre */
+  short apex[3];         /* 0x0A rise target */
   unsigned short radius; /* 0x10 */
   unsigned char phase;   /* 0x12 */
   unsigned char angle;   /* 0x13 */
@@ -1535,7 +1549,7 @@ void func_level_30_8007D938(void) {
 
         st->phase = tick;
 
-        if ((tick & 0xFF) < 0x80) {
+        if ((unsigned char)tick < 0x80) {
           int step = D_800756CC * 4;
 
           st->radius += step;
@@ -1549,12 +1563,12 @@ void func_level_30_8007D938(void) {
           actor->posZ -= st->phase * 8;
         } else {
           func_80017700(svA, &spy->posX);
-          svA[0] += ((func_80016C58(spy->bodyRotZ * 0x10) * 0xB5) +
-                     (func_80016CB0(spy->bodyRotZ * 0x10) * 0xB5)) *
+          svA[0] += (int)((func_80016CB0(D_80078A66 * 0x10) * 0xB5) +
+                          (func_80016C58(D_80078A66 * 0x10) * 0xB5U)) *
                         4 >>
                     12;
-          svA[1] += ((func_80016C58(spy->bodyRotZ * 0x10) * 0xB5) -
-                     (func_80016CB0(spy->bodyRotZ * 0x10) * 0xB5)) *
+          svA[1] += (int)((func_80016C58(D_80078A66 * 0x10) * 0xB5) -
+                          (func_80016CB0(D_80078A66 * 0x10) * 0xB5U)) *
                         4 >>
                     12;
           svA[2] += 0x300;
@@ -1562,10 +1576,6 @@ void func_level_30_8007D938(void) {
           func_80017BFC(st->centre, &actor->posX);
           st->phase = 0;
           actor->unk48 += 1;
-        }
-
-        if (D_80077378 & 0x40) {
-          actor->unk48 = 5;
         }
         break;
       }
@@ -1575,7 +1585,7 @@ void func_level_30_8007D938(void) {
 
         st->phase = tick;
 
-        if ((tick & 0xFF) < 0x40) {
+        if ((unsigned char)tick < 0x40) {
           func_80017C24(svB, st->centre);
           func_80017C24(svC, st->apex);
           func_8001778C(svC, svC, svB);
@@ -1585,18 +1595,14 @@ void func_level_30_8007D938(void) {
           actor->unk46 += D_800756CC * 4;
         } else {
           func_80017700(svD, &spy->posX);
-          svD[0] += func_80016CB0(spy->bodyRotZ * 0x10) >> 3;
-          svD[1] += func_80016C58(spy->bodyRotZ * 0x10) >> 3;
+          svD[0] += func_80016CB0(D_80078A66 * 0x10) >> 3;
+          svD[1] += func_80016C58(D_80078A66 * 0x10) >> 3;
           svD[2] += 0x300;
           func_80017BFC(st->centre, svD);
           st->radius = 0x200;
           st->phase = 0;
-          st->angle = spy->bodyRotZ - 0x40;
+          st->angle = D_80078A66 - 0x40;
           actor->unk48 += 1;
-        }
-
-        if (D_80077378 & 0x40) {
-          actor->unk48 = 5;
         }
         break;
       }
@@ -1606,7 +1612,7 @@ void func_level_30_8007D938(void) {
 
         st->phase = tick;
 
-        if ((tick & 0xFF) < 0x80) {
+        if ((unsigned char)tick < 0x80) {
           int step = D_800756CC * 4;
 
           st->radius -= step;
@@ -1638,10 +1644,13 @@ void func_level_30_8007D938(void) {
         *tally += 1;
         D_80077FDC.v = 0;
         func_80052568(actor);
-        break;
+        continue;
       }
       }
 
+      if (D_80077378 & 0x40) {
+        actor->unk48 = 5;
+      }
       break;
     }
 
@@ -2300,15 +2309,15 @@ void func_level_30_8007D938(void) {
           st->smoke = fx;
           if (fx != 0) {
             fx->anchor = &actor->posX;
-            fx->size = 0x40;
-            fx->unk14 = 0;
-            fx->unk18 = 0;
-            fx->unk1C = 0;
-            fx->r = 0xC0;
-            fx->g = 0xC0;
-            fx->b = 0x60;
-            fx->kind = 9;
-            fx->desc = &D_8006E390;
+            st->smoke->size = 0x40;
+            st->smoke->unk14 = 0;
+            st->smoke->unk18 = 0;
+            st->smoke->unk1C = 0;
+            st->smoke->r = 0xC0;
+            st->smoke->g = 0xC0;
+            st->smoke->b = 0x60;
+            st->smoke->kind = 9;
+            st->smoke->desc = &D_8006E390;
           }
         } else {
           fx->size += 0x20;
@@ -2652,23 +2661,19 @@ void func_level_30_8007D938(void) {
         actor->unk55 = 0x20;
         func_8003851C(actor, 0, 0);
 
-        i = 0;
-        while ((D_800756A8 - D_800756A4) >= 0x15) {
-          i += 1;
+        for (i = 0; i < 2; i++) {
+          if ((D_800756A8 - D_800756A4) < 0x15) {
+            break;
+          }
           D_800758CC(0xFF, actor);
           D_800758CC(0x100, actor);
-          if (i >= 2) {
-            break;
-          }
         }
 
-        i = 0;
-        while ((D_800756A8 - D_800756A4) >= 0x15) {
-          i += 1;
-          D_800758CC(0x101, actor);
-          if (i >= 6) {
+        for (i = 0; i < 6; i++) {
+          if ((D_800756A8 - D_800756A4) < 0x15) {
             break;
           }
+          D_800758CC(0x101, actor);
         }
 
         D_800758E4(5, 2, &actor->posX, 0);
@@ -2696,13 +2701,14 @@ void func_level_30_8007D938(void) {
         st->phase = phase;
 
         if (phase < 0x40) {
-          int k = phase >> 1;
-          int dx = (signed char)D_8006E638[k].a;
-          int dy = (signed char)D_8006E638[k].b;
+          int dx;
+          int dy;
 
-          actor->unk44 = dx + st->rotX;
-          actor->unk45 = (signed char)D_8006E638[st->phase >> 1].b + st->rotY;
+          actor->unk44 = D_8006E638[st->phase >> 1].a + st->rotX;
+          actor->unk45 = D_8006E638[st->phase >> 1].b + st->rotY;
 
+          dx = (signed char)D_8006E638[st->phase >> 1].a;
+          dy = (signed char)D_8006E638[st->phase >> 1].b;
           if (dx < 0) {
             dx = -dx;
           }
@@ -2909,18 +2915,18 @@ void func_level_30_8007D938(void) {
         func_800562A4(actor, 1);
         at = &actor->posX;
       } else if (st->phase >= 0xC0) {
-        int k = (st->phase - 0xC0) >> 1;
-        int dx = (signed char)D_8006E638[k].a;
-        int dy = (signed char)D_8006E638[k].b;
+        int dx;
+        int dy;
 
         if (func_80056DC4(actor, D_80076378[actor->type]->m_Sounds[0]) == 0) {
           func_8003851C(actor, 0, 0);
         }
 
-        actor->unk44 = dx + st->rotX;
-        actor->unk45 =
-            (signed char)D_8006E638[(st->phase - 0xC0) >> 1].b + st->rotY;
+        actor->unk44 = D_8006E638[(st->phase - 0xC0) >> 1].a + st->rotX;
+        actor->unk45 = D_8006E638[(st->phase - 0xC0) >> 1].b + st->rotY;
 
+        dx = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].a;
+        dy = (signed char)D_8006E638[(st->phase - 0xC0) >> 1].b;
         if (dx < 0) {
           dx = -dx;
         }
@@ -3537,15 +3543,14 @@ void func_level_30_8007D938(void) {
     case 450:
     case 451: {
       SatState *st = actor->state;
-      Actor *host = st->parent;
 
-      if (host->unk48 == 0 || host->unk49 != actor->unk48) {
+      if (st->parent->unk48 == 0 || st->parent->unk49 != actor->unk48) {
         func_80052568(actor);
         continue;
       }
 
-      if (host->type == 9) {
-        if (func_80017990(&host->posX, &spy->posX) < 0x400) {
+      if (st->parent->type == 9) {
+        if (func_80017990(&st->parent->posX, &spy->posX) < 0x400) {
           unsigned char was = actor->unk49;
           unsigned char now = was + 8;
 
@@ -3555,28 +3560,26 @@ void func_level_30_8007D938(void) {
         } else {
           int bearing;
           int arm;
-          short phase;
           short *swing;
 
           actor->unk49 += 8;
-          bearing =
-              func_80016AB4(spy->posX - host->posX, spy->posY - host->posY, 0);
+          bearing = func_80016AB4(spy->posX - st->parent->posX,
+                                  SPY.posY - st->parent->posY, 0);
           svN[0] = (D_8006CC78[bearing] * 3) >> 4;
           svN[1] = (D_8006CBF8[bearing] * 3) >> 4;
           svN[2] = 0;
-          svO[0] = (short)D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[1] = (short)D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[0] = D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[1] = D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
           svO[2] = 0;
-          actor->unk46 =
-              ((bearing + 0x80) & 0xFF) + ((D_8006CC78[actor->unk49] * 3) >> 9);
+          bearing = (bearing + 0x80) & 0xFF;
+          actor->unk46 = bearing + ((D_8006CC78[actor->unk49] * 3) >> 9);
           func_800177C0(svP, svO, st->radius - 1);
           func_800176A0(svO, 1);
           arm = st->radius - 1;
-          phase = D_8006CC78[arm * 2];
-          svP[2] += (phase * 3) >> 3;
-          svQ[0] = svN[0] * phase;
+          svP[2] += (D_8006CC78[arm * 2] * 3) >> 3;
+          svQ[0] = svN[0] * D_8006CC78[arm * 2];
           svQ[2] = 0;
-          svQ[1] = svN[1] * phase;
+          svQ[1] = svN[1] * D_8006CC78[arm * 2];
           func_800177C0(svO, svO, st->phase);
           func_8001778C(svP, svP, svO);
           swing = &D_8006CC78[((arm * 2) - (st->phase * 4)) & 0xFF];
@@ -3588,7 +3591,7 @@ void func_level_30_8007D938(void) {
           func_80017758(&actor->posX, &actor->posX, svN);
           func_80017758(&actor->posX, &actor->posX, &st->parent->posX);
           func_8001778C(&actor->posX, &actor->posX, svP);
-          actor->posZ += ((*swing * 3) >> 3) + 0x600;
+        actor->posZ += ((*swing * 3) >> 3) + 0x600;
         }
       } else {
         unsigned char now = actor->unk49 + 8;
