@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,889 vs 5,900 insns (-11). Linked-at-VMA shape diff
+ * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 618 imm-kept / 564 masked
+ * sides, difflib on mnemonics+registers): 582 imm-kept / 535 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -2356,13 +2356,13 @@ void func_level_30_8007D938(void) {
                 int back = -tilt;
 
                 if ((unsigned int)((tilt - 3) & 0xFF) < 0xFB) {
-                  int over = back < -2;
-
                   if (back >= 3) {
                     back = 2;
-                    over = 0;
                   }
-                  actor->unk45 = over ? tilt - 2 : tilt + back;
+                  if (back < -2) {
+                    back = -2;
+                  }
+                  actor->unk45 = tilt + back;
                 }
               }
             }
@@ -2397,7 +2397,7 @@ void func_level_30_8007D938(void) {
           }
 
           case 1:
-            SPY.u164 += 1;
+            D_80078BBC += 1;
             func_80055A78(D_800761D4[0], actor, 0x10, 0);
             actor->unk49 += 1;
             func_80052568(st->gnorc);
@@ -2446,7 +2446,13 @@ void func_level_30_8007D938(void) {
                 func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
               }
             } else {
-              func_800175B8(svJ, dist, dist > 0x136 ? 0x136 : 0x122);
+              int lim = 0x136;
+
+              if (lim < dist) {
+                func_800175B8(svJ, dist, lim);
+              } else {
+                func_800175B8(svJ, dist, 0x122);
+              }
               func_80017758(&actor->posX, &actor->posX, svJ);
               func_80038EE0(actor, func_80016AB4(svJ[0], svJ[1], 0), 0xA, 0, 0);
               actor->unk45 = func_80016AB4(func_800171FC(svJ, 0), svJ[2], 0);
@@ -2984,7 +2990,7 @@ void func_level_30_8007D938(void) {
             actor->unk45 = st->rotY;
             actor->posZ = st->restZ;
             func_8002C924(actor);
-            func_800176F0(&D_80078BFC);
+            func_800176F0(&SPY.headLook);
             D_80078C4C = 0x80002147;
 
             if (D_80078AF4 != 0) {
@@ -2997,14 +3003,14 @@ void func_level_30_8007D938(void) {
                 D_80078C68 = D_80078B6C >> 6;
               }
             } else {
-              int *look = &D_80078C60;
+              int *look = &SPY.u208;
 
               D_80078C70 = 3;
-              func_80017700(look, &D_80078B64);
+              func_80017700(look, &SPY.u10C);
               func_800176C8(look, 6);
               D_80078C68 = 0;
 
-              if (D_80078C60 != 0 || D_80078C64 != 0) {
+              if (SPY.u208 != 0 || D_80078C64 != 0) {
                 func_800175B8(look, func_800171FC(look, 0), 0x60);
                 D_80078C68 = 0;
               }
@@ -3279,7 +3285,7 @@ void func_level_30_8007D938(void) {
           } while (i < 3);
         }
 
-        ((ShardState *)actor->state)->life -= 1;
+        st->life -= 1;
         break;
       }
 
