@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,875 vs 5,900 insns (-25). Linked-at-VMA shape diff
+ * STATE: compiles; 5,866 vs 5,900 insns (-34). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 991 imm-kept / 937 masked
+ * sides, difflib on mnemonics+registers): 847 imm-kept / 786 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -963,7 +963,7 @@ typedef struct EnemyState {
   short node;           /* 0x0C current path node */
   unsigned char mode;   /* 0x0E sub-mode within ->unk49 */
   unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 remaining knock-back bounces */
+  unsigned char bounce; /* 0x10 remaining knock-back bounces */
   signed char lean;     /* 0x11 body pitch */
   signed char roll;     /* 0x12 */
   unsigned char spin;   /* 0x13 */
@@ -1804,37 +1804,38 @@ void func_level_30_8007D938(void) {
           func_80017700(svA, &actor->posX);
           svA[2] += 0x400;
           func_8004D5EC(svA, 0x10000);
-          st->lean = -func_800169AC(func_80017A38((D_80077368 * D_80077368) +
-                                                  (D_80077370 * D_80077370)),
-                                    D_8007736C);
-          st->roll = -func_800169AC(D_80077370, D_80077368);
+          {
+            int *nrm = &D_80077368;
 
-          if (st->bounce & 0xFFFF00) {
+            st->lean = -func_800169AC(
+                func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
+                D_8007736C);
+            st->roll = -func_800169AC(D_80077370, nrm[0]);
+          }
+
+          if (st->lean != 0 || st->roll != 0) {
             actor->unk46 = 0;
           }
           actor->unk49 = 1;
           goto enemy_pose;
 
         case 1: {
-          int near;
 
-          switch (st->mode) {
-          case 0:
-            break;
-
-          case 1:
+          if (st->mode == 0) {
+          } else if (st->mode == 1) {
             func_80038458(actor);
             func_800533D0(actor);
             if (actor->type >= 83) {
-              st->lean =
-                  -func_800169AC(func_80017A38((D_80077368 * D_80077368) +
-                                               (D_80077370 * D_80077370)),
-                                 D_8007736C);
-              st->roll = -func_800169AC(D_80077370, D_80077368);
-            }
-            break;
+              {
+                int *nrm = &D_80077368;
 
-          case 2:
+                st->lean = -func_800169AC(
+                    func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
+                    D_8007736C);
+                st->roll = -func_800169AC(D_80077370, nrm[0]);
+              }
+            }
+          } else if (st->mode == 2) {
             func_80017CB8(st->node, acc[0]);
             func_80017758(acc[0], acc[0], acc[1]);
             func_80017758(acc[0], acc[0], acc[2]);
@@ -1844,24 +1845,17 @@ void func_level_30_8007D938(void) {
             func_800529E4(actor, 2);
             func_80038458(actor);
             func_800533D0(actor);
-            break;
-
-          default:
-            if (st->mode == 3) {
-              func_80017700(svF, &actor->posX);
-              svF[2] += 0x400;
-              func_800529E4(actor, 2);
-              if (func_8004D5EC(svF, 0x1000) > 0) {
-                st->mode = 2;
-                st->node = D_80075808;
-              }
+          } else if (st->mode == 3) {
+            func_80017700(svF, &actor->posX);
+            svF[2] += 0x400;
+            func_800529E4(actor, 2);
+            if (func_8004D5EC(svF, 0x1000) > 0) {
+              st->mode = 2;
+              st->node = D_80075808;
             }
-            break;
           }
 
-          near = toSpyro < 0x59A;
-
-          if (near != 0) {
+          if (toSpyro < 0x59A) {
             int dz = SPY.posZ - (actor->posZ + 0x164);
 
             if (dz < 0) {
@@ -1880,7 +1874,6 @@ void func_level_30_8007D938(void) {
           /* Knocked back: arc away, bounce, then settle. */
           int *at;
           int dist;
-          int near;
 
           func_800177C0(svG, (int *)st, D_800756CC);
           func_800176C8(svG, 1);
@@ -1933,7 +1926,7 @@ void func_level_30_8007D938(void) {
                       func_80017A38((svH[0] * svH[0]) + (svH[2] * svH[2])),
                       svH[1]);
                   st->roll = -func_800169AC(svH[2], svH[0]);
-                  if (st->bounce & 0xFFFF00) {
+                  if (st->lean != 0 || st->roll != 0) {
                     actor->unk46 = 0;
                   }
                 }
@@ -1942,7 +1935,6 @@ void func_level_30_8007D938(void) {
                 st->bounce += 1;
               }
 
-              near = toSpyro < 0x59A;
 
               if (st->bounce == 0) {
                 goto enemy_settle;
@@ -1953,7 +1945,6 @@ void func_level_30_8007D938(void) {
             D_800761E8 = 0x3CCC >> (3 - st->bounce);
             D_800761EA = 0x3CCC >> (3 - st->bounce);
             func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
-            near = toSpyro < 0x59A;
 
             if (func_80017428((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1966,11 +1957,10 @@ void func_level_30_8007D938(void) {
             func_80017700(at, svG);
             func_8004D5EC(svG, 0x10000);
             func_800533D0(actor);
-            near = toSpyro < 0x59A;
           }
 
         enemy_settle:
-          if (near != 0) {
+          if (toSpyro < 0x59A) {
             int dz = SPY.posZ - (actor->posZ + 0x164);
 
             if (dz < 0) {
@@ -2026,6 +2016,9 @@ void func_level_30_8007D938(void) {
           actor->unk45 += st->roll - 7;
           actor->unk46 += st->spin - 7;
           goto enemy_pose;
+
+        case 4:
+          continue;
 
         default:
         enemy_pose:
@@ -3236,19 +3229,20 @@ void func_level_30_8007D938(void) {
         }
 
         if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
+          int *nrm = &D_80077368;
           int along;
           int push;
 
-          func_80017330(&D_80077368, 0x1000);
-          along = (st->vel[0] * D_80077368) + (st->vel[1] * D_8007736C) +
+          func_80017330(nrm, 0x1000);
+          along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
                   (st->vel[2] * D_80077370);
           push = along >> 11;
 
           if (push < 0) {
-            func_800175B8(&D_80077368, 0x1000, (along >> 13) - push);
-            st->vel[0] += D_80077368;
-            st->vel[1] += D_8007736C;
-            st->vel[2] += D_80077370;
+            func_800175B8(nrm, 0x1000, (along >> 13) - push);
+            st->vel[0] += nrm[0];
+            st->vel[1] += AS_I32(D_8007736C);
+            st->vel[2] += AS_I32(D_80077370);
           }
         }
 
