@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,875 vs 5,900 insns (-25). Linked-at-VMA shape diff
+ * STATE: compiles; 5,867 vs 5,900 insns (-33). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 1,183 imm-kept / 1,129 masked
+ * sides, difflib on mnemonics+registers): 1,106 imm-kept / 1,044 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -2152,126 +2152,99 @@ void func_level_30_8007D938(void) {
         break;
 
       case 4: {
-        int *at;
+        int height;
+        int drop;
+        int close;
 
         st->timer += 1;
         actor->posZ = st->baseZ + (func_80016CB0(st->timer << 7) >> 6);
 
-        at = rider->unk48 == 0 || (rider->unk48 == 2 && rider->unk49 >= 0x10)
-                 ? &rider->posX
-                 : &actor->posX;
-
-        if (at == &rider->posX) {
-          if (func_80017990(at, &spy->posX) < 0x400) {
-            int height = rider->posZ - rider->unk38;
-            int drop = height - SPY.posZ;
-
-            if ((drop > 0 && drop < 0x200) ||
-                (drop <= 0 && (SPY.posZ - height) < 0x200)) {
-              if (D_80078AD0 == 0 || D_80078AD0 == 0xD) {
-                if (D_80078AD8 > 0) {
-                plate_cancel:
-                  actor->unk48 = 6;
-                  st->locked = 1;
-                  func_8002CCC8(actor);
-                  break;
-                }
-              }
-            }
-          }
-          at = &actor->posX;
+        if ((rider->unk48 == 0 || (rider->unk48 == 2 && rider->unk49 >= 0x10)) &&
+            func_80017990(&rider->posX, &spy->posX) < 0x400 &&
+            (height = rider->posZ - rider->unk38, drop = height - SPY.posZ,
+             drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
+            (D_80078AD0 == 0 || D_80078AD0 == 0xD) && D_80078AD8 > 0) {
+          actor->unk48 = 6;
+          st->locked = 1;
+          func_8002CCC8(actor);
+          break;
         }
 
-        if (func_80017990(at, &spy->posX) < 0x2401) {
-          int height = actor->posZ - actor->unk38;
-          int drop = height - SPY.posZ;
-          int close = drop > 0 ? drop < 0xC01 : (SPY.posZ - height) < 0xC01;
-
-          if (close != 0) {
-            st->step -= 1;
-            if (st->step == 0) {
-              int reach = (func_8006272C() & 0x3F) + 0x140;
-              int bearing = func_80016AB4(spy->posX - rider->posX,
-                                          spy->posY - rider->posY, 0);
-              int aim = (bearing + (func_8006272C() & 0xF)) - 8;
-
-              func_80017700(st->from, &rider->posX);
-              aim = (aim & 0xFF) * 0x10;
-              actor->unk48 = 5;
-              st->from[0] -= (func_80016CB0(aim) * reach) >> 12;
-              st->from[1] -= (func_80016C58(aim) * reach) >> 12;
-              st->yaw = func_80016AB4(spy->posX - st->from[0],
-                                      spy->posY - st->from[1], 0);
-              st->step = 0;
-            }
-            break;
-          }
+        if (func_80017990(&actor->posX, &spy->posX) >= 0x2401 ||
+            (height = actor->posZ - actor->unk38, drop = height - SPY.posZ,
+             close = drop > 0 ? drop < 0xC01 : (SPY.posZ - height) < 0xC01,
+             close == 0)) {
+          actor->unk48 = 6;
+          break;
         }
 
-        actor->unk48 = 6;
+        st->step -= 1;
+        if (st->step == 0) {
+          int reach = (func_8006272C() & 0x3F) + 0x140;
+          int bearing = func_80016AB4(spy->posX - rider->posX,
+                                      spy->posY - rider->posY, 0);
+          int aim = (bearing + (func_8006272C() & 0xF)) - 8;
+
+          func_80017700(st->from, &rider->posX);
+          aim = (aim & 0xFF) * 0x10;
+          actor->unk48 = 5;
+          st->from[0] -= (func_80016CB0(aim) * reach) >> 12;
+          st->from[1] -= (func_80016C58(aim) * reach) >> 12;
+          st->yaw = func_80016AB4(spy->posX - st->from[0],
+                                  spy->posY - st->from[1], 0);
+          st->step = 0;
+        }
         break;
       }
 
       case 5: {
-        int *at;
+        int height;
+        int drop;
 
         st->timer += 1;
         actor->posZ = st->baseZ + (func_80016CB0(st->timer << 7) >> 6);
 
-        at = rider->unk48 == 0 || (rider->unk48 == 2 && rider->unk49 >= 0x10)
-                 ? &rider->posX
-                 : &actor->posX;
-
-        if (at == &rider->posX) {
-          if (func_80017990(at, &spy->posX) < 0x400) {
-            int height = rider->posZ - rider->unk38;
-            int drop = height - SPY.posZ;
-
-            if ((drop > 0 && drop < 0x200) ||
-                (drop <= 0 && (SPY.posZ - height) < 0x200)) {
-              if (D_80078AD0 == 0 || D_80078AD0 == 0xD) {
-                if (D_80078AD8 > 0) {
-                  goto plate_cancel;
-                }
-              }
-            }
-          }
-          at = &actor->posX;
+        if ((rider->unk48 == 0 || (rider->unk48 == 2 && rider->unk49 >= 0x10)) &&
+            func_80017990(&rider->posX, &spy->posX) < 0x400 &&
+            (height = rider->posZ - rider->unk38, drop = height - SPY.posZ,
+             drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
+            (D_80078AD0 == 0 || D_80078AD0 == 0xD) && D_80078AD8 > 0) {
+          actor->unk48 = 6;
+          st->locked = 1;
+          func_8002CCC8(actor);
+          break;
         }
 
-        if (func_80017990(at, &spy->posX) < 0x2801) {
-          int height = actor->posZ - actor->unk38;
-          int drop = height - SPY.posZ;
-
-          if ((drop > 0 && drop < 0xC01) ||
-              (drop <= 0 && (SPY.posZ - height) < 0xC01)) {
-            int *here = &actor->posX;
-            int turn;
-            int w0;
-            int wSpan;
-            int wDen;
-
-            st->step += 1;
-            func_8001778C(svF, st->from, here);
-            turn = func_80017948(st->yaw, actor->unk46);
-            w0 = func_80016CB0((st->step - 1) << 7);
-            wSpan = w0 - func_80016CB0(st->step << 7);
-            wDen = func_80016CB0((st->step - 1) << 7) + 0x1000;
-            actor->posX += (svF[0] * wSpan) / wDen;
-            actor->unk46 += (turn * wSpan) / wDen;
-            actor->posY += (svF[1] * wSpan) / wDen;
-            func_8004D5EC(here, 0x1000);
-            func_800533D0(actor);
-
-            if (st->step == 0x10) {
-              actor->unk48 = 4;
-              st->step = (func_8006272C() & 0x1F) + 0x1E;
-            }
-            break;
-          }
+        if (func_80017990(&actor->posX, &spy->posX) >= 0x2801 ||
+            (height = actor->posZ - actor->unk38, drop = height - SPY.posZ,
+             drop > 0 ? drop >= 0xC01 : (SPY.posZ - height) >= 0xC01)) {
+          actor->unk48 = 6;
+          break;
         }
+        {
+        int *here = &actor->posX;
+        int turn;
+        int w0;
+        int wSpan;
+        int wDen;
 
-        actor->unk48 = 6;
+        st->step += 1;
+        func_8001778C(svF, st->from, here);
+        turn = func_80017948(st->yaw, actor->unk46);
+        w0 = func_80016CB0((st->step - 1) << 7);
+        wSpan = w0 - func_80016CB0(st->step << 7);
+        wDen = func_80016CB0((st->step - 1) << 7) + 0x1000;
+        actor->posX += (svF[0] * wSpan) / wDen;
+        actor->unk46 += (turn * wSpan) / wDen;
+        actor->posY += (svF[1] * wSpan) / wDen;
+        func_8004D5EC(here, 0x1000);
+        func_800533D0(actor);
+
+        if (st->step == 0x10) {
+          actor->unk48 = 4;
+          st->step = (func_8006272C() & 0x1F) + 0x1E;
+        }
+        }
         break;
       }
 
