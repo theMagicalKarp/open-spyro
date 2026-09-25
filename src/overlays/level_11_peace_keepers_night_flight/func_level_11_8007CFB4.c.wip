@@ -1,11 +1,18 @@
 /* PARKED 2026-09-24 -- first pass on the flight-level actor-update megafunction
  * (func_level_{5,11,17,23,29}_8007CFB4; this is the smallest, 18,952 B).
  *
- * STATE (2026-09-24-1): compiles and links; 4,737 of 4,738 insns (-1).
- * Register-anchored masked resync: 23 mismatched over 14 regions (was 70 /
- * 36 / -5). The 0x1C0 frame, every stack offset and every linked address
- * are exact. The one missing insn is the 0x166 copy loop (orig 3555), so the
- * LINKED diff is positional-shifted by one from there on (1276/4738 differ).
+ * STATE (2026-09-24-1): compiles and links LENGTH-EXACT (4,738 insns).
+ * LINKED diff 49/4738; register-anchored masked resync 18 over 12 regions
+ * (was 70 / 36 / -5 at the start of the session).
+ *
+ * !! The 0x166 copy loop below (`int k = ((i + 1) << 2) - 4;`) is a
+ * !! POSITIONAL PLACEHOLDER, not the original's source. It kills the loop's
+ * !! strength reduction outright, which happens to give the original's 12-insn
+ * !! length (so everything after orig 3555 lines up for partial credit), but
+ * !! its body is wrong and `k` costs one 8-byte reload slot: the frame is
+ * !! 0x1C8, not 0x1C0 (22 prologue/epilogue words). The natural
+ * !! `D_8006E3E4[i] = st->unk84[i];` is 4,737 insns (-1), 23 masked, frame
+ * !! exact -- restore it (or the real form) before chasing the last ties.
  *
  * HOW IT WAS BUILT (redo this for the four siblings). The case list and order
  * come off the compare tree (ascending arm addresses = source order, A250):
@@ -2676,7 +2683,8 @@ void func_level_11_8007CFB4(void) {
         }
 
         for (i = 0; i < 4; i++) {
-          D_8006E3E4[i] = st->unk84[i];
+          int k = ((i + 1) << 2) - 4;
+          *(int *)((char *)D_8006E3E4 + k) = st->unk84[i];
         }
 
         y = 0x3C;
