@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,881 vs 5,900 insns (-19). Linked-at-VMA shape diff
+ * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 749 imm-kept / 692 masked
+ * sides, difflib on mnemonics+registers): 705 imm-kept / 648 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -2988,10 +2988,10 @@ void func_level_30_8007D938(void) {
               D_80078C70 = 6;
               D_80078C60 = D_80078B64 >> 8;
               D_80078C64 = D_80078B68 >> 8;
-              if (D_80078B6C <= 0) {
-                D_80078C68 = D_80078B6C >> 6;
-              } else {
+              if (D_80078B6C > 0) {
                 D_80078C68 = 0;
+              } else {
+                D_80078C68 = D_80078B6C >> 6;
               }
             } else {
               int *look = &D_80078C60;
@@ -3340,19 +3340,14 @@ void func_level_30_8007D938(void) {
         height = actor->posZ - actor->unk38;
         drop = height - SPY.posZ;
 
-        if (drop > 0) {
-          if (drop >= 0x200) {
-            continue;
-          }
-        } else if (SPY.posZ - height >= 0x200) {
-          break;
+        if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+          func_80059474(actor, actor->unk46);
+          actor->unk48 = 2;
+          actor->unk3C = 1;
+          actor->unk49 = 0;
+          continue;
         }
-
-        func_80059474(actor, actor->unk46);
-        actor->unk48 = 2;
-        actor->unk3C = 1;
-        actor->unk49 = 0;
-        continue;
+        break;
       }
 
       case 2: {
@@ -3544,14 +3539,16 @@ void func_level_30_8007D938(void) {
       if (st->parent->type == 9) {
         if (func_80017990(&st->parent->posX, &spy->posX) < 0x400) {
           unsigned char was = actor->unk49;
+          int prev = D_8006CC78[was];
           unsigned char now = was + 8;
 
           actor->unk49 = now;
-          actor->unk46 +=
-              ((D_8006CC78[now] * 3) >> 9) - ((D_8006CC78[was] * 3) >> 9);
+          actor->unk46 =
+              actor->unk46 - ((prev * 3) >> 9) + ((D_8006CC78[now] * 3) >> 9);
         } else {
           int bearing;
           int arm;
+          int idx;
           short *swing;
 
           actor->unk49 += 8;
@@ -3572,9 +3569,10 @@ void func_level_30_8007D938(void) {
           svQ[0] = svN[0] * D_8006CC78[arm * 2];
           svQ[2] = 0;
           svQ[1] = svN[1] * D_8006CC78[arm * 2];
+          idx = ((arm * 2) - (st->phase * 4)) & 0xFF;
           func_800177C0(svO, svO, st->phase);
           func_8001778C(svP, svP, svO);
-          swing = &D_8006CC78[((arm * 2) - (st->phase * 4)) & 0xFF];
+          swing = &D_8006CC78[idx];
           actor->posX = svN[0] * *swing;
           actor->posZ = 0;
           actor->posY = svN[1] * *swing;
@@ -3583,7 +3581,7 @@ void func_level_30_8007D938(void) {
           func_80017758(&actor->posX, &actor->posX, svN);
           func_80017758(&actor->posX, &actor->posX, &st->parent->posX);
           func_8001778C(&actor->posX, &actor->posX, svP);
-        actor->posZ += ((*swing * 3) >> 3) + 0x600;
+          actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }
       } else {
         unsigned char now = actor->unk49 + 8;
