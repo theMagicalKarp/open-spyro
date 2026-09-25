@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,867 vs 5,900 insns (-33). Linked-at-VMA shape diff
+ * STATE: compiles; 5,877 vs 5,900 insns (-23). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 1,106 imm-kept / 1,044 masked
+ * sides, difflib on mnemonics+registers): 1,023 imm-kept / 969 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1892,8 +1892,8 @@ void func_level_30_8007D938(void) {
           }
 
           if (svG[2] < 0) {
-            if ((unsigned short)actor->type - 14 >= 2) {
-              goto enemy_pop;
+            if (actor->type != 14 && actor->type != 15) {
+              func_8003B9D4(actor);
             }
             func_80052568(actor);
             continue;
@@ -1903,8 +1903,8 @@ void func_level_30_8007D938(void) {
 
           if (func_8004BE4C(svG, 0xF0, 0xF0) != 0) {
             if (func_80057380(at) == 0) {
-              if ((unsigned short)actor->type - 14 >= 2) {
-                goto enemy_pop;
+              if (actor->type != 14 && actor->type != 15) {
+                func_8003B9D4(actor);
               }
               func_80052568(actor);
               continue;
@@ -2026,18 +2026,18 @@ void func_level_30_8007D938(void) {
           if (actor->unk49 < 3) {
             if (actor->type == 14) {
               actor->unk44 =
-                  ((short)D_8006CC78[st->spin] << 16 >> 25) + st->lean;
+                  ((unsigned short)D_8006CC78[st->spin] << 16 >> 25) + st->lean;
               actor->unk45 =
-                  ((short)D_8006CBF8[st->spin] << 16 >> 25) + st->roll;
+                  ((unsigned short)D_8006CBF8[st->spin] << 16 >> 25) + st->roll;
               st->spin += D_800756CC * 2;
             } else if (actor->type == 15) {
               actor->unk46 += 8;
               actor->unk45 -= 6;
             } else {
               actor->unk44 =
-                  ((short)D_8006CC78[st->spin] << 16 >> 23) + st->lean;
+                  ((unsigned short)D_8006CC78[st->spin] << 16 >> 23) + st->lean;
               actor->unk45 =
-                  ((short)D_8006CBF8[st->spin] << 16 >> 23) + st->roll;
+                  ((unsigned short)D_8006CBF8[st->spin] << 16 >> 23) + st->roll;
               st->spin += D_800756CC * 2;
             }
           }
@@ -2071,7 +2071,7 @@ void func_level_30_8007D938(void) {
               D_800758E8 += 1;
               func_80052568(actor);
             } else {
-            enemy_pop:
+
               func_8003B9D4(actor);
               func_80052568(actor);
               continue;
@@ -2342,11 +2342,11 @@ void func_level_30_8007D938(void) {
             func_80017700(svA, &st->gnorc->posX);
 
             if (high == 0) {
-              svA[0] -= (short)D_8006CC78[st->gnorc->unk46] << 16 >> 20;
-              svA[1] -= (short)D_8006CBF8[st->gnorc->unk46] << 16 >> 20;
+              svA[0] -= (unsigned short)D_8006CC78[st->gnorc->unk46] << 16 >> 20;
+              svA[1] -= (unsigned short)D_8006CBF8[st->gnorc->unk46] << 16 >> 20;
             } else {
-              svA[0] -= (short)D_8006CC78[st->gnorc->unk46] << 16 >> 22;
-              svA[1] -= (short)D_8006CBF8[st->gnorc->unk46] << 16 >> 22;
+              svA[0] -= (unsigned short)D_8006CC78[st->gnorc->unk46] << 16 >> 22;
+              svA[1] -= (unsigned short)D_8006CBF8[st->gnorc->unk46] << 16 >> 22;
 
               if (actor->unk3F >= 7) {
                 actor->unk49 += 1;
@@ -3431,17 +3431,21 @@ void func_level_30_8007D938(void) {
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
           func_800342F8();
           D_80075910 = D_800758FC;
-          D_80076EA8 = st->preset < 0 ? 0 : &D_8006CA24[st->preset];
+          if (st->preset >= 0) {
+            D_80076EA8 = &D_8006CA24[st->preset];
+          } else {
+            D_80076EA8 = 0;
+          }
         } else {
-          D_80078C4C |= 0x400;
+          SPY.controlFlags |= 0x400;
         }
         break;
       }
 
       case 2:
-        D_80078C4C = 0x80006100;
+        SPY.controlFlags = 0x80006100;
         D_80078C9C = 0x60;
-        SPY.u218 = 0xF;
+        D_80078C70 = 0xF;
         D_80078A7F = 0x7F;
         D_80078C98 = st->portal;
 
@@ -3465,9 +3469,13 @@ void func_level_30_8007D938(void) {
           func_80017758(&CAM.posX, &CAM.posX, &SPY.posX);
           func_800342F8();
           D_80075910 = D_800758FC;
-          D_80076EA8 = st->preset < 0 ? 0 : &D_8006CA24[st->preset];
+          if (st->preset >= 0) {
+            D_80076EA8 = &D_8006CA24[st->preset];
+          } else {
+            D_80076EA8 = 0;
+          }
         } else {
-          D_80078C4C |= 0x400;
+          SPY.controlFlags |= 0x400;
         }
         break;
       }
@@ -3483,10 +3491,9 @@ void func_level_30_8007D938(void) {
         st->restZ = actor->posZ;
         actor->unk48 = 1;
       } else {
-        int z = st->restZ + ((short)D_8006CBF8[actor->unk49] << 16 >> 20);
-
+        actor->posZ =
+            st->restZ + ((unsigned short)D_8006CBF8[actor->unk49] << 16 >> 20);
         actor->unk49 += D_800756CC;
-        actor->posZ = z;
       }
 
       break;
