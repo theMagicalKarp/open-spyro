@@ -2,7 +2,7 @@
  *
  * STATE: compiles; 5,899 vs 5,900 insns (-1). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 195 imm-kept / 186 masked
+ * sides, difflib on mnemonics+registers): 166 imm-kept / 157 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1199,6 +1199,7 @@ void func_level_30_8007D938(void) {
   int one;
   int two;
   char *base;
+  int dt;
   int type;
 
   /* Scratch vectors shared by several cases. */
@@ -1245,7 +1246,8 @@ void func_level_30_8007D938(void) {
 
     D_80075794 = actor->unk42 & 2;
     D_800757F4 = actor->unk42 & 1;
-    D_800756C4 = D_800756CC;
+    dt = D_800756CC;
+    D_800756C4 = dt;
 
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
@@ -1564,7 +1566,7 @@ void func_level_30_8007D938(void) {
     /* Vortex pad (VortexState): spins Spyro up and out of the level. */
     case 34: {
       VortexState *st = actor->state;
-      int phase = actor->unk48;
+      unsigned int phase = actor->unk48;
 
       if (phase != 0 && phase < 5) {
         D_80078C4C = 0x80002000;
@@ -1574,7 +1576,7 @@ void func_level_30_8007D938(void) {
       }
 
       if ((unsigned int)(actor->unk48 - 2) < 3) {
-        func_8003C85C(&actor->posX, D_800756CC);
+        func_8003C85C(&actor->posX, dt);
         D_800758E4(1, 0xC, actor, (int *)0x602080);
       }
 
@@ -1591,9 +1593,6 @@ void func_level_30_8007D938(void) {
         actor->unk44 = 0;
         actor->unk45 = 8;
         actor->unk48 += 1;
-        if (D_80077378 & 0x40) {
-          actor->unk48 = 5;
-        }
         break;
 
       case 2: {
@@ -1611,8 +1610,8 @@ void func_level_30_8007D938(void) {
               (func_80016CB0(st->angle * 0x10) * (short)st->radius) >> 12;
           actor->posY +=
               (func_80016C58(st->angle * 0x10) * (short)st->radius) >> 12;
-          actor->unk46 += D_800756CC * 4;
           actor->posZ -= st->phase * 8;
+          actor->unk46 += D_800756CC * 4;
         } else {
           func_80017700(svA, &spy->posX);
           svA[0] += (int)((func_80016CB0(D_80078A66 * 0x10) * 0xB5) +
@@ -1680,8 +1679,8 @@ void func_level_30_8007D938(void) {
               (func_80016CB0(st->angle * 0x10) * (short)st->radius) >> 12;
           actor->posY +=
               (func_80016C58(st->angle * 0x10) * (short)st->radius) >> 12;
-          actor->unk46 += D_800756CC * 4;
           actor->posZ -= st->phase * 4;
+          actor->unk46 += D_800756CC * 4;
         } else {
           actor->unk48 += 1;
         }
