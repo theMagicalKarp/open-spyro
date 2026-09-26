@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,899 vs 5,900 insns (-1). Linked-at-VMA shape diff
+ * STATE: compiles; 5,898 vs 5,900 insns (-2). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 166 imm-kept / 157 masked
+ * sides, difflib on mnemonics+registers): 156 imm-kept / 147 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1654,8 +1654,8 @@ void func_level_30_8007D938(void) {
           svD[2] += 0x300;
           func_80017BFC(st->centre, svD);
           st->radius = 0x200;
-          st->phase = 0;
           st->angle = D_80078A66 - 0x40;
+          st->phase = 0;
           actor->unk48 += 1;
         }
         if (D_80077378 & 0x40) {
@@ -1713,15 +1713,7 @@ void func_level_30_8007D938(void) {
     case 256: {
       ShardState *st = actor->state;
 
-      if (st->life <= 0) {
-        if (actor->unk51 != 0) {
-          D_800758E4(8, 0x46, &actor->posX, (int *)0x10);
-        }
-        func_80052568(actor);
-        continue;
-      }
-
-      if (actor->unk51 == 0) {
+      if (st->life <= 0 || actor->unk51 == 0) {
         D_800758E4(8, 0x46, &actor->posX, (int *)0x10);
         func_80052568(actor);
         continue;
@@ -1802,12 +1794,11 @@ void func_level_30_8007D938(void) {
     case 87: {
       EnemyState *st = actor->state;
       int toSpyro;
-      unsigned char timer = st->timer;
 
       toSpyro = func_80017990(&actor->posX, &SPY.posX);
 
-      if (timer < 0xFA) {
-        st->timer = timer + D_800756CC;
+      if (st->timer < 0xFA) {
+        st->timer += D_800756CC;
       }
 
       if (actor->type != 15) {
@@ -1890,8 +1881,8 @@ void func_level_30_8007D938(void) {
             svF[2] += 0x400;
             func_800529E4(actor, 2);
             if (func_8004D5EC(svF, 0x1000) > 0) {
-              st->mode = 2;
               st->node = D_80075808;
+              st->mode = 2;
             }
           }
 
