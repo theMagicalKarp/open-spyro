@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,897 vs 5,900 insns (-3). Linked-at-VMA shape diff
+ * STATE: compiles; 5,899 vs 5,900 insns (-1). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 220 imm-kept / 205 masked
+ * sides, difflib on mnemonics+registers): 195 imm-kept / 186 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -3491,7 +3491,7 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60 += D_80078B74;
+          D_80076E60 = D_80078B74 + D_80076E60;
           *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
           D_80078B74 += D_80075858;
           D_80078A66 = D_80078B74 >> 4;
@@ -3529,7 +3529,7 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60 += D_80078B74;
+          D_80076E60 = D_80078B74 + D_80076E60;
           *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
           D_80078B74 += D_80075858;
           D_80078A66 = D_80078B74 >> 4;
@@ -3625,8 +3625,8 @@ void func_level_30_8007D938(void) {
           svN[0] = (D_8006CC78[bearing] * 3) >> 4;
           svN[1] = (D_8006CBF8[bearing] * 3) >> 4;
           svN[2] = 0;
-          svO[0] = D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[1] = D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[0] = (unsigned short)D_8006CC78[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          svO[1] = (unsigned short)D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
           svO[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->unk46 = bearing + ((D_8006CC78[actor->unk49] * 3) >> 9);
@@ -3635,15 +3635,15 @@ void func_level_30_8007D938(void) {
           arm = st->radius - 1;
           svP[2] += (D_8006CC78[arm * 2] * 3) >> 3;
           svQ[0] = svN[0] * D_8006CC78[arm * 2];
-          svQ[2] = 0;
           svQ[1] = svN[1] * D_8006CC78[arm * 2];
-          idx = ((arm * 2) - (st->phase * 4)) & 0xFF;
+          svQ[2] = 0;
+          bearing = ((arm * 2) - (st->phase * 4)) & 0xFF;
           func_800177C0(svO, svO, st->phase);
           func_8001778C(svP, svP, svO);
-          swing = &D_8006CC78[idx];
+          swing = &D_8006CC78[bearing];
           actor->posX = svN[0] * *swing;
-          actor->posZ = 0;
           actor->posY = svN[1] * *swing;
+          actor->posZ = 0;
           func_8001778C(&actor->posX, &actor->posX, svQ);
           func_800176C8(&actor->posX, 0xA);
           func_80017758(&actor->posX, &actor->posX, svN);
