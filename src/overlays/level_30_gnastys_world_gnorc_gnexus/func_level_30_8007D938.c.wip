@@ -43,17 +43,47 @@
  *     holds one SPY-relative base (s0/s1) and derives &SPY.posX from it;
  *     func_8001778C's third arg there is &SPY.posX, not &CAM.posX; ExitState
  *     has a word at 0x10 (dest 0x14, preset 0x18).
+ *   - Branch shapes the original uses throughout (each was a measured win):
+ *     a two-way value feeding one call/store is TWO calls/stores in an
+ *     if/else, cross-jumped by jump.c (not a ?: argument or a temp local);
+ *     range tests on `drop` are `drop > 0 ? drop < N : SPY.posZ - h < N`
+ *     (the && / || form folds to an unsigned range check); fail blocks sit
+ *     BEFORE the body (`if (bad) { unk48 = 6; break; }`); shared tails are
+ *     written inline at every site and left to cross-jumping (a goto label
+ *     starts a new cse ebb and re-loads what the fall-through site kept);
+ *     `x == 14 || x == 15` gives the original's lhu/sltiu range test; the
+ *     inner mode dispatch of the 14/15 arm is an if/else chain; the unk49
+ *     switch has a `case 4: continue;` (5-entry jump table).
+ *   - Types/fields: EnemyState lean/roll tested as `lean != 0 || roll != 0`
+ *     (fold_truthop's word test at 0x10); ShardState spin is short[3];
+ *     WanderState's timers are unk14/reTurn/reStep in that call order; the
+ *     vortex `turn` is int; AnimNode is indexed [attach], not [attach * 6];
+ *     `(unsigned short)tbl[i] << 16 >> N` for the lhu+shift table reads.
+ *   - Allocation levers that worked: the follower arm reuses `parent` as its
+ *     scan variable (gives s0 the original's refs); no `near` local in the
+ *     enemy arm (it lived across calls in s2 and made toSpyro outrank `one`);
+ *     `int lim = 0x136; if (lim < dist)` keeps 310 in a register.
+ *   - The gem-spawn tint loop is `for (i...) f(..., 0x8080 + (i << 24))`: the
+ *     in-loop `lui; addu` is loop.c's strength-reduced giv increment, which
+ *     is created after the movable pass and so is never hoisted.
  *   - fold()'s (A*C)+(B*C) -> (A+B)*C factoring: the vortex arm's 0xB5
  *     products are NOT factored in the original. operand_equal_p refuses
  *     constants of different signedness, so one side is written `* 0xB5U`
  *     under an (int) cast -- same bits, two separate 181-products.
  *
- * OPEN: `one` sits in s6 and `toSpyro` (14/15/83..87 arm, pseudo 868) in s5;
- * the original is the reverse. toSpyro outranks `one` in allocno order either
- * way, so this is find_reg's pass 0 (reuse an already-used hard reg before a
- * fresh one), i.e. what was allocated before toSpyro, not a priority tie.
- * Remaining census (orig/ours): s1 296/220, s0 385/422, s2 159/188,
- * t2..t4 0/16, a3 105/83.
+ * OPEN (2026-09-25 end state, 389 imm-kept over ~200 small regions):
+ *   - "unk46 += ... scheduled late": at three sites the original keeps the
+ *     actor->unk46 read-modify-write BELOW the preceding posX/posY store;
+ *     ours hoists it into the mult latency. Not fixed by `x = x + y`, a
+ *     volatile cast, or the AS_PTRU8 view -- cause unknown.
+ *   - The `&SPY.u164` address group: the original hoists it (preheader
+ *     `la t1, D_80078BBC`) and leaves it unallocated, so every SPY.u164 access
+ *     is absolute and case 16's `&SPY.posX` arg is `addiu a1,t1,-356`. Ours
+ *     does not hoist it (2 sets, savings 2 -- A259 threshold); the `base`
+ *     emulation covers the preheader only.
+ *   - s0/s1 ties: case 398 head (svM vs SPY base), the 310/311 shard arm
+ *     (orig allocates i/push into s0 ahead of st), reward/unk18 compare regs.
+ *   - E60 `+=` load order (v0/v1), a few sched2 store placements.
  *
  * WHAT IS ALREADY SETTLED (do not re-derive):
  *   - The full case list, recovered from the asm compare tree at 0x8007DA1C
@@ -73,7 +103,7 @@
  *     emitted in SOURCE order, so each has a determinable position that is
  *     readable straight off the branch targets. Sites closed so far:
  *       * 14/15/83..87 arm -- block order is case 0, case 1, case 2,
- *         `enemy_grab` (a standalone labelled block reached by `j .L8007F7A8`
+ *         `enemy_grab` (SUPERSEDED 2026-09-25: inline at both sites, cross-jumped; reached by `j .L8007F7A8`
  *         from case 1), case 3, `default:/enemy_pose` (the LAST block).
  *       * case 310/311 -- the `st->life <= 0` early exit is the LAST block of
  *         the arm: `if (st->life > 0) { ...body...; break; }` with the tail

@@ -4642,6 +4642,6 @@ func_level_30_8007D938_2026_09_24:
   note: "Applied the level_11 lever: -42 -> -39 insns, 4,678 -> 4,683 aligned (79.5%)."
 func_level_30_8007D938_2026_09_25:
   verdict: parked
-  class: "frame + const carriers CLOSED; s5/s6 find_reg pass-0 reuse (one vs toSpyro) + s0/s1/s2 map remain"
+  class: "structure ~closed; residue = unk46 RMW sched order, unhoisted &SPY.u164 group (A259), s0/s1 allocation ties"
   date: 2026-09-25
-  note: "Frame 336 -> 424 (15 arrays + acc[3][3], orig order), one/two loop-top carriers ahead of spy, st->parent reload. Imm-kept shape mismatches 1,893 -> 1,677; -48 insns."
+  note: "Linked shape diff 1,893 -> 389 imm-kept (-48 -> -7 insns): frame, const carriers, cross-jump branch shapes, struct fields, one-arg orbit call, movstr constant addresses. See .c.wip header OPEN list."
