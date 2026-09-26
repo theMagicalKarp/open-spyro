@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,893 vs 5,900 insns (-7). Linked-at-VMA shape diff
+ * STATE: compiles; 5,896 vs 5,900 insns (-4). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 389 imm-kept / 356 masked
+ * sides, difflib on mnemonics+registers): 346 imm-kept / 316 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1198,6 +1198,7 @@ void func_level_30_8007D938(void) {
   int one;
   int two;
   char *base;
+  int type;
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -1242,8 +1243,8 @@ void func_level_30_8007D938(void) {
     }
 
     D_80075794 = actor->unk42 & 2;
-    D_800756C4 = D_800756CC;
     D_800757F4 = actor->unk42 & 1;
+    D_800756C4 = D_800756CC;
 
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
@@ -1317,8 +1318,8 @@ void func_level_30_8007D938(void) {
           func_800526A8(actor);
 
           actor->unk51 = 1;
+          self = actor - D_80075828;
           parent = D_80075828;
-          self = -(actor - parent);
 
           for (; parent < D_80075890; parent++) {
             if (parent != actor && parent->unk48 < 0x80 &&
@@ -1365,7 +1366,7 @@ void func_level_30_8007D938(void) {
               func_8003ABC0(actor, 1, 0, 0);
             }
             func_8003B7C0(actor);
-            st->count <<= 7;
+            *(volatile int *)&st->count <<= 7;
             D_800761DC = 2;
             D_800761F4.v =
                 *(unsigned short *)(D_800761D0 + D_800761D4[0x37] * 20 + 0xA) +
@@ -1375,14 +1376,12 @@ void func_level_30_8007D938(void) {
             continue;
           }
         } else if (actor->unk49 != 0 || parent->unk48 >= 0x80) {
-          Actor *scan;
-
           st->release = 9;
           st->count = 1;
 
-          for (scan = D_80075828; scan < actor; scan++) {
-            if (scan->unk48 < 0x80 && scan->type == 13 &&
-                *(int *)scan->state == st->parent) {
+          for (parent = D_80075828; parent < actor; parent++) {
+            if (parent->unk48 < 0x80 && parent->type == 13 &&
+                *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
             }
@@ -1449,6 +1448,8 @@ void func_level_30_8007D938(void) {
             int moved;
             int blocked;
             int step;
+            int z;
+            unsigned int spd;
             int *at;
 
             if (func_80037F90(&st->reTurn, 1) != 0) {
@@ -1466,11 +1467,15 @@ void func_level_30_8007D938(void) {
               st->reStep = func_80037EA0(0x50, 0x8C);
             }
 
-            if (st->speed >= 0x80) {
-              actor->posZ = actor->posZ - 0x100 + st->speed;
+            spd = st->speed;
+            if (spd >= 0x80) {
+              z = actor->posZ - 0x100;
             } else {
-              actor->posZ = actor->posZ + st->speed;
+              z = actor->posZ;
             }
+            actor->posZ = z + spd;
+            do {
+            } while (0);
             step = actor->posZ - func_80038340(actor);
 
             if (step < 0x12C) {
@@ -1485,7 +1490,6 @@ void func_level_30_8007D938(void) {
 
             moved = func_80038EE0(actor, st->heading, 4, 0xA, 1);
             blocked = func_80039398(actor, 0x1E, 0, 0x32, 1);
-            at = &actor->posX;
 
             if (moved != 0) {
               if (blocked != 0) {
@@ -1493,10 +1497,9 @@ void func_level_30_8007D938(void) {
                     func_80038074(st->heading, func_80037EA0(0x62, 0x9E));
                 st->reTurn = func_80037EA0(0x1E, 0x50);
               }
-              at = &actor->posX;
             }
 
-            if (func_80017990(at, st->home) >= 0x7D1) {
+            if (func_80017990(&actor->posX, st->home) >= 0x7D1) {
               st->heading = func_80016AB4(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, 0);
               st->reTurn = 0x28;
@@ -1526,12 +1529,18 @@ void func_level_30_8007D938(void) {
 
           {
             int step;
+            int z;
+            unsigned int spd;
 
-            if (st->speed >= 0x80) {
-              actor->posZ = actor->posZ - 0x100 + st->speed;
+            spd = st->speed;
+            if (spd >= 0x80) {
+              z = actor->posZ - 0x100;
             } else {
-              actor->posZ = actor->posZ + st->speed;
+              z = actor->posZ;
             }
+            actor->posZ = z + spd;
+            do {
+            } while (0);
             step = actor->posZ - func_80038340(actor);
 
             if (step < 0xC8) {
@@ -1962,7 +1971,7 @@ void func_level_30_8007D938(void) {
 
             if (st->bounce == 0) {
               int floor = func_8004D5EC(svG, 0x400);
-              int slope = func_800169AC(svH[2], func_800171FC(svH, 0));
+              signed char slope = func_800169AC(svH[2], func_800171FC(svH, 0));
 
               if ((svG[2] - 0x190) < floor && slope < 0x18) {
                 actor->unk49 = 1;
@@ -2059,9 +2068,13 @@ void func_level_30_8007D938(void) {
             }
           }
 
-          actor->unk44 += st->lean - 7;
-          actor->unk45 += st->roll - 7;
-          actor->unk46 += st->spin - 7;
+          actor->unk44 += (unsigned char)(st->lean - 7);
+          do {
+          } while (0);
+          actor->unk45 += (unsigned char)(st->roll - 7);
+          do {
+          } while (0);
+          actor->unk46 += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
         case 4:
@@ -3280,6 +3293,7 @@ void func_level_30_8007D938(void) {
     case 310:
     case 311: {
       ShardState *st = actor->state;
+      int i;
 
       if (st->life > 0) {
         if (actor->unk51 == 0) {
@@ -3290,15 +3304,14 @@ void func_level_30_8007D938(void) {
         if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
           int *nrm = &D_80077368;
           int along;
-          int push;
 
           func_80017330(nrm, 0x1000);
           along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
                   (st->vel[2] * D_80077370);
-          push = along >> 11;
+          i = along >> 11;
 
-          if (push < 0) {
-            func_800175B8(nrm, 0x1000, (along >> 13) - push);
+          if (i < 0) {
+            func_800175B8(nrm, 0x1000, (along >> 13) - i);
             st->vel[0] += nrm[0];
             st->vel[1] += AS_I32(D_8007736C);
             st->vel[2] += AS_I32(D_80077370);
@@ -3313,9 +3326,8 @@ void func_level_30_8007D938(void) {
         }
         actor->posZ += st->vel[2];
         actor->unk44 += st->spin[0];
+        i = 0;
         {
-          int i = 0;
-
           actor->unk45 += st->spin[1];
           actor->unk46 += st->spin[2];
 
