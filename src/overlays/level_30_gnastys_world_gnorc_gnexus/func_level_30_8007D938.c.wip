@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,896 vs 5,900 insns (-4). Linked-at-VMA shape diff
+ * STATE: compiles; 5,903 vs 5,900 insns (3). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 346 imm-kept / 316 masked
+ * sides, difflib on mnemonics+registers): 272 imm-kept / 247 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1163,6 +1163,7 @@ extern int D_80078B68;
 extern int D_80078B6C;
 extern int D_80078B70;
 extern int D_80078B74; /* camera yaw accumulator */
+extern int D_80078A5C;
 extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
 extern int D_80078BBC; /* balloon sequence stage (== SPY.u164) */
 extern int D_80078BFC;
@@ -2244,6 +2245,8 @@ void func_level_30_8007D938(void) {
                                       spy->posY - rider->posY, 0);
           int aim = (bearing + (func_8006272C() & 0xF)) - 8;
 
+          do {
+          } while (0);
           func_80017700(st->from, &rider->posX);
           aim = (aim & 0xFF) * 0x10;
           actor->unk48 = 5;
@@ -2294,8 +2297,8 @@ void func_level_30_8007D938(void) {
         wSpan = w0 - func_80016CB0(st->step << 7);
         wDen = func_80016CB0((st->step - 1) << 7) + 0x1000;
         actor->posX += (svF[0] * wSpan) / wDen;
-        actor->unk46 += (turn * wSpan) / wDen;
         actor->posY += (svF[1] * wSpan) / wDen;
+        actor->unk46 += (turn * wSpan) / wDen;
         func_8004D5EC(here, 0x1000);
         func_800533D0(actor);
 
@@ -2406,7 +2409,9 @@ void func_level_30_8007D938(void) {
             } else {
               svA[0] -= (unsigned short)D_8006CC78[st->gnorc->unk46] << 16 >> 22;
               svA[1] -= (unsigned short)D_8006CBF8[st->gnorc->unk46] << 16 >> 22;
+            }
 
+            if (high != 0) {
               if (actor->unk3F >= 7) {
                 actor->unk49 += 1;
               }
@@ -2434,7 +2439,7 @@ void func_level_30_8007D938(void) {
                 (func_80037F90((void *)st, 4) != 0 ||
                  (st->timer < 0x50 &&
                   func_80017908((actor->unk46 + (ge->vel[0] * 0x6E)) & 0xFF,
-                                (((short)D_80076E20 << 16 >> 20) + 0x80) &
+                                (((unsigned short)D_80076E20 << 16 >> 20) + 0x80) &
                                     0xFF) < 8))) {
               if (actor->unk3D != actor->unk3D + 1) {
                 D_80075794 = 0;
@@ -2498,6 +2503,8 @@ void func_level_30_8007D938(void) {
                 D_800758E4(1, 0xC, actor, D_8006E330[st->gnorc->type]);
               }
               st->gnorc = 0;
+              do {
+              } while (0);
 
               if (func_80056DC4(actor, D_800761D4[0x2F]) == 0) {
                 D_800761DC = 1;
@@ -2530,6 +2537,8 @@ void func_level_30_8007D938(void) {
             svF[1] = (func_8006272C() & 0x310) - 0x188;
             svF[2] = D_80076E28 == 3 ? (func_8006272C() & 0x7F) + 0x64
                                      : (func_8006272C() & 0x1FF) - 0xC8;
+            do {
+            } while (0);
             st->drift[0] = svF[0];
             st->drift[1] = svF[1];
             st->drift[2] = svF[2];
@@ -2538,12 +2547,14 @@ void func_level_30_8007D938(void) {
             int *at;
 
             st->timer -= D_800756CC;
+            do {
+            } while (0);
 
             if (D_80076E28 == 3) {
               svF[0] = st->drift[0] + (D_80078B70 >> 2);
               svF[1] = st->drift[1];
               svF[2] = st->drift[2];
-              if (st->drift[2] < 0x64) {
+              if (svF[2] < 0x64) {
                 svF[2] = 0x64;
               }
             } else {
@@ -2576,7 +2587,7 @@ void func_level_30_8007D938(void) {
 
             actor->unk44 = 0;
             actor->unk45 = svF[2];
-            func_80038EE0(actor, spy->bodyRotZ, 4, 0, 0);
+            func_80038EE0(actor, D_80078A66, 4, 0, 0);
           }
 
           switch (SPY.u164) {
@@ -2681,16 +2692,16 @@ void func_level_30_8007D938(void) {
       if (((unsigned int)D_80078AD0 < 2 || D_80078AD0 == 0x15 ||
            D_80078AD0 == 2 || D_80078AD0 == 0xB) &&
           func_80017990(&actor->posX, &spy->posX) < 0x780 &&
-          func_80017908(spy->bodyRotZ,
+          func_80017908(D_80078A66,
                         func_80016AB4(actor->posX - spy->posX,
                                       actor->posY - SPY.posY, 0)) < 0x20 &&
           func_80017908(actor->unk46,
                         func_80016AB4(spy->posX - actor->posX,
-                                      SPY.posY - actor->posY, 0)) < 0x28) {
+                                      D_80078A5C - actor->posY, 0)) < 0x28) {
         actor->unk48 = 0;
         D_80078C4C = 0x80002000;
         func_8003DFA4();
-        func_800176F0(&SPY.headLook);
+        func_800176F0(&spy->headLook);
         D_800757A0(actor);
         D_800777F4 = 0x1E;
         D_800758D1 = two;
@@ -2745,7 +2756,7 @@ void func_level_30_8007D938(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->handle != 0) {
+      if (st->unk10 != 0) {
         func_80038458(actor);
       }
 
@@ -2769,7 +2780,8 @@ void func_level_30_8007D938(void) {
           if (dy < 0) {
             dy = -dy;
           }
-          actor->posZ = st->restZ + ((dx + dy) * 6);
+          dx += dy;
+          actor->posZ = st->restZ + dx * 6;
         } else {
           st->phase = 0;
           actor->unk44 = st->rotX;
@@ -2983,7 +2995,8 @@ void func_level_30_8007D938(void) {
           if (dy < 0) {
             dy = -dy;
           }
-          actor->posZ = st->restZ + ((dx + dy) * 6);
+          dx += dy;
+          actor->posZ = st->restZ + dx * 6;
           at = &actor->posX;
         } else if (st->phase >= 0xBC) {
           st->rotX = actor->unk44;
