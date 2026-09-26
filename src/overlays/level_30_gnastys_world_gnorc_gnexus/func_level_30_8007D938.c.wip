@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,891 vs 5,900 insns (-9). Linked-at-VMA shape diff
+ * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 406 imm-kept / 371 masked
+ * sides, difflib on mnemonics+registers): 398 imm-kept / 363 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1872,7 +1872,23 @@ void func_level_30_8007D938(void) {
 
             if (dz < 0x200 && D_80075898 != 0 && D_80078AF4 == 0 &&
                 func_80033E40(&D_80075898->posX, &actor->posX) != 0) {
-              goto enemy_grab;
+              {
+                BalloonState *bal = D_80075898->state;
+
+                if (bal->gnorc == 0) {
+                  if (func_80056DC4(D_80075898,
+                                    D_80076378[D_80075898->type]->m_Sounds[0]) ==
+                      0) {
+                    D_800761DC = 1;
+                    D_800761EA = 0x2000;
+                    D_800761E8 = 0x2000;
+                    func_8003851C(D_80075898, 0, 0);
+                  }
+                  D_80075898->unk49 = 4;
+                  bal->gnorc = actor;
+                }
+              }
+              goto enemy_pose;
             }
           }
           goto enemy_pose;
@@ -1977,29 +1993,29 @@ void func_level_30_8007D938(void) {
 
             if (dz < 0x200 && D_80075898 != 0 && D_80078AF4 == 0 &&
                 st->bounce < 3) {
-              goto enemy_grab;
+              {
+                BalloonState *bal = D_80075898->state;
+
+                if (bal->gnorc == 0) {
+                  if (func_80056DC4(D_80075898,
+                                    D_80076378[D_80075898->type]->m_Sounds[0]) ==
+                      0) {
+                    D_800761DC = 1;
+                    D_800761EA = 0x2000;
+                    D_800761E8 = 0x2000;
+                    func_8003851C(D_80075898, 0, 0);
+                  }
+                  D_80075898->unk49 = 4;
+                  bal->gnorc = actor;
+                }
+              }
+              goto enemy_pose;
             }
           }
           goto enemy_pose;
 
         }
 
-        enemy_grab: {
-          BalloonState *bal = D_80075898->state;
-
-          if (bal->gnorc == 0) {
-            if (func_80056DC4(D_80075898,
-                              D_80076378[D_80075898->type]->m_Sounds[0]) ==
-                0) {
-              D_800761DC = 1;
-              D_800761EA = 0x2000;
-              D_800761E8 = 0x2000;
-              func_8003851C(D_80075898, 0, 0);
-            }
-            D_80075898->unk49 = 4;
-            bal->gnorc = actor;
-          }
-        }
           goto enemy_pose;
 
         case 3:
