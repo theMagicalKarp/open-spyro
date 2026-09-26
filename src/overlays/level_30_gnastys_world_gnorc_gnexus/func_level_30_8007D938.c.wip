@@ -1,9 +1,62 @@
-/* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
+/* PARKED 2026-09-26 -- fifth pass on the level_30 actor-update megafunction.
  *
  * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
  * sides, difflib on mnemonics+registers): 107 imm-kept / 98 masked
- * mismatches, down from 1,893 / 1,631 at the start of the session.
+ * mismatches (8 of the kept are the harness's unrelocated jump-table
+ * `lui at,0x8011` loads, not real), down from 389 / 356 at the start of the
+ * 2026-09-26 session and 1,893 / 1,631 on 2026-09-25. LENGTH-EXACT, so
+ * `open-spyro diff` links it now. CAVEAT: the harness masks branch targets
+ * as T, so a wrong-TARGET jump is invisible to it -- the linked diff shows
+ * at least one (0x8007E25C: `j loop-continue` vs ours `j 0x8007E2EC`).
+ *
+ * CLOSED 2026-09-26 (do not re-derive):
+ *   - Decode errors: case 13's re-point index is `actor - D_80075828`
+ *     (positive, not negated); case 323 matches `scan->type == st->group`
+ *     (not unk43) and resets with ANIM_RESET(scan, 0); case 250's partner
+ *     test is `st->partner != -1`; case 195 tests `st->unk10`, not handle;
+ *     case 255/256 fails with `life <= 0 || unk51 == 0` straight into the
+ *     D_800758E4 call (no unk51 test on the life path); case 34 case 1 has
+ *     NO `D_80077378 & 0x40` escape; the gnorc aim uses `(unsigned short)`
+ *     D_80076E20 (lhu + <<16>>20) and the satellite arm's svO too.
+ *   - SOURCE ORDER is most of what was left: loop top stores D_80075794,
+ *     D_800757F4, D_800756C4; the rail arm's divides are posX, posY, unk46;
+ *     the vortex arms do `posZ -= phase*N` BEFORE `unk46 += dt*4` (that was
+ *     the whole "unk46 scheduled late" item); the lift arm's reset is
+ *     unk44, unk45, posZ, flags; the exit arm starts `D_80076E90` then
+ *     `unk48 = 0`; radius/angle/phase; node before mode.
+ *   - `do { } while (0);` as a pure scheduling barrier (loop notes stop
+ *     sched1/2): after the wander speed store, after the balloon
+ *     `gnorc = 0`, the drift `svF[2]` and `timer -=` stores, the enemy
+ *     rot adds, the rail aim. And at the TOP of
+ *     case 236 / case 16 (before `st = actor->state`) it stops cse2's
+ *     follow-jump from the dispatch tree seeing spy/base as constants.
+ *   - `(int *)(base - 0x164)` (not &spy->posX) at the case-16 and balloon
+ *     Spyro-distance calls: that is the orig's `lui t1;addiu t1;addiu a1,
+ *     t1,-356` (all 3 t1 sites now match).
+ *   - Shared variables: case 310's push IS the spark loop's `i`; case 426's
+ *     idx IS `bearing`; case 34 reads D_800756CC through a loop-top `dt`
+ *     that stays in a1 into the arm; the lift arm's `at` is set ONCE after
+ *     its if-chain and reused as func_8001778C's arg (s2).
+ *   - Camera blocks: `e = E60; yaw = B74; E60 = e + yaw; copy;
+ *     B74 = yaw + D_80075858;` (single B74 load, E60 first), and
+ *     D_80078A66 declared `volatile` so the store's read-back is a real
+ *     `lbu` (A240's volatile-scalar form).
+ *   - Types: `(unsigned char)(st->lean - 7)` for the knock-back rot adds
+ *     (249 immediates), `unsigned int phase` in case 34, `signed char
+ *     slope` in the enemy floor probe, `volatile int count` store pin,
+ *     D_80078A5C alias for the second SPY.posY read in case 192.
+ *
+ * OPEN (2026-09-26 end state, 107 imm-kept):
+ *   - Case 310/311 st (s1) vs i (s0): global.c priority st 44/107 = 2.06 vs
+ *     i 17/39 = 1.74 (post-merge with push). ~30 insns plus the case-255
+ *     tail cross-jump that follows from it. No source lever found yet.
+ *   - Case 398 head s0/s1 (svM vs &SPY.controlFlags) + its store order.
+ *   - Operand/result-register ties: `tick = phase + dt` load order (x3),
+ *     the 0xB5 sum (v1 vs a2), lean table adds (v0 vs v1, x3), enemy dz
+ *     (x2), case-255 push in a3.
+ *   - D_80078C68 = 0 after func_800175B8 is not cross-jumped into the
+ *     AF4 branch's copy; case 195's `flags = 0` delay slot.
  *
  * CLOSED 2026-09-25 (do not re-derive):
  *   - THE FRAME. The original has 15 distinct 16-byte scratch arrays plus an
@@ -71,7 +124,7 @@
  *     constants of different signedness, so one side is written `* 0xB5U`
  *     under an (int) cast -- same bits, two separate 181-products.
  *
- * OPEN (2026-09-25 end state, 389 imm-kept over ~200 small regions):
+ * OPEN (2026-09-25 end state; superseded by the 2026-09-26 lists above):
  *   - "unk46 += ... scheduled late": at three sites the original keeps the
  *     actor->unk46 read-modify-write BELOW the preceding posX/posY store;
  *     ours hoists it into the mult latency. Not fixed by `x = x + y`, a
