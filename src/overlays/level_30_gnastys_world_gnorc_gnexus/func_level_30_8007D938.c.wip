@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,903 vs 5,900 insns (3). Linked-at-VMA shape diff
+ * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 272 imm-kept / 247 masked
+ * sides, difflib on mnemonics+registers): 255 imm-kept / 230 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -2881,8 +2881,11 @@ void func_level_30_8007D938(void) {
 
     /* Charging gnorc (ChargeState): winds up when hit, dashes, recovers. */
     case 236: {
-      ChargeState *st = actor->state;
+      ChargeState *st;
 
+      do {
+      } while (0);
+      st = actor->state;
       if ((actor->flags & 0xB0000) && actor->unk48 != 1) {
         st->heading = func_80038178(
             func_80016AB4(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -2972,10 +2975,9 @@ void func_level_30_8007D938(void) {
           st->phase = 0;
           actor->unk44 = st->rotX;
           actor->unk45 = st->rotY;
-          actor->flags = 0;
           actor->posZ = st->restZ;
+          actor->flags = 0;
           func_800562A4(actor, 1);
-          at = &actor->posX;
         } else if (st->phase >= 0xC0) {
           int dx;
           int dy;
@@ -2997,31 +2999,24 @@ void func_level_30_8007D938(void) {
           }
           dx += dy;
           actor->posZ = st->restZ + dx * 6;
-          at = &actor->posX;
         } else if (st->phase >= 0xBC) {
           st->rotX = actor->unk44;
           st->rotY = actor->unk45;
           st->restZ = actor->posZ;
-          at = &actor->posX;
         } else if (actor->flags != 0) {
           st->phase = 0xBC;
           func_800562A4(actor, 1);
-          at = &actor->posX;
         } else if ((st->phase >> 1) == 0x10 && !(func_8006272C() & 3)) {
           func_8003AAEC(actor, &D_8006E57C);
-          at = &actor->posX;
         } else if ((st->phase >> 1) == 0x30 && !(func_8006272C() & 3)) {
           func_8003AAEC(actor, &D_8006E588);
-          at = &actor->posX;
         } else if ((st->phase >> 1) == 0x50 && !(func_8006272C() & 3)) {
           func_8003AAEC(actor, &D_8006E594);
-          at = &actor->posX;
-        } else {
-          at = &actor->posX;
         }
 
+        at = &actor->posX;
         if (func_80017990(at, &spy->posX) < 0x800) {
-          func_8001778C(svK, &actor->posX, &spy->posX);
+          func_8001778C(svK, at, &spy->posX);
           svK[2] = (svK[2] * 3) >> 2;
 
           if (func_800171FC(svK, 1) < 0x440) {
