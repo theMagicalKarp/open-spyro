@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
+ * STATE: compiles; 5,897 vs 5,900 insns (-3). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 255 imm-kept / 230 masked
+ * sides, difflib on mnemonics+registers): 220 imm-kept / 205 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -3043,7 +3043,7 @@ void func_level_30_8007D938(void) {
               D_800772D8[D_80075964] += 1;
               D_80075750 += 1;
 
-              if (st->partner != st->unk18) {
+              if (st->partner != -1) {
                 D_80075828[st->partner].unk48 = 1;
               }
               func_80052568(actor);
@@ -3372,19 +3372,14 @@ void func_level_30_8007D938(void) {
         st->timer = st->period;
 
         for (scan = D_80075828; scan < D_80075890; scan++) {
-          if (scan->unk43 == st->group && scan->unk48 >= 0x80 &&
+          if (scan->type == st->group && scan->unk48 >= 0x80 &&
               func_80017990(&SPY.posX, scan->state) >= 0x6001) {
             func_80017700(&scan->posX, scan->state);
             func_800526A8(scan);
             scan->flags = 0;
             scan->unk48 = 0;
-            scan->unk40 = 0;
             scan->unk3A &= 0x7F;
-            scan->unk3C = 0;
-            scan->unk3D = 0;
-            scan->unk3E = 0;
-            scan->unk3F = 1;
-            scan->unk41 = TYPE_DESC(scan, 0);
+            ANIM_RESET(scan, 0);
           }
         }
       }
