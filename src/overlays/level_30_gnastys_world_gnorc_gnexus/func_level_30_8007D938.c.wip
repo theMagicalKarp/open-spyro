@@ -2,7 +2,7 @@
  *
  * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 118 imm-kept / 109 masked
+ * sides, difflib on mnemonics+registers): 107 imm-kept / 98 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -3475,8 +3475,8 @@ void func_level_30_8007D938(void) {
 
         if (func_8004BE4C(&CAM.posX, 0x300, 0x300) != 0 &&
             (D_80075718 & 0x3F) < 0x3F && *D_800785B8[D_80075718] == 6) {
-          actor->unk48 = 0;
           D_80076E90 = 0x80000012;
+          actor->unk48 = 0;
           SPY.u218 = 0xF;
           D_80075864 = 0;
           D_800756B0 = 1;
@@ -3519,8 +3519,8 @@ void func_level_30_8007D938(void) {
 
         if (func_8004BE4C(&CAM.posX, 0x300, 0x300) != 0 &&
             (D_80075718 & 0x3F) < 0x3F && *D_800785B8[D_80075718] == 6) {
-          actor->unk48 = 0;
           D_80076E90 = 0x80000012;
+          actor->unk48 = 0;
           D_80075864 = 0;
           D_800756B0 = 1;
           D_800756AC = 0;
