@@ -1,26 +1,20 @@
-/* PARKED 2026-09-25 -- func_level_29_8007CFB4 (0x8007CFB4, 20,596 B), the
- * last sibling of the flight actor-update family (head func_level_11 and
- * siblings 17/5/23 are matched; see their headers).
+/* func_level_29_8007CFB4 (0x8007CFB4, 20,596 B) -- matching notes.
  *
- * STATE: compiles; 5,163 vs 5,149 insns (+14). Stack layout exact (svA..svF,
- * svY, acc, svG..svJ, svU, svW; svZ / vecE / trail block-local). Arms added
- * over level_5: 0xA3 (bobber), 0xE8 (its runner) and the head's 0x18D/0x18F
- * trigger; removed 0x11, 0x134, 0x161, 0x177.., 0x1E3.
- *
- * THE ONE RESIDUE (86 imm-kept mismatches, every one of them): register
- * allocation of the loop-hoisted constants. The original gives $fp to the
- * hoisted &D_80077368 group (dot arms and yaw sites all go through $fp,
- * including 4($fp)/8($fp) for D_8007736C/70 at the yaw sites) and
- * rematerialises the hoisted 255 as `li t0,255`. We give $fp to 255 (pseudo
- * 232: 42 weighted refs, priority 5*42) and spill the &D_80077368 group
- * (pseudo 576: 21 refs, 4*21). global.c allocno_compare is
- * floor_log2(refs)*refs/live_length and flow.c weights each ref by loop
- * depth, so the group needs >= 43 weighted refs, or 255 <= 20.
- * Tried: nrm in the dot arms (not movable: uses cross the `dot < 0` branch),
- * nrm[1]/nrm[2] at the yaw sites (cse folds the nonzero offsets to absolute
- * before loop.c), do/while(0) around the yaw math (refs 21 -> 25).
- * Open: find where the original's extra &D_80077368 references come from,
- * or why its 255 group weighs less.
+ * Sibling of func_level_11_8007CFB4 (the flight actor-update family head),
+ * templated from the matched level_5 copy. See the level_11 file for the
+ * load-bearing source forms shared by the whole family. Differences from
+ * level_5:
+ *   - new arms 0xA3 (bobber) and 0xE8 (its runner), plus the head's
+ *     0x18D/0x18F trigger; no 0x11, 0x134, 0x161, 0x177 or 0x1E3.
+ *   - $fp holds the hoisted &D_80077368 group, not the hoisted 255: global.c
+ *     ranks allocnos by floor_log2(refs) * refs / live_length, and the group
+ *     needs >= 43 loop-weighted refs to beat 255's 42. It gets them when every
+ *     vector read goes through a group pointer: the yaw sites read nrm[0..2]
+ *     after an empty do/while(0) (so cse cannot fold nrm[1]/nrm[2] into
+ *     absolute addresses), and each dot site uses one block-local nrm per
+ *     basic block (a user var is movable only if its set and uses share a
+ *     block). The second nrm sits behind another do/while(0) so cse does not
+ *     merge it into the first.
  */
 /* func_level_29_8007CFB4 -- per-frame actor update for level 11 (Night Flight).
  *
@@ -1581,13 +1575,23 @@ void func_level_29_8007CFB4(void) {
           
           int dot;
 
-          func_80017330(&D_80077368, 0x1000);
-          dot = st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
-                    st->vel[2] * D_80077370 >>
-                11;
+          {
+            int *nrm = &D_80077368;
+
+            func_80017330(nrm, 0x1000);
+            dot = st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
+                      st->vel[2] * D_80077370 >>
+                  11;
+          }
           if (dot < 0) {
-            func_800175B8(&D_80077368, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += D_80077368;
+            int *nrm;
+
+            do {
+            } while (0);
+            nrm = &D_80077368;
+
+            func_800175B8(nrm, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += nrm[0];
             st->vel[1] += AS_I32(D_8007736C);
             st->vel[2] += AS_I32(D_80077370);
           }
@@ -1755,10 +1759,12 @@ void func_level_29_8007CFB4(void) {
         func_80017700(svA, &actor->posX);
         svA[2] += 0x400;
         func_8004D5EC(svA, 0x10000);
+        do {
+        } while (0);
         st->pitch = -func_800169AC(
-            func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
-            D_8007736C);
-        st->yaw = -func_800169AC(D_80077370, nrm[0]);
+            func_80017A38((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
+            nrm[1]);
+        st->yaw = -func_800169AC(nrm[2], nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->unk46 = 0;
@@ -1776,10 +1782,12 @@ void func_level_29_8007CFB4(void) {
             if (actor->type >= 83) {
               int *nrm = &D_80077368;
 
+              do {
+              } while (0);
               st->pitch = -func_800169AC(
-                  func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
-                  D_8007736C);
-              st->yaw = -func_800169AC(D_80077370, nrm[0]);
+                  func_80017A38((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
+                  nrm[1]);
+              st->yaw = -func_800169AC(nrm[2], nrm[0]);
             }
 
           } else if (st->sub == 2) {
@@ -2505,15 +2513,25 @@ void func_level_29_8007CFB4(void) {
               actor->posY = AS_I32(D_80076B84);
               actor->posZ = AS_I32(D_80076B88);
 
-              func_80017330(&D_80077368, 0x1000);
+              {
+                int *nrm = &D_80077368;
 
-              dot = (st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
-                     st->vel[2] * D_80077370) >>
-                    11;
+                func_80017330(nrm, 0x1000);
+
+                dot = (st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
+                       st->vel[2] * D_80077370) >>
+                      11;
+              }
 
               if (dot < 0) {
-                func_800175B8(&D_80077368, 0x1000, -dot);
-                st->vel[0] += D_80077368;
+                int *nrm;
+
+                do {
+                } while (0);
+                nrm = &D_80077368;
+
+                func_800175B8(nrm, 0x1000, -dot);
+                st->vel[0] += nrm[0];
                 st->vel[1] += AS_I32(D_8007736C);
                 st->vel[2] += AS_I32(D_80077370);
               }
@@ -2963,13 +2981,23 @@ void func_level_29_8007CFB4(void) {
         if (func_8004BE4C(&actor->posX, 0x200, 0x200)) {
           int dot;
 
-          func_80017330(&D_80077368, 0x1000);
-          dot = st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
-                    st->vel[2] * D_80077370 >>
-                11;
+          {
+            int *nrm = &D_80077368;
+
+            func_80017330(nrm, 0x1000);
+            dot = st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
+                      st->vel[2] * D_80077370 >>
+                  11;
+          }
           if (dot < 0) {
-            func_800175B8(&D_80077368, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += D_80077368;
+            int *nrm;
+
+            do {
+            } while (0);
+            nrm = &D_80077368;
+
+            func_800175B8(nrm, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += nrm[0];
             st->vel[1] += AS_I32(D_8007736C);
             st->vel[2] += AS_I32(D_80077370);
           }

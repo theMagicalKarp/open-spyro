@@ -4635,13 +4635,13 @@ TickSpyroHornStrikeAttack_2026_09_23:
   verdict: parked
   class: "s0/s1 rotation; `register int *strike asm(\"$17\")` at function scope costs +2 insns"
   date: 2026-09-23
-func_level_29_8007CFB4:
-  verdict: parked
-  class: "global.c priority tie: hoisted 255 (42 refs) beats hoisted &D_80077368 (21) for $fp; original the reverse"
-  date: 2026-09-25
-  note: "Templated from matched level_5 (+0xA3, 0xE8, 0x18D/F arms). Layout exact, +14 insns, 86 masked -- all one allocation choice. See .c.wip header."
 func_level_30_8007D938_2026_09_24:
   verdict: parked
   class: "R6 shared spy base CLOSED (A257 spilled base); preheader hoist order + register map remain"
   date: 2026-09-24
   note: "Applied the level_11 lever: -42 -> -39 insns, 4,678 -> 4,683 aligned (79.5%)."
+func_level_30_8007D938_2026_09_25:
+  verdict: parked
+  class: "structure ~closed; residue = unk46 RMW sched order, unhoisted &SPY.u164 group (A259), s0/s1 allocation ties"
+  date: 2026-09-25
+  note: "Linked shape diff 1,893 -> 389 imm-kept (-48 -> -7 insns): frame, const carriers, cross-jump branch shapes, struct fields, one-arg orbit call, movstr constant addresses. See .c.wip header OPEN list."
