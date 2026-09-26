@@ -4645,3 +4645,8 @@ func_level_30_8007D938_2026_09_25:
   class: "structure ~closed; residue = unk46 RMW sched order, unhoisted &SPY.u164 group (A259), s0/s1 allocation ties"
   date: 2026-09-25
   note: "Linked shape diff 1,893 -> 389 imm-kept (-48 -> -7 insns): frame, const carriers, cross-jump branch shapes, struct fields, one-arg orbit call, movstr constant addresses. See .c.wip header OPEN list."
+func_level_30_8007D938_2026_09_26:
+  verdict: parked
+  class: "length-exact; residue = allocation ties (case 310 st/i s0/s1, case 398 svM/SPY base) + operand-register ties + 2 cross-jump misses"
+  date: 2026-09-26
+  note: "Shape diff 389 -> 107 imm-kept (8 are harness jtbl artifacts), -7 -> 0 insns. Wins were decode errors (6), statement order, do/while(0) sched/cse barriers, shared locals (push=i, idx=bearing, loop-top dt in a1), base-0x164 t1 args, volatile D_80078A66 read-back. .c.wip OPEN list is the resume point."
