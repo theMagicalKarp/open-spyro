@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,890 vs 5,900 insns (-10). Linked-at-VMA shape diff
+ * STATE: compiles; 5,893 vs 5,900 insns (-7). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 398 imm-kept / 363 masked
+ * sides, difflib on mnemonics+registers): 389 imm-kept / 356 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1317,8 +1317,6 @@ void func_level_30_8007D938(void) {
           /* Released: drift away and pop. */
           if (func_80037F90(&st->release, 4) != 0) {
             int *vel = st->pos;
-            int landed;
-            int *hit;
 
             if (st->trackPos != 0) {
               func_80017758(vel, vel, &actor->posX);
@@ -1329,18 +1327,13 @@ void func_level_30_8007D938(void) {
             st->pos[2] += 0x400;
 
             if (st->unk24 != 0) {
-              landed = 4;
-              hit = 0;
+              func_8003ABC0(actor, 4, 0, 0);
             } else if (func_8004D5EC(st->pos, 0x1400) != 0) {
-              landed = 2;
-              hit = st->pos;
               st->pos[2] -= 0x400;
+              func_8003ABC0(actor, 2, 0, st->pos);
             } else {
-              landed = 1;
-              hit = 0;
+              func_8003ABC0(actor, 1, 0, 0);
             }
-
-            func_8003ABC0(actor, landed, 0, hit);
             func_8003B7C0(actor);
             st->count <<= 7;
             D_800761DC = 2;
