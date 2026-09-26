@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,898 vs 5,900 insns (-2). Linked-at-VMA shape diff
+ * STATE: compiles; 5,902 vs 5,900 insns (2). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 156 imm-kept / 147 masked
+ * sides, difflib on mnemonics+registers): 146 imm-kept / 137 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1405,9 +1405,12 @@ void func_level_30_8007D938(void) {
     /* Balloonist's gnorc (WanderState): wanders around the pad until the
      * balloonist is ready, then walks into the flight cutscene. */
     case 16: {
-      WanderState *st = actor->state;
+      WanderState *st;
 
-      if (SPY.u164 < 3 && func_80017990(&actor->posX, &spy->posX) < 0x960) {
+      do {
+      } while (0);
+      st = actor->state;
+      if (SPY.u164 < 3 && func_80017990(&actor->posX, (int *)(base - 0x164)) < 0x960) {
         int height = actor->posZ - actor->unk38;
         int drop = height - SPY.posZ;
 
@@ -1763,7 +1766,7 @@ void func_level_30_8007D938(void) {
     case 257: {
       ShardState *st = actor->state;
 
-      if (st->life != 0 && actor->unk51 != 0 && st->floor < actor->posZ) {
+      if (st->life != 0 && actor->unk51 != 0 && actor->posZ > st->floor) {
         actor->posX += st->vel[0];
         actor->posY += st->vel[1];
         st->vel[2] -= 6;
@@ -2238,7 +2241,8 @@ void func_level_30_8007D938(void) {
           do {
           } while (0);
           func_80017700(st->from, &rider->posX);
-          aim = (aim & 0xFF) * 0x10;
+          aim &= 0xFF;
+          aim *= 0x10;
           actor->unk48 = 5;
           st->from[0] -= (func_80016CB0(aim) * reach) >> 12;
           st->from[1] -= (func_80016C58(aim) * reach) >> 12;
@@ -2376,7 +2380,7 @@ void func_level_30_8007D938(void) {
         continue;
       }
 
-      if (st->gnorc != 0 && func_80017990(&actor->posX, &spy->posX) >= 0x2001) {
+      if (st->gnorc != 0 && func_80017990(&actor->posX, (int *)(base - 0x164)) >= 0x2001) {
         st->timer = 0;
       }
 
