@@ -1,8 +1,8 @@
 /* PARKED 2026-09-25 -- fourth pass on the level_30 actor-update megafunction.
  *
- * STATE: compiles; 5,902 vs 5,900 insns (2). Linked-at-VMA shape diff
+ * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
  * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 146 imm-kept / 137 masked
+ * sides, difflib on mnemonics+registers): 118 imm-kept / 109 masked
  * mismatches, down from 1,893 / 1,631 at the start of the session.
  *
  * CLOSED 2026-09-25 (do not re-derive):
@@ -1164,7 +1164,7 @@ extern int D_80078B6C;
 extern int D_80078B70;
 extern int D_80078B74; /* camera yaw accumulator */
 extern int D_80078A5C;
-extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
+extern volatile unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
 extern int D_80078BBC; /* balloon sequence stage (== SPY.u164) */
 extern int D_80078BFC;
 
@@ -3485,9 +3485,14 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60 = D_80078B74 + D_80076E60;
-          *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
-          D_80078B74 += D_80075858;
+          {
+            int e = D_80076E60;
+            int yaw = D_80078B74;
+
+            D_80076E60 = e + yaw;
+            *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
+            D_80078B74 = yaw + D_80075858;
+          }
           D_80078A66 = D_80078B74 >> 4;
           D_80076E48 -= D_80078A66 * 0x10;
           func_80034204(&CAM.posX);
@@ -3523,9 +3528,14 @@ void func_level_30_8007D938(void) {
           D_8007579C = 1;
           D_80078C5E = st->dest;
           func_80033F08(&CAM.posX);
-          D_80076E60 = D_80078B74 + D_80076E60;
-          *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
-          D_80078B74 += D_80075858;
+          {
+            int e = D_80076E60;
+            int yaw = D_80078B74;
+
+            D_80076E60 = e + yaw;
+            *(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;
+            D_80078B74 = yaw + D_80075858;
+          }
           D_80078A66 = D_80078B74 >> 4;
           D_80076E48 -= D_80078A66 * 0x10;
           func_80034204(&CAM.posX);
