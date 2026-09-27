@@ -4650,3 +4650,8 @@ func_level_30_8007D938_2026_09_26:
   class: "length-exact; residue = allocation ties (case 310 st/i s0/s1, case 398 svM/SPY base) + operand-register ties + 2 cross-jump misses"
   date: 2026-09-26
   note: "Shape diff 389 -> 107 imm-kept (8 are harness jtbl artifacts), -7 -> 0 insns. Wins were decode errors (6), statement order, do/while(0) sched/cse barriers, shared locals (push=i, idx=bearing, loop-top dt in a1), base-0x164 t1 args, volatile D_80078A66 read-back. .c.wip OPEN list is the resume point."
+func_level_30_8007D938_2026_09_27:
+  verdict: matched
+  class: "actor-update megafunction; closed on register pins, a single post-if tail store, and case-398 memory-dependence pins"
+  date: 2026-09-27
+  note: "0x8007D938, 23,600 B. MATCH -> C. From 107 imm-kept: asm(\"$16\") on case 310's i (fixed two cross-jumps too), asm(\"$7\") push, asm(\"$2\") SPY.posZ at both dz sites; `st->phase += dt`; `bearing = arm << 1`; y + x of split 0xB5 products; int-temp lean adds with (unsigned char) fields; `int last` for case 398's more; one `actor->flags = 0` after the 0xA0000 if/else (reorg re-duplicates it); goto into the AF4 branch's D_80078C68 clear; case 398 head via do/while(0) after CA0 + volatile A7F/C98 + `*(PortalDesc **)st` re-read + held `cf`; func_80057380 is void; the wander_body goto was a continue."

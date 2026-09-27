@@ -1,204 +1,28 @@
-/* PARKED 2026-09-26 -- fifth pass on the level_30 actor-update megafunction.
+/* func_level_30_8007D938 (0x8007D938, 23,600 B) -- matching notes.
  *
- * STATE: compiles; 5,900 vs 5,900 insns (0). Linked-at-VMA shape diff
- * (compile, link at 0x8007D938 against the overlay's syms.ld, objdump both
- * sides, difflib on mnemonics+registers): 107 imm-kept / 98 masked
- * mismatches (8 of the kept are the harness's unrelocated jump-table
- * `lui at,0x8011` loads, not real), down from 389 / 356 at the start of the
- * 2026-09-26 session and 1,893 / 1,631 on 2026-09-25. LENGTH-EXACT, so
- * `open-spyro diff` links it now. CAVEAT: the harness masks branch targets
- * as T, so a wrong-TARGET jump is invisible to it -- the linked diff shows
- * at least one (0x8007E25C: `j loop-continue` vs ours `j 0x8007E2EC`).
- *
- * CLOSED 2026-09-26 (do not re-derive):
- *   - Decode errors: case 13's re-point index is `actor - D_80075828`
- *     (positive, not negated); case 323 matches `scan->type == st->group`
- *     (not unk43) and resets with ANIM_RESET(scan, 0); case 250's partner
- *     test is `st->partner != -1`; case 195 tests `st->unk10`, not handle;
- *     case 255/256 fails with `life <= 0 || unk51 == 0` straight into the
- *     D_800758E4 call (no unk51 test on the life path); case 34 case 1 has
- *     NO `D_80077378 & 0x40` escape; the gnorc aim uses `(unsigned short)`
- *     D_80076E20 (lhu + <<16>>20) and the satellite arm's svO too.
- *   - SOURCE ORDER is most of what was left: loop top stores D_80075794,
- *     D_800757F4, D_800756C4; the rail arm's divides are posX, posY, unk46;
- *     the vortex arms do `posZ -= phase*N` BEFORE `unk46 += dt*4` (that was
- *     the whole "unk46 scheduled late" item); the lift arm's reset is
- *     unk44, unk45, posZ, flags; the exit arm starts `D_80076E90` then
- *     `unk48 = 0`; radius/angle/phase; node before mode.
- *   - `do { } while (0);` as a pure scheduling barrier (loop notes stop
- *     sched1/2): after the wander speed store, after the balloon
- *     `gnorc = 0`, the drift `svF[2]` and `timer -=` stores, the enemy
- *     rot adds, the rail aim. And at the TOP of
- *     case 236 / case 16 (before `st = actor->state`) it stops cse2's
- *     follow-jump from the dispatch tree seeing spy/base as constants.
- *   - `(int *)(base - 0x164)` (not &spy->posX) at the case-16 and balloon
- *     Spyro-distance calls: that is the orig's `lui t1;addiu t1;addiu a1,
- *     t1,-356` (all 3 t1 sites now match).
- *   - Shared variables: case 310's push IS the spark loop's `i`; case 426's
- *     idx IS `bearing`; case 34 reads D_800756CC through a loop-top `dt`
- *     that stays in a1 into the arm; the lift arm's `at` is set ONCE after
- *     its if-chain and reused as func_8001778C's arg (s2).
- *   - Camera blocks: `e = E60; yaw = B74; E60 = e + yaw; copy;
- *     B74 = yaw + D_80075858;` (single B74 load, E60 first), and
- *     D_80078A66 declared `volatile` so the store's read-back is a real
- *     `lbu` (A240's volatile-scalar form).
- *   - Types: `(unsigned char)(st->lean - 7)` for the knock-back rot adds
- *     (249 immediates), `unsigned int phase` in case 34, `signed char
- *     slope` in the enemy floor probe, `volatile int count` store pin,
- *     D_80078A5C alias for the second SPY.posY read in case 192.
- *
- * OPEN (2026-09-26 end state, 107 imm-kept):
- *   - Case 310/311 st (s1) vs i (s0): global.c priority st 44/107 = 2.06 vs
- *     i 17/39 = 1.74 (post-merge with push). ~30 insns plus the case-255
- *     tail cross-jump that follows from it. No source lever found yet.
- *   - Case 398 head s0/s1 (svM vs &SPY.controlFlags) + its store order.
- *   - Operand/result-register ties: `tick = phase + dt` load order (x3),
- *     the 0xB5 sum (v1 vs a2), lean table adds (v0 vs v1, x3), enemy dz
- *     (x2), case-255 push in a3.
- *   - D_80078C68 = 0 after func_800175B8 is not cross-jumped into the
- *     AF4 branch's copy; case 195's `flags = 0` delay slot.
- *
- * CLOSED 2026-09-25 (do not re-derive):
- *   - THE FRAME. The original has 15 distinct 16-byte scratch arrays plus an
- *     `int acc[3][3]` (424-byte frame); we had 14 arrays reused across arms
- *     (336). Mapping every orig N(sp) through the alignment to our source
- *     lines gave the declaration order: svA..svE, svF (the 14/15/83..87
- *     default arm, 0x10A and 0x1A0 arms), acc (case 2's node average), svG,
- *     svH, svI, svJ, svK, svL, svM, then case 398's four (svN..svQ). Case
- *     398's old `svL[2] +=` was really the third array's [2] (sp+344).
- *   - THE CONSTANT CARRIERS. `one = 1; two = 2;` as user vars set at the
- *     loop top AHEAD of `spy` (the level_11 flight lever): loop.c then moves
- *     them first, so the preheader is `li 1; li 2; la; addiu s7` like the
- *     original, and the const-2 group finally gets a register. `two` needs
- *     >= 64 weighted refs to beat the hoisted frame address for $fp; it gets
- *     them from `D_800758D1 = two; D_800758D2 = two;`.
- *   - Case 426..451's closing `&host->posX` is `&st->parent->posX` (the
- *     original reloads st->parent after the calls; holding host put a
- *     6-ref pseudo in s5 ahead of the const-1 group). Its else-branch has no
- *     `host`/`phase` locals, reads SPY.posY absolute, and its `<<16>>21`
- *     loads have no (short) cast (the original's lhu).
- *   - Content fixes by arm: VortexState's centre/apex are short[3] (apex at
- *     0x0A, radius 0x10); the vortex arm's `if (D_80077378 & 0x40)` ends
- *     each of cases 1..4 (cross-jumped into case 4's copy, which is why the
- *     shared tail sits before case 5) and its tick compares are unsigned; the two phase-table arms (0x10x and 195) re-read
- *     D_8006E638 after the sound call instead of holding dx/dy; the smoke fx
- *     init re-reads st->smoke per store; the two gem-spawn loops are
- *     `for (i = 0; i < N; ...)` with the diff test as a leading break (a
- *     while/do loop gets its exit test rotated to the bottom).
- *   - Case 398's camera blocks: func_80034204 is ComputeCameraOrbitOffset
- *     and takes ONE argument (a1..a3 at the call are leftovers from the
- *     copy). D_80076E60/D_80076E48's word 0 is a scalar `int` global and the
- *     24-byte copy is `*(Xform *)&D_80076E48 = *(Xform *)&D_80076E60;`: with
- *     the +=/-= no longer sharing the address pseudo, combine folds the
- *     constant into the movstr, and output_block_move spends two scratch
- *     regs on `la t0`/`la a3`, leaving a1/a2 -- the original's pairs.
- *     SPY.u218 / SPY.controlFlags / SPY.u208 are written through SPY so cse
- *     holds one SPY-relative base (s0/s1) and derives &SPY.posX from it;
- *     func_8001778C's third arg there is &SPY.posX, not &CAM.posX; ExitState
- *     has a word at 0x10 (dest 0x14, preset 0x18).
- *   - Branch shapes the original uses throughout (each was a measured win):
- *     a two-way value feeding one call/store is TWO calls/stores in an
- *     if/else, cross-jumped by jump.c (not a ?: argument or a temp local);
- *     range tests on `drop` are `drop > 0 ? drop < N : SPY.posZ - h < N`
- *     (the && / || form folds to an unsigned range check); fail blocks sit
- *     BEFORE the body (`if (bad) { unk48 = 6; break; }`); shared tails are
- *     written inline at every site and left to cross-jumping (a goto label
- *     starts a new cse ebb and re-loads what the fall-through site kept);
- *     `x == 14 || x == 15` gives the original's lhu/sltiu range test; the
- *     inner mode dispatch of the 14/15 arm is an if/else chain; the unk49
- *     switch has a `case 4: continue;` (5-entry jump table).
- *   - Types/fields: EnemyState lean/roll tested as `lean != 0 || roll != 0`
- *     (fold_truthop's word test at 0x10); ShardState spin is short[3];
- *     WanderState's timers are unk14/reTurn/reStep in that call order; the
- *     vortex `turn` is int; AnimNode is indexed [attach], not [attach * 6];
- *     `(unsigned short)tbl[i] << 16 >> N` for the lhu+shift table reads.
- *   - Allocation levers that worked: the follower arm reuses `parent` as its
- *     scan variable (gives s0 the original's refs); no `near` local in the
- *     enemy arm (it lived across calls in s2 and made toSpyro outrank `one`);
- *     `int lim = 0x136; if (lim < dist)` keeps 310 in a register.
- *   - The gem-spawn tint loop is `for (i...) f(..., 0x8080 + (i << 24))`: the
- *     in-loop `lui; addu` is loop.c's strength-reduced giv increment, which
- *     is created after the movable pass and so is never hoisted.
- *   - fold()'s (A*C)+(B*C) -> (A+B)*C factoring: the vortex arm's 0xB5
- *     products are NOT factored in the original. operand_equal_p refuses
- *     constants of different signedness, so one side is written `* 0xB5U`
- *     under an (int) cast -- same bits, two separate 181-products.
- *
- * OPEN (2026-09-25 end state; superseded by the 2026-09-26 lists above):
- *   - "unk46 += ... scheduled late": at three sites the original keeps the
- *     actor->unk46 read-modify-write BELOW the preceding posX/posY store;
- *     ours hoists it into the mult latency. Not fixed by `x = x + y`, a
- *     volatile cast, or the AS_PTRU8 view -- cause unknown.
- *   - The `&SPY.u164` address group: the original hoists it (preheader
- *     `la t1, D_80078BBC`) and leaves it unallocated, so every SPY.u164 access
- *     is absolute and case 16's `&SPY.posX` arg is `addiu a1,t1,-356`. Ours
- *     does not hoist it (2 sets, savings 2 -- A259 threshold); the `base`
- *     emulation covers the preheader only.
- *   - s0/s1 ties: case 398 head (svM vs SPY base), the 310/311 shard arm
- *     (orig allocates i/push into s0 ahead of st), reward/unk18 compare regs.
- *   - E60 `+=` load order (v0/v1), a few sched2 store placements.
- *
- * WHAT IS ALREADY SETTLED (do not re-derive):
- *   - The full case list, recovered from the asm compare tree at 0x8007DA1C
- *     (NOT from m2c, whose three `default:` arms are the tree's interior
- *     nodes, not a source `default`). The true default is `.L8008351C` =
- *     the loop-continue, so the switch has NO `default:` label:
- *       1, 13, 16, 34, 255/256, 257, 14/15/83..87, 110, 120, 173, 192, 194,
- *       195, 208, 236, 250, 251, 260..269, 286, 309, 310/311, 323, 331,
- *       405/477, 398, 416, 76/426..451
- *   - THE CASE ORDER ABOVE IS THE SOURCE ORDER. It is the ascending order of
- *     the arms' block addresses in the asm, and gcc emits switch arms in
- *     source order. Reordering the case blocks to it took the masked
- *     alignment from 22.5% to 53.4% in one edit -- do this FIRST on any
- *     megafunction, before chasing any content diff.
- *   - THE SAME RULE APPLIES *INSIDE* AN ARM (cookbook A250b): a goto-target
- *     block, a shared tail behind a label and an early-exit `if` are all
- *     emitted in SOURCE order, so each has a determinable position that is
- *     readable straight off the branch targets. Sites closed so far:
- *       * 14/15/83..87 arm -- block order is case 0, case 1, case 2,
- *         `enemy_grab` (SUPERSEDED 2026-09-25: inline at both sites, cross-jumped; reached by `j .L8007F7A8`
- *         from case 1), case 3, `default:/enemy_pose` (the LAST block).
- *       * case 310/311 -- the `st->life <= 0` early exit is the LAST block of
- *         the arm: `if (st->life > 0) { ...body...; break; }` with the tail
- *         falling out below.
- *       * case 331 (2026-09-18-1) -- AND THE INNER SWITCH HAS NO `default:`.
- *         The dispatch is `beq 1 / slti 2 / beqz 0 / beq 2`, i.e. a tree over
- *         {0,1,2} whose fall-out is the loop-continue; a real `default:` label
- *         compiles to a 2-compare chain with the arm inline, which is what we
- *         had. Writing it as explicit `case 0:` first (block order 0, 1, 2)
- *         closed a 42-insn dislocation. Same arm: the drop test is two nested
- *         `if`s (`if (drop > 0) { if (drop >= 0x200) continue; } else if
- *         (SPY.posZ - height >= 0x200) break;`) -- a single `||` of two
- *         ranges is folded to an unsigned `(unsigned)(drop-1) < 511` test --
- *         and the cooldown compare is `(unsigned char)tick < 0x30` (orig has
- *         `sltiu`, a plain `int` compare gives `slti`).
- *   - A WHOLE-AGGREGATE ASSIGNMENT, NOT ELEMENT STORES, AT BOTH SIZE CLASSES.
- *     `D_80076E48 = D_80076E60;` (Xform, `int v[6]`) is gcc's move_by_pieces:
- *     a held base per side, then `lw;lw;sw;sw` x3. AND (2026-09-18-1) the
- *     follower arm's 88-byte Actor take-over is `*actor = *parent;` -- 88 B is
- *     over MOVE_RATIO, so gcc emits mips.c's block_move_loop: `move a3,dst;
- *     move a2,src; addiu t0,a2,80;` then a 4-load/4-store/`bne` loop and two
- *     leftover words. A hand-rolled 4-word do/while gives interleaved givs and
- *     extra base pointers no matter how the temps are spelled (plain, one
- *     hoisted temp, four hoisted temps all measured); the struct assignment is
- *     18 insns exact on the first build.
- *   - `spy->bodyRotZ` vs `D_80078A66` IS A PER-SITE CHOICE AND IT MATTERS
- *     (cookbook A240 / B16). At the two case-398 camera sites the original
- *     uses the ABSOLUTE form for both the store and the read-back, which is
- *     also why the read-back is a genuine `lbu` and not an `andi` of the
- *     stored register. Every other bodyRotZ site stays on `spy->`.
- *   - `s7` is `&SPY` built as `&D_80078BBC - 0x164`: CLOSED 2026-09-24 (from
- *     the level_11 flight head). `base = (char *)&D_80078BBC` above the loop,
- *     `spy = base - 0x164` at the loop top, and one in-loop `*(int *)base`
- *     read (case 120) so `base` crosses calls, spills, and reload rebuilds it
- *     through t1: the orig's `lui t1; addiu t1; addiu s7,t1,-0x164` exactly.
- *     -42 -> -39 insns, 4,678 -> 4,683 aligned. Only the `s5 = 1` / `s8 = 2`
- *     hoist ORDER is left in the preheader.
- *
- * (2026-09-18's register-map notes are superseded by the 2026-09-25 block
- * above: a loop-top user var DOES buy the carrier once it is set ahead of
- * spy, and the 3316 `&p->posX` pseudo is gone.)
- *
+ * The level_30 actor-update megafunction. Load-bearing source forms, beyond
+ * the frame layout (15 scratch arrays + acc[3][3], in first-use order) and
+ * the loop-top `one`/`two` constant carriers:
+ *   - Register pins (`register T x asm("$N")`) where a global.c/local-alloc
+ *     tie has no source-order lever: case 310's spark counter i ($16), case
+ *     255's push ($7), the two dz sites' SPY.posZ read ($2) and case 398's
+ *     svM pointer m ($16). Case 398's `more` needs its own `last` temp.
+ *   - Single tail stores after an if/else (the 0xA0000 arm's
+ *     `actor->flags = 0;`): reorg re-duplicates the store into the then-arm's
+ *     `j` delay slot, which a per-arm copy cannot reproduce (jump.c
+ *     cross-jumps it instead). The D_80078C68 clear is the reverse: a `goto`
+ *     into the AF4 branch's copy.
+ *   - Case 398's head is written in source order and pinned by memory
+ *     dependences, not scheduling luck: a do/while(0) after the D_80078CA0
+ *     store, D_80078A7F and D_80078C98 volatile (their stores keep order),
+ *     the call's portal re-read through `*(PortalDesc **)st` (not in_struct,
+ *     so it depends on the C98 store), and the SPY base held in `cf`.
+ *   - Operand order via statement splits: `st->phase += dt` (not a tick
+ *     temp), `bearing = arm << 1;` then the subtract, `y + x` of two
+ *     separately computed 0xB5 products, `int top = posZ + 0x164` for dz, and
+ *     the lean/roll adds through an int temp with (unsigned char) fields.
+ *   - func_80057380 takes no argument; the a0 its caller sees is the delay
+ *     slot's `move a0,s4` stolen from the else-branch.
  */
 /* func_level_30_8007D938 -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -773,7 +597,7 @@ extern void func_80017CB8(int a, int *out);
 extern int func_8004D5EC(int *v, int k);
 extern int func_800171FC(int *v, int mode);
 extern int func_80017A38(int x); /* SquareRoot */
-extern int func_80057380(int *pos);
+extern int func_80057380(void);
 extern void func_8003B9D4(Actor *actor);
 extern int func_80033E40(int *a, int *b);
 extern int func_80056DC4(Actor *actor, int a);
@@ -1205,7 +1029,7 @@ extern int D_80076E60; /* camera spherical current */
 extern int D_80076E90;
 extern Xform *D_80076EA8; /* active camera preset, or null */
 
-extern unsigned char D_80078A7F;
+extern volatile unsigned char D_80078A7F;
 extern int D_80078A8C[]; /* wind basis matrix */
 extern int D_80078AD0;   /* Spyro's state */
 extern int D_80078AD4;
@@ -1227,7 +1051,7 @@ extern int D_80078C60;         /* scripted camera look-at */
 extern int D_80078C64;
 extern int D_80078C68;
 extern int D_80078C70; /* scripted camera mode */
-extern PortalDesc *D_80078C98;
+extern PortalDesc *volatile D_80078C98;
 extern int D_80078C9C;
 extern int D_80078CA0;
 
@@ -1476,7 +1300,7 @@ void func_level_30_8007D938(void) {
               func_8003851C(puff, 0, 0);
               D_80078BBC = 1;
               func_80052568(actor);
-              goto wander_body;
+              continue;
             }
           } else if (D_80075898->unk49 != 0x63) {
             BalloonState *bal = D_80075898->state;
@@ -1499,7 +1323,6 @@ void func_level_30_8007D938(void) {
         }
       }
 
-    wander_body:
       if (!(actor->unk50 & 0x80)) {
         switch (actor->unk48) {
         case 0:
@@ -1652,11 +1475,9 @@ void func_level_30_8007D938(void) {
         break;
 
       case 2: {
-        int tick = st->phase + D_800756CC;
+        st->phase += D_800756CC;
 
-        st->phase = tick;
-
-        if ((unsigned char)tick < 0x80) {
+        if (st->phase < 0x80) {
           int step = D_800756CC * 4;
 
           st->radius += step;
@@ -1669,11 +1490,17 @@ void func_level_30_8007D938(void) {
           actor->posZ -= st->phase * 8;
           actor->unk46 += D_800756CC * 4;
         } else {
+          int cb;
+          int cs;
+          int x;
+          int y;
+
           func_80017700(svA, &spy->posX);
-          svA[0] += (int)((func_80016CB0(D_80078A66 * 0x10) * 0xB5) +
-                          (func_80016C58(D_80078A66 * 0x10) * 0xB5U)) *
-                        4 >>
-                    12;
+          cb = func_80016CB0(D_80078A66 * 0x10);
+          cs = func_80016C58(D_80078A66 * 0x10);
+          x = cb * 0xB5;
+          y = cs * 0xB5;
+          svA[0] += (y + x) * 4 >> 12;
           svA[1] += (int)((func_80016C58(D_80078A66 * 0x10) * 0xB5) -
                           (func_80016CB0(D_80078A66 * 0x10) * 0xB5U)) *
                         4 >>
@@ -1691,11 +1518,9 @@ void func_level_30_8007D938(void) {
       }
 
       case 3: {
-        int tick = st->phase + D_800756CC;
+        st->phase += D_800756CC;
 
-        st->phase = tick;
-
-        if ((unsigned char)tick < 0x40) {
+        if (st->phase < 0x40) {
           func_80017C24(svB, st->centre);
           func_80017C24(svC, st->apex);
           func_8001778C(svC, svC, svB);
@@ -1721,11 +1546,9 @@ void func_level_30_8007D938(void) {
       }
 
       case 4: {
-        int tick = st->phase + D_800756CC;
+        st->phase += D_800756CC;
 
-        st->phase = tick;
-
-        if ((unsigned char)tick < 0x80) {
+        if (st->phase < 0x80) {
           int step = D_800756CC * 4;
 
           st->radius -= step;
@@ -1778,7 +1601,7 @@ void func_level_30_8007D938(void) {
       if (func_8004BE4C(&actor->posX, 0x100, 0x100) != 0) {
         int *nrm = &D_80077368;
         int along;
-        int push;
+        register int push asm("$7");
 
         func_80017330(nrm, 0x1000);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
@@ -1943,7 +1766,9 @@ void func_level_30_8007D938(void) {
           }
 
           if (toSpyro < 0x59A) {
-            int dz = SPY.posZ - (actor->posZ + 0x164);
+            int top = actor->posZ + 0x164;
+            register int py asm("$2") = SPY.posZ;
+            int dz = py - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -2004,7 +1829,7 @@ void func_level_30_8007D938(void) {
           svG[2] += 0xF0;
 
           if (func_8004BE4C(svG, 0xF0, 0xF0) != 0) {
-            if (func_80057380(at) == 0) {
+            if (func_80057380() == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 func_8003B9D4(actor);
               }
@@ -2018,7 +1843,7 @@ void func_level_30_8007D938(void) {
 
             if (st->bounce == 0) {
               int floor = func_8004D5EC(svG, 0x400);
-              signed char slope = func_800169AC(svH[2], func_800171FC(svH, 0));
+              int slope = (signed char)func_800169AC(svH[2], func_800171FC(svH, 0));
 
               if ((svG[2] - 0x190) < floor && slope < 0x18) {
                 actor->unk49 = 1;
@@ -2064,7 +1889,9 @@ void func_level_30_8007D938(void) {
 
         enemy_settle:
           if (toSpyro < 0x59A) {
-            int dz = SPY.posZ - (actor->posZ + 0x164);
+            int top = actor->posZ + 0x164;
+            register int py asm("$2") = SPY.posZ;
+            int dz = py - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -2131,19 +1958,23 @@ void func_level_30_8007D938(void) {
         enemy_pose:
           if (actor->unk49 < 3) {
             if (actor->type == 14) {
-              actor->unk44 =
-                  ((unsigned short)D_8006CC78[st->spin] << 16 >> 25) + st->lean;
-              actor->unk45 =
-                  ((unsigned short)D_8006CBF8[st->spin] << 16 >> 25) + st->roll;
+              int v;
+
+              v = ((unsigned short)D_8006CC78[st->spin] << 16 >> 25) + (unsigned char)st->lean;
+              actor->unk44 = v;
+              v = ((unsigned short)D_8006CBF8[st->spin] << 16 >> 25) + (unsigned char)st->roll;
+              actor->unk45 = v;
               st->spin += D_800756CC * 2;
             } else if (actor->type == 15) {
               actor->unk46 += 8;
               actor->unk45 -= 6;
             } else {
-              actor->unk44 =
-                  ((unsigned short)D_8006CC78[st->spin] << 16 >> 23) + st->lean;
-              actor->unk45 =
-                  ((unsigned short)D_8006CBF8[st->spin] << 16 >> 23) + st->roll;
+              int v;
+
+              v = ((unsigned short)D_8006CC78[st->spin] << 16 >> 23) + (unsigned char)st->lean;
+              actor->unk44 = v;
+              v = ((unsigned short)D_8006CBF8[st->spin] << 16 >> 23) + (unsigned char)st->roll;
+              actor->unk45 = v;
               st->spin += D_800756CC * 2;
             }
           }
@@ -2862,7 +2693,6 @@ void func_level_30_8007D938(void) {
         func_8003ABC0(actor, 3, 0, 0);
         func_8003B7C0(actor);
         func_80052568(actor);
-        actor->flags = 0;
       } else {
         st->handle = func_8003A9EC(actor, st->handle);
 
@@ -2872,10 +2702,9 @@ void func_level_30_8007D938(void) {
           st->rotY = actor->unk45;
           st->restZ = actor->posZ;
         }
-
-        actor->flags = 0;
       }
 
+      actor->flags = 0;
       break;
     }
 
@@ -3110,6 +2939,7 @@ void func_level_30_8007D938(void) {
               D_80078C60 = D_80078B64 >> 8;
               D_80078C64 = D_80078B68 >> 8;
               if (D_80078B6C > 0) {
+              clear_c68:
                 D_80078C68 = 0;
               } else {
                 D_80078C68 = D_80078B6C >> 6;
@@ -3124,7 +2954,7 @@ void func_level_30_8007D938(void) {
 
               if (SPY.u208 != 0 || D_80078C64 != 0) {
                 func_800175B8(look, func_800171FC(look, 0), 0x60);
-                D_80078C68 = 0;
+                goto clear_c68;
               }
             }
           }
@@ -3348,7 +3178,7 @@ void func_level_30_8007D938(void) {
     case 310:
     case 311: {
       ShardState *st = actor->state;
-      int i;
+      register int i asm("$16");
 
       if (st->life > 0) {
         if (actor->unk51 == 0) {
@@ -3495,19 +3325,29 @@ void func_level_30_8007D938(void) {
 
       switch (actor->unk48) {
       case 1: {
+        register int *m asm("$16") = svM;
+        int *cf = &SPY.controlFlags;
+        PortalDesc *portal;
         int *aim;
         int span;
 
-        SPY.controlFlags = 0x80006147;
+        *cf = 0x80006147;
         D_80078CA0 = actor->unk49;
+        do {
+        } while (0);
+        portal = st->portal;
         D_80078C9C = 0x60;
         D_80078C70 = 5;
         D_80078A7F = 0x7F;
-        D_80078C98 = st->portal;
-        func_80017758(svM, st->portal->posA, st->portal->posB);
-        func_800176C8(svM, 1);
-        aim = &SPY.u208;
-        func_8001778C(aim, svM, &SPY.posX);
+        D_80078C98 = portal;
+        {
+          PortalDesc *pd = *(PortalDesc **)st;
+
+          func_80017758(m, pd->posA, pd->posB);
+        }
+        func_800176C8(m, 1);
+        aim = cf + 5;
+        func_8001778C(aim, m, (int *)((char *)cf - 0x1F4));
         func_80017758(aim, aim, st->centre);
         span = func_800171FC(aim, 1);
 
@@ -3517,7 +3357,9 @@ void func_level_30_8007D938(void) {
           int more;
 
           if (actor->unk49 != 0) {
-            more = (st->portal->count - 1) > st->portal->index;
+            int last = st->portal->count - 1;
+
+            more = last > st->portal->index;
           } else {
             more = st->portal->index;
           }
@@ -3528,8 +3370,8 @@ void func_level_30_8007D938(void) {
 
         if (func_8004BE4C(&CAM.posX, 0x300, 0x300) != 0 &&
             (D_80075718 & 0x3F) < 0x3F && *D_800785B8[D_80075718] == 6) {
-          D_80076E90 = 0x80000012;
           actor->unk48 = 0;
+          AS_I32(D_80076E90) = 0x80000012;
           SPY.u218 = 0xF;
           D_80075864 = 0;
           D_800756B0 = 1;
@@ -3572,8 +3414,8 @@ void func_level_30_8007D938(void) {
 
         if (func_8004BE4C(&CAM.posX, 0x300, 0x300) != 0 &&
             (D_80075718 & 0x3F) < 0x3F && *D_800785B8[D_80075718] == 6) {
-          D_80076E90 = 0x80000012;
           actor->unk48 = 0;
+          AS_I32(D_80076E90) = 0x80000012;
           D_80075864 = 0;
           D_800756B0 = 1;
           D_800756AC = 0;
@@ -3694,7 +3536,8 @@ void func_level_30_8007D938(void) {
           svQ[0] = svN[0] * D_8006CC78[arm * 2];
           svQ[1] = svN[1] * D_8006CC78[arm * 2];
           svQ[2] = 0;
-          bearing = ((arm * 2) - (st->phase * 4)) & 0xFF;
+          bearing = arm << 1;
+          bearing = (bearing - (st->phase * 4)) & 0xFF;
           func_800177C0(svO, svO, st->phase);
           func_8001778C(svP, svP, svO);
           swing = &D_8006CC78[bearing];
