@@ -4690,3 +4690,8 @@ DrawActors_2026_09_27_2:
   class: "R1 closed by $5/$2 pins + held byte offset; residue = 40-byte spill-frame shortfall + one loop's register offset"
   date: 2026-09-27
   note: "5,148 B. 132 -> 32 masked (1286 vs 1287). Levers in the .c.wip UPDATE header: k pinned $5, nPoints-1 via $2, ko=k*12 held offset, shift=CLZ one variable, divisor $2, mesh colour via non-struct deref (stays below the preceding scalar store)."
+TickSpyroHornStrikeAttack_2026_09_27_2:
+  verdict: matched
+  class: "F1 whole-function s0/s1 rotation closed by a block-scoped $17 pin"
+  date: 2026-09-27
+  note: "0x800499C0, 1,084 B. MATCH -> C from 17/271. `register int *strike asm(\"$17\")` scoped to the non-cancel branch; the two tip-spawn halves as separate blocks with their own tip/mtx locals (function-level tip/mtx take s2 once s0/s1 are split)."
