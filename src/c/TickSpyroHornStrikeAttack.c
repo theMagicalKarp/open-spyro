@@ -1,33 +1,21 @@
 #include "globals.h"
 
-/* PARKED 2026-07-26 — structure complete, 272 vs 271 insns (+1, so it does not
-   fit its slot; parked rather than linked). Two residues:
+/* Horn-strike swing driver (0x800499c0, 1084 bytes).
 
-   1. F1 whole-function s0/s1 rotation — the original keeps the horn-strike
-      block pointer in s1 and hands s0 to the short-lived pseudos (the `1`
-      constant in the arm-the-swing arm, the tip-offset base, the &vel pointer,
-      the composed-matrix base); ours allocates the block pointer s0 and shifts
-      everything else up one. Declaration order does not move it (gcc orders by
-      first use, and local-alloc ranks by qty_compare priority, not birth).
-   2. The second tip-offset base costs an extra `lui/addiu` pair where the
-      original reuses the register it already has, and the `a0 = tip+0x18` /
-      `a2 = base-0x198` pair schedules one slot apart.
-
-   Levers already banked here (all verified to move the code the right way):
-   five allow_duplicated alias blocks — state (+0 store, +0xC ZeroVector arg,
-   +0x30 matrix, -0x198 world pos), timer (RMW + ZeroVector at +4), anchor mode,
-   collision-active (slot ages at -0x78 into FillWord, A25) and the composed
-   matrix (world pos at -0x1C8); a DISTINCT tip-offset alias at +0xC (A24) so
-   cse cannot derive it from the first; the variant select written as two
-   complete spawn calls in the two arms so jump.c cross-jumps them into one call
-   (A80) instead of if-converting to `sltu a1,zero,a1`; a separate pointer local
-   in the cancel arm so it takes a caller-saved reg; and the anchor-mode store
-   in the swing arm done through its alias pointer, which is what forces the
-   original's reload of the strike timer after it.
-
-   2026-08-14-1 unattended permuter session (~15m, ~55600 iterations, timed out
-   at the 15m budget): best score 285 vs first-iteration score 565. No
-   byte-perfect candidate found; still PARKED (see above). */
+   Load-bearing forms:
+   - the strike state block pointer is a `$17` register variable scoped to
+     the non-cancel branch. As a pseudo it wins s0 on local priority and every
+     short-lived base shifts up one callee-saved register.
+   - the two tip-spawn halves are separate blocks with their own `tip` (and
+     `mtx`) locals, so each base is a fresh short-lived pseudo in s0/s1.
+   - five allow_duplicated alias blocks (state, timer, anchor mode,
+     collision-active, composed matrix) and a DISTINCT tip-offset alias at +0xC
+     (A24) so cse cannot derive it from the first.
+   - the variant select as two complete spawn calls in the two arms, which
+     jump.c cross-jumps into one call (A80) instead of `sltu a1,zero,a1`.
+   - a separate pointer local in the cancel arm (caller-saved), and the
+     anchor-mode store in the swing arm through its alias pointer, which forces
+     the original's strike-timer reload after it. */
 
 /* Horn-strike (charge attack) driver, one frame (0x800499C0, 0x43C).
 
@@ -84,11 +72,8 @@ extern unsigned char g_abSpyroHornCollisionActiveBlock[];
 void TickSpyroHornStrikeAttack(void) {
   int pos[4];
   int vel[4];
-  int *tip;
-  int *mtx;
   int *timer;
   int *cancel;
-  int *strike;
   unsigned char *anchor;
   unsigned char *live;
   if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] +
@@ -97,7 +82,8 @@ void TickSpyroHornStrikeAttack(void) {
     cancel[0] = 0;
     ZeroVector(&cancel[3]);
   } else {
-    strike = g_anSpyroHornStrikeStateBlock;
+    register int *strike asm("$17") = g_anSpyroHornStrikeStateBlock;
+
     switch (strike[0]) {
     case 0:
       anchor = g_abSpyroHornStrikeAnchorModeBlock;
@@ -131,28 +117,32 @@ void TickSpyroHornStrikeAttack(void) {
       if ((((g_nSpyroHornStrikeTimer & 3) == 0) &&
            (((unsigned int)(g_nSpyroHornStrikeTimer - 0xC)) < 0x11)) &&
           (g_nCdStreamState < 0)) {
-        tip = g_anSpyroHornStrikeTipOffsets;
-        RotateVectorByMatrix(&strike[0xC], tip, pos);
-        AddVector(pos, pos, (int *)(((char *)strike) - 0x198));
-        ApplyActiveGteRotation(tip + 6, vel);
-        if (g_nSpyroHornStrikeVariant != 0) {
-          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
-              1, 1, pos, vel);
-        } else {
-          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
-              1, 0, pos, vel);
+        {
+          int *tip = g_anSpyroHornStrikeTipOffsets;
+          RotateVectorByMatrix(&strike[0xC], tip, pos);
+          AddVector(pos, pos, (int *)(((char *)strike) - 0x198));
+          ApplyActiveGteRotation(tip + 6, vel);
+          if (g_nSpyroHornStrikeVariant != 0) {
+            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+                1, 1, pos, vel);
+          } else {
+            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+                1, 0, pos, vel);
+          }
         }
-        mtx = g_anSpyroComposedBodyMtxBlock;
-        tip = g_anSpyroHornStrikeTipOffsets2;
-        RotateVectorByMatrix(mtx, tip, pos);
-        AddVector(pos, pos, (int *)(((char *)mtx) - 0x1C8));
-        ApplyActiveGteRotation(tip + 6, vel);
-        if (g_nSpyroHornStrikeVariant != 0) {
-          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
-              1, 1, pos, vel);
-        } else {
-          ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
-              1, 0, pos, vel);
+        {
+          int *mtx = g_anSpyroComposedBodyMtxBlock;
+          int *tip = g_anSpyroHornStrikeTipOffsets2;
+          RotateVectorByMatrix(mtx, tip, pos);
+          AddVector(pos, pos, (int *)(((char *)mtx) - 0x1C8));
+          ApplyActiveGteRotation(tip + 6, vel);
+          if (g_nSpyroHornStrikeVariant != 0) {
+            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+                1, 1, pos, vel);
+          } else {
+            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+                1, 0, pos, vel);
+          }
         }
       } else if ((g_dwPadPressed & 0x20) &&
                  ((timer = g_anSpyroHornStrikeTimerBlock)[0] >= 0x2C)) {

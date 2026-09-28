@@ -107,6 +107,8 @@ void Initialize(void) {
   g_abFrameDispEnv0.isrgb24 = 1;
   g_abFrameDispEnv1.isrgb24 = 1;
   FillWord(fill, 0, 0x5A000);
+  i = 0;
+  bias = -0xE0;
   do {
     AddBiasToColorRuns(&g_pOtDepthBinHead0, g_apDrawBufBlock[0], bias);
     rect[2] = 0x300;

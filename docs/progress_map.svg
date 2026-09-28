@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">38.47% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">830,748 / 2,159,608 split-code bytes · 642 matched · 45 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">38.49% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">831,272 / 2,159,608 split-code bytes · 646 matched · 41 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -16,7 +16,7 @@
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
-<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">28%</text>
+<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">29%</text>
 <rect x="14.00" y="114.00" width="131.59" height="82.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RenderWorldChunks  ·  19976 bytes  ·  handwritten</title></rect>
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  asm</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  asm</title></rect>
@@ -88,7 +88,7 @@
 <rect x="39.50" y="483.85" width="26.87" height="23.03" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0C_Draw  ·  1132 bytes  ·  wip</title></rect>
 <rect x="66.37" y="483.85" width="26.40" height="23.03" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitStaticActorMeshList  ·  1112 bytes  ·  handwritten</title></rect>
 <rect x="92.77" y="483.85" width="25.83" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceGemCutsceneFrame  ·  1088 bytes  ·  matched</title></rect>
-<rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroHornStrikeAttack  ·  1084 bytes  ·  wip</title></rect>
+<rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroHornStrikeAttack  ·  1084 bytes  ·  matched</title></rect>
 <rect x="144.32" y="483.85" width="25.16" height="23.03" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_800671F0  ·  1060 bytes  ·  asm</title></rect>
 <rect x="169.48" y="483.85" width="24.97" height="23.03" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroTriggerEvent  ·  1052 bytes  ·  asm</title></rect>
 <rect x="194.46" y="483.85" width="24.97" height="23.03" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdCommandSync  ·  1052 bytes  ·  asm</title></rect>
@@ -170,7 +170,7 @@
 <rect x="268.61" y="546.19" width="15.86" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildCameraViewMatrix  ·  496 bytes  ·  matched</title></rect>
 <rect x="284.47" y="546.19" width="15.73" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdInitDriver  ·  492 bytes  ·  matched</title></rect>
 <rect x="300.20" y="546.19" width="15.60" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B294  ·  488 bytes  ·  matched</title></rect>
-<rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  wip</title></rect>
+<rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  matched</title></rect>
 <rect x="100.19" y="580.26" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildSaveGameBuffer  ·  484 bytes  ·  matched</title></rect>
 <rect x="100.19" y="597.10" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardInit  ·  484 bytes  ·  matched</title></rect>
 <rect x="100.19" y="613.94" width="15.71" height="16.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReturningHome_Draw  ·  476 bytes  ·  matched</title></rect>
@@ -183,7 +183,7 @@
 <rect x="100.19" y="727.77" width="15.71" height="15.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemCutscene_Draw  ·  440 bytes  ·  matched</title></rect>
 <rect x="100.19" y="743.08" width="15.71" height="15.17" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateLedgeGrabCamera  ·  436 bytes  ·  asm</title></rect>
 <rect x="100.19" y="758.25" width="15.71" height="15.17" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepSpyroOntoLocalFloor  ·  436 bytes  ·  matched</title></rect>
-<rect x="115.90" y="563.29" width="16.05" height="14.71" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>RelocateMobActorTable  ·  432 bytes  ·  wip</title></rect>
+<rect x="115.90" y="563.29" width="16.05" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateMobActorTable  ·  432 bytes  ·  matched</title></rect>
 <rect x="131.95" y="563.29" width="16.05" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FinalizePadCalibration  ·  432 bytes  ·  matched</title></rect>
 <rect x="148.00" y="563.29" width="16.05" height="14.71" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80066F34  ·  432 bytes  ·  asm</title></rect>
 <rect x="164.06" y="563.29" width="15.61" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ArcTan2  ·  420 bytes  ·  handwritten</title></rect>
@@ -255,7 +255,7 @@
 <rect x="142.94" y="603.97" width="11.79" height="12.42" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardWrite  ·  268 bytes  ·  matched</title></rect>
 <rect x="142.94" y="616.40" width="11.79" height="12.24" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ArcTan2_8bit  ·  264 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="628.63" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginGemCutscene  ·  264 bytes  ·  matched</title></rect>
-<rect x="142.94" y="640.87" width="11.79" height="12.24" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80038C4C  ·  264 bytes  ·  wip</title></rect>
+<rect x="142.94" y="640.87" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038C4C  ·  264 bytes  ·  matched</title></rect>
 <rect x="142.94" y="653.10" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LoadActorMeshTables  ·  264 bytes  ·  matched</title></rect>
 <rect x="142.94" y="665.34" width="11.79" height="12.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollMemCardEvents  ·  264 bytes  ·  matched</title></rect>
 <rect x="142.94" y="677.57" width="11.79" height="12.05" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitActorTriangle  ·  260 bytes  ·  handwritten</title></rect>

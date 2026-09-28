@@ -1,6 +1,25 @@
 #include "types.h"
 
-/* PARKED 2026-09-09 (fresh vein target - never opened before this session).
+/* UPDATE 2026-09-27-2: 132 -> 32 masked, 1286 vs 1287 (-1). R1 is CLOSED:
+   - `register int k asm("$5")` block-scoped in both edge loops (k in a1,
+     the index temp then takes a2), and the `nPoints - 1` wrap read through a
+     `$2` local (a pinned k otherwise loads nPoints straight into a1).
+   - `ko = k * 12` + the KPT macro in the first edge loop's second half: the
+     original holds the byte offset live through the four-arm extents test;
+     a cse temp is recomputed after it (+3 insns gone).
+   - `shift = CLZ(...); if (shift >= 0xf) { shift >>= 1; ...` (n and shift
+     are one variable in the original: move s4,v0 / sra s4,s4,1).
+   - the `/ nPoints` divisor as a `$2` block local.
+   - the mesh colour read as `*(unsigned int *)((char *)pMesh + 0x10)`: a
+     non-struct MEM is ordered after the preceding scalar store (colour /
+     g_nFadeProgress), a struct field load is hoisted above it (3 sites).
+   OPEN: frame 376 vs 416 (five 8-byte spill slots short: flagX/flagY/i
+   spill at 264/272/224 vs 272/280/264); the second-loop point loop (0xd50)
+   runs one register high (a1/a0/a2/v1 vs ours a2/a1/a3/a0); the 0x5f0 zero
+   stores and 0x634 entry reload (the original reloads the mob pointer after
+   the tri-stack store; array-alias stores for it were worse, 44/53).
+
+   PARKED 2026-09-09 (fresh vein target - never opened before this session).
    State: 1291 vs 1287 insns (+4), 132 masked mismatches over 86 regions,
    register-anchored, final positional offset +4. Does NOT link (over slot).
 
@@ -151,7 +170,9 @@ typedef struct EdgeRec {
 
 extern unsigned char D_800771C8[]; /* per-mob visibility gate bytes */
 extern EdgeRec D_80077EA0[];       /* silhouette edge records */
-extern ScreenPt D_80078DD8[];      /* projected ring points */
+extern ScreenPt D_80078DD8[]; /* projected ring points */
+/* point k through a held byte offset (the original keeps k*12 live) */
+#define KPT (*(ScreenPt *)((char *)D_80078DD8 + ko))
 extern int D_80076E24[];           /* [-0x10] view mtx, [-0x15] world mtx */
 extern int D_800785B4;             /* static-mesh LOD cutoff */
 
@@ -176,6 +197,7 @@ void DrawActors(void) {
   int i;
   int j;
   int k;
+  int ko;
   int n;
   int shift;
   int dist;
@@ -269,12 +291,13 @@ void DrawActors(void) {
       flagX = 1;
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
       color = abs(n) >> 1;
-      color = ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
-                                    0xffffff, color);
+      color = ComputeDepthCuedColor(
+          *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
+          0xffffff, color);
       SubtractVector(vDelta, g_apScriptedMobEntries[i]->pts[0], g_anCameraPos);
-      n = CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
-      shift = n >> 1;
-      if (n >= 0xf) {
+      shift = CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
+      if (shift >= 0xf) {
+        shift >>= 1;
         RShiftVector3(vDelta, shift);
         dist = VectorLength(vDelta, 1) << shift;
       } else {
@@ -322,6 +345,8 @@ void DrawActors(void) {
                vDelta[2] * g_apScriptedMobEntries[i]->nz;
 
       for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+        register int k asm("$5");
+
         if (facing > 0) {
           k = j + 1;
           if (k == g_apScriptedMobEntries[i]->nPoints) {
@@ -330,7 +355,11 @@ void DrawActors(void) {
         } else {
           k = j - 1;
           if (k < 0) {
-            k = g_apScriptedMobEntries[i]->nPoints - 1;
+            {
+              register int n asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+
+              k = n - 1;
+            }
           }
         }
         sumX += D_80078DD8[k].x;
@@ -340,7 +369,8 @@ void DrawActors(void) {
             (unsigned int)(D_80078DD8[k].y - 1) < 0xef && D_80078DD8[k].z > 0) {
           flags = 1;
         }
-        xk = D_80078DD8[k].x;
+        ko = k * 12;
+        xk = KPT.x;
         if (maxX < xk) {
           do {
             maxX = xk;
@@ -349,7 +379,7 @@ void DrawActors(void) {
         if (xk < minX) {
           minX = xk;
         }
-        yk = D_80078DD8[k].y;
+        yk = KPT.y;
         if (maxY < yk) {
           maxY = yk;
         }
@@ -378,9 +408,9 @@ void DrawActors(void) {
           D_80077EA0[nEdges].p0 =
               (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
           D_80077EA0[nEdges].p1 =
-              (D_80078DD8[k].y << 16) | (unsigned short)D_80078DD8[k].x;
-          D_80077EA0[nEdges].nx = D_80078DD8[j].y - D_80078DD8[k].y;
-          D_80077EA0[nEdges].ny = D_80078DD8[k].x - D_80078DD8[j].x;
+              (KPT.y << 16) | (unsigned short)KPT.x;
+          D_80077EA0[nEdges].nx = D_80078DD8[j].y - KPT.y;
+          D_80077EA0[nEdges].ny = KPT.x - D_80078DD8[j].x;
           D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
                                  D_80077EA0[nEdges].ny * D_80078DD8[j].y;
           nEdges++;
@@ -388,10 +418,13 @@ void DrawActors(void) {
       }
 
       if ((flagX == 0 && flagY == 0) || nEdges == 0) {
-        n = g_apScriptedMobEntries[i]->nPoints;
-        sumX /= n;
-        g_nActorMeshOtDepthBin = (g_nActorMeshOtDepthBin / n) >> 7;
-        sumY /= n;
+        {
+          register int np asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+
+          sumX /= np;
+          g_nActorMeshOtDepthBin = (g_nActorMeshOtDepthBin / np) >> 7;
+          sumY /= np;
+        }
         if (g_nActorMeshOtDepthBin >= 0x100) {
           g_nActorMeshOtDepthBin += 0x40;
         }
@@ -452,7 +485,7 @@ void DrawActors(void) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
               g_dwActorMeshFadeColor =
-                  ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
+                  ComputeDepthCuedColor(*(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
                                         color, dist - 0x3000);
               EmitDynamicActorMeshFogged(&g_dwActorMeshFadeColor);
             } else {
@@ -502,6 +535,8 @@ void DrawActors(void) {
           }
 
           for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+            register int k asm("$5");
+
             if (facing > 0) {
               k = j + 1;
               if (k == g_apScriptedMobEntries[i]->nPoints) {
@@ -510,7 +545,11 @@ void DrawActors(void) {
             } else {
               k = j - 1;
               if (k < 0) {
-                k = g_apScriptedMobEntries[i]->nPoints - 1;
+                {
+                  register int n asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+
+                  k = n - 1;
+                }
               }
             }
             if ((unsigned int)(D_80078DD8[k].x - 1) < 0x1ff &&
@@ -585,7 +624,7 @@ void DrawActors(void) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
               g_dwActorMeshFadeColor =
-                  ComputeDepthCuedColor(g_apScriptedMobEntries[i]->pMesh->color,
+                  ComputeDepthCuedColor(*(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
                                         color, dist - 0x3000);
               EmitDynamicActorMeshFogShaded(
                   (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
