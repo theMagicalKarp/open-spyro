@@ -10,10 +10,28 @@
  * classes are the exit drop (9), the post guard (314), the lunging enemy
  * (335) and the spinning enemy (349).
  *
- * PARK (2026-09-27): length-exact decode, 56 imm-kept shape mismatches.
- * Load-bearing forms found so far:
- *   - No `one` carrier: the constant 1 is loop-hoisted naturally into s7;
- *     `sixteen` is a loop-top carrier used by the animation macros (s5).
+ * Load-bearing source forms (matched 2026-09-28):
+ *   - Loop-top constant carriers, in this order: `sixteen` (s5), then `oneq`
+ *     (a `short`) and `one` (an int), each with exactly one use. loop.c's
+ *     combine_movables takes leaders in list order: `oneq` leads the byte
+ *     `= 1` sites, `one` then leads the int sites and absorbs `oneq`, which
+ *     orphans oneq's members so they stay inline `li rX,1`. `short` rather
+ *     than `unsigned char` keeps cse from substituting oneq into later QImode
+ *     stores (that broke the case 110/331 cross-jump). Without the carriers
+ *     the hoisted 1 lands after `spy` in the preheader.
+ *   - `dt` is a `$5` register variable: as a pseudo it dies in case 250's
+ *     `phase += dt` and expand_preferences hands its a1 preference to the sum.
+ *   - Cases 314/335 guard: `(c = actor->unk48) != K` with `unsigned char c`,
+ *     and the range test in QImode (`(unsigned char)(c - 13) >= 3`), which
+ *     keeps the original's `andi` on the compare and the raw lbu reg in the
+ *     range test.
+ *   - Case 9: the posZ read is a scalar `*(int *)((char *)actor + 0x14)` so it
+ *     stays below the D_80078A84 store, and the level/tens stores sit before
+ *     the 0x80000012 store (sched1 LUID order of the two hoisted constants).
+ *   - Case 314: `limit = 10` after the first call; `mate->unk46` copied before
+ *     the two 0x28 stores.
+ *   - Case 335: `&actor->posX` (not `pos`) for the svM copy, so `pos` dies
+ *     early; the `do { } while (0);` barrier sits after the head call.
  *   - Case 349 shares ONE `ENTER_POSE(actor, 4)` through gotos from cases 3
  *     and 5. Three separate copies push the constant-4 movable over loop.c's
  *     threshold and 4 gets hoisted (li t1,4 everywhere).
@@ -24,12 +42,6 @@
  *   - Case 120 reads the stage global through `extern int D_80078BBC[]`.
  *   - `x << 16 >> 21` for a sine value >> 5 (a plain `>> 5` is narrowed to a
  *     HImode shift and comes out lhu/sll/sra).
- * OPEN:
- *   - Cases 314/335 head: the original has `andi rX,rY,0xff` feeding the
- *     `unk48 != K` compare (-2 insns); no local/cast/multi-set form found.
- *   - Case 9 exit: 0x80008000 must land in v1 (A84 load then hoists).
- *   - Case 335: pos/dist/SPY-base s0/s2/s4 map; case 331 s0/s2; case 250 v1.
- *   - Loop head: `li s7,1` is emitted after the loop label, not before.
  *
  * ==== Core records ====
  *
@@ -1173,7 +1185,6 @@ extern void func_80039E94(Actor *actor, void *path, int a, int b, int c, int d,
     ANIM_RESET(a, n);                                                          \
   }
 
-#define one 1
 
 /* ENTER_POSE with the already-there test first. */
 #define ENTER_POSE4(a, n)                                                      \
@@ -1190,8 +1201,10 @@ void func_level_4_8007AF94(void) {
   Actor *actor;
   SpyroObj *spy;
   int sixteen;
+  int one;
+  short oneq;
   char *base;
-  int dt;
+  register int dt asm("$5");
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -1228,6 +1241,8 @@ void func_level_4_8007AF94(void) {
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
     sixteen = 0x10;
+    oneq = 1;
+    one = 1;
     spy = (SpyroObj *)(base - 8);
 
     if (actor->unk48 >= 0x80) {
@@ -1252,7 +1267,7 @@ void func_level_4_8007AF94(void) {
           func_8003C358(actor, 0);
           actor->posZ -= 0x600;
         }
-        actor->unk48 = one;
+        actor->unk48 = oneq;
       } else {
         actor->unk48 = 0;
       }
@@ -1290,7 +1305,7 @@ void func_level_4_8007AF94(void) {
             D_80078C4C = 0x80008000;
             D_80078C7C = actor;
             D_80078A84 |= 0x800;
-            D_80078C58 = (&actor->posX)[2] + 0x4000;
+            D_80078C58 = *(int *)((char *)actor + 0x14) + 0x4000;
             func_80017700((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {
@@ -1304,14 +1319,14 @@ void func_level_4_8007AF94(void) {
                 D_80075864 = 0;
                 D_8007576C = -1;
                 D_800756D0 = one;
-                D_800756B0 = one;
+                D_800756B0 = 1;
                 D_800756AC = 0;
-                D_800757D8 = one;
-                D_8007579C = one;
-                D_80076E90 = 0x80000012;
-                D_80078C4C = 0;
+                D_800757D8 = 1;
+                D_8007579C = 1;
                 D_800758AC = D_8007596C;
                 D_800758B4 = D_8007596C / 10 * 10;
+                D_80076E90 = 0x80000012;
+                D_80078C4C = 0;
                 func_8004AC24(0);
                 D_80078CA4 = 0;
                 D_80078768 = 0;
@@ -3161,7 +3176,7 @@ void func_level_4_8007AF94(void) {
       break;
     }
 
-    /* Sparkling shard: one puff per frame. */
+    /* Sparkling shard: 1 puff per frame. */
     case 309: {
       ShardState *st = actor->state;
 
@@ -3258,9 +3273,10 @@ void func_level_4_8007AF94(void) {
      * Spyro gets close, and hands off to its partner when knocked down. */
     case 314: {
       GuardState *st = actor->state;
+      unsigned char c;
 
-      if ((actor->flags & 0x90000) && (unsigned int)(actor->unk48 - 10) >= 10 &&
-          actor->unk48 != 0x62) {
+      if ((actor->flags & 0x90000) && (unsigned char)((c = actor->unk48) - 10) >= 10 &&
+          c != 0x62) {
         actor->unk48 = 10;
         continue;
       }
@@ -3269,13 +3285,14 @@ void func_level_4_8007AF94(void) {
 
       switch (actor->unk48) {
       case 0: {
-        int limit = 10;
+        int limit;
         int toSpy;
         int toMe;
         int speed;
 
         toSpy = func_80016AB4(st->posts->nodes[st->stage].x - spy->posX,
                               st->posts->nodes[st->stage].y - spy->posY, 0);
+        limit = 10;
         toMe = func_80016AB4(actor->posX - st->posts->nodes[st->stage].x,
                              actor->posY - st->posts->nodes[st->stage].y, 0);
         speed = st->stage * 20 + 0xB4;
@@ -3329,12 +3346,12 @@ void func_level_4_8007AF94(void) {
           mate->unk3C = 7;
           mate->unk3D = 7;
           ms->anim = 7;
-          ms->stage = one;
+          ms->stage = 1;
           ms->path->cur = st->path->cur;
           func_80017700(&mate->posX, &actor->posX);
+          mate->unk46 = actor->unk46;
           mate->unk50 = 0x28;
           mate->unk52 = 0x28;
-          mate->unk46 = actor->unk46;
           func_8003ABC0(actor, 1, 0, 0);
           func_8003B7C0(actor);
           ANIM_SET(actor, 5);
@@ -3500,14 +3517,15 @@ void func_level_4_8007AF94(void) {
       int *pos = &actor->posX;
       LungeState *st;
       int dist;
+      unsigned char c;
 
-      do {
-      } while (0);
       st = actor->state;
       dist = func_80017990(pos, &spy->posX);
+      do {
+      } while (0);
 
-      if ((actor->flags & 0x90000) && actor->unk48 != 4 &&
-          (unsigned int)(actor->unk48 - 13) >= 3) {
+      if ((actor->flags & 0x90000) && (c = actor->unk48) != 4 &&
+          (unsigned char)(c - 13) >= 3) {
         if (st->hits == 0) {
           func_8003ABC0(actor, 1, 0, 0);
           func_8003B7C0(actor);
@@ -3531,7 +3549,7 @@ void func_level_4_8007AF94(void) {
             func_800381BC(actor->unk46,
                           func_80016AB4(spy->posX - actor->posX,
                                         SPY.posY - actor->posY, 0));
-            *st->flag = one;
+            *st->flag = 1;
             st->hits -= 1;
             st->anim += 7;
             st->heading = actor->unk46;
@@ -3545,7 +3563,7 @@ void func_level_4_8007AF94(void) {
       }
 
       actor->flags = 0;
-      func_80017700(svM, pos);
+      func_80017700(svM, &actor->posX);
       svM[2] += 0x400;
       if (func_8004D5EC(svM, 0x1000) == 0) {
         func_8003ABC0(actor, 4, 0, 0);
@@ -3583,7 +3601,7 @@ void func_level_4_8007AF94(void) {
         if (func_80038EE0(actor,
                           func_80016AB4(st->target[0] - actor->posX,
                                         st->target[1] - actor->posY, 0),
-                          0xA, 4, one) != 0) {
+                          0xA, 4, 1) != 0) {
           func_8003851C(actor, 1, 0);
           actor->unk48 = 2;
           continue;
@@ -3698,13 +3716,13 @@ void func_level_4_8007AF94(void) {
         break;
 
       case 20:
-        st->alerted = one;
+        st->alerted = 1;
         actor->unk48 = 0;
         continue;
 
       case 100:
         if (func_80017990(&actor->posX, st->home) < 0xB4) {
-          if (func_80038EE0(actor, st->heading, 6, 5, one) != 0) {
+          if (func_80038EE0(actor, st->heading, 6, 5, 1) != 0) {
             *st->flag = 0;
             st->wait = 0x78;
             actor->unk48 = 0;
@@ -3715,7 +3733,7 @@ void func_level_4_8007AF94(void) {
           if (func_80038EE0(actor,
                             func_80016AB4(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, 0),
-                            6, 0x14, one) != 0) {
+                            6, 0x14, 1) != 0) {
             func_80039398(actor, 0x82, 0, 0, 5);
           }
         }
@@ -3860,7 +3878,7 @@ void func_level_4_8007AF94(void) {
         }
         if (st->speed > 0x1E) {
           st->speed -= 0x1E;
-          func_80039688(actor, st->angle, st->speed, 0, 0x12C, one);
+          func_80039688(actor, st->angle, st->speed, 0, 0x12C, 1);
         }
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);

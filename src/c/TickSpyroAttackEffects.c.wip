@@ -32,7 +32,23 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    (count, kind, world position, direction | NULL). */
 #define SPAWN ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)
 
-/* PARKED 2026-07-30-3 — 562/562 insns, 28 words differ (95.0%), every block
+/* UPDATE 2026-09-28 -- 20/562 (was 24).  Arc-path select: the table base is
+   pinned `$2` and the result `$3` (A256), and the sum is written in int
+   arithmetic `(short *)(k * 8 + (int)tbl)` so the shift is operand 0 (A275).
+   The product is its OWN local `k`, not the shared `n`: the original's mflo
+   t0 is a reload through the spill reg, not an allocation.
+   ROOT CAUSE of the F7 "0x68 UNUSED" slot: it is `k`.  In the original k is
+   a spilled pseudo (slot 0x68) whose store is removed by delete_output_reload
+   and whose one use inherits t0, so the slot is allocated and never touched.
+   Verified: giving k a loop-top use (`__asm__ volatile("" : : "r"(k))`)
+   makes it spill to 0x68 and the counters/giv land at 0x58/0x60/0x70 exactly
+   (the extra use then costs a sw/lw).  Here k gets LO (preferred class from
+   its two mult sets), so it is never spilled and `pad[2]` is still needed.
+   Open: what, in the original, keeps k out of LO without making it live
+   across the loop.  The else-arm `la` is also still scheduled above the
+   `i - 4` (4 insns), and the preheader F1 below is unchanged (9 insns).
+
+   PARKED 2026-07-30-3 — 562/562 insns, 28 words differ (95.0%), every block
    positionally aligned.  Four residues, all named:
 
    F7  spill-slot order.  The original's spill block is [0x58 empty]
@@ -104,6 +120,7 @@ void TickSpyroAttackEffects(int steps) {
   int empty;
   int sfxDone;
   int pad[2];
+  int k;
   int *wp;
   unsigned char *seg;
   unsigned char *map;
@@ -114,7 +131,6 @@ void TickSpyroAttackEffects(int steps) {
   int *cursor;
   int *amtx;
   int *rec;
-  short *path;
   int count;
   int limit;
   int mask;
@@ -225,14 +241,17 @@ void TickSpyroAttackEffects(int steps) {
         if ((*age) >= limit) {
           *age = 0;
         } else if ((*state) != 2) {
+          register short *tbl asm("$2");
+          register short *path asm("$3");
+
           if (i < 4) {
-            n = i * count;
-            path = g_anSpyroHornStrikeArcPathsShort;
+            k = i * count;
+            tbl = g_anSpyroHornStrikeArcPathsShort;
           } else {
-            n = (i - 4) * count;
-            path = g_anSpyroHornStrikeArcPathsLong;
+            k = (i - 4) * count;
+            tbl = g_anSpyroHornStrikeArcPathsLong;
           }
-          path += n * 4;
+          path = (short *)(k * 8 + (int)tbl);
           if ((*age) < (count - 1)) {
             SVectorToVector(tip, &path[((*age) + 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);

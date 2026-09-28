@@ -39,13 +39,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
 | `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
-| `0x80050bd0` | DrawActors | main | 5148 | 1488 | local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall |
+| `0x80050bd0` | DrawActors | main | 5148 | 1424 | local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
-| `0x800127c0` | Initialize | main | 1328 | 1156 |  |
+| `0x800127c0` | Initialize | main | 1328 | 1164 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
 | `0x8007af94` | func_level_4_8007AF94 | ovl/level_4_artisans_toasty | 28180 | 1052 | actor-update megafunction clone; length -2 (two missing `andi 0xff` on unk48 != K) + allocation ties (case 9 const v1/v0, case 335 s0/s2/s4, case 250 v1/a1, case 331) |
-| `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | 944 |  |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block |
@@ -54,13 +53,11 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8008af54` | func_level_13_8008AF54 | ovl/level_13_magic_crafters_alpine_ridge | 6788 | 584 | B25 dead `li a3,3` x4 - the class survives a fresh read of the asm |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | 560 |  |
 | `0x80054600` | InitHudCounters | main | 904 | 476 |  |
-| `0x8005e03c` | HandleHardwareInterrupt | main | 488 | 440 | F1/F7 pure register rotation |
 | `0x80061820` | EnqueueGpuOp | main | 736 | 352 | divide-block delay slot (residues 1+2 are one problem) + volatile-vs-plain WIDX hoist |
 | `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | 344 | positional: a 4-insn head knot at orig[28..50] zeroes all partial credit; then A133 constant-in-callee-saved allocation |
 | `0x8005f2a4` | ResetGraph | main | 388 | 328 |  |
 | `0x800655a0` | CdDataSync | main | 364 | 316 | F-class sched1 tie in one WritePrintf arg block |
 | `0x800557cc` | func_800557CC | main | 400 | 288 | B13 (A233 not free here) + a 5-insn st->place schedule |
-| `0x80038c4c` | func_80038C4C | main | 264 | 240 | three-way local-alloc: rec[3]/rec[4] share v0 before $2 is live |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | 236 | decode incomplete |
 | `0x8003d52c` | IntegrateSpyroBodyEuler | main | 420 | 232 | B11 lagged-mult + B-i fold |
 | `0x800606c8` | func_800606C8 | main | 536 | 228 | B9 clamp (inline) |
@@ -72,7 +69,6 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8005dd0c` | WaitForFrameDeadline | main | 156 | 128 |  |
 | `0x8005c1c0` | ControlSpuDmaTransfer | main | 656 | 112 | B22 combine deletes a redundant andi 0xFFFF on a single-use zero-extending load |
 | `0x8006606c` | CdRead | main | 260 | 72 |  |
-| `0x80013230` | RelocateMobActorTable | main | 432 | 64 | F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact |
 | `0x80065dbc` | CdReadStart | main | 532 | 60 |  |
 | `0x8003d3b8` | ComputeSpyroMoveTargetFromPad | main | 372 | 56 |  |
 | `0x8003d978` | BuildSpyroVelocityFromBodyEuler | main | 144 | 16 |  |

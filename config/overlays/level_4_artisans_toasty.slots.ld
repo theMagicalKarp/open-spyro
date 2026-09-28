@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_4_artisans_toasty.ld. */
     . = 0x0000055c ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_8007AF94)
+    build/overlays/level_4_artisans_toasty/c/func_level_4_8007AF94.o(.text)
     . = 0x00007370 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.func_level_4_80081DA8)
     build/overlays/level_4_artisans_toasty/c/func_level_4_80081DA8.o(.text)
