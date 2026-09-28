@@ -4695,3 +4695,18 @@ TickSpyroHornStrikeAttack_2026_09_27_2:
   class: "F1 whole-function s0/s1 rotation closed by a block-scoped $17 pin"
   date: 2026-09-27
   note: "0x800499C0, 1,084 B. MATCH -> C from 17/271. `register int *strike asm(\"$17\")` scoped to the non-cancel branch; the two tip-spawn halves as separate blocks with their own tip/mtx locals (function-level tip/mtx take s2 once s0/s1 are split)."
+FlushGpuQueue_2026_09_27_2:
+  verdict: parked
+  class: "§F8-adjacent sched1 tie (unchanged); A256 pins shorten the diff but cost the load-delay nop"
+  date: 2026-09-27
+  note: "14/187 wip kept. `register int r asm(\"$5\") = RIDX;` for the func-slot index -> 8 masked but 186 insns (the hoisted third RIDX read fills the nop the original keeps); + L3 as a second $5 set, or L2 as $3: 8-9, still -1."
+Initialize_2026_09_27_2:
+  verdict: parked
+  class: "fade-1 inits were missing from the wip; callee-saved map reachable by a $17 pin, then a CD-block schedule knot"
+  date: 2026-09-27
+  note: "1,328 B, wip 37/332. `i = 0; bias = -0xE0;` just before the fade-1 do/while fills the two early jal delay slots (35/332, wip not updated). `register int *lba asm(\"$17\")` fixes the s0/s1 600-vs-lba swap but reorders the CD-read block (+1 insn, 25 masked); fade-loop counters: the original's `addiu s0,1` is not the first insn after the goto label, ours is and reorg steals it into the bnez slot."
+func_level_4_8007AF94_andi_2026_09_27_2:
+  verdict: parked
+  class: "andi 0xff mechanism pinned down; no form fits the original's dead-after v1"
+  date: 2026-09-27
+  note: "The mask survives only if combine cannot fold (and raw 0xff) into the compare: (a) the and sits in an earlier block than the compare (314 shape, but then sched1 puts it before the range test), or (b) the masked value is live after the compare (it lands in a callee-saved reg). The original's mask is dead after the compare and in v1 at both sites. Tried: case-range/one-case switches, (unsigned char) casts, uchar/int locals single- and multi-set, function-level shared state, a do/while(0) barrier, $3 register pin, inline helpers, bitfields — all fold."
