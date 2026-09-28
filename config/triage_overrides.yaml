@@ -4670,3 +4670,8 @@ HandleHardwareInterrupt_2026_09_27_2:
   class: "F1/F7 register rotation closed by A256 pins"
   date: 2026-09-27
   note: "0x8005E03C, 488 B. MATCH -> C from 10/122. I_STAT pointer pinned $4 + enable value pinned $3 (8 -> 4 -> 2); last 2 were AND operand order: a volatile HImode I_STAT read is a subreg after combine and canonicalises FIRST in the and; a non-volatile read through the pinned pointer stays SImode REG and keeps (and $3 x)."
+RelocateMobActorTable_2026_09_27_2:
+  verdict: matched
+  class: "B21 param-preference wall retired by an A256 pin on the param copy"
+  date: 2026-09-27
+  note: "0x80013230, 432 B. MATCH -> C from 92/108. `register int *stream asm(\"$6\") = arg;` escapes the a0 preference (loop counter then takes a0). Then: inner-loop mesh re-fetch as a block-local `$2` pin, `word = mesh[4]` read before the count shift (fills the lh delay slot), relocation sum pinned `$3` (a block-local temp re-scheduled the load; a multi-set dest canonicalised the add operands)."
