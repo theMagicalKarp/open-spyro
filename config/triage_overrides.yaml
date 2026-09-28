@@ -4675,3 +4675,8 @@ RelocateMobActorTable_2026_09_27_2:
   class: "B21 param-preference wall retired by an A256 pin on the param copy"
   date: 2026-09-27
   note: "0x80013230, 432 B. MATCH -> C from 92/108. `register int *stream asm(\"$6\") = arg;` escapes the a0 preference (loop counter then takes a0). Then: inner-loop mesh re-fetch as a block-local `$2` pin, `word = mesh[4]` read before the count shift (fills the lh delay slot), relocation sum pinned `$3` (a block-local temp re-scheduled the load; a multi-set dest canonicalised the add operands)."
+func_80038C4C_2026_09_27_2:
+  verdict: matched
+  class: "three-way local-alloc tie closed by a $2 result pin"
+  date: 2026-09-27
+  note: "0x80038C4C, 264 B. MATCH -> C from 6/66. `register int r asm(\"$2\") = 0; if (rx < rec[3]) r = ay < rec[4]; return r;` keeps $2 live across the rec[3] load, so rec[3] takes v1 and ay a1. Pinning the limit to $3 instead pushed an mflo to t0; ay as $5 rewired the entry param copy."
