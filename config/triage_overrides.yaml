@@ -4710,3 +4710,18 @@ func_level_4_8007AF94_andi_2026_09_27_2:
   class: "andi 0xff mechanism pinned down; no form fits the original's dead-after v1"
   date: 2026-09-27
   note: "The mask survives only if combine cannot fold (and raw 0xff) into the compare: (a) the and sits in an earlier block than the compare (314 shape, but then sched1 puts it before the range test), or (b) the masked value is live after the compare (it lands in a callee-saved reg). The original's mask is dead after the compare and in v1 at both sites. Tried: case-range/one-case switches, (unsigned char) casts, uchar/int locals single- and multi-set, function-level shared state, a do/while(0) barrier, $3 register pin, inline helpers, bitfields — all fold."
+func_level_4_8007AF94_2026_09_28:
+  verdict: matched
+  class: "actor-update megafunction; andi = assignment-in-condition + QImode range; loop.c constant-group carriers (short oneq + int one)"
+  date: 2026-09-28
+  note: "28,180 B. 56 -> 0. `(c = actor->unk48) != K` + `(unsigned char)(c - 13) >= 3` keeps the andi (two uncombined zero-extends of one QI load); dt as a $5 register variable stops expand_preferences giving the phase sum dt's a1; loop-top `oneq` (short) then `one` (int), one use each, reproduce combine_movables' orphaned byte group and put 1 before spy in the preheader; scalar posZ read, &actor->posX for svM, statement moves for LUID ties."
+TickSpyroAttackEffects_2026_09_28:
+  verdict: parked
+  class: "F7 spill slot root-caused: 0x68 is the arc product k, spilled and its store removed by delete_output_reload; k gets LO here"
+  date: 2026-09-28
+  note: "24 -> 20/562. Table base pinned $2, path $3, int-arithmetic sum, separate product local k. A loop-top asm use of k proves the slot (counters/giv land at 0x58/0x60/0x70) but costs sw/lw. Open: what keeps k out of LO without a loop-carried life; else-arm la order; preheader F1."
+Gamestate0C_Draw_2026_09_28:
+  verdict: parked
+  class: "re-screened only (4/283); seven prior entries, no new lever tried"
+  date: 2026-09-28
+  note: "Measured 4/283 and 5/361 (RespawnOrGameOver_Draw); both already exhausted with pins per prior entries -- skipped."

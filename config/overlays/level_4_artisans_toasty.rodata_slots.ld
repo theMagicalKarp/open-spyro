@@ -4,18 +4,7 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000001c ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AA54)
-    . = 0x00000034 ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AA6C)
-    . = 0x00000054 ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AA8C)
-    . = 0x0000007c ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AAB4)
-    . = 0x000000d4 ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AB0C)
-    . = 0x0000026c ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007ACA4)
+    build/overlays/level_4_artisans_toasty/c/func_level_4_8007AF94.o(.rodata)
     . = 0x00000290 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007ACC8)
     build/overlays/level_4_artisans_toasty/c/func_level_4_800826F0.o(.rodata)
