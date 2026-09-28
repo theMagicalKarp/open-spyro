@@ -4680,3 +4680,13 @@ func_80038C4C_2026_09_27_2:
   class: "three-way local-alloc tie closed by a $2 result pin"
   date: 2026-09-27
   note: "0x80038C4C, 264 B. MATCH -> C from 6/66. `register int r asm(\"$2\") = 0; if (rx < rec[3]) r = ay < rec[4]; return r;` keeps $2 live across the rec[3] load, so rec[3] takes v1 and ay a1. Pinning the limit to $3 instead pushed an mflo to t0; ay as $5 rewired the entry param copy."
+func_8005FC6C_2026_09_27_2:
+  verdict: parked
+  class: "A187 copy-canonical (unchanged): pinned $2/$3 return copy is propagated away (A256a)"
+  date: 2026-09-27
+  note: "5/38. `register int *r asm(\"$2\") = ot; register int t asm(\"$3\") = sym & m; *r = t; return r;` (three spellings) -> cse stores through s0 and emits the copy last, byte-identical to the park."
+DrawActors_2026_09_27_2:
+  verdict: parked
+  class: "R1 closed by $5/$2 pins + held byte offset; residue = 40-byte spill-frame shortfall + one loop's register offset"
+  date: 2026-09-27
+  note: "5,148 B. 132 -> 32 masked (1286 vs 1287). Levers in the .c.wip UPDATE header: k pinned $5, nPoints-1 via $2, ko=k*12 held offset, shift=CLZ one variable, divisor $2, mesh colour via non-struct deref (stays below the preceding scalar store)."
