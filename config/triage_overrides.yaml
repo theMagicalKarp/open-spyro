@@ -4665,3 +4665,8 @@ func_level_2_8007AE40:
   class: "clone of func_level_4_8007AF94 (next head in the actor-update vein)"
   date: 2026-09-27
   note: "31,520 B; ~5,000 of 7,665 insns in arms >=90% similar to level_0/level_30 arms."
+HandleHardwareInterrupt_2026_09_27_2:
+  verdict: matched
+  class: "F1/F7 register rotation closed by A256 pins"
+  date: 2026-09-27
+  note: "0x8005E03C, 488 B. MATCH -> C from 10/122. I_STAT pointer pinned $4 + enable value pinned $3 (8 -> 4 -> 2); last 2 were AND operand order: a volatile HImode I_STAT read is a subreg after combine and canonicalises FIRST in the and; a non-volatile read through the pinned pointer stays SImode REG and keeps (and $3 x)."

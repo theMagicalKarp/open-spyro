@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">38.47% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">830,748 / 2,159,608 split-code bytes · 642 matched · 45 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">830,796 / 2,159,608 split-code bytes · 643 matched · 44 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -170,7 +170,7 @@
 <rect x="268.61" y="546.19" width="15.86" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildCameraViewMatrix  ·  496 bytes  ·  matched</title></rect>
 <rect x="284.47" y="546.19" width="15.73" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdInitDriver  ·  492 bytes  ·  matched</title></rect>
 <rect x="300.20" y="546.19" width="15.60" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B294  ·  488 bytes  ·  matched</title></rect>
-<rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  wip</title></rect>
+<rect x="100.19" y="563.29" width="15.71" height="16.98" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>HandleHardwareInterrupt  ·  488 bytes  ·  matched</title></rect>
 <rect x="100.19" y="580.26" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildSaveGameBuffer  ·  484 bytes  ·  matched</title></rect>
 <rect x="100.19" y="597.10" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardInit  ·  484 bytes  ·  matched</title></rect>
 <rect x="100.19" y="613.94" width="15.71" height="16.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReturningHome_Draw  ·  476 bytes  ·  matched</title></rect>
