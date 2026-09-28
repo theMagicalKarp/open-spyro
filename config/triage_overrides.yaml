@@ -4655,3 +4655,13 @@ func_level_30_8007D938_2026_09_27:
   class: "actor-update megafunction; closed on register pins, a single post-if tail store, and case-398 memory-dependence pins"
   date: 2026-09-27
   note: "0x8007D938, 23,600 B. MATCH -> C. From 107 imm-kept: asm(\"$16\") on case 310's i (fixed two cross-jumps too), asm(\"$7\") push, asm(\"$2\") SPY.posZ at both dz sites; `st->phase += dt`; `bearing = arm << 1`; y + x of split 0xB5 products; int-temp lean adds with (unsigned char) fields; `int last` for case 398's more; one `actor->flags = 0` after the 0xA0000 if/else (reorg re-duplicates it); goto into the AF4 branch's D_80078C68 clear; case 398 head via do/while(0) after CA0 + volatile A7F/C98 + `*(PortalDesc **)st` re-read + held `cf`; func_80057380 is void; the wander_body goto was a continue."
+func_level_4_8007AF94:
+  verdict: parked
+  class: "actor-update megafunction clone; length -2 (two missing `andi 0xff` on unk48 != K) + allocation ties (case 9 const v1/v0, case 335 s0/s2/s4, case 250 v1/a1, case 331)"
+  date: 2026-09-27
+  note: "28,180 B. First decode assembled from level_30/level_0 arms (17/24 arms >=92% similar) + 4 new arms (9, 314, 335, 349). Shape diff 2,153 -> 56 imm-kept in one session. Key levers: no `one` carrier; case 349's ENTER_POSE(4) shared by goto (else loop.c hoists constant 4); case 234 is a fade-out prop between 195 and 250; look-at C60/C64 struct; D_80078BBC[] alias in case 120; `<< 16 >> 21` sine shift. See .c.wip header OPEN list."
+func_level_2_8007AE40:
+  verdict: viable
+  class: "clone of func_level_4_8007AF94 (next head in the actor-update vein)"
+  date: 2026-09-27
+  note: "31,520 B; ~5,000 of 7,665 insns in arms >=90% similar to level_0/level_30 arms."
