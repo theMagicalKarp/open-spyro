@@ -4661,10 +4661,10 @@ func_level_4_8007AF94:
   date: 2026-09-27
   note: "28,180 B. First decode assembled from level_30/level_0 arms (17/24 arms >=92% similar) + 4 new arms (9, 314, 335, 349). Shape diff 2,153 -> 56 imm-kept in one session. Key levers: no `one` carrier; case 349's ENTER_POSE(4) shared by goto (else loop.c hoists constant 4); case 234 is a fade-out prop between 195 and 250; look-at C60/C64 struct; D_80078BBC[] alias in case 120; `<< 16 >> 21` sine shift. See .c.wip header OPEN list."
 func_level_2_8007AE40:
-  verdict: viable
-  class: "clone of func_level_4_8007AF94 (next head in the actor-update vein)"
-  date: 2026-09-27
-  note: "31,520 B; ~5,000 of 7,665 insns in arms >=90% similar to level_0/level_30 arms."
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_4/level_30/level_0 arms"
+  date: 2026-09-28
+  note: "31,520 B. 22 arms copied, 7 decoded (115/129/157/165/166/174/412). Last residue was loop.c's threshold -= 3 per hoist: the 3 and 4 groups stay inline only with ENTER_POSE_B (empty loop in the change body) in case 115."
 HandleHardwareInterrupt_2026_09_27_2:
   verdict: matched
   class: "F1/F7 register rotation closed by A256 pins"

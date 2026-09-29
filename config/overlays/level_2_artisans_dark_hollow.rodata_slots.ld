@@ -4,20 +4,7 @@
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000001c ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AA54)
-    . = 0x00000034 ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AA6C)
-    . = 0x00000054 ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AA8C)
-    . = 0x00000084 ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AABC)
-    . = 0x000000dc ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AB14)
-    . = 0x000000f4 ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AB2C)
-    . = 0x00000114 ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AB4C)
+    build/overlays/level_2_artisans_dark_hollow/c/func_level_2_8007AE40.o(.rodata)
     . = 0x0000013c ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AB74)
     build/overlays/level_2_artisans_dark_hollow/c/func_level_2_80083274.o(.rodata)
