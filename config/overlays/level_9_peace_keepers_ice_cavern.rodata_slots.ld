@@ -4,22 +4,7 @@
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x000006f4 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B12C)
-    . = 0x0000070c ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B144)
-    . = 0x00000724 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B15C)
-    . = 0x00000744 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B17C)
-    . = 0x00000764 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B19C)
-    . = 0x00000784 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B1BC)
-    . = 0x0000079c ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B1D4)
-    . = 0x000007bc ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B1F4)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_8007B4C8.o(.rodata)
     . = 0x000007e4 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B21C)
     build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80083F2C.o(.rodata)

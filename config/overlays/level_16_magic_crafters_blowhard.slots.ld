@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_16_magic_crafters_blowhard.ld. */
     . = 0x000004f0 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.func_level_16_8007AF28)
+    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_8007AF28.o(.text)
     . = 0x0000907c ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.func_level_16_80083AB4)
     build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80083AB4.o(.text)
