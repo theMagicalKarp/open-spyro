@@ -38,13 +38,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8007abac` | func_titlescreen_8007ABAC | ovl/titlescreen | 8588 | 5808 | qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | 2896 | six independent residues, 4-insn length deficit |
 | `0x8007aa50` | func_credits_8007AA50 | ovl/credits | 5504 | 2352 | fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode |
-| `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2072 |  |
+| `0x80048d10` | TickSpyroAttackEffects | main | 2248 | 2088 |  |
 | `0x80050bd0` | DrawActors | main | 5148 | 1424 | local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | 1368 | A200 open question — a cse ebb-break with no NOTE_INSN_LOOP_BEG |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | 1312 |  |
 | `0x800127c0` | Initialize | main | 1328 | 1164 |  |
 | `0x8001e24c` | Gamestate0C_Draw | main | 1132 | 1100 | A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break) |
-| `0x8007af94` | func_level_4_8007AF94 | ovl/level_4_artisans_toasty | 28180 | 1052 | actor-update megafunction clone; length -2 (two missing `andi 0xff` on unk48 != K) + allocation ties (case 9 const v1/v0, case 335 s0/s2/s4, case 250 v1/a1, case 331) |
 | `0x8003bfc0` | func_8003BFC0 | main | 920 | 740 |  |
 | `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | 704 | runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation |
 | `0x80061b00` | FlushGpuQueue | main | 748 | 652 | F8-adjacent sched1 tie: volatile-vs-plain MEM ordering in a call-arg block |

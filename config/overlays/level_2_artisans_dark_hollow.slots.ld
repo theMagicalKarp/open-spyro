@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_2_artisans_dark_hollow.ld. */
     . = 0x00000408 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.func_level_2_8007AE40)
+    build/overlays/level_2_artisans_dark_hollow/c/func_level_2_8007AE40.o(.text)
     . = 0x00007f28 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.func_level_2_80082960)
     build/overlays/level_2_artisans_dark_hollow/c/func_level_2_80082960.o(.text)
