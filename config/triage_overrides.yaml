@@ -4725,3 +4725,8 @@ Gamestate0C_Draw_2026_09_28:
   class: "re-screened only (4/283); seven prior entries, no new lever tried"
   date: 2026-09-28
   note: "Measured 4/283 and 5/361 (RespawnOrGameOver_Draw); both already exhausted with pins per prior entries -- skipped."
+func_level_16_8007AF28:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_4/level_2/level_30/level_0 arms"
+  date: 2026-09-29
+  note: "35,724 B. 21 arms copied, 11 decoded (37/38/39/152/283/312/328/329/333/495/497). No loop-top carriers; all scratch arrays at function level in first-use order; case 312's debris pointers shared by both loops (else actor loses s3); ABS2 (level 0's `x > 0 ? x : -x`) for the 312 shake bob and the 495 settle test."
