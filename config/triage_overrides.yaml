@@ -4735,3 +4735,8 @@ func_level_9_8007B4C8:
   class: "actor-update megafunction, seeded from level_4/level_2/level_16/level_30 arms"
   date: 2026-09-29
   note: "33,088 B. 23 arms copied, 8 decoded (198/205/209/211/213/231/332/363). Jump-table dispatch (type - 9). Level 4's oneq/one/spy/sixteen carriers; level 4's case 34; case 110's first state written like 332's so jump.c cross-jumps it; SPY.bodyRotZ (not the volatile D_80078A66) for the 198/231 headings."
+func_level_26_8007B4DC:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_4/level_2/level_9/level_16/level_0/level_30 arms"
+  date: 2026-09-29
+  note: "37,188 B. 27 arms copied, 10 decoded (52/55/61/62/88/160/296/298/390/392). spy is the only carrier and ties with the hoisted 1 for fp: route every orig fp read through spy (cases 300/312). Comma temp to stop fold reassociation (61); ABS2 sum through d (392)."
