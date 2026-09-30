@@ -4749,4 +4749,24 @@ func_level_18_8007E18C:
   verdict: parked
   class: "actor-update megafunction; all arms written, frame exact"
   date: 2026-09-29
-  note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group."
+  note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group. 2026-09-30: ENTER_POSE_B in 137 and a multi-set `sx = 16` stand-in both leave the output byte-identical (40 li t1,16)."
+func_level_25_8007B4F8:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_31 arms"
+  date: 2026-09-30
+  note: "38,556 B. 30 arms copied, 10 decoded (50/51/53/54/56/122/124/129/155/402). Carriers oneq+one each used once (case 9), 16 literal. Frame 0x2D0 needs a 4th reload phantom slot: case 402 indexes one table (D_8006CBF8[t*2-6]/[t*2-5]) instead of two symbols. Case 50 holds its vector in a pointer local; selects are if/else around the store."
+func_level_27_8007B510:
+  verdict: parked
+  class: "actor-update megafunction; loop exit test NOT duplicated (j into bottom test), source form unknown"
+  date: 2026-09-30
+  note: "41,980 B. Seeded (build/l27w: 30 arms copied from l25/l26/l9/l31/l16/l0, arm 458 decoded; 134/135/136/142/203/204 still to write, m2c in arms/). Original enters the actor loop with `j` to a bottom test (no top copy) yet loop.c still hoists+spills 1/2/3/-1/D_8006CC78/D_8006CBF8/D_80076378 into t3. gcc 2.7.2 duplicate_loop_exit_test refuses only on CALL/CODE_LABEL/BLOCK/LOOP_BEG/LOOP_CONT notes or >20 insns in the exit code; while, for(;cond;), for(;;)+break, do{break}while(1), for(init;cond;incr) all duplicate; goto-into-do/while gives the shape but invalidates the loop (nothing hoisted)."
+func_level_24_8007E3C0:
+  verdict: attempted
+  class: "same non-duplicated loop exit test as func_level_27_8007B510"
+  date: 2026-09-30
+  note: "43,620 B, 65% arm coverage. Blocked on the same whole-function loop shape as level_27; solve that first."
+func_level_6_8007E3A0:
+  verdict: attempted
+  class: "same non-duplicated loop exit test as func_level_27_8007B510"
+  date: 2026-09-30
+  note: "48,824 B. Blocked on the same whole-function loop shape as level_27; solve that first."

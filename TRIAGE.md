@@ -28,7 +28,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 14 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 15 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | 52 | overlay (no -g3); segment 26.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(25 viable candidates total; the full ranking is regenerable.)
+(24 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
