@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_31_gnastys_world_gnorc_cove.ld. */
     . = 0x00000af0 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_8007B528)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_8007B528.o(.text)
     . = 0x0000ac2c ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.func_level_31_80085664)
     build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_80085664.o(.text)

@@ -4,18 +4,7 @@
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000075c ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B194)
-    . = 0x00000774 ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B1AC)
-    . = 0x0000078c ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B1C4)
-    . = 0x000007ac ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B1E4)
-    . = 0x000007c4 ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B1FC)
-    . = 0x000007fc ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B234)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_8007B528.o(.rodata)
     . = 0x00000824 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B25C)
     build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_80086144.o(.rodata)
