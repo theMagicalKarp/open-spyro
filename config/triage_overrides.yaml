@@ -4770,3 +4770,21 @@ func_level_6_8007E3A0:
   class: "same non-duplicated loop exit test as func_level_27_8007B510"
   date: 2026-09-30
   note: "48,824 B. Blocked on the same whole-function loop shape as level_27; solve that first."
+func_level_10_8007AEB8:
+  verdict: parked
+  class: "actor-update megafunction; two sched LUID ties in case 371 (call-result consumer vs next call's arg setup)"
+  date: 2026-09-30
+  note: >-
+    38,712 B, 16/9678 insns, length- and frame-exact (0x200). .c.wip checked
+    in. 26 arms copied from l4/l9/l26/l31, three decoded (370 guard, 371
+    Doctor Shemp, 372 lookout). Residue: 371/12 copies the first atan result
+    to s0 after the second call's a2=0 in the original (so the path temp gets
+    v1/t0/a3); 371/41 sets a0/a1 for func_80037F90 before the angle's
+    addiu/andi. rank_for_schedule in 2.7.2 is priority -> last-insn class ->
+    INSN_LUID, so both need the consumer after the arg setup in RTL; statement
+    orders, unsigned char/temp forms and split assignments all leave it put.
+func_level_11_8007B68C:
+  verdict: wall
+  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  date: 2026-09-30
+  note: "Mode-gate candidate; closed with its head on 2026-09-20. Re-listed by triage only because the gate counts clone signals."

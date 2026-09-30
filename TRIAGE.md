@@ -28,7 +28,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 14 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 15 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | 52 | overlay (no -g3); segment 26.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(24 viable candidates total; the full ranking is regenerable.)
+(23 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -75,6 +75,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | 8 | decode gap, not a tie -- 76 masked mismatches over 28 regions |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | raw permuter output -- the .wip does not compile |
+| `0x8007b510` | func_level_27_8007B510 | ovl/level_27_dream_weavers_haunted_towers | 41980 | 0 | actor-update megafunction; loop exit test NOT duplicated (j into bottom test), source form unknown |
 | `0x8007e18c` | func_level_18_8007E18C | ovl/level_18_beast_makers_home | 40292 | 0 | actor-update megafunction; all arms written, frame exact |
 
 ## Auto-skipped (walls)
