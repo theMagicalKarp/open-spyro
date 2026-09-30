@@ -4740,3 +4740,13 @@ func_level_26_8007B4DC:
   class: "actor-update megafunction, seeded from level_4/level_2/level_9/level_16/level_0/level_30 arms"
   date: 2026-09-29
   note: "37,188 B. 27 arms copied, 10 decoded (52/55/61/62/88/160/296/298/390/392). spy is the only carrier and ties with the hoisted 1 for fp: route every orig fp read through spy (cases 300/312). Comma temp to stop fold reassociation (61); ABS2 sum through d (392)."
+func_level_31_8007B528:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_4 arms"
+  date: 2026-09-29
+  note: "41,276 B. 28 arms copied, 8 decoded (154/199/200/201/202/207/236/401). sixteen is the fp carrier; base is hoisted+spilled (case 9 base+0x174). Debris loops as goto loops, d/ds shared across loops and k/sn/cs per-loop (actor keeps s3); if/else around whole calls/stores so tails cross-jump; case 110 state 0 written like 331."
+func_level_18_8007E18C:
+  verdict: parked
+  class: "actor-update megafunction; all arms written, frame exact"
+  date: 2026-09-29
+  note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group."

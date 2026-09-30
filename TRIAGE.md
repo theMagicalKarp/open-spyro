@@ -23,12 +23,12 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | 9 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 10 | `0x8007aeb8` | func_level_10_8007AEB8 | ovl/level_10_peace_keepers_doctor_shemp | 38712 | 54 | overlay (no -g3); segment 22.6% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 11 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007b528` | func_level_31_8007B528 | ovl/level_31_gnastys_world_gnorc_cove | 41276 | 54 | overlay (no -g3); segment 23.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 12 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 13 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 14 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 15 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | 52 | overlay (no -g3); segment 26.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 
-(30 viable candidates total; the full ranking is regenerable.)
+(25 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 
@@ -75,6 +75,7 @@ Segments in play: ovl/level_11_peace_keepers_night_flight, ovl/level_17_magic_cr
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | 8 | decode gap, not a tie -- 76 masked mismatches over 28 regions |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | 0 | B18 constant-hoist layout tie |
 | `0x80061470` | func_80061470 | main | 644 | 0 | raw permuter output -- the .wip does not compile |
+| `0x8007e18c` | func_level_18_8007E18C | ovl/level_18_beast_makers_home | 40292 | 0 | actor-update megafunction; all arms written, frame exact |
 
 ## Auto-skipped (walls)
 
