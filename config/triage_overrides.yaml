@@ -4750,3 +4750,8 @@ func_level_18_8007E18C:
   class: "actor-update megafunction; all arms written, frame exact"
   date: 2026-09-29
   note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group."
+func_level_25_8007B4F8:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_31 arms"
+  date: 2026-09-30
+  note: "38,556 B. 30 arms copied, 10 decoded (50/51/53/54/56/122/124/129/155/402). Carriers oneq+one each used once (case 9), 16 literal. Frame 0x2D0 needs a 4th reload phantom slot: case 402 indexes one table (D_8006CBF8[t*2-6]/[t*2-5]) instead of two symbols. Case 50 holds its vector in a pointer local; selects are if/else around the store."
