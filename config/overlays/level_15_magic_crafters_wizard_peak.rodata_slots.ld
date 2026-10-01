@@ -4,22 +4,7 @@
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000075c ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B194)
-    . = 0x00000854 ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B28C)
-    . = 0x0000086c ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B2A4)
-    . = 0x00000894 ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B2CC)
-    . = 0x000008ac ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B2E4)
-    . = 0x000008cc ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B304)
-    . = 0x000008ec ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B324)
-    . = 0x00000a7c ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B4B4)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_8007B7A8.o(.rodata)
     . = 0x00000aa4 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B4DC)
     build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80087B40.o(.rodata)

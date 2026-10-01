@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_15_magic_crafters_wizard_peak.ld. */
     . = 0x00000d70 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.func_level_15_8007B7A8)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_8007B7A8.o(.text)
     . = 0x0000c3a0 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.func_level_15_80086DD8)
     build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80086DD8.o(.text)
