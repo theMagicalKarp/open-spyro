@@ -17,18 +17,18 @@ Segments in play: ovl/level_17_magic_crafters_crystal_flight, ovl/level_23_beast
 | 3 | `0x8007b68c` | func_level_29_8007B68C | ovl/level_29_dream_weavers_icy_flight | 6440 | 103 | overlay (no -g3); segment 83.8% matched; clone family of 5 (one recipe pays 5×); matched neighbor in segment; megafunction (all-or-nothing) |
 | 4 | `0x8007b64c` | func_level_14_8007B64C | ovl/level_14_magic_crafters_high_caves | 53744 | 59 | overlay (no -g3); segment 12.7% matched; matched neighbor in segment; megafunction (all-or-nothing) |
 | 5 | `0x8007bb00` | func_level_13_8007BB00 | ovl/level_13_magic_crafters_alpine_ridge | 59500 | 59 | overlay (no -g3); segment 11.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 6 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 55 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 7 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 55 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 8 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 9 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 10 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 11 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 53 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 12 | `0x8007b7a8` | func_level_15_8007B7A8 | ovl/level_15_magic_crafters_wizard_peak | 46640 | 53 | overlay (no -g3); segment 24.4% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 13 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | 52 | overlay (no -g3); segment 26.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 14 | `0x8007b5dc` | func_level_19_8007B5DC | ovl/level_19_beast_makers_terrace_village | 36992 | 52 | overlay (no -g3); segment 26.1% matched; matched neighbor in segment; megafunction (all-or-nothing) |
-| 15 | `0x8007e240` | func_level_7_8007E240 | ovl/level_7_peace_keepers_dry_canyon | 49808 | 49 | overlay (no -g3); segment 32.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 6 | `0x8007ad64` | func_level_33_8007AD64 | ovl/level_33_gnastys_world_gnasty_gnorc | 33216 | 54 | overlay (no -g3); segment 22.5% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 7 | `0x8007afbc` | func_level_20_8007AFBC | ovl/level_20_beast_makers_misty_bog | 38748 | 54 | overlay (no -g3); segment 21.8% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 8 | `0x8007ad4c` | func_level_34_8007AD4C | ovl/level_34_gnastys_world_gnastys_loot | 35140 | 53 | overlay (no -g3); segment 24.2% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 9 | `0x8007e398` | func_level_12_8007E398 | ovl/level_12_magic_crafters_home | 53032 | 49 | overlay (no -g3); segment 31.3% matched; matched neighbor in segment; megafunction (all-or-nothing) |
+| 10 | `0x8007b698` | func_level_21_8007B698 | ovl/level_21_beast_makers_tree_tops | 46240 | 35 | overlay (no -g3); segment 20.0% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads) |
+| 11 | `0x8007b770` | func_level_22_8007B770 | ovl/level_22_beast_makers_metalhead | 48524 | 35 | overlay (no -g3); segment 20.8% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads) |
+| 12 | `0x8007af50` | func_level_28_8007AF50 | ovl/level_28_dream_weavers_jacques | 34648 | 33 | overlay (no -g3); segment 24.8% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: actor-update megafunction; compare-tree tool KeyError) |
+| 13 | `0x8007ae5c` | func_level_32_8007AE5C | ovl/level_32_gnastys_world_twilight_harbor | 33452 | 32 | overlay (no -g3); segment 26.5% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads) |
+| 14 | `0x8007b5dc` | func_level_19_8007B5DC | ovl/level_19_beast_makers_terrace_village | 36992 | 32 | overlay (no -g3); segment 26.1% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads) |
+| 15 | `0x8007e240` | func_level_7_8007E240 | ovl/level_7_peace_keepers_dry_canyon | 49808 | 29 | overlay (no -g3); segment 32.2% matched; matched neighbor in segment; megafunction (all-or-nothing); previously attempted (2026-09-30: Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads) |
 
-(21 viable candidates total; the full ranking is regenerable.)
+(17 viable candidates total; the full ranking is regenerable.)
 
 ## Harvest inventory (parked / wip — permuter targets)
 

@@ -1,7 +1,7 @@
 # open-spyro
 
 <!-- progress-badge -->
-![matched](https://img.shields.io/badge/matched-59.36%25-yellowgreen)
+![matched](https://img.shields.io/badge/matched-61.82%25-yellowgreen)
 <!-- /progress-badge -->
 
 `open-spyro` is a **byte-for-byte matching decompilation** of
