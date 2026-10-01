@@ -4788,3 +4788,53 @@ func_level_11_8007B68C:
   class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
   date: 2026-09-30
   note: "Mode-gate candidate; closed with its head on 2026-09-20. Re-listed by triage only because the gate counts clone signals."
+func_level_1_8007DA78:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_0/9/10/16/25/26/31 arms"
+  date: 2026-09-30
+  note: "40,116 B. base and spy = base - 8 set inside the loop; empty do/while(0) at the top of the knockback arms (10/33/113/121) stops cse folding spy through the compare tree. Decoded: egg thief (33), sentry (121), rear-up guard (113), camera-facing prop (222-224). The tree tool missed carrier-register compares (16 via s6, 250 via t1); fixed by tracking the carrier."
+func_level_15_8007B7A8:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_1/9/16/25/26/31 arms"
+  date: 2026-09-30
+  note: "46,640 B. Decoded 36/38/66/284/285/295/318. Pool fields read through the pool, not a pointer local; case 110 spelled like case 333 so the tails cross-jump; case 421 stores in 40/48/41/3D order; ABS through an explicit int temp."
+func_level_8_8007E240:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_0/9/15/16/25/26/31 arms"
+  date: 2026-09-30
+  note: "43,336 B. Decoded 206/218/226/229/230/238/288. Case 288's || re-read cost a reload phantom slot (frame +8); a temp removes it. Case 416 reads D_800756CC directly (level_0 form)."
+func_level_3_8007DA54:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_1/8/9/10/16/26/31 arms"
+  date: 2026-09-30
+  note: "38,992 B. Decoded 23/395/413/502/234. 9 had to be hoisted+spilled: group life 30 was short, so 7 empty nested scopes after case 23's state store add NOTE luids (A294). Mode 2 repeats the camera-lock block instead of goto (cross-jump keeps the camLock test separate). SPY.damageFlags in-struct store after the index calc. Case 234 tests D_80075794 and sits after case 195; case 502's despawn goes at the bottom as the shared tail."
+func_level_28_8007AF50:
+  verdict: attempted
+  class: "actor-update megafunction; compare-tree tool KeyError"
+  date: 2026-09-30
+  note: "34,648 B. build/l2/tree.py raised a KeyError walking this compare tree, so it never got an arm map. Fix the tree walk first."
+func_level_19_8007B5DC:
+  verdict: attempted
+  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
+  date: 2026-09-30
+  note: "36,992 B. tree_x_19.txt in build/l2. Too few arms to copy; it needs a Beast Makers seed decoded first."
+func_level_21_8007B698:
+  verdict: attempted
+  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
+  date: 2026-09-30
+  note: "46,240 B. tree_x_21.txt in build/l2."
+func_level_22_8007B770:
+  verdict: attempted
+  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
+  date: 2026-09-30
+  note: "48,524 B. tree_x_22.txt in build/l2."
+func_level_7_8007E240:
+  verdict: attempted
+  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
+  date: 2026-09-30
+  note: "49,808 B. tree_x_7.txt in build/l2."
+func_level_32_8007AE5C:
+  verdict: attempted
+  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
+  date: 2026-09-30
+  note: "33,452 B. tree_x_32.txt in build/l2."
