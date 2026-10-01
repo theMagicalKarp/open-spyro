@@ -10,7 +10,8 @@ extern int D_80074B20;    /* OT terminator sentinel */
    in a0 as the original has it.  LEFT: the original stores through the RETURN
    copy (`move v0,s0` above the `sw ..,0(v0)`) with the symbol in v1; ours
    stores through s0 and emits the copy last.  cse keeps the parameter canonical
-   for any `r = ot` spelling, including a `$2` register local (propagated away). */
+   for any `r = ot` spelling, including a `$2` register local (propagated away).
+ */
 int *func_8005FC6C(int *ot, int n) {
   register int m asm("$4");
 

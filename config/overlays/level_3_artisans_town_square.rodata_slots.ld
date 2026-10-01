@@ -10,16 +10,7 @@
     build/overlays/level_3_artisans_town_square/c/func_level_3_8007D04C.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x000001ac ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007ABE4)
-    . = 0x000001c4 ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007ABFC)
-    . = 0x000001dc ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC14)
-    . = 0x000001fc ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC34)
-    . = 0x00000224 ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC5C)
+    build/overlays/level_3_artisans_town_square/c/func_level_3_8007DA54.o(.rodata)
     . = 0x00000248 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/data/rodata.rodata.o(.rodata.jtbl_8007AC80)
     build/overlays/level_3_artisans_town_square/c/func_level_3_80087E20.o(.rodata)

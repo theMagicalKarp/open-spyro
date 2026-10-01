@@ -7,8 +7,9 @@
    State (compile-only masked shape diff, §D 2b; registers anchored for the
    "reg" figure, masked for the "structure" figure):
 
-     first m2c decode   2202 insns, 827 reg / 247 structure over 149 regions, off -8
-     now                2193 insns, 725 reg / 191 structure over 126 regions, off -17
+     first m2c decode   2202 insns, 827 reg / 247 structure over 149 regions,
+   off -8 now                2193 insns, 725 reg / 191 structure over 126
+   regions, off -17
 
    `make progress` scores it 344 / 8,840 partial bytes.  That number is NOT a
    measure of distance: partial credit is positional (§C), and the running
@@ -105,7 +106,8 @@ extern void StoreImage(RECT *r, void *dst);
 extern void LoadImage(RECT *r, void *src);
 extern void ConvertRGB15ToLuma8(void *buf, int count);
 extern void AddPrimToOT(int prim);
-extern void SetDrawMode(int prim, int dfe, int dtd, unsigned int tpage, RECT *tw);
+extern void SetDrawMode(int prim, int dfe, int dtd, unsigned int tpage,
+                        RECT *tw);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 extern void EmitTexturedQuad(short *rect, int *uv, int *rgb);
@@ -114,7 +116,8 @@ extern void EnqueuePendingSpritePrims(void);
 extern void RasterizeSpritePrimQueue(void);
 extern void EnqueueLoadingScreenSprites(void);
 extern void *BuildTextSpriteChain(char *text, int *pos, int step, int flags);
-extern void *BuildTextSprites(char *text, int *pos, int *style, int step, int flags);
+extern void *BuildTextSprites(char *text, int *pos, int *style, int step,
+                              int flags);
 extern int ComputeInventoryProgressPercent(void);
 extern int strlen(char *s);
 extern int sprintf(char *buf, char *fmt, ...);
@@ -161,15 +164,15 @@ extern char D_80010B90[]; /* "EXIT WORLD"  */
    quads, draws the menu on top, and submits the frame with the shared
    two-vblank pacing tail. */
 void Gamestate02_03_06_Draw(void) {
-  RECT rect;        /* sp18 */
-  char buf[0x20];   /* sp20 */
-  int pos[3];       /* sp40 */
-  int styA[3];      /* sp50 */
-  int styB[3];      /* sp60 */
-  int styC[3];      /* sp70 */
-  short quad[4];    /* sp80 */
-  short quad2[4];   /* sp88 */
-  int styD[3];      /* sp90 */
+  RECT rect;          /* sp18 */
+  char buf[0x20];     /* sp20 */
+  int pos[3];         /* sp40 */
+  int styA[3];        /* sp50 */
+  int styB[3];        /* sp60 */
+  int styC[3];        /* sp70 */
+  short quad[4];      /* sp80 */
+  short quad2[4];     /* sp88 */
+  int styD[3];        /* sp90 */
   unsigned char rows; /* spA0 */
 
   if (g_nPauseMenuTransitionFrames == 0) {
@@ -242,8 +245,10 @@ void Gamestate02_03_06_Draw(void) {
     g_nPrimBufferOverflowFlag = 0;
     g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
     g_pPrimBufferLimit = (void *)((char *)g_pRenderScratchRegionBase + 0x1c000);
-    g_pSpriteRecordBufferTop = (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
-    g_pSpriteRecordWriteCursor = (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
+    g_pSpriteRecordBufferTop =
+        (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
+    g_pSpriteRecordWriteCursor =
+        (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
     x = i << 7;
     do {
       int clut = i + 0x88;
@@ -491,15 +496,20 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x1400;
               if (cur == 0) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] * 3 >>
+                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                        3 >>
                     9;
               } else {
-                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = 0;
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+                    0;
               }
               phase += 0xc;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
+                  0x7f;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
+                  0xb;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
+                  0xff;
               i++;
               x += 0xa;
             } while (i < g_nSfxVolume);
@@ -538,15 +548,20 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = x;
               if (cur == 1) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] * 3 >>
+                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                        3 >>
                     9;
               } else {
-                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = 0;
+                *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+                    0;
               }
               phase += 0xc;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
+                  0x7f;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
+                  0xb;
+              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
+                  0xff;
               i++;
               x += 0xa;
             } while (i < g_nMusicVolume);
@@ -744,7 +759,8 @@ void Gamestate02_03_06_Draw(void) {
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >> 0x19;
+          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
+          0x19;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
           g_dwHudBobSinePhase;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
@@ -761,9 +777,9 @@ void Gamestate02_03_06_Draw(void) {
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          ((unsigned short *)g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 &
-                                             0x1f0) >>
-                                            1] >>
+          ((unsigned short *)
+               g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >>
+                              1] >>
           8;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
@@ -842,8 +858,8 @@ void Gamestate02_03_06_Draw(void) {
       styD[2] = 0x1000;
       styD[1] = 2;
       pos[0] = g_nSubMenuScrollOffset - ((v - 1) * 0xa - 0x9e);
-      BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD, 0x17,
-                       2);
+      BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD,
+                       0x17, 2);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       phase = 0;
       if ((int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor] > 0) {
@@ -867,7 +883,8 @@ void Gamestate02_03_06_Draw(void) {
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >> 0x19;
+          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
+          0x19;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
           g_dwHudBobSinePhase;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
@@ -882,9 +899,9 @@ void Gamestate02_03_06_Draw(void) {
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          ((unsigned short *)g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 &
-                                             0x1f0) >>
-                                            1] >>
+          ((unsigned short *)
+               g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >>
+                              1] >>
           8;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       i = 0;
@@ -1030,7 +1047,8 @@ void Gamestate02_03_06_Draw(void) {
                   ex += 0x18;
                   EmitTexturedQuad(quad2, uv, rgb);
                   e++;
-                } while (e < (int)g_abLevelTotalEggsBlock[g_nSubMenuCursor * 6 + i]);
+                } while (
+                    e < (int)g_abLevelTotalEggsBlock[g_nSubMenuCursor * 6 + i]);
               }
             }
           }
