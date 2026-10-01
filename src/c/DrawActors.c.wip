@@ -170,11 +170,11 @@ typedef struct EdgeRec {
 
 extern unsigned char D_800771C8[]; /* per-mob visibility gate bytes */
 extern EdgeRec D_80077EA0[];       /* silhouette edge records */
-extern ScreenPt D_80078DD8[]; /* projected ring points */
+extern ScreenPt D_80078DD8[];      /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)D_80078DD8 + ko))
-extern int D_80076E24[];           /* [-0x10] view mtx, [-0x15] world mtx */
-extern int D_800785B4;             /* static-mesh LOD cutoff */
+extern int D_80076E24[]; /* [-0x10] view mtx, [-0x15] world mtx */
+extern int D_800785B4;   /* static-mesh LOD cutoff */
 
 /* Render stage 4: draw the scripted-mob billboards, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
@@ -295,7 +295,8 @@ void DrawActors(void) {
           *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
           0xffffff, color);
       SubtractVector(vDelta, g_apScriptedMobEntries[i]->pts[0], g_anCameraPos);
-      shift = CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
+      shift =
+          CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
       if (shift >= 0xf) {
         shift >>= 1;
         RShiftVector3(vDelta, shift);
@@ -407,8 +408,7 @@ void DrawActors(void) {
           D_80077EA0[nEdges].live = 1;
           D_80077EA0[nEdges].p0 =
               (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
-          D_80077EA0[nEdges].p1 =
-              (KPT.y << 16) | (unsigned short)KPT.x;
+          D_80077EA0[nEdges].p1 = (KPT.y << 16) | (unsigned short)KPT.x;
           D_80077EA0[nEdges].nx = D_80078DD8[j].y - KPT.y;
           D_80077EA0[nEdges].ny = KPT.x - D_80078DD8[j].x;
           D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
@@ -484,9 +484,10 @@ void DrawActors(void) {
           if (dist < 0x4000) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
-              g_dwActorMeshFadeColor =
-                  ComputeDepthCuedColor(*(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
-                                        color, dist - 0x3000);
+              g_dwActorMeshFadeColor = ComputeDepthCuedColor(
+                  *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh +
+                                    0x10),
+                  color, dist - 0x3000);
               EmitDynamicActorMeshFogged(&g_dwActorMeshFadeColor);
             } else {
               EmitDynamicActorMeshFogged(
@@ -623,9 +624,10 @@ void DrawActors(void) {
             D_80077EA0[nEdges].live = 0;
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
-              g_dwActorMeshFadeColor =
-                  ComputeDepthCuedColor(*(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
-                                        color, dist - 0x3000);
+              g_dwActorMeshFadeColor = ComputeDepthCuedColor(
+                  *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh +
+                                    0x10),
+                  color, dist - 0x3000);
               EmitDynamicActorMeshFogShaded(
                   (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
             } else {

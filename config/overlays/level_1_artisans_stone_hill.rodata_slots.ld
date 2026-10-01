@@ -10,16 +10,7 @@
     build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007D070.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x000001ac ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007ABE4)
-    . = 0x000001c4 ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007ABFC)
-    . = 0x000001dc ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AC14)
-    . = 0x000001fc ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AC34)
-    . = 0x00000224 ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AC5C)
+    build/overlays/level_1_artisans_stone_hill/c/func_level_1_8007DA78.o(.rodata)
     . = 0x0000024c ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AC84)
     build/overlays/level_1_artisans_stone_hill/c/func_level_1_80088098.o(.rodata)
