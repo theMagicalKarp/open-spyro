@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_10_peace_keepers_doctor_shemp.ld. */
     . = 0x00000480 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_8007AEB8)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/func_level_10_8007AEB8.o(.text)
     . = 0x00009bb8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.func_level_10_800845F0)
     build/overlays/level_10_peace_keepers_doctor_shemp/c/func_level_10_800845F0.o(.text)

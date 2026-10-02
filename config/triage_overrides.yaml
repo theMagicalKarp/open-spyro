@@ -4771,18 +4771,10 @@ func_level_6_8007E3A0:
   date: 2026-09-30
   note: "48,824 B. Blocked on the same whole-function loop shape as level_27; solve that first."
 func_level_10_8007AEB8:
-  verdict: parked
-  class: "actor-update megafunction; two sched LUID ties in case 371 (call-result consumer vs next call's arg setup)"
-  date: 2026-09-30
-  note: >-
-    38,712 B, 16/9678 insns, length- and frame-exact (0x200). .c.wip checked
-    in. 26 arms copied from l4/l9/l26/l31, three decoded (370 guard, 371
-    Doctor Shemp, 372 lookout). Residue: 371/12 copies the first atan result
-    to s0 after the second call's a2=0 in the original (so the path temp gets
-    v1/t0/a3); 371/41 sets a0/a1 for func_80037F90 before the angle's
-    addiu/andi. rank_for_schedule in 2.7.2 is priority -> last-insn class ->
-    INSN_LUID, so both need the consumer after the arg setup in RTL; statement
-    orders, unsigned char/temp forms and split assignments all leave it put.
+  verdict: matched
+  class: "actor-update megafunction; closed the 2026-09-30 sched ties with F14d single-set result locals"
+  date: 2026-10-02
+  note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two func_800385BC exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
 func_level_11_8007B68C:
   verdict: wall
   class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"

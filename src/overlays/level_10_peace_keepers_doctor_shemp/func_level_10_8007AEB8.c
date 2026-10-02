@@ -1,5 +1,5 @@
 /* func_level_10_8007AEB8 -- per-frame actor update for level 10 (Doctor
- * Shemp). PARKED 2026-09-30 at 16/9678 insns (length- and frame-exact).
+ * Shemp). 0x8007AEB8, 38,712 bytes.
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class. Most
@@ -21,15 +21,9 @@
  *     scalar D_80078C78/D_80078C74; jitter as `p += (r & 0x1FF) - 0x100`
  *     (fold's arg1-split keeps `p - 0x100` first).
  *
- * Open residue (both sched LUID ties, see config/triage_overrides.yaml):
- *   - 371/12 @0x8008294C: orig copies the first atan result (s0 = v0) after
- *     the second call's `a2 = 0`, so the path temp is born while v0 is live
- *     (v1/t0/a3); ours copies first (v0/a3/v1).
- *   - 371/41 @0x800834A0: orig sets a0/a1 for func_80037F90 before
- *     `addiu v0,v0,0x80` (andi s0 in the jal slot); ours computes the angle
- *     first. rank_for_schedule has no reg-weight term in 2.7.2, so equal
- *     priority falls to INSN_LUID: the angle insns must follow the arg setup
- *     in RTL, and no statement order tried does that.
+ *   - Case 371/12 and 371/41 each give their atan result its own local
+ *     (`ha`, `ca`): a single-set pseudo is "birthing", so sched1 boosts its
+ *     copy past the next call's argument setup, as in the original.
  *
  * ==== Core records ====
  *
@@ -4292,6 +4286,7 @@ void func_level_10_8007AEB8(void) {
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
+          func_80052568(actor);
           continue;
         }
         if (func_80039910(actor, &st->speed, st->heading, &st->lift, 0xC,
@@ -4498,6 +4493,8 @@ void func_level_10_8007AEB8(void) {
       ShempState *st = actor->state;
       int d;
       int a;
+      int ha;
+      int ca;
       int b;
       int lim;
       int i;
@@ -4653,7 +4650,7 @@ void func_level_10_8007AEB8(void) {
 
       case 12:
         off = st->node[0] << 4;
-        a = func_80016AB4(*(int *)(st->path + off + 8) - spy->posX,
+        ha = func_80016AB4(*(int *)(st->path + off + 8) - spy->posX,
                           *(int *)(st->path + off + 0xC) - spy->posY, 0);
         lim = 0xE;
         b = func_80016AB4(actor->posX - *(int *)(st->path + off + 8),
@@ -4662,8 +4659,8 @@ void func_level_10_8007AEB8(void) {
         if (actor->unk3D == 9) {
           lim = 6;
         }
-        if (func_80017908(a, b) > lim) {
-          func_80038638(actor, (int *)(st->path + (off + 8)), 0xC80, a, 6,
+        if (func_80017908(ha, b) > lim) {
+          func_80038638(actor, (int *)(st->path + (off + 8)), 0xC80, ha, 6,
                         spd, 9, 0x14, 0xFF, 0xFF, 0, 0, 0);
           ANIM_GO(actor, 9);
         } else {
@@ -4833,7 +4830,7 @@ void func_level_10_8007AEB8(void) {
 
       case 41:
         off = st->node[st->phase - 1] << 4;
-        a = (func_80016AB4(*(int *)(st->path + off + 8) -
+        ca = (func_80016AB4(*(int *)(st->path + off + 8) -
                                PATH_X(st->cam, st->phase - 1),
                            *(int *)(st->path + off + 0xC) -
                                PATH_Y(st->cam, st->phase - 1),
@@ -4847,7 +4844,7 @@ void func_level_10_8007AEB8(void) {
           } while (0);
           D_80078C78 = &D_80078668;
           D_80078C74 = (int *)(st->path + (off + 8));
-          *(int *)&D_80078668 = -a << 4;
+          *(int *)&D_80078668 = -ca << 4;
           D_80078670 = 0x1770;
           D_8007866C = 0x19;
           D_80078678 = -0x32;
@@ -5070,6 +5067,7 @@ void func_level_10_8007AEB8(void) {
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x30);
+          func_80052568(actor);
           continue;
         }
         break;
