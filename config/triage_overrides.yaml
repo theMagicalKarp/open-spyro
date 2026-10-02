@@ -4842,9 +4842,9 @@ func_level_13_8007BB00:
   note: "59,500 B. Decoded 253/315/326. Level_26 loop top, `one` as literal 1 (hoisted and spilled). Case 270's `1 << bit` must go through a mask temp or fold turns it into srav/andi."
 func_level_34_8007AD4C:
   verdict: parked
-  class: "sched ties (store-order) in cases 177/181 after hoist-set and frame fixes"
-  date: 2026-10-01
-  note: "35,140 B, .c.wip at masked 27/8785, frame exact, +3 insns. Hoist set fixed by a spilled loop-top spy carrier used at 2 sites; frame by scalar path indices plus a block of arrays opening at case 181. Residue listed in the .wip header; workspace build/l34w."
+  class: "sched1 memory-unit blocking: one store-order knot in case 177's camera block"
+  date: 2026-10-02
+  note: "35,140 B, .c.wip at masked 6/8785, frame exact, +1 insn (a3 misses the jal slot). 2026-10-02 closed 21 insns: F14d single-set d0 in 177/case 0, SPY.bodyRotZ (struct MEM orders after the st->timer store), D_80078C00[-1..1] for the BFC..C04 zeroing, w[0] first in the w181 init. Left: sched1 drains every store before the blocked lw a1, so -0x100 lands last instead of D_8007570C. Workspace build/l34w (v_K1.c)."
 func_level_17_8007B68C:
   verdict: wall
   class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
