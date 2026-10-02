@@ -4838,3 +4838,38 @@ func_level_32_8007AE5C:
   class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
   date: 2026-09-30
   note: "33,452 B. tree_x_32.txt in build/l2."
+func_level_12_8007E398:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_0/1/8/9/15/25/26/31 arms"
+  date: 2026-10-01
+  note: "53,032 B. Decoded 189/270/271/328. Loop top: level_8's with spy = &D_80078A58 and `oneq` at case 1. Case 270's kill-bitmap test needs idx/word/bit temps; state 0x5B calls the distance before computing the flee range (else the range takes s0 from st)."
+func_level_13_8007BB00:
+  verdict: matched
+  class: "actor-update megafunction, seeded from level_3/4/9/10/12/15/26/31 arms"
+  date: 2026-10-01
+  note: "59,500 B. Decoded 253/315/326. Level_26 loop top, `one` as literal 1 (hoisted and spilled). Case 270's `1 << bit` must go through a mask temp or fold turns it into srav/andi."
+func_level_34_8007AD4C:
+  verdict: parked
+  class: "sched ties (store-order) in cases 177/181 after hoist-set and frame fixes"
+  date: 2026-10-01
+  note: "35,140 B, .c.wip at masked 27/8785, frame exact, +3 insns. Hoist set fixed by a spilled loop-top spy carrier used at 2 sites; frame by scalar path indices plus a block of arrays opening at case 181. Residue listed in the .wip header; workspace build/l34w."
+func_level_17_8007B68C:
+  verdict: wall
+  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  date: 2026-10-01
+  note: "Mode-gate candidate; closed with its head on 2026-09-20."
+func_level_23_8007B68C:
+  verdict: wall
+  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  date: 2026-10-01
+  note: "Mode-gate candidate; closed with its head on 2026-09-20."
+func_level_29_8007B68C:
+  verdict: wall
+  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  date: 2026-10-01
+  note: "Mode-gate candidate; closed with its head on 2026-09-20."
+func_level_18_8007E18C:
+  verdict: parked
+  class: "16-hoist knot (unchanged)"
+  date: 2026-10-01
+  note: "Rescored at 78% arm coverage with level_12/13 matched; not reopened. Try the level_34 lever: a spilled loop-top carrier that adds one early hoist and lowers the threshold for the 16 group."

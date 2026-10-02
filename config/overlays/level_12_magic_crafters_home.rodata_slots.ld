@@ -10,22 +10,7 @@
     build/overlays/level_12_magic_crafters_home/c/func_level_12_8007D990.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x0000082c ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B264)
-    . = 0x00000924 ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B35C)
-    . = 0x0000093c ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B374)
-    . = 0x00000954 ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B38C)
-    . = 0x00000974 ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B3AC)
-    . = 0x00000b0c ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B544)
-    . = 0x00000b3c ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B574)
-    . = 0x00000b64 ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B59C)
+    build/overlays/level_12_magic_crafters_home/c/func_level_12_8007E398.o(.rodata)
     . = 0x00000b8c ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B5C4)
     build/overlays/level_12_magic_crafters_home/c/func_level_12_8008BE98.o(.rodata)

@@ -4,30 +4,7 @@
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000075c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B194)
-    . = 0x00000854 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B28C)
-    . = 0x0000086c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B2A4)
-    . = 0x00000884 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B2BC)
-    . = 0x000008a4 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B2DC)
-    . = 0x00000a3c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B474)
-    . = 0x00000a54 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B48C)
-    . = 0x00000a74 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B4AC)
-    . = 0x00000c0c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B644)
-    . = 0x00000c3c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B674)
-    . = 0x00000c64 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B69C)
-    . = 0x00000c8c ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B6C4)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8007BB00.o(.rodata)
     . = 0x00000e1c ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B854)
     . = 0x00000f60 ;

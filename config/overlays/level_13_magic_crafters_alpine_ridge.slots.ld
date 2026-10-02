@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_13_magic_crafters_alpine_ridge.ld. */
     . = 0x000010c8 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.func_level_13_8007BB00)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8007BB00.o(.text)
     . = 0x0000f934 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.func_level_13_8008A36C)
     build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8008A36C.o(.text)

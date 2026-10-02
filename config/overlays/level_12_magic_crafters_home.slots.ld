@@ -14,6 +14,7 @@
     build/overlays/level_12_magic_crafters_home/c/func_level_12_8007D990.o(.text)
     . = 0x00003960 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.func_level_12_8007E398)
+    build/overlays/level_12_magic_crafters_home/c/func_level_12_8007E398.o(.text)
     . = 0x00010888 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.func_level_12_8008B2C0)
     build/overlays/level_12_magic_crafters_home/c/func_level_12_8008B2C0.o(.text)
