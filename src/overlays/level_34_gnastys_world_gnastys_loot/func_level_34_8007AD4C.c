@@ -1,5 +1,5 @@
 /* func_level_34_8007AD4C -- per-frame actor update for level 34 (Gnasty's
- * Loot). PARKED 2026-10-02: frame-exact, 1 insn long, masked 6/8785.
+ * Loot). 0x8007AD4C, 35,140 bytes.
  *
  * New classes decoded here: bolt (17), vault timer (217, falls through into
  * the 260 group), treasure thief (177), loot critter (179), loot vortex
@@ -25,12 +25,10 @@
  *     `D_80078C00[-1..1]` so the `st->snd` load waits for them; the w181
  *     init stores `w[0]` (the timer read) first.
  *
- * Residue (6 insns, one knot): case 177's camera block. sched1 places the
- * `-0x100` store last because the `st->path` arg load (lw a1) is blocked
- * for a cycle after every store it picks, so the stores drain before it;
- * sched2 then keeps `li v0,-0x100` after the other v0 reuses (priority 2).
- * The original has `D_8007570C = one` last with `&st->laps` in the jal
- * slot. Store-order sweeps (2026-10-02) leave it put. Workspace: build/l34w.
+ *   - Case 177's camera block writes every camera word as an aggregate
+ *     element (D_80078C00[k], D_80078668.w[k]): array/struct MEMs may alias
+ *     the `st->path` arg load, so they all stay ahead of it, while the
+ *     scalar `D_8007570C = one` store is free to sink next to the call.
  *
  * ==== Core records ====
  *
@@ -1452,7 +1450,6 @@ extern int D_80078AD0;
 extern int func_80038074(int heading, int step);
 extern int D_800757F4;
 extern int D_80078A58; /* Spyro, as a plain symbol (the loop's spy carrier) */
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
 typedef struct {
   int x;
   int y;
@@ -3734,14 +3731,16 @@ void func_level_34_8007AD4C(void) {
             int r;
 
             D_8007570C = one;
-            D_80078C74 = &spyc->posX;
-            D_80078C78 = &D_80078668;
-            D_80078C4C = 0x80002200;
-            D_80078670 = 0xC00;
-            D_8007866C = 0x80;
-            D_80078678 = -0x100;
-            D_80078674 = 0;
-            D_8007867C = 0;
+            /* D_80078C74 / D_80078C78 / D_80078C4C as array elements (see the
+             * header): the camera anchor, target and control word. */
+            D_80078C00[29] = (int)&spyc->posX;
+            D_80078C00[30] = (int)&D_80078668;
+            D_80078C00[19] = 0x80002200;
+            D_80078668.w[2] = 0xC00;
+            D_80078668.w[1] = 0x80;
+            D_80078668.w[4] = -0x100;
+            D_80078668.w[3] = 0;
+            D_80078668.w[5] = 0;
             D_80078668.w[0] = 0x800 - D_80078A66 * 16;
             r = func_8003BFC0(actor, (PathData *)st->path, st->look, &st->laps,
                               st->speed, 4);
