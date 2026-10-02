@@ -1,5 +1,5 @@
 /* func_level_14_8007B64C -- per-frame actor update for level 14 (High
- * Caves). PARKED 2026-10-02 at masked 248/13436, +8 insns (cases 109, 227).
+ * Caves). PARKED 2026-10-02 at masked 6/13436, length- and frame-exact.
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class: a small
@@ -20,7 +20,17 @@
  *   - Struct-versus-scalar spellings decide memory dependences (cookbook
  *     A302): SPY.state, SPY.u11C/u128, SPY.bodyRotZ, D_80077858[2].
  *   - Case 109's turn-and-walk idiom reuses `h` and `d`, and its node
- *     searches use `&p->nodes[i].x` (loop.c makes the 8 + 16*i giv).
+ *     searches use `&p->nodes[i].x` (loop.c makes the 8 + 16*i giv) with
+ *     `st->cur->cur = i` (one fewer st ref decides st vs which, s5/s4).
+ *   - Case 109's camera hold block takes `int *w1 = &D_80078668.w[1]` so
+ *     cse derives &D_80078668 as w1 - 4; cases 227/109 read the yaw as
+ *     SPY.bodyRotZ (a struct MEM, ordered against the st->cam stores).
+ *
+ * Residue (6 insns, one knot): case 227 after func_80017700(st->cam, ..),
+ * sched2 places `lui a1,0x8000` (the split 0x80000200 constant: its lui half
+ * is a 2-set pseudo, so sched1 never boosts it) before the bodyRotZ load and
+ * the t2 remat of D_8006CC78; the original has t2, bodyRotZ, lui. Moving
+ * the `controlFlags |= 0x80000200` statement anywhere leaves it put.
  *
  * ==== Core records ====
  *
@@ -2296,6 +2306,9 @@ typedef struct L14State305 {
 #define NODE_PT(p) ((int *)((char *)(p) + ((p)->cur << 4) + 8))
 
 extern int D_80078B24; /* camera yaw override */
+typedef struct Cam5 {
+  int w[5];
+} Cam5;
 
 /* Type 109. */
 typedef struct L14State109 {
@@ -4094,12 +4107,16 @@ void func_level_14_8007B64C(void) {
             } else {
               D_80078668.w[0] = (D_8006C934.w[0] - D_80078B74) & 0xFFF;
             }
-            D_80078C78 = &D_80078668;
-            D_80078668.w[1] = D_8006C934.w[1];
-            D_80078668.w[2] = D_8006C934.w[2];
-            D_80078668.w[3] = D_8006C934.w[3];
-            D_80078668.w[4] = D_8006C934.w[4];
-            D_80078668.w[5] = D_8006C934.w[5];
+            {
+              int *w1 = &D_80078668.w[1];
+
+              D_80078C78 = &D_80078668;
+              *w1 = D_8006C934.w[1];
+            }
+            D_80078670 = D_8006C934.w[2];
+            D_80078674 = D_8006C934.w[3];
+            D_80078678 = D_8006C934.w[4];
+            D_8007867C = D_8006C934.w[5];
           } else {
             st->mode &= ~0x80;
           }
@@ -4116,7 +4133,7 @@ void func_level_14_8007B64C(void) {
             func_800175B8(svF, d, 0x200);
           }
           func_80017758(cf + 1, svF, &SPY.posX);
-          h = (actor->unk46 - D_80078A66) & 0xFF;
+          h = (actor->unk46 - SPY.bodyRotZ) & 0xFF;
           if (h > 0x80) {
             h -= 0x100;
           }
@@ -4126,7 +4143,7 @@ void func_level_14_8007B64C(void) {
           if (h > 4) {
             h = 4;
           }
-          D_80078C5E = D_80078A66 + h;
+          D_80078C5E = SPY.bodyRotZ + h;
           D_80078C70 = 0x11;
           D_80078C74 = &SPY.posX;
           D_80078C7C = 0;
@@ -4142,7 +4159,7 @@ void func_level_14_8007B64C(void) {
 
           *cf = 0x80000327;
           func_80017700(cf + 1, &SPY.posX);
-          h = (actor->unk46 - D_80078A66) & 0xFF;
+          h = (actor->unk46 - SPY.bodyRotZ) & 0xFF;
           if (h > 0x80) {
             h -= 0x100;
           }
@@ -4152,7 +4169,7 @@ void func_level_14_8007B64C(void) {
           if (h > 3) {
             h = 3;
           }
-          D_80078C5E = D_80078A66 + h;
+          D_80078C5E = SPY.bodyRotZ + h;
           D_80078C70 = 0x11;
           D_80078C74 = &SPY.posX;
           D_80078C7C = 0;
@@ -4173,9 +4190,9 @@ void func_level_14_8007B64C(void) {
             st->vz = 0;
             continue;
           }
-          d >>= 1;
           h = func_80016AB4(st->dest[0] - actor->posX,
                             st->dest[1] - actor->posY, 0);
+          d >>= 1;
           if (d > 0x140) {
             d = 0x140;
           }
@@ -4287,10 +4304,9 @@ void func_level_14_8007B64C(void) {
             int which;
 
             st->mode &= ~0x10;
-            i = 0;
             d = func_80017990(&actor->posX, st->dest);
             which = 0;
-            for (; i < st->pathA->count; i++) {
+            for (i = 0; i < st->pathA->count; i++) {
               int e = func_80017990(&actor->posX, &st->pathA->nodes[i].x);
 
               if (e < d) {
@@ -4433,7 +4449,7 @@ void func_level_14_8007B64C(void) {
             if (e < d) {
               d = e;
               st->cur = st->pathA;
-              st->pathA->cur = i;
+              st->cur->cur = i;
             }
           }
           for (i = 0; i < st->pathB->count; i++) {
@@ -4442,7 +4458,7 @@ void func_level_14_8007B64C(void) {
             if (e < d) {
               d = e;
               st->cur = st->pathB;
-              st->pathB->cur = i;
+              st->cur->cur = i;
             }
           }
           for (i = 0; i < st->pathC->count; i++) {
@@ -4451,7 +4467,7 @@ void func_level_14_8007B64C(void) {
             if (e < d) {
               d = e;
               st->cur = st->pathC;
-              st->pathC->cur = i;
+              st->cur->cur = i;
             }
           }
           if (d >= 0x3000) {
@@ -4496,9 +4512,7 @@ void func_level_14_8007B64C(void) {
 
       case 1:
       case 2: {
-        Actor *r = &D_80075828[st->rider];
-
-        if (*(int *)r->state & 0x2C) {
+        if (*(int *)D_80075828[st->rider].state & 0x2C) {
           int side = -0x40;
 
           if ((st->mode & 3) == 1) {
@@ -4527,7 +4541,7 @@ void func_level_14_8007B64C(void) {
           if ((st->mode & 3) == 1) {
             side = 0x50;
           }
-          func_80017700(svF, &r->posX);
+          func_80017700(svF, &D_80075828[st->rider].posX);
           if (actor->unk48 != 0) {
             ENTER_POSE(actor, 0);
             continue;
@@ -4539,8 +4553,8 @@ void func_level_14_8007B64C(void) {
           d = func_80017990(svF, &actor->posX);
           func_8001778C(svF, svF, &actor->posX);
           if (d > 0x20) {
-            d >>= 1;
             h = func_80016AB4(svF[0], svF[1], 0);
+            d >>= 1;
             if (d > 0x190) {
               d = 0x190;
             }
@@ -5076,21 +5090,21 @@ void func_level_14_8007B64C(void) {
         x288[0] += (D_8006CC78[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[1] += (D_8006CBF8[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[2] -= 0x17C;
-        D_80078C4C = 0x80002000;
         dz = x288[2] - actor->posZ;
+        SPY.controlFlags = 0x80002000;
         func_80017700(st->cam, &SPY.posX);
-        st->cam[0] += (D_8006CC78[D_80078A66] * 0x4B) >> 10;
+        st->cam[0] += (D_8006CC78[SPY.bodyRotZ] * 0x4B) >> 10;
+        st->cam[1] += (D_8006CBF8[SPY.bodyRotZ] * 0x4B) >> 10;
         st->cam[2] += 0x64;
-        st->cam[1] += (D_8006CBF8[D_80078A66] * 0x4B) >> 10;
-        D_80078668.w[2] = 0x400;
         D_80078C74 = st->cam;
         D_80078C78 = &D_80078668;
+        D_80078668.w[2] = 0x400;
         D_80078668.w[1] = 0;
         D_80078668.w[3] = 0;
         D_80078668.w[4] = 0;
         D_80078668.w[5] = 0;
         SPY.controlFlags |= 0x80000200;
-        D_80078668.w[0] = -(D_80078A66 + 0x40) << 4;
+        D_80078668.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->unk49) {
         case 0:
           if (func_80017990(&actor->posX, x288) > 0x50) {
@@ -5134,8 +5148,8 @@ void func_level_14_8007B64C(void) {
               r = 0x190;
             }
             func_80017700(x288, &SPY.posX);
-            x288[0] += (r * D_8006CC78[D_80078A66]) >> 12;
-            x288[1] += (r * D_8006CBF8[D_80078A66]) >> 12;
+            x288[0] += (r * D_8006CC78[SPY.bodyRotZ]) >> 12;
+            x288[1] += (r * D_8006CBF8[SPY.bodyRotZ]) >> 12;
             D_800758E4(1, 0x1F, x288, 0);
             st->count = 0;
           }
@@ -5150,17 +5164,13 @@ void func_level_14_8007B64C(void) {
             f = 0xE;
           }
           if (actor->unk3F >= f && *(p = &D_80078768) == 0) {
-            int t;
-
             if (st->kind == 1 || st->kind == 3) {
-              t = 0x9450C00;
+              *p = 0x9450C00;
+            } else if (st->kind == 2) {
+              *p = 0x30C;
             } else {
-              t = 0x384;
-              if (st->kind == 2) {
-                t = 0x30C;
-              }
+              *p = 0x384;
             }
-            *p = t;
             *(q = &D_80078C4C) |= 0x80020000;
             D_80078C5E = st->heading;
           }
