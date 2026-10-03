@@ -4826,10 +4826,10 @@ func_level_7_8007E240:
   date: 2026-10-02
   note: "49,808 B MATCHED in one session. The 2026-09-30 '~30% coverage' was an asm-register artifact (actor in s4); a register-normalised arm scan (build/xscan_r.py) put it at 89%. Seeded from level_1/3/8/10/26/31, decoded 184/186/197/458; last knots: frame slot order, an aggregate D_80078C4C store (A302), a scalar-vs-struct yaw read, the duplicated blend tail in 186."
 func_level_32_8007AE5C:
-  verdict: attempted
-  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
-  date: 2026-09-30
-  note: "33,452 B. tree_x_32.txt in build/l2."
+  verdict: viable
+  class: "MATCHED 2026-10-02 (actor-update clone recipe, 7 new arms)"
+  date: 2026-10-02
+  note: "33,452 B MATCHED in one session. Base frame level_10 (same s7=16/fp=spy carriers). The tree tool missed cases 16 (beq v1,s7) and 250 (beq v1,t1) and lumped 329 into 323; check every beq against a carrier register. Last knots: A285 for the 3/4 hoist groups, absolute D_80077368 + g_anCollisionProbeVec alias in the reflect blocks, A200 for spy->posY folds."
 func_level_12_8007E398:
   verdict: matched
   class: "actor-update megafunction, seeded from level_0/1/8/9/15/25/26/31 arms"
@@ -4875,3 +4875,28 @@ func_level_14_8007B64C:
   class: "sched2 LUID tie: split-constant lui vs t2 remat (case 227); sched1 cannot place the lui past the boosted bodyRotZ chain"
   date: 2026-10-02
   note: "53,744 B. .c.wip at masked 6/13436, length- and frame-exact. 32 arms copied, 7 decoded (109/227/301-305). Levers that closed 4444 -> 6 are in the .wip header. Residue: sched1 always emits lui(0x80000200) right after the lbu (prio 5 = call, never boosted), so its LUID is below the t2 remat reload puts before the addu, and sched2 breaks the prio-7 tie the wrong way. 2026-10-02-1 measured, all no better: A232 barrier sweep over the camera block (126 placements, best 78); constant local (propagated, byte-identical); loop-top `hi = 0x80000000` carrier remat'd at the use (14-19, reassociates or moves the ori); aggregate aliasing (the level_34 lever) does not touch a dep-free constant. Workspace build/l14w (sweep.py)."
+func_level_33_8007AD64_2026_10_03:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (actor-update clone recipe, 6 new arms incl. Gnasty Gnorc)"
+  date: 2026-10-03
+  note: "33,216 B. Base frame level_25 (fp=1 carrier; one/oneq left unused). Tree tool missed case 329 (beq v1,v0 after 0x149). Knots: loop.c hoist set (ENTER_POSE_B + g_anSineLut alias keep 3/CBF8 inline; pre-loop base = D_80078BBC), scalar g_nLevelReadyFlag reads, A297/A302 alias-class spellings in Gnasty's camera blocks, split 159 loop update (i -= dir; i = (i + count) % count) for register order."
+func_level_20_8007AFBC_2026_10_03:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (actor-update clone recipe, 4 new arms + level_18's 137/466)"
+  date: 2026-10-03
+  note: "38,748 B. Base frame level_10 (s7=16); spy = base - 0x164 with base = D_80078BBC as a LOOP-TOP carrier (one more loop.c move, keeps 5/8/D_80076378 inline). Tree tool missed 16 (beq a0,s7), 329, 392. Arms 137/466 taken from build/l18w/new. Knots: A285 ENTER_POSE_B, A200 barriers in the hit blocks, pointer-vs-index spelling flips addu operand order, struct-vs-scalar reads for sched (A302)."
+func_level_21_8007B698_2026_10_03:
+  verdict: parked
+  class: "actor-update megafunction; decode in progress (arm 293/294 left)"
+  date: 2026-10-03
+  note: "46,240 B. .c.wip committed (masked 1,647, -1,194 insns = arm 293). Base level_7 frame. Decoded 57, 100/102, 101; 453 seeded from level_20's 466. Arms 57/100/101 are shared with level_22 (57 0.96, 102 0.94, 170 0.92): finish 21 first, then 22 is mostly copy. Workspace build/l21w."
+func_level_22_8007B770_2026_10_03:
+  verdict: viable
+  class: "actor-update megafunction; ~64% + three arms shared with level_21"
+  date: 2026-10-03
+  note: "48,524 B. 57/102/170 = level_21's 57/100/101 (0.92-0.96); 466 = level_18/20's ram. New: 48 (956), 65 (429), 70, 82, 210."
+func_level_27_8007B510_2026_10_03:
+  verdict: parked
+  class: "A293 j-entry loop (exit test not duplicated) + jump-table dispatch"
+  date: 2026-10-03
+  note: "72% arm coverage but the original's loop keeps the `j` into the bottom test while loop.c still hoists 1/2/3/-1/CBF8/CC78/76378 (remat in t3); type dispatch is a 469-entry jump table, not the compare tree. Same for level_6/24."

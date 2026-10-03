@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_32_gnastys_world_twilight_harbor.ld. */
     . = 0x00000424 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.func_level_32_8007AE5C)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_8007AE5C.o(.text)
     . = 0x000086d0 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.func_level_32_80083108)
     build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_80083108.o(.text)
