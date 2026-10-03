@@ -4880,3 +4880,8 @@ func_level_33_8007AD64_2026_10_03:
   class: "MATCHED 2026-10-03 (actor-update clone recipe, 6 new arms incl. Gnasty Gnorc)"
   date: 2026-10-03
   note: "33,216 B. Base frame level_25 (fp=1 carrier; one/oneq left unused). Tree tool missed case 329 (beq v1,v0 after 0x149). Knots: loop.c hoist set (ENTER_POSE_B + g_anSineLut alias keep 3/CBF8 inline; pre-loop base = D_80078BBC), scalar g_nLevelReadyFlag reads, A297/A302 alias-class spellings in Gnasty's camera blocks, split 159 loop update (i -= dir; i = (i + count) % count) for register order."
+func_level_20_8007AFBC_2026_10_03:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (actor-update clone recipe, 4 new arms + level_18's 137/466)"
+  date: 2026-10-03
+  note: "38,748 B. Base frame level_10 (s7=16); spy = base - 0x164 with base = D_80078BBC as a LOOP-TOP carrier (one more loop.c move, keeps 5/8/D_80076378 inline). Tree tool missed 16 (beq a0,s7), 329, 392. Arms 137/466 taken from build/l18w/new. Knots: A285 ENTER_POSE_B, A200 barriers in the hit blocks, pointer-vs-index spelling flips addu operand order, struct-vs-scalar reads for sched (A302)."

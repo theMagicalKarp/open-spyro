@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_20_beast_makers_misty_bog.ld. */
     . = 0x00000584 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_8007AFBC)
+    build/overlays/level_20_beast_makers_misty_bog/c/func_level_20_8007AFBC.o(.text)
     . = 0x00009ce0 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.func_level_20_80084718)
     build/overlays/level_20_beast_makers_misty_bog/c/func_level_20_80084718.o(.text)
