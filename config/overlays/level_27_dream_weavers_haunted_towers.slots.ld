@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_27_dream_weavers_haunted_towers.ld. */
     . = 0x00000ad8 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.func_level_27_8007B510)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/func_level_27_8007B510.o(.text)
     . = 0x0000aed4 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.func_level_27_8008590C)
     build/overlays/level_27_dream_weavers_haunted_towers/c/func_level_27_8008590C.o(.text)
