@@ -4806,10 +4806,10 @@ func_level_28_8007AF50:
   date: 2026-09-30
   note: "34,648 B. build/l2/tree.py raised a KeyError walking this compare tree, so it never got an arm map. Fix the tree walk first."
 func_level_19_8007B5DC:
-  verdict: attempted
-  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
-  date: 2026-09-30
-  note: "36,992 B. tree_x_19.txt in build/l2. Too few arms to copy; it needs a Beast Makers seed decoded first."
+  verdict: parked
+  class: "cross-jump pairing of duplicated remove tails (arms 14/67/250/329) + 2 sched slots in 467"
+  date: 2026-10-02
+  note: "36,992 B. .c.wip at masked 75/9248 (52 short), frame exact. Register-normalised scan put it at 74% covered; decoded 32/35/343/467/494, 461/466 from the level_18 workspace. Closed: frame slots, the 4 hoist group (A285 split-constant pose at three sites), per-loop counters in 35, `-(x*10) - x*32` in 343. Left: mine merges four duplicated `...; func_80052568` tails that the original keeps (both copies identical in the original, so it is jump.c pairing order, not content); an A301 kill label on 494 made it worse (80). Workspace build/l19w."
 func_level_21_8007B698:
   verdict: attempted
   class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
