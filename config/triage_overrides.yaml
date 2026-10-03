@@ -4841,10 +4841,10 @@ func_level_13_8007BB00:
   date: 2026-10-01
   note: "59,500 B. Decoded 253/315/326. Level_26 loop top, `one` as literal 1 (hoisted and spilled). Case 270's `1 << bit` must go through a mask temp or fold turns it into srav/andi."
 func_level_34_8007AD4C:
-  verdict: parked
-  class: "sched1 memory-unit blocking: one store-order knot in case 177's camera block"
+  verdict: viable
+  class: "MATCHED 2026-10-02 (A302 aggregate-MEM aliasing)"
   date: 2026-10-02
-  note: "35,140 B, .c.wip at masked 6/8785, frame exact, +1 insn (a3 misses the jal slot). 2026-10-02 closed 21 insns: F14d single-set d0 in 177/case 0, SPY.bodyRotZ (struct MEM orders after the st->timer store), D_80078C00[-1..1] for the BFC..C04 zeroing, w[0] first in the w181 init. Left: sched1 drains every store before the blocked lw a1, so -0x100 lands last instead of D_8007570C. Workspace build/l34w (v_K1.c)."
+  note: "35,140 B MATCHED. The last knot (6 masked) was alias-driven: case 177's camera words written as array/struct elements (D_80078C00[19/29/30], D_80078668.w[1..5]) may alias the st->path arg load, so sched1 keeps them ahead of it and only the scalar D_8007570C store sinks to the call (a3 then fills the jal slot)."
 func_level_17_8007B68C:
   verdict: wall
   class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
@@ -4872,6 +4872,6 @@ func_level_18_8007E18C_2026_10_02:
   note: "40,292 B, all arms written, masked 393 (-14). Re-measured: per-arm 16 counts equal orig; leader is c110 st->timer = 0x10. A multi-set var for 16 in arm 137 does nothing (cse makes a constant pseudo per site). A303 loop-top carrier cannot work: any extra move before insn 527 un-hoists D_80076378 (S15 L60 needs thr >= 22). New dial found: each moved_once movable doubles insn_count (loop.c:1611). Details in build/l18w/NOTES.md."
 func_level_14_8007B64C:
   verdict: parked
-  class: "sched2 tie: split-constant lui (2-set pseudo, never boosted) vs bodyRotZ load vs t2 remat in case 227"
+  class: "sched2 LUID tie: split-constant lui vs t2 remat (case 227); sched1 cannot place the lui past the boosted bodyRotZ chain"
   date: 2026-10-02
-  note: "53,744 B. .c.wip at masked 6/13436, length- and frame-exact. 32 arms copied, 7 decoded (109/227/301-305). Levers that closed 4444 -> 6 are in the .wip header (frame order, no spy carrier, struct-vs-scalar spellings, st ref count for the s4/s5 tie, w1 pointer for cse related-value). Workspace build/l14w."
+  note: "53,744 B. .c.wip at masked 6/13436, length- and frame-exact. 32 arms copied, 7 decoded (109/227/301-305). Levers that closed 4444 -> 6 are in the .wip header. Residue: sched1 always emits lui(0x80000200) right after the lbu (prio 5 = call, never boosted), so its LUID is below the t2 remat reload puts before the addu, and sched2 breaks the prio-7 tie the wrong way. 2026-10-02-1 measured, all no better: A232 barrier sweep over the camera block (126 placements, best 78); constant local (propagated, byte-identical); loop-top `hi = 0x80000000` carrier remat'd at the use (14-19, reassociates or moves the ori); aggregate aliasing (the level_34 lever) does not touch a dep-free constant. Workspace build/l14w (sweep.py)."
