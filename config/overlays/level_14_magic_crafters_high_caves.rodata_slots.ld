@@ -4,24 +4,7 @@
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000075c ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B194)
-    . = 0x00000854 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B28C)
-    . = 0x0000086c ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B2A4)
-    . = 0x00000884 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B2BC)
-    . = 0x000008a4 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B2DC)
-    . = 0x000008bc ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B2F4)
-    . = 0x000008e4 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B31C)
-    . = 0x000008fc ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B334)
-    . = 0x00000914 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B34C)
+    build/overlays/level_14_magic_crafters_high_caves/c/func_level_14_8007B64C.o(.rodata)
     . = 0x00000928 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B360)
     . = 0x00000a6c ;

@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_28_dream_weavers_jacques.ld. */
     . = 0x00000518 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_8007AF50)
+    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_8007AF50.o(.text)
     . = 0x00008c70 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.func_level_28_800836A8)
     build/overlays/level_28_dream_weavers_jacques/c/func_level_28_800836A8.o(.text)

@@ -1,5 +1,5 @@
 /* func_level_14_8007B64C -- per-frame actor update for level 14 (High
- * Caves). PARKED 2026-10-02 at masked 6/13436, length- and frame-exact.
+ * Caves). 0x8007B64C, 53,744 bytes.
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class: a small
@@ -12,7 +12,7 @@
  * a scripted camera), 301 (a bolt caster), 302 (a riding platform), 303 and
  * 304 (a spawner and its runner) and 305 (a path-walking critter that flees).
  *
- * Load-bearing source forms found so far:
+ * Load-bearing source forms:
  *   - No base/spy carrier: `spy` is `&SPY`, so Spyro reads are absolute and
  *     the preheader hoists only the small constants.
  *   - The frame is laid out in first-use order with shared slots (svF for
@@ -26,11 +26,9 @@
  *     cse derives &D_80078668 as w1 - 4; cases 227/109 read the yaw as
  *     SPY.bodyRotZ (a struct MEM, ordered against the st->cam stores).
  *
- * Residue (6 insns, one knot): case 227 after func_80017700(st->cam, ..),
- * sched2 places `lui a1,0x8000` (the split 0x80000200 constant: its lui half
- * is a 2-set pseudo, so sched1 never boosts it) before the bodyRotZ load and
- * the t2 remat of D_8006CC78; the original has t2, bodyRotZ, lui. Moving
- * the `controlFlags |= 0x80000200` statement anywhere leaves it put.
+ *   - Case 227 reads the camera's second sine through a pointer local
+ *     (`*(nv = &D_8006CBF8[..])`); with the plain array read sched2 puts the
+ *     split 0x80000200 constant's lui ahead of the D_8006CC78 reload.
  *
  * ==== Core records ====
  *
@@ -4149,11 +4147,11 @@ void func_level_14_8007B64C(void) {
           D_80078C7C = 0;
           D_80078C78 = &D_80078668;
           D_80078668.w[0] = (D_8006C934.w[0] - D_80078B74) & 0xFFF;
+          D_80078668.w[1] = D_8006C934.w[1];
           D_80078668.w[2] = D_8006C934.w[2];
           D_80078668.w[3] = D_8006C934.w[3];
           D_80078668.w[4] = D_8006C934.w[4];
           D_80078668.w[5] = D_8006C934.w[5];
-          D_80078668.w[1] = D_8006C934.w[1];
         } else if (st->mode & 0x10) {
           int *cf = &D_80078C4C;
 
@@ -4175,11 +4173,11 @@ void func_level_14_8007B64C(void) {
           D_80078C7C = 0;
           D_80078C78 = &D_80078668;
           D_80078668.w[0] = (D_8006C934.w[0] - D_80078B74) & 0xFFF;
+          D_80078668.w[1] = D_8006C934.w[1];
           D_80078668.w[2] = D_8006C934.w[2];
           D_80078668.w[3] = D_8006C934.w[3];
           D_80078668.w[4] = D_8006C934.w[4];
           D_80078668.w[5] = D_8006C934.w[5];
-          D_80078668.w[1] = D_8006C934.w[1];
         }
 
         if (st->mode & 4) {
@@ -5083,6 +5081,7 @@ void func_level_14_8007B64C(void) {
 
       case 1: {
         int dz;
+        short *nv;
 
         func_80038DC0(actor, 4, 0, 0);
         func_80017700(x288, &SPY.posX);
@@ -5094,7 +5093,7 @@ void func_level_14_8007B64C(void) {
         SPY.controlFlags = 0x80002000;
         func_80017700(st->cam, &SPY.posX);
         st->cam[0] += (D_8006CC78[SPY.bodyRotZ] * 0x4B) >> 10;
-        st->cam[1] += (D_8006CBF8[SPY.bodyRotZ] * 0x4B) >> 10;
+        st->cam[1] += (*(nv = &D_8006CBF8[SPY.bodyRotZ]) * 0x4B) >> 10;
         st->cam[2] += 0x64;
         D_80078C74 = st->cam;
         D_80078C78 = &D_80078668;

@@ -4,20 +4,7 @@
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x000007d4 ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B20C)
-    . = 0x000007ec ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B224)
-    . = 0x00000844 ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B27C)
-    . = 0x00000924 ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B35C)
-    . = 0x00000a04 ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B43C)
-    . = 0x00000a1c ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B454)
-    . = 0x00000a3c ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B474)
+    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_8007B770.o(.rodata)
     . = 0x00000a6c ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B4A4)
     build/overlays/level_22_beast_makers_metalhead/c/func_level_22_80088178.o(.rodata)

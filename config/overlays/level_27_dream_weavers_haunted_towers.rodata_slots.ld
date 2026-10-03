@@ -4,18 +4,7 @@
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000075c ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B194)
-    . = 0x00000774 ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B1AC)
-    . = 0x0000078c ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B1C4)
-    . = 0x000007ac ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B1E4)
-    . = 0x000007dc ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B214)
-    . = 0x000007f4 ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B22C)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/func_level_27_8007B510.o(.rodata)
     . = 0x0000080c ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/data/rodata.rodata.o(.rodata.jtbl_8007B244)
     build/overlays/level_27_dream_weavers_haunted_towers/c/func_level_27_80086754.o(.rodata)

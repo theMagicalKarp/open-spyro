@@ -4900,3 +4900,38 @@ func_level_27_8007B510_2026_10_03:
   class: "A293 j-entry loop (exit test not duplicated) + jump-table dispatch"
   date: 2026-10-03
   note: "72% arm coverage but the original's loop keeps the `j` into the bottom test while loop.c still hoists 1/2/3/-1/CBF8/CC78/76378 (remat in t3); type dispatch is a 469-entry jump table, not the compare tree. Same for level_6/24."
+func_level_21_8007B698_2026_10_03_2:
+  verdict: matched
+  class: "actor-update megafunction; path runner 293 decoded (A293 j-entry solved)"
+  date: 2026-10-03
+  note: "46,240 B. Supersedes the parked entry above."
+func_level_22_8007B770_2026_10_03_2:
+  verdict: matched
+  class: "actor-update megafunction; Metalhead (48) + 65/70/82/210 decoded"
+  date: 2026-10-03
+  note: "48,524 B."
+func_level_28_8007AF50:
+  verdict: matched
+  class: "actor-update megafunction; Jacques (150) + rocks/rams/path walker decoded, tree simulated"
+  date: 2026-10-03
+  note: "34,648 B."
+func_level_27_8007B510_2026_10_03_2:
+  verdict: matched
+  class: "actor-update megafunction; fence guard (203) + captain (204) decoded; A293 shape needs no carriers"
+  date: 2026-10-03
+  note: "41,980 B. Supersedes the A293 'wall' entry above. Key knot: the whole-function reload register (t3) depended on case 203 reusing `len` for the push distance (cookbook A320)."
+func_level_14_8007B64C_2026_10_03:
+  verdict: matched
+  class: "sched2 split-constant tie closed with a pointer local on the D_8006CBF8 read; template copy in field order"
+  date: 2026-10-03
+  note: "53,744 B. The masked diff hid a relocated-load permutation in two camera blocks (cookbook A319)."
+func_level_24_8007E3C0:
+  verdict: parked
+  class: "one sched tie in case 91 state 10: cs->speed store vs the call's a2 constant and the second unk46 index register"
+  date: 2026-10-03
+  note: "43,620 B. .c.wip at masked 4/10905, length- and frame-exact. Store-first costs the store position; store-last (or inside the call args) flips lbu a2->a3. Permuter (several thousand iterations, two bases) found nothing below. Workspace build/l24w2."
+func_level_6_8007E3A0_2026_10_03:
+  verdict: viable
+  class: "fully decoded, masked 3/12206: case 225's best = 0 is stolen by reorg into the spawn call's delay slot"
+  date: 2026-10-03
+  note: "48,824 B. All arms written (new: 146, 188, 193, 214/216, 225, 237, 417, 454), frame exact, `make check` byte diff confined to 80086E1C-80086E48. With `h = 0xF0` the 240 lands in the load-delay slot but sched1 then puts `move a1,s4` before the D_800758CC load, so reorg fills the jalr slot with `move s7,zero` from later. Workspace build/l6w2 (new/case225.c)."
