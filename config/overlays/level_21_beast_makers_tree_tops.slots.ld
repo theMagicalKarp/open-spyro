@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_21_beast_makers_tree_tops.ld. */
     . = 0x00000c60 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_8007B698)
+    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_8007B698.o(.text)
     . = 0x0000c100 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.func_level_21_80086B38)
     build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_80086B38.o(.text)
