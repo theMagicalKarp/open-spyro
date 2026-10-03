@@ -4821,10 +4821,10 @@ func_level_22_8007B770:
   date: 2026-09-30
   note: "48,524 B. tree_x_22.txt in build/l2."
 func_level_7_8007E240:
-  verdict: attempted
-  class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
-  date: 2026-09-30
-  note: "49,808 B. tree_x_7.txt in build/l2."
+  verdict: viable
+  class: "MATCHED 2026-10-02 (actor-update clone recipe, 4 new arms)"
+  date: 2026-10-02
+  note: "49,808 B MATCHED in one session. The 2026-09-30 '~30% coverage' was an asm-register artifact (actor in s4); a register-normalised arm scan (build/xscan_r.py) put it at 89%. Seeded from level_1/3/8/10/26/31, decoded 184/186/197/458; last knots: frame slot order, an aggregate D_80078C4C store (A302), a scalar-vs-struct yaw read, the duplicated blend tail in 186."
 func_level_32_8007AE5C:
   verdict: attempted
   class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
