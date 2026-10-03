@@ -4875,3 +4875,8 @@ func_level_14_8007B64C:
   class: "sched2 LUID tie: split-constant lui vs t2 remat (case 227); sched1 cannot place the lui past the boosted bodyRotZ chain"
   date: 2026-10-02
   note: "53,744 B. .c.wip at masked 6/13436, length- and frame-exact. 32 arms copied, 7 decoded (109/227/301-305). Levers that closed 4444 -> 6 are in the .wip header. Residue: sched1 always emits lui(0x80000200) right after the lbu (prio 5 = call, never boosted), so its LUID is below the t2 remat reload puts before the addu, and sched2 breaks the prio-7 tie the wrong way. 2026-10-02-1 measured, all no better: A232 barrier sweep over the camera block (126 placements, best 78); constant local (propagated, byte-identical); loop-top `hi = 0x80000000` carrier remat'd at the use (14-19, reassociates or moves the ori); aggregate aliasing (the level_34 lever) does not touch a dep-free constant. Workspace build/l14w (sweep.py)."
+func_level_33_8007AD64_2026_10_03:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (actor-update clone recipe, 6 new arms incl. Gnasty Gnorc)"
+  date: 2026-10-03
+  note: "33,216 B. Base frame level_25 (fp=1 carrier; one/oneq left unused). Tree tool missed case 329 (beq v1,v0 after 0x149). Knots: loop.c hoist set (ENTER_POSE_B + g_anSineLut alias keep 3/CBF8 inline; pre-loop base = D_80078BBC), scalar g_nLevelReadyFlag reads, A297/A302 alias-class spellings in Gnasty's camera blocks, split 159 loop update (i -= dir; i = (i + count) % count) for register order."
