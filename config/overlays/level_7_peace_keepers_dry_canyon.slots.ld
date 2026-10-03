@@ -14,6 +14,7 @@
     build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007D838.o(.text)
     . = 0x00003808 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.func_level_7_8007E240)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007E240.o(.text)
     . = 0x0000fa98 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.func_level_7_8008A4D0)
     build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8008A4D0.o(.text)

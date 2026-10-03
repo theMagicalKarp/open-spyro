@@ -10,20 +10,7 @@
     build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007D838.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x0000084c ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B284)
-    . = 0x00000944 ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B37C)
-    . = 0x0000095c ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B394)
-    . = 0x00000974 ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B3AC)
-    . = 0x00000994 ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B3CC)
-    . = 0x000009b4 ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B3EC)
-    . = 0x00000a0c ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B444)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8007E240.o(.rodata)
     . = 0x00000a34 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B46C)
     build/overlays/level_7_peace_keepers_dry_canyon/c/func_level_7_8008B1C0.o(.rodata)
