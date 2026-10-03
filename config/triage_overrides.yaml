@@ -4885,3 +4885,18 @@ func_level_20_8007AFBC_2026_10_03:
   class: "MATCHED 2026-10-03 (actor-update clone recipe, 4 new arms + level_18's 137/466)"
   date: 2026-10-03
   note: "38,748 B. Base frame level_10 (s7=16); spy = base - 0x164 with base = D_80078BBC as a LOOP-TOP carrier (one more loop.c move, keeps 5/8/D_80076378 inline). Tree tool missed 16 (beq a0,s7), 329, 392. Arms 137/466 taken from build/l18w/new. Knots: A285 ENTER_POSE_B, A200 barriers in the hit blocks, pointer-vs-index spelling flips addu operand order, struct-vs-scalar reads for sched (A302)."
+func_level_21_8007B698_2026_10_03:
+  verdict: parked
+  class: "actor-update megafunction; decode in progress (arm 293/294 left)"
+  date: 2026-10-03
+  note: "46,240 B. .c.wip committed (masked 1,647, -1,194 insns = arm 293). Base level_7 frame. Decoded 57, 100/102, 101; 453 seeded from level_20's 466. Arms 57/100/101 are shared with level_22 (57 0.96, 102 0.94, 170 0.92): finish 21 first, then 22 is mostly copy. Workspace build/l21w."
+func_level_22_8007B770_2026_10_03:
+  verdict: viable
+  class: "actor-update megafunction; ~64% + three arms shared with level_21"
+  date: 2026-10-03
+  note: "48,524 B. 57/102/170 = level_21's 57/100/101 (0.92-0.96); 466 = level_18/20's ram. New: 48 (956), 65 (429), 70, 82, 210."
+func_level_27_8007B510_2026_10_03:
+  verdict: parked
+  class: "A293 j-entry loop (exit test not duplicated) + jump-table dispatch"
+  date: 2026-10-03
+  note: "72% arm coverage but the original's loop keeps the `j` into the bottom test while loop.c still hoists 1/2/3/-1/CBF8/CC78/76378 (remat in t3); type dispatch is a 469-entry jump table, not the compare tree. Same for level_6/24."
