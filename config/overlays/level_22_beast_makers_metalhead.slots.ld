@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_22_beast_makers_metalhead.ld. */
     . = 0x00000d38 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.func_level_22_8007B770)
+    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_8007B770.o(.text)
     . = 0x0000cac4 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.func_level_22_800874FC)
     build/overlays/level_22_beast_makers_metalhead/c/func_level_22_800874FC.o(.text)
