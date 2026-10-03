@@ -4,16 +4,7 @@
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x0000001c ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AA54)
-    . = 0x00000034 ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AA6C)
-    . = 0x00000054 ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AA8C)
-    . = 0x000000ac ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AAE4)
-    . = 0x00000104 ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AB3C)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_8007AE5C.o(.rodata)
     . = 0x00000158 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AB90)
     build/overlays/level_32_gnastys_world_twilight_harbor/c/func_level_32_80083B4C.o(.rodata)
