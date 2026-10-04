@@ -2,7 +2,7 @@
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
 <text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">92.28% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">1,992,800 / 2,159,608 split-code bytes · 691 matched · 33 wip</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">1,992,920 / 2,159,608 split-code bytes · 693 matched · 33 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -570,8 +570,8 @@
 <rect x="248.73" y="746.23" width="6.03" height="5.44" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005C62C  ·  60 bytes  ·  matched</title></rect>
 <rect x="248.73" y="751.66" width="6.03" height="5.44" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitDefaultDispEnv  ·  60 bytes  ·  matched</title></rect>
 <rect x="248.73" y="757.10" width="6.03" height="5.44" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005EBB0  ·  60 bytes  ·  matched</title></rect>
-<rect x="248.73" y="762.54" width="6.03" height="5.44" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005ECDC  ·  60 bytes  ·  asm</title></rect>
-<rect x="248.73" y="767.98" width="6.03" height="5.44" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005ED18  ·  60 bytes  ·  asm</title></rect>
+<rect x="248.73" y="762.54" width="6.03" height="5.44" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005ECDC  ·  60 bytes  ·  matched</title></rect>
+<rect x="248.73" y="767.98" width="6.03" height="5.44" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8005ED18  ·  60 bytes  ·  matched</title></rect>
 <rect x="254.76" y="706.71" width="5.72" height="5.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80060540  ·  60 bytes  ·  matched</title></rect>
 <rect x="260.48" y="706.71" width="5.72" height="5.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WritePrintf  ·  60 bytes  ·  matched</title></rect>
 <rect x="266.20" y="706.71" width="5.72" height="5.73" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>setjmp  ·  60 bytes  ·  asm</title></rect>

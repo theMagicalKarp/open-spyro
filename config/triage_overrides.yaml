@@ -18,14 +18,6 @@
 # switchdata jr-tables in main, handwritten tags) need no entry here.
 
 # --- AddPrim mask family (mask constants in swapped arg regs; ccpsx-built) ---
-func_8005ECDC:
-  verdict: wall
-  class: "B4 AddPrim mask"
-  date: 2026-07-10
-func_8005ED18:
-  verdict: wall
-  class: "B4 AddPrim mask"
-  date: 2026-07-10
 func_8005ED54:
   verdict: wall
   class: "B4 AddPrim mask"
