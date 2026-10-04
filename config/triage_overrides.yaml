@@ -4945,3 +4945,8 @@ func_level_19_8007B5DC_2026_10_03_1:
   class: "MATCHED 2026-10-03 (jump.c new-label cross-jump rule + A302 spellings)"
   date: 2026-10-03
   note: "36,992 B. The 52-insn shortfall came from the last arm's `if (a || b || c) despawn;`: its || branches give the shared despawn tail a label that exists when jump2 starts, so jumps cross-jumped onto it are compared through jump_chain and the duplicated D_800758E4+despawn tails of arms 14/67/250/329 merge. Separate `despawn; continue;` per test leaves no label there, jump.c makes a new one, and jumps to it are never compared. Then case 14 svA->svF / svF->o152, and case 467 heading/flags reads through SPY (A302)."
+func_level_24_8007E3C0_2026_10_03_1:
+  verdict: parked
+  class: "sched1 straggler-gap tie: boosted li 800 (speed store after the steps load) takes the dvz-reload gap a2=800 needs"
+  date: 2026-10-03
+  note: "43,620 B, still masked 4/10905. The steps load aliases every cs store (both through varying struct bases), so the speed store must follow it in source. Then the store's birthing-boosted `li 800` fills the gap after `lh a3` (dvz reload). The a0/a1/a2 arg sets (prio 4) drift into earlier load gaps, a2 lands inside the second unk46 index temp's range, and that temp gets a3. Measured with no improvement: 39 A232 barrier placements (best 21), a hoisted steps read (best 4), multi-set v (s4) or k for 800, and the store inside the call args (7). Workspace build/l24w2 (sweep.py)."
