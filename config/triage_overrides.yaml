@@ -114,10 +114,6 @@ func_8005D7F4:
   verdict: wall
   class: "B11 lagged-mult"
   date: 2026-07-10
-IntegrateSpyroBodyEuler:
-  verdict: wall
-  class: "B11 lagged-mult + B-i fold"
-  date: 2026-07-16
 
 # --- -g3 batch-read/scatter scheduling (main only) ---
 
