@@ -71,6 +71,7 @@ void *UnpackWorldDataChunks(int *cursor, int flag) {
   int i;
   int n;
   int *volatile *new_var;
+  int pad[14];
   {
     int *sect = cursor;
     cursor++;
