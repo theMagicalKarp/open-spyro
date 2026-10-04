@@ -1,5 +1,5 @@
 /* func_level_19_8007B5DC -- per-frame actor update for level 19 (Terrace
- * Village). PARKED 2026-10-02 at masked 75/9248 (52 insns short).
+ * Village). 0x8007B5DC, 36,992 bytes.
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class: a small
@@ -12,7 +12,7 @@
  * fires bolts), 343 (a swinging pair), 467 (a bolt-throwing sentry with three
  * guards) and 494 (the bolt).
  *
- * Load-bearing source forms found so far:
+ * Load-bearing source forms:
  *   - Level 8's loop top (fp = `one`, s7 = `spy`); the frame is laid out in
  *     the original slot order (o152, o256..o528 are slots shared by arms).
  *   - The `4` hoist group must NOT move: the three pose-4 sites in 466/467
@@ -23,11 +23,15 @@
  *     reads the sine tables as unsigned shorts.
  *   - Case 110's first state is shaped like case 331's so they share the
  *     distance test; case 467's mode dispatch is a switch.
- *
- * Residue (75 insns): jump.c pairs several duplicated `... ; remove` tails
- * differently from the original (arms 14, 67, 250 and 329 lose a copy that
- * the original keeps), plus two scheduler slots in 467 (the hit block's
- * speed store and the bolt's damage-flag RMW). Workspace: build/l19w.
+ *   - Case 494 (the last arm) gives each of its three despawn tests its own
+ *     `func_80052568(actor); continue;`. jump.c then has to make a new label
+ *     for the shared despawn tail, and jumps to a label made during the pass
+ *     are never compared with each other. That keeps the duplicated
+ *     `D_800758E4(...); despawn` tails of arms 14, 67, 250 and 329 apart, as
+ *     in the original.
+ *   - Case 14 samples the floor through svF (idle) and o152 (mode 3).
+ *   - Case 467 reads Spyro's heading and damage flags through SPY, so the
+ *     loads stay behind the st->speed and bs->mode stores (cookbook A302).
  *
  * ==== Core records ====
  *
@@ -1906,9 +1910,9 @@ void func_level_19_8007B5DC(void) {
         switch (actor->unk49) {
         case 0:
           /* Idle: sample the floor normal and face along it. */
-          func_80017700(svA, &actor->posX);
-          svA[2] += 0x400;
-          func_8004D5EC(svA, 0x10000);
+          func_80017700(svF, &actor->posX);
+          svF[2] += 0x400;
+          func_8004D5EC(svF, 0x10000);
           {
             int *nrm = &D_80077368;
 
@@ -1952,10 +1956,10 @@ void func_level_19_8007B5DC(void) {
             func_80038458(actor);
             func_800533D0(actor);
           } else if (st->mode == 3) {
-            func_80017700(svF, &actor->posX);
-            svF[2] += 0x400;
+            func_80017700(o152, &actor->posX);
+            o152[2] += 0x400;
             func_800529E4(actor, 2);
-            if (func_8004D5EC(svF, 0x1000) > 0) {
+            if (func_8004D5EC(o152, 0x1000) > 0) {
               st->node = D_80075808;
               st->mode = 2;
             }
@@ -4383,8 +4387,8 @@ void func_level_19_8007B5DC(void) {
 
       if (actor->flags & 0x90000 && func_80017990(&actor->posX, spy) < 0xE10 &&
           actor->unk48 != 6) {
-        st->heading = D_80078A66;
         st->speed = 0xF0;
+        st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         func_8003ABC0(actor, 1, 0, 0);
         func_8003B7C0(actor);
@@ -4473,7 +4477,7 @@ void func_level_19_8007B5DC(void) {
           st->bolt->unk46 = actor->unk46;
           bs = st->bolt->state;
           bs->mode = 0;
-          D_80078A84 |= 0x26;
+          D_80078A84 = SPY.damageFlags | 0x26;
           func_800529E4(actor, 4);
           func_80052D64(actor, 0, &st->bolt->posX);
           bs->parent = actor;
@@ -4663,9 +4667,15 @@ void func_level_19_8007B5DC(void) {
         func_80052568(actor);
         continue;
       }
-      if (func_80037F90(&st->timer, 2) != 0 ||
-          func_8003BCCC(actor, 0x15E, 0x96, 0, 0) != 0 ||
-          func_8004AE38(o480, &actor->posX) != 0) {
+      if (func_80037F90(&st->timer, 2) != 0) {
+        func_80052568(actor);
+        continue;
+      }
+      if (func_8003BCCC(actor, 0x15E, 0x96, 0, 0) != 0) {
+        func_80052568(actor);
+        continue;
+      }
+      if (func_8004AE38(o480, &actor->posX) != 0) {
         func_80052568(actor);
       }
       continue;

@@ -4940,3 +4940,8 @@ func_level_6_8007E3A0_2026_10_03_1:
   class: "MATCHED 2026-10-03 (A232 block split after the spawn call)"
   date: 2026-10-03
   note: "48,824 B. Last residue: with the multi-set h, sched1 fills the posZ load gap with h = 0xF0 (prio 3), so best = 0 (crosses calls, never boosted) drifts to the block head and reorg puts it in the D_800758CC jalr slot. Wrapping the spawn sequence in do { } while (0) ends the block after func_80039398; best = 0 heads the next block. An unused C label does not split (jump deletes it)."
+func_level_19_8007B5DC_2026_10_03_1:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (jump.c new-label cross-jump rule + A302 spellings)"
+  date: 2026-10-03
+  note: "36,992 B. The 52-insn shortfall came from the last arm's `if (a || b || c) despawn;`: its || branches give the shared despawn tail a label that exists when jump2 starts, so jumps cross-jumped onto it are compared through jump_chain and the duplicated D_800758E4+despawn tails of arms 14/67/250/329 merge. Separate `despawn; continue;` per test leaves no label there, jump.c makes a new one, and jumps to it are never compared. Then case 14 svA->svF / svF->o152, and case 467 heading/flags reads through SPY (A302)."
