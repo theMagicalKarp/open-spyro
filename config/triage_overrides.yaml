@@ -120,10 +120,6 @@ IntegrateSpyroBodyEuler:
   date: 2026-07-16
 
 # --- -g3 batch-read/scatter scheduling (main only) ---
-LoadCameraTargetAnglesFromMode:
-  verdict: wall
-  class: "B12 batch-scatter"
-  date: 2026-07-08
 RestartSpyroAnimWithState:
   verdict: wall
   class: "B12 batch-scatter (byte-store variant)"
