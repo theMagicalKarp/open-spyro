@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">91.99% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">1,986,660 / 2,159,608 split-code bytes · 675 matched · 39 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">92.00% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">1,986,788 / 2,159,608 split-code bytes · 676 matched · 38 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -398,7 +398,7 @@
 <rect x="195.62" y="692.32" width="8.79" height="9.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInfoComb  ·  148 bytes  ·  library</title></rect>
 <rect x="195.62" y="701.52" width="8.79" height="9.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_698  ·  148 bytes  ·  library</title></rect>
 <rect x="195.62" y="710.72" width="8.79" height="8.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80032A20  ·  144 bytes  ·  matched</title></rect>
-<rect x="195.62" y="719.68" width="8.79" height="8.96" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>BuildSpyroVelocityFromBodyEuler  ·  144 bytes  ·  wip</title></rect>
+<rect x="195.62" y="719.68" width="8.79" height="8.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildSpyroVelocityFromBodyEuler  ·  144 bytes  ·  matched</title></rect>
 <rect x="195.62" y="728.64" width="8.79" height="8.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimLayer2Frame  ·  144 bytes  ·  matched</title></rect>
 <rect x="195.62" y="737.59" width="8.79" height="8.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpuPerFrame  ·  144 bytes  ·  matched</title></rect>
 <rect x="195.62" y="746.55" width="8.79" height="8.96" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8005D628  ·  144 bytes  ·  asm</title></rect>
