@@ -4970,3 +4970,13 @@ func_level_18_8007E18C_2026_10_04_1:
   class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
   date: 2026-10-04
   note: "40,292 B. Orig hoists &D_80076DF8 (CAM.posX, remat'd as lui a0/addiu a0 in 398) and &SPY.controlFlags; both are only used as memory bases or argument values, so their remats are invisible. NOTE-only scopes stretch the camera group (case 398 state 1, +4 luids), D_80076378 (case 390, +8) and the controlFlags group (case 398 state 2, +80). Case 34 reads SPY.state so its controlFlags store leads the group. Then 16 (S43 L70) stays put at thr 5. Also: level_20's case 137, struct-field stores in 398 state 1, ((SpyroObj *)&D_80078A58) reads in 312, and case 190's dialogue slots."
+func_level_5_8007B68C_2026_10_04:
+  verdict: parked
+  class: "R5 sched2 store/store hole (unchanged) + Rd; new lead: the original's lui/ori pairs are UNSPLIT reload-made `li`s"
+  date: 2026-10-04
+  note: "8/1610. gcc 2.7.2 splits large-constant sets into lui/ori only in sched1 (sched.c, before reload). A reload remat of a REG_EQUIV constant is emitted after sched1, reaches sched2 as one insn and leaves no ori straggler for the hole. Measured: pinned a0/a1 constants 8, function-scope off/bias 1589 (bias wins the free s6; the original saves only s0-s5). Open: a source form whose constant pseudos get no hard register."
+func_level_13_8008AF54_2026_10_04:
+  verdict: parked
+  class: "B25 dead li a3,3 (unchanged); new lead: combine.c distribute_notes inserts (use (reg)) after a CODE_LABEL when a REG_DEAD note has no home"
+  date: 2026-10-04
+  note: "Reload emits an input reload for a USE insn and final prints nothing for the USE, which gives a dead li at a block head. That fits 3 of the 4 extra sites (arm/label heads); 0x8008B79C is mid-block. Our burst (reg/v 76) never dies in the loop, so it gets no REG_DEAD and no USE. Our build does have combine USEs at labels for other regs (732, 738, 1405)."
