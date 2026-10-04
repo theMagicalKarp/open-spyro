@@ -42,14 +42,6 @@ memchr:
   date: 2026-07-23
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
-BuildDrawAreaTopLeft:
-  verdict: wall
-  class: "B9 clamp"
-  date: 2026-07-08
-BuildDrawAreaBottomRight:
-  verdict: wall
-  class: "B9 clamp"
-  date: 2026-07-08
 func_800606C8:
   verdict: wall
   class: "B9 clamp (inline)"
