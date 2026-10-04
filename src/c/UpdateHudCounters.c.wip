@@ -425,8 +425,7 @@ void UpdateHudCounters(void) {
       {
         unsigned char t = g_bHudWorldEggRollPhase - 1;
         FIELD(g_bHudWorldEggRollPhase) = t;
-        OffsetHudDigitRollAxis(0, 0xC,
-                             -g_anHudRollOutStepTable[t]);
+        OffsetHudDigitRollAxis(0, 0xC, -g_anHudRollOutStepTable[t]);
       }
     }
     break;
