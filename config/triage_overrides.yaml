@@ -4995,3 +4995,8 @@ func_8005FC6C_2026_10_04_1:
   class: "F4/A187 return-copy store base (unchanged)"
   date: 2026-10-04
   note: "5/38. `int *r = ot;` with a do/while(0) barrier before or after the mask, and a block-scoped r: all byte-identical to the park. cse canonicalises r to the parameter either way."
+InitHudCounters_2026_10_04_2:
+  verdict: parked
+  class: "F1 local-alloc qty priority: short-lived lives qty takes v0 before the dragon count"
+  date: 2026-10-04
+  note: "100 -> 19/226 linked, length+frame exact. Frame needed pad[2]; the straight-line block's source order comes from true_dependence's both-volatile clause (VOL() on anchor/display/roll/hold stores and idx/counter/lives loads, NOT the cached stores); anchor = &records[0x196]; butterfly loop own dst/count vars, x=icon[k] temps, size=8 local. Left: lives->v0 rotates the counter batch t0..t3; 128 volatility combos + 6 lives placements measured, none reach it."

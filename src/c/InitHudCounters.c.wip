@@ -1,37 +1,29 @@
-/* PARK 53.1% (226/226 length-exact, 106 insns; logic verified against the asm).
- * Residue class F2 (independent-load scheduling order), main/-g3 sched1, in the
- * one ~75-insn straight-line block between the two fill loops and the first
- * SetHudCounterDigits call. The original emits, in source order: the anchor
- * halfword stores (+0x196/+0x29E/+0x3A6/+0x3FE/+0x40E), the five display-state
- * bytes, THEN the four counter loads (dragons/world eggs/level eggs/sparx
- * food), then the roll-phase + hold-timer zero blocks, then the gems/lives
- * loads and the six cached-count stores. Ours hoists the load batch to the top
- * of the block (a load feeding a store has sched priority 3 vs 2 for the
- * li/store anchor chains, so every load outranks them) and sinks the +0x3FE
- * anchor below the gems/lives loads.
- *   Proven source-order invariant: moving the four load statements from before
- * the roll-phase block to after the hold-timer block produces a byte-identical
- * build (checked via the raw cc1 `.loc` order -- the last-listed load goes to
- * the very top, the other three land after the first anchor store, whatever
- * the source order). Making the loads volatile is worse: all four then batch
- * ABOVE the anchor store and the function grows one insn. There is no call and
- * no label inside the block, so nothing can act as a scheduling barrier.
- *   The register-rotation residue in the butterfly loop (ours: pointer in a3 /
- * const 8 in a1; original: t0 / a3) is downstream of the same block.
- * Everything else matches shape-for-shape: both fill loops, the SetHudCounter-
- * Digits triple and the butterfly-layout guard.
- * Levers already banked here: A85 goto-loop for the 12-icon loop (a structured
- * loop hoists the g_anHudIconRestPos `la` and the 0x20 constant into two extra
- * callee-saved regs -- +4 insns, slot overflow); `white = 0xFF` as a user local
- * (the original holds it in s5 while materializing 0x20/0x0B inline); the
- * g_anHudIconAnchorBlock alias (halfword view of records+0x196) for the held
- * base that also derives the icon-10 screen position at +0x1E6.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~56200 iterations, timed out
- * at the 15m budget): best score 1150 vs first-iteration score 3590 -- a large
- * drop, the biggest proportional gain of the session so far, but no
- * byte-perfect candidate. Worth a longer budget. Still PARKED (see above).
+/* PARK 91.6% (226/226 length-exact, 19 insns; 2026-10-04-2 rework).
+ * Residue (one class, F1 local-alloc qty priority): the original loads
+ * g_nExtraLives into v1 AFTER the gems array load and keeps the dragon count
+ * in v0; ours allocates the short-lived `lives` qty first, it takes v0, the
+ * dragon count is pushed to t0 (whole counter batch rotates t0..t3 instead of
+ * v0,t0..t2) and sched2 then hoists the lives load above the sll/gems pair.
+ * Invariant across: lives load position (3 spellings), direct
+ * `g_nHudLivesCachedCount = VOL(g_nExtraLives)`, every volatility combination
+ * of the anchor/display/counter/roll/hold/lives/idx groups (128 measured; a
+ * non-volatile idx fixes lives->v1 but sinks the idx load below the display
+ * stores, 31 linked), and reusing lives/gems/dragons/food as the loop count.
+ * What SOLVED the rest (do not re-derive):
+ *  - frame 0x38: an unreferenced 8-byte local (`pad[2]`);
+ *  - source order of the whole straight-line block is enforced by gcc 2.7.2
+ *    true_dependence's "both MEMs volatile" clause: the anchor/display/roll/
+ *    hold stores and the idx/counter/lives loads are VOL(); the cached-count
+ *    stores must NOT be (else li a3,1 leaves the jal slot, +1 insn);
+ *  - anchor = (short *)&g_abHudIconActorRecords[0x196] (not the alias block):
+ *    cse turns the volatile anchor stores into anchor-relative addresses that
+ *    later fold back to direct `lui at` stores; with the alias symbol the first
+ *    volatile store kept a `la` base;
+ *  - butterfly loop: its own `dst`/`count` vars (not the copy loop's `rect`),
+ *    `x = icon[0]` / `x = icon[1]` temps, and an explicit `size = 8` between
+ *    the icon and ring inits (preheader LUID order).
  */
+#define VOL(x) (*(volatile __typeof__(x) *)&(x))
 #include "globals.h"
 
 /* HUD init for entering a gameplay-with-HUD state (0x80054600, 0x388).
@@ -54,12 +46,6 @@ extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 
 extern short g_anHudIconAnchorBlock[]; /* &g_abHudIconActorRecords[0x196] */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/InitHudCounters.c.wip`; this body came from
-   build/permuter/nonmatchings/InitHudCounters/output-1150-1/source.c. */
 void InitHudCounters(int layout_butterflies) {
   short *anchor;
   int *icon;
@@ -79,6 +65,10 @@ void InitHudCounters(int layout_butterflies) {
   int dragons;
   int worldEggs;
   int levelEggs;
+  int count;
+  int size;
+  int dst;
+  int pad[2];
   FillWord(g_abHudIconActorRecords, 0, 0x420);
   i = 0;
   white = 0xFF;
@@ -115,34 +105,34 @@ icon_slot:
         *((short *)((((char *)g_anHudDigitRestRects) + rect) + 6));
     rect += 8;
   } while (rect < 0x60);
-  anchor = g_anHudIconAnchorBlock;
-  idx = g_nLevelIntroIndex;
-  anchor[0] = 0x1D7;
-  *((short *)(&g_abHudIconActorRecords[0x29E])) = 0x1FA;
-  *((short *)(&g_abHudIconActorRecords[0x3A6])) = 0x3A;
-  *((short *)(&g_abHudIconActorRecords[0x3FE])) = 0xAD;
-  g_abHudIconActorRecords[0x40E] = 0x40;
-  g_abHudCounterDisplayState[0] = 1;
-  g_abHudCounterDisplayState[1] = 1;
-  g_abHudCounterDisplayState[2] = 1;
-  g_abHudCounterDisplayState[3] = 1;
-  g_abHudCounterDisplayState[4] = 1;
-  dragons = g_nWorldDragonsRescued;
-  worldEggs = g_nWorldEggsRecovered;
-  levelEggs = g_nLevelEggCount;
-  food = g_nSparxFoodCount;
-  g_bHudLevelGemRollPhase = 0;
-  g_bHudDragonRollPhase = 0;
-  g_bHudLivesRollPhase = 0;
-  g_bHudWorldEggRollPhase = 0;
-  g_bHudLevelEggRollPhase = 0;
-  g_nHudLevelGemHoldTimer = 0;
-  g_nHudDragonHoldTimer = 0;
-  g_nHudLivesHoldTimer = 0;
-  g_nHudWorldEggHoldTimer = 0;
-  g_nHudLevelEggHoldTimer = 0;
+  anchor = (short *)&g_abHudIconActorRecords[0x196];
+  idx = VOL(g_nLevelIntroIndex);
+  VOL(anchor[0]) = 0x1D7;
+  VOL(*(short *)&g_abHudIconActorRecords[0x29E]) = 0x1FA;
+  VOL(*(short *)&g_abHudIconActorRecords[0x3A6]) = 0x3A;
+  VOL(*(short *)&g_abHudIconActorRecords[0x3FE]) = 0xAD;
+  VOL(g_abHudIconActorRecords[0x40E]) = 0x40;
+  VOL(g_abHudCounterDisplayState[0]) = 1;
+  VOL(g_abHudCounterDisplayState[1]) = 1;
+  VOL(g_abHudCounterDisplayState[2]) = 1;
+  VOL(g_abHudCounterDisplayState[3]) = 1;
+  VOL(g_abHudCounterDisplayState[4]) = 1;
+  dragons = VOL(g_nWorldDragonsRescued);
+  worldEggs = VOL(g_nWorldEggsRecovered);
+  levelEggs = VOL(g_nLevelEggCount);
+  food = VOL(g_nSparxFoodCount);
+  VOL(g_bHudLevelGemRollPhase) = 0;
+  VOL(g_bHudDragonRollPhase) = 0;
+  VOL(g_bHudLivesRollPhase) = 0;
+  VOL(g_bHudWorldEggRollPhase) = 0;
+  VOL(g_bHudLevelEggRollPhase) = 0;
+  VOL(g_nHudLevelGemHoldTimer) = 0;
+  VOL(g_nHudDragonHoldTimer) = 0;
+  VOL(g_nHudLivesHoldTimer) = 0;
+  VOL(g_nHudWorldEggHoldTimer) = 0;
+  VOL(g_nHudLevelEggHoldTimer) = 0;
   gems = g_anLevelGemsCollected[idx];
-  lives = g_nExtraLives;
+  lives = VOL(g_nExtraLives);
   g_nHudDragonCachedCount = dragons;
   g_nHudWorldEggCachedCount = worldEggs;
   g_nHudLevelEggCachedCount = levelEggs;
@@ -155,22 +145,25 @@ icon_slot:
   if (layout_butterflies != 0) {
     g_nHudWorldEggRollRequest = 0;
     i = 0;
-    food = g_nSparxFoodCount;
-    if (food > 0) {
+    count = g_nSparxFoodCount;
+    if (count > 0) {
       icon = (int *)(anchor + 0xF3);
+      size = 8;
       ring = 0;
-      rect = 0x60;
+      dst = 0x60;
       do {
+        int x = icon[0];
         i += 1;
-        *((short *)(((char *)g_anHudSpriteRects) + rect)) =
-            (g_abHudButterflyRingXY[ring] + icon[0]) - 0x1D;
-        new_var = (g_abHudButterflyRingXY[ring + 1] + icon[1]) - 0x1C;
-        *((short *)((((char *)g_anHudSpriteRects) + rect) + 4)) = 8;
-        *((short *)((((char *)g_anHudSpriteRects) + rect) + 6)) = 8;
-        *((short *)((((char *)g_anHudSpriteRects) + rect) + 2)) = new_var;
+        *((short *)(((char *)g_anHudSpriteRects) + dst)) =
+            (g_abHudButterflyRingXY[ring] + x) - 0x1D;
+        x = icon[1];
+        new_var = (g_abHudButterflyRingXY[ring + 1] + x) - 0x1C;
+        *((short *)((((char *)g_anHudSpriteRects) + dst) + 4)) = size;
+        *((short *)((((char *)g_anHudSpriteRects) + dst) + 6)) = size;
+        *((short *)((((char *)g_anHudSpriteRects) + dst) + 2)) = new_var;
         ring += 2;
-        rect += 8;
-      } while (i < food);
+        dst += 8;
+      } while (i < count);
     }
   }
 }
