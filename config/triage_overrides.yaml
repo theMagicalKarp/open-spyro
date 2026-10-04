@@ -4935,3 +4935,8 @@ func_level_6_8007E3A0_2026_10_03:
   class: "fully decoded, masked 3/12206: case 225's best = 0 is stolen by reorg into the spawn call's delay slot"
   date: 2026-10-03
   note: "48,824 B. All arms written (new: 146, 188, 193, 214/216, 225, 237, 417, 454), frame exact, `make check` byte diff confined to 80086E1C-80086E48. With `h = 0xF0` the 240 lands in the load-delay slot but sched1 then puts `move a1,s4` before the D_800758CC load, so reorg fills the jalr slot with `move s7,zero` from later. Workspace build/l6w2 (new/case225.c)."
+func_level_6_8007E3A0_2026_10_03_1:
+  verdict: viable
+  class: "MATCHED 2026-10-03 (A232 block split after the spawn call)"
+  date: 2026-10-03
+  note: "48,824 B. Last residue: with the multi-set h, sched1 fills the posZ load gap with h = 0xF0 (prio 3), so best = 0 (crosses calls, never boosted) drifts to the block head and reorg puts it in the D_800758CC jalr slot. Wrapping the spawn sequence in do { } while (0) ends the block after func_80039398; best = 0 heads the next block. An unused C label does not split (jump deletes it)."

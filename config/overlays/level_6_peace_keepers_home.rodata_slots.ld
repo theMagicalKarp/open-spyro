@@ -10,22 +10,7 @@
     build/overlays/level_6_peace_keepers_home/c/func_level_6_8007D998.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x0000082c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B264)
-    . = 0x00000924 ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B35C)
-    . = 0x0000093c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B374)
-    . = 0x00000954 ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B38C)
-    . = 0x00000974 ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B3AC)
-    . = 0x00000b0c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B544)
-    . = 0x00000b3c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B574)
-    . = 0x00000b6c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5A4)
+    build/overlays/level_6_peace_keepers_home/c/func_level_6_8007E3A0.o(.rodata)
     . = 0x00000b94 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5CC)
     build/overlays/level_6_peace_keepers_home/c/func_level_6_8008AE28.o(.rodata)
