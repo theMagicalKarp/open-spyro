@@ -4,18 +4,7 @@
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    . = 0x000007d4 ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B20C)
-    . = 0x000007ec ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B224)
-    . = 0x00000844 ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B27C)
-    . = 0x0000085c ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B294)
-    . = 0x0000087c ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B2B4)
-    . = 0x000008ac ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B2E4)
+    build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_8007B5DC.o(.rodata)
     . = 0x000008d8 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B310)
     build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_800853AC.o(.rodata)

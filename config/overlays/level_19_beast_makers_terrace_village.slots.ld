@@ -2,6 +2,7 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_19_beast_makers_terrace_village.ld. */
     . = 0x00000ba4 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.func_level_19_8007B5DC)
+    build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_8007B5DC.o(.text)
     . = 0x00009c24 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.func_level_19_8008465C)
     build/overlays/level_19_beast_makers_terrace_village/c/func_level_19_8008465C.o(.text)

@@ -1,18 +1,20 @@
 /* func_level_6_8007E3A0 -- per-frame actor update for level 6 (Peace
- * Keepers home). 0x8007E3A0, 48,824 bytes.  WORK IN PROGRESS (.c.wip).
+ * Keepers home). 0x8007E3A0, 48,824 bytes.
  *
- * Status 2026-10-03: length- and frame-exact, masked 3/12206; as a .c the
- * overlay differs only in 80086E1C..80086E48. All arms written; the level-6
- * classes are the breakable prop (146), the hint giver (188, level 24's 191
- * with other dialogue ids), the critter (193), the Peace Keeper soldiers
- * (214/216, a kind-driven state machine), the cannon (225) and its
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class. The
+ * level-6 classes are the breakable prop (146), the hint giver (188, level
+ * 24's 191 with other dialogue ids), the critter (193), the Peace Keeper
+ * soldiers (214/216, a kind-driven state machine), the cannon (225) and its
  * fireballs (237), the reward burst (417) and falling sparks (454-456).
  *
- * Residue (case 225, fireball init): the original issues `move s7,zero`
- * (best = 0) after func_80039398 and fills the next load-delay slot with
- * `li v1,240`. Writing the two 0xF0 stores through `h` gets the 240 right,
- * but then the spawn call's `move a1,s4` lands before the D_800758CC load and
- * reorg steals best = 0 into that jalr's delay slot. Workspace build/l6w2.
+ * Load-bearing source forms (case 225, fireball launch):
+ *   - The two 0xF0 stores go through the multi-set `h`, which puts
+ *     `li v1,240` in the posZ load-delay slot.
+ *   - The spawn sequence is wrapped in `do { } while (0)`. The loop notes
+ *     end the basic block after func_80039398, so `best = 0` starts the next
+ *     block instead of drifting above the spawn call, where reorg would put
+ *     it in the jalr delay slot ahead of `move a1,s4`.
  *
  * ==== Core records ====
  *
@@ -6151,11 +6153,13 @@ void func_level_6_8007E3A0(void) {
         int d;
         int h;
 
-        o = D_800758CC(0xED, actor);
-        cs = o->state;
-        func_80017700(&o->posX, &actor->posX);
-        o->unk46 = actor->unk46;
-        func_80039398(o, 0x546, 0, 0, 0);
+        do {
+          o = D_800758CC(0xED, actor);
+          cs = o->state;
+          func_80017700(&o->posX, &actor->posX);
+          o->unk46 = actor->unk46;
+          func_80039398(o, 0x546, 0, 0, 0);
+        } while (0);
         best = 0;
         h = 0xF0;
         o->posZ += 0x47E;
