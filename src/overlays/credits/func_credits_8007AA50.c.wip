@@ -18,7 +18,7 @@
  * out) and trim the pool tail.  Finally the 5-way D_80075704 state machine
  * pages the next credits screen in through func_80016698 / func_80016958.
  *
- * ---- STATE 2026-09-02 (first session on this function) -------------------
+ * ---- STATE 2026-09-02 (first session; superseded, see 2026-10-04-1 below) --
  * PARKED at **length-exact (1372/1372), frame-exact, running offset 0**, with
  * 785/1372 linked instructions differing (42.8%) and **252 mismatches over
  * 123 regions** on the register-anchored, immediate-masked, difflib-aligned
@@ -111,33 +111,64 @@
  * loop's guard INTO the loop body (§B24: the escape is different registers,
  * and a second read of the same global is how you buy them).
  *
- * ---- What is left (252 masked mismatches over 123 regions) ----------------
- * R1  ~12 sites: `cur` and `upper` are swapped between s3 and s4.  Same class
- *     as lever 6 (a global.c priority tie) but the trick that fixed the
- *     free-slot index does not reach it: ref counts and live ranges are equal
- *     on both sides.  Next move is a `-dl`/`-dg` allocation probe (cookbook
- *     D-2c) on the two allocnos, not another source sweep.
- * R2  ~14 sites: `addu v1,s0,v1` (orig) vs `addu v1,v1,s0` (ours) on the
- *     `D_8007589C + k` address.  NOT source-controllable -- `k + D_8007589C`
- *     and `D_8007589C + k` are byte-identical objects (fold canonicalises the
- *     PLUS operands), measured twice.
- * R3  init block, ~8 insns: the `D_800785E4` argument load sits BEFORE the
- *     struct copy in the original and after it in ours.  Removing the A232
- *     barrier lets sched hoist the load but also lets the copy jump above the
- *     volatile `D_800785E0` store (281 vs 252); an explicit `fb =` local is
- *     cse-forwarded to the just-stored value, so it is a load only when
- *     something invalidates memory in between -- which is the copy itself.
- * R4  the leading `li a2,2048`: the original materialises the 0x800 argument
- *     in the entry branch's delay slot AND at the end of the `if` body; ours
- *     puts one copy in the `jal` delay slot.  Straggler placement (A164).
- * R5  case 1's tail is cross-jumped into case 2's in our build and duplicated
- *     in the original (6 insns).  The original's cases 0 and 1/2 land on two
- *     DIFFERENT join labels (.L8007BD98 vs .L8007BD94), which is what stops
- *     `find_cross_jump` path (b); ours reaches one label.
- * R6  small sched residues: the case-1 arm's four field loads (orig hoists
- *     {0x12,0xC,5,8}, ours {0x12,0xC,8,0x16}), `sh <cur>,0x18(g)` not landing
- *     in the pool-overflow branch's delay slot, and the `li a1,15` /
- *     `li v0,256` delay-slot swap in the re-centre pass.
+ * ---- STATE 2026-10-04-1: 115 masked mismatches over 32 regions -----------
+ * Length-exact (1372), frame-exact (136, no padding local), 1,223+ of 1,372
+ * linked words byte-identical (was 587).  Measure compile-only (works when the
+ * length drifts): build the .o and difflib it against
+ * build/diff/<fn>.orig.bin with registers anchored and immediates masked.
+ * Levers that closed R1, R2, R5 and most of R6 this session:
+ *  8. **The glyph pool and the line table are STRUCT ARRAYS** (CredGlyph,
+ *     CredLine).  The HImode field stores are then MEM_IN_STRUCT_P with a
+ *     varying address, and sched.c true_dependence lets a SCALAR load
+ *     (D_800756E4) pass them.  That is what puts `sh cur,0x18(g)` in the pool
+ *     overflow branch's delay slot.  Byte fields are QImode and alias
+ *     everything, as in the original.
+ *  9. **Index with `POOL[i]` / `LINES[line]`, not a hand-made byte offset.**
+ *     In an address (EXPAND_SUM) context, expand puts the MULT first, and
+ *     loop.c's giv replacement keeps it first, which gives the original's
+ *     `addu rd,giv,base`.  `&POOL[i]` in a local is NOT an address context,
+ *     so it comes out base-first; where the original is giv-first but holds g
+ *     in a register, write `(CredGlyph *)(i * 0x1C + (int)D_8007589C)`.  The
+ *     re-centre loop and the two state loops have no `k` at all: the `move
+ *     aN,zero` after each guard is loop.c's giv init.
+ * 10. **Exactly ONE loop is a `for`** (the state-machine pass).  A `for`
+ *     guard `i < D` with i == 0 is folded to `blez D` by combine, which
+ *     eliminates the slt temp, and distribute_notes leaves `(use (reg))` for
+ *     it.  That orphan pseudo gets an 8-byte stack slot.  The original's frame
+ *     has exactly one such slot, which the old `int padg[2]` was faking.  The
+ *     `for` guard also defeats jump threading into the next `if (D > 0)`, so
+ *     cse reloads D_800756E4 after the loop as the original does.
+ * 11. `cur`/`upper` (s3/s4): `upper = (unsigned)(*s - 0x30) < 0xA` expanded
+ *     with `upper` as the subtraction's target, which added 2 refs at loop
+ *     depth 3 and pushed upper's priority above cur's.  `c = *s - 0x30;`
+ *     followed by `upper = (unsigned)c < 0xA` fixes it.  c must keep that
+ *     non-byte set, otherwise combine drops the original's `andi c,0xff`.
+ * 12. **A call's plain `D_8007A960[i]` argument goes in a local** (`sector`).
+ *     rtx_cost of a simple MEM is COSTS_N_INSNS(1) == 2, so expand_call does
+ *     not precompute it, and its load lands after the stack-arg store (a
+ *     memory dependence).  Loaded first, `li a2,0x800` falls to the front and
+ *     the stack store to the back, as in the original.
+ * 13. The header key reads: `h + ((idx) * 3 << 3) + K` (a shift index is not
+ *     a MULT rtx, so expand does not move it first).  The re-centre x uses
+ *     `short gx` (unsigned-short arithmetic, reused unreloaded).
+ *     D_80076BB8 is `volatile`: combine will not fold `la; lw 0()` into it.
+ *     Case 2's rect is written in natural [0..3] order.
+ * LEFT (all four clusters survived several spellings):
+ *  A. init block (orig 123-248): the 20-byte D_80078A40 copy and the loads
+ *     around it.  The original keeps D_800785E4/D_80076C1C live across the
+ *     movstr in t0/v1 (so the copy uses t1/t2/a3/t0) and loads D_800785E4
+ *     for D_800757BC before the D_800761D0 field stores.  A struct
+ *     D_800761D0 lets the load pass the stores but scatters the whole block
+ *     (173).  A volatile copy destination becomes a memcpy call;
+ *     __builtin_memcpy is inert.
+ *  B. orig 403-414: D_800761D0 width update, a v1/a1 rotation plus the load
+ *     order of D_800756F8 vs the second pointer read (3 spellings inert).
+ *  C. orig 732-739: the digit-test temp (orig v0, ours v1) and the
+ *     `adv * 3` operand tie in the space branch.
+ *  D. case 4 (orig 1297-1337): the original starts the `% 10` multiply and
+ *     loads D_800785DC before the movstr copy.  Our movstr clobbers a0, so
+ *     the D_800757AC load is output-dependent on it.  Statement order,
+ *     a `page` local, and copy placement are all inert or worse.
  */
 
 extern void func_80016500();
@@ -185,7 +216,7 @@ extern int D_800761DC;
 extern short D_800761E8;
 extern short D_800761EA;
 extern char *D_80076B90[];
-extern int D_80076BB8[];
+extern volatile int D_80076BB8[];
 extern int D_80076C00[];
 extern int D_80076C04;
 extern int D_80076C08;
@@ -211,11 +242,37 @@ extern Blk20 D_80078A40;
 extern int D_8007A960[];
 extern char func_credits_8007C338[];
 
+/* One 0xC-byte line record of the credits script (table at D_80075708). */
+typedef struct {
+  unsigned char *text;
+  short y;
+  short unk6;
+  short unk8;
+  short state; /* 1 = laid out, 2 = scrolled past */
+} CredLine;
+
+/* One 0x1C-byte glyph record of the credits text pool. */
+typedef struct {
+  int unk0;
+  unsigned char state; /* 0 free, 1 fly in, 2 settled, 3 fall out, 4 done */
+  unsigned char r, g, b;
+  unsigned char dr, dg, db;
+  unsigned char timer;
+  short dx, dy, dz;
+  short x, y, z;
+  short line;
+  short glyph;
+} CredGlyph;
+
+#define POOL ((CredGlyph *)D_8007589C)
+#define LINES ((CredLine *)D_80075708)
+
 void func_credits_8007AA50(void) {
   short rect0[4];
 
   if (D_80075704 == -1) {
     char *pool = func_credits_8007C338;
+    int sector;
     if (D_80075768 == 0) {
       int i;
       D_8007589C = pool;
@@ -228,8 +285,8 @@ void func_credits_8007AA50(void) {
       D_800785D8 = D_80075768;
       D_800785DC = D_80075768;
     }
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], 0x800,
-                  D_8007A960[D_800757AC * 2], 0x258);
+    sector = D_8007A960[D_800757AC * 2];
+    func_80016500(D_80076B90[0], D_800785DC_BLK[0], 0x800, sector, 0x258);
     func_80016958(D_80076C00, D_800785DC_BLK[0], 0x1D0);
     func_80016500(D_80076B90[0], D_800785DC_BLK[0], 0x60000,
                   D_80076C00[0] + D_8007A960[D_800757AC * 2], 0x258);
@@ -286,8 +343,8 @@ void func_credits_8007AA50(void) {
       func_80016958(D_80075708, hdr + 0xC, *(int *)hdr - 0xC);
       {
         int n = D_800757DC;
+        int i = 0;
         if (n > 0) {
-          int i = 0;
           int *p = (int *)D_80075708;
           do {
             p[0] = (int)shift + p[0];
@@ -322,11 +379,11 @@ void func_credits_8007AA50(void) {
         {
           char *h = D_800757BC;
           D_80076DF8 = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
-          D_80076DFC = *(int *)(h + (*(int *)h >> 1) * 0x18 + 0x10);
-          D_80076E00 = *(int *)(h + (*(int *)h >> 1) * 0x18 + 0x14);
-          D_80076E1C = *(int *)(h + (*(int *)h >> 1) * 0x18 + 0x18);
-          D_80076E1E = *(int *)(h + (*(int *)h >> 1) * 0x18 + 0x1C);
-          D_80076E20 = *(int *)(h + (*(int *)h >> 1) * 0x18 + 0x20);
+          D_80076DFC = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
+          D_80076E00 = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
+          D_80076E1C = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x18);
+          D_80076E1E = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x1C);
+          D_80076E20 = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x20);
         }
       } else {
         D_80075704 = gate + 1;
@@ -357,31 +414,28 @@ void func_credits_8007AA50(void) {
   if (D_800756E4 > 0 || (D_800757DC > 0 && D_80075968 < D_800757DC)) {
     int last = D_80075878;
     int line;
-    int lineOff;
     int upper;
+    int i;
     func_80058CC0(3);
     line = D_80075968;
     upper = 1;
     if (last >= line) {
-      lineOff = line * 0xC;
       do {
         int cur = -1;
-        if (func_80037F90(D_80075708 + lineOff + 6, 2) != 0) {
-          char *ln = D_80075708 + lineOff;
-          *(short *)(ln + 0xA) = 2;
-          if (*(short *)(ln + 8) == 0 && line == D_80075968) {
+        if (func_80037F90(&LINES[line].unk6, 2) != 0) {
+          LINES[line].state = 2;
+          if (LINES[line].unk8 == 0 && line == D_80075968) {
             D_80075968 = line + 1;
           }
         }
-        if (*(short *)(D_80075708 + 0xA) == 0) {
+        if (LINES[0].state == 0) {
           cur = 0;
-        } else if (func_80037F90(D_80075708 + lineOff + 8, 2) != 0 &&
-                   *(short *)(D_80075708 + lineOff + 0x16) == 0 &&
+        } else if (func_80037F90(&LINES[line].unk8, 2) != 0 &&
+                   LINES[line + 1].state == 0 &&
                    line < D_800757DC - 1) {
           cur = line + 1;
         }
         if (cur != -1) {
-          char *ln = D_80075708 + cur * 0xC;
           int slot = 0;
           int colon = 0;
           struct {
@@ -393,55 +447,50 @@ void func_credits_8007AA50(void) {
             int one;
             int big;
           } st;
-          int padg[2];
           int n;
-          int i;
           int lift;
           int y0;
           unsigned char *s;
           int c;
           int x0;
-          *(short *)(ln + 0xA) = 1;
+          LINES[cur].state = 1;
           lift = 0x10;
           if (D_80075878 < cur) {
             D_80075878 = cur;
           }
-          if (D_800757DC < D_80075878) {
+          if (D_80075878 > D_800757DC) {
             D_80075878 = D_800757DC;
           }
           st.x = 0x100;
-          y0 = *(short *)(ln + 4);
+          y0 = LINES[cur].y;
           st.col = 0x12B3;
           st.adv = 0xE;
           st.one = 1;
           st.big = 0x1600;
           st.y = y0;
-          s = *(unsigned char **)ln;
+          s = LINES[cur].text;
           c = *s;
           x0 = 0x100;
           while (c != 0) {
             if ((c & 0xFF) != 0x20) {
-              char *g;
+              CredGlyph *g;
             retry: {
               n = D_800756E4;
               i = slot;
               if (i < n) {
-                char *tab = D_8007589C;
-                char *q = tab + i * 0x1C;
                 while (i < n) {
-                  if (q[4] == 0) {
+                  if (POOL[i].state == 0) {
                     break;
                   }
                   i += 1;
-                  q += 0x1C;
                 }
                 if (i < D_800756E4) {
                   slot = i;
-                  g = tab + i * 0x1C;
+                  g = &POOL[i];
                   goto got;
                 }
               }
-              g = D_8007589C + D_800756E4 * 0x1C;
+              g = &POOL[D_800756E4];
               D_800756E4 = D_800756E4 + 1;
             got:;
             }
@@ -452,48 +501,48 @@ void func_credits_8007AA50(void) {
               if ((unsigned int)(c - 0x61) < 0x1A) {
                 upper = 0;
               }
-              *(short *)(g + 0x18) = cur;
-              g[4] = 1;
+              g->state = 1;
+              g->line = cur;
               if (D_800756E4 >= 0x65) {
                 func_8006396C(0);
               }
-              *(short *)(g + 0x12) = st.x;
-              *(short *)(g + 0x14) = st.y;
-              *(short *)(g + 0x16) = st.col;
+              g->x = st.x;
+              g->y = st.y;
+              g->z = st.col;
               if (upper == 0) {
-                *(short *)(g + 0x14) = *(unsigned short *)(g + 0x14) + st.one;
-                *(short *)(g + 0x16) = st.big;
+                g->y = g->y + st.one;
+                g->z = st.big;
               }
               c = *s;
               if ((unsigned int)(c - 0x30) < 0xA) {
-                *(short *)(g + 0x1A) = c + 0xD4;
+                g->glyph = c + 0xD4;
               } else if ((unsigned int)(c - 0x41) < 0x1A) {
-                *(short *)(g + 0x1A) = c + 0x169;
+                g->glyph = c + 0x169;
               } else if ((unsigned int)(c - 0x61) < 0x1A) {
-                *(short *)(g + 0x1A) = c + 0x149;
+                g->glyph = c + 0x149;
               } else {
                 int k = c & 0xFF;
                 if (k == 0x21) {
-                  *(short *)(g + 0x1A) = 0x4B;
+                  g->glyph = 0x4B;
                 } else if (k == 0x2C) {
-                  *(short *)(g + 0x1A) = 0x4C;
+                  g->glyph = 0x4C;
                 } else if (k == 0x2E) {
-                  *(short *)(g + 0x1A) = 0x147;
+                  g->glyph = 0x147;
                 } else if (k == 0x2D) {
-                  *(short *)(g + 0x1A) = 0x115;
+                  g->glyph = 0x115;
                 } else if (k == 0x3A) {
-                  *(short *)(g + 0x1A) = 0x147;
-                  *(short *)(g + 0x16) = *(unsigned short *)(g + 0x16) + 0x578;
+                  g->glyph = 0x147;
+                  g->z = g->z + 0x578;
                   if (colon == 0) {
                     colon = 1;
                     goto retry;
                   }
                   colon = 0;
-                  *(short *)(g + 0x14) = *(unsigned short *)(g + 0x14) - 6;
+                  g->y = g->y - 6;
                 } else {
-                  *(short *)(g + 0x1A) = 0x4C;
-                  *(short *)(g + 0x14) =
-                      *(unsigned short *)(g + 0x14) - (st.adv * 2) / 3;
+                  g->glyph = 0x4C;
+                  g->y =
+                      g->y - (st.adv * 2) / 3;
                 }
               }
               if (upper != 0) {
@@ -501,7 +550,8 @@ void func_credits_8007AA50(void) {
               } else {
                 st.x = st.x + st.adv;
               }
-              upper = (unsigned int)(*s - 0x30) < 0xA;
+              c = *s - 0x30;
+              upper = (unsigned int)c < 0xA;
             } else {
               upper = 1;
               st.x = st.x + (st.adv * 3) / 4;
@@ -514,106 +564,93 @@ void func_credits_8007AA50(void) {
             int d = 0x1E;
             i = 0;
             if (D_800756E4 > 0) {
-              int k = 0;
               do {
-                char *g = D_8007589C + k;
-                if (*(short *)(g + 0x18) == cur) {
-                  int gx = *(unsigned short *)(g + 0x12) - mid;
-                  int dx = -(((short)gx - 0x100) * 3) / d;
-                  int dy = -(*(short *)(g + 0x16) * 2) / d;
-                  *(short *)(g + 0x12) = gx;
-                  *(short *)(g + 0xC) = dx;
-                  *(short *)(g + 0x10) = dy;
-                  *(short *)(g + 0x12) = gx - dx * d;
-                  *(short *)(g + 0x16) = *(unsigned short *)(g + 0x16) - dy * d;
-                  (D_8007589C + k)[8] = func_80037F10(4, 0xF);
-                  (D_8007589C + k)[9] = func_80037F10(4, 0xF);
-                  (D_8007589C + k)[0xA] = func_80037F10(4, 0xF);
-                  (D_8007589C + k)[5] =
-                      -(int)*(unsigned char *)(D_8007589C + k + 8) * d;
-                  (D_8007589C + k)[6] =
-                      -(int)*(unsigned char *)(D_8007589C + k + 9) * d;
-                  (D_8007589C + k)[7] =
-                      -(int)*(unsigned char *)(D_8007589C + k + 0xA) * d;
-                  (D_8007589C + k)[0xB] = d;
+                CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)D_8007589C);
+                if (g->line == cur) {
+                  short gx = g->x - mid;
+                  int dx = -((gx - 0x100) * 3) / d;
+                  int dy = -(g->z * 2) / d;
+                  g->x = gx;
+                  g->dx = dx;
+                  g->dz = dy;
+                  g->x = gx - dx * d;
+                  g->z = g->z - dy * d;
+                  POOL[i].dr = func_80037F10(4, 0xF);
+                  POOL[i].dg = func_80037F10(4, 0xF);
+                  POOL[i].db = func_80037F10(4, 0xF);
+                  POOL[i].r =
+                      -(int)POOL[i].dr * d;
+                  POOL[i].g =
+                      -(int)POOL[i].dg * d;
+                  POOL[i].b =
+                      -(int)POOL[i].db * d;
+                  POOL[i].timer = d;
                 }
                 i += 1;
-                k += 0x1C;
               } while (i < D_800756E4);
             }
           }
         }
         line += 1;
-        lineOff += 0xC;
       } while (last >= line);
     }
     if (D_800756E4 > 0) {
-      int i = 0;
-      int k = 0;
-      int st2 = 2;
-      int st3 = 3;
-      int st4 = 4;
+      i = 0;
       do {
-        char *g = D_8007589C + k;
-        int st = *(short *)(D_80075708 + *(short *)(g + 0x18) * 0xC + 0xA);
-        if (st == st2) {
-          if (g[4] == st) {
-            g[4] = st3;
-          } else if (g[4] == st4) {
-            g[4] = 0;
+        int st = LINES[POOL[i].line].state;
+        if (st == 2) {
+          if (POOL[i].state == st) {
+            POOL[i].state = 3;
+          } else if (POOL[i].state == 4) {
+            POOL[i].state = 0;
           }
         }
         i += 1;
-        k += 0x1C;
       } while (i < D_800756E4);
     }
-    if (D_800756E4 > 0) {
-      int i = 0;
-      int k = 0;
-      do {
-        char *g = D_8007589C + k;
-        switch (g[4]) {
+    for (i = 0; i < D_800756E4; i++) {
+      {
+        CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)D_8007589C);
+        switch (g->state) {
         case 1:
-          *(short *)(g + 0x12) =
-              *(unsigned short *)(g + 0x12) + *(unsigned short *)(g + 0xC);
-          g[5] = g[5] + g[8];
-          *(short *)(g + 0x16) =
-              *(unsigned short *)(g + 0x16) + *(unsigned short *)(g + 0x10);
-          (D_8007589C + k)[6] = (D_8007589C + k)[6] + (D_8007589C + k)[9];
-          (D_8007589C + k)[7] = (D_8007589C + k)[7] + (D_8007589C + k)[0xA];
-          if ((unsigned char)((D_8007589C + k)[0xB] =
-                                  (D_8007589C + k)[0xB] - 1) == 0) {
-            (D_8007589C + k)[4] = 2;
-            *(short *)(D_8007589C + k + 0xC) = func_80037F10(3, 0xB);
-            *(short *)(D_8007589C + k + 0xE) = -func_80037EA0(6, 0xA);
-            *(short *)(D_8007589C + k + 0x10) = func_80037EA0(-0x23, 0x23);
-            (D_8007589C + k)[8] = func_80037F10(4, 9);
-            (D_8007589C + k)[9] = func_80037F10(4, 9);
-            (D_8007589C + k)[0xA] = func_80037F10(4, 9);
+          g->x =
+              g->x + g->dx;
+          g->r = g->r + g->dr;
+          g->z =
+              g->z + g->dz;
+          POOL[i].g = POOL[i].g + POOL[i].dg;
+          POOL[i].b = POOL[i].b + POOL[i].db;
+          if ((unsigned char)(POOL[i].timer =
+                                  POOL[i].timer - 1) == 0) {
+            POOL[i].state = 2;
+            POOL[i].dx = func_80037F10(3, 0xB);
+            POOL[i].dy = -func_80037EA0(6, 0xA);
+            POOL[i].dz = func_80037EA0(-0x23, 0x23);
+            POOL[i].dr = func_80037F10(4, 9);
+            POOL[i].dg = func_80037F10(4, 9);
+            POOL[i].db = func_80037F10(4, 9);
           }
           break;
         case 3:
-          *(short *)(g + 0x12) =
-              *(unsigned short *)(g + 0x12) + *(unsigned short *)(g + 0xC);
-          *(short *)(g + 0x14) =
-              *(unsigned short *)(g + 0x14) + *(unsigned short *)(g + 0xE);
-          *(short *)(g + 0x16) =
-              *(unsigned short *)(g + 0x16) + *(unsigned short *)(g + 0x10);
-          g[5] = g[5] + g[8];
-          *(short *)(g + 0xE) = *(unsigned short *)(g + 0xE) + 1;
-          (D_8007589C + k)[6] = (D_8007589C + k)[6] + (D_8007589C + k)[9];
-          (D_8007589C + k)[7] = (D_8007589C + k)[7] + (D_8007589C + k)[0xA];
-          if (*(short *)(D_8007589C + k + 0xE) >= 0x15) {
-            *(short *)(D_8007589C + k + 0xE) = 0x14;
+          g->x =
+              g->x + g->dx;
+          g->y =
+              g->y + g->dy;
+          g->z =
+              g->z + g->dz;
+          g->r = g->r + g->dr;
+          g->dy = g->dy + 1;
+          POOL[i].g = POOL[i].g + POOL[i].dg;
+          POOL[i].b = POOL[i].b + POOL[i].db;
+          if (POOL[i].dy >= 0x15) {
+            POOL[i].dy = 0x14;
           }
-          if (*(short *)(D_8007589C + k + 0x14) >= 0x119) {
-            (D_8007589C + k)[4] = 4;
+          if (POOL[i].y >= 0x119) {
+            POOL[i].state = 4;
           }
           break;
         }
-        i += 1;
-        k += 0x1C;
-      } while (i < D_800756E4);
+      }
     }
     if (D_800756E4 > 0) {
       char *tab;
@@ -647,11 +684,12 @@ void func_credits_8007AA50(void) {
       }
       if ((unsigned int)st < 5) {
         switch (st) {
-        case 0:
-          func_80016698(D_80076B90[0], D_800757EC, 0x800,
-                        D_8007A960[D_800757AC * 2], 0x258);
+        case 0: {
+          int sector = D_8007A960[D_800757AC * 2];
+          func_80016698(D_80076B90[0], D_800757EC, 0x800, sector, 0x258);
           D_80075704 = D_80075704 + 1;
           break;
+        }
         case 1:
           func_80016958(D_80076C00, D_800757EC, 0x1D0);
           func_80016698(D_80076B90[0], D_800757EC, 0x20000,
@@ -661,8 +699,8 @@ void func_credits_8007AA50(void) {
         case 2: {
           short rect[4];
           int span;
-          rect[1] = 0x180;
           rect[0] = 0x200;
+          rect[1] = 0x180;
           rect[2] = 0x200;
           rect[3] = 0x80;
           func_8005F764(0);
