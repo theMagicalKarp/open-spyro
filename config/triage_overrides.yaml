@@ -294,10 +294,6 @@ longjmp:
   verdict: wall
   class: "PSY-Q runtime primitive, not compilable C"
   date: 2026-07-23
-ActivateScriptedCameraView:
-  verdict: wall
-  class: "B12 batch-scatter tail"
-  date: 2026-07-08
 func_8005E804:
   verdict: parked
   class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
