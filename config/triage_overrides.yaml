@@ -4950,3 +4950,8 @@ func_level_24_8007E3C0_2026_10_03_1:
   class: "sched1 straggler-gap tie: boosted li 800 (speed store after the steps load) takes the dvz-reload gap a2=800 needs"
   date: 2026-10-03
   note: "43,620 B, still masked 4/10905. The steps load aliases every cs store (both through varying struct bases), so the speed store must follow it in source. Then the store's birthing-boosted `li 800` fills the gap after `lh a3` (dvz reload). The a0/a1/a2 arg sets (prio 4) drift into earlier load gaps, a2 lands inside the second unk46 index temp's range, and that temp gets a3. Measured with no improvement: 39 A232 barrier placements (best 21), a hoisted steps read (best 4), multi-set v (s4) or k for 800, and the store inside the call args (7). Workspace build/l24w2 (sweep.py)."
+func_level_24_8007E3C0_2026_10_04:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (case 91 comet-state store order)"
+  date: 2026-10-04
+  note: "43,620 B. Swept the 24 orders of {dvz, speed, count, spark} after `timer; steps` (the steps read aliases every cs store): any order with count first (cdvk/cdkv/cvdk/ckdv) is masked 0. With count ahead of dvz the boosted speed `li 800` no longer takes the lh-dvz stall slot, so a2 = 800 lands there in sched1 and the second unk46 index keeps a2."

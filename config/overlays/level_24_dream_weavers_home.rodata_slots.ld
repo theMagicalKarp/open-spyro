@@ -10,26 +10,7 @@
     build/overlays/level_24_dream_weavers_home/c/func_level_24_8007D9B8.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x0000082c ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B264)
-    . = 0x00000844 ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B27C)
-    . = 0x00000874 ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B2AC)
-    . = 0x000008f4 ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B32C)
-    . = 0x0000090c ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B344)
-    . = 0x0000092c ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B364)
-    . = 0x00000abc ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B4F4)
-    . = 0x00000ad4 ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B50C)
-    . = 0x00000aec ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B524)
-    . = 0x00000b6c ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5A4)
+    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007E3C0.o(.rodata)
     . = 0x00000b94 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5CC)
     build/overlays/level_24_dream_weavers_home/c/func_level_24_800897FC.o(.rodata)
