@@ -5003,3 +5003,8 @@ UpdateHudCounters_2026_10_04_2:
   class: "R2 extra callee-saved reg (loop.c hoist of 0x01000000) + offset-profile drift; roll-out store sinking SOLVED via A230"
   date: 2026-10-04
   note: "912/913, masked 205 -> 175. Roll-out arms: block-scoped `unsigned char t` + FIELD() one-member record store (in-struct, so it depends on the lh tbl[t] read). Positional credit unchanged at 244 B; remaining regions are the prologue rotation from R2 and many small schedule spots."
+NudgeSpyroFromWallProbes_2026_10_04_2:
+  verdict: parked
+  class: "F1 global-alloc priority: the in-loop `la g_anSineLut` cse temp (3 refs / 21 insns) ranks below cosp/pto/mask"
+  date: 2026-10-04
+  note: "35/87 permuter park -> fresh decode 20/87 linked, length-exact. B13 gone via A233; goto loop; `a` reused for the angle; pto local. Left: s2/s4/s5 rotation; A195 wrappers cannot reach a cse temp."
