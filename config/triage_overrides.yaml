@@ -232,10 +232,6 @@ func_8003AAEC:
   verdict: parked
   class: "F6 constant-sb li placement"
   date: 2026-07-08
-SetupFrameOT:
-  verdict: parked
-  class: "B18 constant-hoist layout tie"
-  date: 2026-07-08
 func_8003891C:
   verdict: parked
   class: "F5 ret0 block layout"
