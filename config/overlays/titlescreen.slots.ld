@@ -5,6 +5,7 @@
     build/overlays/titlescreen/c/func_titlescreen_8007AAD4.o(.text)
     . = 0x00000174 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.func_titlescreen_8007ABAC)
+    build/overlays/titlescreen/c/func_titlescreen_8007ABAC.o(.text)
     . = 0x00002300 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.func_titlescreen_8007CD38)
     build/overlays/titlescreen/c/func_titlescreen_8007CD38.o(.text)

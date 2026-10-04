@@ -4955,3 +4955,13 @@ func_level_24_8007E3C0_2026_10_04:
   class: "MATCHED 2026-10-04 (case 91 comet-state store order)"
   date: 2026-10-04
   note: "43,620 B. Swept the 24 orders of {dvz, speed, count, spark} after `timer; steps` (the steps read aliases every cs store): any order with count first (cdvk/cdkv/cvdk/ckdv) is masked 0. With count ahead of dvz the boosted speed `li 800` no longer takes the lh-dvz stall slot, so a2 = 800 lands there in sched1 and the second unk46 index keeps a2."
+func_level_18_8007E18C_2026_10_04:
+  verdict: parked
+  class: "loop.c hoist threshold: 16 group (S43 L70) moves at thr 11 / count 19548; orig needs a second insn_count doubling (or 16 S*L < 1777) plus a much larger &SPY.controlFlags group"
+  date: 2026-10-04
+  note: "40,292 B. Swapped in level_20's matched case 137: masked 393 -> 357, still -13 length, hoist set unchanged. do/while(0) is a phony loop (no moved_once). The case-13 scans' two inner-moved 13s combine into one outer group (one doubling); splitting them would stop 16 from moving. Details in build/l18w/NOTES.md."
+func_titlescreen_8007ABAC_2026_10_04:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (CD-read arg loads pinned to $a0/$a3)"
+  date: 2026-10-04
+  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the D_8007A6D8 argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."

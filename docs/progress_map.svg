@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">89.88% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">1,941,032 / 2,159,608 split-code bytes · 673 matched · 40 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">90.01% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">1,943,812 / 2,159,608 split-code bytes · 674 matched · 39 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -1228,8 +1228,8 @@
 <rect x="1122.27" y="1033.97" width="63.73" height="106.24" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="1122.27" y="1033.97" width="63.73" height="16.00" fill="#161b22"/>
 <text x="1126.27" y="1045.97" fill="#e6edf3" font-size="11" font-weight="600">ti…</text>
-<text x="1183.00" y="1045.97" fill="#8b949e" font-size="10" text-anchor="end">34%</text>
-<rect x="1122.27" y="1049.97" width="63.73" height="59.23" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007ABAC  ·  8588 bytes  ·  wip</title></rect>
+<text x="1183.00" y="1045.97" fill="#8b949e" font-size="10" text-anchor="end">100%</text>
+<rect x="1122.27" y="1049.97" width="63.73" height="59.23" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007ABAC  ·  8588 bytes  ·  matched</title></rect>
 <rect x="1122.27" y="1109.20" width="54.49" height="31.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007CEE4  ·  3844 bytes  ·  matched</title></rect>
 <rect x="1176.76" y="1109.20" width="9.24" height="20.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007CD38  ·  428 bytes  ·  matched</title></rect>
 <rect x="1176.76" y="1129.56" width="9.24" height="10.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007AAD4  ·  216 bytes  ·  matched</title></rect>

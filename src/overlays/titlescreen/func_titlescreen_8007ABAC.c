@@ -10,182 +10,12 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * 2026-09-23: 7 -> 3/2147, still length-exact.  The a1 race is gone: the
- * -0x40000 goes through a `register int off asm("$5")` local, which takes the
- * constant out of local-alloc's qty_sugg_compare entirely.  LEFT (3 insns):
- * the `lui a1,0xfffc` is now scheduled at the TOP of the block and reorg puts
- * it in the `bnez` delay slot, where the original has `lui a2,0x4`.  The
- * sched2 trace (-dR) for block 26 shows every insn in the arg group at
- * priority 1; at T-8 the stack-arg `sw` was just scheduled, the cd load is
- * blocked (store->load hazard), and rank_for_schedule then prefers `li v0,600`
- * because it is the sw's TRUE-dep producer (class 1), so the const drifts to
- * T-11.  The original places the const at T-8, i.e. its const had priority 2
- * (a producer edge) or the 600 was not ready.  Inert: the set before / after
- * the cd read, inside the argument, cd also pinned to $4.  Worse: pinning the
- * pointer to $v0 (9), pinning the SUM to $a1 (6, cd read sinks), a barrier
- * before the set (+1 insn).
- *
- * STATUS 2026-08-24: length-exact (2147/2147), links, **2140/2147 words
- * byte-identical, 7 differing instructions** (was 10 on 2026-08-23-1). All 7
- * are ONE call block — the `func_80016698` CD-read at 0x8007ADD8..0x8007AE00 —
- * and the whole residue is now root-caused to a single register decision.
- *
- * ---- BOTH A195 DIALS ARE REMOVED, AND THAT IS THE IMPROVEMENT --------------
- * The 2026-08-23-1 body carried two `do { x = K; } while (0);` dials (on the
- * -0x40000 and on the 600). They cost more than they bought. A dial's
- * NOTE_INSN_LOOP_BEG/END makes sched.c attach the loop-note barrier to the
- * NEXT insn, which here is the `D_800785E8` load — and a barrier insn is a
- * full REG_DEP_TRUE producer for everything after it. Measured with the §D 2d
- * probe on the dialled body: that gives the outgoing stack-arg store
- * (`sw 600,16(sp)`) a latency-2 edge, so `priority()` puts it at 3, tied with
- * the `addu`, and `schedule_select`'s potential_hazard tiebreak (sched.c:2657 —
- * within one priority GROUP the largest-hazard insn is picked first, and
- * scheduling is BACKWARD, so picked-first == placed-LAST) hands the store the
- * final slot. Reorg then gives the jal delay slot to the `sw` instead of the
- * `addu`. Dropping both dials drops the store to priority 1 and the `li 600`
- * lands in the right place (10 -> 7). Do not re-add them.
- *
- * ---- THE REMAINING 7 ARE ONE REGISTER SWAP --------------------------------
- *     orig  li v0,600 | lui a0/lw a0 (cd) | lui a1,0xfffc | sw v0,16(sp) |
- *           lui v0/lw v0 (D_800785E8) | lui a3/lw a3 | jal | addu a1,v0,a1
- *     ours  li v0,600 | sw v0,16(sp) | lui v0,0xfffc | lui a0/lw a0 |
- *           lui a1/lw a1 (D_800785E8) | lui a3/lw a3 | addu a1,a1,v0 | jal(sw)
- * i.e. the original gives **a1 to the -0x40000 constant and v0 to the pointer**
- * (reusing v0 after the `sw` kills the 600); we do the opposite. The store's
- * position is a CONSEQUENCE, not a separate bug: with the constant in v0 there
- * is a WAR chain `li v0,600 -> sw v0 -> v0 = -262144`, which pins the store
- * immediately before the constant. Fix the register and the store floats.
- *
- * Why the swap happens (A225's suggestion pass, measured on this body):
- * insn 262 is `(set (reg a1) (plus P C))` with a hard-reg dest, so combine_regs
- * early-outs on both operands and `qty_sugg_compare` decides — equal suggestion
- * counts, then `floor_log2(refs)*refs*size/(death-birth)` DESCENDING, i.e. the
- * SHORTER live range wins a1. In our sched1 output the constant is born before
- * the pointer (range 4 vs 3), so the pointer wins. **The lever would be making
- * sched1 emit the pointer load BEFORE the constant** — and that is exactly what
- * `schedule_select` refuses to do: at sched1 T-7 both are ready and both carry
- * the F14 birthing boost (0x7f000001), so they are one priority group, and the
- * potential_hazard tiebreak always prefers the LOAD, placing it later.
- * Breaking that needs them in different priority groups, i.e. a second consumer
- * for one of them scheduled at a different step. No source form found.
- *
- * Measured this session and all EXACTLY 7 (do not re-run): no dials; `off` as a
- * plain local before/after the `cd` read; `off` at function scope; `register`
- * `off`; a double set of `off`; `600` as a literal / a plain local / a local set
- * first; a `base = D_800785E8;` temp before or after the `cd` read; the whole
- * sum precomputed into `p`; `-0x40000 + D_800785E8`; a non-volatile `cd` read;
- * an `int tbl = D_8007A6D8;` temp. Worse: any dial (9-10); an empty
- * `do { } while (0);` barrier (10); a volatile `D_800785E8` read (overflows the
- * slot); every statement order that does not put the `cd` read FIRST (2019-2020
- * — the volatile read is the block head and moving it relocates the function).
- *
- * ---- 2026-08-25: THE MECHANISM IS FULLY READ OFF THE sched1 TRACE ---------
- * Do not re-derive any of this.  `cc1 -dS` on the park body, basic block 26
- * (`grep -n "basic block number 26" -A 32 <in>.i.sched`) gives the whole story:
- *
- *   ;; ready list at T-7: 250 (7f000001) ... 248 (7f000001), now 250 248 ...
- *   ;; insn 248 has a greater potential hazard, now 248 250 ...
- *
- * 250 is the `-0x40000` lui, 248 the `D_800785E8` load.  `rank_for_schedule`
- * ALREADY puts the const first (equal boosted priority, then class, then LUID);
- * `schedule_select` then overrides it because `potential_hazard` is 0 for a lui
- * (no function unit) and >0 for a load (mips.md "memory" unit).  The load is
- * therefore picked first, i.e. placed LAST, i.e. born last, i.e. has the SHORTER
- * live range -- and `qty_sugg_compare` (both qtys carry the same single a1
- * suggestion from `(set (reg a1) (plus P C))`) then allocates the shorter-lived
- * one first, so the POINTER takes a1.  Numbers from `-dl`: 135(ptr) 2 refs/6,
- * 137(const) 2 refs/8 => 3333 vs 2500.
- *
- * WHY ARM 2 (`func_8005FA28`, same `ptr - 0x40000`) MATCHES: its block has no
- * third boosted load, so the const is ready at T-5 and the ptr at T-6 -- one per
- * cycle, no collision -- and the ptr is born first there.  Arm 1's extra load is
- * the `D_8007A6D8` a3 argument: its consumer (the a3 arg copy) is scheduled at
- * T-4 (highest LUID of the priority-2 arg-copy group -- expand_call emits the
- * copies in a0,a1,a2,a3 order, so the addu can never win that tie), so the a3
- * load is ready at T-6, takes T-6 from the const, and pushes const+ptr into the
- * same T-7 group.  **Confirmed by construction**: replacing the a3 argument with
- * a literal 0 gives `lui a1,0xfffc` / `lui v0,lw v0` / `addu a1,v0,a1` -- the
- * original's exact register assignment -- on the first build.
- *
- * SO THERE ARE EXACTLY TWO LEVERS, AND BOTH ARE MEASURED AND BOTH COST MORE
- * THAN THEY BUY:
- *  (1) `floor_log2(R)*R/range`: R=3 on the const beats the ptr (3/8 > 2/6).
- *      A195's `do { off = -0x40000; } while (0);` reaches it and the REGISTERS
- *      COME OUT RIGHT -- but **any** loop note in this block sinks the 600/`sw`
- *      pair to the end (10-11/2147).  Root cause, and it is structural: the
- *      loop-note insn gets a dependence on everything before it (sched.c
- *      `if (loop_notes)` sets `reg_pending_sets_all`), so it inherits priority 2
- *      from the block's loads, and every insn after it inherits >=2 -- which
- *      lifts the outgoing stack-arg store out of the priority-1 pool into the
- *      top group, where `potential_hazard` (a store outranks everything) hands
- *      it the LAST slot.  Measured at 10-11 for: dial before the call, dial
- *      after a `p = D_800785E8;` hoist, dial before the `cd` read (14 -- also
- *      breaks a held base in the preceding block), dial with cd/p/tbl hoisted
- *      above it, dial with cd/p/tbl/600 all hoisted, and a dial around the
- *      `q = D_800785E8 + off;` use (that one weights the ptr too, 10).
- *      **Conclusion: the A195 dial is unusable in any block that passes a stack
- *      argument.**
- *  (2) Un-boost the a3 load (F14: a second set => `reg_n_sets != 1`), which
- *      frees T-6 for the const.  Registers come out right; but an un-boosted def
- *      drifts to the FRONT of its block, so the a3 load and the `cd` load swap
- *      places (orig has cd at 0x8007ADDC and a3 at 0x8007ADF4).  Best state:
- *      **7/2147 with a DIFFERENT residue** -- 4 insns in arm 1 (pure a0/a3 load
- *      swap, everything else including `addu a1,v0,a1` byte-identical) plus 3 in
- *      arm 2 from the donor.  Donor rules learned here: a donor whose second set
- *      is a CONSTANT ARGUMENT is deleted by copy/constant propagation and the
- *      carrier silently stays single-set (`tbl = 0; f(&rc,0,0,tbl)` at the
- *      `func_8005F8F8` site => back to the baseline 7); a donor whose second set
- *      is `tbl = K; <global> = tbl;` survives.  Both surviving donors cost their
- *      own arm 3-6 insns because the carrier is one global allocno and arm 1
- *      pins it to a3.  Declaring `tbl` before vs after the `cd` read is a no-op
- *      (the a3 load drifts to the front either way).
- *
- * WHAT WOULD ACTUALLY CLOSE IT (nothing else is left):
- *   - a THIRD real reference to the -0x40000 pseudo, with no loop note.  `-off`
- *     as the a2 argument does not work (cse folds it back to a constant and the
- *     ref disappears); `size`/`-size` sharing gives `subu`, not `addu`.
- *   - or a copy suggestion: `qty_sugg_compare` sorts on `qty_phys_num_copy_sugg`
- *     BEFORE priority, so a pseudo reached by a plain reg-to-reg move into a
- *     hard reg jumps the queue.  Neither operand of an `addu` can get one
- *     (`may_save_copy` needs `SET_SRC == the operand`, or a match-0 constraint,
- *     which MIPS `addsi3` does not have).
- *   - or two hard-reg suggestions on the POINTER (sugg count sorts before
- *     priority, and MORE suggestions sorts LATER), which needs the pointer to be
- *     an operand of a second hard-reg set in the same block.
- * Also retired here: "the residue needs sched1 to emit the pointer before the
- * constant, no source form found" -- there IS one (lever 2), it just relocates
- * the a3 load.
- *
- * ---- 2026-08-30-1: THE A238 SECOND-SET DIAL REACHES a1, AND STRANDS THE
- * POINTER. Do not re-run this; it is the third of the three levers and it is
- * measured. -----------------------------------------------------------------
- * A238's step 1 (a second SET moves a pseudo out of local-alloc) is the one
- * note-free dial this park had not seen, and it works on the POINTER: a
- * function-scope `base` set from `D_800785E8` in BOTH arms makes it a global
- * allocno, local-alloc's suggestion pass is then left with only the constant,
- * and `addu a1,<ptr>,a1` comes out with **a1 holding the -0x40000 constant** --
- * the half this park has been trying to reach for four sessions. It does not
- * close, because a global allocno cannot have v0: the original reuses v0 for
- * the pointer immediately after `sw v0,16(sp)` kills the 600, and a global
- * allocno's conflicts are computed over its whole (two-arm) range, so it takes
- * t0 and both arms' loads drift to the block head (17/2147).
- * So the target is now exact and provably narrow: **the pointer has to be
- * LOCAL (for v0) while the constant wins the a1 suggestion (which needs the
- * pointer to be non-local, or the constant to have 3 refs).** The only escape
- * left is still lever 1's third reference to the constant with no loop note.
- * Also measured and INERT (byte-identical 7/2147): a block-scoped `base` with a
- * second set INSIDE arm 1 (`base = 1; D_80078D78.unk_0x10 = base;`), with the
- * load declared before and after the `cd` read. Constant propagation deletes
- * that second set even though the header's donor rule says a
- * `tbl = K; <global> = tbl;` donor survives -- it does NOT when the destination
- * is a struct field, so the carrier stays single-set.
- *
- * ---- Historical (still true) ---------------------------------------------
- * The rodata-packing blocker is SOLVED — gen_slots_ld skips the subsumed later
- * pieces owned by a flipped function, so the override links cleanly.
- * Do NOT re-run the permuter here: ~39,000 iterations (overnight) plus a 15 m
- * standard `open-spyro permuter` run both returned ZERO sub-floor results, and
- * we now know why — the residue was never in the randomizer's transform space.
+ * The sprite-sheet CD read pins its CD handle to $a0 and the D_8007A6D8
+ * argument to $a3. As pseudos, the handle's volatile load and the a3 load are
+ * both birthing-boosted, and they crowd the `- 0x40000` constant and the
+ * buffer pointer into one sched1 priority group, which hands $a1 to the
+ * pointer. As hard-register sets they are LUID-ordered stragglers instead:
+ * the handle loads first, the a3 load last, and the constant keeps $a1.
  */
 
 #include "titlescreen.h"
@@ -253,12 +83,12 @@ void func_titlescreen_8007ABAC(void) {
 
       if (D_80078D78.unk_0x10 == 0) {
         /* kick off loading titlescreen data from the CD */
-        int cd;
-        register int off asm("$5");
+        register int cd asm("$4");
+        register int t asm("$7");
         cd = *((volatile int *) &D_80076B90.unk_0x00);
-        off = -0x40000;
-        func_80016698(cd, D_800785E8 + off, 0x40000,
-                      D_8007A6D8, 600);
+        t = D_8007A6D8;
+        func_80016698(cd, D_800785E8 - 0x40000, 0x40000,
+                      t, 600);
         D_80078D78.unk_0x10 = 1;
       } else if (D_80078D78.unk_0x10 == 1) {
         /* once loaded, initialize music and upload the sprite sheet to vram */
