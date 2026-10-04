@@ -5000,3 +5000,8 @@ InitHudCounters_2026_10_04_2:
   class: "F1 local-alloc qty priority: short-lived lives qty takes v0 before the dragon count"
   date: 2026-10-04
   note: "100 -> 19/226 linked, length+frame exact. Frame needed pad[2]; the straight-line block's source order comes from true_dependence's both-volatile clause (VOL() on anchor/display/roll/hold stores and idx/counter/lives loads, NOT the cached stores); anchor = &records[0x196]; butterfly loop own dst/count vars, x=icon[k] temps, size=8 local. Left: lives->v0 rotates the counter batch t0..t3; 128 volatility combos + 6 lives placements measured, none reach it."
+TickCdMusicStream_2026_10_04_2:
+  verdict: parked
+  class: "A164 straggler order: la D_8006F05C vs sra pick>>31 in one load-delay bubble"
+  date: 2026-10-04
+  note: "257/256 unlinkable -> 7/256 linked, length+frame exact. A231 alias g_anMusicTrackLbaTablePost closed the 8-byte frame surplus; trk local after CdControl + struct-view command store (A230) closed the old residue 1. Left: 7-insn random-track window, ~14 table/statement spellings measured."
