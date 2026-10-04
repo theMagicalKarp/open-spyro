@@ -4998,3 +4998,8 @@ CdInit_2026_10_04_2:
   class: "B10 compare-const hoist (re-confirmed; goto escape blocked by jump.c block relocation)"
   date: 2026-10-04
   note: "152 B. A85 goto loop: length-exact, no s-reg hoist, but jump.c's first pass moves the success block (ends in a jump to the return label) behind the fail path, 25/38; an inner do/while(0) does not pin it. Every structured form (for, while(tries--), do/while) keeps the layout but loop.c hoists 1 and -1 (21 insns < threshold). loop.c dump: 'Loop from 10 to 75: 21 real insns', both li moved. Likely a libcd built with a different loop.c; not reopenable from source."
+UpdateHudCounters_2026_10_04_2:
+  verdict: parked
+  class: "R2 extra callee-saved reg (loop.c hoist of 0x01000000) + offset-profile drift; roll-out store sinking SOLVED via A230"
+  date: 2026-10-04
+  note: "912/913, masked 205 -> 175. Roll-out arms: block-scoped `unsigned char t` + FIELD() one-member record store (in-struct, so it depends on the lh tbl[t] read). Positional credit unchanged at 244 B; remaining regions are the prologue rotation from R2 and many small schedule spots."

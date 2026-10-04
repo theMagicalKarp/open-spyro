@@ -43,7 +43,17 @@
  * 5. The cosine load is hoisted into `nCos` so it precedes the 0x1A6 store,
  *    which is the original's order (6 masked).
  *
- * ---- The dominant residue: OUR BYTE-GLOBAL STORES SINK -------------------
+ * ---- 2026-10-04-2: the five roll-out store sites are SOLVED (205 -> 175) --
+ * Each roll-out arm now reads `{ unsigned char t = SYM - 1; FIELD(SYM) = t;
+ * Offset(..., tbl[t]); }`.  FIELD() stores through a one-member record view,
+ * so the byte store is MEM_IN_STRUCT and sched.c true_dependence no longer
+ * exempts it from the in-struct `lh tbl[t]` read (A230): it stays above the
+ * andi/sll/lh chain.  The block-scoped `unsigned char t` keeps the decrement
+ * in place in v0 and in the bnez delay slot (the function-wide `j` went to
+ * a3).  Both are load-bearing: plain store + uchar t is 908 insns / 220.
+ * Positional credit is unchanged (the offset profile still wanders).
+ *
+ * ---- (historical) The dominant residue: OUR BYTE-GLOBAL STORES SINK ------
  * ~40 of the 203, and it is the same shape at six sites: the original emits
  * `lui $at; sb rX,%lo(sym)($at)` immediately after the value is computed and
  * BEFORE the `andi/sll/lh` chain that re-reads it (cse having turned the
@@ -137,6 +147,8 @@ extern int g_anHudWorldEggTimerBlock[];             /* 0x80077fc0 */
 extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 
 /* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
+#define FIELD(sym) (((struct { unsigned char v; } *)&(sym))->v)
+
 #define HUD g_adwHudBobSinePhaseBlock
 #define BOB (*(unsigned int *)&HUD[0])
 #define GEM_STATE (HUD[-0x3C])
@@ -235,9 +247,11 @@ void UpdateHudCounters(void) {
     } else if (g_bHudLevelGemRollPhase == 0) {
       GEM_STATE = 0;
     } else {
-      j = g_bHudLevelGemRollPhase - 1;
-      g_bHudLevelGemRollPhase = j;
-      OffsetHudIconRollAxis(0, 5, g_anHudRollOutStepTable[(unsigned char)j]);
+      {
+        unsigned char t = g_bHudLevelGemRollPhase - 1;
+        FIELD(g_bHudLevelGemRollPhase) = t;
+        OffsetHudIconRollAxis(0, 5, g_anHudRollOutStepTable[t]);
+      }
     }
   } else if (GEM_STATE == 4) {
     GEM_TIMER = GEM_TIMER + g_nFrameStep;
@@ -271,9 +285,11 @@ void UpdateHudCounters(void) {
     if (g_bHudDragonRollPhase == 0) {
       g_abHudCounterDisplayState[1] = 0;
     } else {
-      j = g_bHudDragonRollPhase - 1;
-      g_bHudDragonRollPhase = j;
-      OffsetHudIconRollAxis(5, 3, g_anHudRollOutStepTable[(unsigned char)j]);
+      {
+        unsigned char t = g_bHudDragonRollPhase - 1;
+        FIELD(g_bHudDragonRollPhase) = t;
+        OffsetHudIconRollAxis(5, 3, g_anHudRollOutStepTable[t]);
+      }
     }
   }
 
@@ -328,9 +344,11 @@ void UpdateHudCounters(void) {
     } else if (g_bHudLivesRollPhase == 0) {
       g_abHudCounterDisplayState[2] = 0;
     } else {
-      j = g_bHudLivesRollPhase - 1;
-      g_bHudLivesRollPhase = j;
-      OffsetHudIconRollAxis(8, 3, g_anHudRollOutStepTable[(unsigned char)j]);
+      {
+        unsigned char t = g_bHudLivesRollPhase - 1;
+        FIELD(g_bHudLivesRollPhase) = t;
+        OffsetHudIconRollAxis(8, 3, g_anHudRollOutStepTable[t]);
+      }
     }
   }
 
@@ -404,10 +422,12 @@ void UpdateHudCounters(void) {
     } else if (g_bHudWorldEggRollPhase == 0) {
       EGG_STATE = 0;
     } else {
-      j = g_bHudWorldEggRollPhase - 1;
-      g_bHudWorldEggRollPhase = j;
-      OffsetHudDigitRollAxis(0, 0xC,
-                             -g_anHudRollOutStepTable[(unsigned char)j]);
+      {
+        unsigned char t = g_bHudWorldEggRollPhase - 1;
+        FIELD(g_bHudWorldEggRollPhase) = t;
+        OffsetHudDigitRollAxis(0, 0xC,
+                             -g_anHudRollOutStepTable[t]);
+      }
     }
     break;
   }
@@ -466,9 +486,11 @@ void UpdateHudCounters(void) {
     } else if (g_bHudLevelEggRollPhase == 0) {
       LEGG_STATE = 0;
     } else {
-      j = g_bHudLevelEggRollPhase - 1;
-      g_bHudLevelEggRollPhase = j;
-      OffsetHudIconRollAxis(0xB, 1, -g_anHudRollOutStepTable[(unsigned char)j]);
+      {
+        unsigned char t = g_bHudLevelEggRollPhase - 1;
+        FIELD(g_bHudLevelEggRollPhase) = t;
+        OffsetHudIconRollAxis(0xB, 1, -g_anHudRollOutStepTable[t]);
+      }
     }
     break;
   }
