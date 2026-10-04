@@ -10,18 +10,7 @@
     build/overlays/level_18_beast_makers_home/c/func_level_18_8007D784.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    . = 0x000008a4 ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B2DC)
-    . = 0x000008bc ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B2F4)
-    . = 0x000008d4 ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B30C)
-    . = 0x000008f4 ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B32C)
-    . = 0x0000091c ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B354)
-    . = 0x0000094c ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B384)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007E18C.o(.rodata)
     . = 0x00000960 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B398)
     build/overlays/level_18_beast_makers_home/c/func_level_18_800888F8.o(.rodata)

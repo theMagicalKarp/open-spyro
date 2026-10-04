@@ -14,6 +14,7 @@
     build/overlays/level_18_beast_makers_home/c/func_level_18_8007D784.o(.text)
     . = 0x00003754 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_8007E18C)
+    build/overlays/level_18_beast_makers_home/c/func_level_18_8007E18C.o(.text)
     . = 0x0000d4b8 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.func_level_18_80087EF0)
     build/overlays/level_18_beast_makers_home/c/func_level_18_80087EF0.o(.text)

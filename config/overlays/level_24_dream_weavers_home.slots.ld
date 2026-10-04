@@ -14,6 +14,7 @@
     build/overlays/level_24_dream_weavers_home/c/func_level_24_8007D9B8.o(.text)
     . = 0x00003988 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.func_level_24_8007E3C0)
+    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007E3C0.o(.text)
     . = 0x0000e3ec ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.func_level_24_80088E24)
     build/overlays/level_24_dream_weavers_home/c/func_level_24_80088E24.o(.text)

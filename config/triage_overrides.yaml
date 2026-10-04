@@ -4950,3 +4950,33 @@ func_level_24_8007E3C0_2026_10_03_1:
   class: "sched1 straggler-gap tie: boosted li 800 (speed store after the steps load) takes the dvz-reload gap a2=800 needs"
   date: 2026-10-03
   note: "43,620 B, still masked 4/10905. The steps load aliases every cs store (both through varying struct bases), so the speed store must follow it in source. Then the store's birthing-boosted `li 800` fills the gap after `lh a3` (dvz reload). The a0/a1/a2 arg sets (prio 4) drift into earlier load gaps, a2 lands inside the second unk46 index temp's range, and that temp gets a3. Measured with no improvement: 39 A232 barrier placements (best 21), a hoisted steps read (best 4), multi-set v (s4) or k for 800, and the store inside the call args (7). Workspace build/l24w2 (sweep.py)."
+func_level_24_8007E3C0_2026_10_04:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (case 91 comet-state store order)"
+  date: 2026-10-04
+  note: "43,620 B. Swept the 24 orders of {dvz, speed, count, spark} after `timer; steps` (the steps read aliases every cs store): any order with count first (cdvk/cdkv/cvdk/ckdv) is masked 0. With count ahead of dvz the boosted speed `li 800` no longer takes the lh-dvz stall slot, so a2 = 800 lands there in sched1 and the second unk46 index keeps a2."
+func_level_18_8007E18C_2026_10_04:
+  verdict: parked
+  class: "loop.c hoist threshold: 16 group (S43 L70) moves at thr 11 / count 19548; orig needs a second insn_count doubling (or 16 S*L < 1777) plus a much larger &SPY.controlFlags group"
+  date: 2026-10-04
+  note: "40,292 B. Swapped in level_20's matched case 137: masked 393 -> 357, still -13 length, hoist set unchanged. do/while(0) is a phony loop (no moved_once). The case-13 scans' two inner-moved 13s combine into one outer group (one doubling); splitting them would stop 16 from moving. Details in build/l18w/NOTES.md."
+func_titlescreen_8007ABAC_2026_10_04:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (CD-read arg loads pinned to $a0/$a3)"
+  date: 2026-10-04
+  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the D_8007A6D8 argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
+func_level_18_8007E18C_2026_10_04_1:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
+  date: 2026-10-04
+  note: "40,292 B. Orig hoists &D_80076DF8 (CAM.posX, remat'd as lui a0/addiu a0 in 398) and &SPY.controlFlags; both are only used as memory bases or argument values, so their remats are invisible. NOTE-only scopes stretch the camera group (case 398 state 1, +4 luids), D_80076378 (case 390, +8) and the controlFlags group (case 398 state 2, +80). Case 34 reads SPY.state so its controlFlags store leads the group. Then 16 (S43 L70) stays put at thr 5. Also: level_20's case 137, struct-field stores in 398 state 1, ((SpyroObj *)&D_80078A58) reads in 312, and case 190's dialogue slots."
+func_level_5_8007B68C_2026_10_04:
+  verdict: parked
+  class: "R5 sched2 store/store hole (unchanged) + Rd; new lead: the original's lui/ori pairs are UNSPLIT reload-made `li`s"
+  date: 2026-10-04
+  note: "8/1610. gcc 2.7.2 splits large-constant sets into lui/ori only in sched1 (sched.c, before reload). A reload remat of a REG_EQUIV constant is emitted after sched1, reaches sched2 as one insn and leaves no ori straggler for the hole. Measured: pinned a0/a1 constants 8, function-scope off/bias 1589 (bias wins the free s6; the original saves only s0-s5). Open: a source form whose constant pseudos get no hard register."
+func_level_13_8008AF54_2026_10_04:
+  verdict: parked
+  class: "B25 dead li a3,3 (unchanged); new lead: combine.c distribute_notes inserts (use (reg)) after a CODE_LABEL when a REG_DEAD note has no home"
+  date: 2026-10-04
+  note: "Reload emits an input reload for a USE insn and final prints nothing for the USE, which gives a dead li at a block head. That fits 3 of the 4 extra sites (arm/label heads); 0x8008B79C is mid-block. Our burst (reg/v 76) never dies in the loop, so it gets no REG_DEAD and no USE. Our build does have combine USEs at labels for other regs (732, 738, 1405)."

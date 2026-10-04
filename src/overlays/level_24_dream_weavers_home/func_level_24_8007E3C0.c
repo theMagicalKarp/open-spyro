@@ -1,18 +1,20 @@
 /* func_level_24_8007E3C0 -- per-frame actor update for level 24 (Dream
- * Weavers home). 0x8007E3C0, 43,620 bytes.  WORK IN PROGRESS (.c.wip).
+ * Weavers home). 0x8007E3C0, 43,620 bytes.
  *
- * Status 2026-10-03: length- and frame-exact, masked 4/10905. All arms
- * written; new ones are the cannon (91) and its comets (104), the guards
- * (92/130) and the talking NPC (191). The loop's `j` entry appears by
- * itself once every arm exists (cookbook A293): no loop-top carriers, so
- * every hoisted constant spills and the preheader is empty.
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class. The
+ * level-24 classes are the cannon (91) and its comets (104), the guards
+ * (92/130) and the talking NPC (191); the rest are shared with the other
+ * level heads.
  *
- * Residue (one sched tie in case 91 state 10): the original stores
- * cs->speed (li v0,800; sh v0,8(s1)) after the cs->dvz reload for the
- * func_8003891C call. Storing it first (as here) costs those 2 insns; storing
- * it last (or as `cs->speed = 0x320` inside the call's argument list) gets
- * the store right but moves the call's a2 load ahead of the second
- * unk46 index, which then takes a3 instead of a2. Workspace build/l24w2.
+ * Load-bearing source forms:
+ *   - No loop-top carriers: every hoisted constant spills, the preheader is
+ *     empty and jump2 turns the loop entry into a `j` to the bottom test.
+ *   - Case 91 state 10: the comet's state is written timer, steps, count,
+ *     dvz, speed, spark. The steps read must precede every cs store after
+ *     the timer (it aliases them), and the count store ahead of dvz keeps
+ *     the speed constant out of the slot the call's a2 = 800 needs, so the
+ *     second unk46 index stays in a2.
  *
  * ==== Core records ====
  *
@@ -3476,10 +3478,10 @@ void func_level_24_8007E3C0(void) {
           o->unk50 = 0;
           o->unk52 = 0xFF;
           cs->timer = 0x78;
-          cs->speed = 0x320;
           cs->steps = st->steps;
-          cs->dvz = -7;
           cs->count = 0;
+          cs->dvz = -7;
+          cs->speed = 0x320;
           cs->spark = 0;
           cs->vz = func_8003891C(&o->posX, g192, 0x320, cs->dvz, (int *)&g208v);
           cs->trail = (L24Trail *)((char *)st + (st->idx * 0xE38 + 0x28));
