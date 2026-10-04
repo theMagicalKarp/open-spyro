@@ -137,10 +137,6 @@ NudgeSpyroFromWallProbes:
   date: 2026-07-15
 
 # --- Block-layout / constant-hoist ties (source-invariant) ---
-func_80058AE8:
-  verdict: wall
-  class: "B17 free-slot block layout"
-  date: 2026-07-07
 
 # --- Deferred multi-idiom from-scratch targets (not walls; retry when veins dry) ---
 func_800557CC:
