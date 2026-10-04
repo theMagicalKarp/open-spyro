@@ -42,10 +42,6 @@ memchr:
   date: 2026-07-23
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
-SetDrawEnv:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-19
 PutDispEnv:
   verdict: wall
   class: "B9 clamp (inline)"
