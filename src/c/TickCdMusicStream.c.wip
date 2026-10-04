@@ -25,7 +25,8 @@ extern int g_anMusicFadeBlock[];
 /* held-base view of g_dwMusicStreamStatus (0x800774b4); +0x20D reaches the
    last CdlLOC the drive reported. */
 extern unsigned int g_adwMusicStreamBlock[];
-extern int g_anMusicTrackLbaTablePost[]; /* g_anMusicTrackLbaTable, post-call view */
+extern int
+    g_anMusicTrackLbaTablePost[]; /* g_anMusicTrackLbaTable, post-call view */
 
 /* PARKED 2026-10-04-2 at 7/256 linked (LENGTH- and FRAME-exact, links).
    SOLVED this session (do not re-derive):
