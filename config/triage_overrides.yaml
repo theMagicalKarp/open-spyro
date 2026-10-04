@@ -42,10 +42,6 @@ memchr:
   date: 2026-07-23
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
-PutDispEnv:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-19
 func_80060FD8:
   verdict: wall
   class: "B9 clamp (inline)"
@@ -4973,3 +4969,8 @@ InitActorMeshScratchRegions_2026_10_04_2:
   class: "F1 allocation: three address temps scheduled together take v0/v1, post-branch top lands in a3 (B18 part SOLVED)"
   date: 2026-10-04
   note: "21 -> 20/56 linked, 30 -> 14 masked. Per-arm `top += size` restores the original's shared-lui delay slot (same lever matched SetupFrameOT)."
+PutDispEnv_2026_10_04_2:
+  verdict: parked
+  class: "F1 local-alloc tie: the GP1(0x05) argument's y|x value is tied to a0, so the const lui and both ors cross-jump"
+  date: 2026-10-04
+  note: "First decode (was B9 wall). 294/298, 13 masked, one window. Volatile cache shorts, computed height flag, nested-ternary clamps all solved. Inert: 36 association orders, per-arm temps, const-in-variable, register pins. memcpy needs the non-builtin (void*,void*,int) prototype."
