@@ -4965,3 +4965,8 @@ func_titlescreen_8007ABAC_2026_10_04:
   class: "MATCHED 2026-10-04 (CD-read arg loads pinned to $a0/$a3)"
   date: 2026-10-04
   note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the D_8007A6D8 argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
+func_level_18_8007E18C_2026_10_04_1:
+  verdict: viable
+  class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
+  date: 2026-10-04
+  note: "40,292 B. Orig hoists &D_80076DF8 (CAM.posX, remat'd as lui a0/addiu a0 in 398) and &SPY.controlFlags; both are only used as memory bases or argument values, so their remats are invisible. NOTE-only scopes stretch the camera group (case 398 state 1, +4 luids), D_80076378 (case 390, +8) and the controlFlags group (case 398 state 2, +80). Case 34 reads SPY.state so its controlFlags store leads the group. Then 16 (S43 L70) stays put at thr 5. Also: level_20's case 137, struct-field stores in 398 state 1, ((SpyroObj *)&D_80078A58) reads in 312, and case 190's dialogue slots."
