@@ -4,7 +4,12 @@
    debug/env state, GPU_cw the current dispatch table, run ResetGraphImpl, then
    cache the selected mode's screen resolution and invalidate the PutDrawEnv /
    PutDispEnv caches; returns the debug type. Any other mode → optional debug
-   trace then dispatch table +0x34 (cancel) with 1. (0x8005f2a4, 388 bytes.) */
+   trace then dispatch table +0x34 (cancel) with 1. (0x8005f2a4, 388 bytes.)
+
+   The queue-mode flag and the width/height pair are fields of libgpu's state
+   block, so they are stored as record members: an in-struct store depends on
+   the in-struct mode-table reads (sched.c true_dependence), which keeps the
+   original's flag, lw/sh, lw/sh interleave instead of batching both loads. */
 
 extern int WritePrintf(char *fmt, ...);
 extern void memset(unsigned char *dst, int val, int n);
@@ -43,9 +48,11 @@ reset_block:
   GPU_cw((int)g_pGpuDispatchTable & 0xffffff);
   r = ResetGraphImpl(mode);
   g_abGpuDebugBlock[0] = (unsigned char)r;
-  g_bGpuQueueModeActive = 1;
-  g_nGpuScreenWidth = g_anGpuModeHResTable[r & 0xff];
-  g_nGpuScreenHeight = g_anGpuModeVResTable[r & 0xff];
+  ((struct { unsigned char v; } *)&g_bGpuQueueModeActive)->v = 1;
+  ((struct { short v; } *)&g_nGpuScreenWidth)->v =
+      g_anGpuModeHResTable[r & 0xff];
+  ((struct { short v; } *)&g_nGpuScreenHeight)->v =
+      g_anGpuModeVResTable[r & 0xff];
   memset(&g_abGpuDebugBlock[0x10], -1, 0x5c);
   memset(&g_abGpuDebugBlock[0x6c], -1, 0x14);
   return g_abGpuDebugBlock[0];
@@ -56,18 +63,3 @@ else_block:
   }
   return (*(int (**)())((char *)g_pGpuDispatchTable + 0x34))(1);
 }
-
-/* PARKED 87.6% (85/97). Dispatch ladder, held-base memsets (via
-   g_abGpuDebugBlock alias @0x80074a64), WritePrintf/GPU_cw/ResetGraphImpl calls
-   all byte-perfect. Residue = one ~11-insn window (0x8005f358..f398): the
-   original interleaves the two mode-table lookups (lw HRes; sh Width; lw VRes;
-   sh Height) and stores QueueModeActive=1 EARLY via v1; our -g3 gcc batches
-   both table loads first (extra reg a3) and stores QueueModeActive late via v0.
-   §B13/§K batch-load-then- scatter-store wall — volatile stores, volatile reads
-   (overflows), and source reordering all leave it. Permuter-or-never. NB
-   resuming needs the g_abGpuDebugBlock alias re-added to
-   config/symbol_addrs.txt.
-
-   2026-07-25-1 unattended permuter session (~15m, ~84300 iterations, timed out
-   at the 15m budget): best score 300 vs base score 585. No byte-perfect
-   candidate found; still PARKED (see above). */

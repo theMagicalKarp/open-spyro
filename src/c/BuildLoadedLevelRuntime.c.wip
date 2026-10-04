@@ -110,6 +110,7 @@ struct CameraParamBlock {
  */
 int BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
+  int pad[8];
   int dyaw;
   int *p;
   int *base;
