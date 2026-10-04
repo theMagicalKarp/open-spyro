@@ -4980,3 +4980,18 @@ func_level_13_8008AF54_2026_10_04:
   class: "B25 dead li a3,3 (unchanged); new lead: combine.c distribute_notes inserts (use (reg)) after a CODE_LABEL when a REG_DEAD note has no home"
   date: 2026-10-04
   note: "Reload emits an input reload for a USE insn and final prints nothing for the USE, which gives a dead li at a block head. That fits 3 of the 4 extra sites (arm/label heads); 0x8008B79C is mid-block. Our burst (reg/v 76) never dies in the loop, so it gets no REG_DEAD and no USE. Our build does have combine USEs at labels for other regs (732, 738, 1405)."
+func_credits_8007AA50_2026_10_04_1:
+  verdict: parked
+  class: "4 named clusters left (init movstr/header-load order, D_800761D0 width rotation, glyph digit/adv*3 reg ties, case-4 movstr a0 clobber)"
+  date: 2026-10-04
+  note: "252/123 -> 115/32 masked, length+frame exact, 1229/1372 linked words identical (was 587). Glyph pool and line table are struct arrays (HImode in-struct stores let scalar loads pass), POOL[i]/LINES[line] indexing (MULT-first address = giv-first addu), exactly one `for` loop (its combine USE pseudo is the frame's one 8-byte slot; padg removed), c = *s - 0x30 temp fixes the cur/upper priority, a `sector` local precomputes plain array call args, D_80076BB8 volatile. See the wip header LEFT A-D."
+Gamestate0C_Draw_2026_10_04_1:
+  verdict: parked
+  class: "A200 held-base class (unchanged): needs a base with no cse-visible constant"
+  date: 2026-10-04
+  note: "4/283. register asm(\"$3\") base is inert (cse tracks hard regs). Diagnostic only: an empty-asm opaque base (`__asm__(\"\" : \"=r\"(b) : \"0\"(blk))`) does produce `la v1; sw 4(v1); sw 0(v1)` (registers rotated). That confirms the mechanism, but it is not committable source."
+func_8005FC6C_2026_10_04_1:
+  verdict: parked
+  class: "F4/A187 return-copy store base (unchanged)"
+  date: 2026-10-04
+  note: "5/38. `int *r = ot;` with a do/while(0) barrier before or after the mask, and a block-scoped r: all byte-identical to the park. cse canonicalises r to the parameter either way."
