@@ -120,10 +120,6 @@ IntegrateSpyroBodyEuler:
   date: 2026-07-16
 
 # --- -g3 batch-read/scatter scheduling (main only) ---
-RestartSpyroAnimWithState:
-  verdict: wall
-  class: "B12 batch-scatter (byte-store variant)"
-  date: 2026-07-08
 
 # --- Held-base fold rule 1 / shared-base-no-call ---
 AdvanceSpyroSpeedTowardTarget:
