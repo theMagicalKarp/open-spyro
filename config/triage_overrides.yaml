@@ -50,14 +50,6 @@ func_80060FD8:
   verdict: wall
   class: "B9 clamp (inline)"
   date: 2026-07-23
-func_80061470:
-  verdict: wall
-  class: "B9 clamp (full-screen variant); DMA body transcribes"
-  date: 2026-07-23
-func_80061234:
-  verdict: wall
-  class: "B9 clamp (full-screen variant, twin of func_80061470)"
-  date: 2026-07-23
 
 # --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
 CdInit:
@@ -3313,10 +3305,6 @@ UpdateSpyroFlightAttitudeNearGround:
     offset. It does not: the compile-only shape diff is 76 mismatches over 28
     regions and the build is several insns short. This is a re-derive, not a
     residue; the 0.9% is honest.
-func_80061470:
-  verdict: parked
-  class: "raw permuter output -- the .wip does not compile"
-  date: 2026-08-30
   note: >-
     644 B, partial 0/644. The .wip is unfinished permuter spew (parse errors on
     `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh

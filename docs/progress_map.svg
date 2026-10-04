@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">92.21% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">1,991,444 / 2,159,608 split-code bytes · 689 matched · 33 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">92.27% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">1,992,660 / 2,159,608 split-code bytes · 691 matched · 32 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -141,7 +141,7 @@
 <rect x="200.52" y="527.86" width="19.57" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetDrawEnv  ·  656 bytes  ·  matched</title></rect>
 <rect x="220.09" y="527.86" width="19.33" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039688  ·  648 bytes  ·  matched</title></rect>
 <rect x="239.43" y="527.86" width="19.21" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawGemPickupAuraStar  ·  644 bytes  ·  handwritten</title></rect>
-<rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  wip</title></rect>
+<rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  matched</title></rect>
 <rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  wip</title></rect>
 <rect x="296.94" y="527.86" width="18.85" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateScriptedCameraView  ·  632 bytes  ·  matched</title></rect>
 <rect x="81.91" y="546.19" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateActorMeshHeader  ·  620 bytes  ·  matched</title></rect>
@@ -152,7 +152,7 @@
 <rect x="81.91" y="637.56" width="18.28" height="17.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SampleSpyroShadowRingHeights  ·  596 bytes  ·  matched</title></rect>
 <rect x="81.91" y="655.38" width="18.28" height="17.46" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginGemPickupOverlay  ·  584 bytes  ·  matched</title></rect>
 <rect x="81.91" y="672.84" width="18.28" height="17.22" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DispatchActorContactAtSphere  ·  576 bytes  ·  handwritten</title></rect>
-<rect x="81.91" y="690.06" width="18.28" height="17.10" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80061234  ·  572 bytes  ·  asm</title></rect>
+<rect x="81.91" y="690.06" width="18.28" height="17.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80061234  ·  572 bytes  ·  matched</title></rect>
 <rect x="81.91" y="707.16" width="18.28" height="16.86" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80069de0  ·  564 bytes  ·  library</title></rect>
 <rect x="81.91" y="724.02" width="18.28" height="16.74" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemCutscene_Update  ·  560 bytes  ·  matched</title></rect>
 <rect x="81.91" y="740.77" width="18.28" height="16.38" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroAnimStateMachine  ·  548 bytes  ·  asm</title></rect>
