@@ -5000,3 +5000,8 @@ NudgeSpyroFromWallProbes_2026_10_04_2:
   class: "F1 global-alloc priority: the in-loop `la g_anSineLut` cse temp (3 refs / 21 insns) ranks below cosp/pto/mask"
   date: 2026-10-04
   note: "35/87 permuter park -> fresh decode 20/87 linked, length-exact. B13 gone via A233; goto loop; `a` reused for the angle; pto local. Left: s2/s4/s5 rotation; A195 wrappers cannot reach a cse temp."
+InitActorMeshScratchRegions_2026_10_04_2:
+  verdict: parked
+  class: "F1 allocation: three address temps scheduled together take v0/v1, post-branch top lands in a3 (B18 part SOLVED)"
+  date: 2026-10-04
+  note: "21 -> 20/56 linked, 30 -> 14 masked. Per-arm `top += size` restores the original's shared-lui delay slot (same lever matched SetupFrameOT)."
