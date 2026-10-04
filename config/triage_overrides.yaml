@@ -4993,3 +4993,8 @@ TickCdMusicStream_2026_10_04_2:
   class: "A164 straggler order: la D_8006F05C vs sra pick>>31 in one load-delay bubble"
   date: 2026-10-04
   note: "257/256 unlinkable -> 7/256 linked, length+frame exact. A231 alias g_anMusicTrackLbaTablePost closed the 8-byte frame surplus; trk local after CdControl + struct-view command store (A230) closed the old residue 1. Left: 7-insn random-track window, ~14 table/statement spellings measured."
+CdInit_2026_10_04_2:
+  verdict: wall
+  class: "B10 compare-const hoist (re-confirmed; goto escape blocked by jump.c block relocation)"
+  date: 2026-10-04
+  note: "152 B. A85 goto loop: length-exact, no s-reg hoist, but jump.c's first pass moves the success block (ends in a jump to the return label) behind the fail path, 25/38; an inner do/while(0) does not pin it. Every structured form (for, while(tries--), do/while) keeps the layout but loop.c hoists 1 and -1 (21 insns < threshold). loop.c dump: 'Loop from 10 to 75: 21 real insns', both li moved. Likely a libcd built with a different loop.c; not reopenable from source."
