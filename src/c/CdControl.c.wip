@@ -1,0 +1,53 @@
+#include "globals.h"
+
+/* PARKED 2026-10-05 -- length-exact, 2 insns (one prologue straggler) off.
+   Residue: `move s7,zero` (ret = 0) lands right after the parameter copies; the
+   original emits it LAST in the entry block, after loop.c's hoisted
+   `com & 0xff` / `&D_80074DAC[com]` invariants. Entry-block insns are all
+   priority 1, so sched2 places them in LUID order and the init has to come
+   from loop.c, after the hoisted invariants.
+   Tried: `while (ret = 0, cnt--)`. loop.c resets maybe_never at
+   NOTE_INSN_LOOP_VTOP, so the exit-test set hoists LAST (position exact). But
+   jump.c's pre-loop test copy leaves a `ret = ret` copy (5 refs instead of 3),
+   ret outranks param/result in global.c, and 13 insns rotate. Also inert or
+   worse: ret = 0 at loop top (hoisted first), before the second if
+   (maybe_never, not hoisted), at the end of the loop body, do/while forms, a
+   pointer local for &D_80074DAC[com] (+1 insn), declaration-order sweeps, and
+   `register int ret asm("$23")` (hard regs are not loop.c movables).
+   Reading: the return value is ret + 1, ret in {0, -1}. */
+
+extern void *D_80074E34;
+extern unsigned char D_80074E44;
+extern int D_80074DAC[];
+extern int CdCommandSync(unsigned char com, unsigned char *param,
+                         unsigned char *result, int mode);
+
+/* libcd CdControl: issue a command with up to four attempts. Parks the sync
+   callback while the CdlNop abort and the optional CdlSetloc preamble run,
+   restores it for the real command. Returns 1 on success, 0 when every
+   attempt failed (0x80063c48, 312 bytes). */
+int CdControl(unsigned char com, unsigned char *param, unsigned char *result) {
+  void *old = D_80074E34;
+  int cnt = 4;
+  int ret;
+
+  ret = 0;
+
+  while (cnt--) {
+    D_80074E34 = 0;
+    if (com != 1 && (D_80074E44 & 0x10)) {
+      CdCommandSync(1, 0, 0, 0);
+    }
+    if (param == 0 || D_80074DAC[com] == 0 ||
+        CdCommandSync(2, param, result, 0) == 0) {
+      D_80074E34 = old;
+      if (CdCommandSync(com, param, result, 0) == 0) {
+        goto out;
+      }
+    }
+  }
+  D_80074E34 = old;
+  ret = -1;
+out:
+  return ret + 1;
+}
