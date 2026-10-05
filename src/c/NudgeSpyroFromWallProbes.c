@@ -1,19 +1,12 @@
 #include "globals.h"
 
-/* PARKED 2026-10-04-2 -- fresh decode, 87/87 length-exact, 20/87 linked
-   (15 masked). The old permuter body (35/87, "B13") is gone: the tail's
-   `lh; sra 4` pair is A233 (shift counts sh0/sh1 assigned outside the
-   if-block), and the loop is a goto loop -- the original strength-reduces
-   nothing (cos through a hand-advanced pointer, sine indexed by `a`) and
-   recomputes `la g_anSineLut` inside the body for the tail's sine read.
-   `a` is reused for the nudge angle (the original keeps both in s0) and the
-   `to` address is a pointer local (s4).
-   LEFT: one global-alloc rotation, s2/s4/s5. Original: a s0, i s1, sinTab
-   s2, cos s3, to s4, mask s5, pos s6; ours gives sinTab s5 because its `la`
-   is a cse temp with 3 refs over 21 insns (0.143) against cosp 4/41, pto
-   4/40 and mask 4/46. The temp is not the user variable, so A176/A195
-   wrappers around the assignment do not reach it (measured: 21 masked);
-   init order and the assignment's position in the body are inert. */
+/* The tail's `lh; sra 4` pair is A233 (shift counts sh0/sh1 assigned
+   outside the if-block). The loop is a goto loop: the original strength-
+   reduces nothing (cos through a hand-advanced pointer, sine indexed by `a`)
+   and recomputes `la g_anSineLut` inside the body for the tail's sine read.
+   `a` is reused for the nudge angle (the original keeps both in s0).
+   Allocation: sinTab is a `$18` register local (as a pseudo, its `la` is a
+   3-ref cse temp that ranks last) and `pto` a `$20` one, set before `cosp`. */
 
 extern void AddVector(int *dst, int *a, int *b);
 extern int CastRayWorldAndActors(int *from, int *to);
@@ -32,9 +25,9 @@ void NudgeSpyroFromWallProbes(void) {
   int i;
   int a;
   short *cosp;
-  short *sinTab;
+  register short *sinTab asm("$18");
   int *pos;
-  int *pto;
+  register int *pto asm("$20");
   int sh0;
   int sh1;
 
@@ -42,13 +35,13 @@ void NudgeSpyroFromWallProbes(void) {
   a = 0x20;
   i = 0;
   pos = g_anSpyroWorldPos;
-  cosp = &g_anCosineLut[0x20];
   pto = to;
+  cosp = &g_anCosineLut[0x20];
   sh0 = 4;
   sh1 = 4;
 probe:
-  to[0] = from[0] = *cosp >> 4;
-  to[1] = from[1] = g_anSineLut[a] >> 4;
+  from[0] = to[0] = *cosp >> 4;
+  from[1] = to[1] = g_anSineLut[a] >> 4;
   from[2] = -0x124;
   to[2] = -0x1a4;
   AddVector(from, from, pos);

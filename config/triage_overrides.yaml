@@ -4988,3 +4988,7 @@ TickCdMusicStream_2026_10_05:
   verdict: matched
   class: "A164 straggler window closed by a block-local base pointer for the table (cse keeps the register; la emitted with the index load)"
   date: 2026-10-05
+NudgeSpyroFromWallProbes_2026_10_05:
+  verdict: matched
+  class: "F1 global-alloc rotation closed by $18/$20 register locals (A343); chained stores written from[k] = to[k] = v"
+  date: 2026-10-05
