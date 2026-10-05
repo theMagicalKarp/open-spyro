@@ -4972,3 +4972,7 @@ CdRead_2026_10_05:
   verdict: matched
   class: "re-derive of a raw permuter park: switch for the sector size, volatile driver latches, B16 inline volatile cast for the count store"
   date: 2026-10-05
+CdReadStart_2026_10_05:
+  verdict: matched
+  class: "B15 escaped: each failure arm is `D = -1; return D;` -- cross_jump merges the reload into the exit under a NEW label (B24 label birth) so the arms never pair"
+  date: 2026-10-05
