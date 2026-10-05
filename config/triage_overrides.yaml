@@ -4960,3 +4960,7 @@ func_8005FC6C_2026_10_05:
   verdict: matched
   class: "A187 closed for a straight-line tail: `$2` register local for the return copy + dead `ot = 0` after `r = ot` (kills the cse2 copy equivalence)"
   date: 2026-10-05
+Gamestate0A_Draw_2026_10_05:
+  verdict: matched
+  class: "re-derive: plain field re-reads (libgpu set* macro shape) + two-set slot local + $4 env pin + volatile spill/compare pair"
+  date: 2026-10-05
