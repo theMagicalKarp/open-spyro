@@ -28,8 +28,7 @@ extern unsigned int g_adwMusicStreamBlock[];
 extern int
     g_anMusicTrackLbaTablePost[]; /* g_anMusicTrackLbaTable, post-call view */
 
-/* PARKED 2026-10-04-2 at 7/256 linked (LENGTH- and FRAME-exact, links).
-   SOLVED this session (do not re-derive):
+/* Levers (all load-bearing):
      - frame 0x38 -> 0x30: A231. The CdSync==5 arm's two LBA-table reads
        straddle CdIntToPos/CdControl; with one base symbol cse makes them one
        pseudo live across the calls and reload buys it an unreferenced 8-byte
@@ -43,15 +42,9 @@ extern int
    (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount > D_800776CC)`
    (A120 load order); the fade tail's held base + empty do/while(0) (A200)
    and its per-arm "store the new volume" blocks (A201).
-   LEFT (7 insns, one window): in the random-track block the original
-   materialises `la D_8006F05C` into a0 in the load-delay bubble right after
-   the g_nLevelIntroIndex load, then redefines a0 with `sra a0,v0,31` after
-   the idx*12 chain; ours puts the sra in that bubble and the la in v1 just
-   before the addu. A164 straggler order: measured the 6 statement orders,
-   a `m = pick % 3` temp (29), tbl before the call (15-27, length changes),
-   tbl as `D + idx*3` / `idx*3 + D` / char* arithmetic / a 2D view (all 7),
-   and the base-first spellings `tbl = D; tbl += idx*3` (11, la hoists above
-   the idx load). */
+   - the random-track table base is a block-local pointer (`base`): cse keeps
+     the cheaper register, so the `la` is emitted with the index load and
+     fills its load-delay bubble, as in the original. */
 
 /* 0x8002bbe0 (1024 bytes) — per-frame CD-DA music stream tick plus the volume
    fade ramp.  Polls the in-flight CD command, retires it (or dispatches a
@@ -107,7 +100,10 @@ void TickCdMusicStream(void) {
           g_dwCdMusicReadHead) {
         if (g_nVblankTickCount > D_800776CC) {
           pick = (int)GetRandomU32();
-          tbl = &D_8006F05C[g_nLevelIntroIndex * 3];
+          {
+            int *base = D_8006F05C;
+            tbl = &base[g_nLevelIntroIndex * 3];
+          }
           D_800776CC = g_nVblankTickCount + 0x7080;
           g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[tbl[pick % 3]];
         }

@@ -4984,3 +4984,7 @@ PutDispEnv_2026_10_05:
   verdict: matched
   class: "per-arm register pins ($2/$3 swapped per arm, $4 arg, $2 fn ptr) + do/while(0) barriers: jump.c cross-jumps only the or+call tail"
   date: 2026-10-05
+TickCdMusicStream_2026_10_05:
+  verdict: matched
+  class: "A164 straggler window closed by a block-local base pointer for the table (cse keeps the register; la emitted with the index load)"
+  date: 2026-10-05
