@@ -1,19 +1,15 @@
 #include "globals.h"
 
-/* PARKED 2026-10-04-2 -- first decode of libgpu PutDispEnv (was a B9 wall
-   with no C). 294 vs 298 insns, 13 masked mismatches, all in ONE place:
-   the GP1(0x05) display-start argument. The original keeps each arm's
-   0x05000000 `lui` in the arm (v0 in the get_dx arm, v1 in the 10-bit arm)
-   and cross-jumps only the final `or a0,v0,v1` + the dispatch call; ours
-   ties the y|x value to a0 and cross-jumps the `lui` and both `or`s as well
-   (the +2 `nop`s of the original's table load are part of the same tail).
-   Measured inert: 36 association/operand orders of both arguments, per-arm
-   temps, register-pinned temps (worse, 26).
-   SOLVED parts (keep): the PutDispEnv cache shorts are VOLATILE reads (lhu +
-   separate sll/sra, and the first one keeps its `la`); the 0x10 int compare
-   is not; the vertical start reads screen.y once into `y`; the display
-   height test is a computed flag over a block-local `h` (bnez pad0 with the
-   PAL slti in the delay slot); all four range clamps are nested ternaries
+/* The GP1(0x05) display-start word is built per arm with the y|x value and
+   the 0x05000000 command in opposite registers (`$3`/`$2` in the get_dx arm,
+   `$2`/`$3` in the 10-bit arm), joined by one `or` into a `$4` argument and
+   a `$2` function pointer. jump.c then cross-jumps just the `or` + call tail,
+   as in the original. Empty do/while(0) barriers keep the command `lui` last
+   in each arm and the dispatch-table load after the `or`.
+   The PutDispEnv cache shorts are VOLATILE reads (lhu + separate sll/sra; the
+   first keeps its `la`). The 0x10 int compare is not volatile. The vertical
+   start reads screen.y once into `y`. The display height test is a computed
+   flag over a block-local `h`. All four range clamps are nested ternaries
    whose limit is itself a pad0 ternary. */
 
 extern int FUN_80060e28(RECT *r);
@@ -43,11 +39,42 @@ DISPENV *PutDispEnv(DISPENV *env) {
     ((void (*)(char *, DISPENV *))g_pfnGpuDebugPrintf)(D_80011944, env);
   }
   if (g_bGpuDebugType == 1 || g_bGpuDebugType == 2) {
-    GPU_CW(0x05000000 | (((env->disp.y & 0xfff) << 12) |
-                         (FUN_80060e28(&env->disp) & 0xfff)));
+    register int yx asm("$3");
+    register int cmd asm("$2");
+
+    yx = ((env->disp.y & 0xfff) << 12) | (FUN_80060e28(&env->disp) & 0xfff);
+    do {
+    } while (0);
+    cmd = 0x05000000;
+    {
+      register int arg asm("$4");
+      register void (*fn)(int) asm("$2");
+
+      arg = cmd | yx;
+      do {
+      } while (0);
+      fn = *(void (**)(int))((char *)g_pGpuDispatchTable + 0x10);
+      fn(arg);
+    }
   } else {
-    GPU_CW(0x05000000 |
-           ((env->disp.x & 0x3ff) | ((env->disp.y & 0x3ff) << 10)));
+    register int yx asm("$2");
+    register int cmd asm("$3");
+
+    yx = (env->disp.y & 0x3ff) << 10;
+    yx |= env->disp.x & 0x3ff;
+    do {
+    } while (0);
+    cmd = 0x05000000;
+    {
+      register int arg asm("$4");
+      register void (*fn)(int) asm("$2");
+
+      arg = yx | cmd;
+      do {
+      } while (0);
+      fn = *(void (**)(int))((char *)g_pGpuDispatchTable + 0x10);
+      fn(arg);
+    }
   }
   if (CACHE_S(8) != env->screen.x || CACHE_S(10) != env->screen.y ||
       CACHE_S(12) != env->screen.w || CACHE_S(14) != env->screen.h) {
