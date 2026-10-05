@@ -4964,3 +4964,7 @@ Gamestate0A_Draw_2026_10_05:
   verdict: matched
   class: "re-derive: plain field re-reads (libgpu set* macro shape) + two-set slot local + $4 env pin + volatile spill/compare pair"
   date: 2026-10-05
+func_8003BFC0_2026_10_05:
+  verdict: matched
+  class: "re-derive: ++path[1] cursor test with ret++ first, plain dir[k] /= span, $6 span pin, do/while(0) between the idx and *step loads"
+  date: 2026-10-05
