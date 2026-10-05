@@ -40,10 +40,6 @@ func_80060FD8:
   date: 2026-07-23
 
 # --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
-CdInit:
-  verdict: wall
-  class: "B10 compare-const hoist"
-  date: 2026-07-08
 CdControl:
   verdict: parked
   class: "prologue straggler LUID: `ret = 0` must be emitted after loop.c's hoisted invariants (B10 does not apply)"
