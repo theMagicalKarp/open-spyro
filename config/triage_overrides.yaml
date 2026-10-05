@@ -18,14 +18,6 @@
 # switchdata jr-tables in main, handwritten tags) need no entry here.
 
 # --- AddPrim mask family (mask constants in swapped arg regs; ccpsx-built) ---
-func_8005ECDC:
-  verdict: wall
-  class: "B4 AddPrim mask"
-  date: 2026-07-10
-func_8005ED18:
-  verdict: wall
-  class: "B4 AddPrim mask"
-  date: 2026-07-10
 func_8005ED54:
   verdict: wall
   class: "B4 AddPrim mask"
@@ -42,37 +34,9 @@ memchr:
   date: 2026-07-23
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
-BuildDrawAreaTopLeft:
-  verdict: wall
-  class: "B9 clamp"
-  date: 2026-07-08
-BuildDrawAreaBottomRight:
-  verdict: wall
-  class: "B9 clamp"
-  date: 2026-07-08
-func_800606C8:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-19
-SetDrawEnv:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-19
-PutDispEnv:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-19
 func_80060FD8:
   verdict: wall
   class: "B9 clamp (inline)"
-  date: 2026-07-23
-func_80061470:
-  verdict: wall
-  class: "B9 clamp (full-screen variant); DMA body transcribes"
-  date: 2026-07-23
-func_80061234:
-  verdict: wall
-  class: "B9 clamp (full-screen variant, twin of func_80061470)"
   date: 2026-07-23
 
 # --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
@@ -114,20 +78,8 @@ func_8005D7F4:
   verdict: wall
   class: "B11 lagged-mult"
   date: 2026-07-10
-IntegrateSpyroBodyEuler:
-  verdict: wall
-  class: "B11 lagged-mult + B-i fold"
-  date: 2026-07-16
 
 # --- -g3 batch-read/scatter scheduling (main only) ---
-LoadCameraTargetAnglesFromMode:
-  verdict: wall
-  class: "B12 batch-scatter"
-  date: 2026-07-08
-RestartSpyroAnimWithState:
-  verdict: wall
-  class: "B12 batch-scatter (byte-store variant)"
-  date: 2026-07-08
 
 # --- Held-base fold rule 1 / shared-base-no-call ---
 AdvanceSpyroSpeedTowardTarget:
@@ -149,10 +101,6 @@ NudgeSpyroFromWallProbes:
   date: 2026-07-15
 
 # --- Block-layout / constant-hoist ties (source-invariant) ---
-func_80058AE8:
-  verdict: wall
-  class: "B17 free-slot block layout"
-  date: 2026-07-07
 
 # --- Deferred multi-idiom from-scratch targets (not walls; retry when veins dry) ---
 func_800557CC:
@@ -244,10 +192,6 @@ func_8003AAEC:
   verdict: parked
   class: "F6 constant-sb li placement"
   date: 2026-07-08
-SetupFrameOT:
-  verdict: parked
-  class: "B18 constant-hoist layout tie"
-  date: 2026-07-08
 func_8003891C:
   verdict: parked
   class: "F5 ret0 block layout"
@@ -302,10 +246,6 @@ longjmp:
   verdict: wall
   class: "PSY-Q runtime primitive, not compilable C"
   date: 2026-07-23
-ActivateScriptedCameraView:
-  verdict: wall
-  class: "B12 batch-scatter tail"
-  date: 2026-07-08
 func_8005E804:
   verdict: parked
   class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
@@ -3353,10 +3293,6 @@ UpdateSpyroFlightAttitudeNearGround:
     offset. It does not: the compile-only shape diff is 76 mismatches over 28
     regions and the build is several insns short. This is a re-derive, not a
     residue; the 0.9% is honest.
-func_80061470:
-  verdict: parked
-  class: "raw permuter output -- the .wip does not compile"
-  date: 2026-08-30
   note: >-
     644 B, partial 0/644. The .wip is unfinished permuter spew (parse errors on
     `volatile` and `++`). Same class as StoryIntro_Draw was: it needs a fresh
@@ -4995,3 +4931,38 @@ func_8005FC6C_2026_10_04_1:
   class: "F4/A187 return-copy store base (unchanged)"
   date: 2026-10-04
   note: "5/38. `int *r = ot;` with a do/while(0) barrier before or after the mask, and a block-scoped r: all byte-identical to the park. cse canonicalises r to the parameter either way."
+InitHudCounters_2026_10_04_2:
+  verdict: parked
+  class: "F1 local-alloc qty priority: short-lived lives qty takes v0 before the dragon count"
+  date: 2026-10-04
+  note: "100 -> 19/226 linked, length+frame exact. Frame needed pad[2]; the straight-line block's source order comes from true_dependence's both-volatile clause (VOL() on anchor/display/roll/hold stores and idx/counter/lives loads, NOT the cached stores); anchor = &records[0x196]; butterfly loop own dst/count vars, x=icon[k] temps, size=8 local. Left: lives->v0 rotates the counter batch t0..t3; 128 volatility combos + 6 lives placements measured, none reach it."
+TickCdMusicStream_2026_10_04_2:
+  verdict: parked
+  class: "A164 straggler order: la D_8006F05C vs sra pick>>31 in one load-delay bubble"
+  date: 2026-10-04
+  note: "257/256 unlinkable -> 7/256 linked, length+frame exact. A231 alias g_anMusicTrackLbaTablePost closed the 8-byte frame surplus; trk local after CdControl + struct-view command store (A230) closed the old residue 1. Left: 7-insn random-track window, ~14 table/statement spellings measured."
+CdInit_2026_10_04_2:
+  verdict: wall
+  class: "B10 compare-const hoist (re-confirmed; goto escape blocked by jump.c block relocation)"
+  date: 2026-10-04
+  note: "152 B. A85 goto loop: length-exact, no s-reg hoist, but jump.c's first pass moves the success block (ends in a jump to the return label) behind the fail path, 25/38; an inner do/while(0) does not pin it. Every structured form (for, while(tries--), do/while) keeps the layout but loop.c hoists 1 and -1 (21 insns < threshold). loop.c dump: 'Loop from 10 to 75: 21 real insns', both li moved. Likely a libcd built with a different loop.c; not reopenable from source."
+UpdateHudCounters_2026_10_04_2:
+  verdict: parked
+  class: "R2 extra callee-saved reg (loop.c hoist of 0x01000000) + offset-profile drift; roll-out store sinking SOLVED via A230"
+  date: 2026-10-04
+  note: "912/913, masked 205 -> 175. Roll-out arms: block-scoped `unsigned char t` + FIELD() one-member record store (in-struct, so it depends on the lh tbl[t] read). Positional credit unchanged at 244 B; remaining regions are the prologue rotation from R2 and many small schedule spots."
+NudgeSpyroFromWallProbes_2026_10_04_2:
+  verdict: parked
+  class: "F1 global-alloc priority: the in-loop `la g_anSineLut` cse temp (3 refs / 21 insns) ranks below cosp/pto/mask"
+  date: 2026-10-04
+  note: "35/87 permuter park -> fresh decode 20/87 linked, length-exact. B13 gone via A233; goto loop; `a` reused for the angle; pto local. Left: s2/s4/s5 rotation; A195 wrappers cannot reach a cse temp."
+InitActorMeshScratchRegions_2026_10_04_2:
+  verdict: parked
+  class: "F1 allocation: three address temps scheduled together take v0/v1, post-branch top lands in a3 (B18 part SOLVED)"
+  date: 2026-10-04
+  note: "21 -> 20/56 linked, 30 -> 14 masked. Per-arm `top += size` restores the original's shared-lui delay slot (same lever matched SetupFrameOT)."
+PutDispEnv_2026_10_04_2:
+  verdict: parked
+  class: "F1 local-alloc tie: the GP1(0x05) argument's y|x value is tied to a0, so the const lui and both ors cross-jump"
+  date: 2026-10-04
+  note: "First decode (was B9 wall). 294/298, 13 masked, one window. Volatile cache shorts, computed height flag, nested-ternary clamps all solved. Inert: 36 association orders, per-arm temps, const-in-variable, register pins. memcpy needs the non-builtin (void*,void*,int) prototype."

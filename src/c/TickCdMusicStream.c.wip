@@ -6,7 +6,7 @@ extern void HandleMusicCommand(int track, int cmd);
 extern void CdIntToPos(int lba, char *pos);
 extern int CdPosToInt(unsigned char *pos);
 extern int CdControl(unsigned char com, char *param, char *result);
-extern int CdControlB(unsigned char com, char *param, char *result);
+extern int CdControlBlocking(unsigned char com, char *param, char *result);
 extern int CdControlForce(unsigned char com, char *param);
 extern void SetSpuCommonAttr(unsigned int *attr);
 extern unsigned int GetRandomU32(void);
@@ -25,41 +25,33 @@ extern int g_anMusicFadeBlock[];
 /* held-base view of g_dwMusicStreamStatus (0x800774b4); +0x20D reaches the
    last CdlLOC the drive reported. */
 extern unsigned int g_adwMusicStreamBlock[];
+extern int
+    g_anMusicTrackLbaTablePost[]; /* g_anMusicTrackLbaTable, post-call view */
 
-/* PARKED 2026-08-15-1 at 257/256 insns (ONE over, so it does not link), 11
-   shape-diff insns in two clusters — a fresh decode of a function that was pure
-   asm at the start of the session. The §B-i fold that kept it on the skip list
-   is gone: the fade tail's -0x2C0 short pair and the +0x58 step both come off
-   the held base via A200 (incomplete-array alias + an empty do/while(0) between
-   the [0] read and the rest), and the ramp's shared "store the new volume"
-   block is written PER ARM so cross-jumping merges it back (A201). Two other
-   levers that mattered:
-     - the {start,end} LBA pairs need TWO alias symbols. With one
-       `g_anMusicTrackLbaTable[track*2+1]`, cse hoists `sym+4` into a callee-
-       saved register and rewrites the later `[track*2]` access as
-       `addu v0,s0,v0; lw a0,-4(v0)` (+2 insns); giving the end half its own
-       symbol (g_anMusicTrackEndLbaTable) makes the two addresses unrelatable
-       and both come out as the `lui at; addu at; lw %lo` macro form the
-       original uses. An A200 barrier does NOT stop this hoist (measured at
-       three positions) — only the separate symbol does.
-     - `if (g_nVblankTickCount > D_800776CC)` not `if (D_800776CC < ...)`:
-       A120's load-order rule, worth 4 insns.
-   RESIDUE 1 (5 insns + the length): in the CdSync==5 arm the original fills the
-   `lw v0,g_nCurrentMusicTrack` load-delay bubble with the `li 0x1B; lui at;
-   sw g_nLastCdMusicCommand` triple; ours emits a nop and puts the store
-   elsewhere. Measured for every placement of that store (before the arm, before
-   CdIntToPos, between the two calls, after CdControl, after the read-head
-   store, through a shared `cmd` local, through a head temp, through the
-   end-table alias with a -1 index): the store either hoists above the call
-   (11 diffs, the form kept below) or sinks past the chain (12), never into the
-   bubble. F-class sched1 bubble-fill tie.
-   RESIDUE 2 (4 insns): in the random-track block the original emits the
-   `la D_8006F05C` into a0 before the intro*12 chain and re-defines a0 with
-   `sra a0,v0,31` right after it; ours schedules the `sra` first and puts the
-   `la` in v1. A164 group ordering — permuting the three source statements
-   (tbl before/after the GetRandomU32 call, before/after the D_800776CC store,
-   an explicit `idx = pick % 3` temp, the tbl expression inlined) gives 12, 25,
-   26 and 34; none reaches it. */
+/* PARKED 2026-10-04-2 at 7/256 linked (LENGTH- and FRAME-exact, links).
+   SOLVED this session (do not re-derive):
+     - frame 0x38 -> 0x30: A231. The CdSync==5 arm's two LBA-table reads
+       straddle CdIntToPos/CdControl; with one base symbol cse makes them one
+       pseudo live across the calls and reload buys it an unreferenced 8-byte
+       slot. The post-call read uses g_anMusicTrackLbaTablePost.
+     - old RESIDUE 1 (the `li 0x1B; sw g_nLastCdMusicCommand` triple filling
+       the track-load delay slot): read the track into its own local `trk`
+       AFTER CdControl, then store the command through a one-member struct
+       view (A230: an in-struct store keeps the in-struct array read of the
+       table below it).
+   Earlier levers still load-bearing: the end-LBA half has its own symbol
+   (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount > D_800776CC)`
+   (A120 load order); the fade tail's held base + empty do/while(0) (A200)
+   and its per-arm "store the new volume" blocks (A201).
+   LEFT (7 insns, one window): in the random-track block the original
+   materialises `la D_8006F05C` into a0 in the load-delay bubble right after
+   the g_nLevelIntroIndex load, then redefines a0 with `sra a0,v0,31` after
+   the idx*12 chain; ours puts the sra in that bubble and the la in v1 just
+   before the addu. A164 straggler order: measured the 6 statement orders,
+   a `m = pick % 3` temp (29), tbl before the call (15-27, length changes),
+   tbl as `D + idx*3` / `idx*3 + D` / char* arithmetic / a 2D view (all 7),
+   and the base-first spellings `tbl = D; tbl += idx*3` (11, la hoists above
+   the idx load). */
 
 /* 0x8002bbe0 (1024 bytes) — per-frame CD-DA music stream tick plus the volume
    fade ramp.  Polls the in-flight CD command, retires it (or dispatches a
@@ -76,6 +68,7 @@ void TickCdMusicStream(void) {
   int vol;
   int step;
   int r;
+  int trk;
   int pick;
   int *tbl;
 
@@ -103,10 +96,11 @@ void TickCdMusicStream(void) {
   if (g_adwMusicStreamBlock[0] & 0x10) {
     if (sync != 2) {
       if (sync == 5) {
-        g_nLastCdMusicCommand = 0x1B;
         CdIntToPos(g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2], pos);
         CdControl(0x1B, pos, 0);
-        g_dwCdMusicReadHead = g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2];
+        trk = g_nCurrentMusicTrack;
+        ((struct { int v; } *)&g_nLastCdMusicCommand)->v = 0x1B;
+        g_dwCdMusicReadHead = g_anMusicTrackLbaTablePost[trk * 2];
       }
     } else {
       if ((unsigned int)g_anMusicTrackEndLbaTable[g_nCurrentMusicTrack * 2] <
@@ -121,7 +115,7 @@ void TickCdMusicStream(void) {
         CdIntToPos(g_dwCdMusicReadHead, pos);
         filt[0] = 1;
         filt[1] = g_nCurrentMusicTrack & 7;
-        CdControlB(0xD, filt, 0);
+        CdControlBlocking(0xD, filt, 0);
         CdControl(0x1B, pos, 0);
       } else {
         if (FUN_80063aac() == 0x11) {

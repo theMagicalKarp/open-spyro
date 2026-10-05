@@ -1,0 +1,111 @@
+#include "globals.h"
+
+/* PARKED 2026-10-04-2 -- first decode of libgpu PutDispEnv (was a B9 wall
+   with no C). 294 vs 298 insns, 13 masked mismatches, all in ONE place:
+   the GP1(0x05) display-start argument. The original keeps each arm's
+   0x05000000 `lui` in the arm (v0 in the get_dx arm, v1 in the 10-bit arm)
+   and cross-jumps only the final `or a0,v0,v1` + the dispatch call; ours
+   ties the y|x value to a0 and cross-jumps the `lui` and both `or`s as well
+   (the +2 `nop`s of the original's table load are part of the same tail).
+   Measured inert: 36 association/operand orders of both arguments, per-arm
+   temps, register-pinned temps (worse, 26).
+   SOLVED parts (keep): the PutDispEnv cache shorts are VOLATILE reads (lhu +
+   separate sll/sra, and the first one keeps its `la`); the 0x10 int compare
+   is not; the vertical start reads screen.y once into `y`; the display
+   height test is a computed flag over a block-local `h` (bnez pad0 with the
+   PAL slti in the delay slot); all four range clamps are nested ternaries
+   whose limit is itself a pad0 ternary. */
+
+extern int FUN_80060e28(RECT *r);
+extern int GetGraphType(void);
+extern void *memcpy(void *dst, void *src, int n);
+extern char D_80011944[]; /* "PutDispEnv(%08x)...\n" */
+
+#define GPU_CW(x) ((*(void (**)(int))((char *)g_pGpuDispatchTable + 0x10))(x))
+#define CACHE_S(off)                                                           \
+  ((short)*(volatile unsigned short *)&g_abPutDispEnvCache[off])
+
+/* 0x80060030 (0x4a8) — libgpu PutDispEnv: program the display start, the
+   horizontal/vertical display range (only when env->screen differs from the
+   cached environment) and the display mode (only when the mode-relevant
+   fields differ), then cache the environment. */
+DISPENV *PutDispEnv(DISPENV *env) {
+  int hs;
+  int he;
+  int vs;
+  int ve;
+  int mode;
+  int y;
+  int big;
+
+  mode = 0x08000000;
+  if (g_bGpuDebugLevel >= 2) {
+    ((void (*)(char *, DISPENV *))g_pfnGpuDebugPrintf)(D_80011944, env);
+  }
+  if (g_bGpuDebugType == 1 || g_bGpuDebugType == 2) {
+    GPU_CW(0x05000000 | (((env->disp.y & 0xfff) << 12) |
+                         (FUN_80060e28(&env->disp) & 0xfff)));
+  } else {
+    GPU_CW(0x05000000 |
+           ((env->disp.x & 0x3ff) | ((env->disp.y & 0x3ff) << 10)));
+  }
+  if (CACHE_S(8) != env->screen.x || CACHE_S(10) != env->screen.y ||
+      CACHE_S(12) != env->screen.w || CACHE_S(14) != env->screen.h) {
+    env->pad0 = GetGraphType();
+    hs = env->screen.x * 10 + 0x260;
+    y = env->screen.y;
+    vs = env->pad0 ? y + 0x13 : y + 0x10;
+    he = env->screen.w ? hs + env->screen.w * 10 : hs + 0xa00;
+    ve = env->screen.h ? vs + env->screen.h : vs + 0xf0;
+    hs = hs < 0x1f4 ? 0x1f4 : (hs > 0xcda ? 0xcda : hs);
+    he = he < hs + 0x50 ? hs + 0x50 : (he > 0xcda ? 0xcda : he);
+    vs = vs < 0x10
+             ? 0x10
+             : (vs > (env->pad0 ? 0x136 : 0x100) ? (env->pad0 ? 0x136 : 0x100)
+                                                 : vs);
+    ve = ve < vs + 2
+             ? vs + 2
+             : (ve > (env->pad0 ? 0x138 : 0x102) ? (env->pad0 ? 0x138 : 0x102)
+                                                 : ve);
+    GPU_CW(0x06000000 | ((he & 0xfff) << 12) | (hs & 0xfff));
+    GPU_CW(0x07000000 | ((ve & 0x3ff) << 10) | (vs & 0x3ff));
+  }
+  if (*(int *)&g_abPutDispEnvCache[0x10] != *(int *)&env->isinter ||
+      CACHE_S(0) != env->disp.x || CACHE_S(2) != env->disp.y ||
+      CACHE_S(4) != env->disp.w || CACHE_S(6) != env->disp.h) {
+    env->pad0 = GetGraphType();
+    if (env->pad0 == 1) {
+      mode |= 0x08;
+    }
+    if (env->isrgb24) {
+      mode |= 0x10;
+    }
+    if (env->isinter) {
+      mode |= 0x20;
+    }
+    if (g_bGpuReverseFlag) {
+      mode |= 0x80;
+    }
+    if (env->disp.w > 0x118) {
+      if (env->disp.w <= 0x160) {
+        mode |= 0x01;
+      } else if (env->disp.w <= 0x190) {
+        mode |= 0x40;
+      } else if (env->disp.w <= 0x230) {
+        mode |= 0x02;
+      } else {
+        mode |= 0x03;
+      }
+    }
+    {
+      int h = env->disp.h;
+      big = env->pad0 ? h < 0x121 : h < 0x101;
+    }
+    if (!big) {
+      mode |= 0x24;
+    }
+    GPU_CW(mode);
+  }
+  memcpy(g_abPutDispEnvCache, env, 0x14);
+  return env;
+}

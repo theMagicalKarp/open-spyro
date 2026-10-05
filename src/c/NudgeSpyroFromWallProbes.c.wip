@@ -1,102 +1,71 @@
 #include "globals.h"
 
-extern void AddVector(int *dst, int *a, int *b);
-extern int CastRayWorldAndActors();
+/* PARKED 2026-10-04-2 -- fresh decode, 87/87 length-exact, 20/87 linked
+   (15 masked). The old permuter body (35/87, "B13") is gone: the tail's
+   `lh; sra 4` pair is A233 (shift counts sh0/sh1 assigned outside the
+   if-block), and the loop is a goto loop -- the original strength-reduces
+   nothing (cos through a hand-advanced pointer, sine indexed by `a`) and
+   recomputes `la g_anSineLut` inside the body for the tail's sine read.
+   `a` is reused for the nudge angle (the original keeps both in s0) and the
+   `to` address is a pointer local (s4).
+   LEFT: one global-alloc rotation, s2/s4/s5. Original: a s0, i s1, sinTab
+   s2, cos s3, to s4, mask s5, pos s6; ours gives sinTab s5 because its `la`
+   is a cse temp with 3 refs over 21 insns (0.143) against cosp 4/41, pto
+   4/40 and mask 4/46. The temp is not the user variable, so A176/A195
+   wrappers around the assignment do not reach it (measured: 21 masked);
+   init order and the assignment's position in the body are inert. */
 
-/* cosine view of the LUT (g_anSineLut + 0x80); distinct symbol keeps the
-   post-loop absolute lookup underived from the held sine base. */
+extern void AddVector(int *dst, int *a, int *b);
+extern int CastRayWorldAndActors(int *from, int *to);
 extern short g_anCosineLut[];
 
-/* 0x8003e90c (348 bytes) — cast four horizontal wall probes around Spyro
-   (quarter-turn apart, from chest height down-forward) and collect a
-   4-bit hit mask; the mask selects a nudge heading from
-   g_anSpyroWallNudgeAngleByProbeMask whose sine/cosine (>>4) are added to
-   the pending nudge accumulator at g_anSpyroWorldPos +0xF4/+0xF8. */
-/* NOTE: the function body below is decomp-permuter output from the
-   2026-07-25 sweep, kept for its partial-byte credit. It is machine-
-   generated and reads worse than the hand-written form it replaced;
-   the analysis above and below still describes the residue accurately.
-   Original hand-written body: git show
-   HEAD:src/c/NudgeSpyroFromWallProbes.c.wip Best candidate:
-   build/permuter/nonmatchings/NudgeSpyroFromWallProbes/output-435-1/source.c */
-
+/* 0x8003e90c (0x15c) — probe four rays around Spyro (at angles 0x20 +
+   0x40*k, from 0x124 to 0x1a4 below his position); the bitmask of blocked
+   probes selects a nudge angle from g_anSpyroWallNudgeAngleByProbeMask, and
+   a non-negative angle pushes the motion vector (world pos +0xF4/+0xF8)
+   1/16 along it. */
 void NudgeSpyroFromWallProbes(void) {
-  int near[3];
-  int far[3];
+  int from[3];
+  int pad;
+  int to[3];
   int mask;
-  int new_var;
-  int idx;
   int i;
+  int a;
+  short *cosp;
+  short *sinTab;
   int *pos;
-  int *fp;
-  unsigned short *cosCursor;
-  short *lut;
-  int cos;
-  int sin;
-  int off;
-  int angle;
-  int lv;
+  int *pto;
+  int sh0;
+  int sh1;
+
   mask = 0;
-  idx = 0x20;
+  a = 0x20;
   i = 0;
   pos = g_anSpyroWorldPos;
-  new_var = 4;
-  fp = far;
-  cosCursor = (unsigned short *)(((char *)g_anSineLut) + 0xC0);
-probe: {
-  cos = ((short)cosCursor[0]) >> 4;
-  far[0] = cos;
-  near[0] = cos;
-  sin = ((short)((unsigned short *)g_anSineLut)[idx]) >> 4;
-  near[2] = -0x124;
-  far[2] = -0x1A4;
-  far[1] = sin;
-  near[1] = sin;
-  AddVector(near, near, pos);
-  AddVector(fp, fp, pos);
-  lut = g_anSineLut;
-  if (CastRayWorldAndActors(near, fp) != 0) {
+  cosp = &g_anCosineLut[0x20];
+  pto = to;
+  sh0 = 4;
+  sh1 = 4;
+probe:
+  to[0] = from[0] = *cosp >> 4;
+  to[1] = from[1] = g_anSineLut[a] >> 4;
+  from[2] = -0x124;
+  to[2] = -0x1a4;
+  AddVector(from, from, pos);
+  AddVector(pto, pto, pos);
+  sinTab = g_anSineLut;
+  if (CastRayWorldAndActors(from, pto) != 0) {
     mask |= 1 << i;
   }
-  cosCursor += 0x40;
-  i += 1;
-  idx += 0x40;
+  cosp += 0x40;
+  i++;
+  a += 0x40;
   if (i < 4) {
     goto probe;
   }
-}
-
-  angle = g_anSpyroWallNudgeAngleByProbeMask[mask];
-  if (angle >= 0) {
-    cosCursor = g_anCosineLut;
-    off = angle << 1;
-    lv = cosCursor[angle];
-    pos[61] += lv >> 4;
-    lv = *((short *)(((char *)lut) + off));
-    pos[62] += lv >> new_var;
+  a = g_anSpyroWallNudgeAngleByProbeMask[mask];
+  if (a >= 0) {
+    pos[0x3d] += g_anCosineLut[a] >> sh0;
+    pos[0x3e] += sinTab[a] >> sh1;
   }
 }
-
-/* PARKED 2026-07-15 (+8 bytes, loop byte-shaped, tail blocked).
-   Two residues:
-   1. NEW WALL CLASS — signed-short LUT load feeding `>> 4`: the original
-      has `lh; sra 4` (2 insns/access); our cc1 always produces
-      `lhu; sll 16; sra 20` (3). Probed: plain short-array index, (short*)
-      cast form, volatile load, int local, shared multi-def temp — all
-      byte-identical. The sign-extend gets funneled through a single-set
-      temp pseudo that combine substitutes into the shift regardless of
-      the named variable's def count. lh DOES come out when the extended
-      value feeds a compare (CommitHudCounterAnimState precedent) — the
-      wall is shift-consumers only. No other matched fn does lh+sra4.
-   2. goto-loop (needed to keep the in-loop lut la + unreduced sine
-      index; do/while hoisted/SR'd both) rotates all 6 callee-saved
-      roles (§P weighting) — would need the declaration-order lever
-      after (1) is solved.
-   Positive finding recorded in §Y refinement: the pos[61]/pos[62]
-   (+0xF4/+0xF8) RMWs through the held many-use base DID survive
-   post-label (lw/sw 0xF4(s6)) — the rule-1 fold only bites weak
-   (few-use) base pseudos via reload's reg_equiv substitution.
-
-   2026-07-25-1 unattended permuter session (~15m, ~73800 iterations, timed out
-   at the 15m budget): best score 435 vs base score 800. No byte-perfect
-   candidate found; still PARKED (see above). */
