@@ -51,9 +51,10 @@ CdControlForce:
   date: 2026-10-05
   note: "Same recipe and residue as CdControl, 4 masked / 75. Solve the two together."
 func_80064A20:
-  verdict: wall
-  class: "B10 compare-const hoist (CdSync sibling)"
-  date: 2026-07-23
+  verdict: parked
+  class: "shared libcd timeout WritePrintf arg-block schedule (CdDataSync/CdSync class) + result-vs-pend allocation priority; B10 does not apply"
+  date: 2026-10-05
+  note: "Fresh decode (libcd CdReady), length-exact, 9 masked. Goto outer loop keeps the copy-loop -1s inline. Base pointers set before the label; volatile flags; tbl/rdy pinned to $21/$22. Left: 7 insns of arg order in the timeout printf, 2 in the first copy block's null test."
 CdCommandSync:
   verdict: wall
   class: "B10 compare-const hoist (wait loops)"
