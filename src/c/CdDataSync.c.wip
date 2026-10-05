@@ -55,6 +55,10 @@ extern unsigned char D_80075115; /* ready index (Ready) */
    value or an unsigned-char index local goes back to 16.  Left: p lands in
    $v1 where the original parks it in $a0, and the stack-arg `sw` issues
    before the D_80074E55 chain instead of after it.
+   2026-10-05: 12 -> 11/91. Volatile byte reads of readyIdx[0]/[1] keep
+   idx0's lbu first, as in the original. Left: the p chain (sll/addu/lw a3)
+   finishes early and lands in v1, where the original spreads it to the end in
+   a0. A volatile E55 read or volatile table reads do not move it.
    Residue: 14 insns, F-class sched1 tie in the one WritePrintf arg block.  The
    original computes the a3 chain (readyTbl[readyIdx[0]]) FIRST and parks its
    address in a0 until just before the `jal`, then the stack arg, then
@@ -81,9 +85,9 @@ int CdDataSync(int mode) {
     if (VSync(-1) > D_80075AE8 || D_80075AEC++ > 0x3C0000) {
       WriteString(D_80011DFC);
       {
-        int *p = &readyTbl[readyIdx[0]];
+        int *p = &readyTbl[*(volatile unsigned char *)&readyIdx[0]];
         WritePrintf(D_80011E0C, D_80075AF0, syncTbl[D_80074E55], *p,
-                    readyTbl[readyIdx[1]]);
+                    readyTbl[*(volatile unsigned char *)&readyIdx[1]]);
       }
       CdResetController();
       r = -1;
