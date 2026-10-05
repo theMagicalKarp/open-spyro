@@ -4976,3 +4976,7 @@ CdReadStart_2026_10_05:
   verdict: matched
   class: "B15 escaped: each failure arm is `D = -1; return D;` -- cross_jump merges the reload into the exit under a NEW label (B24 label birth) so the arms never pair"
   date: 2026-10-05
+InitHudCounters_2026_10_05:
+  verdict: matched
+  class: "F1 local-alloc qty tie closed by a $2 register local for dragons (A343)"
+  date: 2026-10-05
