@@ -17,7 +17,8 @@ extern char *D_80075AF0;         /* op-name string for the timeout message */
 extern int D_80074E5C[];         /* sync-status name table */
 extern int D_80074EDC[];         /* ready-status name table */
 extern unsigned char D_80074E55; /* sync-status index */
-extern unsigned char D_80075114[]; /* [0] sync status, [1] ready status, [2] pending flag */
+extern unsigned char
+    D_80075114[]; /* [0] sync status, [1] ready status, [2] pending flag */
 
 extern volatile unsigned char *D_800750FC; /* CDIO index register */
 extern void (*D_80074E34)();               /* sync (ready) IRQ callback */
@@ -38,10 +39,10 @@ extern char D_80011E8C[];                  /* "CD_ready" */
       (into a0) and the AF0 name early, and does the tbl[idx[0]] load LAST
       into a3. The plain one-line call scores 17; a/b temps score 9, but still
       load tbl[idx[0]] early and AF0 late. Inert at 17: index-only temps, a
-      `p` alias, name/format temps, b-only and a-only temps. CdDataSync's `int *p = &tbl[idx[0]]`
-      idiom gives 11 here, and every spelling of p is identical. This is the
-      same arg block CdDataSync/CdSync park on: solve it once for all three.
-   R2 (2 insns, first copy block): the original tests `result` (s4) with
+      `p` alias, name/format temps, b-only and a-only temps. CdDataSync's `int
+   *p = &tbl[idx[0]]` idiom gives 11 here, and every spelling of p is identical.
+   This is the same arg block CdDataSync/CdSync park on: solve it once for all
+   three. R2 (2 insns, first copy block): the original tests `result` (s4) with
       `move a1,s4` in the delay slot. We test the `dst` copy. Writing
       `if (result) { dst = result; ...` gives the right shape, but result then
       has 4 refs across 84 insns (priority 0.095), outranks pend (0.067), and
@@ -75,59 +76,60 @@ int func_80064A20(int mode, unsigned char *result) {
   rdy = idx + 1;
   pend = idx + 2;
 top:
-    if (D_80075AE8 < VSync(-1) || (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
-      WriteString(D_80011DFC);
-      {
-        int a = tbl[idx[0]];
-        int b = tbl[idx[1]];
-        WritePrintf(D_80011E0C, D_80075AF0, D_80074E5C[D_80074E55], a, b);
+  if (D_80075AE8 < VSync(-1) ||
+      (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
+    WriteString(D_80011DFC);
+    {
+      int a = tbl[idx[0]];
+      int b = tbl[idx[1]];
+      WritePrintf(D_80011E0C, D_80075AF0, D_80074E5C[D_80074E55], a, b);
+    }
+    CdResetController();
+    flag = -1;
+  } else {
+    flag = 0;
+  }
+  if (flag != 0) {
+    return -1;
+  }
+  if (FUN_8005df1c() != 0) {
+    save = *D_800750FC & 3;
+    while ((irq = CdProcessInterrupt()) != 0) {
+      if ((irq & 4) && D_80074E38 != 0) {
+        D_80074E38(rdy[0], D_80075AD8);
       }
-      CdResetController();
-      flag = -1;
-    } else {
-      flag = 0;
-    }
-    if (flag != 0) {
-      return -1;
-    }
-    if (FUN_8005df1c() != 0) {
-      save = *D_800750FC & 3;
-      while ((irq = CdProcessInterrupt()) != 0) {
-        if ((irq & 4) && D_80074E38 != 0) {
-          D_80074E38(rdy[0], D_80075AD8);
-        }
-        if ((irq & 2) && D_80074E34 != 0) {
-          D_80074E34(idx[0], D_80075AD0);
-        }
+      if ((irq & 2) && D_80074E34 != 0) {
+        D_80074E34(idx[0], D_80075AD0);
       }
-      *D_800750FC = save;
     }
-    if ((c = *(volatile unsigned char *)pend) != 0) {
-      *(volatile unsigned char *)pend = 0;
-      src = D_80075AE0;
-      dst = result;
-      if (dst != 0) {
-        n = 7;
-        do {
-          *dst++ = *src++;
-        } while (n-- != 0);
-      }
-      return c;
+    *D_800750FC = save;
+  }
+  if ((c = *(volatile unsigned char *)pend) != 0) {
+    *(volatile unsigned char *)pend = 0;
+    src = D_80075AE0;
+    dst = result;
+    if (dst != 0) {
+      n = 7;
+      do {
+        *dst++ = *src++;
+      } while (n-- != 0);
     }
-    if ((c = *(volatile unsigned char *)(pend - 1)) != 0) {
-      *(volatile unsigned char *)(pend - 1) = 0;
-      dst = result;
-      src = D_80075AD8;
-      if (dst != 0) {
-        n = 7;
-        do {
-          *dst++ = *src++;
-        } while (n-- != 0);
-      }
-      return c;
+    return c;
+  }
+  if ((c = *(volatile unsigned char *)(pend - 1)) != 0) {
+    *(volatile unsigned char *)(pend - 1) = 0;
+    dst = result;
+    src = D_80075AD8;
+    if (dst != 0) {
+      n = 7;
+      do {
+        *dst++ = *src++;
+      } while (n-- != 0);
     }
-    if (mode == 0) {
-      goto top;
-    }
-    return 0;
+    return c;
+  }
+  if (mode == 0) {
+    goto top;
+  }
+  return 0;
 }

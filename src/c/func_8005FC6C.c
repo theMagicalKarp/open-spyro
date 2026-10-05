@@ -6,20 +6,21 @@ extern int D_80074B20;    /* OT terminator sentinel */
 /* Reset an ordering table to empty (0x8005fc6c): optionally trace, hand the
    table to the +0x2C command-table method, then write the terminator link
    into the head entry. Returns the table. */
-/* 2026-09-23: 7 -> 5/38.  The 0xFFFFFF mask as a `$4` register local puts it
-   in a0 as the original has it.  LEFT: the original stores through the RETURN
-   copy (`move v0,s0` above the `sw ..,0(v0)`) with the symbol in v1; ours
-   stores through s0 and emits the copy last.  cse keeps the parameter canonical
-   for any `r = ot` spelling, including a `$2` register local (propagated away).
- */
+/* The return copy is a `$2` register local so the terminator store goes
+   through v0. The dead `ot = 0` kills the copy's equivalence, so cse2 cannot
+   fold the store address back to the parameter. The 0xFFFFFF mask is a `$4`
+   register local, as the original has it in a0. */
 int *func_8005FC6C(int *ot, int n) {
   register int m asm("$4");
+  register int *r asm("$2");
 
   if (g_bGpuDebugLevel >= 2) {
     ((void (*)(char *, int *, int))g_pfnGpuDebugPrintf)(D_800118E4, ot, n);
   }
   (*(void (**)(int *, int))((char *)g_pGpuDispatchTable + 0x2C))(ot, n);
   m = 0xFFFFFF;
-  *ot = (int)&D_80074B20 & m;
-  return ot;
+  r = ot;
+  ot = 0;
+  *r = (int)&D_80074B20 & m;
+  return r;
 }

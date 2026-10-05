@@ -4537,11 +4537,6 @@ func_80038FC8_2026_09_23:
   verdict: matched
   class: "F14b mutual exclusion closed: bare 0x10 literals keep the schedule, `old` as a `$2` register local fixes the v0/v1 rotation without a loop note"
   date: 2026-09-23
-func_8005FC6C_2026_09_23:
-  verdict: parked
-  class: "A187 copy-canonical: the original stores through the return copy in v0; cse keeps the parameter canonical"
-  date: 2026-09-23
-  note: "7 -> 5/38 with the mask as a `$4` register local. `r = ot` spellings (plain and `$2`-pinned) are propagated away."
 func_80038C4C_2026_09_23:
   verdict: parked
   class: "hard-reg pin unusable: `register int ay asm(\"$5\")` (function or block scope) rewires the entry `move v0,a0 / move a1,v0` param copy, 63/66"
@@ -4961,3 +4956,7 @@ PutDispEnv_2026_10_04_2:
   class: "F1 local-alloc tie: the GP1(0x05) argument's y|x value is tied to a0, so the const lui and both ors cross-jump"
   date: 2026-10-04
   note: "First decode (was B9 wall). 294/298, 13 masked, one window. Volatile cache shorts, computed height flag, nested-ternary clamps all solved. Inert: 36 association orders, per-arm temps, const-in-variable, register pins. memcpy needs the non-builtin (void*,void*,int) prototype."
+func_8005FC6C_2026_10_05:
+  verdict: matched
+  class: "A187 closed for a straight-line tail: `$2` register local for the return copy + dead `ot = 0` after `r = ot` (kills the cse2 copy equivalence)"
+  date: 2026-10-05
