@@ -5105,3 +5105,8 @@ TickGemPickupAssetStream_2026_10_06:
   class: "F8 sched ties: case-2 split-arm camera-path load order + 3 head/intro/size load-order swaps in cases 3/4"
   date: 2026-10-06
   note: "Length-exact .wip, 29/512. Levers that closed the rest: pad[10] (0x58 frame), HEAD/HDR/CHUNK incomplete-array aliases (in-struct, so the head reload hoists over scalar stores in case 1) but a pointer local for case 2's split arm (head reload stays below the statue store), SPU address as `(x << 15) + top - size` with `register int top asm(\"$2\") = 0x80000` per site, n = 0x8000 in an else arm, case-5 i = 1 + mesh base before the list. The case-2 camera path needs the header-end load after the head+offset add; an empty do/while(0) barrier gets that but strands the /24 multiply in the second block (17 insns)."
+TickGemPickupAssetStream_2026_10_06_b:
+  verdict: parked
+  class: "F8 sched: case-2 split-arm camera-path block (the /24 multiply must issue before the head/offset loads) + the case-4 WriteSpuRam size operand load order"
+  date: 2026-10-06
+  note: "21/512 length-exact. The case 3/4 StartCdReadAsync arg orders closed with CheckDeathPlane's recipe (ordered *(volatile T *)& reads into block locals). Volatile reads in the case-2 split arm or WriteSpuRam make it worse."

@@ -178,11 +178,15 @@ void TickGemPickupAssetStream(void) {
     g_nGemPickupReadByteCount = t;
     if (0x100000 - g_nWorldTimAudioChunkSize < t) {
       t -= 0x100000;
-      StartCdReadAsync(g_nCdBaseLba, g_pWorldUnpackHead,
-                       g_nWorldTimAudioChunkSize + t,
-                       g_nWorldTimAudioChunkOffset +
-                           LEVEL_ARCHIVE_OFFSET(g_nLevelIntroIndex) - t,
-                       600);
+      {
+        int lba = *(volatile int *)&g_nCdBaseLba;
+        int intro = *(volatile int *)&g_nLevelIntroIndex;
+        void *dst = *(void *volatile *)&g_pWorldUnpackHead;
+        int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
+
+        StartCdReadAsync(lba, dst, g_nWorldTimAudioChunkSize + t,
+                         off + LEVEL_ARCHIVE_OFFSET(intro) - t, 600);
+      }
     } else {
       g_nGemPickupSplitFlag = 0;
     }
@@ -195,10 +199,15 @@ void TickGemPickupAssetStream(void) {
       while (GetSpuTransferStatus(0) == 0) {
       }
     }
-    StartCdReadAsync(g_nCdBaseLba, g_pWorldUnpackHead, g_nWorldDataExtChunkSize,
-                     g_nWorldDataExtChunkOffset +
-                         LEVEL_ARCHIVE_OFFSET(g_nLevelIntroIndex),
-                     600);
+    {
+      int lba = *(volatile int *)&g_nCdBaseLba;
+      void *dst = *(void *volatile *)&g_pWorldUnpackHead;
+      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int size = *(volatile int *)&g_nWorldDataExtChunkSize;
+      int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
+
+      StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro), 600);
+    }
     break;
   case 5:
     RelocateMobActorTable(
