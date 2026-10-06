@@ -5110,3 +5110,8 @@ TickGemPickupAssetStream_2026_10_06_b:
   class: "F8 sched: case-2 split-arm camera-path block (the /24 multiply must issue before the head/offset loads) + the case-4 WriteSpuRam size operand load order"
   date: 2026-10-06
   note: "21/512 length-exact. The case 3/4 StartCdReadAsync arg orders closed with CheckDeathPlane's recipe (ordered *(volatile T *)& reads into block locals). Volatile reads in the case-2 split arm or WriteSpuRam make it worse."
+DispatchSpyroPhysicsByState_2026_10_06:
+  verdict: viable
+  class: "B8 retired; 45-way Spyro physics switch, 75 calls, slope-speed interpolation math"
+  date: 2026-10-06
+  note: "Screened only (asm read, no C). Clean of B1/B2/B6. Big but ordinary; start from the per-state call sequences."
