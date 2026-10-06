@@ -4992,3 +4992,36 @@ NudgeSpyroFromWallProbes_2026_10_05:
   verdict: matched
   class: "F1 global-alloc rotation closed by $18/$20 register locals (A343); chained stores written from[k] = to[k] = v"
   date: 2026-10-05
+func_8005D628_2026_10_05:
+  verdict: wall
+  class: "B11 re-confirmed: an mflo reads LO left by the PREVIOUS iteration's mult (cross-iteration reuse gcc 2.7.2 cannot emit)"
+  date: 2026-10-05
+Initialize_2026_10_05:
+  verdict: attempted
+  class: "fade-loop delay slot: the original body starts with the two-word `la &g_pOtDepthBinHead0` (reorg cannot fill, nop); ours starts with j+1"
+  date: 2026-10-05
+  note: "sched1 T-22 tie: la uid 367 outranks j+1 uid 362 on LUID. Inert: ++j in the arg, an ot pointer local, a b temp, do/while forms (loop.c hoists the RECT literals). A shared two-set ot local is folded by cse into s3."
+EnqueueLoadingScreenSprites_2026_10_05:
+  verdict: attempted
+  class: "three residues unchanged (preheader address hoist, magic-vs-base order, UV reassociation); screened only"
+  date: 2026-10-05
+FlushGpuQueue_2026_10_05:
+  verdict: attempted
+  class: "volatile-vs-plain arg-block order; A338/A339 already measured worse in the park note; screened only"
+  date: 2026-10-05
+UnpackWorldDataChunks_2026_10_05:
+  verdict: attempted
+  class: "whole-function allocation cascade (cursor s0 vs a2); fresh m2c decode would not change it; screened only"
+  date: 2026-10-05
+TickSpyroAttackEffects_2026_10_05:
+  verdict: attempted
+  class: "F7 spill-slot hole (k at 0x68) still blocks; preheader/arc-path F1 left untouched"
+  date: 2026-10-05
+Gamestate0C_Draw_2026_10_05:
+  verdict: attempted
+  class: "held-base fold: two-set pointer local and a $3 register local both fold to absolute stores (A348 does not reach constant offsets)"
+  date: 2026-10-05
+TickSpyroAnimStateMachine_2026_10_05:
+  verdict: viable
+  class: "B8 only: a plain switch compiles to the original dispatch head; needs the main jump-table placement infra"
+  date: 2026-10-05
