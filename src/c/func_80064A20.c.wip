@@ -49,6 +49,11 @@ extern char D_80011E8C[];                  /* "CD_ready" */
       the s1..s4 map rotates (26 masked). A `$20` pin on result folds dst into
       the pinned reg. The original's result must be ranked below pend: a
       longer live range, or one fewer ref.
+   2026-10-05 later: R2 IS reachable. With `$18` idx and `$19` pend pins, plus
+   a `$20` pin on a copy of result and a `$5` pin on dst, the masked count drops
+   to the printf block alone (7). The linked count stays 13-14: the pinned
+   result copy issues after the VSync `li a0,-1` in the prologue. A barrier
+   after the copy makes it worse (19).
    Solved: goto outer loop (no loop.c: the copy-loop -1s stay inline); base
    pointers idx/rdy = idx + 1/pend = idx + 2 set before the label; volatile
    flag load + store (lbu; andi a2,0xff, and sb before the branch); dst copy
