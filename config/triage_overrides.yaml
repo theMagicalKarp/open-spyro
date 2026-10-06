@@ -5085,3 +5085,8 @@ TickLevelTransitionStream:
   class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
   date: 2026-10-06
   note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+SetSpuCommonAttr_2026_10_06:
+  verdict: parked
+  class: "F1 global-alloc priority: vl/vr/mask/all register rotation (a2/t0/t1/t2 vs a3/t2/t0/t1)"
+  date: 2026-10-06
+  note: "libspu SpuSetCommonAttr decode is length-exact with both switches (explicit case 0 needed, no frame pad). Unpinned 80/229; vr pinned to $8 gives 60/229 (.wip). Residue: vl/clamp-temp a2<->a3 swap, `or` operand order, the right-half andi not stolen into the beqz delay slot, SPUCNT RMW v0/v1 swap. Decl order, all-flag spelling, int types, volatile regs: no change."
