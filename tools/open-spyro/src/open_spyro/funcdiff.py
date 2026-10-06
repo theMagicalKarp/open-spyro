@@ -127,7 +127,7 @@ def _all_names(repo: Path) -> list[str]:
 def _container_script(t: _Target, build: bool) -> str:
     """Build (optionally), slice both files at the VMA, cmp, objdump on mismatch."""
     a, b = f"build/diff/{t.name}.orig.bin", f"build/diff/{t.name}.built.bin"
-    objdump = f"mips-linux-gnu-objdump -D -b binary -m mips:3000 -EL --adjust-vma=0x{t.vma:x}"
+    objdump = f"mips-linux-gnu-objdump -Dz -b binary -m mips:3000 -EL --adjust-vma=0x{t.vma:x}"
     lines = ["set -euo pipefail", "mkdir -p build/diff"]
     if build:
         lines.append(
