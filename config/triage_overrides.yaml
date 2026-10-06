@@ -5025,3 +5025,63 @@ TickSpyroAnimStateMachine_2026_10_05:
   verdict: viable
   class: "B8 only: a plain switch compiles to the original dispatch head; needs the main jump-table placement infra"
   date: 2026-10-05
+ResetSpyroEntity:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+AdvanceSpyroSubstepState:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+DispatchSpyroTriggerEvent:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplySpyroStateTransition:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+TickGemPickupAssetStream:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+PauseMenu_Update:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplySpuVoiceAttrRange:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+func_800671F0:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+CdProcessInterrupt:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+SaveLoadMenu_Draw:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplyPerLevelGlobalsTable:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+TickLevelTransitionStream:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."

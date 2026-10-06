@@ -18,9 +18,9 @@ Run via ``make triage``. Pure stdlib, disc-free, deterministic (stable sort).
   lui $at, <literal>     literal MMIO address load ($at without a %hi reloc).
   jr $tN                 BIOS A0/B0/C0 syscall trampoline / kernel thunk — gcc
                          always appends its own `jr $ra` epilogue.
-  switchdata reference   dense-switch jump table; the main EXE rejects loadable
-                         .rodata in overrides (overlays are fine, so this only
-                         skips main-segment functions).
+  (switchdata reference  no longer a wall: main jump tables are slot-placed like
+                         the overlays' since 2026-10-06 — rodata_pre is sectionized
+                         and a switch owner's .rodata fills its table's VMA.)
   handwritten tag        $at-as-data functions (progress classification).
 
 --- Verdict ledger -----------------------------------------------------------
@@ -181,8 +181,6 @@ def _blockers(rec: dict[str, Any], body: Body | None) -> list[str]:
         out.append("B2 $at literal HW load")
     if body.trampoline:
         out.append("B3 BIOS trampoline")
-    if body.jr_table and rec["segment"] == "main":
-        out.append("B8 jr-table switch (main)")
     return out
 
 
