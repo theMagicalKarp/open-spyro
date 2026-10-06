@@ -22,6 +22,8 @@ SECTIONS
     {
         FILL(0x00000000);
         main_RODATA_START = .;
+        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld`). */
+        INCLUDE config/spyro.main.rodata_slots.ld
         build/main/asm/data/rodata_pre.rodata.o(.rodata);
         build/main/asm/text.o(.rodata);
         main_RODATA_END = .;

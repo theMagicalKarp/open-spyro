@@ -3685,5 +3685,913 @@
    "vram": 2147914136,
    "size": 4
   }
+ ],
+ "rodata": [
+  {
+   "sym": "D_80010000",
+   "offset": 0,
+   "owner": null,
+   "size": 2672
+  },
+  {
+   "sym": "switchdataD_80010a70",
+   "offset": 2672,
+   "owner": "TickGemPickupAssetStream",
+   "size": 24
+  },
+  {
+   "sym": "switchdataD_80010a88",
+   "offset": 2696,
+   "owner": "TickLevelTransitionStream",
+   "size": 56
+  },
+  {
+   "sym": "D_80010AC0",
+   "offset": 2752,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010ACC",
+   "offset": 2764,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010AE0",
+   "offset": 2784,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010AF4",
+   "offset": 2804,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B04",
+   "offset": 2820,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B14",
+   "offset": 2836,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B24",
+   "offset": 2852,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B30",
+   "offset": 2864,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B40",
+   "offset": 2880,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B50",
+   "offset": 2896,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010B60",
+   "offset": 2912,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B6C",
+   "offset": 2924,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B78",
+   "offset": 2936,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B84",
+   "offset": 2948,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B90",
+   "offset": 2960,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010B9C",
+   "offset": 2972,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010BA8",
+   "offset": 2984,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010BB4",
+   "offset": 2996,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010BC0",
+   "offset": 3008,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010BD0",
+   "offset": 3024,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010BE0",
+   "offset": 3040,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010BF4",
+   "offset": 3060,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C08",
+   "offset": 3080,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C1C",
+   "offset": 3100,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010C28",
+   "offset": 3112,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010C38",
+   "offset": 3128,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C4C",
+   "offset": 3148,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C60",
+   "offset": 3168,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C74",
+   "offset": 3188,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010C80",
+   "offset": 3200,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010C94",
+   "offset": 3220,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010CA4",
+   "offset": 3236,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010CB8",
+   "offset": 3256,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010CC4",
+   "offset": 3268,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010CD0",
+   "offset": 3280,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80010CE4",
+   "offset": 3300,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80010CF0",
+   "offset": 3312,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80010D0C",
+   "offset": 3340,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80010D28",
+   "offset": 3368,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80010D40",
+   "offset": 3392,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "switchdataD_80010d58",
+   "offset": 3416,
+   "owner": "SaveLoadMenu_Draw",
+   "size": 32
+  },
+  {
+   "sym": "D_80010D78",
+   "offset": 3448,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80010D88",
+   "offset": 3464,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80010DA0",
+   "offset": 3488,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80010DB8",
+   "offset": 3512,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "switchdataD_80010dd0",
+   "offset": 3536,
+   "owner": "PauseMenu_Update",
+   "size": 24
+  },
+  {
+   "sym": "switchdataD_80010de8",
+   "offset": 3560,
+   "owner": "GemPickup_Update",
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_80010e08",
+   "offset": 3592,
+   "owner": "Gamestate0B_Update",
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_80010e28",
+   "offset": 3624,
+   "owner": "ApplySpyroStateTransition",
+   "size": 48
+  },
+  {
+   "sym": "switchdataD_80010e58",
+   "offset": 3672,
+   "owner": "TickSpyroAnimStateMachine",
+   "size": 48
+  },
+  {
+   "sym": "switchdataD_80010e88",
+   "offset": 3720,
+   "owner": "ChangeSpyroState",
+   "size": 152
+  },
+  {
+   "sym": "switchdataD_80010f20",
+   "offset": 3872,
+   "owner": "ChangeSpyroState",
+   "size": 184
+  },
+  {
+   "sym": "switchdataD_80010fd8",
+   "offset": 4056,
+   "owner": "UpdateSpyroStateBehavior",
+   "size": 184
+  },
+  {
+   "sym": "switchdataD_80011090",
+   "offset": 4240,
+   "owner": "IntegrateSpyroMotionForSubstep",
+   "size": 184
+  },
+  {
+   "sym": "switchdataD_80011148",
+   "offset": 4424,
+   "owner": "IntegrateSpyroMotionForSubstep",
+   "size": 48
+  },
+  {
+   "sym": "switchdataD_80011178",
+   "offset": 4472,
+   "owner": "DispatchSpyroPhysicsByState",
+   "size": 184
+  },
+  {
+   "sym": "switchdataD_80011230",
+   "offset": 4656,
+   "owner": "AdvanceSpyroSubstepState",
+   "size": 184
+  },
+  {
+   "sym": "switchdataD_800112e8",
+   "offset": 4840,
+   "owner": "ResetSpyroEntity",
+   "size": 152
+  },
+  {
+   "sym": "switchdataD_80011380",
+   "offset": 4992,
+   "owner": "DispatchSpyroTriggerEvent",
+   "size": 32
+  },
+  {
+   "sym": "D_800113A0",
+   "offset": 5024,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "switchdataD_800113a4",
+   "offset": 5028,
+   "owner": "ApplyPerLevelGlobalsTable",
+   "size": 400
+  },
+  {
+   "sym": "D_80011534",
+   "offset": 5428,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80011544",
+   "offset": 5444,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80011554",
+   "offset": 5460,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011568",
+   "offset": 5480,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "switchdataD_8001157c",
+   "offset": 5500,
+   "owner": "SetSpuCommonAttr",
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_8001159c",
+   "offset": 5532,
+   "owner": "SetSpuCommonAttr",
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_800115bc",
+   "offset": 5564,
+   "owner": "ApplySpuVoiceAttrRange",
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_800115dc",
+   "offset": 5596,
+   "owner": "ApplySpuVoiceAttrRange",
+   "size": 32
+  },
+  {
+   "sym": "D_800115FC",
+   "offset": 5628,
+   "owner": null,
+   "size": 68
+  },
+  {
+   "sym": "D_80011640",
+   "offset": 5696,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_8001165C",
+   "offset": 5724,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011678",
+   "offset": 5752,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011694",
+   "offset": 5780,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_800116A4",
+   "offset": 5796,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800116BC",
+   "offset": 5820,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_800116CC",
+   "offset": 5836,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800116E4",
+   "offset": 5860,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_800116F4",
+   "offset": 5876,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_8001170C",
+   "offset": 5900,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011718",
+   "offset": 5912,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011724",
+   "offset": 5924,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011740",
+   "offset": 5952,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_8001175C",
+   "offset": 5980,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011768",
+   "offset": 5992,
+   "owner": null,
+   "size": 64
+  },
+  {
+   "sym": "D_800117A8",
+   "offset": 6056,
+   "owner": null,
+   "size": 32
+  },
+  {
+   "sym": "D_800117C8",
+   "offset": 6088,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_800117DC",
+   "offset": 6108,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800117F4",
+   "offset": 6132,
+   "owner": null,
+   "size": 44
+  },
+  {
+   "sym": "D_80011820",
+   "offset": 6176,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011834",
+   "offset": 6196,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011850",
+   "offset": 6224,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011864",
+   "offset": 6244,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011878",
+   "offset": 6264,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011884",
+   "offset": 6276,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011898",
+   "offset": 6296,
+   "owner": null,
+   "size": 4
+  },
+  {
+   "sym": "D_8001189C",
+   "offset": 6300,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_800118A8",
+   "offset": 6312,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_800118B4",
+   "offset": 6324,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_800118C0",
+   "offset": 6336,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_800118CC",
+   "offset": 6348,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800118E4",
+   "offset": 6372,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800118FC",
+   "offset": 6396,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011910",
+   "offset": 6416,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80011928",
+   "offset": 6440,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011944",
+   "offset": 6468,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_8001195C",
+   "offset": 6492,
+   "owner": null,
+   "size": 52
+  },
+  {
+   "sym": "D_80011990",
+   "offset": 6544,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_800119A8",
+   "offset": 6568,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_800119BC",
+   "offset": 6588,
+   "owner": null,
+   "size": 8
+  },
+  {
+   "sym": "D_800119C4",
+   "offset": 6596,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "switchdataD_800119d8",
+   "offset": 6616,
+   "owner": "FormatAndWrite",
+   "size": 484
+  },
+  {
+   "sym": "D_80011BBC",
+   "offset": 7100,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011BD0",
+   "offset": 7120,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "switchdataD_80011be4",
+   "offset": 7140,
+   "owner": "sprintf",
+   "size": 180
+  },
+  {
+   "sym": "g_szNullPlaceholder",
+   "offset": 7320,
+   "owner": null,
+   "size": 8
+  },
+  {
+   "sym": "D_80011CA0",
+   "offset": 7328,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80011CB8",
+   "offset": 7352,
+   "owner": null,
+   "size": 324
+  },
+  {
+   "sym": "D_80011DFC",
+   "offset": 7676,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80011E0C",
+   "offset": 7692,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011E28",
+   "offset": 7720,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011E34",
+   "offset": 7732,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "D_80011E50",
+   "offset": 7760,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011E64",
+   "offset": 7780,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "switchdataD_80011e70",
+   "offset": 7792,
+   "owner": "CdProcessInterrupt",
+   "size": 20
+  },
+  {
+   "sym": "D_80011E84",
+   "offset": 7812,
+   "owner": null,
+   "size": 8
+  },
+  {
+   "sym": "D_80011E8C",
+   "offset": 7820,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011E98",
+   "offset": 7832,
+   "owner": null,
+   "size": 8
+  },
+  {
+   "sym": "D_80011EA0",
+   "offset": 7840,
+   "owner": null,
+   "size": 16
+  },
+  {
+   "sym": "D_80011EB0",
+   "offset": 7856,
+   "owner": null,
+   "size": 60
+  },
+  {
+   "sym": "D_80011EEC",
+   "offset": 7916,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011EF8",
+   "offset": 7928,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011F04",
+   "offset": 7940,
+   "owner": null,
+   "size": 12
+  },
+  {
+   "sym": "D_80011F10",
+   "offset": 7952,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80011F28",
+   "offset": 7976,
+   "owner": null,
+   "size": 24
+  },
+  {
+   "sym": "D_80011F40",
+   "offset": 8000,
+   "owner": null,
+   "size": 20
+  },
+  {
+   "sym": "D_80011F54",
+   "offset": 8020,
+   "owner": null,
+   "size": 40
+  },
+  {
+   "sym": "switchdataD_80011f7c",
+   "offset": 8060,
+   "owner": "func_80066634",
+   "size": 128
+  },
+  {
+   "sym": "D_80011FFC",
+   "offset": 8188,
+   "owner": null,
+   "size": 40
+  },
+  {
+   "sym": "D_80012024",
+   "offset": 8228,
+   "owner": null,
+   "size": 36
+  },
+  {
+   "sym": "D_80012048",
+   "offset": 8264,
+   "owner": null,
+   "size": 56
+  },
+  {
+   "sym": "D_80012080",
+   "offset": 8320,
+   "owner": null,
+   "size": 36
+  },
+  {
+   "sym": "D_800120A4",
+   "offset": 8356,
+   "owner": null,
+   "size": 32
+  },
+  {
+   "sym": "switchdataD_800120c4",
+   "offset": 8388,
+   "owner": "func_80066F34",
+   "size": 128
+  },
+  {
+   "sym": "switchdataD_80012144",
+   "offset": 8516,
+   "owner": "func_800671F0",
+   "size": 124
+  },
+  {
+   "sym": "g_szMemCardPathTemplate",
+   "offset": 8640,
+   "owner": null,
+   "size": 8
+  },
+  {
+   "sym": "D_800121C8",
+   "offset": 8648,
+   "owner": null,
+   "size": 28
+  },
+  {
+   "sym": "switchdataD_800121e4",
+   "offset": 8676,
+   "owner": "PADENTRY_OBJ_158",
+   "size": 32
+  }
  ]
 }

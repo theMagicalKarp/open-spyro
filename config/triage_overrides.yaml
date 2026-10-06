@@ -5025,3 +5025,93 @@ TickSpyroAnimStateMachine_2026_10_05:
   verdict: viable
   class: "B8 only: a plain switch compiles to the original dispatch head; needs the main jump-table placement infra"
   date: 2026-10-05
+ResetSpyroEntity:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+AdvanceSpyroSubstepState:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+DispatchSpyroTriggerEvent:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplySpyroStateTransition:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+TickGemPickupAssetStream:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+PauseMenu_Update:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplySpuVoiceAttrRange:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+func_800671F0:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+CdProcessInterrupt:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+SaveLoadMenu_Draw:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+ApplyPerLevelGlobalsTable:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+TickLevelTransitionStream:
+  verdict: viable
+  class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
+  date: 2026-10-06
+  note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
+SetSpuCommonAttr_2026_10_06:
+  verdict: parked
+  class: "F1 global-alloc priority: vl/vr/mask/all register rotation (a2/t0/t1/t2 vs a3/t2/t0/t1)"
+  date: 2026-10-06
+  note: "libspu SpuSetCommonAttr decode is length-exact with both switches (explicit case 0 needed, no frame pad). Unpinned 80/229; vr pinned to $8 gives 60/229 (.wip). Residue: vl/clamp-temp a2<->a3 swap, `or` operand order, the right-half andi not stolen into the beqz delay slot, SPUCNT RMW v0/v1 swap. Decl order, all-flag spelling, int types, volatile regs: no change."
+DispatchSpyroTriggerEvent_2026_10_06:
+  verdict: parked
+  class: "F8 sched tie: case-0 orb-drop store block (OrbDrop store must fill the flags load delay)"
+  date: 2026-10-06
+  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, D_80075728, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
+sprintf_2026_10_06:
+  verdict: parked
+  class: "F8 sched1 tie: va_arg value load vs spec-flags load order at the 4 conversion sites (d/u/o/x)"
+  date: 2026-10-06
+  note: "PSY-Q libc sprintf decoded (.wip): FmtSpec bitfield struct with char sign at byte 1 copied from the D_80074D98 zero template, ap kept in its stack slot by an unused &ap, store-before-load va_arg. First 0x2c0 bytes exact; 531/535 insns. At each d/u/o/x site the original loads the arg before the flags word (old ap in v1, flags reuses v1 + a load-delay nop); mine hoists the flags load (old ap in v0), 1 insn short per site. Tried: char/int ap with 4 va_arg spellings, separate load/advance, signed v (wrong divides)."
+TickGemPickupAssetStream_2026_10_06:
+  verdict: parked
+  class: "F8 sched ties: case-2 split-arm camera-path load order + 3 head/intro/size load-order swaps in cases 3/4"
+  date: 2026-10-06
+  note: "Length-exact .wip, 29/512. Levers that closed the rest: pad[10] (0x58 frame), HEAD/HDR/CHUNK incomplete-array aliases (in-struct, so the head reload hoists over scalar stores in case 1) but a pointer local for case 2's split arm (head reload stays below the statue store), SPU address as `(x << 15) + top - size` with `register int top asm(\"$2\") = 0x80000` per site, n = 0x8000 in an else arm, case-5 i = 1 + mesh base before the list. The case-2 camera path needs the header-end load after the head+offset add; an empty do/while(0) barrier gets that but strands the /24 multiply in the second block (17 insns)."
+TickGemPickupAssetStream_2026_10_06_b:
+  verdict: parked
+  class: "F8 sched: case-2 split-arm camera-path block (the /24 multiply must issue before the head/offset loads) + the case-4 WriteSpuRam size operand load order"
+  date: 2026-10-06
+  note: "21/512 length-exact. The case 3/4 StartCdReadAsync arg orders closed with CheckDeathPlane's recipe (ordered *(volatile T *)& reads into block locals). Volatile reads in the case-2 split arm or WriteSpuRam make it worse."
+DispatchSpyroPhysicsByState_2026_10_06:
+  verdict: viable
+  class: "B8 retired; 45-way Spyro physics switch, 75 calls, slope-speed interpolation math"
+  date: 2026-10-06
+  note: "Screened only (asm read, no C). Clean of B1/B2/B6. Big but ordinary; start from the per-state call sequences."

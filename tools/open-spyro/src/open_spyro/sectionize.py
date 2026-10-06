@@ -130,32 +130,51 @@ def _patch_main_ld(repo) -> None:
     undefined.
     """
     ld_path = repo / "config/spyro.main.ld"
-    target = "build/main/asm/text.o(.text);"
-    insert = (
-        "        /* Per-function fixed-VMA slots (`open-spyro gen-slots-ld`). Replaces the old",
-        "           monolithic text.o(.text) so individual functions can be flipped to C. */",
-        "        INCLUDE config/spyro.main.slots.ld",
-    )
+    inserts = {
+        "build/main/asm/data/rodata_pre.rodata.o(.rodata);": (
+            "        /* Per-piece fixed-VMA rodata slots (`open-spyro gen-slots-ld`). */",
+            "        INCLUDE config/spyro.main.rodata_slots.ld",
+        ),
+        "build/main/asm/text.o(.text);": (
+            "        /* Per-function fixed-VMA slots (`open-spyro gen-slots-ld`). Replaces the old",
+            "           monolithic text.o(.text) so individual functions can be flipped to C. */",
+            "        INCLUDE config/spyro.main.slots.ld",
+        ),
+    }
     lines = ld_path.read_text().splitlines()
-    if any(ln.strip() == insert[-1].strip() for ln in lines):
-        return
-    for i, ln in enumerate(lines):
-        if ln.strip() == target:
-            lines[i:i] = insert
-            break
-    else:
-        raise SystemExit(f"sectionize: no '{target}' line in {ld_path}")
+    for target, insert in inserts.items():
+        if any(ln.strip() == insert[-1].strip() for ln in lines):
+            continue
+        for i, ln in enumerate(lines):
+            if ln.strip() == target:
+                lines[i:i] = insert
+                break
+        else:
+            raise SystemExit(f"sectionize: no '{target}' line in {ld_path}")
     ld_path.write_text("\n".join(lines) + "\n")
+
+
+MAIN_BASE = 0x80010000
 
 
 def run() -> None:
     repo = repo_root()
     text_s = repo / "asm/text.s"
+    rodata_s = repo / "asm/data/rodata_pre.rodata.s"
     layout_path = repo / "config/text_layout.json"
     n = _sectionize_file(text_s, layout_path)
+    layout = json.loads(layout_path.read_text())
+    text_off = min(f["vram"] for f in layout["functions"] if f["vram"] is not None) - MAIN_BASE
+    # main rodata pieces: only the switch jump tables are owner-guarded (B8 flips).
+    pieces = _sectionize_rodata(
+        rodata_s, text_s, text_off, vram_base=MAIN_BASE, guard_prefixes=("switchdata", "jtbl")
+    )
+    layout["rodata"] = pieces
+    layout_path.write_text(json.dumps(layout, indent=1) + "\n")
     _patch_main_ld(repo)
     print(
         f"sectionize: wrapped {n} functions -> {text_s.relative_to(repo)}; "
+        f"{len(pieces)} rodata pieces -> {rodata_s.relative_to(repo)}; "
         f"layout -> {layout_path.relative_to(repo)}"
     )
 
@@ -163,11 +182,14 @@ def run() -> None:
 # Offset comments in splat's data dump: `/* <off> <vram8> [<bytes8>] */`. The
 # vram token is required so raw continuation lines (`/* 4241... */`) don't match.
 _RODATA_OFF = re.compile(r"^\s*/\*\s*([0-9A-Fa-f]+)\s+[0-9A-Fa-f]{8}\s")
+_RODATA_VRAM = re.compile(r"^\s*/\*\s*[0-9A-Fa-f]+\s+([0-9A-Fa-f]{8})\s")
 # Lines _sectionize_rodata injects — stripped on re-run for idempotency.
 _INJECTED_RO = re.compile(r'^\.section \.rodata\.\S+, "a"$|^\.ifndef HAVE_C_\S+$|^\.endif$')
 
 
-def _sectionize_rodata(rodata_s, text_s, text_end_off: int) -> list[dict]:
+def _sectionize_rodata(
+    rodata_s, text_s, text_end_off: int, vram_base: int | None = None, guard_prefixes=None
+) -> list[dict]:
     """Per-piece sectioning of an overlay's rodata dump (jtbl / const-data flips).
 
     A C override whose function owns rodata (a switch jump table, a static const)
@@ -177,6 +199,12 @@ def _sectionize_rodata(rodata_s, text_s, text_end_off: int) -> list[dict]:
     where the owner is the (unique) function in text.s that references <sym>.
     Returns the piece inventory [(sym, offset, size, owner)...] for the slot
     generator. Idempotent, same as the text sectionizer.
+
+    ``vram_base``: compute piece offsets as ``vram - vram_base`` instead of from the
+    dump's file-offset column (main's offsets include the 0x800 EXE header).
+    ``guard_prefixes``: only pieces whose symbol starts with one of these get the
+    HAVE_C guard (main: jump tables only — main C overrides reference shared
+    strings/data by extern and never emit them).
     """
     raw = rodata_s.read_text().splitlines()
     raw = [ln for ln in raw if not _INJECTED_RO.match(ln) and ln.strip() != '.section .rodata, "a"']
@@ -197,8 +225,15 @@ def _sectionize_rodata(rodata_s, text_s, text_end_off: int) -> list[dict]:
         m = _NONMATCHING.match(block[0])
         assert m is not None
         sym = m.group(1)
-        offs = [int(mm.group(1), 16) for ln in block if (mm := _RODATA_OFF.match(ln))]
-        owner = next((fn for fn, body in func_bodies.items() if f"({sym})" in body), None)
+        if vram_base is None:
+            offs = [int(mm.group(1), 16) for ln in block if (mm := _RODATA_OFF.match(ln))]
+        else:
+            offs = [
+                int(mm.group(1), 16) - vram_base for ln in block if (mm := _RODATA_VRAM.match(ln))
+            ]
+        owner = None
+        if guard_prefixes is None or sym.startswith(tuple(guard_prefixes)):
+            owner = next((fn for fn, body in func_bodies.items() if f"({sym})" in body), None)
         pieces.append({"sym": sym, "offset": offs[0] if offs else None, "owner": owner})
         out.append(f'.section .rodata.{sym}, "a"')
         if owner:

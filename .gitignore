@@ -23,6 +23,7 @@ config/spyro.main.syms.ld
 # config/text_layout.json is intentionally TRACKED — the disc-free CI build reads
 # it (it is produced by `make split`, which CI does not run).
 config/spyro.main.slots.ld
+config/spyro.main.rodata_slots.ld
 # Per-overlay splat configs are regenerated from config/overlays.json by `make split`.
 config/overlays/*.yaml
 config/overlays/*.d
