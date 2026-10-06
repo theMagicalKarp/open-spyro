@@ -1589,6 +1589,7 @@ g_nSpyroWorldPosY = 0x80078a5c; // allow_duplicated:True scalar alias — g_anSp
 g_bSpyroAnimCurrent = 0x80078a71; // size:0x1
 g_bSpyroFramePrev = 0x80078a76; // size:0x1
 g_bSpyroAnimFrame = 0x80078a77; // size:0x1
+g_bSpyroAnimFrame_blk = 0x80078a77; // allow_duplicated:True incomplete-array alias — held-base view of the anim frame byte (ApplySpyroStateTransition case 2 load + store through one register)
 g_bSpyroSubFrameTimer = 0x80078a7c; // allow_duplicated:True size:0x1
 g_abSpyroSubFrameTimerBlock = 0x80078a7c; // allow_duplicated:True alias — held-base view of g_bSpyroSubFrameTimer (StepSpyroAnimAndCommitTransition load + 3 stores through one register)
 g_anSpyroHornStrikeSwingPhaseBlock = 0x80078ab8; // allow_duplicated:True alias — held-base view of g_nSpyroHornStrikeSwingPhase (TickSpyroAnimLayer1 s0 — phase[0]/phase[2] load+store across calls)
