@@ -1,19 +1,14 @@
 #include "globals.h"
 
-/* PARKED 2026-10-04-2 -- fresh decode, 56/56, 20 linked / 14 masked (was
-   the 2026-07-25 permuter body, "B18 constant-hoist layout tie").
-   B18 is SOLVED: with `top += size` written inside each arm of the size
-   select, jump.c leaves the if/else alone and reorg merges both arms' `lui
-   0xfffe` into the beqz delay slot (`j; ori 0xd000` / `ori 0x4000`), exactly
-   the original. (A single join-block add lets jump.c rewrite the select as
-   "default, then conditional override".) SetupFrameOT matched on the same
-   lever.
-   LEFT: allocation. The original computes the emit-list temp and stores it
-   before the OT/prim-top temps, so both temps share v1 and the work-area top
-   stays in v0 across the branch (in place, `top -= 0x6008`); ours schedules
-   the three address temps together, local-alloc hands them v0/v1 first and
-   the post-branch pointer lands in a3. Store-order permutations (6),
-   in-place vs separate `p`, and copy-preference spellings measured 14-18. */
+/* PARKED 2026-10-05 -- 56/56, 3 linked (was 20). B18 solved by `top += size`
+   inside each arm (jump.c keeps the if/else; reorg merges the two `lui 0xfffe`
+   into the beqz slot). The allocation is solved too: `top` is a `$2` register
+   local carved in place, and an empty do/while(0) after the emit-list store
+   keeps the OT temp after it. The chained frame-slot stores are written
+   Slot1 = Slot0 = ... (the original stores slot 0 first).
+   LEFT: the first FillWord's `move a1,zero` issues before the RegionBase store.
+   The original has it after. Inert: a volatile RegionBase store. A second
+   barrier after the store is worse (7). */
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
@@ -24,30 +19,31 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
    0x13000 or 0x1c000 bytes depending on `split`), publish them to both
    frame slots and clear the merged-chain head and the OT. */
 void InitActorMeshScratchRegions(int split) {
-  char *top;
+  register char *top asm("$2");
   int size;
-  char *p;
 
   top = g_pWorkAreaTop;
   g_pEmitListBuffer = top - 0x2000;
+  do {
+  } while (0);
   g_pRenderScratchOtBase = top - 0x6000;
-  p = top - 0x6008;
-  g_pRenderScratchPrimTop = p;
+  top -= 0x6008;
+  g_pRenderScratchPrimTop = top;
   if (split) {
     size = -0x13000;
-    p += size;
+    top += size;
   } else {
     size = -0x1c000;
-    p += size;
+    top += size;
   }
-  g_pRenderScratchPrimBase1 = p;
-  p += size;
-  g_pRenderScratchRegionBase = p;
+  g_pRenderScratchPrimBase1 = top;
+  top += size;
+  g_pRenderScratchRegionBase = top;
   g_pFramePrimBufferBase0 = VREAD(g_pRenderScratchRegionBase);
   g_pFramePrimBufferBase1 = VREAD(g_pRenderScratchPrimBase1);
-  g_pFrameOtMergedChainSlot0 = g_pFrameOtMergedChainSlot1 =
+  g_pFrameOtMergedChainSlot1 = g_pFrameOtMergedChainSlot0 =
       VREAD(g_pRenderScratchPrimTop);
-  g_pFrameOtDepthBinBase0 = g_pFrameOtDepthBinBase1 =
+  g_pFrameOtDepthBinBase1 = g_pFrameOtDepthBinBase0 =
       VREAD(g_pRenderScratchOtBase);
   FillWord(g_pFrameOtMergedChainSlot0, 0, 8);
   FillWord(g_pRenderScratchOtBase, 0, 0x4000);

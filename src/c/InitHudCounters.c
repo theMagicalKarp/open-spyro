@@ -1,28 +1,9 @@
-/* PARK 91.6% (226/226 length-exact, 19 insns; 2026-10-04-2 rework).
- * Residue (one class, F1 local-alloc qty priority): the original loads
- * g_nExtraLives into v1 AFTER the gems array load and keeps the dragon count
- * in v0; ours allocates the short-lived `lives` qty first, it takes v0, the
- * dragon count is pushed to t0 (whole counter batch rotates t0..t3 instead of
- * v0,t0..t2) and sched2 then hoists the lives load above the sll/gems pair.
- * Invariant across: lives load position (3 spellings), direct
- * `g_nHudLivesCachedCount = VOL(g_nExtraLives)`, every volatility combination
- * of the anchor/display/counter/roll/hold/lives/idx groups (128 measured; a
- * non-volatile idx fixes lives->v1 but sinks the idx load below the display
- * stores, 31 linked), and reusing lives/gems/dragons/food as the loop count.
- * What SOLVED the rest (do not re-derive):
- *  - frame 0x38: an unreferenced 8-byte local (`pad[2]`);
- *  - source order of the whole straight-line block is enforced by gcc 2.7.2
- *    true_dependence's "both MEMs volatile" clause: the anchor/display/roll/
- *    hold stores and the idx/counter/lives loads are VOL(); the cached-count
- *    stores must NOT be (else li a3,1 leaves the jal slot, +1 insn);
- *  - anchor = (short *)&g_abHudIconActorRecords[0x196] (not the alias block):
- *    cse turns the volatile anchor stores into anchor-relative addresses that
- *    later fold back to direct `lui at` stores; with the alias symbol the first
- *    volatile store kept a `la` base;
- *  - butterfly loop: its own `dst`/`count` vars (not the copy loop's `rect`),
- *    `x = icon[0]` / `x = icon[1]` temps, and an explicit `size = 8` between
- *    the icon and ring inits (preheader LUID order).
- */
+/* Source order of the straight-line block is enforced by gcc 2.7.2
+ * true_dependence's "both MEMs volatile" clause: the anchor/display/roll/hold
+ * stores and the idx/counter/lives loads are VOL(), the cached-count stores are
+ * not. `dragons` is a `$2` register local: as a pseudo it loses v0 to the
+ * short-lived `lives` qty and the counter batch rotates. The frame needs an
+ * unreferenced 8-byte local (`pad[2]`). */
 #define VOL(x) (*(volatile __typeof__(x) *)&(x))
 #include "globals.h"
 
@@ -62,7 +43,7 @@ void InitHudCounters(int layout_butterflies) {
   int gems;
   int lives;
   int new_var;
-  int dragons;
+  register int dragons asm("$2");
   int worldEggs;
   int levelEggs;
   int count;
