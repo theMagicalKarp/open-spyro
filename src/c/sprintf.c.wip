@@ -1,0 +1,286 @@
+#include "globals.h"
+
+extern int strlen(char *s);
+extern char *memchr(char *s, int c, int n);
+extern void *memmove(void *dst, void *src, int n);
+
+/* One conversion's parsed spec: flag bits, explicit sign character, field
+   width and precision. Reset per conversion from the zero template below. */
+typedef struct {
+  unsigned int left : 1;    /* '-' */
+  unsigned int plus : 1;    /* '+' */
+  unsigned int alt : 1;     /* '#' */
+  unsigned int zero : 1;    /* '0' */
+  unsigned int hasprec : 1; /* '.' precision given */
+  unsigned int half : 1;    /* 'h' */
+  unsigned int lng : 1;     /* 'l' */
+  unsigned int dbl : 1;     /* 'L' */
+  char sign;
+  int width;
+  int prec;
+} FmtSpec;
+
+extern FmtSpec D_80074D98; /* all-zero spec template */
+extern char D_80011BBC[];  /* "0123456789ABCDEF" */
+extern char D_80011BD0[];  /* "0123456789abcdef" */
+
+#define va_start(list, last) (list = (char *)&last + sizeof(last))
+#define va_arg(list, mode) (*(mode *)((list += sizeof(mode)) - sizeof(mode)))
+
+/* PSY-Q libc sprintf (0x80062fd4, 2140 bytes): formats into `buf` with the
+   d/i/u/o/x/X/p/c/s/n conversions, the - + space # 0 flags, `*` width and
+   precision and h/l/L modifiers; `#s` takes a Pascal (length-prefixed)
+   string. An unknown conversion ends the output. Returns the length. */
+int sprintf(char *buf, char *fmt, ...) {
+  char tmp[0x200];
+  FmtSpec st;
+  char *ap;
+  /* DO NOT REMOVE: taking ap's address keeps it in its stack slot, as in the
+     original (every va_arg is a load/store of 0x220(sp)). */
+  char **app = &ap;
+  unsigned int v;
+  char *s;
+  char *digits;
+  char *p;
+  int n;
+  int len;
+  int c;
+
+  va_start(ap, fmt);
+  len = 0;
+  for (c = *fmt; c != 0; c = *++fmt) {
+    if (c != '%') {
+      buf[len++] = c;
+      continue;
+    }
+    st = D_80074D98;
+    for (;;) {
+      c = *++fmt;
+      if (c == '-') {
+        st.left = 1;
+      } else if (c == '+') {
+        st.plus = 1;
+      } else if (c == ' ') {
+        st.sign = c;
+      } else if (c == '#') {
+        st.alt = 1;
+      } else if (c == '0') {
+        st.zero = 1;
+      } else {
+        break;
+      }
+    }
+    if (c == '*') {
+      st.width = va_arg(ap, int);
+      if (st.width < 0) {
+        st.width = -st.width;
+        st.left = 1;
+      }
+      c = *++fmt;
+    } else {
+      while ((unsigned)(c - '0') < 10) {
+        st.width = st.width * 10 + (c - '0');
+        c = *++fmt;
+      }
+    }
+    if (c == '.') {
+      c = *++fmt;
+      if (c == '*') {
+        st.prec = va_arg(ap, int);
+        c = *++fmt;
+      } else {
+        while ((unsigned)(c - '0') < 10) {
+          st.prec = st.prec * 10 + (c - '0');
+          c = *++fmt;
+        }
+      }
+      if (st.prec >= 0) {
+        st.hasprec = 1;
+      }
+    }
+    s = tmp + sizeof(tmp);
+    if (st.left) {
+      st.zero = 0;
+    }
+
+  modifier:
+    switch (c) {
+    case 'h':
+      st.half = 1;
+      c = *++fmt;
+      goto modifier;
+    case 'l':
+      st.lng = 1;
+      c = *++fmt;
+      goto modifier;
+    case 'L':
+      st.dbl = 1;
+      c = *++fmt;
+      goto modifier;
+    case 'd':
+    case 'i':
+      v = va_arg(ap, int);
+      if (st.half) {
+        v = (short)v;
+      }
+      if ((int)v < 0) {
+        v = -v;
+        st.sign = '-';
+      } else if (st.plus) {
+        st.sign = '+';
+      }
+      goto decimal;
+    case 'u':
+      v = va_arg(ap, int);
+      if (st.half) {
+        v = (unsigned short)v;
+      }
+      st.sign = 0;
+    decimal:
+      if (!st.hasprec) {
+        if (st.zero) {
+          st.prec = st.width;
+          if (st.sign) {
+            st.prec = st.width - 1;
+          }
+        }
+        if (st.prec <= 0) {
+          st.prec = 1;
+        }
+      }
+      n = 0;
+      while (v) {
+        *--s = v % 10 + '0';
+        v /= 10;
+        n++;
+      }
+      while (n < st.prec) {
+        *--s = '0';
+        n++;
+      }
+      if (st.sign) {
+        *--s = st.sign;
+        n++;
+      }
+      break;
+    case 'o':
+      v = va_arg(ap, int);
+      if (st.half) {
+        v = (unsigned short)v;
+      }
+      if (!st.hasprec) {
+        if (st.zero) {
+          st.prec = st.width;
+        }
+        if (st.prec <= 0) {
+          st.prec = 1;
+        }
+      }
+      n = 0;
+      while (v) {
+        *--s = (v & 7) + '0';
+        v >>= 3;
+        n++;
+      }
+      if (st.alt && n && *s != '0') {
+        *--s = '0';
+        n++;
+      }
+      while (n < st.prec) {
+        *--s = '0';
+        n++;
+      }
+      break;
+    case 'p':
+      st.prec = 8;
+      st.hasprec = 1;
+      st.lng = 1;
+      /* FALLTHROUGH */
+    case 'X':
+      digits = D_80011BBC;
+      goto hex;
+    case 'x':
+      digits = D_80011BD0;
+    hex:
+      v = va_arg(ap, int);
+      if (st.half) {
+        v = (unsigned short)v;
+      }
+      if (!st.hasprec) {
+        if (st.zero) {
+          st.prec = st.width;
+          if (st.alt) {
+            st.prec = st.width - 2;
+          }
+        }
+        if (st.prec <= 0) {
+          st.prec = 1;
+        }
+      }
+      n = 0;
+      while (v) {
+        *--s = digits[v & 0xF];
+        v >>= 4;
+        n++;
+      }
+      while (n < st.prec) {
+        *--s = '0';
+        n++;
+      }
+      if (st.alt) {
+        *--s = c;
+        *--s = '0';
+        n += 2;
+      }
+      break;
+    case 'c':
+      *--s = va_arg(ap, int);
+      n = 1;
+      break;
+    case 's':
+      s = va_arg(ap, char *);
+      if (st.alt) {
+        n = *s++;
+        if (st.hasprec && st.prec < n) {
+          n = st.prec;
+        }
+      } else if (!st.hasprec) {
+        n = strlen(s);
+      } else if ((p = memchr(s, 0, st.prec)) != 0) {
+        n = p - s;
+      } else {
+        n = st.prec;
+      }
+      break;
+    case 'n':
+      s = va_arg(ap, char *);
+      if (st.half) {
+        *(short *)s = len;
+      } else {
+        *(int *)s = len;
+      }
+      continue;
+    default:
+      if (c != '%') {
+        goto done;
+      }
+      buf[len++] = c;
+      continue;
+    }
+
+    if (n < st.width && !st.left) {
+      do {
+        buf[len++] = ' ';
+      } while (n < --st.width);
+    }
+    memmove(buf + len, s, n);
+    len += n;
+    while (n < st.width) {
+      buf[len++] = ' ';
+      n++;
+    }
+  }
+done:
+  buf[len] = 0;
+  return len;
+}

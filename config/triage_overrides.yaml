@@ -5095,3 +5095,8 @@ DispatchSpyroTriggerEvent_2026_10_06:
   class: "F8 sched tie: case-0 orb-drop store block (OrbDrop store must fill the flags load delay)"
   date: 2026-10-06
   note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, D_80075728, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
+sprintf_2026_10_06:
+  verdict: parked
+  class: "F8 sched1 tie: va_arg value load vs spec-flags load order at the 4 conversion sites (d/u/o/x)"
+  date: 2026-10-06
+  note: "PSY-Q libc sprintf decoded (.wip): FmtSpec bitfield struct with char sign at byte 1 copied from the D_80074D98 zero template, ap kept in its stack slot by an unused &ap, store-before-load va_arg. First 0x2c0 bytes exact; 531/535 insns. At each d/u/o/x site the original loads the arg before the flags word (old ap in v1, flags reuses v1 + a load-delay nop); mine hoists the flags load (old ap in v0), 1 insn short per site. Tried: char/int ap with 4 va_arg spellings, separate load/advance, signed v (wrong divides)."
