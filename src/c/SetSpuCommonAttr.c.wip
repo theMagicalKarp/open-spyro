@@ -2,35 +2,35 @@
 
 /* SPU hardware register block (only the fields this file touches). */
 typedef struct {
-  unsigned short voice[0xC0];   /* 0x000 */
-  short mvol_left;              /* 0x180 */
-  short mvol_right;             /* 0x182 */
-  unsigned short pad184[0x13];  /* 0x184 */
-  unsigned short spucnt;        /* 0x1aa */
-  unsigned short pad1ac[2];     /* 0x1ac */
-  short cd_vol_left;            /* 0x1b0 */
-  short cd_vol_right;           /* 0x1b2 */
-  short ext_vol_left;           /* 0x1b4 */
-  short ext_vol_right;          /* 0x1b6 */
+  unsigned short voice[0xC0];  /* 0x000 */
+  short mvol_left;             /* 0x180 */
+  short mvol_right;            /* 0x182 */
+  unsigned short pad184[0x13]; /* 0x184 */
+  unsigned short spucnt;       /* 0x1aa */
+  unsigned short pad1ac[2];    /* 0x1ac */
+  short cd_vol_left;           /* 0x1b0 */
+  short cd_vol_right;          /* 0x1b2 */
+  short ext_vol_left;          /* 0x1b4 */
+  short ext_vol_right;         /* 0x1b6 */
 } SpuRegs;
 
 /* libspu SpuCommonAttr. */
 typedef struct {
-  unsigned int mask;  /* 0x00 */
-  short mvol_left;    /* 0x04 */
-  short mvol_right;   /* 0x06 */
+  unsigned int mask;    /* 0x00 */
+  short mvol_left;      /* 0x04 */
+  short mvol_right;     /* 0x06 */
   short mvolmode_left;  /* 0x08 */
   short mvolmode_right; /* 0x0a */
-  short mvolx_left;   /* 0x0c */
-  short mvolx_right;  /* 0x0e */
-  short cd_vol_left;  /* 0x10 */
-  short cd_vol_right; /* 0x12 */
-  int cd_reverb;      /* 0x14 */
-  int cd_mix;         /* 0x18 */
-  short ext_vol_left;  /* 0x1c */
-  short ext_vol_right; /* 0x1e */
-  int ext_reverb;     /* 0x20 */
-  int ext_mix;        /* 0x24 */
+  short mvolx_left;     /* 0x0c */
+  short mvolx_right;    /* 0x0e */
+  short cd_vol_left;    /* 0x10 */
+  short cd_vol_right;   /* 0x12 */
+  int cd_reverb;        /* 0x14 */
+  int cd_mix;           /* 0x18 */
+  short ext_vol_left;   /* 0x1c */
+  short ext_vol_right;  /* 0x1e */
+  int ext_reverb;       /* 0x20 */
+  int ext_mix;          /* 0x24 */
 } SpuCommonAttr;
 
 extern SpuRegs *D_80073554; /* SPU register block base */
