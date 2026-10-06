@@ -5090,3 +5090,8 @@ SetSpuCommonAttr_2026_10_06:
   class: "F1 global-alloc priority: vl/vr/mask/all register rotation (a2/t0/t1/t2 vs a3/t2/t0/t1)"
   date: 2026-10-06
   note: "libspu SpuSetCommonAttr decode is length-exact with both switches (explicit case 0 needed, no frame pad). Unpinned 80/229; vr pinned to $8 gives 60/229 (.wip). Residue: vl/clamp-temp a2<->a3 swap, `or` operand order, the right-half andi not stolen into the beqz delay slot, SPUCNT RMW v0/v1 swap. Decl order, all-flag spelling, int types, volatile regs: no change."
+DispatchSpyroTriggerEvent_2026_10_06:
+  verdict: parked
+  class: "F8 sched tie: case-0 orb-drop store block (OrbDrop store must fill the flags load delay)"
+  date: 2026-10-06
+  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, D_80075728, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
