@@ -45,6 +45,7 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
   unsigned short vl;
   register unsigned short vr asm("$8");
   unsigned short vmode;
+  unsigned short vol;
 
   vl = 0;
   vr = 0;
@@ -94,7 +95,8 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
         vl = attr->mvol_left;
       }
     }
-    D_80073554->mvol_left = (vl & 0x7FFF) | vmode;
+    vol = vl & 0x7FFF;
+    D_80073554->mvol_left = vol | vmode;
   }
 
   if (all || (mask & 2)) {
@@ -140,7 +142,8 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
         vr = attr->mvol_right;
       }
     }
-    D_80073554->mvol_right = (vr & 0x7FFF) | vmode;
+    vol = vr & 0x7FFF;
+    D_80073554->mvol_right = vol | vmode;
   }
 
   if (all || (mask & 0x40)) {

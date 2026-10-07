@@ -5125,3 +5125,38 @@ GemPickup_Update:
   class: "sched/regalloc tie residue: constant-set placement in long call blocks + timer-base hard-reg choice"
   date: 2026-10-07
   note: "8,400 B, .c.wip length-exact at 19 masked / 2100 over 6 knots. (a) case 0/6 GB[5] base takes a0 not s1/a3, so the 1-constant takes s1 not s2. (b) case 2 QI `li s1,5` must open the post-loop block to fill the Alloc delay slot; ours lands at its first use. (c) case 4 `li a1,4` placement. (d) case 5 tbl `la s4` floats past AdvanceSpyroAnimFrame. Wins this session: AdvanceSpyroAnimFrame first, `int *tp = &GB[5]` store, `*(int *)(int)g_anCameraPos` non-struct load, plain statue load. Inert: hoisting the constant into a local (cse re-materializes it), register asm pin, tbl decl placement."
+SetSpuCommonAttr_2026_10_07:
+  verdict: parked
+  class: "F1 global-alloc priority: vl (7 refs/42) < clamp temp (3/7) and vr (7/86) < mask/all; needs +1 ref each"
+  date: 2026-10-07
+  note: "ApplySpuVoiceAttrRange's lever applied: a separate `vol = vl & 0x7FFF` statement fixes the or order + delay-slot andi (pinned .wip 60 -> 59; unpinned 80 -> 78). Remaining residue is pure global.c priority (floor_log2(R)*R/L): orig allocates vl before the lh clamp temp and vr before mask/all. Shared clamp temp, vl/vr/vmode type sweeps: no change."
+GemPickup_Update_2026_10_07_1:
+  verdict: parked
+  class: "global.c find_reg: GB[5] base pseudo (118: 3 refs, conflicts only 123/v0/v1) takes a0; orig s1 / a3"
+  date: 2026-10-07
+  note: "Unchanged 22/2100. -dg shows the case-0 base conflicts with nothing but the const-1 pseudo, so pass 0 hands it a0; the original's s1 needs the base to be call-crossing or a0..t7 preferred by a conflicting allocno. Function-scope `int *tp` shared by case 0 and the case-6 tail, and `*(tp = &GB[5])` spellings: byte-identical."
+InitActorMeshScratchRegions_2026_10_07_1:
+  verdict: parked
+  class: "sched1 potential_hazard: at T-17 the RegionBase store (80) beats the FillWord `a1 = 0` (119), so 119 lands before the store"
+  date: 2026-10-07
+  note: "3/56 linked. -dS trace: ready {121,119,80} after the boosted RegionBase reload (85, 7f000001) is placed; the store wins on potential_hazard, so no source order reaches the original's store, a1=0, reload sequence. Needs 80 to leave the ready set one cycle later (a 2-cycle store->load dep cost) or 119 to carry a priority above 1."
+func_level_5_8007B68C_2026_10_07_1:
+  verdict: parked
+  class: "R5 sched2 store/store hole + Rd (unchanged 8/1610)"
+  date: 2026-10-07
+  note: "Re-read the R5 lead against gcc 2.7.2 source: sched.c splits every pre-reload large_int set (try_split while reload_completed == 0), and flow.c only marks setjmp-crossing pseudos reg_live_length = -1, so an unsplit `li` pair must come from reload (a spilled REG_EQUIV constant or an operand reload). No source form tried this session."
+CdControl_2026_10_07_1:
+  verdict: parked
+  class: "prologue straggler LUID (unchanged)"
+  date: 2026-10-07
+  note: "Screened only. loop.c moves a maybe_never set when the dest is NOT a user variable (scan_loop condition 2), so a compiler temp carrying the 0 could hoist from after the &D_80074DAC[com] computation; no spelling that creates such a temp without extra copies is known."
+WaitForFrameDeadline_2026_10_07_1:
+  verdict: wall
+  class: "B20 (unchanged 7/39)"
+  date: 2026-10-07
+  note: "Screened only."
+TickWorldBundleLoadStream_2026_10_07_1:
+  verdict: parked
+  class: "multi-site regalloc residue (unchanged)"
+  date: 2026-10-07
+  note: "Screened only; ~60 masked lines over 6+ sites, not a one-lever park."
