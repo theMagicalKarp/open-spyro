@@ -1,0 +1,778 @@
+#include "globals.h"
+
+extern void TickSpyroGameplayFrame(void);
+extern void UpdateCameraFrame(void);
+extern int ArcTan2(int y, int x, int high_precision);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern void AddVector(int *dst, int *a, int *b);
+extern void RShiftVector3(int *vec, int shift);
+extern void CopyVector(int *dst, int *src);
+extern int VectorLength(int *vec, int include_z);
+extern int AbsAngleDelta12(int a, int b);
+extern int AbsAngleDelta8(int a, int b);
+extern int SignedAngleDelta12(int a, int b);
+extern int SignedAngleDelta8(int a, int b);
+extern int LookupSine(int angle);
+extern int LookupCosine(int angle);
+extern int IntegerSqrt(int n);
+extern void ResetSpyroEntity(int mode);
+extern void StopAllSoundExceptMask(int mask);
+extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
+                           void *marker);
+extern void AdvanceSpyroAnimFrame(int delta);
+extern void TickSpyroAnimLayer1(void);
+extern void TickSpyroAnimLayer2(void);
+extern int FindWorldFloorBelowPoint(int *pos);
+extern void SampleSpyroShadowRingHeights(int mode);
+extern void *AllocActorRecordSlot(void);
+extern void InitActorRenderDefaults(void *actor);
+extern void EncodeCachedVecToActorDirCode(void *actor);
+extern void InsertActorIntoSpatialGrid(void *actor);
+extern void StopSoundVoiceByIndex(int voice, int mode);
+extern void DespawnActorRecord(void *actor);
+extern void CopyWords(void *dst, void *src, int byte_count);
+extern void TickSpuPerFrame(void);
+extern int SetSpuTransferStartAddr(unsigned int addr);
+extern unsigned int WriteSpuRam(void *buf, unsigned int size);
+extern long GetSpuTransferStatus(int mode);
+extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
+                                          int t);
+extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
+extern void CommitHudCounterAnimState(int slot, int digits, int phase);
+extern void EndGemPickupToWorld(void);
+extern void TickGemPickupAssetStream(void);
+extern void TickGemPickupBurstEntity(void *actor);
+
+extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
+extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
+extern int g_anSpyroWorldPosBlock[];
+extern int g_nSpyroAnimPlayRate_blk[];
+extern int g_nSpyroGroundNormalX;  /* 0x80078afc — g_anSpyroGroundNormal[0] */
+extern int g_nSpyroGroundNormalY;  /* 0x80078b00 — g_anSpyroGroundNormal[1] */
+extern unsigned char D_8006F390[]; /* substate-1 flicker euler pairs */
+extern unsigned char D_8006F391[];
+extern unsigned char D_8006F398[]; /* substate-2 flicker euler pairs */
+extern unsigned char D_8006F399[];
+extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
+extern char
+    *volatile D_800761D0; /* volatile view of g_pLevelSampleBankEntries */
+extern void *g_apSampleBankEntriesBlock[];
+extern int D_800761DC;
+extern short D_800761E8;
+extern short D_800761EA;
+
+/* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
+   [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
+extern int g_anGemPickupBlock[];
+extern int g_anHudDragonCachedCountBlock[];
+extern int g_anGemPickupAuraStarBlock[]; /* [0] enable flag */
+
+#define GB g_anGemPickupBlock
+#define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])
+#define SRC (*(char *volatile *)&g_pGemPickupSourceActor)
+#define STATUE (*(char *volatile *)&g_pGemPickupStatueActor)
+#define MIRROR (*(char *volatile *)&g_pGemPickupSpyroMirrorActor)
+#define W32(p, off) (*(int *)((char *)(p) + (off)))
+#define H16(p, off) (*(short *)((char *)(p) + (off)))
+#define U8(p, off) (*(unsigned char *)((char *)(p) + (off)))
+#define REC(p) (*(int **)(p))
+#define OTY ((int)g_dwGemPickupOrbitTargetYaw)
+#define SAMPLE(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
+
+/* Frames between keyframes of a mesh's animation for its frame-rate code. */
+#define FRAME_STEP(model, step)                                                \
+  {                                                                            \
+    int rate = U8(W32(model, 0x38), 0xC);                                      \
+                                                                               \
+    if (rate == 0x10) {                                                        \
+      step = 8;                                                                \
+    } else if (rate == 0x15) {                                                 \
+      step = 6;                                                                \
+    } else {                                                                   \
+      step = 2;                                                                \
+      if (rate == 0x20) {                                                      \
+        step = 4;                                                              \
+      }                                                                        \
+    }                                                                          \
+  }
+
+/* 0x8002f3e4 (0x20d0): the dragon-rescue (gem pickup) gamestate. Substates:
+   0 the aura star swells while Spyro keeps playing, 1 Spyro is swept round
+   the statue and the camera eases in, 2 waits for the dragon assets and
+   spawns the statue and Spyro's stand-in, 3 the statue turns to face its
+   heading, 4 the camera path plays (with the dragon's voice line), 5 the
+   statue lights up and the HUD icons roll in, 6 the dragon counter ticks,
+   7 the fade back to the world. */
+void GemPickup_Update(void) {
+  int vec[3];
+  short ang[4];
+  int t;
+  int a;
+  int d;
+  int i;
+  int done;
+
+  GB[5] += g_nFrameStep;
+  g_nGemPickupSecondaryTimer += g_nFrameStep;
+  switch (g_nGemPickupSubstate) {
+  case 0:
+    g_dwGamestateFrames++;
+    ((void (*)(void))g_pfnGamestate0EarlyHook)();
+    TickSpyroGameplayFrame();
+    UpdateCameraFrame();
+    g_nGemPickupAuraStarEnabled = 1;
+    g_bGemPickupAuraStarColor = g_nGemPickupTimer * 4 + 0x40;
+    g_nGemPickupAuraStarRadius = g_nGemPickupTimer * 0x10;
+    g_abGemPickupAuraStarEuler[2] +=
+        ((g_nGemPickupTimer >> 4) + 2) * g_nFrameStep;
+    if (g_nGemPickupTimer > 0x20) {
+      g_nGemPickupFullscreenTintLevel = (g_nGemPickupTimer - 0x20) * 0x10;
+    } else {
+      g_nGemPickupFullscreenTintLevel = 0;
+    }
+    if (g_nPulseRumbleTimer < 8) {
+      g_nPulseRumbleTimer = 8;
+    }
+    g_nPulseRumbleAmount = 0x46;
+    if (GB[5] >= 0x30) {
+      int *rec;
+      int *tp = &GB[5];
+
+      g_nGemPickupSubstate = 1;
+      *tp = 0;
+      g_nGemPickupFullscreenTintLevel = 0xFF;
+      W32(SRC, 0x14) -= 0x78;
+      {
+        char *src = SRC;
+
+        g_nGemPickupOrbitStartYaw =
+            ArcTan2(g_anSpyroWorldPos[0] - W32(src, 0xC),
+                    g_nSpyroWorldPosY - W32(src, 0x10), 1);
+      }
+      SubtractVector(vec, g_anSpyroWorldPos, (int *)(SRC + 0xC));
+      g_nGemPickupOrbitStartRadius = VectorLength(vec, 0);
+      {
+        char *src = SRC;
+
+        g_dwGemPickupOrbitTargetYaw = W32(REC(src), 0x28);
+        g_nGemPickupOrbitTargetRadius = W32(REC(src), 0x2c);
+        g_nGemPickupCameraStartYaw =
+            ArcTan2(*(int *)(int)g_anCameraPos - W32(src, 0xC),
+                    g_anCameraPos[1] - W32(src, 0x10), 1);
+      }
+      SubtractVector(vec, g_anCameraPos, (int *)(SRC + 0xC));
+      g_nGemPickupCameraStartRadius = VectorLength(vec, 0);
+      g_nGemPickupCameraStartZ = g_anCameraPos[2];
+      {
+        char *src = SRC;
+
+        rec = REC(src);
+        g_nGemPickupCameraTargetYaw = ArcTan2(W32(rec, 0) - W32(src, 0xC),
+                                              W32(rec, 4) - W32(src, 0x10), 1);
+      }
+      SubtractVector(vec, rec, (int *)(SRC + 0xC));
+      g_nGemPickupCameraTargetRadius = VectorLength(vec, 0);
+      g_nGemPickupCameraTargetZ = W32(rec, 8);
+      g_nGemPickupSweepDurationFrames =
+          (AbsAngleDelta12(g_nGemPickupOrbitStartYaw,
+                           g_dwGemPickupOrbitTargetYaw) >>
+           4) +
+          0x28;
+      if (g_nGemPickupSweepDurationFrames < 0x40) {
+        g_nGemPickupSweepDurationFrames = 0x40;
+      }
+      if (g_nGemPickupSweepDurationFrames > 0x80) {
+        g_nGemPickupSweepDurationFrames = 0x80;
+      }
+      g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
+      ResetSpyroEntity(1);
+      g_bSpyroAnimPrev = 1;
+      g_bSpyroAnimCurrent = 1;
+      g_bSpyroAnimFrame = 1;
+      g_bSpyroFramePrev = 0;
+      g_bSpyroSubFrameTimer = 0;
+      g_pEmitListWriteCursor = g_pEmitListBase;
+      ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
+      StopAllSoundExceptMask(1 << U8(SRC, 0x54));
+      PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+    }
+    break;
+  case 1:
+    if (g_nGemPickupTimer < 0x20) {
+      int k = 0x20 - g_nGemPickupTimer;
+
+      g_nGemPickupAuraStarEnabled = 1;
+      g_bGemPickupAuraStarColor = k * 4 + 0x40;
+      g_nGemPickupAuraStarRadius = k * 0x10;
+      g_abGemPickupAuraStarEuler[2] += ((k >> 4) + 2) * g_nFrameStep;
+    } else {
+      g_nGemPickupAuraStarEnabled = 0;
+    }
+    if (g_nGemPickupTimer < 8) {
+      g_nGemPickupFullscreenTintLevel = (8 - g_nGemPickupTimer) << 5;
+    } else {
+      g_nGemPickupFullscreenTintLevel = 0;
+    }
+    {
+      char *s = SRC;
+
+      U8(s, 0x49) = (U8(s, 0x49) + 1) & 3;
+    }
+    {
+      char *s = SRC;
+
+      U8(s, 0x44) = D_8006F390[U8(s, 0x49) * 2];
+    }
+    {
+      char *s = SRC;
+
+      U8(s, 0x45) = D_8006F391[U8(s, 0x49) * 2];
+    }
+    if (g_nPulseRumbleTimer < 8) {
+      g_nPulseRumbleTimer = 8;
+    }
+    g_nPulseRumbleAmount = 0x46;
+    ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(0xFB,
+                                                       g_pGemPickupSourceActor);
+    if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames) {
+      t = LookupSine((g_nGemPickupTimer << 11) /
+                         g_nGemPickupSweepDurationFrames -
+                     0x400) +
+          0x1000;
+      if (((OTY - g_nGemPickupOrbitStartYaw) & 0xFFF) < 0x801) {
+        a = g_nGemPickupOrbitStartYaw +
+            ((AbsAngleDelta12(OTY, g_nGemPickupOrbitStartYaw) * t) >> 13);
+      } else {
+        a = g_nGemPickupOrbitStartYaw -
+            ((AbsAngleDelta12(OTY, g_nGemPickupOrbitStartYaw) * t) >> 13);
+      }
+      d = g_nGemPickupOrbitStartRadius +
+          (((g_nGemPickupOrbitTargetRadius - g_nGemPickupOrbitStartRadius) *
+            (LookupSine((g_nGemPickupTimer << 10) /
+                            g_nGemPickupSweepDurationFrames -
+                        0x400) +
+             0x1000)) >>
+           12);
+      CopyVector(vec, g_anSpyroWorldPos);
+      g_anSpyroWorldPos[0] = W32(SRC, 0xC) + ((LookupCosine(a) * d) >> 12);
+      g_nSpyroWorldPosY = W32(SRC, 0x10) + ((LookupSine(a) * d) >> 12);
+      SubtractVector(vec, g_anSpyroWorldPos, vec);
+      {
+        int dir = ArcTan2(vec[0], vec[1], 0);
+
+        if (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >= 4) {
+          if (((dir - g_abSpyroPersistentEuler[2]) & 0xFF) < 0x81) {
+            g_abSpyroPersistentEuler[2] =
+                g_abSpyroPersistentEuler[2] +
+                (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >> 2);
+          } else {
+            g_abSpyroPersistentEuler[2] =
+                g_abSpyroPersistentEuler[2] -
+                (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >> 2);
+          }
+        }
+      }
+      g_nSpyroAnimPlayRate_blk[0] = VectorLength(vec, 0) >> 1;
+      if (g_nSpyroAnimPlayRate_blk[0] < 4) {
+        g_nSpyroAnimPlayRate_blk[0] = 4;
+      }
+      if (g_nSpyroAnimPlayRate_blk[0] > 0x10) {
+        g_nSpyroAnimPlayRate_blk[0] = 0x10;
+      }
+      if (((GB[21] - GB[18]) & 0xFFF) < 0x801) {
+        a = GB[18] + ((AbsAngleDelta12(GB[21], GB[18]) * t) >> 13);
+      } else {
+        a = GB[18] - ((AbsAngleDelta12(GB[21], GB[18]) * t) >> 13);
+      }
+      d = g_nGemPickupCameraStartRadius +
+          (((g_nGemPickupCameraTargetRadius - g_nGemPickupCameraStartRadius) *
+            t) >>
+           13);
+      g_anCameraPos[0] = W32(SRC, 0xC) + ((LookupCosine(a) * d) >> 12);
+      g_anCameraPos[1] = W32(SRC, 0x10) + ((LookupSine(a) * d) >> 12);
+      g_anCameraPos[2] =
+          g_nGemPickupCameraStartZ +
+          (((g_nGemPickupCameraTargetZ - g_nGemPickupCameraStartZ) * t) >> 13);
+      {
+        int land = g_nGemPickupSweepDurationFrames - 0x10;
+
+        if (g_nGemPickupTimer >= land &&
+            g_nGemPickupTimer - g_nFrameStep < land) {
+          g_bSpyroFramePrev = g_bSpyroAnimFrame;
+          g_bSpyroAnimCurrent = 3;
+          g_bSpyroAnimFrame = 0;
+          g_bSpyroSubFrameTimer = 0;
+          g_nSpyroAnimPlayRate = 0xC;
+        }
+      }
+    } else if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames + 0x20) {
+      if (g_nGemPickupTimer - g_nFrameStep < g_nGemPickupSweepDurationFrames) {
+        g_anSpyroWorldPos[0] =
+            W32(SRC, 0xC) + ((LookupCosine(g_dwGemPickupOrbitTargetYaw) *
+                              g_nGemPickupOrbitTargetRadius) >>
+                             12);
+        {
+          int s = LookupSine(g_dwGemPickupOrbitTargetYaw) *
+                  g_nGemPickupOrbitTargetRadius;
+          char *src = SRC;
+          int y = W32(src, 0x10);
+
+          g_nGemPickupOrbitStartYaw = g_abSpyroPersistentEuler[2] << 4;
+          g_dwGemPickupOrbitTargetYaw =
+              (g_dwGemPickupOrbitTargetYaw + 0x800) & 0xFFF;
+          g_nSpyroWorldPosY = y + (s >> 12);
+          CopyVector(g_anCameraPos, REC(src));
+        }
+      }
+      if (((OTY - g_nGemPickupOrbitStartYaw) & 0xFFF) < 0x801) {
+        a = g_nGemPickupOrbitStartYaw +
+            (AbsAngleDelta12(OTY, g_nGemPickupOrbitStartYaw) *
+             (g_nGemPickupTimer - g_nGemPickupSweepDurationFrames)) /
+                32;
+      } else {
+        a = g_nGemPickupOrbitStartYaw -
+            (AbsAngleDelta12(OTY, g_nGemPickupOrbitStartYaw) *
+             (g_nGemPickupTimer - g_nGemPickupSweepDurationFrames)) /
+                32;
+      }
+      g_abSpyroPersistentEuler[2] = a >> 4;
+      g_nSpyroAnimPlayRate = 8;
+    } else {
+      g_nGemPickupSubstate = 2;
+      g_bSpyroSubFrameTimer = 4;
+      g_nGemPickupTimer = 0;
+      g_bSpyroAnimCurrent = 0;
+      g_bSpyroAnimFrame = 0;
+      g_nSpyroAnimPlayRate = 4;
+      g_abSpyroPersistentEuler[2] = (int)g_dwGemPickupOrbitTargetYaw >> 4;
+    }
+    if (g_nGemPickupSubstate == 1) {
+
+      AddVector(vec, g_anSpyroWorldPos, (int *)(SRC + 0xC));
+      RShiftVector3(vec, 1);
+      SubtractVector(vec, vec, g_anCameraPos);
+      if (g_nGemPickupTimer < 0x10) {
+        ang[0] = 0;
+        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[2] = ArcTan2(vec[0], vec[1], 1);
+        g_nCameraEulerRoll = (g_nCameraEulerRoll +
+                              ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
+                                g_nGemPickupTimer) >>
+                               4)) &
+                             0xFFF;
+        g_nCameraEulerPitch =
+            (g_nCameraEulerPitch +
+             ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) *
+               g_nGemPickupTimer) >>
+              4)) &
+            0xFFF;
+        g_nCameraEulerYaw = (g_nCameraEulerYaw +
+                             ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) *
+                               g_nGemPickupTimer) >>
+                              4)) &
+                            0xFFF;
+      } else if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames - 0x20) {
+        g_nCameraEulerRoll = 0;
+        g_nCameraEulerPitch = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
+      } else {
+        int *rec = REC(SRC);
+
+        ang[0] = 0;
+        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[2] = ArcTan2(vec[0], vec[1], 1);
+        g_nCameraEulerRoll =
+            (ang[0] +
+             ((SignedAngleDelta12(W32(rec, 0xc), ang[0]) *
+               (g_nGemPickupTimer - g_nGemPickupSweepDurationFrames + 0x20)) >>
+              6)) &
+            0xFFF;
+        g_nCameraEulerPitch =
+            (ang[1] +
+             ((SignedAngleDelta12(W32(rec, 0x10), ang[1]) *
+               (g_nGemPickupTimer - g_nGemPickupSweepDurationFrames + 0x20)) >>
+              6)) &
+            0xFFF;
+        g_nCameraEulerYaw =
+            (ang[2] +
+             ((SignedAngleDelta12(W32(rec, 0x14), ang[2]) *
+               (g_nGemPickupTimer - g_nGemPickupSweepDurationFrames + 0x20)) >>
+              6)) &
+            0xFFF;
+      }
+    }
+    {
+      vec[0] = (g_nSpyroGroundNormalX * LookupCosine(EUL2 << 4) +
+                g_nSpyroGroundNormalY * LookupSine(EUL2 << 4)) >>
+               12;
+      vec[1] = (g_nSpyroGroundNormalY * LookupCosine(EUL2 << 4) -
+                g_nSpyroGroundNormalX * LookupSine(EUL2 << 4)) >>
+               12;
+      vec[2] = g_anSpyroGroundNormal[2];
+      g_abSpyroPersistentEuler[0] =
+          -ArcTan2(IntegerSqrt(vec[0] * vec[0] + vec[2] * vec[2]), vec[1], 1);
+      g_abSpyroPersistentEuler[1] = -ArcTan2(vec[2], vec[0], 1);
+      AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
+      TickSpyroAnimLayer1();
+      TickSpyroAnimLayer2();
+      g_nSpyroWorldPosZ += 0x400;
+      g_nSpyroGroundHeightZ = FindWorldFloorBelowPoint(g_anSpyroWorldPosBlock);
+      g_nSpyroWorldPosZ = g_nSpyroGroundHeightZ + 0x164;
+      SampleSpyroShadowRingHeights(0);
+    }
+    break;
+  case 2: {
+    char *s = SRC;
+
+    U8(s, 0x49) = (U8(s, 0x49) + 1) & 3;
+  }
+    {
+      char *s = SRC;
+
+      U8(s, 0x44) = D_8006F398[U8(s, 0x49) * 2];
+    }
+    {
+      char *s = SRC;
+
+      U8(s, 0x45) = D_8006F399[U8(s, 0x49) * 2];
+    }
+    if (g_nPulseRumbleTimer < 8) {
+      g_nPulseRumbleTimer = 8;
+    }
+    g_nPulseRumbleAmount = 0x46;
+    ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(0xFB,
+                                                       g_pGemPickupSourceActor);
+    if (g_nGemPickupTimer < 0x10 || g_nGemPickupStreamState < 3) {
+      AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
+      TickSpyroAnimLayer1();
+      TickSpyroAnimLayer2();
+    } else {
+      g_nGemPickupSubstate = 3;
+      g_nGemPickupTimer = 0;
+      {
+        int n;
+
+        for (n = 0; n < 0x20; n++) {
+          ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(
+              0xFB, g_pGemPickupSourceActor);
+        }
+      }
+      GB[24] = (int)AllocActorRecordSlot();
+      InitActorRenderDefaults((void *)GB[24]);
+      H16(STATUE, 0x36) = 0x1FE;
+      CopyVector((int *)(GB[24] + 0xC), (int *)(SRC + 0xC));
+      {
+        char *s = SRC;
+        char *t = STATUE;
+
+        U8(t, 0x46) = U8(s, 0x46);
+      }
+      U8(STATUE, 0x57) = 0x60;
+      U8(STATUE, 0x47) = 5;
+      W32(STATUE, 0x1C) = -1;
+      W32(STATUE, 0x14) += 0x400;
+      FindWorldFloorBelowPoint((int *)(GB[24] + 0xC));
+      W32(STATUE, 0x14) -= 0x400;
+      EncodeCachedVecToActorDirCode((void *)GB[24]);
+      InsertActorIntoSpatialGrid((void *)GB[24]);
+      g_pGemPickupSpyroMirrorActor = AllocActorRecordSlot();
+      InitActorRenderDefaults(g_pGemPickupSpyroMirrorActor);
+      H16(MIRROR, 0x36) = 0x1FF;
+      CopyVector((int *)(MIRROR + 0xC), g_anSpyroWorldPos);
+      U8(MIRROR, 0x47) = 5;
+      InsertActorIntoSpatialGrid(MIRROR);
+      StopSoundVoiceByIndex(GB[11], 4);
+      PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
+      W32(SRC, 0x14) += 0x78;
+      DespawnActorRecord(SRC);
+    }
+    break;
+  case 3:
+    if (GB[5] < 0x18) {
+      U8(STATUE, 0x57) = 0x60 - GB[5] * 3;
+      {
+        char *s = SRC;
+        int turn;
+
+        turn =
+            SignedAngleDelta8(W32(REC(s), 0x30) >> 4, U8(s, 0x46)) * GB[5] / 24;
+        {
+          char *s2 = SRC;
+          char *t = STATUE;
+
+          U8(t, 0x46) = U8(s2, 0x46) + turn;
+        }
+      }
+    } else {
+      char *s = SRC;
+      char *t;
+
+      g_nGemPickupSubstate = 4;
+      GB[5] = 0;
+      t = STATUE;
+      U8(t, 0x46) = W32(REC(s), 0x30) >> 4;
+      U8(STATUE, 0x57) = 0;
+      U8(MIRROR, 0x44) = g_abSpyroPersistentEuler[0];
+      U8(MIRROR, 0x45) = g_abSpyroPersistentEuler[1];
+      U8(MIRROR, 0x46) = g_abSpyroPersistentEuler[2];
+    }
+    break;
+  case 4: {
+    int save[5];
+    int step;
+
+    done = 0;
+    if (GB[5] < g_nGemPickupCameraPathCount * 2) {
+      if (g_nGemPickupAudioFiredFlag == 0 && GB[5] >= W32(REC(SRC), 0x40)) {
+        CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
+        W32(D_800761D0, 0) = 0x80000 - g_nGemPickupAudioSampleSize;
+        W32(D_800761D0, 4) = -1;
+        H16(D_800761D0, 8) = 0x32;
+        {
+          int rate = (W32(REC(SRC), 0x3c) << 10) / 11025;
+
+          H16(D_800761D0, 0xA) = rate;
+        }
+        H16(D_800761D0, 0xC) = 0;
+        H16(D_800761D0, 0xE) = 0;
+        W32(D_800761D0, 0x10) = 0;
+        D_800761DC = 1;
+        D_800761E8 = 0x3FFF;
+        D_800761EA = 0x3FFF;
+        StopSoundVoiceByIndex(GB[11], 4);
+        PlaySoundEffect(0, 0, 0x10, &GB[11]);
+        CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);
+        g_nGemPickupAudioFiredFlag = 1;
+      }
+      {
+        int *p = (int *)((g_nGemPickupTimer >> 1) * 0x18 +
+                         (int)g_pGemPickupCameraPath);
+
+        g_anCameraPos[0] = W32(p, 0);
+        g_anCameraPos[1] = W32(p, 4);
+        g_anCameraPos[2] = W32(p, 8);
+        g_nCameraEulerRoll = W32(p, 0xC);
+        g_nCameraEulerPitch = W32(p, 0x10);
+        g_nCameraEulerYaw = W32(p, 0x14);
+      }
+      FRAME_STEP(g_pGemPickupStatueModelData, step);
+      U8(STATUE, 0x3E) = GB[5] / step;
+      {
+        char *p = STATUE;
+
+        U8(p, 0x3F) = U8(p, 0x3E) + 1;
+      }
+      U8(STATUE, 0x40) = (GB[5] % step << 6) / step;
+      {
+        short n = H16(W32(g_pGemPickupStatueModelData, 0x38), 0);
+        char *p = STATUE;
+
+        if (U8(p, 0x3F) >= n) {
+          U8(p, 0x3E) = n - 1;
+          U8(STATUE, 0x40) = 0;
+        }
+      }
+      FRAME_STEP(g_pGemPickupMirrorModelData, step);
+      U8(MIRROR, 0x3E) = GB[5] / step;
+      {
+        char *p = MIRROR;
+
+        U8(p, 0x3F) = U8(p, 0x3E) + 1;
+      }
+      U8(MIRROR, 0x40) = (GB[5] % step << 6) / step;
+      {
+        short n = H16(W32(g_pGemPickupMirrorModelData, 0x38), 0);
+        char *p = MIRROR;
+
+        if (U8(p, 0x3F) >= n) {
+          U8(p, 0x3E) = n - 1;
+          U8(MIRROR, 0x40) = 0;
+        }
+      }
+      if (g_dwPadPressed & 0x40) {
+        if (W32(REC(SRC), 0x34) != 0) {
+          if (g_nGemPickupPadHoldTimer == 0) {
+            g_nGemPickupPadHoldTimer = 1;
+          }
+        } else {
+          done = 1;
+        }
+      }
+    }
+    if (done != 0 || g_nGemPickupTimer >= g_nGemPickupCameraPathCount * 2) {
+      int *p;
+
+      g_nGemPickupSubstate = 5;
+      g_nGemPickupTimer = 0;
+      p = (int *)(g_nGemPickupCameraPathCount * 0x18 +
+                  (int)g_pGemPickupCameraPath);
+      g_anCameraPos[0] = W32(p, -0x18);
+      g_anCameraPos[1] = W32(p, -0x14);
+      g_anCameraPos[2] = W32(p, -0x10);
+      g_nCameraEulerRoll = W32(p, -0xC);
+      g_nCameraEulerPitch = W32(p, -8);
+      g_nCameraEulerYaw = W32(p, -4);
+      U8(STATUE, 0x3E) = U8(W32(g_pGemPickupStatueModelData, 0x38), 0) - 1;
+      U8(STATUE, 0x40) = 0;
+      U8(MIRROR, 0x3E) = U8(W32(g_pGemPickupMirrorModelData, 0x38), 0) - 1;
+      U8(MIRROR, 0x40) = 0;
+      g_bSpyroAnimPrev = 0;
+      g_bSpyroAnimCurrent = 0;
+      g_bSpyroFramePrev = 0;
+      g_bSpyroAnimFrame = 1;
+      g_bSpyroSubFrameTimer = 0;
+      g_nSpyroAnimPlayRate = 4;
+      TickSpyroAnimLayer1();
+      TickSpyroAnimLayer2();
+      StopSoundVoiceByIndex(*(int *)&g_bGemPickupSfxVoiceMarker, 2);
+      TickSpuPerFrame();
+      if (g_nGemPickupSplitFlag == 0) {
+        SetSpuTransferStartAddr(0x80000 - g_nGemPickupAudioSampleSize);
+        WriteSpuRam((char *)g_pWorldUnpackHead + g_nGemPickupAudioSampleOffset,
+                    g_nGemPickupAudioSampleSize);
+        while (GetSpuTransferStatus(0) == 0) {
+        }
+      }
+    }
+    if (GB[13] != 0) {
+      GB[13] += g_nFrameStep;
+      if (GB[13] >= 0x78) {
+        GB[13] = 0;
+      }
+    }
+  } break;
+  case 5: {
+    short *tbl;
+    int *icon;
+    int k;
+    int off;
+
+    for (i = 0; i < H16(W32(g_pGemPickupStatueModelData, 0x38), 2); i++) {
+      unsigned int c = ComputeDepthCuedColor(
+          ((int *)W32(W32(g_pGemPickupStatueModelData, 0x38), 0x18))[i],
+          0xFFFFFF, 0x200);
+      int *dst =
+          (int *)(i * 4 + W32(W32(g_pGemPickupStatueModelData, 0x38), 0x18));
+
+      *dst = c;
+    }
+    AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
+    i = 0;
+    tbl = g_anHudRollInStepTable;
+    icon = (int *)(g_abHudIconActorRecords + 0x1C8);
+    k = 0;
+    off = 0;
+    TickSpyroAnimLayer1();
+    TickSpyroAnimLayer2();
+  roll_in:
+    CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + k),
+               (int *)((char *)D_8006F3F0 + off));
+    if (g_nGemPickupTimer < 0x19) {
+      *icon += (tbl[g_nGemPickupTimer >> 1] * 3) >> 1;
+    } else {
+      *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
+    }
+    icon += 0x16;
+    k += 0x58;
+    i++;
+    off += 0xC;
+    if (i < 3) {
+      goto roll_in;
+    }
+    if (GB[5] >= 0x19) {
+      g_nGemPickupSubstate = 6;
+      GB[5] = 0;
+      g_bHudDragonRollPhase = 0;
+      CopyVector((int *)ang, (int *)((char *)g_pGemPickupStatueActor + 0xC));
+      ((int *)ang)[2] += 0x40;
+      ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(
+          0x20, 0x18, (int *)ang, 0);
+      CopyVector(g_anGemPickupAuraStarAnchor, (int *)ang);
+      DespawnActorRecord(STATUE);
+      DespawnActorRecord(MIRROR);
+      PlaySoundEffect(SAMPLE(0x34), 0, 0x10, &GB[11]);
+    }
+  } break;
+  case 6:
+    AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
+    TickSpyroAnimLayer1();
+    TickSpyroAnimLayer2();
+    if (g_anHudDragonCachedCountBlock[0] != g_nWorldDragonsRescued ||
+        g_bHudDragonRollPhase != 0) {
+      g_bHudDragonRollPhase += 0x10;
+      SetHudCounterDigits(5, 2, g_anHudDragonCachedCountBlock[0] + 1, 0);
+      CommitHudCounterAnimState(5, 2, g_bHudDragonRollPhase);
+      if (g_bHudDragonRollPhase == 0xC0) {
+        g_anHudDragonCachedCountBlock[0]++;
+      }
+      if (g_bHudDragonRollPhase == 0) {
+        PlaySoundEffect(SAMPLE(0x35), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+      }
+    }
+    if (GB[5] >= 0x60 && g_nGemPickupStreamState == 6) {
+      g_nGemPickupSubstate = 7;
+      GB[5] = 0;
+      g_pEmitListWriteCursor = g_pEmitListBase;
+      ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
+      PlaySoundEffect(SAMPLE(0x33), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+    }
+    break;
+  case 7: {
+    int k;
+
+    AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
+    TickSpyroAnimLayer1();
+    TickSpyroAnimLayer2();
+    if (g_nGemPickupTimer < 0x10) {
+      int n;
+      int *icon;
+      int j;
+      int off;
+
+      n = 0;
+      icon = (int *)(g_abHudIconActorRecords + 0x1C8);
+      j = 0;
+      off = 0;
+    roll_out:
+      CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + j),
+                 (int *)((char *)D_8006F3F0 + off));
+      j += 0x58;
+      off += 0xC;
+      n++;
+      *icon += (0x11 - g_nGemPickupTimer) * 3;
+      icon += 0x16;
+      if (n < 3) {
+        goto roll_out;
+      }
+    }
+    if (g_nGemPickupTimer < 0x10) {
+      k = g_nGemPickupTimer;
+    } else {
+      k = 0x20 - g_nGemPickupTimer;
+    }
+    g_nGemPickupFullscreenTintLevel = k * 0x10 - 1;
+    g_anGemPickupAuraStarBlock[0] = 1;
+    g_bGemPickupAuraStarColor = k * 8 + 0x40;
+    g_nGemPickupAuraStarRadius = k * 0x50;
+    g_abGemPickupAuraStarEuler[2] += 8;
+    if (g_nGemPickupTimer >= 0x20) {
+      g_anGemPickupAuraStarBlock[0] = 0;
+      EndGemPickupToWorld();
+    }
+  } break;
+  }
+  ((void (*)(int))g_pfnGamestate0LateHook)(g_nFrameStep);
+  if (g_nGemPickupSubstate > 0) {
+    TickGemPickupAssetStream();
+  }
+  {
+    char *actor = g_pActorListBase;
+
+    while (U8(actor, 0x48) != 0xFF) {
+      if (H16(actor, 0x36) == 0xFB && U8(actor, 0x48) < 0x80) {
+        TickGemPickupBurstEntity(actor);
+      }
+      actor += 0x58;
+    }
+  }
+}
