@@ -5115,3 +5115,13 @@ DispatchSpyroPhysicsByState_2026_10_06:
   class: "B8 retired; 45-way Spyro physics switch, 75 calls, slope-speed interpolation math"
   date: 2026-10-06
   note: "Screened only (asm read, no C). Clean of B1/B2/B6. Big but ordinary; start from the per-state call sequences."
+ClipAndEmitFoggedActorTriangle:
+  verdict: wall
+  class: "B6 handwritten asm"
+  date: 2026-10-07
+  note: "212 B; 10 splat handwritten-instruction markers (addi). Not C."
+GemPickup_Update:
+  verdict: parked
+  class: "sched/regalloc tie residue: constant-set placement in long call blocks + timer-base hard-reg choice"
+  date: 2026-10-07
+  note: "8,400 B, .c.wip length-exact at 19 masked / 2100 over 6 knots. (a) case 0/6 GB[5] base takes a0 not s1/a3, so the 1-constant takes s1 not s2. (b) case 2 QI `li s1,5` must open the post-loop block to fill the Alloc delay slot; ours lands at its first use. (c) case 4 `li a1,4` placement. (d) case 5 tbl `la s4` floats past AdvanceSpyroAnimFrame. Wins this session: AdvanceSpyroAnimFrame first, `int *tp = &GB[5]` store, `*(int *)(int)g_anCameraPos` non-struct load, plain statue load. Inert: hoisting the constant into a local (cse re-materializes it), register asm pin, tbl decl placement."
