@@ -5190,3 +5190,8 @@ FlushGpuQueue_2026_10_07_2:
   class: "screened only (24/187 linked); arg-block knot is not the libcd printf class"
   date: 2026-10-07
   note: "Opened the diff only; residue spans the dispatch-arg reloads and three post-call re-reads."
+InitActorMeshScratchRegions_2026_10_07_2:
+  verdict: parked
+  class: "sched1 potential_hazard tie, store vs `a1 = 0` (unchanged 3/56)"
+  date: 2026-10-07
+  note: "Screened against A368: the competing arg set is a constant, so the direct-load lever does not apply; needs a1's set above priority 1 or the store ready a cycle later."
