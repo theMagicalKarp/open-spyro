@@ -154,11 +154,9 @@ void TickGemPickupAssetStream(void) {
     }
     {
       char **h = g_apWorldUnpackHeadBlock;
-      char *p;
+      register char *p asm("$3");
 
       p = *h + g_nGemPickupCameraPathOffset;
-      do {
-      } while (0);
       g_pGemPickupCameraPath = p - g_nGemPickupHeaderEndOffset;
       g_nGemPickupCameraPathCount = g_nGemPickupCameraPathSize / 24;
       g_pGemPickupStatueModelData = RelocateActorMeshHeader(*h);
@@ -194,8 +192,11 @@ void TickGemPickupAssetStream(void) {
   case 4:
     if (g_nGemPickupSplitFlag == 1) {
       SetSpuTransferStartAddr(0x81010 - g_nGemPickupReadByteCount);
-      WriteSpuRam(g_pWorldUnpackHead, (g_nGemPickupReadByteCount - 0x100000) +
-                                          g_nWorldTimAudioChunkSize);
+      {
+        int len = g_nGemPickupReadByteCount - 0x100000;
+
+        WriteSpuRam(g_pWorldUnpackHead, g_nWorldTimAudioChunkSize + len);
+      }
       while (GetSpuTransferStatus(0) == 0) {
       }
     }
@@ -230,6 +231,8 @@ void TickGemPickupAssetStream(void) {
                                               (list[i] - list[-16]));
     }
     break;
+  default:
+    return;
   }
   g_anGemPickupStreamStateBlock[0]++;
 }

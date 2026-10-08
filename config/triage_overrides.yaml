@@ -5195,3 +5195,8 @@ InitActorMeshScratchRegions_2026_10_07_2:
   class: "sched1 potential_hazard tie, store vs `a1 = 0` (unchanged 3/56)"
   date: 2026-10-07
   note: "Screened against A368: the competing arg set is a constant, so the direct-load lever does not apply; needs a1's set above priority 1 or the store ready a cycle later."
+TickGemPickupAssetStream_2026_10_08:
+  verdict: matched
+  class: "sched1 birthing boost on a single-set pseudo, escaped with a hard-reg local"
+  date: 2026-10-08
+  note: "0x80014b70, 2048 B. 21 -> 0: `default: return;` (the ++ belongs to the cases), `register char *p asm(\"$3\")` for the camera-path sum (a hard reg's reg_n_sets > 1, so no LAUNCH boost; replaces the do/while(0) barrier and keeps the mult first), and `Tim + len` with a block temp for the WriteSpuRam size."
