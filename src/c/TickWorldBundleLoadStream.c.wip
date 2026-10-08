@@ -169,6 +169,7 @@ void TickWorldBundleLoadStream(void) {
     }
     return;
   } else if (state == 6) {
+    g_nCdStreamState = 7;
   } else if (state == 7) {
     void *head2 = *((void *volatile *)(&g_pWorldUnpackHead));
     int size = *((volatile int *)(&g_nWorldDataExtChunkSize));
@@ -277,7 +278,11 @@ void TickWorldBundleLoadStream(void) {
  *    0x18 of locals, 0x10 of saved regs).
  *
  * Residues (all same-length replacements, so positional credit is intact):
- *  1. STATE-6 ARM, 2 insns, and the only structural miss. The original writes
+ *  1. CLOSED 2026-10-08 -- the arm is `g_nCdStreamState = 7;`, not 6: the
+ *     original's `beq v1,v0,<tail store>` carries `li v0,7` in its delay slot
+ *     (reorg found the same insn at the head of both paths), so state 6 stores
+ *     7. The elided arm was a behaviour bug, not just a residue. Old note:
+ *     STATE-6 ARM, 2 insns, and the only structural miss. The original writes
  *     `g_nCdStreamState = 6;` in an otherwise empty arm; cse then reuses the
  *     compare constant (v0) for the store, the tail cross-jumps, and the whole
  *     arm collapses to `beq v1,v0,<tail store>`. Ours cannot reach it: cse's

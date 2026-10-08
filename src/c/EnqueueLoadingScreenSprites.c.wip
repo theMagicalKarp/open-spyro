@@ -13,7 +13,14 @@
  *      in the egg loop the original is [magic][base], ours [base][magic].
  *      Source-order invariant (both statement orders tried); A93 does not
  *      reach it because the magic is compiler-generated, not a user local.
- *   3) Egg loop UV address: the original computes `addiu a1,s2,0x108` early
+ *   3) [2026-10-08: 40 -> 32. A block-local `register byte *uv asm("$5")`
+ *      holding anchor + 0x108 gives the original's `addiu a1,s2,0x108` +
+ *      `addu a1,idx,a1` shape (a hard reg is not a loop.c movable, so it is
+ *      not hoisted, and fold cannot reassociate across the asm variable).
+ *      Left: the a1 set lands before the a0/a2 arg copies and `quad += 8`
+ *      (orig: after), and the addu operands read a1,a3 (orig a3,a1); inert:
+ *      the assignment inside the call argument, `uv + idx`.]
+ *      Egg loop UV address: the original computes `addiu a1,s2,0x108` early
  *      and adds the scaled modulo last (`addu a1,idx,a1`); every source form
  *      of `anchor + 0x108 + (step % 9) * 8` reassociates the constant onto the
  *      index (`addiu a1,idx,0x108; addu a1,base,a1`). A separate `uv` pointer
@@ -193,9 +200,12 @@ void EnqueueLoadingScreenSprites(void) {
       anchor = ring + 0x461;
       quad = anchor;
       do {
+        register byte *uv asm("$5");
+
         step = *(int *)(anchor - 0x424) + i;
         idx = (step % 9) * 8;
-        EmitTexturedQuad(quad, idx + (anchor + 0x108), 0);
+        uv = anchor + 0x108;
+        EmitTexturedQuad(quad, idx + uv, 0);
         quad += 8;
         i += 1;
       } while (i < *(int *)(anchor - 0x438));
