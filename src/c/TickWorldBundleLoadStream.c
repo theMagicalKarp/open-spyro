@@ -56,28 +56,18 @@ struct SECTION4HDR {
   int e;
 };
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/TickWorldBundleLoadStream.c.wip`; this body came
-   from
-   build/permuter/nonmatchings/TickWorldBundleLoadStream/output-665-1/source.c.
- */
+/* Register pins (`off` in v1, `pb` in a1) reproduce the original's
+   local-alloc choices in arms 7 and 8: a hard reg is outside qty priority,
+   so the competing temps fall into the order the original has. */
 void TickWorldBundleLoadStream(void) {
   RECT tim;
   int pad[4];
   int state;
   int extSize;
-  int extOffset;
   int new_var;
   int i;
   int def;
   int *unpacked;
-  int *list;
-  int *p;
-  int *base;
-  void **mesh;
   void *volatile *buf;
   int *ent;
   int *head;
@@ -163,7 +153,8 @@ void TickWorldBundleLoadStream(void) {
       int lba = *((volatile int *)(&g_nCdBaseLba));
       int world = *((volatile int *)(&g_nCurrentWorldId));
       void *dst = *((void *volatile *)(&g_pWorldUnpackHead));
-      int off = *((volatile int *)(&g_nWorldDataExtChunkOffset));
+      register int off asm("$3") =
+          *((volatile int *)(&g_nWorldDataExtChunkOffset));
       StartCdReadAsync(lba, dst, extSize,
                        off + (&g_nWorldArchiveOffset)[world * 2], 0x258);
     }
@@ -175,22 +166,25 @@ void TickWorldBundleLoadStream(void) {
     int size = *((volatile int *)(&g_nWorldDataExtChunkSize));
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int world = *((volatile int *)(&g_nCurrentWorldId));
-    int off = *((volatile int *)(&g_nWorldDataExtChunkOffset));
-    StartCdReadAsync(
-        lba, (((char *)head2) + size) - 0x60000, 0x60000,
-        ((&g_nWorldArchiveOffset)[world * 2] - 0x60000) + (off + size), 0x258);
+    register int off asm("$3") =
+        *((volatile int *)(&g_nWorldDataExtChunkOffset));
+    int arch = (&g_nWorldArchiveOffset)[world * 2] - 0x60000;
+    StartCdReadAsync(lba, (((char *)head2) + size) - 0x60000, 0x60000,
+                     (off + size) + arch, 0x258);
     g_nCdStreamState = 8;
   } else if (state == 8) {
     if (g_anActorMeshOffsetBlock[0] > 0) {
-      p = g_anActorMeshOffsetBlock;
-      base = g_anActorMeshOffsetBlock;
-      mesh = &g_apActorMeshTableBlock[1];
+      i = 0;
       do {
-        *(mesh++) = RelocateActorMeshHeader(
-            (int *)(((char *)g_pWorldUnpackHead) + ((*(p++)) - base[-16])));
-      } while ((*p) > 0);
+        g_apActorMeshTableBlock[i + 1] =
+            RelocateActorMeshHeader((int *)(((char *)g_pWorldUnpackHead) +
+                                            (g_anActorMeshOffsetBlock[i] -
+                                             g_anActorMeshOffsetBlock[-16])));
+        i++;
+      } while (g_anActorMeshOffsetBlock[i] > 0);
     }
     {
+      register void *volatile *pb asm("$5") = g_apPathTableBufferBlock;
       void *head2 = *((void *volatile *)(&g_pWorldUnpackHead));
       int extsz = *((volatile int *)(&g_nWorldDataExtChunkSize));
       int lba = *((volatile int *)(&g_nCdBaseLba));
@@ -199,9 +193,9 @@ void TickWorldBundleLoadStream(void) {
       int count;
       int world;
       void *dst;
-      g_apPathTableBufferBlock[0] = ((char *)head2) + extsz;
+      pb[0] = ((char *)head2) + extsz;
       size = *((volatile int *)(&g_nLevelArchiveChunkSize));
-      dst = g_apPathTableBufferBlock[0];
+      dst = pb[0];
       off = *((volatile int *)(&g_nLevelArchiveChunkOffset));
       g_nLevelArchiveByteSize = size;
       count = *((volatile int *)(&g_nLevelArchiveByteSize));
@@ -218,26 +212,27 @@ void TickWorldBundleLoadStream(void) {
     g_pPathTableHead = ent;
     ent[4] = ((int)ent) + ent[4];
     if (ent[3] > 0) {
+      void *volatile *bp = buf;
       head = ent;
     entry_loop:
       i += 1;
 
-      ent[5] += (int)buf[0];
+      ent[5] = (int)bp[0] + ent[5];
       ent += 1;
       if (i < head[3]) {
         goto entry_loop;
       }
     }
     g_pActorListBase = ((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize;
+    i = 0;
     if (((int *)g_pPathTableHead)[3] > 0) {
-      i = 0;
       def = 0x20;
     actor_loop:
       InitActorRenderDefaults(((int)g_pActorListBase) + (i * 0x58));
 
       actor = (unsigned char *)((i * 0x58) + ((int)g_pActorListBase));
       actor[0x50] = def;
-      *((short *)(actor + 0x36)) = i + 1;
+      ((short *)actor)[0x1B] = i + 1;
       i += 1;
       if (i < ((int *)g_pPathTableHead)[3]) {
         goto actor_loop;
@@ -248,76 +243,3 @@ void TickWorldBundleLoadStream(void) {
     g_nCdStreamState = 0xA;
   }
 }
-
-/* PARKED 2026-07-30-1 — LENGTH-EXACT (386/386 insns after the trailing nop),
- * 64/387 words differ (83.5% match). Logic is complete and every block is
- * positionally aligned; the residue is register-allocation / delay-slot ties.
- *
- * Solved here (all levers already folded into the cookbook):
- *  - B16/A142: the in-flight gate read is `*(volatile int
- * *)g_anCdReadInFlightBlock` (inline volatile cast-deref of the alias, no
- * pointer local) for the `lui/addiu/lw 0(r)` form.
- *  - A20/A22 aliases: g_anWorldTimAudioChunkOffsetBlock (CopyWords dst + value
- *    read off one base), g_apDrawBufBlock (two reads across the CopyWords
- * call), g_apPathTableBufferBlock (A21 store-then-reload through one base),
- *    g_anActorMeshOffsetBlock with [-16] reaching g_nWorldDataExtChunkOffset
- *    (A25 negative-offset value off the held base, inside the relocate loop).
- *  - A4 (volatile arg temps, in the ORIGINAL's load order) fixes every
- *    StartCdReadAsync arg block: arms 1/3/4/5/7/8 all fell to it. This is the
- *    single highest-yield lever in this function (61 -> 30 shape mismatches).
- *  - A85 goto-loops for both arm-9 loops: loop.c otherwise strength-reduces the
- *    path-entry walker (`addiu a0,a1,20` giv) and the i*0x58 actor offset
- *    (`addiu s0,s0,88`); the original recomputes both per iteration. The 0x20
- *    default byte survives as a user local (`def`) only under the goto-loop
- * (F6).
- *  - A23: g_pPathTableBuffer is re-read ABSOLUTELY after the rebase loop even
- *    though the held base is still live.
- *  - `*(short *)(actor + 0x36) = i + 1;` BEFORE `i += 1;` reproduces the
- *    original's `addiu v1,s1,1 / sh v1 / move s1,v1` (A114).
- *  - A127: RECT + a dead `int pad[4]` sizes the 0x40 frame (0x18 arg area,
- *    0x18 of locals, 0x10 of saved regs).
- *
- * Residues (all same-length replacements, so positional credit is intact):
- *  1. CLOSED 2026-10-08 -- the arm is `g_nCdStreamState = 7;`, not 6: the
- *     original's `beq v1,v0,<tail store>` carries `li v0,7` in its delay slot
- *     (reorg found the same insn at the head of both paths), so state 6 stores
- *     7. The elided arm was a behaviour bug, not just a residue. Old note:
- *     STATE-6 ARM, 2 insns, and the only structural miss. The original writes
- *     `g_nCdStreamState = 6;` in an otherwise empty arm; cse then reuses the
- *     compare constant (v0) for the store, the tail cross-jumps, and the whole
- *     arm collapses to `beq v1,v0,<tail store>`. Ours cannot reach it: cse's
- *     canon_reg rewrites the stored 6 to the STATE register (v1, the older
- *     quantity from the branch equivalence), so the store does not merge with
- *     the shared tail and the arm costs 5 insns (+4 = slot overflow, will not
- *     link). Every source form was tried: `6 == state`, `= state`, a `next`
- *     local with the single tail store (then `next` loses v0 to the compare
- *     constants -> `li a0,K` in all ten arm tails), an `int` return type so
- *     `return next;` gives next a v0 copy-preference (still a0), and A64's
- *     inverted `state != 6` nesting (+19 insns). The arm is ELIDED here: the
- *     store is a no-op self-store, so behaviour is identical and the function
- *     stays length-exact.
- *  2. F7 la-vs-load allocation swaps, 4 sites: the held-base `la` and a
- *     neighbouring global load trade registers (arm 8 mesh list v1<->a0, arm 8
- *     tail a1<->v1, arm 9 head a1<->a2, arm 7 arch v1<->a3). Structure and
- *     order are identical in every case.
- *  3. F2 arm-0 arg block: the original materializes `li a2,0x800` FIRST and the
- *     `li v0,600 / sw 0x10(sp)` stack arg LAST; ours is the reverse. A4
- * volatile temps pin the LOADS but not the two constants; a `int size = 0x800;`
- * user local does not move it (arms 1/3/4/5/8 all match, so this is per-block
- *     sched1 noise, not a source-order effect).
- *  4. Arm 9 loop 1: the original copies the held base into its own loop
- * register
- *     (`move a2,a1`) and loads `0(a2)` before `20(a0)`. An explicit second
- *     pointer local reproduces both (30 mismatches) but costs +1 insn -> slot
- *     overflow, so the linking form keeps the base uncopied.
- *
- * Next step is the §E permuter aimed at residues 2 + 4 (pure regalloc), or a
- * cracked arm-6 cse-canon story, which would also close residue 1.
- *
- * 2026-08-14-1 unattended permuter session (~15m, ~40800 iterations, timed out
- * at the 15m budget): best score 665 vs first-iteration score 845. This was the
- * "next step" §E permuter run called for above, via the plain unattended path
- * (not aimed specifically at residues 2 + 4) -- it did not close them, so the
- * cracked arm-6 cse-canon story is now the more promising of the two routes.
- * No byte-perfect candidate found; still PARKED (see above).
- */
