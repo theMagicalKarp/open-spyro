@@ -41,15 +41,15 @@ func_80060FD8:
 
 # --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
 CdControl:
-  verdict: parked
-  class: "prologue straggler LUID: `ret = 0` must be emitted after loop.c's hoisted invariants (B10 does not apply)"
-  date: 2026-10-05
-  note: "Fresh decode, length-exact, 2 insns off (move s7,zero lands after the param copies, not last in the entry block). No B10 hoist appears. Exit-test `while (ret = 0, cnt--)` fixes the position via the LOOP_VTOP maybe_never reset, but adds 2 refs and ret takes s2. Inert: decl orders, loop-top/end placements, do/while, register asm pin."
+  verdict: matched
+  class: "loop.c movable order: in-loop user locals for index/table/pointer hoist ahead of ret = 0"
+  date: 2026-10-08
+  note: "0x80063c48, 312 B. Loop-top `int c = com; int *tbl = D_80074DAC; int *p = tbl + c; ret = 0;` - user vars before the first branch are case-3 movables, hoisted in insn order (zext, la, shift, add, then ret)."
 CdControlForce:
-  verdict: parked
-  class: "same prologue-straggler residue as CdControl (ret = 0 in s6)"
-  date: 2026-10-05
-  note: "Same recipe and residue as CdControl, 4 masked / 75. Solve the two together."
+  verdict: matched
+  class: "loop.c movable order: in-loop user locals for index/table/pointer hoist ahead of ret = 0"
+  date: 2026-10-08
+  note: "0x80063d80, 300 B. Loop-top `int c = com; int *tbl = D_80074DAC; int *p = tbl + c; ret = 0;` - user vars before the first branch are case-3 movables, hoisted in insn order (zext, la, shift, add, then ret)."
 func_80064A20:
   verdict: parked
   class: "shared libcd timeout WritePrintf arg-block schedule (CdDataSync/CdSync class) + result-vs-pend allocation priority; B10 does not apply"
