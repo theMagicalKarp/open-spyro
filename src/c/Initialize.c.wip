@@ -61,13 +61,16 @@ extern int
    one shared counter lives across the whole body and steals the low
    callee-saved register the buffer base needs.
 
-   PARKED at 332/332 instructions (length-exact), 37 differ, 88.9%. Three
-   residues, all register-allocation / scheduling ties -- see the .wip note in
-   config/triage_overrides.yaml.
-
-   2026-08-14-1 unattended permuter session (~15m, ~52100 iterations, timed out
-   at the 15m budget): best score 945 vs first-iteration score 1150. No
-   byte-perfect candidate found; still PARKED (see above). */
+   PARKED 2026-10-08-1 at 332/332 (length-exact), 21 differ linked (was
+   37). The 600 marker is a `register int k600 asm("$16")` pin: a hard reg is
+   outside global-alloc priority, so the CdBaseLba base keeps s1 and the
+   constant lands in s0 as in the original; the third read's two counts are
+   volatile locals read before the buffer pointer (orig a2, a3, then a1).
+   Left: (1) the first read wants `lw a0,0(s1)` first and la s1 before
+   la s3; a volatile `lba1` gives that order but then sched sinks the s0 li
+   out of LoadAssetDirectoryFromCd's delay slot (+1 insn); (2) the fade
+   counters' `move s0,zero` / `addiu s0,s0,1` positions (sched1 LUID tie
+   with the call's `la a0`). */
 void Initialize(void) {
   void **buf;
   int i;
@@ -127,27 +130,32 @@ void Initialize(void) {
   } while (i < 8);
 
   LoadAssetDirectoryFromCd();
+  {
+  register int k600 asm("$16") = 600;
   lba = g_anCdBaseLbaBlock;
   archOff = g_anWorldArchiveOffsetBlock;
   {
     int lba1 = lba[0];
     int off1 = *(volatile int *)archOff;
-    CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1, 600);
+    CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1, k600);
   }
   timOff = g_anWorldTimAudioChunkOffsetBlock;
   CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
   top = (char *)0x801C0000 - g_nCrt0StackSize;
-  CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], 600);
-  CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0,
-                    *(volatile int *)&D_8007A6E4, *(volatile int *)&D_8007A6E0,
-                    600);
+  CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
+  {
+    int cnt3 = *(volatile int *)&D_8007A6E4;
+    int off3 = *(volatile int *)&D_8007A6E0;
+    CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0, cnt3, off3, k600);
+  }
   {
     int cnt4 = *(volatile int *)&D_8007A6D4;
     int off4 = *(volatile int *)&D_8007A6D0;
     dst = top - *(volatile int *)&D_8007A6D4;
-    CdReadSyncSectors(lba[0], dst, cnt4, off4, 600);
+    CdReadSyncSectors(lba[0], dst, cnt4, off4, k600);
   }
 
+  }
 hold_title:
   if (VSync(-1) - start < 0xD2) {
     VSync(0);
