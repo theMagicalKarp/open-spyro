@@ -5200,3 +5200,63 @@ TickGemPickupAssetStream_2026_10_08:
   class: "sched1 birthing boost on a single-set pseudo, escaped with a hard-reg local"
   date: 2026-10-08
   note: "0x80014b70, 2048 B. 21 -> 0: `default: return;` (the ++ belongs to the cases), `register char *p asm(\"$3\")` for the camera-path sum (a hard reg's reg_n_sets > 1, so no LAUNCH boost; replaces the do/while(0) barrier and keeps the mult first), and `Tim + len` with a block temp for the WriteSpuRam size."
+WaitForFrameDeadline:
+  verdict: parked
+  class: "sched2 rank_for_schedule LUID tie: prologue sw ra vs volatile budget init store"
+  date: 2026-10-08
+  note: "-dR trace: sw ra and the budget store both feed the guard lw with cost 1 (class 3), so the tie falls to LUID and the prologue save (lowest LUID) is always emitted first; reorg then cannot reach it past the volatile store. A volatile read of g_nRcntAuxState is inert (same 7/39)."
+InitActorMeshScratchRegions:
+  verdict: parked
+  class: "sched1 potential_hazard: RegionBase store beats the FillWord a1=0 arg set, fixing LUID order for sched2"
+  date: 2026-10-08
+  note: "-dS/-dR: in sched1 the store (80) wins T-17 on potential_hazard over the ready a1/a2 arg sets (119/121), so 119 gets the lower LUID; sched2 then ties 119 vs 80 at class 3 and LUID keeps a1 first. Needs 119 not ready until after 80 (a dependence on a1), not a source reorder."
+GemPickup_Update_2026_10_08:
+  verdict: parked
+  class: "sched1 LAUNCH_PRIORITY birthing boost (reg_n_sets == 1) + allocation knots"
+  date: 2026-10-08
+  note: "22 -> 15 linked. Knot (d) closed: a block-local tbl (n_sets 1) is boosted by adjust_priority/birthing_insn_p and lands after AdvanceSpyroAnimFrame; storing the table in case 4's `done` (orig shares s4) gives n_sets 2 and the LUID order. Knot (b) li s1,5 fills a sched1 stall slot in a serialized call chain; second set and block-head placement inert. Left: (a) GB[5] base s1/a3 vs a0, (b), (c) li a1,4."
+TickWorldBundleLoadStream_2026_10_08:
+  verdict: parked
+  class: "F7 la-vs-load local-alloc swaps (arm 8/9 held bases)"
+  date: 2026-10-08
+  note: "51 -> 50. Residue 1 was a decode error: arm 6 stores 7 (the beq's delay slot `li v0,7` is shared by both paths). Arm 8 base/p assignment order and `p = base = ...` inert; the la pseudo takes a0 where the original has v1."
+Initialize_2026_10_08:
+  verdict: parked
+  class: "sched1 LUID tie: loop-top counter ++ vs the call's a0 la (both priority 1)"
+  date: 2026-10-08
+  note: "35/332. -dS: in fade_out_title j++ (362) and `la a0` (367) tie at priority 1 and the higher LUID (the arg set) is placed later, so j++ comes first; the original needs the arg set emitted before j++. Inert: `-(++j) << 5` in the call, a register asm(\"$4\") pin (cse rematerialises the a0 set at the call)."
+DispatchSpyroTriggerEvent_2026_10_08:
+  verdict: parked
+  class: "sched2 memory-unit hazard (§D 2d): the OrbData store fills the wrong stall"
+  date: 2026-10-08
+  note: "15/263, case 0 event-2 arm. The original's statement order (flags, EntryZ, D_80075728 last) is +1 insn: -dR shows lw data[1] blocked 1 cycle before the EntryZ store (adjacent memory ops), so the priority-1 OrbData store fills that slot instead of the flags-load delay slot and a nop appears."
+RespawnOrGameOver_Draw_2026_10_08:
+  verdict: parked
+  class: "A200 open question (arg copy after the ebb barrier)"
+  date: 2026-10-08
+  note: "5/361. A `register int mode asm(\"$4\") = 0;` at the block head passed to DrawSync is inert: expand_call routes the hard-reg arg through a pseudo, cse folds it to 0 and the head set dies, so `move a0,zero` is re-emitted at the call after the barrier."
+EnqueueLoadingScreenSprites_2026_10_08:
+  verdict: parked
+  class: "F2 preheader rotation + egg-loop arg-set order"
+  date: 2026-10-08
+  note: "40 -> 32. A block-local `register byte *uv asm(\"$5\")` = anchor + 0x108 reproduces the addiu/addu UV shape (hard regs are not loop.c movables). Left: uv set before the a0/a2 copies and quad += 8, addu operand order, and residue 2's preheader rotation."
+SetSpuCommonAttr_2026_10_08:
+  verdict: parked
+  class: "F1 global-alloc priority (vl vs lh clamp temp)"
+  date: 2026-10-08
+  note: "59/229. Pinning vl with `register ... asm(\"$6\")` (as vr is pinned to $8) is worse (100): the hard-reg var changes combine's andi/or shape and the switch arms' vmode register."
+TickSpyroAttackEffects_2026_10_08:
+  verdict: parked
+  class: "F7 spill-slot order + F1 preheader order (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 20/562 (header said 28). Read only this session; its preheader [&tip][&dir][la mtx] order is loop.c movable scan order, see the CdControl lever (loop-top user locals) before retrying."
+FlushGpuQueue_2026_10_08:
+  verdict: parked
+  class: "sched1 volatile-vs-plain MEM ordering (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 14/187. Read only; no new lever applies (load-load order is priority-driven, not a birthing boost)."
+Gamestate0C_Draw_2026_10_08:
+  verdict: parked
+  class: "B-i held-base form (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 4/283. Read only; the A200 trade is exhaustive per its header."
