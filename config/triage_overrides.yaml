@@ -5160,3 +5160,38 @@ TickWorldBundleLoadStream_2026_10_07_1:
   class: "multi-site regalloc residue (unchanged)"
   date: 2026-10-07
   note: "Screened only; ~60 masked lines over 6+ sites, not a one-lever park."
+CdSync_2026_10_07_2:
+  verdict: viable
+  class: "MATCHED 2026-10-07 (A368/A370: shared libcd timeout printf block solved)"
+  date: 2026-10-07
+  note: "Goto loop + pinned bases, volatile status read/store, volatile index temps + direct volatile name load in the printf block, do/while(0) around the timeout arm for loop-depth ref weight."
+func_80064A20_2026_10_07_2:
+  verdict: viable
+  class: "MATCHED 2026-10-07 (CdSync recipe + drain-arm do/while(0) lifts save over result)"
+  date: 2026-10-07
+  note: "R2 closed by testing result directly in the first copy block once the drain-arm wrapper fixed the s1/s4 order."
+CdDataSync_2026_10_07_2:
+  verdict: viable
+  class: "MATCHED 2026-10-07 (CdSync printf recipe; real for(;;) already gives loop-depth weight)"
+  date: 2026-10-07
+  note: "Only the printf block changed: volatile index temps + volatile direct name load."
+CdCommandSync_2026_10_07_2:
+  verdict: viable
+  class: "MATCHED 2026-10-07 — the 2026-07-23 B10 wall verdict was wrong"
+  date: 2026-10-07
+  note: "Unpinned real while loop; D_80075114 is a volatile array (la-form accesses loop.c hoists into s2/s4); count loop as a real for with the bound inline (param[i] giv)."
+CdControl_2026_10_07_2:
+  verdict: parked
+  class: "prologue straggler LUID (unchanged; .wip now ret = 0 at loop top, 12/78 linked)"
+  date: 2026-10-07
+  note: "Re-tried positions already in the .wip note (wasted; read the note first). New: a set just before the last command lets cse fold ret + 1 through the single-use `out` label (-1 insn); a second ret = 0 at the end of the body is not hoisted."
+FlushGpuQueue_2026_10_07_2:
+  verdict: attempted
+  class: "screened only (24/187 linked); arg-block knot is not the libcd printf class"
+  date: 2026-10-07
+  note: "Opened the diff only; residue spans the dispatch-arg reloads and three post-call re-reads."
+InitActorMeshScratchRegions_2026_10_07_2:
+  verdict: parked
+  class: "sched1 potential_hazard tie, store vs `a1 = 0` (unchanged 3/56)"
+  date: 2026-10-07
+  note: "Screened against A368: the competing arg set is a constant, so the direct-load lever does not apply; needs a1's set above priority 1 or the store ready a cycle later."

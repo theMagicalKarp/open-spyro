@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">94.58% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">2,042,480 / 2,159,608 split-code bytes · 720 matched · 32 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">94.65% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">2,044,080 / 2,159,608 split-code bytes · 724 matched · 29 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -16,7 +16,7 @@
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
-<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">41%</text>
+<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">42%</text>
 <rect x="14.00" y="114.00" width="131.59" height="82.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RenderWorldChunks  ·  19976 bytes  ·  handwritten</title></rect>
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  asm</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  asm</title></rect>
@@ -91,7 +91,7 @@
 <rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroHornStrikeAttack  ·  1084 bytes  ·  matched</title></rect>
 <rect x="144.32" y="483.85" width="25.16" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800671F0  ·  1060 bytes  ·  matched</title></rect>
 <rect x="169.48" y="483.85" width="24.97" height="23.03" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroTriggerEvent  ·  1052 bytes  ·  wip</title></rect>
-<rect x="194.46" y="483.85" width="24.97" height="23.03" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>CdCommandSync  ·  1052 bytes  ·  asm</title></rect>
+<rect x="194.46" y="483.85" width="24.97" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdCommandSync  ·  1052 bytes  ·  matched</title></rect>
 <rect x="219.43" y="483.85" width="24.31" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickCdMusicStream  ·  1024 bytes  ·  matched</title></rect>
 <rect x="243.73" y="483.85" width="24.21" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GamestateDraw  ·  1020 bytes  ·  matched</title></rect>
 <rect x="267.94" y="483.85" width="24.02" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GamestateUpdate  ·  1012 bytes  ·  matched</title></rect>
@@ -128,7 +128,7 @@
 <rect x="62.40" y="633.04" width="19.50" height="20.63" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>EnqueueGpuOp  ·  736 bytes  ·  wip</title></rect>
 <rect x="62.40" y="653.67" width="19.50" height="20.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039E94  ·  728 bytes  ·  matched</title></rect>
 <rect x="62.40" y="674.07" width="19.50" height="20.18" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80059594  ·  720 bytes  ·  matched</title></rect>
-<rect x="62.40" y="694.26" width="19.50" height="20.07" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80064A20  ·  716 bytes  ·  wip</title></rect>
+<rect x="62.40" y="694.26" width="19.50" height="20.07" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80064A20  ·  716 bytes  ·  matched</title></rect>
 <rect x="62.40" y="714.33" width="19.50" height="19.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SubMenu_Update  ·  708 bytes  ·  matched</title></rect>
 <rect x="62.40" y="734.17" width="19.50" height="19.85" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraFrame  ·  708 bytes  ·  asm</title></rect>
 <rect x="62.40" y="754.02" width="19.50" height="19.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003A16C  ·  692 bytes  ·  matched</title></rect>
@@ -142,7 +142,7 @@
 <rect x="220.09" y="527.86" width="19.33" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039688  ·  648 bytes  ·  matched</title></rect>
 <rect x="239.43" y="527.86" width="19.21" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawGemPickupAuraStar  ·  644 bytes  ·  handwritten</title></rect>
 <rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  matched</title></rect>
-<rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  wip</title></rect>
+<rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  matched</title></rect>
 <rect x="296.94" y="527.86" width="18.85" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateScriptedCameraView  ·  632 bytes  ·  matched</title></rect>
 <rect x="81.91" y="546.19" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateActorMeshHeader  ·  620 bytes  ·  matched</title></rect>
 <rect x="81.91" y="564.72" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SamplePadForDeathReplayFrame  ·  620 bytes  ·  matched</title></rect>
@@ -206,7 +206,7 @@
 <rect x="115.90" y="677.96" width="14.52" height="13.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80039228  ·  368 bytes  ·  matched</title></rect>
 <rect x="115.90" y="691.82" width="14.52" height="13.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TurnSpyroTowardMoveTargetWithLean  ·  368 bytes  ·  matched</title></rect>
 <rect x="115.90" y="705.67" width="14.52" height="13.70" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CheckGpuTimeout  ·  364 bytes  ·  matched</title></rect>
-<rect x="115.90" y="719.37" width="14.52" height="13.70" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>CdDataSync  ·  364 bytes  ·  wip</title></rect>
+<rect x="115.90" y="719.37" width="14.52" height="13.70" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdDataSync  ·  364 bytes  ·  matched</title></rect>
 <rect x="115.90" y="733.07" width="14.52" height="13.70" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_1A0  ·  364 bytes  ·  library</title></rect>
 <rect x="115.90" y="746.77" width="14.52" height="13.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EmitTexturedQuad  ·  356 bytes  ·  matched</title></rect>
 <rect x="115.90" y="760.17" width="14.52" height="13.25" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInitDirect  ·  352 bytes  ·  library</title></rect>

@@ -33,36 +33,15 @@ extern char D_80011E8C[];                  /* "CD_ready" */
    with its 8 result bytes copied to `result`, 0 in poll mode while nothing
    is pending, -1 on timeout.
 
-   PARKED 2026-10-05 -- B10 does not apply. Length-exact, 179/179, 9 masked
-   (register-anchored) over two residues:
-   R1 (7 insns, timeout WritePrintf block): the original loads idx[0] FIRST
-      (into a0) and the AF0 name early, and does the tbl[idx[0]] load LAST
-      into a3. The plain one-line call scores 17; a/b temps score 9, but still
-      load tbl[idx[0]] early and AF0 late. Inert at 17: index-only temps, a
-      `p` alias, name/format temps, b-only and a-only temps. CdDataSync's `int
-   *p = &tbl[idx[0]]` idiom gives 11 here, and every spelling of p is identical.
-   This is the same arg block CdDataSync/CdSync park on: solve it once for all
-   three. R2 (2 insns, first copy block): the original tests `result` (s4) with
-      `move a1,s4` in the delay slot. We test the `dst` copy. Writing
-      `if (result) { dst = result; ...` gives the right shape, but result then
-      has 4 refs across 84 insns (priority 0.095), outranks pend (0.067), and
-      the s1..s4 map rotates (26 masked). A `$20` pin on result folds dst into
-      the pinned reg. The original's result must be ranked below pend: a
-      longer live range, or one fewer ref.
-   2026-10-05 later: R2 IS reachable. With `$18` idx and `$19` pend pins, plus
-   a `$20` pin on a copy of result and a `$5` pin on dst, the masked count drops
-   to the printf block alone (7). The linked count stays 13-14: the pinned
-   result copy issues after the VSync `li a0,-1` in the prologue. A barrier
-   after the copy makes it worse (19).
-   Solved: goto outer loop (no loop.c: the copy-loop -1s stay inline); base
-   pointers idx/rdy = idx + 1/pend = idx + 2 set before the label; volatile
-   flag load + store (lbu; andi a2,0xff, and sb before the branch); dst copy
-   cursor; tbl -> $21 and rdy -> $22 pins (mode and rdy otherwise take s5/s6
-   at priorities 0.026 vs 0.020). */
+   The timeout printf block is CdSync's recipe (do/while(0) ref weight,
+   volatile read order, direct name load). The do/while(0) around the
+   drain arm lifts `save` over `result` in global-alloc so they take s1/s4,
+   and the first copy tests `result` itself so `move a1,s4` fills the
+   branch delay slot. */
 int func_80064A20(int mode, unsigned char *result) {
-  unsigned char *idx;
+  register unsigned char *idx asm("$18");
   register unsigned char *rdy asm("$22");
-  unsigned char *pend;
+  register unsigned char *pend asm("$19");
   unsigned char *dst;
   register int *tbl asm("$21");
   int flag;
@@ -83,14 +62,17 @@ int func_80064A20(int mode, unsigned char *result) {
 top:
   if (D_80075AE8 < VSync(-1) ||
       (old = D_80075AEC, D_80075AEC = old + 1, 0x3C0000 < old)) {
-    WriteString(D_80011DFC);
-    {
-      int a = tbl[idx[0]];
-      int b = tbl[idx[1]];
-      WritePrintf(D_80011E0C, D_80075AF0, D_80074E5C[D_80074E55], a, b);
-    }
-    CdResetController();
-    flag = -1;
+    do {
+      WriteString(D_80011DFC);
+      {
+        int i0 = ((volatile unsigned char *)idx)[0];
+        int i1 = ((volatile unsigned char *)idx)[1];
+        WritePrintf(D_80011E0C, *(char *volatile *)&D_80075AF0,
+                    D_80074E5C[D_80074E55], tbl[i0], tbl[i1]);
+      }
+      CdResetController();
+      flag = -1;
+    } while (0);
   } else {
     flag = 0;
   }
@@ -98,22 +80,24 @@ top:
     return -1;
   }
   if (FUN_8005df1c() != 0) {
-    save = *D_800750FC & 3;
-    while ((irq = CdProcessInterrupt()) != 0) {
-      if ((irq & 4) && D_80074E38 != 0) {
-        D_80074E38(rdy[0], D_80075AD8);
+    do {
+      save = *D_800750FC & 3;
+      while ((irq = CdProcessInterrupt()) != 0) {
+        if ((irq & 4) && D_80074E38 != 0) {
+          D_80074E38(rdy[0], D_80075AD8);
+        }
+        if ((irq & 2) && D_80074E34 != 0) {
+          D_80074E34(idx[0], D_80075AD0);
+        }
       }
-      if ((irq & 2) && D_80074E34 != 0) {
-        D_80074E34(idx[0], D_80075AD0);
-      }
-    }
-    *D_800750FC = save;
+      *D_800750FC = save;
+    } while (0);
   }
   if ((c = *(volatile unsigned char *)pend) != 0) {
     *(volatile unsigned char *)pend = 0;
     src = D_80075AE0;
-    dst = result;
-    if (dst != 0) {
+    if (result != 0) {
+      dst = result;
       n = 7;
       do {
         *dst++ = *src++;
