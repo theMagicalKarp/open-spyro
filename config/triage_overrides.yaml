@@ -5260,3 +5260,73 @@ Gamestate0C_Draw_2026_10_08:
   class: "B-i held-base form (unchanged)"
   date: 2026-10-08
   note: "Re-measured 4/283. Read only; the A200 trade is exhaustive per its header."
+TickSpyroAttackEffects_2026_10_08_1:
+  verdict: parked
+  class: "F7 spill-slot hole (k at 0x68), unchanged"
+  date: 2026-10-08
+  note: "Re-measured 20/562, read only. Not a register-pin target: the residue is the frame's spill-slot layout, not a register choice."
+GemPickup_Update_2026_10_08_1:
+  verdict: parked
+  class: "global-alloc s1 choice for the case-0 &GB[5] base + serialized call-chain li placement"
+  date: 2026-10-08
+  note: "15/2100. A block-scoped `register int *tp asm(\"$17\")` covering the GB[5] test fixes s1/s2, but the rumble store then precedes the GB[5] load (a reg-based MEM no longer disambiguates from the symbol store) and costs +1. Pinning the loaded value or the 0x46 constant is inert: cse/local-alloc fold single-use register vars."
+func_level_5_8007B68C_2026_10_08_1:
+  verdict: wall
+  class: "R5 sched2 store/store load-block hole (machine model)"
+  date: 2026-10-08
+  note: "Probed the 'unsplit li = reload remat' lead: a function-scope 0xFFFE3E00 / 0x1C000 constant crossing calls is allocated to the free s6, never spilled, so reload never rematerialises it (17-24 masked vs 6). The original saves only s0-s5."
+Initialize_2026_10_08_1:
+  verdict: parked
+  class: "first CD read load order vs the s0 li delay slot; fade-counter sched1 LUID tie"
+  date: 2026-10-08
+  note: "37 -> 21 linked. 600 marker pinned to s0, third read's counts as volatile locals. A volatile lba1 fixes the a0 load order but sinks the s0 li out of LoadAssetDirectoryFromCd's delay slot (+1)."
+BuildLoadedLevelRuntime_2026_10_08_1:
+  verdict: parked
+  class: "F10 mask=0 sink + post-pass-1 reload + pass-2 header hoist + A181 copy"
+  date: 2026-10-08
+  note: "49 -> 29 masked (death-replay index/value pinned v1/v0). A block-scoped s2 pin for mask makes global alloc prefer s2 function-wide (regs_used_so_far), +190."
+FlushGpuQueue_2026_10_08_1:
+  verdict: parked
+  class: "sched1 dispatch-block load order (priority, load-load)"
+  date: 2026-10-08
+  note: "14 -> 9 linked, register map exact via RIDX/index pins. Left: L3 and both index shifts hoist above the args load."
+DispatchSpyroTriggerEvent_2026_10_08_1:
+  verdict: parked
+  class: "sched2 memory-unit hazard (OrbDrop store into the FLAGS load shadow)"
+  date: 2026-10-08
+  note: "14/263. Moving `D_80075728 = data[1]` to the arm end gives 5 masked but +1 insn (the OrbDrop store sinks below the FLAGS RMW, leaving the lw nop). Volatile store / split RMW temp inert."
+Gamestate0C_Draw_2026_10_08_1:
+  verdict: parked
+  class: "B-i held-base form (unchanged)"
+  date: 2026-10-08
+  note: "A `register void *volatile *ot asm(\"$3\")` pin keeps the +0 store on the base but cse still folds the +4 store to absolute (+1 insn); a plain-pointee pin folds both."
+InitActorMeshScratchRegions_2026_10_08_1:
+  verdict: parked
+  class: "sched1 potential_hazard arg-set order (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 2/56, read only."
+WaitForFrameDeadline_2026_10_08_1:
+  verdict: parked
+  class: "prologue sw ra vs volatile init store (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 2/39, read only."
+RespawnOrGameOver_Draw_2026_10_08_1:
+  verdict: parked
+  class: "A200 arg copy placement (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 3/361, read only."
+DrawActors_2026_10_08_1:
+  verdict: parked
+  class: "reload frame shortfall (5 spill slots) + second-loop register shift"
+  date: 2026-10-08
+  note: "Re-measured 32 masked / 1286 vs 1287, read only. The frame is the blocker for positional credit."
+Gamestate02_03_06_Draw_2026_10_08_1:
+  verdict: parked
+  class: "R1 head knot + R2-R5 (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 725 anchored / 2193 vs 2210, read only."
+UnpackWorldDataChunks_2026_10_08_1:
+  verdict: parked
+  class: "cursor->a2 vs tail copy knot (unchanged)"
+  date: 2026-10-08
+  note: "Re-measured 105 anchored, read only (permuter body)."
