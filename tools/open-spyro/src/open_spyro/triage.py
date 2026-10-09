@@ -13,8 +13,9 @@ the parked ``.c.wip`` harvest inventory, and the auto-skip list with reasons.
 Run via ``make triage``. Pure stdlib, disc-free, deterministic (stable sort).
 
 --- Blocker signatures (auto-skip; classes reference the cookbook skip list) ---
-  %gp_rel operand        global accessed via $gp — our externs always expand to
-                         lui/%lo, so no C form can match.
+  (%gp_rel operand       no longer a wall since 2026-10-09: include/sdata.h's
+                         SDATA(sym, size) makes maspsx emit %gp_rel for that
+                         TU's accesses, so B1 functions rank like any other.)
   lui $at, <literal>     literal MMIO address load ($at without a %hi reloc).
   jr $tN                 BIOS A0/B0/C0 syscall trampoline / kernel thunk — gcc
                          always appends its own `jr $ra` epilogue.
@@ -175,8 +176,6 @@ def _blockers(rec: dict[str, Any], body: Body | None) -> list[str]:
         out.append("B5 split-label fragment")
     if body is None:
         return out
-    if body.gp_rel:
-        out.append("B1 %gp_rel")
     if body.at_literal:
         out.append("B2 $at literal HW load")
     if body.trampoline:
