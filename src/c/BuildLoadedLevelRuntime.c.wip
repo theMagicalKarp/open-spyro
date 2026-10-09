@@ -1,34 +1,29 @@
-/* PARKED 2026-10-08-2: LENGTH-EXACT and links, 29/927 differ (was 4 insns
-   short, so it could not link at all). Every block outside the two residues
-   below is register-for-register identical.
+/* PARKED 2026-10-08-2: LENGTH-EXACT and links, 4/927 differ (it was 4 insns
+   short and could not link). Everything except one register is identical.
 
    CLOSED 2026-10-08-2:
-     - exit-nudge block (the old residue 1): already shape-exact. The old
-       note was stale.
-     - post-pass-1 reload (3 insns): `rec = *(char *volatile
-   *)&g_pActorListBase;` after the pass-1 loop. cse had reused the loop bottom's
-   load across the fall-through.
-     - committed-bitmap copy (`move v1,v0`): write it as an indexed loop,
-       `g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8]`. loop.c's
-       giv reduction then makes the base copy and the -32 src giv the
-       original has.
-     - pass-2 `sh` in a1: block-scoped `register int sh2 asm("$5")`.
+     - post-pass-1 reload: `rec = *(char *volatile *)&g_pActorListBase;` after
+       the pass-1 loop (cse had reused the loop bottom's load).
+     - committed-bitmap copy (`move v1,v0`): an indexed loop,
+       `g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8]`.
+     - `mask = 0` in the j slot: hoist pass 1's `i = 0` above the guard (A376).
+       It becomes the straggler that fills the `lw g_pActorListBase` bubble and
+       then the beq slot, so `mask = 0` heads the join block and reorg steals
+       it into the death arm's `j`.
+     - both preheaders' `li` constants before `move s0,zero`: index the actor
+       records by `i * 0x58` (no `off` counter). The offset is then a loop.c
+       giv, and its init is inserted AFTER the hoisted movables.
+     - pass-2 header: `sh2`->a1, the kill-table base `tbl`->v1, `b3`->v1
+       (hard-reg pins), and `wi <<= 2` in place. Pass 1's bit is `b1`->a1.
+     - exit-nudge block: already exact (the old residue 1 note was stale).
    CLOSED 2026-10-08-1: death-replay restore (kk/dd pins in v1/v0).
 
-   LEFT:
-     3. `mask = 0` (orig 0x80014134..0x80014178). The original's join block
-        opens with `move s2,zero`, and reorg steals it into the death arm's
-        `j` slot and retargets past it. sched1 drops our dep-free set into the
-        `lw g_pActorListBase` load-shadow bubble instead, so the `j` slot stays
-        a nop and the beq slot takes the set. No effect: a volatile rec load,
-        mask after the rec load, a do/while(0) between them.
-     5. pass-2 header (orig 0x800142bc..0x8001438c). The original keeps
-        wi*4 in place in a2 (`sll a2,a2,2`), the table base in v1, `bit` in
-        v1 and `tb` in a1. Ours has the bases swapped and `bit` in a1 (the
-        dying sh pin lends its register). Pinning bit -> $3 as well scores 32,
-        and pinning tb -> $5 is +1 insn. The `li s4,1; li s3,255;
-        move s0,zero` preheader order is a separate loop.c emission-order
-        residue.
+   LEFT (4 insns): pass 2's else-arm `tb` (orig a1, ours v1). It lives across
+   three blocks, so global alloc picks it, and the first free register is v1.
+   Pinning it to $5 (a fresh pin, or reusing sh2) costs +1 insn: the
+   sprite-pair loop's `j` and the chunk loops' base copies then avoid a1, and
+   the sprite loop's bnez slot goes empty. Pinning that `j` to $5 as well does
+   not bring them back.
 
    Levers already banked here (do not re-derive): A20b aliases for the seven
    count globals + the spawn anchor + the spawn-pos trio, A104 named bit masks,
@@ -474,60 +469,64 @@ sprites:
     }
   }
   mask = 0;
+  i = 0;
   rec = (char *)g_pActorListBase;
   if (((unsigned char)rec[0x48]) != 0xFF) {
-    i = 0;
-    off = 0;
     do {
-      r = (char *)(off + ((int)rec));
+      r = (char *)((i * 0x58) + ((int)rec));
       if (((int *)(&g_apActorMeshTable))[*((short *)(r + 0x36))] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, (int *)((((char *)g_pActorListBase) + off) + 0xC));
+      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * 0x58)) + 0xC));
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) + off);
-      type = *((unsigned char *)((off + ((int)g_pActorListBase)) + 0x3A));
+      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) + (i * 0x58));
+      type =
+          *((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) + 0x3A));
       if (((unsigned int)(type & 0x7F)) < 0x20) {
+        register int b1 asm("$5");
         wi = i >> 5;
-        bit = i & 0x1F;
-        bit = 1 << bit;
-        if ((g_anRunningKillBitmap[wi] & bit) == 0) {
+        b1 = i & 0x1F;
+        b1 = 1 << b1;
+        if ((g_anRunningKillBitmap[wi] & b1) == 0) {
           mask |= 1 << type;
         } else {
           row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
-          if (((*((int *)((wi * 4) + row))) & bit) == 0) {
+          if (((*((int *)((wi * 4) + row))) & b1) == 0) {
             mask |= 1 << type;
           }
         }
       }
-      off += 0x58;
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[off + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
   if (((unsigned char)rec[0x48]) != 0xFF) {
-    off = 0;
     do {
       register int sh2 asm("$5");
+      register int tbl asm("$3");
+      register int b3 asm("$3");
       wi = i >> 5;
       sh2 = i & 0x1F;
-      row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
-      bit = 1 << sh2;
-      if ((*((int *)((wi * 4) + row))) & bit) {
-        if ((g_anRunningKillBitmap[wi] & bit) == 0) {
-          r = (char *)(off + ((int)rec));
+      tbl = (int)g_anLevelKillBitmapTable;
+      row = (g_nLevelIntroIndex << 5) + tbl;
+      wi <<= 2;
+      b3 = 1 << sh2;
+      if ((*((int *)(wi + row))) & b3) {
+        if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
+          r = (char *)((i * 0x58) + ((int)rec));
           if (((*((unsigned char *)(r + 0x3A))) & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
             r[0x53] = 0xFF;
           }
         } else {
-          tb = (*((unsigned char *)((off + ((int)g_pActorListBase)) + 0x3A))) &
+          tb = (*((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) +
+                                    0x3A))) &
                0x7F;
           if (tb < 0x20) {
             tbit = 1 << tb;
@@ -536,16 +535,15 @@ sprites:
             count = tb == 0x7E;
           }
           if (count != 0) {
-            (((char *)g_pActorListBase) + off)[0x53] = 0xFF;
+            (((char *)g_pActorListBase) + (i * 0x58))[0x53] = 0xFF;
           } else {
-            DespawnActorRecord(((char *)g_pActorListBase) + off);
+            DespawnActorRecord(((char *)g_pActorListBase) + (i * 0x58));
           }
         }
       }
       rec = (char *)g_pActorListBase;
-      off += 0x58;
       i++;
-    } while (((unsigned char)rec[off + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
   }
   i = 0;
   do {
