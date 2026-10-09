@@ -57,8 +57,20 @@ unsigned int FlushGpuQueue(void) {
     while ((*(volatile unsigned int *)g_pGpuStatReg & 0x4000000) == 0) {
       ;
     }
-    (*(void (**)(unsigned int, unsigned int))&g_abGpuOpQueueRing[RIDX * 0x60])(
-        g_adwGpuRingArgs[RIDX * 0x18], g_adwGpuRingArg4[RIDX * 0x18]);
+    {
+      register int r1 asm("$5") = RIDX;
+      register int r2 asm("$3") = RIDX;
+      unsigned int a = g_adwGpuRingArgs[r2 * 0x18];
+      register int f asm("$3") = r1 * 3;
+
+      {
+        register int r3 asm("$5") = RIDX;
+
+        f <<= 5;
+        (*(void (**)(unsigned int, unsigned int))(g_abGpuOpQueueRing + f))(
+            a, g_adwGpuRingArg4[r3 * 0x18]);
+      }
+    }
     last[0] = g_adwGpuRingFunc[RIDX * 0x18];
     *(volatile unsigned int *)&g_dwLastGpuOpArg1 =
         g_adwGpuRingArgsPost[RIDX * 0x18];
@@ -80,6 +92,13 @@ unsigned int FlushGpuQueue(void) {
 }
 
 /*
+ * 2026-10-08-1: 14 -> 9 linked, length-exact, register map exact. The three
+ * RIDX reads are hard-reg pins (L1 a1, L2 v1, L3 a1 again once L1 is dead)
+ * and the function index is a pinned v1 `f = L1 * 3; f <<= 5`. Left: pure
+ * sched1 order in the dispatch block -- the original issues L2's `sll 5`,
+ * then L1*3, the args load, L3, and `f <<= 5`; ours hoists both shifts and
+ * L3 above the args load (load-load, no dependence; priority decides).
+ *
  * PARKED 2026-08-13 — LENGTH-EXACT (187/187), 20/187 words differ (89.3%),
  * re-derived from scratch (the 2026-07-25 permuter spew that used to live here
  * was 182 insns / 59 shape-differing; this body is hand-written and readable).
