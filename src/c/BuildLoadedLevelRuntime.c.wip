@@ -1,40 +1,34 @@
-/* PARKED 2026-08-10-5 — 923 of 927 insns, 857 shape-aligned (92.4%); links,
-   does not match. Every block below the fixed header is byte-shape-exact:
-   the sprite-pair loop, all SEVEN chunk-relocation loops, the actor-pool /
-   capacity math, the pickup-table rebase, the spatial-grid rebase and actor
-   pass 1 are register-for-register identical. Residues, in order:
+/* PARKED 2026-10-08-2: LENGTH-EXACT and links, 29/927 differ (was 4 insns
+   short, so it could not link at all). Every block outside the two residues
+   below is register-for-register identical.
 
-     1. exit-nudge block (orig 220..252, ~12 insns) — F2. sched1 hoists the
-        SINE `lhu` above the X store; the original emits cos-load/cos-store
-        then sin-load/sin-store strictly serially. One reused `radial` temp
-        pins the two `sra`s but not the two loads (a store never blocks a load
-        off a different symbol). `short radial` is WORSE (both lhu hoist).
-     2. CLOSED 2026-10-08-1 (49 -> 29 masked): death-replay restore. The
-        index is a `register int kk asm("$3")` and the value temp a
-        `register int dd asm("$2")`, block-scoped; that also moves the
-        g_nDeathState reload and the `andi 0xff`/`sb` pair into place.
-     3. `mask = 0` (orig 699..716, 2 insns) — F8/reorg. 2026-10-08-1: it is
-        sched1 sinking the set to the join block's end (F10); a do/while(0)
-        after it is inert, and a block-scoped `register int m asm("$18")`
-        makes global alloc prefer s2 everywhere (+190). The original has TWO
-        copies: reorg's fill_slots_from_thread steals the join block's
-        `move s2,zero` into the arm-1 `j` delay slot and retargets past it.
-        Ours emits one copy. Plain if/else + a single `mask = 0` after is the
-        right source shape (a `goto` + duplicated assignment cross-jumps).
-     4. post-pass-1 reload (orig 789..792, 3 insns, we are SHORT) — the
-        original re-loads `g_pActorListBase` in the loop-exit block; ours
-        reuses the value the loop bottom just loaded. cse should not cross the
-        ebb here, so something later deletes it; unexplained.
-     5. actor pass 2 header (orig 796..849, ~14 insns) — F7/loop.c. The
-        original hoists only the constant `1` (s4) and re-materialises
-        `lui/addiu %lo(g_anLevelKillBitmapTable)` INSIDE the loop; ours hoists
-        the symbol into the preheader too. Tried: inline expression (75),
-        two-set `row` to disqualify the loop.c movable (86) — both worse than
-        the current single-set `row` (70). The rest is the v1<->a1 rotation
-        that follows from it.
-     6. committed-bitmap copy (orig 866..869, 2 insns) — the original keeps
-        `move v1,v0` between the symbol pseudo and the walker (A181 tie);
-        ours coalesces.
+   CLOSED 2026-10-08-2:
+     - exit-nudge block (the old residue 1): already shape-exact. The old
+       note was stale.
+     - post-pass-1 reload (3 insns): `rec = *(char *volatile
+   *)&g_pActorListBase;` after the pass-1 loop. cse had reused the loop bottom's
+   load across the fall-through.
+     - committed-bitmap copy (`move v1,v0`): write it as an indexed loop,
+       `g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8]`. loop.c's
+       giv reduction then makes the base copy and the -32 src giv the
+       original has.
+     - pass-2 `sh` in a1: block-scoped `register int sh2 asm("$5")`.
+   CLOSED 2026-10-08-1: death-replay restore (kk/dd pins in v1/v0).
+
+   LEFT:
+     3. `mask = 0` (orig 0x80014134..0x80014178). The original's join block
+        opens with `move s2,zero`, and reorg steals it into the death arm's
+        `j` slot and retargets past it. sched1 drops our dep-free set into the
+        `lw g_pActorListBase` load-shadow bubble instead, so the `j` slot stays
+        a nop and the beq slot takes the set. No effect: a volatile rec load,
+        mask after the rec load, a do/while(0) between them.
+     5. pass-2 header (orig 0x800142bc..0x8001438c). The original keeps
+        wi*4 in place in a2 (`sll a2,a2,2`), the table base in v1, `bit` in
+        v1 and `tb` in a1. Ours has the bases swapped and `bit` in a1 (the
+        dying sh pin lends its register). Pinning bit -> $3 as well scores 32,
+        and pinning tb -> $5 is +1 insn. The `li s4,1; li s3,255;
+        move s0,zero` preheader order is a separate loop.c emission-order
+        residue.
 
    Levers already banked here (do not re-derive): A20b aliases for the seven
    count globals + the spawn anchor + the spawn-pos trio, A104 named bit masks,
@@ -513,16 +507,17 @@ sprites:
       rec = (char *)g_pActorListBase;
       i++;
     } while (((unsigned char)rec[off + 0x48]) != 0xFF);
-    rec = (char *)g_pActorListBase;
+    rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
   if (((unsigned char)rec[0x48]) != 0xFF) {
     off = 0;
     do {
+      register int sh2 asm("$5");
       wi = i >> 5;
-      sh = i & 0x1F;
+      sh2 = i & 0x1F;
       row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
-      bit = 1 << sh;
+      bit = 1 << sh2;
       if ((*((int *)((wi * 4) + row))) & bit) {
         if ((g_anRunningKillBitmap[wi] & bit) == 0) {
           r = (char *)(off + ((int)rec));
@@ -553,14 +548,9 @@ sprites:
     } while (((unsigned char)rec[off + 0x48]) != 0xFF);
   }
   i = 0;
-  dst = g_anCommittedKillBitmap;
-  src = g_anCommittedKillBitmap;
-  src = dst - 8;
   do {
-    *dst = *src;
-    src++;
+    g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8];
     i++;
-    dst++;
   } while (i < 8);
   i = 9;
   tg = &g_anLevelTriggerStateSlots[9];
