@@ -34,6 +34,15 @@ from open_spyro.paths import repo_root
 # base + offset). So anchors are written as VMA - base. main always loads here.
 MAIN_BASE = 0x80010000
 
+# Slots that splat split off as their own symbol but that the original emitted as
+# the tail of the PRECEDING function (fragment -> owner). Once the owner is C, its
+# object fills the fragment's bytes too, so the fragment's anchor is dropped (the
+# owner's object runs straight through it). The fragment keeps a comment-only
+# src/c/<fragment>.c so HAVE_C empties its asm and progress counts it.
+ABSORBED_BY = {
+    "func_8001228C": "main",  # main()'s dead epilogue after the infinite frame loop
+}
+
 
 def _rodata_slot_lines(pieces: list[dict], have_c: set[str], ro_obj: str, c_dir: str) -> list[str]:
     """Anchored rodata piece placements (jtbls / const data owned by functions).
@@ -80,6 +89,15 @@ def run() -> None:
     used: list[str] = []
     for f in funcs:
         name, vram = f["name"], f["vram"]
+        owner = ABSORBED_BY.get(name)
+        if owner is not None and (name in have_c) != (owner in have_c):
+            raise SystemExit(
+                f"gen_slots_ld: {name} is absorbed by {owner}: add or remove "
+                f"src/c/{name}.c and src/c/{owner}.c together"
+            )
+        if owner is not None and name in have_c:
+            used.append(name)
+            continue
         lines.append(f"    . = 0x{vram - MAIN_BASE:08x} ;")
         lines.append(f"    build/main/asm/text.o(.text.{name})")
         if name in have_c:

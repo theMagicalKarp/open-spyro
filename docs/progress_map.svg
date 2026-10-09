@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">96.75% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">2,089,384 / 2,159,608 split-code bytes · 747 matched · 12 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">96.76% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">2,089,548 / 2,159,608 split-code bytes · 749 matched · 12 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -409,7 +409,7 @@
 <rect x="222.27" y="655.50" width="8.68" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitCdSystem  ·  140 bytes  ·  matched</title></rect>
 <rect x="230.95" y="655.50" width="8.68" height="8.81" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ScaleVector3Shifted  ·  140 bytes  ·  handwritten</title></rect>
 <rect x="239.64" y="655.50" width="8.68" height="8.81" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ConvertRGB15ToLuma8  ·  140 bytes  ·  handwritten</title></rect>
-<rect x="248.32" y="655.50" width="8.43" height="8.81" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>main  ·  136 bytes  ·  asm</title></rect>
+<rect x="248.32" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>main  ·  136 bytes  ·  matched</title></rect>
 <rect x="256.76" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueuePendingSpritePrims  ·  136 bytes  ·  matched</title></rect>
 <rect x="265.19" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038098  ·  136 bytes  ·  matched</title></rect>
 <rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038494  ·  136 bytes  ·  matched</title></rect>
@@ -686,7 +686,7 @@
 <rect x="274.24" y="765.10" width="4.21" height="4.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_920  ·  32 bytes  ·  library</title></rect>
 <rect x="274.24" y="769.26" width="4.21" height="4.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_63C  ·  32 bytes  ·  library</title></rect>
 <rect x="278.45" y="736.01" width="4.21" height="4.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSioTimeoutDeadline  ·  32 bytes  ·  library</title></rect>
-<rect x="282.66" y="736.01" width="3.68" height="4.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_8001228C  ·  28 bytes  ·  asm</title></rect>
+<rect x="282.66" y="736.01" width="3.68" height="4.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8001228C  ·  28 bytes  ·  matched</title></rect>
 <rect x="286.34" y="736.01" width="3.68" height="4.16" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>FillWord  ·  28 bytes  ·  asm</title></rect>
 <rect x="290.02" y="736.01" width="3.68" height="4.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CopyVector  ·  28 bytes  ·  handwritten</title></rect>
 <rect x="293.70" y="736.01" width="3.68" height="4.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>SVectorToVector  ·  28 bytes  ·  handwritten</title></rect>
