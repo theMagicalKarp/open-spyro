@@ -23,7 +23,13 @@ struct DigitActor {
   unsigned char yaw;   /* 0x46 coarse camera yaw */
 };
 
-/* PARKED 2026-08-27-1 -- FRESH DECODE, 102 vs 100 insns (will not link), and
+/* 2026-10-09: B13 SOLVED, now LENGTH-EXACT and linking at 25/100. An empty
+ * asm copy of each LUT load (`__asm__("" : "=r"(sx) : "0"(sx))`) stops
+ * combine fusing the sign-extend into the shift, so the loads stay `lh; sra 4`.
+ * Left: the z/mult order after the init-hook call, and the loop tail order
+ * (rot[2] reload, sx/cx in v1/a0).
+ *
+ * PARKED 2026-08-27-1 -- FRESH DECODE, 102 vs 100 insns (will not link), and
  * the content diff is **9 mismatched insns over 7 regions**. Two residues:
  *
  *  - **B13 (+2, the whole length delta).** `g_anSineLut[a] >> 4` /
@@ -103,7 +109,9 @@ void func_800557CC(int value, struct DigitActor *src) {
       place *= 10;
       a = rec->yaw;
       sx = g_anSineLut[a];
+      __asm__("" : "=r"(sx) : "0"(sx));
       cx = g_anCosineLut[a];
+      __asm__("" : "=r"(cx) : "0"(cx));
       rot[2] -= 0x10;
       x -= sx >> 4;
       y += cx >> 4;
