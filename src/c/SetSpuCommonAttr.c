@@ -38,12 +38,17 @@ extern SpuRegs *D_80073554; /* SPU register block base */
 /* libspu SpuSetCommonAttr (0x8005cc58, 916 bytes): writes the master volume
    (with the sweep mode from mvolmode, the sweep rate clamped to 0..0x7f), the
    CD/external input volumes and the CD/external reverb + mix enable bits of
-   SPUCNT for every field selected in attr->mask (mask 0 = all). */
+   SPUCNT for every field selected in attr->mask (mask 0 = all).
+
+   The register pins reproduce the original's allocation: mask/all in t1/t2
+   leave t0 to vr, each clamp's sign-extended read sits in a3/a2, the SPUCNT
+   read-modify-writes keep the value in v1, and the last mask test's result
+   is pinned to v0 (a dying hard reg would otherwise lend it t1). */
 void SetSpuCommonAttr(SpuCommonAttr *attr) {
-  unsigned int mask;
-  int all;
+  register unsigned int mask asm("$9");
+  register int all asm("$10");
   unsigned short vl;
-  register unsigned short vr asm("$8");
+  unsigned short vr;
   unsigned short vmode;
   unsigned short vol;
 
@@ -87,9 +92,11 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
       vmode = 0;
     }
     if (vmode != 0) {
-      if (attr->mvol_left >= 0x80) {
+      register int t asm("$7") = attr->mvol_left;
+
+      if (t >= 0x80) {
         vl = 0x7F;
-      } else if (attr->mvol_left < 0) {
+      } else if (t < 0) {
         vl = 0;
       } else {
         vl = attr->mvol_left;
@@ -134,9 +141,11 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
       vmode = 0;
     }
     if (vmode != 0) {
-      if (attr->mvol_right >= 0x80) {
+      register int t asm("$6") = attr->mvol_right;
+
+      if (t >= 0x80) {
         vr = 0x7F;
-      } else if (attr->mvol_right < 0) {
+      } else if (t < 0) {
         vr = 0;
       } else {
         vr = attr->mvol_right;
@@ -160,30 +169,66 @@ void SetSpuCommonAttr(SpuCommonAttr *attr) {
   }
   if (all || (mask & 0x100)) {
     if (attr->cd_reverb == 0) {
-      D_80073554->spucnt &= ~4;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s & ~4;
+      }
     } else {
-      D_80073554->spucnt |= 4;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s | 4;
+      }
     }
   }
   if (all || (mask & 0x200)) {
     if (attr->cd_mix == 0) {
-      D_80073554->spucnt &= ~1;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s & ~1;
+      }
     } else {
-      D_80073554->spucnt |= 1;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s | 1;
+      }
     }
   }
   if (all || (mask & 0x1000)) {
     if (attr->ext_reverb == 0) {
-      D_80073554->spucnt &= ~8;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s & ~8;
+      }
     } else {
-      D_80073554->spucnt |= 8;
+      {
+        register unsigned short s asm("$3") = D_80073554->spucnt;
+
+        D_80073554->spucnt = s | 8;
+      }
     }
   }
-  if (all || (mask & 0x2000)) {
-    if (attr->ext_mix == 0) {
-      D_80073554->spucnt &= ~2;
-    } else {
-      D_80073554->spucnt |= 2;
+  {
+    register unsigned int c asm("$2") = mask & 0x2000;
+
+    if (all || c) {
+      if (attr->ext_mix == 0) {
+        {
+          register unsigned short s asm("$3") = D_80073554->spucnt;
+
+          D_80073554->spucnt = s & ~2;
+        }
+      } else {
+        {
+          register unsigned short s asm("$3") = D_80073554->spucnt;
+
+          D_80073554->spucnt = s | 2;
+        }
+      }
     }
   }
 }

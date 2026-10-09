@@ -9,13 +9,14 @@
         then sin-load/sin-store strictly serially. One reused `radial` temp
         pins the two `sra`s but not the two loads (a store never blocks a load
         off a different symbol). `short radial` is WORSE (both lhu hoist).
-     2. death-replay restore (orig 661..691, ~12 insns) — F1. Pure v0<->v1
-        rotation: the original keeps the *index* in v1 and the value temp in
-        v0, ours the reverse. Tried: inline `g_nDeathTryIndex`, a named `k`,
-        `dyaw` first/last in the declaration list — all identical. Also the
-        `andi 0xff`/`sb` pair is one slot early. Next: the §D 2c allocation
-        probe on the two quantities.
-     3. `mask = 0` (orig 699..716, 2 insns) — F8/reorg. The original has TWO
+     2. CLOSED 2026-10-08-1 (49 -> 29 masked): death-replay restore. The
+        index is a `register int kk asm("$3")` and the value temp a
+        `register int dd asm("$2")`, block-scoped; that also moves the
+        g_nDeathState reload and the `andi 0xff`/`sb` pair into place.
+     3. `mask = 0` (orig 699..716, 2 insns) — F8/reorg. 2026-10-08-1: it is
+        sched1 sinking the set to the join block's end (F10); a do/while(0)
+        after it is inert, and a block-scoped `register int m asm("$18")`
+        makes global alloc prefer s2 everywhere (+190). The original has TWO
         copies: reorg's fill_slots_from_thread steals the join block's
         `move s2,zero` into the arm-1 `j` delay slot and retargets past it.
         Ours emits one copy. Plain if/else + a single `mask = 0` after is the
@@ -454,18 +455,23 @@ sprites:
     } while (i < (*base));
   }
   if (g_nDeathState != 0) {
-    srand(1234);
-    k = g_nDeathTryIndex;
-    dyaw = g_anDeathReplaySpawnTable[k * 4];
-    g_anSpyroWorldPos[0] = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 1];
-    g_nSpyroWorldPosY = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 2];
-    D_80078A60 = dyaw;
-    dyaw = g_anDeathReplaySpawnTable[(k * 4) + 3];
-    g_nDeathRespawnPending = 1;
-    g_abSpyroPersistentEuler[2] = dyaw;
-    g_nSpyroBodyYaw = (dyaw & 0xFF) * 0x10;
+    {
+      register int kk asm("$3");
+      register int dd asm("$2");
+
+      srand(1234);
+      kk = g_nDeathTryIndex;
+      dd = g_anDeathReplaySpawnTable[kk * 4];
+      g_anSpyroWorldPos[0] = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 1];
+      g_nSpyroWorldPosY = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 2];
+      D_80078A60 = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 3];
+      g_nDeathRespawnPending = 1;
+      g_abSpyroPersistentEuler[2] = dd;
+      g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
+    }
     if (g_nDeathState == 1) {
       g_pDeathReplayCursor = p;
     } else {
