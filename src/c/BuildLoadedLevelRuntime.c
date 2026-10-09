@@ -1,40 +1,3 @@
-/* PARKED 2026-10-08-2: LENGTH-EXACT and links, 4/927 differ (it was 4 insns
-   short and could not link). Everything except one register is identical.
-
-   CLOSED 2026-10-08-2:
-     - post-pass-1 reload: `rec = *(char *volatile *)&g_pActorListBase;` after
-       the pass-1 loop (cse had reused the loop bottom's load).
-     - committed-bitmap copy (`move v1,v0`): an indexed loop,
-       `g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8]`.
-     - `mask = 0` in the j slot: hoist pass 1's `i = 0` above the guard (A376).
-       It becomes the straggler that fills the `lw g_pActorListBase` bubble and
-       then the beq slot, so `mask = 0` heads the join block and reorg steals
-       it into the death arm's `j`.
-     - both preheaders' `li` constants before `move s0,zero`: index the actor
-       records by `i * 0x58` (no `off` counter). The offset is then a loop.c
-       giv, and its init is inserted AFTER the hoisted movables.
-     - pass-2 header: `sh2`->a1, the kill-table base `tbl`->v1, `b3`->v1
-       (hard-reg pins), and `wi <<= 2` in place. Pass 1's bit is `b1`->a1.
-     - exit-nudge block: already exact (the old residue 1 note was stale).
-   CLOSED 2026-10-08-1: death-replay restore (kk/dd pins in v1/v0).
-
-   LEFT (4 insns): pass 2's else-arm `tb` (orig a1, ours v1). It lives across
-   three blocks, so global alloc picks it, and the first free register is v1.
-   Pinning it to $5 (a fresh pin, or reusing sh2) costs +1 insn: the
-   sprite-pair loop's `j` and the chunk loops' base copies then avoid a1, and
-   the sprite loop's bnez slot goes empty. Pinning that `j` to $5 as well does
-   not bring them back.
-
-   Levers already banked here (do not re-derive): A20b aliases for the seven
-   count globals + the spawn anchor + the spawn-pos trio, A104 named bit masks,
-   A149 index-first int arithmetic, A85 goto-loop for the sprite pairs, A164
-   straggler source order for `i = 0`, and the single-reused-temp trick that
-   forces load/store interleaving in the death-replay block.
-
-   2026-08-14-1 unattended permuter session (~15m, ~27200 iterations, timed out
-   at the 15m budget): best score 1640 vs first-iteration score 2520. No
-   byte-perfect candidate found; still PARKED (see above). */
-
 /* 0x8001364c — post-CD-stream level finalization driver, the "level-loader
    meat" (3708 b). Builds every piece of per-level runtime state out of the
    bundle the CD stream just dropped in g_pPathTableBuffer. Callers:
@@ -91,13 +54,8 @@ struct CameraParamBlock {
   int w[6];
 };
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/BuildLoadedLevelRuntime.c.wip`; this body came from
-   build/permuter/nonmatchings/BuildLoadedLevelRuntime/output-1640-1/source.c.
- */
+/* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
+   alloc hands `tb` a1, as in the original. */
 int BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int pad[8];
@@ -525,14 +483,22 @@ sprites:
             r[0x53] = 0xFF;
           }
         } else {
-          tb = (*((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) +
-                                    0x3A))) &
-               0x7F;
-          if (tb < 0x20) {
-            tbit = 1 << tb;
-            count = (mask & tbit) != 0;
-          } else {
-            count = tb == 0x7E;
+          {
+            register int k3 asm("$3");
+            register int k4 asm("$4");
+
+            __asm__("" : "=r"(k3));
+            __asm__("" : "=r"(k4));
+            tb = (*((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) +
+                                      0x3A))) &
+                 0x7F;
+            if (tb < 0x20) {
+              tbit = 1 << tb;
+              count = (mask & tbit) != 0;
+            } else {
+              count = tb == 0x7E;
+            }
+            __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
             (((char *)g_pActorListBase) + (i * 0x58))[0x53] = 0xFF;
