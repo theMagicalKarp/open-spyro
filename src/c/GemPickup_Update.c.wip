@@ -1,6 +1,14 @@
 #include "globals.h"
 
-/* 2026-10-08: knot (d) CLOSED, 22 -> 15 linked (length-exact). The case 5
+/* 2026-10-09: 15 -> 13 linked. The case-2 5-holder is an asm-opaque `five`
+   set right before the AllocActorRecordSlot call, so it lands in the jal slot.
+   Left: the timer-base s1/a0 + constant-1 s2/s1 rotation at 0x8002F538, the
+   a3/a0 base at 0x80031238, and `li a1,4` for StopSoundVoiceByIndex (an empty
+   asm barrier puts it in the jal slot but sinks the GB[11] load past the
+   stores; reading GB[11] into a local splits it from the later &GB[11] and
+   costs +1 or +2).
+
+   2026-10-08: knot (d) CLOSED, 22 -> 15 linked (length-exact). The case 5
    table base was a sched1 LAUNCH_PRIORITY boost: adjust_priority ->
    birthing_insn_p promotes a set whose pseudo has reg_n_sets == 1, so a
    block-local `tbl` is scheduled right before the Layer1 call while i/icon/
@@ -463,12 +471,13 @@ void GemPickup_Update(void) {
       g_nGemPickupTimer = 0;
       {
         int n;
+        int five;
 
         for (n = 0; n < 0x20; n++) {
           ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(
               0xFB, g_pGemPickupSourceActor);
         }
-      }
+      __asm__("" : "=r"(five) : "0"(5));
       GB[24] = (int)AllocActorRecordSlot();
       InitActorRenderDefaults((void *)GB[24]);
       H16(STATUE, 0x36) = 0x1FE;
@@ -480,7 +489,7 @@ void GemPickup_Update(void) {
         U8(t, 0x46) = U8(s, 0x46);
       }
       U8(STATUE, 0x57) = 0x60;
-      U8(STATUE, 0x47) = 5;
+      U8(STATUE, 0x47) = five;
       W32(STATUE, 0x1C) = -1;
       W32(STATUE, 0x14) += 0x400;
       FindWorldFloorBelowPoint((int *)(GB[24] + 0xC));
@@ -491,12 +500,13 @@ void GemPickup_Update(void) {
       InitActorRenderDefaults(g_pGemPickupSpyroMirrorActor);
       H16(MIRROR, 0x36) = 0x1FF;
       CopyVector((int *)(MIRROR + 0xC), g_anSpyroWorldPos);
-      U8(MIRROR, 0x47) = 5;
+      U8(MIRROR, 0x47) = five;
       InsertActorIntoSpatialGrid(MIRROR);
       StopSoundVoiceByIndex(GB[11], 4);
       PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
       W32(SRC, 0x14) += 0x78;
       DespawnActorRecord(SRC);
+      }
     }
     break;
   case 3:
