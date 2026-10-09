@@ -5375,3 +5375,92 @@ Gamestate0C_Draw_2026_10_08_2:
   class: "B-i held-base form (unchanged)"
   date: 2026-10-08
   note: "Read only; 4/283."
+func_level_5_8007B68C_2026_10_09:
+  verdict: matched
+  class: "R5 was not a machine-model wall: A232 barrier + pinned e8/f0 loads; Rd via true tail order + all-volatile quad loop + block-scoped pins"
+  date: 2026-10-09
+  note: "Clones 11/17/23/29 matched too; 11/17/23 need a tentative-defined TRY AGAIN blob for per-overlay pad garbage."
+InitActorMeshScratchRegions_2026_10_09:
+  verdict: matched
+  class: "sched1 potential_hazard tie broken by an empty __asm__ volatile barrier"
+  date: 2026-10-09
+FlushGpuQueue_2026_10_09:
+  verdict: matched
+  class: "dispatch-block load order fixed by two asm barriers with operand uses"
+  date: 2026-10-09
+Gamestate0C_Draw_2026_10_09:
+  verdict: matched
+  class: "B-i held base kept by an asm-opaque copy of the block address"
+  date: 2026-10-09
+RespawnOrGameOver_Draw_2026_10_09:
+  verdict: matched
+  class: "A200 open question answered: inline asm-opaque base, no NOTE barrier, cross-jump preserved"
+  date: 2026-10-09
+func_level_13_8008AF54_2026_10_09:
+  verdict: matched
+  class: "B25 solved: dead li a3,3 are reload input reloads of spilled burst for asm-input references"
+  date: 2026-10-09
+func_level_14_80089454_2026_10_09:
+  verdict: matched
+  class: "B25 as level_13 + named step2 declared first for the spill-slot order"
+  date: 2026-10-09
+DispatchSpyroTriggerEvent_2026_10_09:
+  verdict: matched
+  class: "orb-drop store order fixed by an empty asm barrier"
+  date: 2026-10-09
+BuildLoadedLevelRuntime_2026_10_09:
+  verdict: matched
+  class: "global-alloc choice steered by asm-reserved v1/a0 around tb's range"
+  date: 2026-10-09
+sprintf_2026_10_09:
+  verdict: parked
+  class: "case 'n' andi dest reg (dying flags v1 vs orig v0)"
+  date: 2026-10-09
+  note: "2/535 length-exact; asm barriers after the four int va_arg reads + pinned old-ap $3 fixed d/u/o/x."
+GemPickup_Update_2026_10_09:
+  verdict: parked
+  class: "timer-base s1/a0 rotation + li a1,4 vs GB[11]/&GB[11] cse"
+  date: 2026-10-09
+  note: "15 -> 13; asm-opaque five-holder fixed the Alloc jal slot."
+TickSpyroAttackEffects_2026_10_09:
+  verdict: parked
+  class: "F7 spill-slot hole (k gets LO) + preheader F1"
+  date: 2026-10-09
+  note: "20 -> 16; else-arm asm barrier fixed the arc-path select."
+func_credits_8007AA50_2026_10_09:
+  verdict: parked
+  class: "case-4 constant/E0 store order + clusters A-C"
+  date: 2026-10-09
+  note: "143 -> 112 linked; case-4 loads hoisted ahead of the movstr with an asm use."
+func_800557CC_2026_10_09:
+  verdict: parked
+  class: "z/mult order + loop-tail schedule (B13 solved by asm-opaque LUT loads)"
+  date: 2026-10-09
+  note: "Now length-exact 25/100 (was +2, unlinkable)."
+ControlSpuDmaTransfer_2026_10_09:
+  verdict: parked
+  class: "residue #2 register rotation (B22 solved by asm-opaque entry read)"
+  date: 2026-10-09
+  note: "Length-exact 56/164 (was -2); $5/$4/$3 pins in cases 0/1 cost +2."
+Gamestate02_03_06_Draw_2026_10_09:
+  verdict: parked
+  class: "pause-box rows spill slot at sp+0xA0 with dead slots above (pad[24] cannot place it)"
+  date: 2026-10-09
+  note: "2108 -> 1727; head + backdrop ported from the matched level_5 twin."
+WaitForFrameDeadline_2026_10_09:
+  verdict: parked
+  class: "prologue sw ra vs volatile init store (unchanged)"
+  date: 2026-10-09
+  note: "Screened: an asm barrier cannot move a prologue insn below the body."
+UnpackWorldDataChunks_2026_10_09:
+  verdict: attempted
+  class: "permuter body far from the original (162/310); needs a fresh decode"
+  date: 2026-10-09
+UpdateHudCounters_2026_10_09:
+  verdict: attempted
+  class: "screened only: 852/913 positional, 175 masked"
+  date: 2026-10-09
+func_8005D628_2026_10_09:
+  verdict: wall
+  class: "B11 cross-iteration LO reuse (re-screened, unchanged)"
+  date: 2026-10-09
