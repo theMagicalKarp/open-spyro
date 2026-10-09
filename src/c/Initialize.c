@@ -61,16 +61,18 @@ extern int
    one shared counter lives across the whole body and steals the low
    callee-saved register the buffer base needs.
 
-   PARKED 2026-10-08-1 at 332/332 (length-exact), 21 differ linked (was
-   37). The 600 marker is a `register int k600 asm("$16")` pin: a hard reg is
-   outside global-alloc priority, so the CdBaseLba base keeps s1 and the
-   constant lands in s0 as in the original; the third read's two counts are
-   volatile locals read before the buffer pointer (orig a2, a3, then a1).
-   Left: (1) the first read wants `lw a0,0(s1)` first and la s1 before
-   la s3; a volatile `lba1` gives that order but then sched sinks the s0 li
-   out of LoadAssetDirectoryFromCd's delay slot (+1 insn); (2) the fade
-   counters' `move s0,zero` / `addiu s0,s0,1` positions (sched1 LUID tie
-   with the call's `la a0`). */
+   The fade-out loops pass `-(j + 1) << 5` and bump the counter at the
+   bottom. The arg is then a fresh pseudo, so F14's birthing boost puts its
+   addiu after the a0/a1 arg moves, and the bnez slot stays a nop because
+   the loop head is `la a0`.
+
+   The 600 marker is pinned in s0, which keeps the CdBaseLba base in s1. The
+   first read pins lba1/off1 to a0/a3, which gives the original's
+   `lw a0; lw a3` order. The buffer load has to be PLAIN: reorg's
+   mark_referenced_resources ASSIGNS `volatil` from the last MEM it skips,
+   so a volatile load just before `li s0,600` keeps the li out of
+   LoadAssetDirectoryFromCd's delay slot. The third read's two counts are
+   volatile locals read before the buffer pointer (orig a2, a3, then a1). */
 void Initialize(void) {
   void **buf;
   int i;
@@ -135,10 +137,10 @@ void Initialize(void) {
     lba = g_anCdBaseLbaBlock;
     archOff = g_anWorldArchiveOffsetBlock;
     {
-      int lba1 = lba[0];
-      int off1 = *(volatile int *)archOff;
-      CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1,
-                        k600);
+      register int lba1 asm("$4") = lba[0];
+      register int off1 asm("$7") = *(volatile int *)archOff;
+      void *buf1 = D_800113A0;
+      CdReadSyncSectors(lba1, buf1, 0x800, off1, k600);
     }
     timOff = g_anWorldTimAudioChunkOffsetBlock;
     CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
@@ -166,8 +168,7 @@ hold_title:
   j = 0;
   buf2 = g_apDrawBufBlock2;
 fade_out_title:
-  j += 1;
-  AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -j << 5);
+  AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -(j + 1) << 5);
   rect[2] = 0x300;
   rect[0] = 0;
   rect[1] = 0;
@@ -176,6 +177,7 @@ fade_out_title:
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_abFrameDispEnv1);
+  j += 1;
   if (j < 8) {
     goto fade_out_title;
   }
@@ -216,8 +218,7 @@ hold_splash:
   n = 0;
   src2 = dst - 0x5A000;
 fade_out_splash:
-  n += 1;
-  AddBiasToColorRuns(dst, src2, -n << 5);
+  AddBiasToColorRuns(dst, src2, -(n + 1) << 5);
   rect[2] = 0x300;
   rect[0] = 0;
   rect[1] = 0;
@@ -226,6 +227,7 @@ fade_out_splash:
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_abFrameDispEnv1);
+  n += 1;
   if (n < 8) {
     goto fade_out_splash;
   }
