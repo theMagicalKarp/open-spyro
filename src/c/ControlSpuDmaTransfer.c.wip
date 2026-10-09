@@ -23,6 +23,11 @@ extern unsigned short D_8007356C; /* encoded SPU transfer address shadow */
    callback, then kicks the DMA channel through the MADR/BCR/CHCR shadows.
    Returns -2 if any wait spins past 0xF00 iterations, else 0.
 
+   2026-10-09: B22 SOLVED, LENGTH-EXACT 56/164. An empty asm copy of the entry
+   wait-test read (`__asm__("" : "=r"(cur) : "0"(cur))`, compare without the
+   cast) keeps the `andi 0xFFFF`. Left: residue #2's register rotation
+   (block-scoped $5/$4/$3 pins in cases 0/1 cost +2) and #3.
+
    PARKED 2026-08-15 — re-derived from the asm (the 2026-07-25 permuter body is
    gone). 162/164 insns; the whole case-3 tail from the SetSpuDma*StateBits call
    pair to the epilogue is insn-for-insn exact, and the `break` + one shared
@@ -81,8 +86,9 @@ int ControlSpuDmaTransfer(int op, ...) {
     base = D_80073554;
     target = D_8007356C;
     cur = *(volatile unsigned short *)(base + 0x1A6);
+    __asm__("" : "=r"(cur) : "0"(cur));
     g_nSpuPendingDmaDirection = 0;
-    if ((unsigned short)cur != target) {
+    if (cur != target) {
       n = 0;
       do {
         n += 1;
@@ -101,8 +107,9 @@ int ControlSpuDmaTransfer(int op, ...) {
     base = D_80073554;
     target = D_8007356C;
     cur = *(volatile unsigned short *)(base + 0x1A6);
+    __asm__("" : "=r"(cur) : "0"(cur));
     g_nSpuPendingDmaDirection = 1;
-    if ((unsigned short)cur != target) {
+    if (cur != target) {
       n = 0;
       do {
         n += 1;
