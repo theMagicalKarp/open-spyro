@@ -1,131 +1,3 @@
-/* PARKED 2026-09-01-1 at 1692/1696 insns.  Measured on the LINKED bins
- * (build/diff/*.{orig,built}.bin) with registers anchored and immediates
- * masked, difflib-aligned: **4 mismatches over 4 regions, offset -4**, and all
- * four are the SAME instruction -- the dead `li a3,3` class shared with
- * `func_level_14_80089454.c.wip`.  Every other residue this function ever had
- * is now closed.  Was 6 (over 5 regions) at the start of 2026-09-01-1.
- *
- * 2026-09-01-1 CLOSED old residue 2 (the `func_8001778C(v, p, D_80076DF8)`
- * carrier pair) with **A214, chained** -- see the note below.  Zero insn cost:
- * 1692 insns either way.
- *
- * THE TWO LEVERS THAT MOVED IT (63 -> 47 -> 24), both allocation dials:
- *  A. The ten expire sites whose `if` arm is followed by an `else` are written
- *     `goto expire;` against ONE shared `expire: func_80053608(rec);` block at
- *     the bottom of the loop body.  The emitted code is unchanged -- jump.c
- *     cross-jumps all 26 inline call sites down to the single
- *     `jal func_80053608` anyway -- but each inline site is one more
- *     `(set (reg a0) (reg rec))` in the pre-reload RTL, so `rec`'s
- *     `reg_n_refs` falls and global.c allocno_compare stops ranking the biv
- *     above its own rec+4 giv.  rec goes to $s4 and POS to $s3, as the original
- *     has them.  See the level_14 header for the full arithmetic and for the
- *     window at both ends (too few conversions does nothing; all of them cost
- *     rec its register outright).
- *  B. `int step4;` is DECLARED BEFORE `int *dir;`.  Their priorities are an
- *     exact INTEGER tie -- both 23 refs, live lengths 1521 vs 1522, and
- *     allocno_compare truncates `floor_log2(R)*R/L * 10000 * size` to an int,
- *     so both score 604 -- and the tie-break is `v1 - v2` on the ALLOCNO
- *     number, i.e. the lower pseudo wins.  Pseudos are numbered in DECLARATION
- *     order, so moving `step4` above `dir` hands it $s7 and pushes `dir` to
- *     $s8, which is the original's pairing: 47 -> 24.  (The old note claimed
- *     the dial was the ASSIGNMENT order -- `dir = dv;` before
- *     `step4 = step * 4;`.  It is not: swapping the two statements changes
- *     which of the two preheader insns is emitted first but not the register
- *     map, measured at 47/42 either way.  The assignment order that matches is
- *     `step4` first.)
- *
- * THE SIX REAL INSTRUCTIONS LEFT:
- *  1. FOUR missing `li a3,3` (orig[136]/[360]/[464]/[530]) -- the whole -4
- *     length deficit, and the same class as level_14's item 1.  **The
- *     2026-08-29 "these are call-site 4th ARGUMENTS" reading (cookbook B25) is
- *     REFUTED** -- see the level_14 header for the two measurements (only 2 of
- *     6 `func_80017C24` sites and 2 of 5 `func_80017BFC` sites carry it, so it
- *     is not a prototype; and one site is a jump-table arm head with no
- *     possible `$a2` producer, while the measured 4-argument spelling costs
- *     two insns, not one).  Note the original emits EIGHT `li a3,3` and we emit
- *     FOUR: the extra four sit at block heads on the path to a real use, not at
- *     the uses.  SWEPT 2026-08-29-1 over ten spellings of `burst`, all of which
- *     leave the count at FOUR and the residue at 24/-4: an initialiser instead
- *     of an assignment (47), `register`, `short`, `unsigned char`, declared
- *     first, declared last, and the assignment moved below the early return
- *     (all byte-identical to the baseline), `const int burst = 3` (61, -6, and
- *     it loses all four `li`), `volatile` (164, +1).  So the residue is not a
- *     property of how the constant local is declared.
- *     **2026-09-01-1 -- the class is now bounded by ARITHMETIC, and the whole
- *     argument family is refuted for good.**  Read off `<in>.i.greg` (which in
- *     2.7.2 is dumped AFTER reload, because `global_alloc` calls `reload`):
- *     our `burst` is a `reg_equiv_constant` pseudo that won no hard register,
- *     so reload emits `(set (reg:SI 7 a3) (const_int 3)) -1 (nil)` -- an insn
- *     with no insn-code, i.e. reload's own -- IMMEDIATELY BEFORE each of its
- *     four references (uid 4723 feeds the `bne v0,a3`, 4729 the second arm's).
- *     That is the whole model: **one `li` per REFERENCE, adjacent to it.**  So
- *     the original's RTL carried EIGHT references and four of them left only
- *     the reload behind.  What that rules out, arithmetically rather than by
- *     sweep:
- *       - Not an argument, at any arity.  o32 fills a0..a3 in order; there is
- *         no argument shape that writes a3 and leaves a2 untouched, and all
- *         four sites leave a2 untouched (verified on the original: a3 is not
- *         READ anywhere between each dead `li` and the next WRITE of a3 --
- *         `mflo $a3` at 0x8008B2CC after site 1, and the next `li a3,3` after
- *         each of the other three).  These are provably dead instructions.
- *       - Not caller-save.  `caller-save.c insert_save_restore` emits only
- *         `(set (mem regno_save_mem) (reg))` / the reverse; there is no
- *         constant path in the 2.7.2 file at all (grepped).
- *       - Not block-scoping.  `int burst = 3;` declared per-arm (shadowing, in
- *         both 0x4 and 0x8) still emits FOUR: 62/52, offset still -4.  The
- *         extra pseudos also re-tile s6/s7 and cost lever B.
- *     So the open question is precisely: **what source form gives a constant
- *     pseudo a reference whose insn survives flow but leaves nothing but its
- *     input reload after reload?**  The only gcc mechanism that deletes an
- *     insn that late is `final`'s no-op-move skip, which needs
- *     `(set (reg X) (reg X))` -- i.e. a copy of `burst` into a pseudo that
- *     reload also places in $a3.  That pseudo has to be live (or flow deletes
- *     the copy) yet is dead across the very next `jal`, which is the
- *     contradiction the next session has to break.  Suggested next probe: a
- *     `-dR` (`<in>.i.sched2`) trace of an ARTIFICIAL 4-argument spelling to see
- *     where reload puts the `li` when it IS a reference, then work backwards.
- *  2. CLOSED 2026-09-01-1 -- **A214 CHAINED, and this is the general form of
- *     that idiom when TWO carriers must die and only ONE free value exists.**
- *     `func_8001778C(v, p, D_80076DF8)` came out `move a0,s1 / move a1,s0`
- *     where the original re-materialises `addiu a0,sp,96 / addiu a1,sp,80`:
- *     cse holds `bolt == &v` AND `home == &p` and prefers the register
- *     (COST 1) over `(plus sp K)`.  A214's single second-set only kills one of
- *     the two.  The fix is to CHAIN them off the one free value the call needs
- *     anyway -- its own third argument:
- *         home = (int *)D_80076DF8;
- *         bolt = home;                 <- dead copy, flow deletes it
- *         func_8001778C(v, p, D_80076DF8);
- *     `home`'s second set is the very `lui/addiu` the call needs in a2;
- *     `bolt`'s second set is a register copy that is dead on arrival and costs
- *     nothing.  Both carriers are now multi-set, cse has no address to
- *     substitute, and BOTH frame addresses rematerialise: 6 -> 4, 1692 insns
- *     either way.
- *       - ORDER MATTERS and is not symmetric.  Measured, all four spellings
- *         from the same baseline (masked mismatch / regions):
- *           home = D_80076DF8; bolt = home;   ->  4/4   <- checked in
- *           home = D_80076DF8;  (alone)       ->  5/5
- *           bolt = D_80076DF8; home = bolt;   -> 16/10  (s0/s1 swap the arm)
- *           bolt = D_80076DF8;  (alone)       -> 17/11
- *         The carrier that takes the LIVE value must be the one the original
- *         kills LAST (`home`, whose last real use is `func_80017BFC(POS,
- *         home)`); giving it to the other one re-tiles the arm's whole
- *         register map.
- *
- * OTHER THINGS THAT ARE RIGHT AND LOAD-BEARING (do not undo):
- *  - Arm 0x8 addresses its two vectors as: ARRAY NAME at the first use, an
- *    empty `do { } while (0);` A200b barrier, then multi-set `home`/`bolt`
- *    carriers for the middle run, and array names again at the last call.  The
- *    barrier is worth 21 mismatches and the carriers are what stop loop.c
- *    hoisting both addresses into the preheader.
- *  - PROVEN: loop.c hoists a stack vector's address into the preheader (and
- *    spills it) as soon as the ARRAY NAME is used 3+ times in the loop; at <=2
- *    uses it does not.  Block-scoping the arrays inside `case 0x8:` changes
- *    nothing, so it is not a scope effect.  A MULTI-SET pointer carrier defeats
- *    the hoist; a single-set one does not.
- *  - The shared constant 3 must be a NAMED local at all (A100): two arms
- *    compare and store rec[0x1] against it, and as a bare literal the function
- *    comes out 5 insns short.
- */
 /* func_level_13_8008AF54 (0x8008af54, level_13_magic_crafters_alpine_ridge
  * overlay, 0x1a84 bytes).
  *
@@ -160,6 +32,12 @@
  * original hoists that address into $fp in the preheader); the arm's first
  * and last uses of the same vector read `dv` directly, which is the
  * single-use frame address reload rematerialises as `addiu ..,$sp,0x20`.
+ *
+ * `burst` (the class-3 constant) never gets a hard register; reload
+ * rematerialises it as `li a3,3` before each reference.  The four empty asm
+ * statements that take it as an input are references that emit nothing, which
+ * leaves the original's four dead `li a3,3` ahead of the vector calls.  The asm
+ * use of `step4` gives it one more ref so it beats `dir` for $s7.
  */
 
 #define HS(n) (*(short *)(rec + (n)))
@@ -217,6 +95,7 @@ void func_level_13_8008AF54(int step) {
 
   step4 = step * 4;
   dir = dv;
+  __asm__ volatile("" : : "r"(step4));
   burst = 3;
 
   do {
@@ -289,6 +168,7 @@ void func_level_13_8008AF54(int step) {
        * fall into the shared distance test at the bottom, which flips the
        * record between its normal and its "close" colour set (class byte 3).
        */
+      __asm__ volatile("" : : "r"(burst));
       func_80017C24(pt, POS);
       if (HU(0x1E) & 8) {
         if (rec[0x2] >= 0x30) {
@@ -365,6 +245,7 @@ void func_level_13_8008AF54(int step) {
         func_80017758(pt, pt, dir);
       }
     commit:
+      __asm__ volatile("" : : "r"(burst));
       func_80017BFC(POS, pt);
       rec[0x2]++;
     measure:
@@ -436,6 +317,7 @@ void func_level_13_8008AF54(int step) {
       /* The wizard's homing bolt: it spirals around the line to its owner
        * actor (D_80075828 + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
+      __asm__ volatile("" : : "r"(burst));
       func_80017C24(p, POS);
       do {
       } while (0);
@@ -455,6 +337,7 @@ void func_level_13_8008AF54(int step) {
         } else {
           func_800175B8(bolt, len, 0x80);
           func_80017758(home, home, bolt);
+          __asm__ volatile("" : : "r"(burst));
           func_80017BFC(POS, home);
           rec[0x2]++;
           home = (int *)D_80076DF8;

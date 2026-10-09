@@ -477,35 +477,35 @@ void GemPickup_Update(void) {
           ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(
               0xFB, g_pGemPickupSourceActor);
         }
-      __asm__("" : "=r"(five) : "0"(5));
-      GB[24] = (int)AllocActorRecordSlot();
-      InitActorRenderDefaults((void *)GB[24]);
-      H16(STATUE, 0x36) = 0x1FE;
-      CopyVector((int *)(GB[24] + 0xC), (int *)(SRC + 0xC));
-      {
-        char *s = SRC;
-        char *t = STATUE;
+        __asm__("" : "=r"(five) : "0"(5));
+        GB[24] = (int)AllocActorRecordSlot();
+        InitActorRenderDefaults((void *)GB[24]);
+        H16(STATUE, 0x36) = 0x1FE;
+        CopyVector((int *)(GB[24] + 0xC), (int *)(SRC + 0xC));
+        {
+          char *s = SRC;
+          char *t = STATUE;
 
-        U8(t, 0x46) = U8(s, 0x46);
-      }
-      U8(STATUE, 0x57) = 0x60;
-      U8(STATUE, 0x47) = five;
-      W32(STATUE, 0x1C) = -1;
-      W32(STATUE, 0x14) += 0x400;
-      FindWorldFloorBelowPoint((int *)(GB[24] + 0xC));
-      W32(STATUE, 0x14) -= 0x400;
-      EncodeCachedVecToActorDirCode((void *)GB[24]);
-      InsertActorIntoSpatialGrid((void *)GB[24]);
-      g_pGemPickupSpyroMirrorActor = AllocActorRecordSlot();
-      InitActorRenderDefaults(g_pGemPickupSpyroMirrorActor);
-      H16(MIRROR, 0x36) = 0x1FF;
-      CopyVector((int *)(MIRROR + 0xC), g_anSpyroWorldPos);
-      U8(MIRROR, 0x47) = five;
-      InsertActorIntoSpatialGrid(MIRROR);
-      StopSoundVoiceByIndex(GB[11], 4);
-      PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
-      W32(SRC, 0x14) += 0x78;
-      DespawnActorRecord(SRC);
+          U8(t, 0x46) = U8(s, 0x46);
+        }
+        U8(STATUE, 0x57) = 0x60;
+        U8(STATUE, 0x47) = five;
+        W32(STATUE, 0x1C) = -1;
+        W32(STATUE, 0x14) += 0x400;
+        FindWorldFloorBelowPoint((int *)(GB[24] + 0xC));
+        W32(STATUE, 0x14) -= 0x400;
+        EncodeCachedVecToActorDirCode((void *)GB[24]);
+        InsertActorIntoSpatialGrid((void *)GB[24]);
+        g_pGemPickupSpyroMirrorActor = AllocActorRecordSlot();
+        InitActorRenderDefaults(g_pGemPickupSpyroMirrorActor);
+        H16(MIRROR, 0x36) = 0x1FF;
+        CopyVector((int *)(MIRROR + 0xC), g_anSpyroWorldPos);
+        U8(MIRROR, 0x47) = five;
+        InsertActorIntoSpatialGrid(MIRROR);
+        StopSoundVoiceByIndex(GB[11], 4);
+        PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
+        W32(SRC, 0x14) += 0x78;
+        DespawnActorRecord(SRC);
       }
     }
     break;
