@@ -5330,3 +5330,48 @@ UnpackWorldDataChunks_2026_10_08_1:
   class: "cursor->a2 vs tail copy knot (unchanged)"
   date: 2026-10-08
   note: "Re-measured 105 anchored, read only (permuter body)."
+FlushGpuQueue_2026_10_08_2:
+  verdict: parked
+  class: "sched1 potential_hazard: load beats ALU in one priority group"
+  date: 2026-10-08
+  note: "9/187. The f <<= 5 shift has to fill L3's load-delay slot, but the args ring load is ready in the same priority-2 group and potential_hazard always picks the load. A pinned a0 `a` (the load keeps its early LUID) and the shift inlined into the call address both stay 9."
+BuildLoadedLevelRuntime_2026_10_08_2:
+  verdict: parked
+  class: "global-alloc first-free v1 for the 3-block else-arm tb (orig a1)"
+  date: 2026-10-08
+  note: "29 masked/unlinkable -> 4/927 linked, length-exact. A $5 pin on tb costs +1: the sprite-pair j and the chunk-loop base copies leave a1."
+RespawnOrGameOver_Draw_2026_10_08_2:
+  verdict: parked
+  class: "A200 arg copy placement (unchanged)"
+  date: 2026-10-08
+  note: "A `register int z asm(\"$4\") = 0` pin at the frame-15 block head costs +30 insns function-wide and does not move the copy."
+WaitForFrameDeadline_2026_10_08_2:
+  verdict: parked
+  class: "prologue sw ra vs volatile init store (unchanged)"
+  date: 2026-10-08
+  note: "Read only. reorg.c: needed.volatil and set.volatil are ASSIGNED from the last MEM, and a store's MEM dest never resets needed.volatil, so sw ra can only reach the beqz slot when sched2 puts it below every store."
+InitActorMeshScratchRegions_2026_10_08_2:
+  verdict: parked
+  class: "sched1 potential_hazard arg-set order (unchanged)"
+  date: 2026-10-08
+  note: "Read only."
+TickSpyroAttackEffects_2026_10_08_2:
+  verdict: parked
+  class: "F7 spill-slot hole (unchanged)"
+  date: 2026-10-08
+  note: "Read only."
+UnpackWorldDataChunks_2026_10_08_2:
+  verdict: parked
+  class: "cursor->a2 vs tail copy knot (unchanged)"
+  date: 2026-10-08
+  note: "Read only; the body is permuter output with an int pad[14] frame filler."
+func_800557CC_2026_10_08_2:
+  verdict: parked
+  class: "B13 lh/sra vs lhu/sll/sra (+2 length)"
+  date: 2026-10-08
+  note: "Read only; still overflows its slot."
+Gamestate0C_Draw_2026_10_08_2:
+  verdict: parked
+  class: "B-i held-base form (unchanged)"
+  date: 2026-10-08
+  note: "Read only; 4/283."
