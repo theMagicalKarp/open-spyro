@@ -1,15 +1,5 @@
 #include "globals.h"
 
-/* PARKED 2026-10-05 -- 56/56, 3 linked (was 20). B18 solved by `top += size`
-   inside each arm (jump.c keeps the if/else; reorg merges the two `lui 0xfffe`
-   into the beqz slot). The allocation is solved too: `top` is a `$2` register
-   local carved in place, and an empty do/while(0) after the emit-list store
-   keeps the OT temp after it. The chained frame-slot stores are written
-   Slot1 = Slot0 = ... (the original stores slot 0 first).
-   LEFT: the first FillWord's `move a1,zero` issues before the RegionBase store.
-   The original has it after. Inert: a volatile RegionBase store. A second
-   barrier after the store is worse (7). */
-
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 #define VREAD(sym) (*(void *volatile *)&(sym))
@@ -17,7 +7,8 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 /* 0x8005b6f8 (0xe0) — carve the render scratch regions down from
    g_pWorkAreaTop (emit list, OT, primitive top, two primitive buffers of
    0x13000 or 0x1c000 bytes depending on `split`), publish them to both
-   frame slots and clear the merged-chain head and the OT. */
+   frame slots and clear the merged-chain head and the OT. The empty volatile
+   asm keeps the first FillWord's `a1 = 0` below the RegionBase store. */
 void InitActorMeshScratchRegions(int split) {
   register char *top asm("$2");
   int size;
@@ -39,6 +30,7 @@ void InitActorMeshScratchRegions(int split) {
   g_pRenderScratchPrimBase1 = top;
   top += size;
   g_pRenderScratchRegionBase = top;
+  __asm__ volatile("");
   g_pFramePrimBufferBase0 = VREAD(g_pRenderScratchRegionBase);
   g_pFramePrimBufferBase1 = VREAD(g_pRenderScratchPrimBase1);
   g_pFrameOtMergedChainSlot1 = g_pFrameOtMergedChainSlot0 =

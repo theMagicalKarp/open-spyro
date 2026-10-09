@@ -33,12 +33,7 @@ extern unsigned char g_abFrameDrawEnvIsbgBlock[];
 extern unsigned char D_8006F304[]; /* GAMEOVER letter glyph indices */
 extern unsigned char D_80010B9C[]; /* "PRESS X..." prompt string */
 
-/* PARKED at ~99.4% (359/361 insns; length overflow +2). Every block matches
-   byte-for-byte EXCEPT the frame-15 DRAWENV store block, which is an unfixable
-   §Y held-base fold wall (see park note at file tail). Do not flip this file;
-   it links as asm until the §Y wall has a general answer.
-
-   Draw for GS_GAME_OVER (5): three sub-modes driven by g_nGameplayDrawMode.
+/* Draw for GS_GAME_OVER (5): three sub-modes driven by g_nGameplayDrawMode.
    Mode 0 = death fade-out: frame 0 renders one full gameplay frame then
    snapshots half the framebuffer (MoveImage) as a frozen backdrop; frames
    1..15 darken it with fullscreen tints, frame 15 switches both DRAWENVs to
@@ -46,6 +41,17 @@ extern unsigned char D_80010B9C[]; /* "PRESS X..." prompt string */
    revealed on a per-letter delay ramp from frame 0x3C, prompt text + sine
    wave from frame 0x1A5, over a scripted-camera world render. Mode >= 2
    mirrors mode 0 without the initial render (0x8001ca38, 1444 bytes). */
+
+/* Returns its argument through an empty asm so cse/reload cannot fold the
+   frame-15 DRAWENV block base back into absolute addresses. Inline, so both
+   identical frame-15 tails still cross-jump into one. */
+static inline unsigned char *Opaque(unsigned char *p) {
+  unsigned char *q;
+
+  __asm__("" : "=r"(q) : "0"(p));
+  return q;
+}
+
 void RespawnOrGameOver_Draw(void) {
   short rect[4];
   int pos[3];
@@ -102,20 +108,18 @@ void RespawnOrGameOver_Draw(void) {
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {
-        g_abFrameDrawEnvIsbgBlock[0] = 1;
-        do {
-        } while (0);
-        g_abFrameDrawEnv1.isbg = 1;
+        {
+          unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 
-        g_abFrameDrawEnv0.r0 = 0;
-
-        g_abFrameDrawEnv0.g0 = 0;
-
-        g_abFrameDrawEnv0.b0 = 0;
-
-        g_abFrameDrawEnvIsbgBlock[0x85] = 0;
-        g_abFrameDrawEnvIsbgBlock[0x86] = 0;
-        g_abFrameDrawEnvIsbgBlock[0x87] = 0;
+          e[0] = 1;
+          g_abFrameDrawEnv1.isbg = 1;
+          g_abFrameDrawEnv0.r0 = 0;
+          g_abFrameDrawEnv0.g0 = 0;
+          g_abFrameDrawEnv0.b0 = 0;
+          e[0x85] = 0;
+          e[0x86] = 0;
+          e[0x87] = 0;
+        }
         DrawSync(0);
         VSync(0);
         rect[2] = 0x200;
@@ -229,20 +233,18 @@ void RespawnOrGameOver_Draw(void) {
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {
-        g_abFrameDrawEnvIsbgBlock[0] = 1;
-        do {
-        } while (0);
-        g_abFrameDrawEnv1.isbg = 1;
+        {
+          unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 
-        g_abFrameDrawEnv0.r0 = 0;
-
-        g_abFrameDrawEnv0.g0 = 0;
-
-        g_abFrameDrawEnv0.b0 = 0;
-
-        g_abFrameDrawEnvIsbgBlock[0x85] = 0;
-        g_abFrameDrawEnvIsbgBlock[0x86] = 0;
-        g_abFrameDrawEnvIsbgBlock[0x87] = 0;
+          e[0] = 1;
+          g_abFrameDrawEnv1.isbg = 1;
+          g_abFrameDrawEnv0.r0 = 0;
+          g_abFrameDrawEnv0.g0 = 0;
+          g_abFrameDrawEnv0.b0 = 0;
+          e[0x85] = 0;
+          e[0x86] = 0;
+          e[0x87] = 0;
+        }
         DrawSync(0);
         VSync(0);
         rect[2] = 0x200;
@@ -254,48 +256,3 @@ void RespawnOrGameOver_Draw(void) {
     }
   }
 }
-
-/* ============================ PARK NOTE ============================
- * 5/361 (98.6%), LENGTH-EXACT and LINKING. The old "+2 insns, unlinkable,
- * unfixable held-base fold" note is retired: the frame-15 DRAWENV block is an
- * A200 case, and the recipe is the standard one -- the alias declared as an
- * INCOMPLETE ARRAY (g_abFrameDrawEnvIsbgBlock at g_abFrameDrawEnv0+0x18),
- * reached with element indices ([0] for env0.isbg, [0x85]..[0x87] for env1's
- * r0/g0/b0) while env1.isbg and env0.r0/g0/b0 stay absolute, plus an empty
- * do { } while (0); between the base's materialisation and the offset stores.
- *
- * BARRIER POSITION IS SWEPT, do not re-run: the five legal slots (after each
- * of the five stores between [0] and [0x85]) score 5 / 7 / 40 / 9 / 12.
- * Slot 0 -- immediately after `g_abFrameDrawEnvIsbgBlock[0] = 1;` -- is the
- * one below.
- *
- * THE REMAINING 5 ARE ONE INSTRUCTION: `move a0,zero`, the DrawSync(0)
- * argument copy. The original hoists it to the head of the fall-through block,
- * where reorg then steals it into the guard `bne`'s delay slot at 0x8001cf44;
- * ours lands it four insns later, immediately after the barrier, and reorg
- * takes `li v0,1` instead. This is A200's own cost signature (a): the
- * note-carrying insn depends on every preceding set plus reg_pending_sets_all,
- * so nothing after the barrier can be scheduled before it, and the arg copy is
- * necessarily after it -- expand_call emits the copy at the call, which is
- * after all eight stores. Closing it needs a cse ebb-break that emits no
- * NOTE_INSN_LOOP_BEG (A200's standing open question), not another placement.
- *
- * Solved earlier and still load-bearing (do not undo): the sine-wave letter
- * loop's k/t/rec split from the sine loop's sk/st/sc; both loop preheaders
- * order the invariant address before the counter zero, with the sine base as
- * an explicit `sbase = &g_anSineLut[0x40]`.
- *
- * 2026-07-25-1 permuter (~46,200 iterations) found nothing, which is expected:
- * the residue was never in the randomizer's transform space.
- * 2026-08-31 -- two more barrier shapes measured, both 5/361 (identical to
- * the checked-in one): a SECOND empty do { } while (0); added at the top of
- * the frame-15 block, and a NESTED do { do { } while (0); } while (0); at
- * slot 0.  The barrier at the top ALONE is LINKFAIL (it does not split the
- * base from the offsets, so the fold returns).  So the placement axis really
- * is exhausted and the residue is the A200 open question verbatim: a cse
- * ebb-break that emits no NOTE_INSN_LOOP_BEG.  Also worth recording for
- * whoever tries reorg instead: reorg's `fill_slots_from_thread` takes the
- * FIRST eligible insn of the fall-through thread, and ours is `li v0,1` (the
- * shared constant for the two `sb`s) -- so the alternative objective, "make
- * the block lead with the arg copy", is the same problem, not a second door.
- * ================================================================= */

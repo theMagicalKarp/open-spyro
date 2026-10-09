@@ -165,7 +165,10 @@
  *     order of D_800756F8 vs the second pointer read (3 spellings inert).
  *  C. orig 732-739: the digit-test temp (orig v0, ours v1) and the
  *     `adv * 3` operand tie in the space branch.
- *  D. case 4 (orig 1297-1337): the original starts the `% 10` multiply and
+ *  D. 2026-10-09: 143 -> 112 linked. Case 4 now reads D_800757AC and
+ *     D_800785DC into locals ahead of the movstr, pinned there by an empty
+ *     asm use of `dc`; left is the 0x66666667 constant / E0 store order.
+ *     Old note: the original starts the `% 10` multiply and
  *     loads D_800785DC before the movstr copy.  Our movstr clobbers a0, so
  *     the D_800757AC load is output-dependent on it.  Statement order,
  *     a `page` local, and copy placement are all inert or worse.
@@ -739,15 +742,23 @@ void func_credits_8007AA50(void) {
           func_80016958(D_80075768, D_800757EC + 0x40000, D_80075958 - 0x40000);
           D_800757EC = D_80075768 + D_80075958 - 0x40000;
           D_800785E0 = func_80012D58(D_800785DC, 1);
+          {
+            int ac;
+            char *dc;
+
+            ac = D_800757AC;
+            dc = D_800785DC;
+            __asm__ volatile("" : : "r"(dc));
           D_80078A40 = D_80077780;
-          D_800785E4 = D_800785DC + D_80076C0C;
+          D_800785E4 = dc + D_80076C0C;
           D_800757BC = D_800785E4;
           D_80078604 = D_80076C1C;
           D_80078600 = D_80076C18;
-          if (D_800757AC % 10 < 9) {
+          if (ac % 10 < 9) {
             D_80075704 = 0;
           } else {
             D_80075704 = 3;
+          }
           }
           D_800757AC += 1;
           break;

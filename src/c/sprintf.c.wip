@@ -1,3 +1,7 @@
+/* PARKED 2026-10-09 -- 2/535, length-exact. Empty asm barriers after the four
+   int va_arg reads (with a pinned old-ap temp in $3) fixed the d/u/o/x sites.
+   LEFT: case 'n' `andi` result lands in v1 (the dying flags word) where the
+   original has v0. Inert: barrier (+1 insn), volatile st read (3), `!= 0`. */
 #include "globals.h"
 
 extern int strlen(char *s);
@@ -118,8 +122,13 @@ int sprintf(char *buf, char *fmt, ...) {
       c = *++fmt;
       goto modifier;
     case 'd':
-    case 'i':
-      v = va_arg(ap, int);
+    case 'i': {
+      register char *o asm("$3") = ap;
+
+      ap = o + 4;
+      v = *(int *)o;
+    }
+      __asm__ volatile("" : : "r"(v));
       if (st.half) {
         v = (short)v;
       }
@@ -130,8 +139,13 @@ int sprintf(char *buf, char *fmt, ...) {
         st.sign = '+';
       }
       goto decimal;
-    case 'u':
-      v = va_arg(ap, int);
+    case 'u': {
+      register char *o asm("$3") = ap;
+
+      ap = o + 4;
+      v = *(int *)o;
+    }
+      __asm__ volatile("" : : "r"(v));
       if (st.half) {
         v = (unsigned short)v;
       }
@@ -163,8 +177,13 @@ int sprintf(char *buf, char *fmt, ...) {
         n++;
       }
       break;
-    case 'o':
-      v = va_arg(ap, int);
+    case 'o': {
+      register char *o asm("$3") = ap;
+
+      ap = o + 4;
+      v = *(int *)o;
+    }
+      __asm__ volatile("" : : "r"(v));
       if (st.half) {
         v = (unsigned short)v;
       }
@@ -201,8 +220,13 @@ int sprintf(char *buf, char *fmt, ...) {
       goto hex;
     case 'x':
       digits = D_80011BD0;
-    hex:
-      v = va_arg(ap, int);
+    hex: {
+      register char *o asm("$3") = ap;
+
+      ap = o + 4;
+      v = *(int *)o;
+    }
+      __asm__ volatile("" : : "r"(v));
       if (st.half) {
         v = (unsigned short)v;
       }

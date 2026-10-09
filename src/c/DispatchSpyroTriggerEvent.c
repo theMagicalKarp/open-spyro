@@ -54,9 +54,10 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       g_nSpyroTriggerCurrentEventId = event;
     } else if (event == 2) {
       g_pSpyroOrbDropTriggerData = data;
-      D_80075728 = data[1];
       FLAGS = (FLAGS & 0x3FF) | 0x400;
+      __asm__ volatile("");
       g_nSpyroTriggerEntryZ = g_nSpyroGroundHeightZ;
+      D_80075728 = data[1];
     }
     break;
   case 1:

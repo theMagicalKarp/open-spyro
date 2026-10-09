@@ -18,58 +18,10 @@
    fogged static mesh is re-emitted until the fade completes. Ends with the
    standard 2-vblank frame submit.
 
-   PARKED at 279/283 (4 insns), LENGTH-EXACT and LINKING (was 277/283).
-   The whole body is correct; the only residue is the ADDRESSING FORM of the
-   two-word OT bin-head init, and it is now down to one class.
-
-   What changed 2026-09-10: the barrier moved BELOW both stores and the source
-   order flipped to the original's (tail +4 first, head +0 second).  That gives
-   the original's ORDER and its LENGTH, at the price of the held base:
-
-     orig   lui v1,0x8007 / addiu v1,v1,-780 / sw zero,4(v1) / sw v0,0(v1)
-     ours   lui at,0x8007 / sw zero,-776(at) / lui at,0x8007 / sw v0,-780(at)
-
-   Both are four insns, so this is a pure form residue with no length or
-   schedule cost anywhere else in the function.
-
-   THE TRADE IS PROVED AND EXHAUSTIVE — do not re-sweep the barrier:
-     - barrier BETWEEN the two stores  -> held base, but the two stores are in
-       different basic blocks so their order IS the source order, and the
-       offset-0 store must come first to materialise the base (A200's
-       corollary).  Best 6/283 (the 2026-08-30 park).
-     - barrier BELOW both stores       -> correct order, absolute pair, and the
-       barrier is also what PRESERVES the load-delay `nop` after the following
-       `lw D_800777FC` (without it the head store fills that slot and the
-       function comes out one insn short: 270/283).  4/283, this file.
-     - barrier ABOVE both / no barrier -> 270/283, one insn short, absolute.
-
-   AND THE HELD BASE IS NOT BUYABLE AT THIS SITE (five spellings measured
-   2026-09-10, every one of them collapsing to the identical absolute pair and
-   to 270/283 by losing the nop):
-     - pointer local + A200 barrier between the init and the stores (the shape
-       A214 predicts should work) — folded: cse has no equivalence to keep, but
-       reload's update_equiv_regs substitutes the REG_EQUIV constant anyway.
-     - the same with an A214 SECOND SET of the carrier taken from the later
-       FillWord(g_apOtDepthBinBlock, ...) argument — cse propagates the symbol
-       into the call argument, the set dies, and reg_n_sets is back to 1.
-     - B16's inline volatile cast-deref on the +4 store, on the +0 store, and
-       on both (`*(volatile void **)&g_apOtDepthBinBlock[K]`), with and without
-       a pointer local.  Volatile does not reach it here: these addresses are
-       `sym+K`, already legitimate MIPS addresses, so memory_address never
-       force_regs them and there is nothing for volatile to protect (the same
-       limitation B16 records for a runtime pointer base).
-   So the original materialised that base from a POINTER VALUE whose REG_EQUIV
-   survived to reload, which our toolchain only ever produces for a multi-set
-   carrier — and every free second set available in this function is folded
-   away.  Same standing open question as RespawnOrGameOver_Draw and
-   func_8002CCC8: a cse ebb-break that emits no NOTE_INSN_LOOP_BEG.
-
-   2026-08-14-1 unattended permuter session (~15m, ~56500 iterations, timed out
-   at the 15m budget): base score 140, and NOT ONE improving candidate was
-   produced — the randomizer wrote zero output dirs. This looks like a wall
-   rather than a slow climb; plain unattended permutation is not the tool for
-   the remaining tie. Still PARKED (see above).
- */
+   The OT bin-head pair is written through an asm-opaque copy of the block
+   address so cse keeps it as a held base; the empty volatile asm keeps the
+   D_80077850 load ahead of it.
+*/
 extern int sprintf();
 extern int strlen(const char *s);
 extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
@@ -113,8 +65,16 @@ void Gamestate0C_Draw(void) {
 
   if (g_nGamestate0cSubstate >= 4) {
     if (g_nGamestate0cSubstate < 6) {
-      g_apOtDepthBinBlock[1] = 0;
-      g_apOtDepthBinBlock[0] = D_80077850;
+      {
+        register void **ot asm("$3");
+        register void *h asm("$2");
+
+        h = D_80077850;
+        __asm__ volatile("" : : "r"(h));
+        __asm__("" : "=r"(ot) : "0"(g_apOtDepthBinBlock));
+        ot[1] = 0;
+        ot[0] = h;
+      }
       do {
       } while (0);
 
