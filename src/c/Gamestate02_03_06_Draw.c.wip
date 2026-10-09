@@ -1,4 +1,12 @@
-/* PARKED 2026-09-10 — first opening of main's last un-opened wall-free
+/* 2026-10-09: 2108 -> 1727/2210 linked. The capture head and the backdrop
+   block are the main-EXE twin of func_level_5_8007B68C and now use its matched
+   recipe (do/while barriers, img/img2, R5 barrier + pinned loads, all-volatile
+   quad loop with block-scoped pins, i/strip/img2 pinned s3/s1/s2, b pinned s4).
+   Next knot: the pause box. The original keeps `rows` as a reload-spilled
+   pseudo at sp+0xA0 (t1 reloads) with ~33 dead slot words above it, which
+   `int pad[24]` cannot reproduce (an array slot always precedes reload's).
+
+   PARKED 2026-09-10 — first opening of main's last un-opened wall-free
    function (8,840 B / 2,210 insns).  Screen re-confirmed: 0 `handwritten
    instruction` markers, 0 %gp_rel, 0 `switchdata`, 0 non-$ra `jr` (no jump
    tables at all), and 0 bare-constant `($at)` displacements — every $at use is
@@ -177,23 +185,31 @@ void Gamestate02_03_06_Draw(void) {
   int pad[24];
 
   if (g_nPauseMenuTransitionFrames == 0) {
-    DRAWENV *env0;
-    int i;
-    int x;
-    int y;
+    register int i asm("$19");
     int h;
+    register int strip asm("$17");
+    int y;
+    void **img;
+    register void **img2 asm("$18");
+    DRAWENV *envBase;
     i = 0;
     BuildRenderEntityLists();
     h = 0xe0;
     ComposeFrameScene();
-    x = 0x200;
-    RasterizeEmitList();
-    DrawActors();
-    SetupFrameOT();
-    DrawSync(0);
-    VSync(0);
-    env0 = &g_abFrameDrawEnv0;
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    do {
+      strip = 0x200;
+      RasterizeEmitList();
+      DrawActors();
+      SetupFrameOT();
+      DrawSync(0);
+      VSync(0);
+      envBase = &g_abFrameDrawEnv0;
+    } while (0);
+    do {
+      PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+      img = (void **)g_apRenderScratchPrimTopBlock;
+    } while (0);
+    img2 = img - 2;
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
     DrawSync(0);
@@ -203,27 +219,27 @@ void Gamestate02_03_06_Draw(void) {
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xe1;
-    StoreImage(&rect,
-               (void *)((char *)g_apRenderScratchPrimTopBlock[0] - 0x1c200));
+    StoreImage(&rect, (void *)((char *)img[0] + 0xFFFE3E00));
+    y = 8;
     do {
-      y = 8;
       rect.x = i << 7;
-      if (g_pActiveFrameDrawEnv != env0) {
+      if (g_pActiveFrameDrawEnv != envBase) {
         y = 0xf8;
       }
-      i++;
+      i += 1;
       rect.y = y;
       rect.w = 0x80;
       rect.h = h;
-      StoreImage(&rect, g_apRenderScratchPrimTopBlock[-2]);
+      ((void (*)())StoreImage)(&rect, img2[0], y);
       DrawSync(0);
-      ConvertRGB15ToLuma8(g_apRenderScratchPrimTopBlock[-2], 0x7000);
-      rect.x = x;
-      x += 0x40;
+      ConvertRGB15ToLuma8(img2[0], 0x7000);
+      rect.x = strip;
       rect.y = 0;
       rect.w = 0x40;
       rect.h = h;
-      LoadImage(&rect, g_apRenderScratchPrimTopBlock[-2]);
+      LoadImage(&rect, img2[0]);
+      strip += 0x40;
+      y = 8;
     } while (i < 4);
     rect.x = 0x200;
     rect.y = 0xe0;
@@ -235,75 +251,118 @@ void Gamestate02_03_06_Draw(void) {
   } else {
     void *prim;
     int i;
-    int x;
     int h;
-    void *env = &g_abFrameDrawEnv0;
-    if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
-      env = (void *)((char *)env + 0x84);
+    char *env;
+    char *cur;
+    char *p;
+    char *next;
+    char *tv;
+    register int b asm("$20");
+    int a;
+    int d;
+    int tpage;
+    int x;
+    unsigned short bh;
+    unsigned short ch;
+    unsigned char bq;
+    unsigned char cq;
+    cur = (*(char **)&g_pActiveFrameDrawEnv);
+    env = ((char *)&g_abFrameDrawEnv0);
+    if (cur == env)
+    {
+      env += 0x84;
     }
     i = 0;
-    PutDrawEnv(env);
+    PutDrawEnv((DRAWENV *)env);
+    {
+    int off, bias;
+    do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
+    {
+    register char *e8 asm("$3");
+    register char *f0 asm("$2");
+    e8 = (*(char **)&g_pRenderScratchRegionBase);
+    f0 = (*(char **)&g_pRenderScratchPrimTop);
     g_nPrimBufferOverflowFlag = 0;
-    g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
-    g_pPrimBufferLimit = (void *)((char *)g_pRenderScratchRegionBase + 0x1c000);
-    g_pSpriteRecordBufferTop =
-        (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
-    g_pSpriteRecordWriteCursor =
-        (void *)((char *)g_pRenderScratchPrimTop - 0x1c200);
-    x = i << 7;
-    do {
-      int clut = i + 0x88;
-      prim = g_pPrimBufferWriteCursor;
-      *((int *)prim) = 0x9000000;
-      *((unsigned char *)((int)prim + 7)) = 0x2c;
-      *((unsigned char *)((int)prim + 4)) = 0x4c;
-      *((unsigned char *)((int)prim + 5)) = 0x80;
-      *((short *)((int)prim + 8)) = x;
-      *((short *)((int)prim + 0xa)) = 8;
-      *((short *)((int)prim + 0x10)) =
-          *((unsigned short *)((int)prim + 8)) + 0x80;
-      *((short *)((int)prim + 0x1a)) =
-          *((unsigned short *)((int)prim + 0xa)) + 0xdf;
-      i++;
-      *((unsigned char *)((int)prim + 0xd)) = 0;
-      *((short *)((int)prim + 0x12)) = *((unsigned short *)((int)prim + 0xa));
-      h = 0x40;
-      *((unsigned char *)((int)prim + 0xc)) = 0;
-      *((short *)((int)prim + 0x18)) = *((unsigned short *)((int)prim + 8));
-      *((short *)((int)prim + 0x20)) =
-          *((unsigned short *)((int)prim + 8)) + 0x80;
-      *((short *)((int)prim + 0x22)) =
-          *((unsigned short *)((int)prim + 0xa)) + 0xdf;
-      *((unsigned char *)((int)prim + 6)) = h;
-      *((unsigned char *)((int)prim + 0x15)) =
-          *((unsigned char *)((int)prim + 0xd));
-      *((unsigned char *)((int)prim + 0x1c)) =
-          *((unsigned char *)((int)prim + 0xc));
-      *((unsigned char *)((int)prim + 0x14)) =
-          *((unsigned char *)((int)prim + 0xc)) + 0x80;
-      *((unsigned char *)((int)prim + 0x1d)) =
-          *((unsigned char *)((int)prim + 0xd)) - 0x21;
-      *((unsigned char *)((int)prim + 0x24)) =
-          *((unsigned char *)((int)prim + 0xc)) + 0x80;
-      *((unsigned char *)((int)prim + 0x25)) =
-          *((unsigned char *)((int)prim + 0xd)) - 0x21;
-      *((short *)((int)prim + 0xe)) = 0x3820;
-      *((short *)((int)prim + 0x16)) = clut;
-      AddPrimToOT((int)prim);
-      g_pPrimBufferWriteCursor = (void *)((int)prim + 0x28);
-      x = i << 7;
-    } while (i < 4);
-    *((int *)((int)prim + 0x28)) = 0x3000000;
-    *((unsigned char *)((int)prim + 0x2f)) = h;
-    *((short *)((int)prim + 0x30)) = 0;
-    *((short *)((int)prim + 0x32)) = 0xe7;
-    *((short *)((int)prim + 0x34)) = 0x200;
-    *((short *)((int)prim + 0x36)) = 0xe7;
-    *((unsigned char *)((int)prim + 0x2c)) = 0;
-    *((unsigned char *)((int)prim + 0x2d)) = 0;
-    *((unsigned char *)((int)prim + 0x2e)) = 0;
-    AddPrimToOT((int)prim + 0x28);
-    g_pPrimBufferWriteCursor = (void *)((int)prim + 0x38);
+    (*(char **)&g_pPrimBufferWriteCursor) = e8;
+    (*(char **)&g_pPrimBufferLimit) = e8 + off;
+    tv = f0 + bias;
+    }
+    }
+    (*(char **)&g_pSpriteRecordBufferTop) = tv;
+    (*(char **)&g_pSpriteRecordWriteCursor) = tv;
+    quad:
+    {
+    register int xx asm("$3");
+    register int tp asm("$7");
+    xx = i << 7;
+
+    tp = i + 0x88;
+    p = (*(char **)&g_pPrimBufferWriteCursor);
+    {
+    register int a asm("$2");
+    register int d asm("$3");
+    register unsigned short bh asm("$5");
+    register unsigned short ch asm("$6");
+    register unsigned char bq asm("$5");
+    register unsigned char cq asm("$6");
+    *((volatile int *) p) = 0x9000000;
+    *((volatile unsigned char *) (p + 0x7)) = 0x2C;
+    *((volatile unsigned char *) (p + 0x4)) = 0x4C;
+    *((volatile unsigned char *) (p + 0x5)) = 0x80;
+    *((volatile short *) (p + 0x8)) = xx;
+    *((volatile short *) (p + 0xA)) = 8;
+    a = *((volatile unsigned short *) (p + 0x8));
+    bh = *((volatile unsigned short *) (p + 0xA));
+    ch = *((volatile unsigned short *) (p + 0x8));
+    d = *((volatile unsigned short *) (p + 0xA));
+    *((volatile short *) (p + 0x10)) = a + 0x80;
+    a = *((volatile unsigned short *) (p + 0x8));
+    *((volatile short *) (p + 0x1A)) = d + 0xDF;
+    d = *((volatile unsigned short *) (p + 0xA));
+    i += 1;
+    *((volatile unsigned char *) (p + 0xD)) = 0;
+    *((volatile short *) (p + 0x12)) = bh;
+    bq = *((volatile unsigned char *) (p + 0xD));
+    b = 0x40;
+    *((volatile unsigned char *) (p + 0xC)) = 0;
+    *((volatile short *) (p + 0x18)) = ch;
+    cq = *((volatile unsigned char *) (p + 0xC));
+    *((volatile short *) (p + 0x20)) = a + 0x80;
+    a = *((volatile unsigned char *) (p + 0xC));
+    *((volatile short *) (p + 0x22)) = d + 0xDF;
+    d = *((volatile unsigned char *) (p + 0xD));
+    *((volatile unsigned char *) (p + 0x6)) = b;
+    *((volatile unsigned char *) (p + 0x15)) = bq;
+    *((volatile unsigned char *) (p + 0x1C)) = cq;
+    *((volatile unsigned char *) (p + 0x14)) = a + 0x80U;
+    a = *((volatile unsigned char *) (p + 0xC));
+    *((volatile unsigned char *) (p + 0x1D)) = d - 0x21;
+    d = *((volatile unsigned char *) (p + 0xD));
+    *((volatile unsigned char *) (p + 0x24)) = a + 0x80U;
+    *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
+    *((short *) (p + 0xE)) = 0x3820;
+    *((short *) (p + 0x16)) = tp;
+    AddPrimToOT((int)p);
+    }
+    }
+    next = p + 0x28;
+    (*(char **)&g_pPrimBufferWriteCursor) = next;
+    if (i < 4) {
+      goto quad;
+    }
+    *((int *) (p + 0x28)) = 0x3000000;
+    *((unsigned char *) (p + 0x2F)) = b;
+    *((short *) (p + 0x30)) = 0;
+    *((short *) (p + 0x32)) = 0xE7;
+    *((short *) (p + 0x34)) = 0x200;
+    *((short *) (p + 0x36)) = 0xE7;
+    *((unsigned char *) (p + 0x2C)) = 0;
+    *((unsigned char *) (p + 0x2D)) = 0;
+    *((unsigned char *) (p + 0x2E)) = 0;
+    AddPrimToOT((int)next);
+    (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
+    prim = p;
+    h = b;
     if (g_nGamestate == 2) {
       unsigned char *rec;
       short *lut;
