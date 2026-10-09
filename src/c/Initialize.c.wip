@@ -131,30 +131,31 @@ void Initialize(void) {
 
   LoadAssetDirectoryFromCd();
   {
-  register int k600 asm("$16") = 600;
-  lba = g_anCdBaseLbaBlock;
-  archOff = g_anWorldArchiveOffsetBlock;
-  {
-    int lba1 = lba[0];
-    int off1 = *(volatile int *)archOff;
-    CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1, k600);
-  }
-  timOff = g_anWorldTimAudioChunkOffsetBlock;
-  CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
-  top = (char *)0x801C0000 - g_nCrt0StackSize;
-  CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
-  {
-    int cnt3 = *(volatile int *)&D_8007A6E4;
-    int off3 = *(volatile int *)&D_8007A6E0;
-    CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0, cnt3, off3, k600);
-  }
-  {
-    int cnt4 = *(volatile int *)&D_8007A6D4;
-    int off4 = *(volatile int *)&D_8007A6D0;
-    dst = top - *(volatile int *)&D_8007A6D4;
-    CdReadSyncSectors(lba[0], dst, cnt4, off4, k600);
-  }
-
+    register int k600 asm("$16") = 600;
+    lba = g_anCdBaseLbaBlock;
+    archOff = g_anWorldArchiveOffsetBlock;
+    {
+      int lba1 = lba[0];
+      int off1 = *(volatile int *)archOff;
+      CdReadSyncSectors(lba1, *(void *volatile *)&D_800113A0, 0x800, off1,
+                        k600);
+    }
+    timOff = g_anWorldTimAudioChunkOffsetBlock;
+    CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
+    top = (char *)0x801C0000 - g_nCrt0StackSize;
+    CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
+    {
+      int cnt3 = *(volatile int *)&D_8007A6E4;
+      int off3 = *(volatile int *)&D_8007A6E0;
+      CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0, cnt3, off3,
+                        k600);
+    }
+    {
+      int cnt4 = *(volatile int *)&D_8007A6D4;
+      int off4 = *(volatile int *)&D_8007A6D0;
+      dst = top - *(volatile int *)&D_8007A6D4;
+      CdReadSyncSectors(lba[0], dst, cnt4, off4, k600);
+    }
   }
 hold_title:
   if (VSync(-1) - start < 0xD2) {

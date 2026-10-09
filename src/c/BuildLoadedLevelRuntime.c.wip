@@ -456,21 +456,21 @@ sprites:
   }
   if (g_nDeathState != 0) {
     {
-    register int kk asm("$3");
-    register int dd asm("$2");
+      register int kk asm("$3");
+      register int dd asm("$2");
 
-    srand(1234);
-    kk = g_nDeathTryIndex;
-    dd = g_anDeathReplaySpawnTable[kk * 4];
-    g_anSpyroWorldPos[0] = dd;
-    dd = g_anDeathReplaySpawnTable[(kk * 4) + 1];
-    g_nSpyroWorldPosY = dd;
-    dd = g_anDeathReplaySpawnTable[(kk * 4) + 2];
-    D_80078A60 = dd;
-    dd = g_anDeathReplaySpawnTable[(kk * 4) + 3];
-    g_nDeathRespawnPending = 1;
-    g_abSpyroPersistentEuler[2] = dd;
-    g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
+      srand(1234);
+      kk = g_nDeathTryIndex;
+      dd = g_anDeathReplaySpawnTable[kk * 4];
+      g_anSpyroWorldPos[0] = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 1];
+      g_nSpyroWorldPosY = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 2];
+      D_80078A60 = dd;
+      dd = g_anDeathReplaySpawnTable[(kk * 4) + 3];
+      g_nDeathRespawnPending = 1;
+      g_abSpyroPersistentEuler[2] = dd;
+      g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
     }
     if (g_nDeathState == 1) {
       g_pDeathReplayCursor = p;
