@@ -5482,3 +5482,8 @@ func_8001228C:
   class: "absorbed slot (main's dead epilogue)"
   date: 2026-10-09
   note: "Comment-only src/c/func_8001228C.c; main.o's epilogue covers the bytes."
+AdvanceSpyroPhysics:
+  verdict: parked
+  class: "loop.c hoist / global-alloc spill choice (i, steps spilled in orig)"
+  date: 2026-10-09
+  note: "src/c/AdvanceSpyroPhysics.c.wip: 1097/1098 insns, full decode. Residue is which substep-loop values get callee-saved regs vs spill slots."
