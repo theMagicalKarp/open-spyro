@@ -5487,3 +5487,23 @@ AdvanceSpyroPhysics:
   class: "loop.c hoist / global-alloc spill choice (i, steps spilled in orig)"
   date: 2026-10-09
   note: "src/c/AdvanceSpyroPhysics.c.wip: 1097/1098 insns, full decode. Residue is which substep-loop values get callee-saved regs vs spill slots."
+UpdateCameraSpringForMode:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Sparse switch in source case order, cross-jumped REBASE/LOOKAHEAD tails, opaque stuck-frames base."
+ChangeSpyroState:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Two jump-table switches; SPY block related values; volatile state re-read; shared voice-marker pseudo."
+UpdateSpyroStateBehavior:
+  verdict: viable
+  class: "B1 retired; 45-case state switch (switchdataD_80010fd8), 36 ChangeSpyroState tails"
+  date: 2026-10-09
+  note: "Screened 2026-10-09-1: m2c decodes with build/m2c_jt.py. Expect A389 cross-jumped ChangeSpyroState tails throughout."
+IntegrateSpyroMotionForSubstep:
+  verdict: viable
+  class: "B1 retired; 15 KB megafunction"
+  date: 2026-10-09
+  note: "Not opened yet. 12 %gp_rel sites need SDATA declarations."
