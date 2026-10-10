@@ -109,10 +109,6 @@ func_8005E680:
   note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
 
 # --- actor waypoint-follow step (2026-07-24-1 session) ---
-func_8001228C:
-  verdict: wall
-  class: "main's unreachable epilogue fragment"
-  date: 2026-07-08
 func_80017294:
   verdict: wall
   class: "GTE-neighbor epilogue fragment (jr ra; srl v0,t0,12)"
@@ -320,10 +316,10 @@ TickSpyroAnimStateMachine:
   date: 2026-07-25
   note: "switchdata jr-table in main (0x8003d194); build_main.sh rejects loadable rodata."
 DispatchSpyroChargeStateChanges:
-  verdict: skip
-  class: B1
-  date: 2026-07-25
-  note: "%gp_rel access (0x80041270); already named in the cookbook G landscape."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 UpdateGemPickupPathCamera:
   verdict: matched
   class: "matched 2026-08-11-1 (A160 abs() builtin + A187 cse canonical-copy live-range lever; the 2026-07-25 F4 'no source form reaches it' class is retired for the plain-copy case)"
@@ -2282,16 +2278,16 @@ func_800671F0:
   note: "1060 B, 107 insns. Already named in B8's memcard handler family."
 
 SelectCameraMode:
-  verdict: wall
-  class: "B1 %gp_rel global access (6 sites)"
-  date: 2026-08-23
-  note: "1972 B. Same cluster as UpdateCameraFrame / UpdateLedgeGrabCamera."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 
 UpdateGameplayCamera:
-  verdict: wall
-  class: "B1 %gp_rel global access (2 sites)"
-  date: 2026-08-23
-  note: "2052 B. Same cluster as SelectCameraMode."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 
 CdProcessInterrupt:
   verdict: wall
@@ -2391,22 +2387,22 @@ TickLevelTransitionStream:
   note: "4212 B; jr through switchdataD_80010a88 at 0x80015418. 55 jals, otherwise clean."
 
 UpdateLedgeGrabCamera:
-  verdict: wall
-  class: "B1 %gp_rel global access"
-  date: 2026-08-24
-  note: "436 B; one %gp_rel access in the 0x80075600-0x80075950 camera cluster. Our externs always expand to lui/%lo."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 
 UpdateCameraFrame:
-  verdict: wall
-  class: "B1 %gp_rel global access"
-  date: 2026-08-24
-  note: "708 B; one %gp_rel access (same camera cluster as UpdateCameraManualYawInput / SnapCameraToTarget)."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 
 AdvanceCameraSpringStep:
-  verdict: wall
-  class: "B1 %gp_rel global access"
-  date: 2026-08-24
-  note: "2748 B; four %gp_rel accesses. Leaf (no jal), so otherwise the shape would have been attractive."
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
 
 StoryIntro_Draw:
   verdict: viable
@@ -5464,3 +5460,50 @@ func_8005D628_2026_10_09:
   verdict: wall
   class: "B11 cross-iteration LO reuse (re-screened, unchanged)"
   date: 2026-10-09
+
+# --- B1 %gp_rel retired 2026-10-09-1 (include/sdata.h SDATA) ---
+SnapCameraToTarget:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "First build once SDATA(g_nCameraLosClear, 4) was declared."
+UpdateCameraManualYawInput:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "First build."
+main:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Frame loop; gcc's dead epilogue fills func_8001228C via gen_slots_ld ABSORBED_BY."
+func_8001228C:
+  verdict: matched
+  class: "absorbed slot (main's dead epilogue)"
+  date: 2026-10-09
+  note: "Comment-only src/c/func_8001228C.c; main.o's epilogue covers the bytes."
+AdvanceSpyroPhysics:
+  verdict: parked
+  class: "loop.c hoist / global-alloc spill choice (i, steps spilled in orig)"
+  date: 2026-10-09
+  note: "src/c/AdvanceSpyroPhysics.c.wip: 1097/1098 insns, full decode. Residue is which substep-loop values get callee-saved regs vs spill slots."
+UpdateCameraSpringForMode:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Sparse switch in source case order, cross-jumped REBASE/LOOKAHEAD tails, opaque stuck-frames base."
+ChangeSpyroState:
+  verdict: matched
+  class: "B1 retired (SDATA gp-relative declaration)"
+  date: 2026-10-09
+  note: "Two jump-table switches; SPY block related values; volatile state re-read; shared voice-marker pseudo."
+UpdateSpyroStateBehavior:
+  verdict: viable
+  class: "B1 retired; 45-case state switch (switchdataD_80010fd8), 36 ChangeSpyroState tails"
+  date: 2026-10-09
+  note: "Screened 2026-10-09-1: m2c decodes with build/m2c_jt.py. Expect A389 cross-jumped ChangeSpyroState tails throughout."
+IntegrateSpyroMotionForSubstep:
+  verdict: viable
+  class: "B1 retired; 15 KB megafunction"
+  date: 2026-10-09
+  note: "Not opened yet. 12 %gp_rel sites need SDATA declarations."
