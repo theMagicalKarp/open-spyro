@@ -5498,10 +5498,10 @@ ChangeSpyroState:
   date: 2026-10-09
   note: "Two jump-table switches; SPY block related values; volatile state re-read; shared voice-marker pseudo."
 UpdateSpyroStateBehavior:
-  verdict: viable
-  class: "B1 retired; 45-case state switch (switchdataD_80010fd8), 36 ChangeSpyroState tails"
-  date: 2026-10-09
-  note: "Screened 2026-10-09-1: m2c decodes with build/m2c_jt.py. Expect A389 cross-jumped ChangeSpyroState tails throughout."
+  verdict: matched
+  class: "B1 retired (SDATA); per-site ChangeSpyroState calls (no shared label, A322)"
+  date: 2026-10-10
+  note: "Per-site calls keep duplicated li/j blocks; opaque held base (case 18), volatile pad reload (44), a0 asm reservation blocks a reorg steal (case 2)."
 IntegrateSpyroMotionForSubstep:
   verdict: viable
   class: "B1 retired; 15 KB megafunction"

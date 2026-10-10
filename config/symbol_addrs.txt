@@ -1651,6 +1651,7 @@ g_anSpyroMoveTargetYawBlock = 0x80078b24; // allow_duplicated:True alias block �
 g_anSpyroCarryMotionVec = 0x80078b40; // size:0xc
 g_nSpyroCarryMotionZ = 0x80078b48; // size:0x4 allow_duplicated:True scalar view of g_anSpyroCarryMotionVec[2] (ChangeSpyroState clamp, see g_nSpyroMotionZ)
 g_anSpyroVelocity = 0x80078b4c; // size:0xc
+g_nSpyroVelocityZ = 0x80078b54; // size:0x4 allow_duplicated:True scalar view of g_anSpyroVelocity[2] — 4-byte symbol so the += 0xDC0 jump kick stays lui/%lo (UpdateSpyroStateBehavior cases 11/24)
 g_anSpyroVelocityFp6 = 0x80078b58; // size:0xc
 g_anSpyroMotionVec = 0x80078b64; // size:0xc
 g_nSpyroMotionZ = 0x80078b6c; // size:0x4 allow_duplicated:True scalar view of g_anSpyroMotionVec[2] — a 4-byte (sdata-cost) symbol so the clamp load and its conditional store both fold to lui/%lo (ChangeSpyroState)
