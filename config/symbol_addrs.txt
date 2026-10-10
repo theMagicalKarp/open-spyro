@@ -1649,8 +1649,10 @@ g_anSpyroSpeedBlock = 0x80078b20; // allow_duplicated:True incomplete-array alia
 g_nSpyroMoveTargetYaw = 0x80078b24; // allow_duplicated:True size:0x4
 g_anSpyroMoveTargetYawBlock = 0x80078b24; // allow_duplicated:True alias block — shared-base view (+0 move-target yaw, +0x50 g_nSpyroBodyYaw) for ApplyPadInputToSpyroBodyYaw
 g_anSpyroCarryMotionVec = 0x80078b40; // size:0xc
+g_nSpyroCarryMotionY = 0x80078b44; // size:0x4 allow_duplicated:True scalar view of g_anSpyroCarryMotionVec[1] — 4-byte symbol so the >>4 decay RMW stays lui/%lo (IntegrateSpyroMotionForSubstep)
 g_nSpyroCarryMotionZ = 0x80078b48; // size:0x4 allow_duplicated:True scalar view of g_anSpyroCarryMotionVec[2] (ChangeSpyroState clamp, see g_nSpyroMotionZ)
 g_anSpyroVelocity = 0x80078b4c; // size:0xc
+g_nSpyroVelocityY = 0x80078b50; // size:0x4 allow_duplicated:True scalar view of g_anSpyroVelocity[1] — 4-byte symbol so stores stay lui/%lo (IntegrateSpyroMotionForSubstep)
 g_nSpyroVelocityZ = 0x80078b54; // size:0x4 allow_duplicated:True scalar view of g_anSpyroVelocity[2] — 4-byte symbol so the += 0xDC0 jump kick stays lui/%lo (UpdateSpyroStateBehavior cases 11/24)
 g_anSpyroVelocityFp6 = 0x80078b58; // size:0xc
 g_anSpyroMotionVec = 0x80078b64; // size:0xc

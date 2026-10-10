@@ -5503,7 +5503,7 @@ UpdateSpyroStateBehavior:
   date: 2026-10-10
   note: "Per-site calls keep duplicated li/j blocks; opaque held base (case 18), volatile pad reload (44), a0 asm reservation blocks a reorg steal (case 2)."
 IntegrateSpyroMotionForSubstep:
-  verdict: viable
-  class: "B1 retired; 15 KB megafunction"
-  date: 2026-10-09
-  note: "Not opened yet. 12 %gp_rel sites need SDATA declarations."
+  verdict: parked
+  class: "global-alloc priority order in case 15 (y/base vs nx s-reg choice) + reload spill-reg t1/t2"
+  date: 2026-10-10
+  note: "src/c/IntegrateSpyroMotionForSubstep.c.wip: full decode, 3807 insns, 537 masked mismatches over 15 cases (case 15 = 408). Case 15: orig nx=s1 before y/SPY-base=s3; ours gives y s1. A subcase-local y fixes nx/w/base but drops y to a1 (orig y crosses a call, so it must share a pseudo with a cross-call value). Small knots: case 30 carry/vel s0/s1, cases 1/3 pointer in a2, case 5 l/k merge in a2, case 26 obj2 copy scheduling, cases 20/44 lui s0 before speed store, case 24 (20). Wins: per-site ChangeSpyroState, OPAQUE in-place macro, case-scope shared x/y temps (744 -> 537), lo=ramp[0] before the store, -X*300 negate-first."
