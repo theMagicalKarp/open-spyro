@@ -1,0 +1,1684 @@
+#include "globals.h"
+#include "sdata.h"
+
+extern void ChangeSpyroState(int state);
+extern void ComputeSpyroMoveTargetFromPad(int mag);
+extern int ApplyPadInputToSpyroBodyYaw(void);
+extern int TurnSpyroTowardMoveTargetWithLean(int lean);
+extern void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
+extern void BuildSpyroVelocityFromBodyEuler(void);
+extern void IntegrateSpyroBodyEuler(int delta);
+extern void NudgeSpyroFromWallProbes(void);
+extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
+extern int AbsAngleDelta12(int a, int b);
+extern int ArcTan2(int y, int x, int high_precision);
+extern int LookupCosine(int angle);
+extern int LookupSine(int angle);
+extern int IntegerSqrt(int n);
+extern int VectorLength(int *vec, int include_z);
+extern void SetVector3Magnitude(int *vec, int mag);
+extern void ScaleVector3ByRatio(int *vec, int num, int den);
+extern void ScaleVector3Shifted(int *vec, int num, int shift);
+extern void AddVector(int *dst, int *a, int *b);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern void CopyVector(int *dst, int *src);
+extern void ZeroVector(int *vec);
+extern void RShiftVector3(int *vec, int shift);
+extern void LShiftVector3(int *vec, int shift);
+extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
+extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
+extern void AccumulateAnimRootMotionDelta(int frame, int *out, int anim,
+                                          int sub);
+extern int CheckLineOfSightSegment(int *from, int *to);
+extern int FindGroundHeightBelow(int *pt, int depth);
+extern void ActivateScriptedCameraView(int *record);
+extern int ApproxDist2D(int *a, int *b);
+extern int abs(int x);
+
+extern int D_80078A60; /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosY;
+extern int g_nSpyroVelocityY;    /* g_anSpyroVelocity[1] */
+extern int g_nSpyroVelocityZ;    /* g_nSpyroVelocityZ */
+extern int g_nSpyroCarryMotionY; /* g_nSpyroCarryMotionY */
+extern int g_nSpyroCarryMotionZ; /* g_nSpyroCarryMotionZ */
+extern int D_80078B34[];
+extern int D_800756B4;
+extern int D_80075668;
+extern int D_80075700;
+extern int D_80075724;
+extern int D_8007578C;
+extern int D_80075790;
+extern int D_800757F0;
+extern int D_8006E7DC[];
+extern int D_8006E7E4[];
+
+SDATA(D_80075668, 4);
+SDATA(D_800756B4, 4);
+SDATA(D_80075724, 4);
+SDATA(D_8007578C, 4);
+SDATA(D_80075790, 4);
+SDATA(D_800757F0, 4);
+SDATA(g_pSpyroContactActor, 4);
+
+/* One view of the Spyro record from its world position (0x80078a58). */
+extern int g_anSpyroWorldPosBlock[];
+extern int g_anCameraPosBlock[];
+extern int g_anSpyroWorldPosZBlock[];
+extern short g_anCameraEulerYawBlock[];
+extern unsigned int g_adwPadPressedBlock[];
+extern unsigned char g_abSpyroAnimPrevBlock[];
+extern int g_anSpyroDeathCamRecordBlock[];
+
+#define SPY g_anSpyroWorldPosBlock
+#define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */
+#define SPY_AIRBORNE 0x27       /* g_nSpyroAirborneFrames */
+#define SPY_WALL_SLIDE 0x2D     /* g_nSpyroWallSlideContributedFlag */
+#define SPY_NUDGE 0x2E          /* g_anSpyroWallSlideNudgeAccum */
+#define SPY_CLIFF 0x31          /* g_nSpyroCliffEdgeHint */
+#define SPY_SPEED_TARGET 0x32   /* g_nSpyroSpeedTarget */
+#define SPY_PLATFORM 0x37       /* D_80078B34 */
+#define SPY_CARRY 0x3A          /* g_anSpyroCarryMotionVec */
+#define SPY_VELOCITY 0x3D       /* g_anSpyroVelocity */
+#define SPY_VELOCITY_FP6 0x40   /* g_anSpyroVelocityFp6 */
+#define SPY_SPEED 0x46          /* g_nSpyroMotionSpeed */
+#define SPY_YAW 0x47            /* g_nSpyroBodyYaw */
+#define SPY_ROLL 0x48           /* g_nSpyroBodyRoll */
+#define SPY_PITCH 0x49          /* g_nSpyroBodyPitch */
+#define SPY_FRAME_MOTION 0x4A   /* g_nSpyroFrameMotionLength */
+#define SPY_LOCKOUT 0x58        /* g_nSpyroInputLockoutCountdown */
+#define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
+#define SPY_CHARGE_HOLD 0x94    /* g_nSpyroChargeHoldFlag */
+#define SPY_GLIDE_BANK 0x95     /* g_nSpyroGlideBankingFlag */
+
+#define PADB ((unsigned char *)g_pPadSubstepState)
+#define PADW ((int *)g_pPadSubstepState)
+#define RAMP ((signed char *)g_abSpyroEulerRateRampSigned)
+
+#define PARTICLE_SPAWN(a, b, c, d)                                             \
+  ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(a, b, c, d)
+
+/* Opaque copy: the result is a fresh value to cse, so a block address stays
+   in its register and later fields are addressed off it. */
+static inline int OpaqueInt(int p) {
+  int q;
+
+  __asm__("" : "=r"(q) : "0"(p));
+  return q;
+}
+
+static inline int *Opaque(int *p) {
+  int *q;
+
+  __asm__("" : "=r"(q) : "0"(p));
+  return q;
+}
+
+#define OPAQUE(v) __asm__("" : "=r"(v) : "0"(v))
+
+/* Input lockout frames count down to zero. */
+#define LOCKOUT_TICK(p)                                                        \
+  {                                                                            \
+    int n = (p)[0] - 1;                                                        \
+                                                                               \
+    (p)[0] = n;                                                                \
+    if (n < 0) {                                                               \
+      (p)[0] = 0;                                                              \
+    }                                                                          \
+  }
+
+/* Analog stick (or d-pad) as signed x/y in -0x7F..0x7F. */
+#define READ_STICK(x, y)                                                       \
+  if (PADW[4] != 0) {                                                          \
+    x = PADB[0x16] - 0x7F;                                                     \
+    y = 0x7F - PADB[0x17];                                                     \
+  } else {                                                                     \
+    if (PADW[1] & 0x1000) {                                                    \
+      y = 0x7F;                                                                \
+    } else {                                                                   \
+      y = (PADW[1] & 0x4000) ? -0x7F : 0;                                      \
+    }                                                                          \
+    if (PADW[1] & 0x2000) {                                                    \
+      x = 0x7F;                                                                \
+    } else {                                                                   \
+      x = (PADW[1] & 0x8000) ? -0x7F : 0;                                      \
+    }                                                                          \
+  }
+
+/* Slide along the wall that pushed Spyro: add the into-wall share of the
+   velocity back along the nudge direction. */
+#define WALL_SLIDE(w, setspeed)                                                \
+  if ((w)[0] != 0) {                                                           \
+    int *nudge = (w) + 1;                                                      \
+    int k;                                                                     \
+                                                                               \
+    g_anSpyroWallSlideNudgeAccum[2] = 0;                                       \
+    SetVector3Magnitude(nudge, 0x1000);                                        \
+    k = (-(w)[0x10] * (w)[1] -                                                 \
+         g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>               \
+        12;                                                                    \
+    (w) += 0x10;                                                               \
+    if (k > 0) {                                                               \
+      ScaleVector3ByRatio(nudge, 0x1000, k);                                   \
+      AddVector((w), (w), nudge);                                              \
+      setspeed;                                                                \
+    }                                                                          \
+  }
+
+/* On the ground the platform carry is added; airborne or at a cliff edge
+   gravity takes over. */
+#define FINISH_VELOCITY()                                                      \
+  if (g_nSpyroCliffEdgeHint != 0 || g_nSpyroAirborneFrames != 0) {             \
+    g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;                          \
+  } else {                                                                     \
+    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);               \
+  }
+
+#define CLAMP_FALL_SPEED()                                                     \
+  if (g_nSpyroVelocityZ < -0x2300) {                                           \
+    g_nSpyroVelocityZ = -0x2300;                                               \
+  }
+
+/* Glide/charge speed from the height fallen below the floor reference. */
+#define SPEED_FROM_DROP(base, shift)                                           \
+  {                                                                            \
+    int f = g_nSpyroFloorReferenceZ - D_80078A60;                              \
+                                                                               \
+    if (f < 0) {                                                               \
+      g_nSpyroMotionSpeed = (base) - IntegerSqrt(-f << (shift));               \
+    } else {                                                                   \
+      g_nSpyroMotionSpeed = IntegerSqrt(f << (shift)) + (base);                \
+    }                                                                          \
+  }
+
+#define SPEED_FROM_DROP_T(base)                                                \
+  {                                                                            \
+    int f = g_nSpyroFloorReferenceZ - D_80078A60;                              \
+    int v;                                                                     \
+                                                                               \
+    if (f < 0) {                                                               \
+      v = (base) - IntegerSqrt(-f << 13);                                      \
+    } else {                                                                   \
+      v = (base) + IntegerSqrt(f << 13);                                       \
+    }                                                                          \
+    g_nSpyroMotionSpeed = v;                                                   \
+  }
+
+/* Ease the pitch toward a yaw-rate-dependent bank. */
+#define PITCH_TOWARD_TURN()                                                    \
+  {                                                                            \
+    int p = (g_nSpyroBodyYawStep * -8 - g_nSpyroBodyPitch) & 0xFFF;            \
+                                                                               \
+    if (p > 0x800) {                                                           \
+      p -= 0x1000;                                                             \
+    }                                                                          \
+    if (p > 0x10) {                                                            \
+      p = 0x10;                                                                \
+    } else if (p < -0x10) {                                                    \
+      p = -0x10;                                                               \
+    }                                                                          \
+    SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;                             \
+  }
+
+#define LEVEL_GLIDE_HANDOFF()                                                  \
+  {                                                                            \
+    g_nSpyroStateFlags = 0;                                                    \
+    g_bSpyroOtBinBias = 4;                                                     \
+    g_nCameraNextMode = (&g_abSpyroStateCameraMode)[g_nSpyroState];            \
+  }
+
+#define APPROACH_GLIDE_SPEED(t)                                                \
+  if ((t)[SPY_SPEED - SPY_SPEED_TARGET] < (t)[0]) {                            \
+    (t)[SPY_SPEED - SPY_SPEED_TARGET] += 0x80;                                 \
+    if ((t)[SPY_SPEED - SPY_SPEED_TARGET] > (t)[0]) {                          \
+      (t)[SPY_SPEED - SPY_SPEED_TARGET] = (t)[0];                              \
+    }                                                                          \
+  } else if ((t)[SPY_SPEED - SPY_SPEED_TARGET] > (t)[0]) {                     \
+    (t)[SPY_SPEED - SPY_SPEED_TARGET] -= 0x80;                                 \
+    if ((t)[SPY_SPEED - SPY_SPEED_TARGET] < (t)[0]) {                          \
+      (t)[SPY_SPEED - SPY_SPEED_TARGET] = (t)[0];                              \
+    }                                                                          \
+  }
+
+/* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
+   speed and velocity per state, the glide flight model, then the 1/64
+   position accumulator and the persistent byte euler angles. */
+void IntegrateSpyroMotionForSubstep(int substep) {
+  int v10[3];
+  int v20[3];
+  int v30[3];
+  int v40[3];
+  int v50[3];
+  int v60[3];
+  int v70[3];
+  int v80[3];
+  int v90[3];
+  int vA0[3];
+  int vB0[3];
+  int t;
+  int *sp;
+
+  g_pPadSubstepState = &g_anPadSubstepRing[substep * 6];
+  t = g_nSpyroStateTimer + substep;
+  if (g_nGamestate == 0 && g_nActiveLevelId == 0x40 &&
+      g_nSpyroAirborneFrames == 0) {
+    g_nSpyroFallTrackingFlag = 1;
+  }
+  switch (g_nSpyroState) {
+  case 0:
+  case 13:
+  case 18:
+  case 36:
+  case 37:
+  case 38:
+  case 39:
+  case 40:
+  case 41:
+  case 42:
+  case 43:
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroScriptedMoveMode == 0) {
+      ComputeSpyroMoveTargetFromPad(0);
+    } else if (g_nSpyroStateTimer > 0x2C && g_bSpyroHornCollisionActive == 0) {
+      if (g_nSpyroStateFlags != 0) {
+        g_nSpyroScriptedMoveMode = 0;
+      } else {
+        g_nSpyroStateFlags = 1;
+        g_adwPadPressedBlock[0] |= 0x20;
+      }
+    }
+    ZeroVector(g_anSpyroVelocity);
+    break;
+  case 1:
+  case 2:
+  case 21: {
+    int r;
+    int *w;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroScriptedMoveMode == 0) {
+      ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
+    } else {
+      int d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
+
+      if (d > 0x800) {
+        d -= 0x1000;
+      }
+      if (abs(d) < 0x10) {
+        ChangeSpyroState(0);
+      }
+    }
+    g_nSpyroStateFlags = 0;
+    if (g_nSpyroMotionSpeed < 0x400) {
+      r = ApplyPadInputToSpyroBodyYaw();
+    } else {
+      int lean = 2;
+
+      if (g_nSpyroMotionSpeed < 0xC80) {
+        lean = 1;
+      }
+      r = TurnSpyroTowardMoveTargetWithLean(lean);
+    }
+    if (g_nSpyroStateFlags != 0) {
+      int s = g_nSpyroMotionSpeed - 0xC0;
+
+      g_nSpyroMotionSpeed = s;
+      if (s < 0) {
+        g_nSpyroMotionSpeed = 0;
+      }
+    } else {
+      int a = 0x140;
+
+      if (r > 0x200) {
+        a = OpaqueInt(0);
+      }
+      AdvanceSpyroSpeedTowardTarget(a, 0xC0);
+    }
+    BuildSpyroVelocityFromBodyEuler();
+    w = &SPY[SPY_WALL_SLIDE];
+    OPAQUE(w);
+    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, 1));
+    if (Opaque(&SPY[SPY_CLIFF])[0] != 0 || g_nSpyroAirborneFrames != 0) {
+      g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
+    } else {
+      AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+    }
+    break;
+  }
+  case 4: {
+    int d;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    d = AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw);
+    if (d < 0x80) {
+      d >>= 3;
+    } else {
+      d = t;
+      if (d > 0xB) {
+        d = 0xB;
+      }
+      d = g_abSpyroEulerRateRampUp[d];
+    }
+    IntegrateSpyroBodyEuler(d);
+    if (g_nSpyroCliffEdgeHint != 0) {
+      g_nSpyroMotionSpeed = 0;
+    } else {
+      int s = g_nSpyroMotionSpeed - 0x100;
+
+      g_nSpyroMotionSpeed = s;
+      if (s < 0) {
+        g_nSpyroMotionSpeed = 0;
+      }
+    }
+    BuildSpyroVelocityFromBodyEuler();
+    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+    break;
+  }
+  case 3: {
+    int r;
+    int *w;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nPadDirectionalIdleFlag != 0 && g_nSpyroStateFlags == 7) {
+      g_nSpyroSpeedTarget = 0;
+      if (g_pSpyroContactActor != 0) {
+        int *a = g_pSpyroContactActor;
+
+        g_nSpyroMoveTargetYaw =
+            ArcTan2(a[3] - g_anSpyroWorldPos[0], a[4] - g_nSpyroWorldPosY, 1);
+      }
+    } else {
+      ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
+    }
+    if (SPY[SPY_STATE_FLAGS] != 7) {
+      SPY[SPY_STATE_FLAGS] = 0;
+    }
+    if (g_nSpyroMotionSpeed < 0x400) {
+      r = ApplyPadInputToSpyroBodyYaw();
+    } else {
+      int lean = 2;
+
+      if (g_nSpyroMotionSpeed < 0xC80) {
+        lean = 1;
+      }
+      r = TurnSpyroTowardMoveTargetWithLean(lean);
+    }
+    if (g_nSpyroCliffEdgeHint != 0) {
+      g_nSpyroMotionSpeed = 0;
+    } else if (g_nSpyroStateFlags != 0) {
+      int s = g_nSpyroMotionSpeed - 0xC0;
+
+      g_nSpyroMotionSpeed = s;
+      if (s < 0) {
+        g_nSpyroMotionSpeed = 0;
+      }
+    } else {
+      int a = 0x140;
+
+      if (r > 0x200) {
+        a = OpaqueInt(0);
+      }
+      AdvanceSpyroSpeedTowardTarget(a, 0xC0);
+    }
+    BuildSpyroVelocityFromBodyEuler();
+    w = &SPY[SPY_WALL_SLIDE];
+    OPAQUE(w);
+    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, 1));
+    if (SPY[SPY_AIRBORNE] != 0) {
+      g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
+    } else {
+      AddVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], D_80078B34);
+    }
+    break;
+  }
+  case 5: {
+    int *cd = &SPY[SPY_LOCKOUT];
+    int *vel;
+    int l;
+
+    OPAQUE(cd);
+    LOCKOUT_TICK(cd);
+    ComputeSpyroMoveTargetFromPad(0xC80);
+    TurnSpyroTowardMoveTargetWithLean(2);
+    AdvanceSpyroSpeedTowardTarget(0x140, 0xC0);
+    vel = cd + (SPY_VELOCITY - SPY_LOCKOUT);
+    cd[SPY_CARRY - SPY_LOCKOUT] =
+        (g_nSpyroMotionSpeed * LookupCosine(g_nSpyroMoveTargetYaw)) >> 12;
+    g_nSpyroCarryMotionY =
+        (g_nSpyroMotionSpeed * LookupSine(g_nSpyroMoveTargetYaw)) >> 12;
+    SubtractVector(v10, cd + (SPY_CARRY - SPY_LOCKOUT), vel);
+    v10[2] = 0;
+    l = VectorLength(v10, 0);
+    if (l > 0x280) {
+      ScaleVector3ByRatio(v10, l, 0x280);
+    }
+    AddVector(vel, vel, v10);
+    if (g_nSpyroWallSlideContributedFlag != 0) {
+      int *nudge = cd + (SPY_NUDGE - SPY_LOCKOUT);
+      int k;
+
+      g_anSpyroWallSlideNudgeAccum[2] = 0;
+      SetVector3Magnitude(nudge, 0x1000);
+      k = (-cd[SPY_VELOCITY - SPY_LOCKOUT] * cd[SPY_NUDGE - SPY_LOCKOUT] -
+           g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>
+          12;
+      if (k > 0) {
+        ScaleVector3ByRatio(nudge, 0x1000, k);
+        AddVector(vel, vel, nudge);
+      }
+    }
+    if (t < 0xD && g_nSpyroStateFlags == 0 &&
+        ((PADW[1] & 0x40) || D_800756B4 != 0)) {
+      int c = g_nSpyroCarryMotionZ + 0xD7 + g_nSpyroGravityStep;
+      int v;
+
+      g_nSpyroCarryMotionZ = c;
+      v = ((g_nSpyroFloorReferenceZ - D_80078A60) << 6) -
+          g_anSpyroVelocityFp6[2] + c;
+      g_nSpyroVelocityZ = v;
+      g_nSpyroFloorReferenceZ =
+          ((D_80078A60 << 6) + v + g_anSpyroVelocityFp6[2]) >> 6;
+    } else {
+      SPY[SPY_CARRY + 2] += g_nSpyroGravityStep;
+      g_nSpyroVelocityZ = SPY[SPY_CARRY + 2];
+    }
+    break;
+  }
+  case 6: {
+    int *vel;
+    int *vz;
+    int l;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroFallTrackingFlag != 0) {
+      int d;
+
+      ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
+      d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
+      if (d > 0x800) {
+        d -= 0x1000;
+      }
+      if (d > 0x20) {
+        d = 0x20;
+      }
+      if (d < -0x20) {
+        d = -0x20;
+      }
+      IntegrateSpyroBodyEuler(d);
+    }
+    if (SPY[SPY_FRAME_MOTION] < 0x80) {
+      CopyVector(v20, &SPY[SPY_NUDGE]);
+      RShiftVector3(v20, 3);
+      AddVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], v20);
+    }
+    ZeroVector(v20);
+    vel = &SPY[SPY_VELOCITY];
+    SubtractVector(v20, v20, vel);
+    v20[2] = 0;
+    l = VectorLength(v20, 0);
+    if (l > 0x40) {
+      ScaleVector3ByRatio(v20, l, 0x40);
+    }
+    v20[2] = g_nSpyroGravityStep;
+    AddVector(vel, vel, v20);
+    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+      NudgeSpyroFromWallProbes();
+    }
+    vz = &SPY[SPY_VELOCITY + 2];
+    OPAQUE(vz);
+    if (vz[0] < -0x2300) {
+      vz[0] = -0x2300;
+    }
+    if (g_nSpyroWallSlideContributedFlag != 0) {
+      int *nudge = vz + (SPY_NUDGE - SPY_VELOCITY - 2);
+      int k;
+
+      g_anSpyroWallSlideNudgeAccum[2] = 0;
+      SetVector3Magnitude(nudge, 0x1000);
+      k = (-vz[-2] * vz[SPY_NUDGE - SPY_VELOCITY - 2] -
+           g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>
+          12;
+      if (k > 0) {
+        vz -= 2;
+        ScaleVector3ByRatio(nudge, 0x1000, k);
+        AddVector(vz, vz, nudge);
+      }
+    }
+    break;
+  }
+  case 9:
+  case 10: {
+    int *cd = &SPY[SPY_LOCKOUT];
+    int *vel;
+
+    OPAQUE(cd);
+    LOCKOUT_TICK(cd);
+    ComputeSpyroMoveTargetFromPad(0x1000);
+    TurnSpyroTowardMoveTargetWithLean(3);
+    g_nSpyroSpeedTarget = 0x1000;
+    AdvanceSpyroSpeedTowardTarget(0x140, 0xC0);
+    cd[SPY_VELOCITY - SPY_LOCKOUT] = 0;
+    g_nSpyroVelocityZ = 0;
+    g_nSpyroVelocityY = g_nSpyroMotionSpeed;
+    vel = cd + (SPY_VELOCITY - SPY_LOCKOUT);
+    if (g_nSpyroState == 10) {
+      g_nSpyroVelocityY = -g_nSpyroMotionSpeed;
+    }
+    RotateVectorByMatrix(cd - (SPY_LOCKOUT - 0xD), vel, vel);
+    cd[SPY_CARRY - SPY_LOCKOUT] -= cd[SPY_CARRY - SPY_LOCKOUT] >> 4;
+    g_nSpyroCarryMotionY -= g_nSpyroCarryMotionY >> 4;
+    g_nSpyroCarryMotionZ -= g_nSpyroCarryMotionZ >> 4;
+    AddVector(vel, vel, cd + (SPY_CARRY - SPY_LOCKOUT));
+    FINISH_VELOCITY();
+    break;
+  }
+  case 11:
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroStateFlags & 1) {
+      int x;
+      int y;
+      int a;
+      int c;
+      int d;
+      int lo;
+      int *ch;
+      signed char *ramp;
+
+      READ_STICK(x, y);
+      a = (SPY[SPY_YAW] - g_anCameraEulerYawBlock[0]) & 0xFFF;
+      c = LookupCosine(a);
+      ramp = (int *)g_abSpyroEulerRateRampSigned;
+      OPAQUE(ramp);
+      d = (-x * c - y * LookupSine(a)) >> 13;
+      lo = ramp[0];
+      g_nSpyroBodyYawStep = d;
+      if (d < lo) {
+        g_nSpyroBodyYawStep = lo;
+      }
+      if (g_nSpyroBodyYawStep > ramp[12]) {
+        g_nSpyroBodyYawStep = ramp[12];
+      }
+      IntegrateSpyroBodyEuler(g_nSpyroBodyYawStep);
+      if (D_80075790 != 0 && g_nSpyroStateTimer < 0x78) {
+        d = (SPY[SPY_YAW] - g_anCameraEulerYawBlock[0]) & 0xFFF;
+
+        if (d > 0x800) {
+          d -= 0x1000;
+        }
+        if (abs(d) >= 0x200) {
+          int l;
+
+          SubtractVector(v30, (int *)D_80075790 + 3, &SPY[0]);
+          l = VectorLength(v30, 1);
+          d = (ArcTan2(v30[0], v30[1], 1) - SPY[SPY_YAW]) & 0xFFF;
+          if (d > 0x800) {
+            d -= 0x1000;
+          }
+          if (abs(d) < 0x200 && l < 0x1800) {
+            d >>= 2;
+            if (d < ramp[0]) {
+              d = ramp[0];
+            }
+            if (d > ramp[12]) {
+              d = ramp[12];
+            }
+            IntegrateSpyroBodyEuler(d);
+            goto steered;
+          }
+        }
+        D_80075790 = 0;
+      }
+    steered:
+      ch = &SPY[SPY_CHARGE_HOLD];
+      OPAQUE(ch);
+      if (ch[0] != 0) {
+        int *vel;
+
+        SPEED_FROM_DROP(0x1F80, 13);
+        if (SPY[SPY_SPEED] > 0x5900) {
+          SPY[SPY_SPEED] = 0x5900;
+        }
+        if (SPY[SPY_SPEED] < 0x1400) {
+          g_nSpyroSpeedTarget = 0x1400;
+          g_nSpyroFloorReferenceZ = D_80078A60;
+        }
+        vel = &SPY[SPY_VELOCITY];
+        BuildSpyroVelocityFromBodyEuler();
+        CopyVector(&SPY[SPY_CARRY], vel);
+        if (g_nSpyroCliffEdgeHint != 0) {
+          g_nSpyroVelocityZ -= 0xC0;
+        } else {
+          AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+        }
+      } else {
+        int *carry = ch + (SPY_CARRY - SPY_CHARGE_HOLD);
+        int *vel;
+
+        v40[0] = (-ch[SPY_CARRY - SPY_CHARGE_HOLD] * 300) >> 12;
+        v40[1] = (-g_nSpyroCarryMotionY * 300) >> 12;
+        v40[2] = (-g_nSpyroCarryMotionZ * 300) >> 12;
+        AddVector(carry, carry, v40);
+        g_nSpyroMotionSpeed = 0x240;
+        vel = ch + (SPY_VELOCITY - SPY_CHARGE_HOLD);
+        BuildSpyroVelocityFromBodyEuler();
+        AddVector(carry, carry, vel);
+        AddVector(carry, carry, ch + (0x34 - SPY_CHARGE_HOLD));
+        g_nSpyroMotionSpeed = VectorLength(carry, 1);
+        AddVector(vel, carry, ch + (SPY_PLATFORM - SPY_CHARGE_HOLD));
+      }
+    } else {
+      int *vel;
+      int l;
+
+      g_nSpyroSpeedTarget = 0;
+      AdvanceSpyroSpeedTowardTarget(0, 0x180);
+      vel = &SPY[SPY_VELOCITY];
+      BuildSpyroVelocityFromBodyEuler();
+      AddVector(vel, vel, &SPY[0x34]);
+      l = VectorLength(vel, 1);
+      g_nSpyroMotionSpeed = l;
+      if (l > 0x2300) {
+        ScaleVector3ByRatio(vel, l, 0x2300);
+        g_nSpyroMotionSpeed = 0x2300;
+      }
+      if (g_nSpyroCliffEdgeHint != 0) {
+        g_nSpyroVelocityZ -= 0xC0;
+      } else {
+        AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+      }
+    }
+    break;
+  case 12:
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroVelocityZ < 0) {
+      g_nSpyroVelocityZ = 0;
+    }
+    if (t > 0x12) {
+      ScaleVector3Shifted(&SPY[SPY_VELOCITY], 7, 3);
+    }
+    g_nSpyroVelocityZ += g_nSpyroGravityStep;
+    break;
+  case 7:
+  case 14:
+    g_nSpyroSpeedTarget = 0;
+    AdvanceSpyroSpeedTowardTarget(0, 0xC0);
+    BuildSpyroVelocityFromBodyEuler();
+    g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
+    CLAMP_FALL_SPEED();
+    break;
+  case 25:
+    if (SPY[SPY_AIRBORNE] != 0) {
+      g_nSpyroVelocityZ -= 0x600;
+      CLAMP_FALL_SPEED();
+    } else {
+      ZeroVector(&SPY[SPY_VELOCITY]);
+    }
+    break;
+  case 27:
+    if (SPY[SPY_AIRBORNE] != 0) {
+      g_nSpyroVelocityZ -= 0x600;
+      CLAMP_FALL_SPEED();
+    } else {
+      ZeroVector(&SPY[SPY_VELOCITY]);
+    }
+    SPY[SPY_YAW] += 0x55;
+    break;
+  case 15:
+  case 23:
+  case 32:
+  case 33:
+  case 34: {
+    int x;
+    int y;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (g_nSpyroFallTrackingFlag != 0) {
+      int moving;
+      int bias;
+      int n;
+      int mix;
+      int i;
+      int k;
+      unsigned char *ap;
+
+      switch (g_nSpyroStateFlags) {
+      case 0: {
+        int w;
+        int z;
+        int c;
+        int nx;
+        int *sp;
+
+        if (PADW[4] != 0) {
+          x = PADB[0x16] - 0x7F;
+          y = 0x7F - PADB[0x17];
+        } else {
+          if (PADW[1] & 0x1000) {
+            D_80075700 += 0x10;
+            if (D_80075700 >= 0x80) {
+              D_80075700 = 0x7F;
+            }
+          } else if (PADW[1] & 0x4000) {
+            D_80075700 -= 0x10;
+            if (D_80075700 < -0x7F) {
+              D_80075700 = -0x7F;
+            }
+          } else {
+            x = -D_80075700;
+            if (x > 0x20) {
+              x = 0x20;
+            }
+            if (x < -0x20) {
+              x = -0x20;
+            }
+            D_80075700 += x;
+          }
+          y = D_80075700;
+          if (PADW[1] & 0x2000) {
+            g_nSpyroTurnRateAccum += 0x10;
+            if (g_nSpyroTurnRateAccum >= 0x80) {
+              g_nSpyroTurnRateAccum = 0x7F;
+            }
+          } else if (PADW[1] & 0x8000) {
+            g_nSpyroTurnRateAccum -= 0x10;
+            if (g_nSpyroTurnRateAccum < -0x7F) {
+              g_nSpyroTurnRateAccum = -0x7F;
+            }
+          } else {
+            w = -g_nSpyroTurnRateAccum;
+            if (w > 0x20) {
+              w = 0x20;
+            }
+            if (w < -0x20) {
+              w = -0x20;
+            }
+            g_nSpyroTurnRateAccum += w;
+          }
+          x = g_nSpyroTurnRateAccum;
+        }
+        nx = -x;
+        if (y != 0) {
+          z = y;
+        } else {
+          z = g_nSpyroBodyRoll >> 3;
+          if (g_nSpyroMotionSpeed < 0x1040) {
+            z += (0x1040 - g_nSpyroMotionSpeed) >> 6;
+          }
+          if (z > 0x7F) {
+            z = 0x7F;
+          }
+          if (z < -0x7F) {
+            z = -0x7F;
+          }
+        }
+        c = LookupCosine(SPY[SPY_ROLL]);
+        x = (z * -15) >> 7;
+        w = (nx * 20) >> 7;
+        if (D_80078A60 < g_nSpyroFloorReferenceZ) {
+          v40[2] = (g_nSpyroVelocityZ >> 3) - 0x400;
+          if (v40[2] < 0) {
+            int *pos = &SPY[0];
+
+            v40[0] = g_anSpyroVelocity[0] >> 3;
+            v40[1] = g_nSpyroVelocityY >> 3;
+            AddVector(v40, v40, pos);
+            if (CheckLineOfSightSegment(pos, v40) == 0) {
+              y = (D_80078A60 - *(int *)g_nCollisionResolvedZ) >> 3;
+              if (y > 7) {
+                y = 7;
+              }
+              x += y;
+            }
+          }
+        }
+        SPY[SPY_YAW] = (SPY[SPY_YAW] + w) & 0xFFF;
+        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & 0xFFF;
+        if (g_nSpyroBodyRoll > 0x800) {
+          g_nSpyroBodyRoll -= 0x1000;
+        }
+        if (g_nSpyroBodyRoll > 0x320) {
+          g_nSpyroBodyRoll = 0x320;
+        }
+        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        if (x < 0) {
+          g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
+        } else {
+          g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
+        }
+        if (g_nFlightLevelActive == 0) {
+          SPY[SPY_SPEED] += 0x41E;
+        }
+        sp = &SPY[SPY_SPEED];
+        OPAQUE(sp);
+        if (sp[0] > 0x5900) {
+          sp[0] = 0x5900;
+        }
+        x += 0x132;
+        y = x >> 2;
+        if (y < 0) {
+          y = 0;
+        }
+        if (y < g_nSpyroBodyRoll) {
+          g_nSpyroBodyRoll = y;
+        }
+        if (g_nSpyroBodyRoll < -0x320) {
+          g_nSpyroBodyRoll = -0x320;
+        }
+        if (sp[0] < 0x780) {
+          sp[0] = 0x780;
+        }
+        g_nSpyroPitchRateAccum += ((w * -(c << 5)) >> 12) -
+                                  ((g_nSpyroPitchRateAccum << 4) >> 6) -
+                                  ((g_nSpyroBodyPitch << 6) >> 6);
+        g_nSpyroBodyPitch =
+            (g_nSpyroBodyPitch + (g_nSpyroPitchRateAccum >> 6)) & 0xFFF;
+        if (g_nSpyroBodyPitch > 0x800) {
+          g_nSpyroBodyPitch -= 0x1000;
+        }
+        if (g_nSpyroBodyPitch > 0x300) {
+          g_nSpyroBodyPitch = 0x300;
+        }
+        if (g_nSpyroBodyPitch < -0x300) {
+          g_nSpyroBodyPitch = -0x300;
+        }
+        BuildSpyroVelocityFromBodyEuler();
+        if (g_nFlightLevelActive != 0) {
+          int a;
+
+          x = g_nActiveLevelId / 10 - 1;
+          SubtractVector(v40, D_8006E7DC + x * 3, sp + (0 - SPY_SPEED));
+          RShiftVector3(v40, 4);
+          y = VectorLength(v40, 0);
+          a = D_8006E7E4[x * 3] >> 4;
+          if (a < y) {
+            z = y - a;
+            ScaleVector3ByRatio(v40, y, z);
+            LShiftVector3(v40, 5);
+            v40[2] = 0;
+            AddVector(sp + (SPY_VELOCITY - SPY_SPEED),
+                      sp + (SPY_VELOCITY - SPY_SPEED), v40);
+            a = (ArcTan2(v40[0], v40[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
+            if (a > 0x800) {
+              a -= 0x1000;
+            }
+            a = (a * z) >> 15;
+            if (a < -0x20) {
+              a = -0x20;
+            }
+            if (a > 0x20) {
+              a = 0x20;
+            }
+            sp[SPY_YAW - SPY_SPEED] = g_nSpyroBodyYaw + a;
+          }
+        }
+        break;
+      }
+      case 1: {
+        int p;
+
+        SPY[SPY_YAW] &= 0xFFF;
+        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + 0x1E) & 0xFFF;
+        if (g_nSpyroBodyRoll > 0x800) {
+          g_nSpyroBodyRoll -= 0x1000;
+        }
+        if (g_nSpyroBodyRoll > 0x400) {
+          g_nSpyroGlideBankingFlag = 1;
+        } else if (g_nSpyroBodyRoll > 0) {
+          if (g_nSpyroGlideBankingFlag != 0) {
+            g_nSpyroStateFlags = 0;
+          }
+          g_nSpyroGlideBankingFlag = 0;
+        }
+        p = -SPY[SPY_PITCH] & 0xFFF;
+        if (p > 0x800) {
+          p -= 0x1000;
+        }
+        if (p > 0x10) {
+          p = 0x10;
+        }
+        if (p < -0x10) {
+          p = -0x10;
+        }
+        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
+        if (x < 0) {
+          g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
+        } else {
+          g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
+        }
+        if (SPY[SPY_SPEED] > 0x5900) {
+          SPY[SPY_SPEED] = 0x5900;
+        }
+        if (SPY[SPY_SPEED] < 0x1E00 && g_nSpyroGlideBankingFlag == 0) {
+          g_nSpyroStateFlags = 0;
+          g_nSpyroTurnRateAccum = 0;
+          D_80075700 = 0;
+        }
+        BuildSpyroVelocityFromBodyEuler();
+        break;
+      }
+      case 2: {
+        int *gb = &SPY[SPY_GLIDE_BANK];
+
+        OPAQUE(gb);
+        if (gb[0] != 0) {
+          int dz;
+
+          x = -g_nSpyroBodyRoll & 0xFFF;
+
+          if (x > 0x800) {
+            x -= 0x1000;
+          }
+          dz = D_80075700 - D_80078A60;
+          x += (dz - (g_anSpyroMotionVec[2] >> 5)) >> 2;
+          if (x > 0x1E) {
+            x = 0x1E;
+          }
+          if (x < -0x1E) {
+            x = -0x1E;
+          }
+          g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & 0xFFF;
+          if (g_nSpyroBodyRoll > 0x800) {
+            g_nSpyroBodyRoll -= 0x1000;
+          }
+          g_nSpyroBodyYaw &= 0xFFF;
+          if (abs(g_nSpyroBodyPitch) < 0x40) {
+            if (abs(dz) < 0x100 && abs(g_nSpyroBodyRoll) < 0x80) {
+              g_nSpyroStateFlags = 0;
+              gb[0] = 0;
+              g_nSpyroTurnRateAccum = 0;
+              D_80075700 = 0;
+            }
+            g_nSpyroBodyPitch = 0;
+          } else {
+            int p = -g_nSpyroBodyPitch & 0xFFF;
+
+            if (p > 0x800) {
+              p -= 0x1000;
+            }
+            if (p > 0x10) {
+              p = 0x10;
+            }
+            if (p < -0x10) {
+              p = -0x10;
+            }
+            g_nSpyroTurnRateAccum += p;
+            if (g_nSpyroTurnRateAccum > 0x40) {
+              g_nSpyroTurnRateAccum = 0x40;
+            }
+            if (g_nSpyroTurnRateAccum < -0x40) {
+              g_nSpyroTurnRateAccum = -0x40;
+            }
+            gb[SPY_PITCH - SPY_GLIDE_BANK] =
+                (gb[SPY_PITCH - SPY_GLIDE_BANK] + g_nSpyroTurnRateAccum) &
+                0xFFF;
+          }
+          if (SPY[SPY_PITCH] > 0x800) {
+            SPY[SPY_PITCH] -= 0x1000;
+          }
+        } else {
+          int yy = gb[SPY_YAW - SPY_GLIDE_BANK] & 0xFFF;
+          int p;
+
+          gb[SPY_YAW - SPY_GLIDE_BANK] = yy;
+          gb[SPY_ROLL - SPY_GLIDE_BANK] =
+              (gb[SPY_ROLL - SPY_GLIDE_BANK] + 0x1E) & 0xFFF;
+          if (gb[SPY_ROLL - SPY_GLIDE_BANK] > 0x800) {
+            gb[SPY_ROLL - SPY_GLIDE_BANK] -= 0x1000;
+          }
+          if (gb[SPY_ROLL - SPY_GLIDE_BANK] < -0x400) {
+            gb[0] = 1;
+            gb[SPY_YAW - SPY_GLIDE_BANK] = (yy + 0x800) & 0xFFF;
+            gb[SPY_ROLL - SPY_GLIDE_BANK] =
+                (0x800 - gb[SPY_ROLL - SPY_GLIDE_BANK]) & 0xFFF;
+            g_nSpyroTurnRateAccum = 0;
+            g_nSpyroBodyPitch = (g_nSpyroBodyPitch + 0x800) & 0xFFF;
+          }
+          p = -g_nSpyroBodyPitch & 0xFFF;
+          if (p > 0x800) {
+            p -= 0x1000;
+          }
+          if (p > 0x10) {
+            p = 0x10;
+          }
+          if (p < -0x10) {
+            p = -0x10;
+          }
+          g_nSpyroBodyPitch = (g_nSpyroBodyPitch + p) & 0xFFF;
+        }
+        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        if (x < 0) {
+          g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
+        } else {
+          g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
+        }
+        if (SPY[SPY_SPEED] > 0x5900) {
+          SPY[SPY_SPEED] = 0x5900;
+        }
+        if (SPY[SPY_SPEED] < 0x1E00 && g_nSpyroGlideBankingFlag == 0 &&
+            g_nSpyroBodyRoll < 0x400) {
+          g_nSpyroStateFlags = 0;
+          g_nSpyroTurnRateAccum = 0;
+          D_80075700 = 0;
+        }
+        BuildSpyroVelocityFromBodyEuler();
+        break;
+      }
+      case 3: {
+        int p;
+
+        if (g_anCameraPosBlock[12] != 0x8000000E) {
+          CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPosBlock);
+          ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - 6);
+        }
+        x = (0x400 - SPY[SPY_ROLL]) & 0xFFF;
+        if (x > 0x800) {
+          x -= 0x1000;
+        }
+        if (x > 0x1E) {
+          x = 0x1E;
+        }
+        if (x < -0x1E) {
+          x = -0x1E;
+        }
+        SPY[SPY_ROLL] = (SPY[SPY_ROLL] + x) & 0xFFF;
+        g_nSpyroBodyYaw &= 0xFFF;
+        if (SPY[SPY_ROLL] > 0x800) {
+          SPY[SPY_ROLL] -= 0x1000;
+        }
+        p = 0x40;
+        if (abs(SPY[SPY_ROLL] - 0x400) >= 0x80) {
+          p = -g_nSpyroBodyPitch & 0xFFF;
+          if (p > 0x800) {
+            p -= 0x1000;
+          }
+          if (p > 0x10) {
+            p = 0x10;
+          }
+          if (p < -0x10) {
+            p = -0x10;
+          }
+        }
+        x = 0x1040 - g_nSpyroMotionSpeed;
+        SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
+        if (x < -0x80) {
+          x = -0x80;
+        }
+        if (x > 0x80) {
+          x = 0x80;
+        }
+        g_nSpyroMotionSpeed += x;
+        BuildSpyroVelocityFromBodyEuler();
+        break;
+      }
+      case 10: {
+        int *tp = &SPY[SPY_SPEED_TARGET];
+
+        OPAQUE(tp);
+        tp[0] = 0x1900;
+        APPROACH_GLIDE_SPEED(tp);
+        if (SPY[SPY_SPEED] < 0x780) {
+          SPY[SPY_SPEED] = 0x780;
+        }
+        g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
+        y = 0x1E;
+        if (g_nSpyroGlideBankingFlag != 0) {
+          if (g_nSpyroBodyRoll >= -0xFF) {
+            LEVEL_GLIDE_HANDOFF();
+          }
+        } else if (g_nSpyroBodyRoll < 0) {
+          g_nSpyroGlideBankingFlag = 1;
+        }
+        SPY[SPY_ROLL] = (SPY[SPY_ROLL] + y) & 0xFFF;
+        g_abSpyroPersistentEuler[1] = SPY[SPY_ROLL] >> 4;
+        if (SPY[SPY_ROLL] > 0x800) {
+          SPY[SPY_ROLL] -= 0x1000;
+        }
+        BuildSpyroVelocityFromBodyEuler();
+        if (g_nSpyroPadSnapshotCountdown <= 0) {
+          g_nSpyroPadSnapshotCountdown = 1;
+        }
+        PITCH_TOWARD_TURN();
+        break;
+      }
+      }
+      if (g_nSpyroTriggerCurrentEventId != 0 &&
+          D_80078A60 - g_nSpyroGroundHeightZ <= 0xC00) {
+        n = (g_nSpyroMotionSpeed >> 11) + 2;
+        if (g_anSpyroVelocityFp6[0] == 0 && g_anSpyroVelocityFp6[1] == 0) {
+          n += 0x10000;
+        }
+        CopyVector(v50, g_anSpyroVelocityFp6);
+        RShiftVector3(v50, 6);
+        v50[0] += g_anSpyroWorldPos[0];
+        v50[2] = g_nSpyroGroundHeightZ;
+        v50[1] += g_nSpyroWorldPosY;
+        PARTICLE_SPAWN(1, 0x1B, v50, n);
+      }
+      moving = 0;
+      if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
+        moving = 1;
+      }
+      bias = moving - 1;
+      if (g_nSpyroState == 0x20) {
+        bias = moving - 3;
+      }
+      n = (g_nSpyroMotionSpeed >> 11) - bias;
+      if (n <= 0) {
+        n = 1;
+      }
+      mix = g_bSpyroSubFrameTimer;
+      if (moving && mix < 0xD) {
+        mix += 4;
+      }
+      ap = g_abSpyroAnimPrevBlock;
+      OPAQUE(ap);
+      k = 9;
+      for (i = 0; i < 2; i++) {
+        AccumulateAnimRootMotionDelta(k, v60, ap[0], ap[6]);
+        if (mix != 0) {
+          AccumulateAnimRootMotionDelta(k, v70, ap[1], ap[7]);
+          LerpVectorGTE(v60, v60, v70, mix << 8);
+        }
+        RotateVectorByMatrix((int *)(ap + 0x1C), v60, v60);
+        AddVector(v60, v60, (int *)(ap - 0x18));
+        CopyVector(v70, (int *)(ap + 0xE8));
+        RShiftVector3(v70, 6);
+        AddVector(v60, v60, v70);
+        k += 0x5B;
+        PARTICLE_SPAWN(1, 0x1A, v60, n);
+      }
+    } else {
+      int a;
+      int fwd;
+      int side;
+      int c;
+
+      READ_STICK(x, y);
+      a = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
+      c = LookupCosine(a);
+      side = (-x * c - y * LookupSine(a)) >> 12;
+      c = LookupCosine(a);
+      fwd = (y * c - x * LookupSine(a)) >> 12;
+      if (fwd < 0) {
+        g_nSpyroSpeedTarget = ((fwd * 0x1180) >> 7) + 0x1900;
+      } else {
+        g_nSpyroSpeedTarget = 0x1900;
+      }
+      APPROACH_GLIDE_SPEED(&SPY[SPY_SPEED_TARGET]);
+      if (SPY[SPY_SPEED] < 0x780) {
+        SPY[SPY_SPEED] = 0x780;
+      }
+      g_nSpyroBodyYawStep = (side * 20) >> 7;
+      g_abSpyroPersistentEuler[2] =
+          (g_nSpyroBodyYaw + g_nSpyroBodyYawStep) >> 4;
+      g_nSpyroBodyYaw += g_nSpyroBodyYawStep;
+      if (g_nSpyroStateFlags == 8) {
+        if (g_nScriptedMobTag == 0) {
+          g_nSpyroBodyYawStep =
+              ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) & 0xFFF;
+          if (g_nSpyroBodyYawStep > 0x800) {
+            g_nSpyroBodyYawStep -= 0x1000;
+          }
+          g_nSpyroBodyYawStep <<= 4;
+          if (g_nSpyroBodyYawStep < -0x10) {
+            g_nSpyroBodyYawStep = -0x10;
+          }
+          if (g_nSpyroBodyYawStep > 0x10) {
+            g_nSpyroBodyYawStep = 0x10;
+          }
+          g_nSpyroBodyYaw += g_nSpyroBodyYawStep;
+        }
+        ZeroVector(g_anSpyroVelocity);
+        g_nSpyroBodyRoll = 0;
+      } else if (g_nSpyroStateFlags == 9) {
+        BuildSpyroVelocityFromBodyEuler();
+        g_nSpyroVelocityZ = 0;
+        g_dwSpyroRequestMask = 0x80004000;
+        if (g_nSpyroPadSnapshotCountdown <= 0) {
+          g_nSpyroPadSnapshotCountdown = 1;
+        }
+        if (ApproxDist2D(&SPY[0], &SPY[0x7E]) < 0x300) {
+          LEVEL_GLIDE_HANDOFF();
+        }
+        g_nSpyroBodyRoll = 0;
+      } else if (g_nSpyroStateFlags == 11) {
+        BuildSpyroVelocityFromBodyEuler();
+        g_nSpyroVelocityZ = g_anSpyroMotionVec[2];
+        g_nSpyroVelocityZ = g_anSpyroMotionVec[2] + g_nSpyroGravityStep;
+        if (g_nSpyroVelocityZ < -0x780) {
+          g_nSpyroVelocityZ = -0x780;
+        }
+        g_nSpyroBodyRoll = 0;
+        if (g_nSpyroPadSnapshotCountdown <= 0) {
+          g_nSpyroPadSnapshotCountdown = 1;
+        }
+      } else if (g_nSpyroStateFlags == 10) {
+
+        if (g_nSpyroStateTimer < 0x10) {
+          y = 0;
+        } else {
+          y = FindGroundHeightBelow(&SPY[0], 0x10000);
+          if (g_nSpyroGlideBankingFlag != 0) {
+            int d = D_80078A60 - y;
+
+            if (d < 0x200) {
+              LEVEL_GLIDE_HANDOFF();
+            } else if (d < 0x800) {
+              y = (-0x100 - g_nSpyroBodyRoll) & 0xFFF;
+              if (y > 0x800) {
+                y -= 0x1000;
+              }
+              y >>= 2;
+              if (y < -0x3C) {
+                y = -0x3C;
+              }
+              if (y > 0x3C) {
+                y = 0x3C;
+              }
+            } else {
+              goto bank;
+            }
+          } else {
+          bank:
+            y = 0x1E;
+            if ((unsigned int)(g_nSpyroBodyRoll + 0x100) > 0x500) {
+              g_nSpyroGlideBankingFlag = 1;
+              y = (-0x400 - g_nSpyroBodyRoll) & 0xFFF;
+              if (y > 0x800) {
+                y -= 0x1000;
+              }
+              if (g_nActiveLevelId == 0x16 && abs(y) < 0x100) {
+                g_nCameraNextMode = (&g_abSpyroStateCameraMode)[g_nSpyroState];
+              }
+              y >>= 4;
+              if (y < -0x1E) {
+                y = -0x1E;
+              }
+              if (y > 0x1E) {
+                y = 0x1E;
+              }
+            } else {
+              g_nSpyroGlideBankingFlag = 0;
+            }
+          }
+        }
+        SPY[SPY_ROLL] = (SPY[SPY_ROLL] + y) & 0xFFF;
+        g_abSpyroPersistentEuler[1] = SPY[SPY_ROLL] >> 4;
+        if (SPY[SPY_ROLL] > 0x800) {
+          SPY[SPY_ROLL] -= 0x1000;
+        }
+        BuildSpyroVelocityFromBodyEuler();
+        if (g_nSpyroPadSnapshotCountdown <= 0) {
+          g_nSpyroPadSnapshotCountdown = 1;
+        }
+      } else {
+        BuildSpyroVelocityFromBodyEuler();
+        g_nSpyroVelocityZ = g_anSpyroMotionVec[2];
+        g_nSpyroVelocityZ = g_anSpyroMotionVec[2] + g_nSpyroGravityStep;
+        if (g_nSpyroVelocityZ < -0x780) {
+          g_nSpyroVelocityZ = -0x780;
+        }
+        g_nSpyroBodyRoll = 0;
+      }
+      PITCH_TOWARD_TURN();
+    }
+    break;
+  }
+  case 16:
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    g_nSpyroVelocityZ += g_nSpyroGravityStep;
+    CLAMP_FALL_SPEED();
+    break;
+  case 17: {
+    int *actor;
+    int reach;
+    int *zb;
+    int lift;
+    int a;
+    int base;
+    int z;
+    int m;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    actor = (int *)SPY[SPY_SCRIPTED_ACTOR];
+    if (actor == 0) {
+      break;
+    }
+    reach = 0x500;
+    if (((short *)actor)[0x1B] == 0x12C) {
+      reach = ((int **)actor)[0][1];
+    }
+    zb = &D_80078A60;
+    OPAQUE(zb);
+    base = D_80075668;
+    z = zb[0];
+    if (z < base + 0x400) {
+      lift = g_nSpyroCarryMotionZ + 0x80;
+      if (lift > 0x12C0) {
+        lift = 0x12C0;
+      }
+      CopyVector(v80, zb + 0x5D);
+      a = zb[0] - D_80075668;
+      g_nSpyroStateFlags = 0;
+      g_nSpyroMoveTargetMag = 0x400;
+      a = ((a * a) >> 11) + D_8007578C;
+    } else if (z < zb[0x54] - 0x400) {
+      if (g_nSpyroStateFlags <= 0) {
+        g_nSpyroStateFlags = 1;
+        D_8007578C += 0x200;
+      }
+      m = z - base - 0x400;
+      a = D_8007578C + (D_800757F0 * m) / D_80075724;
+      g_nSpyroMoveTargetMag = 0xC80;
+      a = (a + ((m << 10) >> 10)) & 0xFFF;
+      lift = 0x12C0;
+      if (reach < m) {
+        m = reach;
+      }
+      v80[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
+      v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
+      AddVector(v80, v80, zb + 0x5D);
+    } else {
+      a = (g_nSpyroBodyYaw -
+           (((unsigned char *)g_pScriptedCameraActor)[0x46] << 4)) &
+          0xFFF;
+      m = reach;
+      if (a > 0x800) {
+        a -= 0x1000;
+      }
+      if (abs(a) < 0x100) {
+        m += 0x800;
+      }
+      v80[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
+      v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
+      AddVector(v80, v80, zb + 0x5D);
+      a = zb[0x54] - zb[0];
+      lift = (a * 0x12C0) >> 10;
+      a = (((unsigned char *)g_pScriptedCameraActor)[0x46] << 4) -
+          ((a * a) >> 11);
+      g_nSpyroMoveTargetMag = 0xC80;
+    }
+    v80[2] = 0;
+    SubtractVector(v80, v80, g_anSpyroWorldPos);
+    m = VectorLength(v80, 0);
+    if (g_nSpyroMoveTargetMag < m) {
+      ScaleVector3ByRatio(v80, m, g_nSpyroMoveTargetMag);
+    }
+    CopyVector(g_anSpyroWorldPos + SPY_CARRY, v80);
+    CopyVector(g_anSpyroWorldPos + SPY_VELOCITY, g_anSpyroWorldPos + SPY_CARRY);
+    g_nSpyroCarryMotionZ = lift;
+    g_nSpyroVelocityZ = lift;
+    g_nSpyroBodyYaw = a & 0xFFF;
+    break;
+  }
+  case 19: {
+    int *carry;
+    int l;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    RotateSpyroBodyTowardKnockbackDir(8, 4);
+    if (g_nSpyroGroundSlope < 0x17) {
+      int *c2 = &SPY[SPY_CARRY];
+
+      ZeroVector(v90);
+      SubtractVector(v90, v90, c2);
+      l = VectorLength(v90, 1);
+      if (l > 0x100) {
+        ScaleVector3ByRatio(v90, l, 0x100);
+      }
+      AddVector(c2, c2, v90);
+    }
+    carry = g_anSpyroCarryMotionVec;
+    AddVector(carry, carry, carry - 6);
+    l = VectorLength(carry, 1);
+    g_nSpyroMotionSpeed = l;
+    if (l > 0x2300) {
+      ScaleVector3ByRatio(carry, l, 0x2300);
+      g_nSpyroMotionSpeed = 0x2300;
+    }
+    AddVector(carry + 3, carry, D_80078B34);
+    break;
+  }
+  case 20: {
+    int x;
+    int y;
+    int a;
+    int c;
+    int *w;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    READ_STICK(x, y);
+    a = (SPY[SPY_YAW] - g_nCameraEulerYaw) & 0xFFF;
+    c = LookupCosine(a);
+    g_nSpyroBodyYawStep = (-x * c - y * LookupSine(a)) >> 13;
+    if (g_nSpyroBodyYawStep < RAMP[0]) {
+      g_nSpyroBodyYawStep = RAMP[0];
+    }
+    if (g_nSpyroBodyYawStep > RAMP[12]) {
+      g_nSpyroBodyYawStep = RAMP[12];
+    }
+    IntegrateSpyroBodyEuler(g_nSpyroBodyYawStep);
+    if (g_nSpyroStateFlags & 0x40) {
+      SPEED_FROM_DROP_T(g_nSpyroSpeedTarget);
+      sp = &SPY[SPY_SPEED];
+      OPAQUE(sp);
+      if (sp[0] > 0x5900) {
+        sp[0] = 0x5900;
+      }
+      sp[SPY_VELOCITY - SPY_SPEED] =
+          (sp[0] * LookupCosine(g_nSpyroBodyYaw)) >> 12;
+      g_nSpyroVelocityY = (sp[0] * LookupSine(g_nSpyroBodyYaw)) >> 12;
+      CopyVector(sp + (SPY_CARRY - SPY_SPEED), sp + (SPY_VELOCITY - SPY_SPEED));
+    } else {
+      g_nSpyroSpeedTarget = 0x1E00;
+      AdvanceSpyroSpeedTowardTarget(0x240, 0x180);
+      g_anSpyroVelocity[0] =
+          (g_nSpyroMotionSpeed * LookupCosine(SPY[SPY_YAW])) >> 12;
+      g_nSpyroVelocityY =
+          (g_nSpyroMotionSpeed * LookupSine(SPY[SPY_YAW])) >> 12;
+    }
+    w = &SPY[SPY_WALL_SLIDE];
+    OPAQUE(w);
+    WALL_SLIDE(w, ;);
+    SPY[SPY_VELOCITY + 2] -= 0xC0;
+    if (SPY[SPY_VELOCITY + 2] < -0x2300) {
+      SPY[SPY_VELOCITY + 2] = -0x2300;
+    }
+    break;
+  }
+  case 24: {
+    int x;
+    int y;
+    int a;
+    int c;
+    int *yp;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    READ_STICK(x, y);
+    yp = &SPY[SPY_YAW];
+    OPAQUE(yp);
+    a = (yp[0] - g_nCameraEulerYaw) & 0xFFF;
+    c = LookupCosine(a);
+    g_nSpyroBodyYawStep = (-x * c - y * LookupSine(a)) >> 13;
+    if (g_nSpyroBodyYawStep < RAMP[0]) {
+      g_nSpyroBodyYawStep = RAMP[0];
+    }
+    if (g_nSpyroBodyYawStep > RAMP[12]) {
+      g_nSpyroBodyYawStep = RAMP[12];
+    }
+    IntegrateSpyroBodyEuler(g_nSpyroBodyYawStep);
+    yp[SPY_VELOCITY - SPY_YAW] =
+        (g_nSpyroMotionSpeed * LookupCosine(yp[0])) >> 12;
+    g_nSpyroVelocityY = (g_nSpyroMotionSpeed * LookupSine(yp[0])) >> 12;
+    CopyVector(yp + (SPY_CARRY - SPY_YAW), yp + (SPY_VELOCITY - SPY_YAW));
+    if (g_nSpyroStateTimer >= 5) {
+      g_nSpyroVelocityZ -= g_nSpyroGravityStep;
+    }
+    CLAMP_FALL_SPEED();
+    break;
+  }
+  case 26: {
+    int *obj;
+    int *obj2;
+    int *pa;
+    int dist;
+    int ang;
+    int dt;
+    int a;
+    int v;
+
+    obj = ((int **)g_pScriptedCameraActor)[0];
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    obj2 = obj;
+    SubtractVector(vA0, (int *)g_pScriptedCameraActor + 3, &SPY[0]);
+    dist = VectorLength(vA0, 0);
+    ang = ArcTan2(vA0[0], vA0[1], 1);
+    dt = (g_nSpyroStateFlags == 1 ? -g_nSpyroTurnRateAccum
+                                  : g_nSpyroTurnRateAccum) >>
+         6;
+    ComputeSpyroMoveTargetFromPad(0x280);
+    TurnSpyroTowardMoveTargetWithLean(0);
+    g_nSpyroTurnRateAccum += 0x20;
+    if (g_nSpyroSpeedTarget < g_nSpyroTurnRateAccum) {
+      g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
+    }
+    a = (ang + dt + 0x800) & 0xFFF;
+    if (((short *)g_pScriptedCameraActor)[0x1B] == 0xFF) {
+      v = obj2[5] = (obj2[5] + dt) & 0xFFF;
+    } else {
+      v = obj[5] = (obj[5] + dt) & 0xFFF;
+    }
+    ((unsigned char *)g_pScriptedCameraActor)[0x46] = v >> 4;
+    vA0[0] = (dist * LookupCosine(a)) >> 12;
+    vA0[1] = (dist * LookupSine(a)) >> 12;
+    pa = &SPY[SPY_SCRIPTED_ACTOR];
+    OPAQUE(pa);
+    AddVector(vA0, vA0, ((int **)pa)[0] + 3);
+    SubtractVector(vA0, vA0, pa - SPY_SCRIPTED_ACTOR);
+    vA0[2] = 0;
+    LShiftVector3(vA0, 6);
+    CopyVector(pa + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR), vA0);
+    g_nSpyroBodyYaw = (g_nSpyroBodyYaw + dt) & 0xFFF;
+    if (g_nSpyroCliffEdgeHint != 0) {
+      pa[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
+    } else {
+      AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+    }
+    break;
+  }
+  case 22:
+  case 28: {
+    int *vel;
+    int l;
+
+    ZeroVector(vB0);
+    vel = &SPY[SPY_VELOCITY];
+    SubtractVector(vB0, vB0, vel);
+    if (g_nSpyroAirborneFrames != 0) {
+      vB0[2] = 0;
+      l = VectorLength(vB0, 0);
+      if (l > 0x40) {
+        ScaleVector3ByRatio(vB0, l, 0x40);
+      }
+      vB0[2] = -0xC0;
+      AddVector(vel, vel, vB0);
+    } else {
+      l = VectorLength(vB0, 1);
+      if (l > 0x100) {
+        ScaleVector3ByRatio(vB0, l, 0x100);
+      }
+      AddVector(vel, vel, vB0);
+      AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+    }
+    if (SPY[SPY_VELOCITY + 2] < -0x2300) {
+      SPY[SPY_VELOCITY + 2] = -0x2300;
+    }
+    break;
+  }
+  case 29:
+    ZeroVector(g_anSpyroVelocity);
+    break;
+  case 30:
+  case 31: {
+    int *carry = &SPY[SPY_CARRY];
+    int *vel = &SPY[SPY_VELOCITY];
+
+    carry[0] -= carry[0] >> 4;
+    g_nSpyroCarryMotionY -= g_nSpyroCarryMotionY >> 4;
+    g_nSpyroCarryMotionZ -= g_nSpyroCarryMotionZ >> 4;
+    CopyVector(vel, carry);
+    FINISH_VELOCITY();
+    break;
+  }
+  case 8:
+  case 35:
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    break;
+  case 44: {
+    int a;
+    int *vel;
+
+    LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
+    if (PADW[4] != 0) {
+      g_nSpyroBodyYawStep = (0x7F - PADB[0x16]) >> 1;
+      if (g_nSpyroBodyYawStep < RAMP[0]) {
+        g_nSpyroBodyYawStep = RAMP[0];
+      } else if (g_nSpyroBodyYawStep > RAMP[12]) {
+        g_nSpyroBodyYawStep = RAMP[12];
+      }
+      a = g_nSpyroBodyYawStep;
+    } else {
+      if (PADW[1] & 0x8000) {
+        if (g_nSpyroBodyYawStep < 0) {
+          g_nSpyroBodyYawStep = 0;
+        }
+        if (g_nSpyroBodyYawStep < 6) {
+          g_nSpyroBodyYawStep++;
+        }
+      } else if (PADW[1] & 0x2000) {
+        if (g_nSpyroBodyYawStep > 0) {
+          g_nSpyroBodyYawStep = 0;
+        }
+        if (g_nSpyroBodyYawStep > -6) {
+          g_nSpyroBodyYawStep--;
+        }
+      } else {
+        g_nSpyroBodyYawStep = 0;
+      }
+      a = RAMP[6 + g_nSpyroBodyYawStep];
+    }
+    IntegrateSpyroBodyEuler(a);
+    SPEED_FROM_DROP_T(g_nSpyroSpeedTarget);
+    sp = &SPY[SPY_SPEED];
+    OPAQUE(sp);
+    if (sp[0] > 0x5900) {
+      sp[0] = 0x5900;
+    }
+    if (sp[0] < 0x1400) {
+      g_nSpyroSpeedTarget = 0x1400;
+      g_nSpyroFloorReferenceZ = D_80078A60;
+    }
+    vel = sp + (SPY_VELOCITY - SPY_SPEED);
+    BuildSpyroVelocityFromBodyEuler();
+    CopyVector(sp + (SPY_CARRY - SPY_SPEED), vel);
+    if (g_nSpyroAirborneFrames == 0) {
+      AddVector(vel, vel, sp + (SPY_PLATFORM - SPY_SPEED));
+    }
+    g_nPulseRumbleAmount = ((sp[0] - 0x1400) >> 7) + 0x14;
+    if (g_nPulseRumbleAmount < 0x50) {
+      g_nPulseRumbleAmount = 0x50;
+    }
+    if (g_nPulseRumbleAmount > 0xA0) {
+      g_nPulseRumbleAmount = 0xA0;
+    }
+    if (g_nPulseRumbleTimer < 4) {
+      g_nPulseRumbleTimer = 4;
+    }
+    break;
+  }
+  }
+  AddVector(&SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY]);
+  g_abSpyroPersistentEuler[0] = g_nSpyroBodyPitch >> 4;
+  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
+  g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
+}
