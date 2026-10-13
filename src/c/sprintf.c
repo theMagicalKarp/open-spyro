@@ -1,7 +1,3 @@
-/* PARKED 2026-10-09 -- 2/535, length-exact. Empty asm barriers after the four
-   int va_arg reads (with a pinned old-ap temp in $3) fixed the d/u/o/x sites.
-   LEFT: case 'n' `andi` result lands in v1 (the dying flags word) where the
-   original has v0. Inert: barrier (+1 insn), volatile st read (3), `!= 0`. */
 #include "globals.h"
 
 extern int strlen(char *s);
@@ -34,7 +30,10 @@ extern char D_80011BD0[];  /* "0123456789abcdef" */
 /* PSY-Q libc sprintf (0x80062fd4, 2140 bytes): formats into `buf` with the
    d/i/u/o/x/X/p/c/s/n conversions, the - + space # 0 flags, `*` width and
    precision and h/l/L modifiers; `#s` takes a Pascal (length-prefixed)
-   string. An unknown conversion ends the output. Returns the length. */
+   string. An unknown conversion ends the output. Returns the length.
+   The `l` arms (long == int here) are kept as written: they are identical
+   to the int arms and only merge after register allocation, so they shape
+   the flags-word allocation and the d/u/o/x load order. */
 int sprintf(char *buf, char *fmt, ...) {
   char tmp[0x200];
   FmtSpec st;
@@ -122,13 +121,12 @@ int sprintf(char *buf, char *fmt, ...) {
       c = *++fmt;
       goto modifier;
     case 'd':
-    case 'i': {
-      register char *o asm("$3") = ap;
-
-      ap = o + 4;
-      v = *(int *)o;
-    }
-      __asm__ volatile("" : : "r"(v));
+    case 'i':
+      if (st.lng) {
+        v = va_arg(ap, long);
+      } else {
+        v = va_arg(ap, int);
+      }
       if (st.half) {
         v = (short)v;
       }
@@ -139,13 +137,12 @@ int sprintf(char *buf, char *fmt, ...) {
         st.sign = '+';
       }
       goto decimal;
-    case 'u': {
-      register char *o asm("$3") = ap;
-
-      ap = o + 4;
-      v = *(int *)o;
-    }
-      __asm__ volatile("" : : "r"(v));
+    case 'u':
+      if (st.lng) {
+        v = va_arg(ap, long);
+      } else {
+        v = va_arg(ap, int);
+      }
       if (st.half) {
         v = (unsigned short)v;
       }
@@ -177,13 +174,12 @@ int sprintf(char *buf, char *fmt, ...) {
         n++;
       }
       break;
-    case 'o': {
-      register char *o asm("$3") = ap;
-
-      ap = o + 4;
-      v = *(int *)o;
-    }
-      __asm__ volatile("" : : "r"(v));
+    case 'o':
+      if (st.lng) {
+        v = va_arg(ap, long);
+      } else {
+        v = va_arg(ap, int);
+      }
       if (st.half) {
         v = (unsigned short)v;
       }
@@ -220,13 +216,12 @@ int sprintf(char *buf, char *fmt, ...) {
       goto hex;
     case 'x':
       digits = D_80011BD0;
-    hex: {
-      register char *o asm("$3") = ap;
-
-      ap = o + 4;
-      v = *(int *)o;
-    }
-      __asm__ volatile("" : : "r"(v));
+    hex:
+      if (st.lng) {
+        v = va_arg(ap, long);
+      } else {
+        v = va_arg(ap, int);
+      }
       if (st.half) {
         v = (unsigned short)v;
       }
@@ -280,6 +275,8 @@ int sprintf(char *buf, char *fmt, ...) {
       s = va_arg(ap, char *);
       if (st.half) {
         *(short *)s = len;
+      } else if (st.lng) {
+        *(long *)s = len;
       } else {
         *(int *)s = len;
       }
