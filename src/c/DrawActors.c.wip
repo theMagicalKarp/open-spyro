@@ -1,5 +1,21 @@
 #include "types.h"
 
+/* 2026-10-13-2: 107 -> 23 linked, frame EXACT (416). Two edits:
+   - the first dot-product block's aggregates (vAxis/vRel/euler/eulerMtx,
+     sp+0x70..0xb8) moved to FUNCTION scope: block-scoped, their temp slots
+     were freed and the second block reused them (frame 376); the original
+     keeps both sets live (second set at 0xc0, color at 0xb8 between).
+   - spill-slot order is pseudo order (A387): flagX, flagY, facing are now
+     declared before sumX/sumY, and dist after them -> every spill offset
+     (264..320, 368) matches.
+   - `j = 0` hoisted out of the for-init to right after `flags = 0` (orig
+     zero-init order s2, s3, s4).
+   LEFT: (a) nEdges/maxX zero-init swapped (s4 before s3): combine re-emits
+   the `nEdges = 0` set as a NEW insn (uid > 3300 from -dc on) below the
+   sumX/sumY inits, so no source order of the three moves it; (b) the
+   second-pass point loop runs one register high (a1/a2/a3 + a0 for the
+   loaded x vs the original's a0/a1/a2 + v1) -- 21 insns. */
+
 /* 2026-10-13-1: LENGTH-EXACT, 928 -> 107 linked (23 masked). The facing dot
    product now sits BEFORE the extents/zero-init block: its reads of
    g_apScriptedMobEntries[i] are then killed by the intervening stores, so
@@ -200,6 +216,10 @@ void DrawActors(void) {
   MATRIX outMtx;  /* sp+0x30 */
   int vDelta[3];  /* sp+0x50 */
   int vCenter[3]; /* sp+0x60 */
+  int vAxis[3];           /* sp+0x70 */
+  int vRel[3];            /* sp+0x80 */
+  unsigned char euler[3]; /* sp+0x90 */
+  MATRIX eulerMtx;        /* sp+0x98 */
   unsigned int color;
   int iVar1;
   int i;
@@ -208,10 +228,12 @@ void DrawActors(void) {
   int ko;
   int n;
   int shift;
-  int dist;
+  int flagX;
+  int flagY;
+  int facing;
   int sumX;
   int sumY;
-  int facing;
+  int dist;
   int minX;
   int maxX;
   int minY;
@@ -222,8 +244,6 @@ void DrawActors(void) {
   int yk;
   int dx;
   int dy;
-  int flagX;
-  int flagY;
   int lod;
 
   g_nScriptedMobViewYawSpin = (g_nScriptedMobViewYawSpin + 2) & 0xfff;
@@ -346,6 +366,7 @@ void DrawActors(void) {
       minY = 0xf0;
       maxY = 0;
       flags = 0;
+      j = 0;
       nEdges = 0;
       maxX = 0;
       g_nActorMeshOtDepthBin = 0;
@@ -353,7 +374,7 @@ void DrawActors(void) {
       sumY = 0;
       g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
 
-      for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+      for (; j < g_apScriptedMobEntries[i]->nPoints; j++) {
         register int k asm("$5");
 
         if (facing > 0) {
@@ -450,11 +471,6 @@ void DrawActors(void) {
         do {
           do {
             if (flags == 2 && dist < 0x1000) {
-              int vAxis[3];           /* sp+0x70 */
-              int vRel[3];            /* sp+0x80 */
-              unsigned char euler[3]; /* sp+0x90 */
-              MATRIX eulerMtx;        /* sp+0x98 */
-
               SubtractVector(vRel, vCenter, g_anCameraPos);
               vAxis[0] = 0x1000;
               vAxis[1] = 0;
