@@ -5604,3 +5604,23 @@ DrawActors_2026_10_13_2:
   class: "cse zero-class first reg (nEdges) folded into the edge-loop guard by combine; sched2 LUID tie (2 insns)"
   date: 2026-10-13
   note: "107 -> 2 linked: first dot-product aggregates at function scope (frame exact), spill-slot order via declaration order (A387), j=0 hoisted, block-local t in the point loop, A386 ref on yk."
+TickSpyroAttackEffects_2026_10_13_2:
+  verdict: parked
+  class: "F7 spill-slot hole (k must be a spilled pseudo with its store deleted) + preheader F1 (unchanged, 16)"
+  date: 2026-10-13
+  note: "Read only. The A387 declaration-order lever does not apply: the hole is k's slot, and k gets LO, not a spill."
+AdvanceSpyroPhysics_2026_10_13_2:
+  verdict: parked
+  class: "loop.c hoist / global-alloc spill choice (unchanged)"
+  date: 2026-10-13
+  note: "Read only: 707/1098 linked, length -1."
+Gamestate02_03_06_Draw_2026_10_13_2:
+  verdict: parked
+  class: "pause-box reload-spilled rows + head knot (unchanged)"
+  date: 2026-10-13
+  note: "Read only: 1727/2210 linked."
+B2_rescreen_2026_10_13_2:
+  verdict: wall
+  class: "B2 confirmed: gas expands constant-address LOADS via the dest reg, only stores via $at"
+  date: 2026-10-13
+  note: "`.set SYM, addr` absolute symbols reproduce $at stores; every current B2 member has an $at load and all but three are also B6."
