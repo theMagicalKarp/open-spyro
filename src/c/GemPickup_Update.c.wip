@@ -1,6 +1,15 @@
 #include "globals.h"
 
-/* 2026-10-09: 15 -> 13 linked. The case-2 5-holder is an asm-opaque `five`
+/* 2026-10-13-1: 13 -> 6 linked. The case-0 timer base takes s1 (and the
+   constant 1 s2) once it IS the function-scope `a` (the case-1 angle, which
+   crosses calls and so lives in s1): `a = (int)&GB[5]; now = *(int *)a;`
+   with the load BEFORE the rumble store (a multi-set pointer no longer
+   disambiguates from the symbol store, so source order must give the
+   original's load-first order). Left: the case-6 base (orig a3: sched1 must
+   have a0/a2's argument sets above the base's death; ours only a1) and
+   `li a1,4` (sched2 priority 2 vs the stores' 16).
+
+   2026-10-09: 15 -> 13 linked. The case-2 5-holder is an asm-opaque `five`
    set right before the AllocActorRecordSlot call, so it lands in the jal slot.
    Left: the timer-base s1/a0 + constant-1 s2/s1 rotation at 0x8002F538, the
    a3/a0 base at 0x80031238, and `li a1,4` for StopSoundVoiceByIndex (an empty
@@ -135,7 +144,9 @@ void GemPickup_Update(void) {
   GB[5] += g_nFrameStep;
   g_nGemPickupSecondaryTimer += g_nFrameStep;
   switch (g_nGemPickupSubstate) {
-  case 0:
+  case 0: {
+    int now;
+
     g_dwGamestateFrames++;
     ((void (*)(void))g_pfnGamestate0EarlyHook)();
     TickSpyroGameplayFrame();
@@ -153,13 +164,14 @@ void GemPickup_Update(void) {
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
     }
+    a = (int)&GB[5];
+    now = *(int *)a;
     g_nPulseRumbleAmount = 0x46;
-    if (GB[5] >= 0x30) {
+    if (now >= 0x30) {
       int *rec;
-      int *tp = &GB[5];
 
       g_nGemPickupSubstate = 1;
-      *tp = 0;
+      *(int *)a = 0;
       g_nGemPickupFullscreenTintLevel = 0xFF;
       W32(SRC, 0x14) -= 0x78;
       {
@@ -216,7 +228,7 @@ void GemPickup_Update(void) {
       StopAllSoundExceptMask(1 << U8(SRC, 0x54));
       PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
     }
-    break;
+  } break;
   case 1:
     if (g_nGemPickupTimer < 0x20) {
       int k = 0x20 - g_nGemPickupTimer;
