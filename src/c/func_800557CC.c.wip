@@ -23,6 +23,23 @@ struct DigitActor {
   unsigned char yaw;   /* 0x46 coarse camera yaw */
 };
 
+/* 2026-10-13-2: 25 -> 7/100, LENGTH-EXACT, links. Head residue CLOSED:
+ * - the yaw load through a one-field struct view (A400) makes it depend on
+ *   the in-struct `rec->pos[2] = z` store, so sched1 emits the store first,
+ *   z and the yaw temp stop overlapping and z takes v1; sched2 then puts the
+ *   mult straight after the z load (stores win the hazard tie).
+ * - `prod = d * place` / `st->place = prod` after `place *= 10`.
+ * - `rot[2] -= 0x10` between the sine load and the cosine load.
+ * LEFT (tail, 7): the cos load must precede the rot[2] RMW and land in a0.
+ * Measured: rot[2] RMW after both loads + `__asm__ volatile("")` after it
+ * gives the exact tail order but +1 (the HImode rot[2] load is F14-boosted
+ * next to its addiu -> load-delay nop); a multi-set carrier
+ * `r = ((unsigned short *)rot)[2]; r -= 0x10; rot[2] = r;` un-boosts it
+ * (lhu lands right after the lbu as in the original) but is -1 with an
+ * idx/r/st a0<->v0<->a1 local-alloc rotation (36-39 masked). Next: that
+ * carrier + a ref dial (A386) on r or idx to flip the local-alloc order.
+ * A volatile LUT read does NOT replace the B13 asm copies (still lhu/sll/sra).
+ */
 /* 2026-10-09: B13 SOLVED, now LENGTH-EXACT and linking at 25/100. An empty
  * asm copy of each LUT load (`__asm__("" : "=r"(sx) : "0"(sx))`) stops
  * combine fusing the sign-extend into the shift, so the loads stay `lh; sra 4`.
@@ -79,6 +96,7 @@ void func_800557CC(int value, struct DigitActor *src) {
   short *cam;
   int sx;
   int cx;
+  int prod;
   cam = g_anCameraEulerYawBlock;
   place = 1;
   x = src->pos[0];
@@ -91,28 +109,30 @@ void func_800557CC(int value, struct DigitActor *src) {
       int q;
       d = value % 10;
       q = value / 10;
+      prod = d + 0x104;
       rec = (*(struct DigitActor * (*)(int, int))
-                 g_pfnLevelOverlayInitHook)(d + 0x104, 0);
+                 g_pfnLevelOverlayInitHook)(prod, 0);
       rec->pos[0] = x;
       rec->pos[1] = y;
       z = src->pos[2];
+      prod = d * place;
       rec->unk44 = 0;
       rec->unk45 = 0;
       rec->pos[2] = z;
       st = rec->digit;
-      rec->yaw = (unsigned short)g_nCameraEulerYaw >> 4;
+      rec->yaw = ((struct { unsigned short v; } *)&g_nCameraEulerYaw)->v >> 4;
       st->dir[0] = rot[0];
       st->dir[1] = rot[1];
       st->dir[2] = rot[2];
       value = q;
-      st->place = d * place;
       place *= 10;
+      st->place = prod;
       a = rec->yaw;
       sx = g_anSineLut[a];
+      rot[2] -= 0x10;
       __asm__("" : "=r"(sx) : "0"(sx));
       cx = g_anCosineLut[a];
       __asm__("" : "=r"(cx) : "0"(cx));
-      rot[2] -= 0x10;
       x -= sx >> 4;
       y += cx >> 4;
     } while (value != 0);

@@ -5582,3 +5582,20 @@ UpdateHudCounters_2026_10_13_1:
   class: "R2 extra callee-saved reg + small schedule spots (unchanged)"
   date: 2026-10-13
   note: "Read only: 912/913 shape, prologue sw ra insert at insn 7."
+
+# --- session 2026-10-13-2 (harvest, gate 0) ---
+WaitForFrameDeadline_2026_10_13_2:
+  verdict: viable
+  class: "MATCHED: volatile budget store + volatile tick load keep source order (A338)"
+  date: 2026-10-13
+  note: "The 2026-08-11-2 'wall' was wrong: sched2 placed the prologue sw ra in the lw's load-delay slot only once the budget init sat above the tick load; reorg then moved it to the beqz slot."
+ControlSpuDmaTransfer_2026_10_13_2:
+  verdict: viable
+  class: "MATCHED: if-guarded do/while (fall-through delay fill past the B22 asm) + $3 reservation (A384)"
+  date: 2026-10-13
+  note: "A volatile pending-direction store does NOT keep the andi 0xFFFF (cc1 output has no AND at all; the andi only appears with the asm copy). B22 asm stand-in stays."
+func_800557CC_2026_10_13_2:
+  verdict: parked
+  class: "F14 boost on the rot[2] HImode RMW load + local-alloc rotation (tail, 7 insns)"
+  date: 2026-10-13
+  note: "25 -> 7 length-exact via A400 struct view on the yaw load. Barrier + multi-set carrier variants reach the original's order but are +1/-1; see wip header for the next lever (A386 ref dial)."
