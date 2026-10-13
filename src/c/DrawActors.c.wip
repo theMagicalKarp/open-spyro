@@ -1,20 +1,28 @@
 #include "types.h"
 
-/* 2026-10-13-2: 107 -> 23 linked, frame EXACT (416). Two edits:
+/* 2026-10-13-2: 107 -> 2 linked, frame EXACT (416). Edits, all load-bearing:
    - the first dot-product block's aggregates (vAxis/vRel/euler/eulerMtx,
-     sp+0x70..0xb8) moved to FUNCTION scope: block-scoped, their temp slots
+     sp+0x70..0xb8) live at FUNCTION scope: block-scoped, their temp slots
      were freed and the second block reused them (frame 376); the original
      keeps both sets live (second set at 0xc0, color at 0xb8 between).
-   - spill-slot order is pseudo order (A387): flagX, flagY, facing are now
+   - spill-slot order is pseudo order (A387): flagX, flagY, facing are
      declared before sumX/sumY, and dist after them -> every spill offset
      (264..320, 368) matches.
-   - `j = 0` hoisted out of the for-init to right after `flags = 0` (orig
-     zero-init order s2, s3, s4).
-   LEFT: (a) nEdges/maxX zero-init swapped (s4 before s3): combine re-emits
-   the `nEdges = 0` set as a NEW insn (uid > 3300 from -dc on) below the
-   sumX/sumY inits, so no source order of the three moves it; (b) the
-   second-pass point loop runs one register high (a1/a2/a3 + a0 for the
-   loaded x vs the original's a0/a1/a2 + v1) -- 21 insns. */
+   - `j = 0` hoisted out of the for-init to right after `flags = 0`.
+   - the second-pass point loop uses ONE block-local `t` for both the x and
+     y reads (xk/yk conflicted, so xk could not share v1 with yk).
+   - an A386 asm ref on yk after `dy = ...` lifts yk (24/28 -> 25/28 refs)
+     over xk (25/29) for v1 in the first edge loop.
+   LEFT (2): nEdges/maxX zero-init swapped (s4 before s3). Mechanism: cse
+   rewrites the first edge loop's guard `j < nPoints` to the zero-class
+   register with the latest REGNO_LAST_UID (nEdges, last used by the final
+   `D_80077EA0[nEdges].live = 0`), combine folds that `nEdges = 0` into the
+   guard's slt and re-emits it as a NEW insn (uid > 3300) at the guard, and
+   sched2 then places it after maxX on the LUID tie (all prio 0x6f). The
+   original's order needs maxX to be the re-emitted one (maxX last-used
+   after nEdges). Moving `.live = 0` above the scissor stores changes the
+   code (166+). Splitting the second pass's counter into its own variable
+   re-tiles the callee-saved map (78). */
 
 /* 2026-10-13-1: LENGTH-EXACT, 928 -> 107 linked (23 masked). The facing dot
    product now sits BEFORE the extents/zero-init block: its reads of
@@ -428,6 +436,7 @@ void DrawActors(void) {
             flagX = 0;
           }
           dy = D_80078DD8[j].y - yk;
+          __asm__ volatile("" : : "r"(yk));
           if (dy < 0) {
             dy = -dy;
           }
@@ -531,31 +540,33 @@ void DrawActors(void) {
           g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
           nEdges = 0;
           for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
-            xk = D_80078DD8[j].x;
-            if (sumX < xk) {
-              D_80078DD8[j].x = xk + 2;
-            } else if (xk < sumX) {
-              D_80078DD8[j].x = xk - 2;
+            int t;
+
+            t = D_80078DD8[j].x;
+            if (sumX < t) {
+              D_80078DD8[j].x = t + 2;
+            } else if (t < sumX) {
+              D_80078DD8[j].x = t - 2;
             }
-            yk = D_80078DD8[j].y;
-            if (sumY < yk) {
-              D_80078DD8[j].y = yk + 2;
-            } else if (yk < sumY) {
-              D_80078DD8[j].y = yk - 2;
+            t = D_80078DD8[j].y;
+            if (sumY < t) {
+              D_80078DD8[j].y = t + 2;
+            } else if (t < sumY) {
+              D_80078DD8[j].y = t - 2;
             }
-            xk = D_80078DD8[j].x;
-            if (maxX < xk) {
-              maxX = xk;
+            t = D_80078DD8[j].x;
+            if (maxX < t) {
+              maxX = t;
             }
-            if (xk < minX) {
-              minX = xk;
+            if (t < minX) {
+              minX = t;
             }
-            yk = D_80078DD8[j].y;
-            if (maxY < yk) {
-              maxY = yk;
+            t = D_80078DD8[j].y;
+            if (maxY < t) {
+              maxY = t;
             }
-            if (yk < minY) {
-              minY = yk;
+            if (t < minY) {
+              minY = t;
             }
           }
 

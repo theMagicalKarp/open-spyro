@@ -5601,6 +5601,6 @@ func_800557CC_2026_10_13_2:
   note: "25 -> 7 length-exact via A400 struct view on the yaw load. Barrier + multi-set carrier variants reach the original's order but are +1/-1; see wip header for the next lever (A386 ref dial)."
 DrawActors_2026_10_13_2:
   verdict: parked
-  class: "combine re-emitted nEdges init (2) + second point loop one register high (21)"
+  class: "cse zero-class first reg (nEdges) folded into the edge-loop guard by combine; sched2 LUID tie (2 insns)"
   date: 2026-10-13
-  note: "107 -> 23 linked: first dot-product aggregates at function scope (frame exact), spill-slot order via declaration order (A387), j=0 hoisted."
+  note: "107 -> 2 linked: first dot-product aggregates at function scope (frame exact), spill-slot order via declaration order (A387), j=0 hoisted, block-local t in the point loop, A386 ref on yk."
