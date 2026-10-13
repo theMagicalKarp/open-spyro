@@ -23,6 +23,16 @@ extern unsigned short D_8007356C; /* encoded SPU transfer address shadow */
    callback, then kicks the DMA channel through the MADR/BCR/CHCR shadows.
    Returns -2 if any wait spins past 0xF00 iterations, else 0.
 
+   2026-10-13: 4/164, LENGTH-EXACT (was 56). Separate block-local base `b`
+   for the post-loop SPUCNT RMW and case 2; `size` reused as the one value
+   variable (case-2 va_arg, post-loop RMW reads, case-3 madr/size) puts all
+   of those in a0; the while form with `n = 0` ahead of the pending-direction
+   store makes n conflict with the hoisted constant 1, which moves it v1 ->
+   a2. LEFT (cases 1/0, 2 insns each): `move v1,zero` is scheduled above the
+   B22 asm stand-in, and reorg's backward delay-slot search stops at any asm
+   (stop_search_p), so it cannot reach the beq delay slot. The original has
+   no asm there; the real B22 mechanism is still unknown.
+
    2026-10-09: B22 SOLVED, LENGTH-EXACT 56/164. An empty asm copy of the entry
    wait-test read (`__asm__("" : "=r"(cur) : "0"(cur))`, compare without the
    cast) keeps the `andi 0xFFFF`. Left: residue #2's register rotation
@@ -61,9 +71,9 @@ extern unsigned short D_8007356C; /* encoded SPU transfer address shadow */
    straggler order). */
 int ControlSpuDmaTransfer(int op, ...) {
   char *ap;
+  int target;
   char *base;
   int cur;
-  int target;
   unsigned short want;
   unsigned int n;
   unsigned int size;
@@ -76,10 +86,14 @@ int ControlSpuDmaTransfer(int op, ...) {
 
   switch (op) {
   case 2:
-    cur = VA_ARG_U32(ap) >> g_nSpuAddrShift;
-    base = D_80073554;
-    D_8007356C = cur;
-    *(volatile short *)(base + 0x1A6) = cur;
+    size = VA_ARG_U32(ap);
+    cur = size >> g_nSpuAddrShift;
+    {
+      char *b = D_80073554;
+
+      D_8007356C = cur;
+      *(volatile short *)(b + 0x1A6) = cur;
+    }
     break;
 
   case 1:
@@ -88,19 +102,20 @@ int ControlSpuDmaTransfer(int op, ...) {
     cur = *(volatile unsigned short *)(base + 0x1A6);
     __asm__("" : "=r"(cur) : "0"(cur));
     g_nSpuPendingDmaDirection = 0;
-    if (cur != target) {
-      n = 0;
-      do {
-        n += 1;
-        if (n >= 0xF01) {
-          return -2;
-        }
-        cur = *(volatile unsigned short *)(base + 0x1A6);
-      } while (cur != target);
+    n = 0;
+    while (cur != target) {
+      if (++n >= 0xF01) {
+        return -2;
+      }
+      cur = *(volatile unsigned short *)(base + 0x1A6);
     }
-    base = D_80073554;
-    cur = *(volatile unsigned short *)(base + 0x1AA);
-    *(volatile unsigned short *)(base + 0x1AA) = (cur & 0xFFCF) | 0x20;
+    {
+      char *b = D_80073554;
+
+      size = *(unsigned short *)(b + 0x1AA);
+      size = (size & 0xFFCF) | 0x20;
+      *(volatile unsigned short *)(b + 0x1AA) = size;
+    }
     break;
 
   case 0:
@@ -109,19 +124,20 @@ int ControlSpuDmaTransfer(int op, ...) {
     cur = *(volatile unsigned short *)(base + 0x1A6);
     __asm__("" : "=r"(cur) : "0"(cur));
     g_nSpuPendingDmaDirection = 1;
-    if (cur != target) {
-      n = 0;
-      do {
-        n += 1;
-        if (n >= 0xF01) {
-          return -2;
-        }
-        cur = *(volatile unsigned short *)(base + 0x1A6);
-      } while (cur != target);
+    n = 0;
+    while (cur != target) {
+      if (++n >= 0xF01) {
+        return -2;
+      }
+      cur = *(volatile unsigned short *)(base + 0x1A6);
     }
-    base = D_80073554;
-    cur = *(volatile unsigned short *)(base + 0x1AA);
-    *(volatile unsigned short *)(base + 0x1AA) = cur | 0x30;
+    {
+      char *b = D_80073554;
+
+      size = *(unsigned short *)(b + 0x1AA);
+      size |= 0x30;
+      *(volatile unsigned short *)(b + 0x1AA) = size;
+    }
     break;
 
   case 3:
@@ -144,7 +160,8 @@ int ControlSpuDmaTransfer(int op, ...) {
       SetSpuDmaWriteStateBits();
     }
     cmd = 0x1000201;
-    g_dwSpuDmaMadrShadow = VA_ARG_U32(ap);
+    size = VA_ARG_U32(ap);
+    g_dwSpuDmaMadrShadow = size;
     size = VA_ARG_U32(ap);
     blocks = size >> 6;
     frac = (size & 0x3F) != 0;

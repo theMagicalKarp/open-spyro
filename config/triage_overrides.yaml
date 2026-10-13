@@ -5512,3 +5512,18 @@ sprintf_2026_10_13:
   class: "cross-jumped dead arms: identical `l` (long==int) arms merge only post-reload"
   date: 2026-10-13
   note: "case 'n' gets `else if (st.lng) *(long *)s = len;` and d/u/o/x get `st.lng ? va_arg(long) : va_arg(int)`; the extra live flags use fixes the andi dest and the arg-before-flags load order. Barriers and $3 pins removed."
+ControlSpuDmaTransfer_2026_10_13:
+  verdict: parked
+  class: "B22 asm stand-in is a reorg stop_search_p: n=0 can't reach the beq delay slot"
+  date: 2026-10-13
+  note: "56 -> 4, length-exact. Block-local post-loop base, shared `size` value var (a0), while form with n=0 before the pending store (constant 1 -> a2). Left: move v1,zero sits above the asm in cases 1/0. Tried volatile asm (freezes lhu/andi, +2), for-form / ushort entry var / while without asm (mask lost)."
+TickSpyroAttackEffects_2026_10_13:
+  verdict: parked
+  class: "F7 spill-slot hole (k gets LO) + preheader F1 (unchanged)"
+  date: 2026-10-13
+  note: "Per-arm path (k*8+tbl in each arm, no pad) fixes the counter slots but not the frame (k still LO, 34). `k = i; k *= count` moves k to GR v1 but neither spills it nor merges the arms (+1 insn)."
+AdvanceSpyroPhysics_2026_10_13:
+  verdict: attempted
+  class: "screened only: 707/1098 positional, frame 8 B too large"
+  date: 2026-10-13
+  note: "Not a harvest target: scattered register residues across the head, camera and substep blocks, not a single tie."
