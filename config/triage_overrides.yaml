@@ -5527,3 +5527,18 @@ AdvanceSpyroPhysics_2026_10_13:
   class: "screened only: 707/1098 positional, frame 8 B too large"
   date: 2026-10-13
   note: "Not a harvest target: scattered register residues across the head, camera and substep blocks, not a single tie."
+func_800557CC_2026_10_13:
+  verdict: parked
+  class: "sched2 order around the B13 asm stand-ins (z/mult, rot[2] reload)"
+  date: 2026-10-13
+  note: "Moving rot[2] -= 0x10 above the LUT loads costs -1 insn (26). Grouping both LUT loads before the asm(s) is neutral (20 masked)."
+WaitForFrameDeadline_2026_10_13:
+  verdict: wall
+  class: "sched2 mem dep: global load always depends on prologue sw ra (sp vs symbol conflicts)"
+  date: 2026-10-13
+  note: "-dR trace: the g_nRcntAuxState load carries REG_DEP_ANTI on the sw ra insn in every volatile mix (plain/volatile budget x plain/volatile global), so sw ra cannot fill the lw stall slot. An unchanging load drops all deps, but then sw a1 wins the LUID tie."
+IntegrateSpyroMotionForSubstep_2026_10_13:
+  verdict: parked
+  class: "global-alloc priority in case 15: case-scope y (50 refs, mostly subcase 10) outranks nx"
+  date: 2026-10-13
+  note: "Map (subcase 0): orig z s0 / nx s1 / x s2 / y+roll base s3 / w s4; ours y s1, nx s3. Pseudos x=593 y=594 w=608 z=609 nx=611. Renaming subcase 0's post-LookupCosine y uses to y2 fixes w (428 -> 410 masked) but y2 drops to a1 (orig s3) and length goes -7 -> -8. Next: subcase 10's y reuse vs nx priority."
