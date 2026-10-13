@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.31% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">2,123,128 / 2,159,608 split-code bytes · 759 matched · 13 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.52% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">2,127,696 / 2,159,608 split-code bytes · 762 matched · 11 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -16,12 +16,12 @@
 <rect x="14.00" y="98.00" width="301.80" height="675.41" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="14.00" y="98.00" width="301.80" height="16.00" fill="#161b22"/>
 <text x="18.00" y="110.00" fill="#e6edf3" font-size="11" font-weight="600">main (EXE)</text>
-<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">55%</text>
+<text x="312.80" y="110.00" fill="#8b949e" font-size="10" text-anchor="end">58%</text>
 <rect x="14.00" y="114.00" width="131.59" height="82.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RenderWorldChunks  ·  19976 bytes  ·  handwritten</title></rect>
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  wip</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  matched</title></rect>
 <rect x="14.00" y="196.99" width="76.29" height="63.34" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>Gamestate02_03_06_Draw  ·  8840 bytes  ·  wip</title></rect>
-<rect x="90.29" y="196.99" width="72.49" height="63.34" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>GemPickup_Update  ·  8400 bytes  ·  wip</title></rect>
+<rect x="90.29" y="196.99" width="72.49" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemPickup_Update  ·  8400 bytes  ·  matched</title></rect>
 <rect x="162.78" y="196.99" width="58.99" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitSecondaryActorPrimitives  ·  6836 bytes  ·  handwritten</title></rect>
 <rect x="221.77" y="196.99" width="49.09" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_800242B8  ·  5688 bytes  ·  handwritten</title></rect>
 <rect x="270.86" y="196.99" width="44.94" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraSpringForMode  ·  5208 bytes  ·  matched</title></rect>
@@ -77,7 +77,7 @@
 <rect x="14.00" y="483.85" width="25.50" height="28.12" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ResetWorldChunkAnimations  ·  1312 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="511.97" width="25.50" height="28.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003ABC0  ·  1308 bytes  ·  matched</title></rect>
 <rect x="14.00" y="540.01" width="25.50" height="26.84" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawEntityDirectionalSpikes  ·  1252 bytes  ·  handwritten</title></rect>
-<rect x="14.00" y="566.85" width="25.50" height="26.58" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>UnpackWorldDataChunks  ·  1240 bytes  ·  wip</title></rect>
+<rect x="14.00" y="566.85" width="25.50" height="26.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UnpackWorldDataChunks  ·  1240 bytes  ·  matched</title></rect>
 <rect x="14.00" y="593.43" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004F8EC  ·  1216 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="619.50" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80050710  ·  1216 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="645.57" width="25.50" height="26.07" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800658FC  ·  1216 bytes  ·  matched</title></rect>
@@ -147,7 +147,7 @@
 <rect x="81.91" y="546.19" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateActorMeshHeader  ·  620 bytes  ·  matched</title></rect>
 <rect x="81.91" y="564.72" width="18.28" height="18.54" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SamplePadForDeathReplayFrame  ·  620 bytes  ·  matched</title></rect>
 <rect x="81.91" y="583.26" width="18.28" height="18.18" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80038FC8  ·  608 bytes  ·  matched</title></rect>
-<rect x="81.91" y="601.44" width="18.28" height="18.06" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>func_80060FD8  ·  604 bytes  ·  asm</title></rect>
+<rect x="81.91" y="601.44" width="18.28" height="18.06" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80060FD8  ·  604 bytes  ·  matched</title></rect>
 <rect x="81.91" y="619.50" width="18.28" height="18.06" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8006635C  ·  604 bytes  ·  matched</title></rect>
 <rect x="81.91" y="637.56" width="18.28" height="17.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SampleSpyroShadowRingHeights  ·  596 bytes  ·  matched</title></rect>
 <rect x="81.91" y="655.38" width="18.28" height="17.46" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginGemPickupOverlay  ·  584 bytes  ·  matched</title></rect>

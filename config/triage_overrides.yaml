@@ -35,9 +35,10 @@ memchr:
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
 func_80060FD8:
-  verdict: wall
-  class: "B9 clamp (inline)"
-  date: 2026-07-23
+  verdict: matched
+  class: "B9 retired: libgpu _clr (get_cs nested-ternary clamps, W-1 limits)"
+  date: 2026-10-13
+  note: "Texpage word as `0xE1000000 | (stat & 0x7FF) | (dtd << 10)`; the terminator address held in a pointer local (`term = &buf[9]`) so the tag AND and the terminator store share one lui/addiu."
 
 # --- Retry/status-wait loops (compare constants hoisted callee-saved) ---
 CdControl:
@@ -5542,3 +5543,42 @@ IntegrateSpyroMotionForSubstep_2026_10_13:
   class: "global-alloc priority in case 15: case-scope y (50 refs, mostly subcase 10) outranks nx"
   date: 2026-10-13
   note: "Map (subcase 0): orig z s0 / nx s1 / x s2 / y+roll base s3 / w s4; ours y s1, nx s3. Pseudos x=593 y=594 w=608 z=609 nx=611. Renaming subcase 0's post-LookupCosine y uses to y2 fixes w (428 -> 410 masked) but y2 drops to a1 (orig s3) and length goes -7 -> -8. Next: subcase 10's y reuse vs nx priority."
+UnpackWorldDataChunks_2026_10_13_1:
+  verdict: matched
+  class: "cse make_regs_eqv canonical choice: the walking cursor must outlive the section-base copy"
+  date: 2026-10-13
+  note: "Fresh decode over the permuter body. One fn-scope base (s0) for every section; the cursor stays canonical at each `base = p` copy because `p = base + *base; return p;` keeps it live to the last insn (returning `base + *base` folds every increment into displacements). Per-section count locals keep the counts block-local (v0). Header field RMWs as `*(int *)((char *)h + k)` so they are not MEM_IN_STRUCT and each volatile header reload stays behind the previous store. Index-loop sum as `s = base + base[1]; t = *p + 4; *p = s + t;`."
+ControlSpuDmaTransfer_2026_10_13_1:
+  verdict: parked
+  class: "B22 mechanism found: combine label_tick, not a single-use fold"
+  date: 2026-10-13
+  note: "The entry andi survives when the read is an `unsigned short` multi-set var AND a CODE_LABEL sits between the read and the entry test (get_last_value fails on a new label_tick, combine falls back to the global reg_nonzero_bits, which a non-load set elsewhere makes unknown); the loop read+test has no label so it folds. Probed: goto-label (works, unnatural), unreferenced user label, for/while(1)/guard+do-while/inline/fn-scope forms (all fold), dead identical store arms (cross-jumped but leave a j). No natural label source found yet."
+GemPickup_Update_2026_10_13_1:
+  verdict: parked
+  class: "li a1,4: sched2 priority 2 (anti-dep on CopyWords) vs the stores' 16"
+  date: 2026-10-13
+  note: "-dR: the original places li a1,4 last (jal slot via as reorder), so it must have priority >= the D_800761DC/E8/EA stores (16, chained by REG_DEP_OUTPUT to the sample-bank pointer stores). An asm-opaque `four` (5 positions) is inert; making the pointer stores struct fields breaks the store/reload serialisation (-2 insns). Other two knots unchanged (13/2100)."
+GemPickup_Update_2026_10_13_2:
+  verdict: matched
+  class: "sched memory disambiguation (in-struct vs fixed scalar) + shared-carrier allocation"
+  date: 2026-10-13
+  note: "Case-4 sample-bank entry through a struct view, voice-attr globals and the src read as one-field struct views (keeps their order and li a1,4 in the jal slot); case-0 timer base carried by fn-scope `i` (s1); both voice-marker args `&GB[11]` (case-6 base a3, case-0/6 tails cross-jump)."
+func_credits_8007AA50_2026_10_13_1:
+  verdict: parked
+  class: "cluster A: sample-bank entry store/load order (A400 applies, not yet tuned)"
+  date: 2026-10-13
+  note: "Struct view on the D_800761D0 entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
+func_80053570:
+  verdict: wall
+  class: "B6 hand-written asm (addi markers, jr through a saved ra copy)"
+  date: 2026-10-13
+TickSpyroAttackEffects_2026_10_13_1:
+  verdict: parked
+  class: "F7 spill-slot hole + preheader F1 (unchanged)"
+  date: 2026-10-13
+  note: "Read only. Preheader order is loop.c movable/giv insertion order (age/state/pt are givs in the original), not a memory-dependence residue, so A400 does not apply."
+UpdateHudCounters_2026_10_13_1:
+  verdict: parked
+  class: "R2 extra callee-saved reg + small schedule spots (unchanged)"
+  date: 2026-10-13
+  note: "Read only: 912/913 shape, prologue sw ra insert at insn 7."

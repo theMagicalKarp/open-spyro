@@ -1,5 +1,13 @@
 #include "types.h"
 
+/* 2026-10-13-1: LENGTH-EXACT, 928 -> 107 linked (23 masked). The facing dot
+   product now sits BEFORE the extents/zero-init block: its reads of
+   g_apScriptedMobEntries[i] are then killed by the intervening stores, so
+   the edge loop's guard reloads the entry pointer as the original does (the
+   missing insn). Left: xk/the edge-loop temps one register high (orig v1,
+   ours a0: a fn-scope value owns v1 across the loop), the maxX zero-init
+   position, and the R2 two-slot frame shortfall (every spill offset from
+   ~insn 191 on; masked out of the 23). */
 /* UPDATE 2026-09-27-2: 132 -> 32 masked, 1286 vs 1287 (-1). R1 is CLOSED:
    - `register int k asm("$5")` block-scoped in both edge loops (k in a1,
      the index temp then takes a2), and the `nPoints - 1` wrap read through a
@@ -331,6 +339,9 @@ void DrawActors(void) {
       SubtractVector(vDelta, g_anCameraPos, g_apScriptedMobEntries[i]->pts[1]);
       RShiftVector3(vDelta, shift);
 
+      facing = -vDelta[0] * g_apScriptedMobEntries[i]->nx -
+               vDelta[1] * g_apScriptedMobEntries[i]->ny -
+               vDelta[2] * g_apScriptedMobEntries[i]->nz;
       minX = 0x13f8;
       minY = 0xf0;
       maxY = 0;
@@ -341,9 +352,6 @@ void DrawActors(void) {
       sumX = 0;
       sumY = 0;
       g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
-      facing = -vDelta[0] * g_apScriptedMobEntries[i]->nx -
-               vDelta[1] * g_apScriptedMobEntries[i]->ny -
-               vDelta[2] * g_apScriptedMobEntries[i]->nz;
 
       for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
         register int k asm("$5");

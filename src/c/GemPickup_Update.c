@@ -1,24 +1,22 @@
 #include "globals.h"
 
-/* 2026-10-09: 15 -> 13 linked. The case-2 5-holder is an asm-opaque `five`
-   set right before the AllocActorRecordSlot call, so it lands in the jal slot.
-   Left: the timer-base s1/a0 + constant-1 s2/s1 rotation at 0x8002F538, the
-   a3/a0 base at 0x80031238, and `li a1,4` for StopSoundVoiceByIndex (an empty
-   asm barrier puts it in the jal slot but sinks the GB[11] load past the
-   stores; reading GB[11] into a local splits it from the later &GB[11] and
-   costs +1 or +2).
-
-   2026-10-08: knot (d) CLOSED, 22 -> 15 linked (length-exact). The case 5
-   table base was a sched1 LAUNCH_PRIORITY boost: adjust_priority ->
-   birthing_insn_p promotes a set whose pseudo has reg_n_sets == 1, so a
-   block-local `tbl` is scheduled right before the Layer1 call while i/icon/
-   k/off (n_sets > 1) float above AdvanceSpyroAnimFrame in LUID order. The
-   original's s4 is shared with case 4's `done`, so the table pointer IS
-   `done` (two sets, no boost, s4 for free). A case-3 pointer merge also fixes
-   the order but drags that arm's `t` from v1 into s4 (+3).
-   Knot (b) read off -dS: the 5-holder fills a load-latency stall slot in a
-   fully serialized call chain (every ready list has one insn), so neither a
-   second set (`i = 5`) nor moving the set to the block head moves it. */
+/* Matching notes. Several accesses are spelled to control the scheduler's
+   memory disambiguation (sched.c true/anti dependence: a non-QImode store
+   through a varying in-struct address never conflicts with a fixed-address
+   scalar access, and nothing else is disambiguated):
+   - the case-4 sample-bank entry is written through a struct view (SBE), so
+     the voice-attr globals that follow do not chain behind it; those
+     globals and the source-actor read before them are in turn written as
+     one-field struct views, so they keep the original's order (and the
+     StopSoundVoiceByIndex `li a1,4` keeps the call's delay slot);
+   - the case-0 timer base is the function-scope `i` (it lives in s1, as the
+     original's base does), read into a block-local before the rumble store;
+   - both voice-marker arguments are `&GB[11]`, which gives the case-6 timer
+     base its a3 preference and lets the case-0 and case-6 PlaySoundEffect
+     tails cross-jump;
+   - the case-2 5-holder is asm-opaque so it lands in the AllocActorRecordSlot
+     delay slot, and case 4's `done` doubles as the case-5 table pointer (two
+     sets, so sched1 does not boost it above AdvanceSpyroAnimFrame). */
 
 extern void TickSpyroGameplayFrame(void);
 extern void UpdateCameraFrame(void);
@@ -92,10 +90,21 @@ extern int g_anGemPickupAuraStarBlock[]; /* [0] enable flag */
 #define SRC (*(char *volatile *)&g_pGemPickupSourceActor)
 #define STATUE (*(char *volatile *)&g_pGemPickupStatueActor)
 #define MIRROR (*(char *volatile *)&g_pGemPickupSpyroMirrorActor)
+struct SampleBankEntry {
+  int addr;
+  int loop;
+  short vol;
+  short rate;
+  short h0;
+  short h1;
+  int w4;
+};
+#define SBE ((struct SampleBankEntry *)g_apSampleBankEntriesBlock[0])
 #define W32(p, off) (*(int *)((char *)(p) + (off)))
 #define H16(p, off) (*(short *)((char *)(p) + (off)))
 #define U8(p, off) (*(unsigned char *)((char *)(p) + (off)))
 #define REC(p) (*(int **)(p))
+#define SRCS (((struct { char *volatile p; } *)&g_pGemPickupSourceActor)->p)
 #define OTY ((int)g_dwGemPickupOrbitTargetYaw)
 #define SAMPLE(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
@@ -135,7 +144,9 @@ void GemPickup_Update(void) {
   GB[5] += g_nFrameStep;
   g_nGemPickupSecondaryTimer += g_nFrameStep;
   switch (g_nGemPickupSubstate) {
-  case 0:
+  case 0: {
+    int now;
+
     g_dwGamestateFrames++;
     ((void (*)(void))g_pfnGamestate0EarlyHook)();
     TickSpyroGameplayFrame();
@@ -153,13 +164,14 @@ void GemPickup_Update(void) {
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
     }
+    i = (int)&GB[5];
+    now = *(int *)i;
     g_nPulseRumbleAmount = 0x46;
-    if (GB[5] >= 0x30) {
+    if (now >= 0x30) {
       int *rec;
-      int *tp = &GB[5];
 
       g_nGemPickupSubstate = 1;
-      *tp = 0;
+      *(int *)i = 0;
       g_nGemPickupFullscreenTintLevel = 0xFF;
       W32(SRC, 0x14) -= 0x78;
       {
@@ -214,9 +226,9 @@ void GemPickup_Update(void) {
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
       StopAllSoundExceptMask(1 << U8(SRC, 0x54));
-      PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+      PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &GB[11]);
     }
-    break;
+  } break;
   case 1:
     if (g_nGemPickupTimer < 0x20) {
       int k = 0x20 - g_nGemPickupTimer;
@@ -547,20 +559,20 @@ void GemPickup_Update(void) {
     if (GB[5] < g_nGemPickupCameraPathCount * 2) {
       if (g_nGemPickupAudioFiredFlag == 0 && GB[5] >= W32(REC(SRC), 0x40)) {
         CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
-        W32(D_800761D0, 0) = 0x80000 - g_nGemPickupAudioSampleSize;
-        W32(D_800761D0, 4) = -1;
-        H16(D_800761D0, 8) = 0x32;
+        SBE->addr = 0x80000 - g_nGemPickupAudioSampleSize;
+        SBE->loop = -1;
+        SBE->vol = 0x32;
         {
-          int rate = (W32(REC(SRC), 0x3c) << 10) / 11025;
+          int rate = (W32(REC(SRCS), 0x3c) << 10) / 11025;
 
-          H16(D_800761D0, 0xA) = rate;
+          SBE->rate = rate;
         }
-        H16(D_800761D0, 0xC) = 0;
-        H16(D_800761D0, 0xE) = 0;
-        W32(D_800761D0, 0x10) = 0;
-        D_800761DC = 1;
-        D_800761E8 = 0x3FFF;
-        D_800761EA = 0x3FFF;
+        SBE->h0 = 0;
+        SBE->h1 = 0;
+        SBE->w4 = 0;
+        ((struct { int v; } *)&D_800761DC)->v = 1;
+        ((struct { short v; } *)&D_800761E8)->v = 0x3FFF;
+        ((struct { short v; } *)&D_800761EA)->v = 0x3FFF;
         StopSoundVoiceByIndex(GB[11], 4);
         PlaySoundEffect(0, 0, 0x10, &GB[11]);
         CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);
@@ -735,7 +747,7 @@ void GemPickup_Update(void) {
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      PlaySoundEffect(SAMPLE(0x33), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+      PlaySoundEffect(SAMPLE(0x33), 0, 0x10, &GB[11]);
     }
     break;
   case 7: {
