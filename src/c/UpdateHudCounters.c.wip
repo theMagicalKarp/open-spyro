@@ -167,6 +167,15 @@ extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 #define EGG_STATE (g_abHudWorldEggIconBlock[0])
 #define LEGG_STATE (g_abHudLevelEggCounterBlock[0])
 
+/* 2026-10-14-2: R2 SOLVED and the frame matches (852 -> 840 positional,
+   173 -> 122 aligned). The level-egg spawn tint is written as an expression
+   of the counter (`((i + 6) << 24) + 0x8080`, i++ after the call) instead of
+   an accumulator: strength reduction makes it a giv, and giv increments are
+   emitted AFTER loop.c's movables, so the `lui 0x100` stays in the loop and
+   0x8080 is hoisted into s2 exactly as the original (ra/s2/s1/s0 saved).
+   `int pad[2]` after av[3] then gives the original's 56-byte frame. Left:
+   R3 (head re-read order vs the A200 barrier; 1,440 head orders swept,
+   barrier-after-cos loses the held base) and the length (-3). */
 void UpdateHudCounters(void) {
   int nPhase;
   int nDelta;
@@ -177,14 +186,13 @@ void UpdateHudCounters(void) {
   int nTint;
   int nCos;
   int av[3];
+  int pad[2];
 
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
   nPhase = (BOB - g_nFrameStep) & 0xFF;
   BOB = nPhase;
   do {
-  } while (0); /* A200 cse ebb-break: keeps the gem block's
-                  -0x3C..-0x1C accesses on the held base (swept: this
-                  position beats the two later ones by 43 and 10) */
+  } while (0);
   nCos = g_anCosineLut[g_dwHudBobSinePhase];
   g_abHudIconActorRecords[0x1A6] = nPhase;
   g_abHudIconActorRecords[0x1A5] = nCos >> 9;
@@ -458,15 +466,11 @@ void UpdateHudCounters(void) {
   case 2:
     if (g_nHudLevelEggCachedCount != g_nLevelEggCount) {
       if (g_nHudLevelEggHoldTimer == 0) {
-        i = 0;
-        nTint = 0x06000000;
-        do {
-          i += 1;
-          (*(void (*)(int, int, unsigned char *,
-                      int))g_pfnLevelOverlayParticleSpawn)(
-              1, 0xC, &g_abHudIconActorRecords[0x3C8], nTint + 0x8080);
-          nTint += 0x01000000;
-        } while (i < 6);
+i = 0;
+do {
+ (*(void (*)(int, int, unsigned char *, int))g_pfnLevelOverlayParticleSpawn)(1, 0xC, &g_abHudIconActorRecords[0x3C8], ((i + 6) << 24) + 0x8080);
+ i += 1;
+} while (i < 6);
       } else if (g_nHudLevelEggHoldTimer >= 0xC) {
         g_abHudIconActorRecords[0x411] = 0x40;
         g_nHudLevelEggHoldTimer = 0;

@@ -5677,3 +5677,8 @@ Gamestate02_03_06_Draw_2026_10_14_2:
   class: "-19 length + head knot (arg-temp lever closes most of loop 1)"
   date: 2026-10-14
   note: "1727 -> 1722 linked. `arg = img2[0];` first in the StoreImage run; LoadImage chunk order sweep (720 variants) and an &rect pointer temp: no positional gain."
+UpdateHudCounters_2026_10_14_2:
+  verdict: parked
+  class: "R3 head re-read order + -3 length (R2 extra callee-saved reg SOLVED)"
+  date: 2026-10-14
+  note: "852 -> 840 positional. Egg tint as a giv of i (`((i + 6) << 24) + 0x8080`) keeps the lui in-loop and frees s3; pad[2] fixes the frame. 1,440 head statement/barrier orders swept: barrier must precede the cos load to keep the gem block's held base."
