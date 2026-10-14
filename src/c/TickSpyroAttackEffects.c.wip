@@ -32,6 +32,11 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    (count, kind, world position, direction | NULL). */
 #define SPAWN ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)
 
+/* 2026-10-14: merging k into a disjoint-lived local (limit / mask / n /
+   count / empty / sfxDone) is +1 every time: the merged pseudo is no longer
+   LO-preferred, so each arm gets its own mflo instead of the original's one
+   `mflo t0` reload after the join. The original's k is a SPILLED LO-class
+   pseudo (no alternate class, LO busy?) - find what makes LO unavailable. */
 /* UPDATE 2026-10-09 -- 16/562. An empty asm barrier between the else-arm
    `k = (i - 4) * count` and the long-table `tbl` set closes the arc-path
    select (v0 temp + la order). Left: F7 slot hole (k still gets LO) and the

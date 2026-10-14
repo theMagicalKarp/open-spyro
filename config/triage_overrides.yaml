@@ -5626,3 +5626,43 @@ B2_rescreen_2026_10_13_2:
   class: "B2 confirmed: gas expands constant-address LOADS via the dest reg, only stores via $at"
   date: 2026-10-13
   note: "`.set SYM, addr` absolute symbols reproduce $at stores; every current B2 member has an $at load and all but three are also B6."
+DrawActors_2026_10_14:
+  verdict: matched
+  class: "F21 solved: maxX is the same variable as the CLZ shift (cse canonical zero register per pass)"
+  date: 2026-10-14
+  note: "Dead maxX store / asm use made maxX canonical in BOTH passes (92); splitting nEdges per pass fixed the order but re-tiled s-regs (78); merging maxX into shift matched."
+func_800557CC_2026_10_14:
+  verdict: parked
+  class: "F14 birthing boost on the rot[2] reload + in-struct anti-dependence of the sh on the LUT loads"
+  date: 2026-10-14
+  note: "Still 7. Scalar-view rot[2] store: 37. $2-pinned carrier after the loads: tail regs exact but st a0->a1 and -1 (39). Extra $3 pins on dir temps: 53."
+TickSpyroAttackEffects_2026_10_14:
+  verdict: parked
+  class: "F7 slot hole: k must be a SPILLED LO-class pseudo"
+  date: 2026-10-14
+  note: "Merging k into limit/mask/n/count/empty/sfxDone: +1 each (merged pseudo loses LO preference, mflo per arm). Unchanged 16."
+AdvanceSpyroPhysics_2026_10_14:
+  verdict: parked
+  class: "~15 independent knots (spill choice i/steps, request-block constants, divide block)"
+  date: 2026-10-14
+  note: "122 masked. Merging i or steps into request-block locals (keepYaw/a/side/h/t/z): 126-152, none better."
+IntegrateSpyroMotionForSubstep_2026_10_14:
+  verdict: parked
+  class: "global-alloc priority in case 15 + ~200 small register knots"
+  date: 2026-10-14
+  note: "y2 split for subcase 0 = 410 (as 10-13). Merging the CheckLineOfSight pos pointer into y2: 429 (worse)."
+func_credits_8007AA50_2026_10_14:
+  verdict: parked
+  class: "init-block movstr knot (cluster A) + 3 more"
+  date: 2026-10-14
+  note: "Read only; 112/1376 linked, unchanged."
+UpdateHudCounters_2026_10_14:
+  verdict: parked
+  class: "sched2 store-sinking x6 + offset wander"
+  date: 2026-10-14
+  note: "Read only; 173 masked, -1 length."
+Gamestate02_03_06_Draw_2026_10_14:
+  verdict: parked
+  class: "head knot + A133 constant allocation"
+  date: 2026-10-14
+  note: "Read only; 517 masked, -19 length."
