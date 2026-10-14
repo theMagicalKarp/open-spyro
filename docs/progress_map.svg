@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.60% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">2,129,476 / 2,159,608 split-code bytes · 770 matched · 8 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.61% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">2,129,588 / 2,159,608 split-code bytes · 771 matched · 7 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -434,7 +434,7 @@
 <rect x="221.04" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitActorRenderDefaults  ·  124 bytes  ·  matched</title></rect>
 <rect x="229.13" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InstallSpuDmaEventHandler  ·  124 bytes  ·  matched</title></rect>
 <rect x="237.22" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MemCardLoad  ·  124 bytes  ·  matched</title></rect>
-<rect x="245.32" y="664.31" width="7.83" height="8.38" fill="#d29922" stroke="#0d1117" stroke-width="0.5"><title>func_80016FD0  ·  120 bytes  ·  wip</title></rect>
+<rect x="245.32" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80016FD0  ·  120 bytes  ·  matched</title></rect>
 <rect x="253.15" y="664.31" width="7.83" height="8.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RotateVectorByMatrix  ·  120 bytes  ·  handwritten</title></rect>
 <rect x="260.98" y="664.31" width="7.83" height="8.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>WorldToCameraRotate  ·  120 bytes  ·  handwritten</title></rect>
 <rect x="268.81" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RestartSpyroAnimWithState  ·  120 bytes  ·  matched</title></rect>
