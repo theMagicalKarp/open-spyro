@@ -111,6 +111,7 @@ for name in "${names[@]}"; do
   $OPEN_SPYRO gen-syms-ld "$OVL_DIR/$name.syms.ld" \
     "config/overlays/$name.undefined_syms.auto.txt" \
     "config/overlays/$name.undefined_funcs.auto.txt" \
+    config/overlays/undefined_syms_manual.txt \
     config/symbol_addrs.txt
 
   # link (splat's ld + our externals) + objcopy to raw overlay image

@@ -119,8 +119,8 @@ glabel InitGraphicsHardware
     /* 2B54 80012354 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0xA)
     /* 2B58 80012358 6E6F22A4 */  sh         $v0, %lo(g_abFrameDrawEnv1 + 0xA)($at)
     /* 2B5C 8001235C 01000224 */  addiu      $v0, $zero, 0x1
-    /* 2B60 80012360 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x18)
-    /* 2B64 80012364 F86E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x18)($at)
+    /* 2B60 80012360 0780013C */  lui        $at, %hi(g_abFrameDrawEnvIsbgBlock)
+    /* 2B64 80012364 F86E22A0 */  sb         $v0, %lo(g_abFrameDrawEnvIsbgBlock)($at)
     /* 2B68 80012368 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
     /* 2B6C 8001236C 7C6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x18)($at)
     /* 2B70 80012370 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x16)
@@ -312,9 +312,9 @@ glabel BuildAudioTrackTable
     /* 2DB0 800125B0 0000C38C */  lw         $v1, 0x0($a2)
     /* 2DB4 800125B4 00000000 */  nop
     /* 2DB8 800125B8 21104300 */  addu       $v0, $v0, $v1
-    /* 2DBC 800125BC 0780013C */  lui        $at, %hi(g_anMusicTrackLbaTable + 0x4)
+    /* 2DBC 800125BC 0780013C */  lui        $at, %hi(g_anMusicTrackEndLbaTable)
     /* 2DC0 800125C0 21082400 */  addu       $at, $at, $a0
-    /* 2DC4 800125C4 BC7422AC */  sw         $v0, %lo(g_anMusicTrackLbaTable + 0x4)($at)
+    /* 2DC4 800125C4 BC7422AC */  sw         $v0, %lo(g_anMusicTrackEndLbaTable)($at)
     /* 2DC8 800125C8 0800A228 */  slti       $v0, $a1, 0x8
     /* 2DCC 800125CC F0FF4014 */  bnez       $v0, .L80012590
     /* 2DD0 800125D0 0400C624 */   addiu     $a2, $a2, 0x4
@@ -1580,8 +1580,8 @@ glabel BuildLoadedLevelRuntime
     /* 3F88 80013788 0780013C */  lui        $at, %hi(g_anLevelSpawnPos)
     /* 3F8C 8001378C D87822AC */  sw         $v0, %lo(g_anLevelSpawnPos)($at)
     /* 3F90 80013790 0400028E */  lw         $v0, 0x4($s0)
-    /* 3F94 80013794 0780013C */  lui        $at, %hi(g_anLevelSpawnPos + 0x4)
-    /* 3F98 80013798 DC7822AC */  sw         $v0, %lo(g_anLevelSpawnPos + 0x4)($at)
+    /* 3F94 80013794 0780013C */  lui        $at, %hi(g_nLevelSpawnPosY)
+    /* 3F98 80013798 DC7822AC */  sw         $v0, %lo(g_nLevelSpawnPosY)($at)
     /* 3F9C 8001379C 0800028E */  lw         $v0, 0x8($s0)
     /* 3FA0 800137A0 0780013C */  lui        $at, %hi(g_nLevelSpawnPosZ)
     /* 3FA4 800137A4 E07822AC */  sw         $v0, %lo(g_nLevelSpawnPosZ)($at)
@@ -1691,8 +1691,8 @@ glabel BuildLoadedLevelRuntime
     /* 4134 80013934 00000000 */  nop
     /* 4138 80013938 42004014 */  bnez       $v0, .L80013A44
     /* 413C 8001393C 00000000 */   nop
-    /* 4140 80013940 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 4144 80013944 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 4140 80013940 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 4144 80013944 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 4148 80013948 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 414C 8001394C D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
     /* 4150 80013950 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler)
@@ -1710,8 +1710,8 @@ glabel BuildLoadedLevelRuntime
     /* 4180 80013980 0780013C */  lui        $at, %hi(D_80075700)
     /* 4184 80013984 005720AC */  sw         $zero, %lo(D_80075700)($at)
     /* 4188 80013988 00FC4224 */  addiu      $v0, $v0, -0x400
-    /* 418C 8001398C 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 4190 80013990 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 418C 8001398C 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 4190 80013990 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 4194 80013994 914E0008 */  j          .L80013A44
     /* 4198 80013998 00000000 */   nop
   .L8001399C:
@@ -1750,13 +1750,13 @@ glabel BuildLoadedLevelRuntime
     /* 421C 80013A1C 0780013C */  lui        $at, %hi(g_anSineLut)
     /* 4220 80013A20 21082400 */  addu       $at, $at, $a0
     /* 4224 80013A24 F8CB2294 */  lhu        $v0, %lo(g_anSineLut)($at)
-    /* 4228 80013A28 0780033C */  lui        $v1, %hi(g_anLevelSpawnPos + 0x4)
-    /* 422C 80013A2C DC78638C */  lw         $v1, %lo(g_anLevelSpawnPos + 0x4)($v1)
+    /* 4228 80013A28 0780033C */  lui        $v1, %hi(g_nLevelSpawnPosY)
+    /* 422C 80013A2C DC78638C */  lw         $v1, %lo(g_nLevelSpawnPosY)($v1)
     /* 4230 80013A30 00140200 */  sll        $v0, $v0, 16
     /* 4234 80013A34 83140200 */  sra        $v0, $v0, 18
     /* 4238 80013A38 23186200 */  subu       $v1, $v1, $v0
-    /* 423C 80013A3C 0780013C */  lui        $at, %hi(g_anLevelSpawnPos + 0x4)
-    /* 4240 80013A40 DC7823AC */  sw         $v1, %lo(g_anLevelSpawnPos + 0x4)($at)
+    /* 423C 80013A3C 0780013C */  lui        $at, %hi(g_nLevelSpawnPosY)
+    /* 4240 80013A40 DC7823AC */  sw         $v1, %lo(g_nLevelSpawnPosY)($at)
   .L80013A44:
     /* 4244 80013A44 0780033C */  lui        $v1, %hi(g_nActiveLevelId)
     /* 4248 80013A48 6C59638C */  lw         $v1, %lo(g_nActiveLevelId)($v1)
@@ -2206,8 +2206,8 @@ glabel BuildLoadedLevelRuntime
     /* 48D8 800140D8 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable + 0x8)
     /* 48DC 800140DC 21082300 */  addu       $at, $at, $v1
     /* 48E0 800140E0 A4EE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable + 0x8)($at)
-    /* 48E4 800140E4 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 48E8 800140E8 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 48E4 800140E4 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 48E8 800140E8 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 48EC 800140EC 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable + 0xC)
     /* 48F0 800140F0 21082300 */  addu       $at, $at, $v1
     /* 48F4 800140F4 A8EE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable + 0xC)($at)
@@ -4241,8 +4241,8 @@ glabel TickLevelTransitionStream
     /* 6684 80015E84 21300002 */   addu      $a2, $s0, $zero
     /* 6688 80015E88 BED0000C */  jal        UpdateCameraEulerAngles
     /* 668C 80015E8C 00000000 */   nop
-    /* 6690 80015E90 0780103C */  lui        $s0, %hi(D_8006EBE4)
-    /* 6694 80015E94 E4EB1026 */  addiu      $s0, $s0, %lo(D_8006EBE4)
+    /* 6690 80015E90 0780103C */  lui        $s0, %hi(g_anSpyroDeathCamRecordBlock)
+    /* 6694 80015E94 E4EB1026 */  addiu      $s0, $s0, %lo(g_anSpyroDeathCamRecordBlock)
     /* 6698 80015E98 21200002 */  addu       $a0, $s0, $zero
     /* 669C 80015E9C C05D000C */  jal        CopyVector
     /* 66A0 80015EA0 21282002 */   addu      $a1, $s1, $zero
@@ -4449,14 +4449,14 @@ glabel TickLevelTransitionStream
     /* 69AC 800161AC 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraMode12Params)
     /* 69B0 800161B0 34006214 */  bne        $v1, $v0, .L80016284
     /* 69B4 800161B4 21202002 */   addu      $a0, $s1, $zero
-    /* 69B8 800161B8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 69BC 800161BC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 69B8 800161B8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 69BC 800161BC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 69C0 800161C0 0880063C */  lui        $a2, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 69C4 800161C4 668AC690 */  lbu        $a2, %lo(g_abSpyroPersistentEuler + 0x2)($a2)
     /* 69C8 800161C8 00EA4224 */  addiu      $v0, $v0, -0x1600
     /* 69CC 800161CC 40300600 */  sll        $a2, $a2, 1
-    /* 69D0 800161D0 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 69D4 800161D4 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 69D0 800161D0 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 69D4 800161D4 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 69D8 800161D8 0780013C */  lui        $at, %hi(g_anCosineLut)
     /* 69DC 800161DC 21082600 */  addu       $at, $at, $a2
     /* 69E0 800161E0 78CC2384 */  lh         $v1, %lo(g_anCosineLut)($at)
@@ -4506,8 +4506,8 @@ glabel TickLevelTransitionStream
     /* 6A8C 8001628C 21304002 */   addu      $a2, $s2, $zero
     /* 6A90 80016290 BED0000C */  jal        UpdateCameraEulerAngles
     /* 6A94 80016294 00000000 */   nop
-    /* 6A98 80016298 0780103C */  lui        $s0, %hi(D_8006EBE4)
-    /* 6A9C 8001629C E4EB1026 */  addiu      $s0, $s0, %lo(D_8006EBE4)
+    /* 6A98 80016298 0780103C */  lui        $s0, %hi(g_anSpyroDeathCamRecordBlock)
+    /* 6A9C 8001629C E4EB1026 */  addiu      $s0, $s0, %lo(g_anSpyroDeathCamRecordBlock)
     /* 6AA0 800162A0 21200002 */  addu       $a0, $s0, $zero
     /* 6AA4 800162A4 C05D000C */  jal        CopyVector
     /* 6AA8 800162A8 21282002 */   addu      $a1, $s1, $zero
@@ -8588,8 +8588,8 @@ glabel EnqueueLoadingScreenSprites
     /* 9C7C 8001947C EFFF4010 */  beqz       $v0, .L8001943C
     /* 9C80 80019480 04003126 */   addiu     $s1, $s1, 0x4
   .L80019484:
-    /* 9C84 80019484 0780033C */  lui        $v1, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 9C88 80019488 A97F6324 */  addiu      $v1, $v1, %lo(g_abHudCounterDisplayState + 0x1)
+    /* 9C84 80019484 0780033C */  lui        $v1, %hi(g_abHudDragonCounterBlock)
+    /* 9C88 80019488 A97F6324 */  addiu      $v1, $v1, %lo(g_abHudDragonCounterBlock)
     /* 9C8C 8001948C 00006290 */  lbu        $v0, 0x0($v1)
     /* 9C90 80019490 00000000 */  nop
     /* 9C94 80019494 08004010 */  beqz       $v0, .L800194B8
@@ -8603,8 +8603,8 @@ glabel EnqueueLoadingScreenSprites
     /* 9CB0 800194B0 FBFF4014 */  bnez       $v0, .L800194A0
     /* 9CB4 800194B4 58006324 */   addiu     $v1, $v1, 0x58
   .L800194B8:
-    /* 9CB8 800194B8 0780033C */  lui        $v1, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 9CBC 800194BC AA7F6324 */  addiu      $v1, $v1, %lo(g_abHudCounterDisplayState + 0x2)
+    /* 9CB8 800194B8 0780033C */  lui        $v1, %hi(g_abHudLivesCounterBlock)
+    /* 9CBC 800194BC AA7F6324 */  addiu      $v1, $v1, %lo(g_abHudLivesCounterBlock)
     /* 9CC0 800194C0 00006290 */  lbu        $v0, 0x0($v1)
     /* 9CC4 800194C4 00000000 */  nop
     /* 9CC8 800194C8 09004010 */  beqz       $v0, .L800194F0
@@ -8619,8 +8619,8 @@ glabel EnqueueLoadingScreenSprites
     /* 9CE8 800194E8 FBFF4014 */  bnez       $v0, .L800194D8
     /* 9CEC 800194EC 58006324 */   addiu     $v1, $v1, 0x58
   .L800194F0:
-    /* 9CF0 800194F0 0780043C */  lui        $a0, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 9CF4 800194F4 AC7F8424 */  addiu      $a0, $a0, %lo(g_abHudCounterDisplayState + 0x4)
+    /* 9CF0 800194F0 0780043C */  lui        $a0, %hi(g_abHudLevelEggCounterBlock)
+    /* 9CF4 800194F4 AC7F8424 */  addiu      $a0, $a0, %lo(g_abHudLevelEggCounterBlock)
     /* 9CF8 800194F8 00008290 */  lbu        $v0, 0x0($a0)
     /* 9CFC 800194FC 00000000 */  nop
     /* 9D00 80019500 08004010 */  beqz       $v0, .L80019524
@@ -8635,8 +8635,8 @@ glabel EnqueueLoadingScreenSprites
   .L80019524:
     /* 9D24 80019524 000020AE */  sw         $zero, 0x0($s1)
   .L80019528:
-    /* 9D28 80019528 0780053C */  lui        $a1, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 9D2C 8001952C AA7FA524 */  addiu      $a1, $a1, %lo(g_abHudCounterDisplayState + 0x2)
+    /* 9D28 80019528 0780053C */  lui        $a1, %hi(g_abHudLivesCounterBlock)
+    /* 9D2C 8001952C AA7FA524 */  addiu      $a1, $a1, %lo(g_abHudLivesCounterBlock)
     /* 9D30 80019530 0000A290 */  lbu        $v0, 0x0($a1)
     /* 9D34 80019534 00000000 */  nop
     /* 9D38 80019538 29004010 */  beqz       $v0, .L800195E0
@@ -8683,8 +8683,8 @@ glabel EnqueueLoadingScreenSprites
     /* 9DD8 800195D8 E3FF4014 */  bnez       $v0, .L80019568
     /* 9DDC 800195DC 6666023C */   lui       $v0, (0x66666667 >> 16)
   .L800195E0:
-    /* 9DE0 800195E0 0780053C */  lui        $a1, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 9DE4 800195E4 AB7FA524 */  addiu      $a1, $a1, %lo(g_abHudCounterDisplayState + 0x3)
+    /* 9DE0 800195E0 0780053C */  lui        $a1, %hi(g_abHudWorldEggIconBlock)
+    /* 9DE4 800195E4 AB7FA524 */  addiu      $a1, $a1, %lo(g_abHudWorldEggIconBlock)
     /* 9DE8 800195E8 0000A290 */  lbu        $v0, 0x0($a1)
     /* 9DEC 800195EC 00000000 */  nop
     /* 9DF0 800195F0 21004010 */  beqz       $v0, .L80019678
@@ -9436,12 +9436,12 @@ glabel Gamestate01_09_Draw
     /* A878 8001A078 5800BFAF */  sw         $ra, 0x58($sp)
     /* A87C 8001A07C 5400B1AF */  sw         $s1, 0x54($sp)
     /* A880 8001A080 5000B0AF */  sw         $s0, 0x50($sp)
-    /* A884 8001A084 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* A888 8001A088 F96E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* A88C 8001A08C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* A890 8001A090 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* A894 8001A094 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* A898 8001A098 FB6E27A0 */  sb         $a3, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* A884 8001A084 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* A888 8001A088 F96E22A0 */  sb         $v0, %lo(D_80076EF9)($at)
+    /* A88C 8001A08C 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* A890 8001A090 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
+    /* A894 8001A094 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* A898 8001A098 FB6E27A0 */  sb         $a3, %lo(D_80076EFB)($at)
     /* A89C 8001A09C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* A8A0 8001A0A0 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* A8A4 8001A0A4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -12155,12 +12155,12 @@ glabel Gamestate0A_Draw
     /* D11C 8001C91C 1800A293 */  lbu        $v0, 0x18($sp)
     /* D120 8001C920 1900A393 */  lbu        $v1, 0x19($sp)
     /* D124 8001C924 1A00A593 */  lbu        $a1, 0x1A($sp)
-    /* D128 8001C928 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* D12C 8001C92C F96E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* D130 8001C930 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* D134 8001C934 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* D138 8001C938 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* D13C 8001C93C FB6E25A0 */  sb         $a1, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* D128 8001C928 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* D12C 8001C92C F96E22A0 */  sb         $v0, %lo(D_80076EF9)($at)
+    /* D130 8001C930 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* D134 8001C934 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
+    /* D138 8001C938 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* D13C 8001C93C FB6E25A0 */  sb         $a1, %lo(D_80076EFB)($at)
   .L8001C940:
     /* D140 8001C940 767F010C */  jal        PutDrawEnv
     /* D144 8001C944 00000000 */   nop
@@ -12532,8 +12532,8 @@ glabel RespawnOrGameOver_Draw
     /* D698 8001CE98 1E00A2A7 */   sh        $v0, 0x1E($sp)
     /* D69C 8001CE9C D97D010C */  jal        DrawSync
     /* D6A0 8001CEA0 21200000 */   addu      $a0, $zero, $zero
-    /* D6A4 8001CEA4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x18)
-    /* D6A8 8001CEA8 F86E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x18)($at)
+    /* D6A4 8001CEA4 0780013C */  lui        $at, %hi(g_abFrameDrawEnvIsbgBlock)
+    /* D6A8 8001CEA8 F86E20A0 */  sb         $zero, %lo(g_abFrameDrawEnvIsbgBlock)($at)
     /* D6AC 8001CEAC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
     /* D6B0 8001CEB0 7C6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x18)($at)
     /* D6B4 8001CEB4 EF730008 */  j          .L8001CFBC
@@ -12576,18 +12576,18 @@ glabel RespawnOrGameOver_Draw
     /* D73C 8001CF3C 0F000224 */  addiu      $v0, $zero, 0xF
     /* D740 8001CF40 1E006214 */  bne        $v1, $v0, .L8001CFBC
     /* D744 8001CF44 21200000 */   addu      $a0, $zero, $zero
-    /* D748 8001CF48 0780033C */  lui        $v1, %hi(g_abFrameDrawEnv0 + 0x18)
-    /* D74C 8001CF4C F86E6324 */  addiu      $v1, $v1, %lo(g_abFrameDrawEnv0 + 0x18)
+    /* D748 8001CF48 0780033C */  lui        $v1, %hi(g_abFrameDrawEnvIsbgBlock)
+    /* D74C 8001CF4C F86E6324 */  addiu      $v1, $v1, %lo(g_abFrameDrawEnvIsbgBlock)
     /* D750 8001CF50 01000224 */  addiu      $v0, $zero, 0x1
     /* D754 8001CF54 000062A0 */  sb         $v0, 0x0($v1)
     /* D758 8001CF58 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
     /* D75C 8001CF5C 7C6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x18)($at)
-    /* D760 8001CF60 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* D764 8001CF64 F96E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* D768 8001CF68 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* D76C 8001CF6C FA6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* D770 8001CF70 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* D774 8001CF74 FB6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* D760 8001CF60 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* D764 8001CF64 F96E20A0 */  sb         $zero, %lo(D_80076EF9)($at)
+    /* D768 8001CF68 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* D76C 8001CF6C FA6E20A0 */  sb         $zero, %lo(D_80076EFA)($at)
+    /* D770 8001CF70 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* D774 8001CF74 FB6E20A0 */  sb         $zero, %lo(D_80076EFB)($at)
     /* D778 8001CF78 850060A0 */  sb         $zero, 0x85($v1)
     /* D77C 8001CF7C 860060A0 */  sb         $zero, 0x86($v1)
     /* D780 8001CF80 D97D010C */  jal        DrawSync
@@ -12829,8 +12829,8 @@ glabel Gamestate08_Draw
     /* DAD8 8001D2D8 21280000 */  addu       $a1, $zero, $zero
     /* DADC 8001D2DC 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
     /* DAE0 8001D2E0 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
-    /* DAE4 8001D2E4 0880043C */  lui        $a0, %hi(g_abHudIconActorRecords + 0x1B8)
-    /* DAE8 8001D2E8 A4818424 */  addiu      $a0, $a0, %lo(g_abHudIconActorRecords + 0x1B8)
+    /* DAE4 8001D2E4 0880043C */  lui        $a0, %hi(D_800781A4)
+    /* DAE8 8001D2E8 A4818424 */  addiu      $a0, $a0, %lo(D_800781A4)
     /* DAEC 8001D2EC 000043AC */  sw         $v1, 0x0($v0)
     /* DAF0 8001D2F0 04004224 */  addiu      $v0, $v0, 0x4
     /* DAF4 8001D2F4 FC234324 */  addiu      $v1, $v0, 0x23FC
@@ -12931,8 +12931,8 @@ glabel Gamestate08_Draw
     /* DC64 8001D464 0780073C */  lui        $a3, %hi(g_apSpritePrimQueue)
     /* DC68 8001D468 F420E724 */  addiu      $a3, $a3, %lo(g_apSpritePrimQueue)
     /* DC6C 8001D46C 21200000 */  addu       $a0, $zero, $zero
-    /* DC70 8001D470 0880033C */  lui        $v1, %hi(g_abHudIconActorRecords + 0x1B8)
-    /* DC74 8001D474 A4816324 */  addiu      $v1, $v1, %lo(g_abHudIconActorRecords + 0x1B8)
+    /* DC70 8001D470 0880033C */  lui        $v1, %hi(D_800781A4)
+    /* DC74 8001D474 A4816324 */  addiu      $v1, $v1, %lo(D_800781A4)
   .L8001D478:
     /* DC78 8001D478 0000E3AC */  sw         $v1, 0x0($a3)
     /* DC7C 8001D47C 0400E724 */  addiu      $a3, $a3, 0x4
@@ -12987,8 +12987,8 @@ glabel Gamestate08_Draw
     /* DD2C 8001D52C 21280000 */   addu      $a1, $zero, $zero
     /* DD30 8001D530 0780033C */  lui        $v1, %hi(g_apSpritePrimQueue)
     /* DD34 8001D534 F4206324 */  addiu      $v1, $v1, %lo(g_apSpritePrimQueue)
-    /* DD38 8001D538 0880043C */  lui        $a0, %hi(g_abHudIconActorRecords + 0x1B8)
-    /* DD3C 8001D53C A4818424 */  addiu      $a0, $a0, %lo(g_abHudIconActorRecords + 0x1B8)
+    /* DD38 8001D538 0880043C */  lui        $a0, %hi(D_800781A4)
+    /* DD3C 8001D53C A4818424 */  addiu      $a0, $a0, %lo(D_800781A4)
   .L8001D540:
     /* DD40 8001D540 000064AC */  sw         $a0, 0x0($v1)
     /* DD44 8001D544 04006324 */  addiu      $v1, $v1, 0x4
@@ -13999,8 +13999,8 @@ glabel Gamestate0C_Draw
     /* EC08 8001E408 2A100202 */  slt        $v0, $s0, $v0
     /* EC0C 8001E40C 16004014 */  bnez       $v0, .L8001E468
     /* EC10 8001E410 21180000 */   addu      $v1, $zero, $zero
-    /* EC14 8001E414 0780053C */  lui        $a1, %hi(D_800777EC)
-    /* EC18 8001E418 EC77A524 */  addiu      $a1, $a1, %lo(D_800777EC)
+    /* EC14 8001E414 0780053C */  lui        $a1, %hi(g_nGamestate0cTimer)
+    /* EC18 8001E418 EC77A524 */  addiu      $a1, $a1, %lo(g_nGamestate0cTimer)
     /* EC1C 8001E41C 0780043C */  lui        $a0, %hi(g_anCosineLut)
     /* EC20 8001E420 78CC8424 */  addiu      $a0, $a0, %lo(g_anCosineLut)
   .L8001E424:
@@ -14051,13 +14051,13 @@ glabel Gamestate0C_Draw
     /* ECD0 8001E4D0 04000224 */  addiu      $v0, $zero, 0x4
     /* ECD4 8001E4D4 05006214 */  bne        $v1, $v0, .L8001E4EC
     /* ECD8 8001E4D8 00010224 */   addiu     $v0, $zero, 0x100
-    /* ECDC 8001E4DC 0780023C */  lui        $v0, %hi(D_800777EC)
-    /* ECE0 8001E4E0 EC77428C */  lw         $v0, %lo(D_800777EC)($v0)
+    /* ECDC 8001E4DC 0780023C */  lui        $v0, %hi(g_nGamestate0cTimer)
+    /* ECE0 8001E4E0 EC77428C */  lw         $v0, %lo(g_nGamestate0cTimer)($v0)
     /* ECE4 8001E4E4 40790008 */  j          .L8001E500
     /* ECE8 8001E4E8 00110200 */   sll       $v0, $v0, 4
   .L8001E4EC:
-    /* ECEC 8001E4EC 0780033C */  lui        $v1, %hi(D_800777EC)
-    /* ECF0 8001E4F0 EC77638C */  lw         $v1, %lo(D_800777EC)($v1)
+    /* ECEC 8001E4EC 0780033C */  lui        $v1, %hi(g_nGamestate0cTimer)
+    /* ECF0 8001E4F0 EC77638C */  lw         $v1, %lo(g_nGamestate0cTimer)($v1)
     /* ECF4 8001E4F4 00000000 */  nop
     /* ECF8 8001E4F8 23104300 */  subu       $v0, $v0, $v1
     /* ECFC 8001E4FC 00110200 */  sll        $v0, $v0, 4
@@ -14096,12 +14096,12 @@ glabel Gamestate0C_Draw
     /* ED74 8001E574 5C57428C */  lw         $v0, %lo(g_nFadeProgress)($v0)
     /* ED78 8001E578 7A00A593 */  lbu        $a1, 0x7A($sp)
     /* ED7C 8001E57C 00104228 */  slti       $v0, $v0, 0x1000
-    /* ED80 8001E580 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* ED84 8001E584 F96E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* ED88 8001E588 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* ED8C 8001E58C FA6E24A0 */  sb         $a0, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* ED90 8001E590 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* ED94 8001E594 FB6E25A0 */  sb         $a1, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* ED80 8001E580 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* ED84 8001E584 F96E23A0 */  sb         $v1, %lo(D_80076EF9)($at)
+    /* ED88 8001E588 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* ED8C 8001E58C FA6E24A0 */  sb         $a0, %lo(D_80076EFA)($at)
+    /* ED90 8001E590 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* ED94 8001E594 FB6E25A0 */  sb         $a1, %lo(D_80076EFB)($at)
     /* ED98 8001E598 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* ED9C 8001E59C 7D6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* EDA0 8001E5A0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -14329,12 +14329,12 @@ glabel StoryIntro_Draw
   .L8001E8C4:
     /* F0C4 8001E8C4 0780103C */  lui        $s0, %hi(g_apSpritePrimQueue)
     /* F0C8 8001E8C8 F4201026 */  addiu      $s0, $s0, %lo(g_apSpritePrimQueue)
-    /* F0CC 8001E8CC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* F0D0 8001E8D0 F96E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* F0D4 8001E8D4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* F0D8 8001E8D8 FA6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* F0DC 8001E8DC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* F0E0 8001E8E0 FB6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* F0CC 8001E8CC 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* F0D0 8001E8D0 F96E20A0 */  sb         $zero, %lo(D_80076EF9)($at)
+    /* F0D4 8001E8D4 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* F0D8 8001E8D8 FA6E20A0 */  sb         $zero, %lo(D_80076EFA)($at)
+    /* F0DC 8001E8DC 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* F0E0 8001E8E0 FB6E20A0 */  sb         $zero, %lo(D_80076EFB)($at)
     /* F0E4 8001E8E4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* F0E8 8001E8E8 7D6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* F0EC 8001E8EC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -14410,12 +14410,12 @@ glabel GemCutscene_Draw
     /* F1E0 8001E9E0 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* F1E4 8001E9E4 1400BFAF */  sw         $ra, 0x14($sp)
     /* F1E8 8001E9E8 1000B0AF */  sw         $s0, 0x10($sp)
-    /* F1EC 8001E9EC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* F1F0 8001E9F0 F96E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* F1F4 8001E9F4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* F1F8 8001E9F8 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* F1FC 8001E9FC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* F200 8001EA00 FB6E24A0 */  sb         $a0, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* F1EC 8001E9EC 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* F1F0 8001E9F0 F96E22A0 */  sb         $v0, %lo(D_80076EF9)($at)
+    /* F1F4 8001E9F4 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* F1F8 8001E9F8 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
+    /* F1FC 8001E9FC 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* F200 8001EA00 FB6E24A0 */  sb         $a0, %lo(D_80076EFB)($at)
     /* F204 8001EA04 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* F208 8001EA08 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* F20C 8001EA0C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -14546,12 +14546,12 @@ glabel ReturningHome_Draw
     /* F3D0 8001EBD0 1057108E */  lw         $s0, %lo(g_pSpriteRecordWriteCursor)($s0)
     /* F3D4 8001EBD4 12000724 */  addiu      $a3, $zero, 0x12
     /* F3D8 8001EBD8 3C00BFAF */  sw         $ra, 0x3C($sp)
-    /* F3DC 8001EBDC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* F3E0 8001EBE0 F96E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* F3E4 8001EBE4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* F3E8 8001EBE8 FA6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* F3EC 8001EBEC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* F3F0 8001EBF0 FB6E20A0 */  sb         $zero, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* F3DC 8001EBDC 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* F3E0 8001EBE0 F96E20A0 */  sb         $zero, %lo(D_80076EF9)($at)
+    /* F3E4 8001EBE4 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* F3E8 8001EBE8 FA6E20A0 */  sb         $zero, %lo(D_80076EFA)($at)
+    /* F3EC 8001EBEC 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* F3F0 8001EBF0 FB6E20A0 */  sb         $zero, %lo(D_80076EFB)($at)
     /* F3F4 8001EBF4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* F3F8 8001EBF8 7D6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* F3FC 8001EBFC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -14814,12 +14814,12 @@ glabel GamestateDraw
     /* F78C 8001EF8C 518A6390 */  lbu        $v1, %lo(g_dwWorldFogColor + 0x1)($v1)
     /* F790 8001EF90 0880043C */  lui        $a0, %hi(g_dwWorldFogColor + 0x2)
     /* F794 8001EF94 528A8490 */  lbu        $a0, %lo(g_dwWorldFogColor + 0x2)($a0)
-    /* F798 8001EF98 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* F79C 8001EF9C F96E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* F7A0 8001EFA0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* F7A4 8001EFA4 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* F7A8 8001EFA8 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* F7AC 8001EFAC FB6E24A0 */  sb         $a0, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* F798 8001EF98 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* F79C 8001EF9C F96E22A0 */  sb         $v0, %lo(D_80076EF9)($at)
+    /* F7A0 8001EFA0 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* F7A4 8001EFA4 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
+    /* F7A8 8001EFA8 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* F7AC 8001EFAC FB6E24A0 */  sb         $a0, %lo(D_80076EFB)($at)
     /* F7B0 8001EFB0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* F7B4 8001EFB4 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* F7B8 8001EFB8 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -28970,9 +28970,9 @@ glabel TickCdMusicStream
     /* 1C538 8002BD38 0780033C */  lui        $v1, %hi(g_dwCdMusicReadHead)
     /* 1C53C 8002BD3C B876638C */  lw         $v1, %lo(g_dwCdMusicReadHead)($v1)
     /* 1C540 8002BD40 C0100200 */  sll        $v0, $v0, 3
-    /* 1C544 8002BD44 0780013C */  lui        $at, %hi(g_anMusicTrackLbaTable + 0x4)
+    /* 1C544 8002BD44 0780013C */  lui        $at, %hi(g_anMusicTrackEndLbaTable)
     /* 1C548 8002BD48 21082200 */  addu       $at, $at, $v0
-    /* 1C54C 8002BD4C BC74228C */  lw         $v0, %lo(g_anMusicTrackLbaTable + 0x4)($at)
+    /* 1C54C 8002BD4C BC74228C */  lw         $v0, %lo(g_anMusicTrackEndLbaTable)($at)
     /* 1C550 8002BD50 00000000 */  nop
     /* 1C554 8002BD54 2B104300 */  sltu       $v0, $v0, $v1
     /* 1C558 8002BD58 45004010 */  beqz       $v0, .L8002BE70
@@ -29490,14 +29490,14 @@ glabel EnterPauseMenu
   .L8002C4C4:
     /* 1CCC4 8002C4C4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 1CCC8 8002C4C8 A87F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState)($at)
-    /* 1CCCC 8002C4CC 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 1CCD0 8002C4D0 A97F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 1CCD4 8002C4D4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 1CCD8 8002C4D8 AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 1CCDC 8002C4DC 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 1CCE0 8002C4E0 AB7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 1CCE4 8002C4E4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 1CCE8 8002C4E8 AC7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 1CCCC 8002C4CC 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 1CCD0 8002C4D0 A97F22A0 */  sb         $v0, %lo(g_abHudDragonCounterBlock)($at)
+    /* 1CCD4 8002C4D4 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 1CCD8 8002C4D8 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
+    /* 1CCDC 8002C4DC 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 1CCE0 8002C4E0 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 1CCE4 8002C4E4 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 1CCE8 8002C4E8 AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 1CCEC 8002C4EC 0C000224 */  addiu      $v0, $zero, 0xC
     /* 1CCF0 8002C4F0 0780013C */  lui        $at, %hi(g_bHudLevelGemRollPhase)
     /* 1CCF4 8002C4F4 AD7F22A0 */  sb         $v0, %lo(g_bHudLevelGemRollPhase)($at)
@@ -29553,14 +29553,14 @@ glabel ExitPauseMenuToGame
     /* 1CD94 8002C594 03000224 */  addiu      $v0, $zero, 0x3
     /* 1CD98 8002C598 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 1CD9C 8002C59C A87F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState)($at)
-    /* 1CDA0 8002C5A0 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 1CDA4 8002C5A4 A97F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 1CDA8 8002C5A8 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 1CDAC 8002C5AC AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 1CDB0 8002C5B0 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 1CDB4 8002C5B4 AB7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 1CDB8 8002C5B8 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 1CDBC 8002C5BC AC7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 1CDA0 8002C5A0 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 1CDA4 8002C5A4 A97F22A0 */  sb         $v0, %lo(g_abHudDragonCounterBlock)($at)
+    /* 1CDA8 8002C5A8 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 1CDAC 8002C5AC AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
+    /* 1CDB0 8002C5B0 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 1CDB4 8002C5B4 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 1CDB8 8002C5B8 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 1CDBC 8002C5BC AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 1CDC0 8002C5C0 0D000224 */  addiu      $v0, $zero, 0xD
     /* 1CDC4 8002C5C4 0780013C */  lui        $at, %hi(g_bHudLevelGemRollPhase)
     /* 1CDC8 8002C5C8 AD7F22A0 */  sb         $v0, %lo(g_bHudLevelGemRollPhase)($at)
@@ -29749,14 +29749,14 @@ glabel ExitSubMenuToTitle
     /* 1D018 8002C818 B074848C */  lw         $a0, %lo(g_nCurrentMusicTrack)($a0)
     /* 1D01C 8002C81C 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 1D020 8002C820 A87F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState)($at)
-    /* 1D024 8002C824 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 1D028 8002C828 A97F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 1D02C 8002C82C 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 1D030 8002C830 AA7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 1D034 8002C834 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 1D038 8002C838 AB7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 1D03C 8002C83C 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 1D040 8002C840 AC7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 1D024 8002C824 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 1D028 8002C828 A97F20A0 */  sb         $zero, %lo(g_abHudDragonCounterBlock)($at)
+    /* 1D02C 8002C82C 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 1D030 8002C830 AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
+    /* 1D034 8002C834 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 1D038 8002C838 AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 1D03C 8002C83C 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 1D040 8002C840 AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 1D044 8002C844 FD59010C */  jal        HandleMusicCommand
     /* 1D048 8002C848 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D04C 8002C84C 1800BF8F */  lw         $ra, 0x18($sp)
@@ -29809,12 +29809,12 @@ glabel EndRespawnToGameplay
     /* 1D0C0 8002C8C0 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1D0C4 8002C8C4 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D0C8 8002C8C8 D85720AC */  sw         $zero, %lo(g_nGamestate)($at)
-    /* 1D0CC 8002C8CC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* 1D0D0 8002C8D0 F96E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* 1D0D4 8002C8D4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* 1D0D8 8002C8D8 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
-    /* 1D0DC 8002C8DC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* 1D0E0 8002C8E0 FB6E24A0 */  sb         $a0, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* 1D0CC 8002C8CC 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* 1D0D0 8002C8D0 F96E22A0 */  sb         $v0, %lo(D_80076EF9)($at)
+    /* 1D0D4 8002C8D4 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* 1D0D8 8002C8D8 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
+    /* 1D0DC 8002C8DC 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* 1D0E0 8002C8E0 FB6E24A0 */  sb         $a0, %lo(D_80076EFB)($at)
     /* 1D0E4 8002C8E4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* 1D0E8 8002C8E8 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* 1D0EC 8002C8EC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
@@ -30086,14 +30086,14 @@ glabel EndGemPickupToWorld
     /* 1D47C 8002CC7C B074848C */  lw         $a0, %lo(g_nCurrentMusicTrack)($a0)
     /* 1D480 8002CC80 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 1D484 8002CC84 A87F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState)($at)
-    /* 1D488 8002CC88 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 1D48C 8002CC8C A97F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 1D490 8002CC90 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 1D494 8002CC94 AA7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 1D498 8002CC98 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 1D49C 8002CC9C AB7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 1D4A0 8002CCA0 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 1D4A4 8002CCA4 AC7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 1D488 8002CC88 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 1D48C 8002CC8C A97F20A0 */  sb         $zero, %lo(g_abHudDragonCounterBlock)($at)
+    /* 1D490 8002CC90 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 1D494 8002CC94 AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
+    /* 1D498 8002CC98 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 1D49C 8002CC9C AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 1D4A0 8002CCA0 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 1D4A4 8002CCA4 AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 1D4A8 8002CCA8 FD59010C */  jal        HandleMusicCommand
     /* 1D4AC 8002CCAC 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D4B0 8002CCB0 1800BF8F */  lw         $ra, 0x18($sp)
@@ -30404,14 +30404,14 @@ glabel EndSaveMenuToWorld
     /* 1D924 8002D124 B074848C */  lw         $a0, %lo(g_nCurrentMusicTrack)($a0)
     /* 1D928 8002D128 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 1D92C 8002D12C A87F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState)($at)
-    /* 1D930 8002D130 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 1D934 8002D134 A97F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 1D938 8002D138 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 1D93C 8002D13C AA7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 1D940 8002D140 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 1D944 8002D144 AB7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 1D948 8002D148 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 1D94C 8002D14C AC7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 1D930 8002D130 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 1D934 8002D134 A97F20A0 */  sb         $zero, %lo(g_abHudDragonCounterBlock)($at)
+    /* 1D938 8002D138 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 1D93C 8002D13C AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
+    /* 1D940 8002D140 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 1D944 8002D144 AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 1D948 8002D148 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 1D94C 8002D14C AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 1D950 8002D150 FD59010C */  jal        HandleMusicCommand
     /* 1D954 8002D154 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D958 8002D158 1800BF8F */  lw         $ra, 0x18($sp)
@@ -30438,13 +30438,13 @@ glabel BeginStoryIntro
     /* 1D98C 8002D18C D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
     /* 1D990 8002D190 455A000C */  jal        FillWord
     /* 1D994 8002D194 5C000624 */   addiu     $a2, $zero, 0x5C
-    /* 1D998 8002D198 0780053C */  lui        $a1, %hi(D_80076228)
-    /* 1D99C 8002D19C 2862A524 */  addiu      $a1, $a1, %lo(D_80076228)
+    /* 1D998 8002D198 0780053C */  lui        $a1, %hi(D_80076228_blk)
+    /* 1D99C 8002D19C 2862A524 */  addiu      $a1, $a1, %lo(D_80076228_blk)
     /* 1D9A0 8002D1A0 FF3F0224 */  addiu      $v0, $zero, 0x3FFF
     /* 1D9A4 8002D1A4 0000A2AC */  sw         $v0, 0x0($a1)
     /* 1D9A8 8002D1A8 00500224 */  addiu      $v0, $zero, 0x5000
-    /* 1D9AC 8002D1AC 0780013C */  lui        $at, %hi(D_80076224)
-    /* 1D9B0 8002D1B0 246222AC */  sw         $v0, %lo(D_80076224)($at)
+    /* 1D9AC 8002D1AC 0780013C */  lui        $at, %hi(D_80076224_blk)
+    /* 1D9B0 8002D1B0 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
     /* 1D9B4 8002D1B4 0780013C */  lui        $at, %hi(D_80075F18)
     /* 1D9B8 8002D1B8 185F22A4 */  sh         $v0, %lo(D_80075F18)($at)
     /* 1D9BC 8002D1BC 0780013C */  lui        $at, %hi(D_80075F1A)
@@ -31905,8 +31905,8 @@ glabel PauseMenu_Update
     /* 1EDA8 8002E5A8 23186200 */  subu       $v1, $v1, $v0
     /* 1EDAC 8002E5AC 00230300 */  sll        $a0, $v1, 12
     /* 1EDB0 8002E5B0 18008500 */  mult       $a0, $a1
-    /* 1EDB4 8002E5B4 0780013C */  lui        $at, %hi(D_80076228)
-    /* 1EDB8 8002E5B8 286223AC */  sw         $v1, %lo(D_80076228)($at)
+    /* 1EDB4 8002E5B4 0780013C */  lui        $at, %hi(D_80076228_blk)
+    /* 1EDB8 8002E5B8 286223AC */  sw         $v1, %lo(D_80076228_blk)($at)
     /* 1EDBC 8002E5BC 10400000 */  mfhi       $t0
     /* 1EDC0 8002E5C0 21100401 */  addu       $v0, $t0, $a0
     /* 1EDC4 8002E5C4 43130200 */  sra        $v0, $v0, 13
@@ -31965,8 +31965,8 @@ glabel PauseMenu_Update
     /* 1EE8C 8002E68C 0780013C */  lui        $at, %hi(g_nMusicVolume)
     /* 1EE90 8002E690 485722AC */  sw         $v0, %lo(g_nMusicVolume)($at)
   .L8002E694:
-    /* 1EE94 8002E694 0780023C */  lui        $v0, %hi(D_80076224)
-    /* 1EE98 8002E698 24624224 */  addiu      $v0, $v0, %lo(D_80076224)
+    /* 1EE94 8002E694 0780023C */  lui        $v0, %hi(D_80076224_blk)
+    /* 1EE98 8002E698 24624224 */  addiu      $v0, $v0, %lo(D_80076224_blk)
     /* 1EE9C 8002E69C 0780033C */  lui        $v1, %hi(g_nMusicVolume)
     /* 1EEA0 8002E6A0 4857638C */  lw         $v1, %lo(g_nMusicVolume)($v1)
     /* 1EEA4 8002E6A4 C0000524 */  addiu      $a1, $zero, 0xC0
@@ -32552,18 +32552,18 @@ glabel RespawnOrGameOver_Update
     /* 1F6F8 8002EEF8 518A23A0 */  sb         $v1, %lo(g_dwWorldFogColor + 0x1)($at)
     /* 1F6FC 8002EEFC 0200A290 */  lbu        $v0, 0x2($a1)
     /* 1F700 8002EF00 0400A524 */  addiu      $a1, $a1, 0x4
-    /* 1F704 8002EF04 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x19)
-    /* 1F708 8002EF08 F96E24A0 */  sb         $a0, %lo(g_abFrameDrawEnv0 + 0x19)($at)
-    /* 1F70C 8002EF0C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1A)
-    /* 1F710 8002EF10 FA6E23A0 */  sb         $v1, %lo(g_abFrameDrawEnv0 + 0x1A)($at)
+    /* 1F704 8002EF04 0780013C */  lui        $at, %hi(D_80076EF9)
+    /* 1F708 8002EF08 F96E24A0 */  sb         $a0, %lo(D_80076EF9)($at)
+    /* 1F70C 8002EF0C 0780013C */  lui        $at, %hi(D_80076EFA)
+    /* 1F710 8002EF10 FA6E23A0 */  sb         $v1, %lo(D_80076EFA)($at)
     /* 1F714 8002EF14 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
     /* 1F718 8002EF18 7D6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
     /* 1F71C 8002EF1C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
     /* 1F720 8002EF20 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
     /* 1F724 8002EF24 0880013C */  lui        $at, %hi(g_dwWorldFogColor + 0x2)
     /* 1F728 8002EF28 528A22A0 */  sb         $v0, %lo(g_dwWorldFogColor + 0x2)($at)
-    /* 1F72C 8002EF2C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x1B)
-    /* 1F730 8002EF30 FB6E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x1B)($at)
+    /* 1F72C 8002EF2C 0780013C */  lui        $at, %hi(D_80076EFB)
+    /* 1F730 8002EF30 FB6E22A0 */  sb         $v0, %lo(D_80076EFB)($at)
     /* 1F734 8002EF34 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
     /* 1F738 8002EF38 7F6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
     /* 1F73C 8002EF3C 0000A28C */  lw         $v0, 0x0($a1)
@@ -32713,8 +32713,8 @@ glabel RespawnOrGameOver_Update
     /* 1F96C 8002F16C 00043126 */  addiu      $s1, $s1, 0x400
     /* 1F970 8002F170 03891100 */  sra        $s1, $s1, 4
     /* 1F974 8002F174 C31F1300 */  sra        $v1, $s3, 31
-    /* 1F978 8002F178 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 1F97C 8002F17C 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 1F978 8002F178 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 1F97C 8002F17C 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 1F980 8002F180 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 1F984 8002F184 668A31A0 */  sb         $s1, %lo(g_abSpyroPersistentEuler + 0x2)($at)
     /* 1F988 8002F188 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x1)
@@ -32795,8 +32795,8 @@ glabel RespawnOrGameOver_Update
     /* 1FAA0 8002F2A0 0880013C */  lui        $at, %hi(g_nSpyroWorldPosY)
     /* 1FAA4 8002F2A4 5C8A22AC */  sw         $v0, %lo(g_nSpyroWorldPosY)($at)
     /* 1FAA8 8002F2A8 C4060224 */  addiu      $v0, $zero, 0x6C4
-    /* 1FAAC 8002F2AC 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 1FAB0 8002F2B0 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 1FAAC 8002F2AC 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 1FAB0 8002F2B0 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 1FAB4 8002F2B4 F6000224 */  addiu      $v0, $zero, 0xF6
     /* 1FAB8 8002F2B8 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 1FABC 8002F2BC 658A22A0 */  sb         $v0, %lo(g_abSpyroPersistentEuler + 0x1)($at)
@@ -33871,8 +33871,8 @@ glabel GemPickup_Update
     /* 20A84 80030284 00000000 */  nop
     /* 20A88 80030288 18007000 */  mult       $v1, $s0
     /* 20A8C 8003028C 12280000 */  mflo       $a1
-    /* 20A90 80030290 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 20A94 80030294 008B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x4)($v1)
+    /* 20A90 80030290 0880033C */  lui        $v1, %hi(g_nSpyroGroundNormalY)
+    /* 20A94 80030294 008B638C */  lw         $v1, %lo(g_nSpyroGroundNormalY)($v1)
     /* 20A98 80030298 00000000 */  nop
     /* 20A9C 8003029C 18006200 */  mult       $v1, $v0
     /* 20AA0 800302A0 00002492 */  lbu        $a0, 0x0($s1)
@@ -33887,8 +33887,8 @@ glabel GemPickup_Update
     /* 20AC4 800302C4 21804000 */  addu       $s0, $v0, $zero
     /* 20AC8 800302C8 165B000C */  jal        LookupSine
     /* 20ACC 800302CC 00210400 */   sll       $a0, $a0, 4
-    /* 20AD0 800302D0 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 20AD4 800302D4 008B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x4)($v1)
+    /* 20AD0 800302D0 0880033C */  lui        $v1, %hi(g_nSpyroGroundNormalY)
+    /* 20AD4 800302D4 008B638C */  lw         $v1, %lo(g_nSpyroGroundNormalY)($v1)
     /* 20AD8 800302D8 00000000 */  nop
     /* 20ADC 800302DC 18007000 */  mult       $v1, $s0
     /* 20AE0 800302E0 12380000 */  mflo       $a3
@@ -33896,8 +33896,8 @@ glabel GemPickup_Update
     /* 20AE8 800302E8 00000000 */  nop
     /* 20AEC 800302EC 18006300 */  mult       $v1, $v1
     /* 20AF0 800302F0 12300000 */  mflo       $a2
-    /* 20AF4 800302F4 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x8)
-    /* 20AF8 800302F8 048B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x8)($v1)
+    /* 20AF4 800302F4 0880033C */  lui        $v1, %hi(D_80078B04)
+    /* 20AF8 800302F8 048B638C */  lw         $v1, %lo(D_80078B04)($v1)
     /* 20AFC 800302FC 00000000 */  nop
     /* 20B00 80030300 18006300 */  mult       $v1, $v1
     /* 20B04 80030304 12280000 */  mflo       $a1
@@ -33934,19 +33934,19 @@ glabel GemPickup_Update
     /* 20B80 80030380 00000000 */   nop
     /* 20B84 80030384 A327010C */  jal        TickSpyroAnimLayer2
     /* 20B88 80030388 00000000 */   nop
-    /* 20B8C 8003038C 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 20B90 80030390 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 20B8C 8003038C 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 20B90 80030390 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 20B94 80030394 00000000 */  nop
     /* 20B98 80030398 00044224 */  addiu      $v0, $v0, 0x400
-    /* 20B9C 8003039C 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 20BA0 800303A0 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 20B9C 8003039C 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 20BA0 800303A0 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 20BA4 800303A4 C937010C */  jal        FindWorldFloorBelowPoint
     /* 20BA8 800303A8 F2FF2426 */   addiu     $a0, $s1, -0xE
     /* 20BAC 800303AC 0880013C */  lui        $at, %hi(g_nSpyroGroundHeightZ)
     /* 20BB0 800303B0 F88A22AC */  sw         $v0, %lo(g_nSpyroGroundHeightZ)($at)
     /* 20BB4 800303B4 64014224 */  addiu      $v0, $v0, 0x164
-    /* 20BB8 800303B8 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 20BBC 800303BC 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 20BB8 800303B8 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 20BBC 800303BC 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 20BC0 800303C0 EB27010C */  jal        SampleSpyroShadowRingHeights
     /* 20BC4 800303C4 21200000 */   addu      $a0, $zero, $zero
     /* 20BC8 800303C8 FEC40008 */  j          .L800313F8
@@ -34758,8 +34758,8 @@ glabel GemPickup_Update
     /* 217CC 80030FCC 21880000 */  addu       $s1, $zero, $zero
     /* 217D0 80030FD0 0780143C */  lui        $s4, %hi(g_anHudRollInStepTable)
     /* 217D4 80030FD4 7CE79426 */  addiu      $s4, $s4, %lo(g_anHudRollInStepTable)
-    /* 217D8 80030FD8 0880103C */  lui        $s0, %hi(g_abHudIconActorRecords + 0x1C8)
-    /* 217DC 80030FDC B4811026 */  addiu      $s0, $s0, %lo(g_abHudIconActorRecords + 0x1C8)
+    /* 217D8 80030FD8 0880103C */  lui        $s0, %hi(D_800781B4)
+    /* 217DC 80030FDC B4811026 */  addiu      $s0, $s0, %lo(D_800781B4)
     /* 217E0 80030FE0 21980000 */  addu       $s3, $zero, $zero
     /* 217E4 80030FE4 C9F2000C */  jal        AdvanceSpyroAnimFrame
     /* 217E8 80030FE8 21900000 */   addu      $s2, $zero, $zero
@@ -34768,8 +34768,8 @@ glabel GemPickup_Update
     /* 217F4 80030FF4 A327010C */  jal        TickSpyroAnimLayer2
     /* 217F8 80030FF8 00000000 */   nop
   .L80030FFC:
-    /* 217FC 80030FFC 0880043C */  lui        $a0, %hi(g_abHudIconActorRecords + 0x1C4)
-    /* 21800 80031000 B0818424 */  addiu      $a0, $a0, %lo(g_abHudIconActorRecords + 0x1C4)
+    /* 217FC 80030FFC 0880043C */  lui        $a0, %hi(D_800781B0)
+    /* 21800 80031000 B0818424 */  addiu      $a0, $a0, %lo(D_800781B0)
     /* 21804 80031004 21206402 */  addu       $a0, $s3, $a0
     /* 21808 80031008 0780053C */  lui        $a1, %hi(D_8006F3F0)
     /* 2180C 8003100C F0F3A524 */  addiu      $a1, $a1, %lo(D_8006F3F0)
@@ -34966,13 +34966,13 @@ glabel GemPickup_Update
     /* 21AE8 800312E8 22004010 */  beqz       $v0, .L80031374
     /* 21AEC 800312EC 00000000 */   nop
     /* 21AF0 800312F0 21980000 */  addu       $s3, $zero, $zero
-    /* 21AF4 800312F4 0880103C */  lui        $s0, %hi(g_abHudIconActorRecords + 0x1C8)
-    /* 21AF8 800312F8 B4811026 */  addiu      $s0, $s0, %lo(g_abHudIconActorRecords + 0x1C8)
+    /* 21AF4 800312F4 0880103C */  lui        $s0, %hi(D_800781B4)
+    /* 21AF8 800312F8 B4811026 */  addiu      $s0, $s0, %lo(D_800781B4)
     /* 21AFC 800312FC 21900000 */  addu       $s2, $zero, $zero
     /* 21B00 80031300 21880000 */  addu       $s1, $zero, $zero
   .L80031304:
-    /* 21B04 80031304 0880043C */  lui        $a0, %hi(g_abHudIconActorRecords + 0x1C4)
-    /* 21B08 80031308 B0818424 */  addiu      $a0, $a0, %lo(g_abHudIconActorRecords + 0x1C4)
+    /* 21B04 80031304 0880043C */  lui        $a0, %hi(D_800781B0)
+    /* 21B08 80031308 B0818424 */  addiu      $a0, $a0, %lo(D_800781B0)
     /* 21B0C 8003130C 21204402 */  addu       $a0, $s2, $a0
     /* 21B10 80031310 0780053C */  lui        $a1, %hi(D_8006F3F0)
     /* 21B14 80031314 F0F3A524 */  addiu      $a1, $a1, %lo(D_8006F3F0)
@@ -36178,8 +36178,8 @@ nonmatching Gamestate0C_Update, 0x548
 glabel Gamestate0C_Update
     /* 22CD8 800324D8 B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 22CDC 800324DC 4000B2AF */  sw         $s2, 0x40($sp)
-    /* 22CE0 800324E0 0780123C */  lui        $s2, %hi(D_800777EC)
-    /* 22CE4 800324E4 EC775226 */  addiu      $s2, $s2, %lo(D_800777EC)
+    /* 22CE0 800324E0 0780123C */  lui        $s2, %hi(g_nGamestate0cTimer)
+    /* 22CE4 800324E4 EC775226 */  addiu      $s2, $s2, %lo(g_nGamestate0cTimer)
     /* 22CE8 800324E8 4800BFAF */  sw         $ra, 0x48($sp)
     /* 22CEC 800324EC 4400B3AF */  sw         $s3, 0x44($sp)
     /* 22CF0 800324F0 3C00B1AF */  sw         $s1, 0x3C($sp)
@@ -36291,8 +36291,8 @@ glabel Gamestate0C_Update
     /* 22E8C 8003268C E35D000C */  jal        SubtractVector
     /* 22E90 80032690 21302002 */   addu      $a2, $s1, $zero
     /* 22E94 80032694 1800A28F */  lw         $v0, 0x18($sp)
-    /* 22E98 80032698 0780033C */  lui        $v1, %hi(D_800777EC)
-    /* 22E9C 8003269C EC77638C */  lw         $v1, %lo(D_800777EC)($v1)
+    /* 22E98 80032698 0780033C */  lui        $v1, %hi(g_nGamestate0cTimer)
+    /* 22E9C 8003269C EC77638C */  lw         $v1, %lo(g_nGamestate0cTimer)($v1)
     /* 22EA0 800326A0 00024224 */  addiu      $v0, $v0, 0x200
     /* 22EA4 800326A4 40006328 */  slti       $v1, $v1, 0x40
     /* 22EA8 800326A8 33006010 */  beqz       $v1, .L80032778
@@ -36316,8 +36316,8 @@ glabel Gamestate0C_Update
     /* 22EF0 800326F0 1E6EA584 */  lh         $a1, %lo(g_nCameraEulerPitch)($a1)
     /* 22EF4 800326F4 5B5E000C */  jal        SignedAngleDelta12
     /* 22EF8 800326F8 2400A2A7 */   sh        $v0, 0x24($sp)
-    /* 22EFC 800326FC 0780033C */  lui        $v1, %hi(D_800777EC)
-    /* 22F00 80032700 EC77638C */  lw         $v1, %lo(D_800777EC)($v1)
+    /* 22EFC 800326FC 0780033C */  lui        $v1, %hi(g_nGamestate0cTimer)
+    /* 22F00 80032700 EC77638C */  lw         $v1, %lo(g_nGamestate0cTimer)($v1)
     /* 22F04 80032704 00000000 */  nop
     /* 22F08 80032708 18004300 */  mult       $v0, $v1
     /* 22F0C 8003270C 2400A487 */  lh         $a0, 0x24($sp)
@@ -36333,8 +36333,8 @@ glabel Gamestate0C_Update
     /* 22F34 80032734 1E6E22A4 */  sh         $v0, %lo(g_nCameraEulerPitch)($at)
     /* 22F38 80032738 5B5E000C */  jal        SignedAngleDelta12
     /* 22F3C 8003273C 00000000 */   nop
-    /* 22F40 80032740 0780033C */  lui        $v1, %hi(D_800777EC)
-    /* 22F44 80032744 EC77638C */  lw         $v1, %lo(D_800777EC)($v1)
+    /* 22F40 80032740 0780033C */  lui        $v1, %hi(g_nGamestate0cTimer)
+    /* 22F44 80032744 EC77638C */  lw         $v1, %lo(g_nGamestate0cTimer)($v1)
     /* 22F48 80032748 00000000 */  nop
     /* 22F4C 8003274C 18004300 */  mult       $v0, $v1
     /* 22F50 80032750 0780023C */  lui        $v0, %hi(g_nCameraEulerYaw)
@@ -36411,13 +36411,13 @@ glabel Gamestate0C_Update
     /* 23064 80032864 588A8424 */  addiu      $a0, $a0, %lo(g_anSpyroWorldPos)
     /* 23068 80032868 C05D000C */  jal        CopyVector
     /* 2306C 8003286C 0C00A524 */   addiu     $a1, $a1, 0xC
-    /* 23070 80032870 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 23074 80032874 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 23070 80032870 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 23074 80032874 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 23078 80032878 0780033C */  lui        $v1, %hi(D_80077850)
     /* 2307C 8003287C 5078638C */  lw         $v1, %lo(D_80077850)($v1)
     /* 23080 80032880 D4024224 */  addiu      $v0, $v0, 0x2D4
-    /* 23084 80032884 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 23088 80032888 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 23084 80032884 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 23088 80032888 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 2308C 8003288C 46006290 */  lbu        $v0, 0x46($v1)
     /* 23090 80032890 00000000 */  nop
     /* 23094 80032894 80004224 */  addiu      $v0, $v0, 0x80
@@ -36706,8 +36706,8 @@ glabel Gamestate0D_Update
     /* 2347C 80032C7C 0880013C */  lui        $at, %hi(g_nSpyroWorldPosY)
     /* 23480 80032C80 5C8A22AC */  sw         $v0, %lo(g_nSpyroWorldPosY)($at)
     /* 23484 80032C84 A0290224 */  addiu      $v0, $zero, 0x29A0
-    /* 23488 80032C88 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 2348C 80032C8C 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 23488 80032C88 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 2348C 80032C8C 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 23490 80032C90 10000224 */  addiu      $v0, $zero, 0x10
     /* 23494 80032C94 0880013C */  lui        $at, %hi(g_bSpyroAnimPrev)
     /* 23498 80032C98 708A22A0 */  sb         $v0, %lo(g_bSpyroAnimPrev)($at)
@@ -36907,8 +36907,8 @@ glabel Gamestate0D_Update
     /* 23774 80032F74 5C8A22AC */  sw         $v0, %lo(g_nSpyroWorldPosY)($at)
     /* 23778 80032F78 00400224 */  addiu      $v0, $zero, 0x4000
   .L80032F7C:
-    /* 2377C 80032F7C 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 23780 80032F80 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 2377C 80032F7C 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 23780 80032F80 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
   .L80032F84:
     /* 23784 80032F84 1000A427 */  addiu      $a0, $sp, 0x10
     /* 23788 80032F88 0880053C */  lui        $a1, %hi(g_anSpyroWorldPos)
@@ -38370,16 +38370,16 @@ glabel ResetCameraStateToTarget
     /* 24BA4 800343A4 446E088D */  lw         $t0, %lo(g_nCameraTargetYawBias)($t0)
     /* 24BA8 800343A8 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState)
     /* 24BAC 800343AC 786E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState)($at)
-    /* 24BB0 800343B0 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 24BB4 800343B4 7C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x4)($at)
-    /* 24BB8 800343B8 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 24BBC 800343BC 806E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x8)($at)
-    /* 24BC0 800343C0 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 24BC4 800343C4 846E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0xC)($at)
-    /* 24BC8 800343C8 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 24BCC 800343CC 886E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x10)($at)
-    /* 24BD0 800343D0 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 24BD4 800343D4 8C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x14)($at)
+    /* 24BB0 800343B0 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 24BB4 800343B4 7C6E20AC */  sw         $zero, %lo(g_nCameraSpringPitchDelta)($at)
+    /* 24BB8 800343B8 0780013C */  lui        $at, %hi(D_80076E80)
+    /* 24BBC 800343BC 806E20AC */  sw         $zero, %lo(D_80076E80)($at)
+    /* 24BC0 800343C0 0780013C */  lui        $at, %hi(D_80076E84)
+    /* 24BC4 800343C4 846E20AC */  sw         $zero, %lo(D_80076E84)($at)
+    /* 24BC8 800343C8 0780013C */  lui        $at, %hi(D_80076E88)
+    /* 24BCC 800343CC 886E20AC */  sw         $zero, %lo(D_80076E88)($at)
+    /* 24BD0 800343D0 0780013C */  lui        $at, %hi(D_80076E8C)
+    /* 24BD4 800343D4 8C6E20AC */  sw         $zero, %lo(D_80076E8C)($at)
     /* 24BD8 800343D8 0780013C */  lui        $at, %hi(g_nCameraCollisionRetries)
     /* 24BDC 800343DC 946E20AC */  sw         $zero, %lo(g_nCameraCollisionRetries)($at)
     /* 24BE0 800343E0 0780013C */  lui        $at, %hi(g_nCameraStuckFrames)
@@ -39316,8 +39316,8 @@ glabel AdvanceCameraSpringStep
     /* 25914 80035114 00000000 */  nop
     /* 25918 80035118 05004014 */  bnez       $v0, .L80035130
     /* 2591C 8003511C 21280000 */   addu      $a1, $zero, $zero
-    /* 25920 80035120 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25924 80035124 7C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x4)($at)
+    /* 25920 80035120 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 25924 80035124 7C6E20AC */  sw         $zero, %lo(g_nCameraSpringPitchDelta)($at)
     /* 25928 80035128 5FD40008 */  j          .L8003517C
     /* 2592C 8003512C 40200800 */   sll       $a0, $t0, 1
   .L80035130:
@@ -39349,8 +39349,8 @@ glabel AdvanceCameraSpringStep
     /* 25984 80035184 60C72684 */  lh         $a2, %lo(g_anCameraSpringDriveGains + 0xC)($at)
     /* 25988 80035188 00000000 */  nop
     /* 2598C 8003518C 1800C500 */  mult       $a2, $a1
-    /* 25990 80035190 0780073C */  lui        $a3, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25994 80035194 7C6EE724 */  addiu      $a3, $a3, %lo(g_anCameraSpringDeltaState + 0x4)
+    /* 25990 80035190 0780073C */  lui        $a3, %hi(g_nCameraSpringPitchDelta)
+    /* 25994 80035194 7C6EE724 */  addiu      $a3, $a3, %lo(g_nCameraSpringPitchDelta)
     /* 25998 80035198 0780013C */  lui        $at, %hi(g_anCameraSpringDampingGains + 0xC)
     /* 2599C 8003519C 21082400 */  addu       $at, $at, $a0
     /* 259A0 800351A0 A8C72284 */  lh         $v0, %lo(g_anCameraSpringDampingGains + 0xC)($at)
@@ -39401,28 +39401,28 @@ glabel AdvanceCameraSpringStep
     /* 25A48 80035248 00000000 */  nop
     /* 25A4C 8003524C 11004014 */  bnez       $v0, .L80035294
     /* 25A50 80035250 00000000 */   nop
-    /* 25A54 80035254 0780023C */  lui        $v0, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25A58 80035258 7C6E428C */  lw         $v0, %lo(g_anCameraSpringDeltaState + 0x4)($v0)
+    /* 25A54 80035254 0780023C */  lui        $v0, %hi(g_nCameraSpringPitchDelta)
+    /* 25A58 80035258 7C6E428C */  lw         $v0, %lo(g_nCameraSpringPitchDelta)($v0)
     /* 25A5C 8003525C 00000000 */  nop
     /* 25A60 80035260 00E04228 */  slti       $v0, $v0, -0x2000
     /* 25A64 80035264 03004010 */  beqz       $v0, .L80035274
     /* 25A68 80035268 00E00224 */   addiu     $v0, $zero, -0x2000
-    /* 25A6C 8003526C 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25A70 80035270 7C6E22AC */  sw         $v0, %lo(g_anCameraSpringDeltaState + 0x4)($at)
+    /* 25A6C 8003526C 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 25A70 80035270 7C6E22AC */  sw         $v0, %lo(g_nCameraSpringPitchDelta)($at)
   .L80035274:
-    /* 25A74 80035274 0780023C */  lui        $v0, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25A78 80035278 7C6E428C */  lw         $v0, %lo(g_anCameraSpringDeltaState + 0x4)($v0)
+    /* 25A74 80035274 0780023C */  lui        $v0, %hi(g_nCameraSpringPitchDelta)
+    /* 25A78 80035278 7C6E428C */  lw         $v0, %lo(g_nCameraSpringPitchDelta)($v0)
     /* 25A7C 8003527C 00000000 */  nop
     /* 25A80 80035280 01204228 */  slti       $v0, $v0, 0x2001
     /* 25A84 80035284 03004014 */  bnez       $v0, .L80035294
     /* 25A88 80035288 00200224 */   addiu     $v0, $zero, 0x2000
-    /* 25A8C 8003528C 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25A90 80035290 7C6E22AC */  sw         $v0, %lo(g_anCameraSpringDeltaState + 0x4)($at)
+    /* 25A8C 8003528C 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 25A90 80035290 7C6E22AC */  sw         $v0, %lo(g_nCameraSpringPitchDelta)($at)
   .L80035294:
     /* 25A94 80035294 0780053C */  lui        $a1, %hi(g_nCameraSpringPitch)
     /* 25A98 80035298 4C6EA524 */  addiu      $a1, $a1, %lo(g_nCameraSpringPitch)
-    /* 25A9C 8003529C 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 25AA0 800352A0 7C6E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0x4)($a0)
+    /* 25A9C 8003529C 0780043C */  lui        $a0, %hi(g_nCameraSpringPitchDelta)
+    /* 25AA0 800352A0 7C6E848C */  lw         $a0, %lo(g_nCameraSpringPitchDelta)($a0)
     /* 25AA4 800352A4 0000A28C */  lw         $v0, 0x0($a1)
     /* 25AA8 800352A8 0780033C */  lui        $v1, %hi(g_dwActiveCameraOptions)
     /* 25AAC 800352AC 1459638C */  lw         $v1, %lo(g_dwActiveCameraOptions)($v1)
@@ -39466,8 +39466,8 @@ glabel AdvanceCameraSpringStep
     /* 25B30 80035330 6CC72684 */  lh         $a2, %lo(g_anCameraSpringDriveGains + 0x18)($at)
     /* 25B34 80035334 00000000 */  nop
     /* 25B38 80035338 1800C500 */  mult       $a2, $a1
-    /* 25B3C 8003533C 0780073C */  lui        $a3, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 25B40 80035340 806EE724 */  addiu      $a3, $a3, %lo(g_anCameraSpringDeltaState + 0x8)
+    /* 25B3C 8003533C 0780073C */  lui        $a3, %hi(D_80076E80)
+    /* 25B40 80035340 806EE724 */  addiu      $a3, $a3, %lo(D_80076E80)
     /* 25B44 80035344 0780013C */  lui        $at, %hi(g_anCameraSpringDampingGains + 0x18)
     /* 25B48 80035348 21082400 */  addu       $at, $at, $a0
     /* 25B4C 8003534C B4C72284 */  lh         $v0, %lo(g_anCameraSpringDampingGains + 0x18)($at)
@@ -39504,8 +39504,8 @@ glabel AdvanceCameraSpringStep
   .L800353C0:
     /* 25BC0 800353C0 0780053C */  lui        $a1, %hi(g_nCameraSpringDistance)
     /* 25BC4 800353C4 506EA524 */  addiu      $a1, $a1, %lo(g_nCameraSpringDistance)
-    /* 25BC8 800353C8 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 25BCC 800353CC 806E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0x8)($a0)
+    /* 25BC8 800353C8 0780043C */  lui        $a0, %hi(D_80076E80)
+    /* 25BCC 800353CC 806E848C */  lw         $a0, %lo(D_80076E80)($a0)
     /* 25BD0 800353D0 0000A28C */  lw         $v0, 0x0($a1)
     /* 25BD4 800353D4 0780033C */  lui        $v1, %hi(g_dwActiveCameraOptions)
     /* 25BD8 800353D8 1459638C */  lw         $v1, %lo(g_dwActiveCameraOptions)($v1)
@@ -39555,8 +39555,8 @@ glabel AdvanceCameraSpringStep
     /* 25C70 80035470 78C72684 */  lh         $a2, %lo(g_anCameraSpringDriveGains + 0x24)($at)
     /* 25C74 80035474 00000000 */  nop
     /* 25C78 80035478 1800C500 */  mult       $a2, $a1
-    /* 25C7C 8003547C 0780073C */  lui        $a3, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 25C80 80035480 846EE724 */  addiu      $a3, $a3, %lo(g_anCameraSpringDeltaState + 0xC)
+    /* 25C7C 8003547C 0780073C */  lui        $a3, %hi(D_80076E84)
+    /* 25C80 80035480 846EE724 */  addiu      $a3, $a3, %lo(D_80076E84)
     /* 25C84 80035484 0780013C */  lui        $at, %hi(g_anCameraSpringDampingGains + 0x24)
     /* 25C88 80035488 21082400 */  addu       $at, $at, $a0
     /* 25C8C 8003548C C0C72284 */  lh         $v0, %lo(g_anCameraSpringDampingGains + 0x24)($at)
@@ -39593,8 +39593,8 @@ glabel AdvanceCameraSpringStep
   .L80035500:
     /* 25D00 80035500 0780053C */  lui        $a1, %hi(g_nCameraSpringRoll)
     /* 25D04 80035504 546EA524 */  addiu      $a1, $a1, %lo(g_nCameraSpringRoll)
-    /* 25D08 80035508 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 25D0C 8003550C 846E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0xC)($a0)
+    /* 25D08 80035508 0780043C */  lui        $a0, %hi(D_80076E84)
+    /* 25D0C 8003550C 846E848C */  lw         $a0, %lo(D_80076E84)($a0)
     /* 25D10 80035510 0000A28C */  lw         $v0, 0x0($a1)
     /* 25D14 80035514 0780033C */  lui        $v1, %hi(g_dwActiveCameraOptions)
     /* 25D18 80035518 1459638C */  lw         $v1, %lo(g_dwActiveCameraOptions)($v1)
@@ -39644,8 +39644,8 @@ glabel AdvanceCameraSpringStep
     /* 25DB0 800355B0 84C72684 */  lh         $a2, %lo(g_anCameraSpringDriveGains + 0x30)($at)
     /* 25DB4 800355B4 00000000 */  nop
     /* 25DB8 800355B8 1800C500 */  mult       $a2, $a1
-    /* 25DBC 800355BC 0780073C */  lui        $a3, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 25DC0 800355C0 886EE724 */  addiu      $a3, $a3, %lo(g_anCameraSpringDeltaState + 0x10)
+    /* 25DBC 800355BC 0780073C */  lui        $a3, %hi(D_80076E88)
+    /* 25DC0 800355C0 886EE724 */  addiu      $a3, $a3, %lo(D_80076E88)
     /* 25DC4 800355C4 0780013C */  lui        $at, %hi(g_anCameraSpringDampingGains + 0x30)
     /* 25DC8 800355C8 21082400 */  addu       $at, $at, $a0
     /* 25DCC 800355CC CCC72284 */  lh         $v0, %lo(g_anCameraSpringDampingGains + 0x30)($at)
@@ -39682,8 +39682,8 @@ glabel AdvanceCameraSpringStep
   .L80035640:
     /* 25E40 80035640 0780053C */  lui        $a1, %hi(g_nCameraSpringPitchBias)
     /* 25E44 80035644 586EA524 */  addiu      $a1, $a1, %lo(g_nCameraSpringPitchBias)
-    /* 25E48 80035648 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 25E4C 8003564C 886E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0x10)($a0)
+    /* 25E48 80035648 0780043C */  lui        $a0, %hi(D_80076E88)
+    /* 25E4C 8003564C 886E848C */  lw         $a0, %lo(D_80076E88)($a0)
     /* 25E50 80035650 0000A28C */  lw         $v0, 0x0($a1)
     /* 25E54 80035654 0780033C */  lui        $v1, %hi(g_dwActiveCameraOptions)
     /* 25E58 80035658 1459638C */  lw         $v1, %lo(g_dwActiveCameraOptions)($v1)
@@ -39733,8 +39733,8 @@ glabel AdvanceCameraSpringStep
     /* 25EF0 800356F0 90C72684 */  lh         $a2, %lo(g_anCameraSpringDriveGains + 0x3C)($at)
     /* 25EF4 800356F4 00000000 */  nop
     /* 25EF8 800356F8 1800C500 */  mult       $a2, $a1
-    /* 25EFC 800356FC 0780073C */  lui        $a3, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 25F00 80035700 8C6EE724 */  addiu      $a3, $a3, %lo(g_anCameraSpringDeltaState + 0x14)
+    /* 25EFC 800356FC 0780073C */  lui        $a3, %hi(D_80076E8C)
+    /* 25F00 80035700 8C6EE724 */  addiu      $a3, $a3, %lo(D_80076E8C)
     /* 25F04 80035704 0780013C */  lui        $at, %hi(g_anCameraSpringDampingGains + 0x3C)
     /* 25F08 80035708 21082400 */  addu       $at, $at, $a0
     /* 25F0C 8003570C D8C72284 */  lh         $v0, %lo(g_anCameraSpringDampingGains + 0x3C)($at)
@@ -39771,8 +39771,8 @@ glabel AdvanceCameraSpringStep
   .L80035780:
     /* 25F80 80035780 0780023C */  lui        $v0, %hi(g_nCameraSpringYawBias)
     /* 25F84 80035784 5C6E4224 */  addiu      $v0, $v0, %lo(g_nCameraSpringYawBias)
-    /* 25F88 80035788 0780033C */  lui        $v1, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 25F8C 8003578C 8C6E638C */  lw         $v1, %lo(g_anCameraSpringDeltaState + 0x14)($v1)
+    /* 25F88 80035788 0780033C */  lui        $v1, %hi(D_80076E8C)
+    /* 25F8C 8003578C 8C6E638C */  lw         $v1, %lo(D_80076E8C)($v1)
     /* 25F90 80035790 0000448C */  lw         $a0, 0x0($v0)
     /* 25F94 80035794 031A0300 */  sra        $v1, $v1, 8
     /* 25F98 80035798 21208300 */  addu       $a0, $a0, $v1
@@ -40606,16 +40606,16 @@ glabel UpdateCameraSpringForMode
     /* 26B3C 8003633C 300680AF */  sw         $zero, %gp_rel(g_nCameraSpringReengageCountdown)($gp)
     /* 26B40 80036340 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState)
     /* 26B44 80036344 786E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState)($at)
-    /* 26B48 80036348 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 26B4C 8003634C 7C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x4)($at)
-    /* 26B50 80036350 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 26B54 80036354 806E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x8)($at)
-    /* 26B58 80036358 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 26B5C 8003635C 846E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0xC)($at)
-    /* 26B60 80036360 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 26B64 80036364 886E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x10)($at)
-    /* 26B68 80036368 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 26B6C 8003636C 8C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x14)($at)
+    /* 26B48 80036348 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 26B4C 8003634C 7C6E20AC */  sw         $zero, %lo(g_nCameraSpringPitchDelta)($at)
+    /* 26B50 80036350 0780013C */  lui        $at, %hi(D_80076E80)
+    /* 26B54 80036354 806E20AC */  sw         $zero, %lo(D_80076E80)($at)
+    /* 26B58 80036358 0780013C */  lui        $at, %hi(D_80076E84)
+    /* 26B5C 8003635C 846E20AC */  sw         $zero, %lo(D_80076E84)($at)
+    /* 26B60 80036360 0780013C */  lui        $at, %hi(D_80076E88)
+    /* 26B64 80036364 886E20AC */  sw         $zero, %lo(D_80076E88)($at)
+    /* 26B68 80036368 0780013C */  lui        $at, %hi(D_80076E8C)
+    /* 26B6C 8003636C 8C6E20AC */  sw         $zero, %lo(D_80076E8C)($at)
     /* 26B70 80036370 5FDC0008 */  j          .L8003717C
     /* 26B74 80036374 00000000 */   nop
   .L80036378:
@@ -41004,10 +41004,10 @@ glabel UpdateCameraSpringForMode
   .L80036914:
     /* 27114 80036914 0780023C */  lui        $v0, %hi(g_anCameraSpringDeltaState)
     /* 27118 80036918 786E428C */  lw         $v0, %lo(g_anCameraSpringDeltaState)($v0)
-    /* 2711C 8003691C 0780033C */  lui        $v1, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 27120 80036920 7C6E638C */  lw         $v1, %lo(g_anCameraSpringDeltaState + 0x4)($v1)
-    /* 27124 80036924 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 27128 80036928 806E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0x8)($a0)
+    /* 2711C 8003691C 0780033C */  lui        $v1, %hi(g_nCameraSpringPitchDelta)
+    /* 27120 80036920 7C6E638C */  lw         $v1, %lo(g_nCameraSpringPitchDelta)($v1)
+    /* 27124 80036924 0780043C */  lui        $a0, %hi(D_80076E80)
+    /* 27128 80036928 806E848C */  lw         $a0, %lo(D_80076E80)($a0)
     /* 2712C 8003692C C00680AF */  sw         $zero, %gp_rel(g_nCameraManualYawInput)($gp)
     /* 27130 80036930 02004104 */  bgez       $v0, .L8003693C
     /* 27134 80036934 00000000 */   nop
@@ -41023,10 +41023,10 @@ glabel UpdateCameraSpringForMode
     /* 27154 80036954 23200400 */  negu       $a0, $a0
   .L80036958:
     /* 27158 80036958 21104400 */  addu       $v0, $v0, $a0
-    /* 2715C 8003695C 0780033C */  lui        $v1, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 27160 80036960 846E638C */  lw         $v1, %lo(g_anCameraSpringDeltaState + 0xC)($v1)
-    /* 27164 80036964 0780043C */  lui        $a0, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 27168 80036968 886E848C */  lw         $a0, %lo(g_anCameraSpringDeltaState + 0x10)($a0)
+    /* 2715C 8003695C 0780033C */  lui        $v1, %hi(D_80076E84)
+    /* 27160 80036960 846E638C */  lw         $v1, %lo(D_80076E84)($v1)
+    /* 27164 80036964 0780043C */  lui        $a0, %hi(D_80076E88)
+    /* 27168 80036968 886E848C */  lw         $a0, %lo(D_80076E88)($a0)
     /* 2716C 8003696C 02006104 */  bgez       $v1, .L80036978
     /* 27170 80036970 00000000 */   nop
     /* 27174 80036974 23180300 */  negu       $v1, $v1
@@ -41036,8 +41036,8 @@ glabel UpdateCameraSpringForMode
     /* 27180 80036980 00000000 */   nop
     /* 27184 80036984 23200400 */  negu       $a0, $a0
   .L80036988:
-    /* 27188 80036988 0780033C */  lui        $v1, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 2718C 8003698C 8C6E638C */  lw         $v1, %lo(g_anCameraSpringDeltaState + 0x14)($v1)
+    /* 27188 80036988 0780033C */  lui        $v1, %hi(D_80076E8C)
+    /* 2718C 8003698C 8C6E638C */  lw         $v1, %lo(D_80076E8C)($v1)
     /* 27190 80036990 21104400 */  addu       $v0, $v0, $a0
     /* 27194 80036994 02006104 */  bgez       $v1, .L800369A0
     /* 27198 80036998 00000000 */   nop
@@ -41416,8 +41416,8 @@ glabel UpdateCameraSpringForMode
     /* 276EC 80036EEC 0C00828C */  lw         $v0, 0xC($a0)
     /* 276F0 80036EF0 00000000 */  nop
     /* 276F4 80036EF4 000062AC */  sw         $v0, 0x0($v1)
-    /* 276F8 80036EF8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 276FC 80036EFC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 276F8 80036EF8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 276FC 80036EFC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 27700 80036F00 1000838C */  lw         $v1, 0x10($a0)
     /* 27704 80036F04 0780013C */  lui        $at, %hi(g_anCameraScriptedTargetPos + 0x8)
     /* 27708 80036F08 D86E22AC */  sw         $v0, %lo(g_anCameraScriptedTargetPos + 0x8)($at)
@@ -41655,16 +41655,16 @@ glabel UpdateCameraSpringForMode
     /* 27A78 80037278 38FFA524 */   addiu     $a1, $a1, -0xC8
     /* 27A7C 8003727C 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState)
     /* 27A80 80037280 786E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState)($at)
-    /* 27A84 80037284 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x4)
-    /* 27A88 80037288 7C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x4)($at)
-    /* 27A8C 8003728C 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x8)
-    /* 27A90 80037290 806E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x8)($at)
-    /* 27A94 80037294 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0xC)
-    /* 27A98 80037298 846E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0xC)($at)
-    /* 27A9C 8003729C 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x10)
-    /* 27AA0 800372A0 886E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x10)($at)
-    /* 27AA4 800372A4 0780013C */  lui        $at, %hi(g_anCameraSpringDeltaState + 0x14)
-    /* 27AA8 800372A8 8C6E20AC */  sw         $zero, %lo(g_anCameraSpringDeltaState + 0x14)($at)
+    /* 27A84 80037284 0780013C */  lui        $at, %hi(g_nCameraSpringPitchDelta)
+    /* 27A88 80037288 7C6E20AC */  sw         $zero, %lo(g_nCameraSpringPitchDelta)($at)
+    /* 27A8C 8003728C 0780013C */  lui        $at, %hi(D_80076E80)
+    /* 27A90 80037290 806E20AC */  sw         $zero, %lo(D_80076E80)($at)
+    /* 27A94 80037294 0780013C */  lui        $at, %hi(D_80076E84)
+    /* 27A98 80037298 846E20AC */  sw         $zero, %lo(D_80076E84)($at)
+    /* 27A9C 8003729C 0780013C */  lui        $at, %hi(D_80076E88)
+    /* 27AA0 800372A0 886E20AC */  sw         $zero, %lo(D_80076E88)($at)
+    /* 27AA4 800372A4 0780013C */  lui        $at, %hi(D_80076E8C)
+    /* 27AA8 800372A8 8C6E20AC */  sw         $zero, %lo(D_80076E8C)($at)
     /* 27AAC 800372AC C7DC0008 */  j          .L8003731C
     /* 27AB0 800372B0 00000000 */   nop
   .L800372B4:
@@ -41986,8 +41986,8 @@ nonmatching ActivateScriptedCameraView, 0x94
 glabel ActivateScriptedCameraView
     /* 27F14 80037714 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 27F18 80037718 21288000 */  addu       $a1, $a0, $zero
-    /* 27F1C 8003771C 0780023C */  lui        $v0, %hi(D_80076EBC)
-    /* 27F20 80037720 BC6E4224 */  addiu      $v0, $v0, %lo(D_80076EBC)
+    /* 27F1C 8003771C 0780023C */  lui        $v0, %hi(g_apScriptedCameraViewBlock)
+    /* 27F20 80037720 BC6E4224 */  addiu      $v0, $v0, %lo(g_apScriptedCameraViewBlock)
     /* 27F24 80037724 3CFF4424 */  addiu      $a0, $v0, -0xC4
     /* 27F28 80037728 1000BFAF */  sw         $ra, 0x10($sp)
     /* 27F2C 8003772C 000045AC */  sw         $a1, 0x0($v0)
@@ -41997,11 +41997,11 @@ glabel ActivateScriptedCameraView
     /* 27F3C 8003773C 4C8B8424 */  addiu      $a0, $a0, %lo(g_anSpyroVelocity)
     /* 27F40 80037740 BC5D000C */  jal        ZeroVector
     /* 27F44 80037744 00000000 */   nop
-    /* 27F48 80037748 0780033C */  lui        $v1, %hi(D_80076EBC)
-    /* 27F4C 8003774C BC6E638C */  lw         $v1, %lo(D_80076EBC)($v1)
+    /* 27F48 80037748 0780033C */  lui        $v1, %hi(g_apScriptedCameraViewBlock)
+    /* 27F4C 8003774C BC6E638C */  lw         $v1, %lo(g_apScriptedCameraViewBlock)($v1)
     /* 27F50 80037750 00DD0224 */  addiu      $v0, $zero, -0x2300
-    /* 27F54 80037754 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 27F58 80037758 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 27F54 80037754 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 27F58 80037758 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 27F5C 8003775C 2400628C */  lw         $v0, 0x24($v1)
     /* 27F60 80037760 0780013C */  lui        $at, %hi(g_nCameraEulerRoll)
     /* 27F64 80037764 1C6E22A4 */  sh         $v0, %lo(g_nCameraEulerRoll)($at)
@@ -42064,8 +42064,8 @@ glabel UpdateScriptedCameraView
     /* 28028 80037828 6EDE0008 */  j          .L800379B8
     /* 2802C 8003782C 00000000 */   nop
   .L80037830:
-    /* 28030 80037830 0780113C */  lui        $s1, %hi(D_80076EBC)
-    /* 28034 80037834 BC6E3126 */  addiu      $s1, $s1, %lo(D_80076EBC)
+    /* 28030 80037830 0780113C */  lui        $s1, %hi(g_apScriptedCameraViewBlock)
+    /* 28034 80037834 BC6E3126 */  addiu      $s1, $s1, %lo(g_apScriptedCameraViewBlock)
     /* 28038 80037838 0000228E */  lw         $v0, 0x0($s1)
     /* 2803C 8003783C 00000000 */  nop
     /* 28040 80037840 25004010 */  beqz       $v0, .L800378D8
@@ -42084,8 +42084,8 @@ glabel UpdateScriptedCameraView
     /* 28074 80037874 8C000626 */  addiu      $a2, $s0, 0x8C
     /* 28078 80037878 E35D000C */  jal        SubtractVector
     /* 2807C 8003787C 21804000 */   addu      $s0, $v0, $zero
-    /* 28080 80037880 0780023C */  lui        $v0, %hi(D_80076EBC)
-    /* 28084 80037884 BC6E428C */  lw         $v0, %lo(D_80076EBC)($v0)
+    /* 28080 80037880 0780023C */  lui        $v0, %hi(g_apScriptedCameraViewBlock)
+    /* 28084 80037884 BC6E428C */  lw         $v0, %lo(g_apScriptedCameraViewBlock)($v0)
     /* 28088 80037888 00000000 */  nop
     /* 2808C 8003788C 3400428C */  lw         $v0, 0x34($v0)
     /* 28090 80037890 00000000 */  nop
@@ -42124,8 +42124,8 @@ glabel UpdateScriptedCameraView
     /* 28104 80037904 40101200 */  sll        $v0, $s2, 1
     /* 28108 80037908 21105200 */  addu       $v0, $v0, $s2
     /* 2810C 8003790C 03930200 */  sra        $s2, $v0, 12
-    /* 28110 80037910 0780103C */  lui        $s0, %hi(D_80076EBC)
-    /* 28114 80037914 BC6E1026 */  addiu      $s0, $s0, %lo(D_80076EBC)
+    /* 28110 80037910 0780103C */  lui        $s0, %hi(g_apScriptedCameraViewBlock)
+    /* 28114 80037914 BC6E1026 */  addiu      $s0, $s0, %lo(g_apScriptedCameraViewBlock)
     /* 28118 80037918 C0101200 */  sll        $v0, $s2, 3
     /* 2811C 8003791C 23105200 */  subu       $v0, $v0, $s2
     /* 28120 80037920 C0100200 */  sll        $v0, $v0, 3
@@ -42155,8 +42155,8 @@ glabel UpdateScriptedCameraView
     /* 2817C 8003797C 588A8424 */  addiu      $a0, $a0, %lo(g_anSpyroWorldPos)
     /* 28180 80037980 C05D000C */  jal        CopyVector
     /* 28184 80037984 00000000 */   nop
-    /* 28188 80037988 0780033C */  lui        $v1, %hi(D_80076EBC)
-    /* 2818C 8003798C BC6E638C */  lw         $v1, %lo(D_80076EBC)($v1)
+    /* 28188 80037988 0780033C */  lui        $v1, %hi(g_apScriptedCameraViewBlock)
+    /* 2818C 8003798C BC6E638C */  lw         $v1, %lo(g_apScriptedCameraViewBlock)($v1)
     /* 28190 80037990 00000000 */  nop
     /* 28194 80037994 0C00628C */  lw         $v0, 0xC($v1)
     /* 28198 80037998 0880013C */  lui        $at, %hi(g_nSpyroBodyPitch)
@@ -42168,8 +42168,8 @@ glabel UpdateScriptedCameraView
     /* 281B0 800379B0 0880013C */  lui        $at, %hi(g_nSpyroBodyYaw)
     /* 281B4 800379B4 748B22AC */  sw         $v0, %lo(g_nSpyroBodyYaw)($at)
   .L800379B8:
-    /* 281B8 800379B8 0780023C */  lui        $v0, %hi(D_80076EBC)
-    /* 281BC 800379BC BC6E428C */  lw         $v0, %lo(D_80076EBC)($v0)
+    /* 281B8 800379B8 0780023C */  lui        $v0, %hi(g_apScriptedCameraViewBlock)
+    /* 281BC 800379BC BC6E428C */  lw         $v0, %lo(g_apScriptedCameraViewBlock)($v0)
     /* 281C0 800379C0 00000000 */  nop
     /* 281C4 800379C4 3000438C */  lw         $v1, 0x30($v0)
     /* 281C8 800379C8 01000224 */  addiu      $v0, $zero, 0x1
@@ -42504,8 +42504,8 @@ glabel UpdateCameraFrame
     /* 2864C 80037E4C 0780013C */  lui        $at, %hi(D_80076E24)
     /* 28650 80037E50 246E22AC */  sw         $v0, %lo(D_80076E24)($at)
   .L80037E54:
-    /* 28654 80037E54 0780013C */  lui        $at, %hi(D_80076EBC)
-    /* 28658 80037E58 BC6E20AC */  sw         $zero, %lo(D_80076EBC)($at)
+    /* 28654 80037E54 0780013C */  lui        $at, %hi(g_apScriptedCameraViewBlock)
+    /* 28658 80037E58 BC6E20AC */  sw         $zero, %lo(g_apScriptedCameraViewBlock)($at)
   .L80037E5C:
     /* 2865C 80037E5C 0780023C */  lui        $v0, %hi(g_bSpyroPadSnapshotReverseFlag)
     /* 28660 80037E60 44594290 */  lbu        $v0, %lo(g_bSpyroPadSnapshotReverseFlag)($v0)
@@ -46176,8 +46176,8 @@ glabel func_8003ABC0
     /* 2B64C 8003AE4C 2800A427 */   addiu     $a0, $sp, 0x28
     /* 2B650 8003AE50 38004386 */  lh         $v1, 0x38($s2)
     /* 2B654 8003AE54 1400428E */  lw         $v0, 0x14($s2)
-    /* 2B658 8003AE58 0880043C */  lui        $a0, %hi(D_80078A60)
-    /* 2B65C 8003AE5C 608A848C */  lw         $a0, %lo(D_80078A60)($a0)
+    /* 2B658 8003AE58 0880043C */  lui        $a0, %hi(g_nSpyroWorldPosZ)
+    /* 2B65C 8003AE5C 608A848C */  lw         $a0, %lo(g_nSpyroWorldPosZ)($a0)
     /* 2B660 8003AE60 23184300 */  subu       $v1, $v0, $v1
     /* 2B664 8003AE64 23106400 */  subu       $v0, $v1, $a0
     /* 2B668 8003AE68 05004018 */  blez       $v0, .L8003AE80
@@ -49404,10 +49404,10 @@ glabel BuildSpyroVelocityFromBodyEuler
     /* 2E1D0 8003D9D0 0880023C */  lui        $v0, %hi(g_nSpyroMotionSpeed)
     /* 2E1D4 8003D9D4 708B428C */  lw         $v0, %lo(g_nSpyroMotionSpeed)($v0)
     /* 2E1D8 8003D9D8 2130A000 */  addu       $a2, $a1, $zero
-    /* 2E1DC 8003D9DC 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 2E1E0 8003D9E0 508B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x4)($at)
-    /* 2E1E4 8003D9E4 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 2E1E8 8003D9E8 548B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 2E1DC 8003D9DC 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 2E1E0 8003D9E0 508B20AC */  sw         $zero, %lo(g_nSpyroVelocityY)($at)
+    /* 2E1E4 8003D9E4 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 2E1E8 8003D9E8 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
     /* 2E1EC 8003D9EC 125C000C */  jal        RotateVectorByMatrix
     /* 2E1F0 8003D9F0 D0FF02AE */   sw        $v0, -0x30($s0)
     /* 2E1F4 8003D9F4 3C00BF8F */  lw         $ra, 0x3C($sp)
@@ -49518,8 +49518,8 @@ glabel UpdateSpyroFlightAttitudeNearGround
     /* 2E34C 8003DB4C 00000000 */  nop
     /* 2E350 8003DB50 18007000 */  mult       $v1, $s0
     /* 2E354 8003DB54 12280000 */  mflo       $a1
-    /* 2E358 8003DB58 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 2E35C 8003DB5C 008B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x4)($v1)
+    /* 2E358 8003DB58 0880033C */  lui        $v1, %hi(g_nSpyroGroundNormalY)
+    /* 2E35C 8003DB5C 008B638C */  lw         $v1, %lo(g_nSpyroGroundNormalY)($v1)
     /* 2E360 8003DB60 00000000 */  nop
     /* 2E364 8003DB64 18006200 */  mult       $v1, $v0
     /* 2E368 8003DB68 0880043C */  lui        $a0, %hi(g_nSpyroBodyYaw)
@@ -49533,8 +49533,8 @@ glabel UpdateSpyroFlightAttitudeNearGround
     /* 2E388 8003DB88 748B848C */  lw         $a0, %lo(g_nSpyroBodyYaw)($a0)
     /* 2E38C 8003DB8C 165B000C */  jal        LookupSine
     /* 2E390 8003DB90 21804000 */   addu      $s0, $v0, $zero
-    /* 2E394 8003DB94 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 2E398 8003DB98 008B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x4)($v1)
+    /* 2E394 8003DB94 0880033C */  lui        $v1, %hi(g_nSpyroGroundNormalY)
+    /* 2E398 8003DB98 008B638C */  lw         $v1, %lo(g_nSpyroGroundNormalY)($v1)
     /* 2E39C 8003DB9C 00000000 */  nop
     /* 2E3A0 8003DBA0 18007000 */  mult       $v1, $s0
     /* 2E3A4 8003DBA4 12380000 */  mflo       $a3
@@ -49542,8 +49542,8 @@ glabel UpdateSpyroFlightAttitudeNearGround
     /* 2E3AC 8003DBAC 00000000 */  nop
     /* 2E3B0 8003DBB0 18006300 */  mult       $v1, $v1
     /* 2E3B4 8003DBB4 12300000 */  mflo       $a2
-    /* 2E3B8 8003DBB8 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x8)
-    /* 2E3BC 8003DBBC 048B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x8)($v1)
+    /* 2E3B8 8003DBB8 0880033C */  lui        $v1, %hi(D_80078B04)
+    /* 2E3BC 8003DBBC 048B638C */  lw         $v1, %lo(D_80078B04)($v1)
     /* 2E3C0 8003DBC0 00000000 */  nop
     /* 2E3C4 8003DBC4 18006300 */  mult       $v1, $v1
     /* 2E3C8 8003DBC8 12280000 */  mflo       $a1
@@ -49726,8 +49726,8 @@ glabel AlignSpyroBodyToVelocity
     /* 2E658 8003DE58 7F5C000C */  jal        VectorLength
     /* 2E65C 8003DE5C 1000A0AF */   sw        $zero, 0x10($sp)
     /* 2E660 8003DE60 21204000 */  addu       $a0, $v0, $zero
-    /* 2E664 8003DE64 0880053C */  lui        $a1, %hi(g_anSpyroVelocity + 0x8)
-    /* 2E668 8003DE68 548BA58C */  lw         $a1, %lo(g_anSpyroVelocity + 0x8)($a1)
+    /* 2E664 8003DE64 0880053C */  lui        $a1, %hi(g_nSpyroVelocityZ)
+    /* 2E668 8003DE68 548BA58C */  lw         $a1, %lo(g_nSpyroVelocityZ)($a1)
     /* 2E66C 8003DE6C 01000624 */  addiu      $a2, $zero, 0x1
     /* 2E670 8003DE70 AD5A000C */  jal        ArcTan2
     /* 2E674 8003DE74 1800A4AF */   sw        $a0, 0x18($sp)
@@ -50116,8 +50116,8 @@ glabel ProbeSpyroGroundContact
     /* 2EB5C 8003E35C 0880033C */  lui        $v1, %hi(g_dwSpyroRequestMask)
     /* 2EB60 8003E360 4C8C638C */  lw         $v1, %lo(g_dwSpyroRequestMask)($v1)
     /* 2EB64 8003E364 00100224 */  addiu      $v0, $zero, 0x1000
-    /* 2EB68 8003E368 0880013C */  lui        $at, %hi(g_anSpyroGroundNormal + 0x8)
-    /* 2EB6C 8003E36C 048B22AC */  sw         $v0, %lo(g_anSpyroGroundNormal + 0x8)($at)
+    /* 2EB68 8003E368 0880013C */  lui        $at, %hi(D_80078B04)
+    /* 2EB6C 8003E36C 048B22AC */  sw         $v0, %lo(D_80078B04)($at)
     /* 2EB70 8003E370 0880013C */  lui        $at, %hi(g_nSpyroGroundSlope)
     /* 2EB74 8003E374 088B20AC */  sw         $zero, %lo(g_nSpyroGroundSlope)($at)
     /* 2EB78 8003E378 00406330 */  andi       $v1, $v1, 0x4000
@@ -50264,8 +50264,8 @@ glabel ProbeSpyroGroundContact
     /* 2EDA0 8003E5A0 7F5C000C */  jal        VectorLength
     /* 2EDA4 8003E5A4 21280000 */   addu      $a1, $zero, $zero
     /* 2EDA8 8003E5A8 21284000 */  addu       $a1, $v0, $zero
-    /* 2EDAC 8003E5AC 0880043C */  lui        $a0, %hi(g_anSpyroGroundNormal + 0x8)
-    /* 2EDB0 8003E5B0 048B848C */  lw         $a0, %lo(g_anSpyroGroundNormal + 0x8)($a0)
+    /* 2EDAC 8003E5AC 0880043C */  lui        $a0, %hi(D_80078B04)
+    /* 2EDB0 8003E5B0 048B848C */  lw         $a0, %lo(D_80078B04)($a0)
     /* 2EDB4 8003E5B4 AD5A000C */  jal        ArcTan2
     /* 2EDB8 8003E5B8 21300000 */   addu      $a2, $zero, $zero
     /* 2EDBC 8003E5BC 00160200 */  sll        $v0, $v0, 24
@@ -50754,8 +50754,8 @@ glabel ChangeSpyroState
     /* 2F45C 8003EC5C 00000000 */   nop
     /* 2F460 8003EC60 0880043C */  lui        $a0, %hi(g_anSpyroGroundNormal)
     /* 2F464 8003EC64 FC8A848C */  lw         $a0, %lo(g_anSpyroGroundNormal)($a0)
-    /* 2F468 8003EC68 0880053C */  lui        $a1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 2F46C 8003EC6C 008BA58C */  lw         $a1, %lo(g_anSpyroGroundNormal + 0x4)($a1)
+    /* 2F468 8003EC68 0880053C */  lui        $a1, %hi(g_nSpyroGroundNormalY)
+    /* 2F46C 8003EC6C 008BA58C */  lw         $a1, %lo(g_nSpyroGroundNormalY)($a1)
     /* 2F470 8003EC70 AD5A000C */  jal        ArcTan2
     /* 2F474 8003EC74 01000624 */   addiu     $a2, $zero, 0x1
     /* 2F478 8003EC78 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
@@ -50873,15 +50873,15 @@ glabel ChangeSpyroState
     /* 2F618 8003EE18 C05D000C */  jal        CopyVector
     /* 2F61C 8003EE1C 18008524 */   addiu     $a1, $a0, 0x18
     /* 2F620 8003EE20 C00D0224 */  addiu      $v0, $zero, 0xDC0
-    /* 2F624 8003EE24 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 2F628 8003EE28 488B22AC */  sw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 2F624 8003EE24 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 2F628 8003EE28 488B22AC */  sw         $v0, %lo(g_nSpyroCarryMotionZ)($at)
     /* 2F62C 8003EE2C 40FF0224 */  addiu      $v0, $zero, -0xC0
     /* 2F630 8003EE30 0880013C */  lui        $at, %hi(g_nSpyroGravityStep)
     /* 2F634 8003EE34 A48B22AC */  sw         $v0, %lo(g_nSpyroGravityStep)($at)
-    /* 2F638 8003EE38 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 2F63C 8003EE3C 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
-    /* 2F640 8003EE40 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 2F644 8003EE44 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 2F638 8003EE38 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 2F63C 8003EE3C 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
+    /* 2F640 8003EE40 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 2F644 8003EE44 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 2F648 8003EE48 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 2F64C 8003EE4C D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
     /* 2F650 8003EE50 0880013C */  lui        $at, %hi(g_nSpyroJumpHoldLatch)
@@ -50927,18 +50927,18 @@ glabel ChangeSpyroState
     /* 2F6E8 8003EEE8 35FE0008 */  j          .L8003F8D4
     /* 2F6EC 8003EEEC 40FF0224 */   addiu     $v0, $zero, -0xC0
   jlabel .L8003EEF0
-    /* 2F6F0 8003EEF0 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 2F6F4 8003EEF4 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 2F6F0 8003EEF0 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 2F6F4 8003EEF4 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 2F6F8 8003EEF8 0880033C */  lui        $v1, %hi(g_nSpyroGroundProbeSuspendFlag)
     /* 2F6FC 8003EEFC F08A638C */  lw         $v1, %lo(g_nSpyroGroundProbeSuspendFlag)($v1)
     /* 2F700 8003EF00 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 2F704 8003EF04 D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
     /* 2F708 8003EF08 0880013C */  lui        $at, %hi(g_anSpyroVelocity)
     /* 2F70C 8003EF0C 4C8B20AC */  sw         $zero, %lo(g_anSpyroVelocity)($at)
-    /* 2F710 8003EF10 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 2F714 8003EF14 508B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x4)($at)
-    /* 2F718 8003EF18 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 2F71C 8003EF1C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 2F710 8003EF10 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 2F714 8003EF14 508B20AC */  sw         $zero, %lo(g_nSpyroVelocityY)($at)
+    /* 2F718 8003EF18 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 2F71C 8003EF1C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 2F720 8003EF20 6C026014 */  bnez       $v1, .L8003F8D4
     /* 2F724 8003EF24 40FF0224 */   addiu     $v0, $zero, -0xC0
     /* 2F728 8003EF28 0880023C */  lui        $v0, %hi(g_nSpyroGroundSlope)
@@ -50983,8 +50983,8 @@ glabel ChangeSpyroState
     /* 2F7BC 8003EFBC 10004014 */  bnez       $v0, .L8003F000
     /* 2F7C0 8003EFC0 81000224 */   addiu     $v0, $zero, 0x81
     /* 2F7C4 8003EFC4 21200002 */  addu       $a0, $s0, $zero
-    /* 2F7C8 8003EFC8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 2F7CC 8003EFCC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 2F7C8 8003EFC8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 2F7CC 8003EFCC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 2F7D0 8003EFD0 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 2F7D4 8003EFD4 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 2F7D8 8003EFD8 7F5C000C */  jal        VectorLength
@@ -51326,8 +51326,8 @@ glabel ChangeSpyroState
     /* 2FCBC 8003F4BC 0780033C */  lui        $v1, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 2FCC0 8003F4C0 E458638C */  lw         $v1, %lo(g_pfnLevelOverlayParticleSpawn)($v1)
     /* 2FCC4 8003F4C4 00F40224 */  addiu      $v0, $zero, -0xC00
-    /* 2FCC8 8003F4C8 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 2FCCC 8003F4CC 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 2FCC8 8003F4C8 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 2FCCC 8003F4CC 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 2FCD0 8003F4D0 01000224 */  addiu      $v0, $zero, 0x1
     /* 2FCD4 8003F4D4 0880013C */  lui        $at, %hi(g_nSpyroGravityEnableFlag)
     /* 2FCD8 8003F4D8 B48B22AC */  sw         $v0, %lo(g_nSpyroGravityEnableFlag)($at)
@@ -51384,8 +51384,8 @@ glabel ChangeSpyroState
     /* 2FD98 8003F598 22000224 */   addiu     $v0, $zero, 0x22
     /* 2FD9C 8003F59C 75006210 */  beq        $v1, $v0, .L8003F774
     /* 2FDA0 8003F5A0 01000224 */   addiu     $v0, $zero, 0x1
-    /* 2FDA4 8003F5A4 0880033C */  lui        $v1, %hi(g_anSpyroMotionVec + 0x8)
-    /* 2FDA8 8003F5A8 6C8B638C */  lw         $v1, %lo(g_anSpyroMotionVec + 0x8)($v1)
+    /* 2FDA4 8003F5A4 0880033C */  lui        $v1, %hi(g_nSpyroMotionZ)
+    /* 2FDA8 8003F5A8 6C8B638C */  lw         $v1, %lo(g_nSpyroMotionZ)($v1)
     /* 2FDAC 8003F5AC 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 2FDB0 8003F5B0 D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
     /* 2FDB4 8003F5B4 0880013C */  lui        $at, %hi(g_nSpyroGroundRunFlag)
@@ -51400,8 +51400,8 @@ glabel ChangeSpyroState
     /* 2FDD8 8003F5D8 005720AC */  sw         $zero, %lo(D_80075700)($at)
     /* 2FDDC 8003F5DC 03006018 */  blez       $v1, .L8003F5EC
     /* 2FDE0 8003F5E0 7C000426 */   addiu     $a0, $s0, 0x7C
-    /* 2FDE4 8003F5E4 0880013C */  lui        $at, %hi(g_anSpyroMotionVec + 0x8)
-    /* 2FDE8 8003F5E8 6C8B20AC */  sw         $zero, %lo(g_anSpyroMotionVec + 0x8)($at)
+    /* 2FDE4 8003F5E4 0880013C */  lui        $at, %hi(g_nSpyroMotionZ)
+    /* 2FDE8 8003F5E8 6C8B20AC */  sw         $zero, %lo(g_nSpyroMotionZ)($at)
   .L8003F5EC:
     /* 2FDEC 8003F5EC 7F5C000C */  jal        VectorLength
     /* 2FDF0 8003F5F0 21280000 */   addu      $a1, $zero, $zero
@@ -51433,15 +51433,15 @@ glabel ChangeSpyroState
     /* 2FE50 8003F650 00000000 */   nop
     /* 2FE54 8003F654 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 2FE58 8003F658 B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
-    /* 2FE5C 8003F65C 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 2FE60 8003F660 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 2FE5C 8003F65C 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 2FE60 8003F660 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 2FE64 8003F664 00000000 */  nop
     /* 2FE68 8003F668 2A104300 */  slt        $v0, $v0, $v1
     /* 2FE6C 8003F66C 05004010 */  beqz       $v0, .L8003F684
     /* 2FE70 8003F670 00000000 */   nop
   .L8003F674:
-    /* 2FE74 8003F674 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 2FE78 8003F678 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 2FE74 8003F674 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 2FE78 8003F678 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 2FE7C 8003F67C 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 2FE80 8003F680 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
   .L8003F684:
@@ -51473,8 +51473,8 @@ glabel ChangeSpyroState
     /* 2FEE0 8003F6E0 588C638C */  lw         $v1, %lo(g_anSpyroRequestTargetPos + 0x8)($v1)
     /* 2FEE4 8003F6E4 0880043C */  lui        $a0, %hi(g_nSpyroBodyYaw)
     /* 2FEE8 8003F6E8 748B848C */  lw         $a0, %lo(g_nSpyroBodyYaw)($a0)
-    /* 2FEEC 8003F6EC 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 2FEF0 8003F6F0 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 2FEEC 8003F6EC 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 2FEF0 8003F6F0 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 2FEF4 8003F6F4 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 2FEF8 8003F6F8 B08B23AC */  sw         $v1, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 2FEFC 8003F6FC 23186200 */  subu       $v1, $v1, $v0
@@ -51536,13 +51536,13 @@ glabel ChangeSpyroState
     /* 2FFC8 8003F7C8 90004524 */  addiu      $a1, $v0, 0x90
     /* 2FFCC 8003F7CC C05D000C */  jal        CopyVector
     /* 2FFD0 8003F7D0 000040AC */   sw        $zero, 0x0($v0)
-    /* 2FFD4 8003F7D4 0880023C */  lui        $v0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 2FFD8 8003F7D8 488B428C */  lw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($v0)
+    /* 2FFD4 8003F7D4 0880023C */  lui        $v0, %hi(g_nSpyroCarryMotionZ)
+    /* 2FFD8 8003F7D8 488B428C */  lw         $v0, %lo(g_nSpyroCarryMotionZ)($v0)
     /* 2FFDC 8003F7DC 00000000 */  nop
     /* 2FFE0 8003F7E0 03004018 */  blez       $v0, .L8003F7F0
     /* 2FFE4 8003F7E4 00FE0224 */   addiu     $v0, $zero, -0x200
-    /* 2FFE8 8003F7E8 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 2FFEC 8003F7EC 488B20AC */  sw         $zero, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 2FFE8 8003F7E8 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 2FFEC 8003F7EC 488B20AC */  sw         $zero, %lo(g_nSpyroCarryMotionZ)($at)
   .L8003F7F0:
     /* 2FFF0 8003F7F0 0880013C */  lui        $at, %hi(g_nSpyroGravityStep)
     /* 2FFF4 8003F7F4 A48B22AC */  sw         $v0, %lo(g_nSpyroGravityStep)($at)
@@ -51575,8 +51575,8 @@ glabel ChangeSpyroState
     /* 3005C 8003F85C 80004230 */  andi       $v0, $v0, 0x80
     /* 30060 8003F860 0E004014 */  bnez       $v0, .L8003F89C
     /* 30064 8003F864 21200002 */   addu      $a0, $s0, $zero
-    /* 30068 8003F868 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3006C 8003F86C 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 30068 8003F868 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3006C 8003F86C 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 30070 8003F870 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 30074 8003F874 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 30078 8003F878 7F5C000C */  jal        VectorLength
@@ -51600,10 +51600,10 @@ glabel ChangeSpyroState
   .L8003F8B8:
     /* 300B8 8003F8B8 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 300BC 8003F8BC D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
-    /* 300C0 8003F8C0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 300C4 8003F8C4 548B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x8)($at)
-    /* 300C8 8003F8C8 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 300CC 8003F8CC 488B20AC */  sw         $zero, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 300C0 8003F8C0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 300C4 8003F8C4 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
+    /* 300C8 8003F8C8 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 300CC 8003F8CC 488B20AC */  sw         $zero, %lo(g_nSpyroCarryMotionZ)($at)
   .L8003F8D0:
     /* 300D0 8003F8D0 C0FD0224 */  addiu      $v0, $zero, -0x240
   .L8003F8D4:
@@ -51691,20 +51691,20 @@ glabel ChangeSpyroState
     /* 30204 8003FA04 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 30208 8003FA08 D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
     /* 3020C 8003FA0C 80110200 */  sll        $v0, $v0, 6
-    /* 30210 8003FA10 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 30214 8003FA14 508B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 30210 8003FA10 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 30214 8003FA14 508B22AC */  sw         $v0, %lo(g_nSpyroVelocityY)($at)
     /* 30218 8003FA18 03006014 */  bnez       $v1, .L8003FA28
     /* 3021C 8003FA1C 80110300 */   sll       $v0, $v1, 6
-    /* 30220 8003FA20 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 30224 8003FA24 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 30220 8003FA20 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 30224 8003FA24 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
   .L8003FA28:
-    /* 30228 8003FA28 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 3022C 8003FA2C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 30228 8003FA28 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 3022C 8003FA2C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 30230 8003FA30 0880103C */  lui        $s0, %hi(g_anSpyroVelocity)
     /* 30234 8003FA34 4C8B1026 */  addiu      $s0, $s0, %lo(g_anSpyroVelocity)
     /* 30238 8003FA38 0000048E */  lw         $a0, 0x0($s0)
-    /* 3023C 8003FA3C 0880053C */  lui        $a1, %hi(g_anSpyroVelocity + 0x4)
-    /* 30240 8003FA40 508BA58C */  lw         $a1, %lo(g_anSpyroVelocity + 0x4)($a1)
+    /* 3023C 8003FA3C 0880053C */  lui        $a1, %hi(g_nSpyroVelocityY)
+    /* 30240 8003FA40 508BA58C */  lw         $a1, %lo(g_nSpyroVelocityY)($a1)
     /* 30244 8003FA44 AD5A000C */  jal        ArcTan2
     /* 30248 8003FA48 01000624 */   addiu     $a2, $zero, 0x1
     /* 3024C 8003FA4C 0880033C */  lui        $v1, %hi(g_nSpyroAirborneFrames)
@@ -51875,8 +51875,8 @@ glabel ChangeSpyroState
     /* 304A8 8003FCA8 80004230 */  andi       $v0, $v0, 0x80
     /* 304AC 8003FCAC 0E004014 */  bnez       $v0, .L8003FCE8
     /* 304B0 8003FCB0 21200002 */   addu      $a0, $s0, $zero
-    /* 304B4 8003FCB4 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 304B8 8003FCB8 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 304B4 8003FCB4 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 304B8 8003FCB8 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 304BC 8003FCBC 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 304C0 8003FCC0 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 304C4 8003FCC4 7F5C000C */  jal        VectorLength
@@ -52108,8 +52108,8 @@ glabel AdvanceSpyroPhysics
     /* 307E4 8003FFE4 12180000 */  mflo       $v1
     /* 307E8 8003FFE8 0880013C */  lui        $at, %hi(g_anSpyroVelocityFp6 + 0x4)
     /* 307EC 8003FFEC 5C8B22AC */  sw         $v0, %lo(g_anSpyroVelocityFp6 + 0x4)($at)
-    /* 307F0 8003FFF0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 307F4 8003FFF4 508B23AC */  sw         $v1, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 307F0 8003FFF0 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 307F4 8003FFF4 508B23AC */  sw         $v1, %lo(g_nSpyroVelocityY)($at)
     /* 307F8 8003FFF8 0400A230 */  andi       $v0, $a1, 0x4
   .L8003FFFC:
     /* 307FC 8003FFFC 56004010 */  beqz       $v0, .L80040158
@@ -52175,16 +52175,16 @@ glabel AdvanceSpyroPhysics
     /* 308D4 800400D4 12180000 */  mflo       $v1
     /* 308D8 800400D8 0880013C */  lui        $at, %hi(g_anSpyroVelocityFp6 + 0x4)
     /* 308DC 800400DC 5C8B22AC */  sw         $v0, %lo(g_anSpyroVelocityFp6 + 0x4)($at)
-    /* 308E0 800400E0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 308E4 800400E4 508B23AC */  sw         $v1, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 308E0 800400E0 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 308E4 800400E4 508B23AC */  sw         $v1, %lo(g_nSpyroVelocityY)($at)
     /* 308E8 800400E8 0400A230 */  andi       $v0, $a1, 0x4
   .L800400EC:
     /* 308EC 800400EC 1A004010 */  beqz       $v0, .L80040158
     /* 308F0 800400F0 00FFC424 */   addiu     $a0, $a2, -0x100
     /* 308F4 800400F4 0880023C */  lui        $v0, %hi(g_anSpyroRequestTargetPos + 0x8)
     /* 308F8 800400F8 588C428C */  lw         $v0, %lo(g_anSpyroRequestTargetPos + 0x8)($v0)
-    /* 308FC 800400FC 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 30900 80040100 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 308FC 800400FC 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 30900 80040100 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 30904 80040104 00000000 */  nop
     /* 30908 80040108 23104300 */  subu       $v0, $v0, $v1
   .L8004010C:
@@ -52206,8 +52206,8 @@ glabel AdvanceSpyroPhysics
     /* 30940 80040140 12180000 */  mflo       $v1
     /* 30944 80040144 0880013C */  lui        $at, %hi(g_anSpyroVelocityFp6 + 0x8)
     /* 30948 80040148 608B22AC */  sw         $v0, %lo(g_anSpyroVelocityFp6 + 0x8)($at)
-    /* 3094C 8004014C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 30950 80040150 548B23AC */  sw         $v1, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 3094C 8004014C 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 30950 80040150 548B23AC */  sw         $v1, %lo(g_nSpyroVelocityZ)($at)
     /* 30954 80040154 00FFC424 */  addiu      $a0, $a2, -0x100
   .L80040158:
     /* 30958 80040158 7F5C000C */  jal        VectorLength
@@ -53151,8 +53151,8 @@ glabel AdvanceSpyroPhysics
     /* 316C8 80040EC8 0D000600 */  break      6
   .L80040ECC:
     /* 316CC 80040ECC 12300000 */  mflo       $a2
-    /* 316D0 80040ED0 0880033C */  lui        $v1, %hi(g_anSpyroMotionVec + 0x8)
-    /* 316D4 80040ED4 6C8B638C */  lw         $v1, %lo(g_anSpyroMotionVec + 0x8)($v1)
+    /* 316D0 80040ED0 0880033C */  lui        $v1, %hi(g_nSpyroMotionZ)
+    /* 316D4 80040ED4 6C8B638C */  lw         $v1, %lo(g_nSpyroMotionZ)($v1)
     /* 316D8 80040ED8 00000000 */  nop
     /* 316DC 80040EDC 1A006200 */  div        $zero, $v1, $v0
     /* 316E0 80040EE0 02004014 */  bnez       $v0, .L80040EEC
@@ -53171,8 +53171,8 @@ glabel AdvanceSpyroPhysics
     /* 3170C 80040F0C 000087AC */  sw         $a3, 0x0($a0)
     /* 31710 80040F10 0880013C */  lui        $at, %hi(g_anSpyroMotionVec + 0x4)
     /* 31714 80040F14 688B26AC */  sw         $a2, %lo(g_anSpyroMotionVec + 0x4)($at)
-    /* 31718 80040F18 0880013C */  lui        $at, %hi(g_anSpyroMotionVec + 0x8)
-    /* 3171C 80040F1C 6C8B23AC */  sw         $v1, %lo(g_anSpyroMotionVec + 0x8)($at)
+    /* 31718 80040F18 0880013C */  lui        $at, %hi(g_nSpyroMotionZ)
+    /* 3171C 80040F1C 6C8B23AC */  sw         $v1, %lo(g_nSpyroMotionZ)($at)
     /* 31720 80040F20 7F5C000C */  jal        VectorLength
     /* 31724 80040F24 01000524 */   addiu     $a1, $zero, 0x1
     /* 31728 80040F28 0880013C */  lui        $at, %hi(g_nSpyroFrameMotionLength)
@@ -53217,8 +53217,8 @@ glabel DispatchSpyroPadStateChanges
     /* 317A0 80040FA0 00000000 */  nop
     /* 317A4 80040FA4 08004010 */  beqz       $v0, .L80040FC8
     /* 317A8 80040FA8 0EFE0224 */   addiu     $v0, $zero, -0x1F2
-    /* 317AC 80040FAC 0880033C */  lui        $v1, %hi(g_anSpyroMotionVec + 0x8)
-    /* 317B0 80040FB0 6C8B638C */  lw         $v1, %lo(g_anSpyroMotionVec + 0x8)($v1)
+    /* 317AC 80040FAC 0880033C */  lui        $v1, %hi(g_nSpyroMotionZ)
+    /* 317B0 80040FB0 6C8B638C */  lw         $v1, %lo(g_nSpyroMotionZ)($v1)
     /* 317B4 80040FB4 00000000 */  nop
     /* 317B8 80040FB8 03006018 */  blez       $v1, .L80040FC8
     /* 317BC 80040FBC 24208200 */   and       $a0, $a0, $v0
@@ -54146,8 +54146,8 @@ glabel UpdateSpyroStateBehavior
     /* 324B0 80041CB0 0880013C */  lui        $at, %hi(g_nSpyroJumpHoldLatch)
     /* 324B4 80041CB4 AC8B22AC */  sw         $v0, %lo(g_nSpyroJumpHoldLatch)($at)
   .L80041CB8:
-    /* 324B8 80041CB8 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 324BC 80041CBC 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 324B8 80041CB8 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 324BC 80041CBC 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 324C0 80041CC0 00000000 */  nop
     /* 324C4 80041CC4 03004104 */  bgez       $v0, .L80041CD4
     /* 324C8 80041CC8 01000224 */   addiu     $v0, $zero, 0x1
@@ -54195,18 +54195,18 @@ glabel UpdateSpyroStateBehavior
     /* 32568 80041D68 4C8B428C */  lw         $v0, %lo(g_anSpyroVelocity)($v0)
     /* 3256C 80041D6C 00000000 */  nop
     /* 32570 80041D70 18006200 */  mult       $v1, $v0
-    /* 32574 80041D74 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 32578 80041D78 008B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x4)($v1)
+    /* 32574 80041D74 0880033C */  lui        $v1, %hi(g_nSpyroGroundNormalY)
+    /* 32578 80041D78 008B638C */  lw         $v1, %lo(g_nSpyroGroundNormalY)($v1)
     /* 3257C 80041D7C 12280000 */  mflo       $a1
-    /* 32580 80041D80 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x4)
-    /* 32584 80041D84 508B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x4)($v0)
+    /* 32580 80041D80 0880023C */  lui        $v0, %hi(g_nSpyroVelocityY)
+    /* 32584 80041D84 508B428C */  lw         $v0, %lo(g_nSpyroVelocityY)($v0)
     /* 32588 80041D88 00000000 */  nop
     /* 3258C 80041D8C 18006200 */  mult       $v1, $v0
-    /* 32590 80041D90 0880033C */  lui        $v1, %hi(g_anSpyroGroundNormal + 0x8)
-    /* 32594 80041D94 048B638C */  lw         $v1, %lo(g_anSpyroGroundNormal + 0x8)($v1)
+    /* 32590 80041D90 0880033C */  lui        $v1, %hi(D_80078B04)
+    /* 32594 80041D94 048B638C */  lw         $v1, %lo(D_80078B04)($v1)
     /* 32598 80041D98 12200000 */  mflo       $a0
-    /* 3259C 80041D9C 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 325A0 80041DA0 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 3259C 80041D9C 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 325A0 80041DA0 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 325A4 80041DA4 00000000 */  nop
     /* 325A8 80041DA8 18006200 */  mult       $v1, $v0
     /* 325AC 80041DAC 2110A400 */  addu       $v0, $a1, $a0
@@ -54286,8 +54286,8 @@ glabel UpdateSpyroStateBehavior
     /* 326C4 80041EC4 F00F0108 */  j          .L80043FC0
     /* 326C8 80041EC8 20000424 */   addiu     $a0, $zero, 0x20
   .L80041ECC:
-    /* 326CC 80041ECC 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 326D0 80041ED0 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 326CC 80041ECC 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 326D0 80041ED0 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 326D4 80041ED4 00000000 */  nop
     /* 326D8 80041ED8 00E74228 */  slti       $v0, $v0, -0x1900
     /* 326DC 80041EDC 38084014 */  bnez       $v0, .L80043FC0
@@ -54375,8 +54375,8 @@ glabel UpdateSpyroStateBehavior
   .L80042014:
     /* 32814 80042014 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
     /* 32818 80042018 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
-    /* 3281C 8004201C 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 32820 80042020 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 3281C 8004201C 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 32820 80042020 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 32824 80042024 80100200 */  sll        $v0, $v0, 2
     /* 32828 80042028 0780013C */  lui        $at, %hi(g_anLevelDeathPlaneZTable)
     /* 3282C 8004202C 21082200 */  addu       $at, $at, $v0
@@ -54680,14 +54680,14 @@ glabel UpdateSpyroStateBehavior
     /* 32C90 80042490 00000000 */   nop
     /* 32C94 80042494 9AFA000C */  jal        ChangeSpyroState
     /* 32C98 80042498 14000424 */   addiu     $a0, $zero, 0x14
-    /* 32C9C 8004249C 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 32CA0 800424A0 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 32C9C 8004249C 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 32CA0 800424A0 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 32CA4 800424A4 0880033C */  lui        $v1, %hi(g_nSpyroAirborneFrames)
     /* 32CA8 800424A8 F48A638C */  lw         $v1, %lo(g_nSpyroAirborneFrames)($v1)
     /* 32CAC 800424AC C00D4224 */  addiu      $v0, $v0, 0xDC0
     /* 32CB0 800424B0 01006324 */  addiu      $v1, $v1, 0x1
-    /* 32CB4 800424B4 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 32CB8 800424B8 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 32CB4 800424B4 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 32CB8 800424B8 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 32CBC 800424BC 0880013C */  lui        $at, %hi(g_nSpyroAirborneFrames)
     /* 32CC0 800424C0 F48A23AC */  sw         $v1, %lo(g_nSpyroAirborneFrames)($at)
     /* 32CC4 800424C4 F20F0108 */  j          .L80043FC8
@@ -54762,8 +54762,8 @@ glabel UpdateSpyroStateBehavior
     /* 32DC8 800425C8 80004230 */  andi       $v0, $v0, 0x80
     /* 32DCC 800425CC 7E064014 */  bnez       $v0, .L80043FC8
     /* 32DD0 800425D0 98FE8424 */   addiu     $a0, $a0, -0x168
-    /* 32DD4 800425D4 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 32DD8 800425D8 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 32DD4 800425D4 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 32DD8 800425D8 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 32DDC 800425DC 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 32DE0 800425E0 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 32DE4 800425E4 7F5C000C */  jal        VectorLength
@@ -55024,8 +55024,8 @@ glabel UpdateSpyroStateBehavior
     /* 331A8 800429A8 00000000 */  nop
     /* 331AC 800429AC 86054014 */  bnez       $v0, .L80043FC8
     /* 331B0 800429B0 00000000 */   nop
-    /* 331B4 800429B4 0880043C */  lui        $a0, %hi(D_80078A60)
-    /* 331B8 800429B8 608A848C */  lw         $a0, %lo(D_80078A60)($a0)
+    /* 331B4 800429B4 0880043C */  lui        $a0, %hi(g_nSpyroWorldPosZ)
+    /* 331B8 800429B8 608A848C */  lw         $a0, %lo(g_nSpyroWorldPosZ)($a0)
     /* 331BC 800429BC 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 331C0 800429C0 B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
     /* 331C4 800429C4 00000000 */  nop
@@ -55066,8 +55066,8 @@ glabel UpdateSpyroStateBehavior
     /* 33244 80042A44 00000000 */   nop
     /* 33248 80042A48 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 3324C 80042A4C B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
-    /* 33250 80042A50 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 33254 80042A54 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 33250 80042A50 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 33254 80042A54 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 33258 80042A58 18004224 */  addiu      $v0, $v0, 0x18
     /* 3325C 80042A5C 2A104300 */  slt        $v0, $v0, $v1
     /* 33260 80042A60 57054014 */  bnez       $v0, .L80043FC0
@@ -55208,8 +55208,8 @@ glabel UpdateSpyroStateBehavior
     /* 33448 80042C48 00000000 */   nop
     /* 3344C 80042C4C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
     /* 33450 80042C50 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
-    /* 33454 80042C54 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 33458 80042C58 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 33454 80042C54 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 33458 80042C58 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 3345C 80042C5C 80100200 */  sll        $v0, $v0, 2
     /* 33460 80042C60 0780013C */  lui        $at, %hi(g_anLevelDeathPlaneZTable)
     /* 33464 80042C64 21082200 */  addu       $at, $at, $v0
@@ -55443,11 +55443,11 @@ glabel UpdateSpyroStateBehavior
     /* 337B4 80042FB4 FC8A428C */  lw         $v0, %lo(g_anSpyroGroundNormal)($v0)
     /* 337B8 80042FB8 00000000 */  nop
     /* 337BC 80042FBC 18006200 */  mult       $v1, $v0
-    /* 337C0 80042FC0 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 337C4 80042FC4 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 337C0 80042FC0 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 337C4 80042FC4 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 337C8 80042FC8 12200000 */  mflo       $a0
-    /* 337CC 80042FCC 0880023C */  lui        $v0, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 337D0 80042FD0 008B428C */  lw         $v0, %lo(g_anSpyroGroundNormal + 0x4)($v0)
+    /* 337CC 80042FCC 0880023C */  lui        $v0, %hi(g_nSpyroGroundNormalY)
+    /* 337D0 80042FD0 008B428C */  lw         $v0, %lo(g_nSpyroGroundNormalY)($v0)
     /* 337D4 80042FD4 00000000 */  nop
     /* 337D8 80042FD8 18006200 */  mult       $v1, $v0
     /* 337DC 80042FDC 12180000 */  mflo       $v1
@@ -55497,8 +55497,8 @@ glabel UpdateSpyroStateBehavior
     /* 33884 80043084 F00F0108 */  j          .L80043FC0
     /* 33888 80043088 00000000 */   nop
   .L8004308C:
-    /* 3388C 8004308C 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 33890 80043090 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 3388C 8004308C 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 33890 80043090 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 33894 80043094 00000000 */  nop
     /* 33898 80043098 CB034104 */  bgez       $v0, .L80043FC8
     /* 3389C 8004309C 00000000 */   nop
@@ -55638,8 +55638,8 @@ glabel UpdateSpyroStateBehavior
     /* 33A9C 8004329C 10000424 */   addiu     $a0, $zero, 0x10
     /* 33AA0 800432A0 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 33AA4 800432A4 B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
-    /* 33AA8 800432A8 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 33AAC 800432AC 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 33AA8 800432A8 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 33AAC 800432AC 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 33AB0 800432B0 18004224 */  addiu      $v0, $v0, 0x18
     /* 33AB4 800432B4 2A104300 */  slt        $v0, $v0, $v1
     /* 33AB8 800432B8 41034014 */  bnez       $v0, .L80043FC0
@@ -55683,13 +55683,13 @@ glabel UpdateSpyroStateBehavior
     /* 33B48 80043348 00000000 */  nop
     /* 33B4C 8004334C 0A004010 */  beqz       $v0, .L80043378
     /* 33B50 80043350 00000000 */   nop
-    /* 33B54 80043354 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 33B58 80043358 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 33B54 80043354 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 33B58 80043358 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 33B5C 8004335C 0880013C */  lui        $at, %hi(g_nSpyroGravityEnableFlag)
     /* 33B60 80043360 B48B20AC */  sw         $zero, %lo(g_nSpyroGravityEnableFlag)($at)
     /* 33B64 80043364 C00D4224 */  addiu      $v0, $v0, 0xDC0
-    /* 33B68 80043368 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 33B6C 8004336C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 33B68 80043368 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 33B6C 8004336C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 33B70 80043370 EB0C0108 */  j          .L800433AC
     /* 33B74 80043374 00000000 */   nop
   .L80043378:
@@ -55724,11 +55724,11 @@ glabel UpdateSpyroStateBehavior
     /* 33BE4 800433E4 FC8A428C */  lw         $v0, %lo(g_anSpyroGroundNormal)($v0)
     /* 33BE8 800433E8 00000000 */  nop
     /* 33BEC 800433EC 18006200 */  mult       $v1, $v0
-    /* 33BF0 800433F0 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 33BF4 800433F4 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 33BF0 800433F0 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 33BF4 800433F4 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 33BF8 800433F8 12200000 */  mflo       $a0
-    /* 33BFC 800433FC 0880023C */  lui        $v0, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 33C00 80043400 008B428C */  lw         $v0, %lo(g_anSpyroGroundNormal + 0x4)($v0)
+    /* 33BFC 800433FC 0880023C */  lui        $v0, %hi(g_nSpyroGroundNormalY)
+    /* 33C00 80043400 008B428C */  lw         $v0, %lo(g_nSpyroGroundNormalY)($v0)
     /* 33C04 80043404 00000000 */  nop
     /* 33C08 80043408 18006200 */  mult       $v1, $v0
     /* 33C0C 8004340C 12180000 */  mflo       $v1
@@ -55778,8 +55778,8 @@ glabel UpdateSpyroStateBehavior
     /* 33CA8 800434A8 00000000 */  nop
     /* 33CAC 800434AC C4024010 */  beqz       $v0, .L80043FC0
     /* 33CB0 800434B0 0B000424 */   addiu     $a0, $zero, 0xB
-    /* 33CB4 800434B4 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 33CB8 800434B8 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 33CB4 800434B4 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 33CB8 800434B8 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 33CBC 800434BC 00000000 */  nop
     /* 33CC0 800434C0 C1024104 */  bgez       $v0, .L80043FC8
     /* 33CC4 800434C4 00000000 */   nop
@@ -55996,8 +55996,8 @@ glabel UpdateSpyroStateBehavior
     /* 33FE0 800437E0 00044228 */  slti       $v0, $v0, 0x400
     /* 33FE4 800437E4 25004014 */  bnez       $v0, .L8004387C
     /* 33FE8 800437E8 00000000 */   nop
-    /* 33FEC 800437EC 0880033C */  lui        $v1, %hi(g_anSpyroMotionVec + 0x8)
-    /* 33FF0 800437F0 6C8B638C */  lw         $v1, %lo(g_anSpyroMotionVec + 0x8)($v1)
+    /* 33FEC 800437EC 0880033C */  lui        $v1, %hi(g_nSpyroMotionZ)
+    /* 33FF0 800437F0 6C8B638C */  lw         $v1, %lo(g_nSpyroMotionZ)($v1)
     /* 33FF4 800437F4 00000000 */  nop
     /* 33FF8 800437F8 01086228 */  slti       $v0, $v1, 0x801
     /* 33FFC 800437FC 07004010 */  beqz       $v0, .L8004381C
@@ -56026,8 +56026,8 @@ glabel UpdateSpyroStateBehavior
     /* 3404C 8004384C 00000000 */  nop
     /* 34050 80043850 21004014 */  bnez       $v0, .L800438D8
     /* 34054 80043854 00000000 */   nop
-    /* 34058 80043858 0880043C */  lui        $a0, %hi(D_80078A60)
-    /* 3405C 8004385C 608A848C */  lw         $a0, %lo(D_80078A60)($a0)
+    /* 34058 80043858 0880043C */  lui        $a0, %hi(g_nSpyroWorldPosZ)
+    /* 3405C 8004385C 608A848C */  lw         $a0, %lo(g_nSpyroWorldPosZ)($a0)
     /* 34060 80043860 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 34064 80043864 B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
     /* 34068 80043868 00000000 */  nop
@@ -56166,8 +56166,8 @@ glabel UpdateSpyroStateBehavior
     /* 34254 80043A54 1F004228 */  slti       $v0, $v0, 0x1F
     /* 34258 80043A58 0B004014 */  bnez       $v0, .L80043A88
     /* 3425C 80043A5C 00000000 */   nop
-    /* 34260 80043A60 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 34264 80043A64 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 34260 80043A60 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 34264 80043A64 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 34268 80043A68 00000000 */  nop
     /* 3426C 80043A6C 00064228 */  slti       $v0, $v0, 0x600
     /* 34270 80043A70 05004010 */  beqz       $v0, .L80043A88
@@ -56183,8 +56183,8 @@ glabel UpdateSpyroStateBehavior
     /* 34294 80043A94 00000000 */  nop
     /* 34298 80043A98 1E004014 */  bnez       $v0, .L80043B14
     /* 3429C 80043A9C 00000000 */   nop
-    /* 342A0 80043AA0 0880053C */  lui        $a1, %hi(D_80078A60)
-    /* 342A4 80043AA4 608AA58C */  lw         $a1, %lo(D_80078A60)($a1)
+    /* 342A0 80043AA0 0880053C */  lui        $a1, %hi(g_nSpyroWorldPosZ)
+    /* 342A4 80043AA4 608AA58C */  lw         $a1, %lo(g_nSpyroWorldPosZ)($a1)
     /* 342A8 80043AA8 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 342AC 80043AAC B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
     /* 342B0 80043AB0 00000000 */  nop
@@ -56331,8 +56331,8 @@ glabel UpdateSpyroStateBehavior
     /* 344B8 80043CB8 1F004228 */  slti       $v0, $v0, 0x1F
     /* 344BC 80043CBC 0B004014 */  bnez       $v0, .L80043CEC
     /* 344C0 80043CC0 00000000 */   nop
-    /* 344C4 80043CC4 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 344C8 80043CC8 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 344C4 80043CC4 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 344C8 80043CC8 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 344CC 80043CCC 00000000 */  nop
     /* 344D0 80043CD0 01F44228 */  slti       $v0, $v0, -0xBFF
     /* 344D4 80043CD4 05004014 */  bnez       $v0, .L80043CEC
@@ -56348,8 +56348,8 @@ glabel UpdateSpyroStateBehavior
     /* 344F8 80043CF8 00000000 */  nop
     /* 344FC 80043CFC 1E004014 */  bnez       $v0, .L80043D78
     /* 34500 80043D00 00000000 */   nop
-    /* 34504 80043D04 0880053C */  lui        $a1, %hi(D_80078A60)
-    /* 34508 80043D08 608AA58C */  lw         $a1, %lo(D_80078A60)($a1)
+    /* 34504 80043D04 0880053C */  lui        $a1, %hi(g_nSpyroWorldPosZ)
+    /* 34508 80043D08 608AA58C */  lw         $a1, %lo(g_nSpyroWorldPosZ)($a1)
     /* 3450C 80043D0C 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 34510 80043D10 B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
     /* 34514 80043D14 00000000 */  nop
@@ -56456,8 +56456,8 @@ glabel UpdateSpyroStateBehavior
   .L80043E8C:
     /* 3468C 80043E8C 9AFA000C */  jal        ChangeSpyroState
     /* 34690 80043E90 18000424 */   addiu     $a0, $zero, 0x18
-    /* 34694 80043E94 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 34698 80043E98 548B4224 */  addiu      $v0, $v0, %lo(g_anSpyroVelocity + 0x8)
+    /* 34694 80043E94 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 34698 80043E98 548B4224 */  addiu      $v0, $v0, %lo(g_nSpyroVelocityZ)
     /* 3469C 80043E9C 0880013C */  lui        $at, %hi(g_nSpyroGravityEnableFlag)
     /* 346A0 80043EA0 B48B20AC */  sw         $zero, %lo(g_nSpyroGravityEnableFlag)($at)
     /* 346A4 80043EA4 0000438C */  lw         $v1, 0x0($v0)
@@ -56759,8 +56759,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34AC4 800442C4 0400038E */  lw         $v1, 0x4($s0)
     /* 34AC8 800442C8 23100200 */  negu       $v0, $v0
     /* 34ACC 800442CC 18004300 */  mult       $v0, $v1
-    /* 34AD0 800442D0 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 34AD4 800442D4 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 34AD0 800442D0 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 34AD4 800442D4 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 34AD8 800442D8 12200000 */  mflo       $a0
     /* 34ADC 800442DC 0880023C */  lui        $v0, %hi(g_anSpyroWallSlideNudgeAccum + 0x4)
     /* 34AE0 800442E0 148B428C */  lw         $v0, %lo(g_anSpyroWallSlideNudgeAccum + 0x4)($v0)
@@ -56971,8 +56971,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34DC4 800445C4 0400038E */  lw         $v1, 0x4($s0)
     /* 34DC8 800445C8 23100200 */  negu       $v0, $v0
     /* 34DCC 800445CC 18004300 */  mult       $v0, $v1
-    /* 34DD0 800445D0 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 34DD4 800445D4 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 34DD0 800445D0 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 34DD4 800445D4 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 34DD8 800445D8 12200000 */  mflo       $a0
     /* 34DDC 800445DC 0880023C */  lui        $v0, %hi(g_anSpyroWallSlideNudgeAccum + 0x4)
     /* 34DE0 800445E0 148B428C */  lw         $v0, %lo(g_anSpyroWallSlideNudgeAccum + 0x4)($v0)
@@ -57043,8 +57043,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34ED8 800446D8 88FF0526 */  addiu      $a1, $s0, -0x78
     /* 34EDC 800446DC 12500000 */  mflo       $t2
     /* 34EE0 800446E0 03130A00 */  sra        $v0, $t2, 12
-    /* 34EE4 800446E4 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 34EE8 800446E8 448B22AC */  sw         $v0, %lo(g_anSpyroCarryMotionVec + 0x4)($at)
+    /* 34EE4 800446E4 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionY)
+    /* 34EE8 800446E8 448B22AC */  sw         $v0, %lo(g_nSpyroCarryMotionY)($at)
     /* 34EEC 800446EC E35D000C */  jal        SubtractVector
     /* 34EF0 800446F0 21304002 */   addu      $a2, $s2, $zero
     /* 34EF4 800446F4 1000A427 */  addiu      $a0, $sp, 0x10
@@ -57079,8 +57079,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34F64 80044764 58FF038E */  lw         $v1, -0xA8($s0)
     /* 34F68 80044768 23100200 */  negu       $v0, $v0
     /* 34F6C 8004476C 18004300 */  mult       $v0, $v1
-    /* 34F70 80044770 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 34F74 80044774 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 34F70 80044770 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 34F74 80044774 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 34F78 80044778 12200000 */  mflo       $a0
     /* 34F7C 8004477C 0880023C */  lui        $v0, %hi(g_anSpyroWallSlideNudgeAccum + 0x4)
     /* 34F80 80044780 148B428C */  lw         $v0, %lo(g_anSpyroWallSlideNudgeAccum + 0x4)($v0)
@@ -57120,14 +57120,14 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35000 80044800 1D004010 */  beqz       $v0, .L80044878
     /* 35004 80044804 00000000 */   nop
   .L80044808:
-    /* 35008 80044808 0880043C */  lui        $a0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 3500C 8004480C 488B848C */  lw         $a0, %lo(g_anSpyroCarryMotionVec + 0x8)($a0)
+    /* 35008 80044808 0880043C */  lui        $a0, %hi(g_nSpyroCarryMotionZ)
+    /* 3500C 8004480C 488B848C */  lw         $a0, %lo(g_nSpyroCarryMotionZ)($a0)
     /* 35010 80044810 0880053C */  lui        $a1, %hi(g_nSpyroGravityStep)
     /* 35014 80044814 A48BA58C */  lw         $a1, %lo(g_nSpyroGravityStep)($a1)
     /* 35018 80044818 0880023C */  lui        $v0, %hi(g_nSpyroFloorReferenceZ)
     /* 3501C 8004481C B08B428C */  lw         $v0, %lo(g_nSpyroFloorReferenceZ)($v0)
-    /* 35020 80044820 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 35024 80044824 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 35020 80044820 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 35024 80044824 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 35028 80044828 D7008424 */  addiu      $a0, $a0, 0xD7
     /* 3502C 8004482C 21208500 */  addu       $a0, $a0, $a1
     /* 35030 80044830 23104300 */  subu       $v0, $v0, $v1
@@ -57135,30 +57135,30 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35038 80044838 0880053C */  lui        $a1, %hi(g_anSpyroVelocityFp6 + 0x8)
     /* 3503C 8004483C 608BA58C */  lw         $a1, %lo(g_anSpyroVelocityFp6 + 0x8)($a1)
     /* 35040 80044840 80190300 */  sll        $v1, $v1, 6
-    /* 35044 80044844 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 35048 80044848 488B24AC */  sw         $a0, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 35044 80044844 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 35048 80044848 488B24AC */  sw         $a0, %lo(g_nSpyroCarryMotionZ)($at)
     /* 3504C 8004484C 23104500 */  subu       $v0, $v0, $a1
     /* 35050 80044850 21104400 */  addu       $v0, $v0, $a0
     /* 35054 80044854 21186200 */  addu       $v1, $v1, $v0
     /* 35058 80044858 21186500 */  addu       $v1, $v1, $a1
     /* 3505C 8004485C 83190300 */  sra        $v1, $v1, 6
-    /* 35060 80044860 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 35064 80044864 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 35060 80044860 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 35064 80044864 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 35068 80044868 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 3506C 8004486C B08B23AC */  sw         $v1, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 35070 80044870 B91E0108 */  j          .L80047AE4
     /* 35074 80044874 00000000 */   nop
   .L80044878:
-    /* 35078 80044878 0880023C */  lui        $v0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 3507C 8004487C 488B4224 */  addiu      $v0, $v0, %lo(g_anSpyroCarryMotionVec + 0x8)
+    /* 35078 80044878 0880023C */  lui        $v0, %hi(g_nSpyroCarryMotionZ)
+    /* 3507C 8004487C 488B4224 */  addiu      $v0, $v0, %lo(g_nSpyroCarryMotionZ)
     /* 35080 80044880 0000438C */  lw         $v1, 0x0($v0)
     /* 35084 80044884 0880043C */  lui        $a0, %hi(g_nSpyroGravityStep)
     /* 35088 80044888 A48B848C */  lw         $a0, %lo(g_nSpyroGravityStep)($a0)
     /* 3508C 8004488C 00000000 */  nop
     /* 35090 80044890 21186400 */  addu       $v1, $v1, $a0
     /* 35094 80044894 000043AC */  sw         $v1, 0x0($v0)
-    /* 35098 80044898 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 3509C 8004489C 548B23AC */  sw         $v1, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 35098 80044898 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 3509C 8004489C 548B23AC */  sw         $v1, %lo(g_nSpyroVelocityZ)($at)
     /* 350A0 800448A0 B91E0108 */  j          .L80047AE4
     /* 350A4 800448A4 00000000 */   nop
   jlabel .L800448A8
@@ -57264,8 +57264,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35218 80044A18 43FA000C */  jal        NudgeSpyroFromWallProbes
     /* 3521C 80044A1C 00000000 */   nop
   .L80044A20:
-    /* 35220 80044A20 0880103C */  lui        $s0, %hi(g_anSpyroVelocity + 0x8)
-    /* 35224 80044A24 548B1026 */  addiu      $s0, $s0, %lo(g_anSpyroVelocity + 0x8)
+    /* 35220 80044A20 0880103C */  lui        $s0, %hi(g_nSpyroVelocityZ)
+    /* 35224 80044A24 548B1026 */  addiu      $s0, $s0, %lo(g_nSpyroVelocityZ)
     /* 35228 80044A28 0000028E */  lw         $v0, 0x0($s0)
     /* 3522C 80044A2C 00000000 */  nop
     /* 35230 80044A30 00DD4228 */  slti       $v0, $v0, -0x2300
@@ -57287,8 +57287,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3526C 80044A6C BCFF038E */  lw         $v1, -0x44($s0)
     /* 35270 80044A70 23100200 */  negu       $v0, $v0
     /* 35274 80044A74 18004300 */  mult       $v0, $v1
-    /* 35278 80044A78 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 3527C 80044A7C 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 35278 80044A78 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 3527C 80044A7C 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 35280 80044A80 12200000 */  mflo       $a0
     /* 35284 80044A84 0880023C */  lui        $v0, %hi(g_anSpyroWallSlideNudgeAccum + 0x4)
     /* 35288 80044A88 148B428C */  lw         $v0, %lo(g_anSpyroWallSlideNudgeAccum + 0x4)($v0)
@@ -57334,15 +57334,15 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35320 80044B20 0880033C */  lui        $v1, %hi(g_nSpyroState)
     /* 35324 80044B24 D08A638C */  lw         $v1, %lo(g_nSpyroState)($v1)
     /* 35328 80044B28 0A000224 */  addiu      $v0, $zero, 0xA
-    /* 3532C 80044B2C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 35330 80044B30 548B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x8)($at)
-    /* 35334 80044B34 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 35338 80044B38 508B24AC */  sw         $a0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 3532C 80044B2C 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 35330 80044B30 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
+    /* 35334 80044B34 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 35338 80044B38 508B24AC */  sw         $a0, %lo(g_nSpyroVelocityY)($at)
     /* 3533C 80044B3C 04006214 */  bne        $v1, $v0, .L80044B50
     /* 35340 80044B40 94FF1126 */   addiu     $s1, $s0, -0x6C
     /* 35344 80044B44 23100400 */  negu       $v0, $a0
-    /* 35348 80044B48 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 3534C 80044B4C 508B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 35348 80044B48 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 3534C 80044B4C 508B22AC */  sw         $v0, %lo(g_nSpyroVelocityY)($at)
   .L80044B50:
     /* 35350 80044B50 D4FE0426 */  addiu      $a0, $s0, -0x12C
     /* 35354 80044B54 21282002 */  addu       $a1, $s1, $zero
@@ -57351,21 +57351,21 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35360 80044B60 21202002 */  addu       $a0, $s1, $zero
     /* 35364 80044B64 21282002 */  addu       $a1, $s1, $zero
     /* 35368 80044B68 88FF028E */  lw         $v0, -0x78($s0)
-    /* 3536C 80044B6C 0880033C */  lui        $v1, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 35370 80044B70 448B638C */  lw         $v1, %lo(g_anSpyroCarryMotionVec + 0x4)($v1)
+    /* 3536C 80044B6C 0880033C */  lui        $v1, %hi(g_nSpyroCarryMotionY)
+    /* 35370 80044B70 448B638C */  lw         $v1, %lo(g_nSpyroCarryMotionY)($v1)
     /* 35374 80044B74 03390200 */  sra        $a3, $v0, 4
     /* 35378 80044B78 23104700 */  subu       $v0, $v0, $a3
     /* 3537C 80044B7C 03390300 */  sra        $a3, $v1, 4
     /* 35380 80044B80 88FF02AE */  sw         $v0, -0x78($s0)
-    /* 35384 80044B84 0880023C */  lui        $v0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 35388 80044B88 488B428C */  lw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($v0)
+    /* 35384 80044B84 0880023C */  lui        $v0, %hi(g_nSpyroCarryMotionZ)
+    /* 35388 80044B88 488B428C */  lw         $v0, %lo(g_nSpyroCarryMotionZ)($v0)
     /* 3538C 80044B8C 23186700 */  subu       $v1, $v1, $a3
-    /* 35390 80044B90 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 35394 80044B94 448B23AC */  sw         $v1, %lo(g_anSpyroCarryMotionVec + 0x4)($at)
+    /* 35390 80044B90 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionY)
+    /* 35394 80044B94 448B23AC */  sw         $v1, %lo(g_nSpyroCarryMotionY)($at)
     /* 35398 80044B98 03190200 */  sra        $v1, $v0, 4
     /* 3539C 80044B9C 23104300 */  subu       $v0, $v0, $v1
-    /* 353A0 80044BA0 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 353A4 80044BA4 488B22AC */  sw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 353A0 80044BA0 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 353A4 80044BA4 488B22AC */  sw         $v0, %lo(g_nSpyroCarryMotionZ)($at)
     /* 353A8 80044BA8 D65D000C */  jal        AddVector
     /* 353AC 80044BAC 88FF0626 */   addiu     $a2, $s0, -0x78
     /* 353B0 80044BB0 0880023C */  lui        $v0, %hi(g_nSpyroCliffEdgeHint)
@@ -57561,8 +57561,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3566C 80044E6C 98FE5026 */   addiu     $s0, $s2, -0x168
     /* 35670 80044E70 0880033C */  lui        $v1, %hi(g_nSpyroFloorReferenceZ)
     /* 35674 80044E74 B08B638C */  lw         $v1, %lo(g_nSpyroFloorReferenceZ)($v1)
-    /* 35678 80044E78 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3567C 80044E7C 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 35678 80044E78 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3567C 80044E7C 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 35680 80044E80 00000000 */  nop
     /* 35684 80044E84 23186200 */  subu       $v1, $v1, $v0
     /* 35688 80044E88 09006104 */  bgez       $v1, .L80044EB0
@@ -57596,8 +57596,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 356EC 80044EEC 00144228 */  slti       $v0, $v0, 0x1400
     /* 356F0 80044EF0 07004010 */  beqz       $v0, .L80044F10
     /* 356F4 80044EF4 00140224 */   addiu     $v0, $zero, 0x1400
-    /* 356F8 80044EF8 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 356FC 80044EFC 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 356F8 80044EF8 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 356FC 80044EFC 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 35700 80044F00 0880013C */  lui        $at, %hi(g_nSpyroSpeedTarget)
     /* 35704 80044F04 208B22AC */  sw         $v0, %lo(g_nSpyroSpeedTarget)($at)
     /* 35708 80044F08 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
@@ -57613,8 +57613,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3572C 80044F2C 00000000 */  nop
     /* 35730 80044F30 05004010 */  beqz       $v0, .L80044F48
     /* 35734 80044F34 21202002 */   addu      $a0, $s1, $zero
-    /* 35738 80044F38 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 3573C 80044F3C 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 35738 80044F38 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 3573C 80044F3C 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 35740 80044F40 F91D0108 */  j          .L800477E4
     /* 35744 80044F44 40FF4224 */   addiu     $v0, $v0, -0xC0
   .L80044F48:
@@ -57628,8 +57628,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35760 80044F60 21280002 */  addu       $a1, $s0, $zero
     /* 35764 80044F64 4000A627 */  addiu      $a2, $sp, 0x40
     /* 35768 80044F68 98FE428E */  lw         $v0, -0x168($s2)
-    /* 3576C 80044F6C 0880073C */  lui        $a3, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 35770 80044F70 448BE78C */  lw         $a3, %lo(g_anSpyroCarryMotionVec + 0x4)($a3)
+    /* 3576C 80044F6C 0880073C */  lui        $a3, %hi(g_nSpyroCarryMotionY)
+    /* 35770 80044F70 448BE78C */  lw         $a3, %lo(g_nSpyroCarryMotionY)($a3)
     /* 35774 80044F74 23100200 */  negu       $v0, $v0
     /* 35778 80044F78 80180200 */  sll        $v1, $v0, 2
     /* 3577C 80044F7C 21186200 */  addu       $v1, $v1, $v0
@@ -57644,8 +57644,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 357A0 80044FA0 00110300 */  sll        $v0, $v1, 4
     /* 357A4 80044FA4 23104300 */  subu       $v0, $v0, $v1
     /* 357A8 80044FA8 80100200 */  sll        $v0, $v0, 2
-    /* 357AC 80044FAC 0880073C */  lui        $a3, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 357B0 80044FB0 488BE78C */  lw         $a3, %lo(g_anSpyroCarryMotionVec + 0x8)($a3)
+    /* 357AC 80044FAC 0880073C */  lui        $a3, %hi(g_nSpyroCarryMotionZ)
+    /* 357B0 80044FB0 488BE78C */  lw         $a3, %lo(g_nSpyroCarryMotionZ)($a3)
     /* 357B4 80044FB4 03130200 */  sra        $v0, $v0, 12
     /* 357B8 80044FB8 4400A2AF */  sw         $v0, 0x44($sp)
     /* 357BC 80044FBC 23380700 */  negu       $a3, $a3
@@ -57712,8 +57712,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 358A8 800450A8 00000000 */  nop
     /* 358AC 800450AC D1094010 */  beqz       $v0, .L800477F4
     /* 358B0 800450B0 00000000 */   nop
-    /* 358B4 800450B4 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 358B8 800450B8 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 358B4 800450B4 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 358B8 800450B8 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 358BC 800450BC F91D0108 */  j          .L800477E4
     /* 358C0 800450C0 40FF4224 */   addiu     $v0, $v0, -0xC0
   jlabel .L800450C4
@@ -57726,13 +57726,13 @@ glabel IntegrateSpyroMotionForSubstep
     /* 358DC 800450DC 000082AC */   sw        $v0, 0x0($a0)
     /* 358E0 800450E0 000080AC */  sw         $zero, 0x0($a0)
   .L800450E4:
-    /* 358E4 800450E4 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 358E8 800450E8 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 358E4 800450E4 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 358E8 800450E8 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 358EC 800450EC 00000000 */  nop
     /* 358F0 800450F0 03004104 */  bgez       $v0, .L80045100
     /* 358F4 800450F4 1300622A */   slti      $v0, $s3, 0x13
-    /* 358F8 800450F8 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 358FC 800450FC 548B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 358F8 800450F8 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 358FC 800450FC 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
   .L80045100:
     /* 35900 80045100 04004014 */  bnez       $v0, .L80045114
     /* 35904 80045104 94FF8424 */   addiu     $a0, $a0, -0x6C
@@ -57740,14 +57740,14 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3590C 8004510C 855D000C */  jal        ScaleVector3Shifted
     /* 35910 80045110 03000624 */   addiu     $a2, $zero, 0x3
   .L80045114:
-    /* 35914 80045114 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 35918 80045118 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 35914 80045114 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 35918 80045118 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 3591C 8004511C 0880033C */  lui        $v1, %hi(g_nSpyroGravityStep)
     /* 35920 80045120 A48B638C */  lw         $v1, %lo(g_nSpyroGravityStep)($v1)
     /* 35924 80045124 00000000 */  nop
     /* 35928 80045128 21104300 */  addu       $v0, $v0, $v1
-    /* 3592C 8004512C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 35930 80045130 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 3592C 8004512C 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 35930 80045130 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 35934 80045134 B91E0108 */  j          .L80047AE4
     /* 35938 80045138 00000000 */   nop
   jlabel .L8004513C
@@ -57758,12 +57758,12 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3594C 8004514C C0000524 */   addiu     $a1, $zero, 0xC0
     /* 35950 80045150 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 35954 80045154 00000000 */   nop
-    /* 35958 80045158 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 3595C 8004515C 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 35958 80045158 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 3595C 8004515C 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 35960 80045160 00000000 */  nop
     /* 35964 80045164 40FF4224 */  addiu      $v0, $v0, -0xC0
-    /* 35968 80045168 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 3596C 8004516C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 35968 80045168 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 3596C 8004516C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 35970 80045170 141D0108 */  j          .L80047450
     /* 35974 80045174 00DD4228 */   slti      $v0, $v0, -0x2300
   jlabel .L80045178
@@ -57773,12 +57773,12 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35984 80045184 00000000 */  nop
     /* 35988 80045188 09004010 */  beqz       $v0, .L800451B0
     /* 3598C 8004518C 00000000 */   nop
-    /* 35990 80045190 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 35994 80045194 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 35990 80045190 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 35994 80045194 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 35998 80045198 00000000 */  nop
     /* 3599C 8004519C 00FA4224 */  addiu      $v0, $v0, -0x600
-    /* 359A0 800451A0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 359A4 800451A4 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 359A0 800451A0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 359A4 800451A4 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 359A8 800451A8 141D0108 */  j          .L80047450
     /* 359AC 800451AC 00DD4228 */   slti      $v0, $v0, -0x2300
   .L800451B0:
@@ -57793,17 +57793,17 @@ glabel IntegrateSpyroMotionForSubstep
     /* 359CC 800451CC 00000000 */  nop
     /* 359D0 800451D0 0E004010 */  beqz       $v0, .L8004520C
     /* 359D4 800451D4 00000000 */   nop
-    /* 359D8 800451D8 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 359DC 800451DC 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 359D8 800451D8 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 359DC 800451DC 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 359E0 800451E0 00000000 */  nop
     /* 359E4 800451E4 00FA4224 */  addiu      $v0, $v0, -0x600
-    /* 359E8 800451E8 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 359EC 800451EC 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 359E8 800451E8 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 359EC 800451EC 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 359F0 800451F0 00DD4228 */  slti       $v0, $v0, -0x2300
     /* 359F4 800451F4 07004010 */  beqz       $v0, .L80045214
     /* 359F8 800451F8 00DD0224 */   addiu     $v0, $zero, -0x2300
-    /* 359FC 800451FC 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 35A00 80045200 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 359FC 800451FC 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 35A00 80045200 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 35A04 80045204 85140108 */  j          .L80045214
     /* 35A08 80045208 00000000 */   nop
   .L8004520C:
@@ -58003,16 +58003,16 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35CC0 800454C0 21187100 */  addu       $v1, $v1, $s1
     /* 35CC4 800454C4 80180300 */  sll        $v1, $v1, 2
     /* 35CC8 800454C8 C3A10300 */  sra        $s4, $v1, 7
-    /* 35CCC 800454CC 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 35CD0 800454D0 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 35CCC 800454CC 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 35CD0 800454D0 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 35CD4 800454D4 0880043C */  lui        $a0, %hi(g_nSpyroFloorReferenceZ)
     /* 35CD8 800454D8 B08B848C */  lw         $a0, %lo(g_nSpyroFloorReferenceZ)($a0)
     /* 35CDC 800454DC 00000000 */  nop
     /* 35CE0 800454E0 2A186400 */  slt        $v1, $v1, $a0
     /* 35CE4 800454E4 27006010 */  beqz       $v1, .L80045584
     /* 35CE8 800454E8 21B04000 */   addu      $s6, $v0, $zero
-    /* 35CEC 800454EC 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 35CF0 800454F0 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 35CEC 800454EC 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 35CF0 800454F0 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 35CF4 800454F4 00000000 */  nop
     /* 35CF8 800454F8 C3100200 */  sra        $v0, $v0, 3
     /* 35CFC 800454FC 00FC4224 */  addiu      $v0, $v0, -0x400
@@ -58025,8 +58025,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35D18 80045518 21302002 */  addu       $a2, $s1, $zero
     /* 35D1C 8004551C 0880023C */  lui        $v0, %hi(g_anSpyroVelocity)
     /* 35D20 80045520 4C8B428C */  lw         $v0, %lo(g_anSpyroVelocity)($v0)
-    /* 35D24 80045524 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 35D28 80045528 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 35D24 80045524 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 35D28 80045528 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 35D2C 8004552C C3100200 */  sra        $v0, $v0, 3
     /* 35D30 80045530 C3180300 */  sra        $v1, $v1, 3
     /* 35D34 80045534 4000A2AF */  sw         $v0, 0x40($sp)
@@ -58037,8 +58037,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35D48 80045548 21280002 */   addu      $a1, $s0, $zero
     /* 35D4C 8004554C 0D004014 */  bnez       $v0, .L80045584
     /* 35D50 80045550 00000000 */   nop
-    /* 35D54 80045554 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 35D58 80045558 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 35D54 80045554 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 35D58 80045558 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 35D5C 8004555C 0780033C */  lui        $v1, %hi(g_nCollisionResolvedZ)
     /* 35D60 80045560 886B638C */  lw         $v1, %lo(g_nCollisionResolvedZ)($v1)
     /* 35D64 80045564 00000000 */  nop
@@ -58080,8 +58080,8 @@ glabel IntegrateSpyroMotionForSubstep
   .L800455E8:
     /* 35DE8 800455E8 0880033C */  lui        $v1, %hi(g_nSpyroFloorReferenceZ)
     /* 35DEC 800455EC B08B638C */  lw         $v1, %lo(g_nSpyroFloorReferenceZ)($v1)
-    /* 35DF0 800455F0 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 35DF4 800455F4 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 35DF0 800455F0 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 35DF4 800455F4 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 35DF8 800455F8 00000000 */  nop
     /* 35DFC 800455FC 23906200 */  subu       $s2, $v1, $v0
     /* 35E00 80045600 0A004106 */  bgez       $s2, .L8004562C
@@ -58350,8 +58350,8 @@ glabel IntegrateSpyroMotionForSubstep
   .L800459C8:
     /* 361C8 800459C8 0880043C */  lui        $a0, %hi(g_nSpyroFloorReferenceZ)
     /* 361CC 800459CC B08B848C */  lw         $a0, %lo(g_nSpyroFloorReferenceZ)($a0)
-    /* 361D0 800459D0 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 361D4 800459D4 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 361D0 800459D0 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 361D4 800459D4 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 361D8 800459D8 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 361DC 800459DC 23908300 */  subu       $s2, $a0, $v1
     /* 361E0 800459E0 0A004106 */  bgez       $s2, .L80045A0C
@@ -58419,10 +58419,10 @@ glabel IntegrateSpyroMotionForSubstep
   .L80045AC8:
     /* 362C8 80045AC8 0780043C */  lui        $a0, %hi(D_80075700)
     /* 362CC 80045ACC 0057848C */  lw         $a0, %lo(D_80075700)($a0)
-    /* 362D0 80045AD0 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 362D4 80045AD4 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
-    /* 362D8 80045AD8 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 362DC 80045ADC 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 362D0 80045AD0 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 362D4 80045AD4 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
+    /* 362D8 80045AD8 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 362DC 80045ADC 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 362E0 80045AE0 23208300 */  subu       $a0, $a0, $v1
     /* 362E4 80045AE4 43110200 */  sra        $v0, $v0, 5
     /* 362E8 80045AE8 23108200 */  subu       $v0, $a0, $v0
@@ -58608,8 +58608,8 @@ glabel IntegrateSpyroMotionForSubstep
   .L80045D68:
     /* 36568 80045D68 0880033C */  lui        $v1, %hi(g_nSpyroFloorReferenceZ)
     /* 3656C 80045D6C B08B638C */  lw         $v1, %lo(g_nSpyroFloorReferenceZ)($v1)
-    /* 36570 80045D70 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 36574 80045D74 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 36570 80045D70 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 36574 80045D74 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 36578 80045D78 00000000 */  nop
     /* 3657C 80045D7C 23906200 */  subu       $s2, $v1, $v0
     /* 36580 80045D80 0A004106 */  bgez       $s2, .L80045DAC
@@ -58672,8 +58672,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36654 80045E54 0E006334 */  ori        $v1, $v1, (0x8000000E & 0xFFFF)
     /* 36658 80045E58 08004310 */  beq        $v0, $v1, .L80045E7C
     /* 3665C 80045E5C 00000000 */   nop
-    /* 36660 80045E60 0780103C */  lui        $s0, %hi(D_8006EBE4)
-    /* 36664 80045E64 E4EB1026 */  addiu      $s0, $s0, %lo(D_8006EBE4)
+    /* 36660 80045E60 0780103C */  lui        $s0, %hi(g_anSpyroDeathCamRecordBlock)
+    /* 36664 80045E64 E4EB1026 */  addiu      $s0, $s0, %lo(g_anSpyroDeathCamRecordBlock)
     /* 36668 80045E68 21200002 */  addu       $a0, $s0, $zero
     /* 3666C 80045E6C C05D000C */  jal        CopyVector
     /* 36670 80045E70 D0FFA524 */   addiu     $a1, $a1, -0x30
@@ -58903,8 +58903,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3698C 8004618C 00000000 */  nop
     /* 36990 80046190 34004010 */  beqz       $v0, .L80046264
     /* 36994 80046194 00000000 */   nop
-    /* 36998 80046198 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3699C 8004619C 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 36998 80046198 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3699C 8004619C 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 369A0 800461A0 0880033C */  lui        $v1, %hi(g_nSpyroGroundHeightZ)
     /* 369A4 800461A4 F88A638C */  lw         $v1, %lo(g_nSpyroGroundHeightZ)($v1)
     /* 369A8 800461A8 00000000 */  nop
@@ -59256,8 +59256,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36EA4 800466A4 0880033C */  lui        $v1, %hi(g_nSpyroPadSnapshotCountdown)
     /* 36EA8 800466A8 488C638C */  lw         $v1, %lo(g_nSpyroPadSnapshotCountdown)($v1)
     /* 36EAC 800466AC 00404234 */  ori        $v0, $v0, (0x80004000 & 0xFFFF)
-    /* 36EB0 800466B0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 36EB4 800466B4 548B20AC */  sw         $zero, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 36EB0 800466B0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 36EB4 800466B4 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
     /* 36EB8 800466B8 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 36EBC 800466BC 4C8C22AC */  sw         $v0, %lo(g_dwSpyroRequestMask)($at)
     /* 36EC0 800466C0 0400601C */  bgtz       $v1, .L800466D4
@@ -59290,20 +59290,20 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36F24 80046724 0A000224 */   addiu     $v0, $zero, 0xA
     /* 36F28 80046728 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 36F2C 8004672C 00000000 */   nop
-    /* 36F30 80046730 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 36F34 80046734 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 36F30 80046730 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 36F34 80046734 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 36F38 80046738 0880033C */  lui        $v1, %hi(g_nSpyroGravityStep)
     /* 36F3C 8004673C A48B638C */  lw         $v1, %lo(g_nSpyroGravityStep)($v1)
-    /* 36F40 80046740 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 36F44 80046744 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 36F40 80046740 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 36F44 80046744 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 36F48 80046748 21104300 */  addu       $v0, $v0, $v1
-    /* 36F4C 8004674C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 36F50 80046750 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 36F4C 8004674C 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 36F50 80046750 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 36F54 80046754 80F84228 */  slti       $v0, $v0, -0x780
     /* 36F58 80046758 03004010 */  beqz       $v0, .L80046768
     /* 36F5C 8004675C 80F80224 */   addiu     $v0, $zero, -0x780
-    /* 36F60 80046760 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 36F64 80046764 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 36F60 80046760 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 36F64 80046764 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
   .L80046768:
     /* 36F68 80046768 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
     /* 36F6C 8004676C 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
@@ -59330,8 +59330,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36FB8 800467B8 00000000 */  nop
     /* 36FBC 800467BC 2B006010 */  beqz       $v1, .L8004686C
     /* 36FC0 800467C0 21984000 */   addu      $s3, $v0, $zero
-    /* 36FC4 800467C4 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 36FC8 800467C8 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 36FC4 800467C4 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 36FC8 800467C8 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 36FCC 800467CC 00000000 */  nop
     /* 36FD0 800467D0 23185300 */  subu       $v1, $v0, $s3
     /* 36FD4 800467D4 00026228 */  slti       $v0, $v1, 0x200
@@ -59459,20 +59459,20 @@ glabel IntegrateSpyroMotionForSubstep
   .L8004698C:
     /* 3718C 8004698C 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 37190 80046990 00000000 */   nop
-    /* 37194 80046994 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 37198 80046998 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 37194 80046994 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 37198 80046998 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 3719C 8004699C 0880033C */  lui        $v1, %hi(g_nSpyroGravityStep)
     /* 371A0 800469A0 A48B638C */  lw         $v1, %lo(g_nSpyroGravityStep)($v1)
-    /* 371A4 800469A4 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 371A8 800469A8 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 371A4 800469A4 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 371A8 800469A8 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 371AC 800469AC 21104300 */  addu       $v0, $v0, $v1
-    /* 371B0 800469B0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 371B4 800469B4 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 371B0 800469B0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 371B4 800469B4 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 371B8 800469B8 80F84228 */  slti       $v0, $v0, -0x780
     /* 371BC 800469BC 03004010 */  beqz       $v0, .L800469CC
     /* 371C0 800469C0 80F80224 */   addiu     $v0, $zero, -0x780
-    /* 371C4 800469C4 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 371C8 800469C8 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 371C4 800469C4 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 371C8 800469C8 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
   .L800469CC:
     /* 371CC 800469CC 0880013C */  lui        $at, %hi(g_nSpyroBodyRoll)
     /* 371D0 800469D0 788B20AC */  sw         $zero, %lo(g_nSpyroBodyRoll)($at)
@@ -59518,14 +59518,14 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3725C 80046A5C 000062AC */   sw        $v0, 0x0($v1)
     /* 37260 80046A60 000060AC */  sw         $zero, 0x0($v1)
   .L80046A64:
-    /* 37264 80046A64 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 37268 80046A68 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 37264 80046A64 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 37268 80046A68 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 3726C 80046A6C 0880033C */  lui        $v1, %hi(g_nSpyroGravityStep)
     /* 37270 80046A70 A48B638C */  lw         $v1, %lo(g_nSpyroGravityStep)($v1)
     /* 37274 80046A74 00000000 */  nop
     /* 37278 80046A78 21104300 */  addu       $v0, $v0, $v1
-    /* 3727C 80046A7C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 37280 80046A80 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 3727C 80046A7C 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 37280 80046A80 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 37284 80046A84 141D0108 */  j          .L80047450
     /* 37288 80046A88 00DD4228 */   slti      $v0, $v0, -0x2300
   jlabel .L80046A8C
@@ -59551,16 +59551,16 @@ glabel IntegrateSpyroMotionForSubstep
     /* 372D4 80046AD4 00000000 */  nop
     /* 372D8 80046AD8 0400458C */  lw         $a1, 0x4($v0)
   .L80046ADC:
-    /* 372DC 80046ADC 0880123C */  lui        $s2, %hi(D_80078A60)
-    /* 372E0 80046AE0 608A5226 */  addiu      $s2, $s2, %lo(D_80078A60)
+    /* 372DC 80046ADC 0880123C */  lui        $s2, %hi(g_nSpyroWorldPosZ)
+    /* 372E0 80046AE0 608A5226 */  addiu      $s2, $s2, %lo(g_nSpyroWorldPosZ)
     /* 372E4 80046AE4 0404868F */  lw         $a2, %gp_rel(D_80075668)($gp)
     /* 372E8 80046AE8 0000448E */  lw         $a0, 0x0($s2)
     /* 372EC 80046AEC 0004C224 */  addiu      $v0, $a2, 0x400
     /* 372F0 80046AF0 2A108200 */  slt        $v0, $a0, $v0
     /* 372F4 80046AF4 1A004010 */  beqz       $v0, .L80046B60
     /* 372F8 80046AF8 00000000 */   nop
-    /* 372FC 80046AFC 0880023C */  lui        $v0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 37300 80046B00 488B428C */  lw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($v0)
+    /* 372FC 80046AFC 0880023C */  lui        $v0, %hi(g_nSpyroCarryMotionZ)
+    /* 37300 80046B00 488B428C */  lw         $v0, %lo(g_nSpyroCarryMotionZ)($v0)
     /* 37304 80046B04 00000000 */  nop
     /* 37308 80046B08 80005424 */  addiu      $s4, $v0, 0x80
     /* 3730C 80046B0C C112822A */  slti       $v0, $s4, 0x12C1
@@ -59751,10 +59751,10 @@ glabel IntegrateSpyroMotionForSubstep
     /* 375BC 80046DBC C05D000C */  jal        CopyVector
     /* 375C0 80046DC0 21280002 */   addu      $a1, $s0, $zero
     /* 375C4 80046DC4 FF0F2232 */  andi       $v0, $s1, 0xFFF
-    /* 375C8 80046DC8 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 375CC 80046DCC 488B34AC */  sw         $s4, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
-    /* 375D0 80046DD0 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 375D4 80046DD4 548B34AC */  sw         $s4, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 375C8 80046DC8 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 375CC 80046DCC 488B34AC */  sw         $s4, %lo(g_nSpyroCarryMotionZ)($at)
+    /* 375D0 80046DD0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 375D4 80046DD4 548B34AC */  sw         $s4, %lo(g_nSpyroVelocityZ)($at)
     /* 375D8 80046DD8 0880013C */  lui        $at, %hi(g_nSpyroBodyYaw)
     /* 375DC 80046DDC 748B22AC */  sw         $v0, %lo(g_nSpyroBodyYaw)($at)
     /* 375E0 80046DE0 B91E0108 */  j          .L80047AE4
@@ -59930,8 +59930,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37858 80047058 40020424 */   addiu     $a0, $zero, 0x240
     /* 3785C 8004705C 0880033C */  lui        $v1, %hi(g_nSpyroFloorReferenceZ)
     /* 37860 80047060 B08B638C */  lw         $v1, %lo(g_nSpyroFloorReferenceZ)($v1)
-    /* 37864 80047064 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 37868 80047068 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 37864 80047064 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 37868 80047068 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 3786C 8004706C 00000000 */  nop
     /* 37870 80047070 23186200 */  subu       $v1, $v1, $v0
     /* 37874 80047074 07006104 */  bgez       $v1, .L80047094
@@ -59980,8 +59980,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37914 80047114 D0FF0426 */  addiu      $a0, $s0, -0x30
     /* 37918 80047118 12500000 */  mflo       $t2
     /* 3791C 8004711C 03130A00 */  sra        $v0, $t2, 12
-    /* 37920 80047120 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 37924 80047124 508B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 37920 80047120 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 37924 80047124 508B22AC */  sw         $v0, %lo(g_nSpyroVelocityY)($at)
     /* 37928 80047128 C05D000C */  jal        CopyVector
     /* 3792C 8004712C DCFF0526 */   addiu     $a1, $s0, -0x24
     /* 37930 80047130 691C0108 */  j          .L800471A4
@@ -60012,8 +60012,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37990 80047190 18006200 */  mult       $v1, $v0
     /* 37994 80047194 12500000 */  mflo       $t2
     /* 37998 80047198 03130A00 */  sra        $v0, $t2, 12
-    /* 3799C 8004719C 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 379A0 800471A0 508B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 3799C 8004719C 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 379A0 800471A0 508B22AC */  sw         $v0, %lo(g_nSpyroVelocityY)($at)
   .L800471A4:
     /* 379A4 800471A4 0880103C */  lui        $s0, %hi(g_nSpyroWallSlideContributedFlag)
     /* 379A8 800471A8 0C8B1026 */  addiu      $s0, $s0, %lo(g_nSpyroWallSlideContributedFlag)
@@ -60030,8 +60030,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 379D4 800471D4 0400038E */  lw         $v1, 0x4($s0)
     /* 379D8 800471D8 23100200 */  negu       $v0, $v0
     /* 379DC 800471DC 18004300 */  mult       $v0, $v1
-    /* 379E0 800471E0 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x4)
-    /* 379E4 800471E4 508B638C */  lw         $v1, %lo(g_anSpyroVelocity + 0x4)($v1)
+    /* 379E0 800471E0 0880033C */  lui        $v1, %hi(g_nSpyroVelocityY)
+    /* 379E4 800471E4 508B638C */  lw         $v1, %lo(g_nSpyroVelocityY)($v1)
     /* 379E8 800471E8 12200000 */  mflo       $a0
     /* 379EC 800471EC 0880023C */  lui        $v0, %hi(g_anSpyroWallSlideNudgeAccum + 0x4)
     /* 379F0 800471F0 148B428C */  lw         $v0, %lo(g_anSpyroWallSlideNudgeAccum + 0x4)($v0)
@@ -60050,8 +60050,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37A24 80047224 D65D000C */  jal        AddVector
     /* 37A28 80047228 21302002 */   addu      $a2, $s1, $zero
   .L8004722C:
-    /* 37A2C 8004722C 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x8)
-    /* 37A30 80047230 548B6324 */  addiu      $v1, $v1, %lo(g_anSpyroVelocity + 0x8)
+    /* 37A2C 8004722C 0880033C */  lui        $v1, %hi(g_nSpyroVelocityZ)
+    /* 37A30 80047230 548B6324 */  addiu      $v1, $v1, %lo(g_nSpyroVelocityZ)
     /* 37A34 80047234 0000628C */  lw         $v0, 0x0($v1)
     /* 37A38 80047238 00000000 */  nop
     /* 37A3C 8004723C 40FF4224 */  addiu      $v0, $v0, -0xC0
@@ -60172,8 +60172,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37BEC 800473EC CCFF6426 */  addiu      $a0, $s3, -0x34
     /* 37BF0 800473F0 12500000 */  mflo       $t2
     /* 37BF4 800473F4 03130A00 */  sra        $v0, $t2, 12
-    /* 37BF8 800473F8 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x4)
-    /* 37BFC 800473FC 508B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x4)($at)
+    /* 37BF8 800473F8 0880013C */  lui        $at, %hi(g_nSpyroVelocityY)
+    /* 37BFC 800473FC 508B22AC */  sw         $v0, %lo(g_nSpyroVelocityY)($at)
     /* 37C00 80047400 C05D000C */  jal        CopyVector
     /* 37C04 80047404 D8FF6526 */   addiu     $a1, $s3, -0x28
     /* 37C08 80047408 0880023C */  lui        $v0, %hi(g_nSpyroStateTimer)
@@ -60182,24 +60182,24 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37C14 80047414 05004228 */  slti       $v0, $v0, 0x5
     /* 37C18 80047418 09004014 */  bnez       $v0, .L80047440
     /* 37C1C 8004741C 00000000 */   nop
-    /* 37C20 80047420 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 37C24 80047424 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 37C20 80047420 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 37C24 80047424 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 37C28 80047428 0880033C */  lui        $v1, %hi(g_nSpyroGravityStep)
     /* 37C2C 8004742C A48B638C */  lw         $v1, %lo(g_nSpyroGravityStep)($v1)
     /* 37C30 80047430 00000000 */  nop
     /* 37C34 80047434 23104300 */  subu       $v0, $v0, $v1
-    /* 37C38 80047438 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 37C3C 8004743C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 37C38 80047438 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 37C3C 8004743C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
   .L80047440:
-    /* 37C40 80047440 0880023C */  lui        $v0, %hi(g_anSpyroVelocity + 0x8)
-    /* 37C44 80047444 548B428C */  lw         $v0, %lo(g_anSpyroVelocity + 0x8)($v0)
+    /* 37C40 80047440 0880023C */  lui        $v0, %hi(g_nSpyroVelocityZ)
+    /* 37C44 80047444 548B428C */  lw         $v0, %lo(g_nSpyroVelocityZ)($v0)
     /* 37C48 80047448 00000000 */  nop
     /* 37C4C 8004744C 00DD4228 */  slti       $v0, $v0, -0x2300
   .L80047450:
     /* 37C50 80047450 A4014010 */  beqz       $v0, .L80047AE4
     /* 37C54 80047454 00DD0224 */   addiu     $v0, $zero, -0x2300
-    /* 37C58 80047458 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 37C5C 8004745C 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 37C58 80047458 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 37C5C 8004745C 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 37C60 80047460 B91E0108 */  j          .L80047AE4
     /* 37C64 80047464 00000000 */   nop
   jlabel .L80047468
@@ -60386,8 +60386,8 @@ glabel IntegrateSpyroMotionForSubstep
   .L80047710:
     /* 37F10 80047710 D65D000C */  jal        AddVector
     /* 37F14 80047714 00000000 */   nop
-    /* 37F18 80047718 0880033C */  lui        $v1, %hi(g_anSpyroVelocity + 0x8)
-    /* 37F1C 8004771C 548B6324 */  addiu      $v1, $v1, %lo(g_anSpyroVelocity + 0x8)
+    /* 37F18 80047718 0880033C */  lui        $v1, %hi(g_nSpyroVelocityZ)
+    /* 37F1C 8004771C 548B6324 */  addiu      $v1, $v1, %lo(g_nSpyroVelocityZ)
     /* 37F20 80047720 0000628C */  lw         $v0, 0x0($v1)
   .L80047724:
     /* 37F24 80047724 00000000 */  nop
@@ -60409,21 +60409,21 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37F5C 8004775C 0C001126 */  addiu      $s1, $s0, 0xC
     /* 37F60 80047760 21202002 */  addu       $a0, $s1, $zero
     /* 37F64 80047764 0000028E */  lw         $v0, 0x0($s0)
-    /* 37F68 80047768 0880033C */  lui        $v1, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 37F6C 8004776C 448B638C */  lw         $v1, %lo(g_anSpyroCarryMotionVec + 0x4)($v1)
+    /* 37F68 80047768 0880033C */  lui        $v1, %hi(g_nSpyroCarryMotionY)
+    /* 37F6C 8004776C 448B638C */  lw         $v1, %lo(g_nSpyroCarryMotionY)($v1)
     /* 37F70 80047770 03310200 */  sra        $a2, $v0, 4
     /* 37F74 80047774 23104600 */  subu       $v0, $v0, $a2
     /* 37F78 80047778 03310300 */  sra        $a2, $v1, 4
     /* 37F7C 8004777C 000002AE */  sw         $v0, 0x0($s0)
-    /* 37F80 80047780 0880023C */  lui        $v0, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 37F84 80047784 488B428C */  lw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($v0)
+    /* 37F80 80047780 0880023C */  lui        $v0, %hi(g_nSpyroCarryMotionZ)
+    /* 37F84 80047784 488B428C */  lw         $v0, %lo(g_nSpyroCarryMotionZ)($v0)
     /* 37F88 80047788 23186600 */  subu       $v1, $v1, $a2
-    /* 37F8C 8004778C 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x4)
-    /* 37F90 80047790 448B23AC */  sw         $v1, %lo(g_anSpyroCarryMotionVec + 0x4)($at)
+    /* 37F8C 8004778C 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionY)
+    /* 37F90 80047790 448B23AC */  sw         $v1, %lo(g_nSpyroCarryMotionY)($at)
     /* 37F94 80047794 03190200 */  sra        $v1, $v0, 4
     /* 37F98 80047798 23104300 */  subu       $v0, $v0, $v1
-    /* 37F9C 8004779C 0880013C */  lui        $at, %hi(g_anSpyroCarryMotionVec + 0x8)
-    /* 37FA0 800477A0 488B22AC */  sw         $v0, %lo(g_anSpyroCarryMotionVec + 0x8)($at)
+    /* 37F9C 8004779C 0880013C */  lui        $at, %hi(g_nSpyroCarryMotionZ)
+    /* 37FA0 800477A0 488B22AC */  sw         $v0, %lo(g_nSpyroCarryMotionZ)($at)
     /* 37FA4 800477A4 C05D000C */  jal        CopyVector
     /* 37FA8 800477A8 21280002 */   addu      $a1, $s0, $zero
     /* 37FAC 800477AC 0880023C */  lui        $v0, %hi(g_nSpyroCliffEdgeHint)
@@ -60437,13 +60437,13 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37FCC 800477CC 09004010 */  beqz       $v0, .L800477F4
     /* 37FD0 800477D0 00000000 */   nop
   .L800477D4:
-    /* 37FD4 800477D4 0880023C */  lui        $v0, %hi(g_anSpyroMotionVec + 0x8)
-    /* 37FD8 800477D8 6C8B428C */  lw         $v0, %lo(g_anSpyroMotionVec + 0x8)($v0)
+    /* 37FD4 800477D4 0880023C */  lui        $v0, %hi(g_nSpyroMotionZ)
+    /* 37FD8 800477D8 6C8B428C */  lw         $v0, %lo(g_nSpyroMotionZ)($v0)
     /* 37FDC 800477DC 00000000 */  nop
     /* 37FE0 800477E0 40FF4224 */  addiu      $v0, $v0, -0xC0
   .L800477E4:
-    /* 37FE4 800477E4 0880013C */  lui        $at, %hi(g_anSpyroVelocity + 0x8)
-    /* 37FE8 800477E8 548B22AC */  sw         $v0, %lo(g_anSpyroVelocity + 0x8)($at)
+    /* 37FE4 800477E4 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
+    /* 37FE8 800477E8 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
     /* 37FEC 800477EC B91E0108 */  j          .L80047AE4
     /* 37FF0 800477F0 00000000 */   nop
   .L800477F4:
@@ -60568,8 +60568,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 38198 80047998 00000000 */   nop
     /* 3819C 8004799C 0880033C */  lui        $v1, %hi(g_nSpyroFloorReferenceZ)
     /* 381A0 800479A0 B08B638C */  lw         $v1, %lo(g_nSpyroFloorReferenceZ)($v1)
-    /* 381A4 800479A4 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 381A8 800479A8 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 381A4 800479A4 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 381A8 800479A8 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 381AC 800479AC 00000000 */  nop
     /* 381B0 800479B0 23186200 */  subu       $v1, $v1, $v0
     /* 381B4 800479B4 07006104 */  bgez       $v1, .L800479D4
@@ -60604,8 +60604,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3821C 80047A1C 00144228 */  slti       $v0, $v0, 0x1400
     /* 38220 80047A20 07004010 */  beqz       $v0, .L80047A40
     /* 38224 80047A24 00140224 */   addiu     $v0, $zero, 0x1400
-    /* 38228 80047A28 0880033C */  lui        $v1, %hi(D_80078A60)
-    /* 3822C 80047A2C 608A638C */  lw         $v1, %lo(D_80078A60)($v1)
+    /* 38228 80047A28 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
+    /* 3822C 80047A2C 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 38230 80047A30 0880013C */  lui        $at, %hi(g_nSpyroSpeedTarget)
     /* 38234 80047A34 208B22AC */  sw         $v0, %lo(g_nSpyroSpeedTarget)($at)
     /* 38238 80047A38 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
@@ -60761,8 +60761,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38450 80047C50 00000000 */   nop
     /* 38454 80047C54 0880043C */  lui        $a0, %hi(g_anSpyroGroundNormal)
     /* 38458 80047C58 FC8A848C */  lw         $a0, %lo(g_anSpyroGroundNormal)($a0)
-    /* 3845C 80047C5C 0880053C */  lui        $a1, %hi(g_anSpyroGroundNormal + 0x4)
-    /* 38460 80047C60 008BA58C */  lw         $a1, %lo(g_anSpyroGroundNormal + 0x4)($a1)
+    /* 3845C 80047C5C 0880053C */  lui        $a1, %hi(g_nSpyroGroundNormalY)
+    /* 38460 80047C60 008BA58C */  lw         $a1, %lo(g_nSpyroGroundNormalY)($a1)
     /* 38464 80047C64 AD5A000C */  jal        ArcTan2
     /* 38468 80047C68 01000624 */   addiu     $a2, $zero, 0x1
     /* 3846C 80047C6C 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
@@ -60956,8 +60956,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38728 80047F28 00000000 */  nop
     /* 3872C 80047F2C 05004014 */  bnez       $v0, .L80047F44
     /* 38730 80047F30 00000000 */   nop
-    /* 38734 80047F34 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 38738 80047F38 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 38734 80047F34 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 38738 80047F38 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 3873C 80047F3C 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 38740 80047F40 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
   .L80047F44:
@@ -61072,8 +61072,8 @@ glabel DispatchSpyroPhysicsByState
     /* 388CC 800480CC 00000000 */  nop
     /* 388D0 800480D0 05004014 */  bnez       $v0, .L800480E8
     /* 388D4 800480D4 00000000 */   nop
-    /* 388D8 800480D8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 388DC 800480DC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 388D8 800480D8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 388DC 800480DC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 388E0 800480E0 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 388E4 800480E4 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
   .L800480E8:
@@ -61175,8 +61175,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38A44 80048244 00000000 */  nop
     /* 38A48 80048248 05004014 */  bnez       $v0, .L80048260
     /* 38A4C 8004824C 00000000 */   nop
-    /* 38A50 80048250 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 38A54 80048254 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 38A50 80048250 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 38A54 80048254 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 38A58 80048258 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 38A5C 8004825C B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
   .L80048260:
@@ -61293,8 +61293,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38BF8 800483F8 00000000 */  nop
     /* 38BFC 800483FC 05004014 */  bnez       $v0, .L80048414
     /* 38C00 80048400 00000000 */   nop
-    /* 38C04 80048404 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 38C08 80048408 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 38C04 80048404 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 38C08 80048408 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 38C0C 8004840C 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
     /* 38C10 80048410 B08B22AC */  sw         $v0, %lo(g_nSpyroFloorReferenceZ)($at)
   .L80048414:
@@ -61489,8 +61489,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38ED0 800486D0 0880033C */  lui        $v1, %hi(g_nLevelReadyFlag)
     /* 38ED4 800486D4 BC8B638C */  lw         $v1, %lo(g_nLevelReadyFlag)($v1)
     /* 38ED8 800486D8 64014224 */  addiu      $v0, $v0, 0x164
-    /* 38EDC 800486DC 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 38EE0 800486E0 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 38EDC 800486DC 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 38EE0 800486E0 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 38EE4 800486E4 05006004 */  bltz       $v1, .L800486FC
     /* 38EE8 800486E8 97008228 */   slti      $v0, $a0, 0x97
     /* 38EEC 800486EC 07004014 */  bnez       $v0, .L8004870C
@@ -61567,15 +61567,15 @@ glabel DispatchSpyroPhysicsByState
   .L800487F0:
     /* 38FF0 800487F0 1D006214 */  bne        $v1, $v0, .L80048868
     /* 38FF4 800487F4 00000000 */   nop
-    /* 38FF8 800487F8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 38FFC 800487FC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 38FF8 800487F8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 38FFC 800487FC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 39000 80048800 0880033C */  lui        $v1, %hi(g_nSpyroBreathTimer)
     /* 39004 80048804 C08B638C */  lw         $v1, %lo(g_nSpyroBreathTimer)($v1)
     /* 39008 80048808 0880043C */  lui        $a0, %hi(g_nSpyroGroundHeightZ)
     /* 3900C 8004880C F88A848C */  lw         $a0, %lo(g_nSpyroGroundHeightZ)($a0)
     /* 39010 80048810 23104300 */  subu       $v0, $v0, $v1
-    /* 39014 80048814 0880013C */  lui        $at, %hi(D_80078A60)
-    /* 39018 80048818 608A22AC */  sw         $v0, %lo(D_80078A60)($at)
+    /* 39014 80048814 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
+    /* 39018 80048818 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 3901C 8004881C 05008010 */  beqz       $a0, .L80048834
     /* 39020 80048820 00000000 */   nop
     /* 39024 80048824 0880013C */  lui        $at, %hi(g_nSpyroSwimWaterFloorZ)
@@ -61902,8 +61902,8 @@ glabel AdvanceSpyroFrameMotion
     /* 3947C 80048C7C 3F000224 */  addiu      $v0, $zero, 0x3F
     /* 39480 80048C80 08008210 */  beq        $a0, $v0, .L80048CA4
     /* 39484 80048C84 00000000 */   nop
-    /* 39488 80048C88 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3948C 80048C8C 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 39488 80048C88 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3948C 80048C8C 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 39490 80048C90 00000000 */  nop
     /* 39494 80048C94 23104500 */  subu       $v0, $v0, $a1
     /* 39498 80048C98 01024228 */  slti       $v0, $v0, 0x201
@@ -62988,8 +62988,8 @@ glabel TickSpyroHornStrikeAttack
     /* 3A3E8 80049BE8 0880103C */  lui        $s0, %hi(g_anSpyroComposedBodyMtx)
     /* 3A3EC 80049BEC 208C1026 */  addiu      $s0, $s0, %lo(g_anSpyroComposedBodyMtx)
     /* 3A3F0 80049BF0 21200002 */  addu       $a0, $s0, $zero
-    /* 3A3F4 80049BF4 0780113C */  lui        $s1, %hi(g_anSpyroHornStrikeTipOffsets + 0xC)
-    /* 3A3F8 80049BF8 44E23126 */  addiu      $s1, $s1, %lo(g_anSpyroHornStrikeTipOffsets + 0xC)
+    /* 3A3F4 80049BF4 0780113C */  lui        $s1, %hi(g_anSpyroHornStrikeTipOffsets2)
+    /* 3A3F8 80049BF8 44E23126 */  addiu      $s1, $s1, %lo(g_anSpyroHornStrikeTipOffsets2)
     /* 3A3FC 80049BFC 21282002 */  addu       $a1, $s1, $zero
     /* 3A400 80049C00 125C000C */  jal        RotateVectorByMatrix
     /* 3A404 80049C04 1000A627 */   addiu     $a2, $sp, 0x10
@@ -63311,8 +63311,8 @@ glabel SampleSpyroShadowRingHeights
     /* 3A830 8004A030 0880013C */  lui        $at, %hi(g_bSpyroOtBinBias)
     /* 3A834 8004A034 7F8A22A0 */  sb         $v0, %lo(g_bSpyroOtBinBias)($at)
   .L8004A038:
-    /* 3A838 8004A038 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3A83C 8004A03C 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 3A838 8004A038 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3A83C 8004A03C 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 3A840 8004A040 03000324 */  addiu      $v1, $zero, 0x3
     /* 3A844 8004A044 0880013C */  lui        $at, %hi(g_nSpyroShadowOtBinBias)
     /* 3A848 8004A048 2CAA23AC */  sw         $v1, %lo(g_nSpyroShadowOtBinBias)($at)
@@ -63642,8 +63642,8 @@ glabel TickSpyroGameplayFrame
     /* 3ACE0 8004A4E0 8E290108 */  j          .L8004A638
     /* 3ACE4 8004A4E4 00000000 */   nop
   .L8004A4E8:
-    /* 3ACE8 8004A4E8 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 3ACEC 8004A4EC 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 3ACE8 8004A4E8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 3ACEC 8004A4EC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 3ACF0 8004A4F0 00000000 */  nop
     /* 3ACF4 8004A4F4 00044228 */  slti       $v0, $v0, 0x400
     /* 3ACF8 8004A4F8 F7FF4014 */  bnez       $v0, .L8004A4D8
@@ -63660,8 +63660,8 @@ glabel TickSpyroGameplayFrame
     /* 3AD24 8004A524 ECFF4010 */  beqz       $v0, .L8004A4D8
     /* 3AD28 8004A528 00000000 */   nop
   .L8004A52C:
-    /* 3AD2C 8004A52C 0880103C */  lui        $s0, %hi(D_80078A60)
-    /* 3AD30 8004A530 608A1026 */  addiu      $s0, $s0, %lo(D_80078A60)
+    /* 3AD2C 8004A52C 0880103C */  lui        $s0, %hi(g_nSpyroWorldPosZ)
+    /* 3AD30 8004A530 608A1026 */  addiu      $s0, $s0, %lo(g_nSpyroWorldPosZ)
     /* 3AD34 8004A534 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
     /* 3AD38 8004A538 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
     /* 3AD3C 8004A53C 0000038E */  lw         $v1, 0x0($s0)
@@ -63717,8 +63717,8 @@ glabel TickSpyroGameplayFrame
     /* 3ADF4 8004A5F4 00000000 */  nop
     /* 3ADF8 8004A5F8 0A004014 */  bnez       $v0, .L8004A624
     /* 3ADFC 8004A5FC 00000000 */   nop
-    /* 3AE00 8004A600 0780103C */  lui        $s0, %hi(D_8006EBE4)
-    /* 3AE04 8004A604 E4EB1026 */  addiu      $s0, $s0, %lo(D_8006EBE4)
+    /* 3AE00 8004A600 0780103C */  lui        $s0, %hi(g_anSpyroDeathCamRecordBlock)
+    /* 3AE04 8004A604 E4EB1026 */  addiu      $s0, $s0, %lo(g_anSpyroDeathCamRecordBlock)
     /* 3AE08 8004A608 0780053C */  lui        $a1, %hi(g_anCameraPos)
     /* 3AE0C 8004A60C F86DA524 */  addiu      $a1, $a1, %lo(g_anCameraPos)
     /* 3AE10 8004A610 C05D000C */  jal        CopyVector
@@ -75159,35 +75159,35 @@ glabel InitHudCounters
     /* 44F44 80054744 6000C228 */  slti       $v0, $a2, 0x60
     /* 44F48 80054748 E5FF4014 */  bnez       $v0, .L800546E0
     /* 44F4C 8005474C 21200000 */   addu      $a0, $zero, $zero
-    /* 44F50 80054750 0880103C */  lui        $s0, %hi(g_abHudIconActorRecords + 0x196)
-    /* 44F54 80054754 82811026 */  addiu      $s0, $s0, %lo(g_abHudIconActorRecords + 0x196)
+    /* 44F50 80054750 0880103C */  lui        $s0, %hi(g_anHudIconAnchorBlock)
+    /* 44F54 80054754 82811026 */  addiu      $s0, $s0, %lo(g_anHudIconAnchorBlock)
     /* 44F58 80054758 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
     /* 44F5C 8005475C 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
     /* 44F60 80054760 D7010224 */  addiu      $v0, $zero, 0x1D7
     /* 44F64 80054764 000002A6 */  sh         $v0, 0x0($s0)
     /* 44F68 80054768 FA010224 */  addiu      $v0, $zero, 0x1FA
-    /* 44F6C 8005476C 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x29E)
-    /* 44F70 80054770 8A8222A4 */  sh         $v0, %lo(g_abHudIconActorRecords + 0x29E)($at)
+    /* 44F6C 8005476C 0880013C */  lui        $at, %hi(D_8007828A)
+    /* 44F70 80054770 8A8222A4 */  sh         $v0, %lo(D_8007828A)($at)
     /* 44F74 80054774 3A000224 */  addiu      $v0, $zero, 0x3A
-    /* 44F78 80054778 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x3A6)
-    /* 44F7C 8005477C 928322A4 */  sh         $v0, %lo(g_abHudIconActorRecords + 0x3A6)($at)
+    /* 44F78 80054778 0880013C */  lui        $at, %hi(D_80078392)
+    /* 44F7C 8005477C 928322A4 */  sh         $v0, %lo(D_80078392)($at)
     /* 44F80 80054780 AD000224 */  addiu      $v0, $zero, 0xAD
-    /* 44F84 80054784 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x3FE)
-    /* 44F88 80054788 EA8322A4 */  sh         $v0, %lo(g_abHudIconActorRecords + 0x3FE)($at)
+    /* 44F84 80054784 0880013C */  lui        $at, %hi(D_800783EA)
+    /* 44F88 80054788 EA8322A4 */  sh         $v0, %lo(D_800783EA)($at)
     /* 44F8C 8005478C 40000224 */  addiu      $v0, $zero, 0x40
-    /* 44F90 80054790 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x40E)
-    /* 44F94 80054794 FA8322A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x40E)($at)
+    /* 44F90 80054790 0880013C */  lui        $at, %hi(D_800783FA)
+    /* 44F94 80054794 FA8322A0 */  sb         $v0, %lo(D_800783FA)($at)
     /* 44F98 80054798 01000224 */  addiu      $v0, $zero, 0x1
     /* 44F9C 8005479C 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState)
     /* 44FA0 800547A0 A87F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState)($at)
-    /* 44FA4 800547A4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 44FA8 800547A8 A97F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x1)($at)
-    /* 44FAC 800547AC 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 44FB0 800547B0 AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
-    /* 44FB4 800547B4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 44FB8 800547B8 AB7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x3)($at)
-    /* 44FBC 800547BC 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 44FC0 800547C0 AC7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x4)($at)
+    /* 44FA4 800547A4 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 44FA8 800547A8 A97F22A0 */  sb         $v0, %lo(g_abHudDragonCounterBlock)($at)
+    /* 44FAC 800547AC 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 44FB0 800547B0 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
+    /* 44FB4 800547B4 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
+    /* 44FB8 800547B8 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
+    /* 44FBC 800547BC 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
+    /* 44FC0 800547C0 AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
     /* 44FC4 800547C4 0780023C */  lui        $v0, %hi(g_nWorldDragonsRescued)
     /* 44FC8 800547C8 5057428C */  lw         $v0, %lo(g_nWorldDragonsRescued)($v0)
     /* 44FCC 800547CC 0780083C */  lui        $t0, %hi(g_nWorldEggsRecovered)
@@ -75346,13 +75346,13 @@ glabel UpdateHudCounters
     /* 45208 80054A08 0780013C */  lui        $at, %hi(g_anCosineLut)
     /* 4520C 80054A0C 21082300 */  addu       $at, $at, $v1
     /* 45210 80054A10 78CC2294 */  lhu        $v0, %lo(g_anCosineLut)($at)
-    /* 45214 80054A14 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x1A6)
-    /* 45218 80054A18 928125A0 */  sb         $a1, %lo(g_abHudIconActorRecords + 0x1A6)($at)
+    /* 45214 80054A14 0880013C */  lui        $at, %hi(D_80078192)
+    /* 45218 80054A18 928125A0 */  sb         $a1, %lo(D_80078192)($at)
     /* 4521C 80054A1C C4FFC390 */  lbu        $v1, -0x3C($a2)
     /* 45220 80054A20 00140200 */  sll        $v0, $v0, 16
     /* 45224 80054A24 43160200 */  sra        $v0, $v0, 25
-    /* 45228 80054A28 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x1A5)
-    /* 4522C 80054A2C 918122A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x1A5)($at)
+    /* 45228 80054A28 0880013C */  lui        $at, %hi(D_80078191)
+    /* 4522C 80054A2C 918122A0 */  sb         $v0, %lo(D_80078191)($at)
     /* 45230 80054A30 0E006014 */  bnez       $v1, .L80054A6C
     /* 45234 80054A34 01000224 */   addiu     $v0, $zero, 0x1
     /* 45238 80054A38 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
@@ -75573,8 +75573,8 @@ glabel UpdateHudCounters
     /* 45554 80054D54 0D000224 */  addiu      $v0, $zero, 0xD
     /* 45558 80054D58 C9FFC2A0 */  sb         $v0, -0x37($a2)
   .L80054D5C:
-    /* 4555C 80054D5C 0880033C */  lui        $v1, %hi(g_abHudIconActorRecords + 0x2B1)
-    /* 45560 80054D60 9D826324 */  addiu      $v1, $v1, %lo(g_abHudIconActorRecords + 0x2B1)
+    /* 4555C 80054D5C 0880033C */  lui        $v1, %hi(D_8007829D)
+    /* 45560 80054D60 9D826324 */  addiu      $v1, $v1, %lo(D_8007829D)
     /* 45564 80054D64 00006290 */  lbu        $v0, 0x0($v1)
     /* 45568 80054D68 00000000 */  nop
     /* 4556C 80054D6C 08004224 */  addiu      $v0, $v0, 0x8
@@ -75584,11 +75584,11 @@ glabel UpdateHudCounters
     /* 4557C 80054D7C 0780013C */  lui        $at, %hi(g_anCosineLut)
     /* 45580 80054D80 21082200 */  addu       $at, $at, $v0
     /* 45584 80054D84 78CC2294 */  lhu        $v0, %lo(g_anCosineLut)($at)
-    /* 45588 80054D88 0780033C */  lui        $v1, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 4558C 80054D8C A97F6390 */  lbu        $v1, %lo(g_abHudCounterDisplayState + 0x1)($v1)
+    /* 45588 80054D88 0780033C */  lui        $v1, %hi(g_abHudDragonCounterBlock)
+    /* 4558C 80054D8C A97F6390 */  lbu        $v1, %lo(g_abHudDragonCounterBlock)($v1)
     /* 45590 80054D90 02120200 */  srl        $v0, $v0, 8
-    /* 45594 80054D94 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x2AE)
-    /* 45598 80054D98 9A8222A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x2AE)($at)
+    /* 45594 80054D94 0880013C */  lui        $at, %hi(D_8007829A)
+    /* 45598 80054D98 9A8222A0 */  sb         $v0, %lo(D_8007829A)($at)
     /* 4559C 80054D9C 01000224 */  addiu      $v0, $zero, 0x1
     /* 455A0 80054DA0 19006214 */  bne        $v1, $v0, .L80054E08
     /* 455A4 80054DA4 02000224 */   addiu     $v0, $zero, 0x2
@@ -75599,8 +75599,8 @@ glabel UpdateHudCounters
     /* 455B8 80054DB8 0B00A214 */  bne        $a1, $v0, .L80054DE8
     /* 455BC 80054DBC 01006224 */   addiu     $v0, $v1, 0x1
     /* 455C0 80054DC0 02000224 */  addiu      $v0, $zero, 0x2
-    /* 455C4 80054DC4 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 455C8 80054DC8 A97F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x1)($at)
+    /* 455C4 80054DC4 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 455C8 80054DC8 A97F22A0 */  sb         $v0, %lo(g_abHudDragonCounterBlock)($at)
     /* 455CC 80054DCC D8FF0224 */  addiu      $v0, $zero, -0x28
     /* 455D0 80054DD0 0780013C */  lui        $at, %hi(g_bHudDragonRollPhase)
     /* 455D4 80054DD4 AE7F20A0 */  sb         $zero, %lo(g_bHudDragonRollPhase)($at)
@@ -75628,8 +75628,8 @@ glabel UpdateHudCounters
     /* 45624 80054E24 B87F22AC */  sw         $v0, %lo(g_nHudDragonHoldTimer)($at)
     /* 45628 80054E28 1D004314 */  bne        $v0, $v1, .L80054EA0
     /* 4562C 80054E2C 03000224 */   addiu     $v0, $zero, 0x3
-    /* 45630 80054E30 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 45634 80054E34 A97F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x1)($at)
+    /* 45630 80054E30 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 45634 80054E34 A97F22A0 */  sb         $v0, %lo(g_abHudDragonCounterBlock)($at)
     /* 45638 80054E38 0D000224 */  addiu      $v0, $zero, 0xD
     /* 4563C 80054E3C 0780013C */  lui        $at, %hi(g_bHudDragonRollPhase)
     /* 45640 80054E40 AE7F22A0 */  sb         $v0, %lo(g_bHudDragonRollPhase)($at)
@@ -75643,8 +75643,8 @@ glabel UpdateHudCounters
     /* 4565C 80054E5C 00000000 */  nop
     /* 45660 80054E60 05004014 */  bnez       $v0, .L80054E78
     /* 45664 80054E64 FFFF4224 */   addiu     $v0, $v0, -0x1
-    /* 45668 80054E68 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x1)
-    /* 4566C 80054E6C A97F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x1)($at)
+    /* 45668 80054E68 0780013C */  lui        $at, %hi(g_abHudDragonCounterBlock)
+    /* 4566C 80054E6C A97F20A0 */  sb         $zero, %lo(g_abHudDragonCounterBlock)($at)
     /* 45670 80054E70 A8530108 */  j          .L80054EA0
     /* 45674 80054E74 00000000 */   nop
   .L80054E78:
@@ -75662,10 +75662,10 @@ glabel UpdateHudCounters
   .L80054EA0:
     /* 456A0 80054EA0 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
     /* 456A4 80054EA4 E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
-    /* 456A8 80054EA8 0780033C */  lui        $v1, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 456AC 80054EAC AA7F6390 */  lbu        $v1, %lo(g_abHudCounterDisplayState + 0x2)($v1)
-    /* 456B0 80054EB0 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x3B6)
-    /* 456B4 80054EB4 A28322A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x3B6)($at)
+    /* 456A8 80054EA8 0780033C */  lui        $v1, %hi(g_abHudLivesCounterBlock)
+    /* 456AC 80054EAC AA7F6390 */  lbu        $v1, %lo(g_abHudLivesCounterBlock)($v1)
+    /* 456B0 80054EB0 0880013C */  lui        $at, %hi(D_800783A2)
+    /* 456B4 80054EB4 A28322A0 */  sb         $v0, %lo(D_800783A2)($at)
     /* 456B8 80054EB8 15006014 */  bnez       $v1, .L80054F10
     /* 456BC 80054EBC 01000224 */   addiu     $v0, $zero, 0x1
     /* 456C0 80054EC0 0780033C */  lui        $v1, %hi(g_nHudLivesCachedCount)
@@ -75683,8 +75683,8 @@ glabel UpdateHudCounters
     /* 456F0 80054EF0 A4006210 */  beq        $v1, $v0, .L80055184
     /* 456F4 80054EF4 01000224 */   addiu     $v0, $zero, 0x1
   .L80054EF8:
-    /* 456F8 80054EF8 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 456FC 80054EFC AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
+    /* 456F8 80054EF8 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 456FC 80054EFC AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 45700 80054F00 0780013C */  lui        $at, %hi(g_bHudLivesRollPhase)
     /* 45704 80054F04 AF7F20A0 */  sb         $zero, %lo(g_bHudLivesRollPhase)($at)
     /* 45708 80054F08 61540108 */  j          .L80055184
@@ -75703,8 +75703,8 @@ glabel UpdateHudCounters
     /* 45738 80054F38 0780033C */  lui        $v1, %hi(g_nExtraLives)
     /* 4573C 80054F3C 2C58638C */  lw         $v1, %lo(g_nExtraLives)($v1)
     /* 45740 80054F40 02000224 */  addiu      $v0, $zero, 0x2
-    /* 45744 80054F44 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 45748 80054F48 AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
+    /* 45744 80054F44 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 45748 80054F48 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 4574C 80054F4C 0780013C */  lui        $at, %hi(g_bHudLivesRollPhase)
     /* 45750 80054F50 AF7F20A0 */  sb         $zero, %lo(g_bHudLivesRollPhase)($at)
     /* 45754 80054F54 0780013C */  lui        $at, %hi(g_nHudLivesHoldTimer)
@@ -75761,8 +75761,8 @@ glabel UpdateHudCounters
     /* 45818 80055018 BC7F22AC */  sw         $v0, %lo(g_nHudLivesHoldTimer)($at)
     /* 4581C 8005501C 59004314 */  bne        $v0, $v1, .L80055184
     /* 45820 80055020 03000224 */   addiu     $v0, $zero, 0x3
-    /* 45824 80055024 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 45828 80055028 AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
+    /* 45824 80055024 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 45828 80055028 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 4582C 8005502C 0D000224 */  addiu      $v0, $zero, 0xD
     /* 45830 80055030 0780013C */  lui        $at, %hi(g_bHudLivesRollPhase)
     /* 45834 80055034 AF7F22A0 */  sb         $v0, %lo(g_bHudLivesRollPhase)($at)
@@ -75829,8 +75829,8 @@ glabel UpdateHudCounters
     /* 45914 80055114 0780033C */  lui        $v1, %hi(g_nSparxFoodCount)
     /* 45918 80055118 E858638C */  lw         $v1, %lo(g_nSparxFoodCount)($v1)
     /* 4591C 8005511C 01000224 */  addiu      $v0, $zero, 0x1
-    /* 45920 80055120 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 45924 80055124 AA7F22A0 */  sb         $v0, %lo(g_abHudCounterDisplayState + 0x2)($at)
+    /* 45920 80055120 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 45924 80055124 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 45928 80055128 0780013C */  lui        $at, %hi(g_nHudButterflyCachedCount)
     /* 4592C 8005512C E07F23AC */  sw         $v1, %lo(g_nHudButterflyCachedCount)($at)
     /* 45930 80055130 61540108 */  j          .L80055184
@@ -75841,8 +75841,8 @@ glabel UpdateHudCounters
     /* 45940 80055140 00000000 */  nop
     /* 45944 80055144 05004014 */  bnez       $v0, .L8005515C
     /* 45948 80055148 FFFF4224 */   addiu     $v0, $v0, -0x1
-    /* 4594C 8005514C 0780013C */  lui        $at, %hi(g_abHudCounterDisplayState + 0x2)
-    /* 45950 80055150 AA7F20A0 */  sb         $zero, %lo(g_abHudCounterDisplayState + 0x2)($at)
+    /* 4594C 8005514C 0780013C */  lui        $at, %hi(g_abHudLivesCounterBlock)
+    /* 45950 80055150 AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
     /* 45954 80055154 61540108 */  j          .L80055184
     /* 45958 80055158 00000000 */   nop
   .L8005515C:
@@ -75901,8 +75901,8 @@ glabel UpdateHudCounters
     /* 45A20 80055220 E2FF4014 */  bnez       $v0, .L800551AC
     /* 45A24 80055224 08008424 */   addiu     $a0, $a0, 0x8
   .L80055228:
-    /* 45A28 80055228 0780063C */  lui        $a2, %hi(g_abHudCounterDisplayState + 0x3)
-    /* 45A2C 8005522C AB7FC624 */  addiu      $a2, $a2, %lo(g_abHudCounterDisplayState + 0x3)
+    /* 45A28 80055228 0780063C */  lui        $a2, %hi(g_abHudWorldEggIconBlock)
+    /* 45A2C 8005522C AB7FC624 */  addiu      $a2, $a2, %lo(g_abHudWorldEggIconBlock)
     /* 45A30 80055230 0000C390 */  lbu        $v1, 0x0($a2)
     /* 45A34 80055234 01000424 */  addiu      $a0, $zero, 0x1
     /* 45A38 80055238 1F006410 */  beq        $v1, $a0, .L800552B8
@@ -76087,8 +76087,8 @@ glabel UpdateHudCounters
     /* 45CC4 800554C4 0780013C */  lui        $at, %hi(g_nHudLevelEggCachedCount)
     /* 45CC8 800554C8 D87F22AC */  sw         $v0, %lo(g_nHudLevelEggCachedCount)($at)
   .L800554CC:
-    /* 45CCC 800554CC 0780063C */  lui        $a2, %hi(g_abHudCounterDisplayState + 0x4)
-    /* 45CD0 800554D0 AC7FC624 */  addiu      $a2, $a2, %lo(g_abHudCounterDisplayState + 0x4)
+    /* 45CCC 800554CC 0780063C */  lui        $a2, %hi(g_abHudLevelEggCounterBlock)
+    /* 45CD0 800554D0 AC7FC624 */  addiu      $a2, $a2, %lo(g_abHudLevelEggCounterBlock)
     /* 45CD4 800554D4 0000C390 */  lbu        $v1, 0x0($a2)
     /* 45CD8 800554D8 00000000 */  nop
     /* 45CDC 800554DC 17006410 */  beq        $v1, $a0, .L8005553C
@@ -76166,8 +76166,8 @@ glabel UpdateHudCounters
     /* 45DE8 800555E8 01000424 */  addiu      $a0, $zero, 0x1
   .L800555EC:
     /* 45DEC 800555EC 0C000524 */  addiu      $a1, $zero, 0xC
-    /* 45DF0 800555F0 0880063C */  lui        $a2, %hi(g_abHudIconActorRecords + 0x3C8)
-    /* 45DF4 800555F4 B483C624 */  addiu      $a2, $a2, %lo(g_abHudIconActorRecords + 0x3C8)
+    /* 45DF0 800555F0 0880063C */  lui        $a2, %hi(D_800783B4)
+    /* 45DF4 800555F4 B483C624 */  addiu      $a2, $a2, %lo(D_800783B4)
     /* 45DF8 800555F8 21381202 */  addu       $a3, $s0, $s2
     /* 45DFC 800555FC 0780023C */  lui        $v0, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 45E00 80055600 E458428C */  lw         $v0, %lo(g_pfnLevelOverlayParticleSpawn)($v0)
@@ -76184,8 +76184,8 @@ glabel UpdateHudCounters
   .L8005562C:
     /* 45E2C 8005562C 12004014 */  bnez       $v0, .L80055678
     /* 45E30 80055630 40000224 */   addiu     $v0, $zero, 0x40
-    /* 45E34 80055634 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x411)
-    /* 45E38 80055638 FD8322A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x411)($at)
+    /* 45E34 80055634 0880013C */  lui        $at, %hi(D_800783FD)
+    /* 45E38 80055638 FD8322A0 */  sb         $v0, %lo(D_800783FD)($at)
     /* 45E3C 8005563C 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
     /* 45E40 80055640 C47F20AC */  sw         $zero, %lo(g_nHudLevelEggHoldTimer)($at)
     /* 45E44 80055644 0780013C */  lui        $at, %hi(g_nHudLevelEggCachedCount)
@@ -76246,8 +76246,8 @@ glabel UpdateHudCounters
     /* 45F04 80055704 0051010C */  jal        OffsetHudIconRollAxis
     /* 45F08 80055708 23300600 */   negu      $a2, $a2
   .L8005570C:
-    /* 45F0C 8005570C 0880023C */  lui        $v0, %hi(g_abHudIconActorRecords + 0x411)
-    /* 45F10 80055710 FD834224 */  addiu      $v0, $v0, %lo(g_abHudIconActorRecords + 0x411)
+    /* 45F0C 8005570C 0880023C */  lui        $v0, %hi(D_800783FD)
+    /* 45F10 80055710 FD834224 */  addiu      $v0, $v0, %lo(D_800783FD)
     /* 45F14 80055714 00004390 */  lbu        $v1, 0x0($v0)
     /* 45F18 80055718 00000000 */  nop
     /* 45F1C 8005571C 04006324 */  addiu      $v1, $v1, 0x4
@@ -76259,16 +76259,16 @@ glabel UpdateHudCounters
     /* 45F34 80055734 78CC2294 */  lhu        $v0, %lo(g_anCosineLut)($at)
     /* 45F38 80055738 00000000 */  nop
     /* 45F3C 8005573C C2110200 */  srl        $v0, $v0, 7
-    /* 45F40 80055740 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x40C)
-    /* 45F44 80055744 F88322A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x40C)($at)
+    /* 45F40 80055740 0880013C */  lui        $at, %hi(D_800783F8)
+    /* 45F44 80055744 F88322A0 */  sb         $v0, %lo(D_800783F8)($at)
     /* 45F48 80055748 0780013C */  lui        $at, %hi(g_anSineLut)
     /* 45F4C 8005574C 21082300 */  addu       $at, $at, $v1
     /* 45F50 80055750 F8CB2294 */  lhu        $v0, %lo(g_anSineLut)($at)
     /* 45F54 80055754 0780033C */  lui        $v1, %hi(g_nSparxFoodCount)
     /* 45F58 80055758 E858638C */  lw         $v1, %lo(g_nSparxFoodCount)($v1)
     /* 45F5C 8005575C C2110200 */  srl        $v0, $v0, 7
-    /* 45F60 80055760 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x40D)
-    /* 45F64 80055764 F98322A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x40D)($at)
+    /* 45F60 80055760 0880013C */  lui        $at, %hi(D_800783F9)
+    /* 45F64 80055764 F98322A0 */  sb         $v0, %lo(D_800783F9)($at)
     /* 45F68 80055768 14006228 */  slti       $v0, $v1, 0x14
     /* 45F6C 8005576C 10004014 */  bnez       $v0, .L800557B0
     /* 45F70 80055770 00000000 */   nop
@@ -76423,8 +76423,8 @@ glabel InitSoundEngine
     /* 46174 80055974 C3000224 */  addiu      $v0, $zero, 0xC3
     /* 46178 80055978 000002AE */  sw         $v0, 0x0($s0)
     /* 4617C 8005597C FF3F0224 */  addiu      $v0, $zero, 0x3FFF
-    /* 46180 80055980 0780013C */  lui        $at, %hi(D_80076228)
-    /* 46184 80055984 286222AC */  sw         $v0, %lo(D_80076228)($at)
+    /* 46180 80055980 0780013C */  lui        $at, %hi(D_80076228_blk)
+    /* 46184 80055984 286222AC */  sw         $v0, %lo(D_80076228_blk)($at)
     /* 46188 80055988 00100224 */  addiu      $v0, $zero, 0x1000
     /* 4618C 8005598C 0780013C */  lui        $at, %hi(g_nSoundMasterVolume)
     /* 46190 80055990 2C6222AC */  sw         $v0, %lo(g_nSoundMasterVolume)($at)
@@ -76434,8 +76434,8 @@ glabel InitSoundEngine
     /* 461A0 800559A0 0780013C */  lui        $at, %hi(D_80075F0E)
     /* 461A4 800559A4 0E5F22A4 */  sh         $v0, %lo(D_80075F0E)($at)
     /* 461A8 800559A8 00500224 */  addiu      $v0, $zero, 0x5000
-    /* 461AC 800559AC 0780013C */  lui        $at, %hi(D_80076224)
-    /* 461B0 800559B0 246222AC */  sw         $v0, %lo(D_80076224)($at)
+    /* 461AC 800559AC 0780013C */  lui        $at, %hi(D_80076224_blk)
+    /* 461B0 800559B0 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
     /* 461B4 800559B4 0780013C */  lui        $at, %hi(D_80075F18)
     /* 461B8 800559B8 185F22A4 */  sh         $v0, %lo(D_80075F18)($at)
     /* 461BC 800559BC 0780013C */  lui        $at, %hi(D_80075F1A)
@@ -77620,8 +77620,8 @@ glabel HandleMusicCommand
     /* 47274 80056A74 13004010 */  beqz       $v0, .L80056AC4
     /* 47278 80056A78 00000000 */   nop
   .L80056A7C:
-    /* 4727C 80056A7C 0780023C */  lui        $v0, %hi(D_80076224)
-    /* 47280 80056A80 2462428C */  lw         $v0, %lo(D_80076224)($v0)
+    /* 4727C 80056A7C 0780023C */  lui        $v0, %hi(D_80076224_blk)
+    /* 47280 80056A80 2462428C */  lw         $v0, %lo(D_80076224_blk)($v0)
     /* 47284 80056A84 0780043C */  lui        $a0, %hi(D_80075F18)
     /* 47288 80056A88 185F8484 */  lh         $a0, %lo(D_80075F18)($a0)
     /* 4728C 80056A8C 10000324 */  addiu      $v1, $zero, 0x10
@@ -78032,8 +78032,8 @@ glabel DispatchSpyroTriggerEvent
     /* 477B8 80056FB8 01000224 */  addiu      $v0, $zero, 0x1
     /* 477BC 80056FBC 0E00A214 */  bne        $a1, $v0, .L80056FF8
     /* 477C0 80056FC0 02000224 */   addiu     $v0, $zero, 0x2
-    /* 477C4 80056FC4 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 477C8 80056FC8 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 477C4 80056FC4 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 477C8 80056FC8 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 477CC 80056FCC 0880033C */  lui        $v1, %hi(g_nSpyroGroundHeightZ)
     /* 477D0 80056FD0 F88A638C */  lw         $v1, %lo(g_nSpyroGroundHeightZ)($v1)
     /* 477D4 80056FD4 00000000 */  nop
@@ -78078,8 +78078,8 @@ glabel DispatchSpyroTriggerEvent
     /* 47864 80057064 0200A22C */  sltiu      $v0, $a1, 0x2
     /* 47868 80057068 BF004010 */  beqz       $v0, .L80057368
     /* 4786C 8005706C 00000000 */   nop
-    /* 47870 80057070 0880023C */  lui        $v0, %hi(D_80078A60)
-    /* 47874 80057074 608A428C */  lw         $v0, %lo(D_80078A60)($v0)
+    /* 47870 80057070 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
+    /* 47874 80057074 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
     /* 47878 80057078 0880033C */  lui        $v1, %hi(g_nSpyroGroundHeightZ)
     /* 4787C 8005707C F88A638C */  lw         $v1, %lo(g_nSpyroGroundHeightZ)($v1)
     /* 47880 80057080 00000000 */  nop
@@ -80729,8 +80729,8 @@ glabel func_80059594
     /* 49DE0 800595E0 2328A200 */  subu       $a1, $a1, $v0
     /* 49DE4 800595E4 001B0500 */  sll        $v1, $a1, 12
     /* 49DE8 800595E8 18006400 */  mult       $v1, $a0
-    /* 49DEC 800595EC 0780063C */  lui        $a2, %hi(D_80076228)
-    /* 49DF0 800595F0 2862C624 */  addiu      $a2, $a2, %lo(D_80076228)
+    /* 49DEC 800595EC 0780063C */  lui        $a2, %hi(D_80076228_blk)
+    /* 49DF0 800595F0 2862C624 */  addiu      $a2, $a2, %lo(D_80076228_blk)
     /* 49DF4 800595F4 0780013C */  lui        $at, %hi(g_nSfxVolume)
     /* 49DF8 800595F8 545727AC */  sw         $a3, %lo(g_nSfxVolume)($at)
     /* 49DFC 800595FC 0000C5AC */  sw         $a1, 0x0($a2)
@@ -80747,8 +80747,8 @@ glabel func_80059594
     /* 49E28 80059628 0780013C */  lui        $at, %hi(g_nMusicVolume)
     /* 49E2C 8005962C 485722AC */  sw         $v0, %lo(g_nMusicVolume)($at)
     /* 49E30 80059630 C0120200 */  sll        $v0, $v0, 11
-    /* 49E34 80059634 0780013C */  lui        $at, %hi(D_80076224)
-    /* 49E38 80059638 246222AC */  sw         $v0, %lo(D_80076224)($at)
+    /* 49E34 80059634 0780013C */  lui        $at, %hi(D_80076224_blk)
+    /* 49E38 80059638 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
     /* 49E3C 8005963C 0780013C */  lui        $at, %hi(D_80075F18)
     /* 49E40 80059640 185F22A4 */  sh         $v0, %lo(D_80075F18)($at)
     /* 49E44 80059644 0780013C */  lui        $at, %hi(D_80075F1A)
@@ -81802,20 +81802,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4AD8C 8005A58C 90F44224 */  addiu      $v0, $v0, %lo(D_8007F490)
     /* 4AD90 8005A590 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AD94 8005A594 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AD98 8005A598 0880023C */  lui        $v0, %hi(D_8007D970)
-    /* 4AD9C 8005A59C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970)
+    /* 4AD98 8005A598 0880023C */  lui        $v0, %hi(D_8007D970_lv7)
+    /* 4AD9C 8005A59C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970_lv7)
     /* 4ADA0 8005A5A0 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4ADA4 8005A5A4 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4ADA8 8005A5A8 0880023C */  lui        $v0, %hi(D_8007AD08)
-    /* 4ADAC 8005A5AC 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08)
+    /* 4ADA8 8005A5A8 0880023C */  lui        $v0, %hi(D_8007AD08_lv7)
+    /* 4ADAC 8005A5AC 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08_lv7)
     /* 4ADB0 8005A5B0 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4ADB4 8005A5B4 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4ADB8 8005A5B8 0880023C */  lui        $v0, %hi(D_8007E990)
     /* 4ADBC 8005A5BC 90E94224 */  addiu      $v0, $v0, %lo(D_8007E990)
     /* 4ADC0 8005A5C0 0780013C */  lui        $at, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 4ADC4 8005A5C4 E45822AC */  sw         $v0, %lo(g_pfnLevelOverlayParticleSpawn)($at)
-    /* 4ADC8 8005A5C8 0880023C */  lui        $v0, %hi(D_8007DE34)
-    /* 4ADCC 8005A5CC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34)
+    /* 4ADC8 8005A5C8 0880023C */  lui        $v0, %hi(D_8007DE34_lv7)
+    /* 4ADCC 8005A5CC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34_lv7)
     /* 4ADD0 8005A5D0 B66D0108 */  j          .L8005B6D8
     /* 4ADD4 8005A5D4 00000000 */   nop
   jlabel .L8005A5D8
@@ -81823,8 +81823,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4ADDC 8005A5DC B0C74224 */  addiu      $v0, $v0, %lo(D_8007C7B0)
     /* 4ADE0 8005A5E0 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4ADE4 8005A5E4 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4ADE8 8005A5E8 0880023C */  lui        $v0, %hi(D_8007B0AC)
-    /* 4ADEC 8005A5EC ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC)
+    /* 4ADE8 8005A5E8 0880023C */  lui        $v0, %hi(D_8007B0AC_lv13)
+    /* 4ADEC 8005A5EC ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC_lv13)
     /* 4ADF0 8005A5F0 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4ADF4 8005A5F4 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
     /* 4ADF8 8005A5F8 0880023C */  lui        $v0, %hi(D_8007ACC8)
@@ -81840,24 +81840,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4AE20 8005A620 B66D0108 */  j          .L8005B6D8
     /* 4AE24 8005A624 00000000 */   nop
   jlabel .L8005A628
-    /* 4AE28 8005A628 0880023C */  lui        $v0, %hi(D_8007C204)
-    /* 4AE2C 8005A62C 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204)
+    /* 4AE28 8005A628 0880023C */  lui        $v0, %hi(D_8007C204_lv9)
+    /* 4AE2C 8005A62C 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204_lv9)
     /* 4AE30 8005A630 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AE34 8005A634 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AE38 8005A638 0880023C */  lui        $v0, %hi(D_8007B08C)
-    /* 4AE3C 8005A63C 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C)
+    /* 4AE38 8005A638 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
+    /* 4AE3C 8005A63C 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
     /* 4AE40 8005A640 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4AE44 8005A644 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4AE48 8005A648 0880023C */  lui        $v0, %hi(D_8007ACA8)
-    /* 4AE4C 8005A64C A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8)
+    /* 4AE48 8005A648 0880023C */  lui        $v0, %hi(D_8007ACA8_lv9)
+    /* 4AE4C 8005A64C A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8_lv9)
     /* 4AE50 8005A650 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4AE54 8005A654 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
-    /* 4AE58 8005A658 0880023C */  lui        $v0, %hi(D_8007B9F0)
-    /* 4AE5C 8005A65C F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0)
+    /* 4AE58 8005A658 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
+    /* 4AE5C 8005A65C F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
     /* 4AE60 8005A660 0780013C */  lui        $at, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 4AE64 8005A664 E45822AC */  sw         $v0, %lo(g_pfnLevelOverlayParticleSpawn)($at)
-    /* 4AE68 8005A668 0880023C */  lui        $v0, %hi(D_8007B160)
-    /* 4AE6C 8005A66C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160)
+    /* 4AE68 8005A668 0880023C */  lui        $v0, %hi(D_8007B160_lv9)
+    /* 4AE6C 8005A66C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160_lv9)
     /* 4AE70 8005A670 B66D0108 */  j          .L8005B6D8
     /* 4AE74 8005A674 00000000 */   nop
   jlabel .L8005A678
@@ -81865,41 +81865,41 @@ glabel ApplyPerLevelGlobalsTable
     /* 4AE7C 8005A67C F4F24224 */  addiu      $v0, $v0, %lo(D_8007F2F4)
     /* 4AE80 8005A680 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AE84 8005A684 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AE88 8005A688 0880023C */  lui        $v0, %hi(D_8007D970)
-    /* 4AE8C 8005A68C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970)
+    /* 4AE88 8005A688 0880023C */  lui        $v0, %hi(D_8007D970_lv7)
+    /* 4AE8C 8005A68C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970_lv7)
     /* 4AE90 8005A690 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4AE94 8005A694 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4AE98 8005A698 0880023C */  lui        $v0, %hi(D_8007AD08)
-    /* 4AE9C 8005A69C 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08)
+    /* 4AE98 8005A698 0880023C */  lui        $v0, %hi(D_8007AD08_lv7)
+    /* 4AE9C 8005A69C 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08_lv7)
     /* 4AEA0 8005A6A0 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4AEA4 8005A6A4 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4AEA8 8005A6A8 0880023C */  lui        $v0, %hi(D_8007E8E4)
     /* 4AEAC 8005A6AC E4E84224 */  addiu      $v0, $v0, %lo(D_8007E8E4)
     /* 4AEB0 8005A6B0 0780013C */  lui        $at, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 4AEB4 8005A6B4 E45822AC */  sw         $v0, %lo(g_pfnLevelOverlayParticleSpawn)($at)
-    /* 4AEB8 8005A6B8 0880023C */  lui        $v0, %hi(D_8007DE34)
-    /* 4AEBC 8005A6BC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34)
+    /* 4AEB8 8005A6B8 0880023C */  lui        $v0, %hi(D_8007DE34_lv7)
+    /* 4AEBC 8005A6BC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34_lv7)
     /* 4AEC0 8005A6C0 B66D0108 */  j          .L8005B6D8
     /* 4AEC4 8005A6C4 00000000 */   nop
   jlabel .L8005A6C8
-    /* 4AEC8 8005A6C8 0880023C */  lui        $v0, %hi(D_8007C204)
-    /* 4AECC 8005A6CC 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204)
+    /* 4AEC8 8005A6C8 0880023C */  lui        $v0, %hi(D_8007C204_lv9)
+    /* 4AECC 8005A6CC 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204_lv9)
     /* 4AED0 8005A6D0 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AED4 8005A6D4 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AED8 8005A6D8 0880023C */  lui        $v0, %hi(D_8007B08C)
-    /* 4AEDC 8005A6DC 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C)
+    /* 4AED8 8005A6D8 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
+    /* 4AEDC 8005A6DC 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
     /* 4AEE0 8005A6E0 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4AEE4 8005A6E4 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4AEE8 8005A6E8 0880023C */  lui        $v0, %hi(D_8007ACA8)
-    /* 4AEEC 8005A6EC A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8)
+    /* 4AEE8 8005A6E8 0880023C */  lui        $v0, %hi(D_8007ACA8_lv9)
+    /* 4AEEC 8005A6EC A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8_lv9)
     /* 4AEF0 8005A6F0 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4AEF4 8005A6F4 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
-    /* 4AEF8 8005A6F8 0880023C */  lui        $v0, %hi(D_8007B9F0)
-    /* 4AEFC 8005A6FC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0)
+    /* 4AEF8 8005A6F8 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
+    /* 4AEFC 8005A6FC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
     /* 4AF00 8005A700 0780013C */  lui        $at, %hi(g_pfnLevelOverlayParticleSpawn)
     /* 4AF04 8005A704 E45822AC */  sw         $v0, %lo(g_pfnLevelOverlayParticleSpawn)($at)
-    /* 4AF08 8005A708 0880023C */  lui        $v0, %hi(D_8007B160)
-    /* 4AF0C 8005A70C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160)
+    /* 4AF08 8005A708 0880023C */  lui        $v0, %hi(D_8007B160_lv9)
+    /* 4AF0C 8005A70C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160_lv9)
     /* 4AF10 8005A710 B66D0108 */  j          .L8005B6D8
     /* 4AF14 8005A714 00000000 */   nop
   jlabel .L8005A718
@@ -81962,12 +81962,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4AFF4 8005A7F4 98804224 */  addiu      $v0, $v0, %lo(D_80088098)
     /* 4AFF8 8005A7F8 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4AFFC 8005A7FC BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B000 8005A800 0880023C */  lui        $v0, %hi(D_8007AF50)
-    /* 4B004 8005A804 50AF4224 */  addiu      $v0, $v0, %lo(D_8007AF50)
+    /* 4B000 8005A800 0880023C */  lui        $v0, %hi(D_8007AF50_lv54)
+    /* 4B004 8005A804 50AF4224 */  addiu      $v0, $v0, %lo(D_8007AF50_lv54)
     /* 4B008 8005A808 0780013C */  lui        $at, %hi(D_800757A0)
     /* 4B00C 8005A80C A05722AC */  sw         $v0, %lo(D_800757A0)($at)
-    /* 4B010 8005A810 0880023C */  lui        $v0, %hi(D_8007B08C)
-    /* 4B014 8005A814 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C)
+    /* 4B010 8005A810 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
+    /* 4B014 8005A814 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
     /* 4B018 8005A818 0780013C */  lui        $at, %hi(D_800758A8)
     /* 4B01C 8005A81C A85822AC */  sw         $v0, %lo(D_800758A8)($at)
     /* 4B020 8005A820 0880023C */  lui        $v0, %hi(D_8007B0D0)
@@ -82030,8 +82030,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B0FC 8005A8FC 68B04224 */  addiu      $v0, $v0, %lo(D_8007B068)
     /* 4B100 8005A900 0780013C */  lui        $at, %hi(D_800758A8)
     /* 4B104 8005A904 A85822AC */  sw         $v0, %lo(D_800758A8)($at)
-    /* 4B108 8005A908 0880023C */  lui        $v0, %hi(D_8007B0AC)
-    /* 4B10C 8005A90C ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC)
+    /* 4B108 8005A908 0880023C */  lui        $v0, %hi(D_8007B0AC_lv13)
+    /* 4B10C 8005A90C ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC_lv13)
     /* 4B110 8005A910 0780013C */  lui        $at, %hi(D_8007574C)
     /* 4B114 8005A914 4C5722AC */  sw         $v0, %lo(D_8007574C)($at)
     /* 4B118 8005A918 0880023C */  lui        $v0, %hi(D_8007D04C)
@@ -82070,8 +82070,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B194 8005A994 9C244224 */  addiu      $v0, $v0, %lo(D_8008249C)
     /* 4B198 8005A998 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B19C 8005A99C CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B1A0 8005A9A0 0880023C */  lui        $v0, %hi(D_8007CFB4)
-    /* 4B1A4 8005A9A4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4)
+    /* 4B1A0 8005A9A0 0880023C */  lui        $v0, %hi(D_8007CFB4_lv25)
+    /* 4B1A4 8005A9A4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4_lv25)
     /* 4B1A8 8005A9A8 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B1AC 8005A9AC 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B1B0 8005A9B0 0880023C */  lui        $v0, %hi(D_80084128)
@@ -82082,24 +82082,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B1C4 8005A9C4 30334224 */  addiu      $v0, $v0, %lo(D_80083330)
     /* 4B1C8 8005A9C8 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B1CC 8005A9CC BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B1D0 8005A9D0 0880023C */  lui        $v0, %hi(D_8007AE08)
-    /* 4B1D4 8005A9D4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08)
+    /* 4B1D0 8005A9D0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
+    /* 4B1D4 8005A9D4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
     /* 4B1D8 8005A9D8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
     /* 4B1DC 8005A9DC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
-    /* 4B1E0 8005A9E0 0880023C */  lui        $v0, %hi(D_8007AEDC)
-    /* 4B1E4 8005A9E4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC)
+    /* 4B1E0 8005A9E0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
+    /* 4B1E4 8005A9E4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B1E8 8005A9E8 0780013C */  lui        $at, %hi(D_800757A8)
     /* 4B1EC 8005A9EC A85722AC */  sw         $v0, %lo(D_800757A8)($at)
-    /* 4B1F0 8005A9F0 0880023C */  lui        $v0, %hi(D_8007B1FC)
-    /* 4B1F4 8005A9F4 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC)
+    /* 4B1F0 8005A9F0 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
+    /* 4B1F4 8005A9F4 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
     /* 4B1F8 8005A9F8 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
     /* 4B1FC 8005A9FC C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
-    /* 4B200 8005AA00 0880023C */  lui        $v0, %hi(D_8007B68C)
-    /* 4B204 8005AA04 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C)
+    /* 4B200 8005AA00 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
+    /* 4B204 8005AA04 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
     /* 4B208 8005AA08 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
     /* 4B20C 8005AA0C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
-    /* 4B210 8005AA10 0880023C */  lui        $v0, %hi(D_8007B4B0)
-    /* 4B214 8005AA14 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0)
+    /* 4B210 8005AA10 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
+    /* 4B214 8005AA14 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B218 8005AA18 0780013C */  lui        $at, %hi(D_800758C4)
     /* 4B21C 8005AA1C C45822AC */  sw         $v0, %lo(D_800758C4)($at)
     /* 4B220 8005AA20 B86D0108 */  j          .L8005B6E0
@@ -82152,8 +82152,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B2D4 8005AAD4 D0A44224 */  addiu      $v0, $v0, %lo(D_8008A4D0)
     /* 4B2D8 8005AAD8 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B2DC 8005AADC CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B2E0 8005AAE0 0880023C */  lui        $v0, %hi(D_8007E240)
-    /* 4B2E4 8005AAE4 40E24224 */  addiu      $v0, $v0, %lo(D_8007E240)
+    /* 4B2E0 8005AAE0 0880023C */  lui        $v0, %hi(D_8007E240_lv22)
+    /* 4B2E4 8005AAE4 40E24224 */  addiu      $v0, $v0, %lo(D_8007E240_lv22)
     /* 4B2E8 8005AAE8 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B2EC 8005AAEC 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B2F0 8005AAF0 0980023C */  lui        $v0, %hi(D_8008C540)
@@ -82164,20 +82164,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B304 8005AB04 C0B14224 */  addiu      $v0, $v0, %lo(D_8008B1C0)
     /* 4B308 8005AB08 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B30C 8005AB0C BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B310 8005AB10 0880023C */  lui        $v0, %hi(D_8007B718)
-    /* 4B314 8005AB14 18B74224 */  addiu      $v0, $v0, %lo(D_8007B718)
+    /* 4B310 8005AB10 0880023C */  lui        $v0, %hi(D_8007B718_lv22)
+    /* 4B314 8005AB14 18B74224 */  addiu      $v0, $v0, %lo(D_8007B718_lv22)
     /* 4B318 8005AB18 0780013C */  lui        $at, %hi(D_800757A0)
     /* 4B31C 8005AB1C A05722AC */  sw         $v0, %lo(D_800757A0)($at)
-    /* 4B320 8005AB20 0880023C */  lui        $v0, %hi(D_8007B854)
-    /* 4B324 8005AB24 54B84224 */  addiu      $v0, $v0, %lo(D_8007B854)
+    /* 4B320 8005AB20 0880023C */  lui        $v0, %hi(D_8007B854_lv22)
+    /* 4B324 8005AB24 54B84224 */  addiu      $v0, $v0, %lo(D_8007B854_lv22)
     /* 4B328 8005AB28 0780013C */  lui        $at, %hi(D_800758A8)
     /* 4B32C 8005AB2C A85822AC */  sw         $v0, %lo(D_800758A8)($at)
-    /* 4B330 8005AB30 0880023C */  lui        $v0, %hi(D_8007B898)
-    /* 4B334 8005AB34 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898)
+    /* 4B330 8005AB30 0880023C */  lui        $v0, %hi(D_8007B898_lv22)
+    /* 4B334 8005AB34 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898_lv22)
     /* 4B338 8005AB38 0780013C */  lui        $at, %hi(D_8007574C)
     /* 4B33C 8005AB3C 4C5722AC */  sw         $v0, %lo(D_8007574C)($at)
-    /* 4B340 8005AB40 0880023C */  lui        $v0, %hi(D_8007D838)
-    /* 4B344 8005AB44 38D84224 */  addiu      $v0, $v0, %lo(D_8007D838)
+    /* 4B340 8005AB40 0880023C */  lui        $v0, %hi(D_8007D838_lv22)
+    /* 4B344 8005AB44 38D84224 */  addiu      $v0, $v0, %lo(D_8007D838_lv22)
     /* 4B348 8005AB48 0780013C */  lui        $at, %hi(D_800758D8)
     /* 4B34C 8005AB4C D85822AC */  sw         $v0, %lo(D_800758D8)($at)
     /* 4B350 8005AB50 B86D0108 */  j          .L8005B6E0
@@ -82191,8 +82191,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B36C 8005AB6C 888B4224 */  addiu      $v0, $v0, %lo(D_80088B88)
     /* 4B370 8005AB70 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B374 8005AB74 CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B378 8005AB78 0880023C */  lui        $v0, %hi(D_8007E240)
-    /* 4B37C 8005AB7C 40E24224 */  addiu      $v0, $v0, %lo(D_8007E240)
+    /* 4B378 8005AB78 0880023C */  lui        $v0, %hi(D_8007E240_lv22)
+    /* 4B37C 8005AB7C 40E24224 */  addiu      $v0, $v0, %lo(D_8007E240_lv22)
     /* 4B380 8005AB80 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B384 8005AB84 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B388 8005AB88 0980023C */  lui        $v0, %hi(D_8008A9A8)
@@ -82203,20 +82203,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B39C 8005AB9C 14974224 */  addiu      $v0, $v0, %lo(D_80089714)
     /* 4B3A0 8005ABA0 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B3A4 8005ABA4 BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B3A8 8005ABA8 0880023C */  lui        $v0, %hi(D_8007B718)
-    /* 4B3AC 8005ABAC 18B74224 */  addiu      $v0, $v0, %lo(D_8007B718)
+    /* 4B3A8 8005ABA8 0880023C */  lui        $v0, %hi(D_8007B718_lv22)
+    /* 4B3AC 8005ABAC 18B74224 */  addiu      $v0, $v0, %lo(D_8007B718_lv22)
     /* 4B3B0 8005ABB0 0780013C */  lui        $at, %hi(D_800757A0)
     /* 4B3B4 8005ABB4 A05722AC */  sw         $v0, %lo(D_800757A0)($at)
-    /* 4B3B8 8005ABB8 0880023C */  lui        $v0, %hi(D_8007B854)
-    /* 4B3BC 8005ABBC 54B84224 */  addiu      $v0, $v0, %lo(D_8007B854)
+    /* 4B3B8 8005ABB8 0880023C */  lui        $v0, %hi(D_8007B854_lv22)
+    /* 4B3BC 8005ABBC 54B84224 */  addiu      $v0, $v0, %lo(D_8007B854_lv22)
     /* 4B3C0 8005ABC0 0780013C */  lui        $at, %hi(D_800758A8)
     /* 4B3C4 8005ABC4 A85822AC */  sw         $v0, %lo(D_800758A8)($at)
-    /* 4B3C8 8005ABC8 0880023C */  lui        $v0, %hi(D_8007B898)
-    /* 4B3CC 8005ABCC 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898)
+    /* 4B3C8 8005ABC8 0880023C */  lui        $v0, %hi(D_8007B898_lv22)
+    /* 4B3CC 8005ABCC 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898_lv22)
     /* 4B3D0 8005ABD0 0780013C */  lui        $at, %hi(D_8007574C)
     /* 4B3D4 8005ABD4 4C5722AC */  sw         $v0, %lo(D_8007574C)($at)
-    /* 4B3D8 8005ABD8 0880023C */  lui        $v0, %hi(D_8007D838)
-    /* 4B3DC 8005ABDC 38D84224 */  addiu      $v0, $v0, %lo(D_8007D838)
+    /* 4B3D8 8005ABD8 0880023C */  lui        $v0, %hi(D_8007D838_lv22)
+    /* 4B3DC 8005ABDC 38D84224 */  addiu      $v0, $v0, %lo(D_8007D838_lv22)
     /* 4B3E0 8005ABE0 0780013C */  lui        $at, %hi(D_800758D8)
     /* 4B3E4 8005ABE4 D85822AC */  sw         $v0, %lo(D_800758D8)($at)
     /* 4B3E8 8005ABE8 B86D0108 */  j          .L8005B6E0
@@ -82272,8 +82272,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B4A4 8005ACA4 BC194224 */  addiu      $v0, $v0, %lo(D_800819BC)
     /* 4B4A8 8005ACA8 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B4AC 8005ACAC CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B4B0 8005ACB0 0880023C */  lui        $v0, %hi(D_8007CFB4)
-    /* 4B4B4 8005ACB4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4)
+    /* 4B4B0 8005ACB0 0880023C */  lui        $v0, %hi(D_8007CFB4_lv25)
+    /* 4B4B4 8005ACB4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4_lv25)
     /* 4B4B8 8005ACB8 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B4BC 8005ACBC 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B4C0 8005ACC0 0880023C */  lui        $v0, %hi(D_80082F58)
@@ -82284,24 +82284,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B4D4 8005ACD4 00234224 */  addiu      $v0, $v0, %lo(D_80082300)
     /* 4B4D8 8005ACD8 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B4DC 8005ACDC BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B4E0 8005ACE0 0880023C */  lui        $v0, %hi(D_8007AE08)
-    /* 4B4E4 8005ACE4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08)
+    /* 4B4E0 8005ACE0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
+    /* 4B4E4 8005ACE4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
     /* 4B4E8 8005ACE8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
     /* 4B4EC 8005ACEC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
-    /* 4B4F0 8005ACF0 0880023C */  lui        $v0, %hi(D_8007AEDC)
-    /* 4B4F4 8005ACF4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC)
+    /* 4B4F0 8005ACF0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
+    /* 4B4F4 8005ACF4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B4F8 8005ACF8 0780013C */  lui        $at, %hi(D_800757A8)
     /* 4B4FC 8005ACFC A85722AC */  sw         $v0, %lo(D_800757A8)($at)
-    /* 4B500 8005AD00 0880023C */  lui        $v0, %hi(D_8007B1FC)
-    /* 4B504 8005AD04 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC)
+    /* 4B500 8005AD00 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
+    /* 4B504 8005AD04 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
     /* 4B508 8005AD08 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
     /* 4B50C 8005AD0C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
-    /* 4B510 8005AD10 0880023C */  lui        $v0, %hi(D_8007B68C)
-    /* 4B514 8005AD14 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C)
+    /* 4B510 8005AD10 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
+    /* 4B514 8005AD14 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
     /* 4B518 8005AD18 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
     /* 4B51C 8005AD1C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
-    /* 4B520 8005AD20 0880023C */  lui        $v0, %hi(D_8007B4B0)
-    /* 4B524 8005AD24 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0)
+    /* 4B520 8005AD20 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
+    /* 4B524 8005AD24 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B528 8005AD28 0780013C */  lui        $at, %hi(D_800758C4)
     /* 4B52C 8005AD2C C45822AC */  sw         $v0, %lo(D_800758C4)($at)
     /* 4B530 8005AD30 B86D0108 */  j          .L8005B6E0
@@ -82335,8 +82335,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B59C 8005AD9C ACB94224 */  addiu      $v0, $v0, %lo(D_8007B9AC)
     /* 4B5A0 8005ADA0 0780013C */  lui        $at, %hi(D_800758A8)
     /* 4B5A4 8005ADA4 A85822AC */  sw         $v0, %lo(D_800758A8)($at)
-    /* 4B5A8 8005ADA8 0880023C */  lui        $v0, %hi(D_8007B9F0)
-    /* 4B5AC 8005ADAC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0)
+    /* 4B5A8 8005ADA8 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
+    /* 4B5AC 8005ADAC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
     /* 4B5B0 8005ADB0 0780013C */  lui        $at, %hi(D_8007574C)
     /* 4B5B4 8005ADB4 4C5722AC */  sw         $v0, %lo(D_8007574C)($at)
     /* 4B5B8 8005ADB8 0880023C */  lui        $v0, %hi(D_8007D990)
@@ -82438,8 +82438,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B724 8005AF24 0C1F4224 */  addiu      $v0, $v0, %lo(D_80081F0C)
     /* 4B728 8005AF28 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B72C 8005AF2C CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B730 8005AF30 0880023C */  lui        $v0, %hi(D_8007CFB4)
-    /* 4B734 8005AF34 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4)
+    /* 4B730 8005AF30 0880023C */  lui        $v0, %hi(D_8007CFB4_lv25)
+    /* 4B734 8005AF34 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4_lv25)
     /* 4B738 8005AF38 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B73C 8005AF3C 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B740 8005AF40 0880023C */  lui        $v0, %hi(D_800836F8)
@@ -82450,24 +82450,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B754 8005AF54 A02A4224 */  addiu      $v0, $v0, %lo(D_80082AA0)
     /* 4B758 8005AF58 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B75C 8005AF5C BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B760 8005AF60 0880023C */  lui        $v0, %hi(D_8007AE08)
-    /* 4B764 8005AF64 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08)
+    /* 4B760 8005AF60 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
+    /* 4B764 8005AF64 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
     /* 4B768 8005AF68 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
     /* 4B76C 8005AF6C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
-    /* 4B770 8005AF70 0880023C */  lui        $v0, %hi(D_8007AEDC)
-    /* 4B774 8005AF74 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC)
+    /* 4B770 8005AF70 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
+    /* 4B774 8005AF74 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B778 8005AF78 0780013C */  lui        $at, %hi(D_800757A8)
     /* 4B77C 8005AF7C A85722AC */  sw         $v0, %lo(D_800757A8)($at)
-    /* 4B780 8005AF80 0880023C */  lui        $v0, %hi(D_8007B1FC)
-    /* 4B784 8005AF84 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC)
+    /* 4B780 8005AF80 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
+    /* 4B784 8005AF84 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
     /* 4B788 8005AF88 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
     /* 4B78C 8005AF8C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
-    /* 4B790 8005AF90 0880023C */  lui        $v0, %hi(D_8007B68C)
-    /* 4B794 8005AF94 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C)
+    /* 4B790 8005AF90 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
+    /* 4B794 8005AF94 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
     /* 4B798 8005AF98 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
     /* 4B79C 8005AF9C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
-    /* 4B7A0 8005AFA0 0880023C */  lui        $v0, %hi(D_8007B4B0)
-    /* 4B7A4 8005AFA4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0)
+    /* 4B7A0 8005AFA0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
+    /* 4B7A4 8005AFA4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B7A8 8005AFA8 0780013C */  lui        $at, %hi(D_800758C4)
     /* 4B7AC 8005AFAC C45822AC */  sw         $v0, %lo(D_800758C4)($at)
     /* 4B7B0 8005AFB0 B86D0108 */  j          .L8005B6E0
@@ -82604,8 +82604,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B9A4 8005B1A4 3C224224 */  addiu      $v0, $v0, %lo(D_8008223C)
     /* 4B9A8 8005B1A8 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4B9AC 8005B1AC CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4B9B0 8005B1B0 0880023C */  lui        $v0, %hi(D_8007CFB4)
-    /* 4B9B4 8005B1B4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4)
+    /* 4B9B0 8005B1B0 0880023C */  lui        $v0, %hi(D_8007CFB4_lv25)
+    /* 4B9B4 8005B1B4 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4_lv25)
     /* 4B9B8 8005B1B8 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4B9BC 8005B1BC 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4B9C0 8005B1C0 0880023C */  lui        $v0, %hi(D_80083BAC)
@@ -82616,24 +82616,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B9D4 8005B1D4 542F4224 */  addiu      $v0, $v0, %lo(D_80082F54)
     /* 4B9D8 8005B1D8 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4B9DC 8005B1DC BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4B9E0 8005B1E0 0880023C */  lui        $v0, %hi(D_8007AE08)
-    /* 4B9E4 8005B1E4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08)
+    /* 4B9E0 8005B1E0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
+    /* 4B9E4 8005B1E4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
     /* 4B9E8 8005B1E8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
     /* 4B9EC 8005B1EC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
-    /* 4B9F0 8005B1F0 0880023C */  lui        $v0, %hi(D_8007AEDC)
-    /* 4B9F4 8005B1F4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC)
+    /* 4B9F0 8005B1F0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
+    /* 4B9F4 8005B1F4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B9F8 8005B1F8 0780013C */  lui        $at, %hi(D_800757A8)
     /* 4B9FC 8005B1FC A85722AC */  sw         $v0, %lo(D_800757A8)($at)
-    /* 4BA00 8005B200 0880023C */  lui        $v0, %hi(D_8007B1FC)
-    /* 4BA04 8005B204 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC)
+    /* 4BA00 8005B200 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
+    /* 4BA04 8005B204 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
     /* 4BA08 8005B208 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
     /* 4BA0C 8005B20C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
-    /* 4BA10 8005B210 0880023C */  lui        $v0, %hi(D_8007B68C)
-    /* 4BA14 8005B214 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C)
+    /* 4BA10 8005B210 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
+    /* 4BA14 8005B214 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
     /* 4BA18 8005B218 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
     /* 4BA1C 8005B21C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
-    /* 4BA20 8005B220 0880023C */  lui        $v0, %hi(D_8007B4B0)
-    /* 4BA24 8005B224 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0)
+    /* 4BA20 8005B220 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
+    /* 4BA24 8005B224 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BA28 8005B228 0780013C */  lui        $at, %hi(D_800758C4)
     /* 4BA2C 8005B22C C45822AC */  sw         $v0, %lo(D_800758C4)($at)
     /* 4BA30 8005B230 B86D0108 */  j          .L8005B6E0
@@ -82659,8 +82659,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BA7C 8005B27C FC974224 */  addiu      $v0, $v0, %lo(D_800897FC)
     /* 4BA80 8005B280 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4BA84 8005B284 BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4BA88 8005B288 0880023C */  lui        $v0, %hi(D_8007B898)
-    /* 4BA8C 8005B28C 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898)
+    /* 4BA88 8005B288 0880023C */  lui        $v0, %hi(D_8007B898_lv22)
+    /* 4BA8C 8005B28C 98B84224 */  addiu      $v0, $v0, %lo(D_8007B898_lv22)
     /* 4BA90 8005B290 0780013C */  lui        $at, %hi(D_800757A0)
     /* 4BA94 8005B294 A05722AC */  sw         $v0, %lo(D_800757A0)($at)
     /* 4BA98 8005B298 0880023C */  lui        $v0, %hi(D_8007B9D4)
@@ -82749,8 +82749,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BBD4 8005B3D4 A8364224 */  addiu      $v0, $v0, %lo(D_800836A8)
     /* 4BBD8 8005B3D8 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4BBDC 8005B3DC CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4BBE0 8005B3E0 0880023C */  lui        $v0, %hi(D_8007AF50)
-    /* 4BBE4 8005B3E4 50AF4224 */  addiu      $v0, $v0, %lo(D_8007AF50)
+    /* 4BBE0 8005B3E0 0880023C */  lui        $v0, %hi(D_8007AF50_lv54)
+    /* 4BBE4 8005B3E4 50AF4224 */  addiu      $v0, $v0, %lo(D_8007AF50_lv54)
     /* 4BBE8 8005B3E8 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4BBEC 8005B3EC 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4BBF0 8005B3F0 0880023C */  lui        $v0, %hi(D_80085254)
@@ -82770,8 +82770,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BC24 8005B424 28204224 */  addiu      $v0, $v0, %lo(D_80082028)
     /* 4BC28 8005B428 0780013C */  lui        $at, %hi(g_pfnLevelOverlayInitHook)
     /* 4BC2C 8005B42C CC5822AC */  sw         $v0, %lo(g_pfnLevelOverlayInitHook)($at)
-    /* 4BC30 8005B430 0880023C */  lui        $v0, %hi(D_8007CFB4)
-    /* 4BC34 8005B434 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4)
+    /* 4BC30 8005B430 0880023C */  lui        $v0, %hi(D_8007CFB4_lv25)
+    /* 4BC34 8005B434 B4CF4224 */  addiu      $v0, $v0, %lo(D_8007CFB4_lv25)
     /* 4BC38 8005B438 0780013C */  lui        $at, %hi(g_pfnGamestate0EarlyHook)
     /* 4BC3C 8005B43C 345722AC */  sw         $v0, %lo(g_pfnGamestate0EarlyHook)($at)
     /* 4BC40 8005B440 0880023C */  lui        $v0, %hi(D_80083B8C)
@@ -82782,24 +82782,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BC54 8005B454 942D4224 */  addiu      $v0, $v0, %lo(D_80082D94)
     /* 4BC58 8005B458 0780013C */  lui        $at, %hi(g_pfnGamestate0LateHook)
     /* 4BC5C 8005B45C BC5622AC */  sw         $v0, %lo(g_pfnGamestate0LateHook)($at)
-    /* 4BC60 8005B460 0880023C */  lui        $v0, %hi(D_8007AE08)
-    /* 4BC64 8005B464 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08)
+    /* 4BC60 8005B460 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
+    /* 4BC64 8005B464 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
     /* 4BC68 8005B468 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
     /* 4BC6C 8005B46C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
-    /* 4BC70 8005B470 0880023C */  lui        $v0, %hi(D_8007AEDC)
-    /* 4BC74 8005B474 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC)
+    /* 4BC70 8005B470 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
+    /* 4BC74 8005B474 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4BC78 8005B478 0780013C */  lui        $at, %hi(D_800757A8)
     /* 4BC7C 8005B47C A85722AC */  sw         $v0, %lo(D_800757A8)($at)
-    /* 4BC80 8005B480 0880023C */  lui        $v0, %hi(D_8007B1FC)
-    /* 4BC84 8005B484 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC)
+    /* 4BC80 8005B480 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
+    /* 4BC84 8005B484 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
     /* 4BC88 8005B488 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
     /* 4BC8C 8005B48C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
-    /* 4BC90 8005B490 0880023C */  lui        $v0, %hi(D_8007B68C)
-    /* 4BC94 8005B494 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C)
+    /* 4BC90 8005B490 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
+    /* 4BC94 8005B494 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
     /* 4BC98 8005B498 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
     /* 4BC9C 8005B49C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
-    /* 4BCA0 8005B4A0 0880023C */  lui        $v0, %hi(D_8007B4B0)
-    /* 4BCA4 8005B4A4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0)
+    /* 4BCA0 8005B4A0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
+    /* 4BCA4 8005B4A4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BCA8 8005B4A8 0780013C */  lui        $at, %hi(D_800758C4)
     /* 4BCAC 8005B4AC C45822AC */  sw         $v0, %lo(D_800758C4)($at)
     /* 4BCB0 8005B4B0 B86D0108 */  j          .L8005B6E0
@@ -96227,8 +96227,8 @@ glabel func_800658FC
     /* 56234 80065A34 00020224 */  addiu      $v0, $zero, 0x200
     /* 56238 80065A38 25006214 */  bne        $v1, $v0, .L80065AD0
     /* 5623C 80065A3C 00000000 */   nop
-    /* 56240 80065A40 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 56244 80065A44 7851428C */  lw         $v0, %lo(D_80075178)($v0)
+    /* 56240 80065A40 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 56244 80065A44 7851428C */  lw         $v0, %lo(g_anCdReadModeBlock)($v0)
     /* 56248 80065A48 00000000 */  nop
     /* 5624C 80065A4C 01004230 */  andi       $v0, $v0, 0x1
     /* 56250 80065A50 0E004010 */  beqz       $v0, .L80065A8C
@@ -96252,8 +96252,8 @@ glabel func_800658FC
   .L80065A94:
     /* 56294 80065A94 6690010C */  jal        CdPosToInt
     /* 56298 80065A98 1000A427 */   addiu     $a0, $sp, 0x10
-    /* 5629C 80065A9C 0780033C */  lui        $v1, %hi(D_80075168)
-    /* 562A0 80065AA0 68516324 */  addiu      $v1, $v1, %lo(D_80075168)
+    /* 5629C 80065A9C 0780033C */  lui        $v1, %hi(g_anCdExpectedPosBlock)
+    /* 562A0 80065AA0 68516324 */  addiu      $v1, $v1, %lo(g_anCdExpectedPosBlock)
     /* 562A4 80065AA4 0000638C */  lw         $v1, 0x0($v1)
     /* 562A8 80065AA8 00000000 */  nop
     /* 562AC 80065AAC 08004310 */  beq        $v0, $v1, .L80065AD0
@@ -96266,8 +96266,8 @@ glabel func_800658FC
     /* 562C8 80065AC8 0780013C */  lui        $at, %hi(D_8007515C)
     /* 562CC 80065ACC 5C5122AC */  sw         $v0, %lo(D_8007515C)($at)
   .L80065AD0:
-    /* 562D0 80065AD0 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 562D4 80065AD4 78514224 */  addiu      $v0, $v0, %lo(D_80075178)
+    /* 562D0 80065AD0 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 562D4 80065AD4 78514224 */  addiu      $v0, $v0, %lo(g_anCdReadModeBlock)
     /* 562D8 80065AD8 0000428C */  lw         $v0, 0x0($v0)
     /* 562DC 80065ADC 00000000 */  nop
     /* 562E0 80065AE0 01004230 */  andi       $v0, $v0, 0x1
@@ -96304,14 +96304,14 @@ glabel func_800658FC
     /* 56358 80065B58 5C5122AC */  sw         $v0, %lo(D_8007515C)($at)
     /* 5635C 80065B5C 0780023C */  lui        $v0, %hi(D_8007515C)
     /* 56360 80065B60 5C51428C */  lw         $v0, %lo(D_8007515C)($v0)
-    /* 56364 80065B64 0780023C */  lui        $v0, %hi(D_80075168)
-    /* 56368 80065B68 6851428C */  lw         $v0, %lo(D_80075168)($v0)
+    /* 56364 80065B64 0780023C */  lui        $v0, %hi(g_anCdExpectedPosBlock)
+    /* 56368 80065B68 6851428C */  lw         $v0, %lo(g_anCdExpectedPosBlock)($v0)
     /* 5636C 80065B6C 00000000 */  nop
     /* 56370 80065B70 01004224 */  addiu      $v0, $v0, 0x1
-    /* 56374 80065B74 0780013C */  lui        $at, %hi(D_80075168)
-    /* 56378 80065B78 685122AC */  sw         $v0, %lo(D_80075168)($at)
-    /* 5637C 80065B7C 0780023C */  lui        $v0, %hi(D_80075168)
-    /* 56380 80065B80 6851428C */  lw         $v0, %lo(D_80075168)($v0)
+    /* 56374 80065B74 0780013C */  lui        $at, %hi(g_anCdExpectedPosBlock)
+    /* 56378 80065B78 685122AC */  sw         $v0, %lo(g_anCdExpectedPosBlock)($at)
+    /* 5637C 80065B7C 0780023C */  lui        $v0, %hi(g_anCdExpectedPosBlock)
+    /* 56380 80065B80 6851428C */  lw         $v0, %lo(g_anCdExpectedPosBlock)($v0)
     /* 56384 80065B84 E5960108 */  j          .L80065B94
     /* 56388 80065B88 00000000 */   nop
   .L80065B8C:
@@ -96365,8 +96365,8 @@ glabel func_800658FC
     /* 56438 80065C38 7051848C */  lw         $a0, %lo(D_80075170)($a0)
     /* 5643C 80065C3C 0C8F010C */  jal        CdReadyCallback
     /* 56440 80065C40 00000000 */   nop
-    /* 56444 80065C44 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 56448 80065C48 7851428C */  lw         $v0, %lo(D_80075178)($v0)
+    /* 56444 80065C44 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 56448 80065C48 7851428C */  lw         $v0, %lo(g_anCdReadModeBlock)($v0)
     /* 5644C 80065C4C 00000000 */  nop
     /* 56450 80065C50 01004230 */  andi       $v0, $v0, 0x1
     /* 56454 80065C54 06004010 */  beqz       $v0, .L80065C70
@@ -96416,14 +96416,14 @@ glabel func_800658FC
     /* 564F4 80065CF4 5C5122AC */  sw         $v0, %lo(D_8007515C)($at)
     /* 564F8 80065CF8 0780023C */  lui        $v0, %hi(D_8007515C)
     /* 564FC 80065CFC 5C51428C */  lw         $v0, %lo(D_8007515C)($v0)
-    /* 56500 80065D00 0780023C */  lui        $v0, %hi(D_80075168)
-    /* 56504 80065D04 6851428C */  lw         $v0, %lo(D_80075168)($v0)
+    /* 56500 80065D00 0780023C */  lui        $v0, %hi(g_anCdExpectedPosBlock)
+    /* 56504 80065D04 6851428C */  lw         $v0, %lo(g_anCdExpectedPosBlock)($v0)
     /* 56508 80065D08 00000000 */  nop
     /* 5650C 80065D0C 01004224 */  addiu      $v0, $v0, 0x1
-    /* 56510 80065D10 0780013C */  lui        $at, %hi(D_80075168)
-    /* 56514 80065D14 685122AC */  sw         $v0, %lo(D_80075168)($at)
-    /* 56518 80065D18 0780023C */  lui        $v0, %hi(D_80075168)
-    /* 5651C 80065D1C 6851428C */  lw         $v0, %lo(D_80075168)($v0)
+    /* 56510 80065D10 0780013C */  lui        $at, %hi(g_anCdExpectedPosBlock)
+    /* 56514 80065D14 685122AC */  sw         $v0, %lo(g_anCdExpectedPosBlock)($at)
+    /* 56518 80065D18 0780023C */  lui        $v0, %hi(g_anCdExpectedPosBlock)
+    /* 5651C 80065D1C 6851428C */  lw         $v0, %lo(g_anCdExpectedPosBlock)($v0)
     /* 56520 80065D20 0780023C */  lui        $v0, %hi(D_8007515C)
     /* 56524 80065D24 5C51428C */  lw         $v0, %lo(D_8007515C)($v0)
     /* 56528 80065D28 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -96437,8 +96437,8 @@ glabel func_800658FC
     /* 56548 80065D48 7051848C */  lw         $a0, %lo(D_80075170)($a0)
     /* 5654C 80065D4C 0C8F010C */  jal        CdReadyCallback
     /* 56550 80065D50 00000000 */   nop
-    /* 56554 80065D54 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 56558 80065D58 7851428C */  lw         $v0, %lo(D_80075178)($v0)
+    /* 56554 80065D54 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 56558 80065D58 7851428C */  lw         $v0, %lo(g_anCdReadModeBlock)($v0)
     /* 5655C 80065D5C 00000000 */  nop
     /* 56560 80065D60 01004230 */  andi       $v0, $v0, 0x1
     /* 56564 80065D64 06004010 */  beqz       $v0, .L80065D80
@@ -96482,8 +96482,8 @@ glabel CdReadStart
     /* 565D4 80065DD4 1800B0AF */   sw        $s0, 0x18($sp)
     /* 565D8 80065DD8 0C8F010C */  jal        CdReadyCallback
     /* 565DC 80065DDC 21200000 */   addu      $a0, $zero, $zero
-    /* 565E0 80065DE0 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 565E4 80065DE4 78514224 */  addiu      $v0, $v0, %lo(D_80075178)
+    /* 565E0 80065DE0 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 565E4 80065DE4 78514224 */  addiu      $v0, $v0, %lo(g_anCdReadModeBlock)
     /* 565E8 80065DE8 0000428C */  lw         $v0, 0x0($v0)
     /* 565EC 80065DEC 00000000 */  nop
     /* 565F0 80065DF0 01004230 */  andi       $v0, $v0, 0x1
@@ -96573,12 +96573,12 @@ glabel CdReadStart
     /* 56728 80065F28 21204000 */   addu      $a0, $v0, $zero
     /* 5672C 80065F2C 0680043C */  lui        $a0, %hi(D_800659F0)
     /* 56730 80065F30 F0598424 */  addiu      $a0, $a0, %lo(D_800659F0)
-    /* 56734 80065F34 0780013C */  lui        $at, %hi(D_80075168)
-    /* 56738 80065F38 685122AC */  sw         $v0, %lo(D_80075168)($at)
+    /* 56734 80065F34 0780013C */  lui        $at, %hi(g_anCdExpectedPosBlock)
+    /* 56738 80065F38 685122AC */  sw         $v0, %lo(g_anCdExpectedPosBlock)($at)
     /* 5673C 80065F3C 0C8F010C */  jal        CdReadyCallback
     /* 56740 80065F40 00000000 */   nop
-    /* 56744 80065F44 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 56748 80065F48 7851428C */  lw         $v0, %lo(D_80075178)($v0)
+    /* 56744 80065F44 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 56748 80065F48 7851428C */  lw         $v0, %lo(g_anCdReadModeBlock)($v0)
     /* 5674C 80065F4C 00000000 */  nop
     /* 56750 80065F50 01004230 */  andi       $v0, $v0, 0x1
     /* 56754 80065F54 06004010 */  beqz       $v0, .L80065F70
@@ -96624,8 +96624,8 @@ nonmatching func_80065FD0, 0x9C
 glabel func_80065FD0
     /* 567D0 80065FD0 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 567D4 80065FD4 1000B0AF */  sw         $s0, 0x10($sp)
-    /* 567D8 80065FD8 0780103C */  lui        $s0, %hi(D_80075178)
-    /* 567DC 80065FDC 78511026 */  addiu      $s0, $s0, %lo(D_80075178)
+    /* 567D8 80065FD8 0780103C */  lui        $s0, %hi(g_anCdReadModeBlock)
+    /* 567DC 80065FDC 78511026 */  addiu      $s0, $s0, %lo(g_anCdReadModeBlock)
     /* 567E0 80065FE0 1400BFAF */  sw         $ra, 0x14($sp)
     /* 567E4 80065FE4 0000028E */  lw         $v0, 0x0($s0)
     /* 567E8 80065FE8 00000000 */  nop
@@ -96710,8 +96710,8 @@ glabel CdRead
     /* 568F4 800660F4 00000000 */   nop
     /* 568F8 800660F8 0780013C */  lui        $at, %hi(D_80075170)
     /* 568FC 800660FC 705122AC */  sw         $v0, %lo(D_80075170)($at)
-    /* 56900 80066100 0780023C */  lui        $v0, %hi(D_80075178)
-    /* 56904 80066104 7851428C */  lw         $v0, %lo(D_80075178)($v0)
+    /* 56900 80066100 0780023C */  lui        $v0, %hi(g_anCdReadModeBlock)
+    /* 56904 80066104 7851428C */  lw         $v0, %lo(g_anCdReadModeBlock)($v0)
     /* 56908 80066108 00000000 */  nop
     /* 5690C 8006610C 01004230 */  andi       $v0, $v0, 0x1
     /* 56910 80066110 05004010 */  beqz       $v0, .L80066128
@@ -96826,8 +96826,8 @@ endlabel CdReadCallback
 nonmatching FUN_80066254, 0x18
 
 glabel FUN_80066254
-    /* 56A54 80066254 0780033C */  lui        $v1, %hi(D_80075178)
-    /* 56A58 80066258 78516324 */  addiu      $v1, $v1, %lo(D_80075178)
+    /* 56A54 80066254 0780033C */  lui        $v1, %hi(g_anCdReadModeBlock)
+    /* 56A58 80066258 78516324 */  addiu      $v1, $v1, %lo(g_anCdReadModeBlock)
     /* 56A5C 8006625C 0000628C */  lw         $v0, 0x0($v1)
     /* 56A60 80066260 000064AC */  sw         $a0, 0x0($v1)
     /* 56A64 80066264 0800E003 */  jr         $ra
@@ -96884,8 +96884,8 @@ glabel MemCardOpenSession
     /* 56AD0 800662D0 505B4224 */  addiu      $v0, $v0, %lo(D_80075B50)
     /* 56AD4 800662D4 000040AC */  sw         $zero, 0x0($v0)
     /* 56AD8 800662D8 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 56ADC 800662DC 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56AE0 800662E0 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 56ADC 800662DC 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56AE0 800662E0 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 56AE4 800662E4 0780013C */  lui        $at, %hi(D_80075B58)
     /* 56AE8 800662E8 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 56AEC 800662EC 0780013C */  lui        $at, %hi(D_80075B60)
@@ -96945,8 +96945,8 @@ glabel func_8006635C
     /* 56B80 80066380 D8638424 */  addiu      $a0, $a0, %lo(D_800663D8)
     /* 56B84 80066384 01000224 */  addiu      $v0, $zero, 0x1
     /* 56B88 80066388 000062AC */  sw         $v0, 0x0($v1)
-    /* 56B8C 8006638C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56B90 80066390 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 56B8C 8006638C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56B90 80066390 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 56B94 80066394 0780013C */  lui        $at, %hi(D_80075B58)
     /* 56B98 80066398 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 56B9C 8006639C 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -97086,8 +97086,8 @@ glabel func_8006635C
     /* 56D80 80066580 00000000 */   nop
     /* 56D84 80066584 21184000 */  addu       $v1, $v0, $zero
     /* 56D88 80066588 01000224 */  addiu      $v0, $zero, 0x1
-    /* 56D8C 8006658C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56D90 80066590 545B23AC */  sw         $v1, %lo(D_80075B54)($at)
+    /* 56D8C 8006658C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56D90 80066590 545B23AC */  sw         $v1, %lo(D_80075B54_blk)($at)
     /* 56D94 80066594 68990108 */  j          .L800665A0
     /* 56D98 80066598 00000000 */   nop
   .L8006659C:
@@ -97119,8 +97119,8 @@ glabel MemCardLoad
     /* 56DDC 800665DC 34668424 */  addiu      $a0, $a0, %lo(func_80066634)
     /* 56DE0 800665E0 02000224 */  addiu      $v0, $zero, 0x2
     /* 56DE4 800665E4 000062AC */  sw         $v0, 0x0($v1)
-    /* 56DE8 800665E8 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56DEC 800665EC 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 56DE8 800665E8 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56DEC 800665EC 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 56DF0 800665F0 0780013C */  lui        $at, %hi(D_80075B58)
     /* 56DF4 800665F4 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 56DF8 800665F8 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -97178,8 +97178,8 @@ glabel func_80066634
     /* 56E9C 8006669C 0A9A0108 */  j          .L80066828
     /* 56EA0 800666A0 000002AE */   sw        $v0, 0x0($s0)
   jlabel .L800666A4
-    /* 56EA4 800666A4 0780023C */  lui        $v0, %hi(D_80075B54)
-    /* 56EA8 800666A8 545B4224 */  addiu      $v0, $v0, %lo(D_80075B54)
+    /* 56EA4 800666A4 0780023C */  lui        $v0, %hi(D_80075B54_blk)
+    /* 56EA8 800666A8 545B4224 */  addiu      $v0, $v0, %lo(D_80075B54_blk)
     /* 56EAC 800666AC 0000438C */  lw         $v1, 0x0($v0)
     /* 56EB0 800666B0 00000000 */  nop
     /* 56EB4 800666B4 0E006010 */  beqz       $v1, .L800666F0
@@ -97245,8 +97245,8 @@ glabel func_80066634
     /* 56F90 80066790 04000224 */  addiu      $v0, $zero, 0x4
     /* 56F94 80066794 1A006214 */  bne        $v1, $v0, .L80066800
     /* 56F98 80066798 00000000 */   nop
-    /* 56F9C 8006679C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56FA0 800667A0 545B23AC */  sw         $v1, %lo(D_80075B54)($at)
+    /* 56F9C 8006679C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56FA0 800667A0 545B23AC */  sw         $v1, %lo(D_80075B54_blk)($at)
     /* 56FA4 800667A4 0B9A0108 */  j          .L8006682C
     /* 56FA8 800667A8 01000224 */   addiu     $v0, $zero, 0x1
   .L800667AC:
@@ -97256,8 +97256,8 @@ glabel func_80066634
     /* 56FB8 800667B8 2B180300 */  sltu       $v1, $zero, $v1
     /* 56FBC 800667BC 23180300 */  negu       $v1, $v1
     /* 56FC0 800667C0 03006330 */  andi       $v1, $v1, 0x3
-    /* 56FC4 800667C4 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 56FC8 800667C8 545B23AC */  sw         $v1, %lo(D_80075B54)($at)
+    /* 56FC4 800667C4 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 56FC8 800667C8 545B23AC */  sw         $v1, %lo(D_80075B54_blk)($at)
     /* 56FCC 800667CC 0B9A0108 */  j          .L8006682C
     /* 56FD0 800667D0 00000000 */   nop
   .L800667D4:
@@ -97279,8 +97279,8 @@ glabel func_80066634
     /* 5700C 8006680C 00000000 */   nop
     /* 57010 80066810 21184000 */  addu       $v1, $v0, $zero
     /* 57014 80066814 01000224 */  addiu      $v0, $zero, 0x1
-    /* 57018 80066818 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 5701C 8006681C 545B23AC */  sw         $v1, %lo(D_80075B54)($at)
+    /* 57018 80066818 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 5701C 8006681C 545B23AC */  sw         $v1, %lo(D_80075B54_blk)($at)
     /* 57020 80066820 0B9A0108 */  j          .L8006682C
     /* 57024 80066824 00000000 */   nop
   jlabel .L80066828
@@ -97352,8 +97352,8 @@ glabel func_80066634
     /* 57118 80066918 34668424 */  addiu      $a0, $a0, %lo(func_80066634)
     /* 5711C 8006691C 0780013C */  lui        $at, %hi(D_80075B50)
     /* 57120 80066920 505B33AC */  sw         $s3, %lo(D_80075B50)($at)
-    /* 57124 80066924 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57128 80066928 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 57124 80066924 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57128 80066928 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 5712C 8006692C 0780013C */  lui        $at, %hi(D_80075B58)
     /* 57130 80066930 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 57134 80066934 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -97441,8 +97441,8 @@ glabel func_80066634
     /* 57260 80066A60 C86A8424 */  addiu      $a0, $a0, %lo(D_80066AC8)
     /* 57264 80066A64 0780013C */  lui        $at, %hi(D_80075B50)
     /* 57268 80066A68 505B22AC */  sw         $v0, %lo(D_80075B50)($at)
-    /* 5726C 80066A6C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57270 80066A70 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 5726C 80066A6C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57270 80066A70 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 57274 80066A74 0780013C */  lui        $at, %hi(D_80075B58)
     /* 57278 80066A78 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 5727C 80066A7C 0780013C */  lui        $at, %hi(D_80075B64)
@@ -97549,8 +97549,8 @@ glabel func_80066634
   .L80066BE4:
     /* 573E4 80066BE4 1F9F010C */  jal        MapMemCardAccessCode
     /* 573E8 80066BE8 00000000 */   nop
-    /* 573EC 80066BEC 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 573F0 80066BF0 545B22AC */  sw         $v0, %lo(D_80075B54)($at)
+    /* 573EC 80066BEC 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 573F0 80066BF0 545B22AC */  sw         $v0, %lo(D_80075B54_blk)($at)
     /* 573F4 80066BF4 009B0108 */  j          .L80066C00
     /* 573F8 80066BF8 01000224 */   addiu     $v0, $zero, 0x1
   .L80066BFC:
@@ -97589,8 +97589,8 @@ glabel func_80066634
     /* 57470 80066C70 D86C8424 */  addiu      $a0, $a0, %lo(D_80066CD8)
     /* 57474 80066C74 0780013C */  lui        $at, %hi(D_80075B50)
     /* 57478 80066C78 505B22AC */  sw         $v0, %lo(D_80075B50)($at)
-    /* 5747C 80066C7C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57480 80066C80 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 5747C 80066C7C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57480 80066C80 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 57484 80066C84 0780013C */  lui        $at, %hi(D_80075B58)
     /* 57488 80066C88 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 5748C 80066C8C 0780013C */  lui        $at, %hi(D_80075B64)
@@ -97697,8 +97697,8 @@ glabel func_80066634
   .L80066DF4:
     /* 575F4 80066DF4 1F9F010C */  jal        MapMemCardAccessCode
     /* 575F8 80066DF8 00000000 */   nop
-    /* 575FC 80066DFC 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57600 80066E00 545B22AC */  sw         $v0, %lo(D_80075B54)($at)
+    /* 575FC 80066DFC 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57600 80066E00 545B22AC */  sw         $v0, %lo(D_80075B54_blk)($at)
     /* 57604 80066E04 849B0108 */  j          .L80066E10
     /* 57608 80066E08 01000224 */   addiu     $v0, $zero, 0x1
   .L80066E0C:
@@ -97754,8 +97754,8 @@ glabel MemCardRead
     /* 576A8 80066EA8 346F8424 */  addiu      $a0, $a0, %lo(func_80066F34)
     /* 576AC 80066EAC 03000224 */  addiu      $v0, $zero, 0x3
     /* 576B0 80066EB0 000022AE */  sw         $v0, 0x0($s1)
-    /* 576B4 80066EB4 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 576B8 80066EB8 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 576B4 80066EB4 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 576B8 80066EB8 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 576BC 80066EBC 0780013C */  lui        $at, %hi(D_80075B58)
     /* 576C0 80066EC0 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 576C4 80066EC4 0780013C */  lui        $at, %hi(D_80075B64)
@@ -97824,8 +97824,8 @@ glabel func_80066F34
     /* 57790 80066F90 329C0108 */  j          .L800670C8
     /* 57794 80066F94 000022AE */   sw        $v0, 0x0($s1)
   jlabel .L80066F98
-    /* 57798 80066F98 0780103C */  lui        $s0, %hi(D_80075B54)
-    /* 5779C 80066F9C 545B1026 */  addiu      $s0, $s0, %lo(D_80075B54)
+    /* 57798 80066F98 0780103C */  lui        $s0, %hi(D_80075B54_blk)
+    /* 5779C 80066F9C 545B1026 */  addiu      $s0, $s0, %lo(D_80075B54_blk)
     /* 577A0 80066FA0 0000028E */  lw         $v0, 0x0($s0)
     /* 577A4 80066FA4 00000000 */  nop
     /* 577A8 80066FA8 48004014 */  bnez       $v0, .L800670CC
@@ -97897,8 +97897,8 @@ glabel func_80066F34
     /* 57898 80067098 00000000 */   nop
     /* 5789C 8006709C 0780043C */  lui        $a0, %hi(D_80075B60)
     /* 578A0 800670A0 605B848C */  lw         $a0, %lo(D_80075B60)($a0)
-    /* 578A4 800670A4 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 578A8 800670A8 545B22AC */  sw         $v0, %lo(D_80075B54)($at)
+    /* 578A4 800670A4 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 578A8 800670A8 545B22AC */  sw         $v0, %lo(D_80075B54_blk)($at)
     /* 578AC 800670AC 39A1010C */  jal        close
     /* 578B0 800670B0 00000000 */   nop
     /* 578B4 800670B4 FFFF0324 */  addiu      $v1, $zero, -0x1
@@ -97959,8 +97959,8 @@ glabel MemCardWrite
     /* 57964 80067164 F0718424 */  addiu      $a0, $a0, %lo(func_800671F0)
     /* 57968 80067168 04000224 */  addiu      $v0, $zero, 0x4
     /* 5796C 8006716C 000022AE */  sw         $v0, 0x0($s1)
-    /* 57970 80067170 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57974 80067174 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 57970 80067170 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57974 80067174 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 57978 80067178 0780013C */  lui        $at, %hi(D_80075B58)
     /* 5797C 8006717C 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 57980 80067180 0780013C */  lui        $at, %hi(D_80075B64)
@@ -98029,8 +98029,8 @@ glabel func_800671F0
     /* 57A4C 8006724C E19C0108 */  j          .L80067384
     /* 57A50 80067250 000022AE */   sw        $v0, 0x0($s1)
   jlabel .L80067254
-    /* 57A54 80067254 0780103C */  lui        $s0, %hi(D_80075B54)
-    /* 57A58 80067258 545B1026 */  addiu      $s0, $s0, %lo(D_80075B54)
+    /* 57A54 80067254 0780103C */  lui        $s0, %hi(D_80075B54_blk)
+    /* 57A58 80067258 545B1026 */  addiu      $s0, $s0, %lo(D_80075B54_blk)
     /* 57A5C 8006725C 0000028E */  lw         $v0, 0x0($s0)
     /* 57A60 80067260 00000000 */  nop
     /* 57A64 80067264 48004014 */  bnez       $v0, .L80067388
@@ -98102,8 +98102,8 @@ glabel func_800671F0
     /* 57B54 80067354 00000000 */   nop
     /* 57B58 80067358 0780043C */  lui        $a0, %hi(D_80075B60)
     /* 57B5C 8006735C 605B848C */  lw         $a0, %lo(D_80075B60)($a0)
-    /* 57B60 80067360 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57B64 80067364 545B22AC */  sw         $v0, %lo(D_80075B54)($at)
+    /* 57B60 80067360 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57B64 80067364 545B22AC */  sw         $v0, %lo(D_80075B54_blk)($at)
     /* 57B68 80067368 39A1010C */  jal        close
     /* 57B6C 8006736C 00000000 */   nop
     /* 57B70 80067370 FFFF0324 */  addiu      $v1, $zero, -0x1
@@ -98199,8 +98199,8 @@ glabel func_800671F0
     /* 57CC0 800674C0 0680043C */  lui        $a0, %hi(func_80066634)
     /* 57CC4 800674C4 34668424 */  addiu      $a0, $a0, %lo(func_80066634)
     /* 57CC8 800674C8 0000E2AE */  sw         $v0, 0x0($s7)
-    /* 57CCC 800674CC 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 57CD0 800674D0 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 57CCC 800674CC 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 57CD0 800674D0 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 57CD4 800674D4 0780013C */  lui        $at, %hi(D_80075B58)
     /* 57CD8 800674D8 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 57CDC 800674DC 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -98325,8 +98325,8 @@ glabel MemCardSync
     /* 57E54 80067654 0780083C */  lui        $t0, %hi(D_80075B50)
     /* 57E58 80067658 505B0825 */  addiu      $t0, $t0, %lo(D_80075B50)
     /* 57E5C 8006765C 0000078D */  lw         $a3, 0x0($t0)
-    /* 57E60 80067660 0780033C */  lui        $v1, %hi(D_80075B54)
-    /* 57E64 80067664 545B638C */  lw         $v1, %lo(D_80075B54)($v1)
+    /* 57E60 80067660 0780033C */  lui        $v1, %hi(D_80075B54_blk)
+    /* 57E64 80067664 545B638C */  lw         $v1, %lo(D_80075B54_blk)($v1)
     /* 57E68 80067668 0C008014 */  bnez       $a0, .L8006769C
     /* 57E6C 8006766C 00000000 */   nop
     /* 57E70 80067670 0780023C */  lui        $v0, %hi(D_80075B58)
@@ -98464,8 +98464,8 @@ glabel func_80067718
     /* 5802C 8006782C 0680043C */  lui        $a0, %hi(func_80066634)
     /* 58030 80067830 34668424 */  addiu      $a0, $a0, %lo(func_80066634)
     /* 58034 80067834 000013AE */  sw         $s3, 0x0($s0)
-    /* 58038 80067838 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 5803C 8006783C 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 58038 80067838 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 5803C 8006783C 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 58040 80067840 0780013C */  lui        $at, %hi(D_80075B58)
     /* 58044 80067844 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 58048 80067848 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -98601,8 +98601,8 @@ glabel func_80067718
     /* 58220 80067A20 0680043C */  lui        $a0, %hi(func_80066634)
     /* 58224 80067A24 34668424 */  addiu      $a0, $a0, %lo(func_80066634)
     /* 58228 80067A28 000012AE */  sw         $s2, 0x0($s0)
-    /* 5822C 80067A2C 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 58230 80067A30 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 5822C 80067A2C 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 58230 80067A30 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 58234 80067A34 0780013C */  lui        $at, %hi(D_80075B58)
     /* 58238 80067A38 585B20AC */  sw         $zero, %lo(D_80075B58)($at)
     /* 5823C 80067A3C 0780013C */  lui        $at, %hi(D_80075B5C)
@@ -98827,15 +98827,15 @@ glabel func_80067CD4
     /* 58518 80067D18 0780043C */  lui        $a0, %hi(D_80075B94)
     /* 5851C 80067D1C 945B8424 */  addiu      $a0, $a0, %lo(D_80075B94)
     /* 58520 80067D20 000082AC */  sw         $v0, 0x0($a0)
-    /* 58524 80067D24 0780023C */  lui        $v0, %hi(D_80075B54)
-    /* 58528 80067D28 545B428C */  lw         $v0, %lo(D_80075B54)($v0)
+    /* 58524 80067D24 0780023C */  lui        $v0, %hi(D_80075B54_blk)
+    /* 58528 80067D28 545B428C */  lw         $v0, %lo(D_80075B54_blk)($v0)
     /* 5852C 80067D2C 0780063C */  lui        $a2, %hi(D_80075B90)
     /* 58530 80067D30 905BC68C */  lw         $a2, %lo(D_80075B90)($a2)
     /* 58534 80067D34 0780013C */  lui        $at, %hi(D_80075B98)
     /* 58538 80067D38 985B22AC */  sw         $v0, %lo(D_80075B98)($at)
     /* 5853C 80067D3C 000060AC */  sw         $zero, 0x0($v1)
-    /* 58540 80067D40 0780013C */  lui        $at, %hi(D_80075B54)
-    /* 58544 80067D44 545B20AC */  sw         $zero, %lo(D_80075B54)($at)
+    /* 58540 80067D40 0780013C */  lui        $at, %hi(D_80075B54_blk)
+    /* 58544 80067D44 545B20AC */  sw         $zero, %lo(D_80075B54_blk)($at)
     /* 58548 80067D48 0600C010 */  beqz       $a2, .L80067D64
     /* 5854C 80067D4C 00000000 */   nop
     /* 58550 80067D50 0000848C */  lw         $a0, 0x0($a0)

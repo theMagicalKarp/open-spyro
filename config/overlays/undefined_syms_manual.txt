@@ -1,0 +1,15 @@
+// Hand-maintained overlay symbols shared by every overlay link (PROVIDE only defines
+// names an overlay actually references). splat regenerates the per-overlay
+// *.undefined_syms.auto.txt files on `make split`, so aliases live here instead.
+// Read by tools/build_overlays.sh.
+D_80076E1E = 0x80076E1E;
+// Incomplete-array view so the base materializes as a register (lui/addiu + lw 0(r))
+// instead of the per-site $at fold (func_credits_8007AA50 setup block).
+D_800785DC_BLK = 0x800785DC;
+// Scalar aliases (same address, `int` DECL not an incomplete array) so a site can
+// pick the absolute `lui %hi / lw %lo` form the original uses at that site while
+// the array name keeps the held-base form elsewhere (cookbook B16, per-site).
+D_800777EC_s = 0x800777EC;
+D_800777F0_s = 0x800777F0;
+D_800777F4_s = 0x800777F4;
+D_80077838_s = 0x80077838;
