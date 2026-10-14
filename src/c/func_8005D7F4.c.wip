@@ -1,0 +1,65 @@
+/* PARKED 2026-10-14 (ex-B11 wall, first decode): 76 vs 74 insns, 40 masked.
+   Inverse of ComputeSpuPitchFromNoteDelta: find the top set bit of the
+   pitch (octave), then walk 48 quarter-semitone steps of 0x103B/0x1000 with
+   32 linear sub-steps each until the pitch falls inside one; returns
+   ((note + semitones + octave*12) << 8) | (fine + cents). 0x8005d7f4, 296 B.
+   Already right: the bit-scan loop shape, the bit-scan and step counters are
+   ONE variable (both t2 in the original), the mult/mflo pipelining.
+   LEFT: (1) the hit test: the original is `bnez (pitch < B) -> tail` with
+   `v = i*32 + k` in the delay slot (reorg inverted a branch-around-jump);
+   ours is `beqz skip; nop; j tail; v=` (+2). An out-of-line `hit:` block
+   and a return-inside-the-loop (no cross-jump) were both worse (56 / 77).
+   (2) allocation: orig note copy t8, pitch copy a0, hb v1, hi v1; ours v1 /
+   a3 / a0 / a3. (3) the tail computes semitone/cents before the note sum. */
+unsigned int func_8005D7F4(unsigned short note, unsigned short fine,
+                           unsigned short pitch) {
+  int i;
+  int hb;
+  int oct;
+  int base;
+  unsigned int f;
+  int k;
+  unsigned int lo;
+  unsigned int hi;
+  unsigned int step;
+  unsigned int a;
+  unsigned int b;
+  int v;
+  int q;
+  int r;
+
+  hb = 0;
+  for (i = 15; i >= 0; i--) {
+    if ((((unsigned short)~pitch >> i) & 1) == 0) {
+      hb = i;
+      break;
+    }
+  }
+  oct = hb - 12;
+  base = 1 << hb;
+  f = 0x1000;
+  for (i = 0; i < 0x30; i++) {
+    lo = base * f;
+    f *= 0x103B;
+    f >>= 12;
+    hi = base * f;
+    step = (hi - lo) >> 5;
+    a = 0;
+    b = step;
+    for (k = 0; k < 32; k++) {
+      if (pitch >= (lo + a) >> 12) {
+        if (pitch < (lo + b) >> 12) {
+          v = i * 32 + k;
+          goto found;
+        }
+      }
+      b += step;
+      a += step;
+    }
+  }
+  v = 0x600;
+found:
+  q = v / 128;
+  r = v - q * 128;
+  return ((note + q + oct * 12) << 8) | (fine + r);
+}
