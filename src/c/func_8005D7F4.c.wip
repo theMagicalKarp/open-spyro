@@ -8,7 +8,11 @@
    LEFT: (1) the hit test: the original is `bnez (pitch < B) -> tail` with
    `v = i*32 + k` in the delay slot (reorg inverted a branch-around-jump);
    ours is `beqz skip; nop; j tail; v=` (+2). An out-of-line `hit:` block
-   and a return-inside-the-loop (no cross-jump) were both worse (56 / 77).
+   and a return-inside-the-loop (no cross-jump) were both worse (56 / 77);
+   so was `v = 0x600; goto found; hit: v = ...; found:` (56, and it flips
+   the bit-scan loop to beqz). reorg can only put `v=` (which sets v0) in the
+   delay slot of `bnez v0` from the TARGET thread (fill_simple refuses an
+   insn that sets the branch's own condition register).
    (2) allocation: orig note copy t8, pitch copy a0, hb v1, hi v1; ours v1 /
    a3 / a0 / a3. (3) the tail computes semitone/cents before the note sum. */
 unsigned int func_8005D7F4(unsigned short note, unsigned short fine,
