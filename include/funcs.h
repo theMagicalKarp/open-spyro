@@ -1163,13 +1163,7 @@ undefined GetAllSpuVoiceKeyStatus(undefined1 *param_1);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetSpuVoiceVolumeLR(int param_1, ushort param_2, ushort param_3);
 
-void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
-
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined S_GVV_OBJ_38(ushort param_1, undefined4 param_2, ushort *param_3);
-
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined S_GVV_OBJ_58(void);
+void SpuGetVoiceVolume(int voice, short *left, short *right);
 
 void InitHeap(ulong *param_1, ulong param_2);
 
@@ -1440,13 +1434,7 @@ int WritePrintf(char *fmt, ...);
 
 int FormatAndWrite(int fd, char *fmt, void *args);
 
-void *memchr(uchar *param_1, uchar param_2, int param_3);
-
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 MEMCHR_OBJ_20(char *param_1, char param_2, int param_3);
-
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined MEMCHR_OBJ_48(void);
+char *memchr(char *s, int c, int n);
 
 /* 0x80062f10: PSn00bSDK-style _putchar: writes one byte to fd 1 (write syscall) and tracks column position at DAT_80075ac8. Special handling: tab (0x09) recurses on space until the column is 8-aligned; newline (0x0a) recurses on '\r' and resets column. Used by WriteString / WritePrintf for all debug output. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

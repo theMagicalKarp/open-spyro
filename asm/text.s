@@ -85813,7 +85813,7 @@ endlabel SetSpuVoiceVolumeLR
 
 .section .text.SpuGetVoiceVolume, "ax"
 .ifndef HAVE_C_SpuGetVoiceVolume
-nonmatching SpuGetVoiceVolume, 0x38
+nonmatching SpuGetVoiceVolume, 0x60
 
 glabel SpuGetVoiceVolume
     /* 4E2B4 8005DAB4 0780023C */  lui        $v0, %hi(D_80073554)
@@ -85827,38 +85827,24 @@ glabel SpuGetVoiceVolume
     /* 4E2D4 8005DAD4 04004014 */  bnez       $v0, .L8005DAE8
     /* 4E2D8 8005DAD8 00800234 */   ori       $v0, $zero, 0x8000
     /* 4E2DC 8005DADC 2310E200 */  subu       $v0, $a3, $v0
-    /* 4E2E0 8005DAE0 BB760108 */  j          S_GVV_OBJ_38
+    /* 4E2E0 8005DAE0 BB760108 */  j          .L8005DAEC
     /* 4E2E4 8005DAE4 0000A2A4 */   sh        $v0, 0x0($a1)
   .L8005DAE8:
     /* 4E2E8 8005DAE8 0000A3A4 */  sh         $v1, 0x0($a1)
-endlabel SpuGetVoiceVolume
-.endif
-
-.section .text.S_GVV_OBJ_38, "ax"
-.ifndef HAVE_C_S_GVV_OBJ_38
-nonmatching S_GVV_OBJ_38, 0x20
-
-glabel S_GVV_OBJ_38
+  .L8005DAEC:
     /* 4E2EC 8005DAEC FFFF8330 */  andi       $v1, $a0, 0xFFFF
     /* 4E2F0 8005DAF0 0040622C */  sltiu      $v0, $v1, 0x4000
     /* 4E2F4 8005DAF4 04004014 */  bnez       $v0, .L8005DB08
     /* 4E2F8 8005DAF8 00800234 */   ori       $v0, $zero, 0x8000
     /* 4E2FC 8005DAFC 23106200 */  subu       $v0, $v1, $v0
-    /* 4E300 8005DB00 C3760108 */  j          S_GVV_OBJ_58
+    /* 4E300 8005DB00 C3760108 */  j          .L8005DB0C
     /* 4E304 8005DB04 0000C2A4 */   sh        $v0, 0x0($a2)
   .L8005DB08:
     /* 4E308 8005DB08 0000C4A4 */  sh         $a0, 0x0($a2)
-endlabel S_GVV_OBJ_38
-.endif
-
-.section .text.S_GVV_OBJ_58, "ax"
-.ifndef HAVE_C_S_GVV_OBJ_58
-nonmatching S_GVV_OBJ_58, 0x8
-
-glabel S_GVV_OBJ_58
+  .L8005DB0C:
     /* 4E30C 8005DB0C 0800E003 */  jr         $ra
     /* 4E310 8005DB10 00000000 */   nop
-endlabel S_GVV_OBJ_58
+endlabel SpuGetVoiceVolume
 .endif
 
 .section .text.InitHeap, "ax"
@@ -92880,27 +92866,20 @@ endlabel func_80062E60
 
 .section .text.memchr, "ax"
 .ifndef HAVE_C_memchr
-nonmatching memchr, 0x20
+nonmatching memchr, 0x50
 
 glabel memchr
-    /* 536C0 80062EC0 11008010 */  beqz       $a0, MEMCHR_OBJ_48
+    /* 536C0 80062EC0 11008010 */  beqz       $a0, .L80062F08
     /* 536C4 80062EC4 21100000 */   addu      $v0, $zero, $zero
-    /* 536C8 80062EC8 0F00C018 */  blez       $a2, MEMCHR_OBJ_48
+    /* 536C8 80062EC8 0F00C018 */  blez       $a2, .L80062F08
     /* 536CC 80062ECC 00000000 */   nop
-    /* 536D0 80062ED0 B88B0108 */  j          MEMCHR_OBJ_20
+    /* 536D0 80062ED0 B88B0108 */  j          .L80062EE0
     /* 536D4 80062ED4 FFFFC624 */   addiu     $a2, $a2, -0x1
   .L80062ED8:
-    /* 536D8 80062ED8 C28B0108 */  j          MEMCHR_OBJ_48
+    /* 536D8 80062ED8 C28B0108 */  j          .L80062F08
     /* 536DC 80062EDC FFFF8224 */   addiu     $v0, $a0, -0x1
-endlabel memchr
-.endif
-
-.section .text.MEMCHR_OBJ_20, "ax"
-.ifndef HAVE_C_MEMCHR_OBJ_20
-nonmatching MEMCHR_OBJ_20, 0x28
-
-glabel MEMCHR_OBJ_20
-    /* 536E0 80062EE0 0900C004 */  bltz       $a2, MEMCHR_OBJ_48
+  .L80062EE0:
+    /* 536E0 80062EE0 0900C004 */  bltz       $a2, .L80062F08
     /* 536E4 80062EE4 21100000 */   addu      $v0, $zero, $zero
     /* 536E8 80062EE8 FF00A530 */  andi       $a1, $a1, 0xFF
   .L80062EEC:
@@ -92911,17 +92890,10 @@ glabel MEMCHR_OBJ_20
     /* 536FC 80062EFC FFFFC624 */  addiu      $a2, $a2, -0x1
     /* 53700 80062F00 FAFFC104 */  bgez       $a2, .L80062EEC
     /* 53704 80062F04 21100000 */   addu      $v0, $zero, $zero
-endlabel MEMCHR_OBJ_20
-.endif
-
-.section .text.MEMCHR_OBJ_48, "ax"
-.ifndef HAVE_C_MEMCHR_OBJ_48
-nonmatching MEMCHR_OBJ_48, 0x8
-
-glabel MEMCHR_OBJ_48
+  .L80062F08:
     /* 53708 80062F08 0800E003 */  jr         $ra
     /* 5370C 80062F0C 00000000 */   nop
-endlabel MEMCHR_OBJ_48
+endlabel memchr
 .endif
 
 .section .text.WriteChar, "ax"

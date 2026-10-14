@@ -25,13 +25,13 @@ func_8005ED54:
 
 # --- Split-label functions (need a text_layout.json merge first) ---
 SpuGetVoiceVolume:
-  verdict: wall
-  class: "B5 split-label"
-  date: 2026-07-23
+  verdict: matched
+  class: "B5 RETIRED: S_GVV_OBJ_38/58 merged back (symbol_addrs + text.s); 0x8000 through an int temp keeps ori+subu"
+  date: 2026-10-14
 memchr:
-  verdict: wall
-  class: "B5 split-label"
-  date: 2026-07-23
+  verdict: matched
+  class: "B5 RETIRED: MEMCHR_OBJ_20/48 merged back; plain while (--n >= 0) libc memchr, first build"
+  date: 2026-10-14
 
 # --- get_cs/get_ce clamp family (w-1 recompute / copy coalescing) ---
 func_80060FD8:
@@ -135,10 +135,6 @@ __main:
   verdict: wall
   class: "SN CRT prebuilt object"
   date: 2026-07-17
-MEMCHR_OBJ_48:
-  verdict: wall
-  class: "B5 split-label (memchr family)"
-  date: 2026-07-23
 
 # --- Parked tie classes with no .c.wip on disk (residue documented in cookbook §F) ---
 UpdateCameraEulerAngles:
