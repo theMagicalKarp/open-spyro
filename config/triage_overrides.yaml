@@ -63,9 +63,10 @@ CdCommandSync:
 
 # --- Lagged-mult pipeline leaves ---
 func_8005D628:
-  verdict: wall
-  class: "B11 lagged-mult"
-  date: 2026-07-06
+  verdict: matched
+  class: "B11 lagged-mult RETIRED: the split mult/mflo is plain gcc; stack-array lo (non-volatile) + n != 0 guard"
+  date: 2026-10-14
+  note: "lo[1] at sp+8 behind an unused int[2]; f *= K; f >>= 12 in two statements; do/while under if (n != 0)."
 ComputeSpuPitchFromNoteDelta:
   verdict: wall
   class: "B11 lagged-mult"
