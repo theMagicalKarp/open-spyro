@@ -135,7 +135,14 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    (candidate: a GPR copy of k at the join, `mflo t0` = its output reload,
    `sll` = the inheriting use). A plain `t = k;` copy is deleted before
    reload (no disposition in -dg), so the copy needs a spelling that
-   survives combine and keeps LO as its preferred class. */
+   survives combine and keeps LO as its preferred class.
+   Second candidate, better on numbering: the flame half's `% 24` magic-
+   multiply HIGHPART (`mfhi t0; sra v1,t0,2`). It is block-local, set and
+   used once, reloads through t0, and as a body temp its pseudo number falls
+   between the declared locals (empty/sfxDone) and loop.c's giv -- exactly
+   the hole's slot order. Ours gets HI from local-alloc. Tried (no frame
+   change): `% 24` spellings (> 13, x - x/24*24, assigned into n/limit/mask/
+   count/i), and an explicit `(long long)x * 0x2AAAAAAB >> 32` (+2..+6). */
 void TickSpyroAttackEffects(int steps) {
   int flame[3];
   int anchor[3];

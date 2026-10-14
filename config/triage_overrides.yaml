@@ -5671,7 +5671,7 @@ TickSpyroAttackEffects_2026_10_14_2:
   verdict: parked
   class: "F7 slot hole at 0x68 only (preheader F1 SOLVED)"
   date: 2026-10-14
-  note: "16 -> 10. Slot age/state as givs off the anchor block fixes the preheader. Hole = a block-local pseudo with no hard reg whose stores delete_output_reload removed (reload1.c). `t = k` copy is deleted before reload; tried k short/unsigned/decl order/block scope: no effect on the frame."
+  note: "16 -> 10. Slot age/state as givs off the anchor block fixes the preheader. Hole = a block-local pseudo with no hard reg whose stores delete_output_reload removed (reload1.c). `t = k` copy is deleted before reload; tried k short/unsigned/decl order/block scope: no effect on the frame. Better candidate for the hole: the `% 24` highpart temp (mfhi t0), which is block-local and numbered between sfxDone and the giv; % spellings and an explicit 64-bit magic multiply did not move the frame."
 Gamestate02_03_06_Draw_2026_10_14_2:
   verdict: parked
   class: "-19 length + head knot (arg-temp lever closes most of loop 1)"
