@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1208" viewBox="0 0 1200 1208" font-family="ui-monospace,Menlo,Consolas,monospace">
 <rect width="1200" height="1208" fill="#0d1117"/>
 <text x="12" y="38" fill="#e6edf3" font-size="26" font-weight="700">open-spyro — C-match progress</text>
-<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.61% matched</text>
-<text x="202" y="66" fill="#8b949e" font-size="16">2,129,604 / 2,159,608 split-code bytes · 772 matched · 7 wip</text>
+<text x="12" y="66" fill="#3fb950" font-size="22" font-weight="700">98.62% matched</text>
+<text x="202" y="66" fill="#8b949e" font-size="16">2,129,808 / 2,159,608 split-code bytes · 789 matched · 7 wip</text>
 <rect x="1099" y="20" width="14" height="14" rx="2" fill="#8957e5"/>
 <text x="1119" y="32" fill="#e6edf3" font-size="14">library</text>
 <rect x="962" y="20" width="14" height="14" rx="2" fill="#8b949e"/>
@@ -771,24 +771,24 @@
 <rect x="292.19" y="770.46" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_F8  ·  16 bytes  ·  library</title></rect>
 <rect x="295.16" y="752.76" width="3.18" height="2.75" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_348  ·  16 bytes  ·  library</title></rect>
 <rect x="298.33" y="752.76" width="3.18" height="2.75" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_438  ·  16 bytes  ·  library</title></rect>
-<rect x="301.51" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>InitHeap  ·  12 bytes  ·  asm</title></rect>
-<rect x="303.89" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>LoadExec  ·  12 bytes  ·  asm</title></rect>
-<rect x="306.27" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>_96_init  ·  12 bytes  ·  asm</title></rect>
-<rect x="308.65" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>Bios96Remove  ·  12 bytes  ·  asm</title></rect>
-<rect x="311.03" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>DeliverEvent  ·  12 bytes  ·  asm</title></rect>
-<rect x="313.42" y="752.76" width="2.38" height="2.75" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>OpenEvent  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="755.51" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>TestEvent  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="758.07" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>EnableEvent  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="760.63" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ChangeClearPAD  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="763.19" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ChangeClearRCnt  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="765.74" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ReturnFromException  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="768.30" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>ResetEntryInt  ·  12 bytes  ·  asm</title></rect>
-<rect x="295.16" y="770.86" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>HookEntryInt  ·  12 bytes  ·  asm</title></rect>
-<rect x="297.72" y="755.51" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>GPU_cw  ·  12 bytes  ·  asm</title></rect>
+<rect x="301.51" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitHeap  ·  12 bytes  ·  matched</title></rect>
+<rect x="303.89" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LoadExec  ·  12 bytes  ·  matched</title></rect>
+<rect x="306.27" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>_96_init  ·  12 bytes  ·  matched</title></rect>
+<rect x="308.65" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Bios96Remove  ·  12 bytes  ·  matched</title></rect>
+<rect x="311.03" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DeliverEvent  ·  12 bytes  ·  matched</title></rect>
+<rect x="313.42" y="752.76" width="2.38" height="2.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OpenEvent  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="755.51" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TestEvent  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="758.07" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnableEvent  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="760.63" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ChangeClearPAD  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="763.19" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ChangeClearRCnt  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="765.74" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReturnFromException  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="768.30" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetEntryInt  ·  12 bytes  ·  matched</title></rect>
+<rect x="295.16" y="770.86" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>HookEntryInt  ·  12 bytes  ·  matched</title></rect>
+<rect x="297.72" y="755.51" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GPU_cw  ·  12 bytes  ·  matched</title></rect>
 <rect x="297.72" y="758.07" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>SetGeomScreen  ·  12 bytes  ·  asm</title></rect>
-<rect x="297.72" y="760.63" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>FlushCache  ·  12 bytes  ·  asm</title></rect>
-<rect x="297.72" y="763.19" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>write  ·  12 bytes  ·  asm</title></rect>
-<rect x="297.72" y="765.74" width="2.57" height="2.56" fill="#da3633" stroke="#0d1117" stroke-width="0.5"><title>exit  ·  12 bytes  ·  asm</title></rect>
+<rect x="297.72" y="760.63" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FlushCache  ·  12 bytes  ·  matched</title></rect>
+<rect x="297.72" y="763.19" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>write  ·  12 bytes  ·  matched</title></rect>
+<rect x="297.72" y="765.74" width="2.57" height="2.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>exit  ·  12 bytes  ·  matched</title></rect>
 <rect x="297.72" y="768.30" width="2.57" height="2.56" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_bu_init  ·  12 bytes  ·  library</title></rect>
 <rect x="297.72" y="770.86" width="2.57" height="2.56" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CloseEvent  ·  12 bytes  ·  library</title></rect>
 <rect x="300.29" y="755.51" width="2.59" height="2.54" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>open  ·  12 bytes  ·  library</title></rect>
