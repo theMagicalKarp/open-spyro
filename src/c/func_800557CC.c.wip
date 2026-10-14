@@ -23,6 +23,16 @@ struct DigitActor {
   unsigned char yaw;   /* 0x46 coarse camera yaw */
 };
 
+/* 2026-10-14: still 7. sched1 trace: the rot[2] reload is single-set, so it
+ * is birthing-boosted (F14) to sit right above its addiu; the in-struct sh is
+ * anti-dependent on both LUT loads (in-struct varying vs in-struct fixed).
+ * Measured: a scalar-view store/load (`*(short *)((char *)rot + 4)`) frees
+ * them but the load floats to the block head (37); a `register int r
+ * asm("$2")` carrier after the loads (F14j) puts the lhu right after the yaw
+ * lbu and gives sx/cx v1/a0 exactly as the original, but st moves a0->a1,
+ * the dir[2] lh takes a0 (-1, the nop goes) and the addiu/sh still sink to
+ * the tail (39). Next: pin + something that keeps st in a0 (st is a single-
+ * set pseudo too). */
 /* 2026-10-13-2: 25 -> 7/100, LENGTH-EXACT, links. Head residue CLOSED:
  * - the yaw load through a one-field struct view (A400) makes it depend on
  *   the in-struct `rec->pos[2] = z` store, so sched1 emits the store first,

@@ -1,116 +1,23 @@
 #include "types.h"
 
-/* 2026-10-13-2: 107 -> 2 linked, frame EXACT (416). Edits, all load-bearing:
-   - the first dot-product block's aggregates (vAxis/vRel/euler/eulerMtx,
-     sp+0x70..0xb8) live at FUNCTION scope: block-scoped, their temp slots
-     were freed and the second block reused them (frame 376); the original
-     keeps both sets live (second set at 0xc0, color at 0xb8 between).
-   - spill-slot order is pseudo order (A387): flagX, flagY, facing are
-     declared before sumX/sumY, and dist after them -> every spill offset
-     (264..320, 368) matches.
-   - `j = 0` hoisted out of the for-init to right after `flags = 0`.
-   - the second-pass point loop uses ONE block-local `t` for both the x and
-     y reads (xk/yk conflicted, so xk could not share v1 with yk).
-   - an A386 asm ref on yk after `dy = ...` lifts yk (24/28 -> 25/28 refs)
-     over xk (25/29) for v1 in the first edge loop.
-   LEFT (2): nEdges/maxX zero-init swapped (s4 before s3). Mechanism: cse
-   rewrites the first edge loop's guard `j < nPoints` to the zero-class
-   register with the latest REGNO_LAST_UID (nEdges, last used by the final
-   `D_80077EA0[nEdges].live = 0`), combine folds that `nEdges = 0` into the
-   guard's slt and re-emits it as a NEW insn (uid > 3300) at the guard, and
-   sched2 then places it after maxX on the LUID tie (all prio 0x6f). The
-   original's order needs maxX to be the re-emitted one (maxX last-used
-   after nEdges). Moving `.live = 0` above the scissor stores changes the
-   code (166+). Splitting the second pass's counter into its own variable
-   re-tiles the callee-saved map (78). */
+/* DrawActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
 
-/* 2026-10-13-1: LENGTH-EXACT, 928 -> 107 linked (23 masked). The facing dot
-   product now sits BEFORE the extents/zero-init block: its reads of
-   g_apScriptedMobEntries[i] are then killed by the intervening stores, so
-   the edge loop's guard reloads the entry pointer as the original does (the
-   missing insn). Left: xk/the edge-loop temps one register high (orig v1,
-   ours a0: a fn-scope value owns v1 across the loop), the maxX zero-init
-   position, and the R2 two-slot frame shortfall (every spill offset from
-   ~insn 191 on; masked out of the 23). */
-/* UPDATE 2026-09-27-2: 132 -> 32 masked, 1286 vs 1287 (-1). R1 is CLOSED:
-   - `register int k asm("$5")` block-scoped in both edge loops (k in a1,
-     the index temp then takes a2), and the `nPoints - 1` wrap read through a
-     `$2` local (a pinned k otherwise loads nPoints straight into a1).
-   - `ko = k * 12` + the KPT macro in the first edge loop's second half: the
-     original holds the byte offset live through the four-arm extents test;
-     a cse temp is recomputed after it (+3 insns gone).
-   - `shift = CLZ(...); if (shift >= 0xf) { shift >>= 1; ...` (n and shift
-     are one variable in the original: move s4,v0 / sra s4,s4,1).
-   - the `/ nPoints` divisor as a `$2` block local.
-   - the mesh colour read as `*(unsigned int *)((char *)pMesh + 0x10)`: a
-     non-struct MEM is ordered after the preceding scalar store (colour /
-     g_nFadeProgress), a struct field load is hoisted above it (3 sites).
-   OPEN: frame 376 vs 416 (five 8-byte spill slots short: flagX/flagY/i
-   spill at 264/272/224 vs 272/280/264); the second-loop point loop (0xd50)
-   runs one register high (a1/a0/a2/v1 vs ours a2/a1/a3/a0); the 0x5f0 zero
-   stores and 0x634 entry reload (the original reloads the mob pointer after
-   the tri-stack store; array-alias stores for it were worse, 44/53).
-
-   PARKED 2026-09-09 (fresh vein target - never opened before this session).
-   State: 1291 vs 1287 insns (+4), 132 masked mismatches over 86 regions,
-   register-anchored, final positional offset +4. Does NOT link (over slot).
-
-   What is already exact:
-   - The whole matrix head (insns 0..190) is instruction-for-instruction and
-     register-for-register identical.
-   - The USER-LOCAL frame map is exact: sp+0x10/0x30 matrices, 0x50/0x60
-     vectors, 0x70/0x80/0x90/0x98 the first dot-product block, 0xb8 color,
-     0xc0/0xd0/0xe0/0xe8 the second dot-product block.
-   - The callee-saved map is exact: s1=flags, s2=j, s3=nEdges, s4=maxX,
-     s5=mob cursor, s6=minY, s7=maxY, s8=minX.
-   - Zero content/structural diffs remain: every one of the 132 masked
-     mismatches is a register rename, and 55 of them are ONE a1<->a2 pair.
-
-   Four levers are load-bearing; do not "clean" them up.
-   1. A35 typed array-of-struct indexing. `ScreenPt D_80078DD8[]` (stride 0xc)
-      and `EdgeRec D_80077EA0[]` (stride 0x18) are what keep every access on
-      the original's `lui $at / addu $at,idx / lw %lo(sym+K)($at)` fold. Flat
-      `int D_80078DD8[]` + `[k*3+1]` indexing hands loop.c a pointer giv per
-      field instead and costs 19 insns (505 masked -> 232 in one edit).
-   2. The two dot-product blocks are BLOCK-SCOPED, and that is what puts
-      `color` at sp+0xb8. `color` is a plain scalar, so expand_decl gives it a
-      pseudo and the slot only appears when `&color` is taken - i.e. between
-      the first block`s decls and the second`s. Declared at function scope
-      alongside them it lands at sp+0x100 and the whole spill region shifts.
-   3. A195/A176 ref dials, tuned against the -dl probe, are what produce the
-      callee-saved map. Targets (R/live_length, priority = 5R/L):
-      flags 38/447 = .4250 > nEdges 38/479 = .3967 > maxX 37/479 = .3862 >
-      minY = maxY 36/476 = .3782 > minX 36/491 = .3666.
-      The two-level wrapper on the first-half `if (flags == 2 ...)` block buys
-      flags +4 (it is the only splittable region that mentions flags and none
-      of the extents); the INNER wrapper `if (maxX < xk) { do { maxX = xk; }
-      while (0); }` buys maxX exactly +1 - the ordinary outer form gives +2,
-      which ties nEdges and, on the lower allocno, steals its register.
-      Do NOT wrap the big extents condition: it mentions minX/minY/maxX/maxY
-      twice each and lifts all six uniformly (229 -> 294 masked).
-   4. A146: the storm-fade clamp reuses `j`, the loop counter, rather than its
-      own local. Merging those two disjoint lifetimes into one allocno is
-      worth 35 masked diffs (167 -> 132) and is what finally hands j s2 and
-      nEdges s3.
-
-   The two open residues, both one class:
-   R1 (dominant, 55 of 132 + the only real +3 of the length): local-alloc puts
-      `k` in a2 and the `k*3<<2` index temp in a1; the original is the other
-      way round. Because the original`s index temp lives in a2 it survives the
-      four-arm extents test and is still live at the edge-record block, where
-      ours has to recompute it (`sll/addu/sll`, +3 insns at orig[539]). One
-      A195 wrapper on the whole k-selection if/else was measured:
-   byte-identical, so the refs did not move - the next probe is `-dl` on the
-   anonymous index quantity, not another wrapper depth. R2 (frame): our frame is
-   400, the original 416 - we are TWO 8-byte reload slots SHORT (the A231
-   direction nobody has had to fix yet, since every recorded case had a
-   surplus). Because of it every spill offset from insn ~191 on is 8-16 bytes
-   low, which is what keeps the byte-identical word count down even though the
-   content is right. Two more long-lived spilled pseudos are missing; the +1
-   load-delay nops at orig[810] and orig[1229] (the original fills them with the
-   `color` reload) are the same shortfall showing up as schedule.
-
-   Frame: 0x1a0. VMA 0x80050bd0, 5148 bytes. */
+   Matching notes (all load-bearing):
+   - `maxX` is the same variable as the earlier CLZ `shift` (both s4): its
+     first reference then precedes the first edge pass's cse block, so cse
+     makes it the canonical zero register for that pass's loop guard and
+     combine re-emits its `= 0` last; in the second pass nEdges (last used
+     by the final `.live = 0`) wins instead and lands in the guard's delay
+     slot.
+   - the first dot-product block's aggregates live at function scope (the
+     original keeps both sets of temp slots), and flagX/flagY/facing are
+     declared before sumX/sumY with dist after them, so every spill slot
+     lands where the original's does (spill order follows pseudo order).
+   - `register ... asm()` pins on the edge-loop k / nPoints wrap / divisor,
+     the `ko = k * 12` held offset, and an empty asm ref on yk reproduce the
+     original's temp registers in the edge loops.
+   - the mesh colour is read through a plain (non-struct) MEM so it is not
+     hoisted above the preceding scalar stores. */
 
 extern int abs(int x);
 
@@ -220,10 +127,10 @@ extern int D_800785B4;   /* static-mesh LOD cutoff */
    when its extents fall inside the 512x240 frame and the ring faces the
    camera. (0x80050bd0, 5148 bytes.) */
 void DrawActors(void) {
-  MATRIX viewMtx; /* sp+0x10 */
-  MATRIX outMtx;  /* sp+0x30 */
-  int vDelta[3];  /* sp+0x50 */
-  int vCenter[3]; /* sp+0x60 */
+  MATRIX viewMtx;         /* sp+0x10 */
+  MATRIX outMtx;          /* sp+0x30 */
+  int vDelta[3];          /* sp+0x50 */
+  int vCenter[3];         /* sp+0x60 */
   int vAxis[3];           /* sp+0x70 */
   int vRel[3];            /* sp+0x80 */
   unsigned char euler[3]; /* sp+0x90 */
@@ -235,7 +142,7 @@ void DrawActors(void) {
   int k;
   int ko;
   int n;
-  int shift;
+  int maxX; /* doubles as the CLZ shift (one variable in the original) */
   int flagX;
   int flagY;
   int facing;
@@ -243,7 +150,6 @@ void DrawActors(void) {
   int sumY;
   int dist;
   int minX;
-  int maxX;
   int minY;
   int maxY;
   int flags;
@@ -331,18 +237,18 @@ void DrawActors(void) {
           *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
           0xffffff, color);
       SubtractVector(vDelta, g_apScriptedMobEntries[i]->pts[0], g_anCameraPos);
-      shift =
+      maxX =
           CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
-      if (shift >= 0xf) {
-        shift >>= 1;
-        RShiftVector3(vDelta, shift);
-        dist = VectorLength(vDelta, 1) << shift;
+      if (maxX >= 0xf) {
+        maxX >>= 1;
+        RShiftVector3(vDelta, maxX);
+        dist = VectorLength(vDelta, 1) << maxX;
       } else {
         dist = VectorLength(vDelta, 1);
       }
-      shift = CountLeadingZeros(dist) - 0xd;
-      if (shift < 0) {
-        shift = 0;
+      maxX = CountLeadingZeros(dist) - 0xd;
+      if (maxX < 0) {
+        maxX = 0;
       }
       if (g_nLevelStormFlag != 0 && dist >= 0x4001) {
         j = (0x8000 - dist) >> 2;
@@ -358,14 +264,14 @@ void DrawActors(void) {
       ZeroVector(vCenter);
       for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
         ProjectWorldPointGTE((int *)&D_80078DD8[j],
-                             g_apScriptedMobEntries[i]->pts[j], shift);
+                             g_apScriptedMobEntries[i]->pts[j], maxX);
         AddVector(vCenter, vCenter, g_apScriptedMobEntries[i]->pts[j]);
       }
       vCenter[0] /= g_apScriptedMobEntries[i]->nPoints;
       vCenter[1] /= g_apScriptedMobEntries[i]->nPoints;
       vCenter[2] /= g_apScriptedMobEntries[i]->nPoints;
       SubtractVector(vDelta, g_anCameraPos, g_apScriptedMobEntries[i]->pts[1]);
-      RShiftVector3(vDelta, shift);
+      RShiftVector3(vDelta, maxX);
 
       facing = -vDelta[0] * g_apScriptedMobEntries[i]->nx -
                vDelta[1] * g_apScriptedMobEntries[i]->ny -
