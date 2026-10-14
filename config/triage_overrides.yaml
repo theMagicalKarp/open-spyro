@@ -1061,6 +1061,10 @@ func_80016FD0:
   verdict: matched
   class: "B6 RETIRED for $at temps: local `register ... asm(\"$1\")` pins put the swap temp in $at (A374); volatile asm keeps the lui below the loads"
   date: 2026-10-14
+func_80017FD4:
+  verdict: matched
+  class: "B2 RETIRED: $at named by a local register variable, base seeded through an empty asm so cse cannot fold it into the load"
+  date: 2026-10-14
 
 CdDataSync:
   verdict: parked
