@@ -5682,3 +5682,13 @@ UpdateHudCounters_2026_10_14_2:
   class: "R3 head re-read order + -3 length (R2 extra callee-saved reg SOLVED)"
   date: 2026-10-14
   note: "852 -> 840 positional. Egg tint as a giv of i (`((i + 6) << 24) + 0x8080`) keeps the lui in-loop and frees s3; pad[2] fixes the frame. 1,440 head statement/barrier orders swept: barrier must precede the cos load to keep the gem block's held base."
+func_credits_8007AA50_2026_10_14_2:
+  verdict: parked
+  class: "init-block A cluster is not statement order (2,160 orders swept, none better)"
+  date: 2026-10-14
+  note: "Swept dst/E4/lo/hi/src-temp/barrier/copy orders in the D_80078A40 copy block (compile-only, aligned score 74 at best = current). The original's a1 load before the movstr needs something other than order; 112 linked unchanged."
+AdvanceSpyroPhysics_2026_10_14_2:
+  verdict: parked
+  class: "frame -8 (orig spills i/steps + two more slots); pad[2] inert"
+  date: 2026-10-14
+  note: "pad[2] at every declaration position: frame matches but 707 linked unchanged, aligned 140 -> 145+."
