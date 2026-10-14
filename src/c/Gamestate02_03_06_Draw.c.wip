@@ -171,6 +171,12 @@ extern char D_80010B90[]; /* "EXIT WORLD"  */
    (0x200,0xe0).  Every later frame re-draws that backdrop as four textured
    quads, draws the menu on top, and submits the frame with the shared
    two-vblank pacing tail. */
+/* 2026-10-14-2: 1727 -> 1722. First head-loop knot mostly closed by loading
+   the StoreImage source into a local (`arg = img2[0];`) at the top of the
+   statement run, so the a1 load is scheduled ahead of the rect stores as in
+   the original; left there is a0/i++ order (1 pair). The LoadImage chunk's
+   statement order (720 perms of x/y/w/h/strip+=/arg temp) moves nothing
+   positionally. The function is still -19 insns, which is the real blocker. */
 void Gamestate02_03_06_Draw(void) {
   RECT rect;          /* sp18 */
   char buf[0x20];     /* sp20 */
@@ -190,6 +196,7 @@ void Gamestate02_03_06_Draw(void) {
     register int strip asm("$17");
     int y;
     void **img;
+    void *arg;
     register void **img2 asm("$18");
     DRAWENV *envBase;
     i = 0;
@@ -226,11 +233,12 @@ void Gamestate02_03_06_Draw(void) {
       if (g_pActiveFrameDrawEnv != envBase) {
         y = 0xf8;
       }
+      arg = img2[0];
       i += 1;
       rect.y = y;
       rect.w = 0x80;
       rect.h = h;
-      ((void (*)())StoreImage)(&rect, img2[0], y);
+      ((void (*)())StoreImage)(&rect, arg, y);
       DrawSync(0);
       ConvertRGB15ToLuma8(img2[0], 0x7000);
       rect.x = strip;

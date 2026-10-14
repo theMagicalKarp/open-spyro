@@ -5662,3 +5662,33 @@ TickSpyroAttackEffects_2026_10_14_1:
   class: "F7 slot hole at 0x68 (unchanged) + F1 preheader"
   date: 2026-10-14
   note: "Ruled out: X = a pseudo kicked out of the spill reg t0 (reload would pick a free t1-t9 instead). Open theory: X is a GPR copy of k that global alloc spilled, whose mflo output store delete_output_reload removed after the sll's input reload inherited t0."
+func_800557CC_2026_10_14_2:
+  verdict: matched
+  class: "matched 2026-10-14-2 (tail statement order + volatile barrier, found by a mechanical sweep)"
+  date: 2026-10-14
+  note: "400 B. Tail: sin load, cos load, rot[2] RMW, asm volatile barrier, then the two B13 asm copies. 8 of 840 swept orders scored 0; the barrier keeps the sh above the x/y updates and the cos asm copy below it frees the slot after the addiu for the cos LOAD, so the boosted reload lands above it."
+TickSpyroAttackEffects_2026_10_14_2:
+  verdict: parked
+  class: "F7 slot hole at 0x68 only (preheader F1 SOLVED)"
+  date: 2026-10-14
+  note: "16 -> 10. Slot age/state as givs off the anchor block fixes the preheader. Hole = a block-local pseudo with no hard reg whose stores delete_output_reload removed (reload1.c). `t = k` copy is deleted before reload; tried k short/unsigned/decl order/block scope: no effect on the frame. Better candidate for the hole: the `% 24` highpart temp (mfhi t0), which is block-local and numbered between sfxDone and the giv; % spellings and an explicit 64-bit magic multiply did not move the frame."
+Gamestate02_03_06_Draw_2026_10_14_2:
+  verdict: parked
+  class: "-19 length + head knot (arg-temp lever closes most of loop 1)"
+  date: 2026-10-14
+  note: "1727 -> 1722 linked. `arg = img2[0];` first in the StoreImage run; LoadImage chunk order sweep (720 variants) and an &rect pointer temp: no positional gain."
+UpdateHudCounters_2026_10_14_2:
+  verdict: parked
+  class: "R3 head re-read order + -3 length (R2 extra callee-saved reg SOLVED)"
+  date: 2026-10-14
+  note: "852 -> 840 positional. Egg tint as a giv of i (`((i + 6) << 24) + 0x8080`) keeps the lui in-loop and frees s3; pad[2] fixes the frame. 1,440 head statement/barrier orders swept: barrier must precede the cos load to keep the gem block's held base."
+func_credits_8007AA50_2026_10_14_2:
+  verdict: parked
+  class: "init-block A cluster is not statement order (2,160 orders swept, none better)"
+  date: 2026-10-14
+  note: "Swept dst/E4/lo/hi/src-temp/barrier/copy orders in the D_80078A40 copy block (compile-only, aligned score 74 at best = current). The original's a1 load before the movstr needs something other than order; 112 linked unchanged."
+AdvanceSpyroPhysics_2026_10_14_2:
+  verdict: parked
+  class: "frame -8 (orig spills i/steps + two more slots); pad[2] inert"
+  date: 2026-10-14
+  note: "pad[2] at every declaration position: frame matches but 707 linked unchanged, aligned 140 -> 145+."

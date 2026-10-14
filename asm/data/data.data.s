@@ -3459,10 +3459,15 @@ dlabel g_anSpyroHornStrikeTipOffsets
     /* 5EA38 8006E238 20020000 */ .word 0x00000220
     /* 5EA3C 8006E23C 60000000 */ .word 0x00000060
     /* 5EA40 8006E240 00000000 */ .word 0x00000000
+enddlabel g_anSpyroHornStrikeTipOffsets
+
+nonmatching g_anSpyroHornStrikeTipOffsets2
+
+dlabel g_anSpyroHornStrikeTipOffsets2
     /* 5EA44 8006E244 20020000 */ .word 0x00000220
     /* 5EA48 8006E248 A0FFFFFF */ .word 0xFFFFFFA0
     /* 5EA4C 8006E24C 00000000 */ .word 0x00000000
-enddlabel g_anSpyroHornStrikeTipOffsets
+enddlabel g_anSpyroHornStrikeTipOffsets2
 
 .align 2
 nonmatching g_anSpyroHornStrikeTipBurstVels
@@ -4243,9 +4248,9 @@ dlabel D_8006EB24
     /* 5F3E0 8006EBE0 00000000 */ .word 0x00000000
 enddlabel D_8006EB24
 
-nonmatching D_8006EBE4
+nonmatching g_anSpyroDeathCamRecordBlock
 
-dlabel D_8006EBE4
+dlabel g_anSpyroDeathCamRecordBlock
     /* 5F3E4 8006EBE4 00000000 */ .word 0x00000000
     /* 5F3E8 8006EBE8 00000000 */ .word 0x00000000
     /* 5F3EC 8006EBEC 00000000 */ .word 0x00000000
@@ -4362,7 +4367,7 @@ dlabel D_8006EBE4
     /* 5F5A8 8006EDA8 72060200 */ .word 0x00020672
     /* 5F5AC 8006EDAC 8A9F0100 */ .word 0x00019F8A
     /* 5F5B0 8006EDB0 C9720000 */ .word 0x000072C9
-enddlabel D_8006EBE4
+enddlabel g_anSpyroDeathCamRecordBlock
 
 nonmatching g_anLevelSpawnNudgeZTable
 
@@ -12579,11 +12584,11 @@ dlabel D_80075164
     /* 65964 80075164 00000000 */ .word 0x00000000
 enddlabel D_80075164
 
-nonmatching D_80075168
+nonmatching g_anCdExpectedPosBlock
 
-dlabel D_80075168
+dlabel g_anCdExpectedPosBlock
     /* 65968 80075168 00000000 */ .word 0x00000000
-enddlabel D_80075168
+enddlabel g_anCdExpectedPosBlock
 
 nonmatching D_8007516C
 
@@ -12603,11 +12608,11 @@ dlabel D_80075174
     /* 65974 80075174 00000000 */ .word 0x00000000
 enddlabel D_80075174
 
-nonmatching D_80075178
+nonmatching g_anCdReadModeBlock
 
-dlabel D_80075178
+dlabel g_anCdReadModeBlock
     /* 65978 80075178 00000000 */ .word 0x00000000
-enddlabel D_80075178
+enddlabel g_anCdReadModeBlock
 
 nonmatching D_8007517C
 

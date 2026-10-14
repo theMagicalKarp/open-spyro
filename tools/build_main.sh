@@ -116,6 +116,7 @@ done
 $OPEN_SPYRO gen-syms-ld "$SYMS_LD" \
   config/symbol_addrs.txt \
   config/undefined_syms_auto.txt \
+  config/undefined_syms_manual.txt \
   config/undefined_funcs_auto.txt
 
 # Per-function fixed-VMA text slots (config/spyro.main.slots.ld), anchoring every
