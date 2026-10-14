@@ -72,10 +72,9 @@ ComputeSpuPitchFromNoteDelta:
   class: "B11 RETIRED: func_8005D628's loop inline; variable merges (d->base, rem->n) + ?: abs singleton"
   date: 2026-10-14
 func_8005D7F4:
-  verdict: parked
-  class: "B11 RETIRED; reorg branch-around-jump inversion at the hit test (+2) + allocation map"
+  verdict: matched
+  class: "B11 RETIRED: hit block in the outer loop after `continue` (reorg steals v=n+k from the target thread); A374 t2 pin for the i/a global-alloc tie"
   date: 2026-10-14
-  note: "src/c/func_8005D7F4.c.wip: first decode, 76/74, 40 masked. Bit-scan i and step counter merged. Hit test needs bnez->tail with v in the delay slot."
 
 # --- -g3 batch-read/scatter scheduling (main only) ---
 
