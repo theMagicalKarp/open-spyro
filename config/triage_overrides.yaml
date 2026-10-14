@@ -5652,3 +5652,13 @@ Gamestate02_03_06_Draw_2026_10_14:
   class: "head knot + A133 constant allocation"
   date: 2026-10-14
   note: "Read only; 517 masked, -19 length."
+func_800557CC_2026_10_14_1:
+  verdict: parked
+  class: "F14 boost on the rot[2] reload vs hard-reg pins perturbing sched1"
+  date: 2026-10-14
+  note: "sx/cx pinned $3/$4 with the rot[2] RMW after both loads: 18 (tail regs exact, lhu boosted next to its addiu). Adding a $2-pinned RMW carrier and a/st on $4: 35-39 (place*10 sinks between the dir stores, dir[2] temp leaves v1)."
+TickSpyroAttackEffects_2026_10_14_1:
+  verdict: parked
+  class: "F7 slot hole at 0x68 (unchanged) + F1 preheader"
+  date: 2026-10-14
+  note: "Ruled out: X = a pseudo kicked out of the spill reg t0 (reload would pick a free t1-t9 instead). Open theory: X is a GPR copy of k that global alloc spilled, whose mflo output store delete_output_reload removed after the sll's input reload inherited t0."
