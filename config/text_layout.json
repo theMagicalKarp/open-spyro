@@ -2113,17 +2113,7 @@
   {
    "name": "SpuGetVoiceVolume",
    "vram": 2147867316,
-   "size": 56
-  },
-  {
-   "name": "S_GVV_OBJ_38",
-   "vram": 2147867372,
-   "size": 32
-  },
-  {
-   "name": "S_GVV_OBJ_58",
-   "vram": 2147867404,
-   "size": 8
+   "size": 96
   },
   {
    "name": "InitHeap",
@@ -2943,17 +2933,7 @@
   {
    "name": "memchr",
    "vram": 2147888832,
-   "size": 32
-  },
-  {
-   "name": "MEMCHR_OBJ_20",
-   "vram": 2147888864,
-   "size": 40
-  },
-  {
-   "name": "MEMCHR_OBJ_48",
-   "vram": 2147888904,
-   "size": 8
+   "size": 80
   },
   {
    "name": "WriteChar",
