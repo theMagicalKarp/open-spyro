@@ -5662,3 +5662,13 @@ TickSpyroAttackEffects_2026_10_14_1:
   class: "F7 slot hole at 0x68 (unchanged) + F1 preheader"
   date: 2026-10-14
   note: "Ruled out: X = a pseudo kicked out of the spill reg t0 (reload would pick a free t1-t9 instead). Open theory: X is a GPR copy of k that global alloc spilled, whose mflo output store delete_output_reload removed after the sll's input reload inherited t0."
+func_800557CC_2026_10_14_2:
+  verdict: matched
+  class: "matched 2026-10-14-2 (tail statement order + volatile barrier, found by a mechanical sweep)"
+  date: 2026-10-14
+  note: "400 B. Tail: sin load, cos load, rot[2] RMW, asm volatile barrier, then the two B13 asm copies. 8 of 840 swept orders scored 0; the barrier keeps the sh above the x/y updates and the cos asm copy below it frees the slot after the addiu for the cos LOAD, so the boosted reload lands above it."
+TickSpyroAttackEffects_2026_10_14_2:
+  verdict: parked
+  class: "F7 slot hole at 0x68 only (preheader F1 SOLVED)"
+  date: 2026-10-14
+  note: "16 -> 10. Slot age/state as givs off the anchor block fixes the preheader. Hole = a block-local pseudo with no hard reg whose stores delete_output_reload removed (reload1.c). `t = k` copy is deleted before reload; tried k short/unsigned/decl order/block scope: no effect on the frame."
