@@ -159,12 +159,10 @@ undefined ScaleVector3ByRatio(VECTOR *param_1, int param_2, int param_3);
 undefined ScaleVector3Shifted(VECTOR *param_1, undefined4 param_2, uint param_3);
 
 /* 0x800176a0: In-place left-shift of an int[3] vector by param_2 bits. Sibling of RShiftVector3. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined LShiftVector3(int *param_1, uint param_2);
+void LShiftVector3(int *v, int n);
 
 /* 0x800176c8: Arithmetic right-shifts each of the 3 signed ints at *param_1 by (param_2 &amp; 0x1f). Used for fixed-point precision conversion in the actor draw path. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined RShiftVector3(int *param_1, uint param_2);
+void RShiftVector3(int *v, int n);
 
 void ZeroVector(int *vec);
 
@@ -212,12 +210,10 @@ undefined ProjectWorldPointGTEUnscaled(int *param_1, int *param_2);
 undefined ProjectWorldPointGTE(int *param_1, int *param_2, uint param_3);
 
 /* 0x80017c4c: Sign-extend a short[3] vector (SVECTOR) into an int[3] (VECTOR). PSX SDK-style helper. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined SVectorToVector(int *param_1, short *param_2);
+void SVectorToVector(int *dst, short *src);
 
 /* 0x80017c68: Truncate an int[3] vector (VECTOR) into a short[3] (SVECTOR). PSX SDK-style helper. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined VectorToSVector(undefined2 *param_1, undefined4 *param_2);
+void VectorToSVector(short *dst, int *src);
 
 /* 0x80017cb8: Unpacks a packed collision-triangle from the world's triangle table at *(DAT_800785d4+0x10) into a 9-int output buffer (3 vertices × 3 coords). Table entry size = 12 bytes (3 uint32 packed coord-triplets). Per axis (X, Y, Z): low 14 bits = vertex 0's coord (shifted left 4 to recover world units). Then v1 = v0 + signed-9-bit delta (X/Y) or unsigned-8-bit delta (Z); v2 same scheme with deltas at bits 23..31 (X/Y) or 24..31 (Z). All outputs scaled by 16. Output layout: [v0.X, v0.Y, v0.Z, v1.X, v1.Y, v1.Z, v2.X, v2.Y, v2.Z]. The asymmetric encoding (Z always-positive deltas) reflects that these are upward-facing collision triangles (floor + slope geometry). Callers: ProbeSpyroGroundContact + AverageSpyroPlatformMotion (M07 — collision query fetches a candidate triangle's vertices for ray test). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

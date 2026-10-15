@@ -5695,3 +5695,45 @@ AdvanceSpyroPhysics_2026_10_14_2:
   class: "frame -8 (orig spills i/steps + two more slots); pad[2] inert"
   date: 2026-10-14
   note: "pad[2] at every declaration position: frame matches but 707 linked unchanged, aligned 140 -> 145+."
+
+# --- 2026-10-15: "handwritten" ($at-as-data) re-screen with register-asm pins ---
+CopyVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+SVectorToVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+VectorToSVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+LShiftVector3:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+RShiftVector3:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+func_80017BFC:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+func_80017C24:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+AddVector:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-15
+SubtractVector:
+  verdict: wall
+  class: "B6 signed sub (gcc 2.7.2 only emits subu)"
+  date: 2026-10-15
+func_80017C84:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-15
