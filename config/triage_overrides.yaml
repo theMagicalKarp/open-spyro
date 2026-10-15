@@ -124,17 +124,19 @@ func_800229E8:
   class: "handwritten register-restore blob"
   date: 2026-07-08
 setjmp:
-  verdict: wall
-  class: "PSY-Q runtime primitive, not compilable C"
-  date: 2026-07-23
+  verdict: matched
+  class: "ex-wall runtime primitive: file-scope register vars for ra/gp/sp/fp/s0-s7 + two empty asms pin the v0 move"
+  date: 2026-10-15
 __do_global_dtors:
   verdict: wall
   class: "SN CRT prebuilt object ($t0 scratch, no arg-save area)"
-  date: 2026-07-17
+  date: 2026-10-15
+  note: "re-screened with register-asm levers: 16-byte frame with s0 at 4 (no arg area) and flag load before the prologue are non-gcc; still wall"
 __main:
   verdict: wall
   class: "SN CRT prebuilt object"
-  date: 2026-07-17
+  date: 2026-10-15
+  note: "re-screened with register-asm levers: 16-byte frame with s0 at 4 (no arg area) and flag load before the prologue are non-gcc; still wall"
 
 # --- Parked tie classes with no .c.wip on disk (residue documented in cookbook §F) ---
 UpdateCameraEulerAngles:
@@ -229,12 +231,13 @@ ResetCallback:
   date: 2026-07-11
 FUN_80062648:
   verdict: wall
-  class: "B3 kernel trampoline (raw jalr $t2, $ra saved to a global)"
-  date: 2026-07-10
+  class: "frameless non-leaf: any call reserves 16-byte REG_PARM_STACK_SPACE (addiu sp,-16)"
+  date: 2026-10-15
+  note: "global $31 register var drops the ra save and pinned $t2/$t1 reproduce the B0 jalr + loop (15/26); the frame alloc is unavoidable in C"
 longjmp:
-  verdict: wall
-  class: "PSY-Q runtime primitive, not compilable C"
-  date: 2026-07-23
+  verdict: matched
+  class: "ex-wall runtime primitive: file-scope register vars for ra/gp/sp/fp/s0-s7 + two empty asms pin the v0 move"
+  date: 2026-10-15
 func_8005E804:
   verdict: parked
   class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
