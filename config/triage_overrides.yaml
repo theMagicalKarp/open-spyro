@@ -112,13 +112,13 @@ func_8005E680:
 
 # --- actor waypoint-follow step (2026-07-24-1 session) ---
 func_80017294:
-  verdict: wall
-  class: "GTE-neighbor epilogue fragment (jr ra; srl v0,t0,12)"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
+  date: 2026-10-15
 func_80017A9C:
-  verdict: wall
-  class: "GTE-neighbor epilogue fragment"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
+  date: 2026-10-15
 func_800229E8:
   verdict: wall
   class: "handwritten register-restore blob"
