@@ -5737,3 +5737,13 @@ func_80017C84:
   verdict: wall
   class: "B6 signed add (gcc 2.7.2 only emits addu)"
   date: 2026-10-15
+TickSpyroAttackEffects_2026_10_15:
+  verdict: parked
+  class: "F7 slot hole (unchanged 10)"
+  date: 2026-10-15
+  note: "Explicit BLKmode `int sl[6]` for empty/sfxDone puts every slot right (0x58/0x60/0x70) but the counters become ordinary pseudos (v0, 19 diffs); a $8 pin to recover the reload-reg shape makes order_regs_for_reload penalise t0 (regs_explicitly_used) so all spill reloads move to t1 (21). Memory-array route closed."
+IntegrateSpyroMotionForSubstep_2026_10_15:
+  verdict: parked
+  class: "multi-knot: ~20 small allocation/schedule ties left (case 30 s0/s1, case 26 address order, bias a3, particle fnptr t1)"
+  date: 2026-10-15
+  note: "407 -> 41 aligned mismatches (corrected scorer: objdump '...' zero-run collapse had skewed score2.py). Main levers: hard-reg pins in case 15, dead $9 reference to steer reload to t2, case-scope p, SPY[] constant addresses for cse folding. Full lever list + residue map in the .wip header."
