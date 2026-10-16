@@ -240,30 +240,40 @@ static inline int *Opaque(int *p) {
     }                                                                          \
   }
 
-/* PARKED 2026-10-16 -- 18 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
-   reloc-masked; 407 -> 41 on 2026-10-15). Levers that got it here:
-   case-15 subcase-0 pins (w $20, nx $17, sp $21); a dead `$9` register
-   reference at the function end (order_regs_for_reload then prefers t2 for
-   the mflo reloads, as the original); case-scope `p` shared by subcases 1/2/10
-   and both PITCH_TOWARD_TURN sites; tail pins mix/k/ap; inline
-   LookupCosine/LookupSine calls in the stick block; separate early pointers
-   (i = 0, p60 = v60) for the tail loop preheader; fresh temps for
-   read-before-store orderings; SPY[] constant addresses in subcase 10;
-   `-g_nSpyroBodyYawStep * 8` negate-first; a barrier after the
-   SPEED_FROM_DROP_T store. 2026-10-16: an asm USE of a pointer after its last
-   call puts it in an s-reg like the original (case 30 carry/vel; case 26
-   vel IS obj2 -- one variable, A402 -- pinned $19, barrier before its
-   assignment); $6-pinned OPAQUE held bases in cases 1/3 (case 3 addresses
-   the velocity off the airborne base); Opaque(vel) as AddVector's a0 in
-   case 10; OpaqueInt(side * 20) >> 7 stops combine folding to (x*5)>>5;
-   the stick-block glide-speed approach as an explicit $5-pinned base +
-   `tg = t[0]` local; OPAQUE(fwd) drops the extra move. Left (all named,
-   each one perturbs global alloc by ~50 when touched with a new pseudo):
-   subcase-1 `(pitch + p) & 0xFFF` lands in a1 (p's reg) not v0; particle
-   fn pointer load order + t1 (sched + alloc); bias in a3 not v1; k += 0x5B
-   before the arg moves (sched2 luid tie, every source position gives the
-   same order); fwd subu into s0 instead of v0 (pin + OPAQUE combine); case
-   26 `addiu s0,sp,0xA0` scheduled after the s1 la (sched2 tie). */
+/* PARKED 2026-10-16 -- 11 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
+   reloc-masked; 407 -> 41 on 2026-10-15, 41 -> 18 -> 11 on 2026-10-16).
+   Levers that got it here: case-15 subcase-0 pins (w $20, nx $17, sp $21);
+   dead `$9` and `$18` register references at the function end (the `$9`
+   one steers reload's mflo regs; the `$18` one puts s2 in global.c's
+   regs_used_so_far so pass 0 still hands it out once `k` is a pseudo);
+   case-scope `p` shared by subcases 1/2/10 and both PITCH_TOWARD_TURN sites,
+   kept alive across the floor-reference load by a volatile use in the
+   `x < 0` arm (the original's p conflicts with a0 there); `k` a plain
+   pseudo bumped AFTER the spawn call (sched1 lets a call-crossing pseudo's
+   add move up past the call, so it lands after the arg moves; a hard-reg
+   `k` gets an anti-dep on the call and stays put); per-arm `b` temps for
+   the spawn bias (a single `bias` merges n's a3 preference via
+   expand_preferences); inline LookupCosine/LookupSine calls in the stick
+   block; separate early pointers (i = 0, p60 = v60) for the tail loop
+   preheader; fresh temps for read-before-store orderings; SPY[] constant
+   addresses in subcase 10; `-g_nSpyroBodyYawStep * 8` negate-first; a
+   barrier after the SPEED_FROM_DROP_T store; asm uses after the last call
+   for s-reg pointers (case 30 carry/vel; case 26 vel IS obj2, pinned $19);
+   $6-pinned OPAQUE held bases in cases 1/3; Opaque(vel) in case 10;
+   OpaqueInt(side * 20) >> 7; the $5-pinned glide-speed base. Left (3 knots):
+   - 0x1B particle spawn: the original loads the fn pointer into t1 early
+     (right after the ground-height load); ours sinks it next to the jalr in
+     both schedulers (load "launch" + LUID tie) and local-alloc reuses t0.
+     Stack stores never alias a symbol load in sched.c (CONSTANT_P early-out),
+     a $9 pin perturbs reload, OPAQUE perturbs global alloc.
+   - stick block `fwd`: the original computes the subtraction in v0 and
+     shifts into s0. Pinned $16, local-alloc's combine_regs suggests s0 for
+     the subu temp (F18). Unpinned, fwd only conflicts with v0 + one allocno
+     and global.c gives it v1. Needs an s0 preference/conflict source.
+   - case 26: `addiu s0,sp,0xA0` + `a0 = s0` precede the obj-base la in the
+     original; ours has the la first. sched2 tie at priority 13 broken by
+     LUID, and sched1 gives the la priority 2 (the a0 move inherits 13 from
+     its anti-dep on the LookupSine call). */
 /* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
    speed and velocity per state, the glide flight model, then the 1/64
    position accumulator and the persistent byte euler angles. */
@@ -775,11 +785,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     if (g_nSpyroFallTrackingFlag != 0) {
       int moving;
-      int bias;
       int n;
       register int mix asm("$20");
       int i;
-      register int k asm("$18");
+      int k;
       register unsigned char *ap asm("$19");
       int n0;
       int *p70;
@@ -983,10 +992,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (p < -0x10) {
           p = -0x10;
         }
-        p = (SPY[SPY_PITCH] + p) & 0xFFF;
         x = g_nSpyroFloorReferenceZ - D_80078A60;
-        SPY[SPY_PITCH] = p;
+        SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
         if (x < 0) {
+          __asm__ volatile("" : : "r"(p));
           g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
         } else {
           g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
@@ -1210,12 +1219,14 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
         moving = 1;
       }
-      bias = moving - 1;
       if (g_nSpyroState == 0x20) {
-        bias = moving - 3;
-        n = (g_nSpyroMotionSpeed >> 11) - bias;
+        int b = moving - 3;
+
+        n = (g_nSpyroMotionSpeed >> 11) - b;
       } else {
-        n = (g_nSpyroMotionSpeed >> 11) - bias;
+        int b = moving - 1;
+
+        n = (g_nSpyroMotionSpeed >> 11) - b;
       }
       if (n <= 0) {
         n = 1;
@@ -1241,8 +1252,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(p70, (int *)(ap + 0xE8));
         RShiftVector3(p70, 6);
         AddVector(p60, p60, p70);
-        k += 0x5B;
         PARTICLE_SPAWN(1, 0x1A, p60, n);
+        k += 0x5B;
       }
     } else {
       int a;
@@ -1768,5 +1779,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     register int hr asm("$9");
 
     __asm__ volatile("" : "=r"(hr));
+  }
+  {
+    register int hs asm("$18");
+
+    __asm__ volatile("" : "=r"(hs));
   }
 }
