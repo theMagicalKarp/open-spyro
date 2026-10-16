@@ -240,8 +240,8 @@ static inline int *Opaque(int *p) {
     }                                                                          \
   }
 
-/* PARKED 2026-10-16 -- 11 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
-   reloc-masked; 407 -> 41 on 2026-10-15, 41 -> 18 -> 11 on 2026-10-16).
+/* PARKED 2026-10-16 -- 7 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
+   reloc-masked; 407 -> 41 on 2026-10-15, 41 -> 18 -> 7 on 2026-10-16).
    Levers that got it here: case-15 subcase-0 pins (w $20, nx $17, sp $21);
    dead `$9` and `$18` register references at the function end (the `$9`
    one steers reload's mflo regs; the `$18` one puts s2 in global.c's
@@ -260,7 +260,10 @@ static inline int *Opaque(int *p) {
    barrier after the SPEED_FROM_DROP_T store; asm uses after the last call
    for s-reg pointers (case 30 carry/vel; case 26 vel IS obj2, pinned $19);
    $6-pinned OPAQUE held bases in cases 1/3; Opaque(vel) in case 10;
-   OpaqueInt(side * 20) >> 7; the $5-pinned glide-speed base. Left (3 knots):
+   OpaqueInt(side * 20) >> 7; the $5-pinned glide-speed base; case 26's
+   actor base as a fresh single-set `ob = Opaque(...)` (birthing_insn_p
+   boosts it in sched1, so its la lands after the `a0 = &vA0` move).
+   Left (2 knots):
    - 0x1B particle spawn: the original loads the fn pointer into t1 early
      (right after the ground-height load); ours sinks it next to the jalr in
      both schedulers (load "launch" + LUID tie) and local-alloc reuses t0.
@@ -269,11 +272,7 @@ static inline int *Opaque(int *p) {
    - stick block `fwd`: the original computes the subtraction in v0 and
      shifts into s0. Pinned $16, local-alloc's combine_regs suggests s0 for
      the subu temp (F18). Unpinned, fwd only conflicts with v0 + one allocno
-     and global.c gives it v1. Needs an s0 preference/conflict source.
-   - case 26: `addiu s0,sp,0xA0` + `a0 = s0` precede the obj-base la in the
-     original; ours has the la first. sched2 tie at priority 13 broken by
-     LUID, and sched1 gives the la priority 2 (the a0 move inherits 13 from
-     its anti-dep on the LookupSine call). */
+     and global.c gives it v1. Needs an s0 preference/conflict source. */
 /* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
    speed and velocity per state, the glide flight model, then the 1/64
    position accumulator and the persistent byte euler angles. */
@@ -1603,6 +1602,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   }
   case 26: {
     int *obj;
+    int *ob;
     register int *obj2 asm("$19");
     int dist;
     int ang;
@@ -1638,22 +1638,21 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       int t = LookupSine(a);
       int *q;
 
-      obj = &SPY[SPY_SCRIPTED_ACTOR];
-      OPAQUE(obj);
-      q = ((int **)obj)[0] + 3;
+      ob = Opaque(&SPY[SPY_SCRIPTED_ACTOR]);
+      q = ((int **)ob)[0] + 3;
       vA0[1] = (dist * t) >> 12;
       AddVector(vA0, vA0, q);
     }
-    SubtractVector(vA0, vA0, obj - SPY_SCRIPTED_ACTOR);
+    SubtractVector(vA0, vA0, ob - SPY_SCRIPTED_ACTOR);
     vA0[2] = 0;
     LShiftVector3(vA0, 6);
     __asm__ volatile("");
-    obj2 = obj + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
+    obj2 = ob + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
     CopyVector(obj2, vA0);
     __asm__ volatile("" : : "r"(obj2));
     g_nSpyroBodyYaw = (g_nSpyroBodyYaw + dt) & 0xFFF;
     if (g_nSpyroCliffEdgeHint != 0) {
-      obj[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
+      ob[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
     } else {
       AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
     }
