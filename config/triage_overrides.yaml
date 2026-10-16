@@ -112,29 +112,31 @@ func_8005E680:
 
 # --- actor waypoint-follow step (2026-07-24-1 session) ---
 func_80017294:
-  verdict: wall
-  class: "GTE-neighbor epilogue fragment (jr ra; srl v0,t0,12)"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
+  date: 2026-10-15
 func_80017A9C:
-  verdict: wall
-  class: "GTE-neighbor epilogue fragment"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
+  date: 2026-10-15
 func_800229E8:
-  verdict: wall
-  class: "handwritten register-restore blob"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall register-restore fragment: file-scope register vars (A411) + incoming $at/$v0 seeded by empty asm + opaque $at base"
+  date: 2026-10-16
 setjmp:
-  verdict: wall
-  class: "PSY-Q runtime primitive, not compilable C"
-  date: 2026-07-23
+  verdict: matched
+  class: "ex-wall runtime primitive: file-scope register vars for ra/gp/sp/fp/s0-s7 + two empty asms pin the v0 move"
+  date: 2026-10-15
 __do_global_dtors:
   verdict: wall
   class: "SN CRT prebuilt object ($t0 scratch, no arg-save area)"
-  date: 2026-07-17
+  date: 2026-10-15
+  note: "re-screened with register-asm levers: 16-byte frame with s0 at 4 (no arg area) and flag load before the prologue are non-gcc; still wall"
 __main:
   verdict: wall
   class: "SN CRT prebuilt object"
-  date: 2026-07-17
+  date: 2026-10-15
+  note: "re-screened with register-asm levers: 16-byte frame with s0 at 4 (no arg area) and flag load before the prologue are non-gcc; still wall"
 
 # --- Parked tie classes with no .c.wip on disk (residue documented in cookbook §F) ---
 UpdateCameraEulerAngles:
@@ -229,12 +231,13 @@ ResetCallback:
   date: 2026-07-11
 FUN_80062648:
   verdict: wall
-  class: "B3 kernel trampoline (raw jalr $t2, $ra saved to a global)"
-  date: 2026-07-10
+  class: "frameless non-leaf: any call reserves 16-byte REG_PARM_STACK_SPACE (addiu sp,-16)"
+  date: 2026-10-15
+  note: "global $31 register var drops the ra save and pinned $t2/$t1 reproduce the B0 jalr + loop (15/26); the frame alloc is unavoidable in C"
 longjmp:
-  verdict: wall
-  class: "PSY-Q runtime primitive, not compilable C"
-  date: 2026-07-23
+  verdict: matched
+  class: "ex-wall runtime primitive: file-scope register vars for ra/gp/sp/fp/s0-s7 + two empty asms pin the v0 move"
+  date: 2026-10-15
 func_8005E804:
   verdict: parked
   class: "F1 arg copy-up: local-alloc must give a0 to the DICR value temp, not the shift amount (31/42, length-exact; wip carries the length + OR-grouping levers)"
@@ -254,10 +257,9 @@ BuildTextSprites:
   date: 2026-07-23
   note: "81.5% LENGTH-EXACT (168/168). .c.wip parked. Sibling of BuildTextSpriteChain. param_1->s1 fixed via shared pen store; s0/s2 pair is a pure live_length tie (equal 6 refs). int-ch classification reload REQUIRED (A115). Permuter candidate (§E main recipe)."
 AddPrimToOT:
-  verdict: wall
-  class: "B6 handwritten ($at-as-data: lw $at then sh/sb through it)"
-  date: 2026-07-23
-  note: "0x800168dc, 56b. Loads g_pOtActiveDepthSlot deref into $at and stores through it; gcc reserves $at for the assembler. Not compilable C."
+  verdict: matched
+  class: "ex-wall $at-as-data: $1/$3 register locals + opaque base + computed-goto mid-function jr ra via file-scope $31"
+  date: 2026-10-16
 
 # --- DMA IRQ dispatcher (2026-07-24 session) ---
 func_8003A420:
@@ -5692,3 +5694,85 @@ AdvanceSpyroPhysics_2026_10_14_2:
   class: "frame -8 (orig spills i/steps + two more slots); pad[2] inert"
   date: 2026-10-14
   note: "pad[2] at every declaration position: frame matches but 707 linked unchanged, aligned 140 -> 145+."
+
+# --- 2026-10-15: "handwritten" ($at-as-data) re-screen with register-asm pins ---
+CopyVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+SVectorToVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+VectorToSVector:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+LShiftVector3:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+RShiftVector3:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+func_80017BFC:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+func_80017C24:
+  verdict: matched
+  class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
+  date: 2026-10-15
+AddVector:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-15
+SubtractVector:
+  verdict: wall
+  class: "B6 signed sub (gcc 2.7.2 only emits subu)"
+  date: 2026-10-15
+func_80017C84:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-15
+TickSpyroAttackEffects_2026_10_15:
+  verdict: parked
+  class: "F7 slot hole (unchanged 10)"
+  date: 2026-10-15
+  note: "Explicit BLKmode `int sl[6]` for empty/sfxDone puts every slot right (0x58/0x60/0x70) but the counters become ordinary pseudos (v0, 19 diffs); a $8 pin to recover the reload-reg shape makes order_regs_for_reload penalise t0 (regs_explicitly_used) so all spill reloads move to t1 (21). Memory-array route closed."
+IntegrateSpyroMotionForSubstep_2026_10_15:
+  verdict: parked
+  class: "multi-knot: ~20 small allocation/schedule ties left (case 30 s0/s1, case 26 address order, bias a3, particle fnptr t1)"
+  date: 2026-10-15
+  note: "407 -> 41 aligned mismatches (corrected scorer: objdump '...' zero-run collapse had skewed score2.py). Main levers: hard-reg pins in case 15, dead $9 reference to steer reload to t2, case-scope p, SPY[] constant addresses for cse folding. Full lever list + residue map in the .wip header."
+IntegrateSpyroMotionForSubstep_2026_10_16:
+  verdict: parked
+  class: "multi-knot, 18 left, LENGTH-EXACT: 3 global-alloc reg choices (subcase-1 pitch temp a1, particle fn t1, bias a3) + 2 sched2 luid ties (k += 0x5B, case 26 vA0 addr) + fwd subu dest"
+  date: 2026-10-16
+  note: "41 -> 18 (3807/3807). Levers: asm USE after the last call forces s-reg pointers (case 30/26, A417), obj2==vel one variable + $19 pin + barrier, $6/$5-pinned OPAQUE held bases (cases 1/3, stick block), Opaque(vel) for case-10 AddVector a0, OpaqueInt(side*20)>>7 (A418), OPAQUE(fwd). Every remaining knot costs ~50 elsewhere when fixed with a new pseudo or a pin on p (big-function perturbation rule); .wip header maps each."
+TickSpyroAttackEffects_2026_10_16:
+  verdict: parked
+  class: "F7 slot hole (unchanged 10)"
+  date: 2026-10-16
+  note: "Tested the % 24 highpart-spill hypothesis: a volatile `=h` reservation of HI across the highpart makes reload ICE ('fixed or forbidden register was spilled'); non-volatile, sched1 sinks the reservation below the mult and the highpart keeps HI. The highpart route cannot produce a spilled HI pseudo; k (LO) remains the only candidate."
+AdvanceSpyroPhysics_2026_10_16:
+  verdict: parked
+  class: "loop.c hoist / global-alloc spill choice (unchanged 144)"
+  date: 2026-10-16
+  note: "Re-scored only (144 aligned, frame 0xA0 vs 0x98); residue is spread over ~60 hunks, not a harvest target this session."
+func_credits_8007AA50_2026_10_16:
+  verdict: parked
+  class: "unchanged 252 masked over 123 regions"
+  date: 2026-10-16
+  note: "Skipped: too diffuse for a harvest session (not 1-3 insn ties)."
+__main_2026_10_16:
+  verdict: wall
+  class: "SN CRT: jalr makes gcc build its own 32-byte frame"
+  date: 2026-10-16
+  note: "Re-screened after A415/A416: file-scope register vars can't avoid the frame because the ctor loop calls through jalr; a computed goto would emit jr, not jalr."
+AddPrimToOTSlot_2026_10_16:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-16
+  note: "Sibling of AddPrimToOT (matched via A415) but its index add is a trapping `add`."
