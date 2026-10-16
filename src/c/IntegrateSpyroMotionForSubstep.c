@@ -201,7 +201,7 @@ static inline int *Opaque(int *p) {
       v = (base) + IntegerSqrt(f << 13);                                       \
     }                                                                          \
     g_nSpyroMotionSpeed = v;                                                   \
-    __asm__ volatile("");                                                     \
+    __asm__ volatile("");                                                      \
   }
 
 /* Ease the pitch toward a yaw-rate-dependent bank. */
@@ -240,39 +240,16 @@ static inline int *Opaque(int *p) {
     }                                                                          \
   }
 
-/* PARKED 2026-10-16 -- 7 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
-   reloc-masked; 407 -> 41 on 2026-10-15, 41 -> 18 -> 7 on 2026-10-16).
-   Levers that got it here: case-15 subcase-0 pins (w $20, nx $17, sp $21);
-   dead `$9` and `$18` register references at the function end (the `$9`
-   one steers reload's mflo regs; the `$18` one puts s2 in global.c's
-   regs_used_so_far so pass 0 still hands it out once `k` is a pseudo);
-   case-scope `p` shared by subcases 1/2/10 and both PITCH_TOWARD_TURN sites,
-   kept alive across the floor-reference load by a volatile use in the
-   `x < 0` arm (the original's p conflicts with a0 there); `k` a plain
-   pseudo bumped AFTER the spawn call (sched1 lets a call-crossing pseudo's
-   add move up past the call, so it lands after the arg moves; a hard-reg
-   `k` gets an anti-dep on the call and stays put); per-arm `b` temps for
-   the spawn bias (a single `bias` merges n's a3 preference via
-   expand_preferences); inline LookupCosine/LookupSine calls in the stick
-   block; separate early pointers (i = 0, p60 = v60) for the tail loop
-   preheader; fresh temps for read-before-store orderings; SPY[] constant
-   addresses in subcase 10; `-g_nSpyroBodyYawStep * 8` negate-first; a
-   barrier after the SPEED_FROM_DROP_T store; asm uses after the last call
-   for s-reg pointers (case 30 carry/vel; case 26 vel IS obj2, pinned $19);
-   $6-pinned OPAQUE held bases in cases 1/3; Opaque(vel) in case 10;
-   OpaqueInt(side * 20) >> 7; the $5-pinned glide-speed base; case 26's
-   actor base as a fresh single-set `ob = Opaque(...)` (birthing_insn_p
-   boosts it in sched1, so its la lands after the `a0 = &vA0` move).
-   Left (2 knots):
-   - 0x1B particle spawn: the original loads the fn pointer into t1 early
-     (right after the ground-height load); ours sinks it next to the jalr in
-     both schedulers (load "launch" + LUID tie) and local-alloc reuses t0.
-     Stack stores never alias a symbol load in sched.c (CONSTANT_P early-out),
-     a $9 pin perturbs reload, OPAQUE perturbs global alloc.
-   - stick block `fwd`: the original computes the subtraction in v0 and
-     shifts into s0. Pinned $16, local-alloc's combine_regs suggests s0 for
-     the subu temp (F18). Unpinned, fwd only conflicts with v0 + one allocno
-     and global.c gives it v1. Needs an s0 preference/conflict source. */
+/* Source-shape notes (each one is load-bearing for the byte match):
+   - case-15 subcase-0 pins (w $20, nx $17, sp $21), `$5`/`$6`-pinned held
+     bases, and the `$9`/`$18` dead register references at the end steer
+     global.c and reload toward the original's registers;
+   - `p` is one case-scope local shared by subcases 1/2/10 and both
+     PITCH_TOWARD_TURN sites, and `p60` doubles as the stick block's forward
+     component (both keep their original call-crossing allocnos);
+   - `k` is bumped after the spawn call so sched1 hoists it past the call;
+   - case 26's actor base is a fresh single-set `ob` so sched1 boosts its la;
+   - the 0x1B spawn writes v50[2] last so the fn pointer lands in t1. */
 /* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
    speed and velocity per state, the glide flight model, then the 1/64
    position accumulator and the persistent byte euler angles. */
@@ -469,7 +446,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (ab[0] != 0) {
         g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
       } else {
-        AddVector(ab + (SPY_VELOCITY - SPY_AIRBORNE), ab + (SPY_VELOCITY - SPY_AIRBORNE), D_80078B34);
+        AddVector(ab + (SPY_VELOCITY - SPY_AIRBORNE),
+                  ab + (SPY_VELOCITY - SPY_AIRBORNE), D_80078B34);
       }
     }
     break;
@@ -780,6 +758,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int x;
     int y;
     int p;
+    int *p60;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     if (g_nSpyroFallTrackingFlag != 0) {
@@ -791,7 +770,6 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       register unsigned char *ap asm("$19");
       int n0;
       int *p70;
-      int *p60;
 
       switch (g_nSpyroStateFlags) {
       case 0: {
@@ -1210,8 +1188,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(v50, g_anSpyroVelocityFp6);
         RShiftVector3(v50, 6);
         v50[0] += g_anSpyroWorldPos[0];
-        v50[2] = g_nSpyroGroundHeightZ;
         v50[1] += g_nSpyroWorldPosY;
+        v50[2] =
+            g_nSpyroGroundHeightZ; /* last: keeps t0 live past the fn load */
         PARTICLE_SPAWN(1, 0x1B, v50, n0);
       }
       moving = 0;
@@ -1256,17 +1235,16 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
     } else {
       int a;
-      register int fwd asm("$16");
       int side;
       int c;
 
       READ_STICK(x, y);
       a = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
       side = (-x * LookupCosine(a) - y * LookupSine(a)) >> 12;
-      fwd = (y * LookupCosine(a) - x * LookupSine(a)) >> 12;
-      OPAQUE(fwd);
-      if (fwd < 0) {
-        g_nSpyroSpeedTarget = ((fwd * 0x1180) >> 7) + 0x1900;
+      /* Forward stick component; reuses p60's register-sized slot. */
+      p60 = (int *)((y * LookupCosine(a) - x * LookupSine(a)) >> 12);
+      if (((int)p60) < 0) {
+        g_nSpyroSpeedTarget = ((((int)p60) * 0x1180) >> 7) + 0x1900;
       } else {
         g_nSpyroSpeedTarget = 0x1900;
       }
@@ -1772,8 +1750,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   }
   AddVector(&SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY]);
   g_abSpyroPersistentEuler[0] = g_nSpyroBodyPitch >> 4;
-  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
+  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
   {
     register int hr asm("$9");
 
