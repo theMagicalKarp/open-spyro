@@ -8,8 +8,8 @@
    registers are file-scope register variables (setjmp/longjmp recipe, A411),
    so gcc writes them directly with no prologue; the incoming $at/$v0 are
    local register variables seeded by an empty asm (A410), and $at is then
-   reused as the save-area base through an asm-opaque copy (A383). The trailing empty asm keeps reorg out of
-   the return's delay slot. */
+   reused as the save-area base through an asm-opaque copy (A383). The trailing
+   empty asm keeps reorg out of the return's delay slot. */
 register int rr_ra asm("$31");
 register int rr_gp asm("$28");
 register int rr_sp asm("$29");
