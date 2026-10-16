@@ -5495,9 +5495,9 @@ UpdateSpyroStateBehavior:
   note: "Per-site calls keep duplicated li/j blocks; opaque held base (case 18), volatile pad reload (44), a0 asm reservation blocks a reorg steal (case 2)."
 IntegrateSpyroMotionForSubstep:
   verdict: parked
-  class: "F-mixed: 3 global-alloc reg choices (subcase-1 pitch temp a1, particle fn t1, bias a3) + 2 sched2 luid ties (k += 0x5B, case 26 vA0 addr) + fwd subu dest"
-  date: 2026-10-16
-  note: "src/c/IntegrateSpyroMotionForSubstep.c.wip: 18 aligned mismatches, LENGTH-EXACT 3807/3807 (537 -> 407 -> 41 -> 18). Every remaining knot perturbs global alloc by ~50 when a new pseudo is introduced; the .wip header lists each one. 2026-10-16 levers: asm USE after the last call forces an s-reg (case 30/26), obj2==vel one variable, $6/$5-pinned OPAQUE held bases, OpaqueInt(side*20)>>7."
+  class: "global-alloc priority order in case 15 (y/base vs nx s-reg choice) + reload spill-reg t1/t2"
+  date: 2026-10-10
+  note: "src/c/IntegrateSpyroMotionForSubstep.c.wip: full decode, 3807 insns, 537 masked mismatches over 15 cases (case 15 = 408). Case 15: orig nx=s1 before y/SPY-base=s3; ours gives y s1. A subcase-local y fixes nx/w/base but drops y to a1 (orig y crosses a call, so it must share a pseudo with a cross-call value). Small knots: case 30 carry/vel s0/s1, cases 1/3 pointer in a2, case 5 l/k merge in a2, case 26 obj2 copy scheduling, cases 20/44 lui s0 before speed store, case 24 (20). Wins: per-site ChangeSpyroState, OPAQUE in-place macro, case-scope shared x/y temps (744 -> 537), lo=ramp[0] before the store, -X*300 negate-first."
 sprintf_2026_10_13:
   verdict: matched
   class: "cross-jumped dead arms: identical `l` (long==int) arms merge only post-reload"
@@ -5746,3 +5746,33 @@ IntegrateSpyroMotionForSubstep_2026_10_15:
   class: "multi-knot: ~20 small allocation/schedule ties left (case 30 s0/s1, case 26 address order, bias a3, particle fnptr t1)"
   date: 2026-10-15
   note: "407 -> 41 aligned mismatches (corrected scorer: objdump '...' zero-run collapse had skewed score2.py). Main levers: hard-reg pins in case 15, dead $9 reference to steer reload to t2, case-scope p, SPY[] constant addresses for cse folding. Full lever list + residue map in the .wip header."
+IntegrateSpyroMotionForSubstep_2026_10_16:
+  verdict: parked
+  class: "multi-knot, 18 left, LENGTH-EXACT: 3 global-alloc reg choices (subcase-1 pitch temp a1, particle fn t1, bias a3) + 2 sched2 luid ties (k += 0x5B, case 26 vA0 addr) + fwd subu dest"
+  date: 2026-10-16
+  note: "41 -> 18 (3807/3807). Levers: asm USE after the last call forces s-reg pointers (case 30/26, A417), obj2==vel one variable + $19 pin + barrier, $6/$5-pinned OPAQUE held bases (cases 1/3, stick block), Opaque(vel) for case-10 AddVector a0, OpaqueInt(side*20)>>7 (A418), OPAQUE(fwd). Every remaining knot costs ~50 elsewhere when fixed with a new pseudo or a pin on p (big-function perturbation rule); .wip header maps each."
+TickSpyroAttackEffects_2026_10_16:
+  verdict: parked
+  class: "F7 slot hole (unchanged 10)"
+  date: 2026-10-16
+  note: "Tested the % 24 highpart-spill hypothesis: a volatile `=h` reservation of HI across the highpart makes reload ICE ('fixed or forbidden register was spilled'); non-volatile, sched1 sinks the reservation below the mult and the highpart keeps HI. The highpart route cannot produce a spilled HI pseudo; k (LO) remains the only candidate."
+AdvanceSpyroPhysics_2026_10_16:
+  verdict: parked
+  class: "loop.c hoist / global-alloc spill choice (unchanged 144)"
+  date: 2026-10-16
+  note: "Re-scored only (144 aligned, frame 0xA0 vs 0x98); residue is spread over ~60 hunks, not a harvest target this session."
+func_credits_8007AA50_2026_10_16:
+  verdict: parked
+  class: "unchanged 252 masked over 123 regions"
+  date: 2026-10-16
+  note: "Skipped: too diffuse for a harvest session (not 1-3 insn ties)."
+__main_2026_10_16:
+  verdict: wall
+  class: "SN CRT: jalr makes gcc build its own 32-byte frame"
+  date: 2026-10-16
+  note: "Re-screened after A415/A416: file-scope register vars can't avoid the frame because the ctor loop calls through jalr; a computed goto would emit jr, not jalr."
+AddPrimToOTSlot_2026_10_16:
+  verdict: wall
+  class: "B6 signed add (gcc 2.7.2 only emits addu)"
+  date: 2026-10-16
+  note: "Sibling of AddPrimToOT (matched via A415) but its index add is a trapping `add`."
