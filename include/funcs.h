@@ -103,7 +103,7 @@ undefined AddPrimToOTSlot(int param_1, int param_2);
 
 /* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined AddPrimToOT(int param_1);
+void AddPrimToOT(unsigned int prim);
 
 void FillWord(void *dst, uint value, int byte_count);
 
