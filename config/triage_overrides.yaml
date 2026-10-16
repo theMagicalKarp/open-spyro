@@ -120,9 +120,9 @@ func_80017A9C:
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15
 func_800229E8:
-  verdict: wall
-  class: "handwritten register-restore blob"
-  date: 2026-07-08
+  verdict: matched
+  class: "ex-wall register-restore fragment: file-scope register vars (A411) + incoming $at/$v0 seeded by empty asm + opaque $at base"
+  date: 2026-10-16
 setjmp:
   verdict: matched
   class: "ex-wall runtime primitive: file-scope register vars for ra/gp/sp/fp/s0-s7 + two empty asms pin the v0 move"
