@@ -201,7 +201,7 @@ static inline int *Opaque(int *p) {
       v = (base) + IntegerSqrt(f << 13);                                       \
     }                                                                          \
     g_nSpyroMotionSpeed = v;                                                   \
-    __asm__ volatile("");                                                     \
+    __asm__ volatile("");                                                      \
   }
 
 /* Ease the pitch toward a yaw-rate-dependent bank. */
@@ -240,30 +240,16 @@ static inline int *Opaque(int *p) {
     }                                                                          \
   }
 
-/* PARKED 2026-10-16 -- 18 aligned mismatches, LENGTH-EXACT 3807/3807 (difflib,
-   reloc-masked; 407 -> 41 on 2026-10-15). Levers that got it here:
-   case-15 subcase-0 pins (w $20, nx $17, sp $21); a dead `$9` register
-   reference at the function end (order_regs_for_reload then prefers t2 for
-   the mflo reloads, as the original); case-scope `p` shared by subcases 1/2/10
-   and both PITCH_TOWARD_TURN sites; tail pins mix/k/ap; inline
-   LookupCosine/LookupSine calls in the stick block; separate early pointers
-   (i = 0, p60 = v60) for the tail loop preheader; fresh temps for
-   read-before-store orderings; SPY[] constant addresses in subcase 10;
-   `-g_nSpyroBodyYawStep * 8` negate-first; a barrier after the
-   SPEED_FROM_DROP_T store. 2026-10-16: an asm USE of a pointer after its last
-   call puts it in an s-reg like the original (case 30 carry/vel; case 26
-   vel IS obj2 -- one variable, A402 -- pinned $19, barrier before its
-   assignment); $6-pinned OPAQUE held bases in cases 1/3 (case 3 addresses
-   the velocity off the airborne base); Opaque(vel) as AddVector's a0 in
-   case 10; OpaqueInt(side * 20) >> 7 stops combine folding to (x*5)>>5;
-   the stick-block glide-speed approach as an explicit $5-pinned base +
-   `tg = t[0]` local; OPAQUE(fwd) drops the extra move. Left (all named,
-   each one perturbs global alloc by ~50 when touched with a new pseudo):
-   subcase-1 `(pitch + p) & 0xFFF` lands in a1 (p's reg) not v0; particle
-   fn pointer load order + t1 (sched + alloc); bias in a3 not v1; k += 0x5B
-   before the arg moves (sched2 luid tie, every source position gives the
-   same order); fwd subu into s0 instead of v0 (pin + OPAQUE combine); case
-   26 `addiu s0,sp,0xA0` scheduled after the s1 la (sched2 tie). */
+/* Source-shape notes (each one is load-bearing for the byte match):
+   - case-15 subcase-0 pins (w $20, nx $17, sp $21), `$5`/`$6`-pinned held
+     bases, and the `$9`/`$18` dead register references at the end steer
+     global.c and reload toward the original's registers;
+   - `p` is one case-scope local shared by subcases 1/2/10 and both
+     PITCH_TOWARD_TURN sites, and `p60` doubles as the stick block's forward
+     component (both keep their original call-crossing allocnos);
+   - `k` is bumped after the spawn call so sched1 hoists it past the call;
+   - case 26's actor base is a fresh single-set `ob` so sched1 boosts its la;
+   - the 0x1B spawn writes v50[2] last so the fn pointer lands in t1. */
 /* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
    speed and velocity per state, the glide flight model, then the 1/64
    position accumulator and the persistent byte euler angles. */
@@ -460,7 +446,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (ab[0] != 0) {
         g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
       } else {
-        AddVector(ab + (SPY_VELOCITY - SPY_AIRBORNE), ab + (SPY_VELOCITY - SPY_AIRBORNE), D_80078B34);
+        AddVector(ab + (SPY_VELOCITY - SPY_AIRBORNE),
+                  ab + (SPY_VELOCITY - SPY_AIRBORNE), D_80078B34);
       }
     }
     break;
@@ -771,19 +758,18 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int x;
     int y;
     int p;
+    int *p60;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     if (g_nSpyroFallTrackingFlag != 0) {
       int moving;
-      int bias;
       int n;
       register int mix asm("$20");
       int i;
-      register int k asm("$18");
+      int k;
       register unsigned char *ap asm("$19");
       int n0;
       int *p70;
-      int *p60;
 
       switch (g_nSpyroStateFlags) {
       case 0: {
@@ -983,10 +969,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (p < -0x10) {
           p = -0x10;
         }
-        p = (SPY[SPY_PITCH] + p) & 0xFFF;
         x = g_nSpyroFloorReferenceZ - D_80078A60;
-        SPY[SPY_PITCH] = p;
+        SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
         if (x < 0) {
+          __asm__ volatile("" : : "r"(p));
           g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
         } else {
           g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
@@ -1202,20 +1188,23 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(v50, g_anSpyroVelocityFp6);
         RShiftVector3(v50, 6);
         v50[0] += g_anSpyroWorldPos[0];
-        v50[2] = g_nSpyroGroundHeightZ;
         v50[1] += g_nSpyroWorldPosY;
+        v50[2] =
+            g_nSpyroGroundHeightZ; /* last: keeps t0 live past the fn load */
         PARTICLE_SPAWN(1, 0x1B, v50, n0);
       }
       moving = 0;
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
         moving = 1;
       }
-      bias = moving - 1;
       if (g_nSpyroState == 0x20) {
-        bias = moving - 3;
-        n = (g_nSpyroMotionSpeed >> 11) - bias;
+        int b = moving - 3;
+
+        n = (g_nSpyroMotionSpeed >> 11) - b;
       } else {
-        n = (g_nSpyroMotionSpeed >> 11) - bias;
+        int b = moving - 1;
+
+        n = (g_nSpyroMotionSpeed >> 11) - b;
       }
       if (n <= 0) {
         n = 1;
@@ -1241,22 +1230,21 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(p70, (int *)(ap + 0xE8));
         RShiftVector3(p70, 6);
         AddVector(p60, p60, p70);
-        k += 0x5B;
         PARTICLE_SPAWN(1, 0x1A, p60, n);
+        k += 0x5B;
       }
     } else {
       int a;
-      register int fwd asm("$16");
       int side;
       int c;
 
       READ_STICK(x, y);
       a = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
       side = (-x * LookupCosine(a) - y * LookupSine(a)) >> 12;
-      fwd = (y * LookupCosine(a) - x * LookupSine(a)) >> 12;
-      OPAQUE(fwd);
-      if (fwd < 0) {
-        g_nSpyroSpeedTarget = ((fwd * 0x1180) >> 7) + 0x1900;
+      /* Forward stick component; reuses p60's register-sized slot. */
+      p60 = (int *)((y * LookupCosine(a) - x * LookupSine(a)) >> 12);
+      if (((int)p60) < 0) {
+        g_nSpyroSpeedTarget = ((((int)p60) * 0x1180) >> 7) + 0x1900;
       } else {
         g_nSpyroSpeedTarget = 0x1900;
       }
@@ -1592,6 +1580,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   }
   case 26: {
     int *obj;
+    int *ob;
     register int *obj2 asm("$19");
     int dist;
     int ang;
@@ -1627,22 +1616,21 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       int t = LookupSine(a);
       int *q;
 
-      obj = &SPY[SPY_SCRIPTED_ACTOR];
-      OPAQUE(obj);
-      q = ((int **)obj)[0] + 3;
+      ob = Opaque(&SPY[SPY_SCRIPTED_ACTOR]);
+      q = ((int **)ob)[0] + 3;
       vA0[1] = (dist * t) >> 12;
       AddVector(vA0, vA0, q);
     }
-    SubtractVector(vA0, vA0, obj - SPY_SCRIPTED_ACTOR);
+    SubtractVector(vA0, vA0, ob - SPY_SCRIPTED_ACTOR);
     vA0[2] = 0;
     LShiftVector3(vA0, 6);
     __asm__ volatile("");
-    obj2 = obj + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
+    obj2 = ob + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
     CopyVector(obj2, vA0);
     __asm__ volatile("" : : "r"(obj2));
     g_nSpyroBodyYaw = (g_nSpyroBodyYaw + dt) & 0xFFF;
     if (g_nSpyroCliffEdgeHint != 0) {
-      obj[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
+      ob[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
     } else {
       AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
     }
@@ -1762,11 +1750,16 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   }
   AddVector(&SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY_FP6], &SPY[SPY_VELOCITY]);
   g_abSpyroPersistentEuler[0] = g_nSpyroBodyPitch >> 4;
-  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
+  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
   {
     register int hr asm("$9");
 
     __asm__ volatile("" : "=r"(hr));
+  }
+  {
+    register int hs asm("$18");
+
+    __asm__ volatile("" : "=r"(hs));
   }
 }
