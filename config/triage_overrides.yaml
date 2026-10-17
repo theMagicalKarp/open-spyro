@@ -5811,3 +5811,8 @@ UpdateHudCounters_2026_10_17_1:
   class: "split computation across a barrier + hard-reg pins steer local-alloc"
   date: 2026-10-17
   note: "Head: q*9 above the A200 do/while(0), `Mod9 = t - q9` below it, bob re-read `idx` first in block 2. q9 pinned $2 (global, so local-alloc sees v0 live and gives idx v1); q pinned $3 + `__asm__(\"\" : : \"r\"(q))` (else q takes q9's v0 suggestion); `__asm__ volatile(\"\")` after the store keeps subu/sw beside the re-read. 7 -> 0, 914 -> 913."
+func_credits_8007AA50_2026_10_17_1:
+  verdict: parked
+  class: "cluster A: movstr scratch qtys skip a2 in the original (unknown a2 occupant across the copy)"
+  date: 2026-10-17
+  note: "112 -> 103 linked via a volatile D_800785E4_v re-read for the setup call's src arg + volatile D_80076C1C + store order. Scratches are local-alloc priority-0 qtys allocated last; original's a3/t0/t1/t2 means a2 is busy across the copy, ours gives v0/a2. Case-4 asm-pin variants (ac/dc/both/lt-before) and arg-4 forms for the 0x80016500 call all worse."
