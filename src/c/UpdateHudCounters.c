@@ -1,132 +1,16 @@
-/* PARKED 2026-10-16 -- 7 masked (161 at session start), 914 vs 913 insns.
- * Solved this session: uchar roll-phase local + FIELD phase store (five
- * roll-in arms); FIELD/FIELDW stores for the gem state-1 phase reset and the
- * hold-timer reset (A426 in-struct exemption); volatile egg-count check (cse
- * re-loads per arm); direct record-byte spin index; asm-opaque `gc` base for
- * the gem cache block (cse2 otherwise folds `-0x1B(s0)` to sym-27); the
- * butterfly loop with `k = n * 8 + 0x60; j = n * 2;` givs of n (loop.c emits
- * giv inits AFTER the hoisted a3/t0, the original's preheader order) and
- * the E2/E3 loads leading each sum.
- * LEFT (all 7): the head bob-phase re-read. The original issues `lui v1; lw
- * v1,BOB` between the mod-9 `addu` and `subu` (no load-delay nop); ours does
- * it after the mod-9 store behind the do/while(0) barrier, +1 insn. Splitting
- * mod-9 across the barrier (`t/9*9` above, `t - q` below) gets the right
- * position but v0 instead of v1 (13).
- */
-/* PARKED 2026-09-07 -- first session on this function; it was never opened
- * before (it is one of the three main functions §B8 names as clean of every
- * wall).  State, measured with the compile-only masked shape diff (§D 2b,
- * registers anchored, immediates masked, difflib-aligned, running offset
- * printed): **912 vs 913 insns, 203 masked mismatches over 89 regions, final
- * offset -1**.  Trajectory this session: 300/110/+18 (first decode, would not
- * link) -> 276/105/-4 (A200 barrier) -> 270 (byte-offset rect walk) -> 231/88
- * (barrier moved to P1) -> 225 (cosine load hoisted) -> **203/89/-1**.
- *
- * IT LINKS.  Linked positional credit is only 244 bytes (61/913 words) because
- * the running offset wanders +-6 through the middle -- §C's positional trap.
- * The next session's objective is the OFFSET PROFILE, not the mismatch count.
- *
- * ---- The five levers that are already in and are load-bearing --------------
- * 1. **A200 barrier position, swept.**  The gem machine reaches five different
- *    globals off ONE base ($a2 = &g_dwHudBobSinePhase, offsets -0x3C/-0x37/
- *    -0x30/-0x1C/0), which is §B-i rule 1 territory: without a cse ebb-break
- *    every nonzero offset folded to `lui $at; sb %lo(sym+off)($at)`.  The
- *    empty `do { } while (0);` restores all 18 register-based accesses.  Its
- *    POSITION is worth 43 masked mismatches: measured at the three legal slots
- *    (after `BOB = nPhase;` / after the 0x1A6 store / after the 0x1A5 store)
- *    it scores **231 / 241 / 274**.  The winner is the earliest one, i.e.
- *    immediately after the offset-0 access that materialises the base.
- * 2. The alias MUST be reached as an incomplete ARRAY with element indices.  A
- *    pointer local seeded from it (`unsigned char *hud = ...Block;`) was
- *    measured at 303 against the array form's 300 -- reload's
- *    `update_equiv_regs` folds through the pointer's REG_EQUIV note, exactly as
- *    A200's condition 1 says.
- * 3. **The butterfly ring walk is a BYTE offset, not a short index** (A179 /
- *    A35).  `g_anHudSpriteRects[k]`/`[k+1]`/`[k+2]`/`[k+3]` with `k += 4` makes
- *    loop.c hand each of the four field accesses its OWN pointer giv (four
- *    `addiu rN,rN,8` per iteration).  Writing them as
- *    `*(short *)((char *)g_anHudSpriteRects + k)` with `k += 8` keeps the
- *    original's single scaled index register and puts the field constant back
- *    in `%lo(sym+K)($at)`.  Worth 6 masked and, more importantly, 10 insns of
- *    positional offset inside the loop.
- * 4. **The roll-out arms need a named decrement carrier** (A164 step 1).
- *    `SYM -= 1; Offset(..., tbl[SYM]);` puts the argument copy in the branch
- *    delay slot and the decrement inside the block; `j = SYM - 1; SYM = j;
- *    Offset(..., tbl[(unsigned char)j]);` puts the DECREMENT in the delay slot,
- *    which is what the original has.  22 masked mismatches across the five
- *    machines, and it took the final offset from -5 to -1.
- * 5. The cosine load is hoisted into `nCos` so it precedes the 0x1A6 store,
- *    which is the original's order (6 masked).
- *
- * ---- 2026-10-04-2: the five roll-out store sites are SOLVED (205 -> 175) --
- * Each roll-out arm now reads `{ unsigned char t = SYM - 1; FIELD(SYM) = t;
- * Offset(..., tbl[t]); }`.  FIELD() stores through a one-member record view,
- * so the byte store is MEM_IN_STRUCT and sched.c true_dependence no longer
- * exempts it from the in-struct `lh tbl[t]` read (A230): it stays above the
- * andi/sll/lh chain.  The block-scoped `unsigned char t` keeps the decrement
- * in place in v0 and in the bnez delay slot (the function-wide `j` went to
- * a3).  Both are load-bearing: plain store + uchar t is 908 insns / 220.
- * Positional credit is unchanged (the offset profile still wanders).
- *
- * ---- (historical) The dominant residue: OUR BYTE-GLOBAL STORES SINK ------
- * ~40 of the 203, and it is the same shape at six sites: the original emits
- * `lui $at; sb rX,%lo(sym)($at)` immediately after the value is computed and
- * BEFORE the `andi/sll/lh` chain that re-reads it (cse having turned the
- * re-read into the `andi`); we emit the whole chain first and the store just
- * above the `jal`.  Sites: the five roll-out arms (orig[222]/[317]/[502]/
- * [704]/[855], each `-3 +1` then `+2` a few insns later) and the
- * `g_abHudIconActorRecords[0x411] += 4` spin at orig[867].
- * Read off §D 2d: sched2 schedules BACKWARD and `schedule_select` picks the
- * largest `potential_hazard` in the first priority group -- a store beats a
- * load beats an ALU op -- so a store that is READY early is placed LAST.
- * Ruled out this session:
- *   - hoisting the decrement above the test with a comma operator
- *     (`} else if (j = SYM - 1, SYM == 0) {`), which was meant to make the
- *     store's operand live-in and drop its priority to 1: **byte-identical**
- *     to the baseline, 203/89 either way.
- *   - `*(volatile unsigned char *)&SYM = j;` at all five sites (A239): does
- *     NOT pin the store (it still lands below the `lh`), and although it makes
- *     the function length-EXACT (913/913, final offset 0) it re-tiles
- *     everything from orig[229] on and the linked positional credit FALLS from
- *     244 to 148 bytes.  Kept out for that reason; try it per-site.
- * The untried probe is the one §D 2d prescribes: a `-dR` (`<in>.i.sched2`)
- * trace of one roll-out block, to see whether the store is losing on priority
- * or on `potential_hazard`.  That is where the next session should start.
- *
- * ---- The other named residues --------------------------------------------
- * R2  ONE EXTRA CALLEE-SAVED REGISTER (2 insns + a whole-function rotation).
- *     We save ra/s3/s2/s1/s0, the original saves ra/s2/s1/s0.  The extra one
- *     holds the level-egg spawn loop's `0x01000000` increment, which loop.c
- *     hoists for us and the original re-materialises inline as
- *     `lui v0,0x100; addu s0,s0,v0` per iteration (the §B10 direction).  The
- *     original pays for that with a stack slot instead: its `vars` is 24 bytes
- *     against our 16, for the same `av[3]`, i.e. one 8-byte reload spill slot
- *     (§C).  So this is a register-PRESSURE difference, not a spelling: the
- *     original has one more live value somewhere than we do.  A245 (separate
- *     counters for the butterfly and spawn loops) is already applied and did
- *     not close it.
- * R3  The head is byte-aligned through orig[25]; what is left is the absolute
- *     re-read `lui v1,%hi(bob); lw v1,%lo(bob)` (orig[26..27]) sitting ABOVE
- *     the 0x1A6 store in the original and below it in ours -- a 4-insn
- *     displacement the barrier at P1 imposes, since the two are then in
- *     different blocks (A200's "source order is the emitted order" corollary).
- * R4  The butterfly loop still emits the two `sh t0` constant stores before the
- *     first computed store (orig[519..546], -12/+10).  Same store-ordering
- *     family as the dominant residue; the four store statements' source order
- *     has NOT been swept (24 orders, ~20 s each).
- *
- * ---- Decode notes (all verified against the asm, not m2c) -----------------
- *  - Switches 1-3 (gems / dragons / lives) are if/else-if LADDERS: the asm
- *    tests 0,1,2,3,4 linearly.  Switches 4-5 (world eggs / level eggs) are real
- *    `switch` statements -- gcc emits `balance_case_nodes`' binary tree
- *    (`beq 1; slti 2; beqz 0; ...`) and, with four cases, no jump table, so
- *    there is no §B8 rodata problem in this function.
- *  - `g_abHudCounterDisplayState` is byte[5] and every roll-phase/timer global
- *    is <= 8 bytes, so they are all sdata cost 1 and fold to absolute unless
- *    an incomplete-array alias is used (A22).  Four new aliases were added to
- *    symbol_addrs.txt for this function; three more already existed.
- *  - The function is void: the epilogue leaves whatever was last in $v0.
- */
+/* Matching notes (UpdateHudCounters).
+   - The empty `do { } while (0);` after the head breaks cse's held-base fold
+     (A200), so the gem machine keeps its 18 register-based accesses off one
+     `la` of g_adwHudBobSinePhaseBlock.
+   - The mod-9 cycle is split across that barrier: the quotient*9 is formed
+     above it and the subtract/store below it, so the bob-phase re-read sits
+     between the two as in the original.  `q9` is pinned to $2 (A374) so the
+     re-read `idx` (a block-local) avoids v0 while q9 is still live; `q` is
+     pinned to $3 and given an asm use so local-alloc does not hand it q9's
+     v0 suggestion; the volatile asm (A382) keeps the subtract and store
+     beside the re-read instead of below the cosine load.
+   - Roll-phase/hold-timer stores go through one-field struct views (A426)
+     and the butterfly ring is a byte-offset walk (A179/A35). */
 #include "globals.h"
 
 /* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
@@ -183,15 +67,6 @@ extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 #define EGG_STATE (g_abHudWorldEggIconBlock[0])
 #define LEGG_STATE (g_abHudLevelEggCounterBlock[0])
 
-/* 2026-10-14-2: R2 SOLVED and the frame matches (852 -> 840 positional,
-   173 -> 122 aligned). The level-egg spawn tint is written as an expression
-   of the counter (`((i + 6) << 24) + 0x8080`, i++ after the call) instead of
-   an accumulator: strength reduction makes it a giv, and giv increments are
-   emitted AFTER loop.c's movables, so the `lui 0x100` stays in the loop and
-   0x8080 is hoisted into s2 exactly as the original (ra/s2/s1/s0 saved).
-   `int pad[2]` after av[3] then gives the original's 56-byte frame. Left:
-   R3 (head re-read order vs the A200 barrier; 1,440 head orders swept,
-   barrier-after-cos loses the held base) and the length (-3). */
 void UpdateHudCounters(void) {
   int nPhase;
   int nDelta;
@@ -204,13 +79,23 @@ void UpdateHudCounters(void) {
   int nCos;
   int av[3];
   int pad[2];
+  int t;
+  register int q9 asm("$2");
+  register int q asm("$3");
+  unsigned int idx;
 
-  g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
+  t = g_nHudFrameCycleMod9 + 1;
   nPhase = (BOB - g_nFrameStep) & 0xFF;
   BOB = nPhase;
+  q = t / 9;
+  __asm__("" : : "r"(q));
+  q9 = q * 9;
   do {
   } while (0);
-  nCos = g_anCosineLut[g_dwHudBobSinePhase];
+  idx = g_dwHudBobSinePhase;
+  g_nHudFrameCycleMod9 = t - q9;
+  __asm__ volatile("");
+  nCos = g_anCosineLut[idx];
   g_abHudIconActorRecords[0x1A6] = nPhase;
   g_abHudIconActorRecords[0x1A5] = nCos >> 9;
 
@@ -400,7 +285,6 @@ void UpdateHudCounters(void) {
     } while (n < g_anHudButterflyCachedBlock[0]);
   }
 
-
   /* --- counter 3: world eggs ------------------------------------------ */
   switch (EGG_STATE) {
   case 0:
@@ -487,11 +371,14 @@ void UpdateHudCounters(void) {
   case 2:
     if (g_nHudLevelEggCachedCount != g_nLevelEggCount) {
       if (g_nHudLevelEggHoldTimer == 0) {
-i = 0;
-do {
- (*(void (*)(int, int, unsigned char *, int))g_pfnLevelOverlayParticleSpawn)(1, 0xC, &g_abHudIconActorRecords[0x3C8], ((i + 6) << 24) + 0x8080);
- i += 1;
-} while (i < 6);
+        i = 0;
+        do {
+          (*(void (*)(int, int, unsigned char *,
+                      int))g_pfnLevelOverlayParticleSpawn)(
+              1, 0xC, &g_abHudIconActorRecords[0x3C8],
+              ((i + 6) << 24) + 0x8080);
+          i += 1;
+        } while (i < 6);
       } else if (g_nHudLevelEggHoldTimer >= 0xC) {
         g_abHudIconActorRecords[0x411] = 0x40;
         g_nHudLevelEggHoldTimer = 0;
@@ -521,8 +408,10 @@ do {
 
   /* --- the level-egg icon spin, and butterflies -> extra lives --------- */
   g_abHudIconActorRecords[0x411] += 4;
-  g_abHudIconActorRecords[0x40C] = (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x411]] >> 7;
-  g_abHudIconActorRecords[0x40D] = (unsigned short)g_anSineLut[g_abHudIconActorRecords[0x411]] >> 7;
+  g_abHudIconActorRecords[0x40C] =
+      (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x411]] >> 7;
+  g_abHudIconActorRecords[0x40D] =
+      (unsigned short)g_anSineLut[g_abHudIconActorRecords[0x411]] >> 7;
   if (g_nSparxFoodCount >= 0x14) {
     g_nExtraLives = g_nExtraLives + 1;
     if (g_nExtraLives >= 0x64) {
