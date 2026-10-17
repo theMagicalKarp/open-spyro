@@ -5786,3 +5786,8 @@ AdvanceSpyroPhysics_2026_10_16_1:
   class: "F7 frame hole only (144 -> 22 linked)"
   date: 2026-10-16
   note: "Loop/request/camera knots all solved (loop.c movable threshold, user-var retry preheader, twice-set p, non-sdata WS block, *q suspend RMW). Remaining: the original's extra 8-byte reload slot after i/steps; ours spills t0/t1/LO only."
+UpdateHudCounters_2026_10_16_1:
+  verdict: parked
+  class: "head re-read/store order + butterfly preheader order (161 -> 47 masked)"
+  date: 2026-10-16
+  note: "Solved: uchar phase local + FIELD store at all five roll-in arms, volatile egg-count check (per-arm reloads), direct record-byte index for the spin. Remaining knots are the head block and the butterfly loop's hoist/init order."
