@@ -1,3 +1,25 @@
+/* 2026-10-17-3: 344 -> 238 masked, 2199 -> 2209 insns (orig 2210). The
+   gamestate-3 egg-row loop (orig[1987..2101]) now matches exactly:
+   - `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e < Table[cur*6+i])`
+     -- jump.c duplicates the exit test, so the Table la (a1) and the cursor
+     (v1) are set in BOTH test copies and cse carries them into the loop top;
+   - the `== 1` test written `!= 1 ? gx : gx + 0x18` as if/else (forces the
+     cursor reload before the EggsRecovered index, as in the original);
+   - x = `base + e * 0x18` with `base = scroll + 0xe8` its own temp (giv from
+     0, the +0xe8 stays on scroll);
+   - `pos[0] = quad2[0] + 0xc` (the sll/sra 16 sign-extend of the stored short);
+   - TWO EmitTexturedQuad calls, one per arm: jump.c cross-jumps the jal and
+     the giv increment fills its delay slot;
+   - TotalDragonsBlock[cur*6+i] indexed by the expression, not `row` (a
+     plain-pseudo index folds to the $at form; the expression keeps the la,
+     which reload rematerialises into t1 like the original).
+   - the intro-record wave walks `first` itself (first -= 0x58 ...): the
+     original keeps it in the same s-reg as `first`.
+   LEFT: gamestate-3 s0/s1 permutation -- the original gives prim s1 and
+   h/first s0 (ours: prim s0, h/first s1); scoping prim/h per block, and
+   asm uses extending prim's range, changed nothing (prim is pseudo 119,
+   5th in global.c priority; h is 121, 24th). Then the first world-egg loop's
+   x/y/bob-base map (orig s1/s0/s5..s6, ours s0/s5/s7..s4). */
 /* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
    first ~1310 insns are now length-aligned. Levers:
    - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
@@ -1110,10 +1132,9 @@ void Gamestate02_03_06_Draw(void) {
           sprintf(buf, g_szFmtPercentD,
                   g_anLevelTotalGemsTable[g_nSubMenuCursor * 6 + i]);
           BuildTextSpriteChain(buf, pos, 0x12, 2);
-          row = g_nSubMenuCursor * 6 + i;
-          if (g_abLevelTotalDragonsBlock[row] != 0) {
+          if (g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i] != 0) {
             pos[0] = g_nSubMenuScrollOffset + 0x1bd;
-            sprintf(buf, g_szFmtPercentD, g_anLevelDragonsRescued[row]);
+            sprintf(buf, g_szFmtPercentD, g_anLevelDragonsRescued[g_nSubMenuCursor * 6 + i]);
             BuildTextSpriteChain(buf, pos, 0x12, 2);
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
@@ -1130,59 +1151,51 @@ void Gamestate02_03_06_Draw(void) {
             *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x44)) = 0x29;
           }
           if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
-            rec = first - 0x58;
-            if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
+            first -= 0x58;
+            if ((int)first >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                rec[0x46] =
+                first[0x46] =
                     g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) &
                                   0xff] *
                         3 >>
                     9;
-                rec -= 0x58;
+                first -= 0x58;
                 phase += 0xc;
-              } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
+              } while ((int)first >= (int)g_pSpriteRecordWriteCursor);
             }
           }
-          if (g_nWorldEggsRecovered > 0) {
-            n = g_nSubMenuCursor;
-            if (n < 3) {
-              int e = 0;
-              if ((int)g_abLevelTotalEggsTable[n * 6 + i] > 0) {
-                int ex = 0;
-                do {
-                  int *uv;
-                  int *rgb;
-                  int gx = g_nSubMenuScrollOffset + 0xe8 + ex;
-                  int gx2 = gx;
-                  if (g_abLevelTotalEggsBlock[n * 6 + i] == 1) {
-                    gx2 = gx + 0x18;
-                  }
-                  quad2[1] = y - 8;
-                  quad2[2] = 0x18;
-                  quad2[0] = gx2;
-                  quad2[3] = 0x10;
-                  if (e >= g_anLevelEggsRecovered[g_nSubMenuCursor * 6 + i]) {
-                    pos[0] = gx2 + 0xc;
-                    pos[1] = y;
-                    pos[2] = 0x1800;
-                    BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
-                    uv = &g_anLevelSpriteTexWordPairs[2];
-                    rgb = pos;
-                    pos[0] = 0x20;
-                    pos[1] = 0x20;
-                    pos[2] = 0x20;
-                  } else {
-                    rgb = (int *)0;
-                    uv = &g_anHudFrameCycleBlock[0x14b] +
-                         (g_anHudFrameCycleBlock[0] + i) % 9 * 2;
-                  }
-                  ex += 0x18;
-                  EmitTexturedQuad(quad2, uv, rgb);
-                  e++;
-                } while (
-                    e < (int)g_abLevelTotalEggsBlock[g_nSubMenuCursor * 6 + i]);
+          if (g_nWorldEggsRecovered > 0 && g_nSubMenuCursor < 3) {
+            int e = 0;
+            while (e < (int)g_abLevelTotalEggsTable[g_nSubMenuCursor * 6 + i]) {
+              int gx2;
+              int base = g_nSubMenuScrollOffset + 0xe8;
+              int gx = base + e * 0x18;
+              if (g_abLevelTotalEggsTable[g_nSubMenuCursor * 6 + i] != 1) {
+                gx2 = gx;
+              } else {
+                gx2 = gx + 0x18;
               }
+              quad2[1] = y - 8;
+              quad2[2] = 0x18;
+              quad2[0] = gx2;
+              quad2[3] = 0x10;
+              if (e >= g_anLevelEggsRecovered[g_nSubMenuCursor * 6 + i]) {
+                pos[0] = quad2[0] + 0xc;
+                pos[1] = y;
+                pos[2] = 0x1800;
+                BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+                pos[0] = 0x20;
+                pos[1] = 0x20;
+                pos[2] = 0x20;
+                EmitTexturedQuad(quad2, &g_anLevelSpriteTexWordPairs[2], pos);
+              } else {
+                EmitTexturedQuad(quad2,
+                                 &g_anHudFrameCycleBlock[0x14b] +
+                                     (g_anHudFrameCycleBlock[0] + i) % 9 * 2,
+                                 (int *)0);
+              }
+              e++;
             }
           }
           y += 0x13;
