@@ -5826,3 +5826,8 @@ TickSpyroAttackEffects_2026_10_17_1:
   class: "sched1 birthing boost: single-set mtx la placed after the spilled giv init (3 insns)"
   date: 2026-10-17
   note: "Hole dummy fixed the frame (10 -> 3, pad[2] removed). Left: preheader `la s6` vs `sw zero,112(sp)` order; adjust_priority boosts insn 673 when its last consumer is picked. Original's mtx would need reg_n_sets != 1. amtx->mtx merge 27, rec->mtx 29, seg->mtx 70, asm-opaque re-set +1 insn."
+Gamestate02_03_06_Draw_2026_10_17_1:
+  verdict: parked
+  class: "frame solved (asm-\"g\" hole dummies); remaining: lbu-reload sched1 order + held menu constants (cse path)"
+  date: 2026-10-17
+  note: "514 -> 487 masked, -20 insns. rows slot at 0xA0 + dead slots via twelve h0..h11 dummies; head loop unpinned (twin-exact) with A386 strip use + A384 $18 reservation; POLY_F4 struct view; per-arm y2/y3 stores; v built in s0. orig[0..340] clean except two lbu positions."

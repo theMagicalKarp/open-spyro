@@ -1,3 +1,20 @@
+/* 2026-10-17-1 (later): 514 -> 487 masked, orig[0..340] now clean except
+   two `lbu rows` reload positions. Levers this pass:
+   - head loop written exactly like the matched level_5 twin with NO hard-reg
+     pins on i/strip/img2 (a pinned `i` is a hard-reg set, which sched1 ties
+     to the preceding call -- that was the a0/i++ knot); `strip` gets s1 from
+     an empty-asm use at the loop top (A386) and `i` is pushed off s2 onto s3
+     by an A384 reservation of $18 between `i = 0` and `img2 = img - 2`;
+   - the pause-box POLY_F4 fields are stored through a struct view so the
+     substate/dualshock loads pass them (A400);
+   - the box's y2/y3 stores are written in BOTH arms (jump2 cross-jumps them,
+     so the else arm's `li v0,176` sits right before them);
+   - `v = rows * 0x10; v += 0xb6;` and `v = rows << 3; v += rows; v <<= 1;
+     v += 0x9e;` build the line ends in s0 itself.
+   LEFT next: the `lbu rows` reload is placed after `li a0; li a1` in the
+   original (its sched1 order had v's computation after the arg setups); the
+   substate-2/1 menu holds constant 2 in s8 and the else path's 1 in s6
+   (ours: one shared `li s7,1` before the substate==2 branch, 2 not held). */
 /* 2026-10-17-1: FRAME SOLVED. `rows` now spills to sp+0xA0 with the
    original's dead reload slots above it: `pad[24]` is replaced by twelve
    uninitialised `h0..h11` whose only references are empty asms with "g"
@@ -188,6 +205,12 @@ extern char D_80010B90[]; /* "EXIT WORLD"  */
    the original; left there is a0/i++ order (1 pair). The LoadImage chunk's
    statement order (720 perms of x/y/w/h/strip+=/arg temp) moves nothing
    positionally. The function is still -19 insns, which is the real blocker. */
+typedef struct {
+  int tag;
+  unsigned char r0, g0, b0, code;
+  short x0, y0, x1, y1, x2, y2, x3, y3;
+} PolyF4;
+
 void Gamestate02_03_06_Draw(void) {
   RECT rect;          /* sp18 */
   char buf[0x20];     /* sp20 */
@@ -202,15 +225,17 @@ void Gamestate02_03_06_Draw(void) {
   int h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11;
 
   if (g_nPauseMenuTransitionFrames == 0) {
-    register int i asm("$19");
+    int i;
     int h;
-    register int strip asm("$17");
+    int strip;
     int y;
     void **img;
     void *arg;
-    register void **img2 asm("$18");
+    void **img2;
     DRAWENV *envBase;
+    register int k18 asm("$18");
     i = 0;
+    __asm__("" : "=r"(k18));
     BuildRenderEntityLists();
     h = 0xe0;
     ComposeFrameScene();
@@ -227,6 +252,7 @@ void Gamestate02_03_06_Draw(void) {
       PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
       img = (void **)g_apRenderScratchPrimTopBlock;
     } while (0);
+    __asm__ volatile("" : : "r"(k18));
     img2 = img - 2;
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
@@ -240,16 +266,16 @@ void Gamestate02_03_06_Draw(void) {
     StoreImage(&rect, (void *)((char *)img[0] + 0xFFFE3E00));
     y = 8;
     do {
+      __asm__ volatile("" : : "r"(strip));
       rect.x = i << 7;
       if (g_pActiveFrameDrawEnv != envBase) {
         y = 0xf8;
       }
-      arg = img2[0];
-      i += 1;
       rect.y = y;
       rect.w = 0x80;
       rect.h = h;
-      ((void (*)())StoreImage)(&rect, arg, y);
+      ((void (*)())StoreImage)(&rect, img2[0], y);
+      i += 1;
       DrawSync(0);
       ConvertRGB15ToLuma8(img2[0], 0x7000);
       rect.x = strip;
@@ -399,22 +425,23 @@ void Gamestate02_03_06_Draw(void) {
       *((unsigned char *)((int)prim + 0x48)) = h;
       *((unsigned char *)((int)prim + 0x49)) = h;
       *((unsigned char *)((int)prim + 0x4a)) = h;
-      *((short *)((int)prim + 0x4e)) = 0x43;
-      *((short *)((int)prim + 0x52)) = 0x43;
+      ((PolyF4 *)((int)prim + 0x44))->y0 = 0x43;
+      ((PolyF4 *)((int)prim + 0x44))->y1 = 0x43;
       box = (void *)((int)prim + 0x44);
       if (g_nPauseMenuSubstate == 1) {
-        *((short *)((int)prim + 0x4c)) = 0x54;
-        *((short *)((int)prim + 0x50)) = 0x1ac;
+        ((PolyF4 *)((int)prim + 0x44))->x0 = 0x54;
+        ((PolyF4 *)((int)prim + 0x44))->x1 = 0x1ac;
         rows = g_nPadIsDualshockFlag != 0;
         y = rows * 0x10 + 0xb6;
+        ((PolyF4 *)((int)prim + 0x44))->y2 = y;
+        ((PolyF4 *)((int)prim + 0x44))->y3 = y;
       } else {
         rows = 1;
-        *((short *)((int)prim + 0x4c)) = 0x8c;
-        *((short *)((int)prim + 0x50)) = 0x174;
-        y = 0xb0;
+        ((PolyF4 *)((int)prim + 0x44))->x0 = 0x8c;
+        ((PolyF4 *)((int)prim + 0x44))->x1 = 0x174;
+        ((PolyF4 *)((int)prim + 0x44))->y2 = 0xb0;
+        ((PolyF4 *)((int)prim + 0x44))->y3 = 0xb0;
       }
-      *((short *)((int)prim + 0x56)) = y;
-      *((short *)((int)prim + 0x5a)) = y;
       *((short *)((int)box + 0x10)) = *((unsigned short *)((int)box + 8));
       *((short *)((int)box + 0x14)) = *((unsigned short *)((int)box + 0xc));
       AddPrimToOT((int)box);
@@ -422,13 +449,17 @@ void Gamestate02_03_06_Draw(void) {
       EmitRadialShadedLine(0xe0, 0x61, 0x120, 0x61);
       if (g_nPauseMenuSubstate == 1) {
         EmitRadialShadedLine(0x54, 0x43, 0x1ac, 0x43);
-        v = rows * 0x10 + 0xb6;
+        v = rows * 0x10;
+        v += 0xb6;
         EmitRadialShadedLine(0x1ac, 0x43, 0x1ac, v);
         EmitRadialShadedLine(0x1ac, v, 0x54, v);
         EmitRadialShadedLine(0x54, v, 0x54, 0x43);
       } else {
         EmitRadialShadedLine(0x8c, 0x43, 0x174, 0x43);
-        v = rows * 0x12 + 0x9e;
+        v = rows << 3;
+        v += rows;
+        v <<= 1;
+        v += 0x9e;
         EmitRadialShadedLine(0x174, 0x43, 0x174, v);
         EmitRadialShadedLine(0x174, v, 0x8c, v);
         EmitRadialShadedLine(0x8c, v, 0x8c, 0x43);
