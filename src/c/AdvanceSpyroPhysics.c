@@ -1,32 +1,15 @@
-/* UPDATE 2026-10-17 -- the hole has an owner. Unallocated pseudos here, in
-   pseudo order: 72 i (0x58), 73 steps (0x60) and 476 b = &WS, a user var
-   whose REG_EQUIV symbol_ref makes reload rematerialise it (lui/addiu t0) and
-   so gets NO slot from stock 2.7.2 alter_reg. Give 476 a slot and it lands at
-   0x68 -- the original's hole. TickSpyroAttackEffects has the same layout
-   with pt (pseudo 76). No matched game function has an unallocated
-   symbol-equivalent user var, so "the original toolchain slots them" is
-   uncontradicted. Refuted this session: the HI-spill theory (matched
-   ChangeSpyroState / DispatchSpyroPhysicsByState spill LO with a pseudo in
-   HI and keep their frames), a dead div-remainder slot, a caller-save area.
-   Five len/340 spellings and four b scope/set-count forms leave the frame
-   at 0x90. Needed: a zero-code source form that gives b a slot. */
-/* PARKED 2026-10-16 -- 22/1098 linked, LENGTH-EXACT; every non-frame
-   instruction matches. LEFT: the frame. The original is 0x98 with an
-   untouched 8-byte slot at sp+0x68 after the i (0x58) / steps (0x60) spill
-   slots, so every register save/restore offset is +8. That slot is
-   reload-era: a pseudo spilled after i/steps whose refs all vanish, or a
-   caller-save area. Leading theory: reload also spills HI in the original
-   (ours spills only t0/t1/LO), which kicks the `len / 340` highpart pseudo
-   out of HI into a shared spill_stack_slot. The code stays identical
-   (`mfhi t0; sra v0,t0,7`) and the slot is left behind. TickSpyroAttackEffects
-   has the same `mfhi t0` highpart and the same +8 hole. Not yet reproduced:
-   find what insn makes reload need an HI_REG/MD_REGS reload.
-   Levers that got here (see the cookbook): loop.c movable threshold (&n
-   lifetime 5 -> 4 via a pre-computed arg), user-var retry preheader
-   (base/b/p are not hoistable out of the outer loop), one variable `p` for
-   contacted+nudge (set twice, so it is never a movable), a non-sdata
-   WS block so cse keeps `b + 4`, and an array-free `*q` suspend RMW
-   (MEM_IN_STRUCT_P decides sched2 aliasing). */
+/* Matching notes (AdvanceSpyroPhysics).
+   - Frame: the original's 0x98 frame has an untouched 8-byte reload slot at
+     sp+0x68 after the i (0x58) / steps (0x60) spills.  `hole` reproduces it:
+     an uninitialised local whose only reference is an empty asm with a "g"
+     constraint is live through the whole function, gets no hard register,
+     and reload gives it a stack slot (alter_reg, in pseudo order) that the
+     asm then names as a memory operand -- no instruction is emitted.
+   - loop.c movable threshold (&n lifetime 5 -> 4 via a pre-computed arg),
+     a user-var retry preheader (base/b/p are not hoistable out of the outer
+     loop), one variable `p` for contacted+nudge (set twice, never a
+     movable), a non-sdata WS block so cse keeps `b + 4`, and an array-free
+     `*q` suspend RMW (MEM_IN_STRUCT_P decides sched2 aliasing). */
 #include "globals.h"
 #include "sdata.h"
 
@@ -112,9 +95,10 @@ extern int g_anSpyroWallSlideBlock[];
       SubtractVector(d, g_anCollisionContactPoint, pos);                       \
       SetVector3Magnitude(d, 0x100);                                           \
       if (d[2] >= -0xC8) {                                                     \
-        int *v = pos + SPY_VELOCITY_FP6; CopyVector(n, v);                   \
+        int *v = pos + SPY_VELOCITY_FP6;                                       \
+        CopyVector(n, v);                                                      \
         SetVector3Magnitude(n, 0x100);                                         \
-        if ((len = (d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) >> 8) < 0xE1) {           \
+        if ((len = (d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) >> 8) < 0xE1) {   \
           goto keep##from;                                                     \
         }                                                                      \
       }                                                                        \
@@ -146,8 +130,20 @@ extern int g_anSpyroWallSlideBlock[];
 
 /* Wall-slide contributions: the first pass takes a fresh flag pointer, the
    retry pass a hoisted nudge pointer. */
-#define WALL_FIRST { int *w = WS; *w = one; SetVector3Magnitude(g_anCollisionProbeVec, 0x400); w++; AddVector(w, w, g_anCollisionProbeVec); }
-#define WALL_RETRY { *b = one; SetVector3Magnitude(g_anCollisionProbeVec, 0x400); AddVector(p, p, g_anCollisionProbeVec); }
+#define WALL_FIRST                                                             \
+  {                                                                            \
+    int *w = WS;                                                               \
+    *w = one;                                                                  \
+    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
+    w++;                                                                       \
+    AddVector(w, w, g_anCollisionProbeVec);                                    \
+  }
+#define WALL_RETRY                                                             \
+  {                                                                            \
+    *b = one;                                                                  \
+    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
+    AddVector(p, p, g_anCollisionProbeVec);                                    \
+  }
 
 /* Spyro's world collision step (0x8003fe40, 4392 bytes). Applies the pending
    impulse, then the scripted requests (state, velocity toward a target,
@@ -164,6 +160,7 @@ int AdvanceSpyroPhysics(void) {
   int i;
   int steps;
   int len;
+  int hole;
 
   g_nSpyroContactedActorFlag = 0;
   g_nSpyroFirstContactChunkId = 0xFF;
@@ -216,8 +213,8 @@ int AdvanceSpyroPhysics(void) {
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
         if (m & 4) {
-          g_anSpyroVelocityFp6[2] =
-              (g_anSpyroRequestTargetPos[2] - D_80078A60) << 6;
+          g_anSpyroVelocityFp6[2] = (g_anSpyroRequestTargetPos[2] - D_80078A60)
+                                    << 6;
           g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
       }
@@ -484,5 +481,6 @@ int AdvanceSpyroPhysics(void) {
   g_anSpyroMotionVec[1] /= g_nFrameStep;
   g_anSpyroMotionVec[2] /= g_nFrameStep;
   g_nSpyroFrameMotionLength = VectorLength(g_anSpyroMotionVec, 1);
+  __asm__ volatile("" : : "g"(hole));
   return 1;
 }

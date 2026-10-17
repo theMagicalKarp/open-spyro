@@ -153,6 +153,19 @@
  *     `short gx` (unsigned-short arithmetic, reused unreloaded).
  *     D_80076BB8 is `volatile`: combine will not fold `la; lw 0()` into it.
  *     Case 2's rect is written in natural [0..3] order.
+ * ---- STATE 2026-10-17-1: 103 linked (was 112), 65 masked ------------------
+ * 14. The setup block's `src` argument is a VOLATILE re-read of D_800785E4
+ *     right after the store (D_800785E4_v alias, undefined_syms_manual.txt);
+ *     the store goes through the same alias so the two stay ordered, and
+ *     D_80076C1C is volatile so `hi` cannot hoist above them.  Then
+ *     `hi; lo; 8604 = hi; E4; Z; src; copy; 8600 = lo` gives the original's
+ *     lo/hi/src loads in v1/v0/a1.
+ *  A (still): the original's movstr scratches are a3/t0/t1/t2 -- local-alloc
+ *     allocates `(clobber (scratch))` as priority-0 qtys (alloc_qty_for_scratch)
+ *     LAST, so v0,v1,a0,a1 AND a2 are occupied across the copy in the
+ *     original.  Nothing visible holds a2 there; and sched1 cannot move the
+ *     a2 argument set above the movstr (every later reg set carries an
+ *     output dep on it).  Find the a2 occupant before touching this again.
  * LEFT (all four clusters survived several spellings):
  *  A. init block (orig 123-248): the 20-byte D_80078A40 copy and the loads
  *     around it.  The original keeps D_800785E4/D_80076C1C live across the
@@ -225,7 +238,7 @@ extern int D_80076C04;
 extern int D_80076C08;
 extern int D_80076C0C;
 extern int D_80076C18;
-extern int D_80076C1C;
+extern volatile int D_80076C1C;
 extern int D_80076DF8;
 extern int D_80076DFC;
 extern int D_80076E00;
@@ -239,6 +252,7 @@ extern char *D_800785DC;
 extern char *D_800785DC_BLK[];
 extern char *volatile D_800785E0;
 extern char *D_800785E4;
+extern char *volatile D_800785E4_v;
 extern int D_80078600;
 extern volatile int D_80078604;
 extern Blk20 D_80078A40;
@@ -311,16 +325,18 @@ void func_credits_8007AA50(void) {
       char *dst = D_80076B90[0];
       int lo;
       int hi;
-      D_800785E4 = D_800785E0;
-      lo = D_80076C18;
+      char *src;
       hi = D_80076C1C;
+      lo = D_80076C18;
+      D_80078604 = hi;
+      D_800785E4_v = D_800785E0;
+      D_800758BC = 0;
+      src = D_800785E4_v;
       do {
       } while (0);
       D_80078A40 = D_80077780;
       D_80078600 = lo;
-      D_80078604 = hi;
-      D_800758BC = 0;
-      func_80016500(dst, D_800785E4, D_80078604,
+      func_80016500(dst, src, D_80078604,
                     lo + D_8007A960[D_800757AC * 2], 0x258);
     }
     D_800761D0 = D_800778F0;

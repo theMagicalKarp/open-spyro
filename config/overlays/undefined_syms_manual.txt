@@ -13,3 +13,6 @@ D_800777EC_s = 0x800777EC;
 D_800777F0_s = 0x800777F0;
 D_800777F4_s = 0x800777F4;
 D_80077838_s = 0x80077838;
+// Volatile scalar view of D_800785E4 (func_credits_8007AA50 setup block): the
+// original stores it and immediately re-reads it for a call argument.
+D_800785E4_v = 0x800785E4;
