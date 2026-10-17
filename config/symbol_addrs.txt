@@ -1638,6 +1638,7 @@ g_nSpyroGroundNormalY = 0x80078b00; // allow_duplicated:True scalar alias — g_
 g_nSpyroGroundSlope = 0x80078b08; // size:0x4 allow_duplicated:True
 g_anSpyroGroundSlopeBlock = 0x80078b08; // allow_duplicated:True alias block — held base for the near-ground flight attitude controller (slope[0] + euler/mtx/worldpos at negative offsets)
 g_nSpyroWallSlideContributedFlag = 0x80078b0c; // size:0x4
+g_anSpyroWallSlideBlock = 0x80078b0c; // allow_duplicated:True alias block — incomplete-array view (no small-data flag) so cse keeps `base + 4` for the nudge accumulator instead of folding sym+4 (AdvanceSpyroPhysics)
 g_anSpyroWallSlideNudgeAccum = 0x80078b10; // size:0xc
 g_nSpyroCliffEdgeHint = 0x80078b1c; // size:0x4
 g_nSpyroSpeedTarget = 0x80078b20; // size:0x4 allow_duplicated:True

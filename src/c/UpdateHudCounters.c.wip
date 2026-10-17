@@ -1,3 +1,18 @@
+/* PARKED 2026-10-16 -- 7 masked (161 at session start), 914 vs 913 insns.
+ * Solved this session: uchar roll-phase local + FIELD phase store (five
+ * roll-in arms); FIELD/FIELDW stores for the gem state-1 phase reset and the
+ * hold-timer reset (A426 in-struct exemption); volatile egg-count check (cse
+ * re-loads per arm); direct record-byte spin index; asm-opaque `gc` base for
+ * the gem cache block (cse2 otherwise folds `-0x1B(s0)` to sym-27); the
+ * butterfly loop with `k = n * 8 + 0x60; j = n * 2;` givs of n (loop.c emits
+ * giv inits AFTER the hoisted a3/t0, the original's preheader order) and
+ * the E2/E3 loads leading each sum.
+ * LEFT (all 7): the head bob-phase re-read. The original issues `lui v1; lw
+ * v1,BOB` between the mod-9 `addu` and `subu` (no load-delay nop); ours does
+ * it after the mod-9 store behind the do/while(0) barrier, +1 insn. Splitting
+ * mod-9 across the barrier (`t/9*9` above, `t - q` below) gets the right
+ * position but v0 instead of v1 (13).
+ */
 /* PARKED 2026-09-07 -- first session on this function; it was never opened
  * before (it is one of the three main functions §B8 names as clean of every
  * wall).  State, measured with the compile-only masked shape diff (§D 2b,
@@ -147,6 +162,7 @@ extern int g_anHudWorldEggTimerBlock[];             /* 0x80077fc0 */
 extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 
 /* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
+#define FIELDW(sym) (((struct { int v; } *)&(sym))->v)
 #define FIELD(sym) (((struct { unsigned char v; } *)&(sym))->v)
 
 #define HUD g_adwHudBobSinePhaseBlock
@@ -182,6 +198,7 @@ void UpdateHudCounters(void) {
   int i;
   int n;
   int j;
+  unsigned char p;
   int k;
   int nTint;
   int nCos;
@@ -204,17 +221,17 @@ void UpdateHudCounters(void) {
       GEM_PHASE = 0;
     }
   } else if (GEM_STATE == 1) {
-    j = g_bHudLevelGemRollPhase & 0xFF;
-    if (j == 0xD) {
+    p = g_bHudLevelGemRollPhase;
+    if (p == 0xD) {
       GEM_STATE = 2;
-      g_bHudLevelGemRollPhase = 0;
+      FIELD(g_bHudLevelGemRollPhase) = 0;
       GEM_TIMER = 0;
       if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIntroIndex]) {
         GEM_TIMER = -0x28;
       }
     } else {
-      g_bHudLevelGemRollPhase = j + 1;
-      OffsetHudIconRollAxis(0, 5, g_anHudRollInStepTable[j]);
+      FIELD(g_bHudLevelGemRollPhase) = p + 1;
+      OffsetHudIconRollAxis(0, 5, g_anHudRollInStepTable[p]);
     }
   } else if (GEM_STATE == 2) {
     if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIntroIndex] &&
@@ -225,7 +242,7 @@ void UpdateHudCounters(void) {
         GEM_PHASE = 0xD;
       }
     } else {
-      g_nHudLevelGemHoldTimer = 0;
+      FIELDW(g_nHudLevelGemHoldTimer) = 0;
       if (g_anLevelGemsCollected[g_nLevelIntroIndex] -
                   g_nHudLevelGemCachedCount >=
               3 &&
@@ -234,13 +251,18 @@ void UpdateHudCounters(void) {
       } else {
         g_abHudGemRollPhaseBlock[0] -= 0x10;
       }
-      SetHudCounterDigits(0, 4, GEMCACHE + 1, 0);
-      CommitHudCounterAnimState(0, 4, GEMCACHE_PHASE);
-      nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - GEMCACHE;
-      if (nDelta >= 0xC9) {
-        GEMCACHE = GEMCACHE + 8;
-      } else if (nDelta >= 0x15 || GEMCACHE_PHASE == 0xC0) {
-        GEMCACHE = GEMCACHE + 1;
+      {
+        int *gc;
+
+        __asm__("" : "=r"(gc) : "0"(&GEMCACHE));
+        SetHudCounterDigits(0, 4, gc[0] + 1, 0);
+        CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
+        nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - gc[0];
+        if (nDelta >= 0xC9) {
+          gc[0] = gc[0] + 8;
+        } else if (nDelta >= 0x15 || ((unsigned char *)gc)[-0x1B] == 0xC0) {
+          gc[0] = gc[0] + 1;
+        }
       }
       if (g_nHudLevelGemCachedCount ==
               g_anLevelTotalGemsTable[g_nLevelIntroIndex] &&
@@ -274,14 +296,14 @@ void UpdateHudCounters(void) {
   g_abHudIconActorRecords[0x2AE] =
       (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x2B1]] >> 8;
   if (g_abHudCounterDisplayState[1] == 1) {
-    j = g_bHudDragonRollPhase & 0xFF;
-    if (j == 0xD) {
+    p = g_bHudDragonRollPhase;
+    if (p == 0xD) {
       g_abHudCounterDisplayState[1] = 2;
       g_bHudDragonRollPhase = 0;
       g_nHudDragonHoldTimer = -0x28;
     } else {
-      g_bHudDragonRollPhase = j + 1;
-      OffsetHudIconRollAxis(5, 3, g_anHudRollInStepTable[j]);
+      FIELD(g_bHudDragonRollPhase) = p + 1;
+      OffsetHudIconRollAxis(5, 3, g_anHudRollInStepTable[p]);
     }
   } else if (g_abHudCounterDisplayState[1] == 2) {
     g_nHudDragonHoldTimer = g_nHudDragonHoldTimer + 1;
@@ -310,8 +332,8 @@ void UpdateHudCounters(void) {
       g_bHudLivesRollPhase = 0;
     }
   } else if (g_abHudCounterDisplayState[2] == 1) {
-    j = g_bHudLivesRollPhase & 0xFF;
-    if (j == 0xD) {
+    p = g_bHudLivesRollPhase;
+    if (p == 0xD) {
       g_abHudCounterDisplayState[2] = 2;
       g_bHudLivesRollPhase = 0;
       g_nHudLivesHoldTimer = 0;
@@ -320,8 +342,8 @@ void UpdateHudCounters(void) {
         g_nHudLivesHoldTimer = -0x28;
       }
     } else {
-      g_bHudLivesRollPhase = j + 1;
-      OffsetHudIconRollAxis(8, 3, g_anHudRollInStepTable[j]);
+      FIELD(g_bHudLivesRollPhase) = p + 1;
+      OffsetHudIconRollAxis(8, 3, g_anHudRollInStepTable[p]);
     }
   } else if (g_abHudCounterDisplayState[2] == 2) {
     if (g_nHudLivesCachedCount == g_nExtraLives && g_bHudLivesRollPhase == 0) {
@@ -363,22 +385,21 @@ void UpdateHudCounters(void) {
   /* lay the butterflies out around their ring anchor */
   if (g_anHudButterflyCachedBlock[0] > 0) {
     n = 0;
-    j = 0;
-    k = 0x60;
     do {
-      n += 1;
+      k = n * 8 + 0x60;
+      j = n * 2;
       RECT(k) =
-          (g_abHudButterflyRingXY[j] + g_anHudButterflyCachedBlock[0xE2]) -
+          (g_anHudButterflyCachedBlock[0xE2] + g_abHudButterflyRingXY[j]) -
           0x1D;
+      RECT(k + 2) =
+          (g_anHudButterflyCachedBlock[0xE3] + g_abHudButterflyRingXY[j + 1]) -
+          0x1C;
       RECT(k + 4) = 8;
       RECT(k + 6) = 8;
-      RECT(k + 2) =
-          (g_abHudButterflyRingXY[j + 1] + g_anHudButterflyCachedBlock[0xE3]) -
-          0x1C;
-      j += 2;
-      k += 8;
+      n += 1;
     } while (n < g_anHudButterflyCachedBlock[0]);
   }
+
 
   /* --- counter 3: world eggs ------------------------------------------ */
   switch (EGG_STATE) {
@@ -390,8 +411,8 @@ void UpdateHudCounters(void) {
     }
     break;
   case 1:
-    j = g_bHudWorldEggRollPhase & 0xFF;
-    if (j == 0xD) {
+    p = g_bHudWorldEggRollPhase;
+    if (p == 0xD) {
       EGG_STATE = 2;
       g_nHudWorldEggHoldTimer = 0;
       if (g_nHudWorldEggCachedCount == g_nWorldEggsRecovered &&
@@ -399,8 +420,8 @@ void UpdateHudCounters(void) {
         g_nHudWorldEggHoldTimer = -0x28;
       }
     } else {
-      g_bHudWorldEggRollPhase = j + 1;
-      OffsetHudDigitRollAxis(0, 0xC, -g_anHudRollInStepTable[j]);
+      FIELD(g_bHudWorldEggRollPhase) = p + 1;
+      OffsetHudDigitRollAxis(0, 0xC, -g_anHudRollInStepTable[p]);
     }
     break;
   case 2:
@@ -440,7 +461,7 @@ void UpdateHudCounters(void) {
   }
 
   /* --- counter 4: level eggs ------------------------------------------ */
-  if (g_nLevelEggCount != 1) {
+  if (*(volatile int *)&g_nLevelEggCount != 1) {
     g_nHudLevelEggCachedCount = g_nLevelEggCount;
   }
   switch (LEGG_STATE) {
@@ -451,16 +472,16 @@ void UpdateHudCounters(void) {
     }
     break;
   case 1:
-    j = g_bHudLevelEggRollPhase & 0xFF;
-    if (j == 0xD) {
+    p = g_bHudLevelEggRollPhase;
+    if (p == 0xD) {
       LEGG_STATE = 2;
       g_nHudLevelEggHoldTimer = 0;
       if (g_nHudLevelEggCachedCount == g_nLevelEggCount) {
         g_nHudLevelEggHoldTimer = -0x28;
       }
     } else {
-      g_bHudLevelEggRollPhase = j + 1;
-      OffsetHudIconRollAxis(0xB, 1, -g_anHudRollInStepTable[j]);
+      FIELD(g_bHudLevelEggRollPhase) = p + 1;
+      OffsetHudIconRollAxis(0xB, 1, -g_anHudRollInStepTable[p]);
     }
     break;
   case 2:
@@ -500,9 +521,8 @@ do {
 
   /* --- the level-egg icon spin, and butterflies -> extra lives --------- */
   g_abHudIconActorRecords[0x411] += 4;
-  j = g_abHudIconActorRecords[0x411];
-  g_abHudIconActorRecords[0x40C] = (unsigned short)g_anCosineLut[j] >> 7;
-  g_abHudIconActorRecords[0x40D] = (unsigned short)g_anSineLut[j] >> 7;
+  g_abHudIconActorRecords[0x40C] = (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x411]] >> 7;
+  g_abHudIconActorRecords[0x40D] = (unsigned short)g_anSineLut[g_abHudIconActorRecords[0x411]] >> 7;
   if (g_nSparxFoodCount >= 0x14) {
     g_nExtraLives = g_nExtraLives + 1;
     if (g_nExtraLives >= 0x64) {
