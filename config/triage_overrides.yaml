@@ -5831,3 +5831,8 @@ Gamestate02_03_06_Draw_2026_10_17_1:
   class: "frame solved (asm-\"g\" hole dummies); remaining: lbu-reload sched1 order + held menu constants (cse path)"
   date: 2026-10-17
   note: "514 -> 487 masked, -20 insns. rows slot at 0xA0 + dead slots via twelve h0..h11 dummies; head loop unpinned (twin-exact) with A386 strip use + A384 $18 reservation; POLY_F4 struct view; per-arm y2/y3 stores; v built in s0. orig[0..340] clean except two lbu positions."
+Gamestate02_03_06_Draw_2026_10_17_2:
+  verdict: parked
+  class: "global-alloc tie: rec (live-from-entry) outranks box/sty temps for s1"
+  date: 2026-10-17
+  note: "487 -> 469 masked, 2190 -> 2205/2210 insns. Per-loop lut/phase/v/n locals (LUT la before phase=0 only in the three loops that had `lut =`; others index the global so loop.c hoists it). Left: rec vs box/sty s1/s2 swap, tail block reorder at orig[1987..2019]."
