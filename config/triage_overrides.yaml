@@ -5791,3 +5791,8 @@ UpdateHudCounters_2026_10_16_1:
   class: "head re-read/store order + butterfly preheader order (161 -> 47 masked)"
   date: 2026-10-16
   note: "Solved: uchar phase local + FIELD store at all five roll-in arms, volatile egg-count check (per-arm reloads), direct record-byte index for the spin. Remaining knots are the head block and the butterfly loop's hoist/init order."
+UpdateHudCounters_2026_10_16_2:
+  verdict: parked
+  class: "head bob re-read placement only (+1 length, 7 masked)"
+  date: 2026-10-16
+  note: "161 -> 7. Remaining knot is the BOB re-read vs the A200 barrier; mod-9 split across the barrier fixes position but gives v0 (13)."

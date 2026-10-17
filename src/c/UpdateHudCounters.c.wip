@@ -1,13 +1,17 @@
-/* PARKED 2026-10-16 -- 47 masked (from 161). New this session: the five
- * roll-in arms load the phase into an `unsigned char p` (orig `lbu v1; andi
- * a1,v1,0xFF`) and store `FIELD(phase) = p + 1` (A230 in-struct store keeps it
- * above the `lh tbl[p]`); the level-egg count check reads through a volatile
- * so cse re-loads the count/cached pair in every switch arm (orig reloads
- * them); the egg-icon spin indexes the cos/sin tables with the record byte
- * directly (no function-wide `j`, so the andi is in place). LEFT: the head
- * (bob-phase re-read placement, gem state-1 phase/timer store order, cached
- * lbu via the s0 held base) and the butterfly ring loop (orig preheader is
- * a3/t0 hoists BEFORE j=0/k=0x60, and the lw of cached[0xE2] leads the body).
+/* PARKED 2026-10-16 -- 7 masked (161 at session start), 914 vs 913 insns.
+ * Solved this session: uchar roll-phase local + FIELD phase store (five
+ * roll-in arms); FIELD/FIELDW stores for the gem state-1 phase reset and the
+ * hold-timer reset (A426 in-struct exemption); volatile egg-count check (cse
+ * re-loads per arm); direct record-byte spin index; asm-opaque `gc` base for
+ * the gem cache block (cse2 otherwise folds `-0x1B(s0)` to sym-27); the
+ * butterfly loop with `k = n * 8 + 0x60; j = n * 2;` givs of n (loop.c emits
+ * giv inits AFTER the hoisted a3/t0, the original's preheader order) and
+ * the E2/E3 loads leading each sum.
+ * LEFT (all 7): the head bob-phase re-read. The original issues `lui v1; lw
+ * v1,BOB` between the mod-9 `addu` and `subu` (no load-delay nop); ours does
+ * it after the mod-9 store behind the do/while(0) barrier, +1 insn. Splitting
+ * mod-9 across the barrier (`t/9*9` above, `t - q` below) gets the right
+ * position but v0 instead of v1 (13).
  */
 /* PARKED 2026-09-07 -- first session on this function; it was never opened
  * before (it is one of the three main functions §B8 names as clean of every
@@ -158,6 +162,7 @@ extern int g_anHudWorldEggTimerBlock[];             /* 0x80077fc0 */
 extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 
 /* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
+#define FIELDW(sym) (((struct { int v; } *)&(sym))->v)
 #define FIELD(sym) (((struct { unsigned char v; } *)&(sym))->v)
 
 #define HUD g_adwHudBobSinePhaseBlock
@@ -219,7 +224,7 @@ void UpdateHudCounters(void) {
     p = g_bHudLevelGemRollPhase;
     if (p == 0xD) {
       GEM_STATE = 2;
-      g_bHudLevelGemRollPhase = 0;
+      FIELD(g_bHudLevelGemRollPhase) = 0;
       GEM_TIMER = 0;
       if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIntroIndex]) {
         GEM_TIMER = -0x28;
@@ -237,7 +242,7 @@ void UpdateHudCounters(void) {
         GEM_PHASE = 0xD;
       }
     } else {
-      g_nHudLevelGemHoldTimer = 0;
+      FIELDW(g_nHudLevelGemHoldTimer) = 0;
       if (g_anLevelGemsCollected[g_nLevelIntroIndex] -
                   g_nHudLevelGemCachedCount >=
               3 &&
@@ -246,13 +251,18 @@ void UpdateHudCounters(void) {
       } else {
         g_abHudGemRollPhaseBlock[0] -= 0x10;
       }
-      SetHudCounterDigits(0, 4, GEMCACHE + 1, 0);
-      CommitHudCounterAnimState(0, 4, GEMCACHE_PHASE);
-      nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - GEMCACHE;
-      if (nDelta >= 0xC9) {
-        GEMCACHE = GEMCACHE + 8;
-      } else if (nDelta >= 0x15 || GEMCACHE_PHASE == 0xC0) {
-        GEMCACHE = GEMCACHE + 1;
+      {
+        int *gc;
+
+        __asm__("" : "=r"(gc) : "0"(&GEMCACHE));
+        SetHudCounterDigits(0, 4, gc[0] + 1, 0);
+        CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
+        nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - gc[0];
+        if (nDelta >= 0xC9) {
+          gc[0] = gc[0] + 8;
+        } else if (nDelta >= 0x15 || ((unsigned char *)gc)[-0x1B] == 0xC0) {
+          gc[0] = gc[0] + 1;
+        }
       }
       if (g_nHudLevelGemCachedCount ==
               g_anLevelTotalGemsTable[g_nLevelIntroIndex] &&
@@ -375,22 +385,21 @@ void UpdateHudCounters(void) {
   /* lay the butterflies out around their ring anchor */
   if (g_anHudButterflyCachedBlock[0] > 0) {
     n = 0;
-    j = 0;
-    k = 0x60;
     do {
-      n += 1;
+      k = n * 8 + 0x60;
+      j = n * 2;
       RECT(k) =
-          (g_abHudButterflyRingXY[j] + g_anHudButterflyCachedBlock[0xE2]) -
+          (g_anHudButterflyCachedBlock[0xE2] + g_abHudButterflyRingXY[j]) -
           0x1D;
+      RECT(k + 2) =
+          (g_anHudButterflyCachedBlock[0xE3] + g_abHudButterflyRingXY[j + 1]) -
+          0x1C;
       RECT(k + 4) = 8;
       RECT(k + 6) = 8;
-      RECT(k + 2) =
-          (g_abHudButterflyRingXY[j + 1] + g_anHudButterflyCachedBlock[0xE3]) -
-          0x1C;
-      j += 2;
-      k += 8;
+      n += 1;
     } while (n < g_anHudButterflyCachedBlock[0]);
   }
+
 
   /* --- counter 3: world eggs ------------------------------------------ */
   switch (EGG_STATE) {
