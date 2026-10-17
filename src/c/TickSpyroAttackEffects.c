@@ -1,21 +1,17 @@
-/* UPDATE 2026-10-17-1 -- 10 -> 3 linked. The F7 hole is solved: `hole`, an
-   uninitialised local whose only reference is an empty asm with a "g"
-   constraint, gets no hard register, so reload slots it (alter_reg, pseudo
-   order) right after empty/sfxDone and the asm names the slot as memory --
-   no code (same fix matched AdvanceSpyroPhysics); `pad[2]` is gone.
-   LEFT (3): in the horn-loop preheader the original emits `la s6` (mtx)
-   BEFORE the spilled giv init `sw zero,112(sp)`; ours after. sched1's
-   birthing boost (adjust_priority: single-set reg live after) lifts insn 673
-   (mtx = &BLK) to LAUNCH_PRIORITY the moment its last consumer (1415/1421
-   age/state giv inits) is picked, so the giv init (lower LUID, two sets)
-   is always placed first. In the original, mtx must have reg_n_sets != 1 at
-   flow time, yet s6 is set exactly once in its asm. Merging amtx into mtx
-   (27) and reusing rec/seg as mtx (29/70) fix the order but move mtx off s6.
-   Boost-off probe: pin mtx to $22 and add a zero-code second set of $22
-   (`register int z asm("$22"); __asm__ volatile("" : "=r"(z));` at the end)
-   -> reg_n_sets[22] = 2, no boost, but then LUID order puts the la BEFORE
-   the loop.c &tip/&dir movables (5). Explicit ptip/pdir statements ahead of
-   mtx fix the order but lose loop.c's per-site reg/direct split (12). */
+/* Matching notes (TickSpyroAttackEffects).
+   - Frame: the untouched 8-byte reload slot after empty/sfxDone is `hole`,
+     a local that gets no hard register (every callee-saved reg is live
+     across the horn loop), so reload slots it in pseudo order and the asms
+     that name it with "g" constraints emit nothing.
+   - Horn-loop preheader [&tip][&dir][la mtx][burst giv]: the non-volatile
+     `hole = asm(mtx)` sits in one block after the first `dir` movable, so
+     loop.c hoists it (block-local user var, lifetime 18 clears the move
+     threshold) right after &tip/&dir; sched1's birthing boost then lands
+     mtx's `la` immediately before that zero-code consumer, ahead of the
+     burst giv init.
+   - Slot age/state bytes are givs off the anchor block, the arc-path select
+     pins the table base to $2 and the path to $3 with an empty barrier in
+     the long arm, and the product `k` is its own local. */
 #include "globals.h"
 
 extern uint GetRandomU32(void);
@@ -50,76 +46,6 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    (count, kind, world position, direction | NULL). */
 #define SPAWN ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)
 
-/* 2026-10-14: merging k into a disjoint-lived local (limit / mask / n /
-   count / empty / sfxDone) is +1 every time: the merged pseudo is no longer
-   LO-preferred, so each arm gets its own mflo instead of the original's one
-   `mflo t0` reload after the join. The original's k is a SPILLED LO-class
-   pseudo (no alternate class, LO busy?) - find what makes LO unavailable. */
-/* UPDATE 2026-10-09 -- 16/562. An empty asm barrier between the else-arm
-   `k = (i - 4) * count` and the long-table `tbl` set closes the arc-path
-   select (v0 temp + la order). Left: F7 slot hole (k still gets LO) and the
-   preheader F1 order.
-
-   UPDATE 2026-09-28 -- 20/562 (was 24).  Arc-path select: the table base is
-   pinned `$2` and the result `$3` (A256), and the sum is written in int
-   arithmetic `(short *)(k * 8 + (int)tbl)` so the shift is operand 0 (A275).
-   The product is its OWN local `k`, not the shared `n`: the original's mflo
-   t0 is a reload through the spill reg, not an allocation.
-   ROOT CAUSE of the F7 "0x68 UNUSED" slot: it is `k`.  In the original k is
-   a spilled pseudo (slot 0x68) whose store is removed by delete_output_reload
-   and whose one use inherits t0, so the slot is allocated and never touched.
-   Verified: giving k a loop-top use (`__asm__ volatile("" : : "r"(k))`)
-   makes it spill to 0x68 and the counters/giv land at 0x58/0x60/0x70 exactly
-   (the extra use then costs a sw/lw).  Here k gets LO (preferred class from
-   its two mult sets), so it is never spilled and `pad[2]` is still needed.
-   Open: what, in the original, keeps k out of LO without making it live
-   across the loop.  The else-arm `la` is also still scheduled above the
-   `i - 4` (4 insns), and the preheader F1 below is unchanged (9 insns).
-
-   PARKED 2026-07-30-3 — 562/562 insns, 28 words differ (95.0%), every block
-   positionally aligned.  Four residues, all named:
-
-   F7  spill-slot order.  The original's spill block is [0x58 empty]
-       [0x60 sfxDone] [0x68 UNUSED] [0x70 burst giv]; ours has no fourth
-       spilled pseudo, so the giv lands at 0x68 and the frame comes out 0x98
-       instead of 0xA0.  `int pad[2]` buys the frame back (all 20 save/restore
-       insns + the giv slot then match) at the cost of the two counters sitting
-       8 bytes high (5 insns).  The hole is a pseudo that reload gave a slot to
-       and then rematerialised or deleted; no source form reproduces it (a
-       pointer local with a constant equivalence — tried `wp`, `dirs` — is
-       replaced by update_equiv_regs and leaves no slot, and expand-time slots
-       always precede reload's, so a dead local can only pad at 0x58).
-   F1  loop preheader order.  Original: [&tip][&dir][la mtx][giv init][age]
-       [state][pt][cursor]; ours: [la mtx][age][state][&tip][&dir][giv init]
-       [pt][cursor].  The original's age/state/pt come AFTER loop.c's hoisted
-       invariants, i.e. they are loop-generated (givs off `slotAge[i]` /
-       `slotState[i]`), not preheader statements.  Writing them as array givs
-       does produce that order but costs more elsewhere (35 shape mismatches
-       vs 26): the giv form loses `pt` its register and the arc-path block
-       degrades.  9 insns.
-   F1  arc-path table select: original holds the table base in v0 and the
-       scaled index in v1 (mflo -> t0), ours the other way round (mflo -> a3),
-       and the `la` of the long table sits before the subtract in the else arm.
-       Statement order in both arms is already source-matched.  8 insns.
-   F10 PlaySoundEffect arg block: original emits `li a2,4` first and the
-       `sfxDone = 1` store last (reorg then eats it for the jal delay slot);
-       ours emits the flag store early and `li a2,4` late.  5 insns.
-
-   Everything else transcribes exactly, including the whole flame-breath half
-   (129 insns byte-identical).  Levers that got it here: the alias blocks
-   listed below, `i = 0` placed in the merge block so loop.c knows the biv's
-   initial value (otherwise every giv init is computed generically), A142-style
-   volatile on the three `pt[-0xf]` variant reads (without it cse folds them to
-   absolute, `pt` drops to 3 refs and loses its register to the burst giv —
-   measured with the §D 2c allocation probe: pt 9 refs/402 insns = 0.067 vs the
-   giv 7/206 = 0.068), `&pt[i * 3]` for the trail cursor so its giv init comes
-   out as `move s5,s7`, and per-arm SPAWN calls for the variant flag (a ternary
-   if-converts to sltu).  Restore by renaming back to .c.
-
-   2026-08-14-1 unattended permuter session (~15m, ~36900 iterations, timed out
-   at the 15m budget): best score 655 vs first-iteration score 855. No
-   byte-perfect candidate found; still PARKED (see above). */
-
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Flame breath: while the breath timer
    runs, spawn one particle per frame at a random offset in Spyro's body frame
@@ -134,33 +60,6 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
    end-of-arc burst when the slot runs off the end of its path.  param steps =
    frame delta.  Clears g_bSpyroHornCollisionActive once all 8 slots are idle.
  */
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/c/TickSpyroAttackEffects.c.wip`; this body came from
-   build/permuter/nonmatchings/TickSpyroAttackEffects/output-655-1/source.c. */
-/* 2026-10-14-2: 16 -> 10. PREHEADER F1 SOLVED: the slot age/state bytes are
-   read as givs off the anchor block (`((unsigned char *)&BLK[-0x21])[i]`),
-   not walked pointers, so loop.c emits them after the hoisted &tip/&dir/la
-   exactly as the original. Left (10): ONLY the F7 slot hole at 0x68 (pad[2]
-   shifts empty/sfxDone 8 high). Mechanism read off gcc 2.7.2 reload1.c:
-   alter_reg gives every unallocated pseudo without an equivalence a slot,
-   and delete_output_reload later deletes ALL its stores when the pseudo is
-   block-local (reg_basic_block >= 0), dies once, and its one use inherits
-   the output reload reg -- slot allocated, never touched. So X is a
-   BLOCK-LOCAL pseudo that won no hard reg, set and used once in one block
-   (candidate: a GPR copy of k at the join, `mflo t0` = its output reload,
-   `sll` = the inheriting use). A plain `t = k;` copy is deleted before
-   reload (no disposition in -dg), so the copy needs a spelling that
-   survives combine and keeps LO as its preferred class.
-   Second candidate, better on numbering: the flame half's `% 24` magic-
-   multiply HIGHPART (`mfhi t0; sra v1,t0,2`). It is block-local, set and
-   used once, reloads through t0, and as a body temp its pseudo number falls
-   between the declared locals (empty/sfxDone) and loop.c's giv -- exactly
-   the hole's slot order. Ours gets HI from local-alloc. Tried (no frame
-   change): `% 24` spellings (> 13, x - x/24*24, assigned into n/limit/mask/
-   count/i), and an explicit `(long long)x * 0x2AAAAAAB >> 32` (+2..+6). */
 void TickSpyroAttackEffects(int steps) {
   int flame[3];
   int anchor[3];
@@ -275,7 +174,8 @@ void TickSpyroAttackEffects(int steps) {
     mtx = g_anSpyroHornStrikeAnchorMtxBlock;
     pt = &mtx[0xd];
     do {
-      if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] != 0) {
+      if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] !=
+          0) {
         if (i < 4) {
           count = 0x18;
           limit = 0x20;
@@ -283,12 +183,16 @@ void TickSpyroAttackEffects(int steps) {
           count = 0x20;
           limit = 0x28;
         }
-        if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] != 0) {
-          ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] += steps;
+        if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] !=
+            0) {
+          ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] +=
+              steps;
         }
-        if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] >= limit) {
+        if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] >=
+            limit) {
           ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] = 0;
-        } else if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] != 2) {
+        } else if (((unsigned char
+                         *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] != 2) {
           register short *tbl asm("$2");
           register short *path asm("$3");
 
@@ -301,13 +205,21 @@ void TickSpyroAttackEffects(int steps) {
             tbl = g_anSpyroHornStrikeArcPathsLong;
           }
           path = (short *)(k * 8 + (int)tbl);
-          if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] < (count - 1)) {
-            SVectorToVector(tip, &path[(((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] + 1) * 4]);
+          if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] <
+              (count - 1)) {
+            SVectorToVector(
+                tip,
+                &path[(((unsigned char
+                             *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i] +
+                       1) *
+                      4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);
-            if (((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] == 0) {
+            if (((unsigned char
+                      *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] == 0) {
               CopyVector(dir, wp);
-              ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] = 1;
+              ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] =
+                  1;
             } else {
               CopyVector(dir, &pt[i * 3]);
             }
@@ -318,8 +230,10 @@ void TickSpyroAttackEffects(int steps) {
             }
             if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0, 0) != 0) ||
                 (CastRayWorldAndActors(dir, tip) != 0)) {
-              ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] = 2;
-              g_abSpyroHornStrikeSlotEndAge[i] = ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i];
+              ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x1d])[i] =
+                  2;
+              g_abSpyroHornStrikeSlotEndAge[i] = ((
+                  unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i];
               dir[0] = -0x10;
               dir[1] = (GetRandomU32() & 0x1f) - 0x10;
               dir[2] = 0;
@@ -332,6 +246,7 @@ void TickSpyroAttackEffects(int steps) {
                            int *))g_pfnLevelOverlayParticleSpawn)(4, 0x4e, tip,
                                                                   0);
               }
+              __asm__("" : "=g"(hole) : "r"(mtx));
               dir[0] = 0x30;
               dir[1] = 0;
               dir[2] = 0;
@@ -339,6 +254,7 @@ void TickSpyroAttackEffects(int steps) {
               ((void (*)(int, int, int *,
                          int *))g_pfnLevelOverlayParticleSpawn)(
                   ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
+              __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
                 PlaySoundEffect(
                     *((unsigned char *)(((int)g_pLevelSampleBankHeader) +
@@ -347,7 +263,12 @@ void TickSpyroAttackEffects(int steps) {
                 sfxDone = 1;
               }
             }
-          } else if ((count < ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i]) && ((count + steps) >= ((unsigned char *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i])) {
+          } else if ((count <
+                      ((unsigned char
+                            *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i]) &&
+                     ((count + steps) >=
+                      ((unsigned char
+                            *)&g_anSpyroHornStrikeAnchorMtxBlock[-0x21])[i])) {
             SVectorToVector(tip, &path[(count - 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);
@@ -378,5 +299,4 @@ void TickSpyroAttackEffects(int steps) {
       g_bSpyroHornCollisionActive = 0;
     }
   }
-  __asm__ volatile("" : : "g"(hole));
 }

@@ -5797,10 +5797,10 @@ UpdateHudCounters_2026_10_16_2:
   date: 2026-10-16
   note: "161 -> 7. Remaining knot is the BOB re-read vs the A200 barrier; mod-9 split across the barrier fixes position but gives v0 (13)."
 TickSpyroAttackEffects:
-  verdict: parked
-  class: "F7 frame hole: same as AdvanceSpyroPhysics - unallocated REG_EQUIV-constant user var pt (pseudo 76) owns the original's 0x68 slot"
+  verdict: matched
+  class: "loop.c-hoisted zero-code asm consumer places the boosted la (A433)"
   date: 2026-10-17
-  note: "src/c/TickSpyroAttackEffects.c.wip 10/562 linked (slot offsets). Unallocated pseudos in pseudo order 73v, 74v, 76v pt (symbol_ref equiv, rematerialized), 440 giv = original [0x58][0x60][0x68 UNUSED][0x70 giv] exactly. A 559-file scan of src/c finds no matched game function with an unallocated user var whose REG_EQUIV is a symbol_ref, so nothing contradicts 'the original toolchain slots them'."
+  note: "3 -> MATCH. Non-volatile `__asm__(\"\" : \"=g\"(hole) : \"r\"(mtx))` in the long block after the first dir movable, with its \"g\" use at the block end: loop.c hoists it after &tip/&dir (lifetime 18 clears the threshold; 7/10 did not), and mtx's birthing-boosted la lands right before it, ahead of the burst giv init."
 UpdateHudCounters_2026_10_17:
   verdict: parked
   class: "head BOB re-read position vs the A200 do/while(0) barrier (7 masked, +1 insn, does not link)"
@@ -5831,3 +5831,13 @@ Gamestate02_03_06_Draw_2026_10_17_1:
   class: "frame solved (asm-\"g\" hole dummies); remaining: lbu-reload sched1 order + held menu constants (cse path)"
   date: 2026-10-17
   note: "514 -> 487 masked, -20 insns. rows slot at 0xA0 + dead slots via twelve h0..h11 dummies; head loop unpinned (twin-exact) with A386 strip use + A384 $18 reservation; POLY_F4 struct view; per-arm y2/y3 stores; v built in s0. orig[0..340] clean except two lbu positions."
+Gamestate02_03_06_Draw_2026_10_17_2:
+  verdict: parked
+  class: "global-alloc tie: rec (live-from-entry) outranks box/sty temps for s1"
+  date: 2026-10-17
+  note: "487 -> 469 masked, 2190 -> 2205/2210 insns. Per-loop lut/phase/v/n locals (LUT la before phase=0 only in the three loops that had `lut =`; others index the global so loop.c hoists it). Left: rec vs box/sty s1/s2 swap, tail block reorder at orig[1987..2019]."
+func_credits_8007AA50_2026_10_17_2:
+  verdict: parked
+  class: "cluster A: movstr scratches a3/t0/t1/t2 need v0..a2 busy across the copy"
+  date: 2026-10-17
+  note: "65 masked unchanged. Read off local-alloc.c: scratch qtys live [2n-1,2n+1] and the address reloads reuse scratches 3/4 (output_block_move), so the original had five values live across the copy. Tried: hi/lo/E4/58BC statement orders (80-107), Blk20 base-pointer locals before/after the barrier (65, cse folds them)."

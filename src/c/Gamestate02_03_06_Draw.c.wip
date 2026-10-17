@@ -1,3 +1,23 @@
+/* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
+   first ~1310 insns are now length-aligned. Levers:
+   - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
+     original); `lutN = g_anCosineLut;` before `phaseN = 0` in the loops whose
+     original materialises the LUT first (incl. both FillWord loops, s2),
+     every other loop indexes g_anCosineLut directly (loop.c hoists the la);
+   - `rec` gets an asm use at the end of the gamestate-2 scope: the longer
+     live range drops its global.c priority below box/styA/styB, which then
+     take s1 as in the original (rec -> s2);
+   - FillWord loops: `cursor -= 0x58; FillWord(cursor, ...)` (no temp, a0
+     direct) and `x += 0xa; i++;` so the i++ sits by the exit test;
+   - gamestate 3: one `fmt = g_szFmtPercentD` local for the three sprintfs
+     (held in s3), the same FillWord form, and the HUD-bob reads through
+     g_adwHudBobSinePhaseBlock[0] (its base is held in s5 for the egg loop).
+   LEFT: FillWord-loop LUT in s4 (orig s2); the `cur` load sits after the
+   cursor reload in the original; `move a0,zero` order at orig 858/919/978;
+   gamestate 3: s5/s6 swap (bob block vs the 127 constant), the second
+   record's 0x10/0x14 stores vs the LUT read (orig 1314-1323), the egg-loop
+   s-reg tiling; the tail block at orig[1987..2019];
+   the head knots below. */
 /* 2026-10-17-1 (later): 514 -> 487 masked, orig[0..340] now clean except
    two `lbu rows` reload positions. Levers this pass:
    - head loop written exactly like the matched level_5 twin with NO hard-reg
@@ -410,12 +430,14 @@ void Gamestate02_03_06_Draw(void) {
     h = b;
     if (g_nGamestate == 2) {
       unsigned char *rec;
-      short *lut;
+      unsigned char *fr;
+      short *lut1, *lut2, *lut3, *lut4, *lut6;
       unsigned char nGlyphs;
       int cur;
-      int n;
+      int n1, n2, n3, n4, n5, n6;
       int phase;
       int v;
+      int phase1, v1, phase2, v2, phase3, v3, phase4, phase5, v4, phase6, phase7, v5, phase8, v6, phase9, v7, phase10, v8;
       int y;
       void *box = (void *)((int)prim + 0x38);
       SetDrawMode((int)box, 1, 0, 0x40, (RECT *)0);
@@ -492,18 +514,18 @@ void Gamestate02_03_06_Draw(void) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 2;
         }
-        n = nGlyphs;
+        n1 = nGlyphs;
         i = 0;
-        if (n > 0) {
-          lut = g_anCosineLut;
-          phase = 0;
+        if (n1 > 0) {
+          lut1 = g_anCosineLut;
+          phase1 = 0;
           do {
             i++;
-            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-            phase += 0xc;
-            rec[0x46] = v * 3 >> 9;
+            v1 = lut1[(g_nPauseMenuTransitionFrames * 8 + phase1) & 0xff];
+            phase1 += 0xc;
+            rec[0x46] = v1 * 3 >> 9;
             rec += 0x58;
-          } while (i < n);
+          } while (i < n1);
         }
       } else if (g_nPauseMenuSubstate == 1) {
         styB[0] = 0xf;
@@ -560,45 +582,45 @@ void Gamestate02_03_06_Draw(void) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 4;
         }
-        n = nGlyphs;
+        n2 = nGlyphs;
         i = 0;
-        if (n > 0) {
-          lut = g_anCosineLut;
-          phase = 0;
+        if (n2 > 0) {
+          lut2 = g_anCosineLut;
+          phase2 = 0;
           do {
             i++;
-            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-            phase += 0xc;
-            rec[0x46] = v * 3 >> 9;
+            v2 = lut2[(g_nPauseMenuTransitionFrames * 8 + phase2) & 0xff];
+            phase2 += 0xc;
+            rec[0x46] = v2 * 3 >> 9;
             rec += 0x58;
-          } while (i < n);
+          } while (i < n2);
         }
         if (g_nSfxVolume == 0) {
           pos[0] = 0x142;
           pos[1] = 0x6c;
           pos[2] = 0x1400;
           BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
-          phase = 0;
+          phase3 = 0;
           if (g_nPauseMenuCursor == 0) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             i = 0;
             do {
               i++;
-              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-              phase += 0xc;
-              rec[0x46] = v * 3 >> 9;
+              v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) & 0xff];
+              phase3 += 0xc;
+              rec[0x46] = v3 * 3 >> 9;
               rec += 0x58;
             } while (i < 3);
           }
         } else {
           i = 0;
           if (g_nSfxVolume > 0) {
-            phase = 0;
+            lut4 = g_anCosineLut;
+            phase4 = 0;
             x = 0x140;
             do {
-              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-              g_pSpriteRecordWriteCursor = rec;
-              FillWord(rec, 0, 0x58);
+              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               cur = g_nPauseMenuCursor;
               *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6d;
@@ -606,22 +628,22 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x1400;
               if (cur == 0) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                    lut4[(g_nPauseMenuTransitionFrames * 8 + phase4) & 0xff] *
                         3 >>
                     9;
               } else {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
                     0;
               }
-              phase += 0xc;
+              phase4 += 0xc;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
                   0x7f;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
                   0xb;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
                   0xff;
-              i++;
               x += 0xa;
+              i++;
             } while (i < g_nSfxVolume);
           }
         }
@@ -630,27 +652,27 @@ void Gamestate02_03_06_Draw(void) {
           pos[1] = 0x7c;
           pos[2] = 0x1400;
           BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
-          phase = 0;
+          phase5 = 0;
           if (g_nPauseMenuCursor == 1) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             i = 0;
             do {
               i++;
-              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-              phase += 0xc;
-              rec[0x46] = v * 3 >> 9;
+              v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) & 0xff];
+              phase5 += 0xc;
+              rec[0x46] = v4 * 3 >> 9;
               rec += 0x58;
             } while (i < 3);
           }
         } else {
           i = 0;
           if (g_nMusicVolume > 0) {
-            phase = 0;
+            lut6 = g_anCosineLut;
+            phase6 = 0;
             x = 0x140;
             do {
-              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-              g_pSpriteRecordWriteCursor = rec;
-              FillWord(rec, 0, 0x58);
+              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               cur = g_nPauseMenuCursor;
               *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x7d;
@@ -658,22 +680,22 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = x;
               if (cur == 1) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                    lut6[(g_nPauseMenuTransitionFrames * 8 + phase6) & 0xff] *
                         3 >>
                     9;
               } else {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
                     0;
               }
-              phase += 0xc;
+              phase6 += 0xc;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
                   0x7f;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
                   0xb;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
                   0xff;
-              i++;
               x += 0xa;
+              i++;
             } while (i < g_nMusicVolume);
           }
         }
@@ -682,23 +704,23 @@ void Gamestate02_03_06_Draw(void) {
         pos[2] = 0x1400;
         if (g_nSoundMonoMixFlag != 0) {
           BuildTextSprites(g_szUiMono, pos, styB, 0x10, 0xb);
-          n = 4;
+          n3 = 4;
         } else {
           BuildTextSprites(g_szUiStereo, pos, styB, 0x10, 0xb);
-          n = 6;
+          n3 = 6;
         }
         if (g_nPauseMenuCursor == 2) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           i = 0;
-          if (n != 0) {
-            phase = 0;
+          if (n3 != 0) {
+            phase7 = 0;
             do {
               i++;
-              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-              phase += 0xc;
-              rec[0x46] = v * 3 >> 9;
+              v5 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
+              phase7 += 0xc;
+              rec[0x46] = v5 * 3 >> 9;
               rec += 0x58;
-            } while (i < n);
+            } while (i < n3);
           }
         }
         if (g_nPadIsDualshockFlag != 0) {
@@ -707,23 +729,23 @@ void Gamestate02_03_06_Draw(void) {
           pos[2] = 0x1400;
           if (g_nOptionVibrationEnabled != 0) {
             BuildTextSprites(g_szUiOn, pos, styB, 0x10, 0xb);
-            n = 2;
+            n4 = 2;
           } else {
             BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
-            n = 3;
+            n4 = 3;
           }
           if (g_nPauseMenuCursor == 3) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             i = 0;
-            if (n != 0) {
-              phase = 0;
+            if (n4 != 0) {
+              phase8 = 0;
               do {
                 i++;
-                v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-                phase += 0xc;
-                rec[0x46] = v * 3 >> 9;
+                v6 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
+                phase8 += 0xc;
+                rec[0x46] = v6 * 3 >> 9;
                 rec += 0x58;
-              } while (i < n);
+              } while (i < n4);
             }
           }
         }
@@ -732,23 +754,23 @@ void Gamestate02_03_06_Draw(void) {
         pos[2] = 0x1400;
         if (g_dwActiveCameraOptions == 2) {
           BuildTextSprites(g_szUiActive, pos, styB, 0x10, 0xb);
-          n = 6;
+          n5 = 6;
         } else {
           BuildTextSprites(g_szUiPassive, pos, styB, 0x10, 0xb);
-          n = 7;
+          n5 = 7;
         }
         if (g_nPauseMenuCursor == 4) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           i = 0;
-          if (n != 0) {
-            phase = 0;
+          if (n5 != 0) {
+            phase9 = 0;
             do {
               i++;
-              v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-              phase += 0xc;
-              rec[0x46] = v * 3 >> 9;
+              v7 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
+              phase9 += 0xc;
+              rec[0x46] = v7 * 3 >> 9;
               rec += 0x58;
-            } while (i < n);
+            } while (i < n5);
           }
         }
       } else {
@@ -788,7 +810,7 @@ void Gamestate02_03_06_Draw(void) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 4;
           }
-          n = nGlyphs;
+          n6 = nGlyphs;
         } else if (g_nActiveLevelId != g_nActiveLevelId / 10 * 10) {
           pos[0] = 0xb7;
           pos[1] = 0xa4;
@@ -798,7 +820,7 @@ void Gamestate02_03_06_Draw(void) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
           }
-          n = nGlyphs;
+          n6 = nGlyphs;
         } else {
           pos[0] = 0xbf;
           pos[1] = 0xa4;
@@ -808,21 +830,22 @@ void Gamestate02_03_06_Draw(void) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 8;
           }
-          n = nGlyphs;
+          n6 = nGlyphs;
         }
         i = 0;
-        if (n > 0) {
-          lut = g_anCosineLut;
-          phase = 0;
+        if (n6 > 0) {
+          lut3 = g_anCosineLut;
+          phase10 = 0;
           do {
             i++;
-            v = lut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff];
-            phase += 0xc;
-            rec[0x46] = v * 3 >> 9;
+            v8 = lut3[(g_nPauseMenuTransitionFrames * 8 + phase10) & 0xff];
+            phase10 += 0xc;
+            rec[0x46] = v8 * 3 >> 9;
             rec += 0x58;
-          } while (i < n);
+          } while (i < n6);
         }
       }
+      __asm__ volatile("" : : "r"(rec));
     } else if (g_nGamestate == 3) {
       unsigned char *rec;
       int n;
@@ -833,6 +856,7 @@ void Gamestate02_03_06_Draw(void) {
       int bx2;
       int pct = ComputeInventoryProgressPercent();
       int bias;
+      char *fmt;
       pos[0] = 0x1b8;
       pos[1] = 0x2c;
       pos[2] = 0x900;
@@ -842,7 +866,8 @@ void Gamestate02_03_06_Draw(void) {
       if (pct >= 0x64) {
         pos[0] -= 0x22;
       }
-      sprintf(buf, g_szFmtPercentD, pct);
+      fmt = g_szFmtPercentD;
+      sprintf(buf, fmt, pct);
       BuildTextSpriteChain(buf, pos, 0x22, 2);
       pos[0] = 0x1de;
       buf[0] = '%';
@@ -851,7 +876,7 @@ void Gamestate02_03_06_Draw(void) {
       pos[0] = 0x5a;
       pos[1] = 0x24;
       pos[2] = 0xb40;
-      sprintf(buf, g_szFmtPercentD, g_nWorldTreasureCollected);
+      sprintf(buf, fmt, g_nWorldTreasureCollected);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
       pos[0] = 0x14d;
       pos[1] = 0x24;
@@ -859,26 +884,24 @@ void Gamestate02_03_06_Draw(void) {
       if (g_nWorldDragonsRescued >= 0xa) {
         pos[0] = 0x132;
       }
-      sprintf(buf, g_szFmtPercentD, g_nWorldDragonsRescued);
+      sprintf(buf, fmt, g_nWorldDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
-      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-      g_pSpriteRecordWriteCursor = rec;
-      FillWord(rec, 0, 0x58);
+      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
+          ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]] << 0x10 >>
           0x19;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          g_dwHudBobSinePhase;
+          g_adwHudBobSinePhaseBlock[0];
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
-      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-      g_pSpriteRecordWriteCursor = rec;
-      FillWord(rec, 0, 0x58);
+      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x12c;
       if (g_nWorldDragonsRescued >= 0xa) {
