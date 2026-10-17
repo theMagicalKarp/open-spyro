@@ -1,16 +1,18 @@
-/* 2026-10-17-2: 487 -> 469 masked, 2190 -> 2205 insns (orig 2210). The
-   pause-menu glyph-wave loops were sharing lut/phase/v/n across every loop,
-   so those pseudos crossed calls and took s-regs. Now: the three loops whose
-   original materialises the cosine LUT BEFORE `phase = 0` (la a2; move a0)
-   get their own `lutN = g_anCosineLut;` local, every other loop indexes
-   g_anCosineLut directly (loop.c hoists the la after `phase = 0`, a1/s2),
-   and each loop has its own phaseN/vN/nN -> a0/v1/a1 like the original.
-   LEFT: (1) global s1/s2 swap -- `rec` (pseudo 199, live from entry since
-   it is only assigned under cursor tests) now outranks box (232) and the
-   held styA/styB addresses (316/354); the original's s1 = box/sty/call-loop
-   phase, s2 = rec. Sharing the FillWord-loop phases, rec split per loop,
-   and an asm use extending rec did not flip it. (2) the tail block at
-   orig[1987..2019] is reordered (+21/-27). (3) the head knots below. */
+/* 2026-10-17-2: 487 -> 366 masked, 2190 -> 2201 insns (orig 2210); the
+   first ~1190 insns are now length-aligned. Levers:
+   - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
+     original); `lutN = g_anCosineLut;` before `phaseN = 0` in the loops whose
+     original materialises the LUT first (incl. both FillWord loops, s2),
+     every other loop indexes g_anCosineLut directly (loop.c hoists the la);
+   - `rec` gets an asm use at the end of the gamestate-2 scope: the longer
+     live range drops its global.c priority below box/styA/styB, which then
+     take s1 as in the original (rec -> s2);
+   - FillWord loops: `cursor -= 0x58; FillWord(cursor, ...)` (no temp, a0
+     direct) and `x += 0xa; i++;` so the i++ sits by the exit test.
+   LEFT: FillWord-loop LUT in s4 (orig s2); the `cur` load sits after the
+   cursor reload in the original; `move a0,zero` order at orig 858/919/978;
+   the gamestate-3 half from orig[1190]; the tail block at orig[1987..2019];
+   the head knots below. */
 /* 2026-10-17-1 (later): 514 -> 487 masked, orig[0..340] now clean except
    two `lbu rows` reload positions. Levers this pass:
    - head loop written exactly like the matched level_5 twin with NO hard-reg
@@ -423,7 +425,8 @@ void Gamestate02_03_06_Draw(void) {
     h = b;
     if (g_nGamestate == 2) {
       unsigned char *rec;
-      short *lut1, *lut2, *lut3;
+      unsigned char *fr;
+      short *lut1, *lut2, *lut3, *lut4, *lut6;
       unsigned char nGlyphs;
       int cur;
       int n1, n2, n3, n4, n5, n6;
@@ -607,12 +610,12 @@ void Gamestate02_03_06_Draw(void) {
         } else {
           i = 0;
           if (g_nSfxVolume > 0) {
+            lut4 = g_anCosineLut;
             phase4 = 0;
             x = 0x140;
             do {
-              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-              g_pSpriteRecordWriteCursor = rec;
-              FillWord(rec, 0, 0x58);
+              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               cur = g_nPauseMenuCursor;
               *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6d;
@@ -620,7 +623,7 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x1400;
               if (cur == 0) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase4) & 0xff] *
+                    lut4[(g_nPauseMenuTransitionFrames * 8 + phase4) & 0xff] *
                         3 >>
                     9;
               } else {
@@ -634,8 +637,8 @@ void Gamestate02_03_06_Draw(void) {
                   0xb;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
                   0xff;
-              i++;
               x += 0xa;
+              i++;
             } while (i < g_nSfxVolume);
           }
         }
@@ -659,12 +662,12 @@ void Gamestate02_03_06_Draw(void) {
         } else {
           i = 0;
           if (g_nMusicVolume > 0) {
+            lut6 = g_anCosineLut;
             phase6 = 0;
             x = 0x140;
             do {
-              rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-              g_pSpriteRecordWriteCursor = rec;
-              FillWord(rec, 0, 0x58);
+              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               cur = g_nPauseMenuCursor;
               *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1b2;
               *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x7d;
@@ -672,7 +675,7 @@ void Gamestate02_03_06_Draw(void) {
               *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = x;
               if (cur == 1) {
                 *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-                    g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase6) & 0xff] *
+                    lut6[(g_nPauseMenuTransitionFrames * 8 + phase6) & 0xff] *
                         3 >>
                     9;
               } else {
@@ -686,8 +689,8 @@ void Gamestate02_03_06_Draw(void) {
                   0xb;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
                   0xff;
-              i++;
               x += 0xa;
+              i++;
             } while (i < g_nMusicVolume);
           }
         }
@@ -837,6 +840,7 @@ void Gamestate02_03_06_Draw(void) {
           } while (i < n6);
         }
       }
+      __asm__ volatile("" : : "r"(rec));
     } else if (g_nGamestate == 3) {
       unsigned char *rec;
       int n;
