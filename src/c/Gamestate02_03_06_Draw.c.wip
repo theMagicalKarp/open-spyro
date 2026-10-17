@@ -1,3 +1,14 @@
+/* 2026-10-17-1: FRAME SOLVED. `rows` now spills to sp+0xA0 with the
+   original's dead reload slots above it: `pad[24]` is replaced by twelve
+   uninitialised `h0..h11` whose only references are empty asms with "g"
+   constraints at the end of the function -- each gets no hard register and
+   a reload slot in pseudo order (after rows), and the asm names the slots as
+   memory with no code (the AdvanceSpyroPhysics fix). Every sp offset in the
+   function now matches. Still -19 insns, 514 masked. Next lever to try:
+   per-loop `phase`/`v` locals in the pause-menu glyph-wave loops (the
+   original keeps them in a0/v1 with the LUT base rematerialised per loop;
+   the shared locals cross calls and land in s-regs) -- measured 545 masked
+   but 2206 insns (-4), i.e. the right register class, other regions moved. */
 /* 2026-10-09: 2108 -> 1727/2210 linked. The capture head and the backdrop
    block are the main-EXE twin of func_level_5_8007B68C and now use its matched
    recipe (do/while barriers, img/img2, R5 barrier + pinned loads, all-volatile
@@ -188,7 +199,7 @@ void Gamestate02_03_06_Draw(void) {
   short quad2[4];     /* sp88 */
   int styD[3];        /* sp90 */
   unsigned char rows; /* spA0 */
-  int pad[24];
+  int h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11;
 
   if (g_nPauseMenuTransitionFrames == 0) {
     register int i asm("$19");
@@ -1155,5 +1166,7 @@ void Gamestate02_03_06_Draw(void) {
     g_nVsyncFramePaceAnchor = VSync(-1);
     PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
   }
+  __asm__ volatile("" : : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5), "g"(h6), "g"(h7), "g"(h8));
+  __asm__ volatile("" : : "g"(h9), "g"(h10), "g"(h11));
   g_nPauseMenuTransitionFrames++;
 }
