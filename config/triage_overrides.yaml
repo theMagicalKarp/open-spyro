@@ -5797,10 +5797,10 @@ UpdateHudCounters_2026_10_16_2:
   date: 2026-10-16
   note: "161 -> 7. Remaining knot is the BOB re-read vs the A200 barrier; mod-9 split across the barrier fixes position but gives v0 (13)."
 TickSpyroAttackEffects:
-  verdict: parked
-  class: "F7 frame hole: same as AdvanceSpyroPhysics - unallocated REG_EQUIV-constant user var pt (pseudo 76) owns the original's 0x68 slot"
+  verdict: matched
+  class: "loop.c-hoisted zero-code asm consumer places the boosted la (A433)"
   date: 2026-10-17
-  note: "src/c/TickSpyroAttackEffects.c.wip 10/562 linked (slot offsets). Unallocated pseudos in pseudo order 73v, 74v, 76v pt (symbol_ref equiv, rematerialized), 440 giv = original [0x58][0x60][0x68 UNUSED][0x70 giv] exactly. A 559-file scan of src/c finds no matched game function with an unallocated user var whose REG_EQUIV is a symbol_ref, so nothing contradicts 'the original toolchain slots them'."
+  note: "3 -> MATCH. Non-volatile `__asm__(\"\" : \"=g\"(hole) : \"r\"(mtx))` in the long block after the first dir movable, with its \"g\" use at the block end: loop.c hoists it after &tip/&dir (lifetime 18 clears the threshold; 7/10 did not), and mtx's birthing-boosted la lands right before it, ahead of the burst giv init."
 UpdateHudCounters_2026_10_17:
   verdict: parked
   class: "head BOB re-read position vs the A200 do/while(0) barrier (7 masked, +1 insn, does not link)"
