@@ -1,25 +1,27 @@
-/* 2026-10-17-3: 344 -> 238 masked, 2199 -> 2209 insns (orig 2210). The
-   gamestate-3 egg-row loop (orig[1987..2101]) now matches exactly:
-   - `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e < Table[cur*6+i])`
-     -- jump.c duplicates the exit test, so the Table la (a1) and the cursor
-     (v1) are set in BOTH test copies and cse carries them into the loop top;
-   - the `== 1` test written `!= 1 ? gx : gx + 0x18` as if/else (forces the
-     cursor reload before the EggsRecovered index, as in the original);
-   - x = `base + e * 0x18` with `base = scroll + 0xe8` its own temp (giv from
-     0, the +0xe8 stays on scroll);
-   - `pos[0] = quad2[0] + 0xc` (the sll/sra 16 sign-extend of the stored short);
-   - TWO EmitTexturedQuad calls, one per arm: jump.c cross-jumps the jal and
-     the giv increment fills its delay slot;
-   - TotalDragonsBlock[cur*6+i] indexed by the expression, not `row` (a
-     plain-pseudo index folds to the $at form; the expression keeps the la,
-     which reload rematerialises into t1 like the original).
-   - the intro-record wave walks `first` itself (first -= 0x58 ...): the
-     original keeps it in the same s-reg as `first`.
-   LEFT: gamestate-3 s0/s1 permutation -- the original gives prim s1 and
-   h/first s0 (ours: prim s0, h/first s1); scoping prim/h per block, and
-   asm uses extending prim's range, changed nothing (prim is pseudo 119,
-   5th in global.c priority; h is 121, 24th). Then the first world-egg loop's
-   x/y/bob-base map (orig s1/s0/s5..s6, ours s0/s5/s7..s4). */
+/* 2026-10-17-3: 344 -> 160 masked, 2199 -> 2209 insns (orig 2210).
+   Gamestate-3 row loop (orig[1666..2101]) now exact except two sched
+   pairs (orig 1740/1779) and the intro-wave phase/LUT order (1959):
+   - egg loop: `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e <
+     Table[cur*6+i])` -- jump.c duplicates the exit test, so the Table la
+     (a1) and cursor (v1) are set in BOTH test copies and cse carries them
+     into the loop top; `== 1` written as if/else on `!= 1` (forces the
+     cursor reload); x = `base + e * 0x18` with `base = scroll + 0xe8`;
+     `pos[0] = quad2[0] + 0xc`; ONE EmitTexturedQuad PER ARM (jump.c
+     cross-jumps the jal, the giv increment fills its delay slot);
+   - TotalDragonsBlock indexed by the expression, not a `row` local (a plain
+     pseudo index folds to the $at form; the expression keeps the la that
+     reload rematerialises into t1);
+   - NO `h` variable: `y - 0xb` inline at every EmitRadialShadedLine (a cse
+     temp outranks prim for s0, as in the original);
+   - gamestate 3 has its own `prim3` (sharing gamestate 2's `prim` pseudo
+     ties the two allocations together);
+   - per-site `bA..bE = bias + K` temps (local-alloc a0/v1/a1, not one t0);
+   - the gems x is a block temp `gx` (the function-level `x` took s0);
+   - prim stores: y-0xa / y+9 inline, `sc = g_nSubMenuScrollOffset` read
+     once, `pf = prim + 0xc` taken right after the first AddPrimToOT;
+   - the intro-record wave walks `first` itself.
+   LEFT: gamestate-3 head (orig 1314-1670): world-egg loop x/y/bob-base map
+   and the second sprite record's store/LUT order; gamestate-2 small ties. */
 /* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
    first ~1310 insns are now length-aligned. Levers:
    - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
@@ -869,6 +871,7 @@ void Gamestate02_03_06_Draw(void) {
       }
       __asm__ volatile("" : : "r"(rec));
     } else if (g_nGamestate == 3) {
+      void *prim3;
       unsigned char *rec;
       int n;
       int phase;
@@ -972,24 +975,24 @@ void Gamestate02_03_06_Draw(void) {
         } while (i < 0xc);
       }
       EmitRadialShadedLine(0x40, 0x45, 0x1c0, 0x45);
-      prim = g_pPrimBufferWriteCursor;
-      SetDrawMode((int)prim, 1, 0, 0x40, (RECT *)0);
-      AddPrimToOT((int)prim);
-      *((int *)((int)prim + 0xc)) = 0x5000000;
-      *((unsigned char *)((int)prim + 0x13)) = 0x2a;
-      *((unsigned char *)((int)prim + 0x10)) = 0x60;
-      *((unsigned char *)((int)prim + 0x11)) = 0x60;
-      *((unsigned char *)((int)prim + 0x12)) = 0x60;
-      *((short *)((int)prim + 0x16)) = 0x46;
-      *((short *)((int)prim + 0x1a)) = 0x46;
-      *((short *)((int)prim + 0x14)) = 0x40;
-      *((short *)((int)prim + 0x18)) = 0x1c0;
-      *((short *)((int)prim + 0x1c)) = 0x40;
-      *((short *)((int)prim + 0x1e)) = 0x47;
-      *((short *)((int)prim + 0x20)) = 0x1c0;
-      *((short *)((int)prim + 0x22)) = 0x47;
-      AddPrimToOT((int)prim + 0xc);
-      g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
+      prim3 = g_pPrimBufferWriteCursor;
+      SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
+      AddPrimToOT((int)prim3);
+      *((int *)((int)prim3 + 0xc)) = 0x5000000;
+      *((unsigned char *)((int)prim3 + 0x13)) = 0x2a;
+      *((unsigned char *)((int)prim3 + 0x10)) = 0x60;
+      *((unsigned char *)((int)prim3 + 0x11)) = 0x60;
+      *((unsigned char *)((int)prim3 + 0x12)) = 0x60;
+      *((short *)((int)prim3 + 0x16)) = 0x46;
+      *((short *)((int)prim3 + 0x1a)) = 0x46;
+      *((short *)((int)prim3 + 0x14)) = 0x40;
+      *((short *)((int)prim3 + 0x18)) = 0x1c0;
+      *((short *)((int)prim3 + 0x1c)) = 0x40;
+      *((short *)((int)prim3 + 0x1e)) = 0x47;
+      *((short *)((int)prim3 + 0x20)) = 0x1c0;
+      *((short *)((int)prim3 + 0x22)) = 0x47;
+      AddPrimToOT((int)prim3 + 0xc);
+      g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
       EmitRadialShadedLine(0x40, 0x47, 0x1c0, 0x47);
       n = g_nSubMenuCursor;
       if (n > 0 && g_abLevelVisitedFlagVirtualBase[n * 6] != 0) {
@@ -1066,38 +1069,40 @@ void Gamestate02_03_06_Draw(void) {
       do {
         if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + i] != 0) {
           unsigned char *first;
+          int bA, bB, bC, bD, bE;
           int *gems;
+          int gx;
+          int pf;
+          int sc;
           int row;
-          prim = g_pPrimBufferWriteCursor;
-          SetDrawMode((int)prim, 1, 0, 0x40, (RECT *)0);
-          AddPrimToOT((int)prim);
-          *((int *)((int)prim + 0xc)) = 0x5000000;
-          *((unsigned char *)((int)prim + 0x13)) = 0x2a;
-          *((unsigned char *)((int)prim + 0x10)) = 0x28;
-          *((unsigned char *)((int)prim + 0x11)) = 0x28;
-          *((unsigned char *)((int)prim + 0x12)) = 0x28;
-          v = y - 0xa;
-          *((short *)((int)prim + 0x16)) = v;
-          *((short *)((int)prim + 0x1a)) = v;
-          v = y + 9;
-          *((short *)((int)prim + 0x1e)) = v;
-          *((short *)((int)prim + 0x22)) = v;
-          v = g_nSubMenuScrollOffset + 0x1ff;
-          *((short *)((int)prim + 0x14)) = g_nSubMenuScrollOffset;
-          *((short *)((int)prim + 0x18)) = v;
-          *((short *)((int)prim + 0x1c)) = g_nSubMenuScrollOffset;
-          *((short *)((int)prim + 0x20)) = v;
-          AddPrimToOT((int)prim + 0xc);
-          h = y - 0xb;
-          g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
-          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, h,
-                               g_nSubMenuScrollOffset + 0xd0, h);
-          bx = bias + 0x13a;
-          bx2 = bias + 0x17a;
-          EmitRadialShadedLine(g_nSubMenuScrollOffset + bx, h,
-                               g_nSubMenuScrollOffset + bx2, h);
-          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, h,
-                               g_nSubMenuScrollOffset + 0x1ee, h);
+          prim3 = g_pPrimBufferWriteCursor;
+          SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
+          AddPrimToOT((int)prim3);
+          pf = (int)prim3 + 0xc;
+          *((int *)((int)prim3 + 0xc)) = 0x5000000;
+          *((unsigned char *)((int)prim3 + 0x13)) = 0x2a;
+          *((unsigned char *)((int)prim3 + 0x10)) = 0x28;
+          *((unsigned char *)((int)prim3 + 0x11)) = 0x28;
+          *((unsigned char *)((int)prim3 + 0x12)) = 0x28;
+          sc = g_nSubMenuScrollOffset;
+          *((short *)((int)prim3 + 0x16)) = y - 0xa;
+          *((short *)((int)prim3 + 0x1a)) = y - 0xa;
+          *((short *)((int)prim3 + 0x1e)) = y + 9;
+          *((short *)((int)prim3 + 0x22)) = y + 9;
+          *((short *)((int)prim3 + 0x14)) = sc;
+          *((short *)((int)prim3 + 0x18)) = sc + 0x1ff;
+          *((short *)((int)prim3 + 0x1c)) = sc;
+          *((short *)((int)prim3 + 0x20)) = sc + 0x1ff;
+          AddPrimToOT(pf);
+          g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, y - 0xb,
+                               g_nSubMenuScrollOffset + 0xd0, y - 0xb);
+          bA = bias + 0x13a;
+          bB = bias + 0x17a;
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + bA, y - 0xb,
+                               g_nSubMenuScrollOffset + bB, y - 0xb);
+          EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, y - 0xb,
+                               g_nSubMenuScrollOffset + 0x1ee, y - 0xb);
           styD[0] = 0x10;
           styD[1] = 1;
           styD[2] = 0x1400;
@@ -1107,12 +1112,12 @@ void Gamestate02_03_06_Draw(void) {
           first = (unsigned char *)g_pSpriteRecordWriteCursor;
           BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
                            styD, 0x12, 2);
-          bx = bias + 0x113;
-          x = g_nSubMenuScrollOffset + bx;
+          bC = bias + 0x113;
+          gx = g_nSubMenuScrollOffset + bC;
           gems = &g_anLevelGemsBlock[g_nSubMenuCursor * 6 + i];
-          pos[0] = x;
+          pos[0] = gx;
           if (*gems < 0x3e8) {
-            pos[0] = x + 0x12;
+            pos[0] = gx + 0x12;
           }
           if (*gems < 0x64) {
             pos[0] += 0x12;
@@ -1123,12 +1128,12 @@ void Gamestate02_03_06_Draw(void) {
           sprintf(buf, g_szFmtPercentD, *gems);
           BuildTextSpriteChain(buf, pos, 0x12, 2);
           pos[2] = 0x1800;
-          bx = bias + 0x15a;
-          pos[0] = g_nSubMenuScrollOffset + bx;
+          bD = bias + 0x15a;
+          pos[0] = g_nSubMenuScrollOffset + bD;
           BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
           pos[2] = 0x1100;
-          bx = bias + 0x16b;
-          pos[0] = g_nSubMenuScrollOffset + bx;
+          bE = bias + 0x16b;
+          pos[0] = g_nSubMenuScrollOffset + bE;
           sprintf(buf, g_szFmtPercentD,
                   g_anLevelTotalGemsTable[g_nSubMenuCursor * 6 + i]);
           BuildTextSpriteChain(buf, pos, 0x12, 2);
@@ -1201,14 +1206,13 @@ void Gamestate02_03_06_Draw(void) {
           y += 0x13;
         }
         i++;
-        h = y - 0xb;
       } while (i < 6);
-      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, h,
-                           g_nSubMenuScrollOffset + 0xd0, h);
-      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x140, h,
-                           g_nSubMenuScrollOffset + 0x180, h);
-      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, h,
-                           g_nSubMenuScrollOffset + 0x1ee, h);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, y - 0xb,
+                           g_nSubMenuScrollOffset + 0xd0, y - 0xb);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x140, y - 0xb,
+                           g_nSubMenuScrollOffset + 0x180, y - 0xb);
+      EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x1ae, y - 0xb,
+                           g_nSubMenuScrollOffset + 0x1ee, y - 0xb);
     }
     g_apSpritePrimQueue[0] = (void *)0;
     if (g_nGamestate == 2 && g_nFlightLevelActive == 0) {

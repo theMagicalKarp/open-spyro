@@ -5843,6 +5843,6 @@ func_credits_8007AA50_2026_10_17_2:
   note: "65 masked unchanged. Read off local-alloc.c: scratch qtys live [2n-1,2n+1] and the address reloads reuse scratches 3/4 (output_block_move), so the original had five values live across the copy. Tried: hi/lo/E4/58BC statement orders (80-107), Blk20 base-pointer locals before/after the barrier (65, cse folds them)."
 Gamestate02_03_06_Draw_2026_10_17_3:
   verdict: parked
-  class: "global-alloc tie: gamestate-3 prim (s0) vs h/first (s1) swapped vs the original"
+  class: "gs3 head register map (world-egg loop x/y/bob base) + 3 sched pairs in the row loop"
   date: 2026-10-17
-  note: "344 -> 238 masked, 2209/2210 insns. Egg-row loop now exact (while-loop duplicated exit test, if/else != 1, base+e*0x18 giv, quad2[0]+0xc, one EmitTexturedQuad per arm, expression-indexed TotalDragonsBlock, first as the wave walker). Block-scoped prim/h and asm range extensions of prim: no change."
+  note: "344 -> 160 masked, 2209/2210 insns. Row loop exact but 3 sched pairs: no h variable (inline y-0xb cse temp outranks prim for s0), gs3-own prim3, per-site bias temps, block gx, egg loop via duplicated while test + per-arm EmitTexturedQuad. Left: gs3 head (orig 1314-1670) world-egg loop register map."
