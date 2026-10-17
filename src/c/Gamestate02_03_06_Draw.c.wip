@@ -1,4 +1,4 @@
-/* 2026-10-17-3: 344 -> 160 masked, 2199 -> 2209 insns (orig 2210).
+/* 2026-10-17-3: 344 -> 73 masked, 2199 -> 2210 insns (LENGTH-EXACT).
    Gamestate-3 row loop (orig[1666..2101]) now exact except two sched
    pairs (orig 1740/1779) and the intro-wave phase/LUT order (1959):
    - egg loop: `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e <
@@ -20,8 +20,24 @@
    - prim stores: y-0xa / y+9 inline, `sc = g_nSubMenuScrollOffset` read
      once, `pf = prim + 0xc` taken right after the first AddPrimToOT;
    - the intro-record wave walks `first` itself.
-   LEFT: gamestate-3 head (orig 1314-1670): world-egg loop x/y/bob-base map
-   and the second sprite record's store/LUT order; gamestate-2 small ties. */
+   Gamestate-3 head (same recipe):
+   - world-egg loop: one EmitTexturedQuad per arm, block-local x3, the quad
+     y as a giv `i * 0x1b + 0x18` (its init lands after the hoisted
+     movables, like the original's `li s0,24`);
+   - record stores: `bob = (frames * 0x10 & 0x1f0) >> 1;` FIRST, then the
+     0x10/0x14 stores, then `lut[bob] >> 8` (both 0x780 records);
+   - marker tests read g_nSubMenuCursor directly (no `n` local);
+   - title width: `v = (v - 1) * 0xa - 0x9e; pos[0] = scroll - v;` (fold
+     otherwise reassociates to `scroll + 0x9e - ...`);
+   - title-glyph wave is a `while` (duplicated exit test, Block la in a1);
+   - `cursor -= 0x58; FillWord(cursor, ...)` for the two later records;
+   - gamestate 3's `rec` is ALSO the row loop's `first` (both s0).
+   LEFT (all 1-3 insn sched/alloc pairs): orig 242/297/318/363 (gs2 head),
+   651/760 (FillWord LUT s2 vs s4), 664/773 (`cur` load order), 858/919/
+   978/1959 (`move a0,zero` vs LUT la order), 1424 (0x40 held in a1),
+   1485/1514 (arg order), 1586 (0xc store first), 1597/1602 (s4/s6 pos/buf
+   la in the bob block), 1632-1665 (record + row-loop preheader order),
+   1740/1779 (row-loop sched pairs). */
 /* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
    first ~1310 insns are now length-aligned. Levers:
    - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
@@ -932,47 +948,45 @@ void Gamestate02_03_06_Draw(void) {
       if (g_nWorldDragonsRescued >= 0xa) {
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x111;
       }
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          ((unsigned short *)
-               g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >>
-                              1] >>
-          8;
+      {
+        int bob;
+        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = ((unsigned short *)g_anCosineLut)[bob] >> 8;
+      }
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
-      x = 0x24;
+      {
+      int x3;
+      x3 = 0x24;
       if (g_nWorldEggsRecovered > 0) {
         i = 0;
-        y = 0x18;
         do {
-          int *uv;
-          int *rgb;
           quad[1] = 0x32;
           quad[2] = 0x18;
-          quad[0] = y;
+          quad[0] = i * 0x1b + 0x18;
           quad[3] = 0x10;
           if (i >= g_nWorldEggsRecovered) {
             pos[1] = 0x3a;
-            pos[0] = x;
+            pos[0] = x3;
             pos[2] = 0x1800;
             BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
-            uv = &g_anLevelSpriteTexWordPairs[2];
-            rgb = pos;
             pos[0] = 0x20;
             pos[1] = 0x20;
             pos[2] = 0x20;
+            EmitTexturedQuad(quad, &g_anLevelSpriteTexWordPairs[2], pos);
           } else {
-            rgb = (int *)0;
-            uv = &g_adwHudBobSinePhaseBlock[0x14c] +
-                 (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2;
+            EmitTexturedQuad(quad,
+                             &g_adwHudBobSinePhaseBlock[0x14c] +
+                                 (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2,
+                             (int *)0);
           }
-          x += 0x1b;
-          EmitTexturedQuad(quad, uv, rgb);
+          x3 += 0x1b;
           i++;
-          y += 0x1b;
         } while (i < 0xc);
+      }
       }
       EmitRadialShadedLine(0x40, 0x45, 0x1c0, 0x45);
       prim3 = g_pPrimBufferWriteCursor;
@@ -994,14 +1008,13 @@ void Gamestate02_03_06_Draw(void) {
       AddPrimToOT((int)prim3 + 0xc);
       g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
       EmitRadialShadedLine(0x40, 0x47, 0x1c0, 0x47);
-      n = g_nSubMenuCursor;
-      if (n > 0 && g_abLevelVisitedFlagVirtualBase[n * 6] != 0) {
+      if (g_nSubMenuCursor > 0 && g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         pos[0] = 0x28;
         pos[1] = 0x48;
         pos[2] = 0x1100;
         EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 1);
       }
-      if (n < 5 && (&g_abLevelVisitedFlag[6])[n * 6] != 0) {
+      if (g_nSubMenuCursor < 5 && (&g_abLevelVisitedFlag[6])[g_nSubMenuCursor * 6] != 0) {
         pos[0] = 0x1d7;
         pos[1] = 0x48;
         pos[2] = 0x1100;
@@ -1015,29 +1028,29 @@ void Gamestate02_03_06_Draw(void) {
       styD[0] = 0x14;
       styD[2] = 0x1000;
       styD[1] = 2;
-      pos[0] = g_nSubMenuScrollOffset - ((v - 1) * 0xa - 0x9e);
+      v = (v - 1) * 0xa - 0x9e;
+      pos[0] = g_nSubMenuScrollOffset - v;
       BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD,
                        0x17, 2);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       phase = 0;
-      if ((int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor] > 0) {
-        do {
-          i++;
-          rec[0x46] =
-              g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
-                  3 >>
-              9;
-          phase += 0xc;
-          rec += 0x58;
-        } while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]);
+      while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
+        i++;
+        rec[0x46] =
+            g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
+                3 >>
+            9;
+        phase += 0xc;
+        rec += 0x58;
       }
-      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-      g_pSpriteRecordWriteCursor = rec;
-      FillWord(rec, 0, 0x58);
+      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
-      bx = bias + 0x15a;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
-          g_nSubMenuScrollOffset + bx;
+      {
+        int bF = bias + 0x15a;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+            g_nSubMenuScrollOffset + bF;
+      }
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
@@ -1048,19 +1061,19 @@ void Gamestate02_03_06_Draw(void) {
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
-      rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-      g_pSpriteRecordWriteCursor = rec;
-      FillWord(rec, 0, 0x58);
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
-          g_nSubMenuScrollOffset + 0x1d1;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
-      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          ((unsigned short *)
-               g_anCosineLut)[(g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >>
-                              1] >>
-          8;
+      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      {
+        int bob;
+        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+            g_nSubMenuScrollOffset + 0x1d1;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
+        *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+        *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+            ((unsigned short *)g_anCosineLut)[bob] >> 8;
+      }
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       i = 0;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
@@ -1068,7 +1081,6 @@ void Gamestate02_03_06_Draw(void) {
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
       do {
         if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + i] != 0) {
-          unsigned char *first;
           int bA, bB, bC, bD, bE;
           int *gems;
           int gx;
@@ -1109,7 +1121,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = g_nSubMenuScrollOffset + 0x24;
           pos[1] = y;
           pos[2] = 0x1100;
-          first = (unsigned char *)g_pSpriteRecordWriteCursor;
+          rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
                            styD, 0x12, 2);
           bC = bias + 0x113;
@@ -1156,18 +1168,18 @@ void Gamestate02_03_06_Draw(void) {
             *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x44)) = 0x29;
           }
           if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
-            first -= 0x58;
-            if ((int)first >= (int)g_pSpriteRecordWriteCursor) {
+            rec -= 0x58;
+            if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                first[0x46] =
+                rec[0x46] =
                     g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) &
                                   0xff] *
                         3 >>
                     9;
-                first -= 0x58;
+                rec -= 0x58;
                 phase += 0xc;
-              } while ((int)first >= (int)g_pSpriteRecordWriteCursor);
+              } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
             }
           }
           if (g_nWorldEggsRecovered > 0 && g_nSubMenuCursor < 3) {
