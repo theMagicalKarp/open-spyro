@@ -5841,3 +5841,13 @@ func_credits_8007AA50_2026_10_17_2:
   class: "cluster A: movstr scratches a3/t0/t1/t2 need v0..a2 busy across the copy"
   date: 2026-10-17
   note: "65 masked unchanged. Read off local-alloc.c: scratch qtys live [2n-1,2n+1] and the address reloads reuse scratches 3/4 (output_block_move), so the original had five values live across the copy. Tried: hi/lo/E4/58BC statement orders (80-107), Blk20 base-pointer locals before/after the barrier (65, cse folds them)."
+Gamestate02_03_06_Draw_2026_10_17_3:
+  verdict: parked
+  class: "length-exact; ~25 scattered 1-3 insn sched/alloc pairs (see wip LEFT)"
+  date: 2026-10-17
+  note: "344 -> 44 masked, 2210/2210 insns. Gs3 head + row loop rebuilt with per-arm calls, giv y, bob-index-first records, while-loop glyph wave, shared rec/first; no h variable (inline y-0xb cse temp outranks prim for s0), gs3-own prim3, per-site bias temps, block gx, egg loop via duplicated while test + per-arm EmitTexturedQuad. Left: see wip LEFT list (sched/alloc pairs only)."
+func_credits_8007AA50_2026_10_17_3:
+  verdict: parked
+  class: "cluster A (movstr scratches need five live values) still gates; C/D are sched/alloc ties"
+  date: 2026-10-17
+  note: "65 masked unchanged. Cluster C: a block temp for `*s - 0x30` gets the original's v0, but dropping that def of c lets combine remove the loop-top `andi 0xff` (-1 insn). `upper = (c - 0x30) < 10` forms were worse (84-105). Case 4: an early `r = ac % 10` swept over 30 statement orders scored 70-100 (worse)."
