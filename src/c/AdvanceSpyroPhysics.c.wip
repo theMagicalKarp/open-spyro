@@ -1,11 +1,20 @@
-/* PARKED 2026-10-09 -- 1097/1098 insns, decode complete (request block,
-   camera locks, substep loop all structurally right; dispatch is a sparse
-   switch on the state). LEFT: loop.c invariant hoisting / global-alloc spill
-   choice in the substep loop. The original keeps from=s8, st=s5, 1=s4,
-   &probe=s7, &contacted=s6 (inner preheader, addiu s6,s2,0x88) and SPILLS i
-   (sp+0x58) and steps (sp+0x60, reloaded per use); ours hoists &n/&start
-   stack addresses and spills contacted instead. Addressable i/steps fix the
-   slots but not the reloads (they must be spilled pseudos). */
+/* PARKED 2026-10-16 -- 22/1098 linked, LENGTH-EXACT; every non-frame
+   instruction matches. LEFT: the frame. The original is 0x98 with an
+   untouched 8-byte slot at sp+0x68 after the i (0x58) / steps (0x60) spill
+   slots, so every register save/restore offset is +8. That slot is
+   reload-era: a pseudo spilled after i/steps whose refs all vanish, or a
+   caller-save area. Leading theory: reload also spills HI in the original
+   (ours spills only t0/t1/LO), which kicks the `len / 340` highpart pseudo
+   out of HI into a shared spill_stack_slot. The code stays identical
+   (`mfhi t0; sra v0,t0,7`) and the slot is left behind. TickSpyroAttackEffects
+   has the same `mfhi t0` highpart and the same +8 hole. Not yet reproduced:
+   find what insn makes reload need an HI_REG/MD_REGS reload.
+   Levers that got here (see the cookbook): loop.c movable threshold (&n
+   lifetime 5 -> 4 via a pre-computed arg), user-var retry preheader
+   (base/b/p are not hoistable out of the outer loop), one variable `p` for
+   contacted+nudge (set twice, so it is never a movable), a non-sdata
+   WS block so cse keeps `b + 4`, and an array-free `*q` suspend RMW
+   (MEM_IN_STRUCT_P decides sched2 aliasing). */
 #include "globals.h"
 #include "sdata.h"
 
@@ -61,6 +70,8 @@ extern int g_nCameraNextMode_blk[];
 #define SPY_REQUEST_STATE 0x86  /* g_nSpyroRequestState */
 #define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
 #define REQ g_adwSpyroRequestMaskBlock
+extern int g_anSpyroWallSlideBlock[];
+#define WS g_anSpyroWallSlideBlock
 
 #define ACTOR_YAW(a) (((unsigned char *)(a))[0x46])
 #define ACTOR_POS(a) ((int *)((unsigned char *)(a) + 0xC))
@@ -68,7 +79,6 @@ extern int g_nCameraNextMode_blk[];
 /* Pull `pos` back to at most 0x140 from `from`. */
 #define LIMIT_STEP(pos, from)                                                  \
   {                                                                            \
-    int len;                                                                   \
                                                                                \
     SubtractVector(d, pos, from);                                              \
     len = VectorLength(d, 1);                                                  \
@@ -90,9 +100,9 @@ extern int g_nCameraNextMode_blk[];
       SubtractVector(d, g_anCollisionContactPoint, pos);                       \
       SetVector3Magnitude(d, 0x100);                                           \
       if (d[2] >= -0xC8) {                                                     \
-        CopyVector(n, pos + SPY_VELOCITY_FP6);                                 \
+        int *v = pos + SPY_VELOCITY_FP6; CopyVector(n, v);                   \
         SetVector3Magnitude(n, 0x100);                                         \
-        if ((d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) >> 8 < 0xE1) {           \
+        if ((len = (d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) >> 8) < 0xE1) {           \
           goto keep##from;                                                     \
         }                                                                      \
       }                                                                        \
@@ -124,21 +134,8 @@ extern int g_nCameraNextMode_blk[];
 
 /* Wall-slide contributions: the first pass takes a fresh flag pointer, the
    retry pass a hoisted nudge pointer. */
-#define WALL_FIRST                                                             \
-  {                                                                            \
-    int *w;                                                                    \
-                                                                               \
-    __asm__ volatile("" : "=r"(w) : "0"(&SPY[SPY_WALL_SLIDE]));                \
-    *w = 1;                                                                    \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
-    AddVector(w + 1, w + 1, g_anCollisionProbeVec);                            \
-  }
-#define WALL_RETRY                                                             \
-  {                                                                            \
-    g_nSpyroWallSlideContributedFlag = 1;                                      \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
-    AddVector(&SPY[SPY_NUDGE], &SPY[SPY_NUDGE], g_anCollisionProbeVec);        \
-  }
+#define WALL_FIRST { int *w = WS; *w = one; SetVector3Magnitude(g_anCollisionProbeVec, 0x400); w++; AddVector(w, w, g_anCollisionProbeVec); }
+#define WALL_RETRY { *b = one; SetVector3Magnitude(g_anCollisionProbeVec, 0x400); AddVector(p, p, g_anCollisionProbeVec); }
 
 /* Spyro's world collision step (0x8003fe40, 4392 bytes). Applies the pending
    impulse, then the scripted requests (state, velocity toward a target,
@@ -154,17 +151,23 @@ int AdvanceSpyroPhysics(void) {
   int e[3];
   int i;
   int steps;
+  int len;
 
   g_nSpyroContactedActorFlag = 0;
   g_nSpyroFirstContactChunkId = 0xFF;
   g_nSpyroWallSlideContributedFlag = 0;
-  SPY[SPY_PROBE_SUSPEND]++;
+  {
+    int *q = &SPY[SPY_PROBE_SUSPEND];
+
+    (*q)++;
+  }
   ZeroVector(&SPY[SPY_NUDGE]);
   AddVector(SPY, SPY, &SPY[SPY_IMPULSE]);
   ZeroVector(&SPY[SPY_IMPULSE]);
   CopyVector(&SPY[SPY_PREV_POS], SPY);
   if ((int)g_dwSpyroRequestMask < 0) {
     unsigned int m;
+    register unsigned int t asm("$4");
     unsigned int *rq;
     unsigned int *rq2;
 
@@ -176,8 +179,6 @@ int AdvanceSpyroPhysics(void) {
     rq = REQ;
     m = *rq;
     if (m & 7) {
-      int z;
-
       if (m & 0x40) {
         if (m & 1) {
           g_anSpyroVelocityFp6[0] = g_anSpyroRequestVelocity[0] << 6;
@@ -187,10 +188,10 @@ int AdvanceSpyroPhysics(void) {
           g_anSpyroVelocityFp6[1] = g_anSpyroRequestVelocity[1] << 6;
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
-        if (!(m & 4)) {
-          goto speed;
+        if (m & 4) {
+          g_anSpyroVelocityFp6[2] = g_anSpyroRequestVelocity[2] << 6;
+          g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
-        z = g_anSpyroRequestVelocity[2];
       } else {
         if (m & 1) {
           g_anSpyroVelocityFp6[0] =
@@ -202,22 +203,21 @@ int AdvanceSpyroPhysics(void) {
               (g_anSpyroRequestTargetPos[1] - g_nSpyroWorldPosY) << 6;
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
-        if (!(m & 4)) {
-          goto speed;
+        if (m & 4) {
+          g_anSpyroVelocityFp6[2] =
+              (g_anSpyroRequestTargetPos[2] - D_80078A60) << 6;
+          g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
-        z = g_anSpyroRequestTargetPos[2] - D_80078A60;
       }
-      g_anSpyroVelocityFp6[2] = z << 6;
-      g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
-    speed:
       g_nSpyroMotionSpeed = VectorLength((int *)(rq - 0x40), 0);
     }
     rq2 = REQ;
-    if (*rq2 & 8) {
+    t = *rq2;
+    if (t & 8) {
       g_abSpyroPersistentEuler[0] = g_abSpyroRequestEuler[0];
       g_nSpyroBodyPitch = g_abSpyroRequestEuler[0] << 4;
     }
-    m = *rq2;
+    m = t;
     if (m & 0x10) {
       g_abSpyroPersistentEuler[1] = g_abSpyroRequestEuler[1];
       g_nSpyroBodyRoll = g_abSpyroRequestEuler[1] << 4;
@@ -286,7 +286,9 @@ int AdvanceSpyroPhysics(void) {
                   side = 0;
                   t = h - 0x40;
                 }
-                a = ((t << 4) - g_nSpyroMoveTargetYaw) & 0xFFF;
+                a = t << 4;
+                __asm__ volatile("");
+                a = (a - g_nSpyroMoveTargetYaw) & 0xFFF;
                 if (a > 0x800) {
                   a -= 0x1000;
                 }
@@ -326,15 +328,19 @@ int AdvanceSpyroPhysics(void) {
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
         g_anCameraLatchedAnchorPos[2] += 0x200;
+        g_nCameraTargetYawBiasFromMode = ACTOR_YAW(g_pScriptedCameraActor) << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = 0x8000000A;
         g_nSpyroMoveTargetYaw = keepYaw;
         g_dwSpyroRequestMask |= 0x200;
-        g_nCameraTargetYawBiasFromMode = ACTOR_YAW(g_pScriptedCameraActor) << 4;
       } else if (m & 0x8000) {
         g_nCameraNextMode_blk[0] = 0x80000007;
-      } else if (*rq2 & 0x10000) {
-        g_nCameraNextMode_blk[0] = 0x8000000C;
+      } else {
+        register unsigned int r asm("$2") = t & 0x10000;
+
+        if (r) {
+          g_nCameraNextMode_blk[0] = 0x8000000C;
+        }
       }
     }
     if (g_dwSpyroRequestMask & 0x20000) {
@@ -349,11 +355,8 @@ int AdvanceSpyroPhysics(void) {
     AddVector(g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6,
               g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6, g_anSpyroVelocityFp6);
   } else {
-    {
-      int len = VectorLength(g_anSpyroVelocityFp6, 1);
-
-      steps = len / 340 + 1;
-    }
+    len = VectorLength(g_anSpyroVelocityFp6, 1);
+    steps = len / 340 + 1;
     if (steps >= 2) {
       g_anSpyroVelocityFp6[0] /= steps;
       g_anSpyroVelocityFp6[1] /= steps;
@@ -361,20 +364,21 @@ int AdvanceSpyroPhysics(void) {
     }
     i = 0;
     if (steps > 0) {
-      int *fp6 = g_anSpyroVelocityFp6;
+      register int *fp6 asm("$16") = g_anSpyroVelocityFp6;
       int *from = fp6 + 3;
       int *pos = fp6 - SPY_VELOCITY_FP6;
-      int *st = fp6 - (SPY_VELOCITY_FP6 - SPY_STATE);
+      register int *st asm("$21") = fp6 - (SPY_VELOCITY_FP6 - SPY_STATE);
+      register int one asm("$20") = 1;
 
       do {
         int tries;
-        int *contacted;
+        int *p;
 
         CopyVector(from, pos);
         CopyVector(start, pos);
         AddVector(pos, pos, from - 3);
         tries = 0;
-        __asm__ volatile("" : "=r"(contacted) : "0"(pos + SPY_CONTACTED));
+        p = pos + SPY_CONTACTED;
         do {
           int mask = 0;
           void *hit;
@@ -389,7 +393,7 @@ int AdvanceSpyroPhysics(void) {
               }
               if (st[SPY_TRIGGER_FLAGS - SPY_STATE] & 0x4000) {
                 hit = DispatchActorContactAtSphere(
-                    pos, 0x164, &g_dwSpyroTriggerEventFlags, 0x80000, 0, 1);
+                    pos, 0x164, &g_dwSpyroTriggerEventFlags, 0x80000, 0, one);
               }
               break;
             }
@@ -398,7 +402,7 @@ int AdvanceSpyroPhysics(void) {
             hit = DispatchActorContactAtSphere(
                 st - SPY_STATE, 0x164,
                 (unsigned int *)(st - (SPY_STATE - SPY_TRIGGER_FLAGS)), 0x20000,
-                0, 1);
+                0, one);
             if (hit == 0) {
               goto collide;
             }
@@ -423,13 +427,13 @@ int AdvanceSpyroPhysics(void) {
             /* FALLTHROUGH */
           default:
             hit = DispatchActorContactAtSphere(
-                pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, 1);
+                pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, one);
             break;
           }
         contact:
           if (hit != 0) {
             g_pSpyroContactActor = hit;
-            *contacted = 1;
+            *p = one;
             LIMIT_STEP(pos, from);
           }
         collide:
@@ -443,12 +447,18 @@ int AdvanceSpyroPhysics(void) {
           tries++;
         } while (tries < 6);
         if (tries == 6) {
+          int *b;
+          int *base;
+
           tries = 0;
+          b = WS;
+          p = b + 1;
+          base = start;
           do {
             if (!CollideSphereWithWorldAndActors(pos, 0x164, 0x164)) {
               break;
             }
-            SLIDE(start, WALL_RETRY);
+            SLIDE(base, WALL_RETRY);
             tries++;
           } while (tries < 6);
         }

@@ -5475,9 +5475,9 @@ func_8001228C:
   note: "Comment-only src/c/func_8001228C.c; main.o's epilogue covers the bytes."
 AdvanceSpyroPhysics:
   verdict: parked
-  class: "loop.c hoist / global-alloc spill choice (i, steps spilled in orig)"
-  date: 2026-10-09
-  note: "src/c/AdvanceSpyroPhysics.c.wip: 1097/1098 insns, full decode. Residue is which substep-loop values get callee-saved regs vs spill slots."
+  class: "F7 frame hole only: +8 reload-era slot at sp+0x68 (HI-spill theory)"
+  date: 2026-10-16
+  note: "src/c/AdvanceSpyroPhysics.c.wip: 22/1098 linked, length-exact, all 22 are save/restore offsets (frame 0x90 vs 0x98). Same hole as TickSpyroAttackEffects (mfhi t0 highpart)."
 UpdateCameraSpringForMode:
   verdict: matched
   class: "B1 retired (SDATA gp-relative declaration)"
@@ -5781,3 +5781,8 @@ TickSpyroAttackEffects_2026_10_16_1:
   class: "F7 slot hole at 0x68 (one unallocated pseudo between sfxDone and the burst giv)"
   date: 2026-10-16
   note: "Tried a block-local copy of k at the join (regclass could send a LO-sourced copy to memory, then delete_output_reload would leave an untouched slot): every spelling is folded before reload. cse substitutes k for the copy even across a volatile barrier, per-arm copies merge into the mult, and a `lo`-pinned k is propagated into the sll. Frame stays 0x98. Still 10."
+AdvanceSpyroPhysics_2026_10_16_1:
+  verdict: parked
+  class: "F7 frame hole only (144 -> 22 linked)"
+  date: 2026-10-16
+  note: "Loop/request/camera knots all solved (loop.c movable threshold, user-var retry preheader, twice-set p, non-sdata WS block, *q suspend RMW). Remaining: the original's extra 8-byte reload slot after i/steps; ours spills t0/t1/LO only."
