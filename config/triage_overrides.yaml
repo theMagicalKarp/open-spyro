@@ -5816,3 +5816,13 @@ func_credits_8007AA50_2026_10_17_1:
   class: "cluster A: movstr scratch qtys skip a2 in the original (unknown a2 occupant across the copy)"
   date: 2026-10-17
   note: "112 -> 103 linked via a volatile D_800785E4_v re-read for the setup call's src arg + volatile D_80076C1C + store order. Scratches are local-alloc priority-0 qtys allocated last; original's a3/t0/t1/t2 means a2 is busy across the copy, ours gives v0/a2. Case-4 asm-pin variants (ac/dc/both/lt-before) and arg-4 forms for the 0x80016500 call all worse."
+AdvanceSpyroPhysics_2026_10_17_1:
+  verdict: matched
+  class: "F7 frame hole reproduced: spilled asm-\"g\" dummy local"
+  date: 2026-10-17
+  note: "`int hole;` declared after len (pseudo order) + `__asm__ volatile(\"\" : : \"g\"(hole));` at the end: uninitialised, live through the function, no hard reg, reload slots it at sp+0x68 and the asm uses the slot as memory with no code. 22 -> 0."
+TickSpyroAttackEffects_2026_10_17_1:
+  verdict: parked
+  class: "sched1 birthing boost: single-set mtx la placed after the spilled giv init (3 insns)"
+  date: 2026-10-17
+  note: "Hole dummy fixed the frame (10 -> 3, pad[2] removed). Left: preheader `la s6` vs `sw zero,112(sp)` order; adjust_priority boosts insn 673 when its last consumer is picked. Original's mtx would need reg_n_sets != 1. amtx->mtx merge 27, rec->mtx 29, seg->mtx 70, asm-opaque re-set +1 insn."
