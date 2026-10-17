@@ -5836,3 +5836,8 @@ Gamestate02_03_06_Draw_2026_10_17_2:
   class: "global-alloc tie: rec (live-from-entry) outranks box/sty temps for s1"
   date: 2026-10-17
   note: "487 -> 469 masked, 2190 -> 2205/2210 insns. Per-loop lut/phase/v/n locals (LUT la before phase=0 only in the three loops that had `lut =`; others index the global so loop.c hoists it). Left: rec vs box/sty s1/s2 swap, tail block reorder at orig[1987..2019]."
+func_credits_8007AA50_2026_10_17_2:
+  verdict: parked
+  class: "cluster A: movstr scratches a3/t0/t1/t2 need v0..a2 busy across the copy"
+  date: 2026-10-17
+  note: "65 masked unchanged. Read off local-alloc.c: scratch qtys live [2n-1,2n+1] and the address reloads reuse scratches 3/4 (output_block_move), so the original had five values live across the copy. Tried: hi/lo/E4/58BC statement orders (80-107), Blk20 base-pointer locals before/after the barrier (65, cse folds them)."
