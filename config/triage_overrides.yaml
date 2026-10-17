@@ -5475,9 +5475,9 @@ func_8001228C:
   note: "Comment-only src/c/func_8001228C.c; main.o's epilogue covers the bytes."
 AdvanceSpyroPhysics:
   verdict: parked
-  class: "F7 frame hole only: +8 reload-era slot at sp+0x68 (HI-spill theory)"
-  date: 2026-10-16
-  note: "src/c/AdvanceSpyroPhysics.c.wip: 22/1098 linked, length-exact, all 22 are save/restore offsets (frame 0x90 vs 0x98). Same hole as TickSpyroAttackEffects (mfhi t0 highpart)."
+  class: "F7 frame hole: original slots an unallocated REG_EQUIV-constant user var (b, pseudo 476) - stock 2.7.2 reload never does"
+  date: 2026-10-17
+  note: "22/1098 linked, length-exact, only save/restore offsets (0x90 vs 0x98). Unallocated pseudos in pseudo order: 72 i (0x58), 73 steps (0x60), 476 b=&WS (REG_EQUIV symbol_ref, rematerialized lui/addiu t0) -> 0x68 = the original hole. Refuted: HI-spill/highpart kick (matched ChangeSpyroState etc spill LO with a pseudo in HI and keep the frame), dead div-remainder slot (TSAE has no divs), caller-save area. 5 len/340 forms + 4 b scope/set-count forms: frame unchanged."
 UpdateCameraSpringForMode:
   verdict: matched
   class: "B1 retired (SDATA gp-relative declaration)"
@@ -5796,3 +5796,13 @@ UpdateHudCounters_2026_10_16_2:
   class: "head bob re-read placement only (+1 length, 7 masked)"
   date: 2026-10-16
   note: "161 -> 7. Remaining knot is the BOB re-read vs the A200 barrier; mod-9 split across the barrier fixes position but gives v0 (13)."
+TickSpyroAttackEffects:
+  verdict: parked
+  class: "F7 frame hole: same as AdvanceSpyroPhysics - unallocated REG_EQUIV-constant user var pt (pseudo 76) owns the original's 0x68 slot"
+  date: 2026-10-17
+  note: "src/c/TickSpyroAttackEffects.c.wip 10/562 linked (slot offsets). Unallocated pseudos in pseudo order 73v, 74v, 76v pt (symbol_ref equiv, rematerialized), 440 giv = original [0x58][0x60][0x68 UNUSED][0x70 giv] exactly. A 559-file scan of src/c finds no matched game function with an unallocated user var whose REG_EQUIV is a symbol_ref, so nothing contradicts 'the original toolchain slots them'."
+UpdateHudCounters_2026_10_17:
+  verdict: parked
+  class: "head BOB re-read position vs the A200 do/while(0) barrier (7 masked, +1 insn, does not link)"
+  date: 2026-10-17
+  note: "Original keeps mod-9, BOB update, BOB re-read, both icon-record stores and the GEM_STATE lbu in ONE sched2 block, so its cse break is not a NOTE barrier. Re-measured 2026-10-17: barrier after the cos load 44 (block-1 local-alloc rotates a0/a1/a2/a3 by one), after 0x1A6 55, after 0x1A5 59, none 80/934 insns (held base folds), volatile re-read 44, asm-opaque HUD base (A383) at top or after mod-9 59/917. Parked state (7) is still best."

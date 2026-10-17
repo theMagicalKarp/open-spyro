@@ -1,3 +1,8 @@
+/* UPDATE 2026-10-17 -- frame hole owner: pt (pseudo 76, a user var with a
+   REG_EQUIV symbol_ref, rematerialised). Unallocated pseudos 73, 74, 76, 440
+   in pseudo order are exactly the original's [0x58][0x60][0x68 UNUSED][0x70
+   giv]. Stock 2.7.2 never slots a constant-equivalent pseudo; see the
+   AdvanceSpyroPhysics.c.wip header (same class). */
 #include "globals.h"
 
 extern uint GetRandomU32(void);

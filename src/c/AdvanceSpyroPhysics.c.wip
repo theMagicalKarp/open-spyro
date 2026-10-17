@@ -1,3 +1,15 @@
+/* UPDATE 2026-10-17 -- the hole has an owner. Unallocated pseudos here, in
+   pseudo order: 72 i (0x58), 73 steps (0x60) and 476 b = &WS, a user var
+   whose REG_EQUIV symbol_ref makes reload rematerialise it (lui/addiu t0) and
+   so gets NO slot from stock 2.7.2 alter_reg. Give 476 a slot and it lands at
+   0x68 -- the original's hole. TickSpyroAttackEffects has the same layout
+   with pt (pseudo 76). No matched game function has an unallocated
+   symbol-equivalent user var, so "the original toolchain slots them" is
+   uncontradicted. Refuted this session: the HI-spill theory (matched
+   ChangeSpyroState / DispatchSpyroPhysicsByState spill LO with a pseudo in
+   HI and keep their frames), a dead div-remainder slot, a caller-save area.
+   Five len/340 spellings and four b scope/set-count forms leave the frame
+   at 0x90. Needed: a zero-code source form that gives b a slot. */
 /* PARKED 2026-10-16 -- 22/1098 linked, LENGTH-EXACT; every non-frame
    instruction matches. LEFT: the frame. The original is 0x98 with an
    untouched 8-byte slot at sp+0x68 after the i (0x58) / steps (0x60) spill
