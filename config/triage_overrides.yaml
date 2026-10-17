@@ -5806,3 +5806,8 @@ UpdateHudCounters_2026_10_17:
   class: "head BOB re-read position vs the A200 do/while(0) barrier (7 masked, +1 insn, does not link)"
   date: 2026-10-17
   note: "Original keeps mod-9, BOB update, BOB re-read, both icon-record stores and the GEM_STATE lbu in ONE sched2 block, so its cse break is not a NOTE barrier. Re-measured 2026-10-17: barrier after the cos load 44 (block-1 local-alloc rotates a0/a1/a2/a3 by one), after 0x1A6 55, after 0x1A5 59, none 80/934 insns (held base folds), volatile re-read 44, asm-opaque HUD base (A383) at top or after mod-9 59/917. Parked state (7) is still best."
+UpdateHudCounters_2026_10_17_1:
+  verdict: matched
+  class: "split computation across a barrier + hard-reg pins steer local-alloc"
+  date: 2026-10-17
+  note: "Head: q*9 above the A200 do/while(0), `Mod9 = t - q9` below it, bob re-read `idx` first in block 2. q9 pinned $2 (global, so local-alloc sees v0 live and gives idx v1); q pinned $3 + `__asm__(\"\" : : \"r\"(q))` (else q takes q9's v0 suggestion); `__asm__ volatile(\"\")` after the store keeps subu/sw beside the re-read. 7 -> 0, 914 -> 913."
