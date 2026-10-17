@@ -1,4 +1,4 @@
-/* 2026-10-17-3: 344 -> 73 masked, 2199 -> 2210 insns (LENGTH-EXACT).
+/* 2026-10-17-3: 344 -> 52 masked, 2199 -> 2210 insns (LENGTH-EXACT).
    Gamestate-3 row loop (orig[1666..2101]) now exact except two sched
    pairs (orig 1740/1779) and the intro-wave phase/LUT order (1959):
    - egg loop: `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e <
@@ -32,12 +32,16 @@
    - title-glyph wave is a `while` (duplicated exit test, Block la in a1);
    - `cursor -= 0x58; FillWord(cursor, ...)` for the two later records;
    - gamestate 3's `rec` is ALSO the row loop's `first` (both s0).
+   - lut7/lut8/lut9 = g_anCosineLut before phaseN = 0 (la-before-phase, A434);
+   - the gs3 POLY_F4 box stores in field order x0,y0,x1,y1,x2,y2,x3,y3;
+   - styD[0], styD[1], styD[2] in index order (the shared `2` lands in a3);
+   - last 0x780 record: 0xc, 0x10, 0x36, `bob = ...`, 0x14, 0x46.
    LEFT (all 1-3 insn sched/alloc pairs): orig 242/297/318/363 (gs2 head),
-   651/760 (FillWord LUT s2 vs s4), 664/773 (`cur` load order), 858/919/
-   978/1959 (`move a0,zero` vs LUT la order), 1424 (0x40 held in a1),
-   1485/1514 (arg order), 1586 (0xc store first), 1597/1602 (s4/s6 pos/buf
-   la in the bob block), 1632-1665 (record + row-loop preheader order),
-   1740/1779 (row-loop sched pairs). */
+   651/760 (FillWord LUT s2 vs s4: gs2 `rec` is live there, A434 asm use),
+   664/773 (`cur` vs cursor load order), 1485 (marker-call arg order),
+   1586 (0xc store first), 1597/1602 + 1651-1665 (the row-loop pos/buf la
+   movables float above i/y init in the original), 1740/1779, 1959 (gs3
+   wave LUT: a lutR local tips loop.c's hoist threshold, 6144 -> s8). */
 /* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
    first ~1310 insns are now length-aligned. Levers:
    - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
@@ -471,7 +475,7 @@ void Gamestate02_03_06_Draw(void) {
     if (g_nGamestate == 2) {
       unsigned char *rec;
       unsigned char *fr;
-      short *lut1, *lut2, *lut3, *lut4, *lut6;
+      short *lut1, *lut2, *lut3, *lut4, *lut6, *lut7, *lut8, *lut9;
       unsigned char nGlyphs;
       int cur;
       int n1, n2, n3, n4, n5, n6;
@@ -753,10 +757,11 @@ void Gamestate02_03_06_Draw(void) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           i = 0;
           if (n3 != 0) {
+            lut7 = g_anCosineLut;
             phase7 = 0;
             do {
               i++;
-              v5 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
+              v5 = lut7[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
               phase7 += 0xc;
               rec[0x46] = v5 * 3 >> 9;
               rec += 0x58;
@@ -778,10 +783,11 @@ void Gamestate02_03_06_Draw(void) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             i = 0;
             if (n4 != 0) {
+              lut8 = g_anCosineLut;
               phase8 = 0;
               do {
                 i++;
-                v6 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
+                v6 = lut8[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
                 phase8 += 0xc;
                 rec[0x46] = v6 * 3 >> 9;
                 rec += 0x58;
@@ -803,10 +809,11 @@ void Gamestate02_03_06_Draw(void) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           i = 0;
           if (n5 != 0) {
+            lut9 = g_anCosineLut;
             phase9 = 0;
             do {
               i++;
-              v7 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
+              v7 = lut9[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
               phase9 += 0xc;
               rec[0x46] = v7 * 3 >> 9;
               rec += 0x58;
@@ -997,10 +1004,10 @@ void Gamestate02_03_06_Draw(void) {
       *((unsigned char *)((int)prim3 + 0x10)) = 0x60;
       *((unsigned char *)((int)prim3 + 0x11)) = 0x60;
       *((unsigned char *)((int)prim3 + 0x12)) = 0x60;
-      *((short *)((int)prim3 + 0x16)) = 0x46;
-      *((short *)((int)prim3 + 0x1a)) = 0x46;
       *((short *)((int)prim3 + 0x14)) = 0x40;
+      *((short *)((int)prim3 + 0x16)) = 0x46;
       *((short *)((int)prim3 + 0x18)) = 0x1c0;
+      *((short *)((int)prim3 + 0x1a)) = 0x46;
       *((short *)((int)prim3 + 0x1c)) = 0x40;
       *((short *)((int)prim3 + 0x1e)) = 0x47;
       *((short *)((int)prim3 + 0x20)) = 0x1c0;
@@ -1026,8 +1033,8 @@ void Gamestate02_03_06_Draw(void) {
       pos[1] = 0x5c;
       pos[2] = 0xe00;
       styD[0] = 0x14;
-      styD[2] = 0x1000;
       styD[1] = 2;
+      styD[2] = 0x1000;
       v = (v - 1) * 0xa - 0x9e;
       pos[0] = g_nSubMenuScrollOffset - v;
       BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD,
@@ -1065,11 +1072,11 @@ void Gamestate02_03_06_Draw(void) {
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       {
         int bob;
-        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
             g_nSubMenuScrollOffset + 0x1d1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
         *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
         *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
             ((unsigned short *)g_anCosineLut)[bob] >> 8;
