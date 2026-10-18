@@ -1,42 +1,45 @@
-/* 2026-10-18: 44 -> 22 masked (linked 81 -> 52), still length-exact.
-   Fixed this pass (each measured on the shape diff, then linked):
-   - FillWord-loop LUT now s2: rec keeps its end-of-gs2 asm use (box/styA
-     priority) but each FillWord arm ends with a zero-code
-     `__asm__("" : "=r"(rec))` def, so rec is DEAD across the FillWord loops
-     and global.c can hand s2 to lut4/lut6 (orig 651/760).
-   - `cur` vs cursor load order (664/773): `rp = g_pSpriteRecordWriteCursor;`
-     read BEFORE `cur = g_nPauseMenuCursor;` -- both loads were boosted /
-     tied and sched fell back to LUID; the explicit cursor local gives it the
-     lower LUID.
-   - gs2 head `lbu rows` reloads (297/318): the box-line arms use a block
-     `int ve = rows * 0x10 + 0xb6;` / `rows * 0x12 + 0x9e` (single-set ->
-     F14 boosted, so the sll lands after the li a0/a1 arg sets, and reload's
-     lbu follows it); substate 1's `v` then needs two sets (`v = rows;
-     v <<= 4;`) or it turns birthing and costs a move.
-   - li 67 (242): ONE block `int k` carries 0x5000000, 0x2a and 0x43 -- k is
-     multi-set (no boost) and the anti/output deps chain the three sets, so
-     sched1 leaves `box = prim + 0x44` with the higher LUID; sched2 then puts
-     the box addiu at T-5 (reorg moves it into the bne slot) and li 67 lands
-     above the h stores.
-   - intro-record wave (1959): `phase * 0xc` with `phase++` (A216 giv) puts
-     the phase init after the hoisted LUT la.
-   LEFT (22 masked):
-   - 1485: reorg fills the second marker's beqz slot with `move a2,zero`
-     where the original takes `addiu a0,sp,64` (same RTL order as the first
-     marker, which matches); arg carriers/pins inert.
-   - 1586-1594 + 1597/1602 + 1640-1643 + 1651-1665: the row-loop preheader.
-     sched2 gives every hard-reg set the PRECEDING CALL's priority (the
-     gcc 2.7.2 call_used_regs[i] bug), so the loop.c movables s4/s6 (placed
-     after FillWord-2 by sched1, highest LUIDs) win the tail slots
-     1660/1664. The original has them at 1597/1602 (between the FillWords)
-     and i/y at 1660/1664 with 1651/1656 left as nops -- i.e. in the
-     original s4/s6 were NOT ready in the tail. Explicit pp/bp locals are
-     cse'd back into the movable (inert, 4 positions); record-1 statement
-     order x struct-view 0x36 store swept (48): floor 24.
-   - 1779: the Gems `la` and the idx `sll` are both F14-boosted producers of
-     `addu a2`, tie -> LUID; expand emits the la after the sll for every
-     spelling (&B[i], B + i, (int)B + i*4, i[B]); a named base is a user var
-     that drifts to the block top (35). */
+/* 2026-10-18: 81 -> 9 LINKED differing words (length- and frame-exact).
+   Frame: the previous session's vars=304 (frame 368) was 4 slots too big --
+   the masked shape diff masks the prologue immediates, so it never showed.
+   The extra slots are USE-only pseudos (combine.c distribute_notes puts a
+   `(use (reg))` at a label when a REG_DEAD note has no home): jump.c's
+   duplicated `while` exit tests and the gs3 marker reads mint a few more of
+   them than the old do-while forms. Those slots are unreferenced, exactly
+   like the h0..h11 padding, so the count is what matters: h0..h7 (8, was
+   12) restores 336 with every sp offset unchanged.
+   Fixed this session:
+   - FillWord-loop LUT s2 + the gs2 exits threading straight to the shared
+     tail: the end-of-gs2 `asm("" :: "r"(rec))` is GONE. It was an insn
+     between the join label and `j tail`, so jump.c could not thread the
+     guard branches (6 wrong targets in the linked diff), and it kept rec
+     live across the FillWord loops (lut4/lut6 lost s2).
+   - `cur` vs cursor load order: `rp = g_pSpriteRecordWriteCursor;` read
+     BEFORE `cur = g_nPauseMenuCursor;` (both boosted, tie -> LUID).
+   - gs2 head `lbu rows` reloads: single-set block `ve` for the box-line
+     ends (F14 boost puts the sll after the li a0/a1 arg sets); substate 1's
+     `v` needs two sets (`v = rows; v <<= 4;`).
+   - li 67: one block `int k` carries 0x5000000/0x2a/0x43 (multi-set, the
+     anti/output chain keeps `box = prim + 0x44` at the higher LUID, so sched2
+     puts the box addiu at T-5 and reorg moves it into the bne slot).
+   - intro-record wave: `phase * 0xc` + `phase++` (A216 giv).
+   - row-loop preheader (was 14 masked): `register int *pp asm("$20")` /
+     `register char *bp asm("$22")` = pos/buf set in record 1 and used as the
+     loop's call args, fenced by two empty `do { } while (0);` loop-note
+     barriers (after the 0xc store, and after the 0x45 store). The barriers
+     keep the hard-reg sets above FillWord-2 in sched2 (a hard-reg set
+     otherwise inherits the preceding call's priority and sinks to the tail
+     stalls) and leave 1651/1656 as nops with i/y at 1660/1664.
+   LEFT (9 linked words, 3 knots):
+   - 0x8001bb40: reorg fills the second marker's beqz slot with
+     `move a2,zero` (orig `addiu a0,sp,64`); same RTL order as the first
+     marker, identical live-at-start sets at both targets.
+   - 0x8001bdac: record 2's frames load must precede the 0x36 store (orig
+     lw v0 / li v1,506). `bob` before the 0x36 store gives the right order but
+     local-alloc puts the 506/1920 constants in v0 (life 1, priority 2) ahead
+     of the frames chain; shared `k` carriers (180 orders) swap cursor/k.
+   - 0x8001bfd8: Gems `la` vs idx `sll`: both F14-boosted producers of
+     `addu a2`, tie -> LUID; expand always emits the la after the sll; a
+     named base drifts to the block top. */
 /* 2026-10-17-3: 344 -> 44 masked, 2199 -> 2210 insns (LENGTH-EXACT).
    Gamestate-3 row loop (orig[1666..2101]) now exact except two sched
    pairs (orig 1740/1779) and the intro-wave phase/LUT order (1959):
@@ -329,7 +332,7 @@ void Gamestate02_03_06_Draw(void) {
   short quad2[4];     /* sp88 */
   int styD[3];        /* sp90 */
   unsigned char rows; /* spA0 */
-  int h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11;
+  int h0, h1, h2, h3, h4, h5, h6, h7;
 
   if (g_nPauseMenuTransitionFrames == 0) {
     int i;
@@ -742,7 +745,6 @@ void Gamestate02_03_06_Draw(void) {
               i++;
             } while (i < g_nSfxVolume);
           }
-          __asm__("" : "=r"(rec));
         }
         if (g_nMusicVolume == 0) {
           pos[0] = 0x142;
@@ -796,7 +798,6 @@ void Gamestate02_03_06_Draw(void) {
               i++;
             } while (i < g_nMusicVolume);
           }
-          __asm__("" : "=r"(rec));
         }
         pos[0] = 0x142;
         pos[1] = 0x8c;
@@ -947,7 +948,6 @@ void Gamestate02_03_06_Draw(void) {
           } while (i < n6);
         }
       }
-      __asm__ volatile("" : : "r"(rec));
     } else if (g_nGamestate == 3) {
       void *prim3;
       unsigned char *rec;
@@ -960,6 +960,8 @@ void Gamestate02_03_06_Draw(void) {
       int pct = ComputeInventoryProgressPercent();
       int bias;
       char *fmt;
+      register int *pp asm("$20");
+      register char *bp asm("$22");
       pos[0] = 0x1b8;
       pos[1] = 0x2c;
       pos[2] = 0x900;
@@ -1113,11 +1115,15 @@ void Gamestate02_03_06_Draw(void) {
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
             g_nSubMenuScrollOffset + bF;
       }
+      do { } while (0);
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
+      pp = pos;
+      bp = buf;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
           ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
           0x19;
+      do { } while (0);
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
           g_dwHudBobSinePhase;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
@@ -1311,7 +1317,6 @@ void Gamestate02_03_06_Draw(void) {
     g_nVsyncFramePaceAnchor = VSync(-1);
     PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
   }
-  __asm__ volatile("" : : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5), "g"(h6), "g"(h7), "g"(h8));
-  __asm__ volatile("" : : "g"(h9), "g"(h10), "g"(h11));
+  __asm__ volatile("" : : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5), "g"(h6), "g"(h7));
   g_nPauseMenuTransitionFrames++;
 }
