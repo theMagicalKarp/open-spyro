@@ -1,240 +1,3 @@
-/* 2026-10-18: 81 -> 9 LINKED differing words (length- and frame-exact).
-   Frame: the previous session's vars=304 (frame 368) was 4 slots too big --
-   the masked shape diff masks the prologue immediates, so it never showed.
-   The extra slots are USE-only pseudos (combine.c distribute_notes puts a
-   `(use (reg))` at a label when a REG_DEAD note has no home): jump.c's
-   duplicated `while` exit tests and the gs3 marker reads mint a few more of
-   them than the old do-while forms. Those slots are unreferenced, exactly
-   like the h0..h11 padding, so the count is what matters: h0..h7 (8, was
-   12) restores 336 with every sp offset unchanged.
-   Fixed this session:
-   - FillWord-loop LUT s2 + the gs2 exits threading straight to the shared
-     tail: the end-of-gs2 `asm("" :: "r"(rec))` is GONE. It was an insn
-     between the join label and `j tail`, so jump.c could not thread the
-     guard branches (6 wrong targets in the linked diff), and it kept rec
-     live across the FillWord loops (lut4/lut6 lost s2).
-   - `cur` vs cursor load order: `rp = g_pSpriteRecordWriteCursor;` read
-     BEFORE `cur = g_nPauseMenuCursor;` (both boosted, tie -> LUID).
-   - gs2 head `lbu rows` reloads: single-set block `ve` for the box-line
-     ends (F14 boost puts the sll after the li a0/a1 arg sets); substate 1's
-     `v` needs two sets (`v = rows; v <<= 4;`).
-   - li 67: one block `int k` carries 0x5000000/0x2a/0x43 (multi-set, the
-     anti/output chain keeps `box = prim + 0x44` at the higher LUID, so sched2
-     puts the box addiu at T-5 and reorg moves it into the bne slot).
-   - intro-record wave: `phase * 0xc` + `phase++` (A216 giv).
-   - row-loop preheader (was 14 masked): `register int *pp asm("$20")` /
-     `register char *bp asm("$22")` = pos/buf set in record 1 and used as the
-     loop's call args, fenced by two empty `do { } while (0);` loop-note
-     barriers (after the 0xc store, and after the 0x45 store). The barriers
-     keep the hard-reg sets above FillWord-2 in sched2 (a hard-reg set
-     otherwise inherits the preceding call's priority and sinks to the tail
-     stalls) and leave 1651/1656 as nops with i/y at 1660/1664.
-   LEFT (9 linked words, 3 knots):
-   - 0x8001bb40: reorg fills the second marker's beqz slot with
-     `move a2,zero` (orig `addiu a0,sp,64`); same RTL order as the first
-     marker, identical live-at-start sets at both targets.
-   - 0x8001bdac: record 2's frames load must precede the 0x36 store (orig
-     lw v0 / li v1,506). `bob` before the 0x36 store gives the right order but
-     local-alloc puts the 506/1920 constants in v0 (life 1, priority 2) ahead
-     of the frames chain; shared `k` carriers (180 orders) swap cursor/k.
-   - 0x8001bfd8: Gems `la` vs idx `sll`: both F14-boosted producers of
-     `addu a2`, tie -> LUID; expand always emits the la after the sll; a
-     named base drifts to the block top. */
-/* 2026-10-17-3: 344 -> 44 masked, 2199 -> 2210 insns (LENGTH-EXACT).
-   Gamestate-3 row loop (orig[1666..2101]) now exact except two sched
-   pairs (orig 1740/1779) and the intro-wave phase/LUT order (1959):
-   - egg loop: `if (eggs > 0 && g_nSubMenuCursor < 3) { e = 0; while (e <
-     Table[cur*6+i])` -- jump.c duplicates the exit test, so the Table la
-     (a1) and cursor (v1) are set in BOTH test copies and cse carries them
-     into the loop top; `== 1` written as if/else on `!= 1` (forces the
-     cursor reload); x = `base + e * 0x18` with `base = scroll + 0xe8`;
-     `pos[0] = quad2[0] + 0xc`; ONE EmitTexturedQuad PER ARM (jump.c
-     cross-jumps the jal, the giv increment fills its delay slot);
-   - TotalDragonsBlock indexed by the expression, not a `row` local (a plain
-     pseudo index folds to the $at form; the expression keeps the la that
-     reload rematerialises into t1);
-   - NO `h` variable: `y - 0xb` inline at every EmitRadialShadedLine (a cse
-     temp outranks prim for s0, as in the original);
-   - gamestate 3 has its own `prim3` (sharing gamestate 2's `prim` pseudo
-     ties the two allocations together);
-   - per-site `bA..bE = bias + K` temps (local-alloc a0/v1/a1, not one t0);
-   - the gems x is a block temp `gx` (the function-level `x` took s0);
-   - prim stores: y-0xa / y+9 inline, `sc = g_nSubMenuScrollOffset` read
-     once, `pf = prim + 0xc` taken right after the first AddPrimToOT;
-   - the intro-record wave walks `first` itself.
-   Gamestate-3 head (same recipe):
-   - world-egg loop: one EmitTexturedQuad per arm, block-local x3, the quad
-     y as a giv `i * 0x1b + 0x18` (its init lands after the hoisted
-     movables, like the original's `li s0,24`);
-   - record stores: `bob = (frames * 0x10 & 0x1f0) >> 1;` FIRST, then the
-     0x10/0x14 stores, then `lut[bob] >> 8` (both 0x780 records);
-   - marker tests read g_nSubMenuCursor directly (no `n` local);
-   - title width: `v = (v - 1) * 0xa - 0x9e; pos[0] = scroll - v;` (fold
-     otherwise reassociates to `scroll + 0x9e - ...`);
-   - title-glyph wave is a `while` (duplicated exit test, Block la in a1);
-   - `cursor -= 0x58; FillWord(cursor, ...)` for the two later records;
-   - gamestate 3's `rec` is ALSO the row loop's `first` (both s0).
-   - lut7/lut8/lut9 = g_anCosineLut before phaseN = 0 (la-before-phase, A434);
-   - the gs3 POLY_F4 box stores in field order x0,y0,x1,y1,x2,y2,x3,y3;
-   - styD[0], styD[1], styD[2] in index order (the shared `2` lands in a3);
-   - last 0x780 record: 0xc, 0x10, 0x36, `bob = ...`, 0x14, 0x46;
-   - gs2 styA: styA[0], styA[1] = 1, styA[2] (the held 1 in s7 lands early);
-   - row loop: pos[0..2] stores BEFORE styD[0..2] (720-order sweep).
-   LEFT (all 1-3 insn sched/alloc pairs): orig 242/297/318/363 (gs2 head),
-   651/760 (FillWord LUT s2 vs s4: gs2 `rec` is live there, A434 asm use),
-   664/773 (`cur` vs cursor load order), 1485 (marker-call arg order),
-   1586 (0xc store first; volatile scroll read inert), 1597/1602 + 1640 +
-   1651-1665 (the row-loop pos/buf la movables float above i/y init in the
-   original; BCADE record order gets 1640's structure but swaps v0/v1),
-   1779 (gems la before the sll; 4 spellings + order sweep inert), 1959 (gs3
-   wave LUT: a lutR local tips loop.c's hoist threshold, 6144 -> s8). */
-/* 2026-10-17-2: 487 -> 344 masked, 2190 -> 2199 insns (orig 2210); the
-   first ~1310 insns are now length-aligned. Levers:
-   - glyph-wave loops: per-loop phaseN/vN/nN locals (a0/v1/a1 like the
-     original); `lutN = g_anCosineLut;` before `phaseN = 0` in the loops whose
-     original materialises the LUT first (incl. both FillWord loops, s2),
-     every other loop indexes g_anCosineLut directly (loop.c hoists the la);
-   - `rec` gets an asm use at the end of the gamestate-2 scope: the longer
-     live range drops its global.c priority below box/styA/styB, which then
-     take s1 as in the original (rec -> s2);
-   - FillWord loops: `cursor -= 0x58; FillWord(cursor, ...)` (no temp, a0
-     direct) and `x += 0xa; i++;` so the i++ sits by the exit test;
-   - gamestate 3: one `fmt = g_szFmtPercentD` local for the three sprintfs
-     (held in s3), the same FillWord form, and the HUD-bob reads through
-     g_adwHudBobSinePhaseBlock[0] (its base is held in s5 for the egg loop).
-   LEFT: FillWord-loop LUT in s4 (orig s2); the `cur` load sits after the
-   cursor reload in the original; `move a0,zero` order at orig 858/919/978;
-   gamestate 3: s5/s6 swap (bob block vs the 127 constant), the second
-   record's 0x10/0x14 stores vs the LUT read (orig 1314-1323), the egg-loop
-   s-reg tiling; the tail block at orig[1987..2019];
-   the head knots below. */
-/* 2026-10-17-1 (later): 514 -> 487 masked, orig[0..340] now clean except
-   two `lbu rows` reload positions. Levers this pass:
-   - head loop written exactly like the matched level_5 twin with NO hard-reg
-     pins on i/strip/img2 (a pinned `i` is a hard-reg set, which sched1 ties
-     to the preceding call -- that was the a0/i++ knot); `strip` gets s1 from
-     an empty-asm use at the loop top (A386) and `i` is pushed off s2 onto s3
-     by an A384 reservation of $18 between `i = 0` and `img2 = img - 2`;
-   - the pause-box POLY_F4 fields are stored through a struct view so the
-     substate/dualshock loads pass them (A400);
-   - the box's y2/y3 stores are written in BOTH arms (jump2 cross-jumps them,
-     so the else arm's `li v0,176` sits right before them);
-   - `v = rows * 0x10; v += 0xb6;` and `v = rows << 3; v += rows; v <<= 1;
-     v += 0x9e;` build the line ends in s0 itself.
-   LEFT next: the `lbu rows` reload is placed after `li a0; li a1` in the
-   original (its sched1 order had v's computation after the arg setups); the
-   substate-2/1 menu holds constant 2 in s8 and the else path's 1 in s6
-   (ours: one shared `li s7,1` before the substate==2 branch, 2 not held). */
-/* 2026-10-17-1: FRAME SOLVED. `rows` now spills to sp+0xA0 with the
-   original's dead reload slots above it: `pad[24]` is replaced by twelve
-   uninitialised `h0..h11` whose only references are empty asms with "g"
-   constraints at the end of the function -- each gets no hard register and
-   a reload slot in pseudo order (after rows), and the asm names the slots as
-   memory with no code (the AdvanceSpyroPhysics fix). Every sp offset in the
-   function now matches. Still -19 insns, 514 masked. Next lever to try:
-   per-loop `phase`/`v` locals in the pause-menu glyph-wave loops (the
-   original keeps them in a0/v1 with the LUT base rematerialised per loop;
-   the shared locals cross calls and land in s-regs) -- measured 545 masked
-   but 2206 insns (-4), i.e. the right register class, other regions moved. */
-/* 2026-10-09: 2108 -> 1727/2210 linked. The capture head and the backdrop
-   block are the main-EXE twin of func_level_5_8007B68C and now use its matched
-   recipe (do/while barriers, img/img2, R5 barrier + pinned loads, all-volatile
-   quad loop with block-scoped pins, i/strip/img2 pinned s3/s1/s2, b pinned s4).
-   Next knot: the pause box. The original keeps `rows` as a reload-spilled
-   pseudo at sp+0xA0 (t1 reloads) with ~33 dead slot words above it, which
-   `int pad[24]` cannot reproduce (an array slot always precedes reload's).
-
-   PARKED 2026-09-10 — first opening of main's last un-opened wall-free
-   function (8,840 B / 2,210 insns).  Screen re-confirmed: 0 `handwritten
-   instruction` markers, 0 %gp_rel, 0 `switchdata`, 0 non-$ra `jr` (no jump
-   tables at all), and 0 bare-constant `($at)` displacements — every $at use is
-   a gas address/compare macro.  It COMPILES and LINKS in its slot.
-
-   State (compile-only masked shape diff, §D 2b; registers anchored for the
-   "reg" figure, masked for the "structure" figure):
-
-     first m2c decode   2202 insns, 827 reg / 247 structure over 149 regions,
-   off -8 now                2193 insns, 725 reg / 191 structure over 126
-   regions, off -17
-
-   `make progress` scores it 344 / 8,840 partial bytes.  That number is NOT a
-   measure of distance: partial credit is positional (§C), and the running
-   offset leaves zero at orig[29] — the very first excursion — so every word
-   after insn 29 scores nothing even though the offset is back to 0 by insn 33
-   and stays within +-5 of zero for the next 1,270 instructions.
-
-   THE HIGHEST-VALUE NEXT MOVE is therefore not the biggest region, it is the
-   4-insn head knot at orig[28..50]: the original materialises `env0`
-   (&g_abFrameDrawEnv0, s5) at insn 28 — between `VSync(0)` and the first
-   PutDispEnv's argument load — and the scratch base (&g_pRenderScratchPrimTop,
-   s0) at insn 34, with `addiu s2,s0,-8` filling PutDrawEnv's delay slot at 39.
-   Ours emits both one call later.  Closing that alone is worth roughly 1,270
-   words == ~5,000 partial bytes, because the whole first half is otherwise
-   offset-neutral.
-
-   Levers already applied (each measured; do not undo one without re-measuring):
-     * A186 — `nGlyphs = K;` inside the cursor arm and `n = nGlyphs;` AFTER the
-       `if`.  The original's `andi rX,rX,0xff` is a one-insn JOIN block that
-       reorg duplicates into the `bne` delay slot; reading the count before the
-       arm gives one `andi` instead of two.  Five sites.
-     * A228 — two incomplete-array aliases carry the held-base pairs the
-       original derives with an `addiu`:
-         g_apRenderScratchPrimTopBlock (0x800785f0) -> [-2] is
-           g_pRenderScratchRegionBase (`addiu s2,s0,-8`), and
-         g_anHudFrameCycleBlock (0x80077fe8) -> [0x14b] is
-           &g_anLevelSpriteTexWordPairs[2] (`addiu s8,s2,1324`),
-         plus g_adwHudBobSinePhaseBlock (0x80077fe4) for the world-egg loop,
-         whose preheader forms BOTH `s6 = s5+4` and `s5 = s5+1328`.
-       The alias must be used INLINE — an intermediate pointer local (`top = …;
-       top[-2]`) folds the -8 into the addressing mode and loses the `addiu`.
-     * A240 per-site held bases — g_abLevelTotalDragonsBlock,
-       g_abLevelTotalEggsBlock, g_anLevelGemsBlock, g_abWorldTitleGlyphBlock.
-       The original addresses the SAME egg-count table absolutely at the `> 0`
-       guard (`lui $at; addu $at,$at,v0; lbu v0,-2944($at)`) and off a held base
-       at the `== 1` test and the loop condition, so the sized `extern` from
-       globals.h and the incomplete-array alias are both in use, per site.
-     * A113 — the cosine LUT is read `lh` in the eight glyph-wave loops but
-       `lhu` at the two bob sites (`lhu; sll 16; sra 25` and `lhu; srl 8`);
-       ((unsigned short *)g_anCosineLut)[…] buys the second form.
-     * A158 — the fourth menu-border EmitRadialShadedLine is written with
-       LITERALS in both substate arms; jump.c cross-jumps the shared `jal`.
-       Routing it through shared x/y/n locals instead cost 3 `move`s.
-     * A52 / A217 — every region got its own block-scoped scalars.  This is
-       what removed the `bias` spill (it now lives in s8, the original uses s7)
-       and took the register-anchored count 793 -> 734 in one edit.
-     * A137 — `bx = bias + K;` named temps.  `scroll + (bias + K)` is
-       reassociated by fold to `(scroll + K) + bias`; the original is
-       `addiu v1,s7,K; addu v0,v0,v1`.  Five sites, 212 -> 204.
-     * The two volume-bar loops read g_nPauseMenuCursor into a local BEFORE the
-       four sprite-record field stores; the guard's load cannot hoist over
-       stores through the record pointer, so source order decides it.
-
-   Named residues, largest first (offsets are into the original's insn stream):
-     R1  orig[28..50] — the head-knot above.  Positional only, 4 insns, but it
-         owns ~5,000 partial bytes.  Not yet attacked.
-     R2  orig[2012..2017] (-5) and orig[1900..1904] (-4) — the original
-         RE-COMPUTES `g_nSubMenuCursor * 6 + i` from a fresh `lw` of the global
-         inside the egg loop where we keep one cse'd address in a register
-         (`move s2,v1`).  m2c's decode already says so: some sites read the
-         global inline and some read a temp.  Needs the inline/temp split
-         copied exactly, site by site, not a blanket temp.
-     R3  orig[1700..1705] (-5), orig[1588..1591] (-3), orig[1472..1475] (-3) —
-         same family: held-base/absolute choices inside the row loop that have
-         not been walked site by site yet.
-     R4  orig[150], orig[1317], orig[1428], orig[1646], orig[1688] (+3 each) —
-         we emit three insns the original does not.  Unexamined.
-     R5  the register map.  725 anchored vs 191 structure means ~530 of the
-         residue is allocation.  The original keeps the repeated sprite-record
-         store literals (0x7f, 0x0b, 0xff, 0x2e, 0x20, 0x18, 0x40) in
-         callee-saved registers across the whole function (A133) — s0..s8 are
-         mostly CONSTANTS in the original, which is the single biggest
-         difference from our map.  Named locals for those literals is the
-         obvious next experiment and has not been tried.
-
-   Not a decode problem: there are no unresolved control-flow or content
-   questions left in the body.  m2c's only complaint is the varargs $a3 artifact
-   on the seven sprintf calls, which is expected. */
-
 #include "globals.h"
 
 extern void BuildRenderEntityLists(void);
@@ -308,13 +71,21 @@ extern char D_80010B90[]; /* "EXIT WORLD"  */
    a time, each strip is re-uploaded at x=0x200 and the gray CLUT is loaded at
    (0x200,0xe0).  Every later frame re-draws that backdrop as four textured
    quads, draws the menu on top, and submits the frame with the shared
-   two-vblank pacing tail. */
-/* 2026-10-14-2: 1727 -> 1722. First head-loop knot mostly closed by loading
-   the StoreImage source into a local (`arg = img2[0];`) at the top of the
-   statement run, so the a1 load is scheduled ahead of the rect stores as in
-   the original; left there is a0/i++ order (1 pair). The LoadImage chunk's
-   statement order (720 perms of x/y/w/h/strip+=/arg temp) moves nothing
-   positionally. The function is still -19 insns, which is the real blocker. */
+   two-vblank pacing tail.
+
+   Match notes (the non-obvious levers):
+   - h0..h7 are never-allocated locals whose only reference is an empty "g"
+     asm: each takes one 8-byte reload slot above `rows` (sp+0xA0), which
+     together with the USE-only pseudos combine leaves behind reproduces the
+     original's 336-byte frame.
+   - `pp`/`bp` pinned to s4/s6 hold &pos/&buf for the inventory row loop; the
+     empty volatile asms around them are scheduling fences (a hard-reg set
+     otherwise inherits the preceding call's sched2 priority and sinks to the
+     row-loop preheader tail).
+   - The gs3 Gems address and record-2 frames load use the same fence /
+     `$2` pin to get the original's la/sll and load/store order.
+   - The second marker test is nested so `pa = pos` sits in the guard block,
+     where reorg moves it into the branch delay slot. */
 typedef struct {
   int tag;
   unsigned char r0, g0, b0, code;
@@ -423,30 +194,31 @@ void Gamestate02_03_06_Draw(void) {
     unsigned char cq;
     cur = (*(char **)&g_pActiveFrameDrawEnv);
     env = ((char *)&g_abFrameDrawEnv0);
-    if (cur == env)
-    {
+    if (cur == env) {
       env += 0x84;
     }
     i = 0;
     PutDrawEnv((DRAWENV *)env);
     {
-    int off, bias;
-    do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
-    {
-    register char *e8 asm("$3");
-    register char *f0 asm("$2");
-    e8 = (*(char **)&g_pRenderScratchRegionBase);
-    f0 = (*(char **)&g_pRenderScratchPrimTop);
-    g_nPrimBufferOverflowFlag = 0;
-    (*(char **)&g_pPrimBufferWriteCursor) = e8;
-    (*(char **)&g_pPrimBufferLimit) = e8 + off;
-    tv = f0 + bias;
-    }
+      int off, bias;
+      do {
+        off = 0x1C000;
+        bias = 0xFFFE3E00;
+      } while (0);
+      {
+        register char *e8 asm("$3");
+        register char *f0 asm("$2");
+        e8 = (*(char **)&g_pRenderScratchRegionBase);
+        f0 = (*(char **)&g_pRenderScratchPrimTop);
+        g_nPrimBufferOverflowFlag = 0;
+        (*(char **)&g_pPrimBufferWriteCursor) = e8;
+        (*(char **)&g_pPrimBufferLimit) = e8 + off;
+        tv = f0 + bias;
+      }
     }
     (*(char **)&g_pSpriteRecordBufferTop) = tv;
     (*(char **)&g_pSpriteRecordWriteCursor) = tv;
-    quad:
-    {
+  quad: {
     register int xx asm("$3");
     register int tp asm("$7");
     xx = i << 7;
@@ -454,66 +226,66 @@ void Gamestate02_03_06_Draw(void) {
     tp = i + 0x88;
     p = (*(char **)&g_pPrimBufferWriteCursor);
     {
-    register int a asm("$2");
-    register int d asm("$3");
-    register unsigned short bh asm("$5");
-    register unsigned short ch asm("$6");
-    register unsigned char bq asm("$5");
-    register unsigned char cq asm("$6");
-    *((volatile int *) p) = 0x9000000;
-    *((volatile unsigned char *) (p + 0x7)) = 0x2C;
-    *((volatile unsigned char *) (p + 0x4)) = 0x4C;
-    *((volatile unsigned char *) (p + 0x5)) = 0x80;
-    *((volatile short *) (p + 0x8)) = xx;
-    *((volatile short *) (p + 0xA)) = 8;
-    a = *((volatile unsigned short *) (p + 0x8));
-    bh = *((volatile unsigned short *) (p + 0xA));
-    ch = *((volatile unsigned short *) (p + 0x8));
-    d = *((volatile unsigned short *) (p + 0xA));
-    *((volatile short *) (p + 0x10)) = a + 0x80;
-    a = *((volatile unsigned short *) (p + 0x8));
-    *((volatile short *) (p + 0x1A)) = d + 0xDF;
-    d = *((volatile unsigned short *) (p + 0xA));
-    i += 1;
-    *((volatile unsigned char *) (p + 0xD)) = 0;
-    *((volatile short *) (p + 0x12)) = bh;
-    bq = *((volatile unsigned char *) (p + 0xD));
-    b = 0x40;
-    *((volatile unsigned char *) (p + 0xC)) = 0;
-    *((volatile short *) (p + 0x18)) = ch;
-    cq = *((volatile unsigned char *) (p + 0xC));
-    *((volatile short *) (p + 0x20)) = a + 0x80;
-    a = *((volatile unsigned char *) (p + 0xC));
-    *((volatile short *) (p + 0x22)) = d + 0xDF;
-    d = *((volatile unsigned char *) (p + 0xD));
-    *((volatile unsigned char *) (p + 0x6)) = b;
-    *((volatile unsigned char *) (p + 0x15)) = bq;
-    *((volatile unsigned char *) (p + 0x1C)) = cq;
-    *((volatile unsigned char *) (p + 0x14)) = a + 0x80U;
-    a = *((volatile unsigned char *) (p + 0xC));
-    *((volatile unsigned char *) (p + 0x1D)) = d - 0x21;
-    d = *((volatile unsigned char *) (p + 0xD));
-    *((volatile unsigned char *) (p + 0x24)) = a + 0x80U;
-    *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
-    *((short *) (p + 0xE)) = 0x3820;
-    *((short *) (p + 0x16)) = tp;
-    AddPrimToOT((int)p);
+      register int a asm("$2");
+      register int d asm("$3");
+      register unsigned short bh asm("$5");
+      register unsigned short ch asm("$6");
+      register unsigned char bq asm("$5");
+      register unsigned char cq asm("$6");
+      *((volatile int *)p) = 0x9000000;
+      *((volatile unsigned char *)(p + 0x7)) = 0x2C;
+      *((volatile unsigned char *)(p + 0x4)) = 0x4C;
+      *((volatile unsigned char *)(p + 0x5)) = 0x80;
+      *((volatile short *)(p + 0x8)) = xx;
+      *((volatile short *)(p + 0xA)) = 8;
+      a = *((volatile unsigned short *)(p + 0x8));
+      bh = *((volatile unsigned short *)(p + 0xA));
+      ch = *((volatile unsigned short *)(p + 0x8));
+      d = *((volatile unsigned short *)(p + 0xA));
+      *((volatile short *)(p + 0x10)) = a + 0x80;
+      a = *((volatile unsigned short *)(p + 0x8));
+      *((volatile short *)(p + 0x1A)) = d + 0xDF;
+      d = *((volatile unsigned short *)(p + 0xA));
+      i += 1;
+      *((volatile unsigned char *)(p + 0xD)) = 0;
+      *((volatile short *)(p + 0x12)) = bh;
+      bq = *((volatile unsigned char *)(p + 0xD));
+      b = 0x40;
+      *((volatile unsigned char *)(p + 0xC)) = 0;
+      *((volatile short *)(p + 0x18)) = ch;
+      cq = *((volatile unsigned char *)(p + 0xC));
+      *((volatile short *)(p + 0x20)) = a + 0x80;
+      a = *((volatile unsigned char *)(p + 0xC));
+      *((volatile short *)(p + 0x22)) = d + 0xDF;
+      d = *((volatile unsigned char *)(p + 0xD));
+      *((volatile unsigned char *)(p + 0x6)) = b;
+      *((volatile unsigned char *)(p + 0x15)) = bq;
+      *((volatile unsigned char *)(p + 0x1C)) = cq;
+      *((volatile unsigned char *)(p + 0x14)) = a + 0x80U;
+      a = *((volatile unsigned char *)(p + 0xC));
+      *((volatile unsigned char *)(p + 0x1D)) = d - 0x21;
+      d = *((volatile unsigned char *)(p + 0xD));
+      *((volatile unsigned char *)(p + 0x24)) = a + 0x80U;
+      *((volatile unsigned char *)(p + 0x25)) = d - 0x21;
+      *((short *)(p + 0xE)) = 0x3820;
+      *((short *)(p + 0x16)) = tp;
+      AddPrimToOT((int)p);
     }
-    }
+  }
     next = p + 0x28;
     (*(char **)&g_pPrimBufferWriteCursor) = next;
     if (i < 4) {
       goto quad;
     }
-    *((int *) (p + 0x28)) = 0x3000000;
-    *((unsigned char *) (p + 0x2F)) = b;
-    *((short *) (p + 0x30)) = 0;
-    *((short *) (p + 0x32)) = 0xE7;
-    *((short *) (p + 0x34)) = 0x200;
-    *((short *) (p + 0x36)) = 0xE7;
-    *((unsigned char *) (p + 0x2C)) = 0;
-    *((unsigned char *) (p + 0x2D)) = 0;
-    *((unsigned char *) (p + 0x2E)) = 0;
+    *((int *)(p + 0x28)) = 0x3000000;
+    *((unsigned char *)(p + 0x2F)) = b;
+    *((short *)(p + 0x30)) = 0;
+    *((short *)(p + 0x32)) = 0xE7;
+    *((short *)(p + 0x34)) = 0x200;
+    *((short *)(p + 0x36)) = 0xE7;
+    *((unsigned char *)(p + 0x2C)) = 0;
+    *((unsigned char *)(p + 0x2D)) = 0;
+    *((unsigned char *)(p + 0x2E)) = 0;
     AddPrimToOT((int)next);
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
     prim = p;
@@ -528,23 +300,24 @@ void Gamestate02_03_06_Draw(void) {
       int n1, n2, n3, n4, n5, n6;
       int phase;
       int v;
-      int phase1, v1, phase2, v2, phase3, v3, phase4, phase5, v4, phase6, phase7, v5, phase8, v6, phase9, v7, phase10, v8;
+      int phase1, v1, phase2, v2, phase3, v3, phase4, phase5, v4, phase6,
+          phase7, v5, phase8, v6, phase9, v7, phase10, v8;
       int y;
       void *box = (void *)((int)prim + 0x38);
       SetDrawMode((int)box, 1, 0, 0x40, (RECT *)0);
       AddPrimToOT((int)box);
       {
-      int k;
-      k = 0x5000000;
-      *((int *)((int)prim + 0x44)) = k;
-      k = 0x2a;
-      *((unsigned char *)((int)prim + 0x4b)) = k;
-      k = 0x43;
-      *((unsigned char *)((int)prim + 0x48)) = h;
-      *((unsigned char *)((int)prim + 0x49)) = h;
-      *((unsigned char *)((int)prim + 0x4a)) = h;
-      ((PolyF4 *)((int)prim + 0x44))->y0 = k;
-      ((PolyF4 *)((int)prim + 0x44))->y1 = k;
+        int k;
+        k = 0x5000000;
+        *((int *)((int)prim + 0x44)) = k;
+        k = 0x2a;
+        *((unsigned char *)((int)prim + 0x4b)) = k;
+        k = 0x43;
+        *((unsigned char *)((int)prim + 0x48)) = h;
+        *((unsigned char *)((int)prim + 0x49)) = h;
+        *((unsigned char *)((int)prim + 0x4a)) = h;
+        ((PolyF4 *)((int)prim + 0x44))->y0 = k;
+        ((PolyF4 *)((int)prim + 0x44))->y1 = k;
       }
       box = (void *)((int)prim + 0x44);
       if (g_nPauseMenuSubstate == 1) {
@@ -569,18 +342,18 @@ void Gamestate02_03_06_Draw(void) {
       if (g_nPauseMenuSubstate == 1) {
         EmitRadialShadedLine(0x54, 0x43, 0x1ac, 0x43);
         {
-        int ve = rows * 0x10 + 0xb6;
-        EmitRadialShadedLine(0x1ac, 0x43, 0x1ac, ve);
-        EmitRadialShadedLine(0x1ac, ve, 0x54, ve);
-        EmitRadialShadedLine(0x54, ve, 0x54, 0x43);
+          int ve = rows * 0x10 + 0xb6;
+          EmitRadialShadedLine(0x1ac, 0x43, 0x1ac, ve);
+          EmitRadialShadedLine(0x1ac, ve, 0x54, ve);
+          EmitRadialShadedLine(0x54, ve, 0x54, 0x43);
         }
       } else {
         EmitRadialShadedLine(0x8c, 0x43, 0x174, 0x43);
         {
-        int ve = rows * 0x12 + 0x9e;
-        EmitRadialShadedLine(0x174, 0x43, 0x174, ve);
-        EmitRadialShadedLine(0x174, ve, 0x8c, ve);
-        EmitRadialShadedLine(0x8c, ve, 0x8c, 0x43);
+          int ve = rows * 0x12 + 0x9e;
+          EmitRadialShadedLine(0x174, 0x43, 0x174, ve);
+          EmitRadialShadedLine(0x174, ve, 0x8c, ve);
+          EmitRadialShadedLine(0x8c, ve, 0x8c, 0x43);
         }
       }
       pos[0] = 0xba;
@@ -704,7 +477,8 @@ void Gamestate02_03_06_Draw(void) {
             i = 0;
             do {
               i++;
-              v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) & 0xff];
+              v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) &
+                                 0xff];
               phase3 += 0xc;
               rec[0x46] = v3 * 3 >> 9;
               rec += 0x58;
@@ -717,7 +491,8 @@ void Gamestate02_03_06_Draw(void) {
             phase4 = 0;
             x = 0x140;
             do {
-              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              g_pSpriteRecordWriteCursor =
+                  (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (char *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
@@ -731,8 +506,7 @@ void Gamestate02_03_06_Draw(void) {
                         3 >>
                     9;
               } else {
-                *((unsigned char *)((int)rp + 0x46)) =
-                    0;
+                *((unsigned char *)((int)rp + 0x46)) = 0;
               }
               phase4 += 0xc;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
@@ -757,7 +531,8 @@ void Gamestate02_03_06_Draw(void) {
             i = 0;
             do {
               i++;
-              v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) & 0xff];
+              v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) &
+                                 0xff];
               phase5 += 0xc;
               rec[0x46] = v4 * 3 >> 9;
               rec += 0x58;
@@ -770,7 +545,8 @@ void Gamestate02_03_06_Draw(void) {
             phase6 = 0;
             x = 0x140;
             do {
-              g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+              g_pSpriteRecordWriteCursor =
+                  (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (char *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
@@ -784,8 +560,7 @@ void Gamestate02_03_06_Draw(void) {
                         3 >>
                     9;
               } else {
-                *((unsigned char *)((int)rp + 0x46)) =
-                    0;
+                *((unsigned char *)((int)rp + 0x46)) = 0;
               }
               phase6 += 0xc;
               *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
@@ -991,21 +766,24 @@ void Gamestate02_03_06_Draw(void) {
       }
       sprintf(buf, fmt, g_nWorldDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
-      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor =
+          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
-          ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]] << 0x10 >>
+          ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
+              << 0x10 >>
           0x19;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
           g_adwHudBobSinePhaseBlock[0];
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
-      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor =
+          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x12c;
@@ -1017,40 +795,41 @@ void Gamestate02_03_06_Draw(void) {
         bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
-        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) = ((unsigned short *)g_anCosineLut)[bob] >> 8;
+        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
+            ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
       {
-      int x3;
-      x3 = 0x24;
-      if (g_nWorldEggsRecovered > 0) {
-        i = 0;
-        do {
-          quad[1] = 0x32;
-          quad[2] = 0x18;
-          quad[0] = i * 0x1b + 0x18;
-          quad[3] = 0x10;
-          if (i >= g_nWorldEggsRecovered) {
-            pos[1] = 0x3a;
-            pos[0] = x3;
-            pos[2] = 0x1800;
-            BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
-            pos[0] = 0x20;
-            pos[1] = 0x20;
-            pos[2] = 0x20;
-            EmitTexturedQuad(quad, &g_anLevelSpriteTexWordPairs[2], pos);
-          } else {
-            EmitTexturedQuad(quad,
-                             &g_adwHudBobSinePhaseBlock[0x14c] +
-                                 (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2,
-                             (int *)0);
-          }
-          x3 += 0x1b;
-          i++;
-        } while (i < 0xc);
-      }
+        int x3;
+        x3 = 0x24;
+        if (g_nWorldEggsRecovered > 0) {
+          i = 0;
+          do {
+            quad[1] = 0x32;
+            quad[2] = 0x18;
+            quad[0] = i * 0x1b + 0x18;
+            quad[3] = 0x10;
+            if (i >= g_nWorldEggsRecovered) {
+              pos[1] = 0x3a;
+              pos[0] = x3;
+              pos[2] = 0x1800;
+              BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+              pos[0] = 0x20;
+              pos[1] = 0x20;
+              pos[2] = 0x20;
+              EmitTexturedQuad(quad, &g_anLevelSpriteTexWordPairs[2], pos);
+            } else {
+              EmitTexturedQuad(quad,
+                               &g_adwHudBobSinePhaseBlock[0x14c] +
+                                   (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2,
+                               (int *)0);
+            }
+            x3 += 0x1b;
+            i++;
+          } while (i < 0xc);
+        }
       }
       EmitRadialShadedLine(0x40, 0x45, 0x1c0, 0x45);
       prim3 = g_pPrimBufferWriteCursor;
@@ -1072,17 +851,21 @@ void Gamestate02_03_06_Draw(void) {
       AddPrimToOT((int)prim3 + 0xc);
       g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
       EmitRadialShadedLine(0x40, 0x47, 0x1c0, 0x47);
-      if (g_nSubMenuCursor > 0 && g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
+      if (g_nSubMenuCursor > 0 &&
+          g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         pos[0] = 0x28;
         pos[1] = 0x48;
         pos[2] = 0x1100;
         EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 1);
       }
-      if (g_nSubMenuCursor < 5 && (&g_abLevelVisitedFlag[6])[g_nSubMenuCursor * 6] != 0) {
-        pos[0] = 0x1d7;
-        pos[1] = 0x48;
-        pos[2] = 0x1100;
-        EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 0);
+      if (g_nSubMenuCursor < 5) {
+        int *pa = pos;
+        if ((&g_abLevelVisitedFlag[6])[g_nSubMenuCursor * 6] != 0) {
+          pos[0] = 0x1d7;
+          pos[1] = 0x48;
+          pos[2] = 0x1100;
+          EnqueueBlinkingMarkerSprite(pa, g_nPauseMenuTransitionFrames * 2, 0);
+        }
       }
       i = 0;
       bias = (g_nSubMenuCursor < 3) * 8;
@@ -1107,7 +890,8 @@ void Gamestate02_03_06_Draw(void) {
         phase += 0xc;
         rec += 0x58;
       }
-      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor =
+          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
       {
@@ -1115,7 +899,7 @@ void Gamestate02_03_06_Draw(void) {
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
             g_nSubMenuScrollOffset + bF;
       }
-      do { } while (0);
+      __asm__ volatile("");
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
       pp = pos;
       bp = buf;
@@ -1123,21 +907,26 @@ void Gamestate02_03_06_Draw(void) {
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
           ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
           0x19;
-      do { } while (0);
+      __asm__ volatile("");
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
           g_dwHudBobSinePhase;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
       *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
-      g_pSpriteRecordWriteCursor = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor =
+          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       {
         int bob;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
             g_nSubMenuScrollOffset + 0x1d1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
-        *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
-        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
+        {
+          register int fr asm("$2");
+          fr = g_nPauseMenuTransitionFrames;
+          *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+          bob = (fr * 0x10 & 0x1f0) >> 1;
+        }
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
         *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
             ((unsigned short *)g_anCosineLut)[bob] >> 8;
@@ -1194,7 +983,12 @@ void Gamestate02_03_06_Draw(void) {
                            styD, 0x12, 2);
           bC = bias + 0x113;
           gx = g_nSubMenuScrollOffset + bC;
-          gems = &g_anLevelGemsBlock[g_nSubMenuCursor * 6 + i];
+          {
+            int idx = g_nSubMenuCursor * 6 + i;
+            int *gb = g_anLevelGemsBlock;
+            __asm__ volatile("");
+            gems = gb + idx;
+          }
           pos[0] = gx;
           if (*gems < 0x3e8) {
             pos[0] = gx + 0x12;
@@ -1219,7 +1013,8 @@ void Gamestate02_03_06_Draw(void) {
           BuildTextSpriteChain(buf, pos, 0x12, 2);
           if (g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i] != 0) {
             pos[0] = g_nSubMenuScrollOffset + 0x1bd;
-            sprintf(buf, g_szFmtPercentD, g_anLevelDragonsRescued[g_nSubMenuCursor * 6 + i]);
+            sprintf(buf, g_szFmtPercentD,
+                    g_anLevelDragonsRescued[g_nSubMenuCursor * 6 + i]);
             BuildTextSpriteChain(buf, pos, 0x12, 2);
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
@@ -1240,11 +1035,11 @@ void Gamestate02_03_06_Draw(void) {
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                rec[0x46] =
-                    g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase * 0xc) &
-                                  0xff] *
-                        3 >>
-                    9;
+                rec[0x46] = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 +
+                                           phase * 0xc) &
+                                          0xff] *
+                                3 >>
+                            9;
                 rec -= 0x58;
                 phase++;
               } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
@@ -1317,6 +1112,9 @@ void Gamestate02_03_06_Draw(void) {
     g_nVsyncFramePaceAnchor = VSync(-1);
     PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
   }
-  __asm__ volatile("" : : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5), "g"(h6), "g"(h7));
+  __asm__ volatile(""
+                   :
+                   : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5),
+                     "g"(h6), "g"(h7));
   g_nPauseMenuTransitionFrames++;
 }
