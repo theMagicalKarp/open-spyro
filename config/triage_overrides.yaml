@@ -5851,3 +5851,13 @@ func_credits_8007AA50_2026_10_17_3:
   class: "cluster A (movstr scratches need five live values) still gates; C/D are sched/alloc ties"
   date: 2026-10-17
   note: "65 masked unchanged. Cluster C: a block temp for `*s - 0x30` gets the original's v0, but dropping that def of c lets combine remove the loop-top `andi 0xff` (-1 insn). `upper = (c - 0x30) < 10` forms were worse (84-105). Case 4: an early `r = ac % 10` swept over 30 statement orders scored 70-100 (worse)."
+Gamestate02_03_06_Draw_2026_10_18:
+  verdict: viable
+  class: "MATCHED 2026-10-18 (8,840 B)"
+  date: 2026-10-18
+  note: "44 masked / 81 linked -> MATCH. The masked metric hid a +32 frame (USE-only pseudo slots from duplicated while tests; fixed by 8 h pads instead of 12) and six wrong jump targets (a zero-code rec asm use at the gs2 join blocked jump threading). Closers: volatile-asm sched fences + s4/s6-pinned pp/bp for the row-loop preheader and Gems la, $2-pinned record-2 frames load, one multi-set k for the gs2 head constants, nested marker-2 test with pa = pos in the guard block (reorg backward fill)."
+func_credits_8007AA50_2026_10_18:
+  verdict: parked
+  class: "cluster A (movstr scratches need five live values) still gates"
+  date: 2026-10-18
+  note: "65 masked unchanged. Rewrote the copy block in the original's statement order (dst, 85E0 store/reload, lo, 85E4, src, hi, copy, 8600/8604 stores, 58BC) with an empty volatile asm fence at each of 8 positions: 69-97, all worse. Frame already exact; this session's G02 levers (fences, pins, slot accounting) do not reach the scratch allocation."
