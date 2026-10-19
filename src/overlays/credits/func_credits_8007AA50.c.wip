@@ -153,38 +153,52 @@
  *     `short gx` (unsigned-short arithmetic, reused unreloaded).
  *     D_80076BB8 is `volatile`: combine will not fold `la; lw 0()` into it.
  *     Case 2's rect is written in natural [0..3] order.
- * ---- STATE 2026-10-17-1: 103 linked (was 112), 65 masked ------------------
- * 14. The setup block's `src` argument is a VOLATILE re-read of D_800785E4
- *     right after the store (D_800785E4_v alias, undefined_syms_manual.txt);
- *     the store goes through the same alias so the two stay ordered, and
- *     D_80076C1C is volatile so `hi` cannot hoist above them.  Then
- *     `hi; lo; 8604 = hi; E4; Z; src; copy; 8600 = lo` gives the original's
- *     lo/hi/src loads in v1/v0/a1.
- *  A (still): the original's movstr scratches are a3/t0/t1/t2 -- local-alloc
- *     allocates `(clobber (scratch))` as priority-0 qtys (alloc_qty_for_scratch)
- *     LAST, so v0,v1,a0,a1 AND a2 are occupied across the copy in the
- *     original.  Nothing visible holds a2 there; and sched1 cannot move the
- *     a2 argument set above the movstr (every later reg set carries an
- *     output dep on it).  Find the a2 occupant before touching this again.
- * LEFT (all four clusters survived several spellings):
- *  A. init block (orig 123-248): the 20-byte D_80078A40 copy and the loads
- *     around it.  The original keeps D_800785E4/D_80076C1C live across the
- *     movstr in t0/v1 (so the copy uses t1/t2/a3/t0) and loads D_800785E4
- *     for D_800757BC before the D_800761D0 field stores.  A struct
- *     D_800761D0 lets the load pass the stores but scatters the whole block
- *     (173).  A volatile copy destination becomes a memcpy call;
- *     __builtin_memcpy is inert.
- *  B. orig 403-414: D_800761D0 width update, a v1/a1 rotation plus the load
- *     order of D_800756F8 vs the second pointer read (3 spellings inert).
- *  C. orig 732-739: the digit-test temp (orig v0, ours v1) and the
- *     `adv * 3` operand tie in the space branch.
- *  D. 2026-10-09: 143 -> 112 linked. Case 4 now reads D_800757AC and
- *     D_800785DC into locals ahead of the movstr, pinned there by an empty
- *     asm use of `dc`; left is the 0x66666667 constant / E0 store order.
- *     Old note: the original starts the `% 10` multiply and
- *     loads D_800785DC before the movstr copy.  Our movstr clobbers a0, so
- *     the D_800757AC load is output-dependent on it.  Statement order,
- *     a `page` local, and copy placement are all inert or worse.
+ * ---- STATE 2026-10-19: 14 masked / 14 linked, one cluster left ------------
+ * Length-, frame- and branch-target-exact; every difference is the four
+ * movstr scratch registers of the init-block 20-byte copy (ours a2/a3/t0/t1,
+ * original a3/t0/t1/t2).  Levers that closed clusters A-D and a hidden
+ * jump-threading diff this session:
+ * 14. **One struct symbol for the CD-stream state block** (Cd85D8 at
+ *     0x800785D8, D_800785D8_S in undefined_syms_manual.txt).  The BLK copy
+ *     into `S.blk` (0x80078A40) and the 85E0/85E4/8600/8604 fields share a
+ *     base, so sched sees output/anti dependences between the copy and the
+ *     field stores (BLKmode size 0 = "conflicts with everything on that
+ *     base").  That keeps the src re-read and dc read above the copy and the
+ *     8600/8604 stores below it -- no barrier, no asm.  Case 4 matched from
+ *     it outright (`dc = S.dc` before `S.blk = ...`).
+ * 15. **`D_80076C00[3]` instead of a scalar D_80076C0C** for a call argument:
+ *     an ARRAY_REF address goes through memory_address, so the cheap
+ *     (mem (reg)) form is NOT precomputed by expand_call and the a2 load is
+ *     emitted after arg 4's D_800757AC chain, as in the original.
+ * 16. `char *e4 = D_800785E4;` captured right after the call, a `sz` local
+ *     loaded before the D_800757DC store, and `int f = D_800756F8;` before
+ *     the D_800761D0 re-read fix three load orders (all luid ties).
+ * 17. Glyph loop: the `*s - '0'` digit test is a block temp, and the loop
+ *     var gets its non-byte def from the space branch instead:
+ *     `c = (st.adv * 3) / 4;` (that keeps the loop-top `andi c,0xff`).  A
+ *     `do {} while (0)` after `upper = 1` stops sched1 dropping the li into
+ *     the st.adv load's delay slot (which inflated the load's qty span and
+ *     lost it v0 to the sll temp); a loop-note barrier, unlike an asm
+ *     fence, still lets reorg put the li in the bgez delay slot.
+ * 18. `i = 0;` hoisted above `if (D_800756E4 > 0)` before the first state
+ *     loop.  Without it jump.c threads that blez straight past the `for`
+ *     loop (target 0x8007bb6c vs 0x8007b8d0) -- invisible in the masked
+ *     shape diff, caught only by the linked `open-spyro diff`.
+ * LEFT -- the init copy's a2 (orig 152-166): local-alloc gives the four
+ *     priority-0 scratch qtys the first free registers, so the original had
+ *     v0, v1, a0, a1 AND a2 occupied across the copy in sched1 order, yet its
+ *     final code shows `lw v0,C1C ... sw v0,8604` after the copy and a fresh
+ *     `lw a2,8604` before the call.  That shape matches what reload emits for a
+ *     spilled pseudo with a REG_EQUIV (mem 8604): the C1C value lived in a2
+ *     during local-alloc, then was evicted and rematerialised (hypothesis;
+ *     not reproduced).  Measured:
+ *     `D_80078604_n = D_80076C1C; call(..., D_80078604_n, ...)` (non-volatile)
+ *     gives exactly that a2 occupancy and the right scratches, but the value
+ *     is not spilled, so C1C stays in a2 (12 masked).  Sweeps tried (~6,000
+ *     compiles): statement order x {S field, own symbol, array view,
+ *     volatile array} for the 8604 store/read, 8600 spelling, e4/src
+ *     spelling; a $6 asm reservation (A384) breaks the load order because
+ *     update_equiv_regs sinks single-use loads past the barrier.
  */
 
 extern void func_80016500();
@@ -250,14 +264,25 @@ extern char D_800778F0[];
 extern char *D_800785D8;
 extern char *D_800785DC;
 extern char *D_800785DC_BLK[];
-extern char *volatile D_800785E0;
 extern char *D_800785E4;
-extern char *volatile D_800785E4_v;
 extern int D_80078600;
 extern volatile int D_80078604;
-extern Blk20 D_80078A40;
 extern int D_8007A960[];
 extern char func_credits_8007C338[];
+
+typedef struct {
+  char *d8;
+  char *dc;
+  char *volatile e0;
+  char *volatile e4;
+  char padE8[0x18];
+  int l600;
+  volatile int h604;
+  char pad608[0x8A40 - 0x8608];
+  Blk20 blk;
+} Cd85D8;
+extern Cd85D8 D_800785D8_S;
+#define S D_800785D8_S
 
 /* One 0xC-byte line record of the credits script (table at D_80075708). */
 typedef struct {
@@ -318,27 +343,22 @@ void func_credits_8007AA50(void) {
     func_8005CAC4(D_800785DC_BLK[0], 0x7EFF0);
     while (func_8005CBB0(0) == 0) {
     }
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], D_80076C0C,
+    func_80016500(D_80076B90[0], D_800785DC_BLK[0], D_80076C00[3],
                   D_80076C08 + D_8007A960[D_800757AC * 2], 0x258);
-    D_800785E0 = func_80012D58(D_800785DC_BLK[0], 1);
+    S.e0 = func_80012D58(D_800785DC_BLK[0], 1);
     {
-      char *dst = D_80076B90[0];
-      int lo;
-      int hi;
       char *src;
-      hi = D_80076C1C;
-      lo = D_80076C18;
-      D_80078604 = hi;
-      D_800785E4_v = D_800785E0;
+      S.e4 = S.e0;
+      src = S.e4;
+      S.blk = D_80077780;
+      S.l600 = D_80076C18;
+      S.h604 = D_80076C1C;
       D_800758BC = 0;
-      src = D_800785E4_v;
-      do {
-      } while (0);
-      D_80078A40 = D_80077780;
-      D_80078600 = lo;
-      func_80016500(dst, src, D_80078604,
-                    lo + D_8007A960[D_800757AC * 2], 0x258);
+      func_80016500(D_80076B90[0], src, S.h604,
+                    S.l600 + D_8007A960[D_800757AC * 2], 0x258);
     }
+    {
+    char *e4 = D_800785E4;
     D_800761D0 = D_800778F0;
     *(int *)D_800761D0 = 0x1010;
     *(int *)(D_800761D0 + 4) = -1;
@@ -346,20 +366,25 @@ void func_credits_8007AA50(void) {
     *(short *)(D_800761D0 + 0xA) = 0x659;
     *(short *)(D_800761D0 + 0xC) = 0;
     *(short *)(D_800761D0 + 0xE) = 0;
-    D_800757BC = D_800785E4;
+    D_800757BC = e4;
     *(int *)(D_800761D0 + 0x10) = 0;
     D_800761DC = 1;
     D_800761E8 = 0x3FFF;
     D_800761EA = 0x3FFF;
     func_80055A78(0, 0, 0x10, 0);
+    }
     {
       char *hdr;
       char *shift;
       hdr = D_800785E4 + *(int *)(D_800757BC + 4);
+      {
+      int sz;
       D_800757EC = hdr;
-      D_800757DC = *(int *)(hdr + 8);
+      sz = *(int *)hdr;
       shift = D_80075708 + *(int *)(hdr + 4) - 0xC;
-      func_80016958(D_80075708, hdr + 0xC, *(int *)hdr - 0xC);
+      D_800757DC = *(int *)(hdr + 8);
+      func_80016958(D_80075708, hdr + 0xC, sz - 0xC);
+      }
       {
         int n = D_800757DC;
         int i = 0;
@@ -411,12 +436,14 @@ void func_credits_8007AA50(void) {
   }
   if (D_800756E4 == 0) {
     if (D_80075968 >= D_800757DC) {
-      char *p = D_800761D0;
-      *(short *)(p + 8) = *(unsigned short *)(p + 8) - 0xA;
-      p = D_800761D0;
+      char *p;
+      *(short *)(D_800761D0 + 8) -= 0xA;
       {
-        int w = *(short *)(p + 8);
-        D_800756F8 = D_800756F8 + D_800756CC;
+        int f = D_800756F8;
+        int w;
+        p = D_800761D0;
+        w = *(short *)(p + 8);
+        D_800756F8 = f + D_800756CC;
         if (w < 0) {
           *(short *)(p + 8) = 0;
         }
@@ -569,11 +596,16 @@ void func_credits_8007AA50(void) {
               } else {
                 st.x = st.x + st.adv;
               }
-              c = *s - 0x30;
-              upper = (unsigned int)c < 0xA;
+              {
+                int t = *s - 0x30;
+                upper = (unsigned int)t < 0xA;
+              }
             } else {
               upper = 1;
-              st.x = st.x + (st.adv * 3) / 4;
+              do {
+              } while (0);
+              c = (st.adv * 3) / 4;
+              st.x = st.x + c;
             }
             s += 1;
             c = *s;
@@ -613,8 +645,8 @@ void func_credits_8007AA50(void) {
         line += 1;
       } while (last >= line);
     }
+    i = 0;
     if (D_800756E4 > 0) {
-      i = 0;
       do {
         int st = LINES[POOL[i].line].state;
         if (st == 2) {
@@ -757,24 +789,19 @@ void func_credits_8007AA50(void) {
           func_8005F764(0);
           func_80016958(D_80075768, D_800757EC + 0x40000, D_80075958 - 0x40000);
           D_800757EC = D_80075768 + D_80075958 - 0x40000;
-          D_800785E0 = func_80012D58(D_800785DC, 1);
+          S.e0 = func_80012D58(D_800785DC, 1);
           {
-            int ac;
-            char *dc;
-
-            ac = D_800757AC;
-            dc = D_800785DC;
-            __asm__ volatile("" : : "r"(dc));
-          D_80078A40 = D_80077780;
+          char *dc = S.dc;
+          S.blk = D_80077780;
           D_800785E4 = dc + D_80076C0C;
+          }
           D_800757BC = D_800785E4;
           D_80078604 = D_80076C1C;
           D_80078600 = D_80076C18;
-          if (ac % 10 < 9) {
+          if (D_800757AC % 10 < 9) {
             D_80075704 = 0;
           } else {
             D_80075704 = 3;
-          }
           }
           D_800757AC += 1;
           break;

@@ -5861,3 +5861,8 @@ func_credits_8007AA50_2026_10_18:
   class: "cluster A (movstr scratches need five live values) still gates"
   date: 2026-10-18
   note: "65 masked unchanged. Rewrote the copy block in the original's statement order (dst, 85E0 store/reload, lo, 85E4, src, hi, copy, 8600/8604 stores, 58BC) with an empty volatile asm fence at each of 8 positions: 69-97, all worse. Frame already exact; this session's G02 levers (fences, pins, slot accounting) do not reach the scratch allocation."
+func_credits_8007AA50_2026_10_19:
+  verdict: parked
+  class: "F tie: init-copy movstr scratches a2/a3/t0/t1 vs a3/t0/t1/t2 (a2 occupant = likely spilled REG_EQUIV-mem 8604 pseudo)"
+  date: 2026-10-19
+  note: "65 masked / 103 linked -> 14 / 14, length/frame/branch exact; partial 5,064 -> 5,336. Clusters B/C/D + case 4 + a hidden jump-threaded blez closed (wip header levers 14-18: one Cd85D8 struct symbol so the BLK copy aliases the 85xx fields, D_80076C00[3] array arg, `c = (st.adv*3)/4` non-byte def + do/while(0) after upper=1, `i = 0` hoisted). Left: only the copy's scratch regs. A non-volatile D_80078604_n store+arg gives the original's a2 occupancy but keeps C1C in a2 (12 masked); ~6,000 order/spelling compiles and an A384 $6 reservation did not close it."
