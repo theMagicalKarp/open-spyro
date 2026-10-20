@@ -184,21 +184,30 @@
  *     loop.  Without it jump.c threads that blez straight past the `for`
  *     loop (target 0x8007bb6c vs 0x8007b8d0) -- invisible in the masked
  *     shape diff, caught only by the linked `open-spyro diff`.
- * LEFT -- the init copy's a2 (orig 152-166): local-alloc gives the four
- *     priority-0 scratch qtys the first free registers, so the original had
- *     v0, v1, a0, a1 AND a2 occupied across the copy in sched1 order, yet its
- *     final code shows `lw v0,C1C ... sw v0,8604` after the copy and a fresh
- *     `lw a2,8604` before the call.  That shape matches what reload emits for a
- *     spilled pseudo with a REG_EQUIV (mem 8604): the C1C value lived in a2
- *     during local-alloc, then was evicted and rematerialised (hypothesis;
- *     not reproduced).  Measured:
- *     `D_80078604_n = D_80076C1C; call(..., D_80078604_n, ...)` (non-volatile)
- *     gives exactly that a2 occupancy and the right scratches, but the value
- *     is not spilled, so C1C stays in a2 (12 masked).  Sweeps tried (~6,000
- *     compiles): statement order x {S field, own symbol, array view,
- *     volatile array} for the 8604 store/read, 8600 spelling, e4/src
- *     spelling; a $6 asm reservation (A384) breaks the load order because
- *     update_equiv_regs sinks single-use loads past the barrier.
+ * ---- STATE 2026-10-19-1: 4 masked, one load-order swap left ---------------
+ * 19. **The movstr scratches are allocated in SCHED1 order, and sched1 sees
+ *     no hard-reg clobber on the copy.**  local-alloc gives the four scratch
+ *     qtys (birth 2n-1 .. death 2n+1) the first registers free across the
+ *     copy in sched1's order.  The original's a3/t0/t1/t2 means the hard a2
+ *     arg (the volatile 0x8604 re-read) was already loaded ABOVE the copy in
+ *     sched1; sched2, where the copy now clobbers a3, hoists it back up.
+ *     Two things free sched1 to do that: the copy goes to its OWN symbol
+ *     (`D_80078A40 = D_80077780`, not `S.blk`, so it has no dep on the
+ *     S fields), and C1C is read through a NON-volatile alias
+ *     (`D_80076C1C_n`, undefined_syms_manual.txt), so the 8604 store/re-read
+ *     chain is not pinned behind it.  14 -> 4 masked.  Ruled out on the way
+ *     (gcc source): reload spill (a2 is regs_explicitly_used, never a spill
+ *     reg) and global.c's local-reg steal (skips regs_ever_live) -- the
+ *     earlier "spilled REG_EQUIV pseudo" theory for a2 is wrong.
+ * LEFT -- orig `lw a1,85E4` (src) then `lw v0,C1C`; ours swaps them.  sched2
+ *     ties them (priority 5, class 3 vs the copy) and keeps sched1's LUID
+ *     order, so sched1 decides: at T-67 both launch together with the h604
+ *     store as last_scheduled; the e4 re-read's ANTI link to it costs 1
+ *     (class 3) and beats C1C's TRUE link (load, class 1).  Swept (~700
+ *     compiles): all orders of {src, copy, l600, h604, 58BC}, C1C as
+ *     array/struct/pointer views, a reused `t` local (47), split h604
+ *     (non-volatile store + `*(volatile int *)&S.h604` read: fixes this pair
+ *     but drops C18 below the copy, 8), direct `S.e4` arg (16).
  */
 
 extern void func_80016500();
@@ -260,6 +269,9 @@ extern short D_80076E1C;
 extern short D_80076E1E;
 extern short D_80076E20;
 extern Blk20 D_80077780;
+extern Blk20 D_80078A40;
+extern int D_80076C1C_n;
+
 extern char D_800778F0[];
 extern char *D_800785D8;
 extern char *D_800785DC;
@@ -350,9 +362,9 @@ void func_credits_8007AA50(void) {
       char *src;
       S.e4 = S.e0;
       src = S.e4;
-      S.blk = D_80077780;
+      D_80078A40 = D_80077780;
       S.l600 = D_80076C18;
-      S.h604 = D_80076C1C;
+      S.h604 = D_80076C1C_n;
       D_800758BC = 0;
       func_80016500(D_80076B90[0], src, S.h604,
                     S.l600 + D_8007A960[D_800757AC * 2], 0x258);
