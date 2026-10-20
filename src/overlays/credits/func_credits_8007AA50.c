@@ -199,15 +199,16 @@
  *     (gcc source): reload spill (a2 is regs_explicitly_used, never a spill
  *     reg) and global.c's local-reg steal (skips regs_ever_live) -- the
  *     earlier "spilled REG_EQUIV pseudo" theory for a2 is wrong.
- * LEFT -- orig `lw a1,85E4` (src) then `lw v0,C1C`; ours swaps them.  sched2
- *     ties them (priority 5, class 3 vs the copy) and keeps sched1's LUID
- *     order, so sched1 decides: at T-67 both launch together with the h604
- *     store as last_scheduled; the e4 re-read's ANTI link to it costs 1
- *     (class 3) and beats C1C's TRUE link (load, class 1).  Swept (~700
- *     compiles): all orders of {src, copy, l600, h604, 58BC}, C1C as
- *     array/struct/pointer views, a reused `t` local (47), split h604
- *     (non-volatile store + `*(volatile int *)&S.h604` read: fixes this pair
- *     but drops C18 below the copy, 8), direct `S.e4` arg (16).
+ * ---- MATCHED 2026-10-20 ----------------------------------------------------
+ * 20. **`register char *src asm("$5")` for the e4 re-read.**  sched1's
+ *     adjust_priority gives a newly-ready insn the LAUNCH_PRIORITY "birthing"
+ *     boost only when its SET_DEST pseudo has reg_n_sets == 1.  Both the e4
+ *     re-read and the C1C load were boosted, so the class tie (anti link
+ *     cost 1 beats a load's true link) put C1C first.  Setting the hard reg
+ *     a1 directly (n_sets >> 1) drops the re-read to its plain priority 5;
+ *     C1C wins T-67 and the original `lw a1,85E4; lw v0,C1C` order falls out.
+ *     Setting a pseudo twice (`src = D_800785E4` later) also flips the pair
+ *     but makes src non-local and breaks allocation.
  */
 
 extern void func_80016500();
@@ -359,7 +360,7 @@ void func_credits_8007AA50(void) {
                   D_80076C08 + D_8007A960[D_800757AC * 2], 0x258);
     S.e0 = func_80012D58(D_800785DC_BLK[0], 1);
     {
-      char *src;
+      register char *src asm("$5");
       S.e4 = S.e0;
       src = S.e4;
       D_80078A40 = D_80077780;
