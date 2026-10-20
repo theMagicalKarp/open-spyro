@@ -82,9 +82,10 @@ DEFINED = re.compile(r"^\s*(?:glabel|alabel|dlabel|nonmatching)\s+(\S+?)(?:,|\s|
 # `lw $at, 0x0($a1)` (data load, no %lo) is hand-written by construction.
 #
 # spimdisasm independently annotates signed add/sub and cop2 ops `handwritten
-# instruction`; we corroborate with that count but do NOT rely on it alone — it
-# over-fires on GTE `cop2` ops that also appear in compiled C via inline-asm
-# macros, and it does not flag a bare `lw $at`. Hence the conservative gate below.
+# instruction`. That marker is also conclusive on its own: gcc 2.7.2 only emits
+# addu/addiu/subu, and across every function matched from C (all of main's
+# compiled code and all 37 overlays) not one carries the marker. Either signal
+# classifies the function as hand-written.
 HW_COMMENT = "handwritten instruction"
 _AT_ARITH = {"add", "addi", "sub", "neg"}  # signed; compiler emits addu/addiu/subu
 _AT_LOADSTORE = {"lw", "lh", "lb", "lhu", "lbu", "sw", "sh", "sb"}
@@ -105,23 +106,10 @@ def at_is_data(line: str) -> bool:
 
 
 def classify_handwritten(strong: int, hw: int, instr: int) -> str:
-    """Map per-function counts to a class:
-
-    'handwritten'  high-confidence, excluded from %: at least one $at-as-data
-                   instruction (impossible from the toolchain) AND >=10% of the
-                   body is impossible/flagged. Catches the dense hand-written math
-                   library and the hot render/collision loops; rejects a big
-                   compiled function with one stray flagged instruction.
-    'asm-hint'     weaker: some handwritten-flagged (e.g. GTE cop2) or a lone
-                   $at-as-data hit, but below the bar. Tagged, but still counted
-                   in the % until confirmed by hand (avoids inflating the number).
-    ''             ordinary compiled code.
-    """
-    if instr and strong >= 1 and (strong + hw) / instr >= 0.10:
-        return "handwritten"
-    if strong >= 1 or hw >= 1:
-        return "asm-hint"
-    return ""
+    """'handwritten' (excluded from %) if the body holds any instruction the
+    toolchain cannot emit — a $at-as-data op (`strong`) or a spimdisasm
+    `handwritten instruction` marker (`hw`); '' for ordinary compiled code."""
+    return "handwritten" if instr and (strong or hw) else ""
 
 
 def _segments(repo: Path) -> list[dict[str, Any]]:
@@ -130,9 +118,10 @@ def _segments(repo: Path) -> list[dict[str, Any]]:
     lib_ranges: [vram_lo, vram_hi) windows holding stock Sony PSY-Q SDK / libc code
     that is statically linked into the EXE but is NOT ours to decompile. Functions
     in these windows are flagged `lib:true` and EXCLUDED from the headline / badge
-    denominator. The main-EXE SDK tail starts at `_bu_init` (0x80068494) and runs
-    contiguously to the end of .text. The game's own named memcard layer (MemCard*)
-    sits ABOVE this and stays counted as game code.
+    denominator. The main-EXE SDK tail starts at the SN CRT entry `start`
+    (0x8005b8e0) — the linker places every game object first, then the CRT and the
+    PSY-Q libraries — and runs contiguously to the end of .text: libspu, libapi,
+    libetc, libgpu, libgte, libc, libcd, libmcrd (`MemCard*`), libcard, libpad.
     """
     segments: list[dict[str, Any]] = [
         {
@@ -144,7 +133,7 @@ def _segments(repo: Path) -> list[dict[str, Any]]:
             "rebuilt": repo / "build/main/SCUS_942.28",
             "vram_base": 0x80010000,
             "file_base": 0x800,  # rodata starts at file 0x800 == vram 0x80010000
-            "lib_ranges": [(0x80068494, 0x8006BBE0)],
+            "lib_ranges": [(0x8005B8E0, 0x8006BBE0)],
         },
     ]
 
@@ -354,8 +343,10 @@ def build_segment(
             status = "wip"
         is_lib = any(lo <= addr < hi for lo, hi in lib_ranges)
         # Hand-written-asm classification (lib takes precedence — already excluded).
+        # A function matched from C was compilable by definition (e.g. a `$at`
+        # body reproduced with `register ... asm("$1")`), so it stays game code.
         strong, hw, ninstr = hand.get(name, (0, 0, 0))
-        hw_class = "" if is_lib else classify_handwritten(strong, hw, ninstr)
+        hw_class = "" if is_lib or status == "matched" else classify_handwritten(strong, hw, ninstr)
         # `matched_bytes` stays EXACT (full size iff verified byte-identical, else 0).
         # `partial_bytes` is the separate instruction-level credit for a wip attempt,
         # clamped below the full size so it can never masquerade as a real match. The
@@ -375,7 +366,6 @@ def build_segment(
                 "partial_bytes": partial_bytes,
                 "lib": is_lib,
                 "handwritten": hw_class == "handwritten",
-                "asm_hint": hw_class == "asm-hint",
                 "unsplit": seg_unsplit,
             }
         )
@@ -518,10 +508,9 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
         f"Also excluded: **{hand['total']} hand-written assembly functions / "
         f"{hand['total_bytes']:,} bytes** — Insomniac's math/vector/GTE library and "
         "the hot render/collision loops, written directly in asm (they use `$at` as a "
-        "data register, which the gcc→aspsx toolchain cannot emit). These can never be "
-        "matched from C, so they are tracked but kept out of the denominator. A weaker "
-        "`asm-hint` tag flags functions with some hand-written/GTE instructions that are "
-        "*still counted* (e.g. compiled C using inline-asm GTE macros) pending review."
+        "data register or signed `addi`/`add`/`sub`, which the gcc→aspsx toolchain "
+        "cannot emit). These can never be matched from C, so they are tracked but kept "
+        "out of the denominator."
     )
     lines.append("")
     lines.append(
@@ -597,15 +586,7 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     lines.append("| Address | Name | Segment | Size | Status | Class |")
     lines.append("|---|---|---|--:|---|---|")
     for r in records:
-        cls = (
-            "lib"
-            if r["lib"]
-            else "handwritten"
-            if r["handwritten"]
-            else "asm-hint"
-            if r["asm_hint"]
-            else "game"
-        )
+        cls = "lib" if r["lib"] else "handwritten" if r["handwritten"] else "game"
         lines.append(
             f"| `{r['addr']}` | {r['name']} | {r['segment']} | {r['size']} | "
             f"{r['status']} | {cls} |"
