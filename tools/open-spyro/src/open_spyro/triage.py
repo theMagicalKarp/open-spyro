@@ -219,9 +219,6 @@ def _score(
         if body.n_branch / body.n_instr >= 0.20:
             score -= 10
             why.append("branch-dense")
-    if rec["asm_hint"]:
-        score -= 25
-        why.append("asm-hint (GTE/handwritten fragments)")
     if rec["size"] > 2000:
         score -= 30
         why.append("megafunction (all-or-nothing)")
