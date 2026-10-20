@@ -5866,3 +5866,8 @@ func_credits_8007AA50_2026_10_19:
   class: "F tie: init-copy movstr scratches a2/a3/t0/t1 vs a3/t0/t1/t2 (a2 occupant = likely spilled REG_EQUIV-mem 8604 pseudo)"
   date: 2026-10-19
   note: "65 masked / 103 linked -> 14 / 14, length/frame/branch exact; partial 5,064 -> 5,336. Clusters B/C/D + case 4 + a hidden jump-threaded blez closed (wip header levers 14-18: one Cd85D8 struct symbol so the BLK copy aliases the 85xx fields, D_80076C00[3] array arg, `c = (st.adv*3)/4` non-byte def + do/while(0) after upper=1, `i = 0` hoisted). Left: only the copy's scratch regs. A non-volatile D_80078604_n store+arg gives the original's a2 occupancy but keeps C1C in a2 (12 masked); ~6,000 order/spelling compiles and an A384 $6 reservation did not close it."
+func_credits_8007AA50_2026_10_19_1:
+  verdict: parked
+  class: "F tie: sched1 class tie-break (e4 re-read anti link class 3 beats C1C load true link class 1 vs the h604 store)"
+  date: 2026-10-19
+  note: "14 -> 4 masked; partial 5,336 -> 5,384. Scratches fixed: local-alloc uses SCHED1 order, so the a2 arg (volatile 8604 re-read) must load above the copy there; a copy to its own symbol (D_80078A40) + non-volatile C1C alias (D_80076C1C_n) allow it, and sched2 hoists the copy back. The earlier spilled-pseudo theory is ruled out (a2 is never a spill reg or a steal target). Left: `lw a1,85E4` / `lw v0,C1C` swapped. ~1,900 compiles: orders, C1C views, split h604, volatile l600, fences, reused locals; permuter run on the block."
