@@ -5871,3 +5871,8 @@ func_credits_8007AA50_2026_10_19_1:
   class: "F tie: sched1 class tie-break (e4 re-read anti link class 3 beats C1C load true link class 1 vs the h604 store)"
   date: 2026-10-19
   note: "14 -> 4 masked; partial 5,336 -> 5,384. Scratches fixed: local-alloc uses SCHED1 order, so the a2 arg (volatile 8604 re-read) must load above the copy there; a copy to its own symbol (D_80078A40) + non-volatile C1C alias (D_80076C1C_n) allow it, and sched2 hoists the copy back. The earlier spilled-pseudo theory is ruled out (a2 is never a spill reg or a steal target). Left: `lw a1,85E4` / `lw v0,C1C` swapped. ~1,900 compiles: orders, C1C views, split h604, volatile l600, fences, reused locals; permuter run on the block."
+func_credits_8007AA50_2026_10_20:
+  verdict: matched
+  class: "sched1 birthing boost: adjust_priority boosts only SET_DEST pseudos with reg_n_sets == 1"
+  date: 2026-10-20
+  note: "4 -> 0. `register char *src asm(\"$5\")` for the e4 re-read: a hard-reg dest gets no LAUNCH_PRIORITY birthing boost, so the boosted C1C load wins the T-67 tie and the original `lw a1,85E4; lw v0,C1C` order falls out. A 1,920-variant volatility x order sweep found nothing first; the cc1 -dS ready lists named the mechanism."
