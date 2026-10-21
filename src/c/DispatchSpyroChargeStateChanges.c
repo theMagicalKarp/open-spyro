@@ -1,11 +1,8 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void ChangeSpyroState(int state);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void SetVector3Magnitude(int *vec, int mag);
-extern void CopyVector(int *dst, int *src);
 extern void ResetSpyroLinearMotion(void);
 extern int abs(int x);
 

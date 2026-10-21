@@ -19,10 +19,9 @@
  *    wrapper the parked version carried is no longer needed.
  */
 #include "globals.h"
+#include "vecmath.h"
 
 extern int abs(int);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int AbsAngleDelta8(int a, int b);
 extern int func_800381BC(int from, int to);
 extern int func_80038074(int angle, int step);
 extern int func_80038EE0(int *actor, int angle, int p2, int p3, int p4);

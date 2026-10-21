@@ -11,9 +11,7 @@
  * Identical body in ten level overlays.
  */
 
-extern int ArcTan2(int dy, int dx, int flag);
-extern void SubtractVector(int *out, int *a, int *b);
-extern int VectorLength(int *vec, int flag);
+#include "vecmath.h"
 
 extern int g_nGamestate; /* g_Gamestate */
 extern int g_nGamestate0cSubstate;

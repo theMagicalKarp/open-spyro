@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
    Sibling of func_80039688, but the direction comes from the actor's dir
@@ -15,12 +16,9 @@
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void CopyVector(int *dst, int *src);
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void func_800529E4(int *actor, int mode);
-extern int VectorLength(int *v, int mode);
-extern int ArcTan2(int x, int y, int mode);
 extern int abs(int);
 
 extern int D_800756C4;

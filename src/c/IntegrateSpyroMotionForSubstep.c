@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void ChangeSpyroState(int state);
 extern void ComputeSpyroMoveTargetFromPad(int mag);
@@ -10,29 +11,13 @@ extern void BuildSpyroVelocityFromBodyEuler(void);
 extern void IntegrateSpyroBodyEuler(int delta);
 extern void NudgeSpyroFromWallProbes(void);
 extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
-extern int AbsAngleDelta12(int a, int b);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int IntegerSqrt(int n);
-extern int VectorLength(int *vec, int include_z);
-extern void SetVector3Magnitude(int *vec, int mag);
-extern void ScaleVector3ByRatio(int *vec, int num, int den);
 extern void ScaleVector3Shifted(int *vec, int num, int shift);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
-extern void RShiftVector3(int *vec, int shift);
-extern void LShiftVector3(int *vec, int shift);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
 extern void AccumulateAnimRootMotionDelta(int frame, int *out, int anim,
                                           int sub);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
-extern int ApproxDist2D(int *a, int *b);
 extern int abs(int x);
 
 extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */

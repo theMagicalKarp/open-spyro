@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Per-frame tick of a gem-pickup burst particle entity (0x8003c6e4,
    0x178). Follows the burst record hung off actor[0]: while its lifetime
@@ -6,7 +7,6 @@
    position/velocity (gravity -6 clamped at -0x80), fades the RGB bytes,
    and spawns a sparkle every other tick; otherwise emits the pop particle
    and despawns the actor. */
-extern unsigned int GetRandomU32(void);
 extern void DespawnActorRecord(int *actor);
 
 void TickGemPickupBurstEntity(int *actor) {

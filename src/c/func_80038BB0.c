@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern int ApproxDist2D(int *a, int *b);
+#include "vecmath.h"
 
 /* Index of the list point farthest from Spyro: list[0] is the point count and
    each 0x10-byte record starts at offset 8. Returns the winning record's

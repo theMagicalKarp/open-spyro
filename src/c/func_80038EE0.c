@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern int AbsAngleDelta8(int a, int b);
 extern int ApproachAngle8(int target, int yaw, int step, int rate);
 extern int D_800756C4;
 

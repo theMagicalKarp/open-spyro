@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void UpdateHudCounters(void);
 extern void RotateLightVectorXZ(int step);
@@ -18,7 +19,6 @@ extern void EnterInventoryMenu(int fromMenu);
 extern void ExitPauseMenuToGame(int playSfx);
 extern void SetSpuCommonAttr(void *attr);
 extern int CdMix(void *vol);
-extern void ZeroVector(int *v);
 extern void BeginPauseToMenuTransition(void);
 
 extern void *D_800113A0;           /* asset-directory buffer pointer */

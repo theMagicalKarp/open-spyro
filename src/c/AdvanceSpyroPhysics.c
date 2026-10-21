@@ -12,19 +12,10 @@
      `*q` suspend RMW (MEM_IN_STRUCT_P decides sched2 aliasing). */
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
-extern void ZeroVector(int *vec);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern int VectorLength(int *vec, int include_z);
 extern void ChangeSpyroState(int state);
 extern void ComputeSpyroMoveTargetFromPad(int mag);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void RShiftVector3(int *vec, int shift);
-extern void LShiftVector3(int *vec, int shift);
-extern void ScaleVector3ByRatio(int *vec, int num, int den);
-extern void SetVector3Magnitude(int *vec, int mag);
 extern void *DispatchActorContactAtSphere(int *pos, int radius,
                                           unsigned int *flags, int mask, int a4,
                                           int a5);

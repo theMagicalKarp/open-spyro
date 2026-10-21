@@ -1,7 +1,5 @@
 #include "globals.h"
-
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
+#include "vecmath.h"
 
 /* Held base at g_nSpyroBodyPitch: pitch at [0], roll at [-1]. */
 extern int g_anSpyroBodyPitchBlock[];

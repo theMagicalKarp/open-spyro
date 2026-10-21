@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Wander/patrol behaviour step for an actor (0x80039AA8, 0x3ec).
 
@@ -22,9 +23,6 @@ extern int func_80038074(int angle, int step);
 extern int func_80038EE0(int *actor, int target, int step, int lim, int flag);
 extern int func_80039398(int *actor, int speed, int group, int radius,
                          int flags);
-extern unsigned int GetRandomU32(void);
-extern int ApproxDist2D(int *a, int *b);
-extern int ArcTan2(int y, int x, int mode);
 
 extern int D_800756C4;
 extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */

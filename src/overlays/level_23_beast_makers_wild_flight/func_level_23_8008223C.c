@@ -9,6 +9,9 @@
  * work (jump.c deletes it before sched1); tens of thousands of permuter
  * iterations did not, because permutation cannot synthesise a block boundary.
  */
+
+#include "vecmath.h"
+
 /* func_level_23_8008223C (0x8008223C, level_23_beast_makers_wild_flight
  * overlay, 0xd18 bytes).
  *
@@ -142,21 +145,10 @@ typedef struct ShardState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int ArcTan2(int y, int x, int mode);
-extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
-extern int VectorLength(int *v, int mode);
-extern void ScaleVector3ByRatio(int *v, int len, int scale);  /* ScaleVectorToLength */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 

@@ -34,6 +34,7 @@
  * No arm 0x15 here, so the 0x30 carrier is arm 0x21's `ta` at function scope.
  */
 
+#include "vecmath.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -147,13 +148,6 @@ typedef struct Actor {
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
 extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RotateVectorByMatrix(int *mat, int *v, int *dst);
-extern int ApproxDist2D(int *a, int *b);                /* VectorDistance */
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 
 extern int g_anCameraPos[];          /* camera world position */
 extern short g_anCosineLut[];        /* cosine table */

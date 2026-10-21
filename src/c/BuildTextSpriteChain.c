@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void CopyVector(int *dst, int *src);
 
 /* The queue tail is re-read from the global at every field access. */
 #define CURSOR (*(unsigned char *volatile *)&g_pSpriteRecordWriteCursor)

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Steer an actor's yaw toward Spyro (0x80038fc8, 0x260). Computes the
    signed wrap-around delta between the ArcTan2 bearing to Spyro and the
@@ -15,7 +16,6 @@
    a `$2` register local: as a pseudo it spans the cross-jumped tail, so it is
    a global allocno assigned after local-alloc has already given v0 to the
    constant. */
-extern int ArcTan2(int y, int x, int mode);
 extern void func_80037E98(int *actor, int a, int b);
 extern int abs(int);
 

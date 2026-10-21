@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Horn-strike swing driver (0x800499c0, 1084 bytes).
 
@@ -41,12 +42,7 @@
 
    Every non-cancelled frame ends by ticking the strike timer, and the frame
    always finishes in SmoothSpyroByteEulerSpring. */
-extern void ZeroVector(int *vec);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RotateVectorByMatrix(int *mtx, int *vec, int *dst);
-extern void ApplyActiveGteRotation(int *vec, int *dst);
 extern void FillWord(void *dst, unsigned int value, int byteCount);
-extern unsigned int GetRandomU32(void);
 extern void SmoothSpyroByteEulerSpring(void);
 
 extern unsigned char D_80075268[]; /* state -> strike anim descriptor index */

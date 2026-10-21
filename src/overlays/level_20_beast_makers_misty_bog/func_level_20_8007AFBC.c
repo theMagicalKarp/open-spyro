@@ -23,6 +23,9 @@
  * Actor record (0x58 bytes), shared by every actor class. ->type picks the
  * behaviour, ->state points at the class's own block, and 0x3C..0x42 hold
  * the animation state driven by the macros further down. */
+
+#include "vecmath.h"
+
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
   int unk04;           /* 0x04 */
@@ -228,7 +231,6 @@ extern int func_80039398(Actor *actor, int a, int b, int c, int d);
 extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
 extern void func_800529E4(Actor *actor, int mode);
 extern void DespawnActorRecord(Actor *actor);
-extern unsigned int GetRandomU32(void);
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
@@ -262,16 +264,6 @@ extern int g_anLevelEggsRecovered[];
 extern int g_nWorldEggsRecovered;
 
 extern void func_8003C85C(int *pos);
-extern int ArcTan2_8bit(int dx, int dy);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern void CopyVector(int *d, int *s);
-extern void WorldToCameraRotate(int *d, int *s);
-extern void AddVector(int *d, int *a, int *b);
-extern void SubtractVector(int *d, int *a, int *b); /* SubVector */
-extern void RShiftVector3(int *d, int n);
-extern void ZeroVector(int *v);
-extern void ScaleVector3Sat(int *d, int *s, int k);
 extern void func_80017BFC(short *d, int *s);
 extern void func_80017C24(int *d, int *s);
 
@@ -284,9 +276,6 @@ extern int func_80038340(Actor *actor); /* ground height under the actor */
 extern int func_80038638(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
-extern int ApproxDist2D(int *pos, int *target); /* planar distance */
-extern int ArcTan2(int dx, int dy, int z); /* Atan2 */
-extern int AbsAngleDelta8(int a, int b);
 extern void func_8003C358(Actor *actor, int mode);
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
@@ -346,8 +335,6 @@ typedef struct {
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
 extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
-extern void SetVector3Magnitude(int *v, int k);         /* normalise to k */
-extern void ScaleVector3ByRatio(int *v, int k, int n);
 
 /* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
  * doubles as the pickup origin once Sparx has fetched the item. */
@@ -568,13 +555,10 @@ extern short g_anSineLut[];
 extern short g_anCosineLut[];
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void RotateVectorByMatrix(int *dst, int *tbl, int *out);
 extern int func_8003AAEC(Actor *actor, int *tbl);
 extern void EncodeCachedVecToActorDirCode(Actor *actor);
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
-extern int VectorLength(int *v, int mode);
-extern int IntegerSqrt(int x); /* SquareRoot */
 extern int func_80057380(void);
 extern void func_8003B9D4(Actor *actor);
 extern int CheckLineOfSightSegment(int *a, int *b);
@@ -594,7 +578,6 @@ typedef struct PoleState {
   int flag24; /* 0x24 */
 } PoleState;
 
-extern int SignedAngleDelta8(int a, int b); /* signed angle delta, byte-wrapped */
 extern void func_8002CCC8(Actor *actor);
 
 /* Type 114: path-following enemy that runs from Spyro and can be knocked
@@ -645,7 +628,6 @@ extern void *D_8006E490;
 extern void *D_8006E494;
 extern void *D_8006E330[];
 
-extern void ApplyActiveGteRotation(int *d, int *s);
 extern FxNode *func_80058AE8(void);
 extern void func_80058B60(FxNode *node);
 extern int func_80038098(int a, int b, int c);
@@ -690,7 +672,6 @@ typedef struct OrbitState {
 } OrbitState;
 
 /* Shift a vector left by n. */
-extern void LShiftVector3(int *d, int n);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
  * or the floor runs out. */
@@ -1139,7 +1120,6 @@ extern int func_80039E94(Actor *actor, void *path, int a, int b, int c, int d,
     ANIM_RESET(a, n);                                                          \
   }
 
-
 /* ENTER_POSE with the already-there test first. */
 #define ENTER_POSE4(a, n)                                                      \
   (a)->unk48 = (n);                                                            \
@@ -1430,9 +1410,6 @@ typedef struct L9Thrower {
 } L9Thrower;
 extern void func_80052D64(Actor *actor, int a, int *pos);
 
-
-
-
 /* ==== level_10 per-class state blocks ==== */
 /* Type 370: Doctor Shemp's guard. */
 typedef struct {
@@ -1555,7 +1532,6 @@ typedef struct L26Spark {
   int timer;  /* 0x0C */
 } L26Spark;
 /* from level_7 */
-extern int AbsAngleDelta12(int a, int b);
 /* from level_7 */
 /* from level_7 */
 typedef struct BounceState {
@@ -2250,7 +2226,6 @@ typedef struct L18Ram {
   int call;       /* 0x44 */
 } L18Ram;
 
-
 /* Case 137 -- guard. */
 typedef struct L18Guard {
   int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
@@ -2478,7 +2453,6 @@ void func_level_20_8007AFBC(void) {
 
       break;
     }
-
 
     /* Balloonist's gnorc (WanderState): wanders around the pad until the
      * balloonist is ready, then walks into the flight cutscene. */
@@ -2822,8 +2796,6 @@ void func_level_20_8007AFBC(void) {
       continue;
     }
 
-
-
     /* Vortex pad (VortexState): spins Spyro up and out of the level. */
     case 34: {
       VortexState *st = actor->state;
@@ -2969,7 +2941,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
     /* Bouncing chest fragments (SparkState). */
     case 67:
     case 68:
@@ -3022,11 +2993,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
-
-
-
-
     /* Falling chest fragments (TumbleState). */
     case 69:
     case 257:
@@ -3063,11 +3029,6 @@ void func_level_20_8007AFBC(void) {
       st->life -= 1;
       break;
     }
-
-
-
-
-
 
     /* The generic enemy: patrols, notices Spyro, charges, gets knocked back.
      * ->unk49 is the outer state and st->mode the sub-state. */
@@ -3432,9 +3393,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
-
-
     /* Lift plate (PlateState): rises once its trigger actor is gone, waits,
      * then drops back. */
     case 110: {
@@ -3621,10 +3579,6 @@ void func_level_20_8007AFBC(void) {
 
       break;
     }
-
-
-
-
 
     /* The balloonist (BalloonState): smokes, waits for his gnorc, then flies
      * Spyro out once the world is finished. */
@@ -4260,9 +4214,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
-
-
     /* Ambient flyer (FlyState): circles its anchor and pops near Spyro. */
     case 173: {
       FlyState *st = actor->state;
@@ -4321,7 +4272,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
     /* Breakable chest (ChestState): one hit showers gems. */
     case 194: {
       ChestState *st = actor->state;
@@ -4361,10 +4311,6 @@ void func_level_20_8007AFBC(void) {
 
       break;
     }
-
-
-
-
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
     case 195: {
@@ -4443,10 +4389,6 @@ void func_level_20_8007AFBC(void) {
       actor->flags = 0;
       break;
     }
-
-
-
-
 
     /* Boss door (DoorState): swings open, rewards the player, then leaves. */
     case 250: {
@@ -4587,14 +4529,9 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
-
-
-
     /* Dragon fragment, updated out of line. */
     case 251:      TickGemPickupBurstEntity(actor);
       break;
-
 
     /* Thrown projectile (ShotState30): flies until it lands. */
     case 260:
@@ -4659,7 +4596,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
     /* Sparkling shard: one puff per frame. */
     case 309: {
       ShardState *st = actor->state;
@@ -4689,7 +4625,6 @@ void func_level_20_8007AFBC(void) {
 
       break;
     }
-
 
     /* Wood shard: bounces and throws three sparks a frame. */
     case 310:
@@ -4753,10 +4688,6 @@ void func_level_20_8007AFBC(void) {
       DespawnActorRecord(actor);
       continue;
     }
-
-
-
-
 
     /* Type 329: seed pod. Wobbles when struck and holds a floating prize
      * above itself; Spyro takes the prize by touching it (or by being in a
@@ -4905,10 +4836,6 @@ void func_level_20_8007AFBC(void) {
       break;
     }
 
-
-
-
-
     /* Whirlwind pad: a short spin-up before the ride, then a cooldown. */
     case 331:      switch (actor->unk48) {
       case 0:
@@ -4954,7 +4881,6 @@ void func_level_20_8007AFBC(void) {
       }
       break;
 
-
     /* Fade-out props: removed as soon as their animation finishes. */
     case 400:
     case 405:
@@ -4963,9 +4889,6 @@ void func_level_20_8007AFBC(void) {
       }
       DespawnActorRecord(actor);
       continue;
-
-
-
 
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
@@ -5039,8 +4962,6 @@ void func_level_20_8007AFBC(void) {
       actor->flags = 0;
       break;
     }
-
-
 
     /* Type 392: homing spark. Launched at the nearest enemy in front of
      * Spyro (or away from him when there is none), and bursts on what it
@@ -5372,11 +5293,6 @@ void func_level_20_8007AFBC(void) {
       continue;
     }
 
-
-
-
-
-
     /* Life chest (LiftState). */
     case 421: {
       LiftState *st = actor->state;
@@ -5505,10 +5421,6 @@ void func_level_20_8007AFBC(void) {
       DespawnActorRecord(actor);
       continue;
     }
-
-
-
-
 
     /* Orbiting satellite (SatState): rides a spinning parent at a fixed
      * radius, or just spins in place behind a non-spinner. */

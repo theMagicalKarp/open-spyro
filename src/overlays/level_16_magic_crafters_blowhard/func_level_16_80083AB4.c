@@ -20,6 +20,9 @@
  *    the arm and rotates s0/s1/s2 through 10 insns; the literal rematerialises
  *    as `li v0,38` exactly as the original does.
  */
+
+#include "vecmath.h"
+
 /* func_level_16_80083AB4 (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
  *
@@ -166,19 +169,10 @@ typedef struct ShardState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int ArcTan2(int y, int x, int mode);
-extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 extern int g_anCameraPos;     /* turret aim target X */
 extern int D_80076DFC;     /* turret aim target Y */

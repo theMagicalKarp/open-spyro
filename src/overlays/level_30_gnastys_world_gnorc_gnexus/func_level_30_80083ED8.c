@@ -34,6 +34,8 @@
  * level_30_gnastys_world_gnorc_gnexus.ovl.
  */
 
+#include "vecmath.h"
+
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
 #define W(n) (*(int *)(rec + (n)))
@@ -42,10 +44,6 @@
 
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017BFC(short *dst, int *src);
-extern void CopyVector(int *dst, int *src);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 

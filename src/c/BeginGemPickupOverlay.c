@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void CopyVector(int *dst, int *src);
 extern int PlaySoundEffect(unsigned int id, int owner, unsigned int flags,
                            unsigned char *pos);
 

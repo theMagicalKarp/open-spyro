@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern int DispatchSpyroPadStateChanges(int mask);
 extern int DispatchSpyroChargeStateChanges(void);
@@ -9,9 +10,6 @@ extern void CycleSpyroIdleAnim(void);
 extern void ResetSpyroLinearMotion(void);
 extern void TriggerRespawnOrGameOver(void);
 extern void BuildSpyroVelocityFromBodyEuler(void);
-extern int AbsAngleDelta12(int a, int b);
-extern int VectorLength(int *vec, int include_z);
-extern void CopyVector(int *dst, int *src);
 
 extern unsigned short g_anCosineLut[];
 extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */

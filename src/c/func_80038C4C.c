@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void SubtractVector(int *dst, int *a, int *b);
 extern int abs(int n);
 
 extern short g_anCosineLut[];

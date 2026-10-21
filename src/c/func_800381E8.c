@@ -1,7 +1,5 @@
 #include "globals.h"
-
-extern int ArcTan2(int y, int x, int high_precision);
-extern int AbsAngleDelta8(int a, int b);
+#include "vecmath.h"
 
 /* True when the entity's byte yaw (+0x46) points within `threshold` of the
    direction from the entity (+0xC,+0x10) to Spyro. */

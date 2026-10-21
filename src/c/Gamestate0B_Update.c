@@ -1,20 +1,13 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void RotateLightVectorXZ(int steps);
 extern void TickGemCutsceneActorAnims(void **actors, int mode);
-extern int LookupSine(int angle);
-extern int LookupCosine(int angle);
-extern int AbsAngleDelta12(int a, int b);
 extern int SignedAngleDelta12(int a, int b);
 extern void TrackEntityYawTowardSpyro(void *actor, int step, int deadzone,
                                       int snap);
 extern int FindGroundHeightBelow(int *pos, int depth);
 extern void EncodeCachedVecToActorDirCode(void *actor);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
 extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
 extern void AdvanceSpyroAnimFrame(int delta);
 extern void TickSpyroAnimLayer1(void);

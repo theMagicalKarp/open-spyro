@@ -12,6 +12,8 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
+#include "vecmath.h"
+
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
   int unk04;           /* 0x04 */
@@ -107,18 +109,10 @@ typedef struct DebrisState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int ArcTan2(int y, int x, int mode);
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 
 extern Actor *g_pActorListBase;

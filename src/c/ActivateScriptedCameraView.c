@@ -1,7 +1,5 @@
 #include "globals.h"
-
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
+#include "vecmath.h"
 
 /* The active scripted-camera record pointer (D_80076EBC) and the camera
    position 0xc4 below it are reached through one held base register. */

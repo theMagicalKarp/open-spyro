@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
-extern void CopyVector(int *dst, int *src);
 extern int ComputeCameraToTargetAngle(int *pos);
 
 SDATA(g_nCameraLosClear, 4);

@@ -37,6 +37,7 @@
  * store so reload's `li t0,46` keeps its place (A164 on rematerialised
  * constants -- see func_level_0_800873E0's header). */
 
+#include "vecmath.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -169,12 +170,6 @@ typedef struct Actor {
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
 extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RotateVectorByMatrix(int *mat, int *v, int *dst);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 
 extern short g_anCosineLut[];        /* cosine table */
 extern short g_anSineLut[];        /* sine table */                 /* GetRandomU32 */

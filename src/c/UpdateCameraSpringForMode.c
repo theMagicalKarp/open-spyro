@@ -1,15 +1,9 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern int ComputeCameraToTargetAngle(int *pos);
 extern void LoadCameraTargetAnglesFromMode(void);
-extern int AbsAngleDelta12(int a, int b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern void ScaleVector3Sat(int *dst, int *src, int scale);
-extern void RShiftVector3(int *vec, int shift);
-extern int ArcTan2(int y, int x, int high_precision);
 extern void AdvanceCameraSpringStep(int column);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void SnapCameraToTarget(void);

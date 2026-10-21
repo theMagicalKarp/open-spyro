@@ -1,14 +1,11 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Move an actor by a delta with contact/collision checks (0x80039228,
    0x170). In gamestate 3 the delta is scaled by 1.5x (half added), in
    state 4 doubled. flags bit 0 lifts the probe point by 0x12C+radius
    during the checks. Returns 1 on actor contact, 2 on world collision,
    0 when the move was committed. */
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern void LShiftVector3(int *vec, int shift);
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);

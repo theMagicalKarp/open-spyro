@@ -19,6 +19,9 @@
  * tail, move the boundary INTO the batch. Leaving one store behind gives the
  * following block a same-priority straggler to lose to, at zero insn cost.
  */
+
+#include "vecmath.h"
+
 /* func_level_25_80084B94 (0x80084B94, level_25_dream_weavers_dark_passage
  * overlay, 0xc68 bytes).
  *
@@ -158,17 +161,10 @@ typedef struct DebrisState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -178,9 +174,7 @@ extern short D_8006F3A0[]; /* launch-direction table, x */
 extern short D_8006F3A2[]; /* launch-direction table, z */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
-extern int ArcTan2(int y, int x, int mode);
 extern int abs(int n);
-extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
 extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
 
 Actor *func_level_25_80084B94(int type, Actor *parent) {

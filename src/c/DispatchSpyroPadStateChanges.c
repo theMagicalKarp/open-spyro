@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Map this frame's pad intent to Spyro state transitions (0x80040F68, 0x308).
 
@@ -12,8 +13,6 @@
    when a transition was dispatched. */
 extern void ChangeSpyroState(int state);
 extern void ResetSpyroLinearMotion(void);
-extern void SetVector3Magnitude(int *v, int mag);
-extern void CopyVector(int *dst, int *src);
 extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
                            void *marker);
 

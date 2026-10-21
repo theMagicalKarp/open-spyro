@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern void SubtractVector(int *dst, int *a, int *b);
+#include "vecmath.h"
 
 extern int g_nSpyroWorldPosZ;         /* g_anSpyroWorldPos[2] */
 extern int g_anLevelReadyFlagBlock[]; /* held-base view; world pos at -0x164 */

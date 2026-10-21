@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
    position if nothing blocks it (0x8003bccc). Global pace D_800756C4 scales
@@ -9,9 +10,6 @@
    ground height differs from the actor's cached Z by >= 0xC9. Returns 1 on
    contact block, 2 on world collision / ground-step reject, 0 on commit. */
 extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int flag);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);

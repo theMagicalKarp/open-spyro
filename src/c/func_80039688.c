@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Guided-move step for a tracked actor (0x80039688, 0x288). Advances the
    actor's cached position (+0xC/+0x10) along `angle` by `speed` (scaled
@@ -12,7 +13,6 @@
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void CopyVector(int *dst, int *src);
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void func_800529E4(int *actor, int mode);

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* 0x8002d02c, 324 bytes — leave the save/load menu back into the world
    (gamestate 0): unblock gameplay, rebuild the light constants, zero Spyro's
@@ -9,7 +10,6 @@
    the HUD (all five counters hidden), and re-issue the current music track. */
 
 extern void InitLightVectorConstants(void);
-extern void ZeroVector(int *v);
 extern void ResetSpyroEntity(int mode);
 extern void ComputeCameraToTargetAngle(void *params);
 extern void CopyWords(void *dst, void *src, int byte_count);

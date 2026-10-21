@@ -34,6 +34,9 @@
  *
  * Verified byte-identical inside the relinked level_18_beast_makers_home.ovl.
  */
+
+#include "vecmath.h"
+
 /* func_level_18_800888F8 (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
  *
@@ -83,10 +86,6 @@
 
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017BFC(short *dst, int *src);
-extern void CopyVector(int *dst, int *src);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 

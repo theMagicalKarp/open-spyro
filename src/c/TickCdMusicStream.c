@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern int FUN_80063bd8(int mode, unsigned char *result);
 extern int FUN_80063aac(void);
@@ -9,7 +10,6 @@ extern int CdControl(unsigned char com, char *param, char *result);
 extern int CdControlBlocking(unsigned char com, char *param, char *result);
 extern int CdControlForce(unsigned char com, char *param);
 extern void SetSpuCommonAttr(unsigned int *attr);
-extern unsigned int GetRandomU32(void);
 
 extern unsigned char D_800776BC[];
 extern unsigned int D_800776CC;

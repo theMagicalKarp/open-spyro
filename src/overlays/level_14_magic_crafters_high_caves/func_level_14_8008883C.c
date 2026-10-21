@@ -35,6 +35,8 @@
  * With no parent the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
+#include "vecmath.h"
+
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
   int unk04;           /* 0x04 */
@@ -137,18 +139,10 @@ typedef struct AimState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern void ZeroVector(int *vec);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
 
 extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];
@@ -160,8 +154,6 @@ extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 extern int g_nSpyroGroundHeightZ;     /* g_nSpyroGroundHeight */
-extern int ArcTan2(int y, int x, int mode);
-extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
 
 Actor *func_level_14_8008883C(int type, Actor *parent) {
   Actor *rec;

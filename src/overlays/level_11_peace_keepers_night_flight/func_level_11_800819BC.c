@@ -9,6 +9,9 @@
  * work (jump.c deletes it before sched1); tens of thousands of permuter
  * iterations did not, because permutation cannot synthesise a block boundary.
  */
+
+#include "vecmath.h"
+
 /* func_level_11_800819BC (0x800819BC, level_11_peace_keepers_night_flight
  * overlay, 0x944 bytes).
  *
@@ -138,19 +141,10 @@ typedef struct ShardState {
 
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
-extern void CopyVector(int *dst, int *src);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern unsigned int GetRandomU32(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int ArcTan2(int y, int x, int mode);
-extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 extern int D_8007595C;     /* active flight-race slot index */

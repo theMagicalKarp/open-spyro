@@ -1,10 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern void ApplyActiveGteRotation(int *src, int *dst);
 extern int CastRayWorldAndActors();
 extern int abs(int n);
 

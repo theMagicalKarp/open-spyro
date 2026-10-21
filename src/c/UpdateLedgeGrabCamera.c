@@ -1,10 +1,10 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void LoadCameraTargetAnglesFromMode(void);
 extern void AdvanceCameraSpringStep(int column);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void AddVector(int *dst, int *a, int *b);
 extern void SnapCameraToTarget(void);
 extern void UpdateCameraEulerAngles(void);
 extern int ComputeCameraToTargetAngle(int *pos);

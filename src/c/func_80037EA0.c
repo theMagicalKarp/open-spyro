@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern unsigned int GetRandomU32(void);
+#include "vecmath.h"
 
 /* Uniform random integer in the inclusive range [lo, hi]: reduce a fresh 32-bit
    draw modulo the span (hi - lo + 1) and bias by lo. The draw is taken as

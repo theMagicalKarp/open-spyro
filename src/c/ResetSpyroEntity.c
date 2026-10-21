@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void StopSoundVoicesByOwner(void *owner, int mask);
-extern void CopyVector(int *dst, int *src);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void ChangeSpyroState(int state);
 

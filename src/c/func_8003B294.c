@@ -1,13 +1,11 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* OR `bits` into the +0x18 flags word of every actor in pickup group `group`
    that lies inside a box + cone around actor `actor` (0x8003b294): per-axis
    |dx|,|dy| < xyLim, ApproxDist2D < distLim, |dz| < zLim, and the 8-bit
    heading from `actor` to the member within angLim of actor's facing byte
    (+0x46). Members with type byte (+0x48) >= 0x80 are skipped. */
-extern int ApproxDist2D(int *a, int *b);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int AbsAngleDelta8(int a, int b);
 
 void func_8003B294(int actor, int group, unsigned int bits, int distLim,
                    int zLim, int xyLim, int angLim) {

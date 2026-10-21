@@ -38,6 +38,9 @@
  * Verified byte-identical inside the relinked
  * level_16_magic_crafters_blowhard.ovl.
  */
+
+#include "vecmath.h"
+
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
 #define W(n) (*(int *)(rec + (n)))
@@ -47,14 +50,6 @@
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017C24(int *dst, short *src);
 extern void func_80017BFC(short *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b); /* SubVector */
-extern void CopyVector(int *dst, int *src);
-extern int VectorLength(int *v, int mode);
-extern void ScaleVector3ByRatio(int *v, int len, int scale);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 

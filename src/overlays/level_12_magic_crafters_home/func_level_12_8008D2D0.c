@@ -30,6 +30,8 @@
  * `ta` promoted to function scope (see the level_30 donor).
  */
 
+#include "vecmath.h"
+
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
   unsigned char cls;    /* 0x01 record class (stamped by the allocator) */
@@ -158,16 +160,7 @@ typedef struct Actor {
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
 extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RotateVectorByMatrix(int *mat, int *v, int *dst);
-extern void SubtractVector(int *dst, int *a, int *b);     /* SubVector */
-extern void SetVector3Magnitude(int *v, int k);                /* ScaleVectorToLength */
-extern int ApproxDist2D(int *a, int *b);                /* VectorDistance */
 extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern unsigned int GetRandomU32(void);
 
 extern Actor *g_pActorListBase;
 extern int g_anCameraPos[];          /* camera world position */

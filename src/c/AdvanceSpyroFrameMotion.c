@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void ZeroVector(int *vec);
 extern void IntegrateSpyroMotionForSubstep(int substep);
 extern void DispatchSpyroPhysicsByState(void);
 extern void AdvanceSpyroSubstepState(void);

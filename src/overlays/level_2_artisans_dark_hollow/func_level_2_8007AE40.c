@@ -47,6 +47,9 @@
  * Actor record (0x58 bytes), shared by every actor class. ->type picks the
  * behaviour, ->state points at the class's own block, and 0x3C..0x42 hold
  * the animation state driven by the macros further down. */
+
+#include "vecmath.h"
+
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
   int unk04;           /* 0x04 */
@@ -203,7 +206,6 @@ extern int func_80039398(Actor *actor, int a, int b, int c, int d);
 extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
 extern void func_800529E4(Actor *actor, int mode);
 extern void DespawnActorRecord(Actor *actor);
-extern unsigned int GetRandomU32(void);
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
@@ -235,16 +237,6 @@ extern int g_anLevelEggsRecovered[];
 extern int g_nWorldEggsRecovered;
 
 extern void func_8003C85C(int *pos);
-extern int ArcTan2_8bit(int dx, int dy);
-extern int LookupSine(int a);
-extern int LookupCosine(int a);
-extern void CopyVector(int *d, int *s);
-extern void WorldToCameraRotate(int *d, int *s);
-extern void AddVector(int *d, int *a, int *b);
-extern void SubtractVector(int *d, int *a, int *b); /* SubVector */
-extern void RShiftVector3(int *d, int n);
-extern void ZeroVector(int *v);
-extern void ScaleVector3Sat(int *d, int *s, int k);
 extern void func_80017BFC(short *d, int *s);
 extern void func_80017C24(int *d, int *s);
 
@@ -257,12 +249,7 @@ extern int func_80038340(Actor *actor); /* ground height under the actor */
 extern void func_80038638(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
-extern int ApproxDist2D(int *pos, int *target); /* planar distance */
-extern int ArcTan2(int dx, int dy, int z); /* Atan2 */
-extern int AbsAngleDelta8(int a, int b);
 extern void func_8003C358(Actor *actor, int mode);
-
-
 
 extern void func_8002B390(int handle, int a, int b);
 extern void func_8002B444(int handle, int a, int b);
@@ -291,8 +278,6 @@ typedef struct {
   unsigned char *v;
 } PtrU8;
 extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
-extern void SetVector3Magnitude(int *v, int k);         /* normalise to k */
-extern void ScaleVector3ByRatio(int *v, int k, int n);
 
 /* Sparkle nodes spawned around items. */
 typedef struct AnimNode {
@@ -389,7 +374,6 @@ extern CamObj g_anWorldToCameraRotMtx;
 
 extern Xform D_8006CA24[];
 
-
 /* Vortex path: node count and current node, then the two anchor positions
  * whose midpoint Spyro is pulled toward. */
 typedef struct PortalDesc {
@@ -432,20 +416,16 @@ extern short g_anSineLut[];
 extern short g_anCosineLut[];
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void RotateVectorByMatrix(int *dst, int *tbl, int *out);
 extern int func_8003AAEC(Actor *actor, int *tbl);
 extern void EncodeCachedVecToActorDirCode(Actor *actor);
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
-extern int VectorLength(int *v, int mode);
-extern int IntegerSqrt(int x); /* SquareRoot */
 extern int func_80057380(void);
 extern void func_8003B9D4(Actor *actor);
 extern int CheckLineOfSightSegment(int *a, int *b);
 extern int GetSoundVoiceStatusByOwner(Actor *actor, int a);
 extern int func_80017428(int *v, int *n, int *out);
 
-extern int SignedAngleDelta8(int a, int b); /* signed angle delta, byte-wrapped */
 extern void func_8002CCC8(Actor *actor);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -474,15 +454,11 @@ extern void *D_8006E490;
 extern void *D_8006E494;
 extern void *D_8006E330[];
 
-extern void ApplyActiveGteRotation(int *d, int *s);
 extern FxNode *func_80058AE8(void);
 extern void func_80058B60(FxNode *node);
 extern int func_80038098(int a, int b, int c);
 
-
-
 /* Shift a vector left by n. */
-extern void LShiftVector3(int *d, int n);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
  * or the floor runs out. */
@@ -744,7 +720,6 @@ extern struct {
 extern int D_80078C68;
 extern int g_nSpyroRequestState; /* scripted camera mode */
 
-
 extern void func_8002B390(int ch, int vol, int a);
 extern void func_8002B444(int ch, int n, int a);
 extern int func_8002B3F4(int ch);
@@ -836,7 +811,6 @@ typedef struct PostState {
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;
 extern void func_8003AA84(Actor *actor);
-extern int AbsAngleDelta8(int a, int b);
 extern void func_8003B1E8(Actor *actor, int a);
 
 /* An animation change at half speed, keyed on the current animation. */
@@ -1043,7 +1017,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
@@ -1155,7 +1128,6 @@ void func_level_2_8007AE40(void) {
 
       break;
     }
-
 
     /* Butterfly (ChaseState). */
     case 16: {
@@ -1304,7 +1276,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Vortex pad (VortexState): spins Spyro up and out of the level. */
     case 34: {
       VortexState *st = actor->state;
@@ -1450,7 +1421,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Explosion shard with a ground bounce (ShardState). */
     case 255:
     case 256:
@@ -1504,7 +1474,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Falling chest fragments (TumbleState). */
     case 257:
     case 425: {
@@ -1540,7 +1509,6 @@ void func_level_2_8007AE40(void) {
       st->life -= 1;
       break;
     }
-
 
     /* The generic enemy: patrols, notices Spyro, charges, gets knocked back.
      * ->unk49 is the outer state and st->mode the sub-state. */
@@ -1905,7 +1873,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Lift plate (PlateState): rises once its trigger actor is gone, waits,
      * then drops back. */
     case 110: {
@@ -2226,7 +2193,6 @@ void func_level_2_8007AE40(void) {
       func_800529E4(actor, 1);
       break;
     }
-
 
     /* The balloonist (BalloonState): smokes, waits for his gnorc, then flies
      * Spyro out once the world is finished. */
@@ -2952,7 +2918,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Ambient flyer (FlyState): circles its anchor and pops near Spyro. */
     case 173: {
       FlyState *st = actor->state;
@@ -3215,7 +3180,6 @@ void func_level_2_8007AE40(void) {
       continue;
     }
 
-
     /* Wooden chest (BreakState). */
     case 194: {
       BreakState *st;
@@ -3254,7 +3218,6 @@ void func_level_2_8007AE40(void) {
       DespawnActorRecord(actor);
       continue;
     }
-
 
     /* Boss door (DoorState): swings open, rewards the player, then leaves. */
     case 250: {
@@ -3395,12 +3358,10 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Dragon fragment, updated out of line. */
     case 251:
       TickGemPickupBurstEntity(actor);
       break;
-
 
     /* Floating digits (DebrisState). */
     case 260:
@@ -3463,7 +3424,6 @@ void func_level_2_8007AE40(void) {
       }
       break;
     }
-
 
     /* Waypoint rider (RideState30): steps a closed path and calls out a voice
      * line per leg. */
@@ -3574,7 +3534,6 @@ void func_level_2_8007AE40(void) {
       break;
     }
 
-
     /* Sparkling shard: 1 puff per frame. */
     case 309: {
       ShardState *st = actor->state;
@@ -3604,7 +3563,6 @@ void func_level_2_8007AE40(void) {
 
       break;
     }
-
 
     /* Wood shard: bounces and throws three sparks a frame. */
     case 310:
@@ -3669,7 +3627,6 @@ void func_level_2_8007AE40(void) {
       continue;
     }
 
-
     /* Respawn warden (WardenState): puts its group back once Spyro has left. */
     case 323: {
       WardenState *st = actor->state;
@@ -3696,7 +3653,6 @@ void func_level_2_8007AE40(void) {
 
       break;
     }
-
 
     /* Whirlwind pad: a short spin-up before the ride, then a cooldown. */
     case 331:
@@ -3743,7 +3699,6 @@ void func_level_2_8007AE40(void) {
       }
       }
       break;
-
 
     /* Fade-out props: removed as soon as their animation finishes. */
     case 405:
@@ -3806,7 +3761,6 @@ void func_level_2_8007AE40(void) {
       func_800529E4(actor, 1);
       break;
     }
-
 
     /* Life chest (LiftState). */
     case 421: {
@@ -3936,7 +3890,6 @@ void func_level_2_8007AE40(void) {
       DespawnActorRecord(actor);
       continue;
     }
-
 
     /* Orbiting satellite (SatState): rides a spinning parent at a fixed
      * radius, or just spins in place behind a non-spinner. */

@@ -11,11 +11,11 @@
    the chunk itself. */
 
 #include "globals.h"
+#include "vecmath.h"
 
 extern void StopAllSoundExceptMask(unsigned int mask);
 extern void InitLightVectorConstants(void);
 extern void ResetPadFrameSubstepTable(unsigned int *pad);
-extern void CopyVector(int *dst, int *src);
 extern void ResetSpyroEntity();
 extern void ChangeSpyroState();
 extern void ResetCameraStateToTarget(void);

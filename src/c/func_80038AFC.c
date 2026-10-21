@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern int ApproxDist2D(int *a, int *b);
+#include "vecmath.h"
 
 /* Find the list point nearest to Spyro: list[0] is the point count and each
    0x10-byte record starts at offset 8. Returns the smallest 2D distance and,

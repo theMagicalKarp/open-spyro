@@ -1,22 +1,11 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void StopSoundVoicesByOwner(int *owner, int mask);
 extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
-extern unsigned int GetRandomU32(void);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int VectorLength(int *vec, int include_z);
 extern void ApplyGravityAlongSpyroSlopeNormal(void);
 extern void ApplyGravityAlongSpyroSlopeTangent(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int IntegerSqrt(int n);
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern void ScaleVector3ByRatio(int *vec, int num, int den);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 

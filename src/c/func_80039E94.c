@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Waypoint path-follow driver (0x80039e94, 0x2d8). Steers the actor
    toward its current path node (path[1] = node index, 16-byte node
@@ -11,9 +12,6 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to func_80038EE0 + func_80039398. */
 
-extern int ApproxDist2D(int *a, int *b);
-extern int ArcTan2(int x, int y, int mode);
-extern int AbsAngleDelta8(int a, int b);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 extern int func_80038EE0(int *actor, int ang, int step, int lim, int mode);
 extern int func_80039398(int *actor, int speed, int group, int radius,
