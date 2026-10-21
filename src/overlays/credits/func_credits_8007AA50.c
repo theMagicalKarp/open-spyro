@@ -224,9 +224,9 @@ extern void WriteSpuRam();
 extern int GetSpuTransferStatus();
 extern void PlaySoundEffect();
 extern void RotateLightVectorXZ();
-extern int func_80037F90();
-extern int func_80037F10();
-extern int func_80037EA0();
+extern int TickCountdownByFrameDelta();
+extern int RandomSignedInRange();
+extern int RandomIntInRange();
 extern void exit() __attribute__((noreturn));
 extern int func_80063BD8();
 
@@ -481,7 +481,7 @@ void func_credits_8007AA50(void) {
     if (last >= line) {
       do {
         int cur = -1;
-        if (func_80037F90(&LINES[line].unk6, 2) != 0) {
+        if (TickCountdownByFrameDelta(&LINES[line].unk6, 2) != 0) {
           LINES[line].state = 2;
           if (LINES[line].unk8 == 0 && line == D_80075968) {
             D_80075968 = line + 1;
@@ -489,7 +489,7 @@ void func_credits_8007AA50(void) {
         }
         if (LINES[0].state == 0) {
           cur = 0;
-        } else if (func_80037F90(&LINES[line].unk8, 2) != 0 &&
+        } else if (TickCountdownByFrameDelta(&LINES[line].unk8, 2) != 0 &&
                    LINES[line + 1].state == 0 &&
                    line < D_800757DC - 1) {
           cur = line + 1;
@@ -639,9 +639,9 @@ void func_credits_8007AA50(void) {
                   g->dz = dy;
                   g->x = gx - dx * d;
                   g->z = g->z - dy * d;
-                  POOL[i].dr = func_80037F10(4, 0xF);
-                  POOL[i].dg = func_80037F10(4, 0xF);
-                  POOL[i].db = func_80037F10(4, 0xF);
+                  POOL[i].dr = RandomSignedInRange(4, 0xF);
+                  POOL[i].dg = RandomSignedInRange(4, 0xF);
+                  POOL[i].db = RandomSignedInRange(4, 0xF);
                   POOL[i].r =
                       -(int)POOL[i].dr * d;
                   POOL[i].g =
@@ -687,12 +687,12 @@ void func_credits_8007AA50(void) {
           if ((unsigned char)(POOL[i].timer =
                                   POOL[i].timer - 1) == 0) {
             POOL[i].state = 2;
-            POOL[i].dx = func_80037F10(3, 0xB);
-            POOL[i].dy = -func_80037EA0(6, 0xA);
-            POOL[i].dz = func_80037EA0(-0x23, 0x23);
-            POOL[i].dr = func_80037F10(4, 9);
-            POOL[i].dg = func_80037F10(4, 9);
-            POOL[i].db = func_80037F10(4, 9);
+            POOL[i].dx = RandomSignedInRange(3, 0xB);
+            POOL[i].dy = -RandomIntInRange(6, 0xA);
+            POOL[i].dz = RandomIntInRange(-0x23, 0x23);
+            POOL[i].dr = RandomSignedInRange(4, 9);
+            POOL[i].dg = RandomSignedInRange(4, 9);
+            POOL[i].db = RandomSignedInRange(4, 9);
           }
           break;
         case 3:

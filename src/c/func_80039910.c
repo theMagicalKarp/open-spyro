@@ -8,7 +8,7 @@
    halfword once the timer runs out. Returns the move-step result, or 3
    when the floor snap landed. */
 extern int func_80039688(int *actor, int a, int b, int dist, int c, int mode);
-extern int func_80038400(int *actor, int a);
+extern int ProbeActorGroundHeightRaised(int *actor, int a);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 
 int func_80039910(int *actor, int *counter, int arg2, int *timer, int step,
@@ -48,7 +48,7 @@ int func_80039910(int *actor, int *counter, int arg2, int *timer, int step,
     return 2;
   }
   if (timer != 0 && *timer != 0xFFFF) {
-    r4 = func_80038400(actor, 0x258);
+    r4 = ProbeActorGroundHeightRaised(actor, 0x258);
     actor[5] += *timer;
     *timer -= decay;
     if (*timer < -0x104) {

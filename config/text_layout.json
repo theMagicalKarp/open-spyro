@@ -706,7 +706,7 @@
    "size": 348
   },
   {
-   "name": "func_8002CCC8",
+   "name": "BeginSaveMenuFromWorld",
    "vram": 2147667144,
    "size": 868
   },
@@ -941,27 +941,27 @@
    "size": 8
   },
   {
-   "name": "func_80037EA0",
+   "name": "RandomIntInRange",
    "vram": 2147712672,
    "size": 112
   },
   {
-   "name": "func_80037F10",
+   "name": "RandomSignedInRange",
    "vram": 2147712784,
    "size": 128
   },
   {
-   "name": "func_80037F90",
+   "name": "TickCountdownByFrameDelta",
    "vram": 2147712912,
    "size": 228
   },
   {
-   "name": "func_80038074",
+   "name": "WrapAddAngle8",
    "vram": 2147713140,
    "size": 36
   },
   {
-   "name": "func_80038098",
+   "name": "StepAngle8Toward",
    "vram": 2147713176,
    "size": 136
   },
@@ -976,7 +976,7 @@
    "size": 68
   },
   {
-   "name": "func_800381BC",
+   "name": "WrapAngleDelta8",
    "vram": 2147713468,
    "size": 44
   },
@@ -991,32 +991,32 @@
    "size": 240
   },
   {
-   "name": "func_80038340",
+   "name": "ProbeActorGroundHeight",
    "vram": 2147713856,
    "size": 76
   },
   {
-   "name": "func_8003838C",
+   "name": "IsActorGroundFlat",
    "vram": 2147713932,
    "size": 116
   },
   {
-   "name": "func_80038400",
+   "name": "ProbeActorGroundHeightRaised",
    "vram": 2147714048,
    "size": 88
   },
   {
-   "name": "func_80038458",
+   "name": "SnapActorToGround",
    "vram": 2147714136,
    "size": 60
   },
   {
-   "name": "func_80038494",
+   "name": "IsActorInRunningKillSet",
    "vram": 2147714196,
    "size": 136
   },
   {
-   "name": "func_8003851C",
+   "name": "PlayActorMeshVoice",
    "vram": 2147714332,
    "size": 160
   },
@@ -1066,7 +1066,7 @@
    "size": 288
   },
   {
-   "name": "func_80038EE0",
+   "name": "TurnActorYawTowardAngle",
    "vram": 2147716832,
    "size": 232
   },
@@ -1146,7 +1146,7 @@
    "size": 104
   },
   {
-   "name": "func_8003AAEC",
+   "name": "SpawnActorRotBillboard",
    "vram": 2147724012,
    "size": 212
   },
@@ -1166,7 +1166,7 @@
    "size": 136
   },
   {
-   "name": "func_8003B1E8",
+   "name": "SetActorGroupState",
    "vram": 2147725800,
    "size": 172
   },
@@ -1181,7 +1181,7 @@
    "size": 188
   },
   {
-   "name": "func_8003B538",
+   "name": "ReplaceActorGroupState",
    "vram": 2147726648,
    "size": 188
   },
@@ -1196,12 +1196,12 @@
    "size": 160
   },
   {
-   "name": "func_8003B728",
+   "name": "SetActorGroupSubstate",
    "vram": 2147727144,
    "size": 152
   },
   {
-   "name": "func_8003B7C0",
+   "name": "MarkActorCommittedKill",
    "vram": 2147727296,
    "size": 148
   },
@@ -1211,7 +1211,7 @@
    "size": 384
   },
   {
-   "name": "func_8003B9D4",
+   "name": "CollectPickupActor",
    "vram": 2147727828,
    "size": 252
   },

@@ -7,7 +7,7 @@ extern int D_800756C4;
  *   0 - still counting down (value was above the delta)
  *   2 - reached zero on this call (value was positive, now clamped to 0)
  *   1 - already at zero (nothing to do) */
-int func_80037F90(void *pValue, int width) {
+int TickCountdownByFrameDelta(void *pValue, int width) {
   if (width == 4) {
     if (*((int *)pValue) <= D_800756C4) {
       if (*((int *)pValue) == 0) {

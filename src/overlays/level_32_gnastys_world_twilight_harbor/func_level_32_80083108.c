@@ -113,7 +113,7 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -409,13 +409,13 @@ Actor *func_level_32_80083108(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     if (parent->type == 0xB0) {
-      st->vel[0] = func_80037EA0(-0x64, 0x64);
-      st->vel[1] = func_80037EA0(-0x64, 0x64);
-      st->vel[2] = func_80037EA0(-0x3C, 0x6E);
+      st->vel[0] = RandomIntInRange(-0x64, 0x64);
+      st->vel[1] = RandomIntInRange(-0x64, 0x64);
+      st->vel[2] = RandomIntInRange(-0x3C, 0x6E);
     } else {
-      st->vel[0] = func_80037EA0(-0x96, 0x96);
-      st->vel[1] = func_80037EA0(-0x96, 0x96);
-      st->vel[2] = func_80037EA0(-0x46, 0x96);
+      st->vel[0] = RandomIntInRange(-0x96, 0x96);
+      st->vel[1] = RandomIntInRange(-0x96, 0x96);
+      st->vel[2] = RandomIntInRange(-0x46, 0x96);
     }
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
@@ -423,7 +423,7 @@ Actor *func_level_32_80083108(int type, Actor *parent) {
     st->spinX = GetRandomU32() & 0xF;
     st->spinY = GetRandomU32() & 0xF;
     st->spinZ = GetRandomU32() & 0xF;
-    st->unk0C = func_80037EA0(0x18, 0x23);
+    st->unk0C = RandomIntInRange(0x18, 0x23);
     break;
   }
 

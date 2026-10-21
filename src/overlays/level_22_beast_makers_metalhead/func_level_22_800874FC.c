@@ -143,7 +143,7 @@ extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
 extern short D_8006F3A0[]; /* launch-direction table, x */
 extern short D_8006F3A2[]; /* launch-direction table, z */
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 
 Actor *func_level_22_800874FC(int type, Actor *parent) {
   Actor *rec;
@@ -287,7 +287,7 @@ Actor *func_level_22_800874FC(int type, Actor *parent) {
     if (parent->type == 0x23) {
       DebrisState *pst = parent->state;
 
-      yaw = ((pst->unk0C + func_80037EA0(-0x32, 0x32)) & 0xFF) << 4;
+      yaw = ((pst->unk0C + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
       pitch = GetRandomU32() & 0x7FF;
       if (LookupCosine(pitch) >> 4 > 0) {
         speed = LookupCosine(pitch) >> 4;
@@ -297,8 +297,8 @@ Actor *func_level_22_800874FC(int type, Actor *parent) {
       st->vel[0] = speed * LookupCosine(yaw) >> 12;
       st->vel[1] = speed * LookupSine(yaw) >> 12;
       st->vel[2] = LookupSine(pitch) >> 4;
-      st->unk0C = func_80037EA0(0x23, 0x32);
-      rec->unk57 = 0x20 - func_80037EA0(6, 0x14);
+      st->unk0C = RandomIntInRange(0x23, 0x32);
+      rec->unk57 = 0x20 - RandomIntInRange(6, 0x14);
       st->vel[0] += g_anSpyroVelocity[0] >> 6;
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;

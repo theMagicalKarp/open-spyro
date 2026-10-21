@@ -2,7 +2,7 @@
 
 /* Signed 8-bit angle delta: wrap (b - a) into the range (-128, 128]. Used to
    find the shortest turn between two byte angles. */
-int func_800381BC(int a, int b) {
+int WrapAngleDelta8(int a, int b) {
   int d = b - a;
 
   if (d > 0x80) {

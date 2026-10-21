@@ -7,7 +7,7 @@ struct Actor58 {
 /* Mark actor `a0` in the committed-kill bitmap (0x8003b7c0). Ignores pointers
    outside the live pool [g_pActorListBase, g_pActorPoolDynBase); otherwise sets
    the bit for its 0x58-byte pool index. */
-void func_8003B7C0(int a0) {
+void MarkActorCommittedKill(int a0) {
   int index;
   int word;
   int bit;

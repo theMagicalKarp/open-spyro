@@ -9,7 +9,8 @@ extern int D_800756C4;
    never past the actual delta. Returns 0 while still outside the `threshold`
    dead-band (and keeps turning); returns 1 once within it, applying one more
    step when `flag` is set. */
-int func_80038EE0(int *e, int target, int step, int threshold, int flag) {
+int TurnActorYawTowardAngle(int *e, int target, int step, int threshold,
+                            int flag) {
   int delta = AbsAngleDelta8(target, ((unsigned char *)e)[0x46]);
 
   if (D_800756C4 == 3) {

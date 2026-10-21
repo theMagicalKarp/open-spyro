@@ -18,9 +18,10 @@
    backwards-ish heading. Otherwise chase Spyro when he is inside 0x44C (or
    inside the +0x1A radius), else walk back home once past the leash, else just
    tick the two cooldowns down. */
-extern int func_80037EA0(int lo, int hi);
-extern int func_80038074(int angle, int step);
-extern int func_80038EE0(int *actor, int target, int step, int lim, int flag);
+extern int RandomIntInRange(int lo, int hi);
+extern int WrapAddAngle8(int angle, int step);
+extern int TurnActorYawTowardAngle(int *actor, int target, int step, int lim,
+                                   int flag);
 extern int func_80039398(int *actor, int speed, int group, int radius,
                          int flags);
 
@@ -56,12 +57,12 @@ void func_80039AA8(int *actor, unsigned char *p) {
   timer = p[0x17];
   p[0x17] = timer + 0xFF; /* wrapping decrement */
   if (timer == 0) {
-    jitter = func_80037EA0(p[0x11], p[0x12]);
+    jitter = RandomIntInRange(p[0x11], p[0x12]);
     if (GetRandomU32() & 1) {
       jitter = -jitter;
     }
     p[0x18] = (p[0x18] + jitter + 0x100) % 0x100;
-    p[0x17] = func_80037EA0(p[0xF], p[0x10]);
+    p[0x17] = RandomIntInRange(p[0xF], p[0x10]);
     *(short *)(p + 0x1E) = 0;
     p[0x1B] = 0;
   }
@@ -81,7 +82,7 @@ void func_80039AA8(int *actor, unsigned char *p) {
       p[0x19] = -(int)p[0x19];
     }
   }
-  if (func_80038EE0(actor, heading, turn, 5, 1) == 0) {
+  if (TurnActorYawTowardAngle(actor, heading, turn, 5, 1) == 0) {
     aligned = 0;
   }
 
@@ -93,8 +94,8 @@ void func_80039AA8(int *actor, unsigned char *p) {
 
   if (hit != 0) {
     if (aligned != 0) {
-      p[0x18] = func_80038074(p[0x18], func_80037EA0(0x40, 0xC0));
-      p[0x17] = func_80037EA0(p[0xF], p[0x10]);
+      p[0x18] = WrapAddAngle8(p[0x18], RandomIntInRange(0x40, 0xC0));
+      p[0x17] = RandomIntInRange(p[0xF], p[0x10]);
       p[0x1B] = 0;
       if (hit & 2) {
         p[0x1C] = 0x14;
@@ -107,8 +108,8 @@ void func_80039AA8(int *actor, unsigned char *p) {
     dist = ApproxDist2D(actor + 3, spyro);
     if (dist < 0x44C && p[0x1B] == 0) {
       p[0x18] = ArcTan2(actor[3] - spyro[0], actor[4] - g_nSpyroWorldPosY, 0);
-      p[0x18] = func_80038074(p[0x18], func_80037EA0(-0x3C, 0x3C));
-      p[0x17] = func_80037EA0(p[0xF], p[0x10]);
+      p[0x18] = WrapAddAngle8(p[0x18], RandomIntInRange(-0x3C, 0x3C));
+      p[0x17] = RandomIntInRange(p[0xF], p[0x10]);
       p[0x1B] = 1;
       return;
     }
@@ -116,8 +117,8 @@ void func_80039AA8(int *actor, unsigned char *p) {
         dist < (int)(p[0x1A] << 10)) {
       p[0x18] = ArcTan2(actor[3] - g_anSpyroWorldPos[0],
                         actor[4] - g_nSpyroWorldPosY, 0);
-      p[0x18] = func_80038074(p[0x18], func_80037EA0(-0x30, 0x30));
-      p[0x17] = func_80037EA0(p[0xF], p[0x10]);
+      p[0x18] = WrapAddAngle8(p[0x18], RandomIntInRange(-0x30, 0x30));
+      p[0x17] = RandomIntInRange(p[0xF], p[0x10]);
       p[0x1B] = 1;
       return;
     }

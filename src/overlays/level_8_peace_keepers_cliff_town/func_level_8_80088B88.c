@@ -125,7 +125,7 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -434,7 +434,7 @@ Actor *func_level_8_80088B88(int type, Actor *parent) {
     st->spinX = (GetRandomU32() & 0x1F) - 0x10;
     st->spinY = (GetRandomU32() & 0x1F) - 0x10;
     st->spinZ = (GetRandomU32() & 0x1F) - 0x10;
-    st->unk0C = 0x32 - func_80037EA0(0, 0x14);
+    st->unk0C = 0x32 - RandomIntInRange(0, 0x14);
     st->unk0D = 0xA;
     st->unk0E = 4;
     break;

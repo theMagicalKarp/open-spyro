@@ -143,7 +143,7 @@ UpdateCameraEulerAngles:
   verdict: matched
   class: "matched 2026-08-10-3 (A146 union allocno: one scratch local carries roll then yaw so both share a0; A161 for the 0x800-A-B reassociation)"
   date: 2026-08-10
-func_80038494:
+IsActorInRunningKillSet:
   verdict: matched
   class: "matched 2026-08-11 (the word index and the bit index as two locals, in that order - the two independent index insns follow declaration order, not sched1 path length)"
   date: 2026-08-11
@@ -175,11 +175,11 @@ RotateSpyroBodyTowardKnockbackDir:
   verdict: parked
   class: "F4 return-reg coalescing (1 insn, 98.0%)"
   date: 2026-07-10
-func_80037F90:
+TickCountdownByFrameDelta:
   verdict: parked
   class: "F5 tail block order + delay-slot li"
   date: 2026-07-08
-func_8003AAEC:
+SpawnActorRotBillboard:
   verdict: parked
   class: "F6 constant-sb li placement"
   date: 2026-07-08
@@ -1427,7 +1427,7 @@ PollPadAndDistributeInput:
   class: "MATCHED 2026-08-15-1"
   date: 2026-08-15
   note: "the F1 rotation its park called unreachable was A196: the original serves BOTH the Saturn remap accumulator and `pressed` from a1 (disjoint ranges), so giving them the SAME C variable closed all 20 insns in one build."
-func_8002CCC8:
+BeginSaveMenuFromWorld:
   verdict: parked
   class: "A200 barrier cost — the dummy loop's notes split the one region sched1 must interleave"
   date: 2026-08-15
@@ -4113,7 +4113,7 @@ Gamestate0C_Draw_2026_09_15:
     `nop` exactly as the trailing empty barrier does. The two are
     interchangeable for the nop; neither buys the base.
     STANDING OPEN QUESTION, now shared by three of the closest main parks
-    (this one, RespawnOrGameOver_Draw 5/361 and func_8002CCC8 31/217): a cse
+    (this one, RespawnOrGameOver_Draw 5/361 and BeginSaveMenuFromWorld 31/217): a cse
     ebb-break that emits NO NOTE_INSN_LOOP_BEG. Every barrier we have is a
     dummy loop, and its notes are what perturb sched1.
 
@@ -4272,7 +4272,7 @@ Gamestate0C_Draw_2026_09_18_1:
     without it folds back to the checked-in 4/283. So the third-ref dial is not
     free here, which is the same wall the 2026-09-10 A214 second-set attempt
     hit from the other side. The standing open question is unchanged and is
-    shared with RespawnOrGameOver_Draw (5/361) and func_8002CCC8 (31/217): a
+    shared with RespawnOrGameOver_Draw (5/361) and BeginSaveMenuFromWorld (31/217): a
     cse ebb-break that emits no NOTE_INSN_LOOP_BEG, or any other way to make a
     constant-valued pointer pseudo win a hard register so reload keeps its init.
     Those three are 3,444 B behind ONE mechanism and are the best class-level

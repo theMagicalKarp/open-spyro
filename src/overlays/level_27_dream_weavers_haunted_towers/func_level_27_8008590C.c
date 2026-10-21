@@ -168,8 +168,8 @@ extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
-extern int func_80037F10(int lo, int hi);       /* RandomSignedInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
+extern int RandomSignedInRange(int lo, int hi);
 extern void (*g_pfnLevelOverlayParticleSpawn)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 
 Actor *func_level_27_8008590C(int type, Actor *parent) {
@@ -368,20 +368,20 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int speed;
     int dir;
 
-    speed = func_80037EA0(0x78, 0x96);
+    speed = RandomIntInRange(0x78, 0x96);
     st = rec->state;
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    dir = (parent->unk45 + func_80037EA0(-0xF, 0xF)) & 0xFF;
+    dir = (parent->unk45 + RandomIntInRange(-0xF, 0xF)) & 0xFF;
     st->velX = speed * g_anCosineLut[dir] >> 12;
     st->velY = speed * g_anSineLut[dir] >> 12;
-    st->unk04 = func_80037EA0(0x64, 0x8C);
-    st->unk0C = func_80037EA0(0x1E, 0x32);
-    st->unk06 = func_80037F10(7, 0xC);
-    st->unk08 = func_80037F10(7, 0xC);
-    st->unk0A = func_80037F10(7, 0xC);
+    st->unk04 = RandomIntInRange(0x64, 0x8C);
+    st->unk0C = RandomIntInRange(0x1E, 0x32);
+    st->unk06 = RandomSignedInRange(7, 0xC);
+    st->unk08 = RandomSignedInRange(7, 0xC);
+    st->unk0A = RandomSignedInRange(7, 0xC);
     st->unk10 = parent->posZ - parent->unk38 - 0x40;
     *(int *)&rec->unk4C = 0x1000000;
     rec->unk4B |= 0x80;
@@ -569,13 +569,13 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     if (parent->type == 0xB0) {
-      st->vel[0] = func_80037EA0(-0x64, 0x64);
-      st->vel[1] = func_80037EA0(-0x64, 0x64);
-      st->vel[2] = func_80037EA0(-0x3C, 0x6E);
+      st->vel[0] = RandomIntInRange(-0x64, 0x64);
+      st->vel[1] = RandomIntInRange(-0x64, 0x64);
+      st->vel[2] = RandomIntInRange(-0x3C, 0x6E);
     } else {
-      st->vel[0] = func_80037EA0(-0x96, 0x96);
-      st->vel[1] = func_80037EA0(-0x96, 0x96);
-      st->vel[2] = func_80037EA0(-0x46, 0x96);
+      st->vel[0] = RandomIntInRange(-0x96, 0x96);
+      st->vel[1] = RandomIntInRange(-0x96, 0x96);
+      st->vel[2] = RandomIntInRange(-0x46, 0x96);
     }
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
@@ -583,7 +583,7 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     st->spinX = GetRandomU32() & 0xF;
     st->spinY = GetRandomU32() & 0xF;
     st->spinZ = GetRandomU32() & 0xF;
-    st->unk0C = func_80037EA0(0x18, 0x23);
+    st->unk0C = RandomIntInRange(0x18, 0x23);
     break;
   }
 

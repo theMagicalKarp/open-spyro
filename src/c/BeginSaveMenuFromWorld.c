@@ -53,7 +53,7 @@ extern int D_80078D74;
    as a pseudo it is the subu's first dying input and local-alloc ties the
    ArcTan2 y argument to it; as a hard register the tie falls to posY, which
    then lands in $a1 as in the original. */
-void func_8002CCC8(int actor) {
+void BeginSaveMenuFromWorld(int actor) {
   int vec[3];
   int owner;
   char *rec;

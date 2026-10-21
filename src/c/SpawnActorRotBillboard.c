@@ -33,7 +33,7 @@ typedef struct RotBillboard {
    all const-prop back to byte-identical per-use v0 materialization
    (InitActorRenderDefaults constant-sb scheduling class). Permuter
    candidate. */
-int func_8003AAEC(int *arg0, int *arg1) {
+int SpawnActorRotBillboard(int *arg0, int *arg1) {
   RotBillboard *rec;
   int idx;
   idx = func_8005882C();

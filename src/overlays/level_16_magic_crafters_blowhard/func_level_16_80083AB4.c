@@ -173,7 +173,7 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int g_anCameraPos;     /* turret aim target X */
 extern int D_80076DFC;     /* turret aim target Y */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */

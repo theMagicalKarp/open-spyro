@@ -2126,4 +2126,67 @@ undefined SetSioTimeoutDeadline(undefined4 param_1);
 /* 0x8006bb40: libcomb/libcard timeout-deadline predicate. Reads current TMR_SYSCLOCK_VAL, accounts for the 16-bit timer rollover using TMR_SYSCLOCK_MAX, and returns true when (now - DAT_80076b78) (or >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) >= DAT_80078e9c — the budget written by SetSioTimeoutDeadline. */
 bool IsSioTimeoutExpired(void);
 
+/* ---- Actor/angle/random helpers named in phase-2 readability (evidence: the
+ * matched C bodies in src/c/<Name>.c). ---- */
+
+/* 0x8002ccc8: Enters the save-menu gamestate (0xB) from the world: freezes gameplay, resets Spyro, and snapshots yaw/distance from Spyro to the interacted actor, its target, the level-init actor and the camera into the scripted-camera block. Counterpart of EndSaveMenuToWorld. */
+void BeginSaveMenuFromWorld(int actor);
+
+/* 0x80037ea0: Uniform random int in [lo, hi]: (int)GetRandomU32() % (hi - lo + 1) + lo. */
+int RandomIntInRange(int lo, int hi);
+
+/* 0x80037f10: Like RandomIntInRange for the magnitude, with the sign taken from the draw's low bit. */
+int RandomSignedInRange(int lo, int hi);
+
+/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (D_800756C4), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
+int TickCountdownByFrameDelta(void *pValue, int width);
+
+/* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */
+int WrapAddAngle8(int a, int b);
+
+/* 0x80038098: Steps 8-bit angle b toward a by at most c (via WrapAngleDelta8 / WrapAddAngle8); returns a once within range. */
+int StepAngle8Toward(int a, int b, int c, int d);
+
+/* 0x800381bc: Signed 8-bit angle delta (b - a) wrapped into [-0x80, 0x80]. Argument order is the reverse of SignedAngleDelta8. */
+int WrapAngleDelta8(int a, int b);
+
+/* 0x80038340: FindGroundHeightBelow at the actor's position with its Z biased up 0x5DC across the probe; returns the ground height. */
+int ProbeActorGroundHeight(int *e);
+
+/* 0x8003838c: Ground probe as ProbeActorGroundHeight, then true when the probed normal's 8-bit slope angle is < 0x18 (near-flat). */
+int IsActorGroundFlat(int *e);
+
+/* 0x80038400: ProbeActorGroundHeight with a caller-supplied Z bias (also added to the probe ceiling). */
+int ProbeActorGroundHeightRaised(int *e, int delta);
+
+/* 0x80038458: Sets the actor's Z to ProbeActorGroundHeight + its signed +0x38 floor offset, then re-encodes its direction code. */
+void SnapActorToGround(int *e);
+
+/* 0x80038494: True when the actor's pool slot bit is set in g_anRunningKillBitmap and its +0x53 byte is 0xFF. */
+int IsActorInRunningKillSet(unsigned char *actor);
+
+/* 0x8003851c: Plays the voice sample named in the actor's mesh record (g_apActorMeshTable[actor->type] + arg1, byte 4) keyed to arg2, or to the actor's own +0x54 slot after stopping its previous voices. */
+void PlayActorMeshVoice(int *e, int arg1, void *arg2);
+
+/* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
+int TurnActorYawTowardAngle(int *e, int target, int step, int threshold, int flag);
+
+/* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at D_80077108), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
+int SpawnActorRotBillboard(int *arg0, int *arg1);
+
+/* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (+0x43), or on a0 alone when the group index is out of range. */
+void SetActorGroupState(int a0, int a1);
+
+/* 0x8003b538: SetActorGroupState restricted to actors whose current state equals a2. */
+void ReplaceActorGroupState(int a0, int a1, int a2);
+
+/* 0x8003b728: SetActorGroupState for the sub-state byte +0x49. */
+void SetActorGroupSubstate(int a0, int a1);
+
+/* 0x8003b7c0: Sets the actor's pool-index bit in g_anCommittedKillBitmap (ignored outside the live pool). */
+void MarkActorCommittedKill(int a0);
+
+/* 0x8003b9d4: Pickup collection: pushes the actor's kind into the gem-tally icon ring, handles the egg thief, spawns the kind's particle burst and queues the sound for kinds 0x53..0x57. */
+void CollectPickupActor(unsigned char *a);
+
 #endif /* OPEN_SPYRO_FUNCS_H */

@@ -161,13 +161,13 @@ typedef struct ChaserState {
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
 extern void func_80051FEC(void);
-extern int func_80037EA0(int lo, int hi); /* random in [lo, hi] */
-extern int func_80037F10(int a, int b);
+extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
+extern int RandomSignedInRange(int a, int b);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int func_80037F90(void *timer, int step);
-extern int func_80038074(int a, int b);
-extern int func_800381BC(int a, int b); /* signed angle delta */
+extern int TickCountdownByFrameDelta(void *timer, int step);
+extern int WrapAddAngle8(int a, int b);
+extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
@@ -546,7 +546,7 @@ extern void *D_8006E330[];
 
 extern FxNode *func_80058AE8(void);
 extern void func_80058B60(FxNode *node);
-extern int func_80038098(int a, int b, int c);
+extern int StepAngle8Toward(int a, int b, int c);
 
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
@@ -797,7 +797,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         func_8003ABC0(actor, 3, 0, 0);
-        func_8003B7C0(actor);
+        MarkActorCommittedKill(actor);
         actor->unk48 = 3;
         ANIM_RESET(actor, 3);
         continue;
@@ -805,7 +805,7 @@ void func_level_0_8007D9C8(void) {
 
       switch (actor->unk48) {
       case 0: {
-        func_80038458(actor);
+        SnapActorToGround(actor);
 
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 &&
             ABS2(actor->posZ - SPY.posZ) < 0x400) {
@@ -819,7 +819,7 @@ void func_level_0_8007D9C8(void) {
               if (other->unk43 == actor->unk43 && other->unk48 == 0) {
                 if (ost->path->cur == st->path->cur) {
                   other->unk48 = 1;
-                  ost->unk30 = func_80037EA0(6, 0x28);
+                  ost->unk30 = RandomIntInRange(6, 0x28);
                 }
               }
             }
@@ -867,14 +867,14 @@ void func_level_0_8007D9C8(void) {
 
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, 0);
-        angle = (angle + func_80037EA0(-0x20, 0x20)) & 0xFF;
+        angle = (angle + RandomIntInRange(-0x20, 0x20)) & 0xFF;
         angle2 =
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0);
         angleScale = 108;
-        angle2 += (func_800381BC(angle2, angle) * angleScale) >> 7;
+        angle2 += (WrapAngleDelta8(angle2, angle) * angleScale) >> 7;
         angle2 &= 0xFF;
         st->heading = angle2;
-        st->unk24 = func_80037EA0(0x6E, 0xA0);
+        st->unk24 = RandomIntInRange(0x6E, 0xA0);
         st->unk20 = 0;
         distance = ApproxDist2D(&actor->posX,
                                  (int *)&st->path->nodes[st->path->cur]);
@@ -891,7 +891,7 @@ void func_level_0_8007D9C8(void) {
         int distance = ApproxDist2D(&actor->posX,
                                      (int *)&st->path->nodes[st->path->cur]);
 
-        if (func_80037F90(&st->unk30, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->unk30, 4) == 0) {
           break;
         }
 
@@ -904,11 +904,11 @@ void func_level_0_8007D9C8(void) {
           ANIM_ADVANCE(actor, 1);
         }
 
-        if (func_80037F90(&st->unk28, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->unk28, 4) != 0) {
           int angleDelta;
           int turn;
 
-          angleDelta = func_800381BC(
+          angleDelta = WrapAngleDelta8(
               ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                             st->path->nodes[st->path->cur].y - actor->posY, 0),
               st->heading);
@@ -927,7 +927,7 @@ void func_level_0_8007D9C8(void) {
           }
         }
 
-        if (func_80038EE0(actor, st->heading, 6, 0x14, 1) != 0) {
+        if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
           if (func_80039398(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
             st->unk2C++;
           } else {
@@ -938,7 +938,7 @@ void func_level_0_8007D9C8(void) {
               actor->unk48 = 0;
               continue;
             }
-            st->heading = func_80038074(st->heading, func_80037F10(0x3C, 0x64));
+            st->heading = WrapAddAngle8(st->heading, RandomSignedInRange(0x3C, 0x64));
           }
         }
         if (distance < 0xC00 && D_80075794 != 0) {
@@ -973,7 +973,7 @@ void func_level_0_8007D9C8(void) {
       int *st;
 
       st = (int *)actor->state;
-      if (func_80037F90(st, 4) == 0) {
+      if (TickCountdownByFrameDelta(st, 4) == 0) {
         break;
       }
       g_pfnLevelOverlayParticleSpawn(1, 0x16, &actor->posX, 0);
@@ -993,7 +993,7 @@ void func_level_0_8007D9C8(void) {
             if (SPY.u164 >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelOverlayInitHook(120, actor);
 
-              func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
+              PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
               SPY.u164 = 1;
 
@@ -1004,7 +1004,7 @@ void func_level_0_8007D9C8(void) {
             ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
             if (cs->owner == 0) {
-              if (func_800381BC(SPY.bodyRotZ,
+              if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, 0)) < 0) {
                 st->dir = 1;
@@ -1014,7 +1014,7 @@ void func_level_0_8007D9C8(void) {
 
               g_pLevelOverlayInitRecord->unk49 = 0;
               cs->owner = actor;
-              cs->timer = func_80037EA0(150, 210);
+              cs->timer = RandomIntInRange(150, 210);
 
               actor->unk48 = 1;
             }
@@ -1027,22 +1027,22 @@ void func_level_0_8007D9C8(void) {
 
       switch (actor->unk48) {
       case 0: {
-        if (func_80037F90(&st->t14, 2) == 0 || actor->unk51) {
+        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->unk51) {
           int refHeight, rotated, moved;
 
-          if (func_80037F90(&st->t12, 1) != 0) {
-            int r = func_80037F10(30, 90);
+          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+            int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
-            st->heading = func_80038074(st->heading, r);
-            st->t12 = func_80037EA0(60, 140);
+            st->heading = WrapAddAngle8(st->heading, r);
+            st->t12 = RandomIntInRange(60, 140);
           }
 
-          if (func_80037F90(&st->t13, 1) != 0) {
-            st->vz = func_80037F10(10, 25);
-            st->t13 = func_80037EA0(80, 140);
+          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+            st->vz = RandomSignedInRange(10, 25);
+            st->t13 = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -1051,24 +1051,24 @@ void func_level_0_8007D9C8(void) {
             actor->posZ = actor->posZ + st->vz;
           }
 
-          refHeight = actor->posZ - func_80038340(actor);
+          refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
           if (refHeight < 300) {
-            st->vz = func_80037EA0(10, 25);
-            st->t13 = func_80037EA0(80, 140);
+            st->vz = RandomIntInRange(10, 25);
+            st->t13 = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
-            st->vz = -func_80037EA0(10, 25);
-            st->t13 = func_80037EA0(80, 140);
+            st->vz = -RandomIntInRange(10, 25);
+            st->t13 = RandomIntInRange(80, 140);
           }
 
-          rotated = func_80038EE0(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
           moved = func_80039398(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
-            st->heading = func_80038074(st->heading, func_80037EA0(98, 158));
-            st->t12 = func_80037EA0(30, 80);
+            st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
+            st->t12 = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -1086,7 +1086,7 @@ void func_level_0_8007D9C8(void) {
       }
       case 1: {
         func_80038638(actor, &SPY.posX, 0x320,
-                      func_80038074(ArcTan2(actor->posX - SPY.posX,
+                      WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, 0),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
@@ -1096,9 +1096,9 @@ void func_level_0_8007D9C8(void) {
         } else {
           int refHeight;
 
-          if (func_80037F90(&st->t13, 1)) {
-            st->vz = func_80037F10(5, 20);
-            st->t13 = func_80037EA0(40, 80);
+          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+            st->vz = RandomSignedInRange(5, 20);
+            st->t13 = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -1107,16 +1107,16 @@ void func_level_0_8007D9C8(void) {
             actor->posZ = actor->posZ + st->vz;
           }
 
-          refHeight = actor->posZ - func_80038340(actor);
+          refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
           if (refHeight < 200) {
-            st->vz = func_80037EA0(5, 20);
-            st->t13 = func_80037EA0(40, 80);
+            st->vz = RandomIntInRange(5, 20);
+            st->t13 = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
-            st->vz = -func_80037EA0(5, 20);
-            st->t13 = func_80037EA0(40, 80);
+            st->vz = -RandomIntInRange(5, 20);
+            st->t13 = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -1488,7 +1488,7 @@ void func_level_0_8007D9C8(void) {
           }
         } else {
           if (st->timer > 0xf7) {
-            int handle = func_8003AAEC(actor, &D_8006E5A0);
+            int handle = SpawnActorRotBillboard(actor, &D_8006E5A0);
             if (handle >= 0 && dist < 0x4000) {
               st->anim = handle;
             }
@@ -1525,7 +1525,7 @@ void func_level_0_8007D9C8(void) {
         if (st->sub != 0) {
 
           if (st->sub == 1) {
-            func_80038458(actor);
+            SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= 83) {
               int *nrm = &g_anCollisionProbeVec;
@@ -1548,7 +1548,7 @@ void func_level_0_8007D9C8(void) {
             actor->posZ = acc[0][2] / 3;
 
             func_800529E4(actor, 2);
-            func_80038458(actor);
+            SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
           } else if (st->sub == 3) {
@@ -1587,7 +1587,7 @@ void func_level_0_8007D9C8(void) {
                       D_800761DC = 1;
                       D_800761EA = 0x2000;
                       D_800761E8 = 0x2000;
-                      func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
+                      PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                     }
 
                     g_pLevelOverlayInitRecord->unk49 = 4;
@@ -1621,7 +1621,7 @@ void func_level_0_8007D9C8(void) {
 
         if (svG[2] < 0) {
           if (actor->type != 14 && actor->type != 15) {
-            func_8003B9D4(actor);
+            CollectPickupActor(actor);
           }
           DespawnActorRecord(actor);
           continue;
@@ -1631,7 +1631,7 @@ void func_level_0_8007D9C8(void) {
           if (CollideSphereWithWorldAndActors(svG, 240, 240)) {
             if (func_80057380() == 0) {
               if (actor->type != 14 && actor->type != 15) {
-                func_8003B9D4(actor);
+                CollectPickupActor(actor);
               }
               DespawnActorRecord(actor);
               continue;
@@ -1710,7 +1710,7 @@ void func_level_0_8007D9C8(void) {
                     D_800761DC = 1;
                     D_800761EA = 0x2000;
                     D_800761E8 = 0x2000;
-                    func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
+                    PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                   }
 
                   g_pLevelOverlayInitRecord->unk49 = 4;
@@ -1796,7 +1796,7 @@ void func_level_0_8007D9C8(void) {
 
           DespawnActorRecord(actor);
         } else {
-          func_8003B9D4(actor);
+          CollectPickupActor(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1884,7 +1884,7 @@ void func_level_0_8007D9C8(void) {
           if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
             actor->unk48 = 6;
             st->flag24 = 1;
-            func_8002CCC8(actor);
+            BeginSaveMenuFromWorld(actor);
             break;
           }
         }
@@ -1925,7 +1925,7 @@ void func_level_0_8007D9C8(void) {
           if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
             actor->unk48 = 6;
             st->flag24 = 1;
-            func_8002CCC8(actor);
+            BeginSaveMenuFromWorld(actor);
             break;
           }
         }
@@ -1994,7 +1994,7 @@ void func_level_0_8007D9C8(void) {
       if ((actor->flags & 0xB0000) != 0 &&
           (unsigned int)(actor->unk48 - 7) >= 3) {
         func_8003ABC0(actor, 3, 0, 0);
-        func_8003B7C0(actor);
+        MarkActorCommittedKill(actor);
 
         if ((actor->flags & 0x20000) != 0) {
           st->unk10 = 0x190;
@@ -2038,7 +2038,7 @@ void func_level_0_8007D9C8(void) {
           ENTER_POSE(actor, 4);
         }
 
-        if (st->tgtIdx >= 0 && func_80037F90(&st->timer, 4) != 0) {
+        if (st->tgtIdx >= 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->tgtIdx].posX) <
               0x1000) {
             ENTER_POSE(actor, 2);
@@ -2047,7 +2047,7 @@ void func_level_0_8007D9C8(void) {
           ENTER_POSE(actor, 1);
         }
 
-        func_80038458(actor);
+        SnapActorToGround(actor);
         break;
       }
       case 1: {
@@ -2075,7 +2075,7 @@ void func_level_0_8007D9C8(void) {
           ENTER_POSE(actor, 0);
         }
 
-        func_80038458(actor);
+        SnapActorToGround(actor);
         break;
       }
 
@@ -2098,7 +2098,7 @@ void func_level_0_8007D9C8(void) {
           ENTER_POSE(actor, 4);
         }
 
-        func_80038EE0(actor,
+        TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->tgtIdx].posX - actor->posX,
                                     g_pActorListBase[st->tgtIdx].posY - actor->posY,
                                     0),
@@ -2109,7 +2109,7 @@ void func_level_0_8007D9C8(void) {
           ENTER_POSE(actor, 0);
         }
 
-        func_80038458(actor);
+        SnapActorToGround(actor);
         break;
       }
 
@@ -2242,7 +2242,7 @@ void func_level_0_8007D9C8(void) {
           break;
         }
 
-        if (func_80037F90(&st->timer, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->path->cur = st->path->count - 1;
           ENTER_POSE(actor, 3);
         }
@@ -2255,7 +2255,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         actor->unk45 += 4;
-        func_80038EE0(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
         func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
         break;
       }
@@ -2269,7 +2269,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
-        func_80038EE0(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
         break;
       }
 
@@ -2282,7 +2282,7 @@ void func_level_0_8007D9C8(void) {
           continue;
         }
 
-        func_80038EE0(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
         break;
       }
 
@@ -2413,7 +2413,7 @@ void func_level_0_8007D9C8(void) {
           dist = VectorLength(svA, 1);
 
           if (isPickupAnimPhase == 0) {
-            if (func_80037F90(st, 4) != 0 ||
+            if (TickCountdownByFrameDelta(st, 4) != 0 ||
                 (st->timer < 80 &&
                  AbsAngleDelta8((actor->unk46 + (bp->dir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
@@ -2430,10 +2430,10 @@ void func_level_0_8007D9C8(void) {
             ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
           }
           AddVector(&actor->posX, &actor->posX, svA);
-          func_80038EE0(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
+          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
           pitchAngle = ArcTan2(VectorLength(svA, 0), svA[2], 0);
           actor->unk45 = pitchAngle;
-          actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
+          actor->unk45 = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;
         }
         case 1: {
@@ -2493,10 +2493,10 @@ void func_level_0_8007D9C8(void) {
               ScaleVector3ByRatio(svJ, dist, 290);
 
             AddVector(&actor->posX, &actor->posX, svJ);
-            func_80038EE0(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
             pitchAngle = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
             actor->unk45 = pitchAngle;
-            actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
+            actor->unk45 = StepAngle8Toward(pitchAngle, 0, 0x30);
           }
           break;
         }
@@ -2550,7 +2550,7 @@ void func_level_0_8007D9C8(void) {
             svF[2] = -32;
           actor->unk44 = 0;
           actor->unk45 = svF[2];
-          func_80038EE0(actor, SPY.bodyRotZ, 4, 0, 0);
+          TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, 0);
         }
 
         switch (SPY.u164) {
@@ -2632,7 +2632,7 @@ void func_level_0_8007D9C8(void) {
           st->anim = 0xFF;
         }
       } else if (st->timer >= 0xF8) {
-        ang = func_8003AAEC(actor, &D_8006E5AC);
+        ang = SpawnActorRotBillboard(actor, &D_8006E5AC);
         if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
           st->anim = ang;
         }
@@ -2695,14 +2695,14 @@ void func_level_0_8007D9C8(void) {
 
       st = (BreakState *)actor->state;
       if (st->unk04 != 0) {
-        func_80038458(actor);
+        SnapActorToGround(actor);
       }
       if ((actor->flags & 0xB0000) == 0) {
         continue;
       }
 
       actor->unk55 = 0x20;
-      func_8003851C(actor, 0, 0);
+      PlayActorMeshVoice(actor, 0, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -2722,7 +2722,7 @@ void func_level_0_8007D9C8(void) {
       g_pfnLevelOverlayParticleSpawn(5, 2, &actor->posX, 0);
       g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (void *)0x20);
       func_8003ABC0(actor, 3, 0, 0);
-      func_8003B7C0(actor);
+      MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -2752,7 +2752,7 @@ void func_level_0_8007D9C8(void) {
         } else if (st->unk44 >= 192) {
 
           if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0])) {
-            func_8003851C(actor, 0, 0);
+            PlayActorMeshVoice(actor, 0, 0);
           }
           actor->unk44 =
               (signed char)D_8006E638[(st->unk44 - 192) >> 1].a + st->unk48;
@@ -2772,11 +2772,11 @@ void func_level_0_8007D9C8(void) {
           StopSoundVoicesByOwner(actor, 1);
         } else {
           if ((st->unk44 >> 1) == 16 && (GetRandomU32() & 3) == 0) {
-            func_8003AAEC(actor, &D_8006E57C);
+            SpawnActorRotBillboard(actor, &D_8006E57C);
           } else if ((st->unk44 >> 1) == 48 && (GetRandomU32() & 3) == 0) {
-            func_8003AAEC(actor, &D_8006E588);
+            SpawnActorRotBillboard(actor, &D_8006E588);
           } else if ((st->unk44 >> 1) == 80 && (GetRandomU32() & 3) == 0) {
-            func_8003AAEC(actor, &D_8006E594);
+            SpawnActorRotBillboard(actor, &D_8006E594);
           }
         }
 
@@ -2929,7 +2929,7 @@ void func_level_0_8007D9C8(void) {
         break;
 
       case 1:
-        if (func_80037F90(&st->timer, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           snd = (GetRandomU32() & 7) + 7;
         }
@@ -2938,7 +2938,7 @@ void func_level_0_8007D9C8(void) {
       case 2:
         switch (st->sub) {
         case 0:
-          if (func_80037F90(&st->timer, 4) != 0) {
+          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             snd = (GetRandomU32() & 1) + 0xD;
             st->sub = 1;
@@ -2976,14 +2976,14 @@ void func_level_0_8007D9C8(void) {
         break;
 
       case 3:
-        if (func_80037F90(&st->timer, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           snd = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (func_80037F90(&st->timer, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           snd = (int)GetRandomU32() % 4 + 0x15;
         }
@@ -3041,7 +3041,7 @@ void func_level_0_8007D9C8(void) {
       flags = st->flags;
       if (flags & 2) {
         if (st->timer != 0) {
-          if (func_80037F90(&st->timer, 4) != 0)
+          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
             st->flags = (st->flags & ~2) | 4;
           break;
         }
@@ -3079,7 +3079,7 @@ void func_level_0_8007D9C8(void) {
         break;
       }
       if ((st->flags & ~1) == 4 && st->timer != 0 &&
-          func_80037F90(&st->timer, 4) != 0) {
+          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
         st->flags = (st->flags & ~4) | 2;
       }
       break;
@@ -3091,7 +3091,7 @@ void func_level_0_8007D9C8(void) {
       Actor *p;
 
       CopyVector(&actor->posX, &SPY.posX);
-      if (func_80037F90(&st->timer, 4) == 0) {
+      if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
         break;
       }
       st->timer = st->period;
@@ -3166,7 +3166,7 @@ void func_level_0_8007D9C8(void) {
         /* Base speed comes from the animation that is playing. */
         int poseBase = TYPE_DESC(actor, actor->unk3D);
 
-        actor->unk41 = poseBase + func_80037EA0(-4, 4);
+        actor->unk41 = poseBase + RandomIntInRange(-4, 4);
       }
 
       if ((actor->flags & 0x10000) != 0 && actor->unk3D == 0) {
@@ -3204,7 +3204,7 @@ void func_level_0_8007D9C8(void) {
 
           CopyVector(&p->posX, &actor->posX);
           func_8003ABC0(p, 1, 0, 0);
-          func_8003B7C0(p);
+          MarkActorCommittedKill(p);
           st->chainA = *link;
           DespawnActorRecord(p);
           actor->flags = 0;
@@ -3223,7 +3223,7 @@ void func_level_0_8007D9C8(void) {
               st->slots[n][2] = actor->posZ;
               func_8003ABC0(p, 2, 0, st->slots[n]);
               n++;
-              func_8003B7C0(p);
+              MarkActorCommittedKill(p);
               DespawnActorRecord(p);
             }
 
@@ -3234,7 +3234,7 @@ void func_level_0_8007D9C8(void) {
           st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
           st->slots[n][2] = actor->posZ;
           func_8003ABC0(actor, 2, 0, st->slots[n]);
-          func_8003B7C0(actor);
+          MarkActorCommittedKill(actor);
           st->unk04 = 0x118;
           st->unk00 = func_80038178(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
@@ -3400,7 +3400,7 @@ void func_level_0_8007D9C8(void) {
           actor->unk48 = 0x63;
           break;
         }
-        if (func_80037F90(&st->timer, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         actor->unk48 = 0xB;
@@ -3412,7 +3412,7 @@ void func_level_0_8007D9C8(void) {
           actor->unk48 = 0x63;
           break;
         }
-        if (func_80037F90(&st->timer, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         actor->unk48 = 0xA;
@@ -3621,7 +3621,7 @@ void func_level_0_8007D9C8(void) {
       int b;
 
       if (st->unk14 == 1) {
-        func_80038458(actor);
+        SnapActorToGround(actor);
         EncodeCachedVecToActorDirCode(actor);
       }
 
@@ -3648,7 +3648,7 @@ void func_level_0_8007D9C8(void) {
           st->unk00->unk51 = 0;
           st->unk00->unk47 = 5;
 
-          func_8003851C(actor, 0, 0);
+          PlayActorMeshVoice(actor, 0, 0);
         } else if (st->unk04 >= 0x1A0) {
           actor->unk44 = D_8006E638[LIFT_STEP(st)].a + st->unk08;
           actor->unk45 = D_8006E638[LIFT_STEP(st)].b + st->unk0C;
@@ -3663,7 +3663,7 @@ void func_level_0_8007D9C8(void) {
           actor->posZ = st->unk10 + (a + b) * 6;
 
           if (actor->unk54 == 0x7F) {
-            func_8003851C(actor, 1, 0);
+            PlayActorMeshVoice(actor, 1, 0);
           }
         } else if (st->unk04 >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
@@ -3689,7 +3689,7 @@ void func_level_0_8007D9C8(void) {
           actor->unk48 = 0;
           actor->unk3D = 0;
           if (actor->unk54 == 0x7F) {
-            func_8003851C(actor, 3, 0);
+            PlayActorMeshVoice(actor, 3, 0);
           }
         }
       }
@@ -3704,7 +3704,7 @@ void func_level_0_8007D9C8(void) {
       }
 
       actor->unk55 = 0x20;
-      func_8003851C(actor, 4, 0);
+      PlayActorMeshVoice(actor, 4, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
       for (i = 0; i < 2; i++) {

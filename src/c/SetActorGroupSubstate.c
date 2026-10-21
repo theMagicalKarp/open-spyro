@@ -4,7 +4,7 @@
    actor `a0`'s +0x43 group index whose type byte (+0x48) is < 0x80
    (0x8003b728). If that group index is out of range, just stamp the passed
    actor's own +0x49 byte instead. */
-void func_8003B728(int a0, int a1) {
+void SetActorGroupSubstate(int a0, int a1) {
   unsigned short *ptr;
   int idx;
   int group;

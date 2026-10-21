@@ -145,7 +145,7 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 extern int D_8007595C;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */

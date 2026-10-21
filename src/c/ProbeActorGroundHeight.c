@@ -7,7 +7,7 @@ extern int FindGroundHeightBelow(unsigned int *pt, int z);
    restoring it. Returns the probed ground height. The bias is reloaded after
    the call (into $v1) since the probe may touch the actor's memory while the
    probe result stays live in $v0 for the return. */
-int func_80038340(int *e) {
+int ProbeActorGroundHeight(int *e) {
   int ground;
   e[5] += 0x5DC;
   ground = FindGroundHeightBelow((unsigned int *)&e[3], 0x1000);

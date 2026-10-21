@@ -14,7 +14,7 @@ typedef struct ActorSlot {
    declaration order. The bit test also has to be a VALUE temp — written
    directly as a condition, fold rewrites `(x & (1 << b)) != 0` into
    `(x >> b) & 1` and emits `srav` with the unmasked index. */
-int func_80038494(unsigned char *actor) {
+int IsActorInRunningKillSet(unsigned char *actor) {
   int idx = (ActorSlot *)actor - (ActorSlot *)g_pActorListBase;
   int hit = 0;
 

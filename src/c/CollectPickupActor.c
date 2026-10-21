@@ -11,7 +11,7 @@ extern int D_8006E330[];
    the egg-thief actor (D_80075758 -> 3 eggs), notify the pickup handler, spawn
    the level's particle burst for the kind, then queue the matching sound
    effect for kinds 0x53..0x57. */
-void func_8003B9D4(unsigned char *a) {
+void CollectPickupActor(unsigned char *a) {
   short kind;
   int pad[4];
 
