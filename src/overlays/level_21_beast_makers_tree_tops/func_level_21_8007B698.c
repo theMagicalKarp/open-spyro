@@ -21,59 +21,10 @@
  *     mode-1 arrival test written flag-clear-first.
  *   - Case 57: the floor delta through two temps (fold reassociates the
  *     one-expression form into `(h + 0x50) - z`).
- *
- * ==== Core records ====
- *
- * Actor record (0x58 bytes), shared by every actor class. ->type picks the
- * behaviour, ->state points at the class's own block, and 0x3C..0x42 hold
- * the animation state driven by the macros further down. */
+ */
 
+#include "actor.h"
 #include "vecmath.h"
-
-typedef struct Actor {
-  void *state;         /* 0x00 class-specific state block */
-  int unk04;           /* 0x04 */
-  int unk08;           /* 0x08 collision group */
-  int posX;            /* 0x0C position */
-  int posY;            /* 0x10 */
-  int posZ;            /* 0x14 */
-  int flags;           /* 0x18 damage flags */
-  int unk1C;           /* 0x1C shadow distance */
-  int unk20[5];        /* 0x20 rotation matrix */
-  short unk34;         /* 0x34 collision region */
-  short type;          /* 0x36 actor class */
-  short unk38;         /* 0x38 floor distance */
-  unsigned char unk3A; /* 0x3A dropped flag */
-  unsigned char unk3B; /* 0x3B */
-  unsigned char unk3C; /* 0x3C current animation */
-  unsigned char unk3D; /* 0x3D next animation */
-  unsigned char unk3E; /* 0x3E current frame */
-  unsigned char unk3F; /* 0x3F next frame */
-  unsigned char unk40; /* 0x40 frame progress */
-  unsigned char unk41; /* 0x41 progress per frame */
-  unsigned char unk42; /* 0x42 anim flags: bit 1 done, bit 0 new frame */
-  unsigned char unk43; /* 0x43 pod (actor group) */
-  unsigned char unk44; /* 0x44 rotation x */
-  unsigned char unk45; /* 0x45 rotation y */
-  unsigned char unk46; /* 0x46 rotation z */
-  unsigned char unk47; /* 0x47 depth offset */
-  unsigned char unk48; /* 0x48 state; >= 0x80 means dormant */
-  unsigned char unk49; /* 0x49 sub-state */
-  unsigned char unk4A; /* 0x4A sector index */
-  unsigned char unk4B; /* 0x4B renderer */
-  unsigned char unk4C; /* 0x4C */
-  unsigned char unk4D;
-  unsigned char unk4E;
-  unsigned char unk4F;
-  unsigned char unk50; /* 0x50 render radius */
-  unsigned char unk51; /* 0x51 was drawn last frame */
-  unsigned char unk52; /* 0x52 update distance */
-  unsigned char unk53;
-  unsigned char unk54; /* 0x54 sound channel */
-  unsigned char unk55; /* 0x55 sound distance */
-  unsigned char unk56; /* 0x56 actor index */
-  unsigned char unk57; /* 0x57 scale override */
-} Actor;               /* 0x58 */
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
@@ -168,11 +119,6 @@ typedef struct ChaserState {
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
 extern void func_80051FEC(void);
-extern void TickGemCutsceneActorAnims(Actor **list, int mode);
-extern void func_80038458(Actor *actor);
-extern Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
-extern void func_8003B7C0(Actor *actor);
-extern void func_80037E98(Actor *actor);
 extern int func_80037EA0(int lo, int hi); /* random in [lo, hi] */
 extern int func_80037F10(int a, int b);
 
@@ -180,11 +126,6 @@ extern int func_80037F10(int a, int b);
 extern int func_80037F90(void *timer, int step);
 extern int func_80038074(int a, int b);
 extern int func_800381BC(int a, int b); /* signed angle delta */
-extern int func_80038EE0(Actor *actor, int heading, int a, int b, int c);
-extern int func_80039398(Actor *actor, int a, int b, int c, int d);
-extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
-extern void func_800529E4(Actor *actor, int mode);
-extern void DespawnActorRecord(Actor *actor);
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
@@ -222,18 +163,13 @@ extern void func_80017C24(int *d, int *s);
 /* Mark an item collected; the second argument is the actor or its id. */
 extern void func_8003B854(int a, void *b);
 
-extern void PlaySoundEffect(int a, Actor *actor, int b, void *c);
-extern void func_8003851C(Actor *actor, int a, int b);
-extern int func_80038340(Actor *actor); /* ground height under the actor */
 extern int func_80038638(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
-extern void func_8003C358(Actor *actor, int mode);
 
 extern void func_8002B390(int handle, int a, int b);
 extern void func_8002B444(int handle, int a, int b);
 extern int func_8002B3F4(int handle); /* bits 8..15 are the anim marker */
-extern void StopSoundVoicesByOwner(Actor *actor, int mode);
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
@@ -367,14 +303,7 @@ extern int D_8006E594;
 
 extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
-/* Actor reset, dialogue, cutscene and checkpoint callees. */
-extern void InsertActorIntoSpatialGrid(Actor *actor);
-
 extern void func_8002C914(int script, int a);
-extern void BeginGemPickupOverlay(Actor *actor);
-extern void func_80059474(Actor *actor, int heading);
-
-extern void TickGemPickupBurstEntity(Actor *actor); /* the whole of case 251 */
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
@@ -391,23 +320,14 @@ extern short g_anSineLut[];
 extern short g_anCosineLut[];
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int func_8003AAEC(Actor *actor, int *tbl);
-extern void EncodeCachedVecToActorDirCode(Actor *actor);
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int func_80057380(void);
-extern void func_8003B9D4(Actor *actor);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int GetSoundVoiceStatusByOwner(Actor *actor, int a);
 extern int func_80017428(int *v, int *n, int *out);
 
-extern void func_8002CCC8(Actor *actor);
-
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern void func_800385BC(Actor *actor, int a);
 extern int func_80038178(int ang, int facing, int a, int b);
-extern int func_80039910(Actor *actor, int *a, int heading, int *b, int c,
-                         int d);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -709,7 +629,6 @@ extern void func_8002B390(int ch, int vol, int a);
 extern void func_8002B444(int ch, int n, int a);
 extern int func_8002B3F4(int ch);
 extern int func_80017D7C(int *from, int *to, int *step, int speed);
-extern void func_80039AA8(Actor *actor, void *st);
 extern int func_800381BC(int a, int b);
 
 /* ==== Globals shared with level 4 ==== */
@@ -796,7 +715,6 @@ extern int g_dwGamestateFrames;
 extern int func_80038250(int *pos);
 extern int func_80038C4C(int *a, int *b);
 
-extern void func_8003AA84(Actor *actor);
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
   int idx;    /* 0x00 index of its flyer in g_pActorListBase */
@@ -810,11 +728,6 @@ extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
 extern int g_nCameraScriptStickRequestX;
 extern void func_800177F8(int *d, int *s, int k);
-extern int func_8003A9EC(Actor *actor, int handle);
-extern int func_80039228(Actor *actor, int vx, int vy, int vz, int a, int b,
-                         int c);
-
-extern void func_8003AA84(Actor *actor);
 
 extern void func_80052D64(Actor *actor, int a, int *pos);
 
@@ -848,7 +761,6 @@ typedef struct ThiefState {
 } ThiefState;
 
 extern int func_80038BB0(PathData *path);
-extern int func_80038400(Actor *actor, int a);
 
 /* Case 390 -- spinning chest. */
 typedef struct L26Spinner {
@@ -900,8 +812,6 @@ typedef struct SwoopState {
   int *alert;    /* 0x30 shared by the guards of one group */
   int count;     /* 0x34 */
 } SwoopState;
-
-extern void EncodeCachedVecToActorDirCode(Actor *actor);
 
 /* from level_31 */
 typedef struct L26Critter {
@@ -1320,8 +1230,6 @@ typedef struct SpinnerState {
 /* from level_34 */
 extern int func_8003B0DC(int stage);
 /* from level_34 */
-extern void func_8003B728(Actor *actor, int a);
-/* from level_34 */
 #define ENTER_POSE4(a, n)                                                      \
   (a)->unk48 = (n);                                                            \
   if ((a)->unk3D == (n)) {                                                     \
@@ -1350,8 +1258,6 @@ typedef struct HelperState {
   Actor *owner; /* 0x04 */
   int beat;     /* 0x08 */
 } HelperState;
-/* from level_34 */
-extern int func_8003BCCC(Actor *actor, int a, int b, int c, int d);
 /* from level_34 */
 typedef struct L16Guard {
   PathData *path; /* 0x00 */
@@ -1448,8 +1354,6 @@ typedef struct PostState {
   int phase;      /* 0x24 */
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;
-/* from level_34 */
-extern void func_8003B1E8(Actor *actor, int a);
 /* from level_34 */
 #define ANIM_BLEND(a, n)                                                       \
   if ((a)->unk3C != (n)) {                                                     \
@@ -1736,10 +1640,6 @@ typedef struct GuardState370 {
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */
 } GuardState370;
-/* from level_34 */
-extern void func_8003B47C(Actor *actor, int a, int b);
-/* from level_34 */
-extern int func_8003838C(Actor *actor);
 /* from level_34 */
 typedef struct LookoutState {
   int heading;   /* 0x00 knock-back heading */
@@ -2052,9 +1952,6 @@ typedef struct L26Guard {
   int sndTimer;   /* 0x2C */
 } L26Guard;
 /* from level_31 */
-extern void func_8003C994(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e);
-/* from level_31 */
 typedef struct L26Rot {
   unsigned char r[3];
 } L26Rot;
@@ -2184,8 +2081,6 @@ typedef struct ShempState {
   int init;            /* 0x40 */
   int timer2;          /* 0x44 */
 } ShempState;
-/* from level_10 */
-extern int func_80038FC8(Actor *actor, int *a, int *b, int c, int d, int e);
 /* from level_10 */
 extern int D_80075850;
 /* from level_25 */
@@ -2422,7 +2317,6 @@ typedef struct L21Runner {
 } L21Runner;
 extern int D_80075870[]; /* per-goal "runner arrived" flags */
 extern int g_nSpawnAnchorValid[];
-extern int func_80038494(Actor *actor);
 #define RUN_FLAGS(p) (*(int *)((p) + ((p)[1] << 4) + 0x14))
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))
 
