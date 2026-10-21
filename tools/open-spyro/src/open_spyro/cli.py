@@ -27,6 +27,8 @@ from open_spyro import (
     progress,
     progress_delta,
     progress_treemap,
+    readability,
+    rename,
     sectionize,
     triage,
     wad,
@@ -208,6 +210,38 @@ def _verify_overlays(
     overlays.verify(compare_bytes)
 
 
+def _rename(
+    old: Annotated[str, typer.Argument(help="current symbol name")],
+    new: Annotated[str, typer.Argument(help="new symbol name (a C identifier)")],
+    overlay: Annotated[
+        str, typer.Option("--overlay", help="overlay segment, for an autolabel several define")
+    ] = "",
+    views: Annotated[
+        bool, typer.Option("--views/--no-views", help="also rename OLD_<suffix> aliases")
+    ] = True,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="report, change nothing")] = False,
+) -> None:
+    """Rename a symbol everywhere (seeds, asm, layout, headers, C + file names). Byte-neutral."""
+    rename.run(old, new, overlay, views, dry_run)
+
+
+def _canonicalize(
+    paths: Annotated[
+        list[str] | None, typer.Argument(help="limit to these src/ files or dirs")
+    ] = None,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="report, change nothing")] = False,
+) -> None:
+    """Rewrite C refs to autolabels (func_/D_<ADDR>) that main already names."""
+    rename.canonicalize(paths or [], dry_run)
+
+
+def _readability(
+    top: Annotated[int, typer.Option("--top", help="files to list in the table")] = 40,
+) -> None:
+    """Score per-file naming/typing debt in the matched C (READABILITY.md)."""
+    readability.run(top)
+
+
 app.command("progress")(_progress)
 app.command("partial")(_partial)
 app.command("partial-score")(_partial_score)
@@ -226,6 +260,9 @@ app.command("normalize-binary")(_normalize_binary)
 app.command("list-overlays")(_list_overlays)
 app.command("overlay-size")(_overlay_size)
 app.command("verify-overlays")(_verify_overlays)
+app.command("rename")(_rename)
+app.command("canonicalize")(_canonicalize)
+app.command("readability")(_readability)
 
 
 # ---- wad: nested group ------------------------------------------------------

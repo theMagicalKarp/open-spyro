@@ -18,7 +18,7 @@ CLANG_FORMAT := $(UVRUN) -- clang-format
 CFMT_SRC     := $(wildcard src/c/*.c)
 CFMT_WIP     := $(wildcard src/c/*.c.wip)
 
-.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play partial progress lint lint-py lint-c fmt fmt-py fmt-c clean
+.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play partial progress triage readability lint lint-py lint-c fmt fmt-py fmt-c clean
 
 help: ## Print this help (default target)
 	@echo "open-spyro — make targets:"
@@ -39,6 +39,7 @@ help: ## Print this help (default target)
 	@echo "  play       Boot the rebuilt iso in DuckStation"
 	@echo "  partial    Score parked .c.wip attempts (Docker) -> build/partial.json"
 	@echo "  progress   Regenerate the C-match progress report (PROGRESS.md + badge)"
+	@echo "  readability  Score naming/typing debt in the matched C (READABILITY.md)"
 	@echo "  lint       Lint + type-check everything: Python (ruff + ty) + C (clang-format), same as CI"
 	@echo "  fmt        Auto-format everything: Python (ruff) + C (clang-format)"
 	@echo "  clean      Remove build output + all regenerable/untracked artifacts"
@@ -113,6 +114,9 @@ partial: ## Score parked .c.wip attempts (Docker) -> build/partial.json (instruc
 progress: partial ## Regenerate the C-match progress report (PROGRESS.md + badge)
 	$(OPEN_SPYRO) progress
 	$(OPEN_SPYRO) progress-treemap
+
+readability: ## Score naming/typing debt in the matched C (READABILITY.md)
+	$(OPEN_SPYRO) readability
 
 triage: ## Rank remaining unmatched functions (TRIAGE.md; verdicts in config/triage_overrides.yaml)
 	$(OPEN_SPYRO) triage
