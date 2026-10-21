@@ -3,36 +3,36 @@
  *
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
- * Allocates a pool record (func_800524C4 = AllocActorRecordSlot), stamps the
+ * Allocates a pool record (AllocActorRecordSlot = AllocActorRecordSlot), stamps the
  * type into +0x36 and the parent's pool index into +0x56 (the 0x58-byte-record
  * pointer difference, clamped away when it is not a real pool slot), then runs
- * a per-type init arm. Every arm starts from func_8003A720
+ * a per-type init arm. Every arm starts from InitActorRenderDefaults
  * (InitActorRenderDefaults) and ends by placing the new actor: most copy the
- * parent's position (func_80017700 = CopyVector) and either register it in the
- * spatial grid (func_800526A8) or hide its render record (func_800529CC).
+ * parent's position (CopyVector = CopyVector) and either register it in the
+ * spatial grid (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).
  *
  * The interesting arms:
  *  - 0xE / 0x53..0x57 (flame spawns): fill the flame state block,
- *    take a ground probe (func_8004D5EC) 0x400 above the spawn point, encode
- *    the cached direction (func_800533D0) and select the per-type flame
+ *    take a ground probe (FindGroundHeightBelow) 0x400 above the spawn point, encode
+ *    the cached direction (EncodeCachedVecToActorDirCode) and select the per-type flame
  *    variant byte at +0x4F.
  *  - 0x43..0x45 / 0xFF..0x101 / 0x135..0x137 (debris bursts):
  *    give the fragment a random unit velocity built from a random yaw
  *    (0xFFF) and pitch (0x7FF) through LookupCosine/LookupSine, add a sixth
- *    of Spyro's velocity (D_80078B4C..54) when the parent is flagged 0x20000,
+ *    of Spyro's velocity (g_anSpyroVelocity..54) when the parent is flagged 0x20000,
  *    nudge the spawn point along it, and randomise the tumble rates. The
  *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
  *    +0x4B bit 7 flag.
  *  - 0xFB (Metalhead's mortar shot): pick one of eight launch directions from
  *    the D_8006F3A0/D_8006F3A2 table, rotate it into the parent's orientation
- *    (func_80017048 = RotateVectorByMatrix), jitter each component by
- *    +-0x3F, offset the spawn point along it (func_80017758 = AddVector) and
- *    seed the shot's velocity (func_800176C8 = RShiftVector3) with a further
+ *    (RotateVectorByMatrix = RotateVectorByMatrix), jitter each component by
+ *    +-0x3F, offset the spawn point along it (AddVector = AddVector) and
+ *    seed the shot's velocity (RShiftVector3 = RShiftVector3) with a further
  *    +-0x7F of jitter plus randomised spin rates and fuse.
  *  - 0x16B..0x16C: drop 0x200 and snap to the ground below when it is within
  *    0x800, otherwise back off by 0x200.
  *
- * With no parent the position falls back to Spyro's (D_80078A58).
+ * With no parent the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
 typedef struct Actor {
@@ -149,43 +149,43 @@ typedef struct DebrisState {
   int unk10;
 } DebrisState;
 
-extern Actor *func_800524C4(void);              /* AllocActorRecordSlot */
-extern void func_8003A720(Actor *rec);          /* InitActorRenderDefaults */
-extern void func_80017700(int *dst, int *src);  /* CopyVector */
-extern void func_800526A8(Actor *rec);          /* InsertActorIntoSpatialGrid */
-extern void func_800529CC(Actor *rec);          /* HideActorRenderRecord */
-extern void func_800533D0(Actor *rec);          /* EncodeCachedVecToActorDir */
-extern int func_8004D5EC(int *pos, int drop);   /* FindGroundHeightBelow */
-extern void func_80017048(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
-extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
-extern void func_800176C8(int *vec, int shift);          /* RShiftVector3 */
-extern unsigned int func_8006272C(void);        /* GetRandomU32 */
-extern int func_80016CB0(int angle);            /* LookupCosine */
-extern int func_80016C58(int angle);            /* LookupSine */
+extern Actor *AllocActorRecordSlot(void);
+extern void InitActorRenderDefaults(Actor *rec);
+extern void CopyVector(int *dst, int *src);
+extern void InsertActorIntoSpatialGrid(Actor *rec);
+extern void HideActorRenderRecord(Actor *rec);
+extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
+extern int FindGroundHeightBelow(int *pos, int drop);
+extern void RotateVectorByMatrix(int *mtx, int *src, int *dst); /* RotateVectorByMtx */
+extern void AddVector(int *dst, int *a, int *b);
+extern void RShiftVector3(int *vec, int shift);
+extern unsigned int GetRandomU32(void);
+extern int LookupCosine(int angle);
+extern int LookupSine(int angle);
 
-extern Actor *D_80075828;  /* g_pActorListBase */
-extern int D_80078A58[];   /* g_anSpyroWorldPos */
-extern int D_80078B4C[3];  /* g_anSpyroVelocity */
-extern int D_80077058;     /* g_nGemPickupSubstate */
+extern Actor *g_pActorListBase;
+extern int g_anSpyroWorldPos[];
+extern int g_anSpyroVelocity[3];
+extern int g_nGemPickupSubstate;
 extern short D_8006F3A0[]; /* launch-direction table, x */
 extern short D_8006F3A2[]; /* launch-direction table, z */
-extern short D_8006CBF8[]; /* unit-circle y table (8-bit angle) */
-extern short D_8006CC78[]; /* unit-circle x table (8-bit angle) */
-extern unsigned char **D_80076378[];  /* per-type actor asset table */
-extern int D_80078A60;     /* g_anSpyroWorldPos[2] */
-extern int func_80016AB4(int y, int x, int mode);         /* ArcTan2 */
-extern int func_80017990(int *a, int *b);       /* HorizontalDistance */
+extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
+extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
+extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
+extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
+extern int ArcTan2(int y, int x, int mode);
+extern int ApproxDist2D(int *a, int *b);       /* HorizontalDistance */
 extern int func_80037EA0(int lo, int hi);       /* RandomInRange */
 extern int func_80037F10(int lo, int hi);       /* RandomSignedInRange */
-extern void (*D_800758E4)(int kind, int count, int *pos, int spread); /* SpawnPuff */
+extern void (*g_pfnLevelOverlayParticleSpawn)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 
 Actor *func_level_27_8008590C(int type, Actor *parent) {
   Actor *rec;
   int owner;
 
-  rec = func_800524C4();
+  rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - D_80075828) >= 0x100) {
+  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->unk56 = owner;
@@ -194,7 +194,7 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
   case 0xF: {
     FlameState *st = rec->state;
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     st->unk08 = 0x8C;
     st->unk10 = 3;
     st->unk14 = 0xFF;
@@ -212,9 +212,9 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     rec->unk45 = 0;
     rec->unk46 = 0;
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     }
-    func_800526A8(rec);
+    InsertActorIntoSpatialGrid(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
     rec->unk4E = 0;
@@ -227,12 +227,12 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     BeamState *st = rec->state;
     int *pos;
 
-    func_8003A720(rec);
-    func_800526A8(rec);
+    InitActorRenderDefaults(rec);
+    InsertActorIntoSpatialGrid(rec);
     pos = &rec->posX;
-    func_80017700(pos, &parent->posX);
+    CopyVector(pos, &parent->posX);
     rec->posZ += 0x200;
-    func_80017700(st->anchor, pos);
+    CopyVector(st->anchor, pos);
     st->unk13 = 0;
     st->unk12 = 0;
     st->unk14 = 0x708;
@@ -240,13 +240,13 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
   }
 
   case 0x22:
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
     rec->unk52 = 0xFF;
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     }
-    func_800529CC(rec);
+    HideActorRenderRecord(rec);
     break;
 
   case 0x26: {
@@ -254,23 +254,23 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int *pos;
     int turn;
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80017700(pos, &parent->posX);
+    CopyVector(pos, &parent->posX);
     if (parent->type == type) {
       rec->unk46 = parent->unk46;
       rec->unk48 = 3;
       rec->unk40 = 0;
-      rec->unk41 = D_80076378[rec->type][0x11][0xC];
+      rec->unk41 = g_apActorMeshTable[rec->type][0x11][0xC];
       rec->unk3C = 3;
       rec->unk3D = 3;
       *st = 3;
     } else if (parent->unk3F >= 6) {
-      rec->posX += func_80016CB0(parent->unk46 << 4) >> 2;
-      rec->posY += func_80016C58(parent->unk46 << 4) >> 2;
+      rec->posX += LookupCosine(parent->unk46 << 4) >> 2;
+      rec->posY += LookupSine(parent->unk46 << 4) >> 2;
       rec->posZ += 0x12C;
       rec->unk46 = parent->unk46;
-      turn = (func_80016AB4(func_80017990(pos, D_80078A58), D_80078A60 - rec->posZ,
+      turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
                             0) -
               parent->unk45) &
              0xFF;
@@ -287,11 +287,11 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
       *st = 0x80;
       rec->unk48 = 2;
       rec->unk40 = 0;
-      rec->unk41 = D_80076378[rec->type][0x10][0xC];
+      rec->unk41 = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->unk3C = 2;
       rec->unk3D = 2;
-      D_800758E4(4, 7, pos, 0x10);
-      func_800526A8(rec);
+      g_pfnLevelOverlayParticleSpawn(4, 7, pos, 0x10);
+      InsertActorIntoSpatialGrid(rec);
       break;
     } else {
       if (parent->unk3F >= 2) {
@@ -299,7 +299,7 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
         rec->unk46 = parent->unk46;
         rec->unk48 = 1;
         rec->unk40 = 0;
-        rec->unk41 = D_80076378[rec->type][0xF][0xC];
+        rec->unk41 = g_apActorMeshTable[rec->type][0xF][0xC];
         rec->unk3C = 1;
         rec->unk3D = 1;
       } else {
@@ -308,7 +308,7 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
       }
       *st = 2;
     }
-    func_800526A8(rec);
+    InsertActorIntoSpatialGrid(rec);
     break;
   }
   case 0xE:
@@ -317,7 +317,7 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int *pos;
     int probe[3];
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     st->unk00 = 0;
     st->unk04 = 0;
     st->unk08 = 0x8C;
@@ -339,13 +339,13 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     rec->unk44 = 0x20;
     rec->unk45 = 0;
     rec->unk46 = 0;
-    func_80017700(pos, &parent->posX);
-    func_800529CC(rec);
+    CopyVector(pos, &parent->posX);
+    HideActorRenderRecord(rec);
     rec->unk1C = -1;
-    func_80017700(probe, pos);
+    CopyVector(probe, pos);
     probe[2] += 0x400;
-    func_8004D5EC(probe, 0x10000);
-    func_800533D0(rec);
+    FindGroundHeightBelow(probe, 0x10000);
+    EncodeCachedVecToActorDirCode(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
     rec->unk4E = 0;
@@ -377,13 +377,13 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
 
     speed = func_80037EA0(0x78, 0x96);
     st = rec->state;
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    func_80017700(&rec->posX, &parent->posX);
-    func_800526A8(rec);
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
     dir = (parent->unk45 + func_80037EA0(-0xF, 0xF)) & 0xFF;
-    st->velX = speed * D_8006CC78[dir] >> 12;
-    st->velY = speed * D_8006CBF8[dir] >> 12;
+    st->velX = speed * g_anCosineLut[dir] >> 12;
+    st->velY = speed * g_anSineLut[dir] >> 12;
     st->unk04 = func_80037EA0(0x64, 0x8C);
     st->unk0C = func_80037EA0(0x1E, 0x32);
     st->unk06 = func_80037F10(7, 0xC);
@@ -398,8 +398,8 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
   case 0x78: {
     SpinState *st = rec->state;
 
-    func_8003A720(rec);
-    func_800526A8(rec);
+    InitActorRenderDefaults(rec);
+    InsertActorIntoSpatialGrid(rec);
     rec->unk49 = 0;
     st->unk00 = 0;
     st->unk08 = 0;
@@ -408,16 +408,16 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     st->unk0C = 0;
     st->unk10 = 0;
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     }
     break;
   }
 
   case 0x98 ... 0x99:
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
     rec->unk52 = 0xFF;
-    func_800529CC(rec);
+    HideActorRenderRecord(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
     rec->unk4E = 0;
@@ -434,28 +434,28 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int yaw;
     int pitch;
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    func_80017700(&rec->posX, &parent->posX);
-    func_800526A8(rec);
-    yaw = func_8006272C() & 0xFFF;
-    pitch = func_8006272C() & 0x7FF;
-    st->vel[0] = (func_80016CB0(pitch) >> 5) * func_80016CB0(yaw) >> 12;
-    st->vel[1] = (func_80016CB0(pitch) >> 5) * func_80016C58(yaw) >> 12;
-    st->vel[2] = func_80016C58(pitch) >> 5;
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
+    yaw = GetRandomU32() & 0xFFF;
+    pitch = GetRandomU32() & 0x7FF;
+    st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
+    st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;
+    st->vel[2] = LookupSine(pitch) >> 5;
     if (parent->flags & 0x20000) {
-      st->vel[0] += D_80078B4C[0] >> 6;
-      st->vel[1] += D_80078B4C[1] >> 6;
-      st->vel[2] += D_80078B4C[2] >> 6;
+      st->vel[0] += g_anSpyroVelocity[0] >> 6;
+      st->vel[1] += g_anSpyroVelocity[1] >> 6;
+      st->vel[2] += g_anSpyroVelocity[2] >> 6;
     }
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = func_8006272C() & 0xF;
-    st->spinY = func_8006272C() & 0xF;
-    st->spinZ = func_8006272C() & 0xF;
+    st->spinX = GetRandomU32() & 0xF;
+    st->spinY = GetRandomU32() & 0xF;
+    st->spinZ = GetRandomU32() & 0xF;
     st->unk10 = parent->posZ - 0x40;
-    st->unk0C = 0x40 - (func_8006272C() & 0xF);
+    st->unk0C = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
       *(int *)&rec->unk4C = 0xA18618;
       rec->unk4B |= 0x80;
@@ -469,41 +469,41 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int unused[2];
     int i;
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
     rec->unk52 = 0xFF;
-    func_800529CC(rec);
+    HideActorRenderRecord(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
     rec->unk4E = 0;
     rec->unk4F = 0xE;
-    if (D_80077058 == 3) {
+    if (g_nGemPickupSubstate == 3) {
       rec->unk57 = 0x14;
-    } else if (D_80077058 == 1) {
+    } else if (g_nGemPickupSubstate == 1) {
       rec->unk57 = 0x30;
     }
-    i = func_8006272C() & 7;
+    i = GetRandomU32() & 7;
     dir[0] = D_8006F3A0[i * 2];
     dir[1] = 0;
     dir[2] = D_8006F3A2[i * 2];
-    func_80017048(parent->unk20, dir, dir);
-    dir[0] -= 0x3F - (func_8006272C() & 0x7F);
-    dir[1] -= 0x3F - (func_8006272C() & 0x7F);
-    dir[2] -= 0x3F - (func_8006272C() & 0x7F);
-    func_80017758(&rec->posX, &parent->posX, dir);
-    func_80017700(st->vel, dir);
-    func_800176C8(st->vel, 2);
-    st->vel[0] -= 0x7F - (func_8006272C() & 0xFF);
-    st->vel[1] -= 0x7F - (func_8006272C() & 0xFF);
-    st->vel[2] -= 0x7F - (func_8006272C() & 0xFF);
-    rec->unk44 = func_8006272C();
-    rec->unk45 = func_8006272C();
-    rec->unk46 = func_8006272C();
-    st->unk10 = func_8006272C() & 0xF;
-    st->unk11 = func_8006272C() & 0xF;
-    st->unk12 = func_8006272C() & 0xF;
+    RotateVectorByMatrix(parent->unk20, dir, dir);
+    dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
+    dir[1] -= 0x3F - (GetRandomU32() & 0x7F);
+    dir[2] -= 0x3F - (GetRandomU32() & 0x7F);
+    AddVector(&rec->posX, &parent->posX, dir);
+    CopyVector(st->vel, dir);
+    RShiftVector3(st->vel, 2);
+    st->vel[0] -= 0x7F - (GetRandomU32() & 0xFF);
+    st->vel[1] -= 0x7F - (GetRandomU32() & 0xFF);
+    st->vel[2] -= 0x7F - (GetRandomU32() & 0xFF);
+    rec->unk44 = GetRandomU32();
+    rec->unk45 = GetRandomU32();
+    rec->unk46 = GetRandomU32();
+    st->unk10 = GetRandomU32() & 0xF;
+    st->unk11 = GetRandomU32() & 0xF;
+    st->unk12 = GetRandomU32() & 0xF;
     st->unk0C = parent->posZ;
-    st->unk13 = (func_8006272C() & 3) + 0x10;
+    st->unk13 = (GetRandomU32() & 3) + 0x10;
     break;
   }
 
@@ -512,8 +512,8 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
   case 0x147: {
     int *st = rec->state;
 
-    func_8003A720(rec);
-    func_800529CC(rec);
+    InitActorRenderDefaults(rec);
+    HideActorRenderRecord(rec);
     rec->unk4F = 2;
     rec->unk4C = 0;
     rec->unk4D = 0;
@@ -523,14 +523,14 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
   }
 
   case 0x188:
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk47 = 5;
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
-    func_800526A8(rec);
+    InsertActorIntoSpatialGrid(rec);
     break;
 
   case 0x195:
@@ -538,14 +538,14 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     int ground;
     int z;
     int gap;
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
     rec->posZ += 0x200;
-    ground = func_8004D5EC(&rec->posX, 0x800);
+    ground = FindGroundHeightBelow(&rec->posX, 0x800);
     z = rec->posZ;
     gap = ground - z;
     if (gap < 0) {
@@ -556,25 +556,25 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     } else {
       rec->posZ = z - 0x200;
     }
-    func_800526A8(rec);
+    InsertActorIntoSpatialGrid(rec);
     break;
   }
 
   case 0x4C:
   case 0x1AA ... 0x1C3:
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
     rec->unk52 = 0xFF;
-    func_800529CC(rec);
+    HideActorRenderRecord(rec);
     break;
 
   case 0x1CA ... 0x1CB: {
     DebrisState *st = rec->state;
 
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    func_80017700(&rec->posX, &parent->posX);
-    func_800526A8(rec);
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
     if (parent->type == 0xB0) {
       st->vel[0] = func_80037EA0(-0x64, 0x64);
       st->vel[1] = func_80037EA0(-0x64, 0x64);
@@ -587,21 +587,21 @@ Actor *func_level_27_8008590C(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = func_8006272C() & 0xF;
-    st->spinY = func_8006272C() & 0xF;
-    st->spinZ = func_8006272C() & 0xF;
+    st->spinX = GetRandomU32() & 0xF;
+    st->spinY = GetRandomU32() & 0xF;
+    st->spinZ = GetRandomU32() & 0xF;
     st->unk0C = func_80037EA0(0x18, 0x23);
     break;
   }
 
   default:
-    func_8003A720(rec);
+    InitActorRenderDefaults(rec);
     if (parent != 0) {
-      func_80017700(&rec->posX, &parent->posX);
+      CopyVector(&rec->posX, &parent->posX);
     } else {
-      func_80017700(&rec->posX, D_80078A58);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
-    func_800526A8(rec);
+    InsertActorIntoSpatialGrid(rec);
     break;
   }
 

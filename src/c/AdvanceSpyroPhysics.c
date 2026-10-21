@@ -32,7 +32,7 @@ extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int abs(int x);
 
 extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
-extern int D_80078A60;        /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 extern int D_80075948;
 
 SDATA(D_80075948, 4);
@@ -213,8 +213,8 @@ int AdvanceSpyroPhysics(void) {
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
         if (m & 4) {
-          g_anSpyroVelocityFp6[2] = (g_anSpyroRequestTargetPos[2] - D_80078A60)
-                                    << 6;
+          g_anSpyroVelocityFp6[2] =
+              (g_anSpyroRequestTargetPos[2] - g_nSpyroWorldPosZ) << 6;
           g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
       }

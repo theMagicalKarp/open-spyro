@@ -1,24 +1,24 @@
 /* func_level_3_8007B068 (0x8007B068, level_3_artisans_town_square overlay).
  *
  * Level hook run when leaving the save menu back to the world: forwards to
- * EndSaveMenuToWorld (func_8002D02C), clears the level's pending-action word
- * (D_80078C0C) and flag byte (D_80078A69), then if the tracked actor
- * (D_80075898) exists, resets its +0x50 mode byte to 0x10.
+ * EndSaveMenuToWorld (EndSaveMenuToWorld), clears the level's pending-action word
+ * (g_nSpyroSwingEulerPrev1) and flag byte (g_bSpyroSwingByteEuler1), then if the tracked actor
+ * (g_pLevelOverlayInitRecord) exists, resets its +0x50 mode byte to 0x10.
  * Identical body in ten level overlays.
  */
 
-extern void func_8002D02C(void);
-extern char *D_80075898;
-extern int D_80078C0C;
-extern unsigned char D_80078A69;
+extern void EndSaveMenuToWorld(void);
+extern char *g_pLevelOverlayInitRecord;
+extern int g_nSpyroSwingEulerPrev1;
+extern unsigned char g_bSpyroSwingByteEuler1;
 
 void func_level_3_8007B068(void) {
   char *actor;
 
-  func_8002D02C();
-  actor = D_80075898;
-  D_80078C0C = 0;
-  D_80078A69 = 0;
+  EndSaveMenuToWorld();
+  actor = g_pLevelOverlayInitRecord;
+  g_nSpyroSwingEulerPrev1 = 0;
+  g_bSpyroSwingByteEuler1 = 0;
   if (actor != 0) {
     actor[0x50] = 0x10;
   }

@@ -145,22 +145,22 @@ typedef struct Actor {
 
 extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
 extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
-extern void func_80017700(int *dst, int *src);           /* CopyVector */
-extern void func_80017758(int *dst, int *a, int *b);     /* AddVector */
-extern void func_80017048(int *mat, int *v, int *dst);   /* RotateVectorByMatrix */
-extern int func_80016C58(int a);                         /* LookupSine */
-extern int func_80016CB0(int a);                         /* LookupCosine */
-extern unsigned int func_8006272C(void);                 /* GetRandomU32 */
+extern void CopyVector(int *dst, int *src);
+extern void AddVector(int *dst, int *a, int *b);
+extern void RotateVectorByMatrix(int *mat, int *v, int *dst);
+extern int LookupSine(int a);
+extern int LookupCosine(int a);
+extern unsigned int GetRandomU32(void);
 
-extern int D_800757D8;            /* g_Gamestate */
-extern int D_80078764;
-extern int D_80078A58[];          /* Spyro world position */
+extern int g_nGamestate;            /* g_Gamestate */
+extern int g_nSpyroHornStrikeVariant;
+extern int g_anSpyroWorldPos[];          /* Spyro world position */
 extern unsigned char D_80078A66;
-extern int D_80078A8C[];          /* Spyro orientation matrix (position at -0x34) */
-extern int D_80078AF8;
-extern int D_80078B70;
-extern int D_80078BBC;
-extern int D_8007596C;
+extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
+extern int g_nSpyroGroundHeightZ;
+extern int g_nSpyroMotionSpeed;
+extern int g_nLevelReadyFlag;
+extern int g_nActiveLevelId;
 extern unsigned char D_8006E438[];  /* trail colour table, stride 4 */
 extern unsigned char D_8006E439[];
 extern unsigned char D_8006E43A[];
@@ -193,7 +193,7 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       func_80017BFC(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
-      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
@@ -210,12 +210,12 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       func_80017BFC(rec->u.spark.pos, pos);
       func_80017BFC(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
-      if (D_800757D8 == 8) {
+      if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
       } else {
         rec->u.spark.life = 0x10;
       }
-      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x60;
       rec->u.spark.g = 0x60;
       rec->u.spark.b = 0x60;
@@ -229,13 +229,13 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->unk03 = 1;
       func_80017BFC(rec->u.spark.pos, pos);
-      v0[0] = (func_8006272C() & 0x3F) - 0x20;
-      v0[1] = (func_8006272C() & 0x3F) - 0x20;
+      v0[0] = (GetRandomU32() & 0x3F) - 0x20;
+      v0[1] = (GetRandomU32() & 0x3F) - 0x20;
       v0[2] = 0x1E;
       func_80017BFC(rec->u.spark.vel, v0);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x20;
-      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
@@ -251,16 +251,16 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       owner = ((Actor *)pos)->owner;
       rec = (Emit *)func_80053570(3);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
       func_80017BFC(rec->u.plume.pos, ((Actor *)pos)->pos);
-      t1 = func_8006272C() & 0x7E;
+      t1 = GetRandomU32() & 0x7E;
       u1 = rec->u.plume.pos[0] - 0x3F;
       rec->u.plume.pos[0] = u1 + t1;
-      t2 = func_8006272C() & 0x7E;
+      t2 = GetRandomU32() & 0x7E;
       u2 = rec->u.plume.pos[1] - 0x3F;
       rec->u.plume.pos[1] = u2 + t2;
-      t3 = func_8006272C() & 0x1FF;
+      t3 = GetRandomU32() & 0x1FF;
       u3 = rec->u.plume.pos[2] - 0x100;
       rec->u.plume.src = ((Actor *)pos)->pos;
       rec->u.plume.pos[2] = u3 + t3;
@@ -269,7 +269,7 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       rec->u.plume.life = 0x20;
       rec->u.plume.seed = 0x14;
       if (((Actor *)pos)->flag49 != 0) {
-        switch (func_8006272C() & 7) {
+        switch (GetRandomU32() & 7) {
         case 0:
           rec->u.plume.r = 0x80;
           rec->u.plume.g = 0;
@@ -311,7 +311,7 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
           rec->u.plume.b = 0x80;
           break;
         }
-      } else if (D_8007596C == 0x32) {
+      } else if (g_nActiveLevelId == 0x32) {
         rec->u.plume.r = 0x80;
         rec->u.plume.g = 0x80;
         rec->u.plume.b = 0;
@@ -334,16 +334,16 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       func_80017BFC(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
-      rec->u.spark.seed = func_8006272C();
-      if (D_80078B70 >= 0x5781) {
+      rec->u.spark.seed = GetRandomU32();
+      if (g_nSpyroMotionSpeed >= 0x5781) {
         rec->u.spark.r = 0xFF;
         rec->u.spark.g = 0;
         rec->u.spark.b = 0;
-      } else if (D_80078B70 >= 0x4241) {
+      } else if (g_nSpyroMotionSpeed >= 0x4241) {
         rec->u.spark.r = 0xF0;
         rec->u.spark.g = 0x60;
         rec->u.spark.b = 0;
-      } else if (D_80078B70 >= 0x3681) {
+      } else if (g_nSpyroMotionSpeed >= 0x3681) {
         rec->u.spark.r = 0xE0;
         rec->u.spark.g = 0xE0;
         rec->u.spark.b = 0;
@@ -360,9 +360,9 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
     case 0xA: {
       rec = (Emit *)func_80053570(3);
       rec->type = type;
-      rec->phase = func_8006272C() & 0x1F;
+      rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, D_80078A58);
+      func_80017BFC(rec->u.spark.pos, g_anSpyroWorldPos);
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = 0xF;
       rec->u.spark.r = D_8006E438[k];
@@ -380,30 +380,30 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       rec->unk03 = 1;
       rec->u.spark.unk11 = 4;
       if (((Actor *)pos)->kind == 0x22) {
-        func_80017700(v1, ((Actor *)pos)->pos);
+        CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
         if ((arg3 >> 24) < 6) {
-          func_80017048((int *)((Actor *)pos)->mat, &D_8006E4E0[(arg3 >> 24) * 3], v1);
-          func_80017758(v1, v1, ((Actor *)pos)->pos);
+          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &D_8006E4E0[(arg3 >> 24) * 3], v1);
+          AddVector(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.unk11 = 0x16;
-          func_80017700(v1, &D_8006E4E0[(arg3 >> 24) * 3]);
+          CopyVector(v1, &D_8006E4E0[(arg3 >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
-        func_80017048((int *)((Actor *)pos)->mat, D_8006E570, v1);
-        func_80017758(v1, v1, ((Actor *)pos)->pos);
+        RotateVectorByMatrix((int *)((Actor *)pos)->mat, D_8006E570, v1);
+        AddVector(v1, v1, ((Actor *)pos)->pos);
       } else {
-        func_80017048((int *)((Actor *)pos)->mat, &D_8006E498[i * 3], v1);
-        func_80017758(v1, v1, ((Actor *)pos)->pos);
+        RotateVectorByMatrix((int *)((Actor *)pos)->mat, &D_8006E498[i * 3], v1);
+        AddVector(v1, v1, ((Actor *)pos)->pos);
       }
       func_80017BFC(rec->u.spark.pos, v1);
       rec->u.spark.g = arg3 >> 8;
       rec->u.spark.r = arg3;
       rec->u.spark.b = arg3 >> 16;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.life = (func_8006272C() & 7) + 0x10;
-      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
+      rec->u.spark.seed = GetRandomU32();
       rec->u.spark.unk10 = 0;
       break;
     }
@@ -463,15 +463,15 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
         v2[0] = 0x164;
         v2[1] = 0;
         v2[2] = 0;
-        func_80017048(D_80078A8C, v2, v2);
-        func_80017758(v2, v2, D_80078A8C - 13);
+        RotateVectorByMatrix(g_anSpyroBodyMtx, v2, v2);
+        AddVector(v2, v2, g_anSpyroBodyMtx - 13);
       } else {
-        func_80017700(v2, D_80078A58);
-        v2[2] = D_80078AF8;
-        ta = func_8006272C() & 0x3E;
+        CopyVector(v2, g_anSpyroWorldPos);
+        v2[2] = g_nSpyroGroundHeightZ;
+        ta = GetRandomU32() & 0x3E;
         ua = v2[0] - 0x1F;
         v2[0] = ua + ta;
-        tb = func_8006272C() & 0x3E;
+        tb = GetRandomU32() & 0x3E;
         ub = v2[1] - 0x1F;
         v2[1] = ub + tb;
       }
@@ -479,7 +479,7 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       func_80017BFC(rec->u.spark.vel, pos);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x10;
-      rec->u.spark.seed = func_8006272C();
+      rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x20;
       rec->u.spark.g = 0x20;
       rec->u.spark.b = 0x20;
@@ -491,21 +491,21 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
     case 0x42: {
       rec = (Emit *)func_80053570(0);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      rec->u.dust.pos[0] = (pos[0] >> 2) + (func_8006272C() & 0xF) - 8;
-      rec->u.dust.pos[1] = (pos[1] >> 2) + (func_8006272C() & 0xF) - 8;
-      rec->u.dust.pos[2] = (pos[2] >> 2) + (func_8006272C() & 0xF) - 8;
+      rec->u.dust.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.dust.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.dust.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
       rec->u.dust.vel[0] = 0;
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (arg3 == 1 || (arg3 == 0 && D_80078BBC >= 3)) {
+      if (arg3 == 1 || (arg3 == 0 && g_nLevelReadyFlag >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;
       } else {
-        switch (func_8006272C() & 7) {
+        switch (GetRandomU32() & 7) {
         case 0:
           rec->u.dust.r = 0xFF;
           rec->u.dust.g = 0;
@@ -554,11 +554,11 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
     case 0x46: {
       rec = (Emit *)func_80053570(1);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      v3[0] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v3[1] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v3[2] = (arg3 * (int)(func_8006272C() & 0xFFF)) >> 12;
+      v3[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = (pos[0] >> 2) + v3[0] * 4;
       rec->u.line.a[1] = (pos[1] >> 2) + v3[1] * 4;
       rec->u.line.a[2] = (pos[2] >> 2) + v3[2] * 4;
@@ -579,11 +579,11 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
     case 0x47: {
       rec = (Emit *)func_80053570(1);
       rec->type = type;
-      rec->phase = func_8006272C() & 7;
+      rec->phase = GetRandomU32() & 7;
       rec->unk03 = 1;
-      v3[0] = (((int)(func_8006272C() & 0xFFF) - 0x800) * 16) >> 12;
-      v3[1] = (((int)(func_8006272C() & 0xFFF) - 0x800) * 16) >> 12;
-      v3[2] = (((int)(func_8006272C() & 0xFFF) - 0x800) * 16) >> 12;
+      v3[0] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
+      v3[1] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
+      v3[2] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
       rec->u.line.a[0] = (pos[0] >> 2) + v3[0] * 4;
       rec->u.line.a[1] = (pos[1] >> 2) + v3[1] * 4;
       rec->u.line.a[2] = (pos[2] >> 2) + v3[2] * 4;
@@ -626,13 +626,13 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       int u;
       rec = (Emit *)func_80053570(4);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       func_80017BFC(rec->u.line.b, pos);
       func_80017BFC(rec->u.line.a, pos);
-      t = func_8006272C() & 0xFFF;
-      rec->u.line.a[0] = rec->u.line.a[0] + (func_80016CB0(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (func_80016C58(func_8006272C() & 0x7FF) >> 8);
-      u = func_80016C58(t);
+      t = GetRandomU32() & 0xFFF;
+      rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
+      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;
       rec->u.line.c0[2] = 0x60;
@@ -649,27 +649,27 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       int u1, u2, u3;
       rec = (Emit *)func_80053570(0);
       rec->type = type;
-      rec->phase = func_8006272C() & 0x1F;
+      rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
       func_80017BFC(rec->u.dust.pos, pos);
-      t1 = func_8006272C() & 0x3F;
+      t1 = GetRandomU32() & 0x3F;
       u1 = rec->u.dust.pos[0] - 0x20;
       rec->u.dust.pos[0] = u1 + t1;
-      t2 = func_8006272C() & 0x3F;
+      t2 = GetRandomU32() & 0x3F;
       u2 = rec->u.dust.pos[1] - 0x20;
       rec->u.dust.pos[1] = u2 + t2;
-      t3 = func_8006272C() & 0x3F;
+      t3 = GetRandomU32() & 0x3F;
       u3 = rec->u.dust.pos[2] - 0x20;
       rec->u.dust.pos[2] = u3 + t3;
-      rec->u.dust.vel[0] = (func_8006272C() & 2) - 1;
-      rec->u.dust.vel[1] = (func_8006272C() & 2) - 1;
-      rec->u.dust.vel[2] = -(func_8006272C() & 1);
-      rec->u.dust.r = func_8006272C() | 0x80;
-      rec->u.dust.g = (func_8006272C() & 0x7F) + 0x60;
+      rec->u.dust.vel[0] = (GetRandomU32() & 2) - 1;
+      rec->u.dust.vel[1] = (GetRandomU32() & 2) - 1;
+      rec->u.dust.vel[2] = -(GetRandomU32() & 1);
+      rec->u.dust.r = GetRandomU32() | 0x80;
+      rec->u.dust.g = (GetRandomU32() & 0x7F) + 0x60;
       if (rec->u.dust.r < rec->u.dust.g) {
         rec->u.dust.g = rec->u.dust.r;
       }
-      rec->u.dust.b = (func_8006272C() & 0x3F) + 0x40;
+      rec->u.dust.b = (GetRandomU32() & 0x3F) + 0x40;
       rec->u.dust.fx = 0x40;
       rec->u.dust.life = 2;
       break;
@@ -679,35 +679,35 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
       int u4, u5, u6;
       rec = (Emit *)func_80053570(1);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
       func_80017BFC(rec->u.line.b, pos);
-      func_80017758(v3, pos, (int *)arg3);
-      t4 = func_8006272C() & 0x3F;
+      AddVector(v3, pos, (int *)arg3);
+      t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
       v3[0] = u4 + t4;
-      t5 = func_8006272C() & 0x3F;
+      t5 = GetRandomU32() & 0x3F;
       u5 = v3[1] - 0x20;
       v3[1] = u5 + t5;
-      t6 = func_8006272C() & 0x7F;
+      t6 = GetRandomU32() & 0x7F;
       u6 = v3[2] - 0x40;
       v3[2] = u6 + t6;
       func_80017BFC(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
-      if (D_80078764 == 0) {
-        rec->u.line.c0[0] = func_8006272C() | 0xC0;
-        rec->u.line.c0[1] = (func_8006272C() & 0x3F) - 0x60;
+      if (g_nSpyroHornStrikeVariant == 0) {
+        rec->u.line.c0[0] = GetRandomU32() | 0xC0;
+        rec->u.line.c0[1] = (GetRandomU32() & 0x3F) - 0x60;
         rec->u.line.c0[2] = 0;
-        rec->u.line.c1[0] = func_8006272C() | 0xE0;
-        rec->u.line.c1[1] = func_8006272C() | 0xE0;
+        rec->u.line.c1[0] = GetRandomU32() | 0xE0;
+        rec->u.line.c1[1] = GetRandomU32() | 0xE0;
         rec->u.line.c1[2] = 0x80;
       } else {
-        rec->u.line.c0[0] = func_8006272C() | 0xC0;
-        rec->u.line.c0[1] = (func_8006272C() & 0x3F) + 0x40;
-        rec->u.line.c0[2] = (func_8006272C() & 0x3F) + 0x40;
-        rec->u.line.c1[0] = func_8006272C() | 0xE0;
-        rec->u.line.c1[1] = (func_8006272C() & 0x1F) - 0x60;
-        rec->u.line.c1[2] = (func_8006272C() & 0x1F) - 0x60;
+        rec->u.line.c0[0] = GetRandomU32() | 0xC0;
+        rec->u.line.c0[1] = (GetRandomU32() & 0x3F) + 0x40;
+        rec->u.line.c0[2] = (GetRandomU32() & 0x3F) + 0x40;
+        rec->u.line.c1[0] = GetRandomU32() | 0xE0;
+        rec->u.line.c1[1] = (GetRandomU32() & 0x1F) - 0x60;
+        rec->u.line.c1[2] = (GetRandomU32() & 0x1F) - 0x60;
       }
       rec->u.line.c0[3] = 0x50;
       break;
@@ -715,12 +715,12 @@ void func_level_28_80085254(int count, int type, int *pos, int arg3) {
     case 0x50: {
       rec = (Emit *)func_80053570(1);
       rec->type = type;
-      rec->phase = func_8006272C() & 0xF;
+      rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
       func_80017BFC(rec->u.line.a, pos);
-      v4[0] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v4[1] = (arg3 * ((int)(func_8006272C() & 0xFFF) - 0x800)) >> 12;
-      v4[2] = (arg3 * (int)(func_8006272C() & 0xFFF)) >> 12;
+      v4[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = rec->u.line.a[0] + v4[0] * 4;
       rec->u.line.a[1] = rec->u.line.a[1] + v4[1] * 4;
       rec->u.line.a[2] = rec->u.line.a[2] + v4[2] * 4;

@@ -19,7 +19,7 @@ extern void UpdateGameplayCamera(void);
 extern int abs(int x);
 
 extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
-extern int D_80078A60;        /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 
 /* Held-base views of the camera record (from g_anCameraPos) and the Spyro
    record (from g_anSpyroWorldPos). */
@@ -436,7 +436,7 @@ void UpdateCameraSpringForMode(void) {
     actor = g_pScriptedCameraActor;
     g_pCameraAnchorPos = g_anCameraScriptedTargetPos;
     g_pCameraAnchorPos[0] = ACTOR_X(actor);
-    z = D_80078A60;
+    z = g_nSpyroWorldPosZ;
     y = ACTOR_Y(actor);
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;

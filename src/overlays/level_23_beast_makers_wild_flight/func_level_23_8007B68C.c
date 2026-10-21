@@ -1,15 +1,15 @@
 /* func_level_23_8007B68C (0x8007B68C, level_23_beast_makers_wild_flight overlay, 6440 bytes).
  *
  * Flight-level end-of-run results/time-attack screen draw. First frame
- * (D_800758B8 == 0): runs the render pipeline once, then captures the frame
+ * (g_nPauseMenuTransitionFrames == 0): runs the render pipeline once, then captures the frame
  * into VRAM strips (4x MoveImage columns + LoadImage of the backdrop strip
  * and CLUT row). Later frames: rebuilds the frozen backdrop as 4 POLY_FT4
  * quads (clut 0x3820) plus a black TILE bar, then draws either the results
  * board (COMPLETED/QUIT/TIME IS UP/CRASHED headline, four tally rows
- * revealed by D_80075744, bonus column, TOTAL, PRESS-TO-CONTINUE or
- * TRY AGAIN?/YES/NO menu) or, at D_80075744 == 0x64, the TIME ATTACK board
+ * revealed by g_nSubMenuCursor, bonus column, TOTAL, PRESS-TO-CONTINUE or
+ * TRY AGAIN?/YES/NO menu) or, at g_nSubMenuCursor == 0x64, the TIME ATTACK board
  * (times via the formatter D_800758C4, NEW RECORD, TRY AGAIN/YES/NO).
- * Selected records get a sine glow on +0x46 from D_8006CC78. Standard
+ * Selected records get a sine glow on +0x46 from g_anCosineLut. Standard
  * 2-vblank pace tail. Word-identical in all five flight overlays
  * (5/11/17/23/29).
  *
@@ -20,66 +20,66 @@
  * matching the original's map.
  */
 
-extern void func_800521C0(void); /* BuildRenderEntityLists */
-extern void func_80019698(void); /* ComposeFrameScene */
-extern void func_800573C8(void); /* RasterizeEmitList */
-extern void func_80050BD0(void); /* DrawActors */
-extern void func_8002B9CC(void); /* SetupFrameOT */
-extern void func_8005F764();     /* DrawSync */
-extern int func_8005DBC4();      /* VSync */
-extern void func_80060030();     /* PutDispEnv */
-extern void func_8005FDD8();     /* PutDrawEnv */
-extern int func_80016784();      /* LinkOTPrimitives */
-extern void func_8005FD64();     /* DrawOTag */
-extern void func_8005FA8C();     /* MoveImage */
-extern void func_8005FA28();     /* LoadImage */
-extern void func_80017E98();     /* texture-page sync */
-extern void func_800168DC();     /* AddPrimToOT */
-extern void func_80016914();     /* FillWord */
-extern void func_80017FE4();     /* BuildTextSpriteChain */
-extern int func_8006276C();      /* text glyph count */
-extern void func_80062FD4();     /* format string */
-extern void func_8001844C();     /* EmitRadialShadedLine */
-extern void func_80055A78();     /* PlaySoundEffect */
-extern void func_80018880();
-extern void func_80022A2C();
+extern void BuildRenderEntityLists(void);
+extern void ComposeFrameScene(void);
+extern void RasterizeEmitList(void);
+extern void DrawActors(void);
+extern void SetupFrameOT(void);
+extern void DrawSync();
+extern int VSync();
+extern void PutDispEnv();
+extern void PutDrawEnv();
+extern int LinkOTPrimitives();
+extern void DrawOTag();
+extern void StoreImage();     /* MoveImage */
+extern void LoadImage();
+extern void ConvertRGB15ToLuma8();     /* texture-page sync */
+extern void AddPrimToOT();
+extern void FillWord();
+extern void BuildTextSpriteChain();
+extern int strlen();      /* text glyph count */
+extern void sprintf();     /* format string */
+extern void EmitRadialShadedLine();
+extern void PlaySoundEffect();
+extern void EnqueuePendingSpritePrims();
+extern void RasterizeSpritePrimQueue();
 extern void *memcpy();
 
-extern int D_800758B8;     /* results frame counter */
-extern char *D_80075888;   /* active DRAWENV pair */
-extern char D_80076EE0[];  /* DRAWENV pair 0 */
-extern char *D_800785F0[]; /* level image base; [-2] = D_800785E8 */
-extern char *D_800785E8;
-extern int D_800758B0;
-extern char *D_800757B0; /* prim write cursor */
-extern char *D_80075780;
-extern char *D_800756FC;
-extern char *D_80075710; /* sprite record cursor */
-extern int D_80075784;
-extern int D_80075950;
-extern int D_80075954[];
-extern int D_80075744; /* reveal timer */
-extern int D_80075720; /* menu cursor */
-extern int D_8007568C; /* idle/blink counter */
+extern int g_nPauseMenuTransitionFrames;     /* results frame counter */
+extern char *g_pActiveFrameDrawEnv;   /* active DRAWENV pair */
+extern char g_abFrameDrawEnv0[];  /* DRAWENV pair 0 */
+extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
+extern char *g_pRenderScratchRegionBase;
+extern int g_nPrimBufferOverflowFlag;
+extern char *g_pPrimBufferWriteCursor; /* prim write cursor */
+extern char *g_pPrimBufferLimit;
+extern char *g_pSpriteRecordBufferTop;
+extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
+extern int g_nDeathRespawnPending;
+extern int g_nVsyncFramePaceAnchor;
+extern int g_nVsyncFrameEndCount[];
+extern int g_nSubMenuCursor; /* reveal timer */
+extern int g_nPauseMenuCursor; /* menu cursor */
+extern int g_nPauseMenuIdleFrames; /* idle/blink counter */
 extern int D_8007569C; /* reveal sound step */
 extern int D_80075900;
 extern int D_80075908;
 extern int D_8007595C;              /* course index */
 extern int D_800758F4;              /* run clock */
 extern int (*D_800758C4)();         /* time formatter */
-extern unsigned char *D_800761D4;   /* sample bank header */
-extern int D_80077FE4;              /* backdrop bob phase */
-extern char D_80077FEC[];           /* HUD sprite records */
-extern char *D_800720F4[];          /* published record table */
-extern char D_8006F310[];           /* CLUT row */
-extern char D_8006FCF4[];           /* OT depth bins */
-extern unsigned short D_8006CC78[]; /* sine LUT */
+extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
+extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
+extern char g_abHudIconActorRecords[];           /* HUD sprite records */
+extern char *g_apSpritePrimQueue[];          /* published record table */
+extern char g_anMenuBackdropGrayClut[];           /* CLUT row */
+extern char g_pOtDepthBinHead0[];           /* OT depth bins */
+extern unsigned short g_anCosineLut[]; /* sine LUT */
 extern int D_80078630;              /* tally: class 0 */
 extern int D_80078634;
 extern int D_80078638;
 extern int D_8007863C;
-extern int D_80078618[];           /* per-course best time */
-extern unsigned char D_80078680[]; /* per-course claim flags */
+extern int g_anWorldPersistentFlags[];           /* per-course best time */
+extern unsigned char g_abWorldPerLevelByteTable[]; /* per-course claim flags */
 extern unsigned char D_80078681[];
 extern unsigned char D_80078682[];
 extern unsigned char D_80078683[];
@@ -93,7 +93,7 @@ extern char *D_8006E8C0[]; /* row title string tables */
 extern char *D_8006E8C4[];
 extern char *D_8006E8C8[];
 extern char *D_8006E8CC[];
-extern char D_80078A58[];
+extern char g_anSpyroWorldPos[];
 
 
 static const char g_szTryAgain[12];
@@ -109,7 +109,7 @@ void func_level_23_8007B68C(void)
   } rect;
   int buf[8];
   int pos[3];
-  if (D_800758B8 == 0)
+  if (g_nPauseMenuTransitionFrames == 0)
   {
     int i;
     int h;
@@ -120,53 +120,53 @@ void func_level_23_8007B68C(void)
     char *im;
     char *envBase;
     i = 0;
-    func_800521C0();
+    BuildRenderEntityLists();
     h = 0xE0;
-    func_80019698();
+    ComposeFrameScene();
     do {
     strip = 0x200;
-    func_800573C8();
-    func_80050BD0();
-    func_8002B9CC();
-    func_8005F764(0);
-    func_8005DBC4(0);
-    envBase = D_80076EE0;
+    RasterizeEmitList();
+    DrawActors();
+    SetupFrameOT();
+    DrawSync(0);
+    VSync(0);
+    envBase = g_abFrameDrawEnv0;
     } while (0);
     do {
-    func_80060030(D_80075888 + 0x5C);
-    img = D_800785F0;
+    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+    img = g_pRenderScratchPrimTop;
     } while (0);
     img2 = img - 2;
-    func_8005FDD8(D_80075888);
-    func_8005FD64(func_80016784(0x800));
-    func_8005F764(0);
-    func_8005DBC4(0);
-    func_80060030(D_80075888 + 0x5C);
+    PutDrawEnv(g_pActiveFrameDrawEnv);
+    DrawOTag(LinkOTPrimitives(0x800));
+    DrawSync(0);
+    VSync(0);
+    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
     rect.x = 0x200;
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xE1;
-    func_8005FA8C(&rect, img[0] + 0xFFFE3E00);
+    StoreImage(&rect, img[0] + 0xFFFE3E00);
     y = 8;
     do
     {
       rect.x = i << 7;
-      if (D_80075888 != envBase)
+      if (g_pActiveFrameDrawEnv != envBase)
       {
         y = 0xF8;
       }
       rect.y = y;
       rect.w = 0x80;
       rect.h = h;
-      func_8005FA8C(&rect, img2[0], y);
+      StoreImage(&rect, img2[0], y);
       i += 1;
-      func_8005F764(0);
-      func_80017E98(img2[0], 0x7000);
+      DrawSync(0);
+      ConvertRGB15ToLuma8(img2[0], 0x7000);
       rect.x = strip;
       rect.y = 0;
       rect.w = 0x40;
       rect.h = h;
-      func_8005FA28(&rect, img2[0]);
+      LoadImage(&rect, img2[0]);
       strip += 0x40;
       y = 8;
     }
@@ -175,9 +175,9 @@ void func_level_23_8007B68C(void)
     rect.y = 0xE0;
     rect.w = 0x20;
     rect.h = 1;
-    func_8005FA28(&rect, D_8006F310);
-    func_8005F764(0);
-    D_80075950 = func_8005DBC4(-1);
+    LoadImage(&rect, g_anMenuBackdropGrayClut);
+    DrawSync(0);
+    g_nVsyncFramePaceAnchor = VSync(-1);
   }
   else
   {
@@ -200,31 +200,31 @@ void func_level_23_8007B68C(void)
     unsigned short ch;
     unsigned char bq;
     unsigned char cq;
-    cur = D_80075888;
+    cur = g_pActiveFrameDrawEnv;
     allclear = 0;
-    env = D_80076EE0;
+    env = g_abFrameDrawEnv0;
     if (cur == env)
     {
       env += 0x84;
     }
     i = 0;
-    func_8005FDD8(env);
+    PutDrawEnv(env);
     {
     int off, bias;
     do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
     {
     register char *e8 asm("$3");
     register char *f0 asm("$2");
-    e8 = D_800785E8;
-    f0 = D_800785F0[0];
-    D_800758B0 = 0;
-    D_800757B0 = e8;
-    D_80075780 = e8 + off;
+    e8 = g_pRenderScratchRegionBase;
+    f0 = g_pRenderScratchPrimTop[0];
+    g_nPrimBufferOverflowFlag = 0;
+    g_pPrimBufferWriteCursor = e8;
+    g_pPrimBufferLimit = e8 + off;
     tv = f0 + bias;
     }
     }
-    D_800756FC = tv;
-    D_80075710 = tv;
+    g_pSpriteRecordBufferTop = tv;
+    g_pSpriteRecordWriteCursor = tv;
     quad:
     {
     register int xx asm("$3");
@@ -232,7 +232,7 @@ void func_level_23_8007B68C(void)
     xx = i << 7;
 
     tp = i + 0x88;
-    p = D_800757B0;
+    p = g_pPrimBufferWriteCursor;
     {
     register int a asm("$2");
     register int d asm("$3");
@@ -277,11 +277,11 @@ void func_level_23_8007B68C(void)
     *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
     *((short *) (p + 0xE)) = 0x3820;
     *((short *) (p + 0x16)) = tp;
-    func_800168DC(p);
+    AddPrimToOT(p);
     }
     }
     next = p + 0x28;
-    D_800757B0 = next;
+    g_pPrimBufferWriteCursor = next;
     if (i < 4)
     {
       goto quad;
@@ -295,9 +295,9 @@ void func_level_23_8007B68C(void)
     *((unsigned char *) (p + 0x2C)) = 0;
     *((unsigned char *) (p + 0x2D)) = 0;
     *((unsigned char *) (p + 0x2E)) = 0;
-    func_800168DC(next);
-    D_800757B0 = p + 0x38;
-    if (D_80075744 < 0x64)
+    AddPrimToOT(next);
+    g_pPrimBufferWriteCursor = p + 0x38;
+    if (g_nSubMenuCursor < 0x64)
     {
       bonus = 0;
       if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
@@ -319,254 +319,254 @@ void func_level_23_8007B68C(void)
       {
         memcpy(buf, "CRASHED", 8);
       }
-      pos[0] = 0x10C - (func_8006276C(buf) * 0xC);
+      pos[0] = 0x10C - (strlen(buf) * 0xC);
       pos[1] = 0x1E;
       pos[2] = 0xC00;
-      func_80017FE4(buf, pos, 0x18, 0xB);
-      fp = D_80075710 - 0x58;
-      D_80075710 = fp;
-      func_80016914(fp, 0, 0x58);
+      BuildTextSpriteChain(buf, pos, 0x18, 0xB);
+      fp = g_pSpriteRecordWriteCursor - 0x58;
+      g_pSpriteRecordWriteCursor = fp;
+      FillWord(fp, 0, 0x58);
       {
-        char *r = D_80075710;
+        char *r = g_pSpriteRecordWriteCursor;
         *((short *) (r + 0x36)) = 0x1D7;
         *((int *) (r + 0xC)) = 0x1CC;
         *((int *) (r + 0x10)) = 0x28;
         *((int *) (r + 0x14)) = 0xC00;
-        *((unsigned char *) (r + 0x45)) = ((short) D_8006CC78[D_80077FE4]) >> 9;
+        *((unsigned char *) (r + 0x45)) = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
       }
-      *((unsigned char *) (((char *) D_80075710) + 0x46)) = D_80077FE4;
-      *((unsigned char *) (((char *) D_80075710) + 0x47)) = 0x7F;
-      *((unsigned char *) (((char *) D_80075710) + 0x4F)) = 0xB;
-      *((unsigned char *) (((char *) D_80075710) + 0x50)) = 0xFF;
-      func_8001844C(0x3C, 0x2E, 0x1C4, 0x2E);
+      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x46)) = g_dwHudBobSinePhase;
+      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x47)) = 0x7F;
+      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x4F)) = 0xB;
+      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x50)) = 0xFF;
+      EmitRadialShadedLine(0x3C, 0x2E, 0x1C4, 0x2E);
       pos[0] = 0x64;
       pos[1] = 0x3C;
       pos[2] = 0x1100;
-      func_80017FE4(D_8006E8C0[D_8007595C * 4], pos, 0x12, 0xB);
-      if (D_80075744 > 0)
+      BuildTextSpriteChain(D_8006E8C0[D_8007595C * 4], pos, 0x12, 0xB);
+      if (g_nSubMenuCursor > 0)
       {
-        func_80062FD4(buf, "%d/8", D_80078630);
+        sprintf(buf, "%d/8", D_80078630);
         pos[0] = 0x140;
         pos[1] = 0x3C;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
       }
-      if (D_80075744 >= 2)
+      if (g_nSubMenuCursor >= 2)
       {
         if (D_80078630 == 8)
         {
           int k = D_8007595C * 5;
-          if (D_80078680[k] != 0)
+          if (g_abWorldPerLevelByteTable[k] != 0)
           {
-            func_80062FD4(buf, "^");
+            sprintf(buf, "^");
           }
           else
           {
-            func_80062FD4(buf, "%d", D_8006E920[k]);
+            sprintf(buf, "%d", D_8006E920[k]);
             bonus += D_8006E920[D_8007595C * 5];
           }
           snd = 0;
         }
         else
         {
-          func_80062FD4(buf, "0");
+          sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
         pos[1] = 0x3C;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (D_8007569C < 2)
         {
-          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
           D_8007569C = 2;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      func_80017FE4(D_8006E8C4[D_8007595C * 4], pos, 0x12, 0xB);
-      if (D_80075744 >= 3)
+      BuildTextSpriteChain(D_8006E8C4[D_8007595C * 4], pos, 0x12, 0xB);
+      if (g_nSubMenuCursor >= 3)
       {
-        func_80062FD4(buf, "%d/8", D_80078634);
+        sprintf(buf, "%d/8", D_80078634);
         pos[0] = 0x140;
         pos[1] = 0x50;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
       }
-      if (D_80075744 >= 4)
+      if (g_nSubMenuCursor >= 4)
       {
         if (D_80078634 == 8)
         {
           int k = D_8007595C * 5;
           if (D_80078681[k] != 0)
           {
-            func_80062FD4(buf, "^");
+            sprintf(buf, "^");
           }
           else
           {
-            func_80062FD4(buf, "%d", D_8006E924[k]);
+            sprintf(buf, "%d", D_8006E924[k]);
             bonus += D_8006E920[D_8007595C * 5 + 1];
           }
           snd = 0;
         }
         else
         {
-          func_80062FD4(buf, "0");
+          sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
         pos[1] = 0x50;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (D_8007569C < 4)
         {
-          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
           D_8007569C = 4;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      func_80017FE4(D_8006E8C8[D_8007595C * 4], pos, 0x12, 0xB);
-      if (D_80075744 >= 5)
+      BuildTextSpriteChain(D_8006E8C8[D_8007595C * 4], pos, 0x12, 0xB);
+      if (g_nSubMenuCursor >= 5)
       {
-        func_80062FD4(buf, "%d/8", D_80078638);
+        sprintf(buf, "%d/8", D_80078638);
         pos[0] = 0x140;
         pos[1] = 0x64;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
       }
-      if (D_80075744 >= 6)
+      if (g_nSubMenuCursor >= 6)
       {
         if (D_80078638 == 8)
         {
           int k = D_8007595C * 5;
           if (D_80078682[k] != 0)
           {
-            func_80062FD4(buf, "^");
+            sprintf(buf, "^");
           }
           else
           {
-            func_80062FD4(buf, "%d", D_8006E928[k]);
+            sprintf(buf, "%d", D_8006E928[k]);
             bonus += D_8006E928[D_8007595C * 5];
           }
           snd = 0;
         }
         else
         {
-          func_80062FD4(buf, "0");
+          sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
         pos[1] = 0x64;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (D_8007569C < 6)
         {
-          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
           D_8007569C = 6;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x78;
       pos[2] = 0x1100;
-      func_80017FE4(D_8006E8CC[D_8007595C * 4], pos, 0x12, 0xB);
-      if (D_80075744 >= 7)
+      BuildTextSpriteChain(D_8006E8CC[D_8007595C * 4], pos, 0x12, 0xB);
+      if (g_nSubMenuCursor >= 7)
       {
-        func_80062FD4(buf, "%d/8", D_8007863C);
+        sprintf(buf, "%d/8", D_8007863C);
         pos[0] = 0x140;
         pos[1] = 0x78;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
       }
-      if (D_80075744 >= 8)
+      if (g_nSubMenuCursor >= 8)
       {
         if (D_8007863C == 8)
         {
           int k = D_8007595C * 5;
           if (D_80078683[k] != 0)
           {
-            func_80062FD4(buf, "^");
+            sprintf(buf, "^");
           }
           else
           {
-            func_80062FD4(buf, "%d", D_8006E92C[k]);
+            sprintf(buf, "%d", D_8006E92C[k]);
             bonus += D_8006E92C[D_8007595C * 5];
           }
           snd = 0;
         }
         else
         {
-          func_80062FD4(buf, "0");
+          sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
         pos[1] = 0x78;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (D_8007569C < 8)
         {
-          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
           D_8007569C = 8;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x8C;
       pos[2] = 0x1100;
-      func_80017FE4("ALL IN ONE", pos, 0x12, 0xB);
-      if (D_80075744 >= 9)
+      BuildTextSpriteChain("ALL IN ONE", pos, 0x12, 0xB);
+      if (g_nSubMenuCursor >= 9)
       {
         if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
         {
           int k = D_8007595C * 5;
           if (D_80078684[k] != 0)
           {
-            func_80062FD4(buf, "^");
+            sprintf(buf, "^");
           }
           else
           {
-            func_80062FD4(buf, "%d", D_8006E930[k]);
+            sprintf(buf, "%d", D_8006E930[k]);
             bonus += D_8006E930[D_8007595C * 5];
           }
           snd = 0;
         }
         else
         {
-          func_80062FD4(buf, "0");
+          sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
         pos[1] = 0x8C;
         pos[2] = 0x1100;
-        func_80017FE4(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (D_8007569C < 9)
         {
-          func_80055A78(D_800761D4[snd], D_80078A58, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
           D_8007569C = 9;
         }
       }
-      func_8001844C(0x1A0, 0x96, 0x1D6, 0x96);
+      EmitRadialShadedLine(0x1A0, 0x96, 0x1D6, 0x96);
       pos[0] = 0x64;
       pos[1] = 0xA0;
       pos[2] = 0x1100;
-      func_80017FE4("TOTAL", pos, 0x12, 0xB);
-      func_80062FD4(buf, "%d", bonus);
-      pos[0] = 0x1E0 - (func_8006276C(buf) * 0x12);
+      BuildTextSpriteChain("TOTAL", pos, 0x12, 0xB);
+      sprintf(buf, "%d", bonus);
+      pos[0] = 0x1E0 - (strlen(buf) * 0x12);
       pos[1] = 0xA0;
       pos[2] = 0x1100;
-      func_80017FE4(buf, pos, 0x12, 0xB);
-      func_8001844C(0x3C, 0xB0, 0x1C4, 0xB0);
-      if (D_80075744 >= 9)
+      BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+      EmitRadialShadedLine(0x3C, 0xB0, 0x1C4, 0xB0);
+      if (g_nSubMenuCursor >= 9)
       {
-        if ((allclear != 0) || (D_80078618[D_8007595C] != 0))
+        if ((allclear != 0) || (g_anWorldPersistentFlags[D_8007595C] != 0))
         {
           pos[0] = 0x50;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
-          func_80017FE4("PRESS   TO CONTINUE", pos, 0x12, 0xB);
+          BuildTextSpriteChain("PRESS   TO CONTINUE", pos, 0x12, 0xB);
           pos[0] = 0xBC;
-          func_80017FE4("X", pos, 0x12, 0xA);
+          BuildTextSpriteChain("X", pos, 0x12, 0xA);
         }
         else
         {
@@ -578,50 +578,50 @@ void func_level_23_8007B68C(void)
           pos[0] = 0x8C;
           pos[1] = 0xBE;
           pos[2] = 0x1100;
-          func_80017FE4("TRY AGAIN?", pos, 0x12, 0xB);
+          BuildTextSpriteChain("TRY AGAIN?", pos, 0x12, 0xB);
           blink = 0;
           pos[0] = 0x15C;
           pos[1] = 0xBE;
           pos[2] = 0x1100;
           pp = pos;
           q3 = pp;
-          if (D_80075720 == 0)
+          if (g_nPauseMenuCursor == 0)
           {
-            if ((D_8007568C % 0x10) < 6)
+            if ((g_nPauseMenuIdleFrames % 0x10) < 6)
             {
               blink = 1;
             }
           }
-          func_80017FE4("YES", q3, 0x12, (blink * 2) + 0xA);
+          BuildTextSpriteChain("YES", q3, 0x12, (blink * 2) + 0xA);
           count = 3;
           blink = 0;
           pos[0] = 0x15C;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
-          rec = D_80075710;
+          rec = g_pSpriteRecordWriteCursor;
           pp = pos;
-          if (D_80075720 == 1)
+          if (g_nPauseMenuCursor == 1)
           {
-            if ((D_8007568C % 0x10) < 6)
+            if ((g_nPauseMenuIdleFrames % 0x10) < 6)
             {
               blink = 1;
             }
           }
-          func_80017FE4("NO", pp, 0x12, (blink * 2) + 0xA);
-          if (D_80075720 != 0)
+          BuildTextSpriteChain("NO", pp, 0x12, (blink * 2) + 0xA);
+          if (g_nPauseMenuCursor != 0)
           {
-            rec = D_80075710;
+            rec = g_pSpriteRecordWriteCursor;
             count = 2;
           }
           i = 0;
           if (count > 0)
           {
-            short *lut = (short *) D_8006CC78;
+            short *lut = (short *) g_anCosineLut;
             int ph = 0;
             do
             {
               i += 1;
-              *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+              *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
               rec += 0x58;
             }
@@ -632,9 +632,9 @@ void func_level_23_8007B68C(void)
       {
         char **slot;
         char *r;
-        slot = D_800720F4;
+        slot = g_apSpritePrimQueue;
         i = 0;
-        r = D_80077FEC;
+        r = g_abHudIconActorRecords;
         pub:
         *slot = r;
 
@@ -659,41 +659,41 @@ void func_level_23_8007B68C(void)
       pos[0] = 0x88;
       pos[1] = 0x28;
       pos[2] = 0xC00;
-      func_80017FE4("TIME ATTACK", pos, 0x18, 0xB);
-      func_8001844C(0x3C, 0x3D, 0x1C4, 0x3D);
+      BuildTextSpriteChain("TIME ATTACK", pos, 0x18, 0xB);
+      EmitRadialShadedLine(0x3C, 0x3D, 0x1C4, 0x3D);
       pos[0] = 0x140;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      func_80017FE4("BEST TIME", pos, 0x12, 0xB);
+      BuildTextSpriteChain("BEST TIME", pos, 0x12, 0xB);
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      D_800758C4(D_80078618[D_8007595C], pos, 0xB);
+      D_800758C4(g_anWorldPersistentFlags[D_8007595C], pos, 0xB);
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      func_80017FE4("YOUR TIME", pos, 0x12, 0xB);
+      BuildTextSpriteChain("YOUR TIME", pos, 0x12, 0xB);
       pos[0] = 0x89;
       pos[1] = 0x64;
       pos[2] = 0x1100;
       snd = 0xB;
-      if (D_80078618[D_8007595C] >= D_800758F4)
+      if (g_anWorldPersistentFlags[D_8007595C] >= D_800758F4)
       {
         snd = 8;
       }
       if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
       {
         count = D_800758C4(D_800758F4, pos, snd);
-        rec = D_80075710;
+        rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
-          short *lut = (short *) D_8006CC78;
+          short *lut = (short *) g_anCosineLut;
           int ph = 0;
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+            *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec += 0x58;
           }
@@ -714,21 +714,21 @@ void func_level_23_8007B68C(void)
         {
           memcpy(buf, "CRASHED", 8);
         }
-        count = func_8006276C(buf);
+        count = strlen(buf);
         pos[0] = 0x10C - (count * 0xC);
         pos[1] = 0x96;
         pos[2] = 0xC00;
-        func_80017FE4(buf, pos, 0x18, 0xB);
-        rec = D_80075710;
+        BuildTextSpriteChain(buf, pos, 0x18, 0xB);
+        rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
-          short *lut = (short *) D_8006CC78;
+          short *lut = (short *) g_anCosineLut;
           int ph = 0;
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+            *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec += 0x58;
           }
@@ -736,113 +736,113 @@ void func_level_23_8007B68C(void)
         }
       }
       else
-        if (D_80078618[D_8007595C] >= D_800758F4)
+        if (g_anWorldPersistentFlags[D_8007595C] >= D_800758F4)
       {
         int ph;
         short *lut;
         pos[0] = 0x94;
         pos[1] = 0x96;
         pos[2] = 0xC00;
-        func_80017FE4("NEW RECORD", pos, 0x18, 8);
+        BuildTextSpriteChain("NEW RECORD", pos, 0x18, 8);
         count = 0xA;
         i = 0;
-        lut = (short *) D_8006CC78;
+        lut = (short *) g_anCosineLut;
         ph = 0;
-        rec = D_80075710;
+        rec = g_pSpriteRecordWriteCursor;
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+          *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec += 0x58;
         }
         while (i < count);
       }
-      func_8001844C(0x3C, 0xAB, 0x1C4, 0xAB);
+      EmitRadialShadedLine(0x3C, 0xAB, 0x1C4, 0xAB);
       pos[0] = 0x8C;
       pos[1] = 0xBE;
       pos[2] = 0x1100;
       pp = pos;
-      func_80017FE4(g_szTryAgain, pp, 0x12, 0xB);
+      BuildTextSpriteChain(g_szTryAgain, pp, 0x12, 0xB);
       blink = 0;
       pos[0] = 0x154;
       pos[1] = 0xBE;
       pos[2] = 0x1100;
       q2 = pp;
-      if (D_80075720 == 0)
+      if (g_nPauseMenuCursor == 0)
       {
-        if ((D_8007568C % 0x10) < 6)
+        if ((g_nPauseMenuIdleFrames % 0x10) < 6)
         {
           blink = 1;
         }
       }
-      func_80017FE4("YES", q2, 0x12, (blink * 2) + 0xA);
+      BuildTextSpriteChain("YES", q2, 0x12, (blink * 2) + 0xA);
       count = 3;
       blink = 0;
       pos[0] = 0x154;
       pos[1] = 0xD2;
       pos[2] = 0x1100;
-      rec = D_80075710;
+      rec = g_pSpriteRecordWriteCursor;
       qq = pos;
-      if (D_80075720 == 1)
+      if (g_nPauseMenuCursor == 1)
       {
-        if ((D_8007568C % 0x10) < 6)
+        if ((g_nPauseMenuIdleFrames % 0x10) < 6)
         {
           blink = 1;
         }
       }
-      func_80017FE4("NO", qq, 0x12, (blink * 2) + 0xA);
-      if (D_80075720 != 0)
+      BuildTextSpriteChain("NO", qq, 0x12, (blink * 2) + 0xA);
+      if (g_nPauseMenuCursor != 0)
       {
-        rec = D_80075710;
+        rec = g_pSpriteRecordWriteCursor;
         count = 2;
       }
       i = 0;
       if (count > 0)
       {
-        short *lut = (short *) D_8006CC78;
+        short *lut = (short *) g_anCosineLut;
         int ph = 0;
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (lut[((D_800758B8 * 8) + ph) & 0xFF] * 3) >> 9;
+          *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec += 0x58;
         }
         while (i < count);
       }
-      D_800720F4[0] = 0;
+      g_apSpritePrimQueue[0] = 0;
     }
   }
-  if (D_800758B8 > 0)
+  if (g_nPauseMenuTransitionFrames > 0)
   {
-    func_80018880();
-    func_80016914(D_8006FCF4, 0, 0x900);
-    func_80022A2C();
+    EnqueuePendingSpritePrims();
+    FillWord(g_pOtDepthBinHead0, 0, 0x900);
+    RasterizeSpritePrimQueue();
   }
-  func_8005FD64(func_80016784(0));
-  func_8005F764(0);
-  if (D_80075784 != 0)
+  DrawOTag(LinkOTPrimitives(0));
+  DrawSync(0);
+  if (g_nDeathRespawnPending != 0)
   {
-    func_8005DBC4(0);
+    VSync(0);
   }
   {
     int *end;
-    *(end = D_80075954) = func_8005DBC4(-1);
-    if ((end[0] - D_80075950) < 2)
+    *(end = g_nVsyncFrameEndCount) = VSync(-1);
+    if ((end[0] - g_nVsyncFramePaceAnchor) < 2)
     {
       int *p2 = end;
       do
       {
-        func_8005DBC4(0);
-        p2[0] = func_8005DBC4(-1);
+        VSync(0);
+        p2[0] = VSync(-1);
       }
       while ((p2[0] - p2[-1]) < 2);
     }
   }
-  D_80075950 = func_8005DBC4(-1);
-  func_80060030(D_80075888 + 0x5C);
-  D_800758B8 += 1;
+  g_nVsyncFramePaceAnchor = VSync(-1);
+  PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+  g_nPauseMenuTransitionFrames += 1;
 }
 
 static const char g_szTryAgain[12] = {'T', 'R', 'Y', ' ', 'A', 'G', 'A', 'I', 'N', '\0', 't', ' '};

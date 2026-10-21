@@ -3,7 +3,7 @@
  *
  * The emit-list ADVANCE pass -- the 1604-insn wizard-peak variant of the walk
  * matched in level_10 / level_11 / level_5.  Walks the 0x20-byte record stream
- * at D_80075824 and ages one record per iteration: integrates its position,
+ * at g_pEmitListBase and ages one record per iteration: integrates its position,
  * fades its colour, ticks its life counter and, when the record has expired
  * (or its alive byte has been cleared), hands it back with func_80053608().
  * The walk stops at the terminator record, whose class byte at +0x01 is 0xFF.
@@ -41,33 +41,33 @@
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017BFC(short *dst, int *src);
 extern void func_80017C24(int *dst, short *src);
-extern void func_80017700(int *dst, int *src);       /* CopyVector */
-extern void func_80017758(int *dst, int *a, int *b); /* AddVector */
-extern void func_8001778C(int *dst, int *a, int *b); /* SubVector */
-extern void func_800176C8(int *vec, int shift);      /* RShiftVector3 */
-extern int func_800171FC(int *v, int mode);          /* VectorLength */
-extern void func_800175B8(int *v, int len, int scale);
-extern int func_80016C58(int a);         /* LookupSine */
-extern int func_80016CB0(int a);         /* LookupCosine */
-extern unsigned int func_8006272C(void); /* GetRandomU32 */
+extern void CopyVector(int *dst, int *src);
+extern void AddVector(int *dst, int *a, int *b);
+extern void SubtractVector(int *dst, int *a, int *b); /* SubVector */
+extern void RShiftVector3(int *vec, int shift);
+extern int VectorLength(int *v, int mode);
+extern void ScaleVector3ByRatio(int *v, int len, int scale);
+extern int LookupSine(int a);
+extern int LookupCosine(int a);
+extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 
-extern unsigned char *D_80075824; /* g_pEmitListBase */
-extern char *D_80075828;          /* g_pActorListBase */
-extern int D_80075814;            /* g_nSpyroDrawSuppressed */
-extern int D_800756CC;            /* per-frame step count */
-extern short D_8006CBF8[];        /* sine table */
-extern short D_8006CC78[];        /* cosine table */
-extern int D_80076DF8[];          /* the camera world position */
-extern short D_80076E20;
-extern int D_8007706C;
-extern int D_80078AD0;
-extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
-extern int D_80078BBC;
+extern unsigned char *g_pEmitListBase;
+extern char *g_pActorListBase;
+extern int g_nSpyroDrawSuppressed;
+extern int g_nFrameStep;            /* per-frame step count */
+extern short g_anSineLut[];        /* sine table */
+extern short g_anCosineLut[];        /* cosine table */
+extern int g_anCameraPos[];          /* the camera world position */
+extern short g_nCameraEulerYaw;
+extern int g_nGemPickupTimer;
+extern int g_nSpyroState;
+extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+extern int g_nLevelReadyFlag;
 
 void func_level_15_80087B40(int step) {
-  unsigned char *rec = D_80075824;
+  unsigned char *rec = g_pEmitListBase;
   int pt[3];
   int dv[3];
   int qa[3];
@@ -156,11 +156,11 @@ void func_level_15_80087B40(int step) {
           func_80053608(rec);
           break;
         }
-        rx = func_8006272C();
+        rx = GetRandomU32();
         jx = HU(0x18) - 3;
         jx += rx & 6;
         HU(0x18) = jx;
-        ry = func_8006272C();
+        ry = GetRandomU32();
         jy = HU(0x1A) - 3;
         jy += ry & 6;
         HU(0x1A) = jy;
@@ -175,39 +175,39 @@ void func_level_15_80087B40(int step) {
       } else if (HU(0x1E) & 1) {
         if (rec[0x2] >= 0x30) {
           rec[0x2] = 0;
-          HS(0x18) = (func_8006272C() & 6) - 3;
-          HS(0x1A) = (func_8006272C() & 6) - 3;
+          HS(0x18) = (GetRandomU32() & 6) - 3;
+          HS(0x1A) = (GetRandomU32() & 6) - 3;
           HU(0x1C) = 0;
           HS(0x1E) = 8;
           goto measure;
         } else {
           func_80017C24(dv, VEL);
           if (HU(0x1E) & 2) {
-            dv[0] += (rec[0x2] * func_80016CB0(rec[0x2] << 7)) >> 7;
+            dv[0] += (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
           } else {
-            dv[0] -= (rec[0x2] * func_80016CB0(rec[0x2] << 7)) >> 7;
+            dv[0] -= (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
           }
           if (HU(0x1E) & 4) {
-            dv[1] += (rec[0x2] * func_80016C58(rec[0x2] << 7)) >> 7;
+            dv[1] += (rec[0x2] * LookupSine(rec[0x2] << 7)) >> 7;
           } else {
-            dv[1] -= (rec[0x2] * func_80016C58(rec[0x2] << 7)) >> 7;
+            dv[1] -= (rec[0x2] * LookupSine(rec[0x2] << 7)) >> 7;
           }
           dv[2] += rec[0x2] << 5;
-          func_8001778C(dir, dir, pt);
-          len = func_800171FC(dir, 1);
+          SubtractVector(dir, dir, pt);
+          len = VectorLength(dir, 1);
           if (len >= 0x81) {
-            func_800175B8(dir, len, 0x80);
+            ScaleVector3ByRatio(dir, len, 0x80);
           }
-          func_80017758(pt, pt, dir);
+          AddVector(pt, pt, dir);
           goto commit;
         }
       } else {
-        func_80017700(dir, (int *)(W(0x18) + 0xC));
-        dv[0] += func_80016CB0(rec[0x2] << 7) >> 2;
-        dv[1] += func_80016C58(rec[0x2] << 7) >> 2;
-        dv[2] += func_80016CB0((rec[0x2] << 7) + 0x200) >> 2;
-        func_8001778C(dir, dir, pt);
-        len = func_800171FC(dir, 1);
+        CopyVector(dir, (int *)(W(0x18) + 0xC));
+        dv[0] += LookupCosine(rec[0x2] << 7) >> 2;
+        dv[1] += LookupSine(rec[0x2] << 7) >> 2;
+        dv[2] += LookupCosine((rec[0x2] << 7) + 0x200) >> 2;
+        SubtractVector(dir, dir, pt);
+        len = VectorLength(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
           int *owner = **(int ***)(rec + 0x18);
 
@@ -215,21 +215,21 @@ void func_level_15_80087B40(int step) {
             owner[5] = 2;
             owner[0] = 0x20;
           }
-          HS(0x1E) = (func_8006272C() & 6) + 1;
+          HS(0x1E) = (GetRandomU32() & 6) + 1;
           func_80017BFC(VEL, (int *)(W(0x18) + 0xC));
-          spin = func_8006272C() & 0x7F;
+          spin = GetRandomU32() & 0x7F;
           rec[0x2] = 0;
           HU(0x1C) += spin;
           goto measure;
         }
-        func_800175B8(dir, len, 0x100);
-        func_80017758(pt, pt, dir);
+        ScaleVector3ByRatio(dir, len, 0x100);
+        AddVector(pt, pt, dir);
       }
     commit:
       func_80017BFC(POS, pt);
       rec[0x2]++;
     measure:
-      func_8001778C(dv, pt, D_80076DF8);
+      SubtractVector(dv, pt, g_anCameraPos);
       near = abs(dv[0]) + abs(dv[1]);
       len = near + abs(dv[2]);
       if (rec[0x1] == 3) {
@@ -249,8 +249,8 @@ void func_level_15_80087B40(int step) {
         rec[0x11] = 4;
         rec[0xF] = 0x2C;
         rec[0x10] = 0;
-        rec[0xA] = (func_8006272C() & 0xF) + 0x18;
-        rec[0xB] = (func_8006272C() & 0x7) + 0xF;
+        rec[0xA] = (GetRandomU32() & 0xF) + 0x18;
+        rec[0xB] = (GetRandomU32() & 0x7) + 0xF;
       }
       break;
     }
@@ -268,19 +268,19 @@ void func_level_15_80087B40(int step) {
         func_80053608(rec);
       } else {
         func_80017C24(qa, POS);
-        rq = func_8006272C();
+        rq = GetRandomU32();
         jq = HU(0x18) - 3;
         jq += rq & 6;
         HU(0x18) = jq;
-        rr = func_8006272C();
+        rr = GetRandomU32();
         jr = HU(0x1A) - 3;
         dec = HU(0x1C) - 1;
         jr += rr & 6;
         HU(0x1A) = jr;
         HU(0x1C) = dec;
         func_80017C24(qb, VEL);
-        func_800176C8(qb, 2);
-        func_80017758(qa, qa, qb);
+        RShiftVector3(qb, 2);
+        AddVector(qa, qa, qb);
         func_80017BFC(POS, qa);
         rec[0x2]++;
       }
@@ -293,15 +293,15 @@ void func_level_15_80087B40(int step) {
       int amp;
       int z;
 
-      func_80017700(p, *(int **)(rec + 0x18));
+      CopyVector(p, *(int **)(rec + 0x18));
       z = p[2] + HS(0x1E) * 0x40;
       amp = rec[0x2] * 0x40;
       ang = amp;
       if (HS(0x1C) < amp) {
         amp = HS(0x1C);
       }
-      p[0] += (amp * func_80016CB0(ang)) >> 12;
-      p[1] += (amp * func_80016C58(ang)) >> 12;
+      p[0] += (amp * LookupCosine(ang)) >> 12;
+      p[1] += (amp * LookupSine(ang)) >> 12;
       p[2] = HS(0x8) * 4 + 0x40;
       if (z < p[2] || rec[0x2] >= 0xC9) {
         func_80053608(rec);
@@ -346,17 +346,17 @@ void func_level_15_80087B40(int step) {
 
     case 0xa:  /* <- func_level_10_80084EF0 */
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
-          D_80078BB8[0] <= 0) {
+      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+          g_nSpyroInputLockoutCountdown[0] <= 0) {
         func_80053608(rec);
       } else {
-        func_80017700(v, D_80078BB8 - 0x58);
-        v[0] += func_80016CB0(HS(0x18)) >> 4;
-        v[1] += func_80016C58(HS(0x18)) >> 4;
+        CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
+        v[0] += LookupCosine(HS(0x18)) >> 4;
+        v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;
         func_80017BFC(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(func_80016CB0((HS(0x18) - D_80076E20) & 0xFFF)) / 170;
+        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -391,11 +391,11 @@ void func_level_15_80087B40(int step) {
     {
       int s;
 
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += *(const int *)&D_800756CC * 6;
+      rec[0x18] += g_nFrameStep * 4;
+      rec[0x19] += g_nFrameStep;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
+      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      HU(0x8) += *(const int *)&g_nFrameStep * 6;
       rec[0xB] += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
@@ -417,15 +417,15 @@ void func_level_15_80087B40(int step) {
       if (rec[0xE] < 0xF0) {
         rec[0xE] += 4;
       }
-      rec[0x1C] += D_800756CC * 8;
+      rec[0x1C] += g_nFrameStep * 8;
       heat = 0x3F;
-      if (D_8007706C < 0x40) {
-        heat = D_8007706C;
+      if (g_nGemPickupTimer < 0x40) {
+        heat = g_nGemPickupTimer;
       }
       HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((g_anSineLut[rec[0x1C]] * HS(0x1A)) >> 12);
       HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
@@ -476,11 +476,11 @@ void func_level_15_80087B40(int step) {
       HU(0x4) += d[0];
       HU(0x6) += d[1];
       HU(0x8) += d[2];
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
       d[0] = j;
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
@@ -509,15 +509,15 @@ void func_level_15_80087B40(int step) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x10) - 1;
             j += r & 2;
             HU(0x10) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x12) - 1;
             j += r & 2;
             HU(0x12) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x14) - 1;
             j += r & 2;
             HU(0x14) = j;
@@ -543,11 +543,11 @@ void func_level_15_80087B40(int step) {
       HU(0x4) += d[0];
       HU(0x6) += d[1];
       HU(0x8) += d[2];
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
       d[0] = j;
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
@@ -599,15 +599,15 @@ void func_level_15_80087B40(int step) {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
         d[2] = HS(0xE) - HS(0x8);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 1;
         j += r & 2;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -640,15 +640,15 @@ void func_level_15_80087B40(int step) {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
         d[2] = (HS(0x8) - HS(0xE)) >> 1;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 2;
         j += r & 4;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -666,11 +666,11 @@ void func_level_15_80087B40(int step) {
     {
       int s;
 
-      rec[0x18] += D_800756CC * 4;
-      rec[0x19] += D_800756CC;
-      HU(0x4) = HU(0x10) + ((D_8006CC78[rec[0x18]] * rec[0x19]) >> 12);
-      s = D_8006CBF8[rec[0x18]] * rec[0x19];
-      HU(0x8) += D_800756CC * 6;
+      rec[0x18] += g_nFrameStep * 4;
+      rec[0x19] += g_nFrameStep;
+      HU(0x4) = HU(0x10) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
+      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
         func_80053608(rec);
@@ -712,15 +712,15 @@ void func_level_15_80087B40(int step) {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
         HU(0x8) += HU(0x14);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x10) - 1;
         j += r & 2;
         HU(0x10) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x12) - 1;
         j += r & 2;
         HU(0x12) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         k = HU(0x14) - 1;
         k += r & 2;
         HU(0x14) = k;

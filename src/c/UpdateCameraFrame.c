@@ -11,7 +11,7 @@ extern int FindWorldFloorBelowPoint(uint *pos);
 
 extern int D_80075844;
 extern int D_80076E24;
-extern int D_80076EBC;
+extern int g_apScriptedCameraViewBlock;
 extern int D_800785B4;
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
@@ -76,7 +76,7 @@ void UpdateCameraFrame(void) {
       if (D_80076E24 >= D_800785B4) {
         D_80076E24 = -1;
       }
-      D_80076EBC = 0;
+      g_apScriptedCameraViewBlock = 0;
     }
   }
   if (g_bSpyroPadSnapshotReverseFlag != 0) {

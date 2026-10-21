@@ -7,7 +7,7 @@
  *   - new arm 0xA2 (a roller cycling over four paths); no 0x4E, 0x16A,
  *     0x197 or 0x198; 0x18C (not 0x1EA) joins the 0x183 arm.
  *   - scratch vectors as level_17 minus `svT`; no extra array in 0x4C.
- *   - the &D_80077368 group must be hoisted by loop.c (the original
+ *   - the &g_anCollisionProbeVec group must be hoisted by loop.c (the original
  *     rematerialises it per call). This overlay's loop is long enough that
  *     4 x life 92 x threshold 14 falls short, so the 0x1DE arm carries two
  *     empty scopes between its uses: each block note adds two luids of
@@ -82,8 +82,8 @@ typedef struct Actor {
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
-extern Actor *D_800700F4[]; /* live actor list, 0-terminated */
-extern int D_800756CC;      /* frame delta in ticks */
+extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
+extern int g_nFrameStep;      /* frame delta in ticks */
 extern int D_800756C4;      /* frame delta, as seen by the callees */
 extern int D_80075794;      /* current actor's animation finished */
 extern int D_800757F4;      /* current actor's new-frame flag */
@@ -119,8 +119,8 @@ typedef struct Model {
   AnimationHeader *m_Animations[1]; /* 0x38 */
 } Model;
 
-extern Model *D_80076378[]; /* per-type model table, indexed by ->type */
-extern Actor *D_80075898;   /* Sparx, or null when absent */
+extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
+extern Actor *g_pLevelOverlayInitRecord;   /* Sparx, or null when absent */
 
 /* ==== Per-class state blocks ====
  *
@@ -180,7 +180,7 @@ extern int func_80017D7C(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, anim)                                                     \
-  (D_80076378[(a)->type]->m_Animations[(anim)]->m_ProgressPerTick)
+  (g_apActorMeshTable[(a)->type]->m_Animations[(anim)]->m_ProgressPerTick)
 
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
 typedef struct ShotState {
@@ -195,7 +195,7 @@ typedef struct ShotState {
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
   int shift; /* 0x00 bit position within the target's 0x49 mask */
-  int idx;   /* 0x04 index into the actor pool at D_80075828 */
+  int idx;   /* 0x04 index into the actor pool at g_pActorListBase */
 } SwitchState;
 
 /* Type 16: butterfly. Flutters around an anchor until Sparx fetches it. */
@@ -223,7 +223,7 @@ typedef struct ChaserState {
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
 extern void func_80051FEC(void);
-extern void func_800522C0(Actor **list, int mode);
+extern void TickGemCutsceneActorAnims(Actor **list, int mode);
 extern void func_80038458(Actor *actor);
 extern Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
 extern void func_8003B7C0(Actor *actor);
@@ -239,23 +239,23 @@ extern int func_80038EE0(Actor *actor, int heading, int a, int b, int c);
 extern int func_80039398(Actor *actor, int a, int b, int c, int d);
 extern int func_80039688(Actor *actor, int a, int b, int c, int d, int e);
 extern void func_800529E4(Actor *actor, int mode);
-extern void func_80052568(Actor *actor);
-extern unsigned int func_8006272C(void); /* GetRandomU32 */
+extern void DespawnActorRecord(Actor *actor);
+extern unsigned int GetRandomU32(void);
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
-extern void (*D_800758E4)(int a, int effect, int *pos, void *c);
+extern void (*g_pfnLevelOverlayParticleSpawn)(int a, int effect, int *pos, void *c);
 
 /* Actor spawn hook: (type, parent) -> new actor. */
-extern Actor *(*D_800758CC)(int type, Actor *parent);
+extern Actor *(*g_pfnLevelOverlayInitHook)(int type, Actor *parent);
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
-extern Actor *D_80075828;         /* level actor pool */
-extern Actor *D_80075890;         /* end of the level actor pool */
+extern Actor *g_pActorListBase;         /* level actor pool */
+extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
 extern int D_80077AE8;            /* bit 0: switch sounds enabled */
-extern unsigned char *D_800761D0; /* sound definitions, 20 bytes each */
-extern unsigned char *D_800761D4; /* sound id table */
+extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
+extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 extern int D_800761DC;
 extern struct {
   short v;
@@ -264,41 +264,41 @@ extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
  * shift, sine and cosine. */
-extern int D_8007570C;
+extern int g_nGameplayBlocked;
 extern struct {
   int v;
-} D_80077FDC;
-extern int D_80077378; /* pad buttons pressed; 0x40 skips the egg */
-extern int D_80075964;
-extern int D_80076FE8[];
-extern int D_80075810;
+} g_nHudWorldEggRollRequest;
+extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
+extern int g_nLevelIntroIndex;
+extern int g_anLevelEggsRecovered[];
+extern int g_nWorldEggsRecovered;
 
 extern void func_8003C85C(int *pos);
-extern int func_800169AC(int dx, int dy);
-extern int func_80016C58(int a);           /* LookupSine */
-extern int func_80016CB0(int a);           /* LookupCosine */
-extern void func_80017700(int *d, int *s); /* CopyVector */
-extern void func_80017110(int *d, int *s);
-extern void func_80017758(int *d, int *a, int *b); /* AddVector */
-extern void func_8001778C(int *d, int *a, int *b); /* SubVector */
-extern void func_800176C8(int *d, int n);          /* RShiftVector3 */
-extern void func_800176F0(int *v);
-extern void func_800177C0(int *d, int *s, int k); /* ScaleVector3Sat */
+extern int ArcTan2_8bit(int dx, int dy);
+extern int LookupSine(int a);
+extern int LookupCosine(int a);
+extern void CopyVector(int *d, int *s);
+extern void WorldToCameraRotate(int *d, int *s);
+extern void AddVector(int *d, int *a, int *b);
+extern void SubtractVector(int *d, int *a, int *b); /* SubVector */
+extern void RShiftVector3(int *d, int n);
+extern void ZeroVector(int *v);
+extern void ScaleVector3Sat(int *d, int *s, int k);
 extern void func_80017BFC(short *d, int *s);
 extern void func_80017C24(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 extern void func_8003B854(int a, void *b);
 
-extern void func_80055A78(int a, Actor *actor, int b, void *c);
+extern void PlaySoundEffect(int a, Actor *actor, int b, void *c);
 extern void func_8003851C(Actor *actor, int a, int b);
 extern int func_80038340(Actor *actor); /* ground height under the actor */
 extern void func_80038638(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
-extern int func_80017990(int *pos, int *target); /* planar distance */
-extern int func_80016AB4(int dx, int dy, int z); /* Atan2 */
-extern int func_80017908(int a, int b);          /* AbsAngleDelta8 */
+extern int ApproxDist2D(int *pos, int *target); /* planar distance */
+extern int ArcTan2(int dx, int dy, int z); /* Atan2 */
+extern int AbsAngleDelta8(int a, int b);
 extern void func_8003C358(Actor *actor, int mode);
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
@@ -319,7 +319,7 @@ extern unsigned char D_8007A6AC;
 extern void func_8002B390(int handle, int a, int b);
 extern void func_8002B444(int handle, int a, int b);
 extern int func_8002B3F4(int handle); /* bits 8..15 are the anim marker */
-extern void func_800562A4(Actor *actor, int mode);
+extern void StopSoundVoicesByOwner(Actor *actor, int mode);
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -342,7 +342,7 @@ typedef struct DebrisState {
 } DebrisState;
 
 /* Surface normal produced by the collision probes. */
-extern int D_80077368;
+extern int g_anCollisionProbeVec;
 extern int D_8007736C;
 extern int D_80077370;
 
@@ -357,9 +357,9 @@ typedef struct {
 } PtrU8;
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
-extern int func_8004BE4C(int *pos, int a, int b); /* ground/wall probe */
-extern void func_80017330(int *v, int k);         /* normalise to k */
-extern void func_800175B8(int *v, int k, int n);
+extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
+extern void SetVector3Magnitude(int *v, int k);         /* normalise to k */
+extern void ScaleVector3ByRatio(int *v, int k, int n);
 
 /* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
  * doubles as the pickup origin once Sparx has fetched the item. */
@@ -396,20 +396,20 @@ typedef struct SpinState {
   unsigned char anim;  /* 0x03 0xFF == none */
 } SpinState;
 
-extern int D_80075830; /* key collected */
+extern int g_nLevelEggCount; /* key collected */
 
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
-extern int D_80075750;
-extern unsigned char D_800758D0[]; /* save-options block; [1] is the latch */
+extern int g_nWorldDragonsRescued;
+extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the latch */
 extern int D_800777F4;
 extern int D_800777F8;
-extern void func_8003DFA4(void);
+extern void ResetSpyroLinearMotion(void);
 extern void (*D_800757A0)(Actor *actor);
 
 /* Dynamic actor pool counters; the difference is the free slot count. */
-extern int D_800756A4;
-extern int D_800756A8;
+extern int g_nActorPoolLiveCount;
+extern int g_nActorPoolCapacity;
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -423,7 +423,7 @@ typedef struct RideState {
   int unk00[6]; /* 0x00 */
   int unk18;    /* 0x18 */
   int unk1C;    /* 0x1C fallback heading when ->unk20 is unset */
-  int unk20;    /* 0x20 index into D_80075828, -1 for none */
+  int unk20;    /* 0x20 index into g_pActorListBase, -1 for none */
   int unk24;    /* 0x24 script id handed to func_8002C914, -1 for none */
   int unk28[7]; /* 0x28 */
   int unk44;    /* 0x44 phase counter, 0 .. 0x100 */
@@ -455,15 +455,15 @@ typedef struct LiftState {
 
 /* Type 398: exit vortex. Surface-below flags and the level transition
  * globals. */
-extern int D_80075718;             /* index of the surface under the probe */
-extern unsigned char **D_800785B8; /* surface records, indexed by the above */
-extern int D_80075864;
-extern int D_800756AC;
-extern int D_800756B0;
-extern int D_8007579C;
-extern int D_800757D8;
-extern int D_80075858;
-extern int D_800758FC;
+extern int g_nGroundSurfaceType;             /* index of the surface under the probe */
+extern unsigned char **g_pTriggerRegionTable; /* surface records, indexed by the above */
+extern int g_nCdStreamState;
+extern int g_nLevelTransitionPhase;
+extern int g_nLevelTransitionTallyActive;
+extern int g_nGamePaused;
+extern int g_nGamestate;
+extern int g_nScriptedMobViewYawSpin;
+extern int g_nScriptedMobViewPitchTilt;
 extern int D_80075910;
 
 /* 0x18-byte spherical camera coordinates; D_8006CA24 holds the presets. */
@@ -501,9 +501,9 @@ extern CamObj g_anWorldToCameraRotMtx;
 
 extern Xform D_8006CA24[];
 
-extern void func_80033F08(int *out);
-extern void func_80034204(int *out, int a, int b, Xform *x);
-extern void func_800342F8(void);
+extern void ComputeCameraToTargetAngle(int *out);
+extern void ComputeCameraOrbitOffset(int *out, int a, int b, Xform *x);
+extern void UpdateCameraEulerAngles(void);
 
 /* Vortex path: node count and current node, then the two anchor positions
  * whose midpoint Spyro is pulled toward. */
@@ -530,14 +530,14 @@ extern int D_8006E57C;
 extern int D_8006E588;
 extern int D_8006E594;
 
-extern int D_800772D8[]; /* per-D_80075964 completion counters */
+extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
 /* Type 300: camera trigger volume. Live camera sphere and its template. */
 typedef struct Xform6 {
   int w[6];
 } Xform6;
-extern Xform6 D_80078668; /* live camera transform */
-extern Xform6 D_8006C934; /* template it is seeded from */
+extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
+extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
 /* Type 300 state block: activation box, mode flags, timer, linked actor. */
 typedef struct TriggerState {
@@ -546,7 +546,7 @@ typedef struct TriggerState {
   int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
               * bit4 also stamps actor->unk49 */
   int timer; /* 0x0C */
-  int idx;   /* 0x10 index into the actor pool at D_80075828 */
+  int idx;   /* 0x10 index into the actor pool at g_pActorListBase */
 } TriggerState;
 
 /* Type 323: respawner. Revives dormant actors of one class out of view. */
@@ -557,40 +557,40 @@ typedef struct RespawnState {
 } RespawnState;
 
 /* Actor reset, dialogue, cutscene and checkpoint callees. */
-extern void func_800526A8(Actor *actor);
+extern void InsertActorIntoSpatialGrid(Actor *actor);
 
 extern void func_8002C914(int script, int a);
-extern void func_8002C924(Actor *actor);
+extern void BeginGemPickupOverlay(Actor *actor);
 extern void func_80059474(Actor *actor, int heading);
 
-extern void func_8003C6E4(Actor *actor); /* the whole of case 251 */
+extern void TickGemPickupBurstEntity(Actor *actor); /* the whole of case 251 */
 
 /* Collision contact point, pickup counters and sound volume override. */
-extern int D_80076B80;   /* collision contact point */
+extern int g_anCollisionResolvedPos;   /* collision contact point */
 extern int D_80076B84;   /* ..y */
-extern int D_80076B88;   /* ..z */
-extern int D_80075808;   /* collision triangle index */
-extern int D_8007582C;   /* life count, capped at 99 */
-extern int D_800758E8;   /* life orb count */
+extern int g_nCollisionResolvedZ;   /* ..z */
+extern int g_nLastCollisionHitChunkId;   /* collision triangle index */
+extern int g_nExtraLives;   /* life count, capped at 99 */
+extern int g_nSparxFoodCount;   /* life orb count */
 extern short D_800761E8; /* sound volume override, left/right */
 extern short D_800761EA;
 
 /* 256-entry sine and cosine tables. */
-extern short D_8006CBF8[];
-extern short D_8006CC78[];
+extern short g_anSineLut[];
+extern short g_anCosineLut[];
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void func_80017048(int *dst, int *tbl, int *out);
+extern void RotateVectorByMatrix(int *dst, int *tbl, int *out);
 extern int func_8003AAEC(Actor *actor, int *tbl);
-extern void func_800533D0(Actor *actor);
-extern void func_80017CB8(int a, int *out);
-extern int func_8004D5EC(int *v, int k);
-extern int func_800171FC(int *v, int mode);
-extern int func_80017A38(int x); /* SquareRoot */
+extern void EncodeCachedVecToActorDirCode(Actor *actor);
+extern void UnpackWorldCollisionTri(int a, int *out);
+extern int FindGroundHeightBelow(int *v, int k);
+extern int VectorLength(int *v, int mode);
+extern int IntegerSqrt(int x); /* SquareRoot */
 extern int func_80057380(int *pos);
 extern void func_8003B9D4(Actor *actor);
-extern int func_80033E40(int *a, int *b);
-extern int func_80056DC4(Actor *actor, int a);
+extern int CheckLineOfSightSegment(int *a, int *b);
+extern int GetSoundVoiceStatusByOwner(Actor *actor, int a);
 extern int func_80017428(int *v, int *n, int *out);
 
 /* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
@@ -606,7 +606,7 @@ typedef struct PoleState {
   int flag24; /* 0x24 */
 } PoleState;
 
-extern int func_80017948(int a, int b); /* signed angle delta, byte-wrapped */
+extern int SignedAngleDelta8(int a, int b); /* signed angle delta, byte-wrapped */
 extern void func_8002CCC8(Actor *actor);
 
 /* Type 114: path-following enemy that runs from Spyro and can be knocked
@@ -614,13 +614,13 @@ extern void func_8002CCC8(Actor *actor);
 typedef struct WalkerState {
   PathData *path; /* 0x00 */
   int timer;      /* 0x04 */
-  int tgtIdx;     /* 0x08 index into D_80075828, -1 when unclaimed */
+  int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
   int unk10;      /* 0x10 passed by address to func_80039910 */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
-extern void func_80038DC0(Actor *actor, int a, int b, int c);
+extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 extern void func_800385BC(Actor *actor, int a);
 extern int func_80038178(int ang, int facing, int a, int b);
 extern int func_80039910(Actor *actor, int *a, int heading, int *b, int c,
@@ -657,7 +657,7 @@ extern void *D_8006E490;
 extern void *D_8006E494;
 extern void *D_8006E330[];
 
-extern void func_800170C0(int *d, int *s);
+extern void ApplyActiveGteRotation(int *d, int *s);
 extern FxNode *func_80058AE8(void);
 extern void func_80058B60(FxNode *node);
 extern int func_80038098(int a, int b, int c);
@@ -681,8 +681,8 @@ typedef struct PatchRideState {
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
 
-extern int D_8007572C; /* frame counter; the arm acts on every 4th frame */
-extern int func_8004AE38(int *a, int *b);
+extern int g_dwGamestateFrames; /* frame counter; the arm acts on every 4th frame */
+extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
@@ -702,7 +702,7 @@ typedef struct OrbitState {
 } OrbitState;
 
 /* Shift a vector left by n. */
-extern void func_800176A0(int *d, int n);
+extern void LShiftVector3(int *d, int n);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
  * or the floor runs out. */
@@ -821,7 +821,7 @@ extern SpyroObj g_anSpyroWorldPosBlock;
 /* Case 13 — tethered follower: rides a parent actor (by table index) and,
  * once released, re-points every other follower at the same parent. */
 typedef struct FollowState {
-  int parent;   /* 0x00 parent actor index into D_80075828 */
+  int parent;   /* 0x00 parent actor index into g_pActorListBase */
   int pos[3];   /* 0x04 carried world position */
   int detached; /* 0x10 set once the parent slot has gone dormant */
   int active;   /* 0x14 */
@@ -1004,7 +1004,7 @@ typedef struct DoorState {
  *
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-extern int D_80075860;           /* gem total shown on the balloon */
+extern int g_nWorldTreasureCollected;           /* gem total shown on the balloon */
 extern unsigned char D_800758D1; /* per-world "seen it" flags */
 extern unsigned char D_800758D2;
 extern unsigned char D_800758D3;
@@ -1012,37 +1012,37 @@ extern unsigned char D_800758D4;
 extern unsigned char D_800758D5;
 extern int D_80077350;
 
-extern short D_80076E20; /* camera yaw, as the balloonist reads it */
-extern int D_80076E28;   /* camera mode */
-extern Xform D_80076E48; /* camera spherical target */
-extern Xform D_80076E60; /* camera spherical current */
-extern int D_80076E90;
-extern Xform *D_80076EA8; /* active camera preset, or null */
+extern short g_nCameraEulerYaw; /* camera yaw, as the balloonist reads it */
+extern int g_nCameraCurrentMode;   /* camera mode */
+extern Xform g_nCameraSpringYaw; /* camera spherical target */
+extern Xform g_nCameraYaw; /* camera spherical current */
+extern int g_nCameraNextMode;
+extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
-extern unsigned char D_80078A7F;
-extern int D_80078A8C[]; /* wind basis matrix */
-extern int D_80078AD0;   /* Spyro's state */
-extern int D_80078AD4;
-extern int D_80078AD8;
-extern int D_80078AF4;
-extern int D_80078B64; /* look-at offset */
+extern unsigned char g_bSpyroOtBinBias;
+extern int g_anSpyroBodyMtx[]; /* wind basis matrix */
+extern int g_nSpyroState;   /* Spyro's state */
+extern int g_nSpyroStateFlags;
+extern int g_nSpyroStateTimer;
+extern int g_nSpyroAirborneFrames;
+extern int g_anSpyroMotionVec; /* look-at offset */
 extern int D_80078B68;
-extern int D_80078B6C;
-extern int D_80078B70;
-extern int D_80078B74; /* camera yaw accumulator */
+extern int g_nSpyroMotionZ;
+extern int g_nSpyroMotionSpeed;
+extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
 extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
-extern int D_80078BBC; /* balloon sequence stage (== SPY.u164) */
-extern int D_80078BFC;
+extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
+extern int g_nSpyroSwingEulerPitchTarget;
 
-extern int D_80078C4C;         /* scripted camera control word */
+extern int g_dwSpyroRequestMask;         /* scripted camera control word */
 extern signed char D_80078C5E; /* destination level */
-extern int D_80078C60;         /* scripted camera look-at */
+extern int g_anSpyroRequestVelocity;         /* scripted camera look-at */
 extern int D_80078C64;
 extern int D_80078C68;
-extern int D_80078C70; /* scripted camera mode */
-extern PortalDesc *D_80078C98;
-extern int D_80078C9C;
-extern int D_80078CA0;
+extern int g_nSpyroRequestState; /* scripted camera mode */
+extern PortalDesc *g_pGemPickupCamPathData;
+extern int g_nGemPickupCamPathMaxStep;
+extern int g_nGemPickupCamPathReverseFlag;
 
 extern unsigned char D_80078E98; /* ambience channel enables */
 extern unsigned char D_80078E99;
@@ -1082,15 +1082,15 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-extern int D_80078618[];  /* per-mode "time attack" flag */
+extern int g_anWorldPersistentFlags[];  /* per-mode "time attack" flag */
 extern int D_8007595C;    /* current mode index */
 extern int D_80075908;    /* time bonus accumulator */
 extern int D_80075840;    /* time remaining */
-extern int D_800758C8;    /* frame counter */
+extern int g_nVblankTickCount;    /* frame counter */
 extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
 extern int func_80038D54(int *pos, void *st);
 extern void func_8003CAC4(int sound);
-extern void func_80017AA4(int *d, int *s);
+extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
 /* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
  * swept phase. */
@@ -1104,8 +1104,8 @@ typedef struct TallyState {
 } TallyState;
 
 extern int D_800757C4;      /* tally slot index */
-extern short D_8006CBF8[];  /* HUD slot layout rows, 64 shorts each */
-extern short D_8006CC78[];
+extern short g_anSineLut[];  /* HUD slot layout rows, 64 shorts each */
+extern short g_anCosineLut[];
 
 /* Flight HUD controller (0x166): clock digits, the per-class tally icons,
  * icons being spent into a slot, and the four finish slots. */
@@ -1132,12 +1132,12 @@ extern int D_80078610;
 extern int D_80078614;
 extern int D_800758F8;      /* tally class being shown */
 extern int D_8006E3E4[];
-extern Actor D_80077FEC[];  /* the four HUD class icons */
+extern Actor g_abHudIconActorRecords[];  /* the four HUD class icons */
 extern int D_800756A0;
-extern void (*D_80075694)(void); /* out-of-time handler */
-extern void func_8003EA68(int a);
-extern void func_8003A720(Actor *actor);
-extern void func_800529CC(Actor *actor);
+extern void (*g_pfnLevelFallImpactCallback)(void); /* out-of-time handler */
+extern void ChangeSpyroState(int a);
+extern void InitActorRenderDefaults(Actor *actor);
+extern void HideActorRenderRecord(Actor *actor);
 extern unsigned char *D_80076824; /* level sound ids */
 
 /* ==== The function ==== */
@@ -1164,12 +1164,12 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-extern int D_8007596C;
-extern int D_800756A8;
-extern int D_800756A4;
+extern int g_nActiveLevelId;
+extern int g_nActorPoolCapacity;
+extern int g_nActorPoolLiveCount;
 extern int func_8003BFC0(Actor *actor, unsigned char *path, int *a, int *b,
                           int c, int d);
-extern int func_8004AE38(int *pos, int *to);
+extern int CastRayWorldAndActors(int *pos, int *to);
 extern int func_8004E2E8(int *pos, int a, int b);
 
 /* Types 0x1E1..0x1E3: the walker's embers. */
@@ -1200,10 +1200,10 @@ typedef struct SmokerState {
   int timer;           /* 0x14 */
 } SmokerState;
 
-extern int D_80078AD4;
-extern int D_8007572C;
+extern int g_nSpyroStateFlags;
+extern int g_dwGamestateFrames;
 extern void func_80052D64(void *actor, int a, int *out);
-extern void func_8004E3C8(int *pos, int a, int b, int c, Actor *actor, int d);
+extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Type 0xA2: a roller that cycles over four paths. */
 typedef struct CyclerState {
@@ -1221,8 +1221,8 @@ typedef struct CyclerState {
   int unk40;               /* 0x40 */
 } CyclerState;
 
-extern void func_800176F0(int *v);
-extern void func_80038DC0(Actor *actor, int a, int b, int c);
+extern void ZeroVector(int *v);
+extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 void func_level_23_8007CFB4(void) {
   Actor **actorList;
@@ -1252,15 +1252,15 @@ void func_level_23_8007CFB4(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   func_80051FEC();
-  func_800522C0(D_800700F4, 0);
+  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
 
-  if (D_800756CC >= 3) {
-    func_800522C0(D_800700F4, D_800756CC == 3 ? 0x80000001 : 0x80000000);
+  if (g_nFrameStep >= 3) {
+    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = D_800700F4;
+  actorList = g_apSaveMenuAnimActorList;
   sh6 = 6;
-  base = (char *)&D_80078BBC;
+  base = (char *)&g_nLevelReadyFlag;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
@@ -1273,41 +1273,41 @@ void func_level_23_8007CFB4(void) {
 
     D_80075794 = actor->unk42 & 2;
     D_800757F4 = actor->unk42 & 1;
-    D_800756C4 = D_800756CC;
+    D_800756C4 = g_nFrameStep;
 
     switch (actor->type) {
     /* Butterfly (ChaseState). */
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && func_80017990(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->unk38;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
-          if (D_80075898 == 0) {
+          if (g_pLevelOverlayInitRecord == 0) {
             if (SPY.u164 >= 0) {
-              D_80075898 = D_800758CC(120, actor);
+              g_pLevelOverlayInitRecord = g_pfnLevelOverlayInitHook(120, actor);
 
-              func_8003851C(D_80075898, 0, 0);
+              func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
 
               SPY.u164 = one;
 
-              func_80052568(actor);
+              DespawnActorRecord(actor);
               break;
             }
-          } else if (D_80075898->unk49 != 99) {
-            ChaserState *cs = (ChaserState *)D_80075898->state;
+          } else if (g_pLevelOverlayInitRecord->unk49 != 99) {
+            ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
             if (cs->owner == 0) {
               if (func_800381BC(spy->bodyRotZ,
-                                func_80016AB4(actor->posX - spy->posX,
+                                ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0)) < 0) {
                 st->dir = 1;
               } else {
                 st->dir = -1;
               }
 
-              D_80075898->unk49 = 0;
+              g_pLevelOverlayInitRecord->unk49 = 0;
               cs->owner = actor;
               cs->timer = func_80037EA0(150, 210);
 
@@ -1327,7 +1327,7 @@ void func_level_23_8007CFB4(void) {
 
           if (func_80037F90(&st->t12, 1) != 0) {
             int r = func_80037F10(30, 90);
-            if (func_8006272C() & 1) {
+            if (GetRandomU32() & 1) {
               r = -r;
             }
 
@@ -1366,27 +1366,27 @@ void func_level_23_8007CFB4(void) {
             st->t12 = func_80037EA0(30, 80);
           }
 
-          if (func_80017990(&actor->posX, &st->tgtX) > 2000) {
-            int angle = func_80016AB4(st->tgtX - actor->posX,
+          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
+            int angle = ArcTan2(st->tgtX - actor->posX,
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
             st->t12 = 40;
           }
         } else {
-          func_80052568(actor);
+          DespawnActorRecord(actor);
           continue;
         }
         break;
       }
       case 1: {
         func_80038638(actor, &spy->posX, 0x320,
-                      func_80038074(func_80016AB4(actor->posX - spy->posX,
+                      func_80038074(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-        if (D_80075898 == 0 || D_80075898->unk49 == 99) {
+        if (g_pLevelOverlayInitRecord == 0 || g_pLevelOverlayInitRecord->unk49 == 99) {
           actor->unk48 = 0;
         } else {
           int refHeight;
@@ -1424,14 +1424,14 @@ void func_level_23_8007CFB4(void) {
       DriftState *st = actor->state;
 
       if (func_80037F90(&st->timer, 4) == 0) {
-        func_80017758(svX, &actor->posX, st->vel);
-        if (func_8004AE38(&actor->posX, svX) == 0 &&
+        AddVector(svX, &actor->posX, st->vel);
+        if (CastRayWorldAndActors(&actor->posX, svX) == 0 &&
             func_8004E2E8(&actor->posX, 0, 1) == 0) {
-          func_80017700(&actor->posX, svX);
+          CopyVector(&actor->posX, svX);
           break;
         }
       }
-      func_80052568(actor);
+      DespawnActorRecord(actor);
       continue;
     }
 
@@ -1449,50 +1449,50 @@ void func_level_23_8007CFB4(void) {
       }
       if ((unsigned int)(actor->unk48 - 2) < 3) {
         func_8003C85C(&actor->posX);
-        D_800758E4(1, 0xC, (int *)actor, (void *)0x602080);
+        g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, (void *)0x602080);
       }
 
       switch (actor->unk48) {
       case 1:
-        D_8007570C = 1;
+        g_nGameplayBlocked = 1;
         func_80017BFC(st->from, &actor->posX);
         st->heading =
-            func_800169AC(actor->posX - spy->posX, actor->posY - spy->posY) +
+            ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
             0x40;
         st->speed = 0;
         st->phase = 0;
-        D_80077FDC.v = 1;
+        g_nHudWorldEggRollRequest.v = 1;
         actor->unk44 = 0;
         actor->unk45 = 8;
         actor->unk48 = actor->unk48 + 1;
         break;
 
       case 2:
-        st->phase = st->phase + D_800756CC;
+        st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x80) {
-          int step = D_800756CC << 2;
+          int step = g_nFrameStep << 2;
           st->speed = st->speed + step;
           st->heading = st->heading + step;
           func_80017C24(&actor->posX, st->from);
-          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
-          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
           {
             int ph = st->phase;
-            actor->unk46 = actor->unk46 + (D_800756CC << 2);
+            actor->unk46 = actor->unk46 + (g_nFrameStep << 2);
             actor->posZ = actor->posZ - (ph << 3);
           }
         } else {
-          func_80017700(svA, &spy->posX);
+          CopyVector(svA, &spy->posX);
           {
-            int c = func_80016CB0(D_80078A66 << 4);
-            int s = func_80016C58(D_80078A66 << 4);
+            int c = LookupCosine(D_80078A66 << 4);
+            int s = LookupSine(D_80078A66 << 4);
             int cr = c * 724;
             int sr = s * 724;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
-            int s = func_80016C58(D_80078A66 << 4);
-            int c = func_80016CB0(D_80078A66 << 4);
+            int s = LookupSine(D_80078A66 << 4);
+            int c = LookupCosine(D_80078A66 << 4);
             int sr = s * 724;
             int cr = c * 724;
             svA[1] = svA[1] + ((sr - cr) >> 12);
@@ -1503,25 +1503,25 @@ void func_level_23_8007CFB4(void) {
           st->phase = 0;
           actor->unk48 = actor->unk48 + 1;
         }
-        if ((D_80077378 & 0x40) != 0) {
+        if ((g_dwPadPressed & 0x40) != 0) {
           actor->unk48 = 5;
         }
         break;
 
       case 3:
-        st->phase = st->phase + D_800756CC;
+        st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x40) {
           func_80017C24(svB, st->from);
           func_80017C24(svC, st->to);
-          func_8001778C(svC, svC, svB);
-          func_800177C0(svC, svC, st->phase);
-          func_800176C8(svC, 6);
-          func_80017758(&actor->posX, svB, svC);
-          actor->unk46 = actor->unk46 + (D_800756CC << 2);
+          SubtractVector(svC, svC, svB);
+          ScaleVector3Sat(svC, svC, st->phase);
+          RShiftVector3(svC, 6);
+          AddVector(&actor->posX, svB, svC);
+          actor->unk46 = actor->unk46 + (g_nFrameStep << 2);
         } else {
-          func_80017700(svD, &spy->posX);
-          svD[0] = svD[0] + (func_80016CB0(D_80078A66 << 4) >> 3);
-          svD[1] = svD[1] + (func_80016C58(D_80078A66 << 4) >> 3);
+          CopyVector(svD, &spy->posX);
+          svD[0] = svD[0] + (LookupCosine(D_80078A66 << 4) >> 3);
+          svD[1] = svD[1] + (LookupSine(D_80078A66 << 4) >> 3);
           svD[2] = svD[2] + 0x300;
           func_80017BFC(st->from, svD);
           st->heading = D_80078A66 - 0x40;
@@ -1529,44 +1529,44 @@ void func_level_23_8007CFB4(void) {
           st->phase = 0;
           actor->unk48 = actor->unk48 + 1;
         }
-        if ((D_80077378 & 0x40) != 0) {
+        if ((g_dwPadPressed & 0x40) != 0) {
           actor->unk48 = 5;
         }
         break;
 
       case 4:
-        st->phase = st->phase + D_800756CC;
+        st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x80) {
-          int step = D_800756CC << 2;
+          int step = g_nFrameStep << 2;
           st->speed = st->speed - step;
           st->heading = st->heading - step;
           func_80017C24(&actor->posX, st->from);
-          actor->posX += (func_80016CB0(st->heading << 4) * st->speed) >> 12;
-          actor->posY += (func_80016C58(st->heading << 4) * st->speed) >> 12;
+          actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
+          actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
           {
             int ph = st->phase;
-            actor->unk46 = actor->unk46 + (D_800756CC << 2);
+            actor->unk46 = actor->unk46 + (g_nFrameStep << 2);
             actor->posZ = actor->posZ - (ph << 2);
           }
         } else {
           actor->unk48 = actor->unk48 + 1;
         }
-        if ((D_80077378 & 0x40) != 0) {
+        if ((g_dwPadPressed & 0x40) != 0) {
           actor->unk48 = 5;
         }
         break;
 
       case 5:
-        func_8001778C(svE, &actor->posX, &CAM.posX);
-        func_80017110(svE, svE);
-        D_800758E4(0x10, 0x4D, svE, 0);
-        D_8007570C = 0;
-        func_800176F0(&SPY.headLook);
+        SubtractVector(svE, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(svE, svE);
+        g_pfnLevelOverlayParticleSpawn(0x10, 0x4D, svE, 0);
+        g_nGameplayBlocked = 0;
+        ZeroVector(&SPY.headLook);
         func_8003B854(0, st->unk00);
-        D_80075810 = D_80075810 + 1;
-        D_80076FE8[D_80075964] += 1;
-        D_80077FDC.v = 0;
-        func_80052568(actor);
+        g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
+        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_nHudWorldEggRollRequest.v = 0;
+        DespawnActorRecord(actor);
         break;
 
       default:
@@ -1581,18 +1581,18 @@ void func_level_23_8007CFB4(void) {
       SparkState *st = actor->state;
 
       if (st->life > 0 && actor->unk51) {
-        if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
+        if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
           
           int dot;
 
-          func_80017330(&D_80077368, 0x1000);
+          SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
           { int pad0; { int pad1; } } /* see header: loop.c lifetime dial */
-          dot = st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
+          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * D_8007736C +
                     st->vel[2] * D_80077370 >>
                 11;
           if (dot < 0) {
-            func_800175B8(&D_80077368, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += D_80077368;
+            ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += g_anCollisionProbeVec;
             st->vel[1] += AS_I32(D_8007736C);
             st->vel[2] += AS_I32(D_80077370);
           }
@@ -1610,15 +1610,15 @@ void func_level_23_8007CFB4(void) {
         actor->unk46 += st->spin2;
         if ((st->life & 3) == 0) {
 
-          svD[0] = func_8006272C() & 3;
-          svD[1] = func_8006272C() & 3;
+          svD[0] = GetRandomU32() & 3;
+          svD[1] = GetRandomU32() & 3;
           svD[2] = 0x14;
-          D_800758E4(1, 1, &actor->posX, svD);
+          g_pfnLevelOverlayParticleSpawn(1, 1, &actor->posX, svD);
         }
         st->life--;
       } else {
-        D_800758E4(8, 0x46, &actor->posX, (void *)0x10);
-        func_80052568(actor);
+        g_pfnLevelOverlayParticleSpawn(8, 0x46, &actor->posX, (void *)0x10);
+        DespawnActorRecord(actor);
         continue;
       }
       break;
@@ -1644,7 +1644,7 @@ void func_level_23_8007CFB4(void) {
 
         st->life -= 1;
       } else {
-        func_80052568(actor);
+        DespawnActorRecord(actor);
         continue;
       }
       break;
@@ -1660,10 +1660,10 @@ void func_level_23_8007CFB4(void) {
     case 87: {
       PickupState *st = (PickupState *)actor->state;
 
-      int dist = func_80017990(&actor->posX, &SPY.posX);
+      int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
       if (st->timer < 0xFA) {
-        st->timer += D_800756CC;
+        st->timer += g_nFrameStep;
       }
 
       if (actor->type != 15) {
@@ -1672,12 +1672,12 @@ void func_level_23_8007CFB4(void) {
           func_800529E4(actor, 4);
 
           if (actor->type == 14) {
-            func_80017048(actor->unk20, &D_8006E5B8, D_80077108[st->anim].pos);
+            RotateVectorByMatrix(actor->unk20, &D_8006E5B8, D_80077108[st->anim].pos);
           } else {
-            func_80017048(actor->unk20, &D_8006E5A0, D_80077108[st->anim].pos);
+            RotateVectorByMatrix(actor->unk20, &D_8006E5A0, D_80077108[st->anim].pos);
           }
 
-          func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+          AddVector(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
                         &actor->posX);
 
           if (D_80077108[st->anim].flag < 5) {
@@ -1690,7 +1690,7 @@ void func_level_23_8007CFB4(void) {
               st->anim = handle;
             }
 
-            st->timer = (func_8006272C() & 0x1F) + 33;
+            st->timer = (GetRandomU32() & 0x1F) + 33;
           }
         }
       }
@@ -1701,15 +1701,15 @@ void func_level_23_8007CFB4(void) {
 
       switch (actor->unk49) {
       case 0: {
-        int *nrm = &D_80077368;
+        int *nrm = &g_anCollisionProbeVec;
 
-        func_80017700(svA, &actor->posX);
+        CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
-        func_8004D5EC(svA, 0x10000);
-        st->pitch = -func_800169AC(
-            func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
+        FindGroundHeightBelow(svA, 0x10000);
+        st->pitch = -ArcTan2_8bit(
+            IntegerSqrt((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
             D_8007736C);
-        st->yaw = -func_800169AC(D_80077370, nrm[0]);
+        st->yaw = -ArcTan2_8bit(D_80077370, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->unk46 = 0;
@@ -1723,22 +1723,22 @@ void func_level_23_8007CFB4(void) {
 
           if (st->sub == 1) {
             func_80038458(actor);
-            func_800533D0(actor);
+            EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= 83) {
-              int *nrm = &D_80077368;
+              int *nrm = &g_anCollisionProbeVec;
 
-              st->pitch = -func_800169AC(
-                  func_80017A38((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
+              st->pitch = -ArcTan2_8bit(
+                  IntegerSqrt((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
                   D_8007736C);
-              st->yaw = -func_800169AC(D_80077370, nrm[0]);
+              st->yaw = -ArcTan2_8bit(D_80077370, nrm[0]);
             }
 
           } else if (st->sub == 2) {
 
-            func_80017CB8(st->unk0C, acc[0]);
+            UnpackWorldCollisionTri(st->unk0C, acc[0]);
 
-            func_80017758(acc[0], acc[0], acc[1]);
-            func_80017758(acc[0], acc[0], acc[2]);
+            AddVector(acc[0], acc[0], acc[1]);
+            AddVector(acc[0], acc[0], acc[2]);
 
             actor->posX = acc[0][0] / 3;
             actor->posY = acc[0][1] / 3;
@@ -1746,18 +1746,18 @@ void func_level_23_8007CFB4(void) {
 
             func_800529E4(actor, 2);
             func_80038458(actor);
-            func_800533D0(actor);
+            EncodeCachedVecToActorDirCode(actor);
 
           } else if (st->sub == 3) {
             int colIndex;
 
-            func_80017700(svF, &actor->posX);
+            CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
 
             func_800529E4(actor, 2);
 
-            if (func_8004D5EC(svF, 0x1000) > 0) {
-              colIndex = D_80075808;
+            if (FindGroundHeightBelow(svF, 0x1000) > 0) {
+              colIndex = g_nLastCollisionHitChunkId;
               st->sub = 2;
               st->unk0C = colIndex;
             }
@@ -1769,25 +1769,25 @@ void func_level_23_8007CFB4(void) {
 
           if (ABS2(zDist) < 512) {
 
-            if (D_80075898 != 0) {
+            if (g_pLevelOverlayInitRecord != 0) {
 
               if (SPY.u09C == 0) {
 
-                int res = func_80033E40(&D_80075898->posX, &actor->posX);
+                int res = CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)D_80075898->state;
+                  ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
                   if (cs->owner == 0) {
-                    if (!func_80056DC4(D_80075898,
-                                       D_80076378[D_80075898->type]->m_Sounds[0])) {
+                    if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
+                                       g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
                       D_800761DC = 1;
                       D_800761EA = 0x2000;
                       D_800761E8 = 0x2000;
-                      func_8003851C(D_80075898, 0, 0);
+                      func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
                     }
 
-                    D_80075898->unk49 = 4;
+                    g_pLevelOverlayInitRecord->unk49 = 4;
                     cs->owner = actor;
                   }
                 }
@@ -1801,26 +1801,26 @@ void func_level_23_8007CFB4(void) {
       case 2: {
         int speed;
 
-        func_800177C0(svG, st->vel, D_800756CC);
-        func_800176C8(svG, 1);
+        ScaleVector3Sat(svG, st->vel, g_nFrameStep);
+        RShiftVector3(svG, 1);
 
-        speed = func_800171FC(svG, 1);
+        speed = VectorLength(svG, 1);
 
         if (220 < speed) {
-          func_800175B8(svG, speed, 220);
+          ScaleVector3ByRatio(svG, speed, 220);
         }
 
-        func_80017758(svG, &actor->posX, svG);
+        AddVector(svG, &actor->posX, svG);
 
         if (-220 < st->vel[2]) {
-          st->vel[2] -= D_800756CC * 5;
+          st->vel[2] -= g_nFrameStep * 5;
         }
 
         if (svG[2] < 0) {
           if (actor->type != 14 && actor->type != 15) {
             func_8003B9D4(actor);
           }
-          func_80052568(actor);
+          DespawnActorRecord(actor);
           continue;
         } else {
           int r;
@@ -1828,44 +1828,44 @@ void func_level_23_8007CFB4(void) {
 
           svG[2] += 240;
 
-          r = func_8004BE4C(svG, 240, 240);
+          r = CollideSphereWithWorldAndActors(svG, 240, 240);
           pos = &actor->posX;
           if (r) {
             if (func_80057380(pos) == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 func_8003B9D4(actor);
               }
-              func_80052568(actor);
+              DespawnActorRecord(actor);
               continue;
             }
 
-            func_80017700(svH, &D_80077368);
-            func_80017700(&actor->posX, &D_80076B80);
+            CopyVector(svH, &g_anCollisionProbeVec);
+            CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
-              int groundHeight = func_8004D5EC(svG, 0x400);
+              int groundHeight = FindGroundHeightBelow(svG, 0x400);
               int groundAngle =
-                  (signed char)func_800169AC(svH[2], func_800171FC(svH, 0));
+                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, 0));
 
               if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->unk49 = 1;
-                func_80017700(&actor->posX, svG);
+                CopyVector(&actor->posX, svG);
                 actor->posZ = groundHeight;
 
                 if (actor->type != 0xF) {
 
-                  st->pitch = -func_800169AC(
-                      func_80017A38((svH[0] * svH[0]) + (svH[2] * svH[2])),
+                  st->pitch = -ArcTan2_8bit(
+                      IntegerSqrt((svH[0] * svH[0]) + (svH[2] * svH[2])),
                       svH[1]);
-                  st->yaw = -func_800169AC(svH[2], svH[0]);
+                  st->yaw = -ArcTan2_8bit(svH[2], svH[0]);
 
                   if (st->pitch != 0 || st->yaw != 0) {
                     actor->unk46 = 0;
                   }
                 }
 
-                func_800533D0(actor);
+                EncodeCachedVecToActorDirCode(actor);
               } else {
                 st->count++;
               }
@@ -1876,22 +1876,22 @@ void func_level_23_8007CFB4(void) {
               D_800761E8 = 0x3CCC >> (3 - st->count);
               D_800761EA = 0x3CCC >> (3 - st->count);
 
-              func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
 
               if (func_80017428(st->vel, svH, st->vel)) {
                 st->count--;
 
-                st->vel[0] = (st->vel[0] >> 3) + (func_8006272C() & 0x3F) - 32;
-                st->vel[1] = (st->vel[1] >> 3) + (func_8006272C() & 0x3F) - 32;
-                st->vel[2] = (st->vel[2] >> 2) + (func_8006272C() & 0xF);
+                st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
+                st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 32;
+                st->vel[2] = (st->vel[2] >> 2) + (GetRandomU32() & 0xF);
               }
             }
 
           } else {
             svG[2] -= 240;
-            func_80017700(pos, svG);
-            func_8004D5EC(svG, 0x10000);
-            func_800533D0(actor);
+            CopyVector(pos, svG);
+            FindGroundHeightBelow(svG, 0x10000);
+            EncodeCachedVecToActorDirCode(actor);
           }
         }
 
@@ -1900,22 +1900,22 @@ void func_level_23_8007CFB4(void) {
 
           if (ABS2(zDist) < 512) {
 
-            if (D_80075898 != 0) {
+            if (g_pLevelOverlayInitRecord != 0) {
 
               if (SPY.u09C == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)D_80075898->state;
+                ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
                 if (cs->owner == 0) {
-                  if (!func_80056DC4(D_80075898,
-                                     D_80076378[D_80075898->type]->m_Sounds[0])) {
+                  if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
+                                     g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
                     D_800761DC = 1;
                     D_800761EA = 0x2000;
                     D_800761E8 = 0x2000;
-                    func_8003851C(D_80075898, 0, 0);
+                    func_8003851C(g_pLevelOverlayInitRecord, 0, 0);
                   }
 
-                  D_80075898->unk49 = 4;
+                  g_pLevelOverlayInitRecord->unk49 = 4;
                   cs->owner = actor;
                 }
               }
@@ -1927,19 +1927,19 @@ void func_level_23_8007CFB4(void) {
       }
       case 3: {
         if (st->timer >= 32) {
-          func_80017700(&actor->posX, &SPY.posX);
+          CopyVector(&actor->posX, &SPY.posX);
         } else {
 
-          func_8001778C(svI, &spy->posX, st->vel);
-          func_800176C8(svI, 5);
+          SubtractVector(svI, &spy->posX, st->vel);
+          RShiftVector3(svI, 5);
 
-          if (func_800171FC(svI, 1) > 480) {
-            func_80017700(&actor->posX, &spy->posX);
+          if (VectorLength(svI, 1) > 480) {
+            CopyVector(&actor->posX, &spy->posX);
             st->timer = 32;
           } else {
-            func_800177C0(svI, svI, st->timer);
-            func_80017758(&actor->posX, st->vel, svI);
-            actor->posZ += D_8006CBF8[st->timer * 4] / 12;
+            ScaleVector3Sat(svI, svI, st->timer);
+            AddVector(&actor->posX, st->vel, svI);
+            actor->posZ += g_anSineLut[st->timer * 4] / 12;
           }
         }
 
@@ -1955,24 +1955,24 @@ void func_level_23_8007CFB4(void) {
       }
       if (actor->unk49 < 3) {
         if (actor->type == 14) {
-          actor->unk44 = (D_8006CC78[st->roll] >> 9) + st->pitch;
-          actor->unk45 = (D_8006CBF8[st->roll] >> 9) + st->yaw;
-          st->roll += D_800756CC << 1;
+          actor->unk44 = (g_anCosineLut[st->roll] >> 9) + st->pitch;
+          actor->unk45 = (g_anSineLut[st->roll] >> 9) + st->yaw;
+          st->roll += g_nFrameStep << 1;
         } else if (actor->type == 15) {
           actor->unk46 += 8;
           actor->unk45 -= 6;
         } else {
-          actor->unk44 = (D_8006CC78[st->roll] >> 7) + st->pitch;
-          actor->unk45 = (D_8006CBF8[st->roll] >> 7) + st->yaw;
-          st->roll += D_800756CC << 1;
+          actor->unk44 = (g_anCosineLut[st->roll] >> 7) + st->pitch;
+          actor->unk45 = (g_anSineLut[st->roll] >> 7) + st->yaw;
+          st->roll += g_nFrameStep << 1;
         }
       }
       if ((st->timer > 32 && dist < 512 && (-384 < (SPY.posZ - actor->posZ)) &&
            ((SPY.posZ - actor->posZ) < 512)) ||
           (actor->unk49 == 3 && st->timer > 64)) {
 
-        if (D_80075898 != 0) {
-          ChaserState *cs = (ChaserState *)D_80075898->state;
+        if (g_pLevelOverlayInitRecord != 0) {
+          ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
           if (cs->owner == actor) {
             cs->owner = 0;
@@ -1980,26 +1980,26 @@ void func_level_23_8007CFB4(void) {
         }
 
         if (actor->type == 14) {
-          func_80055A78(D_800761D4[0], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
           func_800529E4(actor, 4);
-          D_800758E4(16, 70, &actor->posX, (void *)8);
-          D_800758E4(16, 70, &actor->posX, (void *)0x10);
+          g_pfnLevelOverlayParticleSpawn(16, 70, &actor->posX, (void *)8);
+          g_pfnLevelOverlayParticleSpawn(16, 70, &actor->posX, (void *)0x10);
 
-          if (D_8007582C < 99) {
-            D_8007582C++;
+          if (g_nExtraLives < 99) {
+            g_nExtraLives++;
           }
 
           func_8003B854(0, actor);
-          func_80052568(actor);
+          DespawnActorRecord(actor);
           continue;
         } else if (actor->type == 15) {
-          func_80055A78(D_800761D4[0], actor, 16, 0);
-          D_800758E8++;
+          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
+          g_nSparxFoodCount++;
 
-          func_80052568(actor);
+          DespawnActorRecord(actor);
         } else {
           func_8003B9D4(actor);
-          func_80052568(actor);
+          DespawnActorRecord(actor);
           continue;
         }
       }
@@ -2017,16 +2017,16 @@ void func_level_23_8007CFB4(void) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
-        func_80017048(actor->unk20, svF, svF);
-        func_80017758(svF, svF, &actor->posX);
-        D_800758E4(2, 0x42, svF, 0);
+        RotateVectorByMatrix(actor->unk20, svF, svF);
+        AddVector(svF, svF, &actor->posX);
+        g_pfnLevelOverlayParticleSpawn(2, 0x42, svF, 0);
 
         svF[0] = 0;
         svF[1] = -0x64;
         svF[2] = 0;
-        func_800170C0(svF, svF);
-        func_80017758(svF, svF, &actor->posX);
-        D_800758E4(2, 0x42, svF, 0);
+        ApplyActiveGteRotation(svF, svF);
+        AddVector(svF, svF, &actor->posX);
+        g_pfnLevelOverlayParticleSpawn(2, 0x42, svF, 0);
       }
 
       if (SPY.u164 >= 3) {
@@ -2063,12 +2063,12 @@ void func_level_23_8007CFB4(void) {
         if (target != 0 && target->type == 16) {
           target->unk48 = 0;
         }
-        D_80075898 = 0;
-        func_80052568(actor);
+        g_pLevelOverlayInitRecord = 0;
+        DespawnActorRecord(actor);
         break;
       }
 
-      if (st->rider != 0 && func_80017990(&actor->posX, &SPY.posX) > 8192) {
+      if (st->rider != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 8192) {
         st->timer = 0;
       }
 
@@ -2084,13 +2084,13 @@ void func_level_23_8007CFB4(void) {
           int dist;
           int targetSpeed;
 
-          func_80017700(svA, &target->posX);
+          CopyVector(svA, &target->posX);
           if (isPickupAnimPhase == 0) {
-            svA[0] -= D_8006CC78[st->rider->unk46] >> 4;
-            svA[1] -= D_8006CBF8[st->rider->unk46] >> 4;
+            svA[0] -= g_anCosineLut[st->rider->unk46] >> 4;
+            svA[1] -= g_anSineLut[st->rider->unk46] >> 4;
           } else {
-            svA[0] -= D_8006CC78[st->rider->unk46] >> 6;
-            svA[1] -= D_8006CBF8[st->rider->unk46] >> 6;
+            svA[0] -= g_anCosineLut[st->rider->unk46] >> 6;
+            svA[1] -= g_anSineLut[st->rider->unk46] >> 6;
           }
 
           if (isPickupAnimPhase) {
@@ -2111,13 +2111,13 @@ void func_level_23_8007CFB4(void) {
             }
           }
 
-          func_8001778C(svA, svA, &actor->posX);
-          dist = func_800171FC(svA, 1);
+          SubtractVector(svA, svA, &actor->posX);
+          dist = VectorLength(svA, 1);
 
           if (isPickupAnimPhase == 0) {
             if (func_80037F90(st, 4) != 0 ||
                 (st->timer < 80 &&
-                 func_80017908((actor->unk46 + (bp->dir * 110)) & 0xFF,
+                 AbsAngleDelta8((actor->unk46 + (bp->dir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
               if (actor->unk3D != actor->unk3D + 1) {
                 D_80075794 = 0;
@@ -2127,22 +2127,22 @@ void func_level_23_8007CFB4(void) {
           }
           targetSpeed = isPickupAnimPhase ? 150 : 130;
           if (targetSpeed + 5 < dist) {
-            func_800175B8(svA, dist, targetSpeed + 5);
+            ScaleVector3ByRatio(svA, dist, targetSpeed + 5);
           } else {
-            func_800175B8(svA, dist, targetSpeed - 5);
+            ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
           }
-          func_80017758(&actor->posX, &actor->posX, svA);
-          func_80038EE0(actor, func_80016AB4(svA[0], svA[1], 0), 0xA, 0, 0);
-          pitchAngle = func_80016AB4(func_800171FC(svA, 0), svA[2], 0);
+          AddVector(&actor->posX, &actor->posX, svA);
+          func_80038EE0(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
+          pitchAngle = ArcTan2(VectorLength(svA, 0), svA[2], 0);
           actor->unk45 = pitchAngle;
           actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
           break;
         }
         case 1: {
           SPY.u164++;
-          func_80055A78(D_800761D4[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
           actor->unk49++;
-          func_80052568(st->rider);
+          DespawnActorRecord(st->rider);
           break;
         }
         case 2: {
@@ -2160,43 +2160,43 @@ void func_level_23_8007CFB4(void) {
           PickupState *cp = st->rider->state;
           int dist;
 
-          func_8001778C(svJ, &st->rider->posX, &actor->posX);
-          dist = func_800171FC(svJ, 1);
+          SubtractVector(svJ, &st->rider->posX, &actor->posX);
+          dist = VectorLength(svJ, 1);
 
           if (dist < 512) {
             cp->timer = 0;
-            cp->pitch = func_8006272C() & 0xE;
-            cp->yaw = func_8006272C() & 0xE;
-            cp->roll = func_8006272C() & 0xE;
+            cp->pitch = GetRandomU32() & 0xE;
+            cp->yaw = GetRandomU32() & 0xE;
+            cp->roll = GetRandomU32() & 0xE;
 
-            func_80017700(cp->vel, &st->rider->posX);
+            CopyVector(cp->vel, &st->rider->posX);
             st->rider->unk49 = 3;
 
             if (st->rider->type == 14)
-              D_800758E4(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, D_8006E494);
             else if (st->rider->type == 15)
-              D_800758E4(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, D_8006E490);
             else
-              D_800758E4(1, 0xC, (int *)actor, D_8006E330[st->rider->type]);
+              g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, D_8006E330[st->rider->type]);
 
             st->rider = 0;
-            if (!func_80056DC4(actor, AS_PTRU8(D_800761D4)[0x2F])) {
+            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
               D_800761DC = 1;
               D_800761EA = 0x3600;
               D_800761E8 = 0x3600;
-              func_80055A78(D_800761D4[0x2F], actor, 8, &actor->unk54);
+              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
             }
           } else {
             int dcheck = 310;
 
             if (dcheck < dist)
-              func_800175B8(svJ, dist, 310);
+              ScaleVector3ByRatio(svJ, dist, 310);
             else
-              func_800175B8(svJ, dist, 290);
+              ScaleVector3ByRatio(svJ, dist, 290);
 
-            func_80017758(&actor->posX, &actor->posX, svJ);
-            func_80038EE0(actor, func_80016AB4(svJ[0], svJ[1], 0), 0xA, 0, 0);
-            pitchAngle = func_80016AB4(func_800171FC(svJ, 0), svJ[2], 0);
+            AddVector(&actor->posX, &actor->posX, svJ);
+            func_80038EE0(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
+            pitchAngle = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
             actor->unk45 = pitchAngle;
             actor->unk45 = func_80038098(pitchAngle, 0, 0x30);
           }
@@ -2209,18 +2209,18 @@ void func_level_23_8007CFB4(void) {
         if (st->timer <= 0) {
 
           svF[0] = -0x258;
-          svF[1] = (func_8006272C() & 0x310) - 0x188;
+          svF[1] = (GetRandomU32() & 0x310) - 0x188;
           if (CAM.state == 3) {
-            svF[2] = (func_8006272C() & 0x7F) + 0x64;
+            svF[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
-            svF[2] = (func_8006272C() & 0x1FF) - 0xC8;
+            svF[2] = (GetRandomU32() & 0x1FF) - 0xC8;
           }
           st->vx = svF[0];
           st->vy = svF[1];
           st->vz = svF[2];
-          st->timer = func_8006272C() & 0x7B;
+          st->timer = GetRandomU32() & 0x7B;
         } else {
-          st->timer -= D_800756CC;
+          st->timer -= g_nFrameStep;
           if (CAM.state == 3) {
             svF[0] = st->vx + (SPY.u118 >> 2);
             svF[1] = st->vy;
@@ -2236,14 +2236,14 @@ void func_level_23_8007CFB4(void) {
             svF[1] = st->vy;
             svF[2] = st->vz;
           }
-          func_80017048(&SPY.u034, svF, svF);
-          func_80017758(svF, svF, &SPY.posX);
-          func_8001778C(svF, svF, &actor->posX);
-          func_800176C8(svF, 2);
-          func_80017758(&actor->posX, &actor->posX, svF);
+          RotateVectorByMatrix(&SPY.u034, svF, svF);
+          AddVector(svF, svF, &SPY.posX);
+          SubtractVector(svF, svF, &actor->posX);
+          RShiftVector3(svF, 2);
+          AddVector(&actor->posX, &actor->posX, svF);
 
-          if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
-            func_80017700(&actor->posX, &D_80076B80);
+          if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
+            CopyVector(&actor->posX, &g_anCollisionResolvedPos);
           }
 
           if (svF[2] > 32)
@@ -2294,7 +2294,7 @@ void func_level_23_8007CFB4(void) {
         Actor *reward;
         int i;
 
-        reward = D_800758CC(st->reward + 0x158, actor);
+        reward = g_pfnLevelOverlayInitHook(st->reward + 0x158, actor);
         if (reward != 0) {
           reward->unk48 = 1;
         }
@@ -2302,15 +2302,15 @@ void func_level_23_8007CFB4(void) {
         st->unk28 = 0xC8;
         st->unk30 = 0x15E;
         st->heading = func_80038178(
-            func_80016AB4(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
         for (i = 0; i < 3; i++) {
-          if (D_800756A8 - D_800756A4 < 0x15) {
+          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          D_800758CC(0x167, actor);
-          D_800758CC(0x168, actor);
-          D_800758CC(0x169, actor);
+          g_pfnLevelOverlayInitHook(0x167, actor);
+          g_pfnLevelOverlayInitHook(0x168, actor);
+          g_pfnLevelOverlayInitHook(0x169, actor);
         }
         func_8003851C(actor, 0, 0);
         actor->unk48 = 1;
@@ -2328,10 +2328,10 @@ void func_level_23_8007CFB4(void) {
             st->path[1] = 0;
           }
           st->unk40 = 0;
-          func_800176F0(st->unk34);
+          ZeroVector(st->unk34);
         }
         d = actor->unk46;
-        if (D_80078AD4 < 8 &&
+        if (g_nSpyroStateFlags < 8 &&
             func_8003BFC0(actor, st->path, st->unk34, &st->unk40, 0xA, 4) == 2) {
           st->pathIdx = (st->pathIdx + 1) & 3;
           switch (st->pathIdx) {
@@ -2382,12 +2382,12 @@ void func_level_23_8007CFB4(void) {
         }
         /* fall through */
       case 2:
-        func_80038DC0(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (func_80039910(actor, &st->unk30, st->heading, &st->unk28, 0xC,
                           0xC) == 3) {
-          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
-          D_800758CC(0x190, actor);
-          func_80052568(actor);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
+          g_pfnLevelOverlayInitHook(0x190, actor);
+          DespawnActorRecord(actor);
           continue;
         }
         break;
@@ -2407,22 +2407,22 @@ void func_level_23_8007CFB4(void) {
         continue;
       }
 
-      actor->unk44 = (unsigned short)D_8006CC78[st->angle] >> 7;
-      actor->unk45 = (unsigned short)D_8006CBF8[st->angle] >> 7;
-      st->angle = st->angle + D_800756CC * 2;
+      actor->unk44 = (unsigned short)g_anCosineLut[st->angle] >> 7;
+      actor->unk45 = (unsigned short)g_anSineLut[st->angle] >> 7;
+      st->angle = st->angle + g_nFrameStep * 2;
 
-      if (func_80017990(&actor->posX, &spy->posX) < 0x200) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) < 0x200) {
         dz = (actor->posZ - actor->unk38) - SPY.posZ;
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->unk38) < 0x200) {
-          func_80055A78(D_800761D4[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
           func_800529E4(actor, 4);
 
           for (i = 0; i < 6; i++) {
-            D_800758E4(1, 0xC, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
+            g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
           }
 
-          D_80075830 = 1;
+          g_nLevelEggCount = 1;
           actor->unk50 = 0;
           actor->unk52 = 0;
           actor->unk51 = 0;
@@ -2435,21 +2435,21 @@ void func_level_23_8007CFB4(void) {
 
       if (st->anim != 0xFF) {
         func_800529E4(actor, 4);
-        func_80017048(actor->unk20, &D_8006E5AC, D_80077108[st->anim].pos);
-        func_80017758(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+        RotateVectorByMatrix(actor->unk20, &D_8006E5AC, D_80077108[st->anim].pos);
+        AddVector(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
                       &actor->posX);
         if (D_80077108[st->anim].flag < 5) {
           st->anim = 0xFF;
         }
       } else if (st->timer >= 0xF8) {
         ang = func_8003AAEC(actor, &D_8006E5AC);
-        if (ang >= 0 && func_80017990(&actor->posX, &SPY.posX) < 0x4000) {
+        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
           st->anim = ang;
         }
-        st->timer = (func_8006272C() & 0x3F) + 0x18;
+        st->timer = (GetRandomU32() & 0x3F) + 0x18;
       }
 
-      st->timer = st->timer + D_800756CC;
+      st->timer = st->timer + g_nFrameStep;
       continue;
     }
 
@@ -2482,34 +2482,34 @@ void func_level_23_8007CFB4(void) {
           actor->posZ += st->vel[2];
 
           if (actor->posZ > 1023) {
-            if (func_8004BE4C(&actor->posX, 0x100, 0x100)) {
+            if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
               
               int dot;
 
-              actor->posX = D_80076B80;
+              actor->posX = g_anCollisionResolvedPos;
               actor->posY = AS_I32(D_80076B84);
-              actor->posZ = AS_I32(D_80076B88);
+              actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              func_80017330(&D_80077368, 0x1000);
+              SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
 
-              dot = (st->vel[0] * D_80077368 + st->vel[1] * D_8007736C +
+              dot = (st->vel[0] * g_anCollisionProbeVec + st->vel[1] * D_8007736C +
                      st->vel[2] * D_80077370) >>
                     11;
 
               if (dot < 0) {
-                func_800175B8(&D_80077368, 0x1000, -dot);
-                st->vel[0] += D_80077368;
+                ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, -dot);
+                st->vel[0] += g_anCollisionProbeVec;
                 st->vel[1] += AS_I32(D_8007736C);
                 st->vel[2] += AS_I32(D_80077370);
               }
             }
             st->life--;
           } else {
-            func_80052568(actor);
+            DespawnActorRecord(actor);
           }
         } else {
-          D_800758E4(10, 0x47, &actor->posX, 0);
-          func_80052568(actor);
+          g_pfnLevelOverlayParticleSpawn(10, 0x47, &actor->posX, 0);
+          DespawnActorRecord(actor);
         }
       }
       break;
@@ -2526,36 +2526,36 @@ void func_level_23_8007CFB4(void) {
 
         func_8003851C(actor, 0, 0);
         func_8003CAC4(st[1]);
-        reward = D_800758CC(st[0] + 0x158, actor);
+        reward = g_pfnLevelOverlayInitHook(st[0] + 0x158, actor);
         if (reward != 0) {
           reward->unk48 = 1;
         }
 
         for (i = 0; i < 2; i++) {
-          if (D_800756A8 - D_800756A4 < 0x15) {
+          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          D_800758CC(0x1DE, actor);
-          D_800758CC(0x1DF, actor);
+          g_pfnLevelOverlayInitHook(0x1DE, actor);
+          g_pfnLevelOverlayInitHook(0x1DF, actor);
         }
         for (i = 0; i < 6; i++) {
-          if (D_800756A8 - D_800756A4 < 0x15) {
+          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          D_800758CC(0x1E0, actor);
+          g_pfnLevelOverlayInitHook(0x1E0, actor);
         }
 
-        D_800758E4(5, 2, &actor->posX, 0);
-        D_800758E4(0x10, 0x46, &actor->posX, (void *)0x20);
-        func_80052568(actor);
+        g_pfnLevelOverlayParticleSpawn(5, 2, &actor->posX, 0);
+        g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (void *)0x20);
+        DespawnActorRecord(actor);
         break;
       }
 
       {
-        Model **models = D_80076378;
+        Model **models = g_apActorMeshTable;
 
-        if (func_80056DC4(actor, D_80076824[5]) == 0 && D_800757D8 == 0) {
-          func_80055A78(models[actor->type]->m_Sounds[1], actor, 8,
+        if (GetSoundVoiceStatusByOwner(actor, D_80076824[5]) == 0 && g_nGamestate == 0) {
+          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
                         &actor->unk54);
         }
       }
@@ -2569,7 +2569,7 @@ void func_level_23_8007CFB4(void) {
         int i;
 
         for (i = 0; i < st->path[0]; i++) {
-          int d = func_80017990(&actor->posX, (int *)(st->path + ((i << 4) + 8)));
+          int d = ApproxDist2D(&actor->posX, (int *)(st->path + ((i << 4) + 8)));
 
           if (d < best) {
             best = d;
@@ -2583,7 +2583,7 @@ void func_level_23_8007CFB4(void) {
         Actor *reward;
         int i;
 
-        reward = D_800758CC(st->reward + 0x158, actor);
+        reward = g_pfnLevelOverlayInitHook(st->reward + 0x158, actor);
         if (reward != 0) {
           reward->unk48 = 1;
         }
@@ -2591,15 +2591,15 @@ void func_level_23_8007CFB4(void) {
         st->unk14 = 0;
         st->unk1C = 0x15E;
         st->heading = func_80038178(
-            func_80016AB4(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
         for (i = 0; i < 3; i++) {
-          if (D_800756A8 - D_800756A4 < 0x15) {
+          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          D_800758CC(0x1E1, actor);
-          D_800758CC(0x1E2, actor);
-          D_800758CC(0x1E3, actor);
+          g_pfnLevelOverlayInitHook(0x1E1, actor);
+          g_pfnLevelOverlayInitHook(0x1E2, actor);
+          g_pfnLevelOverlayInitHook(0x1E3, actor);
         }
         func_8003851C(actor, 0, 0);
         actor->unk48 = 1;
@@ -2611,7 +2611,7 @@ void func_level_23_8007CFB4(void) {
       case 0: {
         int d = actor->unk46;
 
-        if (D_8007596C == 0xF || D_8007596C == 0x2D) {
+        if (g_nActiveLevelId == 0xF || g_nActiveLevelId == 0x2D) {
           func_8003BFC0(actor, st->path, st->unk20, &st->unk2C, 0xC, 4);
         } else {
           func_8003BFC0(actor, st->path, st->unk20, &st->unk2C, 0x16, 0);
@@ -2637,9 +2637,9 @@ void func_level_23_8007CFB4(void) {
       case 1:
         if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
                           0xC) == 3) {
-          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
-          D_800758CC(0x190, actor);
-          func_80052568(actor);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
+          g_pfnLevelOverlayInitHook(0x190, actor);
+          DespawnActorRecord(actor);
           continue;
         }
         if (D_80075794 != 0) {
@@ -2650,9 +2650,9 @@ void func_level_23_8007CFB4(void) {
       case 2:
         if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
                           0xC) == 3) {
-          func_80055A78(D_800761D4[0x1D], actor, 8, &actor->unk54);
-          D_800758CC(0x190, actor);
-          func_80052568(actor);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
+          g_pfnLevelOverlayInitHook(0x190, actor);
+          DespawnActorRecord(actor);
           continue;
         }
         break;
@@ -2668,28 +2668,28 @@ void func_level_23_8007CFB4(void) {
 
       switch (actor->unk48) {
       case 0:
-        if (D_80078618[D_8007595C] != 0) {
-          func_80052568(actor);
+        if (g_anWorldPersistentFlags[D_8007595C] != 0) {
+          DespawnActorRecord(actor);
           break;
         }
         do {
         } while (0);
         func_80038EE0(actor,
-                      func_80038074(func_80016AB4(spy->posX - actor->posX,
+                      func_80038074(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
                                     0x40),
                       4, 0, 0);
         break;
       case 1:
         D_80075908 += (actor->type - 0x158) * 60;
-        func_80017AA4(&actor->posX, &actor->posX);
+        ProjectWorldPointGTEUnscaled(&actor->posX, &actor->posX);
         actor->unk44 = 0;
         actor->unk45 = 0;
         actor->unk46 = 0xC0;
         actor->unk50 = 0xFF;
         actor->unk47 = 0x20;
         actor->unk48 = 2;
-        func_80055A78(D_800761D4[0x23], actor, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
         break;
       case 2: {
         int d;
@@ -2697,8 +2697,8 @@ void func_level_23_8007CFB4(void) {
         svU[0] = 0x1A4;
         svU[1] = 0x30;
         svU[2] = 0x157C;
-        func_8001778C(svU, svU, &actor->posX);
-        d = func_800171FC(svU, 1);
+        SubtractVector(svU, svU, &actor->posX);
+        d = VectorLength(svU, 1);
         if (d < 0x20) {
           actor->unk48 = 3;
           actor->posX = 0x1A4;
@@ -2707,17 +2707,17 @@ void func_level_23_8007CFB4(void) {
           *st = 0x1E;
         } else {
           if (d > 0x80) {
-            func_800175B8(svU, d, 0x80);
+            ScaleVector3ByRatio(svU, d, 0x80);
           }
-          func_80017758(&actor->posX, &actor->posX, svU);
+          AddVector(&actor->posX, &actor->posX, svU);
         }
         break;
       }
       case 3:
         if (func_80037F90(st, 4) != 0) {
           D_80075840 += (actor->type - 0x158) * 60;
-          func_80055A78(D_800761D4[0x22], actor, 0x10, 0);
-          func_80052568(actor);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x22], actor, 0x10, 0);
+          DespawnActorRecord(actor);
         }
         break;
       }
@@ -2728,19 +2728,19 @@ void func_level_23_8007CFB4(void) {
     case 0x161: {
       TargetState *st = actor->state;
 
-      if (D_80078618[D_8007595C] == 0 && st->helper == 0) {
-        st->helper = D_800758CC(st->helperType + 0x158, actor);
+      if (g_anWorldPersistentFlags[D_8007595C] == 0 && st->helper == 0) {
+        st->helper = g_pfnLevelOverlayInitHook(st->helperType + 0x158, actor);
       }
 
-      if (func_80017990(&actor->posX, &spy->posX) < 3000) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) < 3000) {
         int height = actor->posZ - actor->unk38;
         int drop = height - SPY.posZ;
 
         if (drop > 0 ? drop < 4000 : SPY.posZ - height < 4000) {
-          func_8001778C(svV, &actor->posX, &spy->posX);
+          SubtractVector(svV, &actor->posX, &spy->posX);
           svW[2] = (svV[2] - 0xC0) * 4;
           svV[2] = (svW[2] - svV[2]) >> 2;
-          if (func_800171FC(svV, 1) < 0x578 &&
+          if (VectorLength(svV, 1) < 0x578 &&
               func_80038D54(&spy->posX, st) < 0x200) {
             int i;
 
@@ -2753,34 +2753,34 @@ void func_level_23_8007CFB4(void) {
               Actor *shard;
               BurstState *ss;
 
-              if (D_800756A8 - D_800756A4 < 0x15) {
+              if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
                 break;
               }
-              shard = D_800758CC(i + 0x176, actor);
+              shard = g_pfnLevelOverlayInitHook(i + 0x176, actor);
               ss = shard->state;
-              func_80017048(actor->unk20, &D_8006E824[i * 3], svV);
-              func_80017758(&shard->posX, &actor->posX, svV);
-              func_800176C8(svV, 5);
-              svW[0] = (func_8006272C() & 0x7E) - 0x3F;
-              svW[1] = (func_8006272C() & 0x7E) - 0x3F;
-              svW[2] = (func_8006272C() & 0x7E) - 0x3F;
-              func_80017758(&ss->posX, svV, svW);
-              func_80017758(&shard->posX, &shard->posX, &ss->posX);
-              ss->spinX = (func_8006272C() & 2) - 1;
-              ss->spinY = (func_8006272C() & 2) - 1;
-              ss->spinZ = (func_8006272C() & 2) - 1;
+              RotateVectorByMatrix(actor->unk20, &D_8006E824[i * 3], svV);
+              AddVector(&shard->posX, &actor->posX, svV);
+              RShiftVector3(svV, 5);
+              svW[0] = (GetRandomU32() & 0x7E) - 0x3F;
+              svW[1] = (GetRandomU32() & 0x7E) - 0x3F;
+              svW[2] = (GetRandomU32() & 0x7E) - 0x3F;
+              AddVector(&ss->posX, svV, svW);
+              AddVector(&shard->posX, &shard->posX, &ss->posX);
+              ss->spinX = (GetRandomU32() & 2) - 1;
+              ss->spinY = (GetRandomU32() & 2) - 1;
+              ss->spinZ = (GetRandomU32() & 2) - 1;
               ss->life = 0x3C;
             }
 
             func_8003851C(actor, 0, 0);
-            func_80052568(actor);
+            DespawnActorRecord(actor);
             break;
           }
         }
       }
 
       {
-        int c = func_80016CB0(D_800758C8 << 4);
+        int c = LookupCosine(g_nVblankTickCount << 4);
 
         c = (ABS(c) << 4) >> 12;
         if (c >= 0x40) {
@@ -2801,7 +2801,7 @@ void func_level_23_8007CFB4(void) {
       int t;
       int y;
 
-      func_80017700(&actor->posX, &SPY.posX);
+      CopyVector(&actor->posX, &SPY.posX);
 
       if (st->icon[0] == 0) {
         D_80075908 = st->time;
@@ -2824,7 +2824,7 @@ void func_level_23_8007CFB4(void) {
         D_800758F8 = -1;
 
         for (i = 3; i >= 0; i--) {
-          st->digit[i] = D_800758CC(0x147, actor);
+          st->digit[i] = g_pfnLevelOverlayInitHook(0x147, actor);
           st->digit[i]->unk50 = 0xFF;
           st->digit[i]->unk47 = 0x20;
           st->digit[i]->posZ = 0x1000;
@@ -2839,9 +2839,9 @@ void func_level_23_8007CFB4(void) {
         st->digit[3]->posX = 0x1C4;
         st->digit[3]->posY = 0x1E;
 
-        if (D_80078618[D_8007595C] != 0) {
+        if (g_anWorldPersistentFlags[D_8007595C] != 0) {
           for (i = 4; i < 8; i++) {
-            st->digit[i] = D_800758CC(0x147, actor);
+            st->digit[i] = g_pfnLevelOverlayInitHook(0x147, actor);
             st->digit[i]->unk50 = 0xFF;
             st->digit[i]->unk47 = 0x20;
             st->digit[i]->unk46 = 0;
@@ -2861,7 +2861,7 @@ void func_level_23_8007CFB4(void) {
         }
 
         for (i = 0; i < 8; i++) {
-          st->icon[i] = D_800758CC(st->types[0], actor);
+          st->icon[i] = g_pfnLevelOverlayInitHook(st->types[0], actor);
         }
 
         {
@@ -2876,20 +2876,20 @@ void func_level_23_8007CFB4(void) {
         }
 
         for (i = 0, y = 0x3C; i < 4; i++) {
-          D_80077FEC[i].type = st->types[i];
-          func_8003A720(&D_80077FEC[i]);
-          func_800529CC(&D_80077FEC[i]);
-          D_80077FEC[i].posY = y;
+          g_abHudIconActorRecords[i].type = st->types[i];
+          InitActorRenderDefaults(&g_abHudIconActorRecords[i]);
+          HideActorRenderRecord(&g_abHudIconActorRecords[i]);
+          g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
-          D_80077FEC[i].unk47 = 0x20;
-          D_80077FEC[i].unk50 = 0xFF;
-          D_80077FEC[i].posX = 0x3C;
-          D_80077FEC[i].posZ = 0x1000;
-          D_80077FEC[i].unk4F = i + 3;
+          g_abHudIconActorRecords[i].unk47 = 0x20;
+          g_abHudIconActorRecords[i].unk50 = 0xFF;
+          g_abHudIconActorRecords[i].posX = 0x3C;
+          g_abHudIconActorRecords[i].posZ = 0x1000;
+          g_abHudIconActorRecords[i].unk4F = i + 3;
         }
       }
 
-      if (D_80078618[D_8007595C] != 0) {
+      if (g_anWorldPersistentFlags[D_8007595C] != 0) {
         t = D_800758F4;
       } else {
         t = D_80075840;
@@ -2902,25 +2902,25 @@ void func_level_23_8007CFB4(void) {
 
       if (D_80078630[0] + D_80078630[1] + D_80078630[2] + D_80078630[3] !=
           0x20) {
-        if (D_800756A0 == 0 && D_80078AD4 < 8 &&
-            D_80078618[D_8007595C] == 0) {
-          D_80075908 -= D_800756CC;
-          D_80075840 -= D_800756CC;
+        if (D_800756A0 == 0 && g_nSpyroStateFlags < 8 &&
+            g_anWorldPersistentFlags[D_8007595C] == 0) {
+          D_80075908 -= g_nFrameStep;
+          D_80075840 -= g_nFrameStep;
           if (D_80075908 < 0) {
-            D_80075694();
+            g_pfnLevelFallImpactCallback();
           }
         }
-        D_800758F4 += D_800756CC;
+        D_800758F4 += g_nFrameStep;
         if (D_800758F4 > 0x8C9F) {
           D_800758F4 = 0x8C9F;
         }
       } else {
-        func_8003EA68(0x20);
-        D_80078AD4 = 3;
-        D_80078C4C = 0x80004000;
+        ChangeSpyroState(0x20);
+        g_nSpyroStateFlags = 3;
+        g_dwSpyroRequestMask = 0x80004000;
       }
 
-      if (D_80078618[D_8007595C] != 0) {
+      if (g_anWorldPersistentFlags[D_8007595C] != 0) {
         t = D_800758F4;
         i = t / 3600;
         if (i != 0) {
@@ -2960,7 +2960,7 @@ void func_level_23_8007CFB4(void) {
         i = t / 6 - min * 10;
         st->digit[3]->type = i + 0x104;
 
-        if (D_80078618[D_8007595C] == 0) {
+        if (g_anWorldPersistentFlags[D_8007595C] == 0) {
           i = min;
           if (i < prevMin) {
             if (i < 6) {
@@ -2969,13 +2969,13 @@ void func_level_23_8007CFB4(void) {
               st->hurry = 0;
             }
             if (i < 10) {
-              func_80055A78(D_800761D4[0x21], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[0x21], actor, 0x10, 0);
             }
           }
           if (st->hurry != 0) {
             i = t / 6;
             if (i < prevTenth) {
-              func_80055A78(D_800761D4[0x25], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[0x25], actor, 0x10, 0);
             }
           }
         }
@@ -2986,7 +2986,7 @@ void func_level_23_8007CFB4(void) {
           st->count--;
           st->spent[st->count]->unk48 = 2;
           st->timer = 0x10;
-          func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
+          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[0x24], actor, 0x10, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -2999,18 +2999,18 @@ void func_level_23_8007CFB4(void) {
               st->slot[D_800757C4]->posZ = 0x1000;
               st->slot[D_800757C4]->unk48 = 1;
             } else {
-              func_80052568(a);
+              DespawnActorRecord(a);
             }
             st->spent[i] = 0;
-            func_80055A78(AS_PTRU8(D_800761D4)[0x24], actor, 0x10, 0);
+            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[0x24], actor, 0x10, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&
                  st->slot[3] != 0) {
         int s = st->slot[0]->unk48;
 
-        if (s == 4 || (D_80077378 & 0x40)) {
-          D_80075694();
+        if (s == 4 || (g_dwPadPressed & 0x40)) {
+          g_pfnLevelFallImpactCallback();
         } else if (s == 1) {
           for (i = 0; i < 4; i++) {
             st->slot[i]->unk49 = i;
@@ -3045,7 +3045,7 @@ void func_level_23_8007CFB4(void) {
             if (D_80078630[D_800758F8] == 8) {
               for (i = 0; i < 8; i++) {
                 st->spent[i] = st->icon[i];
-                st->icon[i] = D_800758CC(st->types[0], actor);
+                st->icon[i] = g_pfnLevelOverlayInitHook(st->types[0], actor);
               }
               st->timer = 0;
               st->count = 8;
@@ -3060,7 +3060,7 @@ void func_level_23_8007CFB4(void) {
         D_800758F8 = -1;
       }
 
-      if (D_800757D8 == 7) {
+      if (g_nGamestate == 7) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
             st->icon[i]->unk50 = 0;
@@ -3101,7 +3101,7 @@ void func_level_23_8007CFB4(void) {
 
         st->life -= 1;
       } else {
-        func_80052568(actor);
+        DespawnActorRecord(actor);
         continue;
       }
       break;
@@ -3112,7 +3112,7 @@ void func_level_23_8007CFB4(void) {
       if (D_80075794 == 0) {
         break;
       }
-      func_80052568(actor);
+      DespawnActorRecord(actor);
       continue;
 
     /* A 0x161 burst shard: drifts and tumbles until its life runs out or it
@@ -3132,12 +3132,12 @@ void func_level_23_8007CFB4(void) {
       BurstState *ss = actor->state;
 
       if (actor->unk51 != 0 && func_80037F90(&ss->life, 4) == 0) {
-        func_80017758(&actor->posX, &actor->posX, &ss->posX);
+        AddVector(&actor->posX, &actor->posX, &ss->posX);
         actor->unk44 += ss->spinX;
         actor->unk45 += ss->spinY;
         actor->unk46 += ss->spinZ;
       } else {
-        func_80052568(actor);
+        DespawnActorRecord(actor);
       }
       break;
     }
@@ -3160,12 +3160,12 @@ void func_level_23_8007CFB4(void) {
         svW[0] = D_800757C4 * 50 + 0x1E;
         svW[1] = 0xC8;
         svW[2] = 0x1000;
-        func_80017758(&st->x, svW, &actor->posX);
-        func_800176C8(&st->x, 1);
-        func_8001778C(svW, &st->x, &actor->posX);
-        st->radius = func_800171FC(svW, 0);
+        AddVector(&st->x, svW, &actor->posX);
+        RShiftVector3(&st->x, 1);
+        SubtractVector(svW, &st->x, &actor->posX);
+        st->radius = VectorLength(svW, 0);
         st->angle =
-            func_80016AB4(actor->posX - st->x, st->y - actor->posY, 1);
+            ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
         actor->unk48 = 3;
         actor->unk46 += 8;
@@ -3173,24 +3173,24 @@ void func_level_23_8007CFB4(void) {
       case 3:
         st->phase -= 0x40;
         actor->posX =
-            st->x - ((st->radius * func_80016CB0(st->angle + st->phase)) >> 12);
+            st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
         actor->posY =
-            st->y + ((st->radius * func_80016C58(st->angle + st->phase)) >> 12);
+            st->y + ((st->radius * LookupSine(st->angle + st->phase)) >> 12);
         actor->unk46 += 8;
         if (st->phase <= 0) {
           actor->unk48 = 4;
         }
         break;
       case 5:
-        svW[0] = (D_8006CC78[actor->unk49 * 64] >> sh6) + 0x100;
-        svW[1] = ((D_8006CBF8[actor->unk49 * 64] * 5) >> 9) + 0x78;
+        svW[0] = (g_anCosineLut[actor->unk49 * 64] >> sh6) + 0x100;
+        svW[1] = ((g_anSineLut[actor->unk49 * 64] * 5) >> 9) + 0x78;
         svW[2] = 0x1000;
-        func_80017758(&st->x, svW, &actor->posX);
-        func_800176C8(&st->x, 1);
-        func_8001778C(svW, &st->x, &actor->posX);
-        st->radius = func_800171FC(svW, 0);
+        AddVector(&st->x, svW, &actor->posX);
+        RShiftVector3(&st->x, 1);
+        SubtractVector(svW, &st->x, &actor->posX);
+        st->radius = VectorLength(svW, 0);
         st->angle =
-            func_80016AB4(actor->posX - st->x, st->y - actor->posY, 1);
+            ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
         actor->unk48 = 6;
         actor->unk46 += 8;
@@ -3198,13 +3198,13 @@ void func_level_23_8007CFB4(void) {
       case 6:
         st->phase -= 0x40;
         actor->posX =
-            st->x - ((st->radius * func_80016CB0(st->angle + st->phase)) >> 12);
+            st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
         actor->posY =
-            st->y + ((st->radius * func_80016C58(st->angle + st->phase)) >> 12);
+            st->y + ((st->radius * LookupSine(st->angle + st->phase)) >> 12);
         actor->unk46 += 8;
         if (st->phase <= 0) {
           st->angle =
-              func_80016AB4(actor->posX - 0x100, actor->posY - 0x78, 1);
+              ArcTan2(actor->posX - 0x100, actor->posY - 0x78, 1);
           st->phase = -0x3000;
           st->radius = 0x40;
           actor->unk48 = 7;
@@ -3214,10 +3214,10 @@ void func_level_23_8007CFB4(void) {
         st->phase += 0x80;
         st->radius -= 2;
         actor->posX =
-            ((st->radius * (func_80016CB0(st->angle + st->phase) << 6)) >> 18) +
+            ((st->radius * (LookupCosine(st->angle + st->phase) << 6)) >> 18) +
             0x100;
         {
-          int s = func_80016C58(st->angle + st->phase) * 40;
+          int s = LookupSine(st->angle + st->phase) * 40;
 
           actor->posY = ((st->radius * s) >> 18) + 0x78;
         }
@@ -3259,14 +3259,14 @@ void func_level_23_8007CFB4(void) {
       OrbitState *st = actor->state;
 
       if (st->owner->unk48 == 0 || st->owner->unk49 != actor->unk48) {
-        func_80052568(actor);
+        DespawnActorRecord(actor);
       } else if (st->owner->type == 9) {
-        if (func_80017990(&st->owner->posX, &spy->posX) < 0x400) {
+        if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {
           int oldval;
-          oldval = D_8006CC78[actor->unk49];
+          oldval = g_anCosineLut[actor->unk49];
           actor->unk49 += 8;
           actor->unk46 = actor->unk46 - (oldval * 3 >> 9) +
-                         (D_8006CC78[actor->unk49] * 3 >> 9);
+                         (g_anCosineLut[actor->unk49] * 3 >> 9);
         } else {
           int anglespyro;
           int vecA[3];
@@ -3275,40 +3275,40 @@ void func_level_23_8007CFB4(void) {
           int vecD[3];
 
           actor->unk49 += 8;
-          anglespyro = func_80016AB4(spy->posX - st->owner->posX,
+          anglespyro = ArcTan2(spy->posX - st->owner->posX,
                                      SPY.posY - st->owner->posY, 0);
-          vecA[0] = D_8006CC78[anglespyro] * 3 >> 4;
-          vecA[1] = D_8006CBF8[anglespyro] * 3 >> 4;
+          vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
+          vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;
-          vecB[0] = D_8006CC78[anglespyro + 64 & 0xFF] >> 5;
-          vecB[1] = D_8006CBF8[(anglespyro + 64) & 0xFF] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + 0x80) & 0xFF;
-          actor->unk46 = anglespyro + (D_8006CC78[actor->unk49] * 3 >> 9);
-          func_800177C0(vecC, vecB, st->unk04 - 1);
-          func_800176A0(vecB, 1);
+          actor->unk46 = anglespyro + (g_anCosineLut[actor->unk49] * 3 >> 9);
+          ScaleVector3Sat(vecC, vecB, st->unk04 - 1);
+          LShiftVector3(vecB, 1);
           anglespyro = 2;
           anglespyro = (st->unk04 - 1) * anglespyro;
-          vecC[2] += D_8006CC78[anglespyro] * 3 >> 3;
-          vecD[0] = vecA[0] * D_8006CC78[anglespyro];
-          vecD[1] = vecA[1] * D_8006CC78[anglespyro];
+          vecC[2] += g_anCosineLut[anglespyro] * 3 >> 3;
+          vecD[0] = vecA[0] * g_anCosineLut[anglespyro];
+          vecD[1] = vecA[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
           anglespyro = ((anglespyro - st->unk06 * 4)) & 0xFF;
-          func_800177C0(vecB, vecB, st->unk06);
-          func_8001778C(vecC, vecC, vecB);
-          actor->posX = vecA[0] * D_8006CC78[anglespyro];
-          actor->posY = vecA[1] * D_8006CC78[anglespyro];
+          ScaleVector3Sat(vecB, vecB, st->unk06);
+          SubtractVector(vecC, vecC, vecB);
+          actor->posX = vecA[0] * g_anCosineLut[anglespyro];
+          actor->posY = vecA[1] * g_anCosineLut[anglespyro];
           actor->posZ = 0;
-          func_8001778C(&actor->posX, &actor->posX, vecD);
-          func_800176C8(&actor->posX, 10);
-          func_80017758(&actor->posX, &actor->posX, vecA);
-          func_80017758(&actor->posX, &actor->posX, &st->owner->posX);
-          func_8001778C(&actor->posX, &actor->posX, vecC);
-          actor->posZ = actor->posZ + (D_8006CC78[anglespyro] * 3 >> 3) + 0x600;
+          SubtractVector(&actor->posX, &actor->posX, vecD);
+          RShiftVector3(&actor->posX, 10);
+          AddVector(&actor->posX, &actor->posX, vecA);
+          AddVector(&actor->posX, &actor->posX, &st->owner->posX);
+          SubtractVector(&actor->posX, &actor->posX, vecC);
+          actor->posZ = actor->posZ + (g_anCosineLut[anglespyro] * 3 >> 3) + 0x600;
         }
       } else {
         actor->unk49 += 8;
-        actor->unk46 = actor->unk38 + (D_8006CC78[actor->unk49] * 3 >> 9);
+        actor->unk46 = actor->unk38 + (g_anCosineLut[actor->unk49] * 3 >> 9);
       }
     }
     break;
@@ -3331,15 +3331,15 @@ void func_level_23_8007CFB4(void) {
         actor->unk45 += st->spin[1];
         actor->unk46 += st->spin[2];
         if ((st->life & 3) == 0) {
-          trail[0] = func_8006272C() & 3;
-          trail[1] = func_8006272C() & 3;
+          trail[0] = GetRandomU32() & 3;
+          trail[1] = GetRandomU32() & 3;
           trail[2] = 0x14;
-          D_800758E4(1, 1, &actor->posX, trail);
+          g_pfnLevelOverlayParticleSpawn(1, 1, &actor->posX, trail);
         }
         st->life--;
       } else {
-        D_800758E4(8, 0x46, &actor->posX, (void *)0x10);
-        func_80052568(actor);
+        g_pfnLevelOverlayParticleSpawn(8, 0x46, &actor->posX, (void *)0x10);
+        DespawnActorRecord(actor);
         continue;
       }
       break;

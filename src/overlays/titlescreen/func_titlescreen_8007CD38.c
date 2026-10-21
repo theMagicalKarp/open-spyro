@@ -38,11 +38,11 @@ typedef struct {
   unsigned char nV;      /* 0x7 */
 } TitlescreenSprite;
 
-extern POLY_FT4 *D_800757B0;            /* primitive allocation pointer */
+extern POLY_FT4 *g_pPrimBufferWriteCursor;            /* primitive allocation pointer */
 extern unsigned int D_8006FABC[];       /* selection color words (P_CODEs) */
 extern TitlescreenSprite D_8006FACC[];  /* title-screen sprite table */
 
-extern void func_800168DC(POLY_FT4 *);  /* submit primitive to the OT */
+extern void AddPrimToOT(POLY_FT4 *);  /* submit primitive to the OT */
 
 void func_titlescreen_8007CD38(int nX, int nY, int nSprite, int nColorId) {
   POLY_FT4 *p;
@@ -53,7 +53,7 @@ void func_titlescreen_8007CD38(int nX, int nY, int nSprite, int nColorId) {
     nSprite = -nSprite;
   }
 
-  p = D_800757B0;
+  p = g_pPrimBufferWriteCursor;
   p->tag = 0x09000000;
   ((unsigned int *)p)[1] = D_8006FABC[nColorId];
 
@@ -72,9 +72,9 @@ void func_titlescreen_8007CD38(int nX, int nY, int nSprite, int nColorId) {
   p->tpage = D_8006FACC[nSprite].nTpage;
   p->clut = D_8006FACC[nSprite].nClut;
 
-  func_800168DC(p);
+  AddPrimToOT(p);
 
-  D_800757B0 = p + 1;
+  g_pPrimBufferWriteCursor = p + 1;
 
   if (bMirrored) {
     p->u0 = p->u1;

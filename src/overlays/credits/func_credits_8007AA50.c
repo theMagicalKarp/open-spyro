@@ -1,13 +1,13 @@
 /* func_credits_8007AA50 (0x8007AA50, credits overlay, 5504 B).
  *
  * Credits-sequence frame update (the Draw half is func_credits_8007BFD0).
- * While the sequence gate D_80075704 is -1 it first BUILDS the sequence:
+ * While the sequence gate g_nGamestate0fMode is -1 it first BUILDS the sequence:
  * clears the 100-entry glyph pool (0x1C stride, base D_8007589C =
  * func_credits_8007C338), loads the four credits VRAM strips through
- * func_80016500, waits on the CD stream, relocates the loaded script
+ * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
  * (D_80075708 line table, 0xC stride) and arms the scroll header
  * D_800757BC.  Then, every frame: advances the header cursor and the fade
- * level D_80075918, walks the visible line window
+ * level g_nGenericCountdown, walks the visible line window
  * [D_80075968 .. D_80075878], and for each newly revealed line lays its
  * text out into free glyph records -- one record per non-space character,
  * x advanced by 0xE (0x10 for digit runs, 3/4 of a space), ':' emitting two
@@ -15,8 +15,8 @@
  * small punctuation table.  A second pass re-centres the finished line on
  * (x - 0x100) / 2 and seeds each glyph's per-frame drift/colour deltas, and
  * two more passes run the per-glyph state machine (1 = fly in, 3 = fall
- * out) and trim the pool tail.  Finally the 5-way D_80075704 state machine
- * pages the next credits screen in through func_80016698 / func_80016958.
+ * out) and trim the pool tail.  Finally the 5-way g_nGamestate0fMode state machine
+ * pages the next credits screen in through StartCdReadAsync / CopyWords.
  *
  * ---- STATE 2026-09-02 (first session; superseded, see 2026-10-04-1 below) --
  * PARKED at **length-exact (1372/1372), frame-exact, running offset 0**, with
@@ -54,7 +54,7 @@
  *    (gcc 2.7.2 has no SRA).  Declaring `struct { int x,y,col,unkC,adv,one,
  *    big; } st;` reproduced the whole frame window, hole included.
  * 2. **`__attribute__((noreturn))` on the pool-overflow callee.**  The one
- *    `jal func_8006396C` inside the glyph loop made every loop-carried value
+ *    `jal exit` inside the glyph loop made every loop-carried value
  *    (slot, colon, the char pointer, the hoisted 0x10/0x100) call-crossing, so
  *    reload put them all in s-registers where the original uses a3/t0/t1/t2.
  *    `volatile void f();` is NOT enough in this cc1 -- the attribute is.
@@ -62,12 +62,12 @@
  *    back.  Probe first by deleting the call: if the registers change, the
  *    callee is noreturn in the original.
  * 3. **`volatile` on a pointer/state global is the only thing that stops cse
- *    store-forwarding.**  The original re-loads D_800761D0 before EVERY field
+ *    store-forwarding.**  The original re-loads g_pLevelSampleBankEntries before EVERY field
  *    store (six `lui/lw` pairs) although it had just stored a symbol address
  *    into it; ours folded the whole block to absolute `$at` addresses.  No
  *    A200 barrier reaches this (the fold is of the STORED VALUE, not of a
- *    held base).  `char *volatile D_800761D0;` fixes it in one line.  Same for
- *    D_800785E0 and D_80078604, which the original also re-reads after
+ *    held base).  `char *volatile g_pLevelSampleBankEntries;` fixes it in one line.  Same for
+ *    g_pWorldUnpackHead and g_nLevelArchiveByteSize, which the original also re-reads after
  *    storing.  Do NOT blanket-volatile: where the original CACHES a global
  *    across a loop (D_800756E4 in the free-slot search) an explicit `int n =`
  *    local is what reproduces it, and volatile would break it.
@@ -100,11 +100,11 @@
  *    `-(x - 0x100) * 3` is folded to `(0x100 - x) * 3` (one `subu`); the
  *    original's `addiu v0,v0,-256; ...*3; negu` needs `-((x - 0x100) * 3)`.
  *    Worth 34 identical words.
- * Also folded in: an A240 per-site alias for D_800785DC (`D_800785DC_BLK`, an
+ * Also folded in: an A240 per-site alias for g_pDrawBufB (`D_800785DC_BLK`, an
  * incomplete-array view added to credits.undefined_syms.auto.txt) -- the setup
  * block reads it five times through one `lui/addiu` base while case 4 uses the
  * absolute `$at` form, and only two C spellings of one address give both; an
- * A232 `do { } while (0)` before the 20-byte `D_80078A40 = D_80077780` struct
+ * A232 `do { } while (0)` before the 20-byte `g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount` struct
  * assignment (sched2 otherwise hoists a whole `move_by_pieces` block above the
  * preceding volatile store); and `if (D_8007589C[...] == 0) { tab = D_8007589C;
  * ... }` instead of a shared `tab`, which stops jump.c cross-jumping the trim
@@ -151,7 +151,7 @@
  * 13. The header key reads: `h + ((idx) * 3 << 3) + K` (a shift index is not
  *     a MULT rtx, so expand does not move it first).  The re-centre x uses
  *     `short gx` (unsigned-short arithmetic, reused unreloaded).
- *     D_80076BB8 is `volatile`: combine will not fold `la; lw 0()` into it.
+ *     g_nCdReadInFlight is `volatile`: combine will not fold `la; lw 0()` into it.
  *     Case 2's rect is written in natural [0..3] order.
  * ---- STATE 2026-10-19: 14 masked / 14 linked, one cluster left ------------
  * Length-, frame- and branch-target-exact; every difference is the four
@@ -166,13 +166,13 @@
  *     base").  That keeps the src re-read and dc read above the copy and the
  *     8600/8604 stores below it -- no barrier, no asm.  Case 4 matched from
  *     it outright (`dc = S.dc` before `S.blk = ...`).
- * 15. **`D_80076C00[3]` instead of a scalar D_80076C0C** for a call argument:
+ * 15. **`g_nWorldTimAudioChunkOffset[3]` instead of a scalar g_nWorldBundleChunkSize** for a call argument:
  *     an ARRAY_REF address goes through memory_address, so the cheap
  *     (mem (reg)) form is NOT precomputed by expand_call and the a2 load is
  *     emitted after arg 4's D_800757AC chain, as in the original.
- * 16. `char *e4 = D_800785E4;` captured right after the call, a `sz` local
- *     loaded before the D_800757DC store, and `int f = D_800756F8;` before
- *     the D_800761D0 re-read fix three load orders (all luid ties).
+ * 16. `char *e4 = g_pPathTableBuffer;` captured right after the call, a `sz` local
+ *     loaded before the D_800757DC store, and `int f = g_nReturningHomePhase;` before
+ *     the g_pLevelSampleBankEntries re-read fix three load orders (all luid ties).
  * 17. Glyph loop: the `*s - '0'` digit test is a block temp, and the loop
  *     var gets its non-byte def from the space branch instead:
  *     `c = (st.adv * 3) / 4;` (that keeps the loop-top `andi c,0xff`).  A
@@ -192,7 +192,7 @@
  *     arg (the volatile 0x8604 re-read) was already loaded ABOVE the copy in
  *     sched1; sched2, where the copy now clobbers a3, hoists it back up.
  *     Two things free sched1 to do that: the copy goes to its OWN symbol
- *     (`D_80078A40 = D_80077780`, not `S.blk`, so it has no dep on the
+ *     (`g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount`, not `S.blk`, so it has no dep on the
  *     S fields), and C1C is read through a NON-volatile alias
  *     (`D_80076C1C_n`, undefined_syms_manual.txt), so the 8604 store/re-read
  *     chain is not pinned behind it.  14 -> 4 masked.  Ruled out on the way
@@ -207,79 +207,79 @@
  *     cost 1 beats a load's true link) put C1C first.  Setting the hard reg
  *     a1 directly (n_sets >> 1) drops the re-read to its plain priority 5;
  *     C1C wins T-67 and the original `lw a1,85E4; lw v0,C1C` order falls out.
- *     Setting a pseudo twice (`src = D_800785E4` later) also flips the pair
+ *     Setting a pseudo twice (`src = g_pPathTableBuffer` later) also flips the pair
  *     but makes src non-local and breaks allocation.
  */
 
-extern void func_80016500();
-extern void func_80016958();
-extern void func_80016698();
-extern void func_800163E4();
-extern char *func_80012D58();
-extern void func_8005FA28();
-extern void func_8005FAF0();
-extern void func_8005F764(); /* DrawSync */
-extern void func_8005CB24();
-extern void func_8005CAC4();
-extern int func_8005CBB0();
-extern void func_80055A78();
-extern void func_80058CC0();
+extern void CdReadSyncSectors();
+extern void CopyWords();
+extern void StartCdReadAsync();
+extern void RestartStalledCdRead();
+extern char *UnpackWorldDataChunks();
+extern void LoadImage();
+extern void MoveImage();
+extern void DrawSync();
+extern void SetSpuTransferStartAddr();
+extern void WriteSpuRam();
+extern int GetSpuTransferStatus();
+extern void PlaySoundEffect();
+extern void RotateLightVectorXZ();
 extern int func_80037F90();
 extern int func_80037F10();
 extern int func_80037EA0();
-extern void func_8006396C() __attribute__((noreturn));
+extern void exit() __attribute__((noreturn));
 extern int func_80063BD8();
 
 typedef struct {
   int w[5];
 } Blk20;
 
-extern int D_800756CC;
+extern int g_nFrameStep;
 extern int D_800756E4;
-extern int D_800756F8;
-extern int D_80075704;
+extern int g_nReturningHomePhase;
+extern int g_nGamestate0fMode;
 extern char *D_80075708;
 extern char *D_80075768;
-extern int D_8007576C;
+extern int g_nPreserveMobIdx;
 extern int D_800757AC;
 extern char *D_800757BC;
 extern int D_800757DC;
 extern char *D_800757EC;
 extern int D_80075878;
 extern char *D_8007589C;
-extern int D_800758BC;
-extern int D_80075918;
+extern int g_nScriptedMobCount;
+extern int g_nGenericCountdown;
 extern int D_80075958;
 extern int D_80075968;
-extern char *volatile D_800761D0;
+extern char *volatile g_pLevelSampleBankEntries;
 extern int D_800761DC;
 extern short D_800761E8;
 extern short D_800761EA;
-extern char *D_80076B90[];
-extern volatile int D_80076BB8[];
-extern int D_80076C00[];
-extern int D_80076C04;
-extern int D_80076C08;
-extern int D_80076C0C;
-extern int D_80076C18;
-extern volatile int D_80076C1C;
-extern int D_80076DF8;
+extern char *g_nCdBaseLba[];
+extern volatile int g_nCdReadInFlight[];
+extern int g_nWorldTimAudioChunkOffset[];
+extern int g_nWorldTimAudioChunkSize;
+extern int g_nWorldBundleChunkOffset;
+extern int g_nWorldBundleChunkSize;
+extern int g_nLevelArchiveChunkOffset;
+extern volatile int g_nLevelArchiveChunkSize;
+extern int g_anCameraPos;
 extern int D_80076DFC;
 extern int D_80076E00;
-extern short D_80076E1C;
-extern short D_80076E1E;
-extern short D_80076E20;
-extern Blk20 D_80077780;
-extern Blk20 D_80078A40;
+extern short g_nCameraEulerRoll;
+extern short g_nCameraEulerPitch;
+extern short g_nCameraEulerYaw;
+extern Blk20 g_nWorldCollisionTriCount;
+extern Blk20 g_nWorldRenderMeshChunkCount;
 extern int D_80076C1C_n;
 
 extern char D_800778F0[];
-extern char *D_800785D8;
-extern char *D_800785DC;
+extern char *g_pDrawBufA;
+extern char *g_pDrawBufB;
 extern char *D_800785DC_BLK[];
-extern char *D_800785E4;
-extern int D_80078600;
-extern volatile int D_80078604;
+extern char *g_pPathTableBuffer;
+extern int g_nLevelArchiveBaseLba;
+extern volatile int g_nLevelArchiveByteSize;
 extern int D_8007A960[];
 extern char func_credits_8007C338[];
 
@@ -325,7 +325,7 @@ typedef struct {
 void func_credits_8007AA50(void) {
   short rect0[4];
 
-  if (D_80075704 == -1) {
+  if (g_nGamestate0fMode == -1) {
     char *pool = func_credits_8007C338;
     int sector;
     if (D_80075768 == 0) {
@@ -337,66 +337,66 @@ void func_credits_8007AA50(void) {
       }
       D_80075708 = pool + 0xAF0;
       D_80075768 = pool + 0x2800;
-      D_800785D8 = D_80075768;
-      D_800785DC = D_80075768;
+      g_pDrawBufA = D_80075768;
+      g_pDrawBufB = D_80075768;
     }
     sector = D_8007A960[D_800757AC * 2];
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], 0x800, sector, 0x258);
-    func_80016958(D_80076C00, D_800785DC_BLK[0], 0x1D0);
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], 0x60000,
-                  D_80076C00[0] + D_8007A960[D_800757AC * 2], 0x258);
+    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], 0x800, sector, 0x258);
+    CopyWords(g_nWorldTimAudioChunkOffset, D_800785DC_BLK[0], 0x1D0);
+    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], 0x60000,
+                  g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2], 0x258);
     rect0[0] = 0x200;
     rect0[2] = 0x200;
     rect0[1] = 0;
     rect0[3] = 0x180;
-    func_8005FA28(rect0, D_800785DC_BLK[0]);
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], D_80076C04 - 0x60000,
-                  D_80076C00[0] + D_8007A960[D_800757AC * 2] + 0x60000, 0x258);
-    func_8005CB24(0x1010);
-    func_8005CAC4(D_800785DC_BLK[0], 0x7EFF0);
-    while (func_8005CBB0(0) == 0) {
+    LoadImage(rect0, D_800785DC_BLK[0]);
+    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], g_nWorldTimAudioChunkSize - 0x60000,
+                  g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2] + 0x60000, 0x258);
+    SetSpuTransferStartAddr(0x1010);
+    WriteSpuRam(D_800785DC_BLK[0], 0x7EFF0);
+    while (GetSpuTransferStatus(0) == 0) {
     }
-    func_80016500(D_80076B90[0], D_800785DC_BLK[0], D_80076C00[3],
-                  D_80076C08 + D_8007A960[D_800757AC * 2], 0x258);
-    S.e0 = func_80012D58(D_800785DC_BLK[0], 1);
+    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], g_nWorldTimAudioChunkOffset[3],
+                  g_nWorldBundleChunkOffset + D_8007A960[D_800757AC * 2], 0x258);
+    S.e0 = UnpackWorldDataChunks(D_800785DC_BLK[0], 1);
     {
       register char *src asm("$5");
       S.e4 = S.e0;
       src = S.e4;
-      D_80078A40 = D_80077780;
-      S.l600 = D_80076C18;
+      g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
+      S.l600 = g_nLevelArchiveChunkOffset;
       S.h604 = D_80076C1C_n;
-      D_800758BC = 0;
-      func_80016500(D_80076B90[0], src, S.h604,
+      g_nScriptedMobCount = 0;
+      CdReadSyncSectors(g_nCdBaseLba[0], src, S.h604,
                     S.l600 + D_8007A960[D_800757AC * 2], 0x258);
     }
     {
-    char *e4 = D_800785E4;
-    D_800761D0 = D_800778F0;
-    *(int *)D_800761D0 = 0x1010;
-    *(int *)(D_800761D0 + 4) = -1;
-    *(short *)(D_800761D0 + 8) = 0x50;
-    *(short *)(D_800761D0 + 0xA) = 0x659;
-    *(short *)(D_800761D0 + 0xC) = 0;
-    *(short *)(D_800761D0 + 0xE) = 0;
+    char *e4 = g_pPathTableBuffer;
+    g_pLevelSampleBankEntries = D_800778F0;
+    *(int *)g_pLevelSampleBankEntries = 0x1010;
+    *(int *)(g_pLevelSampleBankEntries + 4) = -1;
+    *(short *)(g_pLevelSampleBankEntries + 8) = 0x50;
+    *(short *)(g_pLevelSampleBankEntries + 0xA) = 0x659;
+    *(short *)(g_pLevelSampleBankEntries + 0xC) = 0;
+    *(short *)(g_pLevelSampleBankEntries + 0xE) = 0;
     D_800757BC = e4;
-    *(int *)(D_800761D0 + 0x10) = 0;
+    *(int *)(g_pLevelSampleBankEntries + 0x10) = 0;
     D_800761DC = 1;
     D_800761E8 = 0x3FFF;
     D_800761EA = 0x3FFF;
-    func_80055A78(0, 0, 0x10, 0);
+    PlaySoundEffect(0, 0, 0x10, 0);
     }
     {
       char *hdr;
       char *shift;
-      hdr = D_800785E4 + *(int *)(D_800757BC + 4);
+      hdr = g_pPathTableBuffer + *(int *)(D_800757BC + 4);
       {
       int sz;
       D_800757EC = hdr;
       sz = *(int *)hdr;
       shift = D_80075708 + *(int *)(hdr + 4) - 0xC;
       D_800757DC = *(int *)(hdr + 8);
-      func_80016958(D_80075708, hdr + 0xC, sz - 0xC);
+      CopyWords(D_80075708, hdr + 0xC, sz - 0xC);
       }
       {
         int n = D_800757DC;
@@ -411,62 +411,62 @@ void func_credits_8007AA50(void) {
         }
       }
     }
-    D_80075704 = 0;
+    g_nGamestate0fMode = 0;
     D_800757AC += 1;
   }
   if (D_800757BC != 0) {
-    int gate = D_80075704;
+    int gate = g_nGamestate0fMode;
     if (gate >= 0) {
       int *rec = (int *)D_800757BC;
-      int t = rec[0] + D_800756CC;
+      int t = rec[0] + g_nFrameStep;
       int lim = rec[2] * 2;
       rec[0] = t;
       if (t < lim) {
         if (t < 0x20 || (t = lim - t, t < 0x20)) {
-          D_80075918 = 0x10 - (t >> 1);
+          g_nGenericCountdown = 0x10 - (t >> 1);
         } else {
-          D_80075918 = 0;
+          g_nGenericCountdown = 0;
         }
-        if (D_80075918 >= 0x10) {
-          D_80075918 = 0xF;
+        if (g_nGenericCountdown >= 0x10) {
+          g_nGenericCountdown = 0xF;
         }
-        if (D_80075918 < 0) {
-          D_80075918 = 0;
+        if (g_nGenericCountdown < 0) {
+          g_nGenericCountdown = 0;
         }
         {
           char *h = D_800757BC;
-          D_80076DF8 = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
+          g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
           D_80076DFC = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
           D_80076E00 = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
-          D_80076E1C = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x18);
-          D_80076E1E = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x1C);
-          D_80076E20 = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x20);
+          g_nCameraEulerRoll = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x18);
+          g_nCameraEulerPitch = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x1C);
+          g_nCameraEulerYaw = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x20);
         }
       } else {
-        D_80075704 = gate + 1;
+        g_nGamestate0fMode = gate + 1;
       }
     }
   }
   if (D_800756E4 == 0) {
     if (D_80075968 >= D_800757DC) {
       char *p;
-      *(short *)(D_800761D0 + 8) -= 0xA;
+      *(short *)(g_pLevelSampleBankEntries + 8) -= 0xA;
       {
-        int f = D_800756F8;
+        int f = g_nReturningHomePhase;
         int w;
-        p = D_800761D0;
+        p = g_pLevelSampleBankEntries;
         w = *(short *)(p + 8);
-        D_800756F8 = f + D_800756CC;
+        g_nReturningHomePhase = f + g_nFrameStep;
         if (w < 0) {
           *(short *)(p + 8) = 0;
         }
       }
-      D_80075918 = D_800756F8;
-      if (D_800756F8 >= 0x10) {
-        D_80075918 = 0xF;
+      g_nGenericCountdown = g_nReturningHomePhase;
+      if (g_nReturningHomePhase >= 0x10) {
+        g_nGenericCountdown = 0xF;
       }
-      if (D_80075918 == 0xF) {
-        D_80075704 = 0x63;
+      if (g_nGenericCountdown == 0xF) {
+        g_nGamestate0fMode = 0x63;
       }
     }
   }
@@ -475,7 +475,7 @@ void func_credits_8007AA50(void) {
     int line;
     int upper;
     int i;
-    func_80058CC0(3);
+    RotateLightVectorXZ(3);
     line = D_80075968;
     upper = 1;
     if (last >= line) {
@@ -563,7 +563,7 @@ void func_credits_8007AA50(void) {
               g->state = 1;
               g->line = cur;
               if (D_800756E4 >= 0x65) {
-                func_8006396C(0);
+                exit(0);
               }
               g->x = st.x;
               g->y = st.y;
@@ -734,31 +734,31 @@ void func_credits_8007AA50(void) {
     }
   }
   {
-    int st = D_80075704;
+    int st = g_nGamestate0fMode;
     if (st != -1) {
       if (st > 0) {
-        func_800163E4();
-        if (D_80076BB8[0] != 0) {
+        RestartStalledCdRead();
+        if (g_nCdReadInFlight[0] != 0) {
           return;
         }
         if (func_80063BD8(1, 0) != 2) {
           return;
         }
-        st = D_80075704;
+        st = g_nGamestate0fMode;
       }
       if ((unsigned int)st < 5) {
         switch (st) {
         case 0: {
           int sector = D_8007A960[D_800757AC * 2];
-          func_80016698(D_80076B90[0], D_800757EC, 0x800, sector, 0x258);
-          D_80075704 = D_80075704 + 1;
+          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, 0x800, sector, 0x258);
+          g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
         }
         case 1:
-          func_80016958(D_80076C00, D_800757EC, 0x1D0);
-          func_80016698(D_80076B90[0], D_800757EC, 0x20000,
-                        D_80076C00[0] + D_8007A960[D_800757AC * 2], 0x258);
-          D_80075704 = D_80075704 + 1;
+          CopyWords(g_nWorldTimAudioChunkOffset, D_800757EC, 0x1D0);
+          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, 0x20000,
+                        g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2], 0x258);
+          g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
         case 2: {
           short rect[4];
@@ -767,22 +767,22 @@ void func_credits_8007AA50(void) {
           rect[1] = 0x180;
           rect[2] = 0x200;
           rect[3] = 0x80;
-          func_8005F764(0);
-          func_8005FA28(rect, D_800757EC);
-          func_8005F764(0);
+          DrawSync(0);
+          LoadImage(rect, D_800757EC);
+          DrawSync(0);
           {
-            int off = D_80076C1C + 0x40000;
-            span = D_80076C0C + off;
+            int off = g_nLevelArchiveChunkSize + 0x40000;
+            span = g_nWorldBundleChunkSize + off;
           }
           D_80075958 = span;
-          func_80016698(D_80076B90[0], D_800757EC, span,
-                        D_80076C00[0] + D_8007A960[D_800757AC * 2] + 0x20000,
+          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, span,
+                        g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2] + 0x20000,
                         0x258);
-          D_80075704 = D_80075704 + 1;
+          g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
         }
         case 3:
-          D_8007576C = 0;
+          g_nPreserveMobIdx = 0;
           break;
         case 4: {
           short rect[4];
@@ -790,31 +790,31 @@ void func_credits_8007AA50(void) {
           rect[1] = 0x80;
           rect[2] = 0x200;
           rect[3] = 0x100;
-          D_800785D8 = D_80075768;
-          D_800785DC = D_80075768;
-          func_8005F764(0);
-          func_8005FA28(rect, D_800757EC);
+          g_pDrawBufA = D_80075768;
+          g_pDrawBufB = D_80075768;
+          DrawSync(0);
+          LoadImage(rect, D_800757EC);
           rect[0] = 0x200;
           rect[1] = 0x180;
           rect[2] = 0x200;
           rect[3] = 0x80;
-          func_8005FAF0(rect, 0x200, 0);
-          func_8005F764(0);
-          func_80016958(D_80075768, D_800757EC + 0x40000, D_80075958 - 0x40000);
+          MoveImage(rect, 0x200, 0);
+          DrawSync(0);
+          CopyWords(D_80075768, D_800757EC + 0x40000, D_80075958 - 0x40000);
           D_800757EC = D_80075768 + D_80075958 - 0x40000;
-          S.e0 = func_80012D58(D_800785DC, 1);
+          S.e0 = UnpackWorldDataChunks(g_pDrawBufB, 1);
           {
           char *dc = S.dc;
-          S.blk = D_80077780;
-          D_800785E4 = dc + D_80076C0C;
+          S.blk = g_nWorldCollisionTriCount;
+          g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
           }
-          D_800757BC = D_800785E4;
-          D_80078604 = D_80076C1C;
-          D_80078600 = D_80076C18;
+          D_800757BC = g_pPathTableBuffer;
+          g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;
+          g_nLevelArchiveBaseLba = g_nLevelArchiveChunkOffset;
           if (D_800757AC % 10 < 9) {
-            D_80075704 = 0;
+            g_nGamestate0fMode = 0;
           } else {
-            D_80075704 = 3;
+            g_nGamestate0fMode = 3;
           }
           D_800757AC += 1;
           break;

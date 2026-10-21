@@ -3,7 +3,7 @@
  *
  * The emit-list ADVANCE pass -- the Magic-Crafters-home 1294-insn variant,
  * the largest F16-free copy in the family.  Walks the 0x20-byte record
- * stream at D_80075824 and ages one record per iteration: integrates its
+ * stream at g_pEmitListBase and ages one record per iteration: integrates its
  * position, fades its colour, ticks its life counter and, when the record
  * has expired (or its alive byte has been cleared), hands it back with
  * func_80053608().  The walk stops at the terminator record, whose class
@@ -28,7 +28,7 @@
  * in turn carries the level_6 / level_2 donors).  Three are new:
  *   0x7   the rune orbit -- a triangular height ramp off the age byte;
  *   0x8   the wizard's homing bolt, the only arm in the family that reads
- *         the owner ACTOR (D_80075828 + owner * 0x58) and spirals around
+ *         the owner ACTOR (g_pActorListBase + owner * 0x58) and spirals around
  *         the line to it, switching to its burst state (class byte 3) once
  *         it closes inside 0x2800;
  *   0x41  a short-lived midpoint relaxation -- the 0x46 shape with only two
@@ -59,32 +59,32 @@
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017C24(int *dst, short *src);
 extern void func_80017BFC(short *dst, int *src);
-extern void func_80017758(int *dst, int *a, int *b); /* AddVector */
-extern void func_8001778C(int *dst, int *a, int *b); /* SubVector */
-extern void func_80017700(int *dst, int *src);       /* CopyVector */
-extern int func_800171FC(int *v, int mode);          /* VectorLength */
-extern void func_800175B8(int *v, int len, int scale);
-extern int func_80016C58(int a);         /* LookupSine */
-extern int func_80016CB0(int a);         /* LookupCosine */
-extern unsigned int func_8006272C(void); /* GetRandomU32 */
+extern void AddVector(int *dst, int *a, int *b);
+extern void SubtractVector(int *dst, int *a, int *b); /* SubVector */
+extern void CopyVector(int *dst, int *src);
+extern int VectorLength(int *v, int mode);
+extern void ScaleVector3ByRatio(int *v, int len, int scale);
+extern int LookupSine(int a);
+extern int LookupCosine(int a);
+extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 
-extern unsigned char *D_80075824; /* g_pEmitListBase */
-extern char *D_80075828;          /* g_pActorListBase */
-extern int D_80075814;            /* g_nSpyroDrawSuppressed */
-extern int D_800756CC;            /* per-frame step count */
-extern short D_8006CBF8[];        /* sine table */
-extern short D_8006CC78[];        /* cosine table */
-extern short D_80076E20;
-extern int D_80076DF8[];
-extern int D_8007706C;
-extern int D_80078AD0;
-extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
-extern int D_80078BBC;
+extern unsigned char *g_pEmitListBase;
+extern char *g_pActorListBase;
+extern int g_nSpyroDrawSuppressed;
+extern int g_nFrameStep;            /* per-frame step count */
+extern short g_anSineLut[];        /* sine table */
+extern short g_anCosineLut[];        /* cosine table */
+extern short g_nCameraEulerYaw;
+extern int g_anCameraPos[];
+extern int g_nGemPickupTimer;
+extern int g_nSpyroState;
+extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+extern int g_nLevelReadyFlag;
 
 void func_level_12_8008BE98(int step) {
-  unsigned char *rec = D_80075824;
+  unsigned char *rec = g_pEmitListBase;
   int p[3];
   int v[3];
   int w[3];
@@ -173,26 +173,26 @@ void func_level_12_8008BE98(int step) {
       int len;
 
       /* The wizard's homing bolt: it spirals around the line to its owner
-       * actor (D_80075828 + owner * 0x58), and switches to its burst state
+       * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
       func_80017C24(p, POS);
       if (rec[0x3] == 0) {
         func_80053608(rec);
       } else {
-        func_80017700(dir, (int *)(D_80075828 + rec[0x1E] * 0x58 + 0xC));
-        v[0] += func_80016CB0(rec[0x2] << 7) >> 1;
-        v[1] += func_80016C58(rec[0x2] << 7) >> 1;
-        v[2] += func_80016CB0((rec[0x2] << 7) - 0x100) >> 2;
-        func_8001778C(dir, dir, p);
-        len = func_800171FC(dir, 1);
+        CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * 0x58 + 0xC));
+        v[0] += LookupCosine(rec[0x2] << 7) >> 1;
+        v[1] += LookupSine(rec[0x2] << 7) >> 1;
+        v[2] += LookupCosine((rec[0x2] << 7) - 0x100) >> 2;
+        SubtractVector(dir, dir, p);
+        len = VectorLength(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
           func_80053608(rec);
         } else {
-          func_800175B8(dir, len, 0x80);
-          func_80017758(p, p, dir);
+          ScaleVector3ByRatio(dir, len, 0x80);
+          AddVector(p, p, dir);
           func_80017BFC(POS, p);
           rec[0x2]++;
-          func_8001778C(v, p, D_80076DF8);
+          SubtractVector(v, p, g_anCameraPos);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
           if (rec[0x1] == 3) {
@@ -214,8 +214,8 @@ void func_level_12_8008BE98(int step) {
             rec[0xC] = c;
             rec[0xD] >>= 1;
             rec[0xE] >>= 1;
-            rec[0xA] = (func_8006272C() & 0xF) + 0x18;
-            rec[0xB] = (func_8006272C() & 0x7) + 0xF;
+            rec[0xA] = (GetRandomU32() & 0xF) + 0x18;
+            rec[0xB] = (GetRandomU32() & 0x7) + 0xF;
           }
         }
       }
@@ -237,17 +237,17 @@ void func_level_12_8008BE98(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
-          D_80078BB8[0] <= 0) {
+      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+          g_nSpyroInputLockoutCountdown[0] <= 0) {
         func_80053608(rec);
       } else {
-        func_80017700(w, D_80078BB8 - 0x58);
-        w[0] += func_80016CB0(HS(0x18)) >> 4;
-        w[1] += func_80016C58(HS(0x18)) >> 4;
+        CopyVector(w, g_nSpyroInputLockoutCountdown - 0x58);
+        w[0] += LookupCosine(HS(0x18)) >> 4;
+        w[1] += LookupSine(HS(0x18)) >> 4;
         w[2] += 0x100;
         func_80017BFC(POS, w);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(func_80016CB0((HS(0x18) - D_80076E20) & 0xFFF)) / 170;
+        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -299,7 +299,7 @@ void func_level_12_8008BE98(int step) {
         HS(0x1A) = a;
       }
       rec[0xB] += rec[0x1E];
-      d = rec[0xE] - D_800756CC;
+      d = rec[0xE] - g_nFrameStep;
       if (d <= 0) {
         func_80053608(rec);
       } else {
@@ -326,15 +326,15 @@ void func_level_12_8008BE98(int step) {
       if (rec[0xE] < 0xF0) {
         rec[0xE] += 4;
       }
-      rec[0x1C] += D_800756CC * 8;
+      rec[0x1C] += g_nFrameStep * 8;
       heat = 0x3F;
-      if (D_8007706C < 0x40) {
-        heat = D_8007706C;
+      if (g_nGemPickupTimer < 0x40) {
+        heat = g_nGemPickupTimer;
       }
       HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((D_8006CC78[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((D_8006CBF8[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x1C]] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((g_anSineLut[rec[0x1C]] * HS(0x1A)) >> 12);
       HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
@@ -381,11 +381,11 @@ void func_level_12_8008BE98(int step) {
       HU(0x4) += d[0];
       HU(0x6) += d[1];
       HU(0x8) += d[2];
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
       d[0] = j;
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
@@ -413,15 +413,15 @@ void func_level_12_8008BE98(int step) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x10) - 1;
             j += r & 2;
             HU(0x10) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x12) - 1;
             j += r & 2;
             HU(0x12) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x14) - 1;
             j += r & 2;
             HU(0x14) = j;
@@ -446,11 +446,11 @@ void func_level_12_8008BE98(int step) {
       HU(0x4) += d[0];
       HU(0x6) += d[1];
       HU(0x8) += d[2];
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
       d[0] = j;
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
@@ -501,15 +501,15 @@ void func_level_12_8008BE98(int step) {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
         d[2] = HS(0xE) - HS(0x8);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 1;
         j += r & 2;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -541,15 +541,15 @@ void func_level_12_8008BE98(int step) {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
         d[2] = (HS(0x8) - HS(0xE)) >> 1;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 2;
         j += r & 4;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -595,15 +595,15 @@ void func_level_12_8008BE98(int step) {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
         HU(0x8) += HU(0x14);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x10) - 1;
         j += r & 2;
         HU(0x10) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x12) - 1;
         j += r & 2;
         HU(0x12) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         k = HU(0x14) - 1;
         k += r & 2;
         HU(0x14) = k;

@@ -2,7 +2,7 @@
  *
  * Balloonist cutscene tick — the per-frame update half of gamestate 0xC
  * (func_level_0_8007CFC0 is the draw half). Dispatches on the substate word
- * D_800777E8 through an 8-entry jump table (jtbl_8007AA3C):
+ * g_nGamestate0cSubstate through an 8-entry jump table (jtbl_8007AA3C):
  *   0  approach: swing the camera round to the balloonist over 0x60 frames,
  *   1  dialogue: pad-driven page/roster menu (D_800777F4 submode),
  *   2  board:    fly Spyro to the balloon over 0x66 frames,
@@ -11,7 +11,7 @@
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
- *                gamestate 0 (func_80058C7C).
+ *                gamestate 0 (InitLightVectorConstants).
  * Substate 4 is the "wait for the level stream" state and falls straight
  * through to the epilogue.  Identical body in the six hub overlays.
  *
@@ -19,7 +19,7 @@
  * arrays and indexed with constants, so cse's related_value derives the
  * sibling offsets off one held base (A36) — that is what produces the
  * original's `lw 0(s0)` / `lw -0x18(s0)` pairs off D_80077838 and the
- * `addiu a1,s1,0x20` / `addiu s1,s1,0x14` derivations off D_800777EC.
+ * `addiu a1,s1,0x20` / `addiu s1,s1,0x14` derivations off g_nGamestate0cTimer.
  * A pointer local (`int *rot = D_80077838; rot[-6]`) is the trap here: it
  * gives the pseudo a qty_const and B-i rule 1 folds every nonzero offset
  * back to absolute. Dropping the pointer locals for direct constant-index
@@ -37,11 +37,11 @@
  *  L2  MEM_IN_STRUCT alias dial (sched anti-dependence).  A scalar store and
  *      an in_struct load at a varying address "cannot alias", so sched moves
  *      the load across the store.  Where the original keeps the load BELOW a
- *      store, spell the store so it CAN alias: array form `D_800777EC[0] = 0`
+ *      store, spell the store so it CAN alias: array form `g_nGamestate0cTimer[0] = 0`
  *      (arm 1), `*((int *) ((char *) D_80077800 + 12)) = 0x4A0`, and
- *      `*((int *) ((char *) D_80076EA0)) = ...` (the char* cast matters).
+ *      `*((int *) ((char *) g_pCameraAnchorPos)) = ...` (the char* cast matters).
  *  L3  R1 cross-jump -- SOLVED, and not by registers.  Arm 3 (t >= 0x48) writes
- *      its `D_80078A66 = k >> 4; D_80078AB0 = 8;` tail INSIDE both branches,
+ *      its `D_80078A66 = k >> 4; g_nSpyroAnimPlayRate = 8;` tail INSIDE both branches,
  *      each preceded by an empty do/while(0) (so sched keeps the tail order);
  *      arm 1 keeps its tail after the join.  jump.c then merges arm 3's
  *      branch tails into a label it CREATES (uid >= max_uid), so path (b) can
@@ -54,10 +54,10 @@
  *      in local-alloc and m falls to v1).
  *  L5  Per-arm sn: arm 2 has its own `int sn` (local => local-alloc gives it
  *      s0 before &EC[5]'s pseudo), so base = s1, sn = s0 across case 0.
- *  L6  Block-local temps for the D_80078A77 -> D_80078A76 copy (`int m`) and
+ *  L6  Block-local temps for the g_bSpyroAnimFrame -> g_bSpyroFramePrev copy (`int m`) and
  *      for `n` / `z` in the arm-3 re-seed and case-5 else blocks: a shared
  *      case-level variable is GLOBAL and loses every local-alloc race.
- *  L7  `k = D_800777EC[0];` after the `t == n` block in case 6 reproduces the
+ *  L7  `k = g_nGamestate0cTimer[0];` after the `t == n` block in case 6 reproduces the
  *      original's `move v1,a0` join copy; `n -= 0x1B; D_800777FC = n;` and
  *      `vecD[2] += 0x200; vecD[2] -= cn >> 4;` are in-place forms.
  *  L8  DECODE fixes: `(k == 3) && (D_80077018 < 2)` (was >= 2); the arm-1
@@ -72,84 +72,84 @@
  *      after the store gives k a last use past the join that only cse2 (which
  *      knows k >= 0x40 on that path) folds away.
  *  L10 Case 3's `t == n` block: `yaw` is set twice (`yaw += 0x2D4;
- *      D_80078A60 = yaw;`).  A single-set yaw gets sched1's birthing boost and
+ *      g_nSpyroWorldPosZ = yaw;`).  A single-set yaw gets sched1's birthing boost and
  *      lands after the A77 load, which gives the D_80077850 pointer one insn
  *      too much life and loses it a1 to `z` in local-alloc.
  */
 
-extern void func_80015370();
-extern void func_80016958(void *dst, void *src, int len);
-extern int func_80016AB4(int dy, int dx, int flag);
-extern int func_80016C58(int ang);
-extern int func_80016CB0(int ang);
-extern void func_80016D2C(int *a, int *b, int c);
-extern void func_80017048();
-extern int func_800171FC(int *vec, int flag);
-extern void func_800176C8(int *vec, int shift);
-extern void func_80017700();
-extern void func_80017758(int *out, int *a, int *b);
-extern void func_8001778C(int *out, int *a, int *b);
-extern void func_800177C0(int *out, int *a, int scale);
-extern int func_80017928(int a, int b);
-extern int func_8001796C(int a, int b);
-extern void func_80033F08(int *a0);
-extern void func_80034358(void);
-extern void func_80048D10(int a0);
-extern void func_80049FAC(int a0);
-extern void func_8004AC24(int a0);
-extern int func_8004D5EC(int *a0, int a1);
-extern void func_800522C0(void *a0, int a1);
-extern void func_80054600(int a0);
-extern void func_80055A78(int a0, int a1, int a2, int a3);
-extern void func_8005637C(void);
-extern void func_80056B28(int a0);
+extern void TickLevelTransitionStream();
+extern void CopyWords(void *dst, void *src, int len);
+extern int ArcTan2(int dy, int dx, int flag);
+extern int LookupSine(int ang);
+extern int LookupCosine(int ang);
+extern void ApplyEulerRotation(int *a, int *b, int c);
+extern void RotateVectorByMatrix();
+extern int VectorLength(int *vec, int flag);
+extern void RShiftVector3(int *vec, int shift);
+extern void CopyVector();
+extern void AddVector(int *out, int *a, int *b);
+extern void SubtractVector(int *out, int *a, int *b);
+extern void ScaleVector3Sat(int *out, int *a, int scale);
+extern int AbsAngleDelta12(int a, int b);
+extern int SignedAngleDelta12(int a, int b);
+extern void ComputeCameraToTargetAngle(int *a0);
+extern void ResetCameraStateToTarget(void);
+extern void TickSpyroAttackEffects(int a0);
+extern void SampleSpyroShadowRingHeights(int a0);
+extern void ResetSpyroEntity(int a0);
+extern int FindGroundHeightBelow(int *a0, int a1);
+extern void TickGemCutsceneActorAnims(void *a0, int a1);
+extern void InitHudCounters(int a0);
+extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
+extern void TickActiveSoundVoices(void);
+extern void StopAllSoundExceptMask(int a0);
 extern void func_80058B60(int a0);
-extern void func_80058C7C(void);
-extern int func_8006272C();
+extern void InitLightVectorConstants(void);
+extern int GetRandomU32();
 
-extern int D_8006C8BC[];
+extern int g_anCameraDynamicTargetParams[];
 extern int D_8006EADC[];
 extern int D_8006EAE0[];
-extern unsigned char *D_800700F4[];
+extern unsigned char *g_apSaveMenuAnimActorList[];
 extern int D_800700F8;
 extern int D_80071E9C[];
-extern void (*D_800756BC)(int);
-extern int D_800756CC;
-extern int D_800756D0;
-extern int D_8007570C;
-extern int D_8007576C;
-extern int D_8007579C;
-extern int D_800757D8;
-extern int D_80075864;
-extern unsigned char *D_80075898;
-extern int D_800758A4;
+extern void (*g_pfnGamestate0LateHook)(int);
+extern int g_nFrameStep;
+extern int g_nScriptedRespawnFlag;
+extern int g_nGameplayBlocked;
+extern int g_nPreserveMobIdx;
+extern int g_nGamePaused;
+extern int g_nGamestate;
+extern int g_nCdStreamState;
+extern unsigned char *g_pLevelOverlayInitRecord;
+extern int g_nSpyroFlameBreathTimerSave;
 extern void (*D_800758A8)();
-extern int D_800758AC;
-extern int D_800758B4;
-extern unsigned char D_800758D0[];
+extern int g_nScriptedMobTag;
+extern int g_nCurrentLevelId;
+extern unsigned char g_abSaveOptionsBlock[];
 extern unsigned char D_800758D1;
-extern int D_8007596C;
-extern unsigned char *D_800761D4;
+extern int g_nActiveLevelId;
+extern unsigned char *g_pLevelSampleBankHeader;
 extern int *D_800769F8[];
-extern int D_80076DF8[];
+extern int g_anCameraPos[];
 extern int D_80076DFC;
 extern int D_80076E00;
-extern short D_80076E1C;
-extern short D_80076E1E;
-extern short D_80076E20;
-extern int D_80076E28;
-extern int D_80076E90;
-extern int D_80076EA0[];
-extern int D_80076EA4;
-extern int D_80076EA8;
+extern short g_nCameraEulerRoll;
+extern short g_nCameraEulerPitch;
+extern short g_nCameraEulerYaw;
+extern int g_nCameraCurrentMode;
+extern int g_nCameraNextMode;
+extern int g_pCameraAnchorPos[];
+extern int g_nCameraTargetYawBiasFromMode;
+extern int g_pCameraTargetParams;
 extern int D_80076FEC;
 extern int D_80077004;
 extern int D_80077008;
 extern int D_80077018;
 extern int D_80077024;
-extern int D_80077378[];
-extern int D_800777E8[];
-extern int D_800777EC[];
+extern int g_dwPadPressed[];
+extern int g_nGamestate0cSubstate[];
+extern int g_nGamestate0cTimer[];
 extern int D_800777EC_s;
 extern int D_800777F0[];
 extern int D_800777F0_s;
@@ -179,25 +179,25 @@ extern int D_80077844;
 extern int D_80077848;
 extern unsigned char *D_8007784C;
 extern unsigned char *D_80077850;
-extern int D_800785E8;
-extern int D_80078768;
-extern int D_80078A44;
-extern int D_80078A58[];
-extern int D_80078A5C;
-extern int D_80078A60;
-extern unsigned char D_80078A64[];
+extern int g_pRenderScratchRegionBase;
+extern int g_nSpyroFlameBreathTimer;
+extern int g_pWorldRenderMeshChunkArray;
+extern int g_anSpyroWorldPos[];
+extern int g_nSpyroWorldPosY;
+extern int g_nSpyroWorldPosZ;
+extern unsigned char g_abSpyroPersistentEuler[];
 extern unsigned char D_80078A65;
 extern unsigned char D_80078A66;
-extern unsigned char D_80078A70[];
-extern unsigned char D_80078A71;
-extern unsigned char D_80078A76;
-extern unsigned char D_80078A77;
-extern unsigned char D_80078A7C;
-extern unsigned char D_80078A7F;
-extern int D_80078AB0;
-extern int D_80078AF8;
-extern int D_80078B74;
-extern int D_80078C48;
+extern unsigned char g_bSpyroAnimPrev[];
+extern unsigned char g_bSpyroAnimCurrent;
+extern unsigned char g_bSpyroFramePrev;
+extern unsigned char g_bSpyroAnimFrame;
+extern unsigned char g_bSpyroSubFrameTimer;
+extern unsigned char g_bSpyroOtBinBias;
+extern int g_nSpyroAnimPlayRate;
+extern int g_nSpyroGroundHeightZ;
+extern int g_nSpyroBodyYaw;
+extern int g_nSpyroPadSnapshotCountdown;
 
 void func_level_3_8007B0AC(void)
 {
@@ -209,12 +209,12 @@ void func_level_3_8007B0AC(void)
   int vecE[4];  /* sp+0x58 */
   short pad[4]; /* sp+0x68, dead — sizes the frame to 0x88 */
   int *st;
-  st = D_800777E8;
+  st = g_nGamestate0cSubstate;
   if (st[0] < 4)
   {
     D_800700F8 = 0;
-    D_800700F4[0] = D_8007784C;
-    func_800522C0(D_800700F4, 0);
+    g_apSaveMenuAnimActorList[0] = D_8007784C;
+    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
   }
   switch (st[0])
   {
@@ -228,161 +228,161 @@ void func_level_3_8007B0AC(void)
       int yaw;
       int cz;
 
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x60)
       {
-        cn = func_80016C58(((t << 11) / 96) - 0x400) + 0x1000;
-        if (D_800777EC[0] == D_800756CC)
+        cn = LookupSine(((t << 11) / 96) - 0x400) + 0x1000;
+        if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
-          if (D_80075898 != 0)
+          if (g_pLevelOverlayInitRecord != 0)
           {
-            D_80075898[0x50] = 0;
-            D_80075898[0x51] = 0;
-            if (((int **) D_80075898)[0][3] != 0)
+            g_pLevelOverlayInitRecord[0x50] = 0;
+            g_pLevelOverlayInitRecord[0x51] = 0;
+            if (((int **) g_pLevelOverlayInitRecord)[0][3] != 0)
             {
-              func_80058B60(((int **) D_80075898)[0][3]);
-              ((int **) D_80075898)[0][3] = 0;
+              func_80058B60(((int **) g_pLevelOverlayInitRecord)[0][3]);
+              ((int **) g_pLevelOverlayInitRecord)[0][3] = 0;
             }
           }
-          D_800758A4 = D_80078768;
-          func_8004AC24(1);
-          D_80078A70[0] = 1;
-          D_80078A71 = 1;
-          D_80078A77 = 1;
-          func_80017700(D_80077800, &D_80078A70[-0x18]);
+          g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
+          ResetSpyroEntity(1);
+          g_bSpyroAnimPrev[0] = 1;
+          g_bSpyroAnimCurrent = 1;
+          g_bSpyroAnimFrame = 1;
+          CopyVector(D_80077800, &g_bSpyroAnimPrev[-0x18]);
           *((int *) ((char *) D_80077800 + 12)) = 0x4A0;
           D_80077810 = 0;
           D_80077814 = 0x164;
-          func_80017048(D_8007784C + 0x20, &D_80077800[3], &D_80077800[3]);
-          func_80017758(&D_80077800[3], &D_80077800[3], (int *) (D_8007784C + 0xC));
+          RotateVectorByMatrix(D_8007784C + 0x20, &D_80077800[3], &D_80077800[3]);
+          AddVector(&D_80077800[3], &D_80077800[3], (int *) (D_8007784C + 0xC));
           D_80077818 = D_80078A66 * 0x10;
-          func_8001778C(vecA, &D_80077800[3], D_80077800);
-          D_8007781C = func_80016AB4(vecA[0], vecA[1], 1);
+          SubtractVector(vecA, &D_80077800[3], D_80077800);
+          D_8007781C = ArcTan2(vecA[0], vecA[1], 1);
         }
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x18)
         {
           int m;
-          sn = func_80016C58(((t << 11) / 24) - 0x400) + 0x1000;
+          sn = LookupSine(((t << 11) / 24) - 0x400) + 0x1000;
           if (((D_8007781C - D_80077818) & 0xFFF) < 0x801)
           {
-            m = (func_80017928(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 + m;
+            m = (AbsAngleDelta12(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 + m;
           }
           else
           {
-            m = (func_80017928(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 - m;
+            m = (AbsAngleDelta12(D_8007781C, D_80077818) * sn) >> 13; k = D_80077818 - m;
           }
           D_80078A66 = k >> 4;
-          D_80078AB0 = 8;
+          g_nSpyroAnimPlayRate = 8;
         }
         else
           if (t < 0x48)
         {
           int sn;
-          sn = func_80016C58((((t - 0x18) << 11) / 48) - 0x400) + 0x1000;
-          func_8001778C(vecA, &D_800777EC[8], &D_800777EC[5]);
-          func_800177C0(vecA, vecA, sn);
-          func_800176C8(vecA, 0xD);
-          func_80017758(D_80078A58, &D_800777EC[5], vecA);
-          D_80078AB0 = func_800171FC(vecA, 0) >> 1;
-          if (D_80078AB0 < 4)
+          sn = LookupSine((((t - 0x18) << 11) / 48) - 0x400) + 0x1000;
+          SubtractVector(vecA, &g_nGamestate0cTimer[8], &g_nGamestate0cTimer[5]);
+          ScaleVector3Sat(vecA, vecA, sn);
+          RShiftVector3(vecA, 0xD);
+          AddVector(g_anSpyroWorldPos, &g_nGamestate0cTimer[5], vecA);
+          g_nSpyroAnimPlayRate = VectorLength(vecA, 0) >> 1;
+          if (g_nSpyroAnimPlayRate < 4)
           {
-            D_80078AB0 = 4;
+            g_nSpyroAnimPlayRate = 4;
           }
-          if (D_80078AB0 >= 0x11)
+          if (g_nSpyroAnimPlayRate >= 0x11)
           {
-            D_80078AB0 = 0x10;
+            g_nSpyroAnimPlayRate = 0x10;
           }
         }
         else
         {
-          sn = func_80016C58((((t - 0x48) << 11) / 24) - 0x400) + 0x1000;
-          if ((D_800777EC[0] - D_800756CC) < 0x48)
+          sn = LookupSine((((t - 0x48) << 11) / 24) - 0x400) + 0x1000;
+          if ((g_nGamestate0cTimer[0] - g_nFrameStep) < 0x48)
           {
             int m;
             int n;
             D_80077818 = D_80078A66 * 0x10;
             n = D_8007784C[0x46];
-            m = D_80078A77;
-            D_80078A71 = 3;
-            D_80078A76 = m;
-            D_80078A77 = 0;
-            D_80078A7C = 0;
-            D_80078AB0 = 8;
+            m = g_bSpyroAnimFrame;
+            g_bSpyroAnimCurrent = 3;
+            g_bSpyroFramePrev = m;
+            g_bSpyroAnimFrame = 0;
+            g_bSpyroSubFrameTimer = 0;
+            g_nSpyroAnimPlayRate = 8;
             D_8007781C = ((n * 0x10) - 0x800) & 0xFFF;
           }
           if (((D_8007781C - D_80077818) & 0xFFF) < 0x801)
           {
-            int k; k = D_80077818 + ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            int k; k = D_80077818 + ((AbsAngleDelta12(D_8007781C, D_80077818) * sn) >> 13);
             do { } while (0);
             D_80078A66 = k >> 4;
-            D_80078AB0 = 8;
+            g_nSpyroAnimPlayRate = 8;
           }
           else
           {
-            int k; k = D_80077818 - ((func_80017928(D_8007781C, D_80077818) * sn) >> 13);
+            int k; k = D_80077818 - ((AbsAngleDelta12(D_8007781C, D_80077818) * sn) >> 13);
             do { } while (0);
             D_80078A66 = k >> 4;
-            D_80078AB0 = 8;
+            g_nSpyroAnimPlayRate = 8;
           }
         }
-        D_80078A64[0] = 0;
+        g_abSpyroPersistentEuler[0] = 0;
         D_80078A65 = 0;
-        D_80078AF8 = func_8004D5EC((int *) (&D_80078A64[-0xC]), 0x10000);
-        func_80016D2C((int *) (&D_80078A64[0]), (int *) (&D_80078A64[0x28]), 0);
-        func_80049FAC(1);
-        func_80048D10(D_800756CC);
+        g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-0xC]), 0x10000);
+        ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
+        SampleSpyroShadowRingHeights(1);
+        TickSpyroAttackEffects(g_nFrameStep);
         if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((AbsAngleDelta12(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((AbsAngleDelta12(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
-        D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
-        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((func_80016C58(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ((int *) (D_8007784C + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
+        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
         vecA[0] = 0x220;
         vecA[2] = 0x340;
         vecA[1] = 0;
         D_80076E00 = D_80077828 + (((D_80077840 - D_80077828) * cn) >> 13);
-        func_80017048(D_8007784C + 0x20, vecA, vecA);
-        func_80017758(vecA, vecA, (int *) (D_8007784C + 0xC));
-        func_8001778C(vecA, vecA, D_80076DF8);
+        RotateVectorByMatrix(D_8007784C + 0x20, vecA, vecA);
+        AddVector(vecA, vecA, (int *) (D_8007784C + 0xC));
+        SubtractVector(vecA, vecA, g_anCameraPos);
         if (D_800777EC_s < 0x20)
         {
           ang[0] = 0;
-          ang[1] = func_80016AB4(func_800171FC(vecA, 0), -vecA[2], 1);
-          ang[2] = func_80016AB4(vecA[0], vecA[1], 1);
-          D_80076E1C = (((unsigned short) D_80076E1C) + ((func_8001796C(ang[0], D_80076E1C) * D_800777EC_s) >> 5)) & 0xFFF;
-          D_80076E1E = (((unsigned short) D_80076E1E) + ((func_8001796C(ang[1], D_80076E1E) * D_800777EC_s) >> 5)) & 0xFFF;
-          D_80076E20 = (((unsigned short) D_80076E20) + ((func_8001796C(ang[2], D_80076E20) * D_800777EC_s) >> 5)) & 0xFFF;
+          ang[1] = ArcTan2(VectorLength(vecA, 0), -vecA[2], 1);
+          ang[2] = ArcTan2(vecA[0], vecA[1], 1);
+          g_nCameraEulerRoll = (((unsigned short) g_nCameraEulerRoll) + ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) * D_800777EC_s) >> 5)) & 0xFFF;
+          g_nCameraEulerPitch = (((unsigned short) g_nCameraEulerPitch) + ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) * D_800777EC_s) >> 5)) & 0xFFF;
+          g_nCameraEulerYaw = (((unsigned short) g_nCameraEulerYaw) + ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) * D_800777EC_s) >> 5)) & 0xFFF;
         }
         else
         {
-          D_80076E1C = 0;
-          D_80076E1E = func_80016AB4(func_800171FC(vecA, 0), -vecA[2], 1);
-          D_80076E20 = func_80016AB4(vecA[0], vecA[1], 1);
+          g_nCameraEulerRoll = 0;
+          g_nCameraEulerPitch = ArcTan2(VectorLength(vecA, 0), -vecA[2], 1);
+          g_nCameraEulerYaw = ArcTan2(vecA[0], vecA[1], 1);
         }
-        D_800756BC(D_800756CC);
-        func_8005637C();
+        g_pfnGamestate0LateHook(g_nFrameStep);
+        TickActiveSoundVoices();
       }
       else
       {
-        D_80076DF8[0] = ((int *) (D_8007784C + 0xC))[0] + ((func_80016CB0(D_80077838_s) * D_8007783C) >> 12);
-        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((func_80016C58(D_80077838_s) * D_8007783C) >> 12);
+        g_anCameraPos[0] = ((int *) (D_8007784C + 0xC))[0] + ((LookupCosine(D_80077838_s) * D_8007783C) >> 12);
+        D_80076DFC = ((int *) (D_8007784C + 0x10))[0] + ((LookupSine(D_80077838_s) * D_8007783C) >> 12);
         D_80076E00 = D_80077840;
-        func_80017700(D_80078A58, &D_800777EC[8]);
-        n = D_80078A77;
-        D_80078AB0 = 4;
-        D_80078A71 = 0;
-        D_80078A77 = 0;
-        D_80078A7C = 0;
-        D_800777E8[0] = 1;
-        D_800777EC[0] = 0;
+        CopyVector(g_anSpyroWorldPos, &g_nGamestate0cTimer[8]);
+        n = g_bSpyroAnimFrame;
+        g_nSpyroAnimPlayRate = 4;
+        g_bSpyroAnimCurrent = 0;
+        g_bSpyroAnimFrame = 0;
+        g_bSpyroSubFrameTimer = 0;
+        g_nGamestate0cSubstate[0] = 1;
+        g_nGamestate0cTimer[0] = 0;
         D_80078A66 = D_8007781C >> 4;
-        D_80078A76 = n;
+        g_bSpyroFramePrev = n;
       }
         break;
     }
@@ -397,7 +397,7 @@ void func_level_3_8007B0AC(void)
         t = D_800777F4[0];
         if (t < 0x1E)
       {
-        if ((D_80077378[0] & 0x6840) && (D_800777EC_s >= 0x51))
+        if ((g_dwPadPressed[0] & 0x6840) && (D_800777EC_s >= 0x51))
         {
           n = t % 6;
           if (n == 0)
@@ -416,7 +416,7 @@ void func_level_3_8007B0AC(void)
             {
               do
               {
-                k = ((int) func_8006272C()) % 5;
+                k = ((int) GetRandomU32()) % 5;
                 if ((k == 0) && (D_80076FEC == 0))
                 {
                   D_800777F4_s = 0x21;
@@ -463,7 +463,7 @@ void func_level_3_8007B0AC(void)
           {
             D_800777F4[0] = 0x1F;
           }
-          D_800777EC[0] = 0;
+          g_nGamestate0cTimer[0] = 0;
         }
       }
       else
@@ -472,7 +472,7 @@ void func_level_3_8007B0AC(void)
         i = 1;
         k = 2;
         scan:
-        if (D_800758D0[i] == k)
+        if (g_abSaveOptionsBlock[i] == k)
         {
           do { i++; } while (0);
           if (i < 6)
@@ -481,60 +481,60 @@ void func_level_3_8007B0AC(void)
           }
         }
 
-        if (D_80077378[0] & 0x1000)
+        if (g_dwPadPressed[0] & 0x1000)
         {
           D_800777F0[0] = D_800777F0[0] - 1;
           if (D_800777F0[0] < 0)
           {
             D_800777F0[0] = i - 1;
           }
-          D_800777EC[0] = 0x20;
-          func_80055A78(D_800761D4[0x2D], 0, 0x10, 0);
+          g_nGamestate0cTimer[0] = 0x20;
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
         else
-          if (D_80077378[0] & 0x4000)
+          if (g_dwPadPressed[0] & 0x4000)
         {
           D_800777F0[0] = D_800777F0[0] + 1;
           if (D_800777F0[0] >= i)
           {
             D_800777F0[0] = 0;
           }
-          D_800777EC[0] = 0x20;
-          func_80055A78(D_800761D4[0x2D], 0, 0x10, 0);
+          g_nGamestate0cTimer[0] = 0x20;
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
-        if ((D_80077378[0] & 0x840) == 0)
+        if ((g_dwPadPressed[0] & 0x840) == 0)
         {
           return;
         }
-        if (D_800777EC[0] < 0x1F)
+        if (g_nGamestate0cTimer[0] < 0x1F)
         {
           return;
         }
-        if (D_800777EC[1] == 0)
+        if (g_nGamestate0cTimer[1] == 0)
         {
           D_800758A8();
           return;
         }
-        func_80056B28(0);
-        D_800777E8[0] = 2;
-        D_800777EC[0] = 0;
-        D_800758B4 = D_800777EC[1] * 0xA;
-        if (D_800758B4 >= D_8007596C)
+        StopAllSoundExceptMask(0);
+        g_nGamestate0cSubstate[0] = 2;
+        g_nGamestate0cTimer[0] = 0;
+        g_nCurrentLevelId = g_nGamestate0cTimer[1] * 0xA;
+        if (g_nCurrentLevelId >= g_nActiveLevelId)
         {
-          D_800758B4 = D_800758B4 + 0xA;
+          g_nCurrentLevelId = g_nCurrentLevelId + 0xA;
         }
-        D_800777FC = (D_800758B4 / 10) - 1;
+        D_800777FC = (g_nCurrentLevelId / 10) - 1;
       }
       else
         if (((unsigned int) (t - 0x1F)) < 2)
       {
-        if (D_80077378[0] & 0x5000)
+        if (g_dwPadPressed[0] & 0x5000)
         {
           D_800777EC_s = 0x20;
           D_800777F0_s = 1 - D_800777F0_s;
-          func_80055A78(D_800761D4[0x2D], 0, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
-        if ((D_80077378[0] & 0x840) == 0)
+        if ((g_dwPadPressed[0] & 0x840) == 0)
         {
           return;
         }
@@ -554,17 +554,17 @@ void func_level_3_8007B0AC(void)
           D_800777F8 = 1;
           return;
         }
-        func_80056B28(0);
-        D_800777E8[0] = 2;
-        D_800777EC[0] = 0;
+        StopAllSoundExceptMask(0);
+        g_nGamestate0cSubstate[0] = 2;
+        g_nGamestate0cTimer[0] = 0;
         if (D_800777F4[0] == 0x1F)
         {
-          D_800758B4 = D_8007596C + 0xA;
-          D_800777FC = (D_800758B4 / 10) - 1;
+          g_nCurrentLevelId = g_nActiveLevelId + 0xA;
+          D_800777FC = (g_nCurrentLevelId / 10) - 1;
         }
       }
       else
-        if ((D_80077378[0] & 0x6840) && (D_800777F4[-2] >= 0x51))
+        if ((g_dwPadPressed[0] & 0x6840) && (D_800777F4[-2] >= 0x51))
       {
         if ((t == 0x24) || (t == 0x26))
         {
@@ -581,21 +581,21 @@ void func_level_3_8007B0AC(void)
         }
         if (t == 0x21)
         {
-          D_800758B4 = 0xB;
+          g_nCurrentLevelId = 0xB;
         }
         else
           if (t == 0x22)
         {
-          D_800758B4 = 0x15;
+          g_nCurrentLevelId = 0x15;
         }
         else
           if (t == 0x23)
         {
-          D_800758B4 = 0x16;
+          g_nCurrentLevelId = 0x16;
         }
         n = D_800777F4_s;
         D_800777F4_s = 0x20;
-        D_800777EC[0] = 0;
+        g_nGamestate0cTimer[0] = 0;
         n -= 0x1B;
         D_800777FC = n;
       }
@@ -610,98 +610,98 @@ void func_level_3_8007B0AC(void)
       int yaw;
       int cz;
 
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x66)
       {
-        cn = func_80016C58(((t << 11) / 102) - 0x400) + 0x1000;
-        if (D_800777EC[0] == D_800756CC)
+        cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
+        if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
           D_80077850[0x4A] = 0xFF;
-          D_80077820 = func_80016AB4(D_80076DF8[0] - ((int *) (D_80077850 + 0xC))[0], D_80076DFC - ((int *) (D_80077850 + 0x10))[0], 1);
-          func_8001778C(vecB, D_80076DF8, (int *) (D_80077850 + 0xC));
-          D_80077824 = func_800171FC(vecB, 0);
+          D_80077820 = ArcTan2(g_anCameraPos[0] - ((int *) (D_80077850 + 0xC))[0], D_80076DFC - ((int *) (D_80077850 + 0x10))[0], 1);
+          SubtractVector(vecB, g_anCameraPos, (int *) (D_80077850 + 0xC));
+          D_80077824 = VectorLength(vecB, 0);
           D_80077828 = D_80076E00;
-          D_8007782C = D_80076E1C;
-          D_80077830 = D_80076E1E;
-          D_80077834 = D_80076E20;
+          D_8007782C = g_nCameraEulerRoll;
+          D_80077830 = g_nCameraEulerPitch;
+          D_80077834 = g_nCameraEulerYaw;
           n = D_80077850[0x46];
           D_8007783C = 0xE00;
           D_80077838_s = ((n * 0x10) - 0x480) & 0xFFF;
           D_80077840 = ((int *) (D_80077850 + 0x14))[0] + 0x200;
           D_80077844 = ((int *) (D_80077850 + 0x14))[0];
           D_80077848 = ((int *) (D_8007784C + 0x14))[0] + 0x488;
-          func_80017700(&D_800777EC[5], D_80078A58);
-          func_80017700(&D_800777EC[8], D_8007784C + 0xC);
+          CopyVector(&g_nGamestate0cTimer[5], g_anSpyroWorldPos);
+          CopyVector(&g_nGamestate0cTimer[8], D_8007784C + 0xC);
           {
             int m;
-          m = D_80078A77;
-          D_80078A71 = 5;
-          D_80078A77 = 0;
-          D_80078A7C = 0;
-          D_80078AB0 = 7;
-          D_80078A76 = m;
+          m = g_bSpyroAnimFrame;
+          g_bSpyroAnimCurrent = 5;
+          g_bSpyroAnimFrame = 0;
+          g_bSpyroSubFrameTimer = 0;
+          g_nSpyroAnimPlayRate = 7;
+          g_bSpyroFramePrev = m;
           }
         }
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x30)
         {
-          D_80078A58[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) / 48);
-          D_80078A5C = D_80077804 + (((D_80077810 - D_80077804) * t) / 48);
-          D_80078A60 = D_80077808 + ((func_80016C58(t << 5) * 0xA) / 36);
-          D_80078AF8 = func_8004D5EC(D_80078A58, 0x10000);
-          func_80016D2C(&D_80078A58[3], &D_80078A58[13], 0);
-          func_80049FAC(1);
+          g_anSpyroWorldPos[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) / 48);
+          g_nSpyroWorldPosY = D_80077804 + (((D_80077810 - D_80077804) * t) / 48);
+          g_nSpyroWorldPosZ = D_80077808 + ((LookupSine(t << 5) * 0xA) / 36);
+          g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
+          ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+          SampleSpyroShadowRingHeights(1);
         }
         else
         {
-          if ((t - D_800756CC) < 0x30)
+          if ((t - g_nFrameStep) < 0x30)
           {
-            D_80077800[0] = D_800777EC[8];
+            D_80077800[0] = g_nGamestate0cTimer[8];
             D_80077804 = D_80077810;
             D_80077808 = D_80077808 + 0x325;
-            func_80017700(&D_800777EC[8], D_80077850 + 0xC);
+            CopyVector(&g_nGamestate0cTimer[8], D_80077850 + 0xC);
             {
               int m;
-            m = D_80078A77;
-            D_80078A77 = 0;
-            D_80078A7C = 0;
-            D_80078AB0 = 4;
-            D_80078A76 = m;
+            m = g_bSpyroAnimFrame;
+            g_bSpyroAnimFrame = 0;
+            g_bSpyroSubFrameTimer = 0;
+            g_nSpyroAnimPlayRate = 4;
+            g_bSpyroFramePrev = m;
             }
           }
-          t = D_800777EC[0];
-          if ((t - D_800756CC) >= 0x36)
+          t = g_nGamestate0cTimer[0];
+          if ((t - g_nFrameStep) >= 0x36)
           {
             t = t - 0x36;
-            D_80078AB0 = 7;
-            D_80078A58[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) / 48);
-            D_80078A5C = D_80077804 + (((D_80077810 - D_80077804) * t) / 48);
-            D_80078A60 = D_80077808 + (func_80016C58(t << 5) >> 2);
+            g_nSpyroAnimPlayRate = 7;
+            g_anSpyroWorldPos[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) / 48);
+            g_nSpyroWorldPosY = D_80077804 + (((D_80077810 - D_80077804) * t) / 48);
+            g_nSpyroWorldPosZ = D_80077808 + (LookupSine(t << 5) >> 2);
           }
         }
         if (((D_80077838[0] - D_80077838[-6]) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838[-6] + ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] + ((AbsAngleDelta12(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838[-6] - ((func_80017928(D_80077838[0], D_80077838[-6]) * cn) >> 13);
+          yaw = D_80077838[-6] - ((AbsAngleDelta12(D_80077838[0], D_80077838[-6]) * cn) >> 13);
         }
         cz = D_80077824 + (((D_8007783C - D_80077824) * cn) >> 13);
-        D_80076DF8[0] = ((int *) (D_80077850 + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
-        D_80076DFC = ((int *) (D_80077850 + 0x10))[0] + ((func_80016C58(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ((int *) (D_80077850 + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
+        D_80076DFC = ((int *) (D_80077850 + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
         D_80076E00 = D_80077828 + (((D_80077840 - D_80077828) * cn) >> 13);
-        func_8001778C(vecB, (int *) (D_80077850 + 0xC), D_80076DF8);
-        ang[1] = func_80016AB4(func_800171FC(vecB, 0), -vecB[2], 1);
-        ang[2] = func_80016AB4(vecB[0], vecB[1], 1);
-        D_80076E1E = (D_80077830 + ((func_8001796C(ang[1], D_80077830) * cn) >> 13)) & 0xFFF;
-        D_80076E20 = (D_80077834 + ((func_8001796C(ang[2], D_80077834) * cn) >> 13)) & 0xFFF;
+        SubtractVector(vecB, (int *) (D_80077850 + 0xC), g_anCameraPos);
+        ang[1] = ArcTan2(VectorLength(vecB, 0), -vecB[2], 1);
+        ang[2] = ArcTan2(vecB[0], vecB[1], 1);
+        g_nCameraEulerPitch = (D_80077830 + ((SignedAngleDelta12(ang[1], D_80077830) * cn) >> 13)) & 0xFFF;
+        g_nCameraEulerYaw = (D_80077834 + ((SignedAngleDelta12(ang[2], D_80077834) * cn) >> 13)) & 0xFFF;
         ((int *) (D_80077850 + 0x14))[0] = D_80077844 + (((D_80077848 - D_80077844) * cn) >> 13);
       }
       else
       {
-        D_800777E8[0] = 3;
-        D_800777EC[0] = 0;
+        g_nGamestate0cSubstate[0] = 3;
+        g_nGamestate0cTimer[0] = 0;
       }
         break;
     }
@@ -717,74 +717,74 @@ void func_level_3_8007B0AC(void)
       int step;
       int * slot;
 
-        if (D_800777EC[0] < 0x80)
+        if (g_nGamestate0cTimer[0] < 0x80)
       {
-        if (D_800777EC[0] == D_800756CC)
+        if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
           z = ((int *) (D_80077850 + 0x14))[0];
-          k = D_80078A77;
+          k = g_bSpyroAnimFrame;
           D_80077828 = D_80076E00;
-          D_80078A58[0] = D_8007780C;
-          D_80078A5C = D_80077810;
+          g_anSpyroWorldPos[0] = D_8007780C;
+          g_nSpyroWorldPosY = D_80077810;
           D_80077844 = z;
           yaw = ((int *) (D_80077850 + 0x14))[0];
-          D_80078A76 = k;
-          D_80078AB0 = 4;
-          D_80078A71 = 0;
-          D_80078A77 = 0;
-          D_80078A7C = 0;
-          D_80078A7F = 3;
+          g_bSpyroFramePrev = k;
+          g_nSpyroAnimPlayRate = 4;
+          g_bSpyroAnimCurrent = 0;
+          g_bSpyroAnimFrame = 0;
+          g_bSpyroSubFrameTimer = 0;
+          g_bSpyroOtBinBias = 3;
           yaw += 0x2D4;
-          D_80078A60 = yaw;
+          g_nSpyroWorldPosZ = yaw;
         }
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x40)
         {
-          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + (((func_80016C58((t << 4) + 0xC00) + 0x1000) * 3) >> 2);
+          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + (((LookupSine((t << 4) + 0xC00) + 0x1000) * 3) >> 2);
         }
         else
         {
-          ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] + (D_800756CC * 0x4B);
-          D_80076E00 = D_80077828 + (((func_80016C58((D_800777EC[0] << 4) + 0x800) + 0x1000) * 3) >> 2);
+          ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] + (g_nFrameStep * 0x4B);
+          D_80076E00 = D_80077828 + (((LookupSine((g_nGamestate0cTimer[0] << 4) + 0x800) + 0x1000) * 3) >> 2);
         }
-        func_8001778C(vecC, (int *) (D_80077850 + 0xC), D_80076DF8);
-        D_80076E1E = func_80016AB4(func_800171FC(vecC, 0), -vecC[2], 1);
-        D_80076E20 = func_80016AB4(vecC[0], vecC[1], 1);
-        D_80078A60 = ((int *) (D_80077850 + 0x14))[0] + 0x2D4;
+        SubtractVector(vecC, (int *) (D_80077850 + 0xC), g_anCameraPos);
+        g_nCameraEulerPitch = ArcTan2(VectorLength(vecC, 0), -vecC[2], 1);
+        g_nCameraEulerYaw = ArcTan2(vecC[0], vecC[1], 1);
+        g_nSpyroWorldPosZ = ((int *) (D_80077850 + 0x14))[0] + 0x2D4;
         D_80078A66 = D_80077850[0x46] + 0x80;
       }
       else
       {
-        D_80077820 = func_80016AB4(D_80076DF8[0] - ((int *) (D_80077850 + 0xC))[0], D_80076DFC - ((int *) (D_80077850 + 0x10))[0], 1);
-        func_8001778C(vecC, D_80076DF8, (int *) (D_80077850 + 0xC));
-        D_80077824 = func_800171FC(vecC, 0);
+        D_80077820 = ArcTan2(g_anCameraPos[0] - ((int *) (D_80077850 + 0xC))[0], D_80076DFC - ((int *) (D_80077850 + 0x10))[0], 1);
+        SubtractVector(vecC, g_anCameraPos, (int *) (D_80077850 + 0xC));
+        D_80077824 = VectorLength(vecC, 0);
         D_80077828 = D_80076E00;
         n = D_80077850[0x46];
         D_8007783C = 0x800;
-        D_80075864 = 0;
-        D_8007576C = -1;
-        D_800756D0 = 0;
-        D_800758AC = 0;
+        g_nCdStreamState = 0;
+        g_nPreserveMobIdx = -1;
+        g_nScriptedRespawnFlag = 0;
+        g_nScriptedMobTag = 0;
         D_80077838_s = ((n * 0x10) + 0x390) & 0xFFF;
         {
           int m;
         m = ((int *) (D_80077850 + 0x14))[0];
-        D_800777E8[0] = 4;
-        D_800777EC[0] = 0;
+        g_nGamestate0cSubstate[0] = 4;
+        g_nGamestate0cTimer[0] = 0;
         D_80077840 = m + 0x200;
         }
-        func_80015370(1);
-        func_80016958(D_80071E9C, D_80077850, 0x58);
+        TickLevelTransitionStream(1);
+        CopyWords(D_80071E9C, D_80077850, 0x58);
         D_80077850 = (unsigned char *) D_80071E9C;
-        if (((unsigned int) D_800785E8) <= 0x801FFFFF)
+        if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
-          bank = (int *) (D_80078A44 - 0x400C);
+          bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
         }
         else
         {
           bank = (int *) 0x801FE000;
         }
-        func_80016958(bank, D_800769F8[0], 0x4000);
+        CopyWords(bank, D_800769F8[0], 0x4000);
         step = ((int) bank) - ((int) D_800769F8[0]);
         D_800769F8[0] = bank;
         D_800769F8[0][14] = D_800769F8[0][14] + step;
@@ -805,37 +805,37 @@ void func_level_3_8007B0AC(void)
       int yaw;
       int cz;
 
-        if (D_80075864 < 0xD)
+        if (g_nCdStreamState < 0xD)
       {
-        func_80015370(1);
+        TickLevelTransitionStream(1);
       }
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x100)
       {
-        cn = func_80016C58(((t << 11) >> 8) - 0x400) + 0x1000;
+        cn = LookupSine(((t << 11) >> 8) - 0x400) + 0x1000;
         if (((D_80077820 - D_80077838_s) & 0xFFF) < 0x801)
         {
-          yaw = D_80077838_s + ((func_80017928(D_80077820, D_80077838_s) * cn) >> 13);
+          yaw = D_80077838_s + ((AbsAngleDelta12(D_80077820, D_80077838_s) * cn) >> 13);
         }
         else
         {
-          yaw = D_80077838_s - ((func_80017928(D_80077820, D_80077838_s) * cn) >> 13);
+          yaw = D_80077838_s - ((AbsAngleDelta12(D_80077820, D_80077838_s) * cn) >> 13);
         }
         cz = D_8007783C + (((D_80077824 - D_8007783C) * cn) >> 13);
-        D_80076DF8[0] = ((int *) (D_80077850 + 0xC))[0] + ((func_80016CB0(yaw) * cz) >> 12);
-        D_80076DFC = ((int *) (D_80077850 + 0x10))[0] + ((func_80016C58(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ((int *) (D_80077850 + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
+        D_80076DFC = ((int *) (D_80077850 + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
         D_80076E00 = D_80077840 + (((D_80077828 - D_80077840) * cn) >> 13);
-        func_8001778C(vecD, (int *) (D_80077850 + 0xC), D_80076DF8);
+        SubtractVector(vecD, (int *) (D_80077850 + 0xC), g_anCameraPos);
         vecD[2] += 0x200; vecD[2] -= cn >> 4;
-        D_80076E1E = func_80016AB4(func_800171FC(vecD, 0), -vecD[2], 1);
-        D_80076E20 = func_80016AB4(vecD[0], vecD[1], 1);
+        g_nCameraEulerPitch = ArcTan2(VectorLength(vecD, 0), -vecD[2], 1);
+        g_nCameraEulerYaw = ArcTan2(vecD[0], vecD[1], 1);
       }
       else
-        if (D_80075864 == 0xD)
+        if (g_nCdStreamState == 0xD)
       {
-        D_800777E8[0] = 6;
-        D_800777EC[0] = 0;
-        func_80015370(1);
+        g_nGamestate0cSubstate[0] = 6;
+        g_nGamestate0cTimer[0] = 0;
+        TickLevelTransitionStream(1);
       }
         break;
     }
@@ -846,10 +846,10 @@ void func_level_3_8007B0AC(void)
       int n;
       int k;
 
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x80)
       {
-        n = D_800756CC;
+        n = g_nFrameStep;
         if (t == n)
         {
           int z;
@@ -857,11 +857,11 @@ void func_level_3_8007B0AC(void)
           D_80077828 = D_80076E00;
           D_80077844 = z;
         }
-        k = D_800777EC[0];
+        k = g_nGamestate0cTimer[0];
         if (k < 0x40)
         {
           ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] - (n * 0x4B);
-          D_80076E00 = D_80077828 + ((func_80016C58((-D_800777EC[0]) << 4) * 3) >> 2);
+          D_80076E00 = D_80077828 + ((LookupSine((-g_nGamestate0cTimer[0]) << 4) * 3) >> 2);
         }
         else
         {
@@ -873,38 +873,38 @@ void func_level_3_8007B0AC(void)
           {
             D_80077844 = ((int *) (D_80077850 + 0x14))[0] - 0x4B;
           }
-          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((func_80016C58(0x400 - (t << 4)) * 3) >> 2);
+          ((int *) (D_80077850 + 0x14))[0] = D_80077844 + ((LookupSine(0x400 - (t << 4)) * 3) >> 2);
           if (k < 0x40) /* L9: dead; cse2 folds it */
           {
             D_80077844 = 0;
           }
         }
-        func_8001778C(vecE, (int *) (D_80077850 + 0xC), D_80076DF8);
-        D_80076E1E = func_80016AB4(func_800171FC(vecE, 0), -vecE[2], 1);
-        D_80076E20 = func_80016AB4(vecE[0], vecE[1], 1);
-        D_80078A60 = ((int *) (D_80077850 + 0x14))[0] + 0x2D4;
+        SubtractVector(vecE, (int *) (D_80077850 + 0xC), g_anCameraPos);
+        g_nCameraEulerPitch = ArcTan2(VectorLength(vecE, 0), -vecE[2], 1);
+        g_nCameraEulerYaw = ArcTan2(vecE[0], vecE[1], 1);
+        g_nSpyroWorldPosZ = ((int *) (D_80077850 + 0x14))[0] + 0x2D4;
         D_80078A66 = D_80077850[0x46] + 0x80;
       }
       else
       {
-        D_800777E8[0] = 7;
-        D_800777EC[0] = 0;
-        func_80017700(&D_800777EC[5], D_80078A58);
+        g_nGamestate0cSubstate[0] = 7;
+        g_nGamestate0cTimer[0] = 0;
+        CopyVector(&g_nGamestate0cTimer[5], g_anSpyroWorldPos);
         {
           int m;
           int k;
         m = D_800777FC * 8;
-        D_800777EC[8] = *((int *) (((char *) D_8006EADC) + m));
+        g_nGamestate0cTimer[8] = *((int *) (((char *) D_8006EADC) + m));
         k = *((int *) (((char *) D_8006EAE0) + m));
-        D_80077814 = D_80078A60;
+        D_80077814 = g_nSpyroWorldPosZ;
         D_80077810 = k;
-        D_80077814 = func_8004D5EC(&D_800777EC[8], 0x10000) + 0x164;
-        k = D_80078A77;
-        D_80078A71 = 5;
-        D_80078A77 = 0;
-        D_80078A7C = 0;
-        D_80078AB0 = 6;
-        D_80078A76 = k;
+        D_80077814 = FindGroundHeightBelow(&g_nGamestate0cTimer[8], 0x10000) + 0x164;
+        k = g_bSpyroAnimFrame;
+        g_bSpyroAnimCurrent = 5;
+        g_bSpyroAnimFrame = 0;
+        g_bSpyroSubFrameTimer = 0;
+        g_nSpyroAnimPlayRate = 6;
+        g_bSpyroFramePrev = k;
         }
       }
         break;
@@ -914,39 +914,39 @@ void func_level_3_8007B0AC(void)
     {
       int t;
 
-        t = D_800777EC[0];
+        t = g_nGamestate0cTimer[0];
         if (t < 0x40)
       {
-        D_80078A58[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) >> 6);
-        D_80078A5C = D_80077804 + (((D_80077810 - D_80077804) * t) >> 6);
-        D_80078A60 = D_80077814 + ((func_80016C58((t * 0x18) + 0x200) * (D_80077808 - D_80077814)) / 2896);
-        D_80078AF8 = func_8004D5EC(D_80078A58, 0x10000);
-        func_80016D2C(&D_80078A58[3], &D_80078A58[13], 0);
-        func_80049FAC(1);
-        if (D_800777EC[0] >= 0x20)
+        g_anSpyroWorldPos[0] = D_80077800[0] + (((D_8007780C - D_80077800[0]) * t) >> 6);
+        g_nSpyroWorldPosY = D_80077804 + (((D_80077810 - D_80077804) * t) >> 6);
+        g_nSpyroWorldPosZ = D_80077814 + ((LookupSine((t * 0x18) + 0x200) * (D_80077808 - D_80077814)) / 2896);
+        g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
+        ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+        SampleSpyroShadowRingHeights(1);
+        if (g_nGamestate0cTimer[0] >= 0x20)
         {
-          ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] + (D_800777EC[0] * D_800756CC);
+          ((int *) (D_80077850 + 0x14))[0] = ((int *) (D_80077850 + 0x14))[0] + (g_nGamestate0cTimer[0] * g_nFrameStep);
         }
       }
       else
       {
-        func_80017700(D_80078A58, &D_800777EC[8]);
-        func_8004AC24(1);
-        D_80078C48 = 0x10;
-        *((int *) ((char *) D_80076EA0)) = (int) D_80078A58;
-        D_80076E28 = 0;
-        D_80076E90 = 0;
-        D_80076EA8 = (int) D_8006C8BC;
-        D_80076EA4 = D_80078B74;
-        func_80033F08(&D_80076EA0[-0x2A]);
-        func_80016958(D_8006C8BC, &D_80076EA0[-0x10], 0x18);
-        D_8006C8BC[0] = (D_8006C8BC[0] + D_80076EA4) & 0xFFF;
-        func_80034358();
-        func_80054600(0);
-        D_800757D8 = 0;
-        D_8007579C = 1;
-        D_8007570C = 0;
-        func_80058C7C();
+        CopyVector(g_anSpyroWorldPos, &g_nGamestate0cTimer[8]);
+        ResetSpyroEntity(1);
+        g_nSpyroPadSnapshotCountdown = 0x10;
+        *((int *) ((char *) g_pCameraAnchorPos)) = (int) g_anSpyroWorldPos;
+        g_nCameraCurrentMode = 0;
+        g_nCameraNextMode = 0;
+        g_pCameraTargetParams = (int) g_anCameraDynamicTargetParams;
+        g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+        ComputeCameraToTargetAngle(&g_pCameraAnchorPos[-0x2A]);
+        CopyWords(g_anCameraDynamicTargetParams, &g_pCameraAnchorPos[-0x10], 0x18);
+        g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+        ResetCameraStateToTarget();
+        InitHudCounters(0);
+        g_nGamestate = 0;
+        g_nGamePaused = 1;
+        g_nGameplayBlocked = 0;
+        InitLightVectorConstants();
       }
         break;
     }

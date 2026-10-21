@@ -14,7 +14,7 @@ extern int VectorLength(int *vec, int include_z);
 extern void CopyVector(int *dst, int *src);
 
 extern unsigned short g_anCosineLut[];
-extern int D_80078A60;        /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
 extern int D_800756B4;
 extern int D_80075700;
@@ -374,7 +374,7 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
     }
-    if (D_80078A60 >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
+    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
         g_nSpyroAirborneFrames == 0) {
       int next;
       int fwd[3];
@@ -514,7 +514,7 @@ void UpdateSpyroStateBehavior(void) {
       if (!(g_nSpyroStateFlags & 0x80)) {
         int v;
 
-        g_nSpyroFloorReferenceZ = D_80078A60;
+        g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
         v = VectorLength(&SPY[SPY_CARRY], 1);
         if (v < 0x1F80) {
           v = 0x1F80;
@@ -646,7 +646,7 @@ void UpdateSpyroStateBehavior(void) {
       if (g_nSpyroStateFlags != 0) {
         break;
       }
-      d = D_80078A60;
+      d = g_nSpyroWorldPosZ;
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(6);
         break;
@@ -661,7 +661,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateFlags == 0 &&
-        g_nSpyroFloorReferenceZ + 0x18 < D_80078A60) {
+        g_nSpyroFloorReferenceZ + 0x18 < g_nSpyroWorldPosZ) {
       ChangeSpyroState(6);
       break;
     }
@@ -745,7 +745,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (D_80078A60 >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
+    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
         g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroStateTimer >= 0x18 || g_nSpyroGroundSlope >= 0x17) {
         ChangeSpyroState(6);
@@ -885,7 +885,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(16);
       break;
     }
-    if (g_nSpyroFloorReferenceZ + 0x18 < D_80078A60) {
+    if (g_nSpyroFloorReferenceZ + 0x18 < g_nSpyroWorldPosZ) {
       ChangeSpyroState(6);
       break;
     }
@@ -1013,7 +1013,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_anSpyroMotionVec[2] < -0x1000) {
       ChangeSpyroState(34);
     } else if (g_nSpyroStateFlags == 0) {
-      int d = D_80078A60;
+      int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(6);
@@ -1055,7 +1055,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] < 0x600) {
       ChangeSpyroState(32);
     } else if (SPY[SPY_FLAGS] == 0) {
-      int d = D_80078A60;
+      int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(6);
@@ -1099,7 +1099,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
       ChangeSpyroState(32);
     } else if (SPY[SPY_FLAGS] == 0) {
-      int d = D_80078A60;
+      int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(6);

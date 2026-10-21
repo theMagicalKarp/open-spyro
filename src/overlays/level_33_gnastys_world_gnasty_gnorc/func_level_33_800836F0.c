@@ -2,7 +2,7 @@
  * overlay, 0xf44 bytes).
  *
  * The emit-list ADVANCE pass -- the sibling of the emit dispatcher
- * func_level_33_80082B84.  Walks the 0x20-byte record stream at D_80075824
+ * func_level_33_80082B84.  Walks the 0x20-byte record stream at g_pEmitListBase
  * and ages one record per iteration: integrates its position, fades its
  * colour, ticks its life counter and, when the record has expired (or its
  * alive byte has been cleared), hands it back with func_80053608().  The
@@ -42,22 +42,22 @@
 
 extern void func_80017C84(short *dst, short *src, short *delta);
 extern void func_80017BFC(short *dst, int *src);
-extern void func_80017700(int *dst, int *src); /* CopyVector */
-extern int func_80016C58(int a);               /* LookupSine */
-extern int func_80016CB0(int a);               /* LookupCosine */
-extern unsigned int func_8006272C(void);       /* GetRandomU32 */
+extern void CopyVector(int *dst, int *src);
+extern int LookupSine(int a);
+extern int LookupCosine(int a);
+extern unsigned int GetRandomU32(void);
 extern int abs(int n);
 extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
 
-extern unsigned char *D_80075824; /* g_pEmitListBase */
-extern int D_80075814;            /* g_nSpyroDrawSuppressed */
-extern short D_80076E20;
-extern int D_80078AD0;
-extern int D_80078BB8[]; /* [-0x58] is the Spyro world position (D_80078A58) */
-extern int D_80078BBC;
+extern unsigned char *g_pEmitListBase;
+extern int g_nSpyroDrawSuppressed;
+extern short g_nCameraEulerYaw;
+extern int g_nSpyroState;
+extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+extern int g_nLevelReadyFlag;
 
 void func_level_33_800836F0(int step) {
-  unsigned char *rec = D_80075824;
+  unsigned char *rec = g_pEmitListBase;
   int v[3];
 
   if (rec[1] == 0xFF) {
@@ -129,17 +129,17 @@ void func_level_33_800836F0(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((D_80078AD0 == 0x1D && D_80078BBC < 0) || D_80075814 != 0 ||
-          D_80078BB8[0] <= 0) {
+      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+          g_nSpyroInputLockoutCountdown[0] <= 0) {
         func_80053608(rec);
       } else {
-        func_80017700(v, D_80078BB8 - 0x58);
-        v[0] += func_80016CB0(HS(0x18)) >> 4;
-        v[1] += func_80016C58(HS(0x18)) >> 4;
+        CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
+        v[0] += LookupCosine(HS(0x18)) >> 4;
+        v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;
         func_80017BFC(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(func_80016CB0((HS(0x18) - D_80076E20) & 0xFFF)) / 170;
+        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -265,15 +265,15 @@ void func_level_33_800836F0(int step) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x10) - 1;
             j += r & 2;
             HU(0x10) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x12) - 1;
             j += r & 2;
             HU(0x12) = j;
-            r = func_8006272C();
+            r = GetRandomU32();
             j = HU(0x14) - 1;
             j += r & 2;
             HU(0x14) = j;
@@ -298,11 +298,11 @@ void func_level_33_800836F0(int step) {
       HU(0x4) += d[0];
       HU(0x6) += d[1];
       HU(0x8) += d[2];
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
       d[0] = j;
-      r = func_8006272C();
+      r = GetRandomU32();
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
@@ -353,15 +353,15 @@ void func_level_33_800836F0(int step) {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
         d[2] = HS(0xE) - HS(0x8);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 1;
         j += r & 2;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -393,15 +393,15 @@ void func_level_33_800836F0(int step) {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
         d[2] = (HS(0x8) - HS(0xE)) >> 1;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
         d[0] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[1] - 2;
         j += r & 4;
         d[1] = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
@@ -447,15 +447,15 @@ void func_level_33_800836F0(int step) {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
         HU(0x8) += HU(0x14);
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x10) - 1;
         j += r & 2;
         HU(0x10) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         j = HU(0x12) - 1;
         j += r & 2;
         HU(0x12) = j;
-        r = func_8006272C();
+        r = GetRandomU32();
         k = HU(0x14) - 1;
         k += r & 2;
         HU(0x14) = k;

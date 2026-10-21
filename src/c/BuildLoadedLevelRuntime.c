@@ -36,7 +36,7 @@ extern int g_nLevelSpawnPosZ;
 extern int g_nSpyroWorldPosY;
 extern int D_80075698;
 extern int D_80075700;
-extern int D_80078A60;
+extern int g_nSpyroWorldPosZ;
 extern int D_8006F140[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anLevelSpawnPosZBlock[];
@@ -154,7 +154,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
       g_nSpyroPitchRateAccum = 0;
       g_nSpyroTurnRateAccum = 0;
       D_80075700 = 0;
-      D_80078A60 -= 0x400;
+      g_nSpyroWorldPosZ -= 0x400;
     }
   } else {
     g_nFlightLevelActive = 0;
@@ -413,7 +413,7 @@ sprites:
       dd = g_anDeathReplaySpawnTable[(kk * 4) + 1];
       g_nSpyroWorldPosY = dd;
       dd = g_anDeathReplaySpawnTable[(kk * 4) + 2];
-      D_80078A60 = dd;
+      g_nSpyroWorldPosZ = dd;
       dd = g_anDeathReplaySpawnTable[(kk * 4) + 3];
       g_nDeathRespawnPending = 1;
       g_abSpyroPersistentEuler[2] = dd;

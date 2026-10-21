@@ -23,295 +23,295 @@
 static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 
 #define SWAP_MENU_SELECTION                                                    \
-  D_80078D78.unk_0x0C = 16;                                                   \
-  D_80078D78.unk_0x14 = 1 - D_80078D78.unk_0x14;               \
+  g_nGamestate0dMode.unk_0x0C = 16;                                                   \
+  g_nGamestate0dMode.unk_0x14 = 1 - g_nGamestate0dMode.unk_0x14;               \
   func_titlescreen_8007AAD4(0);
 
 #define RELOAD_MEMCARDS                                                        \
-  D_80078D78.unk_0x10 = SubState_0x00;                            \
-  D_80078D78.unk_0x04 = 0;                                                      \
-  func_80067628(0, (long *)&D_80078D78.unk_0x40,                    \
-                (long *)&D_80078D78.unk_0x44);
+  g_nGamestate0dMode.unk_0x10 = SubState_0x00;                            \
+  g_nGamestate0dMode.unk_0x04 = 0;                                                      \
+  MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,                    \
+                (long *)&g_nGamestate0dMode.unk_0x44);
 
 #define START_DEMO(DEMO_TYPE)                                                  \
-  D_80078D78.unk_0x04 = 5;                                                      \
-  D_80078D78.unk_0x1C = DEMO_TYPE;                                           \
-  D_80078D14.unk_0x20 = D_80078D78.unk_0x4C->unk_0x000.unk_0x60[15];         \
+  g_nGamestate0dMode.unk_0x04 = 5;                                                      \
+  g_nGamestate0dMode.unk_0x1C = DEMO_TYPE;                                           \
+  D_80078D14.unk_0x20 = g_nGamestate0dMode.unk_0x4C->unk_0x000.unk_0x60[15];         \
   D_80078D14.unk_0x14 = 1;                                              \
-  D_80078D14.unk_0x18 = D_80078D78.unk_0x28 << 4;                \
-  D_80078D14.unk_0x1c = D_80078D78.unk_0x14;                           \
-  func_80067628(0, (long *)&D_80078D78.unk_0x40,                    \
-                (long *)&D_80078D78.unk_0x44);
+  D_80078D14.unk_0x18 = g_nGamestate0dMode.unk_0x28 << 4;                \
+  D_80078D14.unk_0x1c = g_nGamestate0dMode.unk_0x14;                           \
+  MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,                    \
+                (long *)&g_nGamestate0dMode.unk_0x44);
 
 void func_titlescreen_8007ABAC(void) {
   int old_state =
-      D_80078D78.unk_0x00 < 2 ? D_80078D78.unk_0x10 : D_80078D78.unk_0x04;
+      g_nGamestate0dMode.unk_0x00 < 2 ? g_nGamestate0dMode.unk_0x10 : g_nGamestate0dMode.unk_0x04;
 
-  D_80075680->unk_0x00 += 2;
+  g_pPathTableHead->unk_0x00 += 2;
 
-  if (D_80075680->unk_0x00 < 1100) {
-    D_80078D78.unk_0x08 = 0;
-    if (D_80078D78.unk_0x10 == 2 && D_80075680->unk_0x00 >= 300 &&
-        (D_80077378.unk_0x8 & (PAD_START | PAD_CROSS)) != 0) {
-      func_80056200(D_80077084, 4); /* StopSound(voice) */
-      D_80075680->unk_0x00 = 1170;
+  if (g_pPathTableHead->unk_0x00 < 1100) {
+    g_nGamestate0dMode.unk_0x08 = 0;
+    if (g_nGamestate0dMode.unk_0x10 == 2 && g_pPathTableHead->unk_0x00 >= 300 &&
+        (g_dwPadPressed.unk_0x8 & (PAD_START | PAD_CROSS)) != 0) {
+      StopSoundVoiceByIndex(g_bGemPickupSfxVoiceMarker, 4); /* StopSound(voice) */
+      g_pPathTableHead->unk_0x00 = 1170;
     }
   } else {
-    if (D_80075680->unk_0x00 == 1344 && (func_8006272C() & 3) != 0) {
-      D_80075680->unk_0x00 = 1172;
-    } else if (D_80075680->unk_0x00 >= 1530) {
-      D_80075680->unk_0x00 = 1172;
+    if (g_pPathTableHead->unk_0x00 == 1344 && (GetRandomU32() & 3) != 0) {
+      g_pPathTableHead->unk_0x00 = 1172;
+    } else if (g_pPathTableHead->unk_0x00 >= 1530) {
+      g_pPathTableHead->unk_0x00 = 1172;
     }
   }
 
-  if (D_80075918)
-    --D_80075918;
+  if (g_nGenericCountdown)
+    --g_nGenericCountdown;
 
-  func_8002BFE0(D_80075680->unk_0x00);
+  AdvanceGemCutsceneFrame(g_pPathTableHead->unk_0x00);
 
-  D_80076E1C.x = 0;
-  D_80076E1C.y += 16;
+  g_nCameraEulerRoll.x = 0;
+  g_nCameraEulerRoll.y += 16;
 
-  switch (D_80078D78.unk_0x00) {
+  switch (g_nGamestate0dMode.unk_0x00) {
   case Mode_0x00: {
-    if (D_80078D78.unk_0x10 < 2) {
+    if (g_nGamestate0dMode.unk_0x10 < 2) {
       /* kick out while we're still loading from the CD */
-      func_800163E4();
-      if (D_80076B90.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
-          (D_800774B0.unk_0x004 & 0x40) == 0)
+      RestartStalledCdRead();
+      if (g_nCdBaseLba.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
+          (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0)
         break;
 
-      if (D_80078D78.unk_0x10 == 0) {
+      if (g_nGamestate0dMode.unk_0x10 == 0) {
         /* kick off loading titlescreen data from the CD */
         register int cd asm("$4");
         register int t asm("$7");
-        cd = *((volatile int *) &D_80076B90.unk_0x00);
+        cd = *((volatile int *) &g_nCdBaseLba.unk_0x00);
         t = D_8007A6D8;
-        func_80016698(cd, D_800785E8 - 0x40000, 0x40000,
+        StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
                       t, 600);
-        D_80078D78.unk_0x10 = 1;
-      } else if (D_80078D78.unk_0x10 == 1) {
+        g_nGamestate0dMode.unk_0x10 = 1;
+      } else if (g_nGamestate0dMode.unk_0x10 == 1) {
         /* once loaded, initialize music and upload the sprite sheet to vram */
         RECT rc;
-        D_800774B0.unk_0x000 = 20;
-        D_800774B0.unk_0x21C = 155520000;
-        func_800567F4(20, 1);
+        g_nCurrentMusicTrack.unk_0x000 = 20;
+        g_nCurrentMusicTrack.unk_0x21C = 155520000;
+        HandleMusicCommand(20, 1);
         setRECT(&rc, 512, 256, 512, 256);
-        func_8005FA28(&rc, D_800785E8 - 0x40000);
-        D_80078D78.unk_0x10 = 2;
+        LoadImage(&rc, g_pRenderScratchRegionBase - 0x40000);
+        g_nGamestate0dMode.unk_0x10 = 2;
       }
-    } else if (D_80078D78.unk_0x10 == 2) {
+    } else if (g_nGamestate0dMode.unk_0x10 == 2) {
       /* titlescreen sequence is playing, just waiting for a bit */
-      if (D_80075680->unk_0x00 < 1169) {
-        D_80078D78.unk_0x0C = 0;
+      if (g_pPathTableHead->unk_0x00 < 1169) {
+        g_nGamestate0dMode.unk_0x0C = 0;
       } else {
-        if (D_80078D78.unk_0x0C == 1) {
+        if (g_nGamestate0dMode.unk_0x0C == 1) {
           func_titlescreen_8007AAD4(6);
         }
-        if (D_80078D78.unk_0x0C >= 16)
-          D_80078D78.unk_0x10 = 3;
+        if (g_nGamestate0dMode.unk_0x0C >= 16)
+          g_nGamestate0dMode.unk_0x10 = 3;
       }
-    } else if (D_80078D78.unk_0x10 == 3) {
+    } else if (g_nGamestate0dMode.unk_0x10 == 3) {
       /* ready for button inputs or to time out to show the demo */
-      if ((D_80077378.unk_0x8 & (PAD_L1 | PAD_TRIANGLE)) ==
+      if ((g_dwPadPressed.unk_0x8 & (PAD_L1 | PAD_TRIANGLE)) ==
           (PAD_L1 | PAD_TRIANGLE)) {
-        func_80056B28(0); /* stop all sounds */
+        StopAllSoundExceptMask(0); /* stop all sounds */
         func_titlescreen_8007AAD4(9);
-        func_80056ED4();
-        while (D_80076B90.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
-               (D_800774B0.unk_0x004 & 0x40) == 0) {
-          func_800163E4();
-          func_8005637C(); /* update sounds */
-          func_8002BBE0();
+        TickSpuPerFrame();
+        while (g_nCdBaseLba.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
+               (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0) {
+          RestartStalledCdRead();
+          TickActiveSoundVoices(); /* update sounds */
+          TickCdMusicStream();
         }
         func_8002BAB8(); /* crash-demo launch */
-      } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
-        D_80078D78.unk_0x10 = 4;
+      } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        g_nGamestate0dMode.unk_0x10 = 4;
         func_titlescreen_8007AAD4(7);
-      } else if (D_80078D78.unk_0x08 >= 990) {
-        D_80078D78.unk_0x10 = 5;
+      } else if (g_nGamestate0dMode.unk_0x08 >= 990) {
+        g_nGamestate0dMode.unk_0x10 = 5;
       }
-    } else if (D_80078D78.unk_0x10 == 4) {
+    } else if (g_nGamestate0dMode.unk_0x10 == 4) {
       /* animate out the logo, move to mem card screen */
-      if (D_80078D78.unk_0x0C == 16) {
+      if (g_nGamestate0dMode.unk_0x0C == 16) {
         func_titlescreen_8007AAD4(8);
       }
-      if (D_80078D78.unk_0x0C >= 32) {
-        D_80078D78.unk_0x00 = Mode_0x01;
-        D_80078D78.unk_0x10 = SubState_0x00;
-        D_80078D78.unk_0x04 = 0;
-        func_800662BC(); /* MemCardStart */
+      if (g_nGamestate0dMode.unk_0x0C >= 32) {
+        g_nGamestate0dMode.unk_0x00 = Mode_0x01;
+        g_nGamestate0dMode.unk_0x10 = SubState_0x00;
+        g_nGamestate0dMode.unk_0x04 = 0;
+        MemCardOpenSession(); /* MemCardStart */
       }
-    } else if (D_80078D78.unk_0x10 == 5) {
+    } else if (g_nGamestate0dMode.unk_0x10 == 5) {
       /* timed out: fade out for 16 ticks and then move to demo mode */
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(5);
       }
-      D_80075918 = D_80078D78.unk_0x0C;
-      if (D_80075918 > 15)
-        D_80075918 = 15;
-      if (D_80078D78.unk_0x0C >= 16) {
+      g_nGenericCountdown = g_nGamestate0dMode.unk_0x0C;
+      if (g_nGenericCountdown > 15)
+        g_nGenericCountdown = 15;
+      if (g_nGamestate0dMode.unk_0x0C >= 16) {
         RECT rc;
-        D_80078D78.unk_0x00 = Mode_0x03;
-        D_80078D78.unk_0x04 = 0;
-        D_80078D78.unk_0x1C = 2;
+        g_nGamestate0dMode.unk_0x00 = Mode_0x03;
+        g_nGamestate0dMode.unk_0x04 = 0;
+        g_nGamestate0dMode.unk_0x1C = 2;
         setRECT(&rc, 0, 0, 512, 480);
-        func_8005F8F8(&rc, 0, 0, 0);
-        func_8005F764(0); /* DrawSync */
+        ClearImage(&rc, 0, 0, 0);
+        DrawSync(0); /* DrawSync */
       }
     }
     break;
   }
   case Mode_0x01: {
-    switch (D_80078D78.unk_0x10) {
+    switch (g_nGamestate0dMode.unk_0x10) {
     case SubState_0x00: {
       /* wait for async mem card function to finish */
-      if (func_80067628(1, (long *)&D_80078D78.unk_0x40,
-                        (long *)&D_80078D78.unk_0x44) == 0)
+      if (MemCardSync(1, (long *)&g_nGamestate0dMode.unk_0x40,
+                        (long *)&g_nGamestate0dMode.unk_0x44) == 0)
         break;
 
-      if (D_80078D78.unk_0x04 == 0) {
+      if (g_nGamestate0dMode.unk_0x04 == 0) {
         /* try to ping port A for a mem card */
         func_titlescreen_8007AAD4(2);
-        func_800665B8(0 /* port A card 0 */);
-        D_80078D78.unk_0x04 = 1;
-      } else if (D_80078D78.unk_0x04 == 1) {
+        MemCardLoad(0 /* port A card 0 */);
+        g_nGamestate0dMode.unk_0x04 = 1;
+      } else if (g_nGamestate0dMode.unk_0x04 == 1) {
         /* pull memcard state for port A */
-        D_80078D78.unk_0x30[0] = D_80078D78.unk_0x44;
+        g_nGamestate0dMode.unk_0x30[0] = g_nGamestate0dMode.unk_0x44;
 
-        if (D_80078D78.unk_0x30[0] == McErrNewCard)
-          D_80078D78.unk_0x30[0] = McErrNone;
-        if (D_80078D78.unk_0x30[0] == McErrNotFormat) {
-          D_80078D78.unk_0x30[0] = McErrNone;
-          D_80078D78.unk_0x38[0] = 1;
+        if (g_nGamestate0dMode.unk_0x30[0] == McErrNewCard)
+          g_nGamestate0dMode.unk_0x30[0] = McErrNone;
+        if (g_nGamestate0dMode.unk_0x30[0] == McErrNotFormat) {
+          g_nGamestate0dMode.unk_0x30[0] = McErrNone;
+          g_nGamestate0dMode.unk_0x38[0] = 1;
         } else
-          D_80078D78.unk_0x38[0] = 0;
+          g_nGamestate0dMode.unk_0x38[0] = 0;
 
         /* now go and ping port B */
-        func_800665B8(0x10 /* port B card 0 */);
-        D_80078D78.unk_0x04 = 2;
+        MemCardLoad(0x10 /* port B card 0 */);
+        g_nGamestate0dMode.unk_0x04 = 2;
       } else {
         /* pull memcard state for port B */
-        D_80078D78.unk_0x30[1] = D_80078D78.unk_0x44;
+        g_nGamestate0dMode.unk_0x30[1] = g_nGamestate0dMode.unk_0x44;
 
-        if (D_80078D78.unk_0x30[1] == McErrNewCard)
-          D_80078D78.unk_0x30[1] = McErrNone;
-        if (D_80078D78.unk_0x30[1] == McErrNotFormat) {
-          D_80078D78.unk_0x30[1] = McErrNone;
-          D_80078D78.unk_0x38[1] = 1;
+        if (g_nGamestate0dMode.unk_0x30[1] == McErrNewCard)
+          g_nGamestate0dMode.unk_0x30[1] = McErrNone;
+        if (g_nGamestate0dMode.unk_0x30[1] == McErrNotFormat) {
+          g_nGamestate0dMode.unk_0x30[1] = McErrNone;
+          g_nGamestate0dMode.unk_0x38[1] = 1;
         } else {
-          D_80078D78.unk_0x38[1] = 0;
+          g_nGamestate0dMode.unk_0x38[1] = 0;
         }
 
         /* figure out what screen to go to for our A/B memcard states */
-        if (D_80078D78.unk_0x30[0] == McErrNone &&
-            D_80078D78.unk_0x30[1] == McErrNone) {
+        if (g_nGamestate0dMode.unk_0x30[0] == McErrNone &&
+            g_nGamestate0dMode.unk_0x30[1] == McErrNone) {
           /* both ports have a valid, formatted memcard, go to select menu */
-          D_80078D78.unk_0x10 = SubState_0x0F;
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80078D78.unk_0x30[0] == McErrNone &&
-                   !D_80078D78.unk_0x38[0]) {
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0F;
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_nGamestate0dMode.unk_0x30[0] == McErrNone &&
+                   !g_nGamestate0dMode.unk_0x38[0]) {
           /* port A is valid and doesn't need formatting: select it */
-          D_80078D78.unk_0x28 = 0;
-          D_80078D78.unk_0x10 = SubState_0x01;
-          D_80078D78.unk_0x04 = 0;
-          D_80078D78.unk_0x24 = 0;
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80078D78.unk_0x30[1] == McErrNone &&
-                   !D_80078D78.unk_0x38[1]) {
+          g_nGamestate0dMode.unk_0x28 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x01;
+          g_nGamestate0dMode.unk_0x04 = 0;
+          g_nGamestate0dMode.unk_0x24 = 0;
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_nGamestate0dMode.unk_0x30[1] == McErrNone &&
+                   !g_nGamestate0dMode.unk_0x38[1]) {
           /* port B is valid and doesn't need formatting: select it */
-          D_80078D78.unk_0x28 = 1;
-          D_80078D78.unk_0x10 = SubState_0x01;
-          D_80078D78.unk_0x04 = 0;
-          D_80078D78.unk_0x24 = 0;
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80078D78.unk_0x30[0] == McErrNone &&
-                   D_80078D78.unk_0x38[0]) {
+          g_nGamestate0dMode.unk_0x28 = 1;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x01;
+          g_nGamestate0dMode.unk_0x04 = 0;
+          g_nGamestate0dMode.unk_0x24 = 0;
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_nGamestate0dMode.unk_0x30[0] == McErrNone &&
+                   g_nGamestate0dMode.unk_0x38[0]) {
           /* port A is valid but needs a format, ask if that's ok */
-          D_80078D78.unk_0x28 = 0;
-          D_80078D78.unk_0x10 = SubState_0x05;
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80078D78.unk_0x30[1] == McErrNone &&
-                   D_80078D78.unk_0x38[1]) {
+          g_nGamestate0dMode.unk_0x28 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x05;
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_nGamestate0dMode.unk_0x30[1] == McErrNone &&
+                   g_nGamestate0dMode.unk_0x38[1]) {
           /* port B is valid but needs a format, ask if that's ok */
-          D_80078D78.unk_0x28 = 1;
-          D_80078D78.unk_0x10 = SubState_0x05;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x28 = 1;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x05;
+          g_nGamestate0dMode.unk_0x14 = 0;
         } else {
           /* no valid cards found */
-          D_80078D78.unk_0x28 = -1;
-          D_80078D78.unk_0x10 = SubState_0x02;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x28 = -1;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x02;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
       }
       break;
     }
     case SubState_0x01: {
       /* wait for async mem card function to finish */
-      if (func_80067628(1, (long *)&D_80078D78.unk_0x40,
-                        (long *)&D_80078D78.unk_0x44) == 0)
+      if (MemCardSync(1, (long *)&g_nGamestate0dMode.unk_0x40,
+                        (long *)&g_nGamestate0dMode.unk_0x44) == 0)
         break;
 
-      if (D_80078D78.unk_0x04 == 0) {
+      if (g_nGamestate0dMode.unk_0x04 == 0) {
         /* read save file from the selected card */
-        func_80066E28(D_80078D78.unk_0x28 << 4, (char *)s_SaveFileName,
-                      (unsigned long *)D_80078D78.unk_0x4C, 0,
+        MemCardRead(g_nGamestate0dMode.unk_0x28 << 4, (char *)s_SaveFileName,
+                      (unsigned long *)g_nGamestate0dMode.unk_0x4C, 0,
                       sizeof(Struct_0x1A00));
-        D_80078D78.unk_0x04 = 1;
-      } else if (D_80078D78.unk_0x04 == 1) {
+        g_nGamestate0dMode.unk_0x04 = 1;
+      } else if (g_nGamestate0dMode.unk_0x04 == 1) {
         /* save file has been read */
-        if (D_80078D78.unk_0x44 == McErrNone) {
+        if (g_nGamestate0dMode.unk_0x44 == McErrNone) {
           /* no errors reading, check to see if data is intact */
-          if (func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[0]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[0].unk_0x58C &&
-              func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[1]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[1].unk_0x58C &&
-              func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[2]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[2].unk_0x58C) {
+          if (ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[0].unk_0x58C &&
+              ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[1].unk_0x58C &&
+              ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[2].unk_0x58C) {
             /* save checksums matched, go to save file picker */
-            D_80078D78.unk_0x00 = Mode_0x02;
-            D_80078D78.unk_0x04 = 4;
-            D_80078D78.unk_0x14 = 1;
-            D_8007579C = 1;
+            g_nGamestate0dMode.unk_0x00 = Mode_0x02;
+            g_nGamestate0dMode.unk_0x04 = 4;
+            g_nGamestate0dMode.unk_0x14 = 1;
+            g_nGamePaused = 1;
             func_titlescreen_8007AAD4(9);
-          } else if (D_80078D78.unk_0x24 < 2) {
+          } else if (g_nGamestate0dMode.unk_0x24 < 2) {
             /* save checksums didn't match, retry the read up to 2 times */
-            D_80078D78.unk_0x24++;
-            D_80078D78.unk_0x04 = 0;
+            g_nGamestate0dMode.unk_0x24++;
+            g_nGamestate0dMode.unk_0x04 = 0;
           } else {
             /* retries didn't work, recreate the ones that looked like garbage */
-            func_8001277C(); /* reset game */
-            if (func_8005956C(
-                    (u_char *)&D_80078D78.unk_0x4C->unk_0x200[0]) !=
-                D_80078D78.unk_0x4C->unk_0x200[0].unk_0x58C)
-              func_80059864(&D_80078D78.unk_0x4C->unk_0x200[0]);
-            if (func_8005956C(
-                    (u_char *)&D_80078D78.unk_0x4C->unk_0x200[1]) !=
-                D_80078D78.unk_0x4C->unk_0x200[1].unk_0x58C)
-              func_80059864(&D_80078D78.unk_0x4C->unk_0x200[1]);
-            if (func_8005956C(
-                    (u_char *)&D_80078D78.unk_0x4C->unk_0x200[2]) !=
-                D_80078D78.unk_0x4C->unk_0x200[2].unk_0x58C)
-              func_80059864(&D_80078D78.unk_0x4C->unk_0x200[2]);
+            InitNewGameState(); /* reset game */
+            if (ComputeSaveGameChecksum(
+                    (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]) !=
+                g_nGamestate0dMode.unk_0x4C->unk_0x200[0].unk_0x58C)
+              BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]);
+            if (ComputeSaveGameChecksum(
+                    (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]) !=
+                g_nGamestate0dMode.unk_0x4C->unk_0x200[1].unk_0x58C)
+              BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]);
+            if (ComputeSaveGameChecksum(
+                    (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]) !=
+                g_nGamestate0dMode.unk_0x4C->unk_0x200[2].unk_0x58C)
+              BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]);
 
             /* go to the save file picker */
-            D_80078D78.unk_0x00 = Mode_0x02;
-            D_80078D78.unk_0x04 = 4;
-            D_80078D78.unk_0x14 = 1;
-            D_8007579C = 1;
+            g_nGamestate0dMode.unk_0x00 = Mode_0x02;
+            g_nGamestate0dMode.unk_0x04 = 4;
+            g_nGamestate0dMode.unk_0x14 = 1;
+            g_nGamePaused = 1;
             func_titlescreen_8007AAD4(9);
           }
-        } else if (D_80078D78.unk_0x44 == McErrFileNotExist) {
+        } else if (g_nGamestate0dMode.unk_0x44 == McErrFileNotExist) {
           /* no save file, ask if we can create one */
-          D_80078D78.unk_0x10 = SubState_0x0A;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0A;
+          g_nGamestate0dMode.unk_0x14 = 0;
         } else {
           /* no memory card available anymore */
-          D_80078D78.unk_0x10 = SubState_0x03;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
       }
       break;
@@ -319,26 +319,26 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x02: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[0] == McErrNone ||
-          D_80078D78.unk_0x30[0] == McErrNewCard ||
-          D_80078D78.unk_0x30[1] == McErrNone ||
-          D_80078D78.unk_0x30[1] == McErrNewCard) {
+      if (g_nGamestate0dMode.unk_0x30[0] == McErrNone ||
+          g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
+          g_nGamestate0dMode.unk_0x30[1] == McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1] == McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(4);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            D_80078D78.unk_0x10 = SubState_0x04;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            g_nGamestate0dMode.unk_0x10 = SubState_0x04;
             func_titlescreen_8007AAD4(3);
           } else {
             RELOAD_MEMCARDS
@@ -350,31 +350,31 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x03: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x28 >= 0) {
-        if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-            D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x28 >= 0) {
+        if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+            g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
                 McErrNewCard) {
           RELOAD_MEMCARDS
           break;
         }
       } else {
-        if (D_80078D78.unk_0x30[0] == McErrNone ||
-            D_80078D78.unk_0x30[0] == McErrNewCard ||
-            D_80078D78.unk_0x30[1] == McErrNone ||
-            D_80078D78.unk_0x30[1] == McErrNewCard) {
+        if (g_nGamestate0dMode.unk_0x30[0] == McErrNone ||
+            g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
+            g_nGamestate0dMode.unk_0x30[1] == McErrNone ||
+            g_nGamestate0dMode.unk_0x30[1] == McErrNewCard) {
           RELOAD_MEMCARDS
           break;
         }
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            D_80078D78.unk_0x10 = SubState_0x04;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            g_nGamestate0dMode.unk_0x10 = SubState_0x04;
             func_titlescreen_8007AAD4(3);
           } else {
             RELOAD_MEMCARDS
@@ -386,35 +386,35 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x04: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x28 >= 0) {
-        if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-            D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x28 >= 0) {
+        if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+            g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
                 McErrNewCard) {
           RELOAD_MEMCARDS
           break;
         }
       } else {
-        if (D_80078D78.unk_0x30[0] == McErrNone ||
-            D_80078D78.unk_0x30[0] == McErrNewCard ||
-            D_80078D78.unk_0x30[1] == McErrNone ||
-            D_80078D78.unk_0x30[1] == McErrNewCard) {
+        if (g_nGamestate0dMode.unk_0x30[0] == McErrNone ||
+            g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
+            g_nGamestate0dMode.unk_0x30[1] == McErrNone ||
+            g_nGamestate0dMode.unk_0x30[1] == McErrNewCard) {
           RELOAD_MEMCARDS
           break;
         }
       }
 
       /* mem card states still the same, process buttons after a few ticks */
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            func_8001277C();
-            D_80078D78.unk_0x00 = Mode_0x02;
-            D_80078D78.unk_0x04 = 5;
-            D_80078D78.unk_0x1C = 0;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            InitNewGameState();
+            g_nGamestate0dMode.unk_0x00 = Mode_0x02;
+            g_nGamestate0dMode.unk_0x04 = 5;
+            g_nGamestate0dMode.unk_0x1C = 0;
             D_80078D14.unk_0x14 = 0;
           } else {
             RELOAD_MEMCARDS
@@ -427,36 +427,36 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x06: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(3);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            if (D_80078D78.unk_0x10 == SubState_0x05) {
-              D_80078D78.unk_0x10 = SubState_0x06;
-              D_80078D78.unk_0x14 = 1;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            if (g_nGamestate0dMode.unk_0x10 == SubState_0x05) {
+              g_nGamestate0dMode.unk_0x10 = SubState_0x06;
+              g_nGamestate0dMode.unk_0x14 = 1;
             } else {
-              D_80078D78.unk_0x10 = SubState_0x07;
-              func_80067628(0, (long *)&D_80078D78.unk_0x40,
-                            (long *)&D_80078D78.unk_0x44);
+              g_nGamestate0dMode.unk_0x10 = SubState_0x07;
+              MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,
+                            (long *)&g_nGamestate0dMode.unk_0x44);
               func_titlescreen_8007AAD4(2);
             }
           } else {
-            D_80078D78.unk_0x10 = SubState_0x03;
-            D_80078D78.unk_0x14 = 0;
+            g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+            g_nGamestate0dMode.unk_0x14 = 0;
             func_titlescreen_8007AAD4(3);
           }
         }
@@ -464,17 +464,17 @@ void func_titlescreen_8007ABAC(void) {
       break;
     }
     case SubState_0x07: {
-      if (D_80078D78.unk_0x0C >= 2) {
-        D_80078D78.unk_0x44 =
-            func_80067B28(D_80078D78.unk_0x28 << 4);
-        if (D_80078D78.unk_0x44 == McErrNone) {
-          D_80078D78.unk_0x30[D_80078D78.unk_0x28] = McErrNone;
-          D_80078D78.unk_0x10 = SubState_0x08;
-          D_80078D78.unk_0x14 = 0; /* continue */
+      if (g_nGamestate0dMode.unk_0x0C >= 2) {
+        g_nGamestate0dMode.unk_0x44 =
+            func_80067B28(g_nGamestate0dMode.unk_0x28 << 4);
+        if (g_nGamestate0dMode.unk_0x44 == McErrNone) {
+          g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] = McErrNone;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x08;
+          g_nGamestate0dMode.unk_0x14 = 0; /* continue */
           func_titlescreen_8007AAD4(9);
         } else {
-          D_80078D78.unk_0x10 = SubState_0x09;
-          D_80078D78.unk_0x14 = 1; /* cancel */
+          g_nGamestate0dMode.unk_0x10 = SubState_0x09;
+          g_nGamestate0dMode.unk_0x14 = 1; /* cancel */
           func_titlescreen_8007AAD4(4);
         }
       }
@@ -483,22 +483,22 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x08: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
           func_titlescreen_8007AAD4(1);
-          D_80078D78.unk_0x10 = SubState_0x01;
-          D_80078D78.unk_0x04 = 0;
-          D_80078D78.unk_0x24 = 0;
-          D_80078D78.unk_0x14 = 1;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x01;
+          g_nGamestate0dMode.unk_0x04 = 0;
+          g_nGamestate0dMode.unk_0x24 = 0;
+          g_nGamestate0dMode.unk_0x14 = 1;
         }
       }
 
@@ -507,28 +507,28 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x09: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          if (D_80078D78.unk_0x14 == 0) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
             /* retry format */
-            D_80078D78.unk_0x10 = SubState_0x07;
-            func_80067628(0, (long *)&D_80078D78.unk_0x40,
-                          (long *)&D_80078D78.unk_0x44);
+            g_nGamestate0dMode.unk_0x10 = SubState_0x07;
+            MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,
+                          (long *)&g_nGamestate0dMode.unk_0x44);
             func_titlescreen_8007AAD4(2);
           } else {
-            D_80078D78.unk_0x10 = SubState_0x03;
-            D_80078D78.unk_0x14 = 0;
+            g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+            g_nGamestate0dMode.unk_0x14 = 0;
             func_titlescreen_8007AAD4(3);
           }
         }
@@ -538,33 +538,33 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x0A: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(3);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            D_80078D78.unk_0x10 = SubState_0x0B;
-            D_80078D78.unk_0x04 = 0;
-            D_80078D78.unk_0x24 = 0;
-            func_80067628(0, (long *)&D_80078D78.unk_0x40,
-                          (long *)&D_80078D78.unk_0x44);
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            g_nGamestate0dMode.unk_0x10 = SubState_0x0B;
+            g_nGamestate0dMode.unk_0x04 = 0;
+            g_nGamestate0dMode.unk_0x24 = 0;
+            MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,
+                          (long *)&g_nGamestate0dMode.unk_0x44);
             func_titlescreen_8007AAD4(2);
           } else {
-            D_80078D78.unk_0x10 = SubState_0x03;
-            D_80078D78.unk_0x14 = 0;
+            g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+            g_nGamestate0dMode.unk_0x14 = 0;
             func_titlescreen_8007AAD4(3);
           }
         }
@@ -574,103 +574,103 @@ void func_titlescreen_8007ABAC(void) {
     }
     case SubState_0x0B: {
       int i;
-      if (D_80078D78.unk_0x04 == 0) {
-        D_80078D78.unk_0x04 = 1; /* ok ... */
-      } else if (D_80078D78.unk_0x04 == 1) {
-        if (D_80078D78.unk_0x24 == 0) {
-          D_80078D78.unk_0x44 = func_80067718(
-              D_80078D78.unk_0x28 << 4, (char *)s_SaveFileName, 1);
+      if (g_nGamestate0dMode.unk_0x04 == 0) {
+        g_nGamestate0dMode.unk_0x04 = 1; /* ok ... */
+      } else if (g_nGamestate0dMode.unk_0x04 == 1) {
+        if (g_nGamestate0dMode.unk_0x24 == 0) {
+          g_nGamestate0dMode.unk_0x44 = func_80067718(
+              g_nGamestate0dMode.unk_0x28 << 4, (char *)s_SaveFileName, 1);
         }
-        if (D_80078D78.unk_0x44 == McErrNone) {
-          char *mcs = (char *)D_80078D78.unk_0x4C;
+        if (g_nGamestate0dMode.unk_0x44 == McErrNone) {
+          char *mcs = (char *)g_nGamestate0dMode.unk_0x4C;
 
           /* copy over the header/icons */
-          func_80016958(D_80078D78.unk_0x4C, D_8006F494,
+          CopyWords(g_nGamestate0dMode.unk_0x4C, D_8006F494,
                         sizeof(D_8006F494));
 
           D_80078D14.unk_0x20 = func_80017FD4();
-          D_80078D78.unk_0x4C->unk_0x000.unk_0x60[15] = D_80078D14.unk_0x20;
+          g_nGamestate0dMode.unk_0x4C->unk_0x000.unk_0x60[15] = D_80078D14.unk_0x20;
 
           /* reset game and create all 3 saves */
           mcs += sizeof(D_8006F494);
-          func_8001277C();
+          InitNewGameState();
           for (i = 0; i < 3; ++i) {
-            func_80059864((Struct_0x600 *)(mcs + i * sizeof(Struct_0x600)));
+            BuildSaveGameBuffer((Struct_0x600 *)(mcs + i * sizeof(Struct_0x600)));
           }
-          func_800670E4(D_80078D78.unk_0x28 << 4, (char *)s_SaveFileName,
-                        (unsigned long *)D_80078D78.unk_0x4C, 0,
+          MemCardWrite(g_nGamestate0dMode.unk_0x28 << 4, (char *)s_SaveFileName,
+                        (unsigned long *)g_nGamestate0dMode.unk_0x4C, 0,
                         sizeof(Struct_0x1A00));
 
-          D_80078D78.unk_0x04 = 2;
-        } else if (D_80078D78.unk_0x44 == McErrBlockFull) {
-          D_80078D78.unk_0x10 = SubState_0x0C;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x04 = 2;
+        } else if (g_nGamestate0dMode.unk_0x44 == McErrBlockFull) {
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0C;
+          g_nGamestate0dMode.unk_0x14 = 0;
         } else {
-          D_80078D78.unk_0x10 = SubState_0x0D;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0D;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
-      } else if (D_80078D78.unk_0x04 == 2) {
+      } else if (g_nGamestate0dMode.unk_0x04 == 2) {
         /* kick back if MemCardWrite is not complete yet */
-        if (func_80067628(1, (long *)&D_80078D78.unk_0x40,
-                          (long *)&D_80078D78.unk_0x44) == 0)
+        if (MemCardSync(1, (long *)&g_nGamestate0dMode.unk_0x40,
+                          (long *)&g_nGamestate0dMode.unk_0x44) == 0)
           break;
 
         /* write is done, check to see if it was successful */
-        if (D_80078D78.unk_0x44 != McErrNone) {
-          D_80078D78.unk_0x10 = SubState_0x0D;
-          D_80078D78.unk_0x14 = 0;
+        if (g_nGamestate0dMode.unk_0x44 != McErrNone) {
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0D;
+          g_nGamestate0dMode.unk_0x14 = 0;
         } else {
           /* save succeeded, let's re-read it off the card */
-          func_80066E28(D_80078D78.unk_0x28 << 4, (char *)s_SaveFileName,
-                        (unsigned long *)D_80078D78.unk_0x4C, 0,
+          MemCardRead(g_nGamestate0dMode.unk_0x28 << 4, (char *)s_SaveFileName,
+                        (unsigned long *)g_nGamestate0dMode.unk_0x4C, 0,
                         sizeof(Struct_0x1A00));
-          D_80078D78.unk_0x04 = 3;
+          g_nGamestate0dMode.unk_0x04 = 3;
         }
       } else {
         /* make sure the re-read looks good */
-        if (D_80078D78.unk_0x44 == McErrNone) {
-          if (func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[0]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[0].unk_0x58C &&
-              func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[1]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[1].unk_0x58C &&
-              func_8005956C(
-                  (u_char *)&D_80078D78.unk_0x4C->unk_0x200[2]) ==
-                  D_80078D78.unk_0x4C->unk_0x200[2].unk_0x58C) {
-            D_80078D78.unk_0x00 = Mode_0x02;
-            D_80078D78.unk_0x04 = 4;
-            D_80078D78.unk_0x14 = 0;
-            D_8007579C = 1;
+        if (g_nGamestate0dMode.unk_0x44 == McErrNone) {
+          if (ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[0].unk_0x58C &&
+              ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[1].unk_0x58C &&
+              ComputeSaveGameChecksum(
+                  (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]) ==
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[2].unk_0x58C) {
+            g_nGamestate0dMode.unk_0x00 = Mode_0x02;
+            g_nGamestate0dMode.unk_0x04 = 4;
+            g_nGamestate0dMode.unk_0x14 = 0;
+            g_nGamePaused = 1;
             func_titlescreen_8007AAD4(9);
           } else {
-            if (D_80078D78.unk_0x24 < 2) {
-              D_80078D78.unk_0x24++;
-              D_80078D78.unk_0x04 = 2;
+            if (g_nGamestate0dMode.unk_0x24 < 2) {
+              g_nGamestate0dMode.unk_0x24++;
+              g_nGamestate0dMode.unk_0x04 = 2;
             } else {
-              func_8001277C();
-              if (func_8005956C(
-                      (u_char *)&D_80078D78.unk_0x4C->unk_0x200[0]) !=
-                  D_80078D78.unk_0x4C->unk_0x200[0].unk_0x58C)
-                func_80059864(&D_80078D78.unk_0x4C->unk_0x200[0]);
-              if (func_8005956C(
-                      (u_char *)&D_80078D78.unk_0x4C->unk_0x200[1]) !=
-                  D_80078D78.unk_0x4C->unk_0x200[1].unk_0x58C)
-                func_80059864(&D_80078D78.unk_0x4C->unk_0x200[1]);
-              if (func_8005956C(
-                      (u_char *)&D_80078D78.unk_0x4C->unk_0x200[2]) !=
-                  D_80078D78.unk_0x4C->unk_0x200[2].unk_0x58C)
-                func_80059864(&D_80078D78.unk_0x4C->unk_0x200[2]);
-              D_80078D78.unk_0x00 = Mode_0x02;
-              D_80078D78.unk_0x04 = 4;
-              D_80078D78.unk_0x14 = 0;
-              D_8007579C = 1;
+              InitNewGameState();
+              if (ComputeSaveGameChecksum(
+                      (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]) !=
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[0].unk_0x58C)
+                BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[0]);
+              if (ComputeSaveGameChecksum(
+                      (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]) !=
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[1].unk_0x58C)
+                BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[1]);
+              if (ComputeSaveGameChecksum(
+                      (u_char *)&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]) !=
+                  g_nGamestate0dMode.unk_0x4C->unk_0x200[2].unk_0x58C)
+                BuildSaveGameBuffer(&g_nGamestate0dMode.unk_0x4C->unk_0x200[2]);
+              g_nGamestate0dMode.unk_0x00 = Mode_0x02;
+              g_nGamestate0dMode.unk_0x04 = 4;
+              g_nGamestate0dMode.unk_0x14 = 0;
+              g_nGamePaused = 1;
               func_titlescreen_8007AAD4(9);
             }
           }
         } else {
-          D_80078D78.unk_0x10 = SubState_0x0D;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x0D;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
       }
       break;
@@ -678,24 +678,24 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x0C: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(4);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
           func_titlescreen_8007AAD4(3);
-          D_80078D78.unk_0x10 = SubState_0x03;
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
       }
       break;
@@ -703,33 +703,33 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x0D: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
         RELOAD_MEMCARDS
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(4);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          if (D_80078D78.unk_0x14 == 0) {
-            D_80078D78.unk_0x10 = SubState_0x0B;
-            D_80078D78.unk_0x04 = 0;
-            D_80078D78.unk_0x24 = 0;
-            func_80067628(0, (long *)&D_80078D78.unk_0x40,
-                          (long *)&D_80078D78.unk_0x44);
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          if (g_nGamestate0dMode.unk_0x14 == 0) {
+            g_nGamestate0dMode.unk_0x10 = SubState_0x0B;
+            g_nGamestate0dMode.unk_0x04 = 0;
+            g_nGamestate0dMode.unk_0x24 = 0;
+            MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,
+                          (long *)&g_nGamestate0dMode.unk_0x44);
             func_titlescreen_8007AAD4(2);
           } else {
-            D_80078D78.unk_0x10 = SubState_0x03;
-            D_80078D78.unk_0x14 = 0;
+            g_nGamestate0dMode.unk_0x10 = SubState_0x03;
+            g_nGamestate0dMode.unk_0x14 = 0;
             func_titlescreen_8007AAD4(3);
           }
         }
@@ -739,31 +739,31 @@ void func_titlescreen_8007ABAC(void) {
     case SubState_0x0F: {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[0] == McErrCardNotExist ||
-          D_80078D78.unk_0x30[0] == McErrNewCard ||
-          D_80078D78.unk_0x30[1] == McErrCardNotExist ||
-          D_80078D78.unk_0x30[1] == McErrNewCard) {
+      if (g_nGamestate0dMode.unk_0x30[0] == McErrCardNotExist ||
+          g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
+          g_nGamestate0dMode.unk_0x30[1] == McErrCardNotExist ||
+          g_nGamestate0dMode.unk_0x30[1] == McErrNewCard) {
         RELOAD_MEMCARDS;
         break;
       }
 
-      if (D_80078D78.unk_0x0C == 0) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(3);
       }
 
-      if (D_80078D78.unk_0x0C >= 8) {
-        if (D_80077378.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
+        if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_CROSS | PAD_START)) {
-          D_80078D78.unk_0x28 = D_80078D78.unk_0x14;
-          if (D_80078D78.unk_0x38[D_80078D78.unk_0x14]) {
-            D_80078D78.unk_0x10 = SubState_0x05;
-            D_80078D78.unk_0x14 = 0;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+          g_nGamestate0dMode.unk_0x28 = g_nGamestate0dMode.unk_0x14;
+          if (g_nGamestate0dMode.unk_0x38[g_nGamestate0dMode.unk_0x14]) {
+            g_nGamestate0dMode.unk_0x10 = SubState_0x05;
+            g_nGamestate0dMode.unk_0x14 = 0;
           } else {
-            D_80078D78.unk_0x10 = SubState_0x01;
-            D_80078D78.unk_0x04 = 0;
-            D_80078D78.unk_0x24 = 0;
-            D_80078D78.unk_0x14 = 1;
+            g_nGamestate0dMode.unk_0x10 = SubState_0x01;
+            g_nGamestate0dMode.unk_0x04 = 0;
+            g_nGamestate0dMode.unk_0x24 = 0;
+            g_nGamestate0dMode.unk_0x14 = 1;
             func_titlescreen_8007AAD4(1);
           }
         }
@@ -775,200 +775,200 @@ void func_titlescreen_8007ABAC(void) {
   }
   case Mode_0x02: {
     /* while not transitioning to the demo, keep checking our card states */
-    if (D_80078D78.unk_0x04 < 5) {
+    if (g_nGamestate0dMode.unk_0x04 < 5) {
       func_80032A20();
 
-      if (D_80078D78.unk_0x30[D_80078D78.unk_0x28] != McErrNone ||
-          D_80078D78.unk_0x30[1 - D_80078D78.unk_0x28] ==
+      if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
+          g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
               McErrNewCard) {
-        D_80078D78.unk_0x00 = Mode_0x01;
-        D_80078D78.unk_0x10 = SubState_0x00;
-        D_80078D78.unk_0x04 = 0;
-        func_80067628(0, (long *)&D_80078D78.unk_0x40,
-                      (long *)&D_80078D78.unk_0x44);
+        g_nGamestate0dMode.unk_0x00 = Mode_0x01;
+        g_nGamestate0dMode.unk_0x10 = SubState_0x00;
+        g_nGamestate0dMode.unk_0x04 = 0;
+        MemCardSync(0, (long *)&g_nGamestate0dMode.unk_0x40,
+                      (long *)&g_nGamestate0dMode.unk_0x44);
         break;
       }
     }
 
     /* keep checking to see if we have any save files */
-    D_80078D78.unk_0x50[0] = &D_80078D78.unk_0x4C->unk_0x200[0];
-    D_80078D78.unk_0x50[1] = &D_80078D78.unk_0x4C->unk_0x200[1];
-    D_80078D78.unk_0x50[2] = &D_80078D78.unk_0x4C->unk_0x200[2];
-    if (!D_80078D78.unk_0x50[0]->unk_0x40[0] &&
-        !D_80078D78.unk_0x50[1]->unk_0x40[0] &&
-        !D_80078D78.unk_0x50[2]->unk_0x40[0]) {
-      D_80078D78.unk_0x48 = 0;
+    g_nGamestate0dMode.unk_0x50[0] = &g_nGamestate0dMode.unk_0x4C->unk_0x200[0];
+    g_nGamestate0dMode.unk_0x50[1] = &g_nGamestate0dMode.unk_0x4C->unk_0x200[1];
+    g_nGamestate0dMode.unk_0x50[2] = &g_nGamestate0dMode.unk_0x4C->unk_0x200[2];
+    if (!g_nGamestate0dMode.unk_0x50[0]->unk_0x40[0] &&
+        !g_nGamestate0dMode.unk_0x50[1]->unk_0x40[0] &&
+        !g_nGamestate0dMode.unk_0x50[2]->unk_0x40[0]) {
+      g_nGamestate0dMode.unk_0x48 = 0;
     } else {
-      D_80078D78.unk_0x48 = 1;
+      g_nGamestate0dMode.unk_0x48 = 1;
     }
 
-    if (D_80078D78.unk_0x04 == 0) {
-      if (D_80078D78.unk_0x20 == 0) {
-        D_80078D78.unk_0x04 = 1;
-        if (!D_80078D78.unk_0x50[0]->unk_0x40[0]) {
-          D_80078D78.unk_0x14 = 0;
-        } else if (!D_80078D78.unk_0x50[1]->unk_0x40[0]) {
-          D_80078D78.unk_0x14 = 1;
-        } else if (!D_80078D78.unk_0x50[2]->unk_0x40[0]) {
-          D_80078D78.unk_0x14 = 2;
+    if (g_nGamestate0dMode.unk_0x04 == 0) {
+      if (g_nGamestate0dMode.unk_0x20 == 0) {
+        g_nGamestate0dMode.unk_0x04 = 1;
+        if (!g_nGamestate0dMode.unk_0x50[0]->unk_0x40[0]) {
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (!g_nGamestate0dMode.unk_0x50[1]->unk_0x40[0]) {
+          g_nGamestate0dMode.unk_0x14 = 1;
+        } else if (!g_nGamestate0dMode.unk_0x50[2]->unk_0x40[0]) {
+          g_nGamestate0dMode.unk_0x14 = 2;
         } else {
-          D_80078D78.unk_0x14 = 0;
+          g_nGamestate0dMode.unk_0x14 = 0;
         }
-      } else if (D_80078D78.unk_0x48) {
-        D_80078D78.unk_0x04 = 3;
-        if (D_80078D78.unk_0x50[0]->unk_0x40[0]) {
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80078D78.unk_0x50[1]->unk_0x40[0]) {
-          D_80078D78.unk_0x14 = 1;
+      } else if (g_nGamestate0dMode.unk_0x48) {
+        g_nGamestate0dMode.unk_0x04 = 3;
+        if (g_nGamestate0dMode.unk_0x50[0]->unk_0x40[0]) {
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_nGamestate0dMode.unk_0x50[1]->unk_0x40[0]) {
+          g_nGamestate0dMode.unk_0x14 = 1;
         } else {
-          D_80078D78.unk_0x14 = 2;
+          g_nGamestate0dMode.unk_0x14 = 2;
         }
       } else {
-        D_80078D78.unk_0x14 = 1;
-        D_80078D78.unk_0x04 = 4;
+        g_nGamestate0dMode.unk_0x14 = 1;
+        g_nGamestate0dMode.unk_0x04 = 4;
       }
-    } else if (D_80078D78.unk_0x04 == 1) {
-      if (D_80078D78.unk_0x0C >= 8) {
-        if (D_80077378.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
+    } else if (g_nGamestate0dMode.unk_0x04 == 1) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
+        if (g_dwPadPressed.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
           func_titlescreen_8007AAD4(9);
-          D_80078D78.unk_0x04 = 4;
-          D_80078D78.unk_0x14 = 0;
-        } else if (D_80077378.unk_0x0 & PAD_LEFT) {
-          D_80078D78.unk_0x0C = 16;
-          D_80078D78.unk_0x14 -= 1;
-          if (D_80078D78.unk_0x14 < 0)
-            D_80078D78.unk_0x14 = 2;
+          g_nGamestate0dMode.unk_0x04 = 4;
+          g_nGamestate0dMode.unk_0x14 = 0;
+        } else if (g_dwPadPressed.unk_0x0 & PAD_LEFT) {
+          g_nGamestate0dMode.unk_0x0C = 16;
+          g_nGamestate0dMode.unk_0x14 -= 1;
+          if (g_nGamestate0dMode.unk_0x14 < 0)
+            g_nGamestate0dMode.unk_0x14 = 2;
           func_titlescreen_8007AAD4(0);
-        } else if (D_80077378.unk_0x0 & PAD_RIGHT) {
-          D_80078D78.unk_0x0C = 16;
-          D_80078D78.unk_0x14 += 1;
-          if (D_80078D78.unk_0x14 > 2)
-            D_80078D78.unk_0x14 = 0;
+        } else if (g_dwPadPressed.unk_0x0 & PAD_RIGHT) {
+          g_nGamestate0dMode.unk_0x0C = 16;
+          g_nGamestate0dMode.unk_0x14 += 1;
+          if (g_nGamestate0dMode.unk_0x14 > 2)
+            g_nGamestate0dMode.unk_0x14 = 0;
           func_titlescreen_8007AAD4(0);
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
-          if (D_80078D78.unk_0x50[D_80078D78.unk_0x14]
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+          if (g_nGamestate0dMode.unk_0x50[g_nGamestate0dMode.unk_0x14]
                   ->unk_0x40[0]) {
             func_titlescreen_8007AAD4(3);
-            D_80078D78.unk_0x04 = 2;
-            D_80078D78.unk_0x18 = 1;
+            g_nGamestate0dMode.unk_0x04 = 2;
+            g_nGamestate0dMode.unk_0x18 = 1;
           } else {
-            func_8001277C();
+            InitNewGameState();
             START_DEMO(0)
           }
         }
       }
-    } else if (D_80078D78.unk_0x04 == 2) {
-      if (D_80078D78.unk_0x0C >= 8) {
-        if ((D_80077378.unk_0x0 & (PAD_RIGHT | PAD_LEFT))) {
-          D_80078D78.unk_0x0C = 16;
-          D_80078D78.unk_0x18 = 1 - D_80078D78.unk_0x18;
+    } else if (g_nGamestate0dMode.unk_0x04 == 2) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
+        if ((g_dwPadPressed.unk_0x0 & (PAD_RIGHT | PAD_LEFT))) {
+          g_nGamestate0dMode.unk_0x0C = 16;
+          g_nGamestate0dMode.unk_0x18 = 1 - g_nGamestate0dMode.unk_0x18;
           func_titlescreen_8007AAD4(0);
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
-          if (D_80078D78.unk_0x18 == 1 ||
-              (D_80077378.unk_0x0 & PAD_TRIANGLE) != 0) {
-            D_80078D78.unk_0x04 = 1;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
+          if (g_nGamestate0dMode.unk_0x18 == 1 ||
+              (g_dwPadPressed.unk_0x0 & PAD_TRIANGLE) != 0) {
+            g_nGamestate0dMode.unk_0x04 = 1;
             func_titlescreen_8007AAD4(4);
           } else {
-            func_8001277C();
+            InitNewGameState();
             START_DEMO(0)
           }
         }
       }
-    } else if (D_80078D78.unk_0x04 == 3) {
-      if (D_80078D78.unk_0x0C >= 8) {
-        if (D_80077378.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
+    } else if (g_nGamestate0dMode.unk_0x04 == 3) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
+        if (g_dwPadPressed.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
           func_titlescreen_8007AAD4(9);
-          D_80078D78.unk_0x04 = 4;
-          D_80078D78.unk_0x14 = 1;
-        } else if (D_80077378.unk_0x0 & PAD_LEFT) {
+          g_nGamestate0dMode.unk_0x04 = 4;
+          g_nGamestate0dMode.unk_0x14 = 1;
+        } else if (g_dwPadPressed.unk_0x0 & PAD_LEFT) {
           int i;
-          for (i = D_80078D78.unk_0x14 - 1; i >= 0; --i) {
-            if (D_80078D78.unk_0x50[i]->unk_0x40[0]) {
-              D_80078D78.unk_0x0C = 16;
+          for (i = g_nGamestate0dMode.unk_0x14 - 1; i >= 0; --i) {
+            if (g_nGamestate0dMode.unk_0x50[i]->unk_0x40[0]) {
+              g_nGamestate0dMode.unk_0x0C = 16;
               break;
             }
           }
           if (i >= 0) {
-            D_80078D78.unk_0x14 = i;
+            g_nGamestate0dMode.unk_0x14 = i;
             func_titlescreen_8007AAD4(0);
           }
-        } else if (D_80077378.unk_0x0 & PAD_RIGHT) {
+        } else if (g_dwPadPressed.unk_0x0 & PAD_RIGHT) {
           int i;
-          for (i = D_80078D78.unk_0x14 + 1; i < 3; ++i) {
-            if (D_80078D78.unk_0x50[i]->unk_0x40[0]) {
-              D_80078D78.unk_0x0C = 16;
+          for (i = g_nGamestate0dMode.unk_0x14 + 1; i < 3; ++i) {
+            if (g_nGamestate0dMode.unk_0x50[i]->unk_0x40[0]) {
+              g_nGamestate0dMode.unk_0x0C = 16;
               break;
             }
           }
           if (i < 3) {
-            D_80078D78.unk_0x14 = i;
+            g_nGamestate0dMode.unk_0x14 = i;
             func_titlescreen_8007AAD4(0);
           }
-        } else if (D_80077378.unk_0x0 & (PAD_START | PAD_CROSS)) {
-          D_80078BBC = 3;
-          D_800758E8 = 0;
-          D_8007580C = -1;
-          func_80059594(D_80078D78.unk_0x50[D_80078D78.unk_0x14]);
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+          g_nLevelReadyFlag = 3;
+          g_nSparxFoodCount = 0;
+          g_nLevelReadyFlagStash = -1;
+          func_80059594(g_nGamestate0dMode.unk_0x50[g_nGamestate0dMode.unk_0x14]);
           START_DEMO(1)
         }
       }
-    } else if (D_80078D78.unk_0x04 == 4) {
-      if (D_80078D78.unk_0x0C >= 8) {
+    } else if (g_nGamestate0dMode.unk_0x04 == 4) {
+      if (g_nGamestate0dMode.unk_0x0C >= 8) {
         if (func_80032AB0()) {
           /* triangle was pushed, func_80032AB0 already took care of it */
-        } else if (D_80077378.unk_0x0 & (PAD_RIGHT | PAD_LEFT)) {
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_RIGHT | PAD_LEFT)) {
           SWAP_MENU_SELECTION
-        } else if (D_80077378.unk_0x0 & (PAD_UP | PAD_START | PAD_CROSS)) {
-          if (D_80078D78.unk_0x14 == 1 && !D_80078D78.unk_0x48) {
-            D_80078D78.unk_0x0C = 16;
+        } else if (g_dwPadPressed.unk_0x0 & (PAD_UP | PAD_START | PAD_CROSS)) {
+          if (g_nGamestate0dMode.unk_0x14 == 1 && !g_nGamestate0dMode.unk_0x48) {
+            g_nGamestate0dMode.unk_0x0C = 16;
             func_titlescreen_8007AAD4(4);
           } else {
-            D_80078D78.unk_0x04 = 0;
-            D_8007579C = 1;
-            D_80078D78.unk_0x20 = D_80078D78.unk_0x14;
+            g_nGamestate0dMode.unk_0x04 = 0;
+            g_nGamePaused = 1;
+            g_nGamestate0dMode.unk_0x20 = g_nGamestate0dMode.unk_0x14;
             func_titlescreen_8007AAD4(1);
           }
         }
       }
-    } else if (D_80078D78.unk_0x04 == 5) {
-      if (D_80078D78.unk_0x0C == 0) {
+    } else if (g_nGamestate0dMode.unk_0x04 == 5) {
+      if (g_nGamestate0dMode.unk_0x0C == 0) {
         func_titlescreen_8007AAD4(5);
       }
 
-      D_80075918 = D_80078D78.unk_0x0C + 1;
-      if (D_80075918 > 15)
-        D_80075918 = 15;
+      g_nGenericCountdown = g_nGamestate0dMode.unk_0x0C + 1;
+      if (g_nGenericCountdown > 15)
+        g_nGenericCountdown = 15;
 
-      if (D_80078D78.unk_0x0C >= 16) {
+      if (g_nGamestate0dMode.unk_0x0C >= 16) {
         RECT rc;
-        func_8006631C(); /* MemCardStop */
-        D_80078D78.unk_0x00 = Mode_0x03;
-        D_80078D78.unk_0x04 = 0;
+        MemCardCloseSession(); /* MemCardStop */
+        g_nGamestate0dMode.unk_0x00 = Mode_0x03;
+        g_nGamestate0dMode.unk_0x04 = 0;
         setRECT(&rc, 0, 0, 512, 480);
-        func_8005F8F8(&rc, 0, 0, 0);
-        func_8005F764(0); /* DrawSync */
+        ClearImage(&rc, 0, 0, 0);
+        DrawSync(0); /* DrawSync */
       }
     }
     break;
   }
   }
 
-  func_80058CC0(3); /* SpecularUpdate */
-  if (D_80077378.unk_0xC >= 2 && (u_short)D_80077378.unk_0x8 != 0) {
-    D_80078D78.unk_0x08 = 0;
+  RotateLightVectorXZ(3); /* SpecularUpdate */
+  if (g_dwPadPressed.unk_0xC >= 2 && (u_short)g_dwPadPressed.unk_0x8 != 0) {
+    g_nGamestate0dMode.unk_0x08 = 0;
   } else {
-    D_80078D78.unk_0x08++;
+    g_nGamestate0dMode.unk_0x08++;
   }
 
-  if (D_80078D78.unk_0x00 < 2) {
-    if (D_80078D78.unk_0x10 != old_state)
-      D_80078D78.unk_0x0C = 0;
+  if (g_nGamestate0dMode.unk_0x00 < 2) {
+    if (g_nGamestate0dMode.unk_0x10 != old_state)
+      g_nGamestate0dMode.unk_0x0C = 0;
     else
-      D_80078D78.unk_0x0C = D_80078D78.unk_0x0C + 1;
+      g_nGamestate0dMode.unk_0x0C = g_nGamestate0dMode.unk_0x0C + 1;
   } else {
-    if (D_80078D78.unk_0x04 != old_state)
-      D_80078D78.unk_0x0C = 0;
+    if (g_nGamestate0dMode.unk_0x04 != old_state)
+      g_nGamestate0dMode.unk_0x0C = 0;
     else
-      D_80078D78.unk_0x0C = D_80078D78.unk_0x0C + 1;
+      g_nGamestate0dMode.unk_0x0C = g_nGamestate0dMode.unk_0x0C + 1;
   }
 }

@@ -13,9 +13,9 @@
  * `q600` BEFORE the copy that feeds the *100 chain. See cookbook A210.
  */
 
-extern void func_80017FE4(); /* draw text run */
-extern void func_80062FD4(); /* sprintf */
-extern int func_8006276C();  /* strlen */
+extern void BuildTextSpriteChain(); /* draw text run */
+extern void sprintf();
+extern int strlen();
 
 int func_level_5_8007B4B0(int time, int *pos, int arg2)
 {
@@ -31,7 +31,7 @@ int func_level_5_8007B4B0(int time, int *pos, int arg2)
   {
     pos[0] -= 0x36;
     pos[1] -= 5;
-    func_80017FE4("......", pos, 0x12, arg2);
+    BuildTextSpriteChain("......", pos, 0x12, arg2);
     sign = 6;
     return sign;
   }
@@ -45,26 +45,26 @@ int func_level_5_8007B4B0(int time, int *pos, int arg2)
 
   if (hr != 0)
   {
-    func_80062FD4(buf, "%d %02d.%02d", hr, min, frac);
+    sprintf(buf, "%d %02d.%02d", hr, min, frac);
   }
   else
   {
-    func_80062FD4(buf, "%d.%02d", min, frac);
+    sprintf(buf, "%d.%02d", min, frac);
   }
-  len = func_8006276C(buf);
+  len = strlen(buf);
   pos[0] -= len * 9;
-  func_80017FE4(buf, pos, 0x12, arg2);
+  BuildTextSpriteChain(buf, pos, 0x12, arg2);
   if (hr != 0)
   {
     char *fmt = ".";
     pos[0] -= 0x6C;
     pos[1] += 1;
     pos[2] = (pos[2] * 3) >> 1;
-    func_80017FE4(fmt, pos, 0x12, arg2);
+    BuildTextSpriteChain(fmt, pos, 0x12, arg2);
     len += 1;
     pos[0] -= 0x12;
     pos[1] -= 8;
-    func_80017FE4(fmt, pos, 0x12, arg2);
+    BuildTextSpriteChain(fmt, pos, 0x12, arg2);
   }
   return len;
 }
