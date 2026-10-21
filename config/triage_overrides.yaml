@@ -147,7 +147,7 @@ IsActorInRunningKillSet:
   verdict: matched
   class: "matched 2026-08-11 (the word index and the bit index as two locals, in that order - the two independent index insns follow declaration order, not sched1 path length)"
   date: 2026-08-11
-func_8003A9EC:
+SelectActorLodBand:
   verdict: matched
   class: "matched 2026-08-10-2 (literal 0xA00000 page base, one exit, -n split out of the address sum)"
   date: 2026-08-10
@@ -644,7 +644,7 @@ BeginGemCutscene:
     sched2 restores the store's position (A172). Reading the world id later
     also flips the priority (L=16) but empties the branch delay slot — the
     `*head = 0;` store has to stay adjacent to the `if`.
-func_80038C4C:
+IsPointInRotatedBox:
   verdict: park
   class: "F1 local-alloc ORDER, 6/66 (unchanged; 2026-08-11: the fresh-local-for-abs split is byte-identical, so the rx quantity does not reach the ay v1-vs-a1 tie)"
   date: 2026-08-10
@@ -697,7 +697,7 @@ func_80039E94:
   verdict: matched
   class: "matched 2026-08-10-2 (do/while(0) on both turn call sites weights step/lim refs by loop_depth, lifting step over kind in global.c)"
   date: 2026-08-10
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "coupled schedule/register pair (4/152): bare literals give the exact schedule with a v0/v1 rotation, an A195 dial fixes the rotation and reverts the schedule"
   date: 2026-08-23
@@ -955,7 +955,7 @@ park_sweep_2026_08_11_2:
   note: >-
     Swept all 64 main `.c.wip` parks through `open-spyro diff` (~9 min): zero
     free matches, and the ranking is unchanged from 2026-08-11-1 —
-    DrawCinematicLetterbox 2, func_80038C4C 6, func_80038FC8 6,
+    DrawCinematicLetterbox 2, IsPointInRotatedBox 6, SteerActorYawTowardSpyro 6,
     ApplyPadInputToSpyroBodyYaw 7, func_8005FC6C 7, WaitForFrameDeadline 7
     (now a wall, above), func_8003A420 9, EndSaveMenuToWorld 12,
     func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
@@ -969,7 +969,7 @@ WaitForFrameDeadline_2026_08_11_2_scope:
   note: >-
     Scanned asm/text.s for the fingerprint (a `sw $ra` sitting in a branch
     delay slot): 37 functions have it and 28 are ALREADY MATCHED, several with
-    1-2 frame stores ahead of the save and `func_80039910` with four. So the
+    1-2 frame stores ahead of the save and `DriveActorTrackedMove` with four. So the
     B20 wall is specifically "an early VOLATILE frame store pins the ra-save
     above the branch", not "any frame store". Unmatched members of the
     fingerprint worth a look next session, cheapest first: `CdRead` (65 insns,
@@ -1629,7 +1629,7 @@ func_level_0_8007CFC0:
     the body is a genuinely different instruction sequence. This is decode work,
     not the "steer the base from s1 to s2 / shed a callee-saved" job the note
     promises. Budget it as a fresh decode, not an allocation session.
-func_80038C4C:
+IsPointInRotatedBox:
   verdict: attempted
   class: "F1 local-alloc tie (ay v1-vs-a1) — six more source forms measured, all 6/66"
   date: 2026-08-18
@@ -1652,7 +1652,7 @@ func_80038C4C:
 # The full .c.wip sweep through the LINKED path was re-run over all 64 wips
 # (§C "cheapest bytes on the board"): ZERO free matches, same as 2026-08-06-1.
 # Closest parks, in order: TurnSpyroTowardMoveTargetWithLean 2/92,
-# EndSaveMenuToWorld 4/81, func_80038FC8 4/152, func_level_1_800892C4 4/1085,
+# EndSaveMenuToWorld 4/81, SteerActorYawTowardSpyro 4/152, func_level_1_800892C4 4/1085,
 # func_level_3_80088F68 4/985, func_level_11_800819BC 5/593,
 # func_level_17_80081F0C 5/741, func_level_23_8008223C 5/838,
 # func_level_25_80084B94 5/794 (the last four are B19-gated).
@@ -2136,7 +2136,7 @@ func_titlescreen_8007ABAC:
     the call site: 14 vs 6. Open question, now narrow: raise the constant's
     reg_n_refs without ending cse's ebb. DO NOT spend more permuter time.
 
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "F14b mutual exclusion — REGISTER half retired, cross-jump now the blocker"
   date: 2026-08-21
@@ -2286,7 +2286,7 @@ CdProcessInterrupt:
   date: 2026-08-23
   note: "1416 B, 353 insns; libcd, also carries B10 wait-loop risk."
 
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "sched1 priority-1 straggler LUID tie: call-arg a0 copy vs the constant's li"
   date: 2026-08-23
@@ -2614,7 +2614,7 @@ TurnSpyroTowardMoveTargetWithLean:
     apply (the residue is `subu a1,v0,v1; andi a1` vs `subu v0,v0,v1; andi a1,v0`,
     a pure allocation tie with no call-arg copy and no branch involved). The
     .c.wip header's numeric criterion still stands; permuter-or-never.
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: park
   class: "F14b mutual exclusion: li-const position vs old/const v0 rotation"
   date: 2026-08-26
@@ -2626,7 +2626,7 @@ func_80038FC8:
     between the def and the call so there is an earlier block to place the
     def in. The .c.wip header's open question ("make v0 unavailable to the
     constant over orig 106-108 without a loop note") is unchanged.
-func_80038C4C:
+IsPointInRotatedBox:
   verdict: park
   class: "F1 register rotation (a1 vs v1) around a negu/store pair"
   date: 2026-08-26
@@ -2896,8 +2896,8 @@ barrier_sweep_negative_2026_08_28:
   date: 2026-08-28
   note: >-
     Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
-    with the compile-only shape diff) run over func_80038FC8 (4/152),
-    func_80059594 (6/180), func_80038C4C (6/66), func_8005FC6C (38 insns),
+    with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
+    func_80059594 (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
     HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
     func_8003A420 (9/192), func_level_27_80086754's 0x1D arm and
     func_level_5_8007B68C (735 placements): no variant beat the baseline on any
@@ -3138,7 +3138,7 @@ A236_screening_2026_08_29_2:
     wants $a0): the recompute block contains no call. `func_8003BFC0` (span wants
     $a2): the a2 assignment is a live-range consequence -- span is live across all
     three divides so it must avoid v0/v1/a0, and a2 is simply the lowest free reg,
-    not a suggestion. `func_80038FC8` (the 0x10 constant must vacate $v0 for `old`):
+    not a suggestion. `SteerActorYawTowardSpyro` (the 0x10 constant must vacate $v0 for `old`):
     A236 would move the constant to $a3 via the spare argument slot of
     func_80037E98, but the original has it in $v1, so it trades one wrong register
     for another. The general precondition is therefore: a call in the SAME basic
@@ -3336,7 +3336,7 @@ func_titlescreen_8007ABAC:
     So the objective is now exactly: the pointer must be LOCAL (to get v0) while
     the constant wins the a1 suggestion, i.e. lever 1's third reference to the
     constant with no loop note is the only thing left.
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "F14b straggler LUID tie (li v1,16 vs the call-arg copy) — now reachable from two different allocation routes"
   date: 2026-08-30-1
@@ -3485,7 +3485,7 @@ func_8005FC6C:
     so we would need the copy to survive. Three more spellings (hoisted to the
     first statement, assigned in both arms of the debug if, assigned inside the
     arm) are byte-identical or worse. Settled.
-func_80038C4C:
+IsPointInRotatedBox:
   verdict: parked
   class: "three-way: rec[3]/rec[4] share v0 in local-alloc because hard reg $2 is not yet live"
   date: 2026-08-31
@@ -3496,7 +3496,7 @@ func_80038C4C:
     `return 0` value) live across the rec[3] load; routing the result through a
     pseudo costs a `move` and will not link, and dead-local limit carriers are
     6/14/7.
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "F14b mutual exclusion (schedule XOR register) — needs update_equiv_regs to delete the 0x10 pseudo"
   date: 2026-08-31
@@ -3868,7 +3868,7 @@ func_8005FC6C:
     branch after the dispatch call. 116k permuter iterations on a 38-insn
     function found nothing. Do not re-open without a new class.
 
-func_80038FC8:
+SteerActorYawTowardSpyro:
   verdict: parked
   class: "F14b schedule-XOR-register; needs update_equiv_regs to delete the 0x10 pseudo"
   date: 2026-09-10
@@ -3925,7 +3925,7 @@ HandleHardwareInterrupt:
     2026-08-24 ranking's own note), so nothing to aim a schedule dial at; not
     re-opened this session.
 
-func_80038C4C:
+IsPointInRotatedBox:
   verdict: parked
   class: "three-way local-alloc: rec[3]/rec[4] share v0 before $2 is live"
   date: 2026-09-10
@@ -4075,8 +4075,8 @@ harvest_inventory_staleness_2026_09_15:
     (listed there as "2/92, the closest thing on the board"), `func_8005FBB4`,
     `func_80059474`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
-    re-measure of the ten that remain, 2026-09-15: func_80038FC8 4/152,
-    func_80059594 4/180, func_80038C4C 6/66, BeginGemPickupOverlay 7/146,
+    re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
+    func_80059594 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
     func_8005FC6C 7/38, func_titlescreen_8007ABAC 7/2147,
     func_8003A420 9/192, func_level_27_80086754 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
@@ -4852,7 +4852,7 @@ func_level_6_8007E3A0_2026_10_03_1:
   verdict: viable
   class: "MATCHED 2026-10-03 (A232 block split after the spawn call)"
   date: 2026-10-03
-  note: "48,824 B. Last residue: with the multi-set h, sched1 fills the posZ load gap with h = 0xF0 (prio 3), so best = 0 (crosses calls, never boosted) drifts to the block head and reorg puts it in the D_800758CC jalr slot. Wrapping the spawn sequence in do { } while (0) ends the block after func_80039398; best = 0 heads the next block. An unused C label does not split (jump deletes it)."
+  note: "48,824 B. Last residue: with the multi-set h, sched1 fills the posZ load gap with h = 0xF0 (prio 3), so best = 0 (crosses calls, never boosted) drifts to the block head and reorg puts it in the D_800758CC jalr slot. Wrapping the spawn sequence in do { } while (0) ends the block after MoveActorAlongHeading; best = 0 heads the next block. An unused C label does not split (jump deletes it)."
 func_level_19_8007B5DC_2026_10_03_1:
   verdict: viable
   class: "MATCHED 2026-10-03 (jump.c new-label cross-jump rule + A302 spellings)"

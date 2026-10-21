@@ -17,7 +17,7 @@
  * "attitude-copy" arms the other four carry.  Four arms are unique to it:
  *  - 0x4E: bare init, straight into the spatial grid.
  *  - 0xE8: spawn 0x400 above the parent, then aim at Spyro -- ArcTan2 of the
- *    horizontal offset (ArcTan2) fed through func_80038178 with Spyro's
+ *    horizontal offset (ArcTan2) fed through StepAndLerpAngle8 with Spyro's
  *    8-bit body yaw.
  *  - 0x167..0x169: a scatter burst on a random 8-bit heading, read out of the
  *    unit-circle tables (g_anCosineLut/g_anSineLut) and shifted down 7, with a
@@ -157,7 +157,7 @@ extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
-extern int func_80038178(int yaw, unsigned char pitch, int speed, int lift);
+extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
@@ -341,7 +341,7 @@ Actor *func_level_29_80082028(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     st->unk04 = 0xC8;
     st->unk08 = 0x15E;
-    st->unk00 = func_80038178(
+    st->unk00 = StepAndLerpAngle8(
         ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, 0),
         D_80078A66, 0x28, 0x40);
     st->unk0C = 0x78;

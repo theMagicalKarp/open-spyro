@@ -5,7 +5,7 @@
    point count and each 0x10-byte record starts at offset 8. Returns the
    smallest 2D distance and, when `out_index` is non-NULL, stores the winning
    record's index. */
-int func_80038A40(int *ref, unsigned char *list, int *out_index) {
+int FindNearestPathPointToActor(int *ref, unsigned char *list, int *out_index) {
   int best = 0xFFFFFF;
   int best_i;
   int i;

@@ -517,12 +517,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1165,8 +1165,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1232,7 +1232,7 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int func_80038A40(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
@@ -1241,7 +1241,7 @@ typedef struct CageState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for func_8003A9EC */
+  int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
@@ -1361,7 +1361,7 @@ typedef struct ShempState {
   int unk04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 passed by address to func_80038FC8 */
+  int unk18;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
@@ -1755,7 +1755,7 @@ void func_level_10_8007AEB8(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -3157,7 +3157,7 @@ void func_level_10_8007AEB8(void) {
         break;
       }
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       actor->flags = 0;
       continue;
     }
@@ -3265,7 +3265,7 @@ void func_level_10_8007AEB8(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -4029,7 +4029,7 @@ void func_level_10_8007AEB8(void) {
             if (actor->unk43 == 0xFF) {
               ENTER_POSE(actor, 2);
             }
-            func_8003B47C(actor, 1, 3);
+            SetActorGroupStateExcept(actor, 1, 3);
           }
           if (st->watch != -1 && g_pActorListBase[st->watch].unk3D == 7) {
             st->done = 1;
@@ -4067,8 +4067,8 @@ void func_level_10_8007AEB8(void) {
             actor->unk48 = 0x1E;
             continue;
           }
-          if (func_80038C4C(&actor->posX, st->boxA) != 0 ||
-              func_80038C4C(&actor->posX, st->boxB) != 0) {
+          if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
+              IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
             actor->unk48 = 5;
             continue;
           }
@@ -4086,7 +4086,7 @@ void func_level_10_8007AEB8(void) {
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
                             8, 0x26, 1) != 0) {
-            func_80039398(actor, st->accel, 0x200, 0x200, 0x23);
+            MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
           }
           g = ProbeActorGroundHeight(actor);
           if (actor->posZ - g > 0x1F4) {
@@ -4119,7 +4119,7 @@ void func_level_10_8007AEB8(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (func_80039910(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
                           0xC) == 3 &&
             actor->unk3F < 0xD) {
           int c;
@@ -4147,7 +4147,7 @@ void func_level_10_8007AEB8(void) {
         if (st->accel < 0xC8) {
           st->accel += 0x14;
         }
-        func_80039398(actor, st->accel, 0x200, 0x200, 0x23);
+        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
         g4 = ProbeActorGroundHeight(actor);
         if (actor->posZ - g4 > 0x1F4) {
           st->heading = 0x4D;
@@ -4163,8 +4163,8 @@ void func_level_10_8007AEB8(void) {
           continue;
         }
         actor->posZ = actor->unk38 + g4;
-        if (func_80038C4C(&actor->posX, st->boxA) != 0 ||
-            func_80038C4C(&actor->posX, st->boxB) != 0) {
+        if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
+            IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
           actor->unk48 = 5;
           continue;
         }
@@ -4192,7 +4192,7 @@ void func_level_10_8007AEB8(void) {
 
       case 5:
         st->timer24 = 0xB4;
-        func_80038A40(actor, (PostPath *)st->path, &idx370[0]);
+        FindNearestPathPointToActor(actor, (PostPath *)st->path, &idx370[0]);
         st->turn = ArcTan2(PATH_X(st->path, idx370[0]) - actor->posX,
                                  PATH_Y(st->path, idx370[0]) - actor->posY, 0);
         actor->unk48 = 6;
@@ -4230,7 +4230,7 @@ void func_level_10_8007AEB8(void) {
           continue;
         }
         actor->posZ = h + actor->unk38;
-        func_80039398(actor, st->accel, 0x200, 0x200, 0x23);
+        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
         break;
       }
 
@@ -4271,12 +4271,12 @@ void func_level_10_8007AEB8(void) {
           continue;
         }
         if (actor->unk49 == 0 && st->lift < -0x50) {
-          func_80038A40(actor, (PostPath *)st->path, &idx370[1]);
+          FindNearestPathPointToActor(actor, (PostPath *)st->path, &idx370[1]);
           func_8003ABC0(actor, 2, 0, (int *)(st->path + ((idx370[1] << 4) + 8)));
           MarkActorCommittedKill(actor);
           actor->unk49 = 1;
         }
-        func_80039910(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
         break;
 
       case 20:
@@ -4402,7 +4402,7 @@ void func_level_10_8007AEB8(void) {
       switch (actor->unk48) {
       case 0:
         st->ang = actor->unk46 * 16;
-        d = func_80038FC8(actor, &st->unk18, &st->ang, 0x20, 0x280, 1);
+        d = SteerActorYawTowardSpyro(actor, &st->unk18, &st->ang, 0x20, 0x280, 1);
         if (ABS(d) < 0x80) {
           ANIM_GO(actor, 0);
         }
@@ -4530,7 +4530,7 @@ void func_level_10_8007AEB8(void) {
 
       case 14:
         ANIM_GO(actor, 9);
-        if (func_80039398(actor, 0xAA, 0, 0, 0x11) != 0 ||
+        if (MoveActorAlongHeading(actor, 0xAA, 0, 0, 0x11) != 0 ||
             TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
             (AbsAngleDelta8(actor->unk46,
                            ArcTan2(spy->posX - actor->posX,
@@ -4570,7 +4570,7 @@ void func_level_10_8007AEB8(void) {
                           ArcTan2(tgt371[0] - actor->posX,
                                         tgt371[1] - actor->posY, 0),
                           4, 0x1E, 1) != 0) {
-          func_80039398(actor, 0x5A, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x5A, 0, 0, 1);
         }
         if (ApproxDist2D(&actor->posX, tgt371) < 0x100) {
           st->timer = 0x8C;
@@ -4891,7 +4891,7 @@ void func_level_10_8007AEB8(void) {
 
       case 7:
         if (st->speed > 0) {
-          func_80039688(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
         }
         if (D_80075794 != 0) {

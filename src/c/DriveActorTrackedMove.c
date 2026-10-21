@@ -2,17 +2,18 @@
 
 /* Drive an actor's tracked move toward its target (0x80039910, 0x198).
    Picks the probe mode/distance from the actor's +0x3B flag byte, runs the
-   guided-move step (func_80039688) while *counter is live, then while
+   guided-move step (MoveActorAlongAngle) while *counter is live, then while
    *timer is live applies the vertical timer decay to the actor's Y
    (+0x14), clamping the timer at -0x104 and floor-snapping via the +0x38
    halfword once the timer runs out. Returns the move-step result, or 3
    when the floor snap landed. */
-extern int func_80039688(int *actor, int a, int b, int dist, int c, int mode);
+extern int MoveActorAlongAngle(int *actor, int a, int b, int dist, int c,
+                               int mode);
 extern int ProbeActorGroundHeightRaised(int *actor, int a);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 
-int func_80039910(int *actor, int *counter, int arg2, int *timer, int step,
-                  int decay) {
+int DriveActorTrackedMove(int *actor, int *counter, int arg2, int *timer,
+                          int step, int decay) {
   int ret;
   int mode;
   int dist;
@@ -37,7 +38,7 @@ int func_80039910(int *actor, int *counter, int arg2, int *timer, int step,
     }
   }
   if (*counter != 0) {
-    ret = func_80039688(actor, arg2, *counter, dist, 0x1F4, mode);
+    ret = MoveActorAlongAngle(actor, arg2, *counter, dist, 0x1F4, mode);
     t = *counter - step;
     *counter = t;
     if (t < 0) {

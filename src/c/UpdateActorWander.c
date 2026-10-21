@@ -22,13 +22,13 @@ extern int RandomIntInRange(int lo, int hi);
 extern int WrapAddAngle8(int angle, int step);
 extern int TurnActorYawTowardAngle(int *actor, int target, int step, int lim,
                                    int flag);
-extern int func_80039398(int *actor, int speed, int group, int radius,
-                         int flags);
+extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
+                                 int flags);
 
 extern int D_800756C4;
 extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
-void func_80039AA8(int *actor, unsigned char *p) {
+void UpdateActorWander(int *actor, unsigned char *p) {
   int unused[2];
   int *spyro;
   int turn;
@@ -87,9 +87,9 @@ void func_80039AA8(int *actor, unsigned char *p) {
   }
 
   if (p[0x1D] != 0) {
-    hit = func_80039398(actor, speed, 0, p[0xE], 0x55);
+    hit = MoveActorAlongHeading(actor, speed, 0, p[0xE], 0x55);
   } else {
-    hit = func_80039398(actor, speed, p[0xE], p[0xE], 0x55);
+    hit = MoveActorAlongHeading(actor, speed, p[0xE], p[0xE], 0x55);
   }
 
   if (hit != 0) {

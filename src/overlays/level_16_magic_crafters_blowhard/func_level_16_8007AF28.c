@@ -535,12 +535,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1185,8 +1185,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1527,7 +1527,7 @@ void func_level_16_8007AF28(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1877,7 +1877,7 @@ void func_level_16_8007AF28(void) {
           continue;
         }
         if (TickCountdownByFrameDelta(st, 4) != 0 ||
-            func_8003BCCC(actor, 0x80, 0, 0x100, 0) != 0 ||
+            TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -3033,7 +3033,7 @@ void func_level_16_8007AF28(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -3263,7 +3263,7 @@ void func_level_16_8007AF28(void) {
         g_pfnLevelOverlayParticleSpawn(1, 0x41, actor, 0);
         if (actor->flags & 0xB0000) {
           st->speed = 0xDC;
-          st->knock = func_80038178(ArcTan2(actor->posX - SPY.posX,
+          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, 0),
                                     D_80078A66, 0x20, 0x60);
           if (actor->flags & 0x20000) {
@@ -3354,7 +3354,7 @@ void func_level_16_8007AF28(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, 0),
             8, 0x10, 1);
-        func_80039398(actor, 0x60, 0x180, 0x180, 0x27);
+        MoveActorAlongHeading(actor, 0x60, 0x180, 0x180, 0x27);
         break;
 
       case 1:
@@ -3377,7 +3377,7 @@ void func_level_16_8007AF28(void) {
         break;
 
       case 2:
-        func_80039910(actor, &st->speed, st->knock, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
@@ -4181,13 +4181,13 @@ void func_level_16_8007AF28(void) {
 
       if ((dz > 0 ? dz < 0x578
                   : SPY.posZ - (actor->posZ - actor->unk38) < 0x578) &&
-          dist < 0x2800 && func_80038250(&actor->posX) != 0 &&
+          dist < 0x2800 && CheckSpyroLineOfSightTo(&actor->posX) != 0 &&
           g_nSpyroState != 0xB && g_nSpyroState != 0x14 && actor->unk48 != 0x50 &&
           actor->unk48 != 0x5A) {
         g_dwSpyroRequestMask = 0x80010000;
         g_pScriptedCameraActor = actor;
       }
-      if (func_80038C4C(&SPY.posX, &st->unk74) != 0) {
+      if (IsPointInRotatedBox(&SPY.posX, &st->unk74) != 0) {
         actor->unk55 = 0x10;
       }
       if (actor->flags & 0x90000) {

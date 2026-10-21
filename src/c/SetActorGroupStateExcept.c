@@ -4,7 +4,7 @@
    by actor `a0`'s +0x43 group index whose current type byte is < 0x80 and not
    equal to `a2` (0x8003b47c). Out-of-range group index applies the same guarded
    write to the passed actor itself. */
-void func_8003B47C(int a0, int a1, int a2) {
+void SetActorGroupStateExcept(int a0, int a1, int a2) {
   unsigned short *ptr;
   int idx;
   int group;

@@ -17,7 +17,7 @@
  *     for the last callee-saved register, so every Spyro read the original
  *     makes through fp must go through `spy` (cases 300 and 312 included).
  *   - Scratch arrays at function level in first-use order, with a BLKmode
- *     `idx[2]` after svE for case 62's func_80038A40 out-argument.
+ *     `idx[2]` after svE for case 62's FindNearestPathPointToActor out-argument.
  *   - Case 61 settles with `z ? z : (t = posZ - 0x200, t - depth)`: the comma
  *     temp stops fold from reassociating the subtraction.
  *   - Case 392's |dx| + |dy| goes through `d` (ABS2 form) and its tests are
@@ -521,12 +521,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1169,8 +1169,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1236,7 +1236,7 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int func_80038A40(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
@@ -1245,7 +1245,7 @@ typedef struct CageState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for func_8003A9EC */
+  int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
@@ -1390,7 +1390,7 @@ typedef struct L26Spinner {
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L26Spinner;
 extern int D_80075F38[][7]; /* voice table */
 extern int D_80075F44[][7]; /* its word 3 */
@@ -1766,7 +1766,7 @@ void func_level_26_8007B4DC(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2020,7 +2020,7 @@ void func_level_26_8007B4DC(void) {
           continue;
         }
         if (st->speed > 0) {
-          func_80039688(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
         }
         break;
@@ -2046,7 +2046,7 @@ void func_level_26_8007B4DC(void) {
         }
         if (func_8004E2E8(&actor->posX, 0x64, 7) != 0 ||
             TickCountdownByFrameDelta(st, 4) != 0 ||
-            func_8003BCCC(actor, 0xE0, 0, 0x100, 0) != 0 ||
+            TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
           actor->unk48 = 1;
         }
@@ -2107,7 +2107,7 @@ void func_level_26_8007B4DC(void) {
       int a;
 
       if ((actor->flags & 0xB0000) && actor->unk48 != 4) {
-        st->knock = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & 0x80000) {
@@ -2146,7 +2146,7 @@ void func_level_26_8007B4DC(void) {
       switch (actor->unk48) {
       case 0:
         if (st->onPath != 0) {
-          func_8003C994(actor, st->path, 0x400, 0x5C, 0x180, 4, 2);
+          FollowActorWaypointPath(actor, st->path, 0x400, 0x5C, 0x180, 4, 2);
         } else {
           int r;
           int e;
@@ -2175,7 +2175,7 @@ void func_level_26_8007B4DC(void) {
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0)) <
                   0x20 &&
-              func_80038250(&actor->posX) != 0) {
+              CheckSpyroLineOfSightTo(&actor->posX) != 0) {
             st->timer = 0x78;
             ENTER_POSE(actor, 2);
           }
@@ -2184,7 +2184,7 @@ void func_level_26_8007B4DC(void) {
 
       case 1:
         if (st->onPath != 0) {
-          d = func_80038A40(actor, (PostPath *)st->path, idx);
+          d = FindNearestPathPointToActor(actor, (PostPath *)st->path, idx);
           st->path->cur = idx[0];
           if (d < 0x200) {
             ENTER_POSE(actor, 0);
@@ -2248,7 +2248,7 @@ void func_level_26_8007B4DC(void) {
 
       case 2:
         func_8003BAD0(actor, &spy->posX, 0x80, 4, 2, 0x180);
-        if (actor->unk51 != 0 && func_80038250(&actor->posX) != 0) {
+        if (actor->unk51 != 0 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           if (AbsAngleDelta8(actor->unk46,
                             ArcTan2(spy->posX - actor->posX,
                                           SPY.posY - actor->posY, 0)) < 0x18) {
@@ -2277,7 +2277,7 @@ void func_level_26_8007B4DC(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC,
                           0x10) != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
@@ -3364,7 +3364,7 @@ void func_level_26_8007B4DC(void) {
 
       if ((actor->flags & 0xB0000) && actor->unk48 != 1) {
         actor->flags = 0;
-        st->knock = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
@@ -3383,13 +3383,13 @@ void func_level_26_8007B4DC(void) {
 
       switch (actor->unk48) {
       case 0:
-        func_80039AA8(actor, st);
+        UpdateActorWander(actor, st);
         break;
 
       case 1:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          func_80039688(actor, st->knock, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
         }
         if (D_80075794 != 0) {
           DespawnActorRecord(actor);
@@ -3658,7 +3658,7 @@ void func_level_26_8007B4DC(void) {
         break;
       }
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       actor->flags = 0;
       continue;
     }
@@ -3766,7 +3766,7 @@ void func_level_26_8007B4DC(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -4039,7 +4039,7 @@ void func_level_26_8007B4DC(void) {
         if (actor->flags & 0x80000) {
           g_pActorListBase[st->partner].flags |= actor->flags;
           st->speed = (SPY.u118 >> 6) + 0x1C2;
-          st->heading = func_80038178(ArcTan2(actor->posX - SPY.posX,
+          st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, 0),
                                       D_80078A66, 0x20, 0x40);
           st->lift = 0x50;
@@ -4076,7 +4076,7 @@ void func_level_26_8007B4DC(void) {
         break;
 
       case 2:
-        if (func_80039910(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
                           0x10) != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x30);
@@ -4097,7 +4097,7 @@ void func_level_26_8007B4DC(void) {
         break;
 
       case 3:
-        if (func_80039910(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
                           0x10) != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x30);
@@ -4731,7 +4731,7 @@ void func_level_26_8007B4DC(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       st->speed -= 1;
       if (pitch < cur && actor->unk54 != 0x7F) {
         D_80075F44[actor->unk54 & 0x7F][0] = -4;

@@ -522,12 +522,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1053,9 +1053,9 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to func_80039910 */
+  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to func_80039910 */
+  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
   int unk20[3];        /* 0x20 */
   int unk2C;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
@@ -1238,7 +1238,7 @@ void func_level_5_8007CFB4(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2414,7 +2414,7 @@ void func_level_5_8007CFB4(void) {
         func_8003CAC4(st->tally);
         st->unk14 = 0;
         st->unk1C = 0x15E;
-        st->heading = func_80038178(
+        st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
         for (i = 0; i < 3; i++) {
@@ -2459,7 +2459,7 @@ void func_level_5_8007CFB4(void) {
         break;
       }
       case 1:
-        if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
           g_pfnLevelOverlayInitHook(0x190, actor);
@@ -2472,7 +2472,7 @@ void func_level_5_8007CFB4(void) {
         }
         break;
       case 2:
-        if (func_80039910(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
           g_pfnLevelOverlayInitHook(0x190, actor);

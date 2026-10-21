@@ -26,9 +26,9 @@ extern int WrapAngleDelta8(int from, int to);
 extern int WrapAddAngle8(int angle, int step);
 extern int TurnActorYawTowardAngle(int *actor, int angle, int p2, int p3,
                                    int p4);
-extern int func_80039398(int *actor, int speed, int p2, int p3, int p4);
-extern int func_80039688(int *actor, int angle, int speed, int p3, int p4,
-                         int p5);
+extern int MoveActorAlongHeading(int *actor, int speed, int p2, int p3, int p4);
+extern int MoveActorAlongAngle(int *actor, int angle, int speed, int p3, int p4,
+                               int p5);
 
 extern short g_anCosineLut[];
 extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
@@ -128,13 +128,13 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   if (flags & 8) {
     TurnActorYawTowardAngle(
         actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6, 0, 0);
-    r = func_80039688(actor, heading, speed, p10, p11, flags);
+    r = MoveActorAlongAngle(actor, heading, speed, p10, p11, flags);
   } else {
     r = TurnActorYawTowardAngle(actor, heading, p6, p7, 1);
     if (r == 0) {
       goto stalled;
     }
-    r = func_80039398(actor, speed, p10, p11, flags);
+    r = MoveActorAlongHeading(actor, speed, p10, p11, flags);
   }
   if (r != 0) {
     return -r;

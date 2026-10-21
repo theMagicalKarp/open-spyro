@@ -2189,4 +2189,61 @@ void MarkActorCommittedKill(int a0);
 /* 0x8003b9d4: Pickup collection: pushes the actor's kind into the gem-tally icon ring, handles the egg thief, spawns the kind's particle burst and queues the sound for kinds 0x53..0x57. */
 void CollectPickupActor(unsigned char *a);
 
+/* 0x80038fc8: Steers the tracked yaw *yawp toward the ArcTan2 bearing to Spyro with a held turn direction (*dirp, flips past `thresh`) and frame-scaled `speed`; swaps the turn anim pair while far off-bearing; stores the coarse yaw at +0x46 and returns the delta. */
+int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
+
+/* 0x80039228: Moves the actor by an explicit delta (x1.5/x2 at frame delta 3/4) with actor-contact and world-collision checks; returns 1 contact, 2 collision, 0 committed. */
+int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius, int flags);
+
+/* 0x80039398: Guided-move step along the actor's own heading byte (+0x46): contact, world collision, ground probe, step-height and slope rejects per `flags`; returns 1 contact, 2 rejected, 0 committed. Sibling of MoveActorAlongAngle. */
+int MoveActorAlongHeading(int *actor, int speed, int group, int radius, int flags);
+
+/* 0x80039688: Guided-move step along an explicit `angle`, same checks and return codes as MoveActorAlongHeading. */
+int MoveActorAlongAngle(int *actor, int angle, int speed, int group, int radius, int flags);
+
+/* 0x80039910: Runs MoveActorAlongAngle while *counter is live, then applies the vertical timer decay to +0x14 and floor-snaps when *timer runs out; returns the move result or 3 on landing. */
+int DriveActorTrackedMove(int *actor, int *counter, int arg2, int *timer, int step, int decay);
+
+/* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
+void UpdateActorWander(int *actor, unsigned char *p);
+
+/* 0x8003a9ec: Nudges the actor's LOD band and points its mesh-table entry (+0x4C) at the matching VRAM page; returns the band. */
+int SelectActorLodBand(int *actor, int level);
+
+/* 0x8003b294: ORs `bits` into +0x18 of every non-dormant actor of pickup group `group` inside a box + facing cone around `actor`. */
+void OrActorGroupFlagsInCone(int actor, int group, unsigned int bits, int distLim, int zLim, int xyLim, int angLim);
+
+/* 0x8003b47c: SetActorGroupState restricted to actors whose current state differs from a2. */
+void SetActorGroupStateExcept(int a0, int a1, int a2);
+
+/* 0x8003bccc: Trial-moves the actor `speed` along its facing and commits unless blocked by contact, world collision or a ground step >= 0xC9; returns 1 / 2 / 0. */
+int TryMoveActorForward(int actor, int speed, int contactR, int collideR, int flags);
+
+/* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte waypoints from +8), wrapping the index forward or back, and steers toward the current waypoint with speed dist>>4 capped. */
+void FollowActorWaypointPath(unsigned char *pos, unsigned char *path, int threshold, int cap, int arg5, int arg6, int arg7);
+
+/* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the shortest delta. */
+int LerpAngle8(int a, int b, unsigned char c);
+
+/* 0x80038178: StepAngle8Toward(a, b, c) then LerpAngle8 by d/256. */
+int StepAndLerpAngle8(int a, int b, int c, int d);
+
+/* 0x800381e8: True when the actor's yaw byte (+0x46) is within `threshold` of the bearing to Spyro. */
+int IsActorFacingSpyro(int *e, int threshold);
+
+/* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point; the Spyro-sourced sibling of CheckLineOfSightSegment. */
+unsigned int CheckSpyroLineOfSightTo(int *param_1);
+
+/* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records from +8) to the actor's position; returns the 2D distance, index via out_index. */
+int FindNearestPathPointToActor(int *ref, unsigned char *list, int *out_index);
+
+/* 0x80038afc: FindNearestPathPointToActor measured from Spyro. */
+int FindNearestPathPointToSpyro(unsigned char *list, int *out_index);
+
+/* 0x80038bb0: Index of the path-list point farthest (2D) from Spyro. */
+int FindFarthestPathPointFromSpyro(unsigned char *list);
+
+/* 0x80038c4c: Rotates pos - rec into the record's yaw frame (+0x14) and tests it against the half-extents at +0xC/+0x10. */
+int IsPointInRotatedBox(int *pos, int *rec);
+
 #endif /* OPEN_SPYRO_FUNCS_H */

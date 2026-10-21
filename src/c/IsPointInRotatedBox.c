@@ -10,7 +10,7 @@ extern short g_anCosineLut[];
    return whether the rotated point lies inside the record's box extents
    (+0xC half-width, +0x10 half-depth). The rotated |x|/|y| pair is also
    written to a scratch pair (never read back). */
-int func_80038C4C(int *pos, int *rec) {
+int IsPointInRotatedBox(int *pos, int *rec) {
   volatile int out[4];
   int delta[3];
   short *cosp;

@@ -525,12 +525,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1056,9 +1056,9 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to func_80039910 */
+  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to func_80039910 */
+  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
   int unk20[3];        /* 0x20 */
   int unk2C;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
@@ -1113,9 +1113,9 @@ typedef struct BobberState {
   int phase;   /* 0x08 0..479 */
   int unk0C[2];
   int baseZ;   /* 0x14 */
-  int unk18;   /* 0x18 passed by address to func_80039910 */
+  int unk18;   /* 0x18 passed by address to DriveActorTrackedMove */
   int heading; /* 0x1C */
-  int unk20;   /* 0x20 passed by address to func_80039910 */
+  int unk20;   /* 0x20 passed by address to DriveActorTrackedMove */
 } BobberState;
 
 /* Type 0xE8: the helper; spins and runs until it gets away or times out. */
@@ -1262,7 +1262,7 @@ void func_level_29_8007CFB4(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2255,7 +2255,7 @@ void func_level_29_8007CFB4(void) {
         }
         st->unk18 = 0x64;
         st->unk20 = 0x15E;
-        st->heading = func_80038178(
+        st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
             SPY.bodyRotZ, 0x28, 0x40);
         PlayActorMeshVoice(actor, 0, 0);
@@ -2290,7 +2290,7 @@ void func_level_29_8007CFB4(void) {
         /* fall through */
       case 2:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (func_80039910(actor, &st->unk20, st->heading, &st->unk18, 0xC,
+        if (DriveActorTrackedMove(actor, &st->unk20, st->heading, &st->unk18, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->unk54);
           g_pfnLevelOverlayInitHook(0x190, actor);
@@ -2363,7 +2363,7 @@ void func_level_29_8007CFB4(void) {
       RunnerState *st = actor->state;
 
       actor->unk46 += 8;
-      if (func_80039910(actor, &st->unk08, st->heading, &st->unk04, 0xC,
+      if (DriveActorTrackedMove(actor, &st->unk08, st->heading, &st->unk04, 0xC,
                         0xC) == 3) {
         DespawnActorRecord(actor);
         continue;

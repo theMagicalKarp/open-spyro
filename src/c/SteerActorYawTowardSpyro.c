@@ -22,8 +22,8 @@ extern int abs(int);
 extern int D_800756C4;
 extern int D_80075794;
 
-int func_80038FC8(int *actor, int *dirp, int *yawp, int speed, int thresh,
-                  int animId) {
+int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
+                             int thresh, int animId) {
   int ret;
   int yaw;
   int d;

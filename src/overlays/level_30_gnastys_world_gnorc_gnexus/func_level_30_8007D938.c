@@ -533,12 +533,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1272,7 +1272,7 @@ void func_level_30_8007D938(void) {
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-            blocked = func_80039398(actor, 0x1E, 0, 0x32, 1);
+            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, 1);
 
             if (moved != 0) {
               if (blocked != 0) {
@@ -2594,7 +2594,7 @@ void func_level_30_8007D938(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -2663,7 +2663,7 @@ void func_level_30_8007D938(void) {
       } while (0);
       st = actor->state;
       if ((actor->flags & 0xB0000) && actor->unk48 != 1) {
-        st->heading = func_80038178(
+        st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & 0x10000) {
@@ -2682,7 +2682,7 @@ void func_level_30_8007D938(void) {
       } else {
         switch (actor->unk48) {
         case 0:
-          func_80039AA8(actor, st);
+          UpdateActorWander(actor, st);
           if (TickCountdownByFrameDelta(&st->rest, 4) != 0) {
             actor->unk48 = 2;
             if (actor->unk3D != 2) {
@@ -2696,7 +2696,7 @@ void func_level_30_8007D938(void) {
         case 1:
           if (st->speed >= 0x10) {
             st->speed -= 0xF;
-            func_80039688(actor, st->heading, st->speed, 0, 0x1F4, 5);
+            MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, 5);
           }
           if (D_80075794 != 0) {
             func_800529E4(actor, 4);

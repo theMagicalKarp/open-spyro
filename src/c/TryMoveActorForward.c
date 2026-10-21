@@ -19,7 +19,8 @@ extern void EncodeCachedVecToActorDirCode(int actor);
 
 extern int D_800756C4;
 
-int func_8003BCCC(int actor, int speed, int contactR, int collideR, int flags) {
+int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
+                        int flags) {
   int mtx[8];
   int vec[3];
   int ground;

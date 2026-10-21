@@ -7,8 +7,8 @@
    heading from `actor` to the member within angLim of actor's facing byte
    (+0x46). Members with type byte (+0x48) >= 0x80 are skipped. */
 
-void func_8003B294(int actor, int group, unsigned int bits, int distLim,
-                   int zLim, int xyLim, int angLim) {
+void OrActorGroupFlagsInCone(int actor, int group, unsigned int bits,
+                             int distLim, int zLim, int xyLim, int angLim) {
   unsigned short *ptr;
   int idx;
   char *rec;

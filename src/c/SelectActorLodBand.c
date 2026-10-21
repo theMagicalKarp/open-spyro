@@ -6,7 +6,7 @@
    above 0x20, in by 1 below) and the quarter-band index selects the page
    (0x1000 across, 0x40 down, less one byte per index) stored at +0x4C.
    Returns the adjusted band. */
-int func_8003A9EC(int *actor, int level) {
+int SelectActorLodBand(int *actor, int level) {
   int n;
   int addr;
 

@@ -506,12 +506,12 @@ typedef struct WalkerState {
   int timer;           /* 0x04 */
   int tgtIdx;          /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;         /* 0x0C */
-  int unk10;           /* 0x10 passed by address to func_80039910 */
+  int unk10;           /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;           /* 0x14 likewise */
 } WalkerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -928,7 +928,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
-          if (func_80039398(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
+          if (MoveActorAlongHeading(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
             st->unk2C++;
           } else {
             st->unk2C = 0;
@@ -952,7 +952,7 @@ void func_level_0_8007D9C8(void) {
       case 3: {
         if (st->unk20 >= 0x10) {
           st->unk20 -= 0xF;
-          func_80039688(actor, st->heading, st->unk20, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->heading, st->unk20, 0, 0x2BC, 5);
         }
 
         if (D_80075794 != 0) {
@@ -1064,7 +1064,7 @@ void func_level_0_8007D9C8(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1999,7 +1999,7 @@ void func_level_0_8007D9C8(void) {
         if ((actor->flags & 0x20000) != 0) {
           st->unk10 = 0x190;
           st->unk14 = 0x46;
-          st->heading = func_80038178(
+          st->heading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
               SPY.bodyRotZ, 0x28, 0x80);
           ENTER_POSE(actor, 8);
@@ -2008,7 +2008,7 @@ void func_level_0_8007D9C8(void) {
         PlaySoundEffect(g_pLevelSampleBankHeader[0x27], actor, 8, &actor->unk54);
         st->unk14 = 0xB4;
         st->unk10 = 0x118;
-        st->heading = func_80038178(
+        st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
             SPY.bodyRotZ, 0x20, 0x40);
         ENTER_POSE(actor, 7);
@@ -2153,7 +2153,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          func_80039398(actor, 0x40, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, 0x27);
         }
 
         if (angleDelta < -8) {
@@ -2207,7 +2207,7 @@ void func_level_0_8007D9C8(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          func_80039398(actor, 0x82, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, 0x27);
         }
 
         if (angleDelta < -8) {
@@ -2256,7 +2256,7 @@ void func_level_0_8007D9C8(void) {
 
         actor->unk45 += 4;
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
-        func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
         break;
       }
 
@@ -2268,13 +2268,13 @@ void func_level_0_8007D9C8(void) {
           continue;
         }
 
-        func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->unk10, st->heading, &st->unk14, 0xC, 0xC);
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
         break;
       }
 
       case 9: {
-        if (func_80039910(actor, &st->unk10, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->unk10, st->heading, &st->unk14, 0xC,
                           0x10) == 3) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x10);
@@ -3236,7 +3236,7 @@ void func_level_0_8007D9C8(void) {
           func_8003ABC0(actor, 2, 0, st->slots[n]);
           MarkActorCommittedKill(actor);
           st->unk04 = 0x118;
-          st->unk00 = func_80038178(
+          st->unk00 = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
               SPY.bodyRotZ, 0x20, 0x40);
           actor->unk48 = 5;
@@ -3329,9 +3329,9 @@ void func_level_0_8007D9C8(void) {
 
         if (ABS2(nextAngle) < 0x20) {
           if (actor->unk48 == 4) {
-            func_80039398(actor, 0xD2, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, 0x27);
           } else {
-            func_80039398(actor, 0x60, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
           }
         }
 
@@ -3359,7 +3359,7 @@ void func_level_0_8007D9C8(void) {
           continue;
         }
 
-        func_80039910(actor, &st->unk04, st->unk00, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->unk04, st->unk00, 0, 0xC, 0);
         break;
       }
       }

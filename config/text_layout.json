@@ -966,12 +966,12 @@
    "size": 136
   },
   {
-   "name": "func_80038120",
+   "name": "LerpAngle8",
    "vram": 2147713312,
    "size": 88
   },
   {
-   "name": "func_80038178",
+   "name": "StepAndLerpAngle8",
    "vram": 2147713400,
    "size": 68
   },
@@ -981,12 +981,12 @@
    "size": 44
   },
   {
-   "name": "func_800381E8",
+   "name": "IsActorFacingSpyro",
    "vram": 2147713512,
    "size": 104
   },
   {
-   "name": "func_80038250",
+   "name": "CheckSpyroLineOfSightTo",
    "vram": 2147713616,
    "size": 240
   },
@@ -1036,22 +1036,22 @@
    "size": 292
   },
   {
-   "name": "func_80038A40",
+   "name": "FindNearestPathPointToActor",
    "vram": 2147715648,
    "size": 188
   },
   {
-   "name": "func_80038AFC",
+   "name": "FindNearestPathPointToSpyro",
    "vram": 2147715836,
    "size": 180
   },
   {
-   "name": "func_80038BB0",
+   "name": "FindFarthestPathPointFromSpyro",
    "vram": 2147716016,
    "size": 156
   },
   {
-   "name": "func_80038C4C",
+   "name": "IsPointInRotatedBox",
    "vram": 2147716172,
    "size": 264
   },
@@ -1071,32 +1071,32 @@
    "size": 232
   },
   {
-   "name": "func_80038FC8",
+   "name": "SteerActorYawTowardSpyro",
    "vram": 2147717064,
    "size": 608
   },
   {
-   "name": "func_80039228",
+   "name": "MoveActorByDelta",
    "vram": 2147717672,
    "size": 368
   },
   {
-   "name": "func_80039398",
+   "name": "MoveActorAlongHeading",
    "vram": 2147718040,
    "size": 752
   },
   {
-   "name": "func_80039688",
+   "name": "MoveActorAlongAngle",
    "vram": 2147718792,
    "size": 648
   },
   {
-   "name": "func_80039910",
+   "name": "DriveActorTrackedMove",
    "vram": 2147719440,
    "size": 408
   },
   {
-   "name": "func_80039AA8",
+   "name": "UpdateActorWander",
    "vram": 2147719848,
    "size": 1004
   },
@@ -1136,7 +1136,7 @@
    "size": 204
   },
   {
-   "name": "func_8003A9EC",
+   "name": "SelectActorLodBand",
    "vram": 2147723756,
    "size": 152
   },
@@ -1171,12 +1171,12 @@
    "size": 172
   },
   {
-   "name": "func_8003B294",
+   "name": "OrActorGroupFlagsInCone",
    "vram": 2147725972,
    "size": 488
   },
   {
-   "name": "func_8003B47C",
+   "name": "SetActorGroupStateExcept",
    "vram": 2147726460,
    "size": 188
   },
@@ -1221,7 +1221,7 @@
    "size": 508
   },
   {
-   "name": "func_8003BCCC",
+   "name": "TryMoveActorForward",
    "vram": 2147728588,
    "size": 524
   },
@@ -1251,7 +1251,7 @@
    "size": 312
   },
   {
-   "name": "func_8003C994",
+   "name": "FollowActorWaypointPath",
    "vram": 2147731860,
    "size": 304
   },

@@ -521,12 +521,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1169,8 +1169,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1236,7 +1236,7 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int func_80038A40(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
@@ -1245,7 +1245,7 @@ typedef struct CageState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for func_8003A9EC */
+  int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
@@ -1390,7 +1390,7 @@ typedef struct L26Spinner {
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L26Spinner;
 extern int D_80075F38[][7]; /* voice table */
 extern int D_80075F44[][7]; /* its word 3 */
@@ -1442,10 +1442,10 @@ typedef struct L31Rock {
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L31Rock;
 
-/* Case 236 -- wandering critter (roam block for func_80039AA8 first). */
+/* Case 236 -- wandering critter (roam block for UpdateActorWander first). */
 typedef struct L31Critter {
   char pad00[0x20];
   int speed; /* 0x20 knock-back speed */
@@ -1459,7 +1459,7 @@ typedef struct L31Hatch {
   int pad00;
   int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
   Actor *child; /* 0x08 released occupant */
-  int handle;   /* 0x0C for func_8003A9EC */
+  int handle;   /* 0x0C for SelectActorLodBand */
 } L31Hatch;
 
 /* Case 199 -- mount. */
@@ -1489,7 +1489,7 @@ typedef struct L31Barrel {
   int heading;  /* 0x08 run heading */
   int sink;     /* 0x0C sink speed */
   int link;     /* 0x10 index into g_pActorListBase, -1 = none */
-  short handle; /* 0x14 for func_8003A9EC */
+  short handle; /* 0x14 for SelectActorLodBand */
 } L31Barrel;
 
 /* Barrel stave / splinter debris. */
@@ -1877,7 +1877,7 @@ void func_level_31_8007B528(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -3062,7 +3062,7 @@ void func_level_31_8007B528(void) {
       int kind;
       int mask;
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       kind = st->kind;
       mask = 0xF0000;
       if (kind != 0) {
@@ -3404,7 +3404,7 @@ void func_level_31_8007B528(void) {
         break;
       }
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       actor->flags = 0;
       continue;
     }
@@ -3512,7 +3512,7 @@ void func_level_31_8007B528(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -3534,7 +3534,7 @@ void func_level_31_8007B528(void) {
       if ((actor->flags & 0xB0000) && actor->unk48 != 2) {
         ((int *)g_pActorListBase[st->rider].state)[4] = -1;
         st->rider = -1;
-        st->knock = func_80038178(ArcTan2(actor->posX - SPY.posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x78;
@@ -3596,7 +3596,7 @@ void func_level_31_8007B528(void) {
         break;
 
       case 2:
-        func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
@@ -3616,7 +3616,7 @@ void func_level_31_8007B528(void) {
       L31Carrier *st = actor->state;
 
       if ((actor->flags & 0x90000) && actor->unk48 != 3) {
-        st->knock = func_80038178(ArcTan2(actor->posX - SPY.posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x3C;
@@ -3678,7 +3678,7 @@ void func_level_31_8007B528(void) {
       }
 
       case 3:
-        func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x30);
@@ -3713,7 +3713,7 @@ void func_level_31_8007B528(void) {
 
       func_8003AA84(actor);
       if ((unsigned int)(actor->unk48 - 6) < 5 && (actor->flags & 0x10000)) {
-        st->knock = func_80038178(ArcTan2(actor->posX - SPY.posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x3C;
@@ -3870,7 +3870,7 @@ void func_level_31_8007B528(void) {
         break;
 
       case 12:
-        func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x30);
@@ -4083,7 +4083,7 @@ void func_level_31_8007B528(void) {
           st->sink = -0xA;
           actor->posZ = f + 0x180;
         }
-        if (func_80039688(actor, (actor->unk46 - 0x40) & 0xFF, 0x80, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->unk46 - 0x40) & 0xFF, 0x80, 0x200,
                           0x200, 1) != 0) {
           actor->unk48 = 2;
         }
@@ -4110,14 +4110,14 @@ void func_level_31_8007B528(void) {
       int i;
       unsigned char s;
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       if ((actor->flags & 0x20000) &&
           (unsigned char)(actor->unk48 - 2) >= 2 && actor->unk48 != 4) {
         if (st->link < 0 || g_pActorListBase[st->link].type != 0xC9) {
           Actor *best;
           Actor *a;
 
-          st->heading = func_80038178(ArcTan2(actor->posX - SPY.posX,
+          st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, 0),
                                       SPY.bodyRotZ, 0x20, 0x40);
           st->sink = 0x80;
@@ -4320,7 +4320,7 @@ void func_level_31_8007B528(void) {
         actor->posZ += st->sink;
         st->timer += g_nFrameStep;
         if (st->timer >= 0x10) {
-          r = func_80039688(actor, st->heading, 0xF0, 0x200, 0x200, 0);
+          r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0x200, 0x200, 0);
           if (r != 0) {
             if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
@@ -4328,7 +4328,7 @@ void func_level_31_8007B528(void) {
             actor->unk48 = 2;
           }
         } else {
-          r = func_80039688(actor, st->heading, 0xF0, 0, 0x200, 0);
+          r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0, 0x200, 0);
           if (r != 0) {
             if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
@@ -4366,7 +4366,7 @@ void func_level_31_8007B528(void) {
           st->sink = -0xA;
           actor->posZ = f + 0x180;
         }
-        if (func_80039688(actor, (actor->unk46 - 0x40) & 0xFF, 0x80, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->unk46 - 0x40) & 0xFF, 0x80, 0x200,
                           0x200, 1) != 0) {
           actor->unk48 = 2;
         }
@@ -4391,7 +4391,7 @@ void func_level_31_8007B528(void) {
       L31Critter *st = actor->state;
 
       if ((actor->flags & 0xB0000) && actor->unk48 != 1) {
-        st->knock = func_80038178(ArcTan2(actor->posX - SPY.posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
         if (actor->flags & 0x10000) {
@@ -4407,7 +4407,7 @@ void func_level_31_8007B528(void) {
 
       switch (actor->unk48) {
       case 0:
-        func_80039AA8(actor, st);
+        UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
           ENTER_POSE(actor, 2);
         }
@@ -4416,7 +4416,7 @@ void func_level_31_8007B528(void) {
       case 1:
         if (st->speed > 0xF) {
           st->speed -= 0xF;
-          func_80039688(actor, st->knock, st->speed, 0, 0x1F4, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x1F4, 5);
         }
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
@@ -5391,7 +5391,7 @@ void func_level_31_8007B528(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
         if ((actor->flags & 0x30000) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->unk44;

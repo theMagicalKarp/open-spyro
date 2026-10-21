@@ -19,8 +19,8 @@ typedef struct {
   int z;
 } DeltaVec;
 
-int func_80039228(int *actor, DeltaVec delta, int group, int radius,
-                  int flags) {
+int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
+                     int flags) {
   int newpos[4];
   int half[4];
   int *h;

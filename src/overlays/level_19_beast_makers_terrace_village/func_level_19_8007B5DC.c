@@ -354,7 +354,7 @@ extern int CheckLineOfSightSegment(int *a, int *b);
 extern int func_80017428(int *v, int *n, int *out);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -696,7 +696,7 @@ extern int D_8006E5C4[][3];
 
 extern int g_dwGamestateFrames;
 
-extern int func_80038C4C(int *a, int *b);
+extern int IsPointInRotatedBox(int *a, int *b);
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant
@@ -730,7 +730,7 @@ typedef struct L26Spinner {
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L26Spinner;
 extern int D_80075F38[][7]; /* voice table */
 extern int D_80075F44[][7]; /* its word 3 */
@@ -745,7 +745,7 @@ typedef struct L31Rock {
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L31Rock;
 
 /* Set the state byte and queue animation `n` without promoting the current
@@ -1225,7 +1225,7 @@ void func_level_19_8007B5DC(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1462,7 +1462,7 @@ void func_level_19_8007B5DC(void) {
         st->turn = 0xE6;
         st->speed = 0x12C;
         st->heading =
-            func_80038178(ArcTan2(actor->posX - spy->posX,
+            StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - g_nSpyroWorldPosY, 0),
                           D_80078A66, 0x20, 0x40);
         actor->flags = 0;
@@ -1486,10 +1486,10 @@ void func_level_19_8007B5DC(void) {
       case 0:
         ANIM_GO(actor, 0);
         if (st->mode == one &&
-            (func_80038C4C((int *)spy, st->u30) != 0 || d < st->range << 10) &&
+            (IsPointInRotatedBox((int *)spy, st->u30) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->unk43 != 0xFF) {
-            func_8003B47C(actor, 0xA, 3);
+            SetActorGroupStateExcept(actor, 0xA, 3);
           }
           actor->unk48 = 0xA;
           continue;
@@ -1541,7 +1541,7 @@ void func_level_19_8007B5DC(void) {
       case 3:
         actor->unk44 += st->spinX;
         actor->unk45 += st->spinY;
-        if (func_80039910(actor, &st->speed, st->heading, &st->turn, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC,
                           0x10) == 3) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
@@ -2733,7 +2733,7 @@ void func_level_19_8007B5DC(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -3399,7 +3399,7 @@ void func_level_19_8007B5DC(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       st->speed -= 1;
       if (pitch < cur && actor->unk54 != 0x7F) {
         D_80075F44[actor->unk54 & 0x7F][0] = -4;
@@ -3585,7 +3585,7 @@ void func_level_19_8007B5DC(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
         if ((actor->flags & 0x30000) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->unk44;
@@ -3954,7 +3954,7 @@ void func_level_19_8007B5DC(void) {
 
       if ((actor->flags & 0xB0000) && (unsigned int)(actor->unk48 - 3) >= 2) {
         actor->flags = 0;
-        st->knock = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         st->lift = 0x46;
@@ -4005,7 +4005,7 @@ void func_level_19_8007B5DC(void) {
       case 3:
         actor->unk45 += g_nFrameStep * 2;
         if (TickCountdownByFrameDelta(&st->life, 4) != 0 ||
-            func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
+            DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
                 3) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x18);
@@ -4040,7 +4040,7 @@ void func_level_19_8007B5DC(void) {
           st->speed = 0x8C;
           st->lift = 0x23;
         } else {
-          st->knock = func_80038178(ArcTan2(actor->posX - spy->posX,
+          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
@@ -4066,7 +4066,7 @@ void func_level_19_8007B5DC(void) {
       actor->flags = 0;
       if (st->chan != -1 && g_anLevelTriggerStateSlots[st->chan] != 0 &&
           (unsigned int)(actor->unk48 - 3) >= 2 &&
-          func_80038C4C(&actor->posX, &st->p2C) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->p2C) != 0) {
         ENTER_POSE_B(actor, 4);
       }
 
@@ -4118,7 +4118,7 @@ void func_level_19_8007B5DC(void) {
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
-          func_80039688(actor, ang, 0x50, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
             ENTER_POSE(actor, 0);
@@ -4128,7 +4128,7 @@ void func_level_19_8007B5DC(void) {
       }
 
       case 3:
-        func_80039910(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
           func_800385BC(actor, 0x10);
@@ -4317,7 +4317,7 @@ void func_level_19_8007B5DC(void) {
           st->bolt = 0;
         }
         if (st->speed > 0) {
-          func_80039688(actor, st->heading, st->speed, 0x1F4, 0x2BC, one);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, one);
           st->speed -= 0x10;
         }
         if (D_80075794 != 0) {
@@ -4376,7 +4376,7 @@ void func_level_19_8007B5DC(void) {
           ANIM_QUEUE(actor, 0);
         }
         if (actor->unk3F - 8U < 7 && st->speed < d) {
-          func_80039688(actor, h, st->speed, 0, 0, 0);
+          MoveActorAlongAngle(actor, h, st->speed, 0, 0, 0);
         }
         break;
       }
@@ -4468,7 +4468,7 @@ void func_level_19_8007B5DC(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (func_8003BCCC(actor, 0x15E, 0x96, 0, 0) != 0) {
+      if (TryMoveActorForward(actor, 0x15E, 0x96, 0, 0) != 0) {
         DespawnActorRecord(actor);
         continue;
       }

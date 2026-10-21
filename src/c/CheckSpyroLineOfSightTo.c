@@ -11,7 +11,7 @@ extern int CastRayWorldAndActors();
 /* Ray-march occlusion probe from Spyro toward param_1 (0x80038250): like
    CheckLineOfSightSegment but sources the start point from g_anSpyroWorldPos
    and refines the segment length via the sqrt LUT before stepping. */
-unsigned int func_80038250(int *param_1) {
+unsigned int CheckSpyroLineOfSightTo(int *param_1) {
   VECTOR seg;
   VECTOR cur;
   VECTOR next;

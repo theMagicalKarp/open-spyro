@@ -511,12 +511,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1159,8 +1159,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1226,7 +1226,7 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int func_80038A40(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
@@ -1235,7 +1235,7 @@ typedef struct CageState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for func_8003A9EC */
+  int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
@@ -1355,7 +1355,7 @@ typedef struct ShempState {
   int unk04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 passed by address to func_80038FC8 */
+  int unk18;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
@@ -1420,14 +1420,14 @@ typedef struct ThiefState {
   int area[3];    /* 0x44 trigger volume for mode 4 */
 } ThiefState;
 /* from level_7 */
-extern int func_80038BB0(PathData *path);
+extern int FindFarthestPathPointFromSpyro(PathData *path);
 /* from level_7 */
 typedef struct L26Spinner {
   Actor *lid; /* 0x00 */
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L26Spinner;
 /* from level_7 */
 extern int D_80075F38[][7]; /* voice table */
@@ -1547,7 +1547,7 @@ typedef struct L31Rock {
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int handle; /* 0x10 for func_8003A9EC */
+  int handle; /* 0x10 for SelectActorLodBand */
 } L31Rock;
 /* from level_34 */
 typedef struct WispState {
@@ -1868,7 +1868,7 @@ typedef struct LootThiefState {
   int leg;        /* 0x44 */
 } LootThiefState;
 /* from level_34 */
-extern int func_80038AFC(FlyPath *path, int *nearest);
+extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -1968,7 +1968,7 @@ typedef struct L31Hatch {
   int pad00;
   int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
   Actor *child; /* 0x08 released occupant */
-  int handle;   /* 0x0C for func_8003A9EC */
+  int handle;   /* 0x0C for SelectActorLodBand */
 } L31Hatch;
 /* from level_31 */
 typedef struct L31Mount {
@@ -1995,7 +1995,7 @@ typedef struct L31Barrel {
   int heading;  /* 0x08 run heading */
   int sink;     /* 0x0C sink speed */
   int link;     /* 0x10 index into g_pActorListBase, -1 = none */
-  short handle; /* 0x14 for func_8003A9EC */
+  short handle; /* 0x14 for SelectActorLodBand */
 } L31Barrel;
 /* from level_31 */
 typedef struct L31Debris {
@@ -2204,7 +2204,7 @@ typedef struct L32Timer {
   int u04; /* 0x04 re-arm timer */
 } L32Timer;
 
-/* Type 236 state (the head is func_80039AA8's wander block). */
+/* Type 236 state (the head is UpdateActorWander's wander block). */
 typedef struct L32State236 {
   int u00[8]; /* 0x00 */
   int u20;    /* 0x20 knock-back speed */
@@ -2559,7 +2559,7 @@ void func_level_32_8007AE5C(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -3723,7 +3723,7 @@ void func_level_32_8007AE5C(void) {
           st->u04 = 0x154;
         }
         st->u0C = 0x82;
-        st->u08 = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->u08 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 D_80078A66, 0x20, 0x40);
         actor->flags = 0;
@@ -3737,8 +3737,8 @@ void func_level_32_8007AE5C(void) {
       if (st->u70 == 0) {
         st->u70 = 1;
         actor->unk52 = 0x20;
-        if (st->u00 == 1 && (func_80038C4C((int *)spy, st->u40) != 0 ||
-                             func_80038C4C((int *)spy, st->u58) != 0)) {
+        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u40) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->u58) != 0)) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -3747,7 +3747,7 @@ void func_level_32_8007AE5C(void) {
       switch (actor->unk48) {
       case 0:
         if (st->u00 == 1 &&
-            func_80038C4C((int *)&g_anSpyroWorldPos, st->u28) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u28) != 0) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -3806,7 +3806,7 @@ void func_level_32_8007AE5C(void) {
         continue;
 
       case 4:
-        func_80039910(actor, &st->u04, st->u08, &st->u0C, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->u04, st->u08, &st->u0C, 0xC, sixteen);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->unk38;
@@ -3861,7 +3861,7 @@ void func_level_32_8007AE5C(void) {
         StopSoundVoicesByOwner(actor, 1);
         st->u08 = 0xC8;
         st->u10 = 0x104;
-        st->u0C = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->u0C = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 D_80078A66, 0x20, 0x40);
         actor->flags = 0;
@@ -3875,8 +3875,8 @@ void func_level_32_8007AE5C(void) {
       if (st->u7C == 0) {
         st->u7C = 1;
         actor->unk52 = 0x20;
-        if (st->u00 == 1 && (func_80038C4C((int *)spy, st->u4C) != 0 ||
-                             func_80038C4C((int *)spy, st->u64) != 0)) {
+        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u4C) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->u64) != 0)) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -3885,7 +3885,7 @@ void func_level_32_8007AE5C(void) {
       switch (actor->unk48) {
       case 0:
         if (st->u00 == 1 &&
-            func_80038C4C((int *)&g_anSpyroWorldPos, st->u34) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u34) != 0) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -3975,7 +3975,7 @@ void func_level_32_8007AE5C(void) {
         continue;
 
       case 4:
-        func_80039910(actor, &st->u08, st->u0C, &st->u10, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->u08, st->u0C, &st->u10, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->unk38;
@@ -4032,7 +4032,7 @@ void func_level_32_8007AE5C(void) {
         StopSoundVoicesByOwner(actor, 1);
         st->u04 = 0x12C;
         st->u0C = 0x104;
-        st->u08 = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->u08 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 D_80078A66, 0x20, 0x40);
         actor->flags = 0;
@@ -4050,8 +4050,8 @@ void func_level_32_8007AE5C(void) {
       if (st->u74 == 0) {
         st->u74 = 1;
         actor->unk52 = 0x20;
-        if (st->u00 == 1 && (func_80038C4C((int *)spy, st->u44) != 0 ||
-                             func_80038C4C((int *)spy, st->u5C) != 0)) {
+        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u44) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->u5C) != 0)) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -4060,7 +4060,7 @@ void func_level_32_8007AE5C(void) {
       switch (actor->unk48) {
       case 0:
         if (st->u00 == 1 &&
-            func_80038C4C((int *)&g_anSpyroWorldPos, st->u10) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u10) != 0) {
           st->u00 &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -4104,7 +4104,7 @@ void func_level_32_8007AE5C(void) {
         break;
 
       case 4:
-        func_80039910(actor, &st->u04, st->u08, &st->u0C, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->u04, st->u08, &st->u0C, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->unk38;
@@ -4523,7 +4523,7 @@ void func_level_32_8007AE5C(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
@@ -4542,7 +4542,7 @@ void func_level_32_8007AE5C(void) {
       L32State236 *st = actor->state;
 
       if ((actor->flags & 0xB0000) && actor->unk48 != 1) {
-        st->u24 = func_80038178(ArcTan2(actor->posX - spy->posX,
+        st->u24 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0),
                                 spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & 0x10000) {
@@ -4558,7 +4558,7 @@ void func_level_32_8007AE5C(void) {
 
       switch (actor->unk48) {
       case 0:
-        func_80039AA8(actor, st);
+        UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->u2C, 4) != 0) {
           ENTER_POSE(actor, 2);
         }
@@ -4567,7 +4567,7 @@ void func_level_32_8007AE5C(void) {
       case 1:
         if (st->u20 >= 0x10) {
           st->u20 -= 0xF;
-          func_80039688(actor, st->u24, st->u20, 0, 0x1F4, 5);
+          MoveActorAlongAngle(actor, st->u24, st->u20, 0, 0x1F4, 5);
         }
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
@@ -5235,7 +5235,7 @@ void func_level_32_8007AE5C(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
         if ((actor->flags & 0x30000) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->unk44;

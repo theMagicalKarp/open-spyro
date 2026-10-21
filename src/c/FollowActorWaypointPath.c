@@ -11,8 +11,9 @@ extern void func_8003BAD0(unsigned char *pos, int *wp, int speed, int a, int b,
    `threshold`, step the index (+0x6 halfword == -1 selects forward wrap
    [0..count), else backward wrap to count-1); then steer toward the (possibly
    new) waypoint with speed = dist>>4 clamped to `cap`. */
-void func_8003C994(unsigned char *pos, unsigned char *path, int threshold,
-                   int cap, int arg5, int arg6, int arg7) {
+void FollowActorWaypointPath(unsigned char *pos, unsigned char *path,
+                             int threshold, int cap, int arg5, int arg6,
+                             int arg7) {
   int v[3];
   int dist;
 

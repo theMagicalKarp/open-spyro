@@ -518,12 +518,12 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to func_80039910 */
+  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int func_80038178(int ang, int facing, int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1166,8 +1166,8 @@ typedef struct L16Boss {
 } L16Boss;
 extern int D_800778E8[]; /* hits taken */
 extern int D_800778EC[]; /* stage reached */
-extern int func_80038250(int *pos);
-extern int func_80038C4C(int *a, int *b);
+extern int CheckSpyroLineOfSightTo(int *pos);
+extern int IsPointInRotatedBox(int *a, int *b);
 extern int func_8003BFC0(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -1233,7 +1233,7 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int func_80038A40(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
@@ -1242,7 +1242,7 @@ typedef struct CageState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for func_8003A9EC */
+  int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
@@ -1396,7 +1396,7 @@ typedef struct ThiefState {
   int area[3];    /* 0x44 trigger volume for mode 4 */
 } ThiefState;
 
-extern int func_80038BB0(PathData *path);
+extern int FindFarthestPathPointFromSpyro(PathData *path);
 
 /* A pointer global seen as a one-member struct, so its store is MEM_IN_STRUCT
  * and stays ordered against other in-struct accesses. */
@@ -1698,7 +1698,7 @@ void func_level_1_8007DA78(void) {
         }
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
-          if (func_80039398(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
+          if (MoveActorAlongHeading(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
             st->unk2C++;
           } else {
             st->unk2C = 0;
@@ -1722,7 +1722,7 @@ void func_level_1_8007DA78(void) {
       case 3: {
         if (st->unk20 >= 0x10) {
           st->unk20 -= 0xF;
-          func_80039688(actor, st->heading, st->unk20, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->heading, st->unk20, 0, 0x2BC, 5);
         }
 
         if (D_80075794 != 0) {
@@ -1947,7 +1947,7 @@ void func_level_1_8007DA78(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = func_80039398(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2022,7 +2022,7 @@ void func_level_1_8007DA78(void) {
         if ((actor->flags & 0x20000) != 0) {
           st->knock = 0xE1;
         }
-        st->heading = func_80038178(
+        st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->unk53 == 0xFF) {
@@ -2094,7 +2094,7 @@ void func_level_1_8007DA78(void) {
                             ArcTan2(actor->posX - spy->posX,
                                           actor->posY - SPY.posY, 0),
                             8, 0, 0);
-              func_80039398(actor, spd, 0, 0, 5);
+              MoveActorAlongHeading(actor, spd, 0, 0, 5);
             } else {
               int lim = 10;
               int r;
@@ -2137,7 +2137,7 @@ void func_level_1_8007DA78(void) {
                                   st->path->nodes[0].y - actor->posY, 0);
 
             TurnActorYawTowardAngle(actor, a, 8, 0, 0);
-            func_80039398(actor, spd, 0, 0, 5);
+            MoveActorAlongHeading(actor, spd, 0, 0, 5);
             if (AbsAngleDelta8(a, b) > 0x50) {
               actor->unk49 = 0;
             }
@@ -2159,8 +2159,8 @@ void func_level_1_8007DA78(void) {
         } else if (st->mode == 3) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(actor->posZ - actor->unk38 - SPY.posZ) < 0x708 &&
-              (st->needLos == 0 || func_80038250(&actor->posX) != 0)) {
-            st->node = func_80038BB0(st->path);
+              (st->needLos == 0 || CheckSpyroLineOfSightTo(&actor->posX) != 0)) {
+            st->node = FindFarthestPathPointFromSpyro(st->path);
             st->speed = 0;
             if (st->node - st->path->reversed != st->path->cur) {
               st->turned = 0;
@@ -2180,7 +2180,7 @@ void func_level_1_8007DA78(void) {
           ANIM_GO(actor, 4);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         } else if (st->mode == 4) {
-          if (func_80038C4C(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
             actor->unk48 = 0x28;
             continue;
           }
@@ -2241,7 +2241,7 @@ void func_level_1_8007DA78(void) {
                                     st->path->nodes[st->path->cur].y - actor->posY,
                                     0),
                       6, 0, 0);
-        func_80039398(actor, 0x96, 0, 0, 1);
+        MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
             0x100) {
           actor->unk48 = 3;
@@ -2283,7 +2283,7 @@ void func_level_1_8007DA78(void) {
                             st->path->nodes[k].y - actor->posY, 0);
           if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > 0x100) {
             if (TurnActorYawTowardAngle(actor, h, 8, 0x14, 1) != 0) {
-              func_80039398(actor, 0x96, 0, 0, 5);
+              MoveActorAlongHeading(actor, 0x96, 0, 0, 5);
             }
           } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x800 ||
                      ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < 0x800) {
@@ -2303,7 +2303,7 @@ void func_level_1_8007DA78(void) {
                                     st->path->nodes[0].y - actor->posY, 0),
                       6, 0, 0);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x100) {
-          func_80039398(actor, 0x82, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x82, 0, 0, 1);
         }
         actor->posZ += st->vz;
         st->vz -= 0x14;
@@ -2337,7 +2337,7 @@ void func_level_1_8007DA78(void) {
           }
         }
         if (st->knock != 0) {
-          func_80039688(actor, st->heading, st->knock, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, 5);
           st->knock -= 0x10;
           if (st->knock < 0) {
             st->knock = 0;
@@ -2410,7 +2410,7 @@ void func_level_1_8007DA78(void) {
                           8, 0x1E, 1) == 0) {
           break;
         }
-        func_80039398(actor, 0xFA, 0, 0, sp);
+        MoveActorAlongHeading(actor, 0xFA, 0, 0, sp);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[2].x) < 0x100) {
           st->path->cur = 3;
           actor->unk48 = 0x15;
@@ -2491,7 +2491,7 @@ void func_level_1_8007DA78(void) {
             actor->unk48 = 0;
             continue;
           }
-          st->node = func_80038BB0(st->path);
+          st->node = FindFarthestPathPointFromSpyro(st->path);
         }
         break;
       }
@@ -2528,7 +2528,7 @@ void func_level_1_8007DA78(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          func_80039398(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
         }
         if (d < 0x100 && actor->posZ == g) {
           if (++st->path->cur == 0xD) {
@@ -2576,7 +2576,7 @@ void func_level_1_8007DA78(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          func_80039398(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
         }
         if (d < 0x100 && actor->posZ == g) {
           st->path->reversed = -st->path->reversed;
@@ -2869,7 +2869,7 @@ void func_level_1_8007DA78(void) {
                           4, 0x1E, 1) == 0) {
           break;
         }
-        if (func_80039398(actor, 0x64, 0, 0x12C, 5) != 0) {
+        if (MoveActorAlongHeading(actor, 0x64, 0, 0x12C, 5) != 0) {
         flee:
           *st->alert = 0;
           actor->unk48 = 0x64;
@@ -2898,7 +2898,7 @@ void func_level_1_8007DA78(void) {
         }
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          func_80039688(actor, st->heading, st->speed, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x12C, 5);
         }
         if (D_80075794 == 0) {
           break;
@@ -2910,7 +2910,7 @@ void func_level_1_8007DA78(void) {
 
       case 3:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        func_80039398(actor, st->speed, 0, 0x12C, 5);
+        MoveActorAlongHeading(actor, st->speed, 0, 0x12C, 5);
         if (actor->unk3E >= 5 && st->speed >= 0x51) {
           st->speed -= 5;
         }
@@ -2953,7 +2953,7 @@ void func_level_1_8007DA78(void) {
             st->speed = 0;
           }
         }
-        func_80039398(actor, st->speed, 0, 0x12C, 5);
+        MoveActorAlongHeading(actor, st->speed, 0, 0x12C, 5);
         if (D_80075794 == 0) {
           break;
         }
@@ -2971,7 +2971,7 @@ void func_level_1_8007DA78(void) {
                           ArcTan2_8bit(st->homeX - actor->posX,
                                         st->homeY - actor->posY),
                           4, 0x14, 1) != 0) {
-          func_80039398(actor, 0x5A, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0x5A, 0, 0, 5);
         }
         ANIM_GO(actor, 1);
         if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
@@ -3752,7 +3752,7 @@ void func_level_1_8007DA78(void) {
         }
         if (st->speed > 0x1E) {
           st->speed -= 0x1E;
-          func_80039688(actor, st->heading, st->speed, 0, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x12C, 1);
         }
         if (D_80075794 != 0) {
           func_800529E4(actor, 4);
@@ -4334,7 +4334,7 @@ void func_level_1_8007DA78(void) {
         break;
       }
 
-      st->handle = func_8003A9EC(actor, st->handle);
+      st->handle = SelectActorLodBand(actor, st->handle);
       actor->flags = 0;
       continue;
     }
@@ -4442,7 +4442,7 @@ void func_level_1_8007DA78(void) {
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = func_8003A9EC(actor, st->handle);
+        st->handle = SelectActorLodBand(actor, st->handle);
 
         if ((actor->flags & 0x10000) && st->phase == 0) {
           st->phase = 1;
