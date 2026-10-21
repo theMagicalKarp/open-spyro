@@ -4,10 +4,10 @@
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_8007B4DC.o(.rodata)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_UpdateActors.o(.rodata)
     . = 0x000007d8 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007B210)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_800850A0.o(.rodata)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_AdvanceEmitList.o(.rodata)
     . = 0x0000091c ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/data/rodata.rodata.o(.rodata.jtbl_8007B354)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/func_level_26_80086438.o(.rodata)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_EmitParticles.o(.rodata)

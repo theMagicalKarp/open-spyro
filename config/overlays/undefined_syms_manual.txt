@@ -4,7 +4,7 @@
 // Read by tools/build_overlays.sh.
 D_80076E1E = 0x80076E1E;
 // Incomplete-array view so the base materializes as a register (lui/addiu + lw 0(r))
-// instead of the per-site $at fold (func_credits_8007AA50 setup block).
+// instead of the per-site $at fold (Credits_Update setup block).
 D_800785DC_BLK = 0x800785DC;
 // Scalar aliases (same address, `int` DECL not an incomplete array) so a site can
 // pick the absolute `lui %hi / lw %lo` form the original uses at that site while
@@ -13,7 +13,7 @@ D_800777EC_s = 0x800777EC;
 D_800777F0_s = 0x800777F0;
 D_800777F4_s = 0x800777F4;
 D_80077838_s = 0x80077838;
-// Struct view of the CD-stream state block at 0x800785D8 (func_credits_8007AA50):
+// Struct view of the CD-stream state block at 0x800785D8 (Credits_Update):
 // one base symbol makes the 20-byte block copy alias the 85E0/85E4/8600/8604 fields.
 D_800785D8_S = 0x800785D8;
 // Non-volatile alias of D_80076C1C for the credits setup block, where the original's

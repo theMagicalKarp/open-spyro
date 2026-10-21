@@ -4,16 +4,16 @@
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007BA18.o(.rodata)
+    build/overlays/level_24_dream_weavers_home/c/Level24_BalloonistCutscene_Update.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007D9B8.o(.rodata)
+    build/overlays/level_24_dream_weavers_home/c/Level24_BalloonistCutscene_Draw.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_24_dream_weavers_home/c/func_level_24_8007E3C0.o(.rodata)
+    build/overlays/level_24_dream_weavers_home/c/Level24_UpdateActors.o(.rodata)
     . = 0x00000b94 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5CC)
-    build/overlays/level_24_dream_weavers_home/c/func_level_24_800897FC.o(.rodata)
+    build/overlays/level_24_dream_weavers_home/c/Level24_AdvanceEmitList.o(.rodata)
     . = 0x00000cd8 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/data/rodata.rodata.o(.rodata.jtbl_8007B710)
-    build/overlays/level_24_dream_weavers_home/c/func_level_24_8008AA24.o(.rodata)
+    build/overlays/level_24_dream_weavers_home/c/Level24_EmitParticles.o(.rodata)

@@ -27,7 +27,7 @@ FROM ghcr.io/astral-sh/uv:${UV_VER} AS uv
 # from-source build of the same 2.7.2 tree on a modern host is NOT
 # bit-behavior-identical: we found a stack-temp slot allocation divergence
 # (host-compiler-dependent behavior in the 2.7.2 source) that flips spill
-# slot offsets in large functions (found via func_titlescreen_8007CEE4:
+# slot offsets in large functions (found via Titlescreen_Draw:
 # `sw $t0,0x24($sp)` vs the original 0x20). The release binary reproduces
 # the original bytes; the from-source one does not. Pinned by tag + sha256.
 # ============================================================================

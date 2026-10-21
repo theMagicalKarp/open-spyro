@@ -4,16 +4,16 @@
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007AF90.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Update.o(.rodata)
     . = 0x00000024 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007CF30.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Draw.o(.rodata)
     . = 0x000000b4 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_8007D938.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_UpdateActors.o(.rodata)
     . = 0x0000012c ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AB64)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_80083ED8.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_AdvanceEmitList.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/func_level_30_80084EA0.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_EmitParticles.o(.rodata)

@@ -4,7 +4,7 @@
     build/overlays/titlescreen/asm/overlays/titlescreen/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    build/overlays/titlescreen/c/func_titlescreen_8007ABAC.o(.rodata)
+    build/overlays/titlescreen/c/Titlescreen_Update.o(.rodata)
     . = 0x0000005c ;
     build/overlays/titlescreen/asm/overlays/titlescreen/data/rodata.rodata.o(.rodata.jtbl_8007AA94)
-    build/overlays/titlescreen/c/func_titlescreen_8007CEE4.o(.rodata)
+    build/overlays/titlescreen/c/Titlescreen_Draw.o(.rodata)

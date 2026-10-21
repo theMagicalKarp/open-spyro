@@ -4,10 +4,10 @@
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8007BB00.o(.rodata)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_UpdateActors.o(.rodata)
     . = 0x00000e1c ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B854)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8008AF54.o(.rodata)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_AdvanceEmitList.o(.rodata)
     . = 0x00000f60 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/data/rodata.rodata.o(.rodata.jtbl_8007B998)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/func_level_13_8008C9D8.o(.rodata)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_EmitParticles.o(.rodata)

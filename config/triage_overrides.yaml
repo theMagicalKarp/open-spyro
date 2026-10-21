@@ -188,7 +188,7 @@ func_8003891C:
   class: "F5 ret0 block layout"
   date: 2026-07-09
 # --- Clone siblings blocked on the level_5 template ---
-func_level_5_8007B4B0:
+Level5_DrawFlightRaceTime:
   verdict: parked
   class: "F1 divide-block register rotation (was 'F9 double knot' - RETIRED)"
   date: 2026-08-17
@@ -207,19 +207,19 @@ func_level_5_8007B4B0:
     Remaining: sign wants v1 but gets a0 because our /600 mfhi quantity takes
     v1; qty_compare_1 arithmetic (A194/A195), not a permuter target. Full
     measurement table in the .c.wip header.
-func_level_11_8007B4B0:
+Level11_DrawFlightRaceTime:
   verdict: parked
-  class: "F1 divide-block register rotation; crack func_level_5_8007B4B0 first, then sed-clone"
+  class: "F1 divide-block register rotation; crack Level5_DrawFlightRaceTime first, then sed-clone"
   date: 2026-08-17
-func_level_17_8007B4B0:
+Level17_DrawFlightRaceTime:
   verdict: parked
   class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
-func_level_23_8007B4B0:
+Level23_DrawFlightRaceTime:
   verdict: parked
   class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
-func_level_29_8007B4B0:
+Level29_DrawFlightRaceTime:
   verdict: parked
   class: "F1 divide-block register rotation; via level_5 template"
   date: 2026-07-19
@@ -327,26 +327,26 @@ UpdateGemPickupPathCamera:
 
 
 # --- emit-list advance pass, 894-insn flight variant (2026-08-05) ---
-func_level_5_80083330:
+Level5_AdvanceEmitList:
   verdict: matched
   class: "vein — emit-list advance pass (894-insn flight variant)"
   date: 2026-08-05
   note: >-
-    MATCHED 2026-08-05 and sed-cloned to func_level_29_80082D94 (+7,152 exact
+    MATCHED 2026-08-05 and sed-cloned to Level29_AdvanceEmitList (+7,152 exact
     bytes). 3576 b / 894 insns each. The level_11 790-insn decode plus classes
     0xD and 0x13. Two idioms closed it: write step*4 INLINE (not as a `fade`
     local) so loop.c hoists 1 / step*2 / step*4 in first-use order, and give
     each value site in the 0x13 arm its own local (A156).
-func_level_29_80082D94:
+Level29_AdvanceEmitList:
   verdict: matched
-  class: "clone of func_level_5_80083330"
+  class: "clone of Level5_AdvanceEmitList"
   date: 2026-08-05
   note: >-
-    sed-clone of func_level_5_80083330 (norm-identical, branch displacements
+    sed-clone of Level5_AdvanceEmitList (norm-identical, branch displacements
     only). Matched first build.
 
 # --- emit-list advance pass, 1163-insn ground variant (2026-08-05) ---
-func_level_2_80083274:
+Level2_AdvanceEmitList:
   verdict: parked
   class: "F16 sched1 two-chain lead tie (arm 0x15 only)"
   date: 2026-08-05
@@ -365,24 +365,24 @@ func_level_2_80083274:
     NOT an aliasing effect (same base, memrefs_conflict_p disambiguates; volatile
     can only force a full order). Next lever: permuter aimed at that one arm.
     Unparks 4 norm-identical siblings with it (23,260 B).
-func_level_1_80088098:
+Level1_AdvanceEmitList:
   verdict: parked
-  class: "clone of func_level_2_80083274"
+  class: "clone of Level2_AdvanceEmitList"
   date: 2026-08-05
   note: "norm-identical sibling; lands with the level_2 park's F tie."
-func_level_4_800826F0:
+Level4_AdvanceEmitList:
   verdict: parked
-  class: "clone of func_level_2_80083274"
+  class: "clone of Level2_AdvanceEmitList"
   date: 2026-08-05
   note: "norm-identical sibling; lands with the level_2 park's F tie."
-func_level_10_80084EF0:
+Level10_AdvanceEmitList:
   verdict: parked
-  class: "clone of func_level_2_80083274"
+  class: "clone of Level2_AdvanceEmitList"
   date: 2026-08-05
   note: "norm-identical sibling; lands with the level_2 park's F tie."
-func_level_28_80084028:
+Level28_AdvanceEmitList:
   verdict: parked
-  class: "clone of func_level_2_80083274"
+  class: "clone of Level2_AdvanceEmitList"
   date: 2026-08-05
   note: "norm-identical sibling; lands with the level_2 park's F tie."
 
@@ -391,13 +391,13 @@ func_level_28_80084028:
 # scheduled between a store and the def that feeds it (priority(def) ==
 # priority(store), the def is ready the instant the store is scheduled, and the
 # LUID tie-break is monotone in source order). See cookbook §F16 and the
-# func_level_2_80083274 .wip header. The five 1163-insn ground advance copies
+# Level2_AdvanceEmitList .wip header. The five 1163-insn ground advance copies
 # stay parked at 99.0%; do not reopen without a new mechanism.
 #
 # The emit-list ADVANCE pass is a 35-function family (790-1815 insns, ~140 KB),
 # not the 10 previously recorded. F16 gates every variant carrying arm 0x15 --
 # fingerprint base-agnostically: lbu $X,0xA($B) .. addiu $X,$X,0x4 .. sb $X,0xA($B).
-func_level_0_80086134:
+Level0_AdvanceEmitList:
   verdict: matched
   class: "advance pass, 1195 insns, F16-free"
   date: 2026-08-05-3
@@ -406,7 +406,7 @@ func_level_0_80086134:
     0x1E (the mote that dies on age alone, no shared kill tail); everything
     else transferred verbatim from level_6 / level_2. The decay pair needs a
     `short` local with in-place a--/a++ (cookbook A162).
-func_level_12_8008BE98:
+Level12_AdvanceEmitList:
   verdict: matched
   class: "F17 (retired)"
   date: 2026-08-06
@@ -416,20 +416,20 @@ func_level_12_8008BE98:
     order, which puts both preheader insns where the original has them and
     leaves the arm's last call reading v as a single-use frame address that
     reload rematerialises.
-func_level_3_80087E20:
+Level3_AdvanceEmitList:
   verdict: skip
   class: "F16 (arm 0x15)"
   date: 2026-08-05
   note: >-
-    1106-insn ground advance; norm-identical clone of func_level_20_80085084
+    1106-insn ground advance; norm-identical clone of Level20_AdvanceEmitList
     (8,848 B for one match). Arm set == level_2's minus 0x6, so it decodes
     almost for free -- but it carries the arm 0x15 F16 window and would park at
     ~99%. Revisit only if F16 ever falls.
-func_level_20_80085084:
+Level20_AdvanceEmitList:
   verdict: skip
   class: "F16 (arm 0x15)"
   date: 2026-08-05
-  note: "norm-identical clone of func_level_3_80087E20; same F16 gate."
+  note: "norm-identical clone of Level3_AdvanceEmitList; same F16 gate."
 SubMenu_Update:
   verdict: matched
   class: "stale park"
@@ -471,7 +471,7 @@ StopAllSoundExceptMask:
     inside the if-body (sched1 puts the volatile key-off load first and reorg
     will not speculate it); splitting the && into nested ifs and computing the
     row bit between the guards lands it.
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: park
   class: "R1 sched1 straggler-hole (21) + A127 frame slot count (16) + three small ties (14)"
   date: 2026-08-26
@@ -548,7 +548,7 @@ EndSaveMenuToWorld:
     g_anSpyroMoveTargetYawBlock alias (+0x50, same reloc, identical bytes) sets
     MEM_IN_STRUCT_P on the load and pins it below the store. One line.
 
-func_level_0_8007CFC0:
+Level0_BalloonistCutscene_Draw:
   verdict: park
   class: "mid-decode, 215/642 content-aligned"
   date: 2026-08-06-2
@@ -558,7 +558,7 @@ func_level_0_8007CFC0:
     vs 642 orig, MISMATCH 215 — this is a genuine mid-decode, not a tie, and
     needs a fresh decode session, not permuter time. Do not pick it up expecting
     a close.
-func_level_0_8007B020:
+Level0_BalloonistCutscene_Update:
   verdict: park
   class: "R1 cross-jump asymmetry + addressing/sched ties; 230 mismatched over 114 regions"
   date: 2026-08-20
@@ -575,19 +575,19 @@ func_level_0_8007B020:
     114 mismatch regions, MISMATCH 230. This supersedes both the header's
     register-MASKED "87 mismatched" and the cookbook C-section's "460 over 205
     regions" (measured 2026-08-11-2, before the 08-18/08-19 work). Still ~4x
-    further out than func_level_5_8007B68C, so finish the x5 head first.
+    further out than Level5_FlightResults_Draw, so finish the x5 head first.
 
-func_level_6_8007B9F8:
+Level6_BalloonistCutscene_Update:
   verdict: clone
-  class: "clone of func_level_0_8007B020 (strict-identical body)"
+  class: "clone of Level0_BalloonistCutscene_Update (strict-identical body)"
   date: 2026-08-06-3
   note: >-
-    Same for func_level_12_8007B9F0 / func_level_18_8007B7E4 /
-    func_level_24_8007BA18 / func_level_30_8007AF90 — all five are
-    instruction-and-operand identical to func_level_0_8007B020 modulo %hi/%lo
+    Same for Level12_BalloonistCutscene_Update / Level18_BalloonistCutscene_Update /
+    Level24_BalloonistCutscene_Update / Level30_BalloonistCutscene_Update — all five are
+    instruction-and-operand identical to Level0_BalloonistCutscene_Update modulo %hi/%lo
     symbol names and branch labels (md5 of the masked body agrees). sed-clone
-    them the moment level_0 lands. func_level_1_8007B0D0 /
-    func_level_3_8007B0AC / func_level_7_8007B898 / func_level_8_8007B898 are a
+    them the moment level_0 lands. Level1_BalloonistCutscene_Update /
+    Level3_BalloonistCutscene_Update / Level7_BalloonistCutscene_Update / Level8_BalloonistCutscene_Update are a
     second 2024-insn group (also identical among themselves) that differs from
     the level_0 group in register allocation only.
 DampenSpyroFreeFallAttitude:
@@ -1617,7 +1617,7 @@ HandleHardwareInterrupt_2026_08_17:
     contains a second value that could donate one.
 
 # --- session 2026-08-18 ---
-func_level_0_8007CFC0:
+Level0_BalloonistCutscene_Draw:
   verdict: parked
   class: "decode-incomplete (NOT the claimed allocation shift)"
   date: 2026-08-18
@@ -1635,7 +1635,7 @@ IsPointInRotatedBox:
   date: 2026-08-18
   note: >-
     Re-opened with the A210 quantity-split lever that closed
-    func_level_5_8007B4B0; it does not reach here. Root cause is narrower than
+    Level5_DrawFlightRaceTime; it does not reach here. Root cause is narrower than
     the note said: `ay` (abs(ry)) spans the abssi2 branch so it is a GLOBAL
     allocno, while the `rec[3]` limit load is block-LOCAL, and whichever is
     allocated first takes v1. Ours gives the limit v0 and ay v1; the original
@@ -1652,10 +1652,10 @@ IsPointInRotatedBox:
 # The full .c.wip sweep through the LINKED path was re-run over all 64 wips
 # (§C "cheapest bytes on the board"): ZERO free matches, same as 2026-08-06-1.
 # Closest parks, in order: TurnSpyroTowardMoveTargetWithLean 2/92,
-# EndSaveMenuToWorld 4/81, SteerActorYawTowardSpyro 4/152, func_level_1_800892C4 4/1085,
-# func_level_3_80088F68 4/985, func_level_11_800819BC 5/593,
-# func_level_17_80081F0C 5/741, func_level_23_8008223C 5/838,
-# func_level_25_80084B94 5/794 (the last four are B19-gated).
+# EndSaveMenuToWorld 4/81, SteerActorYawTowardSpyro 4/152, Level1_EmitParticles 4/1085,
+# Level3_EmitParticles 4/985, Level11_SpawnActor 5/593,
+# Level17_SpawnActor 5/741, Level23_SpawnActor 5/838,
+# Level25_SpawnActor 5/794 (the last four are B19-gated).
 
 func_level_1_800892C4_2026_08_18_1:
   verdict: parked
@@ -1681,24 +1681,24 @@ func_level_1_800892C4_2026_08_18_1:
     rematerialised by reload would land there, positioned by sched2 not sched1.
     Do NOT spend another session on donor selection. 21,700 B across
     levels 1/2/4/10/28 plus 7,880 B in the 985 group hang on this.
-func_level_2_800844A0:
+Level2_EmitParticles:
   verdict: parked
-  class: "clone of func_level_1_800892C4"
+  class: "clone of Level1_EmitParticles"
   date: 2026-08-18
   note: "branch-displacement clone; lands with the level_1 head."
-func_level_4_8008391C:
+Level4_EmitParticles:
   verdict: parked
-  class: "clone of func_level_1_800892C4"
+  class: "clone of Level1_EmitParticles"
   date: 2026-08-18
   note: "branch-displacement clone; lands with the level_1 head."
-func_level_10_8008611C:
+Level10_EmitParticles:
   verdict: parked
-  class: "clone of func_level_1_800892C4"
+  class: "clone of Level1_EmitParticles"
   date: 2026-08-18
   note: "branch-displacement clone; lands with the level_1 head."
-func_level_28_80085254:
+Level28_EmitParticles:
   verdict: parked
-  class: "clone of func_level_1_800892C4"
+  class: "clone of Level1_EmitParticles"
   date: 2026-08-18
   note: "branch-displacement clone; lands with the level_1 head."
 
@@ -1755,7 +1755,7 @@ TurnSpyroTowardMoveTargetWithLean_2026_08_18_1:
 # on the preceding rec store, which lifts the *6 chain one dependence edge
 # above the byte RMW; a const-qualified deref at that one site drops it and the
 # original's interleave falls out.  13 variants matched this session.
-func_level_16_80084830:
+Level16_AdvanceEmitList:
   verdict: matched
   class: "A214: free multi-set carrier kills the cse address equivalence"
   date: 2026-08-19-2
@@ -1767,12 +1767,12 @@ func_level_16_80084830:
     nothing, and a multi-set pointer has no constant equivalence for cse to
     fold, which turns the last use of p2 from `move a1,s0` into a fresh
     `addiu a1,sp,0x20`. That one insn was the whole residue. See A214.
-func_level_9_80083F2C:
+Level9_AdvanceEmitList:
   verdict: viable
   class: "advance pass, 2 new arms (0xF 22 insns, 0x4B 44 insns)"
   date: 2026-08-19
   note: "Decoded the arm pair: 0xF and 0x4B are the same body cross-jumped at .L80084C34, differing only in which stack vectors they take (0x20/0x30 vs 0x40/0x58). Needs a 4+ vector frame layout worked out like level_16's."
-func_level_15_80087B40:
+Level15_AdvanceEmitList:
   verdict: matched
   class: "advance pass, arms 0x4 + 0x5 decoded"
   date: 2026-08-19-1
@@ -1784,7 +1784,7 @@ func_level_15_80087B40:
     rec[0x2]++;` tail must be written ONCE behind a goto label -- inline in each
     sub-state, sched1 pulls the arg setup into the pt[] load-stall slots before
     cross-jumping runs and the merge lands one insn short plus a nop.
-func_level_13_8008AF54:
+Level13_AdvanceEmitList:
   verdict: parked
   class: "4 missing `li a3,3` remats + one rec/POS allocno_compare tie"
   date: 2026-08-19-1
@@ -1803,7 +1803,7 @@ func_level_13_8008AF54:
     `step4 = step * 4;` puts step4 in $s7 and dir in $fp as the original has them
     (68 -> 47) -- the two are a priority tie decided by one insn of live length,
     and the one defined LATER wins. See the .wip header before touching it.
-func_level_27_80086754:
+Level27_AdvanceEmitList:
   verdict: parked
   class: "F14 birthing boost on one byte load; no free non-birthing carrier in the arm"
   date: 2026-08-19-1
@@ -1817,7 +1817,7 @@ func_level_27_80086754:
     len, a re-used idx, a second A200 barrier) costs +1 insn. Permuter target.
     The rest of the function is byte-exact and the .wip header lists the six
     source decisions that got it there -- read it before touching anything.
-func_level_14_80089454:
+Level14_AdvanceEmitList:
   verdict: parked
   class: "dead `li a3,3` remat (shared with level_13) + biv/giv allocno_compare tie"
   date: 2026-08-19-2
@@ -1834,12 +1834,12 @@ func_level_14_80089454:
     the pseudo won no hard register, and caller-save.c only ever emits MEMORY
     saves, never a `li`. Five multi-set spellings all lose reg_equiv_constant,
     move the value to a callee-saved register and re-colour the function
-    (1809 insns, 75-82 mismatch). Same class parks func_level_13_8008AF54;
+    (1809 insns, 75-82 mismatch). Same class parks Level13_AdvanceEmitList;
     level_16's copy of arm 0x8 has the ordinary two-`li` $v0 form, so it is a
     whole-function reload artefact, not an arm. .wip header lists the four
     load-bearing source decisions (A213 preheader order, arm 0x45's two
     swapped multi-set carriers, A168 index fold, the nine-vector frame).
-func_level_1_800892C4:
+Level1_EmitParticles:
   verdict: parked
   class: "reload-insn LUID: the original's spill remat sits two statements above its consumer"
   date: 2026-08-19-2
@@ -1858,13 +1858,13 @@ func_level_1_800892C4:
     statements earlier, so some insn there already needed the constant. Nine
     more source forms measured this session, all worse -- see the .wip header.
     Worth 21,700 B (word-identical to level_2/4/10/28) and the same residue
-    parks func_level_3_80088F68 (3,940 B).
-func_level_3_80088F68:
+    parks Level3_EmitParticles (3,940 B).
+Level3_EmitParticles:
   verdict: parked
-  class: "same as func_level_1_800892C4 (reload-insn LUID in arm 0x18)"
+  class: "same as Level1_EmitParticles (reload-insn LUID in arm 0x18)"
   date: 2026-08-19-2
   note: >-
-    4/985, length-exact, the identical 4-insn residue as func_level_1_800892C4.
+    4/985, length-exact, the identical 4-insn residue as Level1_EmitParticles.
     Apply that park's `v` promotion (arm 0x15's block local to function scope,
     carrying 0x30) plus a plain `0x2E` literal to get the register right, then
     the same one reload-insn placement question is all that is left.
@@ -1873,12 +1873,12 @@ func_level_16_80084830_sweep_note:
   class: "B19 call-arg copy before a store batch"
   date: 2026-08-19-2
   note: >-
-    Bookkeeping from the 2026-08-19-2 wip sweep: func_level_11_800819BC (5/593),
-    func_level_17_80081F0C (5/741) and func_level_23_8008223C (5/838) all show
+    Bookkeeping from the 2026-08-19-2 wip sweep: Level11_SpawnActor (5/593),
+    Level17_SpawnActor (5/741) and Level23_SpawnActor (5/838) all show
     the IDENTICAL residue and it is B19 verbatim (`lb/lb/lb; sb/sb/sb; move
     a0,rec`), which is proved unreachable. Do not re-open them. The sweep found
     zero already-matching parks across all 66 wips.
-func_level_0_8007CFC0_family:
+Level0_BalloonistCutscene_Draw_family:
   verdict: viable
   class: "clone family head — MATCHED 2026-08-19-3"
   date: 2026-08-19-3
@@ -1891,7 +1891,7 @@ func_level_0_8007CFC0_family:
     "decode-incomplete, do not pick it up" verdict was about a permuter body
     that had replaced the hand-written one; a fresh m2c decode closed it in
     eight iterations. See cookbook A215/A216/A217 for the three levers.
-func_level_0_8007B020_remeasure:
+Level0_BalloonistCutscene_Update_remeasure:
   verdict: parked
   class: "R1 cross-jump asymmetry + ~20 per-site held-base choices + a0/v1 rotations"
   date: 2026-08-19-3
@@ -1906,7 +1906,7 @@ func_level_0_8007B020_remeasure:
     holds a base where the original re-emits `lui;lh %lo(sym+K)`; the old wip
     also did not link, it referenced an undefined D_80076E1E). 80,960 B behind
     it. Pick it up as an addressing-per-site session, not a decode session.
-func_level_5_8007B68C_remeasure:
+Level5_FlightResults_Draw_remeasure:
   verdict: parked
   class: "13 independent scheduling/allocation residues (see the wip's R1..R13)"
   date: 2026-08-19-3
@@ -1931,7 +1931,7 @@ overlay_size_band_exhausted:
     megafunction families (8007B020 x10 = 80,960 B, 8007B68C x5 = 32,200 B),
     the gated dispatcher arms, and the blob-tagged moby megafunctions.
 
-func_level_0_8007D9C8:
+Level0_UpdateActors:
   verdict: parked
   class: "full decode, 562 mismatch regions -- long haul, no residue diagnosis recorded"
   date: 2026-08-20
@@ -1945,7 +1945,7 @@ func_level_0_8007D9C8:
     decode-complete/verify-pending, and drive it off the masked resync diff,
     never the linked one.
 
-func_level_1_800892C4_family:
+Level1_EmitParticles_family:
   verdict: viable
   class: "A220 straggler LUID + multi-set 0x30 carrier"
   date: 2026-08-20-1
@@ -1956,7 +1956,7 @@ func_level_1_800892C4_family:
     `unk11`/`unk18` written BELOW the fx store so their LUIDs rise above the
     reload's. See cookbook A220. Landed level_1 + its four clones, level_3 +
     level_20, and unblocked the whole 36-overlay emit-spawn family.
-func_level_27_80086754:
+Level27_AdvanceEmitList:
   verdict: parked
   class: "reload gives the index v0, which pins it against the *0x58 chain at sched2"
   date: 2026-08-20-1
@@ -1997,7 +1997,7 @@ func_level_13_8008AF54_and_14_80089454:
     this session.
 
 # --- 2026-08-21 session: five emit-spawn dispatchers landed, six arms decoded ---
-func_level_16_80085F40:
+Level16_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-21"
   date: 2026-08-21
@@ -2011,7 +2011,7 @@ func_level_16_80085F40:
     the three tail-colour stores volatile (A208) -- ~30 statement permutations,
     five multi-set carriers, three declaration orders and one-sided volatile all
     gave the identical 13-insn residue.
-func_level_12_8008D2D0:
+Level12_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-21, first build"
   date: 2026-08-21
@@ -2020,7 +2020,7 @@ func_level_12_8008D2D0:
     as an 8-bit angle across iterations, velocity from the sin/cos tables as
     tbl[arg3]*7>>11, brightness from the same distance with a >= guard so the
     constant arm lands out of line). Arms 0x8/0x41 lifted from level_16.
-func_level_15_80089450:
+Level15_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-21"
   date: 2026-08-21
@@ -2028,14 +2028,14 @@ func_level_15_80089450:
     5,200 B. Arms 0x4 (plume keeping the emitter actor at +0x18, +-0x3F jitter)
     and 0x5 (static puff, zeroed velocity, +-0x1F jitter) decoded here. Arm
     0x15's unk10/unk11 order needed the same per-variant fix as level_16.
-func_level_13_8008C9D8:
+Level13_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-21"
   date: 2026-08-21
   note: >-
     5,352 B. Arms 0x4/0x5 (level_15), 0x8 (level_16), 0x16 (level_12) all
     transferred verbatim; only arm 0x15's store order was local work.
-func_level_0_800873E0:
+Level0_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-21"
   date: 2026-08-21
@@ -2045,7 +2045,7 @@ func_level_0_800873E0:
     inherits ITS STORE's LUID and the `li`s come out in SOURCE order while the
     stores are re-ordered by priority, so the colour stores must be written
     BEFORE the fx store. New A164 corollary, now in the cookbook.
-func_level_27_800881D8:
+Level27_EmitParticles:
   verdict: parked
   class: "B13 (lh; sra unreachable) -- 2 insns, will not link"
   date: 2026-08-21
@@ -2059,7 +2059,7 @@ func_level_27_800881D8:
     (the copy is deleted by copy propagation -- BYTE-IDENTICAL to plain), an
     in-place `c >>= 10` on that carrier, and a volatile short load (which also
     loses the fused $at addressing). Do not re-derive; solve B13 or leave it.
-func_level_14_8008B0B0:
+Level14_EmitParticles:
   verdict: parked
   class: "B13 via arm 0x1F, plus arms 0x45 / 0x49 still undecoded"
   date: 2026-08-21
@@ -2094,7 +2094,7 @@ func_level_27_80086754_2026_08_21_1:
     this block (a wrapper on the `*(int **)actor` load is length-exact and
     scores 7); it just does not point the right way. Full detail in the .wip.
 
-func_titlescreen_8007ABAC:
+Titlescreen_Update:
   verdict: parked
   class: "A164 stack-arg li/sw placement (4 insns) — the addu wall is RETIRED"
   date: 2026-08-23
@@ -2305,7 +2305,7 @@ SteerActorYawTowardSpyro:
 
 # --- 2026-08-24 session ---------------------------------------------------
 
-func_level_0_8007B020:
+Level0_BalloonistCutscene_Update:
   verdict: parked
   class: "R1 jump.c cross-jump asymmetry (label identity, not block content) + ~20 B16 per-site addressing + caller-saved rotations"
   date: 2026-08-24
@@ -2328,7 +2328,7 @@ func_level_0_8007B020:
     form addresses directly. Do not re-attempt R1 by permuting the arm bodies —
     they must stay identical to match.
 
-func_titlescreen_8007ABAC:
+Titlescreen_Update:
   verdict: parked
   class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6"
   date: 2026-08-25
@@ -2659,7 +2659,7 @@ func_8003B854:
     fixed address, so our scheduler hoisted the `g_pLevelSampleBankHeader` load
     above the kill-bitmap store. Reading the bank pointer through a one-member
     struct (a COMPONENT_REF sets MEM_IN_STRUCT_P) restores the dependence.
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: parked
   class: "R1 sched2 priority (unreachable) + 3 small ties"
   date: 2026-08-27
@@ -2718,7 +2718,7 @@ TickCdMusicStream:
 # A233) and seven functions matched, +27,348 exact bytes. The spawn-dispatcher
 # vein is 35/36 and the emit-spawn vein is 36/36 (CLOSED).
 
-func_level_5_8008249C:
+Level5_SpawnActor:
   verdict: viable
   class: "MATCHED 2026-08-27-1 (A232 retires B19)"
   date: 2026-08-27
@@ -2726,19 +2726,19 @@ func_level_5_8008249C:
     3,732 B. do { rec->unk44=dx; rec->unk45=dy; rec->unk46=dz; } while (0);
     before func_800526A8(rec) -- the real basic-block boundary B19's own note
     named as the only escape. MATCH on the first build.
-func_level_11_800819BC:
+Level11_SpawnActor:
   verdict: viable
-  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  class: "MATCHED 2026-08-27-1 (A232, clone of Level5_SpawnActor)"
   date: 2026-08-27
   note: "2,372 B. Same one-line barrier, one site."
-func_level_17_80081F0C:
+Level17_SpawnActor:
   verdict: viable
-  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  class: "MATCHED 2026-08-27-1 (A232, clone of Level5_SpawnActor)"
   date: 2026-08-27
   note: "2,964 B. Same one-line barrier, one site."
-func_level_23_8008223C:
+Level23_SpawnActor:
   verdict: viable
-  class: "MATCHED 2026-08-27-1 (A232, clone of func_level_5_8008249C)"
+  class: "MATCHED 2026-08-27-1 (A232, clone of Level5_SpawnActor)"
   date: 2026-08-27
   note: "3,352 B. Same one-line barrier, one site."
 func_level_25_80084B94_2026_08_27_1:
@@ -2754,7 +2754,7 @@ func_level_25_80084B94_2026_08_27_1:
     cross-jump but deletes the arg copy instead (13). What DOES help is a
     barrier on the LOAD batch (5 -> 4). Next idea: stop the cross-jump, not the
     hoist.
-func_level_16_80083AB4:
+Level16_SpawnActor:
   verdict: viable
   class: "MATCHED 2026-08-27-1 (A233 retires B13; last wall in the spawn vein)"
   date: 2026-08-27
@@ -2764,7 +2764,7 @@ func_level_16_80083AB4:
     `anim` temp hoisting the D_80076378 lookup above the four unk3C..3F zero
     stores (written 3D, 3C, 3F, 3E), and arm 0x26 comparing parent->type
     against the LITERAL 0x26 instead of the `type` parameter.
-func_level_27_800881D8:
+Level27_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-27-1 (A233)"
   date: 2026-08-27
@@ -2772,7 +2772,7 @@ func_level_27_800881D8:
     5,704 B. sh0 = 10; sh1 = 10; in the for-loop preheader for arm 0x1F's two
     unit-circle shifts. The block boundary is what matters: the same locals
     assigned inside the arm, or inside a do/while(0), leave both sites at lhu.
-func_level_14_8008B0B0:
+Level14_EmitParticles:
   verdict: viable
   class: "MATCHED 2026-08-27-1 (last member of the emit-spawn family)"
   date: 2026-08-27
@@ -2840,7 +2840,7 @@ func_800557CC:
     .c.wip header.
 
 # --- 2026-08-28 session ---
-func_level_25_80084B94_matched:
+Level25_SpawnActor_matched:
   verdict: matched
   class: "matched 2026-08-28 (A232 boundary INSIDE the store batch, not around it)"
   date: 2026-08-28
@@ -2899,8 +2899,8 @@ barrier_sweep_negative_2026_08_28:
     with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
     func_80059594 (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
     HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
-    func_8003A420 (9/192), func_level_27_80086754's 0x1D arm and
-    func_level_5_8007B68C (735 placements): no variant beat the baseline on any
+    func_8003A420 (9/192), Level27_AdvanceEmitList's 0x1D arm and
+    Level5_FlightResults_Draw (735 placements): no variant beat the baseline on any
     of them once confirmed against the LINKED diff. Consistent with the
     cookbook's read that these are register-allocation rotations, not
     block-boundary problems — the sweep is a cheap way to CONFIRM that rather
@@ -2988,7 +2988,7 @@ func_level_14_80089454_2026_08_29:
   class: "the four `li a3,3` are call-site 4th ARGUMENTS, not dead constants — decode gap, not a reload wall"
   date: 2026-08-29
   note: >-
-    7,260 B here + 6,788 B in func_level_13_8008AF54 = 14,048 B, previously
+    7,260 B here + 6,788 B in Level13_AdvanceEmitList = 14,048 B, previously
     recorded as proved-unreachable. The park's own gcc-source proof (gcc can
     never emit a dead `li`) refutes its own "DEAD" reading. Compile-only shape
     diff: MISMATCH 48 over 31 regions, offset -4; the two length-deficit sites
@@ -3049,7 +3049,7 @@ func_level_13_and_14_li_a3_3_class_2026_08_29_1:
   date: 2026-08-29-1
   note: >-
     Negative result, recorded so it is not re-derived. The original emits EIGHT
-    `li a3,3` in each of func_level_13_8008AF54 / func_level_14_80089454 and we
+    `li a3,3` in each of Level13_AdvanceEmitList / Level14_AdvanceEmitList and we
     emit FOUR; the extra four sit at basic-block heads (and one mid-block
     between two calls) on the path to a real use, each immediately killed by the
     following `jal`. Ruled out this session: (1) a 4-argument prototype -- only
@@ -3319,7 +3319,7 @@ BuildTextSprites:
     fill_slots_from_thread stops (an 8-byte insn is not delay-slot eligible)
     and takes the other thread's insn instead. Making the letter arm's read and
     the allocation write-back plain closed 7 -> 2 -> 0. MATCHED, 672 B.
-func_titlescreen_8007ABAC:
+Titlescreen_Update:
   verdict: parked
   class: "qty_sugg_compare a1 race: the constant needs a third note-free reference, or the pointer needs v0 while non-local"
   date: 2026-08-30-1
@@ -3446,7 +3446,7 @@ BeginGemPickupOverlay:
     chain back byte-exact. The residue is now one $a0/$a1 decision between the
     carrier and `world`, and the shape caps at 2 because the increment carrier
     can never be the constant. Full variant table in the park header.
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (proved unreachable under 6 insns) + Rd tpage/clut delay slot"
   date: 2026-08-31
@@ -3456,7 +3456,7 @@ func_level_5_8007B68C:
     its own summary. Both residues carry full mechanism write-ups in the wip
     header; no new lever this session. Head of the x5 flight-results clone
     family (32,200 B).
-func_level_27_80086754:
+Level27_AdvanceEmitList:
   verdict: parked
   class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin on the *0x58 chain; carrier search closed (26 variants)"
   date: 2026-08-31
@@ -3536,7 +3536,7 @@ BuildLoadedLevelRuntime:
     replay rotation) is the only one this session's de-boost lever aims at --
     closing one of six does not make it a match. Drive it off the compile-only
     shape diff if it is re-opened.
-func_level_0_8007B020:
+Level0_BalloonistCutscene_Update:
   verdict: parked
   class: "R1 cross-jump asymmetry + R6 shared-s0 held base + R3 caller-saved rotations"
   date: 2026-09-01
@@ -3552,7 +3552,7 @@ func_level_0_8007B020:
     (unchanged, -7 for ~1,850 insns), R6 (11 sites, the original holds
     `s0 = &D_800777F4` across arms and uses -4/-8 offsets — A200 barrier
     untried) and R3.
-func_level_13_8008AF54:
+Level13_AdvanceEmitList:
   verdict: parked
   class: "B25 dead `li a3,3` remat — origin narrowed, still unexplained"
   date: 2026-09-01
@@ -3560,7 +3560,7 @@ func_level_13_8008AF54:
     Opened for the B25 re-derive and closed three more escapes without editing
     the park. New facts: the shape `addiu $a3,$zero,3` immediately before a
     `jal` to a 2-argument leaf exists NOWHERE else in the game — a whole-tree
-    grep finds it only in this function and func_level_14_80089454; both callees
+    grep finds it only in this function and Level14_AdvanceEmitList; both callees
     (func_80017C24 / func_80017BFC, the SVECTOR<->VECTOR <<2 / >>2 pair) are
     ten-instruction hand-written leaves that read only $a0/$a1; and all four
     dead sites sit at a BLOCK HEAD (two are jump-table arm heads, .L8008B174 and
@@ -3569,7 +3569,7 @@ func_level_13_8008AF54:
     construction and — with no life_analysis after reload — can only have been
     created by reload or orphaned by cross_jump (§B24), neither of which has a
     known path here. Do not re-attack it from the constant's spelling.
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole + Rd tpage/clut delay slot"
   date: 2026-09-01
@@ -3579,7 +3579,7 @@ func_level_5_8007B68C:
     6+ insns. Not opened further this session.
 
 # --- session 2026-09-01-1: A214 chained closes the level_13/level_14 carrier knot ---
-func_level_13_8008AF54:
+Level13_AdvanceEmitList:
   verdict: parked
   class: "reload reg_equiv_constant remat: the original has 8 references, we have 4"
   date: 2026-09-01
@@ -3600,7 +3600,7 @@ func_level_13_8008AF54:
     per-arm block-scoped `int burst = 3;` (still four, and it re-tiles s6/s7).
     Only `final`'s no-op-move skip deletes an insn late enough to leave a
     reload behind.
-func_level_14_80089454:
+Level14_AdvanceEmitList:
   verdict: parked
   class: "same dead `li a3,3` class as level_13 + a preheader straggler + the step*2/step*4 slot swap"
   date: 2026-09-01
@@ -3611,7 +3611,7 @@ func_level_14_80089454:
     level_13), the one-insn `addiu s8,sp,32` preheader permutation, and residue
     2 (the step*2/step*4 frame-slot swap, which an immediate-masked diff hides -
     re-run with immediates live to see it).
-func_level_27_80086754:
+Level27_AdvanceEmitList:
   verdict: parked
   class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin; A238 and A236 now both ruled out"
   date: 2026-09-01
@@ -3627,7 +3627,7 @@ func_level_27_80086754:
     $a2 that `idx` needs, but the copy does not coalesce - the arg pseudo becomes
     a real allocno and every $t0 rotates to $t1, 4 -> 71 over 50 regions. The
     K&R declaration needed to spell it is inert on its own.
-func_credits_8007AA50:
+Credits_Update:
   verdict: parked
   class: "fresh decode, length- and frame-exact at 252 masked / 785 linked; residue is global.c priority + jump.c cross-jump, not decode"
   date: 2026-09-02
@@ -3745,7 +3745,7 @@ MulMatrix0:
     268 B, the SetRotMatrix-less variant of MulMatrix. Identical screen: 19
     handwritten markers. Ranked 15th by triage for the same reason.
 
-func_level_13_8008AF54:
+Level13_AdvanceEmitList:
   verdict: parked
   class: "B25 dead `li a3,3` x4 - the class survives a fresh read of the asm"
   date: 2026-09-07
@@ -3764,7 +3764,7 @@ func_level_13_8008AF54:
     eight. Recorded so the next session attacks the PER-BLOCK materialisation
     pattern rather than another spelling of the constant local.
 
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (ALL axes now closed) + Rd re-classed and largely solved: 8/1610 open-tail vs 17/1610 Rd-closed"
   date: 2026-09-09
@@ -3895,7 +3895,7 @@ BeginGemPickupOverlay:
     original's `addiu a1,a1,1` shows it increments world in place, which that
     carrier cannot reproduce. Caps at 2 even if the order flips.
 
-func_level_27_80086754:
+Level27_AdvanceEmitList:
   verdict: parked
   class: "F14 boost -> v0 -> REG_DEP_OUTPUT pin (idx must take a2, the deref v0)"
   date: 2026-09-10
@@ -3950,7 +3950,7 @@ FlushGpuQueue:
     note and both are full block boundaries. Remains a clean permuter target.
 
 # --- session 2026-09-13: balloonist update head, 161 masked -> 9 masked / 33 linked ---
-func_level_0_8007B020:
+Level0_BalloonistCutscene_Update:
   verdict: parked
   class: "KA local-alloc qty_compare life tie (ptr vs z, one insn of life) + KB cse follow-jumps carries the join copy into case 6's else"
   date: 2026-09-13
@@ -3964,7 +3964,7 @@ func_level_0_8007B020:
     Clone to level_6/12/18/24/30 (+1/3/7/8) the moment it matches.
 
 # --- session 2026-09-14: balloonist update family closed (x10, +80,960 B) ---
-func_level_0_8007B020:
+Level0_BalloonistCutscene_Update:
   verdict: matched
   class: "MATCHED 2026-09-14 (cse canonical-register path dial for KB + two-set de-boost for KA)"
   date: 2026-09-14
@@ -3981,7 +3981,7 @@ func_level_0_8007B020:
     level_6/12/18/24/30 and 1/3/7/8 sed-clone with no source change beyond the
     name; each overlay's undefined_syms needs the head's D_800777EC_s /
     D_800777F0_s / D_800777F4_s / D_80077838_s aliases and D_80076E1E.
-func_level_5_8007B68C:
+Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged)"
   date: 2026-09-14
@@ -3991,13 +3991,13 @@ func_level_5_8007B68C:
     ori halves are always ready, so no schedule of this block content can put
     a load at T-8 as the original does. The two-set de-boost lever does not
     apply (sched2 has no birthing boost). Linked 8/1610 reproduced.
-func_level_30_8007D938:
+Level30_UpdateActors:
   verdict: viable
-  class: "actor-update megafunction, same skeleton as matched func_level_0_8007D9C8"
+  class: "actor-update megafunction, same skeleton as matched Level0_UpdateActors"
   date: 2026-09-14
   note: >-
     23,600 B, the smallest per-level actor update megafunction. 68% of its
-    opcode 12-grams occur in func_level_0_8007D9C8 (matched upstream, #193);
+    opcode 12-grams occur in Level0_UpdateActors (matched upstream, #193);
     every other level's megafunction shares 38-58%. Same preamble and actor
     loop, same compare-tree dispatch on actor->type, but the callee-saved map
     differs (s5 = 1, fp = 2, s7 = &D_80078BBC - 0x164 held base) and only
@@ -4077,11 +4077,11 @@ harvest_inventory_staleness_2026_09_15:
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
     func_80059594 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
-    func_8005FC6C 7/38, func_titlescreen_8007ABAC 7/2147,
-    func_8003A420 9/192, func_level_27_80086754 9/1697,
+    func_8005FC6C 7/38, Titlescreen_Update 7/2147,
+    func_8003A420 9/192, Level27_AdvanceEmitList 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
-    is still func_titlescreen_8007ABAC (8,588 B at 7 insns), then
-    func_level_27_80086754 (6,788 B at 9).
+    is still Titlescreen_Update (8,588 B at 7 insns), then
+    Level27_AdvanceEmitList (6,788 B at 9).
 
 Gamestate0C_Draw_2026_09_15:
   verdict: parked
@@ -4124,7 +4124,7 @@ func_level_30_8007D938_2026_09_17:
   note: >-
     23,600 B level_30 actor-update megafunction, the megafunction vein's
     designated start (viable entry 2026-09-14). Decoded from scratch this
-    session on the matched func_level_0_8007D9C8 scaffold (its types, anim
+    session on the matched Level0_UpdateActors scaffold (its types, anim
     macros, CAM/SPY aggregates and callee decls all transfer verbatim; only
     the per-class state blocks and the arms are new). Now compiles and LINKS
     at orig 5,894 / mine 5,849 insns. Parked as a .c.wip; make check is green.
@@ -4568,12 +4568,12 @@ func_level_30_8007D938_2026_09_27:
   class: "actor-update megafunction; closed on register pins, a single post-if tail store, and case-398 memory-dependence pins"
   date: 2026-09-27
   note: "0x8007D938, 23,600 B. MATCH -> C. From 107 imm-kept: asm(\"$16\") on case 310's i (fixed two cross-jumps too), asm(\"$7\") push, asm(\"$2\") SPY.posZ at both dz sites; `st->phase += dt`; `bearing = arm << 1`; y + x of split 0xB5 products; int-temp lean adds with (unsigned char) fields; `int last` for case 398's more; one `actor->flags = 0` after the 0xA0000 if/else (reorg re-duplicates it); goto into the AF4 branch's D_80078C68 clear; case 398 head via do/while(0) after CA0 + volatile A7F/C98 + `*(PortalDesc **)st` re-read + held `cf`; func_80057380 is void; the wander_body goto was a continue."
-func_level_4_8007AF94:
+Level4_UpdateActors:
   verdict: parked
   class: "actor-update megafunction clone; length -2 (two missing `andi 0xff` on unk48 != K) + allocation ties (case 9 const v1/v0, case 335 s0/s2/s4, case 250 v1/a1, case 331)"
   date: 2026-09-27
   note: "28,180 B. First decode assembled from level_30/level_0 arms (17/24 arms >=92% similar) + 4 new arms (9, 314, 335, 349). Shape diff 2,153 -> 56 imm-kept in one session. Key levers: no `one` carrier; case 349's ENTER_POSE(4) shared by goto (else loop.c hoists constant 4); case 234 is a fade-out prop between 195 and 250; look-at C60/C64 struct; D_80078BBC[] alias in case 120; `<< 16 >> 21` sine shift. See .c.wip header OPEN list."
-func_level_2_8007AE40:
+Level2_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_30/level_0 arms"
   date: 2026-09-28
@@ -4638,142 +4638,142 @@ Gamestate0C_Draw_2026_09_28:
   class: "re-screened only (4/283); seven prior entries, no new lever tried"
   date: 2026-09-28
   note: "Measured 4/283 and 5/361 (RespawnOrGameOver_Draw); both already exhausted with pins per prior entries -- skipped."
-func_level_16_8007AF28:
+Level16_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_2/level_30/level_0 arms"
   date: 2026-09-29
   note: "35,724 B. 21 arms copied, 11 decoded (37/38/39/152/283/312/328/329/333/495/497). No loop-top carriers; all scratch arrays at function level in first-use order; case 312's debris pointers shared by both loops (else actor loses s3); ABS2 (level 0's `x > 0 ? x : -x`) for the 312 shake bob and the 495 settle test."
-func_level_9_8007B4C8:
+Level9_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_2/level_16/level_30 arms"
   date: 2026-09-29
   note: "33,088 B. 23 arms copied, 8 decoded (198/205/209/211/213/231/332/363). Jump-table dispatch (type - 9). Level 4's oneq/one/spy/sixteen carriers; level 4's case 34; case 110's first state written like 332's so jump.c cross-jumps it; SPY.bodyRotZ (not the volatile D_80078A66) for the 198/231 headings."
-func_level_26_8007B4DC:
+Level26_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_2/level_9/level_16/level_0/level_30 arms"
   date: 2026-09-29
   note: "37,188 B. 27 arms copied, 10 decoded (52/55/61/62/88/160/296/298/390/392). spy is the only carrier and ties with the hoisted 1 for fp: route every orig fp read through spy (cases 300/312). Comma temp to stop fold reassociation (61); ABS2 sum through d (392)."
-func_level_31_8007B528:
+Level31_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_4 arms"
   date: 2026-09-29
   note: "41,276 B. 28 arms copied, 8 decoded (154/199/200/201/202/207/236/401). sixteen is the fp carrier; base is hoisted+spilled (case 9 base+0x174). Debris loops as goto loops, d/ds shared across loops and k/sn/cs per-loop (actor keeps s3); if/else around whole calls/stores so tails cross-jump; case 110 state 0 written like 331."
-func_level_18_8007E18C:
+Level18_UpdateActors:
   verdict: parked
   class: "actor-update megafunction; all arms written, frame exact"
   date: 2026-09-29
   note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group. 2026-09-30: ENTER_POSE_B in 137 and a multi-set `sx = 16` stand-in both leave the output byte-identical (40 li t1,16)."
-func_level_25_8007B4F8:
+Level25_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_31 arms"
   date: 2026-09-30
   note: "38,556 B. 30 arms copied, 10 decoded (50/51/53/54/56/122/124/129/155/402). Carriers oneq+one each used once (case 9), 16 literal. Frame 0x2D0 needs a 4th reload phantom slot: case 402 indexes one table (D_8006CBF8[t*2-6]/[t*2-5]) instead of two symbols. Case 50 holds its vector in a pointer local; selects are if/else around the store."
-func_level_27_8007B510:
+Level27_UpdateActors:
   verdict: parked
   class: "actor-update megafunction; loop exit test NOT duplicated (j into bottom test), source form unknown"
   date: 2026-09-30
   note: "41,980 B. Seeded (build/l27w: 30 arms copied from l25/l26/l9/l31/l16/l0, arm 458 decoded; 134/135/136/142/203/204 still to write, m2c in arms/). Original enters the actor loop with `j` to a bottom test (no top copy) yet loop.c still hoists+spills 1/2/3/-1/D_8006CC78/D_8006CBF8/D_80076378 into t3. gcc 2.7.2 duplicate_loop_exit_test refuses only on CALL/CODE_LABEL/BLOCK/LOOP_BEG/LOOP_CONT notes or >20 insns in the exit code; while, for(;cond;), for(;;)+break, do{break}while(1), for(init;cond;incr) all duplicate; goto-into-do/while gives the shape but invalidates the loop (nothing hoisted)."
-func_level_24_8007E3C0:
+Level24_UpdateActors:
   verdict: attempted
-  class: "same non-duplicated loop exit test as func_level_27_8007B510"
+  class: "same non-duplicated loop exit test as Level27_UpdateActors"
   date: 2026-09-30
   note: "43,620 B, 65% arm coverage. Blocked on the same whole-function loop shape as level_27; solve that first."
-func_level_6_8007E3A0:
+Level6_UpdateActors:
   verdict: attempted
-  class: "same non-duplicated loop exit test as func_level_27_8007B510"
+  class: "same non-duplicated loop exit test as Level27_UpdateActors"
   date: 2026-09-30
   note: "48,824 B. Blocked on the same whole-function loop shape as level_27; solve that first."
-func_level_10_8007AEB8:
+Level10_UpdateActors:
   verdict: matched
   class: "actor-update megafunction; closed the 2026-09-30 sched ties with F14d single-set result locals"
   date: 2026-10-02
   note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two func_800385BC exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
-func_level_11_8007B68C:
+Level11_FlightResults_Draw:
   verdict: wall
-  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"
   date: 2026-09-30
   note: "Mode-gate candidate; closed with its head on 2026-09-20. Re-listed by triage only because the gate counts clone signals."
-func_level_1_8007DA78:
+Level1_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_0/9/10/16/25/26/31 arms"
   date: 2026-09-30
   note: "40,116 B. base and spy = base - 8 set inside the loop; empty do/while(0) at the top of the knockback arms (10/33/113/121) stops cse folding spy through the compare tree. Decoded: egg thief (33), sentry (121), rear-up guard (113), camera-facing prop (222-224). The tree tool missed carrier-register compares (16 via s6, 250 via t1); fixed by tracking the carrier."
-func_level_15_8007B7A8:
+Level15_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_1/9/16/25/26/31 arms"
   date: 2026-09-30
   note: "46,640 B. Decoded 36/38/66/284/285/295/318. Pool fields read through the pool, not a pointer local; case 110 spelled like case 333 so the tails cross-jump; case 421 stores in 40/48/41/3D order; ABS through an explicit int temp."
-func_level_8_8007E240:
+Level8_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_0/9/15/16/25/26/31 arms"
   date: 2026-09-30
   note: "43,336 B. Decoded 206/218/226/229/230/238/288. Case 288's || re-read cost a reload phantom slot (frame +8); a temp removes it. Case 416 reads D_800756CC directly (level_0 form)."
-func_level_3_8007DA54:
+Level3_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_1/8/9/10/16/26/31 arms"
   date: 2026-09-30
   note: "38,992 B. Decoded 23/395/413/502/234. 9 had to be hoisted+spilled: group life 30 was short, so 7 empty nested scopes after case 23's state store add NOTE luids (A294). Mode 2 repeats the camera-lock block instead of goto (cross-jump keeps the camLock test separate). SPY.damageFlags in-struct store after the index calc. Case 234 tests D_80075794 and sits after case 195; case 502's despawn goes at the bottom as the shared tail."
-func_level_28_8007AF50:
+Level28_UpdateActors:
   verdict: attempted
   class: "actor-update megafunction; compare-tree tool KeyError"
   date: 2026-09-30
   note: "34,648 B. build/l2/tree.py raised a KeyError walking this compare tree, so it never got an arm map. Fix the tree walk first."
-func_level_19_8007B5DC:
+Level19_UpdateActors:
   verdict: parked
   class: "cross-jump pairing of duplicated remove tails (arms 14/67/250/329) + 2 sched slots in 467"
   date: 2026-10-02
   note: "36,992 B. .c.wip at masked 75/9248 (52 short), frame exact. Register-normalised scan put it at 74% covered; decoded 32/35/343/467/494, 461/466 from the level_18 workspace. Closed: frame slots, the 4 hoist group (A285 split-constant pose at three sites), per-loop counters in 35, `-(x*10) - x*32` in 343. Left: mine merges four duplicated `...; func_80052568` tails that the original keeps (both copies identical in the original, so it is jump.c pairing order, not content); an A301 kill label on 494 made it worse (80). Workspace build/l19w."
-func_level_21_8007B698:
+Level21_UpdateActors:
   verdict: attempted
   class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
   date: 2026-09-30
   note: "46,240 B. tree_x_21.txt in build/l2."
-func_level_22_8007B770:
+Level22_UpdateActors:
   verdict: attempted
   class: "Beast Makers actor-update head with the actor in s4; ~30% arm coverage from matched heads"
   date: 2026-09-30
   note: "48,524 B. tree_x_22.txt in build/l2."
-func_level_7_8007E240:
+Level7_UpdateActors:
   verdict: viable
   class: "MATCHED 2026-10-02 (actor-update clone recipe, 4 new arms)"
   date: 2026-10-02
   note: "49,808 B MATCHED in one session. The 2026-09-30 '~30% coverage' was an asm-register artifact (actor in s4); a register-normalised arm scan (build/xscan_r.py) put it at 89%. Seeded from level_1/3/8/10/26/31, decoded 184/186/197/458; last knots: frame slot order, an aggregate D_80078C4C store (A302), a scalar-vs-struct yaw read, the duplicated blend tail in 186."
-func_level_32_8007AE5C:
+Level32_UpdateActors:
   verdict: viable
   class: "MATCHED 2026-10-02 (actor-update clone recipe, 7 new arms)"
   date: 2026-10-02
   note: "33,452 B MATCHED in one session. Base frame level_10 (same s7=16/fp=spy carriers). The tree tool missed cases 16 (beq v1,s7) and 250 (beq v1,t1) and lumped 329 into 323; check every beq against a carrier register. Last knots: A285 for the 3/4 hoist groups, absolute D_80077368 + g_anCollisionProbeVec alias in the reflect blocks, A200 for spy->posY folds."
-func_level_12_8007E398:
+Level12_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_0/1/8/9/15/25/26/31 arms"
   date: 2026-10-01
   note: "53,032 B. Decoded 189/270/271/328. Loop top: level_8's with spy = &D_80078A58 and `oneq` at case 1. Case 270's kill-bitmap test needs idx/word/bit temps; state 0x5B calls the distance before computing the flee range (else the range takes s0 from st)."
-func_level_13_8007BB00:
+Level13_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_3/4/9/10/12/15/26/31 arms"
   date: 2026-10-01
   note: "59,500 B. Decoded 253/315/326. Level_26 loop top, `one` as literal 1 (hoisted and spilled). Case 270's `1 << bit` must go through a mask temp or fold turns it into srav/andi."
-func_level_34_8007AD4C:
+Level34_UpdateActors:
   verdict: viable
   class: "MATCHED 2026-10-02 (A302 aggregate-MEM aliasing)"
   date: 2026-10-02
   note: "35,140 B MATCHED. The last knot (6 masked) was alias-driven: case 177's camera words written as array/struct elements (D_80078C00[19/29/30], D_80078668.w[1..5]) may alias the st->path arg load, so sched1 keeps them ahead of it and only the scalar D_8007570C store sinks to the call (a3 then fills the jal slot)."
-func_level_17_8007B68C:
+Level17_FlightResults_Draw:
   verdict: wall
-  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"
   date: 2026-10-01
   note: "Mode-gate candidate; closed with its head on 2026-09-20."
-func_level_23_8007B68C:
+Level23_FlightResults_Draw:
   verdict: wall
-  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"
   date: 2026-10-01
   note: "Mode-gate candidate; closed with its head on 2026-09-20."
-func_level_29_8007B68C:
+Level29_FlightResults_Draw:
   verdict: wall
-  class: "sibling of func_level_5_8007B68C (sched2 memory-unit hazard)"
+  class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"
   date: 2026-10-01
   note: "Mode-gate candidate; closed with its head on 2026-09-20."
-func_level_18_8007E18C:
+Level18_UpdateActors:
   verdict: parked
   class: "16-hoist knot (unchanged)"
   date: 2026-10-01
@@ -4783,7 +4783,7 @@ func_level_18_8007E18C_2026_10_02:
   class: "loop.c hoist threshold: the 16 group (S43 L70) is hoisted, orig keeps 16 inline and hoists &SPY.controlFlags instead"
   date: 2026-10-02
   note: "40,292 B, all arms written, masked 393 (-14). Re-measured: per-arm 16 counts equal orig; leader is c110 st->timer = 0x10. A multi-set var for 16 in arm 137 does nothing (cse makes a constant pseudo per site). A303 loop-top carrier cannot work: any extra move before insn 527 un-hoists D_80076378 (S15 L60 needs thr >= 22). New dial found: each moved_once movable doubles insn_count (loop.c:1611). Details in build/l18w/NOTES.md."
-func_level_14_8007B64C:
+Level14_UpdateActors:
   verdict: parked
   class: "sched2 LUID tie: split-constant lui vs t2 remat (case 227); sched1 cannot place the lui past the boosted bodyRotZ chain"
   date: 2026-10-02
@@ -4823,7 +4823,7 @@ func_level_22_8007B770_2026_10_03_2:
   class: "actor-update megafunction; Metalhead (48) + 65/70/82/210 decoded"
   date: 2026-10-03
   note: "48,524 B."
-func_level_28_8007AF50:
+Level28_UpdateActors:
   verdict: matched
   class: "actor-update megafunction; Jacques (150) + rocks/rams/path walker decoded, tree simulated"
   date: 2026-10-03
@@ -4838,7 +4838,7 @@ func_level_14_8007B64C_2026_10_03:
   class: "sched2 split-constant tie closed with a pointer local on the D_8006CBF8 read; template copy in field order"
   date: 2026-10-03
   note: "53,744 B. The masked diff hid a relocated-load permutation in two camera blocks (cookbook A319)."
-func_level_24_8007E3C0:
+Level24_UpdateActors:
   verdict: parked
   class: "one sched tie in case 91 state 10: cs->speed store vs the call's a2 constant and the second unk46 index register"
   date: 2026-10-03

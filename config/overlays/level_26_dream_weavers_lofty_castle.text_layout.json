@@ -1,27 +1,27 @@
 {
  "functions": [
   {
-   "name": "func_level_26_8007B4DC",
+   "name": "Level26_UpdateActors",
    "vram": 2147988700,
    "size": 37188
   },
   {
-   "name": "func_level_26_80084620",
+   "name": "Level26_SpawnActor",
    "vram": 2148025888,
    "size": 2688
   },
   {
-   "name": "func_level_26_800850A0",
+   "name": "Level26_AdvanceEmitList",
    "vram": 2148028576,
    "size": 5016
   },
   {
-   "name": "func_level_26_80086438",
+   "name": "Level26_EmitParticles",
    "vram": 2148033592,
    "size": 4836
   },
   {
-   "name": "func_level_26_8008771C",
+   "name": "Level26_Noop",
    "vram": 2148038428,
    "size": 8
   }
@@ -36,61 +36,61 @@
   {
    "sym": "jtbl_8007AA3C",
    "offset": 4,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 1880
   },
   {
    "sym": "jtbl_8007B194",
    "offset": 1884,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007B1AC",
    "offset": 1908,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007B1C4",
    "offset": 1932,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007B1DC",
    "offset": 1956,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007B1F4",
    "offset": 1980,
-   "owner": "func_level_26_8007B4DC",
+   "owner": "Level26_UpdateActors",
    "size": 28
   },
   {
    "sym": "jtbl_8007B210",
    "offset": 2008,
-   "owner": "func_level_26_800850A0",
+   "owner": "Level26_AdvanceEmitList",
    "size": 324
   },
   {
    "sym": "jtbl_8007B354",
    "offset": 2332,
-   "owner": "func_level_26_80086438",
+   "owner": "Level26_EmitParticles",
    "size": 328
   },
   {
    "sym": "jtbl_8007B49C",
    "offset": 2660,
-   "owner": "func_level_26_80086438",
+   "owner": "Level26_EmitParticles",
    "size": 32
   },
   {
    "sym": "jtbl_8007B4BC",
    "offset": 2692,
-   "owner": "func_level_26_80086438",
+   "owner": "Level26_EmitParticles",
    "size": 32
   }
  ]

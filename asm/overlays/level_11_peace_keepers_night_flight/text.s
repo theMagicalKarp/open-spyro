@@ -8,11 +8,11 @@
 
 .section .text, "ax"
 
-.section .text.func_level_11_8007AE08, "ax"
-.ifndef HAVE_C_func_level_11_8007AE08
-nonmatching func_level_11_8007AE08, 0xD4
+.section .text.Level11_FlightEndHook, "ax"
+.ifndef HAVE_C_Level11_FlightEndHook
+nonmatching Level11_FlightEndHook, 0xD4
 
-glabel func_level_11_8007AE08
+glabel Level11_FlightEndHook
     /* 3D0 8007AE08 0780023C */  lui        $v0, %hi(D_800757D8)
     /* 3D4 8007AE0C D857428C */  lw         $v0, %lo(D_800757D8)($v0)
     /* 3D8 8007AE10 07000324 */  addiu      $v1, $zero, 0x7
@@ -67,14 +67,14 @@ glabel func_level_11_8007AE08
   .L8007AED4:
     /* 49C 8007AED4 0800E003 */  jr         $ra
     /* 4A0 8007AED8 00000000 */   nop
-endlabel func_level_11_8007AE08
+endlabel Level11_FlightEndHook
 .endif
 
-.section .text.func_level_11_8007AEDC, "ax"
-.ifndef HAVE_C_func_level_11_8007AEDC
-nonmatching func_level_11_8007AEDC, 0x320
+.section .text.Level11_HandleFlightResults, "ax"
+.ifndef HAVE_C_Level11_HandleFlightResults
+nonmatching Level11_HandleFlightResults, 0x320
 
-glabel func_level_11_8007AEDC
+glabel Level11_HandleFlightResults
     /* 4A4 8007AEDC D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 4A8 8007AEE0 11008010 */  beqz       $a0, .L8007AF28
     /* 4AC 8007AEE4 2000BFAF */   sw        $ra, 0x20($sp)
@@ -284,14 +284,14 @@ glabel func_level_11_8007AEDC
     /* 7B8 8007B1F0 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 7BC 8007B1F4 0800E003 */  jr         $ra
     /* 7C0 8007B1F8 00000000 */   nop
-endlabel func_level_11_8007AEDC
+endlabel Level11_HandleFlightResults
 .endif
 
-.section .text.func_level_11_8007B1FC, "ax"
-.ifndef HAVE_C_func_level_11_8007B1FC
-nonmatching func_level_11_8007B1FC, 0x2B4
+.section .text.Level11_FlightResultsMenu_Update, "ax"
+.ifndef HAVE_C_Level11_FlightResultsMenu_Update
+nonmatching Level11_FlightResultsMenu_Update, 0x2B4
 
-glabel func_level_11_8007B1FC
+glabel Level11_FlightResultsMenu_Update
     /* 7C4 8007B1FC 0780023C */  lui        $v0, %hi(D_8007568C)
     /* 7C8 8007B200 8C56428C */  lw         $v0, %lo(D_8007568C)($v0)
     /* 7CC 8007B204 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -479,14 +479,14 @@ glabel func_level_11_8007B1FC
     /* A6C 8007B4A4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* A70 8007B4A8 0800E003 */  jr         $ra
     /* A74 8007B4AC 00000000 */   nop
-endlabel func_level_11_8007B1FC
+endlabel Level11_FlightResultsMenu_Update
 .endif
 
-.section .text.func_level_11_8007B4B0, "ax"
-.ifndef HAVE_C_func_level_11_8007B4B0
-nonmatching func_level_11_8007B4B0, 0x1DC
+.section .text.Level11_DrawFlightRaceTime, "ax"
+.ifndef HAVE_C_Level11_DrawFlightRaceTime
+nonmatching Level11_DrawFlightRaceTime, 0x1DC
 
-glabel func_level_11_8007B4B0
+glabel Level11_DrawFlightRaceTime
     /* A78 8007B4B0 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* A7C 8007B4B4 2C00B1AF */  sw         $s1, 0x2C($sp)
     /* A80 8007B4B8 2188A000 */  addu       $s1, $a1, $zero
@@ -611,14 +611,14 @@ glabel func_level_11_8007B4B0
     /* C48 8007B680 4000BD27 */  addiu      $sp, $sp, 0x40
     /* C4C 8007B684 0800E003 */  jr         $ra
     /* C50 8007B688 00000000 */   nop
-endlabel func_level_11_8007B4B0
+endlabel Level11_DrawFlightRaceTime
 .endif
 
-.section .text.func_level_11_8007B68C, "ax"
-.ifndef HAVE_C_func_level_11_8007B68C
-nonmatching func_level_11_8007B68C, 0x1928
+.section .text.Level11_FlightResults_Draw, "ax"
+.ifndef HAVE_C_Level11_FlightResults_Draw
+nonmatching Level11_FlightResults_Draw, 0x1928
 
-glabel func_level_11_8007B68C
+glabel Level11_FlightResults_Draw
     /* C54 8007B68C 0780023C */  lui        $v0, %hi(D_800758B8)
     /* C58 8007B690 B858428C */  lw         $v0, %lo(D_800758B8)($v0)
     /* C5C 8007B694 70FFBD27 */  addiu      $sp, $sp, -0x90
@@ -2299,14 +2299,14 @@ glabel func_level_11_8007B68C
     /* 2570 8007CFA8 9000BD27 */  addiu      $sp, $sp, 0x90
     /* 2574 8007CFAC 0800E003 */  jr         $ra
     /* 2578 8007CFB0 00000000 */   nop
-endlabel func_level_11_8007B68C
+endlabel Level11_FlightResults_Draw
 .endif
 
-.section .text.func_level_11_8007CFB4, "ax"
-.ifndef HAVE_C_func_level_11_8007CFB4
-nonmatching func_level_11_8007CFB4, 0x4A08
+.section .text.Level11_UpdateActors, "ax"
+.ifndef HAVE_C_Level11_UpdateActors
+nonmatching Level11_UpdateActors, 0x4A08
 
-glabel func_level_11_8007CFB4
+glabel Level11_UpdateActors
     /* 257C 8007CFB4 40FEBD27 */  addiu      $sp, $sp, -0x1C0
     /* 2580 8007CFB8 BC01BFAF */  sw         $ra, 0x1BC($sp)
     /* 2584 8007CFBC B801BEAF */  sw         $fp, 0x1B8($sp)
@@ -7311,14 +7311,14 @@ glabel func_level_11_8007CFB4
     /* 6F78 800819B0 C001BD27 */  addiu      $sp, $sp, 0x1C0
     /* 6F7C 800819B4 0800E003 */  jr         $ra
     /* 6F80 800819B8 00000000 */   nop
-endlabel func_level_11_8007CFB4
+endlabel Level11_UpdateActors
 .endif
 
-.section .text.func_level_11_800819BC, "ax"
-.ifndef HAVE_C_func_level_11_800819BC
-nonmatching func_level_11_800819BC, 0x944
+.section .text.Level11_SpawnActor, "ax"
+.ifndef HAVE_C_Level11_SpawnActor
+nonmatching Level11_SpawnActor, 0x944
 
-glabel func_level_11_800819BC
+glabel Level11_SpawnActor
     /* 6F84 800819BC C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 6F88 800819C0 2000B0AF */  sw         $s0, 0x20($sp)
     /* 6F8C 800819C4 21808000 */  addu       $s0, $a0, $zero
@@ -7958,14 +7958,14 @@ glabel func_level_11_800819BC
     /* 78BC 800822F4 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 78C0 800822F8 0800E003 */  jr         $ra
     /* 78C4 800822FC 00000000 */   nop
-endlabel func_level_11_800819BC
+endlabel Level11_SpawnActor
 .endif
 
-.section .text.func_level_11_80082300, "ax"
-.ifndef HAVE_C_func_level_11_80082300
-nonmatching func_level_11_80082300, 0xC58
+.section .text.Level11_AdvanceEmitList, "ax"
+.ifndef HAVE_C_Level11_AdvanceEmitList
+nonmatching Level11_AdvanceEmitList, 0xC58
 
-glabel func_level_11_80082300
+glabel Level11_AdvanceEmitList
     /* 78C8 80082300 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 78CC 80082304 4000B2AF */  sw         $s2, 0x40($sp)
     /* 78D0 80082308 0780123C */  lui        $s2, %hi(D_80075824)
@@ -8798,14 +8798,14 @@ glabel func_level_11_80082300
     /* 8514 80082F4C 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 8518 80082F50 0800E003 */  jr         $ra
     /* 851C 80082F54 00000000 */   nop
-endlabel func_level_11_80082300
+endlabel Level11_AdvanceEmitList
 .endif
 
-.section .text.func_level_11_80082F58, "ax"
-.ifndef HAVE_C_func_level_11_80082F58
-nonmatching func_level_11_80082F58, 0xC98
+.section .text.Level11_EmitParticles, "ax"
+.ifndef HAVE_C_Level11_EmitParticles
+nonmatching Level11_EmitParticles, 0xC98
 
-glabel func_level_11_80082F58
+glabel Level11_EmitParticles
     /* 8520 80082F58 68FFBD27 */  addiu      $sp, $sp, -0x98
     /* 8524 80082F5C 8000B4AF */  sw         $s4, 0x80($sp)
     /* 8528 80082F60 21A0A000 */  addu       $s4, $a1, $zero
@@ -9665,16 +9665,16 @@ glabel func_level_11_80082F58
     /* 91AC 80083BE4 9800BD27 */  addiu      $sp, $sp, 0x98
     /* 91B0 80083BE8 0800E003 */  jr         $ra
     /* 91B4 80083BEC 00000000 */   nop
-endlabel func_level_11_80082F58
+endlabel Level11_EmitParticles
 .endif
 
-.section .text.func_level_11_80083BF0, "ax"
-.ifndef HAVE_C_func_level_11_80083BF0
-nonmatching func_level_11_80083BF0, 0x8
+.section .text.Level11_Noop, "ax"
+.ifndef HAVE_C_Level11_Noop
+nonmatching Level11_Noop, 0x8
 
-glabel func_level_11_80083BF0
+glabel Level11_Noop
     /* 91B8 80083BF0 0800E003 */  jr         $ra
     /* 91BC 80083BF4 00000000 */   nop
-endlabel func_level_11_80083BF0
+endlabel Level11_Noop
 .endif
 

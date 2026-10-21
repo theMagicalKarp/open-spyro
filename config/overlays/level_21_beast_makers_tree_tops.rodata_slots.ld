@@ -4,10 +4,10 @@
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_8007B698.o(.rodata)
+    build/overlays/level_21_beast_makers_tree_tops/c/Level21_UpdateActors.o(.rodata)
     . = 0x00000994 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007B3CC)
-    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_80087400.o(.rodata)
+    build/overlays/level_21_beast_makers_tree_tops/c/Level21_AdvanceEmitList.o(.rodata)
     . = 0x00000ad8 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/data/rodata.rodata.o(.rodata.jtbl_8007B510)
-    build/overlays/level_21_beast_makers_tree_tops/c/func_level_21_8008869C.o(.rodata)
+    build/overlays/level_21_beast_makers_tree_tops/c/Level21_EmitParticles.o(.rodata)

@@ -323,7 +323,7 @@ extern void AdvanceGemCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 
 /* overlay-local */
-void func_titlescreen_8007CD38(int nX, int nY, int nSprite, int nColorId);
-void func_titlescreen_8007AAD4(int nSoundId);
+void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId);
+void Titlescreen_PlayUiSound(int nSoundId);
 
 #endif

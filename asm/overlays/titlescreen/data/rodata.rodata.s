@@ -16,7 +16,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.D_8007AA3C, "a"
-.ifndef HAVE_C_func_titlescreen_8007ABAC
+.ifndef HAVE_C_Titlescreen_Update
 nonmatching D_8007AA3C
 
 dlabel D_8007AA3C
@@ -31,7 +31,7 @@ enddlabel D_8007AA3C
 .endif
 
 .section .rodata.jtbl_8007AA54, "a"
-.ifndef HAVE_C_func_titlescreen_8007ABAC
+.ifndef HAVE_C_Titlescreen_Update
 nonmatching jtbl_8007AA54
 
 dlabel jtbl_8007AA54
@@ -55,7 +55,7 @@ enddlabel jtbl_8007AA54
 .endif
 
 .section .rodata.jtbl_8007AA94, "a"
-.ifndef HAVE_C_func_titlescreen_8007CEE4
+.ifndef HAVE_C_Titlescreen_Draw
 nonmatching jtbl_8007AA94
 
 dlabel jtbl_8007AA94

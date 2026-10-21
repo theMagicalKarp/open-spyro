@@ -2,12 +2,12 @@
 // Block starts are splat's own autodetection over the compiled .text region.
 // The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
-func_level_7_8007B718 = 0x8007B718; // type:func size:0x13C
-func_level_7_8007B854 = 0x8007B854; // type:func size:0x44
-func_level_7_8007B898 = 0x8007B898; // type:func size:0x1FA0
-func_level_7_8007D838 = 0x8007D838; // type:func size:0xA08
-func_level_7_8007E240 = 0x8007E240; // type:func size:0xC290
-func_level_7_8008A4D0 = 0x8008A4D0; // type:func size:0xCF0
-func_level_7_8008B1C0 = 0x8008B1C0; // type:func size:0x1380
-func_level_7_8008C540 = 0x8008C540; // type:func size:0x10C0
-func_level_7_8008D600 = 0x8008D600; // type:func size:0x8
+Level7_BeginActorCutscene = 0x8007B718; // type:func size:0x13C
+Level7_OnSaveMenuExit = 0x8007B854; // type:func size:0x44
+Level7_BalloonistCutscene_Update = 0x8007B898; // type:func size:0x1FA0
+Level7_BalloonistCutscene_Draw = 0x8007D838; // type:func size:0xA08
+Level7_UpdateActors = 0x8007E240; // type:func size:0xC290
+Level7_SpawnActor = 0x8008A4D0; // type:func size:0xCF0
+Level7_AdvanceEmitList = 0x8008B1C0; // type:func size:0x1380
+Level7_EmitParticles = 0x8008C540; // type:func size:0x10C0
+Level7_Noop = 0x8008D600; // type:func size:0x8

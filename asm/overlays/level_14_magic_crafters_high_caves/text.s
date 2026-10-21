@@ -8,11 +8,11 @@
 
 .section .text, "ax"
 
-.section .text.func_level_14_8007B64C, "ax"
-.ifndef HAVE_C_func_level_14_8007B64C
-nonmatching func_level_14_8007B64C, 0xD1F0
+.section .text.Level14_UpdateActors, "ax"
+.ifndef HAVE_C_Level14_UpdateActors
+nonmatching Level14_UpdateActors, 0xD1F0
 
-glabel func_level_14_8007B64C
+glabel Level14_UpdateActors
     /* C14 8007B64C F8FCBD27 */  addiu      $sp, $sp, -0x308
     /* C18 8007B650 0403BFAF */  sw         $ra, 0x304($sp)
     /* C1C 8007B654 0003BEAF */  sw         $fp, 0x300($sp)
@@ -14340,14 +14340,14 @@ glabel func_level_14_8007B64C
     /* DDF8 80088830 0803BD27 */  addiu      $sp, $sp, 0x308
     /* DDFC 80088834 0800E003 */  jr         $ra
     /* DE00 80088838 00000000 */   nop
-endlabel func_level_14_8007B64C
+endlabel Level14_UpdateActors
 .endif
 
-.section .text.func_level_14_8008883C, "ax"
-.ifndef HAVE_C_func_level_14_8008883C
-nonmatching func_level_14_8008883C, 0xC18
+.section .text.Level14_SpawnActor, "ax"
+.ifndef HAVE_C_Level14_SpawnActor
+nonmatching Level14_SpawnActor, 0xC18
 
-glabel func_level_14_8008883C
+glabel Level14_SpawnActor
     /* DE04 8008883C 98FFBD27 */  addiu      $sp, $sp, -0x68
     /* DE08 80088840 4800B0AF */  sw         $s0, 0x48($sp)
     /* DE0C 80088844 21808000 */  addu       $s0, $a0, $zero
@@ -15177,14 +15177,14 @@ glabel func_level_14_8008883C
     /* EA10 80089448 6800BD27 */  addiu      $sp, $sp, 0x68
     /* EA14 8008944C 0800E003 */  jr         $ra
     /* EA18 80089450 00000000 */   nop
-endlabel func_level_14_8008883C
+endlabel Level14_SpawnActor
 .endif
 
-.section .text.func_level_14_80089454, "ax"
-.ifndef HAVE_C_func_level_14_80089454
-nonmatching func_level_14_80089454, 0x1C5C
+.section .text.Level14_AdvanceEmitList, "ax"
+.ifndef HAVE_C_Level14_AdvanceEmitList
+nonmatching Level14_AdvanceEmitList, 0x1C5C
 
-glabel func_level_14_80089454
+glabel Level14_AdvanceEmitList
     /* EA1C 80089454 08FFBD27 */  addiu      $sp, $sp, -0xF8
     /* EA20 80089458 E400B5AF */  sw         $s5, 0xE4($sp)
     /* EA24 8008945C 0780153C */  lui        $s5, %hi(D_80075824)
@@ -17091,14 +17091,14 @@ glabel func_level_14_80089454
     /* 1066C 8008B0A4 F800BD27 */  addiu      $sp, $sp, 0xF8
     /* 10670 8008B0A8 0800E003 */  jr         $ra
     /* 10674 8008B0AC 00000000 */   nop
-endlabel func_level_14_80089454
+endlabel Level14_AdvanceEmitList
 .endif
 
-.section .text.func_level_14_8008B0B0, "ax"
-.ifndef HAVE_C_func_level_14_8008B0B0
-nonmatching func_level_14_8008B0B0, 0x168C
+.section .text.Level14_EmitParticles, "ax"
+.ifndef HAVE_C_Level14_EmitParticles
+nonmatching Level14_EmitParticles, 0x168C
 
-glabel func_level_14_8008B0B0
+glabel Level14_EmitParticles
     /* 10678 8008B0B0 50FFBD27 */  addiu      $sp, $sp, -0xB0
     /* 1067C 8008B0B4 9C00B5AF */  sw         $s5, 0x9C($sp)
     /* 10680 8008B0B8 21A8A000 */  addu       $s5, $a1, $zero
@@ -18621,16 +18621,16 @@ glabel func_level_14_8008B0B0
     /* 11CF8 8008C730 B000BD27 */  addiu      $sp, $sp, 0xB0
     /* 11CFC 8008C734 0800E003 */  jr         $ra
     /* 11D00 8008C738 00000000 */   nop
-endlabel func_level_14_8008B0B0
+endlabel Level14_EmitParticles
 .endif
 
-.section .text.func_level_14_8008C73C, "ax"
-.ifndef HAVE_C_func_level_14_8008C73C
-nonmatching func_level_14_8008C73C, 0x8
+.section .text.Level14_Noop, "ax"
+.ifndef HAVE_C_Level14_Noop
+nonmatching Level14_Noop, 0x8
 
-glabel func_level_14_8008C73C
+glabel Level14_Noop
     /* 11D04 8008C73C 0800E003 */  jr         $ra
     /* 11D08 8008C740 00000000 */   nop
-endlabel func_level_14_8008C73C
+endlabel Level14_Noop
 .endif
 

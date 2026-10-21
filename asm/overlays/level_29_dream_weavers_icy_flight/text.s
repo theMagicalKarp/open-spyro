@@ -8,11 +8,11 @@
 
 .section .text, "ax"
 
-.section .text.func_level_29_8007AE08, "ax"
-.ifndef HAVE_C_func_level_29_8007AE08
-nonmatching func_level_29_8007AE08, 0xD4
+.section .text.Level29_FlightEndHook, "ax"
+.ifndef HAVE_C_Level29_FlightEndHook
+nonmatching Level29_FlightEndHook, 0xD4
 
-glabel func_level_29_8007AE08
+glabel Level29_FlightEndHook
     /* 3D0 8007AE08 0780023C */  lui        $v0, %hi(D_800757D8)
     /* 3D4 8007AE0C D857428C */  lw         $v0, %lo(D_800757D8)($v0)
     /* 3D8 8007AE10 07000324 */  addiu      $v1, $zero, 0x7
@@ -67,14 +67,14 @@ glabel func_level_29_8007AE08
   .L8007AED4:
     /* 49C 8007AED4 0800E003 */  jr         $ra
     /* 4A0 8007AED8 00000000 */   nop
-endlabel func_level_29_8007AE08
+endlabel Level29_FlightEndHook
 .endif
 
-.section .text.func_level_29_8007AEDC, "ax"
-.ifndef HAVE_C_func_level_29_8007AEDC
-nonmatching func_level_29_8007AEDC, 0x320
+.section .text.Level29_HandleFlightResults, "ax"
+.ifndef HAVE_C_Level29_HandleFlightResults
+nonmatching Level29_HandleFlightResults, 0x320
 
-glabel func_level_29_8007AEDC
+glabel Level29_HandleFlightResults
     /* 4A4 8007AEDC D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 4A8 8007AEE0 11008010 */  beqz       $a0, .L8007AF28
     /* 4AC 8007AEE4 2000BFAF */   sw        $ra, 0x20($sp)
@@ -284,14 +284,14 @@ glabel func_level_29_8007AEDC
     /* 7B8 8007B1F0 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 7BC 8007B1F4 0800E003 */  jr         $ra
     /* 7C0 8007B1F8 00000000 */   nop
-endlabel func_level_29_8007AEDC
+endlabel Level29_HandleFlightResults
 .endif
 
-.section .text.func_level_29_8007B1FC, "ax"
-.ifndef HAVE_C_func_level_29_8007B1FC
-nonmatching func_level_29_8007B1FC, 0x2B4
+.section .text.Level29_FlightResultsMenu_Update, "ax"
+.ifndef HAVE_C_Level29_FlightResultsMenu_Update
+nonmatching Level29_FlightResultsMenu_Update, 0x2B4
 
-glabel func_level_29_8007B1FC
+glabel Level29_FlightResultsMenu_Update
     /* 7C4 8007B1FC 0780023C */  lui        $v0, %hi(D_8007568C)
     /* 7C8 8007B200 8C56428C */  lw         $v0, %lo(D_8007568C)($v0)
     /* 7CC 8007B204 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -479,14 +479,14 @@ glabel func_level_29_8007B1FC
     /* A6C 8007B4A4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* A70 8007B4A8 0800E003 */  jr         $ra
     /* A74 8007B4AC 00000000 */   nop
-endlabel func_level_29_8007B1FC
+endlabel Level29_FlightResultsMenu_Update
 .endif
 
-.section .text.func_level_29_8007B4B0, "ax"
-.ifndef HAVE_C_func_level_29_8007B4B0
-nonmatching func_level_29_8007B4B0, 0x1DC
+.section .text.Level29_DrawFlightRaceTime, "ax"
+.ifndef HAVE_C_Level29_DrawFlightRaceTime
+nonmatching Level29_DrawFlightRaceTime, 0x1DC
 
-glabel func_level_29_8007B4B0
+glabel Level29_DrawFlightRaceTime
     /* A78 8007B4B0 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* A7C 8007B4B4 2C00B1AF */  sw         $s1, 0x2C($sp)
     /* A80 8007B4B8 2188A000 */  addu       $s1, $a1, $zero
@@ -611,14 +611,14 @@ glabel func_level_29_8007B4B0
     /* C48 8007B680 4000BD27 */  addiu      $sp, $sp, 0x40
     /* C4C 8007B684 0800E003 */  jr         $ra
     /* C50 8007B688 00000000 */   nop
-endlabel func_level_29_8007B4B0
+endlabel Level29_DrawFlightRaceTime
 .endif
 
-.section .text.func_level_29_8007B68C, "ax"
-.ifndef HAVE_C_func_level_29_8007B68C
-nonmatching func_level_29_8007B68C, 0x1928
+.section .text.Level29_FlightResults_Draw, "ax"
+.ifndef HAVE_C_Level29_FlightResults_Draw
+nonmatching Level29_FlightResults_Draw, 0x1928
 
-glabel func_level_29_8007B68C
+glabel Level29_FlightResults_Draw
     /* C54 8007B68C 0780023C */  lui        $v0, %hi(D_800758B8)
     /* C58 8007B690 B858428C */  lw         $v0, %lo(D_800758B8)($v0)
     /* C5C 8007B694 70FFBD27 */  addiu      $sp, $sp, -0x90
@@ -2299,14 +2299,14 @@ glabel func_level_29_8007B68C
     /* 2570 8007CFA8 9000BD27 */  addiu      $sp, $sp, 0x90
     /* 2574 8007CFAC 0800E003 */  jr         $ra
     /* 2578 8007CFB0 00000000 */   nop
-endlabel func_level_29_8007B68C
+endlabel Level29_FlightResults_Draw
 .endif
 
-.section .text.func_level_29_8007CFB4, "ax"
-.ifndef HAVE_C_func_level_29_8007CFB4
-nonmatching func_level_29_8007CFB4, 0x5074
+.section .text.Level29_UpdateActors, "ax"
+.ifndef HAVE_C_Level29_UpdateActors
+nonmatching Level29_UpdateActors, 0x5074
 
-glabel func_level_29_8007CFB4
+glabel Level29_UpdateActors
     /* 257C 8007CFB4 30FEBD27 */  addiu      $sp, $sp, -0x1D0
     /* 2580 8007CFB8 CC01BFAF */  sw         $ra, 0x1CC($sp)
     /* 2584 8007CFBC C801BEAF */  sw         $fp, 0x1C8($sp)
@@ -7747,14 +7747,14 @@ glabel func_level_29_8007CFB4
     /* 75E4 8008201C D001BD27 */  addiu      $sp, $sp, 0x1D0
     /* 75E8 80082020 0800E003 */  jr         $ra
     /* 75EC 80082024 00000000 */   nop
-endlabel func_level_29_8007CFB4
+endlabel Level29_UpdateActors
 .endif
 
-.section .text.func_level_29_80082028, "ax"
-.ifndef HAVE_C_func_level_29_80082028
-nonmatching func_level_29_80082028, 0xD6C
+.section .text.Level29_SpawnActor, "ax"
+.ifndef HAVE_C_Level29_SpawnActor
+nonmatching Level29_SpawnActor, 0xD6C
 
-glabel func_level_29_80082028
+glabel Level29_SpawnActor
     /* 75F0 80082028 B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 75F4 8008202C 3000B0AF */  sw         $s0, 0x30($sp)
     /* 75F8 80082030 21808000 */  addu       $s0, $a0, $zero
@@ -8677,14 +8677,14 @@ glabel func_level_29_80082028
     /* 8350 80082D88 5000BD27 */  addiu      $sp, $sp, 0x50
     /* 8354 80082D8C 0800E003 */  jr         $ra
     /* 8358 80082D90 00000000 */   nop
-endlabel func_level_29_80082028
+endlabel Level29_SpawnActor
 .endif
 
-.section .text.func_level_29_80082D94, "ax"
-.ifndef HAVE_C_func_level_29_80082D94
-nonmatching func_level_29_80082D94, 0xDF8
+.section .text.Level29_AdvanceEmitList, "ax"
+.ifndef HAVE_C_Level29_AdvanceEmitList
+nonmatching Level29_AdvanceEmitList, 0xDF8
 
-glabel func_level_29_80082D94
+glabel Level29_AdvanceEmitList
     /* 835C 80082D94 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* 8360 80082D98 4000B2AF */  sw         $s2, 0x40($sp)
     /* 8364 80082D9C 0780123C */  lui        $s2, %hi(D_80075824)
@@ -9632,14 +9632,14 @@ glabel func_level_29_80082D94
     /* 9148 80083B80 6000BD27 */  addiu      $sp, $sp, 0x60
     /* 914C 80083B84 0800E003 */  jr         $ra
     /* 9150 80083B88 00000000 */   nop
-endlabel func_level_29_80082D94
+endlabel Level29_AdvanceEmitList
 .endif
 
-.section .text.func_level_29_80083B8C, "ax"
-.ifndef HAVE_C_func_level_29_80083B8C
-nonmatching func_level_29_80083B8C, 0xDA8
+.section .text.Level29_EmitParticles, "ax"
+.ifndef HAVE_C_Level29_EmitParticles
+nonmatching Level29_EmitParticles, 0xDA8
 
-glabel func_level_29_80083B8C
+glabel Level29_EmitParticles
     /* 9154 80083B8C 60FFBD27 */  addiu      $sp, $sp, -0xA0
     /* 9158 80083B90 8800B4AF */  sw         $s4, 0x88($sp)
     /* 915C 80083B94 21A0A000 */  addu       $s4, $a1, $zero
@@ -10571,16 +10571,16 @@ glabel func_level_29_80083B8C
     /* 9EF0 80084928 A000BD27 */  addiu      $sp, $sp, 0xA0
     /* 9EF4 8008492C 0800E003 */  jr         $ra
     /* 9EF8 80084930 00000000 */   nop
-endlabel func_level_29_80083B8C
+endlabel Level29_EmitParticles
 .endif
 
-.section .text.func_level_29_80084934, "ax"
-.ifndef HAVE_C_func_level_29_80084934
-nonmatching func_level_29_80084934, 0x8
+.section .text.Level29_Noop, "ax"
+.ifndef HAVE_C_Level29_Noop
+nonmatching Level29_Noop, 0x8
 
-glabel func_level_29_80084934
+glabel Level29_Noop
     /* 9EFC 80084934 0800E003 */  jr         $ra
     /* 9F00 80084938 00000000 */   nop
-endlabel func_level_29_80084934
+endlabel Level29_Noop
 .endif
 

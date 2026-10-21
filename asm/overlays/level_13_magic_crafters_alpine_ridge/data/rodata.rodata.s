@@ -13,7 +13,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.jtbl_8007AA3C, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007AA3C
 
 dlabel jtbl_8007AA3C
@@ -491,7 +491,7 @@ enddlabel jtbl_8007AA3C
 .endif
 
 .section .rodata.jtbl_8007B194, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B194
 
 dlabel jtbl_8007B194
@@ -561,7 +561,7 @@ enddlabel jtbl_8007B194
 .endif
 
 .section .rodata.jtbl_8007B28C, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B28C
 
 dlabel jtbl_8007B28C
@@ -575,7 +575,7 @@ enddlabel jtbl_8007B28C
 .endif
 
 .section .rodata.jtbl_8007B2A4, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B2A4
 
 dlabel jtbl_8007B2A4
@@ -589,7 +589,7 @@ enddlabel jtbl_8007B2A4
 .endif
 
 .section .rodata.jtbl_8007B2BC, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B2BC
 
 dlabel jtbl_8007B2BC
@@ -605,7 +605,7 @@ enddlabel jtbl_8007B2BC
 .endif
 
 .section .rodata.jtbl_8007B2DC, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B2DC
 
 dlabel jtbl_8007B2DC
@@ -715,7 +715,7 @@ enddlabel jtbl_8007B2DC
 .endif
 
 .section .rodata.jtbl_8007B474, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B474
 
 dlabel jtbl_8007B474
@@ -729,7 +729,7 @@ enddlabel jtbl_8007B474
 .endif
 
 .section .rodata.jtbl_8007B48C, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B48C
 
 dlabel jtbl_8007B48C
@@ -745,7 +745,7 @@ enddlabel jtbl_8007B48C
 .endif
 
 .section .rodata.jtbl_8007B4AC, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B4AC
 
 dlabel jtbl_8007B4AC
@@ -855,7 +855,7 @@ enddlabel jtbl_8007B4AC
 .endif
 
 .section .rodata.jtbl_8007B644, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B644
 
 dlabel jtbl_8007B644
@@ -875,7 +875,7 @@ enddlabel jtbl_8007B644
 .endif
 
 .section .rodata.jtbl_8007B674, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B674
 
 dlabel jtbl_8007B674
@@ -893,7 +893,7 @@ enddlabel jtbl_8007B674
 .endif
 
 .section .rodata.jtbl_8007B69C, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B69C
 
 dlabel jtbl_8007B69C
@@ -911,7 +911,7 @@ enddlabel jtbl_8007B69C
 .endif
 
 .section .rodata.jtbl_8007B6C4, "a"
-.ifndef HAVE_C_func_level_13_8007BB00
+.ifndef HAVE_C_Level13_UpdateActors
 nonmatching jtbl_8007B6C4
 
 dlabel jtbl_8007B6C4
@@ -1019,7 +1019,7 @@ enddlabel jtbl_8007B6C4
 .endif
 
 .section .rodata.jtbl_8007B854, "a"
-.ifndef HAVE_C_func_level_13_8008AF54
+.ifndef HAVE_C_Level13_AdvanceEmitList
 nonmatching jtbl_8007B854
 
 dlabel jtbl_8007B854
@@ -1108,7 +1108,7 @@ enddlabel jtbl_8007B854
 .endif
 
 .section .rodata.jtbl_8007B998, "a"
-.ifndef HAVE_C_func_level_13_8008C9D8
+.ifndef HAVE_C_Level13_EmitParticles
 nonmatching jtbl_8007B998
 
 dlabel jtbl_8007B998
@@ -1198,7 +1198,7 @@ enddlabel jtbl_8007B998
 .endif
 
 .section .rodata.jtbl_8007BAE0, "a"
-.ifndef HAVE_C_func_level_13_8008C9D8
+.ifndef HAVE_C_Level13_EmitParticles
 nonmatching jtbl_8007BAE0
 
 dlabel jtbl_8007BAE0

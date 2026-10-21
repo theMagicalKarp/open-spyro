@@ -4,16 +4,16 @@
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_8007B4B0.o(.rodata)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_DrawFlightRaceTime.o(.rodata)
     . = 0x00000028 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.D_8007AA60)
-    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_8007B68C.o(.rodata)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_FlightResults_Draw.o(.rodata)
     . = 0x000000e0 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB18)
-    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_8007CFB4.o(.rodata)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_UpdateActors.o(.rodata)
     . = 0x00000130 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
-    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082300.o(.rodata)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_AdvanceEmitList.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_11_peace_keepers_night_flight/c/func_level_11_80082F58.o(.rodata)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_EmitParticles.o(.rodata)

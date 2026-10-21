@@ -4,10 +4,10 @@
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_8007B7A8.o(.rodata)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_UpdateActors.o(.rodata)
     . = 0x00000aa4 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B4DC)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80087B40.o(.rodata)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_AdvanceEmitList.o(.rodata)
     . = 0x00000be8 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/data/rodata.rodata.o(.rodata.jtbl_8007B620)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/func_level_15_80089450.o(.rodata)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_EmitParticles.o(.rodata)
