@@ -38,50 +38,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_spawn_actor.h"
-
-typedef struct Actor {
-  void *state;         /* 0x00 per-type state block */
-  int unk04;           /* 0x04 */
-  int collision;           /* 0x08 */
-  int posX;            /* 0x0C */
-  int posY;            /* 0x10 */
-  int posZ;            /* 0x14 */
-  int flags;           /* 0x18 */
-  int unk1C;           /* 0x1C */
-  int mtx[5];        /* 0x20 */
-  short gridCell;         /* 0x34 */
-  short type;          /* 0x36 */
-  short floorOffset;         /* 0x38 */
-  short killGroup;
-  unsigned char anim; /* 0x3C */
-  unsigned char nextAnim;
-  unsigned char frame;
-  unsigned char nextFrame;
-  unsigned char frameProgress; /* 0x40 */
-  unsigned char frameRate;
-  unsigned char animFlags;
-  unsigned char group;
-  unsigned char rotX; /* 0x44 */
-  unsigned char rotY;
-  unsigned char rotZ;
-  unsigned char unk47;
-  unsigned char mode;
-  unsigned char subMode; /* 0x49 */
-  unsigned char visZone;
-  unsigned char renderList; /* 0x4B */
-  unsigned char unk4C; /* 0x4C */
-  unsigned char unk4D;
-  unsigned char unk4E;
-  unsigned char unk4F;
-  unsigned char cullRadius; /* 0x50 */
-  unsigned char drawn;
-  unsigned char updateDist; /* 0x52 */
-  unsigned char dropKind;
-  unsigned char sfxSlot;
-  unsigned char soundRange;
-  unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char scale;
-} Actor; /* 0x58 */
+#include "actor.h"
 
 /* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
 /* Flung-critter state block (level_27 type 0xD7). */
@@ -97,10 +54,6 @@ typedef struct BatState {
 } BatState;
 
 extern Actor *AllocActorRecordSlot(void);
-extern void InitActorRenderDefaults(Actor *rec);
-extern void InsertActorIntoSpatialGrid(Actor *rec);
-extern void HideActorRenderRecord(Actor *rec);
-extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

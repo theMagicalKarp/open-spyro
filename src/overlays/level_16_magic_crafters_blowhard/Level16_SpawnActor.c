@@ -24,6 +24,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_spawn_actor.h"
+#include "actor.h"
 
 /* Level16_SpawnActor (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
@@ -38,49 +39,6 @@
  * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
-
-typedef struct Actor {
-  void *state;         /* 0x00 per-type state block */
-  int unk04;           /* 0x04 */
-  int collision;           /* 0x08 */
-  int posX;            /* 0x0C */
-  int posY;            /* 0x10 */
-  int posZ;            /* 0x14 */
-  int flags;           /* 0x18 */
-  int unk1C;           /* 0x1C */
-  int mtx[5];        /* 0x20 */
-  short gridCell;         /* 0x34 */
-  short type;          /* 0x36 */
-  int unk38;           /* 0x38 */
-  unsigned char unk3C; /* 0x3C */
-  unsigned char nextAnim;
-  unsigned char frame;
-  unsigned char nextFrame;
-  unsigned char frameProgress; /* 0x40 */
-  unsigned char frameRate;
-  unsigned char animFlags;
-  unsigned char group;
-  unsigned char rotX; /* 0x44 */
-  unsigned char rotY;
-  unsigned char rotZ;
-  unsigned char unk47;
-  unsigned char mode;
-  unsigned char subMode; /* 0x49 */
-  unsigned char visZone;
-  unsigned char renderList; /* 0x4B */
-  unsigned char unk4C; /* 0x4C */
-  unsigned char unk4D;
-  unsigned char unk4E;
-  unsigned char unk4F;
-  unsigned char cullRadius; /* 0x50 */
-  unsigned char drawn;
-  unsigned char updateDist; /* 0x52 */
-  unsigned char dropKind;
-  unsigned char sfxSlot;
-  unsigned char soundRange;
-  unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char scale;
-} Actor; /* 0x58 */
 
 /* Whirlwind state block (type 0x25). */
 typedef struct WindState {
@@ -100,10 +58,6 @@ typedef struct AimState {
 } AimState;
 
 extern Actor *AllocActorRecordSlot(void);
-extern void InitActorRenderDefaults(Actor *rec);
-extern void InsertActorIntoSpatialGrid(Actor *rec);
-extern void HideActorRenderRecord(Actor *rec);
-extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int g_anCameraPos;     /* turret aim target X */
 
 extern Actor *g_pActorListBase;
@@ -234,7 +188,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->mode = 0;
       anim = g_apActorMeshTable[rec->type][0xE][0xC];
       rec->nextAnim = 0;
-      rec->unk3C = 0;
+      rec->anim = 0;
       rec->nextFrame = 0;
       rec->frame = 0;
       rec->frameRate = anim;
@@ -256,7 +210,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->mode = 3;
         rec->frameProgress = 0;
         rec->frameRate = g_apActorMeshTable[rec->type][0x11][0xC];
-        rec->unk3C = 3;
+        rec->anim = 3;
         rec->nextAnim = 3;
         *st = 3;
       }
@@ -285,7 +239,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->mode = 2;
         rec->frameProgress = 0;
         rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
-        rec->unk3C = 2;
+        rec->anim = 2;
         rec->nextAnim = 2;
         g_pfnLevelEmitParticles(4, 7, pos, 0x10);
         InsertActorIntoSpatialGrid(rec);
@@ -300,7 +254,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
           rec->mode = 1;
           rec->frameProgress = 0;
           rec->frameRate = g_apActorMeshTable[rec->type][0xF][0xC];
-          rec->unk3C = 1;
+          rec->anim = 1;
           rec->nextAnim = 1;
         }
         else
