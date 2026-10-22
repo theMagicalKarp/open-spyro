@@ -8,7 +8,7 @@
  * board (COMPLETED/QUIT/TIME IS UP/CRASHED headline, four tally rows
  * revealed by g_nSubMenuCursor, bonus column, TOTAL, PRESS-TO-CONTINUE or
  * TRY AGAIN?/YES/NO menu) or, at g_nSubMenuCursor == 0x64, the TIME ATTACK board
- * (times via the formatter D_800758C4, NEW RECORD, TRY AGAIN/YES/NO).
+ * (times via the formatter g_pfnFlightTimeFormatter, NEW RECORD, TRY AGAIN/YES/NO).
  * Selected records get a sine glow on +0x46 from g_anCosineLut. Standard
  * 2-vblank pace tail. Word-identical in all five flight overlays
  * (5/11/17/23/29).
@@ -62,11 +62,11 @@ extern int g_nSubMenuCursor; /* reveal timer */
 extern int g_nPauseMenuCursor; /* menu cursor */
 extern int g_nPauseMenuIdleFrames; /* idle/blink counter */
 extern int g_nFlightResultsRevealStep; /* reveal sound step */
-extern int D_80075900;
-extern int D_80075908;
+extern int g_nFlightQuitFlag;
+extern int g_nFlightTimeBonus;
 extern int g_nActiveWorldIndex;              /* course index */
 extern int g_nFlightRunClock;              /* run clock */
-extern int (*D_800758C4)();         /* time formatter */
+extern int (*g_pfnFlightTimeFormatter)();         /* time formatter */
 extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
 extern char g_abHudIconActorRecords[];           /* HUD sprite records */
@@ -84,7 +84,7 @@ extern unsigned char D_80078681[];
 extern unsigned char D_80078682[];
 extern unsigned char D_80078683[];
 extern unsigned char D_80078684[];
-extern int D_8006E920[]; /* per-course bonus table rows */
+extern int g_anFlightCourseBonusTable[]; /* per-course bonus table rows */
 extern int D_8006E924[];
 extern int D_8006E928[];
 extern int D_8006E92C[];
@@ -304,12 +304,12 @@ void Level5_FlightResults_Draw(void)
         allclear = 1;
       }
       else
-        if (D_80075900 != 0)
+        if (g_nFlightQuitFlag != 0)
       {
         memcpy(buf, "QUIT", 5);
       }
       else
-        if (D_80075908 < 0)
+        if (g_nFlightTimeBonus < 0)
       {
         memcpy(buf, "TIME IS UP", 11);
       }
@@ -360,8 +360,8 @@ void Level5_FlightResults_Draw(void)
           }
           else
           {
-            sprintf(buf, "%d", D_8006E920[k]);
-            bonus += D_8006E920[g_nActiveWorldIndex * 5];
+            sprintf(buf, "%d", g_anFlightCourseBonusTable[k]);
+            bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -404,7 +404,7 @@ void Level5_FlightResults_Draw(void)
           else
           {
             sprintf(buf, "%d", D_8006E924[k]);
-            bonus += D_8006E920[g_nActiveWorldIndex * 5 + 1];
+            bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5 + 1];
           }
           snd = 0;
         }
@@ -666,7 +666,7 @@ void Level5_FlightResults_Draw(void)
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      D_800758C4(g_anWorldPersistentFlags[g_nActiveWorldIndex], pos, 0xB);
+      g_pfnFlightTimeFormatter(g_anWorldPersistentFlags[g_nActiveWorldIndex], pos, 0xB);
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
@@ -681,7 +681,7 @@ void Level5_FlightResults_Draw(void)
       }
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
-        count = D_800758C4(g_nFlightRunClock, pos, snd);
+        count = g_pfnFlightTimeFormatter(g_nFlightRunClock, pos, snd);
         rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
@@ -700,11 +700,11 @@ void Level5_FlightResults_Draw(void)
       }
       else
       {
-        D_800758C4(-1, pos, 0xB);
+        g_pfnFlightTimeFormatter(-1, pos, 0xB);
       }
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) < 0x20)
       {
-        if (D_80075900 != 0)
+        if (g_nFlightQuitFlag != 0)
         {
           memcpy(buf, "QUIT", 5);
         }

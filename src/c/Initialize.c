@@ -26,12 +26,12 @@ extern void LoadActorMeshTables(void);
 extern void BeginGemCutscene(void);
 extern void BeginStoryIntro(void);
 
-extern void *D_800113A0; /* shared CD sector buffer pointer */
-extern int D_8007A6E4;   /* title-art chunk byte count */
-extern int D_8007A6E0;   /* title-art byte offset */
-extern int D_8007A6D4;   /* boot-splash chunk byte count */
-extern int D_8007A6D0;   /* boot-splash byte offset */
-extern int D_8007DDE8;   /* draw-buffer sentinel */
+extern void *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
+extern int D_8007A6E4;            /* title-art chunk byte count */
+extern int D_8007A6E0;            /* title-art byte offset */
+extern int D_8007A6D4;            /* boot-splash chunk byte count */
+extern int D_8007A6D0;            /* boot-splash byte offset */
+extern int D_8007DDE8;            /* draw-buffer sentinel */
 extern int D_800785CC;
 
 extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
@@ -139,18 +139,18 @@ void Initialize(void) {
     {
       register int lba1 asm("$4") = lba[0];
       register int off1 asm("$7") = *(volatile int *)archOff;
-      void *buf1 = D_800113A0;
+      void *buf1 = g_pSharedLoadBuffer;
       CdReadSyncSectors(lba1, buf1, 0x800, off1, k600);
     }
     timOff = g_anWorldTimAudioChunkOffsetBlock;
-    CopyWords(timOff, *(void *volatile *)&D_800113A0, 0x1D0);
+    CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer, 0x1D0);
     top = (char *)0x801C0000 - g_nCrt0StackSize;
     CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
     {
       int cnt3 = *(volatile int *)&D_8007A6E4;
       int off3 = *(volatile int *)&D_8007A6E0;
-      CdReadSyncSectors(lba[0], *(void *volatile *)&D_800113A0, cnt3, off3,
-                        k600);
+      CdReadSyncSectors(lba[0], *(void *volatile *)&g_pSharedLoadBuffer, cnt3,
+                        off3, k600);
     }
     {
       int cnt4 = *(volatile int *)&D_8007A6D4;

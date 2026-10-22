@@ -14,7 +14,7 @@ extern void SetSpuCommonAttr(unsigned int *attr);
 extern unsigned char D_800776BC[];
 extern unsigned int D_800776CC;
 extern int D_8006F05C[];
-extern short D_80075F18;
+extern short g_nCdDaVolumeCurrent;
 extern short D_80075F1A;
 
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
@@ -152,7 +152,7 @@ void TickCdMusicStream(void) {
       vol = g_nMusicVolumeFadeTarget;
       g_nMusicVolumeFadeStep = 0;
       g_nMusicVolumeFadeTarget = -1;
-      D_80075F18 = vol;
+      g_nCdDaVolumeCurrent = vol;
       goto store_right;
     }
     if (vol < target) {

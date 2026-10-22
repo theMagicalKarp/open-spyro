@@ -1170,7 +1170,7 @@ extern int g_nGemPickupCamPathMaxStep;
 /* from level_34 */
 extern int g_nGemPickupCamPathReverseFlag;
 /* from level_34 */
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_34 */
 extern unsigned char D_80078E99;
 /* from level_34 */
@@ -3415,7 +3415,7 @@ void Level6_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -5539,7 +5539,7 @@ void Level6_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }

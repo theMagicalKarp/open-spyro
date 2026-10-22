@@ -1613,7 +1613,7 @@ void Level7_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -3431,7 +3431,7 @@ void Level7_UpdateActors(void) {
         MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3557,7 +3557,7 @@ void Level7_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4217,7 +4217,7 @@ void Level7_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }

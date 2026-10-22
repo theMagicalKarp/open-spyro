@@ -944,7 +944,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -2148,7 +2148,7 @@ void Level15_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -2895,7 +2895,7 @@ void Level15_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x32);
+        BurstActorWithSound(actor, 0x32);
         DespawnActorRecord(actor);
         continue;
 
@@ -4411,7 +4411,7 @@ void Level15_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4558,7 +4558,7 @@ void Level15_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4568,7 +4568,7 @@ void Level15_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4577,7 +4577,7 @@ void Level15_UpdateActors(void) {
       case 7:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4825,7 +4825,7 @@ void Level15_UpdateActors(void) {
                       &st->knockSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }

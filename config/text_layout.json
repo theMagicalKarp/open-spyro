@@ -1021,7 +1021,7 @@
    "size": 160
   },
   {
-   "name": "func_800385BC",
+   "name": "BurstActorWithSound",
    "vram": 2147714492,
    "size": 124
   },
@@ -1656,7 +1656,7 @@
    "size": 392
   },
   {
-   "name": "func_800530C0",
+   "name": "BurstActorIntoSparks",
    "vram": 2147823808,
    "size": 784
   },
@@ -4040,7 +4040,7 @@
    "size": 32
   },
   {
-   "sym": "D_800113A0",
+   "sym": "g_pSharedLoadBuffer",
    "offset": 5024,
    "owner": null,
    "size": 4

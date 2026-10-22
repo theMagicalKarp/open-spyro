@@ -2263,7 +2263,7 @@ void Level0_UpdateActors(void) {
       case 8: {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x1C);
+          BurstActorWithSound(actor, 0x1C);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2277,7 +2277,7 @@ void Level0_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->unk10, st->heading, &st->unk14, 0xC,
                           0x10) == 3) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3354,7 +3354,7 @@ void Level0_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }

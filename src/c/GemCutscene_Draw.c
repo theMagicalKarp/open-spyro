@@ -14,7 +14,7 @@ extern void PutDrawEnv(void *env);
 extern void *LinkOTPrimitives(int depth_max);
 extern void DrawOTag(void *ot);
 
-extern int D_800785D0;   /* per-gamestate far-plane cull limit */
+extern int g_nFarPlaneDrawDistance; /* per-gamestate far-plane cull limit */
 extern int D_80076DE4[]; /* camera view matrix (worldToCam at -0x14) */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
@@ -44,7 +44,7 @@ void GemCutscene_Draw(void) {
   FillWord(otHead, 0, 0x900);
   EmitActorDrawList();
   FillWord(otHead, 0, 0x1c00);
-  D_800785D0 = 0x14000;
+  g_nFarPlaneDrawDistance = 0x14000;
   RenderWorldChunks(-1);
   EmitStaticActorMeshList(-1, D_80076DE4, (int *)((char *)D_80076DE4 - 0x14));
   if (g_nGenericCountdown != 0) {

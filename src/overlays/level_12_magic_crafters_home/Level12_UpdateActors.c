@@ -1651,7 +1651,7 @@ void Level12_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -4056,7 +4056,7 @@ void Level12_UpdateActors(void) {
         }
         if (actor->unk50 == 0 && st->sndDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
           DespawnActorRecord(actor);
           continue;
@@ -4526,7 +4526,7 @@ void Level12_UpdateActors(void) {
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4832,7 +4832,7 @@ void Level12_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }

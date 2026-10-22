@@ -1345,7 +1345,7 @@ extern int g_nGemPickupCamPathMaxStep;
 /* from level_10 */
 extern int g_nGemPickupCamPathReverseFlag;
 /* from level_10 */
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_10 */
 extern unsigned char D_80078E99;
 /* from level_10 */
@@ -2957,7 +2957,7 @@ void Level14_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -5818,7 +5818,7 @@ void Level14_UpdateActors(void) {
       case 4:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5944,7 +5944,7 @@ void Level14_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -6026,7 +6026,7 @@ void Level14_UpdateActors(void) {
       case 4:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           StopSoundVoicesByOwner(actor, 2);
           DespawnActorRecord(actor);
           continue;
@@ -6098,7 +6098,7 @@ void Level14_UpdateActors(void) {
       if (actor->mode == 2) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }

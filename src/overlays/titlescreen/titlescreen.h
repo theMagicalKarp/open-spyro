@@ -197,7 +197,7 @@ extern struct {
 } g_nVsyncFramePaceAnchor; /* vsync frame pacing pair */
 
 extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
-extern int D_800785D0;       /* far-plane culling distance */
+extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
 extern char D_80076DE4[];    /* camera view matrix (proj matrix at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */

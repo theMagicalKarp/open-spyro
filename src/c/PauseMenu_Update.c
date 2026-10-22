@@ -21,20 +21,20 @@ extern void SetSpuCommonAttr(void *attr);
 extern int CdMix(void *vol);
 extern void BeginPauseToMenuTransition(void);
 
-extern void *D_800113A0;           /* asset-directory buffer pointer */
+extern void *g_pSharedLoadBuffer;  /* asset-directory buffer pointer */
 extern int D_8007A6E0;             /* level-load byte offset */
 extern int D_8007A6E4;             /* level-load chunk size */
 extern unsigned char D_8007DDE8[]; /* draw buffer pool */
 extern int D_80076228_blk;         /* SFX volume (0..0x3fff) */
 extern int D_80076224_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 extern int g_anSoundMonoMixFlagBlock[];
-extern short D_80075F18;         /* SpuCommonAttr CD volume L */
-extern short D_80075F1A;         /* SpuCommonAttr CD volume R */
-extern unsigned char D_800776D0; /* CdMix attenuation L->L */
-extern unsigned char D_800776D1; /* L->R */
-extern unsigned char D_800776D2; /* R->R */
-extern unsigned char D_800776D3; /* R->L */
-extern int D_80075900;           /* flight-level quit flag */
+extern short g_nCdDaVolumeCurrent; /* SpuCommonAttr CD volume L */
+extern short D_80075F1A;           /* SpuCommonAttr CD volume R */
+extern unsigned char D_800776D0;   /* CdMix attenuation L->L */
+extern unsigned char D_800776D1;   /* L->R */
+extern unsigned char D_800776D2;   /* R->R */
+extern unsigned char D_800776D3;   /* R->L */
+extern int g_nFlightQuitFlag;      /* flight-level quit flag */
 
 #define SFX(off)                                                               \
   PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[off], 0, 0x10, 0)
@@ -101,7 +101,7 @@ void PauseMenu_Update(void) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       int count = *(volatile int *)&D_8007A6E4;
       int offset = *(volatile int *)&D_8007A6E0;
-      void *dst = *(void *volatile *)&D_800113A0;
+      void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
 
       CdReadSyncSectors(lba, dst, count, offset, 600);
     }
@@ -168,7 +168,7 @@ void PauseMenu_Update(void) {
         *common = 0xC0;
         vol = g_nMusicVolume << 11;
         *p = vol;
-        D_80075F18 = vol;
+        g_nCdDaVolumeCurrent = vol;
         D_80075F1A = vol;
         SetSpuCommonAttr(common);
       }
@@ -269,7 +269,7 @@ void PauseMenu_Update(void) {
       g_nGamestate = 7;
       g_nPauseMenuCursor = 0;
       g_nPauseMenuIdleFrames = 0;
-      D_80075900 = 1;
+      g_nFlightQuitFlag = 1;
       ((void (*)(void))g_pfnGamestate0EarlyHook)();
     } else {
       BeginPauseToMenuTransition();

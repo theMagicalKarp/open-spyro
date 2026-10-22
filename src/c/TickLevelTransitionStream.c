@@ -46,7 +46,7 @@ extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
 extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];
 
-extern void *D_800113A0; /* level splash image buffer */
+extern void *g_pSharedLoadBuffer; /* level splash image buffer */
 extern int D_80075670;
 extern int D_80075674;
 extern int D_8007577C;
@@ -178,7 +178,7 @@ void TickLevelTransitionStream(int full) {
     g_nLevelIntroIndex = intro;
     if (full) {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      void *dst = *(void *volatile *)&D_800113A0;
+      void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
 
       int size = LEVEL_SPLASH_SIZE(intro);
       int off = LEVEL_SPLASH_OFFSET(intro);

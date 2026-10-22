@@ -182,8 +182,8 @@ extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
-extern short D_8006F3A0[]; /* launch-direction table, x */
-extern short D_8006F3A2[]; /* launch-direction table, z */
+extern short g_anLaunchDirTable[]; /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
@@ -576,9 +576,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->unk57 = 0x30;
       }
       i = GetRandomU32() & 7;
-      dir[0] = D_8006F3A0[i * 2];
+      dir[0] = g_anLaunchDirTable[i * 2];
       dir[1] = 0;
-      dir[2] = D_8006F3A2[i * 2];
+      dir[2] = g_anLaunchDirTableZ[i * 2];
       RotateVectorByMatrix(parent->unk20, dir, dir);
       dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
       dir[1] -= 0x3F - (GetRandomU32() & 0x7F);

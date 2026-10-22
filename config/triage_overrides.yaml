@@ -2669,7 +2669,7 @@ Level5_FlightResults_Draw:
     their bonus cell twice across a call under one base symbol, so cse
     value-numbered each pair into a pseudo that reload spilled to an 8-byte
     BLKmode slot; re-spelling ONE accumulate against a neighbouring column of
-    the same stride-5 row table (D_8006E920[k+1] == D_8006E924[k]) frees exactly
+    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == D_8006E924[k]) frees exactly
     one slot at zero insn cost and gives the original's vars= 96, regs= 7/0.
     R1 (21 insns, the `la envBase` pair) re-root-caused off `cc1 -dR`: it is a
     sched2 PRIORITY decision, not the sched1 straggler LUID tie the old note
@@ -3812,7 +3812,7 @@ Gamestate0C_Draw:
     277/283 -> 279/283, length-exact and linking. Moved the A200 barrier BELOW
     both OT bin-head stores and flipped the source order to the original's
     (tail +4 first, head +0 second): that buys the original's ORDER and keeps
-    the load-delay nop after the following `lw D_800777FC`, at the price of the
+    the load-delay nop after the following `lw g_nGamestate0cCardVariant`, at the price of the
     held base (ours `lui $at; sw %lo` twice, orig `la v1,sym; sw 4(v1); sw
     0(v1)` -- both four insns, so a pure form residue). The trade is now
     exhaustive: barrier between = held base + wrong order (6); barrier below =
@@ -4108,7 +4108,7 @@ Gamestate0C_Draw_2026_09_15:
     propagation or reg_equiv substitution removes first.
     One genuinely useful side result: `depth 0 / no trailing barrier` scores
     270/283 (one insn short — the head store fills the load-delay slot after
-    `lw D_800777FC`) while `depth 1 / no trailing barrier` scores 4, i.e. a
+    `lw g_nGamestate0cCardVariant`) while `depth 1 / no trailing barrier` scores 4, i.e. a
     dummy `do { } while (0);` wrapped AROUND the two stores preserves that
     `nop` exactly as the trailing empty barrier does. The two are
     interchangeable for the nop; neither buys the base.
@@ -4687,7 +4687,7 @@ Level10_UpdateActors:
   verdict: matched
   class: "actor-update megafunction; closed the 2026-09-30 sched ties with F14d single-set result locals"
   date: 2026-10-02
-  note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two func_800385BC exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
+  note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two BurstActorWithSound exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
 Level11_FlightResults_Draw:
   verdict: wall
   class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"

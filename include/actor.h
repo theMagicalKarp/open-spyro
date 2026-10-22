@@ -80,7 +80,7 @@ int ProbeActorGroundHeightRaised(Actor *actor, int a);
 void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int a, int b);
-void func_800385BC(Actor *actor, int a);
+void BurstActorWithSound(Actor *actor, int a);
 int TurnActorYawTowardAngle(Actor *actor, int heading, int a, int b, int c);
 int SteerActorYawTowardSpyro(Actor *actor, int *a, int *b, int c, int d, int e);
 int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int a, int b, int c);

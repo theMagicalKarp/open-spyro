@@ -946,7 +946,7 @@ extern PortalDesc *g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -984,8 +984,8 @@ typedef struct BurstState {
 
 extern int g_anWorldPersistentFlags[];  /* per-mode "time attack" flag */
 extern int g_nActiveWorldIndex;    /* current mode index */
-extern int D_80075908;    /* time bonus accumulator */
-extern int D_80075840;    /* time remaining */
+extern int g_nFlightTimeBonus;    /* time bonus accumulator */
+extern int g_nFlightTimeRemaining;    /* time remaining */
 extern int g_nVblankTickCount;    /* frame counter */
 extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
 extern int PlaneDistanceAbs(int *pos, void *st);
@@ -1003,7 +1003,7 @@ typedef struct TallyState {
   short phase;  /* 0x10 */
 } TallyState;
 
-extern int D_800757C4;      /* tally slot index */
+extern int g_nFlightTallySlot;      /* tally slot index */
 extern short g_anSineLut[];  /* HUD slot layout rows, 64 shorts each */
 extern short g_anCosineLut[];
 
@@ -1023,8 +1023,8 @@ typedef struct HudState {
 } HudState;
 
 extern int g_nFlightRunClock;      /* elapsed time (time attack) */
-extern int D_80075900;
-extern int D_800770F8[];    /* tally shown, per class */
+extern int g_nFlightQuitFlag;
+extern int g_anFlightTallyShown[];    /* tally shown, per class */
 extern int g_anFlightTargetTally[];    /* tally collected, per class */
 extern int g_anFlightTallyActiveSlots;      /* pending tally-class queue, 4 deep */
 extern int D_8007860C;
@@ -1036,7 +1036,7 @@ extern Actor g_abHudIconActorRecords[];  /* the four HUD class icons */
 extern int D_800756A0;
 extern void (*g_pfnLevelFallImpactCallback)(void); /* out-of-time handler */
 extern void ChangeSpyroState(int a);
-extern unsigned char *D_80076824; /* level sound ids */
+extern unsigned char *g_pLevelSoundIds; /* level sound ids */
 
 /* ==== The function ==== */
 /* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or
@@ -2451,7 +2451,7 @@ void Level23_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, D_80076824[5]) == 0 && g_nGamestate == 0) {
+        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == 0) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
                         &actor->sfxSlot);
         }
@@ -2578,7 +2578,7 @@ void Level23_UpdateActors(void) {
                       4, 0, 0);
         break;
       case 1:
-        D_80075908 += (actor->type - 0x158) * 60;
+        g_nFlightTimeBonus += (actor->type - 0x158) * 60;
         ProjectWorldPointGTEUnscaled(&actor->posX, &actor->posX);
         actor->rotX = 0;
         actor->rotY = 0;
@@ -2612,7 +2612,7 @@ void Level23_UpdateActors(void) {
       }
       case 3:
         if (TickCountdownByFrameDelta(st, 4) != 0) {
-          D_80075840 += (actor->type - 0x158) * 60;
+          g_nFlightTimeRemaining += (actor->type - 0x158) * 60;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x22], actor, 0x10, 0);
           DespawnActorRecord(actor);
         }
@@ -2701,23 +2701,23 @@ void Level23_UpdateActors(void) {
       CopyVector(&actor->posX, &SPY.posX);
 
       if (st->icon[0] == 0) {
-        D_80075908 = st->time;
-        D_80075840 = st->time;
+        g_nFlightTimeBonus = st->time;
+        g_nFlightTimeRemaining = st->time;
         g_nFlightRunClock = 0;
-        D_80075900 = 0;
-        D_800770F8[0] = 0;
+        g_nFlightQuitFlag = 0;
+        g_anFlightTallyShown[0] = 0;
         g_anFlightTargetTally[0] = 0;
-        D_800770F8[1] = 0;
+        g_anFlightTallyShown[1] = 0;
         g_anFlightTargetTally[1] = 0;
-        D_800770F8[2] = 0;
+        g_anFlightTallyShown[2] = 0;
         g_anFlightTargetTally[2] = 0;
-        D_800770F8[3] = 0;
+        g_anFlightTallyShown[3] = 0;
         g_anFlightTargetTally[3] = 0;
         D_80078614 = -1;
         D_80078610 = -1;
         D_8007860C = -1;
         g_anFlightTallyActiveSlots = -1;
-        D_800757C4 = -1;
+        g_nFlightTallySlot = -1;
         g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
@@ -2789,7 +2789,7 @@ void Level23_UpdateActors(void) {
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
         t = g_nFlightRunClock;
       } else {
-        t = D_80075840;
+        t = g_nFlightTimeRemaining;
       }
       if (t < 0) {
         t = 0;
@@ -2801,9 +2801,9 @@ void Level23_UpdateActors(void) {
           0x20) {
         if (D_800756A0 == 0 && g_nSpyroStateFlags < 8 &&
             g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
-          D_80075908 -= g_nFrameStep;
-          D_80075840 -= g_nFrameStep;
-          if (D_80075908 < 0) {
+          g_nFlightTimeBonus -= g_nFrameStep;
+          g_nFlightTimeRemaining -= g_nFrameStep;
+          if (g_nFlightTimeBonus < 0) {
             g_pfnLevelFallImpactCallback();
           }
         }
@@ -2834,7 +2834,7 @@ void Level23_UpdateActors(void) {
         st->digit[7]->type = i + 0x104;
         st->digit[7]->unk50 = 0xFF;
       } else {
-        t = D_80075840;
+        t = g_nFlightTimeRemaining;
         if (t < 0) {
           t = 0;
         }
@@ -2889,12 +2889,12 @@ void Level23_UpdateActors(void) {
           Actor *a = st->spent[i];
 
           if (a != 0 && a->mode == 4) {
-            if (st->slot[D_800757C4] == 0) {
-              st->slot[D_800757C4] = a;
-              a->posX = D_800757C4 * 50 + 0x1E;
-              st->slot[D_800757C4]->posY = 0xC8;
-              st->slot[D_800757C4]->posZ = 0x1000;
-              st->slot[D_800757C4]->mode = 1;
+            if (st->slot[g_nFlightTallySlot] == 0) {
+              st->slot[g_nFlightTallySlot] = a;
+              a->posX = g_nFlightTallySlot * 50 + 0x1E;
+              st->slot[g_nFlightTallySlot]->posY = 0xC8;
+              st->slot[g_nFlightTallySlot]->posZ = 0x1000;
+              st->slot[g_nFlightTallySlot]->mode = 1;
             } else {
               DespawnActorRecord(a);
             }
@@ -2917,7 +2917,7 @@ void Level23_UpdateActors(void) {
       } else {
         if (g_anFlightTallyActiveSlots >= 0) {
           g_nFlightTallyShownClass = g_anFlightTallyActiveSlots;
-          if (g_anFlightTargetTally[g_nFlightTallyShownClass] != D_800770F8[g_nFlightTallyShownClass]) {
+          if (g_anFlightTargetTally[g_nFlightTallyShownClass] != g_anFlightTallyShown[g_nFlightTallyShownClass]) {
             int *cnt = g_anFlightTargetTally;
             int x;
 
@@ -2938,7 +2938,7 @@ void Level23_UpdateActors(void) {
               x += 0x1E;
             }
 
-            D_800770F8[g_nFlightTallyShownClass] = g_anFlightTargetTally[g_nFlightTallyShownClass];
+            g_anFlightTallyShown[g_nFlightTallyShownClass] = g_anFlightTargetTally[g_nFlightTallyShownClass];
             if (g_anFlightTargetTally[g_nFlightTallyShownClass] == 8) {
               for (i = 0; i < 8; i++) {
                 st->spent[i] = st->icon[i];
@@ -2946,7 +2946,7 @@ void Level23_UpdateActors(void) {
               }
               st->timer = 0;
               st->count = 8;
-              D_800757C4 = g_nFlightTallyShownClass;
+              g_nFlightTallySlot = g_nFlightTallyShownClass;
             }
           }
           g_anFlightTallyActiveSlots = D_8007860C;
@@ -3054,7 +3054,7 @@ void Level23_UpdateActors(void) {
         actor->rotZ += 8;
         break;
       case 2:
-        svW[0] = D_800757C4 * 50 + 0x1E;
+        svW[0] = g_nFlightTallySlot * 50 + 0x1E;
         svW[1] = 0xC8;
         svW[2] = 0x1000;
         AddVector(&st->x, svW, &actor->posX);

@@ -19,7 +19,7 @@ extern int D_80075878;
 extern int D_800757DC;
 extern int D_800757BC;
 extern int D_80075768;
-extern int *D_800113A0; /* shared CD sector buffer pointer */
+extern int *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
 extern int D_8007A95C;
 extern int D_8007A958;
 
@@ -53,7 +53,7 @@ void BeginCreditsSequence(int param_1) {
     int lba = *(volatile int *)&g_nCdBaseLba;
     int arg2 = *(volatile int *)&D_8007A95C;
     int arg3 = *(volatile int *)&D_8007A958;
-    int *dst = *(int *volatile *)&D_800113A0;
+    int *dst = *(int *volatile *)&g_pSharedLoadBuffer;
     CdReadSyncSectors(lba, dst, arg2, arg3, 0x258);
   }
 }

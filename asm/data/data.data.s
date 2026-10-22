@@ -14464,11 +14464,11 @@ dlabel g_nMusicVolume
     /* 65F48 80075748 00000000 */ .word 0x00000000
 enddlabel g_nMusicVolume
 
-nonmatching D_8007574C
+nonmatching g_pfnGamestate0cSubstateUpdate
 
-dlabel D_8007574C
+dlabel g_pfnGamestate0cSubstateUpdate
     /* 65F4C 8007574C 00000000 */ .word 0x00000000
-enddlabel D_8007574C
+enddlabel g_pfnGamestate0cSubstateUpdate
 
 nonmatching g_nWorldDragonsRescued
 
@@ -14652,12 +14652,12 @@ dlabel g_pfnGamestate7Handler
     /* 65FC0 800757C0 00000000 */ .word 0x00000000
 enddlabel g_pfnGamestate7Handler
 
-nonmatching D_800757C4
+nonmatching g_nFlightTallySlot
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800757C4
+dlabel g_nFlightTallySlot
     /* 65FC4 800757C4 00000000 */ .word 0x00000000
-enddlabel D_800757C4
+enddlabel g_nFlightTallySlot
 
 nonmatching g_nPauseMenuSubstate
 

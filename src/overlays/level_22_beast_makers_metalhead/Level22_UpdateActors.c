@@ -1177,7 +1177,7 @@ extern int g_nGemPickupCamPathMaxStep;
 /* from level_34 */
 extern int g_nGemPickupCamPathReverseFlag;
 /* from level_34 */
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_34 */
 extern unsigned char D_80078E99;
 /* from level_34 */
@@ -3244,7 +3244,7 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ModifyWorldChunkAnimFlags(3, 0xFC, 0);
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x40);
+          BurstActorWithSound(actor, 0x40);
           D_80075854 = 1;
           DespawnActorRecord(actor);
           continue;
@@ -3590,7 +3590,7 @@ void Level22_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3742,7 +3742,7 @@ void Level22_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->u2C, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, 4, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -3993,7 +3993,7 @@ void Level22_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->u30, st->u2C, &st->u34, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x34);
+          BurstActorWithSound(actor, 0x34);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4099,7 +4099,7 @@ void Level22_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->u1C, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x34);
+          BurstActorWithSound(actor, 0x34);
           SpawnActorDeathDrop(actor, 4, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -6821,7 +6821,7 @@ void Level22_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }

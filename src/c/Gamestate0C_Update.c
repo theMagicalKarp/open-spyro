@@ -3,10 +3,10 @@
 /* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
 
    Substate 4 is the only one this function drives; every other substate is
-   forwarded to the handler installed at D_8007574C. The block based at
-   D_800777EC holds the whole transition: [-1] is the substate, [0] a frame
-   timer advanced by g_nFrameStep, and the +0x34..+0x54 fields are the camera
-   fly-in's start/goal triples (yaw, orbit radius, height).
+   forwarded to the handler installed at g_pfnGamestate0cSubstateUpdate. The
+   block based at D_800777EC holds the whole transition: [-1] is the substate,
+   [0] a frame timer advanced by g_nFrameStep, and the +0x34..+0x54 fields are
+   the camera fly-in's start/goal triples (yaw, orbit radius, height).
 
    While the timer is under 0x100 the camera orbits the incoming level's
    entry point: a sine of the timer ramped over the window gives a 0..0x2000
@@ -134,9 +134,10 @@ extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
 extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
 extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
-extern int D_8006EA4C[];         /* entry points, 4 words per level */
-extern void (*D_8007574C)(void); /* handler for every other substate */
-extern int g_nSpyroWorldPosZ;    /* g_anSpyroWorldPos[2] */
+extern int D_8006EA4C[]; /* entry points, 4 words per level */
+extern void (*g_pfnGamestate0cSubstateUpdate)(
+    void);                    /* handler for every other substate */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
@@ -309,7 +310,7 @@ void Gamestate0C_Update(void) {
       D_800777EC[13] = ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
-    D_8007574C();
+    g_pfnGamestate0cSubstateUpdate();
   }
 
   AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);

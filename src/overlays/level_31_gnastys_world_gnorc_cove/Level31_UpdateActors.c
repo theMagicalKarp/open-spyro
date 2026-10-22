@@ -949,7 +949,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -3599,7 +3599,7 @@ void Level31_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3681,7 +3681,7 @@ void Level31_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3873,7 +3873,7 @@ void Level31_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4420,7 +4420,7 @@ void Level31_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }

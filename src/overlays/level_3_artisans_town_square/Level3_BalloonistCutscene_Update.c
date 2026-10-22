@@ -58,7 +58,7 @@
  *      for `n` / `z` in the arm-3 re-seed and case-5 else blocks: a shared
  *      case-level variable is GLOBAL and loses every local-alloc race.
  *  L7  `k = g_nGamestate0cTimer[0];` after the `t == n` block in case 6 reproduces the
- *      original's `move v1,a0` join copy; `n -= 0x1B; D_800777FC = n;` and
+ *      original's `move v1,a0` join copy; `n -= 0x1B; g_nGamestate0cCardVariant = n;` and
  *      `vecD[2] += 0x200; vecD[2] -= cn >> 4;` are in-place forms.
  *  L8  DECODE fixes: `(k == 3) && (D_80077018 < 2)` (was >= 2); the arm-1
  *      mode tests are `D_800777F4[0] == 0xE` / `D_800777F4[0] = 0x1E` (were
@@ -156,7 +156,7 @@ extern int D_800777F0_s;
 extern int D_800777F4[];
 extern int D_800777F4_s; /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int D_800777F8;
-extern int D_800777FC;
+extern int g_nGamestate0cCardVariant;
 extern int D_80077800[];
 extern int D_80077804;
 extern int D_80077808;
@@ -186,7 +186,7 @@ extern int g_anSpyroWorldPos[];
 extern int g_nSpyroWorldPosY;
 extern int g_nSpyroWorldPosZ;
 extern unsigned char g_abSpyroPersistentEuler[];
-extern unsigned char D_80078A65;
+extern unsigned char g_bSpyroPersistentEulerY;
 extern unsigned char g_bSpyroPersistentEulerZ;
 extern unsigned char g_bSpyroAnimPrev[];
 extern unsigned char g_bSpyroAnimCurrent;
@@ -327,7 +327,7 @@ void Level3_BalloonistCutscene_Update(void)
           }
         }
         g_abSpyroPersistentEuler[0] = 0;
-        D_80078A65 = 0;
+        g_bSpyroPersistentEulerY = 0;
         g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-0xC]), 0x10000);
         ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
         SampleSpyroShadowRingHeights(1);
@@ -523,7 +523,7 @@ void Level3_BalloonistCutscene_Update(void)
         {
           g_nCurrentLevelId = g_nCurrentLevelId + 0xA;
         }
-        D_800777FC = (g_nCurrentLevelId / 10) - 1;
+        g_nGamestate0cCardVariant = (g_nCurrentLevelId / 10) - 1;
       }
       else
         if (((unsigned int) (t - 0x1F)) < 2)
@@ -560,7 +560,7 @@ void Level3_BalloonistCutscene_Update(void)
         if (D_800777F4[0] == 0x1F)
         {
           g_nCurrentLevelId = g_nActiveLevelId + 0xA;
-          D_800777FC = (g_nCurrentLevelId / 10) - 1;
+          g_nGamestate0cCardVariant = (g_nCurrentLevelId / 10) - 1;
         }
       }
       else
@@ -597,7 +597,7 @@ void Level3_BalloonistCutscene_Update(void)
         D_800777F4_s = 0x20;
         g_nGamestate0cTimer[0] = 0;
         n -= 0x1B;
-        D_800777FC = n;
+        g_nGamestate0cCardVariant = n;
       }
         break;
     }
@@ -893,7 +893,7 @@ void Level3_BalloonistCutscene_Update(void)
         {
           int m;
           int k;
-        m = D_800777FC * 8;
+        m = g_nGamestate0cCardVariant * 8;
         g_nGamestate0cTimer[8] = *((int *) (((char *) D_8006EADC) + m));
         k = *((int *) (((char *) D_8006EAE0) + m));
         D_80077814 = g_nSpyroWorldPosZ;

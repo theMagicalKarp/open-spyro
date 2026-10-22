@@ -1170,7 +1170,7 @@ extern int g_nGemPickupCamPathMaxStep;
 /* from level_34 */
 extern int g_nGemPickupCamPathReverseFlag;
 /* from level_34 */
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_34 */
 extern unsigned char D_80078E99;
 /* from level_34 */
@@ -3419,7 +3419,7 @@ void Level24_UpdateActors(void) {
             actor->mode = 0x14;
             continue;
           }
-          func_800385BC(actor, 0x28);
+          BurstActorWithSound(actor, 0x28);
           actor->unk57 = 0x40;
           st->base = 0;
           ANIM_SET(actor, st->base);
@@ -3527,7 +3527,7 @@ void Level24_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3573,7 +3573,7 @@ void Level24_UpdateActors(void) {
         actor->unk57 += g_nFrameStep * 2;
         if (actor->unk57 >= 0x38) {
           actor->unk57 = 0x20;
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);
           st->kind = !st->kind;
@@ -4936,7 +4936,7 @@ void Level24_UpdateActors(void) {
           }
           if (st->kind == 0) {
             st->kind = !st->kind;
-            func_800385BC(actor, 0x28);
+            BurstActorWithSound(actor, 0x28);
             actor->unk57 = 0x40;
             st->base = 0;
             ANIM_SET(actor, st->base);
@@ -5037,7 +5037,7 @@ void Level24_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5096,7 +5096,7 @@ void Level24_UpdateActors(void) {
         if (actor->unk57 >= 0x38) {
           StopSoundVoicesByOwner(actor, 1);
           actor->unk57 = 0x20;
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);
           actor->mode = 0;

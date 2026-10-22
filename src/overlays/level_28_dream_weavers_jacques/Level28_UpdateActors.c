@@ -1178,7 +1178,7 @@ extern int g_nGemPickupCamPathMaxStep;
 /* from level_34 */
 extern int g_nGemPickupCamPathReverseFlag;
 /* from level_34 */
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_34 */
 extern unsigned char D_80078E99;
 /* from level_34 */
@@ -3149,7 +3149,7 @@ void Level28_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 5);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4632,7 +4632,7 @@ void Level28_UpdateActors(void) {
 
       case 3:
         if (g_nActorAnimDone != 0) {
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }

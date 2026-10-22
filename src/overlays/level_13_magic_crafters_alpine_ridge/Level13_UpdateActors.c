@@ -1795,7 +1795,7 @@ void Level13_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -3841,7 +3841,7 @@ void Level13_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x46);
+          BurstActorWithSound(actor, 0x46);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4324,7 +4324,7 @@ void Level13_UpdateActors(void) {
         }
         if (actor->unk50 == 0 && st->sndDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
           DespawnActorRecord(actor);
           continue;
@@ -4793,7 +4793,7 @@ void Level13_UpdateActors(void) {
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5644,7 +5644,7 @@ void Level13_UpdateActors(void) {
       case 6:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }

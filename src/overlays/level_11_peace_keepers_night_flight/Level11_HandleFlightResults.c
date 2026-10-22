@@ -7,7 +7,7 @@
  * then banks rewards: for each of the four collectible classes whose tally
  * (g_anFlightTargetTally..3C) hit 8, an unclaimed per-course flag
  * (g_abWorldPerLevelByteTable[course*5 + i]) pays the class bonus from the course reward
- * table (D_8006E920[course*5 + i]) into the level gem total
+ * table (g_anFlightCourseBonusTable[course*5 + i]) into the level gem total
  * (g_anLevelGemsCollected[g_nLevelIntroIndex]) and running score (g_nWorldTreasureCollected), 12 digits
  * (g_nGemTallyIconCount) per payout. A perfect run (tallies sum to 0x20) pays the
  * fifth "all clear" bonus (D_8006E930[course*5], flag D_80078684) and
@@ -43,7 +43,7 @@ extern unsigned char g_abWorldPerLevelByteTable[];
 extern unsigned char D_80078684[];
 extern int g_nSpyroState;
 extern int g_nSpyroStateFlags;
-extern int D_8006E920[];
+extern int g_anFlightCourseBonusTable[];
 extern int D_8006E930[];
 extern unsigned char D_8006E998[];
 extern unsigned char g_abSpyroStateCameraMode[];
@@ -73,7 +73,7 @@ void Level11_HandleFlightResults(int reload) {
       if (*flag == 0) {
         int row;
         g_anLevelGemsCollected[g_nLevelIntroIndex] +=
-            *(int *)((i << 2) + (row = (int)&D_8006E920[idx]));
+            *(int *)((i << 2) + (row = (int)&g_anFlightCourseBonusTable[idx]));
         g_nWorldTreasureCollected += *(int *)((i << 2) + row);
         g_nGemTallyIconCount += 0xC;
         *flag = 1;

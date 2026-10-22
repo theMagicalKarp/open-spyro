@@ -334,7 +334,7 @@ void Titlescreen_Draw(void) {
 
   /* draw the environment */
   FillWord(g_pOtDepthBinHead0, 0, 0x1C00);
-  D_800785D0 = 0x1c000;
+  g_nFarPlaneDrawDistance = 0x1c000;
   RenderWorldChunks(-1);
 
   /* draw the cyclorama (view matrix, then projection matrix just below it) */

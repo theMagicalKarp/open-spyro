@@ -2062,7 +2062,7 @@ void Level2_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x48);
+          BurstActorWithSound(actor, 0x48);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2611,7 +2611,7 @@ void Level2_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2760,7 +2760,7 @@ void Level2_UpdateActors(void) {
       case 1:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x48);
+          BurstActorWithSound(actor, 0x48);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3666,7 +3666,7 @@ void Level2_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->time, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }

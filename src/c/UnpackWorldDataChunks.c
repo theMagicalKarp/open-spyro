@@ -8,7 +8,7 @@ extern void *g_pWorldMeshVertexData;  /* 0x800785c4 */
 extern void *g_pWorldChunkArray;      /* 0x800785a8 */
 extern int g_nWorldChunkCount;        /* 0x800785ac */
 extern int D_800785B0;
-extern int D_800785B4[];
+extern int g_nStaticMeshLodCutoff[];
 extern void *g_pWorldMeshIndexTable; /* 0x8007778c */
 extern int g_nWorldMeshIndexCount[]; /* 0x80077788 */
 extern void *g_pTriggerRegionTable;  /* 0x800785b8 */
@@ -91,7 +91,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       p++;
       i = 0;
       {
-        int *pn = D_800785B4;
+        int *pn = g_nStaticMeshLodCutoff;
 
         D_800785B0 = (int)p;
         *pn = n3;
@@ -127,7 +127,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
         }
       }
     } else {
-      D_800785B4[0] = 0;
+      g_nStaticMeshLodCutoff[0] = 0;
       D_800785B0 = 0;
       g_pWorldMeshIndexTable = 0;
     }

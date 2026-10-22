@@ -286,7 +286,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80038458` | SnapActorToGround | main | 60 | matched | game |
 | `0x80038494` | IsActorInRunningKillSet | main | 136 | matched | game |
 | `0x8003851c` | PlayActorMeshVoice | main | 160 | matched | game |
-| `0x800385bc` | func_800385BC | main | 124 | matched | game |
+| `0x800385bc` | BurstActorWithSound | main | 124 | matched | game |
 | `0x80038638` | SteerActorAroundPoint | main | 740 | matched | game |
 | `0x8003891c` | ComputeLobVelocityZ | main | 292 | matched | game |
 | `0x80038a40` | FindNearestPathPointToActor | main | 188 | matched | game |
@@ -413,7 +413,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800529e4` | RefreshActorDerivedState | main | 896 | asm | handwritten |
 | `0x80052d64` | GetActorAttachPoint | main | 468 | asm | handwritten |
 | `0x80052f38` | AccumulateAnimRootMotionDelta | main | 392 | asm | handwritten |
-| `0x800530c0` | func_800530C0 | main | 784 | asm | handwritten |
+| `0x800530c0` | BurstActorIntoSparks | main | 784 | asm | handwritten |
 | `0x800533d0` | EncodeCachedVecToActorDirCode | main | 416 | asm | handwritten |
 | `0x80053570` | AllocEmitListRecord | main | 152 | asm | handwritten |
 | `0x80053608` | FreeEmitListRecord | main | 156 | asm | handwritten |

@@ -1082,6 +1082,24 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nFlightTallyShownClass      0x800758f8  tally class the HUD is showing
  *   g_nFlightResultsRevealStep    0x8007569c  results-screen reveal sound step
  *   g_nLevelIntroParallaxCountdown 0x80075910 level-intro camera parallax countdown (-2/frame)
+ *
+ * Batch 2 (documentation only, same reasons):
+ *   g_anEmitSlotOffsets / g_anEmitStepOffsets 0x8006e4e0 / 0x8006e498  EmitParticles per-slot / per-step int[3] offsets
+ *   g_abEmitTrailColors     0x8006e438  EmitParticles trail colours, stride 4
+ *   g_anLaunchDirTable(Z)   0x8006f3a0 / 0x8006f3a2  SpawnActor launch-direction shorts (x / z view)
+ *   g_aSpuVoiceRows         0x80075f30  the 24 sound mixer rows (PlaySoundEffect)
+ *   g_nGamestate0cCardVariant 0x800777fc  title-card variant (Gamestate0C_Draw)
+ *   g_pfnGamestate0cSubstateUpdate / Draw 0x8007574c / 0x800758d8  per-level handlers for the other 0xC substates (ApplyPerLevelGlobalsTable)
+ *   g_nFlightTallySlot 0x800757c4, g_anFlightTallyShown 0x800770f8, g_nFlightTimeBonus 0x80075908,
+ *   g_anFlightCourseBonusTable 0x8006e920, g_pfnFlightTimeFormatter 0x800758c4,
+ *   g_nFlightTimeRemaining 0x80075840, g_nFlightQuitFlag 0x80075900  flight-level results/HUD state
+ *   g_bAmbienceChannelMask  0x80078e98  ambience channel enables
+ *   g_bSpyroPersistentEulerY 0x80078a65 g_abSpyroPersistentEuler[1]
+ *   g_pSharedLoadBuffer     0x800113a0  shared CD/asset/splash load buffer pointer
+ *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)
+ *   g_nStaticMeshLodCutoff  0x800785b4  static-mesh LOD cutoff
+ *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
+ *   g_pLevelSoundIds        0x80076824  level sound id table
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

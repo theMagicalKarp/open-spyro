@@ -2377,4 +2377,13 @@ void ClearWord(int *p);
  * snapshot the level tallies into the persistence block. */
 void SetSpawnAnchorFromActor(unsigned char *actor, int yaw);
 
+/* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the actor
+ * (positionless for NULL), then BurstActorIntoSparks(actor, arg). */
+void BurstActorWithSound(void *actor, int arg);
+
+/* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
+ * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
+ * at them; `arg` lands in GTE RBK and seeds the spark colour. */
+void BurstActorIntoSparks(void *actor, int arg);
+
 #endif /* OPEN_SPYRO_FUNCS_H */

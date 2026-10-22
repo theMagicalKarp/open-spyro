@@ -1615,12 +1615,12 @@ enddlabel switchdataD_80011380
     /* 1B9C 8001139C 1C730580 */ .word .L8005731C
 .endif
 
-.section .rodata.D_800113A0, "a"
-nonmatching D_800113A0
+.section .rodata.g_pSharedLoadBuffer, "a"
+nonmatching g_pSharedLoadBuffer
 
-dlabel D_800113A0
+dlabel g_pSharedLoadBuffer
     /* 1BA0 800113A0 38AA0780 */ .word g_abAssetDirectoryBuffer
-enddlabel D_800113A0
+enddlabel g_pSharedLoadBuffer
 
 .section .rodata.switchdataD_800113a4, "a"
 .ifndef HAVE_C_ApplyPerLevelGlobalsTable

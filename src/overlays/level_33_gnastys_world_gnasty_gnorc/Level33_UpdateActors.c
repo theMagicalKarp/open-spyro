@@ -943,7 +943,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -2342,7 +2342,7 @@ typedef struct GnastyState {
 
 extern int D_80077CC8[];         /* level flags */
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
-extern unsigned char D_80078A65; /* SPY.bodyRotY, absolute form */
+extern unsigned char g_bSpyroPersistentEulerY; /* SPY.bodyRotY, absolute form */
 extern int D_800757AC;
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
 extern short g_anSineLut[];
@@ -3792,7 +3792,7 @@ void Level33_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->u18, st->u14, &st->u1C, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4200,7 +4200,7 @@ void Level33_UpdateActors(void) {
           *(Actor **)o->state = actor;
           CopyVector(&o->posX, &SPY.posX);
           o->rotX = g_abSpyroPersistentEuler;
-          o->rotY = D_80078A65;
+          o->rotY = g_bSpyroPersistentEulerY;
           o->rotZ = g_bSpyroPersistentEulerZ;
           g_nSpyroDrawSuppressed = 1;
         }
@@ -4208,7 +4208,7 @@ void Level33_UpdateActors(void) {
           actor->unk50 = 0;
           actor->drawn = 0;
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x40);
+          BurstActorWithSound(actor, 0x40);
           st->u58 = 0x3C;
           actor->mode = 9;
           continue;

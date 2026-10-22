@@ -980,7 +980,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -3282,7 +3282,7 @@ void Level4_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
           SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3463,7 +3463,7 @@ void Level4_UpdateActors(void) {
         SpawnActorDeathDrop(actor, 4, 0, 0);
         MarkActorCommittedKill(actor);
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
       }
@@ -3562,7 +3562,7 @@ void Level4_UpdateActors(void) {
                       0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3575,7 +3575,7 @@ void Level4_UpdateActors(void) {
           ANIM_GO(actor, st->anim + 5);
         }
         if (g_nActorAnimDone != 0) {
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -3776,7 +3776,7 @@ void Level4_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }

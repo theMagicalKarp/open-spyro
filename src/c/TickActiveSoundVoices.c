@@ -101,7 +101,7 @@ typedef struct {
   /* 0x2E */ short nVolR;
 } SPUFARROW;
 
-extern SPUVOICEROW D_80075F30[];                  /* the 24 mixer rows */
+extern SPUVOICEROW g_aSpuVoiceRows[];             /* the 24 mixer rows */
 extern unsigned short g_anCameraEulerYawBlock[];  /* camera euler yaw */
 extern int g_anSoundMasterVolumeBlock[];          /* g_nSoundMasterVolume */
 extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
@@ -129,34 +129,34 @@ int TickActiveSoundVoices(void) {
   yc = (int)g_anCameraEulerYawBlock;
   yaw = (unsigned char)((*((volatile unsigned short *)yc)) >> 4);
   for (; i < 24; i++) {
-    if (D_80075F30[i].nFlags & 0x40) {
-      D_80075F30[i].nFlags = 0;
+    if (g_aSpuVoiceRows[i].nFlags & 0x40) {
+      g_aSpuVoiceRows[i].nFlags = 0;
       continue;
     }
-    if (!(D_80075F30[i].nFlags & 1)) {
+    if (!(g_aSpuVoiceRows[i].nFlags & 1)) {
       continue;
     }
     status = GetSpuVoiceKeyStatus(bit << i);
-    if (D_80075F30[i].nFlags & 2) {
+    if (g_aSpuVoiceRows[i].nFlags & 2) {
       if ((status & 0xFF) == 3) {
-        playing = D_80075F30[i].pPlaying;
+        playing = g_aSpuVoiceRows[i].pPlaying;
         keyOff |= bit << i;
         if (playing != 0) {
           *playing = 0x7F;
         }
-        D_80075F30[i].nFlags = 0x40;
-        D_80075F30[i].pPlaying = 0;
-        D_80075F30[i].pOwner = 0;
-        D_80075F30[i].nSampleId = 0xFF;
+        g_aSpuVoiceRows[i].nFlags = 0x40;
+        g_aSpuVoiceRows[i].pPlaying = 0;
+        g_aSpuVoiceRows[i].pOwner = 0;
+        g_aSpuVoiceRows[i].nSampleId = 0xFF;
         continue;
       }
     } else if (((status & 0xFF) == bit) || ((status & 0xFF) == 3)) {
-      D_80075F30[i].nFlags |= 2;
+      g_aSpuVoiceRows[i].nFlags |= 2;
     }
-    if (!(D_80075F30[i].nFlags & 1)) {
+    if (!(g_aSpuVoiceRows[i].nFlags & 1)) {
       continue;
     }
-    mode = D_80075F30[i].nFlags & 0x1C;
+    mode = g_aSpuVoiceRows[i].nFlags & 0x1C;
     switch (mode) {
     case 4:
       yc = 0x2000;
@@ -165,9 +165,9 @@ int TickActiveSoundVoices(void) {
       break;
 
     case 8:
-      pVol = &D_80075F30[i].nVolL;
+      pVol = &g_aSpuVoiceRows[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
-      owner = D_80075F30[i].pOwner;
+      owner = g_aSpuVoiceRows[i].pOwner;
       range = owner[0x55] << 10;
       if (range == 0) {
         range = 0x4000;
@@ -175,47 +175,49 @@ int TickActiveSoundVoices(void) {
       SubtractVector(vec, (int *)(owner + 0xC), g_anCameraPos);
       dist = VectorLength(vec, 1);
       if (dist >= range) {
-        far = (SPUFARROW *)((char *)D_80075F30 - 0x28 + i * 0x1C);
-        attr.volR = (far->nVolR = D_80075F30[i].nVolR >> 1);
-        vol = D_80075F30[i].nVolL >> 1;
+        far = (SPUFARROW *)((char *)g_aSpuVoiceRows - 0x28 + i * 0x1C);
+        attr.volR = (far->nVolR = g_aSpuVoiceRows[i].nVolR >> 1);
+        vol = g_aSpuVoiceRows[i].nVolL >> 1;
         attr.volL = (far->nVolL = vol);
         if ((attr.volR < 0x40) && (vol < 0x40)) {
-          playing = D_80075F30[i].pPlaying;
+          playing = g_aSpuVoiceRows[i].pPlaying;
           keyOff |= bit << i;
           if (playing != 0) {
             *playing = 0x7F;
           }
-          D_80075F30[i].nFlags = 0x40;
-          D_80075F30[i].pPlaying = 0;
-          D_80075F30[i].pOwner = 0;
-          D_80075F30[i].nSampleId = 0xFF;
+          g_aSpuVoiceRows[i].nFlags = 0x40;
+          g_aSpuVoiceRows[i].pPlaying = 0;
+          g_aSpuVoiceRows[i].pOwner = 0;
+          g_aSpuVoiceRows[i].nSampleId = 0xFF;
         } else {
-          D_80075F30[i].nVolL =
-              (D_80075F30[i].nVolL *
+          g_aSpuVoiceRows[i].nVolL =
+              (g_aSpuVoiceRows[i].nVolL *
                (*((volatile int *)((char *)g_anSoundMasterVolumeBlock)))) >>
               12;
-          D_80075F30[i].nVolR =
-              (D_80075F30[i].nVolR *
+          g_aSpuVoiceRows[i].nVolR =
+              (g_aSpuVoiceRows[i].nVolR *
                (*((volatile int *)((char *)g_anSoundMasterVolumeBlock)))) >>
               12;
-          SetSpuVoiceVolumeLR(i, D_80075F30[i].nVolL, D_80075F30[i].nVolR);
+          SetSpuVoiceVolumeLR(i, g_aSpuVoiceRows[i].nVolL,
+                              g_aSpuVoiceRows[i].nVolR);
         }
         continue;
       };
       ComputeVoicePanAndFalloff(
           &attr.volL, dist,
-          (unsigned char)(ArcTan2(((int *)(D_80075F30[i].pOwner + 0xC))[0] -
-                                      g_anCameraPos[0],
-                                  ((int *)(D_80075F30[i].pOwner + 0xC))[1] -
-                                      g_anCameraPos[1],
-                                  0) -
+          (unsigned char)(ArcTan2(
+                              ((int *)(g_aSpuVoiceRows[i].pOwner + 0xC))[0] -
+                                  g_anCameraPos[0],
+                              ((int *)(g_aSpuVoiceRows[i].pOwner + 0xC))[1] -
+                                  g_anCameraPos[1],
+                              0) -
                           yaw),
-          range, D_80075F30[i].anPanCache);
+          range, g_aSpuVoiceRows[i].anPanCache);
       break;
 
     case 0x10:
-      attr.volR = D_80075F30[i].nVolR;
-      attr.volL = D_80075F30[i].nVolL;
+      attr.volR = g_aSpuVoiceRows[i].nVolR;
+      attr.volL = g_aSpuVoiceRows[i].nVolL;
       break;
     }
 
@@ -223,10 +225,10 @@ int TickActiveSoundVoices(void) {
     attr.voice = bit << i;
     attr.volL = (attr.volL * g_nSoundMasterVolume) >> 12;
     attr.volR = (attr.volR * g_nSoundMasterVolume) >> 12;
-    D_80075F30[i].nPitch += D_80075F30[i].nPitchStep;
-    D_80075F30[i].nPitchStep = 0;
+    g_aSpuVoiceRows[i].nPitch += g_aSpuVoiceRows[i].nPitchStep;
+    g_aSpuVoiceRows[i].nPitchStep = 0;
     attr.mask |= 0x10;
-    attr.pitch = D_80075F30[i].nPitch;
+    attr.pitch = g_aSpuVoiceRows[i].nPitch;
     ApplySpuVoiceAttr(&attr.voice);
   }
 

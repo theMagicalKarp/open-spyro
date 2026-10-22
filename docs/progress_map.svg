@@ -117,7 +117,7 @@
 <rect x="193.69" y="506.88" width="20.42" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StoryIntro_Draw  ·  784 bytes  ·  matched</title></rect>
 <rect x="214.11" y="506.88" width="20.42" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ProbeSpyroGroundContact  ·  784 bytes  ·  matched</title></rect>
 <rect x="234.53" y="506.88" width="20.42" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroSubstepState  ·  784 bytes  ·  matched</title></rect>
-<rect x="254.95" y="506.88" width="20.42" height="20.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_800530C0  ·  784 bytes  ·  handwritten</title></rect>
+<rect x="254.95" y="506.88" width="20.42" height="20.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BurstActorIntoSparks  ·  784 bytes  ·  handwritten</title></rect>
 <rect x="275.37" y="506.88" width="20.21" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateGemPickupPathCamera  ·  776 bytes  ·  matched</title></rect>
 <rect x="295.59" y="506.88" width="20.21" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroPadStateChanges  ·  776 bytes  ·  matched</title></rect>
 <rect x="62.40" y="527.86" width="19.50" height="21.53" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WalkActorAlongWaypoints  ·  768 bytes  ·  matched</title></rect>
@@ -430,7 +430,7 @@
 <rect x="204.41" y="748.83" width="8.54" height="8.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdPosToInt  ·  128 bytes  ·  library</title></rect>
 <rect x="204.41" y="757.02" width="8.54" height="8.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>RegisterMemCardEvent  ·  128 bytes  ·  library</title></rect>
 <rect x="204.41" y="765.22" width="8.54" height="8.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInfoAct  ·  128 bytes  ·  library</title></rect>
-<rect x="212.95" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800385BC  ·  124 bytes  ·  matched</title></rect>
+<rect x="212.95" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BurstActorWithSound  ·  124 bytes  ·  matched</title></rect>
 <rect x="221.04" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitActorRenderDefaults  ·  124 bytes  ·  matched</title></rect>
 <rect x="229.13" y="664.31" width="8.09" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InstallSpuDmaEventHandler  ·  124 bytes  ·  library</title></rect>
 <rect x="237.22" y="664.31" width="8.09" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardLoad  ·  124 bytes  ·  library</title></rect>

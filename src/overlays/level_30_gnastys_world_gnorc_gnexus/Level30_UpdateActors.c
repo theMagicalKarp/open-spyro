@@ -957,7 +957,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -2614,7 +2614,7 @@ void Level30_UpdateActors(void) {
       MusicState *st = actor->state;
 
       if (st->started == 0) {
-        if (D_80078E98 != 0) {
+        if (g_bAmbienceChannelMask != 0) {
           ModifyWorldChunkAnimFlags(0, 0xFC, 0);
           if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
@@ -2700,7 +2700,7 @@ void Level30_UpdateActors(void) {
           }
           if (g_nActorAnimDone != 0) {
             RefreshActorDerivedState(actor, 4);
-            func_800385BC(actor, 0x10);
+            BurstActorWithSound(actor, 0x10);
             DespawnActorRecord(actor);
             continue;
           }

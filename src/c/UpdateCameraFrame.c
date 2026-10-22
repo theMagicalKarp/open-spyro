@@ -12,7 +12,7 @@ extern int FindWorldFloorBelowPoint(uint *pos);
 extern int D_80075844;
 extern int D_80076E24;
 extern int g_apScriptedCameraViewBlock;
-extern int D_800785B4;
+extern int g_nStaticMeshLodCutoff;
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
 
@@ -73,7 +73,7 @@ void UpdateCameraFrame(void) {
       if (FindWorldFloorBelowPoint((uint *)g_anCameraPos) != 0) {
         D_80076E24 = D_80075844;
       }
-      if (D_80076E24 >= D_800785B4) {
+      if (D_80076E24 >= g_nStaticMeshLodCutoff) {
         D_80076E24 = -1;
       }
       g_apScriptedCameraViewBlock = 0;

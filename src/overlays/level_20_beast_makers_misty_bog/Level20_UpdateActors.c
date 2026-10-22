@@ -938,7 +938,7 @@ extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
-extern unsigned char D_80078E98; /* ambience channel enables */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 extern unsigned char D_80078E99;
 extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
@@ -2652,7 +2652,7 @@ void Level20_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4023,7 +4023,7 @@ void Level20_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x28);
+          BurstActorWithSound(actor, 0x28);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5082,7 +5082,7 @@ void Level20_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->u38, 4) != 0 || g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x18);
+          BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5524,7 +5524,7 @@ void Level20_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }
@@ -5723,7 +5723,7 @@ void Level20_UpdateActors(void) {
         actor->rotY += 4;
         if (DriveActorTrackedMove(actor, &st->u24, st->u20, &st->u28, 0xC, 0xE) == 3) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x30);
+          BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }

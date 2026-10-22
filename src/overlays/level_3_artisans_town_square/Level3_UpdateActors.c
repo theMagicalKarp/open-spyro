@@ -1293,7 +1293,7 @@ void Level3_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
             RefreshActorDerivedState(actor, 4);
-            func_800385BC(actor, 0x20);
+            BurstActorWithSound(actor, 0x20);
             DespawnActorRecord(actor);
             continue;
           }
@@ -1315,7 +1315,7 @@ void Level3_UpdateActors(void) {
       case 9:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1703,7 +1703,7 @@ void Level3_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
-        func_800385BC(actor, 0x18);
+        BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
@@ -4130,7 +4130,7 @@ void Level3_UpdateActors(void) {
         actor->rotY += st->spinY;
         if (st->vz < -0xB3) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x20);
+          BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4212,7 +4212,7 @@ void Level3_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
-          func_800385BC(actor, 0x10);
+          BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
         }

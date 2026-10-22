@@ -12,7 +12,7 @@ extern void BeginGemCutscene(void);
 extern void AdvanceGemCutsceneFrame(int timer);
 extern void DispatchSpecialCutscene(void);
 
-extern void *D_800113A0;
+extern void *g_pSharedLoadBuffer;
 
 /* 0x800331ac — GS_GEM_CUTSCENE (0xE) per-tick handler: on first entry (timer
    0, hub world) clear the screen, stream the cutscene bundle in synchronously
@@ -37,8 +37,8 @@ void GemCutscene_Update(void) {
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     g_nCdStreamState = 0;
-    g_pDrawBufA = D_800113A0;
-    g_pDrawBufB = D_800113A0;
+    g_pDrawBufA = g_pSharedLoadBuffer;
+    g_pDrawBufB = g_pSharedLoadBuffer;
     if (g_nCurrentWorldId == 3) {
       g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);
