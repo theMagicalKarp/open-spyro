@@ -11,8 +11,8 @@
  * cursor action (0 = restart flight via D_800757A8(1) +
  * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via D_800757A8(0) +
  * BeginPauseToMenuTransition/BeginPauseToMenuTransition) or, when the course was
- * completed (collectible tallies D_80078630..3C >= 0x20 and the world
- * flag g_anWorldPersistentFlags[D_8007595C] set) locks the timer at 0x64. Before
+ * completed (collectible tallies g_anFlightTargetTally..3C >= 0x20 and the world
+ * flag g_anWorldPersistentFlags[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
  * reveal, confirm fast-forwards the timer to 9.
  * Identical body in the five flight-level overlays.
  */
@@ -28,16 +28,16 @@ extern int g_nPauseMenuIdleFrames;
 extern int g_nPauseMenuCursor;
 extern int g_nSubMenuCursor;
 extern int g_nSubMenuScrollOffset;
-extern int D_8007595C;
+extern int g_nActiveWorldIndex;
 extern unsigned char *g_pLevelSampleBankHeader;
 extern unsigned int g_dwPadPressed[];
 extern unsigned int g_dwHudBobSinePhase[];
 extern unsigned char D_80078032[];
 extern int g_anWorldPersistentFlags[];
-extern int D_80078630;
-extern int D_80078634;
-extern int D_80078638;
-extern int D_8007863C;
+extern int g_anFlightTargetTally;
+extern int g_nFlightTargetTally1;
+extern int g_nFlightTargetTally2;
+extern int g_nFlightTargetTally3;
 
 void Level11_FlightResultsMenu_Update(void) {
   unsigned int *bob;
@@ -74,8 +74,8 @@ void Level11_FlightResultsMenu_Update(void) {
     }
     if (pad[0] & 0x840) {
       if (g_nSubMenuCursor >= 0x64 ||
-          (D_80078630 + D_80078634 + D_80078638 + D_8007863C < 0x20 &&
-           g_anWorldPersistentFlags[D_8007595C] == 0)) {
+          (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
+           g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
         case 0:
           D_800757A8(1);

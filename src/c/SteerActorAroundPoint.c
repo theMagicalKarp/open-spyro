@@ -31,7 +31,8 @@ extern int MoveActorAlongAngle(int *actor, int angle, int speed, int p3, int p4,
                                int p5);
 
 extern short g_anCosineLut[];
-extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
+extern int
+    g_nActorFrameDelta; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
 
 /* Steers `actor` around a target point instead of straight at it: aims at the
    point `radius` away from `tgt` on the side the actor is already turning
@@ -40,12 +41,12 @@ extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
    nothing moved, 0x100 when the approach is refused because the target
    direction is within 5 of one of the two blocked headings `blockA`/`blockB`
    on the same side as the turn, and the negated move result otherwise.
-   Camera mode D_800756C4 scales the turn speed by 1.5x / 2x.
+   Camera mode g_nActorFrameDelta scales the turn speed by 1.5x / 2x.
    (0x80038638, 740 bytes.) */
 
-int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
-                  int speed, int p6, int p7, int blockA, int blockB, int p10,
-                  int p11, int flags) {
+int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
+                          int deadzone, int speed, int p6, int p7, int blockA,
+                          int blockB, int p10, int p11, int flags) {
   int pt[3];
   int dir;
   int t;
@@ -120,9 +121,9 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
   pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
   heading = ArcTan2(pt[0] - actor[3], pt[1] - actor[4], 0);
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed = speed + (speed >> 1);
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed = speed * 2;
   }
   if (flags & 8) {

@@ -64,9 +64,9 @@ extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
 extern char
     *volatile D_800761D0; /* volatile view of g_pLevelSampleBankEntries */
 extern void *g_apSampleBankEntriesBlock[];
-extern int D_800761DC;
-extern short D_800761E8;
-extern short D_800761EA;
+extern int g_nSfxOverrideFlags;
+extern short g_nSfxOverrideVolL;
+extern short g_nSfxOverrideVolR;
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
@@ -559,9 +559,9 @@ void GemPickup_Update(void) {
         SBE->h0 = 0;
         SBE->h1 = 0;
         SBE->w4 = 0;
-        ((struct { int v; } *)&D_800761DC)->v = 1;
-        ((struct { short v; } *)&D_800761E8)->v = 0x3FFF;
-        ((struct { short v; } *)&D_800761EA)->v = 0x3FFF;
+        ((struct { int v; } *)&g_nSfxOverrideFlags)->v = 1;
+        ((struct { short v; } *)&g_nSfxOverrideVolL)->v = 0x3FFF;
+        ((struct { short v; } *)&g_nSfxOverrideVolR)->v = 0x3FFF;
         StopSoundVoiceByIndex(GB[11], 4);
         PlaySoundEffect(0, 0, 0x10, &GB[11]);
         CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);

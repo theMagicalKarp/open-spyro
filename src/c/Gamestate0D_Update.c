@@ -33,8 +33,8 @@ extern void InitActorMeshScratchRegions(int mode);
 extern void BeginGemCutscene(void);
 extern void RotateLightVectorXZ(int steps);
 
-extern void *D_800113A0; /* default draw-buffer base */
-extern int D_8006EE7C[]; /* per-try first level table */
+extern void *g_pSharedLoadBuffer; /* default draw-buffer base */
+extern int D_8006EE7C[];          /* per-try first level table */
 
 extern int g_anSpyroWorldPosBlock[]; /* held-base view of g_anSpyroWorldPos */
 extern int g_nSpyroWorldPosY;        /* g_anSpyroWorldPos[1] */
@@ -54,8 +54,8 @@ void Gamestate0D_Update(void) {
       if (g_nStoryIntroMessage == 0) {
         g_nCurrentWorldId = 1;
         g_nCdStreamState = 0;
-        g_pDrawBufA = D_800113A0;
-        g_pDrawBufB = D_800113A0;
+        g_pDrawBufA = g_pSharedLoadBuffer;
+        g_pDrawBufB = g_pSharedLoadBuffer;
       } else if (g_nStoryIntroMessage == 1) {
         g_nFlightLevelActive = 0;
         g_nCdStreamState = 1;

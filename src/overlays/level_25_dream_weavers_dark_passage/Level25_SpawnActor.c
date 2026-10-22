@@ -48,7 +48,7 @@
  *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
  *    +0x4B bit 7 flag.
  *  - 0xFB (Metalhead's mortar shot): pick one of eight launch directions from
- *    the D_8006F3A0/D_8006F3A2 table, rotate it into the parent's orientation
+ *    the g_anLaunchDirTable/g_anLaunchDirTableZ table, rotate it into the parent's orientation
  *    (RotateVectorByMatrix = RotateVectorByMatrix), jitter each component by
  *    +-0x3F, offset the spawn point along it (AddVector = AddVector) and
  *    seed the shot's velocity (RShiftVector3 = RShiftVector3) with a further
@@ -170,12 +170,12 @@ extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
-extern short D_8006F3A0[]; /* launch-direction table, x */
-extern short D_8006F3A2[]; /* launch-direction table, z */
+extern short g_anLaunchDirTable[]; /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern int abs(int n);
-extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
+extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 Actor *Level25_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -254,7 +254,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);
@@ -281,7 +281,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);
@@ -420,7 +420,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);
@@ -507,9 +507,9 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
       rec->unk57 = 0x30;
     }
     i = GetRandomU32() & 7;
-    dir[0] = D_8006F3A0[i * 2];
+    dir[0] = g_anLaunchDirTable[i * 2];
     dir[1] = 0;
-    dir[2] = D_8006F3A2[i * 2];
+    dir[2] = g_anLaunchDirTableZ[i * 2];
     RotateVectorByMatrix(parent->unk20, dir, dir);
     dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
     dir[1] -= 0x3F - (GetRandomU32() & 0x7F);

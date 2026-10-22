@@ -112,8 +112,8 @@ extern EdgeRec D_80077EA0[];       /* silhouette edge records */
 extern ScreenPt D_80078DD8[];      /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)D_80078DD8 + ko))
-extern int D_80076E24[]; /* [-0x10] view mtx, [-0x15] world mtx */
-extern int D_800785B4;   /* static-mesh LOD cutoff */
+extern int D_80076E24[];           /* [-0x10] view mtx, [-0x15] world mtx */
+extern int g_nStaticMeshLodCutoff; /* static-mesh LOD cutoff */
 
 /* Render stage 4: draw the scripted-mob billboards, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
@@ -582,7 +582,7 @@ void DrawActors(void) {
   }
 
   lod = D_80076E24[0];
-  if (lod >= D_800785B4) {
+  if (lod >= g_nStaticMeshLodCutoff) {
     lod = -1;
   }
   EmitStaticActorMeshList(lod, (MATRIX *)&D_80076E24[-0x10],

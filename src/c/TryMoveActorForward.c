@@ -2,8 +2,8 @@
 #include "vecmath.h"
 
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
-   position if nothing blocks it (0x8003bccc). Global pace D_800756C4 scales
-   speed (3 -> 1.5x, 4 -> 2x). flags: bit 0 biases the probe Z up by
+   position if nothing blocks it (0x8003bccc). Global pace g_nActorFrameDelta
+   scales speed (3 -> 1.5x, 4 -> 2x). flags: bit 0 biases the probe Z up by
    0x12C+collideR for the contact tests (undone after), bit 1 selects the
    fire-and-forget contact dispatch (mode 3) over the blocking one, bits
    2/4 (0x14) probe the ground below, bit 4 also rejects a commit when the
@@ -14,10 +14,10 @@ extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);
 extern int FindGroundHeightBelow(int *pt, int z);
-extern void func_800529E4(int actor, int n);
+extern void RefreshActorDerivedState(int actor, int n);
 extern void EncodeCachedVecToActorDirCode(int actor);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 
 int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
                         int flags) {
@@ -26,9 +26,9 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
   int ground;
   int d;
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
   ApplyEulerRotation((unsigned char *)(actor + 0x44), mtx, 0);
@@ -81,6 +81,6 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
 gdone:
   CopyVector((int *)(actor + 0xC), vec);
   EncodeCachedVecToActorDirCode(actor);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return 0;
 }

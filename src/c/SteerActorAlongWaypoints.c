@@ -11,7 +11,7 @@ extern void DispatchActorContactAtSphere();
 extern int FindGroundHeightBelow();
 extern void CopyVector();
 extern void EncodeCachedVecToActorDirCode(char *actor);
-extern void func_800529E4();
+extern void RefreshActorDerivedState();
 
 /* Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
  * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):
@@ -23,8 +23,9 @@ extern void func_800529E4();
  * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
  * `d` carries the turn delta and is reused for the ground height. */
-int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
-                  int contact, int clamp, int limit, int *yawp) {
+int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
+                             int speed, int contact, int clamp, int limit,
+                             int *yawp) {
   char eul[8];
   int vec[4];
   int d;
@@ -79,7 +80,7 @@ int func_8003A16C(char *actor, unsigned char *path, int radius, int speed,
   }
   CopyVector(actor + 0xC, vec);
   EncodeCachedVecToActorDirCode(actor);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   ret = 0;
   SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   if (((int)VectorLength(vec, 1)) < radius) {

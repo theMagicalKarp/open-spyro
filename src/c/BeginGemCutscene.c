@@ -10,9 +10,9 @@ extern int D_800778F0[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
 extern char *volatile D_800761D0;
-extern int D_800761DC;
-extern short D_800761E8;
-extern short D_800761EA;
+extern int g_nSfxOverrideFlags;
+extern short g_nSfxOverrideVolL;
+extern short g_nSfxOverrideVolR;
 
 void BeginGemCutscene(void) {
   register int world;
@@ -37,9 +37,9 @@ void BeginGemCutscene(void) {
   *((short *)(D_800761D0 + 0xC)) = 0;
   *((short *)(D_800761D0 + 0xE)) = 0;
   *((int *)(D_800761D0 + 0x10)) = 0;
-  D_800761E8 = 0x3FFF;
-  D_800761EA = 0x3FFF;
-  D_800761DC = 1;
+  g_nSfxOverrideVolL = 0x3FFF;
+  g_nSfxOverrideVolR = 0x3FFF;
+  g_nSfxOverrideFlags = 1;
 
   PlaySoundEffect(0, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
 }

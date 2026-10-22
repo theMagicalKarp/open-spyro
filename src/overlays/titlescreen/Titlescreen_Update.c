@@ -317,7 +317,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x02: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[0] == McErrNone ||
           g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
@@ -348,7 +348,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x03: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x28 >= 0) {
         if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
@@ -384,7 +384,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x04: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x28 >= 0) {
         if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
@@ -425,7 +425,7 @@ void Titlescreen_Update(void) {
     }
     case SubState_0x05:
     case SubState_0x06: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -481,7 +481,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x08: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -505,7 +505,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x09: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -536,7 +536,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x0A: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -676,7 +676,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x0C: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -701,7 +701,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x0D: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==
@@ -737,7 +737,7 @@ void Titlescreen_Update(void) {
       break;
     }
     case SubState_0x0F: {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[0] == McErrCardNotExist ||
           g_nGamestate0dMode.unk_0x30[0] == McErrNewCard ||
@@ -776,7 +776,7 @@ void Titlescreen_Update(void) {
   case Mode_0x02: {
     /* while not transitioning to the demo, keep checking our card states */
     if (g_nGamestate0dMode.unk_0x04 < 5) {
-      func_80032A20();
+      PollMemCardSyncRing();
 
       if (g_nGamestate0dMode.unk_0x30[g_nGamestate0dMode.unk_0x28] != McErrNone ||
           g_nGamestate0dMode.unk_0x30[1 - g_nGamestate0dMode.unk_0x28] ==

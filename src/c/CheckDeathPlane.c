@@ -14,15 +14,15 @@ extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
 extern void StartCdReadAsync(int lba, int dst, int count, int offset,
                              int marker);
 
-extern void *D_800113A0; /* asset-directory buffer pointer */
-extern int D_8007A6E4;   /* level-load chunk size */
-extern int D_8007A6E0;   /* level-load byte offset */
-extern int D_8007A6D8;   /* async-read byte offset */
-extern int D_8007DDE8;   /* draw-buffer sentinel */
-extern int D_800778F0;   /* death-cutscene sample-bank record */
-extern int D_800761DC;
-extern short D_800761E8;
-extern short D_800761EA;
+extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
+extern int D_8007A6E4;            /* level-load chunk size */
+extern int D_8007A6E0;            /* level-load byte offset */
+extern int D_8007A6D8;            /* async-read byte offset */
+extern int D_8007DDE8;            /* draw-buffer sentinel */
+extern int D_800778F0;            /* death-cutscene sample-bank record */
+extern int g_nSfxOverrideFlags;
+extern short g_nSfxOverrideVolL;
+extern short g_nSfxOverrideVolR;
 extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field
@@ -75,7 +75,7 @@ int CheckDeathPlane(void) {
         int lba = *(volatile int *)&g_nCdBaseLba;
         int count = *(volatile int *)&D_8007A6E4;
         int offset = *(volatile int *)&D_8007A6E0;
-        void *dst = *(void *volatile *)&D_800113A0;
+        void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }
       while (g_nCdStreamState < 10) {
@@ -96,9 +96,9 @@ int CheckDeathPlane(void) {
         *(short *)(BANK + 0xc) = 0;
         *(short *)(BANK + 0xe) = 0;
         *(int *)(BANK + 0x10) = 0;
-        D_800761DC = 1;
-        D_800761E8 = 0x3fff;
-        D_800761EA = 0x3fff;
+        g_nSfxOverrideFlags = 1;
+        g_nSfxOverrideVolL = 0x3fff;
+        g_nSfxOverrideVolR = 0x3fff;
         PlaySoundEffect(0, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
       } else {
         *(int *)g_pPathTableHead = 0x490;

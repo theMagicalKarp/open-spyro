@@ -7,7 +7,7 @@ extern void AddVector();
 extern void RShiftVector3();
 extern int VectorLength();
 extern int ArcTan2_8bit(int y, int x);
-extern void func_800529E4();
+extern void RefreshActorDerivedState();
 
 extern short D_80075280[];
 extern short D_8006CBA4[];
@@ -29,8 +29,8 @@ extern short D_8006CBCC[];
    load (the original's load-delay nop); `ret++` precedes the cursor test so
    reorg puts it in the branch delay slot; the divisor is a `$6` register
    local (the original's a2). */
-int func_8003BFC0(unsigned char *actor, unsigned char *path, int *prev,
-                  int *step, int legs, int flags) {
+int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
+                        int *step, int legs, int flags) {
   int dir[4];
   int blend[4];
   short *tbl;
@@ -103,6 +103,6 @@ int func_8003BFC0(unsigned char *actor, unsigned char *path, int *prev,
   pos = (int *)(actor + 0xc);
   actor[0x45] = -x + 0x40;
   AddVector(pos, pos, dir);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return ret;
 }

@@ -14262,11 +14262,11 @@ dlabel g_nLetterboxBarHeight
     /* 65EC0 800756C0 00000000 */ .word 0x00000000
 enddlabel g_nLetterboxBarHeight
 
-nonmatching D_800756C4
+nonmatching g_nActorFrameDelta
 
-dlabel D_800756C4
+dlabel g_nActorFrameDelta
     /* 65EC4 800756C4 00000000 */ .word 0x00000000
-enddlabel D_800756C4
+enddlabel g_nActorFrameDelta
 
 nonmatching g_nGemTallyIconCount
 
@@ -14464,11 +14464,11 @@ dlabel g_nMusicVolume
     /* 65F48 80075748 00000000 */ .word 0x00000000
 enddlabel g_nMusicVolume
 
-nonmatching D_8007574C
+nonmatching g_pfnGamestate0cSubstateUpdate
 
-dlabel D_8007574C
+dlabel g_pfnGamestate0cSubstateUpdate
     /* 65F4C 8007574C 00000000 */ .word 0x00000000
-enddlabel D_8007574C
+enddlabel g_pfnGamestate0cSubstateUpdate
 
 nonmatching g_nWorldDragonsRescued
 
@@ -14580,11 +14580,11 @@ dlabel D_80075790
     /* 65F90 80075790 00000000 */ .word 0x00000000
 enddlabel D_80075790
 
-nonmatching D_80075794
+nonmatching g_nActorAnimDone
 
-dlabel D_80075794
+dlabel g_nActorAnimDone
     /* 65F94 80075794 00000000 */ .word 0x00000000
-enddlabel D_80075794
+enddlabel g_nActorAnimDone
 
 nonmatching g_pActorDeferredTriStackTop
 
@@ -14652,12 +14652,12 @@ dlabel g_pfnGamestate7Handler
     /* 65FC0 800757C0 00000000 */ .word 0x00000000
 enddlabel g_pfnGamestate7Handler
 
-nonmatching D_800757C4
+nonmatching g_nFlightTallySlot
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800757C4
+dlabel g_nFlightTallySlot
     /* 65FC4 800757C4 00000000 */ .word 0x00000000
-enddlabel D_800757C4
+enddlabel g_nFlightTallySlot
 
 nonmatching g_nPauseMenuSubstate
 

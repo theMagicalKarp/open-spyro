@@ -2,8 +2,8 @@
 
 extern unsigned int VectorLength(int *vec, int include_z);
 
-int func_8003891C(int *pos, int *target, int speed, int gravity,
-                  int *pOutTime) {
+int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity,
+                        int *pOutTime) {
   int v[2];
   int t;
   int r;

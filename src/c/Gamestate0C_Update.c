@@ -3,18 +3,18 @@
 /* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
 
    Substate 4 is the only one this function drives; every other substate is
-   forwarded to the handler installed at D_8007574C. The block based at
-   D_800777EC holds the whole transition: [-1] is the substate, [0] a frame
-   timer advanced by g_nFrameStep, and the +0x34..+0x54 fields are the camera
-   fly-in's start/goal triples (yaw, orbit radius, height).
+   forwarded to the handler installed at g_pfnGamestate0cSubstateUpdate. The
+   block based at D_800777EC holds the whole transition: [-1] is the substate,
+   [0] a frame timer advanced by g_nFrameStep, and the +0x34..+0x54 fields are
+   the camera fly-in's start/goal triples (yaw, orbit radius, height).
 
    While the timer is under 0x100 the camera orbits the incoming level's
    entry point: a sine of the timer ramped over the window gives a 0..0x2000
    ease factor, that factor interpolates yaw the short way round the circle
    (AbsAngleDelta12 added or subtracted depending on which side of 0x800 the
    difference falls), and radius/height are lerped the same way. The camera is
-   then placed on that orbit around the record at D_80077850 +0xC and aimed
-   back at it. For the first 0x40 frames the aim is a ramped approach —
+   then placed on that orbit around the record at g_pGamestate0cRecord +0xC and
+   aimed back at it. For the first 0x40 frames the aim is a ramped approach —
    the pitch/yaw error is scaled by the timer itself and folded in — and after
    that it snaps straight to the computed angles.
 
@@ -31,8 +31,8 @@
    existing §B-i tool applied twice; the other two are new. What the rtl dump
    added is WHICH PASS does the folding -- see THE MECHANISM below.
 
-   1. D_80077850 read DIRECTLY at every use, in both arms (no `rec` local).
-      The original reloads it into a CALLER-saved temp at each use, because
+   1. g_pGamestate0cRecord read DIRECTLY at every use, in both arms (no `rec`
+   local). The original reloads it into a CALLER-saved temp at each use, because
       every use is separated from the last by a `jal`; holding it emitted the
       load twice and cost a callee-saved register. Direct reads reproduce all
       7 materialisations register for register.
@@ -83,9 +83,9 @@
    value in its own statement puts it back on the force_reg path. Spelling the
    array access differently does NOT work -- `(&A[i])[3]`, `*(A + i + 3)` and
    `A[i + 3]` all parse to the same tree and produce byte-identical output.
-   `face` does the same job for the tail: it pins the D_80077850 load ahead of
-   the g_anCameraPos load so the latter fills its shadow and the `lbu` needs no
-   nop.
+   `face` does the same job for the tail: it pins the g_pGamestate0cRecord load
+   ahead of the g_anCameraPos load so the latter fills its shadow and the `lbu`
+   needs no nop.
 
    HISTORY WORTH KEEPING. Every source-shape lever tried before the rtl dump
    failed, and the mechanism says they had to: a block-scoped pointer local
@@ -118,24 +118,26 @@ extern void TickSpyroAnimLayer1(void);
 extern void TickSpyroAnimLayer2(void);
 
 /* Held-base view of the gamestate-0xC block: [-1] substate, [0] timer,
-   [13]/[15] the yaw and height starts also reachable as D_80077820 /
-   D_80077828, [25] the active level record. */
+   [13]/[15] the yaw and height starts also reachable as
+   g_nGamestate0cCamYawStart / g_nGamestate0cCamHeightStart, [25] the active
+   level record. */
 extern int D_800777EC[];
 /* Absolute alias of D_800777EC[0]: the aim ramp reads the timer after the
    camera calls, where the original drops the held base and re-addresses it. */
 extern int g_nGamestate0cTimer;
 
-extern int D_80077820;   /* camera yaw start   (block +0x34) */
-extern int D_80077824;   /* camera radius start (block +0x38) */
-extern int D_80077828;   /* camera height start (block +0x3c) */
-extern int D_80077838;   /* camera yaw goal     (block +0x4c) */
-extern int D_8007783C;   /* camera radius goal  (block +0x50) */
-extern int D_80077840;   /* camera height goal  (block +0x54) */
-extern void *D_80077850; /* active level record (block +0x64) */
+extern int g_nGamestate0cCamYawStart;    /* camera yaw start   (block +0x34) */
+extern int g_nGamestate0cCamRadiusStart; /* camera radius start (block +0x38) */
+extern int g_nGamestate0cCamHeightStart; /* camera height start (block +0x3c) */
+extern int g_nGamestate0cCamYawGoal;     /* camera yaw goal     (block +0x4c) */
+extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
+extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
+extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
-extern int D_8006EA4C[];         /* entry points, 4 words per level */
-extern void (*D_8007574C)(void); /* handler for every other substate */
-extern int g_nSpyroWorldPosZ;    /* g_anSpyroWorldPos[2] */
+extern int D_8006EA4C[]; /* entry points, 4 words per level */
+extern void (*g_pfnGamestate0cSubstateUpdate)(
+    void);                    /* handler for every other substate */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
@@ -189,27 +191,35 @@ void Gamestate0C_Update(void) {
       /* goal/start are named so both feed the compare AND survive as the call
          arguments: the difference test below leaves them in a0/a1 exactly
          where AbsAngleDelta12 wants them, so the call needs no setup. */
-      goal = D_80077838;
-      start = D_80077820;
+      goal = g_nGamestate0cCamYawGoal;
+      start = g_nGamestate0cCamYawStart;
       if (((goal - start) & 0xFFF) < 0x801) {
-        yaw = D_80077820 + ((AbsAngleDelta12(goal, start) * ease) >> 13);
+        yaw = g_nGamestate0cCamYawStart +
+              ((AbsAngleDelta12(goal, start) * ease) >> 13);
       } else {
         /* Same variable as `start`, but reached through the held base — the
            original re-addresses it here rather than reloading the symbol. */
         yaw = D_800777EC[13] - ((AbsAngleDelta12(goal, start) * ease) >> 13);
       }
 
-      radius = D_80077824 + (((D_8007783C - D_80077824) * ease) >> 13);
+      radius = g_nGamestate0cCamRadiusStart +
+               (((g_nGamestate0cCamRadiusGoal - g_nGamestate0cCamRadiusStart) *
+                 ease) >>
+                13);
       cam = g_anCameraPosBlock;
 
-      cam[0] = *(int *)((char *)D_80077850 + 0xC) +
+      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
                ((LookupCosine(yaw) * radius) >> 12);
-      g_anCameraPos[1] = *(int *)((char *)D_80077850 + 0x10) +
+      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
                          ((LookupSine(yaw) * radius) >> 12);
       g_anCameraPos[2] =
-          D_80077828 + (((D_80077840 - D_80077828) * ease) >> 13);
+          g_nGamestate0cCamHeightStart +
+          (((g_nGamestate0cCamHeightGoal - g_nGamestate0cCamHeightStart) *
+            ease) >>
+           13);
 
-      SubtractVector(&delta.vx, (int *)((char *)D_80077850 + 0xC), cam);
+      SubtractVector(&delta.vx, (int *)((char *)g_pGamestate0cRecord + 0xC),
+                     cam);
       delta.vz += 0x200;
 
       if (g_nGamestate0cTimer < 0x40) {
@@ -261,25 +271,27 @@ void Gamestate0C_Update(void) {
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
       lvl = D_800777EC[4];
-      *(char *)((char *)D_80077850 + 0x46) = (char)D_8006EA4C[lvl * 4 + 3];
+      *(char *)((char *)g_pGamestate0cRecord + 0x46) =
+          (char)D_8006EA4C[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos, (int *)((char *)D_800777EC[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] =
-          *(unsigned char *)((char *)D_80077850 + 0x46) + 0x80;
+          *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) + 0x80;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       D_800777EC[19] =
-          ((*(unsigned char *)((char *)D_80077850 + 0x46) << 4) + 0x390) &
+          ((*(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) << 4) +
+           0x390) &
           0xFFF;
 
       cam = g_anCameraPosBlock;
-      cam[0] = *(int *)((char *)D_80077850 + 0xC) +
+      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
                ((LookupCosine(D_800777EC[19]) * D_800777EC[20]) >> 12);
-      g_anCameraPos[1] = *(int *)((char *)D_80077850 + 0x10) +
+      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
                          ((LookupSine(D_800777EC[19]) * D_800777EC[20]) >> 12);
-      g_anCameraPos[2] = *(int *)((char *)D_80077850 + 0x14) + 0x200;
+      g_anCameraPos[2] = *(int *)((char *)g_pGamestate0cRecord + 0x14) + 0x200;
 
       SubtractVector(&settle.vx, (int *)((char *)D_800777EC[25] + 0xC), cam);
       settle.vz += 0x200;
@@ -287,17 +299,18 @@ void Gamestate0C_Update(void) {
       g_nCameraEulerPitch = ArcTan2(VectorLength(&settle.vx, 0), -settle.vz, 1);
       g_nCameraEulerYaw = ArcTan2(settle.vx, settle.vy, 1);
 
-      /* Named to pin the D_80077850 load ahead of the g_anCameraPos reads
-         below, so the camera load falls into its shadow and the `lbu` needs no
-         nop. Left inline in the [13] store, the scheduler hoists g_anCameraPos
-         above the g_nCameraEulerYaw store instead and the nop costs one. */
-      face = *(unsigned char *)((char *)D_80077850 + 0x46);
+      /* Named to pin the g_pGamestate0cRecord load ahead of the g_anCameraPos
+         reads below, so the camera load falls into its shadow and the `lbu`
+         needs no nop. Left inline in the [13] store, the scheduler hoists
+         g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
+         costs one. */
+      face = *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46);
       D_800777EC[21] = g_anCameraPos[2];
       D_800777EC[15] = g_anCameraPos[2] - 0xFCE;
       D_800777EC[13] = ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
-    D_8007574C();
+    g_pfnGamestate0cSubstateUpdate();
   }
 
   AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);

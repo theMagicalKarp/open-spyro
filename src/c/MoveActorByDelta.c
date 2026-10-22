@@ -9,9 +9,9 @@
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void func_800529E4(int *actor, int mode);
+extern void RefreshActorDerivedState(int *actor, int mode);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 
 typedef struct {
   int x;
@@ -27,13 +27,13 @@ int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
   int *d;
   int t;
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     h = half;
     d = (int *)&delta;
     CopyVector(h, d);
     RShiftVector3(h, 1);
     AddVector(d, d, h);
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     LShiftVector3((int *)&delta, 1);
   }
   AddVector(newpos, actor + 3, (int *)&delta);
@@ -56,6 +56,6 @@ int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
     newpos[2] = t - radius;
   }
   CopyVector(actor + 3, newpos);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return 0;
 }

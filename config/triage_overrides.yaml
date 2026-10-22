@@ -183,7 +183,7 @@ SpawnActorRotBillboard:
   verdict: parked
   class: "F6 constant-sb li placement"
   date: 2026-07-08
-func_8003891C:
+ComputeLobVelocityZ:
   verdict: parked
   class: "F5 ret0 block layout"
   date: 2026-07-09
@@ -262,7 +262,7 @@ AddPrimToOT:
   date: 2026-10-16
 
 # --- DMA IRQ dispatcher (2026-07-24 session) ---
-func_8003A420:
+WalkActorAlongWaypoints:
   verdict: parked
   class: "F9 double knot (F4 ground v0-coalesce + F1 counter-split) + F-sched negu"
   date: 2026-07-24
@@ -283,7 +283,7 @@ RelocateActorMeshHeader:
   verdict: skip
   class: "re-confirmed 2026-07-28-1 from the 2026-07-24 screen (suspected non-gcc TU); do not re-open from the triage ranking"
   date: 2026-07-28
-func_8003C358:
+SpawnNameLetterActors:
   verdict: matched
   date: 2026-07-24
   note: >-
@@ -294,7 +294,7 @@ func_8003C358:
     original out-of-line else + `j`); explicit `if (len > 0) { p = name; do {} }`
     puts the string-cursor copy in the loop preheader; hoisted `skin` temp kills
     a trailing load-delay nop; 8 bytes of unused tail local to reach frame 0x80.
-func_80038638:
+SteerActorAroundPoint:
   verdict: park
   class: F1
   date: 2026-07-24
@@ -455,7 +455,7 @@ BeginStoryIntro:
   class: "stale park (B-i)"
   date: 2026-08-06
   note: "184 B. Links exact from the parked source."
-func_80054578:
+RefreshHudLevelGemCounter:
   verdict: matched
   class: "stale park (B7)"
   date: 2026-08-06
@@ -491,11 +491,11 @@ Level5_FlightResults_Draw:
     every one gives the right order at the wrong holes plus a nop (+1 insn,
     cannot link). A127 frame (16) is 6 x 8-byte `alter_reg` slots vs the
     original's 5, and the six owning statements are enumerated in the header
-    (five `bonus += D_8006E9xx[D_8007595C * 5]` plus one array compare); the
+    (five `bonus += D_8006E9xx[g_nActiveWorldIndex * 5]` plus one array compare); the
     earlier same-day caller-save explanation is DISPROVED
     (-fcaller-saves/-fno-caller-saves both give vars=104). R3'/R5/Rq (14)
     unchanged.
-func_80059474:
+SetSpawnAnchorFromActor:
   verdict: matched
   class: "A170 — inline arg spelling + cursor assigned after the call"
   date: 2026-08-07
@@ -601,7 +601,7 @@ DampenSpyroFreeFallAttitude:
     error shift is split (`<< 2` right after chain 0's spring update, `>> 4`
     after the D_80078CB4 load) so sched1 cannot hoist it to the block head; and
     the D_80078CB4 load is written ahead of the D_80078CB0 store.
-func_8003A16C:
+SteerActorAlongWaypoints:
   verdict: matched
   class: "F14 disjoint-reuse carrier + carrier-free yaw (A146/A151 family)"
   date: 2026-08-10
@@ -639,7 +639,7 @@ BeginGemCutscene:
     calls canonical, and the world id only wins that when it outlives the const
     — so it must NOT be reused as the call's arg0 (A171); (2) with the reuse
     gone the const (R=4, L=50, pri 1600) outranks the world id (R=3, L=20, pri
-    1500) and steals a0, rotating 9 insns. Writing `D_800761DC = 1;` AFTER the
+    1500) and steals a0, rotating 9 insns. Writing `g_nSfxOverrideFlags = 1;` AFTER the
     two 0x3FFF volume stores lengthens the const's range past the flip point;
     sched2 restores the store's position (A172). Reading the world id later
     also flips the priority (L=16) but empties the branch delay slot — the
@@ -693,7 +693,7 @@ func_80039E94_2026_08_10_1:
     give 396 vs 439 and kind is allocated first; kind only reaches 4 refs via
     flow's loop-depth weighting of its in-loop compare. Needs the arms
     reordered to close the 20-insn gap.
-func_80039E94:
+PivotActorAlongPath:
   verdict: matched
   class: "matched 2026-08-10-2 (do/while(0) on both turn call sites weights step/lim refs by loop_depth, lifting step over kind in global.c)"
   date: 2026-08-10
@@ -957,7 +957,7 @@ park_sweep_2026_08_11_2:
     free matches, and the ranking is unchanged from 2026-08-11-1 —
     DrawCinematicLetterbox 2, IsPointInRotatedBox 6, SteerActorYawTowardSpyro 6,
     ApplyPadInputToSpyroBodyYaw 7, func_8005FC6C 7, WaitForFrameDeadline 7
-    (now a wall, above), func_8003A420 9, EndSaveMenuToWorld 12,
+    (now a wall, above), WalkActorAlongWaypoints 9, EndSaveMenuToWorld 12,
     func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
     func_80061470's wip does not compile (parse errors), so the sweep reports
     it as 0 differing insns — that is a build failure, not a match.
@@ -974,7 +974,7 @@ WaitForFrameDeadline_2026_08_11_2_scope:
     above the branch", not "any frame store". Unmatched members of the
     fingerprint worth a look next session, cheapest first: `CdRead` (65 insns,
     no frame store before the save), `TurnSpyroTowardMoveTargetWithLean` (92,
-    none), `func_8003B854` (96, two), `func_8005FC6C` (38, two — already a
+    none), `CommitActorKillGems` (96, two), `func_8005FC6C` (38, two — already a
     known F4 park); plus three still in asm: `PopMemCardEventHandler` (27),
     `RegisterMemCardEvent` (32), `AdvanceSpyroSubstepState` (196, B8
     switchdata so skip). For the no-frame-store ones the B20 lever is simply to
@@ -1342,7 +1342,7 @@ func_80038FC8_2026_08_14:
   note: >-
     608 B. Re-tested the multi-set-local lever (A198) as a way to give the call-arg
     copy `move a0,s0` a lower LUID than the arm's `li v1,16`: a function-scope
-    `rec` assigned in BOTH anim arms and passed to func_80037E98 is BYTE-IDENTICAL.
+    `rec` assigned in BOTH anim arms and passed to StubActorHook is BYTE-IDENTICAL.
     Both defs have the same source, so the copy coalesces and the arg setup is
     re-created at the call. A198 pins the position of a MATERIALISATION (a
     constant), not of a copy of an already-live value.
@@ -1780,7 +1780,7 @@ Level15_AdvanceEmitList:
     MATCHED, 6416 B. Three decisions: the owner handle at +0x18 is a DOUBLE
     indirection; `step4` must be a named pre-loop local (inline `step * 4` lets
     loop.c hoist it AFTER `dir = dv`, and it then wins the callee-saved register
-    that belongs to dir); and arm 0x4's shared `func_80017BFC(POS, pt);
+    that belongs to dir); and arm 0x4's shared `VectorToSVectorShr2(POS, pt);
     rec[0x2]++;` tail must be written ONCE behind a goto label -- inline in each
     sub-state, sched1 pulls the arg setup into the pt[] load-stall slots before
     cross-jumping runs and the merge lands one insn short plus a nop.
@@ -1925,7 +1925,7 @@ overlay_size_band_exhausted:
   note: >-
     Swept every unmatched overlay function of 600..4000 bytes (2026-08-19-3):
     ALL of them are members of a known gated family — 3 emit dispatchers
-    (`jal func_80053570`, gated by arm 0x18 / F14b) and 6 spawn dispatchers
+    (`jal AllocEmitListRecord`, gated by arm 0x18 / F14b) and 6 spawn dispatchers
     (`jal func_800524C4`, gated by B19). There is no ungated overlay work left
     in that size band, so the remaining overlay bytes are the two hub
     megafunction families (8007B020 x10 = 80,960 B, 8007B68C x5 = 32,200 B),
@@ -1975,7 +1975,7 @@ emit_spawn_dispatcher_family:
   class: "generator vein, 2 skeletons left"
   date: 2026-08-21
   note: >-
-    36 overlay functions calling func_80053570; 33 matched (28 on 2026-08-20-1,
+    36 overlay functions calling AllocEmitListRecord; 33 matched (28 on 2026-08-20-1,
     then level_16/12/15/13/0 on 2026-08-21 for +25,612 B). Arms 0x4, 0x5, 0x8,
     0xE, 0x16, 0x1D, 0x1E, 0x1F and 0x41 are all decoded now and live in the
     matched sources. The two left are `level_27` (5,704 B, fully decoded,
@@ -1991,7 +1991,7 @@ func_level_13_8008AF54_and_14_80089454:
     Re-screened only. The four extra `li a3,3` are genuinely dead (each is
     immediately clobbered by a following jal) and sit at block heads / merge
     labels, so they are reload artefacts, not call arguments -- checked against
-    every matched call site of func_80017C24 / func_80017BFC / func_8001778C,
+    every matched call site of SVectorToVectorShl2 / VectorToSVectorShr2 / func_8001778C,
     none of which is 4-arg, and against level_16, whose copy of the same arm has
     the ordinary two-`li $v0` form. 14,048 B behind one mechanism; not attempted
     this session.
@@ -2150,7 +2150,7 @@ SteerActorYawTowardSpyro:
     its use only 3/8 (both still lose — floor_log2 is a STEP function, 3 refs
     is still 1); wrapping BOTH gives old 4/8 = 10000 and it takes v0 with c16
     single-set and in v1. What blocks it now is that the use-site barrier lets
-    jump.c cross-jump the two arms' identical func_80037E98 tails, collapsing
+    jump.c cross-jump the two arms' identical StubActorHook tails, collapsing
     both per-arm `move a0,s0` copies into the shared tail (7/152). Every
     use-site nesting depth is bit-identical — the dial saturates. Park stays on
     the 4/152 multi-set body.
@@ -2173,7 +2173,7 @@ Gamestate0C_Update:
     CONSTANT_ADDRESS_P, so an address that reaches it already constant can never
     become base+offset. Isolated on a 6-line test case, only offset 0 keeps the
     base; every nonzero offset folds, negative as well as positive. THE FIX,
-    four levers, 352 -> 338. (1) read D_80077850 directly at every use in both
+    four levers, 352 -> 338. (1) read g_pGamestate0cRecord directly at every use in both
     arms — the original reloads it into a caller-saved temp each time because
     every use is behind a jal, and a `rec` local emitted it twice and cost a
     callee-saved register; direct reads reproduce all 7. (2)/(3) two empty
@@ -2189,7 +2189,7 @@ Gamestate0C_Update:
     statement puts it back on the force_reg path. Spelling the access
     differently does not work — A[i + 3], (&A[i])[3] and *(A + i + 3) parse to
     one tree and give byte-identical output. `face` additionally pins the
-    D_80077850 load ahead of the g_anCameraPos reads so the latter fills its
+    g_pGamestate0cRecord load ahead of the g_anCameraPos reads so the latter fills its
     shadow and the lbu needs no nop. RETIRED BY MECHANISM, all previously
     measured as no-ops or regressions: block-scoped pointer local
     (const-propagates), sizing the array, source reordering, naming the
@@ -2206,7 +2206,7 @@ Gamestate0C_Update:
     is usually the whole residue), place a dial on whichever arm folds, then
     look for reads expand never force_regs.
 
-func_8003ABC0:
+SpawnActorDeathDrop:
   verdict: matched
   class: "jal-chain + one held-base alias; B-i rule 2 (offset-0 sdata cost) and A106c"
   date: 2026-08-23
@@ -2643,7 +2643,7 @@ func_8005FC6C:
     pointer copy `move v0,s0` BEFORE the la/and/sw chain; ours puts the mask in
     v1 and the pointer copy last. Straight-line block, no branch, so A229 does
     not apply; this is the B4-adjacent AddPrim mask shape in a store wrapper.
-func_8003B854:
+CommitActorKillGems:
   verdict: matched
   class: ""
   date: 2026-08-26
@@ -2669,7 +2669,7 @@ Level5_FlightResults_Draw:
     their bonus cell twice across a call under one base symbol, so cse
     value-numbered each pair into a pseudo that reload spilled to an 8-byte
     BLKmode slot; re-spelling ONE accumulate against a neighbouring column of
-    the same stride-5 row table (D_8006E920[k+1] == D_8006E924[k]) frees exactly
+    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == D_8006E924[k]) frees exactly
     one slot at zero insn cost and gives the original's vars= 96, regs= 7/0.
     R1 (21 insns, the `la envBase` pair) re-root-caused off `cc1 -dR`: it is a
     sched2 PRIORITY decision, not the sched1 straggler LUID tie the old note
@@ -2899,12 +2899,12 @@ barrier_sweep_negative_2026_08_28:
     with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
     func_80059594 (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
     HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
-    func_8003A420 (9/192), Level27_AdvanceEmitList's 0x1D arm and
+    WalkActorAlongWaypoints (9/192), Level27_AdvanceEmitList's 0x1D arm and
     Level5_FlightResults_Draw (735 placements): no variant beat the baseline on any
     of them once confirmed against the LINKED diff. Consistent with the
     cookbook's read that these are register-allocation rotations, not
     block-boundary problems — the sweep is a cheap way to CONFIRM that rather
-    than assume it. One trap found: func_8003A420 scored 9 -> 8 on the masked
+    than assume it. One trap found: WalkActorAlongWaypoints scored 9 -> 8 on the masked
     shape diff from a barrier around `ret = 0;` but 9 -> 14 on the LINKED diff
     (difflib collapses a displacement the positional diff charges in full), so
     every sweep hit has to be re-scored linked before it is believed.
@@ -2993,10 +2993,10 @@ func_level_14_80089454_2026_08_29:
     never emit a dead `li`) refutes its own "DEAD" reading. Compile-only shape
     diff: MISMATCH 48 over 31 regions, offset -4; the two length-deficit sites
     are orig[143] and orig[466] and BOTH read
-    `li a3,3 ; addiu a0,sp,0x10 ; jal func_80017C24 ; move a1,s4(delay)` —
+    `li a3,3 ; addiu a0,sp,0x10 ; jal SVectorToVectorShl2 ; move a1,s4(delay)` —
     a caller-saved register given a constant as the first insn of a switch-arm
     block with that block's own call setup right after, which is argument shape
-    and nothing else. func_80017C24 is a hand-written 2-arg leaf that ignores
+    and nothing else. SVectorToVectorShl2 is a hand-written 2-arg leaf that ignores
     a2/a3, so the extra argument is invisible at run time (ordinary
     prototype-mismatch C); this function itself takes four parameters
     (`sw $a3,0xC0($sp)` in the prologue). Blocker: a 4-arg call also emits an
@@ -3012,7 +3012,7 @@ func_level_14_80089454_2026_08_29_1:
   note: >-
     144 -> 36 mismatched instructions (immediates AND registers live; the old
     "57" was an immediate-masked number that hid a ten-site step*2/step*4 frame
-    slot swap). The lever is A235: nine of the 28 inline `func_80053608(rec)`
+    slot swap). The lever is A235: nine of the 28 inline `FreeEmitListRecord(rec)`
     call sites rewritten as `goto expire;` against one shared block. jump.c
     already cross-jumps all 28 down to a single `jal`, so the emitted code is
     unchanged -- but each inline site is 2 more pre-reload refs of `rec`, and
@@ -3053,7 +3053,7 @@ func_level_13_and_14_li_a3_3_class_2026_08_29_1:
     emit FOUR; the extra four sit at basic-block heads (and one mid-block
     between two calls) on the path to a real use, each immediately killed by the
     following `jal`. Ruled out this session: (1) a 4-argument prototype -- only
-    2 of 6 `jal func_80017C24` and 2 of 5 `jal func_80017BFC` sites carry it;
+    2 of 6 `jal SVectorToVectorShl2` and 2 of 5 `jal VectorToSVectorShr2` sites carry it;
     (2) a per-site 4-argument call -- one site is a jump-table arm head with no
     possible `$a2` producer anywhere in its CFG predecessors, and the measured
     4-arg spelling costs two insns (`move a2,X` + `li a3,3`) where the original
@@ -3072,7 +3072,7 @@ func_level_13_and_14_li_a3_3_class_2026_08_29_2:
     Second negative result on the same class, narrowing it hard. (1) The
     argument reading is now closed on the CALLEE side too, not just the
     call-site side: all four extras sit immediately before a `jal
-    func_80017C24` or `jal func_80017BFC`, and both callees are hand-written
+    SVectorToVectorShl2` or `jal VectorToSVectorShr2`, and both callees are hand-written
     2-argument leaves whose whole body reads only `$a0`/`$a1` (3 loads off a1,
     3 shifts, 3 stores to a0) -- so the "invisible extra argument to a
     hand-written leaf" escape B25 hung its hope on does not exist here either.
@@ -3135,12 +3135,12 @@ A236_screening_2026_08_29_2:
     why each fails, so the next session does not re-screen them.
     `RelocateMobActorTable` (B21, a0<->a2): ZERO `jal`s -- a leaf has nothing to hang
     the argument copy on. `HandleHardwareInterrupt` (10/122, the g_pIStatReg POINTER
-    wants $a0): the recompute block contains no call. `func_8003BFC0` (span wants
+    wants $a0): the recompute block contains no call. `TweenActorAlongPath` (span wants
     $a2): the a2 assignment is a live-range consequence -- span is live across all
     three divides so it must avoid v0/v1/a0, and a2 is simply the lowest free reg,
     not a suggestion. `SteerActorYawTowardSpyro` (the 0x10 constant must vacate $v0 for `old`):
     A236 would move the constant to $a3 via the spare argument slot of
-    func_80037E98, but the original has it in $v1, so it trades one wrong register
+    StubActorHook, but the original has it in $v1, so it trades one wrong register
     for another. The general precondition is therefore: a call in the SAME basic
     block, a callee that provably ignores the slot, and the wanted register being one
     of $a0..$a3.
@@ -3423,7 +3423,7 @@ EnqueueGpuOp:
     costs a held base, B16, 61/184); this session's lever removes a pin, which
     is the wrong direction, and the three reads share one global so they would
     be cse-merged anyway.
-func_8003A420:
+WalkActorAlongWaypoints:
   verdict: parked
   class: "F9 knot — the ground-probe call result has a hard v0 preference nothing conflicts with"
   date: 2026-08-30-1
@@ -3543,7 +3543,7 @@ Level0_BalloonistCutscene_Update:
   note: >-
     8,096 B, head of the ×10 balloonist UPDATE family (80,960 B). Took it from
     230 mismatches / 114 regions / offset -12 to 161 / 85 / +6 with four
-    one-line levers: per-site scalar aliases for D_800777F4 / D_80077838 /
+    one-line levers: per-site scalar aliases for D_800777F4 / g_nGamestate0cCamYawGoal /
     D_800777EC / D_800777F0 (the §B16 register-form lever run in reverse — a
     plain `extern int X;` DECL is always `lui %hi / lw %lo`), a real symbol for
     D_80076E1E instead of a cast-deref macro, hoisting the D_800758D0 scan
@@ -3561,7 +3561,7 @@ Level13_AdvanceEmitList:
     the park. New facts: the shape `addiu $a3,$zero,3` immediately before a
     `jal` to a 2-argument leaf exists NOWHERE else in the game — a whole-tree
     grep finds it only in this function and Level14_AdvanceEmitList; both callees
-    (func_80017C24 / func_80017BFC, the SVECTOR<->VECTOR <<2 / >>2 pair) are
+    (SVectorToVectorShl2 / VectorToSVectorShr2, the SVECTOR<->VECTOR <<2 / >>2 pair) are
     ten-instruction hand-written leaves that read only $a0/$a1; and all four
     dead sites sit at a BLOCK HEAD (two are jump-table arm heads, .L8008B174 and
     .L8008B694; two are join labels). Since $a3 is call-clobbered, gcc cannot
@@ -3622,7 +3622,7 @@ Level27_AdvanceEmitList:
     `*(int *)actor` then `node[8]` scores 14, and with `idx` multi-set as well
     17 - this pair is not A238's shape, because one temp is the consumer of the
     other rather than a sibling load. A236 "extra argument to an
-    argument-ignoring callee": the following `func_80017C24(hold, POS)` is a
+    argument-ignoring callee": the following `SVectorToVectorShl2(hold, POS)` is a
     verified a0/a1-only hand-written leaf and its third argument register IS the
     $a2 that `idx` needs, but the copy does not coalesce - the arg pseudo becomes
     a real allocno and every $t0 rotates to $t1, 4 -> 71 over 50 regions. The
@@ -3752,12 +3752,12 @@ Level13_AdvanceEmitList:
   note: >-
     Re-screened 2026-09-07 (not edited). Two things confirmed by reading the
     original rather than the park: (a) both callees really are 2-argument
-    hand-written leaves - func_80017BFC is `lw/lw/lw; sra 2 x3; sh/sh/sh` and
-    func_80017C24 the `lhu x3; sll 2 x3; sw x3` mirror, neither touches $a2/$a3,
+    hand-written leaves - VectorToSVectorShr2 is `lw/lw/lw; sra 2 x3; sh/sh/sh` and
+    SVectorToVectorShl2 the `lhu x3; sll 2 x3; sw x3` mirror, neither touches $a2/$a3,
     so the "invisible 4th argument" reading stays refuted; (b) the eight `li
     a3,3` sites fall into a POSITIONAL pattern the park does not record - per
     jump-table arm, the constant is materialised at the arm HEAD (before a `jal
-    func_80017C24`), again mid-arm (before a `jal func_80017BFC`), and again at
+    SVectorToVectorShl2`), again mid-arm (before a `jal VectorToSVectorShr2`), and again at
     the real use, i.e. once per basic block on the path from the arm to the use,
     with the two live uses being `bne v0,a3` (a threshold compare against
     rec[0]) and `sb a3,0(s2)` (rec[0] = 3). Two arms x (head + mid + use) = the
@@ -3812,7 +3812,7 @@ Gamestate0C_Draw:
     277/283 -> 279/283, length-exact and linking. Moved the A200 barrier BELOW
     both OT bin-head stores and flipped the source order to the original's
     (tail +4 first, head +0 second): that buys the original's ORDER and keeps
-    the load-delay nop after the following `lw D_800777FC`, at the price of the
+    the load-delay nop after the following `lw g_nGamestate0cCardVariant`, at the price of the
     held base (ours `lui $at; sw %lo` twice, orig `la v1,sym; sw 4(v1); sw
     0(v1)` -- both four insns, so a pure form residue). The trade is now
     exhaustive: barrier between = held base + wrong order (6); barrier below =
@@ -3975,12 +3975,12 @@ Level0_BalloonistCutscene_Update:
     plus a block-local k in the outer else and an empty do/while at the else
     head leaves t at `t << 4` and k at `k - n`. KA: `yaw += 0x2D4;
     D_80078A60 = yaw;` makes yaw two-set, which removes sched1's birthing boost
-    on the re-read, shortens the D_80077850 pointer's life by one insn and wins
+    on the re-read, shortens the g_pGamestate0cRecord pointer's life by one insn and wins
     it a1 over z. Found via a PERM_RANDOMIZE-restricted permuter hint
     (`t = ...; yaw = t;`), then cleaned to the in-place form. Siblings
     level_6/12/18/24/30 and 1/3/7/8 sed-clone with no source change beyond the
     name; each overlay's undefined_syms needs the head's D_800777EC_s /
-    D_800777F0_s / D_800777F4_s / D_80077838_s aliases and D_80076E1E.
+    D_800777F0_s / D_800777F4_s / g_nGamestate0cCamYawGoal_s aliases and D_80076E1E.
 Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged)"
@@ -4073,12 +4073,12 @@ harvest_inventory_staleness_2026_09_15:
     Seven of the seventeen parks named in cookbook C's 2026-08-24/08-25
     rankings no longer have a `.c.wip` at all — `TurnSpyroTowardMoveTargetWithLean`
     (listed there as "2/92, the closest thing on the board"), `func_8005FBB4`,
-    `func_80059474`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
+    `SetSpawnAnchorFromActor`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
     func_80059594 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
     func_8005FC6C 7/38, Titlescreen_Update 7/2147,
-    func_8003A420 9/192, Level27_AdvanceEmitList 9/1697,
+    WalkActorAlongWaypoints 9/192, Level27_AdvanceEmitList 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
     is still Titlescreen_Update (8,588 B at 7 insns), then
     Level27_AdvanceEmitList (6,788 B at 9).
@@ -4108,7 +4108,7 @@ Gamestate0C_Draw_2026_09_15:
     propagation or reg_equiv substitution removes first.
     One genuinely useful side result: `depth 0 / no trailing barrier` scores
     270/283 (one insn short — the head store fills the load-delay slot after
-    `lw D_800777FC`) while `depth 1 / no trailing barrier` scores 4, i.e. a
+    `lw g_nGamestate0cCardVariant`) while `depth 1 / no trailing barrier` scores 4, i.e. a
     dummy `do { } while (0);` wrapped AROUND the two stores preserves that
     `nop` exactly as the trailing empty barrier does. The two are
     interchangeable for the nop; neither buys the base.
@@ -4171,7 +4171,7 @@ func_level_30_8007D938_2026_09_18:
     original copies them with move_by_pieces (a held base EACH side, then
     lw;lw;sw;sw x3); six element assignments instead emit six absolute
     lui;lw / lui;sw pairs into t1..t6. (4) At the two case-398 camera sites
-    bodyRotZ is the absolute `D_80078A66` form for BOTH the store and the
+    bodyRotZ is the absolute `g_bSpyroPersistentEulerZ` form for BOTH the store and the
     read-back, which is also why the read-back is a real `lbu` and not an
     `andi` of the stored register; through `spy->` it goes via the held s7 base
     and cse folds the reload. Per-site, every other bodyRotZ site stays on
@@ -4356,8 +4356,8 @@ func_level_13_8008AF54_2026_09_20:
     0x8008B87C `sb a3,0(s2)` fed from 0x8008B878. So the four real references
     are two `bne`s and two byte stores of the constant.
     DEAD (the four we do not emit): 0x8008B174, 0x8008B4F4, 0x8008B694,
-    0x8008B79C. **All four sit immediately before a `jal func_80017C24` or
-    `jal func_80017BFC`** -- the two hand-written 2-argument SVECTOR<->VECTOR
+    0x8008B79C. **All four sit immediately before a `jal SVectorToVectorShl2` or
+    `jal VectorToSVectorShr2`** -- the two hand-written 2-argument SVECTOR<->VECTOR
     converters -- with that call's `a0` and `a1` setup around them and `$a2`
     never written. Two of the four (0x8008B4F4, 0x8008B79C) additionally sit
     directly AFTER a `jal func_80017758` whose own delay slot sets `$a2`, i.e.
@@ -4562,12 +4562,12 @@ func_level_30_8007D938_2026_09_26:
   verdict: parked
   class: "length-exact; residue = allocation ties (case 310 st/i s0/s1, case 398 svM/SPY base) + operand-register ties + 2 cross-jump misses"
   date: 2026-09-26
-  note: "Shape diff 389 -> 107 imm-kept (8 are harness jtbl artifacts), -7 -> 0 insns. Wins were decode errors (6), statement order, do/while(0) sched/cse barriers, shared locals (push=i, idx=bearing, loop-top dt in a1), base-0x164 t1 args, volatile D_80078A66 read-back. .c.wip OPEN list is the resume point."
+  note: "Shape diff 389 -> 107 imm-kept (8 are harness jtbl artifacts), -7 -> 0 insns. Wins were decode errors (6), statement order, do/while(0) sched/cse barriers, shared locals (push=i, idx=bearing, loop-top dt in a1), base-0x164 t1 args, volatile g_bSpyroPersistentEulerZ read-back. .c.wip OPEN list is the resume point."
 func_level_30_8007D938_2026_09_27:
   verdict: matched
   class: "actor-update megafunction; closed on register pins, a single post-if tail store, and case-398 memory-dependence pins"
   date: 2026-09-27
-  note: "0x8007D938, 23,600 B. MATCH -> C. From 107 imm-kept: asm(\"$16\") on case 310's i (fixed two cross-jumps too), asm(\"$7\") push, asm(\"$2\") SPY.posZ at both dz sites; `st->phase += dt`; `bearing = arm << 1`; y + x of split 0xB5 products; int-temp lean adds with (unsigned char) fields; `int last` for case 398's more; one `actor->flags = 0` after the 0xA0000 if/else (reorg re-duplicates it); goto into the AF4 branch's D_80078C68 clear; case 398 head via do/while(0) after CA0 + volatile A7F/C98 + `*(PortalDesc **)st` re-read + held `cf`; func_80057380 is void; the wander_body goto was a continue."
+  note: "0x8007D938, 23,600 B. MATCH -> C. From 107 imm-kept: asm(\"$16\") on case 310's i (fixed two cross-jumps too), asm(\"$7\") push, asm(\"$2\") SPY.posZ at both dz sites; `st->phase += dt`; `bearing = arm << 1`; y + x of split 0xB5 products; int-temp lean adds with (unsigned char) fields; `int last` for case 398's more; one `actor->flags = 0` after the 0xA0000 if/else (reorg re-duplicates it); goto into the AF4 branch's g_nSpyroRequestVelocityZ clear; case 398 head via do/while(0) after CA0 + volatile A7F/C98 + `*(PortalDesc **)st` re-read + held `cf`; GetGroundTriggerRegionType is void; the wander_body goto was a continue."
 Level4_UpdateActors:
   verdict: parked
   class: "actor-update megafunction clone; length -2 (two missing `andi 0xff` on unk48 != K) + allocation ties (case 9 const v1/v0, case 335 s0/s2/s4, case 250 v1/a1, case 331)"
@@ -4647,7 +4647,7 @@ Level9_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_2/level_16/level_30 arms"
   date: 2026-09-29
-  note: "33,088 B. 23 arms copied, 8 decoded (198/205/209/211/213/231/332/363). Jump-table dispatch (type - 9). Level 4's oneq/one/spy/sixteen carriers; level 4's case 34; case 110's first state written like 332's so jump.c cross-jumps it; SPY.bodyRotZ (not the volatile D_80078A66) for the 198/231 headings."
+  note: "33,088 B. 23 arms copied, 8 decoded (198/205/209/211/213/231/332/363). Jump-table dispatch (type - 9). Level 4's oneq/one/spy/sixteen carriers; level 4's case 34; case 110's first state written like 332's so jump.c cross-jumps it; SPY.bodyRotZ (not the volatile g_bSpyroPersistentEulerZ) for the 198/231 headings."
 Level26_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_4/level_2/level_9/level_16/level_0/level_30 arms"
@@ -4687,7 +4687,7 @@ Level10_UpdateActors:
   verdict: matched
   class: "actor-update megafunction; closed the 2026-09-30 sched ties with F14d single-set result locals"
   date: 2026-10-02
-  note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two func_800385BC exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
+  note: "38,712 B. The two 371 residues were not LUID ties: `a` had three sets, so its call-result copy was not birthing and sched1 never boosted it past the next call's arg setup. Giving 371/12 and 371/41 their own locals (ha, ca) closed both. Masked diffs hide j targets: the two BurstActorWithSound exits (0x18, 0x30) also needed func_80052568(actor) before continue (cross-jumped into the shared remove tail)."
 Level11_FlightResults_Draw:
   verdict: wall
   class: "sibling of Level5_FlightResults_Draw (sched2 memory-unit hazard)"
@@ -4712,7 +4712,7 @@ Level3_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_1/8/9/10/16/26/31 arms"
   date: 2026-09-30
-  note: "38,992 B. Decoded 23/395/413/502/234. 9 had to be hoisted+spilled: group life 30 was short, so 7 empty nested scopes after case 23's state store add NOTE luids (A294). Mode 2 repeats the camera-lock block instead of goto (cross-jump keeps the camLock test separate). SPY.damageFlags in-struct store after the index calc. Case 234 tests D_80075794 and sits after case 195; case 502's despawn goes at the bottom as the shared tail."
+  note: "38,992 B. Decoded 23/395/413/502/234. 9 had to be hoisted+spilled: group life 30 was short, so 7 empty nested scopes after case 23's state store add NOTE luids (A294). Mode 2 repeats the camera-lock block instead of goto (cross-jump keeps the camLock test separate). SPY.damageFlags in-struct store after the index calc. Case 234 tests g_nActorAnimDone and sits after case 195; case 502's despawn goes at the bottom as the shared tail."
 Level28_UpdateActors:
   verdict: attempted
   class: "actor-update megafunction; compare-tree tool KeyError"
@@ -5547,7 +5547,7 @@ GemPickup_Update_2026_10_13_1:
   verdict: parked
   class: "li a1,4: sched2 priority 2 (anti-dep on CopyWords) vs the stores' 16"
   date: 2026-10-13
-  note: "-dR: the original places li a1,4 last (jal slot via as reorder), so it must have priority >= the D_800761DC/E8/EA stores (16, chained by REG_DEP_OUTPUT to the sample-bank pointer stores). An asm-opaque `four` (5 positions) is inert; making the pointer stores struct fields breaks the store/reload serialisation (-2 insns). Other two knots unchanged (13/2100)."
+  note: "-dR: the original places li a1,4 last (jal slot via as reorder), so it must have priority >= the g_nSfxOverrideFlags/E8/EA stores (16, chained by REG_DEP_OUTPUT to the sample-bank pointer stores). An asm-opaque `four` (5 positions) is inert; making the pointer stores struct fields breaks the store/reload serialisation (-2 insns). Other two knots unchanged (13/2100)."
 GemPickup_Update_2026_10_13_2:
   verdict: matched
   class: "sched memory disambiguation (in-struct vs fixed scalar) + shared-carrier allocation"
@@ -5558,7 +5558,7 @@ func_credits_8007AA50_2026_10_13_1:
   class: "cluster A: sample-bank entry store/load order (A400 applies, not yet tuned)"
   date: 2026-10-13
   note: "Struct view on the D_800761D0 entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
-func_80053570:
+AllocEmitListRecord:
   verdict: wall
   class: "B6 hand-written asm (addi markers, jr through a saved ra copy)"
   date: 2026-10-13
@@ -5716,11 +5716,11 @@ RShiftVector3:
   verdict: matched
   class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
   date: 2026-10-15
-func_80017BFC:
+VectorToSVectorShr2:
   verdict: matched
   class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
   date: 2026-10-15
-func_80017C24:
+SVectorToVectorShl2:
   verdict: matched
   class: "ex-handwritten $at-as-data: $1/$2/$3 register locals"
   date: 2026-10-15
@@ -5732,7 +5732,7 @@ SubtractVector:
   verdict: wall
   class: "B6 signed sub (gcc 2.7.2 only emits subu)"
   date: 2026-10-15
-func_80017C84:
+AddSVector:
   verdict: wall
   class: "B6 signed add (gcc 2.7.2 only emits addu)"
   date: 2026-10-15

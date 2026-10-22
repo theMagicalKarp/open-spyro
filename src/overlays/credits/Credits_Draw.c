@@ -44,7 +44,7 @@ extern char *g_pSpriteRecordWriteCursor;
 extern char *D_8007589C;
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
-extern int D_800785D0;
+extern int g_nFarPlaneDrawDistance;
 extern int D_80076DE4[];
 extern int g_nDeathRespawnPending;
 extern int g_nVsyncFramePaceAnchor;
@@ -122,7 +122,7 @@ void Credits_Draw(void) {
     FillWord(ot, 0, 0x900);
     RasterizeSpritePrimQueue();
     FillBlock16(ot, 0, 0x1C00);
-    D_800785D0 = 0x28000;
+    g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
     EmitStaticActorMeshList(-1, D_80076DE4, (char *)D_80076DE4 - 0x14);
   }

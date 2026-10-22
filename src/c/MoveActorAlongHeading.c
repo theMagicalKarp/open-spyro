@@ -18,10 +18,10 @@ extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
-extern void func_800529E4(int *actor, int mode);
+extern void RefreshActorDerivedState(int *actor, int mode);
 extern int abs(int);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
@@ -36,9 +36,9 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   int snapz;
   int d;
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
   newpos[0] =
@@ -117,6 +117,6 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   if (flags & 0x54) {
     EncodeCachedVecToActorDirCode(actor);
   }
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return 0;
 }

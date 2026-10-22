@@ -197,7 +197,7 @@ extern struct {
 } g_nVsyncFramePaceAnchor; /* vsync frame pacing pair */
 
 extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
-extern int D_800785D0;       /* far-plane culling distance */
+extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
 extern char D_80076DE4[];    /* camera view matrix (proj matrix at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
@@ -314,7 +314,7 @@ extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
 extern void BuildSaveGameBuffer(Struct_0x600 *);
 extern int func_80059594(Struct_0x600 *);
-extern void func_80032A20(void);
+extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int func_80017FD4(void);
 extern void InitNewGameState(void);

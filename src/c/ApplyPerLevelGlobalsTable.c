@@ -1,12 +1,12 @@
 #include "globals.h"
 
 /* Per-level hook slots not yet named in globals.h. */
-extern void *D_8007574C;
+extern void *g_pfnGamestate0cSubstateUpdate;
 extern void *D_800757A0;
 extern void *D_800757A8;
 extern void *D_800758A8;
-extern void *D_800758C4;
-extern void *D_800758D8;
+extern void *g_pfnFlightTimeFormatter;
+extern void *g_pfnGamestate0cSubstateDraw;
 
 /* Overlay-resident entry points / buffers (addresses inside the level
    overlay loaded at 0x8007aa38). */
@@ -311,8 +311,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80080A0C;
     D_800757A0 = D_8007ADB8;
     D_800758A8 = D_8007AEF4;
-    D_8007574C = D_8007AF38;
-    D_800758D8 = D_8007CED8;
+    g_pfnGamestate0cSubstateUpdate = D_8007AF38;
+    g_pfnGamestate0cSubstateDraw = D_8007CED8;
     break;
   case 1:
     g_pDrawBufA = D_8007BFF0;
@@ -364,8 +364,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80086134;
     D_800757A0 = D_8007AEA0;
     D_800758A8 = D_8007AFDC;
-    D_8007574C = D_8007B020;
-    D_800758D8 = D_8007CFC0;
+    g_pfnGamestate0cSubstateUpdate = D_8007B020;
+    g_pfnGamestate0cSubstateDraw = D_8007CFC0;
     break;
   case 11:
     g_pDrawBufA = D_8008A3B8;
@@ -375,8 +375,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80088098;
     D_800757A0 = D_8007AF50;
     D_800758A8 = D_8007B08C_lv11;
-    D_8007574C = D_8007B0D0;
-    D_800758D8 = D_8007D070;
+    g_pfnGamestate0cSubstateUpdate = D_8007B0D0;
+    g_pfnGamestate0cSubstateDraw = D_8007D070;
     break;
   case 12:
     g_pDrawBufA = D_80085594;
@@ -393,8 +393,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80087E20;
     D_800757A0 = D_8007AF2C;
     D_800758A8 = D_8007B068;
-    D_8007574C = D_8007B0AC_lv13;
-    D_800758D8 = D_8007D04C;
+    g_pfnGamestate0cSubstateUpdate = D_8007B0AC_lv13;
+    g_pfnGamestate0cSubstateDraw = D_8007D04C;
     break;
   case 14:
     g_pDrawBufA = D_80084A10;
@@ -413,7 +413,7 @@ void ApplyPerLevelGlobalsTable(void) {
     D_800757A8 = D_8007AEDC;
     g_pfnGamestate7Handler = D_8007B1FC;
     g_pfnGamestate7DrawHook = D_8007B68C;
-    D_800758C4 = D_8007B4B0;
+    g_pfnFlightTimeFormatter = D_8007B4B0;
     break;
   case 20:
     g_pDrawBufA = D_8008CFA4;
@@ -423,8 +423,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_8008AE28;
     D_800757A0 = D_8007B878;
     D_800758A8 = D_8007B9B4;
-    D_8007574C = D_8007B9F8;
-    D_800758D8 = D_8007D998;
+    g_pfnGamestate0cSubstateUpdate = D_8007B9F8;
+    g_pfnGamestate0cSubstateDraw = D_8007D998;
     break;
   case 21:
     g_pDrawBufA = D_8008D600;
@@ -434,8 +434,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_8008B1C0;
     D_800757A0 = D_8007B718;
     D_800758A8 = D_8007B854;
-    D_8007574C = D_8007B898;
-    D_800758D8 = D_8007D838;
+    g_pfnGamestate0cSubstateUpdate = D_8007B898;
+    g_pfnGamestate0cSubstateDraw = D_8007D838;
     break;
   case 22:
     g_pDrawBufA = D_8008BAF8;
@@ -445,8 +445,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80089714;
     D_800757A0 = D_8007B718_lv22;
     D_800758A8 = D_8007B854_lv22;
-    D_8007574C = D_8007B898_lv22;
-    D_800758D8 = D_8007D838_lv22;
+    g_pfnGamestate0cSubstateUpdate = D_8007B898_lv22;
+    g_pfnGamestate0cSubstateDraw = D_8007D838_lv22;
     break;
   case 23:
     g_pDrawBufA = D_80086260;
@@ -472,7 +472,7 @@ void ApplyPerLevelGlobalsTable(void) {
     D_800757A8 = D_8007AEDC_lv25;
     g_pfnGamestate7Handler = D_8007B1FC_lv25;
     g_pfnGamestate7DrawHook = D_8007B68C_lv25;
-    D_800758C4 = D_8007B4B0_lv25;
+    g_pfnFlightTimeFormatter = D_8007B4B0_lv25;
     break;
   case 30:
     g_pDrawBufA = D_8008E608;
@@ -482,8 +482,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_8008BE98;
     D_800757A0 = D_8007B870;
     D_800758A8 = D_8007B9AC;
-    D_8007574C = D_8007B9F0_lv30;
-    D_800758D8 = D_8007D990;
+    g_pfnGamestate0cSubstateUpdate = D_8007B9F0_lv30;
+    g_pfnGamestate0cSubstateDraw = D_8007D990;
     break;
   case 31:
     g_pDrawBufA = D_8008DEC0;
@@ -523,7 +523,7 @@ void ApplyPerLevelGlobalsTable(void) {
     D_800757A8 = D_8007AEDC_lv35;
     g_pfnGamestate7Handler = D_8007B1FC_lv35;
     g_pfnGamestate7DrawHook = D_8007B68C_lv35;
-    D_800758C4 = D_8007B4B0_lv35;
+    g_pfnFlightTimeFormatter = D_8007B4B0_lv35;
     break;
   case 40:
     g_pDrawBufA = D_8008AB70;
@@ -533,8 +533,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_800888F8;
     D_800757A0 = D_8007B664;
     D_800758A8 = D_8007B7A0;
-    D_8007574C = D_8007B7E4;
-    D_800758D8 = D_8007D784;
+    g_pfnGamestate0cSubstateUpdate = D_8007B7E4;
+    g_pfnGamestate0cSubstateDraw = D_8007D784;
     break;
   case 41:
     g_pDrawBufA = D_80087944;
@@ -574,7 +574,7 @@ void ApplyPerLevelGlobalsTable(void) {
     D_800757A8 = D_8007AEDC_lv45;
     g_pfnGamestate7Handler = D_8007B1FC_lv45;
     g_pfnGamestate7DrawHook = D_8007B68C_lv45;
-    D_800758C4 = D_8007B4B0_lv45;
+    g_pfnFlightTimeFormatter = D_8007B4B0_lv45;
     break;
   case 50:
     g_pDrawBufA = D_8008BB38;
@@ -584,8 +584,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_800897FC;
     D_800757A0 = D_8007B898_lv50;
     D_800758A8 = D_8007B9D4;
-    D_8007574C = D_8007BA18;
-    D_800758D8 = D_8007D9B8;
+    g_pfnGamestate0cSubstateUpdate = D_8007BA18;
+    g_pfnGamestate0cSubstateDraw = D_8007D9B8;
     break;
   case 51:
     g_pDrawBufA = D_800880D4;
@@ -625,7 +625,7 @@ void ApplyPerLevelGlobalsTable(void) {
     D_800757A8 = D_8007AEDC_lv55;
     g_pfnGamestate7Handler = D_8007B1FC_lv55;
     g_pfnGamestate7DrawHook = D_8007B68C_lv55;
-    D_800758C4 = D_8007B4B0_lv55;
+    g_pfnFlightTimeFormatter = D_8007B4B0_lv55;
     break;
   case 60:
     g_pDrawBufA = D_80085CE0;
@@ -635,8 +635,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnGamestate0LateHook = D_80083ED8;
     D_800757A0 = D_8007AE10;
     D_800758A8 = D_8007AF4C;
-    D_8007574C = D_8007AF90;
-    D_800758D8 = D_8007CF30;
+    g_pfnGamestate0cSubstateUpdate = D_8007AF90;
+    g_pfnGamestate0cSubstateDraw = D_8007CF30;
     break;
   case 61:
     g_pDrawBufA = D_80088668;

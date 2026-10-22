@@ -25,10 +25,10 @@ extern int DispatchActorContactAtSphere(int *p, int r, int c, int d, int actor,
                                         int f);
 extern int FindGroundHeightBelow(int *p, int z);
 extern void EncodeCachedVecToActorDirCode(int actor);
-extern void func_800529E4(char *actor, int mode);
+extern void RefreshActorDerivedState(char *actor, int mode);
 
-int func_8003A420(char *actor, unsigned char *wp, int arg2, int cap, int arg4,
-                  int arg5, int arg6, int *arg7) {
+int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arg2, int cap,
+                            int arg4, int arg5, int arg6, int *arg7) {
   unsigned char eul[3];
   int vec[3];
   int mtx[8];
@@ -96,7 +96,7 @@ int func_8003A420(char *actor, unsigned char *wp, int arg2, int cap, int arg4,
   }
   CopyVector((int *)(actor + 0xC), vec);
   EncodeCachedVecToActorDirCode((int)actor);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   ret = 0;
   SubtractVector(vec, (int *)(wp + ((wp[1] << 4) + 8)), (int *)(actor + 0xC));
   if ((int)VectorLength(vec, 1) < arg2) {

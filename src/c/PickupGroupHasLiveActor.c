@@ -4,7 +4,7 @@
    low 15 bits index the 0x58-byte actor pool, bit 15 marks the last entry.
    Returns 1 as soon as one of the group's actors has type byte (+0x48) < 0x80,
    else 0 (also when the group index is out of range). */
-int func_8003B0DC(int a0) {
+int PickupGroupHasLiveActor(int a0) {
   unsigned short *ptr;
   unsigned short id;
   int idx;

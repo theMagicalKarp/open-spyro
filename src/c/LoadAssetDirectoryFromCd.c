@@ -2,7 +2,7 @@
 
 extern int CdReadSyncSectors();
 extern void CopyWords();
-extern int *D_800113A0;                   /* shared CD sector buffer pointer */
+extern int *g_pSharedLoadBuffer;          /* shared CD sector buffer pointer */
 extern int D_8007A6D0[];                  /* boot asset directory table */
 extern volatile int g_anCdBaseLbaBlock[]; /* alias of g_nCdBaseLba */
 
@@ -15,6 +15,6 @@ void LoadAssetDirectoryFromCd(void) {
   volatile int *lba = g_anCdBaseLbaBlock;
 
   *lba = 0x25;
-  CdReadSyncSectors(*lba, D_800113A0, 0x800, 0, 600);
-  CopyWords(D_8007A6D0, D_800113A0, 0x330);
+  CdReadSyncSectors(*lba, g_pSharedLoadBuffer, 0x800, 0, 600);
+  CopyWords(D_8007A6D0, g_pSharedLoadBuffer, 0x330);
 }

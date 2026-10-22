@@ -252,9 +252,9 @@ extern int g_nGenericCountdown;
 extern int D_80075958;
 extern int D_80075968;
 extern char *volatile g_pLevelSampleBankEntries;
-extern int D_800761DC;
-extern short D_800761E8;
-extern short D_800761EA;
+extern int g_nSfxOverrideFlags;
+extern short g_nSfxOverrideVolL;
+extern short g_nSfxOverrideVolR;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
 extern int g_nWorldTimAudioChunkOffset[];
@@ -264,8 +264,8 @@ extern int g_nWorldBundleChunkSize;
 extern int g_nLevelArchiveChunkOffset;
 extern volatile int g_nLevelArchiveChunkSize;
 extern int g_anCameraPos;
-extern int D_80076DFC;
-extern int D_80076E00;
+extern int g_nCameraPosY;
+extern int g_nCameraPosZ;
 extern short g_nCameraEulerRoll;
 extern short g_nCameraEulerPitch;
 extern short g_nCameraEulerYaw;
@@ -381,9 +381,9 @@ void Credits_Update(void) {
     *(short *)(g_pLevelSampleBankEntries + 0xE) = 0;
     D_800757BC = e4;
     *(int *)(g_pLevelSampleBankEntries + 0x10) = 0;
-    D_800761DC = 1;
-    D_800761E8 = 0x3FFF;
-    D_800761EA = 0x3FFF;
+    g_nSfxOverrideFlags = 1;
+    g_nSfxOverrideVolL = 0x3FFF;
+    g_nSfxOverrideVolR = 0x3FFF;
     PlaySoundEffect(0, 0, 0x10, 0);
     }
     {
@@ -436,8 +436,8 @@ void Credits_Update(void) {
         {
           char *h = D_800757BC;
           g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
-          D_80076DFC = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
-          D_80076E00 = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
+          g_nCameraPosY = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
+          g_nCameraPosZ = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
           g_nCameraEulerRoll = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x18);
           g_nCameraEulerPitch = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x1C);
           g_nCameraEulerYaw = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x20);

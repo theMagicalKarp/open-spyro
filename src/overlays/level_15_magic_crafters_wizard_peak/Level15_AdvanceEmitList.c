@@ -5,7 +5,7 @@
  * matched in level_10 / level_11 / level_5.  Walks the 0x20-byte record stream
  * at g_pEmitListBase and ages one record per iteration: integrates its position,
  * fades its colour, ticks its life counter and, when the record has expired
- * (or its alive byte has been cleared), hands it back with func_80053608().
+ * (or its alive byte has been cleared), hands it back with FreeEmitListRecord().
  * The walk stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable; every field access is an ADDRESS
@@ -40,11 +40,11 @@
 #define POS ((short *)(rec + 4))
 #define VEL ((short *)(rec + 0x18))
 
-extern void func_80017C84(short *dst, short *src, short *delta);
-extern void func_80017BFC(short *dst, int *src);
-extern void func_80017C24(int *dst, short *src);
+extern void AddSVector(short *dst, short *src, short *delta);
+extern void VectorToSVectorShr2(short *dst, int *src);
+extern void SVectorToVectorShl2(int *dst, short *src);
 extern int abs(int n);
-extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
+extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 extern char *g_pActorListBase;
@@ -79,8 +79,8 @@ void Level15_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:  /* <- func_level_10_80084EF0 */
-      func_80017C84(POS, POS, VEL);
+    case 0x0:  /* <- Level10_AdvanceEmitList */
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -91,12 +91,12 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
-    case 0x1:  /* <- func_level_10_80084EF0 */
-      func_80017C84(POS, POS, VEL);
+    case 0x1:  /* <- Level10_AdvanceEmitList */
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -107,12 +107,12 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
-    case 0x2:  /* <- func_level_10_80084EF0 */
-      func_80017C84(POS, POS, VEL);
+    case 0x2:  /* <- Level10_AdvanceEmitList */
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -123,7 +123,7 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -143,10 +143,10 @@ void Level15_AdvanceEmitList(int step) {
        * fall into the shared distance test at the bottom, which flips the
        * record between its normal and its "close" colour set (class byte 3).
        */
-      func_80017C24(pt, POS);
+      SVectorToVectorShl2(pt, POS);
       if (HU(0x1E) & 8) {
         if (rec[0x2] >= 0x30) {
-          func_80053608(rec);
+          FreeEmitListRecord(rec);
           break;
         }
         rx = GetRandomU32();
@@ -174,7 +174,7 @@ void Level15_AdvanceEmitList(int step) {
           HS(0x1E) = 8;
           goto measure;
         } else {
-          func_80017C24(dv, VEL);
+          SVectorToVectorShl2(dv, VEL);
           if (HU(0x1E) & 2) {
             dv[0] += (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
           } else {
@@ -209,7 +209,7 @@ void Level15_AdvanceEmitList(int step) {
             owner[0] = 0x20;
           }
           HS(0x1E) = (GetRandomU32() & 6) + 1;
-          func_80017BFC(VEL, (int *)(W(0x18) + 0xC));
+          VectorToSVectorShr2(VEL, (int *)(W(0x18) + 0xC));
           spin = GetRandomU32() & 0x7F;
           rec[0x2] = 0;
           HU(0x1C) += spin;
@@ -219,7 +219,7 @@ void Level15_AdvanceEmitList(int step) {
         AddVector(pt, pt, dir);
       }
     commit:
-      func_80017BFC(POS, pt);
+      VectorToSVectorShr2(POS, pt);
       rec[0x2]++;
     measure:
       SubtractVector(dv, pt, g_anCameraPos);
@@ -258,9 +258,9 @@ void Level15_AdvanceEmitList(int step) {
       /* The short spawn drift: the record walks along its own jittered
        * velocity, plus a quarter of the record velocity vector. */
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
-        func_80017C24(qa, POS);
+        SVectorToVectorShl2(qa, POS);
         rq = GetRandomU32();
         jq = HU(0x18) - 3;
         jq += rq & 6;
@@ -271,16 +271,16 @@ void Level15_AdvanceEmitList(int step) {
         jr += rr & 6;
         HU(0x1A) = jr;
         HU(0x1C) = dec;
-        func_80017C24(qb, VEL);
+        SVectorToVectorShl2(qb, VEL);
         RShiftVector3(qb, 2);
         AddVector(qa, qa, qb);
-        func_80017BFC(POS, qa);
+        VectorToSVectorShr2(POS, qa);
         rec[0x2]++;
       }
       break;
     }
 
-    case 0x6:  /* <- func_level_10_80084EF0 */
+    case 0x6:  /* <- Level10_AdvanceEmitList */
     {
       int ang;
       int amp;
@@ -297,19 +297,19 @@ void Level15_AdvanceEmitList(int step) {
       p[1] += (amp * LookupSine(ang)) >> 12;
       p[2] = HS(0x8) * 4 + 0x40;
       if (z < p[2] || rec[0x2] >= 0xC9) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
-        func_80017BFC(POS, p);
+        VectorToSVectorShr2(POS, p);
         rec[0x2]++;
       }
       break;
     }
 
-    case 0x7:  /* <- func_level_12_8008BE98 */
+    case 0x7:  /* <- Level12_AdvanceEmitList */
       /* The rune orbit: it rises and falls on a triangular ramp keyed to the
        * age byte and drifts by its own per-axis velocity words. */
       if (rec[0x2] >= 0x19 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0xB] += rec[0x1E];
         if (rec[0x2] >= 0xD) {
@@ -324,8 +324,8 @@ void Level15_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:  /* <- func_level_10_80084EF0 */
-      func_80017C84(POS, POS, VEL);
+    case 0x9:  /* <- Level10_AdvanceEmitList */
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -333,37 +333,37 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xA] += step * 2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
-    case 0xa:  /* <- func_level_10_80084EF0 */
+    case 0xa:  /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
         v[0] += LookupCosine(HS(0x18)) >> 4;
         v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;
-        func_80017BFC(POS, v);
+        VectorToSVectorShr2(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
         rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
-    case 0xb:  /* <- func_level_10_80084EF0 */
-      func_80017C84(POS, POS, (short *)(rec + 0x12));
+    case 0xb:  /* <- Level10_AdvanceEmitList */
+      AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
-    case 0xc:  /* <- func_level_10_80084EF0 */
+    case 0xc:  /* <- Level10_AdvanceEmitList */
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -376,11 +376,11 @@ void Level15_AdvanceEmitList(int step) {
         rec[0xE] -= 8;
       }
       if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
-    case 0x15:  /* <- func_level_10_80084EF0 */
+    case 0x15:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -392,12 +392,12 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xB] += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x18:  /* <- func_level_10_80084EF0 */
+    case 0x18:  /* <- Level10_AdvanceEmitList */
     {
       int heat;
 
@@ -423,11 +423,11 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21:  /* <- func_level_10_80084EF0 */
+    case 0x21:  /* <- Level10_AdvanceEmitList */
     {
       int c;
 
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -450,12 +450,12 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xE] = c;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x41:  /* <- func_level_12_8008BE98 */
+    case 0x41:  /* <- Level12_AdvanceEmitList */
     {
       unsigned short d[3];
       int j;
@@ -482,12 +482,12 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x8 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x42:  /* <- func_level_10_80084EF0 */
+    case 0x42:  /* <- Level10_AdvanceEmitList */
     {
       int i;
       int j;
@@ -519,12 +519,12 @@ void Level15_AdvanceEmitList(int step) {
         rec[0x2]++;
       }
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x46:  /* <- func_level_10_80084EF0 */
+    case 0x46:  /* <- Level10_AdvanceEmitList */
     {
       unsigned short d[3];
       int j;
@@ -552,7 +552,7 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         if (rec[0x10] < 0x80) {
@@ -579,7 +579,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47:  /* <- func_level_10_80084EF0 */
+    case 0x47:  /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -587,7 +587,7 @@ void Level15_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
@@ -620,7 +620,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x48:  /* <- func_level_10_80084EF0 */
+    case 0x48:  /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -628,7 +628,7 @@ void Level15_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
@@ -655,7 +655,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4c:  /* <- func_level_10_80084EF0 */
+    case 0x4c:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -666,12 +666,12 @@ void Level15_AdvanceEmitList(int step) {
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x4d:  /* <- func_level_10_80084EF0 */
+    case 0x4d:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -687,12 +687,12 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
 
-    case 0x4e:  /* <- func_level_10_80084EF0 */
+    case 0x4e:  /* <- Level10_AdvanceEmitList */
     {
       int j;
       int k;
@@ -700,7 +700,7 @@ void Level15_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
@@ -730,7 +730,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4f:  /* <- func_level_10_80084EF0 */
+    case 0x4f:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -745,7 +745,7 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         rec[0x11] -= 4;
@@ -758,7 +758,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50:  /* <- func_level_10_80084EF0 */
+    case 0x50:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -774,7 +774,7 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }

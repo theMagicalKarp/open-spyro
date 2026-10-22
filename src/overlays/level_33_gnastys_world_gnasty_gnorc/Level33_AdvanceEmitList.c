@@ -5,11 +5,11 @@
  * func_level_33_80082B84.  Walks the 0x20-byte record stream at g_pEmitListBase
  * and ages one record per iteration: integrates its position, fades its
  * colour, ticks its life counter and, when the record has expired (or its
- * alive byte has been cleared), hands it back with func_80053608().  The
+ * alive byte has been cleared), hands it back with FreeEmitListRecord().  The
  * walk stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
- * pointers because the arms pass them to func_80017C84() as values, so
+ * pointers because the arms pass them to AddSVector() as values, so
  * loop.c strength-reduces each into its own register; every field access is
  * an ADDRESS giv off `rec`, and loop.c picks the last one it scans -- the
  * `rec[1]` terminator test -- as the shared base, which is how the whole
@@ -42,10 +42,10 @@
 #define POS ((short *)(rec + 4))
 #define VEL ((short *)(rec + 0x18))
 
-extern void func_80017C84(short *dst, short *src, short *delta);
-extern void func_80017BFC(short *dst, int *src);
+extern void AddSVector(short *dst, short *src, short *delta);
+extern void VectorToSVectorShr2(short *dst, int *src);
 extern int abs(int n);
-extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
+extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 extern int g_nSpyroDrawSuppressed;
@@ -65,7 +65,7 @@ void Level33_AdvanceEmitList(int step) {
   do {
     switch (rec[0]) {
     case 0x0:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -76,12 +76,12 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xE] -= step * 4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x1:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -92,12 +92,12 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xE] -= step * 4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x2:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -108,12 +108,12 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xE] -= step * 4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x9:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -121,7 +121,7 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xA] += step * 2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -129,25 +129,25 @@ void Level33_AdvanceEmitList(int step) {
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
         v[0] += LookupCosine(HS(0x18)) >> 4;
         v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;
-        func_80017BFC(POS, v);
+        VectorToSVectorShr2(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
         rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case 0xB:
-      func_80017C84(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -164,14 +164,14 @@ void Level33_AdvanceEmitList(int step) {
         rec[0xE] -= 8;
       }
       if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x10:
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -181,13 +181,13 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xD] -= 4;
       rec[0xE] -= 4;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x11:
       /* The same ember with a late red cut-off at age 9. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -200,13 +200,13 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xE] -= 4;
       rec[0x2]++;
       if (rec[0x2] >= 0xC || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x19:
       /* The plain aged spark: no colour ramp, no alive check. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -214,14 +214,14 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xA] += step * 2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x21: {
       int c;
 
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -244,7 +244,7 @@ void Level33_AdvanceEmitList(int step) {
       rec[0xE] = c;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -280,7 +280,7 @@ void Level33_AdvanceEmitList(int step) {
         rec[0x2]++;
       }
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -312,7 +312,7 @@ void Level33_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         if (rec[0x10] < 0x80) {
@@ -346,7 +346,7 @@ void Level33_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
@@ -386,7 +386,7 @@ void Level33_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
@@ -428,7 +428,7 @@ void Level33_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -440,7 +440,7 @@ void Level33_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
@@ -484,7 +484,7 @@ void Level33_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         rec[0x11] -= 4;

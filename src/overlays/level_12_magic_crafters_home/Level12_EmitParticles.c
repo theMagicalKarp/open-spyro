@@ -4,7 +4,7 @@
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
  *
- * func_80053570 = AllocEmitListRecord(class): hands back the next 0x20-byte
+ * AllocEmitListRecord(class): hands back the next 0x20-byte
  * slot and stamps the record class at +0x01.  The class picks the record
  * layout: 2/3/6 are sparks (short position at +4, a velocity at +0x18 and an
  * RGB triple at +0xC), 0 is a dust mote (short position + short velocity at
@@ -17,7 +17,7 @@
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * MATCHED 2026-08-21, first build.  Arms 0x8 and 0x41 are verbatim lifts from
- * func_level_16_80085F40 (decoded there the same session); arm 0x16 is new
+ * Level16_EmitParticles (decoded there the same session); arm 0x16 is new
  * here: a wind-blown mote that first range-checks the emitter against the
  * camera (`ApproxDist2D(pos, g_anCameraPos) > 0x7FFF` skips the record), walks
  * `arg3` as an 8-bit ANGLE across the loop iterations
@@ -158,9 +158,9 @@ typedef struct Actor {
   char pad4A[0xE];      /* 0x4A -- the pool stride is 0x58 */
 } Actor;
 
-extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
-extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
-extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
+extern void *AllocEmitListRecord(int cls);
+extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
+extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 extern Actor *g_pActorListBase;
 extern int g_anCameraPos[];          /* camera world position */
@@ -169,17 +169,17 @@ extern short g_anSineLut[];        /* sine table */
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
 extern int g_nActiveLevelId;
-extern unsigned char D_8006E438[];  /* trail colour table, stride 4 */
+extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
 extern unsigned char D_8006E439[];
 extern unsigned char D_8006E43A[];
-extern int D_8006E498[];            /* per-step offsets, stride 3 ints */
-extern int D_8006E4E0[];            /* per-slot offsets, stride 3 ints */
+extern int g_anEmitStepOffsets[];            /* per-step offsets, stride 3 ints */
+extern int g_anEmitSlotOffsets[];            /* per-slot offsets, stride 3 ints */
 extern int D_8006E570[];
 
 void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
@@ -202,12 +202,12 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     k = i * 4;
     switch (type) {
     case 0x0: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -220,12 +220,12 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x1:
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
@@ -241,15 +241,15 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     case 0x2: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
       v0[0] = (GetRandomU32() & 0x3F) - 0x20;
       v0[1] = (GetRandomU32() & 0x3F) - 0x20;
       v0[2] = 0x1E;
-      func_80017BFC(rec->u.spark.vel, v0);
+      VectorToSVectorShr2(rec->u.spark.vel, v0);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x20;
       rec->u.spark.seed = GetRandomU32();
@@ -262,11 +262,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x7: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
       if (arg3 != 0) {
         rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((arg3 * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
         rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((arg3 * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
@@ -289,12 +289,12 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x8: {
       int t1, t2, t3;
       int u1, u2, u3;
-      rec = (Emit *)func_80053570(3);
+      rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 3;
       rec->unk03 = 1;
-      func_80052D64((Actor *)pos, GetRandomU32() & 1, vt);
-      func_80017BFC(rec->u.track.pos, vt);
+      GetActorAttachPoint((Actor *)pos, GetRandomU32() & 1, vt);
+      VectorToSVectorShr2(rec->u.track.pos, vt);
       t1 = GetRandomU32() & 0xE;
       u1 = rec->u.track.pos[0] - 7;
       rec->u.track.pos[0] = u1 + t1;
@@ -307,7 +307,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       SubtractVector(vt, vt, ((Actor *)pos)->pos);
       vt[2] = vt[2] - 0x384;
       SetVector3Magnitude(vt, 0x80);
-      func_80017BFC(rec->u.track.vel, vt);
+      VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)arg3 - g_pActorListBase;
       rec->u.track.unk1F = 0;
       rec->u.track.life = (GetRandomU32() & 0xF) + 0x18;
@@ -336,12 +336,12 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x9: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -368,14 +368,14 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0xA: {
-      rec = (Emit *)func_80053570(3);
+      rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, g_anSpyroWorldPos);
+      VectorToSVectorShr2(rec->u.spark.pos, g_anSpyroWorldPos);
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = 0xF;
-      rec->u.spark.r = D_8006E438[k];
+      rec->u.spark.r = g_abEmitTrailColors[k];
       rec->u.spark.g = D_8006E439[k];
       rec->u.spark.b = D_8006E43A[k];
       rec->u.spark.fx = 0x2C;
@@ -385,7 +385,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0xC: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->unk03 = 1;
       rec->u.spark.unk11 = 4;
@@ -393,21 +393,21 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
         CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
         if ((arg3 >> 24) < 6) {
-          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &D_8006E4E0[(arg3 >> 24) * 3], v1);
+          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(arg3 >> 24) * 3], v1);
           AddVector(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.unk11 = 0x16;
-          CopyVector(v1, &D_8006E4E0[(arg3 >> 24) * 3]);
+          CopyVector(v1, &g_anEmitSlotOffsets[(arg3 >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, D_8006E570, v1);
         AddVector(v1, v1, ((Actor *)pos)->pos);
       } else {
-        RotateVectorByMatrix((int *)((Actor *)pos)->mat, &D_8006E498[i * 3], v1);
+        RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitStepOffsets[i * 3], v1);
         AddVector(v1, v1, ((Actor *)pos)->pos);
       }
-      func_80017BFC(rec->u.spark.pos, v1);
+      VectorToSVectorShr2(rec->u.spark.pos, v1);
       rec->u.spark.g = arg3 >> 8;
       rec->u.spark.r = arg3;
       rec->u.spark.b = arg3 >> 16;
@@ -423,11 +423,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       if (d > 0x7FFF) {
         break;
       }
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
       rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((((int)(GetRandomU32() & 0xFFF) - 0x7FF) * 300) >> 12);
       rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((((int)(GetRandomU32() & 0xFFF) - 0x7FF) * 300) >> 12);
       arg3 = (arg3 + (int)(GetRandomU32() & 0x1E) - 0xF) & 0xFF;
@@ -451,11 +451,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x18: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.band.pos, pos);
-      func_80017BFC(rec->u.band.pos2, pos);
+      VectorToSVectorShr2(rec->u.band.pos, pos);
+      VectorToSVectorShr2(rec->u.band.pos2, pos);
       ta = 0x30;
       z = i * 16;
       rec->u.band.life = ta;
@@ -473,7 +473,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x21: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
@@ -493,8 +493,8 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
         ub = v2[1] - 0x1F;
         v2[1] = ub + tb;
       }
-      func_80017BFC(rec->u.spark.pos, v2);
-      func_80017BFC(rec->u.spark.vel, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, v2);
+      VectorToSVectorShr2(rec->u.spark.vel, pos);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x10;
       rec->u.spark.seed = GetRandomU32();
@@ -509,11 +509,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x41: {
       int t1, t2, t3;
       int u1, u2, u3;
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 3;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.line.a, pos + 3);
+      VectorToSVectorShr2(rec->u.line.a, pos + 3);
       t1 = GetRandomU32() & 0x7E;
       u1 = rec->u.line.a[0] - 0x3F;
       rec->u.line.a[0] = u1 + t1;
@@ -537,7 +537,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x42: {
-      rec = (Emit *)func_80053570(0);
+      rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
@@ -600,7 +600,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x46: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
@@ -625,7 +625,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x47: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
       rec->unk03 = 1;
@@ -651,11 +651,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4D: {
       int t;
       int u;
-      rec = (Emit *)func_80053570(4);
+      rec = (Emit *)AllocEmitListRecord(4);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
-      func_80017BFC(rec->u.line.b, pos);
-      func_80017BFC(rec->u.line.a, pos);
+      VectorToSVectorShr2(rec->u.line.b, pos);
+      VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
       rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
@@ -674,11 +674,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4E: {
       int t1, t2, t3;
       int u1, u2, u3;
-      rec = (Emit *)func_80053570(0);
+      rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.dust.pos, pos);
+      VectorToSVectorShr2(rec->u.dust.pos, pos);
       t1 = GetRandomU32() & 0x3F;
       u1 = rec->u.dust.pos[0] - 0x20;
       rec->u.dust.pos[0] = u1 + t1;
@@ -704,11 +704,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4F: {
       int t4, t5, t6;
       int u4, u5, u6;
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.line.b, pos);
+      VectorToSVectorShr2(rec->u.line.b, pos);
       AddVector(v3, pos, (int *)arg3);
       t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
@@ -719,7 +719,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       t6 = GetRandomU32() & 0x7F;
       u6 = v3[2] - 0x40;
       v3[2] = u6 + t6;
-      func_80017BFC(rec->u.line.a, v3);
+      VectorToSVectorShr2(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
       if (g_nSpyroHornStrikeVariant == 0) {
         rec->u.line.c0[0] = GetRandomU32() | 0xC0;
@@ -740,11 +740,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x50: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.line.a, pos);
+      VectorToSVectorShr2(rec->u.line.a, pos);
       v4[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
       v4[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
       v4[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
@@ -799,8 +799,8 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
+ * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

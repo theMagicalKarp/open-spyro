@@ -2,7 +2,7 @@
 #include "vecmath.h"
 
 extern int ApproachAngle8(int target, int yaw, int step, int rate);
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 
 /* Rotate entity `e`'s byte yaw (+0x46) toward an explicit `target` angle,
    stepping by at most `step` (boosted 1.5x in camera mode 3, 2x in mode 4) but
@@ -13,9 +13,9 @@ int TurnActorYawTowardAngle(int *e, int target, int step, int threshold,
                             int flag) {
   int delta = AbsAngleDelta8(target, ((unsigned char *)e)[0x46]);
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     step += step >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     step <<= 1;
   }
   if (delta < step) {

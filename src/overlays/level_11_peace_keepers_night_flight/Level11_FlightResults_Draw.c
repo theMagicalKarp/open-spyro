@@ -8,7 +8,7 @@
  * board (COMPLETED/QUIT/TIME IS UP/CRASHED headline, four tally rows
  * revealed by g_nSubMenuCursor, bonus column, TOTAL, PRESS-TO-CONTINUE or
  * TRY AGAIN?/YES/NO menu) or, at g_nSubMenuCursor == 0x64, the TIME ATTACK board
- * (times via the formatter D_800758C4, NEW RECORD, TRY AGAIN/YES/NO).
+ * (times via the formatter g_pfnFlightTimeFormatter, NEW RECORD, TRY AGAIN/YES/NO).
  * Selected records get a sine glow on +0x46 from g_anCosineLut. Standard
  * 2-vblank pace tail. Word-identical in all five flight overlays
  * (5/11/17/23/29).
@@ -61,12 +61,12 @@ extern int g_nVsyncFrameEndCount[];
 extern int g_nSubMenuCursor; /* reveal timer */
 extern int g_nPauseMenuCursor; /* menu cursor */
 extern int g_nPauseMenuIdleFrames; /* idle/blink counter */
-extern int D_8007569C; /* reveal sound step */
-extern int D_80075900;
-extern int D_80075908;
-extern int D_8007595C;              /* course index */
-extern int D_800758F4;              /* run clock */
-extern int (*D_800758C4)();         /* time formatter */
+extern int g_nFlightResultsRevealStep; /* reveal sound step */
+extern int g_nFlightQuitFlag;
+extern int g_nFlightTimeBonus;
+extern int g_nActiveWorldIndex;              /* course index */
+extern int g_nFlightRunClock;              /* run clock */
+extern int (*g_pfnFlightTimeFormatter)();         /* time formatter */
 extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
 extern char g_abHudIconActorRecords[];           /* HUD sprite records */
@@ -74,17 +74,17 @@ extern char *g_apSpritePrimQueue[];          /* published record table */
 extern char g_anMenuBackdropGrayClut[];           /* CLUT row */
 extern char g_pOtDepthBinHead0[];           /* OT depth bins */
 extern unsigned short g_anCosineLut[]; /* sine LUT */
-extern int D_80078630;              /* tally: class 0 */
-extern int D_80078634;
-extern int D_80078638;
-extern int D_8007863C;
+extern int g_anFlightTargetTally;              /* tally: class 0 */
+extern int g_nFlightTargetTally1;
+extern int g_nFlightTargetTally2;
+extern int g_nFlightTargetTally3;
 extern int g_anWorldPersistentFlags[];           /* per-course best time */
 extern unsigned char g_abWorldPerLevelByteTable[]; /* per-course claim flags */
 extern unsigned char D_80078681[];
 extern unsigned char D_80078682[];
 extern unsigned char D_80078683[];
 extern unsigned char D_80078684[];
-extern int D_8006E920[]; /* per-course bonus table rows */
+extern int g_anFlightCourseBonusTable[]; /* per-course bonus table rows */
 extern int D_8006E924[];
 extern int D_8006E928[];
 extern int D_8006E92C[];
@@ -300,18 +300,18 @@ void Level11_FlightResults_Draw(void)
     if (g_nSubMenuCursor < 0x64)
     {
       bonus = 0;
-      if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
         memcpy(buf, "COMPLETED", 10);
         allclear = 1;
       }
       else
-        if (D_80075900 != 0)
+        if (g_nFlightQuitFlag != 0)
       {
         memcpy(buf, "QUIT", 5);
       }
       else
-        if (D_80075908 < 0)
+        if (g_nFlightTimeBonus < 0)
       {
         memcpy(buf, "TIME IS UP", 11);
       }
@@ -342,10 +342,10 @@ void Level11_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x3C;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C0[D_8007595C * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(D_8006E8C0[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor > 0)
       {
-        sprintf(buf, "%d/8", D_80078630);
+        sprintf(buf, "%d/8", g_anFlightTargetTally);
         pos[0] = 0x140;
         pos[1] = 0x3C;
         pos[2] = 0x1100;
@@ -353,17 +353,17 @@ void Level11_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 2)
       {
-        if (D_80078630 == 8)
+        if (g_anFlightTargetTally == 8)
         {
-          int k = D_8007595C * 5;
+          int k = g_nActiveWorldIndex * 5;
           if (g_abWorldPerLevelByteTable[k] != 0)
           {
             sprintf(buf, "^");
           }
           else
           {
-            sprintf(buf, "%d", D_8006E920[k]);
-            bonus += D_8006E920[D_8007595C * 5];
+            sprintf(buf, "%d", g_anFlightCourseBonusTable[k]);
+            bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -376,19 +376,19 @@ void Level11_FlightResults_Draw(void)
         pos[1] = 0x3C;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
-        if (D_8007569C < 2)
+        if (g_nFlightResultsRevealStep < 2)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
-          D_8007569C = 2;
+          g_nFlightResultsRevealStep = 2;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C4[D_8007595C * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(D_8006E8C4[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 3)
       {
-        sprintf(buf, "%d/8", D_80078634);
+        sprintf(buf, "%d/8", g_nFlightTargetTally1);
         pos[0] = 0x140;
         pos[1] = 0x50;
         pos[2] = 0x1100;
@@ -396,9 +396,9 @@ void Level11_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 4)
       {
-        if (D_80078634 == 8)
+        if (g_nFlightTargetTally1 == 8)
         {
-          int k = D_8007595C * 5;
+          int k = g_nActiveWorldIndex * 5;
           if (D_80078681[k] != 0)
           {
             sprintf(buf, "^");
@@ -406,7 +406,7 @@ void Level11_FlightResults_Draw(void)
           else
           {
             sprintf(buf, "%d", D_8006E924[k]);
-            bonus += D_8006E920[D_8007595C * 5 + 1];
+            bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5 + 1];
           }
           snd = 0;
         }
@@ -419,19 +419,19 @@ void Level11_FlightResults_Draw(void)
         pos[1] = 0x50;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
-        if (D_8007569C < 4)
+        if (g_nFlightResultsRevealStep < 4)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
-          D_8007569C = 4;
+          g_nFlightResultsRevealStep = 4;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C8[D_8007595C * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(D_8006E8C8[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 5)
       {
-        sprintf(buf, "%d/8", D_80078638);
+        sprintf(buf, "%d/8", g_nFlightTargetTally2);
         pos[0] = 0x140;
         pos[1] = 0x64;
         pos[2] = 0x1100;
@@ -439,9 +439,9 @@ void Level11_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 6)
       {
-        if (D_80078638 == 8)
+        if (g_nFlightTargetTally2 == 8)
         {
-          int k = D_8007595C * 5;
+          int k = g_nActiveWorldIndex * 5;
           if (D_80078682[k] != 0)
           {
             sprintf(buf, "^");
@@ -449,7 +449,7 @@ void Level11_FlightResults_Draw(void)
           else
           {
             sprintf(buf, "%d", D_8006E928[k]);
-            bonus += D_8006E928[D_8007595C * 5];
+            bonus += D_8006E928[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -462,19 +462,19 @@ void Level11_FlightResults_Draw(void)
         pos[1] = 0x64;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
-        if (D_8007569C < 6)
+        if (g_nFlightResultsRevealStep < 6)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
-          D_8007569C = 6;
+          g_nFlightResultsRevealStep = 6;
         }
       }
       pos[0] = 0x64;
       pos[1] = 0x78;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8CC[D_8007595C * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(D_8006E8CC[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 7)
       {
-        sprintf(buf, "%d/8", D_8007863C);
+        sprintf(buf, "%d/8", g_nFlightTargetTally3);
         pos[0] = 0x140;
         pos[1] = 0x78;
         pos[2] = 0x1100;
@@ -482,9 +482,9 @@ void Level11_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 8)
       {
-        if (D_8007863C == 8)
+        if (g_nFlightTargetTally3 == 8)
         {
-          int k = D_8007595C * 5;
+          int k = g_nActiveWorldIndex * 5;
           if (D_80078683[k] != 0)
           {
             sprintf(buf, "^");
@@ -492,7 +492,7 @@ void Level11_FlightResults_Draw(void)
           else
           {
             sprintf(buf, "%d", D_8006E92C[k]);
-            bonus += D_8006E92C[D_8007595C * 5];
+            bonus += D_8006E92C[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -505,10 +505,10 @@ void Level11_FlightResults_Draw(void)
         pos[1] = 0x78;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
-        if (D_8007569C < 8)
+        if (g_nFlightResultsRevealStep < 8)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
-          D_8007569C = 8;
+          g_nFlightResultsRevealStep = 8;
         }
       }
       pos[0] = 0x64;
@@ -517,9 +517,9 @@ void Level11_FlightResults_Draw(void)
       BuildTextSpriteChain("ALL IN ONE", pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 9)
       {
-        if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
+        if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
         {
-          int k = D_8007595C * 5;
+          int k = g_nActiveWorldIndex * 5;
           if (D_80078684[k] != 0)
           {
             sprintf(buf, "^");
@@ -527,7 +527,7 @@ void Level11_FlightResults_Draw(void)
           else
           {
             sprintf(buf, "%d", D_8006E930[k]);
-            bonus += D_8006E930[D_8007595C * 5];
+            bonus += D_8006E930[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -540,10 +540,10 @@ void Level11_FlightResults_Draw(void)
         pos[1] = 0x8C;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
-        if (D_8007569C < 9)
+        if (g_nFlightResultsRevealStep < 9)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
-          D_8007569C = 9;
+          g_nFlightResultsRevealStep = 9;
         }
       }
       EmitRadialShadedLine(0x1A0, 0x96, 0x1D6, 0x96);
@@ -559,7 +559,7 @@ void Level11_FlightResults_Draw(void)
       EmitRadialShadedLine(0x3C, 0xB0, 0x1C4, 0xB0);
       if (g_nSubMenuCursor >= 9)
       {
-        if ((allclear != 0) || (g_anWorldPersistentFlags[D_8007595C] != 0))
+        if ((allclear != 0) || (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0))
         {
           pos[0] = 0x50;
           pos[1] = 0xD2;
@@ -668,7 +668,7 @@ void Level11_FlightResults_Draw(void)
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      D_800758C4(g_anWorldPersistentFlags[D_8007595C], pos, 0xB);
+      g_pfnFlightTimeFormatter(g_anWorldPersistentFlags[g_nActiveWorldIndex], pos, 0xB);
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
@@ -677,13 +677,13 @@ void Level11_FlightResults_Draw(void)
       pos[1] = 0x64;
       pos[2] = 0x1100;
       snd = 0xB;
-      if (g_anWorldPersistentFlags[D_8007595C] >= D_800758F4)
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] >= g_nFlightRunClock)
       {
         snd = 8;
       }
-      if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) == 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
-        count = D_800758C4(D_800758F4, pos, snd);
+        count = g_pfnFlightTimeFormatter(g_nFlightRunClock, pos, snd);
         rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
@@ -702,11 +702,11 @@ void Level11_FlightResults_Draw(void)
       }
       else
       {
-        D_800758C4(-1, pos, 0xB);
+        g_pfnFlightTimeFormatter(-1, pos, 0xB);
       }
-      if ((((D_80078630 + D_80078634) + D_80078638) + D_8007863C) < 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) < 0x20)
       {
-        if (D_80075900 != 0)
+        if (g_nFlightQuitFlag != 0)
         {
           memcpy(buf, "QUIT", 5);
         }
@@ -736,7 +736,7 @@ void Level11_FlightResults_Draw(void)
         }
       }
       else
-        if (g_anWorldPersistentFlags[D_8007595C] >= D_800758F4)
+        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] >= g_nFlightRunClock)
       {
         int ph;
         short *lut;

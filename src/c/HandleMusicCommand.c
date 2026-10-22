@@ -15,7 +15,8 @@
 extern int CdControlBlocking(int cmd, char *param, char *result);
 extern char *CdIntToPos(int lba, char *loc);
 
-extern short D_80075F18;   /* live CD-DA volume (fade ramp current value) */
+extern short
+    g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */
 extern int D_80076224_blk; /* CD-DA volume fade ceiling */
 
 extern unsigned int
@@ -53,7 +54,7 @@ void HandleMusicCommand(int track, int cmd) {
         g_nPendingMusicCommand = 0;
         *status = 0x10;
         g_nMusicVolumeFadeTarget = D_80076224_blk;
-        g_nMusicVolumeFadeStep = (D_80076224_blk - D_80075F18) >> 3;
+        g_nMusicVolumeFadeStep = (D_80076224_blk - g_nCdDaVolumeCurrent) >> 3;
       } else {
         g_nPendingMusicCommand = cmd;
       }
@@ -71,8 +72,8 @@ void HandleMusicCommand(int track, int cmd) {
   case 4:
     stopStatus = g_adwMusicStopStatusBlock;
     if ((*stopStatus & 0x10) != 0) {
-      if (D_80075F18 != 0) {
-        g_nMusicVolumeFadeStep = -D_80075F18 >> 3;
+      if (g_nCdDaVolumeCurrent != 0) {
+        g_nMusicVolumeFadeStep = -g_nCdDaVolumeCurrent >> 3;
         g_nLastCdMusicCommand = 9;
         g_nMusicVolumeFadeTarget = 0;
         *stopStatus = 0x200;
@@ -101,7 +102,7 @@ void HandleMusicCommand(int track, int cmd) {
         g_nPendingMusicCommand = 0;
         *status = 0x10;
         g_nMusicVolumeFadeTarget = D_80076224_blk;
-        g_nMusicVolumeFadeStep = (D_80076224_blk - D_80075F18) >> 3;
+        g_nMusicVolumeFadeStep = (D_80076224_blk - g_nCdDaVolumeCurrent) >> 3;
       } else {
         g_nPendingMusicCommand = cmd;
       }

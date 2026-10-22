@@ -147,7 +147,7 @@ extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedV
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
-extern int D_8007595C;     /* active flight-race slot index */
+extern int g_nActiveWorldIndex;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
@@ -155,8 +155,8 @@ extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
-extern short D_8006F3A0[]; /* launch-direction table, x */
-extern short D_8006F3A2[]; /* launch-direction table, z */
+extern short g_anLaunchDirTable[]; /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
@@ -387,7 +387,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     }
 
     case 0x159 ... 0x15B:
-      if (g_anWorldPersistentFlags[D_8007595C] != 0)
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0)
     {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);

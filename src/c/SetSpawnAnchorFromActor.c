@@ -29,7 +29,7 @@ extern int D_800778EC;
      arg copy schedules ahead of it. Assigning `src` before the call — in any
      position, including at the call itself — always emits the addiu first. */
 
-void func_80059474(unsigned char *actor, int yaw) {
+void SetSpawnAnchorFromActor(unsigned char *actor, int yaw) {
   int *new_var;
   int *dst;
   int *src;

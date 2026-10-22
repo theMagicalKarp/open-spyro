@@ -2138,7 +2138,7 @@ int RandomIntInRange(int lo, int hi);
 /* 0x80037f10: Like RandomIntInRange for the magnitude, with the sign taken from the draw's low bit. */
 int RandomSignedInRange(int lo, int hi);
 
-/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (D_800756C4), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
+/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
 int TickCountdownByFrameDelta(void *pValue, int width);
 
 /* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */
@@ -2245,5 +2245,145 @@ int FindFarthestPathPointFromSpyro(unsigned char *list);
 
 /* 0x80038c4c: Rotates pos - rec into the record's yaw frame (+0x14) and tests it against the half-extents at +0xC/+0x10. */
 int IsPointInRotatedBox(int *pos, int *rec);
+
+/* --- Shared helpers named 2026-10-21 (session 2). Evidence: the original asm
+ * (hand-written routines) or the matched C body named in each entry. --- */
+
+/* 0x800177f8: dst = src * (0x10000 / den) >> 16 via GTE gpl0 (IR inputs saturate to 16 bits). */
+void DivideVector3(int *dst, int *src, int den);
+
+/* 0x80017bfc: Narrow an int[3] to short[3], dropping 2 fractional bits (>>2). */
+void VectorToSVectorShr2(short *dst, int *src);
+
+/* 0x80017c24: Widen a ushort[3] to int[3], adding 2 fractional bits (<<2). */
+void SVectorToVectorShl2(int *dst, unsigned short *src);
+
+/* 0x80017c84: Element-wise short[3] add (dst = a + b). */
+void AddSVector(short *dst, short *a, short *b);
+
+/* 0x80017d7c: Per-frame step from `from` toward `to`: LZCS of speed/2 picks a
+ * normalising shift of the largest |delta| component, then GTE gpf scales the
+ * delta into `step`; returns the frame divisor. Name is literal. */
+int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
+
+/* 0x8002b390: For every world chunk-anim entry (the 9 count/ptr tables from
+ * g_nWorldAnimMeshKeyframeCount) whose id byte [0] == id: [1] = ([1] & andMask) | orMask
+ * ([1] is the state-flags byte, see TickWorldChunkAnimations). */
+void ModifyWorldChunkAnimFlags(int id, int andMask, int orMask);
+
+/* 0x8002b3f4: First chunk-anim entry with id byte == id; returns its word >> 8
+ * (flags | step << 8 | delay << 16). */
+int GetWorldChunkAnimState(int id);
+
+/* 0x8002b444: Every chunk-anim entry with id byte == id: [2] (current step) = step;
+ * when `fire` is set also [3] (delay) = 1 so it advances on the next tick. */
+void SetWorldChunkAnimStep(int id, int step, int fire);
+
+/* 0x8002c914: Empty `jr ra` stub; level code calls it with a reward/script id. */
+void StubRewardHook(void);
+
+/* 0x80032a20: Poll the pending memcard sync; on completion commit the result into
+ * the 2-entry ring and flip its index, then run the card-info op handler. Used by
+ * the titlescreen memcard menu. */
+void PollMemCardSyncRing(void);
+
+/* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
+void StubActorHook(void);
+
+/* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
+ * `speed` under `gravity`; flight time (frames) via pOutTime. */
+int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity, int *pOutTime);
+
+/* 0x80038d54: |dot(plane.xyz, p) >> 10 + plane.w| — absolute point/plane distance. */
+int PlaneDistanceAbs(int *p, int *plane);
+
+/* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
+ * side it is already turning toward); returns the residual heading error. */
+int SteerActorAroundPoint();
+
+/* 0x80039e94: Path-follow that turns in place while the heading error exceeds
+ * `lim`, then walks; returns 0x100 + node index on arrival. */
+int PivotActorAlongPath();
+
+/* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
+ * waypoint, optional contact probe and ground snap; returns 0x100 + index on arrival. */
+int SteerActorAlongWaypoints();
+
+/* 0x8003a420: Ground-walking path follow: clamped turn, matrix-rotated move,
+ * ground contact, waypoint advance. */
+int WalkActorAlongWaypoints();
+
+/* 0x8003abc0: Spawn the drop (gem/item/debris) a broken or flamed actor leaves. */
+void SpawnActorDeathDrop();
+
+/* 0x8003b0dc: True when any actor of pickup group `group` has type byte (+0x48) < 0x80. */
+int PickupGroupHasLiveActor(int group);
+
+/* 0x8003b854: Bank `value` gems for an actor kill/pickup and set its committed-kill
+ * and per-level kill bits, then play the pickup sound on the actor. */
+void CommitActorKillGems(int value, unsigned char *actor);
+
+/* 0x8003bad0: Turn (yaw/pitch clamped) and move an actor toward a 3D point, with
+ * optional sphere collision; returns 1 when the move was adjusted. */
+int SteerActorTowardPoint();
+
+/* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
+ * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
+int TweenActorAlongPath();
+
+/* 0x8003c358: Spell a level or balloonist name in floating letter actors around a sign. */
+void SpawnNameLetterActors();
+
+/* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera stick requests. */
+void AimCameraStickTowardPoint(int *target);
+
+/* 0x8004e2e8: If Spyro is within radius + 0x164 of pos (box then sphere test), OR
+ * `flags` into g_dwSpyroTriggerEventFlags and return 1; else 0. */
+int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
+
+/* 0x80051fec: Build the frame's active-actor pointer list: actors flagged
+ * always-active (+0x51) or within their activation radius (+0x52 << 10) of Spyro,
+ * plus every member of a pickup group (+0x43) with any active member. */
+void BuildActiveActorList(void);
+
+/* 0x800529e4: Recompute an actor's derived state by flag bits: 1 = mesh/anim frame
+ * pointer (+8), 2 = spatial-grid cell relink (+0x34), 4 = rotation matrix from euler (+0x44). */
+void RefreshActorDerivedState(void *actor, int flags);
+
+/* 0x80052d64: World position of attach/mount point `slot` on an actor's model. */
+void GetActorAttachPoint(void *actor, int slot, int *dst);
+
+/* 0x80053570: Claim the next 0x20-byte emit-list record and stamp its class at +1
+ * (a full list overwrites a random record). */
+void *AllocEmitListRecord(int cls);
+
+/* 0x80053608: Release an emit-list record: mark it a hole (-2), or trim the list's
+ * tail (-1 terminator) when it was last; pulls the write cursor back. */
+void FreeEmitListRecord(unsigned char *rec);
+
+/* 0x80054578: Refresh the HUD level-gem counter cache and digits. */
+void RefreshHudLevelGemCounter(void);
+
+/* 0x80057380: Trigger-region type byte of the current ground surface, or -1. */
+int GetGroundTriggerRegionType(void);
+
+/* 0x80058ae8: Claim a free world sparkle record (kind 0x11), NULL when all 16 are used. */
+void *AllocWorldSparkle(void);
+
+/* 0x80058b60: *p = 0. */
+void ClearWord(int *p);
+
+/* 0x80059474: Latch an actor's position and yaw as the level spawn anchor and
+ * snapshot the level tallies into the persistence block. */
+void SetSpawnAnchorFromActor(unsigned char *actor, int yaw);
+
+/* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the actor
+ * (positionless for NULL), then BurstActorIntoSparks(actor, arg). */
+void BurstActorWithSound(void *actor, int arg);
+
+/* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
+ * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
+ * at them; `arg` lands in GTE RBK and seeds the spark colour. */
+void BurstActorIntoSparks(void *actor, int arg);
 
 #endif /* OPEN_SPYRO_FUNCS_H */

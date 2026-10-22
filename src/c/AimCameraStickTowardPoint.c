@@ -14,7 +14,7 @@ extern int g_anCameraScriptStickRequestXBlock[];
    matrix, take the offset to the target back into body space, then convert
    the pitch/yaw angles into clamped stick-request values (dead-banded away
    from the straight-up/straight-down poles). */
-void func_8003C85C(int *target) {
+void AimCameraStickTowardPoint(int *target) {
   int inv[8];
   int v[3];
 

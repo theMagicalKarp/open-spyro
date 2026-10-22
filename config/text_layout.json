@@ -291,7 +291,7 @@
    "size": 56
   },
   {
-   "name": "func_800177F8",
+   "name": "DivideVector3",
    "vram": 2147579896,
    "size": 92
   },
@@ -356,12 +356,12 @@
    "size": 180
   },
   {
-   "name": "func_80017BFC",
+   "name": "VectorToSVectorShr2",
    "vram": 2147580924,
    "size": 40
   },
   {
-   "name": "func_80017C24",
+   "name": "SVectorToVectorShl2",
    "vram": 2147580964,
    "size": 40
   },
@@ -376,7 +376,7 @@
    "size": 28
   },
   {
-   "name": "func_80017C84",
+   "name": "AddSVector",
    "vram": 2147581060,
    "size": 52
   },
@@ -386,7 +386,7 @@
    "size": 196
   },
   {
-   "name": "func_80017D7C",
+   "name": "ComputeStepTowardPoint",
    "vram": 2147581308,
    "size": 216
   },
@@ -596,17 +596,17 @@
    "size": 3220
   },
   {
-   "name": "func_8002B390",
+   "name": "ModifyWorldChunkAnimFlags",
    "vram": 2147660688,
    "size": 100
   },
   {
-   "name": "func_8002B3F4",
+   "name": "GetWorldChunkAnimState",
    "vram": 2147660788,
    "size": 80
   },
   {
-   "name": "func_8002B444",
+   "name": "SetWorldChunkAnimStep",
    "vram": 2147660868,
    "size": 104
   },
@@ -686,7 +686,7 @@
    "size": 112
   },
   {
-   "name": "func_8002C914",
+   "name": "StubRewardHook",
    "vram": 2147666196,
    "size": 8
   },
@@ -811,7 +811,7 @@
    "size": 1352
   },
   {
-   "name": "func_80032A20",
+   "name": "PollMemCardSyncRing",
    "vram": 2147691040,
    "size": 144
   },
@@ -936,7 +936,7 @@
    "size": 708
   },
   {
-   "name": "func_80037E98",
+   "name": "StubActorHook",
    "vram": 2147712664,
    "size": 8
   },
@@ -1021,17 +1021,17 @@
    "size": 160
   },
   {
-   "name": "func_800385BC",
+   "name": "BurstActorWithSound",
    "vram": 2147714492,
    "size": 124
   },
   {
-   "name": "func_80038638",
+   "name": "SteerActorAroundPoint",
    "vram": 2147714616,
    "size": 740
   },
   {
-   "name": "func_8003891C",
+   "name": "ComputeLobVelocityZ",
    "vram": 2147715356,
    "size": 292
   },
@@ -1056,7 +1056,7 @@
    "size": 264
   },
   {
-   "name": "func_80038D54",
+   "name": "PlaneDistanceAbs",
    "vram": 2147716436,
    "size": 108
   },
@@ -1101,17 +1101,17 @@
    "size": 1004
   },
   {
-   "name": "func_80039E94",
+   "name": "PivotActorAlongPath",
    "vram": 2147720852,
    "size": 728
   },
   {
-   "name": "func_8003A16C",
+   "name": "SteerActorAlongWaypoints",
    "vram": 2147721580,
    "size": 692
   },
   {
-   "name": "func_8003A420",
+   "name": "WalkActorAlongWaypoints",
    "vram": 2147722272,
    "size": 768
   },
@@ -1151,12 +1151,12 @@
    "size": 212
   },
   {
-   "name": "func_8003ABC0",
+   "name": "SpawnActorDeathDrop",
    "vram": 2147724224,
    "size": 1308
   },
   {
-   "name": "func_8003B0DC",
+   "name": "PickupGroupHasLiveActor",
    "vram": 2147725532,
    "size": 132
   },
@@ -1206,7 +1206,7 @@
    "size": 148
   },
   {
-   "name": "func_8003B854",
+   "name": "CommitActorKillGems",
    "vram": 2147727444,
    "size": 384
   },
@@ -1216,7 +1216,7 @@
    "size": 252
   },
   {
-   "name": "func_8003BAD0",
+   "name": "SteerActorTowardPoint",
    "vram": 2147728080,
    "size": 508
   },
@@ -1231,12 +1231,12 @@
    "size": 232
   },
   {
-   "name": "func_8003BFC0",
+   "name": "TweenActorAlongPath",
    "vram": 2147729344,
    "size": 920
   },
   {
-   "name": "func_8003C358",
+   "name": "SpawnNameLetterActors",
    "vram": 2147730264,
    "size": 908
   },
@@ -1246,7 +1246,7 @@
    "size": 376
   },
   {
-   "name": "func_8003C85C",
+   "name": "AimCameraStickTowardPoint",
    "vram": 2147731548,
    "size": 312
   },
@@ -1256,7 +1256,7 @@
    "size": 304
   },
   {
-   "name": "func_8003CAC4",
+   "name": "TallyFlightTarget",
    "vram": 2147732164,
    "size": 96
   },
@@ -1526,7 +1526,7 @@
    "size": 964
   },
   {
-   "name": "func_8004E2E8",
+   "name": "RaiseSpyroTriggerInRadius",
    "vram": 2147803880,
    "size": 224
   },
@@ -1606,7 +1606,7 @@
    "size": 5148
   },
   {
-   "name": "func_80051FEC",
+   "name": "BuildActiveActorList",
    "vram": 2147819500,
    "size": 468
   },
@@ -1641,12 +1641,12 @@
    "size": 24
   },
   {
-   "name": "func_800529E4",
+   "name": "RefreshActorDerivedState",
    "vram": 2147822052,
    "size": 896
   },
   {
-   "name": "func_80052D64",
+   "name": "GetActorAttachPoint",
    "vram": 2147822948,
    "size": 468
   },
@@ -1656,7 +1656,7 @@
    "size": 392
   },
   {
-   "name": "func_800530C0",
+   "name": "BurstActorIntoSparks",
    "vram": 2147823808,
    "size": 784
   },
@@ -1666,12 +1666,12 @@
    "size": 416
   },
   {
-   "name": "func_80053570",
+   "name": "AllocEmitListRecord",
    "vram": 2147825008,
    "size": 152
   },
   {
-   "name": "func_80053608",
+   "name": "FreeEmitListRecord",
    "vram": 2147825160,
    "size": 156
   },
@@ -1731,7 +1731,7 @@
    "size": 208
   },
   {
-   "name": "func_80054578",
+   "name": "RefreshHudLevelGemCounter",
    "vram": 2147829112,
    "size": 136
   },
@@ -1811,7 +1811,7 @@
    "size": 1052
   },
   {
-   "name": "func_80057380",
+   "name": "GetGroundTriggerRegionType",
    "vram": 2147840896,
    "size": 72
   },
@@ -1841,12 +1841,12 @@
    "size": 644
   },
   {
-   "name": "func_80058AE8",
+   "name": "AllocWorldSparkle",
    "vram": 2147846888,
    "size": 120
   },
   {
-   "name": "func_80058B60",
+   "name": "ClearWord",
    "vram": 2147847008,
    "size": 8
   },
@@ -1881,7 +1881,7 @@
    "size": 1808
   },
   {
-   "name": "func_80059474",
+   "name": "SetSpawnAnchorFromActor",
    "vram": 2147849332,
    "size": 248
   },
@@ -4040,7 +4040,7 @@
    "size": 32
   },
   {
-   "sym": "D_800113A0",
+   "sym": "g_pSharedLoadBuffer",
    "offset": 5024,
    "owner": null,
    "size": 4

@@ -6,7 +6,7 @@ extern int ComputeSaveGameChecksum(unsigned char *data);
 
 extern int D_80075838;
 extern int D_8007583C;
-extern short D_80075F18;
+extern short g_nCdDaVolumeCurrent;
 extern short D_80075F1A;
 extern int D_80076224_blk;
 extern int D_80076228;
@@ -64,7 +64,7 @@ int func_80059594(unsigned char *buf) {
   *((int *)common) = 0xC0;
   g_nMusicVolume = mv;
   D_80076224_blk = mv << 0xB;
-  D_80075F18 = mv << 0xB;
+  g_nCdDaVolumeCurrent = mv << 0xB;
   D_80075F1A = mv << 0xB;
   SetSpuCommonAttr(common);
   cam = *((unsigned int *)(buf + 4));

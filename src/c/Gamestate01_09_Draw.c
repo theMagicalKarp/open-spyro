@@ -19,15 +19,16 @@ extern void DrawOTag(void *ot);
 /* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
 extern short g_anCameraEulerPitchBlock[];
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
-extern int D_80075910;               /* level-intro camera parallax countdown */
+extern int
+    g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */
 extern int D_80076DE4[]; /* camera view matrix (worldToCam at -0x14) */
 
 /* Draw gamestates 1 and 9 (level intro / world arrival): copies the world
    fog color into both frame DRAWENVs, clears the OT bins, draws the
    transition gem tally when active, Spyro, then the static world mesh —
    with a temporary pitch-parallax view matrix while the intro countdown
-   (D_80075910, -2/frame) runs. Ends with the standard 2-vblank frame
-   submit (0x8001a050, 956 bytes). */
+   (g_nLevelIntroParallaxCountdown, -2/frame) runs. Ends with the standard
+   2-vblank frame submit (0x8001a050, 956 bytes). */
 void Gamestate01_09_Draw(void) {
   int r;
   int g;
@@ -52,21 +53,25 @@ void Gamestate01_09_Draw(void) {
   }
   RasterizePairedActor();
   if (g_nWorldRenderMeshChunkCount != 0) {
-    D_80075910 -= 2;
-    if (D_80075910 < 0) {
-      D_80075910 = 0;
+    g_nLevelIntroParallaxCountdown -= 2;
+    if (g_nLevelIntroParallaxCountdown < 0) {
+      g_nLevelIntroParallaxCountdown = 0;
     }
-    if (D_80075910 != 0) {
+    if (g_nLevelIntroParallaxCountdown != 0) {
       FillWord(&m1, 0, 0x20);
       SetTransMatrix(&m1);
       m1.m[0][0] = 0x1000;
-      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] - D_80075910);
+      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] -
+                           g_nLevelIntroParallaxCountdown);
       m1.m[1][1] = iVar1;
-      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] - D_80075910);
+      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] -
+                         g_nLevelIntroParallaxCountdown);
       m1.m[2][1] = iVar1;
-      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] - D_80075910);
+      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] -
+                         g_nLevelIntroParallaxCountdown);
       m1.m[1][2] = -iVar1;
-      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] - D_80075910);
+      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] -
+                           g_nLevelIntroParallaxCountdown);
       m1.m[2][2] = iVar1;
 
       p2 = &m2;

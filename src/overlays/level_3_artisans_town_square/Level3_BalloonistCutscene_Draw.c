@@ -12,7 +12,7 @@
  *            * 0x1F/0x20: the confirm prompt + "GO TO <name>".
  *          The highlighted entry is the one whose index equals D_800777F0;
  *          its glyphs get the pulse, the rest stay flat.
- *   >= 4 — append the pending OT node (D_80077850) to the depth-bin list at
+ *   >= 4 — append the pending OT node (g_pGamestate0cRecord) to the depth-bin list at
  *          g_pOtDepthBinHead0 instead.
  * Every path finishes with the frame pipeline (BuildRenderEntityLists / ComposeFrameScene /
  * SetupFrameOT / DrawActors / RasterizeEmitList).
@@ -42,7 +42,7 @@ extern int g_nGamestate0cSubstate[];            /* [0] substate [1] phase [2] se
 extern int g_pSpriteRecordWriteCursor;              /* sprite-record write cursor */
 extern int g_nActiveLevelId;              /* active level id */
 extern int g_nCurrentLevelId;              /* current level id */
-extern int D_80077850;              /* pending OT node */
+extern int g_pGamestate0cRecord;              /* pending OT node */
 extern int g_apSpritePrimQueue;              /* sprite prim queue head */
 extern int g_pOtDepthBinHead0[];            /* OT depth-bin list */
 extern unsigned short g_anCosineLut[]; /* cosine LUT */
@@ -242,7 +242,7 @@ void Level3_BalloonistCutscene_Draw(void) {
       } while (*node != 0);
     }
     node[1] = 0;
-    node[0] = D_80077850;
+    node[0] = g_pGamestate0cRecord;
     ComposeFrameScene();
   }
   SetupFrameOT();

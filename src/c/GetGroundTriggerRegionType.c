@@ -4,7 +4,7 @@
    bits of g_nGroundSurfaceType index a table of region records; 0x3F is the
    "no region" sentinel. For a real region, dereference its record and return
    the leading type byte; otherwise return -1. */
-int func_80057380(void) {
+int GetGroundTriggerRegionType(void) {
   int surface = g_nGroundSurfaceType & 0x3F;
 
   if (surface != 0x3F) {

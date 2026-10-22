@@ -175,15 +175,15 @@ extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedV
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int g_anCameraPos;     /* turret aim target X */
-extern int D_80076DFC;     /* turret aim target Y */
+extern int g_nCameraPosY;     /* turret aim target Y */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
-extern short D_8006F3A0[]; /* launch-direction table, x */
-extern short D_8006F3A2[]; /* launch-direction table, z */
+extern short g_anLaunchDirTable[]; /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
@@ -403,7 +403,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
-      rec->unk46 = ArcTan2(g_anCameraPos - rec->posX, D_80076DFC - rec->posY, 0);
+      rec->unk46 = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, 0);
       rec->posZ -= 0x400;
       st->unk00 = 0x40;
       st->owner = parent;
@@ -576,9 +576,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->unk57 = 0x30;
       }
       i = GetRandomU32() & 7;
-      dir[0] = D_8006F3A0[i * 2];
+      dir[0] = g_anLaunchDirTable[i * 2];
       dir[1] = 0;
-      dir[2] = D_8006F3A2[i * 2];
+      dir[2] = g_anLaunchDirTableZ[i * 2];
       RotateVectorByMatrix(parent->unk20, dir, dir);
       dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
       dir[1] -= 0x3F - (GetRandomU32() & 0x7F);

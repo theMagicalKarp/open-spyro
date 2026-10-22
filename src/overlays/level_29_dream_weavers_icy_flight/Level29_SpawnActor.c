@@ -164,8 +164,8 @@ extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
-extern short D_8006F3A0[]; /* launch-direction table, x */
-extern short D_8006F3A2[]; /* launch-direction table, z */
+extern short g_anLaunchDirTable[]; /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
@@ -174,8 +174,8 @@ extern int g_anSpyroFirstContactNormal[3];
 extern int g_nSpyroGroundHeightZ;     /* g_nSpyroGroundHeight */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
-extern unsigned char D_80078A66;  /* g_bSpyroBodyYaw (8-bit) */
-extern int D_8007595C;     /* active flight-race slot index */
+extern unsigned char g_bSpyroPersistentEulerZ;  /* g_bSpyroBodyYaw (8-bit) */
+extern int g_nActiveWorldIndex;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 
@@ -343,7 +343,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     st->unk08 = 0x15E;
     st->unk00 = StepAndLerpAngle8(
         ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, 0),
-        D_80078A66, 0x28, 0x40);
+        g_bSpyroPersistentEulerZ, 0x28, 0x40);
     st->unk0C = 0x78;
     break;
   }
@@ -507,7 +507,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
   }
 
   case 0x159 ... 0x15B:
-    if (g_anWorldPersistentFlags[D_8007595C] != 0) {
+    if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);
       rec = 0;

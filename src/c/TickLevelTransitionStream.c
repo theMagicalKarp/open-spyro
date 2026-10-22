@@ -46,7 +46,7 @@ extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
 extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];
 
-extern void *D_800113A0; /* level splash image buffer */
+extern void *g_pSharedLoadBuffer; /* level splash image buffer */
 extern int D_80075670;
 extern int D_80075674;
 extern int D_8007577C;
@@ -56,8 +56,8 @@ extern int D_80075850;
 extern int D_80075854;
 extern int D_80075870;
 extern int D_80075874;
-extern int D_80075910;
-extern int D_8007595C; /* current world index */
+extern int g_nLevelIntroParallaxCountdown;
+extern int g_nActiveWorldIndex; /* current world index */
 extern int D_80076E24;
 extern int D_800776CC; /* level-intro deadline */
 extern int D_8007A71C; /* splash size column of the level archive table */
@@ -173,12 +173,12 @@ void TickLevelTransitionStream(int full) {
     ApplyPerLevelGlobalsTable();
     g_nPrevLevelIntroIndex = g_nLevelIntroIndex;
     world = g_nActiveLevelId / 10 - 1;
-    D_8007595C = world;
+    g_nActiveWorldIndex = world;
     intro = world * 6 + g_nActiveLevelId % 10;
     g_nLevelIntroIndex = intro;
     if (full) {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      void *dst = *(void *volatile *)&D_800113A0;
+      void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
 
       int size = LEVEL_SPLASH_SIZE(intro);
       int off = LEVEL_SPLASH_OFFSET(intro);
@@ -331,7 +331,7 @@ void TickLevelTransitionStream(int full) {
       g_nCdStreamState++;
       break;
     }
-    if (D_80075910 != 0) {
+    if (g_nLevelIntroParallaxCountdown != 0) {
       break;
     }
     if (g_nScriptedMobTag != 0) {
