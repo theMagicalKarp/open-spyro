@@ -17712,13 +17712,13 @@ glabel Level8_EmitParticles
 endlabel Level8_EmitParticles
 .endif
 
-.section .text.Level8_Noop, "ax"
-.ifndef HAVE_C_Level8_Noop
-nonmatching Level8_Noop, 0x8
+.section .text.Level8_OverlayEnd, "ax"
+.ifndef HAVE_C_Level8_OverlayEnd
+nonmatching Level8_OverlayEnd, 0x8
 
-glabel Level8_Noop
+glabel Level8_OverlayEnd
     /* 110C0 8008BAF8 0800E003 */  jr         $ra
     /* 110C4 8008BAFC 00000000 */   nop
-endlabel Level8_Noop
+endlabel Level8_OverlayEnd
 .endif
 

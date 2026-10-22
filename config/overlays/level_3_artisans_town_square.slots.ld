@@ -25,5 +25,5 @@
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_EmitParticles)
     build/overlays/level_3_artisans_town_square/c/Level3_EmitParticles.o(.text)
     . = 0x0000f494 ;
-    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_Noop)
-    build/overlays/level_3_artisans_town_square/c/Level3_Noop.o(.text)
+    build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_OverlayEnd)
+    build/overlays/level_3_artisans_town_square/c/Level3_OverlayEnd.o(.text)

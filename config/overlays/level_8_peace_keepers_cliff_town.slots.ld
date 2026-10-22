@@ -25,5 +25,5 @@
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_EmitParticles)
     build/overlays/level_8_peace_keepers_cliff_town/c/Level8_EmitParticles.o(.text)
     . = 0x000110c0 ;
-    build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_Noop)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_Noop.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_OverlayEnd)
+    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_OverlayEnd.o(.text)

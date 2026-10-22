@@ -10574,13 +10574,13 @@ glabel Level29_EmitParticles
 endlabel Level29_EmitParticles
 .endif
 
-.section .text.Level29_Noop, "ax"
-.ifndef HAVE_C_Level29_Noop
-nonmatching Level29_Noop, 0x8
+.section .text.Level29_OverlayEnd, "ax"
+.ifndef HAVE_C_Level29_OverlayEnd
+nonmatching Level29_OverlayEnd, 0x8
 
-glabel Level29_Noop
+glabel Level29_OverlayEnd
     /* 9EFC 80084934 0800E003 */  jr         $ra
     /* 9F00 80084938 00000000 */   nop
-endlabel Level29_Noop
+endlabel Level29_OverlayEnd
 .endif
 

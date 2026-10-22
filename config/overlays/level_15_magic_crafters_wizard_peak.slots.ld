@@ -13,5 +13,5 @@
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_EmitParticles)
     build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_EmitParticles.o(.text)
     . = 0x0000fe68 ;
-    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_Noop)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_Noop.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_OverlayEnd)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_OverlayEnd.o(.text)

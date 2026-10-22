@@ -13,5 +13,5 @@
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_EmitParticles)
     build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_EmitParticles.o(.text)
     . = 0x0000b828 ;
-    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_Noop)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_Noop.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_OverlayEnd)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_OverlayEnd.o(.text)

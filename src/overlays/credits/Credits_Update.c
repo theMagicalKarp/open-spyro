@@ -3,7 +3,7 @@
  * Credits-sequence frame update (the Draw half is Credits_Draw).
  * While the sequence gate g_nGamestate0fMode is -1 it first BUILDS the sequence:
  * clears the 100-entry glyph pool (0x1C stride, base D_8007589C =
- * Credits_Noop), loads the four credits VRAM strips through
+ * Credits_OverlayEnd), loads the four credits VRAM strips through
  * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
  * (D_80075708 line table, 0xC stride) and arms the scroll header
  * D_800757BC.  Then, every frame: advances the header cursor and the fade
@@ -281,7 +281,7 @@ extern char *g_pPathTableBuffer;
 extern int g_nLevelArchiveBaseLba;
 extern volatile int g_nLevelArchiveByteSize;
 extern int D_8007A960[];
-extern char Credits_Noop[];
+extern char Credits_OverlayEnd[];
 
 typedef struct {
   char *d8;
@@ -326,7 +326,7 @@ void Credits_Update(void) {
   short rect0[4];
 
   if (g_nGamestate0fMode == -1) {
-    char *pool = Credits_Noop;
+    char *pool = Credits_OverlayEnd;
     int sector;
     if (D_80075768 == 0) {
       int i;

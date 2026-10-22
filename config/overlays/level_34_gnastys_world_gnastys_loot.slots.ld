@@ -13,5 +13,5 @@
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.Level34_EmitParticles)
     build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_EmitParticles.o(.text)
     . = 0x0000b82c ;
-    build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.Level34_Noop)
-    build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_Noop.o(.text)
+    build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/text.o(.text.Level34_OverlayEnd)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_OverlayEnd.o(.text)

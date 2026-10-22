@@ -7,5 +7,5 @@
     build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_Draw)
     build/overlays/credits/c/Credits_Draw.o(.text)
     . = 0x00001900 ;
-    build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_Noop)
-    build/overlays/credits/c/Credits_Noop.o(.text)
+    build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_OverlayEnd)
+    build/overlays/credits/c/Credits_OverlayEnd.o(.text)

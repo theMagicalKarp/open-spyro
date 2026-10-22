@@ -28,5 +28,5 @@
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_EmitParticles)
     build/overlays/level_29_dream_weavers_icy_flight/c/Level29_EmitParticles.o(.text)
     . = 0x00009efc ;
-    build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_Noop)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_Noop.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_OverlayEnd)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_OverlayEnd.o(.text)

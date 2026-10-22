@@ -10,4 +10,4 @@ Level18_UpdateActors = 0x8007E18C; // type:func size:0x9D64
 Level18_SpawnActor = 0x80087EF0; // type:func size:0xA08
 Level18_AdvanceEmitList = 0x800888F8; // type:func size:0x11C0
 Level18_EmitParticles = 0x80089AB8; // type:func size:0x10B8
-Level18_Noop = 0x8008AB70; // type:func size:0x8
+Level18_OverlayEnd = 0x8008AB70; // type:func size:0x8

@@ -13,5 +13,5 @@
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_EmitParticles)
     build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_EmitParticles.o(.text)
     . = 0x0000ede8 ;
-    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_Noop)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_Noop.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_OverlayEnd)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_OverlayEnd.o(.text)

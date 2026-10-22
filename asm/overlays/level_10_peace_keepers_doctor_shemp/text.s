@@ -13333,13 +13333,13 @@ glabel Level10_EmitParticles
 endlabel Level10_EmitParticles
 .endif
 
-.section .text.Level10_Noop, "ax"
-.ifndef HAVE_C_Level10_Noop
-nonmatching Level10_Noop, 0x8
+.section .text.Level10_OverlayEnd, "ax"
+.ifndef HAVE_C_Level10_OverlayEnd
+nonmatching Level10_OverlayEnd, 0x8
 
-glabel Level10_Noop
+glabel Level10_OverlayEnd
     /* C7D8 80087210 0800E003 */  jr         $ra
     /* C7DC 80087214 00000000 */   nop
-endlabel Level10_Noop
+endlabel Level10_OverlayEnd
 .endif
 

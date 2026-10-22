@@ -10,4 +10,4 @@ Level7_UpdateActors = 0x8007E240; // type:func size:0xC290
 Level7_SpawnActor = 0x8008A4D0; // type:func size:0xCF0
 Level7_AdvanceEmitList = 0x8008B1C0; // type:func size:0x1380
 Level7_EmitParticles = 0x8008C540; // type:func size:0x10C0
-Level7_Noop = 0x8008D600; // type:func size:0x8
+Level7_OverlayEnd = 0x8008D600; // type:func size:0x8

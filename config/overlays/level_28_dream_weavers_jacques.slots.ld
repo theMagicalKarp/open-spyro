@@ -13,5 +13,5 @@
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_EmitParticles)
     build/overlays/level_28_dream_weavers_jacques/c/Level28_EmitParticles.o(.text)
     . = 0x0000b910 ;
-    build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_Noop)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_Noop.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_OverlayEnd)
+    build/overlays/level_28_dream_weavers_jacques/c/Level28_OverlayEnd.o(.text)

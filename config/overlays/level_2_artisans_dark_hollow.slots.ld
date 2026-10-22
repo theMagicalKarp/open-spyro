@@ -13,5 +13,5 @@
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_EmitParticles)
     build/overlays/level_2_artisans_dark_hollow/c/Level2_EmitParticles.o(.text)
     . = 0x0000ab5c ;
-    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_Noop)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_Noop.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_OverlayEnd)
+    build/overlays/level_2_artisans_dark_hollow/c/Level2_OverlayEnd.o(.text)

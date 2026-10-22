@@ -28,5 +28,5 @@
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_EmitParticles)
     build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_EmitParticles.o(.text)
     . = 0x00009958 ;
-    build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_Noop)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_Noop.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_OverlayEnd)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_OverlayEnd.o(.text)

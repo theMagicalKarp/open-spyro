@@ -28,5 +28,5 @@
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_EmitParticles)
     build/overlays/level_23_beast_makers_wild_flight/c/Level23_EmitParticles.o(.text)
     . = 0x00009e0c ;
-    build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_Noop)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_Noop.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_OverlayEnd)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_OverlayEnd.o(.text)

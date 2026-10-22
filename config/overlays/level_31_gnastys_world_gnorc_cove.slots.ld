@@ -13,5 +13,5 @@
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_EmitParticles)
     build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_EmitParticles.o(.text)
     . = 0x0000dc30 ;
-    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_Noop)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_Noop.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_OverlayEnd)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_OverlayEnd.o(.text)

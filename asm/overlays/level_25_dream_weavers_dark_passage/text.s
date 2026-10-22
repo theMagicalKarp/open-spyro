@@ -13872,13 +13872,13 @@ glabel Level25_EmitParticles
 endlabel Level25_EmitParticles
 .endif
 
-.section .text.Level25_Noop, "ax"
-.ifndef HAVE_C_Level25_Noop
-nonmatching Level25_Noop, 0x8
+.section .text.Level25_OverlayEnd, "ax"
+.ifndef HAVE_C_Level25_OverlayEnd
+nonmatching Level25_OverlayEnd, 0x8
 
-glabel Level25_Noop
+glabel Level25_OverlayEnd
     /* D69C 800880D4 0800E003 */  jr         $ra
     /* D6A0 800880D8 00000000 */   nop
-endlabel Level25_Noop
+endlabel Level25_OverlayEnd
 .endif
 

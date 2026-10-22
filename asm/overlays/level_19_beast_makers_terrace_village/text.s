@@ -13318,13 +13318,13 @@ glabel Level19_EmitParticles
 endlabel Level19_EmitParticles
 .endif
 
-.section .text.Level19_Noop, "ax"
-.ifndef HAVE_C_Level19_Noop
-nonmatching Level19_Noop, 0x8
+.section .text.Level19_OverlayEnd, "ax"
+.ifndef HAVE_C_Level19_OverlayEnd
+nonmatching Level19_OverlayEnd, 0x8
 
-glabel Level19_Noop
+glabel Level19_OverlayEnd
     /* CF0C 80087944 0800E003 */  jr         $ra
     /* CF10 80087948 00000000 */   nop
-endlabel Level19_Noop
+endlabel Level19_OverlayEnd
 .endif
 

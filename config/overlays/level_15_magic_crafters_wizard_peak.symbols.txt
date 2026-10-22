@@ -6,4 +6,4 @@ Level15_UpdateActors = 0x8007B7A8; // type:func size:0xB630
 Level15_SpawnActor = 0x80086DD8; // type:func size:0xD68
 Level15_AdvanceEmitList = 0x80087B40; // type:func size:0x1910
 Level15_EmitParticles = 0x80089450; // type:func size:0x1450
-Level15_Noop = 0x8008A8A0; // type:func size:0x8
+Level15_OverlayEnd = 0x8008A8A0; // type:func size:0x8

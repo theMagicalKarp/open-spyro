@@ -2,4 +2,4 @@
 // Block starts are splat's own autodetection over the compiled .text region.
 Credits_Update = 0x8007AA50; // type:func size:0x1580
 Credits_Draw = 0x8007BFD0; // type:func size:0x368
-Credits_Noop = 0x8007C338; // type:func size:0x8
+Credits_OverlayEnd = 0x8007C338; // type:func size:0x8

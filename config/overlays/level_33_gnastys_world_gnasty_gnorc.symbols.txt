@@ -6,4 +6,4 @@ Level33_UpdateActors = 0x8007AD64; // type:func size:0x81C0
 Level33_SpawnActor = 0x80082F24; // type:func size:0x7CC
 Level33_AdvanceEmitList = 0x800836F0; // type:func size:0xF44
 Level33_EmitParticles = 0x80084634; // type:func size:0xE80
-Level33_Noop = 0x800854B4; // type:func size:0x8
+Level33_OverlayEnd = 0x800854B4; // type:func size:0x8

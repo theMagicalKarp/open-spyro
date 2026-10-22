@@ -15459,13 +15459,13 @@ glabel Level27_EmitParticles
 endlabel Level27_EmitParticles
 .endif
 
-.section .text.Level27_Noop, "ax"
-.ifndef HAVE_C_Level27_Noop
-nonmatching Level27_Noop, 0x8
+.section .text.Level27_OverlayEnd, "ax"
+.ifndef HAVE_C_Level27_OverlayEnd
+nonmatching Level27_OverlayEnd, 0x8
 
-glabel Level27_Noop
+glabel Level27_OverlayEnd
     /* EDE8 80089820 0800E003 */  jr         $ra
     /* EDEC 80089824 00000000 */   nop
-endlabel Level27_Noop
+endlabel Level27_OverlayEnd
 .endif
 

@@ -28,5 +28,5 @@
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_EmitParticles)
     build/overlays/level_5_artisans_sunny_flight/c/Level5_EmitParticles.o(.text)
     . = 0x0000a498 ;
-    build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_Noop)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_Noop.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_OverlayEnd)
+    build/overlays/level_5_artisans_sunny_flight/c/Level5_OverlayEnd.o(.text)

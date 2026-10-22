@@ -25,5 +25,5 @@
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_EmitParticles)
     build/overlays/level_18_beast_makers_home/c/Level18_EmitParticles.o(.text)
     . = 0x00010138 ;
-    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_Noop)
-    build/overlays/level_18_beast_makers_home/c/Level18_Noop.o(.text)
+    build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_OverlayEnd)
+    build/overlays/level_18_beast_makers_home/c/Level18_OverlayEnd.o(.text)

@@ -13,5 +13,5 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_EmitParticles)
     build/overlays/level_4_artisans_toasty/c/Level4_EmitParticles.o(.text)
     . = 0x00009fd8 ;
-    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_Noop)
-    build/overlays/level_4_artisans_toasty/c/Level4_Noop.o(.text)
+    build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_OverlayEnd)
+    build/overlays/level_4_artisans_toasty/c/Level4_OverlayEnd.o(.text)

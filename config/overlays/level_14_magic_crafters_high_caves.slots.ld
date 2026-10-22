@@ -13,5 +13,5 @@
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_EmitParticles)
     build/overlays/level_14_magic_crafters_high_caves/c/Level14_EmitParticles.o(.text)
     . = 0x00011d04 ;
-    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_Noop)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_Noop.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_OverlayEnd)
+    build/overlays/level_14_magic_crafters_high_caves/c/Level14_OverlayEnd.o(.text)

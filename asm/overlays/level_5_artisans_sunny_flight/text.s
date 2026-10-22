@@ -10953,13 +10953,13 @@ glabel Level5_EmitParticles
 endlabel Level5_EmitParticles
 .endif
 
-.section .text.Level5_Noop, "ax"
-.ifndef HAVE_C_Level5_Noop
-nonmatching Level5_Noop, 0x8
+.section .text.Level5_OverlayEnd, "ax"
+.ifndef HAVE_C_Level5_OverlayEnd
+nonmatching Level5_OverlayEnd, 0x8
 
-glabel Level5_Noop
+glabel Level5_OverlayEnd
     /* A498 80084ED0 0800E003 */  jr         $ra
     /* A49C 80084ED4 00000000 */   nop
-endlabel Level5_Noop
+endlabel Level5_OverlayEnd
 .endif
 

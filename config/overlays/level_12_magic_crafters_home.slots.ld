@@ -25,5 +25,5 @@
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_EmitParticles)
     build/overlays/level_12_magic_crafters_home/c/Level12_EmitParticles.o(.text)
     . = 0x00013bd0 ;
-    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_Noop)
-    build/overlays/level_12_magic_crafters_home/c/Level12_Noop.o(.text)
+    build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_OverlayEnd)
+    build/overlays/level_12_magic_crafters_home/c/Level12_OverlayEnd.o(.text)

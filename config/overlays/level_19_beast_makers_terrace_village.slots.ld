@@ -13,5 +13,5 @@
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_EmitParticles)
     build/overlays/level_19_beast_makers_terrace_village/c/Level19_EmitParticles.o(.text)
     . = 0x0000cf0c ;
-    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_Noop)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_Noop.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_OverlayEnd)
+    build/overlays/level_19_beast_makers_terrace_village/c/Level19_OverlayEnd.o(.text)

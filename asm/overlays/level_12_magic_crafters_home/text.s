@@ -20506,13 +20506,13 @@ glabel Level12_EmitParticles
 endlabel Level12_EmitParticles
 .endif
 
-.section .text.Level12_Noop, "ax"
-.ifndef HAVE_C_Level12_Noop
-nonmatching Level12_Noop, 0x8
+.section .text.Level12_OverlayEnd, "ax"
+.ifndef HAVE_C_Level12_OverlayEnd
+nonmatching Level12_OverlayEnd, 0x8
 
-glabel Level12_Noop
+glabel Level12_OverlayEnd
     /* 13BD0 8008E608 0800E003 */  jr         $ra
     /* 13BD4 8008E60C 00000000 */   nop
-endlabel Level12_Noop
+endlabel Level12_OverlayEnd
 .endif
 

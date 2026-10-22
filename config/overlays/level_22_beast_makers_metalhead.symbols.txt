@@ -6,4 +6,4 @@ Level22_UpdateActors = 0x8007B770; // type:func size:0xBD8C
 Level22_SpawnActor = 0x800874FC; // type:func size:0xC7C
 Level22_AdvanceEmitList = 0x80088178; // type:func size:0x1338
 Level22_EmitParticles = 0x800894B0; // type:func size:0x11EC
-Level22_Noop = 0x8008A69C; // type:func size:0x8
+Level22_OverlayEnd = 0x8008A69C; // type:func size:0x8

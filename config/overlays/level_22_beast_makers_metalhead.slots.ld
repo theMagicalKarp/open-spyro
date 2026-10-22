@@ -13,5 +13,5 @@
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_EmitParticles)
     build/overlays/level_22_beast_makers_metalhead/c/Level22_EmitParticles.o(.text)
     . = 0x0000fc64 ;
-    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_Noop)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_Noop.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_OverlayEnd)
+    build/overlays/level_22_beast_makers_metalhead/c/Level22_OverlayEnd.o(.text)

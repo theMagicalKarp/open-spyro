@@ -13,5 +13,5 @@
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_EmitParticles)
     build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_EmitParticles.o(.text)
     . = 0x0000cce4 ;
-    build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_Noop)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_Noop.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_OverlayEnd)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_OverlayEnd.o(.text)

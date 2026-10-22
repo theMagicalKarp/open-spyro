@@ -11402,13 +11402,13 @@ glabel Level33_EmitParticles
 endlabel Level33_EmitParticles
 .endif
 
-.section .text.Level33_Noop, "ax"
-.ifndef HAVE_C_Level33_Noop
-nonmatching Level33_Noop, 0x8
+.section .text.Level33_OverlayEnd, "ax"
+.ifndef HAVE_C_Level33_OverlayEnd
+nonmatching Level33_OverlayEnd, 0x8
 
-glabel Level33_Noop
+glabel Level33_OverlayEnd
     /* AA7C 800854B4 0800E003 */  jr         $ra
     /* AA80 800854B8 00000000 */   nop
-endlabel Level33_Noop
+endlabel Level33_OverlayEnd
 .endif
 

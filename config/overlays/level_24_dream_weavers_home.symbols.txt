@@ -10,4 +10,4 @@ Level24_UpdateActors = 0x8007E3C0; // type:func size:0xAA64
 Level24_SpawnActor = 0x80088E24; // type:func size:0x9D8
 Level24_AdvanceEmitList = 0x800897FC; // type:func size:0x1228
 Level24_EmitParticles = 0x8008AA24; // type:func size:0x1114
-Level24_Noop = 0x8008BB38; // type:func size:0x8
+Level24_OverlayEnd = 0x8008BB38; // type:func size:0x8
