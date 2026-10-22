@@ -1816,9 +1816,9 @@ void Level17_UpdateActors(void) {
         g_anFlightTargetTally[2] = 0;
         g_anFlightTallyShown[3] = 0;
         g_anFlightTargetTally[3] = 0;
-        D_80078614 = -1;
-        D_80078610 = -1;
-        D_8007860C = -1;
+        g_anFlightTallyActiveSlots_e3 = -1;
+        g_anFlightTallyActiveSlots_e2 = -1;
+        g_anFlightTallyActiveSlots_e1 = -1;
         g_anFlightTallyActiveSlots = -1;
         g_nFlightTallySlot = -1;
         g_nFlightTallyShownClass = -1;
@@ -2052,10 +2052,10 @@ void Level17_UpdateActors(void) {
               g_nFlightTallySlot = g_nFlightTallyShownClass;
             }
           }
-          g_anFlightTallyActiveSlots = D_8007860C;
-          D_8007860C = D_80078610;
-          D_80078610 = D_80078614;
-          D_80078614 = -1;
+          g_anFlightTallyActiveSlots = g_anFlightTallyActiveSlots_e1;
+          g_anFlightTallyActiveSlots_e1 = g_anFlightTallyActiveSlots_e2;
+          g_anFlightTallyActiveSlots_e2 = g_anFlightTallyActiveSlots_e3;
+          g_anFlightTallyActiveSlots_e3 = -1;
         }
         g_nFlightTallyShownClass = -1;
       }

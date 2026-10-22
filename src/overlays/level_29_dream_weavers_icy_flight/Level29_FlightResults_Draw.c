@@ -298,7 +298,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x3C;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C0[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor > 0)
       {
         sprintf(buf, "%d/8", g_anFlightTargetTally);
@@ -341,7 +341,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C4[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r1[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 3)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally1);
@@ -355,13 +355,13 @@ void Level29_FlightResults_Draw(void)
         if (g_nFlightTargetTally1 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (D_80078681[k] != 0)
+          if (g_abWorldPerLevelByteTable_r1[k] != 0)
           {
             sprintf(buf, "^");
           }
           else
           {
-            sprintf(buf, "%d", D_8006E924[k]);
+            sprintf(buf, "%d", g_anFlightCourseBonusTable_r1[k]);
             bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5 + 1];
           }
           snd = 0;
@@ -384,7 +384,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8C8[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r2[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 5)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally2);
@@ -398,14 +398,14 @@ void Level29_FlightResults_Draw(void)
         if (g_nFlightTargetTally2 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (D_80078682[k] != 0)
+          if (g_abWorldPerLevelByteTable_r2[k] != 0)
           {
             sprintf(buf, "^");
           }
           else
           {
-            sprintf(buf, "%d", D_8006E928[k]);
-            bonus += D_8006E928[g_nActiveWorldIndex * 5];
+            sprintf(buf, "%d", g_anFlightCourseBonusTable_r2[k]);
+            bonus += g_anFlightCourseBonusTable_r2[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -427,7 +427,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x78;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(D_8006E8CC[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r3[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
       if (g_nSubMenuCursor >= 7)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally3);
@@ -441,14 +441,14 @@ void Level29_FlightResults_Draw(void)
         if (g_nFlightTargetTally3 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (D_80078683[k] != 0)
+          if (g_abWorldPerLevelByteTable_r3[k] != 0)
           {
             sprintf(buf, "^");
           }
           else
           {
-            sprintf(buf, "%d", D_8006E92C[k]);
-            bonus += D_8006E92C[g_nActiveWorldIndex * 5];
+            sprintf(buf, "%d", g_anFlightCourseBonusTable_r3[k]);
+            bonus += g_anFlightCourseBonusTable_r3[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }
@@ -476,14 +476,14 @@ void Level29_FlightResults_Draw(void)
         if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (D_80078684[k] != 0)
+          if (g_abWorldPerLevelByteTable_r4[k] != 0)
           {
             sprintf(buf, "^");
           }
           else
           {
-            sprintf(buf, "%d", D_8006E930[k]);
-            bonus += D_8006E930[g_nActiveWorldIndex * 5];
+            sprintf(buf, "%d", g_anFlightCourseBonusTable_r4[k]);
+            bonus += g_anFlightCourseBonusTable_r4[g_nActiveWorldIndex * 5];
           }
           snd = 0;
         }

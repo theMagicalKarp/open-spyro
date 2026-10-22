@@ -10,7 +10,7 @@
  * table (g_anFlightCourseBonusTable[course*5 + i]) into the level gem total
  * (g_anLevelGemsCollected[g_nLevelIntroIndex]) and running score (g_nWorldTreasureCollected), 12 digits
  * (g_nGemTallyIconCount) per payout. A perfect run (tallies sum to 0x20) pays the
- * fifth "all clear" bonus (D_8006E930[course*5], flag D_80078684) and
+ * fifth "all clear" bonus (g_anFlightCourseBonusTable_r4[course*5], flag g_abWorldPerLevelByteTable_r4) and
  * records a best time (g_anWorldPersistentFlags[course], lower is better, 0 = unset)
  * from the run clock g_nFlightRunClock. Finally spins the reward digit ring
  * (g_abGemTallyIconUvTable, 32 slots, glyphs from D_8006E998[i % 12]) and, if the
@@ -61,13 +61,13 @@ void Level29_HandleFlightResults(int reload) {
   }
   if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == 0x20) {
     int idx = g_nActiveWorldIndex * 5;
-    if (D_80078684[idx] == 0) {
+    if (g_abWorldPerLevelByteTable_r4[idx] == 0) {
       int off;
       g_anLevelGemsCollected[g_nLevelIntroIndex] +=
-          *(int *)((char *)D_8006E930 + (off = idx << 2));
-      g_nWorldTreasureCollected += *(int *)((char *)D_8006E930 + off);
+          *(int *)((char *)g_anFlightCourseBonusTable_r4 + (off = idx << 2));
+      g_nWorldTreasureCollected += *(int *)((char *)g_anFlightCourseBonusTable_r4 + off);
       g_nGemTallyIconCount += 0xC;
-      D_80078684[idx] = 1;
+      g_abWorldPerLevelByteTable_r4[idx] = 1;
     }
     {
       int *best = &g_anWorldPersistentFlags[g_nActiveWorldIndex];

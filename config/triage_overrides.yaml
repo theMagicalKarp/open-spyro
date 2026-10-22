@@ -2669,7 +2669,7 @@ Level5_FlightResults_Draw:
     their bonus cell twice across a call under one base symbol, so cse
     value-numbered each pair into a pseudo that reload spilled to an 8-byte
     BLKmode slot; re-spelling ONE accumulate against a neighbouring column of
-    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == D_8006E924[k]) frees exactly
+    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == g_anFlightCourseBonusTable_r1[k]) frees exactly
     one slot at zero insn cost and gives the original's vars= 96, regs= 7/0.
     R1 (21 insns, the `la envBase` pair) re-root-caused off `cc1 -dR`: it is a
     sched2 PRIORITY decision, not the sched1 straggler LUID tie the old note
