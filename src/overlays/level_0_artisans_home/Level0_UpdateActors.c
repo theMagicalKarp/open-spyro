@@ -88,9 +88,9 @@ typedef struct PathState {
   int unk18;
   int heading; /* 0x1C */
   int unk20;   /* 0x20 */
-  int unk24;   /* 0x24 divisor, random 0x6E..0xA0 */
+  int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
   int unk28;   /* 0x28 clamped to <= 0x5A */
-  int unk2C;   /* 0x2C consecutive-success counter */
+  int successCount;   /* 0x2C consecutive-success counter */
   int unk30;   /* 0x30 */
 } PathState;
 
@@ -102,7 +102,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->soundRange every frame */
+  int soundRange;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -287,14 +287,14 @@ typedef struct BreakState {
 typedef struct RideState {
   int unk00[6]; /* 0x00 */
   int unk18;    /* 0x18 */
-  int unk1C;    /* 0x1C fallback heading when ->unk20 is unset */
-  int unk20;    /* 0x20 index into g_pActorListBase, -1 for none */
-  int unk24;    /* 0x24 script id handed to StubRewardHook, -1 for none */
+  int fallbackHeading;    /* 0x1C fallback heading when ->unk20 is unset */
+  int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
+  int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
   int unk28[7]; /* 0x28 */
-  int unk44;    /* 0x44 phase counter, 0 .. 0x100 */
-  int unk48;    /* 0x48 saved actor->rotX */
-  int unk4C;    /* 0x4C saved actor->rotY */
-  int unk50;    /* 0x50 saved actor->posZ */
+  int phase;    /* 0x44 phase counter, 0 .. 0x100 */
+  int savedRotX;    /* 0x48 saved actor->rotX */
+  int savedRotY;    /* 0x4C saved actor->rotY */
+  int savedPosZ;    /* 0x50 saved actor->posZ */
 } RideState;
 
 /* Shake table: x/y rotation offsets, one row per two ticks. */
@@ -308,15 +308,15 @@ extern AngPair g_aShakeRotOffsets[];
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 typedef struct LiftState {
-  Actor *unk00; /* 0x00 the spawned passenger, valid once ->mode is 1 */
-  int unk04;    /* 0x04 phase */
-  int unk08;    /* 0x08 saved actor->rotX */
-  int unk0C;    /* 0x0C saved actor->rotY */
-  int unk10;    /* 0x10 saved actor->posZ */
-  int unk14;    /* 0x14 mode; 1 selects the extra tick and the rearm */
+  Actor *passenger; /* 0x00 the spawned passenger, valid once ->mode is 1 */
+  int phase;    /* 0x04 phase */
+  int savedRotX;    /* 0x08 saved actor->rotX */
+  int savedRotY;    /* 0x0C saved actor->rotY */
+  int savedPosZ;    /* 0x10 saved actor->posZ */
+  int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
 } LiftState;
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
+#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -373,7 +373,7 @@ typedef struct PortalState {
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
   int unk14;        /* 0x14 published to SPY.u206 as a byte */
-  int unk18;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
+  int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
 /* Type 300: camera trigger volume. Live camera sphere and its template. */
@@ -385,8 +385,8 @@ extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
 /* Type 300 state block: activation box, mode flags, timer, linked actor. */
 typedef struct TriggerState {
-  int unk00; /* 0x00 vertical span; also the offset added to the target Z */
-  int unk04; /* 0x04 horizontal radius */
+  int spanZ; /* 0x00 vertical span; also the offset added to the target Z */
+  int radius; /* 0x04 horizontal radius */
   int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
               * bit4 also stamps actor->subMode */
   int timer; /* 0x0C */
@@ -468,8 +468,8 @@ extern int StepAngle8Toward(int a, int b, int c);
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
 typedef struct FlockState {
-  int unk00;           /* 0x00 knockback angle */
-  int unk04;           /* 0x04 knockback speed */
+  int knockAngle;           /* 0x00 knockback angle */
+  int knockSpeed;           /* 0x04 knockback speed */
   PathData *path;      /* 0x08 */
   int unk0C;
   int chainA;       /* 0x10 */
@@ -499,8 +499,8 @@ extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
  * parent actor. */
 typedef struct OrbitState {
   Actor *owner; /* 0x00 */
-  short unk04;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
-  short unk06;  /* 0x06 phase offset within the ring */
+  short ring;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
+  short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 
 /* Shift a vector left by n. */
@@ -790,11 +790,11 @@ void Level0_UpdateActors(void) {
         angle2 += (WrapAngleDelta8(angle2, angle) * angleScale) >> 7;
         angle2 &= 0xFF;
         st->heading = angle2;
-        st->unk24 = RandomIntInRange(0x6E, 0xA0);
+        st->stepDivisor = RandomIntInRange(0x6E, 0xA0);
         st->unk20 = 0;
         distance = ApproxDist2D(&actor->posX,
                                  (int *)&st->path->nodes[st->path->cur]);
-        st->unk28 = (distance / st->unk24) >> 1;
+        st->unk28 = (distance / st->stepDivisor) >> 1;
 
         if (st->unk28 >= 0x5B) {
           st->unk28 = 0x5A;
@@ -811,7 +811,7 @@ void Level0_UpdateActors(void) {
           break;
         }
 
-        if (st->unk20 < st->unk24) {
+        if (st->unk20 < st->stepDivisor) {
           st->unk20 += 0xA;
         }
 
@@ -845,11 +845,11 @@ void Level0_UpdateActors(void) {
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
           if (MoveActorAlongHeading(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
-            st->unk2C++;
+            st->successCount++;
           } else {
-            st->unk2C = 0;
+            st->successCount = 0;
           }
-          if (st->unk2C >= 4 && g_nActorAnimDone != 0) {
+          if (st->successCount >= 4 && g_nActorAnimDone != 0) {
             if (distance < 0x1400) {
               actor->mode = 0;
               continue;
@@ -2648,50 +2648,50 @@ void Level0_UpdateActors(void) {
       RideState *st = (RideState *)actor->state;
 
       if (actor->mode == 0) {
-        int padIdx = st->unk20;
+        int padIdx = st->partner;
         if (padIdx != -1) {
           g_pActorListBase[padIdx].mode = 3;
         }
         actor->mode = 1;
-        st->unk48 = actor->rotX;
-        st->unk4C = actor->rotY;
-        st->unk50 = actor->posZ;
+        st->savedRotX = actor->rotX;
+        st->savedRotY = actor->rotY;
+        st->savedPosZ = actor->posZ;
       } else if (actor->mode == 1) {
-        st->unk44 += g_nFrameStep;
-        if (st->unk44 > 256) {
-          st->unk44 = 0;
-          actor->rotX = st->unk48;
-          actor->rotY = st->unk4C;
-          actor->posZ = st->unk50;
+        st->phase += g_nFrameStep;
+        if (st->phase > 256) {
+          st->phase = 0;
+          actor->rotX = st->savedRotX;
+          actor->rotY = st->savedRotY;
+          actor->posZ = st->savedPosZ;
           actor->flags = 0;
           StopSoundVoicesByOwner(actor, 1);
-        } else if (st->unk44 >= 192) {
+        } else if (st->phase >= 192) {
 
           if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0])) {
             PlayActorMeshVoice(actor, 0, 0);
           }
           actor->rotX =
-              (signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].a + st->unk48;
+              (signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].a + st->savedRotX;
           actor->rotY =
-              (signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].b + st->unk4C;
+              (signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].b + st->savedRotY;
           actor->posZ =
-              st->unk50 +
-              (ABS2((signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].a) +
-               ABS2((signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].b)) *
+              st->savedPosZ +
+              (ABS2((signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].a) +
+               ABS2((signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].b)) *
                   6;
-        } else if (st->unk44 >= 188) {
-          st->unk48 = actor->rotX;
-          st->unk4C = actor->rotY;
-          st->unk50 = actor->posZ;
+        } else if (st->phase >= 188) {
+          st->savedRotX = actor->rotX;
+          st->savedRotY = actor->rotY;
+          st->savedPosZ = actor->posZ;
         } else if (actor->flags != 0) {
-          st->unk44 = 188;
+          st->phase = 188;
           StopSoundVoicesByOwner(actor, 1);
         } else {
-          if ((st->unk44 >> 1) == 16 && (GetRandomU32() & 3) == 0) {
+          if ((st->phase >> 1) == 16 && (GetRandomU32() & 3) == 0) {
             SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
-          } else if ((st->unk44 >> 1) == 48 && (GetRandomU32() & 3) == 0) {
+          } else if ((st->phase >> 1) == 48 && (GetRandomU32() & 3) == 0) {
             SpawnActorRotBillboard(actor, &g_anRotBillboardOffset1);
-          } else if ((st->unk44 >> 1) == 80 && (GetRandomU32() & 3) == 0) {
+          } else if ((st->phase >> 1) == 80 && (GetRandomU32() & 3) == 0) {
             SpawnActorRotBillboard(actor, &g_anRotBillboardOffset2);
           }
         }
@@ -2703,36 +2703,36 @@ void Level0_UpdateActors(void) {
           if (VectorLength(svK, 1) < 1088) {
             int rotZ;
             int cutsceneId;
-            if (st->unk20 != -1) {
-              rotZ = g_pActorListBase[st->unk20].rotZ;
+            if (st->partner != -1) {
+              rotZ = g_pActorListBase[st->partner].rotZ;
             } else {
-              rotZ = st->unk1C;
+              rotZ = st->fallbackHeading;
             }
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, rotZ);
 
-            if (st->unk24 != -1) {
+            if (st->rewardScript != -1) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
               g_nWorldDragonsRescued++;
-              StubRewardHook(st->unk24, 0);
-              if (st->unk20 != -1) {
-                g_pActorListBase[st->unk20].mode = 1;
+              StubRewardHook(st->rewardScript, 0);
+              if (st->partner != -1) {
+                g_pActorListBase[st->partner].mode = 1;
               }
               DespawnActorRecord(actor);
               continue;
-            } else if (cutsceneId = st->unk18, cutsceneId == st->unk24) {
+            } else if (cutsceneId = st->unk18, cutsceneId == st->rewardScript) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
               g_nWorldDragonsRescued++;
-              if (st->unk20 != cutsceneId) {
-                g_pActorListBase[st->unk20].mode = 1;
+              if (st->partner != cutsceneId) {
+                g_pActorListBase[st->partner].mode = 1;
               }
               DespawnActorRecord(actor);
               continue;
             } else {
               actor->mode = 2;
-              actor->rotX = st->unk48;
-              actor->rotY = st->unk4C;
-              actor->posZ = st->unk50;
+              actor->rotX = st->savedRotX;
+              actor->rotY = st->savedRotY;
+              actor->posZ = st->savedPosZ;
               BeginGemPickupOverlay(actor);
               ZeroVector(&SPY.headLook);
               SPY.controlFlags = 0x80002147;
@@ -2836,7 +2836,7 @@ void Level0_UpdateActors(void) {
       RoamState *st = actor->state;
       int snd;
 
-      actor->soundRange = st->unk04;
+      actor->soundRange = st->soundRange;
       snd = -1;
 
       switch (st->mode) {
@@ -2974,13 +2974,13 @@ void Level0_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
       SubtractVector(svK, &SPY.posX, &actor->posX);
       distance = VectorLength(svK, 0);
-      if (distance < st->unk04 && svK[2] >= -0x3FF && svK[2] < st->unk00 &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->unk00)) {
+      if (distance < st->radius && svK[2] >= -0x3FF && svK[2] < st->spanZ &&
+          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
-        SPY.u200 = actor->posZ + st->unk00;
+        SPY.u200 = actor->posZ + st->spanZ;
         CopyVector(&SPY.contact, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
@@ -3151,8 +3151,8 @@ void Level0_UpdateActors(void) {
           st->slots[n][2] = actor->posZ;
           SpawnActorDeathDrop(actor, 2, 0, st->slots[n]);
           MarkActorCommittedKill(actor);
-          st->unk04 = 0x118;
-          st->unk00 = StepAndLerpAngle8(
+          st->knockSpeed = 0x118;
+          st->knockAngle = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
               SPY.bodyRotZ, 0x20, 0x40);
           actor->mode = 5;
@@ -3275,7 +3275,7 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->unk04, st->unk00, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, 0, 0xC, 0);
         break;
       }
       }
@@ -3460,8 +3460,8 @@ void Level0_UpdateActors(void) {
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
           g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
-          if (st->unk18 >= 0) {
-            CAM.preset = &g_aCameraXformPresets[st->unk18];
+          if (st->cameraPreset >= 0) {
+            CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {
             CAM.preset = 0;
           }
@@ -3499,8 +3499,8 @@ void Level0_UpdateActors(void) {
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
           g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
-          if (st->unk18 >= 0) {
-            CAM.preset = &g_aCameraXformPresets[st->unk18];
+          if (st->cameraPreset >= 0) {
+            CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {
             CAM.preset = 0;
           }
@@ -3536,38 +3536,38 @@ void Level0_UpdateActors(void) {
       int a;
       int b;
 
-      if (st->unk14 == 1) {
+      if (st->rideMode == 1) {
         SnapActorToGround(actor);
         EncodeCachedVecToActorDirCode(actor);
       }
 
       if (actor->mode == 0) {
-        st->unk04 += g_nFrameStep;
+        st->phase += g_nFrameStep;
 
-        if (st->unk04 >= 0x1E1) {
-          st->unk04 = 0;
-          actor->rotX = st->unk08;
-          actor->rotY = st->unk0C;
-          actor->posZ = st->unk10;
+        if (st->phase >= 0x1E1) {
+          st->phase = 0;
+          actor->rotX = st->savedRotX;
+          actor->rotY = st->savedRotY;
+          actor->posZ = st->savedPosZ;
           actor->mode = 1;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->unk00 = g_pfnLevelSpawnActor(0x1A6, actor);
-          st->unk00->rotX = actor->rotX;
-          st->unk00->rotY = actor->rotY;
-          st->unk00->rotZ = actor->rotZ;
-          st->unk00->frameRate = 0x10;
-          st->unk00->updateDist = 0;
-          st->unk00->cullRadius = 0;
-          st->unk00->drawn = 0;
-          st->unk00->unk47 = 5;
+          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger->rotX = actor->rotX;
+          st->passenger->rotY = actor->rotY;
+          st->passenger->rotZ = actor->rotZ;
+          st->passenger->frameRate = 0x10;
+          st->passenger->updateDist = 0;
+          st->passenger->cullRadius = 0;
+          st->passenger->drawn = 0;
+          st->passenger->unk47 = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
-        } else if (st->unk04 >= 0x1A0) {
-          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->unk08;
-          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->unk0C;
+        } else if (st->phase >= 0x1A0) {
+          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->savedRotX;
+          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->savedRotY;
           a = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].a;
           b = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].b;
           if (a < 0) {
@@ -3576,30 +3576,30 @@ void Level0_UpdateActors(void) {
           if (b < 0) {
             b = -b;
           }
-          actor->posZ = st->unk10 + (a + b) * 6;
+          actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->sfxSlot == 0x7F) {
             PlayActorMeshVoice(actor, 1, 0);
           }
-        } else if (st->unk04 >= 0x19C) {
+        } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
-          st->unk08 = actor->rotX;
-          st->unk0C = actor->rotY;
-          st->unk10 = actor->posZ;
-          if (st->unk14 == 1) {
-            st->unk04 = 0;
+          st->savedRotX = actor->rotX;
+          st->savedRotY = actor->rotY;
+          st->savedPosZ = actor->posZ;
+          if (st->rideMode == 1) {
+            st->phase = 0;
           }
         }
       } else {
         if (actor->anim == 1) {
-          st->unk04 += g_nFrameStep;
-          st->unk00->cullRadius = 0x10;
-          st->unk00->updateDist = 0xFF;
+          st->phase += g_nFrameStep;
+          st->passenger->cullRadius = 0x10;
+          st->passenger->updateDist = 0xFF;
         }
 
-        if (st->unk04 >= 0xE6) {
-          DespawnActorRecord(st->unk00);
-          st->unk04 = GetRandomU32() & 0xFF;
+        if (st->phase >= 0xE6) {
+          DespawnActorRecord(st->passenger);
+          st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->mode = 0;
@@ -3615,7 +3615,7 @@ void Level0_UpdateActors(void) {
       }
 
       rider = SpawnActorDeathDrop(actor, 5, 0, 0);
-      if (st->unk14 == 1) {
+      if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = 1;
       }
 
@@ -3650,7 +3650,7 @@ void Level0_UpdateActors(void) {
       g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x18);
 
       if (actor->mode == 1) {
-        DespawnActorRecord(st->unk00);
+        DespawnActorRecord(st->passenger);
       }
 
       PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, 8,
@@ -3716,16 +3716,16 @@ void Level0_UpdateActors(void) {
           vecB[2] = 0;
           anglespyro = (anglespyro + 0x80) & 0xFF;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
-          ScaleVector3Sat(vecC, vecB, st->unk04 - 1);
+          ScaleVector3Sat(vecC, vecB, st->ring - 1);
           LShiftVector3(vecB, 1);
           anglespyro = 2;
-          anglespyro = (st->unk04 - 1) * anglespyro;
+          anglespyro = (st->ring - 1) * anglespyro;
           vecC[2] += g_anCosineLut[anglespyro] * 3 >> 3;
           vecD[0] = vecA[0] * g_anCosineLut[anglespyro];
           vecD[1] = vecA[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
-          anglespyro = ((anglespyro - st->unk06 * 4)) & 0xFF;
-          ScaleVector3Sat(vecB, vecB, st->unk06);
+          anglespyro = ((anglespyro - st->ringPhase * 4)) & 0xFF;
+          ScaleVector3Sat(vecB, vecB, st->ringPhase);
           SubtractVector(vecC, vecC, vecB);
           actor->posX = vecA[0] * g_anCosineLut[anglespyro];
           actor->posY = vecA[1] * g_anCosineLut[anglespyro];
