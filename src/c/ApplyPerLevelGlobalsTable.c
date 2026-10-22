@@ -9,51 +9,54 @@ extern void *g_pfnFlightTimeFormatter;
 extern void *g_pfnGamestate0cSubstateDraw;
 
 /* Entry points for level ids 0-9 and 99, whose overlays are not among the
-   37 mapped from WAD.WAD (addresses inside an overlay loaded at 0x8007aa38). */
-extern char D_8007AC8C[];
-extern char D_8007ACA8[];
-extern char D_8007ACA8_lv9[];
-extern char D_8007ACC8[];
-extern char D_8007ACDC[];
-extern char D_8007AD08[];
-extern char D_8007AD08_lv7[];
-extern char D_8007ADB8[];
-extern char D_8007AEF4[];
-extern char D_8007AF38[];
-extern char D_8007B070[];
-extern char D_8007B08C[];
-extern char D_8007B08C_lv9[];
-extern char D_8007B0AC_lv13[];
-extern char D_8007B0C0[];
-extern char D_8007B144[];
-extern char D_8007B160[];
-extern char D_8007B160_lv9[];
-extern char D_8007B180[];
-extern char D_8007B194[];
-extern char D_8007B8AC[];
-extern char D_8007B9F0[];
-extern char D_8007B9F0_lv9[];
-extern char D_8007BC44[];
-extern char D_8007BC50[];
-extern char D_8007BFF0[];
-extern char D_8007C204[];
-extern char D_8007C204_lv9[];
-extern char D_8007C654[];
-extern char D_8007C7B0[];
-extern char D_8007CED8[];
-extern char D_8007D8E0[];
-extern char D_8007D970[];
-extern char D_8007D970_lv7[];
-extern char D_8007DE34[];
-extern char D_8007DE34_lv7[];
-extern char D_8007E8E4[];
-extern char D_8007E990[];
-extern char D_8007F2F4[];
-extern char D_8007F490[];
-extern char D_80080548[];
-extern char D_80080A0C[];
-extern char D_80081568[];
-extern char D_80082068[];
+   37 mapped from WAD.WAD (addresses inside an overlay loaded at 0x8007aa38).
+   Named LevelId<id>_<Role> after the hook slot each one is installed into
+   (the mapped overlays' Level<N> numbering starts at level id 10). Two ids
+   that share an address keep separate per-level symbols. */
+extern char LevelId1_UpdateActors[];
+extern char LevelId4_UpdateActors[];
+extern char LevelId9_UpdateActors[];
+extern char LevelId3_UpdateActors[];
+extern char LevelId99_UpdateActors[];
+extern char LevelId2_UpdateActors[];
+extern char LevelId7_UpdateActors[];
+extern char LevelId0_BeginActorCutscene[];
+extern char LevelId0_OnSaveMenuExit[];
+extern char LevelId0_BalloonistCutscene_Update[];
+extern char LevelId1_SpawnActor[];
+extern char LevelId4_SpawnActor[];
+extern char LevelId9_SpawnActor[];
+extern char LevelId3_SpawnActor[];
+extern char LevelId99_SpawnActor[];
+extern char LevelId1_AdvanceEmitList[];
+extern char LevelId4_AdvanceEmitList[];
+extern char LevelId9_AdvanceEmitList[];
+extern char LevelId3_AdvanceEmitList[];
+extern char LevelId99_AdvanceEmitList[];
+extern char LevelId1_EmitParticles[];
+extern char LevelId4_EmitParticles[];
+extern char LevelId9_EmitParticles[];
+extern char LevelId99_EmitParticles[];
+extern char LevelId3_EmitParticles[];
+extern char LevelId1_OverlayEnd[];
+extern char LevelId4_OverlayEnd[];
+extern char LevelId9_OverlayEnd[];
+extern char LevelId99_OverlayEnd[];
+extern char LevelId3_OverlayEnd[];
+extern char LevelId0_BalloonistCutscene_Draw[];
+extern char LevelId0_UpdateActors[];
+extern char LevelId2_SpawnActor[];
+extern char LevelId7_SpawnActor[];
+extern char LevelId2_AdvanceEmitList[];
+extern char LevelId7_AdvanceEmitList[];
+extern char LevelId7_EmitParticles[];
+extern char LevelId2_EmitParticles[];
+extern char LevelId7_OverlayEnd[];
+extern char LevelId2_OverlayEnd[];
+extern char LevelId0_SpawnActor[];
+extern char LevelId0_AdvanceEmitList[];
+extern char LevelId0_EmitParticles[];
+extern char LevelId0_OverlayEnd[];
 
 /* Level-overlay entry points (each level overlay loads at 0x8007aa38). */
 extern char Level0_BeginActorCutscene[];
@@ -306,57 +309,57 @@ extern char Level34_OverlayEnd[];
 void ApplyPerLevelGlobalsTable(void) {
   switch (g_nActiveLevelId) {
   case 0:
-    g_pDrawBufA = D_80082068;
-    g_pfnLevelSpawnActor = D_80080548;
-    g_pfnLevelUpdateActors = D_8007D8E0;
-    g_pfnLevelEmitParticles = D_80081568;
-    g_pfnLevelAdvanceEmitList = D_80080A0C;
-    g_pfnLevelBeginActorCutscene = D_8007ADB8;
-    g_pfnLevelOnSaveMenuExit = D_8007AEF4;
-    g_pfnGamestate0cSubstateUpdate = D_8007AF38;
-    g_pfnGamestate0cSubstateDraw = D_8007CED8;
+    g_pDrawBufA = LevelId0_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId0_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId0_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId0_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId0_AdvanceEmitList;
+    g_pfnLevelBeginActorCutscene = LevelId0_BeginActorCutscene;
+    g_pfnLevelOnSaveMenuExit = LevelId0_OnSaveMenuExit;
+    g_pfnGamestate0cSubstateUpdate = LevelId0_BalloonistCutscene_Update;
+    g_pfnGamestate0cSubstateDraw = LevelId0_BalloonistCutscene_Draw;
     break;
   case 1:
-    g_pDrawBufA = D_8007BFF0;
-    g_pfnLevelSpawnActor = D_8007B070;
-    g_pfnLevelUpdateActors = D_8007AC8C;
-    g_pfnLevelEmitParticles = D_8007B8AC;
-    g_pfnLevelAdvanceEmitList = D_8007B144;
+    g_pDrawBufA = LevelId1_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId1_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId1_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId1_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId1_AdvanceEmitList;
     break;
   case 2:
-    g_pDrawBufA = D_8007F490;
-    g_pfnLevelSpawnActor = D_8007D970;
-    g_pfnLevelUpdateActors = D_8007AD08;
-    g_pfnLevelEmitParticles = D_8007E990;
-    g_pfnLevelAdvanceEmitList = D_8007DE34;
+    g_pDrawBufA = LevelId2_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId2_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId2_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId2_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId2_AdvanceEmitList;
     break;
   case 3:
-    g_pDrawBufA = D_8007C7B0;
-    g_pfnLevelSpawnActor = D_8007B0AC_lv13;
-    g_pfnLevelUpdateActors = D_8007ACC8;
-    g_pfnLevelEmitParticles = D_8007BC50;
-    g_pfnLevelAdvanceEmitList = D_8007B180;
+    g_pDrawBufA = LevelId3_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId3_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId3_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId3_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId3_AdvanceEmitList;
     break;
   case 4:
-    g_pDrawBufA = D_8007C204;
-    g_pfnLevelSpawnActor = D_8007B08C;
-    g_pfnLevelUpdateActors = D_8007ACA8;
-    g_pfnLevelEmitParticles = D_8007B9F0;
-    g_pfnLevelAdvanceEmitList = D_8007B160;
+    g_pDrawBufA = LevelId4_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId4_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId4_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId4_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId4_AdvanceEmitList;
     break;
   case 7:
-    g_pDrawBufA = D_8007F2F4;
-    g_pfnLevelSpawnActor = D_8007D970_lv7;
-    g_pfnLevelUpdateActors = D_8007AD08_lv7;
-    g_pfnLevelEmitParticles = D_8007E8E4;
-    g_pfnLevelAdvanceEmitList = D_8007DE34_lv7;
+    g_pDrawBufA = LevelId7_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId7_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId7_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId7_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId7_AdvanceEmitList;
     break;
   case 9:
-    g_pDrawBufA = D_8007C204_lv9;
-    g_pfnLevelSpawnActor = D_8007B08C_lv9;
-    g_pfnLevelUpdateActors = D_8007ACA8_lv9;
-    g_pfnLevelEmitParticles = D_8007B9F0_lv9;
-    g_pfnLevelAdvanceEmitList = D_8007B160_lv9;
+    g_pDrawBufA = LevelId9_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId9_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId9_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId9_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId9_AdvanceEmitList;
     break;
   case 10:
     g_pDrawBufA = Level0_OverlayEnd;
@@ -669,11 +672,11 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level34_AdvanceEmitList;
     break;
   case 99:
-    g_pDrawBufA = D_8007C654;
-    g_pfnLevelSpawnActor = D_8007B0C0;
-    g_pfnLevelUpdateActors = D_8007ACDC;
-    g_pfnLevelEmitParticles = D_8007BC44;
-    g_pfnLevelAdvanceEmitList = D_8007B194;
+    g_pDrawBufA = LevelId99_OverlayEnd;
+    g_pfnLevelSpawnActor = LevelId99_SpawnActor;
+    g_pfnLevelUpdateActors = LevelId99_UpdateActors;
+    g_pfnLevelEmitParticles = LevelId99_EmitParticles;
+    g_pfnLevelAdvanceEmitList = LevelId99_AdvanceEmitList;
     break;
   }
   g_pDrawBufB = g_pDrawBufA;
