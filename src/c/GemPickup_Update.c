@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Matching notes. Several accesses are spelled to control the scheduler's
    memory disambiguation (sched.c true/anti dependence: a non-QImode store
@@ -20,19 +21,7 @@
 
 extern void TickSpyroGameplayFrame(void);
 extern void UpdateCameraFrame(void);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void AddVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern void CopyVector(int *dst, int *src);
-extern int VectorLength(int *vec, int include_z);
-extern int AbsAngleDelta12(int a, int b);
-extern int AbsAngleDelta8(int a, int b);
 extern int SignedAngleDelta12(int a, int b);
-extern int SignedAngleDelta8(int a, int b);
-extern int LookupSine(int angle);
-extern int LookupCosine(int angle);
-extern int IntegerSqrt(int n);
 extern void ResetSpyroEntity(int mode);
 extern void StopAllSoundExceptMask(int mask);
 extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,

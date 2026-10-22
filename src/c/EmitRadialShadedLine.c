@@ -1,7 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern int ArcTan2_8bit(int x, int y);
-extern int AbsAngleDelta8(int a, int b);
 extern void AddPrimToOT(unsigned char *prim);
 
 extern int g_anLightSweepAngleBlock[];

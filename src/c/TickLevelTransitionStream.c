@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void RestartStalledCdRead(void);
 extern int FUN_80063bd8(); /* CdSync */
@@ -20,12 +21,8 @@ extern void BuildLoadedLevelRuntime(int full);
 extern void ChangeSpyroState(int state);
 extern void ComputeCameraToTargetAngle(int *pos);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
 extern void UpdateCameraEulerAngles(void);
 extern void ActivateScriptedCameraView(int record);
-extern int ArcTan2(int y, int x, int high_precision);
 extern int abs(int x);
 
 extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */

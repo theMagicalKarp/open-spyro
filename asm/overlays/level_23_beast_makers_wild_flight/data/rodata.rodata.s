@@ -16,7 +16,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.D_8007AA3C, "a"
-.ifndef HAVE_C_func_level_23_8007B4B0
+.ifndef HAVE_C_Level23_DrawFlightRaceTime
 nonmatching D_8007AA3C
 
 dlabel D_8007AA3C
@@ -27,7 +27,7 @@ enddlabel D_8007AA3C
 .endif
 
 .section .rodata.D_8007AA44, "a"
-.ifndef HAVE_C_func_level_23_8007B4B0
+.ifndef HAVE_C_Level23_DrawFlightRaceTime
 nonmatching D_8007AA44
 
 dlabel D_8007AA44
@@ -38,7 +38,7 @@ enddlabel D_8007AA44
 .endif
 
 .section .rodata.D_8007AA54, "a"
-.ifndef HAVE_C_func_level_23_8007B4B0
+.ifndef HAVE_C_Level23_DrawFlightRaceTime
 nonmatching D_8007AA54
 
 dlabel D_8007AA54
@@ -49,7 +49,7 @@ enddlabel D_8007AA54
 .endif
 
 .section .rodata.D_8007AA5C, "a"
-.ifndef HAVE_C_func_level_23_8007B4B0
+.ifndef HAVE_C_Level23_DrawFlightRaceTime
 nonmatching D_8007AA5C
 
 dlabel D_8007AA5C
@@ -60,7 +60,7 @@ enddlabel D_8007AA5C
 .endif
 
 .section .rodata.D_8007AA60, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA60
 
 dlabel D_8007AA60
@@ -71,7 +71,7 @@ enddlabel D_8007AA60
 .endif
 
 .section .rodata.D_8007AA6C, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA6C
 
 dlabel D_8007AA6C
@@ -80,7 +80,7 @@ enddlabel D_8007AA6C
 .endif
 
 .section .rodata.D_8007AA70, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA70
 
 dlabel D_8007AA70
@@ -92,7 +92,7 @@ enddlabel D_8007AA70
 .endif
 
 .section .rodata.D_8007AA74, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA74
 
 dlabel D_8007AA74
@@ -103,7 +103,7 @@ enddlabel D_8007AA74
 .endif
 
 .section .rodata.D_8007AA80, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA80
 
 dlabel D_8007AA80
@@ -112,7 +112,7 @@ enddlabel D_8007AA80
 .endif
 
 .section .rodata.D_8007AA84, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA84
 
 dlabel D_8007AA84
@@ -121,7 +121,7 @@ enddlabel D_8007AA84
 .endif
 
 .section .rodata.D_8007AA88, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA88
 
 dlabel D_8007AA88
@@ -132,7 +132,7 @@ enddlabel D_8007AA88
 .endif
 
 .section .rodata.D_8007AA90, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA90
 
 dlabel D_8007AA90
@@ -143,7 +143,7 @@ enddlabel D_8007AA90
 .endif
 
 .section .rodata.D_8007AA94, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA94
 
 dlabel D_8007AA94
@@ -154,7 +154,7 @@ enddlabel D_8007AA94
 .endif
 
 .section .rodata.D_8007AA98, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA98
 
 dlabel D_8007AA98
@@ -165,7 +165,7 @@ enddlabel D_8007AA98
 .endif
 
 .section .rodata.D_8007AA9C, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AA9C
 
 dlabel D_8007AA9C
@@ -176,7 +176,7 @@ enddlabel D_8007AA9C
 .endif
 
 .section .rodata.D_8007AAA8, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAA8
 
 dlabel D_8007AAA8
@@ -187,7 +187,7 @@ enddlabel D_8007AAA8
 .endif
 
 .section .rodata.D_8007AAB0, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAB0
 
 dlabel D_8007AAB0
@@ -198,7 +198,7 @@ enddlabel D_8007AAB0
 .endif
 
 .section .rodata.D_8007AAC4, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAC4
 
 dlabel D_8007AAC4
@@ -209,7 +209,7 @@ enddlabel D_8007AAC4
 .endif
 
 .section .rodata.D_8007AAC8, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAC8
 
 dlabel D_8007AAC8
@@ -220,7 +220,7 @@ enddlabel D_8007AAC8
 .endif
 
 .section .rodata.D_8007AAD4, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAD4
 
 dlabel D_8007AAD4
@@ -231,7 +231,7 @@ enddlabel D_8007AAD4
 .endif
 
 .section .rodata.D_8007AAD8, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAD8
 
 dlabel D_8007AAD8
@@ -242,7 +242,7 @@ enddlabel D_8007AAD8
 .endif
 
 .section .rodata.D_8007AADC, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AADC
 
 dlabel D_8007AADC
@@ -253,7 +253,7 @@ enddlabel D_8007AADC
 .endif
 
 .section .rodata.D_8007AAE8, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAE8
 
 dlabel D_8007AAE8
@@ -264,7 +264,7 @@ enddlabel D_8007AAE8
 .endif
 
 .section .rodata.D_8007AAF4, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AAF4
 
 dlabel D_8007AAF4
@@ -275,7 +275,7 @@ enddlabel D_8007AAF4
 .endif
 
 .section .rodata.D_8007AB00, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AB00
 
 dlabel D_8007AB00
@@ -286,7 +286,7 @@ enddlabel D_8007AB00
 .endif
 
 .section .rodata.D_8007AB0C, "a"
-.ifndef HAVE_C_func_level_23_8007B68C
+.ifndef HAVE_C_Level23_FlightResults_Draw
 nonmatching D_8007AB0C
 
 dlabel D_8007AB0C
@@ -297,7 +297,7 @@ enddlabel D_8007AB0C
 .endif
 
 .section .rodata.jtbl_8007AB18, "a"
-.ifndef HAVE_C_func_level_23_8007CFB4
+.ifndef HAVE_C_Level23_UpdateActors
 nonmatching jtbl_8007AB18
 
 dlabel jtbl_8007AB18
@@ -311,7 +311,7 @@ enddlabel jtbl_8007AB18
 .endif
 
 .section .rodata.jtbl_8007AB30, "a"
-.ifndef HAVE_C_func_level_23_8007CFB4
+.ifndef HAVE_C_Level23_UpdateActors
 nonmatching jtbl_8007AB30
 
 dlabel jtbl_8007AB30
@@ -325,7 +325,7 @@ enddlabel jtbl_8007AB30
 .endif
 
 .section .rodata.jtbl_8007AB48, "a"
-.ifndef HAVE_C_func_level_23_8007CFB4
+.ifndef HAVE_C_Level23_UpdateActors
 nonmatching jtbl_8007AB48
 
 dlabel jtbl_8007AB48
@@ -341,7 +341,7 @@ enddlabel jtbl_8007AB48
 .endif
 
 .section .rodata.jtbl_8007AB68, "a"
-.ifndef HAVE_C_func_level_23_80082F54
+.ifndef HAVE_C_Level23_AdvanceEmitList
 nonmatching jtbl_8007AB68
 
 dlabel jtbl_8007AB68
@@ -429,7 +429,7 @@ enddlabel jtbl_8007AB68
 .endif
 
 .section .rodata.jtbl_8007ACA8, "a"
-.ifndef HAVE_C_func_level_23_80083BAC
+.ifndef HAVE_C_Level23_EmitParticles
 nonmatching jtbl_8007ACA8
 
 dlabel jtbl_8007ACA8
@@ -517,7 +517,7 @@ enddlabel jtbl_8007ACA8
 .endif
 
 .section .rodata.jtbl_8007ADE8, "a"
-.ifndef HAVE_C_func_level_23_80083BAC
+.ifndef HAVE_C_Level23_EmitParticles
 nonmatching jtbl_8007ADE8
 
 dlabel jtbl_8007ADE8

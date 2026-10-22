@@ -4,6 +4,9 @@
  * not. `dragons` is a `$2` register local: as a pseudo it loses v0 to the
  * short-lived `lives` qty and the counter batch rotates. The frame needs an
  * unreferenced 8-byte local (`pad[2]`). */
+
+#include "vecmath.h"
+
 #define VOL(x) (*(volatile __typeof__(x) *)&(x))
 #include "globals.h"
 
@@ -22,7 +25,6 @@
    (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring offsets. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void HideActorRenderRecord(int rec);
-extern void CopyVector(int *dst, int *src);
 extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 
 extern short g_anHudIconAnchorBlock[]; /* &g_abHudIconActorRecords[0x196] */

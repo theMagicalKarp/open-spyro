@@ -18,7 +18,7 @@ extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);
 extern void func_800529E4(int actor, int n);
-extern int func_80038340(int actor);
+extern int ProbeActorGroundHeight(int actor);
 extern void EncodeCachedVecToActorDirCode(int actor);
 
 int func_8003BAD0(int actor, int *target, int speed, int yawLim, int pitchLim,
@@ -79,7 +79,7 @@ int func_8003BAD0(int actor, int *target, int speed, int yawLim, int pitchLim,
     }
   }
   func_800529E4(actor, 2);
-  func_80038340(actor);
+  ProbeActorGroundHeight(actor);
   EncodeCachedVecToActorDirCode(actor);
   return moved;
 }

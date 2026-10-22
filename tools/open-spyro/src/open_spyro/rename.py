@@ -270,6 +270,23 @@ def run(old: str, new: str, overlay: str, views: bool, dry_run: bool) -> None:
     report(p, dry_run)
 
 
+_COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+
+_INCLUDE = re.compile(r'^#include\s+"([^"]+)"', re.M)
+
+
+def _included(root: Path, rel: Path, text: str) -> str:
+    """Text of the project headers ``text`` includes (one level: the headers are flat)."""
+    out = []
+    for name in _INCLUDE.findall(text):
+        for d in (root / rel.parent, root / "include"):
+            if (d / name).is_file():
+                out.append((d / name).read_text())
+                break
+    return "\n".join(out)
+
+
 def alias_candidates(root: Path, rels: list[Path]) -> dict[Path, dict[str, str]]:
     """Per C file: autolabel refs whose address main already names (old -> canonical)."""
     by_addr: dict[int, str] = {}
@@ -281,10 +298,16 @@ def alias_candidates(root: Path, rels: list[Path]) -> dict[Path, dict[str, str]]
         text = _read(root, rel)
         if not text:
             continue
+        code = _COMMENT.sub(" ", text + _included(root, rel, text))
+        # A file whose code (or an included header) already spells the
+        # canonical name keeps its autolabel: the two are deliberate
+        # same-address aliases (a volatile or per-site absolute form beside the
+        # declared one) and merging them is a redeclaration.
         hits = {
-            m.group(0): by_addr[int(m.group(1), 16)]
+            m.group(0): name
             for m in _AUTOLABEL_REF.finditer(text)
-            if int(m.group(1), 16) in by_addr
+            if (name := by_addr.get(int(m.group(1), 16)))
+            and not re.search(rf"\b{re.escape(name)}\b", code)
         }
         if hits:
             out[rel] = hits
@@ -294,7 +317,7 @@ def alias_candidates(root: Path, rels: list[Path]) -> dict[Path, dict[str, str]]
 def canonicalize(paths: list[str], dry_run: bool) -> None:
     """Rewrite autolabel aliases of already-named main symbols to the canonical name."""
     root = repo_root()
-    rels = [p for p in _tracked(root) if p.parts[0] == "src" and p.suffix == ".c"]
+    rels = [p for p in _tracked(root) if p.parts[0] == "src" and p.suffix in (".c", ".h")]
     if paths:
         want = [Path(p) for p in paths]
         rels = [r for r in rels if any(r == w or w in r.parents for w in want)]

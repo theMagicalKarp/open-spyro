@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* 0x8002da74 — level-transition gem tally sparkle animation (1320 b).
 
@@ -19,7 +20,6 @@
    scaled phase. Past 0x93 the particle retires, and every third one plays the
    bank's 0x2f sample as it lands. */
 extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + quarter turn */
-extern unsigned int GetRandomU32(void);
 extern int PlaySoundEffect(unsigned int id, int owner, unsigned int mode,
                            void *pos);
 

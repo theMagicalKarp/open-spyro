@@ -10,13 +10,13 @@
    The two play paths issue the same libcd triple — CdlSetmode 0xC8 (double
    speed, CD-DA, report), CdlSetfilter with file 1 / channel track%8, then
    CdlReadS at the track LBA (fresh track) or at the saved read head (resume).
-   On a successful ReadS the fade ramps back up to D_80076224; a rejected
+   On a successful ReadS the fade ramps back up to D_80076224_blk; a rejected
    command re-queues itself. */
 extern int CdControlBlocking(int cmd, char *param, char *result);
 extern char *CdIntToPos(int lba, char *loc);
 
-extern short D_80075F18; /* live CD-DA volume (fade ramp current value) */
-extern int D_80076224;   /* CD-DA volume fade ceiling */
+extern short D_80075F18;   /* live CD-DA volume (fade ramp current value) */
+extern int D_80076224_blk; /* CD-DA volume fade ceiling */
 
 extern unsigned int
     g_adwMusicStreamStatusBlock[]; /* alias of g_dwMusicStreamStatus */
@@ -52,8 +52,8 @@ void HandleMusicCommand(int track, int cmd) {
         g_nLastCdMusicCommand = 0;
         g_nPendingMusicCommand = 0;
         *status = 0x10;
-        g_nMusicVolumeFadeTarget = D_80076224;
-        g_nMusicVolumeFadeStep = (D_80076224 - D_80075F18) >> 3;
+        g_nMusicVolumeFadeTarget = D_80076224_blk;
+        g_nMusicVolumeFadeStep = (D_80076224_blk - D_80075F18) >> 3;
       } else {
         g_nPendingMusicCommand = cmd;
       }
@@ -100,8 +100,8 @@ void HandleMusicCommand(int track, int cmd) {
         g_nLastCdMusicCommand = 0;
         g_nPendingMusicCommand = 0;
         *status = 0x10;
-        g_nMusicVolumeFadeTarget = D_80076224;
-        g_nMusicVolumeFadeStep = (D_80076224 - D_80075F18) >> 3;
+        g_nMusicVolumeFadeTarget = D_80076224_blk;
+        g_nMusicVolumeFadeStep = (D_80076224_blk - D_80075F18) >> 3;
       } else {
         g_nPendingMusicCommand = cmd;
       }

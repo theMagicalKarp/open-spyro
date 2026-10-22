@@ -4,10 +4,10 @@
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_8007AF28.o(.rodata)
+    build/overlays/level_16_magic_crafters_blowhard/c/Level16_UpdateActors.o(.rodata)
     . = 0x00000224 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007AC5C)
-    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80084830.o(.rodata)
+    build/overlays/level_16_magic_crafters_blowhard/c/Level16_AdvanceEmitList.o(.rodata)
     . = 0x00000368 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/data/rodata.rodata.o(.rodata.jtbl_8007ADA0)
-    build/overlays/level_16_magic_crafters_blowhard/c/func_level_16_80085F40.o(.rodata)
+    build/overlays/level_16_magic_crafters_blowhard/c/Level16_EmitParticles.o(.rodata)

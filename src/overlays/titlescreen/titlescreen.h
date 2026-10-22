@@ -159,7 +159,7 @@ typedef struct {
   Struct_0x600 *unk_0x50[3];   /* 0x50 */
 } Struct_0x5C;
 
-extern Struct_0x5C D_80078D78;
+extern Struct_0x5C g_nGamestate0dMode;
 
 /* ---- cutscene layout ---- */
 typedef struct {
@@ -169,12 +169,12 @@ typedef struct {
   int unk_0x0C;
 } Struct_0x10;
 
-extern Struct_0x10 *D_80075680;
+extern Struct_0x10 *g_pPathTableHead;
 
 /* ---- misc main-EXE state the overlay touches ---- */
 extern u_char D_8006FA74[16];
 extern u_char D_8006FA84[16];
-extern int D_80075918;
+extern int g_nGenericCountdown;
 
 /* frame double-buffer: draw-env @0 (r0/g0/b0 @+0x19), disp-env @0x5C */
 typedef struct {
@@ -182,38 +182,38 @@ typedef struct {
   u_char unk_0x5C[0x14];
 } Struct_0x70;
 
-extern Struct_0x70 *D_80075888;
+extern Struct_0x70 *g_pActiveFrameDrawEnv;
 /* background-color bytes of the two frame buffers' draw-env (r0,g0,b0) */
 typedef struct {
   u_char r, g, b;
 } Struct_0x03;
 extern Struct_0x03 D_80076EF9;
 extern Struct_0x03 D_80076F7D;
-extern Struct_0x03 D_80078A50;
+extern Struct_0x03 g_dwWorldFogColor;
 
 extern struct {
   int post; /* 0x80075950 */
   int pre;  /* 0x80075954 */
-} D_80075950; /* vsync frame pacing pair */
+} g_nVsyncFramePaceAnchor; /* vsync frame pacing pair */
 
-extern u_char D_8006FCF4[];  /* scratch image buffer */
+extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
 extern int D_800785D0;       /* far-plane culling distance */
 extern char D_80076DE4[];    /* camera view matrix (proj matrix at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
-extern void func_80016914(void *, int, int);
-extern void func_800521C0(void);
-extern void func_8001F158(void);
-extern void func_8001F798(void);
-extern void func_800258F0(int);
-extern void func_8004EBA8(int, void *, void *);
-extern void func_800190D4(int, int, int, int);
-extern void func_8005F764(int);
-extern int func_8005DBC4(int);
-extern void func_80060030(void *);
-extern void func_8005FDD8(void *);
-extern void *func_80016784(int);
-extern void func_8005FD64(void *);
+extern void FillWord(void *, int, int);
+extern void BuildRenderEntityLists(void);
+extern void BuildActorDrawList(void);
+extern void EmitActorDrawList(void);
+extern void RenderWorldChunks(int);
+extern void EmitStaticActorMeshList(int, void *, void *);
+extern void DrawFullscreenTint(int, int, int, int);
+extern void DrawSync(int);
+extern int VSync(int);
+extern void PutDispEnv(void *);
+extern void PutDrawEnv(void *);
+extern void *LinkOTPrimitives(int);
+extern void DrawOTag(void *);
 
 /* ---- gamepad ---- */
 #define PAD_L1 (1 << 2)
@@ -230,7 +230,7 @@ extern struct {
   int unk_0x4;
   int unk_0x8;
   int unk_0xC;
-} D_80077378;
+} g_dwPadPressed;
 
 /* ---- memory card error codes (PSY-Q libmcrd) ---- */
 #define McErrNone 0
@@ -248,7 +248,7 @@ extern struct {
   void *unk_0x0C;        /* 0x0C */
   char unk_0x10[24];     /* 0x10 CdlFILE */
   volatile int unk_0x28;/* 0x28 */
-} D_80076B90;
+} g_nCdBaseLba;
 
 extern struct {
   int unk_0x000;      /* 0x000 */
@@ -259,7 +259,7 @@ extern struct {
   int unk_0x214;   /* 0x214 */
   int unk_0x218;            /* 0x218 */
   int unk_0x21C;    /* 0x21C */
-} D_800774B0;
+} g_nCurrentMusicTrack;
 
 /* ---- fairy cutscene tail (this struct's field names are absolute byte
    offsets within the larger unmatched structure) ---- */
@@ -273,7 +273,7 @@ extern struct {
 /* camera rotation svec */
 extern struct {
   short x, y, z;
-} D_80076E1C;
+} g_nCameraEulerRoll;
 
 typedef struct {
   short x, y, w, h;
@@ -281,49 +281,49 @@ typedef struct {
 #define setRECT(r, _x, _y, _w, _h) \
   (r)->x = (_x), (r)->y = (_y), (r)->w = (_w), (r)->h = (_h)
 
-extern int D_8007579C;
-extern int D_800758E8;
-extern int D_8007580C;
-extern int D_80078BBC;
-extern int D_80077084;
+extern int g_nGamePaused;
+extern int g_nSparxFoodCount;
+extern int g_nLevelReadyFlagStash;
+extern int g_nLevelReadyFlag;
+extern int g_bGemPickupSfxVoiceMarker;
 extern u_char D_8006F494[512];
-extern char *D_800785E8;
+extern char *g_pRenderScratchRegionBase;
 extern int D_8007A6D8;
 
-extern int func_8006272C(void);
-extern void func_80056200(int, int);
-extern void func_800163E4(void);
+extern int GetRandomU32(void);
+extern void StopSoundVoiceByIndex(int, int);
+extern void RestartStalledCdRead(void);
 extern int func_80063BD8(int, int);
-extern void func_80016698(int, void *, int, int, int);
-extern void func_800567F4(int, int);
-extern void func_8005FA28(RECT *, void *);
-extern void func_8005F8F8(RECT *, int, int, int);
-extern void func_80056B28(int);
-extern void func_80056ED4(void);
-extern void func_8005637C(void);
-extern void func_8002BBE0(void);
+extern void StartCdReadAsync(int, void *, int, int, int);
+extern void HandleMusicCommand(int, int);
+extern void LoadImage(RECT *, void *);
+extern void ClearImage(RECT *, int, int, int);
+extern void StopAllSoundExceptMask(int);
+extern void TickSpuPerFrame(void);
+extern void TickActiveSoundVoices(void);
+extern void TickCdMusicStream(void);
 extern void func_8002BAB8(void);
-extern void func_800662BC(void);
-extern int func_80067628(int, long *, long *);
-extern void func_800665B8(int);
-extern void func_80066E28(int, char *, unsigned long *, int, int);
-extern void func_800670E4(int, char *, unsigned long *, int, int);
+extern void MemCardOpenSession(void);
+extern int MemCardSync(int, long *, long *);
+extern void MemCardLoad(int);
+extern void MemCardRead(int, char *, unsigned long *, int, int);
+extern void MemCardWrite(int, char *, unsigned long *, int, int);
 extern int func_80067718(int, char *, int);
 extern int func_80067B28(int);
-extern void func_8006631C(void);
-extern int func_8005956C(u_char *);
-extern void func_80059864(Struct_0x600 *);
+extern void MemCardCloseSession(void);
+extern int ComputeSaveGameChecksum(u_char *);
+extern void BuildSaveGameBuffer(Struct_0x600 *);
 extern int func_80059594(Struct_0x600 *);
 extern void func_80032A20(void);
-extern void func_80016958(void *, void *, int);
+extern void CopyWords(void *, void *, int);
 extern int func_80017FD4(void);
-extern void func_8001277C(void);
+extern void InitNewGameState(void);
 extern int func_80032AB0(void);
-extern void func_8002BFE0(int);
-extern void func_80058CC0(int);
+extern void AdvanceGemCutsceneFrame(int);
+extern void RotateLightVectorXZ(int);
 
 /* overlay-local */
-void func_titlescreen_8007CD38(int nX, int nY, int nSprite, int nColorId);
-void func_titlescreen_8007AAD4(int nSoundId);
+void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId);
+void Titlescreen_PlayUiSound(int nSoundId);
 
 #endif

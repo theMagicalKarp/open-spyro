@@ -4,10 +4,10 @@
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_8007AD4C.o(.rodata)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_UpdateActors.o(.rodata)
     . = 0x00000074 ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007AAAC)
-    build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_800840FC.o(.rodata)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_AdvanceEmitList.o(.rodata)
     . = 0x000001b4 ;
     build/overlays/level_34_gnastys_world_gnastys_loot/asm/overlays/level_34_gnastys_world_gnastys_loot/data/rodata.rodata.o(.rodata.jtbl_8007ABEC)
-    build/overlays/level_34_gnastys_world_gnastys_loot/c/func_level_34_80085230.o(.rodata)
+    build/overlays/level_34_gnastys_world_gnastys_loot/c/Level34_EmitParticles.o(.rodata)

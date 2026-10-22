@@ -4,10 +4,10 @@
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_8007AF50.o(.rodata)
+    build/overlays/level_28_dream_weavers_jacques/c/Level28_UpdateActors.o(.rodata)
     . = 0x0000024c ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007AC84)
-    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80084028.o(.rodata)
+    build/overlays/level_28_dream_weavers_jacques/c/Level28_AdvanceEmitList.o(.rodata)
     . = 0x00000390 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/data/rodata.rodata.o(.rodata.jtbl_8007ADC8)
-    build/overlays/level_28_dream_weavers_jacques/c/func_level_28_80085254.o(.rodata)
+    build/overlays/level_28_dream_weavers_jacques/c/Level28_EmitParticles.o(.rodata)

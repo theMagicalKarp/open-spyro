@@ -4,10 +4,10 @@
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_8007B528.o(.rodata)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_UpdateActors.o(.rodata)
     . = 0x00000824 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B25C)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_80086144.o(.rodata)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_AdvanceEmitList.o(.rodata)
     . = 0x00000968 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/data/rodata.rodata.o(.rodata.jtbl_8007B3A0)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/func_level_31_8008747C.o(.rodata)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_EmitParticles.o(.rodata)

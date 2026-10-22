@@ -4,16 +4,16 @@
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_8007B4B0.o(.rodata)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_DrawFlightRaceTime.o(.rodata)
     . = 0x00000028 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.D_8007AA60)
-    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_8007B68C.o(.rodata)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_FlightResults_Draw.o(.rodata)
     . = 0x000000e0 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB18)
-    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_8007CFB4.o(.rodata)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_UpdateActors.o(.rodata)
     . = 0x00000130 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
-    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80082F54.o(.rodata)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_AdvanceEmitList.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_23_beast_makers_wild_flight/c/func_level_23_80083BAC.o(.rodata)
+    build/overlays/level_23_beast_makers_wild_flight/c/Level23_EmitParticles.o(.rodata)

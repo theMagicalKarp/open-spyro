@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void CopyVector(int *dst, int *src);
 extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */

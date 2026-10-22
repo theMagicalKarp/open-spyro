@@ -4,10 +4,10 @@
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_8007B4C8.o(.rodata)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_UpdateActors.o(.rodata)
     . = 0x000007e4 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B21C)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80083F2C.o(.rodata)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_AdvanceEmitList.o(.rodata)
     . = 0x00000928 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/data/rodata.rodata.o(.rodata.jtbl_8007B360)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/func_level_9_80085184.o(.rodata)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_EmitParticles.o(.rodata)

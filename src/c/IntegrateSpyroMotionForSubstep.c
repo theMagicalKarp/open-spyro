@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void ChangeSpyroState(int state);
 extern void ComputeSpyroMoveTargetFromPad(int mag);
@@ -10,37 +11,21 @@ extern void BuildSpyroVelocityFromBodyEuler(void);
 extern void IntegrateSpyroBodyEuler(int delta);
 extern void NudgeSpyroFromWallProbes(void);
 extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
-extern int AbsAngleDelta12(int a, int b);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int IntegerSqrt(int n);
-extern int VectorLength(int *vec, int include_z);
-extern void SetVector3Magnitude(int *vec, int mag);
-extern void ScaleVector3ByRatio(int *vec, int num, int den);
 extern void ScaleVector3Shifted(int *vec, int num, int shift);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
-extern void RShiftVector3(int *vec, int shift);
-extern void LShiftVector3(int *vec, int shift);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
 extern void AccumulateAnimRootMotionDelta(int frame, int *out, int anim,
                                           int sub);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
-extern int ApproxDist2D(int *a, int *b);
 extern int abs(int x);
 
-extern int D_80078A60; /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 extern int g_nSpyroWorldPosY;
-extern int g_nSpyroVelocityY;    /* g_anSpyroVelocity[1] */
-extern int g_nSpyroVelocityZ;    /* g_nSpyroVelocityZ */
-extern int g_nSpyroCarryMotionY; /* g_nSpyroCarryMotionY */
-extern int g_nSpyroCarryMotionZ; /* g_nSpyroCarryMotionZ */
+extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
+extern int g_nSpyroVelocityZ;
+extern int g_nSpyroCarryMotionY;
+extern int g_nSpyroCarryMotionZ;
 extern int D_80078B34[];
 extern int D_800756B4;
 extern int D_80075668;
@@ -181,7 +166,7 @@ static inline int *Opaque(int *p) {
 /* Glide/charge speed from the height fallen below the floor reference. */
 #define SPEED_FROM_DROP(base, shift)                                           \
   {                                                                            \
-    int f = g_nSpyroFloorReferenceZ - D_80078A60;                              \
+    int f = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;                       \
                                                                                \
     if (f < 0) {                                                               \
       g_nSpyroMotionSpeed = (base) - IntegerSqrt(-f << (shift));               \
@@ -192,7 +177,7 @@ static inline int *Opaque(int *p) {
 
 #define SPEED_FROM_DROP_T(base)                                                \
   {                                                                            \
-    int f = g_nSpyroFloorReferenceZ - D_80078A60;                              \
+    int f = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;                       \
     int v;                                                                     \
                                                                                \
     if (f < 0) {                                                               \
@@ -496,11 +481,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       c += 0xD7;
       c += g_nSpyroGravityStep;
       g_nSpyroCarryMotionZ = c;
-      v = ((g_nSpyroFloorReferenceZ - D_80078A60) << 6) -
+      v = ((g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ) << 6) -
           g_anSpyroVelocityFp6[2] + c;
       g_nSpyroVelocityZ = v;
       g_nSpyroFloorReferenceZ =
-          ((D_80078A60 << 6) + v + g_anSpyroVelocityFp6[2]) >> 6;
+          ((g_nSpyroWorldPosZ << 6) + v + g_anSpyroVelocityFp6[2]) >> 6;
     } else {
       SPY[SPY_CARRY + 2] += g_nSpyroGravityStep;
       g_nSpyroVelocityZ = SPY[SPY_CARRY + 2];
@@ -667,7 +652,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         }
         if (SPY[SPY_SPEED] < 0x1400) {
           g_nSpyroSpeedTarget = 0x1400;
-          g_nSpyroFloorReferenceZ = D_80078A60;
+          g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
         }
         vel = &SPY[SPY_VELOCITY];
         BuildSpyroVelocityFromBodyEuler();
@@ -844,7 +829,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         c = LookupCosine(SPY[SPY_ROLL]);
         x = (z * -15) >> 7;
         w = (nx * 20) >> 7;
-        if (D_80078A60 < g_nSpyroFloorReferenceZ) {
+        if (g_nSpyroWorldPosZ < g_nSpyroFloorReferenceZ) {
           v40[2] = (g_nSpyroVelocityZ >> 3) - 0x400;
           if (v40[2] < 0) {
             int *pos = &SPY[0];
@@ -853,7 +838,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             v40[1] = g_nSpyroVelocityY >> 3;
             AddVector(v40, v40, pos);
             if (CheckLineOfSightSegment(pos, v40) == 0) {
-              y = (D_80078A60 - *(int *)g_nCollisionResolvedZ) >> 3;
+              y = (g_nSpyroWorldPosZ - *(int *)g_nCollisionResolvedZ) >> 3;
               if (y > 7) {
                 y = 7;
               }
@@ -869,7 +854,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroBodyRoll > 0x320) {
           g_nSpyroBodyRoll = 0x320;
         }
-        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        x = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;
         if (x < 0) {
           g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
         } else {
@@ -969,7 +954,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (p < -0x10) {
           p = -0x10;
         }
-        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        x = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;
         SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
         if (x < 0) {
           __asm__ volatile("" : : "r"(p));
@@ -1000,7 +985,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           if (x > 0x800) {
             x -= 0x1000;
           }
-          dz = D_80075700 - D_80078A60;
+          dz = D_80075700 - g_nSpyroWorldPosZ;
           x += (dz - (g_anSpyroMotionVec[2] >> 5)) >> 2;
           if (x > 0x1E) {
             x = 0x1E;
@@ -1077,7 +1062,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           }
           g_nSpyroBodyPitch = (g_nSpyroBodyPitch + p) & 0xFFF;
         }
-        x = g_nSpyroFloorReferenceZ - D_80078A60;
+        x = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;
         if (x < 0) {
           g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
         } else {
@@ -1180,7 +1165,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
       }
       if (g_nSpyroTriggerCurrentEventId != 0 &&
-          D_80078A60 - g_nSpyroGroundHeightZ <= 0xC00) {
+          g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ <= 0xC00) {
         n0 = (g_nSpyroMotionSpeed >> 11) + 2;
         if (g_anSpyroVelocityFp6[0] == 0 && g_anSpyroVelocityFp6[1] == 0) {
           n0 += 0x10000;
@@ -1320,7 +1305,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         } else {
           y = FindGroundHeightBelow(&SPY[0], 0x10000);
           if (g_nSpyroGlideBankingFlag != 0) {
-            int d = D_80078A60 - y;
+            int d = g_nSpyroWorldPosZ - y;
 
             if (d < 0x200) {
               LEVEL_GLIDE_HANDOFF();
@@ -1409,7 +1394,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (((short *)actor)[0x1B] == 0x12C) {
       reach = ((int **)actor)[0][1];
     }
-    zb = &D_80078A60;
+    zb = &g_nSpyroWorldPosZ;
     OPAQUE(zb);
     base = D_80075668;
     z = zb[0];
@@ -1727,7 +1712,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     if (sp[0] < 0x1400) {
       g_nSpyroSpeedTarget = 0x1400;
-      g_nSpyroFloorReferenceZ = D_80078A60;
+      g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     vel = sp + (SPY_VELOCITY - SPY_SPEED);
     BuildSpyroVelocityFromBodyEuler();

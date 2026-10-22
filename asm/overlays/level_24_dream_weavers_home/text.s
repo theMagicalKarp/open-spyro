@@ -8,11 +8,11 @@
 
 .section .text, "ax"
 
-.section .text.func_level_24_8007B898, "ax"
-.ifndef HAVE_C_func_level_24_8007B898
-nonmatching func_level_24_8007B898, 0x13C
+.section .text.Level24_BeginActorCutscene, "ax"
+.ifndef HAVE_C_Level24_BeginActorCutscene
+nonmatching Level24_BeginActorCutscene, 0x13C
 
-glabel func_level_24_8007B898
+glabel Level24_BeginActorCutscene
     /* E60 8007B898 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* E64 8007B89C 2000B0AF */  sw         $s0, 0x20($sp)
     /* E68 8007B8A0 21808000 */  addu       $s0, $a0, $zero
@@ -92,14 +92,14 @@ glabel func_level_24_8007B898
     /* F90 8007B9C8 3000BD27 */  addiu      $sp, $sp, 0x30
     /* F94 8007B9CC 0800E003 */  jr         $ra
     /* F98 8007B9D0 00000000 */   nop
-endlabel func_level_24_8007B898
+endlabel Level24_BeginActorCutscene
 .endif
 
-.section .text.func_level_24_8007B9D4, "ax"
-.ifndef HAVE_C_func_level_24_8007B9D4
-nonmatching func_level_24_8007B9D4, 0x44
+.section .text.Level24_OnSaveMenuExit, "ax"
+.ifndef HAVE_C_Level24_OnSaveMenuExit
+nonmatching Level24_OnSaveMenuExit, 0x44
 
-glabel func_level_24_8007B9D4
+glabel Level24_OnSaveMenuExit
     /* F9C 8007B9D4 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* FA0 8007B9D8 1000BFAF */  sw         $ra, 0x10($sp)
     /* FA4 8007B9DC 0BB4000C */  jal        func_8002D02C
@@ -118,14 +118,14 @@ glabel func_level_24_8007B9D4
     /* FD4 8007BA0C 1800BD27 */  addiu      $sp, $sp, 0x18
     /* FD8 8007BA10 0800E003 */  jr         $ra
     /* FDC 8007BA14 00000000 */   nop
-endlabel func_level_24_8007B9D4
+endlabel Level24_OnSaveMenuExit
 .endif
 
-.section .text.func_level_24_8007BA18, "ax"
-.ifndef HAVE_C_func_level_24_8007BA18
-nonmatching func_level_24_8007BA18, 0x1FA0
+.section .text.Level24_BalloonistCutscene_Update, "ax"
+.ifndef HAVE_C_Level24_BalloonistCutscene_Update
+nonmatching Level24_BalloonistCutscene_Update, 0x1FA0
 
-glabel func_level_24_8007BA18
+glabel Level24_BalloonistCutscene_Update
     /* FE0 8007BA18 78FFBD27 */  addiu      $sp, $sp, -0x88
     /* FE4 8007BA1C 7000B0AF */  sw         $s0, 0x70($sp)
     /* FE8 8007BA20 0780103C */  lui        $s0, %hi(D_800777E8)
@@ -2233,14 +2233,14 @@ glabel func_level_24_8007BA18
     /* 2F74 8007D9AC 8800BD27 */  addiu      $sp, $sp, 0x88
     /* 2F78 8007D9B0 0800E003 */  jr         $ra
     /* 2F7C 8007D9B4 00000000 */   nop
-endlabel func_level_24_8007BA18
+endlabel Level24_BalloonistCutscene_Update
 .endif
 
-.section .text.func_level_24_8007D9B8, "ax"
-.ifndef HAVE_C_func_level_24_8007D9B8
-nonmatching func_level_24_8007D9B8, 0xA08
+.section .text.Level24_BalloonistCutscene_Draw, "ax"
+.ifndef HAVE_C_Level24_BalloonistCutscene_Draw
+nonmatching Level24_BalloonistCutscene_Draw, 0xA08
 
-glabel func_level_24_8007D9B8
+glabel Level24_BalloonistCutscene_Draw
     /* 2F80 8007D9B8 08FFBD27 */  addiu      $sp, $sp, -0xF8
     /* 2F84 8007D9BC E800B2AF */  sw         $s2, 0xE8($sp)
     /* 2F88 8007D9C0 0780123C */  lui        $s2, %hi(D_800777E8)
@@ -2914,14 +2914,14 @@ glabel func_level_24_8007D9B8
     /* 397C 8007E3B4 F800BD27 */  addiu      $sp, $sp, 0xF8
     /* 3980 8007E3B8 0800E003 */  jr         $ra
     /* 3984 8007E3BC 00000000 */   nop
-endlabel func_level_24_8007D9B8
+endlabel Level24_BalloonistCutscene_Draw
 .endif
 
-.section .text.func_level_24_8007E3C0, "ax"
-.ifndef HAVE_C_func_level_24_8007E3C0
-nonmatching func_level_24_8007E3C0, 0xAA64
+.section .text.Level24_UpdateActors, "ax"
+.ifndef HAVE_C_Level24_UpdateActors
+nonmatching Level24_UpdateActors, 0xAA64
 
-glabel func_level_24_8007E3C0
+glabel Level24_UpdateActors
     /* 3988 8007E3C0 50FDBD27 */  addiu      $sp, $sp, -0x2B0
     /* 398C 8007E3C4 AC02BFAF */  sw         $ra, 0x2AC($sp)
     /* 3990 8007E3C8 A802BEAF */  sw         $fp, 0x2A8($sp)
@@ -14473,14 +14473,14 @@ glabel func_level_24_8007E3C0
     /* E3E0 80088E18 B002BD27 */  addiu      $sp, $sp, 0x2B0
     /* E3E4 80088E1C 0800E003 */  jr         $ra
     /* E3E8 80088E20 00000000 */   nop
-endlabel func_level_24_8007E3C0
+endlabel Level24_UpdateActors
 .endif
 
-.section .text.func_level_24_80088E24, "ax"
-.ifndef HAVE_C_func_level_24_80088E24
-nonmatching func_level_24_80088E24, 0x9D8
+.section .text.Level24_SpawnActor, "ax"
+.ifndef HAVE_C_Level24_SpawnActor
+nonmatching Level24_SpawnActor, 0x9D8
 
-glabel func_level_24_80088E24
+glabel Level24_SpawnActor
     /* E3EC 80088E24 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* E3F0 80088E28 3800B0AF */  sw         $s0, 0x38($sp)
     /* E3F4 80088E2C 21808000 */  addu       $s0, $a0, $zero
@@ -15155,14 +15155,14 @@ glabel func_level_24_80088E24
     /* EDB8 800897F0 5800BD27 */  addiu      $sp, $sp, 0x58
     /* EDBC 800897F4 0800E003 */  jr         $ra
     /* EDC0 800897F8 00000000 */   nop
-endlabel func_level_24_80088E24
+endlabel Level24_SpawnActor
 .endif
 
-.section .text.func_level_24_800897FC, "ax"
-.ifndef HAVE_C_func_level_24_800897FC
-nonmatching func_level_24_800897FC, 0x1228
+.section .text.Level24_AdvanceEmitList, "ax"
+.ifndef HAVE_C_Level24_AdvanceEmitList
+nonmatching Level24_AdvanceEmitList, 0x1228
 
-glabel func_level_24_800897FC
+glabel Level24_AdvanceEmitList
     /* EDC4 800897FC 80FFBD27 */  addiu      $sp, $sp, -0x80
     /* EDC8 80089800 6800B4AF */  sw         $s4, 0x68($sp)
     /* EDCC 80089804 0780143C */  lui        $s4, %hi(D_80075824)
@@ -16384,14 +16384,14 @@ glabel func_level_24_800897FC
     /* FFE0 8008AA18 8000BD27 */  addiu      $sp, $sp, 0x80
     /* FFE4 8008AA1C 0800E003 */  jr         $ra
     /* FFE8 8008AA20 00000000 */   nop
-endlabel func_level_24_800897FC
+endlabel Level24_AdvanceEmitList
 .endif
 
-.section .text.func_level_24_8008AA24, "ax"
-.ifndef HAVE_C_func_level_24_8008AA24
-nonmatching func_level_24_8008AA24, 0x1114
+.section .text.Level24_EmitParticles, "ax"
+.ifndef HAVE_C_Level24_EmitParticles
+nonmatching Level24_EmitParticles, 0x1114
 
-glabel func_level_24_8008AA24
+glabel Level24_EmitParticles
     /* FFEC 8008AA24 60FFBD27 */  addiu      $sp, $sp, -0xA0
     /* FFF0 8008AA28 8C00B5AF */  sw         $s5, 0x8C($sp)
     /* FFF4 8008AA2C 21A8A000 */  addu       $s5, $a1, $zero
@@ -17557,16 +17557,16 @@ glabel func_level_24_8008AA24
     /* 110F4 8008BB2C A000BD27 */  addiu      $sp, $sp, 0xA0
     /* 110F8 8008BB30 0800E003 */  jr         $ra
     /* 110FC 8008BB34 00000000 */   nop
-endlabel func_level_24_8008AA24
+endlabel Level24_EmitParticles
 .endif
 
-.section .text.func_level_24_8008BB38, "ax"
-.ifndef HAVE_C_func_level_24_8008BB38
-nonmatching func_level_24_8008BB38, 0x8
+.section .text.Level24_Noop, "ax"
+.ifndef HAVE_C_Level24_Noop
+nonmatching Level24_Noop, 0x8
 
-glabel func_level_24_8008BB38
+glabel Level24_Noop
     /* 11100 8008BB38 0800E003 */  jr         $ra
     /* 11104 8008BB3C 00000000 */   nop
-endlabel func_level_24_8008BB38
+endlabel Level24_Noop
 .endif
 

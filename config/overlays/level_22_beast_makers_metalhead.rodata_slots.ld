@@ -4,10 +4,10 @@
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_8007B770.o(.rodata)
+    build/overlays/level_22_beast_makers_metalhead/c/Level22_UpdateActors.o(.rodata)
     . = 0x00000a6c ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B4A4)
-    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_80088178.o(.rodata)
+    build/overlays/level_22_beast_makers_metalhead/c/Level22_AdvanceEmitList.o(.rodata)
     . = 0x00000bb0 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/data/rodata.rodata.o(.rodata.jtbl_8007B5E8)
-    build/overlays/level_22_beast_makers_metalhead/c/func_level_22_800894B0.o(.rodata)
+    build/overlays/level_22_beast_makers_metalhead/c/Level22_EmitParticles.o(.rodata)

@@ -1,7 +1,6 @@
 #include "globals.h"
+#include "vecmath.h"
 
-extern void ZeroVector(int *v);
-extern void WorldToCameraRotate(int *out, int *in);
 extern void VectorToSVector(void *dst, int *src);
 
 /* 0x80058bd8: precomputes the 3 camera-space basis vectors (X/Y/-Z axes)

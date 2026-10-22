@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Waypoint path-follow driver (0x80039e94, 0x2d8). Steers the actor
    toward its current path node (path[1] = node index, 16-byte node
@@ -9,15 +10,13 @@
    When the heading delta to the node exceeds `lim`, turns in place via
    ApproachAngle8 (deferring the turn when another listed actor of the
    same `kind` is already mid-turn); otherwise marks the actor moving
-   and delegates the step to func_80038EE0 + func_80039398. */
+   and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-extern int ApproxDist2D(int *a, int *b);
-extern int ArcTan2(int x, int y, int mode);
-extern int AbsAngleDelta8(int a, int b);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
-extern int func_80038EE0(int *actor, int ang, int step, int lim, int mode);
-extern int func_80039398(int *actor, int speed, int group, int radius,
-                         int flags);
+extern int TurnActorYawTowardAngle(int *actor, int ang, int step, int lim,
+                                   int mode);
+extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
+                                 int flags);
 extern int abs(int);
 
 extern int D_800756C4;
@@ -81,8 +80,8 @@ int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
 
   if (AbsAngleDelta8(ang, ACTOR_YAW(actor)) <= lim) {
     ACTOR_TURNSTATE(actor) = 1;
-    func_80038EE0(actor, ang, step, lim, 1);
-    func_80039398(actor, speed, group, 0, flags);
+    TurnActorYawTowardAngle(actor, ang, step, lim, 1);
+    MoveActorAlongHeading(actor, speed, group, 0, flags);
     goto done;
   }
 

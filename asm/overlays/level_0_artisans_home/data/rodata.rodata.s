@@ -13,7 +13,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.jtbl_8007AA3C, "a"
-.ifndef HAVE_C_func_level_0_8007B020
+.ifndef HAVE_C_Level0_BalloonistCutscene_Update
 nonmatching jtbl_8007AA3C
 
 dlabel jtbl_8007AA3C
@@ -29,7 +29,7 @@ enddlabel jtbl_8007AA3C
 .endif
 
 .section .rodata.D_8007AA5C, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AA5C
 
 dlabel D_8007AA5C
@@ -40,7 +40,7 @@ enddlabel D_8007AA5C
 .endif
 
 .section .rodata.D_8007AA70, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AA70
 
 dlabel D_8007AA70
@@ -51,7 +51,7 @@ enddlabel D_8007AA70
 .endif
 
 .section .rodata.D_8007AA80, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AA80
 
 dlabel D_8007AA80
@@ -62,7 +62,7 @@ enddlabel D_8007AA80
 .endif
 
 .section .rodata.D_8007AA90, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AA90
 
 dlabel D_8007AA90
@@ -73,7 +73,7 @@ enddlabel D_8007AA90
 .endif
 
 .section .rodata.D_8007AAA4, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AAA4
 
 dlabel D_8007AAA4
@@ -84,7 +84,7 @@ enddlabel D_8007AAA4
 .endif
 
 .section .rodata.D_8007AAB0, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AAB0
 
 dlabel D_8007AAB0
@@ -95,7 +95,7 @@ enddlabel D_8007AAB0
 .endif
 
 .section .rodata.D_8007AAC8, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AAC8
 
 dlabel D_8007AAC8
@@ -106,7 +106,7 @@ enddlabel D_8007AAC8
 .endif
 
 .section .rodata.D_8007AAE0, "a"
-.ifndef HAVE_C_func_level_0_8007CFC0
+.ifndef HAVE_C_Level0_BalloonistCutscene_Draw
 nonmatching D_8007AAE0
 
 dlabel D_8007AAE0
@@ -117,7 +117,7 @@ enddlabel D_8007AAE0
 .endif
 
 .section .rodata.jtbl_8007AAEC, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007AAEC
 
 dlabel jtbl_8007AAEC
@@ -131,7 +131,7 @@ enddlabel jtbl_8007AAEC
 .endif
 
 .section .rodata.jtbl_8007AB04, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007AB04
 
 dlabel jtbl_8007AB04
@@ -145,7 +145,7 @@ enddlabel jtbl_8007AB04
 .endif
 
 .section .rodata.jtbl_8007AB1C, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007AB1C
 
 dlabel jtbl_8007AB1C
@@ -161,7 +161,7 @@ enddlabel jtbl_8007AB1C
 .endif
 
 .section .rodata.jtbl_8007AB3C, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007AB3C
 
 dlabel jtbl_8007AB3C
@@ -191,7 +191,7 @@ enddlabel jtbl_8007AB3C
 .endif
 
 .section .rodata.jtbl_8007AB94, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007AB94
 
 dlabel jtbl_8007AB94
@@ -209,7 +209,7 @@ enddlabel jtbl_8007AB94
 .endif
 
 .section .rodata.jtbl_8007ABBC, "a"
-.ifndef HAVE_C_func_level_0_8007D9C8
+.ifndef HAVE_C_Level0_UpdateActors
 nonmatching jtbl_8007ABBC
 
 dlabel jtbl_8007ABBC
@@ -223,7 +223,7 @@ enddlabel jtbl_8007ABBC
 .endif
 
 .section .rodata.jtbl_8007ABD4, "a"
-.ifndef HAVE_C_func_level_0_80086134
+.ifndef HAVE_C_Level0_AdvanceEmitList
 nonmatching jtbl_8007ABD4
 
 dlabel jtbl_8007ABD4
@@ -312,7 +312,7 @@ enddlabel jtbl_8007ABD4
 .endif
 
 .section .rodata.jtbl_8007AD18, "a"
-.ifndef HAVE_C_func_level_0_800873E0
+.ifndef HAVE_C_Level0_EmitParticles
 nonmatching jtbl_8007AD18
 
 dlabel jtbl_8007AD18
@@ -402,7 +402,7 @@ enddlabel jtbl_8007AD18
 .endif
 
 .section .rodata.jtbl_8007AE60, "a"
-.ifndef HAVE_C_func_level_0_800873E0
+.ifndef HAVE_C_Level0_EmitParticles
 nonmatching jtbl_8007AE60
 
 dlabel jtbl_8007AE60
@@ -418,7 +418,7 @@ enddlabel jtbl_8007AE60
 .endif
 
 .section .rodata.jtbl_8007AE80, "a"
-.ifndef HAVE_C_func_level_0_800873E0
+.ifndef HAVE_C_Level0_EmitParticles
 nonmatching jtbl_8007AE80
 
 dlabel jtbl_8007AE80

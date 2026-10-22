@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* The tail's `lh; sra 4` pair is A233 (shift counts sh0/sh1 assigned
    outside the if-block). The loop is a goto loop: the original strength-
@@ -8,7 +9,6 @@
    Allocation: sinTab is a `$18` register local (as a pseudo, its `la` is a
    3-ref cse temp that ranks last) and `pto` a `$20` one, set before `cosp`. */
 
-extern void AddVector(int *dst, int *a, int *b);
 extern int CastRayWorldAndActors(int *from, int *to);
 extern short g_anCosineLut[];
 

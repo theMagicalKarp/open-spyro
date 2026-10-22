@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void CopyVector(int *dst, int *src);
 
 /* Push a blinking SPRT_16 marker onto the front of the sprite queue
    (0x80018534): g_pSpriteRecordWriteCursor bumps down 0x58 bytes. Gated by

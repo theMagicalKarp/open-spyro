@@ -16,7 +16,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.jtbl_8007AA3C, "a"
-.ifndef HAVE_C_func_credits_8007AA50
+.ifndef HAVE_C_Credits_Update
 nonmatching jtbl_8007AA3C
 
 dlabel jtbl_8007AA3C

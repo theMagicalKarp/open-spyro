@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern void ZeroVector(int *vec);
+#include "vecmath.h"
 
 /* Hard-zero of Spyro's linear motion. Clears the knockback/motion accumulator
    g_anSpyroMotionVec, the frame-delta length g_nSpyroFrameMotionLength, the

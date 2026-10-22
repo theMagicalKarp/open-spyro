@@ -1,47 +1,47 @@
 {
  "functions": [
   {
-   "name": "func_level_1_8007AF50",
+   "name": "Level1_BeginActorCutscene",
    "vram": 2147987280,
    "size": 316
   },
   {
-   "name": "func_level_1_8007B08C",
+   "name": "Level1_OnSaveMenuExit",
    "vram": 2147987596,
    "size": 68
   },
   {
-   "name": "func_level_1_8007B0D0",
+   "name": "Level1_BalloonistCutscene_Update",
    "vram": 2147987664,
    "size": 8096
   },
   {
-   "name": "func_level_1_8007D070",
+   "name": "Level1_BalloonistCutscene_Draw",
    "vram": 2147995760,
    "size": 2568
   },
   {
-   "name": "func_level_1_8007DA78",
+   "name": "Level1_UpdateActors",
    "vram": 2147998328,
    "size": 40116
   },
   {
-   "name": "func_level_1_8008772C",
+   "name": "Level1_SpawnActor",
    "vram": 2148038444,
    "size": 2412
   },
   {
-   "name": "func_level_1_80088098",
+   "name": "Level1_AdvanceEmitList",
    "vram": 2148040856,
    "size": 4652
   },
   {
-   "name": "func_level_1_800892C4",
+   "name": "Level1_EmitParticles",
    "vram": 2148045508,
    "size": 4340
   },
   {
-   "name": "func_level_1_8008A3B8",
+   "name": "Level1_Noop",
    "vram": 2148049848,
    "size": 8
   }
@@ -56,115 +56,115 @@
   {
    "sym": "jtbl_8007AA3C",
    "offset": 4,
-   "owner": "func_level_1_8007B0D0",
+   "owner": "Level1_BalloonistCutscene_Update",
    "size": 32
   },
   {
    "sym": "D_8007AA5C",
    "offset": 36,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 20
   },
   {
    "sym": "D_8007AA70",
    "offset": 56,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 16
   },
   {
    "sym": "D_8007AA80",
    "offset": 72,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 16
   },
   {
    "sym": "D_8007AA90",
    "offset": 88,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 20
   },
   {
    "sym": "D_8007AAA4",
    "offset": 108,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 12
   },
   {
    "sym": "D_8007AAB0",
    "offset": 120,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 24
   },
   {
    "sym": "D_8007AAC8",
    "offset": 144,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 24
   },
   {
    "sym": "D_8007AAE0",
    "offset": 168,
-   "owner": "func_level_1_8007D070",
+   "owner": "Level1_BalloonistCutscene_Draw",
    "size": 12
   },
   {
    "sym": "jtbl_8007AAEC",
    "offset": 180,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 248
   },
   {
    "sym": "jtbl_8007ABE4",
    "offset": 428,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007ABFC",
    "offset": 452,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 24
   },
   {
    "sym": "jtbl_8007AC14",
    "offset": 476,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 32
   },
   {
    "sym": "jtbl_8007AC34",
    "offset": 508,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 40
   },
   {
    "sym": "jtbl_8007AC5C",
    "offset": 548,
-   "owner": "func_level_1_8007DA78",
+   "owner": "Level1_UpdateActors",
    "size": 40
   },
   {
    "sym": "jtbl_8007AC84",
    "offset": 588,
-   "owner": "func_level_1_80088098",
+   "owner": "Level1_AdvanceEmitList",
    "size": 324
   },
   {
    "sym": "jtbl_8007ADC8",
    "offset": 912,
-   "owner": "func_level_1_800892C4",
+   "owner": "Level1_EmitParticles",
    "size": 328
   },
   {
    "sym": "jtbl_8007AF10",
    "offset": 1240,
-   "owner": "func_level_1_800892C4",
+   "owner": "Level1_EmitParticles",
    "size": 32
   },
   {
    "sym": "jtbl_8007AF30",
    "offset": 1272,
-   "owner": "func_level_1_800892C4",
+   "owner": "Level1_EmitParticles",
    "size": 32
   }
  ]

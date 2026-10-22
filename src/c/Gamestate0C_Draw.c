@@ -13,10 +13,10 @@
    0x58-byte record at a time, walking back down the sprite-record queue.
 
    Substates below 6 also cross-fade the world fog toward the actor mesh fade
-   color: the fade parameter runs D_800777EC*0x10 on the way in (substate 4)
-   and (0x100 - D_800777EC)*0x10 on the way out, clamped to 0..0x1000, and the
-   fogged static mesh is re-emitted until the fade completes. Ends with the
-   standard 2-vblank frame submit.
+   color: the fade parameter runs g_nGamestate0cTimer*0x10 on the way in
+   (substate 4) and (0x100 - g_nGamestate0cTimer)*0x10 on the way out, clamped
+   to 0..0x1000, and the fogged static mesh is re-emitted until the fade
+   completes. Ends with the standard 2-vblank frame submit.
 
    The OT bin-head pair is written through an asm-opaque copy of the block
    address so cse keeps it as a held base; the empty volatile asm keeps the
@@ -42,12 +42,12 @@ extern void PutDrawEnv(void *env);
 extern void *LinkOTPrimitives(int depth_max);
 extern void DrawOTag(void *ot);
 
-extern char D_80010CD0[]; /* "%s" */
-extern char D_80010CE4[]; /* "%s" (level form) */
-extern void *D_80077850;  /* OT bin head seed for the title card */
-extern int D_800777EC[];  /* transition fade counter */
-extern int D_800777FC;    /* transition card variant */
-extern void *D_800758D8;  /* substate draw handler */
+extern char D_80010CD0[];         /* "%s" */
+extern char D_80010CE4[];         /* "%s" (level form) */
+extern void *D_80077850;          /* OT bin head seed for the title card */
+extern int g_nGamestate0cTimer[]; /* transition fade counter */
+extern int D_800777FC;            /* transition card variant */
+extern void *D_800758D8;          /* substate draw handler */
 extern unsigned short g_anCosineLut[];
 extern void *g_apOtDepthBinBlock[];  /* alias @0x8006fcf4: head/tail pair */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
@@ -101,7 +101,7 @@ void Gamestate0C_Draw(void) {
       rec -= 0x58;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-        int *fade = D_800777EC;
+        int *fade = g_nGamestate0cTimer;
         unsigned short *cos = g_anCosineLut;
         do {
           rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
@@ -121,9 +121,9 @@ void Gamestate0C_Draw(void) {
       if (g_nGamestate0cSubstate < 6) {
         g_dwActorMeshFadeColor = 0x401010;
         if (g_nGamestate0cSubstate == 4) {
-          g_nFadeProgress = D_800777EC[0] * 0x10;
+          g_nFadeProgress = g_nGamestate0cTimer[0] * 0x10;
         } else {
-          g_nFadeProgress = (0x100 - D_800777EC[0]) * 0x10;
+          g_nFadeProgress = (0x100 - g_nGamestate0cTimer[0]) * 0x10;
         }
         if (g_nFadeProgress < 0) {
           *(volatile int *)&g_nFadeProgress = 0;

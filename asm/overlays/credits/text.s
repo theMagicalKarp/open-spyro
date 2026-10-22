@@ -8,11 +8,11 @@
 
 .section .text, "ax"
 
-.section .text.func_credits_8007AA50, "ax"
-.ifndef HAVE_C_func_credits_8007AA50
-nonmatching func_credits_8007AA50, 0x1580
+.section .text.Credits_Update, "ax"
+.ifndef HAVE_C_Credits_Update
+nonmatching Credits_Update, 0x1580
 
-glabel func_credits_8007AA50
+glabel Credits_Update
     /* 18 8007AA50 78FFBD27 */  addiu      $sp, $sp, -0x88
     /* 1C 8007AA54 0780033C */  lui        $v1, %hi(D_80075704)
     /* 20 8007AA58 0457638C */  lw         $v1, %lo(D_80075704)($v1)
@@ -30,8 +30,8 @@ glabel func_credits_8007AA50
     /* 50 8007AA88 6000B0AF */   sw        $s0, 0x60($sp)
     /* 54 8007AA8C 0780023C */  lui        $v0, %hi(D_80075768)
     /* 58 8007AA90 6857428C */  lw         $v0, %lo(D_80075768)($v0)
-    /* 5C 8007AA94 0880053C */  lui        $a1, %hi(func_credits_8007C338)
-    /* 60 8007AA98 38C3A524 */  addiu      $a1, $a1, %lo(func_credits_8007C338)
+    /* 5C 8007AA94 0880053C */  lui        $a1, %hi(Credits_Noop)
+    /* 60 8007AA98 38C3A524 */  addiu      $a1, $a1, %lo(Credits_Noop)
     /* 64 8007AA9C 1A004014 */  bnez       $v0, .L8007AB08
     /* 68 8007AAA0 00080624 */   addiu     $a2, $zero, 0x800
     /* 6C 8007AAA4 21200000 */  addu       $a0, $zero, $zero
@@ -1471,14 +1471,14 @@ glabel func_credits_8007AA50
     /* 158C 8007BFC4 8800BD27 */  addiu      $sp, $sp, 0x88
     /* 1590 8007BFC8 0800E003 */  jr         $ra
     /* 1594 8007BFCC 00000000 */   nop
-endlabel func_credits_8007AA50
+endlabel Credits_Update
 .endif
 
-.section .text.func_credits_8007BFD0, "ax"
-.ifndef HAVE_C_func_credits_8007BFD0
-nonmatching func_credits_8007BFD0, 0x368
+.section .text.Credits_Draw, "ax"
+.ifndef HAVE_C_Credits_Draw
+nonmatching Credits_Draw, 0x368
 
-glabel func_credits_8007BFD0
+glabel Credits_Draw
     /* 1598 8007BFD0 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 159C 8007BFD4 0780033C */  lui        $v1, %hi(D_80075704)
     /* 15A0 8007BFD8 0457638C */  lw         $v1, %lo(D_80075704)($v1)
@@ -1707,16 +1707,16 @@ glabel func_credits_8007BFD0
     /* 18F4 8007C32C 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 18F8 8007C330 0800E003 */  jr         $ra
     /* 18FC 8007C334 00000000 */   nop
-endlabel func_credits_8007BFD0
+endlabel Credits_Draw
 .endif
 
-.section .text.func_credits_8007C338, "ax"
-.ifndef HAVE_C_func_credits_8007C338
-nonmatching func_credits_8007C338, 0x8
+.section .text.Credits_Noop, "ax"
+.ifndef HAVE_C_Credits_Noop
+nonmatching Credits_Noop, 0x8
 
-glabel func_credits_8007C338
+glabel Credits_Noop
     /* 1900 8007C338 0800E003 */  jr         $ra
     /* 1904 8007C33C 00000000 */   nop
-endlabel func_credits_8007C338
+endlabel Credits_Noop
 .endif
 

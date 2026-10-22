@@ -7,7 +7,7 @@ extern int VectorLength(int *vec, int include_z);
 extern signed char ArcTan2_8bit(int a, int b);
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
-extern void func_8003851C(void *rec, int a, int b);
+extern void PlayActorMeshVoice(void *rec, int a, int b);
 extern void func_800177F8(int *dst, int *src, int n);
 
 extern int g_nSpyroWorldPosZ;         /* 0x80078a60 — g_anSpyroWorldPos[2] */
@@ -43,16 +43,16 @@ struct Actor {
    (0xf normal, 0xe on a 2-in-25 roll, 0x10 for the "extra life" band while the
    level is still loading).  The 0x10 case doubles as the one-shot key/egg
    record: while none is registered yet and g_nLevelReadyFlag is non-negative
-   the drop is built as id 0x78 instead, seeded by func_8003851C, latched into
-   g_pLevelOverlayInitRecord and the flag knocked down to 1.
-   Otherwise a record is allocated through g_pfnLevelOverlayInitHook and thrown:
-   kinds 0/2/6 land on the source (or `alt`) position with a small XY jitter,
-   kind 1 and any kind-3/4 that fails its Spyro proximity test scatter over a
-   wider XY box, kind 5 drops in place with zero velocity, and kinds 3/4 that
-   pass attach straight onto the source with a random tumble.  The thrown path
-   probes the landing spot for ground and a walkable slope, integrates the
-   ballistic arc at 10 units of gravity per frame to count the flight time, and
-   divides the offset by that count to get the launch velocity. */
+   the drop is built as id 0x78 instead, seeded by PlayActorMeshVoice, latched
+   into g_pLevelOverlayInitRecord and the flag knocked down to 1. Otherwise a
+   record is allocated through g_pfnLevelOverlayInitHook and thrown: kinds 0/2/6
+   land on the source (or `alt`) position with a small XY jitter, kind 1 and any
+   kind-3/4 that fails its Spyro proximity test scatter over a wider XY box,
+   kind 5 drops in place with zero velocity, and kinds 3/4 that pass attach
+   straight onto the source with a random tumble.  The thrown path probes the
+   landing spot for ground and a walkable slope, integrates the ballistic arc at
+   10 units of gravity per frame to count the flight time, and divides the
+   offset by that count to get the launch velocity. */
 struct Actor *func_8003ABC0(struct Actor *src, int kind, int *hint, int *alt) {
   int land[4];   /* sp+0x18 */
   int throw_[4]; /* sp+0x28 */
@@ -92,7 +92,7 @@ struct Actor *func_8003ABC0(struct Actor *src, int kind, int *hint, int *alt) {
     } else {
       rec = (*(struct Actor * (*)(int, struct Actor *))
                  g_pfnLevelOverlayInitHook)(0x78, src);
-      func_8003851C(rec, 0, 0);
+      PlayActorMeshVoice(rec, 0, 0);
       g_anLevelReadyFlagBlock[0] = 1;
       g_pLevelOverlayInitRecord = rec;
     }

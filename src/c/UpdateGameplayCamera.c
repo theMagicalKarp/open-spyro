@@ -1,10 +1,7 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern int VectorLength(int *vec, int include_z);
 extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int ComputeCameraToTargetAngle(int *pos);

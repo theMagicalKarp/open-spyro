@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* 0x800189f0 — the motion-trail ribbons (1344 b), drawn from ComposeFrameScene.
 
@@ -15,8 +16,6 @@ extern int D_800772C8[];   /* 0x800772c8: per-ribbon slice count */
 extern void *D_80078658[]; /* 0x80078658: per-ribbon slice list */
 
 extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int flags);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern int IntegerSqrt(int n);
 extern void SetDrawMode(void *prim, int dfe, int dtd, unsigned int tpage,
                         void *clip);
 extern void AddPrimToOTSlot(void *prim, int slot);

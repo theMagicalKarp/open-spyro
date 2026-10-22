@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Average the frame-to-frame motion of the collision tri Spyro stands on
    (0x8003e628, 0x130). Unpacks the current ground tri, subtracts the
@@ -6,12 +7,7 @@
    platform impulse, and suppresses the camera spring when the platform
    moved far enough. */
 
-extern void ZeroVector(int *vec);
 extern void UnpackWorldCollisionTri(int chunkId, int *verts);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern int VectorLength(int *vec, int include_z);
 
 extern int g_anSpyroGroundChunkBlock[];
 

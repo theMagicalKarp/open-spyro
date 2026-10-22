@@ -30105,11 +30105,11 @@ glabel EndGemPickupToWorld
 endlabel EndGemPickupToWorld
 .endif
 
-.section .text.func_8002CCC8, "ax"
-.ifndef HAVE_C_func_8002CCC8
-nonmatching func_8002CCC8, 0x364
+.section .text.BeginSaveMenuFromWorld, "ax"
+.ifndef HAVE_C_BeginSaveMenuFromWorld
+nonmatching BeginSaveMenuFromWorld, 0x364
 
-glabel func_8002CCC8
+glabel BeginSaveMenuFromWorld
     /* 1D4C8 8002CCC8 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 1D4CC 8002CCCC 2000B0AF */  sw         $s0, 0x20($sp)
     /* 1D4D0 8002CCD0 21808000 */  addu       $s0, $a0, $zero
@@ -30331,7 +30331,7 @@ glabel func_8002CCC8
     /* 1D820 8002D020 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 1D824 8002D024 0800E003 */  jr         $ra
     /* 1D828 8002D028 00000000 */   nop
-endlabel func_8002CCC8
+endlabel BeginSaveMenuFromWorld
 .endif
 
 .section .text.EndSaveMenuToWorld, "ax"
@@ -42536,11 +42536,11 @@ glabel func_80037E98
 endlabel func_80037E98
 .endif
 
-.section .text.func_80037EA0, "ax"
-.ifndef HAVE_C_func_80037EA0
-nonmatching func_80037EA0, 0x70
+.section .text.RandomIntInRange, "ax"
+.ifndef HAVE_C_RandomIntInRange
+nonmatching RandomIntInRange, 0x70
 
-glabel func_80037EA0
+glabel RandomIntInRange
     /* 286A0 80037EA0 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 286A4 80037EA4 1400B1AF */  sw         $s1, 0x14($sp)
     /* 286A8 80037EA8 21888000 */  addu       $s1, $a0, $zero
@@ -42571,14 +42571,14 @@ glabel func_80037EA0
     /* 28704 80037F04 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28708 80037F08 0800E003 */  jr         $ra
     /* 2870C 80037F0C 00000000 */   nop
-endlabel func_80037EA0
+endlabel RandomIntInRange
 .endif
 
-.section .text.func_80037F10, "ax"
-.ifndef HAVE_C_func_80037F10
-nonmatching func_80037F10, 0x80
+.section .text.RandomSignedInRange, "ax"
+.ifndef HAVE_C_RandomSignedInRange
+nonmatching RandomSignedInRange, 0x80
 
-glabel func_80037F10
+glabel RandomSignedInRange
     /* 28710 80037F10 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28714 80037F14 1400B1AF */  sw         $s1, 0x14($sp)
     /* 28718 80037F18 21888000 */  addu       $s1, $a0, $zero
@@ -42615,14 +42615,14 @@ glabel func_80037F10
     /* 28784 80037F84 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28788 80037F88 0800E003 */  jr         $ra
     /* 2878C 80037F8C 00000000 */   nop
-endlabel func_80037F10
+endlabel RandomSignedInRange
 .endif
 
-.section .text.func_80037F90, "ax"
-.ifndef HAVE_C_func_80037F90
-nonmatching func_80037F90, 0xE4
+.section .text.TickCountdownByFrameDelta, "ax"
+.ifndef HAVE_C_TickCountdownByFrameDelta
+nonmatching TickCountdownByFrameDelta, 0xE4
 
-glabel func_80037F90
+glabel TickCountdownByFrameDelta
     /* 28790 80037F90 04000224 */  addiu      $v0, $zero, 0x4
     /* 28794 80037F94 1000A214 */  bne        $a1, $v0, .L80037FD8
     /* 28798 80037F98 F8FFBD27 */   addiu     $sp, $sp, -0x8
@@ -42687,14 +42687,14 @@ glabel func_80037F90
     /* 28868 80038068 0800BD27 */  addiu      $sp, $sp, 0x8
     /* 2886C 8003806C 0800E003 */  jr         $ra
     /* 28870 80038070 00000000 */   nop
-endlabel func_80037F90
+endlabel TickCountdownByFrameDelta
 .endif
 
-.section .text.func_80038074, "ax"
-.ifndef HAVE_C_func_80038074
-nonmatching func_80038074, 0x24
+.section .text.WrapAddAngle8, "ax"
+.ifndef HAVE_C_WrapAddAngle8
+nonmatching WrapAddAngle8, 0x24
 
-glabel func_80038074
+glabel WrapAddAngle8
     /* 28874 80038074 21208500 */  addu       $a0, $a0, $a1
     /* 28878 80038078 00018324 */  addiu      $v1, $a0, 0x100
     /* 2887C 8003807C 02006104 */  bgez       $v1, .L80038088
@@ -42705,14 +42705,14 @@ glabel func_80038074
     /* 2888C 8003808C 00120200 */  sll        $v0, $v0, 8
     /* 28890 80038090 0800E003 */  jr         $ra
     /* 28894 80038094 23106200 */   subu      $v0, $v1, $v0
-endlabel func_80038074
+endlabel WrapAddAngle8
 .endif
 
-.section .text.func_80038098, "ax"
-.ifndef HAVE_C_func_80038098
-nonmatching func_80038098, 0x88
+.section .text.StepAngle8Toward, "ax"
+.ifndef HAVE_C_StepAngle8Toward
+nonmatching StepAngle8Toward, 0x88
 
-glabel func_80038098
+glabel StepAngle8Toward
     /* 28898 80038098 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 2889C 8003809C 1800B2AF */  sw         $s2, 0x18($sp)
     /* 288A0 800380A0 21908000 */  addu       $s2, $a0, $zero
@@ -42720,7 +42720,7 @@ glabel func_80038098
     /* 288A8 800380A8 2180A000 */  addu       $s0, $a1, $zero
     /* 288AC 800380AC 1400B1AF */  sw         $s1, 0x14($sp)
     /* 288B0 800380B0 1C00BFAF */  sw         $ra, 0x1C($sp)
-    /* 288B4 800380B4 6FE0000C */  jal        func_800381BC
+    /* 288B4 800380B4 6FE0000C */  jal        WrapAngleDelta8
     /* 288B8 800380B8 2188C000 */   addu      $s1, $a2, $zero
     /* 288BC 800380BC 21184000 */  addu       $v1, $v0, $zero
     /* 288C0 800380C0 02006104 */  bgez       $v1, .L800380CC
@@ -42732,12 +42732,12 @@ glabel func_80038098
     /* 288D4 800380D4 00000000 */   nop
     /* 288D8 800380D8 05006104 */  bgez       $v1, .L800380F0
     /* 288DC 800380DC 21200002 */   addu      $a0, $s0, $zero
-    /* 288E0 800380E0 1DE0000C */  jal        func_80038074
+    /* 288E0 800380E0 1DE0000C */  jal        WrapAddAngle8
     /* 288E4 800380E4 21282002 */   addu      $a1, $s1, $zero
     /* 288E8 800380E8 41E00008 */  j          .L80038104
     /* 288EC 800380EC 00000000 */   nop
   .L800380F0:
-    /* 288F0 800380F0 1DE0000C */  jal        func_80038074
+    /* 288F0 800380F0 1DE0000C */  jal        WrapAddAngle8
     /* 288F4 800380F4 23281100 */   negu      $a1, $s1
     /* 288F8 800380F8 41E00008 */  j          .L80038104
     /* 288FC 800380FC 00000000 */   nop
@@ -42751,14 +42751,14 @@ glabel func_80038098
     /* 28914 80038114 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28918 80038118 0800E003 */  jr         $ra
     /* 2891C 8003811C 00000000 */   nop
-endlabel func_80038098
+endlabel StepAngle8Toward
 .endif
 
-.section .text.func_80038120, "ax"
-.ifndef HAVE_C_func_80038120
-nonmatching func_80038120, 0x58
+.section .text.LerpAngle8, "ax"
+.ifndef HAVE_C_LerpAngle8
+nonmatching LerpAngle8, 0x58
 
-glabel func_80038120
+glabel LerpAngle8
     /* 28920 80038120 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28924 80038124 21108000 */  addu       $v0, $a0, $zero
     /* 28928 80038128 1400B1AF */  sw         $s1, 0x14($sp)
@@ -42767,13 +42767,13 @@ glabel func_80038120
     /* 28934 80038134 21284000 */  addu       $a1, $v0, $zero
     /* 28938 80038138 1000B0AF */  sw         $s0, 0x10($sp)
     /* 2893C 8003813C 1800BFAF */  sw         $ra, 0x18($sp)
-    /* 28940 80038140 6FE0000C */  jal        func_800381BC
+    /* 28940 80038140 6FE0000C */  jal        WrapAngleDelta8
     /* 28944 80038144 2180C000 */   addu      $s0, $a2, $zero
     /* 28948 80038148 FF001032 */  andi       $s0, $s0, 0xFF
     /* 2894C 8003814C 18005000 */  mult       $v0, $s0
     /* 28950 80038150 21202002 */  addu       $a0, $s1, $zero
     /* 28954 80038154 12180000 */  mflo       $v1
-    /* 28958 80038158 1DE0000C */  jal        func_80038074
+    /* 28958 80038158 1DE0000C */  jal        WrapAddAngle8
     /* 2895C 8003815C 032A0300 */   sra       $a1, $v1, 8
     /* 28960 80038160 1800BF8F */  lw         $ra, 0x18($sp)
     /* 28964 80038164 1400B18F */  lw         $s1, 0x14($sp)
@@ -42781,24 +42781,24 @@ glabel func_80038120
     /* 2896C 8003816C 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28970 80038170 0800E003 */  jr         $ra
     /* 28974 80038174 00000000 */   nop
-endlabel func_80038120
+endlabel LerpAngle8
 .endif
 
-.section .text.func_80038178, "ax"
-.ifndef HAVE_C_func_80038178
-nonmatching func_80038178, 0x44
+.section .text.StepAndLerpAngle8, "ax"
+.ifndef HAVE_C_StepAndLerpAngle8
+nonmatching StepAndLerpAngle8, 0x44
 
-glabel func_80038178
+glabel StepAndLerpAngle8
     /* 28978 80038178 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 2897C 8003817C 1400B1AF */  sw         $s1, 0x14($sp)
     /* 28980 80038180 2188A000 */  addu       $s1, $a1, $zero
     /* 28984 80038184 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28988 80038188 1800BFAF */  sw         $ra, 0x18($sp)
-    /* 2898C 8003818C 26E0000C */  jal        func_80038098
+    /* 2898C 8003818C 26E0000C */  jal        StepAngle8Toward
     /* 28990 80038190 2180E000 */   addu      $s0, $a3, $zero
     /* 28994 80038194 21204000 */  addu       $a0, $v0, $zero
     /* 28998 80038198 21282002 */  addu       $a1, $s1, $zero
-    /* 2899C 8003819C 48E0000C */  jal        func_80038120
+    /* 2899C 8003819C 48E0000C */  jal        LerpAngle8
     /* 289A0 800381A0 FF000632 */   andi      $a2, $s0, 0xFF
     /* 289A4 800381A4 1800BF8F */  lw         $ra, 0x18($sp)
     /* 289A8 800381A8 1400B18F */  lw         $s1, 0x14($sp)
@@ -42806,14 +42806,14 @@ glabel func_80038178
     /* 289B0 800381B0 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 289B4 800381B4 0800E003 */  jr         $ra
     /* 289B8 800381B8 00000000 */   nop
-endlabel func_80038178
+endlabel StepAndLerpAngle8
 .endif
 
-.section .text.func_800381BC, "ax"
-.ifndef HAVE_C_func_800381BC
-nonmatching func_800381BC, 0x2C
+.section .text.WrapAngleDelta8, "ax"
+.ifndef HAVE_C_WrapAngleDelta8
+nonmatching WrapAngleDelta8, 0x2C
 
-glabel func_800381BC
+glabel WrapAngleDelta8
     /* 289BC 800381BC 2328A400 */  subu       $a1, $a1, $a0
     /* 289C0 800381C0 8100A228 */  slti       $v0, $a1, 0x81
     /* 289C4 800381C4 03004014 */  bnez       $v0, .L800381D4
@@ -42827,14 +42827,14 @@ glabel func_800381BC
   .L800381E0:
     /* 289E0 800381E0 0800E003 */  jr         $ra
     /* 289E4 800381E4 2110A000 */   addu      $v0, $a1, $zero
-endlabel func_800381BC
+endlabel WrapAngleDelta8
 .endif
 
-.section .text.func_800381E8, "ax"
-.ifndef HAVE_C_func_800381E8
-nonmatching func_800381E8, 0x68
+.section .text.IsActorFacingSpyro, "ax"
+.ifndef HAVE_C_IsActorFacingSpyro
+nonmatching IsActorFacingSpyro, 0x68
 
-glabel func_800381E8
+glabel IsActorFacingSpyro
     /* 289E8 800381E8 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 289EC 800381EC 1000B0AF */  sw         $s0, 0x10($sp)
     /* 289F0 800381F0 21808000 */  addu       $s0, $a0, $zero
@@ -42861,14 +42861,14 @@ glabel func_800381E8
     /* 28A44 80038244 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28A48 80038248 0800E003 */  jr         $ra
     /* 28A4C 8003824C 00000000 */   nop
-endlabel func_800381E8
+endlabel IsActorFacingSpyro
 .endif
 
-.section .text.func_80038250, "ax"
-.ifndef HAVE_C_func_80038250
-nonmatching func_80038250, 0xF0
+.section .text.CheckSpyroLineOfSightTo, "ax"
+.ifndef HAVE_C_CheckSpyroLineOfSightTo
+nonmatching CheckSpyroLineOfSightTo, 0xF0
 
-glabel func_80038250
+glabel CheckSpyroLineOfSightTo
     /* 28A50 80038250 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* 28A54 80038254 4C00B1AF */  sw         $s1, 0x4C($sp)
     /* 28A58 80038258 21888000 */  addu       $s1, $a0, $zero
@@ -42932,14 +42932,14 @@ glabel func_80038250
     /* 28B34 80038334 6000BD27 */  addiu      $sp, $sp, 0x60
     /* 28B38 80038338 0800E003 */  jr         $ra
     /* 28B3C 8003833C 00000000 */   nop
-endlabel func_80038250
+endlabel CheckSpyroLineOfSightTo
 .endif
 
-.section .text.func_80038340, "ax"
-.ifndef HAVE_C_func_80038340
-nonmatching func_80038340, 0x4C
+.section .text.ProbeActorGroundHeight, "ax"
+.ifndef HAVE_C_ProbeActorGroundHeight
+nonmatching ProbeActorGroundHeight, 0x4C
 
-glabel func_80038340
+glabel ProbeActorGroundHeight
     /* 28B40 80038340 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 28B44 80038344 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28B48 80038348 21808000 */  addu       $s0, $a0, $zero
@@ -42959,14 +42959,14 @@ glabel func_80038340
     /* 28B80 80038380 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 28B84 80038384 0800E003 */  jr         $ra
     /* 28B88 80038388 00000000 */   nop
-endlabel func_80038340
+endlabel ProbeActorGroundHeight
 .endif
 
-.section .text.func_8003838C, "ax"
-.ifndef HAVE_C_func_8003838C
-nonmatching func_8003838C, 0x74
+.section .text.IsActorGroundFlat, "ax"
+.ifndef HAVE_C_IsActorGroundFlat
+nonmatching IsActorGroundFlat, 0x74
 
-glabel func_8003838C
+glabel IsActorGroundFlat
     /* 28B8C 8003838C E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 28B90 80038390 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28B94 80038394 21808000 */  addu       $s0, $a0, $zero
@@ -42996,14 +42996,14 @@ glabel func_8003838C
     /* 28BF4 800383F4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 28BF8 800383F8 0800E003 */  jr         $ra
     /* 28BFC 800383FC 00000000 */   nop
-endlabel func_8003838C
+endlabel IsActorGroundFlat
 .endif
 
-.section .text.func_80038400, "ax"
-.ifndef HAVE_C_func_80038400
-nonmatching func_80038400, 0x58
+.section .text.ProbeActorGroundHeightRaised, "ax"
+.ifndef HAVE_C_ProbeActorGroundHeightRaised
+nonmatching ProbeActorGroundHeightRaised, 0x58
 
-glabel func_80038400
+glabel ProbeActorGroundHeightRaised
     /* 28C00 80038400 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28C04 80038404 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28C08 80038408 21808000 */  addu       $s0, $a0, $zero
@@ -43026,18 +43026,18 @@ glabel func_80038400
     /* 28C4C 8003844C 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28C50 80038450 0800E003 */  jr         $ra
     /* 28C54 80038454 00000000 */   nop
-endlabel func_80038400
+endlabel ProbeActorGroundHeightRaised
 .endif
 
-.section .text.func_80038458, "ax"
-.ifndef HAVE_C_func_80038458
-nonmatching func_80038458, 0x3C
+.section .text.SnapActorToGround, "ax"
+.ifndef HAVE_C_SnapActorToGround
+nonmatching SnapActorToGround, 0x3C
 
-glabel func_80038458
+glabel SnapActorToGround
     /* 28C58 80038458 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 28C5C 8003845C 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28C60 80038460 1400BFAF */  sw         $ra, 0x14($sp)
-    /* 28C64 80038464 D0E0000C */  jal        func_80038340
+    /* 28C64 80038464 D0E0000C */  jal        ProbeActorGroundHeight
     /* 28C68 80038468 21808000 */   addu      $s0, $a0, $zero
     /* 28C6C 8003846C 38000386 */  lh         $v1, 0x38($s0)
     /* 28C70 80038470 21200002 */  addu       $a0, $s0, $zero
@@ -43049,14 +43049,14 @@ glabel func_80038458
     /* 28C88 80038488 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 28C8C 8003848C 0800E003 */  jr         $ra
     /* 28C90 80038490 00000000 */   nop
-endlabel func_80038458
+endlabel SnapActorToGround
 .endif
 
-.section .text.func_80038494, "ax"
-.ifndef HAVE_C_func_80038494
-nonmatching func_80038494, 0x88
+.section .text.IsActorInRunningKillSet, "ax"
+.ifndef HAVE_C_IsActorInRunningKillSet
+nonmatching IsActorInRunningKillSet, 0x88
 
-glabel func_80038494
+glabel IsActorInRunningKillSet
     /* 28C94 80038494 21288000 */  addu       $a1, $a0, $zero
     /* 28C98 80038498 0780043C */  lui        $a0, %hi(g_pActorListBase)
     /* 28C9C 8003849C 2858848C */  lw         $a0, %lo(g_pActorListBase)($a0)
@@ -43092,14 +43092,14 @@ glabel func_80038494
   .L80038514:
     /* 28D14 80038514 0800E003 */  jr         $ra
     /* 28D18 80038518 2110C000 */   addu      $v0, $a2, $zero
-endlabel func_80038494
+endlabel IsActorInRunningKillSet
 .endif
 
-.section .text.func_8003851C, "ax"
-.ifndef HAVE_C_func_8003851C
-nonmatching func_8003851C, 0xA0
+.section .text.PlayActorMeshVoice, "ax"
+.ifndef HAVE_C_PlayActorMeshVoice
+nonmatching PlayActorMeshVoice, 0xA0
 
-glabel func_8003851C
+glabel PlayActorMeshVoice
     /* 28D1C 8003851C E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28D20 80038520 1000B0AF */  sw         $s0, 0x10($sp)
     /* 28D24 80038524 21808000 */  addu       $s0, $a0, $zero
@@ -43142,7 +43142,7 @@ glabel func_8003851C
     /* 28DB0 800385B0 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 28DB4 800385B4 0800E003 */  jr         $ra
     /* 28DB8 800385B8 00000000 */   nop
-endlabel func_8003851C
+endlabel PlayActorMeshVoice
 .endif
 
 .section .text.func_800385BC, "ax"
@@ -43220,7 +43220,7 @@ glabel func_80038638
     /* 28EA0 800386A0 23284500 */   subu      $a1, $v0, $a1
     /* 28EA4 800386A4 21904000 */  addu       $s2, $v0, $zero
     /* 28EA8 800386A8 21202002 */  addu       $a0, $s1, $zero
-    /* 28EAC 800386AC 6FE0000C */  jal        func_800381BC
+    /* 28EAC 800386AC 6FE0000C */  jal        WrapAngleDelta8
     /* 28EB0 800386B0 21284002 */   addu      $a1, $s2, $zero
     /* 28EB4 800386B4 21884000 */  addu       $s1, $v0, $zero
     /* 28EB8 800386B8 02002106 */  bgez       $s1, .L800386C4
@@ -43238,7 +43238,7 @@ glabel func_80038638
     /* 28EE4 800386E4 05004228 */  slti       $v0, $v0, 0x5
     /* 28EE8 800386E8 0B004010 */  beqz       $v0, .L80038718
     /* 28EEC 800386EC 2120A002 */   addu      $a0, $s5, $zero
-    /* 28EF0 800386F0 6FE0000C */  jal        func_800381BC
+    /* 28EF0 800386F0 6FE0000C */  jal        WrapAngleDelta8
     /* 28EF4 800386F4 21284002 */   addu      $a1, $s2, $zero
     /* 28EF8 800386F8 03002106 */  bgez       $s1, .L80038708
     /* 28EFC 800386FC 00000000 */   nop
@@ -43259,7 +43259,7 @@ glabel func_80038638
     /* 28F2C 8003872C 05004228 */  slti       $v0, $v0, 0x5
     /* 28F30 80038730 0D004010 */  beqz       $v0, .L80038768
     /* 28F34 80038734 2120E002 */   addu      $a0, $s7, $zero
-    /* 28F38 80038738 6FE0000C */  jal        func_800381BC
+    /* 28F38 80038738 6FE0000C */  jal        WrapAngleDelta8
     /* 28F3C 8003873C 21284002 */   addu      $a1, $s2, $zero
     /* 28F40 80038740 03002106 */  bgez       $s1, .L80038750
     /* 28F44 80038744 00000000 */   nop
@@ -43281,7 +43281,7 @@ glabel func_80038638
   .L80038778:
     /* 28F78 80038778 FDFF0524 */  addiu      $a1, $zero, -0x3
   .L8003877C:
-    /* 28F7C 8003877C 1DE0000C */  jal        func_80038074
+    /* 28F7C 8003877C 1DE0000C */  jal        WrapAddAngle8
     /* 28F80 80038780 00000000 */   nop
     /* 28F84 80038784 21904000 */  addu       $s2, $v0, $zero
     /* 28F88 80038788 40201200 */  sll        $a0, $s2, 1
@@ -43341,7 +43341,7 @@ glabel func_80038638
     /* 29058 80038858 21284000 */  addu       $a1, $v0, $zero
     /* 2905C 8003885C 6800A68F */  lw         $a2, 0x68($sp)
     /* 29060 80038860 21380000 */  addu       $a3, $zero, $zero
-    /* 29064 80038864 B8E3000C */  jal        func_80038EE0
+    /* 29064 80038864 B8E3000C */  jal        TurnActorYawTowardAngle
     /* 29068 80038868 1000A0AF */   sw        $zero, 0x10($sp)
     /* 2906C 8003886C 21206002 */  addu       $a0, $s3, $zero
     /* 29070 80038870 7800A78F */  lw         $a3, 0x78($sp)
@@ -43350,7 +43350,7 @@ glabel func_80038638
     /* 2907C 8003887C 1000A8AF */  sw         $t0, 0x10($sp)
     /* 29080 80038880 8000A88F */  lw         $t0, 0x80($sp)
     /* 29084 80038884 21308002 */  addu       $a2, $s4, $zero
-    /* 29088 80038888 A2E5000C */  jal        func_80039688
+    /* 29088 80038888 A2E5000C */  jal        MoveActorAlongAngle
     /* 2908C 8003888C 1400A8AF */   sw        $t0, 0x14($sp)
     /* 29090 80038890 35E20008 */  j          .L800388D4
     /* 29094 80038894 00000000 */   nop
@@ -43360,7 +43360,7 @@ glabel func_80038638
     /* 290A0 800388A0 6800A68F */  lw         $a2, 0x68($sp)
     /* 290A4 800388A4 6C00A78F */  lw         $a3, 0x6C($sp)
     /* 290A8 800388A8 21280002 */  addu       $a1, $s0, $zero
-    /* 290AC 800388AC B8E3000C */  jal        func_80038EE0
+    /* 290AC 800388AC B8E3000C */  jal        TurnActorYawTowardAngle
     /* 290B0 800388B0 1000A2AF */   sw        $v0, 0x10($sp)
     /* 290B4 800388B4 09004010 */  beqz       $v0, .L800388DC
     /* 290B8 800388B8 21206002 */   addu      $a0, $s3, $zero
@@ -43368,7 +43368,7 @@ glabel func_80038638
     /* 290C0 800388C0 7800A68F */  lw         $a2, 0x78($sp)
     /* 290C4 800388C4 7C00A78F */  lw         $a3, 0x7C($sp)
     /* 290C8 800388C8 21288002 */  addu       $a1, $s4, $zero
-    /* 290CC 800388CC E6E4000C */  jal        func_80039398
+    /* 290CC 800388CC E6E4000C */  jal        MoveActorAlongHeading
     /* 290D0 800388D0 1000A8AF */   sw        $t0, 0x10($sp)
   .L800388D4:
     /* 290D4 800388D4 04004014 */  bnez       $v0, .L800388E8
@@ -43482,11 +43482,11 @@ glabel func_8003891C
 endlabel func_8003891C
 .endif
 
-.section .text.func_80038A40, "ax"
-.ifndef HAVE_C_func_80038A40
-nonmatching func_80038A40, 0xBC
+.section .text.FindNearestPathPointToActor, "ax"
+.ifndef HAVE_C_FindNearestPathPointToActor
+nonmatching FindNearestPathPointToActor, 0xBC
 
-glabel func_80038A40
+glabel FindNearestPathPointToActor
     /* 29240 80038A40 C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 29244 80038A44 2800B4AF */  sw         $s4, 0x28($sp)
     /* 29248 80038A48 21A08000 */  addu       $s4, $a0, $zero
@@ -43538,14 +43538,14 @@ glabel func_80038A40
     /* 292F0 80038AF0 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 292F4 80038AF4 0800E003 */  jr         $ra
     /* 292F8 80038AF8 00000000 */   nop
-endlabel func_80038A40
+endlabel FindNearestPathPointToActor
 .endif
 
-.section .text.func_80038AFC, "ax"
-.ifndef HAVE_C_func_80038AFC
-nonmatching func_80038AFC, 0xB4
+.section .text.FindNearestPathPointToSpyro, "ax"
+.ifndef HAVE_C_FindNearestPathPointToSpyro
+nonmatching FindNearestPathPointToSpyro, 0xB4
 
-glabel func_80038AFC
+glabel FindNearestPathPointToSpyro
     /* 292FC 80038AFC C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 29300 80038B00 2000B2AF */  sw         $s2, 0x20($sp)
     /* 29304 80038B04 21908000 */  addu       $s2, $a0, $zero
@@ -43595,14 +43595,14 @@ glabel func_80038AFC
     /* 293A4 80038BA4 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 293A8 80038BA8 0800E003 */  jr         $ra
     /* 293AC 80038BAC 00000000 */   nop
-endlabel func_80038AFC
+endlabel FindNearestPathPointToSpyro
 .endif
 
-.section .text.func_80038BB0, "ax"
-.ifndef HAVE_C_func_80038BB0
-nonmatching func_80038BB0, 0x9C
+.section .text.FindFarthestPathPointFromSpyro, "ax"
+.ifndef HAVE_C_FindFarthestPathPointFromSpyro
+nonmatching FindFarthestPathPointFromSpyro, 0x9C
 
-glabel func_80038BB0
+glabel FindFarthestPathPointFromSpyro
     /* 293B0 80038BB0 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 293B4 80038BB4 2000B2AF */  sw         $s2, 0x20($sp)
     /* 293B8 80038BB8 21908000 */  addu       $s2, $a0, $zero
@@ -43645,14 +43645,14 @@ glabel func_80038BB0
     /* 29440 80038C40 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 29444 80038C44 0800E003 */  jr         $ra
     /* 29448 80038C48 00000000 */   nop
-endlabel func_80038BB0
+endlabel FindFarthestPathPointFromSpyro
 .endif
 
-.section .text.func_80038C4C, "ax"
-.ifndef HAVE_C_func_80038C4C
-nonmatching func_80038C4C, 0x108
+.section .text.IsPointInRotatedBox, "ax"
+.ifndef HAVE_C_IsPointInRotatedBox
+nonmatching IsPointInRotatedBox, 0x108
 
-glabel func_80038C4C
+glabel IsPointInRotatedBox
     /* 2944C 80038C4C C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 29450 80038C50 21108000 */  addu       $v0, $a0, $zero
     /* 29454 80038C54 3400B1AF */  sw         $s1, 0x34($sp)
@@ -43722,7 +43722,7 @@ glabel func_80038C4C
     /* 29548 80038D48 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 2954C 80038D4C 0800E003 */  jr         $ra
     /* 29550 80038D50 00000000 */   nop
-endlabel func_80038C4C
+endlabel IsPointInRotatedBox
 .endif
 
 .section .text.func_80038D54, "ax"
@@ -43848,11 +43848,11 @@ glabel TrackEntityYawTowardSpyro
 endlabel TrackEntityYawTowardSpyro
 .endif
 
-.section .text.func_80038EE0, "ax"
-.ifndef HAVE_C_func_80038EE0
-nonmatching func_80038EE0, 0xE8
+.section .text.TurnActorYawTowardAngle, "ax"
+.ifndef HAVE_C_TurnActorYawTowardAngle
+nonmatching TurnActorYawTowardAngle, 0xE8
 
-glabel func_80038EE0
+glabel TurnActorYawTowardAngle
     /* 296E0 80038EE0 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 296E4 80038EE4 1800B2AF */  sw         $s2, 0x18($sp)
     /* 296E8 80038EE8 21908000 */  addu       $s2, $a0, $zero
@@ -43918,14 +43918,14 @@ glabel func_80038EE0
     /* 297BC 80038FBC 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 297C0 80038FC0 0800E003 */  jr         $ra
     /* 297C4 80038FC4 00000000 */   nop
-endlabel func_80038EE0
+endlabel TurnActorYawTowardAngle
 .endif
 
-.section .text.func_80038FC8, "ax"
-.ifndef HAVE_C_func_80038FC8
-nonmatching func_80038FC8, 0x260
+.section .text.SteerActorYawTowardSpyro, "ax"
+.ifndef HAVE_C_SteerActorYawTowardSpyro
+nonmatching SteerActorYawTowardSpyro, 0x260
 
-glabel func_80038FC8
+glabel SteerActorYawTowardSpyro
     /* 297C8 80038FC8 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 297CC 80038FCC 1000B0AF */  sw         $s0, 0x10($sp)
     /* 297D0 80038FD0 21808000 */  addu       $s0, $a0, $zero
@@ -44095,14 +44095,14 @@ glabel func_80038FC8
     /* 29A1C 8003921C 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 29A20 80039220 0800E003 */  jr         $ra
     /* 29A24 80039224 00000000 */   nop
-endlabel func_80038FC8
+endlabel SteerActorYawTowardSpyro
 .endif
 
-.section .text.func_80039228, "ax"
-.ifndef HAVE_C_func_80039228
-nonmatching func_80039228, 0x170
+.section .text.MoveActorByDelta, "ax"
+.ifndef HAVE_C_MoveActorByDelta
+nonmatching MoveActorByDelta, 0x170
 
-glabel func_80039228
+glabel MoveActorByDelta
     /* 29A28 80039228 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 29A2C 8003922C 4800B4AF */  sw         $s4, 0x48($sp)
     /* 29A30 80039230 6800B48F */  lw         $s4, 0x68($sp)
@@ -44202,14 +44202,14 @@ glabel func_80039228
     /* 29B8C 8003938C 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 29B90 80039390 0800E003 */  jr         $ra
     /* 29B94 80039394 00000000 */   nop
-endlabel func_80039228
+endlabel MoveActorByDelta
 .endif
 
-.section .text.func_80039398, "ax"
-.ifndef HAVE_C_func_80039398
-nonmatching func_80039398, 0x2F0
+.section .text.MoveActorAlongHeading, "ax"
+.ifndef HAVE_C_MoveActorAlongHeading
+nonmatching MoveActorAlongHeading, 0x2F0
 
-glabel func_80039398
+glabel MoveActorAlongHeading
     /* 29B98 80039398 0780033C */  lui        $v1, %hi(D_800756C4)
     /* 29B9C 8003939C C456638C */  lw         $v1, %lo(D_800756C4)($v1)
     /* 29BA0 800393A0 C0FFBD27 */  addiu      $sp, $sp, -0x40
@@ -44419,14 +44419,14 @@ glabel func_80039398
     /* 29E7C 8003967C 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 29E80 80039680 0800E003 */  jr         $ra
     /* 29E84 80039684 00000000 */   nop
-endlabel func_80039398
+endlabel MoveActorAlongHeading
 .endif
 
-.section .text.func_80039688, "ax"
-.ifndef HAVE_C_func_80039688
-nonmatching func_80039688, 0x288
+.section .text.MoveActorAlongAngle, "ax"
+.ifndef HAVE_C_MoveActorAlongAngle
+nonmatching MoveActorAlongAngle, 0x288
 
-glabel func_80039688
+glabel MoveActorAlongAngle
     /* 29E88 80039688 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 29E8C 8003968C 2800B0AF */  sw         $s0, 0x28($sp)
     /* 29E90 80039690 21808000 */  addu       $s0, $a0, $zero
@@ -44605,14 +44605,14 @@ glabel func_80039688
     /* 2A104 80039904 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 2A108 80039908 0800E003 */  jr         $ra
     /* 2A10C 8003990C 00000000 */   nop
-endlabel func_80039688
+endlabel MoveActorAlongAngle
 .endif
 
-.section .text.func_80039910, "ax"
-.ifndef HAVE_C_func_80039910
-nonmatching func_80039910, 0x198
+.section .text.DriveActorTrackedMove, "ax"
+.ifndef HAVE_C_DriveActorTrackedMove
+nonmatching DriveActorTrackedMove, 0x198
 
-glabel func_80039910
+glabel DriveActorTrackedMove
     /* 2A110 80039910 C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 2A114 80039914 1C00B1AF */  sw         $s1, 0x1C($sp)
     /* 2A118 80039918 21888000 */  addu       $s1, $a0, $zero
@@ -44660,7 +44660,7 @@ glabel func_80039910
     /* 2A1B0 800399B0 1000A2AF */  sw         $v0, 0x10($sp)
     /* 2A1B4 800399B4 1400A8AF */  sw         $t0, 0x14($sp)
     /* 2A1B8 800399B8 0000468E */  lw         $a2, 0x0($s2)
-    /* 2A1BC 800399BC A2E5000C */  jal        func_80039688
+    /* 2A1BC 800399BC A2E5000C */  jal        MoveActorAlongAngle
     /* 2A1C0 800399C0 21202002 */   addu      $a0, $s1, $zero
     /* 2A1C4 800399C4 0000438E */  lw         $v1, 0x0($s2)
     /* 2A1C8 800399C8 21984000 */  addu       $s3, $v0, $zero
@@ -44679,7 +44679,7 @@ glabel func_80039910
     /* 2A1F8 800399F8 21006210 */  beq        $v1, $v0, .L80039A80
     /* 2A1FC 800399FC 21106002 */   addu      $v0, $s3, $zero
     /* 2A200 80039A00 21202002 */  addu       $a0, $s1, $zero
-    /* 2A204 80039A04 00E1000C */  jal        func_80038400
+    /* 2A204 80039A04 00E1000C */  jal        ProbeActorGroundHeightRaised
     /* 2A208 80039A08 58020524 */   addiu     $a1, $zero, 0x258
     /* 2A20C 80039A0C 1400238E */  lw         $v1, 0x14($s1)
     /* 2A210 80039A10 0000048E */  lw         $a0, 0x0($s0)
@@ -44724,14 +44724,14 @@ glabel func_80039910
     /* 2A29C 80039A9C 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 2A2A0 80039AA0 0800E003 */  jr         $ra
     /* 2A2A4 80039AA4 00000000 */   nop
-endlabel func_80039910
+endlabel DriveActorTrackedMove
 .endif
 
-.section .text.func_80039AA8, "ax"
-.ifndef HAVE_C_func_80039AA8
-nonmatching func_80039AA8, 0x3EC
+.section .text.UpdateActorWander, "ax"
+.ifndef HAVE_C_UpdateActorWander
+nonmatching UpdateActorWander, 0x3EC
 
-glabel func_80039AA8
+glabel UpdateActorWander
     /* 2A2A8 80039AA8 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 2A2AC 80039AAC 2C00B3AF */  sw         $s3, 0x2C($sp)
     /* 2A2B0 80039AB0 21988000 */  addu       $s3, $a0, $zero
@@ -44768,7 +44768,7 @@ glabel func_80039AA8
     /* 2A324 80039B24 170002A2 */   sb        $v0, 0x17($s0)
     /* 2A328 80039B28 11000492 */  lbu        $a0, 0x11($s0)
     /* 2A32C 80039B2C 12000592 */  lbu        $a1, 0x12($s0)
-    /* 2A330 80039B30 A8DF000C */  jal        func_80037EA0
+    /* 2A330 80039B30 A8DF000C */  jal        RandomIntInRange
     /* 2A334 80039B34 00000000 */   nop
     /* 2A338 80039B38 CB89010C */  jal        GetRandomU32
     /* 2A33C 80039B3C 21884000 */   addu      $s1, $v0, $zero
@@ -44790,7 +44790,7 @@ glabel func_80039AA8
     /* 2A374 80039B74 0F000492 */  lbu        $a0, 0xF($s0)
     /* 2A378 80039B78 10000592 */  lbu        $a1, 0x10($s0)
     /* 2A37C 80039B7C 23106200 */  subu       $v0, $v1, $v0
-    /* 2A380 80039B80 A8DF000C */  jal        func_80037EA0
+    /* 2A380 80039B80 A8DF000C */  jal        RandomIntInRange
     /* 2A384 80039B84 180002A2 */   sb        $v0, 0x18($s0)
     /* 2A388 80039B88 170002A2 */  sb         $v0, 0x17($s0)
     /* 2A38C 80039B8C 1E0000A6 */  sh         $zero, 0x1E($s0)
@@ -44828,7 +44828,7 @@ glabel func_80039AA8
     /* 2A400 80039C00 1000A2AF */  sw         $v0, 0x10($sp)
     /* 2A404 80039C04 21206002 */  addu       $a0, $s3, $zero
     /* 2A408 80039C08 21308002 */  addu       $a2, $s4, $zero
-    /* 2A40C 80039C0C B8E3000C */  jal        func_80038EE0
+    /* 2A40C 80039C0C B8E3000C */  jal        TurnActorYawTowardAngle
     /* 2A410 80039C10 05000724 */   addiu     $a3, $zero, 0x5
     /* 2A414 80039C14 02004014 */  bnez       $v0, .L80039C20
     /* 2A418 80039C18 00000000 */   nop
@@ -44851,21 +44851,21 @@ glabel func_80039AA8
     /* 2A454 80039C54 1000A2AF */  sw         $v0, 0x10($sp)
     /* 2A458 80039C58 2138C000 */  addu       $a3, $a2, $zero
   .L80039C5C:
-    /* 2A45C 80039C5C E6E4000C */  jal        func_80039398
+    /* 2A45C 80039C5C E6E4000C */  jal        MoveActorAlongHeading
     /* 2A460 80039C60 00000000 */   nop
     /* 2A464 80039C64 21884000 */  addu       $s1, $v0, $zero
     /* 2A468 80039C68 15002012 */  beqz       $s1, .L80039CC0
     /* 2A46C 80039C6C 0C006426 */   addiu     $a0, $s3, 0xC
     /* 2A470 80039C70 7E00A012 */  beqz       $s5, .L80039E6C
     /* 2A474 80039C74 40000424 */   addiu     $a0, $zero, 0x40
-    /* 2A478 80039C78 A8DF000C */  jal        func_80037EA0
+    /* 2A478 80039C78 A8DF000C */  jal        RandomIntInRange
     /* 2A47C 80039C7C C0000524 */   addiu     $a1, $zero, 0xC0
     /* 2A480 80039C80 18000492 */  lbu        $a0, 0x18($s0)
-    /* 2A484 80039C84 1DE0000C */  jal        func_80038074
+    /* 2A484 80039C84 1DE0000C */  jal        WrapAddAngle8
     /* 2A488 80039C88 21284000 */   addu      $a1, $v0, $zero
     /* 2A48C 80039C8C 0F000492 */  lbu        $a0, 0xF($s0)
     /* 2A490 80039C90 10000592 */  lbu        $a1, 0x10($s0)
-    /* 2A494 80039C94 A8DF000C */  jal        func_80037EA0
+    /* 2A494 80039C94 A8DF000C */  jal        RandomIntInRange
     /* 2A498 80039C98 180002A2 */   sb        $v0, 0x18($s0)
     /* 2A49C 80039C9C 170002A2 */  sb         $v0, 0x17($s0)
     /* 2A4A0 80039CA0 02002232 */  andi       $v0, $s1, 0x2
@@ -44929,14 +44929,14 @@ glabel func_80039AA8
     /* 2A57C 80039D7C D0FF0424 */  addiu      $a0, $zero, -0x30
     /* 2A580 80039D80 30000524 */  addiu      $a1, $zero, 0x30
   .L80039D84:
-    /* 2A584 80039D84 A8DF000C */  jal        func_80037EA0
+    /* 2A584 80039D84 A8DF000C */  jal        RandomIntInRange
     /* 2A588 80039D88 180002A2 */   sb        $v0, 0x18($s0)
     /* 2A58C 80039D8C 18000492 */  lbu        $a0, 0x18($s0)
-    /* 2A590 80039D90 1DE0000C */  jal        func_80038074
+    /* 2A590 80039D90 1DE0000C */  jal        WrapAddAngle8
     /* 2A594 80039D94 21284000 */   addu      $a1, $v0, $zero
     /* 2A598 80039D98 0F000492 */  lbu        $a0, 0xF($s0)
     /* 2A59C 80039D9C 10000592 */  lbu        $a1, 0x10($s0)
-    /* 2A5A0 80039DA0 A8DF000C */  jal        func_80037EA0
+    /* 2A5A0 80039DA0 A8DF000C */  jal        RandomIntInRange
     /* 2A5A4 80039DA4 180002A2 */   sb        $v0, 0x18($s0)
     /* 2A5A8 80039DA8 170002A2 */  sb         $v0, 0x17($s0)
     /* 2A5AC 80039DAC 01000224 */  addiu      $v0, $zero, 0x1
@@ -45004,7 +45004,7 @@ glabel func_80039AA8
     /* 2A688 80039E88 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 2A68C 80039E8C 0800E003 */  jr         $ra
     /* 2A690 80039E90 00000000 */   nop
-endlabel func_80039AA8
+endlabel UpdateActorWander
 .endif
 
 .section .text.func_80039E94, "ax"
@@ -45130,14 +45130,14 @@ glabel func_80039E94
     /* 2A840 8003A040 01000224 */  addiu      $v0, $zero, 0x1
     /* 2A844 8003A044 490042A2 */  sb         $v0, 0x49($s2)
     /* 2A848 8003A048 01000224 */  addiu      $v0, $zero, 0x1
-    /* 2A84C 8003A04C B8E3000C */  jal        func_80038EE0
+    /* 2A84C 8003A04C B8E3000C */  jal        TurnActorYawTowardAngle
     /* 2A850 8003A050 1000A2AF */   sw        $v0, 0x10($sp)
     /* 2A854 8003A054 21204002 */  addu       $a0, $s2, $zero
     /* 2A858 8003A058 21286002 */  addu       $a1, $s3, $zero
     /* 2A85C 8003A05C 5000A68F */  lw         $a2, 0x50($sp)
     /* 2A860 8003A060 6000A88F */  lw         $t0, 0x60($sp)
     /* 2A864 8003A064 21380000 */  addu       $a3, $zero, $zero
-    /* 2A868 8003A068 E6E4000C */  jal        func_80039398
+    /* 2A868 8003A068 E6E4000C */  jal        MoveActorAlongHeading
     /* 2A86C 8003A06C 1000A8AF */   sw        $t0, 0x10($sp)
     /* 2A870 8003A070 4EE80008 */  j          .L8003A138
     /* 2A874 8003A074 2110C003 */   addu      $v0, $fp, $zero
@@ -45841,11 +45841,11 @@ glabel func_8003A920
 endlabel func_8003A920
 .endif
 
-.section .text.func_8003A9EC, "ax"
-.ifndef HAVE_C_func_8003A9EC
-nonmatching func_8003A9EC, 0x98
+.section .text.SelectActorLodBand, "ax"
+.ifndef HAVE_C_SelectActorLodBand
+nonmatching SelectActorLodBand, 0x98
 
-glabel func_8003A9EC
+glabel SelectActorLodBand
     /* 2B1EC 8003A9EC 2130A000 */  addu       $a2, $a1, $zero
     /* 2B1F0 8003A9F0 0500C014 */  bnez       $a2, .L8003AA08
     /* 2B1F4 8003A9F4 21388000 */   addu      $a3, $a0, $zero
@@ -45890,7 +45890,7 @@ glabel func_8003A9EC
   .L8003AA7C:
     /* 2B27C 8003AA7C 0800E003 */  jr         $ra
     /* 2B280 8003AA80 2110C000 */   addu      $v0, $a2, $zero
-endlabel func_8003A9EC
+endlabel SelectActorLodBand
 .endif
 
 .section .text.func_8003AA84, "ax"
@@ -45930,11 +45930,11 @@ glabel func_8003AA84
 endlabel func_8003AA84
 .endif
 
-.section .text.func_8003AAEC, "ax"
-.ifndef HAVE_C_func_8003AAEC
-nonmatching func_8003AAEC, 0xD4
+.section .text.SpawnActorRotBillboard, "ax"
+.ifndef HAVE_C_SpawnActorRotBillboard
+nonmatching SpawnActorRotBillboard, 0xD4
 
-glabel func_8003AAEC
+glabel SpawnActorRotBillboard
     /* 2B2EC 8003AAEC D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 2B2F0 8003AAF0 1400B1AF */  sw         $s1, 0x14($sp)
     /* 2B2F4 8003AAF4 21888000 */  addu       $s1, $a0, $zero
@@ -45989,7 +45989,7 @@ glabel func_8003AAEC
     /* 2B3B4 8003ABB4 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 2B3B8 8003ABB8 0800E003 */  jr         $ra
     /* 2B3BC 8003ABBC 00000000 */   nop
-endlabel func_8003AAEC
+endlabel SpawnActorRotBillboard
 .endif
 
 .section .text.func_8003ABC0, "ax"
@@ -46083,7 +46083,7 @@ glabel func_8003ABC0
     /* 2B4F4 8003ACF4 21904000 */  addu       $s2, $v0, $zero
     /* 2B4F8 8003ACF8 21204002 */  addu       $a0, $s2, $zero
     /* 2B4FC 8003ACFC 21280000 */  addu       $a1, $zero, $zero
-    /* 2B500 8003AD00 47E1000C */  jal        func_8003851C
+    /* 2B500 8003AD00 47E1000C */  jal        PlayActorMeshVoice
     /* 2B504 8003AD04 21300000 */   addu      $a2, $zero, $zero
     /* 2B508 8003AD08 01000224 */  addiu      $v0, $zero, 0x1
     /* 2B50C 8003AD0C 000002AE */  sw         $v0, 0x0($s0)
@@ -46447,11 +46447,11 @@ glabel func_8003B160
 endlabel func_8003B160
 .endif
 
-.section .text.func_8003B1E8, "ax"
-.ifndef HAVE_C_func_8003B1E8
-nonmatching func_8003B1E8, 0xAC
+.section .text.SetActorGroupState, "ax"
+.ifndef HAVE_C_SetActorGroupState
+nonmatching SetActorGroupState, 0xAC
 
-glabel func_8003B1E8
+glabel SetActorGroupState
     /* 2B9E8 8003B1E8 43008690 */  lbu        $a2, 0x43($a0)
     /* 2B9EC 8003B1EC 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2B9F0 8003B1F0 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
@@ -46499,14 +46499,14 @@ glabel func_8003B1E8
   .L8003B28C:
     /* 2BA8C 8003B28C 0800E003 */  jr         $ra
     /* 2BA90 8003B290 00000000 */   nop
-endlabel func_8003B1E8
+endlabel SetActorGroupState
 .endif
 
-.section .text.func_8003B294, "ax"
-.ifndef HAVE_C_func_8003B294
-nonmatching func_8003B294, 0x1E8
+.section .text.OrActorGroupFlagsInCone, "ax"
+.ifndef HAVE_C_OrActorGroupFlagsInCone
+nonmatching OrActorGroupFlagsInCone, 0x1E8
 
-glabel func_8003B294
+glabel OrActorGroupFlagsInCone
     /* 2BA94 8003B294 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BA98 8003B298 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2BA9C 8003B29C C8FFBD27 */  addiu      $sp, $sp, -0x38
@@ -46638,14 +46638,14 @@ glabel func_8003B294
     /* 2BC70 8003B470 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 2BC74 8003B474 0800E003 */  jr         $ra
     /* 2BC78 8003B478 00000000 */   nop
-endlabel func_8003B294
+endlabel OrActorGroupFlagsInCone
 .endif
 
-.section .text.func_8003B47C, "ax"
-.ifndef HAVE_C_func_8003B47C
-nonmatching func_8003B47C, 0xBC
+.section .text.SetActorGroupStateExcept, "ax"
+.ifndef HAVE_C_SetActorGroupStateExcept
+nonmatching SetActorGroupStateExcept, 0xBC
 
-glabel func_8003B47C
+glabel SetActorGroupStateExcept
     /* 2BC7C 8003B47C 43008790 */  lbu        $a3, 0x43($a0)
     /* 2BC80 8003B480 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BC84 8003B484 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
@@ -46697,14 +46697,14 @@ glabel func_8003B47C
   .L8003B530:
     /* 2BD30 8003B530 0800E003 */  jr         $ra
     /* 2BD34 8003B534 00000000 */   nop
-endlabel func_8003B47C
+endlabel SetActorGroupStateExcept
 .endif
 
-.section .text.func_8003B538, "ax"
-.ifndef HAVE_C_func_8003B538
-nonmatching func_8003B538, 0xBC
+.section .text.ReplaceActorGroupState, "ax"
+.ifndef HAVE_C_ReplaceActorGroupState
+nonmatching ReplaceActorGroupState, 0xBC
 
-glabel func_8003B538
+glabel ReplaceActorGroupState
     /* 2BD38 8003B538 43008790 */  lbu        $a3, 0x43($a0)
     /* 2BD3C 8003B53C 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BD40 8003B540 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
@@ -46756,7 +46756,7 @@ glabel func_8003B538
   .L8003B5EC:
     /* 2BDEC 8003B5EC 0800E003 */  jr         $ra
     /* 2BDF0 8003B5F0 00000000 */   nop
-endlabel func_8003B538
+endlabel ReplaceActorGroupState
 .endif
 
 .section .text.func_8003B5F4, "ax"
@@ -46858,11 +46858,11 @@ glabel func_8003B688
 endlabel func_8003B688
 .endif
 
-.section .text.func_8003B728, "ax"
-.ifndef HAVE_C_func_8003B728
-nonmatching func_8003B728, 0x98
+.section .text.SetActorGroupSubstate, "ax"
+.ifndef HAVE_C_SetActorGroupSubstate
+nonmatching SetActorGroupSubstate, 0x98
 
-glabel func_8003B728
+glabel SetActorGroupSubstate
     /* 2BF28 8003B728 43008690 */  lbu        $a2, 0x43($a0)
     /* 2BF2C 8003B72C 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BF30 8003B730 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
@@ -46905,14 +46905,14 @@ glabel func_8003B728
   .L8003B7B8:
     /* 2BFB8 8003B7B8 0800E003 */  jr         $ra
     /* 2BFBC 8003B7BC 00000000 */   nop
-endlabel func_8003B728
+endlabel SetActorGroupSubstate
 .endif
 
-.section .text.func_8003B7C0, "ax"
-.ifndef HAVE_C_func_8003B7C0
-nonmatching func_8003B7C0, 0x94
+.section .text.MarkActorCommittedKill, "ax"
+.ifndef HAVE_C_MarkActorCommittedKill
+nonmatching MarkActorCommittedKill, 0x94
 
-glabel func_8003B7C0
+glabel MarkActorCommittedKill
     /* 2BFC0 8003B7C0 0780033C */  lui        $v1, %hi(g_pActorListBase)
     /* 2BFC4 8003B7C4 2858638C */  lw         $v1, %lo(g_pActorListBase)($v1)
     /* 2BFC8 8003B7C8 00000000 */  nop
@@ -46951,7 +46951,7 @@ glabel func_8003B7C0
   .L8003B84C:
     /* 2C04C 8003B84C 0800E003 */  jr         $ra
     /* 2C050 8003B850 00000000 */   nop
-endlabel func_8003B7C0
+endlabel MarkActorCommittedKill
 .endif
 
 .section .text.func_8003B854, "ax"
@@ -47062,11 +47062,11 @@ glabel func_8003B854
 endlabel func_8003B854
 .endif
 
-.section .text.func_8003B9D4, "ax"
-.ifndef HAVE_C_func_8003B9D4
-nonmatching func_8003B9D4, 0xFC
+.section .text.CollectPickupActor, "ax"
+.ifndef HAVE_C_CollectPickupActor
+nonmatching CollectPickupActor, 0xFC
 
-glabel func_8003B9D4
+glabel CollectPickupActor
     /* 2C1D4 8003B9D4 0780023C */  lui        $v0, %hi(g_nGemTallyIconCount)
     /* 2C1D8 8003B9D8 C856428C */  lw         $v0, %lo(g_nGemTallyIconCount)($v0)
     /* 2C1DC 8003B9DC D8FFBD27 */  addiu      $sp, $sp, -0x28
@@ -47137,7 +47137,7 @@ glabel func_8003B9D4
     /* 2C2C4 8003BAC4 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 2C2C8 8003BAC8 0800E003 */  jr         $ra
     /* 2C2CC 8003BACC 00000000 */   nop
-endlabel func_8003B9D4
+endlabel CollectPickupActor
 .endif
 
 .section .text.func_8003BAD0, "ax"
@@ -47263,7 +47263,7 @@ glabel func_8003BAD0
     /* 2C47C 8003BC7C 21204002 */  addu       $a0, $s2, $zero
     /* 2C480 8003BC80 794A010C */  jal        func_800529E4
     /* 2C484 8003BC84 02000524 */   addiu     $a1, $zero, 0x2
-    /* 2C488 8003BC88 D0E0000C */  jal        func_80038340
+    /* 2C488 8003BC88 D0E0000C */  jal        ProbeActorGroundHeight
     /* 2C48C 8003BC8C 21204002 */   addu      $a0, $s2, $zero
     /* 2C490 8003BC90 F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 2C494 8003BC94 21204002 */   addu      $a0, $s2, $zero
@@ -47283,11 +47283,11 @@ glabel func_8003BAD0
 endlabel func_8003BAD0
 .endif
 
-.section .text.func_8003BCCC, "ax"
-.ifndef HAVE_C_func_8003BCCC
-nonmatching func_8003BCCC, 0x20C
+.section .text.TryMoveActorForward, "ax"
+.ifndef HAVE_C_TryMoveActorForward
+nonmatching TryMoveActorForward, 0x20C
 
-glabel func_8003BCCC
+glabel TryMoveActorForward
     /* 2C4CC 8003BCCC 0780033C */  lui        $v1, %hi(D_800756C4)
     /* 2C4D0 8003BCD0 C456638C */  lw         $v1, %lo(D_800756C4)($v1)
     /* 2C4D4 8003BCD4 98FFBD27 */  addiu      $sp, $sp, -0x68
@@ -47431,7 +47431,7 @@ glabel func_8003BCCC
     /* 2C6CC 8003BECC 6800BD27 */  addiu      $sp, $sp, 0x68
     /* 2C6D0 8003BED0 0800E003 */  jr         $ra
     /* 2C6D4 8003BED4 00000000 */   nop
-endlabel func_8003BCCC
+endlabel TryMoveActorForward
 .endif
 
 .section .text.func_8003BED8, "ax"
@@ -48207,11 +48207,11 @@ glabel func_8003C85C
 endlabel func_8003C85C
 .endif
 
-.section .text.func_8003C994, "ax"
-.ifndef HAVE_C_func_8003C994
-nonmatching func_8003C994, 0x130
+.section .text.FollowActorWaypointPath, "ax"
+.ifndef HAVE_C_FollowActorWaypointPath
+nonmatching FollowActorWaypointPath, 0x130
 
-glabel func_8003C994
+glabel FollowActorWaypointPath
     /* 2D194 8003C994 B8FFBD27 */  addiu      $sp, $sp, -0x48
     /* 2D198 8003C998 3400B3AF */  sw         $s3, 0x34($sp)
     /* 2D19C 8003C99C 21988000 */  addu       $s3, $a0, $zero
@@ -48291,7 +48291,7 @@ glabel func_8003C994
     /* 2D2B8 8003CAB8 4800BD27 */  addiu      $sp, $sp, 0x48
     /* 2D2BC 8003CABC 0800E003 */  jr         $ra
     /* 2D2C0 8003CAC0 00000000 */   nop
-endlabel func_8003C994
+endlabel FollowActorWaypointPath
 .endif
 
 .section .text.func_8003CAC4, "ax"

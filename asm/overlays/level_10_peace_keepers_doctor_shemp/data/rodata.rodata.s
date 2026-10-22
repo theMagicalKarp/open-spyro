@@ -13,7 +13,7 @@ dlabel D_8007AA38
 enddlabel D_8007AA38
 
 .section .rodata.jtbl_8007AA3C, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AA3C
 
 dlabel jtbl_8007AA3C
@@ -27,7 +27,7 @@ enddlabel jtbl_8007AA3C
 .endif
 
 .section .rodata.jtbl_8007AA54, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AA54
 
 dlabel jtbl_8007AA54
@@ -41,7 +41,7 @@ enddlabel jtbl_8007AA54
 .endif
 
 .section .rodata.jtbl_8007AA6C, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AA6C
 
 dlabel jtbl_8007AA6C
@@ -57,7 +57,7 @@ enddlabel jtbl_8007AA6C
 .endif
 
 .section .rodata.jtbl_8007AA8C, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AA8C
 
 dlabel jtbl_8007AA8C
@@ -75,7 +75,7 @@ enddlabel jtbl_8007AA8C
 .endif
 
 .section .rodata.jtbl_8007AAB4, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AAB4
 
 dlabel jtbl_8007AAB4
@@ -115,7 +115,7 @@ enddlabel jtbl_8007AAB4
 .endif
 
 .section .rodata.jtbl_8007AB34, "a"
-.ifndef HAVE_C_func_level_10_8007AEB8
+.ifndef HAVE_C_Level10_UpdateActors
 nonmatching jtbl_8007AB34
 
 dlabel jtbl_8007AB34
@@ -169,7 +169,7 @@ enddlabel jtbl_8007AB34
 .endif
 
 .section .rodata.jtbl_8007ABEC, "a"
-.ifndef HAVE_C_func_level_10_80084EF0
+.ifndef HAVE_C_Level10_AdvanceEmitList
 nonmatching jtbl_8007ABEC
 
 dlabel jtbl_8007ABEC
@@ -258,7 +258,7 @@ enddlabel jtbl_8007ABEC
 .endif
 
 .section .rodata.jtbl_8007AD30, "a"
-.ifndef HAVE_C_func_level_10_8008611C
+.ifndef HAVE_C_Level10_EmitParticles
 nonmatching jtbl_8007AD30
 
 dlabel jtbl_8007AD30
@@ -348,7 +348,7 @@ enddlabel jtbl_8007AD30
 .endif
 
 .section .rodata.jtbl_8007AE78, "a"
-.ifndef HAVE_C_func_level_10_8008611C
+.ifndef HAVE_C_Level10_EmitParticles
 nonmatching jtbl_8007AE78
 
 dlabel jtbl_8007AE78
@@ -364,7 +364,7 @@ enddlabel jtbl_8007AE78
 .endif
 
 .section .rodata.jtbl_8007AE98, "a"
-.ifndef HAVE_C_func_level_10_8008611C
+.ifndef HAVE_C_Level10_EmitParticles
 nonmatching jtbl_8007AE98
 
 dlabel jtbl_8007AE98

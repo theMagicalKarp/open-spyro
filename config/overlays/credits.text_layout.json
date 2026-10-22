@@ -1,17 +1,17 @@
 {
  "functions": [
   {
-   "name": "func_credits_8007AA50",
+   "name": "Credits_Update",
    "vram": 2147986000,
    "size": 5504
   },
   {
-   "name": "func_credits_8007BFD0",
+   "name": "Credits_Draw",
    "vram": 2147991504,
    "size": 872
   },
   {
-   "name": "func_credits_8007C338",
+   "name": "Credits_Noop",
    "vram": 2147992376,
    "size": 8
   }
@@ -26,7 +26,7 @@
   {
    "sym": "jtbl_8007AA3C",
    "offset": 4,
-   "owner": "func_credits_8007AA50",
+   "owner": "Credits_Update",
    "size": 20
   }
  ]

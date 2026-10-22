@@ -135,7 +135,7 @@ extern void *D_80077850; /* active level record (block +0x64) */
 
 extern int D_8006EA4C[];         /* entry points, 4 words per level */
 extern void (*D_8007574C)(void); /* handler for every other substate */
-extern int D_80078A60;           /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ;    /* g_anSpyroWorldPos[2] */
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
@@ -263,7 +263,7 @@ void Gamestate0C_Update(void) {
       lvl = D_800777EC[4];
       *(char *)((char *)D_80077850 + 0x46) = (char)D_8006EA4C[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos, (int *)((char *)D_800777EC[25] + 0xC));
-      D_80078A60 += 0x2D4;
+      g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] =
           *(unsigned char *)((char *)D_80077850 + 0x46) + 0x80;

@@ -4,16 +4,16 @@
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_8007B4B0.o(.rodata)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_DrawFlightRaceTime.o(.rodata)
     . = 0x00000028 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.D_8007AA60)
-    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_8007B68C.o(.rodata)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_FlightResults_Draw.o(.rodata)
     . = 0x000000e0 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB18)
-    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_8007CFB4.o(.rodata)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_UpdateActors.o(.rodata)
     . = 0x00000130 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
-    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80082D94.o(.rodata)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_AdvanceEmitList.o(.rodata)
     . = 0x00000270 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_29_dream_weavers_icy_flight/c/func_level_29_80083B8C.o(.rodata)
+    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_EmitParticles.o(.rodata)

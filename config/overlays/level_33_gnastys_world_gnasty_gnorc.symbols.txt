@@ -2,8 +2,8 @@
 // Block starts are splat's own autodetection over the compiled .text region.
 // The large func_ below (>= 0x4000 bytes) is this level's moby-dispatch megafunction — real code, the biggest single match target in this overlay.
 // from the headline match % (tracked separately; see PROGRESS.md).
-func_level_33_8007AD64 = 0x8007AD64; // type:func size:0x81C0
-func_level_33_80082F24 = 0x80082F24; // type:func size:0x7CC
-func_level_33_800836F0 = 0x800836F0; // type:func size:0xF44
-func_level_33_80084634 = 0x80084634; // type:func size:0xE80
-func_level_33_800854B4 = 0x800854B4; // type:func size:0x8
+Level33_UpdateActors = 0x8007AD64; // type:func size:0x81C0
+Level33_SpawnActor = 0x80082F24; // type:func size:0x7CC
+Level33_AdvanceEmitList = 0x800836F0; // type:func size:0xF44
+Level33_EmitParticles = 0x80084634; // type:func size:0xE80
+Level33_Noop = 0x800854B4; // type:func size:0x8

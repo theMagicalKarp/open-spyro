@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void UpdateHudCounters(void);
 extern void RotateLightVectorXZ(int step);
@@ -18,14 +19,13 @@ extern void EnterInventoryMenu(int fromMenu);
 extern void ExitPauseMenuToGame(int playSfx);
 extern void SetSpuCommonAttr(void *attr);
 extern int CdMix(void *vol);
-extern void ZeroVector(int *v);
 extern void BeginPauseToMenuTransition(void);
 
 extern void *D_800113A0;           /* asset-directory buffer pointer */
 extern int D_8007A6E0;             /* level-load byte offset */
 extern int D_8007A6E4;             /* level-load chunk size */
 extern unsigned char D_8007DDE8[]; /* draw buffer pool */
-extern int D_80076228;             /* SFX volume (0..0x3fff) */
+extern int D_80076228_blk;         /* SFX volume (0..0x3fff) */
 extern int D_80076224_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 extern int g_anSoundMonoMixFlagBlock[];
 extern short D_80075F18;         /* SpuCommonAttr CD volume L */
@@ -149,8 +149,8 @@ void PauseMenu_Update(void) {
         SFX(0x2E);
         g_nSfxVolume++;
       }
-      D_80076228 = g_nSfxVolume * 0x3FFF / 10;
-      g_nSoundMasterVolume = (D_80076228 << 12) / 0x3FFF;
+      D_80076228_blk = g_nSfxVolume * 0x3FFF / 10;
+      g_nSoundMasterVolume = (D_80076228_blk << 12) / 0x3FFF;
       return;
     case 1:
       if ((g_dwPadPressed & 0x8000) && g_nMusicVolume > 0) {

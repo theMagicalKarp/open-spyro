@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern int ArcTan2(int y, int x, int high_precision);
+#include "vecmath.h"
 
 /* D-pad -> yaw table (16 entries, stride 2), indexed by the pad button nibble.
  */

@@ -1,9 +1,9 @@
+#include "vecmath.h"
 
 typedef unsigned char byte;
 extern byte g_abSpyroPersistentEuler[3];
 extern int g_anSpyroMotionVec[3];
 extern int g_nSpyroBodyYaw;
-extern int ArcTan2(int y, int x, int high_precision);
 void RotateSpyroBodyTowardKnockbackDir(int step, int band) {
   int ret;
   int yaw;

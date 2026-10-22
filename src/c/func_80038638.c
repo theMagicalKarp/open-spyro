@@ -19,16 +19,16 @@
  *    wrapper the parked version carried is no longer needed.
  */
 #include "globals.h"
+#include "vecmath.h"
 
 extern int abs(int);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int AbsAngleDelta8(int a, int b);
-extern int func_800381BC(int from, int to);
-extern int func_80038074(int angle, int step);
-extern int func_80038EE0(int *actor, int angle, int p2, int p3, int p4);
-extern int func_80039398(int *actor, int speed, int p2, int p3, int p4);
-extern int func_80039688(int *actor, int angle, int speed, int p3, int p4,
-                         int p5);
+extern int WrapAngleDelta8(int from, int to);
+extern int WrapAddAngle8(int angle, int step);
+extern int TurnActorYawTowardAngle(int *actor, int angle, int p2, int p3,
+                                   int p4);
+extern int MoveActorAlongHeading(int *actor, int speed, int p2, int p3, int p4);
+extern int MoveActorAlongAngle(int *actor, int angle, int speed, int p3, int p4,
+                               int p5);
 
 extern short g_anCosineLut[];
 extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
@@ -53,7 +53,7 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   int heading;
   int r;
   dir = ArcTan2(actor[3] - tgt[0], actor[4] - tgt[1], 0);
-  face = func_800381BC(face, dir);
+  face = WrapAngleDelta8(face, dir);
   do {
     do {
       do {
@@ -92,7 +92,7 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   }
   if (blockA != 0xff) {
     if (AbsAngleDelta8(dir, blockA) < 5) {
-      e = func_800381BC(blockA, dir);
+      e = WrapAngleDelta8(blockA, dir);
       if ((face < 0) && (e < 0)) {
         return 0x100;
       }
@@ -103,7 +103,7 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
   }
   if (blockB != 0xff) {
     if (AbsAngleDelta8(dir, blockB) < 5) {
-      e = func_800381BC(blockB, dir);
+      e = WrapAngleDelta8(blockB, dir);
       if ((face < 0) && (e < 0)) {
         return 0x100;
       }
@@ -113,9 +113,9 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
     }
   }
   if (face < 0) {
-    dir = func_80038074(dir, 3);
+    dir = WrapAddAngle8(dir, 3);
   } else {
-    dir = func_80038074(dir, -3);
+    dir = WrapAddAngle8(dir, -3);
   }
   pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
   pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
@@ -126,15 +126,15 @@ int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
     speed = speed * 2;
   }
   if (flags & 8) {
-    func_80038EE0(actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6,
-                  0, 0);
-    r = func_80039688(actor, heading, speed, p10, p11, flags);
+    TurnActorYawTowardAngle(
+        actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6, 0, 0);
+    r = MoveActorAlongAngle(actor, heading, speed, p10, p11, flags);
   } else {
-    r = func_80038EE0(actor, heading, p6, p7, 1);
+    r = TurnActorYawTowardAngle(actor, heading, p6, p7, 1);
     if (r == 0) {
       goto stalled;
     }
-    r = func_80039398(actor, speed, p10, p11, flags);
+    r = MoveActorAlongHeading(actor, speed, p10, p11, flags);
   }
   if (r != 0) {
     return -r;

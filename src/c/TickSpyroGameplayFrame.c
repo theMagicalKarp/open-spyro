@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 extern void SnapshotPadInputState(unsigned int *dst, unsigned int *src);
 extern void AdvanceSpyroFrameMotion();
@@ -13,8 +14,6 @@ extern void MulMatrix0(int *a, int *b, int *out);
 extern void SampleSpyroShadowRingHeights(int mode);
 extern void TickSpyroAttackEffects(int steps);
 extern void TriggerRespawnOrGameOver(void);
-extern void ZeroVector(int *vec);
-extern void CopyVector(int *dst, int *src);
 extern void ActivateScriptedCameraView(int record);
 extern void ChangeSpyroState();
 extern unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,

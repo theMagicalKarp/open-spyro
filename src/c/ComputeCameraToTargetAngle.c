@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "vecmath.h"
 
 /* Camera-to-target angle solver (0x80033f08, 0x290). Builds the anchor→
    target delta vector, refines the 2D/3D distances, and derives the
@@ -9,10 +10,7 @@
    and returns 1; otherwise commits the plain yaw (or spring yaw) and
    returns 0. Tail publishes the draft roll and the wrapped pitch/yaw
    biases against the euler camera state. */
-extern void SubtractVector(int *dst, int *a, int *b);
-extern int VectorLength(int *v, int mode);
 extern int RefineSqrtEstimate(int *v, int len, int mode);
-extern int ArcTan2(int x, int y, int mode);
 extern int abs(int);
 
 extern int g_anCameraPitchBlock[]; /* g_nCameraPitch */

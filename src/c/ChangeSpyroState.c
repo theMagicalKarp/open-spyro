@@ -1,27 +1,16 @@
 #include "globals.h"
 #include "sdata.h"
+#include "vecmath.h"
 
 extern void StopSoundVoicesByOwner(int *owner, int mask);
 extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
-extern unsigned int GetRandomU32(void);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int VectorLength(int *vec, int include_z);
 extern void ApplyGravityAlongSpyroSlopeNormal(void);
 extern void ApplyGravityAlongSpyroSlopeTangent(void);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int IntegerSqrt(int n);
-extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, int shift);
-extern void ScaleVector3ByRatio(int *vec, int num, int den);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];
-extern int D_80078A60;           /* g_anSpyroWorldPos[2] */
+extern int g_nSpyroWorldPosZ;    /* g_anSpyroWorldPos[2] */
 extern int g_nSpyroMotionZ;      /* g_anSpyroMotionVec[2] */
 extern int g_nSpyroCarryMotionZ; /* g_anSpyroCarryMotionVec[2] */
 extern int D_80075700;
@@ -65,7 +54,7 @@ extern int g_anSpyroWorldPosBlock[];
   {                                                                            \
     int v;                                                                     \
                                                                                \
-    g_nSpyroFloorReferenceZ = D_80078A60;                                      \
+    g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;                               \
     v = VectorLength(vec, 1);                                                  \
     if (v < 0x1F80) {                                                          \
       v = 0x1F80;                                                              \
@@ -190,7 +179,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroStateFlags = 0;
     g_nSpyroJumpHoldLatch = 0;
     g_nSpyroGravityEnableFlag = 0;
-    g_nSpyroFloorReferenceZ = D_80078A60 + (g_anSpyroVelocity[2] >> 6);
+    g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ + (g_anSpyroVelocity[2] >> 6);
     if (g_nSpyroState == 0x1D) {
       D_800756B4 = 1;
     } else {
@@ -421,8 +410,8 @@ void ChangeSpyroState(int state) {
       g_nSpyroMotionSpeed = 0x780;
     }
     if (*st != 6 || g_nFlightLevelActive ||
-        g_nSpyroFloorReferenceZ < D_80078A60) {
-      g_nSpyroFloorReferenceZ = D_80078A60;
+        g_nSpyroFloorReferenceZ < g_nSpyroWorldPosZ) {
+      g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     if (g_nSpyroBodyRoll > 0x400) {
       g_nSpyroGlideBankingFlag = 1;
@@ -440,8 +429,8 @@ void ChangeSpyroState(int state) {
       ZeroVector(&SPY[SPY_VELOCITY]);
       D_8007578C = g_nSpyroBodyYaw;
       g_nSpyroFloorReferenceZ = g_anSpyroRequestTargetPos[2];
-      D_80075724 = g_anSpyroRequestTargetPos[2] - D_80078A60 - 0x800;
-      D_80075668 = D_80078A60;
+      D_80075724 = g_anSpyroRequestTargetPos[2] - g_nSpyroWorldPosZ - 0x800;
+      D_80075668 = g_nSpyroWorldPosZ;
       D_800757F0 = ((D_80075724 << 10) >> 10) + 0x400;
       D_800757F0 = ((((unsigned char *)g_pScriptedCameraActor)[0x46] << 4) -
                     g_nSpyroBodyYaw - D_800757F0) &
