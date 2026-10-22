@@ -48,7 +48,10 @@ typedef struct Actor {
   unsigned char rotX;  /* 0x44 euler x (8-bit angle) */
   unsigned char rotY;  /* 0x45 euler y */
   unsigned char rotZ;  /* 0x46 euler z (yaw) */
-  unsigned char unk47; /* 0x47 depth offset */
+  unsigned char otBias; /* 0x47 signed OT-bin bias: RasterizeSpritePrimQueue
+                        * bins at (MAC3 >> 6) - otBias, clamped >= 0. Default 4
+                        * (InitActorRenderDefaults), 0x20 HUD/screen actors,
+                        * 0x7F sprite records, 0xFE (-2) pushes it one bin pair deeper */
   unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
   unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;

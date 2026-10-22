@@ -49,10 +49,10 @@ typedef struct Actor {
   unsigned char frameRate;
   unsigned char animFlags;
   unsigned char group;
-  signed char unk44;   /* 0x44 */
-  signed char unk45;
-  signed char unk46;
-  unsigned char unk47;
+  signed char rotX;   /* 0x44 */
+  signed char rotY;
+  signed char rotZ;
+  unsigned char otBias;
   unsigned char mode;
   unsigned char subMode; /* 0x49 */
   unsigned char visZone;
@@ -117,9 +117,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->subMode = 2;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x10;
-      rec->unk44 = 0x20;
-      rec->unk45 = 0;
-      rec->unk46 = 0;
+      rec->rotX = 0x20;
+      rec->rotY = 0;
+      rec->rotZ = 0;
       if (parent != 0)
       {
         CopyVector(&rec->posX, &parent->posX);
@@ -189,9 +189,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->subMode = 2;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x40;
-      rec->unk44 = 0x20;
-      rec->unk45 = 0;
-      rec->unk46 = 0;
+      rec->rotX = 0x20;
+      rec->rotY = 0;
+      rec->rotZ = 0;
       CopyVector(pos, &parent->posX);
       HideActorRenderRecord(rec);
       rec->groundCode = -1;
@@ -331,13 +331,13 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       int dz;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = parent->unk44;
-      dy = parent->unk45;
-      dz = parent->unk46;
+      dx = parent->rotX;
+      dy = parent->rotY;
+      dz = parent->rotZ;
       do {
-      rec->unk44 = dx;
-      rec->unk45 = dy;
-      rec->unk46 = dz;
+      rec->rotX = dx;
+      rec->rotY = dy;
+      rec->rotZ = dz;
       } while (0);
       InsertActorIntoSpatialGrid(rec);
       rec->renderList = 0xBF;
@@ -356,12 +356,12 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       int dz;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = parent->unk44;
-      dy = parent->unk45;
-      dz = parent->unk46;
-      rec->unk44 = dx;
-      rec->unk45 = dy;
-      rec->unk46 = dz;
+      dx = parent->rotX;
+      dy = parent->rotY;
+      dz = parent->rotZ;
+      rec->rotX = dx;
+      rec->rotY = dy;
+      rec->rotZ = dz;
  do { InsertActorIntoSpatialGrid(rec); rec->renderList = 0xBF; rec->tint0 = parent->tint0; rec->tint1 = parent->tint1; } while (0);
       rec->tint2 = parent->tint2;
       rec->tintMode = parent->tintMode;
@@ -377,7 +377,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->posY = 0x1E;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
-      rec->unk47 = 0x20;
+      rec->otBias = 0x20;
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
@@ -391,7 +391,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->posY = 0x28;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
-      rec->unk47 = 0x20;
+      rec->otBias = 0x20;
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;

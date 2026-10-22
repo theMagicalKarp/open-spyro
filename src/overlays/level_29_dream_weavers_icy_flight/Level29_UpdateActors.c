@@ -1712,7 +1712,7 @@ void Level29_UpdateActors(void) {
         actor->rotY = 0;
         actor->rotZ = 0xC0;
         actor->cullRadius = 0xFF;
-        actor->unk47 = 0x20;
+        actor->otBias = 0x20;
         actor->mode = 2;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
         break;
@@ -1784,7 +1784,7 @@ void Level29_UpdateActors(void) {
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
           st->digit[i]->cullRadius = 0xFF;
-          st->digit[i]->unk47 = 0x20;
+          st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
         }
@@ -1801,7 +1801,7 @@ void Level29_UpdateActors(void) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
             st->digit[i]->cullRadius = 0xFF;
-            st->digit[i]->unk47 = 0x20;
+            st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
           }
           st->digit[4]->posX = 0x180;
@@ -1839,7 +1839,7 @@ void Level29_UpdateActors(void) {
           HideActorRenderRecord(&g_abHudIconActorRecords[i]);
           g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
-          g_abHudIconActorRecords[i].unk47 = 0x20;
+          g_abHudIconActorRecords[i].otBias = 0x20;
           g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;

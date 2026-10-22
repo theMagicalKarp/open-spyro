@@ -14,7 +14,7 @@
 
    Wipes the 12 big-icon actor records, then per slot hides the render record,
    seeds its rest position from g_anHudIconRestPos and writes the default
-   render bytes (+0x47 scale, +0x49/+0x50 colour, +0x4F flags). Wipes the
+   render bytes (+0x47 OT bias, +0x49/+0x50 colour, +0x4F flags). Wipes the
    sprite-rect table and copies the 12 digit rest rects into it. Places the
    four fixed HUD anchors, arms all five counter state machines (phase and
    hold timer cleared), snapshots the live gem/dragon/life/egg/butterfly

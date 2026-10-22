@@ -2559,7 +2559,7 @@ void Level22_UpdateActors(void) {
             b->baseZ = st->kids[i]->posZ - 0x2EE;
             st->kids[i]->posZ += b->z;
             st->kids[i]->rotZ = i * 0x3C;
-            st->kids[i]->unk47 = 6;
+            st->kids[i]->otBias = 6;
             st->kids[i]->subMode = RandomSignedInRange(10, 0x12);
           }
         }
@@ -4784,7 +4784,7 @@ void Level22_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

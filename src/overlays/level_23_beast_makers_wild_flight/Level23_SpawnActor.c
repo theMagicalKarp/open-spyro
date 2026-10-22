@@ -423,7 +423,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->cullRadius = 0;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
-      rec->unk47 = 0x20;
+      rec->otBias = 0x20;
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
