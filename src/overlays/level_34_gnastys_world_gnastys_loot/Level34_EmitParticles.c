@@ -86,8 +86,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pos2[3];             /* 0x12 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } ribbon;
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
@@ -99,8 +99,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       short pos2[3];             /* 0x10 */
       short pad16;               /* 0x16 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } smear;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
@@ -329,8 +329,8 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       } else {
         v = arg3 * 2 - 0x80;
       }
-      rec->u.ribbon.unk18 = v;
-      rec->u.ribbon.unk19 = 8;
+      rec->u.ribbon.angle = v;
+      rec->u.ribbon.radius = 8;
       rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
       rec->u.ribbon.g = 0xFF;
       rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
@@ -555,8 +555,8 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       } else {
         w = arg3 * 2 - 0x80;
       }
-      rec->u.smear.unk18 = w;
-      rec->u.smear.unk19 = 8;
+      rec->u.smear.angle = w;
+      rec->u.smear.radius = 8;
       rec->u.smear.r = ~((arg3 & 0xF) << 4);
       rec->u.smear.g = 0xFF;
       rec->u.smear.b = -0x80 - ((arg3 & 0xF) << 3);

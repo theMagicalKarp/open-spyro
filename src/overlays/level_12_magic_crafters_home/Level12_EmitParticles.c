@@ -75,8 +75,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pos2[3];             /* 0x12 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } ribbon;
     struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
       short pos[3];              /* 0x04 */
@@ -89,10 +89,10 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pos2[3];             /* 0x12 */
-      short unk18;               /* 0x18 */
-      short unk1A;               /* 0x1A */
-      unsigned char unk1C;       /* 0x1C */
-      unsigned char unk1D;       /* 0x1D */
+      short lift;               /* 0x18 fire-jet height lift (scaled by segment and heat) */
+      short radius;               /* 0x1A fire-jet ring radius */
+      unsigned char angle;       /* 0x1C fire-jet spin angle (LUT index, += step*8) */
+      unsigned char segment;       /* 0x1D fire-jet segment index */
     } band;
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
@@ -104,8 +104,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       short pos2[3];             /* 0x10 */
       short pad16;               /* 0x16 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } smear;
     struct {                     /* class 3 -- actor-tracking plume */
       unsigned short pos[3];     /* 0x04 */
@@ -119,8 +119,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pad[3];              /* 0x12 */
       int *src;                  /* 0x18 the actor position it tracks */
-      short unk1C;               /* 0x1C */
-      short unk1E;               /* 0x1E */
+      short maxRadius;               /* 0x1C orbit radius cap (orbiting spark 0x6) */
+      short rise;               /* 0x1E rise limit in 0x40 units (orbiting spark 0x6); zeroed elsewhere */
     } plume;
     struct {                     /* class 3 -- owner-tracked spark */
       unsigned short pos[3];     /* 0x04 */
@@ -135,7 +135,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
       unsigned char owner;       /* 0x1E actor index into the pool */
-      unsigned char unk1F;       /* 0x1F */
+      unsigned char orbitRadius;       /* 0x1F orbit radius (two-axis orbit 0x49) */
     } track;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
@@ -291,7 +291,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)arg3 - g_pActorListBase;
-      rec->u.track.unk1F = 0;
+      rec->u.track.orbitRadius = 0;
       rec->u.track.life = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.seed = (GetRandomU32() & 7) + 0xF;
       rec->u.track.fx = 0x2C;
@@ -447,11 +447,11 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.band.seed = z;
       rec->u.band.fx = 0x2E;
       rec->u.band.depthBias = 8;
-      rec->u.band.unk18 = i * 32;
+      rec->u.band.lift = i * 32;
       rec->u.band.texIndex = 0;
-      rec->u.band.unk1A = 0x10;
-      rec->u.band.unk1C = z;
-      rec->u.band.unk1D = i;
+      rec->u.band.radius = 0x10;
+      rec->u.band.angle = z;
+      rec->u.band.segment = i;
       break;
     }
     case 0x21: {
