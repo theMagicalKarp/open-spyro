@@ -309,7 +309,7 @@ typedef struct FollowState {
   int trackPos; /* 0x18 copy the parent's position each frame */
   int release;  /* 0x1C release countdown, 0 while held */
   int count;    /* 0x20 number of followers sharing this parent */
-  int unk24;    /* 0x24 */
+  int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
 /* Case 110 — the lift plate that rises when its trigger actor is cleared. */
@@ -661,7 +661,7 @@ typedef struct {
  * doubles as the pickup origin once Sparx has fetched the item. */
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
-  short unk0C;         /* 0x0C */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
   unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */

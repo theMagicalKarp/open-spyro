@@ -411,7 +411,7 @@ void Level7_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;

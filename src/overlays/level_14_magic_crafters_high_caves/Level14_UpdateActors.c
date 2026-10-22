@@ -450,7 +450,7 @@ typedef struct FollowState {
   int trackPos; /* 0x18 copy the parent's position each frame */
   int release;  /* 0x1C release countdown, 0 while held */
   int count;    /* 0x20 number of followers sharing this parent */
-  int unk24;    /* 0x24 */
+  int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
 /* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
@@ -1007,7 +1007,7 @@ typedef struct {
 /* from level_10 */
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
-  short unk0C;         /* 0x0C */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
   unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */
@@ -2245,7 +2245,7 @@ void Level14_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
@@ -3490,7 +3490,7 @@ void Level14_UpdateActors(void) {
 
           } else if (st->sub == 2) {
 
-            UnpackWorldCollisionTri(st->unk0C, acc[0]);
+            UnpackWorldCollisionTri(st->groundTri, acc[0]);
 
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -3514,7 +3514,7 @@ void Level14_UpdateActors(void) {
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
               st->sub = 2;
-              st->unk0C = colIndex;
+              st->groundTri = colIndex;
             }
           }
         }

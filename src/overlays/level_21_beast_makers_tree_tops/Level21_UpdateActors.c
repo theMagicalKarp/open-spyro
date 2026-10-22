@@ -815,7 +815,7 @@ void Level21_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
@@ -2216,7 +2216,7 @@ void Level21_UpdateActors(void) {
 
           } else if (st->sub == 2) {
 
-            UnpackWorldCollisionTri(st->unk0C, f312[0]);
+            UnpackWorldCollisionTri(st->groundTri, f312[0]);
 
             AddVector(f312[0], f312[0], f312[1]);
             AddVector(f312[0], f312[0], f312[2]);
@@ -2240,7 +2240,7 @@ void Level21_UpdateActors(void) {
             if (FindGroundHeightBelow(f280, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
               st->sub = 2;
-              st->unk0C = colIndex;
+              st->groundTri = colIndex;
             }
           }
         }

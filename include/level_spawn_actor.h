@@ -14,7 +14,7 @@ typedef struct PickupDropState {
   int velX;              /* 0x00 pop-out velocity */
   int velY;              /* 0x04 */
   int velZ;              /* 0x08 */
-  unsigned char unk0C;   /* 0x0C (PickupState: collision-tri index, short) */
+  unsigned char unk0C;   /* 0x0C (PickupState: groundTri, a short) */
   unsigned char unk0D;
   unsigned char sub;     /* 0x0E resting sub-state */
   unsigned char timer;   /* 0x0F sparkle timer */

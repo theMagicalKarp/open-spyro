@@ -52,7 +52,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
-      short unk1E;               /* 0x1E */
+      short toggle;               /* 0x1E phase toggle (AdvanceEmitList flips it 0<->1) */
     } spark;
     struct {                     /* class 0 -- dust mote */
       unsigned short pos[3];     /* 0x04 */
@@ -167,7 +167,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
-      rec->u.spark.unk1E = 0;
+      rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
@@ -185,7 +185,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
-      rec->u.spark.unk1E = 0;
+      rec->u.spark.toggle = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
       } else {
@@ -209,7 +209,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       v0[1] = (GetRandomU32() & 0x3F) - 0x20;
       v0[2] = 0x1E;
       VectorToSVectorShr2(rec->u.spark.vel, v0);
-      rec->u.spark.unk1E = 0;
+      rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x20;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
@@ -308,7 +308,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
-      rec->u.spark.unk1E = 0;
+      rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
       if (g_nSpyroMotionSpeed >= 0x5781) {
@@ -453,7 +453,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       }
       VectorToSVectorShr2(rec->u.spark.pos, v2);
       VectorToSVectorShr2(rec->u.spark.vel, pos);
-      rec->u.spark.unk1E = 0;
+      rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x10;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x20;

@@ -283,7 +283,7 @@ extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wa
  * doubles as the pickup origin once Sparx has fetched the item. */
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
-  short unk0C;         /* 0x0C */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
   unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */
@@ -651,7 +651,7 @@ typedef struct FollowState {
   int trackPos; /* 0x18 copy the parent's position each frame */
   int release;  /* 0x1C release countdown, 0 while held */
   int count;    /* 0x20 number of followers sharing this parent */
-  int unk24;    /* 0x24 */
+  int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
 /* Case 16 — the balloonist's gnorc: wanders until the balloonist is up, then
@@ -1137,7 +1137,7 @@ void Level4_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
