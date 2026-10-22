@@ -10,19 +10,19 @@ extern void DivideVector3();
    then rebuild its offset vector: copy, scale by half the counter, add the
    actor anchor (+0xC), subtract the indexed sub-record vector, and blend
    by the remaining step fraction. */
-void StepTweenOffsetVector(int *arg0, unsigned char *arg1, int *arg2,
-                           int *arg3) {
+void StepTweenOffsetVector(int *actor, unsigned char *tween, int *out,
+                           int *base) {
   unsigned int t;
 
-  t = arg1[3] & 0xFE;
-  arg1[2] = t;
+  t = tween[3] & 0xFE;
+  tween[2] = t;
   if (t >= 9) {
-    arg1[2] = 8;
+    tween[2] = 8;
   }
 
-  CopyVector(arg3, arg2);
-  ScaleVector3Sat(arg2, arg3, arg1[2] >> 1);
-  AddVector(arg2, arg2, arg0 + 3);
-  SubtractVector(arg2, (int *)(arg1 + ((arg1[1] << 4) + 8)), arg2);
-  DivideVector3(arg2, arg2, arg1[3] - (arg1[2] >> 1));
+  CopyVector(base, out);
+  ScaleVector3Sat(out, base, tween[2] >> 1);
+  AddVector(out, out, actor + 3);
+  SubtractVector(out, (int *)(tween + ((tween[1] << 4) + 8)), out);
+  DivideVector3(out, out, tween[3] - (tween[2] >> 1));
 }

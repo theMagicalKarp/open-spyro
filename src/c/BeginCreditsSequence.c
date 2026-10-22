@@ -51,9 +51,9 @@ void BeginCreditsSequence(int param_1) {
   }
   {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    int arg2 = *(volatile int *)&D_8007A95C;
-    int arg3 = *(volatile int *)&D_8007A958;
+    int size = *(volatile int *)&D_8007A95C;
+    int offset = *(volatile int *)&D_8007A958;
     int *dst = *(int *volatile *)&g_pSharedLoadBuffer;
-    CdReadSyncSectors(lba, dst, arg2, arg3, 0x258);
+    CdReadSyncSectors(lba, dst, size, offset, 0x258);
   }
 }

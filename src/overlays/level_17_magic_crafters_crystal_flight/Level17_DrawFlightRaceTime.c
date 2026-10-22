@@ -15,7 +15,7 @@
 
 #include "level_funcs.h"
 
-int Level17_DrawFlightRaceTime(int time, int *pos, int arg2)
+int Level17_DrawFlightRaceTime(int time, int *pos, int palette)
 {
   char buf[16];
   int q600;
@@ -29,7 +29,7 @@ int Level17_DrawFlightRaceTime(int time, int *pos, int arg2)
   {
     pos[0] -= 0x36;
     pos[1] -= 5;
-    BuildTextSpriteChain("......", pos, 0x12, arg2);
+    BuildTextSpriteChain("......", pos, 0x12, palette);
     sign = 6;
     return sign;
   }
@@ -51,18 +51,18 @@ int Level17_DrawFlightRaceTime(int time, int *pos, int arg2)
   }
   len = strlen(buf);
   pos[0] -= len * 9;
-  BuildTextSpriteChain(buf, pos, 0x12, arg2);
+  BuildTextSpriteChain(buf, pos, 0x12, palette);
   if (hr != 0)
   {
     char *fmt = ".";
     pos[0] -= 0x6C;
     pos[1] += 1;
     pos[2] = (pos[2] * 3) >> 1;
-    BuildTextSpriteChain(fmt, pos, 0x12, arg2);
+    BuildTextSpriteChain(fmt, pos, 0x12, palette);
     len += 1;
     pos[0] -= 0x12;
     pos[1] -= 8;
-    BuildTextSpriteChain(fmt, pos, 0x12, arg2);
+    BuildTextSpriteChain(fmt, pos, 0x12, palette);
   }
   return len;
 }

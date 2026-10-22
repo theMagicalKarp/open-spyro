@@ -13,19 +13,19 @@
  *
  * `pos` is the emitter position (an int 3-vector) for every effect except
  * 0xC, where it is the source actor and the offset is rotated out of the
- * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
+ * actor's own matrix.  `effectArg` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * The loot variant: the town-square arm set plus 0x4A (the ember dust mote,
- * class 0, velocity out of arg3 at fx 0x40) and without 0x18, the ribbon arm
+ * class 0, velocity out of effectArg at fx 0x40) and without 0x18, the ribbon arm
  * the rest of the family parks on.
  *
  * Two arm shapes this level needed that the donor levels did not:
- * the 0x1A arm writes `arg3 * 8` to r/g/b as three separate expressions (a
+ * the 0x1A arm writes `effectArg * 8` to r/g/b as three separate expressions (a
  * named local pins the shift above the seed store and the tail then no longer
  * cross-jumps into the 0x1C arm's colour block), and the 0x15 ribbon arm's
  * source order is r, g, b, life, fx, texIndex -- storing g first leaves the
- * `lw` of the hoisted (arg3 & 0xF) with an unfilled load-delay slot.
+ * `lw` of the hoisted (effectArg & 0xF) with an unfilled load-delay slot.
  */
 
 #include "vecmath.h"
@@ -121,7 +121,7 @@ typedef struct Actor {
   short kind;   /* 0x36 */
 } Actor;
 
-void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
+void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -143,7 +143,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -161,7 +161,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
@@ -203,7 +203,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -254,7 +254,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       if (((Actor *)pos)->kind == 0x22) {
         CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
-        hi = arg3 >> 24;
+        hi = effectArg >> 24;
         if (hi < 6) {
           RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[hi * 3], v1);
           AddVector(v1, v1, ((Actor *)pos)->pos);
@@ -271,9 +271,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
         AddVector(v1, v1, ((Actor *)pos)->pos);
       }
       VectorToSVectorShr2(rec->u.spark.pos, v1);
-      rec->u.spark.g = arg3 >> 8;
-      rec->u.spark.r = arg3;
-      rec->u.spark.b = arg3 >> 16;
+      rec->u.spark.g = effectArg >> 8;
+      rec->u.spark.r = effectArg;
+      rec->u.spark.b = effectArg >> 16;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
@@ -288,9 +288,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, pos + 3);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = ((int *)arg3)[0];
+      rec->u.spark.life = ((int *)effectArg)[0];
       rec->u.spark.seed = GetRandomU32();
-      c = ((int *)arg3)[1] * 8;
+      c = ((int *)effectArg)[1] * 8;
       rec->u.spark.r = c;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.depthBias = 4;
@@ -309,9 +309,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
-      rec->u.spark.r = ((int *)arg3)[0];
-      rec->u.spark.g = ((int *)arg3)[1];
-      rec->u.spark.b = ((int *)arg3)[2];
+      rec->u.spark.r = ((int *)effectArg)[0];
+      rec->u.spark.g = ((int *)effectArg)[1];
+      rec->u.spark.b = ((int *)effectArg)[2];
       rec->u.spark.fx = 0x2E;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
@@ -324,20 +324,20 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
       VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
-      if ((arg3 & 0x1F) < 0x10) {
-        v = arg3 * 2;
+      if ((effectArg & 0x1F) < 0x10) {
+        v = effectArg * 2;
       } else {
-        v = arg3 * 2 - 0x80;
+        v = effectArg * 2 - 0x80;
       }
       rec->u.ribbon.angle = v;
       rec->u.ribbon.radius = 8;
-      rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
+      rec->u.ribbon.r = ~((effectArg & 0xF) << 4);
       rec->u.ribbon.g = 0xFF;
-      rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
-      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
+      rec->u.ribbon.b = -0x80 - ((effectArg & 0xF) << 3);
+      rec->u.ribbon.life = 0x30 - ((effectArg & 0xF) * 2);
       rec->u.ribbon.fx = 0x2E;
       rec->u.ribbon.texIndex = 0;
-      rec->u.ribbon.seed = arg3 * 2;
+      rec->u.ribbon.seed = effectArg * 2;
       rec->u.ribbon.depthBias = 2;
       break;
     }
@@ -349,9 +349,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       rec->u.spark.life = 0xC;
       rec->u.spark.seed = GetRandomU32();
-      rec->u.spark.r = arg3 * 8;
-      rec->u.spark.g = arg3 * 8;
-      rec->u.spark.b = arg3 * 8;
+      rec->u.spark.r = effectArg * 8;
+      rec->u.spark.g = effectArg * 8;
+      rec->u.spark.b = effectArg * 8;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
@@ -364,9 +364,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      rec->u.spark.life = ((arg3 >> 16) * 6) + 0xC;
+      rec->u.spark.life = ((effectArg >> 16) * 6) + 0xC;
       w = g_bSpyroPersistentEulerZ + (GetRandomU32() & 7) + 0x1D;
-      q = (arg3 & 0xFFFF) * 8;
+      q = (effectArg & 0xFFFF) * 8;
       rec->u.spark.r = q;
       rec->u.spark.g = q;
       rec->u.spark.b = q;
@@ -388,7 +388,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
-      if (arg3 != 0) {
+      if (effectArg != 0) {
         v2[0] = 0x164;
         v2[1] = 0;
         v2[2] = 0;
@@ -429,7 +429,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (arg3 == 1 || (arg3 == 0 && g_nLevelReadyFlag >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nLevelReadyFlag >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;
@@ -485,9 +485,9 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      v3[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
+      v3[0] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[1] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[2] = (effectArg * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = (pos[0] >> 2) + v3[0] * 4;
       rec->u.line.a[1] = (pos[1] >> 2) + v3[1] * 4;
       rec->u.line.a[2] = (pos[2] >> 2) + v3[2] * 4;
@@ -535,7 +535,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.dust.pos, pos);
-      VectorToSVectorShr2(rec->u.dust.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.dust.vel, (int *)effectArg);
       rec->u.dust.r = 0xFF;
       rec->u.dust.g = 0xFF;
       rec->u.dust.b = 0;
@@ -550,16 +550,16 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
       VectorToSVectorShr2(rec->u.smear.pos2, pos);
-      if ((arg3 & 0x1F) < 0x10) {
-        w = arg3 * 2;
+      if ((effectArg & 0x1F) < 0x10) {
+        w = effectArg * 2;
       } else {
-        w = arg3 * 2 - 0x80;
+        w = effectArg * 2 - 0x80;
       }
       rec->u.smear.angle = w;
       rec->u.smear.radius = 8;
-      rec->u.smear.r = ~((arg3 & 0xF) << 4);
+      rec->u.smear.r = ~((effectArg & 0xF) << 4);
       rec->u.smear.g = 0xFF;
-      rec->u.smear.b = -0x80 - ((arg3 & 0xF) << 3);
+      rec->u.smear.b = -0x80 - ((effectArg & 0xF) << 3);
       rec->u.smear.fx = 0x40;
       rec->u.smear.life = 2;
       break;
@@ -625,7 +625,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.b, pos);
-      AddVector(v3, pos, (int *)arg3);
+      AddVector(v3, pos, (int *)effectArg);
       t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
       v3[0] = u4 + t4;

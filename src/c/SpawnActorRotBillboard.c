@@ -33,7 +33,7 @@ typedef struct RotBillboard {
    all const-prop back to byte-identical per-use v0 materialization
    (InitActorRenderDefaults constant-sb scheduling class). Permuter
    candidate. */
-int SpawnActorRotBillboard(int *arg0, int *arg1) {
+int SpawnActorRotBillboard(int *actor, int *offset) {
   RotBillboard *rec;
   int idx;
   idx = FindFreeRotBillboardSlot();
@@ -43,9 +43,9 @@ int SpawnActorRotBillboard(int *arg0, int *arg1) {
     rec->g = 0xFF;
     rec->b = 0xFF;
 
-    RefreshActorDerivedState(arg0, 4);
-    RotateVectorByMatrix(arg0 + 8, arg1, rec->pos);
-    AddVector(rec->pos, rec->pos, arg0 + 3);
+    RefreshActorDerivedState(actor, 4);
+    RotateVectorByMatrix(actor + 8, offset, rec->pos);
+    AddVector(rec->pos, rec->pos, actor + 3);
     rec->angle = GetRandomU32();
 
     rec->angVel = 3;

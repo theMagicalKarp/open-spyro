@@ -13,7 +13,7 @@
  *
  * `pos` is the emitter position (an int 3-vector) for every effect except
  * 0xC, where it is the source actor and the offset is rotated out of the
- * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
+ * actor's own matrix.  `effectArg` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * MATCHED 2026-08-27-1 -- the LAST member of the 36-overlay emit-spawn family.
@@ -172,7 +172,7 @@ extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 extern Actor *g_pActorListBase;
 
-void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
+void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int vt[3];
   int v1[3];
@@ -200,7 +200,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -218,7 +218,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
@@ -270,7 +270,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.plume.pos[1] = u2 + t2;
       t3 = GetRandomU32() & 0x7E;
       u3 = rec->u.plume.pos[2] - 0x3F;
-      rec->u.plume.src = (int *)arg3;
+      rec->u.plume.src = (int *)effectArg;
       rec->u.plume.rise = 0;
       rec->u.plume.pos[2] = u3 + t3;
       rec->u.plume.life = (GetRandomU32() & 0xF) + 0x18;
@@ -335,7 +335,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       vt[2] = vt[2] - 0x384;
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
-      rec->u.track.owner = (Actor *)arg3 - g_pActorListBase;
+      rec->u.track.owner = (Actor *)effectArg - g_pActorListBase;
       rec->u.track.orbitRadius = 0;
       rec->u.track.life = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.seed = (GetRandomU32() & 7) + 0xF;
@@ -368,7 +368,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -419,13 +419,13 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       if (((Actor *)pos)->kind == 0x22) {
         CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
-        if ((arg3 >> 24) < 6) {
-          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(arg3 >> 24) * 3], v1);
+        if ((effectArg >> 24) < 6) {
+          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.depthBias = 0x16;
-          CopyVector(v1, &g_anEmitSlotOffsets[(arg3 >> 24) * 3]);
+          CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, g_anSparxEmitOffset, v1);
@@ -435,9 +435,9 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
         AddVector(v1, v1, ((Actor *)pos)->pos);
       }
       VectorToSVectorShr2(rec->u.spark.pos, v1);
-      rec->u.spark.g = arg3 >> 8;
-      rec->u.spark.r = arg3;
-      rec->u.spark.b = arg3 >> 16;
+      rec->u.spark.g = effectArg >> 8;
+      rec->u.spark.r = effectArg;
+      rec->u.spark.b = effectArg >> 16;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
@@ -452,9 +452,9 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, pos + 3);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = ((int *)arg3)[0];
+      rec->u.spark.life = ((int *)effectArg)[0];
       rec->u.spark.seed = GetRandomU32();
-      c = ((int *)arg3)[1] * 8;
+      c = ((int *)effectArg)[1] * 8;
       rec->u.spark.r = c;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.depthBias = 4;
@@ -473,9 +473,9 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
-      rec->u.spark.r = ((int *)arg3)[0];
-      rec->u.spark.g = ((int *)arg3)[1];
-      rec->u.spark.b = ((int *)arg3)[2];
+      rec->u.spark.r = ((int *)effectArg)[0];
+      rec->u.spark.g = ((int *)effectArg)[1];
+      rec->u.spark.b = ((int *)effectArg)[2];
       rec->u.spark.fx = 0x2E;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
@@ -487,18 +487,18 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
       VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
-      if ((arg3 & 0x1F) < 0x10) {
-        v = arg3 * 2;
+      if ((effectArg & 0x1F) < 0x10) {
+        v = effectArg * 2;
       } else {
-        v = arg3 * 2 - 0x80;
+        v = effectArg * 2 - 0x80;
       }
       rec->u.ribbon.angle = v;
       rec->u.ribbon.radius = 8;
-      rec->u.ribbon.r = ~((arg3 & 0xF) << 4);
+      rec->u.ribbon.r = ~((effectArg & 0xF) << 4);
       rec->u.ribbon.g = 0xFF;
-      rec->u.ribbon.b = -0x80 - ((arg3 & 0xF) << 3);
-      rec->u.ribbon.life = 0x30 - ((arg3 & 0xF) * 2);
-      rec->u.ribbon.seed = arg3 * 2;
+      rec->u.ribbon.b = -0x80 - ((effectArg & 0xF) << 3);
+      rec->u.ribbon.life = 0x30 - ((effectArg & 0xF) * 2);
+      rec->u.ribbon.seed = effectArg * 2;
       rec->u.ribbon.fx = 0x2E;
       rec->u.ribbon.depthBias = 2;
       rec->u.ribbon.texIndex = 0;
@@ -572,7 +572,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
-      if (arg3 != 0) {
+      if (effectArg != 0) {
         v2[0] = 0x164;
         v2[1] = 0;
         v2[2] = 0;
@@ -613,7 +613,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (arg3 == 1 || (arg3 == 0 && g_nLevelReadyFlag >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nLevelReadyFlag >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;
@@ -672,7 +672,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.dust.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
       rec->u.dust.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
       rec->u.dust.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.dust.src = arg3;
+      rec->u.dust.src = effectArg;
       rec->u.dust.waypoint = 0;
       rec->u.dust.life = 2;
       switch (GetRandomU32() & 7) {
@@ -725,9 +725,9 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      v3[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
+      v3[0] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[1] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[2] = (effectArg * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = (pos[0] >> 2) + v3[0] * 4;
       rec->u.line.a[1] = (pos[1] >> 2) + v3[1] * 4;
       rec->u.line.a[2] = (pos[2] >> 2) + v3[2] * 4;
@@ -835,16 +835,16 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
       VectorToSVectorShr2(rec->u.smear.pos2, pos);
-      if ((arg3 & 0x1F) < 0x10) {
-        w = arg3 * 2;
+      if ((effectArg & 0x1F) < 0x10) {
+        w = effectArg * 2;
       } else {
-        w = arg3 * 2 - 0x80;
+        w = effectArg * 2 - 0x80;
       }
       rec->u.smear.angle = w;
       rec->u.smear.radius = 8;
-      rec->u.smear.r = ~((arg3 & 0xF) << 4);
+      rec->u.smear.r = ~((effectArg & 0xF) << 4);
       rec->u.smear.g = 0xFF;
-      rec->u.smear.b = -0x80 - ((arg3 & 0xF) << 3);
+      rec->u.smear.b = -0x80 - ((effectArg & 0xF) << 3);
       rec->u.smear.fx = 0x40;
       rec->u.smear.life = 2;
       break;
@@ -910,7 +910,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.b, pos);
-      AddVector(v3, pos, (int *)arg3);
+      AddVector(v3, pos, (int *)effectArg);
       t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
       v3[0] = u4 + t4;
@@ -946,9 +946,9 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.a, pos);
-      v4[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v4[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v4[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
+      v4[0] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[1] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[2] = (effectArg * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = rec->u.line.a[0] + v4[0] * 4;
       rec->u.line.a[1] = rec->u.line.a[1] + v4[1] * 4;
       rec->u.line.a[2] = rec->u.line.a[2] + v4[2] * 4;
