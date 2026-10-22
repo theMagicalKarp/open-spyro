@@ -10,7 +10,8 @@ extern void DivideVector3();
    then rebuild its offset vector: copy, scale by half the counter, add the
    actor anchor (+0xC), subtract the indexed sub-record vector, and blend
    by the remaining step fraction. */
-void func_8003A850(int *arg0, unsigned char *arg1, int *arg2, int *arg3) {
+void StepTweenOffsetVector(int *arg0, unsigned char *arg1, int *arg2,
+                           int *arg3) {
   unsigned int t;
 
   t = arg1[3] & 0xFE;

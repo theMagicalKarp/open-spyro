@@ -8,7 +8,7 @@ extern void RotateVectorByMatrix();
    quadrant mask: compute actor(+0xC) - Spyro (optionally un-rotated by the
    actor's yaw byte at +0x46), then AND away the halves of 0xF that the
    X/Y signs rule out. */
-int func_8003BED8(unsigned char *actor) {
+int ClassifyActorQuadrantVsSpyro(unsigned char *actor) {
   int mtx[8];
   signed char euler[8];
   int delta[4];

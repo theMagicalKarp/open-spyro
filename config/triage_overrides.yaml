@@ -111,11 +111,11 @@ func_8005E680:
   note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
 
 # --- actor waypoint-follow step (2026-07-24-1 session) ---
-func_80017294:
+ReturnT0Fixed12:
   verdict: matched
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15
-func_80017A9C:
+ReturnT0Fixed12Dup:
   verdict: matched
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15

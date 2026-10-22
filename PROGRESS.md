@@ -124,10 +124,10 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80017110` | WorldToCameraRotate | main | 120 | asm | handwritten |
 | `0x80017188` | func_80017188 | main | 116 | asm | handwritten |
 | `0x800171fc` | VectorLength | main | 152 | asm | handwritten |
-| `0x80017294` | func_80017294 | main | 8 | matched | game |
+| `0x80017294` | ReturnT0Fixed12 | main | 8 | matched | game |
 | `0x8001729c` | RefineSqrtEstimate | main | 148 | asm | handwritten |
 | `0x80017330` | SetVector3Magnitude | main | 240 | asm | handwritten |
-| `0x80017420` | func_80017420 | main | 8 | matched | game |
+| `0x80017420` | ZeroRecordField08 | main | 8 | matched | game |
 | `0x80017428` | ReflectVectorOffNormal | main | 288 | asm | handwritten |
 | `0x80017548` | func_80017548 | main | 112 | asm | handwritten |
 | `0x800175b8` | ScaleVector3ByRatio | main | 92 | asm | handwritten |
@@ -150,7 +150,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80017990` | ApproxDist2D | main | 96 | asm | handwritten |
 | `0x800179f0` | ApproachAngle8 | main | 72 | asm | handwritten |
 | `0x80017a38` | IntegerSqrt | main | 100 | asm | handwritten |
-| `0x80017a9c` | func_80017A9C | main | 8 | matched | game |
+| `0x80017a9c` | ReturnT0Fixed12Dup | main | 8 | matched | game |
 | `0x80017aa4` | ProjectWorldPointGTEUnscaled | main | 164 | asm | handwritten |
 | `0x80017b48` | ProjectWorldPointGTE | main | 180 | asm | handwritten |
 | `0x80017bfc` | VectorToSVectorShr2 | main | 40 | matched | game |
@@ -170,7 +170,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80018534` | EnqueueBlinkingMarkerSprite | main | 216 | matched | game |
 | `0x8001860c` | DrawShadedMenuBox | main | 284 | matched | game |
 | `0x80018728` | DrawDragonRescuedBanner | main | 336 | matched | game |
-| `0x80018878` | func_80018878 | main | 8 | matched | game |
+| `0x80018878` | EmptyStub | main | 8 | matched | game |
 | `0x80018880` | EnqueuePendingSpritePrims | main | 136 | matched | game |
 | `0x80018908` | DrawDemoModeOverlay | main | 232 | matched | game |
 | `0x800189f0` | DrawMotionTrailRibbons | main | 1344 | matched | game |
@@ -306,15 +306,15 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003a16c` | SteerActorAlongWaypoints | main | 692 | matched | game |
 | `0x8003a420` | WalkActorAlongWaypoints | main | 768 | matched | game |
 | `0x8003a720` | InitActorRenderDefaults | main | 124 | matched | game |
-| `0x8003a79c` | func_8003A79C | main | 180 | matched | game |
-| `0x8003a850` | func_8003A850 | main | 208 | matched | game |
+| `0x8003a79c` | MeasureOffsetToPathPoint | main | 180 | matched | game |
+| `0x8003a850` | StepTweenOffsetVector | main | 208 | matched | game |
 | `0x8003a920` | BlendVectorPairByMode | main | 204 | matched | game |
 | `0x8003a9ec` | SelectActorLodBand | main | 152 | matched | game |
 | `0x8003aa84` | TickActorFlameGlow | main | 104 | matched | game |
 | `0x8003aaec` | SpawnActorRotBillboard | main | 212 | matched | game |
 | `0x8003abc0` | SpawnActorDeathDrop | main | 1308 | matched | game |
 | `0x8003b0dc` | PickupGroupHasLiveActor | main | 132 | matched | game |
-| `0x8003b160` | func_8003B160 | main | 136 | matched | game |
+| `0x8003b160` | IsPickupGroupAllType | main | 136 | matched | game |
 | `0x8003b1e8` | SetActorGroupState | main | 172 | matched | game |
 | `0x8003b294` | OrActorGroupFlagsInCone | main | 488 | matched | game |
 | `0x8003b47c` | SetActorGroupStateExcept | main | 188 | matched | game |
@@ -327,7 +327,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003b9d4` | CollectPickupActor | main | 252 | matched | game |
 | `0x8003bad0` | SteerActorTowardPoint | main | 508 | matched | game |
 | `0x8003bccc` | TryMoveActorForward | main | 524 | matched | game |
-| `0x8003bed8` | func_8003BED8 | main | 232 | matched | game |
+| `0x8003bed8` | ClassifyActorQuadrantVsSpyro | main | 232 | matched | game |
 | `0x8003bfc0` | TweenActorAlongPath | main | 920 | matched | game |
 | `0x8003c358` | SpawnNameLetterActors | main | 908 | matched | game |
 | `0x8003c6e4` | TickGemPickupBurstEntity | main | 376 | matched | game |
@@ -347,7 +347,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003da08` | DampenSpyroFreeFallAttitude | main | 220 | matched | game |
 | `0x8003dae4` | UpdateSpyroFlightAttitudeNearGround | main | 864 | matched | game |
 | `0x8003de44` | AlignSpyroBodyToVelocity | main | 284 | matched | game |
-| `0x8003df60` | func_8003DF60 | main | 68 | matched | game |
+| `0x8003df60` | ResetSpyroFrameMotion | main | 68 | matched | game |
 | `0x8003dfa4` | ResetSpyroLinearMotion | main | 72 | matched | game |
 | `0x8003dfec` | RotateSpyroBodyTowardKnockbackDir | main | 200 | matched | game |
 | `0x8003e0b4` | ApplyGravityAlongSpyroSlopeTangent | main | 248 | matched | game |
@@ -679,7 +679,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80063a14` | func_80063A14 | main | 120 | asm | lib |
 | `0x80063a8c` | CdStatus | main | 16 | asm | lib |
 | `0x80063a9c` | FUN_80063a9c | main | 16 | asm | lib |
-| `0x80063aac` | FUN_80063aac | main | 16 | asm | lib |
+| `0x80063aac` | GetCdStatusByte | main | 16 | asm | lib |
 | `0x80063abc` | CdLastPos | main | 16 | asm | lib |
 | `0x80063acc` | CdReset | main | 108 | asm | lib |
 | `0x80063b38` | FUN_80063b38 | main | 32 | asm | lib |

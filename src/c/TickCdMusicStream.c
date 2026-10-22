@@ -2,7 +2,7 @@
 #include "vecmath.h"
 
 extern int CallCdSync(int mode, unsigned char *result);
-extern int FUN_80063aac(void);
+extern int GetCdStatusByte(void);
 extern void HandleMusicCommand(int track, int cmd);
 extern void CdIntToPos(int lba, char *pos);
 extern int CdPosToInt(unsigned char *pos);
@@ -114,7 +114,7 @@ void TickCdMusicStream(void) {
         CdControlBlocking(0xD, filt, 0);
         CdControl(0x1B, pos, 0);
       } else {
-        if (FUN_80063aac() == 0x11) {
+        if (GetCdStatusByte() == 0x11) {
           r = CdPosToInt((unsigned char *)g_adwMusicStreamBlock + 0x20D);
           if (r > 0) {
             g_dwCdMusicReadHead = r;

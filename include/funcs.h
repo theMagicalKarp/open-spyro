@@ -1470,7 +1470,7 @@ undefined1 FUN_80063a9c(void);
 
 /* 0x80063aac: Sony SDK internal — libcd accessor returning DAT_80074e55 (1 byte adjacent to DAT_80074e54, zeroed at CdInit). Likely the second of the CdLastCom/CdLastInt pair. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined1 FUN_80063aac(void);
+undefined1 GetCdStatusByte(void);
 
 /* 0x80063abc: libcd CdLastPos: returns a pointer to the last seek position (3-byte BCD CdlLOC stored at DAT_80074e50). Use CdPosToInt to convert to LBA. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

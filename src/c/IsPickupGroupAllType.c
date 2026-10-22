@@ -5,7 +5,7 @@
    Returns 0 as soon as one of the group's actors has a type byte (+0x48)
    different from `a1`; returns 1 if every actor matches (also 0 when the group
    index is out of range). */
-int func_8003B160(int a0, int a1) {
+int IsPickupGroupAllType(int a0, int a1) {
   unsigned short *ptr;
   unsigned short id;
   int idx;

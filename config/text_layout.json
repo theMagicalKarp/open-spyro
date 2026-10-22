@@ -211,7 +211,7 @@
    "size": 152
   },
   {
-   "name": "func_80017294",
+   "name": "ReturnT0Fixed12",
    "vram": 2147578516,
    "size": 8
   },
@@ -226,7 +226,7 @@
    "size": 240
   },
   {
-   "name": "func_80017420",
+   "name": "ZeroRecordField08",
    "vram": 2147578912,
    "size": 8
   },
@@ -341,7 +341,7 @@
    "size": 100
   },
   {
-   "name": "func_80017A9C",
+   "name": "ReturnT0Fixed12Dup",
    "vram": 2147580572,
    "size": 8
   },
@@ -441,7 +441,7 @@
    "size": 336
   },
   {
-   "name": "func_80018878",
+   "name": "EmptyStub",
    "vram": 2147584120,
    "size": 8
   },
@@ -1121,12 +1121,12 @@
    "size": 124
   },
   {
-   "name": "func_8003A79C",
+   "name": "MeasureOffsetToPathPoint",
    "vram": 2147723164,
    "size": 180
   },
   {
-   "name": "func_8003A850",
+   "name": "StepTweenOffsetVector",
    "vram": 2147723344,
    "size": 208
   },
@@ -1161,7 +1161,7 @@
    "size": 132
   },
   {
-   "name": "func_8003B160",
+   "name": "IsPickupGroupAllType",
    "vram": 2147725664,
    "size": 136
   },
@@ -1226,7 +1226,7 @@
    "size": 524
   },
   {
-   "name": "func_8003BED8",
+   "name": "ClassifyActorQuadrantVsSpyro",
    "vram": 2147729112,
    "size": 232
   },
@@ -1326,7 +1326,7 @@
    "size": 284
   },
   {
-   "name": "func_8003DF60",
+   "name": "ResetSpyroFrameMotion",
    "vram": 2147737440,
    "size": 68
   },
@@ -2996,7 +2996,7 @@
    "size": 16
   },
   {
-   "name": "FUN_80063aac",
+   "name": "GetCdStatusByte",
    "vram": 2147891884,
    "size": 16
   },

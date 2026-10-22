@@ -5788,7 +5788,7 @@ glabel VectorLength
     /* 7A28 80017228 20082200 */  add        $at, $at, $v0 /* handwritten instruction */
     /* 7A2C 8001722C 20082300 */  add        $at, $at, $v1 /* handwritten instruction */
     /* 7A30 80017230 00F08148 */  mtc2       $at, $30 /* handwritten instruction */
-    /* 7A34 80017234 17002010 */  beqz       $at, func_80017294
+    /* 7A34 80017234 17002010 */  beqz       $at, ReturnT0Fixed12
     /* 7A38 80017238 00000820 */   addi      $t0, $zero, 0x0 /* handwritten instruction */
     /* 7A3C 8001723C 00F80248 */  mfc2       $v0, $31 /* handwritten instruction */
     /* 7A40 80017240 FEFF0520 */  addi       $a1, $zero, -0x2 /* handwritten instruction */
@@ -5817,14 +5817,14 @@ glabel VectorLength
 endlabel VectorLength
 .endif
 
-.section .text.func_80017294, "ax"
-.ifndef HAVE_C_func_80017294
-nonmatching func_80017294, 0x8
+.section .text.ReturnT0Fixed12, "ax"
+.ifndef HAVE_C_ReturnT0Fixed12
+nonmatching ReturnT0Fixed12, 0x8
 
-glabel func_80017294
+glabel ReturnT0Fixed12
     /* 7A94 80017294 0800E003 */  jr         $ra
     /* 7A98 80017298 02130800 */   srl       $v0, $t0, 12
-endlabel func_80017294
+endlabel ReturnT0Fixed12
 
 /* Handwritten function */
 .endif
@@ -5949,14 +5949,14 @@ glabel SetVector3Magnitude
 endlabel SetVector3Magnitude
 .endif
 
-.section .text.func_80017420, "ax"
-.ifndef HAVE_C_func_80017420
-nonmatching func_80017420, 0x8
+.section .text.ZeroRecordField08, "ax"
+.ifndef HAVE_C_ZeroRecordField08
+nonmatching ZeroRecordField08, 0x8
 
-glabel func_80017420
+glabel ZeroRecordField08
     /* 7C20 80017420 0800E003 */  jr         $ra
     /* 7C24 80017424 080080AC */   sw        $zero, 0x8($a0)
-endlabel func_80017420
+endlabel ZeroRecordField08
 
 /* Handwritten function */
 .endif
@@ -6574,7 +6574,7 @@ nonmatching IntegerSqrt, 0x64
 
 glabel IntegerSqrt
     /* 8238 80017A38 00F08448 */  mtc2       $a0, $30 /* handwritten instruction */
-    /* 823C 80017A3C 17008010 */  beqz       $a0, func_80017A9C
+    /* 823C 80017A3C 17008010 */  beqz       $a0, ReturnT0Fixed12Dup
     /* 8240 80017A40 00000820 */   addi      $t0, $zero, 0x0 /* handwritten instruction */
     /* 8244 80017A44 00F80248 */  mfc2       $v0, $31 /* handwritten instruction */
     /* 8248 80017A48 FEFF0520 */  addi       $a1, $zero, -0x2 /* handwritten instruction */
@@ -6603,14 +6603,14 @@ glabel IntegerSqrt
 endlabel IntegerSqrt
 .endif
 
-.section .text.func_80017A9C, "ax"
-.ifndef HAVE_C_func_80017A9C
-nonmatching func_80017A9C, 0x8
+.section .text.ReturnT0Fixed12Dup, "ax"
+.ifndef HAVE_C_ReturnT0Fixed12Dup
+nonmatching ReturnT0Fixed12Dup, 0x8
 
-glabel func_80017A9C
+glabel ReturnT0Fixed12Dup
     /* 829C 80017A9C 0800E003 */  jr         $ra
     /* 82A0 80017AA0 02130800 */   srl       $v0, $t0, 12
-endlabel func_80017A9C
+endlabel ReturnT0Fixed12Dup
 
 /* Handwritten function */
 .endif
@@ -7713,14 +7713,14 @@ glabel DrawDragonRescuedBanner
 endlabel DrawDragonRescuedBanner
 .endif
 
-.section .text.func_80018878, "ax"
-.ifndef HAVE_C_func_80018878
-nonmatching func_80018878, 0x8
+.section .text.EmptyStub, "ax"
+.ifndef HAVE_C_EmptyStub
+nonmatching EmptyStub, 0x8
 
-glabel func_80018878
+glabel EmptyStub
     /* 9078 80018878 0800E003 */  jr         $ra
     /* 907C 8001887C 00000000 */   nop
-endlabel func_80018878
+endlabel EmptyStub
 .endif
 
 .section .text.EnqueuePendingSpritePrims, "ax"
@@ -29047,7 +29047,7 @@ glabel TickCdMusicStream
     /* 1C668 8002BE68 A9AF0008 */  j          .L8002BEA4
     /* 1C66C 8002BE6C 00000000 */   nop
   .L8002BE70:
-    /* 1C670 8002BE70 AB8E010C */  jal        FUN_80063aac
+    /* 1C670 8002BE70 AB8E010C */  jal        GetCdStatusByte
     /* 1C674 8002BE74 00000000 */   nop
     /* 1C678 8002BE78 11000324 */  addiu      $v1, $zero, 0x11
     /* 1C67C 8002BE7C 07004314 */  bne        $v0, $v1, .L8002BE9C
@@ -45662,11 +45662,11 @@ glabel InitActorRenderDefaults
 endlabel InitActorRenderDefaults
 .endif
 
-.section .text.func_8003A79C, "ax"
-.ifndef HAVE_C_func_8003A79C
-nonmatching func_8003A79C, 0xB4
+.section .text.MeasureOffsetToPathPoint, "ax"
+.ifndef HAVE_C_MeasureOffsetToPathPoint
+nonmatching MeasureOffsetToPathPoint, 0xB4
 
-glabel func_8003A79C
+glabel MeasureOffsetToPathPoint
     /* 2AF9C 8003A79C D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 2AFA0 8003A7A0 2400BFAF */  sw         $ra, 0x24($sp)
     /* 2AFA4 8003A7A4 2000B0AF */  sw         $s0, 0x20($sp)
@@ -45714,14 +45714,14 @@ glabel func_8003A79C
     /* 2B044 8003A844 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 2B048 8003A848 0800E003 */  jr         $ra
     /* 2B04C 8003A84C 00000000 */   nop
-endlabel func_8003A79C
+endlabel MeasureOffsetToPathPoint
 .endif
 
-.section .text.func_8003A850, "ax"
-.ifndef HAVE_C_func_8003A850
-nonmatching func_8003A850, 0xD0
+.section .text.StepTweenOffsetVector, "ax"
+.ifndef HAVE_C_StepTweenOffsetVector
+nonmatching StepTweenOffsetVector, 0xD0
 
-glabel func_8003A850
+glabel StepTweenOffsetVector
     /* 2B050 8003A850 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 2B054 8003A854 1C00B3AF */  sw         $s3, 0x1C($sp)
     /* 2B058 8003A858 21988000 */  addu       $s3, $a0, $zero
@@ -45775,7 +45775,7 @@ glabel func_8003A850
     /* 2B114 8003A914 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 2B118 8003A918 0800E003 */  jr         $ra
     /* 2B11C 8003A91C 00000000 */   nop
-endlabel func_8003A850
+endlabel StepTweenOffsetVector
 .endif
 
 .section .text.BlendVectorPairByMode, "ax"
@@ -46402,11 +46402,11 @@ glabel PickupGroupHasLiveActor
 endlabel PickupGroupHasLiveActor
 .endif
 
-.section .text.func_8003B160, "ax"
-.ifndef HAVE_C_func_8003B160
-nonmatching func_8003B160, 0x88
+.section .text.IsPickupGroupAllType, "ax"
+.ifndef HAVE_C_IsPickupGroupAllType
+nonmatching IsPickupGroupAllType, 0x88
 
-glabel func_8003B160
+glabel IsPickupGroupAllType
     /* 2B960 8003B160 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2B964 8003B164 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2B968 8003B168 00000000 */  nop
@@ -46444,7 +46444,7 @@ glabel func_8003B160
   .L8003B1E0:
     /* 2B9E0 8003B1E0 0800E003 */  jr         $ra
     /* 2B9E4 8003B1E4 00000000 */   nop
-endlabel func_8003B160
+endlabel IsPickupGroupAllType
 .endif
 
 .section .text.SetActorGroupState, "ax"
@@ -47434,11 +47434,11 @@ glabel TryMoveActorForward
 endlabel TryMoveActorForward
 .endif
 
-.section .text.func_8003BED8, "ax"
-.ifndef HAVE_C_func_8003BED8
-nonmatching func_8003BED8, 0xE8
+.section .text.ClassifyActorQuadrantVsSpyro, "ax"
+.ifndef HAVE_C_ClassifyActorQuadrantVsSpyro
+nonmatching ClassifyActorQuadrantVsSpyro, 0xE8
 
-glabel func_8003BED8
+glabel ClassifyActorQuadrantVsSpyro
     /* 2C6D8 8003BED8 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 2C6DC 8003BEDC 5000B2AF */  sw         $s2, 0x50($sp)
     /* 2C6E0 8003BEE0 21908000 */  addu       $s2, $a0, $zero
@@ -47503,7 +47503,7 @@ glabel func_8003BED8
     /* 2C7B4 8003BFB4 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 2C7B8 8003BFB8 0800E003 */  jr         $ra
     /* 2C7BC 8003BFBC 00000000 */   nop
-endlabel func_8003BED8
+endlabel ClassifyActorQuadrantVsSpyro
 .endif
 
 .section .text.TweenActorAlongPath, "ax"
@@ -49794,11 +49794,11 @@ glabel AlignSpyroBodyToVelocity
 endlabel AlignSpyroBodyToVelocity
 .endif
 
-.section .text.func_8003DF60, "ax"
-.ifndef HAVE_C_func_8003DF60
-nonmatching func_8003DF60, 0x44
+.section .text.ResetSpyroFrameMotion, "ax"
+.ifndef HAVE_C_ResetSpyroFrameMotion
+nonmatching ResetSpyroFrameMotion, 0x44
 
-glabel func_8003DF60
+glabel ResetSpyroFrameMotion
     /* 2E760 8003DF60 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 2E764 8003DF64 1000B0AF */  sw         $s0, 0x10($sp)
     /* 2E768 8003DF68 0880103C */  lui        $s0, %hi(g_anSpyroWorldPos)
@@ -49816,7 +49816,7 @@ glabel func_8003DF60
     /* 2E798 8003DF98 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 2E79C 8003DF9C 0800E003 */  jr         $ra
     /* 2E7A0 8003DFA0 00000000 */   nop
-endlabel func_8003DF60
+endlabel ResetSpyroFrameMotion
 .endif
 
 .section .text.ResetSpyroLinearMotion, "ax"
@@ -93817,16 +93817,16 @@ glabel FUN_80063a9c
 endlabel FUN_80063a9c
 .endif
 
-.section .text.FUN_80063aac, "ax"
-.ifndef HAVE_C_FUN_80063aac
-nonmatching FUN_80063aac, 0x10
+.section .text.GetCdStatusByte, "ax"
+.ifndef HAVE_C_GetCdStatusByte
+nonmatching GetCdStatusByte, 0x10
 
-glabel FUN_80063aac
+glabel GetCdStatusByte
     /* 542AC 80063AAC 0780023C */  lui        $v0, %hi(D_80074E55)
     /* 542B0 80063AB0 554E4290 */  lbu        $v0, %lo(D_80074E55)($v0)
     /* 542B4 80063AB4 0800E003 */  jr         $ra
     /* 542B8 80063AB8 00000000 */   nop
-endlabel FUN_80063aac
+endlabel GetCdStatusByte
 .endif
 
 .section .text.CdLastPos, "ax"
