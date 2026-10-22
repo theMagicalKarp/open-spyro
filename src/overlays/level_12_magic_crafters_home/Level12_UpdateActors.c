@@ -3355,23 +3355,23 @@ void Level12_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abSaveOptionsBlock[1] = 2;
-        g_abSaveOptionsBlock[2] = 2;
+        g_abWorldBalloonistState[1] = 2;
+        g_abWorldBalloonistState[2] = 2;
 
         if (g_nWorldEggsRecovered < 5) {
-          if (g_abSaveOptionsBlock[3] == 0) {
+          if (g_abWorldBalloonistState[3] == 0) {
             g_nGamestate0cDialogPage = 0xC;
-            g_abSaveOptionsBlock[3] = 1;
+            g_abWorldBalloonistState[3] = 1;
           } else {
             g_nGamestate0cDialogPage = 0xE;
           }
-        } else if (g_abSaveOptionsBlock[3] < 2) {
-          if (g_abSaveOptionsBlock[3] == 0) {
+        } else if (g_abWorldBalloonistState[3] < 2) {
+          if (g_abWorldBalloonistState[3] == 0) {
             g_nGamestate0cDialogPage = 0xF;
           } else {
             g_nGamestate0cDialogPage = 0x10;
           }
-          g_abSaveOptionsBlock[3] = 2;
+          g_abWorldBalloonistState[3] = 2;
         } else {
           g_nGamestate0cDialogPage = 0x1E;
           g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;

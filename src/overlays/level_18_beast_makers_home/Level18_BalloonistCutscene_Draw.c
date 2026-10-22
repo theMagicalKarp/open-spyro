@@ -7,7 +7,7 @@
  *          cosine LUT g_anCosineLut with a per-glyph phase step of 0xC.
  *   == 1 — plus one of three sub-menus selected by g_nGamestate0cSubstate[3]:
  *            * outside 0x1E..0x20: the dialogue page whose line range is
- *              g_abBalloonistDialoguePageStarts[m]..D_8006F89D[m] into g_apBalloonistDialogueLines,
+ *              g_abBalloonistDialoguePageStarts[m]..g_abBalloonistDialoguePageEnds[m] into g_apBalloonistDialogueLines,
  *            * 0x1E: the greeting + "STAY HERE" + the roster of visited worlds,
  *            * 0x1F/0x20: the confirm prompt + "GO TO <name>".
  *          The highlighted entry is the one whose index equals g_nGamestate0cMenuCursor;
@@ -97,7 +97,7 @@ void Level18_BalloonistCutscene_Draw(void) {
         pageColor[2] = 0x1400;
         line = g_abBalloonistDialoguePageStarts[g_nGamestate0cSubstate[3]];
         pageCursor = g_pSpriteRecordWriteCursor;
-        while (line < D_8006F89D[g_nGamestate0cSubstate[3]]) {
+        while (line < g_abBalloonistDialoguePageEnds[g_nGamestate0cSubstate[3]]) {
           pagePos[0] = 0x5E;
           BuildTextSprites(g_apBalloonistDialogueLines[line], pagePos, pageColor, 0x12, 0xB);
           pagePos[1] += 0x12;
@@ -147,10 +147,10 @@ void Level18_BalloonistCutscene_Draw(void) {
         }
         slot = 1;
         for (world = 0; world < 6; world++) {
-          if (g_nActiveLevelId / 10 - 1 != world && g_abSaveOptionsBlock[world] == 2) {
+          if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == 2) {
             menuPos[0] = 0x110;
             rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
-            BuildTextSprites(D_8006F7D4[world], menuPos, menuColor, 0x10, 0xB);
+            BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);
             menuPos[1] += 0xF;
             if (g_nGamestate0cSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
@@ -199,10 +199,10 @@ void Level18_BalloonistCutscene_Draw(void) {
         askPos[0] = 0x80;
         rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
         if (g_nGamestate0cSubstate[3] == 0x1F) {
-          sprintf(dest, g_szGoTo, D_8006F7D4[g_nActiveLevelId / 10]);
+          sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
           sprintf(dest, g_szGoTo,
-                        D_8006F7D8[(g_nCurrentLevelId / 10) * 6 + g_nCurrentLevelId % 10]);
+                        g_apLevelNameByWorldRow[(g_nCurrentLevelId / 10) * 6 + g_nCurrentLevelId % 10]);
         }
         BuildTextSprites(dest, askPos, askColor, 0x12, 0xB);
         if (g_nGamestate0cSubstate[2] == 1) {

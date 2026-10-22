@@ -645,7 +645,7 @@ extern int g_nScriptedMobCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
-extern byte g_abSaveOptionsBlock[6];         /* 0x800758d0 */
+extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
 extern int g_nSparxFoodCount;                /* 0x800758e8 */
@@ -1145,6 +1145,17 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nGamestate0cMenuCursor  0x800777f0  highlighted entry of the dialogue page/roster menu (wraps)
  *   g_nGamestate0cDialogPage  0x800777f4  dialogue page id the substate-1 menu shows (0x1E/0x1F, 0x21..0x26, ...)
  *   g_nGamestate0cDialogVariant 0x800777f8  line variant within the page (UpdateActors picks 0..2 at random)
+ *   g_abGamestate0cActorSnapshot 0x80071e9c  0x58-byte copy of the focus actor taken at lift-off (substate 3)
+ *   g_anGamestate0cLandingX / Y 0x8006eadc / 0x8006eae0  per-card-variant landing x / y (stride 8), copied to
+ *       g_nGamestate0cSpyroToX / Y before the descend substate
+ *   g_bWorldBalloonistState1 0x800758d1  g_abWorldBalloonistState[1] (scalar view)
+ *   g_nLevelEggsRecovered1/7/8/12/15 0x80076fec..0x80077024  g_anLevelEggsRecovered[n] views; a zero one
+ *       (or < 2 for [12]) unlocks hint pages 0x21..0x25
+ *   g_apWorldNameByLevelTens 0x8006f7d4  &g_apTitleCardNames[1], indexed by level id / 10 (world name)
+ *   g_apLevelNameByWorldRow  0x8006f7d8  indexed (level id / 10) * 6 + level id % 10 (lands in
+ *       g_apLevelNameStrings from world 1)
+ *   g_abBalloonistDialoguePageEnds 0x8006f89d  &g_abBalloonistDialoguePageStarts[1]: page m ends where m + 1 starts
+ *   g_pSaveMenuAnimActorList1 0x800700f8  g_apSaveMenuAnimActorList[1] (cleared on cutscene entry)
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

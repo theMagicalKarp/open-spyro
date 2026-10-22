@@ -7,7 +7,7 @@
  *   1  dialogue: pad-driven page/roster menu (g_nGamestate0cDialogPage submode),
  *   2  board:    fly Spyro to the balloon over 0x66 frames,
  *   3  lift off: raise the balloon (Z) for 0x80 frames, then snapshot the
- *                actor into D_80071E9C and swap the 0x4000-byte scratch bank,
+ *                actor into g_abGamestate0cActorSnapshot and swap the 0x4000-byte scratch bank,
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
@@ -60,7 +60,7 @@
  *  L7  `k = g_nGamestate0cTimer[0];` after the `t == n` block in case 6 reproduces the
  *      original's `move v1,a0` join copy; `n -= 0x1B; g_nGamestate0cCardVariant = n;` and
  *      `vecD[2] += 0x200; vecD[2] -= cn >> 4;` are in-place forms.
- *  L8  DECODE fixes: `(k == 3) && (D_80077018 < 2)` (was >= 2); the arm-1
+ *  L8  DECODE fixes: `(k == 3) && (g_nLevelEggsRecovered12 < 2)` (was >= 2); the arm-1
  *      mode tests are `g_nGamestate0cDialogPage[0] == 0xE` / `g_nGamestate0cDialogPage[0] = 0x1E` (were
  *      F0 -- invisible to an immediate-masked diff, found by the linked diff);
  *      `g_nGamestate0cCamYawGoal[0]` (array) in both yaw conditions AND call args.
@@ -126,7 +126,7 @@ void Level0_BalloonistCutscene_Update(void)
   st = g_nGamestate0cSubstate;
   if (st[0] < 4)
   {
-    D_800700F8 = 0;
+    g_pSaveMenuAnimActorList1 = 0;
     g_apSaveMenuAnimActorList[0] = g_pGamestate0cActor;
     TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
   }
@@ -321,7 +321,7 @@ void Level0_BalloonistCutscene_Update(void)
           else
             if (n < 3)
           {
-            if ((t < 3) && (D_800758D1 < 2))
+            if ((t < 3) && (g_bWorldBalloonistState1 < 2))
             {
               g_pfnLevelOnSaveMenuExit();
             }
@@ -331,27 +331,27 @@ void Level0_BalloonistCutscene_Update(void)
               do
               {
                 k = ((int) GetRandomU32()) % 5;
-                if ((k == 0) && (D_80076FEC == 0))
+                if ((k == 0) && (g_nLevelEggsRecovered1 == 0))
                 {
                   g_nGamestate0cDialogPage_s = 0x21;
                 }
                 else
-                  if ((k == 1) && (D_80077004 == 0))
+                  if ((k == 1) && (g_nLevelEggsRecovered7 == 0))
                 {
                   g_nGamestate0cDialogPage_s = 0x22;
                 }
                 else
-                  if ((k == 2) && (D_80077008 == 0))
+                  if ((k == 2) && (g_nLevelEggsRecovered8 == 0))
                 {
                   g_nGamestate0cDialogPage_s = 0x23;
                 }
                 else
-                  if ((k == 3) && (D_80077018 < 2))
+                  if ((k == 3) && (g_nLevelEggsRecovered12 < 2))
                 {
                   g_nGamestate0cDialogPage_s = 0x24;
                 }
                 else
-                  if ((k == 4) && (D_80077024 == 0))
+                  if ((k == 4) && (g_nLevelEggsRecovered15 == 0))
                 {
                   g_nGamestate0cDialogPage_s = 0x25;
                 }
@@ -386,7 +386,7 @@ void Level0_BalloonistCutscene_Update(void)
         i = 1;
         k = 2;
         scan:
-        if (g_abSaveOptionsBlock[i] == k)
+        if (g_abWorldBalloonistState[i] == k)
         {
           do { i++; } while (0);
           if (i < 6)
@@ -688,8 +688,8 @@ void Level0_BalloonistCutscene_Update(void)
         g_nGamestate0cCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(D_80071E9C, g_pGamestate0cRecord, 0x58);
-        g_pGamestate0cRecord = (unsigned char *) D_80071E9C;
+        CopyWords(g_abGamestate0cActorSnapshot, g_pGamestate0cRecord, 0x58);
+        g_pGamestate0cRecord = (unsigned char *) g_abGamestate0cActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
           bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
@@ -808,8 +808,8 @@ void Level0_BalloonistCutscene_Update(void)
           int m;
           int k;
         m = g_nGamestate0cCardVariant * 8;
-        g_nGamestate0cTimer[8] = *((int *) (((char *) D_8006EADC) + m));
-        k = *((int *) (((char *) D_8006EAE0) + m));
+        g_nGamestate0cTimer[8] = *((int *) (((char *) g_anGamestate0cLandingX) + m));
+        k = *((int *) (((char *) g_anGamestate0cLandingY) + m));
         g_nGamestate0cSpyroToZ = g_nSpyroWorldPosZ;
         g_nGamestate0cSpyroToY = k;
         g_nGamestate0cSpyroToZ = FindGroundHeightBelow(&g_nGamestate0cTimer[8], 0x10000) + 0x164;

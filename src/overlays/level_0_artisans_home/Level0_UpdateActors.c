@@ -2583,19 +2583,19 @@ void Level0_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
 
         if (g_nWorldDragonsRescued < 10) {
-          if (g_abSaveOptionsBlock[1] == 0) {
+          if (g_abWorldBalloonistState[1] == 0) {
             g_nGamestate0cDialogPage = 0;
-            g_abSaveOptionsBlock[1] = 1;
+            g_abWorldBalloonistState[1] = 1;
           } else {
             g_nGamestate0cDialogPage = 2;
           }
-        } else if (g_abSaveOptionsBlock[1] < 2) {
-          if (g_abSaveOptionsBlock[1] == 0) {
+        } else if (g_abWorldBalloonistState[1] < 2) {
+          if (g_abWorldBalloonistState[1] == 0) {
             g_nGamestate0cDialogPage = 3;
           } else {
             g_nGamestate0cDialogPage = 4;
           }
-          g_abSaveOptionsBlock[1] = 2;
+          g_abWorldBalloonistState[1] = 2;
         } else {
           g_nGamestate0cDialogPage = 0x1E;
           g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;

@@ -5085,25 +5085,25 @@ void Level24_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abSaveOptionsBlock[1] = 2;
-        g_abSaveOptionsBlock[2] = 2;
-        g_abSaveOptionsBlock[3] = 2;
-        g_abSaveOptionsBlock[4] = 2;
+        g_abWorldBalloonistState[1] = 2;
+        g_abWorldBalloonistState[2] = 2;
+        g_abWorldBalloonistState[3] = 2;
+        g_abWorldBalloonistState[4] = 2;
 
         if (g_nWorldTreasureCollected < 0x1770) {
-          if (g_abSaveOptionsBlock[5] == 0) {
+          if (g_abWorldBalloonistState[5] == 0) {
             g_nGamestate0cDialogPage = 0x18;
-            g_abSaveOptionsBlock[5] = 1;
+            g_abWorldBalloonistState[5] = 1;
           } else {
             g_nGamestate0cDialogPage = 0x1A;
           }
-        } else if (g_abSaveOptionsBlock[5] < 2) {
-          if (g_abSaveOptionsBlock[5] == 0) {
+        } else if (g_abWorldBalloonistState[5] < 2) {
+          if (g_abWorldBalloonistState[5] == 0) {
             g_nGamestate0cDialogPage = 0x1B;
           } else {
             g_nGamestate0cDialogPage = 0x1C;
           }
-          g_abSaveOptionsBlock[5] = 2;
+          g_abWorldBalloonistState[5] = 2;
         } else {
           g_nGamestate0cDialogPage = 0x1E;
           g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;

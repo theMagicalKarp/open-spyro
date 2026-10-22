@@ -43,13 +43,13 @@ void ResetLevelState(void) {
   } while (i < 0x24);
 
   n = 5;
-  p = &g_abSaveOptionsBlock[5];
+  p = &g_abWorldBalloonistState[5];
   do {
     *p = 0;
     n -= 1;
     p -= 1;
   } while (n >= 0);
-  g_abSaveOptionsBlock[0] = 2;
+  g_abWorldBalloonistState[0] = 2;
 
   row = g_abWorldPerLevelByteTable;
   off = 0;

@@ -4922,22 +4922,22 @@ void Level6_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abSaveOptionsBlock[1] = 2;
+        g_abWorldBalloonistState[1] = 2;
 
         if (g_nWorldTreasureCollected < 0x4B0) {
-          if (g_abSaveOptionsBlock[2] == 0) {
+          if (g_abWorldBalloonistState[2] == 0) {
             g_nGamestate0cDialogPage = 6;
-            g_abSaveOptionsBlock[2] = 1;
+            g_abWorldBalloonistState[2] = 1;
           } else {
             g_nGamestate0cDialogPage = 8;
           }
-        } else if (g_abSaveOptionsBlock[2] < 2) {
-          if (g_abSaveOptionsBlock[2] == 0) {
+        } else if (g_abWorldBalloonistState[2] < 2) {
+          if (g_abWorldBalloonistState[2] == 0) {
             g_nGamestate0cDialogPage = 9;
           } else {
             g_nGamestate0cDialogPage = 0xA;
           }
-          g_abSaveOptionsBlock[2] = 2;
+          g_abWorldBalloonistState[2] = 2;
         } else {
           g_nGamestate0cDialogPage = 0x1E;
           g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;

@@ -23,21 +23,21 @@ extern int D_8006E928[];
 extern int D_8006E92C[];
 extern int D_8006E930[];
 extern unsigned char D_8006E998[];
-extern int D_8006EADC[];
-extern int D_8006EAE0[];
-extern char *D_8006F7D4[];                               /* world names */
-extern char *D_8006F7D8[];                               /* level names */
-extern unsigned char D_8006F89D[];                       /* dialogue page end line */
-extern int D_800700F8;
-extern int D_80071E9C[];
+extern int g_anGamestate0cLandingX[];
+extern int g_anGamestate0cLandingY[];
+extern char *g_apWorldNameByLevelTens[];                               /* world names */
+extern char *g_apLevelNameByWorldRow[];                               /* level names */
+extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
+extern int g_pSaveMenuAnimActorList1;
+extern int g_abGamestate0cActorSnapshot[];
 extern int D_800756A0;
-extern unsigned char D_800758D1;                         /* per-world "seen it" flags */
+extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *D_800769F8[];
-extern int D_80076FEC;
-extern int D_80077004;
-extern int D_80077008;
-extern int D_80077018;
-extern int D_80077024;
+extern int g_nLevelEggsRecovered1;
+extern int g_nLevelEggsRecovered7;
+extern int g_nLevelEggsRecovered8;
+extern int g_nLevelEggsRecovered12;
+extern int g_nLevelEggsRecovered15;
 extern int g_anGamestate0cTimerBlock_s;
 extern int g_nGamestate0cMenuCursor_s;
 extern int g_nGamestate0cDialogPage_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
@@ -72,7 +72,7 @@ extern unsigned char g_abEmitTrailColorsG[];
 extern unsigned char g_abGemTallyIconUvTable[];
 extern unsigned char g_abHudCounterDisplayState;
 extern unsigned char g_abLevelGemPercent[];              /* per-level "left through the exit" flags */
-extern unsigned char g_abSaveOptionsBlock[];             /* per-world visited flags */
+extern unsigned char g_abWorldBalloonistState[];             /* per-world balloonist progress 0/1/2 */
 extern unsigned char g_abSpyroStateCameraMode[];
 extern unsigned char g_abWorldPerLevelByteTable[];       /* per-course claim flags */
 extern void *g_adwActorBurstColors[];

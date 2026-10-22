@@ -2361,7 +2361,7 @@ void Level30_UpdateActors(void) {
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
         g_nGamestate0cDialogPage = 0x1E;
-        D_800758D1 = two;
+        g_bWorldBalloonistState1 = two;
         D_800758D2 = two;
         D_800758D3 = 2;
         D_800758D4 = 2;

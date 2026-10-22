@@ -28,7 +28,7 @@ void ApplyCheatCodeEffect(int code) {
     } while (n >= 0);
     val = 2;
     n = 5;
-    q = &g_abSaveOptionsBlock[5];
+    q = &g_abWorldBalloonistState[5];
     do {
       *q = val;
       n -= 1;

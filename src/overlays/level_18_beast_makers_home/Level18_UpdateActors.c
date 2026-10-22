@@ -27,7 +27,7 @@
  *   - Case 312 reads Spyro's position through ((SpyroObj *)&g_anSpyroWorldPos), a
  *     struct view that cse cannot fold into `spy` (fp).
  *   - Case 190 is level 12's talking dragon with this level's dialogue
- *     slots (g_abSaveOptionsBlock[1..4]) and line ids.
+ *     slots (g_abWorldBalloonistState[1..4]) and line ids.
  */
 
 #include "actor.h"
@@ -3434,23 +3434,23 @@ void Level18_UpdateActors(void) {
         ZeroVector(&SPY.headLook);
         g_pfnLevelBeginActorCutscene(actor);
 
-        g_abSaveOptionsBlock[1] = 2;
-        g_abSaveOptionsBlock[2] = 2;
-        g_abSaveOptionsBlock[3] = 2;
+        g_abWorldBalloonistState[1] = 2;
+        g_abWorldBalloonistState[2] = 2;
+        g_abWorldBalloonistState[3] = 2;
         if (g_nWorldDragonsRescued < 0x32) {
-          if (g_abSaveOptionsBlock[4] == 0) {
+          if (g_abWorldBalloonistState[4] == 0) {
             g_nGamestate0cDialogPage = 0x12;
-            g_abSaveOptionsBlock[4] = 1;
+            g_abWorldBalloonistState[4] = 1;
           } else {
             g_nGamestate0cDialogPage = 0x14;
           }
-        } else if (g_abSaveOptionsBlock[4] < 2) {
-          if (g_abSaveOptionsBlock[4] == 0) {
+        } else if (g_abWorldBalloonistState[4] < 2) {
+          if (g_abWorldBalloonistState[4] == 0) {
             g_nGamestate0cDialogPage = 0x15;
           } else {
             g_nGamestate0cDialogPage = 0x16;
           }
-          g_abSaveOptionsBlock[4] = 2;
+          g_abWorldBalloonistState[4] = 2;
         } else {
           g_nGamestate0cDialogPage = 0x1E;
           g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;

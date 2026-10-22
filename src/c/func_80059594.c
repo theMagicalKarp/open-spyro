@@ -132,7 +132,7 @@ int func_80059594(unsigned char *buf) {
   } while (i < 0x24);
   i = 0;
   do {
-    g_abSaveOptionsBlock[i] = *((buf + i) + 0x106);
+    g_abWorldBalloonistState[i] = *((buf + i) + 0x106);
     i += 1;
   } while (i < 6);
   CopyWords(g_anLevelKillBitmapTable, buf + 0x10C, 0x480);

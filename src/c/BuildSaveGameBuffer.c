@@ -71,7 +71,7 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   } while (i < 0x24);
   i = 0;
   do {
-    *(i + buf + 0x106) = g_abSaveOptionsBlock[i];
+    *(i + buf + 0x106) = g_abWorldBalloonistState[i];
     i += 1;
   } while (i < 6);
   CopyWords(buf + 0x10C, g_anLevelKillBitmapTable, 0x480);

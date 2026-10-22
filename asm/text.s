@@ -367,16 +367,16 @@ glabel ResetLevelState
     /* 2E64 80012664 F0FF4014 */  bnez       $v0, .L80012628
     /* 2E68 80012668 04008424 */   addiu     $a0, $a0, 0x4
     /* 2E6C 8001266C 05000324 */  addiu      $v1, $zero, 0x5
-    /* 2E70 80012670 0780023C */  lui        $v0, %hi(g_abSaveOptionsBlock + 0x5)
-    /* 2E74 80012674 D5584224 */  addiu      $v0, $v0, %lo(g_abSaveOptionsBlock + 0x5)
+    /* 2E70 80012670 0780023C */  lui        $v0, %hi(g_abWorldBalloonistState + 0x5)
+    /* 2E74 80012674 D5584224 */  addiu      $v0, $v0, %lo(g_abWorldBalloonistState + 0x5)
   .L80012678:
     /* 2E78 80012678 000040A0 */  sb         $zero, 0x0($v0)
     /* 2E7C 8001267C FFFF6324 */  addiu      $v1, $v1, -0x1
     /* 2E80 80012680 FDFF6104 */  bgez       $v1, .L80012678
     /* 2E84 80012684 FFFF4224 */   addiu     $v0, $v0, -0x1
     /* 2E88 80012688 02000224 */  addiu      $v0, $zero, 0x2
-    /* 2E8C 8001268C 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
-    /* 2E90 80012690 D05822A0 */  sb         $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 2E8C 8001268C 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
+    /* 2E90 80012690 D05822A0 */  sb         $v0, %lo(g_abWorldBalloonistState)($at)
     /* 2E94 80012694 0880063C */  lui        $a2, %hi(g_abWorldPerLevelByteTable)
     /* 2E98 80012698 8086C624 */  addiu      $a2, $a2, %lo(g_abWorldPerLevelByteTable)
     /* 2E9C 8001269C 21280000 */  addu       $a1, $zero, $zero
@@ -30966,8 +30966,8 @@ glabel ApplyCheatCodeEffect
     /* 1E08C 8002D88C FFFF6324 */   addiu     $v1, $v1, -0x1
     /* 1E090 8002D890 02000424 */  addiu      $a0, $zero, 0x2
     /* 1E094 8002D894 05000224 */  addiu      $v0, $zero, 0x5
-    /* 1E098 8002D898 0780033C */  lui        $v1, %hi(g_abSaveOptionsBlock + 0x5)
-    /* 1E09C 8002D89C D5586324 */  addiu      $v1, $v1, %lo(g_abSaveOptionsBlock + 0x5)
+    /* 1E098 8002D898 0780033C */  lui        $v1, %hi(g_abWorldBalloonistState + 0x5)
+    /* 1E09C 8002D89C D5586324 */  addiu      $v1, $v1, %lo(g_abWorldBalloonistState + 0x5)
   .L8002D8A0:
     /* 1E0A0 8002D8A0 000064A0 */  sb         $a0, 0x0($v1)
     /* 1E0A4 8002D8A4 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -80869,9 +80869,9 @@ glabel func_80059594
     /* 49FFC 800597FC 21100602 */  addu       $v0, $s0, $a2
   .L80059800:
     /* 4A000 80059800 06014290 */  lbu        $v0, 0x106($v0)
-    /* 4A004 80059804 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
+    /* 4A004 80059804 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
     /* 4A008 80059808 21082600 */  addu       $at, $at, $a2
-    /* 4A00C 8005980C D05822A0 */  sb         $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 4A00C 8005980C D05822A0 */  sb         $v0, %lo(g_abWorldBalloonistState)($at)
     /* 4A010 80059810 0100C624 */  addiu      $a2, $a2, 0x1
     /* 4A014 80059814 0600C228 */  slti       $v0, $a2, 0x6
     /* 4A018 80059818 F9FF4014 */  bnez       $v0, .L80059800
@@ -81004,9 +81004,9 @@ glabel BuildSaveGameBuffer
     /* 4A1E8 800599E8 21200000 */  addu       $a0, $zero, $zero
     /* 4A1EC 800599EC 21180402 */  addu       $v1, $s0, $a0
   .L800599F0:
-    /* 4A1F0 800599F0 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
+    /* 4A1F0 800599F0 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
     /* 4A1F4 800599F4 21082400 */  addu       $at, $at, $a0
-    /* 4A1F8 800599F8 D0582290 */  lbu        $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 4A1F8 800599F8 D0582290 */  lbu        $v0, %lo(g_abWorldBalloonistState)($at)
     /* 4A1FC 800599FC 01008424 */  addiu      $a0, $a0, 0x1
     /* 4A200 80059A00 060162A0 */  sb         $v0, 0x106($v1)
     /* 4A204 80059A04 06008228 */  slti       $v0, $a0, 0x6
