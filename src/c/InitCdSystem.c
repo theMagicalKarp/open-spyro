@@ -5,7 +5,7 @@ extern int CdControl(unsigned char cmd, unsigned char *param,
                      unsigned char *result);
 extern int CdReadCallback(unsigned int cb);
 extern int CdMix(unsigned char *atv);
-extern void func_80016490(void);
+extern void CdReadCompleteCallback(void);
 
 extern int
     g_anMusicStreamBlock[]; /* shared-base view of g_dwMusicStreamStatus */
@@ -22,7 +22,7 @@ void InitCdSystem(void) {
   mode = 0x80;
   CdInit();
   CdControl(0xE, &mode, 0);
-  CdReadCallback((unsigned int)func_80016490);
+  CdReadCallback((unsigned int)CdReadCompleteCallback);
   g_anMusicStreamBlock[0] = 0x40;
   g_nLastCdMusicCommand = 0;
   g_nPendingMusicCommand = 0;

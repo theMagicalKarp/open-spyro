@@ -106,7 +106,7 @@
    "size": 172
   },
   {
-   "name": "func_80016490",
+   "name": "CdReadCompleteCallback",
    "vram": 2147574928,
    "size": 112
   },
@@ -181,7 +181,7 @@
    "size": 676
   },
   {
-   "name": "func_80016FD0",
+   "name": "TransposePackedMatrix",
    "vram": 2147577808,
    "size": 120
   },
@@ -566,7 +566,7 @@
    "size": 6836
   },
   {
-   "name": "func_800229E8",
+   "name": "StoreAndRestoreStaticRegs",
    "vram": 2147625448,
    "size": 68
   },
@@ -816,7 +816,7 @@
    "size": 144
   },
   {
-   "name": "func_80032AB0",
+   "name": "ArmStoryIntroOnStart",
    "vram": 2147691184,
    "size": 88
   },
@@ -1131,7 +1131,7 @@
    "size": 208
   },
   {
-   "name": "func_8003A920",
+   "name": "BlendVectorPairByMode",
    "vram": 2147723552,
    "size": 204
   },
@@ -1186,12 +1186,12 @@
    "size": 188
   },
   {
-   "name": "func_8003B5F4",
+   "name": "OrPickupGroupActorFlags",
    "vram": 2147726836,
    "size": 148
   },
   {
-   "name": "func_8003B688",
+   "name": "DespawnPickupGroupActors",
    "vram": 2147726984,
    "size": 160
   },
@@ -1746,7 +1746,7 @@
    "size": 3652
   },
   {
-   "name": "func_800557CC",
+   "name": "SpawnFloatingDigitActors",
    "vram": 2147833804,
    "size": 400
   },
@@ -1831,7 +1831,7 @@
    "size": 872
   },
   {
-   "name": "func_8005882C",
+   "name": "FindFreeRotBillboardSlot",
    "vram": 2147846188,
    "size": 56
   },
@@ -3021,7 +3021,7 @@
    "size": 128
   },
   {
-   "name": "FUN_80063bd8",
+   "name": "CallCdSync",
    "vram": 2147892184,
    "size": 32
   },

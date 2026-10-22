@@ -2,8 +2,8 @@
 
 extern int CdInit(void);
 extern void CdReadCallback(void *callback);
-extern void func_80016490();
-extern int FUN_80063bd8();
+extern void CdReadCompleteCallback();
+extern int CallCdSync();
 extern void CdRead(int count, void *dst, unsigned int mode);
 
 /* 0x800163e4: watchdog-driven CD stall recovery. If a stall marker is armed
@@ -17,13 +17,13 @@ void RestartStalledCdRead(void) {
   if (marker != 0) {
     if (marker < g_nCdStallWatchdogTicks) {
       CdInit();
-      CdReadCallback(func_80016490);
+      CdReadCallback(CdReadCompleteCallback);
       g_dwMusicStreamStatus = 0x40;
       g_nLastCdMusicCommand = 0;
       g_nPendingMusicCommand = 0;
 
       do {
-      } while (FUN_80063bd8(1, 0) != 2);
+      } while (CallCdSync(1, 0) != 2);
 
       g_nCdStallWatchdogTicks = 0;
       CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, 0x80);

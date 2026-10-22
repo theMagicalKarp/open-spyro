@@ -193,7 +193,7 @@
 <rect x="226.33" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReadSyncSectors  ·  408 bytes  ·  matched</title></rect>
 <rect x="241.49" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DriveActorTrackedMove  ·  408 bytes  ·  matched</title></rect>
 <rect x="256.65" y="563.29" width="15.16" height="14.71" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_3A0  ·  408 bytes  ·  library</title></rect>
-<rect x="271.81" y="563.29" width="14.86" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800557CC  ·  400 bytes  ·  matched</title></rect>
+<rect x="271.81" y="563.29" width="14.86" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SpawnFloatingDigitActors  ·  400 bytes  ·  matched</title></rect>
 <rect x="286.67" y="563.29" width="14.56" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CheckCheatCodeMatch  ·  392 bytes  ·  matched</title></rect>
 <rect x="301.23" y="563.29" width="14.56" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AccumulateAnimRootMotionDelta  ·  392 bytes  ·  handwritten</title></rect>
 <rect x="115.90" y="578.00" width="14.52" height="14.60" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005E680  ·  388 bytes  ·  library</title></rect>
@@ -310,7 +310,7 @@
 <rect x="305.47" y="615.55" width="10.32" height="11.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CommitHudCounterAnimState  ·  208 bytes  ·  matched</title></rect>
 <rect x="165.90" y="626.57" width="10.54" height="10.79" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005D91C  ·  208 bytes  ·  library</title></rect>
 <rect x="165.90" y="637.35" width="10.54" height="10.79" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>firstfile  ·  208 bytes  ·  library</title></rect>
-<rect x="165.90" y="648.14" width="10.54" height="10.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003A920  ·  204 bytes  ·  matched</title></rect>
+<rect x="165.90" y="648.14" width="10.54" height="10.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BlendVectorPairByMode  ·  204 bytes  ·  matched</title></rect>
 <rect x="165.90" y="658.72" width="10.54" height="10.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>BuildDrawAreaTopLeft  ·  204 bytes  ·  library</title></rect>
 <rect x="165.90" y="669.29" width="10.54" height="10.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>BuildDrawAreaBottomRight  ·  204 bytes  ·  library</title></rect>
 <rect x="165.90" y="679.87" width="10.54" height="10.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80066170  ·  204 bytes  ·  library</title></rect>
@@ -364,7 +364,7 @@
 <rect x="288.62" y="636.83" width="9.21" height="9.73" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>WriteSpuVoiceAddrRegister  ·  164 bytes  ·  library</title></rect>
 <rect x="297.83" y="636.83" width="8.98" height="9.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ExitSubMenuToTitle  ·  160 bytes  ·  matched</title></rect>
 <rect x="306.81" y="636.83" width="8.98" height="9.73" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PlayActorMeshVoice  ·  160 bytes  ·  matched</title></rect>
-<rect x="186.19" y="646.56" width="9.43" height="9.28" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B688  ·  160 bytes  ·  matched</title></rect>
+<rect x="186.19" y="646.56" width="9.43" height="9.28" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DespawnPickupGroupActors  ·  160 bytes  ·  matched</title></rect>
 <rect x="186.19" y="655.84" width="9.43" height="9.28" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80067CD4  ·  160 bytes  ·  library</title></rect>
 <rect x="186.19" y="665.12" width="9.43" height="9.28" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>IsSioTimeoutExpired  ·  160 bytes  ·  library</title></rect>
 <rect x="186.19" y="674.39" width="9.43" height="9.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LoadAndStartLevelFromCd  ·  156 bytes  ·  matched</title></rect>
@@ -390,7 +390,7 @@
 <rect x="279.33" y="646.56" width="9.30" height="8.93" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_108  ·  152 bytes  ·  library</title></rect>
 <rect x="288.63" y="646.56" width="9.06" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RefineSqrtEstimate  ·  148 bytes  ·  handwritten</title></rect>
 <rect x="297.69" y="646.56" width="9.06" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActivateScriptedCameraView  ·  148 bytes  ·  matched</title></rect>
-<rect x="306.74" y="646.56" width="9.06" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003B5F4  ·  148 bytes  ·  matched</title></rect>
+<rect x="306.74" y="646.56" width="9.06" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OrPickupGroupActorFlags  ·  148 bytes  ·  matched</title></rect>
 <rect x="195.62" y="655.50" width="8.79" height="9.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MarkActorCommittedKill  ·  148 bytes  ·  matched</title></rect>
 <rect x="195.62" y="664.70" width="8.79" height="9.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimFrame  ·  148 bytes  ·  matched</title></rect>
 <rect x="195.62" y="673.91" width="8.79" height="9.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>GetSpuVoiceKeyStatus  ·  148 bytes  ·  library</title></rect>
@@ -434,7 +434,7 @@
 <rect x="221.04" y="664.31" width="8.09" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitActorRenderDefaults  ·  124 bytes  ·  matched</title></rect>
 <rect x="229.13" y="664.31" width="8.09" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InstallSpuDmaEventHandler  ·  124 bytes  ·  library</title></rect>
 <rect x="237.22" y="664.31" width="8.09" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardLoad  ·  124 bytes  ·  library</title></rect>
-<rect x="245.32" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80016FD0  ·  120 bytes  ·  matched</title></rect>
+<rect x="245.32" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TransposePackedMatrix  ·  120 bytes  ·  matched</title></rect>
 <rect x="253.15" y="664.31" width="7.83" height="8.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RotateVectorByMatrix  ·  120 bytes  ·  handwritten</title></rect>
 <rect x="260.98" y="664.31" width="7.83" height="8.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>WorldToCameraRotate  ·  120 bytes  ·  handwritten</title></rect>
 <rect x="268.81" y="664.31" width="7.83" height="8.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RestartSpyroAnimWithState  ·  120 bytes  ·  matched</title></rect>
@@ -449,7 +449,7 @@
 <rect x="212.95" y="696.37" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>DrawOTag  ·  116 bytes  ·  library</title></rect>
 <rect x="212.95" y="704.27" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_padSendAtLoadInfo  ·  116 bytes  ·  library</title></rect>
 <rect x="212.95" y="712.16" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_1C8  ·  116 bytes  ·  library</title></rect>
-<rect x="212.95" y="720.06" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80016490  ·  112 bytes  ·  matched</title></rect>
+<rect x="212.95" y="720.06" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReadCompleteCallback  ·  112 bytes  ·  matched</title></rect>
 <rect x="212.95" y="727.68" width="8.03" height="7.62" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017548  ·  112 bytes  ·  handwritten</title></rect>
 <rect x="212.95" y="735.30" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EndRespawnToGameplay  ·  112 bytes  ·  matched</title></rect>
 <rect x="212.95" y="742.92" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RandomIntInRange  ·  112 bytes  ·  matched</title></rect>
@@ -514,7 +514,7 @@
 <rect x="287.37" y="687.54" width="7.35" height="6.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_23C  ·  92 bytes  ·  library</title></rect>
 <rect x="294.72" y="687.54" width="7.03" height="6.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LookupSine  ·  88 bytes  ·  handwritten</title></rect>
 <rect x="301.74" y="687.54" width="7.03" height="6.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LookupCosine  ·  88 bytes  ·  handwritten</title></rect>
-<rect x="308.77" y="687.54" width="7.03" height="6.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80032AB0  ·  88 bytes  ·  matched</title></rect>
+<rect x="308.77" y="687.54" width="7.03" height="6.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ArmStoryIntroOnStart  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="694.38" width="6.64" height="7.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LerpAngle8  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="701.63" width="6.64" height="7.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ProbeActorGroundHeightRaised  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="708.87" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSpuTransferStartAddr  ·  88 bytes  ·  library</title></rect>
@@ -551,7 +551,7 @@
 <rect x="248.38" y="700.83" width="6.46" height="6.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadSetAct  ·  72 bytes  ·  library</title></rect>
 <rect x="254.83" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitNewGameState  ·  68 bytes  ·  matched</title></rect>
 <rect x="260.93" y="700.83" width="6.10" height="6.10" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ComputeDepthCuedColor  ·  68 bytes  ·  handwritten</title></rect>
-<rect x="267.02" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_800229E8  ·  68 bytes  ·  matched</title></rect>
+<rect x="267.02" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StoreAndRestoreStaticRegs  ·  68 bytes  ·  matched</title></rect>
 <rect x="273.12" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepAndLerpAngle8  ·  68 bytes  ·  matched</title></rect>
 <rect x="279.22" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003DF60  ·  68 bytes  ·  matched</title></rect>
 <rect x="285.31" y="700.83" width="6.10" height="6.10" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitLightVectorConstants  ·  68 bytes  ·  matched</title></rect>
@@ -582,7 +582,7 @@
 <rect x="304.88" y="706.93" width="5.65" height="5.81" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>GetMemCardEventStatusSlot2  ·  60 bytes  ·  library</title></rect>
 <rect x="310.53" y="706.93" width="5.27" height="5.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AddPrimToOT  ·  56 bytes  ·  matched</title></rect>
 <rect x="254.03" y="712.74" width="5.55" height="5.52" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ScaleVector3Sat  ·  56 bytes  ·  handwritten</title></rect>
-<rect x="254.03" y="718.25" width="5.55" height="5.52" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8005882C  ·  56 bytes  ·  handwritten</title></rect>
+<rect x="254.03" y="718.25" width="5.55" height="5.52" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>FindFreeRotBillboardSlot  ·  56 bytes  ·  handwritten</title></rect>
 <rect x="254.03" y="723.77" width="5.55" height="5.52" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005F0AC  ·  56 bytes  ·  library</title></rect>
 <rect x="254.03" y="729.29" width="5.55" height="5.52" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005FFF8  ·  56 bytes  ·  library</title></rect>
 <rect x="254.03" y="734.80" width="5.55" height="5.52" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_800604D8  ·  56 bytes  ·  library</title></rect>
@@ -667,7 +667,7 @@
 <rect x="273.96" y="732.28" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005EF94  ·  32 bytes  ·  library</title></rect>
 <rect x="273.96" y="736.40" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetTransMatrix  ·  32 bytes  ·  library</title></rect>
 <rect x="273.96" y="740.51" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80063b38  ·  32 bytes  ·  library</title></rect>
-<rect x="273.96" y="744.62" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80063bd8  ·  32 bytes  ·  library</title></rect>
+<rect x="273.96" y="744.62" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CallCdSync  ·  32 bytes  ·  library</title></rect>
 <rect x="273.96" y="748.74" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80063BF8  ·  32 bytes  ·  library</title></rect>
 <rect x="273.96" y="752.85" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdMix  ·  32 bytes  ·  library</title></rect>
 <rect x="273.96" y="756.96" width="4.25" height="4.11" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdGetSector  ·  32 bytes  ·  library</title></rect>

@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "vecmath.h"
 
-extern int FUN_80063bd8(int mode, unsigned char *result);
+extern int CallCdSync(int mode, unsigned char *result);
 extern int FUN_80063aac(void);
 extern void HandleMusicCommand(int track, int cmd);
 extern void CdIntToPos(int lba, char *pos);
@@ -65,7 +65,7 @@ void TickCdMusicStream(void) {
   int pick;
   int *tbl;
 
-  sync = FUN_80063bd8(1, D_800776BC);
+  sync = CallCdSync(1, D_800776BC);
   cmd = g_nLastCdMusicCommand;
   if (cmd != 0) {
     switch ((unsigned int)cmd) {

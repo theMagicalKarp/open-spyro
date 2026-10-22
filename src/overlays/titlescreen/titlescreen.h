@@ -298,7 +298,7 @@ extern int D_8007A6D8;
 extern int GetRandomU32(void);
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
-extern int func_80063BD8(int, int);
+extern int CallCdSync(int, int);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
 extern void LoadImage(RECT *, void *);
@@ -323,7 +323,7 @@ extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
-extern int func_80032AB0(void);
+extern int ArmStoryIntroOnStart(void);
 extern void AdvanceGemCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 

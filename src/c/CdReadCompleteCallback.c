@@ -7,7 +7,7 @@ extern int CdRead(int count, void *buf, int mode);
    (intr == 2) the read finished cleanly, so clear the in-flight flag and the
    stall-watchdog state; on any other interrupt the read stalled, so re-seek
    (CdControl) and re-issue the original CdRead. (0x80016490, 112 bytes.) */
-void func_80016490(unsigned char intr) {
+void CdReadCompleteCallback(unsigned char intr) {
   if (intr == 2) {
     g_nCdReadInFlight = 0;
     g_nCdStallWatchdogTicks = 0;

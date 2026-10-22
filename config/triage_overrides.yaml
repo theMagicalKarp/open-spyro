@@ -100,7 +100,7 @@ NudgeSpyroFromWallProbes:
 # --- Block-layout / constant-hoist ties (source-invariant) ---
 
 # --- Deferred multi-idiom from-scratch targets (not walls; retry when veins dry) ---
-func_800557CC:
+SpawnFloatingDigitActors:
   verdict: attempted
   class: "B13 lh+sra expected; multi-idiom, no ghidra seed"
   date: 2026-07-12
@@ -119,7 +119,7 @@ func_80017A9C:
   verdict: matched
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15
-func_800229E8:
+StoreAndRestoreStaticRegs:
   verdict: matched
   class: "ex-wall register-restore fragment: file-scope register vars (A411) + incoming $at/$v0 seeded by empty asm + opaque $at base"
   date: 2026-10-16
@@ -1037,7 +1037,7 @@ park_rewrite_vein_2026_08_11_3:
     that scores 18 says nothing about how close a clean decode is. So do not
     pick harvest targets off that ranking alone — prefer a permuter-spew wip
     whose asm you can read in one screen, delete the body, and re-derive.
-    Remaining members worth taking next, by size: func_80016FD0 (120 B),
+    Remaining members worth taking next, by size: TransposePackedMatrix (120 B),
     BuildAudioTrackTable (152), memmove (108), LoadActorMeshTables (264),
     CheckGpuTimeout (364), FinalizePadCalibration (432).
 
@@ -1059,7 +1059,7 @@ LoadActorMeshTables:
     the four straggler statements measured identical — the stragglers come from
     expand_call's arg setup, so source order cannot reach them.
 
-func_80016FD0:
+TransposePackedMatrix:
   verdict: matched
   class: "B6 RETIRED for $at temps: local `register ... asm(\"$1\")` pins put the swap temp in $at (A374); volatile asm keeps the lui below the loads"
   date: 2026-10-14
@@ -2824,7 +2824,7 @@ ComputeSpyroMoveTargetFromPad_2026_08_27_1:
     with the `iVar1+iVar2` addu and then recomputing it. Note the shape diff
     mis-aligns here (the two arms come out in the opposite branch sense), so
     measure it with the linked path once a variant links.
-func_800557CC:
+SpawnFloatingDigitActors:
   verdict: parked
   class: "B13 (A233 not free here) + a 5-insn st->place schedule"
   date: 2026-08-27

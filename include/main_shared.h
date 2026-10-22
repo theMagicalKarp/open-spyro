@@ -12,7 +12,7 @@
 
 extern void RestartStalledCdRead(void);
 
-extern int FUN_80063bd8();
+extern int CallCdSync();
 
 extern int SetSpuTransferStartAddr(unsigned int addr);
 

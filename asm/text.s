@@ -224,8 +224,8 @@ glabel InitCdSystem
     /* 2C98 80012498 1000A527 */  addiu      $a1, $sp, 0x10
     /* 2C9C 8001249C 128F010C */  jal        CdControl
     /* 2CA0 800124A0 21300000 */   addu      $a2, $zero, $zero
-    /* 2CA4 800124A4 0180043C */  lui        $a0, %hi(func_80016490)
-    /* 2CA8 800124A8 90648424 */  addiu      $a0, $a0, %lo(func_80016490)
+    /* 2CA4 800124A4 0180043C */  lui        $a0, %hi(CdReadCompleteCallback)
+    /* 2CA8 800124A8 90648424 */  addiu      $a0, $a0, %lo(CdReadCompleteCallback)
     /* 2CAC 800124AC 8F98010C */  jal        CdReadCallback
     /* 2CB0 800124B0 00000000 */   nop
     /* 2CB4 800124B4 0780033C */  lui        $v1, %hi(g_dwMusicStreamStatus)
@@ -2543,7 +2543,7 @@ glabel TickWorldBundleLoadStream
     /* 4D88 80014588 00000000 */  nop
     /* 4D8C 8001458C 71014014 */  bnez       $v0, .L80014B54
     /* 4D90 80014590 01000424 */   addiu     $a0, $zero, 0x1
-    /* 4D94 80014594 F68E010C */  jal        FUN_80063bd8
+    /* 4D94 80014594 F68E010C */  jal        CallCdSync
     /* 4D98 80014598 21280000 */   addu      $a1, $zero, $zero
     /* 4D9C 8001459C 21904000 */  addu       $s2, $v0, $zero
     /* 4DA0 800145A0 02000224 */  addiu      $v0, $zero, 0x2
@@ -2959,7 +2959,7 @@ glabel TickGemPickupAssetStream
     /* 539C 80014B9C 00000000 */  nop
     /* 53A0 80014BA0 EA014014 */  bnez       $v0, .L8001534C
     /* 53A4 80014BA4 01000424 */   addiu     $a0, $zero, 0x1
-    /* 53A8 80014BA8 F68E010C */  jal        FUN_80063bd8
+    /* 53A8 80014BA8 F68E010C */  jal        CallCdSync
     /* 53AC 80014BAC 21280000 */   addu      $a1, $zero, $zero
     /* 53B0 80014BB0 02000324 */  addiu      $v1, $zero, 0x2
     /* 53B4 80014BB4 E5014314 */  bne        $v0, $v1, .L8001534C
@@ -3514,7 +3514,7 @@ glabel TickLevelTransitionStream
     /* 5BB8 800153B8 00000000 */  nop
     /* 5BBC 800153BC FF034014 */  bnez       $v0, .L800163BC
     /* 5BC0 800153C0 01000424 */   addiu     $a0, $zero, 0x1
-    /* 5BC4 800153C4 F68E010C */  jal        FUN_80063bd8
+    /* 5BC4 800153C4 F68E010C */  jal        CallCdSync
     /* 5BC8 800153C8 21280000 */   addu      $a1, $zero, $zero
     /* 5BCC 800153CC 02000324 */  addiu      $v1, $zero, 0x2
     /* 5BD0 800153D0 FA034314 */  bne        $v0, $v1, .L800163BC
@@ -4617,8 +4617,8 @@ glabel RestartStalledCdRead
     /* 6C10 80016410 00000000 */   nop
     /* 6C14 80016414 5F8E010C */  jal        CdInit
     /* 6C18 80016418 02001024 */   addiu     $s0, $zero, 0x2
-    /* 6C1C 8001641C 0180043C */  lui        $a0, %hi(func_80016490)
-    /* 6C20 80016420 90648424 */  addiu      $a0, $a0, %lo(func_80016490)
+    /* 6C1C 8001641C 0180043C */  lui        $a0, %hi(CdReadCompleteCallback)
+    /* 6C20 80016420 90648424 */  addiu      $a0, $a0, %lo(CdReadCompleteCallback)
     /* 6C24 80016424 8F98010C */  jal        CdReadCallback
     /* 6C28 80016428 00000000 */   nop
     /* 6C2C 8001642C 40000224 */  addiu      $v0, $zero, 0x40
@@ -4630,7 +4630,7 @@ glabel RestartStalledCdRead
     /* 6C44 80016444 C87620AC */  sw         $zero, %lo(g_nPendingMusicCommand)($at)
     /* 6C48 80016448 01000424 */  addiu      $a0, $zero, 0x1
   .L8001644C:
-    /* 6C4C 8001644C F68E010C */  jal        FUN_80063bd8
+    /* 6C4C 8001644C F68E010C */  jal        CallCdSync
     /* 6C50 80016450 21280000 */   addu      $a1, $zero, $zero
     /* 6C54 80016454 FDFF5014 */  bne        $v0, $s0, .L8001644C
     /* 6C58 80016458 01000424 */   addiu     $a0, $zero, 0x1
@@ -4651,11 +4651,11 @@ glabel RestartStalledCdRead
 endlabel RestartStalledCdRead
 .endif
 
-.section .text.func_80016490, "ax"
-.ifndef HAVE_C_func_80016490
-nonmatching func_80016490, 0x70
+.section .text.CdReadCompleteCallback, "ax"
+.ifndef HAVE_C_CdReadCompleteCallback
+nonmatching CdReadCompleteCallback, 0x70
 
-glabel func_80016490
+glabel CdReadCompleteCallback
     /* 6C90 80016490 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 6C94 80016494 FF008430 */  andi       $a0, $a0, 0xFF
     /* 6C98 80016498 02000224 */  addiu      $v0, $zero, 0x2
@@ -4686,7 +4686,7 @@ glabel func_80016490
     /* 6CF4 800164F4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 6CF8 800164F8 0800E003 */  jr         $ra
     /* 6CFC 800164FC 00000000 */   nop
-endlabel func_80016490
+endlabel CdReadCompleteCallback
 .endif
 
 .section .text.CdReadSyncSectors, "ax"
@@ -4718,7 +4718,7 @@ glabel CdReadSyncSectors
     /* 6D50 80016550 00000000 */  nop
     /* 6D54 80016554 0B004014 */  bnez       $v0, .L80016584
     /* 6D58 80016558 01000424 */   addiu     $a0, $zero, 0x1
-    /* 6D5C 8001655C F68E010C */  jal        FUN_80063bd8
+    /* 6D5C 8001655C F68E010C */  jal        CallCdSync
     /* 6D60 80016560 21280000 */   addu      $a1, $zero, $zero
     /* 6D64 80016564 07005014 */  bne        $v0, $s0, .L80016584
     /* 6D68 80016568 00000000 */   nop
@@ -4783,7 +4783,7 @@ glabel CdReadSyncSectors
     /* 6E40 80016640 00000000 */  nop
     /* 6E44 80016644 05004014 */  bnez       $v0, .L8001665C
     /* 6E48 80016648 01000424 */   addiu     $a0, $zero, 0x1
-    /* 6E4C 8001664C F68E010C */  jal        FUN_80063bd8
+    /* 6E4C 8001664C F68E010C */  jal        CallCdSync
     /* 6E50 80016650 21280000 */   addu      $a1, $zero, $zero
     /* 6E54 80016654 05005010 */  beq        $v0, $s0, .L8001666C
     /* 6E58 80016658 00000000 */   nop
@@ -5575,11 +5575,11 @@ glabel ApplyEulerRotation
 endlabel ApplyEulerRotation
 .endif
 
-.section .text.func_80016FD0, "ax"
-.ifndef HAVE_C_func_80016FD0
-nonmatching func_80016FD0, 0x78
+.section .text.TransposePackedMatrix, "ax"
+.ifndef HAVE_C_TransposePackedMatrix
+nonmatching TransposePackedMatrix, 0x78
 
-glabel func_80016FD0
+glabel TransposePackedMatrix
     /* 77D0 80016FD0 0000A68C */  lw         $a2, 0x0($a1)
     /* 77D4 80016FD4 0400A78C */  lw         $a3, 0x4($a1)
     /* 77D8 80016FD8 0800A88C */  lw         $t0, 0x8($a1)
@@ -5610,7 +5610,7 @@ glabel func_80016FD0
     /* 783C 8001703C 0C0089AC */  sw         $t1, 0xC($a0)
     /* 7840 80017040 0800E003 */  jr         $ra
     /* 7844 80017044 10008AAC */   sw        $t2, 0x10($a0)
-endlabel func_80016FD0
+endlabel TransposePackedMatrix
 
 /* Handwritten function */
 .endif
@@ -18892,11 +18892,11 @@ glabel EmitSecondaryActorPrimitives
 endlabel EmitSecondaryActorPrimitives
 .endif
 
-.section .text.func_800229E8, "ax"
-.ifndef HAVE_C_func_800229E8
-nonmatching func_800229E8, 0x44
+.section .text.StoreAndRestoreStaticRegs, "ax"
+.ifndef HAVE_C_StoreAndRestoreStaticRegs
+nonmatching StoreAndRestoreStaticRegs, 0x44
 
-glabel func_800229E8
+glabel StoreAndRestoreStaticRegs
     /* 131E8 800229E8 000022AC */  sw         $v0, 0x0($at)
     /* 131EC 800229EC 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 131F0 800229F0 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -18914,7 +18914,7 @@ glabel func_800229E8
     /* 13220 80022A20 0000308C */  lw         $s0, 0x0($at)
     /* 13224 80022A24 0800E003 */  jr         $ra
     /* 13228 80022A28 00000000 */   nop
-endlabel func_800229E8
+endlabel StoreAndRestoreStaticRegs
 
 /* Handwritten function */
 .endif
@@ -28882,7 +28882,7 @@ glabel TickCdMusicStream
     /* 1C3EC 8002BBEC BC76A524 */  addiu      $a1, $a1, %lo(D_800776BC)
     /* 1C3F0 8002BBF0 2800BFAF */  sw         $ra, 0x28($sp)
     /* 1C3F4 8002BBF4 2400B1AF */  sw         $s1, 0x24($sp)
-    /* 1C3F8 8002BBF8 F68E010C */  jal        FUN_80063bd8
+    /* 1C3F8 8002BBF8 F68E010C */  jal        CallCdSync
     /* 1C3FC 8002BBFC 2000B0AF */   sw        $s0, 0x20($sp)
     /* 1C400 8002BC00 0780033C */  lui        $v1, %hi(g_nLastCdMusicCommand)
     /* 1C404 8002BC04 C476638C */  lw         $v1, %lo(g_nLastCdMusicCommand)($v1)
@@ -36570,11 +36570,11 @@ glabel PollMemCardSyncRing
 endlabel PollMemCardSyncRing
 .endif
 
-.section .text.func_80032AB0, "ax"
-.ifndef HAVE_C_func_80032AB0
-nonmatching func_80032AB0, 0x58
+.section .text.ArmStoryIntroOnStart, "ax"
+.ifndef HAVE_C_ArmStoryIntroOnStart
+nonmatching ArmStoryIntroOnStart, 0x58
 
-glabel func_80032AB0
+glabel ArmStoryIntroOnStart
     /* 232B0 80032AB0 0780023C */  lui        $v0, %hi(g_dwPadPressed)
     /* 232B4 80032AB4 7873428C */  lw         $v0, %lo(g_dwPadPressed)($v0)
     /* 232B8 80032AB8 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -36598,7 +36598,7 @@ glabel func_80032AB0
     /* 232FC 80032AFC 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 23300 80032B00 0800E003 */  jr         $ra
     /* 23304 80032B04 00000000 */   nop
-endlabel func_80032AB0
+endlabel ArmStoryIntroOnStart
 .endif
 
 .section .text.Gamestate0D_Update, "ax"
@@ -45778,11 +45778,11 @@ glabel func_8003A850
 endlabel func_8003A850
 .endif
 
-.section .text.func_8003A920, "ax"
-.ifndef HAVE_C_func_8003A920
-nonmatching func_8003A920, 0xCC
+.section .text.BlendVectorPairByMode, "ax"
+.ifndef HAVE_C_BlendVectorPairByMode
+nonmatching BlendVectorPairByMode, 0xCC
 
-glabel func_8003A920
+glabel BlendVectorPairByMode
     /* 2B120 8003A920 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 2B124 8003A924 3800B2AF */  sw         $s2, 0x38($sp)
     /* 2B128 8003A928 3C00BFAF */  sw         $ra, 0x3C($sp)
@@ -45838,7 +45838,7 @@ glabel func_8003A920
     /* 2B1E0 8003A9E0 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 2B1E4 8003A9E4 0800E003 */  jr         $ra
     /* 2B1E8 8003A9E8 00000000 */   nop
-endlabel func_8003A920
+endlabel BlendVectorPairByMode
 .endif
 
 .section .text.SelectActorLodBand, "ax"
@@ -45942,7 +45942,7 @@ glabel SpawnActorRotBillboard
     /* 2B2FC 8003AAFC 2198A000 */  addu       $s3, $a1, $zero
     /* 2B300 8003AB00 2000BFAF */  sw         $ra, 0x20($sp)
     /* 2B304 8003AB04 1800B2AF */  sw         $s2, 0x18($sp)
-    /* 2B308 8003AB08 0B62010C */  jal        func_8005882C
+    /* 2B308 8003AB08 0B62010C */  jal        FindFreeRotBillboardSlot
     /* 2B30C 8003AB0C 1000B0AF */   sw        $s0, 0x10($sp)
     /* 2B310 8003AB10 21904000 */  addu       $s2, $v0, $zero
     /* 2B314 8003AB14 21004006 */  bltz       $s2, .L8003AB9C
@@ -46759,11 +46759,11 @@ glabel ReplaceActorGroupState
 endlabel ReplaceActorGroupState
 .endif
 
-.section .text.func_8003B5F4, "ax"
-.ifndef HAVE_C_func_8003B5F4
-nonmatching func_8003B5F4, 0x94
+.section .text.OrPickupGroupActorFlags, "ax"
+.ifndef HAVE_C_OrPickupGroupActorFlags
+nonmatching OrPickupGroupActorFlags, 0x94
 
-glabel func_8003B5F4
+glabel OrPickupGroupActorFlags
     /* 2BDF4 8003B5F4 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BDF8 8003B5F8 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2BDFC 8003B5FC 00000000 */  nop
@@ -46804,14 +46804,14 @@ glabel func_8003B5F4
   .L8003B680:
     /* 2BE80 8003B680 0800E003 */  jr         $ra
     /* 2BE84 8003B684 00000000 */   nop
-endlabel func_8003B5F4
+endlabel OrPickupGroupActorFlags
 .endif
 
-.section .text.func_8003B688, "ax"
-.ifndef HAVE_C_func_8003B688
-nonmatching func_8003B688, 0xA0
+.section .text.DespawnPickupGroupActors, "ax"
+.ifndef HAVE_C_DespawnPickupGroupActors
+nonmatching DespawnPickupGroupActors, 0xA0
 
-glabel func_8003B688
+glabel DespawnPickupGroupActors
     /* 2BE88 8003B688 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2BE8C 8003B68C B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2BE90 8003B690 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -46855,7 +46855,7 @@ glabel func_8003B688
     /* 2BF1C 8003B71C 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 2BF20 8003B720 0800E003 */  jr         $ra
     /* 2BF24 8003B724 00000000 */   nop
-endlabel func_8003B688
+endlabel DespawnPickupGroupActors
 .endif
 
 .section .text.SetActorGroupSubstate, "ax"
@@ -46971,7 +46971,7 @@ glabel CommitActorKillGems
     /* 2C078 8003B878 00034228 */  slti       $v0, $v0, 0x300
     /* 2C07C 8003B87C 03004014 */  bnez       $v0, .L8003B88C
     /* 2C080 8003B880 00000000 */   nop
-    /* 2C084 8003B884 F355010C */  jal        func_800557CC
+    /* 2C084 8003B884 F355010C */  jal        SpawnFloatingDigitActors
     /* 2C088 8003B888 00000000 */   nop
   .L8003B88C:
     /* 2C08C 8003B88C 0780043C */  lui        $a0, %hi(g_nLevelIntroIndex)
@@ -48148,7 +48148,7 @@ glabel AimCameraStickTowardPoint
     /* 2D0BC 8003C8BC E35D000C */  jal        SubtractVector
     /* 2D0C0 8003C8C0 21300002 */   addu      $a2, $s0, $zero
     /* 2D0C4 8003C8C4 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 2D0C8 8003C8C8 F45B000C */  jal        func_80016FD0
+    /* 2D0C8 8003C8C8 F45B000C */  jal        TransposePackedMatrix
     /* 2D0CC 8003C8CC 21282002 */   addu      $a1, $s1, $zero
     /* 2D0D0 8003C8D0 1000A427 */  addiu      $a0, $sp, 0x10
     /* 2D0D4 8003C8D4 21280002 */  addu       $a1, $s0, $zero
@@ -76299,11 +76299,11 @@ glabel UpdateHudCounters
 endlabel UpdateHudCounters
 .endif
 
-.section .text.func_800557CC, "ax"
-.ifndef HAVE_C_func_800557CC
-nonmatching func_800557CC, 0x190
+.section .text.SpawnFloatingDigitActors, "ax"
+.ifndef HAVE_C_SpawnFloatingDigitActors
+nonmatching SpawnFloatingDigitActors, 0x190
 
-glabel func_800557CC
+glabel SpawnFloatingDigitActors
     /* 45FCC 800557CC C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 45FD0 800557D0 2000B2AF */  sw         $s2, 0x20($sp)
     /* 45FD4 800557D4 21908000 */  addu       $s2, $a0, $zero
@@ -76406,7 +76406,7 @@ glabel func_800557CC
     /* 46150 80055950 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 46154 80055954 0800E003 */  jr         $ra
     /* 46158 80055958 00000000 */   nop
-endlabel func_800557CC
+endlabel SpawnFloatingDigitActors
 .endif
 
 .section .text.InitSoundEngine, "ax"
@@ -79708,11 +79708,11 @@ endlabel DrawWorldRotatingBillboards
 /* Handwritten function */
 .endif
 
-.section .text.func_8005882C, "ax"
-.ifndef HAVE_C_func_8005882C
-nonmatching func_8005882C, 0x38
+.section .text.FindFreeRotBillboardSlot, "ax"
+.ifndef HAVE_C_FindFreeRotBillboardSlot
+nonmatching FindFreeRotBillboardSlot, 0x38
 
-glabel func_8005882C
+glabel FindFreeRotBillboardSlot
     /* 4902C 8005882C 0780013C */  lui        $at, %hi(g_aRotBillboards)
     /* 49030 80058830 08712124 */  addiu      $at, $at, %lo(g_aRotBillboards)
     /* 49034 80058834 C0002220 */  addi       $v0, $at, 0xC0 /* handwritten instruction */
@@ -79729,7 +79729,7 @@ glabel func_8005882C
   .L8005885C:
     /* 4905C 8005885C 0800E003 */  jr         $ra
     /* 49060 80058860 00008220 */   addi      $v0, $a0, 0x0 /* handwritten instruction */
-endlabel func_8005882C
+endlabel FindFreeRotBillboardSlot
 
 /* Handwritten function */
 .endif
@@ -93938,11 +93938,11 @@ glabel func_80063B58
 endlabel func_80063B58
 .endif
 
-.section .text.FUN_80063bd8, "ax"
-.ifndef HAVE_C_FUN_80063bd8
-nonmatching FUN_80063bd8, 0x20
+.section .text.CallCdSync, "ax"
+.ifndef HAVE_C_CallCdSync
+nonmatching CallCdSync, 0x20
 
-glabel FUN_80063bd8
+glabel CallCdSync
     /* 543D8 80063BD8 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 543DC 80063BDC 1000BFAF */  sw         $ra, 0x10($sp)
     /* 543E0 80063BE0 E891010C */  jal        CdSync
@@ -93951,7 +93951,7 @@ glabel FUN_80063bd8
     /* 543EC 80063BEC 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 543F0 80063BF0 0800E003 */  jr         $ra
     /* 543F4 80063BF4 00000000 */   nop
-endlabel FUN_80063bd8
+endlabel CallCdSync
 .endif
 
 .section .text.func_80063BF8, "ax"

@@ -1246,10 +1246,10 @@ void Level22_UpdateActors(void) {
         if (IsActorInRunningKillSet(actor) != 0) {
           ModifyWorldChunkAnimFlags(4, 0xFC, 0);
           ModifyWorldChunkAnimFlags(5, 0xFC, 0);
-          func_8003B5F4(0, 0x40000);
-          func_8003B5F4(1, 0x40000);
-          func_8003B688(2);
-          func_8003B688(3);
+          OrPickupGroupActorFlags(0, 0x40000);
+          OrPickupGroupActorFlags(1, 0x40000);
+          DespawnPickupGroupActors(2);
+          DespawnPickupGroupActors(3);
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 8)));
           if (actor->dropKind != 0xFF) {
@@ -1449,7 +1449,7 @@ void Level22_UpdateActors(void) {
         int h = ArcTan2(PATH_X(st->path, st->path[1]) - actor->posX,
                               PATH_Y(st->path, st->path[1]) - actor->posY, 0);
 
-        func_8003B5F4(st->phase, 0x40000);
+        OrPickupGroupActorFlags(st->phase, 0x40000);
         if (st->phase == 1) {
           SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);

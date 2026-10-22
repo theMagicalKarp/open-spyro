@@ -12,7 +12,7 @@
    loads, where the backward scheduler would otherwise hoist it. gas warns about
    the explicit $at uses; the bytes are unaffected. */
 
-void func_80016FD0(unsigned int *dst, unsigned int *src) {
+void TransposePackedMatrix(unsigned int *dst, unsigned int *src) {
   register unsigned int w0 asm("$6");
   register unsigned int w1 asm("$7");
   register unsigned int w2 asm("$8");

@@ -1,6 +1,6 @@
 #include "globals.h"
 
-extern int func_8005882C();
+extern int FindFreeRotBillboardSlot();
 extern void RefreshActorDerivedState();
 extern void RotateVectorByMatrix();
 extern void AddVector();
@@ -36,7 +36,7 @@ typedef struct RotBillboard {
 int SpawnActorRotBillboard(int *arg0, int *arg1) {
   RotBillboard *rec;
   int idx;
-  idx = func_8005882C();
+  idx = FindFreeRotBillboardSlot();
   if (idx >= 0) {
     rec = (RotBillboard *)(idx * 24 + (int)g_aRotBillboards);
     rec->r = 0xFF;

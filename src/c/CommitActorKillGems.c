@@ -1,6 +1,6 @@
 #include "globals.h"
 
-extern void func_800557CC(void);
+extern void SpawnFloatingDigitActors(void);
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 
 struct Actor58 {
@@ -34,7 +34,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     int w;
     int g;
     if (*(int *)(actor + 0x14) >= 0x300) {
-      func_800557CC();
+      SpawnFloatingDigitActors();
     }
     gems = &g_anLevelGemsCollected[g_nLevelIntroIndex];
     w = g_nWorldTreasureCollected + value;

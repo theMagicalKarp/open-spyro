@@ -229,7 +229,7 @@ extern int TickCountdownByFrameDelta();
 extern int RandomSignedInRange();
 extern int RandomIntInRange();
 extern void exit() __attribute__((noreturn));
-extern int func_80063BD8();
+extern int CallCdSync();
 
 typedef struct {
   int w[5];
@@ -733,7 +733,7 @@ void Credits_Update(void) {
         if (g_nCdReadInFlight[0] != 0) {
           return;
         }
-        if (func_80063BD8(1, 0) != 2) {
+        if (CallCdSync(1, 0) != 2) {
           return;
         }
         st = g_nGamestate0fMode;

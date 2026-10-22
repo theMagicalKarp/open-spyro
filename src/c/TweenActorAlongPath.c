@@ -22,8 +22,8 @@ extern short D_8006CBCC[];
    is published in `prev`. Otherwise the remaining leg is divided into the
    frames still to run; for the first steps of a leg that share of the new
    leg is cross-faded with `prev` through the per-length weight table
-   (func_8003A920's tables). Flags bit 2 keeps the vertical component. The
-   step vector is folded into the actor position and its yaw/pitch bytes
+   (BlendVectorPairByMode's tables). Flags bit 2 keeps the vertical component.
+   The step vector is folded into the actor position and its yaw/pitch bytes
    (+0x46/+0x45) are re-aimed along it.
    Match notes: the empty do/while(0) keeps the idx load ahead of the *step
    load (the original's load-delay nop); `ret++` precedes the cursor test so

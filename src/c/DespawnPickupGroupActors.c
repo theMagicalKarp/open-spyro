@@ -6,7 +6,7 @@ extern void DespawnActorRecord();
    whose type byte (+0x48) is < 0x80. The call clobbers the id load, so the
    bit-15 last-entry test reloads *ptr as a signed halfword. No-op when the
    group index is out of range. */
-void func_8003B688(int a0) {
+void DespawnPickupGroupActors(int a0) {
   unsigned short *ptr;
   int idx;
 

@@ -51,7 +51,7 @@ void TickGemPickupAssetStream(void) {
   if (*(volatile int *)g_anCdReadInFlightBlock != 0) {
     return;
   }
-  if (FUN_80063bd8(1, 0) != 2) {
+  if (CallCdSync(1, 0) != 2) {
     return;
   }
   if (!(g_dwMusicStreamStatus & 0x40)) {
