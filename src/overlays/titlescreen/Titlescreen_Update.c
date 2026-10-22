@@ -124,7 +124,7 @@ void Titlescreen_Update(void) {
           TickActiveSoundVoices(); /* update sounds */
           TickCdMusicStream();
         }
-        func_8002BAB8(); /* crash-demo launch */
+        LaunchCrashDemo(); /* crash-demo launch */
       } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
         g_nGamestate0dMode.subState = 4;
         Titlescreen_PlayUiSound(7);

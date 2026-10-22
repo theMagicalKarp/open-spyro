@@ -34,8 +34,8 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern char D_80010CD0[];             /* "%s" */
-extern char D_80010CE4[];             /* "%s" (level form) */
+extern char g_szEnteringWorldFmt[];   /* "%s" */
+extern char g_szEnteringFmt[];        /* "%s" (level form) */
 extern void *g_pGamestate0cRecord;    /* OT bin head seed for the title card */
 extern int g_nGamestate0cTimer[];     /* transition fade counter */
 extern int g_nGamestate0cCardVariant; /* transition card variant */
@@ -71,13 +71,16 @@ void Gamestate0C_Draw(void) {
 
       variant = *(volatile int *)&g_nGamestate0cCardVariant;
       if (variant < 5) {
-        sprintf(buf, D_80010CD0, g_apTitleCardNames[g_nCurrentLevelId / 10]);
+        sprintf(buf, g_szEnteringWorldFmt,
+                g_apTitleCardNames[g_nCurrentLevelId / 10]);
       } else if (variant == 5) {
-        sprintf(buf, D_80010CE4, g_apTitleCardNames[g_nCurrentLevelId / 10]);
+        sprintf(buf, g_szEnteringFmt,
+                g_apTitleCardNames[g_nCurrentLevelId / 10]);
       } else {
         world = g_nCurrentLevelId / 10;
         level = g_nCurrentLevelId - world * 10;
-        sprintf(buf, D_80010CE4, g_apTitleCardNames[world * 6 + level + 2]);
+        sprintf(buf, g_szEnteringFmt,
+                g_apTitleCardNames[world * 6 + level + 2]);
       }
 
       pos[0] = 0x100 - (strlen(buf) - 1) * 7;

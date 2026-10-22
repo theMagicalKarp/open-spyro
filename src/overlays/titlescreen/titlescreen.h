@@ -305,7 +305,7 @@ extern void StopAllSoundExceptMask(int);
 extern void TickSpuPerFrame(void);
 extern void TickActiveSoundVoices(void);
 extern void TickCdMusicStream(void);
-extern void func_8002BAB8(void);
+extern void LaunchCrashDemo(void);
 extern void MemCardOpenSession(void);
 extern int MemCardSync(int, long *, long *);
 extern void MemCardLoad(int);

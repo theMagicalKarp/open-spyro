@@ -8,8 +8,8 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern unsigned char D_80010ACC[];     /* "RETURNING HOME..." */
-extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
+extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
+extern unsigned short g_anCosineLut[];    /* g_anSineLut + 0x80 */
 
 /* Draw gamestate 0xF's post-credits "RETURNING HOME..." card with the animated
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),
@@ -35,7 +35,7 @@ void ReturningHome_Draw(void) {
   g_abFrameDrawEnv1.r0 = 0;
   g_abFrameDrawEnv1.g0 = 0;
   g_abFrameDrawEnv1.b0 = 0;
-  BuildTextSprites(D_80010ACC, posVec, sizeVec, 0x12, 0xb);
+  BuildTextSprites(g_szReturningHome, posVec, sizeVec, 0x12, 0xb);
   iVar3 = (int)pvVar1 - 0x58;
   iVar2 = 0;
   if ((int)g_pSpriteRecordWriteCursor <= iVar3) {

@@ -206,8 +206,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002b444` | SetWorldChunkAnimStep | main | 104 | asm | handwritten |
 | `0x8002b4ac` | ResetWorldChunkAnimations | main | 1312 | asm | handwritten |
 | `0x8002b9cc` | SetupFrameOT | main | 156 | matched | game |
-| `0x8002ba68` | func_8002BA68 | main | 80 | matched | game |
-| `0x8002bab8` | func_8002BAB8 | main | 104 | matched | game |
+| `0x8002ba68` | QuiesceHardwareForExec | main | 80 | matched | game |
+| `0x8002bab8` | LaunchCrashDemo | main | 104 | matched | game |
 | `0x8002bb20` | ComputeInventoryProgressPercent | main | 192 | matched | game |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | matched | game |
 | `0x8002bfe0` | AdvanceGemCutsceneFrame | main | 1088 | matched | game |

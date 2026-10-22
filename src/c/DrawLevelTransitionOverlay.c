@@ -23,12 +23,12 @@
    The queue is flushed here rather than by the caller: clear the head slot,
    EnqueuePendingSpritePrims, then rasterize. */
 
-extern unsigned char D_80010ACC[];     /* "RETURNING HOME..." */
-extern unsigned char D_80010AE0[];     /* "CONFRONTING %s..." */
-extern unsigned char D_80010AF4[];     /* "ENTERING %s..." */
-extern unsigned char D_80010B04[];     /* "TREASURE FOUND" */
-extern unsigned char D_80010B14[];     /* "TOTAL TREASURE" */
-extern unsigned short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 */
+extern unsigned char g_szReturningHome[];   /* "RETURNING HOME..." */
+extern unsigned char g_szConfrontingFmt[];  /* "CONFRONTING %s..." */
+extern unsigned char g_szEnteringDotsFmt[]; /* "ENTERING %s..." */
+extern unsigned char g_szTreasureFound[];   /* "TREASURE FOUND" */
+extern unsigned char g_szTotalTreasure[];   /* "TOTAL TREASURE" */
+extern unsigned short g_anCosineLut[];      /* 0x8006cc78: g_anSineLut + 0x80 */
 
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *step, int a,
                               int b);
@@ -87,12 +87,12 @@ void DrawLevelTransitionOverlay(void) {
   idx = (g_nCurrentLevelId / 10 - 1) * 6 + g_nCurrentLevelId % 10;
   sub = g_nCurrentLevelId % 10;
   if (sub == 0) {
-    sprintf(buf, D_80010ACC);
+    sprintf(buf, g_szReturningHome);
   } else if ((g_nCurrentLevelId < 0x3c && sub == 4) ||
              g_nCurrentLevelId == 0x3f) {
-    sprintf(buf, D_80010AE0, g_apLevelNameStrings[idx]);
+    sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {
-    sprintf(buf, D_80010AF4, g_apLevelNameStrings[idx]);
+    sprintf(buf, g_szEnteringDotsFmt, g_apLevelNameStrings[idx]);
   }
 
   pos[0] = 0x100 - (strlen(buf) - 1) * 8;
@@ -157,9 +157,9 @@ void DrawLevelTransitionOverlay(void) {
     }
 
     if (g_nLevelTransitionPhase < 0xe0) {
-      sprintf(buf, D_80010B04);
+      sprintf(buf, g_szTreasureFound);
     } else {
-      sprintf(buf, D_80010B14);
+      sprintf(buf, g_szTotalTreasure);
       pos[0] -= 0x10;
     }
     {
