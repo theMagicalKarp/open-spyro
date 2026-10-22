@@ -47,10 +47,10 @@ extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
 
 /* One scripted-mob mesh header; only the tint word at +0x10 is read here. */
 typedef struct ScriptedMobMesh {
-  int unk0;
-  int unk4;
-  int unk8;
-  int unkC;
+  int pad00;
+  int pad04;
+  int pad08;
+  int pad0C;
   unsigned int color; /* +0x10 */
 } ScriptedMobMesh;
 
@@ -63,8 +63,8 @@ typedef struct ScriptedMob {
   int ny;                 /* +0x0c */
   int nz;                 /* +0x10 */
   int nGateIndex;         /* +0x14 */
-  int unk18;
-  int unk1c;
+  int pad18;
+  int pad1C;
   int pts[8][3]; /* +0x20 */
 } ScriptedMob;
 

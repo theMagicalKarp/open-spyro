@@ -66,8 +66,8 @@
 /* Parent-anchored tracker state block. */
 typedef struct TrackState {
   Actor *owner;        /* 0x00 */
-  int unk04;
-  int unk08;
+  int pad04;
+  int pad08;
 } TrackState;
 
 extern Actor *AllocActorRecordSlot(void);

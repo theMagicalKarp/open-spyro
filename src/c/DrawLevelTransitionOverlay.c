@@ -53,14 +53,14 @@ typedef struct {
 } GemTallyParticle;
 
 typedef struct {
-  int unk00[3];    /* 0x00 */
+  int pad00[3];    /* 0x00 */
   int x;           /* 0x0c */
   int y;           /* 0x10 */
   int scale;       /* 0x14 */
-  int unk18[7];    /* 0x18 */
-  short unk34;     /* 0x34 */
+  int pad18[7];    /* 0x18 */
+  short pad34;     /* 0x34 */
   short uv;        /* 0x36 */
-  int unk38[3];    /* 0x38 */
+  int pad38[3];    /* 0x38 */
   unsigned char r; /* 0x44 */
 } TallySprite;
 

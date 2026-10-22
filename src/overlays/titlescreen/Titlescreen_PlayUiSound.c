@@ -26,11 +26,11 @@ typedef struct {
 
 typedef struct {
   SoundDef *pSoundDef;          /* 0x0  (0x800761D0) active sound definition */
-  int unk4;                     /* 0x4 */
-  int unk8;                     /* 0x8 */
+  int pad04;                     /* 0x4 */
+  int pad08;                     /* 0x8 */
   int nNextSoundOverrideFlags;  /* 0xC  (0x800761DC) */
-  int unk10;                    /* 0x10 */
-  int unk14;                    /* 0x14 */
+  int pad10;                    /* 0x10 */
+  int pad14;                    /* 0x14 */
   short nVolumeOverrideLeft;    /* 0x18 (0x800761E8) */
   short nVolumeOverrideRight;   /* 0x1A (0x800761EA) */
 } SpuDriver;

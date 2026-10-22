@@ -48,7 +48,7 @@ typedef struct {
   /* 0x04 */ short nVolL;
   /* 0x06 */ short nVolR;
   /* 0x08 */ int nPitch;
-  /* 0x0C */ unsigned char unk0C;
+  /* 0x0C */ unsigned char pad0C;
   /* 0x0D */ unsigned char nSampleId;
   /* 0x0E */ unsigned short nFlags;
   /* 0x10 */ short anPanCache[2];

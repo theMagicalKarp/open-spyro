@@ -143,8 +143,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char owner;       /* 0x18 actor index into the pool */
       unsigned char unk19;       /* 0x19 */
       unsigned char unk1A;       /* 0x1A */
-      unsigned char unk1B;       /* 0x1B */
-      short unk1C;               /* 0x1C */
+      unsigned char pad1B;       /* 0x1B */
+      short pad1C;               /* 0x1C */
       short unk1E;               /* 0x1E */
     } tether;
     struct {                     /* classes 1 / 4 -- streak */

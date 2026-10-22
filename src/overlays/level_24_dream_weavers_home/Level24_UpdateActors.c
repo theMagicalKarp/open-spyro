@@ -221,7 +221,7 @@ extern void UpdateCameraEulerAngles(void);
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -4622,7 +4622,7 @@ void Level24_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           SPY.u218 = 0xF;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
@@ -4662,7 +4662,7 @@ void Level24_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;

@@ -300,7 +300,7 @@ typedef struct {
 
 /* One 0x1C-byte glyph record of the credits text pool. */
 typedef struct {
-  int unk0;
+  int pad00;
   unsigned char state; /* 0 free, 1 fly in, 2 settled, 3 fall out, 4 done */
   unsigned char r, g, b;
   unsigned char dr, dg, db;
@@ -493,7 +493,7 @@ void Credits_Update(void) {
             int x;
             int y;
             int col;
-            int unkC;
+            int pad0C;
             int adv;
             int one;
             int big;

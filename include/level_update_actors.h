@@ -185,8 +185,8 @@ typedef struct {
   Xform lastSim; /* 0x60 */
   Xform sphere;  /* 0x78 m_Sphere */
   Xform sim;     /* 0x90 m_Simulation */
-  Xform unkA8;   /* 0xA8 */
-  int unkC0;     /* 0xC0 */
+  Xform springDelta; /* 0xA8 g_anCameraSpringDeltaState */
+  int nextMode;  /* 0xC0 g_nCameraNextMode */
   char padC4[0x14];
   Xform *preset; /* 0xD8 m_SphericalPreset */
 } CamObj;

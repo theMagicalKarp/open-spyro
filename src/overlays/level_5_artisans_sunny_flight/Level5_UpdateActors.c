@@ -199,7 +199,7 @@ typedef struct TargetState {
   int unk00;
   int unk04;
   int unk08;
-  int unk0C;
+  int pad0C;
   Actor *helper;  /* 0x10 */
   int helperType; /* 0x14, spawned as helperType + 0x158 */
   int sound;      /* 0x18 */
@@ -241,7 +241,7 @@ typedef struct HudState {
   Actor *spent[8];  /* 0x44 a completed row flying to its slot */
   Actor *slot[4];   /* 0x64 finish slots */
   int types[4];     /* 0x74 icon actor type per class */
-  int unk84[4];     /* 0x84 */
+  int pad84[4];     /* 0x84 */
   int timer;        /* 0x94 */
   int count;        /* 0x98 icons still to spend */
   int hurry;        /* 0x9C under a minute left */

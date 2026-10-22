@@ -95,13 +95,13 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
 typedef struct PathData {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
-  char unk02[4];
+  char pad02[4];
   short reversed; /* 0x06 */
   struct {
     int x;
     int y;
     int z;
-    int unk0C;
+    int pad0C;
   } nodes[1]; /* 0x08 */
 } PathData;
 
@@ -117,7 +117,7 @@ typedef struct ChaseState {
   int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
   int tgtX;              /* 0x04 */
   int tgtY;              /* 0x08 */
-  int unk0C;             /* 0x0C */
+  int pad0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
   unsigned char headingTimer;     /* 0x12 heading-change timer */
@@ -128,9 +128,9 @@ typedef struct ChaseState {
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
-  int unk04;
-  int unk08;
-  int unk0C;
+  int pad04;
+  int pad08;
+  int pad0C;
   Actor *owner; /* 0x10 actor being fetched, or null */
 } ChaserState;
 
@@ -171,7 +171,7 @@ extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
   int life;   /* 0x00 */
-  int unk04;  /* 0x04 */
+  int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
 } DebrisState;
 
@@ -204,7 +204,7 @@ extern void ResetSpyroLinearMotion(void);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
-  int unk00; /* 0x00 */
+  int pad00; /* 0x00 */
   int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
@@ -247,15 +247,15 @@ typedef struct {
   short rotX;         /* 0x4C m_Rotation */
   short rotY;         /* 0x4E */
   short rotZ;         /* 0x50 */
-  short unk52;        /* 0x52 */
+  short pad52;        /* 0x52 */
   int occlusion;      /* 0x54 */
   unsigned int state; /* 0x58 m_State */
-  int unk5C;          /* 0x5C */
+  int pad5C;          /* 0x5C */
   Xform lastSim;      /* 0x60 */
   Xform sphere;       /* 0x78 m_Sphere */
   Xform sim;          /* 0x90 m_Simulation */
-  Xform unkA8;        /* 0xA8 */
-  int unkC0;          /* 0xC0 */
+  Xform springDelta;        /* 0xA8 g_anCameraSpringDeltaState */
+  int nextMode;          /* 0xC0 g_nCameraNextMode */
   char padC4[0x14];
   Xform *preset; /* 0xD8 m_SphericalPreset */
 } CamObj;
@@ -267,9 +267,9 @@ extern CamObj g_anWorldToCameraRotMtx;
 typedef struct PortalDesc {
   unsigned char count;    /* 0x00 */
   unsigned char index;    /* 0x01 */
-  unsigned char unk02[6]; /* 0x02 */
+  unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
-  int unk14;              /* 0x14 */
+  int pad14;              /* 0x14 */
   int posB[3];            /* 0x18 */
 } PortalDesc;
 
@@ -564,9 +564,9 @@ extern void ResetSpyroEntity(int a0);
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
  * takes Spyro out of the level when he drops into it. */
 typedef struct DropState {
-  int unk00;
+  int pad00;
   int tick; /* 0x04 sparkle counter */
-  int unk08;
+  int pad08;
   int depth; /* 0x0C drop depth that triggers the exit, 0 = 0x2000 */
 } DropState;
 

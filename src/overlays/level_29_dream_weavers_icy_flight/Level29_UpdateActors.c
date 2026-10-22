@@ -204,7 +204,7 @@ typedef struct TargetState {
   int unk00;
   int unk04;
   int unk08;
-  int unk0C;
+  int pad0C;
   Actor *helper;  /* 0x10 */
   int helperType; /* 0x14, spawned as helperType + 0x158 */
   int sound;      /* 0x18 */
@@ -243,7 +243,7 @@ typedef struct HudState {
   Actor *spent[8];  /* 0x44 a completed row flying to its slot */
   Actor *slot[4];   /* 0x64 finish slots */
   int types[4];     /* 0x74 icon actor type per class */
-  int unk84[4];     /* 0x84 */
+  int pad84[4];     /* 0x84 */
   int timer;        /* 0x94 */
   int count;        /* 0x98 icons still to spend */
   int hurry;        /* 0x9C under a minute left */
@@ -267,11 +267,11 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int pad14;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
+  int pad1C;           /* 0x1C passed by address to DriveActorTrackedMove */
   int unk20[3];        /* 0x20 */
-  int unk2C;           /* 0x2C */
+  int pad2C;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
@@ -315,7 +315,7 @@ typedef struct BobberState {
   int reward;  /* 0x00 */
   int tally;   /* 0x04 */
   int phase;   /* 0x08 0..479 */
-  int unk0C[2];
+  int pad0C[2];
   int baseZ;   /* 0x14 */
   int unk18;   /* 0x18 passed by address to DriveActorTrackedMove */
   int heading; /* 0x1C */

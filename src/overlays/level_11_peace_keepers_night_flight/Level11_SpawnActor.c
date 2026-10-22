@@ -30,7 +30,7 @@
 
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
-  int unk04;           /* 0x04 */
+  int pad04;           /* 0x04 */
   int collision;           /* 0x08 */
   int posX;            /* 0x0C */
   int posY;            /* 0x10 */
@@ -40,7 +40,7 @@ typedef struct Actor {
   int mtx[5];        /* 0x20 */
   short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
-  int unk38;           /* 0x38 */
+  int pad38;           /* 0x38 */
   unsigned char anim; /* 0x3C */
   unsigned char nextAnim;
   unsigned char frame;

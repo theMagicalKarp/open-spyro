@@ -2967,7 +2967,7 @@ void Level0_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           SPY.u218 = 0xF;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
@@ -3007,7 +3007,7 @@ void Level0_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;

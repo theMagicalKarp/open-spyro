@@ -19,10 +19,10 @@
 
 /* Homing-shot state block (types 0xCA / 0xCF). */
 typedef struct SeekState {
-  short unk00;
+  short pad00;
   short unk02;
   Actor *owner; /* 0x04 */
-  int unk08;
+  int pad08;
   int unk0C;
   int unk10;
   short unk14;
