@@ -963,7 +963,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -2518,7 +2518,7 @@ void Level18_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -2657,9 +2657,9 @@ void Level18_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -3439,21 +3439,21 @@ void Level18_UpdateActors(void) {
         g_abSaveOptionsBlock[3] = 2;
         if (g_nWorldDragonsRescued < 0x32) {
           if (g_abSaveOptionsBlock[4] == 0) {
-            D_800777F4 = 0x12;
+            g_nGamestate0cDialogPage = 0x12;
             g_abSaveOptionsBlock[4] = 1;
           } else {
-            D_800777F4 = 0x14;
+            g_nGamestate0cDialogPage = 0x14;
           }
         } else if (g_abSaveOptionsBlock[4] < 2) {
           if (g_abSaveOptionsBlock[4] == 0) {
-            D_800777F4 = 0x15;
+            g_nGamestate0cDialogPage = 0x15;
           } else {
-            D_800777F4 = 0x16;
+            g_nGamestate0cDialogPage = 0x16;
           }
           g_abSaveOptionsBlock[4] = 2;
         } else {
-          D_800777F4 = 0x1E;
-          D_800777F8 = (int)GetRandomU32() % 3;
+          g_nGamestate0cDialogPage = 0x1E;
+          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;
@@ -4105,14 +4105,14 @@ void Level18_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          ps[0] = D_8006E614[i >> 1].pos[0];
-          ps[1] = D_8006E614[i >> 1].pos[1];
-          ps[2] = D_8006E614[i >> 1].pos[2];
+          ps[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          ps[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          ps[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, ps, ps);
           AddVector(ps, ps, &actor->posX);
-          ps[3] = D_8006E614[i >> 1].vel[0];
-          ps[4] = D_8006E614[i >> 1].vel[1];
-          ps[5] = D_8006E614[i >> 1].vel[2];
+          ps[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          ps[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          ps[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;

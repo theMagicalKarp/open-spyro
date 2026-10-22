@@ -9,10 +9,10 @@
 #ifndef OPEN_SPYRO_LEVEL_GLOBALS_H
 #define OPEN_SPYRO_LEVEL_GLOBALS_H
 
-extern int D_8006E390;
+extern int g_anSparkleGlowDesc;
 extern int D_8006E3E4[];
-extern void *D_8006E490;
-extern void *D_8006E494;
+extern void *g_dwBurstColorType15;
+extern void *g_dwBurstColorType14;
 extern int D_8006E52C[];
 extern char *D_8006E8C0[];                               /* row title string tables */
 extern char *D_8006E8C4[];
@@ -38,10 +38,10 @@ extern int D_80077004;
 extern int D_80077008;
 extern int D_80077018;
 extern int D_80077024;
-extern int D_800777EC_s;
-extern int D_800777F0_s;
-extern int D_800777F4_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
-extern int D_800777F8;
+extern int g_anGamestate0cTimerBlock_s;
+extern int g_nGamestate0cMenuCursor_s;
+extern int g_nGamestate0cDialogPage_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
+extern int g_nGamestate0cDialogVariant;
 extern int g_anGamestate0cSpyroFrom[];
 extern int g_nGamestate0cSpyroFromY;
 extern int g_nGamestate0cSpyroFromZ;

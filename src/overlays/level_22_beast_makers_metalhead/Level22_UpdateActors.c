@@ -589,7 +589,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -1885,7 +1885,7 @@ typedef struct GrazerState {
   int voice; /* 0x2C bleat timer */
 } GrazerState;
 /* from level_1 */
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 /* from level_10 */
 typedef struct ShempState {
   int ang;             /* 0x00 heading << 4 */
@@ -4828,7 +4828,7 @@ void Level22_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -4967,9 +4967,9 @@ void Level22_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -5936,14 +5936,14 @@ void Level22_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          g584[0] = D_8006E614[i >> 1].pos[0];
-          g584[1] = D_8006E614[i >> 1].pos[1];
-          g584[2] = D_8006E614[i >> 1].pos[2];
+          g584[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          g584[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          g584[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, g584, g584);
           AddVector(g584, g584, &actor->posX);
-          g584[3] = D_8006E614[i >> 1].vel[0];
-          g584[4] = D_8006E614[i >> 1].vel[1];
-          g584[5] = D_8006E614[i >> 1].vel[2];
+          g584[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          g584[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          g584[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, g584 + 3, g584 + 3);
           g584[3] += (GetRandomU32() & 0xF) - 8;
           g584[4] += (GetRandomU32() & 0xF) - 8;

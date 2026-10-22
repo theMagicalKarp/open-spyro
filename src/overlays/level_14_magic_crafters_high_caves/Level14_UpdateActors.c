@@ -634,7 +634,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -686,7 +686,7 @@ extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int WrapAddAngle8(int heading, int step);
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
   int y;
@@ -3778,10 +3778,10 @@ void Level14_UpdateActors(void) {
               g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
               *w1 = g_anCameraParamMode2Front.w[1];
             }
-            D_80078670 = g_anCameraParamMode2Front.w[2];
-            D_80078674 = g_anCameraParamMode2Front.w[3];
-            D_80078678 = g_anCameraParamMode2Front.w[4];
-            D_8007867C = g_anCameraParamMode2Front.w[5];
+            g_nCameraActiveTargetDistance = g_anCameraParamMode2Front.w[2];
+            g_nCameraActiveTargetRoll = g_anCameraParamMode2Front.w[3];
+            g_nCameraActiveTargetPitchBias = g_anCameraParamMode2Front.w[4];
+            g_nCameraActiveTargetYawBias = g_anCameraParamMode2Front.w[5];
           } else {
             st->mode &= ~0x80;
           }
@@ -4459,7 +4459,7 @@ void Level14_UpdateActors(void) {
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
             st->fx->kind = 9;
-            st->fx->desc = &D_8006E390;
+            st->fx->desc = &g_anSparkleGlowDesc;
           }
         } else {
           st->fx->size += 0x20;
@@ -4589,9 +4589,9 @@ void Level14_UpdateActors(void) {
             st->rider->subMode = 3;
 
             if (st->rider->type == 14)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
             else if (st->rider->type == 15)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 
@@ -6294,14 +6294,14 @@ void Level14_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          ps[0] = D_8006E614[i >> 1].pos[0];
-          ps[1] = D_8006E614[i >> 1].pos[1];
-          ps[2] = D_8006E614[i >> 1].pos[2];
+          ps[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          ps[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          ps[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, ps, ps);
           AddVector(ps, ps, &actor->posX);
-          ps[3] = D_8006E614[i >> 1].vel[0];
-          ps[4] = D_8006E614[i >> 1].vel[1];
-          ps[5] = D_8006E614[i >> 1].vel[2];
+          ps[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          ps[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          ps[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;

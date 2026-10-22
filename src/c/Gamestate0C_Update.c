@@ -4,9 +4,10 @@
 
    Substate 4 is the only one this function drives; every other substate is
    forwarded to the handler installed at g_pfnGamestate0cSubstateUpdate. The
-   block based at D_800777EC holds the whole transition: [-1] is the substate,
-   [0] a frame timer advanced by g_nFrameStep, and the +0x34..+0x54 fields are
-   the camera fly-in's start/goal triples (yaw, orbit radius, height).
+   block based at g_anGamestate0cTimerBlock holds the whole transition: [-1] is
+   the substate, [0] a frame timer advanced by g_nFrameStep, and the
+   +0x34..+0x54 fields are the camera fly-in's start/goal triples (yaw, orbit
+   radius, height).
 
    While the timer is under 0x100 the camera orbits the incoming level's
    entry point: a sine of the timer ramped over the window gives a 0..0x2000
@@ -44,9 +45,9 @@
       cse's extended basic block, so the base has no constant equivalence in
       the block below and its accesses keep `off(sN)`. New here is only that
       this function needs TWO, at those exact points. Together: 352 -> 340
-      instructions, 14 %hi(D_800777EC) -> 4 (the original's count), and the
-      frame goes back to 0x50 with four callee-saved registers (s0-s3).
-      Placement is exact: the same dial before the APPROACH arm gives 354.
+      instructions, 14 %hi(g_anGamestate0cTimerBlock) -> 4 (the original's
+   count), and the frame goes back to 0x50 with four callee-saved registers
+   (s0-s3). Placement is exact: the same dial before the APPROACH arm gives 354.
 
    4. TWO named locals, `lvl` and `face`, each read in its own statement.
       This is the subtle one and it is a different mechanism from the dials --
@@ -76,9 +77,10 @@
 
    WHY THE NAMED LOCALS ARE A SEPARATE FIX. `lvl` and `face` are NOT about
    cse2. Their reads were never force_reg'd in the first place, so they never
-   reached cse's rewrite at all -- the second read of D_800777EC[4] came out of
-   expand as `(set (reg 204) (mem (const (plus sym 16))))`, address inline,
-   while the first read of the SAME field came out as
+   reached cse's rewrite at all -- the second read of
+   g_anGamestate0cTimerBlock[4] came out of expand as `(set (reg 204) (mem
+   (const (plus sym 16))))`, address inline, while the first read of the SAME
+   field came out as
    `(set (reg 197) (const (plus sym 16)))` + `(mem (reg 197))`. Reading the
    value in its own statement puts it back on the force_reg path. Spelling the
    array access differently does NOT work -- `(&A[i])[3]`, `*(A + i + 3)` and
@@ -100,9 +102,10 @@
    block, and its ~15-minute permuter run produced no improving candidate at
    all — which now reads as expected rather than discouraging, since the
    permuter can only stumble onto the dial by luck. Try the levers here in
-   order: count its %hi(D_800777EC) against the original first (the difference
-   times one is usually the whole residue), then place a do/while dial on
-   whichever arm folds, then look for reads expand never force_regs. */
+   order: count its %hi(g_anGamestate0cTimerBlock) against the original first
+   (the difference times one is usually the whole residue), then place a
+   do/while dial on whichever arm folds, then look for reads expand never
+   force_regs. */
 extern void RotateLightVectorXZ(int steps);
 extern void TickLevelTransitionStream(int mode);
 extern int LookupSine(unsigned int angle_12_4);
@@ -121,9 +124,10 @@ extern void TickSpyroAnimLayer2(void);
    [13]/[15] the yaw and height starts also reachable as
    g_nGamestate0cCamYawStart / g_nGamestate0cCamHeightStart, [25] the active
    level record. */
-extern int D_800777EC[];
-/* Absolute alias of D_800777EC[0]: the aim ramp reads the timer after the
-   camera calls, where the original drops the held base and re-addresses it. */
+extern int g_anGamestate0cTimerBlock[];
+/* Absolute alias of g_anGamestate0cTimerBlock[0]: the aim ramp reads the timer
+   after the camera calls, where the original drops the held base and
+   re-addresses it. */
 extern int g_nGamestate0cTimer;
 
 extern int g_nGamestate0cCamYawStart;    /* camera yaw start   (block +0x34) */
@@ -160,24 +164,25 @@ void Gamestate0C_Update(void) {
   int goal;
   int start;
 
-  D_800777EC[0] += g_nFrameStep;
+  g_anGamestate0cTimerBlock[0] += g_nFrameStep;
   RotateLightVectorXZ(3);
 
   /* LOAD-BEARING — do not delete, and do not "simplify". The §B-i ebb break:
      this empty loop emits no code, but its NOTE_INSN_LOOP_BEG ends cse's
      extended basic block, so the cse rerun after loop enters the block below
-     with no constant equivalence for the D_800777EC base and cannot fold its
-     accesses to absolute. Deleting it costs ~12 instructions and the fourth
-     callee-saved register. Header has the pass-by-pass evidence. */
+     with no constant equivalence for the g_anGamestate0cTimerBlock base and
+     cannot fold its accesses to absolute. Deleting it costs ~12 instructions
+     and the fourth callee-saved register. Header has the pass-by-pass evidence.
+   */
   do {
   } while (0);
 
-  if (D_800777EC[-1] == 4) {
+  if (g_anGamestate0cTimerBlock[-1] == 4) {
     if (g_nCdStreamState < 0xA) {
       TickLevelTransitionStream(1);
     }
 
-    if (D_800777EC[0] < 0x100) {
+    if (g_anGamestate0cTimerBlock[0] < 0x100) {
       /* Block-scoped per arm on purpose: one function-scope `cam` spanning both
          arms is a single pseudo with a single live range, and it holds a fifth
          callee-saved register the original does not use. */
@@ -186,7 +191,8 @@ void Gamestate0C_Update(void) {
       /* 0..0x2000 ease: the sine argument sweeps -0x400..+0x400 across the
          0x100-frame window, so the factor runs a full half-cosine of travel.
          Both shifts are in the source — the sra cannot come from a divide. */
-      ease = LookupSine(((D_800777EC[0] << 11) >> 8) - 0x400) + 0x1000;
+      ease = LookupSine(((g_anGamestate0cTimerBlock[0] << 11) >> 8) - 0x400) +
+             0x1000;
 
       /* goal/start are named so both feed the compare AND survive as the call
          arguments: the difference test below leaves them in a0/a1 exactly
@@ -199,7 +205,8 @@ void Gamestate0C_Update(void) {
       } else {
         /* Same variable as `start`, but reached through the held base — the
            original re-addresses it here rather than reloading the symbol. */
-        yaw = D_800777EC[13] - ((AbsAngleDelta12(goal, start) * ease) >> 13);
+        yaw = g_anGamestate0cTimerBlock[13] -
+              ((AbsAngleDelta12(goal, start) * ease) >> 13);
       }
 
       radius = g_nGamestate0cCamRadiusStart +
@@ -257,10 +264,10 @@ void Gamestate0C_Update(void) {
       *(WORLDCOUNTERS *)&g_nWorldRenderMeshChunkCount =
           *(WORLDCOUNTERS *)&g_nWorldCollisionTriCount;
 
-      D_800777EC[-1] = 5;
-      D_800777EC[0] = 0;
-      CopyVector((int *)((char *)D_800777EC[25] + 0xC),
-                 &D_8006EA4C[D_800777EC[4] * 4]);
+      g_anGamestate0cTimerBlock[-1] = 5;
+      g_anGamestate0cTimerBlock[0] = 0;
+      CopyVector((int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC),
+                 &D_8006EA4C[g_anGamestate0cTimerBlock[4] * 4]);
 
       /* Read in its own statement rather than inline in the index below. This
          is the one read of this field that expand does NOT force_reg — it comes
@@ -270,10 +277,11 @@ void Gamestate0C_Update(void) {
          first read of the SAME field, in the CopyVector call above, is
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
-      lvl = D_800777EC[4];
+      lvl = g_anGamestate0cTimerBlock[4];
       *(char *)((char *)g_pGamestate0cRecord + 0x46) =
           (char)D_8006EA4C[lvl * 4 + 3];
-      CopyVector(g_anSpyroWorldPos, (int *)((char *)D_800777EC[25] + 0xC));
+      CopyVector(g_anSpyroWorldPos,
+                 (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] =
@@ -281,19 +289,24 @@ void Gamestate0C_Update(void) {
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
-      D_800777EC[19] =
+      g_anGamestate0cTimerBlock[19] =
           ((*(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) << 4) +
            0x390) &
           0xFFF;
 
       cam = g_anCameraPosBlock;
       cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
-               ((LookupCosine(D_800777EC[19]) * D_800777EC[20]) >> 12);
+               ((LookupCosine(g_anGamestate0cTimerBlock[19]) *
+                 g_anGamestate0cTimerBlock[20]) >>
+                12);
       g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
-                         ((LookupSine(D_800777EC[19]) * D_800777EC[20]) >> 12);
+                         ((LookupSine(g_anGamestate0cTimerBlock[19]) *
+                           g_anGamestate0cTimerBlock[20]) >>
+                          12);
       g_anCameraPos[2] = *(int *)((char *)g_pGamestate0cRecord + 0x14) + 0x200;
 
-      SubtractVector(&settle.vx, (int *)((char *)D_800777EC[25] + 0xC), cam);
+      SubtractVector(&settle.vx,
+                     (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC), cam);
       settle.vz += 0x200;
 
       g_nCameraEulerPitch = ArcTan2(VectorLength(&settle.vx, 0), -settle.vz, 1);
@@ -305,9 +318,9 @@ void Gamestate0C_Update(void) {
          g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
          costs one. */
       face = *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46);
-      D_800777EC[21] = g_anCameraPos[2];
-      D_800777EC[15] = g_anCameraPos[2] - 0xFCE;
-      D_800777EC[13] = ((face << 4) + 0xBA0) & 0xFFF;
+      g_anGamestate0cTimerBlock[21] = g_anCameraPos[2];
+      g_anGamestate0cTimerBlock[15] = g_anCameraPos[2] - 0xFCE;
+      g_anGamestate0cTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
     g_pfnGamestate0cSubstateUpdate();

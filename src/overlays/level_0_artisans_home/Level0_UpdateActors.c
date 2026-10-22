@@ -2257,7 +2257,7 @@ void Level0_UpdateActors(void) {
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
             st->fx->kind = 9;
-            st->fx->desc = &D_8006E390;
+            st->fx->desc = &g_anSparkleGlowDesc;
           }
         } else {
           st->fx->size += 0x20;
@@ -2387,9 +2387,9 @@ void Level0_UpdateActors(void) {
             st->rider->subMode = 3;
 
             if (st->rider->type == 14)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
             else if (st->rider->type == 15)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 
@@ -2584,21 +2584,21 @@ void Level0_UpdateActors(void) {
 
         if (g_nWorldDragonsRescued < 10) {
           if (g_abSaveOptionsBlock[1] == 0) {
-            D_800777F4 = 0;
+            g_nGamestate0cDialogPage = 0;
             g_abSaveOptionsBlock[1] = 1;
           } else {
-            D_800777F4 = 2;
+            g_nGamestate0cDialogPage = 2;
           }
         } else if (g_abSaveOptionsBlock[1] < 2) {
           if (g_abSaveOptionsBlock[1] == 0) {
-            D_800777F4 = 3;
+            g_nGamestate0cDialogPage = 3;
           } else {
-            D_800777F4 = 4;
+            g_nGamestate0cDialogPage = 4;
           }
           g_abSaveOptionsBlock[1] = 2;
         } else {
-          D_800777F4 = 0x1E;
-          D_800777F8 = (int)GetRandomU32() % 3;
+          g_nGamestate0cDialogPage = 0x1E;
+          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

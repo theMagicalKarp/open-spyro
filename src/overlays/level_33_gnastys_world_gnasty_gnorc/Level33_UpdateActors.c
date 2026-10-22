@@ -946,7 +946,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -1806,7 +1806,7 @@ typedef struct ShempState {
 } ShempState;
 /* from level_32 */
 /* from level_32 */
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 /* from level_32 */
 typedef struct L7State184 {
   int link;    /* 0x00 handed to the spawned bolt */
@@ -3127,7 +3127,7 @@ void Level33_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -3266,9 +3266,9 @@ void Level33_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -3707,11 +3707,11 @@ void Level33_UpdateActors(void) {
           anc = PATH_END(*(FlyPath **)((char *)st + 4));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-          D_80078670 = 0x1770;
-          D_8007866C = 0x19;
-          D_80078674 = 0;
-          D_80078678 = -0x32;
-          D_8007867C = 0;
+          g_nCameraActiveTargetDistance = 0x1770;
+          g_nCameraActiveTargetPitch = 0x19;
+          g_nCameraActiveTargetRoll = 0;
+          g_nCameraActiveTargetPitchBias = -0x32;
+          g_nCameraActiveTargetYawBias = 0;
           g_nGameplayBlocked = 1;
           g_pSpyroRequestCameraAnchor = anc;
         } else {
@@ -3730,11 +3730,11 @@ void Level33_UpdateActors(void) {
         anc = (int *)((char *)*(FlyPath **)st + 8);
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
         *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-        D_80078670 = 0xFA0;
-        D_8007866C = 0x19;
-        D_80078674 = 0;
-        D_80078678 = -0x32;
-        D_8007867C = 0;
+        g_nCameraActiveTargetDistance = 0xFA0;
+        g_nCameraActiveTargetPitch = 0x19;
+        g_nCameraActiveTargetRoll = 0;
+        g_nCameraActiveTargetPitchBias = -0x32;
+        g_nCameraActiveTargetYawBias = 0;
         g_pSpyroRequestCameraAnchor = anc;
       }
 
@@ -4844,14 +4844,14 @@ void Level33_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          ps[0] = D_8006E614[i >> 1].pos[0];
-          ps[1] = D_8006E614[i >> 1].pos[1];
-          ps[2] = D_8006E614[i >> 1].pos[2];
+          ps[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          ps[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          ps[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, ps, ps);
           AddVector(ps, ps, &actor->posX);
-          ps[3] = D_8006E614[i >> 1].vel[0];
-          ps[4] = D_8006E614[i >> 1].vel[1];
-          ps[5] = D_8006E614[i >> 1].vel[2];
+          ps[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          ps[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          ps[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;

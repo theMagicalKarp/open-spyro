@@ -1130,6 +1130,21 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
  *   g_pThiefEggDrop         0x80075758  egg dropped by a killed thief; collecting it sets g_nLevelEggCount = 3 (CollectPickupActor)
  *   g_anRotBillboardOffsetsRand 0x8006e5c4  int[4][3] spawn offsets picked at random, after g_anRotBillboardOffset5
+ *   g_dwBurstColorType15 / Type14 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
+ *       UpdateActors passes to emit effect 0xC for actor types 15 / 14 in place of g_adwActorBurstColors;
+ *       entries 5 and 6 of a 7-word colour table at 0x8006e47c
+ *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every kind-9 sparkle from
+ *       AllocWorldSparkle (UpdateActors smoke/glow nodes); 42 small signed words, likely shape offsets
+ *   g_aSmokeJetEmitters     0x8006e614  3 x {short pos[3], vel[3]} jet origins/velocities, rotated by the
+ *       actor matrix (two puffs per jet per frame)
+ *   g_nCameraActiveTarget{Pitch,Distance,Roll,PitchBias,YawBias} 0x8007866c..7c  per-word views of
+ *       g_anCameraActiveTargetParams[1..5]; word order from LoadCameraTargetAnglesFromMode
+ *
+ * Gamestate 0xC dialogue state (BalloonistCutscene_Update, the six homeworld overlays + UpdateActors):
+ *   g_anGamestate0cTimerBlock 0x800777ec  incomplete-array view of g_nGamestate0cTimer (held base, Gamestate0C_Update)
+ *   g_nGamestate0cMenuCursor  0x800777f0  highlighted entry of the dialogue page/roster menu (wraps)
+ *   g_nGamestate0cDialogPage  0x800777f4  dialogue page id the substate-1 menu shows (0x1E/0x1F, 0x21..0x26, ...)
+ *   g_nGamestate0cDialogVariant 0x800777f8  line variant within the page (UpdateActors picks 0..2 at random)
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

@@ -1810,7 +1810,7 @@ void Level29_UpdateActors(void) {
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
             st->fx->kind = 9;
-            st->fx->desc = &D_8006E390;
+            st->fx->desc = &g_anSparkleGlowDesc;
           }
         } else {
           st->fx->size += 0x20;
@@ -1940,9 +1940,9 @@ void Level29_UpdateActors(void) {
             st->rider->subMode = 3;
 
             if (st->rider->type == 14)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
             else if (st->rider->type == 15)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 

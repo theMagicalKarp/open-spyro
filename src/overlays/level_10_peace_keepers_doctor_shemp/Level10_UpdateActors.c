@@ -1213,7 +1213,7 @@ typedef struct LookoutState {
   int wait;      /* 0x2C */
 } LookoutState;
 extern int WrapAddAngle8(int heading, int step);
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
   int y;
@@ -2456,7 +2456,7 @@ void Level10_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -2595,9 +2595,9 @@ void Level10_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -4494,11 +4494,11 @@ void Level10_UpdateActors(void) {
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           g_pSpyroRequestCameraAnchor = (int *)(st->path + (off + 8));
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-          D_80078670 = 0x1770;
-          D_8007866C = 0x19;
-          D_80078678 = -0x32;
-          D_80078674 = 0;
-          D_8007867C = 0;
+          g_nCameraActiveTargetDistance = 0x1770;
+          g_nCameraActiveTargetPitch = 0x19;
+          g_nCameraActiveTargetPitchBias = -0x32;
+          g_nCameraActiveTargetRoll = 0;
+          g_nCameraActiveTargetYawBias = 0;
         } else {
           g_nGameplayBlocked = 0;
         }
@@ -4611,11 +4611,11 @@ void Level10_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
                                          SPY.posY - actor->posY, 0)
                           << 4;
-        D_8007866C = 0;
-        D_80078674 = 0;
-        D_80078678 = 0;
-        D_8007867C = 0;
-        D_80078670 = st->camDist;
+        g_nCameraActiveTargetPitch = 0;
+        g_nCameraActiveTargetRoll = 0;
+        g_nCameraActiveTargetPitchBias = 0;
+        g_nCameraActiveTargetYawBias = 0;
+        g_nCameraActiveTargetDistance = st->camDist;
       }
 
       mode = actor->mode;

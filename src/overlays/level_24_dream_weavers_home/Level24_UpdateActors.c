@@ -580,7 +580,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -1874,7 +1874,7 @@ typedef struct GrazerState {
   int voice; /* 0x2C bleat timer */
 } GrazerState;
 /* from level_1 */
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 /* from level_10 */
 typedef struct ShempState {
   int ang;             /* 0x00 heading << 4 */
@@ -4175,7 +4175,7 @@ void Level24_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -4314,9 +4314,9 @@ void Level24_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -5092,21 +5092,21 @@ void Level24_UpdateActors(void) {
 
         if (g_nWorldTreasureCollected < 0x1770) {
           if (g_abSaveOptionsBlock[5] == 0) {
-            D_800777F4 = 0x18;
+            g_nGamestate0cDialogPage = 0x18;
             g_abSaveOptionsBlock[5] = 1;
           } else {
-            D_800777F4 = 0x1A;
+            g_nGamestate0cDialogPage = 0x1A;
           }
         } else if (g_abSaveOptionsBlock[5] < 2) {
           if (g_abSaveOptionsBlock[5] == 0) {
-            D_800777F4 = 0x1B;
+            g_nGamestate0cDialogPage = 0x1B;
           } else {
-            D_800777F4 = 0x1C;
+            g_nGamestate0cDialogPage = 0x1C;
           }
           g_abSaveOptionsBlock[5] = 2;
         } else {
-          D_800777F4 = 0x1E;
-          D_800777F8 = (int)GetRandomU32() % 3;
+          g_nGamestate0cDialogPage = 0x1E;
+          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;
@@ -5757,14 +5757,14 @@ void Level24_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          g456[0] = D_8006E614[i >> 1].pos[0];
-          g456[1] = D_8006E614[i >> 1].pos[1];
-          g456[2] = D_8006E614[i >> 1].pos[2];
+          g456[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          g456[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          g456[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, g456, g456);
           AddVector(g456, g456, &actor->posX);
-          g456[3] = D_8006E614[i >> 1].vel[0];
-          g456[4] = D_8006E614[i >> 1].vel[1];
-          g456[5] = D_8006E614[i >> 1].vel[2];
+          g456[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          g456[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          g456[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, g456 + 3, g456 + 3);
           g456[3] += (GetRandomU32() & 0xF) - 8;
           g456[4] += (GetRandomU32() & 0xF) - 8;

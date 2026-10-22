@@ -681,7 +681,7 @@ extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int WrapAddAngle8(int heading, int step);
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
   int y;
@@ -2806,7 +2806,7 @@ void Level12_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -2945,9 +2945,9 @@ void Level12_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -3360,21 +3360,21 @@ void Level12_UpdateActors(void) {
 
         if (g_nWorldEggsRecovered < 5) {
           if (g_abSaveOptionsBlock[3] == 0) {
-            D_800777F4 = 0xC;
+            g_nGamestate0cDialogPage = 0xC;
             g_abSaveOptionsBlock[3] = 1;
           } else {
-            D_800777F4 = 0xE;
+            g_nGamestate0cDialogPage = 0xE;
           }
         } else if (g_abSaveOptionsBlock[3] < 2) {
           if (g_abSaveOptionsBlock[3] == 0) {
-            D_800777F4 = 0xF;
+            g_nGamestate0cDialogPage = 0xF;
           } else {
-            D_800777F4 = 0x10;
+            g_nGamestate0cDialogPage = 0x10;
           }
           g_abSaveOptionsBlock[3] = 2;
         } else {
-          D_800777F4 = 0x1E;
-          D_800777F8 = (int)GetRandomU32() % 3;
+          g_nGamestate0cDialogPage = 0x1E;
+          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;
@@ -3786,11 +3786,11 @@ void Level12_UpdateActors(void) {
           g_pSpyroRequestCameraAnchor = &spy->posX;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           g_dwSpyroRequestMask = 0x80000200;
-          D_80078670 = 0xC00;
-          D_8007866C = 0x80;
-          D_80078678 = -0xB0;
-          D_80078674 = 0;
-          D_8007867C = 0;
+          g_nCameraActiveTargetDistance = 0xC00;
+          g_nCameraActiveTargetPitch = 0x80;
+          g_nCameraActiveTargetPitchBias = -0xB0;
+          g_nCameraActiveTargetRoll = 0;
+          g_nCameraActiveTargetYawBias = 0;
           g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
         }
         if (st->snd == -1) {

@@ -2181,7 +2181,7 @@ Gamestate0C_Update:
     statement of the handoff arm — the established §B-i ebb break, not a new
     tool; new here is only that this function needs TWO, at those exact points:
     352 -> 340, 14
-    %hi(D_800777EC) -> 4, and the frame returns to 0x50 with s0-s3. Placement is
+    %hi(g_anGamestate0cTimerBlock) -> 4, and the frame returns to 0x50 with s0-s3. Placement is
     exact — the same dial before the approach arm gives 354. (4) two named
     locals, `lvl` and `face`, a SEPARATE mechanism: their reads were never
     force_reg'd by expand at all (address inline in the MEM), so they never
@@ -2202,7 +2202,7 @@ Gamestate0C_Update:
     metric — always re-measure with open-spyro diff. SIBLING: Gamestate0C_Draw
     is parked on the same fold over the same block and its permuter run produced
     nothing, which now reads as expected rather than discouraging. Try, in
-    order: count its %hi(D_800777EC) against the original (difference times one
+    order: count its %hi(g_anGamestate0cTimerBlock) against the original (difference times one
     is usually the whole residue), place a dial on whichever arm folds, then
     look for reads expand never force_regs.
 
@@ -3543,14 +3543,14 @@ Level0_BalloonistCutscene_Update:
   note: >-
     8,096 B, head of the ×10 balloonist UPDATE family (80,960 B). Took it from
     230 mismatches / 114 regions / offset -12 to 161 / 85 / +6 with four
-    one-line levers: per-site scalar aliases for D_800777F4 / g_nGamestate0cCamYawGoal /
-    D_800777EC / D_800777F0 (the §B16 register-form lever run in reverse — a
+    one-line levers: per-site scalar aliases for g_nGamestate0cDialogPage / g_nGamestate0cCamYawGoal /
+    g_anGamestate0cTimerBlock / g_nGamestate0cMenuCursor (the §B16 register-form lever run in reverse — a
     plain `extern int X;` DECL is always `lui %hi / lw %lo`), a real symbol for
     D_80076E1E instead of a cast-deref macro, hoisting the D_800758D0 scan
     loop's compare constant into a shared local, and spelling the five-arm
     submode chain as `if (k == N && g == 0) ... else if`. Still parked: R1
     (unchanged, -7 for ~1,850 insns), R6 (11 sites, the original holds
-    `s0 = &D_800777F4` across arms and uses -4/-8 offsets — A200 barrier
+    `s0 = &g_nGamestate0cDialogPage` across arms and uses -4/-8 offsets — A200 barrier
     untried) and R3.
 Level13_AdvanceEmitList:
   verdict: parked
@@ -3979,8 +3979,8 @@ Level0_BalloonistCutscene_Update:
     it a1 over z. Found via a PERM_RANDOMIZE-restricted permuter hint
     (`t = ...; yaw = t;`), then cleaned to the in-place form. Siblings
     level_6/12/18/24/30 and 1/3/7/8 sed-clone with no source change beyond the
-    name; each overlay's undefined_syms needs the head's D_800777EC_s /
-    D_800777F0_s / D_800777F4_s / g_nGamestate0cCamYawGoal_s aliases and D_80076E1E.
+    name; each overlay's undefined_syms needs the head's g_anGamestate0cTimerBlock_s /
+    g_nGamestate0cMenuCursor_s / g_nGamestate0cDialogPage_s / g_nGamestate0cCamYawGoal_s aliases and D_80076E1E.
 Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged)"

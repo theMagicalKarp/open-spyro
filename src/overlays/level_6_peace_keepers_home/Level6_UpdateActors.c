@@ -1873,7 +1873,7 @@ typedef struct GrazerState {
   int voice; /* 0x2C bleat timer */
 } GrazerState;
 /* from level_1 */
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 /* from level_10 */
 typedef struct ShempState {
   int ang;             /* 0x00 heading << 4 */
@@ -4336,7 +4336,7 @@ void Level6_UpdateActors(void) {
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
             st->smoke->kind = 9;
-            st->smoke->desc = &D_8006E390;
+            st->smoke->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
@@ -4475,9 +4475,9 @@ void Level6_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
@@ -4926,21 +4926,21 @@ void Level6_UpdateActors(void) {
 
         if (g_nWorldTreasureCollected < 0x4B0) {
           if (g_abSaveOptionsBlock[2] == 0) {
-            D_800777F4 = 6;
+            g_nGamestate0cDialogPage = 6;
             g_abSaveOptionsBlock[2] = 1;
           } else {
-            D_800777F4 = 8;
+            g_nGamestate0cDialogPage = 8;
           }
         } else if (g_abSaveOptionsBlock[2] < 2) {
           if (g_abSaveOptionsBlock[2] == 0) {
-            D_800777F4 = 9;
+            g_nGamestate0cDialogPage = 9;
           } else {
-            D_800777F4 = 0xA;
+            g_nGamestate0cDialogPage = 0xA;
           }
           g_abSaveOptionsBlock[2] = 2;
         } else {
-          D_800777F4 = 0x1E;
-          D_800777F8 = (int)GetRandomU32() % 3;
+          g_nGamestate0cDialogPage = 0x1E;
+          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

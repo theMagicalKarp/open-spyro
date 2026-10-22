@@ -15,7 +15,7 @@ extern int g_anRotBillboardOffsetsRand[][3];
 extern Actor *g_pThiefEggDrop;
 extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
 extern int g_anSpuVoiceRowPitchStep[][7];                    /* g_aSpuVoiceRows[i].nPitchStep */
-extern int D_800777F4;
+extern int g_nGamestate0cDialogPage;
 extern Actor g_abHudIconActorRecords[];                      /* the four HUD class icons */
 extern int g_anCollisionResolvedPos;                         /* collision contact point */
 extern short g_anCosineLut[];
