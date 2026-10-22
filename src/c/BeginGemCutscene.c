@@ -3,10 +3,11 @@
 /* Enter the gem-cutscene gamestate (0x8002d338, gamestate 0xE): reset the
    generic countdown fade and the path-table head, raise the storm flag when
    entering from world 1, then build the cutscene sample-bank entry at
-   D_800778F0 (sample 0x1010, per-world pitch from g_nWorldCutsceneSamplePitch)
-   and trigger it via PlaySoundEffect with the gem-pickup voice marker. */
+   g_CutsceneSoundDef (sample 0x1010, per-world pitch from
+   g_nWorldCutsceneSamplePitch) and trigger it via PlaySoundEffect with the
+   gem-pickup voice marker. */
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
-extern int D_800778F0[];
+extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
 extern char *volatile D_800761D0;
@@ -28,7 +29,7 @@ void BeginGemCutscene(void) {
     g_nLevelStormFlag = 1;
   }
 
-  entry = D_800778F0;
+  entry = g_CutsceneSoundDef;
   D_800761D0 = (char *)entry;
   *((int *)D_800761D0) = 0x1010;
   *((int *)(D_800761D0 + 4)) = -1;

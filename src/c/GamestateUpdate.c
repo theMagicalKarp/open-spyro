@@ -30,7 +30,7 @@ extern void Gamestate0C_Update(void);
 extern void Gamestate0D_Update(void);
 extern void GemCutscene_Update(void);
 extern void Gamestate0F_Update(void);
-extern void Credits_Update(void); /* credits overlay entry (0x8007AA50) */
+extern void Credits_Update(void);     /* credits overlay entry (0x8007AA50) */
 extern void Titlescreen_Update(void); /* titlescreen overlay entry */
 extern int CheckDeathPlane(void);
 extern void TickWorldChunkAnimations(int step);

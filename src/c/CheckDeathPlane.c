@@ -15,12 +15,13 @@ extern void StartCdReadAsync(int lba, int dst, int count, int offset,
 extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
 extern int D_8007A6D8;            /* async-read byte offset */
 extern int g_abDrawBufPool;       /* draw-buffer sentinel */
-extern int D_800778F0;            /* death-cutscene sample-bank record */
+extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
 extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field
-   (the original never proves it points at &D_800778F0); a volatile read of the
-   pointer defeats gcc's constant-propagation of the just-assigned address. */
+   (the original never proves it points at &g_CutsceneSoundDef); a volatile read
+   of the pointer defeats gcc's constant-propagation of the just-assigned
+   address. */
 #define BANK (*(char *volatile *)&g_pLevelSampleBankEntries)
 
 /* Death-plane watcher (GS state-0 path, g_nDeathState != 0). Ramps the fade
@@ -81,7 +82,7 @@ int CheckDeathPlane(void) {
       if ((int)g_dwGamestateFrames >=
           g_anDeathReplayFrameThreshold[g_nDeathTryIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;
-        g_pLevelSampleBankEntries = &D_800778F0;
+        g_pLevelSampleBankEntries = &g_CutsceneSoundDef;
         *(int *)(BANK + 0x0) = 0x262d0;
         *(int *)(BANK + 0x4) = -1;
         *(short *)(BANK + 0x8) = 0x50;

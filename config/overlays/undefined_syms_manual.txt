@@ -5,7 +5,7 @@
 D_80076E1E = 0x80076E1E;
 // Incomplete-array view so the base materializes as a register (lui/addiu + lw 0(r))
 // instead of the per-site $at fold (Credits_Update setup block).
-D_800785DC_BLK = 0x800785DC;
+g_pDrawBufB_blk = 0x800785DC;
 // Scalar aliases (same address, `int` DECL not an incomplete array) so a site can
 // pick the absolute `lui %hi / lw %lo` form the original uses at that site while
 // the array name keeps the held-base form elsewhere (cookbook B16, per-site).
@@ -15,7 +15,7 @@ g_nGamestate0cDialogPage_s = 0x800777F4;
 g_nGamestate0cCamYawGoal_s = 0x80077838;
 // Struct view of the CD-stream state block at 0x800785D8 (Credits_Update):
 // one base symbol makes the 20-byte block copy alias the 85E0/85E4/8600/8604 fields.
-D_800785D8_S = 0x800785D8;
+g_pDrawBufA_s = 0x800785D8;
 // Non-volatile alias of D_80076C1C for the credits setup block, where the original's
 // plain read lets sched1 drop the 0x8604 re-read (a2) above the block copy.
-D_80076C1C_n = 0x80076C1C;
+g_nLevelArchiveChunkSize_n = 0x80076C1C;

@@ -585,7 +585,7 @@ typedef struct GnastyState {
 
 extern int D_80077CC8[];         /* level flags */
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
-extern int D_800757AC;
+extern int g_nCreditsPageIndex;
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
 extern int g_nLevelReadyFlag; /* == D_80078BBC, scalar view */
 
@@ -2467,7 +2467,7 @@ void Level33_UpdateActors(void) {
         }
         if (st->u58 == 0) {
           g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
-          D_800757AC = 0;
+          g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
           g_nGamestate = 0xE;
           g_nGamePaused = 1;

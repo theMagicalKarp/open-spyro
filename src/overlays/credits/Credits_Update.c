@@ -2,13 +2,13 @@
  *
  * Credits-sequence frame update (the Draw half is Credits_Draw).
  * While the sequence gate g_nGamestate0fMode is -1 it first BUILDS the sequence:
- * clears the 100-entry glyph pool (0x1C stride, base D_8007589C =
+ * clears the 100-entry glyph pool (0x1C stride, base g_pCreditsGlyphPool =
  * Credits_OverlayEnd), loads the four credits VRAM strips through
  * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
- * (D_80075708 line table, 0xC stride) and arms the scroll header
- * D_800757BC.  Then, every frame: advances the header cursor and the fade
+ * (g_pCreditsLineTable line table, 0xC stride) and arms the scroll header
+ * g_pCreditsScrollHeader.  Then, every frame: advances the header cursor and the fade
  * level g_nGenericCountdown, walks the visible line window
- * [D_80075968 .. D_80075878], and for each newly revealed line lays its
+ * [g_nCreditsFirstVisibleLine .. g_nCreditsLastVisibleLine], and for each newly revealed line lays its
  * text out into free glyph records -- one record per non-space character,
  * x advanced by 0xE (0x10 for digit runs, 3/4 of a space), ':' emitting two
  * dots, and the glyph index taken from the 0x30/0x41/0x61 ranges plus a
@@ -69,7 +69,7 @@
  *    held base).  `char *volatile g_pLevelSampleBankEntries;` fixes it in one line.  Same for
  *    g_pWorldUnpackHead and g_nLevelArchiveByteSize, which the original also re-reads after
  *    storing.  Do NOT blanket-volatile: where the original CACHES a global
- *    across a loop (D_800756E4 in the free-slot search) an explicit `int n =`
+ *    across a loop (g_nCreditsGlyphCount in the free-slot search) an explicit `int n =`
  *    local is what reproduces it, and volatile would break it.
  * 4. **gcc 2.7.2 REUSES stack temp slots across disjoint lexical blocks, so
  *    the slot map is a source-scope dial.**  The original's three rects live
@@ -100,13 +100,13 @@
  *    `-(x - 0x100) * 3` is folded to `(0x100 - x) * 3` (one `subu`); the
  *    original's `addiu v0,v0,-256; ...*3; negu` needs `-((x - 0x100) * 3)`.
  *    Worth 34 identical words.
- * Also folded in: an A240 per-site alias for g_pDrawBufB (`D_800785DC_BLK`, an
+ * Also folded in: an A240 per-site alias for g_pDrawBufB (`g_pDrawBufB_blk`, an
  * incomplete-array view added to credits.undefined_syms.auto.txt) -- the setup
  * block reads it five times through one `lui/addiu` base while case 4 uses the
  * absolute `$at` form, and only two C spellings of one address give both; an
  * A232 `do { } while (0)` before the 20-byte `g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount` struct
  * assignment (sched2 otherwise hoists a whole `move_by_pieces` block above the
- * preceding volatile store); and `if (D_8007589C[...] == 0) { tab = D_8007589C;
+ * preceding volatile store); and `if (g_pCreditsGlyphPool[...] == 0) { tab = g_pCreditsGlyphPool;
  * ... }` instead of a shared `tab`, which stops jump.c cross-jumping the trim
  * loop's guard INTO the loop body (§B24: the escape is different registers,
  * and a second read of the same global is how you buy them).
@@ -120,7 +120,7 @@
  *  8. **The glyph pool and the line table are STRUCT ARRAYS** (CredGlyph,
  *     CredLine).  The HImode field stores are then MEM_IN_STRUCT_P with a
  *     varying address, and sched.c true_dependence lets a SCALAR load
- *     (D_800756E4) pass them.  That is what puts `sh cur,0x18(g)` in the pool
+ *     (g_nCreditsGlyphCount) pass them.  That is what puts `sh cur,0x18(g)` in the pool
  *     overflow branch's delay slot.  Byte fields are QImode and alias
  *     everything, as in the original.
  *  9. **Index with `POOL[i]` / `LINES[line]`, not a hand-made byte offset.**
@@ -128,7 +128,7 @@
  *     loop.c's giv replacement keeps it first, which gives the original's
  *     `addu rd,giv,base`.  `&POOL[i]` in a local is NOT an address context,
  *     so it comes out base-first; where the original is giv-first but holds g
- *     in a register, write `(CredGlyph *)(i * 0x1C + (int)D_8007589C)`.  The
+ *     in a register, write `(CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool)`.  The
  *     re-centre loop and the two state loops have no `k` at all: the `move
  *     aN,zero` after each guard is loop.c's giv init.
  * 10. **Exactly ONE loop is a `for`** (the state-machine pass).  A `for`
@@ -137,13 +137,13 @@
  *     it.  That orphan pseudo gets an 8-byte stack slot.  The original's frame
  *     has exactly one such slot, which the old `int padg[2]` was faking.  The
  *     `for` guard also defeats jump threading into the next `if (D > 0)`, so
- *     cse reloads D_800756E4 after the loop as the original does.
+ *     cse reloads g_nCreditsGlyphCount after the loop as the original does.
  * 11. `cur`/`upper` (s3/s4): `upper = (unsigned)(*s - 0x30) < 0xA` expanded
  *     with `upper` as the subtraction's target, which added 2 refs at loop
  *     depth 3 and pushed upper's priority above cur's.  `c = *s - 0x30;`
  *     followed by `upper = (unsigned)c < 0xA` fixes it.  c must keep that
  *     non-byte set, otherwise combine drops the original's `andi c,0xff`.
- * 12. **A call's plain `D_8007A960[i]` argument goes in a local** (`sector`).
+ * 12. **A call's plain `g_anCreditsPageSectors[i]` argument goes in a local** (`sector`).
  *     rtx_cost of a simple MEM is COSTS_N_INSNS(1) == 2, so expand_call does
  *     not precompute it, and its load lands after the stack-arg store (a
  *     memory dependence).  Loaded first, `li a2,0x800` falls to the front and
@@ -159,7 +159,7 @@
  * original a3/t0/t1/t2).  Levers that closed clusters A-D and a hidden
  * jump-threading diff this session:
  * 14. **One struct symbol for the CD-stream state block** (Cd85D8 at
- *     0x800785D8, D_800785D8_S in undefined_syms_manual.txt).  The BLK copy
+ *     0x800785D8, g_pDrawBufA_s in undefined_syms_manual.txt).  The BLK copy
  *     into `S.blk` (0x80078A40) and the 85E0/85E4/8600/8604 fields share a
  *     base, so sched sees output/anti dependences between the copy and the
  *     field stores (BLKmode size 0 = "conflicts with everything on that
@@ -169,9 +169,9 @@
  * 15. **`g_nWorldTimAudioChunkOffset[3]` instead of a scalar g_nWorldBundleChunkSize** for a call argument:
  *     an ARRAY_REF address goes through memory_address, so the cheap
  *     (mem (reg)) form is NOT precomputed by expand_call and the a2 load is
- *     emitted after arg 4's D_800757AC chain, as in the original.
+ *     emitted after arg 4's g_nCreditsPageIndex chain, as in the original.
  * 16. `char *e4 = g_pPathTableBuffer;` captured right after the call, a `sz` local
- *     loaded before the D_800757DC store, and `int f = g_nReturningHomePhase;` before
+ *     loaded before the g_nCreditsLineCount store, and `int f = g_nReturningHomePhase;` before
  *     the g_pLevelSampleBankEntries re-read fix three load orders (all luid ties).
  * 17. Glyph loop: the `*s - '0'` digit test is a block temp, and the loop
  *     var gets its non-byte def from the space branch instead:
@@ -180,7 +180,7 @@
  *     the st.adv load's delay slot (which inflated the load's qty span and
  *     lost it v0 to the sll temp); a loop-note barrier, unlike an asm
  *     fence, still lets reorg put the li in the bgez delay slot.
- * 18. `i = 0;` hoisted above `if (D_800756E4 > 0)` before the first state
+ * 18. `i = 0;` hoisted above `if (g_nCreditsGlyphCount > 0)` before the first state
  *     loop.  Without it jump.c threads that blez straight past the `for`
  *     loop (target 0x8007bb6c vs 0x8007b8d0) -- invisible in the masked
  *     shape diff, caught only by the linked `open-spyro diff`.
@@ -194,7 +194,7 @@
  *     Two things free sched1 to do that: the copy goes to its OWN symbol
  *     (`g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount`, not `S.blk`, so it has no dep on the
  *     S fields), and C1C is read through a NON-volatile alias
- *     (`D_80076C1C_n`, undefined_syms_manual.txt), so the 8604 store/re-read
+ *     (`g_nLevelArchiveChunkSize_n`, undefined_syms_manual.txt), so the 8604 store/re-read
  *     chain is not pinned behind it.  14 -> 4 masked.  Ruled out on the way
  *     (gcc source): reload spill (a2 is regs_explicitly_used, never a spill
  *     reg) and global.c's local-reg steal (skips regs_ever_live) -- the
@@ -235,21 +235,21 @@ typedef struct {
   int w[5];
 } Blk20;
 
-extern int D_800756E4;
+extern int g_nCreditsGlyphCount;
 extern int g_nReturningHomePhase;
 extern int g_nGamestate0fMode;
-extern char *D_80075708;
-extern char *D_80075768;
-extern int D_800757AC;
-extern char *D_800757BC;
-extern int D_800757DC;
-extern char *D_800757EC;
-extern int D_80075878;
-extern char *D_8007589C;
+extern char *g_pCreditsLineTable;
+extern char *g_pCreditsScratchBuf;
+extern int g_nCreditsPageIndex;
+extern char *g_pCreditsScrollHeader;
+extern int g_nCreditsLineCount;
+extern char *g_pCreditsLoadBuf;
+extern int g_nCreditsLastVisibleLine;
+extern char *g_pCreditsGlyphPool;
 extern int g_nScriptedMobCount;
 extern int g_nGenericCountdown;
-extern int D_80075958;
-extern int D_80075968;
+extern int g_nCreditsLoadSpan;
+extern int g_nCreditsFirstVisibleLine;
 extern char *volatile g_pLevelSampleBankEntries;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
@@ -263,16 +263,16 @@ extern int g_anCameraPos;
 extern short g_nCameraEulerPitch;
 extern Blk20 g_nWorldCollisionTriCount;
 extern Blk20 g_nWorldRenderMeshChunkCount;
-extern int D_80076C1C_n;
+extern int g_nLevelArchiveChunkSize_n;
 
-extern char D_800778F0[];
+extern char g_CutsceneSoundDef[];
 extern char *g_pDrawBufA;
 extern char *g_pDrawBufB;
-extern char *D_800785DC_BLK[];
+extern char *g_pDrawBufB_blk[];
 extern char *g_pPathTableBuffer;
 extern int g_nLevelArchiveBaseLba;
 extern volatile int g_nLevelArchiveByteSize;
-extern int D_8007A960[];
+extern int g_anCreditsPageSectors[];
 extern char Credits_OverlayEnd[];
 
 typedef struct {
@@ -286,10 +286,10 @@ typedef struct {
   char pad608[0x8A40 - 0x8608];
   Blk20 blk;
 } Cd85D8;
-extern Cd85D8 D_800785D8_S;
-#define S D_800785D8_S
+extern Cd85D8 g_pDrawBufA_s;
+#define S g_pDrawBufA_s
 
-/* One 0xC-byte line record of the credits script (table at D_80075708). */
+/* One 0xC-byte line record of the credits script (table at g_pCreditsLineTable). */
 typedef struct {
   unsigned char *text;
   short y;
@@ -311,8 +311,8 @@ typedef struct {
   short glyph;
 } CredGlyph;
 
-#define POOL ((CredGlyph *)D_8007589C)
-#define LINES ((CredLine *)D_80075708)
+#define POOL ((CredGlyph *)g_pCreditsGlyphPool)
+#define LINES ((CredLine *)g_pCreditsLineTable)
 
 void Credits_Update(void) {
   short rect0[4];
@@ -320,58 +320,58 @@ void Credits_Update(void) {
   if (g_nGamestate0fMode == -1) {
     char *pool = Credits_OverlayEnd;
     int sector;
-    if (D_80075768 == 0) {
+    if (g_pCreditsScratchBuf == 0) {
       int i;
-      D_8007589C = pool;
-      D_800756E4 = 0;
+      g_pCreditsGlyphPool = pool;
+      g_nCreditsGlyphCount = 0;
       for (i = 0; i < 0x64; i++) {
-        D_8007589C[i * 0x1C + 4] = 0;
+        g_pCreditsGlyphPool[i * 0x1C + 4] = 0;
       }
-      D_80075708 = pool + 0xAF0;
-      D_80075768 = pool + 0x2800;
-      g_pDrawBufA = D_80075768;
-      g_pDrawBufB = D_80075768;
+      g_pCreditsLineTable = pool + 0xAF0;
+      g_pCreditsScratchBuf = pool + 0x2800;
+      g_pDrawBufA = g_pCreditsScratchBuf;
+      g_pDrawBufB = g_pCreditsScratchBuf;
     }
-    sector = D_8007A960[D_800757AC * 2];
-    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], 0x800, sector, 0x258);
-    CopyWords(g_nWorldTimAudioChunkOffset, D_800785DC_BLK[0], 0x1D0);
-    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2], 0x258);
+    sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x800, sector, 0x258);
+    CopyWords(g_nWorldTimAudioChunkOffset, g_pDrawBufB_blk[0], 0x1D0);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x60000,
+                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
     rect0[0] = 0x200;
     rect0[2] = 0x200;
     rect0[1] = 0;
     rect0[3] = 0x180;
-    LoadImage(rect0, D_800785DC_BLK[0]);
-    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], g_nWorldTimAudioChunkSize - 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2] + 0x60000, 0x258);
+    LoadImage(rect0, g_pDrawBufB_blk[0]);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkSize - 0x60000,
+                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x60000, 0x258);
     SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(D_800785DC_BLK[0], 0x7EFF0);
+    WriteSpuRam(g_pDrawBufB_blk[0], 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
     }
-    CdReadSyncSectors(g_nCdBaseLba[0], D_800785DC_BLK[0], g_nWorldTimAudioChunkOffset[3],
-                  g_nWorldBundleChunkOffset + D_8007A960[D_800757AC * 2], 0x258);
-    S.e0 = UnpackWorldDataChunks(D_800785DC_BLK[0], 1);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkOffset[3],
+                  g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+    S.e0 = UnpackWorldDataChunks(g_pDrawBufB_blk[0], 1);
     {
       register char *src asm("$5");
       S.e4 = S.e0;
       src = S.e4;
       g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
       S.l600 = g_nLevelArchiveChunkOffset;
-      S.h604 = D_80076C1C_n;
+      S.h604 = g_nLevelArchiveChunkSize_n;
       g_nScriptedMobCount = 0;
       CdReadSyncSectors(g_nCdBaseLba[0], src, S.h604,
-                    S.l600 + D_8007A960[D_800757AC * 2], 0x258);
+                    S.l600 + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
     }
     {
     char *e4 = g_pPathTableBuffer;
-    g_pLevelSampleBankEntries = D_800778F0;
+    g_pLevelSampleBankEntries = g_CutsceneSoundDef;
     *(int *)g_pLevelSampleBankEntries = 0x1010;
     *(int *)(g_pLevelSampleBankEntries + 4) = -1;
     *(short *)(g_pLevelSampleBankEntries + 8) = 0x50;
     *(short *)(g_pLevelSampleBankEntries + 0xA) = 0x659;
     *(short *)(g_pLevelSampleBankEntries + 0xC) = 0;
     *(short *)(g_pLevelSampleBankEntries + 0xE) = 0;
-    D_800757BC = e4;
+    g_pCreditsScrollHeader = e4;
     *(int *)(g_pLevelSampleBankEntries + 0x10) = 0;
     g_nSfxOverrideFlags = 1;
     g_nSfxOverrideVolL = 0x3FFF;
@@ -381,20 +381,20 @@ void Credits_Update(void) {
     {
       char *hdr;
       char *shift;
-      hdr = g_pPathTableBuffer + *(int *)(D_800757BC + 4);
+      hdr = g_pPathTableBuffer + *(int *)(g_pCreditsScrollHeader + 4);
       {
       int sz;
-      D_800757EC = hdr;
+      g_pCreditsLoadBuf = hdr;
       sz = *(int *)hdr;
-      shift = D_80075708 + *(int *)(hdr + 4) - 0xC;
-      D_800757DC = *(int *)(hdr + 8);
-      CopyWords(D_80075708, hdr + 0xC, sz - 0xC);
+      shift = g_pCreditsLineTable + *(int *)(hdr + 4) - 0xC;
+      g_nCreditsLineCount = *(int *)(hdr + 8);
+      CopyWords(g_pCreditsLineTable, hdr + 0xC, sz - 0xC);
       }
       {
-        int n = D_800757DC;
+        int n = g_nCreditsLineCount;
         int i = 0;
         if (n > 0) {
-          int *p = (int *)D_80075708;
+          int *p = (int *)g_pCreditsLineTable;
           do {
             p[0] = (int)shift + p[0];
             i += 1;
@@ -404,12 +404,12 @@ void Credits_Update(void) {
       }
     }
     g_nGamestate0fMode = 0;
-    D_800757AC += 1;
+    g_nCreditsPageIndex += 1;
   }
-  if (D_800757BC != 0) {
+  if (g_pCreditsScrollHeader != 0) {
     int gate = g_nGamestate0fMode;
     if (gate >= 0) {
-      int *rec = (int *)D_800757BC;
+      int *rec = (int *)g_pCreditsScrollHeader;
       int t = rec[0] + g_nFrameStep;
       int lim = rec[2] * 2;
       rec[0] = t;
@@ -426,7 +426,7 @@ void Credits_Update(void) {
           g_nGenericCountdown = 0;
         }
         {
-          char *h = D_800757BC;
+          char *h = g_pCreditsScrollHeader;
           g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
           g_nCameraPosY = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
           g_nCameraPosZ = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
@@ -439,8 +439,8 @@ void Credits_Update(void) {
       }
     }
   }
-  if (D_800756E4 == 0) {
-    if (D_80075968 >= D_800757DC) {
+  if (g_nCreditsGlyphCount == 0) {
+    if (g_nCreditsFirstVisibleLine >= g_nCreditsLineCount) {
       char *p;
       *(short *)(g_pLevelSampleBankEntries + 8) -= 0xA;
       {
@@ -462,28 +462,28 @@ void Credits_Update(void) {
       }
     }
   }
-  if (D_800756E4 > 0 || (D_800757DC > 0 && D_80075968 < D_800757DC)) {
-    int last = D_80075878;
+  if (g_nCreditsGlyphCount > 0 || (g_nCreditsLineCount > 0 && g_nCreditsFirstVisibleLine < g_nCreditsLineCount)) {
+    int last = g_nCreditsLastVisibleLine;
     int line;
     int upper;
     int i;
     RotateLightVectorXZ(3);
-    line = D_80075968;
+    line = g_nCreditsFirstVisibleLine;
     upper = 1;
     if (last >= line) {
       do {
         int cur = -1;
         if (TickCountdownByFrameDelta(&LINES[line].unk6, 2) != 0) {
           LINES[line].state = 2;
-          if (LINES[line].unk8 == 0 && line == D_80075968) {
-            D_80075968 = line + 1;
+          if (LINES[line].unk8 == 0 && line == g_nCreditsFirstVisibleLine) {
+            g_nCreditsFirstVisibleLine = line + 1;
           }
         }
         if (LINES[0].state == 0) {
           cur = 0;
         } else if (TickCountdownByFrameDelta(&LINES[line].unk8, 2) != 0 &&
                    LINES[line + 1].state == 0 &&
-                   line < D_800757DC - 1) {
+                   line < g_nCreditsLineCount - 1) {
           cur = line + 1;
         }
         if (cur != -1) {
@@ -506,11 +506,11 @@ void Credits_Update(void) {
           int x0;
           LINES[cur].state = 1;
           lift = 0x10;
-          if (D_80075878 < cur) {
-            D_80075878 = cur;
+          if (g_nCreditsLastVisibleLine < cur) {
+            g_nCreditsLastVisibleLine = cur;
           }
-          if (D_80075878 > D_800757DC) {
-            D_80075878 = D_800757DC;
+          if (g_nCreditsLastVisibleLine > g_nCreditsLineCount) {
+            g_nCreditsLastVisibleLine = g_nCreditsLineCount;
           }
           st.x = 0x100;
           y0 = LINES[cur].y;
@@ -526,7 +526,7 @@ void Credits_Update(void) {
             if ((c & 0xFF) != 0x20) {
               CredGlyph *g;
             retry: {
-              n = D_800756E4;
+              n = g_nCreditsGlyphCount;
               i = slot;
               if (i < n) {
                 while (i < n) {
@@ -535,14 +535,14 @@ void Credits_Update(void) {
                   }
                   i += 1;
                 }
-                if (i < D_800756E4) {
+                if (i < g_nCreditsGlyphCount) {
                   slot = i;
                   g = &POOL[i];
                   goto got;
                 }
               }
-              g = &POOL[D_800756E4];
-              D_800756E4 = D_800756E4 + 1;
+              g = &POOL[g_nCreditsGlyphCount];
+              g_nCreditsGlyphCount = g_nCreditsGlyphCount + 1;
             got:;
             }
               c = *s;
@@ -554,7 +554,7 @@ void Credits_Update(void) {
               }
               g->state = 1;
               g->line = cur;
-              if (D_800756E4 >= 0x65) {
+              if (g_nCreditsGlyphCount >= 0x65) {
                 exit(0);
               }
               g->x = st.x;
@@ -619,9 +619,9 @@ void Credits_Update(void) {
             int mid = (st.x - x0) >> 1;
             int d = 0x1E;
             i = 0;
-            if (D_800756E4 > 0) {
+            if (g_nCreditsGlyphCount > 0) {
               do {
-                CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)D_8007589C);
+                CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
                 if (g->line == cur) {
                   short gx = g->x - mid;
                   int dx = -((gx - 0x100) * 3) / d;
@@ -643,7 +643,7 @@ void Credits_Update(void) {
                   POOL[i].timer = d;
                 }
                 i += 1;
-              } while (i < D_800756E4);
+              } while (i < g_nCreditsGlyphCount);
             }
           }
         }
@@ -651,7 +651,7 @@ void Credits_Update(void) {
       } while (last >= line);
     }
     i = 0;
-    if (D_800756E4 > 0) {
+    if (g_nCreditsGlyphCount > 0) {
       do {
         int st = LINES[POOL[i].line].state;
         if (st == 2) {
@@ -662,11 +662,11 @@ void Credits_Update(void) {
           }
         }
         i += 1;
-      } while (i < D_800756E4);
+      } while (i < g_nCreditsGlyphCount);
     }
-    for (i = 0; i < D_800756E4; i++) {
+    for (i = 0; i < g_nCreditsGlyphCount; i++) {
       {
-        CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)D_8007589C);
+        CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
         switch (g->state) {
         case 1:
           g->x =
@@ -708,13 +708,13 @@ void Credits_Update(void) {
         }
       }
     }
-    if (D_800756E4 > 0) {
+    if (g_nCreditsGlyphCount > 0) {
       char *tab;
-      if (D_8007589C[D_800756E4 * 0x1C - 0x18] == 0) {
-        tab = D_8007589C;
+      if (g_pCreditsGlyphPool[g_nCreditsGlyphCount * 0x1C - 0x18] == 0) {
+        tab = g_pCreditsGlyphPool;
         for (;;) {
-          int m = D_800756E4 - 1;
-          D_800756E4 = m;
+          int m = g_nCreditsGlyphCount - 1;
+          g_nCreditsGlyphCount = m;
           if (m <= 0) {
             break;
           }
@@ -741,15 +741,15 @@ void Credits_Update(void) {
       if ((unsigned int)st < 5) {
         switch (st) {
         case 0: {
-          int sector = D_8007A960[D_800757AC * 2];
-          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, 0x800, sector, 0x258);
+          int sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
+          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, 0x258);
           g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
         }
         case 1:
-          CopyWords(g_nWorldTimAudioChunkOffset, D_800757EC, 0x1D0);
-          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, 0x20000,
-                        g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2], 0x258);
+          CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, 0x1D0);
+          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
+                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
           g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
         case 2: {
@@ -760,15 +760,15 @@ void Credits_Update(void) {
           rect[2] = 0x200;
           rect[3] = 0x80;
           DrawSync(0);
-          LoadImage(rect, D_800757EC);
+          LoadImage(rect, g_pCreditsLoadBuf);
           DrawSync(0);
           {
             int off = g_nLevelArchiveChunkSize + 0x40000;
             span = g_nWorldBundleChunkSize + off;
           }
-          D_80075958 = span;
-          StartCdReadAsync(g_nCdBaseLba[0], D_800757EC, span,
-                        g_nWorldTimAudioChunkOffset[0] + D_8007A960[D_800757AC * 2] + 0x20000,
+          g_nCreditsLoadSpan = span;
+          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, span,
+                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x20000,
                         0x258);
           g_nGamestate0fMode = g_nGamestate0fMode + 1;
           break;
@@ -782,33 +782,33 @@ void Credits_Update(void) {
           rect[1] = 0x80;
           rect[2] = 0x200;
           rect[3] = 0x100;
-          g_pDrawBufA = D_80075768;
-          g_pDrawBufB = D_80075768;
+          g_pDrawBufA = g_pCreditsScratchBuf;
+          g_pDrawBufB = g_pCreditsScratchBuf;
           DrawSync(0);
-          LoadImage(rect, D_800757EC);
+          LoadImage(rect, g_pCreditsLoadBuf);
           rect[0] = 0x200;
           rect[1] = 0x180;
           rect[2] = 0x200;
           rect[3] = 0x80;
           MoveImage(rect, 0x200, 0);
           DrawSync(0);
-          CopyWords(D_80075768, D_800757EC + 0x40000, D_80075958 - 0x40000);
-          D_800757EC = D_80075768 + D_80075958 - 0x40000;
+          CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000, g_nCreditsLoadSpan - 0x40000);
+          g_pCreditsLoadBuf = g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
           S.e0 = UnpackWorldDataChunks(g_pDrawBufB, 1);
           {
           char *dc = S.dc;
           S.blk = g_nWorldCollisionTriCount;
           g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
           }
-          D_800757BC = g_pPathTableBuffer;
+          g_pCreditsScrollHeader = g_pPathTableBuffer;
           g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;
           g_nLevelArchiveBaseLba = g_nLevelArchiveChunkOffset;
-          if (D_800757AC % 10 < 9) {
+          if (g_nCreditsPageIndex % 10 < 9) {
             g_nGamestate0fMode = 0;
           } else {
             g_nGamestate0fMode = 3;
           }
-          D_800757AC += 1;
+          g_nCreditsPageIndex += 1;
           break;
         }
         }

@@ -14310,12 +14310,12 @@ dlabel g_nCdStallMarker
     /* 65EE0 800756E0 00000000 */ .word 0x00000000
 enddlabel g_nCdStallMarker
 
-nonmatching D_800756E4
+nonmatching g_nCreditsGlyphCount
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800756E4
+dlabel g_nCreditsGlyphCount
     /* 65EE4 800756E4 00000000 */ .word 0x00000000
-enddlabel D_800756E4
+enddlabel g_nCreditsGlyphCount
 
 nonmatching g_pActorAuxPoolTop
 
@@ -14361,12 +14361,12 @@ dlabel g_nGamestate0fMode
     /* 65F04 80075704 00000000 */ .word 0x00000000
 enddlabel g_nGamestate0fMode
 
-nonmatching D_80075708
+nonmatching g_pCreditsLineTable
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80075708
+dlabel g_pCreditsLineTable
     /* 65F08 80075708 00000000 */ .word 0x00000000
-enddlabel D_80075708
+enddlabel g_pCreditsLineTable
 
 nonmatching g_nGameplayBlocked
 
@@ -14506,11 +14506,11 @@ dlabel g_nVibrationLevel
     /* 65F64 80075764 00000000 */ .word 0x00000000
 enddlabel g_nVibrationLevel
 
-nonmatching D_80075768
+nonmatching g_pCreditsScratchBuf
 
-dlabel D_80075768
+dlabel g_pCreditsScratchBuf
     /* 65F68 80075768 00000000 */ .word 0x00000000
-enddlabel D_80075768
+enddlabel g_pCreditsScratchBuf
 
 nonmatching g_nPreserveMobIdx
 
@@ -14616,11 +14616,11 @@ dlabel g_pfnLevelHandleFlightResults
     /* 65FA8 800757A8 00000000 */ .word 0x00000000
 enddlabel g_pfnLevelHandleFlightResults
 
-nonmatching D_800757AC
+nonmatching g_nCreditsPageIndex
 
-dlabel D_800757AC
+dlabel g_nCreditsPageIndex
     /* 65FAC 800757AC 00000000 */ .word 0x00000000
-enddlabel D_800757AC
+enddlabel g_nCreditsPageIndex
 
 nonmatching g_pPrimBufferWriteCursor
 
@@ -14640,11 +14640,11 @@ dlabel g_nDeathTryIndex
     /* 65FB8 800757B8 00000000 */ .word 0x00000000
 enddlabel g_nDeathTryIndex
 
-nonmatching D_800757BC
+nonmatching g_pCreditsScrollHeader
 
-dlabel D_800757BC
+dlabel g_pCreditsScrollHeader
     /* 65FBC 800757BC 00000000 */ .word 0x00000000
-enddlabel D_800757BC
+enddlabel g_pCreditsScrollHeader
 
 nonmatching g_pfnGamestate7Handler
 
@@ -14689,11 +14689,11 @@ dlabel g_nGamestate
     /* 65FD8 800757D8 00000000 */ .word 0x00000000
 enddlabel g_nGamestate
 
-nonmatching D_800757DC
+nonmatching g_nCreditsLineCount
 
-dlabel D_800757DC
+dlabel g_nCreditsLineCount
     /* 65FDC 800757DC 00000000 */ .word 0x00000000
-enddlabel D_800757DC
+enddlabel g_nCreditsLineCount
 
 nonmatching g_pPadSubstepState
 
@@ -14713,12 +14713,12 @@ dlabel g_nGameOverLevelIntroIndex
     /* 65FE8 800757E8 00000000 */ .word 0x00000000
 enddlabel g_nGameOverLevelIntroIndex
 
-nonmatching D_800757EC
+nonmatching g_pCreditsLoadBuf
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800757EC
+dlabel g_pCreditsLoadBuf
     /* 65FEC 800757EC 00000000 */ .word 0x00000000
-enddlabel D_800757EC
+enddlabel g_pCreditsLoadBuf
 
 nonmatching g_nSpyroScriptedLiftTurn
 

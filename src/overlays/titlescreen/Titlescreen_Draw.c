@@ -321,10 +321,10 @@ void Titlescreen_Draw(void) {
   }
 
   /* setRGB0 of both draw envs from the cyclorama background color */
-  D_80076EF9.r = g_dwWorldFogColor.r, D_80076EF9.g = g_dwWorldFogColor.g,
-  D_80076EF9.b = g_dwWorldFogColor.b;
-  D_80076F7D.r = g_dwWorldFogColor.r, D_80076F7D.g = g_dwWorldFogColor.g,
-  D_80076F7D.b = g_dwWorldFogColor.b;
+  g_bFrameDrawEnv0BgR.r = g_dwWorldFogColor.r, g_bFrameDrawEnv0BgR.g = g_dwWorldFogColor.g,
+  g_bFrameDrawEnv0BgR.b = g_dwWorldFogColor.b;
+  g_bFrameDrawEnv1BgR.r = g_dwWorldFogColor.r, g_bFrameDrawEnv1BgR.g = g_dwWorldFogColor.g,
+  g_bFrameDrawEnv1BgR.b = g_dwWorldFogColor.b;
 
   /* draw the mobys */
   BuildRenderEntityLists();

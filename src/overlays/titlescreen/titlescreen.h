@@ -190,8 +190,8 @@ extern Struct_0x70 *g_pActiveFrameDrawEnv;
 typedef struct {
   u_char r, g, b;
 } Struct_0x03;
-extern Struct_0x03 D_80076EF9;
-extern Struct_0x03 D_80076F7D;
+extern Struct_0x03 g_bFrameDrawEnv0BgR;
+extern Struct_0x03 g_bFrameDrawEnv1BgR;
 extern Struct_0x03 g_dwWorldFogColor;
 
 extern struct {
