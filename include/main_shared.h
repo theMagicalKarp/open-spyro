@@ -122,9 +122,9 @@ extern void UpdateCameraFrame(void);
 
 extern void TickCdMusicStream(void);
 
-extern int D_80075728;
+extern int g_nSpyroOrbDropSpawnIndex;
 
-extern int D_800756B4;
+extern int g_bSpyroJumpHoldForced;
 
 extern void BeginStoryIntro(void);
 

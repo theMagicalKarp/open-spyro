@@ -14129,11 +14129,11 @@ dlabel D_80075658
     /* 65E64 80075664 00000000 */ .word 0x00000000
 enddlabel D_80075658
 
-nonmatching D_80075668
+nonmatching g_nSpyroScriptedLiftBaseZ
 
-dlabel D_80075668
+dlabel g_nSpyroScriptedLiftBaseZ
     /* 65E68 80075668 00000000 */ .word 0x00000000
-enddlabel D_80075668
+enddlabel g_nSpyroScriptedLiftBaseZ
 
 nonmatching g_nCurrentWorldId
 
@@ -14238,11 +14238,11 @@ dlabel g_nLevelTransitionTallyActive
     /* 65EB0 800756B0 00000000 */ .word 0x00000000
 enddlabel g_nLevelTransitionTallyActive
 
-nonmatching D_800756B4
+nonmatching g_bSpyroJumpHoldForced
 
-dlabel D_800756B4
+dlabel g_bSpyroJumpHoldForced
     /* 65EB4 800756B4 00000000 */ .word 0x00000000
-enddlabel D_800756B4
+enddlabel g_bSpyroJumpHoldForced
 
 nonmatching g_nCameraLosClear
 
@@ -14404,17 +14404,17 @@ dlabel g_nPauseMenuCursor
     /* 65F20 80075720 00000000 */ .word 0x00000000
 enddlabel g_nPauseMenuCursor
 
-nonmatching D_80075724
+nonmatching g_nSpyroScriptedLiftRise
 
-dlabel D_80075724
+dlabel g_nSpyroScriptedLiftRise
     /* 65F24 80075724 00000000 */ .word 0x00000000
-enddlabel D_80075724
+enddlabel g_nSpyroScriptedLiftRise
 
-nonmatching D_80075728
+nonmatching g_nSpyroOrbDropSpawnIndex
 
-dlabel D_80075728
+dlabel g_nSpyroOrbDropSpawnIndex
     /* 65F28 80075728 00000000 */ .word 0x00000000
-enddlabel D_80075728
+enddlabel g_nSpyroOrbDropSpawnIndex
 
 nonmatching g_dwGamestateFrames
 
@@ -14568,17 +14568,17 @@ dlabel D_8007578A
     /* 65F8A 8007578A */ .short 0x0000
 enddlabel D_8007578A
 
-nonmatching D_8007578C
+nonmatching g_nSpyroScriptedLiftYaw
 
-dlabel D_8007578C
+dlabel g_nSpyroScriptedLiftYaw
     /* 65F8C 8007578C 00000000 */ .word 0x00000000
-enddlabel D_8007578C
+enddlabel g_nSpyroScriptedLiftYaw
 
-nonmatching D_80075790
+nonmatching g_pSpyroHomingTargetActor
 
-dlabel D_80075790
+dlabel g_pSpyroHomingTargetActor
     /* 65F90 80075790 00000000 */ .word 0x00000000
-enddlabel D_80075790
+enddlabel g_pSpyroHomingTargetActor
 
 nonmatching g_nActorAnimDone
 
@@ -14720,12 +14720,12 @@ dlabel D_800757EC
     /* 65FEC 800757EC 00000000 */ .word 0x00000000
 enddlabel D_800757EC
 
-nonmatching D_800757F0
+nonmatching g_nSpyroScriptedLiftTurn
 
-dlabel D_800757F0
+dlabel g_nSpyroScriptedLiftTurn
     /* 65FF0 800757F0 00000000 */ .word 0x00000000
     /* 65FF4 800757F4 00000000 */ .word 0x00000000
-enddlabel D_800757F0
+enddlabel g_nSpyroScriptedLiftTurn
 
 nonmatching g_pLevelPickupTableEntries
 

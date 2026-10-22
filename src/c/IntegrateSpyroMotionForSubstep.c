@@ -27,22 +27,22 @@ extern int g_nSpyroVelocityZ;
 extern int g_nSpyroCarryMotionY;
 extern int g_nSpyroCarryMotionZ;
 extern int D_80078B34[];
-extern int D_800756B4;
-extern int D_80075668;
+extern int g_bSpyroJumpHoldForced;
+extern int g_nSpyroScriptedLiftBaseZ;
 extern int D_80075700;
-extern int D_80075724;
-extern int D_8007578C;
-extern int D_80075790;
-extern int D_800757F0;
+extern int g_nSpyroScriptedLiftRise;
+extern int g_nSpyroScriptedLiftYaw;
+extern int g_pSpyroHomingTargetActor;
+extern int g_nSpyroScriptedLiftTurn;
 extern int D_8006E7DC[];
 extern int D_8006E7E4[];
 
-SDATA(D_80075668, 4);
-SDATA(D_800756B4, 4);
-SDATA(D_80075724, 4);
-SDATA(D_8007578C, 4);
-SDATA(D_80075790, 4);
-SDATA(D_800757F0, 4);
+SDATA(g_nSpyroScriptedLiftBaseZ, 4);
+SDATA(g_bSpyroJumpHoldForced, 4);
+SDATA(g_nSpyroScriptedLiftRise, 4);
+SDATA(g_nSpyroScriptedLiftYaw, 4);
+SDATA(g_pSpyroHomingTargetActor, 4);
+SDATA(g_nSpyroScriptedLiftTurn, 4);
 SDATA(g_pSpyroContactActor, 4);
 
 /* One view of the Spyro record from its world position (0x80078a58). */
@@ -472,7 +472,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
     }
     if (t < 0xD && g_nSpyroStateFlags == 0 &&
-        ((PADW[1] & 0x40) || D_800756B4 != 0)) {
+        ((PADW[1] & 0x40) || g_bSpyroJumpHoldForced != 0)) {
       int c;
       int v;
 
@@ -610,7 +610,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         g_nSpyroBodyYawStep = ramp[12];
       }
       IntegrateSpyroBodyEuler(g_nSpyroBodyYawStep);
-      if (D_80075790 != 0 && g_nSpyroStateTimer < 0x78) {
+      if (g_pSpyroHomingTargetActor != 0 && g_nSpyroStateTimer < 0x78) {
         d = (SPY[SPY_YAW] - g_anCameraEulerYawBlock[0]) & 0xFFF;
 
         if (d > 0x800) {
@@ -619,7 +619,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (abs(d) >= 0x200) {
           int l;
 
-          SubtractVector(v30, (int *)D_80075790 + 3, &SPY[0]);
+          SubtractVector(v30, (int *)g_pSpyroHomingTargetActor + 3, &SPY[0]);
           l = VectorLength(v30, 1);
           d = (ArcTan2(v30[0], v30[1], 1) - SPY[SPY_YAW]) & 0xFFF;
           if (d > 0x800) {
@@ -637,7 +637,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             goto steered;
           }
         }
-        D_80075790 = 0;
+        g_pSpyroHomingTargetActor = 0;
       }
     steered:
       ch = &SPY[SPY_CHARGE_HOLD];
@@ -1395,7 +1395,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     zb = &g_nSpyroWorldPosZ;
     OPAQUE(zb);
-    base = D_80075668;
+    base = g_nSpyroScriptedLiftBaseZ;
     z = zb[0];
     if (z < base + 0x400) {
       lift = g_nSpyroCarryMotionZ + 0x80;
@@ -1403,17 +1403,18 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         lift = 0x12C0;
       }
       CopyVector(v80, zb + 0x5D);
-      a = zb[0] - D_80075668;
+      a = zb[0] - g_nSpyroScriptedLiftBaseZ;
       g_nSpyroStateFlags = 0;
       g_nSpyroMoveTargetMag = 0x400;
-      a = ((a * a) >> 11) + D_8007578C;
+      a = ((a * a) >> 11) + g_nSpyroScriptedLiftYaw;
     } else if (z < zb[0x54] - 0x400) {
       if (g_nSpyroStateFlags <= 0) {
         g_nSpyroStateFlags = 1;
-        D_8007578C += 0x200;
+        g_nSpyroScriptedLiftYaw += 0x200;
       }
       m = z - base - 0x400;
-      a = D_8007578C + (D_800757F0 * m) / D_80075724;
+      a = g_nSpyroScriptedLiftYaw +
+          (g_nSpyroScriptedLiftTurn * m) / g_nSpyroScriptedLiftRise;
       g_nSpyroMoveTargetMag = 0xC80;
       a = (a + ((m << 10) >> 10)) & 0xFFF;
       lift = 0x12C0;

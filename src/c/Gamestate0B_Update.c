@@ -37,26 +37,26 @@ extern char g_szMemCardSaveName[];            /* memory card save file name */
 extern int g_nSaveSlotLoaded;
 extern int g_nSaveSlotIndex;
 extern int g_nSaveFileTag;
-extern int D_80078D30;
-extern int D_80078D34;
-extern int D_80078D38;
-extern int D_80078D3C;
-extern int D_80078D40;
-extern int D_80078D44;
-extern int D_80078D48;
-extern int D_80078D4C;
-extern int D_80078D50;
-extern int D_80078D58;
-extern int D_80078D5C;
-extern int D_80078D60;
-extern int D_80078D64;
-extern int D_80078D68;
-extern int D_80078D70;
-extern int *volatile D_80078D74; /* the rescued dragon's actor */
+extern int g_nSaveMenuDragonFromDist;
+extern int g_nSaveMenuDragonFromZ;
+extern int g_nSaveMenuDragonToAngle;
+extern int g_nSaveMenuDragonToDist;
+extern int g_nSaveMenuDragonToZ;
+extern int g_nSaveMenuOverlayFromAngle;
+extern int g_nSaveMenuOverlayFromDist;
+extern int g_nSaveMenuOverlayToAngle;
+extern int g_nSaveMenuOverlayToDist;
+extern int g_nSaveMenuCameraFromDist;
+extern int g_nSaveMenuCameraFromZ;
+extern int g_nSaveMenuCameraToAngle;
+extern int g_nSaveMenuCameraToDist;
+extern int g_nSaveMenuCameraToZ;
+extern int g_nSaveMenuSpyroToYaw;
+extern int *volatile g_pSaveMenuDragonActor; /* the rescued dragon's actor */
 
 #define SM g_anSaveMenuBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
-#define ACT D_80078D74
+#define ACT g_pSaveMenuDragonActor
 #define FLD(p, off) (*(int *)((char *)(p) + (off)))
 #define SAMPLE(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
@@ -99,26 +99,35 @@ void Gamestate0B_Update(void) {
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);
-      d = D_80078D30 + (((D_80078D3C - D_80078D30) * t) >> 13);
+      d = g_nSaveMenuDragonFromDist +
+          (((g_nSaveMenuDragonToDist - g_nSaveMenuDragonFromDist) * t) >> 13);
       FLD(ACT, 0xc) = g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
       FLD(ACT, 0x10) = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
-      FLD(ACT, 0x14) = D_80078D34 + (((D_80078D40 - D_80078D34) * t) >> 13);
+      FLD(ACT, 0x14) =
+          g_nSaveMenuDragonFromZ +
+          (((g_nSaveMenuDragonToZ - g_nSaveMenuDragonFromZ) * t) >> 13);
       TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
       FindGroundHeightBelow(ACT + 3, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
       if (g_pLevelOverlayInitRecord != 0) {
-        a = LERP_ANGLE(D_80078D4C, D_80078D44, t);
-        d = D_80078D48 + (((D_80078D50 - D_80078D48) * t) >> 13);
+        a = LERP_ANGLE(g_nSaveMenuOverlayToAngle, g_nSaveMenuOverlayFromAngle,
+                       t);
+        d = g_nSaveMenuOverlayFromDist +
+            (((g_nSaveMenuOverlayToDist - g_nSaveMenuOverlayFromDist) * t) >>
+             13);
         ((int *)g_pLevelOverlayInitRecord)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
         ((int *)g_pLevelOverlayInitRecord)[4] =
             g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
       a = LERP_ANGLE(SM[24], SM[21], t);
-      d = D_80078D58 + (((D_80078D64 - D_80078D58) * t) >> 13);
+      d = g_nSaveMenuCameraFromDist +
+          (((g_nSaveMenuCameraToDist - g_nSaveMenuCameraFromDist) * t) >> 13);
       g_anCameraPos[0] = g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
       g_anCameraPos[1] = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
-      g_anCameraPos[2] = D_80078D5C + (((D_80078D68 - D_80078D5C) * t) >> 13);
+      g_anCameraPos[2] =
+          g_nSaveMenuCameraFromZ +
+          (((g_nSaveMenuCameraToZ - g_nSaveMenuCameraFromZ) * t) >> 13);
       AddVector(vec, g_anSpyroWorldPos, ACT + 3);
       vec[2] += 0x240;
       RShiftVector3(vec, 1);
@@ -163,11 +172,15 @@ void Gamestate0B_Update(void) {
       TickSpyroAttackEffects(g_nFrameStep);
       ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     } else {
-      FLD(ACT, 0xc) = g_anSpyroWorldPos[0] +
-                      ((LookupCosine(D_80078D38) * D_80078D3C) >> 12);
+      FLD(ACT, 0xc) =
+          g_anSpyroWorldPos[0] +
+          ((LookupCosine(g_nSaveMenuDragonToAngle) * g_nSaveMenuDragonToDist) >>
+           12);
       FLD(ACT, 0x10) =
-          g_anSpyroWorldPos[1] + ((LookupSine(D_80078D38) * D_80078D3C) >> 12);
-      FLD(ACT, 0x14) = D_80078D40;
+          g_anSpyroWorldPos[1] +
+          ((LookupSine(g_nSaveMenuDragonToAngle) * g_nSaveMenuDragonToDist) >>
+           12);
+      FLD(ACT, 0x14) = g_nSaveMenuDragonToZ;
       {
         int *act = ACT;
 
@@ -180,10 +193,12 @@ void Gamestate0B_Update(void) {
         ((int *)g_pLevelOverlayInitRecord)[4] =
             g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
       }
-      g_anCameraPos[0] = g_anSpyroWorldPos[0] +
-                         ((LookupCosine(D_80078D60) * D_80078D64) >> 12);
+      g_anCameraPos[0] =
+          g_anSpyroWorldPos[0] +
+          ((LookupCosine(g_nSaveMenuCameraToAngle) * g_nSaveMenuCameraToDist) >>
+           12);
       {
-        int sn = LookupSine(D_80078D60);
+        int sn = LookupSine(g_nSaveMenuCameraToAngle);
 
         SPYB[0x24] = 4;
         SPYB[0x19] = 0;
@@ -191,9 +206,10 @@ void Gamestate0B_Update(void) {
         g_anSpyroWorldPosBlock[0x16] = 4;
         SM[0] = 1;
         SM[1] = 0;
-        g_anCameraPos[2] = D_80078D68;
-        SPYB[0xE] = D_80078D70 >> 4;
-        g_anCameraPos[1] = g_anSpyroWorldPos[1] + ((sn * D_80078D64) >> 12);
+        g_anCameraPos[2] = g_nSaveMenuCameraToZ;
+        SPYB[0xE] = g_nSaveMenuSpyroToYaw >> 4;
+        g_anCameraPos[1] =
+            g_anSpyroWorldPos[1] + ((sn * g_nSaveMenuCameraToDist) >> 12);
       }
     }
     break;

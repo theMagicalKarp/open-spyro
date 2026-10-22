@@ -30149,8 +30149,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D550 8002CD50 0780033C */  lui        $v1, %hi(g_pLevelSampleBankHeader)
     /* 1D554 8002CD54 D461638C */  lw         $v1, %lo(g_pLevelSampleBankHeader)($v1)
     /* 1D558 8002CD58 10000624 */  addiu      $a2, $zero, 0x10
-    /* 1D55C 8002CD5C 0880013C */  lui        $at, %hi(D_80078D74)
-    /* 1D560 8002CD60 748D30AC */  sw         $s0, %lo(D_80078D74)($at)
+    /* 1D55C 8002CD5C 0880013C */  lui        $at, %hi(g_pSaveMenuDragonActor)
+    /* 1D560 8002CD60 748D30AC */  sw         $s0, %lo(g_pSaveMenuDragonActor)($at)
     /* 1D564 8002CD64 0780013C */  lui        $at, %hi(g_nSpyroFlameBreathTimerSave)
     /* 1D568 8002CD68 A45822AC */  sw         $v0, %lo(g_nSpyroFlameBreathTimerSave)($at)
     /* 1D56C 8002CD6C 2C006490 */  lbu        $a0, 0x2C($v1)
@@ -30175,8 +30175,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D5B8 8002CDB8 778A22A0 */  sb         $v0, %lo(g_bSpyroAnimFrame)($at)
     /* 1D5BC 8002CDBC 0880013C */  lui        $at, %hi(g_bSpyroSubFrameTimer)
     /* 1D5C0 8002CDC0 7C8A20A0 */  sb         $zero, %lo(g_bSpyroSubFrameTimer)($at)
-    /* 1D5C4 8002CDC4 0880013C */  lui        $at, %hi(D_80078D6C)
-    /* 1D5C8 8002CDC8 6C8D23AC */  sw         $v1, %lo(D_80078D6C)($at)
+    /* 1D5C4 8002CDC4 0880013C */  lui        $at, %hi(g_nSaveMenuSpyroFromYaw)
+    /* 1D5C8 8002CDC8 6C8D23AC */  sw         $v1, %lo(g_nSaveMenuSpyroFromYaw)($at)
     /* 1D5CC 8002CDCC 0400438E */  lw         $v1, 0x4($s2)
     /* 1D5D0 8002CDD0 E8FF248E */  lw         $a0, -0x18($s1)
     /* 1D5D4 8002CDD4 40100300 */  sll        $v0, $v1, 1
@@ -30193,8 +30193,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D600 8002CE00 AD5A000C */  jal        ArcTan2
     /* 1D604 8002CE04 23284500 */   subu      $a1, $v0, $a1
     /* 1D608 8002CE08 01000624 */  addiu      $a2, $zero, 0x1
-    /* 1D60C 8002CE0C 0880013C */  lui        $at, %hi(D_80078D70)
-    /* 1D610 8002CE10 708D22AC */  sw         $v0, %lo(D_80078D70)($at)
+    /* 1D60C 8002CE0C 0880013C */  lui        $at, %hi(g_nSaveMenuSpyroToYaw)
+    /* 1D610 8002CE10 708D22AC */  sw         $v0, %lo(g_nSaveMenuSpyroToYaw)($at)
     /* 1D614 8002CE14 0C00038E */  lw         $v1, 0xC($s0)
     /* 1D618 8002CE18 E8FF248E */  lw         $a0, -0x18($s1)
     /* 1D61C 8002CE1C 1000028E */  lw         $v0, 0x10($s0)
@@ -30206,31 +30206,31 @@ glabel BeginSaveMenuFromWorld
     /* 1D634 8002CE34 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1D638 8002CE38 0C000526 */  addiu      $a1, $s0, 0xC
     /* 1D63C 8002CE3C E8FF3226 */  addiu      $s2, $s1, -0x18
-    /* 1D640 8002CE40 0880013C */  lui        $at, %hi(D_80078D2C)
-    /* 1D644 8002CE44 2C8D22AC */  sw         $v0, %lo(D_80078D2C)($at)
+    /* 1D640 8002CE40 0880013C */  lui        $at, %hi(g_nSaveMenuDragonFromAngle)
+    /* 1D644 8002CE44 2C8D22AC */  sw         $v0, %lo(g_nSaveMenuDragonFromAngle)($at)
     /* 1D648 8002CE48 E35D000C */  jal        SubtractVector
     /* 1D64C 8002CE4C 21304002 */   addu      $a2, $s2, $zero
     /* 1D650 8002CE50 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1D654 8002CE54 7F5C000C */  jal        VectorLength
     /* 1D658 8002CE58 21280000 */   addu      $a1, $zero, $zero
-    /* 1D65C 8002CE5C 0880013C */  lui        $at, %hi(D_80078D30)
-    /* 1D660 8002CE60 308D22AC */  sw         $v0, %lo(D_80078D30)($at)
+    /* 1D65C 8002CE5C 0880013C */  lui        $at, %hi(g_nSaveMenuDragonFromDist)
+    /* 1D660 8002CE60 308D22AC */  sw         $v0, %lo(g_nSaveMenuDragonFromDist)($at)
     /* 1D664 8002CE64 1400038E */  lw         $v1, 0x14($s0)
-    /* 1D668 8002CE68 0880043C */  lui        $a0, %hi(D_80078D70)
-    /* 1D66C 8002CE6C 708D848C */  lw         $a0, %lo(D_80078D70)($a0)
+    /* 1D668 8002CE68 0880043C */  lui        $a0, %hi(g_nSaveMenuSpyroToYaw)
+    /* 1D66C 8002CE6C 708D848C */  lw         $a0, %lo(g_nSaveMenuSpyroToYaw)($a0)
     /* 1D670 8002CE70 80040224 */  addiu      $v0, $zero, 0x480
-    /* 1D674 8002CE74 0880013C */  lui        $at, %hi(D_80078D3C)
-    /* 1D678 8002CE78 3C8D22AC */  sw         $v0, %lo(D_80078D3C)($at)
-    /* 1D67C 8002CE7C 0880013C */  lui        $at, %hi(D_80078D34)
-    /* 1D680 8002CE80 348D23AC */  sw         $v1, %lo(D_80078D34)($at)
-    /* 1D684 8002CE84 0880013C */  lui        $at, %hi(D_80078D38)
-    /* 1D688 8002CE88 388D24AC */  sw         $a0, %lo(D_80078D38)($at)
+    /* 1D674 8002CE74 0880013C */  lui        $at, %hi(g_nSaveMenuDragonToDist)
+    /* 1D678 8002CE78 3C8D22AC */  sw         $v0, %lo(g_nSaveMenuDragonToDist)($at)
+    /* 1D67C 8002CE7C 0880013C */  lui        $at, %hi(g_nSaveMenuDragonFromZ)
+    /* 1D680 8002CE80 348D23AC */  sw         $v1, %lo(g_nSaveMenuDragonFromZ)($at)
+    /* 1D684 8002CE84 0880013C */  lui        $at, %hi(g_nSaveMenuDragonToAngle)
+    /* 1D688 8002CE88 388D24AC */  sw         $a0, %lo(g_nSaveMenuDragonToAngle)($at)
     /* 1D68C 8002CE8C F0FF228E */  lw         $v0, -0x10($s1)
     /* 1D690 8002CE90 0780053C */  lui        $a1, %hi(g_pLevelOverlayInitRecord)
     /* 1D694 8002CE94 9858A58C */  lw         $a1, %lo(g_pLevelOverlayInitRecord)($a1)
     /* 1D698 8002CE98 70014224 */  addiu      $v0, $v0, 0x170
-    /* 1D69C 8002CE9C 0880013C */  lui        $at, %hi(D_80078D40)
-    /* 1D6A0 8002CEA0 408D22AC */  sw         $v0, %lo(D_80078D40)($at)
+    /* 1D69C 8002CE9C 0880013C */  lui        $at, %hi(g_nSaveMenuDragonToZ)
+    /* 1D6A0 8002CEA0 408D22AC */  sw         $v0, %lo(g_nSaveMenuDragonToZ)($at)
     /* 1D6A4 8002CEA4 2000A010 */  beqz       $a1, .L8002CF28
     /* 1D6A8 8002CEA8 00000000 */   nop
     /* 1D6AC 8002CEAC 01000624 */  addiu      $a2, $zero, 0x1
@@ -30246,24 +30246,24 @@ glabel BeginSaveMenuFromWorld
     /* 1D6D4 8002CED4 0780053C */  lui        $a1, %hi(g_pLevelOverlayInitRecord)
     /* 1D6D8 8002CED8 9858A58C */  lw         $a1, %lo(g_pLevelOverlayInitRecord)($a1)
     /* 1D6DC 8002CEDC 21304002 */  addu       $a2, $s2, $zero
-    /* 1D6E0 8002CEE0 0880013C */  lui        $at, %hi(D_80078D44)
-    /* 1D6E4 8002CEE4 448D22AC */  sw         $v0, %lo(D_80078D44)($at)
+    /* 1D6E0 8002CEE0 0880013C */  lui        $at, %hi(g_nSaveMenuOverlayFromAngle)
+    /* 1D6E4 8002CEE4 448D22AC */  sw         $v0, %lo(g_nSaveMenuOverlayFromAngle)($at)
     /* 1D6E8 8002CEE8 E35D000C */  jal        SubtractVector
     /* 1D6EC 8002CEEC 0C00A524 */   addiu     $a1, $a1, 0xC
     /* 1D6F0 8002CEF0 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1D6F4 8002CEF4 7F5C000C */  jal        VectorLength
     /* 1D6F8 8002CEF8 21280000 */   addu      $a1, $zero, $zero
-    /* 1D6FC 8002CEFC 0880013C */  lui        $at, %hi(D_80078D48)
-    /* 1D700 8002CF00 488D22AC */  sw         $v0, %lo(D_80078D48)($at)
-    /* 1D704 8002CF04 0880023C */  lui        $v0, %hi(D_80078D70)
-    /* 1D708 8002CF08 708D428C */  lw         $v0, %lo(D_80078D70)($v0)
+    /* 1D6FC 8002CEFC 0880013C */  lui        $at, %hi(g_nSaveMenuOverlayFromDist)
+    /* 1D700 8002CF00 488D22AC */  sw         $v0, %lo(g_nSaveMenuOverlayFromDist)($at)
+    /* 1D704 8002CF04 0880023C */  lui        $v0, %hi(g_nSaveMenuSpyroToYaw)
+    /* 1D708 8002CF08 708D428C */  lw         $v0, %lo(g_nSaveMenuSpyroToYaw)($v0)
     /* 1D70C 8002CF0C 00060324 */  addiu      $v1, $zero, 0x600
-    /* 1D710 8002CF10 0880013C */  lui        $at, %hi(D_80078D50)
-    /* 1D714 8002CF14 508D23AC */  sw         $v1, %lo(D_80078D50)($at)
+    /* 1D710 8002CF10 0880013C */  lui        $at, %hi(g_nSaveMenuOverlayToDist)
+    /* 1D714 8002CF14 508D23AC */  sw         $v1, %lo(g_nSaveMenuOverlayToDist)($at)
     /* 1D718 8002CF18 00084224 */  addiu      $v0, $v0, 0x800
     /* 1D71C 8002CF1C FF0F4230 */  andi       $v0, $v0, 0xFFF
-    /* 1D720 8002CF20 0880013C */  lui        $at, %hi(D_80078D4C)
-    /* 1D724 8002CF24 4C8D22AC */  sw         $v0, %lo(D_80078D4C)($at)
+    /* 1D720 8002CF20 0880013C */  lui        $at, %hi(g_nSaveMenuOverlayToAngle)
+    /* 1D724 8002CF24 4C8D22AC */  sw         $v0, %lo(g_nSaveMenuOverlayToAngle)($at)
   .L8002CF28:
     /* 1D728 8002CF28 01000624 */  addiu      $a2, $zero, 0x1
     /* 1D72C 8002CF2C 0780103C */  lui        $s0, %hi(g_anCameraPos)
@@ -30279,19 +30279,19 @@ glabel BeginSaveMenuFromWorld
     /* 1D754 8002CF54 23284500 */   subu      $a1, $v0, $a1
     /* 1D758 8002CF58 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1D75C 8002CF5C 21280002 */  addu       $a1, $s0, $zero
-    /* 1D760 8002CF60 0880013C */  lui        $at, %hi(D_80078D54)
-    /* 1D764 8002CF64 548D22AC */  sw         $v0, %lo(D_80078D54)($at)
+    /* 1D760 8002CF60 0880013C */  lui        $at, %hi(g_nSaveMenuCameraFromAngle)
+    /* 1D764 8002CF64 548D22AC */  sw         $v0, %lo(g_nSaveMenuCameraFromAngle)($at)
     /* 1D768 8002CF68 E35D000C */  jal        SubtractVector
     /* 1D76C 8002CF6C 21304002 */   addu      $a2, $s2, $zero
     /* 1D770 8002CF70 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1D774 8002CF74 7F5C000C */  jal        VectorLength
     /* 1D778 8002CF78 21280000 */   addu      $a1, $zero, $zero
-    /* 1D77C 8002CF7C 0880043C */  lui        $a0, %hi(D_80078D54)
-    /* 1D780 8002CF80 548D848C */  lw         $a0, %lo(D_80078D54)($a0)
-    /* 1D784 8002CF84 0880053C */  lui        $a1, %hi(D_80078D70)
-    /* 1D788 8002CF88 708DA58C */  lw         $a1, %lo(D_80078D70)($a1)
-    /* 1D78C 8002CF8C 0880013C */  lui        $at, %hi(D_80078D58)
-    /* 1D790 8002CF90 588D22AC */  sw         $v0, %lo(D_80078D58)($at)
+    /* 1D77C 8002CF7C 0880043C */  lui        $a0, %hi(g_nSaveMenuCameraFromAngle)
+    /* 1D780 8002CF80 548D848C */  lw         $a0, %lo(g_nSaveMenuCameraFromAngle)($a0)
+    /* 1D784 8002CF84 0880053C */  lui        $a1, %hi(g_nSaveMenuSpyroToYaw)
+    /* 1D788 8002CF88 708DA58C */  lw         $a1, %lo(g_nSaveMenuSpyroToYaw)($a1)
+    /* 1D78C 8002CF8C 0880013C */  lui        $at, %hi(g_nSaveMenuCameraFromDist)
+    /* 1D790 8002CF90 588D22AC */  sw         $v0, %lo(g_nSaveMenuCameraFromDist)($at)
     /* 1D794 8002CF94 B0000224 */  addiu      $v0, $zero, 0xB0
     /* 1D798 8002CF98 0880013C */  lui        $at, %hi(g_nSaveMenuXOffset)
     /* 1D79C 8002CF9C 108D22AC */  sw         $v0, %lo(g_nSaveMenuXOffset)($at)
@@ -30299,31 +30299,31 @@ glabel BeginSaveMenuFromWorld
     /* 1D7A4 8002CFA4 006E428C */  lw         $v0, %lo(g_anCameraPos + 0x8)($v0)
     /* 1D7A8 8002CFA8 0B03A524 */  addiu      $a1, $a1, 0x30B
     /* 1D7AC 8002CFAC FF0FA530 */  andi       $a1, $a1, 0xFFF
-    /* 1D7B0 8002CFB0 0880013C */  lui        $at, %hi(D_80078D5C)
-    /* 1D7B4 8002CFB4 5C8D22AC */  sw         $v0, %lo(D_80078D5C)($at)
-    /* 1D7B8 8002CFB8 0880013C */  lui        $at, %hi(D_80078D60)
-    /* 1D7BC 8002CFBC 608D25AC */  sw         $a1, %lo(D_80078D60)($at)
+    /* 1D7B0 8002CFB0 0880013C */  lui        $at, %hi(g_nSaveMenuCameraFromZ)
+    /* 1D7B4 8002CFB4 5C8D22AC */  sw         $v0, %lo(g_nSaveMenuCameraFromZ)($at)
+    /* 1D7B8 8002CFB8 0880013C */  lui        $at, %hi(g_nSaveMenuCameraToAngle)
+    /* 1D7BC 8002CFBC 608D25AC */  sw         $a1, %lo(g_nSaveMenuCameraToAngle)($at)
     /* 1D7C0 8002CFC0 4A5E000C */  jal        AbsAngleDelta12
     /* 1D7C4 8002CFC4 00000000 */   nop
     /* 1D7C8 8002CFC8 01044228 */  slti       $v0, $v0, 0x401
     /* 1D7CC 8002CFCC 09004014 */  bnez       $v0, .L8002CFF4
     /* 1D7D0 8002CFD0 00000000 */   nop
-    /* 1D7D4 8002CFD4 0880023C */  lui        $v0, %hi(D_80078D70)
-    /* 1D7D8 8002CFD8 708D428C */  lw         $v0, %lo(D_80078D70)($v0)
+    /* 1D7D4 8002CFD4 0880023C */  lui        $v0, %hi(g_nSaveMenuSpyroToYaw)
+    /* 1D7D8 8002CFD8 708D428C */  lw         $v0, %lo(g_nSaveMenuSpyroToYaw)($v0)
     /* 1D7DC 8002CFDC 0880013C */  lui        $at, %hi(g_nSaveMenuXOffset)
     /* 1D7E0 8002CFE0 108D20AC */  sw         $zero, %lo(g_nSaveMenuXOffset)($at)
     /* 1D7E4 8002CFE4 F5FC4224 */  addiu      $v0, $v0, -0x30B
     /* 1D7E8 8002CFE8 FF0F4230 */  andi       $v0, $v0, 0xFFF
-    /* 1D7EC 8002CFEC 0880013C */  lui        $at, %hi(D_80078D60)
-    /* 1D7F0 8002CFF0 608D22AC */  sw         $v0, %lo(D_80078D60)($at)
+    /* 1D7EC 8002CFEC 0880013C */  lui        $at, %hi(g_nSaveMenuCameraToAngle)
+    /* 1D7F0 8002CFF0 608D22AC */  sw         $v0, %lo(g_nSaveMenuCameraToAngle)($at)
   .L8002CFF4:
     /* 1D7F4 8002CFF4 F0FF228E */  lw         $v0, -0x10($s1)
     /* 1D7F8 8002CFF8 C9040324 */  addiu      $v1, $zero, 0x4C9
-    /* 1D7FC 8002CFFC 0880013C */  lui        $at, %hi(D_80078D64)
-    /* 1D800 8002D000 648D23AC */  sw         $v1, %lo(D_80078D64)($at)
+    /* 1D7FC 8002CFFC 0880013C */  lui        $at, %hi(g_nSaveMenuCameraToDist)
+    /* 1D800 8002D000 648D23AC */  sw         $v1, %lo(g_nSaveMenuCameraToDist)($at)
     /* 1D804 8002D004 6B054224 */  addiu      $v0, $v0, 0x56B
-    /* 1D808 8002D008 0880013C */  lui        $at, %hi(D_80078D68)
-    /* 1D80C 8002D00C 688D22AC */  sw         $v0, %lo(D_80078D68)($at)
+    /* 1D808 8002D008 0880013C */  lui        $at, %hi(g_nSaveMenuCameraToZ)
+    /* 1D80C 8002D00C 688D22AC */  sw         $v0, %lo(g_nSaveMenuCameraToZ)($at)
     /* 1D810 8002D010 2C00BF8F */  lw         $ra, 0x2C($sp)
     /* 1D814 8002D014 2800B28F */  lw         $s2, 0x28($sp)
     /* 1D818 8002D018 2400B18F */  lw         $s1, 0x24($sp)
@@ -35111,8 +35111,8 @@ glabel Gamestate0B_Update
     /* 21CEC 800314EC 000022AE */   sw        $v0, 0x0($s1)
     /* 21CF0 800314F0 0780043C */  lui        $a0, %hi(g_apSaveMenuAnimActorList)
     /* 21CF4 800314F4 F4008424 */  addiu      $a0, $a0, %lo(g_apSaveMenuAnimActorList)
-    /* 21CF8 800314F8 0880023C */  lui        $v0, %hi(D_80078D74)
-    /* 21CFC 800314FC 748D428C */  lw         $v0, %lo(D_80078D74)($v0)
+    /* 21CF8 800314F8 0880023C */  lui        $v0, %hi(g_pSaveMenuDragonActor)
+    /* 21CFC 800314FC 748D428C */  lw         $v0, %lo(g_pSaveMenuDragonActor)($v0)
     /* 21D00 80031500 21280000 */  addu       $a1, $zero, $zero
     /* 21D04 80031504 0780013C */  lui        $at, %hi(g_apSaveMenuAnimActorList + 0x4)
     /* 21D08 80031508 F80020AC */  sw         $zero, %lo(g_apSaveMenuAnimActorList + 0x4)($at)
@@ -35134,8 +35134,8 @@ glabel Gamestate0B_Update
     /* 21D44 80031544 40210400 */   sll       $a0, $a0, 5
     /* 21D48 80031548 165B000C */  jal        LookupSine
     /* 21D4C 8003154C 00FC8424 */   addiu     $a0, $a0, -0x400
-    /* 21D50 80031550 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 21D54 80031554 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 21D50 80031550 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 21D54 80031554 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 21D58 80031558 00000000 */  nop
     /* 21D5C 8003155C 0000638C */  lw         $v1, 0x0($v1)
     /* 21D60 80031560 00000000 */  nop
@@ -35166,8 +35166,8 @@ glabel Gamestate0B_Update
     /* 21DC4 800315C4 480080A0 */  sb         $zero, 0x48($a0)
     /* 21DC8 800315C8 3C0080A0 */  sb         $zero, 0x3C($a0)
   .L800315CC:
-    /* 21DCC 800315CC 0880103C */  lui        $s0, %hi(D_80078D38)
-    /* 21DD0 800315D0 388D1026 */  addiu      $s0, $s0, %lo(D_80078D38)
+    /* 21DCC 800315CC 0880103C */  lui        $s0, %hi(g_nSaveMenuDragonToAngle)
+    /* 21DD0 800315D0 388D1026 */  addiu      $s0, $s0, %lo(g_nSaveMenuDragonToAngle)
     /* 21DD4 800315D4 0000048E */  lw         $a0, 0x0($s0)
     /* 21DD8 800315D8 F4FF058E */  lw         $a1, -0xC($s0)
     /* 21DDC 800315DC 00000000 */  nop
@@ -35193,10 +35193,10 @@ glabel Gamestate0B_Update
     /* 21E28 80031628 43130800 */  sra        $v0, $t0, 13
     /* 21E2C 8003162C 23806200 */  subu       $s0, $v1, $v0
   .L80031630:
-    /* 21E30 80031630 0880023C */  lui        $v0, %hi(D_80078D3C)
-    /* 21E34 80031634 3C8D428C */  lw         $v0, %lo(D_80078D3C)($v0)
-    /* 21E38 80031638 0880033C */  lui        $v1, %hi(D_80078D30)
-    /* 21E3C 8003163C 308D638C */  lw         $v1, %lo(D_80078D30)($v1)
+    /* 21E30 80031630 0880023C */  lui        $v0, %hi(g_nSaveMenuDragonToDist)
+    /* 21E34 80031634 3C8D428C */  lw         $v0, %lo(g_nSaveMenuDragonToDist)($v0)
+    /* 21E38 80031638 0880033C */  lui        $v1, %hi(g_nSaveMenuDragonFromDist)
+    /* 21E3C 8003163C 308D638C */  lw         $v1, %lo(g_nSaveMenuDragonFromDist)($v1)
     /* 21E40 80031640 00000000 */  nop
     /* 21E44 80031644 23104300 */  subu       $v0, $v0, $v1
     /* 21E48 80031648 18005300 */  mult       $v0, $s3
@@ -35209,8 +35209,8 @@ glabel Gamestate0B_Update
     /* 21E64 80031664 21200002 */  addu       $a0, $s0, $zero
     /* 21E68 80031668 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
     /* 21E6C 8003166C 588A428C */  lw         $v0, %lo(g_anSpyroWorldPos)($v0)
-    /* 21E70 80031670 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 21E74 80031674 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 21E70 80031670 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 21E74 80031674 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 21E78 80031678 12400000 */  mflo       $t0
     /* 21E7C 8003167C 032B0800 */  sra        $a1, $t0, 12
     /* 21E80 80031680 21104500 */  addu       $v0, $v0, $a1
@@ -35219,38 +35219,38 @@ glabel Gamestate0B_Update
     /* 21E8C 8003168C 18005200 */  mult       $v0, $s2
     /* 21E90 80031690 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosY)
     /* 21E94 80031694 5C8A428C */  lw         $v0, %lo(g_nSpyroWorldPosY)($v0)
-    /* 21E98 80031698 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 21E9C 8003169C 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 21E98 80031698 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 21E9C 8003169C 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 21EA0 800316A0 12400000 */  mflo       $t0
     /* 21EA4 800316A4 03230800 */  sra        $a0, $t0, 12
     /* 21EA8 800316A8 21104400 */  addu       $v0, $v0, $a0
     /* 21EAC 800316AC 100062AC */  sw         $v0, 0x10($v1)
-    /* 21EB0 800316B0 0880023C */  lui        $v0, %hi(D_80078D40)
-    /* 21EB4 800316B4 408D428C */  lw         $v0, %lo(D_80078D40)($v0)
-    /* 21EB8 800316B8 0880033C */  lui        $v1, %hi(D_80078D34)
-    /* 21EBC 800316BC 348D638C */  lw         $v1, %lo(D_80078D34)($v1)
+    /* 21EB0 800316B0 0880023C */  lui        $v0, %hi(g_nSaveMenuDragonToZ)
+    /* 21EB4 800316B4 408D428C */  lw         $v0, %lo(g_nSaveMenuDragonToZ)($v0)
+    /* 21EB8 800316B8 0880033C */  lui        $v1, %hi(g_nSaveMenuDragonFromZ)
+    /* 21EBC 800316BC 348D638C */  lw         $v1, %lo(g_nSaveMenuDragonFromZ)($v1)
     /* 21EC0 800316C0 00000000 */  nop
     /* 21EC4 800316C4 23104300 */  subu       $v0, $v0, $v1
     /* 21EC8 800316C8 18005300 */  mult       $v0, $s3
     /* 21ECC 800316CC 03000524 */  addiu      $a1, $zero, 0x3
     /* 21ED0 800316D0 21300000 */  addu       $a2, $zero, $zero
-    /* 21ED4 800316D4 0880043C */  lui        $a0, %hi(D_80078D74)
-    /* 21ED8 800316D8 748D848C */  lw         $a0, %lo(D_80078D74)($a0)
+    /* 21ED4 800316D4 0880043C */  lui        $a0, %hi(g_pSaveMenuDragonActor)
+    /* 21ED8 800316D8 748D848C */  lw         $a0, %lo(g_pSaveMenuDragonActor)($a0)
     /* 21EDC 800316DC 12400000 */  mflo       $t0
     /* 21EE0 800316E0 43130800 */  sra        $v0, $t0, 13
     /* 21EE4 800316E4 21186200 */  addu       $v1, $v1, $v0
     /* 21EE8 800316E8 140083AC */  sw         $v1, 0x14($a0)
-    /* 21EEC 800316EC 0880043C */  lui        $a0, %hi(D_80078D74)
-    /* 21EF0 800316F0 748D848C */  lw         $a0, %lo(D_80078D74)($a0)
+    /* 21EEC 800316EC 0880043C */  lui        $a0, %hi(g_pSaveMenuDragonActor)
+    /* 21EF0 800316F0 748D848C */  lw         $a0, %lo(g_pSaveMenuDragonActor)($a0)
     /* 21EF4 800316F4 70E3000C */  jal        TrackEntityYawTowardSpyro
     /* 21EF8 800316F8 21380000 */   addu      $a3, $zero, $zero
-    /* 21EFC 800316FC 0880043C */  lui        $a0, %hi(D_80078D74)
-    /* 21F00 80031700 748D848C */  lw         $a0, %lo(D_80078D74)($a0)
+    /* 21EFC 800316FC 0880043C */  lui        $a0, %hi(g_pSaveMenuDragonActor)
+    /* 21F00 80031700 748D848C */  lw         $a0, %lo(g_pSaveMenuDragonActor)($a0)
     /* 21F04 80031704 00100524 */  addiu      $a1, $zero, 0x1000
     /* 21F08 80031708 7B35010C */  jal        FindGroundHeightBelow
     /* 21F0C 8003170C 0C008424 */   addiu     $a0, $a0, 0xC
-    /* 21F10 80031710 0880043C */  lui        $a0, %hi(D_80078D74)
-    /* 21F14 80031714 748D848C */  lw         $a0, %lo(D_80078D74)($a0)
+    /* 21F10 80031710 0880043C */  lui        $a0, %hi(g_pSaveMenuDragonActor)
+    /* 21F14 80031714 748D848C */  lw         $a0, %lo(g_pSaveMenuDragonActor)($a0)
     /* 21F18 80031718 F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 21F1C 8003171C 00000000 */   nop
     /* 21F20 80031720 0780023C */  lui        $v0, %hi(g_pLevelOverlayInitRecord)
@@ -35258,10 +35258,10 @@ glabel Gamestate0B_Update
     /* 21F28 80031728 00000000 */  nop
     /* 21F2C 8003172C 3C004010 */  beqz       $v0, .L80031820
     /* 21F30 80031730 00000000 */   nop
-    /* 21F34 80031734 0880043C */  lui        $a0, %hi(D_80078D4C)
-    /* 21F38 80031738 4C8D848C */  lw         $a0, %lo(D_80078D4C)($a0)
-    /* 21F3C 8003173C 0880053C */  lui        $a1, %hi(D_80078D44)
-    /* 21F40 80031740 448DA58C */  lw         $a1, %lo(D_80078D44)($a1)
+    /* 21F34 80031734 0880043C */  lui        $a0, %hi(g_nSaveMenuOverlayToAngle)
+    /* 21F38 80031738 4C8D848C */  lw         $a0, %lo(g_nSaveMenuOverlayToAngle)($a0)
+    /* 21F3C 8003173C 0880053C */  lui        $a1, %hi(g_nSaveMenuOverlayFromAngle)
+    /* 21F40 80031740 448DA58C */  lw         $a1, %lo(g_nSaveMenuOverlayFromAngle)($a1)
     /* 21F44 80031744 00000000 */  nop
     /* 21F48 80031748 23108500 */  subu       $v0, $a0, $a1
     /* 21F4C 8003174C FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -35271,8 +35271,8 @@ glabel Gamestate0B_Update
     /* 21F5C 8003175C 4A5E000C */  jal        AbsAngleDelta12
     /* 21F60 80031760 00000000 */   nop
     /* 21F64 80031764 18005300 */  mult       $v0, $s3
-    /* 21F68 80031768 0880033C */  lui        $v1, %hi(D_80078D44)
-    /* 21F6C 8003176C 448D638C */  lw         $v1, %lo(D_80078D44)($v1)
+    /* 21F68 80031768 0880033C */  lui        $v1, %hi(g_nSaveMenuOverlayFromAngle)
+    /* 21F6C 8003176C 448D638C */  lw         $v1, %lo(g_nSaveMenuOverlayFromAngle)($v1)
     /* 21F70 80031770 12400000 */  mflo       $t0
     /* 21F74 80031774 43130800 */  sra        $v0, $t0, 13
     /* 21F78 80031778 E8C50008 */  j          .L800317A0
@@ -35281,16 +35281,16 @@ glabel Gamestate0B_Update
     /* 21F80 80031780 4A5E000C */  jal        AbsAngleDelta12
     /* 21F84 80031784 00000000 */   nop
     /* 21F88 80031788 18005300 */  mult       $v0, $s3
-    /* 21F8C 8003178C 0880033C */  lui        $v1, %hi(D_80078D44)
-    /* 21F90 80031790 448D638C */  lw         $v1, %lo(D_80078D44)($v1)
+    /* 21F8C 8003178C 0880033C */  lui        $v1, %hi(g_nSaveMenuOverlayFromAngle)
+    /* 21F90 80031790 448D638C */  lw         $v1, %lo(g_nSaveMenuOverlayFromAngle)($v1)
     /* 21F94 80031794 12400000 */  mflo       $t0
     /* 21F98 80031798 43130800 */  sra        $v0, $t0, 13
     /* 21F9C 8003179C 23806200 */  subu       $s0, $v1, $v0
   .L800317A0:
-    /* 21FA0 800317A0 0880023C */  lui        $v0, %hi(D_80078D50)
-    /* 21FA4 800317A4 508D428C */  lw         $v0, %lo(D_80078D50)($v0)
-    /* 21FA8 800317A8 0880033C */  lui        $v1, %hi(D_80078D48)
-    /* 21FAC 800317AC 488D638C */  lw         $v1, %lo(D_80078D48)($v1)
+    /* 21FA0 800317A0 0880023C */  lui        $v0, %hi(g_nSaveMenuOverlayToDist)
+    /* 21FA4 800317A4 508D428C */  lw         $v0, %lo(g_nSaveMenuOverlayToDist)($v0)
+    /* 21FA8 800317A8 0880033C */  lui        $v1, %hi(g_nSaveMenuOverlayFromDist)
+    /* 21FAC 800317AC 488D638C */  lw         $v1, %lo(g_nSaveMenuOverlayFromDist)($v1)
     /* 21FB0 800317B0 00000000 */  nop
     /* 21FB4 800317B4 23104300 */  subu       $v0, $v0, $v1
     /* 21FB8 800317B8 18005300 */  mult       $v0, $s3
@@ -35320,8 +35320,8 @@ glabel Gamestate0B_Update
     /* 22018 80031818 21104400 */  addu       $v0, $v0, $a0
     /* 2201C 8003181C 100062AC */  sw         $v0, 0x10($v1)
   .L80031820:
-    /* 22020 80031820 0880103C */  lui        $s0, %hi(D_80078D60)
-    /* 22024 80031824 608D1026 */  addiu      $s0, $s0, %lo(D_80078D60)
+    /* 22020 80031820 0880103C */  lui        $s0, %hi(g_nSaveMenuCameraToAngle)
+    /* 22024 80031824 608D1026 */  addiu      $s0, $s0, %lo(g_nSaveMenuCameraToAngle)
     /* 22028 80031828 0000048E */  lw         $a0, 0x0($s0)
     /* 2202C 8003182C F4FF058E */  lw         $a1, -0xC($s0)
     /* 22030 80031830 00000000 */  nop
@@ -35347,10 +35347,10 @@ glabel Gamestate0B_Update
     /* 2207C 8003187C 43130800 */  sra        $v0, $t0, 13
     /* 22080 80031880 23806200 */  subu       $s0, $v1, $v0
   .L80031884:
-    /* 22084 80031884 0880023C */  lui        $v0, %hi(D_80078D64)
-    /* 22088 80031888 648D428C */  lw         $v0, %lo(D_80078D64)($v0)
-    /* 2208C 8003188C 0880033C */  lui        $v1, %hi(D_80078D58)
-    /* 22090 80031890 588D638C */  lw         $v1, %lo(D_80078D58)($v1)
+    /* 22084 80031884 0880023C */  lui        $v0, %hi(g_nSaveMenuCameraToDist)
+    /* 22088 80031888 648D428C */  lw         $v0, %lo(g_nSaveMenuCameraToDist)($v0)
+    /* 2208C 8003188C 0880033C */  lui        $v1, %hi(g_nSaveMenuCameraFromDist)
+    /* 22090 80031890 588D638C */  lw         $v1, %lo(g_nSaveMenuCameraFromDist)($v1)
     /* 22094 80031894 00000000 */  nop
     /* 22098 80031898 23104300 */  subu       $v0, $v0, $v1
     /* 2209C 8003189C 18005300 */  mult       $v0, $s3
@@ -35372,17 +35372,17 @@ glabel Gamestate0B_Update
     /* 220DC 800318DC 165B000C */  jal        LookupSine
     /* 220E0 800318E0 000022AE */   sw        $v0, 0x0($s1)
     /* 220E4 800318E4 18005200 */  mult       $v0, $s2
-    /* 220E8 800318E8 0880023C */  lui        $v0, %hi(D_80078D68)
-    /* 220EC 800318EC 688D428C */  lw         $v0, %lo(D_80078D68)($v0)
-    /* 220F0 800318F0 0880073C */  lui        $a3, %hi(D_80078D5C)
-    /* 220F4 800318F4 5C8DE78C */  lw         $a3, %lo(D_80078D5C)($a3)
+    /* 220E8 800318E8 0880023C */  lui        $v0, %hi(g_nSaveMenuCameraToZ)
+    /* 220EC 800318EC 688D428C */  lw         $v0, %lo(g_nSaveMenuCameraToZ)($v0)
+    /* 220F0 800318F0 0880073C */  lui        $a3, %hi(g_nSaveMenuCameraFromZ)
+    /* 220F4 800318F4 5C8DE78C */  lw         $a3, %lo(g_nSaveMenuCameraFromZ)($a3)
     /* 220F8 800318F8 12180000 */  mflo       $v1
     /* 220FC 800318FC 23104700 */  subu       $v0, $v0, $a3
     /* 22100 80031900 00000000 */  nop
     /* 22104 80031904 18005300 */  mult       $v0, $s3
     /* 22108 80031908 1800A427 */  addiu      $a0, $sp, 0x18
-    /* 2210C 8003190C 0880063C */  lui        $a2, %hi(D_80078D74)
-    /* 22110 80031910 748DC68C */  lw         $a2, %lo(D_80078D74)($a2)
+    /* 2210C 8003190C 0880063C */  lui        $a2, %hi(g_pSaveMenuDragonActor)
+    /* 22110 80031910 748DC68C */  lw         $a2, %lo(g_pSaveMenuDragonActor)($a2)
     /* 22114 80031914 21280002 */  addu       $a1, $s0, $zero
     /* 22118 80031918 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosY)
     /* 2211C 8003191C 5C8A428C */  lw         $v0, %lo(g_nSpyroWorldPosY)($v0)
@@ -35495,8 +35495,8 @@ glabel Gamestate0B_Update
   .L80031AC4:
     /* 222C4 80031AC4 0780013C */  lui        $at, %hi(g_nCameraEulerYaw)
     /* 222C8 80031AC8 206E22A4 */  sh         $v0, %lo(g_nCameraEulerYaw)($at)
-    /* 222CC 80031ACC 0880103C */  lui        $s0, %hi(D_80078D70)
-    /* 222D0 80031AD0 708D1026 */  addiu      $s0, $s0, %lo(D_80078D70)
+    /* 222CC 80031ACC 0880103C */  lui        $s0, %hi(g_nSaveMenuSpyroToYaw)
+    /* 222D0 80031AD0 708D1026 */  addiu      $s0, $s0, %lo(g_nSaveMenuSpyroToYaw)
     /* 222D4 80031AD4 0000048E */  lw         $a0, 0x0($s0)
     /* 222D8 80031AD8 FCFF058E */  lw         $a1, -0x4($s0)
     /* 222DC 80031ADC 00000000 */  nop
@@ -35553,46 +35553,46 @@ glabel Gamestate0B_Update
     /* 223A0 80031BA0 2EC90008 */  j          .L800324B8
     /* 223A4 80031BA4 00000000 */   nop
   .L80031BA8:
-    /* 223A8 80031BA8 0880043C */  lui        $a0, %hi(D_80078D38)
-    /* 223AC 80031BAC 388D848C */  lw         $a0, %lo(D_80078D38)($a0)
+    /* 223A8 80031BA8 0880043C */  lui        $a0, %hi(g_nSaveMenuDragonToAngle)
+    /* 223AC 80031BAC 388D848C */  lw         $a0, %lo(g_nSaveMenuDragonToAngle)($a0)
     /* 223B0 80031BB0 2C5B000C */  jal        LookupCosine
     /* 223B4 80031BB4 00000000 */   nop
-    /* 223B8 80031BB8 0880033C */  lui        $v1, %hi(D_80078D3C)
-    /* 223BC 80031BBC 3C8D638C */  lw         $v1, %lo(D_80078D3C)($v1)
+    /* 223B8 80031BB8 0880033C */  lui        $v1, %hi(g_nSaveMenuDragonToDist)
+    /* 223BC 80031BBC 3C8D638C */  lw         $v1, %lo(g_nSaveMenuDragonToDist)($v1)
     /* 223C0 80031BC0 00000000 */  nop
     /* 223C4 80031BC4 18004300 */  mult       $v0, $v1
     /* 223C8 80031BC8 0880103C */  lui        $s0, %hi(g_anSpyroWorldPos)
     /* 223CC 80031BCC 588A1026 */  addiu      $s0, $s0, %lo(g_anSpyroWorldPos)
     /* 223D0 80031BD0 0000028E */  lw         $v0, 0x0($s0)
-    /* 223D4 80031BD4 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 223D8 80031BD8 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 223D4 80031BD4 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 223D8 80031BD8 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 223DC 80031BDC 12400000 */  mflo       $t0
     /* 223E0 80031BE0 03230800 */  sra        $a0, $t0, 12
     /* 223E4 80031BE4 21104400 */  addu       $v0, $v0, $a0
     /* 223E8 80031BE8 0C0062AC */  sw         $v0, 0xC($v1)
-    /* 223EC 80031BEC 0880043C */  lui        $a0, %hi(D_80078D38)
-    /* 223F0 80031BF0 388D848C */  lw         $a0, %lo(D_80078D38)($a0)
+    /* 223EC 80031BEC 0880043C */  lui        $a0, %hi(g_nSaveMenuDragonToAngle)
+    /* 223F0 80031BF0 388D848C */  lw         $a0, %lo(g_nSaveMenuDragonToAngle)($a0)
     /* 223F4 80031BF4 165B000C */  jal        LookupSine
     /* 223F8 80031BF8 00000000 */   nop
-    /* 223FC 80031BFC 0880033C */  lui        $v1, %hi(D_80078D3C)
-    /* 22400 80031C00 3C8D638C */  lw         $v1, %lo(D_80078D3C)($v1)
+    /* 223FC 80031BFC 0880033C */  lui        $v1, %hi(g_nSaveMenuDragonToDist)
+    /* 22400 80031C00 3C8D638C */  lw         $v1, %lo(g_nSaveMenuDragonToDist)($v1)
     /* 22404 80031C04 00000000 */  nop
     /* 22408 80031C08 18004300 */  mult       $v0, $v1
     /* 2240C 80031C0C 0400028E */  lw         $v0, 0x4($s0)
-    /* 22410 80031C10 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 22414 80031C14 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 22410 80031C10 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 22414 80031C14 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 22418 80031C18 12400000 */  mflo       $t0
     /* 2241C 80031C1C 03230800 */  sra        $a0, $t0, 12
     /* 22420 80031C20 21104400 */  addu       $v0, $v0, $a0
     /* 22424 80031C24 100062AC */  sw         $v0, 0x10($v1)
-    /* 22428 80031C28 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 2242C 80031C2C 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
-    /* 22430 80031C30 0880023C */  lui        $v0, %hi(D_80078D40)
-    /* 22434 80031C34 408D428C */  lw         $v0, %lo(D_80078D40)($v0)
+    /* 22428 80031C28 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 2242C 80031C2C 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
+    /* 22430 80031C30 0880023C */  lui        $v0, %hi(g_nSaveMenuDragonToZ)
+    /* 22434 80031C34 408D428C */  lw         $v0, %lo(g_nSaveMenuDragonToZ)($v0)
     /* 22438 80031C38 21300000 */  addu       $a2, $zero, $zero
     /* 2243C 80031C3C 140062AC */  sw         $v0, 0x14($v1)
-    /* 22440 80031C40 0880023C */  lui        $v0, %hi(D_80078D74)
-    /* 22444 80031C44 748D428C */  lw         $v0, %lo(D_80078D74)($v0)
+    /* 22440 80031C40 0880023C */  lui        $v0, %hi(g_pSaveMenuDragonActor)
+    /* 22444 80031C44 748D428C */  lw         $v0, %lo(g_pSaveMenuDragonActor)($v0)
     /* 22448 80031C48 0000078E */  lw         $a3, 0x0($s0)
     /* 2244C 80031C4C 0400038E */  lw         $v1, 0x4($s0)
     /* 22450 80031C50 0C00448C */  lw         $a0, 0xC($v0)
@@ -35600,8 +35600,8 @@ glabel Gamestate0B_Update
     /* 22458 80031C58 2320E400 */  subu       $a0, $a3, $a0
     /* 2245C 80031C5C AD5A000C */  jal        ArcTan2
     /* 22460 80031C60 23286500 */   subu      $a1, $v1, $a1
-    /* 22464 80031C64 0880033C */  lui        $v1, %hi(D_80078D74)
-    /* 22468 80031C68 748D638C */  lw         $v1, %lo(D_80078D74)($v1)
+    /* 22464 80031C64 0880033C */  lui        $v1, %hi(g_pSaveMenuDragonActor)
+    /* 22468 80031C68 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 2246C 80031C6C 00000000 */  nop
     /* 22470 80031C70 460062A0 */  sb         $v0, 0x46($v1)
     /* 22474 80031C74 0780023C */  lui        $v0, %hi(g_pLevelOverlayInitRecord)
@@ -35636,16 +35636,16 @@ glabel Gamestate0B_Update
     /* 224E8 80031CE8 21104400 */  addu       $v0, $v0, $a0
     /* 224EC 80031CEC 100062AC */  sw         $v0, 0x10($v1)
   .L80031CF0:
-    /* 224F0 80031CF0 0880043C */  lui        $a0, %hi(D_80078D60)
-    /* 224F4 80031CF4 608D848C */  lw         $a0, %lo(D_80078D60)($a0)
+    /* 224F0 80031CF0 0880043C */  lui        $a0, %hi(g_nSaveMenuCameraToAngle)
+    /* 224F4 80031CF4 608D848C */  lw         $a0, %lo(g_nSaveMenuCameraToAngle)($a0)
     /* 224F8 80031CF8 2C5B000C */  jal        LookupCosine
     /* 224FC 80031CFC 00000000 */   nop
-    /* 22500 80031D00 0880033C */  lui        $v1, %hi(D_80078D64)
-    /* 22504 80031D04 648D638C */  lw         $v1, %lo(D_80078D64)($v1)
+    /* 22500 80031D00 0880033C */  lui        $v1, %hi(g_nSaveMenuCameraToDist)
+    /* 22504 80031D04 648D638C */  lw         $v1, %lo(g_nSaveMenuCameraToDist)($v1)
     /* 22508 80031D08 00000000 */  nop
     /* 2250C 80031D0C 18004300 */  mult       $v0, $v1
-    /* 22510 80031D10 0880043C */  lui        $a0, %hi(D_80078D60)
-    /* 22514 80031D14 608D848C */  lw         $a0, %lo(D_80078D60)($a0)
+    /* 22510 80031D10 0880043C */  lui        $a0, %hi(g_nSaveMenuCameraToAngle)
+    /* 22514 80031D14 608D848C */  lw         $a0, %lo(g_nSaveMenuCameraToAngle)($a0)
     /* 22518 80031D18 0000028E */  lw         $v0, 0x0($s0)
     /* 2251C 80031D1C 12400000 */  mflo       $t0
     /* 22520 80031D20 031B0800 */  sra        $v1, $t0, 12
@@ -35654,13 +35654,13 @@ glabel Gamestate0B_Update
     /* 2252C 80031D2C F86D22AC */  sw         $v0, %lo(g_anCameraPos)($at)
     /* 22530 80031D30 165B000C */  jal        LookupSine
     /* 22534 80031D34 00000000 */   nop
-    /* 22538 80031D38 0880043C */  lui        $a0, %hi(D_80078D64)
-    /* 2253C 80031D3C 648D848C */  lw         $a0, %lo(D_80078D64)($a0)
+    /* 22538 80031D38 0880043C */  lui        $a0, %hi(g_nSaveMenuCameraToDist)
+    /* 2253C 80031D3C 648D848C */  lw         $a0, %lo(g_nSaveMenuCameraToDist)($a0)
     /* 22540 80031D40 04000324 */  addiu      $v1, $zero, 0x4
     /* 22544 80031D44 0880013C */  lui        $at, %hi(g_bSpyroSubFrameTimer)
     /* 22548 80031D48 7C8A23A0 */  sb         $v1, %lo(g_bSpyroSubFrameTimer)($at)
-    /* 2254C 80031D4C 0880033C */  lui        $v1, %hi(D_80078D70)
-    /* 22550 80031D50 708D638C */  lw         $v1, %lo(D_80078D70)($v1)
+    /* 2254C 80031D4C 0880033C */  lui        $v1, %hi(g_nSaveMenuSpyroToYaw)
+    /* 22550 80031D50 708D638C */  lw         $v1, %lo(g_nSaveMenuSpyroToYaw)($v1)
     /* 22554 80031D54 0880013C */  lui        $at, %hi(g_bSpyroAnimCurrent)
     /* 22558 80031D58 718A20A0 */  sb         $zero, %lo(g_bSpyroAnimCurrent)($at)
     /* 2255C 80031D5C 18004400 */  mult       $v0, $a0
@@ -35670,8 +35670,8 @@ glabel Gamestate0B_Update
     /* 2256C 80031D6C 0880013C */  lui        $at, %hi(g_nSpyroAnimPlayRate)
     /* 22570 80031D70 B08A22AC */  sw         $v0, %lo(g_nSpyroAnimPlayRate)($at)
     /* 22574 80031D74 01000224 */  addiu      $v0, $zero, 0x1
-    /* 22578 80031D78 0880043C */  lui        $a0, %hi(D_80078D68)
-    /* 2257C 80031D7C 688D848C */  lw         $a0, %lo(D_80078D68)($a0)
+    /* 22578 80031D78 0880043C */  lui        $a0, %hi(g_nSaveMenuCameraToZ)
+    /* 2257C 80031D7C 688D848C */  lw         $a0, %lo(g_nSaveMenuCameraToZ)($a0)
     /* 22580 80031D80 03190300 */  sra        $v1, $v1, 4
     /* 22584 80031D84 FCFF22AE */  sw         $v0, -0x4($s1)
     /* 22588 80031D88 000020AE */  sw         $zero, 0x0($s1)
@@ -35810,8 +35810,8 @@ glabel Gamestate0B_Update
   .L80031F88:
     /* 22788 80031F88 42016214 */  bne        $v1, $v0, .L80032494
     /* 2278C 80031F8C 00000000 */   nop
-    /* 22790 80031F90 0880023C */  lui        $v0, %hi(D_80078D74)
-    /* 22794 80031F94 748D428C */  lw         $v0, %lo(D_80078D74)($v0)
+    /* 22790 80031F90 0880023C */  lui        $v0, %hi(g_pSaveMenuDragonActor)
+    /* 22794 80031F94 748D428C */  lw         $v0, %lo(g_pSaveMenuDragonActor)($v0)
     /* 22798 80031F98 00000000 */  nop
     /* 2279C 80031F9C 0000428C */  lw         $v0, 0x0($v0)
     /* 227A0 80031FA0 00000000 */  nop
@@ -50897,11 +50897,11 @@ glabel ChangeSpyroState
     /* 2F678 8003EE78 1D000224 */  addiu      $v0, $zero, 0x1D
     /* 2F67C 8003EE7C 04006214 */  bne        $v1, $v0, .L8003EE90
     /* 2F680 8003EE80 01000224 */   addiu     $v0, $zero, 0x1
-    /* 2F684 8003EE84 500482AF */  sw         $v0, %gp_rel(D_800756B4)($gp)
+    /* 2F684 8003EE84 500482AF */  sw         $v0, %gp_rel(g_bSpyroJumpHoldForced)($gp)
     /* 2F688 8003EE88 54FF0008 */  j          .L8003FD50
     /* 2F68C 8003EE8C 00000000 */   nop
   .L8003EE90:
-    /* 2F690 8003EE90 500480AF */  sw         $zero, %gp_rel(D_800756B4)($gp)
+    /* 2F690 8003EE90 500480AF */  sw         $zero, %gp_rel(g_bSpyroJumpHoldForced)($gp)
     /* 2F694 8003EE94 54FF0008 */  j          .L8003FD50
     /* 2F698 8003EE98 00000000 */   nop
   jlabel .L8003EE9C
@@ -51025,7 +51025,7 @@ glabel ChangeSpyroState
     /* 2F85C 8003F05C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
     /* 2F860 8003F060 0880023C */  lui        $v0, %hi(g_nSpyroBodyYaw)
     /* 2F864 8003F064 748B428C */  lw         $v0, %lo(g_nSpyroBodyYaw)($v0)
-    /* 2F868 8003F068 2C0580AF */  sw         $zero, %gp_rel(D_80075790)($gp)
+    /* 2F868 8003F068 2C0580AF */  sw         $zero, %gp_rel(g_pSpyroHomingTargetActor)($gp)
     /* 2F86C 8003F06C 23104300 */  subu       $v0, $v0, $v1
     /* 2F870 8003F070 FF0F4330 */  andi       $v1, $v0, 0xFFF
     /* 2F874 8003F074 01086228 */  slti       $v0, $v1, 0x801
@@ -51115,7 +51115,7 @@ glabel ChangeSpyroState
     /* 2F9A4 8003F1A4 03004010 */  beqz       $v0, .L8003F1B4
     /* 2F9A8 8003F1A8 00000000 */   nop
     /* 2F9AC 8003F1AC 21988000 */  addu       $s3, $a0, $zero
-    /* 2F9B0 8003F1B0 2C0590AF */  sw         $s0, %gp_rel(D_80075790)($gp)
+    /* 2F9B0 8003F1B0 2C0590AF */  sw         $s0, %gp_rel(g_pSpyroHomingTargetActor)($gp)
   .L8003F1B4:
     /* 2F9B4 8003F1B4 0780023C */  lui        $v0, %hi(g_pActorPoolDynBase)
     /* 2F9B8 8003F1B8 9058428C */  lw         $v0, %lo(g_pActorPoolDynBase)($v0)
@@ -51479,15 +51479,15 @@ glabel ChangeSpyroState
     /* 2FEF8 8003F6F8 B08B23AC */  sw         $v1, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 2FEFC 8003F6FC 23186200 */  subu       $v1, $v1, $v0
     /* 2FF00 8003F700 00F86324 */  addiu      $v1, $v1, -0x800
-    /* 2FF04 8003F704 C00483AF */  sw         $v1, %gp_rel(D_80075724)($gp)
+    /* 2FF04 8003F704 C00483AF */  sw         $v1, %gp_rel(g_nSpyroScriptedLiftRise)($gp)
     /* 2FF08 8003F708 801A0300 */  sll        $v1, $v1, 10
     /* 2FF0C 8003F70C 831A0300 */  sra        $v1, $v1, 10
-    /* 2FF10 8003F710 040482AF */  sw         $v0, %gp_rel(D_80075668)($gp)
+    /* 2FF10 8003F710 040482AF */  sw         $v0, %gp_rel(g_nSpyroScriptedLiftBaseZ)($gp)
     /* 2FF14 8003F714 0880023C */  lui        $v0, %hi(g_pScriptedCameraActor)
     /* 2FF18 8003F718 7C8C428C */  lw         $v0, %lo(g_pScriptedCameraActor)($v0)
     /* 2FF1C 8003F71C 00046324 */  addiu      $v1, $v1, 0x400
-    /* 2FF20 8003F720 280584AF */  sw         $a0, %gp_rel(D_8007578C)($gp)
-    /* 2FF24 8003F724 8C0583AF */  sw         $v1, %gp_rel(D_800757F0)($gp)
+    /* 2FF20 8003F720 280584AF */  sw         $a0, %gp_rel(g_nSpyroScriptedLiftYaw)($gp)
+    /* 2FF24 8003F724 8C0583AF */  sw         $v1, %gp_rel(g_nSpyroScriptedLiftTurn)($gp)
     /* 2FF28 8003F728 46004290 */  lbu        $v0, 0x46($v0)
     /* 2FF2C 8003F72C 00000000 */  nop
     /* 2FF30 8003F730 00110200 */  sll        $v0, $v0, 4
@@ -51495,11 +51495,11 @@ glabel ChangeSpyroState
     /* 2FF38 8003F738 23104300 */  subu       $v0, $v0, $v1
     /* 2FF3C 8003F73C FF0F4330 */  andi       $v1, $v0, 0xFFF
     /* 2FF40 8003F740 01086228 */  slti       $v0, $v1, 0x801
-    /* 2FF44 8003F744 8C0583AF */  sw         $v1, %gp_rel(D_800757F0)($gp)
+    /* 2FF44 8003F744 8C0583AF */  sw         $v1, %gp_rel(g_nSpyroScriptedLiftTurn)($gp)
     /* 2FF48 8003F748 08004014 */  bnez       $v0, .L8003F76C
     /* 2FF4C 8003F74C 80000224 */   addiu     $v0, $zero, 0x80
     /* 2FF50 8003F750 00F06224 */  addiu      $v0, $v1, -0x1000
-    /* 2FF54 8003F754 8C0582AF */  sw         $v0, %gp_rel(D_800757F0)($gp)
+    /* 2FF54 8003F754 8C0582AF */  sw         $v0, %gp_rel(g_nSpyroScriptedLiftTurn)($gp)
     /* 2FF58 8003F758 DBFD0008 */  j          .L8003F76C
     /* 2FF5C 8003F75C 80000224 */   addiu     $v0, $zero, 0x80
   .L8003F760:
@@ -51756,8 +51756,8 @@ glabel ChangeSpyroState
     /* 302FC 8003FAFC 09F84000 */  jalr       $v0
     /* 30300 8003FB00 21380000 */   addu      $a3, $zero, $zero
   .L8003FB04:
-    /* 30304 8003FB04 0780023C */  lui        $v0, %hi(D_80075728)
-    /* 30308 8003FB08 2857428C */  lw         $v0, %lo(D_80075728)($v0)
+    /* 30304 8003FB04 0780023C */  lui        $v0, %hi(g_nSpyroOrbDropSpawnIndex)
+    /* 30308 8003FB08 2857428C */  lw         $v0, %lo(g_nSpyroOrbDropSpawnIndex)($v0)
     /* 3030C 8003FB0C 00000000 */  nop
     /* 30310 8003FB10 80100200 */  sll        $v0, $v0, 2
     /* 30314 8003FB14 0780013C */  lui        $at, %hi(D_8006EA34)
@@ -54165,7 +54165,7 @@ glabel UpdateSpyroStateBehavior
     /* 324F4 80041CF4 40004230 */  andi       $v0, $v0, 0x40
     /* 324F8 80041CF8 07004014 */  bnez       $v0, .L80041D18
     /* 324FC 80041CFC 00000000 */   nop
-    /* 32500 80041D00 5004828F */  lw         $v0, %gp_rel(D_800756B4)($gp)
+    /* 32500 80041D00 5004828F */  lw         $v0, %gp_rel(g_bSpyroJumpHoldForced)($gp)
     /* 32504 80041D04 00000000 */  nop
     /* 32508 80041D08 03004014 */  bnez       $v0, .L80041D18
     /* 3250C 80041D0C 02000224 */   addiu     $v0, $zero, 0x2
@@ -55897,8 +55897,8 @@ glabel UpdateSpyroStateBehavior
     /* 33E70 80043670 3D006228 */  slti       $v0, $v1, 0x3D
     /* 33E74 80043674 10004014 */  bnez       $v0, .L800436B8
     /* 33E78 80043678 10006228 */   slti      $v0, $v1, 0x10
-    /* 33E7C 8004367C 0780023C */  lui        $v0, %hi(D_80075728)
-    /* 33E80 80043680 2857428C */  lw         $v0, %lo(D_80075728)($v0)
+    /* 33E7C 8004367C 0780023C */  lui        $v0, %hi(g_nSpyroOrbDropSpawnIndex)
+    /* 33E80 80043680 2857428C */  lw         $v0, %lo(g_nSpyroOrbDropSpawnIndex)($v0)
     /* 33E84 80043684 FFFF0324 */  addiu      $v1, $zero, -0x1
     /* 33E88 80043688 000083AC */  sw         $v1, 0x0($a0)
     /* 33E8C 8004368C 80100200 */  sll        $v0, $v0, 2
@@ -57115,7 +57115,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34FEC 800447EC 40004230 */  andi       $v0, $v0, 0x40
     /* 34FF0 800447F0 05004014 */  bnez       $v0, .L80044808
     /* 34FF4 800447F4 00000000 */   nop
-    /* 34FF8 800447F8 5004828F */  lw         $v0, %gp_rel(D_800756B4)($gp)
+    /* 34FF8 800447F8 5004828F */  lw         $v0, %gp_rel(g_bSpyroJumpHoldForced)($gp)
     /* 34FFC 800447FC 00000000 */  nop
     /* 35000 80044800 1D004010 */  beqz       $v0, .L80044878
     /* 35004 80044804 00000000 */   nop
@@ -57475,7 +57475,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35534 80044D34 A08B848C */  lw         $a0, %lo(g_nSpyroBodyYawStep)($a0)
     /* 35538 80044D38 4BF5000C */  jal        IntegrateSpyroBodyEuler
     /* 3553C 80044D3C 00000000 */   nop
-    /* 35540 80044D40 2C05858F */  lw         $a1, %gp_rel(D_80075790)($gp)
+    /* 35540 80044D40 2C05858F */  lw         $a1, %gp_rel(g_pSpyroHomingTargetActor)($gp)
     /* 35544 80044D44 00000000 */  nop
     /* 35548 80044D48 4300A010 */  beqz       $a1, .L80044E58
     /* 3554C 80044D4C 00000000 */   nop
@@ -57551,7 +57551,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3564C 80044E4C 96130108 */  j          .L80044E58
     /* 35650 80044E50 00000000 */   nop
   .L80044E54:
-    /* 35654 80044E54 2C0580AF */  sw         $zero, %gp_rel(D_80075790)($gp)
+    /* 35654 80044E54 2C0580AF */  sw         $zero, %gp_rel(g_pSpyroHomingTargetActor)($gp)
   .L80044E58:
     /* 35658 80044E58 0880123C */  lui        $s2, %hi(g_nSpyroChargeHoldFlag)
     /* 3565C 80044E5C A88C5226 */  addiu      $s2, $s2, %lo(g_nSpyroChargeHoldFlag)
@@ -59553,7 +59553,7 @@ glabel IntegrateSpyroMotionForSubstep
   .L80046ADC:
     /* 372DC 80046ADC 0880123C */  lui        $s2, %hi(g_nSpyroWorldPosZ)
     /* 372E0 80046AE0 608A5226 */  addiu      $s2, $s2, %lo(g_nSpyroWorldPosZ)
-    /* 372E4 80046AE4 0404868F */  lw         $a2, %gp_rel(D_80075668)($gp)
+    /* 372E4 80046AE4 0404868F */  lw         $a2, %gp_rel(g_nSpyroScriptedLiftBaseZ)($gp)
     /* 372E8 80046AE8 0000448E */  lw         $a0, 0x0($s2)
     /* 372EC 80046AEC 0004C224 */  addiu      $v0, $a2, 0x400
     /* 372F0 80046AF0 2A108200 */  slt        $v0, $a0, $v0
@@ -59571,13 +59571,13 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3731C 80046B1C C05D000C */  jal        CopyVector
     /* 37320 80046B20 74014526 */   addiu     $a1, $s2, 0x174
     /* 37324 80046B24 0000438E */  lw         $v1, 0x0($s2)
-    /* 37328 80046B28 0404828F */  lw         $v0, %gp_rel(D_80075668)($gp)
+    /* 37328 80046B28 0404828F */  lw         $v0, %gp_rel(g_nSpyroScriptedLiftBaseZ)($gp)
     /* 3732C 80046B2C 00000000 */  nop
     /* 37330 80046B30 23886200 */  subu       $s1, $v1, $v0
     /* 37334 80046B34 18003102 */  mult       $s1, $s1
     /* 37338 80046B38 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 3733C 80046B3C D48A20AC */  sw         $zero, %lo(g_nSpyroStateFlags)($at)
-    /* 37340 80046B40 2805838F */  lw         $v1, %gp_rel(D_8007578C)($gp)
+    /* 37340 80046B40 2805838F */  lw         $v1, %gp_rel(g_nSpyroScriptedLiftYaw)($gp)
     /* 37344 80046B44 00040224 */  addiu      $v0, $zero, 0x400
     /* 37348 80046B48 0880013C */  lui        $at, %hi(g_nSpyroMoveTargetMag)
     /* 3734C 80046B4C 9C8B22AC */  sw         $v0, %lo(g_nSpyroMoveTargetMag)($at)
@@ -59597,19 +59597,19 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37380 80046B80 00000000 */  nop
     /* 37384 80046B84 0800401C */  bgtz       $v0, .L80046BA8
     /* 37388 80046B88 23108600 */   subu      $v0, $a0, $a2
-    /* 3738C 80046B8C 2805828F */  lw         $v0, %gp_rel(D_8007578C)($gp)
+    /* 3738C 80046B8C 2805828F */  lw         $v0, %gp_rel(g_nSpyroScriptedLiftYaw)($gp)
     /* 37390 80046B90 01000324 */  addiu      $v1, $zero, 0x1
     /* 37394 80046B94 0880013C */  lui        $at, %hi(g_nSpyroStateFlags)
     /* 37398 80046B98 D48A23AC */  sw         $v1, %lo(g_nSpyroStateFlags)($at)
     /* 3739C 80046B9C 00024224 */  addiu      $v0, $v0, 0x200
-    /* 373A0 80046BA0 280582AF */  sw         $v0, %gp_rel(D_8007578C)($gp)
+    /* 373A0 80046BA0 280582AF */  sw         $v0, %gp_rel(g_nSpyroScriptedLiftYaw)($gp)
     /* 373A4 80046BA4 23108600 */  subu       $v0, $a0, $a2
   .L80046BA8:
-    /* 373A8 80046BA8 8C05838F */  lw         $v1, %gp_rel(D_800757F0)($gp)
+    /* 373A8 80046BA8 8C05838F */  lw         $v1, %gp_rel(g_nSpyroScriptedLiftTurn)($gp)
     /* 373AC 80046BAC 00FC5024 */  addiu      $s0, $v0, -0x400
     /* 373B0 80046BB0 18007000 */  mult       $v1, $s0
     /* 373B4 80046BB4 12100000 */  mflo       $v0
-    /* 373B8 80046BB8 C004838F */  lw         $v1, %gp_rel(D_80075724)($gp)
+    /* 373B8 80046BB8 C004838F */  lw         $v1, %gp_rel(g_nSpyroScriptedLiftRise)($gp)
     /* 373BC 80046BBC 00000000 */  nop
     /* 373C0 80046BC0 1A004300 */  div        $zero, $v0, $v1
     /* 373C4 80046BC4 02006014 */  bnez       $v1, .L80046BD0
@@ -59624,7 +59624,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 373E4 80046BE4 0D000600 */  break      6
   .L80046BE8:
     /* 373E8 80046BE8 12180000 */  mflo       $v1
-    /* 373EC 80046BEC 2805848F */  lw         $a0, %gp_rel(D_8007578C)($gp)
+    /* 373EC 80046BEC 2805848F */  lw         $a0, %gp_rel(g_nSpyroScriptedLiftYaw)($gp)
     /* 373F0 80046BF0 800C0224 */  addiu      $v0, $zero, 0xC80
     /* 373F4 80046BF4 0880013C */  lui        $at, %hi(g_nSpyroMoveTargetMag)
     /* 373F8 80046BF8 9C8B22AC */  sw         $v0, %lo(g_nSpyroMoveTargetMag)($at)
@@ -78061,8 +78061,8 @@ glabel DispatchSpyroTriggerEvent
     /* 47828 80057028 0400C38C */  lw         $v1, 0x4($a2)
     /* 4782C 8005702C 0880013C */  lui        $at, %hi(g_nSpyroTriggerEntryZ)
     /* 47830 80057030 CC8B22AC */  sw         $v0, %lo(g_nSpyroTriggerEntryZ)($at)
-    /* 47834 80057034 0780013C */  lui        $at, %hi(D_80075728)
-    /* 47838 80057038 285723AC */  sw         $v1, %lo(D_80075728)($at)
+    /* 47834 80057034 0780013C */  lui        $at, %hi(g_nSpyroOrbDropSpawnIndex)
+    /* 47838 80057038 285723AC */  sw         $v1, %lo(g_nSpyroOrbDropSpawnIndex)($at)
     /* 4783C 8005703C DA5C0108 */  j          .L80057368
     /* 47840 80057040 00000000 */   nop
   jlabel .L80057044

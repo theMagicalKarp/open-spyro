@@ -4414,8 +4414,8 @@ func_8002CCC8_2026_09_22:
   date: 2026-09-22
   note: >-
     31 -> 16/217 on the B23 hoist lever: `yaw` load above the byte-store block,
-    knot 2 closed by batch-reading actor+0x14/D_80078D70 into locals above
-    the D3C/D34/D38 stores plus a second barrier before `D_80078D40 = ...`.
+    knot 2 closed by batch-reading actor+0x14/g_nSaveMenuSpyroToYaw into locals above
+    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuDragonToZ = ...`.
     posY above the barrier (3 positions) = 20; in-place `py = rec[0x10] - py`
     byte-identical. Next: -dl on the ArcTan2 block.
 
@@ -5081,7 +5081,7 @@ DispatchSpyroTriggerEvent_2026_10_06:
   verdict: parked
   class: "F8 sched tie: case-0 orb-drop store block (OrbDrop store must fill the flags load delay)"
   date: 2026-10-06
-  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, D_80075728, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
+  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, g_nSpyroOrbDropSpawnIndex, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
 sprintf_2026_10_06:
   verdict: parked
   class: "F8 sched1 tie: va_arg value load vs spec-flags load order at the 4 conversion sites (d/u/o/x)"
@@ -5216,7 +5216,7 @@ DispatchSpyroTriggerEvent_2026_10_08:
   verdict: parked
   class: "sched2 memory-unit hazard (§D 2d): the OrbData store fills the wrong stall"
   date: 2026-10-08
-  note: "15/263, case 0 event-2 arm. The original's statement order (flags, EntryZ, D_80075728 last) is +1 insn: -dR shows lw data[1] blocked 1 cycle before the EntryZ store (adjacent memory ops), so the priority-1 OrbData store fills that slot instead of the flags-load delay slot and a nop appears."
+  note: "15/263, case 0 event-2 arm. The original's statement order (flags, EntryZ, g_nSpyroOrbDropSpawnIndex last) is +1 insn: -dR shows lw data[1] blocked 1 cycle before the EntryZ store (adjacent memory ops), so the priority-1 OrbData store fills that slot instead of the flags-load delay slot and a nop appears."
 RespawnOrGameOver_Draw_2026_10_08:
   verdict: parked
   class: "A200 open question (arg copy after the ebb barrier)"
@@ -5281,7 +5281,7 @@ DispatchSpyroTriggerEvent_2026_10_08_1:
   verdict: parked
   class: "sched2 memory-unit hazard (OrbDrop store into the FLAGS load shadow)"
   date: 2026-10-08
-  note: "14/263. Moving `D_80075728 = data[1]` to the arm end gives 5 masked but +1 insn (the OrbDrop store sinks below the FLAGS RMW, leaving the lw nop). Volatile store / split RMW temp inert."
+  note: "14/263. Moving `g_nSpyroOrbDropSpawnIndex = data[1]` to the arm end gives 5 masked but +1 insn (the OrbDrop store sinks below the FLAGS RMW, leaving the lw nop). Volatile store / split RMW temp inert."
 Gamestate0C_Draw_2026_10_08_1:
   verdict: parked
   class: "B-i held-base form (unchanged)"
