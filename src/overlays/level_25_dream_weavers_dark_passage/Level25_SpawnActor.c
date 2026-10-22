@@ -175,7 +175,7 @@ extern short D_8006F3A2[]; /* launch-direction table, z */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern int abs(int n);
-extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
+extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 Actor *Level25_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -254,7 +254,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);
@@ -281,7 +281,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);
@@ -420,7 +420,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
-    func_80052D64(parent, 0, pos);
+    GetActorAttachPoint(parent, 0, pos);
     rec->unk44 = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, 0);

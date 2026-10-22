@@ -43,9 +43,9 @@ extern int D_800756C4; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
    Camera mode D_800756C4 scales the turn speed by 1.5x / 2x.
    (0x80038638, 740 bytes.) */
 
-int func_80038638(int *actor, int *tgt, int radius, int face, int deadzone,
-                  int speed, int p6, int p7, int blockA, int blockB, int p10,
-                  int p11, int flags) {
+int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
+                          int deadzone, int speed, int p6, int p7, int blockA,
+                          int blockB, int p10, int p11, int flags) {
   int pt[3];
   int dir;
   int t;

@@ -14,7 +14,7 @@ extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);
 extern int FindGroundHeightBelow(int *pt, int z);
-extern void func_800529E4(int actor, int n);
+extern void RefreshActorDerivedState(int actor, int n);
 extern void EncodeCachedVecToActorDirCode(int actor);
 
 extern int D_800756C4;
@@ -81,6 +81,6 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
 gdone:
   CopyVector((int *)(actor + 0xC), vec);
   EncodeCachedVecToActorDirCode(actor);
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return 0;
 }

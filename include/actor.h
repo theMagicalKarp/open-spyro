@@ -73,7 +73,7 @@ void TickGemPickupBurstEntity(Actor *actor);
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not
  * yet named. */
 void BeginSaveMenuFromWorld(Actor *actor);
-void func_80037E98(Actor *actor);
+void StubActorHook(Actor *actor);
 int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int a);
@@ -91,7 +91,7 @@ void UpdateActorWander(Actor *actor, void *st);
 int SelectActorLodBand(Actor *actor, int handle);
 void func_8003AA84(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *tbl);
-Actor *func_8003ABC0(Actor *actor, int a, int b, void *c);
+Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
 void SetActorGroupState(Actor *actor, int a);
 void OrActorGroupFlagsInCone(Actor *actor, int heading, int a, int b, int c, int d, int e);
 void SetActorGroupStateExcept(Actor *actor, int a, int b);
@@ -100,9 +100,9 @@ void SetActorGroupSubstate(Actor *actor, int a);
 void MarkActorCommittedKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
 int TryMoveActorForward(Actor *actor, int a, int b, int c, int d);
-void func_8003C358(Actor *actor, int mode);
+void SpawnNameLetterActors(Actor *actor, int mode);
 void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int d, int e);
-void func_800529E4(Actor *actor, int mode);
-void func_80059474(Actor *actor, int heading);
+void RefreshActorDerivedState(Actor *actor, int mode);
+void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
 #endif /* OPEN_SPYRO_ACTOR_H */

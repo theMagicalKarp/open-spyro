@@ -4,7 +4,7 @@
  * The emit-list ADVANCE pass -- the 1815-insn high-caves variant, the largest
  * of the 35 and the last one in the family with undecoded arms.  Walks the
  * 0x20-byte record stream at g_pEmitListBase and ages one record per iteration,
- * handing expired records back with func_80053608().  The walk stops at the
+ * handing expired records back with FreeEmitListRecord().  The walk stops at the
  * terminator record, whose class byte at +0x01 is 0xFF.
  *
  * 28 classes.  Arms 0x4/0x5 come from the matched func_level_15_80087B40,
@@ -33,10 +33,10 @@
 #define VEL ((short *)(rec + 0x18))
 
 extern int abs(int n);
-extern void func_80017BFC(short *dst, int *src);
-extern void func_80017C24(int *dst, short *src);
-extern void func_80017C84(short *dst, short *src, short *delta);
-extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
+extern void VectorToSVectorShr2(short *dst, int *src);
+extern void SVectorToVectorShl2(int *dst, short *src);
+extern void AddSVector(short *dst, short *src, short *delta);
+extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 extern short g_anSineLut[];        /* sine table */
@@ -81,7 +81,7 @@ void Level14_AdvanceEmitList(int step) {
   do {
     switch (rec[0]) {
     case 0x0:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -92,12 +92,12 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x1:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -108,12 +108,12 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x2:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -124,7 +124,7 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -146,10 +146,10 @@ void Level14_AdvanceEmitList(int step) {
        * record between its normal and its "close" colour set (class byte 3).
        */
       __asm__ volatile("" : : "r"(burst));
-      func_80017C24(pt, POS);
+      SVectorToVectorShl2(pt, POS);
       if (HU(0x1E) & 8) {
         if (rec[0x2] >= 0x30) {
-          func_80053608(rec);
+          FreeEmitListRecord(rec);
           break;
         }
         rx = GetRandomU32();
@@ -177,7 +177,7 @@ void Level14_AdvanceEmitList(int step) {
           HS(0x1E) = 8;
           goto measure;
         } else {
-          func_80017C24(dv, VEL);
+          SVectorToVectorShl2(dv, VEL);
           if (HU(0x1E) & 2) {
             dv[0] += (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
           } else {
@@ -212,7 +212,7 @@ void Level14_AdvanceEmitList(int step) {
             owner[0] = 0x20;
           }
           HS(0x1E) = (GetRandomU32() & 6) + 1;
-          func_80017BFC(VEL, (int *)(W(0x18) + 0xC));
+          VectorToSVectorShr2(VEL, (int *)(W(0x18) + 0xC));
           spin = GetRandomU32() & 0x7F;
           rec[0x2] = 0;
           HU(0x1C) += spin;
@@ -223,7 +223,7 @@ void Level14_AdvanceEmitList(int step) {
       }
     commit:
       __asm__ volatile("" : : "r"(burst));
-      func_80017BFC(POS, pt);
+      VectorToSVectorShr2(POS, pt);
       rec[0x2]++;
     measure:
       SubtractVector(dv, pt, g_anCameraPos);
@@ -265,7 +265,7 @@ void Level14_AdvanceEmitList(int step) {
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
         goto expire;
       } else {
-        func_80017C24(qa, POS);
+        SVectorToVectorShl2(qa, POS);
         rq = GetRandomU32();
         jq = HU(0x18) - 3;
         jq += rq & 6;
@@ -276,10 +276,10 @@ void Level14_AdvanceEmitList(int step) {
         jr += rr & 6;
         HU(0x1A) = jr;
         HU(0x1C) = dec;
-        func_80017C24(qb, VEL);
+        SVectorToVectorShl2(qb, VEL);
         RShiftVector3(qb, 2);
         AddVector(qa, qa, qb);
-        func_80017BFC(POS, qa);
+        VectorToSVectorShr2(POS, qa);
         rec[0x2]++;
       }
       break;
@@ -295,7 +295,7 @@ void Level14_AdvanceEmitList(int step) {
        * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
       __asm__ volatile("" : : "r"(burst));
-      func_80017C24(p, POS);
+      SVectorToVectorShl2(p, POS);
       do {
       } while (0);
       if (rec[0x3] == 0) {
@@ -315,7 +315,7 @@ void Level14_AdvanceEmitList(int step) {
           ScaleVector3ByRatio(bolt, len, 0x80);
           AddVector(home, home, bolt);
           __asm__ volatile("" : : "r"(burst));
-          func_80017BFC(POS, home);
+          VectorToSVectorShr2(POS, home);
           rec[0x2]++;
           home = (int *)g_anCameraPos;
           bolt = home;
@@ -350,7 +350,7 @@ void Level14_AdvanceEmitList(int step) {
     }
 
     case 0x9:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -358,7 +358,7 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xA] += step2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -373,19 +373,19 @@ void Level14_AdvanceEmitList(int step) {
         w[0] += LookupCosine(HS(0x18)) >> 4;
         w[1] += LookupSine(HS(0x18)) >> 4;
         w[2] += 0x100;
-        func_80017BFC(POS, w);
+        VectorToSVectorShr2(POS, w);
         HS(0x18) = HU(0x18) + 0x40;
         rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case 0xB:
-      func_80017C84(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -402,14 +402,14 @@ void Level14_AdvanceEmitList(int step) {
         rec[0xE] -= 8;
       }
       if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x10:
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -419,13 +419,13 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xD] -= 4;
       rec[0xE] -= 4;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x11:
       /* The same ember with a late red cut-off at age 9. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -438,7 +438,7 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] -= 4;
       rec[0x2]++;
       if (rec[0x2] >= 0xC || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -454,7 +454,7 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xB] += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -493,16 +493,16 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] -= step2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x1F:
       /* A plain drifter with a long life. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       rec[0x2] += step;
       if (rec[0x2] >= 0x40 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -510,7 +510,7 @@ void Level14_AdvanceEmitList(int step) {
     {
       int c;
 
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -533,7 +533,7 @@ void Level14_AdvanceEmitList(int step) {
       rec[0xE] = c;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -570,7 +570,7 @@ void Level14_AdvanceEmitList(int step) {
         rec[0x2]++;
       }
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -584,7 +584,7 @@ void Level14_AdvanceEmitList(int step) {
 
       path = (unsigned char *)W(0x18);
       base = cur;
-      func_80017C24(base, POS);
+      SVectorToVectorShl2(base, POS);
       hop = adv;
       CopyVector(hop, (int *)&path[W(0x1C) * 0x10 + 8]);
       adv[0] += LookupCosine(rec[0x2] << 7) >> 2;
@@ -595,7 +595,7 @@ void Level14_AdvanceEmitList(int step) {
       if (len < 0x401) {
         W(0x1C)++;
         if (W(0x1C) >= path[0]) {
-          func_80053608(rec);
+          FreeEmitListRecord(rec);
           break;
         }
       }
@@ -603,7 +603,7 @@ void Level14_AdvanceEmitList(int step) {
       ScaleVector3ByRatio(base, len, 0x100);
       hop = cur;
       AddVector(hop, hop, base);
-      func_80017BFC(POS, hop);
+      VectorToSVectorShr2(POS, hop);
       rec[0x2]++;
       break;
     }
@@ -741,7 +741,7 @@ void Level14_AdvanceEmitList(int step) {
 
     case 0x49:
       if (rec[0x3] == 0 || rec[0x2] >= 0x21) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
         break;
       }
       HS(0x4) = (rec[0x1F] * LookupCosine((rec[0x1E] + rec[0x2]) << 6)) >> 10;
@@ -764,7 +764,7 @@ void Level14_AdvanceEmitList(int step) {
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -785,7 +785,7 @@ void Level14_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -872,7 +872,7 @@ void Level14_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -883,7 +883,7 @@ void Level14_AdvanceEmitList(int step) {
     goto next;
 
   expire:
-    func_80053608(rec);
+    FreeEmitListRecord(rec);
 
   next:
     rec += 0x20;

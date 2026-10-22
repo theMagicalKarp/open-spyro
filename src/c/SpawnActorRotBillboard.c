@@ -1,7 +1,7 @@
 #include "globals.h"
 
 extern int func_8005882C();
-extern void func_800529E4();
+extern void RefreshActorDerivedState();
 extern void RotateVectorByMatrix();
 extern void AddVector();
 extern unsigned int GetRandomU32();
@@ -43,7 +43,7 @@ int SpawnActorRotBillboard(int *arg0, int *arg1) {
     rec->g = 0xFF;
     rec->b = 0xFF;
 
-    func_800529E4(arg0, 4);
+    RefreshActorDerivedState(arg0, 4);
     RotateVectorByMatrix(arg0 + 8, arg1, rec->pos);
     AddVector(rec->pos, rec->pos, arg0 + 3);
     rec->angle = GetRandomU32();

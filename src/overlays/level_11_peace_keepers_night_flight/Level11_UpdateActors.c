@@ -22,7 +22,7 @@
  *     view keeps the load below the st->timer / st->spent[i] stores.
  *   - arm 14/15: `pos` pinned to $4 between CollideSphereWithWorldAndActors and the branch, so
  *     the argument is set once ahead of the beqz (fills its delay slot) and
- *     the func_80057380 jal keeps a nop.
+ *     the GetGroundTriggerRegionType jal keeps a nop.
  *   - 0x166 copy loop: explicit `src` / `off` pointers, initialised in the
  *     for-header after `i = 0`. The indexed spelling either strength-reduces
  *     the destination or eliminates the counter.
@@ -141,12 +141,12 @@ typedef struct RoamState {
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
-  int unk14;           /* 0x14 4th argument to func_80017D7C */
-  int vel[3];          /* 0x18 current leg velocity, written by func_80017D7C */
+  int unk14;           /* 0x14 4th argument to ComputeStepTowardPoint */
+  int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
 
-extern int func_80017D7C(int *from, int *to, int *vel, int a);
+extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, anim)                                                     \
@@ -192,7 +192,7 @@ typedef struct ChaserState {
 
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
-extern void func_80051FEC(void);
+extern void BuildActiveActorList(void);
 extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
 extern int RandomSignedInRange(int a, int b);
 
@@ -232,14 +232,14 @@ extern int g_nLevelIntroIndex;
 extern int g_anLevelEggsRecovered[];
 extern int g_nWorldEggsRecovered;
 
-extern void func_8003C85C(int *pos);
-extern void func_80017BFC(short *d, int *s);
-extern void func_80017C24(int *d, int *s);
+extern void AimCameraStickTowardPoint(int *pos);
+extern void VectorToSVectorShr2(short *d, int *s);
+extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
-extern void func_8003B854(int a, void *b);
+extern void CommitActorKillGems(int a, void *b);
 
-extern void func_80038638(Actor *actor, int *target, int a, int heading, int b,
+extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
@@ -258,9 +258,9 @@ extern unsigned char D_8007A6AA;
 extern unsigned char D_8007A6AB;
 extern unsigned char D_8007A6AC;
 
-extern void func_8002B390(int handle, int a, int b);
-extern void func_8002B444(int handle, int a, int b);
-extern int func_8002B3F4(int handle); /* bits 8..15 are the anim marker */
+extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
+extern void SetWorldChunkAnimStep(int handle, int a, int b);
+extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -363,7 +363,7 @@ typedef struct RideState {
   int unk18;    /* 0x18 */
   int unk1C;    /* 0x1C fallback heading when ->unk20 is unset */
   int unk20;    /* 0x20 index into g_pActorListBase, -1 for none */
-  int unk24;    /* 0x24 script id handed to func_8002C914, -1 for none */
+  int unk24;    /* 0x24 script id handed to StubRewardHook, -1 for none */
   int unk28[7]; /* 0x28 */
   int unk44;    /* 0x44 phase counter, 0 .. 0x100 */
   int unk48;    /* 0x48 saved actor->unk44 */
@@ -495,7 +495,7 @@ typedef struct RespawnState {
   int period; /* 0x08 reload for ->timer */
 } RespawnState;
 
-extern void func_8002C914(int script, int a);
+extern void StubRewardHook(int script, int a);
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
@@ -514,7 +514,7 @@ extern short g_anCosineLut[];
 /* Callees used by the collectible and fairy behaviours. */
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
-extern int func_80057380(int *pos);
+extern int GetGroundTriggerRegionType(int *pos);
 extern int CheckLineOfSightSegment(int *a, int *b);
 extern int func_80017428(int *v, int *n, int *out);
 
@@ -576,8 +576,8 @@ extern void *D_8006E490;
 extern void *D_8006E494;
 extern void *D_8006E330[];
 
-extern FxNode *func_80058AE8(void);
-extern void func_80058B60(FxNode *node);
+extern FxNode *AllocWorldSparkle(void);
+extern void ClearWord(FxNode *node);
 extern int StepAngle8Toward(int a, int b, int c);
 
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
@@ -604,7 +604,7 @@ extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
-  int anim;   /* 0x00 handle for func_8002B390 / B3F4 / B444 */
+  int anim;   /* 0x00 handle for ModifyWorldChunkAnimFlags / B3F4 / B444 */
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
@@ -656,7 +656,7 @@ typedef struct TumbleState {
   (a)->unk3D = (next);                                                         \
   (a)->unk3E = (a)->unk3F;                                                     \
   (a)->unk3F = 0;                                                              \
-  func_80037E98(a);
+  StubActorHook(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -670,7 +670,7 @@ typedef struct TumbleState {
     (a)->unk3D = (n);                                                          \
     (a)->unk3E = (a)->unk3F;                                                   \
     (a)->unk3F = 0;                                                            \
-    func_80037E98(a);                                                          \
+    StubActorHook(a);                                                          \
   }                                                                            \
   continue
 
@@ -967,10 +967,10 @@ extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
 extern unsigned char D_8007A6C8;
 
-extern void func_8002B390(int ch, int vol, int a);
-extern void func_8002B444(int ch, int n, int a);
-extern int func_8002B3F4(int ch);
-extern int func_80017D7C(int *from, int *to, int *step, int speed);
+extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
+extern void SetWorldChunkAnimStep(int ch, int n, int a);
+extern int GetWorldChunkAnimState(int ch);
+extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== Flight-level classes ==== */
@@ -1003,7 +1003,7 @@ extern int D_80075908;    /* time bonus accumulator */
 extern int D_80075840;    /* time remaining */
 extern int g_nVblankTickCount;    /* frame counter */
 extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
-extern int func_80038D54(int *pos, void *st);
+extern int PlaneDistanceAbs(int *pos, void *st);
 extern void func_8003CAC4(int sound);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
@@ -1081,7 +1081,7 @@ void Level11_UpdateActors(void) {
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
-  func_80051FEC();
+  BuildActiveActorList();
   TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
 
   if (g_nFrameStep >= 3) {
@@ -1210,7 +1210,7 @@ void Level11_UpdateActors(void) {
         break;
       }
       case 1: {
-        func_80038638(actor, &spy->posX, 0x320,
+        SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
                                     st->dir * 8),
@@ -1264,14 +1264,14 @@ void Level11_UpdateActors(void) {
         }
       }
       if ((unsigned int)(actor->unk48 - 2) < 3) {
-        func_8003C85C(&actor->posX);
+        AimCameraStickTowardPoint(&actor->posX);
         g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, (void *)0x602080);
       }
 
       switch (actor->unk48) {
       case 1:
         g_nGameplayBlocked = 1;
-        func_80017BFC(st->from, &actor->posX);
+        VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
             0x40;
@@ -1289,7 +1289,7 @@ void Level11_UpdateActors(void) {
           int step = g_nFrameStep << 2;
           st->speed = st->speed + step;
           st->heading = st->heading + step;
-          func_80017C24(&actor->posX, st->from);
+          SVectorToVectorShl2(&actor->posX, st->from);
           actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
           actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
           {
@@ -1314,8 +1314,8 @@ void Level11_UpdateActors(void) {
             svA[1] = svA[1] + ((sr - cr) >> 12);
           }
           svA[2] = svA[2] + 0x300;
-          func_80017BFC(st->to, svA);
-          func_80017BFC(st->from, &actor->posX);
+          VectorToSVectorShr2(st->to, svA);
+          VectorToSVectorShr2(st->from, &actor->posX);
           st->phase = 0;
           actor->unk48 = actor->unk48 + 1;
         }
@@ -1327,8 +1327,8 @@ void Level11_UpdateActors(void) {
       case 3:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x40) {
-          func_80017C24(svB, st->from);
-          func_80017C24(svC, st->to);
+          SVectorToVectorShl2(svB, st->from);
+          SVectorToVectorShl2(svC, st->to);
           SubtractVector(svC, svC, svB);
           ScaleVector3Sat(svC, svC, st->phase);
           RShiftVector3(svC, 6);
@@ -1339,7 +1339,7 @@ void Level11_UpdateActors(void) {
           svD[0] = svD[0] + (LookupCosine(D_80078A66 << 4) >> 3);
           svD[1] = svD[1] + (LookupSine(D_80078A66 << 4) >> 3);
           svD[2] = svD[2] + 0x300;
-          func_80017BFC(st->from, svD);
+          VectorToSVectorShr2(st->from, svD);
           st->heading = D_80078A66 - 0x40;
           st->speed = 0x200;
           st->phase = 0;
@@ -1356,7 +1356,7 @@ void Level11_UpdateActors(void) {
           int step = g_nFrameStep << 2;
           st->speed = st->speed - step;
           st->heading = st->heading - step;
-          func_80017C24(&actor->posX, st->from);
+          SVectorToVectorShl2(&actor->posX, st->from);
           actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
           actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
           {
@@ -1378,7 +1378,7 @@ void Level11_UpdateActors(void) {
         g_pfnLevelOverlayParticleSpawn(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        func_8003B854(0, st->unk00);
+        CommitActorKillGems(0, st->unk00);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -1493,7 +1493,7 @@ void Level11_UpdateActors(void) {
       if (actor->type != 15) {
 
         if (st->anim != 255) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
 
           if (actor->type == 14) {
             RotateVectorByMatrix(actor->unk20, &D_8006E5B8, D_80077108[st->anim].pos);
@@ -1568,7 +1568,7 @@ void Level11_UpdateActors(void) {
             actor->posY = acc[0][1] / 3;
             actor->posZ = acc[0][2] / 3;
 
-            func_800529E4(actor, 2);
+            RefreshActorDerivedState(actor, 2);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
@@ -1578,7 +1578,7 @@ void Level11_UpdateActors(void) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
 
-            func_800529E4(actor, 2);
+            RefreshActorDerivedState(actor, 2);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
@@ -1655,7 +1655,7 @@ void Level11_UpdateActors(void) {
           r = CollideSphereWithWorldAndActors(svG, 240, 240);
           pos = &actor->posX;
           if (r) {
-            if (func_80057380(pos) == 0) {
+            if (GetGroundTriggerRegionType(pos) == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 CollectPickupActor(actor);
               }
@@ -1805,7 +1805,7 @@ void Level11_UpdateActors(void) {
 
         if (actor->type == 14) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           g_pfnLevelOverlayParticleSpawn(16, 70, &actor->posX, (void *)8);
           g_pfnLevelOverlayParticleSpawn(16, 70, &actor->posX, (void *)0x10);
 
@@ -1813,7 +1813,7 @@ void Level11_UpdateActors(void) {
             g_nExtraLives++;
           }
 
-          func_8003B854(0, actor);
+          CommitActorKillGems(0, actor);
           DespawnActorRecord(actor);
           continue;
         } else if (actor->type == 15) {
@@ -1855,7 +1855,7 @@ void Level11_UpdateActors(void) {
 
       if (SPY.u164 >= 3) {
         if (st->fx == 0) {
-          FxNode *g = func_80058AE8();
+          FxNode *g = AllocWorldSparkle();
           st->fx = g;
           if (g != 0) {
             g->anchor = &actor->posX;
@@ -1877,7 +1877,7 @@ void Level11_UpdateActors(void) {
         }
       } else {
         if (st->fx != 0) {
-          func_80058B60(st->fx);
+          ClearWord(st->fx);
           st->fx = 0;
         }
       }
@@ -2107,7 +2107,7 @@ void Level11_UpdateActors(void) {
           break;
         }
       }
-      func_800529E4(actor, 4);
+      RefreshActorDerivedState(actor, 4);
       break;
     }
 
@@ -2132,7 +2132,7 @@ void Level11_UpdateActors(void) {
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->unk38) < 0x200) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
 
           for (i = 0; i < 6; i++) {
             g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
@@ -2150,7 +2150,7 @@ void Level11_UpdateActors(void) {
       }
 
       if (st->anim != 0xFF) {
-        func_800529E4(actor, 4);
+        RefreshActorDerivedState(actor, 4);
         RotateVectorByMatrix(actor->unk20, &D_8006E5AC, D_80077108[st->anim].pos);
         AddVector(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
                       &actor->posX);
@@ -2292,7 +2292,7 @@ void Level11_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
       }
 
-      func_800529E4(actor, 4);
+      RefreshActorDerivedState(actor, 4);
 
       if (ApproxDist2D(&actor->posX, &spy->posX) < 3000) {
         int height = actor->posZ - actor->unk38;
@@ -2301,7 +2301,7 @@ void Level11_UpdateActors(void) {
         if (drop > 0 ? drop < 3000 : SPY.posZ - height < 3000) {
           SubtractVector(svT, &actor->posX, &spy->posX);
           if (VectorLength(svT, 1) < 2500 &&
-              func_80038D54(&spy->posX, st) < 0x200) {
+              PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             func_8003CAC4(st->sound);
             if (st->helper != 0) {
               st->helper->unk48 = 1;
@@ -2394,7 +2394,7 @@ void Level11_UpdateActors(void) {
           svW[2] = (svV[2] - 0xC0) * 4;
           svV[2] = (svW[2] - svV[2]) >> 2;
           if (VectorLength(svV, 1) < 0x578 &&
-              func_80038D54(&spy->posX, st) < 0x200) {
+              PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
             func_8003CAC4(st->sound);
@@ -2870,7 +2870,7 @@ void Level11_UpdateActors(void) {
           reward->unk48 = 1;
         }
         if (st[2] >= 0) {
-          func_8002B390(st[2], 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st[2], 0xFC, 0);
         }
         actor->type = 0x18F;
       }

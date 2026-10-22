@@ -9,14 +9,14 @@
    gamestate-scaled `speed` clamped to the remaining delta. While more
    than 0x101 off-bearing it swaps the actor's anim pair at +0x3C..+0x41
    (animId when turning positive, animId+1 otherwise) through
-   func_80037E98. Stores the coarse yaw at +0x46; returns the delta.
+   StubActorHook. Stores the coarse yaw at +0x46; returns the delta.
 
    In each anim arm the 0x10 stores are bare literals (a shared carrier costs
    the birthing boost and swaps the `li` with the call-arg copy), and `old` is
    a `$2` register local: as a pseudo it spans the cross-jumped tail, so it is
    a global allocno assigned after local-alloc has already given v0 to the
    constant. */
-extern void func_80037E98(int *actor, int a, int b);
+extern void StubActorHook(int *actor, int a, int b);
 extern int abs(int);
 
 extern int D_800756C4;
@@ -87,7 +87,7 @@ int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
         *((unsigned char *)actor + 0x3F) = 0;
         *((unsigned char *)actor + 0x3C) = old;
         *((unsigned char *)actor + 0x3E) = p3F;
-        func_80037E98(actor, p3F, next);
+        StubActorHook(actor, p3F, next);
       }
     } else {
       if (*((unsigned char *)actor + 0x3D) != next) {
@@ -102,7 +102,7 @@ int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
         *((unsigned char *)actor + 0x3F) = 0;
         *((unsigned char *)actor + 0x3C) = old;
         *((unsigned char *)actor + 0x3E) = p3F;
-        func_80037E98(actor, p3F, next);
+        StubActorHook(actor, p3F, next);
       }
     }
   }

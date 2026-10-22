@@ -2,8 +2,8 @@
 
 extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);
-extern void func_8003BAD0(unsigned char *pos, int *wp, int speed, int a, int b,
-                          int c);
+extern void SteerActorTowardPoint(unsigned char *pos, int *wp, int speed, int a,
+                                  int b, int c);
 
 /* 0x8003c994 (0x130) — advance an actor along its waypoint path record:
    measure the distance from `pos`+0xC to the current waypoint (path index
@@ -37,6 +37,6 @@ void FollowActorWaypointPath(unsigned char *pos, unsigned char *path,
   if (cap < dist) {
     dist = cap;
   }
-  func_8003BAD0(pos, (int *)(path + ((path[1] << 4) + 8)), dist, arg6, arg7,
-                arg5);
+  SteerActorTowardPoint(pos, (int *)(path + ((path[1] << 4) + 8)), dist, arg6,
+                        arg7, arg5);
 }

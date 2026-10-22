@@ -6325,11 +6325,11 @@ endlabel ScaleVector3Sat
 /* Handwritten function */
 .endif
 
-.section .text.func_800177F8, "ax"
-.ifndef HAVE_C_func_800177F8
-nonmatching func_800177F8, 0x5C
+.section .text.DivideVector3, "ax"
+.ifndef HAVE_C_DivideVector3
+nonmatching DivideVector3, 0x5C
 
-glabel func_800177F8
+glabel DivideVector3
     /* 7FF8 800177F8 0100013C */  lui        $at, (0x10000 >> 16)
     /* 7FFC 800177FC 1A002600 */  div        $zero, $at, $a2
     /* 8000 80017800 0000A9C8 */  lwc2       $9, 0x0($a1)
@@ -6353,7 +6353,7 @@ glabel func_800177F8
     /* 8048 80017848 040082AC */  sw         $v0, 0x4($a0)
     /* 804C 8001784C 0800E003 */  jr         $ra
     /* 8050 80017850 080083AC */   sw        $v1, 0x8($a0)
-endlabel func_800177F8
+endlabel DivideVector3
 
 /* Handwritten function */
 .endif
@@ -6719,11 +6719,11 @@ glabel ProjectWorldPointGTE
 endlabel ProjectWorldPointGTE
 .endif
 
-.section .text.func_80017BFC, "ax"
-.ifndef HAVE_C_func_80017BFC
-nonmatching func_80017BFC, 0x28
+.section .text.VectorToSVectorShr2, "ax"
+.ifndef HAVE_C_VectorToSVectorShr2
+nonmatching VectorToSVectorShr2, 0x28
 
-glabel func_80017BFC
+glabel VectorToSVectorShr2
     /* 83FC 80017BFC 0000A18C */  lw         $at, 0x0($a1)
     /* 8400 80017C00 0400A28C */  lw         $v0, 0x4($a1)
     /* 8404 80017C04 0800A38C */  lw         $v1, 0x8($a1)
@@ -6734,14 +6734,14 @@ glabel func_80017BFC
     /* 8418 80017C18 020082A4 */  sh         $v0, 0x2($a0)
     /* 841C 80017C1C 0800E003 */  jr         $ra
     /* 8420 80017C20 040083A4 */   sh        $v1, 0x4($a0)
-endlabel func_80017BFC
+endlabel VectorToSVectorShr2
 .endif
 
-.section .text.func_80017C24, "ax"
-.ifndef HAVE_C_func_80017C24
-nonmatching func_80017C24, 0x28
+.section .text.SVectorToVectorShl2, "ax"
+.ifndef HAVE_C_SVectorToVectorShl2
+nonmatching SVectorToVectorShl2, 0x28
 
-glabel func_80017C24
+glabel SVectorToVectorShl2
     /* 8424 80017C24 0000A194 */  lhu        $at, 0x0($a1)
     /* 8428 80017C28 0200A294 */  lhu        $v0, 0x2($a1)
     /* 842C 80017C2C 0400A394 */  lhu        $v1, 0x4($a1)
@@ -6752,7 +6752,7 @@ glabel func_80017C24
     /* 8440 80017C40 040082AC */  sw         $v0, 0x4($a0)
     /* 8444 80017C44 0800E003 */  jr         $ra
     /* 8448 80017C48 080083AC */   sw        $v1, 0x8($a0)
-endlabel func_80017C24
+endlabel SVectorToVectorShl2
 .endif
 
 .section .text.SVectorToVector, "ax"
@@ -6787,11 +6787,11 @@ endlabel VectorToSVector
 /* Handwritten function */
 .endif
 
-.section .text.func_80017C84, "ax"
-.ifndef HAVE_C_func_80017C84
-nonmatching func_80017C84, 0x34
+.section .text.AddSVector, "ax"
+.ifndef HAVE_C_AddSVector
+nonmatching AddSVector, 0x34
 
-glabel func_80017C84
+glabel AddSVector
     /* 8484 80017C84 0000A184 */  lh         $at, 0x0($a1)
     /* 8488 80017C88 0200A284 */  lh         $v0, 0x2($a1)
     /* 848C 80017C8C 0400A384 */  lh         $v1, 0x4($a1)
@@ -6805,7 +6805,7 @@ glabel func_80017C84
     /* 84AC 80017CAC 020082A4 */  sh         $v0, 0x2($a0)
     /* 84B0 80017CB0 0800E003 */  jr         $ra
     /* 84B4 80017CB4 040083A4 */   sh        $v1, 0x4($a0)
-endlabel func_80017C84
+endlabel AddSVector
 
 /* Handwritten function */
 .endif
@@ -6869,11 +6869,11 @@ endlabel UnpackWorldCollisionTri
 /* Handwritten function */
 .endif
 
-.section .text.func_80017D7C, "ax"
-.ifndef HAVE_C_func_80017D7C
-nonmatching func_80017D7C, 0xD8
+.section .text.ComputeStepTowardPoint, "ax"
+.ifndef HAVE_C_ComputeStepTowardPoint
+nonmatching ComputeStepTowardPoint, 0xD8
 
-glabel func_80017D7C
+glabel ComputeStepTowardPoint
     /* 857C 80017D7C 0000888C */  lw         $t0, 0x0($a0)
     /* 8580 80017D80 0000A98C */  lw         $t1, 0x0($a1)
     /* 8584 80017D84 04008A8C */  lw         $t2, 0x4($a0)
@@ -6934,7 +6934,7 @@ glabel func_80017D7C
   .L80017E4C:
     /* 864C 80017E4C 0800E003 */  jr         $ra
     /* 8650 80017E50 0800CAAC */   sw        $t2, 0x8($a2)
-endlabel func_80017D7C
+endlabel ComputeStepTowardPoint
 
 /* Handwritten function */
 .endif
@@ -28236,11 +28236,11 @@ endlabel TickWorldChunkAnimations
 /* Handwritten function */
 .endif
 
-.section .text.func_8002B390, "ax"
-.ifndef HAVE_C_func_8002B390
-nonmatching func_8002B390, 0x64
+.section .text.ModifyWorldChunkAnimFlags, "ax"
+.ifndef HAVE_C_ModifyWorldChunkAnimFlags
+nonmatching ModifyWorldChunkAnimFlags, 0x64
 
-glabel func_8002B390
+glabel ModifyWorldChunkAnimFlags
     /* 1BB90 8002B390 00008D20 */  addi       $t5, $a0, 0x0 /* handwritten instruction */
     /* 1BB94 8002B394 0000AE20 */  addi       $t6, $a1, 0x0 /* handwritten instruction */
     /* 1BB98 8002B398 0000CF20 */  addi       $t7, $a2, 0x0 /* handwritten instruction */
@@ -28269,16 +28269,16 @@ glabel func_8002B390
   .L8002B3EC:
     /* 1BBEC 8002B3EC 0800E003 */  jr         $ra
     /* 1BBF0 8002B3F0 00000000 */   nop
-endlabel func_8002B390
+endlabel ModifyWorldChunkAnimFlags
 
 /* Handwritten function */
 .endif
 
-.section .text.func_8002B3F4, "ax"
-.ifndef HAVE_C_func_8002B3F4
-nonmatching func_8002B3F4, 0x50
+.section .text.GetWorldChunkAnimState, "ax"
+.ifndef HAVE_C_GetWorldChunkAnimState
+nonmatching GetWorldChunkAnimState, 0x50
 
-glabel func_8002B3F4
+glabel GetWorldChunkAnimState
     /* 1BBF4 8002B3F4 006E0400 */  sll        $t5, $a0, 24
     /* 1BBF8 8002B3F8 0880183C */  lui        $t8, %hi(g_nWorldAnimMeshKeyframeCount)
     /* 1BBFC 8002B3FC 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimMeshKeyframeCount)
@@ -28302,16 +28302,16 @@ glabel func_8002B3F4
   .L8002B43C:
     /* 1BC3C 8002B43C 0800E003 */  jr         $ra
     /* 1BC40 8002B440 00000000 */   nop
-endlabel func_8002B3F4
+endlabel GetWorldChunkAnimState
 
 /* Handwritten function */
 .endif
 
-.section .text.func_8002B444, "ax"
-.ifndef HAVE_C_func_8002B444
-nonmatching func_8002B444, 0x68
+.section .text.SetWorldChunkAnimStep, "ax"
+.ifndef HAVE_C_SetWorldChunkAnimStep
+nonmatching SetWorldChunkAnimStep, 0x68
 
-glabel func_8002B444
+glabel SetWorldChunkAnimStep
     /* 1BC44 8002B444 00008D20 */  addi       $t5, $a0, 0x0 /* handwritten instruction */
     /* 1BC48 8002B448 0000AE20 */  addi       $t6, $a1, 0x0 /* handwritten instruction */
     /* 1BC4C 8002B44C 0000CF20 */  addi       $t7, $a2, 0x0 /* handwritten instruction */
@@ -28341,7 +28341,7 @@ glabel func_8002B444
   .L8002B4A4:
     /* 1BCA4 8002B4A4 0800E003 */  jr         $ra
     /* 1BCA8 8002B4A8 00000000 */   nop
-endlabel func_8002B444
+endlabel SetWorldChunkAnimStep
 
 /* Handwritten function */
 .endif
@@ -29830,14 +29830,14 @@ glabel EndRespawnToGameplay
 endlabel EndRespawnToGameplay
 .endif
 
-.section .text.func_8002C914, "ax"
-.ifndef HAVE_C_func_8002C914
-nonmatching func_8002C914, 0x8
+.section .text.StubRewardHook, "ax"
+.ifndef HAVE_C_StubRewardHook
+nonmatching StubRewardHook, 0x8
 
-glabel func_8002C914
+glabel StubRewardHook
     /* 1D114 8002C914 0800E003 */  jr         $ra
     /* 1D118 8002C918 00000000 */   nop
-endlabel func_8002C914
+endlabel StubRewardHook
 .endif
 
 .section .text.Gamestate06SubstateStub_Noop, "ax"
@@ -36524,11 +36524,11 @@ glabel Gamestate0C_Update
 endlabel Gamestate0C_Update
 .endif
 
-.section .text.func_80032A20, "ax"
-.ifndef HAVE_C_func_80032A20
-nonmatching func_80032A20, 0x90
+.section .text.PollMemCardSyncRing, "ax"
+.ifndef HAVE_C_PollMemCardSyncRing
+nonmatching PollMemCardSyncRing, 0x90
 
-glabel func_80032A20
+glabel PollMemCardSyncRing
     /* 23220 80032A20 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 23224 80032A24 01000424 */  addiu      $a0, $zero, 0x1
     /* 23228 80032A28 1000B0AF */  sw         $s0, 0x10($sp)
@@ -36567,7 +36567,7 @@ glabel func_80032A20
     /* 232A4 80032AA4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 232A8 80032AA8 0800E003 */  jr         $ra
     /* 232AC 80032AAC 00000000 */   nop
-endlabel func_80032A20
+endlabel PollMemCardSyncRing
 .endif
 
 .section .text.func_80032AB0, "ax"
@@ -42526,14 +42526,14 @@ glabel UpdateCameraFrame
 endlabel UpdateCameraFrame
 .endif
 
-.section .text.func_80037E98, "ax"
-.ifndef HAVE_C_func_80037E98
-nonmatching func_80037E98, 0x8
+.section .text.StubActorHook, "ax"
+.ifndef HAVE_C_StubActorHook
+nonmatching StubActorHook, 0x8
 
-glabel func_80037E98
+glabel StubActorHook
     /* 28698 80037E98 0800E003 */  jr         $ra
     /* 2869C 80037E9C 00000000 */   nop
-endlabel func_80037E98
+endlabel StubActorHook
 .endif
 
 .section .text.RandomIntInRange, "ax"
@@ -43186,11 +43186,11 @@ glabel func_800385BC
 endlabel func_800385BC
 .endif
 
-.section .text.func_80038638, "ax"
-.ifndef HAVE_C_func_80038638
-nonmatching func_80038638, 0x2E4
+.section .text.SteerActorAroundPoint, "ax"
+.ifndef HAVE_C_SteerActorAroundPoint
+nonmatching SteerActorAroundPoint, 0x2E4
 
-glabel func_80038638
+glabel SteerActorAroundPoint
     /* 28E38 80038638 B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 28E3C 8003863C 3400B3AF */  sw         $s3, 0x34($sp)
     /* 28E40 80038640 21988000 */  addu       $s3, $a0, $zero
@@ -43391,14 +43391,14 @@ glabel func_80038638
     /* 29110 80038910 5000BD27 */  addiu      $sp, $sp, 0x50
     /* 29114 80038914 0800E003 */  jr         $ra
     /* 29118 80038918 00000000 */   nop
-endlabel func_80038638
+endlabel SteerActorAroundPoint
 .endif
 
-.section .text.func_8003891C, "ax"
-.ifndef HAVE_C_func_8003891C
-nonmatching func_8003891C, 0x124
+.section .text.ComputeLobVelocityZ, "ax"
+.ifndef HAVE_C_ComputeLobVelocityZ
+nonmatching ComputeLobVelocityZ, 0x124
 
-glabel func_8003891C
+glabel ComputeLobVelocityZ
     /* 2911C 8003891C D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 29120 80038920 1C00B1AF */  sw         $s1, 0x1C($sp)
     /* 29124 80038924 21888000 */  addu       $s1, $a0, $zero
@@ -43479,7 +43479,7 @@ glabel func_8003891C
     /* 29234 80038A34 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 29238 80038A38 0800E003 */  jr         $ra
     /* 2923C 80038A3C 00000000 */   nop
-endlabel func_8003891C
+endlabel ComputeLobVelocityZ
 .endif
 
 .section .text.FindNearestPathPointToActor, "ax"
@@ -43725,11 +43725,11 @@ glabel IsPointInRotatedBox
 endlabel IsPointInRotatedBox
 .endif
 
-.section .text.func_80038D54, "ax"
-.ifndef HAVE_C_func_80038D54
-nonmatching func_80038D54, 0x6C
+.section .text.PlaneDistanceAbs, "ax"
+.ifndef HAVE_C_PlaneDistanceAbs
+nonmatching PlaneDistanceAbs, 0x6C
 
-glabel func_80038D54
+glabel PlaneDistanceAbs
     /* 29554 80038D54 0000A38C */  lw         $v1, 0x0($a1)
     /* 29558 80038D58 0000828C */  lw         $v0, 0x0($a0)
     /* 2955C 80038D5C 00000000 */  nop
@@ -43758,7 +43758,7 @@ glabel func_80038D54
     /* 295B4 80038DB4 1000BD27 */  addiu      $sp, $sp, 0x10
     /* 295B8 80038DB8 0800E003 */  jr         $ra
     /* 295BC 80038DBC 00000000 */   nop
-endlabel func_80038D54
+endlabel PlaneDistanceAbs
 .endif
 
 .section .text.TrackEntityYawTowardSpyro, "ax"
@@ -44066,7 +44066,7 @@ glabel SteerActorYawTowardSpyro
   .L800391B4:
     /* 299B4 800391B4 3F0000A2 */  sb         $zero, 0x3F($s0)
     /* 299B8 800391B8 3C0002A2 */  sb         $v0, 0x3C($s0)
-    /* 299BC 800391BC A6DF000C */  jal        func_80037E98
+    /* 299BC 800391BC A6DF000C */  jal        StubActorHook
     /* 299C0 800391C0 3E0005A2 */   sb        $a1, 0x3E($s0)
   .L800391C4:
     /* 299C4 800391C4 0000628E */  lw         $v0, 0x0($s3)
@@ -44188,7 +44188,7 @@ glabel MoveActorByDelta
     /* 29B58 80039358 C05D000C */  jal        CopyVector
     /* 29B5C 8003935C 1800A527 */   addiu     $a1, $sp, 0x18
     /* 29B60 80039360 21204002 */  addu       $a0, $s2, $zero
-    /* 29B64 80039364 794A010C */  jal        func_800529E4
+    /* 29B64 80039364 794A010C */  jal        RefreshActorDerivedState
     /* 29B68 80039368 02000524 */   addiu     $a1, $zero, 0x2
     /* 29B6C 8003936C 21100000 */  addu       $v0, $zero, $zero
   .L80039370:
@@ -44407,7 +44407,7 @@ glabel MoveActorAlongHeading
     /* 29E54 80039654 21200002 */   addu      $a0, $s0, $zero
     /* 29E58 80039658 21200002 */  addu       $a0, $s0, $zero
   .L8003965C:
-    /* 29E5C 8003965C 794A010C */  jal        func_800529E4
+    /* 29E5C 8003965C 794A010C */  jal        RefreshActorDerivedState
     /* 29E60 80039660 02000524 */   addiu     $a1, $zero, 0x2
     /* 29E64 80039664 21100000 */  addu       $v0, $zero, $zero
   .L80039668:
@@ -44593,7 +44593,7 @@ glabel MoveActorAlongAngle
     /* 2A0DC 800398DC 21200002 */   addu      $a0, $s0, $zero
     /* 2A0E0 800398E0 21200002 */  addu       $a0, $s0, $zero
   .L800398E4:
-    /* 2A0E4 800398E4 794A010C */  jal        func_800529E4
+    /* 2A0E4 800398E4 794A010C */  jal        RefreshActorDerivedState
     /* 2A0E8 800398E8 02000524 */   addiu     $a1, $zero, 0x2
     /* 2A0EC 800398EC 21100000 */  addu       $v0, $zero, $zero
   .L800398F0:
@@ -45007,11 +45007,11 @@ glabel UpdateActorWander
 endlabel UpdateActorWander
 .endif
 
-.section .text.func_80039E94, "ax"
-.ifndef HAVE_C_func_80039E94
-nonmatching func_80039E94, 0x2D8
+.section .text.PivotActorAlongPath, "ax"
+.ifndef HAVE_C_PivotActorAlongPath
+nonmatching PivotActorAlongPath, 0x2D8
 
-glabel func_80039E94
+glabel PivotActorAlongPath
     /* 2A694 80039E94 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 2A698 80039E98 3000B6AF */  sw         $s6, 0x30($sp)
     /* 2A69C 80039E9C 5400B68F */  lw         $s6, 0x54($sp)
@@ -45211,14 +45211,14 @@ glabel func_80039E94
     /* 2A960 8003A160 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 2A964 8003A164 0800E003 */  jr         $ra
     /* 2A968 8003A168 00000000 */   nop
-endlabel func_80039E94
+endlabel PivotActorAlongPath
 .endif
 
-.section .text.func_8003A16C, "ax"
-.ifndef HAVE_C_func_8003A16C
-nonmatching func_8003A16C, 0x2B4
+.section .text.SteerActorAlongWaypoints, "ax"
+.ifndef HAVE_C_SteerActorAlongWaypoints
+nonmatching SteerActorAlongWaypoints, 0x2B4
 
-glabel func_8003A16C
+glabel SteerActorAlongWaypoints
     /* 2A96C 8003A16C 88FFBD27 */  addiu      $sp, $sp, -0x78
     /* 2A970 8003A170 6000B4AF */  sw         $s4, 0x60($sp)
     /* 2A974 8003A174 21A08000 */  addu       $s4, $a0, $zero
@@ -45361,7 +45361,7 @@ glabel func_8003A16C
     /* 2AB6C 8003A36C F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 2AB70 8003A370 21208002 */   addu      $a0, $s4, $zero
     /* 2AB74 8003A374 21208002 */  addu       $a0, $s4, $zero
-    /* 2AB78 8003A378 794A010C */  jal        func_800529E4
+    /* 2AB78 8003A378 794A010C */  jal        RefreshActorDerivedState
     /* 2AB7C 8003A37C 02000524 */   addiu     $a1, $zero, 0x2
     /* 2AB80 8003A380 21980000 */  addu       $s3, $zero, $zero
     /* 2AB84 8003A384 21200002 */  addu       $a0, $s0, $zero
@@ -45405,14 +45405,14 @@ glabel func_8003A16C
     /* 2AC14 8003A414 7800BD27 */  addiu      $sp, $sp, 0x78
     /* 2AC18 8003A418 0800E003 */  jr         $ra
     /* 2AC1C 8003A41C 00000000 */   nop
-endlabel func_8003A16C
+endlabel SteerActorAlongWaypoints
 .endif
 
-.section .text.func_8003A420, "ax"
-.ifndef HAVE_C_func_8003A420
-nonmatching func_8003A420, 0x300
+.section .text.WalkActorAlongWaypoints, "ax"
+.ifndef HAVE_C_WalkActorAlongWaypoints
+nonmatching WalkActorAlongWaypoints, 0x300
 
-glabel func_8003A420
+glabel WalkActorAlongWaypoints
     /* 2AC20 8003A420 88FFBD27 */  addiu      $sp, $sp, -0x78
     /* 2AC24 8003A424 5800B2AF */  sw         $s2, 0x58($sp)
     /* 2AC28 8003A428 21908000 */  addu       $s2, $a0, $zero
@@ -45576,7 +45576,7 @@ glabel func_8003A420
     /* 2AE6C 8003A66C F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 2AE70 8003A670 21204002 */   addu      $a0, $s2, $zero
     /* 2AE74 8003A674 21204002 */  addu       $a0, $s2, $zero
-    /* 2AE78 8003A678 794A010C */  jal        func_800529E4
+    /* 2AE78 8003A678 794A010C */  jal        RefreshActorDerivedState
     /* 2AE7C 8003A67C 02000524 */   addiu     $a1, $zero, 0x2
     /* 2AE80 8003A680 21A00000 */  addu       $s4, $zero, $zero
     /* 2AE84 8003A684 21200002 */  addu       $a0, $s0, $zero
@@ -45620,7 +45620,7 @@ glabel func_8003A420
     /* 2AF14 8003A714 7800BD27 */  addiu      $sp, $sp, 0x78
     /* 2AF18 8003A718 0800E003 */  jr         $ra
     /* 2AF1C 8003A71C 00000000 */   nop
-endlabel func_8003A420
+endlabel WalkActorAlongWaypoints
 .endif
 
 .section .text.InitActorRenderDefaults, "ax"
@@ -45765,7 +45765,7 @@ glabel func_8003A850
     /* 2B0EC 8003A8EC 02000692 */  lbu        $a2, 0x2($s0)
     /* 2B0F0 8003A8F0 03000292 */  lbu        $v0, 0x3($s0)
     /* 2B0F4 8003A8F4 42300600 */  srl        $a2, $a2, 1
-    /* 2B0F8 8003A8F8 FE5D000C */  jal        func_800177F8
+    /* 2B0F8 8003A8F8 FE5D000C */  jal        DivideVector3
     /* 2B0FC 8003A8FC 23304600 */   subu      $a2, $v0, $a2
     /* 2B100 8003A900 2000BF8F */  lw         $ra, 0x20($sp)
     /* 2B104 8003A904 1C00B38F */  lw         $s3, 0x1C($sp)
@@ -45957,7 +45957,7 @@ glabel SpawnActorRotBillboard
     /* 2B338 8003AB38 FF000224 */  addiu      $v0, $zero, 0xFF
     /* 2B33C 8003AB3C 100002A2 */  sb         $v0, 0x10($s0)
     /* 2B340 8003AB40 110002A2 */  sb         $v0, 0x11($s0)
-    /* 2B344 8003AB44 794A010C */  jal        func_800529E4
+    /* 2B344 8003AB44 794A010C */  jal        RefreshActorDerivedState
     /* 2B348 8003AB48 120002A2 */   sb        $v0, 0x12($s0)
     /* 2B34C 8003AB4C 20002426 */  addiu      $a0, $s1, 0x20
     /* 2B350 8003AB50 21286002 */  addu       $a1, $s3, $zero
@@ -45992,11 +45992,11 @@ glabel SpawnActorRotBillboard
 endlabel SpawnActorRotBillboard
 .endif
 
-.section .text.func_8003ABC0, "ax"
-.ifndef HAVE_C_func_8003ABC0
-nonmatching func_8003ABC0, 0x51C
+.section .text.SpawnActorDeathDrop, "ax"
+.ifndef HAVE_C_SpawnActorDeathDrop
+nonmatching SpawnActorDeathDrop, 0x51C
 
-glabel func_8003ABC0
+glabel SpawnActorDeathDrop
     /* 2B3C0 8003ABC0 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* 2B3C4 8003ABC4 4400B3AF */  sw         $s3, 0x44($sp)
     /* 2B3C8 8003ABC8 21988000 */  addu       $s3, $a0, $zero
@@ -46332,7 +46332,7 @@ glabel func_8003ABC0
     /* 2B87C 8003B07C 1800A627 */   addiu     $a2, $sp, 0x18
     /* 2B880 8003B080 21200002 */  addu       $a0, $s0, $zero
     /* 2B884 8003B084 21280002 */  addu       $a1, $s0, $zero
-    /* 2B888 8003B088 FE5D000C */  jal        func_800177F8
+    /* 2B888 8003B088 FE5D000C */  jal        DivideVector3
     /* 2B88C 8003B08C 21302002 */   addu      $a2, $s1, $zero
     /* 2B890 8003B090 2120A002 */  addu       $a0, $s5, $zero
     /* 2B894 8003B094 21280002 */  addu       $a1, $s0, $zero
@@ -46355,14 +46355,14 @@ glabel func_8003ABC0
     /* 2B8D0 8003B0D0 6000BD27 */  addiu      $sp, $sp, 0x60
     /* 2B8D4 8003B0D4 0800E003 */  jr         $ra
     /* 2B8D8 8003B0D8 00000000 */   nop
-endlabel func_8003ABC0
+endlabel SpawnActorDeathDrop
 .endif
 
-.section .text.func_8003B0DC, "ax"
-.ifndef HAVE_C_func_8003B0DC
-nonmatching func_8003B0DC, 0x84
+.section .text.PickupGroupHasLiveActor, "ax"
+.ifndef HAVE_C_PickupGroupHasLiveActor
+nonmatching PickupGroupHasLiveActor, 0x84
 
-glabel func_8003B0DC
+glabel PickupGroupHasLiveActor
     /* 2B8DC 8003B0DC 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2B8E0 8003B0E0 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2B8E4 8003B0E4 00000000 */  nop
@@ -46399,7 +46399,7 @@ glabel func_8003B0DC
   .L8003B158:
     /* 2B958 8003B158 0800E003 */  jr         $ra
     /* 2B95C 8003B15C 00000000 */   nop
-endlabel func_8003B0DC
+endlabel PickupGroupHasLiveActor
 .endif
 
 .section .text.func_8003B160, "ax"
@@ -46954,11 +46954,11 @@ glabel MarkActorCommittedKill
 endlabel MarkActorCommittedKill
 .endif
 
-.section .text.func_8003B854, "ax"
-.ifndef HAVE_C_func_8003B854
-nonmatching func_8003B854, 0x180
+.section .text.CommitActorKillGems, "ax"
+.ifndef HAVE_C_CommitActorKillGems
+nonmatching CommitActorKillGems, 0x180
 
-glabel func_8003B854
+glabel CommitActorKillGems
     /* 2C054 8003B854 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 2C058 8003B858 1000B0AF */  sw         $s0, 0x10($sp)
     /* 2C05C 8003B85C 21808000 */  addu       $s0, $a0, $zero
@@ -47059,7 +47059,7 @@ glabel func_8003B854
     /* 2C1C8 8003B9C8 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 2C1CC 8003B9CC 0800E003 */  jr         $ra
     /* 2C1D0 8003B9D0 00000000 */   nop
-endlabel func_8003B854
+endlabel CommitActorKillGems
 .endif
 
 .section .text.CollectPickupActor, "ax"
@@ -47091,7 +47091,7 @@ glabel CollectPickupActor
     /* 2C228 8003BA28 0780013C */  lui        $at, %hi(g_nLevelEggCount)
     /* 2C22C 8003BA2C 305822AC */  sw         $v0, %lo(g_nLevelEggCount)($at)
   .L8003BA30:
-    /* 2C230 8003BA30 794A010C */  jal        func_800529E4
+    /* 2C230 8003BA30 794A010C */  jal        RefreshActorDerivedState
     /* 2C234 8003BA34 04000524 */   addiu     $a1, $zero, 0x4
     /* 2C238 8003BA38 06000424 */  addiu      $a0, $zero, 0x6
     /* 2C23C 8003BA3C 0C000524 */  addiu      $a1, $zero, 0xC
@@ -47129,7 +47129,7 @@ glabel CollectPickupActor
     /* 2C2AC 8003BAAC 03006214 */  bne        $v1, $v0, .L8003BABC
     /* 2C2B0 8003BAB0 19000424 */   addiu     $a0, $zero, 0x19
   .L8003BAB4:
-    /* 2C2B4 8003BAB4 15EE000C */  jal        func_8003B854
+    /* 2C2B4 8003BAB4 15EE000C */  jal        CommitActorKillGems
     /* 2C2B8 8003BAB8 21280002 */   addu      $a1, $s0, $zero
   .L8003BABC:
     /* 2C2BC 8003BABC 2400BF8F */  lw         $ra, 0x24($sp)
@@ -47140,11 +47140,11 @@ glabel CollectPickupActor
 endlabel CollectPickupActor
 .endif
 
-.section .text.func_8003BAD0, "ax"
-.ifndef HAVE_C_func_8003BAD0
-nonmatching func_8003BAD0, 0x1FC
+.section .text.SteerActorTowardPoint, "ax"
+.ifndef HAVE_C_SteerActorTowardPoint
+nonmatching SteerActorTowardPoint, 0x1FC
 
-glabel func_8003BAD0
+glabel SteerActorTowardPoint
     /* 2C2D0 8003BAD0 90FFBD27 */  addiu      $sp, $sp, -0x70
     /* 2C2D4 8003BAD4 5000B2AF */  sw         $s2, 0x50($sp)
     /* 2C2D8 8003BAD8 21908000 */  addu       $s2, $a0, $zero
@@ -47261,7 +47261,7 @@ glabel func_8003BAD0
     /* 2C478 8003BC78 01001524 */  addiu      $s5, $zero, 0x1
   .L8003BC7C:
     /* 2C47C 8003BC7C 21204002 */  addu       $a0, $s2, $zero
-    /* 2C480 8003BC80 794A010C */  jal        func_800529E4
+    /* 2C480 8003BC80 794A010C */  jal        RefreshActorDerivedState
     /* 2C484 8003BC84 02000524 */   addiu     $a1, $zero, 0x2
     /* 2C488 8003BC88 D0E0000C */  jal        ProbeActorGroundHeight
     /* 2C48C 8003BC8C 21204002 */   addu      $a0, $s2, $zero
@@ -47280,7 +47280,7 @@ glabel func_8003BAD0
     /* 2C4C0 8003BCC0 7000BD27 */  addiu      $sp, $sp, 0x70
     /* 2C4C4 8003BCC4 0800E003 */  jr         $ra
     /* 2C4C8 8003BCC8 00000000 */   nop
-endlabel func_8003BAD0
+endlabel SteerActorTowardPoint
 .endif
 
 .section .text.TryMoveActorForward, "ax"
@@ -47416,7 +47416,7 @@ glabel TryMoveActorForward
     /* 2C694 8003BE94 F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 2C698 8003BE98 21204002 */   addu      $a0, $s2, $zero
     /* 2C69C 8003BE9C 21204002 */  addu       $a0, $s2, $zero
-    /* 2C6A0 8003BEA0 794A010C */  jal        func_800529E4
+    /* 2C6A0 8003BEA0 794A010C */  jal        RefreshActorDerivedState
     /* 2C6A4 8003BEA4 02000524 */   addiu     $a1, $zero, 0x2
     /* 2C6A8 8003BEA8 21100000 */  addu       $v0, $zero, $zero
   .L8003BEAC:
@@ -47506,11 +47506,11 @@ glabel func_8003BED8
 endlabel func_8003BED8
 .endif
 
-.section .text.func_8003BFC0, "ax"
-.ifndef HAVE_C_func_8003BFC0
-nonmatching func_8003BFC0, 0x398
+.section .text.TweenActorAlongPath, "ax"
+.ifndef HAVE_C_TweenActorAlongPath
+nonmatching TweenActorAlongPath, 0x398
 
-glabel func_8003BFC0
+glabel TweenActorAlongPath
     /* 2C7C0 8003BFC0 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 2C7C4 8003BFC4 4000B4AF */  sw         $s4, 0x40($sp)
     /* 2C7C8 8003BFC8 6800B48F */  lw         $s4, 0x68($sp)
@@ -47748,7 +47748,7 @@ glabel func_8003BFC0
     /* 2CB10 8003C310 D65D000C */  jal        AddVector
     /* 2CB14 8003C314 450062A2 */   sb        $v0, 0x45($s3)
     /* 2CB18 8003C318 21206002 */  addu       $a0, $s3, $zero
-    /* 2CB1C 8003C31C 794A010C */  jal        func_800529E4
+    /* 2CB1C 8003C31C 794A010C */  jal        RefreshActorDerivedState
     /* 2CB20 8003C320 02000524 */   addiu     $a1, $zero, 0x2
     /* 2CB24 8003C324 2110A002 */  addu       $v0, $s5, $zero
     /* 2CB28 8003C328 5000BF8F */  lw         $ra, 0x50($sp)
@@ -47763,14 +47763,14 @@ glabel func_8003BFC0
     /* 2CB4C 8003C34C 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 2CB50 8003C350 0800E003 */  jr         $ra
     /* 2CB54 8003C354 00000000 */   nop
-endlabel func_8003BFC0
+endlabel TweenActorAlongPath
 .endif
 
-.section .text.func_8003C358, "ax"
-.ifndef HAVE_C_func_8003C358
-nonmatching func_8003C358, 0x38C
+.section .text.SpawnNameLetterActors, "ax"
+.ifndef HAVE_C_SpawnNameLetterActors
+nonmatching SpawnNameLetterActors, 0x38C
 
-glabel func_8003C358
+glabel SpawnNameLetterActors
     /* 2CB58 8003C358 80FFBD27 */  addiu      $sp, $sp, -0x80
     /* 2CB5C 8003C35C 6800B4AF */  sw         $s4, 0x68($sp)
     /* 2CB60 8003C360 21A08000 */  addu       $s4, $a0, $zero
@@ -48008,7 +48008,7 @@ glabel func_8003C358
     /* 2CED8 8003C6D8 8000BD27 */  addiu      $sp, $sp, 0x80
     /* 2CEDC 8003C6DC 0800E003 */  jr         $ra
     /* 2CEE0 8003C6E0 00000000 */   nop
-endlabel func_8003C358
+endlabel SpawnNameLetterActors
 .endif
 
 .section .text.TickGemPickupBurstEntity, "ax"
@@ -48116,11 +48116,11 @@ glabel TickGemPickupBurstEntity
 endlabel TickGemPickupBurstEntity
 .endif
 
-.section .text.func_8003C85C, "ax"
-.ifndef HAVE_C_func_8003C85C
-nonmatching func_8003C85C, 0x138
+.section .text.AimCameraStickTowardPoint, "ax"
+.ifndef HAVE_C_AimCameraStickTowardPoint
+nonmatching AimCameraStickTowardPoint, 0x138
 
-glabel func_8003C85C
+glabel AimCameraStickTowardPoint
     /* 2D05C 8003C85C B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 2D060 8003C860 4800B2AF */  sw         $s2, 0x48($sp)
     /* 2D064 8003C864 21908000 */  addu       $s2, $a0, $zero
@@ -48204,7 +48204,7 @@ glabel func_8003C85C
     /* 2D188 8003C988 5000BD27 */  addiu      $sp, $sp, 0x50
     /* 2D18C 8003C98C 0800E003 */  jr         $ra
     /* 2D190 8003C990 00000000 */   nop
-endlabel func_8003C85C
+endlabel AimCameraStickTowardPoint
 .endif
 
 .section .text.FollowActorWaypointPath, "ax"
@@ -48279,7 +48279,7 @@ glabel FollowActorWaypointPath
     /* 2D288 8003CA88 1400B5AF */  sw         $s5, 0x14($sp)
     /* 2D28C 8003CA8C 00290500 */  sll        $a1, $a1, 4
     /* 2D290 8003CA90 0800A524 */  addiu      $a1, $a1, 0x8
-    /* 2D294 8003CA94 B4EE000C */  jal        func_8003BAD0
+    /* 2D294 8003CA94 B4EE000C */  jal        SteerActorTowardPoint
     /* 2D298 8003CA98 21282502 */   addu      $a1, $s1, $a1
     /* 2D29C 8003CA9C 4000BF8F */  lw         $ra, 0x40($sp)
     /* 2D2A0 8003CAA0 3C00B58F */  lw         $s5, 0x3C($sp)
@@ -67913,11 +67913,11 @@ endlabel FindWorldFloorBelowPoint
 /* Handwritten function */
 .endif
 
-.section .text.func_8004E2E8, "ax"
-.ifndef HAVE_C_func_8004E2E8
-nonmatching func_8004E2E8, 0xE0
+.section .text.RaiseSpyroTriggerInRadius, "ax"
+.ifndef HAVE_C_RaiseSpyroTriggerInRadius
+nonmatching RaiseSpyroTriggerInRadius, 0xE0
 
-glabel func_8004E2E8
+glabel RaiseSpyroTriggerInRadius
     /* 3EAE8 8004E2E8 6401A520 */  addi       $a1, $a1, 0x164 /* handwritten instruction */
     /* 3EAEC 8004E2EC 0880093C */  lui        $t1, %hi(g_anSpyroWorldPos)
     /* 3EAF0 8004E2F0 588A2925 */  addiu      $t1, $t1, %lo(g_anSpyroWorldPos)
@@ -67978,7 +67978,7 @@ glabel func_8004E2E8
   .L8004E3C0:
     /* 3EBC0 8004E3C0 0800E003 */  jr         $ra
     /* 3EBC4 8004E3C4 00000220 */   addi      $v0, $zero, 0x0 /* handwritten instruction */
-endlabel func_8004E2E8
+endlabel RaiseSpyroTriggerInRadius
 
 /* Handwritten function */
 .endif
@@ -72223,11 +72223,11 @@ endlabel DrawActors
 /* Handwritten function */
 .endif
 
-.section .text.func_80051FEC, "ax"
-.ifndef HAVE_C_func_80051FEC
-nonmatching func_80051FEC, 0x1D4
+.section .text.BuildActiveActorList, "ax"
+.ifndef HAVE_C_BuildActiveActorList
+nonmatching BuildActiveActorList, 0x1D4
 
-glabel func_80051FEC
+glabel BuildActiveActorList
     /* 427EC 80051FEC 0780013C */  lui        $at, %hi(D_80077868)
     /* 427F0 80051FF0 68782124 */  addiu      $at, $at, %lo(D_80077868)
     /* 427F4 80051FF4 20002220 */  addi       $v0, $at, 0x20 /* handwritten instruction */
@@ -72354,7 +72354,7 @@ glabel func_80051FEC
   .L800521B8:
     /* 429B8 800521B8 0800E003 */  jr         $ra
     /* 429BC 800521BC 0000C0AD */   sw        $zero, 0x0($t6)
-endlabel func_80051FEC
+endlabel BuildActiveActorList
 
 /* Handwritten function */
 .endif
@@ -72971,11 +72971,11 @@ endlabel HideActorRenderRecord
 /* Handwritten function */
 .endif
 
-.section .text.func_800529E4, "ax"
-.ifndef HAVE_C_func_800529E4
-nonmatching func_800529E4, 0x380
+.section .text.RefreshActorDerivedState, "ax"
+.ifndef HAVE_C_RefreshActorDerivedState
+nonmatching RefreshActorDerivedState, 0x380
 
-glabel func_800529E4
+glabel RefreshActorDerivedState
     /* 431E4 800529E4 0100A130 */  andi       $at, $a1, 0x1
     /* 431E8 800529E8 1E002010 */  beqz       $at, .L80052A64
     /* 431EC 800529EC 00000000 */   nop
@@ -73209,16 +73209,16 @@ glabel func_800529E4
   .L80052D5C:
     /* 4355C 80052D5C 0800E003 */  jr         $ra
     /* 43560 80052D60 00000000 */   nop
-endlabel func_800529E4
+endlabel RefreshActorDerivedState
 
 /* Handwritten function */
 .endif
 
-.section .text.func_80052D64, "ax"
-.ifndef HAVE_C_func_80052D64
-nonmatching func_80052D64, 0x1D4
+.section .text.GetActorAttachPoint, "ax"
+.ifndef HAVE_C_GetActorAttachPoint
+nonmatching GetActorAttachPoint, 0x1D4
 
-glabel func_80052D64
+glabel GetActorAttachPoint
     /* 43564 80052D64 00009820 */  addi       $t8, $a0, 0x0 /* handwritten instruction */
     /* 43568 80052D68 0000AF20 */  addi       $t7, $a1, 0x0 /* handwritten instruction */
     /* 4356C 80052D6C 0000D920 */  addi       $t9, $a2, 0x0 /* handwritten instruction */
@@ -73338,7 +73338,7 @@ glabel func_80052D64
     /* 4372C 80052F2C 040025AF */  sw         $a1, 0x4($t9)
     /* 43730 80052F30 0800E003 */  jr         $ra
     /* 43734 80052F34 080026AF */   sw        $a2, 0x8($t9)
-endlabel func_80052D64
+endlabel GetActorAttachPoint
 
 /* Handwritten function */
 .endif
@@ -73571,7 +73571,7 @@ glabel func_800530C0
     /* 43A60 80053260 CB89010C */  jal        GetRandomU32
     /* 43A64 80053264 00000000 */   nop
     /* 43A68 80053268 00004E20 */  addi       $t6, $v0, 0x0 /* handwritten instruction */
-    /* 43A6C 8005326C 5C4D010C */  jal        func_80053570
+    /* 43A6C 8005326C 5C4D010C */  jal        AllocEmitListRecord
     /* 43A70 80053270 02000420 */   addi      $a0, $zero, 0x2 /* handwritten instruction */
     /* 43A74 80053274 00000387 */  lh         $v1, 0x0($t8)
     /* 43A78 80053278 02000487 */  lh         $a0, 0x2($t8)
@@ -73791,11 +73791,11 @@ endlabel EncodeCachedVecToActorDirCode
 /* Handwritten function */
 .endif
 
-.section .text.func_80053570, "ax"
-.ifndef HAVE_C_func_80053570
-nonmatching func_80053570, 0x98
+.section .text.AllocEmitListRecord, "ax"
+.ifndef HAVE_C_AllocEmitListRecord
+nonmatching AllocEmitListRecord, 0x98
 
-glabel func_80053570
+glabel AllocEmitListRecord
     /* 43D70 80053570 0780053C */  lui        $a1, %hi(g_pEmitListBase)
     /* 43D74 80053574 2458A524 */  addiu      $a1, $a1, %lo(g_pEmitListBase)
     /* 43D78 80053578 0000A58C */  lw         $a1, 0x0($a1)
@@ -73838,16 +73838,16 @@ glabel func_80053570
   .L80053600:
     /* 43E00 80053600 0800E003 */  jr         $ra
     /* 43E04 80053604 000023AC */   sw        $v1, 0x0($at)
-endlabel func_80053570
+endlabel AllocEmitListRecord
 
 /* Handwritten function */
 .endif
 
-.section .text.func_80053608, "ax"
-.ifndef HAVE_C_func_80053608
-nonmatching func_80053608, 0x9C
+.section .text.FreeEmitListRecord, "ax"
+.ifndef HAVE_C_FreeEmitListRecord
+nonmatching FreeEmitListRecord, 0x9C
 
-glabel func_80053608
+glabel FreeEmitListRecord
     /* 43E08 80053608 0780053C */  lui        $a1, %hi(g_pEmitListBase)
     /* 43E0C 8005360C 2458A524 */  addiu      $a1, $a1, %lo(g_pEmitListBase)
     /* 43E10 80053610 0000A58C */  lw         $a1, 0x0($a1)
@@ -73892,7 +73892,7 @@ glabel func_80053608
   .L8005369C:
     /* 43E9C 8005369C 0800E003 */  jr         $ra
     /* 43EA0 800536A0 010023A0 */   sb        $v1, 0x1($at)
-endlabel func_80053608
+endlabel FreeEmitListRecord
 .endif
 
 .section .text.ResetPadFrameSubstepTable, "ax"
@@ -75024,11 +75024,11 @@ glabel CommitHudCounterAnimState
 endlabel CommitHudCounterAnimState
 .endif
 
-.section .text.func_80054578, "ax"
-.ifndef HAVE_C_func_80054578
-nonmatching func_80054578, 0x88
+.section .text.RefreshHudLevelGemCounter, "ax"
+.ifndef HAVE_C_RefreshHudLevelGemCounter
+nonmatching RefreshHudLevelGemCounter, 0x88
 
-glabel func_80054578
+glabel RefreshHudLevelGemCounter
     /* 44D78 80054578 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 44D7C 8005457C 1000B0AF */  sw         $s0, 0x10($sp)
     /* 44D80 80054580 0780103C */  lui        $s0, %hi(g_nHudLevelGemCachedCount)
@@ -75065,7 +75065,7 @@ glabel func_80054578
     /* 44DF4 800545F4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 44DF8 800545F8 0800E003 */  jr         $ra
     /* 44DFC 800545FC 00000000 */   nop
-endlabel func_80054578
+endlabel RefreshHudLevelGemCounter
 .endif
 
 .section .text.InitHudCounters, "ax"
@@ -78288,11 +78288,11 @@ glabel DispatchSpyroTriggerEvent
 endlabel DispatchSpyroTriggerEvent
 .endif
 
-.section .text.func_80057380, "ax"
-.ifndef HAVE_C_func_80057380
-nonmatching func_80057380, 0x48
+.section .text.GetGroundTriggerRegionType, "ax"
+.ifndef HAVE_C_GetGroundTriggerRegionType
+nonmatching GetGroundTriggerRegionType, 0x48
 
-glabel func_80057380
+glabel GetGroundTriggerRegionType
     /* 47B80 80057380 0780023C */  lui        $v0, %hi(g_nGroundSurfaceType)
     /* 47B84 80057384 1857428C */  lw         $v0, %lo(g_nGroundSurfaceType)($v0)
     /* 47B88 80057388 00000000 */  nop
@@ -78313,7 +78313,7 @@ glabel func_80057380
   .L800573C0:
     /* 47BC0 800573C0 0800E003 */  jr         $ra
     /* 47BC4 800573C4 00000000 */   nop
-endlabel func_80057380
+endlabel GetGroundTriggerRegionType
 
 /* Handwritten function */
 .endif
@@ -79908,11 +79908,11 @@ glabel DrawGemPickupAuraStar
 endlabel DrawGemPickupAuraStar
 .endif
 
-.section .text.func_80058AE8, "ax"
-.ifndef HAVE_C_func_80058AE8
-nonmatching func_80058AE8, 0x78
+.section .text.AllocWorldSparkle, "ax"
+.ifndef HAVE_C_AllocWorldSparkle
+nonmatching AllocWorldSparkle, 0x78
 
-glabel func_80058AE8
+glabel AllocWorldSparkle
     /* 492E8 80058AE8 21300000 */  addu       $a2, $zero, $zero
     /* 492EC 80058AEC 11000724 */  addiu      $a3, $zero, 0x11
     /* 492F0 80058AF0 0780083C */  lui        $t0, %hi(D_8006E308)
@@ -79946,17 +79946,17 @@ glabel func_80058AE8
   .L80058B58:
     /* 49358 80058B58 0800E003 */  jr         $ra
     /* 4935C 80058B5C 00000000 */   nop
-endlabel func_80058AE8
+endlabel AllocWorldSparkle
 .endif
 
-.section .text.func_80058B60, "ax"
-.ifndef HAVE_C_func_80058B60
-nonmatching func_80058B60, 0x8
+.section .text.ClearWord, "ax"
+.ifndef HAVE_C_ClearWord
+nonmatching ClearWord, 0x8
 
-glabel func_80058B60
+glabel ClearWord
     /* 49360 80058B60 0800E003 */  jr         $ra
     /* 49364 80058B64 000080AC */   sw        $zero, 0x0($a0)
-endlabel func_80058B60
+endlabel ClearWord
 .endif
 
 .section .text.ResetWorldParticleTables, "ax"
@@ -80612,11 +80612,11 @@ glabel DrawSpyroHornStrikeTrails
 endlabel DrawSpyroHornStrikeTrails
 .endif
 
-.section .text.func_80059474, "ax"
-.ifndef HAVE_C_func_80059474
-nonmatching func_80059474, 0xF8
+.section .text.SetSpawnAnchorFromActor, "ax"
+.ifndef HAVE_C_SetSpawnAnchorFromActor
+nonmatching SetSpawnAnchorFromActor, 0xF8
 
-glabel func_80059474
+glabel SetSpawnAnchorFromActor
     /* 49C74 80059474 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 49C78 80059478 1000B0AF */  sw         $s0, 0x10($sp)
     /* 49C7C 8005947C 0780103C */  lui        $s0, %hi(g_nLevelSpawnYaw)
@@ -80680,7 +80680,7 @@ glabel func_80059474
     /* 49D60 80059560 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 49D64 80059564 0800E003 */  jr         $ra
     /* 49D68 80059568 00000000 */   nop
-endlabel func_80059474
+endlabel SetSpawnAnchorFromActor
 .endif
 
 .section .text.ComputeSaveGameChecksum, "ax"

@@ -13,7 +13,7 @@ extern void D_8006E308(); /* sparkle particle update routine */
    The record offset is a block-local `k = i * 0x24`: loop.c turns the kind
    access, the returned address and `k` itself into three separate givs, the
    original's a0/a1/v1 trio. */
-void *func_80058AE8(void) {
+void *AllocWorldSparkle(void) {
   int i;
 
   for (i = 0; i < 16; i++) {

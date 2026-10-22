@@ -31,8 +31,8 @@ extern void *g_apSaveMenuAnimActorListBlock[];
     ACTOR_YAW(actor) = ApproachAngle8(ang, ACTOR_YAW(actor), step, lim);       \
   } while (0)
 
-int func_80039E94(int *actor, unsigned char *path, int thresh, int speed,
-                  int group, int step, int lim, int kind, int flags) {
+int PivotActorAlongPath(int *actor, unsigned char *path, int thresh, int speed,
+                        int group, int step, int lim, int kind, int flags) {
   int ret;
   int zclose;
   int ang;

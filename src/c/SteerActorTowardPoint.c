@@ -17,12 +17,12 @@ extern void CopyVector(int *dst, int *src);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);
-extern void func_800529E4(int actor, int n);
+extern void RefreshActorDerivedState(int actor, int n);
 extern int ProbeActorGroundHeight(int actor);
 extern void EncodeCachedVecToActorDirCode(int actor);
 
-int func_8003BAD0(int actor, int *target, int speed, int yawLim, int pitchLim,
-                  int radius) {
+int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
+                          int pitchLim, int radius) {
   int dv[3];
   int mtx[8];
   int moved;
@@ -78,7 +78,7 @@ int func_8003BAD0(int actor, int *target, int speed, int yawLim, int pitchLim,
       moved = 1;
     }
   }
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   ProbeActorGroundHeight(actor);
   EncodeCachedVecToActorDirCode(actor);
   return moved;

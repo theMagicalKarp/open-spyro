@@ -18,7 +18,7 @@ extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
-extern void func_800529E4(int *actor, int mode);
+extern void RefreshActorDerivedState(int *actor, int mode);
 extern int abs(int);
 
 extern int D_800756C4;
@@ -117,6 +117,6 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   if (flags & 0x54) {
     EncodeCachedVecToActorDirCode(actor);
   }
-  func_800529E4(actor, 2);
+  RefreshActorDerivedState(actor, 2);
   return 0;
 }

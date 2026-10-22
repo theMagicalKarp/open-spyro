@@ -1,7 +1,7 @@
 #include "globals.h"
 
-extern void func_800529E4(unsigned char *actor, int n);
-extern void func_8003B854(int id, unsigned char *actor);
+extern void RefreshActorDerivedState(unsigned char *actor, int n);
+extern void CommitActorKillGems(int id, unsigned char *actor);
 
 extern unsigned char *D_80075758;
 extern int D_8006E330[];
@@ -21,20 +21,20 @@ void CollectPickupActor(unsigned char *a) {
   if (a == D_80075758) {
     g_nLevelEggCount = 3;
   }
-  func_800529E4(a, 4);
+  RefreshActorDerivedState(a, 4);
   ((void (*)(int, int, unsigned char *, int))g_pfnLevelOverlayParticleSpawn)(
       6, 0xC, a, D_8006E330[*(short *)(a + 0x36)]);
 
   kind = *(short *)(a + 0x36);
   if (kind == 0x53) {
-    func_8003B854(1, a);
+    CommitActorKillGems(1, a);
   } else if (kind == 0x54) {
-    func_8003B854(2, a);
+    CommitActorKillGems(2, a);
   } else if (kind == 0x55) {
-    func_8003B854(5, a);
+    CommitActorKillGems(5, a);
   } else if (kind == 0x56) {
-    func_8003B854(0xA, a);
+    CommitActorKillGems(0xA, a);
   } else if (kind == 0x57) {
-    func_8003B854(0x19, a);
+    CommitActorKillGems(0x19, a);
   }
 }

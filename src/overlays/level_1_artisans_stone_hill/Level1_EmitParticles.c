@@ -4,7 +4,7 @@
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
  *
- * func_80053570 = AllocEmitListRecord(class): hands back the next 0x20-byte
+ * AllocEmitListRecord(class): hands back the next 0x20-byte
  * slot and stamps the record class at +0x01.  The class picks the record
  * layout: 2/3/6 are sparks (short position at +4, a velocity at +0x18 and an
  * RGB triple at +0xC), 0 is a dust mote (short position + short velocity at
@@ -142,8 +142,8 @@ typedef struct Actor {
   unsigned char flag49; /* 0x49 */
 } Actor;
 
-extern void *func_80053570(int cls);                     /* AllocEmitListRecord */
-extern void func_80017BFC(void *dst, int *src);          /* vector -> short[3] >>2 */
+extern void *AllocEmitListRecord(int cls);
+extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
 
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
@@ -178,12 +178,12 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     k = i * 4;
     switch (type) {
     case 0x0: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -196,12 +196,12 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x1:
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
@@ -217,15 +217,15 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.unk10 = 0;
       break;
     case 0x2: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
       v0[0] = (GetRandomU32() & 0x3F) - 0x20;
       v0[1] = (GetRandomU32() & 0x3F) - 0x20;
       v0[2] = 0x1E;
-      func_80017BFC(rec->u.spark.vel, v0);
+      VectorToSVectorShr2(rec->u.spark.vel, v0);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x20;
       rec->u.spark.seed = GetRandomU32();
@@ -242,11 +242,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       int t1, t2, t3;
       int u1, u2, u3;
       owner = ((Actor *)pos)->owner;
-      rec = (Emit *)func_80053570(3);
+      rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.plume.pos, ((Actor *)pos)->pos);
+      VectorToSVectorShr2(rec->u.plume.pos, ((Actor *)pos)->pos);
       t1 = GetRandomU32() & 0x7E;
       u1 = rec->u.plume.pos[0] - 0x3F;
       rec->u.plume.pos[0] = u1 + t1;
@@ -319,12 +319,12 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x9: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, pos);
-      func_80017BFC(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.pos, pos);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -351,11 +351,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0xA: {
-      rec = (Emit *)func_80053570(3);
+      rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.spark.pos, g_anSpyroWorldPos);
+      VectorToSVectorShr2(rec->u.spark.pos, g_anSpyroWorldPos);
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = 0xF;
       rec->u.spark.r = D_8006E438[k];
@@ -368,7 +368,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0xC: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->unk03 = 1;
       rec->u.spark.unk11 = 4;
@@ -390,7 +390,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, &D_8006E498[i * 3], v1);
         AddVector(v1, v1, ((Actor *)pos)->pos);
       }
-      func_80017BFC(rec->u.spark.pos, v1);
+      VectorToSVectorShr2(rec->u.spark.pos, v1);
       rec->u.spark.g = arg3 >> 8;
       rec->u.spark.r = arg3;
       rec->u.spark.b = arg3 >> 16;
@@ -401,11 +401,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x15: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.ribbon.pos, pos);
-      func_80017BFC(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.pos, pos);
+      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
       if ((arg3 & 0x1F) < 0x10) {
         v = arg3 * 2;
       } else {
@@ -424,11 +424,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x18: {
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.band.pos, pos);
-      func_80017BFC(rec->u.band.pos2, pos);
+      VectorToSVectorShr2(rec->u.band.pos, pos);
+      VectorToSVectorShr2(rec->u.band.pos2, pos);
       v = 0x30;
       z = i * 16;
       rec->u.band.life = v;
@@ -448,7 +448,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x21: {
       int ta, tb;
       int ua, ub;
-      rec = (Emit *)func_80053570(2);
+      rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
       rec->unk03 = 1;
@@ -468,8 +468,8 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
         ub = v2[1] - 0x1F;
         v2[1] = ub + tb;
       }
-      func_80017BFC(rec->u.spark.pos, v2);
-      func_80017BFC(rec->u.spark.vel, pos);
+      VectorToSVectorShr2(rec->u.spark.pos, v2);
+      VectorToSVectorShr2(rec->u.spark.vel, pos);
       rec->u.spark.unk1E = 0;
       rec->u.spark.life = 0x10;
       rec->u.spark.seed = GetRandomU32();
@@ -482,7 +482,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x42: {
-      rec = (Emit *)func_80053570(0);
+      rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
@@ -545,7 +545,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x46: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
@@ -570,7 +570,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x47: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
       rec->unk03 = 1;
@@ -595,11 +595,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     }
     case 0x4C: {
       int w;
-      rec = (Emit *)func_80053570(0);
+      rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.smear.pos, pos);
-      func_80017BFC(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.pos, pos);
+      VectorToSVectorShr2(rec->u.smear.pos2, pos);
       if ((arg3 & 0x1F) < 0x10) {
         w = arg3 * 2;
       } else {
@@ -617,11 +617,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4D: {
       int t;
       int u;
-      rec = (Emit *)func_80053570(4);
+      rec = (Emit *)AllocEmitListRecord(4);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
-      func_80017BFC(rec->u.line.b, pos);
-      func_80017BFC(rec->u.line.a, pos);
+      VectorToSVectorShr2(rec->u.line.b, pos);
+      VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
       rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
@@ -640,11 +640,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4E: {
       int t1, t2, t3;
       int u1, u2, u3;
-      rec = (Emit *)func_80053570(0);
+      rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.dust.pos, pos);
+      VectorToSVectorShr2(rec->u.dust.pos, pos);
       t1 = GetRandomU32() & 0x3F;
       u1 = rec->u.dust.pos[0] - 0x20;
       rec->u.dust.pos[0] = u1 + t1;
@@ -670,11 +670,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
     case 0x4F: {
       int t4, t5, t6;
       int u4, u5, u6;
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.line.b, pos);
+      VectorToSVectorShr2(rec->u.line.b, pos);
       AddVector(v3, pos, (int *)arg3);
       t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
@@ -685,7 +685,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       t6 = GetRandomU32() & 0x7F;
       u6 = v3[2] - 0x40;
       v3[2] = u6 + t6;
-      func_80017BFC(rec->u.line.a, v3);
+      VectorToSVectorShr2(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
       if (g_nSpyroHornStrikeVariant == 0) {
         rec->u.line.c0[0] = GetRandomU32() | 0xC0;
@@ -706,11 +706,11 @@ void Level1_EmitParticles(int count, int type, int *pos, int arg3) {
       break;
     }
     case 0x50: {
-      rec = (Emit *)func_80053570(1);
+      rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->unk03 = 1;
-      func_80017BFC(rec->u.line.a, pos);
+      VectorToSVectorShr2(rec->u.line.a, pos);
       v4[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
       v4[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
       v4[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;

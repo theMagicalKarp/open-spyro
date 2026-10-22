@@ -90,7 +90,7 @@ typedef struct PathData {
   } nodes[1]; /* 0x08 */
 } PathData;
 
-extern int func_80017D7C(int *from, int *to, int *vel, int a);
+extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, anim)                                                     \
@@ -120,7 +120,7 @@ typedef struct ChaserState {
 
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
-extern void func_80051FEC(void);
+extern void BuildActiveActorList(void);
 extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
 extern int RandomSignedInRange(int a, int b);
 
@@ -158,20 +158,20 @@ extern int g_nLevelIntroIndex;
 extern int g_anLevelEggsRecovered[];
 extern int g_nWorldEggsRecovered;
 
-extern void func_8003C85C(int *pos);
-extern void func_80017BFC(short *d, int *s);
-extern void func_80017C24(int *d, int *s);
+extern void AimCameraStickTowardPoint(int *pos);
+extern void VectorToSVectorShr2(short *d, int *s);
+extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
-extern void func_8003B854(int a, void *b);
+extern void CommitActorKillGems(int a, void *b);
 
-extern int func_80038638(Actor *actor, int *target, int a, int heading, int b,
+extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void func_8002B390(int handle, int a, int b);
-extern void func_8002B444(int handle, int a, int b);
-extern int func_8002B3F4(int handle); /* bits 8..15 are the anim marker */
+extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
+extern void SetWorldChunkAnimStep(int handle, int a, int b);
+extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
@@ -305,7 +305,7 @@ extern int D_8006E594;
 
 extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
-extern void func_8002C914(int script, int a);
+extern void StubRewardHook(int script, int a);
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
@@ -324,7 +324,7 @@ extern short g_anCosineLut[];
 /* Callees used by the collectible and fairy behaviours. */
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
-extern int func_80057380(void);
+extern int GetGroundTriggerRegionType(void);
 extern int CheckLineOfSightSegment(int *a, int *b);
 extern int func_80017428(int *v, int *n, int *out);
 
@@ -351,8 +351,8 @@ extern void *D_8006E490;
 extern void *D_8006E494;
 extern void *D_8006E330[];
 
-extern FxNode *func_80058AE8(void);
-extern void func_80058B60(FxNode *node);
+extern FxNode *AllocWorldSparkle(void);
+extern void ClearWord(FxNode *node);
 extern int StepAngle8Toward(int a, int b, int c);
 
 extern int g_dwGamestateFrames; /* frame counter; the arm acts on every 4th frame */
@@ -395,7 +395,7 @@ typedef struct TumbleState {
   (a)->unk3D = (next);                                                         \
   (a)->unk3E = (a)->unk3F;                                                     \
   (a)->unk3F = 0;                                                              \
-  func_80037E98(a);
+  StubActorHook(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -409,7 +409,7 @@ typedef struct TumbleState {
     (a)->unk3D = (n);                                                          \
     (a)->unk3E = (a)->unk3F;                                                   \
     (a)->unk3F = 0;                                                            \
-    func_80037E98(a);                                                          \
+    StubActorHook(a);                                                          \
   }                                                                            \
   continue
 
@@ -627,10 +627,10 @@ extern struct {
 extern int D_80078C68;
 extern int g_nSpyroRequestState; /* scripted camera mode */
 
-extern void func_8002B390(int ch, int vol, int a);
-extern void func_8002B444(int ch, int n, int a);
-extern int func_8002B3F4(int ch);
-extern int func_80017D7C(int *from, int *to, int *step, int speed);
+extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
+extern void SetWorldChunkAnimStep(int ch, int n, int a);
+extern int GetWorldChunkAnimState(int ch);
+extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== Globals shared with level 4 ==== */
@@ -648,7 +648,7 @@ extern int g_nActiveLevelId;
 extern int g_nSpyroFallTrackingFlag;
 extern int g_nSpyroFlameBreathTimer;
 extern int g_nSpyroWorldPosZ; /* SPY.posZ, absolute form */
-extern void func_80054578(void);
+extern void RefreshHudLevelGemCounter(void);
 extern void ResetSpyroEntity(int a0);
 
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
@@ -660,7 +660,7 @@ typedef struct DropState {
   int depth; /* 0x0C drop depth that triggers the exit, 0 = 0x2000 */
 } DropState;
 
-extern int func_80039E94(Actor *actor, void *path, int a, int b, int c, int d,
+extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
                           int e, int f, int g);
 
 /* An animation change that also clears the finished flag. */
@@ -675,7 +675,7 @@ extern int func_80039E94(Actor *actor, void *path, int a, int b, int c, int d,
     ANIM_RESET(a, n);                                                          \
   }
 
-extern int func_8004E2E8(int *pos, int a, int b);
+extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
 
 /* Cases 152/153 -- sparking debris. */
 typedef struct DebrisFallState {
@@ -729,9 +729,9 @@ typedef struct CageState {
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
 extern int g_nCameraScriptStickRequestX;
-extern void func_800177F8(int *d, int *s, int k);
+extern void DivideVector3(int *d, int *s, int k);
 
-extern void func_80052D64(Actor *actor, int a, int *pos);
+extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int g_nSpyroState;
@@ -907,7 +907,7 @@ void Level7_UpdateActors(void) {
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
-  func_80051FEC();
+  BuildActiveActorList();
   TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
 
   if (g_nFrameStep >= 3) {
@@ -940,7 +940,7 @@ void Level7_UpdateActors(void) {
       if (actor->unk48 != 0 ? dist < 0x2800 : dist < 0x2400) {
         if (actor->unk48 == 0) {
           actor->posZ += 0x600;
-          func_8003C358(actor, 0);
+          SpawnNameLetterActors(actor, 0);
           actor->posZ -= 0x600;
         }
         actor->unk48 = 1;
@@ -976,7 +976,7 @@ void Level7_UpdateActors(void) {
 
           if (g_nSpyroState == 0x11 || top + 0xC00 < z + depth) {
             if (g_abHudCounterDisplayState == 2) {
-              func_80054578();
+              RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
@@ -1086,12 +1086,12 @@ void Level7_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->unk24 != 0) {
-              func_8003ABC0(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              func_8003ABC0(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, 2, 0, st->pos);
             } else {
-              func_8003ABC0(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, 1, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -1233,7 +1233,7 @@ void Level7_UpdateActors(void) {
         break;
       }
       case 1: {
-        func_80038638(actor, &spy->posX, 0x320,
+        SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
                                     st->dir * 8),
@@ -1292,7 +1292,7 @@ void Level7_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->unk53 == 0xFF) {
           actor->unk53 = 0xF;
-          func_8003ABC0(actor, 3, 0, 0);
+          SpawnActorDeathDrop(actor, 3, 0, 0);
           MarkActorCommittedKill(actor);
         }
         actor->unk48 = 10;
@@ -1374,7 +1374,7 @@ void Level7_UpdateActors(void) {
               }
               if (AbsAngleDelta8(a, b) > lim &&
                   ApproxDist2D(&actor->posX, &spy->posX) < 0x3000) {
-                r = func_80038638(actor, &st->path->nodes[0].x, 0x1800, a, 5,
+                r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0x1800, a, 5,
                                   spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, 4);
               }
               if (r > 0x5A) {
@@ -1490,7 +1490,7 @@ void Level7_UpdateActors(void) {
         if (spd > 0xDC) {
           spd = 0xDC;
         }
-        if (func_80039E94(actor, st->path, 0x73A, spd, 0xC8, 0xA, 0x80,
+        if (PivotActorAlongPath(actor, st->path, 0x73A, spd, 0xC8, 0xA, 0x80,
                           actor->unk43, 0) == 0x104) {
           st->vz = 0x12C;
           actor->unk48 = 2;
@@ -1612,14 +1612,14 @@ void Level7_UpdateActors(void) {
         if (D_80075794 == 0) {
           break;
         }
-        func_800529E4(actor, 4);
+        RefreshActorDerivedState(actor, 4);
         func_800385BC(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
 
       case 0x14:
         ANIM_GO(actor, 1);
-        if (func_80039E94(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
                           5) == 0x103) {
           actor->unk48 = 0x15;
           continue;
@@ -1641,7 +1641,7 @@ void Level7_UpdateActors(void) {
 
       case 0x16:
         ANIM_GO(actor, 1);
-        if (func_80039E94(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
                           5) == 0x101) {
           actor->unk48 = 0x17;
           continue;
@@ -1749,7 +1749,7 @@ void Level7_UpdateActors(void) {
             st->path->cur = next;
           }
         }
-        r = func_80039E94(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, 5);
+        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, 5);
         if (r & 0x100) {
           if ((r & ~0x100) ==
               (st->node - st->path->reversed) % st->path->count) {
@@ -1771,7 +1771,7 @@ void Level7_UpdateActors(void) {
         if (st->path->nodes[st->path->cur].unk0C > 0) {
           st->speed = st->path->nodes[st->path->cur].unk0C;
         }
-        if (func_80039E94(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
                           5) == 0x10B) {
           st->vz = 0x96;
           actor->unk48 = 0x29;
@@ -1867,7 +1867,7 @@ void Level7_UpdateActors(void) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
-        if (func_80039E94(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
                           5) == st->path->count + 0xFF) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 1;
@@ -1885,7 +1885,7 @@ void Level7_UpdateActors(void) {
                    0x80) &
                   0xFF;
 
-          func_80038638(actor, &st->path->nodes[0].x, st->dist, a, 8,
+          SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist, a, 8,
                         st->speed, 0xF, 0x40, 0xFF, 0xFF, 0, 0, 0);
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
@@ -1908,10 +1908,10 @@ void Level7_UpdateActors(void) {
       }
 
       if (st->egg != 0) {
-        func_800529E4(actor, 4);
-        func_80052D64(actor, 0, &st->egg->posX);
+        RefreshActorDerivedState(actor, 4);
+        GetActorAttachPoint(actor, 0, &st->egg->posX);
       }
-      func_800529E4(actor, 1);
+      RefreshActorDerivedState(actor, 1);
       break;
     }
 
@@ -1928,14 +1928,14 @@ void Level7_UpdateActors(void) {
       }
 
       if ((unsigned int)(actor->unk48 - 2) < 3) {
-        func_8003C85C(&actor->posX);
+        AimCameraStickTowardPoint(&actor->posX);
         g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, (int *)0x602080);
       }
 
       switch (actor->unk48) {
       case 1:
         g_nGameplayBlocked = 1;
-        func_80017BFC(st->centre, &actor->posX);
+        VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
             0x40;
@@ -1955,7 +1955,7 @@ void Level7_UpdateActors(void) {
 
           st->radius += step;
           st->angle += step;
-          func_80017C24(&actor->posX, st->centre);
+          SVectorToVectorShl2(&actor->posX, st->centre);
           actor->posX +=
               (LookupCosine(st->angle * 0x10) * (short)st->radius) >> 12;
           actor->posY +=
@@ -1979,8 +1979,8 @@ void Level7_UpdateActors(void) {
                         4 >>
                     12;
           svA[2] += 0x300;
-          func_80017BFC(st->apex, svA);
-          func_80017BFC(st->centre, &actor->posX);
+          VectorToSVectorShr2(st->apex, svA);
+          VectorToSVectorShr2(st->centre, &actor->posX);
           st->phase = 0;
           actor->unk48 += 1;
         }
@@ -1994,8 +1994,8 @@ void Level7_UpdateActors(void) {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
-          func_80017C24(svB, st->centre);
-          func_80017C24(svC, st->apex);
+          SVectorToVectorShl2(svB, st->centre);
+          SVectorToVectorShl2(svC, st->apex);
           SubtractVector(svC, svC, svB);
           ScaleVector3Sat(svC, svC, st->phase);
           RShiftVector3(svC, 6);
@@ -2006,7 +2006,7 @@ void Level7_UpdateActors(void) {
           svD[0] += LookupCosine(D_80078A66 * 0x10) >> 3;
           svD[1] += LookupSine(D_80078A66 * 0x10) >> 3;
           svD[2] += 0x300;
-          func_80017BFC(st->centre, svD);
+          VectorToSVectorShr2(st->centre, svD);
           st->radius = 0x200;
           st->angle = D_80078A66 - 0x40;
           st->phase = 0;
@@ -2026,7 +2026,7 @@ void Level7_UpdateActors(void) {
 
           st->radius -= step;
           st->angle -= step;
-          func_80017C24(&actor->posX, st->centre);
+          SVectorToVectorShl2(&actor->posX, st->centre);
           actor->posX +=
               (LookupCosine(st->angle * 0x10) * (short)st->radius) >> 12;
           actor->posY +=
@@ -2048,7 +2048,7 @@ void Level7_UpdateActors(void) {
         g_pfnLevelOverlayParticleSpawn(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
-        func_8003B854(0, st->idx);
+        CommitActorKillGems(0, st->idx);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -2173,7 +2173,7 @@ void Level7_UpdateActors(void) {
 
       if (actor->type != 15) {
         if (st->attach != 0xFF) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           if (actor->type == 14) {
             RotateVectorByMatrix(&actor->unk20[0], &D_8006E5B8,
                           D_80077108[st->attach].pos);
@@ -2244,13 +2244,13 @@ void Level7_UpdateActors(void) {
             actor->posX = acc[0][0] / 3;
             actor->posY = acc[0][1] / 3;
             actor->posZ = acc[0][2] / 3;
-            func_800529E4(actor, 2);
+            RefreshActorDerivedState(actor, 2);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
           } else if (st->mode == 3) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
-            func_800529E4(actor, 2);
+            RefreshActorDerivedState(actor, 2);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->node = g_nLastCollisionHitChunkId;
               st->mode = 2;
@@ -2321,7 +2321,7 @@ void Level7_UpdateActors(void) {
           svG[2] += 0xF0;
 
           if (CollideSphereWithWorldAndActors(svG, 0xF0, 0xF0) != 0) {
-            if (func_80057380() == 0) {
+            if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != 14 && actor->type != 15) {
                 CollectPickupActor(actor);
               }
@@ -2487,13 +2487,13 @@ void Level7_UpdateActors(void) {
 
             if (actor->type == 14) {
               PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
-              func_800529E4(actor, 4);
+              RefreshActorDerivedState(actor, 4);
               g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)8);
               g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x10);
               if (g_nExtraLives < 0x63) {
                 g_nExtraLives += 1;
               }
-              func_8003B854(0, actor);
+              CommitActorKillGems(0, actor);
               DespawnActorRecord(actor);
               continue;
             }
@@ -2561,7 +2561,7 @@ void Level7_UpdateActors(void) {
                 actor->unk48 = 3;
                 actor->unk57 = 0x60;
                 g_pfnLevelOverlayParticleSpawn(0x18, 0x50, at, (int *)0xC);
-                func_800529E4(actor, 1);
+                RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
                 actor->unk1C |= 0x80000000;
@@ -2726,7 +2726,7 @@ void Level7_UpdateActors(void) {
         FxNode *fx = st->smoke;
 
         if (fx == 0) {
-          fx = func_80058AE8();
+          fx = AllocWorldSparkle();
           st->smoke = fx;
           if (fx != 0) {
             fx->anchor = &actor->posX;
@@ -2747,7 +2747,7 @@ void Level7_UpdateActors(void) {
           }
         }
       } else if (st->smoke != 0) {
-        func_80058B60(st->smoke);
+        ClearWord(st->smoke);
         st->smoke = 0;
       }
 
@@ -2995,7 +2995,7 @@ void Level7_UpdateActors(void) {
           }
         }
 
-        func_800529E4(actor, 4);
+        RefreshActorDerivedState(actor, 4);
       }
 
       break;
@@ -3051,7 +3051,7 @@ void Level7_UpdateActors(void) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
-            func_800529E4(actor, 4);
+            RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
               g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
@@ -3069,7 +3069,7 @@ void Level7_UpdateActors(void) {
         }
 
         if (st->attach != 0xFF) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           RotateVectorByMatrix(&actor->unk20[0], &D_8006E5AC,
                         D_80077108[st->attach].pos);
           AddVector(D_80077108[st->attach].pos, D_80077108[st->attach].pos,
@@ -3208,7 +3208,7 @@ void Level7_UpdateActors(void) {
           t352[2] -= 0x100;
           RShiftVector3(t352, 5);
           ScaleVector3Sat(t352, t352, st->shake);
-          func_800177F8(t352, t352, 6);
+          DivideVector3(t352, t352, 6);
           AddVector(t352, t352, &spy->posX);
           t352[2] += 0x100;
           t352[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
@@ -3273,7 +3273,7 @@ void Level7_UpdateActors(void) {
           }
 
           g_pfnLevelOverlayParticleSpawn(0x20, 0x46, &actor->posX, (void *)0x18);
-          D_80075758 = func_8003ABC0(actor, 1, 0, 0);
+          D_80075758 = SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           g_nLevelEggCount = 2;
@@ -3282,7 +3282,7 @@ void Level7_UpdateActors(void) {
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        func_800529E4(fly, 4);
+        RefreshActorDerivedState(fly, 4);
         if (st->shake % 4 < 2) {
           g_pfnLevelOverlayParticleSpawn(1, 0xC, (int *)fly, (void *)0x8080);
         } else {
@@ -3306,7 +3306,7 @@ void Level7_UpdateActors(void) {
                                         actor->posY - spy->posY, 0),
                           spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0xFA;
-        func_8003ABC0(actor, 1, 0, 0);
+        SpawnActorDeathDrop(actor, 1, 0, 0);
         MarkActorCommittedKill(actor);
         actor->unk48 = 6;
         ANIM_RESET(actor, 6);
@@ -3430,14 +3430,14 @@ void Level7_UpdateActors(void) {
         }
         MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
         if (D_80075794 != 0) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x30);
           DespawnActorRecord(actor);
           continue;
         }
         break;
       }
-      func_800529E4(actor, 1);
+      RefreshActorDerivedState(actor, 1);
       continue;
     }
 
@@ -3460,7 +3460,7 @@ void Level7_UpdateActors(void) {
                           spy->bodyRotZ, 0x20, 0x40);
         st->turn = 0x1E;
         actor->flags = 0;
-        func_8003ABC0(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 3);
       }
@@ -3524,8 +3524,8 @@ void Level7_UpdateActors(void) {
           c->unk46 = actor->unk46;
           cs->u0C = 0x88;
           cs->u0E = 0x1E;
-          func_800529E4(actor, 4);
-          func_80052D64(actor, 0, &c->posX);
+          RefreshActorDerivedState(actor, 4);
+          GetActorAttachPoint(actor, 0, &c->posX);
           CopyVector(v, &SPY.posX);
           v[2] -= 0x12C;
           SubtractVector(cs->vel, v, &c->posX);
@@ -3556,7 +3556,7 @@ void Level7_UpdateActors(void) {
       case 3:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC, 0xA);
         if (D_80075794 != 0) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
@@ -3594,7 +3594,7 @@ void Level7_UpdateActors(void) {
           actor->unk3D = 7;
           actor->unk3E = actor->unk3F;
           actor->unk3F = 5;
-          func_80037E98(actor);
+          StubActorHook(actor);
           actor->unk48 = 7;
           continue;
         } else {
@@ -3615,7 +3615,7 @@ void Level7_UpdateActors(void) {
             actor->unk3D = 7;
             actor->unk3E = actor->unk3F;
             actor->unk3F = 5;
-            func_80037E98(actor);
+            StubActorHook(actor);
             actor->unk48 = 7;
             continue;
           }
@@ -3677,7 +3677,7 @@ void Level7_UpdateActors(void) {
       case 20:
         ANIM_GO(actor, 4);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800 ||
-            func_80039E94(actor, st->path, 0x100, 0x5A, 0, 8, 0x28, 0xFF, 5) ==
+            PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x28, 0xFF, 5) ==
                 0x100) {
           st->timer = 0x3C;
           actor->unk3C = 7;
@@ -3689,7 +3689,7 @@ void Level7_UpdateActors(void) {
         }
         break;
       }
-      func_800529E4(actor, 1);
+      RefreshActorDerivedState(actor, 1);
       continue;
     }
 
@@ -3709,7 +3709,7 @@ void Level7_UpdateActors(void) {
             st->speed = 0x190;
           }
         }
-        func_8003ABC0(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         actor->unk48 = 1;
         ANIM_RESET(actor, 1);
@@ -3732,7 +3732,7 @@ void Level7_UpdateActors(void) {
         }
         break;
       }
-      func_800529E4(actor, 1);
+      RefreshActorDerivedState(actor, 1);
       break;
     }
 
@@ -3769,7 +3769,7 @@ void Level7_UpdateActors(void) {
 
       g_pfnLevelOverlayParticleSpawn(5, 2, &actor->posX, 0);
       g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (void *)0x20);
-      func_8003ABC0(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, 3, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -3835,7 +3835,7 @@ void Level7_UpdateActors(void) {
         }
 
         g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x18);
-        func_8003ABC0(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -3910,7 +3910,7 @@ void Level7_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      func_800529E4(actor, 1);
+      RefreshActorDerivedState(actor, 1);
       continue;
     }
 
@@ -3959,7 +3959,7 @@ void Level7_UpdateActors(void) {
         if (actor->unk48 != 0) {
           *st->alert = 0;
         }
-        func_8003ABC0(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         if (actor->flags & 0xB0000) {
           int i;
@@ -4037,7 +4037,7 @@ void Level7_UpdateActors(void) {
               actor->unk3D = 1;
               actor->unk3E = actor->unk3F;
               actor->unk3F = 0;
-              func_80037E98(actor);
+              StubActorHook(actor);
             }
             actor->unk48 = 1;
             continue;
@@ -4216,14 +4216,14 @@ void Level7_UpdateActors(void) {
           actor->posZ -= 0x32;
         }
         if (D_80075794 != 0) {
-          func_800529E4(actor, 4);
+          RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
         break;
       }
-      func_800529E4(actor, 3);
+      RefreshActorDerivedState(actor, 3);
       FindGroundHeightBelow(&actor->posX, 0x10000);
       EncodeCachedVecToActorDirCode(actor);
       break;
@@ -4301,13 +4301,13 @@ void Level7_UpdateActors(void) {
 
             facing =
                 st->partner != -1 ? g_pActorListBase[st->partner].unk46 : st->unk1C;
-            func_8003B854(0, actor);
-            func_80059474(actor, facing);
+            CommitActorKillGems(0, actor);
+            SetSpawnAnchorFromActor(actor, facing);
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
-              func_8002C914(st->reward, 0);
+              StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].unk48 = 1;
@@ -4484,7 +4484,7 @@ void Level7_UpdateActors(void) {
                 st->path->nodes[(st->path->cur + 1) % st->path->count].z;
             st->leg = 0;
             st->path->cur = (st->path->cur + 1) % st->path->count;
-            st->left = func_80017D7C(
+            st->left = ComputeStepTowardPoint(
                 &st->path->nodes[st->path->cur].x,
                 &st->path->nodes[(st->path->cur + 1) % st->path->count].x,
                 st->step, st->speed);
@@ -4796,7 +4796,7 @@ void Level7_UpdateActors(void) {
           DebrisFallState *cs;
 
           PlayActorMeshVoice(actor, 1, 0);
-          func_8003ABC0(actor, 6, 0, 0);
+          SpawnActorDeathDrop(actor, 6, 0, 0);
           for (i = 0; i < 8; i++) {
             short *p;
 
@@ -4853,7 +4853,7 @@ void Level7_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            func_8004E2E8(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           D_80078C68 = 0;
@@ -4925,7 +4925,7 @@ void Level7_UpdateActors(void) {
           st->rotY = actor->unk45;
           st->restZ = actor->posZ;
           actor->unk52 = 0x40;
-          st->prize = func_8003ABC0(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->unk49 = 4;
           st->prize->unk50 = 0;
           st->prize->unk51 = 0;
@@ -5073,7 +5073,7 @@ void Level7_UpdateActors(void) {
         drop = height - SPY.posZ;
 
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
-          func_80059474(actor, actor->unk46);
+          SetSpawnAnchorFromActor(actor, actor->unk46);
           actor->unk48 = 2;
           actor->unk3C = 1;
           actor->unk49 = 0;
@@ -5162,7 +5162,7 @@ void Level7_UpdateActors(void) {
           g_pfnLevelOverlayInitHook(0x135, actor);
         }
         g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x18);
-        func_8003ABC0(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       }
@@ -5364,7 +5364,7 @@ void Level7_UpdateActors(void) {
         break;
       }
 
-      rider = func_8003ABC0(actor, 5, 0, 0);
+      rider = SpawnActorDeathDrop(actor, 5, 0, 0);
       if (st->unk14 == 1) {
         ((unsigned char *)rider->state)[0xE] = st->unk14;
       }

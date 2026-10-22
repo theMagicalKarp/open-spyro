@@ -9,7 +9,7 @@ extern void func_8006635C();
 extern volatile int D_80078DA4;
 extern volatile int D_80078DA8[];
 
-void func_80032A20(void) {
+void PollMemCardSyncRing(void) {
   int r = MemCardSync(1, &D_80078DA8[4], &D_80078DA8[5]);
   if (r == 0) {
     return;

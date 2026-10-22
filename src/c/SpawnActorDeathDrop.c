@@ -8,7 +8,7 @@ extern signed char ArcTan2_8bit(int a, int b);
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern void PlayActorMeshVoice(void *rec, int a, int b);
-extern void func_800177F8(int *dst, int *src, int n);
+extern void DivideVector3(int *dst, int *src, int n);
 
 extern int g_nSpyroWorldPosZ;         /* 0x80078a60 — g_anSpyroWorldPos[2] */
 extern int g_anLevelReadyFlagBlock[]; /* 0x80078bbc — g_nLevelReadyFlag */
@@ -53,7 +53,8 @@ struct Actor {
    landing spot for ground and a walkable slope, integrates the ballistic arc at
    10 units of gravity per frame to count the flight time, and divides the
    offset by that count to get the launch velocity. */
-struct Actor *func_8003ABC0(struct Actor *src, int kind, int *hint, int *alt) {
+struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
+                                  int *alt) {
   int land[4];   /* sp+0x18 */
   int throw_[4]; /* sp+0x28 */
   struct Actor *rec;
@@ -183,7 +184,7 @@ struct Actor *func_8003ABC0(struct Actor *src, int kind, int *hint, int *alt) {
 
   CopyVector(rec->pos, land);
   SubtractVector(throw_, throw_, land);
-  func_800177F8(throw_, throw_, n);
+  DivideVector3(throw_, throw_, n);
   throw_[2] = vz;
   CopyVector(dbg->vel, throw_);
   dbg->live = 1;

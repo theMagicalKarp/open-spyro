@@ -4,7 +4,7 @@ typedef struct {
   int x, y, z, w;
 } IVec4;
 
-int func_80038D54(IVec4 *arg0, IVec4 *arg1) {
+int PlaneDistanceAbs(IVec4 *arg0, IVec4 *arg1) {
   int r;
   int t[4];
   r = ((arg1->x * arg0->x) + (arg1->y * arg0->y) + (arg1->z * arg0->z)) >> 10;

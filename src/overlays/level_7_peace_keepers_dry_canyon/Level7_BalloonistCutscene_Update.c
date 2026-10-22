@@ -103,7 +103,7 @@ extern void InitHudCounters(int a0);
 extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
 extern void TickActiveSoundVoices(void);
 extern void StopAllSoundExceptMask(int a0);
-extern void func_80058B60(int a0);
+extern void ClearWord(int a0);
 extern void InitLightVectorConstants(void);
 extern int GetRandomU32();
 
@@ -240,7 +240,7 @@ void Level7_BalloonistCutscene_Update(void)
             g_pLevelOverlayInitRecord[0x51] = 0;
             if (((int **) g_pLevelOverlayInitRecord)[0][3] != 0)
             {
-              func_80058B60(((int **) g_pLevelOverlayInitRecord)[0][3]);
+              ClearWord(((int **) g_pLevelOverlayInitRecord)[0][3]);
               ((int **) g_pLevelOverlayInitRecord)[0][3] = 0;
             }
           }

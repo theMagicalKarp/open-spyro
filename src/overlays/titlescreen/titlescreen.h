@@ -314,7 +314,7 @@ extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
 extern void BuildSaveGameBuffer(Struct_0x600 *);
 extern int func_80059594(Struct_0x600 *);
-extern void func_80032A20(void);
+extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int func_80017FD4(void);
 extern void InitNewGameState(void);

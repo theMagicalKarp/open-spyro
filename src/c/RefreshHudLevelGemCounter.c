@@ -6,7 +6,7 @@
 extern void SetHudCounterDigits();
 extern int g_anHudLevelGemCachedBlock[];
 
-void func_80054578(void) {
+void RefreshHudLevelGemCounter(void) {
   int *pc = g_anHudLevelGemCachedBlock;
   unsigned char *ps = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x20;
   unsigned char *pr = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x1B;

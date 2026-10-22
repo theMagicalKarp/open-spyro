@@ -5,7 +5,7 @@
  * Walks the 0x20-byte record stream at g_pEmitListBase and ages one record per
  * iteration: integrates its position, fades its colour, ticks its life
  * counter and, when the record has expired (or its alive byte has been
- * cleared), hands it back with func_80053608().  The walk stops at the
+ * cleared), hands it back with FreeEmitListRecord().  The walk stops at the
  * terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Head and arms 0x7/0x8/0x41 come from func_level_12_8008BE98, the ground
@@ -18,7 +18,7 @@
  *    the split has to be declared in that sequence or every sp-relative
  *    offset in the function shifts by 16.
  *  - An A200 cse barrier (`do { } while (0);`) between arm 0x8's first
- *    func_80017C24(p2, POS) and the direction-vector group.  Without it the
+ *    SVectorToVectorShl2(p2, POS) and the direction-vector group.  Without it the
  *    whole arm shares ONE address pseudo: gcc either hoists it to the loop
  *    preheader and spills it or holds it in s0 from the first use, where the
  *    original rematerialises `addiu a0,sp,0x20` there and only takes s0 for
@@ -47,11 +47,11 @@
 #define POS ((short *)(rec + 4))
 #define VEL ((short *)(rec + 0x18))
 
-extern void func_80017C84(short *dst, short *src, short *delta);
-extern void func_80017C24(int *dst, short *src);
-extern void func_80017BFC(short *dst, int *src);
+extern void AddSVector(short *dst, short *src, short *delta);
+extern void SVectorToVectorShl2(int *dst, short *src);
+extern void VectorToSVectorShr2(short *dst, int *src);
 extern int abs(int n);
-extern void func_80053608(unsigned char *rec); /* FreeEmitListRecord */
+extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 extern char *g_pActorListBase;
@@ -87,7 +87,7 @@ void Level16_AdvanceEmitList(int step) {
   do {
     switch (rec[0]) {
     case 0x0:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -98,12 +98,12 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x1:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -114,12 +114,12 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x2:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -130,7 +130,7 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xE] -= step4;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -150,9 +150,9 @@ void Level16_AdvanceEmitList(int step) {
       p[1] += (amp * LookupSine(ang)) >> 12;
       p[2] = HS(0x8) * 4 + 0x40;
       if (z < p[2] || rec[0x2] >= 0xC9) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
-        func_80017BFC(POS, p);
+        VectorToSVectorShr2(POS, p);
         rec[0x2]++;
       }
       break;
@@ -162,7 +162,7 @@ void Level16_AdvanceEmitList(int step) {
       /* The rune orbit: it rises and falls on a triangular ramp keyed to the
        * age byte and drifts by its own per-axis velocity words. */
       if (rec[0x2] >= 0x19 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0xB] += rec[0x1E];
         if (rec[0x2] >= 0xD) {
@@ -184,9 +184,9 @@ void Level16_AdvanceEmitList(int step) {
       /* The wizard's homing bolt: it spirals around the line to its owner
        * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
-      func_80017C24(p2, POS);
+      SVectorToVectorShl2(p2, POS);
       if (rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * 0x58 + 0xC));
         do {
@@ -198,11 +198,11 @@ void Level16_AdvanceEmitList(int step) {
         SubtractVector(dir, dir, hold);
         len = VectorLength(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
-          func_80053608(rec);
+          FreeEmitListRecord(rec);
         } else {
           ScaleVector3ByRatio(dir, len, 0x80);
           AddVector(hold, hold, dir);
-          func_80017BFC(POS, hold);
+          VectorToSVectorShr2(POS, hold);
           rec[0x2]++;
           hold = g_anCameraPos;
           SubtractVector(v, p2, hold);
@@ -236,7 +236,7 @@ void Level16_AdvanceEmitList(int step) {
     }
 
     case 0x9:
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -244,7 +244,7 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xA] += step * 2;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -252,25 +252,25 @@ void Level16_AdvanceEmitList(int step) {
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         CopyVector(w, g_nSpyroInputLockoutCountdown - 0x58);
         w[0] += LookupCosine(HS(0x18)) >> 4;
         w[1] += LookupSine(HS(0x18)) >> 4;
         w[2] += 0x100;
-        func_80017BFC(POS, w);
+        VectorToSVectorShr2(POS, w);
         HS(0x18) = HU(0x18) + 0x40;
         rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case 0xB:
-      func_80017C84(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -287,14 +287,14 @@ void Level16_AdvanceEmitList(int step) {
         rec[0xE] -= 8;
       }
       if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x10:
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -304,13 +304,13 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xD] -= 4;
       rec[0xE] -= 4;
       if (rec[0xC] == 0 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
     case 0x11:
       /* The same ember with a late red cut-off at age 9. */
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -323,7 +323,7 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xE] -= 4;
       rec[0x2]++;
       if (rec[0x2] >= 0xC || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
 
@@ -338,7 +338,7 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xB] += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -369,7 +369,7 @@ void Level16_AdvanceEmitList(int step) {
     }
 
     case 0x21: {
-      func_80017C84(POS, POS, VEL);
+      AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
@@ -392,7 +392,7 @@ void Level16_AdvanceEmitList(int step) {
       rec[0xE] = c;
       rec[0x2] += step;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -423,7 +423,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x8 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -459,7 +459,7 @@ void Level16_AdvanceEmitList(int step) {
         rec[0x2]++;
       }
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -491,7 +491,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         if (rec[0x10] < 0x80) {
@@ -525,7 +525,7 @@ void Level16_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
         d[1] = HS(0xC) - HS(0x6);
@@ -565,7 +565,7 @@ void Level16_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
         d[1] = (HS(0x6) - HS(0xC)) >> 1;
@@ -602,7 +602,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -622,7 +622,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }
@@ -634,7 +634,7 @@ void Level16_AdvanceEmitList(int step) {
 
       rec[0x2]++;
       if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
         HU(0x6) += HU(0x12);
@@ -678,7 +678,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
         rec[0x11] -= 4;
@@ -706,7 +706,7 @@ void Level16_AdvanceEmitList(int step) {
       HU(0xE) += d[2];
       rec[0x2]++;
       if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
-        func_80053608(rec);
+        FreeEmitListRecord(rec);
       }
       break;
     }

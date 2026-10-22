@@ -25,7 +25,7 @@ struct SampleBankRef {
    bitmap (by 0x58-byte pool index when the pointer is in the live pool, else
    by its +0x56 id byte) and in the per-level kill bitmap, then play the
    level's pickup sound on the actor. */
-void func_8003B854(int value, unsigned char *actor) {
+void CommitActorKillGems(int value, unsigned char *actor) {
   int id;
   int word;
 

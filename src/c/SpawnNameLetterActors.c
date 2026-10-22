@@ -50,7 +50,7 @@ struct Actor {
    `bend` and lifted by the cosine of its position ('L' actors get an extra
    0x100 of height). Spaces advance the cursor without spawning.
    (0x8003c358, 908 bytes.) */
-void func_8003C358(struct Actor *sign, int named) {
+void SpawnNameLetterActors(struct Actor *sign, int named) {
   /* Four 16-byte (VECTOR-shaped) slots at sp+0x10/0x20/0x30/0x40, plus 8 bytes
      of tail slack the original's frame reserves and never touches. */
   int radial[4];

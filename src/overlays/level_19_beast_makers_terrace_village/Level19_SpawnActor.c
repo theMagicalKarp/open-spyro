@@ -153,10 +153,10 @@ extern short D_8006F3A2[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern int g_anSpyroFirstContactNormal[3];
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
-extern void func_80052D64(Actor *parent, int slot, int *dst); /* GetActorAttachPoint */
+extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 extern unsigned short g_nCameraEulerPitch;  /* tracked world yaw (byte) */
 extern short g_nCameraEulerYaw;           /* tracked world pitch */
-extern void func_80052D64(Actor *parent, int slot, int *dst); /* PlaceActorAtMountPoint */         /* ArcTan2 */
+extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);         /* ArcTan2 */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -223,7 +223,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     st->owner = parent;
-    func_80052D64(parent, 0, &rec->posX);
+    GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
     rec->unk45 = g_nCameraEulerPitch;
     rec->unk46 = (g_nCameraEulerYaw + 0x400) >> 4;
