@@ -72,9 +72,9 @@ typedef struct ChaseState {
   int unk0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
-  unsigned char t12;     /* 0x12 heading-change timer */
-  unsigned char t13;     /* 0x13 vertical-change timer */
-  unsigned char t14;     /* 0x14 */
+  unsigned char headingTimer;     /* 0x12 heading-change timer */
+  unsigned char climbTimer;     /* 0x13 vertical-change timer */
+  unsigned char idleTimer;     /* 0x14 */
 } ChaseState;
 
 /* Sparx's state block, as seen by the actors that send him fetching. */
@@ -141,7 +141,7 @@ extern void ResetSpyroLinearMotion(void);
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
   int unk00; /* 0x00 */
-  int unk04; /* 0x04 */
+  int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
 /* Shake table: x/y rotation offsets, one row per two ticks. */
@@ -222,9 +222,9 @@ typedef struct FxNode {
   unsigned char b;     /* 0x0E */
   unsigned char pad0F; /* 0x0F */
   int size;            /* 0x10 grows 0x20/frame, clamped at 0x400 */
-  int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 */
-  int unk1C;           /* 0x1C */
+  int offX;           /* 0x14 draw offset from *anchor (DrawWorldSparkleParticles) */
+  int offY;           /* 0x18 */
+  int offZ;           /* 0x1C */
 } FxNode;
 
 extern FxNode *AllocWorldSparkle(void);
@@ -344,7 +344,7 @@ typedef struct WobbleState {
   int rotX;   /* 0x04 rest pose */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int unk10;  /* 0x10 */
+  int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
   int handle; /* 0x14 */
 } WobbleState;
 
@@ -377,11 +377,12 @@ typedef struct WardenState {
   int period; /* 0x08 */
 } WardenState;
 
-/* Case 250 — the boss-door gnorc: opens the door, then leaves the level. */
-typedef struct DoorState {
+/* Case 250 — crystal dragon statue: shakes through its rest pose, then
+ * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
+typedef struct DragonStatueState {
   char pad00[0x18];
   int unk18;   /* 0x18 */
-  int unk1C;   /* 0x1C */
+  int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
   char pad28[0x1C];
@@ -389,7 +390,7 @@ typedef struct DoorState {
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */
   int restZ; /* 0x50 */
-} DoorState;
+} DragonStatueState;
 
 extern struct {
   int x;

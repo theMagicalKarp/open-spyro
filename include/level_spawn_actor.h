@@ -44,7 +44,7 @@ typedef struct ButterflyState {
   unsigned char heading;      /* 0x11 */
   unsigned char headingTimer; /* 0x12 */
   unsigned char climbTimer;   /* 0x13 vertical-change timer */
-  short unk14;
+  short idleTimer;
 } ButterflyState;
 
 /* Sparx (type 0x78) — SpawnActor's view of UpdateActors' FlierState. */

@@ -168,9 +168,9 @@ typedef struct ChaseState {
   int unk0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
-  unsigned char t12;     /* 0x12 heading-change timer */
-  unsigned char t13;     /* 0x13 vertical-change timer */
-  unsigned char t14;     /* 0x14 */
+  unsigned char headingTimer;     /* 0x12 heading-change timer */
+  unsigned char climbTimer;     /* 0x13 vertical-change timer */
+  unsigned char idleTimer;     /* 0x14 */
 } ChaseState;
 
 /* Sparx's state block, as seen by the actors that send him fetching. */
@@ -297,7 +297,7 @@ extern void ResetSpyroLinearMotion(void);
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
   int unk00; /* 0x00 */
-  int unk04; /* 0x04 */
+  int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
@@ -459,9 +459,9 @@ typedef struct FxNode {
   unsigned char b;     /* 0x0E */
   unsigned char pad0F; /* 0x0F */
   int size;            /* 0x10 grows 0x20/frame, clamped at 0x400 */
-  int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 */
-  int unk1C;           /* 0x1C */
+  int offX;           /* 0x14 draw offset from *anchor (DrawWorldSparkleParticles) */
+  int offY;           /* 0x18 */
+  int offZ;           /* 0x1C */
 } FxNode;
 
 /* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
@@ -719,7 +719,7 @@ typedef struct WobbleState {
   int rotX;   /* 0x04 rest pose */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int unk10;  /* 0x10 */
+  int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
   int handle; /* 0x14 */
 } WobbleState;
 
@@ -797,11 +797,12 @@ typedef struct BobState {
   int restZ; /* 0x00 */
 } BobState;
 
-/* Case 250 — the boss-door gnorc: opens the door, then leaves the level. */
-typedef struct DoorState {
+/* Case 250 — crystal dragon statue: shakes through its rest pose, then
+ * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
+typedef struct DragonStatueState {
   char pad00[0x18];
   int unk18;   /* 0x18 */
-  int unk1C;   /* 0x1C */
+  int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
   char pad28[0x1C];
@@ -809,7 +810,7 @@ typedef struct DoorState {
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */
   int restZ; /* 0x50 */
-} DoorState;
+} DragonStatueState;
 
 /* ==== level_30 globals ====
  *
@@ -2014,9 +2015,9 @@ void Level30_UpdateActors(void) {
           if (fx != 0) {
             fx->anchor = &actor->posX;
             st->smoke->size = 0x40;
-            st->smoke->unk14 = 0;
-            st->smoke->unk18 = 0;
-            st->smoke->unk1C = 0;
+            st->smoke->offX = 0;
+            st->smoke->offY = 0;
+            st->smoke->offZ = 0;
             st->smoke->r = 0xC0;
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
@@ -2413,7 +2414,7 @@ void Level30_UpdateActors(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->unk10 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
@@ -2607,9 +2608,9 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Boss door (DoorState): swings open, rewards the player, then leaves. */
+    /* Crystal dragon statue (DragonStatueState): shakes, then counts the rescue when Spyro is close. */
     case 250: {
-      DoorState *st = actor->state;
+      DragonStatueState *st = actor->state;
       int *at;
 
       if (actor->mode == 0) {
@@ -2678,7 +2679,7 @@ void Level30_UpdateActors(void) {
             int facing;
 
             facing =
-                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->unk1C;
+                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->facing;
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, facing);
 

@@ -157,9 +157,9 @@ typedef struct ChaseState {
   int unk0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
-  unsigned char t12;     /* 0x12 heading-change timer */
-  unsigned char t13;     /* 0x13 vertical-change timer */
-  unsigned char t14;     /* 0x14 */
+  unsigned char headingTimer;     /* 0x12 heading-change timer */
+  unsigned char climbTimer;     /* 0x13 vertical-change timer */
+  unsigned char idleTimer;     /* 0x14 */
 } ChaseState;
 
 /* Sparx's state block, as seen by the actors that send him fetching. */
@@ -282,7 +282,7 @@ typedef struct SpinState {
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
   int unk00; /* 0x00 */
-  int unk04; /* 0x04 */
+  int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
@@ -435,9 +435,9 @@ typedef struct FxNode {
   unsigned char b;     /* 0x0E */
   unsigned char pad0F; /* 0x0F */
   int size;            /* 0x10 grows 0x20/frame, clamped at 0x400 */
-  int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 */
-  int unk1C;           /* 0x1C */
+  int offX;           /* 0x14 draw offset from *anchor (DrawWorldSparkleParticles) */
+  int offY;           /* 0x18 */
+  int offZ;           /* 0x1C */
 } FxNode;
 
 /* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
@@ -697,7 +697,7 @@ typedef struct WobbleState {
   int rotX;   /* 0x04 rest pose */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int unk10;  /* 0x10 */
+  int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
   int handle; /* 0x14 */
 } WobbleState;
 
@@ -775,11 +775,12 @@ typedef struct BobState {
   int restZ; /* 0x00 */
 } BobState;
 
-/* Case 250 — the boss-door gnorc: opens the door, then leaves the level. */
-typedef struct DoorState {
+/* Case 250 — crystal dragon statue: shakes through its rest pose, then
+ * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
+typedef struct DragonStatueState {
   char pad00[0x18];
   int unk18;   /* 0x18 */
-  int unk1C;   /* 0x1C */
+  int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
   char pad28[0x1C];
@@ -787,7 +788,7 @@ typedef struct DoorState {
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */
   int restZ; /* 0x50 */
-} DoorState;
+} DragonStatueState;
 
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
@@ -1015,22 +1016,22 @@ void Level5_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0: {
-        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->drawn) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
             st->heading = WrapAddAngle8(st->heading, r);
-            st->t12 = RandomIntInRange(60, 140);
+            st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
             st->vz = RandomSignedInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -1043,12 +1044,12 @@ void Level5_UpdateActors(void) {
 
           if (refHeight < 300) {
             st->vz = RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
@@ -1056,7 +1057,7 @@ void Level5_UpdateActors(void) {
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
-            st->t12 = RandomIntInRange(30, 80);
+            st->headingTimer = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -1064,7 +1065,7 @@ void Level5_UpdateActors(void) {
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
-            st->t12 = 40;
+            st->headingTimer = 40;
           }
         } else {
           DespawnActorRecord(actor);
@@ -1084,9 +1085,9 @@ void Level5_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
             st->vz = RandomSignedInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -1099,12 +1100,12 @@ void Level5_UpdateActors(void) {
 
           if (refHeight < 200) {
             st->vz = RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -1782,9 +1783,9 @@ void Level5_UpdateActors(void) {
           if (g != 0) {
             g->anchor = &actor->posX;
             st->fx->size = 0x40;
-            st->fx->unk14 = 0;
-            st->fx->unk18 = 0;
-            st->fx->unk1C = 0;
+            st->fx->offX = 0;
+            st->fx->offY = 0;
+            st->fx->offZ = 0;
             st->fx->r = 0xC0;
             st->fx->g = 0xC0;
             st->fx->b = 0x60;

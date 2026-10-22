@@ -141,7 +141,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     CopyVector(st->anchor, pos);
     st->climbTimer = 0;
     st->headingTimer = 0;
-    st->unk14 = 0x708;
+    st->idleTimer = 0x708;
     break;
   }
 

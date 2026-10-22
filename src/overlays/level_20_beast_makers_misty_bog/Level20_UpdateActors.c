@@ -1758,9 +1758,9 @@ void Level20_UpdateActors(void) {
           if (fx != 0) {
             fx->anchor = &actor->posX;
             st->smoke->size = 0x40;
-            st->smoke->unk14 = 0;
-            st->smoke->unk18 = 0;
-            st->smoke->unk1C = 0;
+            st->smoke->offX = 0;
+            st->smoke->offY = 0;
+            st->smoke->offZ = 0;
             st->smoke->r = 0xC0;
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
@@ -2465,7 +2465,7 @@ void Level20_UpdateActors(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->unk10 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
@@ -2539,9 +2539,9 @@ void Level20_UpdateActors(void) {
       break;
     }
 
-    /* Boss door (DoorState): swings open, rewards the player, then leaves. */
+    /* Crystal dragon statue (DragonStatueState): shakes, then counts the rescue when Spyro is close. */
     case 250: {
-      DoorState *st = actor->state;
+      DragonStatueState *st = actor->state;
       int *at;
 
       if (actor->mode == 0) {
@@ -2610,7 +2610,7 @@ void Level20_UpdateActors(void) {
             int facing;
 
             facing =
-                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->unk1C;
+                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->facing;
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, facing);
 
