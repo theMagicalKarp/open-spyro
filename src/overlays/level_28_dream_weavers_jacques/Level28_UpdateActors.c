@@ -55,7 +55,7 @@ extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
+#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
@@ -3622,13 +3622,13 @@ void Level28_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
       SubtractVector(g400, &spy->posX, &actor->posX);
       distance = VectorLength(g400, 0);
-      if (distance < st->unk04 && g400[2] >= -0x3FF && g400[2] < st->unk00 &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->unk00)) {
+      if (distance < st->radius && g400[2] >= -0x3FF && g400[2] < st->spanZ &&
+          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
-        SPY.u200 = actor->posZ + st->unk00;
+        SPY.u200 = actor->posZ + st->spanZ;
         CopyVector(&spy->contact, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
@@ -3929,38 +3929,38 @@ void Level28_UpdateActors(void) {
       int a;
       int b;
 
-      if (st->unk14 == 1) {
+      if (st->rideMode == 1) {
         SnapActorToGround(actor);
         EncodeCachedVecToActorDirCode(actor);
       }
 
       if (actor->mode == 0) {
-        st->unk04 += g_nFrameStep;
+        st->phase += g_nFrameStep;
 
-        if (st->unk04 >= 0x1E1) {
-          st->unk04 = 0;
-          actor->rotX = st->unk08;
-          actor->rotY = st->unk0C;
-          actor->posZ = st->unk10;
+        if (st->phase >= 0x1E1) {
+          st->phase = 0;
+          actor->rotX = st->savedRotX;
+          actor->rotY = st->savedRotY;
+          actor->posZ = st->savedPosZ;
           actor->mode = 1;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->unk00 = g_pfnLevelSpawnActor(0x1A6, actor);
-          st->unk00->rotX = actor->rotX;
-          st->unk00->rotY = actor->rotY;
-          st->unk00->rotZ = actor->rotZ;
-          st->unk00->frameRate = 0x10;
-          st->unk00->updateDist = 0;
-          st->unk00->unk50 = 0;
-          st->unk00->drawn = 0;
-          st->unk00->unk47 = 5;
+          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger->rotX = actor->rotX;
+          st->passenger->rotY = actor->rotY;
+          st->passenger->rotZ = actor->rotZ;
+          st->passenger->frameRate = 0x10;
+          st->passenger->updateDist = 0;
+          st->passenger->unk50 = 0;
+          st->passenger->drawn = 0;
+          st->passenger->unk47 = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
-        } else if (st->unk04 >= 0x1A0) {
-          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->unk08;
-          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->unk0C;
+        } else if (st->phase >= 0x1A0) {
+          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->savedRotX;
+          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->savedRotY;
           a = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].a;
           b = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].b;
           if (a < 0) {
@@ -3969,30 +3969,30 @@ void Level28_UpdateActors(void) {
           if (b < 0) {
             b = -b;
           }
-          actor->posZ = st->unk10 + (a + b) * 6;
+          actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->sfxSlot == 0x7F) {
             PlayActorMeshVoice(actor, 1, 0);
           }
-        } else if (st->unk04 >= 0x19C) {
+        } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
-          st->unk08 = actor->rotX;
-          st->unk0C = actor->rotY;
-          st->unk10 = actor->posZ;
-          if (st->unk14 == 1) {
-            st->unk04 = 0;
+          st->savedRotX = actor->rotX;
+          st->savedRotY = actor->rotY;
+          st->savedPosZ = actor->posZ;
+          if (st->rideMode == 1) {
+            st->phase = 0;
           }
         }
       } else {
         if (actor->anim == 1) {
-          st->unk04 += g_nFrameStep;
-          st->unk00->unk50 = 0x10;
-          st->unk00->updateDist = 0xFF;
+          st->phase += g_nFrameStep;
+          st->passenger->unk50 = 0x10;
+          st->passenger->updateDist = 0xFF;
         }
 
-        if (st->unk04 >= 0xE6) {
-          DespawnActorRecord(st->unk00);
-          st->unk04 = GetRandomU32() & 0xFF;
+        if (st->phase >= 0xE6) {
+          DespawnActorRecord(st->passenger);
+          st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->mode = 0;
@@ -4008,7 +4008,7 @@ void Level28_UpdateActors(void) {
       }
 
       rider = SpawnActorDeathDrop(actor, 5, 0, 0);
-      if (st->unk14 == 1) {
+      if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = one;
       }
 
@@ -4041,7 +4041,7 @@ void Level28_UpdateActors(void) {
       g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x18);
 
       if (actor->mode == 1) {
-        DespawnActorRecord(st->unk00);
+        DespawnActorRecord(st->passenger);
       }
 
       PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, 8,

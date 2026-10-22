@@ -2537,13 +2537,13 @@ void Level10_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
       SubtractVector(v250, &spy->posX, &actor->posX);
       distance = VectorLength(v250, 0);
-      if (distance < st->unk04 && v250[2] >= -0x3FF && v250[2] < st->unk00 &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->unk00)) {
+      if (distance < st->radius && v250[2] >= -0x3FF && v250[2] < st->spanZ &&
+          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
-        SPY.u200 = actor->posZ + st->unk00;
+        SPY.u200 = actor->posZ + st->spanZ;
         CopyVector(&spy->contact, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
