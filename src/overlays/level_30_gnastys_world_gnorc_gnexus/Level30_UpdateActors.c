@@ -2716,7 +2716,7 @@ void Level30_UpdateActors(void) {
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
               g_anSpyroRequestVelocity = g_anSpyroMotionVec >> 8;
-              g_nSpyroRequestVelocityY = D_80078B68 >> 8;
+              g_nSpyroRequestVelocityY = g_nSpyroMotionY >> 8;
               if (g_nSpyroMotionZ > 0) {
               clear_c68:
                 g_nSpyroRequestVelocityZ = 0;

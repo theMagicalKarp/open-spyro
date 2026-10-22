@@ -16,15 +16,15 @@ extern void *AllocEmitListRecord(int cls);
 extern int ArcTan2(int dy, int dx, int flag);
 extern void BeginPauseToMenuTransition(void);
 extern void BuildActiveActorList(void);
-extern void BuildTextSpriteChain();                                  /* draw text run */
-extern void BuildTextSprites();                                      /* BuildTextSpriteChain */
+extern void BuildTextSpriteChain();                          /* draw text run */
+extern void BuildTextSprites();                              /* BuildTextSpriteChain */
 extern void ChangeSpyroState(int a);
 extern int CheckLineOfSightSegment(int *a, int *b);
 extern int CheckSpyroLineOfSightTo(int *pos);
-extern int CollideSphereWithWorldAndActors(int *pos, int a, int b);  /* ground/wall probe */
+extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
 extern void CommitActorKillGems(int a, void *b);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void ConvertRGB15ToLuma8();                                   /* texture-page sync */
+extern void ConvertRGB15ToLuma8();                           /* texture-page sync */
 extern void CopyVector();
 extern void DivideVector3(int *d, int *s, int k);
 extern void DrawOTag();
@@ -34,7 +34,7 @@ extern void EmitRadialShadedLine();
 extern void EndSaveMenuToWorld(void);
 extern void EnqueueBlinkingMarkerSprite();
 extern void EnqueuePendingSpritePrims();
-extern void FillWord();                                              /* word fill */
+extern void FillWord();                                      /* word fill */
 extern void FreeEmitListRecord(unsigned char *rec);
 extern int func_80017428(int *v, int *n, int *out);
 extern int GetRandomU32();
@@ -59,11 +59,11 @@ extern void RShiftVector3(int *vec, int shift);
 extern void SampleSpyroShadowRingHeights(int a0);
 extern void ScaleVector3Sat(int *out, int *a, int scale);
 extern int SignedAngleDelta12(int a, int b);
-extern void sprintf();                                               /* format string */
+extern void sprintf();                                       /* format string */
 extern int StepAngle8Toward(int a, int b, int c);
 extern void StopSoundVoiceByIndex(int ch, int a);
-extern void StoreImage();                                            /* MoveImage */
-extern int strlen();                                                 /* text glyph count */
+extern void StoreImage();                                    /* MoveImage */
+extern int strlen();                                         /* text glyph count */
 extern void StubRewardHook(int script, int a);
 extern void SubtractVector(int *out, int *a, int *b);
 extern void TallyFlightTarget(int sound);
@@ -75,6 +75,6 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern void UpdateCameraEulerAngles(void);
 extern int VectorLength(int *vec, int flag);
 extern int VSync();
-extern int WrapAngleDelta8(int a, int b);                            /* signed angle delta */
+extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
 
 #endif /* OPEN_SPYRO_LEVEL_FUNCS_H */

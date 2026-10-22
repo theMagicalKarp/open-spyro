@@ -47080,8 +47080,8 @@ glabel CollectPickupActor
     /* 2C1FC 8003B9FC B87D23A0 */  sb         $v1, %lo(g_abGemTallyIconUvTable)($at)
     /* 2C200 8003BA00 0780023C */  lui        $v0, %hi(g_nGemTallyIconCount)
     /* 2C204 8003BA04 C856428C */  lw         $v0, %lo(g_nGemTallyIconCount)($v0)
-    /* 2C208 8003BA08 0780033C */  lui        $v1, %hi(D_80075758)
-    /* 2C20C 8003BA0C 5857638C */  lw         $v1, %lo(D_80075758)($v1)
+    /* 2C208 8003BA08 0780033C */  lui        $v1, %hi(g_pThiefEggDrop)
+    /* 2C20C 8003BA0C 5857638C */  lw         $v1, %lo(g_pThiefEggDrop)($v1)
     /* 2C210 8003BA10 01004224 */  addiu      $v0, $v0, 0x1
     /* 2C214 8003BA14 0780013C */  lui        $at, %hi(g_nGemTallyIconCount)
     /* 2C218 8003BA18 C85622AC */  sw         $v0, %lo(g_nGemTallyIconCount)($at)
@@ -76621,9 +76621,9 @@ glabel PlaySoundEffect
     /* 46448 80055C48 F4616394 */  lhu        $v1, %lo(g_nSfxOverridePitch)($v1)
     /* 4644C 80055C4C 2410A200 */  and        $v0, $a1, $v0
     /* 46450 80055C50 0000C2AC */  sw         $v0, 0x0($a2)
-    /* 46454 80055C54 0780013C */  lui        $at, %hi(D_80075F38)
+    /* 46454 80055C54 0780013C */  lui        $at, %hi(g_anSpuVoiceRowPitch)
     /* 46458 80055C58 21082400 */  addu       $at, $at, $a0
-    /* 4645C 80055C5C 385F23AC */  sw         $v1, %lo(D_80075F38)($at)
+    /* 4645C 80055C5C 385F23AC */  sw         $v1, %lo(g_anSpuVoiceRowPitch)($at)
     /* 46460 80055C60 25570108 */  j          .L80055C94
     /* 46464 80055C64 0100023C */   lui       $v0, (0x10093 >> 16)
   .L80055C68:
@@ -76634,9 +76634,9 @@ glabel PlaySoundEffect
     /* 46478 80055C78 80100200 */  sll        $v0, $v0, 2
     /* 4647C 80055C7C 21104300 */  addu       $v0, $v0, $v1
     /* 46480 80055C80 0A004294 */  lhu        $v0, 0xA($v0)
-    /* 46484 80055C84 0780013C */  lui        $at, %hi(D_80075F38)
+    /* 46484 80055C84 0780013C */  lui        $at, %hi(g_anSpuVoiceRowPitch)
     /* 46488 80055C88 21082400 */  addu       $at, $at, $a0
-    /* 4648C 80055C8C 385F22AC */  sw         $v0, %lo(D_80075F38)($at)
+    /* 4648C 80055C8C 385F22AC */  sw         $v0, %lo(g_anSpuVoiceRowPitch)($at)
     /* 46490 80055C90 0100023C */  lui        $v0, (0x10093 >> 16)
   .L80055C94:
     /* 46494 80055C94 93004234 */  ori        $v0, $v0, (0x10093 & 0xFFFF)
@@ -77106,9 +77106,9 @@ glabel StopSoundVoicesByOwner
     /* 46B20 80056320 000000AD */  sw         $zero, 0x0($t0)
     /* 46B24 80056324 00002EA5 */  sh         $t6, 0x0($t1)
     /* 46B28 80056328 0000C0AC */  sw         $zero, 0x0($a2)
-    /* 46B2C 8005632C 0780013C */  lui        $at, %hi(D_80075F44)
+    /* 46B2C 8005632C 0780013C */  lui        $at, %hi(g_anSpuVoiceRowPitchStep)
     /* 46B30 80056330 21082700 */  addu       $at, $at, $a3
-    /* 46B34 80056334 445F20AC */  sw         $zero, %lo(D_80075F44)($at)
+    /* 46B34 80056334 445F20AC */  sw         $zero, %lo(g_anSpuVoiceRowPitchStep)($at)
     /* 46B38 80056338 0780013C */  lui        $at, %hi(D_80075F3D)
     /* 46B3C 8005633C 21082700 */  addu       $at, $at, $a3
     /* 46B40 80056340 3D5F2DA0 */  sb         $t5, %lo(D_80075F3D)($at)

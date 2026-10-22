@@ -3308,7 +3308,7 @@ void Level12_UpdateActors(void) {
           }
 
           g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
-          D_80075758 = SpawnActorDeathDrop(actor, 1, 0, 0);
+          g_pThiefEggDrop = SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           g_nLevelEggCount = 2;
@@ -3606,7 +3606,7 @@ void Level12_UpdateActors(void) {
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
               g_anSpyroRequestVelocity.x = g_anSpyroMotionVec >> 8;
-              g_nSpyroRequestVelocityY = D_80078B68 >> 8;
+              g_nSpyroRequestVelocityY = g_nSpyroMotionY >> 8;
               if (g_nSpyroMotionZ > 0) {
               clear_c68:
                 g_nSpyroRequestVelocityZ = 0;
@@ -4992,7 +4992,7 @@ void Level12_UpdateActors(void) {
           continue;
         }
         if (st->timer >= 0xF8) {
-          SpawnActorRotBillboard(actor, D_8006E5C4[GetRandomU32() & 3]);
+          SpawnActorRotBillboard(actor, g_anRotBillboardOffsetsRand[GetRandomU32() & 3]);
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
         }
         st->timer += g_nFrameStep;
@@ -5155,7 +5155,7 @@ void Level12_UpdateActors(void) {
                                       g_apActorMeshTable[actor->type]->m_Sounds[1] *
                                           20 +
                                       0xA);
-      int cur = D_80075F38[actor->sfxSlot & 0x7F][0];
+      int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
       if ((actor->flags & 0x90000) == 0x10000) {
@@ -5163,7 +5163,7 @@ void Level12_UpdateActors(void) {
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
                       &actor->sfxSlot);
         if (actor->sfxSlot != 0x7F) {
-          D_80075F38[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
+          g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
         }
       }
       if (st->speed < 0x19) {
@@ -5185,7 +5185,7 @@ void Level12_UpdateActors(void) {
       st->handle = SelectActorLodBand(actor, st->handle);
       st->speed -= 1;
       if (pitch < cur && actor->sfxSlot != 0x7F) {
-        D_80075F44[actor->sfxSlot & 0x7F][0] = -4;
+        g_anSpuVoiceRowPitchStep[actor->sfxSlot & 0x7F][0] = -4;
       }
       if (st->speed < 0x18) {
         st->speed = 0x18;

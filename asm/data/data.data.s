@@ -14482,11 +14482,11 @@ dlabel g_nSfxVolume
     /* 65F54 80075754 00000000 */ .word 0x00000000
 enddlabel g_nSfxVolume
 
-nonmatching D_80075758
+nonmatching g_pThiefEggDrop
 
-dlabel D_80075758
+dlabel g_pThiefEggDrop
     /* 65F58 80075758 00000000 */ .word 0x00000000
-enddlabel D_80075758
+enddlabel g_pThiefEggDrop
 
 nonmatching g_nFadeProgress
 

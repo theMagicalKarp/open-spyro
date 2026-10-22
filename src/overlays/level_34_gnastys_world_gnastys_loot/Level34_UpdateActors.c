@@ -1829,7 +1829,7 @@ void Level34_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            D_80078C58 = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {
@@ -4552,7 +4552,7 @@ void Level34_UpdateActors(void) {
           continue;
         }
         if (st->timer >= 0xF8) {
-          SpawnActorRotBillboard(actor, D_8006E5C4[GetRandomU32() & 3]);
+          SpawnActorRotBillboard(actor, g_anRotBillboardOffsetsRand[GetRandomU32() & 3]);
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
         }
         st->timer += g_nFrameStep;
@@ -4686,7 +4686,7 @@ void Level34_UpdateActors(void) {
                                       g_apActorMeshTable[actor->type]->m_Sounds[1] *
                                           20 +
                                       0xA);
-      int cur = D_80075F38[actor->sfxSlot & 0x7F][0];
+      int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
       if ((actor->flags & 0x90000) == 0x10000) {
@@ -4694,7 +4694,7 @@ void Level34_UpdateActors(void) {
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
                       &actor->sfxSlot);
         if (actor->sfxSlot != 0x7F) {
-          D_80075F38[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
+          g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
         }
       }
       if (st->speed < 0x19) {
@@ -4716,7 +4716,7 @@ void Level34_UpdateActors(void) {
       st->handle = SelectActorLodBand(actor, st->handle);
       st->speed -= 1;
       if (pitch < cur && actor->sfxSlot != 0x7F) {
-        D_80075F44[actor->sfxSlot & 0x7F][0] = -4;
+        g_anSpuVoiceRowPitchStep[actor->sfxSlot & 0x7F][0] = -4;
       }
       if (st->speed < 0x18) {
         st->speed = 0x18;

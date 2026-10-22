@@ -1120,6 +1120,11 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_anSparxEmitOffset     0x8006e570  int[3] EmitParticles offset for actor type 0x78 (Sparx)
  *   g_adwActorBurstColors   0x8006e330  packed RGB per actor type for emit effect 0xC (CollectPickupActor)
  *   g_aCameraXformPresets   0x8006ca24  0x18-byte spherical camera-coordinate presets
+ *   g_nSpyroMotionY         0x80078b68  scalar view of g_anSpyroMotionVec[1]
+ *   g_nSpyroRequestTargetZ  0x80078c58  g_anSpyroRequestTargetPos[2]
+ *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
+ *   g_pThiefEggDrop         0x80075758  egg dropped by a killed thief; collecting it sets g_nLevelEggCount = 3 (CollectPickupActor)
+ *   g_anRotBillboardOffsetsRand 0x8006e5c4  int[4][3] spawn offsets picked at random, after g_anRotBillboardOffset5
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

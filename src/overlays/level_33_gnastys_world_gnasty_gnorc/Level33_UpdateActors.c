@@ -5015,7 +5015,7 @@ void Level33_UpdateActors(void) {
           continue;
         }
         if (st->timer >= 0xF8) {
-          SpawnActorRotBillboard(actor, D_8006E5C4[GetRandomU32() & 3]);
+          SpawnActorRotBillboard(actor, g_anRotBillboardOffsetsRand[GetRandomU32() & 3]);
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
         }
         st->timer += g_nFrameStep;

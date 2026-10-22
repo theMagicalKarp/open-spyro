@@ -14,7 +14,7 @@ extern int D_8006E3E4[];
 extern void *D_8006E490;
 extern void *D_8006E494;
 extern int D_8006E52C[];
-extern char *D_8006E8C0[];                                /* row title string tables */
+extern char *D_8006E8C0[];                               /* row title string tables */
 extern char *D_8006E8C4[];
 extern char *D_8006E8C8[];
 extern char *D_8006E8CC[];
@@ -25,13 +25,13 @@ extern int D_8006E930[];
 extern unsigned char D_8006E998[];
 extern int D_8006EADC[];
 extern int D_8006EAE0[];
-extern char *D_8006F7D4[];                                /* world names */
-extern char *D_8006F7D8[];                                /* level names */
-extern unsigned char D_8006F89D[];                        /* dialogue page end line */
+extern char *D_8006F7D4[];                               /* world names */
+extern char *D_8006F7D8[];                               /* level names */
+extern unsigned char D_8006F89D[];                       /* dialogue page end line */
 extern int D_800700F8;
 extern int D_80071E9C[];
 extern int D_800756A0;
-extern unsigned char D_800758D1;                          /* per-world "seen it" flags */
+extern unsigned char D_800758D1;                         /* per-world "seen it" flags */
 extern int *D_800769F8[];
 extern int D_80076FEC;
 extern int D_80077004;
@@ -40,7 +40,7 @@ extern int D_80077018;
 extern int D_80077024;
 extern int D_800777EC_s;
 extern int D_800777F0_s;
-extern int D_800777F4_s;                                  /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
+extern int D_800777F4_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int D_800777F8;
 extern int D_80077800[];
 extern int D_80077804;
@@ -63,26 +63,26 @@ extern unsigned char D_80078681[];
 extern unsigned char D_80078682[];
 extern unsigned char D_80078683[];
 extern unsigned char D_80078684[];
-extern int D_80078B68;
-extern int D_80078C58;
-extern unsigned char g_abBalloonistDialoguePageStarts[];  /* dialogue page first line */
-extern unsigned char g_abEmitTrailColors[];               /* trail colour table, stride 4 */
+extern int g_nSpyroMotionY;
+extern int g_nSpyroRequestTargetZ;
+extern unsigned char g_abBalloonistDialoguePageStarts[]; /* dialogue page first line */
+extern unsigned char g_abEmitTrailColors[];              /* trail colour table, stride 4 */
 extern unsigned char g_abEmitTrailColorsB[];
 extern unsigned char g_abEmitTrailColorsG[];
 extern unsigned char g_abGemTallyIconUvTable[];
 extern unsigned char g_abHudCounterDisplayState;
-extern unsigned char g_abLevelGemPercent[];               /* per-level "left through the exit" flags */
-extern unsigned char g_abSaveOptionsBlock[];              /* per-world visited flags */
+extern unsigned char g_abLevelGemPercent[];              /* per-level "left through the exit" flags */
+extern unsigned char g_abSaveOptionsBlock[];             /* per-world visited flags */
 extern unsigned char g_abSpyroStateCameraMode[];
-extern unsigned char g_abWorldPerLevelByteTable[];        /* per-course claim flags */
+extern unsigned char g_abWorldPerLevelByteTable[];       /* per-course claim flags */
 extern void *g_adwActorBurstColors[];
-extern int g_anEmitSlotOffsets[];                         /* per-slot offsets, stride 3 ints */
-extern int g_anEmitStepOffsets[];                         /* per-step offsets, stride 3 ints */
-extern int g_anFlightCourseBonusTable[];                  /* per-course bonus table rows */
-extern int g_anFlightTallyActiveSlots;                    /* pending tally-class queue, 4 deep */
-extern int g_anFlightTallyShown[];                        /* tally shown, per class */
-extern short g_anLaunchDirTable[];                        /* launch-direction table, x */
-extern short g_anLaunchDirTableZ[];                       /* launch-direction table, z */
+extern int g_anEmitSlotOffsets[];                        /* per-slot offsets, stride 3 ints */
+extern int g_anEmitStepOffsets[];                        /* per-step offsets, stride 3 ints */
+extern int g_anFlightCourseBonusTable[];                 /* per-course bonus table rows */
+extern int g_anFlightTallyActiveSlots;                   /* pending tally-class queue, 4 deep */
+extern int g_anFlightTallyShown[];                       /* tally shown, per class */
+extern short g_anLaunchDirTable[];                       /* launch-direction table, x */
+extern short g_anLaunchDirTableZ[];                      /* launch-direction table, z */
 extern int g_anRotBillboardOffset0;
 extern int g_anRotBillboardOffset1;
 extern int g_anRotBillboardOffset2;
@@ -97,67 +97,67 @@ extern unsigned char g_bSpyroAnimCurrent;
 extern unsigned char g_bSpyroAnimFrame;
 extern unsigned char g_bSpyroAnimPrev[];
 extern unsigned char g_bSpyroFramePrev;
-extern unsigned char g_bSpyroPersistentEulerY;            /* SPY.bodyRotY, absolute form */
+extern unsigned char g_bSpyroPersistentEulerY;           /* SPY.bodyRotY, absolute form */
 extern unsigned char g_bSpyroSubFrameTimer;
 extern unsigned char g_bSpyroSwingByteEuler1;
-extern int g_dwGamestateFrames;                           /* frame counter; the arm acts on every 4th frame */
-extern int g_dwSpyroRequestMask;                          /* scripted camera control word */
-extern int g_dwSpyroTriggerEventFlags;                    /* SPY.damageFlags, absolute form */
-extern int g_nActiveLevelId;                              /* active level id */
-extern int g_nActiveWorldIndex;                           /* course index */
-extern int g_nActorAnimDone;                              /* current actor's animation finished */
-extern int g_nActorAnimNewFrame;                          /* current actor's new-frame flag */
+extern int g_dwGamestateFrames;                          /* frame counter; the arm acts on every 4th frame */
+extern int g_dwSpyroRequestMask;                         /* scripted camera control word */
+extern int g_dwSpyroTriggerEventFlags;                   /* SPY.damageFlags, absolute form */
+extern int g_nActiveLevelId;                             /* active level id */
+extern int g_nActiveWorldIndex;                          /* course index */
+extern int g_nActorAnimDone;                             /* current actor's animation finished */
+extern int g_nActorAnimNewFrame;                         /* current actor's new-frame flag */
 extern int g_nActorPoolCapacity;
 extern int g_nActorPoolLiveCount;
-extern int g_nCameraCurrentMode;                          /* camera mode */
+extern int g_nCameraCurrentMode;                         /* camera mode */
 extern short g_nCameraEulerRoll;
-extern short g_nCameraEulerYaw;                           /* camera yaw, as the balloonist reads it */
+extern short g_nCameraEulerYaw;                          /* camera yaw, as the balloonist reads it */
 extern int g_nCameraNextMode;
-extern int g_nCameraPosY;                                 /* turret aim target Y */
+extern int g_nCameraPosY;                                /* turret aim target Y */
 extern int g_nCameraPosZ;
 extern int g_nCameraScriptStickRequestX;
 extern int g_nCameraTargetYawBiasFromMode;
 extern int g_nCdStreamState;
 extern int g_nCollisionProbeVecY;
 extern int g_nCollisionProbeVecZ;
-extern int g_nCollisionResolvedY;                         /* ..y */
-extern int g_nCurrentLevelId;                             /* current level id */
+extern int g_nCollisionResolvedY;                        /* ..y */
+extern int g_nCurrentLevelId;                            /* current level id */
 extern int g_nDeathRespawnPending;
-extern int g_nExtraLives;                                 /* life count, capped at 99 */
+extern int g_nExtraLives;                                /* life count, capped at 99 */
 extern int g_nFlightQuitFlag;
-extern int g_nFlightResultsRevealStep;                    /* reveal sound step */
-extern int g_nFlightRunClock;                             /* run clock */
-extern int g_nFlightTallyShownClass;                      /* tally class being shown */
-extern int g_nFlightTallySlot;                            /* tally slot index */
+extern int g_nFlightResultsRevealStep;                   /* reveal sound step */
+extern int g_nFlightRunClock;                            /* run clock */
+extern int g_nFlightTallyShownClass;                     /* tally class being shown */
+extern int g_nFlightTallySlot;                           /* tally slot index */
 extern int g_nFlightTargetTally1;
 extern int g_nFlightTargetTally2;
 extern int g_nFlightTargetTally3;
-extern int g_nFlightTimeBonus;                            /* time bonus accumulator */
-extern int g_nFlightTimeRemaining;                        /* time remaining */
-extern int g_nFrameStep;                                  /* frame delta in ticks */
+extern int g_nFlightTimeBonus;                           /* time bonus accumulator */
+extern int g_nFlightTimeRemaining;                       /* time remaining */
+extern int g_nFrameStep;                                 /* frame delta in ticks */
 extern int g_nGamePaused;
 extern int g_nGameplayBlocked;
-extern int g_nGamestate;                                  /* g_Gamestate */
+extern int g_nGamestate;                                 /* g_Gamestate */
 extern int g_nGamestate0cCamHeightGoal;
 extern int g_nGamestate0cCamHeightStart;
 extern int g_nGamestate0cCamRadiusGoal;
 extern int g_nGamestate0cCamRadiusStart;
-extern int g_nGamestate0cCamYawGoal_s;                    /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
+extern int g_nGamestate0cCamYawGoal_s;                   /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int g_nGamestate0cCamYawStart;
 extern int g_nGamestate0cCardVariant;
 extern int g_nGemPickupSubstate;
 extern int g_nGemPickupTimer;
 extern int g_nGemTallyIconCount;
-extern int g_nGroundSurfaceType;                          /* index of the surface under the probe */
-extern int g_nLastCollisionHitChunkId;                    /* collision triangle index */
-extern int g_nLevelEggCount;                              /* key collected */
+extern int g_nGroundSurfaceType;                         /* index of the surface under the probe */
+extern int g_nLastCollisionHitChunkId;                   /* collision triangle index */
+extern int g_nLevelEggCount;                             /* key collected */
 extern int g_nLevelIntroIndex;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
-extern int g_nPauseMenuCursor;                            /* menu cursor */
-extern int g_nPauseMenuIdleFrames;                        /* idle/blink counter */
-extern int g_nPauseMenuTransitionFrames;                  /* results frame counter */
+extern int g_nPauseMenuCursor;                           /* menu cursor */
+extern int g_nPauseMenuIdleFrames;                       /* idle/blink counter */
+extern int g_nPauseMenuTransitionFrames;                 /* results frame counter */
 extern int g_nPreserveMobIdx;
 extern int g_nPrimBufferOverflowFlag;
 extern int g_nScriptedMobTag;
@@ -165,37 +165,37 @@ extern int g_nScriptedMobViewPitchTilt;
 extern int g_nScriptedMobViewYawSpin;
 extern int g_nScriptedRespawnFlag;
 extern int g_nSfxOverrideFlags;
-extern short g_nSfxOverrideVolL;                          /* sound volume override, left/right */
+extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */
 extern short g_nSfxOverrideVolR;
-extern int g_nSparxFoodCount;                             /* life orb count */
+extern int g_nSparxFoodCount;                            /* life orb count */
 extern int g_nSpyroAirborneFrames;
 extern int g_nSpyroAnimPlayRate;
-extern int g_nSpyroBodyYaw;                               /* camera yaw accumulator */
-extern int g_nSpyroDrawSuppressed;                        /* Spyro is being carried */
+extern int g_nSpyroBodyYaw;                              /* camera yaw accumulator */
+extern int g_nSpyroDrawSuppressed;                       /* Spyro is being carried */
 extern int g_nSpyroFallTrackingFlag;
 extern int g_nSpyroFlameBreathTimer;
 extern int g_nSpyroFlameBreathTimerSave;
-extern int g_nSpyroGroundHeightZ;                         /* g_nSpyroGroundHeight */
+extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroPadSnapshotCountdown;
-extern int g_nSpyroRequestState;                          /* scripted camera mode */
+extern int g_nSpyroRequestState;                         /* scripted camera mode */
 extern int g_nSpyroRequestVelocityZ;
-extern int g_nSpyroState;                                 /* Spyro's state */
+extern int g_nSpyroState;                                /* Spyro's state */
 extern int g_nSpyroStateFlags;
 extern int g_nSpyroStateTimer;
 extern int g_nSpyroSwingEulerPitchTarget;
 extern int g_nSpyroSwingEulerPrev1;
-extern int g_nSpyroWorldPosZ;                             /* SPY.posZ, absolute form */
-extern int g_nSubMenuCursor;                              /* reveal timer */
+extern int g_nSpyroWorldPosZ;                            /* SPY.posZ, absolute form */
+extern int g_nSubMenuCursor;                             /* reveal timer */
 extern int g_nSubMenuScrollOffset;
 extern int g_nVsyncFramePaceAnchor;
 extern int g_nWorldDragonsRescued;
 extern int g_nWorldEggsRecovered;
-extern int g_nWorldTreasureCollected;                     /* gem total shown on the balloon */
+extern int g_nWorldTreasureCollected;                    /* gem total shown on the balloon */
 extern unsigned char *g_pGamestate0cActor;
-extern unsigned char *g_pLevelSoundIds;                   /* level sound ids */
-extern void *g_pSpyroRequestCameraTargetParams;           /* SPY.pCamTarget, absolute form */
+extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
+extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */
