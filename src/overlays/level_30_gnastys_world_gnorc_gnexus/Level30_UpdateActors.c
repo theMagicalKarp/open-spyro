@@ -138,7 +138,6 @@ typedef struct RoamState {
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -187,7 +186,6 @@ typedef struct ChaserState {
 extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
@@ -220,9 +218,6 @@ typedef struct AnimState {
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -830,7 +825,6 @@ extern volatile unsigned char g_bSpyroOtBinBias;
 extern volatile unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 
-extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 extern int g_anSpyroRequestVelocity;         /* scripted camera look-at */
 extern int g_nSpyroRequestVelocityY;
 extern PortalDesc *volatile g_pGemPickupCamPathData;
@@ -843,10 +837,6 @@ extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
 extern unsigned char D_8007A6C8;
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== The function ==== */

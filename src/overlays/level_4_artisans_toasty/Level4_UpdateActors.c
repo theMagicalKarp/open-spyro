@@ -157,7 +157,6 @@ typedef struct RoamState {
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -206,7 +205,6 @@ typedef struct ChaserState {
 extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
@@ -239,9 +237,6 @@ typedef struct AnimState {
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -834,10 +829,6 @@ extern struct {
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== level_4 globals ==== */
@@ -898,7 +889,6 @@ typedef struct SpinnerState {
   int spin;  /* 0x10 */
 } SpinnerState;
 
-extern int PickupGroupHasLiveActor(int stage);
 extern void PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
                           int e, int f, int g);
 

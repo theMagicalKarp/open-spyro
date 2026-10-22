@@ -28,14 +28,12 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
@@ -55,9 +53,6 @@ extern unsigned char D_8007A6AA;
 extern unsigned char D_8007A6AB;
 extern unsigned char D_8007A6AC;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -87,7 +82,6 @@ extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 

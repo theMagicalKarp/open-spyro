@@ -115,7 +115,6 @@ typedef struct PathState {
 #define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
 #define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -148,7 +147,6 @@ typedef struct ChaserState {
 extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
@@ -173,9 +171,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
@@ -320,7 +315,6 @@ extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
 extern int StepAngle8Toward(int a, int b, int c);
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Shift a vector left by n. */
 
@@ -569,10 +563,6 @@ extern struct {
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== Globals shared with level 4 ==== */
@@ -686,7 +676,6 @@ typedef struct PatrolState {
 extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int WrapAddAngle8(int heading, int step);
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
@@ -1175,7 +1164,6 @@ typedef struct BobState {
 /* from level_10 */
 /* from level_10 */
 /* from level_10 */
-extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 /* from level_10 */
 /* from level_10 */
 /* from level_10 */

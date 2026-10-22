@@ -50,4 +50,18 @@ extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 extern int TickCountdownByFrameDelta(void *timer, int step);
 extern void VectorToSVectorShr2(short *d, int *s);
 
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern int CastRayWorldAndActors(int *a, int *b);
+extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
+extern int D_80078BBC[]; /* balloon sequence stage (== SPY.u164) */
+extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
+extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
+extern int PickupGroupHasLiveActor(int stage);
+extern int PlaneDistanceAbs(int *pos, void *st);
+extern void SetWorldChunkAnimStep(int handle, int a, int b);
+extern int WrapAddAngle8(int a, int b);
+extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
+extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
+extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
+
 #endif /* OPEN_SPYRO_LEVEL_ACTORS_H */

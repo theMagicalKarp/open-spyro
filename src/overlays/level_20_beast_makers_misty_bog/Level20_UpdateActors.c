@@ -32,14 +32,12 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -47,9 +45,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -173,14 +168,9 @@ typedef struct ExitState {
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int D_80078BBC[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -251,7 +241,6 @@ extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c
                           int d);
 
 /* ==== level_10 per-class state blocks ==== */
-extern int WrapAddAngle8(int heading, int step);
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 

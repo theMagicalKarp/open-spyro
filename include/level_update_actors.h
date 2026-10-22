@@ -1682,4 +1682,7 @@ typedef struct L25Lantern {
 
 extern int FindFarthestPathPointFromSpyro(PathData *path);
 
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
+
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

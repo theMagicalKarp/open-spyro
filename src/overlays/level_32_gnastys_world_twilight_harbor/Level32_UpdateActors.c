@@ -116,7 +116,6 @@ typedef struct RoamState {
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -165,7 +164,6 @@ typedef struct ChaserState {
 extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
@@ -198,9 +196,6 @@ typedef struct AnimState {
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -471,7 +466,6 @@ typedef struct PatchRideState {
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
@@ -797,10 +791,6 @@ extern struct {
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== Globals shared with level 4 ==== */
@@ -1203,7 +1193,6 @@ typedef struct LookoutState {
   int range;     /* 0x28 in 1024s */
   int wait;      /* 0x2C */
 } LookoutState;
-extern int WrapAddAngle8(int heading, int step);
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
