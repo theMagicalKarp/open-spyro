@@ -21,6 +21,7 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_advance_emit_list.h"
 
 /* Level27_AdvanceEmitList (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -59,19 +60,6 @@
 #define W(n) (*(int *)(rec + (n)))
 #define POS ((short *)(rec + 4))
 #define VEL ((short *)(rec + 0x18))
-
-extern void AddSVector(short *dst, short *src, short *delta);
-extern void VectorToSVectorShr2(short *dst, int *src);
-extern void SVectorToVectorShl2(int *dst, short *src);
-extern int abs(int n);
-extern void FreeEmitListRecord(unsigned char *rec);
-
-extern unsigned char *g_pEmitListBase;
-extern char *g_pActorListBase;
-extern short g_anSineLut[];        /* sine table */
-extern short g_anCosineLut[];        /* cosine table */
-extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
-extern int g_nLevelReadyFlag;
 
 void Level27_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

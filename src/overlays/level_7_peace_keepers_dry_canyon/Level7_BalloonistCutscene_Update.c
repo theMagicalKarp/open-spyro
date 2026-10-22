@@ -79,39 +79,9 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "level_balloonist_cutscene.h"
 
-extern void CopyWords(void *dst, void *src, int len);
-extern void ApplyEulerRotation(int *a, int *b, int c);
-extern void ComputeCameraToTargetAngle(int *a0);
-extern int FindGroundHeightBelow(int *a0, int a1);
-extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
-extern void StopAllSoundExceptMask(int a0);
-extern void ClearWord(int a0);
-
-extern int g_anCameraDynamicTargetParams[];
-extern unsigned char *g_apSaveMenuAnimActorList[];
-extern void (*g_pfnLevelAdvanceEmitList)(int);
-extern unsigned char *g_pLevelOverlayInitRecord;
-extern void (*g_pfnLevelOnSaveMenuExit)();
-extern unsigned char *g_pLevelSampleBankHeader;
-extern int g_anCameraPos[];
-extern short g_nCameraEulerPitch;
-extern int g_pCameraAnchorPos[];
-extern int g_pCameraTargetParams;
-extern int g_dwPadPressed[];
-extern int g_nGamestate0cSubstate[];
-extern int g_nGamestate0cTimer[];
-extern int g_nGamestate0cMenuCursor[];
-extern int g_nGamestate0cDialogPage[];
-extern int g_nGamestate0cCamYawGoal[];
 extern unsigned char *g_pGamestate0cRecord;
-extern int g_pRenderScratchRegionBase;
-extern int g_pWorldRenderMeshChunkArray;
-extern int g_anSpyroWorldPos[];
-extern int g_nSpyroWorldPosY;
-extern unsigned char g_abSpyroPersistentEuler[];
-extern unsigned char g_bSpyroPersistentEulerZ;
-extern unsigned char g_bSpyroOtBinBias;
 
 void Level7_BalloonistCutscene_Update(void)
 {

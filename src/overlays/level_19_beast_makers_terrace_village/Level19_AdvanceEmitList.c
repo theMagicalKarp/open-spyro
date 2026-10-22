@@ -51,23 +51,13 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_advance_emit_list.h"
 
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
 #define W(n) (*(int *)(rec + (n)))
 #define POS ((short *)(rec + 4))
 #define VEL ((short *)(rec + 0x18))
-
-extern void AddSVector(short *dst, short *src, short *delta);
-extern void VectorToSVectorShr2(short *dst, int *src);
-extern int abs(int n);
-extern void FreeEmitListRecord(unsigned char *rec);
-
-extern unsigned char *g_pEmitListBase;
-extern short g_anSineLut[];        /* sine table */
-extern short g_anCosineLut[];        /* cosine table */
-extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
-extern int g_nLevelReadyFlag;
 
 void Level19_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

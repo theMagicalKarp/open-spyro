@@ -12,6 +12,7 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_spawn_actor.h"
 
 /* Level11_SpawnActor (0x800819BC, level_11_peace_keepers_night_flight
  * overlay, 0x944 bytes).
@@ -70,88 +71,15 @@ typedef struct Actor {
   unsigned char scale;
 } Actor; /* 0x58 */
 
-/* Flame state block (types 0xE, 0xF, 0x53..0x57). */
-typedef struct FlameState {
-  int unk00;
-  int unk04;
-  int unk08;
-  unsigned char unk0C;
-  unsigned char unk0D;
-  unsigned char unk0E;
-  unsigned char unk0F;
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  unsigned char unk14;
-} FlameState;
-
-/* Mortar-shot state block (type 0xFB). */
-typedef struct ShotState {
-  int vel[3];  /* 0x00 */
-  int unk0C;   /* 0x0C */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-} ShotState;
-
-/* Beam/link state block (type 0x10). */
-typedef struct BeamState {
-  int unk00;
-  int anchor[3]; /* 0x04 */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  short unk14;
-} BeamState;
-
-/* Spin state block (type 0x78). */
-typedef struct SpinState {
-  int unk00;
-  short unk04;
-  short unk06;
-  short unk08;
-  short unk0A;
-  int unk0C;
-  int unk10;
-} SpinState;
-
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-typedef struct DebrisState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  int unk0C;
-  int unk10;
-} DebrisState;
-
-/* Thrown-shard state block (types 0x120..0x121). */
-typedef struct ShardState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  unsigned char unk0C;
-  unsigned char unk0D;
-  short unk0E;
-  int unk10;
-} ShardState;
-
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
-extern int FindGroundHeightBelow(int *pos, int drop);
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
-extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE

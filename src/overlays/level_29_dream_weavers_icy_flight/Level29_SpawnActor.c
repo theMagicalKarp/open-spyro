@@ -29,6 +29,7 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_spawn_actor.h"
 
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
@@ -73,76 +74,6 @@ typedef struct Actor {
   unsigned char scale;
 } Actor; /* 0x58 */
 
-/* Flame state block (types 0xE, 0xF, 0x53..0x57). */
-typedef struct FlameState {
-  int unk00;
-  int unk04;
-  int unk08;
-  unsigned char unk0C;
-  unsigned char unk0D;
-  unsigned char unk0E;
-  unsigned char unk0F;
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  unsigned char unk14;
-} FlameState;
-
-/* Mortar-shot state block (type 0xFB). */
-typedef struct ShotState {
-  int vel[3];  /* 0x00 */
-  int unk0C;   /* 0x0C */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-} ShotState;
-
-/* Beam/link state block (type 0x10). */
-typedef struct BeamState {
-  int unk00;
-  int anchor[3]; /* 0x04 */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  short unk14;
-} BeamState;
-
-/* Spin state block (type 0x78). */
-typedef struct SpinState {
-  int unk00;
-  short unk04;
-  short unk06;
-  short unk08;
-  short unk0A;
-  int unk0C;
-  int unk10;
-} SpinState;
-
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-typedef struct DebrisState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  int unk0C;
-  int unk10;
-} DebrisState;
-
-/* Thrown-shard state block (types 0x120..0x121). */
-typedef struct ShardState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  unsigned char unk0C;
-  unsigned char unk0D;
-  short unk0E;
-  int unk10;
-} ShardState;
-
 /* Aim/lob state block (type 0xE8). */
 typedef struct AimState {
   int unk00;
@@ -156,17 +87,12 @@ extern void InitActorRenderDefaults(Actor *rec);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
-extern int FindGroundHeightBelow(int *pos, int drop);
 extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
-extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
-extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern unsigned char g_bSpyroPersistentEulerZ;  /* g_bSpyroBodyYaw (8-bit) */
-extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 
 Actor *Level29_SpawnActor(int type, Actor *parent) {

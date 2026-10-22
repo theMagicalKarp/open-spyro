@@ -26,22 +26,9 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "level_balloonist_cutscene.h"
 
-extern void RasterizeSpritePrimQueue();
-extern void BuildRenderEntityLists();
-extern void ComposeFrameScene();
-extern void SetupFrameOT();
-extern void DrawActors();
-extern void RasterizeEmitList();
-
-extern int g_nGamestate0cSubstate[];            /* [0] substate [1] phase [2] selected [3] submode [4] greeting */
-extern int g_pSpriteRecordWriteCursor;              /* sprite-record write cursor */
 extern int g_pGamestate0cRecord;              /* pending OT node */
-extern int g_apSpritePrimQueue;              /* sprite prim queue head */
-extern int g_pOtDepthBinHead0[];            /* OT depth-bin list */
-extern unsigned short g_anCosineLut[]; /* cosine LUT */
-extern char *g_apBalloonistNames[];          /* per-world balloonist names */
-extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
 
 static const char g_szGoTo[12];
 
