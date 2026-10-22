@@ -33,3 +33,7 @@ D_8007E240 = 0x8007E240;
 D_8006EBE4 = 0x8006EBE4;
 D_80075168 = 0x80075168;
 D_80075178 = 0x80075178;
+Credits_Update = 0x8007AA50;
+Titlescreen_Update = 0x8007ABAC;
+Credits_Draw = 0x8007BFD0;
+Titlescreen_Draw = 0x8007CEE4;

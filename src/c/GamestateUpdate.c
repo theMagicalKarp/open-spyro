@@ -30,8 +30,8 @@ extern void Gamestate0C_Update(void);
 extern void Gamestate0D_Update(void);
 extern void GemCutscene_Update(void);
 extern void Gamestate0F_Update(void);
-extern void func_8007AA50(void); /* credits overlay entry */
-extern void func_8007ABAC(void); /* titlescreen overlay entry */
+extern void Credits_Update(void); /* credits overlay entry (0x8007AA50) */
+extern void Titlescreen_Update(void); /* titlescreen overlay entry */
 extern int CheckDeathPlane(void);
 extern void TickWorldChunkAnimations(int step);
 extern void ComputeBillboardBasisVectors(void);
@@ -70,7 +70,7 @@ void GamestateUpdate(void) {
       Gamestate0C_Update();
     } else if (g_nGamestate == 0xD) {
       if (g_nGamestate0dMode != 3) {
-        func_8007ABAC();
+        Titlescreen_Update();
       } else {
         Gamestate0D_Update();
       }
@@ -80,7 +80,7 @@ void GamestateUpdate(void) {
       if (g_nGamestate0fMode >= 0x63) {
         Gamestate0F_Update();
       } else {
-        func_8007AA50();
+        Credits_Update();
       }
     }
   } else {
