@@ -5,7 +5,7 @@
  * (MoveImage) of the 512x224 strip at y=8 (front env active) or y=0xF8
  * to the opposite half, and a final DrawSync. Otherwise draws a full frame:
  * copies the fade color bytes (g_dwWorldFogColor..52) into both frame DRAWENVs,
- * builds one 0x58-byte sprite prim per credits line (records at D_8007589C,
+ * builds one 0x58-byte sprite prim per credits line (records at g_pCreditsGlyphPool,
  * 0x1C stride; prim cursor g_pSpriteRecordWriteCursor grows downward; record type 0x115 gets
  * a +0x29 glyph offset and depth 0x1C00), submits the pending sprite queue,
  * clears the OT bins, emits the static world, then runs the standard
@@ -27,21 +27,19 @@ extern int g_nGamestate0fMode;
 extern unsigned char *g_pActiveFrameDrawEnv;
 extern unsigned char g_abFrameDrawEnv0[];
 extern unsigned char g_dwWorldFogColor;
-extern unsigned char D_80078A51;
-extern unsigned char D_80078A52;
-extern unsigned char D_80076EF9;
-extern unsigned char D_80076EFA;
-extern unsigned char D_80076EFB;
-extern unsigned char D_80076F7D;
-extern unsigned char D_80076F7E;
-extern unsigned char D_80076F7F;
-extern int D_800756E4;
+extern unsigned char g_bWorldFogColorG;
+extern unsigned char g_bWorldFogColorB;
+extern unsigned char g_bFrameDrawEnv0BgR;
+extern unsigned char g_bFrameDrawEnv0BgG;
+extern unsigned char g_bFrameDrawEnv0BgB;
+extern unsigned char g_bFrameDrawEnv1BgR;
+extern unsigned char g_bFrameDrawEnv1BgG;
+extern unsigned char g_bFrameDrawEnv1BgB;
 extern char *g_pSpriteRecordWriteCursor;
-extern char *D_8007589C;
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nFarPlaneDrawDistance;
-extern int D_80076DE4[];
+extern int g_anCameraViewMtx[];
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {
@@ -68,21 +66,21 @@ void Credits_Draw(void) {
   }
   {
     int r = g_dwWorldFogColor;
-    int g = D_80078A51;
-    int b = D_80078A52;
-    D_80076EF9 = r;
-    D_80076EFA = g;
-    D_80076EFB = b;
-    D_80076F7D = r;
-    D_80076F7E = g;
-    D_80076F7F = b;
+    int g = g_bWorldFogColorG;
+    int b = g_bWorldFogColorB;
+    g_bFrameDrawEnv0BgR = r;
+    g_bFrameDrawEnv0BgG = g;
+    g_bFrameDrawEnv0BgB = b;
+    g_bFrameDrawEnv1BgR = r;
+    g_bFrameDrawEnv1BgG = g;
+    g_bFrameDrawEnv1BgB = b;
   }
-  for (i = 0; i < D_800756E4; i++) {
+  for (i = 0; i < g_nCreditsGlyphCount; i++) {
     {
       char *rec;
       char *prim = g_pSpriteRecordWriteCursor - 0x58;
       g_pSpriteRecordWriteCursor = prim;
-      rec = D_8007589C + i * 0x1C;
+      rec = g_pCreditsGlyphPool + i * 0x1C;
       FillWord(prim, 0, 0x58);
       *(int *)(g_pSpriteRecordWriteCursor + 0xC) = *(short *)(rec + 0x12);
       *(int *)(g_pSpriteRecordWriteCursor + 0x10) = *(short *)(rec + 0x14);
@@ -118,7 +116,7 @@ void Credits_Draw(void) {
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
-    EmitStaticActorMeshList(-1, D_80076DE4, (char *)D_80076DE4 - 0x14);
+    EmitStaticActorMeshList(-1, g_anCameraViewMtx, (char *)g_anCameraViewMtx - 0x14);
   }
   DrawSync(0);
   if (g_nDeathRespawnPending != 0) {

@@ -28,14 +28,12 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
@@ -55,9 +53,6 @@ extern unsigned char D_8007A6AA;
 extern unsigned char D_8007A6AB;
 extern unsigned char D_8007A6AC;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -87,7 +82,6 @@ extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 
@@ -759,7 +753,7 @@ void Level0_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -1296,7 +1290,7 @@ void Level0_UpdateActors(void) {
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->unk1C |= 0x80000000;
+                actor->groundCode |= 0x80000000;
               }
             }
           }
@@ -1420,7 +1414,7 @@ void Level0_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
 
-          actor->unk1C &= 0x7FFFFFFF;
+          actor->groundCode &= 0x7FFFFFFF;
         }
         break;
       }
@@ -2060,7 +2054,7 @@ void Level0_UpdateActors(void) {
           actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
-          actor->unk1C = 0;
+          actor->groundCode = 0;
           actor->visZone = 0xFF;
           actor->subMode = 2;
         }
@@ -2247,7 +2241,7 @@ void Level0_UpdateActors(void) {
               }
               DespawnActorRecord(actor);
               continue;
-            } else if (cutsceneId = st->unk18, cutsceneId == st->rewardScript) {
+            } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
               g_nWorldDragonsRescued++;
               if (st->partner != cutsceneId) {
@@ -2967,7 +2961,7 @@ void Level0_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           SPY.u218 = 0xF;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
@@ -3007,7 +3001,7 @@ void Level0_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.unkC0 = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;

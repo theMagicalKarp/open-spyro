@@ -5,11 +5,11 @@ extern void AdvanceSpyroAnimLayer1Frame(int amount);
 extern int g_anSpyroHornStrikeSwingPhaseBlock[];
 extern int D_80078AC0;
 extern unsigned char D_80075264[][2];
-extern unsigned char D_80075268[];
-extern unsigned char D_80078A72;
-extern unsigned char D_80078A73;
-extern unsigned char D_80078A78;
-extern unsigned char D_80078A79;
+extern unsigned char g_abSpyroHornStrikeAnimTable[];
+extern unsigned char g_bSpyroAnimLayer1Prev;
+extern unsigned char g_bSpyroAnimLayer1Current;
+extern unsigned char g_bSpyroAnimLayer1FramePrev;
+extern unsigned char g_bSpyroAnimLayer1Frame;
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock;
 
 /* 0x80049660 — per-frame layer-1 (horn-strike overlay) anim driver: phase 0
@@ -47,10 +47,10 @@ void TickSpyroAnimLayer1(void) {
         cur = *(volatile byte *)&g_bSpyroAnimCurrent;
         frame = *(volatile byte *)&g_bSpyroAnimFrame;
         sub = *(volatile byte *)&g_bSpyroSubFrameTimer;
-        *(volatile unsigned char *)&D_80078A72 = prev;
-        *(volatile unsigned char *)&D_80078A78 = framePrev;
-        *(volatile unsigned char *)&D_80078A73 = cur;
-        *(volatile unsigned char *)&D_80078A79 = frame;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Prev = prev;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1FramePrev = framePrev;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = cur;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Frame = frame;
         *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = sub;
       } else {
         AdvanceSpyroAnimLayer1Frame(g_nSpyroHornStrikeAnimRate);
@@ -59,29 +59,29 @@ void TickSpyroAnimLayer1(void) {
       mode = D_80075264[D_80078AC0][state];
       switch (mode) {
       case 2:
-        oldAnim = *(volatile byte *)&D_80078A73;
-        oldFrame = *(volatile byte *)&D_80078A79;
+        oldAnim = *(volatile byte *)&g_bSpyroAnimLayer1Current;
+        oldFrame = *(volatile byte *)&g_bSpyroAnimLayer1Frame;
         g_anSpyroHornStrikeSwingPhaseBlock[0] = mode;
-        *(volatile unsigned char *)&D_80078A72 = oldAnim;
-        *(volatile unsigned char *)&D_80078A78 = oldFrame;
-        newAnim = D_80075268[state];
-        *(volatile unsigned char *)&D_80078A79 = 0;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Prev = oldAnim;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1FramePrev = oldFrame;
+        newAnim = g_abSpyroHornStrikeAnimTable[state];
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Frame = 0;
         *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 4;
         g_anSpyroHornStrikeSwingPhaseBlock[2] = state;
-        *(volatile unsigned char *)&D_80078A73 = newAnim;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = newAnim;
         break;
       case 1:
         *(volatile int *)&g_anSpyroHornStrikeSwingPhaseBlock[0] = mode;
-        blendAnim = *(volatile byte *)&D_80078A73;
-        blendFrame = *(volatile byte *)&D_80078A79;
+        blendAnim = *(volatile byte *)&g_bSpyroAnimLayer1Current;
+        blendFrame = *(volatile byte *)&g_bSpyroAnimLayer1Frame;
         blendCur = *(volatile byte *)&g_bSpyroAnimCurrent;
         blendCurFrame = *(volatile byte *)&g_bSpyroAnimFrame;
         *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 2;
         g_anSpyroHornStrikeSwingPhaseBlock[2] = state;
-        *(volatile unsigned char *)&D_80078A72 = blendAnim;
-        *(volatile unsigned char *)&D_80078A78 = blendFrame;
-        *(volatile unsigned char *)&D_80078A73 = blendCur;
-        *(volatile unsigned char *)&D_80078A79 = blendCurFrame;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Prev = blendAnim;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1FramePrev = blendFrame;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = blendCur;
+        *(volatile unsigned char *)&g_bSpyroAnimLayer1Frame = blendCurFrame;
         break;
       }
     }

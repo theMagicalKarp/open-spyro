@@ -8,8 +8,7 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
-extern unsigned short g_anCosineLut[];    /* g_anSineLut + 0x80 */
+extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
 /* Draw gamestate 0xF's post-credits "RETURNING HOME..." card with the animated
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),

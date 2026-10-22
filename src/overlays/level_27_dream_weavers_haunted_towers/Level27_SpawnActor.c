@@ -53,7 +53,6 @@ typedef struct BatState {
   int unk10;           /* 0x10 */
 } BatState;
 
-extern Actor *AllocActorRecordSlot(void);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -96,10 +95,10 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       CopyVector(&rec->posX, &parent->posX);
     }
     InsertActorIntoSpatialGrid(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 1;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 1;
     rec->renderList |= 0x80;
     break;
   }
@@ -222,31 +221,31 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->rotZ = 0;
     CopyVector(pos, &parent->posX);
     HideActorRenderRecord(rec);
-    rec->unk1C = -1;
+    rec->groundCode = -1;
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeCachedVecToActorDirCode(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
     if (rec->type == 0xE) {
-      rec->unk4F = 0xC;
+      rec->tintMode = 0xC;
     }
     if (rec->type == 0x53) {
-      rec->unk4F = 1;
+      rec->tintMode = 1;
     }
     if (rec->type == 0x54) {
-      rec->unk4F = 2;
+      rec->tintMode = 2;
     }
     if (rec->type == 0x55) {
-      rec->unk4F = 3;
+      rec->tintMode = 3;
     }
     if (rec->type == 0x56) {
-      rec->unk4F = 4;
+      rec->tintMode = 4;
     }
     if (rec->type == 0x57) {
-      rec->unk4F = 5;
+      rec->tintMode = 5;
     }
     break;
   }
@@ -271,7 +270,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->unk08 = RandomSignedInRange(7, 0xC);
     st->unk0A = RandomSignedInRange(7, 0xC);
     st->unk10 = parent->posZ - parent->floorOffset - 0x40;
-    *(int *)&rec->unk4C = 0x1000000;
+    *(int *)&rec->tint0 = 0x1000000;
     rec->renderList |= 0x80;
     break;
   }
@@ -299,10 +298,10 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 0xD;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 0xD;
     break;
 
   case 0x43 ... 0x45:
@@ -338,7 +337,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
-      *(int *)&rec->unk4C = 0xA18618;
+      *(int *)&rec->tint0 = 0xA18618;
       rec->renderList |= 0x80;
     }
     break;
@@ -354,10 +353,10 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 0xE;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 0xE;
     if (g_nGemPickupSubstate == 3) {
       rec->scale = 0x14;
     } else if (g_nGemPickupSubstate == 1) {
@@ -395,10 +394,10 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     HideActorRenderRecord(rec);
-    rec->unk4F = 2;
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
+    rec->tintMode = 2;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
     *st = 0x40;
     break;
   }

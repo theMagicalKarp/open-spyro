@@ -22,7 +22,13 @@ typedef struct Actor {
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 damage flags */
-  int unk1C;           /* 0x1C shadow distance */
+  int groundCode;      /* 0x1C packed ground contact, written by
+                        * EncodeCachedVecToActorDirCode from the last ground
+                        * probe: bit 31 valid, two 6-bit floor-normal angles
+                        * at bits 22 and 16, floor z >> 2 below. Overlays
+                        * store -1 / 0 to reset it and toggle bit 31 (bit 31
+                        * also puts the actor on BuildActorDrawList's near
+                        * list). */
   int mtx[5];          /* 0x20 rotation matrix (packed GTE, see RefreshActorDerivedState) */
   short gridCell;      /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
   short type;          /* 0x36 actor class */
@@ -45,14 +51,22 @@ typedef struct Actor {
   unsigned char unk47; /* 0x47 depth offset */
   unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char visZone; /* 0x4A visibility-gate index into D_800771C8;
+  unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
   unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
                              * bucket: 0, < 0, > 0 (default 0x20) */
-  unsigned char unk4C; /* 0x4C */
-  unsigned char unk4D;
-  unsigned char unk4E;
-  unsigned char unk4F;
+  /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
+   * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. SelectActorLodBand
+   * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
+   * store, and the flame band raises c2 while lowering c0/c1. With 0x4C..0x4E
+   * zeroed, tintMode picks a preset instead: gem colours 1..5 (HUD icons set
+   * type - 0x52) and 0xB for HUD sprites. TickActorFlameGlow drives tint2 as a
+   * 0..0x60 glow on its own. These names describe the byte layout only; the
+   * renderer that reads them is hand-written asm and not decoded yet. */
+  unsigned char tint0; /* 0x4C */
+  unsigned char tint1; /* 0x4D */
+  unsigned char tint2; /* 0x4E */
+  unsigned char tintMode; /* 0x4F */
   unsigned char cullRadius; /* 0x50 view-space cull bound >> 8 (BuildActorDrawList
                             * loads it as the halfword with ->drawn) */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
@@ -104,7 +118,8 @@ void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *tbl);
 Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
 void SetActorGroupState(Actor *actor, int a);
-void OrActorGroupFlagsInCone(Actor *actor, int heading, int a, int b, int c, int d, int e);
+void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
+                             int distLim, int zLim, int xyLim, int angLim);
 void SetActorGroupStateExcept(Actor *actor, int a, int b);
 void ReplaceActorGroupState(Actor *actor, int a, int b);
 void SetActorGroupSubstate(Actor *actor, int a);
@@ -115,5 +130,9 @@ void SpawnNameLetterActors(Actor *actor, int mode);
 void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int d, int e);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
+
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern Actor *AllocActorRecordSlot(void);
+extern char *g_pGamestate0cRecord;
 
 #endif /* OPEN_SPYRO_ACTOR_H */

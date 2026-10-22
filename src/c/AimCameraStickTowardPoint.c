@@ -3,7 +3,7 @@
 extern void RotateVectorByMatrix(int *mtx, int *in, int *out);
 extern void AddVector(int *dst, int *a, int *b);
 extern void SubtractVector(int *dst, int *a, int *b);
-extern void func_80016FD0(int *out, int *mtx);
+extern void TransposePackedMatrix(int *out, int *mtx);
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int ArcTan2(int y, int x, int high_precision);
 
@@ -24,7 +24,7 @@ void AimCameraStickTowardPoint(int *target) {
   RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
   AddVector(v, v, g_anSpyroBodyMtx - 13);
   SubtractVector(v, target, v);
-  func_80016FD0(inv, g_anSpyroBodyMtx);
+  TransposePackedMatrix(inv, g_anSpyroBodyMtx);
   RotateVectorByMatrix(inv, v, v);
 
   {

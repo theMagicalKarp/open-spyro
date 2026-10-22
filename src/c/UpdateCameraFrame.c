@@ -9,8 +9,8 @@ extern void UpdateGemPickupPathCamera(void);
 extern void UpdateCameraSpringForMode(void);
 extern int FindWorldFloorBelowPoint(uint *pos);
 
-extern int D_80075844;
-extern int D_80076E24;
+extern int g_nWorldFloorSurfaceType;
+extern int g_nCameraFloorSurfaceType;
 extern int g_apScriptedCameraViewBlock;
 extern int g_nStaticMeshLodCutoff;
 
@@ -71,10 +71,10 @@ void UpdateCameraFrame(void) {
     }
     if (g_nCdStreamState < 0) {
       if (FindWorldFloorBelowPoint((uint *)g_anCameraPos) != 0) {
-        D_80076E24 = D_80075844;
+        g_nCameraFloorSurfaceType = g_nWorldFloorSurfaceType;
       }
-      if (D_80076E24 >= g_nStaticMeshLodCutoff) {
-        D_80076E24 = -1;
+      if (g_nCameraFloorSurfaceType >= g_nStaticMeshLodCutoff) {
+        g_nCameraFloorSurfaceType = -1;
       }
       g_apScriptedCameraViewBlock = 0;
     }

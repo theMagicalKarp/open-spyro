@@ -10,7 +10,7 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * The sprite-sheet CD read pins its CD handle to $a0 and the D_8007A6D8
+ * The sprite-sheet CD read pins its CD handle to $a0 and the g_nTitleSceneSectorOffset
  * argument to $a3. As pseudos, the handle's volatile load and the a3 load are
  * both birthing-boosted, and they crowd the `- 0x40000` constant and the
  * buffer pointer into one sched1 priority group, which hands $a1 to the
@@ -77,7 +77,7 @@ void Titlescreen_Update(void) {
     if (g_nGamestate0dMode.subState < 2) {
       /* kick out while we're still loading from the CD */
       RestartStalledCdRead();
-      if (g_nCdBaseLba.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
+      if (g_nCdBaseLba.unk_0x28 != 0 || CallCdSync(1, 0) != 2 ||
           (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0)
         break;
 
@@ -86,7 +86,7 @@ void Titlescreen_Update(void) {
         register int cd asm("$4");
         register int t asm("$7");
         cd = *((volatile int *) &g_nCdBaseLba.unk_0x00);
-        t = D_8007A6D8;
+        t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
                       t, 600);
         g_nGamestate0dMode.subState = 1;
@@ -118,7 +118,7 @@ void Titlescreen_Update(void) {
         StopAllSoundExceptMask(0); /* stop all sounds */
         Titlescreen_PlayUiSound(9);
         TickSpuPerFrame();
-        while (g_nCdBaseLba.unk_0x28 != 0 || func_80063BD8(1, 0) != 2 ||
+        while (g_nCdBaseLba.unk_0x28 != 0 || CallCdSync(1, 0) != 2 ||
                (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0) {
           RestartStalledCdRead();
           TickActiveSoundVoices(); /* update sounds */
@@ -332,8 +332,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
@@ -368,8 +368,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
@@ -405,8 +405,8 @@ void Titlescreen_Update(void) {
 
       /* mem card states still the same, process buttons after a few ticks */
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
@@ -439,8 +439,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
@@ -491,8 +491,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
           Titlescreen_PlayUiSound(1);
           g_nGamestate0dMode.subState = SubState_0x01;
@@ -515,8 +515,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
@@ -550,8 +550,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
@@ -690,8 +690,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
           Titlescreen_PlayUiSound(3);
           g_nGamestate0dMode.subState = SubState_0x03;
@@ -715,8 +715,8 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
@@ -908,14 +908,14 @@ void Titlescreen_Update(void) {
           g_nLevelReadyFlag = 3;
           g_nSparxFoodCount = 0;
           g_nLevelReadyFlagStash = -1;
-          func_80059594(g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]);
+          ApplySaveGameBuffer(g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]);
           START_DEMO(1)
         }
       }
     } else if (g_nGamestate0dMode.menuState == 4) {
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (func_80032AB0()) {
-          /* triangle was pushed, func_80032AB0 already took care of it */
+        if (ArmStoryIntroOnStart()) {
+          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
         } else if (g_dwPadPressed.unk_0x0 & (PAD_RIGHT | PAD_LEFT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.unk_0x0 & (PAD_UP | PAD_START | PAD_CROSS)) {

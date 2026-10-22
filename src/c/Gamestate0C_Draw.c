@@ -29,7 +29,6 @@ extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
                               int flags);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern int ComputeDepthCuedColor(unsigned int fog, unsigned int color, int t);
-extern void EmitStaticActorMeshListFogged(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);

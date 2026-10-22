@@ -45,14 +45,12 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -60,9 +58,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -87,7 +82,6 @@ extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Shift a vector left by n. */
 
@@ -189,10 +183,6 @@ typedef struct ExitState {
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* ==== Flight-level classes ==== */
 
@@ -201,8 +191,8 @@ extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 typedef struct TargetState {
   int unk00;
   int unk04;
-  int unk08;
-  int unk0C;
+  int pad08;
+  int pad0C;
   Actor *helper;  /* 0x10 */
   int helperType; /* 0x14, spawned as helperType + 0x158 */
   int sound;      /* 0x18 */
@@ -219,8 +209,6 @@ typedef struct BurstState {
 } BurstState;
 
 extern int g_nVblankTickCount;    /* frame counter */
-extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
-extern int PlaneDistanceAbs(int *pos, void *st);
 extern void TallyFlightTarget(int sound);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
@@ -244,7 +232,7 @@ typedef struct HudState {
   Actor *spent[8];  /* 0x44 a completed row flying to its slot */
   Actor *slot[4];   /* 0x64 finish slots */
   int types[4];     /* 0x74 icon actor type per class */
-  int unk84[4];     /* 0x84 */
+  int pad84[4];     /* 0x84 */
   int timer;        /* 0x94 */
   int count;        /* 0x98 icons still to spend */
   int hurry;        /* 0x9C under a minute left */
@@ -278,7 +266,6 @@ typedef struct RollerState {
 
 extern int TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
                           int c, int d);
-extern int CastRayWorldAndActors(int *pos, int *to);
 
 /* Types 0x1E1..0x1E3: the walker's embers. */
 typedef struct EmberState {
@@ -304,7 +291,7 @@ typedef struct RiderState {
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
   int unk04;           /* 0x04 */
-  int unk08[3];        /* 0x08 */
+  int pad08[3];        /* 0x08 */
   int timer;           /* 0x14 */
 } SmokerState;
 
@@ -664,7 +651,7 @@ void Level23_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -1528,7 +1515,7 @@ void Level23_UpdateActors(void) {
           actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
-          actor->unk1C = 0;
+          actor->groundCode = 0;
           actor->scale = 0x40;
           actor->visZone = 0xFF;
           actor->subMode = 2;
@@ -1860,7 +1847,7 @@ void Level23_UpdateActors(void) {
               }
               shard = g_pfnLevelSpawnActor(i + 0x176, actor);
               ss = shard->state;
-              RotateVectorByMatrix(actor->mtx, &D_8006E824[i * 3], svV);
+              RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], svV);
               AddVector(&shard->posX, &actor->posX, svV);
               RShiftVector3(svV, 5);
               svW[0] = (GetRandomU32() & 0x7E) - 0x3F;
@@ -1888,7 +1875,7 @@ void Level23_UpdateActors(void) {
         if (c >= 0x40) {
           c = 0x3F;
         }
-        *(int *)&actor->unk4C = (c << 6) | 0xA00000;
+        *(int *)&actor->tint0 = (c << 6) | 0xA00000;
       }
       break;
     }
@@ -1987,7 +1974,7 @@ void Level23_UpdateActors(void) {
           g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;
-          g_abHudIconActorRecords[i].unk4F = i + 3;
+          g_abHudIconActorRecords[i].tintMode = i + 3;
         }
       }
 
@@ -2131,13 +2118,13 @@ void Level23_UpdateActors(void) {
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
-                st->icon[i]->unk4F = 0;
+                st->icon[i]->tintMode = 0;
                 st->icon[i]->rotZ = 0;
                 st->icon[i]->mode = 0;
               } else {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
-                st->icon[i]->unk4F = g_nFlightTallyShownClass + 3;
+                st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = 1;
               }
               x += 0x1E;

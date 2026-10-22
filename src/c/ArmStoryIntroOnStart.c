@@ -10,7 +10,7 @@ extern int MemCardSync(int mode, int *result, int *extra);
    substate, then kick a MemCardSync poll whose result/extra slots sit at
    +0x40/+0x44 in the same block. All three block accesses share one base
    register. (0x80032ab0, 88 bytes.) */
-void func_80032AB0(void) {
+void ArmStoryIntroOnStart(void) {
   if (g_dwPadPressed & 0x10) {
     g_anGamestate0dBlock[0] = 1;
     D_80078D88 = 0;

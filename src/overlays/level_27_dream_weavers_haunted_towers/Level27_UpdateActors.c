@@ -30,14 +30,12 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -45,9 +43,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -161,10 +156,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -183,7 +174,6 @@ extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *ac
 /* Case 328 -- floor-snapped marker. */
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int WrapAddAngle8(int heading, int step);
 
 #define sixteen 0x10
 
@@ -219,13 +209,12 @@ extern int WrapAddAngle8(int heading, int step);
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
-extern int CastRayWorldAndActors(int *a, int *b);
 /* from level_34 */
 /* from level_34 */
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -244,7 +233,6 @@ typedef struct ExitState {
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
-extern signed char D_80078C5E; /* destination level */
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
@@ -810,7 +798,6 @@ typedef struct L24Guard {
   int reload;          /* 0x50 */
   int spin;            /* 0x54 */
 } L24Guard;
-extern int WrapAddAngle8(int a, int b);
 
 /* Type 130 state: the bigger guard (as type 92's, with two followers). */
 typedef struct L24Guard2 {
@@ -1478,7 +1465,7 @@ void Level27_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, g120, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -2049,7 +2036,7 @@ void Level27_UpdateActors(void) {
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->unk1C |= 0x80000000;
+                actor->groundCode |= 0x80000000;
               }
             }
           }
@@ -2173,7 +2160,7 @@ void Level27_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
 
-          actor->unk1C &= 0x7FFFFFFF;
+          actor->groundCode &= 0x7FFFFFFF;
         }
         break;
       }
@@ -2794,7 +2781,7 @@ void Level27_UpdateActors(void) {
                 ANIM_RESET(o, 1);
               }
               o->renderList = 0xA0;
-              *(int *)&o->unk4C = 0xA18618;
+              *(int *)&o->tint0 = 0xA18618;
             }
             a = (actor->rotZ + 0x40) & 0xFF;
             dd = (i % 3 - 1) * 800;
@@ -2962,7 +2949,7 @@ void Level27_UpdateActors(void) {
               *p = 0x384;
             }
             *(q = &g_dwSpyroRequestMask) |= 0x80020000;
-            D_80078C5E = st->heading;
+            g_bSpyroRequestYaw = st->heading;
           }
           break;
         }
@@ -3156,7 +3143,7 @@ void Level27_UpdateActors(void) {
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
-            actor->unk1C = 0;
+            actor->groundCode = 0;
             actor->visZone = 0xFF;
             actor->subMode = 2;
           }
@@ -3741,7 +3728,7 @@ void Level27_UpdateActors(void) {
               continue;
             }
 
-            if (st->unk18 == st->reward) {
+            if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
@@ -4028,7 +4015,7 @@ void Level27_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -4248,7 +4235,7 @@ void Level27_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

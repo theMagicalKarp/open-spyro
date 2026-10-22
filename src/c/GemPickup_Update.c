@@ -35,7 +35,6 @@ extern void InsertActorIntoSpatialGrid(void *actor);
 extern void StopSoundVoiceByIndex(int voice, int mode);
 extern void DespawnActorRecord(void *actor);
 extern void CopyWords(void *dst, void *src, int byte_count);
-extern long GetSpuTransferStatus(int mode);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
 extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
@@ -52,15 +51,14 @@ extern unsigned char D_8006F391[];
 extern unsigned char D_8006F398[]; /* substate-2 flicker euler pairs */
 extern unsigned char D_8006F399[];
 extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
-extern char
-    *volatile D_800761D0; /* volatile view of g_pLevelSampleBankEntries */
+extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
+                                                    g_pLevelSampleBankEntries */
 extern void *g_apSampleBankEntriesBlock[];
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
 extern int g_anGemPickupBlock[];
 extern int g_anHudDragonCachedCountBlock[];
-extern int g_anGemPickupAuraStarBlock[]; /* [0] enable flag */
 
 #define GB g_anGemPickupBlock
 #define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])

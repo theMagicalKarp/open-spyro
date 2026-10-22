@@ -9,10 +9,8 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern void RelocateLevelSampleBank(void *bank, int mode);
 extern void ApplyPerLevelGlobalsTable(void);
 extern void LoadImage(RECT *rect, void *data);
-extern long GetSpuTransferStatus(int mode);
 extern void *UnpackWorldDataChunks(void *src, int mode);
 extern void *RelocateActorMeshHeader(void *header);
-extern void RelocateMobActorTable(void *table);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void BuildLoadedLevelRuntime(int full);
 extern void ChangeSpyroState(int state);
@@ -25,8 +23,7 @@ extern char
     *g_apWorldUnpackHeadBlock[];       /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern int g_anSpawnAnchorBlock[];
-extern int g_anSpyroWorldPosZBlock[]; /* 0x80078a60 */
+extern int g_anSpyroWorldPosZBlock[];  /* 0x80078a60 */
 extern int g_anSpyroStateFlagsBlock[];
 extern void *g_apDrawBufBBlock[];
 extern short g_anCosineLut[];
@@ -41,8 +38,8 @@ extern int D_80075854;
 extern int D_80075870;
 extern int D_80075874;
 extern int g_nLevelIntroParallaxCountdown;
-extern int g_nActiveWorldIndex; /* current world index */
-extern int D_800776CC;          /* level-intro deadline */
+extern int g_nActiveWorldIndex;     /* current world index */
+extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
 extern int D_8007A71C; /* splash size column of the level archive table */
 
 typedef struct {
@@ -85,7 +82,7 @@ void TickLevelTransitionStream(int full) {
     if (*(volatile int *)g_anCdReadInFlightBlock != 0) {
       return;
     }
-    if (FUN_80063bd8(1, 0) != 2) {
+    if (CallCdSync(1, 0) != 2) {
       return;
     }
     if (!(g_dwMusicStreamStatus & 0x40)) {
@@ -140,13 +137,13 @@ void TickLevelTransitionStream(int full) {
                 g_nLevelSampleBankCount);
     CopyWords(p, g_pLevelSampleBankHeader, g_nLevelSampleBankCount);
     RelocateLevelSampleBank(p, 0);
-    D_80076E24 = -1;
+    g_nCameraFloorSurfaceType = -1;
     g_nCdStreamState = 2;
   } break;
   case 1:
     StopAllSoundExceptMask(0);
     g_nWorldRenderMeshChunkCount = 0;
-    D_80076E24 = -1;
+    g_nCameraFloorSurfaceType = -1;
     g_nCdStreamState++;
   case 2: {
     int world;
@@ -337,9 +334,9 @@ void TickLevelTransitionStream(int full) {
   } break;
   case 13: {
     if (g_abLevelVisitedFlag[g_nLevelIntroIndex] == 0) {
-      D_800776CC = 0xA8C0;
+      g_nCdMusicStreamTimeout = 0xA8C0;
     } else {
-      D_800776CC = 0x7080;
+      g_nCdMusicStreamTimeout = 0x7080;
     }
     g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIntroIndex];
     g_abLevelVisitedFlag[g_nLevelIntroIndex] = 1;

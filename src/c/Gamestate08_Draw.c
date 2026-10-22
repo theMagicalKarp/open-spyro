@@ -16,7 +16,6 @@
    2-vblank frame submit. */
 extern void ApplyEulerRotation(void *euler, void *mtx, void *viewMtx);
 extern void DrawGemPickupAuraStar(void);
-extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void DrawDragonRescuedBanner(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void DrawEntityDirectionalSpikes(void);
@@ -28,10 +27,9 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
-extern void *g_apOtDepthBinBlock[];      /* 0x8006fcf4: OT head list,
-                                            sprite prim queue at [2304] */
-extern short D_8006F3C0[];               /* gem-pickup timer scale curve */
+extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4: OT head list,
+                                       sprite prim queue at [2304] */
+extern short D_8006F3C0[];          /* gem-pickup timer scale curve */
 
 void Gamestate08_Draw(void) {
   int unused[4];

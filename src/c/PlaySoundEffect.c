@@ -59,7 +59,7 @@ typedef struct {
 typedef struct {
   /* 0x00 */ unsigned int nSampleAddr;
   /* 0x04 */ unsigned int nLoopAddr;
-  /* 0x08 */ unsigned short unk08;
+  /* 0x08 */ unsigned short pad08;
   /* 0x0A */ unsigned short nPitch;
   /* 0x0C */ unsigned short nPitchSpread;
   /* 0x0E */ unsigned short nPitchStep;

@@ -31,14 +31,12 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -46,9 +44,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -162,10 +157,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -182,7 +173,6 @@ extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 /* Case 328 -- floor-snapped marker. */
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int WrapAddAngle8(int heading, int step);
 
 #define sixteen 0x10
 
@@ -223,7 +213,7 @@ extern int WrapAddAngle8(int heading, int step);
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -2137,7 +2127,7 @@ void Level28_UpdateActors(void) {
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->unk1C |= 0x80000000;
+                actor->groundCode |= 0x80000000;
               }
             }
           }
@@ -2267,7 +2257,7 @@ void Level28_UpdateActors(void) {
           actor->mode = 2;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (int *)0xC);
-          actor->unk1C &= 0x7FFFFFFF;
+          actor->groundCode &= 0x7FFFFFFF;
         }
         break;
       }
@@ -2891,7 +2881,7 @@ void Level28_UpdateActors(void) {
         }
         if (actor->nextFrame == 0 && st->child == 0) {
           st->child = g_pfnLevelSpawnActor(0x2F, actor);
-          st->child->unk1C = -1;
+          st->child->groundCode = -1;
           ((L28Rock *)st->child->state)->partner = actor;
           ((L28Rock *)st->child->state)->mode = 1;
         }
@@ -3018,7 +3008,7 @@ void Level28_UpdateActors(void) {
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
-            actor->unk1C = 0;
+            actor->groundCode = 0;
             actor->visZone = 0xFF;
             actor->subMode = 2;
           }
@@ -3104,7 +3094,7 @@ void Level28_UpdateActors(void) {
           g_nLevelEggCount = 1;
           actor->subMode = 1;
           fly->scale = 0x40;
-          fly->unk1C = 0;
+          fly->groundCode = 0;
           fly->visZone = 0xFF;
           fly->subMode = 2;
         }
@@ -3463,7 +3453,7 @@ void Level28_UpdateActors(void) {
               continue;
             }
 
-            if (st->unk18 == st->reward) {
+            if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
@@ -3752,7 +3742,7 @@ void Level28_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

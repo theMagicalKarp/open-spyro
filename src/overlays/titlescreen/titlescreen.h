@@ -190,8 +190,8 @@ extern Struct_0x70 *g_pActiveFrameDrawEnv;
 typedef struct {
   u_char r, g, b;
 } Struct_0x03;
-extern Struct_0x03 D_80076EF9;
-extern Struct_0x03 D_80076F7D;
+extern Struct_0x03 g_bFrameDrawEnv0BgR;
+extern Struct_0x03 g_bFrameDrawEnv1BgR;
 extern Struct_0x03 g_dwWorldFogColor;
 
 extern struct {
@@ -201,7 +201,7 @@ extern struct {
 
 extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
 extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
-extern char D_80076DE4[];    /* camera view matrix (proj matrix at -0x14) */
+extern char g_anCameraViewMtx[];    /* camera view matrix (proj matrix at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
 extern void FillWord(void *, int, int);
@@ -293,12 +293,12 @@ extern int g_nLevelReadyFlag;
 extern int g_bGemPickupSfxVoiceMarker;
 extern u_char D_8006F494[512];
 extern char *g_pRenderScratchRegionBase;
-extern int D_8007A6D8;
+extern int g_nTitleSceneSectorOffset;
 
 extern int GetRandomU32(void);
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
-extern int func_80063BD8(int, int);
+extern int CallCdSync(int, int);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
 extern void LoadImage(RECT *, void *);
@@ -318,12 +318,12 @@ extern int func_80067B28(int);
 extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
 extern void BuildSaveGameBuffer(Struct_0x600 *);
-extern int func_80059594(Struct_0x600 *);
+extern int ApplySaveGameBuffer(Struct_0x600 *);
 extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
-extern int func_80032AB0(void);
+extern int ArmStoryIntroOnStart(void);
 extern void AdvanceGemCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 

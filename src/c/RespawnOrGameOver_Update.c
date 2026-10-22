@@ -18,7 +18,6 @@
    form, and a single-set destination would be boosted to max priority by
    sched.c's birthing_insn_p and sink below the second base's `la`. */
 extern void StopAllSoundExceptMask(int owner_key);
-extern void RotateLightVectorXZ(int steps);
 extern void EndRespawnToGameplay(void);
 extern void LoadAndStartLevelFromCd(void);
 extern void CdReadSyncSectors(int lba, void *dst, int byte_count,

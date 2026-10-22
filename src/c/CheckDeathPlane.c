@@ -12,15 +12,15 @@ extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
 extern void StartCdReadAsync(int lba, int dst, int count, int offset,
                              int marker);
 
-extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
-extern int D_8007A6D8;            /* async-read byte offset */
-extern int D_8007DDE8;            /* draw-buffer sentinel */
-extern int D_800778F0;            /* death-cutscene sample-bank record */
+extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
+extern int g_nTitleSceneSectorOffset; /* async-read byte offset */
+extern int g_CutsceneSoundDef;        /* death-cutscene sample-bank record */
 extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field
-   (the original never proves it points at &D_800778F0); a volatile read of the
-   pointer defeats gcc's constant-propagation of the just-assigned address. */
+   (the original never proves it points at &g_CutsceneSoundDef); a volatile read
+   of the pointer defeats gcc's constant-propagation of the just-assigned
+   address. */
 #define BANK (*(char *volatile *)&g_pLevelSampleBankEntries)
 
 /* Death-plane watcher (GS state-0 path, g_nDeathState != 0). Ramps the fade
@@ -53,8 +53,8 @@ int CheckDeathPlane(void) {
       rect[3] = 0x1e0;
       ClearImage(rect, 0, 0, 0);
       DrawSync(0);
-      g_pDrawBufA = &D_8007DDE8;
-      g_pDrawBufB = &D_8007DDE8;
+      g_pDrawBufA = &g_abDrawBufPool;
+      g_pDrawBufB = &g_abDrawBufPool;
       g_nHitRumbleTimer = 0;
       g_nVibrationLevel = 0;
       g_nPulseRumbleTimer = 0;
@@ -66,8 +66,8 @@ int CheckDeathPlane(void) {
       g_nDeathRespawnPending = 0;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
-        int count = *(volatile int *)&D_8007A6E4;
-        int offset = *(volatile int *)&D_8007A6E0;
+        int count = *(volatile int *)&g_nLevelLoadChunkSize;
+        int offset = *(volatile int *)&g_nLevelLoadByteOffset;
         void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }
@@ -81,7 +81,7 @@ int CheckDeathPlane(void) {
       if ((int)g_dwGamestateFrames >=
           g_anDeathReplayFrameThreshold[g_nDeathTryIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;
-        g_pLevelSampleBankEntries = &D_800778F0;
+        g_pLevelSampleBankEntries = &g_CutsceneSoundDef;
         *(int *)(BANK + 0x0) = 0x262d0;
         *(int *)(BANK + 0x4) = -1;
         *(short *)(BANK + 0x8) = 0x50;
@@ -99,7 +99,7 @@ int CheckDeathPlane(void) {
       D_80078D88 = 1;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
-        int offset = *(volatile int *)&D_8007A6D8;
+        int offset = *(volatile int *)&g_nTitleSceneSectorOffset;
         int dst =
             -0x40000 + (int)*(void *volatile *)&g_pRenderScratchRegionBase;
         StartCdReadAsync(lba, dst, 0x40000, offset, 600);

@@ -34,7 +34,6 @@ extern short g_anCosineLut[];
 extern int g_nLevelSpawnPosZ;
 extern int D_80075698;
 extern int D_8006F140[];
-extern int g_anSpawnAnchorBlock[];
 extern int g_anLevelSpawnPosZBlock[];
 extern int g_nLevelSpawnPosX;
 extern int g_nLevelSpawnPosY;

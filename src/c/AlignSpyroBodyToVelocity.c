@@ -4,8 +4,8 @@
 /* Align Spyro's body pitch/roll toward his velocity direction (0x8003de44,
    284 bytes). Computes the target pitch from ArcTan2(speed, vz) + 0x8E (roll
    target is 0), wraps each delta to a signed 12-bit angle, then advances the
-   two spring velocities (D_80078CB0/CB4) toward the deltas and steps the body
-   euler angles by spring/4. */
+   two spring velocities (g_nSpyroPitchSpringVel/CB4) toward the deltas and
+   steps the body euler angles by spring/4. */
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int ArcTan2(int y, int x, int high_precision);
 
@@ -43,14 +43,15 @@ void AlignSpyroBodyToVelocity(void) {
   if (v >= 0x800) {
     d[1] = v - 0x1000;
   }
-  step = D_80078CB0 + (((d[0] << 2) >> 4) - ((D_80078CB0 << 4) >> 6));
+  step = g_nSpyroPitchSpringVel +
+         (((d[0] << 2) >> 4) - ((g_nSpyroPitchSpringVel << 4) >> 6));
   u = (d[1] << 2) >> 4;
-  D_80078CB0 = step;
-  step2 = D_80078CB4 + (u - ((D_80078CB4 << 4) >> 6));
+  g_nSpyroPitchSpringVel = step;
+  step2 = g_nSpyroRollSpringVel + (u - ((g_nSpyroRollSpringVel << 4) >> 6));
   step >>= 2;
   d[0] = step;
   g_nSpyroBodyPitch = pitch + step;
-  D_80078CB4 = step2;
+  g_nSpyroRollSpringVel = step2;
   step2 >>= 2;
   d[1] = step2;
   g_nSpyroBodyRoll = roll + step2;

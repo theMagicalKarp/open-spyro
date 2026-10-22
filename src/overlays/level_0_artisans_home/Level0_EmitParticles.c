@@ -13,7 +13,7 @@
  *
  * `pos` is the emitter position (an int 3-vector) for every effect except
  * 0xC, where it is the source actor and the offset is rotated out of the
- * actor's own matrix.  `arg3` is per-effect: a velocity vector for 0/1, a
+ * actor's own matrix.  `effectArg` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * MATCHED 2026-08-21.  Arm 0xE decoded here (a camera-range-limited puff that
@@ -79,8 +79,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pos2[3];             /* 0x12 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } ribbon;
     struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
       short pos[3];              /* 0x04 */
@@ -93,10 +93,10 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pos2[3];             /* 0x12 */
-      short unk18;               /* 0x18 */
-      short unk1A;               /* 0x1A */
-      unsigned char unk1C;       /* 0x1C */
-      unsigned char unk1D;       /* 0x1D */
+      short lift;               /* 0x18 fire-jet height lift (scaled by segment and heat) */
+      short radius;               /* 0x1A fire-jet ring radius */
+      unsigned char angle;       /* 0x1C fire-jet spin angle (LUT index, += step*8) */
+      unsigned char segment;       /* 0x1D fire-jet segment index */
     } band;
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
@@ -108,8 +108,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       short pos2[3];             /* 0x10 */
       short pad16;               /* 0x16 */
-      unsigned char unk18;       /* 0x18 */
-      unsigned char unk19;       /* 0x19 */
+      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
+      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } smear;
     struct {                     /* class 3 -- actor-tracking plume */
       unsigned short pos[3];     /* 0x04 */
@@ -123,8 +123,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pad[3];              /* 0x12 */
       int *src;                  /* 0x18 the actor position it tracks */
-      short unk1C;               /* 0x1C */
-      short unk1E;               /* 0x1E */
+      short maxRadius;               /* 0x1C orbit radius cap (orbiting spark 0x6) */
+      short rise;               /* 0x1E rise limit in 0x40 units (orbiting spark 0x6); zeroed elsewhere */
     } plume;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
@@ -148,7 +148,7 @@ typedef struct Actor {
   unsigned char flag49; /* 0x49 */
 } Actor;
 
-void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
+void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int v1[3];
   int v2[3];
@@ -172,7 +172,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -190,7 +190,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       if (g_nGamestate == 8) {
         rec->u.spark.life = 8;
@@ -246,8 +246,8 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       u3 = rec->u.plume.pos[2] - 0x100;
       rec->u.plume.src = ((Actor *)pos)->pos;
       rec->u.plume.pos[2] = u3 + t3;
-      rec->u.plume.unk1C = owner[1];
-      rec->u.plume.unk1E = owner[0] >> 6;
+      rec->u.plume.maxRadius = owner[1];
+      rec->u.plume.rise = owner[0] >> 6;
       rec->u.plume.life = 0x20;
       rec->u.plume.seed = 0x14;
       if (((Actor *)pos)->flag49 != 0) {
@@ -313,7 +313,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
@@ -364,13 +364,13 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       if (((Actor *)pos)->kind == 0x22) {
         CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
-        if ((arg3 >> 24) < 6) {
-          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(arg3 >> 24) * 3], v1);
+        if ((effectArg >> 24) < 6) {
+          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
           rec->u.spark.depthBias = 0x16;
-          CopyVector(v1, &g_anEmitSlotOffsets[(arg3 >> 24) * 3]);
+          CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, g_anSparxEmitOffset, v1);
@@ -380,9 +380,9 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
         AddVector(v1, v1, ((Actor *)pos)->pos);
       }
       VectorToSVectorShr2(rec->u.spark.pos, v1);
-      rec->u.spark.g = arg3 >> 8;
-      rec->u.spark.r = arg3;
-      rec->u.spark.b = arg3 >> 16;
+      rec->u.spark.g = effectArg >> 8;
+      rec->u.spark.r = effectArg;
+      rec->u.spark.b = effectArg >> 16;
       rec->u.spark.fx = 0x2E;
       rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
@@ -400,7 +400,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
+      VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x40;
       rec->u.spark.seed = GetRandomU32();
@@ -430,9 +430,9 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((((int)(GetRandomU32() & 0xFFF) - 0x7FF) * 300) >> 12);
       rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((((int)(GetRandomU32() & 0xFFF) - 0x7FF) * 300) >> 12);
-      arg3 = (arg3 + (int)(GetRandomU32() & 0x1E) - 0xF) & 0xFF;
-      rec->u.spark.vel[0] = (g_anCosineLut[arg3] * 7) >> 11;
-      rec->u.spark.vel[1] = (g_anSineLut[arg3] * 7) >> 11;
+      effectArg = (effectArg + (int)(GetRandomU32() & 0x1E) - 0xF) & 0xFF;
+      rec->u.spark.vel[0] = (g_anCosineLut[effectArg] * 7) >> 11;
+      rec->u.spark.vel[1] = (g_anSineLut[effectArg] * 7) >> 11;
       rec->u.spark.vel[2] = 8;
       rec->u.spark.toggle = (GetRandomU32() & 2) - 1;
       rec->u.spark.life = 0xE0;
@@ -465,11 +465,11 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.band.seed = z;
       rec->u.band.fx = 0x2E;
       rec->u.band.depthBias = 8;
-      rec->u.band.unk18 = i * 32;
+      rec->u.band.lift = i * 32;
       rec->u.band.texIndex = 0;
-      rec->u.band.unk1A = 0x10;
-      rec->u.band.unk1C = z;
-      rec->u.band.unk1D = i;
+      rec->u.band.radius = 0x10;
+      rec->u.band.angle = z;
+      rec->u.band.segment = i;
       break;
     }
     case 0x1E: {
@@ -494,7 +494,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
-      if (arg3 != 0) {
+      if (effectArg != 0) {
         v2[0] = 0x164;
         v2[1] = 0;
         v2[2] = 0;
@@ -535,7 +535,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (arg3 == 1 || (arg3 == 0 && g_nLevelReadyFlag >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nLevelReadyFlag >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;
@@ -591,9 +591,9 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      v3[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v3[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
+      v3[0] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[1] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v3[2] = (effectArg * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = (pos[0] >> 2) + v3[0] * 4;
       rec->u.line.a[1] = (pos[1] >> 2) + v3[1] * 4;
       rec->u.line.a[2] = (pos[2] >> 2) + v3[2] * 4;
@@ -696,7 +696,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.b, pos);
-      AddVector(v3, pos, (int *)arg3);
+      AddVector(v3, pos, (int *)effectArg);
       t4 = GetRandomU32() & 0x3F;
       u4 = v3[0] - 0x20;
       v3[0] = u4 + t4;
@@ -732,9 +732,9 @@ void Level0_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.a, pos);
-      v4[0] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v4[1] = (arg3 * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
-      v4[2] = (arg3 * (int)(GetRandomU32() & 0xFFF)) >> 12;
+      v4[0] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[1] = (effectArg * ((int)(GetRandomU32() & 0xFFF) - 0x800)) >> 12;
+      v4[2] = (effectArg * (int)(GetRandomU32() & 0xFFF)) >> 12;
       rec->u.line.a[0] = rec->u.line.a[0] + v4[0] * 4;
       rec->u.line.a[1] = rec->u.line.a[1] + v4[1] * 4;
       rec->u.line.a[2] = rec->u.line.a[2] + v4[2] * 4;

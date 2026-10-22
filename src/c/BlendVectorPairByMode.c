@@ -4,16 +4,11 @@
 extern void AddVector();
 extern void RShiftVector3();
 
-extern short D_80075280[];
-extern short D_8006CBA4[];
-extern short D_8006CBB4[];
-extern short D_8006CBCC[];
-
 /* 0x8003a920 — blend two vectors by a per-mode weight pair: pick the
    weight table from the record's mode byte (+2), scale vecA/vecB by the
    idx'th pair, sum into out, then >>10 to renormalize. */
-void func_8003A920(int *out, unsigned char *rec, int idx, int *vecA,
-                   int *vecB) {
+void BlendVectorPairByMode(int *out, unsigned char *rec, int idx, int *vecA,
+                           int *vecB) {
   int va[4];
   int vb[4];
   short *tbl;

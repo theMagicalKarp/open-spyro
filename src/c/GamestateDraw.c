@@ -16,7 +16,6 @@
    then the fullscreen tint while the generic countdown runs and the cinematic
    letterbox while gameplay is blocked. Ends with the standard 2-vblank frame
    submit. */
-extern void BuildCameraViewMatrix(void);
 extern void Gamestate01_09_Draw(void);
 extern void Gamestate02_03_06_Draw(void);
 extern void RespawnOrGameOver_Draw(void);
@@ -25,13 +24,11 @@ extern void Gamestate0A_Draw(void);
 extern void SaveLoadMenu_Draw(void);
 extern void Gamestate0C_Draw(void);
 extern void StoryIntro_Draw(void);
-extern void func_8007CEE4(void); /* titlescreen overlay draw */
+extern void Titlescreen_Draw(void); /* titlescreen overlay draw */
 extern void GemCutscene_Draw(void);
-extern void func_8007BFD0(void); /* credits overlay draw */
+extern void Credits_Draw(void); /* credits overlay draw */
 extern void ReturningHome_Draw(void);
-extern void EnqueueLoadingScreenSprites(void);
 extern void DrawDemoModeOverlay(void);
-extern void DrawFullscreenTint(int mode, int r, int g, int b);
 extern void DrawMotionTrailRibbons(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
@@ -95,13 +92,13 @@ void GamestateDraw(void) {
       if (g_nGamestate0dMode == 3) {
         StoryIntro_Draw();
       } else {
-        func_8007CEE4();
+        Titlescreen_Draw();
       }
     } else if (g_nGamestate == 0xE) {
       GemCutscene_Draw();
     } else if (g_nGamestate == 0xF) {
       if (g_nGamestate0fMode < 0x63) {
-        func_8007BFD0();
+        Credits_Draw();
       } else {
         ReturningHome_Draw();
       }

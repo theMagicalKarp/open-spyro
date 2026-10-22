@@ -16,7 +16,6 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern void InitHudCounters(int mode);
 extern void HandleMusicCommand(int track, int cmd);
 
-extern int *g_apCameraAnchorBlock[];          /* alias of g_pCameraAnchorPos */
 extern int g_anSpyroSwingTargetBlock[];       /* alias of
                                                  g_nSpyroSwingEulerPitchTarget */
 extern int g_nSpyroSwingEulerPrev1;           /* g_anSpyroSwingEulerPrev[1] */

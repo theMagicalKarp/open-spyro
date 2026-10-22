@@ -21,20 +21,21 @@ extern void SetSpuCommonAttr(void *attr);
 extern int CdMix(void *vol);
 extern void BeginPauseToMenuTransition(void);
 
-extern void *g_pSharedLoadBuffer;  /* asset-directory buffer pointer */
-extern int D_8007A6E0;             /* level-load byte offset */
-extern int D_8007A6E4;             /* level-load chunk size */
-extern unsigned char D_8007DDE8[]; /* draw buffer pool */
-extern int D_80076228_blk;         /* SFX volume (0..0x3fff) */
-extern int D_80076224_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
+extern void *g_pSharedLoadBuffer;       /* asset-directory buffer pointer */
+extern int g_nLevelLoadByteOffset;      /* level-load byte offset */
+extern int g_nLevelLoadChunkSize;       /* level-load chunk size */
+extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
+extern int g_nSfxMixVolume_blk;         /* SFX volume (0..0x3fff) */
+extern int
+    g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 extern int g_anSoundMonoMixFlagBlock[];
-extern short g_nCdDaVolumeCurrent; /* SpuCommonAttr CD volume L */
-extern short D_80075F1A;           /* SpuCommonAttr CD volume R */
-extern unsigned char D_800776D0;   /* CdMix attenuation L->L */
-extern unsigned char D_800776D1;   /* L->R */
-extern unsigned char D_800776D2;   /* R->R */
-extern unsigned char D_800776D3;   /* R->L */
-extern int g_nFlightQuitFlag;      /* flight-level quit flag */
+extern short g_nCdDaVolumeCurrent;         /* SpuCommonAttr CD volume L */
+extern short g_nSpuCommonCdVolumeR;        /* SpuCommonAttr CD volume R */
+extern unsigned char g_bCdMixLeftToLeft;   /* CdMix attenuation L->L */
+extern unsigned char g_bCdMixLeftToRight;  /* L->R */
+extern unsigned char g_bCdMixRightToRight; /* R->R */
+extern unsigned char g_bCdMixRightToLeft;  /* R->L */
+extern int g_nFlightQuitFlag;              /* flight-level quit flag */
 
 #define SFX(off)                                                               \
   PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[off], 0, 0x10, 0)
@@ -93,14 +94,14 @@ void PauseMenu_Update(void) {
     r.h = 0x1E0;
     ClearImage(&r, 0, 0, 0);
     DrawSync(0);
-    g_pDrawBufA = D_8007DDE8;
-    g_pDrawBufB = D_8007DDE8;
+    g_pDrawBufA = g_abDrawBufPool;
+    g_pDrawBufB = g_abDrawBufPool;
     g_nCdStreamState = 0;
     g_nCurrentWorldId = 0;
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      int count = *(volatile int *)&D_8007A6E4;
-      int offset = *(volatile int *)&D_8007A6E0;
+      int count = *(volatile int *)&g_nLevelLoadChunkSize;
+      int offset = *(volatile int *)&g_nLevelLoadByteOffset;
       void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
 
       CdReadSyncSectors(lba, dst, count, offset, 600);
@@ -149,8 +150,8 @@ void PauseMenu_Update(void) {
         SFX(0x2E);
         g_nSfxVolume++;
       }
-      D_80076228_blk = g_nSfxVolume * 0x3FFF / 10;
-      g_nSoundMasterVolume = (D_80076228_blk << 12) / 0x3FFF;
+      g_nSfxMixVolume_blk = g_nSfxVolume * 0x3FFF / 10;
+      g_nSoundMasterVolume = (g_nSfxMixVolume_blk << 12) / 0x3FFF;
       return;
     case 1:
       if ((g_dwPadPressed & 0x8000) && g_nMusicVolume > 0) {
@@ -161,7 +162,7 @@ void PauseMenu_Update(void) {
         g_nMusicVolume++;
       }
       {
-        int *p = D_80076224_blk;
+        int *p = g_nCdAudioVolume_blk;
         int *common = (int *)((char *)p - 0x31C);
         int vol;
 
@@ -169,7 +170,7 @@ void PauseMenu_Update(void) {
         vol = g_nMusicVolume << 11;
         *p = vol;
         g_nCdDaVolumeCurrent = vol;
-        D_80075F1A = vol;
+        g_nSpuCommonCdVolumeR = vol;
         SetSpuCommonAttr(common);
       }
       return;
@@ -178,17 +179,17 @@ void PauseMenu_Update(void) {
         SFX(0x2E);
         if ((*g_anSoundMonoMixFlagBlock = 1 - *g_anSoundMonoMixFlagBlock) !=
             0) {
-          D_800776D3 = 0x3F;
-          D_800776D2 = 0x3F;
-          D_800776D1 = 0x3F;
-          D_800776D0 = 0x3F;
+          g_bCdMixRightToLeft = 0x3F;
+          g_bCdMixRightToRight = 0x3F;
+          g_bCdMixLeftToRight = 0x3F;
+          g_bCdMixLeftToLeft = 0x3F;
         } else {
-          D_800776D2 = 0x7F;
-          D_800776D0 = 0x7F;
-          D_800776D3 = 0;
-          D_800776D1 = 0;
+          g_bCdMixRightToRight = 0x7F;
+          g_bCdMixLeftToLeft = 0x7F;
+          g_bCdMixRightToLeft = 0;
+          g_bCdMixLeftToRight = 0;
         }
-        CdMix(&D_800776D0);
+        CdMix(&g_bCdMixLeftToLeft);
       }
       return;
     case 3:

@@ -29,7 +29,7 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
   idle = 2;
   mode[0] = 0x80;
   for (;;) {
-    if (*inflight == 0 && FUN_80063bd8(1, 0) == idle &&
+    if (*inflight == 0 && CallCdSync(1, 0) == idle &&
         (g_dwMusicStreamStatus & 0x40)) {
       break;
     }
@@ -55,7 +55,7 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
 
   flag = (int *)(loc + 0x20);
   for (;;) {
-    if (*flag == 0 && FUN_80063bd8(1, 0) == 2) {
+    if (*flag == 0 && CallCdSync(1, 0) == 2) {
       break;
     }
     RestartStalledCdRead();

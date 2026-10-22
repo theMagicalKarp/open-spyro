@@ -5,7 +5,6 @@
 extern void StopAllSoundExceptMask(int mask);
 extern void ClearImage(RECT *rect, int r, int g, int b);
 extern void DrawSync(int mode);
-extern void InitActorMeshScratchRegions(int mode);
 extern void TickWorldBundleLoadStream(void);
 extern void AdvanceGemCutsceneFrame(int timer);
 extern void DispatchSpecialCutscene(void);

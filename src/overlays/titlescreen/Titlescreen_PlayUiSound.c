@@ -26,24 +26,24 @@ typedef struct {
 
 typedef struct {
   SoundDef *pSoundDef;          /* 0x0  (0x800761D0) active sound definition */
-  int unk4;                     /* 0x4 */
-  int unk8;                     /* 0x8 */
+  int pad04;                     /* 0x4 */
+  int pad08;                     /* 0x8 */
   int nNextSoundOverrideFlags;  /* 0xC  (0x800761DC) */
-  int unk10;                    /* 0x10 */
-  int unk14;                    /* 0x14 */
+  int pad10;                    /* 0x10 */
+  int pad14;                    /* 0x14 */
   short nVolumeOverrideLeft;    /* 0x18 (0x800761E8) */
   short nVolumeOverrideRight;   /* 0x1A (0x800761EA) */
 } SpuDriver;
 
 extern SpuDriver g_pLevelSampleBankEntries;  /* the SPU driver state */
-extern SoundDef D_800778F0;   /* the shared cutscene sound definition */
+extern SoundDef g_CutsceneSoundDef;   /* the shared cutscene sound definition */
 extern int D_8006FA94[];      /* title-screen SPU sample offset table */
 extern int g_bGemPickupSfxVoiceMarker;        /* dragon-cutscene sound voice */
 
 extern void PlaySoundEffect(int, void *, int, unsigned char *); /* PlaySound */
 
 void Titlescreen_PlayUiSound(int nSoundId) {
-  g_pLevelSampleBankEntries.pSoundDef = &D_800778F0;
+  g_pLevelSampleBankEntries.pSoundDef = &g_CutsceneSoundDef;
   g_pLevelSampleBankEntries.pSoundDef->nAddr = D_8006FA94[nSoundId] + 0x1010;
   g_pLevelSampleBankEntries.pSoundDef->nLoopAddr = -1;
   g_pLevelSampleBankEntries.pSoundDef->nVolume = 0x50;

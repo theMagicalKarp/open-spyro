@@ -17,7 +17,6 @@ extern void CopyWords(void *dst, void *src, int count);
 extern void InitHudCounters(int mode);
 extern void HandleMusicCommand(int track, int cmd);
 
-extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
 extern int
     g_anSpyroPadSnapshotBlock[]; /* alias of g_nSpyroPadSnapshotCountdown */
 

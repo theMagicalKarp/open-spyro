@@ -7,7 +7,6 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern int g_anSaveMenuBlock[]; /* [1] phase, [2] cursor, [4] x offset */
 extern short g_anCosineLut[];
 typedef struct {
   short x, y, w, h;
@@ -16,7 +15,6 @@ extern MenuBox D_8006F350[]; /* per-substate menu box */
 extern char g_szHiSpyro[];
 extern char g_szSaveGame[];
 extern char g_szReplayDragon[];
-extern char g_szContinue[];
 extern char g_szNoSaveFile[];
 extern char g_szPleaseRestartWith[];
 extern char g_szAMemoryCardTo[];

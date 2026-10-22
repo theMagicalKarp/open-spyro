@@ -15,7 +15,7 @@ extern unsigned short g_anCosineLut[];
 extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
 extern int D_8006EA40[];
 
-SDATA(D_800756B4, 4);
+SDATA(g_bSpyroJumpHoldForced, 4);
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_FLAGS 0x1F        /* g_nSpyroStateFlags */
@@ -313,7 +313,8 @@ void UpdateSpyroStateBehavior(void) {
     if (g_anSpyroMotionVec[2] < 0) {
       g_nSpyroStateFlags = 1;
     }
-    if (g_nSpyroStateFlags == 0 && !(g_dwPadHeld & 0x40) && D_800756B4 == 0) {
+    if (g_nSpyroStateFlags == 0 && !(g_dwPadHeld & 0x40) &&
+        g_bSpyroJumpHoldForced == 0) {
       g_nSpyroStateFlags = 2;
     }
     if (g_nSpyroAirborneFrames == 0 && g_nSpyroStateTimer >= 0x10) {
@@ -978,7 +979,8 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_READY] = -1;
-      ((void (*)(int, int))g_pfnLevelSpawnActor)(D_8006EA40[D_80075728], 0);
+      ((void (*)(int, int))g_pfnLevelSpawnActor)(
+          D_8006EA40[g_nSpyroOrbDropSpawnIndex], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & 0x40)) {

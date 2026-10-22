@@ -12881,9 +12881,9 @@ dlabel D_80075264
     /* 65A67 80075267 */ .byte 0x02
 enddlabel D_80075264
 
-nonmatching D_80075268
+nonmatching g_abSpyroHornStrikeAnimTable
 
-dlabel D_80075268
+dlabel g_abSpyroHornStrikeAnimTable
     /* 65A68 80075268 */ .byte 0x00
     /* 65A69 80075269 */ .byte 0x07
     /* 65A6A 8007526A */ .byte 0x00
@@ -12896,7 +12896,7 @@ dlabel D_80075268
     /* 65A71 80075271 */ .byte 0x00
     /* 65A72 80075272 */ .byte 0x00
     /* 65A73 80075273 */ .byte 0x00
-enddlabel D_80075268
+enddlabel g_abSpyroHornStrikeAnimTable
 
 nonmatching g_abSpyroIdleDelayRandTable
 
@@ -14129,11 +14129,11 @@ dlabel D_80075658
     /* 65E64 80075664 00000000 */ .word 0x00000000
 enddlabel D_80075658
 
-nonmatching D_80075668
+nonmatching g_nSpyroScriptedLiftBaseZ
 
-dlabel D_80075668
+dlabel g_nSpyroScriptedLiftBaseZ
     /* 65E68 80075668 00000000 */ .word 0x00000000
-enddlabel D_80075668
+enddlabel g_nSpyroScriptedLiftBaseZ
 
 nonmatching g_nCurrentWorldId
 
@@ -14238,11 +14238,11 @@ dlabel g_nLevelTransitionTallyActive
     /* 65EB0 800756B0 00000000 */ .word 0x00000000
 enddlabel g_nLevelTransitionTallyActive
 
-nonmatching D_800756B4
+nonmatching g_bSpyroJumpHoldForced
 
-dlabel D_800756B4
+dlabel g_bSpyroJumpHoldForced
     /* 65EB4 800756B4 00000000 */ .word 0x00000000
-enddlabel D_800756B4
+enddlabel g_bSpyroJumpHoldForced
 
 nonmatching g_nCameraLosClear
 
@@ -14310,12 +14310,12 @@ dlabel g_nCdStallMarker
     /* 65EE0 800756E0 00000000 */ .word 0x00000000
 enddlabel g_nCdStallMarker
 
-nonmatching D_800756E4
+nonmatching g_nCreditsGlyphCount
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800756E4
+dlabel g_nCreditsGlyphCount
     /* 65EE4 800756E4 00000000 */ .word 0x00000000
-enddlabel D_800756E4
+enddlabel g_nCreditsGlyphCount
 
 nonmatching g_pActorAuxPoolTop
 
@@ -14361,12 +14361,12 @@ dlabel g_nGamestate0fMode
     /* 65F04 80075704 00000000 */ .word 0x00000000
 enddlabel g_nGamestate0fMode
 
-nonmatching D_80075708
+nonmatching g_pCreditsLineTable
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80075708
+dlabel g_pCreditsLineTable
     /* 65F08 80075708 00000000 */ .word 0x00000000
-enddlabel D_80075708
+enddlabel g_pCreditsLineTable
 
 nonmatching g_nGameplayBlocked
 
@@ -14404,17 +14404,17 @@ dlabel g_nPauseMenuCursor
     /* 65F20 80075720 00000000 */ .word 0x00000000
 enddlabel g_nPauseMenuCursor
 
-nonmatching D_80075724
+nonmatching g_nSpyroScriptedLiftRise
 
-dlabel D_80075724
+dlabel g_nSpyroScriptedLiftRise
     /* 65F24 80075724 00000000 */ .word 0x00000000
-enddlabel D_80075724
+enddlabel g_nSpyroScriptedLiftRise
 
-nonmatching D_80075728
+nonmatching g_nSpyroOrbDropSpawnIndex
 
-dlabel D_80075728
+dlabel g_nSpyroOrbDropSpawnIndex
     /* 65F28 80075728 00000000 */ .word 0x00000000
-enddlabel D_80075728
+enddlabel g_nSpyroOrbDropSpawnIndex
 
 nonmatching g_dwGamestateFrames
 
@@ -14506,11 +14506,11 @@ dlabel g_nVibrationLevel
     /* 65F64 80075764 00000000 */ .word 0x00000000
 enddlabel g_nVibrationLevel
 
-nonmatching D_80075768
+nonmatching g_pCreditsScratchBuf
 
-dlabel D_80075768
+dlabel g_pCreditsScratchBuf
     /* 65F68 80075768 00000000 */ .word 0x00000000
-enddlabel D_80075768
+enddlabel g_pCreditsScratchBuf
 
 nonmatching g_nPreserveMobIdx
 
@@ -14568,17 +14568,17 @@ dlabel D_8007578A
     /* 65F8A 8007578A */ .short 0x0000
 enddlabel D_8007578A
 
-nonmatching D_8007578C
+nonmatching g_nSpyroScriptedLiftYaw
 
-dlabel D_8007578C
+dlabel g_nSpyroScriptedLiftYaw
     /* 65F8C 8007578C 00000000 */ .word 0x00000000
-enddlabel D_8007578C
+enddlabel g_nSpyroScriptedLiftYaw
 
-nonmatching D_80075790
+nonmatching g_pSpyroHomingTargetActor
 
-dlabel D_80075790
+dlabel g_pSpyroHomingTargetActor
     /* 65F90 80075790 00000000 */ .word 0x00000000
-enddlabel D_80075790
+enddlabel g_pSpyroHomingTargetActor
 
 nonmatching g_nActorAnimDone
 
@@ -14616,11 +14616,11 @@ dlabel g_pfnLevelHandleFlightResults
     /* 65FA8 800757A8 00000000 */ .word 0x00000000
 enddlabel g_pfnLevelHandleFlightResults
 
-nonmatching D_800757AC
+nonmatching g_nCreditsPageIndex
 
-dlabel D_800757AC
+dlabel g_nCreditsPageIndex
     /* 65FAC 800757AC 00000000 */ .word 0x00000000
-enddlabel D_800757AC
+enddlabel g_nCreditsPageIndex
 
 nonmatching g_pPrimBufferWriteCursor
 
@@ -14640,11 +14640,11 @@ dlabel g_nDeathTryIndex
     /* 65FB8 800757B8 00000000 */ .word 0x00000000
 enddlabel g_nDeathTryIndex
 
-nonmatching D_800757BC
+nonmatching g_pCreditsScrollHeader
 
-dlabel D_800757BC
+dlabel g_pCreditsScrollHeader
     /* 65FBC 800757BC 00000000 */ .word 0x00000000
-enddlabel D_800757BC
+enddlabel g_pCreditsScrollHeader
 
 nonmatching g_pfnGamestate7Handler
 
@@ -14689,11 +14689,11 @@ dlabel g_nGamestate
     /* 65FD8 800757D8 00000000 */ .word 0x00000000
 enddlabel g_nGamestate
 
-nonmatching D_800757DC
+nonmatching g_nCreditsLineCount
 
-dlabel D_800757DC
+dlabel g_nCreditsLineCount
     /* 65FDC 800757DC 00000000 */ .word 0x00000000
-enddlabel D_800757DC
+enddlabel g_nCreditsLineCount
 
 nonmatching g_pPadSubstepState
 
@@ -14713,19 +14713,19 @@ dlabel g_nGameOverLevelIntroIndex
     /* 65FE8 800757E8 00000000 */ .word 0x00000000
 enddlabel g_nGameOverLevelIntroIndex
 
-nonmatching D_800757EC
+nonmatching g_pCreditsLoadBuf
 
 /* Automatically generated and unreferenced pad */
-dlabel D_800757EC
+dlabel g_pCreditsLoadBuf
     /* 65FEC 800757EC 00000000 */ .word 0x00000000
-enddlabel D_800757EC
+enddlabel g_pCreditsLoadBuf
 
-nonmatching D_800757F0
+nonmatching g_nSpyroScriptedLiftTurn
 
-dlabel D_800757F0
+dlabel g_nSpyroScriptedLiftTurn
     /* 65FF0 800757F0 00000000 */ .word 0x00000000
     /* 65FF4 800757F4 00000000 */ .word 0x00000000
-enddlabel D_800757F0
+enddlabel g_nSpyroScriptedLiftTurn
 
 nonmatching g_pLevelPickupTableEntries
 

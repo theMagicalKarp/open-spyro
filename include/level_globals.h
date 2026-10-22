@@ -13,7 +13,7 @@ extern int g_anSparkleGlowDesc;
 extern int D_8006E3E4[];
 extern void *g_dwBurstColorType15;
 extern void *g_dwBurstColorType14;
-extern int D_8006E52C[];
+extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
 /* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
  * values / claimed flags); _rN is row N of the same table, declared as its
  * own symbol because the original addresses each row directly. */
@@ -25,7 +25,7 @@ extern int g_anFlightCourseBonusTable_r1[];
 extern int g_anFlightCourseBonusTable_r2[];
 extern int g_anFlightCourseBonusTable_r3[];
 extern int g_anFlightCourseBonusTable_r4[];
-extern unsigned char D_8006E998[];
+extern unsigned char g_abGemTallyIconGlyphs[];
 extern int g_anGamestate0cLandingX[];
 extern int g_anGamestate0cLandingY[];
 extern char *g_apWorldNameByLevelTens[];                               /* world names */
@@ -200,5 +200,10 @@ extern int g_nWorldTreasureCollected;                    /* gem total shown on t
 extern unsigned char *g_pGamestate0cActor;
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
+
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern int g_nCreditsGlyphCount;
+extern int g_nCreditsPageIndex;
+extern char *g_pCreditsGlyphPool;
 
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */

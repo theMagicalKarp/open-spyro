@@ -100,7 +100,7 @@ NudgeSpyroFromWallProbes:
 # --- Block-layout / constant-hoist ties (source-invariant) ---
 
 # --- Deferred multi-idiom from-scratch targets (not walls; retry when veins dry) ---
-func_800557CC:
+SpawnFloatingDigitActors:
   verdict: attempted
   class: "B13 lh+sra expected; multi-idiom, no ghidra seed"
   date: 2026-07-12
@@ -111,15 +111,15 @@ func_8005E680:
   note: "0x8005e680, 388b. MATCH -> C. A74 while(1)+top-break keeps ch<7 at loop top; split loop-local dicr ptr homes callback arg in a0; explicit base local (A20) for s5+per-iter copy; A93 explicit const locals (bit=1/keep=0xFFFFFF) force F2 preheader emit order."
 
 # --- actor waypoint-follow step (2026-07-24-1 session) ---
-func_80017294:
+ReturnT0Fixed12:
   verdict: matched
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15
-func_80017A9C:
+ReturnT0Fixed12Dup:
   verdict: matched
   class: "ex-wall GTE epilogue fragment: $t0 read via register-asm local seeded by empty asm"
   date: 2026-10-15
-func_800229E8:
+StoreAndRestoreStaticRegs:
   verdict: matched
   class: "ex-wall register-restore fragment: file-scope register vars (A411) + incoming $at/$v0 seeded by empty asm + opaque $at base"
   date: 2026-10-16
@@ -244,11 +244,11 @@ func_8005E804:
   date: 2026-08-10
 
 # --- save-block deserializer (2026-07-23-3 session) ---
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region"
   date: 2026-07-23
-  note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via D_80076228_blk alias (A20). Permuter target."
+  note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via g_nSfxMixVolume_blk alias (A20). Permuter target."
 
 # --- text-sprite builder (2026-07-23-4 session) ---
 BuildTextSprites:
@@ -599,8 +599,8 @@ DampenSpyroFreeFallAttitude:
     its own single-set local (`out0`/`out1`), which restores the original's
     `addu a1,t0,a1` operand order instead of accumulating in place; the chain-1
     error shift is split (`<< 2` right after chain 0's spring update, `>> 4`
-    after the D_80078CB4 load) so sched1 cannot hoist it to the block head; and
-    the D_80078CB4 load is written ahead of the D_80078CB0 store.
+    after the g_nSpyroRollSpringVel load) so sched1 cannot hoist it to the block head; and
+    the g_nSpyroRollSpringVel load is written ahead of the g_nSpyroPitchSpringVel store.
 SteerActorAlongWaypoints:
   verdict: matched
   class: "F14 disjoint-reuse carrier + carrier-free yaw (A146/A151 family)"
@@ -958,7 +958,7 @@ park_sweep_2026_08_11_2:
     DrawCinematicLetterbox 2, IsPointInRotatedBox 6, SteerActorYawTowardSpyro 6,
     ApplyPadInputToSpyroBodyYaw 7, func_8005FC6C 7, WaitForFrameDeadline 7
     (now a wall, above), WalkActorAlongWaypoints 9, EndSaveMenuToWorld 12,
-    func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
+    ApplySaveGameBuffer 13, FinalizePadCalibration 14, ResetGraph 15. Note
     func_80061470's wip does not compile (parse errors), so the sweep reports
     it as 0 differing insns — that is a build failure, not a match.
 
@@ -1037,7 +1037,7 @@ park_rewrite_vein_2026_08_11_3:
     that scores 18 says nothing about how close a clean decode is. So do not
     pick harvest targets off that ranking alone — prefer a permuter-spew wip
     whose asm you can read in one screen, delete the body, and re-derive.
-    Remaining members worth taking next, by size: func_80016FD0 (120 B),
+    Remaining members worth taking next, by size: TransposePackedMatrix (120 B),
     BuildAudioTrackTable (152), memmove (108), LoadActorMeshTables (264),
     CheckGpuTimeout (364), FinalizePadCalibration (432).
 
@@ -1059,7 +1059,7 @@ LoadActorMeshTables:
     the four straggler statements measured identical — the stragglers come from
     expand_call's arg setup, so source order cannot reach them.
 
-func_80016FD0:
+TransposePackedMatrix:
   verdict: matched
   class: "B6 RETIRED for $at temps: local `register ... asm(\"$1\")` pins put the swap temp in $at (A374); volatile asm keeps the lui below the loads"
   date: 2026-10-14
@@ -1476,7 +1476,7 @@ TickCdMusicStream:
   verdict: parked
   class: "F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order"
   date: 2026-08-15
-  note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > D_800776CC (A120 load order, 4 insns)."
+  note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > g_nCdMusicStreamTimeout (A120 load order, 4 insns)."
 
 TickActiveSoundVoices_2026_08_16:
   verdict: viable
@@ -2330,7 +2330,7 @@ Level0_BalloonistCutscene_Update:
 
 Titlescreen_Update:
   verdict: parked
-  class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6"
+  class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the g_nTitleSceneSectorOffset a3 load stealing sched1's T-6"
   date: 2026-08-25
   note: >-
     8588 B, 7/2147 linked. FULL MECHANISM READ OFF `cc1 -dS` THIS SESSION (see
@@ -2340,7 +2340,7 @@ Titlescreen_Update:
     placed last, born last, has the shorter live range, and qty_sugg_compare
     (equal single a1 suggestions) hands IT a1. Arm 2 of the same expression
     matches because its block has no third boosted load; arm 1's is the
-    D_8007A6D8 a3 argument, whose arg copy always wins the T-4 LUID tie (
+    g_nTitleSceneSectorOffset a3 argument, whose arg copy always wins the T-4 LUID tie (
     expand_call emits arg copies a0..a3 in order). Proved by construction:
     passing a literal 0 for a3 reproduces the original's registers first build.
     Two levers reach the right registers and both cost more than they buy:
@@ -2583,7 +2583,7 @@ EmitDynamicActorMeshFogged:
   date: 2026-08-25
   note: "240 B; 60 insns, 6 `addi` markers, 2 jals."
 
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "qty_compare live-range tie on the accumulator loop's d/g pair, pinned at both ends by rank_for_schedule's class test and an unresolvable load/store alias"
   date: 2026-08-25
@@ -2824,7 +2824,7 @@ ComputeSpyroMoveTargetFromPad_2026_08_27_1:
     with the `iVar1+iVar2` addu and then recomputing it. Note the shape diff
     mis-aligns here (the two arms come out in the opposite branch sense), so
     measure it with the linked path once a variant links.
-func_800557CC:
+SpawnFloatingDigitActors:
   verdict: parked
   class: "B13 (A233 not free here) + a 5-insn st->place schedule"
   date: 2026-08-27
@@ -2897,7 +2897,7 @@ barrier_sweep_negative_2026_08_28:
   note: >-
     Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
     with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
-    func_80059594 (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
+    ApplySaveGameBuffer (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
     HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
     WalkActorAlongWaypoints (9/192), Level27_AdvanceEmitList's 0x1D arm and
     Level5_FlightResults_Draw (735 placements): no variant beat the baseline on any
@@ -3282,7 +3282,7 @@ UpdateSpyroFlightAttitudeNearGround:
     partial bytes on the board once decoded.
 
 # --- 2026-08-30-1 session: the A238 ref dial applied to the harvest inventory ---
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F19 store-vs-compare position swap + an alias-order/allocation conflict (R1)"
   date: 2026-08-30-1
@@ -3465,7 +3465,7 @@ Level27_AdvanceEmitList:
     top non-balloonist entry; its arm-0x1D residue is a single a2/v0 rotation
     with a closed 26-variant carrier search and a proved-unreachable head
     straggler order. Nothing in A236-A239 aims at it.
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "R2 barrier-vs-slti trade (R1 now shown reachable but only at equal cost)"
   date: 2026-08-31
@@ -3841,7 +3841,7 @@ SmoothSpyroByteEulerSpring:
     barrier cost and fell by WIDENING the prev1 wrapper to swallow the
     stanza-2 guard `if`.
 
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F19 potential_hazard: store vs neighbour inside one priority group"
   date: 2026-09-10
@@ -4076,7 +4076,7 @@ harvest_inventory_staleness_2026_09_15:
     `SetSpawnAnchorFromActor`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
-    func_80059594 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
+    ApplySaveGameBuffer 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
     func_8005FC6C 7/38, Titlescreen_Update 7/2147,
     WalkActorAlongWaypoints 9/192, Level27_AdvanceEmitList 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
@@ -4414,8 +4414,8 @@ func_8002CCC8_2026_09_22:
   date: 2026-09-22
   note: >-
     31 -> 16/217 on the B23 hoist lever: `yaw` load above the byte-store block,
-    knot 2 closed by batch-reading actor+0x14/D_80078D70 into locals above
-    the D3C/D34/D38 stores plus a second barrier before `D_80078D40 = ...`.
+    knot 2 closed by batch-reading actor+0x14/g_nSaveMenuSpyroToYaw into locals above
+    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuDragonToZ = ...`.
     posY above the barrier (3 positions) = 20; in-place `py = rec[0x10] - py`
     byte-identical. Next: -dl on the ArcTan2 block.
 
@@ -4877,7 +4877,7 @@ func_titlescreen_8007ABAC_2026_10_04:
   verdict: viable
   class: "MATCHED 2026-10-04 (CD-read arg loads pinned to $a0/$a3)"
   date: 2026-10-04
-  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the D_8007A6D8 argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
+  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the g_nTitleSceneSectorOffset argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
 func_level_18_8007E18C_2026_10_04_1:
   verdict: viable
   class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
@@ -4895,7 +4895,7 @@ func_level_13_8008AF54_2026_10_04:
   note: "Reload emits an input reload for a USE insn and final prints nothing for the USE, which gives a dead li at a block head. That fits 3 of the 4 extra sites (arm/label heads); 0x8008B79C is mid-block. Our burst (reg/v 76) never dies in the loop, so it gets no REG_DEAD and no USE. Our build does have combine USEs at labels for other regs (732, 738, 1405)."
 func_credits_8007AA50_2026_10_04_1:
   verdict: parked
-  class: "4 named clusters left (init movstr/header-load order, D_800761D0 width rotation, glyph digit/adv*3 reg ties, case-4 movstr a0 clobber)"
+  class: "4 named clusters left (init movstr/header-load order, g_pActiveCutsceneSoundDef width rotation, glyph digit/adv*3 reg ties, case-4 movstr a0 clobber)"
   date: 2026-10-04
   note: "252/123 -> 115/32 masked, length+frame exact, 1229/1372 linked words identical (was 587). Glyph pool and line table are struct arrays (HImode in-struct stores let scalar loads pass), POOL[i]/LINES[line] indexing (MULT-first address = giv-first addu), exactly one `for` loop (its combine USE pseudo is the frame's one 8-byte slot; padg removed), c = *s - 0x30 temp fixes the cur/upper priority, a `sector` local precomputes plain array call args, D_80076BB8 volatile. See the wip header LEFT A-D."
 Gamestate0C_Draw_2026_10_04_1:
@@ -5081,7 +5081,7 @@ DispatchSpyroTriggerEvent_2026_10_06:
   verdict: parked
   class: "F8 sched tie: case-0 orb-drop store block (OrbDrop store must fill the flags load delay)"
   date: 2026-10-06
-  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, D_80075728, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
+  note: "Length-exact, 15/263, all in case 0 (type 0, event 2). Levers that closed the rest: one-field struct view of g_adwSpyroTriggerEventBlock per case (MEM_IN_STRUCT lets the flags load hoist over the scalar store; a shared pointer local made it a global allocno), mob idx read once, ENT macro instead of an entry pointer. All 24 orders of the 4 case-0 statements tried: natural order costs a load-delay nop (+1 insn), the best order is (OrbDrop, g_nSpyroOrbDropSpawnIndex, flags, EntryZ). Struct data view and volatile OrbDrop store: no change."
 sprintf_2026_10_06:
   verdict: parked
   class: "F8 sched1 tie: va_arg value load vs spec-flags load order at the 4 conversion sites (d/u/o/x)"
@@ -5216,7 +5216,7 @@ DispatchSpyroTriggerEvent_2026_10_08:
   verdict: parked
   class: "sched2 memory-unit hazard (§D 2d): the OrbData store fills the wrong stall"
   date: 2026-10-08
-  note: "15/263, case 0 event-2 arm. The original's statement order (flags, EntryZ, D_80075728 last) is +1 insn: -dR shows lw data[1] blocked 1 cycle before the EntryZ store (adjacent memory ops), so the priority-1 OrbData store fills that slot instead of the flags-load delay slot and a nop appears."
+  note: "15/263, case 0 event-2 arm. The original's statement order (flags, EntryZ, g_nSpyroOrbDropSpawnIndex last) is +1 insn: -dR shows lw data[1] blocked 1 cycle before the EntryZ store (adjacent memory ops), so the priority-1 OrbData store fills that slot instead of the flags-load delay slot and a nop appears."
 RespawnOrGameOver_Draw_2026_10_08:
   verdict: parked
   class: "A200 open question (arg copy after the ebb barrier)"
@@ -5281,7 +5281,7 @@ DispatchSpyroTriggerEvent_2026_10_08_1:
   verdict: parked
   class: "sched2 memory-unit hazard (OrbDrop store into the FLAGS load shadow)"
   date: 2026-10-08
-  note: "14/263. Moving `D_80075728 = data[1]` to the arm end gives 5 masked but +1 insn (the OrbDrop store sinks below the FLAGS RMW, leaving the lw nop). Volatile store / split RMW temp inert."
+  note: "14/263. Moving `g_nSpyroOrbDropSpawnIndex = data[1]` to the arm end gives 5 masked but +1 insn (the OrbDrop store sinks below the FLAGS RMW, leaving the lw nop). Volatile store / split RMW temp inert."
 Gamestate0C_Draw_2026_10_08_1:
   verdict: parked
   class: "B-i held-base form (unchanged)"
@@ -5557,7 +5557,7 @@ func_credits_8007AA50_2026_10_13_1:
   verdict: parked
   class: "cluster A: sample-bank entry store/load order (A400 applies, not yet tuned)"
   date: 2026-10-13
-  note: "Struct view on the D_800761D0 entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
+  note: "Struct view on the g_pActiveCutsceneSoundDef entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
 AllocEmitListRecord:
   verdict: wall
   class: "B6 hand-written asm (addi markers, jr through a saved ra copy)"
@@ -5870,7 +5870,7 @@ func_credits_8007AA50_2026_10_19_1:
   verdict: parked
   class: "F tie: sched1 class tie-break (e4 re-read anti link class 3 beats C1C load true link class 1 vs the h604 store)"
   date: 2026-10-19
-  note: "14 -> 4 masked; partial 5,336 -> 5,384. Scratches fixed: local-alloc uses SCHED1 order, so the a2 arg (volatile 8604 re-read) must load above the copy there; a copy to its own symbol (D_80078A40) + non-volatile C1C alias (D_80076C1C_n) allow it, and sched2 hoists the copy back. The earlier spilled-pseudo theory is ruled out (a2 is never a spill reg or a steal target). Left: `lw a1,85E4` / `lw v0,C1C` swapped. ~1,900 compiles: orders, C1C views, split h604, volatile l600, fences, reused locals; permuter run on the block."
+  note: "14 -> 4 masked; partial 5,336 -> 5,384. Scratches fixed: local-alloc uses SCHED1 order, so the a2 arg (volatile 8604 re-read) must load above the copy there; a copy to its own symbol (D_80078A40) + non-volatile C1C alias (g_nLevelArchiveChunkSize_n) allow it, and sched2 hoists the copy back. The earlier spilled-pseudo theory is ruled out (a2 is never a spill reg or a steal target). Left: `lw a1,85E4` / `lw v0,C1C` swapped. ~1,900 compiles: orders, C1C views, split h604, volatile l600, fences, reused locals; permuter run on the block."
 func_credits_8007AA50_2026_10_20:
   verdict: matched
   class: "sched1 birthing boost: adjust_priority boosts only SET_DEST pseudos with reg_n_sets == 1"

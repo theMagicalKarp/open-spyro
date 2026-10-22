@@ -132,7 +132,7 @@ void TickSpyroAttackEffects(int steps) {
     }
     if (((g_bSpyroHornStrikeSegmentIdx < 0x1e) &&
          (((*((int *)(&g_bSpyroAnimPrev))) & 0xffff0000) == 0x07070000)) &&
-        (D_80078A78 == 4)) {
+        (g_bSpyroAnimLayer1FramePrev == 4)) {
       g_abSpyroAnimLayer1SubstepBlock[0] = 0;
     }
     if (g_abSpyroHornStrikeAnchorModeBlock[0] != 0) {

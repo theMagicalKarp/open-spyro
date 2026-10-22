@@ -12,8 +12,8 @@ extern void SteerActorTowardPoint(unsigned char *pos, int *wp, int speed, int a,
    [0..count), else backward wrap to count-1); then steer toward the (possibly
    new) waypoint with speed = dist>>4 clamped to `cap`. */
 void FollowActorWaypointPath(unsigned char *pos, unsigned char *path,
-                             int threshold, int cap, int arg5, int arg6,
-                             int arg7) {
+                             int threshold, int cap, int radius, int yawLim,
+                             int pitchLim) {
   int v[3];
   int dist;
 
@@ -37,6 +37,6 @@ void FollowActorWaypointPath(unsigned char *pos, unsigned char *path,
   if (cap < dist) {
     dist = cap;
   }
-  SteerActorTowardPoint(pos, (int *)(path + ((path[1] << 4) + 8)), dist, arg6,
-                        arg7, arg5);
+  SteerActorTowardPoint(pos, (int *)(path + ((path[1] << 4) + 8)), dist, yawLim,
+                        pitchLim, radius);
 }

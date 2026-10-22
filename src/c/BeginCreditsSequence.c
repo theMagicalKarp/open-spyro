@@ -4,20 +4,21 @@
 /* Enter the credits gamestate (0x8002d228, gamestate 0xF): clear the whole
    VRAM framebuffer, silence all sound, optionally reload the actor mesh tables
    (param nonzero), reset Spyro, zero the credits/returning-home phase globals
-   (D_800757AC only when it is not the level-select magic 0xA), then kick off
-   the synchronous 0x258-sector credits asset read from the CD base LBA. */
+   (g_nCreditsPageIndex only when it is not the level-select magic 0xA), then
+   kick off the synchronous 0x258-sector credits asset read from the CD base
+   LBA. */
 extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
                        unsigned char b);
 extern int DrawSync(int mode);
 extern void StopAllSoundExceptMask(unsigned int mask);
 extern void ResetSpyroEntity(int param);
 extern int CdReadSyncSectors();
-extern int D_800757AC;
-extern int D_80075968;
-extern int D_80075878;
-extern int D_800757DC;
-extern int D_800757BC;
-extern int D_80075768;
+extern int g_nCreditsPageIndex;
+extern int g_nCreditsFirstVisibleLine;
+extern int g_nCreditsLastVisibleLine;
+extern int g_nCreditsLineCount;
+extern int g_pCreditsScrollHeader;
+extern int g_pCreditsScratchBuf;
 extern int *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
 extern int D_8007A95C;
 extern int D_8007A958;
@@ -39,20 +40,20 @@ void BeginCreditsSequence(int param_1) {
   ResetSpyroEntity(1);
   g_nGamestate = 0xF;
   g_nGamestate0fMode = -1;
-  D_80075968 = 0;
-  D_80075878 = 0;
-  D_800757DC = 0;
-  D_800757BC = 0;
-  D_80075768 = 0;
+  g_nCreditsFirstVisibleLine = 0;
+  g_nCreditsLastVisibleLine = 0;
+  g_nCreditsLineCount = 0;
+  g_pCreditsScrollHeader = 0;
+  g_pCreditsScratchBuf = 0;
   g_nReturningHomePhase = 0;
-  if (D_800757AC != 0xA) {
-    D_800757AC = 0;
+  if (g_nCreditsPageIndex != 0xA) {
+    g_nCreditsPageIndex = 0;
   }
   {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    int arg2 = *(volatile int *)&D_8007A95C;
-    int arg3 = *(volatile int *)&D_8007A958;
+    int size = *(volatile int *)&D_8007A95C;
+    int offset = *(volatile int *)&D_8007A958;
     int *dst = *(int *volatile *)&g_pSharedLoadBuffer;
-    CdReadSyncSectors(lba, dst, arg2, arg3, 0x258);
+    CdReadSyncSectors(lba, dst, size, offset, 0x258);
   }
 }

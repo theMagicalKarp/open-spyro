@@ -1,8 +1,8 @@
 #include "globals.h"
 #include "vecmath.h"
 
-extern int FUN_80063bd8(int mode, unsigned char *result);
-extern int FUN_80063aac(void);
+extern int CallCdSync(int mode, unsigned char *result);
+extern int GetCdStatusByte(void);
 extern void HandleMusicCommand(int track, int cmd);
 extern void CdIntToPos(int lba, char *pos);
 extern int CdPosToInt(unsigned char *pos);
@@ -12,10 +12,10 @@ extern int CdControlForce(unsigned char com, char *param);
 extern void SetSpuCommonAttr(unsigned int *attr);
 
 extern unsigned char D_800776BC[];
-extern unsigned int D_800776CC;
+extern unsigned int g_nCdMusicStreamTimeout;
 extern int D_8006F05C[];
 extern short g_nCdDaVolumeCurrent;
-extern short D_80075F1A;
+extern short g_nSpuCommonCdVolumeR;
 
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
    [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short
@@ -39,9 +39,10 @@ extern int
        view (A230: an in-struct store keeps the in-struct array read of the
        table below it).
    Earlier levers still load-bearing: the end-LBA half has its own symbol
-   (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount > D_800776CC)`
-   (A120 load order); the fade tail's held base + empty do/while(0) (A200)
-   and its per-arm "store the new volume" blocks (A201).
+   (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount >
+   g_nCdMusicStreamTimeout)` (A120 load order); the fade tail's held base +
+   empty do/while(0) (A200) and its per-arm "store the new volume" blocks
+   (A201).
    - the random-track table base is a block-local pointer (`base`): cse keeps
      the cheaper register, so the `la` is emitted with the index load and
      fills its load-delay bubble, as in the original. */
@@ -65,7 +66,7 @@ void TickCdMusicStream(void) {
   int pick;
   int *tbl;
 
-  sync = FUN_80063bd8(1, D_800776BC);
+  sync = CallCdSync(1, D_800776BC);
   cmd = g_nLastCdMusicCommand;
   if (cmd != 0) {
     switch ((unsigned int)cmd) {
@@ -98,13 +99,13 @@ void TickCdMusicStream(void) {
     } else {
       if ((unsigned int)g_anMusicTrackEndLbaTable[g_nCurrentMusicTrack * 2] <
           g_dwCdMusicReadHead) {
-        if (g_nVblankTickCount > D_800776CC) {
+        if (g_nVblankTickCount > g_nCdMusicStreamTimeout) {
           pick = (int)GetRandomU32();
           {
             int *base = D_8006F05C;
             tbl = &base[g_nLevelIntroIndex * 3];
           }
-          D_800776CC = g_nVblankTickCount + 0x7080;
+          g_nCdMusicStreamTimeout = g_nVblankTickCount + 0x7080;
           g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[tbl[pick % 3]];
         }
         g_dwCdMusicReadHead = g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2];
@@ -114,7 +115,7 @@ void TickCdMusicStream(void) {
         CdControlBlocking(0xD, filt, 0);
         CdControl(0x1B, pos, 0);
       } else {
-        if (FUN_80063aac() == 0x11) {
+        if (GetCdStatusByte() == 0x11) {
           r = CdPosToInt((unsigned char *)g_adwMusicStreamBlock + 0x20D);
           if (r > 0) {
             g_dwCdMusicReadHead = r;
@@ -161,11 +162,11 @@ void TickCdMusicStream(void) {
     }
     g_anMusicFadeBlock[0x16] = 0;
     *(short *)&g_anMusicFadeBlock[-0xB0] = target;
-    D_80075F1A = target;
+    g_nSpuCommonCdVolumeR = target;
     g_anMusicFadeBlock[0] = -1;
     goto spu;
   store_right:
-    D_80075F1A = vol;
+    g_nSpuCommonCdVolumeR = vol;
   spu:
     *(unsigned int *)g_abSpuCommonAttr = 0xC0;
     SetSpuCommonAttr((unsigned int *)g_abSpuCommonAttr);

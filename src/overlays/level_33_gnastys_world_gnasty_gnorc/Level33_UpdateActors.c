@@ -36,14 +36,12 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -51,9 +49,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -81,7 +76,6 @@ extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
-extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Shift a vector left by n. */
 
@@ -175,21 +169,16 @@ typedef struct ShardState {
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int D_80078BBC[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -507,8 +496,7 @@ typedef struct L33State169 {
 } L33State169;
 
 extern int g_nMotionTrailRibbonCount;      /* trail slots used this frame */
-extern int D_800772C8[];    /* trail lengths */
-extern L33Trail *D_80078658[]; /* trails */
+extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
@@ -585,7 +573,6 @@ typedef struct GnastyState {
 
 extern int D_80077CC8[];         /* level flags */
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
-extern int D_800757AC;
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
 extern int g_nLevelReadyFlag; /* == D_80078BBC, scalar view */
 
@@ -1043,7 +1030,7 @@ void Level33_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -2467,7 +2454,7 @@ void Level33_UpdateActors(void) {
         }
         if (st->u58 == 0) {
           g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
-          D_800757AC = 0;
+          g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
           g_nGamestate = 0xE;
           g_nGamePaused = 1;
@@ -2662,9 +2649,9 @@ void Level33_UpdateActors(void) {
         if (g_nMotionTrailRibbonCount < 3) {
           int k = g_nMotionTrailRibbonCount;
 
-          D_800772C8[k] = st->h0A;
+          g_anMotionTrailSliceCounts[k] = st->h0A;
           g_nMotionTrailRibbonCount = k + 1;
-          D_80078658[k] = st->trail;
+          g_apMotionTrailSlices[k] = st->trail;
         }
         if (actor->mode == 1) {
           actor->mode = 2;
@@ -2703,7 +2690,7 @@ void Level33_UpdateActors(void) {
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
-            actor->unk1C = 0;
+            actor->groundCode = 0;
             actor->visZone = 0xFF;
             actor->subMode = 2;
           }
@@ -2771,7 +2758,7 @@ void Level33_UpdateActors(void) {
           actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
-          actor->unk1C = 0;
+          actor->groundCode = 0;
           actor->scale = 0x40;
           actor->visZone = 0xFF;
           actor->subMode = 1;
@@ -2805,7 +2792,7 @@ void Level33_UpdateActors(void) {
           actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
-          actor->unk1C = 0;
+          actor->groundCode = 0;
           actor->scale = 0x40;
           actor->visZone = 0xFF;
           break;
@@ -3233,7 +3220,7 @@ void Level33_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -3426,7 +3413,7 @@ void Level33_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

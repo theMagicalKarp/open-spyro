@@ -13,25 +13,25 @@ extern int AbsAngleDelta12(int a, int b);
 extern int g_abSpyroAnimPrevBlock[];
 extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
 extern int g_nSaveSlotLoaded;
-extern int D_80078D2C;
-extern unsigned int D_80078D30;
-extern int D_80078D34;
-extern int D_80078D38;
-extern int D_80078D3C;
-extern int D_80078D40;
-extern int D_80078D44;
-extern unsigned int D_80078D48;
-extern int D_80078D4C;
-extern int D_80078D50;
-extern int D_80078D54;
-extern unsigned int D_80078D58;
-extern int D_80078D5C;
-extern int D_80078D60;
-extern int D_80078D64;
-extern int D_80078D68;
-extern int D_80078D6C;
-extern int D_80078D70;
-extern int D_80078D74;
+extern int g_nSaveMenuDragonFromAngle;
+extern unsigned int g_nSaveMenuDragonFromDist;
+extern int g_nSaveMenuDragonFromZ;
+extern int g_nSaveMenuDragonToAngle;
+extern int g_nSaveMenuDragonToDist;
+extern int g_nSaveMenuDragonToZ;
+extern int g_nSaveMenuOverlayFromAngle;
+extern unsigned int g_nSaveMenuOverlayFromDist;
+extern int g_nSaveMenuOverlayToAngle;
+extern int g_nSaveMenuOverlayToDist;
+extern int g_nSaveMenuCameraFromAngle;
+extern unsigned int g_nSaveMenuCameraFromDist;
+extern int g_nSaveMenuCameraFromZ;
+extern int g_nSaveMenuCameraToAngle;
+extern int g_nSaveMenuCameraToDist;
+extern int g_nSaveMenuCameraToZ;
+extern int g_nSaveMenuSpyroFromYaw;
+extern int g_nSaveMenuSpyroToYaw;
+extern int g_pSaveMenuDragonActor;
 
 /* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,
    snapshotting the scene around the actor the player interacted with.  Freezes
@@ -39,8 +39,9 @@ extern int D_80078D74;
    plays the level's menu sound, resets Spyro and forces anim state 1, then
    captures the yaw and distance from Spyro to the actor's pickup target, to the
    actor itself, to the level-overlay init actor (when present) and to the
-   camera into the D_80078D2C..D70 scripted-camera block, and seeds the menu pan
-   targets.
+   camera into the g_nSaveMenu*From/To keyframe block (0x80078D2C..0x80078D74:
+   polar angle/distance/z about Spyro for the dragon, the overlay record and
+   the camera, plus Spyro's from/to yaw), and seeds the menu pan targets.
 
    The g_abSpyroAnimPrevBlock alias is an incomplete INT
    array reached by element index, and the empty do/while right after the
@@ -48,12 +49,12 @@ extern int D_80078D74;
    accesses stay off the held base (A200).  Everything the original emits above
    that store (the yaw load) is computed above it in source (A253), and the
    four byte stores below it are volatile so their order is pinned.  The second
-   barrier keeps the -16 read below the batch-read D_80078D34/38 stores.
-   `rec` is built in int arithmetic so the addu keeps idx*88 as its first
-   operand (A149).  The rec+0x10 read goes through a `$2` register local:
-   as a pseudo it is the subu's first dying input and local-alloc ties the
-   ArcTan2 y argument to it; as a hard register the tie falls to posY, which
-   then lands in $a1 as in the original. */
+   barrier keeps the -16 read below the batch-read g_nSaveMenuDragonFromZ /
+   g_nSaveMenuDragonToAngle stores. `rec` is built in int arithmetic so the addu
+   keeps idx*88 as its first operand (A149).  The rec+0x10 read goes through a
+   `$2` register local: as a pseudo it is the subu's first dying input and
+   local-alloc ties the ArcTan2 y argument to it; as a hard register the tie
+   falls to posY, which then lands in $a1 as in the original. */
 void BeginSaveMenuFromWorld(int actor) {
   int vec[3];
   int owner;
@@ -76,7 +77,7 @@ void BeginSaveMenuFromWorld(int actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
-  D_80078D74 = actor;
+  g_pSaveMenuDragonActor = actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
   PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
                   0, 0x10, 0);
@@ -90,50 +91,52 @@ void BeginSaveMenuFromWorld(int actor) {
   *(volatile unsigned char *)&g_bSpyroFramePrev = 0;
   *(volatile unsigned char *)&g_bSpyroAnimFrame = 1;
   *(volatile unsigned char *)&g_bSpyroSubFrameTimer = 0;
-  D_80078D6C = yaw;
+  g_nSaveMenuSpyroFromYaw = yaw;
   rec = (char *)(*(int *)(owner + 4) * 88 + (int)g_pActorListBase);
   {
     register int ry asm("$2");
     ry = *(int *)(rec + 0x10);
-    D_80078D70 =
+    g_nSaveMenuSpyroToYaw =
         ArcTan2(*(int *)(rec + 0xC) - g_abSpyroAnimPrevBlock[-6], ry - py, 1);
   }
-  D_80078D2C = ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
-                       *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
+  g_nSaveMenuDragonFromAngle =
+      ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
+              *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
-  D_80078D30 = VectorLength(vec, 0);
+  g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
   z = *(int *)(actor + 0x14);
-  yw = D_80078D70;
-  D_80078D3C = 0x480;
-  D_80078D34 = z;
-  D_80078D38 = yw;
+  yw = g_nSaveMenuSpyroToYaw;
+  g_nSaveMenuDragonToDist = 0x480;
+  g_nSaveMenuDragonFromZ = z;
+  g_nSaveMenuDragonToAngle = yw;
   do {
   } while (0);
-  D_80078D40 = g_abSpyroAnimPrevBlock[-4] + 0x170;
+  g_nSaveMenuDragonToZ = g_abSpyroAnimPrevBlock[-4] + 0x170;
   if (g_pLevelOverlayInitRecord != 0) {
-    D_80078D44 = ArcTan2(*(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
-                             g_abSpyroAnimPrevBlock[-6],
-                         *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) -
-                             g_nSpyroWorldPosY,
-                         1);
+    g_nSaveMenuOverlayFromAngle = ArcTan2(
+        *(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
+            g_abSpyroAnimPrevBlock[-6],
+        *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) - g_nSpyroWorldPosY,
+        1);
     SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
                    &g_abSpyroAnimPrevBlock[-6]);
-    D_80078D48 = VectorLength(vec, 0);
-    D_80078D50 = 0x600;
-    D_80078D4C = (D_80078D70 + 0x800) & 0xFFF;
+    g_nSaveMenuOverlayFromDist = VectorLength(vec, 0);
+    g_nSaveMenuOverlayToDist = 0x600;
+    g_nSaveMenuOverlayToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;
   }
-  D_80078D54 = ArcTan2(g_anCameraPos[0] - g_abSpyroAnimPrevBlock[-6],
-                       g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
+  g_nSaveMenuCameraFromAngle =
+      ArcTan2(g_anCameraPos[0] - g_abSpyroAnimPrevBlock[-6],
+              g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, g_anCameraPos, &g_abSpyroAnimPrevBlock[-6]);
-  D_80078D58 = VectorLength(vec, 0);
+  g_nSaveMenuCameraFromDist = VectorLength(vec, 0);
   g_nSaveMenuXOffset = 0xB0;
-  D_80078D5C = g_anCameraPos[2];
-  camYaw = (D_80078D70 + 0x30B) & 0xFFF;
-  D_80078D60 = camYaw;
-  if (AbsAngleDelta12(D_80078D54, camYaw) > 0x400) {
+  g_nSaveMenuCameraFromZ = g_anCameraPos[2];
+  camYaw = (g_nSaveMenuSpyroToYaw + 0x30B) & 0xFFF;
+  g_nSaveMenuCameraToAngle = camYaw;
+  if (AbsAngleDelta12(g_nSaveMenuCameraFromAngle, camYaw) > 0x400) {
     g_nSaveMenuXOffset = 0;
-    D_80078D60 = (D_80078D70 - 0x30B) & 0xFFF;
+    g_nSaveMenuCameraToAngle = (g_nSaveMenuSpyroToYaw - 0x30B) & 0xFFF;
   }
-  D_80078D64 = 0x4C9;
-  D_80078D68 = g_abSpyroAnimPrevBlock[-4] + 0x56B;
+  g_nSaveMenuCameraToDist = 0x4C9;
+  g_nSaveMenuCameraToZ = g_abSpyroAnimPrevBlock[-4] + 0x56B;
 }

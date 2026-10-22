@@ -9,7 +9,6 @@ extern void DispatchSpyroTriggerEvent(int surface, int kind);
 /* shared-base view of g_dwSpyroRequestMask (0x80078c4c): the mask read and
    the FindGroundHeightBelow position arg (-0x1F4 = g_anSpyroWorldPos) are
    both reached off one held register. */
-extern unsigned int g_adwSpyroRequestMaskBlock[];
 
 /* 0x80048b9c (372 bytes) — per-frame Spyro physics driver: zero the motion
    accumulator, run the per-substep integrate loop, the footing-state

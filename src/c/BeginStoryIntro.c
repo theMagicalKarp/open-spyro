@@ -5,13 +5,14 @@
    0x5000 into +0x10/+0x12) alongside the 0x3FFF/0x5000 volume shadow globals,
    drop SFX/music volume to 10, park the gem-cutscene scratch pointer 0x2000
    below the render scratch region, and reseed the RNG. The 0xC0 store and the
-   SetSpuCommonAttr argument address the attr block 0x320 below D_80076228_blk,
-   which gcc holds as the one materialized base across the call. */
+   SetSpuCommonAttr argument address the attr block 0x320 below
+   g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the
+   call. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void SetSpuCommonAttr(void *attr);
 extern void srand(unsigned int seed);
-extern int D_80076228_blk[];
-extern int D_80076224_blk;
+extern int g_nSfxMixVolume_blk[];
+extern int g_nCdAudioVolume_blk;
 extern char *D_80078DC4;
 
 void BeginStoryIntro(void) {
@@ -20,10 +21,10 @@ void BeginStoryIntro(void) {
   int vol;
   g_nGamestate = 0xD;
   FillWord(&g_nGamestate0dMode, 0, 0x5C);
-  blk = D_80076228_blk;
+  blk = g_nSfxMixVolume_blk;
   blk[0] = 0x3FFF;
   vol = 0x5000;
-  D_80076224_blk = vol;
+  g_nCdAudioVolume_blk = vol;
   g_nSfxVolume = 0xA;
   *((short *)(&g_abSpuCommonAttr[0x10])) = vol;
   *((short *)(&g_abSpuCommonAttr[0x12])) = vol;

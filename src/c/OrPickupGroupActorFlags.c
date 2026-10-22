@@ -4,7 +4,7 @@
    type byte (+0x48) is < 0x80, OR the flag bits `a1` into its +0x18 word. The
    |= store may alias the id list, so the bit-15 last-entry test reloads *ptr as
    a signed halfword. No-op when the group index is out of range. */
-void func_8003B5F4(int a0, int a1) {
+void OrPickupGroupActorFlags(int a0, int a1) {
   unsigned short *ptr;
   int idx;
   unsigned char *base;

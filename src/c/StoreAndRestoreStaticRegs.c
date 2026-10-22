@@ -23,7 +23,7 @@ register int rr_s5 asm("$21");
 register int rr_s6 asm("$22");
 register int rr_s7 asm("$23");
 
-void func_800229E8(void) {
+void StoreAndRestoreStaticRegs(void) {
   register int *at asm("$1");
   register int v0 asm("$2");
 

@@ -5,8 +5,6 @@ extern void AverageSpyroPlatformMotion(void);
 extern void AdvanceSpyroPhysics(void);
 extern void ProbeSpyroGroundContact(void);
 extern void StepSpyroOntoLocalFloor(void);
-extern void ApplyGravityAlongSpyroSlopeNormal(void);
-extern void ApplyGravityAlongSpyroSlopeTangent(void);
 extern void ProbeSpyroLedgeForward(void);
 extern int ArcTan2(int y, int x, int high_precision);
 extern int LookupCosine(int angle);

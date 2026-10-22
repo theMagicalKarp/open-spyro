@@ -9,11 +9,6 @@ extern int VectorLength();
 extern int ArcTan2_8bit(int y, int x);
 extern void RefreshActorDerivedState();
 
-extern short D_80075280[];
-extern short D_8006CBA4[];
-extern short D_8006CBB4[];
-extern short D_8006CBCC[];
-
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
    +8 + i*0x10) and `step` the sub-step counter within the current leg, which
@@ -22,8 +17,8 @@ extern short D_8006CBCC[];
    is published in `prev`. Otherwise the remaining leg is divided into the
    frames still to run; for the first steps of a leg that share of the new
    leg is cross-faded with `prev` through the per-length weight table
-   (func_8003A920's tables). Flags bit 2 keeps the vertical component. The
-   step vector is folded into the actor position and its yaw/pitch bytes
+   (BlendVectorPairByMode's tables). Flags bit 2 keeps the vertical component.
+   The step vector is folded into the actor position and its yaw/pitch bytes
    (+0x46/+0x45) are re-aimed along it.
    Match notes: the empty do/while(0) keeps the idx load ahead of the *step
    load (the original's load-delay nop); `ret++` precedes the cursor test so

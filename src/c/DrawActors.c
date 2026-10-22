@@ -47,10 +47,10 @@ extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
 
 /* One scripted-mob mesh header; only the tint word at +0x10 is read here. */
 typedef struct ScriptedMobMesh {
-  int unk0;
-  int unk4;
-  int unk8;
-  int unkC;
+  int pad00;
+  int pad04;
+  int pad08;
+  int pad0C;
   unsigned int color; /* +0x10 */
 } ScriptedMobMesh;
 
@@ -63,8 +63,8 @@ typedef struct ScriptedMob {
   int ny;                 /* +0x0c */
   int nz;                 /* +0x10 */
   int nGateIndex;         /* +0x14 */
-  int unk18;
-  int unk1c;
+  int pad18;
+  int pad1C;
   int pts[8][3]; /* +0x20 */
 } ScriptedMob;
 
@@ -107,25 +107,26 @@ typedef struct EdgeRec {
   int c;
 } EdgeRec;
 
-extern unsigned char D_800771C8[]; /* per-mob visibility gate bytes */
-extern EdgeRec D_80077EA0[];       /* silhouette edge records */
-extern ScreenPt D_80078DD8[];      /* projected ring points */
+extern unsigned char g_abVisZoneGates[]; /* per-mob visibility gate bytes */
+extern EdgeRec g_aMobSilhouetteEdges[];  /* silhouette edge records */
+extern ScreenPt g_aMobRingScreenPts[];   /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
-#define KPT (*(ScreenPt *)((char *)D_80078DD8 + ko))
-extern int D_80076E24[];           /* [-0x10] view mtx, [-0x15] world mtx */
+#define KPT (*(ScreenPt *)((char *)g_aMobRingScreenPts + ko))
+extern int
+    g_nCameraFloorSurfaceType[];   /* [-0x10] view mtx, [-0x15] world mtx */
 extern int g_nStaticMeshLodCutoff; /* static-mesh LOD cutoff */
 
 /* Render stage 4: draw the scripted-mob billboards, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
    camera euler angles plus a slow spin/tilt (g_nScriptedMobViewYawSpin /
    ...PitchTilt, both advanced 2/frame here) and squashed to 5/8 on the middle
-   row. Each live mob is projected point-by-point into D_80078DD8, depth-cued
-   (and fog-blended during storms), then walked twice: once to accumulate the
-   centroid, screen extents and silhouette edges of the ring as-is, and — when
-   the mob is nearer than 0x4000 — once more with every point pushed 2 px away
-   from the centroid, giving the fattened outline pass. A pass is emitted only
-   when its extents fall inside the 512x240 frame and the ring faces the
-   camera. (0x80050bd0, 5148 bytes.) */
+   row. Each live mob is projected point-by-point into g_aMobRingScreenPts,
+   depth-cued (and fog-blended during storms), then walked twice: once to
+   accumulate the centroid, screen extents and silhouette edges of the ring
+   as-is, and — when the mob is nearer than 0x4000 — once more with every point
+   pushed 2 px away from the centroid, giving the fattened outline pass. A pass
+   is emitted only when its extents fall inside the 512x240 frame and the ring
+   faces the camera. (0x80050bd0, 5148 bytes.) */
 void DrawActors(void) {
   MATRIX viewMtx;         /* sp+0x10 */
   MATRIX outMtx;          /* sp+0x30 */
@@ -228,7 +229,7 @@ void DrawActors(void) {
 
   for (i = 0; i < g_nScriptedMobCount; i++) {
     if (g_apScriptedMobEntries[i]->nGateIndex < 0 ||
-        D_800771C8[g_apScriptedMobEntries[i]->nGateIndex] != 0) {
+        g_abVisZoneGates[g_apScriptedMobEntries[i]->nGateIndex] != 0) {
       flagY = 1;
       flagX = 1;
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
@@ -263,7 +264,7 @@ void DrawActors(void) {
 
       ZeroVector(vCenter);
       for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
-        ProjectWorldPointGTE((int *)&D_80078DD8[j],
+        ProjectWorldPointGTE((int *)&g_aMobRingScreenPts[j],
                              g_apScriptedMobEntries[i]->pts[j], maxX);
         AddVector(vCenter, vCenter, g_apScriptedMobEntries[i]->pts[j]);
       }
@@ -306,11 +307,12 @@ void DrawActors(void) {
             }
           }
         }
-        sumX += D_80078DD8[k].x;
-        sumY += D_80078DD8[k].y;
-        g_nActorMeshOtDepthBin += D_80078DD8[k].z;
-        if ((unsigned int)(D_80078DD8[k].x - 1) < 0x1ff &&
-            (unsigned int)(D_80078DD8[k].y - 1) < 0xef && D_80078DD8[k].z > 0) {
+        sumX += g_aMobRingScreenPts[k].x;
+        sumY += g_aMobRingScreenPts[k].y;
+        g_nActorMeshOtDepthBin += g_aMobRingScreenPts[k].z;
+        if ((unsigned int)(g_aMobRingScreenPts[k].x - 1) < 0x1ff &&
+            (unsigned int)(g_aMobRingScreenPts[k].y - 1) < 0xef &&
+            g_aMobRingScreenPts[k].z > 0) {
           flags = 1;
         }
         ko = k * 12;
@@ -330,18 +332,18 @@ void DrawActors(void) {
         if (yk < minY) {
           minY = yk;
         }
-        if ((D_80078DD8[j].x < 0x200 || xk < 0x200) &&
-            (D_80078DD8[j].x > 0 || xk > 0) &&
-            (D_80078DD8[j].y < 0xf0 || yk < 0xf0) &&
-            (D_80078DD8[j].y > 0 || yk > 0)) {
-          dx = D_80078DD8[j].x - xk;
+        if ((g_aMobRingScreenPts[j].x < 0x200 || xk < 0x200) &&
+            (g_aMobRingScreenPts[j].x > 0 || xk > 0) &&
+            (g_aMobRingScreenPts[j].y < 0xf0 || yk < 0xf0) &&
+            (g_aMobRingScreenPts[j].y > 0 || yk > 0)) {
+          dx = g_aMobRingScreenPts[j].x - xk;
           if (dx < 0) {
             dx = -dx;
           }
           if (dx >= 3) {
             flagX = 0;
           }
-          dy = D_80078DD8[j].y - yk;
+          dy = g_aMobRingScreenPts[j].y - yk;
           __asm__ volatile("" : : "r"(yk));
           if (dy < 0) {
             dy = -dy;
@@ -349,14 +351,17 @@ void DrawActors(void) {
           if (dy >= 3) {
             flagY = 0;
           }
-          D_80077EA0[nEdges].live = 1;
-          D_80077EA0[nEdges].p0 =
-              (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
-          D_80077EA0[nEdges].p1 = (KPT.y << 16) | (unsigned short)KPT.x;
-          D_80077EA0[nEdges].nx = D_80078DD8[j].y - KPT.y;
-          D_80077EA0[nEdges].ny = KPT.x - D_80078DD8[j].x;
-          D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
-                                 D_80077EA0[nEdges].ny * D_80078DD8[j].y;
+          g_aMobSilhouetteEdges[nEdges].live = 1;
+          g_aMobSilhouetteEdges[nEdges].p0 =
+              (g_aMobRingScreenPts[j].y << 16) |
+              (unsigned short)g_aMobRingScreenPts[j].x;
+          g_aMobSilhouetteEdges[nEdges].p1 =
+              (KPT.y << 16) | (unsigned short)KPT.x;
+          g_aMobSilhouetteEdges[nEdges].nx = g_aMobRingScreenPts[j].y - KPT.y;
+          g_aMobSilhouetteEdges[nEdges].ny = KPT.x - g_aMobRingScreenPts[j].x;
+          g_aMobSilhouetteEdges[nEdges].c =
+              -g_aMobSilhouetteEdges[nEdges].nx * g_aMobRingScreenPts[j].x -
+              g_aMobSilhouetteEdges[nEdges].ny * g_aMobRingScreenPts[j].y;
           nEdges++;
         }
       }
@@ -419,7 +424,7 @@ void DrawActors(void) {
           g_anActorScissorRect[1] = maxY << 16;
           g_anActorScissorRect[2] = maxX << 16;
           g_anActorScissorRect[3] = minX << 16;
-          D_80077EA0[nEdges].live = 0;
+          g_aMobSilhouetteEdges[nEdges].live = 0;
           if (dist < 0x4000) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
@@ -448,26 +453,26 @@ void DrawActors(void) {
           for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
             int t;
 
-            t = D_80078DD8[j].x;
+            t = g_aMobRingScreenPts[j].x;
             if (sumX < t) {
-              D_80078DD8[j].x = t + 2;
+              g_aMobRingScreenPts[j].x = t + 2;
             } else if (t < sumX) {
-              D_80078DD8[j].x = t - 2;
+              g_aMobRingScreenPts[j].x = t - 2;
             }
-            t = D_80078DD8[j].y;
+            t = g_aMobRingScreenPts[j].y;
             if (sumY < t) {
-              D_80078DD8[j].y = t + 2;
+              g_aMobRingScreenPts[j].y = t + 2;
             } else if (t < sumY) {
-              D_80078DD8[j].y = t - 2;
+              g_aMobRingScreenPts[j].y = t - 2;
             }
-            t = D_80078DD8[j].x;
+            t = g_aMobRingScreenPts[j].x;
             if (maxX < t) {
               maxX = t;
             }
             if (t < minX) {
               minX = t;
             }
-            t = D_80078DD8[j].y;
+            t = g_aMobRingScreenPts[j].y;
             if (maxY < t) {
               maxY = t;
             }
@@ -494,24 +499,33 @@ void DrawActors(void) {
                 }
               }
             }
-            if ((unsigned int)(D_80078DD8[k].x - 1) < 0x1ff &&
-                (unsigned int)(D_80078DD8[k].y - 1) < 0xef &&
-                D_80078DD8[k].z > 0) {
+            if ((unsigned int)(g_aMobRingScreenPts[k].x - 1) < 0x1ff &&
+                (unsigned int)(g_aMobRingScreenPts[k].y - 1) < 0xef &&
+                g_aMobRingScreenPts[k].z > 0) {
               flags = 1;
             }
-            if ((D_80078DD8[j].x < 0x200 || D_80078DD8[k].x < 0x200) &&
-                (D_80078DD8[j].x > 0 || D_80078DD8[k].x > 0) &&
-                (D_80078DD8[j].y < 0xf0 || D_80078DD8[k].y < 0xf0) &&
-                (D_80078DD8[j].y > 0 || D_80078DD8[k].y > 0)) {
-              D_80077EA0[nEdges].live = 1;
-              D_80077EA0[nEdges].p0 =
-                  (D_80078DD8[j].y << 16) | (unsigned short)D_80078DD8[j].x;
-              D_80077EA0[nEdges].p1 =
-                  (D_80078DD8[k].y << 16) | (unsigned short)D_80078DD8[k].x;
-              D_80077EA0[nEdges].nx = D_80078DD8[j].y - D_80078DD8[k].y;
-              D_80077EA0[nEdges].ny = D_80078DD8[k].x - D_80078DD8[j].x;
-              D_80077EA0[nEdges].c = -D_80077EA0[nEdges].nx * D_80078DD8[j].x -
-                                     D_80077EA0[nEdges].ny * D_80078DD8[j].y;
+            if ((g_aMobRingScreenPts[j].x < 0x200 ||
+                 g_aMobRingScreenPts[k].x < 0x200) &&
+                (g_aMobRingScreenPts[j].x > 0 ||
+                 g_aMobRingScreenPts[k].x > 0) &&
+                (g_aMobRingScreenPts[j].y < 0xf0 ||
+                 g_aMobRingScreenPts[k].y < 0xf0) &&
+                (g_aMobRingScreenPts[j].y > 0 ||
+                 g_aMobRingScreenPts[k].y > 0)) {
+              g_aMobSilhouetteEdges[nEdges].live = 1;
+              g_aMobSilhouetteEdges[nEdges].p0 =
+                  (g_aMobRingScreenPts[j].y << 16) |
+                  (unsigned short)g_aMobRingScreenPts[j].x;
+              g_aMobSilhouetteEdges[nEdges].p1 =
+                  (g_aMobRingScreenPts[k].y << 16) |
+                  (unsigned short)g_aMobRingScreenPts[k].x;
+              g_aMobSilhouetteEdges[nEdges].nx =
+                  g_aMobRingScreenPts[j].y - g_aMobRingScreenPts[k].y;
+              g_aMobSilhouetteEdges[nEdges].ny =
+                  g_aMobRingScreenPts[k].x - g_aMobRingScreenPts[j].x;
+              g_aMobSilhouetteEdges[nEdges].c =
+                  -g_aMobSilhouetteEdges[nEdges].nx * g_aMobRingScreenPts[j].x -
+                  g_aMobSilhouetteEdges[nEdges].ny * g_aMobRingScreenPts[j].y;
               nEdges++;
             }
           }
@@ -562,7 +576,7 @@ void DrawActors(void) {
             g_anActorScissorRect[1] = maxY << 16;
             g_anActorScissorRect[2] = maxX << 16;
             g_anActorScissorRect[3] = minX << 16;
-            D_80077EA0[nEdges].live = 0;
+            g_aMobSilhouetteEdges[nEdges].live = 0;
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
               g_dwActorMeshFadeColor = ComputeDepthCuedColor(
@@ -581,10 +595,10 @@ void DrawActors(void) {
     }
   }
 
-  lod = D_80076E24[0];
+  lod = g_nCameraFloorSurfaceType[0];
   if (lod >= g_nStaticMeshLodCutoff) {
     lod = -1;
   }
-  EmitStaticActorMeshList(lod, (MATRIX *)&D_80076E24[-0x10],
-                          (MATRIX *)&D_80076E24[-0x15]);
+  EmitStaticActorMeshList(lod, (MATRIX *)&g_nCameraFloorSurfaceType[-0x10],
+                          (MATRIX *)&g_nCameraFloorSurfaceType[-0x15]);
 }

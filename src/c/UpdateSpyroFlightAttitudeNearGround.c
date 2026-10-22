@@ -25,8 +25,8 @@ extern int g_anSpyroGroundNormalPost[];
    ground (g_nSpyroGroundSlope < 0x17; otherwise DampenSpyroFreeFallAttitude).
    Projects the ground normal into Spyro's yaw frame, derives the target pitch
    and roll from it, spring-damps the body pitch/roll toward them (velocities
-   in D_80078CB0/CB4), and when both persistent-euler snapshots are tilted
-   past 0xc0+0x20 layers a ground-hug offset (rotated by the body euler
+   in g_nSpyroPitchSpringVel/CB4), and when both persistent-euler snapshots are
+   tilted past 0xc0+0x20 layers a ground-hug offset (rotated by the body euler
    matrix) onto g_anSpyroWorldPos.
 
    Match notes: the angle pair lives in an addressable `ang[2]` (stack 0x20)
@@ -68,10 +68,12 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
     if (ang[1] > 0x800) {
       ang[1] -= 0x1000;
     }
-    D_80078CB0 += ((ang[0] << 2) >> 4) - ((D_80078CB0 << 4) >> 6);
-    D_80078CB4 += ((ang[1] << 2) >> 4) - ((D_80078CB4 << 4) >> 6);
-    ang[0] = D_80078CB0 >> 2;
-    ang[1] = D_80078CB4 >> 2;
+    g_nSpyroPitchSpringVel +=
+        ((ang[0] << 2) >> 4) - ((g_nSpyroPitchSpringVel << 4) >> 6);
+    g_nSpyroRollSpringVel +=
+        ((ang[1] << 2) >> 4) - ((g_nSpyroRollSpringVel << 4) >> 6);
+    ang[0] = g_nSpyroPitchSpringVel >> 2;
+    ang[1] = g_nSpyroRollSpringVel >> 2;
     g_nSpyroBodyPitch = (g_nSpyroBodyPitch + ang[0]) & 0xfff;
     if (g_nSpyroBodyPitch > 0x800) {
       g_nSpyroBodyPitch -= 0x1000;

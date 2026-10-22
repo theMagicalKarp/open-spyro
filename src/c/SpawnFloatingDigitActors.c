@@ -23,7 +23,7 @@ struct DigitActor {
   unsigned char yaw;   /* 0x46 coarse camera yaw */
 };
 
-/* func_800557CC - VMA 0x800557cc, 400 bytes.
+/* SpawnFloatingDigitActors - VMA 0x800557cc, 400 bytes.
 
    Spawn one floating digit actor (id 0x104 + digit) per decimal digit of
    `value`, least significant first, walking away from `src` along the camera
@@ -46,7 +46,7 @@ struct DigitActor {
      sched1, idx2/cos take a0 and rot[2] v0, and sched2 can hoist the lhu up
      to the yaw lbu. The barrier also keeps the sh above the x/y updates
      (a free store would win the hazard tie and sink to the delay slot). */
-void func_800557CC(int value, struct DigitActor *src) {
+void SpawnFloatingDigitActors(int value, struct DigitActor *src) {
   short rot[3];
   struct DigitActor *rec;
   struct Digit *st;

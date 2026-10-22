@@ -12,7 +12,7 @@
 
 extern void RestartStalledCdRead(void);
 
-extern int FUN_80063bd8();
+extern int CallCdSync();
 
 extern int SetSpuTransferStartAddr(unsigned int addr);
 
@@ -53,18 +53,18 @@ extern int D_80075838;
 
 extern int D_8007583C;
 
-extern int D_80076E24;
+extern int g_nCameraFloorSurfaceType;
 
 /* array alias for the sub-frame accumulator at 0x80078a7c (see
    config/symbol_addrs.txt) -- forces the held base register, matching the
    original's single `a1` reuse across the load + both stores. */
 extern unsigned char g_abSpyroSubFrameTimerBlock[];
 
-extern unsigned char D_80078A72;
+extern unsigned char g_bSpyroAnimLayer1Prev;
 
-extern unsigned char D_80078A78;
+extern unsigned char g_bSpyroAnimLayer1FramePrev;
 
-extern unsigned char D_80078A79;
+extern unsigned char g_bSpyroAnimLayer1Frame;
 
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* array alias for
    the substep accumulator at 0x80078a7d, see config/symbol_addrs.txt --
@@ -75,9 +75,9 @@ extern void IntegrateSpyroMotionForSubstep(int substep);
 
 extern void AdvanceSpyroSubstepState(void);
 
-extern int D_80078CB0;
+extern int g_nSpyroPitchSpringVel;
 
-extern int D_80078CB4;
+extern int g_nSpyroRollSpringVel;
 
 /* held-base view of g_nSpyroMoveTargetYaw (0x80078b24): [0] is the move-target
    yaw, [0x14] (+0x50) is g_nSpyroBodyYaw. */
@@ -95,7 +95,7 @@ extern short g_nSfxOverrideVolL;
 
 extern short g_nSfxOverrideVolR;
 
-extern int D_80076224_blk;
+extern int g_nCdAudioVolume_blk;
 
 /* Return to the current world's hub (0x8002c664): reset the level-transition /
    CD-stream state, arm a scripted respawn back into the hub (camera mode
@@ -122,15 +122,15 @@ extern void UpdateCameraFrame(void);
 
 extern void TickCdMusicStream(void);
 
-extern int D_80075728;
+extern int g_nSpyroOrbDropSpawnIndex;
 
-extern int D_800756B4;
+extern int g_bSpyroJumpHoldForced;
 
 extern void BeginStoryIntro(void);
 
-extern int D_8007A6E4;            /* level-load chunk size */
+extern int g_nLevelLoadChunkSize;            /* level-load chunk size */
 
-extern int D_8007A6E0;            /* level-load byte offset */
+extern int g_nLevelLoadByteOffset;            /* level-load byte offset */
 
 extern void BuildActorDrawList(void);
 
@@ -181,7 +181,7 @@ extern short g_anCameraEulerYawBlock[];
 
 extern int g_nActorFrameDelta;
 
-extern short D_80075F1A;           /* SpuCommonAttr CD volume R */
+extern short g_nSpuCommonCdVolumeR;           /* SpuCommonAttr CD volume R */
 
 /* Snap the spring camera to its per-mode target (0x80034358, 0x128).
    Loads the target angles for the current mode, copies all six target
@@ -204,5 +204,39 @@ extern void TickSpyroAnimStateMachine(void);
 extern void TickSpyroHornStrikeAttack(void);
 
 extern void TickSpyroAnimLayer2GateTimer(void);
+
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern void AdvanceCameraSpringStep(int column);
+extern void ApplyGravityAlongSpyroSlopeNormal(void);
+extern void ApplyGravityAlongSpyroSlopeTangent(void);
+extern int ApproachAngle8(int target, int cur, int step, int lim);
+extern void BuildCameraViewMatrix(void);
+extern short D_8006CBA4[];
+extern short D_8006CBB4[];
+extern short D_8006CBCC[];
+extern short D_80075280[];
+extern void DrawFullscreenTint(int slot, int r, int g, int b);
+extern void EmitStaticActorMeshListFogged(void);
+extern void EnqueueLoadingScreenSprites(void);
+extern long GetSpuTransferStatus(int mode);
+extern void InitActorMeshScratchRegions(int mode);
+extern void InitNewGameState(void);
+extern void RelocateMobActorTable(void *table);
+extern void RotateLightVectorXZ(int steps);
+extern void SetSpuCommonAttr(unsigned char *attr);
+extern void SnapCameraToTarget(void);
+extern int g_abDrawBufPool;          /* draw-buffer sentinel */
+extern unsigned int g_adwSpyroRequestMaskBlock[];
+extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
+extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
+extern int g_anSaveMenuBlock[];
+extern int g_anSpawnAnchorBlock[];
+extern int g_anSpyroStateBlock[];
+extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
+extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
+extern void *g_apRenderScratchPrimTopBlock[];
+extern void *g_apSaveMenuAnimActorListBlock[];
+extern char g_szContinue[];       /* "CONTINUE"    */
+extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 
 #endif /* OPEN_SPYRO_MAIN_SHARED_H */

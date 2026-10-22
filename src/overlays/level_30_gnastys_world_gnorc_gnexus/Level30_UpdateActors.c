@@ -94,31 +94,31 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
 typedef struct PathData {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
-  char unk02[4];
+  char pad02[4];
   short reversed; /* 0x06 */
   struct {
     int x;
     int y;
     int z;
-    int unk0C;
+    int pad0C;
   } nodes[1]; /* 0x08 */
 } PathData;
 
 /* Type 10: path patroller. */
 typedef struct PathState {
-  int unk00;
+  int pad00;
   int unk04;
-  int unk08;
+  int pad08;
   PathData *path; /* 0x0C */
-  int unk10;
+  int pad10;
   int unk14;
   int unk18;
   int heading; /* 0x1C */
-  int unk20;   /* 0x20 */
+  int pad20;   /* 0x20 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
-  int unk28;   /* 0x28 clamped to <= 0x5A */
+  int pad28;   /* 0x28 clamped to <= 0x5A */
   int successCount;   /* 0x2C consecutive-success counter */
-  int unk30;   /* 0x30 */
+  int pad30;   /* 0x30 */
 } PathState;
 
 /* Node accessors for paths held as byte pointers (type 286). */
@@ -138,7 +138,6 @@ typedef struct RoamState {
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
 
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -146,7 +145,7 @@ extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
 typedef struct ShotState {
-  void *unk00;           /* 0x00 egg index */
+  void *pad00;           /* 0x00 egg index */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
@@ -165,7 +164,7 @@ typedef struct ChaseState {
   int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
   int tgtX;              /* 0x04 */
   int tgtY;              /* 0x08 */
-  int unk0C;             /* 0x0C */
+  int pad0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
   unsigned char headingTimer;     /* 0x12 heading-change timer */
@@ -177,8 +176,8 @@ typedef struct ChaseState {
 typedef struct ChaserState {
   int timer; /* 0x00 */
   int unk04;
-  int unk08;
-  int unk0C;
+  int pad08;
+  int pad0C;
   Actor *owner; /* 0x10 actor being fetched, or null */
 } ChaserState;
 
@@ -187,7 +186,6 @@ typedef struct ChaserState {
 extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
@@ -220,9 +218,6 @@ typedef struct AnimState {
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
 
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
@@ -296,19 +291,19 @@ extern void ResetSpyroLinearMotion(void);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
-  int unk00; /* 0x00 */
+  int pad00; /* 0x00 */
   int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
 typedef struct RideState {
-  int unk00[6]; /* 0x00 */
-  int unk18;    /* 0x18 */
+  int pad00[6]; /* 0x00 */
+  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->unk20 is unset */
   int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
-  int unk28[7]; /* 0x28 */
+  int pad28[7]; /* 0x28 */
   int phase;    /* 0x44 phase counter, 0 .. 0x100 */
   int savedRotX;    /* 0x48 saved actor->rotX */
   int savedRotY;    /* 0x4C saved actor->rotY */
@@ -354,15 +349,15 @@ typedef struct {
   short rotX;         /* 0x4C m_Rotation */
   short rotY;         /* 0x4E */
   short rotZ;         /* 0x50 */
-  short unk52;        /* 0x52 */
+  short pad52;        /* 0x52 */
   int occlusion;      /* 0x54 */
   unsigned int state; /* 0x58 m_State */
-  int unk5C;          /* 0x5C */
+  int pad5C;          /* 0x5C */
   Xform lastSim;      /* 0x60 */
   Xform sphere;       /* 0x78 m_Sphere */
   Xform sim;          /* 0x90 m_Simulation */
-  Xform unkA8;        /* 0xA8 */
-  int unkC0;          /* 0xC0 */
+  Xform springDelta;        /* 0xA8 g_anCameraSpringDeltaState */
+  int nextMode;          /* 0xC0 g_nCameraNextMode */
   char padC4[0x14];
   Xform *preset; /* 0xD8 m_SphericalPreset */
 } CamObj;
@@ -379,7 +374,7 @@ extern void UpdateCameraEulerAngles(void);
 typedef struct PortalDesc {
   unsigned char count;    /* 0x00 */
   unsigned char index;    /* 0x01 */
-  unsigned char unk02[6]; /* 0x02 */
+  unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
   int unk14;              /* 0x14 */
   int posB[3];            /* 0x18 */
@@ -389,7 +384,7 @@ typedef struct PortalDesc {
 typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
-  int unk10;        /* 0x10 */
+  int pad10;        /* 0x10 */
   int unk14;        /* 0x14 published to SPY.u206 as a byte */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
@@ -445,7 +440,7 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
+  int pad10;      /* 0x10 passed by address to DriveActorTrackedMove */
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
@@ -485,7 +480,7 @@ typedef struct FlockState {
   int knockAngle;      /* 0x00 knockback angle */
   int knockSpeed;      /* 0x04 knockback speed */
   PathData *path; /* 0x08 */
-  int unk0C;
+  int pad0C;
   int chainA;       /* 0x10 */
   int chainB;       /* 0x14 */
   int slots[16][3]; /* 0x18 */
@@ -709,7 +704,7 @@ typedef struct FlyState {
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
 typedef struct ChestState {
-  int unk0;
+  int pad00;
   int shake; /* 0x04 */
 } ChestState;
 
@@ -787,7 +782,7 @@ typedef struct WardenState {
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -801,7 +796,8 @@ typedef struct BobState {
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
   char pad00[0x18];
-  int unk18;   /* 0x18 */
+  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
+                * statue has none and counts the rescue directly */
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
@@ -830,7 +826,6 @@ extern volatile unsigned char g_bSpyroOtBinBias;
 extern volatile unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 
-extern signed char D_80078C5E; /* destination level */
 extern int g_anSpyroRequestVelocity;         /* scripted camera look-at */
 extern int g_nSpyroRequestVelocityY;
 extern PortalDesc *volatile g_pGemPickupCamPathData;
@@ -843,10 +838,6 @@ extern unsigned char D_80078E9A;
 extern unsigned char D_8007A6C7;
 extern unsigned char D_8007A6C8;
 
-extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
-extern void SetWorldChunkAnimStep(int ch, int n, int a);
-extern int GetWorldChunkAnimState(int ch);
-extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
 
 /* ==== The function ==== */
@@ -1850,7 +1841,7 @@ void Level30_UpdateActors(void) {
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->unk1C |= 0x80000000;
+                actor->groundCode |= 0x80000000;
               }
             }
           }
@@ -1978,7 +1969,7 @@ void Level30_UpdateActors(void) {
           actor->mode = 2;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (int *)0xC);
-          actor->unk1C &= 0x7FFFFFFF;
+          actor->groundCode &= 0x7FFFFFFF;
         }
         break;
       }
@@ -2306,7 +2297,7 @@ void Level30_UpdateActors(void) {
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
-            actor->unk1C = 0;
+            actor->groundCode = 0;
             actor->visZone = 0xFF;
             actor->subMode = 2;
           }
@@ -2695,7 +2686,7 @@ void Level30_UpdateActors(void) {
               continue;
             }
 
-            if (st->unk18 == st->reward) {
+            if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
@@ -3158,7 +3149,7 @@ void Level30_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          D_80078C5E = st->dest;
+          g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
           {
             int e = g_nCameraYaw;
@@ -3201,7 +3192,7 @@ void Level30_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          D_80078C5E = st->dest;
+          g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
           {
             int e = g_nCameraYaw;

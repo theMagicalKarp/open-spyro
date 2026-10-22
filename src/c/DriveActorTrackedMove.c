@@ -12,7 +12,7 @@ extern int MoveActorAlongAngle(int *actor, int a, int b, int dist, int c,
 extern int ProbeActorGroundHeightRaised(int *actor, int a);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 
-int DriveActorTrackedMove(int *actor, int *counter, int arg2, int *timer,
+int DriveActorTrackedMove(int *actor, int *counter, int angle, int *timer,
                           int step, int decay) {
   int ret;
   int mode;
@@ -38,7 +38,7 @@ int DriveActorTrackedMove(int *actor, int *counter, int arg2, int *timer,
     }
   }
   if (*counter != 0) {
-    ret = MoveActorAlongAngle(actor, arg2, *counter, dist, 0x1F4, mode);
+    ret = MoveActorAlongAngle(actor, angle, *counter, dist, 0x1F4, mode);
     t = *counter - step;
     *counter = t;
     if (t < 0) {
