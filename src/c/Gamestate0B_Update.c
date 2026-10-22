@@ -165,7 +165,7 @@ void Gamestate0B_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
       TickSpyroAttackEffects(g_nFrameStep);
-      ((void (*)(int))g_pfnGamestate0LateHook)(g_nFrameStep);
+      ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     } else {
       FLD(ACT, 0xc) = g_anSpyroWorldPos[0] +
                       ((LookupCosine(D_80078D38) * D_80078D3C) >> 12);
@@ -206,7 +206,7 @@ void Gamestate0B_Update(void) {
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
     g_dwGamestateFrames++;
-    ((void (*)(int))g_pfnGamestate0LateHook)(g_nFrameStep);
+    ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     switch (SM[3]) {
     case 0:
       if (g_dwPadPressed & 0x4000) {

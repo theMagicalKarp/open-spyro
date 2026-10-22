@@ -144,7 +144,7 @@ extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
-extern void (*g_pfnLevelOverlayParticleSpawn)(int kind, int count, int *pos, int spread); /* SpawnPuff */
+extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 extern int g_anSpyroFirstContactNormal[3];
 
 Actor *Level12_SpawnActor(int type, Actor *parent) {
@@ -258,7 +258,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->unk41 = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->unk3C = 2;
       rec->unk3D = 2;
-      g_pfnLevelOverlayParticleSpawn(4, 7, pos, 0x10);
+      g_pfnLevelEmitParticles(4, 7, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
     } else {

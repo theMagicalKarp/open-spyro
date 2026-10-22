@@ -530,7 +530,7 @@ sprites:
   ResetWorldParticleTables();
   if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
     g_pLevelOverlayInitRecord =
-        (*((void *(**)())(&g_pfnLevelOverlayInitHook)))(0x78, 0);
+        (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
     InitHudCounters(1);
   }
   return HandleMusicCommand(g_nCurrentMusicTrack, 1);

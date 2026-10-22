@@ -80,7 +80,7 @@ extern int g_anSpyroDeathCamRecordBlock[];
 #define RAMP ((signed char *)g_abSpyroEulerRateRampSigned)
 
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(a, b, c, d)
+  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
 /* Opaque copy: the result is a fresh value to cse, so a block address stays
    in its register and later fields are addressed off it. */

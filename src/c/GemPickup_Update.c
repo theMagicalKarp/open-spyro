@@ -137,7 +137,7 @@ void GemPickup_Update(void) {
     int now;
 
     g_dwGamestateFrames++;
-    ((void (*)(void))g_pfnGamestate0EarlyHook)();
+    ((void (*)(void))g_pfnLevelUpdateActors)();
     TickSpyroGameplayFrame();
     UpdateCameraFrame();
     g_nGemPickupAuraStarEnabled = 1;
@@ -253,8 +253,8 @@ void GemPickup_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(0xFB,
-                                                       g_pGemPickupSourceActor);
+    ((void (*)(int, void *))g_pfnLevelSpawnActor)(0xFB,
+                                                  g_pGemPickupSourceActor);
     if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames) {
       t = LookupSine((g_nGemPickupTimer << 11) /
                          g_nGemPickupSweepDurationFrames -
@@ -461,8 +461,8 @@ void GemPickup_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(0xFB,
-                                                       g_pGemPickupSourceActor);
+    ((void (*)(int, void *))g_pfnLevelSpawnActor)(0xFB,
+                                                  g_pGemPickupSourceActor);
     if (g_nGemPickupTimer < 0x10 || g_nGemPickupStreamState < 3) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
@@ -475,7 +475,7 @@ void GemPickup_Update(void) {
         int five;
 
         for (n = 0; n < 0x20; n++) {
-          ((void (*)(int, void *))g_pfnLevelOverlayInitHook)(
+          ((void (*)(int, void *))g_pfnLevelSpawnActor)(
               0xFB, g_pGemPickupSourceActor);
         }
         __asm__("" : "=r"(five) : "0"(5));
@@ -707,8 +707,8 @@ void GemPickup_Update(void) {
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, (int *)((char *)g_pGemPickupStatueActor + 0xC));
       ((int *)ang)[2] += 0x40;
-      ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(
-          0x20, 0x18, (int *)ang, 0);
+      ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(0x20, 0x18,
+                                                                (int *)ang, 0);
       CopyVector(g_anGemPickupAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
@@ -783,7 +783,7 @@ void GemPickup_Update(void) {
     }
   } break;
   }
-  ((void (*)(int))g_pfnGamestate0LateHook)(g_nFrameStep);
+  ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
   if (g_nGemPickupSubstate > 0) {
     TickGemPickupAssetStream();
   }

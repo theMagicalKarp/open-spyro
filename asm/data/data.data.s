@@ -14250,11 +14250,11 @@ dlabel g_nCameraLosClear
     /* 65EB8 800756B8 00000000 */ .word 0x00000000
 enddlabel g_nCameraLosClear
 
-nonmatching g_pfnGamestate0LateHook
+nonmatching g_pfnLevelAdvanceEmitList
 
-dlabel g_pfnGamestate0LateHook
+dlabel g_pfnLevelAdvanceEmitList
     /* 65EBC 800756BC 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0LateHook
+enddlabel g_pfnLevelAdvanceEmitList
 
 nonmatching g_nLetterboxBarHeight
 
@@ -14428,11 +14428,11 @@ dlabel g_nPadSetMainModePending
     /* 65F30 80075730 00000000 */ .word 0x00000000
 enddlabel g_nPadSetMainModePending
 
-nonmatching g_pfnGamestate0EarlyHook
+nonmatching g_pfnLevelUpdateActors
 
-dlabel g_pfnGamestate0EarlyHook
+dlabel g_pfnLevelUpdateActors
     /* 65F34 80075734 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0EarlyHook
+enddlabel g_pfnLevelUpdateActors
 
 nonmatching g_pEmitListWriteCursor
 
@@ -14598,11 +14598,11 @@ dlabel g_nGamePaused
     /* 65F9C 8007579C 00000000 */ .word 0x00000000
 enddlabel g_nGamePaused
 
-nonmatching D_800757A0
+nonmatching g_pfnLevelBeginActorCutscene
 
-dlabel D_800757A0
+dlabel g_pfnLevelBeginActorCutscene
     /* 65FA0 800757A0 00000000 */ .word 0x00000000
-enddlabel D_800757A0
+enddlabel g_pfnLevelBeginActorCutscene
 
 nonmatching g_nOptionVibrationEnabled
 
@@ -14610,11 +14610,11 @@ dlabel g_nOptionVibrationEnabled
     /* 65FA4 800757A4 00000000 */ .word 0x00000000
 enddlabel g_nOptionVibrationEnabled
 
-nonmatching D_800757A8
+nonmatching g_pfnLevelHandleFlightResults
 
-dlabel D_800757A8
+dlabel g_pfnLevelHandleFlightResults
     /* 65FA8 800757A8 00000000 */ .word 0x00000000
-enddlabel D_800757A8
+enddlabel g_pfnLevelHandleFlightResults
 
 nonmatching D_800757AC
 

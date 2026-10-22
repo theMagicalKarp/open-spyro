@@ -45,7 +45,7 @@ struct Actor {
    record: while none is registered yet and g_nLevelReadyFlag is non-negative
    the drop is built as id 0x78 instead, seeded by PlayActorMeshVoice, latched
    into g_pLevelOverlayInitRecord and the flag knocked down to 1. Otherwise a
-   record is allocated through g_pfnLevelOverlayInitHook and thrown: kinds 0/2/6
+   record is allocated through g_pfnLevelSpawnActor and thrown: kinds 0/2/6
    land on the source (or `alt`) position with a small XY jitter, kind 1 and any
    kind-3/4 that fails its Spyro proximity test scatter over a wider XY box,
    kind 5 drops in place with zero velocity, and kinds 3/4 that pass attach
@@ -89,10 +89,10 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
   if (id == 0x10) {
     if (g_pLevelOverlayInitRecord != 0 || g_anLevelReadyFlagBlock[0] < 0) {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelOverlayInitHook)(0x10, src);
+                 g_pfnLevelSpawnActor)(0x10, src);
     } else {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelOverlayInitHook)(0x78, src);
+                 g_pfnLevelSpawnActor)(0x78, src);
       PlayActorMeshVoice(rec, 0, 0);
       g_anLevelReadyFlagBlock[0] = 1;
       g_pLevelOverlayInitRecord = rec;
@@ -102,14 +102,14 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
 
   if (id == 0xe) {
     rec = (*(struct Actor * (*)(int, struct Actor *))
-               g_pfnLevelOverlayInitHook)(0xe, src);
+               g_pfnLevelSpawnActor)(0xe, src);
     dbg = rec->debris;
     dbg->live = 1;
     return rec;
   }
 
-  rec = (*(struct Actor * (*)(int, struct Actor *))
-             g_pfnLevelOverlayInitHook)(id, src);
+  rec = (*(struct Actor * (*)(int, struct Actor *)) g_pfnLevelSpawnActor)(id,
+                                                                          src);
   dbg = rec->debris;
 
   if (kind == 0) {

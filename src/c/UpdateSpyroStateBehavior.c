@@ -52,7 +52,7 @@ static inline int OpaqueInt(int p) {
 }
 
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(a, b, c, d)
+  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
 /* Landing: pick the ground state from the speed target and current speed. */
 #define LAND_ON_GROUND()                                                       \
@@ -410,7 +410,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
         ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnGamestate0EarlyHook)();
+        ((void (*)(void))g_pfnLevelUpdateActors)();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -788,7 +788,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
         ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnGamestate0EarlyHook)();
+        ((void (*)(void))g_pfnLevelUpdateActors)();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -985,8 +985,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_READY] = -1;
-      ((void (*)(int, int))g_pfnLevelOverlayInitHook)(D_8006EA40[D_80075728],
-                                                      0);
+      ((void (*)(int, int))g_pfnLevelSpawnActor)(D_8006EA40[D_80075728], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & 0x40)) {

@@ -96,7 +96,7 @@ void GamestateUpdate(void) {
     }
 
     TickWorldChunkAnimations(g_nFrameStep);
-    (*(void (*)())g_pfnGamestate0EarlyHook)();
+    (*(void (*)())g_pfnLevelUpdateActors)();
 
     if (g_nGamestate == 0xB || g_nGamestate == 0xC || g_nGamestate == 7 ||
         g_nGamestate == 1) {
@@ -108,7 +108,7 @@ void GamestateUpdate(void) {
       return;
     }
 
-    (*(void (*)())g_pfnGamestate0LateHook)(g_nFrameStep);
+    (*(void (*)())g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     if (!g_nFlightLevelActive) {
       UpdateHudCounters();
     }

@@ -152,7 +152,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_STATE] == 3) {
       CopyVector(puff, &SPY[SPY_MOTION]);
       RShiftVector3(puff, 6);
-      ((ParticleSpawnFn)g_pfnLevelOverlayParticleSpawn)(1, 0x21, puff, 0);
+      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, puff, 0);
     }
   } break;
   case 4:
@@ -164,7 +164,7 @@ void DispatchSpyroPhysicsByState(void) {
     dir[1] = 0;
     dir[2] = 0;
     RotateVectorByMatrix(g_anSpyroBodyMtx, dir, dir);
-    ((ParticleSpawnFn)g_pfnLevelOverlayParticleSpawn)(1, 0x21, dir, 0);
+    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, dir, 0);
     break;
   case 7: {
     unsigned char frame;
@@ -309,7 +309,7 @@ void DispatchSpyroPhysicsByState(void) {
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
       CopyVector(dustVel, &SPY[SPY_MOTION]);
       RShiftVector3(dustVel, 6);
-      ((ParticleSpawnFn)g_pfnLevelOverlayParticleSpawn)(1, 9, dust, dustVel);
+      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, dust, dustVel);
     }
     break;
   case 9:
@@ -356,7 +356,7 @@ void DispatchSpyroPhysicsByState(void) {
     bubble[2] -= 0x164;
     CopyVector(bubbleVel, &SPY[SPY_MOTION]);
     RShiftVector3(bubbleVel, 6);
-    ((ParticleSpawnFn)g_pfnLevelOverlayParticleSpawn)(1, 9, bubble, bubbleVel);
+    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, bubble, bubbleVel);
     break;
   }
   if (SPY[SPY_STATE] == 0x1D) {

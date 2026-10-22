@@ -170,7 +170,7 @@ extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int RandomSignedInRange(int lo, int hi);
-extern void (*g_pfnLevelOverlayParticleSpawn)(int kind, int count, int *pos, int spread); /* SpawnPuff */
+extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 
 Actor *Level27_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -283,7 +283,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       rec->unk41 = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->unk3C = 2;
       rec->unk3D = 2;
-      g_pfnLevelOverlayParticleSpawn(4, 7, pos, 0x10);
+      g_pfnLevelEmitParticles(4, 7, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
     } else {

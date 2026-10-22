@@ -22,7 +22,7 @@ void CollectPickupActor(unsigned char *a) {
     g_nLevelEggCount = 3;
   }
   RefreshActorDerivedState(a, 4);
-  ((void (*)(int, int, unsigned char *, int))g_pfnLevelOverlayParticleSpawn)(
+  ((void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
       6, 0xC, a, D_8006E330[*(short *)(a + 0x36)]);
 
   kind = *(short *)(a + 0x36);

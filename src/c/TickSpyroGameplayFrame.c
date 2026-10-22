@@ -118,7 +118,7 @@ void TickSpyroGameplayFrame(void) {
       if (g_nSpyroBreathTimer == 0x240) {
         if (g_nFlightLevelActive != 0) {
           (*(void (*)(void))g_pfnLevelFallImpactCallback)();
-          (*(void (*)(void))g_pfnGamestate0EarlyHook)();
+          (*(void (*)(void))g_pfnLevelUpdateActors)();
         } else {
           TriggerRespawnOrGameOver();
         }

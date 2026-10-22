@@ -113,7 +113,7 @@ extern int D_8006EAE0[];
 extern unsigned char *g_apSaveMenuAnimActorList[];
 extern int D_800700F8;
 extern int D_80071E9C[];
-extern void (*g_pfnGamestate0LateHook)(int);
+extern void (*g_pfnLevelAdvanceEmitList)(int);
 extern int g_nFrameStep;
 extern int g_nScriptedRespawnFlag;
 extern int g_nGameplayBlocked;
@@ -123,7 +123,7 @@ extern int g_nGamestate;
 extern int g_nCdStreamState;
 extern unsigned char *g_pLevelOverlayInitRecord;
 extern int g_nSpyroFlameBreathTimerSave;
-extern void (*D_800758A8)();
+extern void (*g_pfnLevelOnSaveMenuExit)();
 extern int g_nScriptedMobTag;
 extern int g_nCurrentLevelId;
 extern unsigned char g_abSaveOptionsBlock[];
@@ -365,7 +365,7 @@ void Level30_BalloonistCutscene_Update(void)
           g_nCameraEulerPitch = ArcTan2(VectorLength(vecA, 0), -vecA[2], 1);
           g_nCameraEulerYaw = ArcTan2(vecA[0], vecA[1], 1);
         }
-        g_pfnGamestate0LateHook(g_nFrameStep);
+        g_pfnLevelAdvanceEmitList(g_nFrameStep);
         TickActiveSoundVoices();
       }
       else
@@ -409,7 +409,7 @@ void Level30_BalloonistCutscene_Update(void)
           {
             if ((t < 3) && (D_800758D1 < 2))
             {
-              D_800758A8();
+              g_pfnLevelOnSaveMenuExit();
             }
             else
               if (D_800777F4[0] == 0xE)
@@ -512,7 +512,7 @@ void Level30_BalloonistCutscene_Update(void)
         }
         if (g_nGamestate0cTimer[1] == 0)
         {
-          D_800758A8();
+          g_pfnLevelOnSaveMenuExit();
           return;
         }
         StopAllSoundExceptMask(0);
@@ -546,7 +546,7 @@ void Level30_BalloonistCutscene_Update(void)
         {
           if (D_800777F4[0] == 0x1F)
           {
-            D_800758A8();
+            g_pfnLevelOnSaveMenuExit();
             return;
           }
           D_800777F4[0] = 0x1E;

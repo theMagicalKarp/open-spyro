@@ -198,10 +198,10 @@ extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Particle spawn hook. The last argument is either a packed parameter word
  * or a pointer to a velocity vector, depending on the effect. */
-extern void (*g_pfnLevelOverlayParticleSpawn)(int a, int effect, int *pos, void *c);
+extern void (*g_pfnLevelEmitParticles)(int a, int effect, int *pos, void *c);
 
 /* Actor spawn hook: (type, parent) -> new actor. */
-extern Actor *(*g_pfnLevelOverlayInitHook)(int type, Actor *parent);
+extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
@@ -339,7 +339,7 @@ extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the l
 extern int D_800777F4;
 extern int D_800777F8;
 extern void ResetSpyroLinearMotion(void);
-extern void (*D_800757A0)(Actor *actor);
+extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 
 /* Dynamic actor pool counters; the difference is the free slot count. */
 extern int g_nActorPoolLiveCount;
@@ -1195,7 +1195,7 @@ void Level30_UpdateActors(void) {
         if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
           if (g_pLevelOverlayInitRecord == 0) {
             if (g_nLevelReadyFlag >= 0) {
-              Actor *puff = g_pfnLevelOverlayInitHook(0x78, actor);
+              Actor *puff = g_pfnLevelSpawnActor(0x78, actor);
 
               g_pLevelOverlayInitRecord = puff;
               PlayActorMeshVoice(puff, 0, 0);
@@ -1357,7 +1357,7 @@ void Level30_UpdateActors(void) {
 
       if ((unsigned int)(actor->mode - 2) < 3) {
         AimCameraStickTowardPoint(&actor->posX, dt);
-        g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, (int *)0x602080);
+        g_pfnLevelEmitParticles(1, 0xC, actor, (int *)0x602080);
       }
 
       switch (actor->mode) {
@@ -1473,7 +1473,7 @@ void Level30_UpdateActors(void) {
       case 5: {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
-        g_pfnLevelOverlayParticleSpawn(0x10, 0x4D, svE, 0);
+        g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);
@@ -1494,7 +1494,7 @@ void Level30_UpdateActors(void) {
       ShardState *st = actor->state;
 
       if (st->life <= 0 || actor->drawn == 0) {
-        g_pfnLevelOverlayParticleSpawn(8, 0x46, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
         DespawnActorRecord(actor);
         continue;
       }
@@ -1532,7 +1532,7 @@ void Level30_UpdateActors(void) {
         svD[0] = GetRandomU32() & 3;
         svD[1] = GetRandomU32() & 3;
         svD[2] = 0x14;
-        g_pfnLevelOverlayParticleSpawn(1, 1, &actor->posX, svD);
+        g_pfnLevelEmitParticles(1, 1, &actor->posX, svD);
       }
 
       st->life -= 1;
@@ -1893,8 +1893,8 @@ void Level30_UpdateActors(void) {
             if (actor->type == 14) {
               PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
               RefreshActorDerivedState(actor, 4);
-              g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)8);
-              g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x10);
+              g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)8);
+              g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x10);
               if (g_nExtraLives < 0x63) {
                 g_nExtraLives += 1;
               }
@@ -1966,7 +1966,7 @@ void Level30_UpdateActors(void) {
                 actor->unk50 = 0x20;
                 actor->mode = 3;
                 actor->unk57 = 0x60;
-                g_pfnLevelOverlayParticleSpawn(0x18, 0x50, at, (int *)0xC);
+                g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
@@ -2097,7 +2097,7 @@ void Level30_UpdateActors(void) {
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
-          g_pfnLevelOverlayParticleSpawn(0x18, 0x50, &actor->posX, (int *)0xC);
+          g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (int *)0xC);
           actor->unk1C &= 0x7FFFFFFF;
         }
         break;
@@ -2117,13 +2117,13 @@ void Level30_UpdateActors(void) {
         svF[2] = 0;
         RotateVectorByMatrix(&actor->mtx[0], svF, svF);
         AddVector(svF, svF, &actor->posX);
-        g_pfnLevelOverlayParticleSpawn(2, 0x42, svF, 0);
+        g_pfnLevelEmitParticles(2, 0x42, svF, 0);
         svF[0] = 0;
         svF[1] = -0x64;
         svF[2] = 0;
         ApplyActiveGteRotation(svF, svF);
         AddVector(svF, svF, &actor->posX);
-        g_pfnLevelOverlayParticleSpawn(2, 0x42, svF, 0);
+        g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
       if (SPY.u164 >= 3) {
@@ -2274,11 +2274,11 @@ void Level30_UpdateActors(void) {
               st->gnorc->subMode = 3;
 
               if (st->gnorc->type == 14) {
-                g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, D_8006E494);
+                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E494);
               } else if (st->gnorc->type == 15) {
-                g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, D_8006E490);
+                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E490);
               } else {
-                g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, D_8006E330[st->gnorc->type]);
+                g_pfnLevelEmitParticles(1, 0xC, actor, D_8006E330[st->gnorc->type]);
               }
               st->gnorc = 0;
               do {
@@ -2418,7 +2418,7 @@ void Level30_UpdateActors(void) {
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
-              g_pfnLevelOverlayParticleSpawn(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
+              g_pfnLevelEmitParticles(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
             }
 
             g_nLevelEggCount = 1;
@@ -2480,7 +2480,7 @@ void Level30_UpdateActors(void) {
         g_dwSpyroRequestMask = 0x80002000;
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
-        D_800757A0(actor);
+        g_pfnLevelBeginActorCutscene(actor);
         D_800777F4 = 0x1E;
         D_800758D1 = two;
         D_800758D2 = two;
@@ -2508,19 +2508,19 @@ void Level30_UpdateActors(void) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelOverlayInitHook(0xFF, actor);
-          g_pfnLevelOverlayInitHook(0x100, actor);
+          g_pfnLevelSpawnActor(0xFF, actor);
+          g_pfnLevelSpawnActor(0x100, actor);
         }
 
         for (i = 0; i < 6; i++) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelOverlayInitHook(0x101, actor);
+          g_pfnLevelSpawnActor(0x101, actor);
         }
 
-        g_pfnLevelOverlayParticleSpawn(5, 2, &actor->posX, 0);
-        g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x20);
+        g_pfnLevelEmitParticles(5, 2, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x20);
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
@@ -2578,18 +2578,18 @@ void Level30_UpdateActors(void) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelOverlayInitHook(0x136, actor);
-          g_pfnLevelOverlayInitHook(0x137, actor);
+          g_pfnLevelSpawnActor(0x136, actor);
+          g_pfnLevelSpawnActor(0x137, actor);
         }
 
         for (i = 0; i < 6; i++) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelOverlayInitHook(0x135, actor);
+          g_pfnLevelSpawnActor(0x135, actor);
         }
 
-        g_pfnLevelOverlayParticleSpawn(0x10, 0x46, &actor->posX, (int *)0x18);
+        g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x18);
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
@@ -2926,7 +2926,7 @@ void Level30_UpdateActors(void) {
             continue;
           }
         } else {
-          g_pfnLevelOverlayParticleSpawn(0xA, 0x47, &actor->posX, 0);
+          g_pfnLevelEmitParticles(0xA, 0x47, &actor->posX, 0);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3064,7 +3064,7 @@ void Level30_UpdateActors(void) {
         svK[1] = (GetRandomU32() & 0xFE) - 0x7F;
         svK[2] = (GetRandomU32() & 0xFE) - 0x40;
         AddVector(svK, svK, &actor->posX);
-        g_pfnLevelOverlayParticleSpawn(1, 0x42, svK, (int *)1);
+        g_pfnLevelEmitParticles(1, 0x42, svK, (int *)1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -3122,7 +3122,7 @@ void Level30_UpdateActors(void) {
             svL[1] = (GetRandomU32() & 0xFE) - 0x7F;
             svL[2] = (GetRandomU32() & 0xFE) - 0x40;
             AddVector(svL, svL, &actor->posX);
-            g_pfnLevelOverlayParticleSpawn(1, 0x42, svL, (int *)1);
+            g_pfnLevelEmitParticles(1, 0x42, svL, (int *)1);
           } while (i < 3);
         }
 
@@ -3131,7 +3131,7 @@ void Level30_UpdateActors(void) {
       }
 
       if (actor->drawn != 0) {
-        g_pfnLevelOverlayParticleSpawn(8, 0x46, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
       }
       DespawnActorRecord(actor);
       continue;
