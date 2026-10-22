@@ -54,7 +54,7 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
 typedef struct PathData {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
-  char unk02[4];
+  char pad02[4];
   short reversed;      /* 0x06 */
   struct {
     int x;
@@ -178,10 +178,10 @@ typedef struct {
   short rotX;    /* 0x4C m_Rotation */
   short rotY;    /* 0x4E */
   short rotZ;    /* 0x50 */
-  short unk52;   /* 0x52 */
+  short pad52;   /* 0x52 */
   int occlusion; /* 0x54 */
   unsigned int state; /* 0x58 m_State */
-  int unk5C;     /* 0x5C */
+  int pad5C;     /* 0x5C */
   Xform lastSim; /* 0x60 */
   Xform sphere;  /* 0x78 m_Sphere */
   Xform sim;     /* 0x90 m_Simulation */
@@ -198,7 +198,7 @@ extern CamObj g_anWorldToCameraRotMtx;
 typedef struct PortalDesc {
   unsigned char count;    /* 0x00 */
   unsigned char index;    /* 0x01 */
-  unsigned char unk02[6]; /* 0x02 */
+  unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
   int unk14;              /* 0x14 */
   int posB[3];            /* 0x18 */
@@ -482,7 +482,7 @@ typedef struct ThiefState {
   int stuck;      /* 0x18 frames spent cornered */
   int heading;    /* 0x1C knockback heading */
   int knock;      /* 0x20 knockback speed */
-  int unk24;
+  int pad24;
   int node;       /* 0x28 node the path should stop at */
   int range;      /* 0x2C wake-up range, in 0x400 units */
   int turned;     /* 0x30 has reversed once on this leg */
@@ -809,7 +809,7 @@ typedef struct WanderState {
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
 typedef struct ChestState {
-  int unk0;
+  int pad00;
   int shake; /* 0x04 */
 } ChestState;
 
@@ -865,9 +865,9 @@ typedef struct LungeState {
   int hits;      /* 0x30 */
   int heading;   /* 0x34 -1 until first set */
   int alerted;   /* 0x38 */
-  int unk3C;
+  int pad3C;
   int *flag; /* 0x40 */
-  int unk44;
+  int pad44;
   int wait;       /* 0x48 */
   int knockAngle; /* 0x4C */
   int knockSpeed; /* 0x50 */
@@ -1283,7 +1283,7 @@ typedef struct VillagerState {
   int timerLong;       /* 0x18 */
   int timerShort;      /* 0x1C */
   int noBoost;         /* 0x20 */
-  int unk24;
+  int pad24;
   int talkDist;        /* 0x28 in 1024ths */
   int camDist;         /* 0x2C in 1024ths */
   int camAlways;       /* 0x30 */
@@ -1361,7 +1361,7 @@ typedef struct SorcererState {
   int range;           /* 0x18 */
   int angry;           /* 0x1C */
   int sub;             /* 0x20 */
-  int unk24[3];
+  int pad24[3];
   int rest;            /* 0x30 */
 } SorcererState;
 
@@ -1598,7 +1598,7 @@ typedef struct WardState {
   int spin;       /* 0x18 */
   int timer;      /* 0x1C */
   int camLock;    /* 0x20 */
-  int unk24[4];
+  int pad24[4];
   int mode;       /* 0x34 0 = post, 1 = chase, 2 = patrol */
   PathData *path; /* 0x38 */
   int pathDist;   /* 0x3C */
