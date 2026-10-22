@@ -2249,6 +2249,12 @@ int IsPointInRotatedBox(int *pos, int *rec);
 /* --- Shared helpers named 2026-10-21 (session 2). Evidence: the original asm
  * (hand-written routines) or the matched C body named in each entry. --- */
 
+/* 0x80017428 (hand-written GTE): reflect v off a surface with normal n
+   (both >> 4 into the GTE): when v points into the surface (v.n <= 0),
+   out = v - 2 (v.n / |n|^2) n and returns 1; otherwise out = v, returns 0.
+   The overlays bounce velocities with it (vel, normal, vel). */
+int ReflectVectorOffNormal(int *v, int *n, int *out);
+
 /* 0x800177f8: dst = src * (0x10000 / den) >> 16 via GTE gpl0 (IR inputs saturate to 16 bits). */
 void DivideVector3(int *dst, int *src, int den);
 

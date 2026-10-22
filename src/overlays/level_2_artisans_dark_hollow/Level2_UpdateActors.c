@@ -280,7 +280,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
@@ -1530,7 +1530,7 @@ void Level2_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-            if (func_80017428((int *)st, svH, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
@@ -2334,7 +2334,7 @@ void Level2_UpdateActors(void) {
     case 165: {
       PostState *st = actor->state;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       do {
       } while (0);
       if ((actor->flags & 0xB0000) && actor->mode != 2 &&
@@ -2553,7 +2553,7 @@ void Level2_UpdateActors(void) {
     case 166: {
       PatrolState *st = actor->state;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       do {
       } while (0);
       if ((actor->flags & 0x90000) && actor->mode != 1 &&

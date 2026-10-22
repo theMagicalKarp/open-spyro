@@ -297,7 +297,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
@@ -3627,7 +3627,7 @@ void Level14_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, svH, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -5907,7 +5907,7 @@ void Level14_UpdateActors(void) {
     case 305: {
       L14State305 *st = actor->state;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if (actor->mode == 2) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);

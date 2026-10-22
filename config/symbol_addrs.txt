@@ -2298,3 +2298,5 @@ LevelId0_SpawnActor = 0x80080548; // type:data
 LevelId0_AdvanceEmitList = 0x80080A0C; // type:data
 LevelId0_EmitParticles = 0x80081568; // type:data
 LevelId0_OverlayEnd = 0x80082068; // type:data
+ReflectVectorOffNormal = 0x80017428; // type:func size:0x120
+TickActorFlameGlow = 0x8003AA84; // type:func size:0x68

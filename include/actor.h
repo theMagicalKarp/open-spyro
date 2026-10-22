@@ -99,7 +99,7 @@ int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
 int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
 void UpdateActorWander(Actor *actor, void *st);
 int SelectActorLodBand(Actor *actor, int handle);
-void func_8003AA84(Actor *actor);
+void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *tbl);
 Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
 void SetActorGroupState(Actor *actor, int a);

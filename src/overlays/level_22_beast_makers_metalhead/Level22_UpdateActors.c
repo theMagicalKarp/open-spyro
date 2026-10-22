@@ -1632,7 +1632,7 @@ void Level22_UpdateActors(void) {
           continue;
         }
         CopyVector(g168, &g_anCollisionProbeVec);
-        if (func_80017428(g152, g168, g152) == 0) {
+        if (ReflectVectorOffNormal(g152, g168, g152) == 0) {
           continue;
         }
         st->vx = (g152[0] * 7) >> 3;
@@ -1725,7 +1725,7 @@ void Level22_UpdateActors(void) {
       int f;
 
       if (actor->type == 0x66) {
-        func_8003AA84(actor);
+        TickActorFlameGlow(actor);
       }
       f = actor->flags;
       if ((f & 0xF0000) && actor->mode != 3 &&
@@ -2498,7 +2498,7 @@ void Level22_UpdateActors(void) {
       int n = 4;
       int i;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if ((actor->flags & 0x20000) && actor->mode < 2) {
         PlayActorMeshVoice(actor, 0, 0);
         actor->posZ -= 0x190;
@@ -2942,7 +2942,7 @@ void Level22_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, g416, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, g416, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;

@@ -1285,7 +1285,7 @@ void Level16_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, svJ, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, svJ, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;

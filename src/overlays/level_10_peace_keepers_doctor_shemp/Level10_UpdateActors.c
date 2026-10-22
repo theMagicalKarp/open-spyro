@@ -1124,7 +1124,7 @@ void Level10_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-            if (func_80017428((int *)st, svH, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
@@ -2857,7 +2857,7 @@ void Level10_UpdateActors(void) {
 
       do {
       } while (0);
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if (actor->mode != 1 && actor->mode != 3 && actor->flags != 0 &&
           ((actor->flags & 0x20000) ||
            AbsAngleDelta8(actor->rotZ,
@@ -3196,7 +3196,7 @@ void Level10_UpdateActors(void) {
       int spd;
 
       near = ApproxDist2D(&actor->posX, &spy->posX);
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if (near < 0x2000 && actor->mode != 0x29 && g_nSpyroState != 0xB &&
           g_nSpyroState != 0x14) {
         SPY.pScriptedActor = actor;

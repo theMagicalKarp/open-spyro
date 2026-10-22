@@ -3,8 +3,10 @@
 /* Tick the +0x4E countdown byte on an actor. When the 0x10000 flag (+0x18) is
    set it counts UP by 0x18, wrapping back to 0x60 once it reaches 0x61. When
    the flag is clear it counts DOWN: by 2 while >= 0x21, by 1 below that, and
-   holds at 0. */
-void func_8003AA84(char *e) {
+   holds at 0. Named for the flag: 0x10000 is the flame-hit bit (a flame
+   breaks the type-146 prop at once) and SelectActorLodBand pushes the shade
+   band out for the same flag, so +0x4E reads as a scorch glow (likely). */
+void TickActorFlameGlow(char *e) {
   if (*(int *)(e + 0x18) & 0x10000) {
     int v = (unsigned char)e[0x4E] + 0x18;
     e[0x4E] = v;

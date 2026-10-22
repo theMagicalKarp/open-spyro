@@ -5961,11 +5961,11 @@ endlabel func_80017420
 /* Handwritten function */
 .endif
 
-.section .text.func_80017428, "ax"
-.ifndef HAVE_C_func_80017428
-nonmatching func_80017428, 0x120
+.section .text.ReflectVectorOffNormal, "ax"
+.ifndef HAVE_C_ReflectVectorOffNormal
+nonmatching ReflectVectorOffNormal, 0x120
 
-glabel func_80017428
+glabel ReflectVectorOffNormal
     /* 7C28 80017428 0000A18C */  lw         $at, 0x0($a1)
     /* 7C2C 8001742C 0400A28C */  lw         $v0, 0x4($a1)
     /* 7C30 80017430 0800A38C */  lw         $v1, 0x8($a1)
@@ -6039,7 +6039,7 @@ glabel func_80017428
     /* 7D3C 8001753C 0800C3AC */  sw         $v1, 0x8($a2)
     /* 7D40 80017540 0800E003 */  jr         $ra
     /* 7D44 80017544 01000220 */   addi      $v0, $zero, 0x1 /* handwritten instruction */
-endlabel func_80017428
+endlabel ReflectVectorOffNormal
 
 /* Handwritten function */
 .endif
@@ -45893,11 +45893,11 @@ glabel SelectActorLodBand
 endlabel SelectActorLodBand
 .endif
 
-.section .text.func_8003AA84, "ax"
-.ifndef HAVE_C_func_8003AA84
-nonmatching func_8003AA84, 0x68
+.section .text.TickActorFlameGlow, "ax"
+.ifndef HAVE_C_TickActorFlameGlow
+nonmatching TickActorFlameGlow, 0x68
 
-glabel func_8003AA84
+glabel TickActorFlameGlow
     /* 2B284 8003AA84 1800828C */  lw         $v0, 0x18($a0)
     /* 2B288 8003AA88 0100033C */  lui        $v1, (0x10000 >> 16)
     /* 2B28C 8003AA8C 24104300 */  and        $v0, $v0, $v1
@@ -45927,7 +45927,7 @@ glabel func_8003AA84
   .L8003AAE4:
     /* 2B2E4 8003AAE4 0800E003 */  jr         $ra
     /* 2B2E8 8003AAE8 00000000 */   nop
-endlabel func_8003AA84
+endlabel TickActorFlameGlow
 .endif
 
 .section .text.SpawnActorRotBillboard, "ax"

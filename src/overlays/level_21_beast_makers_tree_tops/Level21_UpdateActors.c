@@ -1256,7 +1256,7 @@ void Level21_UpdateActors(void) {
           continue;
         }
         CopyVector(f136, &g_anCollisionProbeVec);
-        if (func_80017428(f056, f136, f056) == 0) {
+        if (ReflectVectorOffNormal(f056, f136, f056) == 0) {
           continue;
         }
         st->vx = (f056[0] * 7) >> 3;
@@ -1274,7 +1274,7 @@ void Level21_UpdateActors(void) {
       int f;
 
       if (actor->type == 0x66) {
-        func_8003AA84(actor);
+        TickActorFlameGlow(actor);
       }
       f = actor->flags;
       if ((f & 0xF0000) && actor->mode != 3 &&
@@ -2354,7 +2354,7 @@ void Level21_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, f352, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, f352, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;

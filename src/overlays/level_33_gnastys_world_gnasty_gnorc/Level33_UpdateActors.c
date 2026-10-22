@@ -401,7 +401,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 /* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
  * fairy cutscene when Spyro stands still on the pad. */
@@ -2944,7 +2944,7 @@ void Level33_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-            if (func_80017428((int *)st, svH, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
@@ -3623,7 +3623,7 @@ void Level33_UpdateActors(void) {
       int dist;
 
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
 
       if (actor->flags & 0x10000) {
         if (st->phase == 2 &&

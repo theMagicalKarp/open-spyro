@@ -1850,7 +1850,7 @@ void Level27_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-            if (func_80017428((int *)st, g208, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, g208, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
@@ -2486,7 +2486,7 @@ void Level27_UpdateActors(void) {
     case 134: {
       L27Thrower *st = actor->state;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if ((actor->flags & 0xB0000) && actor->mode != 3) {
         Actor *o;
         L27Chunk *c;
@@ -3316,7 +3316,7 @@ void Level27_UpdateActors(void) {
       if (dist < 0x32C8) {
         dist = VectorLength(g376, 0);
       }
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if (actor->flags & 0x80000) {
         ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY, 0);
         SpawnActorDeathDrop(actor, 3, 0, 0);

@@ -211,7 +211,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 
 extern int CheckLineOfSightSegment(int *a, int *b);
 
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 typedef struct FxNode {
   int kind;            /* 0x00 */

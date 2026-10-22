@@ -36,7 +36,7 @@ extern void EnqueueBlinkingMarkerSprite();
 extern void EnqueuePendingSpritePrims();
 extern void FillWord();                                      /* word fill */
 extern void FreeEmitListRecord(unsigned char *rec);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 extern int GetRandomU32();
 extern void InitHudCounters(int a0);
 extern void InitLightVectorConstants(void);
