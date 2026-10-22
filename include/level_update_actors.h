@@ -225,6 +225,7 @@ typedef struct FxNode {
   int offX;           /* 0x14 draw offset from *anchor (DrawWorldSparkleParticles) */
   int offY;           /* 0x18 */
   int offZ;           /* 0x1C */
+  int sizeBias;        /* 0x20 added to the projected size (DrawWorldSparkleParticles) */
 } FxNode;
 
 extern FxNode *AllocWorldSparkle(void);
@@ -267,7 +268,9 @@ typedef struct {
   int u114;                       /* 0x114 */
   int u118;                       /* 0x118 */
   int u11C;                       /* 0x11C */
-  char pad120[0x44];
+  char pad120[0x8];
+  int u128;                       /* 0x128 */
+  char pad12C[0x38];
   int u164;                       /* 0x164 */
   char pad168[0x14];
   int contact;                    /* 0x17C */
