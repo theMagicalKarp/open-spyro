@@ -250,7 +250,7 @@ typedef struct DebrisState {
 } DebrisState;
 
 /* Surface normal produced by the collision probes. */
-extern int D_80077368;
+extern int g_anCollisionProbeVec;
 extern int g_nCollisionProbeVecY;
 extern int g_nCollisionProbeVecZ;
 
@@ -2738,7 +2738,7 @@ void Level33_UpdateActors(void) {
       if (st->life > 0 && actor->drawn != 0) {
 
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
-        int *nrm = &D_80077368;
+        int *nrm = &g_anCollisionProbeVec;
         int along;
         register int push asm("$7");
 
@@ -2871,7 +2871,7 @@ void Level33_UpdateActors(void) {
           svA[2] += 0x400;
           FindGroundHeightBelow(svA, 0x10000);
           {
-            int *nrm = &D_80077368;
+            int *nrm = &g_anCollisionProbeVec;
 
             st->lean = -ArcTan2_8bit(
                 IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
@@ -2893,7 +2893,7 @@ void Level33_UpdateActors(void) {
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= 83) {
               {
-                int *nrm = &D_80077368;
+                int *nrm = &g_anCollisionProbeVec;
 
                 st->lean = -ArcTan2_8bit(
                     IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
@@ -2993,7 +2993,7 @@ void Level33_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svH, &D_80077368);
+            CopyVector(svH, &g_anCollisionProbeVec);
             CopyVector(at, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -4751,7 +4751,7 @@ void Level33_UpdateActors(void) {
 
           if (actor->posZ > 1023) {
             if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
-              int *nrm = &D_80077368;
+              int *nrm = &g_anCollisionProbeVec;
               int dot;
 
               actor->posX = g_anCollisionResolvedPos;
@@ -4826,7 +4826,7 @@ void Level33_UpdateActors(void) {
         }
 
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
-          int *nrm = &D_80077368;
+          int *nrm = &g_anCollisionProbeVec;
           int along;
 
           SetVector3Magnitude(nrm, 0x1000);

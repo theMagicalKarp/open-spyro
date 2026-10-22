@@ -23,7 +23,7 @@ extern char D_8007AF38[];
 extern char D_8007B070[];
 extern char D_8007B08C[];
 extern char D_8007B08C_lv9[];
-extern char D_8007B0AC[];
+extern char D_8007B0AC_lv13[];
 extern char D_8007B0C0[];
 extern char D_8007B144[];
 extern char D_8007B160[];
@@ -332,7 +332,7 @@ void ApplyPerLevelGlobalsTable(void) {
     break;
   case 3:
     g_pDrawBufA = D_8007C7B0;
-    g_pfnLevelSpawnActor = D_8007B0AC;
+    g_pfnLevelSpawnActor = D_8007B0AC_lv13;
     g_pfnLevelUpdateActors = D_8007ACC8;
     g_pfnLevelEmitParticles = D_8007BC50;
     g_pfnLevelAdvanceEmitList = D_8007B180;
