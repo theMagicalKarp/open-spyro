@@ -18,12 +18,11 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
 extern void StopAllSoundExceptMask(int mask);
 extern void RotateLightVectorXZ(int step);
 extern void PlaySoundEffect();
-extern void LoadAndStartLevelFromCd(void);
-extern void BeginPauseToMenuTransition(void);
 extern void (*g_pfnLevelHandleFlightResults)();
 
 extern unsigned char *g_pLevelSampleBankHeader;

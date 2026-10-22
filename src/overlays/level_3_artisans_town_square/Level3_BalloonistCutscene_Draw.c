@@ -25,14 +25,8 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
-extern void sprintf();
-extern int strlen();
-extern void BuildTextSprites();  /* BuildTextSpriteChain */
-extern void EmitRadialShadedLine();
-extern void DrawShadedMenuBox();
-extern void EnqueueBlinkingMarkerSprite();
-extern void EnqueuePendingSpritePrims();
 extern void RasterizeSpritePrimQueue();
 extern void BuildRenderEntityLists();
 extern void ComposeFrameScene();

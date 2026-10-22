@@ -78,36 +78,15 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
-extern void TickLevelTransitionStream();
 extern void CopyWords(void *dst, void *src, int len);
-extern int ArcTan2(int dy, int dx, int flag);
-extern int LookupSine(int ang);
-extern int LookupCosine(int ang);
 extern void ApplyEulerRotation(int *a, int *b, int c);
-extern void RotateVectorByMatrix();
-extern int VectorLength(int *vec, int flag);
-extern void RShiftVector3(int *vec, int shift);
-extern void CopyVector();
-extern void AddVector(int *out, int *a, int *b);
-extern void SubtractVector(int *out, int *a, int *b);
-extern void ScaleVector3Sat(int *out, int *a, int scale);
-extern int AbsAngleDelta12(int a, int b);
-extern int SignedAngleDelta12(int a, int b);
 extern void ComputeCameraToTargetAngle(int *a0);
-extern void ResetCameraStateToTarget(void);
-extern void TickSpyroAttackEffects(int a0);
-extern void SampleSpyroShadowRingHeights(int a0);
-extern void ResetSpyroEntity(int a0);
 extern int FindGroundHeightBelow(int *a0, int a1);
-extern void TickGemCutsceneActorAnims(void *a0, int a1);
-extern void InitHudCounters(int a0);
 extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
-extern void TickActiveSoundVoices(void);
 extern void StopAllSoundExceptMask(int a0);
 extern void ClearWord(int a0);
-extern void InitLightVectorConstants(void);
-extern int GetRandomU32();
 
 extern int g_anCameraDynamicTargetParams[];
 extern unsigned char *g_apSaveMenuAnimActorList[];

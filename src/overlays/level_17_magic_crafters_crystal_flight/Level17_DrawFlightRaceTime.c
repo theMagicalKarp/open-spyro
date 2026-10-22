@@ -13,9 +13,7 @@
  * `q600` BEFORE the copy that feeds the *100 chain. See cookbook A210.
  */
 
-extern void BuildTextSpriteChain(); /* draw text run */
-extern void sprintf();
-extern int strlen();
+#include "level_funcs.h"
 
 int Level17_DrawFlightRaceTime(int time, int *pos, int arg2)
 {

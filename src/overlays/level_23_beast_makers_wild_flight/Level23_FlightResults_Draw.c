@@ -21,31 +21,17 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
 extern void BuildRenderEntityLists(void);
 extern void ComposeFrameScene(void);
 extern void RasterizeEmitList(void);
 extern void DrawActors(void);
 extern void SetupFrameOT(void);
-extern void DrawSync();
-extern int VSync();
-extern void PutDispEnv();
-extern void PutDrawEnv();
 extern int LinkOTPrimitives();
-extern void DrawOTag();
-extern void StoreImage();     /* MoveImage */
-extern void LoadImage();
-extern void ConvertRGB15ToLuma8();     /* texture-page sync */
 extern void AddPrimToOT();
-extern void FillWord();
-extern void BuildTextSpriteChain();
-extern int strlen();      /* text glyph count */
-extern void sprintf();     /* format string */
-extern void EmitRadialShadedLine();
 extern void PlaySoundEffect();
-extern void EnqueuePendingSpritePrims();
 extern void RasterizeSpritePrimQueue();
-extern void *memcpy();
 
 extern char *g_pActiveFrameDrawEnv;   /* active DRAWENV pair */
 extern char g_abFrameDrawEnv0[];  /* DRAWENV pair 0 */

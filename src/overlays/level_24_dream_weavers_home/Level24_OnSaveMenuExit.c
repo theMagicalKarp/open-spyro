@@ -8,8 +8,8 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
-extern void EndSaveMenuToWorld(void);
 extern char *g_pLevelOverlayInitRecord;
 
 void Level24_OnSaveMenuExit(void) {

@@ -20,10 +20,7 @@
  */
 
 #include "level_globals.h"
-
-extern void LoadImage();
-extern void DrawSync();
-extern void InitLightVectorConstants(void);
+#include "level_funcs.h"
 
 extern char *g_pRenderScratchPrimTop;
 extern int g_anLevelGemsCollected[];

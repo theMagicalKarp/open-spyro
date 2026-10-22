@@ -212,15 +212,14 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
 extern void CdReadSyncSectors();
 extern void CopyWords();
 extern void StartCdReadAsync();
 extern void RestartStalledCdRead();
 extern char *UnpackWorldDataChunks();
-extern void LoadImage();
 extern void MoveImage();
-extern void DrawSync();
 extern void SetSpuTransferStartAddr();
 extern void WriteSpuRam();
 extern int GetSpuTransferStatus();

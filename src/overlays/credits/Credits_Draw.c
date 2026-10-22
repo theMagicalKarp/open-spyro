@@ -13,21 +13,15 @@
  */
 
 #include "level_globals.h"
+#include "level_funcs.h"
 
-extern void DrawSync();
-extern int VSync();
 extern void MoveImage();
-extern void FillWord();  /* word fill */
 extern void DrawFullscreenTint();
-extern void EnqueuePendingSpritePrims();
 extern void RasterizeSpritePrimQueue(void);
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
-extern void PutDispEnv();
-extern void PutDrawEnv();
 extern void *LinkOTPrimitives();
-extern void DrawOTag();
 
 extern int g_nGamestate0fMode;
 extern unsigned char *g_pActiveFrameDrawEnv;
