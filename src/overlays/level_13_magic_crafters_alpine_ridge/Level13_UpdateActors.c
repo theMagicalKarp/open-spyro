@@ -1088,11 +1088,11 @@ void Level13_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->unk53 & 0x80))) {
+            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
-          parent->unk53 = actor->unk53;
+          parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
           if (parent->mode < 0x80) {
@@ -1347,8 +1347,8 @@ void Level13_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (actor->unk53 == 0xFF) {
-          actor->unk53 = 0xF;
+        if (actor->dropKind == 0xFF) {
+          actor->dropKind = 0xF;
           SpawnActorDeathDrop(actor, 3, 0, 0);
           MarkActorCommittedKill(actor);
         }
@@ -1356,7 +1356,7 @@ void Level13_UpdateActors(void) {
         continue;
       }
 
-      if (actor->unk53 != 0xFF && st->egg == 0 && actor->mode != 10) {
+      if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
         st->egg = g_pfnLevelSpawnActor(0x22, actor);
         st->egg->unk47 = 0;
         *(Actor **)st->egg->state = actor;
@@ -2677,7 +2677,7 @@ void Level13_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        actor->unk08 = 0;
+        actor->collision = 0;
         if (ApproxDist2D(&rider->posX, &SPY.posX) < 0xA01) {
           break;
         }
@@ -2696,7 +2696,7 @@ void Level13_UpdateActors(void) {
         if (st->timer != 0) {
           st->timer -= 1;
         } else {
-          actor->unk08 = 0;
+          actor->collision = 0;
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
@@ -2712,7 +2712,7 @@ void Level13_UpdateActors(void) {
                                0x80;
                 actor->unk50 = 0x20;
                 actor->mode = 3;
-                actor->unk57 = 0x60;
+                actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(at, 0x1000);
@@ -2725,8 +2725,8 @@ void Level13_UpdateActors(void) {
         break;
 
       case 3:
-        if (actor->unk57 >= 0x21) {
-          actor->unk57 -= 4;
+        if (actor->scale >= 0x21) {
+          actor->scale -= 4;
           actor->rotZ += 8;
         } else {
           actor->mode = 4;
@@ -2838,8 +2838,8 @@ void Level13_UpdateActors(void) {
       }
 
       case 6:
-        if (actor->unk57 < 0x60) {
-          actor->unk57 += 4;
+        if (actor->scale < 0x60) {
+          actor->scale += 4;
           actor->rotZ += 8;
         } else {
           actor->unk50 = 0;
@@ -3211,12 +3211,12 @@ void Level13_UpdateActors(void) {
             }
 
             g_nLevelEggCount = 1;
-            actor->unk57 = 0x40;
+            actor->scale = 0x40;
             actor->unk50 = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
-            actor->unk4A = 0xFF;
+            actor->visZone = 0xFF;
             actor->subMode = 2;
           }
         }
@@ -3258,7 +3258,7 @@ void Level13_UpdateActors(void) {
         continue;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 0, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -3325,7 +3325,7 @@ void Level13_UpdateActors(void) {
       if (actor->flags & 0xA0000) {
         int i;
 
-        actor->unk55 = 0x20;
+        actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, 0, 0);
 
         for (i = 0; i < 2; i++) {
@@ -3980,7 +3980,7 @@ void Level13_UpdateActors(void) {
         bit = idx & 0x1F;
         mask = 1 << bit;
         if (g_anRunningKillBitmap[word] & mask) {
-          gone = actor->unk53 == 0xFF;
+          gone = actor->dropKind == 0xFF;
         }
         if (st->mode == 2) {
           Actor *pair = &g_pActorListBase[st->link];
@@ -3991,7 +3991,7 @@ void Level13_UpdateActors(void) {
           bit = idx & 0x1F;
           mask = 1 << bit;
           if ((g_anRunningKillBitmap[word] & mask) &&
-              (pair->mode >= 0x80 || pair->unk53 == 0xFF)) {
+              (pair->mode >= 0x80 || pair->dropKind == 0xFF)) {
             pairGone = 1;
           }
         }
@@ -4853,7 +4853,7 @@ void Level13_UpdateActors(void) {
       RideState30 *st = actor->state;
       int voice = -1;
 
-      actor->unk55 = st->volume;
+      actor->soundRange = st->volume;
 
       switch (st->pose) {
       case 0:
@@ -5133,7 +5133,7 @@ void Level13_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -5615,11 +5615,11 @@ void Level13_UpdateActors(void) {
     case 329: {
       L16Pod *st = actor->state;
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
@@ -5738,7 +5738,7 @@ void Level13_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, 0, x368, col2);
           }
           DespawnActorRecord(st->prize);
-          actor->unk3A &= 0x7F;
+          actor->killGroup &= 0x7F;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
@@ -5898,8 +5898,8 @@ void Level13_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->unk08 == 0 ||
-              a->unk08 >= 0) {
+          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+              a->collision >= 0) {
             continue;
           }
           SubtractVector(w408, &a->posX, &actor->posX);
@@ -6181,7 +6181,7 @@ void Level13_UpdateActors(void) {
         ((unsigned char *)rider->state)[0xE] = st->unk14;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 4, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */

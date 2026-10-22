@@ -102,7 +102,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  int unk04;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -1267,7 +1267,7 @@ void Level0_UpdateActors(void) {
           if (g_pActorListBase[st->idx].mode >= 0x80 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
             ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
-            actor->unk55 = 0x30;
+            actor->soundRange = 0x30;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, 8, &actor->sfxSlot);
           }
         }
@@ -1730,7 +1730,7 @@ void Level0_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0: {
-        actor->unk08 = 0;
+        actor->collision = 0;
         if (ApproxDist2D(&tgtB->posX, &SPY.posX) > 2560) {
           actor->mode = 1;
         }
@@ -1750,7 +1750,7 @@ void Level0_UpdateActors(void) {
         if (st->timer != 0) {
           st->timer--;
         } else {
-          actor->unk08 = 0;
+          actor->collision = 0;
 
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
             if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 2048) {
@@ -1762,7 +1762,7 @@ void Level0_UpdateActors(void) {
                                128;
                 actor->unk50 = 0x20;
                 actor->mode = 3;
-                actor->unk57 = 0x60;
+                actor->scale = 0x60;
 
                 g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
 
@@ -1778,8 +1778,8 @@ void Level0_UpdateActors(void) {
       }
 
       case 3: {
-        if (actor->unk57 >= 0x21) {
-          actor->unk57 -= 4;
+        if (actor->scale >= 0x21) {
+          actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
           actor->mode = 4;
@@ -1882,8 +1882,8 @@ void Level0_UpdateActors(void) {
       }
 
       case 6: {
-        if (actor->unk57 < 96) {
-          actor->unk57 += 4;
+        if (actor->scale < 96) {
+          actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
           actor->unk50 = 0;
@@ -2529,12 +2529,12 @@ void Level0_UpdateActors(void) {
           }
 
           g_nLevelEggCount = 1;
-          actor->unk57 = 0x40;
+          actor->scale = 0x40;
           actor->unk50 = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk4A = 0xFF;
+          actor->visZone = 0xFF;
           actor->subMode = 2;
         }
       }
@@ -2617,7 +2617,7 @@ void Level0_UpdateActors(void) {
         continue;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 0, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2836,7 +2836,7 @@ void Level0_UpdateActors(void) {
       RoamState *st = actor->state;
       int snd;
 
-      actor->unk55 = st->unk04;
+      actor->soundRange = st->unk04;
       snd = -1;
 
       switch (st->mode) {
@@ -3025,7 +3025,7 @@ void Level0_UpdateActors(void) {
 
         CopyVector(&p->posX, p->state);
         InsertActorIntoSpatialGrid(p);
-        p->unk3A &= 0x7F;
+        p->killGroup &= 0x7F;
         p->flags = 0;
         p->mode = 0;
         p->frameProgress = 0;
@@ -3307,7 +3307,7 @@ void Level0_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
         actor->mode = 0xA;
         st->timer = 0x1E;
-        actor->unk55 = 0x30;
+        actor->soundRange = 0x30;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, 8, &actor->sfxSlot);
         break;
 
@@ -3619,7 +3619,7 @@ void Level0_UpdateActors(void) {
         ((unsigned char *)rider->state)[0xE] = 1;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 4, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */

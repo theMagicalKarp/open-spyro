@@ -119,7 +119,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  int unk04;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -2137,8 +2137,8 @@ void Level23_UpdateActors(void) {
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk57 = 0x40;
-          actor->unk4A = 0xFF;
+          actor->scale = 0x40;
+          actor->visZone = 0xFF;
           actor->subMode = 2;
         }
       }

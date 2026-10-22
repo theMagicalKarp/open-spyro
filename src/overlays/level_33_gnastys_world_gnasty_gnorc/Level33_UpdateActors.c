@@ -110,7 +110,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  int unk04;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -2241,11 +2241,11 @@ void Level33_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->unk53 & 0x80))) {
+            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
-          parent->unk53 = actor->unk53;
+          parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
           if (parent->mode < 0x80) {
@@ -3395,12 +3395,12 @@ void Level33_UpdateActors(void) {
       L33State143 *st = actor->state;
 
       st->u00 += dt * 14;
-      actor->unk57 = 0xBB80 / st->u00;
-      if (actor->unk57 < 5) {
-        actor->unk57 = 5;
+      actor->scale = 0xBB80 / st->u00;
+      if (actor->scale < 5) {
+        actor->scale = 5;
       }
-      if (actor->unk57 >= 0x80) {
-        actor->unk57 = 0x7F;
+      if (actor->scale >= 0x80) {
+        actor->scale = 0x7F;
       }
       if (st->u04 != 0) {
         RaiseSpyroTriggerInRadius(&actor->posX, st->u00, 7);
@@ -3651,7 +3651,7 @@ void Level33_UpdateActors(void) {
           st->u18 = 0xD2;
           st->u14 = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, 0);
-          if (actor->unk53 != 0xFF) {
+          if (actor->dropKind != 0xFF) {
             D_80077CC8[0] &= ~1;
           }
           SpawnActorDeathDrop(actor, 4, 0, 0);
@@ -4192,12 +4192,12 @@ void Level33_UpdateActors(void) {
 
             p->u00 = 0x190;
             p->u04 = 0x12;
-            o->unk57 = 0xBB80 / p->u00;
-            if (o->unk57 < 5) {
-              o->unk57 = 5;
+            o->scale = 0xBB80 / p->u00;
+            if (o->scale < 5) {
+              o->scale = 5;
             }
-            if (o->unk57 >= 0x80) {
-              o->unk57 = 0x7F;
+            if (o->scale >= 0x80) {
+              o->scale = 0x7F;
             }
             actor->mode = 1;
             PlayActorMeshVoice(actor, 0, 0);
@@ -4265,12 +4265,12 @@ void Level33_UpdateActors(void) {
             }
 
             g_nLevelEggCount = 1;
-            actor->unk57 = 0x40;
+            actor->scale = 0x40;
             actor->unk50 = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
-            actor->unk4A = 0xFF;
+            actor->visZone = 0xFF;
             actor->subMode = 2;
           }
         }
@@ -4338,8 +4338,8 @@ void Level33_UpdateActors(void) {
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk57 = 0x40;
-          actor->unk4A = 0xFF;
+          actor->scale = 0x40;
+          actor->visZone = 0xFF;
           actor->subMode = 1;
           st->mode = 1;
         }
@@ -4372,8 +4372,8 @@ void Level33_UpdateActors(void) {
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk57 = 0x40;
-          actor->unk4A = 0xFF;
+          actor->scale = 0x40;
+          actor->visZone = 0xFF;
           break;
         }
         actor->subMode = 1;
@@ -4532,7 +4532,7 @@ void Level33_UpdateActors(void) {
         continue;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 0, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -4599,7 +4599,7 @@ void Level33_UpdateActors(void) {
       if (actor->flags & 0xA0000) {
         int i;
 
-        actor->unk55 = 0x20;
+        actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, 0, 0);
 
         for (i = 0; i < 2; i++) {
@@ -4799,7 +4799,7 @@ void Level33_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -4988,11 +4988,11 @@ void Level33_UpdateActors(void) {
     case 329: {
       L16Pod *st = actor->state;
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
@@ -5111,7 +5111,7 @@ void Level33_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, 0, s480, col2);
           }
           DespawnActorRecord(st->prize);
-          actor->unk3A &= 0x7F;
+          actor->killGroup &= 0x7F;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;

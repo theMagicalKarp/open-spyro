@@ -41,7 +41,7 @@
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
   int unk04;           /* 0x04 */
-  int unk08;           /* 0x08 */
+  int collision;           /* 0x08 */
   int posX;            /* 0x0C */
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
@@ -57,8 +57,8 @@ typedef struct Actor {
   unsigned char unk47;
   unsigned char mode;
   unsigned char subMode; /* 0x49 */
-  unsigned char unk4A;
-  unsigned char unk4B; /* 0x4B */
+  unsigned char visZone;
+  unsigned char renderList; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
   unsigned char unk4D;
   unsigned char unk4E;
@@ -66,11 +66,11 @@ typedef struct Actor {
   unsigned char unk50; /* 0x50 */
   unsigned char drawn;
   unsigned char updateDist; /* 0x52 */
-  unsigned char unk53;
+  unsigned char dropKind;
   unsigned char sfxSlot;
-  unsigned char unk55;
+  unsigned char soundRange;
   unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char unk57;
+  unsigned char scale;
 } Actor; /* 0x58 */
 
 /* Flame state block (types 0xE, 0xF, 0x53..0x57). */
@@ -182,7 +182,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     rec->unk4D = 0;
     rec->unk4E = 0;
     rec->unk4F = 1;
-    rec->unk4B |= 0x80;
+    rec->renderList |= 0x80;
     break;
   }
 
@@ -295,7 +295,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
       st->vel[1] = speed * LookupSine(yaw) >> 12;
       st->vel[2] = LookupSine(pitch) >> 4;
       st->unk0C = RandomIntInRange(0x23, 0x32);
-      rec->unk57 = 0x20 - RandomIntInRange(6, 0x14);
+      rec->scale = 0x20 - RandomIntInRange(6, 0x14);
       st->vel[0] += g_anSpyroVelocity[0] >> 6;
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;
@@ -323,7 +323,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     rec->rotZ += (unsigned char)st->spinZ * 4;
     st->unk10 = parent->posZ - 0x40;
     *(int *)&rec->unk4C = 0x1000000;
-    rec->unk4B |= 0x80;
+    rec->renderList |= 0x80;
     break;
   }
 
@@ -389,7 +389,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     st->unk0C = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
       *(int *)&rec->unk4C = 0xA18618;
-      rec->unk4B |= 0x80;
+      rec->renderList |= 0x80;
     }
     break;
   }
@@ -409,9 +409,9 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     rec->unk4E = 0;
     rec->unk4F = 0xE;
     if (g_nGemPickupSubstate == 3) {
-      rec->unk57 = 0x14;
+      rec->scale = 0x14;
     } else if (g_nGemPickupSubstate == 1) {
-      rec->unk57 = 0x30;
+      rec->scale = 0x30;
     }
     i = GetRandomU32() & 7;
     dir[0] = g_anLaunchDirTable[i * 2];

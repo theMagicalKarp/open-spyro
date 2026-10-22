@@ -35,7 +35,7 @@
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
   int unk04;           /* 0x04 */
-  int unk08;           /* 0x08 */
+  int collision;           /* 0x08 */
   int posX;            /* 0x0C */
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
@@ -51,8 +51,8 @@ typedef struct Actor {
   unsigned char unk47;
   unsigned char mode;
   unsigned char subMode; /* 0x49 */
-  unsigned char unk4A;
-  unsigned char unk4B; /* 0x4B */
+  unsigned char visZone;
+  unsigned char renderList; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
   unsigned char unk4D;
   unsigned char unk4E;
@@ -60,11 +60,11 @@ typedef struct Actor {
   unsigned char unk50; /* 0x50 */
   unsigned char drawn;
   unsigned char updateDist; /* 0x52 */
-  unsigned char unk53;
+  unsigned char dropKind;
   unsigned char sfxSlot;
-  unsigned char unk55;
+  unsigned char soundRange;
   unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char unk57;
+  unsigned char scale;
 } Actor; /* 0x58 */
 
 /* Flame state block (types 0xE, 0xF, 0x53..0x57). */
@@ -165,7 +165,7 @@ Actor *Level33_SpawnActor(int type, Actor *parent) {
     rec->unk4D = 0;
     rec->unk4E = 0;
     rec->unk4F = 1;
-    rec->unk4B |= 0x80;
+    rec->renderList |= 0x80;
     break;
   }
 
@@ -315,7 +315,7 @@ Actor *Level33_SpawnActor(int type, Actor *parent) {
     st->unk0C = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
       *(int *)&rec->unk4C = 0xA18618;
-      rec->unk4B |= 0x80;
+      rec->renderList |= 0x80;
     }
     break;
   }
