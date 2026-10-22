@@ -9,11 +9,6 @@ extern int VectorLength();
 extern int ArcTan2_8bit(int y, int x);
 extern void RefreshActorDerivedState();
 
-extern short D_80075280[];
-extern short D_8006CBA4[];
-extern short D_8006CBB4[];
-extern short D_8006CBCC[];
-
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
    +8 + i*0x10) and `step` the sub-step counter within the current leg, which

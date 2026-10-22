@@ -12,7 +12,6 @@ extern void MulMatrix0();
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */
-extern int g_anSpyroStateBlock[];
 
 /* 0x8004a7ec (544 bytes) — Spyro frame tick that forces the jump state
    (0xF): snapshot the pad, ChangeSpyroState(0xF) unless already there,

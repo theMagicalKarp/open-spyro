@@ -14,7 +14,6 @@ extern void StartCdReadAsync(int lba, int dst, int count, int offset,
 
 extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
 extern int g_nTitleSceneSectorOffset; /* async-read byte offset */
-extern int g_abDrawBufPool;           /* draw-buffer sentinel */
 extern int g_CutsceneSoundDef;        /* death-cutscene sample-bank record */
 extern int D_80078D88;
 

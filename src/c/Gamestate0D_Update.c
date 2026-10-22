@@ -12,7 +12,6 @@
    the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
 extern void StopAllSoundExceptMask(int owner_key);
-extern void InitNewGameState(void);
 extern void ResetSpyroEntity(int mode);
 extern void TickWorldBundleLoadStream(void);
 extern void TickLevelTransitionStream(int mode);
@@ -26,8 +25,6 @@ extern void AdvanceSpyroAnimFrame(char layer_mask);
 extern void ClearImage(RECT *rect, unsigned int r, unsigned int g,
                        unsigned int b);
 extern int DrawSync(int mode);
-extern void InitActorMeshScratchRegions(int mode);
-extern void RotateLightVectorXZ(int steps);
 
 extern void *g_pSharedLoadBuffer; /* default draw-buffer base */
 extern int D_8006EE7C[];          /* per-try first level table */

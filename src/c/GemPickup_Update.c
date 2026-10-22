@@ -35,7 +35,6 @@ extern void InsertActorIntoSpatialGrid(void *actor);
 extern void StopSoundVoiceByIndex(int voice, int mode);
 extern void DespawnActorRecord(void *actor);
 extern void CopyWords(void *dst, void *src, int byte_count);
-extern long GetSpuTransferStatus(int mode);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
 extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
@@ -60,7 +59,6 @@ extern void *g_apSampleBankEntriesBlock[];
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
 extern int g_anGemPickupBlock[];
 extern int g_anHudDragonCachedCountBlock[];
-extern int g_anGemPickupAuraStarBlock[]; /* [0] enable flag */
 
 #define GB g_anGemPickupBlock
 #define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])

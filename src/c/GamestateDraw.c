@@ -16,7 +16,6 @@
    then the fullscreen tint while the generic countdown runs and the cinematic
    letterbox while gameplay is blocked. Ends with the standard 2-vblank frame
    submit. */
-extern void BuildCameraViewMatrix(void);
 extern void Gamestate01_09_Draw(void);
 extern void Gamestate02_03_06_Draw(void);
 extern void RespawnOrGameOver_Draw(void);
@@ -29,9 +28,7 @@ extern void Titlescreen_Draw(void); /* titlescreen overlay draw */
 extern void GemCutscene_Draw(void);
 extern void Credits_Draw(void); /* credits overlay draw */
 extern void ReturningHome_Draw(void);
-extern void EnqueueLoadingScreenSprites(void);
 extern void DrawDemoModeOverlay(void);
-extern void DrawFullscreenTint(int mode, int r, int g, int b);
 extern void DrawMotionTrailRibbons(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);

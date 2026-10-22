@@ -28,7 +28,6 @@ extern int D_80075948;
 SDATA(D_80075948, 4);
 SDATA(g_pSpyroContactActor, 4);
 
-extern unsigned int g_adwSpyroRequestMaskBlock[];
 extern int g_nCameraNextMode_blk[];
 
 #define SPY g_anSpyroWorldPosBlock

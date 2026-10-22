@@ -2,7 +2,6 @@
 #include "main_shared.h"
 
 extern void InitSpu(void);
-extern void SetSpuCommonAttr(unsigned char *attr);
 extern void ApplySpuVoiceAttr(int *attr);
 extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void SetSpuTransferMode(int mode);

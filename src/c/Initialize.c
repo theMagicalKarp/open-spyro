@@ -27,10 +27,8 @@ extern void TickWorldBundleLoadStream(void);
 extern void *g_pSharedLoadBuffer;    /* shared CD sector buffer pointer */
 extern int g_nAssetDirBootBlockSize; /* boot-splash chunk byte count */
 extern int g_anAssetDirectory;       /* boot-splash byte offset */
-extern int g_abDrawBufPool;          /* draw-buffer sentinel */
 extern int D_800785CC;
 
-extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
 extern void *g_apDrawBufBlock2[]; /* distinct alias, fade-out pass (A23) */
 extern int g_anCdBaseLbaBlock[];  /* alias of g_nCdBaseLba */
 extern int g_anWorldArchiveOffsetBlock[]; /* alias, held across the reads */

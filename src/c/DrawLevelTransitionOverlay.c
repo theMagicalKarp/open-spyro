@@ -23,7 +23,6 @@
    The queue is flushed here rather than by the caller: clear the head slot,
    EnqueuePendingSpritePrims, then rasterize. */
 
-extern unsigned char g_szReturningHome[];   /* "RETURNING HOME..." */
 extern unsigned char g_szConfrontingFmt[];  /* "CONFRONTING %s..." */
 extern unsigned char g_szEnteringDotsFmt[]; /* "ENTERING %s..." */
 extern unsigned char g_szTreasureFound[];   /* "TREASURE FOUND" */

@@ -5,8 +5,6 @@
 
 extern void StopSoundVoicesByOwner(int *owner, int mask);
 extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
-extern void ApplyGravityAlongSpyroSlopeNormal(void);
-extern void ApplyGravityAlongSpyroSlopeTangent(void);
 extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 

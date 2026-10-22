@@ -107,7 +107,6 @@
    (the difference times one is usually the whole residue), then place a
    do/while dial on whichever arm folds, then look for reads expand never
    force_regs. */
-extern void RotateLightVectorXZ(int steps);
 extern void TickLevelTransitionStream(int mode);
 extern int LookupSine(unsigned int angle_12_4);
 extern int LookupCosine(unsigned int angle_12_4);

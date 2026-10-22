@@ -14,7 +14,6 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 extern void EmitTexturedQuad(short *rect, int *uv, int *rgb);
 extern void EnqueueBlinkingMarkerSprite(int *pos, unsigned int phase, int dir);
-extern void EnqueueLoadingScreenSprites(void);
 extern void *BuildTextSpriteChain(char *text, int *pos, int step, int flags);
 extern void *BuildTextSprites(char *text, int *pos, int *style, int step,
                               int flags);
@@ -24,7 +23,6 @@ extern int sprintf(char *buf, char *fmt, ...);
 
 /* Held-base alias for g_pRenderScratchPrimTop (0x800785f0);
    [-2] is g_pRenderScratchRegionBase. */
-extern void *g_apRenderScratchPrimTopBlock[];
 /* Held-base view of g_nVsyncFrameEndCount; [-1] = g_nVsyncFramePaceAnchor. */
 /* cosine view of the sine LUT (g_anSineLut + 0x80). */
 extern short g_anCosineLut[];
@@ -46,7 +44,6 @@ extern char g_szSoundEffects[];   /* "SOUND FX"    */
 extern char g_szMusicVolume[];    /* "MUSIC"       */
 extern char g_szSpeakerSetup[];   /* "SOUND"       */
 extern char g_szVibration[];      /* "VIBRATION"   */
-extern char g_szContinue[];       /* "CONTINUE"    */
 extern char g_szInventory[];      /* "INVENTORY"   */
 extern char g_szExitLevel[];      /* "EXIT LEVEL"  */
 extern char g_szQuitGame[];       /* "EXIT WORLD"  */

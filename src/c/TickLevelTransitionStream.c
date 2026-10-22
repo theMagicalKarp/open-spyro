@@ -9,10 +9,8 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern void RelocateLevelSampleBank(void *bank, int mode);
 extern void ApplyPerLevelGlobalsTable(void);
 extern void LoadImage(RECT *rect, void *data);
-extern long GetSpuTransferStatus(int mode);
 extern void *UnpackWorldDataChunks(void *src, int mode);
 extern void *RelocateActorMeshHeader(void *header);
-extern void RelocateMobActorTable(void *table);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void BuildLoadedLevelRuntime(int full);
 extern void ChangeSpyroState(int state);
@@ -25,8 +23,7 @@ extern char
     *g_apWorldUnpackHeadBlock[];       /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern int g_anSpawnAnchorBlock[];
-extern int g_anSpyroWorldPosZBlock[]; /* 0x80078a60 */
+extern int g_anSpyroWorldPosZBlock[];  /* 0x80078a60 */
 extern int g_anSpyroStateFlagsBlock[];
 extern void *g_apDrawBufBBlock[];
 extern short g_anCosineLut[];

@@ -205,4 +205,38 @@ extern void TickSpyroHornStrikeAttack(void);
 
 extern void TickSpyroAnimLayer2GateTimer(void);
 
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern void AdvanceCameraSpringStep(int column);
+extern void ApplyGravityAlongSpyroSlopeNormal(void);
+extern void ApplyGravityAlongSpyroSlopeTangent(void);
+extern int ApproachAngle8(int target, int cur, int step, int lim);
+extern void BuildCameraViewMatrix(void);
+extern short D_8006CBA4[];
+extern short D_8006CBB4[];
+extern short D_8006CBCC[];
+extern short D_80075280[];
+extern void DrawFullscreenTint(int slot, int r, int g, int b);
+extern void EmitStaticActorMeshListFogged(void);
+extern void EnqueueLoadingScreenSprites(void);
+extern long GetSpuTransferStatus(int mode);
+extern void InitActorMeshScratchRegions(int mode);
+extern void InitNewGameState(void);
+extern void RelocateMobActorTable(void *table);
+extern void RotateLightVectorXZ(int steps);
+extern void SetSpuCommonAttr(unsigned char *attr);
+extern void SnapCameraToTarget(void);
+extern int g_abDrawBufPool;          /* draw-buffer sentinel */
+extern unsigned int g_adwSpyroRequestMaskBlock[];
+extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
+extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
+extern int g_anSaveMenuBlock[];
+extern int g_anSpawnAnchorBlock[];
+extern int g_anSpyroStateBlock[];
+extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
+extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
+extern void *g_apRenderScratchPrimTopBlock[];
+extern void *g_apSaveMenuAnimActorListBlock[];
+extern char g_szContinue[];       /* "CONTINUE"    */
+extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
+
 #endif /* OPEN_SPYRO_MAIN_SHARED_H */

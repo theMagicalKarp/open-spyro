@@ -12,7 +12,6 @@ extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
 extern int DrawSync(int mode);
 extern void StopAllSoundExceptMask(unsigned int mask);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void InitNewGameState(void);
 extern void BeginCreditsSequence(int param);
 extern int g_anGamestate0dBlock[]; /* alias of g_nGamestate0dMode */
 extern int g_nCreditsPageIndex;

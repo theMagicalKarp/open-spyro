@@ -2,7 +2,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern void RotateLightVectorXZ(int steps);
 extern void TickGemCutsceneActorAnims(void **actors, int mode);
 extern int SignedAngleDelta12(int a, int b);
 extern void TrackEntityYawTowardSpyro(void *actor, int step, int deadzone,
@@ -28,10 +27,7 @@ extern void BuildSaveGameBuffer(void *buf);
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
    keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
-extern int g_anSaveMenuBlock[];
 extern unsigned int g_adwPadPressedBlock[];
-extern void *g_apSaveMenuAnimActorListBlock[];
-extern void *g_apRenderScratchPrimTopBlock[];
 extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
 extern char g_szMemCardSaveName[];            /* memory card save file name */
 extern int g_nSaveSlotLoaded;

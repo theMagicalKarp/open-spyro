@@ -3,8 +3,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void AdvanceCameraSpringStep(int column);
-extern void SnapCameraToTarget(void);
 extern void UpdateCameraEulerAngles(void);
 extern int ComputeCameraToTargetAngle(int *pos);
 

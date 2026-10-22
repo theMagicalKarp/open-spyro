@@ -4,13 +4,11 @@
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void RenderWorldChunks(int lod);
 extern void EmitStaticActorMeshList(int lod, int *viewMtx, int *worldMtx);
-extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern int g_nFarPlaneDrawDistance; /* per-gamestate far-plane cull limit */
-extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
 
 /* Draw gamestate 0xE (GS_GEM_CUTSCENE): the collected gem shown in 3D with a
    g_nGenericCountdown fade-to-black. Copies the world fog color into both frame

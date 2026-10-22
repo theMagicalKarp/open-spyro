@@ -5,7 +5,6 @@ extern void LoadImage(RECT *rect, short *pix);
 extern void DrawSync(int mode);
 extern void AddPrimToOTSlot(int prim, int slot);
 extern unsigned long long ComputeDepthCuedColor();
-extern void EmitStaticActorMeshListFogged(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);

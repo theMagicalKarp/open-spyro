@@ -15,7 +15,6 @@ extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern int
     g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */
-extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
 
 /* Draw gamestates 1 and 9 (level intro / world arrival): copies the world
    fog color into both frame DRAWENVs, clears the OT bins, draws the

@@ -4,8 +4,6 @@
 #include "vecmath.h"
 
 extern int ComputeCameraToTargetAngle(int *pos);
-extern void AdvanceCameraSpringStep(int column);
-extern void SnapCameraToTarget(void);
 extern void UpdateCameraEulerAngles(void);
 extern void UpdateCameraManualYawInput(void);
 extern void UpdateGameplayCamera(void);

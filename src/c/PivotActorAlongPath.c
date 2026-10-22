@@ -13,14 +13,11 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-extern int ApproachAngle8(int target, int cur, int step, int lim);
 extern int TurnActorYawTowardAngle(int *actor, int ang, int step, int lim,
                                    int mode);
 extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
                                  int flags);
 extern int abs(int);
-
-extern void *g_apSaveMenuAnimActorListBlock[];
 
 #define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))
 #define ACTOR_TURNSTATE(a) (*(unsigned char *)((char *)(a) + 0x49))
