@@ -4,7 +4,7 @@ extern void RefreshActorDerivedState(unsigned char *actor, int n);
 extern void CommitActorKillGems(int id, unsigned char *actor);
 
 extern unsigned char *D_80075758;
-extern int D_8006E330[];
+extern int g_adwActorBurstColors[];
 
 /* 0x8003b9d4 (0xFC) — on picking up actor `a` (a fodder/pickup): record its
    kind byte in the gem-tally icon UV ring, bump the ring count, special-case
@@ -23,7 +23,7 @@ void CollectPickupActor(unsigned char *a) {
   }
   RefreshActorDerivedState(a, 4);
   ((void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
-      6, 0xC, a, D_8006E330[*(short *)(a + 0x36)]);
+      6, 0xC, a, g_adwActorBurstColors[*(short *)(a + 0x36)]);
 
   kind = *(short *)(a + 0x36);
   if (kind == 0x53) {

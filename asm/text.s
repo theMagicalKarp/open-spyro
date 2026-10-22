@@ -45951,8 +45951,8 @@ glabel SpawnActorRotBillboard
     /* 2B320 8003AB20 40801200 */  sll        $s0, $s2, 1
     /* 2B324 8003AB24 21801202 */  addu       $s0, $s0, $s2
     /* 2B328 8003AB28 C0801000 */  sll        $s0, $s0, 3
-    /* 2B32C 8003AB2C 0780023C */  lui        $v0, %hi(D_80077108)
-    /* 2B330 8003AB30 08714224 */  addiu      $v0, $v0, %lo(D_80077108)
+    /* 2B32C 8003AB2C 0780023C */  lui        $v0, %hi(g_aRotBillboards)
+    /* 2B330 8003AB30 08714224 */  addiu      $v0, $v0, %lo(g_aRotBillboards)
     /* 2B334 8003AB34 21800202 */  addu       $s0, $s0, $v0
     /* 2B338 8003AB38 FF000224 */  addiu      $v0, $zero, 0xFF
     /* 2B33C 8003AB3C 100002A2 */  sb         $v0, 0x10($s0)
@@ -47099,9 +47099,9 @@ glabel CollectPickupActor
     /* 2C244 8003BA44 0780033C */  lui        $v1, %hi(g_pfnLevelEmitParticles)
     /* 2C248 8003BA48 E458638C */  lw         $v1, %lo(g_pfnLevelEmitParticles)($v1)
     /* 2C24C 8003BA4C 80100200 */  sll        $v0, $v0, 2
-    /* 2C250 8003BA50 0780013C */  lui        $at, %hi(D_8006E330)
+    /* 2C250 8003BA50 0780013C */  lui        $at, %hi(g_adwActorBurstColors)
     /* 2C254 8003BA54 21082200 */  addu       $at, $at, $v0
-    /* 2C258 8003BA58 30E3278C */  lw         $a3, %lo(D_8006E330)($at)
+    /* 2C258 8003BA58 30E3278C */  lw         $a3, %lo(g_adwActorBurstColors)($at)
     /* 2C25C 8003BA5C 09F86000 */  jalr       $v1
     /* 2C260 8003BA60 21300002 */   addu      $a2, $s0, $zero
     /* 2C264 8003BA64 36000386 */  lh         $v1, 0x36($s0)
@@ -79511,8 +79511,8 @@ glabel DrawWorldRotatingBillboards
     /* 48D44 80058544 2800CC8C */  lw         $t4, 0x28($a2)
     /* 48D48 80058548 2C00CD8C */  lw         $t5, 0x2C($a2)
     /* 48D4C 8005854C 3000CE8C */  lw         $t6, 0x30($a2)
-    /* 48D50 80058550 0780183C */  lui        $t8, %hi(D_80077108)
-    /* 48D54 80058554 08711827 */  addiu      $t8, $t8, %lo(D_80077108)
+    /* 48D50 80058550 0780183C */  lui        $t8, %hi(g_aRotBillboards)
+    /* 48D54 80058554 08711827 */  addiu      $t8, $t8, %lo(g_aRotBillboards)
     /* 48D58 80058558 E8FF1823 */  addi       $t8, $t8, -0x18 /* handwritten instruction */
     /* 48D5C 8005855C C0001923 */  addi       $t9, $t8, 0xC0 /* handwritten instruction */
   .L80058560:
@@ -79713,8 +79713,8 @@ endlabel DrawWorldRotatingBillboards
 nonmatching func_8005882C, 0x38
 
 glabel func_8005882C
-    /* 4902C 8005882C 0780013C */  lui        $at, %hi(D_80077108)
-    /* 49030 80058830 08712124 */  addiu      $at, $at, %lo(D_80077108)
+    /* 4902C 8005882C 0780013C */  lui        $at, %hi(g_aRotBillboards)
+    /* 49030 80058830 08712124 */  addiu      $at, $at, %lo(g_aRotBillboards)
     /* 49034 80058834 C0002220 */  addi       $v0, $at, 0xC0 /* handwritten instruction */
     /* 49038 80058838 00000420 */  addi       $a0, $zero, 0x0 /* handwritten instruction */
   .L8005883C:

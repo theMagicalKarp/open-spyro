@@ -2171,7 +2171,7 @@ void PlayActorMeshVoice(int *e, int arg1, void *arg2);
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
 int TurnActorYawTowardAngle(int *e, int target, int step, int threshold, int flag);
 
-/* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at D_80077108), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
+/* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
 int SpawnActorRotBillboard(int *arg0, int *arg1);
 
 /* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (+0x43), or on a0 alone when the group index is out of range. */

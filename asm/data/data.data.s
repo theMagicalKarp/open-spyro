@@ -1456,17 +1456,17 @@ dlabel g_anCameraParamMode9ScriptStick
     /* 5D220 8006CA20 00000000 */ .word 0x00000000
 enddlabel g_anCameraParamMode9ScriptStick
 
-nonmatching D_8006CA24
+nonmatching g_aCameraXformPresets
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8006CA24
+dlabel g_aCameraXformPresets
     /* 5D224 8006CA24 00080000 */ .word 0x00000800
     /* 5D228 8006CA28 40FFFFFF */ .word 0xFFFFFF40
     /* 5D22C 8006CA2C 000A0000 */ .word 0x00000A00
     /* 5D230 8006CA30 00000000 */ .word 0x00000000
     /* 5D234 8006CA34 00000000 */ .word 0x00000000
     /* 5D238 8006CA38 00000000 */ .word 0x00000000
-enddlabel D_8006CA24
+enddlabel g_aCameraXformPresets
 
 nonmatching g_anCameraParamLedgeGrabYawBelow
 
@@ -3548,9 +3548,9 @@ dlabel D_8006E308
     /* 5EB2C 8006E32C 00000000 */ .word 0x00000000
 enddlabel D_8006E308
 
-nonmatching D_8006E330
+nonmatching g_adwActorBurstColors
 
-dlabel D_8006E330
+dlabel g_adwActorBurstColors
     /* 5EB30 8006E330 36000000 */ .word 0x00000036
     /* 5EB34 8006E334 08000000 */ .word 0x00000008
     /* 5EB38 8006E338 2A000000 */ .word 0x0000002A
@@ -3593,7 +3593,7 @@ dlabel D_8006E330
     /* 5EBCC 8006E3CC EBFFFFFF */ .word 0xFFFFFFEB
     /* 5EBD0 8006E3D0 00000000 */ .word 0x00000000
     /* 5EBD4 8006E3D4 E2FFFFFF */ .word 0xFFFFFFE2
-enddlabel D_8006E330
+enddlabel g_adwActorBurstColors
 
 nonmatching D_8006E3D8
 

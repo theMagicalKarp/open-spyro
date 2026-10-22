@@ -221,19 +221,19 @@ typedef struct {
 
 extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
 
-/* Sparkle nodes spawned around items. */
-typedef struct AnimNode {
+/* g_aRotBillboards records (SpawnActorRotBillboard) used as sparkles around items. */
+typedef struct RotBillboard {
   int pos[3];         /* 0x00 */
-  unsigned char flag; /* 0x0C */
+  unsigned char life; /* 0x0C frames left; 0 = slot free */
   unsigned char pad[11];
-} AnimNode;
+} RotBillboard;
 
-extern AnimNode D_80077108[];
+extern RotBillboard g_aRotBillboards[];
 
-/* Sparkle anchor offsets per model family. */
-extern int D_8006E5A0;
-extern int D_8006E5B8;
-extern int D_8006E5AC;
+/* SpawnActorRotBillboard spawn offsets (one 0xC-byte table from 0x8006e57c), per model family. */
+extern int g_anRotBillboardOffset3;
+extern int g_anRotBillboardOffset5;
+extern int g_anRotBillboardOffset4;
 
 extern int g_nLevelEggCount; /* key collected */
 
@@ -258,7 +258,7 @@ typedef struct AngPair {
   unsigned char b; /* 0x01 */
 } AngPair;
 
-extern AngPair D_8006E638[];
+extern AngPair g_aShakeRotOffsets[];
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
@@ -286,7 +286,7 @@ extern int g_nScriptedMobViewYawSpin;
 extern int g_nScriptedMobViewPitchTilt;
 extern int g_nLevelIntroParallaxCountdown;
 
-/* 0x18-byte spherical camera coordinates; D_8006CA24 holds the presets. */
+/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
   int v[6];
 } Xform;
@@ -319,7 +319,7 @@ typedef struct {
 extern CamObj g_anWorldToCameraRotMtx;
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform D_8006CA24[];
+extern Xform g_aCameraXformPresets[];
 
 extern void ComputeCameraToTargetAngle(int *out);
 extern void ComputeCameraOrbitOffset(int *out);
@@ -342,13 +342,13 @@ typedef struct PortalState {
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
   int unk14;        /* 0x14 published to SPY.u206 as a byte */
-  int unk18;        /* 0x18 index into D_8006CA24; negative selects none */
+  int unk18;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
-/* Crystal dragon sparkle anchors, one per sparkle phase. */
-extern int D_8006E57C;
-extern int D_8006E588;
-extern int D_8006E594;
+/* SpawnActorRotBillboard spawn offsets for the crystal dragon, one per sparkle phase. */
+extern int g_anRotBillboardOffset0;
+extern int g_anRotBillboardOffset1;
+extern int g_anRotBillboardOffset2;
 
 extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
@@ -402,7 +402,7 @@ typedef struct FxNode {
 extern int D_8006E390;
 extern void *D_8006E490;
 extern void *D_8006E494;
-extern void *D_8006E330[];
+extern void *g_adwActorBurstColors[];
 
 extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
@@ -3613,20 +3613,20 @@ void Level14_UpdateActors(void) {
           RefreshActorDerivedState(actor, 4);
 
           if (actor->type == 14) {
-            RotateVectorByMatrix(actor->mtx, &D_8006E5B8, D_80077108[st->anim].pos);
+            RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
           } else {
-            RotateVectorByMatrix(actor->mtx, &D_8006E5A0, D_80077108[st->anim].pos);
+            RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset3, g_aRotBillboards[st->anim].pos);
           }
 
-          AddVector(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+          AddVector(g_aRotBillboards[st->anim].pos, g_aRotBillboards[st->anim].pos,
                         &actor->posX);
 
-          if (D_80077108[st->anim].flag < 5) {
+          if (g_aRotBillboards[st->anim].life < 5) {
             st->anim = 255;
           }
         } else {
           if (st->timer > 0xf7) {
-            int handle = SpawnActorRotBillboard(actor, &D_8006E5A0);
+            int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
             if (handle >= 0 && dist < 0x4000) {
               st->anim = handle;
             }
@@ -4780,7 +4780,7 @@ void Level14_UpdateActors(void) {
             else if (st->rider->type == 15)
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
             else
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E330[st->rider->type]);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 
             st->rider = 0;
             if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
@@ -5186,14 +5186,14 @@ void Level14_UpdateActors(void) {
 
       if (st->anim != 0xFF) {
         RefreshActorDerivedState(actor, 4);
-        RotateVectorByMatrix(actor->mtx, &D_8006E5AC, D_80077108[st->anim].pos);
-        AddVector(D_80077108[st->anim].pos, D_80077108[st->anim].pos,
+        RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->anim].pos);
+        AddVector(g_aRotBillboards[st->anim].pos, g_aRotBillboards[st->anim].pos,
                       &actor->posX);
-        if (D_80077108[st->anim].flag < 5) {
+        if (g_aRotBillboards[st->anim].life < 5) {
           st->anim = 0xFF;
         }
       } else if (st->timer >= 0xF8) {
-        ang = SpawnActorRotBillboard(actor, &D_8006E5AC);
+        ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
         if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
           st->anim = ang;
         }
@@ -5260,11 +5260,11 @@ void Level14_UpdateActors(void) {
           int dx;
           int dy;
 
-          actor->rotX = D_8006E638[st->phase >> 1].a + st->rotX;
-          actor->rotY = D_8006E638[st->phase >> 1].b + st->rotY;
+          actor->rotX = g_aShakeRotOffsets[st->phase >> 1].a + st->rotX;
+          actor->rotY = g_aShakeRotOffsets[st->phase >> 1].b + st->rotY;
 
-          dx = (signed char)D_8006E638[st->phase >> 1].a;
-          dy = (signed char)D_8006E638[st->phase >> 1].b;
+          dx = (signed char)g_aShakeRotOffsets[st->phase >> 1].a;
+          dy = (signed char)g_aShakeRotOffsets[st->phase >> 1].b;
           if (dx < 0) {
             dx = -dx;
           }
@@ -5349,13 +5349,13 @@ void Level14_UpdateActors(void) {
             PlayActorMeshVoice(actor, 0, 0);
           }
           actor->rotX =
-              (signed char)D_8006E638[(st->unk44 - 192) >> 1].a + st->unk48;
+              (signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].a + st->unk48;
           actor->rotY =
-              (signed char)D_8006E638[(st->unk44 - 192) >> 1].b + st->unk4C;
+              (signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].b + st->unk4C;
           actor->posZ =
               st->unk50 +
-              (ABS2((signed char)D_8006E638[(st->unk44 - 192) >> 1].a) +
-               ABS2((signed char)D_8006E638[(st->unk44 - 192) >> 1].b)) *
+              (ABS2((signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].a) +
+               ABS2((signed char)g_aShakeRotOffsets[(st->unk44 - 192) >> 1].b)) *
                   6;
         } else if (st->unk44 >= 188) {
           st->unk48 = actor->rotX;
@@ -5366,11 +5366,11 @@ void Level14_UpdateActors(void) {
           StopSoundVoicesByOwner(actor, 1);
         } else {
           if ((st->unk44 >> 1) == 16 && (GetRandomU32() & 3) == 0) {
-            SpawnActorRotBillboard(actor, &D_8006E57C);
+            SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
           } else if ((st->unk44 >> 1) == 48 && (GetRandomU32() & 3) == 0) {
-            SpawnActorRotBillboard(actor, &D_8006E588);
+            SpawnActorRotBillboard(actor, &g_anRotBillboardOffset1);
           } else if ((st->unk44 >> 1) == 80 && (GetRandomU32() & 3) == 0) {
-            SpawnActorRotBillboard(actor, &D_8006E594);
+            SpawnActorRotBillboard(actor, &g_anRotBillboardOffset2);
           }
         }
 
@@ -6513,12 +6513,12 @@ void Level14_UpdateActors(void) {
           }
         }
         if (st->timer >= 0x39) {
-          actor->rotX = D_8006E638[(0x78 - st->timer) >> 1].a + st->rotX;
-          actor->rotY = D_8006E638[(0x78 - st->timer) >> 1].b + st->rotY;
+          actor->rotX = g_aShakeRotOffsets[(0x78 - st->timer) >> 1].a + st->rotX;
+          actor->rotY = g_aShakeRotOffsets[(0x78 - st->timer) >> 1].b + st->rotY;
           actor->posZ =
               st->restZ +
-              (ABS2((signed char)D_8006E638[(0x78 - st->timer) >> 1].a) +
-               ABS2((signed char)D_8006E638[(0x78 - st->timer) >> 1].b)) *
+              (ABS2((signed char)g_aShakeRotOffsets[(0x78 - st->timer) >> 1].a) +
+               ABS2((signed char)g_aShakeRotOffsets[(0x78 - st->timer) >> 1].b)) *
                   6;
         }
         } else {
@@ -6757,10 +6757,10 @@ void Level14_UpdateActors(void) {
           int dx;
           int dy;
 
-          actor->rotX = D_8006E638[st->timer >> 1].a + st->rotX;
-          actor->rotY = D_8006E638[st->timer >> 1].b + st->rotY;
-          dx = (signed char)D_8006E638[st->timer >> 1].a;
-          dy = (signed char)D_8006E638[st->timer >> 1].b;
+          actor->rotX = g_aShakeRotOffsets[st->timer >> 1].a + st->rotX;
+          actor->rotY = g_aShakeRotOffsets[st->timer >> 1].b + st->rotY;
+          dx = (signed char)g_aShakeRotOffsets[st->timer >> 1].a;
+          dy = (signed char)g_aShakeRotOffsets[st->timer >> 1].b;
           if (dx < 0) {
             dx = -dx;
           }

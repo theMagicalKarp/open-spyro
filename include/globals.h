@@ -1111,6 +1111,15 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_pfnLevelBeginActorCutscene  0x800757a0  Level<N>_BeginActorCutscene (6 homeworlds + 4 levels)
  *   g_pfnLevelOnSaveMenuExit      0x800758a8  Level<N>_OnSaveMenuExit (same 10 levels)
  *   g_pfnLevelHandleFlightResults 0x800757a8  Level<N>_HandleFlightResults (flight levels)
+ *
+ * Shared data the level overlays read (documentation only, same reasons):
+ *   g_aRotBillboards        0x80077108  0x18-byte rotating-billboard records (SpawnActorRotBillboard)
+ *   g_anRotBillboardOffset0..5 0x8006e57c + 0xC*i  int[3] spawn offsets passed to SpawnActorRotBillboard
+ *   g_aShakeRotOffsets      0x8006e638  byte x/y rotation offsets, one pair per two shake ticks
+ *   g_abEmitTrailColorsG/B  0x8006e439 / 0x8006e43a  green / blue views of g_abEmitTrailColors
+ *   g_anSparxEmitOffset     0x8006e570  int[3] EmitParticles offset for actor type 0x78 (Sparx)
+ *   g_adwActorBurstColors   0x8006e330  packed RGB per actor type for emit effect 0xC (CollectPickupActor)
+ *   g_aCameraXformPresets   0x8006ca24  0x18-byte spherical camera-coordinate presets
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

@@ -173,11 +173,11 @@ extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
 extern int g_nActiveLevelId;
 extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
-extern unsigned char D_8006E439[];
-extern unsigned char D_8006E43A[];
+extern unsigned char g_abEmitTrailColorsG[];
+extern unsigned char g_abEmitTrailColorsB[];
 extern int g_anEmitStepOffsets[];            /* per-step offsets, stride 3 ints */
 extern int g_anEmitSlotOffsets[];            /* per-slot offsets, stride 3 ints */
-extern int D_8006E570[];
+extern int g_anSparxEmitOffset[];
 
 void Level13_EmitParticles(int count, int type, int *pos, int arg3) {
   int v0[3];
@@ -406,8 +406,8 @@ void Level13_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = 0xF;
       rec->u.spark.r = g_abEmitTrailColors[k];
-      rec->u.spark.g = D_8006E439[k];
-      rec->u.spark.b = D_8006E43A[k];
+      rec->u.spark.g = g_abEmitTrailColorsG[k];
+      rec->u.spark.b = g_abEmitTrailColorsB[k];
       rec->u.spark.fx = 0x2C;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
@@ -431,7 +431,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int arg3) {
           CopyVector(v1, &g_anEmitSlotOffsets[(arg3 >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
-        RotateVectorByMatrix((int *)((Actor *)pos)->mat, D_8006E570, v1);
+        RotateVectorByMatrix((int *)((Actor *)pos)->mat, g_anSparxEmitOffset, v1);
         AddVector(v1, v1, ((Actor *)pos)->pos);
       } else {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitStepOffsets[i * 3], v1);
