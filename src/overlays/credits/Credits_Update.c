@@ -42,7 +42,7 @@
  * lw ...,%lo(sym)($at)` for an indexed global, and `lui $at,(0x80000000>>16)`
  * + `bne $v1,$at,L` for an immediate COMPARE.  Real B2 is `lui $at,<imm>`
  * feeding a load/store whose displacement is a BARE constant
- * (`func_80017FD4`: `lui $at,(0x1F801120>>16); lhu $v0,(0x1F801120&0xFFFF)($at)`).
+ * (`ReadRootCounter2`: `lui $at,(0x1F801120>>16); lhu $v0,(0x1F801120&0xFFFF)($at)`).
  * The detector now keys off the memory operand instead of the `lui`
  * (triage.py); that moved 32 overlay functions out of the wall list.
  *

@@ -745,7 +745,7 @@
 <rect x="303.21" y="746.67" width="3.50" height="3.13" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_940  ·  20 bytes  ·  library</title></rect>
 <rect x="306.71" y="746.67" width="3.50" height="3.13" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_358  ·  20 bytes  ·  library</title></rect>
 <rect x="310.20" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ZeroVector  ·  16 bytes  ·  matched</title></rect>
-<rect x="313.00" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80017FD4  ·  16 bytes  ·  matched</title></rect>
+<rect x="313.00" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReadRootCounter2  ·  16 bytes  ·  matched</title></rect>
 <rect x="289.23" y="749.80" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>EnterCriticalSection  ·  16 bytes  ·  library</title></rect>
 <rect x="289.23" y="752.75" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ExitCriticalSection  ·  16 bytes  ·  library</title></rect>
 <rect x="289.23" y="755.70" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8005df1c  ·  16 bytes  ·  library</title></rect>

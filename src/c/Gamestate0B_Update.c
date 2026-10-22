@@ -34,9 +34,9 @@ extern void *g_apSaveMenuAnimActorListBlock[];
 extern void *g_apRenderScratchPrimTopBlock[];
 extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
 extern char g_szMemCardSaveName[];            /* memory card save file name */
-extern int D_80078D14;
-extern int D_80078D1C;
-extern int D_80078D20;
+extern int g_nSaveSlotLoaded;
+extern int g_nSaveSlotIndex;
+extern int g_nSaveFileTag;
 extern int D_80078D30;
 extern int D_80078D34;
 extern int D_80078D38;
@@ -222,7 +222,7 @@ void Gamestate0B_Update(void) {
         PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
         if (g_nSaveMenuCursor == 0) {
           SM[1] = 0;
-          if (D_80078D14 != 0) {
+          if (g_nSaveSlotLoaded != 0) {
             g_nSaveMenuSubstate = 2;
           } else {
             g_nSaveMenuSubstate = 1;
@@ -291,13 +291,13 @@ void Gamestate0B_Update(void) {
         }
         st = SM[10];
         if (st == 0) {
-          if (D_80078D20 ==
+          if (g_nSaveFileTag ==
               *(unsigned short *)((char *)g_pRenderScratchPrimTop - 0x582)) {
             BuildSaveGameBuffer((char *)g_apRenderScratchPrimTopBlock[0] -
                                 0x600);
             MemCardWrite(g_nSaveSlotSelected, g_szMemCardSaveName,
                          (char *)g_apRenderScratchPrimTopBlock[0] - 0x600,
-                         D_80078D1C * 0x600 + 0x200, 0x600);
+                         g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
             *cur = 3;
             break;
           }
@@ -314,7 +314,7 @@ void Gamestate0B_Update(void) {
         if (SM[10] == 0) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
                       (char *)g_pRenderScratchPrimTop - 0x600,
-                      D_80078D1C * 0x600 + 0x200, 0x600);
+                      g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
           *cur = 4;
           break;
         }

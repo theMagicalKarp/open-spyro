@@ -163,7 +163,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80017e54` | ComputeDepthCuedColor | main | 68 | asm | handwritten |
 | `0x80017e98` | ConvertRGB15ToLuma8 | main | 140 | asm | handwritten |
 | `0x80017f24` | AddBiasToColorRuns | main | 176 | asm | handwritten |
-| `0x80017fd4` | func_80017FD4 | main | 16 | matched | game |
+| `0x80017fd4` | ReadRootCounter2 | main | 16 | matched | game |
 | `0x80017fe4` | BuildTextSpriteChain | main | 456 | matched | game |
 | `0x800181ac` | BuildTextSprites | main | 672 | matched | game |
 | `0x8001844c` | EmitRadialShadedLine | main | 232 | matched | game |

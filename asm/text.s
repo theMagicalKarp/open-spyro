@@ -7071,16 +7071,16 @@ glabel AddBiasToColorRuns
 endlabel AddBiasToColorRuns
 .endif
 
-.section .text.func_80017FD4, "ax"
-.ifndef HAVE_C_func_80017FD4
-nonmatching func_80017FD4, 0x10
+.section .text.ReadRootCounter2, "ax"
+.ifndef HAVE_C_ReadRootCounter2
+nonmatching ReadRootCounter2, 0x10
 
-glabel func_80017FD4
+glabel ReadRootCounter2
     /* 87D4 80017FD4 801F013C */  lui        $at, (0x1F801120 >> 16)
     /* 87D8 80017FD8 20112294 */  lhu        $v0, (0x1F801120 & 0xFFFF)($at)
     /* 87DC 80017FDC 0800E003 */  jr         $ra
     /* 87E0 80017FE0 00000000 */   nop
-endlabel func_80017FD4
+endlabel ReadRootCounter2
 .endif
 
 .section .text.BuildTextSpriteChain, "ax"
@@ -30117,8 +30117,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D4D8 8002CCD8 2800B2AF */  sw         $s2, 0x28($sp)
     /* 1D4DC 8002CCDC 2400B1AF */  sw         $s1, 0x24($sp)
     /* 1D4E0 8002CCE0 0000128E */  lw         $s2, 0x0($s0)
-    /* 1D4E4 8002CCE4 0880033C */  lui        $v1, %hi(D_80078D14)
-    /* 1D4E8 8002CCE8 148D638C */  lw         $v1, %lo(D_80078D14)($v1)
+    /* 1D4E4 8002CCE4 0880033C */  lui        $v1, %hi(g_nSaveSlotLoaded)
+    /* 1D4E8 8002CCE8 148D638C */  lw         $v1, %lo(g_nSaveSlotLoaded)($v1)
     /* 1D4EC 8002CCEC 0B000224 */  addiu      $v0, $zero, 0xB
     /* 1D4F0 8002CCF0 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D4F4 8002CCF4 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
@@ -35791,8 +35791,8 @@ glabel Gamestate0B_Update
     /* 22740 80031F40 00000000 */  nop
     /* 22744 80031F44 10006014 */  bnez       $v1, .L80031F88
     /* 22748 80031F48 01000224 */   addiu     $v0, $zero, 0x1
-    /* 2274C 80031F4C 0880023C */  lui        $v0, %hi(D_80078D14)
-    /* 22750 80031F50 148D428C */  lw         $v0, %lo(D_80078D14)($v0)
+    /* 2274C 80031F4C 0880023C */  lui        $v0, %hi(g_nSaveSlotLoaded)
+    /* 22750 80031F50 148D428C */  lw         $v0, %lo(g_nSaveSlotLoaded)($v0)
     /* 22754 80031F54 00000000 */  nop
     /* 22758 80031F58 06004010 */  beqz       $v0, .L80031F74
     /* 2275C 80031F5C 000000AE */   sw        $zero, 0x0($s0)
@@ -35963,8 +35963,8 @@ glabel Gamestate0B_Update
     /* 229C8 800321C8 F085428C */  lw         $v0, %lo(g_pRenderScratchPrimTop)($v0)
     /* 229CC 800321CC 00000000 */  nop
     /* 229D0 800321D0 7EFA4394 */  lhu        $v1, -0x582($v0)
-    /* 229D4 800321D4 0880023C */  lui        $v0, %hi(D_80078D20)
-    /* 229D8 800321D8 208D428C */  lw         $v0, %lo(D_80078D20)($v0)
+    /* 229D4 800321D4 0880023C */  lui        $v0, %hi(g_nSaveFileTag)
+    /* 229D8 800321D8 208D428C */  lw         $v0, %lo(g_nSaveFileTag)($v0)
     /* 229DC 800321DC 00000000 */  nop
     /* 229E0 800321E0 4F004314 */  bne        $v0, $v1, .L80032320
     /* 229E4 800321E4 04000224 */   addiu     $v0, $zero, 0x4
@@ -35980,8 +35980,8 @@ glabel Gamestate0B_Update
     /* 22A0C 8003220C 00060224 */  addiu      $v0, $zero, 0x600
     /* 22A10 80032210 1000A2AF */  sw         $v0, 0x10($sp)
     /* 22A14 80032214 0000068E */  lw         $a2, 0x0($s0)
-    /* 22A18 80032218 0880023C */  lui        $v0, %hi(D_80078D1C)
-    /* 22A1C 8003221C 1C8D428C */  lw         $v0, %lo(D_80078D1C)($v0)
+    /* 22A18 80032218 0880023C */  lui        $v0, %hi(g_nSaveSlotIndex)
+    /* 22A1C 8003221C 1C8D428C */  lw         $v0, %lo(g_nSaveSlotIndex)($v0)
     /* 22A20 80032220 00FAC624 */  addiu      $a2, $a2, -0x600
     /* 22A24 80032224 40380200 */  sll        $a3, $v0, 1
     /* 22A28 80032228 2138E200 */  addu       $a3, $a3, $v0
@@ -36016,8 +36016,8 @@ glabel Gamestate0B_Update
     /* 22A94 80032294 F085C68C */  lw         $a2, %lo(g_pRenderScratchPrimTop)($a2)
     /* 22A98 80032298 00060224 */  addiu      $v0, $zero, 0x600
     /* 22A9C 8003229C 1000A2AF */  sw         $v0, 0x10($sp)
-    /* 22AA0 800322A0 0880023C */  lui        $v0, %hi(D_80078D1C)
-    /* 22AA4 800322A4 1C8D428C */  lw         $v0, %lo(D_80078D1C)($v0)
+    /* 22AA0 800322A0 0880023C */  lui        $v0, %hi(g_nSaveSlotIndex)
+    /* 22AA4 800322A4 1C8D428C */  lw         $v0, %lo(g_nSaveSlotIndex)($v0)
     /* 22AA8 800322A8 00FAC624 */  addiu      $a2, $a2, -0x600
     /* 22AAC 800322AC 40380200 */  sll        $a3, $v0, 1
     /* 22AB0 800322B0 2138E200 */  addu       $a3, $a3, $v0

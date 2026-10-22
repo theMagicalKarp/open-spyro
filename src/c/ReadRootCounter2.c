@@ -9,7 +9,7 @@
    $at with a local register variable reaches it; the base is seeded through
    an empty asm so cse cannot fold the single-use constant back into the
    load. */
-unsigned short func_80017FD4(void) {
+unsigned short ReadRootCounter2(void) {
   register unsigned short *io asm("$1");
 
   __asm__("" : "=r"(io) : "0"(0x1F800000));
