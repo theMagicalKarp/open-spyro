@@ -2378,7 +2378,7 @@ void Level33_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80)
+      if (actor->cullRadius & 0x80)
         break;
 
       switch (actor->mode) {
@@ -3300,7 +3300,7 @@ void Level33_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -3472,13 +3472,13 @@ void Level33_UpdateActors(void) {
       }
       actor->flags = 0;
 
-      if (st->u04 == 1 && actor->unk50 == 0 &&
+      if (st->u04 == 1 && actor->cullRadius == 0 &&
           ((GetWorldChunkAnimState(4) >> 8) & 0xFF) > 0) {
-        actor->unk50 = 0x28;
-        g_pActorListBase[st->u60].unk50 = 0x28;
+        actor->cullRadius = 0x28;
+        g_pActorListBase[st->u60].cullRadius = 0x28;
       }
 
-      if (actor->nextAnim == 0 && actor->unk50 != 0) {
+      if (actor->nextAnim == 0 && actor->cullRadius != 0) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
           PlayActorMeshVoice(actor, 6, 0);
@@ -4012,7 +4012,7 @@ void Level33_UpdateActors(void) {
           g_nSpyroDrawSuppressed = 1;
         }
         if (g_nActorAnimDone != 0) {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
@@ -4168,7 +4168,7 @@ void Level33_UpdateActors(void) {
             o->subMode = 0;
             o->rotY = ArcTan2(st->u0C, st->u10, 0);
             o->rotZ = actor->rotZ;
-            o->unk50 = 0x50;
+            o->cullRadius = 0x50;
             st->h04 = 0;
           }
           actor->posX += (st->u0C * g_anCosineLut[actor->rotZ]) >> 12;
@@ -4178,7 +4178,7 @@ void Level33_UpdateActors(void) {
             actor->mode = 1;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->drawn = 0;
             actor->mode = 1;
             continue;
@@ -4203,7 +4203,7 @@ void Level33_UpdateActors(void) {
             PlayActorMeshVoice(actor, 0, 0);
           }
           if (actor->mode == 1) {
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->drawn = 0;
           }
         }
@@ -4266,7 +4266,7 @@ void Level33_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -4334,7 +4334,7 @@ void Level33_UpdateActors(void) {
             goto spark;
           }
           g_nLevelEggCount = 1;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -4343,7 +4343,7 @@ void Level33_UpdateActors(void) {
           actor->subMode = 1;
           st->mode = 1;
         }
-        if (st->spark != 0xFF && actor->unk50 != 0) {
+        if (st->spark != 0xFF && actor->cullRadius != 0) {
           RefreshActorDerivedState(actor, 4);
           RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->spark].pos);
           AddVector(g_aRotBillboards[st->spark].pos, g_aRotBillboards[st->spark].pos,
@@ -4351,7 +4351,7 @@ void Level33_UpdateActors(void) {
           if (g_aRotBillboards[st->spark].life < 5) {
             st->spark = 0xFF;
           }
-        } else if (st->timer >= 0xF8 && actor->unk50 != 0) {
+        } else if (st->timer >= 0xF8 && actor->cullRadius != 0) {
           int s = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
           if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -4368,7 +4368,7 @@ void Level33_UpdateActors(void) {
           break;
         }
         if (g_pActorListBase[st->key].mode < 0x7F) {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -4397,7 +4397,7 @@ void Level33_UpdateActors(void) {
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
-          actor->unk50 = 0x18;
+          actor->cullRadius = 0x18;
           st->mode = 2;
           st->timer = 0;
           if (st->seen != 0) {
@@ -4424,7 +4424,7 @@ void Level33_UpdateActors(void) {
           st->timer = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;
-        actor->unk50 = 0x18;
+        actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
         g_nGameplayBlocked = 1;
         if (st->timer < 0xC0) {
@@ -4477,7 +4477,7 @@ void Level33_UpdateActors(void) {
         }
         if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == 0x15 ||
                                     SPY.state == 2 || SPY.state == 3)) {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           g_nGameplayBlocked = 0;
           g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
@@ -4649,7 +4649,7 @@ void Level33_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -4807,14 +4807,14 @@ void Level33_UpdateActors(void) {
         if (actor->flags & 0x40000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & 0x10000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
           goto hit;
@@ -4827,7 +4827,7 @@ void Level33_UpdateActors(void) {
       hit:
         if (actor->flags & 0xA0000) {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -4886,7 +4886,7 @@ void Level33_UpdateActors(void) {
         }
         } else {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -5004,7 +5004,7 @@ void Level33_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -5024,7 +5024,7 @@ void Level33_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;

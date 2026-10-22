@@ -380,7 +380,7 @@ void Level17_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80)
+      if (actor->cullRadius & 0x80)
         break;
 
       switch (actor->mode) {
@@ -1276,7 +1276,7 @@ void Level17_UpdateActors(void) {
         }
       } else {
 
-        actor->unk50 = 0x10;
+        actor->cullRadius = 0x10;
         if (st->timer <= 0) {
 
           svF[0] = -0x258;
@@ -1387,7 +1387,7 @@ void Level17_UpdateActors(void) {
 
           g_nLevelEggCount = 1;
           actor->scale = 0x40;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -1429,7 +1429,7 @@ void Level17_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -1686,7 +1686,7 @@ void Level17_UpdateActors(void) {
         actor->rotX = 0;
         actor->rotY = 0;
         actor->rotZ = 0xC0;
-        actor->unk50 = 0xFF;
+        actor->cullRadius = 0xFF;
         actor->unk47 = 0x20;
         actor->mode = 2;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
@@ -1825,7 +1825,7 @@ void Level17_UpdateActors(void) {
 
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
-          st->digit[i]->unk50 = 0xFF;
+          st->digit[i]->cullRadius = 0xFF;
           st->digit[i]->unk47 = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
@@ -1842,7 +1842,7 @@ void Level17_UpdateActors(void) {
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
-            st->digit[i]->unk50 = 0xFF;
+            st->digit[i]->cullRadius = 0xFF;
             st->digit[i]->unk47 = 0x20;
             st->digit[i]->rotZ = 0;
           }
@@ -1882,7 +1882,7 @@ void Level17_UpdateActors(void) {
           g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
           g_abHudIconActorRecords[i].unk47 = 0x20;
-          g_abHudIconActorRecords[i].unk50 = 0xFF;
+          g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;
           g_abHudIconActorRecords[i].unk4F = i + 3;
@@ -1925,17 +1925,17 @@ void Level17_UpdateActors(void) {
         i = t / 3600;
         if (i != 0) {
           st->digit[6]->type = i + 0x104;
-          st->digit[4]->unk50 = 0xFF;
-          st->digit[5]->unk50 = 0xFF;
-          st->digit[6]->unk50 = 0xFF;
+          st->digit[4]->cullRadius = 0xFF;
+          st->digit[5]->cullRadius = 0xFF;
+          st->digit[6]->cullRadius = 0xFF;
         } else {
-          st->digit[4]->unk50 = 0;
-          st->digit[5]->unk50 = 0;
-          st->digit[6]->unk50 = 0;
+          st->digit[4]->cullRadius = 0;
+          st->digit[5]->cullRadius = 0;
+          st->digit[6]->cullRadius = 0;
         }
         i = t * 10 / 6 % 10;
         st->digit[7]->type = i + 0x104;
-        st->digit[7]->unk50 = 0xFF;
+        st->digit[7]->cullRadius = 0xFF;
       } else {
         t = g_nFlightTimeRemaining;
         if (t < 0) {
@@ -1947,9 +1947,9 @@ void Level17_UpdateActors(void) {
       if (i != 0) {
         i = i % 6;
         st->digit[0]->type = i + 0x104;
-        st->digit[0]->unk50 = 0xFF;
+        st->digit[0]->cullRadius = 0xFF;
       } else {
-        st->digit[0]->unk50 = 0;
+        st->digit[0]->cullRadius = 0;
       }
 
       {
@@ -2027,13 +2027,13 @@ void Level17_UpdateActors(void) {
             for (i = 0, x = 0x1E; i < 8; i++) {
               st->icon[i]->type = st->types[g_nFlightTallyShownClass];
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
-                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = 0;
                 st->icon[i]->rotZ = 0;
                 st->icon[i]->mode = 0;
               } else {
-                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = 1;
@@ -2063,18 +2063,18 @@ void Level17_UpdateActors(void) {
       if (g_nGamestate == 7) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
-            st->icon[i]->unk50 = 0;
+            st->icon[i]->cullRadius = 0;
           }
           if (st->spent[i] != 0) {
-            st->spent[i]->unk50 = 0;
+            st->spent[i]->cullRadius = 0;
           }
         }
         for (i = 0; i < 8; i++) {
           if (st->digit[i] != 0) {
-            st->digit[i]->unk50 = 0;
+            st->digit[i]->cullRadius = 0;
           }
           if (st->slot[i] != 0) {
-            st->slot[i]->unk50 = 0;
+            st->slot[i]->cullRadius = 0;
           }
         }
       }

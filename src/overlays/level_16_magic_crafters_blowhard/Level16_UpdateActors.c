@@ -540,7 +540,7 @@ void Level16_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80)
+      if (actor->cullRadius & 0x80)
         break;
 
       switch (actor->mode) {
@@ -1453,7 +1453,7 @@ void Level16_UpdateActors(void) {
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0) -
                                128;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
 
@@ -1579,7 +1579,7 @@ void Level16_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 16;
@@ -1804,7 +1804,7 @@ void Level16_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svG[0] = -0x258;
@@ -1952,7 +1952,7 @@ void Level16_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2259,7 +2259,7 @@ void Level16_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -2731,14 +2731,14 @@ void Level16_UpdateActors(void) {
         if (actor->flags & 0x40000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & 0x10000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
           goto hit;
@@ -2751,7 +2751,7 @@ void Level16_UpdateActors(void) {
       hit:
         if (actor->flags & 0xA0000) {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2810,7 +2810,7 @@ void Level16_UpdateActors(void) {
         }
         } else {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2963,7 +2963,7 @@ void Level16_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -2983,7 +2983,7 @@ void Level16_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -3605,8 +3605,8 @@ void Level16_UpdateActors(void) {
         continue;
 
       case 1:
-        if (g_nActorAnimDone != 0 && actor->unk50 != 0) {
-          actor->unk50 = 0;
+        if (g_nActorAnimDone != 0 && actor->cullRadius != 0) {
+          actor->cullRadius = 0;
           actor->frameRate = 0;
           actor->collision = 0;
           BurstActorWithSound(actor, 0x20);
@@ -3618,7 +3618,7 @@ void Level16_UpdateActors(void) {
           if (r & 2) {
             if (((r >> 8) & 0xFF) != 0) {
               ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
-            } else if (actor->unk50 == 0) {
+            } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
             }
@@ -3631,7 +3631,7 @@ void Level16_UpdateActors(void) {
           if (r & 2) {
             if (((r >> 8) & 0xFF) != 0) {
               ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
-            } else if (actor->unk50 == 0) {
+            } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
             }

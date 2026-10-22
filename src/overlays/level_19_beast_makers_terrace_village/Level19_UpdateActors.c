@@ -638,7 +638,7 @@ void Level19_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -1584,7 +1584,7 @@ void Level19_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -1716,7 +1716,7 @@ void Level19_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -1938,7 +1938,7 @@ void Level19_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -2053,7 +2053,7 @@ void Level19_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2369,7 +2369,7 @@ void Level19_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -2601,7 +2601,7 @@ void Level19_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -2621,7 +2621,7 @@ void Level19_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -2766,7 +2766,7 @@ void Level19_UpdateActors(void) {
       case 0:
         st->t = -(actor->subMode * 10) - actor->subMode * 32;
         actor->mode = 1;
-        actor->unk50 = 0;
+        actor->cullRadius = 0;
         continue;
 
       case 1:
@@ -2782,7 +2782,7 @@ void Level19_UpdateActors(void) {
         int *c = o336;
         int k;
 
-        actor->unk50 = 0x20;
+        actor->cullRadius = 0x20;
         st->t += g_nFrameStep;
         k = (st->t << 5) & 0x3FF;
         GetActorAttachPoint(st->owner, 0, a);
@@ -2844,7 +2844,7 @@ void Level19_UpdateActors(void) {
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
-        st->lid->unk50 = 0x1A;
+        st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
         continue;
@@ -2938,7 +2938,7 @@ void Level19_UpdateActors(void) {
         st->vel[2] += 0xA0;
         st->timer = 0;
         actor->subMode = 2;
-        actor->unk50 = 0x20;
+        actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3083,7 +3083,7 @@ void Level19_UpdateActors(void) {
         }
         actor->subMode = 1;
         actor->updateDist = 0xFF;
-        actor->unk50 = 0x7F;
+        actor->cullRadius = 0x7F;
         continue;
 
       case 1:
@@ -3130,7 +3130,7 @@ void Level19_UpdateActors(void) {
           continue;
         }
         actor->subMode = 2;
-        actor->unk50 = 0x40;
+        actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
         st->path[1] = 1;
         st->timer = 0;
@@ -3210,7 +3210,7 @@ void Level19_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->unk50 = 0;
+          st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
           st->passenger->unk47 = 5;
 
@@ -3243,7 +3243,7 @@ void Level19_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
-          st->passenger->unk50 = 0x10;
+          st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = 0xFF;
         }
 
@@ -3465,7 +3465,7 @@ void Level19_UpdateActors(void) {
                 3) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x18);
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->mode = 4;
           continue;
         }

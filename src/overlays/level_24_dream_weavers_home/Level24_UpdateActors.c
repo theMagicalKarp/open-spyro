@@ -1096,7 +1096,7 @@ void Level24_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -1498,7 +1498,7 @@ void Level24_UpdateActors(void) {
         cs->lifeOn = 0;
         best = 0;
         cs->trail = (L24Trail *)((char *)st + (st->idx * 0xFDC + 0x28));
-        o->unk50 = 0;
+        o->cullRadius = 0;
         o->updateDist = 0xFF;
         bestScore = 0xA410;
         actor->flags = 0;
@@ -1597,7 +1597,7 @@ void Level24_UpdateActors(void) {
           o->posX += (g_anCosineLut[o->rotZ] * 0x7D) >> 8;
           o->posY += (g_anSineLut[o->rotZ] * 0x7D) >> 8;
           o->posZ += 0x578;
-          o->unk50 = 0;
+          o->cullRadius = 0;
           o->updateDist = 0xFF;
           cs->timer = 0x78;
           cs->steps = st->steps;
@@ -1897,7 +1897,7 @@ void Level24_UpdateActors(void) {
             o->subMode = 7;
             o->rotY = ArcTan2(st->speed, st->vz, 0);
             o->rotZ = actor->rotZ;
-            o->unk50 = 0x50;
+            o->cullRadius = 0x50;
             st->spark = 0;
           }
           do {
@@ -1919,7 +1919,7 @@ void Level24_UpdateActors(void) {
             actor->mode = 1;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->drawn = 0;
             actor->mode = 1;
             continue;
@@ -1929,7 +1929,7 @@ void Level24_UpdateActors(void) {
             actor->mode = 1;
           }
           if (actor->mode == 1) {
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->drawn = 0;
           }
         }
@@ -2463,7 +2463,7 @@ void Level24_UpdateActors(void) {
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0) -
                                128;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
 
@@ -2589,7 +2589,7 @@ void Level24_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 16;
@@ -2814,7 +2814,7 @@ void Level24_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             g136[0] = -0x258;
@@ -3495,7 +3495,7 @@ void Level24_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -3851,7 +3851,7 @@ void Level24_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -4186,14 +4186,14 @@ void Level24_UpdateActors(void) {
         if (actor->flags & 0x40000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & 0x10000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
           goto hit;
@@ -4206,7 +4206,7 @@ void Level24_UpdateActors(void) {
       hit:
         if (actor->flags & 0xA0000) {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -4265,7 +4265,7 @@ void Level24_UpdateActors(void) {
         }
         } else {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -4410,7 +4410,7 @@ void Level24_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -4430,7 +4430,7 @@ void Level24_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -4742,7 +4742,7 @@ void Level24_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->unk50 = 0;
+          st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
           st->passenger->unk47 = 5;
 
@@ -4775,7 +4775,7 @@ void Level24_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
-          st->passenger->unk50 = 0x10;
+          st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = 0xFF;
         }
 

@@ -978,7 +978,7 @@ void Level2_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -1722,7 +1722,7 @@ void Level2_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -1854,7 +1854,7 @@ void Level2_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -2210,7 +2210,7 @@ void Level2_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -2750,7 +2750,7 @@ void Level2_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2834,7 +2834,7 @@ void Level2_UpdateActors(void) {
           g_nLevelEggCount = 0;
           actor->updateDist = sixteen;
           fly->updateDist = 0x40;
-          fly->unk50 = 0x18;
+          fly->cullRadius = 0x18;
         } else {
           g_nLevelEggCount = 1;
           actor->subMode = 1;
@@ -2885,7 +2885,7 @@ void Level2_UpdateActors(void) {
           st->shake = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;
-        fly->unk50 = 0x18;
+        fly->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nGameplayBlocked = 1;
 
@@ -2941,7 +2941,7 @@ void Level2_UpdateActors(void) {
               SPY.state == 2 || SPY.state == 3)) {
           int i;
 
-          fly->unk50 = 0;
+          fly->cullRadius = 0;
           fly->updateDist = 0;
           fly->drawn = 0;
           g_nGameplayBlocked = 0;
@@ -3183,7 +3183,7 @@ void Level2_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -3601,7 +3601,7 @@ void Level2_UpdateActors(void) {
           st->unk00->rotZ = actor->rotZ;
           st->unk00->frameRate = 0x10;
           st->unk00->updateDist = 0;
-          st->unk00->unk50 = 0;
+          st->unk00->cullRadius = 0;
           st->unk00->drawn = 0;
           st->unk00->unk47 = 5;
 
@@ -3634,7 +3634,7 @@ void Level2_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->unk04 += g_nFrameStep;
-          st->unk00->unk50 = 0x10;
+          st->unk00->cullRadius = 0x10;
           st->unk00->updateDist = 0xFF;
         }
 

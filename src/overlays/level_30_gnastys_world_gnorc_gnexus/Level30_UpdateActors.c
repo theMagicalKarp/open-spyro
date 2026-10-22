@@ -1103,7 +1103,7 @@ void Level30_UpdateActors(void) {
         }
       }
 
-      if (!(actor->unk50 & 0x80)) {
+      if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
         case 0:
           if (TickCountdownByFrameDelta(&st->unk14, 2) == 0 || actor->drawn != 0) {
@@ -1842,7 +1842,7 @@ void Level30_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -1972,7 +1972,7 @@ void Level30_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -2187,7 +2187,7 @@ void Level30_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -2302,7 +2302,7 @@ void Level30_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2763,7 +2763,7 @@ void Level30_UpdateActors(void) {
     case 268:
     case 269: {
       ShotState30 *st = actor->state;
-      int radius = actor->unk50;
+      int radius = actor->cullRadius;
 
       if (!(radius & 0x80) && radius != 0) {
         if (st->life > 0) {

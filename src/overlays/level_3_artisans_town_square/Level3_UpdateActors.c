@@ -382,7 +382,7 @@ void Level3_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -2046,7 +2046,7 @@ void Level3_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -2178,7 +2178,7 @@ void Level3_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -2400,7 +2400,7 @@ void Level3_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -2515,7 +2515,7 @@ void Level3_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2828,7 +2828,7 @@ void Level3_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -3128,7 +3128,7 @@ void Level3_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3148,7 +3148,7 @@ void Level3_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -3330,7 +3330,7 @@ void Level3_UpdateActors(void) {
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
-        st->lid->unk50 = 0x1A;
+        st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
         continue;
@@ -3424,7 +3424,7 @@ void Level3_UpdateActors(void) {
         st->vel[2] += 0xA0;
         st->timer = 0;
         actor->subMode = 2;
-        actor->unk50 = 0x20;
+        actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3653,7 +3653,7 @@ void Level3_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->unk50 = 0;
+          st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
           st->passenger->unk47 = 5;
 
@@ -3686,7 +3686,7 @@ void Level3_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
-          st->passenger->unk50 = 0x10;
+          st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = 0xFF;
         }
 

@@ -978,7 +978,7 @@ void Level22_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -1399,7 +1399,7 @@ void Level22_UpdateActors(void) {
           sh->vel[0] /= d;
           sh->vel[1] /= d;
           sh->vel[2] /= d;
-          o->unk50 = 0x28;
+          o->cullRadius = 0x28;
           o->rotZ = ArcTan2(g056[0] - o->posX, g056[1] - o->posY, 0);
           o->rotY = ArcTan2(ApproxDist2D(&o->posX, g056),
                                    g056[2] - o->posZ, 0);
@@ -1426,7 +1426,7 @@ void Level22_UpdateActors(void) {
           b->timer = 0xF0;
           o->rotZ = ArcTan2(st->aim[0] - o->posX, st->aim[1] - o->posY,
                                    0);
-          o->unk50 = 0x28;
+          o->cullRadius = 0x28;
           st->count = 0;
           b->heading = st->phase + 2;
           b->dvz = -7;
@@ -2041,7 +2041,7 @@ void Level22_UpdateActors(void) {
 
       case 50:
         if (st->u14 != 0) {
-          actor->unk50 = 0x28;
+          actor->cullRadius = 0x28;
           actor->mode++;
         }
         break;
@@ -2408,7 +2408,7 @@ void Level22_UpdateActors(void) {
 
       case 50:
         if (st->u14 != 0) {
-          actor->unk50 = 0x28;
+          actor->cullRadius = 0x28;
           actor->mode++;
         }
         break;
@@ -2562,7 +2562,7 @@ void Level22_UpdateActors(void) {
             L22Bob *b;
 
             st->kids[i] = g_pfnLevelSpawnActor(0xD2, actor);
-            st->kids[i]->unk50 = 0;
+            st->kids[i]->cullRadius = 0;
             b = st->kids[i]->state;
             CopyVector(&st->kids[i]->posX, &actor->posX);
             b->period = 0x3B6;
@@ -2599,7 +2599,7 @@ void Level22_UpdateActors(void) {
           sh->vel[0] /= d;
           sh->vel[1] /= d;
           sh->vel[2] /= d;
-          o->unk50 = 0x28;
+          o->cullRadius = 0x28;
           o->rotZ = ArcTan2(g200[0] - o->posX, g200[1] - o->posY, 0);
           o->rotY = ArcTan2(ApproxDist2D(&o->posX, g200),
                                    g200[2] - o->posZ, 0);
@@ -3111,7 +3111,7 @@ void Level22_UpdateActors(void) {
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0) -
                                128;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
 
@@ -3237,7 +3237,7 @@ void Level22_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 16;
@@ -3462,7 +3462,7 @@ void Level22_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             g296[0] = -0x258;
@@ -3610,7 +3610,7 @@ void Level22_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -3694,7 +3694,7 @@ void Level22_UpdateActors(void) {
           g_nLevelEggCount = 0;
           actor->updateDist = sixteen;
           fly->updateDist = 0x40;
-          fly->unk50 = 0x18;
+          fly->cullRadius = 0x18;
         } else {
           g_nLevelEggCount = 1;
           actor->subMode = 1;
@@ -3745,7 +3745,7 @@ void Level22_UpdateActors(void) {
           st->shake = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;
-        fly->unk50 = 0x18;
+        fly->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nGameplayBlocked = 1;
 
@@ -3801,7 +3801,7 @@ void Level22_UpdateActors(void) {
               SPY.state == 2 || SPY.state == 3)) {
           int i;
 
-          fly->unk50 = 0;
+          fly->cullRadius = 0;
           fly->updateDist = 0;
           fly->drawn = 0;
           g_nGameplayBlocked = 0;
@@ -3968,7 +3968,7 @@ void Level22_UpdateActors(void) {
     case 210: {
       L22Bob *st = actor->state;
 
-      actor->unk50 = 0x20;
+      actor->cullRadius = 0x20;
       actor->rotZ += actor->subMode;
       if (st->z > st->period) {
         st->z -= st->period;
@@ -4134,7 +4134,7 @@ void Level22_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -4360,14 +4360,14 @@ void Level22_UpdateActors(void) {
         if (actor->flags & 0x40000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & 0x10000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
           goto hit;
@@ -4380,7 +4380,7 @@ void Level22_UpdateActors(void) {
       hit:
         if (actor->flags & 0xA0000) {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -4439,7 +4439,7 @@ void Level22_UpdateActors(void) {
         }
         } else {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -4584,7 +4584,7 @@ void Level22_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -4604,7 +4604,7 @@ void Level22_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -4794,7 +4794,7 @@ void Level22_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->unk50 = 0;
+          st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
           st->passenger->unk47 = 5;
 
@@ -4827,7 +4827,7 @@ void Level22_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
-          st->passenger->unk50 = 0x10;
+          st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = 0xFF;
         }
 

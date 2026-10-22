@@ -2317,7 +2317,7 @@ void Level32_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
@@ -3061,7 +3061,7 @@ void Level32_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -3193,7 +3193,7 @@ void Level32_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -3415,7 +3415,7 @@ void Level32_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -3933,7 +3933,7 @@ void Level32_UpdateActors(void) {
 
         if (st->u38 == 0 && actor->nextFrame >= 5) {
           st->u38 = g_pfnLevelSpawnActor(0xB0, actor);
-          st->u38->unk50 = 0x28;
+          st->u38->cullRadius = 0x28;
           st->u38->updateDist = 0xFF;
         }
         if (st->u38 != 0 && st->u38 != (Actor *)-1 && st->u38->subMode == 0) {
@@ -4022,7 +4022,7 @@ void Level32_UpdateActors(void) {
         }
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
           actor->mode = 1;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           continue;
         }
@@ -4104,7 +4104,7 @@ void Level32_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -4545,7 +4545,7 @@ void Level32_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -4802,7 +4802,7 @@ void Level32_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -4822,7 +4822,7 @@ void Level32_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -5080,7 +5080,7 @@ void Level32_UpdateActors(void) {
           st->unk00->rotZ = actor->rotZ;
           st->unk00->frameRate = 0x10;
           st->unk00->updateDist = 0;
-          st->unk00->unk50 = 0;
+          st->unk00->cullRadius = 0;
           st->unk00->drawn = 0;
           st->unk00->unk47 = 5;
 
@@ -5113,7 +5113,7 @@ void Level32_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->unk04 += g_nFrameStep;
-          st->unk00->unk50 = 0x10;
+          st->unk00->cullRadius = 0x10;
           st->unk00->updateDist = 0xFF;
         }
 

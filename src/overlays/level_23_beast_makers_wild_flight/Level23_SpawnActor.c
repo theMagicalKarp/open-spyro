@@ -19,11 +19,11 @@
  *
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
- * Allocates a pool record (AllocActorRecordSlot = AllocActorRecordSlot), stamps the
+ * Allocates a pool record (AllocActorRecordSlot), stamps the
  * type into +0x36 and the parent's pool index into +0x56, then runs a per-type
  * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
  * ends by placing the new actor -- most copy the parent's position
- * (CopyVector = CopyVector) and either register it in the spatial grid
+ * (CopyVector) and either register it in the spatial grid
  * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  *
@@ -65,7 +65,7 @@ typedef struct Actor {
   unsigned char unk4D;
   unsigned char unk4E;
   unsigned char unk4F;
-  unsigned char unk50; /* 0x50 */
+  unsigned char cullRadius; /* 0x50 */
   unsigned char drawn;
   unsigned char updateDist; /* 0x52 */
   unsigned char dropKind;
@@ -107,20 +107,20 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
   {
     case 0xF:
     {
-      FlameState *st = rec->state;
+      PickupDropState *st = rec->state;
       InitActorRenderDefaults(rec);
-      st->unk08 = 0x8C;
-      st->unk10 = 3;
-      st->unk14 = 0xFF;
-      st->unk00 = 0;
-      st->unk04 = 0;
-      st->unk0E = 0;
-      st->unk0F = 0;
-      st->unk11 = 0;
-      st->unk12 = 0;
-      st->unk13 = 0;
+      st->velZ = 0x8C;
+      st->bounces = 3;
+      st->sparkle = 0xFF;
+      st->velX = 0;
+      st->velY = 0;
+      st->sub = 0;
+      st->timer = 0;
+      st->pitch = 0;
+      st->yaw = 0;
+      st->roll = 0;
       rec->subMode = 2;
-      rec->unk50 = 0x18;
+      rec->cullRadius = 0x18;
       rec->updateDist = 0x10;
       rec->rotX = 0x20;
       rec->rotY = 0;
@@ -140,7 +140,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x10:
     {
-      BeamState *st = rec->state;
+      ButterflyState *st = rec->state;
       int *pos;
       InitActorRenderDefaults(rec);
       InsertActorIntoSpatialGrid(rec);
@@ -148,8 +148,8 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       CopyVector(pos, &parent->posX);
       rec->posZ += 0x200;
       CopyVector(st->anchor, pos);
-      st->unk13 = 0;
-      st->unk12 = 0;
+      st->climbTimer = 0;
+      st->headingTimer = 0;
       st->unk14 = 0x708;
       break;
     }
@@ -178,7 +178,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x22:
       InitActorRenderDefaults(rec);
-      rec->unk50 = 0x20;
+      rec->cullRadius = 0x20;
       rec->updateDist = 0xFF;
       if (parent != 0)
     {
@@ -191,30 +191,30 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x53 ... 0x57:
     {
-      FlameState *st = rec->state;
+      PickupDropState *st = rec->state;
       int *pos;
       int probe[3];
       InitActorRenderDefaults(rec);
-      st->unk00 = 0;
-      st->unk04 = 0;
-      st->unk08 = 0x8C;
-      st->unk0E = 0;
-      st->unk0F = 0;
-      st->unk11 = 0;
-      st->unk12 = 0;
-      st->unk13 = 0;
+      st->velX = 0;
+      st->velY = 0;
+      st->velZ = 0x8C;
+      st->sub = 0;
+      st->timer = 0;
+      st->pitch = 0;
+      st->yaw = 0;
+      st->roll = 0;
       if (parent->type == 0xD)
       {
-        st->unk10 = 2;
+        st->bounces = 2;
       }
       else
       {
-        st->unk10 = 3;
+        st->bounces = 3;
       }
       pos = &rec->posX;
-      st->unk14 = 0xFF;
+      st->sparkle = 0xFF;
       rec->subMode = 2;
-      rec->unk50 = 0x18;
+      rec->cullRadius = 0x18;
       rec->updateDist = 0x40;
       rec->rotX = 0x20;
       rec->rotY = 0;
@@ -258,16 +258,16 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x78:
     {
-      SpinState *st = rec->state;
+      SparxState *st = rec->state;
       InitActorRenderDefaults(rec);
       InsertActorIntoSpatialGrid(rec);
       rec->subMode = 0;
-      st->unk00 = 0;
-      st->unk08 = 0;
-      st->unk06 = 0;
-      st->unk04 = 0;
-      st->unk0C = 0;
-      st->unk10 = 0;
+      st->timer = 0;
+      st->vz = 0;
+      st->vy = 0;
+      st->vx = 0;
+      st->fx = 0;
+      st->rider = 0;
       if (parent != 0)
       {
         CopyVector(&rec->posX, &parent->posX);
@@ -277,11 +277,11 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x1DE ... 0x1E0:
     {
-      DebrisState *st = rec->state;
+      FragmentState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
-      rec->unk50 = 0x20;
+      rec->cullRadius = 0x20;
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
       yaw = GetRandomU32() & 0xFFF;
@@ -301,8 +301,8 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       st->spinX = GetRandomU32() & 0xF;
       st->spinY = GetRandomU32() & 0xF;
       st->spinZ = GetRandomU32() & 0xF;
-      st->unk10 = parent->posZ - 0x40;
-      st->unk0C = 0x40 - (GetRandomU32() & 0xF);
+      st->floorZ = parent->posZ - 0x40;
+      st->life = 0x40 - (GetRandomU32() & 0xF);
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
       {
         *((int *) (&rec->unk4C)) = 0xA18618;
@@ -313,11 +313,11 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x1E1 ... 0x1E3:
     {
-      DebrisState *st = rec->state;
+      FragmentState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
-      rec->unk50 = 0x20;
+      rec->cullRadius = 0x20;
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
       yaw = GetRandomU32() & 0xFFF;
@@ -334,17 +334,17 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       st->spinX = GetRandomU32() & 0xF;
       st->spinY = GetRandomU32() & 0xF;
       st->spinZ = GetRandomU32() & 0xF;
-      st->unk10 = parent->posZ - 0x40;
-      st->unk0C = 0x40 - (GetRandomU32() & 0xF);
+      st->floorZ = parent->posZ - 0x40;
+      st->life = 0x40 - (GetRandomU32() & 0xF);
       break;
     }
 
     case 0x167 ... 0x169:
     {
-      DebrisState *st = rec->state;
+      FragmentState *st = rec->state;
       int seed;
       InitActorRenderDefaults(rec);
-      rec->unk50 = 0x20;
+      rec->cullRadius = 0x20;
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
       seed = GetRandomU32();
@@ -370,8 +370,8 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       st->spinX = GetRandomU32() & 0xF;
       st->spinY = GetRandomU32() & 0xF;
       st->spinZ = GetRandomU32() & 0xF;
-      st->unk10 = parent->posZ - 0x40;
-      st->unk0C = 0x40 - (GetRandomU32() & 0xF);
+      st->floorZ = parent->posZ - 0x40;
+      st->life = 0x40 - (GetRandomU32() & 0xF);
       break;
     }
 
@@ -406,7 +406,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       {
         CopyVector(&rec->posX, &parent->posX);
       }
-      rec->unk50 = 0x40;
+      rec->cullRadius = 0x40;
       HideActorRenderRecord(rec);
       rec->unk4C = 0;
       rec->unk4D = 0;
@@ -436,7 +436,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->unk4D = parent->unk4D;
       rec->unk4E = parent->unk4E;
       rec->unk4F = parent->unk4F;
-      rec->unk50 = parent->unk50;
+      rec->cullRadius = parent->cullRadius;
       break;
     }
 
@@ -468,7 +468,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       rec->posX = -0x64;
       rec->posY = 0x1E;
-      rec->unk50 = 0;
+      rec->cullRadius = 0;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
       rec->unk47 = 0x20;
@@ -520,7 +520,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case 0x1AA ... 0x1C3:
       InitActorRenderDefaults(rec);
-      rec->unk50 = 0x20;
+      rec->cullRadius = 0x20;
       rec->updateDist = 0xFF;
       HideActorRenderRecord(rec);
       break;
