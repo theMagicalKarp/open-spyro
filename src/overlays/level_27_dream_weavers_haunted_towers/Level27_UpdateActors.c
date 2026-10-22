@@ -244,7 +244,7 @@ typedef struct ExitState {
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
-extern signed char D_80078C5E; /* destination level */
+extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
@@ -2962,7 +2962,7 @@ void Level27_UpdateActors(void) {
               *p = 0x384;
             }
             *(q = &g_dwSpyroRequestMask) |= 0x80020000;
-            D_80078C5E = st->heading;
+            g_bSpyroRequestYaw = st->heading;
           }
           break;
         }

@@ -460,7 +460,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | asm | handwritten |
 | `0x80059474` | SetSpawnAnchorFromActor | main | 248 | matched | game |
 | `0x8005956c` | ComputeSaveGameChecksum | main | 40 | matched | game |
-| `0x80059594` | func_80059594 | main | 720 | matched | game |
+| `0x80059594` | ApplySaveGameBuffer | main | 720 | matched | game |
 | `0x80059864` | BuildSaveGameBuffer | main | 484 | matched | game |
 | `0x80059a48` | DrawSpyroDropShadow | main | 1348 | asm | handwritten |
 | `0x80059f8c` | DrawEntityDirectionalSpikes | main | 1252 | asm | handwritten |

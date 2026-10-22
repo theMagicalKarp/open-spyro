@@ -237,13 +237,13 @@ glabel InitCdSystem
     /* 2CCC 800124CC C47620AC */  sw         $zero, %lo(g_nLastCdMusicCommand)($at)
     /* 2CD0 800124D0 0780013C */  lui        $at, %hi(g_nPendingMusicCommand)
     /* 2CD4 800124D4 C87620AC */  sw         $zero, %lo(g_nPendingMusicCommand)($at)
-    /* 2CD8 800124D8 0780013C */  lui        $at, %hi(D_800776D2)
-    /* 2CDC 800124DC D27622A0 */  sb         $v0, %lo(D_800776D2)($at)
+    /* 2CD8 800124D8 0780013C */  lui        $at, %hi(g_bCdMixRightToRight)
+    /* 2CDC 800124DC D27622A0 */  sb         $v0, %lo(g_bCdMixRightToRight)($at)
     /* 2CE0 800124E0 1C0262A0 */  sb         $v0, 0x21C($v1)
-    /* 2CE4 800124E4 0780013C */  lui        $at, %hi(D_800776D3)
-    /* 2CE8 800124E8 D37620A0 */  sb         $zero, %lo(D_800776D3)($at)
-    /* 2CEC 800124EC 0780013C */  lui        $at, %hi(D_800776D1)
-    /* 2CF0 800124F0 D17620A0 */  sb         $zero, %lo(D_800776D1)($at)
+    /* 2CE4 800124E4 0780013C */  lui        $at, %hi(g_bCdMixRightToLeft)
+    /* 2CE8 800124E8 D37620A0 */  sb         $zero, %lo(g_bCdMixRightToLeft)($at)
+    /* 2CEC 800124EC 0780013C */  lui        $at, %hi(g_bCdMixLeftToRight)
+    /* 2CF0 800124F0 D17620A0 */  sb         $zero, %lo(g_bCdMixLeftToRight)($at)
     /* 2CF4 800124F4 FC8F010C */  jal        CdMix
     /* 2CF8 800124F8 1C026424 */   addiu     $a0, $v1, 0x21C
     /* 2CFC 800124FC 1800BF8F */  lw         $ra, 0x18($sp)
@@ -498,8 +498,8 @@ glabel Initialize
     /* 3024 80012824 55010424 */   addiu     $a0, $zero, 0x155
     /* 3028 80012828 0880103C */  lui        $s0, %hi(g_pDrawBufA)
     /* 302C 8001282C D8851026 */  addiu      $s0, $s0, %lo(g_pDrawBufA)
-    /* 3030 80012830 0880023C */  lui        $v0, %hi(D_8007DDE8)
-    /* 3034 80012834 E8DD4224 */  addiu      $v0, $v0, %lo(D_8007DDE8)
+    /* 3030 80012830 0880023C */  lui        $v0, %hi(g_abDrawBufPool)
+    /* 3034 80012834 E8DD4224 */  addiu      $v0, $v0, %lo(g_abDrawBufPool)
     /* 3038 80012838 000002AE */  sw         $v0, 0x0($s0)
     /* 303C 8001283C 0880013C */  lui        $at, %hi(g_pDrawBufB)
     /* 3040 80012840 DC8522AC */  sw         $v0, %lo(g_pDrawBufB)($at)
@@ -583,10 +583,10 @@ glabel Initialize
     /* 3170 80012970 4059000C */  jal        CdReadSyncSectors
     /* 3174 80012974 21384700 */   addu      $a3, $v0, $a3
     /* 3178 80012978 0000248E */  lw         $a0, 0x0($s1)
-    /* 317C 8001297C 0880063C */  lui        $a2, %hi(D_8007A6E4)
-    /* 3180 80012980 E4A6C68C */  lw         $a2, %lo(D_8007A6E4)($a2)
-    /* 3184 80012984 0880073C */  lui        $a3, %hi(D_8007A6E0)
-    /* 3188 80012988 E0A6E78C */  lw         $a3, %lo(D_8007A6E0)($a3)
+    /* 317C 8001297C 0880063C */  lui        $a2, %hi(g_nLevelLoadChunkSize)
+    /* 3180 80012980 E4A6C68C */  lw         $a2, %lo(g_nLevelLoadChunkSize)($a2)
+    /* 3184 80012984 0880073C */  lui        $a3, %hi(g_nLevelLoadByteOffset)
+    /* 3188 80012988 E0A6E78C */  lw         $a3, %lo(g_nLevelLoadByteOffset)($a3)
     /* 318C 8001298C 0180053C */  lui        $a1, %hi(g_pSharedLoadBuffer)
     /* 3190 80012990 A013A58C */  lw         $a1, %lo(g_pSharedLoadBuffer)($a1)
     /* 3194 80012994 4059000C */  jal        CdReadSyncSectors
@@ -3640,8 +3640,8 @@ glabel TickLevelTransitionStream
     /* 5D98 80015598 3C4B000C */  jal        RelocateLevelSampleBank
     /* 5D9C 8001559C 21280000 */   addu      $a1, $zero, $zero
     /* 5DA0 800155A0 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 5DA4 800155A4 0780013C */  lui        $at, %hi(D_80076E24)
-    /* 5DA8 800155A8 246E22AC */  sw         $v0, %lo(D_80076E24)($at)
+    /* 5DA4 800155A4 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
+    /* 5DA8 800155A8 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
     /* 5DAC 800155AC ED580008 */  j          .L800163B4
     /* 5DB0 800155B0 02000224 */   addiu     $v0, $zero, 0x2
   jlabel .L800155B4
@@ -3652,8 +3652,8 @@ glabel TickLevelTransitionStream
     /* 5DC4 800155C4 FFFF0324 */  addiu      $v1, $zero, -0x1
     /* 5DC8 800155C8 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
     /* 5DCC 800155CC 408A20AC */  sw         $zero, %lo(g_nWorldRenderMeshChunkCount)($at)
-    /* 5DD0 800155D0 0780013C */  lui        $at, %hi(D_80076E24)
-    /* 5DD4 800155D4 246E23AC */  sw         $v1, %lo(D_80076E24)($at)
+    /* 5DD0 800155D0 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
+    /* 5DD4 800155D4 246E23AC */  sw         $v1, %lo(g_nCameraFloorSurfaceType)($at)
     /* 5DD8 800155D8 01004224 */  addiu      $v0, $v0, 0x1
     /* 5DDC 800155DC 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 5DE0 800155E0 645822AC */  sw         $v0, %lo(g_nCdStreamState)($at)
@@ -9609,8 +9609,8 @@ glabel Gamestate01_09_Draw
     /* AB18 8001A318 21300002 */   addu      $a2, $s0, $zero
   .L8001A31C:
     /* AB1C 8001A31C FFFF0424 */  addiu      $a0, $zero, -0x1
-    /* AB20 8001A320 0780053C */  lui        $a1, %hi(D_80076DE4)
-    /* AB24 8001A324 E46DA524 */  addiu      $a1, $a1, %lo(D_80076DE4)
+    /* AB20 8001A320 0780053C */  lui        $a1, %hi(g_anCameraViewMtx)
+    /* AB24 8001A324 E46DA524 */  addiu      $a1, $a1, %lo(g_anCameraViewMtx)
     /* AB28 8001A328 ECFFA624 */  addiu      $a2, $a1, -0x14
   .L8001A32C:
     /* AB2C 8001A32C EA3A010C */  jal        EmitStaticActorMeshList
@@ -14445,8 +14445,8 @@ glabel GemCutscene_Draw
     /* F26C 8001EA6C 3C96000C */  jal        RenderWorldChunks
     /* F270 8001EA70 FFFF0424 */   addiu     $a0, $zero, -0x1
     /* F274 8001EA74 FFFF0424 */  addiu      $a0, $zero, -0x1
-    /* F278 8001EA78 0780053C */  lui        $a1, %hi(D_80076DE4)
-    /* F27C 8001EA7C E46DA524 */  addiu      $a1, $a1, %lo(D_80076DE4)
+    /* F278 8001EA78 0780053C */  lui        $a1, %hi(g_anCameraViewMtx)
+    /* F27C 8001EA7C E46DA524 */  addiu      $a1, $a1, %lo(g_anCameraViewMtx)
     /* F280 8001EA80 EA3A010C */  jal        EmitStaticActorMeshList
     /* F284 8001EA84 ECFFA624 */   addiu     $a2, $a1, -0x14
     /* F288 8001EA88 0780053C */  lui        $a1, %hi(g_nGenericCountdown)
@@ -28713,8 +28713,8 @@ glabel SetupFrameOT
     /* 1C1DC 8002B9DC 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1C1E0 8002B9E0 4C5A000C */  jal        FillBlock16
     /* 1C1E4 8002B9E4 001C0624 */   addiu     $a2, $zero, 0x1C00
-    /* 1C1E8 8002B9E8 0780043C */  lui        $a0, %hi(D_80076E24)
-    /* 1C1EC 8002B9EC 246E848C */  lw         $a0, %lo(D_80076E24)($a0)
+    /* 1C1E8 8002B9E8 0780043C */  lui        $a0, %hi(g_nCameraFloorSurfaceType)
+    /* 1C1EC 8002B9EC 246E848C */  lw         $a0, %lo(g_nCameraFloorSurfaceType)($a0)
     /* 1C1F0 8002B9F0 0880023C */  lui        $v0, %hi(g_nStaticMeshLodCutoff)
     /* 1C1F4 8002B9F4 B485428C */  lw         $v0, %lo(g_nStaticMeshLodCutoff)($v0)
     /* 1C1F8 8002B9F8 00000000 */  nop
@@ -29117,15 +29117,15 @@ glabel TickCdMusicStream
     /* 1C764 8002BF64 FFFF0224 */   addiu     $v0, $zero, -0x1
     /* 1C768 8002BF68 5800A0AC */  sw         $zero, 0x58($a1)
     /* 1C76C 8002BF6C 40FDA4A4 */  sh         $a0, -0x2C0($a1)
-    /* 1C770 8002BF70 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 1C774 8002BF74 1A5F24A4 */  sh         $a0, %lo(D_80075F1A)($at)
+    /* 1C770 8002BF70 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 1C774 8002BF74 1A5F24A4 */  sh         $a0, %lo(g_nSpuCommonCdVolumeR)($at)
     /* 1C778 8002BF78 E3AF0008 */  j          .L8002BF8C
     /* 1C77C 8002BF7C 0000A2AC */   sw        $v0, 0x0($a1)
   .L8002BF80:
     /* 1C780 8002BF80 40FDA3A4 */  sh         $v1, -0x2C0($a1)
   .L8002BF84:
-    /* 1C784 8002BF84 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 1C788 8002BF88 1A5F23A4 */  sh         $v1, %lo(D_80075F1A)($at)
+    /* 1C784 8002BF84 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 1C788 8002BF88 1A5F23A4 */  sh         $v1, %lo(g_nSpuCommonCdVolumeR)($at)
   .L8002BF8C:
     /* 1C78C 8002BF8C 0780043C */  lui        $a0, %hi(g_abSpuCommonAttr)
     /* 1C790 8002BF90 085F8424 */  addiu      $a0, $a0, %lo(g_abSpuCommonAttr)
@@ -30438,17 +30438,17 @@ glabel BeginStoryIntro
     /* 1D98C 8002D18C D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
     /* 1D990 8002D190 455A000C */  jal        FillWord
     /* 1D994 8002D194 5C000624 */   addiu     $a2, $zero, 0x5C
-    /* 1D998 8002D198 0780053C */  lui        $a1, %hi(D_80076228_blk)
-    /* 1D99C 8002D19C 2862A524 */  addiu      $a1, $a1, %lo(D_80076228_blk)
+    /* 1D998 8002D198 0780053C */  lui        $a1, %hi(g_nSfxMixVolume_blk)
+    /* 1D99C 8002D19C 2862A524 */  addiu      $a1, $a1, %lo(g_nSfxMixVolume_blk)
     /* 1D9A0 8002D1A0 FF3F0224 */  addiu      $v0, $zero, 0x3FFF
     /* 1D9A4 8002D1A4 0000A2AC */  sw         $v0, 0x0($a1)
     /* 1D9A8 8002D1A8 00500224 */  addiu      $v0, $zero, 0x5000
-    /* 1D9AC 8002D1AC 0780013C */  lui        $at, %hi(D_80076224_blk)
-    /* 1D9B0 8002D1B0 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
+    /* 1D9AC 8002D1AC 0780013C */  lui        $at, %hi(g_nCdAudioVolume_blk)
+    /* 1D9B0 8002D1B0 246222AC */  sw         $v0, %lo(g_nCdAudioVolume_blk)($at)
     /* 1D9B4 8002D1B4 0780013C */  lui        $at, %hi(g_nCdDaVolumeCurrent)
     /* 1D9B8 8002D1B8 185F22A4 */  sh         $v0, %lo(g_nCdDaVolumeCurrent)($at)
-    /* 1D9BC 8002D1BC 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 1D9C0 8002D1C0 1A5F22A4 */  sh         $v0, %lo(D_80075F1A)($at)
+    /* 1D9BC 8002D1BC 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 1D9C0 8002D1C0 1A5F22A4 */  sh         $v0, %lo(g_nSpuCommonCdVolumeR)($at)
     /* 1D9C4 8002D1C4 0880023C */  lui        $v0, %hi(g_pRenderScratchRegionBase)
     /* 1D9C8 8002D1C8 E885428C */  lw         $v0, %lo(g_pRenderScratchRegionBase)($v0)
     /* 1D9CC 8002D1CC 0A000324 */  addiu      $v1, $zero, 0xA
@@ -31713,14 +31713,14 @@ glabel PauseMenu_Update
     /* 1EAD8 8002E2D8 21200000 */   addu      $a0, $zero, $zero
     /* 1EADC 8002E2DC 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 1EAE0 8002E2E0 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 1EAE4 8002E2E4 0880063C */  lui        $a2, %hi(D_8007A6E4)
-    /* 1EAE8 8002E2E8 E4A6C68C */  lw         $a2, %lo(D_8007A6E4)($a2)
-    /* 1EAEC 8002E2EC 0880073C */  lui        $a3, %hi(D_8007A6E0)
-    /* 1EAF0 8002E2F0 E0A6E78C */  lw         $a3, %lo(D_8007A6E0)($a3)
+    /* 1EAE4 8002E2E4 0880063C */  lui        $a2, %hi(g_nLevelLoadChunkSize)
+    /* 1EAE8 8002E2E8 E4A6C68C */  lw         $a2, %lo(g_nLevelLoadChunkSize)($a2)
+    /* 1EAEC 8002E2EC 0880073C */  lui        $a3, %hi(g_nLevelLoadByteOffset)
+    /* 1EAF0 8002E2F0 E0A6E78C */  lw         $a3, %lo(g_nLevelLoadByteOffset)($a3)
     /* 1EAF4 8002E2F4 0180053C */  lui        $a1, %hi(g_pSharedLoadBuffer)
     /* 1EAF8 8002E2F8 A013A58C */  lw         $a1, %lo(g_pSharedLoadBuffer)($a1)
-    /* 1EAFC 8002E2FC 0880023C */  lui        $v0, %hi(D_8007DDE8)
-    /* 1EB00 8002E300 E8DD4224 */  addiu      $v0, $v0, %lo(D_8007DDE8)
+    /* 1EAFC 8002E2FC 0880023C */  lui        $v0, %hi(g_abDrawBufPool)
+    /* 1EB00 8002E300 E8DD4224 */  addiu      $v0, $v0, %lo(g_abDrawBufPool)
     /* 1EB04 8002E304 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 1EB08 8002E308 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
     /* 1EB0C 8002E30C 0880013C */  lui        $at, %hi(g_pDrawBufB)
@@ -31905,8 +31905,8 @@ glabel PauseMenu_Update
     /* 1EDA8 8002E5A8 23186200 */  subu       $v1, $v1, $v0
     /* 1EDAC 8002E5AC 00230300 */  sll        $a0, $v1, 12
     /* 1EDB0 8002E5B0 18008500 */  mult       $a0, $a1
-    /* 1EDB4 8002E5B4 0780013C */  lui        $at, %hi(D_80076228_blk)
-    /* 1EDB8 8002E5B8 286223AC */  sw         $v1, %lo(D_80076228_blk)($at)
+    /* 1EDB4 8002E5B4 0780013C */  lui        $at, %hi(g_nSfxMixVolume_blk)
+    /* 1EDB8 8002E5B8 286223AC */  sw         $v1, %lo(g_nSfxMixVolume_blk)($at)
     /* 1EDBC 8002E5BC 10400000 */  mfhi       $t0
     /* 1EDC0 8002E5C0 21100401 */  addu       $v0, $t0, $a0
     /* 1EDC4 8002E5C4 43130200 */  sra        $v0, $v0, 13
@@ -31965,8 +31965,8 @@ glabel PauseMenu_Update
     /* 1EE8C 8002E68C 0780013C */  lui        $at, %hi(g_nMusicVolume)
     /* 1EE90 8002E690 485722AC */  sw         $v0, %lo(g_nMusicVolume)($at)
   .L8002E694:
-    /* 1EE94 8002E694 0780023C */  lui        $v0, %hi(D_80076224_blk)
-    /* 1EE98 8002E698 24624224 */  addiu      $v0, $v0, %lo(D_80076224_blk)
+    /* 1EE94 8002E694 0780023C */  lui        $v0, %hi(g_nCdAudioVolume_blk)
+    /* 1EE98 8002E698 24624224 */  addiu      $v0, $v0, %lo(g_nCdAudioVolume_blk)
     /* 1EE9C 8002E69C 0780033C */  lui        $v1, %hi(g_nMusicVolume)
     /* 1EEA0 8002E6A0 4857638C */  lw         $v1, %lo(g_nMusicVolume)($v1)
     /* 1EEA4 8002E6A4 C0000524 */  addiu      $a1, $zero, 0xC0
@@ -31975,8 +31975,8 @@ glabel PauseMenu_Update
     /* 1EEB0 8002E6B0 000043AC */  sw         $v1, 0x0($v0)
     /* 1EEB4 8002E6B4 0780013C */  lui        $at, %hi(g_nCdDaVolumeCurrent)
     /* 1EEB8 8002E6B8 185F23A4 */  sh         $v1, %lo(g_nCdDaVolumeCurrent)($at)
-    /* 1EEBC 8002E6BC 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 1EEC0 8002E6C0 1A5F23A4 */  sh         $v1, %lo(D_80075F1A)($at)
+    /* 1EEBC 8002E6BC 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 1EEC0 8002E6C0 1A5F23A4 */  sh         $v1, %lo(g_nSpuCommonCdVolumeR)($at)
     /* 1EEC4 8002E6C4 1673010C */  jal        SetSpuCommonAttr
     /* 1EEC8 8002E6C8 E4FC4424 */   addiu     $a0, $v0, -0x31C
     /* 1EECC 8002E6CC C5BA0008 */  j          .L8002EB14
@@ -32002,29 +32002,29 @@ glabel PauseMenu_Update
     /* 1EF18 8002E718 0C004010 */  beqz       $v0, .L8002E74C
     /* 1EF1C 8002E71C 000082AC */   sw        $v0, 0x0($a0)
     /* 1EF20 8002E720 3F000224 */  addiu      $v0, $zero, 0x3F
-    /* 1EF24 8002E724 0780013C */  lui        $at, %hi(D_800776D3)
-    /* 1EF28 8002E728 D37622A0 */  sb         $v0, %lo(D_800776D3)($at)
-    /* 1EF2C 8002E72C 0780013C */  lui        $at, %hi(D_800776D2)
-    /* 1EF30 8002E730 D27622A0 */  sb         $v0, %lo(D_800776D2)($at)
-    /* 1EF34 8002E734 0780013C */  lui        $at, %hi(D_800776D1)
-    /* 1EF38 8002E738 D17622A0 */  sb         $v0, %lo(D_800776D1)($at)
-    /* 1EF3C 8002E73C 0780013C */  lui        $at, %hi(D_800776D0)
-    /* 1EF40 8002E740 D07622A0 */  sb         $v0, %lo(D_800776D0)($at)
+    /* 1EF24 8002E724 0780013C */  lui        $at, %hi(g_bCdMixRightToLeft)
+    /* 1EF28 8002E728 D37622A0 */  sb         $v0, %lo(g_bCdMixRightToLeft)($at)
+    /* 1EF2C 8002E72C 0780013C */  lui        $at, %hi(g_bCdMixRightToRight)
+    /* 1EF30 8002E730 D27622A0 */  sb         $v0, %lo(g_bCdMixRightToRight)($at)
+    /* 1EF34 8002E734 0780013C */  lui        $at, %hi(g_bCdMixLeftToRight)
+    /* 1EF38 8002E738 D17622A0 */  sb         $v0, %lo(g_bCdMixLeftToRight)($at)
+    /* 1EF3C 8002E73C 0780013C */  lui        $at, %hi(g_bCdMixLeftToLeft)
+    /* 1EF40 8002E740 D07622A0 */  sb         $v0, %lo(g_bCdMixLeftToLeft)($at)
     /* 1EF44 8002E744 DCB90008 */  j          .L8002E770
     /* 1EF48 8002E748 00000000 */   nop
   .L8002E74C:
     /* 1EF4C 8002E74C 7F000224 */  addiu      $v0, $zero, 0x7F
-    /* 1EF50 8002E750 0780013C */  lui        $at, %hi(D_800776D2)
-    /* 1EF54 8002E754 D27622A0 */  sb         $v0, %lo(D_800776D2)($at)
-    /* 1EF58 8002E758 0780013C */  lui        $at, %hi(D_800776D0)
-    /* 1EF5C 8002E75C D07622A0 */  sb         $v0, %lo(D_800776D0)($at)
-    /* 1EF60 8002E760 0780013C */  lui        $at, %hi(D_800776D3)
-    /* 1EF64 8002E764 D37620A0 */  sb         $zero, %lo(D_800776D3)($at)
-    /* 1EF68 8002E768 0780013C */  lui        $at, %hi(D_800776D1)
-    /* 1EF6C 8002E76C D17620A0 */  sb         $zero, %lo(D_800776D1)($at)
+    /* 1EF50 8002E750 0780013C */  lui        $at, %hi(g_bCdMixRightToRight)
+    /* 1EF54 8002E754 D27622A0 */  sb         $v0, %lo(g_bCdMixRightToRight)($at)
+    /* 1EF58 8002E758 0780013C */  lui        $at, %hi(g_bCdMixLeftToLeft)
+    /* 1EF5C 8002E75C D07622A0 */  sb         $v0, %lo(g_bCdMixLeftToLeft)($at)
+    /* 1EF60 8002E760 0780013C */  lui        $at, %hi(g_bCdMixRightToLeft)
+    /* 1EF64 8002E764 D37620A0 */  sb         $zero, %lo(g_bCdMixRightToLeft)($at)
+    /* 1EF68 8002E768 0780013C */  lui        $at, %hi(g_bCdMixLeftToRight)
+    /* 1EF6C 8002E76C D17620A0 */  sb         $zero, %lo(g_bCdMixLeftToRight)($at)
   .L8002E770:
-    /* 1EF70 8002E770 0780043C */  lui        $a0, %hi(D_800776D0)
-    /* 1EF74 8002E774 D0768424 */  addiu      $a0, $a0, %lo(D_800776D0)
+    /* 1EF70 8002E770 0780043C */  lui        $a0, %hi(g_bCdMixLeftToLeft)
+    /* 1EF74 8002E774 D0768424 */  addiu      $a0, $a0, %lo(g_bCdMixLeftToLeft)
     /* 1EF78 8002E778 FC8F010C */  jal        CdMix
     /* 1EF7C 8002E77C 00000000 */   nop
     /* 1EF80 8002E780 C5BA0008 */  j          .L8002EB14
@@ -37380,14 +37380,14 @@ glabel CheckDeathPlane
     /* 23E00 80033600 21200000 */   addu      $a0, $zero, $zero
     /* 23E04 80033604 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 23E08 80033608 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 23E0C 8003360C 0880063C */  lui        $a2, %hi(D_8007A6E4)
-    /* 23E10 80033610 E4A6C68C */  lw         $a2, %lo(D_8007A6E4)($a2)
-    /* 23E14 80033614 0880073C */  lui        $a3, %hi(D_8007A6E0)
-    /* 23E18 80033618 E0A6E78C */  lw         $a3, %lo(D_8007A6E0)($a3)
+    /* 23E0C 8003360C 0880063C */  lui        $a2, %hi(g_nLevelLoadChunkSize)
+    /* 23E10 80033610 E4A6C68C */  lw         $a2, %lo(g_nLevelLoadChunkSize)($a2)
+    /* 23E14 80033614 0880073C */  lui        $a3, %hi(g_nLevelLoadByteOffset)
+    /* 23E18 80033618 E0A6E78C */  lw         $a3, %lo(g_nLevelLoadByteOffset)($a3)
     /* 23E1C 8003361C 0180053C */  lui        $a1, %hi(g_pSharedLoadBuffer)
     /* 23E20 80033620 A013A58C */  lw         $a1, %lo(g_pSharedLoadBuffer)($a1)
-    /* 23E24 80033624 0880023C */  lui        $v0, %hi(D_8007DDE8)
-    /* 23E28 80033628 E8DD4224 */  addiu      $v0, $v0, %lo(D_8007DDE8)
+    /* 23E24 80033624 0880023C */  lui        $v0, %hi(g_abDrawBufPool)
+    /* 23E28 80033628 E8DD4224 */  addiu      $v0, $v0, %lo(g_abDrawBufPool)
     /* 23E2C 8003362C 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 23E30 80033630 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
     /* 23E34 80033634 0880013C */  lui        $at, %hi(g_pDrawBufB)
@@ -42488,21 +42488,21 @@ glabel UpdateCameraFrame
     /* 28610 80037E10 00000000 */   nop
     /* 28614 80037E14 05004010 */  beqz       $v0, .L80037E2C
     /* 28618 80037E18 00000000 */   nop
-    /* 2861C 80037E1C 0780023C */  lui        $v0, %hi(D_80075844)
-    /* 28620 80037E20 4458428C */  lw         $v0, %lo(D_80075844)($v0)
-    /* 28624 80037E24 0780013C */  lui        $at, %hi(D_80076E24)
-    /* 28628 80037E28 246E22AC */  sw         $v0, %lo(D_80076E24)($at)
+    /* 2861C 80037E1C 0780023C */  lui        $v0, %hi(g_nWorldFloorSurfaceType)
+    /* 28620 80037E20 4458428C */  lw         $v0, %lo(g_nWorldFloorSurfaceType)($v0)
+    /* 28624 80037E24 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
+    /* 28628 80037E28 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
   .L80037E2C:
-    /* 2862C 80037E2C 0780023C */  lui        $v0, %hi(D_80076E24)
-    /* 28630 80037E30 246E428C */  lw         $v0, %lo(D_80076E24)($v0)
+    /* 2862C 80037E2C 0780023C */  lui        $v0, %hi(g_nCameraFloorSurfaceType)
+    /* 28630 80037E30 246E428C */  lw         $v0, %lo(g_nCameraFloorSurfaceType)($v0)
     /* 28634 80037E34 0880033C */  lui        $v1, %hi(g_nStaticMeshLodCutoff)
     /* 28638 80037E38 B485638C */  lw         $v1, %lo(g_nStaticMeshLodCutoff)($v1)
     /* 2863C 80037E3C 00000000 */  nop
     /* 28640 80037E40 2A104300 */  slt        $v0, $v0, $v1
     /* 28644 80037E44 03004014 */  bnez       $v0, .L80037E54
     /* 28648 80037E48 FFFF0224 */   addiu     $v0, $zero, -0x1
-    /* 2864C 80037E4C 0780013C */  lui        $at, %hi(D_80076E24)
-    /* 28650 80037E50 246E22AC */  sw         $v0, %lo(D_80076E24)($at)
+    /* 2864C 80037E4C 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
+    /* 28650 80037E50 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
   .L80037E54:
     /* 28654 80037E54 0780013C */  lui        $at, %hi(g_apScriptedCameraViewBlock)
     /* 28658 80037E58 BC6E20AC */  sw         $zero, %lo(g_apScriptedCameraViewBlock)($at)
@@ -67879,16 +67879,16 @@ glabel FindWorldFloorBelowPoint
     /* 3EA70 8004E270 00000000 */  nop
     /* 3EA74 8004E274 20083300 */  add        $at, $at, $s3 /* handwritten instruction */
     /* 3EA78 8004E278 00002190 */  lbu        $at, 0x0($at)
-    /* 3EA7C 8004E27C 0780023C */  lui        $v0, %hi(D_80075844)
-    /* 3EA80 8004E280 44584224 */  addiu      $v0, $v0, %lo(D_80075844)
+    /* 3EA7C 8004E27C 0780023C */  lui        $v0, %hi(g_nWorldFloorSurfaceType)
+    /* 3EA80 8004E280 44584224 */  addiu      $v0, $v0, %lo(g_nWorldFloorSurfaceType)
     /* 3EA84 8004E284 13380108 */  j          .L8004E04C
     /* 3EA88 8004E288 000041AC */   sw        $at, 0x0($v0)
   .L8004E28C:
     /* 3EA8C 8004E28C 0600C01E */  bgtz       $s6, .L8004E2A8
     /* 3EA90 8004E290 00111600 */   sll       $v0, $s6, 4
     /* 3EA94 8004E294 FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
-    /* 3EA98 8004E298 0780013C */  lui        $at, %hi(D_80075844)
-    /* 3EA9C 8004E29C 44582124 */  addiu      $at, $at, %lo(D_80075844)
+    /* 3EA98 8004E298 0780013C */  lui        $at, %hi(g_nWorldFloorSurfaceType)
+    /* 3EA9C 8004E29C 44582124 */  addiu      $at, $at, %lo(g_nWorldFloorSurfaceType)
     /* 3EAA0 8004E2A0 000022AC */  sw         $v0, 0x0($at)
     /* 3EAA4 8004E2A4 00000220 */  addi       $v0, $zero, 0x0 /* handwritten instruction */
   .L8004E2A8:
@@ -69391,8 +69391,8 @@ glabel EmitDynamicActorMeshScissored
     /* 3FFC4 8004F7C4 43090100 */  sra        $at, $at, 5
     /* 3FFC8 8004F7C8 43110200 */  sra        $v0, $v0, 5
     /* 3FFCC 8004F7CC 43190300 */  sra        $v1, $v1, 5
-    /* 3FFD0 8004F7D0 07800A3C */  lui        $t2, %hi(D_80077EA0)
-    /* 3FFD4 8004F7D4 A07E4A25 */  addiu      $t2, $t2, %lo(D_80077EA0)
+    /* 3FFD0 8004F7D0 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
+    /* 3FFD4 8004F7D4 A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
     /* 3FFD8 8004F7D8 FA3D010C */  jal        ClipAndEmitActorTriangle
     /* 3FFDC 8004F7DC 00000000 */   nop
     /* 3FFE0 8004F7E0 D53D0108 */  j          .L8004F754
@@ -69928,8 +69928,8 @@ glabel EmitDynamicActorMeshFogged
     /* 4073C 8004FF3C 04006D8D */  lw         $t5, 0x4($t3)
     /* 40740 8004FF40 08006E8D */  lw         $t6, 0x8($t3)
     /* 40744 8004FF44 0C006B21 */  addi       $t3, $t3, 0xC /* handwritten instruction */
-    /* 40748 8004FF48 07800A3C */  lui        $t2, %hi(D_80077EA0)
-    /* 4074C 8004FF4C A07E4A25 */  addiu      $t2, $t2, %lo(D_80077EA0)
+    /* 40748 8004FF48 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
+    /* 4074C 8004FF4C A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
     /* 40750 8004FF50 E43F010C */  jal        ClipAndEmitFoggedActorTriangle
     /* 40754 8004FF54 FFFFEF21 */   addi      $t7, $t7, -0x1 /* handwritten instruction */
     /* 40758 8004FF58 CD3F0108 */  j          .L8004FF34
@@ -70410,8 +70410,8 @@ glabel EmitDynamicActorMeshFogShaded
     /* 40DE8 800505E8 43090100 */  sra        $at, $at, 5
     /* 40DEC 800505EC 43110200 */  sra        $v0, $v0, 5
     /* 40DF0 800505F0 43190300 */  sra        $v1, $v1, 5
-    /* 40DF4 800505F4 07800A3C */  lui        $t2, %hi(D_80077EA0)
-    /* 40DF8 800505F8 A07E4A25 */  addiu      $t2, $t2, %lo(D_80077EA0)
+    /* 40DF4 800505F4 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
+    /* 40DF8 800505F8 A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
     /* 40DFC 800505FC 8341010C */  jal        ClipAndEmitFogShadedActorTriangle
     /* 40E00 80050600 00000000 */   nop
     /* 40E04 80050604 5E410108 */  j          .L80050578
@@ -71018,9 +71018,9 @@ glabel DrawActors
     /* 4169C 80050E9C 00000000 */  nop
     /* 416A0 80050EA0 07004004 */  bltz       $v0, .L80050EC0
     /* 416A4 80050EA4 00000000 */   nop
-    /* 416A8 80050EA8 0780013C */  lui        $at, %hi(D_800771C8)
+    /* 416A8 80050EA8 0780013C */  lui        $at, %hi(g_abVisZoneGates)
     /* 416AC 80050EAC 21082200 */  addu       $at, $at, $v0
-    /* 416B0 80050EB0 C8712290 */  lbu        $v0, %lo(D_800771C8)($at)
+    /* 416B0 80050EB0 C8712290 */  lbu        $v0, %lo(g_abVisZoneGates)($at)
     /* 416B4 80050EB4 00000000 */  nop
     /* 416B8 80050EB8 28044010 */  beqz       $v0, .L80051F5C
     /* 416BC 80050EBC 00000000 */   nop
@@ -71136,8 +71136,8 @@ glabel DrawActors
     /* 41848 80051048 21900000 */   addu      $s2, $zero, $zero
     /* 4184C 8005104C 6000B327 */  addiu      $s3, $sp, 0x60
     /* 41850 80051050 20001024 */  addiu      $s0, $zero, 0x20
-    /* 41854 80051054 0880113C */  lui        $s1, %hi(D_80078DD8)
-    /* 41858 80051058 D88D3126 */  addiu      $s1, $s1, %lo(D_80078DD8)
+    /* 41854 80051054 0880113C */  lui        $s1, %hi(g_aMobRingScreenPts)
+    /* 41858 80051058 D88D3126 */  addiu      $s1, $s1, %lo(g_aMobRingScreenPts)
   .L8005105C:
     /* 4185C 8005105C 21202002 */  addu       $a0, $s1, $zero
     /* 41860 80051060 21308002 */  addu       $a2, $s4, $zero
@@ -71291,9 +71291,9 @@ glabel DrawActors
   .L80051288:
     /* 41A88 80051288 21104500 */  addu       $v0, $v0, $a1
     /* 41A8C 8005128C 80300200 */  sll        $a2, $v0, 2
-    /* 41A90 80051290 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41A90 80051290 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41A94 80051294 21082600 */  addu       $at, $at, $a2
-    /* 41A98 80051298 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 41A98 80051298 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 41A9C 8005129C 2801AC8F */  lw         $t4, 0x128($sp)
     /* 41AA0 800512A0 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41AA4 800512A4 21082600 */  addu       $at, $at, $a2
@@ -71309,9 +71309,9 @@ glabel DrawActors
     /* 41ACC 800512CC 0880013C */  lui        $at, %hi(D_80078DE0)
     /* 41AD0 800512D0 21082600 */  addu       $at, $at, $a2
     /* 41AD4 800512D4 E08D248C */  lw         $a0, %lo(D_80078DE0)($at)
-    /* 41AD8 800512D8 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41AD8 800512D8 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41ADC 800512DC 21082600 */  addu       $at, $at, $a2
-    /* 41AE0 800512E0 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 41AE0 800512E0 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 41AE4 800512E4 21186400 */  addu       $v1, $v1, $a0
     /* 41AE8 800512E8 FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 41AEC 800512EC FF01422C */  sltiu      $v0, $v0, 0x1FF
@@ -71337,9 +71337,9 @@ glabel DrawActors
   .L8005133C:
     /* 41B3C 8005133C 21104500 */  addu       $v0, $v0, $a1
     /* 41B40 80051340 80380200 */  sll        $a3, $v0, 2
-    /* 41B44 80051344 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41B44 80051344 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41B48 80051348 21082700 */  addu       $at, $at, $a3
-    /* 41B4C 8005134C D88D248C */  lw         $a0, %lo(D_80078DD8)($at)
+    /* 41B4C 8005134C D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
     /* 41B50 80051350 00000000 */  nop
     /* 41B54 80051354 2A108402 */  slt        $v0, $s4, $a0
     /* 41B58 80051358 02004010 */  beqz       $v0, .L80051364
@@ -71363,9 +71363,9 @@ glabel DrawActors
     /* 41B94 80051394 00000000 */   nop
     /* 41B98 80051398 21B06000 */  addu       $s6, $v1, $zero
   .L8005139C:
-    /* 41B9C 8005139C 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41B9C 8005139C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41BA0 800513A0 21082800 */  addu       $at, $at, $t0
-    /* 41BA4 800513A4 D88D268C */  lw         $a2, %lo(D_80078DD8)($at)
+    /* 41BA4 800513A4 D88D268C */  lw         $a2, %lo(g_aMobRingScreenPts)($at)
     /* 41BA8 800513A8 00000000 */  nop
     /* 41BAC 800513AC 0002C228 */  slti       $v0, $a2, 0x200
     /* 41BB0 800513B0 03004014 */  bnez       $v0, .L800513C0
@@ -71411,15 +71411,15 @@ glabel DrawActors
     /* 41C34 80051434 01000224 */   addiu     $v0, $zero, 0x1
     /* 41C38 80051438 1801A0AF */  sw         $zero, 0x118($sp)
   .L8005143C:
-    /* 41C3C 8005143C 0780013C */  lui        $at, %hi(D_80077EA0)
+    /* 41C3C 8005143C 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
     /* 41C40 80051440 21082900 */  addu       $at, $at, $t1
-    /* 41C44 80051444 A07E22AC */  sw         $v0, %lo(D_80077EA0)($at)
+    /* 41C44 80051444 A07E22AC */  sw         $v0, %lo(g_aMobSilhouetteEdges)($at)
     /* 41C48 80051448 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41C4C 8005144C 21082800 */  addu       $at, $at, $t0
     /* 41C50 80051450 DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 41C54 80051454 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41C54 80051454 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41C58 80051458 21082800 */  addu       $at, $at, $t0
-    /* 41C5C 8005145C D88D2394 */  lhu        $v1, %lo(D_80078DD8)($at)
+    /* 41C5C 8005145C D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
     /* 41C60 80051460 00140200 */  sll        $v0, $v0, 16
     /* 41C64 80051464 25104300 */  or         $v0, $v0, $v1
     /* 41C68 80051468 0780013C */  lui        $at, %hi(D_80077EA4)
@@ -71428,9 +71428,9 @@ glabel DrawActors
     /* 41C74 80051474 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41C78 80051478 21082700 */  addu       $at, $at, $a3
     /* 41C7C 8005147C DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 41C80 80051480 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41C80 80051480 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41C84 80051484 21082700 */  addu       $at, $at, $a3
-    /* 41C88 80051488 D88D2394 */  lhu        $v1, %lo(D_80078DD8)($at)
+    /* 41C88 80051488 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
     /* 41C8C 8005148C 00140200 */  sll        $v0, $v0, 16
     /* 41C90 80051490 25104300 */  or         $v0, $v0, $v1
     /* 41C94 80051494 0780013C */  lui        $at, %hi(D_80077EA8)
@@ -71445,21 +71445,21 @@ glabel DrawActors
     /* 41CB8 800514B8 00000000 */  nop
     /* 41CBC 800514BC 23104300 */  subu       $v0, $v0, $v1
     /* 41CC0 800514C0 000042AD */  sw         $v0, 0x0($t2)
-    /* 41CC4 800514C4 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41CC4 800514C4 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41CC8 800514C8 21082700 */  addu       $at, $at, $a3
-    /* 41CCC 800514CC D88D248C */  lw         $a0, %lo(D_80078DD8)($at)
-    /* 41CD0 800514D0 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41CCC 800514CC D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
+    /* 41CD0 800514D0 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41CD4 800514D4 21082800 */  addu       $at, $at, $t0
-    /* 41CD8 800514D8 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 41CD8 800514D8 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 41CDC 800514DC 00000000 */  nop
     /* 41CE0 800514E0 23208200 */  subu       $a0, $a0, $v0
     /* 41CE4 800514E4 0780013C */  lui        $at, %hi(D_80077EB0)
     /* 41CE8 800514E8 21082900 */  addu       $at, $at, $t1
     /* 41CEC 800514EC B07E24AC */  sw         $a0, %lo(D_80077EB0)($at)
     /* 41CF0 800514F0 0000428D */  lw         $v0, 0x0($t2)
-    /* 41CF4 800514F4 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 41CF4 800514F4 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 41CF8 800514F8 21082800 */  addu       $at, $at, $t0
-    /* 41CFC 800514FC D88D238C */  lw         $v1, %lo(D_80078DD8)($at)
+    /* 41CFC 800514FC D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
     /* 41D00 80051500 23100200 */  negu       $v0, $v0
     /* 41D04 80051504 18004300 */  mult       $v0, $v1
     /* 41D08 80051508 12180000 */  mflo       $v1
@@ -71692,9 +71692,9 @@ glabel DrawActors
     /* 42040 80051840 40101300 */  sll        $v0, $s3, 1
     /* 42044 80051844 21105300 */  addu       $v0, $v0, $s3
     /* 42048 80051848 C0100200 */  sll        $v0, $v0, 3
-    /* 4204C 8005184C 0780013C */  lui        $at, %hi(D_80077EA0)
+    /* 4204C 8005184C 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
     /* 42050 80051850 21082200 */  addu       $at, $at, $v0
-    /* 42054 80051854 A07E20AC */  sw         $zero, %lo(D_80077EA0)($at)
+    /* 42054 80051854 A07E20AC */  sw         $zero, %lo(g_aMobSilhouetteEdges)($at)
     /* 42058 80051858 3801AC8F */  lw         $t4, 0x138($sp)
     /* 4205C 8005185C 00000000 */  nop
     /* 42060 80051860 00408229 */  slti       $v0, $t4, 0x4000
@@ -71750,8 +71750,8 @@ glabel DrawActors
     /* 42118 80051918 0880023C */  lui        $v0, %hi(g_apScriptedMobEntries)
     /* 4211C 8005191C 40864224 */  addiu      $v0, $v0, %lo(g_apScriptedMobEntries)
     /* 42120 80051920 7001AC8F */  lw         $t4, 0x170($sp)
-    /* 42124 80051924 0880053C */  lui        $a1, %hi(D_80078DD8)
-    /* 42128 80051928 D88DA524 */  addiu      $a1, $a1, %lo(D_80078DD8)
+    /* 42124 80051924 0880053C */  lui        $a1, %hi(g_aMobRingScreenPts)
+    /* 42128 80051928 D88DA524 */  addiu      $a1, $a1, %lo(g_aMobRingScreenPts)
     /* 4212C 8005192C 21200000 */  addu       $a0, $zero, $zero
     /* 42130 80051930 21308201 */  addu       $a2, $t4, $v0
   .L80051934:
@@ -71858,9 +71858,9 @@ glabel DrawActors
   .L80051A94:
     /* 42294 80051A94 21104500 */  addu       $v0, $v0, $a1
     /* 42298 80051A98 80180200 */  sll        $v1, $v0, 2
-    /* 4229C 80051A9C 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 4229C 80051A9C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 422A0 80051AA0 21082300 */  addu       $at, $at, $v1
-    /* 422A4 80051AA4 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 422A4 80051AA4 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 422A8 80051AA8 00000000 */  nop
     /* 422AC 80051AAC FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 422B0 80051AB0 FF01422C */  sltiu      $v0, $v0, 0x1FF
@@ -71882,18 +71882,18 @@ glabel DrawActors
     /* 422F0 80051AF0 00000000 */   nop
     /* 422F4 80051AF4 01001124 */  addiu      $s1, $zero, 0x1
   .L80051AF8:
-    /* 422F8 80051AF8 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 422F8 80051AF8 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 422FC 80051AFC 21082600 */  addu       $at, $at, $a2
-    /* 42300 80051B00 D88D238C */  lw         $v1, %lo(D_80078DD8)($at)
+    /* 42300 80051B00 D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
     /* 42304 80051B04 00000000 */  nop
     /* 42308 80051B08 00026228 */  slti       $v0, $v1, 0x200
     /* 4230C 80051B0C 0A004014 */  bnez       $v0, .L80051B38
     /* 42310 80051B10 40100500 */   sll       $v0, $a1, 1
     /* 42314 80051B14 21104500 */  addu       $v0, $v0, $a1
     /* 42318 80051B18 80100200 */  sll        $v0, $v0, 2
-    /* 4231C 80051B1C 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 4231C 80051B1C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 42320 80051B20 21082200 */  addu       $at, $at, $v0
-    /* 42324 80051B24 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 42324 80051B24 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 42328 80051B28 00000000 */  nop
     /* 4232C 80051B2C 00024228 */  slti       $v0, $v0, 0x200
     /* 42330 80051B30 6A004010 */  beqz       $v0, .L80051CDC
@@ -71903,9 +71903,9 @@ glabel DrawActors
     /* 4233C 80051B3C 40100500 */   sll       $v0, $a1, 1
     /* 42340 80051B40 21104500 */  addu       $v0, $v0, $a1
     /* 42344 80051B44 80100200 */  sll        $v0, $v0, 2
-    /* 42348 80051B48 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 42348 80051B48 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 4234C 80051B4C 21082200 */  addu       $at, $at, $v0
-    /* 42350 80051B50 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 42350 80051B50 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 42354 80051B54 00000000 */  nop
     /* 42358 80051B58 60004018 */  blez       $v0, .L80051CDC
     /* 4235C 80051B5C 00000000 */   nop
@@ -71942,15 +71942,15 @@ glabel DrawActors
     /* 423CC 80051BCC 40200500 */  sll        $a0, $a1, 1
     /* 423D0 80051BD0 21208500 */  addu       $a0, $a0, $a1
     /* 423D4 80051BD4 80200400 */  sll        $a0, $a0, 2
-    /* 423D8 80051BD8 0780013C */  lui        $at, %hi(D_80077EA0)
+    /* 423D8 80051BD8 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
     /* 423DC 80051BDC 21082700 */  addu       $at, $at, $a3
-    /* 423E0 80051BE0 A07E22AC */  sw         $v0, %lo(D_80077EA0)($at)
+    /* 423E0 80051BE0 A07E22AC */  sw         $v0, %lo(g_aMobSilhouetteEdges)($at)
     /* 423E4 80051BE4 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 423E8 80051BE8 21082600 */  addu       $at, $at, $a2
     /* 423EC 80051BEC DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 423F0 80051BF0 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 423F0 80051BF0 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 423F4 80051BF4 21082600 */  addu       $at, $at, $a2
-    /* 423F8 80051BF8 D88D2394 */  lhu        $v1, %lo(D_80078DD8)($at)
+    /* 423F8 80051BF8 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
     /* 423FC 80051BFC 00140200 */  sll        $v0, $v0, 16
     /* 42400 80051C00 25104300 */  or         $v0, $v0, $v1
     /* 42404 80051C04 0780013C */  lui        $at, %hi(D_80077EA4)
@@ -71959,9 +71959,9 @@ glabel DrawActors
     /* 42410 80051C10 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 42414 80051C14 21082400 */  addu       $at, $at, $a0
     /* 42418 80051C18 DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 4241C 80051C1C 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 4241C 80051C1C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 42420 80051C20 21082400 */  addu       $at, $at, $a0
-    /* 42424 80051C24 D88D2394 */  lhu        $v1, %lo(D_80078DD8)($at)
+    /* 42424 80051C24 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
     /* 42428 80051C28 00140200 */  sll        $v0, $v0, 16
     /* 4242C 80051C2C 25104300 */  or         $v0, $v0, $v1
     /* 42430 80051C30 0780013C */  lui        $at, %hi(D_80077EA8)
@@ -71976,21 +71976,21 @@ glabel DrawActors
     /* 42454 80051C54 00000000 */  nop
     /* 42458 80051C58 23104300 */  subu       $v0, $v0, $v1
     /* 4245C 80051C5C 000002AD */  sw         $v0, 0x0($t0)
-    /* 42460 80051C60 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 42460 80051C60 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 42464 80051C64 21082400 */  addu       $at, $at, $a0
-    /* 42468 80051C68 D88D248C */  lw         $a0, %lo(D_80078DD8)($at)
-    /* 4246C 80051C6C 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 42468 80051C68 D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
+    /* 4246C 80051C6C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 42470 80051C70 21082600 */  addu       $at, $at, $a2
-    /* 42474 80051C74 D88D228C */  lw         $v0, %lo(D_80078DD8)($at)
+    /* 42474 80051C74 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
     /* 42478 80051C78 00000000 */  nop
     /* 4247C 80051C7C 23208200 */  subu       $a0, $a0, $v0
     /* 42480 80051C80 0780013C */  lui        $at, %hi(D_80077EB0)
     /* 42484 80051C84 21082700 */  addu       $at, $at, $a3
     /* 42488 80051C88 B07E24AC */  sw         $a0, %lo(D_80077EB0)($at)
     /* 4248C 80051C8C 0000028D */  lw         $v0, 0x0($t0)
-    /* 42490 80051C90 0880013C */  lui        $at, %hi(D_80078DD8)
+    /* 42490 80051C90 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
     /* 42494 80051C94 21082600 */  addu       $at, $at, $a2
-    /* 42498 80051C98 D88D238C */  lw         $v1, %lo(D_80078DD8)($at)
+    /* 42498 80051C98 D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
     /* 4249C 80051C9C 23100200 */  negu       $v0, $v0
     /* 424A0 80051CA0 18004300 */  mult       $v0, $v1
     /* 424A4 80051CA4 12180000 */  mflo       $v1
@@ -72147,9 +72147,9 @@ glabel DrawActors
     /* 426D4 80051ED4 40101300 */  sll        $v0, $s3, 1
     /* 426D8 80051ED8 21105300 */  addu       $v0, $v0, $s3
     /* 426DC 80051EDC C0100200 */  sll        $v0, $v0, 3
-    /* 426E0 80051EE0 0780013C */  lui        $at, %hi(D_80077EA0)
+    /* 426E0 80051EE0 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
     /* 426E4 80051EE4 21082200 */  addu       $at, $at, $v0
-    /* 426E8 80051EE8 A07E20AC */  sw         $zero, %lo(D_80077EA0)($at)
+    /* 426E8 80051EE8 A07E20AC */  sw         $zero, %lo(g_aMobSilhouetteEdges)($at)
     /* 426EC 80051EEC 3801AC8F */  lw         $t4, 0x138($sp)
     /* 426F0 80051EF0 00000000 */  nop
     /* 426F4 80051EF4 01308229 */  slti       $v0, $t4, 0x3001
@@ -72192,8 +72192,8 @@ glabel DrawActors
     /* 42780 80051F80 C3FB4014 */  bnez       $v0, .L80050E90
     /* 42784 80051F84 0801ACAF */   sw        $t4, 0x108($sp)
   .L80051F88:
-    /* 42788 80051F88 0780063C */  lui        $a2, %hi(D_80076E24)
-    /* 4278C 80051F8C 246EC624 */  addiu      $a2, $a2, %lo(D_80076E24)
+    /* 42788 80051F88 0780063C */  lui        $a2, %hi(g_nCameraFloorSurfaceType)
+    /* 4278C 80051F8C 246EC624 */  addiu      $a2, $a2, %lo(g_nCameraFloorSurfaceType)
     /* 42790 80051F90 0000C48C */  lw         $a0, 0x0($a2)
     /* 42794 80051F94 0880023C */  lui        $v0, %hi(g_nStaticMeshLodCutoff)
     /* 42798 80051F98 B485428C */  lw         $v0, %lo(g_nStaticMeshLodCutoff)($v0)
@@ -72372,8 +72372,8 @@ glabel BuildRenderEntityLists
     /* 429D4 800521D4 00244420 */  addi       $a0, $v0, 0x2400 /* handwritten instruction */
     /* 429D8 800521D8 00224320 */  addi       $v1, $v0, 0x2200 /* handwritten instruction */
     /* 429DC 800521DC 00004220 */  addi       $v0, $v0, 0x0 /* handwritten instruction */
-    /* 429E0 800521E0 0780053C */  lui        $a1, %hi(D_800771C8)
-    /* 429E4 800521E4 C871A524 */  addiu      $a1, $a1, %lo(D_800771C8)
+    /* 429E0 800521E0 0780053C */  lui        $a1, %hi(g_abVisZoneGates)
+    /* 429E4 800521E4 C871A524 */  addiu      $a1, $a1, %lo(g_abVisZoneGates)
     /* 429E8 800521E8 4800278C */  lw         $a3, 0x48($at)
     /* 429EC 800521EC FF000620 */  addi       $a2, $zero, 0xFF /* handwritten instruction */
     /* 429F0 800521F0 A8FF2120 */  addi       $at, $at, -0x58 /* handwritten instruction */
@@ -76423,8 +76423,8 @@ glabel InitSoundEngine
     /* 46174 80055974 C3000224 */  addiu      $v0, $zero, 0xC3
     /* 46178 80055978 000002AE */  sw         $v0, 0x0($s0)
     /* 4617C 8005597C FF3F0224 */  addiu      $v0, $zero, 0x3FFF
-    /* 46180 80055980 0780013C */  lui        $at, %hi(D_80076228_blk)
-    /* 46184 80055984 286222AC */  sw         $v0, %lo(D_80076228_blk)($at)
+    /* 46180 80055980 0780013C */  lui        $at, %hi(g_nSfxMixVolume_blk)
+    /* 46184 80055984 286222AC */  sw         $v0, %lo(g_nSfxMixVolume_blk)($at)
     /* 46188 80055988 00100224 */  addiu      $v0, $zero, 0x1000
     /* 4618C 8005598C 0780013C */  lui        $at, %hi(g_nSoundMasterVolume)
     /* 46190 80055990 2C6222AC */  sw         $v0, %lo(g_nSoundMasterVolume)($at)
@@ -76434,12 +76434,12 @@ glabel InitSoundEngine
     /* 461A0 800559A0 0780013C */  lui        $at, %hi(D_80075F0E)
     /* 461A4 800559A4 0E5F22A4 */  sh         $v0, %lo(D_80075F0E)($at)
     /* 461A8 800559A8 00500224 */  addiu      $v0, $zero, 0x5000
-    /* 461AC 800559AC 0780013C */  lui        $at, %hi(D_80076224_blk)
-    /* 461B0 800559B0 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
+    /* 461AC 800559AC 0780013C */  lui        $at, %hi(g_nCdAudioVolume_blk)
+    /* 461B0 800559B0 246222AC */  sw         $v0, %lo(g_nCdAudioVolume_blk)($at)
     /* 461B4 800559B4 0780013C */  lui        $at, %hi(g_nCdDaVolumeCurrent)
     /* 461B8 800559B8 185F22A4 */  sh         $v0, %lo(g_nCdDaVolumeCurrent)($at)
-    /* 461BC 800559BC 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 461C0 800559C0 1A5F22A4 */  sh         $v0, %lo(D_80075F1A)($at)
+    /* 461BC 800559BC 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 461C0 800559C0 1A5F22A4 */  sh         $v0, %lo(g_nSpuCommonCdVolumeR)($at)
     /* 461C4 800559C4 FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 461C8 800559C8 0780013C */  lui        $at, %hi(g_nMusicVolumeFadeTarget)
     /* 461CC 800559CC D86122AC */  sw         $v0, %lo(g_nMusicVolumeFadeTarget)($at)
@@ -77620,8 +77620,8 @@ glabel HandleMusicCommand
     /* 47274 80056A74 13004010 */  beqz       $v0, .L80056AC4
     /* 47278 80056A78 00000000 */   nop
   .L80056A7C:
-    /* 4727C 80056A7C 0780023C */  lui        $v0, %hi(D_80076224_blk)
-    /* 47280 80056A80 2462428C */  lw         $v0, %lo(D_80076224_blk)($v0)
+    /* 4727C 80056A7C 0780023C */  lui        $v0, %hi(g_nCdAudioVolume_blk)
+    /* 47280 80056A80 2462428C */  lw         $v0, %lo(g_nCdAudioVolume_blk)($v0)
     /* 47284 80056A84 0780043C */  lui        $a0, %hi(g_nCdDaVolumeCurrent)
     /* 47288 80056A88 185F8484 */  lh         $a0, %lo(g_nCdDaVolumeCurrent)($a0)
     /* 4728C 80056A8C 10000324 */  addiu      $v1, $zero, 0x10
@@ -80702,11 +80702,11 @@ glabel ComputeSaveGameChecksum
 endlabel ComputeSaveGameChecksum
 .endif
 
-.section .text.func_80059594, "ax"
-.ifndef HAVE_C_func_80059594
-nonmatching func_80059594, 0x2D0
+.section .text.ApplySaveGameBuffer, "ax"
+.ifndef HAVE_C_ApplySaveGameBuffer
+nonmatching ApplySaveGameBuffer, 0x2D0
 
-glabel func_80059594
+glabel ApplySaveGameBuffer
     /* 49D94 80059594 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 49D98 80059598 1000B0AF */  sw         $s0, 0x10($sp)
     /* 49D9C 8005959C 21808000 */  addu       $s0, $a0, $zero
@@ -80729,8 +80729,8 @@ glabel func_80059594
     /* 49DE0 800595E0 2328A200 */  subu       $a1, $a1, $v0
     /* 49DE4 800595E4 001B0500 */  sll        $v1, $a1, 12
     /* 49DE8 800595E8 18006400 */  mult       $v1, $a0
-    /* 49DEC 800595EC 0780063C */  lui        $a2, %hi(D_80076228_blk)
-    /* 49DF0 800595F0 2862C624 */  addiu      $a2, $a2, %lo(D_80076228_blk)
+    /* 49DEC 800595EC 0780063C */  lui        $a2, %hi(g_nSfxMixVolume_blk)
+    /* 49DF0 800595F0 2862C624 */  addiu      $a2, $a2, %lo(g_nSfxMixVolume_blk)
     /* 49DF4 800595F4 0780013C */  lui        $at, %hi(g_nSfxVolume)
     /* 49DF8 800595F8 545727AC */  sw         $a3, %lo(g_nSfxVolume)($at)
     /* 49DFC 800595FC 0000C5AC */  sw         $a1, 0x0($a2)
@@ -80747,12 +80747,12 @@ glabel func_80059594
     /* 49E28 80059628 0780013C */  lui        $at, %hi(g_nMusicVolume)
     /* 49E2C 8005962C 485722AC */  sw         $v0, %lo(g_nMusicVolume)($at)
     /* 49E30 80059630 C0120200 */  sll        $v0, $v0, 11
-    /* 49E34 80059634 0780013C */  lui        $at, %hi(D_80076224_blk)
-    /* 49E38 80059638 246222AC */  sw         $v0, %lo(D_80076224_blk)($at)
+    /* 49E34 80059634 0780013C */  lui        $at, %hi(g_nCdAudioVolume_blk)
+    /* 49E38 80059638 246222AC */  sw         $v0, %lo(g_nCdAudioVolume_blk)($at)
     /* 49E3C 8005963C 0780013C */  lui        $at, %hi(g_nCdDaVolumeCurrent)
     /* 49E40 80059640 185F22A4 */  sh         $v0, %lo(g_nCdDaVolumeCurrent)($at)
-    /* 49E44 80059644 0780013C */  lui        $at, %hi(D_80075F1A)
-    /* 49E48 80059648 1A5F22A4 */  sh         $v0, %lo(D_80075F1A)($at)
+    /* 49E44 80059644 0780013C */  lui        $at, %hi(g_nSpuCommonCdVolumeR)
+    /* 49E48 80059648 1A5F22A4 */  sh         $v0, %lo(g_nSpuCommonCdVolumeR)($at)
     /* 49E4C 8005964C 1673010C */  jal        SetSpuCommonAttr
     /* 49E50 80059650 E0FCC424 */   addiu     $a0, $a2, -0x320
     /* 49E54 80059654 03000292 */  lbu        $v0, 0x3($s0)
@@ -80893,7 +80893,7 @@ glabel func_80059594
     /* 4A058 80059858 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 4A05C 8005985C 0800E003 */  jr         $ra
     /* 4A060 80059860 00000000 */   nop
-endlabel func_80059594
+endlabel ApplySaveGameBuffer
 .endif
 
 .section .text.BuildSaveGameBuffer, "ax"

@@ -1175,7 +1175,7 @@ typedef struct BobState {
 /* from level_10 */
 /* from level_10 */
 /* from level_10 */
-extern signed char D_80078C5E; /* destination level */
+extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 /* from level_10 */
 /* from level_10 */
 /* from level_10 */
@@ -3809,7 +3809,7 @@ void Level14_UpdateActors(void) {
           if (h > 4) {
             h = 4;
           }
-          D_80078C5E = SPY.bodyRotZ + h;
+          g_bSpyroRequestYaw = SPY.bodyRotZ + h;
           g_nSpyroRequestState = 0x11;
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
@@ -3835,7 +3835,7 @@ void Level14_UpdateActors(void) {
           if (h > 3) {
             h = 3;
           }
-          D_80078C5E = SPY.bodyRotZ + h;
+          g_bSpyroRequestYaw = SPY.bodyRotZ + h;
           g_nSpyroRequestState = 0x11;
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
@@ -4837,7 +4837,7 @@ void Level14_UpdateActors(void) {
               *p = 0x384;
             }
             *(q = &g_dwSpyroRequestMask) |= 0x80020000;
-            D_80078C5E = st->heading;
+            g_bSpyroRequestYaw = st->heading;
           }
           break;
         }

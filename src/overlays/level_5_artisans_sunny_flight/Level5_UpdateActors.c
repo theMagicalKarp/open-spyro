@@ -216,7 +216,7 @@ typedef struct BurstState {
 } BurstState;
 
 extern int g_nVblankTickCount;    /* frame counter */
-extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
+extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
 extern int PlaneDistanceAbs(int *pos, void *st);
 extern void TallyFlightTarget(int sound);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
@@ -1787,7 +1787,7 @@ void Level5_UpdateActors(void) {
               }
               shard = g_pfnLevelSpawnActor(i + 0x176, actor);
               ss = shard->state;
-              RotateVectorByMatrix(actor->mtx, &D_8006E824[i * 3], svV);
+              RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], svV);
               AddVector(&shard->posX, &actor->posX, svV);
               RShiftVector3(svV, 5);
               svW[0] = (GetRandomU32() & 0x7E) - 0x3F;

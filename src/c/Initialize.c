@@ -27,7 +27,7 @@ extern void TickWorldBundleLoadStream(void);
 extern void *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
 extern int D_8007A6D4;            /* boot-splash chunk byte count */
 extern int D_8007A6D0;            /* boot-splash byte offset */
-extern int D_8007DDE8;            /* draw-buffer sentinel */
+extern int g_abDrawBufPool;       /* draw-buffer sentinel */
 extern int D_800785CC;
 
 extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
@@ -98,8 +98,8 @@ void Initialize(void) {
   InitGeom();
   SetGeomOffset(0x100, 0x78);
   SetGeomScreen(0x155);
-  g_apDrawBufBlock[0] = &D_8007DDE8;
-  g_pDrawBufB = &D_8007DDE8;
+  g_apDrawBufBlock[0] = &g_abDrawBufPool;
+  g_pDrawBufB = &g_abDrawBufPool;
   start = VSync(-1);
   SetDispMask(0);
   fill = g_apDrawBufBlock[0];
@@ -141,8 +141,8 @@ void Initialize(void) {
     top = (char *)0x801C0000 - g_nCrt0StackSize;
     CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
     {
-      int cnt3 = *(volatile int *)&D_8007A6E4;
-      int off3 = *(volatile int *)&D_8007A6E0;
+      int cnt3 = *(volatile int *)&g_nLevelLoadChunkSize;
+      int off3 = *(volatile int *)&g_nLevelLoadByteOffset;
       CdReadSyncSectors(lba[0], *(void *volatile *)&g_pSharedLoadBuffer, cnt3,
                         off3, k600);
     }

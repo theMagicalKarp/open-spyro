@@ -2,8 +2,8 @@
 // these D_ names directly). Kept out of undefined_syms_auto.txt because `make split`
 // regenerates that file and would drop them. Read by tools/build_main.sh.
 D_80075B54 = 0x80075B54;
-D_80076224 = 0x80076224;
-D_80076228 = 0x80076228;
+g_nCdAudioVolume = 0x80076224;
+g_nSfxMixVolume = 0x80076228;
 D_80076EBC = 0x80076EBC;
 g_anGamestate0cTimerBlock = 0x800777EC;
 D_80078A60 = 0x80078A60;

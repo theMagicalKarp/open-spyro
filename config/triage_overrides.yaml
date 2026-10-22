@@ -244,11 +244,11 @@ func_8005E804:
   date: 2026-08-10
 
 # --- save-block deserializer (2026-07-23-3 session) ---
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F9 double knot — a0/a1 d/g swap in the world-totals loop (F7 qty_compare tie); the add/store split that equalizes ranges cascades into the start=buf region"
   date: 2026-07-23
-  note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via D_80076228_blk alias (A20). Permuter target."
+  note: "91.7% length-exact; .wip parked. Held-base SpuCommonAttr -0x320 solved via g_nSfxMixVolume_blk alias (A20). Permuter target."
 
 # --- text-sprite builder (2026-07-23-4 session) ---
 BuildTextSprites:
@@ -958,7 +958,7 @@ park_sweep_2026_08_11_2:
     DrawCinematicLetterbox 2, IsPointInRotatedBox 6, SteerActorYawTowardSpyro 6,
     ApplyPadInputToSpyroBodyYaw 7, func_8005FC6C 7, WaitForFrameDeadline 7
     (now a wall, above), WalkActorAlongWaypoints 9, EndSaveMenuToWorld 12,
-    func_80059594 13, FinalizePadCalibration 14, ResetGraph 15. Note
+    ApplySaveGameBuffer 13, FinalizePadCalibration 14, ResetGraph 15. Note
     func_80061470's wip does not compile (parse errors), so the sweep reports
     it as 0 differing insns — that is a build failure, not a match.
 
@@ -2583,7 +2583,7 @@ EmitDynamicActorMeshFogged:
   date: 2026-08-25
   note: "240 B; 60 insns, 6 `addi` markers, 2 jals."
 
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "qty_compare live-range tie on the accumulator loop's d/g pair, pinned at both ends by rank_for_schedule's class test and an unresolvable load/store alias"
   date: 2026-08-25
@@ -2897,7 +2897,7 @@ barrier_sweep_negative_2026_08_28:
   note: >-
     Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
     with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
-    func_80059594 (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
+    ApplySaveGameBuffer (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
     HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
     WalkActorAlongWaypoints (9/192), Level27_AdvanceEmitList's 0x1D arm and
     Level5_FlightResults_Draw (735 placements): no variant beat the baseline on any
@@ -3282,7 +3282,7 @@ UpdateSpyroFlightAttitudeNearGround:
     partial bytes on the board once decoded.
 
 # --- 2026-08-30-1 session: the A238 ref dial applied to the harvest inventory ---
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F19 store-vs-compare position swap + an alias-order/allocation conflict (R1)"
   date: 2026-08-30-1
@@ -3465,7 +3465,7 @@ Level27_AdvanceEmitList:
     top non-balloonist entry; its arm-0x1D residue is a single a2/v0 rotation
     with a closed 26-variant carrier search and a proved-unreachable head
     straggler order. Nothing in A236-A239 aims at it.
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "R2 barrier-vs-slti trade (R1 now shown reachable but only at equal cost)"
   date: 2026-08-31
@@ -3841,7 +3841,7 @@ SmoothSpyroByteEulerSpring:
     barrier cost and fell by WIDENING the prev1 wrapper to swallow the
     stanza-2 guard `if`.
 
-func_80059594:
+ApplySaveGameBuffer:
   verdict: parked
   class: "F19 potential_hazard: store vs neighbour inside one priority group"
   date: 2026-09-10
@@ -4076,7 +4076,7 @@ harvest_inventory_staleness_2026_09_15:
     `SetSpawnAnchorFromActor`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
-    func_80059594 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
+    ApplySaveGameBuffer 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
     func_8005FC6C 7/38, Titlescreen_Update 7/2147,
     WalkActorAlongWaypoints 9/192, Level27_AdvanceEmitList 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue

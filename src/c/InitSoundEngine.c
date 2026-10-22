@@ -8,7 +8,7 @@ extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void SetSpuTransferMode(int mode);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
-extern int D_80076228_blk;           /* sfx mix volume */
+extern int g_nSfxMixVolume_blk;      /* sfx mix volume */
 extern short g_anSpuCommonVolAttr[]; /* g_abSpuCommonAttr + 0x4 (see alias) */
 
 /* 0x8005595c (0x11c) — top-level sound init (after SpuInit): reset the SPU,
@@ -26,12 +26,12 @@ void InitSoundEngine(void) {
   InitSpu();
   common = g_abSpuCommonAttr;
   *(int *)common = 0xC3;
-  D_80076228_blk = 0x3FFF;
+  g_nSfxMixVolume_blk = 0x3FFF;
   g_nSoundMasterVolume = 0x1000;
   g_anSpuCommonVolAttr[0] = 0x3CCC;
   g_anSpuCommonVolAttr[1] = 0x3CCC;
   cd = 0x5000;
-  D_80076224_blk = cd;
+  g_nCdAudioVolume_blk = cd;
   g_anSpuCommonVolAttr[6] = cd;
   g_anSpuCommonVolAttr[7] = cd;
   g_nMusicVolumeFadeTarget = -1;

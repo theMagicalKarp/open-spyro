@@ -15,7 +15,7 @@ extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern int
     g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */
-extern int D_80076DE4[]; /* camera view matrix (worldToCam at -0x14) */
+extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
 
 /* Draw gamestates 1 and 9 (level intro / world arrival): copies the world
    fog color into both frame DRAWENVs, clears the OT bins, draws the
@@ -111,8 +111,8 @@ void Gamestate01_09_Draw(void) {
       m2.m[1][2] = iVar1 >> 9;
       EmitStaticActorMeshList(-1, &m1, p2);
     } else {
-      EmitStaticActorMeshList(-1, (MATRIX *)D_80076DE4,
-                              (MATRIX *)((char *)D_80076DE4 - 0x14));
+      EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
+                              (MATRIX *)((char *)g_anCameraViewMtx - 0x14));
     }
   }
   DrawSync(0);

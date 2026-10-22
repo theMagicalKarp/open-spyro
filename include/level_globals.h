@@ -25,7 +25,7 @@ extern int g_anFlightCourseBonusTable_r1[];
 extern int g_anFlightCourseBonusTable_r2[];
 extern int g_anFlightCourseBonusTable_r3[];
 extern int g_anFlightCourseBonusTable_r4[];
-extern unsigned char D_8006E998[];
+extern unsigned char g_abGemTallyIconGlyphs[];
 extern int g_anGamestate0cLandingX[];
 extern int g_anGamestate0cLandingY[];
 extern char *g_apWorldNameByLevelTens[];                               /* world names */

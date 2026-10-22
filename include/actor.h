@@ -45,7 +45,7 @@ typedef struct Actor {
   unsigned char unk47; /* 0x47 depth offset */
   unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char visZone; /* 0x4A visibility-gate index into D_800771C8;
+  unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
   unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
                              * bucket: 0, < 0, > 0 (default 0x20) */

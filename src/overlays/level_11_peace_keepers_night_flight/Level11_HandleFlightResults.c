@@ -13,7 +13,7 @@
  * fifth "all clear" bonus (g_anFlightCourseBonusTable_r4[course*5], flag g_abWorldPerLevelByteTable_r4) and
  * records a best time (g_anWorldPersistentFlags[course], lower is better, 0 = unset)
  * from the run clock g_nFlightRunClock. Finally spins the reward digit ring
- * (g_abGemTallyIconUvTable, 32 slots, glyphs from D_8006E998[i % 12]) and, if the
+ * (g_abGemTallyIconUvTable, 32 slots, glyphs from g_abGemTallyIconGlyphs[i % 12]) and, if the
  * pending-scene word g_nCameraCurrentMode is 0x8000000E, latches the scene byte
  * g_abSpyroStateCameraMode[g_nSpyroState] into g_nCameraNextMode.
  * Identical body in the five flight-level overlays.
@@ -79,7 +79,7 @@ void Level11_HandleFlightResults(int reload) {
   i = 0;
   if (g_nGemTallyIconCount > 0) {
     do {
-      g_abGemTallyIconUvTable[i & 0x1F] = D_8006E998[i % 12];
+      g_abGemTallyIconUvTable[i & 0x1F] = g_abGemTallyIconGlyphs[i % 12];
       i += 1;
     } while (i < g_nGemTallyIconCount);
   }

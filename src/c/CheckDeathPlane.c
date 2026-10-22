@@ -14,7 +14,7 @@ extern void StartCdReadAsync(int lba, int dst, int count, int offset,
 
 extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
 extern int D_8007A6D8;            /* async-read byte offset */
-extern int D_8007DDE8;            /* draw-buffer sentinel */
+extern int g_abDrawBufPool;       /* draw-buffer sentinel */
 extern int D_800778F0;            /* death-cutscene sample-bank record */
 extern int D_80078D88;
 
@@ -53,8 +53,8 @@ int CheckDeathPlane(void) {
       rect[3] = 0x1e0;
       ClearImage(rect, 0, 0, 0);
       DrawSync(0);
-      g_pDrawBufA = &D_8007DDE8;
-      g_pDrawBufB = &D_8007DDE8;
+      g_pDrawBufA = &g_abDrawBufPool;
+      g_pDrawBufB = &g_abDrawBufPool;
       g_nHitRumbleTimer = 0;
       g_nVibrationLevel = 0;
       g_nPulseRumbleTimer = 0;
@@ -66,8 +66,8 @@ int CheckDeathPlane(void) {
       g_nDeathRespawnPending = 0;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
-        int count = *(volatile int *)&D_8007A6E4;
-        int offset = *(volatile int *)&D_8007A6E0;
+        int count = *(volatile int *)&g_nLevelLoadChunkSize;
+        int offset = *(volatile int *)&g_nLevelLoadByteOffset;
         void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }

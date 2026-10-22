@@ -41,7 +41,7 @@ extern char *D_8007589C;
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nFarPlaneDrawDistance;
-extern int D_80076DE4[];
+extern int g_anCameraViewMtx[];
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {
@@ -118,7 +118,7 @@ void Credits_Draw(void) {
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
-    EmitStaticActorMeshList(-1, D_80076DE4, (char *)D_80076DE4 - 0x14);
+    EmitStaticActorMeshList(-1, g_anCameraViewMtx, (char *)g_anCameraViewMtx - 0x14);
   }
   DrawSync(0);
   if (g_nDeathRespawnPending != 0) {

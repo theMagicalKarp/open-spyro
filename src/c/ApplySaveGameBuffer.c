@@ -4,7 +4,7 @@
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void SetSpuCommonAttr(unsigned char *attr);
 
-extern int D_80076228_blk[];
+extern int g_nSfxMixVolume_blk[];
 
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
    BuildSaveGameBuffer.  Unpacks a 0x600-byte save buffer back into live game
@@ -12,13 +12,13 @@ extern int D_80076228_blk[];
    tallies with recomputed world totals, kill bitmaps) and returns whether the
    stored checksum at +0x58C matches.
 
-   The SpuCommonAttr block at -0x320 is reached through the D_80076228_blk
+   The SpuCommonAttr block at -0x320 is reached through the g_nSfxMixVolume_blk
    incomplete-array alias (A20).  In the tally loop, the egg-guard compare `c`
    and the treasure sum `t` are computed ABOVE the empty do/while: the barrier's
    loop notes land on the `*gems` store, and sched1 then makes every later insn
    depend on it (B23), so anything that must be emitted before that store has
    to be computed before the barrier. */
-int func_80059594(unsigned char *buf) {
+int ApplySaveGameBuffer(unsigned char *buf) {
   unsigned char *start;
   int off;
   unsigned char *common;
@@ -50,16 +50,16 @@ int func_80059594(unsigned char *buf) {
   g_nActiveLevelId = buf[0];
   sfx = buf[1];
   sm = (sfx * 0x3FFF) / 10;
-  D_80076228_blk[0] = sm;
+  g_nSfxMixVolume_blk[0] = sm;
   g_nSfxVolume = sfx;
   g_nSoundMasterVolume = (sm << 0xC) / 16383;
   mv = buf[2];
-  common = ((unsigned char *)D_80076228_blk) - 0x320;
+  common = ((unsigned char *)g_nSfxMixVolume_blk) - 0x320;
   *((int *)common) = 0xC0;
   g_nMusicVolume = mv;
-  D_80076224_blk = mv << 0xB;
+  g_nCdAudioVolume_blk = mv << 0xB;
   g_nCdDaVolumeCurrent = mv << 0xB;
-  D_80075F1A = mv << 0xB;
+  g_nSpuCommonCdVolumeR = mv << 0xB;
   SetSpuCommonAttr(common);
   cam = *((unsigned int *)(buf + 4));
   g_nOptionVibrationEnabled = buf[3];

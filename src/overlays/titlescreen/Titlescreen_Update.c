@@ -908,7 +908,7 @@ void Titlescreen_Update(void) {
           g_nLevelReadyFlag = 3;
           g_nSparxFoodCount = 0;
           g_nLevelReadyFlagStash = -1;
-          func_80059594(g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]);
+          ApplySaveGameBuffer(g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]);
           START_DEMO(1)
         }
       }

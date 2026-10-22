@@ -1891,7 +1891,7 @@
    "size": 40
   },
   {
-   "name": "func_80059594",
+   "name": "ApplySaveGameBuffer",
    "vram": 2147849620,
    "size": 720
   },

@@ -201,7 +201,7 @@ extern struct {
 
 extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
 extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
-extern char D_80076DE4[];    /* camera view matrix (proj matrix at -0x14) */
+extern char g_anCameraViewMtx[];    /* camera view matrix (proj matrix at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
 extern void FillWord(void *, int, int);
@@ -318,7 +318,7 @@ extern int func_80067B28(int);
 extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
 extern void BuildSaveGameBuffer(Struct_0x600 *);
-extern int func_80059594(Struct_0x600 *);
+extern int ApplySaveGameBuffer(Struct_0x600 *);
 extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);

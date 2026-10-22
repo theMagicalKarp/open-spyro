@@ -53,7 +53,7 @@ extern int D_80075838;
 
 extern int D_8007583C;
 
-extern int D_80076E24;
+extern int g_nCameraFloorSurfaceType;
 
 /* array alias for the sub-frame accumulator at 0x80078a7c (see
    config/symbol_addrs.txt) -- forces the held base register, matching the
@@ -95,7 +95,7 @@ extern short g_nSfxOverrideVolL;
 
 extern short g_nSfxOverrideVolR;
 
-extern int D_80076224_blk;
+extern int g_nCdAudioVolume_blk;
 
 /* Return to the current world's hub (0x8002c664): reset the level-transition /
    CD-stream state, arm a scripted respawn back into the hub (camera mode
@@ -128,9 +128,9 @@ extern int g_bSpyroJumpHoldForced;
 
 extern void BeginStoryIntro(void);
 
-extern int D_8007A6E4;            /* level-load chunk size */
+extern int g_nLevelLoadChunkSize;            /* level-load chunk size */
 
-extern int D_8007A6E0;            /* level-load byte offset */
+extern int g_nLevelLoadByteOffset;            /* level-load byte offset */
 
 extern void BuildActorDrawList(void);
 
@@ -181,7 +181,7 @@ extern short g_anCameraEulerYawBlock[];
 
 extern int g_nActorFrameDelta;
 
-extern short D_80075F1A;           /* SpuCommonAttr CD volume R */
+extern short g_nSpuCommonCdVolumeR;           /* SpuCommonAttr CD volume R */
 
 /* Snap the spring camera to its per-mode target (0x80034358, 0x128).
    Loads the target angles for the current mode, copies all six target

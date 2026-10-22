@@ -15,7 +15,7 @@ extern unsigned char D_800776BC[];
 extern unsigned int D_800776CC;
 extern int D_8006F05C[];
 extern short g_nCdDaVolumeCurrent;
-extern short D_80075F1A;
+extern short g_nSpuCommonCdVolumeR;
 
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
    [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short
@@ -161,11 +161,11 @@ void TickCdMusicStream(void) {
     }
     g_anMusicFadeBlock[0x16] = 0;
     *(short *)&g_anMusicFadeBlock[-0xB0] = target;
-    D_80075F1A = target;
+    g_nSpuCommonCdVolumeR = target;
     g_anMusicFadeBlock[0] = -1;
     goto spu;
   store_right:
-    D_80075F1A = vol;
+    g_nSpuCommonCdVolumeR = vol;
   spu:
     *(unsigned int *)g_abSpuCommonAttr = 0xC0;
     SetSpuCommonAttr((unsigned int *)g_abSpuCommonAttr);

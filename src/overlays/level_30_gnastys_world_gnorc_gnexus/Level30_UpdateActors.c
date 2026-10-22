@@ -830,7 +830,7 @@ extern volatile unsigned char g_bSpyroOtBinBias;
 extern volatile unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 
-extern signed char D_80078C5E; /* destination level */
+extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 extern int g_anSpyroRequestVelocity;         /* scripted camera look-at */
 extern int g_nSpyroRequestVelocityY;
 extern PortalDesc *volatile g_pGemPickupCamPathData;
@@ -3158,7 +3158,7 @@ void Level30_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          D_80078C5E = st->dest;
+          g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
           {
             int e = g_nCameraYaw;
@@ -3201,7 +3201,7 @@ void Level30_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          D_80078C5E = st->dest;
+          g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
           {
             int e = g_nCameraYaw;
