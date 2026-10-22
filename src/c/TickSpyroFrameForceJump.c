@@ -1,28 +1,18 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void SnapshotPadInputState();
 extern void ChangeSpyroState(int state);
 extern void ZeroVector();
-extern void IntegrateSpyroMotionForSubstep(int substep);
-extern void AdvanceSpyroSubstepState(void);
 extern void RShiftVector3();
 extern void CopyVector();
 extern void AddVector();
-extern void TickSpyroAnimStateMachine(void);
-extern void TickSpyroHornStrikeAttack(void);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2GateTimer(void);
-extern void TickSpyroAnimLayer2(void);
 extern void ApplyEulerRotation();
 extern void MulMatrix0();
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */
 extern int g_anSpyroStateBlock[];
-/* alias for g_abSpyroPersistentEuler (0x80078a64): the byte[3] scalar view
-   is sdata-flagged and would hijack the held-base [0] store. +0x28 is
-   g_anSpyroBodyMtx, +0x1BC the world transform scratch matrix. */
-extern unsigned char g_abSpyroPersistentEulerBlock[];
 
 /* 0x8004a7ec (544 bytes) — Spyro frame tick that forces the jump state
    (0xF): snapshot the pad, ChangeSpyroState(0xF) unless already there,

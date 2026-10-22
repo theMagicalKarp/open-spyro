@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void SubtractVector();
 extern void CopyVector();
-extern void ScaleVector3Sat();
 extern void AddVector();
 extern void RShiftVector3();
 extern int VectorLength();

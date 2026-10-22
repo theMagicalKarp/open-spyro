@@ -1,11 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void CopyWords(void *dst, void *src, int byte_count);
-extern int ComputeSaveGameChecksum(unsigned char *data);
-
-extern int D_80075838;
-extern int D_8007583C;
 
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
    game state into a 0x600-byte buffer (options bytes, per-world tables,
@@ -71,7 +68,7 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   } while (i < 0x24);
   i = 0;
   do {
-    *(i + buf + 0x106) = g_abSaveOptionsBlock[i];
+    *(i + buf + 0x106) = g_abWorldBalloonistState[i];
     i += 1;
   } while (i < 6);
   CopyWords(buf + 0x10C, g_anLevelKillBitmapTable, 0x480);

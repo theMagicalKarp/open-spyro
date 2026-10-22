@@ -15,7 +15,9 @@
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
   int unk04;           /* 0x04 */
-  int unk08;           /* 0x08 collision group */
+  int collision;       /* 0x08 collision record; < 0 (a KSEG0 pointer) when the
+                        * actor can be hit, 0 / >= 0 when not (overlay target
+                        * scans skip those) */
   int posX;            /* 0x0C position */
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
@@ -25,7 +27,9 @@ typedef struct Actor {
   short gridCell;      /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
   short type;          /* 0x36 actor class */
   short floorOffset;   /* 0x38 signed offset above the ground (SnapActorToGround) */
-  unsigned char unk3A; /* 0x3A dropped flag */
+  unsigned char killGroup; /* 0x3A low 7 bits: kill group (< 0x20 a group bit,
+                            * 0x7D/0x7E special; BuildLoadedLevelRuntime);
+                            * bit 7 latches the death drop (SpawnActorDeathDrop) */
   unsigned char unk3B; /* 0x3B */
   unsigned char anim;  /* 0x3C current animation */
   unsigned char nextAnim; /* 0x3D next animation */
@@ -41,8 +45,10 @@ typedef struct Actor {
   unsigned char unk47; /* 0x47 depth offset */
   unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char unk4A; /* 0x4A sector index */
-  unsigned char unk4B; /* 0x4B renderer */
+  unsigned char visZone; /* 0x4A visibility-gate index into D_800771C8;
+                          * 0xFF = always drawn (BuildRenderEntityLists) */
+  unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
+                             * bucket: 0, < 0, > 0 (default 0x20) */
   unsigned char unk4C; /* 0x4C */
   unsigned char unk4D;
   unsigned char unk4E;
@@ -50,11 +56,15 @@ typedef struct Actor {
   unsigned char unk50; /* 0x50 render radius */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
-  unsigned char unk53;
+  unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
+                           * 0xFF = random gem roll) — SpawnActorDeathDrop,
+                           * IsActorInRunningKillSet */
   unsigned char sfxSlot; /* 0x54 sound owner key (PlaySoundEffect) */
-  unsigned char unk55; /* 0x55 sound distance */
+  unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
   unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
-  unsigned char unk57; /* 0x57 scale override */
+  unsigned char scale; /* 0x57 draw scale override, 0 = mesh default (likely; overlay
+                        * grow/shrink tweens drive it 0x20..0x60, BuildActorDrawList
+                        * packs it into the draw word) */
 } Actor; /* 0x58 */
 
 /* Named actor-system entry points. */
@@ -89,7 +99,7 @@ int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
 int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
 void UpdateActorWander(Actor *actor, void *st);
 int SelectActorLodBand(Actor *actor, int handle);
-void func_8003AA84(Actor *actor);
+void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *tbl);
 Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
 void SetActorGroupState(Actor *actor, int a);

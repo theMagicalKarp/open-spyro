@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
    (2324 b), drawn by Gamestate01_09_Draw.
@@ -32,8 +33,6 @@ extern unsigned short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 */
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *step, int a,
                               int b);
 extern void *BuildTextSpriteChain(unsigned char *str, int *pos, int a, int b);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern int sprintf();
 extern int strlen();

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern unsigned int GetRandomU32(void);
 extern int ApproxDist2D(int *a, int *b);
@@ -9,9 +10,6 @@ extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern void PlayActorMeshVoice(void *rec, int a, int b);
 extern void DivideVector3(int *dst, int *src, int n);
-
-extern int g_nSpyroWorldPosZ;         /* 0x80078a60 — g_anSpyroWorldPos[2] */
-extern int g_anLevelReadyFlagBlock[]; /* 0x80078bbc — g_nLevelReadyFlag */
 
 /* The tumbling sub-record hung off an actor's +0x00 pointer. */
 struct Debris {

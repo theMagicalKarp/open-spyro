@@ -26,6 +26,7 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_emit_particles.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -153,20 +154,9 @@ typedef struct Actor {
   char pad4A[0xE];      /* 0x4A -- the pool stride is 0x58 */
 } Actor;
 
-extern void *AllocEmitListRecord(int cls);
-extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
 extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
-extern short g_anCosineLut[];        /* cosine table */
-extern short g_anSineLut[];        /* sine table */                 /* GetRandomU32 */
-
 extern Actor *g_pActorListBase;
-extern int g_anCameraPos[];          /* camera world position */
-extern short g_anCosineLut[];        /* cosine table */
-extern short g_anSineLut[];        /* sine table */
-extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
-extern int g_nLevelReadyFlag;
 
 void Level13_EmitParticles(int count, int type, int *pos, int arg3) {
   int v0[3];

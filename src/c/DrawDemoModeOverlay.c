@@ -1,9 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern unsigned char D_80010AC0[];
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *step, int a,
                               int b);
-extern void EnqueuePendingSpritePrims(void);
 
 /* Build the "DEMO MODE" text overlay (0x80018908) via BuildTextSprites, then
    phase-pulse each glyph's alpha (+0x46) from the sine LUT indexed by the

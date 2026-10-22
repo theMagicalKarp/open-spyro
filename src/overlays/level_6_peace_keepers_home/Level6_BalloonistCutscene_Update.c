@@ -4,10 +4,10 @@
  * (Level0_BalloonistCutscene_Draw is the draw half). Dispatches on the substate word
  * g_nGamestate0cSubstate through an 8-entry jump table (jtbl_8007AA3C):
  *   0  approach: swing the camera round to the balloonist over 0x60 frames,
- *   1  dialogue: pad-driven page/roster menu (D_800777F4 submode),
+ *   1  dialogue: pad-driven page/roster menu (g_nGamestate0cDialogPage submode),
  *   2  board:    fly Spyro to the balloon over 0x66 frames,
  *   3  lift off: raise the balloon (Z) for 0x80 frames, then snapshot the
- *                actor into D_80071E9C and swap the 0x4000-byte scratch bank,
+ *                actor into g_abGamestate0cActorSnapshot and swap the 0x4000-byte scratch bank,
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
@@ -29,10 +29,10 @@
  * statements look odd and every one is load-bearing.
  *
  * LEVERS (in the order they fell):
- *  L1  R6 shared s0 base.  `t = D_800777F4[0]` (ARRAY form) at the arm-1 head
- *      materialises s0 = &D_800777F4 and cse follow-jumps carries it into the
- *      0x1F / 0x6840 arms, so `D_800777F4[-1]`/`[-2]` come out -4(s0)/-8(s0).
- *      Every store to F4 in arm 1 is `D_800777F4[0] = ...`; the EC reads/writes
+ *  L1  R6 shared s0 base.  `t = g_nGamestate0cDialogPage[0]` (ARRAY form) at the arm-1 head
+ *      materialises s0 = &g_nGamestate0cDialogPage and cse follow-jumps carries it into the
+ *      0x1F / 0x6840 arms, so `g_nGamestate0cDialogPage[-1]`/`[-2]` come out -4(s0)/-8(s0).
+ *      Every store to F4 in arm 1 is `g_nGamestate0cDialogPage[0] = ...`; the EC reads/writes
  *      in the 0x1F arm are the `_s` scalar (absolute).
  *  L2  MEM_IN_STRUCT alias dial (sched anti-dependence).  A scalar store and
  *      an in_struct load at a varying address "cannot alias", so sched moves
@@ -60,8 +60,8 @@
  *  L7  `k = g_nGamestate0cTimer[0];` after the `t == n` block in case 6 reproduces the
  *      original's `move v1,a0` join copy; `n -= 0x1B; g_nGamestate0cCardVariant = n;` and
  *      `vecD[2] += 0x200; vecD[2] -= cn >> 4;` are in-place forms.
- *  L8  DECODE fixes: `(k == 3) && (D_80077018 < 2)` (was >= 2); the arm-1
- *      mode tests are `D_800777F4[0] == 0xE` / `D_800777F4[0] = 0x1E` (were
+ *  L8  DECODE fixes: `(k == 3) && (g_nLevelEggsRecovered12 < 2)` (was >= 2); the arm-1
+ *      mode tests are `g_nGamestate0cDialogPage[0] == 0xE` / `g_nGamestate0cDialogPage[0] = 0x1E` (were
  *      F0 -- invisible to an immediate-masked diff, found by the linked diff);
  *      `g_nGamestate0cCamYawGoal[0]` (array) in both yaw conditions AND call args.
  *  L9  Case 6's else arm (`k >= 0x40`): the original's `0x400 - (t << 4)` reads
@@ -79,39 +79,9 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "level_balloonist_cutscene.h"
 
-extern void CopyWords(void *dst, void *src, int len);
-extern void ApplyEulerRotation(int *a, int *b, int c);
-extern void ComputeCameraToTargetAngle(int *a0);
-extern int FindGroundHeightBelow(int *a0, int a1);
-extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
-extern void StopAllSoundExceptMask(int a0);
-extern void ClearWord(int a0);
-
-extern int g_anCameraDynamicTargetParams[];
-extern unsigned char *g_apSaveMenuAnimActorList[];
-extern void (*g_pfnLevelAdvanceEmitList)(int);
-extern unsigned char *g_pLevelOverlayInitRecord;
-extern void (*g_pfnLevelOnSaveMenuExit)();
-extern unsigned char *g_pLevelSampleBankHeader;
-extern int g_anCameraPos[];
-extern short g_nCameraEulerPitch;
-extern int g_pCameraAnchorPos[];
-extern int g_pCameraTargetParams;
-extern int g_dwPadPressed[];
-extern int g_nGamestate0cSubstate[];
-extern int g_nGamestate0cTimer[];
-extern int D_800777F0[];
-extern int D_800777F4[];
-extern int g_nGamestate0cCamYawGoal[];
 extern unsigned char *g_pGamestate0cRecord;
-extern int g_pRenderScratchRegionBase;
-extern int g_pWorldRenderMeshChunkArray;
-extern int g_anSpyroWorldPos[];
-extern int g_nSpyroWorldPosY;
-extern unsigned char g_abSpyroPersistentEuler[];
-extern unsigned char g_bSpyroPersistentEulerZ;
-extern unsigned char g_bSpyroOtBinBias;
 
 void Level6_BalloonistCutscene_Update(void)
 {
@@ -126,7 +96,7 @@ void Level6_BalloonistCutscene_Update(void)
   st = g_nGamestate0cSubstate;
   if (st[0] < 4)
   {
-    D_800700F8 = 0;
+    g_pSaveMenuAnimActorList1 = 0;
     g_apSaveMenuAnimActorList[0] = g_pGamestate0cActor;
     TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
   }
@@ -264,14 +234,14 @@ void Level6_BalloonistCutscene_Update(void)
         RotateVectorByMatrix(g_pGamestate0cActor + 0x20, vecA, vecA);
         AddVector(vecA, vecA, (int *) (g_pGamestate0cActor + 0xC));
         SubtractVector(vecA, vecA, g_anCameraPos);
-        if (D_800777EC_s < 0x20)
+        if (g_anGamestate0cTimerBlock_s < 0x20)
         {
           ang[0] = 0;
           ang[1] = ArcTan2(VectorLength(vecA, 0), -vecA[2], 1);
           ang[2] = ArcTan2(vecA[0], vecA[1], 1);
-          g_nCameraEulerRoll = (((unsigned short) g_nCameraEulerRoll) + ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) * D_800777EC_s) >> 5)) & 0xFFF;
-          g_nCameraEulerPitch = (((unsigned short) g_nCameraEulerPitch) + ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) * D_800777EC_s) >> 5)) & 0xFFF;
-          g_nCameraEulerYaw = (((unsigned short) g_nCameraEulerYaw) + ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) * D_800777EC_s) >> 5)) & 0xFFF;
+          g_nCameraEulerRoll = (((unsigned short) g_nCameraEulerRoll) + ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) * g_anGamestate0cTimerBlock_s) >> 5)) & 0xFFF;
+          g_nCameraEulerPitch = (((unsigned short) g_nCameraEulerPitch) + ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) * g_anGamestate0cTimerBlock_s) >> 5)) & 0xFFF;
+          g_nCameraEulerYaw = (((unsigned short) g_nCameraEulerYaw) + ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) * g_anGamestate0cTimerBlock_s) >> 5)) & 0xFFF;
         }
         else
         {
@@ -308,74 +278,74 @@ void Level6_BalloonistCutscene_Update(void)
       int k;
       int i;
 
-        t = D_800777F4[0];
+        t = g_nGamestate0cDialogPage[0];
         if (t < 0x1E)
       {
-        if ((g_dwPadPressed[0] & 0x6840) && (D_800777EC_s >= 0x51))
+        if ((g_dwPadPressed[0] & 0x6840) && (g_anGamestate0cTimerBlock_s >= 0x51))
         {
           n = t % 6;
           if (n == 0)
           {
-            D_800777F4[0] = t + 1;
+            g_nGamestate0cDialogPage[0] = t + 1;
           }
           else
             if (n < 3)
           {
-            if ((t < 3) && (D_800758D1 < 2))
+            if ((t < 3) && (g_bWorldBalloonistState1 < 2))
             {
               g_pfnLevelOnSaveMenuExit();
             }
             else
-              if (D_800777F4[0] == 0xE)
+              if (g_nGamestate0cDialogPage[0] == 0xE)
             {
               do
               {
                 k = ((int) GetRandomU32()) % 5;
-                if ((k == 0) && (D_80076FEC == 0))
+                if ((k == 0) && (g_nLevelEggsRecovered1 == 0))
                 {
-                  D_800777F4_s = 0x21;
+                  g_nGamestate0cDialogPage_s = 0x21;
                 }
                 else
-                  if ((k == 1) && (D_80077004 == 0))
+                  if ((k == 1) && (g_nLevelEggsRecovered7 == 0))
                 {
-                  D_800777F4_s = 0x22;
+                  g_nGamestate0cDialogPage_s = 0x22;
                 }
                 else
-                  if ((k == 2) && (D_80077008 == 0))
+                  if ((k == 2) && (g_nLevelEggsRecovered8 == 0))
                 {
-                  D_800777F4_s = 0x23;
+                  g_nGamestate0cDialogPage_s = 0x23;
                 }
                 else
-                  if ((k == 3) && (D_80077018 < 2))
+                  if ((k == 3) && (g_nLevelEggsRecovered12 < 2))
                 {
-                  D_800777F4_s = 0x24;
+                  g_nGamestate0cDialogPage_s = 0x24;
                 }
                 else
-                  if ((k == 4) && (D_80077024 == 0))
+                  if ((k == 4) && (g_nLevelEggsRecovered15 == 0))
                 {
-                  D_800777F4_s = 0x25;
+                  g_nGamestate0cDialogPage_s = 0x25;
                 }
               }
-              while (D_800777F4_s == 0xE);
+              while (g_nGamestate0cDialogPage_s == 0xE);
             }
             else
             {
-              D_800777F4[0] = 0x1E;
+              g_nGamestate0cDialogPage[0] = 0x1E;
             }
           }
           else
             if (n == 3)
           {
-            D_800777F4[0] = t + 2;
+            g_nGamestate0cDialogPage[0] = t + 2;
           }
           else
             if (n == 4)
           {
-            D_800777F4[0] = t + 1;
+            g_nGamestate0cDialogPage[0] = t + 1;
           }
           else
           {
-            D_800777F4[0] = 0x1F;
+            g_nGamestate0cDialogPage[0] = 0x1F;
           }
           g_nGamestate0cTimer[0] = 0;
         }
@@ -386,7 +356,7 @@ void Level6_BalloonistCutscene_Update(void)
         i = 1;
         k = 2;
         scan:
-        if (g_abSaveOptionsBlock[i] == k)
+        if (g_abWorldBalloonistState[i] == k)
         {
           do { i++; } while (0);
           if (i < 6)
@@ -397,10 +367,10 @@ void Level6_BalloonistCutscene_Update(void)
 
         if (g_dwPadPressed[0] & 0x1000)
         {
-          D_800777F0[0] = D_800777F0[0] - 1;
-          if (D_800777F0[0] < 0)
+          g_nGamestate0cMenuCursor[0] = g_nGamestate0cMenuCursor[0] - 1;
+          if (g_nGamestate0cMenuCursor[0] < 0)
           {
-            D_800777F0[0] = i - 1;
+            g_nGamestate0cMenuCursor[0] = i - 1;
           }
           g_nGamestate0cTimer[0] = 0x20;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
@@ -408,10 +378,10 @@ void Level6_BalloonistCutscene_Update(void)
         else
           if (g_dwPadPressed[0] & 0x4000)
         {
-          D_800777F0[0] = D_800777F0[0] + 1;
-          if (D_800777F0[0] >= i)
+          g_nGamestate0cMenuCursor[0] = g_nGamestate0cMenuCursor[0] + 1;
+          if (g_nGamestate0cMenuCursor[0] >= i)
           {
-            D_800777F0[0] = 0;
+            g_nGamestate0cMenuCursor[0] = 0;
           }
           g_nGamestate0cTimer[0] = 0x20;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
@@ -444,53 +414,53 @@ void Level6_BalloonistCutscene_Update(void)
       {
         if (g_dwPadPressed[0] & 0x5000)
         {
-          D_800777EC_s = 0x20;
-          D_800777F0_s = 1 - D_800777F0_s;
+          g_anGamestate0cTimerBlock_s = 0x20;
+          g_nGamestate0cMenuCursor_s = 1 - g_nGamestate0cMenuCursor_s;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
         if ((g_dwPadPressed[0] & 0x840) == 0)
         {
           return;
         }
-        if (D_800777EC_s < 0x1F)
+        if (g_anGamestate0cTimerBlock_s < 0x1F)
         {
           return;
         }
-        if (D_800777F4[-1] == 0)
+        if (g_nGamestate0cDialogPage[-1] == 0)
         {
-          if (D_800777F4[0] == 0x1F)
+          if (g_nGamestate0cDialogPage[0] == 0x1F)
           {
             g_pfnLevelOnSaveMenuExit();
             return;
           }
-          D_800777F4[0] = 0x1E;
-          D_800777F4[-1] = 0;
-          D_800777F8 = 1;
+          g_nGamestate0cDialogPage[0] = 0x1E;
+          g_nGamestate0cDialogPage[-1] = 0;
+          g_nGamestate0cDialogVariant = 1;
           return;
         }
         StopAllSoundExceptMask(0);
         g_nGamestate0cSubstate[0] = 2;
         g_nGamestate0cTimer[0] = 0;
-        if (D_800777F4[0] == 0x1F)
+        if (g_nGamestate0cDialogPage[0] == 0x1F)
         {
           g_nCurrentLevelId = g_nActiveLevelId + 0xA;
           g_nGamestate0cCardVariant = (g_nCurrentLevelId / 10) - 1;
         }
       }
       else
-        if ((g_dwPadPressed[0] & 0x6840) && (D_800777F4[-2] >= 0x51))
+        if ((g_dwPadPressed[0] & 0x6840) && (g_nGamestate0cDialogPage[-2] >= 0x51))
       {
         if ((t == 0x24) || (t == 0x26))
         {
-          D_800777F4[0] = 0x1E;
-          D_800777F0[0] = 0;
-          D_800777F8 = 1;
+          g_nGamestate0cDialogPage[0] = 0x1E;
+          g_nGamestate0cMenuCursor[0] = 0;
+          g_nGamestate0cDialogVariant = 1;
           return;
         }
         if (t == 0x25)
         {
-          D_800777F4[0] = 0x26;
-          D_800777F4[-2] = 0;
+          g_nGamestate0cDialogPage[0] = 0x26;
+          g_nGamestate0cDialogPage[-2] = 0;
           return;
         }
         if (t == 0x21)
@@ -507,8 +477,8 @@ void Level6_BalloonistCutscene_Update(void)
         {
           g_nCurrentLevelId = 0x16;
         }
-        n = D_800777F4_s;
-        D_800777F4_s = 0x20;
+        n = g_nGamestate0cDialogPage_s;
+        g_nGamestate0cDialogPage_s = 0x20;
         g_nGamestate0cTimer[0] = 0;
         n -= 0x1B;
         g_nGamestate0cCardVariant = n;
@@ -688,8 +658,8 @@ void Level6_BalloonistCutscene_Update(void)
         g_nGamestate0cCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(D_80071E9C, g_pGamestate0cRecord, 0x58);
-        g_pGamestate0cRecord = (unsigned char *) D_80071E9C;
+        CopyWords(g_abGamestate0cActorSnapshot, g_pGamestate0cRecord, 0x58);
+        g_pGamestate0cRecord = (unsigned char *) g_abGamestate0cActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
           bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
@@ -808,8 +778,8 @@ void Level6_BalloonistCutscene_Update(void)
           int m;
           int k;
         m = g_nGamestate0cCardVariant * 8;
-        g_nGamestate0cTimer[8] = *((int *) (((char *) D_8006EADC) + m));
-        k = *((int *) (((char *) D_8006EAE0) + m));
+        g_nGamestate0cTimer[8] = *((int *) (((char *) g_anGamestate0cLandingX) + m));
+        k = *((int *) (((char *) g_anGamestate0cLandingY) + m));
         g_nGamestate0cSpyroToZ = g_nSpyroWorldPosZ;
         g_nGamestate0cSpyroToY = k;
         g_nGamestate0cSpyroToZ = FindGroundHeightBelow(&g_nGamestate0cTimer[8], 0x10000) + 0x164;

@@ -23,6 +23,7 @@
 
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_spawn_actor.h"
 
 /* Level16_SpawnActor (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
@@ -41,7 +42,7 @@
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
   int unk04;           /* 0x04 */
-  int unk08;           /* 0x08 */
+  int collision;           /* 0x08 */
   int posX;            /* 0x0C */
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
@@ -65,8 +66,8 @@ typedef struct Actor {
   unsigned char unk47;
   unsigned char mode;
   unsigned char subMode; /* 0x49 */
-  unsigned char unk4A;
-  unsigned char unk4B; /* 0x4B */
+  unsigned char visZone;
+  unsigned char renderList; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
   unsigned char unk4D;
   unsigned char unk4E;
@@ -74,70 +75,12 @@ typedef struct Actor {
   unsigned char unk50; /* 0x50 */
   unsigned char drawn;
   unsigned char updateDist; /* 0x52 */
-  unsigned char unk53;
+  unsigned char dropKind;
   unsigned char sfxSlot;
-  unsigned char unk55;
+  unsigned char soundRange;
   unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char unk57;
+  unsigned char scale;
 } Actor; /* 0x58 */
-
-/* Flame state block (types 0xE, 0xF, 0x53..0x57). */
-typedef struct FlameState {
-  int unk00;
-  int unk04;
-  int unk08;
-  unsigned char unk0C;
-  unsigned char unk0D;
-  unsigned char unk0E;
-  unsigned char unk0F;
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  unsigned char unk14;
-} FlameState;
-
-/* Mortar-shot state block (type 0xFB). */
-typedef struct ShotState {
-  int vel[3];  /* 0x00 */
-  int unk0C;   /* 0x0C */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-} ShotState;
-
-/* Beam/link state block (type 0x10). */
-typedef struct BeamState {
-  int unk00;
-  int anchor[3]; /* 0x04 */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  short unk14;
-} BeamState;
-
-/* Spin state block (type 0x78). */
-typedef struct SpinState {
-  int unk00;
-  short unk04;
-  short unk06;
-  short unk08;
-  short unk0A;
-  int unk0C;
-  int unk10;
-} SpinState;
-
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-typedef struct DebrisState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  int unk0C;
-  int unk10;
-} DebrisState;
 
 /* Whirlwind state block (type 0x25). */
 typedef struct WindState {
@@ -156,32 +99,16 @@ typedef struct AimState {
   int unk08;
 } AimState;
 
-/* Thrown-shard state block (types 0x120..0x121). */
-typedef struct ShardState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  unsigned char unk0C;
-  unsigned char unk0D;
-  short unk0E;
-  int unk10;
-} ShardState;
-
 extern Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(Actor *rec);
 extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
-extern int FindGroundHeightBelow(int *pos, int drop);
 extern int g_anCameraPos;     /* turret aim target X */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
-extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
-extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
-extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
@@ -233,7 +160,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->unk4D = 0;
       rec->unk4E = 0;
       rec->unk4F = 1;
-      rec->unk4B |= 0x80;
+      rec->renderList |= 0x80;
       break;
     }
 
@@ -537,7 +464,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
       {
         *((int *) (&rec->unk4C)) = 0xA18618;
-        rec->unk4B |= 0x80;
+        rec->renderList |= 0x80;
       }
       break;
     }
@@ -558,12 +485,12 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->unk4F = 0xE;
       if (g_nGemPickupSubstate == 3)
       {
-        rec->unk57 = 0x14;
+        rec->scale = 0x14;
       }
       else
         if (g_nGemPickupSubstate == 1)
       {
-        rec->unk57 = 0x30;
+        rec->scale = 0x30;
       }
       i = GetRandomU32() & 7;
       dir[0] = g_anLaunchDirTable[i * 2];

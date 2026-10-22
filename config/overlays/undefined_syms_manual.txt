@@ -9,9 +9,9 @@ D_800785DC_BLK = 0x800785DC;
 // Scalar aliases (same address, `int` DECL not an incomplete array) so a site can
 // pick the absolute `lui %hi / lw %lo` form the original uses at that site while
 // the array name keeps the held-base form elsewhere (cookbook B16, per-site).
-D_800777EC_s = 0x800777EC;
-D_800777F0_s = 0x800777F0;
-D_800777F4_s = 0x800777F4;
+g_anGamestate0cTimerBlock_s = 0x800777EC;
+g_nGamestate0cMenuCursor_s = 0x800777F0;
+g_nGamestate0cDialogPage_s = 0x800777F4;
 g_nGamestate0cCamYawGoal_s = 0x80077838;
 // Struct view of the CD-stream state block at 0x800785D8 (Credits_Update):
 // one base symbol makes the 20-byte block copy alias the 85E0/85E4/8600/8604 fields.

@@ -1,0 +1,208 @@
+/* main_shared.h — C declarations three or more matched main-EXE files spell
+ * identically (prototypes, held-base views, scalar aliases), declared once.
+ * funcs.h/globals.h keep the Ghidra-import signatures; these are the forms
+ * the matched C actually uses.
+ *
+ * Each item is spelled identically in every file that includes this header;
+ * files that declare any of these names differently keep their own
+ * declarations and do not include it. */
+
+#ifndef OPEN_SPYRO_MAIN_SHARED_H
+#define OPEN_SPYRO_MAIN_SHARED_H
+
+extern void RestartStalledCdRead(void);
+
+extern int FUN_80063bd8();
+
+extern int SetSpuTransferStartAddr(unsigned int addr);
+
+extern unsigned int WriteSpuRam(void *buf, unsigned int size);
+
+extern void ComputeCameraOrbitOffset(int *out);
+
+extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
+
+extern int
+    g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
+
+extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
+
+extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
+                                           g_apActorMeshTable */
+
+/* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
+   SubtractVector argument share one base register while [1] and [2] stay
+   absolute — same split as g_anSpyroWorldPosBlock in Gamestate0D_Update. */
+extern int g_anCameraPosBlock[];
+
+/* Held-base views of the Spyro record, the request mask and the camera's
+   next mode. */
+extern int g_anSpyroWorldPosBlock[];
+
+/* Held-base view of the spring angle set (yaw, pitch, distance, roll, pitch
+   bias, yaw bias). */
+extern int g_anCameraSpringYawBlock[];
+
+extern int g_anSpyroDeathCamRecordBlock[];
+
+extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
+
+extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
+
+extern int D_80075838;
+
+extern int D_8007583C;
+
+extern int D_80076E24;
+
+/* array alias for the sub-frame accumulator at 0x80078a7c (see
+   config/symbol_addrs.txt) -- forces the held base register, matching the
+   original's single `a1` reuse across the load + both stores. */
+extern unsigned char g_abSpyroSubFrameTimerBlock[];
+
+extern unsigned char D_80078A72;
+
+extern unsigned char D_80078A78;
+
+extern unsigned char D_80078A79;
+
+extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* array alias for
+   the substep accumulator at 0x80078a7d, see config/symbol_addrs.txt --
+   forces the held base register, matching the original's single `a1` reuse
+   across the load + both stores. */
+
+extern void IntegrateSpyroMotionForSubstep(int substep);
+
+extern void AdvanceSpyroSubstepState(void);
+
+extern int D_80078CB0;
+
+extern int D_80078CB4;
+
+/* held-base view of g_nSpyroMoveTargetYaw (0x80078b24): [0] is the move-target
+   yaw, [0x14] (+0x50) is g_nSpyroBodyYaw. */
+extern int g_anSpyroMoveTargetYawBlock[];
+
+extern unsigned char g_abSpyroStateTransitionMatrixBlock[45][45];
+
+extern void TickSpuPerFrame(void);
+
+extern void LoadActorMeshTables(void);
+
+extern int g_nSfxOverrideFlags;
+
+extern short g_nSfxOverrideVolL;
+
+extern short g_nSfxOverrideVolR;
+
+extern int D_80076224_blk;
+
+/* Return to the current world's hub (0x8002c664): reset the level-transition /
+   CD-stream state, arm a scripted respawn back into the hub (camera mode
+   0x80000012, gamestate 1, tally + paused flags), tag the preserve-mob slot as
+   empty, and snap the target level id back to the world's hub id
+   ((active level / 10) * 10). */
+extern void InitLightVectorConstants(void);
+
+/* Held-base alias for &g_nCameraEulerPitch: the pitch reads and both output
+   matrix addresses (view @ base-0x3A, world-to-camera @ base-0x4E) share it. */
+extern short g_anCameraEulerPitchBlock[];
+
+extern void ResetCameraStateToTarget(void);
+
+extern int D_80075700;
+
+extern int ComputeSaveGameChecksum(unsigned char *data);
+
+extern int g_anSpyroBodyPitchBlock[]; /* +0 pitch, [-12] g_anSpyroVelocity */
+
+extern void TickSpyroGameplayFrame(void);
+
+extern void UpdateCameraFrame(void);
+
+extern void TickCdMusicStream(void);
+
+extern int D_80075728;
+
+extern int D_800756B4;
+
+extern void BeginStoryIntro(void);
+
+extern int D_8007A6E4;            /* level-load chunk size */
+
+extern int D_8007A6E0;            /* level-load byte offset */
+
+extern void BuildActorDrawList(void);
+
+extern void EmitActorDrawList(void);
+
+extern void RasterizeSpritePrimQueue(void);
+
+extern void RasterizePairedActor(void);
+
+extern void ResetSpyroLinearMotion(void);
+
+extern int g_anLevelReadyFlagBlock[];     /* g_nLevelReadyFlag */
+
+extern void EnqueuePendingSpritePrims(void);
+
+extern void UpdateHudCounters(void);
+
+extern void PutDrawEnv(void *env);
+
+extern void *LinkOTPrimitives(int depth_max);
+
+extern void DrawOTag(void *ot);
+
+extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
+
+extern void BuildRenderEntityLists(void);
+
+extern void ComposeFrameScene(void);
+
+extern void RasterizeEmitList(void);
+
+extern void DrawActors(void);
+
+extern void SetupFrameOT(void);
+
+extern void DrawCinematicLetterbox(void);
+
+extern void TickSpyroAnimLayer1(void);
+
+extern void TickSpyroAnimLayer2(void);
+
+extern void BeginGemCutscene(void);
+
+extern short
+    g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */
+
+extern short g_anCameraEulerYawBlock[];
+
+extern int g_nActorFrameDelta;
+
+extern short D_80075F1A;           /* SpuCommonAttr CD volume R */
+
+/* Snap the spring camera to its per-mode target (0x80034358, 0x128).
+   Loads the target angles for the current mode, copies all six target
+   angles into the spring set, zeroes the spring delta state and the
+   collision/stuck counters, recomputes the eye position (orbit offset +
+   anchor), seats the smoothed position on it, refreshes the euler angles,
+   and clears any camera shake. */
+extern void LoadCameraTargetAnglesFromMode(void);
+
+extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
+
+extern void ScaleVector3Sat();
+
+extern unsigned int g_adwSpuPendingKeyOffBlock[];
+
+extern unsigned char g_abSpyroPersistentEulerBlock[]; /* 0x80078a64 */
+
+extern void TickSpyroAnimStateMachine(void);
+
+extern void TickSpyroHornStrikeAttack(void);
+
+extern void TickSpyroAnimLayer2GateTimer(void);
+
+#endif /* OPEN_SPYRO_MAIN_SHARED_H */

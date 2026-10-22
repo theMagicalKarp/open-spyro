@@ -1,9 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
-extern void IntegrateSpyroMotionForSubstep(int substep);
 extern void DispatchSpyroPhysicsByState(void);
-extern void AdvanceSpyroSubstepState(void);
 extern int FindGroundHeightBelow(int *pos, int maxDown);
 extern void DispatchSpyroTriggerEvent(int surface, int kind);
 

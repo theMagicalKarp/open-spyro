@@ -231,7 +231,7 @@
    "size": 8
   },
   {
-   "name": "func_80017428",
+   "name": "ReflectVectorOffNormal",
    "vram": 2147578920,
    "size": 288
   },
@@ -1141,7 +1141,7 @@
    "size": 152
   },
   {
-   "name": "func_8003AA84",
+   "name": "TickActorFlameGlow",
    "vram": 2147723908,
    "size": 104
   },

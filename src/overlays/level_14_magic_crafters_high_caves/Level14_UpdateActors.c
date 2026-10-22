@@ -297,7 +297,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
@@ -634,7 +634,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
+extern SmokeJet g_aSmokeJetEmitters[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -686,7 +686,7 @@ extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int WrapAddAngle8(int heading, int step);
-extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
+extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 typedef struct {
   int x;
   int y;
@@ -951,7 +951,7 @@ typedef struct L31Rock {
 /* from level_10 */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  int unk04;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -2190,11 +2190,11 @@ void Level14_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->unk53 & 0x80))) {
+            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
-          parent->unk53 = actor->unk53;
+          parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
           if (parent->mode < 0x80) {
@@ -2447,8 +2447,8 @@ void Level14_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (actor->unk53 == 0xFF) {
-          actor->unk53 = 0xF;
+        if (actor->dropKind == 0xFF) {
+          actor->dropKind = 0xF;
           SpawnActorDeathDrop(actor, 3, 0, 0);
           MarkActorCommittedKill(actor);
         }
@@ -2456,7 +2456,7 @@ void Level14_UpdateActors(void) {
         continue;
       }
 
-      if (actor->unk53 != 0xFF && st->egg == 0 && actor->mode != 10) {
+      if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
         st->egg = g_pfnLevelSpawnActor(0x22, actor);
         st->egg->unk47 = 0;
         *(Actor **)st->egg->state = actor;
@@ -3627,7 +3627,7 @@ void Level14_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, svH, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -3778,10 +3778,10 @@ void Level14_UpdateActors(void) {
               g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
               *w1 = g_anCameraParamMode2Front.w[1];
             }
-            D_80078670 = g_anCameraParamMode2Front.w[2];
-            D_80078674 = g_anCameraParamMode2Front.w[3];
-            D_80078678 = g_anCameraParamMode2Front.w[4];
-            D_8007867C = g_anCameraParamMode2Front.w[5];
+            g_nCameraActiveTargetDistance = g_anCameraParamMode2Front.w[2];
+            g_nCameraActiveTargetRoll = g_anCameraParamMode2Front.w[3];
+            g_nCameraActiveTargetPitchBias = g_anCameraParamMode2Front.w[4];
+            g_nCameraActiveTargetYawBias = g_anCameraParamMode2Front.w[5];
           } else {
             st->mode &= ~0x80;
           }
@@ -4251,7 +4251,7 @@ void Level14_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0: {
-        actor->unk08 = 0;
+        actor->collision = 0;
         if (ApproxDist2D(&tgtB->posX, &SPY.posX) > 2560) {
           actor->mode = 1;
         }
@@ -4271,7 +4271,7 @@ void Level14_UpdateActors(void) {
         if (st->timer != 0) {
           st->timer--;
         } else {
-          actor->unk08 = 0;
+          actor->collision = 0;
 
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
             if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 2048) {
@@ -4283,7 +4283,7 @@ void Level14_UpdateActors(void) {
                                128;
                 actor->unk50 = 0x20;
                 actor->mode = 3;
-                actor->unk57 = 0x60;
+                actor->scale = 0x60;
 
                 g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
 
@@ -4299,8 +4299,8 @@ void Level14_UpdateActors(void) {
       }
 
       case 3: {
-        if (actor->unk57 >= 0x21) {
-          actor->unk57 -= 4;
+        if (actor->scale >= 0x21) {
+          actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
           actor->mode = 4;
@@ -4403,8 +4403,8 @@ void Level14_UpdateActors(void) {
       }
 
       case 6: {
-        if (actor->unk57 < 96) {
-          actor->unk57 += 4;
+        if (actor->scale < 96) {
+          actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
           actor->unk50 = 0;
@@ -4459,7 +4459,7 @@ void Level14_UpdateActors(void) {
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
             st->fx->kind = 9;
-            st->fx->desc = &D_8006E390;
+            st->fx->desc = &g_anSparkleGlowDesc;
           }
         } else {
           st->fx->size += 0x20;
@@ -4589,9 +4589,9 @@ void Level14_UpdateActors(void) {
             st->rider->subMode = 3;
 
             if (st->rider->type == 14)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
             else if (st->rider->type == 15)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 
@@ -4987,12 +4987,12 @@ void Level14_UpdateActors(void) {
           }
 
           g_nLevelEggCount = 1;
-          actor->unk57 = 0x40;
+          actor->scale = 0x40;
           actor->unk50 = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk4A = 0xFF;
+          actor->visZone = 0xFF;
           actor->subMode = 2;
         }
       }
@@ -5030,7 +5030,7 @@ void Level14_UpdateActors(void) {
         continue;
       }
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       PlayActorMeshVoice(actor, 0, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -5097,7 +5097,7 @@ void Level14_UpdateActors(void) {
       if (actor->flags & 0xA0000) {
         int i;
 
-        actor->unk55 = 0x20;
+        actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, 0, 0);
 
         for (i = 0; i < 2; i++) {
@@ -5328,7 +5328,7 @@ void Level14_UpdateActors(void) {
       RideState30 *st = actor->state;
       int voice = -1;
 
-      actor->unk55 = st->volume;
+      actor->soundRange = st->volume;
 
       switch (st->pose) {
       case 0:
@@ -5907,7 +5907,7 @@ void Level14_UpdateActors(void) {
     case 305: {
       L14State305 *st = actor->state;
 
-      func_8003AA84(actor);
+      TickActorFlameGlow(actor);
       if (actor->mode == 2) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
@@ -6249,7 +6249,7 @@ void Level14_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -6294,14 +6294,14 @@ void Level14_UpdateActors(void) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
-          ps[0] = D_8006E614[i >> 1].pos[0];
-          ps[1] = D_8006E614[i >> 1].pos[1];
-          ps[2] = D_8006E614[i >> 1].pos[2];
+          ps[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
+          ps[1] = g_aSmokeJetEmitters[i >> 1].pos[1];
+          ps[2] = g_aSmokeJetEmitters[i >> 1].pos[2];
           RotateVectorByMatrix(actor->mtx, ps, ps);
           AddVector(ps, ps, &actor->posX);
-          ps[3] = D_8006E614[i >> 1].vel[0];
-          ps[4] = D_8006E614[i >> 1].vel[1];
-          ps[5] = D_8006E614[i >> 1].vel[2];
+          ps[3] = g_aSmokeJetEmitters[i >> 1].vel[0];
+          ps[4] = g_aSmokeJetEmitters[i >> 1].vel[1];
+          ps[5] = g_aSmokeJetEmitters[i >> 1].vel[2];
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;
@@ -6475,7 +6475,7 @@ void Level14_UpdateActors(void) {
 
         CopyVector(&p->posX, p->state);
         InsertActorIntoSpatialGrid(p);
-        p->unk3A &= 0x7F;
+        p->killGroup &= 0x7F;
         p->flags = 0;
         p->mode = 0;
         p->frameProgress = 0;
@@ -6526,11 +6526,11 @@ void Level14_UpdateActors(void) {
     case 329: {
       L16Pod *st = actor->state;
 
-      actor->unk55 = 0x20;
+      actor->soundRange = 0x20;
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->unk53];
+          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
@@ -6649,7 +6649,7 @@ void Level14_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, 0, s512, s528);
           }
           DespawnActorRecord(st->prize);
-          actor->unk3A &= 0x7F;
+          actor->killGroup &= 0x7F;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
@@ -6800,8 +6800,8 @@ void Level14_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->unk08 == 0 ||
-              a->unk08 >= 0) {
+          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+              a->collision >= 0) {
             continue;
           }
           SubtractVector(s496, &a->posX, &actor->posX);

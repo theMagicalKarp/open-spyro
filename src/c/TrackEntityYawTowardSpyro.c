@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern int ApproachAngle8(int target, int yaw, int step, int rate);
-extern int g_nActorFrameDelta;
 
 /* Rotate entity `e`'s byte yaw (+0x46) toward the direction of Spyro, stepping
    by at most `step` (boosted 1.5x in camera mode 3, 2x in mode 4) but never

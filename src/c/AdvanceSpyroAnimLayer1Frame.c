@@ -1,13 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern unsigned char D_80078A72;
 extern unsigned char D_80078A73;
-extern unsigned char D_80078A78;
-extern unsigned char D_80078A79;
-extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* array alias for
-   the substep accumulator at 0x80078a7d, see config/symbol_addrs.txt --
-   forces the held base register, matching the original's single `a1` reuse
-   across the load + both stores. */
 
 /* 0x800495d8 */
 void AdvanceSpyroAnimLayer1Frame(int param_1) {

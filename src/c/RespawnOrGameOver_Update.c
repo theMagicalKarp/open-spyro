@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* 0x8002edf0 (1492 bytes) — update for gamestate 5 (GS_GAME_OVER).
 
@@ -27,8 +28,6 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern int LookupCosine(unsigned int angle_12_4);
 extern int LookupSine(unsigned int angle_12_4);
 extern void AdvanceSpyroAnimFrame(char layer_mask);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2(void);
 extern void TickLevelTransitionStream(int mode);
 extern void RestartSpyroAnimWithState(void *state);
 

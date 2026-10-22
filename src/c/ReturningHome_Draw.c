@@ -1,20 +1,15 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *size, int a,
                               int b);
-extern void EnqueuePendingSpritePrims(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void RasterizeSpritePrimQueue(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
 extern unsigned char D_80010ACC[];     /* "RETURNING HOME..." */
 extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
-extern int g_anVsyncFrameEndBlock[];   /* held-base alias: [-1] = anchor */
 
 /* Draw gamestate 0xF's post-credits "RETURNING HOME..." card with the animated
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),

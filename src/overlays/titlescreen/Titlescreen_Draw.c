@@ -14,41 +14,41 @@
 #include "titlescreen.h"
 
 #define DRAW_OPTIONS(op1, op2)                                                 \
-  if (g_nGamestate0dMode.unk_0x0C > 7) {                                              \
+  if (g_nGamestate0dMode.animTimer > 7) {                                              \
     Titlescreen_EmitSpriteQuad(128, 88, op1,                                        \
-                          (g_nGamestate0dMode.unk_0x14 == 0 &&                 \
-                           ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))                 \
+                          (g_nGamestate0dMode.selection == 0 &&                 \
+                           ((g_nGamestate0dMode.animTimer & 0xF) < 8))                 \
                               ? Color_0x01                                \
                               : Color_0x00);                                \
     Titlescreen_EmitSpriteQuad(256, 88, op2,                                        \
-                          (g_nGamestate0dMode.unk_0x14 == 1 &&                 \
-                           ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))                 \
+                          (g_nGamestate0dMode.selection == 1 &&                 \
+                           ((g_nGamestate0dMode.animTimer & 0xF) < 8))                 \
                               ? Color_0x01                                \
                               : Color_0x00);                                \
   }
 
 void Titlescreen_Draw(void) {
 
-  switch (g_nGamestate0dMode.unk_0x00) {
+  switch (g_nGamestate0dMode.mode) {
   case Mode_0x00: {
 
-    if (g_nGamestate0dMode.unk_0x10 == 2) {
+    if (g_nGamestate0dMode.subState == 2) {
       /* spyro landed, logo incoming */
-      if (g_pPathTableHead->unk_0x00 >= 1170)
-        Titlescreen_EmitSpriteQuad(128, D_8006FA74[g_nGamestate0dMode.unk_0x0C] - 128,
+      if (g_pPathTableHead->introFrame >= 1170)
+        Titlescreen_EmitSpriteQuad(128, D_8006FA74[g_nGamestate0dMode.animTimer] - 128,
                               Sprite_0x00, Color_0x00);
-    } else if (g_nGamestate0dMode.unk_0x10 == 3) {
+    } else if (g_nGamestate0dMode.subState == 3) {
       Titlescreen_EmitSpriteQuad(128, 0, Sprite_0x00, 0);
       Titlescreen_EmitSpriteQuad(192, 210, Sprite_0x0B,
-                            ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8) * 2);
-    } else if (g_nGamestate0dMode.unk_0x10 == 4) {
-      if (g_nGamestate0dMode.unk_0x0C < 16) {
-        Titlescreen_EmitSpriteQuad(128, D_8006FA84[g_nGamestate0dMode.unk_0x0C] - 128,
+                            ((g_nGamestate0dMode.animTimer & 0xF) < 8) * 2);
+    } else if (g_nGamestate0dMode.subState == 4) {
+      if (g_nGamestate0dMode.animTimer < 16) {
+        Titlescreen_EmitSpriteQuad(128, D_8006FA84[g_nGamestate0dMode.animTimer] - 128,
                               Sprite_0x00, Color_0x00);
       } else {
-        Titlescreen_EmitSpriteQuad(108, D_8006FA74[g_nGamestate0dMode.unk_0x0C - 16] - 119,
+        Titlescreen_EmitSpriteQuad(108, D_8006FA74[g_nGamestate0dMode.animTimer - 16] - 119,
                               Sprite_0x01, Color_0x00);
-        Titlescreen_EmitSpriteQuad(255, D_8006FA74[g_nGamestate0dMode.unk_0x0C - 16] - 119,
+        Titlescreen_EmitSpriteQuad(255, D_8006FA74[g_nGamestate0dMode.animTimer - 16] - 119,
                               -Sprite_0x01, Color_0x00);
       }
     }
@@ -59,16 +59,16 @@ void Titlescreen_Draw(void) {
     Titlescreen_EmitSpriteQuad(108, 9, Sprite_0x01, Color_0x00);
     Titlescreen_EmitSpriteQuad(255, 9, -Sprite_0x01, Color_0x00);
 
-    switch (g_nGamestate0dMode.unk_0x10) {
+    switch (g_nGamestate0dMode.subState) {
     case SubState_0x00:
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x18,
                             Color_0x00); /* accessing mem card */
       break;
     case SubState_0x01: /* memcard slot selected, checking */
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x18, Color_0x00);
-      if (g_nGamestate0dMode.unk_0x14 != 0) {
+      if (g_nGamestate0dMode.selection != 0) {
         Titlescreen_EmitSpriteQuad(128, 106,
-                              g_nGamestate0dMode.unk_0x28 +
+                              g_nGamestate0dMode.cardPort +
                                   Sprite_0x31,
                               Color_0x00);
       }
@@ -77,7 +77,7 @@ void Titlescreen_Draw(void) {
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x19, Color_0x00);
       DRAW_OPTIONS(Sprite_0x34, Sprite_0x35);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -86,7 +86,7 @@ void Titlescreen_Draw(void) {
                             Color_0x00);
       DRAW_OPTIONS(Sprite_0x34, Sprite_0x35);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -100,15 +100,15 @@ void Titlescreen_Draw(void) {
                             Color_0x00);
       DRAW_OPTIONS(Sprite_0x34, Sprite_0x36);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
     case SubState_0x05:
     case SubState_0x06:
-      if (g_nGamestate0dMode.unk_0x10 == SubState_0x05) {
+      if (g_nGamestate0dMode.subState == SubState_0x05) {
         Titlescreen_EmitSpriteQuad(128, 30,
-                              g_nGamestate0dMode.unk_0x28 +
+                              g_nGamestate0dMode.cardPort +
                                   Sprite_0x1F,
                               Color_0x00);
         Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x21, Color_0x00);
@@ -122,7 +122,7 @@ void Titlescreen_Draw(void) {
       }
       DRAW_OPTIONS(Sprite_0x37, Sprite_0x36);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -131,14 +131,14 @@ void Titlescreen_Draw(void) {
       break;
     case SubState_0x08:
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x26, Color_0x00);
-      if (g_nGamestate0dMode.unk_0x0C > 7) {
+      if (g_nGamestate0dMode.animTimer > 7) {
         Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x39,
-                              (g_nGamestate0dMode.unk_0x0C & 0xf) < 8
+                              (g_nGamestate0dMode.animTimer & 0xf) < 8
                                   ? Color_0x01
                                   : Color_0x00);
       }
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -146,13 +146,13 @@ void Titlescreen_Draw(void) {
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x27, Color_0x00);
       DRAW_OPTIONS(Sprite_0x35, Sprite_0x36);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
     case SubState_0x0A:
       Titlescreen_EmitSpriteQuad(128, 30,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x1F,
                             Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x28,
@@ -162,20 +162,20 @@ void Titlescreen_Draw(void) {
 
       DRAW_OPTIONS(Sprite_0x38, Sprite_0x36);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
     case SubState_0x0B:
       Titlescreen_EmitSpriteQuad(128, 46, Sprite_0x2A, Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
     case SubState_0x0C:
       Titlescreen_EmitSpriteQuad(128, 22,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x1F,
                             0);
       Titlescreen_EmitSpriteQuad(128, 38, Sprite_0x2B, Color_0x00);
@@ -183,12 +183,12 @@ void Titlescreen_Draw(void) {
                             Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 70, Sprite_0x3F,
                             Color_0x00);
-      if (g_nGamestate0dMode.unk_0x0C > 7) {
+      if (g_nGamestate0dMode.animTimer > 7) {
         Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x39,
-                              (g_nGamestate0dMode.unk_0x0C & 0xF) < 8);
+                              (g_nGamestate0dMode.animTimer & 0xF) < 8);
       }
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -197,7 +197,7 @@ void Titlescreen_Draw(void) {
                             Color_0x00);
       DRAW_OPTIONS(Sprite_0x35, Sprite_0x36);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
       break;
@@ -215,35 +215,35 @@ void Titlescreen_Draw(void) {
     int i;
     int j;
     int dragon_count;
-    if (g_nGamestate0dMode.unk_0x04 < 5) {
+    if (g_nGamestate0dMode.menuState < 5) {
       Titlescreen_EmitSpriteQuad(108, 9, Sprite_0x01, Color_0x00);
       Titlescreen_EmitSpriteQuad(255, 9, -Sprite_0x01, Color_0x00);
-      if (g_nGamestate0dMode.unk_0x04 > 0) {
+      if (g_nGamestate0dMode.menuState > 0) {
         for (i = 0; i < 3; ++i) {
-          if (!g_nGamestate0dMode.unk_0x50[i]->unk_0x40[0]) {
+          if (!g_nGamestate0dMode.apSaves[i]->levelVisited[0]) {
             int color = 0;
-            if ((g_nGamestate0dMode.unk_0x04 < 3 &&
-                 g_nGamestate0dMode.unk_0x14 != i) ||
-                g_nGamestate0dMode.unk_0x04 - 3u < 2) {
+            if ((g_nGamestate0dMode.menuState < 3 &&
+                 g_nGamestate0dMode.selection != i) ||
+                g_nGamestate0dMode.menuState - 3u < 2) {
               color = 3;
             }
             Titlescreen_EmitSpriteQuad(140 + 80 * i, 38, Sprite_0x08, color);
           } else {
             int color = 0;
-            if ((g_nGamestate0dMode.unk_0x04 < 4 &&
-                 g_nGamestate0dMode.unk_0x14 != i) ||
-                g_nGamestate0dMode.unk_0x04 == 4) {
+            if ((g_nGamestate0dMode.menuState < 4 &&
+                 g_nGamestate0dMode.selection != i) ||
+                g_nGamestate0dMode.menuState == 4) {
               color = 3;
             }
             Titlescreen_EmitSpriteQuad(140 + 80 * i, 38,
-                                  g_nGamestate0dMode.unk_0x50[i]->unk_0x00 / 10 -
+                                  g_nGamestate0dMode.apSaves[i]->levelId / 10 -
                                       1 + Sprite_0x02,
                                   color);
             Titlescreen_EmitSpriteQuad(184 + 80 * i, 22, Sprite_0x17,
                                   color);
 
             for (j = 0, dragon_count = 0; j < TOTAL_LEVEL_COUNT; ++j) {
-              dragon_count += g_nGamestate0dMode.unk_0x50[i]->unk_0x88[j];
+              dragon_count += g_nGamestate0dMode.apSaves[i]->levelDragons[j];
             }
 
             /* dragon count ones digit */
@@ -260,58 +260,58 @@ void Titlescreen_Draw(void) {
         }
       }
     } else {
-      Titlescreen_EmitSpriteQuad(108, D_8006FA84[g_nGamestate0dMode.unk_0x0C] - 119,
+      Titlescreen_EmitSpriteQuad(108, D_8006FA84[g_nGamestate0dMode.animTimer] - 119,
                             Sprite_0x01, Color_0x00);
-      Titlescreen_EmitSpriteQuad(255, D_8006FA84[g_nGamestate0dMode.unk_0x0C] - 119,
+      Titlescreen_EmitSpriteQuad(255, D_8006FA84[g_nGamestate0dMode.animTimer] - 119,
                             -Sprite_0x01, Color_0x00);
     }
 
-    if (g_nGamestate0dMode.unk_0x04 == 1) {
-      if ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8) {
-        Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.unk_0x14 * 80 + 140, 38,
+    if (g_nGamestate0dMode.menuState == 1) {
+      if ((g_nGamestate0dMode.animTimer & 0xF) < 8) {
+        Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.selection * 80 + 140, 38,
                               Sprite_0x09, Color_0x00);
       }
       Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x3B, Color_0x01);
       Titlescreen_EmitSpriteQuad(256, 88, Sprite_0x3A, Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 106, Sprite_0x2E,
                             Color_0x00);
-    } else if (g_nGamestate0dMode.unk_0x04 == 2) {
-      Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.unk_0x14 * 80 + 140, 38,
+    } else if (g_nGamestate0dMode.menuState == 2) {
+      Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.selection * 80 + 140, 38,
                             Sprite_0x0A, Color_0x00);
-      Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.unk_0x14 * 80 + 140, 38,
+      Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.selection * 80 + 140, 38,
                             Sprite_0x09, Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x3E,
                             (g_nGamestate0dMode.unk_0x18 == 0 &&
-                             ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))
+                             ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
       Titlescreen_EmitSpriteQuad(256, 88, Sprite_0x36,
                             (g_nGamestate0dMode.unk_0x18 == 1 &&
-                             ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))
+                             ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
-    } else if (g_nGamestate0dMode.unk_0x04 == 3) {
-      if ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8) {
-        Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.unk_0x14 * 80 + 140, 38,
+    } else if (g_nGamestate0dMode.menuState == 3) {
+      if ((g_nGamestate0dMode.animTimer & 0xF) < 8) {
+        Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.selection * 80 + 140, 38,
                               Sprite_0x09, Color_0x00);
       }
       Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x3B, Color_0x00);
       Titlescreen_EmitSpriteQuad(256, 88, Sprite_0x3A, Color_0x01);
       Titlescreen_EmitSpriteQuad(128, 106, Sprite_0x2F,
                             Color_0x00);
-    } else if (g_nGamestate0dMode.unk_0x04 == 4) {
+    } else if (g_nGamestate0dMode.menuState == 4) {
       Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x3B,
-                            (g_nGamestate0dMode.unk_0x14 == 0 &&
-                             ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))
+                            (g_nGamestate0dMode.selection == 0 &&
+                             ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
       Titlescreen_EmitSpriteQuad(256, 88, Sprite_0x3A,
-                            (g_nGamestate0dMode.unk_0x14 == 1 &&
-                             ((g_nGamestate0dMode.unk_0x0C & 0xF) < 8))
+                            (g_nGamestate0dMode.selection == 1 &&
+                             ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 106,
-                            g_nGamestate0dMode.unk_0x28 +
+                            g_nGamestate0dMode.cardPort +
                                 Sprite_0x31,
                             Color_0x00);
     }

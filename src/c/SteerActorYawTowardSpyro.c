@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Steer an actor's yaw toward Spyro (0x80038fc8, 0x260). Computes the
@@ -19,7 +20,6 @@
 extern void StubActorHook(int *actor, int a, int b);
 extern int abs(int);
 
-extern int g_nActorFrameDelta;
 extern int g_nActorAnimDone;
 
 int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,

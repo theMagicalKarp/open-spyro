@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
    0x6a4). Only runs its body while g_nGamestate0dMode is 3; three substates:
@@ -11,11 +12,9 @@
    the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
 extern void StopAllSoundExceptMask(int owner_key);
-extern void TickSpuPerFrame(void);
 extern void InitNewGameState(void);
 extern void ResetSpyroEntity(int mode);
 extern void TickWorldBundleLoadStream(void);
-extern void TickCdMusicStream(void);
 extern void TickLevelTransitionStream(int mode);
 extern void CopyVector(VECTOR *dst, VECTOR *src);
 extern void SubtractVector(VECTOR *dst, VECTOR *a, VECTOR *b);
@@ -24,21 +23,15 @@ extern int ArcTan2(int y, int x, int high_precision);
 extern int LookupCosine(unsigned int angle_12_4);
 extern int LookupSine(unsigned int angle_12_4);
 extern void AdvanceSpyroAnimFrame(char layer_mask);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2(void);
 extern void ClearImage(RECT *rect, unsigned int r, unsigned int g,
                        unsigned int b);
 extern int DrawSync(int mode);
 extern void InitActorMeshScratchRegions(int mode);
-extern void BeginGemCutscene(void);
 extern void RotateLightVectorXZ(int steps);
 
 extern void *g_pSharedLoadBuffer; /* default draw-buffer base */
 extern int D_8006EE7C[];          /* per-try first level table */
 
-extern int g_anSpyroWorldPosBlock[]; /* held-base view of g_anSpyroWorldPos */
-extern int g_nSpyroWorldPosY;        /* g_anSpyroWorldPos[1] */
-extern int g_nSpyroWorldPosZ;        /* g_anSpyroWorldPos[2] */
 extern int g_anStoryIntroMessageBlock[]; /* held-base view of the message id */
 extern int g_anStoryIntroTimerBlock[];   /* held-base view of the intro timer */
 

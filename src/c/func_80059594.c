@@ -1,14 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void SetSpuCommonAttr(unsigned char *attr);
-extern int ComputeSaveGameChecksum(unsigned char *data);
 
-extern int D_80075838;
-extern int D_8007583C;
-extern short g_nCdDaVolumeCurrent;
-extern short D_80075F1A;
-extern int D_80076224_blk;
 extern int D_80076228_blk[];
 
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
@@ -132,7 +127,7 @@ int func_80059594(unsigned char *buf) {
   } while (i < 0x24);
   i = 0;
   do {
-    g_abSaveOptionsBlock[i] = *((buf + i) + 0x106);
+    g_abWorldBalloonistState[i] = *((buf + i) + 0x106);
     i += 1;
   } while (i < 6);
   CopyWords(g_anLevelKillBitmapTable, buf + 0x10C, 0x480);

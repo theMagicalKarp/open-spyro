@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void AverageSpyroPlatformMotion(void);
 extern void AdvanceSpyroPhysics(void);
@@ -18,11 +19,6 @@ extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int FindGroundHeightBelow(int *pos, int depth);
 extern int GetRandomU32(void);
 extern int abs(int x);
-
-/* One view of the Spyro record from its world position (0x80078a58), so that
-   field addresses taken in one block are derived from a single held base. */
-extern int g_anSpyroWorldPosBlock[];
-extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE 0x1E         /* g_nSpyroState */

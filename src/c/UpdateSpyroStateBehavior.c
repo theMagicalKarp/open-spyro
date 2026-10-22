@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -7,22 +8,14 @@ extern int DispatchSpyroChargeStateChanges(void);
 extern void ChangeSpyroState(int state);
 extern void RestartSpyroAnimWithState(int state);
 extern void CycleSpyroIdleAnim(void);
-extern void ResetSpyroLinearMotion(void);
 extern void TriggerRespawnOrGameOver(void);
 extern void BuildSpyroVelocityFromBodyEuler(void);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
-extern int D_800756B4;
-extern int D_80075700;
-extern int D_80075728;
 extern int D_8006EA40[];
 
 SDATA(D_800756B4, 4);
-
-/* One view of the Spyro record from its world position (0x80078a58). */
-extern int g_anSpyroWorldPosBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_FLAGS 0x1F        /* g_nSpyroStateFlags */

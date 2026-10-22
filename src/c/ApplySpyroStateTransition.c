@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern unsigned char g_abSpyroStateTransitionMatrixBlock[45][45];
 extern unsigned char
     g_bSpyroAnimFrame_blk[]; /* held-base view of g_bSpyroAnimFrame */
 

@@ -16,7 +16,7 @@
 
 extern int g_nGamestate0cSubstate;
 extern int g_nGamestate0cTimer;
-extern int D_800777F0;
+extern int g_nGamestate0cMenuCursor;
 extern char *g_pActorListBase;
 extern char *g_pGamestate0cRecord;
 extern int g_anCameraPos[];
@@ -33,7 +33,7 @@ void Level30_BeginActorCutscene(unsigned char *actor) {
   g_nGamestate = 0xC;
   g_nGamestate0cSubstate = 0;
   g_nGamestate0cTimer = 0;
-  D_800777F0 = 0;
+  g_nGamestate0cMenuCursor = 0;
   g_pGamestate0cActor = actor;
   count = *p;
   pos = g_anCameraPos;

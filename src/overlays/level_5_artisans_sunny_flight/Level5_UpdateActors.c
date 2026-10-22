@@ -118,7 +118,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->unk55 every frame */
+  int unk04;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -399,7 +399,7 @@ extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(int *pos);
 extern int CheckLineOfSightSegment(int *a, int *b);
-extern int func_80017428(int *v, int *n, int *out);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 /* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
  * fairy cutscene when Spyro stands still on the pad. */
@@ -1624,7 +1624,7 @@ void Level5_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
 
-              if (func_80017428(st->vel, svH, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -1789,7 +1789,7 @@ void Level5_UpdateActors(void) {
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
             st->fx->kind = 9;
-            st->fx->desc = &D_8006E390;
+            st->fx->desc = &g_anSparkleGlowDesc;
           }
         } else {
           st->fx->size += 0x20;
@@ -1919,9 +1919,9 @@ void Level5_UpdateActors(void) {
             st->rider->subMode = 3;
 
             if (st->rider->type == 14)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E494);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
             else if (st->rider->type == 15)
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, D_8006E490);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
 
@@ -2061,12 +2061,12 @@ void Level5_UpdateActors(void) {
           }
 
           g_nLevelEggCount = 1;
-          actor->unk57 = 0x40;
+          actor->scale = 0x40;
           actor->unk50 = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
-          actor->unk4A = 0xFF;
+          actor->visZone = 0xFF;
           actor->subMode = 2;
         }
       }

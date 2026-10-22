@@ -1,8 +1,5 @@
 #include "globals.h"
-
-extern int g_anSpyroBodyPitchBlock[]; /* +0 pitch, [-1] roll */
-extern int D_80078CB0;                /* pitch damping spring */
-extern int D_80078CB4;                /* roll damping spring */
+#include "main_shared.h"
 
 /* 0x8003da08 (0xDC) — spring Spyro's body pitch and roll back toward level
    while free-falling: wrap each angle's error into [-0x800,0x800), run it

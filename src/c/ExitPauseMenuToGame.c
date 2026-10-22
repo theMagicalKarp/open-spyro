@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Leave the pause menu back to gameplay (0x8002c534). Blit the saved 0x200x0xE1
    backdrop tile from render scratch back into the frame buffer, wait for the
@@ -7,7 +8,6 @@
    resume the current music track. */
 extern void LoadImage(RECT *rect, unsigned int src);
 extern int DrawSync(int mode);
-extern void InitLightVectorConstants(void);
 extern int HandleMusicCommand(int track, int cmd);
 
 void ExitPauseMenuToGame(int param_1) {

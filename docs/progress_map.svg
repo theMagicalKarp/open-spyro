@@ -235,7 +235,7 @@
 <rect x="130.43" y="697.59" width="12.51" height="12.93" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ValidateGpuRect  ·  296 bytes  ·  library</title></rect>
 <rect x="130.43" y="710.51" width="12.51" height="12.75" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComputeLobVelocityZ  ·  292 bytes  ·  matched</title></rect>
 <rect x="130.43" y="723.27" width="12.51" height="12.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitGraphicsHardware  ·  288 bytes  ·  matched</title></rect>
-<rect x="130.43" y="735.85" width="12.51" height="12.58" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017428  ·  288 bytes  ·  handwritten</title></rect>
+<rect x="130.43" y="735.85" width="12.51" height="12.58" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ReflectVectorOffNormal  ·  288 bytes  ·  handwritten</title></rect>
 <rect x="130.43" y="748.43" width="12.51" height="12.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TrackEntityYawTowardSpyro  ·  288 bytes  ·  matched</title></rect>
 <rect x="130.43" y="761.01" width="12.51" height="12.41" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LinkOTPrimitives  ·  284 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="591.70" width="12.65" height="12.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawShadedMenuBox  ·  284 bytes  ·  matched</title></rect>
@@ -468,7 +468,7 @@
 <rect x="292.69" y="672.69" width="7.70" height="7.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>SetWorldChunkAnimStep  ·  104 bytes  ·  handwritten</title></rect>
 <rect x="300.39" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8002BAB8  ·  104 bytes  ·  matched</title></rect>
 <rect x="308.09" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorFacingSpyro  ·  104 bytes  ·  matched</title></rect>
-<rect x="220.98" y="680.07" width="7.31" height="7.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003AA84  ·  104 bytes  ·  matched</title></rect>
+<rect x="220.98" y="680.07" width="7.31" height="7.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickActorFlameGlow  ·  104 bytes  ·  matched</title></rect>
 <rect x="220.98" y="687.85" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>__do_global_dtors  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="695.62" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ReadSpuRamDma  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="703.40" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>DelaySpuRegisterWrite  ·  104 bytes  ·  library</title></rect>

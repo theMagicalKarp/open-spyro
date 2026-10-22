@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Per-frame top-level draw dispatcher (0x8001ED5C, 0x3fc).
 
@@ -28,24 +29,13 @@ extern void func_8007CEE4(void); /* titlescreen overlay draw */
 extern void GemCutscene_Draw(void);
 extern void func_8007BFD0(void); /* credits overlay draw */
 extern void ReturningHome_Draw(void);
-extern void BuildRenderEntityLists(void);
 extern void EnqueueLoadingScreenSprites(void);
 extern void DrawDemoModeOverlay(void);
-extern void ComposeFrameScene(void);
-extern void SetupFrameOT(void);
-extern void DrawActors(void);
-extern void RasterizeEmitList(void);
 extern void DrawFullscreenTint(int mode, int r, int g, int b);
-extern void DrawCinematicLetterbox(void);
 extern void DrawMotionTrailRibbons(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
-
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 void GamestateDraw(void) {
   char *env;

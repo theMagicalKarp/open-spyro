@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern int g_nActorFrameDelta;
+#include "main_shared.h"
 
 /* Step a countdown value of the given width (4/2/1 bytes) down by the global
  * delta g_nActorFrameDelta, clamping at zero. Returns:

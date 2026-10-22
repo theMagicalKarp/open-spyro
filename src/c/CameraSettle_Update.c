@@ -1,11 +1,5 @@
 #include "globals.h"
-
-extern void TickSpyroGameplayFrame(void);
-extern void UpdateCameraFrame(void);
-
-/* incomplete-array view of g_nCameraEulerPitch (0x80076e1e) — every access is
-   at offset 0 off one held base register. */
-extern short g_anCameraEulerPitchBlock[];
+#include "main_shared.h"
 
 /* 0x8002e000 (132 bytes) — the camera-settle gamestate tick: run one gameplay
    frame and one camera frame, wrap the camera pitch back into signed 12-bit

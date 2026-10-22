@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Align Spyro's body pitch/roll toward his velocity direction (0x8003de44,
    284 bytes). Computes the target pitch from ArcTan2(speed, vz) + 0x8E (roll
@@ -7,9 +8,6 @@
    euler angles by spring/4. */
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int ArcTan2(int y, int x, int high_precision);
-
-extern int D_80078CB0;
-extern int D_80078CB4;
 
 /* Scheduling levers: the pitch delta is written as four separate statements
    (stack read, global read, subtract, mask). The array read must come FIRST in

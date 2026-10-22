@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
@@ -21,7 +22,6 @@ extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void RefreshActorDerivedState(int *actor, int mode);
 extern int abs(int);
 
-extern int g_nActorFrameDelta;
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 

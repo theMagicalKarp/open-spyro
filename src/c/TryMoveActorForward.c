@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
@@ -16,8 +17,6 @@ extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void RefreshActorDerivedState(int actor, int n);
 extern void EncodeCachedVecToActorDirCode(int actor);
-
-extern int g_nActorFrameDelta;
 
 int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
                         int flags) {

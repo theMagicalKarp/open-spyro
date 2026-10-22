@@ -11,14 +11,13 @@
    the chunk itself. */
 
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void StopAllSoundExceptMask(unsigned int mask);
-extern void InitLightVectorConstants(void);
 extern void ResetPadFrameSubstepTable(unsigned int *pad);
 extern void ResetSpyroEntity();
 extern void ChangeSpyroState();
-extern void ResetCameraStateToTarget(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void InsertActorIntoSpatialGrid(char *rec);
 extern void HideActorRenderRecord(char *rec);
@@ -33,10 +32,7 @@ extern void srand(unsigned int seed);
 
 extern short g_anCosineLut[];
 extern int g_nLevelSpawnPosZ;
-extern int g_nSpyroWorldPosY;
 extern int D_80075698;
-extern int D_80075700;
-extern int g_nSpyroWorldPosZ;
 extern int D_8006F140[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anLevelSpawnPosZBlock[];

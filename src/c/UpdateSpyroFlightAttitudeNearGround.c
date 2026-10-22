@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern int LookupCosine(int angle);
 extern int LookupSine(int angle);
@@ -8,9 +9,6 @@ extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int flag);
 extern void RotateVectorByMatrix(int *mtx, int *in, int *out);
 extern void AddVector(int *dst, int *a, int *b);
 extern void DampenSpyroFreeFallAttitude(void);
-
-extern int D_80078CB0; /* pitch damping spring */
-extern int D_80078CB4; /* roll damping spring */
 
 /* Held base at g_nSpyroGroundSlope: the slope test, the first persistent-
    euler byte (-0xA4) and the three call-argument addresses (euler -0xA4, body

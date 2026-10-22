@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void DrawLevelTransitionOverlay(void);
-extern void RasterizePairedActor(void);
 extern void SetTransMatrix(MATRIX *m);
 extern int LookupSine(unsigned int angle);
 extern int LookupCosine(unsigned int angle);
@@ -12,13 +12,7 @@ extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
-/* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
-extern short g_anCameraEulerPitchBlock[];
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 extern int
     g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */
 extern int D_80076DE4[]; /* camera view matrix (worldToCam at -0x14) */

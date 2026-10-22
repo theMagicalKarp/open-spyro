@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void InitGraphicsHardware(void);
 extern void SpuInit(void);
@@ -22,13 +23,8 @@ extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
                               int marker);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void TickWorldBundleLoadStream(void);
-extern void LoadActorMeshTables(void);
-extern void BeginGemCutscene(void);
-extern void BeginStoryIntro(void);
 
 extern void *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
-extern int D_8007A6E4;            /* title-art chunk byte count */
-extern int D_8007A6E0;            /* title-art byte offset */
 extern int D_8007A6D4;            /* boot-splash chunk byte count */
 extern int D_8007A6D0;            /* boot-splash byte offset */
 extern int D_8007DDE8;            /* draw-buffer sentinel */
@@ -38,8 +34,6 @@ extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
 extern void *g_apDrawBufBlock2[]; /* distinct alias, fade-out pass (A23) */
 extern int g_anCdBaseLbaBlock[];  /* alias of g_nCdBaseLba */
 extern int g_anWorldArchiveOffsetBlock[]; /* alias, held across the reads */
-extern int
-    g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
    SPU, pad, sound engine, CD and GTE, publishes both draw buffers, then runs

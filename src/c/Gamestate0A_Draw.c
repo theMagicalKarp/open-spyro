@@ -1,19 +1,14 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern void PutDrawEnv(void *env);
 extern void LoadImage(RECT *rect, short *pix);
 extern void DrawSync(int mode);
 extern void AddPrimToOTSlot(int prim, int slot);
 extern unsigned long long ComputeDepthCuedColor();
 extern void EmitStaticActorMeshListFogged(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void RasterizePairedActor(void);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 /* Draw gamestate 0xA (pause -> world-map transition, 0x8001c694, 0x3a4).
    Phase 0: re-darken the frozen gray backdrop by re-loading the CLUT ramp

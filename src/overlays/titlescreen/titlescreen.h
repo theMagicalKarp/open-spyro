@@ -1,8 +1,11 @@
 /* titlescreen.h — shared definitions for the titlescreen overlay C matches.
  * Extern names are our splat autolabels (PROVIDE()d by address at overlay
- * link), with structs anchored at the symbols the asm references. Field/enum
- * names are offset- or value-based (unk_0x.., Sprite_0x..) since only the
- * layout, not any semantic name, is asserted by the byte-match.
+ * link), with structs anchored at the symbols the asm references. The save
+ * image (SaveGame) is named from BuildSaveGameBuffer's field order and the
+ * memory-card file header (McFileHeader) follows the standard PS1 save-block
+ * header; TitleState fields are named from their use in Titlescreen_Update /
+ * _Draw. Remaining unk_0x.. fields and the Sprite_0x.. ids keep their offset /
+ * value names.
  */
 #ifndef OVL_TITLESCREEN_H
 #define OVL_TITLESCREEN_H
@@ -90,80 +93,80 @@ enum {
 /* top-level titlescreen modes */
 enum { Mode_0x00 = 0, Mode_0x01 = 1, Mode_0x02 = 2, Mode_0x03 = 3 };
 
-/* ---- save file (offsets are what matter) ---- */
+/* ---- save file: the 0x600-byte image BuildSaveGameBuffer packs ---- */
 #define TOTAL_LEVEL_COUNT 36
 
 typedef struct {
-  int unk_0x00[5];         /* 0x00 */
-  u_char unk_0x14[5][5];   /* 0x14 */
+  int worldFlags[5];         /* 0x00 */
+  u_char worldLevelBytes[5][5];   /* 0x14 */
 } Struct_0x30;              /* 0x30 */
 
 typedef struct {
-  u_char unk_0x00;                     /* 0x00 */
-  u_char unk_0x01;                     /* 0x01 */
-  u_char unk_0x02;                     /* 0x02 */
-  u_char unk_0x03;                     /* 0x03 */
-  int unk_0x04;                        /* 0x04 */
-  u_char unk_0x08;                     /* 0x08 */
+  u_char levelId;                     /* 0x00 */
+  u_char sfxVolume;                     /* 0x01 */
+  u_char musicVolume;                     /* 0x02 */
+  u_char vibration;                     /* 0x03 */
+  int cameraOptions;                        /* 0x04 */
+  u_char monoMix;                     /* 0x08 */
   u_char unk_0x09;                     /* 0x09 */
   u_char unk_0x0A;                     /* 0x0A */
-  u_char unk_0x0B;                     /* 0x0B */
+  u_char extraLives;                     /* 0x0B */
   int unk_0x0C;                        /* 0x0C */
-  Struct_0x30 unk_0x10;                /* 0x10 */
-  u_char unk_0x40[TOTAL_LEVEL_COUNT];  /* 0x40 */
-  u_char unk_0x64[TOTAL_LEVEL_COUNT];  /* 0x64 */
-  u_char unk_0x88[TOTAL_LEVEL_COUNT];  /* 0x88 */
-  short unk_0xAC[TOTAL_LEVEL_COUNT];   /* 0xAC */
-  u_char unk_0xF4[18];                 /* 0xF4 */
-  u_char unk_0x106[6];                 /* 0x106 */
-  u_char unk_0x10C[TOTAL_LEVEL_COUNT * 32]; /* 0x10C */
-  int unk_0x58C;                       /* 0x58C */
+  Struct_0x30 worlds;                /* 0x10 */
+  u_char levelVisited[TOTAL_LEVEL_COUNT];  /* 0x40 */
+  u_char levelGemPercent[TOTAL_LEVEL_COUNT];  /* 0x64 */
+  u_char levelDragons[TOTAL_LEVEL_COUNT];  /* 0x88 */
+  short levelGems[TOTAL_LEVEL_COUNT];   /* 0xAC */
+  u_char levelEggs[18];                 /* 0xF4 */
+  u_char balloonistState[6];                 /* 0x106 */
+  u_char killBitmaps[TOTAL_LEVEL_COUNT * 32]; /* 0x10C */
+  int checksum;                       /* 0x58C */
   char pad[0x70];
 } Struct_0x600;
 
 typedef struct {
-  char unk_0x00[2];
-  u_char unk_0x02;
-  u_char unk_0x03;
-  u_char unk_0x04[0x40];
+  char magic[2];
+  u_char iconFlag;
+  u_char blockCount;
+  u_char title[0x40];
   char reserved[0x1C];
-  u_short unk_0x60[0x10];
-  u_char unk_0x80[0x80][3];
+  u_short clut[0x10];
+  u_char icon[0x80][3];
 } Struct_0x200; /* 0x200 */
 
 typedef struct {
-  Struct_0x200 unk_0x000;    /* 0x000 */
-  Struct_0x600 unk_0x200[3]; /* 0x200, 3 x 0x600 */
+  Struct_0x200 header;    /* 0x000 */
+  Struct_0x600 saves[3]; /* 0x200, 3 x 0x600 */
 } Struct_0x1A00;
 
 /* ---- titlescreen state (0x5C bytes) ---- */
 typedef struct {
-  int unk_0x00;               /* 0x00 */
-  int unk_0x04;                /* 0x04 */
-  int unk_0x08;                 /* 0x08 */
-  int unk_0x0C;              /* 0x0C */
-  int unk_0x10;             /* 0x10 */
-  int unk_0x14;       /* 0x14 */
+  int mode;               /* 0x00 */
+  int menuState;                /* 0x04 */
+  int idleFrames;                 /* 0x08 */
+  int animTimer;              /* 0x0C */
+  int subState;             /* 0x10 */
+  int selection;       /* 0x14 */
   int unk_0x18;                 /* 0x18 */
-  int unk_0x1C;                 /* 0x1C */
-  int unk_0x20;/* 0x20 */
-  int unk_0x24;        /* 0x24 */
-  int unk_0x28;         /* 0x28 */
+  int demoType;                 /* 0x1C */
+  int savedSelection;/* 0x20 */
+  int retryCount;        /* 0x24 */
+  int cardPort;         /* 0x28 */
   int unk_0x2C;        /* 0x2C */
-  int unk_0x30[2];        /* 0x30 */
+  int cardStatus[2];        /* 0x30 */
   int unk_0x38[2];   /* 0x38 */
-  int unk_0x40;    /* 0x40 */
-  int unk_0x44;    /* 0x44 */
+  int mcCmd;    /* 0x40 */
+  int mcResult;    /* 0x44 */
   int unk_0x48;           /* 0x48 */
-  Struct_0x1A00 *unk_0x4C; /* 0x4C */
-  Struct_0x600 *unk_0x50[3];   /* 0x50 */
+  Struct_0x1A00 *file; /* 0x4C */
+  Struct_0x600 *apSaves[3];   /* 0x50 */
 } Struct_0x5C;
 
 extern Struct_0x5C g_nGamestate0dMode;
 
 /* ---- cutscene layout ---- */
 typedef struct {
-  int unk_0x00; /* 0x00 */
+  int introFrame; /* 0x00 */
   int unk_0x04;
   int unk_0x08;
   int unk_0x0C;

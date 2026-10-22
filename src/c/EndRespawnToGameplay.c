@@ -1,6 +1,5 @@
 #include "globals.h"
-
-extern void InitLightVectorConstants(void);
+#include "main_shared.h"
 
 /* Finishes the respawn->gameplay transition: returns to gamestate 0, copies the
    world fog RGB into both frame draw-env background-fill colors, then rebuilds

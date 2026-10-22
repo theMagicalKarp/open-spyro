@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Draw handler for gamestate 0xC — the level-transition title card
    (0x8001E24C, 0x46c).
@@ -26,21 +27,12 @@ extern int sprintf();
 extern int strlen(const char *s);
 extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
                               int flags);
-extern void BuildActorDrawList(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void EmitActorDrawList(void);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
-extern void RasterizePairedActor(void);
 extern int ComputeDepthCuedColor(unsigned int fog, unsigned int color, int t);
 extern void EmitStaticActorMeshListFogged(void);
-extern void DrawCinematicLetterbox(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
 extern char D_80010CD0[];             /* "%s" */
 extern char D_80010CE4[];             /* "%s" (level form) */
@@ -49,8 +41,7 @@ extern int g_nGamestate0cTimer[];     /* transition fade counter */
 extern int g_nGamestate0cCardVariant; /* transition card variant */
 extern void *g_pfnGamestate0cSubstateDraw; /* substate draw handler */
 extern unsigned short g_anCosineLut[];
-extern void *g_apOtDepthBinBlock[];  /* alias @0x8006fcf4: head/tail pair */
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
+extern void *g_apOtDepthBinBlock[]; /* alias @0x8006fcf4: head/tail pair */
 
 void Gamestate0C_Draw(void) {
   int pos[3];

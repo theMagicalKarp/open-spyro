@@ -128,7 +128,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8001729c` | RefineSqrtEstimate | main | 148 | asm | handwritten |
 | `0x80017330` | SetVector3Magnitude | main | 240 | asm | handwritten |
 | `0x80017420` | func_80017420 | main | 8 | matched | game |
-| `0x80017428` | func_80017428 | main | 288 | asm | handwritten |
+| `0x80017428` | ReflectVectorOffNormal | main | 288 | asm | handwritten |
 | `0x80017548` | func_80017548 | main | 112 | asm | handwritten |
 | `0x800175b8` | ScaleVector3ByRatio | main | 92 | asm | handwritten |
 | `0x80017614` | ScaleVector3Shifted | main | 140 | asm | handwritten |
@@ -310,7 +310,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003a850` | func_8003A850 | main | 208 | matched | game |
 | `0x8003a920` | func_8003A920 | main | 204 | matched | game |
 | `0x8003a9ec` | SelectActorLodBand | main | 152 | matched | game |
-| `0x8003aa84` | func_8003AA84 | main | 104 | matched | game |
+| `0x8003aa84` | TickActorFlameGlow | main | 104 | matched | game |
 | `0x8003aaec` | SpawnActorRotBillboard | main | 212 | matched | game |
 | `0x8003abc0` | SpawnActorDeathDrop | main | 1308 | matched | game |
 | `0x8003b0dc` | PickupGroupHasLiveActor | main | 132 | matched | game |

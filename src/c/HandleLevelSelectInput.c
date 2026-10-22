@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void StopAllSoundExceptMask();
-extern void InitLightVectorConstants(void);
 extern void ResetSpyroEntity();
 extern void RestartSpyroAnimWithState();
 

@@ -1,13 +1,11 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 
 extern int abs(int x);
 
 /* Held-base view of g_anCameraSpringDeltaState. */
 extern int g_anCameraSpringDeltaStateBlock[];
-/* Held-base view of the spring angle set (yaw, pitch, distance, roll, pitch
-   bias, yaw bias). */
-extern int g_anCameraSpringYawBlock[];
 /* Scalar view of g_anCameraSpringDeltaState[0]. */
 extern int g_nCameraSpringYawDelta;
 extern int g_nCameraSpringPitchDelta;

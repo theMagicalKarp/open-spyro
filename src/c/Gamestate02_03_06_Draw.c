@@ -1,16 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern void BuildRenderEntityLists(void);
-extern void ComposeFrameScene(void);
-extern void RasterizeEmitList(void);
-extern void DrawActors(void);
-extern void SetupFrameOT(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 extern void StoreImage(RECT *r, void *dst);
 extern void LoadImage(RECT *r, void *src);
 extern void ConvertRGB15ToLuma8(void *buf, int count);
@@ -21,8 +14,6 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 extern void EmitTexturedQuad(short *rect, int *uv, int *rgb);
 extern void EnqueueBlinkingMarkerSprite(int *pos, unsigned int phase, int dir);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
 extern void EnqueueLoadingScreenSprites(void);
 extern void *BuildTextSpriteChain(char *text, int *pos, int step, int flags);
 extern void *BuildTextSprites(char *text, int *pos, int *style, int step,
@@ -35,7 +26,6 @@ extern int sprintf(char *buf, char *fmt, ...);
    [-2] is g_pRenderScratchRegionBase. */
 extern void *g_apRenderScratchPrimTopBlock[];
 /* Held-base view of g_nVsyncFrameEndCount; [-1] = g_nVsyncFramePaceAnchor. */
-extern int g_anVsyncFrameEndBlock[];
 /* cosine view of the sine LUT (g_anSineLut + 0x80). */
 extern short g_anCosineLut[];
 /* Held-base alias for g_dwHudBobSinePhase (0x80077fe4): [1] is the mod-9 HUD

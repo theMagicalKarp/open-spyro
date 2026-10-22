@@ -367,16 +367,16 @@ glabel ResetLevelState
     /* 2E64 80012664 F0FF4014 */  bnez       $v0, .L80012628
     /* 2E68 80012668 04008424 */   addiu     $a0, $a0, 0x4
     /* 2E6C 8001266C 05000324 */  addiu      $v1, $zero, 0x5
-    /* 2E70 80012670 0780023C */  lui        $v0, %hi(g_abSaveOptionsBlock + 0x5)
-    /* 2E74 80012674 D5584224 */  addiu      $v0, $v0, %lo(g_abSaveOptionsBlock + 0x5)
+    /* 2E70 80012670 0780023C */  lui        $v0, %hi(g_abWorldBalloonistState + 0x5)
+    /* 2E74 80012674 D5584224 */  addiu      $v0, $v0, %lo(g_abWorldBalloonistState + 0x5)
   .L80012678:
     /* 2E78 80012678 000040A0 */  sb         $zero, 0x0($v0)
     /* 2E7C 8001267C FFFF6324 */  addiu      $v1, $v1, -0x1
     /* 2E80 80012680 FDFF6104 */  bgez       $v1, .L80012678
     /* 2E84 80012684 FFFF4224 */   addiu     $v0, $v0, -0x1
     /* 2E88 80012688 02000224 */  addiu      $v0, $zero, 0x2
-    /* 2E8C 8001268C 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
-    /* 2E90 80012690 D05822A0 */  sb         $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 2E8C 8001268C 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
+    /* 2E90 80012690 D05822A0 */  sb         $v0, %lo(g_abWorldBalloonistState)($at)
     /* 2E94 80012694 0880063C */  lui        $a2, %hi(g_abWorldPerLevelByteTable)
     /* 2E98 80012698 8086C624 */  addiu      $a2, $a2, %lo(g_abWorldPerLevelByteTable)
     /* 2E9C 8001269C 21280000 */  addu       $a1, $zero, $zero
@@ -5961,11 +5961,11 @@ endlabel func_80017420
 /* Handwritten function */
 .endif
 
-.section .text.func_80017428, "ax"
-.ifndef HAVE_C_func_80017428
-nonmatching func_80017428, 0x120
+.section .text.ReflectVectorOffNormal, "ax"
+.ifndef HAVE_C_ReflectVectorOffNormal
+nonmatching ReflectVectorOffNormal, 0x120
 
-glabel func_80017428
+glabel ReflectVectorOffNormal
     /* 7C28 80017428 0000A18C */  lw         $at, 0x0($a1)
     /* 7C2C 8001742C 0400A28C */  lw         $v0, 0x4($a1)
     /* 7C30 80017430 0800A38C */  lw         $v1, 0x8($a1)
@@ -6039,7 +6039,7 @@ glabel func_80017428
     /* 7D3C 8001753C 0800C3AC */  sw         $v1, 0x8($a2)
     /* 7D40 80017540 0800E003 */  jr         $ra
     /* 7D44 80017544 01000220 */   addi      $v0, $zero, 0x1 /* handwritten instruction */
-endlabel func_80017428
+endlabel ReflectVectorOffNormal
 
 /* Handwritten function */
 .endif
@@ -30966,8 +30966,8 @@ glabel ApplyCheatCodeEffect
     /* 1E08C 8002D88C FFFF6324 */   addiu     $v1, $v1, -0x1
     /* 1E090 8002D890 02000424 */  addiu      $a0, $zero, 0x2
     /* 1E094 8002D894 05000224 */  addiu      $v0, $zero, 0x5
-    /* 1E098 8002D898 0780033C */  lui        $v1, %hi(g_abSaveOptionsBlock + 0x5)
-    /* 1E09C 8002D89C D5586324 */  addiu      $v1, $v1, %lo(g_abSaveOptionsBlock + 0x5)
+    /* 1E098 8002D898 0780033C */  lui        $v1, %hi(g_abWorldBalloonistState + 0x5)
+    /* 1E09C 8002D89C D5586324 */  addiu      $v1, $v1, %lo(g_abWorldBalloonistState + 0x5)
   .L8002D8A0:
     /* 1E0A0 8002D8A0 000064A0 */  sb         $a0, 0x0($v1)
     /* 1E0A4 8002D8A4 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -45893,11 +45893,11 @@ glabel SelectActorLodBand
 endlabel SelectActorLodBand
 .endif
 
-.section .text.func_8003AA84, "ax"
-.ifndef HAVE_C_func_8003AA84
-nonmatching func_8003AA84, 0x68
+.section .text.TickActorFlameGlow, "ax"
+.ifndef HAVE_C_TickActorFlameGlow
+nonmatching TickActorFlameGlow, 0x68
 
-glabel func_8003AA84
+glabel TickActorFlameGlow
     /* 2B284 8003AA84 1800828C */  lw         $v0, 0x18($a0)
     /* 2B288 8003AA88 0100033C */  lui        $v1, (0x10000 >> 16)
     /* 2B28C 8003AA8C 24104300 */  and        $v0, $v0, $v1
@@ -45927,7 +45927,7 @@ glabel func_8003AA84
   .L8003AAE4:
     /* 2B2E4 8003AAE4 0800E003 */  jr         $ra
     /* 2B2E8 8003AAE8 00000000 */   nop
-endlabel func_8003AA84
+endlabel TickActorFlameGlow
 .endif
 
 .section .text.SpawnActorRotBillboard, "ax"
@@ -80869,9 +80869,9 @@ glabel func_80059594
     /* 49FFC 800597FC 21100602 */  addu       $v0, $s0, $a2
   .L80059800:
     /* 4A000 80059800 06014290 */  lbu        $v0, 0x106($v0)
-    /* 4A004 80059804 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
+    /* 4A004 80059804 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
     /* 4A008 80059808 21082600 */  addu       $at, $at, $a2
-    /* 4A00C 8005980C D05822A0 */  sb         $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 4A00C 8005980C D05822A0 */  sb         $v0, %lo(g_abWorldBalloonistState)($at)
     /* 4A010 80059810 0100C624 */  addiu      $a2, $a2, 0x1
     /* 4A014 80059814 0600C228 */  slti       $v0, $a2, 0x6
     /* 4A018 80059818 F9FF4014 */  bnez       $v0, .L80059800
@@ -81004,9 +81004,9 @@ glabel BuildSaveGameBuffer
     /* 4A1E8 800599E8 21200000 */  addu       $a0, $zero, $zero
     /* 4A1EC 800599EC 21180402 */  addu       $v1, $s0, $a0
   .L800599F0:
-    /* 4A1F0 800599F0 0780013C */  lui        $at, %hi(g_abSaveOptionsBlock)
+    /* 4A1F0 800599F0 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
     /* 4A1F4 800599F4 21082400 */  addu       $at, $at, $a0
-    /* 4A1F8 800599F8 D0582290 */  lbu        $v0, %lo(g_abSaveOptionsBlock)($at)
+    /* 4A1F8 800599F8 D0582290 */  lbu        $v0, %lo(g_abWorldBalloonistState)($at)
     /* 4A1FC 800599FC 01008424 */  addiu      $a0, $a0, 0x1
     /* 4A200 80059A00 060162A0 */  sb         $v0, 0x106($v1)
     /* 4A204 80059A04 06008228 */  slti       $v0, $a0, 0x6
@@ -81738,168 +81738,168 @@ glabel ApplyPerLevelGlobalsTable
     /* 4AC98 8005A498 08004000 */  jr         $v0
     /* 4AC9C 8005A49C 00000000 */   nop
   jlabel .L8005A4A0
-    /* 4ACA0 8005A4A0 0880023C */  lui        $v0, %hi(D_80082068)
-    /* 4ACA4 8005A4A4 68204224 */  addiu      $v0, $v0, %lo(D_80082068)
+    /* 4ACA0 8005A4A0 0880023C */  lui        $v0, %hi(LevelId0_OverlayEnd)
+    /* 4ACA4 8005A4A4 68204224 */  addiu      $v0, $v0, %lo(LevelId0_OverlayEnd)
     /* 4ACA8 8005A4A8 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4ACAC 8005A4AC D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4ACB0 8005A4B0 0880023C */  lui        $v0, %hi(D_80080548)
-    /* 4ACB4 8005A4B4 48054224 */  addiu      $v0, $v0, %lo(D_80080548)
+    /* 4ACB0 8005A4B0 0880023C */  lui        $v0, %hi(LevelId0_SpawnActor)
+    /* 4ACB4 8005A4B4 48054224 */  addiu      $v0, $v0, %lo(LevelId0_SpawnActor)
     /* 4ACB8 8005A4B8 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4ACBC 8005A4BC CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4ACC0 8005A4C0 0880023C */  lui        $v0, %hi(D_8007D8E0)
-    /* 4ACC4 8005A4C4 E0D84224 */  addiu      $v0, $v0, %lo(D_8007D8E0)
+    /* 4ACC0 8005A4C0 0880023C */  lui        $v0, %hi(LevelId0_UpdateActors)
+    /* 4ACC4 8005A4C4 E0D84224 */  addiu      $v0, $v0, %lo(LevelId0_UpdateActors)
     /* 4ACC8 8005A4C8 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4ACCC 8005A4CC 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4ACD0 8005A4D0 0880023C */  lui        $v0, %hi(D_80081568)
-    /* 4ACD4 8005A4D4 68154224 */  addiu      $v0, $v0, %lo(D_80081568)
+    /* 4ACD0 8005A4D0 0880023C */  lui        $v0, %hi(LevelId0_EmitParticles)
+    /* 4ACD4 8005A4D4 68154224 */  addiu      $v0, $v0, %lo(LevelId0_EmitParticles)
     /* 4ACD8 8005A4D8 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4ACDC 8005A4DC E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4ACE0 8005A4E0 0880023C */  lui        $v0, %hi(D_80080A0C)
-    /* 4ACE4 8005A4E4 0C0A4224 */  addiu      $v0, $v0, %lo(D_80080A0C)
+    /* 4ACE0 8005A4E0 0880023C */  lui        $v0, %hi(LevelId0_AdvanceEmitList)
+    /* 4ACE4 8005A4E4 0C0A4224 */  addiu      $v0, $v0, %lo(LevelId0_AdvanceEmitList)
     /* 4ACE8 8005A4E8 0780013C */  lui        $at, %hi(g_pfnLevelAdvanceEmitList)
     /* 4ACEC 8005A4EC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
-    /* 4ACF0 8005A4F0 0880023C */  lui        $v0, %hi(D_8007ADB8)
-    /* 4ACF4 8005A4F4 B8AD4224 */  addiu      $v0, $v0, %lo(D_8007ADB8)
+    /* 4ACF0 8005A4F0 0880023C */  lui        $v0, %hi(LevelId0_BeginActorCutscene)
+    /* 4ACF4 8005A4F4 B8AD4224 */  addiu      $v0, $v0, %lo(LevelId0_BeginActorCutscene)
     /* 4ACF8 8005A4F8 0780013C */  lui        $at, %hi(g_pfnLevelBeginActorCutscene)
     /* 4ACFC 8005A4FC A05722AC */  sw         $v0, %lo(g_pfnLevelBeginActorCutscene)($at)
-    /* 4AD00 8005A500 0880023C */  lui        $v0, %hi(D_8007AEF4)
-    /* 4AD04 8005A504 F4AE4224 */  addiu      $v0, $v0, %lo(D_8007AEF4)
+    /* 4AD00 8005A500 0880023C */  lui        $v0, %hi(LevelId0_OnSaveMenuExit)
+    /* 4AD04 8005A504 F4AE4224 */  addiu      $v0, $v0, %lo(LevelId0_OnSaveMenuExit)
     /* 4AD08 8005A508 0780013C */  lui        $at, %hi(g_pfnLevelOnSaveMenuExit)
     /* 4AD0C 8005A50C A85822AC */  sw         $v0, %lo(g_pfnLevelOnSaveMenuExit)($at)
-    /* 4AD10 8005A510 0880023C */  lui        $v0, %hi(D_8007AF38)
-    /* 4AD14 8005A514 38AF4224 */  addiu      $v0, $v0, %lo(D_8007AF38)
+    /* 4AD10 8005A510 0880023C */  lui        $v0, %hi(LevelId0_BalloonistCutscene_Update)
+    /* 4AD14 8005A514 38AF4224 */  addiu      $v0, $v0, %lo(LevelId0_BalloonistCutscene_Update)
     /* 4AD18 8005A518 0780013C */  lui        $at, %hi(g_pfnGamestate0cSubstateUpdate)
     /* 4AD1C 8005A51C 4C5722AC */  sw         $v0, %lo(g_pfnGamestate0cSubstateUpdate)($at)
-    /* 4AD20 8005A520 0880023C */  lui        $v0, %hi(D_8007CED8)
-    /* 4AD24 8005A524 D8CE4224 */  addiu      $v0, $v0, %lo(D_8007CED8)
+    /* 4AD20 8005A520 0880023C */  lui        $v0, %hi(LevelId0_BalloonistCutscene_Draw)
+    /* 4AD24 8005A524 D8CE4224 */  addiu      $v0, $v0, %lo(LevelId0_BalloonistCutscene_Draw)
     /* 4AD28 8005A528 0780013C */  lui        $at, %hi(g_pfnGamestate0cSubstateDraw)
     /* 4AD2C 8005A52C D85822AC */  sw         $v0, %lo(g_pfnGamestate0cSubstateDraw)($at)
     /* 4AD30 8005A530 B86D0108 */  j          .L8005B6E0
     /* 4AD34 8005A534 00000000 */   nop
   jlabel .L8005A538
-    /* 4AD38 8005A538 0880023C */  lui        $v0, %hi(D_8007BFF0)
-    /* 4AD3C 8005A53C F0BF4224 */  addiu      $v0, $v0, %lo(D_8007BFF0)
+    /* 4AD38 8005A538 0880023C */  lui        $v0, %hi(LevelId1_OverlayEnd)
+    /* 4AD3C 8005A53C F0BF4224 */  addiu      $v0, $v0, %lo(LevelId1_OverlayEnd)
     /* 4AD40 8005A540 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AD44 8005A544 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AD48 8005A548 0880023C */  lui        $v0, %hi(D_8007B070)
-    /* 4AD4C 8005A54C 70B04224 */  addiu      $v0, $v0, %lo(D_8007B070)
+    /* 4AD48 8005A548 0880023C */  lui        $v0, %hi(LevelId1_SpawnActor)
+    /* 4AD4C 8005A54C 70B04224 */  addiu      $v0, $v0, %lo(LevelId1_SpawnActor)
     /* 4AD50 8005A550 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4AD54 8005A554 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4AD58 8005A558 0880023C */  lui        $v0, %hi(D_8007AC8C)
-    /* 4AD5C 8005A55C 8CAC4224 */  addiu      $v0, $v0, %lo(D_8007AC8C)
+    /* 4AD58 8005A558 0880023C */  lui        $v0, %hi(LevelId1_UpdateActors)
+    /* 4AD5C 8005A55C 8CAC4224 */  addiu      $v0, $v0, %lo(LevelId1_UpdateActors)
     /* 4AD60 8005A560 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4AD64 8005A564 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4AD68 8005A568 0880023C */  lui        $v0, %hi(D_8007B8AC)
-    /* 4AD6C 8005A56C ACB84224 */  addiu      $v0, $v0, %lo(D_8007B8AC)
+    /* 4AD68 8005A568 0880023C */  lui        $v0, %hi(LevelId1_EmitParticles)
+    /* 4AD6C 8005A56C ACB84224 */  addiu      $v0, $v0, %lo(LevelId1_EmitParticles)
     /* 4AD70 8005A570 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4AD74 8005A574 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4AD78 8005A578 0880023C */  lui        $v0, %hi(D_8007B144)
-    /* 4AD7C 8005A57C 44B14224 */  addiu      $v0, $v0, %lo(D_8007B144)
+    /* 4AD78 8005A578 0880023C */  lui        $v0, %hi(LevelId1_AdvanceEmitList)
+    /* 4AD7C 8005A57C 44B14224 */  addiu      $v0, $v0, %lo(LevelId1_AdvanceEmitList)
     /* 4AD80 8005A580 B66D0108 */  j          .L8005B6D8
     /* 4AD84 8005A584 00000000 */   nop
   jlabel .L8005A588
-    /* 4AD88 8005A588 0880023C */  lui        $v0, %hi(D_8007F490)
-    /* 4AD8C 8005A58C 90F44224 */  addiu      $v0, $v0, %lo(D_8007F490)
+    /* 4AD88 8005A588 0880023C */  lui        $v0, %hi(LevelId2_OverlayEnd)
+    /* 4AD8C 8005A58C 90F44224 */  addiu      $v0, $v0, %lo(LevelId2_OverlayEnd)
     /* 4AD90 8005A590 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AD94 8005A594 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AD98 8005A598 0880023C */  lui        $v0, %hi(D_8007D970_lv7)
-    /* 4AD9C 8005A59C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970_lv7)
+    /* 4AD98 8005A598 0880023C */  lui        $v0, %hi(LevelId7_SpawnActor)
+    /* 4AD9C 8005A59C 70D94224 */  addiu      $v0, $v0, %lo(LevelId7_SpawnActor)
     /* 4ADA0 8005A5A0 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4ADA4 8005A5A4 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4ADA8 8005A5A8 0880023C */  lui        $v0, %hi(D_8007AD08_lv7)
-    /* 4ADAC 8005A5AC 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08_lv7)
+    /* 4ADA8 8005A5A8 0880023C */  lui        $v0, %hi(LevelId7_UpdateActors)
+    /* 4ADAC 8005A5AC 08AD4224 */  addiu      $v0, $v0, %lo(LevelId7_UpdateActors)
     /* 4ADB0 8005A5B0 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4ADB4 8005A5B4 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4ADB8 8005A5B8 0880023C */  lui        $v0, %hi(D_8007E990)
-    /* 4ADBC 8005A5BC 90E94224 */  addiu      $v0, $v0, %lo(D_8007E990)
+    /* 4ADB8 8005A5B8 0880023C */  lui        $v0, %hi(LevelId2_EmitParticles)
+    /* 4ADBC 8005A5BC 90E94224 */  addiu      $v0, $v0, %lo(LevelId2_EmitParticles)
     /* 4ADC0 8005A5C0 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4ADC4 8005A5C4 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4ADC8 8005A5C8 0880023C */  lui        $v0, %hi(D_8007DE34_lv7)
-    /* 4ADCC 8005A5CC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34_lv7)
+    /* 4ADC8 8005A5C8 0880023C */  lui        $v0, %hi(LevelId7_AdvanceEmitList)
+    /* 4ADCC 8005A5CC 34DE4224 */  addiu      $v0, $v0, %lo(LevelId7_AdvanceEmitList)
     /* 4ADD0 8005A5D0 B66D0108 */  j          .L8005B6D8
     /* 4ADD4 8005A5D4 00000000 */   nop
   jlabel .L8005A5D8
-    /* 4ADD8 8005A5D8 0880023C */  lui        $v0, %hi(D_8007C7B0)
-    /* 4ADDC 8005A5DC B0C74224 */  addiu      $v0, $v0, %lo(D_8007C7B0)
+    /* 4ADD8 8005A5D8 0880023C */  lui        $v0, %hi(LevelId3_OverlayEnd)
+    /* 4ADDC 8005A5DC B0C74224 */  addiu      $v0, $v0, %lo(LevelId3_OverlayEnd)
     /* 4ADE0 8005A5E0 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4ADE4 8005A5E4 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4ADE8 8005A5E8 0880023C */  lui        $v0, %hi(D_8007B0AC_lv13)
-    /* 4ADEC 8005A5EC ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC_lv13)
+    /* 4ADE8 8005A5E8 0880023C */  lui        $v0, %hi(LevelId3_SpawnActor)
+    /* 4ADEC 8005A5EC ACB04224 */  addiu      $v0, $v0, %lo(LevelId3_SpawnActor)
     /* 4ADF0 8005A5F0 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4ADF4 8005A5F4 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4ADF8 8005A5F8 0880023C */  lui        $v0, %hi(D_8007ACC8)
-    /* 4ADFC 8005A5FC C8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACC8)
+    /* 4ADF8 8005A5F8 0880023C */  lui        $v0, %hi(LevelId3_UpdateActors)
+    /* 4ADFC 8005A5FC C8AC4224 */  addiu      $v0, $v0, %lo(LevelId3_UpdateActors)
     /* 4AE00 8005A600 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4AE04 8005A604 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4AE08 8005A608 0880023C */  lui        $v0, %hi(D_8007BC50)
-    /* 4AE0C 8005A60C 50BC4224 */  addiu      $v0, $v0, %lo(D_8007BC50)
+    /* 4AE08 8005A608 0880023C */  lui        $v0, %hi(LevelId3_EmitParticles)
+    /* 4AE0C 8005A60C 50BC4224 */  addiu      $v0, $v0, %lo(LevelId3_EmitParticles)
     /* 4AE10 8005A610 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4AE14 8005A614 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4AE18 8005A618 0880023C */  lui        $v0, %hi(D_8007B180)
-    /* 4AE1C 8005A61C 80B14224 */  addiu      $v0, $v0, %lo(D_8007B180)
+    /* 4AE18 8005A618 0880023C */  lui        $v0, %hi(LevelId3_AdvanceEmitList)
+    /* 4AE1C 8005A61C 80B14224 */  addiu      $v0, $v0, %lo(LevelId3_AdvanceEmitList)
     /* 4AE20 8005A620 B66D0108 */  j          .L8005B6D8
     /* 4AE24 8005A624 00000000 */   nop
   jlabel .L8005A628
-    /* 4AE28 8005A628 0880023C */  lui        $v0, %hi(D_8007C204_lv9)
-    /* 4AE2C 8005A62C 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204_lv9)
+    /* 4AE28 8005A628 0880023C */  lui        $v0, %hi(LevelId9_OverlayEnd)
+    /* 4AE2C 8005A62C 04C24224 */  addiu      $v0, $v0, %lo(LevelId9_OverlayEnd)
     /* 4AE30 8005A630 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AE34 8005A634 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AE38 8005A638 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
-    /* 4AE3C 8005A63C 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
+    /* 4AE38 8005A638 0880023C */  lui        $v0, %hi(LevelId9_SpawnActor)
+    /* 4AE3C 8005A63C 8CB04224 */  addiu      $v0, $v0, %lo(LevelId9_SpawnActor)
     /* 4AE40 8005A640 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4AE44 8005A644 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4AE48 8005A648 0880023C */  lui        $v0, %hi(D_8007ACA8_lv9)
-    /* 4AE4C 8005A64C A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8_lv9)
+    /* 4AE48 8005A648 0880023C */  lui        $v0, %hi(LevelId9_UpdateActors)
+    /* 4AE4C 8005A64C A8AC4224 */  addiu      $v0, $v0, %lo(LevelId9_UpdateActors)
     /* 4AE50 8005A650 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4AE54 8005A654 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4AE58 8005A658 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
-    /* 4AE5C 8005A65C F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
+    /* 4AE58 8005A658 0880023C */  lui        $v0, %hi(LevelId9_EmitParticles)
+    /* 4AE5C 8005A65C F0B94224 */  addiu      $v0, $v0, %lo(LevelId9_EmitParticles)
     /* 4AE60 8005A660 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4AE64 8005A664 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4AE68 8005A668 0880023C */  lui        $v0, %hi(D_8007B160_lv9)
-    /* 4AE6C 8005A66C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160_lv9)
+    /* 4AE68 8005A668 0880023C */  lui        $v0, %hi(LevelId9_AdvanceEmitList)
+    /* 4AE6C 8005A66C 60B14224 */  addiu      $v0, $v0, %lo(LevelId9_AdvanceEmitList)
     /* 4AE70 8005A670 B66D0108 */  j          .L8005B6D8
     /* 4AE74 8005A674 00000000 */   nop
   jlabel .L8005A678
-    /* 4AE78 8005A678 0880023C */  lui        $v0, %hi(D_8007F2F4)
-    /* 4AE7C 8005A67C F4F24224 */  addiu      $v0, $v0, %lo(D_8007F2F4)
+    /* 4AE78 8005A678 0880023C */  lui        $v0, %hi(LevelId7_OverlayEnd)
+    /* 4AE7C 8005A67C F4F24224 */  addiu      $v0, $v0, %lo(LevelId7_OverlayEnd)
     /* 4AE80 8005A680 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AE84 8005A684 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AE88 8005A688 0880023C */  lui        $v0, %hi(D_8007D970_lv7)
-    /* 4AE8C 8005A68C 70D94224 */  addiu      $v0, $v0, %lo(D_8007D970_lv7)
+    /* 4AE88 8005A688 0880023C */  lui        $v0, %hi(LevelId7_SpawnActor)
+    /* 4AE8C 8005A68C 70D94224 */  addiu      $v0, $v0, %lo(LevelId7_SpawnActor)
     /* 4AE90 8005A690 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4AE94 8005A694 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4AE98 8005A698 0880023C */  lui        $v0, %hi(D_8007AD08_lv7)
-    /* 4AE9C 8005A69C 08AD4224 */  addiu      $v0, $v0, %lo(D_8007AD08_lv7)
+    /* 4AE98 8005A698 0880023C */  lui        $v0, %hi(LevelId7_UpdateActors)
+    /* 4AE9C 8005A69C 08AD4224 */  addiu      $v0, $v0, %lo(LevelId7_UpdateActors)
     /* 4AEA0 8005A6A0 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4AEA4 8005A6A4 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4AEA8 8005A6A8 0880023C */  lui        $v0, %hi(D_8007E8E4)
-    /* 4AEAC 8005A6AC E4E84224 */  addiu      $v0, $v0, %lo(D_8007E8E4)
+    /* 4AEA8 8005A6A8 0880023C */  lui        $v0, %hi(LevelId7_EmitParticles)
+    /* 4AEAC 8005A6AC E4E84224 */  addiu      $v0, $v0, %lo(LevelId7_EmitParticles)
     /* 4AEB0 8005A6B0 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4AEB4 8005A6B4 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4AEB8 8005A6B8 0880023C */  lui        $v0, %hi(D_8007DE34_lv7)
-    /* 4AEBC 8005A6BC 34DE4224 */  addiu      $v0, $v0, %lo(D_8007DE34_lv7)
+    /* 4AEB8 8005A6B8 0880023C */  lui        $v0, %hi(LevelId7_AdvanceEmitList)
+    /* 4AEBC 8005A6BC 34DE4224 */  addiu      $v0, $v0, %lo(LevelId7_AdvanceEmitList)
     /* 4AEC0 8005A6C0 B66D0108 */  j          .L8005B6D8
     /* 4AEC4 8005A6C4 00000000 */   nop
   jlabel .L8005A6C8
-    /* 4AEC8 8005A6C8 0880023C */  lui        $v0, %hi(D_8007C204_lv9)
-    /* 4AECC 8005A6CC 04C24224 */  addiu      $v0, $v0, %lo(D_8007C204_lv9)
+    /* 4AEC8 8005A6C8 0880023C */  lui        $v0, %hi(LevelId9_OverlayEnd)
+    /* 4AECC 8005A6CC 04C24224 */  addiu      $v0, $v0, %lo(LevelId9_OverlayEnd)
     /* 4AED0 8005A6D0 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4AED4 8005A6D4 D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4AED8 8005A6D8 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
-    /* 4AEDC 8005A6DC 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
+    /* 4AED8 8005A6D8 0880023C */  lui        $v0, %hi(LevelId9_SpawnActor)
+    /* 4AEDC 8005A6DC 8CB04224 */  addiu      $v0, $v0, %lo(LevelId9_SpawnActor)
     /* 4AEE0 8005A6E0 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4AEE4 8005A6E4 CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4AEE8 8005A6E8 0880023C */  lui        $v0, %hi(D_8007ACA8_lv9)
-    /* 4AEEC 8005A6EC A8AC4224 */  addiu      $v0, $v0, %lo(D_8007ACA8_lv9)
+    /* 4AEE8 8005A6E8 0880023C */  lui        $v0, %hi(LevelId9_UpdateActors)
+    /* 4AEEC 8005A6EC A8AC4224 */  addiu      $v0, $v0, %lo(LevelId9_UpdateActors)
     /* 4AEF0 8005A6F0 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4AEF4 8005A6F4 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4AEF8 8005A6F8 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
-    /* 4AEFC 8005A6FC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
+    /* 4AEF8 8005A6F8 0880023C */  lui        $v0, %hi(LevelId9_EmitParticles)
+    /* 4AEFC 8005A6FC F0B94224 */  addiu      $v0, $v0, %lo(LevelId9_EmitParticles)
     /* 4AF00 8005A700 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4AF04 8005A704 E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4AF08 8005A708 0880023C */  lui        $v0, %hi(D_8007B160_lv9)
-    /* 4AF0C 8005A70C 60B14224 */  addiu      $v0, $v0, %lo(D_8007B160_lv9)
+    /* 4AF08 8005A708 0880023C */  lui        $v0, %hi(LevelId9_AdvanceEmitList)
+    /* 4AF0C 8005A70C 60B14224 */  addiu      $v0, $v0, %lo(LevelId9_AdvanceEmitList)
     /* 4AF10 8005A710 B66D0108 */  j          .L8005B6D8
     /* 4AF14 8005A714 00000000 */   nop
   jlabel .L8005A718
@@ -81966,8 +81966,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B004 8005A804 50AF4224 */  addiu      $v0, $v0, %lo(D_8007AF50_lv54)
     /* 4B008 8005A808 0780013C */  lui        $at, %hi(g_pfnLevelBeginActorCutscene)
     /* 4B00C 8005A80C A05722AC */  sw         $v0, %lo(g_pfnLevelBeginActorCutscene)($at)
-    /* 4B010 8005A810 0880023C */  lui        $v0, %hi(D_8007B08C_lv9)
-    /* 4B014 8005A814 8CB04224 */  addiu      $v0, $v0, %lo(D_8007B08C_lv9)
+    /* 4B010 8005A810 0880023C */  lui        $v0, %hi(LevelId9_SpawnActor)
+    /* 4B014 8005A814 8CB04224 */  addiu      $v0, $v0, %lo(LevelId9_SpawnActor)
     /* 4B018 8005A818 0780013C */  lui        $at, %hi(g_pfnLevelOnSaveMenuExit)
     /* 4B01C 8005A81C A85822AC */  sw         $v0, %lo(g_pfnLevelOnSaveMenuExit)($at)
     /* 4B020 8005A820 0880023C */  lui        $v0, %hi(D_8007B0D0)
@@ -82030,8 +82030,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B0FC 8005A8FC 68B04224 */  addiu      $v0, $v0, %lo(D_8007B068)
     /* 4B100 8005A900 0780013C */  lui        $at, %hi(g_pfnLevelOnSaveMenuExit)
     /* 4B104 8005A904 A85822AC */  sw         $v0, %lo(g_pfnLevelOnSaveMenuExit)($at)
-    /* 4B108 8005A908 0880023C */  lui        $v0, %hi(D_8007B0AC_lv13)
-    /* 4B10C 8005A90C ACB04224 */  addiu      $v0, $v0, %lo(D_8007B0AC_lv13)
+    /* 4B108 8005A908 0880023C */  lui        $v0, %hi(LevelId3_SpawnActor)
+    /* 4B10C 8005A90C ACB04224 */  addiu      $v0, $v0, %lo(LevelId3_SpawnActor)
     /* 4B110 8005A910 0780013C */  lui        $at, %hi(g_pfnGamestate0cSubstateUpdate)
     /* 4B114 8005A914 4C5722AC */  sw         $v0, %lo(g_pfnGamestate0cSubstateUpdate)($at)
     /* 4B118 8005A918 0880023C */  lui        $v0, %hi(D_8007D04C)
@@ -82335,8 +82335,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B59C 8005AD9C ACB94224 */  addiu      $v0, $v0, %lo(D_8007B9AC)
     /* 4B5A0 8005ADA0 0780013C */  lui        $at, %hi(g_pfnLevelOnSaveMenuExit)
     /* 4B5A4 8005ADA4 A85822AC */  sw         $v0, %lo(g_pfnLevelOnSaveMenuExit)($at)
-    /* 4B5A8 8005ADA8 0880023C */  lui        $v0, %hi(D_8007B9F0_lv9)
-    /* 4B5AC 8005ADAC F0B94224 */  addiu      $v0, $v0, %lo(D_8007B9F0_lv9)
+    /* 4B5A8 8005ADA8 0880023C */  lui        $v0, %hi(LevelId9_EmitParticles)
+    /* 4B5AC 8005ADAC F0B94224 */  addiu      $v0, $v0, %lo(LevelId9_EmitParticles)
     /* 4B5B0 8005ADB0 0780013C */  lui        $at, %hi(g_pfnGamestate0cSubstateUpdate)
     /* 4B5B4 8005ADB4 4C5722AC */  sw         $v0, %lo(g_pfnGamestate0cSubstateUpdate)($at)
     /* 4B5B8 8005ADB8 0880023C */  lui        $v0, %hi(D_8007D990)
@@ -82928,24 +82928,24 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BE88 8005B688 B66D0108 */  j          .L8005B6D8
     /* 4BE8C 8005B68C 00000000 */   nop
   jlabel .L8005B690
-    /* 4BE90 8005B690 0880023C */  lui        $v0, %hi(D_8007C654)
-    /* 4BE94 8005B694 54C64224 */  addiu      $v0, $v0, %lo(D_8007C654)
+    /* 4BE90 8005B690 0880023C */  lui        $v0, %hi(LevelId99_OverlayEnd)
+    /* 4BE94 8005B694 54C64224 */  addiu      $v0, $v0, %lo(LevelId99_OverlayEnd)
     /* 4BE98 8005B698 0880013C */  lui        $at, %hi(g_pDrawBufA)
     /* 4BE9C 8005B69C D88522AC */  sw         $v0, %lo(g_pDrawBufA)($at)
-    /* 4BEA0 8005B6A0 0880023C */  lui        $v0, %hi(D_8007B0C0)
-    /* 4BEA4 8005B6A4 C0B04224 */  addiu      $v0, $v0, %lo(D_8007B0C0)
+    /* 4BEA0 8005B6A0 0880023C */  lui        $v0, %hi(LevelId99_SpawnActor)
+    /* 4BEA4 8005B6A4 C0B04224 */  addiu      $v0, $v0, %lo(LevelId99_SpawnActor)
     /* 4BEA8 8005B6A8 0780013C */  lui        $at, %hi(g_pfnLevelSpawnActor)
     /* 4BEAC 8005B6AC CC5822AC */  sw         $v0, %lo(g_pfnLevelSpawnActor)($at)
-    /* 4BEB0 8005B6B0 0880023C */  lui        $v0, %hi(D_8007ACDC)
-    /* 4BEB4 8005B6B4 DCAC4224 */  addiu      $v0, $v0, %lo(D_8007ACDC)
+    /* 4BEB0 8005B6B0 0880023C */  lui        $v0, %hi(LevelId99_UpdateActors)
+    /* 4BEB4 8005B6B4 DCAC4224 */  addiu      $v0, $v0, %lo(LevelId99_UpdateActors)
     /* 4BEB8 8005B6B8 0780013C */  lui        $at, %hi(g_pfnLevelUpdateActors)
     /* 4BEBC 8005B6BC 345722AC */  sw         $v0, %lo(g_pfnLevelUpdateActors)($at)
-    /* 4BEC0 8005B6C0 0880023C */  lui        $v0, %hi(D_8007BC44)
-    /* 4BEC4 8005B6C4 44BC4224 */  addiu      $v0, $v0, %lo(D_8007BC44)
+    /* 4BEC0 8005B6C0 0880023C */  lui        $v0, %hi(LevelId99_EmitParticles)
+    /* 4BEC4 8005B6C4 44BC4224 */  addiu      $v0, $v0, %lo(LevelId99_EmitParticles)
     /* 4BEC8 8005B6C8 0780013C */  lui        $at, %hi(g_pfnLevelEmitParticles)
     /* 4BECC 8005B6CC E45822AC */  sw         $v0, %lo(g_pfnLevelEmitParticles)($at)
-    /* 4BED0 8005B6D0 0880023C */  lui        $v0, %hi(D_8007B194)
-    /* 4BED4 8005B6D4 94B14224 */  addiu      $v0, $v0, %lo(D_8007B194)
+    /* 4BED0 8005B6D0 0880023C */  lui        $v0, %hi(LevelId99_AdvanceEmitList)
+    /* 4BED4 8005B6D4 94B14224 */  addiu      $v0, $v0, %lo(LevelId99_AdvanceEmitList)
   .L8005B6D8:
     /* 4BED8 8005B6D8 0780013C */  lui        $at, %hi(g_pfnLevelAdvanceEmitList)
     /* 4BEDC 8005B6DC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
