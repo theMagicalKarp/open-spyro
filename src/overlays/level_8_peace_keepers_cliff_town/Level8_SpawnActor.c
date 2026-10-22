@@ -122,7 +122,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     rec->rotZ = 0;
     CopyVector(pos, &parent->posX);
     HideActorRenderRecord(rec);
-    rec->unk1C = -1;
+    rec->groundCode = -1;
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);

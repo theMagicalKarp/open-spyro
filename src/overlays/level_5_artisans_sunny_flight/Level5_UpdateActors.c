@@ -1456,7 +1456,7 @@ void Level5_UpdateActors(void) {
           actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
-          actor->unk1C = 0;
+          actor->groundCode = 0;
           actor->visZone = 0xFF;
           actor->subMode = 2;
         }

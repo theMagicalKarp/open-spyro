@@ -2472,7 +2472,7 @@ void Level24_UpdateActors(void) {
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->unk1C |= 0x80000000;
+                actor->groundCode |= 0x80000000;
               }
             }
           }
@@ -2596,7 +2596,7 @@ void Level24_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
 
-          actor->unk1C &= 0x7FFFFFFF;
+          actor->groundCode &= 0x7FFFFFFF;
         }
         break;
       }
@@ -3498,7 +3498,7 @@ void Level24_UpdateActors(void) {
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
-            actor->unk1C = 0;
+            actor->groundCode = 0;
             actor->visZone = 0xFF;
             actor->subMode = 2;
           }

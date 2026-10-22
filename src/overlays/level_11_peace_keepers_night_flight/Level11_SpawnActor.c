@@ -36,7 +36,7 @@ typedef struct Actor {
   int posY;            /* 0x10 */
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 */
-  int unk1C;           /* 0x1C */
+  int groundCode;      /* 0x1C packed ground contact (see actor.h) */
   int mtx[5];        /* 0x20 */
   short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
@@ -194,7 +194,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->unk46 = 0;
       CopyVector(pos, &parent->posX);
       HideActorRenderRecord(rec);
-      rec->unk1C = -1;
+      rec->groundCode = -1;
       CopyVector(probe, pos);
       probe[2] += 0x400;
       FindGroundHeightBelow(probe, 0x10000);
