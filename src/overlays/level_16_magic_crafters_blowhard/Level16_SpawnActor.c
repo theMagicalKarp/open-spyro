@@ -22,6 +22,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level16_SpawnActor (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
@@ -174,16 +175,10 @@ extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern int g_anCameraPos;     /* turret aim target X */
-extern int g_nCameraPosY;     /* turret aim target Y */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern int g_anSpyroVelocity[3];
-extern int g_nGemPickupSubstate;
-extern short g_anLaunchDirTable[]; /* launch-direction table, x */
-extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
-extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */

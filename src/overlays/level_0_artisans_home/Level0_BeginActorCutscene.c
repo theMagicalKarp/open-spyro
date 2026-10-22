@@ -12,25 +12,15 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
-extern int g_nGamestate; /* g_Gamestate */
 extern int g_nGamestate0cSubstate;
 extern int g_nGamestate0cTimer;
 extern int D_800777F0;
-extern unsigned char *g_pGamestate0cActor;
-extern int g_nGameplayBlocked;
-extern int g_nGamePaused;
 extern char *g_pActorListBase;
 extern char *g_pGamestate0cRecord;
 extern int g_anCameraPos[];
-extern int g_nCameraPosY;
-extern int g_nCameraPosZ;
-extern int g_nGamestate0cCamYawStart;
-extern int g_nGamestate0cCamRadiusStart;
-extern int g_nGamestate0cCamHeightStart;
 extern int g_nGamestate0cCamYawGoal;
-extern int g_nGamestate0cCamRadiusGoal;
-extern int g_nGamestate0cCamHeightGoal;
 
 void Level0_BeginActorCutscene(unsigned char *actor) {
   int vec[4];

@@ -11,6 +11,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level17_SpawnActor (0x80081F0C, level_17_magic_crafters_crystal_flight
  * overlay, 0xb94 bytes).
@@ -149,12 +150,9 @@ extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern int g_anSpyroVelocity[3];
-extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
-extern int g_nActiveWorldIndex;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 

@@ -19,34 +19,16 @@
  * Identical body in the five flight-level overlays.
  */
 
+#include "level_globals.h"
+
 extern void LoadImage();
 extern void DrawSync();
 extern void InitLightVectorConstants(void);
 
 extern char *g_pRenderScratchPrimTop;
-extern int g_nGamestate;
-extern int g_nActiveWorldIndex;
-extern int g_nLevelIntroIndex;
-extern int g_nGemTallyIconCount;
-extern int g_nWorldTreasureCollected;
-extern int g_nFlightRunClock;
-extern int g_nCameraCurrentMode;
-extern int g_nCameraNextMode;
 extern int g_anLevelGemsCollected[];
-extern unsigned char g_abGemTallyIconUvTable[];
 extern int g_anWorldPersistentFlags[];
 extern int g_anFlightTargetTally;
-extern int g_nFlightTargetTally1;
-extern int g_nFlightTargetTally2;
-extern int g_nFlightTargetTally3;
-extern unsigned char g_abWorldPerLevelByteTable[];
-extern unsigned char D_80078684[];
-extern int g_nSpyroState;
-extern int g_nSpyroStateFlags;
-extern int g_anFlightCourseBonusTable[];
-extern int D_8006E930[];
-extern unsigned char D_8006E998[];
-extern unsigned char g_abSpyroStateCameraMode[];
 
 void Level17_HandleFlightResults(int reload) {
   int i;

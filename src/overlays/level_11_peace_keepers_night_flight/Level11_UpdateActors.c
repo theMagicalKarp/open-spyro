@@ -32,6 +32,7 @@
 
 #include "actor.h"
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level11_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -53,10 +54,7 @@
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
 extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
-extern int g_nFrameStep;      /* frame delta in ticks */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
-extern int g_nActorAnimDone;      /* current actor's animation finished */
-extern int g_nActorAnimNewFrame;      /* current actor's new-frame flag */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
  * animation. */
@@ -211,21 +209,17 @@ extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
-extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
 } g_nSfxOverridePitch;
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
  * shift, sine and cosine. */
-extern int g_nGameplayBlocked;
 extern struct {
   int v;
 } g_nHudWorldEggRollRequest;
 extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
-extern int g_nLevelIntroIndex;
 extern int g_anLevelEggsRecovered[];
-extern int g_nWorldEggsRecovered;
 
 extern void AimCameraStickTowardPoint(int *pos);
 extern void VectorToSVectorShr2(short *d, int *s);
@@ -272,8 +266,6 @@ typedef struct DebrisState {
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
-extern int g_nCollisionProbeVecY;
-extern int g_nCollisionProbeVecZ;
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {
@@ -311,11 +303,6 @@ typedef struct RotBillboard {
 
 extern RotBillboard g_aRotBillboards[];
 
-/* SpawnActorRotBillboard spawn offsets (one 0xC-byte table from 0x8006e57c), per model family. */
-extern int g_anRotBillboardOffset3;
-extern int g_anRotBillboardOffset5;
-extern int g_anRotBillboardOffset4;
-
 /* Type 173: key. Rocks in place, sparkles, and is collected on contact. */
 typedef struct SpinState {
   short timer;         /* 0x00 */
@@ -323,15 +310,9 @@ typedef struct SpinState {
   unsigned char anim;  /* 0x03 0xFF == none */
 } SpinState;
 
-extern int g_nLevelEggCount; /* key collected */
-
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
-
-/* Dynamic actor pool counters; the difference is the free slot count. */
-extern int g_nActorPoolLiveCount;
-extern int g_nActorPoolCapacity;
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -372,10 +353,6 @@ typedef struct LiftState {
 } LiftState;
 
 #define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
-
-/* Type 398: exit vortex. Surface-below flags and the level transition
- * globals. */
-extern int g_nGamestate;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -454,13 +431,7 @@ typedef struct RespawnState {
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int g_nCollisionResolvedY;   /* ..y */
 extern int g_nCollisionResolvedZ;   /* ..z */
-extern int g_nLastCollisionHitChunkId;   /* collision triangle index */
-extern int g_nExtraLives;   /* life count, capped at 99 */
-extern int g_nSparxFoodCount;   /* life orb count */
-extern short g_nSfxOverrideVolL; /* sound volume override, left/right */
-extern short g_nSfxOverrideVolR;
 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut[];
@@ -522,11 +493,6 @@ typedef struct FlierState {
   FxNode *fx;   /* 0x0C */
   Actor *rider; /* 0x10 */
 } FlierState;
-
-extern int D_8006E390;
-extern void *D_8006E490;
-extern void *D_8006E494;
-extern void *g_adwActorBurstColors[];
 
 extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
@@ -864,11 +830,8 @@ typedef struct DoorState {
   int restZ; /* 0x50 */
 } DoorState;
 
-extern int g_nSpyroStateFlags;
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
-
-extern int g_dwSpyroRequestMask;         /* scripted camera control word */
 
 extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
 extern void SetWorldChunkAnimStep(int ch, int n, int a);
@@ -901,9 +864,6 @@ typedef struct BurstState {
 } BurstState;
 
 extern int g_anWorldPersistentFlags[];  /* per-mode "time attack" flag */
-extern int g_nActiveWorldIndex;    /* current mode index */
-extern int g_nFlightTimeBonus;    /* time bonus accumulator */
-extern int g_nFlightTimeRemaining;    /* time remaining */
 extern int g_nVblankTickCount;    /* frame counter */
 extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
 extern int PlaneDistanceAbs(int *pos, void *st);
@@ -921,7 +881,6 @@ typedef struct TallyState {
   short phase;  /* 0x10 */
 } TallyState;
 
-extern int g_nFlightTallySlot;      /* tally slot index */
 extern short g_anSineLut[];  /* HUD slot layout rows, 64 shorts each */
 extern short g_anCosineLut[];
 
@@ -940,21 +899,10 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-extern int g_nFlightRunClock;      /* elapsed time (time attack) */
-extern int g_nFlightQuitFlag;
-extern int g_anFlightTallyShown[];    /* tally shown, per class */
 extern int g_anFlightTargetTally[];    /* tally collected, per class */
-extern int g_anFlightTallyActiveSlots;      /* pending tally-class queue, 4 deep */
-extern int D_8007860C;
-extern int D_80078610;
-extern int D_80078614;
-extern int g_nFlightTallyShownClass;      /* tally class being shown */
-extern int D_8006E3E4[];
 extern Actor g_abHudIconActorRecords[];  /* the four HUD class icons */
-extern int D_800756A0;
 extern void (*g_pfnLevelFallImpactCallback)(void); /* out-of-time handler */
 extern void ChangeSpyroState(int a);
-extern unsigned char *g_pLevelSoundIds; /* level sound ids */
 
 /* ==== The function ==== */
 void Level11_UpdateActors(void) {

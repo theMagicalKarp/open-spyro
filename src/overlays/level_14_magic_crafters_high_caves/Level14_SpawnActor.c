@@ -36,6 +36,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
@@ -146,14 +147,9 @@ extern int FindGroundHeightBelow(int *pos, int drop);
 
 extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];
-extern int g_anSpyroVelocity[3];
-extern int g_nGemPickupSubstate;
-extern short g_anLaunchDirTable[]; /* launch-direction table, x */
-extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
-extern int g_nSpyroGroundHeightZ;     /* g_nSpyroGroundHeight */
 
 Actor *Level14_SpawnActor(int type, Actor *parent) {
   Actor *rec;

@@ -8,20 +8,10 @@
  * Identical body in the five flight-level overlays (level_5/11/17/23/29).
  */
 
-extern int g_nGamestate;
-extern int g_nFlightRunClock;
-extern int g_nActiveWorldIndex;
-extern int g_nPauseMenuCursor;
-extern int g_nPauseMenuIdleFrames;
-extern int g_nPauseMenuTransitionFrames;
-extern int g_nSubMenuCursor;
-extern int g_nSubMenuScrollOffset;
-extern int g_nFlightResultsRevealStep;
+#include "level_globals.h"
+
 extern int g_anWorldPersistentFlags[];
 extern int g_anFlightTargetTally;
-extern int g_nFlightTargetTally1;
-extern int g_nFlightTargetTally2;
-extern int g_nFlightTargetTally3;
 
 void Level5_FlightEndHook(void) {
   if (g_nGamestate != 7) {

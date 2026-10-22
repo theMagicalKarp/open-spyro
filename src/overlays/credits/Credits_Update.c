@@ -211,6 +211,8 @@
  *     but makes src non-local and breaks allocation.
  */
 
+#include "level_globals.h"
+
 extern void CdReadSyncSectors();
 extern void CopyWords();
 extern void StartCdReadAsync();
@@ -234,13 +236,11 @@ typedef struct {
   int w[5];
 } Blk20;
 
-extern int g_nFrameStep;
 extern int D_800756E4;
 extern int g_nReturningHomePhase;
 extern int g_nGamestate0fMode;
 extern char *D_80075708;
 extern char *D_80075768;
-extern int g_nPreserveMobIdx;
 extern int D_800757AC;
 extern char *D_800757BC;
 extern int D_800757DC;
@@ -252,9 +252,6 @@ extern int g_nGenericCountdown;
 extern int D_80075958;
 extern int D_80075968;
 extern char *volatile g_pLevelSampleBankEntries;
-extern int g_nSfxOverrideFlags;
-extern short g_nSfxOverrideVolL;
-extern short g_nSfxOverrideVolR;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
 extern int g_nWorldTimAudioChunkOffset[];
@@ -264,11 +261,7 @@ extern int g_nWorldBundleChunkSize;
 extern int g_nLevelArchiveChunkOffset;
 extern volatile int g_nLevelArchiveChunkSize;
 extern int g_anCameraPos;
-extern int g_nCameraPosY;
-extern int g_nCameraPosZ;
-extern short g_nCameraEulerRoll;
 extern short g_nCameraEulerPitch;
-extern short g_nCameraEulerYaw;
 extern Blk20 g_nWorldCollisionTriCount;
 extern Blk20 g_nWorldRenderMeshChunkCount;
 extern int D_80076C1C_n;

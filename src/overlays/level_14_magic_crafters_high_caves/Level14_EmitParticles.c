@@ -36,6 +36,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -176,19 +177,9 @@ extern short g_anSineLut[];        /* sine table */                 /* GetRandom
 extern Actor *g_pActorListBase;
 extern short g_anCosineLut[];        /* cosine table */
 extern short g_anSineLut[];        /* sine table */
-extern int g_nGamestate;            /* g_Gamestate */
-extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
-extern int g_nSpyroGroundHeightZ;
-extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
-extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
-extern unsigned char g_abEmitTrailColorsG[];
-extern unsigned char g_abEmitTrailColorsB[];
-extern int g_anEmitStepOffsets[];            /* per-step offsets, stride 3 ints */
-extern int g_anEmitSlotOffsets[];            /* per-slot offsets, stride 3 ints */
-extern int g_anSparxEmitOffset[];
 
 void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
   int v0[3];

@@ -36,6 +36,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level18_AdvanceEmitList (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
@@ -90,13 +91,8 @@ extern int abs(int n);
 extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
-extern int g_nSpyroDrawSuppressed;
-extern int g_nFrameStep;            /* per-frame step count */
 extern short g_anSineLut[];        /* sine table */
 extern short g_anCosineLut[];        /* cosine table */
-extern short g_nCameraEulerYaw;
-extern int g_nGemPickupTimer;
-extern int g_nSpyroState;
 extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 extern int g_nLevelReadyFlag;
 

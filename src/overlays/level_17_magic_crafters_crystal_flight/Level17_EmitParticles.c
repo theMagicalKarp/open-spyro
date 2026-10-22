@@ -33,6 +33,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
@@ -86,20 +87,10 @@ typedef struct Actor {
 extern void *AllocEmitListRecord(int cls);
 extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
 
-extern int g_nGamestate;            /* g_Gamestate */
-extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
 extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
-extern int g_nSpyroGroundHeightZ;
-extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
-extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
-extern unsigned char g_abEmitTrailColorsG[];
-extern unsigned char g_abEmitTrailColorsB[];
-extern int g_anEmitStepOffsets[];            /* per-step offsets, stride 3 ints */
-extern int g_anEmitSlotOffsets[];            /* per-slot offsets, stride 3 ints */
-extern int g_anSparxEmitOffset[];
 
 void Level17_EmitParticles(int count, int type, int *pos, int arg3) {
   int v0[3];

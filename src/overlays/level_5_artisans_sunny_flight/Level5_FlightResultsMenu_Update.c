@@ -17,6 +17,8 @@
  * Identical body in the five flight-level overlays.
  */
 
+#include "level_globals.h"
+
 extern void StopAllSoundExceptMask(int mask);
 extern void RotateLightVectorXZ(int step);
 extern void PlaySoundEffect();
@@ -24,20 +26,11 @@ extern void LoadAndStartLevelFromCd(void);
 extern void BeginPauseToMenuTransition(void);
 extern void (*g_pfnLevelHandleFlightResults)();
 
-extern int g_nPauseMenuIdleFrames;
-extern int g_nPauseMenuCursor;
-extern int g_nSubMenuCursor;
-extern int g_nSubMenuScrollOffset;
-extern int g_nActiveWorldIndex;
 extern unsigned char *g_pLevelSampleBankHeader;
 extern unsigned int g_dwPadPressed[];
 extern unsigned int g_dwHudBobSinePhase[];
-extern unsigned char D_80078032[];
 extern int g_anWorldPersistentFlags[];
 extern int g_anFlightTargetTally;
-extern int g_nFlightTargetTally1;
-extern int g_nFlightTargetTally2;
-extern int g_nFlightTargetTally3;
 
 void Level5_FlightResultsMenu_Update(void) {
   unsigned int *bob;

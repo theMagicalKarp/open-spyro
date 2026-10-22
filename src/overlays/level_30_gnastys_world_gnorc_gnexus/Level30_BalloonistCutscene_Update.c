@@ -77,6 +77,8 @@
  *      too much life and loses it a1 to `z` in local-alloc.
  */
 
+#include "level_globals.h"
+
 extern void TickLevelTransitionStream();
 extern void CopyWords(void *dst, void *src, int len);
 extern int ArcTan2(int dy, int dx, int flag);
@@ -108,96 +110,29 @@ extern void InitLightVectorConstants(void);
 extern int GetRandomU32();
 
 extern int g_anCameraDynamicTargetParams[];
-extern int D_8006EADC[];
-extern int D_8006EAE0[];
 extern unsigned char *g_apSaveMenuAnimActorList[];
-extern int D_800700F8;
-extern int D_80071E9C[];
 extern void (*g_pfnLevelAdvanceEmitList)(int);
-extern int g_nFrameStep;
-extern int g_nScriptedRespawnFlag;
-extern int g_nGameplayBlocked;
-extern int g_nPreserveMobIdx;
-extern int g_nGamePaused;
-extern int g_nGamestate;
-extern int g_nCdStreamState;
 extern unsigned char *g_pLevelOverlayInitRecord;
-extern int g_nSpyroFlameBreathTimerSave;
 extern void (*g_pfnLevelOnSaveMenuExit)();
-extern int g_nScriptedMobTag;
-extern int g_nCurrentLevelId;
-extern unsigned char g_abSaveOptionsBlock[];
-extern unsigned char D_800758D1;
-extern int g_nActiveLevelId;
 extern unsigned char *g_pLevelSampleBankHeader;
-extern int *D_800769F8[];
 extern int g_anCameraPos[];
-extern int g_nCameraPosY;
-extern int g_nCameraPosZ;
-extern short g_nCameraEulerRoll;
 extern short g_nCameraEulerPitch;
-extern short g_nCameraEulerYaw;
-extern int g_nCameraCurrentMode;
-extern int g_nCameraNextMode;
 extern int g_pCameraAnchorPos[];
-extern int g_nCameraTargetYawBiasFromMode;
 extern int g_pCameraTargetParams;
-extern int D_80076FEC;
-extern int D_80077004;
-extern int D_80077008;
-extern int D_80077018;
-extern int D_80077024;
 extern int g_dwPadPressed[];
 extern int g_nGamestate0cSubstate[];
 extern int g_nGamestate0cTimer[];
-extern int D_800777EC_s;
 extern int D_800777F0[];
-extern int D_800777F0_s;
 extern int D_800777F4[];
-extern int D_800777F4_s; /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
-extern int D_800777F8;
-extern int g_nGamestate0cCardVariant;
-extern int D_80077800[];
-extern int D_80077804;
-extern int D_80077808;
-extern int D_8007780C;
-extern int D_80077810;
-extern int D_80077814;
-extern int D_80077818;
-extern int D_8007781C;
-extern int g_nGamestate0cCamYawStart;
-extern int g_nGamestate0cCamRadiusStart;
-extern int g_nGamestate0cCamHeightStart;
-extern int D_8007782C;
-extern int D_80077830;
-extern int D_80077834;
 extern int g_nGamestate0cCamYawGoal[];
-extern int g_nGamestate0cCamYawGoal_s; /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
-extern int g_nGamestate0cCamRadiusGoal;
-extern int g_nGamestate0cCamHeightGoal;
-extern int D_80077844;
-extern int D_80077848;
-extern unsigned char *g_pGamestate0cActor;
 extern unsigned char *g_pGamestate0cRecord;
 extern int g_pRenderScratchRegionBase;
-extern int g_nSpyroFlameBreathTimer;
 extern int g_pWorldRenderMeshChunkArray;
 extern int g_anSpyroWorldPos[];
 extern int g_nSpyroWorldPosY;
-extern int g_nSpyroWorldPosZ;
 extern unsigned char g_abSpyroPersistentEuler[];
-extern unsigned char g_bSpyroPersistentEulerY;
 extern unsigned char g_bSpyroPersistentEulerZ;
-extern unsigned char g_bSpyroAnimPrev[];
-extern unsigned char g_bSpyroAnimCurrent;
-extern unsigned char g_bSpyroFramePrev;
-extern unsigned char g_bSpyroAnimFrame;
-extern unsigned char g_bSpyroSubFrameTimer;
 extern unsigned char g_bSpyroOtBinBias;
-extern int g_nSpyroAnimPlayRate;
-extern int g_nSpyroGroundHeightZ;
-extern int g_nSpyroBodyYaw;
-extern int g_nSpyroPadSnapshotCountdown;
 
 void Level30_BalloonistCutscene_Update(void)
 {

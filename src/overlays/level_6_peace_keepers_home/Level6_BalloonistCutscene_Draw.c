@@ -24,6 +24,8 @@
  * Word-identical body (branch displacements aside) in all ten hub overlays.
  */
 
+#include "level_globals.h"
+
 extern void sprintf();
 extern int strlen();
 extern void BuildTextSprites();  /* BuildTextSpriteChain */
@@ -40,19 +42,12 @@ extern void RasterizeEmitList();
 
 extern int g_nGamestate0cSubstate[];            /* [0] substate [1] phase [2] selected [3] submode [4] greeting */
 extern int g_pSpriteRecordWriteCursor;              /* sprite-record write cursor */
-extern int g_nActiveLevelId;              /* active level id */
-extern int g_nCurrentLevelId;              /* current level id */
 extern int g_pGamestate0cRecord;              /* pending OT node */
 extern int g_apSpritePrimQueue;              /* sprite prim queue head */
 extern int g_pOtDepthBinHead0[];            /* OT depth-bin list */
 extern unsigned short g_anCosineLut[]; /* cosine LUT */
-extern unsigned char g_abSaveOptionsBlock[];  /* per-world visited flags */
-extern unsigned char g_abBalloonistDialoguePageStarts[];  /* dialogue page first line */
-extern unsigned char D_8006F89D[];  /* dialogue page end line */
 extern char *g_apBalloonistNames[];          /* per-world balloonist names */
 extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
-extern char *D_8006F7D4[];          /* world names */
-extern char *D_8006F7D8[];          /* level names */
 
 static const char g_szGoTo[12];
 

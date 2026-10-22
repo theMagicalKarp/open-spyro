@@ -11,6 +11,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level11_SpawnActor (0x800819BC, level_11_peace_keepers_night_flight
  * overlay, 0x944 bytes).
@@ -146,12 +147,10 @@ extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
-extern int g_nActiveWorldIndex;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern int g_anSpyroVelocity[3];
 extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in

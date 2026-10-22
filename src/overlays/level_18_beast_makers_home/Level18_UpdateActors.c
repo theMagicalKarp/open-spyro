@@ -32,14 +32,12 @@
 
 #include "actor.h"
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
 extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
-extern int g_nFrameStep;      /* frame delta in ticks */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
-extern int g_nActorAnimDone;      /* current actor's animation finished */
-extern int g_nActorAnimNewFrame;      /* current actor's new-frame flag */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
  * animation. */
@@ -197,21 +195,17 @@ extern Actor *g_pActorListBase;         /* level actor pool */
 extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
 extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
-extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
 } g_nSfxOverridePitch;
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
  * shift, sine and cosine. */
-extern int g_nGameplayBlocked;
 extern struct {
   int v;
 } g_nHudWorldEggRollRequest;
 extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
-extern int g_nLevelIntroIndex;
 extern int g_anLevelEggsRecovered[];
-extern int g_nWorldEggsRecovered;
 
 extern void AimCameraStickTowardPoint(int *pos);
 extern void VectorToSVectorShr2(short *d, int *s);
@@ -258,8 +252,6 @@ typedef struct DebrisState {
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
-extern int g_nCollisionProbeVecY;
-extern int g_nCollisionProbeVecZ;
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {
@@ -297,11 +289,6 @@ typedef struct RotBillboard {
 
 extern RotBillboard g_aRotBillboards[];
 
-/* SpawnActorRotBillboard spawn offsets (one 0xC-byte table from 0x8006e57c), per model family. */
-extern int g_anRotBillboardOffset3;
-extern int g_anRotBillboardOffset5;
-extern int g_anRotBillboardOffset4;
-
 /* Type 173: key. Rocks in place, sparkles, and is collected on contact. */
 typedef struct SpinState {
   short timer;         /* 0x00 */
@@ -309,20 +296,11 @@ typedef struct SpinState {
   unsigned char anim;  /* 0x03 0xFF == none */
 } SpinState;
 
-extern int g_nLevelEggCount; /* key collected */
-
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
-extern int g_nWorldDragonsRescued;
-extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the latch */
 extern int D_800777F4;
-extern int D_800777F8;
 extern void ResetSpyroLinearMotion(void);
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
-
-/* Dynamic actor pool counters; the difference is the free slot count. */
-extern int g_nActorPoolLiveCount;
-extern int g_nActorPoolCapacity;
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -368,16 +346,7 @@ typedef struct LiftState {
 
 /* Type 398: exit vortex. Surface-below flags and the level transition
  * globals. */
-extern int g_nGroundSurfaceType;             /* index of the surface under the probe */
 extern unsigned char **g_pTriggerRegionTable; /* surface records, indexed by the above */
-extern int g_nCdStreamState;
-extern int g_nLevelTransitionPhase;
-extern int g_nLevelTransitionTallyActive;
-extern int g_nGamePaused;
-extern int g_nGamestate;
-extern int g_nScriptedMobViewYawSpin;
-extern int g_nScriptedMobViewPitchTilt;
-extern int g_nLevelIntroParallaxCountdown;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -438,11 +407,6 @@ typedef struct PortalState {
   int unk18;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
-/* SpawnActorRotBillboard spawn offsets for the crystal dragon, one per sparkle phase. */
-extern int g_anRotBillboardOffset0;
-extern int g_anRotBillboardOffset1;
-extern int g_anRotBillboardOffset2;
-
 extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
 /* Type 300: camera trigger volume. Live camera sphere and its template. */
@@ -473,13 +437,7 @@ extern void StubRewardHook(int script, int a);
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int g_nCollisionResolvedY;   /* ..y */
 extern int g_nCollisionResolvedZ;   /* ..z */
-extern int g_nLastCollisionHitChunkId;   /* collision triangle index */
-extern int g_nExtraLives;   /* life count, capped at 99 */
-extern int g_nSparxFoodCount;   /* life orb count */
-extern short g_nSfxOverrideVolL; /* sound volume override, left/right */
-extern short g_nSfxOverrideVolR;
 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut[];
@@ -545,11 +503,6 @@ typedef struct FlierState {
   Actor *rider; /* 0x10 */
 } FlierState;
 
-extern int D_8006E390;
-extern void *D_8006E490;
-extern void *D_8006E494;
-extern void *g_adwActorBurstColors[];
-
 extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
 extern int StepAngle8Toward(int a, int b, int c);
@@ -572,8 +525,6 @@ typedef struct PatchRideState {
   int handle;    /* 0x00 */
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
-
-extern int g_dwGamestateFrames; /* frame counter; the arm acts on every 4th frame */
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
@@ -888,37 +839,22 @@ typedef struct DoorState {
   int restZ; /* 0x50 */
 } DoorState;
 
-extern short g_nCameraEulerYaw; /* camera yaw, as the balloonist reads it */
-extern int g_nCameraCurrentMode;   /* camera mode */
 extern int g_nCameraSpringYaw;   /* camera spherical target */
 extern int g_nCameraYaw;   /* camera spherical current */
-extern int g_nCameraNextMode;
 extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
 extern volatile unsigned char g_bSpyroOtBinBias;
-extern int g_nSpyroState;   /* Spyro's state */
-extern int g_nSpyroStateFlags;
-extern int g_nSpyroStateTimer;
-extern int g_nSpyroAirborneFrames;
 extern int g_anSpyroMotionVec; /* look-at offset */
-extern int D_80078B68;
-extern int g_nSpyroMotionZ;
-extern int g_nSpyroMotionSpeed;
-extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
-extern int g_nSpyroSwingEulerPitchTarget;
 
-extern int g_dwSpyroRequestMask;         /* scripted camera control word */
 extern signed char D_80078C5E; /* destination level */
 extern struct {
   int x;
   int y;
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-extern int g_nSpyroRequestVelocityZ;
-extern int g_nSpyroRequestState; /* scripted camera mode */
 extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
 
@@ -927,9 +863,6 @@ extern void SetWorldChunkAnimStep(int ch, int n, int a);
 extern int GetWorldChunkAnimState(int ch);
 extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int WrapAngleDelta8(int a, int b);
-
-/* ==== Globals shared with level 4 ==== */
-extern int g_nSpyroWorldPosZ; /* SPY.posZ, absolute form */
 
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
  * takes Spyro out of the level when he drops into it. */
@@ -1068,7 +1001,6 @@ typedef struct SmokeJet {
   short vel[3]; /* 0x06 */
 } SmokeJet;
 extern SmokeJet D_8006E614[];
-extern int D_8006E52C[];
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
@@ -1092,7 +1024,6 @@ typedef struct L16Bell {
   char pad1C[0x14];
   int target; /* 0x30 index into g_pActorListBase */
 } L16Bell;
-extern int g_dwGamestateFrames;
 
 /* Case 495 -- the level boss. */
 typedef struct L16Boss {
@@ -1194,7 +1125,6 @@ typedef struct CageState {
 } CageState;
 extern Actor *D_80075758;
 extern int g_nCameraScriptStickRequestY[];
-extern int g_nCameraScriptStickRequestX;
 extern void DivideVector3(int *d, int *s, int k);
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant

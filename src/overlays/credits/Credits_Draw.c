@@ -12,6 +12,8 @@
  * 2-vblank pace loop and PutDispEnv/PutDrawEnv/DrawOTag submit.
  */
 
+#include "level_globals.h"
+
 extern void DrawSync();
 extern int VSync();
 extern void MoveImage();
@@ -46,8 +48,6 @@ extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nFarPlaneDrawDistance;
 extern int D_80076DE4[];
-extern int g_nDeathRespawnPending;
-extern int g_nVsyncFramePaceAnchor;
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {
