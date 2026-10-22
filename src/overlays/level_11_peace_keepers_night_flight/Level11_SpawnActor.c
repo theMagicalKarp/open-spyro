@@ -35,24 +35,24 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 */
   int unk1C;           /* 0x1C */
-  int unk20[5];        /* 0x20 */
-  short unk34;         /* 0x34 */
+  int mtx[5];        /* 0x20 */
+  short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
   int unk38;           /* 0x38 */
-  unsigned char unk3C; /* 0x3C */
-  unsigned char unk3D;
-  unsigned char unk3E;
-  unsigned char unk3F;
-  unsigned char unk40; /* 0x40 */
-  unsigned char unk41;
-  unsigned char unk42;
-  unsigned char unk43;
+  unsigned char anim; /* 0x3C */
+  unsigned char nextAnim;
+  unsigned char frame;
+  unsigned char nextFrame;
+  unsigned char frameProgress; /* 0x40 */
+  unsigned char frameRate;
+  unsigned char animFlags;
+  unsigned char group;
   signed char unk44;   /* 0x44 */
   signed char unk45;
   signed char unk46;
   unsigned char unk47;
-  unsigned char unk48;
-  unsigned char unk49; /* 0x49 */
+  unsigned char mode;
+  unsigned char subMode; /* 0x49 */
   unsigned char unk4A;
   unsigned char unk4B; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
@@ -60,12 +60,12 @@ typedef struct Actor {
   unsigned char unk4E;
   unsigned char unk4F;
   unsigned char unk50; /* 0x50 */
-  unsigned char unk51;
-  unsigned char unk52; /* 0x52 */
+  unsigned char drawn;
+  unsigned char updateDist; /* 0x52 */
   unsigned char unk53;
-  unsigned char unk54;
+  unsigned char sfxSlot;
   unsigned char unk55;
-  unsigned char unk56; /* 0x56 owner pool index */
+  unsigned char poolIndex; /* 0x56 owner pool index */
   unsigned char unk57;
 } Actor; /* 0x58 */
 
@@ -182,7 +182,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
   {
     owner = 0;
   }
-  rec->unk56 = owner;
+  rec->poolIndex = owner;
   switch (type)
   {
     case 0xF:
@@ -199,9 +199,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       st->unk11 = 0;
       st->unk12 = 0;
       st->unk13 = 0;
-      rec->unk49 = 2;
+      rec->subMode = 2;
       rec->unk50 = 0x18;
-      rec->unk52 = 0x10;
+      rec->updateDist = 0x10;
       rec->unk44 = 0x20;
       rec->unk45 = 0;
       rec->unk46 = 0;
@@ -237,7 +237,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     case 0x22:
       InitActorRenderDefaults(rec);
       rec->unk50 = 0x20;
-      rec->unk52 = 0xFF;
+      rec->updateDist = 0xFF;
       if (parent != 0)
     {
       CopyVector(&rec->posX, &parent->posX);
@@ -271,9 +271,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       }
       pos = &rec->posX;
       st->unk14 = 0xFF;
-      rec->unk49 = 2;
+      rec->subMode = 2;
       rec->unk50 = 0x18;
-      rec->unk52 = 0x40;
+      rec->updateDist = 0x40;
       rec->unk44 = 0x20;
       rec->unk45 = 0;
       rec->unk46 = 0;
@@ -319,7 +319,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       SpinState *st = rec->state;
       InitActorRenderDefaults(rec);
       InsertActorIntoSpatialGrid(rec);
-      rec->unk49 = 0;
+      rec->subMode = 0;
       st->unk00 = 0;
       st->unk08 = 0;
       st->unk06 = 0;
@@ -524,7 +524,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     case 0x1AA ... 0x1C3:
       InitActorRenderDefaults(rec);
       rec->unk50 = 0x20;
-      rec->unk52 = 0xFF;
+      rec->updateDist = 0xFF;
       HideActorRenderRecord(rec);
       break;
 

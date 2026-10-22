@@ -23,24 +23,24 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 */
   int unk1C;           /* 0x1C */
-  int unk20[5];        /* 0x20 */
-  short unk34;         /* 0x34 */
+  int mtx[5];        /* 0x20 */
+  short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
   int unk38;           /* 0x38 */
-  unsigned char unk3C; /* 0x3C */
-  unsigned char unk3D;
-  unsigned char unk3E;
-  unsigned char unk3F;
-  unsigned char unk40; /* 0x40 */
-  unsigned char unk41;
-  unsigned char unk42;
-  unsigned char unk43;
-  unsigned char unk44; /* 0x44 */
-  unsigned char unk45;
-  unsigned char unk46;
+  unsigned char anim; /* 0x3C */
+  unsigned char nextAnim;
+  unsigned char frame;
+  unsigned char nextFrame;
+  unsigned char frameProgress; /* 0x40 */
+  unsigned char frameRate;
+  unsigned char animFlags;
+  unsigned char group;
+  unsigned char rotX; /* 0x44 */
+  unsigned char rotY;
+  unsigned char rotZ;
   unsigned char unk47;
-  unsigned char unk48;
-  unsigned char unk49; /* 0x49 */
+  unsigned char mode;
+  unsigned char subMode; /* 0x49 */
   unsigned char unk4A;
   unsigned char unk4B; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
@@ -48,12 +48,12 @@ typedef struct Actor {
   unsigned char unk4E;
   unsigned char unk4F;
   unsigned char unk50; /* 0x50 */
-  unsigned char unk51;
-  unsigned char unk52; /* 0x52 */
+  unsigned char drawn;
+  unsigned char updateDist; /* 0x52 */
   unsigned char unk53;
-  unsigned char unk54;
+  unsigned char sfxSlot;
   unsigned char unk55;
-  unsigned char unk56; /* 0x56 owner pool index */
+  unsigned char poolIndex; /* 0x56 owner pool index */
   unsigned char unk57;
 } Actor; /* 0x58 */
 
@@ -160,7 +160,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
   if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
-  rec->unk56 = owner;
+  rec->poolIndex = owner;
 
   switch (type) {
   case 0xF: {
@@ -177,12 +177,12 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     st->unk11 = 0;
     st->unk12 = 0;
     st->unk13 = 0;
-    rec->unk49 = 2;
+    rec->subMode = 2;
     rec->unk50 = 0x18;
-    rec->unk52 = 0x10;
-    rec->unk44 = 0x20;
-    rec->unk45 = 0;
-    rec->unk46 = 0;
+    rec->updateDist = 0x10;
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
@@ -214,7 +214,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
   case 0x22:
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
@@ -230,21 +230,21 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
     if (parent->type == type) {
-      rec->unk46 = parent->unk46;
-      rec->unk48 = 3;
-      rec->unk40 = 0;
-      rec->unk41 = g_apActorMeshTable[rec->type][0x11][0xC];
-      rec->unk3C = 3;
-      rec->unk3D = 3;
+      rec->rotZ = parent->rotZ;
+      rec->mode = 3;
+      rec->frameProgress = 0;
+      rec->frameRate = g_apActorMeshTable[rec->type][0x11][0xC];
+      rec->anim = 3;
+      rec->nextAnim = 3;
       *st = 3;
-    } else if (parent->unk3F >= 6) {
-      rec->posX += LookupCosine(parent->unk46 << 4) >> 2;
-      rec->posY += LookupSine(parent->unk46 << 4) >> 2;
+    } else if (parent->nextFrame >= 6) {
+      rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
+      rec->posY += LookupSine(parent->rotZ << 4) >> 2;
       rec->posZ += 0x12C;
-      rec->unk46 = parent->unk46;
+      rec->rotZ = parent->rotZ;
       turn = (ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
                             0) -
-              parent->unk45) &
+              parent->rotY) &
              0xFF;
       if (turn > 0x80) {
         turn -= 0x100;
@@ -255,28 +255,28 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
       if (turn > 0x10) {
         turn = 0x10;
       }
-      rec->unk45 = parent->unk45 + turn;
+      rec->rotY = parent->rotY + turn;
       *st = 0x80;
-      rec->unk48 = 2;
-      rec->unk40 = 0;
-      rec->unk41 = g_apActorMeshTable[rec->type][0x10][0xC];
-      rec->unk3C = 2;
-      rec->unk3D = 2;
+      rec->mode = 2;
+      rec->frameProgress = 0;
+      rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
+      rec->anim = 2;
+      rec->nextAnim = 2;
       g_pfnLevelEmitParticles(4, 7, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
     } else {
-      if (parent->unk3F >= 2) {
+      if (parent->nextFrame >= 2) {
         rec->posZ += 0x12C;
-        rec->unk46 = parent->unk46;
-        rec->unk48 = 1;
-        rec->unk40 = 0;
-        rec->unk41 = g_apActorMeshTable[rec->type][0xF][0xC];
-        rec->unk3C = 1;
-        rec->unk3D = 1;
+        rec->rotZ = parent->rotZ;
+        rec->mode = 1;
+        rec->frameProgress = 0;
+        rec->frameRate = g_apActorMeshTable[rec->type][0xF][0xC];
+        rec->anim = 1;
+        rec->nextAnim = 1;
       } else {
         rec->posZ += 0x180;
-        rec->unk46 = parent->unk46;
+        rec->rotZ = parent->rotZ;
       }
       *st = 2;
     }
@@ -305,12 +305,12 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     }
     pos = &rec->posX;
     st->unk14 = 0xFF;
-    rec->unk49 = 2;
+    rec->subMode = 2;
     rec->unk50 = 0x18;
-    rec->unk52 = 0x40;
-    rec->unk44 = 0x20;
-    rec->unk45 = 0;
-    rec->unk46 = 0;
+    rec->updateDist = 0x40;
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
     CopyVector(pos, &parent->posX);
     HideActorRenderRecord(rec);
     rec->unk1C = -1;
@@ -347,7 +347,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     InsertActorIntoSpatialGrid(rec);
-    rec->unk49 = 0;
+    rec->subMode = 0;
     st->unk00 = 0;
     st->unk08 = 0;
     st->unk06 = 0;
@@ -405,7 +405,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
@@ -420,7 +420,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     dir[0] = g_anLaunchDirTable[i * 2];
     dir[1] = 0;
     dir[2] = g_anLaunchDirTableZ[i * 2];
-    RotateVectorByMatrix(parent->unk20, dir, dir);
+    RotateVectorByMatrix(parent->mtx, dir, dir);
     dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
     dir[1] -= 0x3F - (GetRandomU32() & 0x7F);
     dir[2] -= 0x3F - (GetRandomU32() & 0x7F);
@@ -430,9 +430,9 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     st->vel[0] -= 0x7F - (GetRandomU32() & 0xFF);
     st->vel[1] -= 0x7F - (GetRandomU32() & 0xFF);
     st->vel[2] -= 0x7F - (GetRandomU32() & 0xFF);
-    rec->unk44 = GetRandomU32();
-    rec->unk45 = GetRandomU32();
-    rec->unk46 = GetRandomU32();
+    rec->rotX = GetRandomU32();
+    rec->rotY = GetRandomU32();
+    rec->rotZ = GetRandomU32();
     st->unk10 = GetRandomU32() & 0xF;
     st->unk11 = GetRandomU32() & 0xF;
     st->unk12 = GetRandomU32() & 0xF;
@@ -465,12 +465,12 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     int dist;
 
     InitActorRenderDefaults(rec);
-    rec->posX = parent->posX + (g_anCosineLut[parent->unk46] >> 1);
-    rec->posY = parent->posY + (g_anSineLut[parent->unk46] >> 1);
+    rec->posX = parent->posX + (g_anCosineLut[parent->rotZ] >> 1);
+    rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> 1);
     rec->posZ = parent->posZ + 0x300;
     dx = g_anSpyroWorldPos[0] - rec->posX;
     dy = g_nSpyroWorldPosY - rec->posY;
-    turn = (ArcTan2(dx, dy, 0) - parent->unk46) & 0xFF;
+    turn = (ArcTan2(dx, dy, 0) - parent->rotZ) & 0xFF;
     if (turn > 0x80) {
       turn -= 0x100;
     }
@@ -480,10 +480,10 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     if (turn > 0x20) {
       turn = 0x20;
     }
-    rec->unk46 = parent->unk46 + turn;
+    rec->rotZ = parent->rotZ + turn;
     dist = ApproxDist2D(&rec->posX, (int *)g_anSpyroWorldPos);
     dz = rec->posZ - 0x164;
-    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, 0) - parent->unk45) & 0xFF;
+    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, 0) - parent->rotY) & 0xFF;
     if (turn > 0x80) {
       turn -= 0x100;
     }
@@ -493,7 +493,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     if (turn > 0x30) {
       turn = 0x30;
     }
-    rec->unk45 = parent->unk45 + turn;
+    rec->rotY = parent->rotY + turn;
     st[1] = 0x5A;
     st[0] = 0;
     InsertActorIntoSpatialGrid(rec);
@@ -553,7 +553,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
   case 0x1AA ... 0x1C3:
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
     break;
 

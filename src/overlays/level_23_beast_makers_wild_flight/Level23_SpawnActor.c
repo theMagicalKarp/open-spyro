@@ -39,24 +39,24 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 */
   int unk1C;           /* 0x1C */
-  int unk20[5];        /* 0x20 */
-  short unk34;         /* 0x34 */
+  int mtx[5];        /* 0x20 */
+  short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
   int unk38;           /* 0x38 */
-  unsigned char unk3C; /* 0x3C */
-  unsigned char unk3D;
-  unsigned char unk3E;
-  unsigned char unk3F;
-  unsigned char unk40; /* 0x40 */
-  unsigned char unk41;
-  unsigned char unk42;
-  unsigned char unk43;
-  unsigned char unk44; /* 0x44 */
-  unsigned char unk45;
-  unsigned char unk46;
+  unsigned char anim; /* 0x3C */
+  unsigned char nextAnim;
+  unsigned char frame;
+  unsigned char nextFrame;
+  unsigned char frameProgress; /* 0x40 */
+  unsigned char frameRate;
+  unsigned char animFlags;
+  unsigned char group;
+  unsigned char rotX; /* 0x44 */
+  unsigned char rotY;
+  unsigned char rotZ;
   unsigned char unk47;
-  unsigned char unk48;
-  unsigned char unk49; /* 0x49 */
+  unsigned char mode;
+  unsigned char subMode; /* 0x49 */
   unsigned char unk4A;
   unsigned char unk4B; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
@@ -64,12 +64,12 @@ typedef struct Actor {
   unsigned char unk4E;
   unsigned char unk4F;
   unsigned char unk50; /* 0x50 */
-  unsigned char unk51;
-  unsigned char unk52; /* 0x52 */
+  unsigned char drawn;
+  unsigned char updateDist; /* 0x52 */
   unsigned char unk53;
-  unsigned char unk54;
+  unsigned char sfxSlot;
   unsigned char unk55;
-  unsigned char unk56; /* 0x56 owner pool index */
+  unsigned char poolIndex; /* 0x56 owner pool index */
   unsigned char unk57;
 } Actor; /* 0x58 */
 
@@ -186,7 +186,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
   {
     owner = 0;
   }
-  rec->unk56 = owner;
+  rec->poolIndex = owner;
   switch (type)
   {
     case 0xF:
@@ -203,12 +203,12 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       st->unk11 = 0;
       st->unk12 = 0;
       st->unk13 = 0;
-      rec->unk49 = 2;
+      rec->subMode = 2;
       rec->unk50 = 0x18;
-      rec->unk52 = 0x10;
-      rec->unk44 = 0x20;
-      rec->unk45 = 0;
-      rec->unk46 = 0;
+      rec->updateDist = 0x10;
+      rec->rotX = 0x20;
+      rec->rotY = 0;
+      rec->rotZ = 0;
       if (parent != 0)
       {
         CopyVector(&rec->posX, &parent->posX);
@@ -244,10 +244,10 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       int dir;
       int d[3];
       InitActorRenderDefaults(rec);
-      dir = parent->unk46;
-      rec->unk46 = dir;
+      dir = parent->rotZ;
+      rec->rotZ = dir;
       rec->posX = parent->posX + (g_anCosineLut[dir] >> 4);
-      rec->posY = parent->posY + (g_anSineLut[rec->unk46] >> 4);
+      rec->posY = parent->posY + (g_anSineLut[rec->rotZ] >> 4);
       rec->posZ = parent->posZ;
       d[0] = g_anSpyroWorldPos[0] - rec->posX;
       d[1] = g_nSpyroWorldPosY - rec->posY;
@@ -263,7 +263,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
     case 0x22:
       InitActorRenderDefaults(rec);
       rec->unk50 = 0x20;
-      rec->unk52 = 0xFF;
+      rec->updateDist = 0xFF;
       if (parent != 0)
     {
       CopyVector(&rec->posX, &parent->posX);
@@ -297,12 +297,12 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       }
       pos = &rec->posX;
       st->unk14 = 0xFF;
-      rec->unk49 = 2;
+      rec->subMode = 2;
       rec->unk50 = 0x18;
-      rec->unk52 = 0x40;
-      rec->unk44 = 0x20;
-      rec->unk45 = 0;
-      rec->unk46 = 0;
+      rec->updateDist = 0x40;
+      rec->rotX = 0x20;
+      rec->rotY = 0;
+      rec->rotZ = 0;
       CopyVector(pos, &parent->posX);
       HideActorRenderRecord(rec);
       rec->unk1C = -1;
@@ -345,7 +345,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       SpinState *st = rec->state;
       InitActorRenderDefaults(rec);
       InsertActorIntoSpatialGrid(rec);
-      rec->unk49 = 0;
+      rec->subMode = 0;
       st->unk00 = 0;
       st->unk08 = 0;
       st->unk06 = 0;
@@ -432,9 +432,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
       seed = GetRandomU32();
-      rec->unk46 = seed;
+      rec->rotZ = seed;
       st->vel[0] = g_anCosineLut[(unsigned char) seed] >> 7;
-      st->vel[1] = g_anSineLut[rec->unk46] >> 7;
+      st->vel[1] = g_anSineLut[rec->rotZ] >> 7;
       if (GetRandomU32() & 1)
       {
         st->vel[2] = 0x5A;
@@ -442,7 +442,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       else
       {
         st->vel[2] = -0x5A;
-        rec->unk44 = 0x80;
+        rec->rotX = 0x80;
       }
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
@@ -506,13 +506,13 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       int dz;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = (signed char) parent->unk44;
-      dy = (signed char) parent->unk45;
-      dz = (signed char) parent->unk46;
+      dx = (signed char) parent->rotX;
+      dy = (signed char) parent->rotY;
+      dz = (signed char) parent->rotZ;
       do {
-      rec->unk44 = dx;
-      rec->unk45 = dy;
-      rec->unk46 = dz;
+      rec->rotX = dx;
+      rec->rotY = dy;
+      rec->rotZ = dz;
       } while (0);
       InsertActorIntoSpatialGrid(rec);
       rec->unk4B = 0xBF;
@@ -531,10 +531,10 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       int dz;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = (signed char) parent->unk44;
-      dy = (signed char) parent->unk45;
- do { dz = (signed char) parent->unk46; rec->unk44 = dx; rec->unk45 = dy; } while (0);
-      rec->unk46 = dz;
+      dx = (signed char) parent->rotX;
+      dy = (signed char) parent->rotY;
+ do { dz = (signed char) parent->rotZ; rec->rotX = dx; rec->rotY = dy; } while (0);
+      rec->rotZ = dz;
       InsertActorIntoSpatialGrid(rec);
       rec->unk4B = 0xBF;
       rec->unk4C = parent->unk4C;
@@ -605,7 +605,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
     case 0x1AA ... 0x1C3:
       InitActorRenderDefaults(rec);
       rec->unk50 = 0x20;
-      rec->unk52 = 0xFF;
+      rec->updateDist = 0xFF;
       HideActorRenderRecord(rec);
       break;
 
