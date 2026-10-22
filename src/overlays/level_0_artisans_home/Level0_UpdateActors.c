@@ -753,7 +753,7 @@ void Level0_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -2241,7 +2241,7 @@ void Level0_UpdateActors(void) {
               }
               DespawnActorRecord(actor);
               continue;
-            } else if (cutsceneId = st->unk18, cutsceneId == st->rewardScript) {
+            } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
               g_nWorldDragonsRescued++;
               if (st->partner != cutsceneId) {

@@ -2469,3 +2469,4 @@ g_anAssetDirectory = 0x8007A6D0; // type:data
 g_nAssetDirBootBlockSize = 0x8007A6D4; // type:data
 g_nTitleSceneSectorOffset = 0x8007A6D8; // type:data
 g_nCdMusicStreamTimeout = 0x800776CC; // type:data
+g_anTintByDropKind = 0x8006E52C; // type:data

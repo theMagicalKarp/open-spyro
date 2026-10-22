@@ -1030,7 +1030,7 @@ void Level33_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->unk00);
+        CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -3220,7 +3220,7 @@ void Level33_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -3413,7 +3413,7 @@ void Level33_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

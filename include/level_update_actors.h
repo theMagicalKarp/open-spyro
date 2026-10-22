@@ -60,7 +60,7 @@ typedef struct PathData {
     int x;
     int y;
     int z;
-    int unk0C;
+    int speed; /* > 0 overrides the follow speed at this node */
   } nodes[1];          /* 0x08 */
 } PathData;
 
@@ -384,7 +384,8 @@ typedef struct WardenState {
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
   char pad00[0x18];
-  int unk18;   /* 0x18 */
+  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
+                * statue has none and counts the rescue directly */
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
@@ -618,7 +619,7 @@ typedef struct RoamState {
 
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
 typedef struct ShotState {
-  void *unk00;           /* 0x00 egg index */
+  void *killActor;        /* 0x00 actor handed to CommitActorKillGems on collection */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
@@ -680,7 +681,7 @@ typedef struct SpinState {
 
 typedef struct RideState {
   int unk00[6]; /* 0x00 */
-  int unk18;    /* 0x18 */
+  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
   int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */

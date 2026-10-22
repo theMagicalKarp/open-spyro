@@ -273,7 +273,7 @@ typedef struct BreakState {
  * saves a checkpoint and starts the rescue. */
 typedef struct RideState {
   int pad00[6]; /* 0x00 */
-  int unk18;    /* 0x18 */
+  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->unk20 is unset */
   int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
@@ -770,7 +770,8 @@ typedef struct BobState {
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
   char pad00[0x18];
-  int unk18;   /* 0x18 */
+  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
+                * statue has none and counts the rescue directly */
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
@@ -4466,7 +4467,7 @@ void Level32_UpdateActors(void) {
               continue;
             }
 
-            if (st->unk18 == st->reward) {
+            if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
@@ -4780,7 +4781,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

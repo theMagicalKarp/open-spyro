@@ -1291,8 +1291,8 @@ void Level1_UpdateActors(void) {
         int r;
 
         ANIM_GO(actor, 1);
-        if (st->path->nodes[st->path->cur].unk0C > 0) {
-          top = st->path->nodes[st->path->cur].unk0C;
+        if (st->path->nodes[st->path->cur].speed > 0) {
+          top = st->path->nodes[st->path->cur].speed;
         }
         if (st->speed < top) {
           st->speed += 0x1E;
@@ -1351,8 +1351,8 @@ void Level1_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         st->speed = 0xB4;
-        if (st->path->nodes[st->path->cur].unk0C > 0) {
-          st->speed = st->path->nodes[st->path->cur].unk0C;
+        if (st->path->nodes[st->path->cur].speed > 0) {
+          st->speed = st->path->nodes[st->path->cur].speed;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
                           5) == 0x10B) {
@@ -3417,7 +3417,7 @@ void Level1_UpdateActors(void) {
               continue;
             }
 
-            if (st->unk18 == st->reward) {
+            if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
               g_nWorldDragonsRescued += 1;
 

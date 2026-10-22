@@ -89,7 +89,7 @@ typedef struct PathData {
     int x;
     int y;
     int z;
-    int unk0C;
+    int speed; /* > 0 overrides the follow speed at this node */
   } nodes[1]; /* 0x08 */
 } PathData;
 
@@ -543,7 +543,8 @@ typedef struct RideState30 {
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
   char pad00[0x18];
-  int unk18;   /* 0x18 */
+  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
+                * statue has none and counts the rescue directly */
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
@@ -1014,7 +1015,7 @@ typedef struct SpinState {
 /* from level_10 */
 typedef struct RideState {
   int pad00[6]; /* 0x00 */
-  int unk18;    /* 0x18 */
+  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->unk20 is unset */
   int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
@@ -2854,8 +2855,8 @@ void Level14_UpdateActors(void) {
         int r;
 
         ANIM_GO(actor, 1);
-        if (st->path->nodes[st->path->cur].unk0C > 0) {
-          top = st->path->nodes[st->path->cur].unk0C;
+        if (st->path->nodes[st->path->cur].speed > 0) {
+          top = st->path->nodes[st->path->cur].speed;
         }
         if (st->speed < top) {
           st->speed += 0x1E;
@@ -2914,8 +2915,8 @@ void Level14_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         st->speed = 0xB4;
-        if (st->path->nodes[st->path->cur].unk0C > 0) {
-          st->speed = st->path->nodes[st->path->cur].unk0C;
+        if (st->path->nodes[st->path->cur].speed > 0) {
+          st->speed = st->path->nodes[st->path->cur].speed;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
                           5) == 0x10B) {
@@ -5200,7 +5201,7 @@ void Level14_UpdateActors(void) {
               }
               DespawnActorRecord(actor);
               continue;
-            } else if (cutsceneId = st->unk18, cutsceneId == st->rewardScript) {
+            } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
               g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
               g_nWorldDragonsRescued++;
               if (st->partner != cutsceneId) {
@@ -6238,7 +6239,7 @@ void Level14_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -6519,7 +6520,7 @@ void Level14_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

@@ -13,7 +13,7 @@ extern int g_anSparkleGlowDesc;
 extern int D_8006E3E4[];
 extern void *g_dwBurstColorType15;
 extern void *g_dwBurstColorType14;
-extern int D_8006E52C[];
+extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
 /* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
  * values / claimed flags); _rN is row N of the same table, declared as its
  * own symbol because the original addresses each row directly. */
