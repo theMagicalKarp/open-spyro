@@ -107,7 +107,7 @@ extern int g_nGamestate;            /* g_Gamestate */
 extern int g_anCameraPos[];          /* world anchor position */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;

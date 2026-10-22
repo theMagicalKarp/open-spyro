@@ -8,7 +8,7 @@
  * cleared), hands it back with FreeEmitListRecord().  The walk stops at the
  * terminator record, whose class byte at +0x01 is 0xFF.
  *
- * Head and arms 0x7/0x8/0x41 come from func_level_12_8008BE98, the ground
+ * Head and arms 0x7/0x8/0x41 come from Level12_AdvanceEmitList, the ground
  * classes from level_2, 0x10/0x11 from level_33, the rest are shared.
  *
  * Three per-level decisions this variant needed:

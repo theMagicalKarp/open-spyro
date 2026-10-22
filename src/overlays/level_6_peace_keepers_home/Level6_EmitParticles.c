@@ -18,7 +18,7 @@
  *
  * The peace-keepers-home variant, GENERATED from the matched level_3
  * (town-square) donor: level_3's arm set minus 0x15 / 0x4C, plus 0xD (lifted
- * from func_level_5_80084128), 0x4A (from func_level_34_80085230) and a newly
+ * from Level5_EmitParticles), 0x4A (from Level34_EmitParticles) and a newly
  * decoded 0x17.  Case order is jump-table ADDRESS order, which is what makes
  * the donor arms drop straight in.
  *
@@ -150,7 +150,7 @@ extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> shor
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;

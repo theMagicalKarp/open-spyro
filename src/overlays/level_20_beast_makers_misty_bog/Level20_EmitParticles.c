@@ -22,8 +22,8 @@
  * three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it out
  * of the loop (scan_loop case 2); a named local would pin it inside the arm.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254.
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles.
  *
  * Arm 0x18's store order is load-bearing: `unk11 = 8` and `unk18 = i * 32`
  * are written AFTER `fx = 0x2E` -- see the note at the end.
@@ -147,7 +147,7 @@ extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> shor
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -676,7 +676,7 @@ void Level20_EmitParticles(int count, int type, int *pos, int arg3) {
  *    slots.  With a single-set carrier (`t` used only in this arm) the `li` is
  *    birthing-boosted and the pair comes out swapped.
  *
- * Word-identical (bar branch displacements) to func_level_3_80088F68, of which
+ * Word-identical (bar branch displacements) to Level3_EmitParticles, of which
  * this file is a sed-clone; that file carries the full match note.  The same fix landed the five-overlay 1085-insn
- * group headed by func_level_1_800892C4 (21,700 B).
+ * group headed by Level1_EmitParticles (21,700 B).
  */

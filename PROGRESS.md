@@ -333,7 +333,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003c6e4` | TickGemPickupBurstEntity | main | 376 | matched | game |
 | `0x8003c85c` | AimCameraStickTowardPoint | main | 312 | matched | game |
 | `0x8003c994` | FollowActorWaypointPath | main | 304 | matched | game |
-| `0x8003cac4` | func_8003CAC4 | main | 96 | matched | game |
+| `0x8003cac4` | TallyFlightTarget | main | 96 | matched | game |
 | `0x8003cb24` | AdvanceSpyroAnimFrame | main | 148 | matched | game |
 | `0x8003cbb8` | StepSpyroAnimAndCommitTransition | main | 300 | matched | game |
 | `0x8003cce4` | ApplySpyroStateTransition | main | 1200 | matched | game |

@@ -1043,4 +1043,45 @@ extern int g_nSpyroShadowHiddenFlag;                    /* 0x8007aa34 */
 /* ---- RAM ---- */
 extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
 
+/* ---- Named 2026-10-21 (session 2) — documented here, declared per file ----
+ * These were autolabels; the users still carry their own extern (several
+ * spell them as arrays or volatile on purpose, and a sized declaration here
+ * would move a main-segment scalar into %gp_rel under -G8), so this block is
+ * documentation only.
+ *
+ * Per-actor tick state (written by each level's UpdateActors before calling
+ * the actor's handler; read by the shared actor helpers):
+ *   g_nActorAnimDone        0x80075794  actor +0x42 bit 1: animation finished
+ *   g_nActorAnimNewFrame    0x800757f4  actor +0x42 bit 0: new anim frame
+ *   g_nActorFrameDelta      0x800756c4  this actor's frame delta (TickCountdownByFrameDelta)
+ *
+ * Component aliases of named vectors (absolute-address forms the matches need):
+ *   g_bSpyroPersistentEulerZ   0x80078a66  g_abSpyroPersistentEuler[2]
+ *   g_nCollisionProbeVecY/Z    0x8007736c/70  g_anCollisionProbeVec[1..2]
+ *   g_nCollisionResolvedY      0x80076b84  g_anCollisionResolvedPos[1]
+ *   g_nSpyroRequestVelocityY/Z 0x80078c64/68  g_anSpyroRequestVelocity[1..2]
+ *   g_nCameraPosY/Z            0x80076dfc/e00  g_anCameraPos[1..2]
+ *
+ * One-shot PlaySoundEffect overrides (set by CheckDeathPlane, BeginGemCutscene):
+ *   g_nSfxOverrideFlags  0x800761dc  1 = volume pair, 2 = pitch
+ *   g_nSfxOverrideVolL/R 0x800761e8/ea, g_nSfxOverridePitch 0x800761f4
+ *
+ * Gamestate 0xC block (base 0x800777ec = g_nGamestate0cTimer; level-transition
+ * fly-in and the balloonist/actor cutscene share it):
+ *   g_nGamestate0cCam{Yaw,Radius,Height}Start  0x80077820/24/28  (+0x34..)
+ *   g_nGamestate0cCam{Yaw,Radius,Height}Goal   0x80077838/3c/40  (+0x4c..)
+ *   g_pGamestate0cActor   0x8007784c  focus actor (BeginActorCutscene)
+ *   g_pGamestate0cRecord  0x80077850  orbit-centre record / title-card OT seed
+ *
+ * World / flight levels:
+ *   g_nActiveWorldIndex           0x8007595c  g_nActiveLevelId / 10 - 1 (TickLevelTransitionStream)
+ *   g_anFlightTargetTally         0x80078630  per-class flight target hits (4 classes, 8 each);
+ *                                             g_nFlightTargetTally1..3 are [1..3]
+ *   g_anFlightTallyActiveSlots    0x80078608  4-slot table of recently hit classes (TallyFlightTarget)
+ *   g_nFlightRunClock             0x800758f4  flight-level run timer
+ *   g_nFlightTallyShownClass      0x800758f8  tally class the HUD is showing
+ *   g_nFlightResultsRevealStep    0x8007569c  results-screen reveal sound step
+ *   g_nLevelIntroParallaxCountdown 0x80075910 level-intro camera parallax countdown (-2/frame)
+ */
+
 #endif /* OPEN_SPYRO_GLOBALS_H */

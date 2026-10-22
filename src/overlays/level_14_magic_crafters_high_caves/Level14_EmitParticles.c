@@ -20,7 +20,7 @@
  * Generated from level_13 (head, tail and 19 arms), with 0x1E/0x1F lifted from
  * level_27 and 0x45 / 0x49 decoded here.  Three things this variant needed:
  *   - `sh0 = 10; sh1 = 10;` in the for-loop preheader for arm 0x1F's
- *     `table[w] >> sh` (the B13 lever -- see func_level_27_800881D8's header).
+ *     `table[w] >> sh` (the B13 lever -- see Level27_EmitParticles's header).
  *   - Arms 0x45 and 0x49 are the same effect with two record layouts: 0x45 is
  *     a `dust` mote that keeps the emitter argument as an INT at +0x18 with a
  *     zero int at +0x1C (new `src`/`unk1C` fields on the dust struct), 0x49 is
@@ -180,7 +180,7 @@ extern short g_anSineLut[];        /* sine table */
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -1021,8 +1021,8 @@ void Level14_EmitParticles(int count, int type, int *pos, int arg3) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
+ * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

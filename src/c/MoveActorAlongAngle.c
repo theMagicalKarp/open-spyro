@@ -18,7 +18,7 @@ extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void RefreshActorDerivedState(int *actor, int mode);
 extern int abs(int);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
@@ -31,9 +31,9 @@ int MoveActorAlongAngle(int *actor, int angle, int speed, int group, int radius,
   int step;
   int d;
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
   newpos[0] = actor[3] + ((g_anCosineLut[angle] * speed) >> 12);

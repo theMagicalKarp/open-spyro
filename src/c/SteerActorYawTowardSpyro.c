@@ -19,8 +19,8 @@
 extern void StubActorHook(int *actor, int a, int b);
 extern int abs(int);
 
-extern int D_800756C4;
-extern int D_80075794;
+extern int g_nActorFrameDelta;
+extern int g_nActorAnimDone;
 
 int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
                              int thresh, int animId) {
@@ -45,9 +45,9 @@ int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
   if (d2 >= 0x801) {
     d2 -= 0x1000;
   }
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
   ad = abs(d);
@@ -78,7 +78,7 @@ int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
       if (*((unsigned char *)actor + 0x3D) != animId) {
         register int old asm("$2");
         int p3F;
-        D_80075794 = 0;
+        g_nActorAnimDone = 0;
         old = *((unsigned char *)actor + 0x3D);
         p3F = *((unsigned char *)actor + 0x3F);
         *((unsigned char *)actor + 0x40) = 0x10;
@@ -93,7 +93,7 @@ int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
       if (*((unsigned char *)actor + 0x3D) != next) {
         register int old asm("$2");
         int p3F;
-        D_80075794 = 0;
+        g_nActorAnimDone = 0;
         old = *((unsigned char *)actor + 0x3D);
         p3F = *((unsigned char *)actor + 0x3F);
         *((unsigned char *)actor + 0x40) = 0x10;

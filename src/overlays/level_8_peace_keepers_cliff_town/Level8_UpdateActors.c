@@ -32,9 +32,9 @@
  * dispatches. */
 extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
 extern int g_nFrameStep;      /* frame delta in ticks */
-extern int D_800756C4;      /* frame delta, as seen by the callees */
-extern int D_80075794;      /* current actor's animation finished */
-extern int D_800757F4;      /* current actor's new-frame flag */
+extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
+extern int g_nActorAnimDone;      /* current actor's animation finished */
+extern int g_nActorAnimNewFrame;      /* current actor's new-frame flag */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
  * animation. */
@@ -193,10 +193,10 @@ extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
 extern int D_80077AE8;            /* bit 0: switch sounds enabled */
 extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
-extern int D_800761DC;
+extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
-} D_800761F4;
+} g_nSfxOverridePitch;
 extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
@@ -262,8 +262,8 @@ typedef struct DebrisState {
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
-extern int D_8007736C;
-extern int D_80077370;
+extern int g_nCollisionProbeVecY;
+extern int g_nCollisionProbeVecZ;
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {
@@ -381,7 +381,7 @@ extern int g_nGamePaused;
 extern int g_nGamestate;
 extern int g_nScriptedMobViewYawSpin;
 extern int g_nScriptedMobViewPitchTilt;
-extern int D_80075910;
+extern int g_nLevelIntroParallaxCountdown;
 
 /* 0x18-byte spherical camera coordinates; D_8006CA24 holds the presets. */
 typedef struct Xform {
@@ -477,13 +477,13 @@ extern void StubRewardHook(int script, int a);
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int D_80076B84;   /* ..y */
+extern int g_nCollisionResolvedY;   /* ..y */
 extern int g_nCollisionResolvedZ;   /* ..z */
 extern int g_nLastCollisionHitChunkId;   /* collision triangle index */
 extern int g_nExtraLives;   /* life count, capped at 99 */
 extern int g_nSparxFoodCount;   /* life orb count */
-extern short D_800761E8; /* sound volume override, left/right */
-extern short D_800761EA;
+extern short g_nSfxOverrideVolL; /* sound volume override, left/right */
+extern short g_nSfxOverrideVolR;
 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut[];
@@ -927,7 +927,7 @@ extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
 extern int g_nSpyroWorldPosY;
 extern volatile unsigned char
-    D_80078A66;          /* SPY.bodyRotZ, absolute form (A240) */
+    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 extern int g_nSpyroSwingEulerPitchTarget;
 
@@ -937,8 +937,8 @@ extern struct {
   int x;
   int y;
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
-#define D_80078C64 g_anSpyroRequestVelocity.y
-extern int D_80078C68;
+#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
+extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroRequestState; /* scripted camera mode */
 extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
@@ -1035,12 +1035,12 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
   if ((a)->unk3D != (n)) {                                                     \
-    D_80075794 = 0;                                                            \
+    g_nActorAnimDone = 0;                                                            \
     ANIM_ADVANCE(a, n);                                                        \
   }
 #define ANIM_SET(a, n)                                                         \
   if ((a)->unk3C != (n)) {                                                     \
-    D_80075794 = 0;                                                            \
+    g_nActorAnimDone = 0;                                                            \
     ANIM_RESET(a, n);                                                          \
   }
 
@@ -1330,7 +1330,7 @@ extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int g_nSpyroState;
 extern int WrapAddAngle8(int heading, int step);
-extern int D_800757F4;
+extern int g_nActorAnimNewFrame;
 extern int g_anSpyroWorldPos; /* Spyro, as a plain symbol (the loop's spy carrier) */
 extern int D_8007866C, D_80078670, D_80078674, D_80078678, D_8007867C;
 typedef struct {
@@ -1709,10 +1709,10 @@ void Level8_UpdateActors(void) {
       continue;
     }
 
-    D_80075794 = actor->unk42 & 2;
-    D_800757F4 = actor->unk42 & 1;
+    g_nActorAnimDone = actor->unk42 & 2;
+    g_nActorAnimNewFrame = actor->unk42 & 1;
     dt = g_nFrameStep;
-    D_800756C4 = dt;
+    g_nActorFrameDelta = dt;
 
     switch (actor->type) {
     /* Exit drop (DropState). */
@@ -1879,8 +1879,8 @@ void Level8_UpdateActors(void) {
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
-            D_800761DC = 2;
-            D_800761F4.v =
+            g_nSfxOverrideFlags = 2;
+            g_nSfxOverridePitch.v =
                 *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->unk54);
@@ -1900,8 +1900,8 @@ void Level8_UpdateActors(void) {
           }
 
           if (st->count == 1) {
-            D_800761DC = 2;
-            D_800761F4.v =
+            g_nSfxOverrideFlags = 2;
+            g_nSfxOverridePitch.v =
                 *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->unk54);
           }
@@ -2393,7 +2393,7 @@ void Level8_UpdateActors(void) {
           }
         }
         ANIM_GO(actor, 3);
-        if (D_80075794 == 0) {
+        if (g_nActorAnimDone == 0) {
           break;
         }
         RefreshActorDerivedState(actor, 4);
@@ -2753,13 +2753,13 @@ void Level8_UpdateActors(void) {
           int y;
 
           CopyVector(svA, &spy->posX);
-          cb = LookupCosine(D_80078A66 * 0x10);
-          cs = LookupSine(D_80078A66 * 0x10);
+          cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
+          cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
           x = cb * 0xB5;
           y = cs * 0xB5;
           svA[0] += (y + x) * 4 >> 12;
-          svA[1] += (int)((LookupSine(D_80078A66 * 0x10) * 0xB5) -
-                          (LookupCosine(D_80078A66 * 0x10) * 0xB5U)) *
+          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
                         4 >>
                     12;
           svA[2] += 0x300;
@@ -2787,12 +2787,12 @@ void Level8_UpdateActors(void) {
           actor->unk46 += g_nFrameStep * 4;
         } else {
           CopyVector(svD, &spy->posX);
-          svD[0] += LookupCosine(D_80078A66 * 0x10) >> 3;
-          svD[1] += LookupSine(D_80078A66 * 0x10) >> 3;
+          svD[0] += LookupCosine(g_bSpyroPersistentEulerZ * 0x10) >> 3;
+          svD[1] += LookupSine(g_bSpyroPersistentEulerZ * 0x10) >> 3;
           svD[2] += 0x300;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = 0x200;
-          st->angle = D_80078A66 - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - 0x40;
           st->phase = 0;
           actor->unk48 += 1;
         }
@@ -2859,15 +2859,15 @@ void Level8_UpdateActors(void) {
         register int push asm("$7");
 
         SetVector3Magnitude(nrm, 0x1000);
-        along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
-                (st->vel[2] * D_80077370);
+        along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionProbeVecY) +
+                (st->vel[2] * g_nCollisionProbeVecZ);
         push = along >> 11;
 
         if (push < 0) {
           ScaleVector3ByRatio(nrm, 0x1000, (along >> 13) - push);
           st->vel[0] += nrm[0];
-          st->vel[1] += AS_I32(D_8007736C);
-          st->vel[2] += AS_I32(D_80077370);
+          st->vel[1] += AS_I32(g_nCollisionProbeVecY);
+          st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
         }
       }
 
@@ -2989,9 +2989,9 @@ void Level8_UpdateActors(void) {
             int *nrm = &g_anCollisionProbeVec;
 
             st->lean = -ArcTan2_8bit(
-                IntegerSqrt((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
-                D_8007736C);
-            st->roll = -ArcTan2_8bit(D_80077370, nrm[0]);
+                IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
+                g_nCollisionProbeVecY);
+            st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
           }
 
           if (st->lean != 0 || st->roll != 0) {
@@ -3012,9 +3012,9 @@ void Level8_UpdateActors(void) {
 
                 st->lean =
                     -ArcTan2_8bit(IntegerSqrt((nrm[0] * nrm[0]) +
-                                                 (D_80077370 * D_80077370)),
-                                   D_8007736C);
-                st->roll = -ArcTan2_8bit(D_80077370, nrm[0]);
+                                                 (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
+                                   g_nCollisionProbeVecY);
+                st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
           } else if (st->mode == 2) {
@@ -3055,9 +3055,9 @@ void Level8_UpdateActors(void) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pLevelOverlayInitRecord,
                           g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0]) == 0) {
-                    D_800761DC = 1;
-                    D_800761EA = 0x2000;
-                    D_800761E8 = 0x2000;
+                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideVolR = 0x2000;
+                    g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                   }
                   g_pLevelOverlayInitRecord->unk49 = 4;
@@ -3141,9 +3141,9 @@ void Level8_UpdateActors(void) {
               }
             }
 
-            D_800761DC = 1;
-            D_800761E8 = 0x3CCC >> (3 - st->bounce);
-            D_800761EA = 0x3CCC >> (3 - st->bounce);
+            g_nSfxOverrideFlags = 1;
+            g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
+            g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
 
             if (func_80017428((int *)st, svH, (int *)st) != 0) {
@@ -3178,9 +3178,9 @@ void Level8_UpdateActors(void) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pLevelOverlayInitRecord,
                           g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0]) == 0) {
-                    D_800761DC = 1;
-                    D_800761EA = 0x2000;
-                    D_800761E8 = 0x2000;
+                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideVolR = 0x2000;
+                    g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                   }
                   g_pLevelOverlayInitRecord->unk49 = 4;
@@ -3603,7 +3603,7 @@ void Level8_UpdateActors(void) {
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->unk3D != actor->unk3D + 1) {
-                D_80075794 = 0;
+                g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->unk3D + 1);
               }
             }
@@ -3630,9 +3630,9 @@ void Level8_UpdateActors(void) {
             break;
 
           case 2:
-            if (D_80075794 != 0) {
+            if (g_nActorAnimDone != 0) {
               if (actor->unk3D != actor->unk3D - 1) {
-                D_80075794 = 0;
+                g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->unk3D - 1);
               }
               st->gnorc = 0;
@@ -3668,9 +3668,9 @@ void Level8_UpdateActors(void) {
               } while (0);
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
-                D_800761DC = 1;
-                D_800761EA = 0x3600;
-                D_800761E8 = 0x3600;
+                g_nSfxOverrideFlags = 1;
+                g_nSfxOverrideVolR = 0x3600;
+                g_nSfxOverrideVolL = 0x3600;
                 PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
               }
             } else {
@@ -3748,27 +3748,27 @@ void Level8_UpdateActors(void) {
 
             actor->unk44 = 0;
             actor->unk45 = svF[2];
-            TurnActorYawTowardAngle(actor, D_80078A66, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
           switch (SPY.u164) {
           case 1:
             if (actor->unk3D != 0 && actor->unk3C != 0) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
           case 2:
             if (actor->unk3D != 2 && actor->unk3C != 2) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
           case 3:
             if (actor->unk3D != 4 && actor->unk3C != 4) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
             }
             break;
@@ -3969,7 +3969,7 @@ void Level8_UpdateActors(void) {
         }
       }
       actor->flags = 0;
-      if (D_80075794 != 0) {
+      if (g_nActorAnimDone != 0) {
         switch (actor->unk3D) {
         case 2: {
           Actor *p = g_pfnLevelOverlayInitHook(0x1ED, actor);
@@ -3996,7 +3996,7 @@ void Level8_UpdateActors(void) {
 
       if (actor->flags & 0x10000) {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
-        int a = AbsAngleDelta8(D_80078A66,
+        int a = AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                               ArcTan2(actor->posX - spy->posX,
                                             actor->posY - SPY.posY, 0));
 
@@ -4146,7 +4146,7 @@ void Level8_UpdateActors(void) {
         if (r == 2 && st->knockSpeed >= -0x63) {
           st->knockSpeed = -0x64;
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x10);
           DespawnActorRecord(actor);
@@ -4156,13 +4156,13 @@ void Level8_UpdateActors(void) {
 
       case 6:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, 4);
         }
         break;
 
       case 8:
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, 4);
         }
         break;
@@ -4277,13 +4277,13 @@ void Level8_UpdateActors(void) {
         }
         if (d > 0x2000) {
           TurnActorYawTowardAngle(actor, st->home, 4, 0, 0);
-          if (actor->unk3C == 2 && D_800757F4 != 0 && actor->unk3E == 0xF &&
+          if (actor->unk3C == 2 && g_nActorAnimNewFrame != 0 && actor->unk3E == 0xF &&
               --st->count > 0) {
             actor->unk3E = 5;
             actor->unk3F = 6;
             actor->unk40 = 0;
           }
-          if (D_80075794 != 0) {
+          if (g_nActorAnimDone != 0) {
             if (st->count == 0) {
               st->count = RandomIntInRange(3, 5);
               if (RandomIntInRange(0, 0x64) > 0x50) {
@@ -4310,7 +4310,7 @@ void Level8_UpdateActors(void) {
           if (actor->unk3C < 2 || actor->unk3C == 5) {
             TurnActorYawTowardAngle(actor, h, 4, 0, 0);
           }
-          if (D_80075794 != 0) {
+          if (g_nActorAnimDone != 0) {
             if (actor->unk3D == 2) {
               ANIM_SET(actor, 0);
             } else if (--st->count <= 0) {
@@ -4339,15 +4339,15 @@ void Level8_UpdateActors(void) {
                                                   spy->posY - actor->posY, 0),
                                     5),
                       6, 0, 0);
-        if (D_800757F4 != 0 && actor->unk3E == 3 &&
+        if (g_nActorAnimNewFrame != 0 && actor->unk3E == 3 &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0xA8C) {
           SubtractVector(y288, &spy->posX, &actor->posX);
           ScaleVector3ByRatio(y288, VectorLength(y288, 0), 0x78);
           g_dwSpyroRequestMask = 0x80000047;
           g_anSpyroRequestVelocity.x = y288[0];
-          D_80078C68 = 0x28;
+          g_nSpyroRequestVelocityZ = 0x28;
           g_nSpyroRequestState = mode;
-          D_80078C64 = y288[1];
+          g_nSpyroRequestVelocityY = y288[1];
           st->camTimer = 0x28;
           st->camTimer2 = 0x28;
           st->camDist = 0xFA0;
@@ -4355,7 +4355,7 @@ void Level8_UpdateActors(void) {
             g_nHitRumbleTimer = 0xF;
           }
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, 0);
         }
         break;
@@ -4365,7 +4365,7 @@ void Level8_UpdateActors(void) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x30);
           DespawnActorRecord(actor);
@@ -4380,13 +4380,13 @@ void Level8_UpdateActors(void) {
                           8, 6, 1) != 0) {
           ANIM_GO(actor, 8);
         }
-        if (actor->unk3C == 8 && D_800757F4 != 0 && actor->unk3E == 5) {
+        if (actor->unk3C == 8 && g_nActorAnimNewFrame != 0 && actor->unk3E == 5) {
           if (link->unk3D != 7) {
             ANIM_ADVANCE(link, 7);
           }
           link->unk48 = 0xA;
         }
-        if (D_80075794 != 0 && actor->unk3C == 8) {
+        if (g_nActorAnimDone != 0 && actor->unk3C == 8) {
           ANIM_GO(actor, 4);
           actor->unk48 = 0;
           continue;
@@ -4510,7 +4510,7 @@ void Level8_UpdateActors(void) {
         a = ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, 0);
         step = 0xC;
 
-        if (D_80075794 == 0 && actor->unk3D == 1 && actor->unk3F < 0xB) {
+        if (g_nActorAnimDone == 0 && actor->unk3D == 1 && actor->unk3F < 0xB) {
           break;
         }
         st->count += g_nFrameStep;
@@ -4525,7 +4525,7 @@ void Level8_UpdateActors(void) {
         } else if (d < 0x1770) {
           step = 0x18;
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 2);
         }
         if (st->speed < 0xAA) {
@@ -4637,7 +4637,7 @@ void Level8_UpdateActors(void) {
             actor->posZ -= 0x64;
           }
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 2);
         }
         if (st->kind == 2) {
@@ -4665,7 +4665,7 @@ void Level8_UpdateActors(void) {
         if (FindGroundHeightBelow(y320, 0x800) < actor->posZ) {
           actor->posZ -= 0x32;
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x18);
           DespawnActorRecord(actor);
@@ -4714,7 +4714,7 @@ void Level8_UpdateActors(void) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           func_800385BC(actor, 0x10);
           DespawnActorRecord(actor);
@@ -4725,7 +4725,7 @@ void Level8_UpdateActors(void) {
         if (actor->unk3C == 6 && actor->unk3E < 8) {
           UpdateActorWander(actor, st);
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           if (actor->unk3C != 6) {
             DespawnActorRecord(actor);
             continue;
@@ -4847,12 +4847,12 @@ void Level8_UpdateActors(void) {
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
               g_anSpyroRequestVelocity.x = g_anSpyroMotionVec >> 8;
-              D_80078C64 = D_80078B68 >> 8;
+              g_nSpyroRequestVelocityY = D_80078B68 >> 8;
               if (g_nSpyroMotionZ > 0) {
               clear_c68:
-                D_80078C68 = 0;
+                g_nSpyroRequestVelocityZ = 0;
               } else {
-                D_80078C68 = g_nSpyroMotionZ >> 6;
+                g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
               int *look = &SPY.u208;
@@ -4860,9 +4860,9 @@ void Level8_UpdateActors(void) {
               g_nSpyroRequestState = 3;
               CopyVector(look, &SPY.u10C);
               RShiftVector3(look, 6);
-              D_80078C68 = 0;
+              g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || D_80078C64 != 0) {
+              if (SPY.u208 != 0 || g_nSpyroRequestVelocityY != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }
@@ -4916,20 +4916,20 @@ void Level8_UpdateActors(void) {
               int dot;
 
               actor->posX = g_anCollisionResolvedPos;
-              actor->posY = AS_I32(D_80076B84);
+              actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
               SetVector3Magnitude(nrm, 0x1000);
 
-              dot = (st->vel[0] * nrm[0] + st->vel[1] * D_8007736C +
-                     st->vel[2] * D_80077370) >>
+              dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionProbeVecY +
+                     st->vel[2] * g_nCollisionProbeVecZ) >>
                     11;
 
               if (dot < 0) {
                 ScaleVector3ByRatio(nrm, 0x1000, -dot);
                 st->vel[0] += nrm[0];
-                st->vel[1] += AS_I32(D_8007736C);
-                st->vel[2] += AS_I32(D_80077370);
+                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
+                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
               }
             }
             st->life--;
@@ -5219,15 +5219,15 @@ void Level8_UpdateActors(void) {
           int along;
 
           SetVector3Magnitude(nrm, 0x1000);
-          along = (st->vel[0] * nrm[0]) + (st->vel[1] * D_8007736C) +
-                  (st->vel[2] * D_80077370);
+          along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionProbeVecY) +
+                  (st->vel[2] * g_nCollisionProbeVecZ);
           i = along >> 11;
 
           if (i < 0) {
             ScaleVector3ByRatio(nrm, 0x1000, (along >> 13) - i);
             st->vel[0] += nrm[0];
-            st->vel[1] += AS_I32(D_8007736C);
-            st->vel[2] += AS_I32(D_80077370);
+            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
+            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
           }
         }
 
@@ -5760,7 +5760,7 @@ void Level8_UpdateActors(void) {
     case 234:
     case 363:
     case 364:
-    case 493:      if (D_80075794 != 0) {
+    case 493:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

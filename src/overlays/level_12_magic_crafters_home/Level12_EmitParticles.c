@@ -17,7 +17,7 @@
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * MATCHED 2026-08-21, first build.  Arms 0x8 and 0x41 are verbatim lifts from
- * func_level_16_80085F40 (decoded there the same session); arm 0x16 is new
+ * Level16_EmitParticles (decoded there the same session); arm 0x16 is new
  * here: a wind-blown mote that first range-checks the emitter against the
  * camera (`ApproxDist2D(pos, g_anCameraPos) > 0x7FFF` skips the record), walks
  * `arg3` as an 8-bit ANGLE across the loop iterations
@@ -169,7 +169,7 @@ extern short g_anSineLut[];        /* sine table */
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -799,8 +799,8 @@ void Level12_EmitParticles(int count, int type, int *pos, int arg3) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
+ * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

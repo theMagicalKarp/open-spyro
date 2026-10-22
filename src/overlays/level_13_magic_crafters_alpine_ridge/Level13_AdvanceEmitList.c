@@ -93,8 +93,8 @@ void Level13_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x0:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -110,8 +110,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x1:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -127,8 +127,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x2:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -144,7 +144,7 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x4:  /* <- func_level_15_80087B40 */
+    case 0x4:  /* <- Level15_AdvanceEmitList */
     {
       int len;
       int near;
@@ -268,7 +268,7 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x5:  /* <- func_level_15_80087B40 */
+    case 0x5:  /* <- Level15_AdvanceEmitList */
     {
       int rq;
       int rr;
@@ -301,7 +301,7 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x8:  /* <- func_level_12_8008BE98 */
+    case 0x8:  /* <- Level12_AdvanceEmitList */
     {
       int len;
       int *home;
@@ -365,8 +365,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x9:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x9:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -379,8 +379,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xa:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0xa:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -396,8 +396,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xb:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0xb:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
@@ -407,8 +407,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xc:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0xc:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -425,7 +425,7 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x10:  /* <- func_level_18_800888F8 */
+    case 0x10:  /* <- Level18_AdvanceEmitList */
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
@@ -442,7 +442,7 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x11:  /* <- func_level_18_800888F8 */
+    case 0x11:  /* <- Level18_AdvanceEmitList */
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
@@ -461,8 +461,8 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x15:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x15:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -479,7 +479,7 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x16:  /* <- func_level_12_8008BE98 */
+    case 0x16:  /* <- Level12_AdvanceEmitList */
     {
       short a;
 
@@ -516,8 +516,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x18:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x18:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int heat;
 
@@ -543,8 +543,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x21:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int c;
 
@@ -576,8 +576,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x42:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int i;
       int j;
@@ -614,8 +614,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x46:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       unsigned short d[3];
       int j;
@@ -670,8 +670,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x47:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -712,8 +712,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x48:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x48:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -748,8 +748,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4c:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x4c:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -765,8 +765,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4d:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x4d:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -787,8 +787,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4e:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x4e:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       int j;
       int k;
@@ -826,8 +826,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4f:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x4f:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -855,8 +855,8 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50:  /* <- func_level_15_80087B40 */
-    /* <- func_level_10_80084EF0 */
+    case 0x50:  /* <- Level15_AdvanceEmitList */
+    /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 

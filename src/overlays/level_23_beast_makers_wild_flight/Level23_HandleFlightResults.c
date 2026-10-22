@@ -5,14 +5,14 @@
  * (g_pRenderScratchPrimTop - 0x1C200, LoadImage) and kicks DrawSync(0). Resets
  * the gamestate (g_nGamestate = 0), reseeds the light vector (InitLightVectorConstants),
  * then banks rewards: for each of the four collectible classes whose tally
- * (D_80078630..3C) hit 8, an unclaimed per-course flag
+ * (g_anFlightTargetTally..3C) hit 8, an unclaimed per-course flag
  * (g_abWorldPerLevelByteTable[course*5 + i]) pays the class bonus from the course reward
  * table (D_8006E920[course*5 + i]) into the level gem total
  * (g_anLevelGemsCollected[g_nLevelIntroIndex]) and running score (g_nWorldTreasureCollected), 12 digits
  * (g_nGemTallyIconCount) per payout. A perfect run (tallies sum to 0x20) pays the
  * fifth "all clear" bonus (D_8006E930[course*5], flag D_80078684) and
  * records a best time (g_anWorldPersistentFlags[course], lower is better, 0 = unset)
- * from the run clock D_800758F4. Finally spins the reward digit ring
+ * from the run clock g_nFlightRunClock. Finally spins the reward digit ring
  * (g_abGemTallyIconUvTable, 32 slots, glyphs from D_8006E998[i % 12]) and, if the
  * pending-scene word g_nCameraCurrentMode is 0x8000000E, latches the scene byte
  * g_abSpyroStateCameraMode[g_nSpyroState] into g_nCameraNextMode.
@@ -25,20 +25,20 @@ extern void InitLightVectorConstants(void);
 
 extern char *g_pRenderScratchPrimTop;
 extern int g_nGamestate;
-extern int D_8007595C;
+extern int g_nActiveWorldIndex;
 extern int g_nLevelIntroIndex;
 extern int g_nGemTallyIconCount;
 extern int g_nWorldTreasureCollected;
-extern int D_800758F4;
+extern int g_nFlightRunClock;
 extern int g_nCameraCurrentMode;
 extern int g_nCameraNextMode;
 extern int g_anLevelGemsCollected[];
 extern unsigned char g_abGemTallyIconUvTable[];
 extern int g_anWorldPersistentFlags[];
-extern int D_80078630;
-extern int D_80078634;
-extern int D_80078638;
-extern int D_8007863C;
+extern int g_anFlightTargetTally;
+extern int g_nFlightTargetTally1;
+extern int g_nFlightTargetTally2;
+extern int g_nFlightTargetTally3;
 extern unsigned char g_abWorldPerLevelByteTable[];
 extern unsigned char D_80078684[];
 extern int g_nSpyroState;
@@ -66,8 +66,8 @@ void Level23_HandleFlightResults(int reload) {
   g_nGamestate = 0;
   InitLightVectorConstants();
   for (i = 0; i < 4; i++) {
-    if ((&D_80078630)[i] == 8) {
-      int idx = D_8007595C * 5;
+    if ((&g_anFlightTargetTally)[i] == 8) {
+      int idx = g_nActiveWorldIndex * 5;
       int fbase = idx + (int)g_abWorldPerLevelByteTable;
       unsigned char *flag = (unsigned char *)fbase + i;
       if (*flag == 0) {
@@ -80,8 +80,8 @@ void Level23_HandleFlightResults(int reload) {
       }
     }
   }
-  if (D_80078630 + D_80078634 + D_80078638 + D_8007863C == 0x20) {
-    int idx = D_8007595C * 5;
+  if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == 0x20) {
+    int idx = g_nActiveWorldIndex * 5;
     if (D_80078684[idx] == 0) {
       int off;
       g_anLevelGemsCollected[g_nLevelIntroIndex] +=
@@ -91,9 +91,9 @@ void Level23_HandleFlightResults(int reload) {
       D_80078684[idx] = 1;
     }
     {
-      int *best = &g_anWorldPersistentFlags[D_8007595C];
-      if (*best == 0 || D_800758F4 < *best) {
-        *best = D_800758F4;
+      int *best = &g_anWorldPersistentFlags[g_nActiveWorldIndex];
+      if (*best == 0 || g_nFlightRunClock < *best) {
+        *best = g_nFlightRunClock;
       }
     }
   }

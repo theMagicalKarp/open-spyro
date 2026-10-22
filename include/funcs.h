@@ -2138,7 +2138,7 @@ int RandomIntInRange(int lo, int hi);
 /* 0x80037f10: Like RandomIntInRange for the magnitude, with the sign taken from the draw's low bit. */
 int RandomSignedInRange(int lo, int hi);
 
-/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (D_800756C4), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
+/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
 int TickCountdownByFrameDelta(void *pValue, int width);
 
 /* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */

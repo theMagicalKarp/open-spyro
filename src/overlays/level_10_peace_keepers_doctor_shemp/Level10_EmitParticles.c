@@ -23,8 +23,8 @@
  * of the loop (scan_loop case 2); a named local would pin it inside the arm.
  *
  * Word-identical (bar branch displacements) to the five-overlay family
- * func_level_1_800892C4, func_level_2_800844A0,
- * func_level_4_8008391C, Level10_EmitParticles and func_level_28_80085254;
+ * Level1_EmitParticles, Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles;
  * this file is a sed-clone of the level_1 copy, which carries the full
  * match note.
  *
@@ -151,7 +151,7 @@ extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> shor
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -769,9 +769,9 @@ void Level10_EmitParticles(int count, int type, int *pos, int arg3) {
  * value a0 instead of leaving it to reload's spill register t0.
  *
  * Word-identical (bar branch displacements) to the five-overlay family
- * func_level_1_800892C4, func_level_2_800844A0,
- * func_level_4_8008391C, Level10_EmitParticles and func_level_28_80085254;
+ * Level1_EmitParticles, Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles;
  * this file is a sed-clone of the level_1 copy, which carries the full
- * match note.  func_level_3_80088F68 (3,940 B) is the
+ * match note.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

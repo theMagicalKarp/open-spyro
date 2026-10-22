@@ -1,4 +1,4 @@
-/* func_level_2_80083274 (0x80083274, level_2_artisans_dark_hollow overlay,
+/* Level2_AdvanceEmitList (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
  *
  * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn

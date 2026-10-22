@@ -20,7 +20,7 @@
 
    The OT bin-head pair is written through an asm-opaque copy of the block
    address so cse keeps it as a held base; the empty volatile asm keeps the
-   D_80077850 load ahead of it.
+   g_pGamestate0cRecord load ahead of it.
 */
 extern int sprintf();
 extern int strlen(const char *s);
@@ -42,12 +42,12 @@ extern void PutDrawEnv(void *env);
 extern void *LinkOTPrimitives(int depth_max);
 extern void DrawOTag(void *ot);
 
-extern char D_80010CD0[];         /* "%s" */
-extern char D_80010CE4[];         /* "%s" (level form) */
-extern void *D_80077850;          /* OT bin head seed for the title card */
-extern int g_nGamestate0cTimer[]; /* transition fade counter */
-extern int D_800777FC;            /* transition card variant */
-extern void *D_800758D8;          /* substate draw handler */
+extern char D_80010CD0[];          /* "%s" */
+extern char D_80010CE4[];          /* "%s" (level form) */
+extern void *g_pGamestate0cRecord; /* OT bin head seed for the title card */
+extern int g_nGamestate0cTimer[];  /* transition fade counter */
+extern int D_800777FC;             /* transition card variant */
+extern void *D_800758D8;           /* substate draw handler */
 extern unsigned short g_anCosineLut[];
 extern void *g_apOtDepthBinBlock[];  /* alias @0x8006fcf4: head/tail pair */
 extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
@@ -69,7 +69,7 @@ void Gamestate0C_Draw(void) {
         register void **ot asm("$3");
         register void *h asm("$2");
 
-        h = D_80077850;
+        h = g_pGamestate0cRecord;
         __asm__ volatile("" : : "r"(h));
         __asm__("" : "=r"(ot) : "0"(g_apOtDepthBinBlock));
         ot[1] = 0;

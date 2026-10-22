@@ -19,7 +19,7 @@
  * MATCHED 2026-08-21.  Arms 0x4 and 0x5 decoded here (both class 3: 0x4 is a
  * plume that keeps the emitter ACTOR at +0x18 and jitters +-0x3F, 0x5 is a
  * static puff that zeroes the velocity and jitters +-0x1F); arm 0x41 lifted
- * from func_level_16_80085F40.
+ * from Level16_EmitParticles.
  *
  * Arm 0x15's `unk10 = 0` had to move BELOW `unk11` -- the donor order puts the
  * unk10 store above the fx store and the arm's last three stores come out
@@ -160,7 +160,7 @@ extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> shor
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -891,8 +891,8 @@ void Level15_EmitParticles(int count, int type, int *pos, int arg3) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
+ * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

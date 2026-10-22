@@ -14262,11 +14262,11 @@ dlabel g_nLetterboxBarHeight
     /* 65EC0 800756C0 00000000 */ .word 0x00000000
 enddlabel g_nLetterboxBarHeight
 
-nonmatching D_800756C4
+nonmatching g_nActorFrameDelta
 
-dlabel D_800756C4
+dlabel g_nActorFrameDelta
     /* 65EC4 800756C4 00000000 */ .word 0x00000000
-enddlabel D_800756C4
+enddlabel g_nActorFrameDelta
 
 nonmatching g_nGemTallyIconCount
 
@@ -14580,11 +14580,11 @@ dlabel D_80075790
     /* 65F90 80075790 00000000 */ .word 0x00000000
 enddlabel D_80075790
 
-nonmatching D_80075794
+nonmatching g_nActorAnimDone
 
-dlabel D_80075794
+dlabel g_nActorAnimDone
     /* 65F94 80075794 00000000 */ .word 0x00000000
-enddlabel D_80075794
+enddlabel g_nActorAnimDone
 
 nonmatching g_pActorDeferredTriStackTop
 

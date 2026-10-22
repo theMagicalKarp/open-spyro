@@ -494,7 +494,7 @@
 <rect x="308.77" y="680.07" width="7.02" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LoadAssetDirectoryFromCd  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="687.54" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApproxDist2D  ·  96 bytes  ·  handwritten</title></rect>
 <rect x="228.29" y="694.69" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraEulerAngles  ·  96 bytes  ·  matched</title></rect>
-<rect x="228.29" y="701.85" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8003CAC4  ·  96 bytes  ·  matched</title></rect>
+<rect x="228.29" y="701.85" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TallyFlightTarget  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="709.01" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004BDEC  ·  96 bytes  ·  handwritten</title></rect>
 <rect x="228.29" y="716.16" width="7.33" height="7.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005C668  ·  96 bytes  ·  library</title></rect>
 <rect x="228.29" y="723.32" width="7.33" height="7.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ReadSpuRam  ·  96 bytes  ·  library</title></rect>

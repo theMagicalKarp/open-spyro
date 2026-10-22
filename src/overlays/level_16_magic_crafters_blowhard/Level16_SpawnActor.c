@@ -175,7 +175,7 @@ extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedV
 extern int FindGroundHeightBelow(int *pos, int drop);
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int g_anCameraPos;     /* turret aim target X */
-extern int D_80076DFC;     /* turret aim target Y */
+extern int g_nCameraPosY;     /* turret aim target Y */
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
@@ -403,7 +403,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
-      rec->unk46 = ArcTan2(g_anCameraPos - rec->posX, D_80076DFC - rec->posY, 0);
+      rec->unk46 = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, 0);
       rec->posZ -= 0x400;
       st->unk00 = 0x40;
       st->owner = parent;

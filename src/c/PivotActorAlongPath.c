@@ -19,7 +19,7 @@ extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
                                  int flags);
 extern int abs(int);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 extern void *g_apSaveMenuAnimActorListBlock[];
 
 #define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))
@@ -42,9 +42,9 @@ int PivotActorAlongPath(int *actor, unsigned char *path, int thresh, int speed,
   void **list;
   unsigned char *peer;
 
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
 

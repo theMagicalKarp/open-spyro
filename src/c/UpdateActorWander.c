@@ -25,7 +25,7 @@ extern int TurnActorYawTowardAngle(int *actor, int target, int step, int lim,
 extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
                                  int flags);
 
-extern int D_800756C4;
+extern int g_nActorFrameDelta;
 extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
 void UpdateActorWander(int *actor, unsigned char *p) {
@@ -46,10 +46,10 @@ void UpdateActorWander(int *actor, unsigned char *p) {
   turn = p[0xD];
   speed = p[0xC];
   aligned = 1;
-  if (D_800756C4 == 3) {
+  if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
     turn += turn >> 1;
-  } else if (D_800756C4 == 4) {
+  } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
     turn <<= 1;
   }

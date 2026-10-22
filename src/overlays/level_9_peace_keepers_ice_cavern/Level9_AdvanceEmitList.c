@@ -85,7 +85,7 @@ void Level9_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:  /* <- func_level_10_80084EF0 */
+    case 0x0:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -101,7 +101,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:  /* <- func_level_10_80084EF0 */
+    case 0x1:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -117,7 +117,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:  /* <- func_level_10_80084EF0 */
+    case 0x2:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -133,7 +133,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:  /* <- func_level_10_80084EF0 */
+    case 0x9:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -146,7 +146,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xa:  /* <- func_level_10_80084EF0 */
+    case 0xa:  /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -162,7 +162,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xb:  /* <- func_level_10_80084EF0 */
+    case 0xb:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, (short *)(rec + 0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
@@ -172,7 +172,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xc:  /* <- func_level_10_80084EF0 */
+    case 0xc:  /* <- Level10_AdvanceEmitList */
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -223,7 +223,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x15:  /* <- func_level_10_80084EF0 */
+    case 0x15:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -240,7 +240,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x18:  /* <- func_level_10_80084EF0 */
+    case 0x18:  /* <- Level10_AdvanceEmitList */
     {
       int heat;
 
@@ -266,7 +266,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21:  /* <- func_level_10_80084EF0 */
+    case 0x21:  /* <- Level10_AdvanceEmitList */
     {
       int c;
 
@@ -298,7 +298,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42:  /* <- func_level_10_80084EF0 */
+    case 0x42:  /* <- Level10_AdvanceEmitList */
     {
       int i;
       int j;
@@ -335,7 +335,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46:  /* <- func_level_10_80084EF0 */
+    case 0x46:  /* <- Level10_AdvanceEmitList */
     {
       unsigned short d[3];
       int j;
@@ -390,7 +390,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47:  /* <- func_level_10_80084EF0 */
+    case 0x47:  /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -431,7 +431,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x48:  /* <- func_level_10_80084EF0 */
+    case 0x48:  /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -500,7 +500,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4c:  /* <- func_level_10_80084EF0 */
+    case 0x4c:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -516,7 +516,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4d:  /* <- func_level_10_80084EF0 */
+    case 0x4d:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -537,7 +537,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4e:  /* <- func_level_10_80084EF0 */
+    case 0x4e:  /* <- Level10_AdvanceEmitList */
     {
       int j;
       int k;
@@ -575,7 +575,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4f:  /* <- func_level_10_80084EF0 */
+    case 0x4f:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -603,7 +603,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50:  /* <- func_level_10_80084EF0 */
+    case 0x50:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 

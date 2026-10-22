@@ -56,8 +56,8 @@ extern int D_80075850;
 extern int D_80075854;
 extern int D_80075870;
 extern int D_80075874;
-extern int D_80075910;
-extern int D_8007595C; /* current world index */
+extern int g_nLevelIntroParallaxCountdown;
+extern int g_nActiveWorldIndex; /* current world index */
 extern int D_80076E24;
 extern int D_800776CC; /* level-intro deadline */
 extern int D_8007A71C; /* splash size column of the level archive table */
@@ -173,7 +173,7 @@ void TickLevelTransitionStream(int full) {
     ApplyPerLevelGlobalsTable();
     g_nPrevLevelIntroIndex = g_nLevelIntroIndex;
     world = g_nActiveLevelId / 10 - 1;
-    D_8007595C = world;
+    g_nActiveWorldIndex = world;
     intro = world * 6 + g_nActiveLevelId % 10;
     g_nLevelIntroIndex = intro;
     if (full) {
@@ -331,7 +331,7 @@ void TickLevelTransitionStream(int full) {
       g_nCdStreamState++;
       break;
     }
-    if (D_80075910 != 0) {
+    if (g_nLevelIntroParallaxCountdown != 0) {
       break;
     }
     if (g_nScriptedMobTag != 0) {

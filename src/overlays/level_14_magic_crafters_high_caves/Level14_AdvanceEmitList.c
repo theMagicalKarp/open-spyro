@@ -7,7 +7,7 @@
  * handing expired records back with FreeEmitListRecord().  The walk stops at the
  * terminator record, whose class byte at +0x01 is 0xFF.
  *
- * 28 classes.  Arms 0x4/0x5 come from the matched func_level_15_80087B40,
+ * 28 classes.  Arms 0x4/0x5 come from the matched Level15_AdvanceEmitList,
  * 0x8/0x10/0x11 and the seven-vector frame from the level_13 park, 0x1E/0x1F
  * from the level_27 park and the rest from level_0 / level_9 / level_10.
  * Two arms are new here:
@@ -363,7 +363,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
 
     case 0xA:
-    /* <- func_level_10_80084EF0 */
+    /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {

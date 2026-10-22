@@ -35,7 +35,7 @@
  * a multi-set carrier, a volatile read); the dial is the shift count.
  * arm 0x1E was already CLOSED: its colour stores are written before the `fx`
  * store so reload's `li t0,46` keeps its place (A164 on rematerialised
- * constants -- see func_level_0_800873E0's header). */
+ * constants -- see Level0_EmitParticles's header). */
 
 #include "vecmath.h"
 
@@ -180,7 +180,7 @@ extern short g_anSineLut[];        /* sine table */
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char D_80078A66;
+extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
@@ -984,8 +984,8 @@ void Level27_EmitParticles(int count, int type, int *pos, int arg3) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to func_level_2_800844A0,
- * func_level_4_8008391C, func_level_10_8008611C and func_level_28_80085254,
- * which are sed-clones of this file.  func_level_3_80088F68 (3,940 B) is the
+ * Word-identical (bar branch displacements) to Level2_EmitParticles,
+ * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
+ * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
  * 985-insn variant of the same walk and carries the same arm 0x18.
  */

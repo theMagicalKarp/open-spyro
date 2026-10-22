@@ -68,15 +68,18 @@ typedef struct {
 
 extern SPUVOICEROW D_80075F30[];        /* the 24 mixer rows */
 extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
-extern int D_800761DC[]; /* one-shot override flags: 1 = vol pair, 2 = pitch */
-extern unsigned short D_800761F4; /* override pitch */
+extern int g_nSfxOverrideFlags[]; /* one-shot override flags: 1 = vol pair, 2 =
+                                     pitch */
+extern unsigned short g_nSfxOverridePitch; /* override pitch */
 
 /* The one-shot override pair and the row volume fields it feeds are all
    volatile: the mixer reads the row back on the next tick, so every read and
    write in the override arms below has to keep its own load and its program
    order slot (see nVolL/nVolR/anPanCache above). */
-extern volatile unsigned short D_800761E8; /* one-shot override left volume */
-extern volatile unsigned short D_800761EA; /* one-shot override right volume */
+extern volatile unsigned short
+    g_nSfxOverrideVolL; /* one-shot override left volume */
+extern volatile unsigned short
+    g_nSfxOverrideVolR; /* one-shot override right volume */
 
 #define ENT ((SAMPLEENTRY *)g_pLevelSampleBankEntries + sampleId)
 
@@ -91,9 +94,10 @@ extern volatile unsigned short D_800761EA; /* one-shot override right volume */
    The chosen row is stamped with owner/sample/flags and a pitch that may be
    randomized around the bank entry's nominal value (nPitchMode 0 = centred
    spread, 1 = up only, 2 = down only, each in nPitchStep units). The volume
-   pair comes from the row's flag group — the one-shot overrides at D_800761E8
-   win once when armed — and is scaled by g_nSoundMasterVolume and pushed to the
-   SPU via ApplySpuVoiceAttr, then the voice is queued for key-on.
+   pair comes from the row's flag group — the one-shot overrides at
+   g_nSfxOverrideVolL win once when armed — and is scaled by
+   g_nSoundMasterVolume and pushed to the SPU via ApplySpuVoiceAttr, then the
+   voice is queued for key-on.
 
    `pPlaying` receives the row index (or 0x7F when the sound was dropped); rows
    whose bank entry has a loop address are marked 0x100 so the mixer knows they
@@ -156,12 +160,12 @@ unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
       D_80075F30[voice].pOwner = owner;
       D_80075F30[voice].nSampleId = sampleId;
       {
-        int *ovr = D_800761DC;
+        int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
         if (pending & 2) {
           ovr[0] = pending & ~2;
-          D_80075F30[voice].nPitch = D_800761F4;
+          D_80075F30[voice].nPitch = g_nSfxOverridePitch;
         } else {
           D_80075F30[voice].nPitch = ENT->nPitch;
         }
@@ -191,17 +195,17 @@ unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
       switch (D_80075F30[i].nFlags & 0x1C) {
       case 4:
       case 0x10: {
-        int *ovr = D_800761DC;
+        int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
         if (pending & 1) {
           ovr[0] = pending & ~1;
-          D_80075F30[voice].anPanCache[0] = D_800761E8;
-          D_80075F30[voice].anPanCache[1] = D_800761E8;
-          attr.volL = D_800761E8;
-          attr.volR = D_800761EA;
+          D_80075F30[voice].anPanCache[0] = g_nSfxOverrideVolL;
+          D_80075F30[voice].anPanCache[1] = g_nSfxOverrideVolL;
+          attr.volL = g_nSfxOverrideVolL;
+          attr.volR = g_nSfxOverrideVolR;
           D_80075F30[i].nVolR = attr.volR;
-          D_80075F30[i].nVolL = D_800761E8;
+          D_80075F30[i].nVolL = g_nSfxOverrideVolL;
         } else {
           D_80075F30[voice].anPanCache[0] = 0x2000;
           D_80075F30[voice].anPanCache[1] = 0x2000;
@@ -213,15 +217,15 @@ unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
         break;
       }
       case 8: {
-        int *ovr = D_800761DC;
+        int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
         if (pending & 1) {
           ovr[0] = pending & ~1;
-          D_80075F30[voice].anPanCache[0] = D_800761E8;
-          D_80075F30[voice].anPanCache[1] = D_800761EA;
-          attr.volR = D_800761EA;
-          attr.volL = D_800761E8;
+          D_80075F30[voice].anPanCache[0] = g_nSfxOverrideVolL;
+          D_80075F30[voice].anPanCache[1] = g_nSfxOverrideVolR;
+          attr.volR = g_nSfxOverrideVolR;
+          attr.volL = g_nSfxOverrideVolL;
         } else {
           D_80075F30[voice].anPanCache[0] = 0x3CCC;
           D_80075F30[voice].anPanCache[1] = 0x3CCC;

@@ -1,6 +1,6 @@
 /* Level17_UpdateActors (0x8007CFB4, 20,312 B) -- matching notes.
  *
- * Sibling of func_level_11_8007CFB4 (the flight actor-update family head);
+ * Sibling of Level11_UpdateActors (the flight actor-update family head);
  * templated from it arm for arm. See the level_11 file for the load-bearing
  * source forms shared by the whole family. Differences from the head:
  *   - new arms 0x11 (drift shard), 0x134 (roller) and 0x1E1..0x1E3 (its
@@ -40,9 +40,9 @@
  * dispatches. */
 extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
 extern int g_nFrameStep;      /* frame delta in ticks */
-extern int D_800756C4;      /* frame delta, as seen by the callees */
-extern int D_80075794;      /* current actor's animation finished */
-extern int D_800757F4;      /* current actor's new-frame flag */
+extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
+extern int g_nActorAnimDone;      /* current actor's animation finished */
+extern int g_nActorAnimNewFrame;      /* current actor's new-frame flag */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
  * animation. */
@@ -201,10 +201,10 @@ extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
 extern int D_80077AE8;            /* bit 0: switch sounds enabled */
 extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
-extern int D_800761DC;
+extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
-} D_800761F4;
+} g_nSfxOverridePitch;
 extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
@@ -270,8 +270,8 @@ typedef struct DebrisState {
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
-extern int D_8007736C;
-extern int D_80077370;
+extern int g_nCollisionProbeVecY;
+extern int g_nCollisionProbeVecZ;
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {
@@ -389,7 +389,7 @@ extern int g_nGamePaused;
 extern int g_nGamestate;
 extern int g_nScriptedMobViewYawSpin;
 extern int g_nScriptedMobViewPitchTilt;
-extern int D_80075910;
+extern int g_nLevelIntroParallaxCountdown;
 
 /* 0x18-byte spherical camera coordinates; D_8006CA24 holds the presets. */
 typedef struct Xform {
@@ -485,13 +485,13 @@ extern void StubRewardHook(int script, int a);
 
 /* Collision contact point, pickup counters and sound volume override. */
 extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int D_80076B84;   /* ..y */
+extern int g_nCollisionResolvedY;   /* ..y */
 extern int g_nCollisionResolvedZ;   /* ..z */
 extern int g_nLastCollisionHitChunkId;   /* collision triangle index */
 extern int g_nExtraLives;   /* life count, capped at 99 */
 extern int g_nSparxFoodCount;   /* life orb count */
-extern short D_800761E8; /* sound volume override, left/right */
-extern short D_800761EA;
+extern short g_nSfxOverrideVolL; /* sound volume override, left/right */
+extern short g_nSfxOverrideVolR;
 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut[];
@@ -933,15 +933,15 @@ extern int D_80078B68;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
-extern unsigned char D_80078A66; /* SPY.bodyRotZ, absolute form (A240) */
+extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 extern int g_nSpyroSwingEulerPitchTarget;
 
 extern int g_dwSpyroRequestMask;         /* scripted camera control word */
 extern signed char D_80078C5E; /* destination level */
 extern int g_anSpyroRequestVelocity;         /* scripted camera look-at */
-extern int D_80078C64;
-extern int D_80078C68;
+extern int g_nSpyroRequestVelocityY;
+extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroRequestState; /* scripted camera mode */
 extern PortalDesc *g_pGemPickupCamPathData;
 extern int g_nGemPickupCamPathMaxStep;
@@ -984,13 +984,13 @@ typedef struct BurstState {
 } BurstState;
 
 extern int g_anWorldPersistentFlags[];  /* per-mode "time attack" flag */
-extern int D_8007595C;    /* current mode index */
+extern int g_nActiveWorldIndex;    /* current mode index */
 extern int D_80075908;    /* time bonus accumulator */
 extern int D_80075840;    /* time remaining */
 extern int g_nVblankTickCount;    /* frame counter */
 extern int D_8006E824[];  /* shard offset vectors, 3 ints each */
 extern int PlaneDistanceAbs(int *pos, void *st);
-extern void func_8003CAC4(int sound);
+extern void TallyFlightTarget(int sound);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
 /* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
@@ -1023,15 +1023,15 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-extern int D_800758F4;      /* elapsed time (time attack) */
+extern int g_nFlightRunClock;      /* elapsed time (time attack) */
 extern int D_80075900;
 extern int D_800770F8[];    /* tally shown, per class */
-extern int D_80078630[];    /* tally collected, per class */
-extern int D_80078608;      /* pending tally-class queue, 4 deep */
+extern int g_anFlightTargetTally[];    /* tally collected, per class */
+extern int g_anFlightTallyActiveSlots;      /* pending tally-class queue, 4 deep */
 extern int D_8007860C;
 extern int D_80078610;
 extern int D_80078614;
-extern int D_800758F8;      /* tally class being shown */
+extern int g_nFlightTallyShownClass;      /* tally class being shown */
 extern int D_8006E3E4[];
 extern Actor g_abHudIconActorRecords[];  /* the four HUD class icons */
 extern int D_800756A0;
@@ -1126,9 +1126,9 @@ void Level17_UpdateActors(void) {
       continue;
     }
 
-    D_80075794 = actor->unk42 & 2;
-    D_800757F4 = actor->unk42 & 1;
-    D_800756C4 = g_nFrameStep;
+    g_nActorAnimDone = actor->unk42 & 2;
+    g_nActorAnimNewFrame = actor->unk42 & 1;
+    g_nActorFrameDelta = g_nFrameStep;
 
     switch (actor->type) {
     /* Butterfly (ChaseState). */
@@ -1339,15 +1339,15 @@ void Level17_UpdateActors(void) {
         } else {
           CopyVector(svA, &spy->posX);
           {
-            int c = LookupCosine(D_80078A66 << 4);
-            int s = LookupSine(D_80078A66 << 4);
+            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
+            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
             int cr = c * 724;
             int sr = s * 724;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
-            int s = LookupSine(D_80078A66 << 4);
-            int c = LookupCosine(D_80078A66 << 4);
+            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
+            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
             int sr = s * 724;
             int cr = c * 724;
             svA[1] = svA[1] + ((sr - cr) >> 12);
@@ -1375,11 +1375,11 @@ void Level17_UpdateActors(void) {
           actor->unk46 = actor->unk46 + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &spy->posX);
-          svD[0] = svD[0] + (LookupCosine(D_80078A66 << 4) >> 3);
-          svD[1] = svD[1] + (LookupSine(D_80078A66 << 4) >> 3);
+          svD[0] = svD[0] + (LookupCosine(g_bSpyroPersistentEulerZ << 4) >> 3);
+          svD[1] = svD[1] + (LookupSine(g_bSpyroPersistentEulerZ << 4) >> 3);
           svD[2] = svD[2] + 0x300;
           VectorToSVectorShr2(st->from, svD);
-          st->heading = D_80078A66 - 0x40;
+          st->heading = g_bSpyroPersistentEulerZ - 0x40;
           st->speed = 0x200;
           st->phase = 0;
           actor->unk48 = actor->unk48 + 1;
@@ -1441,14 +1441,14 @@ void Level17_UpdateActors(void) {
           int dot;
 
           SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
-          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * D_8007736C +
-                    st->vel[2] * D_80077370 >>
+          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
+                    st->vel[2] * g_nCollisionProbeVecZ >>
                 11;
           if (dot < 0) {
             ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, (dot >> 2) - (dot));
             st->vel[0] += g_anCollisionProbeVec;
-            st->vel[1] += AS_I32(D_8007736C);
-            st->vel[2] += AS_I32(D_80077370);
+            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
+            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
           }
         }
 
@@ -1570,9 +1570,9 @@ void Level17_UpdateActors(void) {
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
         st->pitch = -ArcTan2_8bit(
-            IntegerSqrt((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
-            D_8007736C);
-        st->yaw = -ArcTan2_8bit(D_80077370, nrm[0]);
+            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
+            g_nCollisionProbeVecY);
+        st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->unk46 = 0;
@@ -1591,9 +1591,9 @@ void Level17_UpdateActors(void) {
               int *nrm = &g_anCollisionProbeVec;
 
               st->pitch = -ArcTan2_8bit(
-                  IntegerSqrt((nrm[0] * nrm[0]) + (D_80077370 * D_80077370)),
-                  D_8007736C);
-              st->yaw = -ArcTan2_8bit(D_80077370, nrm[0]);
+                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
+                  g_nCollisionProbeVecY);
+              st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
             }
 
           } else if (st->sub == 2) {
@@ -1644,9 +1644,9 @@ void Level17_UpdateActors(void) {
                   if (cs->owner == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
                                        g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
-                      D_800761DC = 1;
-                      D_800761EA = 0x2000;
-                      D_800761E8 = 0x2000;
+                      g_nSfxOverrideFlags = 1;
+                      g_nSfxOverrideVolR = 0x2000;
+                      g_nSfxOverrideVolL = 0x2000;
                       PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                     }
 
@@ -1735,9 +1735,9 @@ void Level17_UpdateActors(void) {
             }
 
             if (st->count != 0) {
-              D_800761DC = 1;
-              D_800761E8 = 0x3CCC >> (3 - st->count);
-              D_800761EA = 0x3CCC >> (3 - st->count);
+              g_nSfxOverrideFlags = 1;
+              g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
+              g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
 
@@ -1772,9 +1772,9 @@ void Level17_UpdateActors(void) {
                 if (cs->owner == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
                                      g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
-                    D_800761DC = 1;
-                    D_800761EA = 0x2000;
-                    D_800761E8 = 0x2000;
+                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideVolR = 0x2000;
+                    g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
                   }
 
@@ -1983,7 +1983,7 @@ void Level17_UpdateActors(void) {
                  AbsAngleDelta8((actor->unk46 + (bp->dir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
               if (actor->unk3D != actor->unk3D + 1) {
-                D_80075794 = 0;
+                g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->unk3D + 1);
               }
             }
@@ -2009,9 +2009,9 @@ void Level17_UpdateActors(void) {
           break;
         }
         case 2: {
-          if (D_80075794 != 0) {
+          if (g_nActorAnimDone != 0) {
             if (actor->unk3D != actor->unk3D - 1) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_ADVANCE(actor, actor->unk3D - 1);
             }
             st->rider = 0;
@@ -2044,9 +2044,9 @@ void Level17_UpdateActors(void) {
 
             st->rider = 0;
             if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
-              D_800761DC = 1;
-              D_800761EA = 0x3600;
-              D_800761E8 = 0x3600;
+              g_nSfxOverrideFlags = 1;
+              g_nSfxOverrideVolR = 0x3600;
+              g_nSfxOverrideVolL = 0x3600;
               PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->unk54);
             }
           } else {
@@ -2122,7 +2122,7 @@ void Level17_UpdateActors(void) {
         case 1:
           if (actor->unk3D != 0) {
             if (actor->unk3C != 0) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
           }
@@ -2130,7 +2130,7 @@ void Level17_UpdateActors(void) {
         case 2:
           if (actor->unk3D != 2) {
             if (actor->unk3C != 2) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
           }
@@ -2139,7 +2139,7 @@ void Level17_UpdateActors(void) {
         case 3:
           if (actor->unk3D != 4) {
             if (actor->unk3C != 4) {
-              D_80075794 = 0;
+              g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
             }
           }
@@ -2242,20 +2242,20 @@ void Level17_UpdateActors(void) {
               int dot;
 
               actor->posX = g_anCollisionResolvedPos;
-              actor->posY = AS_I32(D_80076B84);
+              actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
               SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
 
-              dot = (st->vel[0] * g_anCollisionProbeVec + st->vel[1] * D_8007736C +
-                     st->vel[2] * D_80077370) >>
+              dot = (st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
+                     st->vel[2] * g_nCollisionProbeVecZ) >>
                     11;
 
               if (dot < 0) {
                 ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, -dot);
                 st->vel[0] += g_anCollisionProbeVec;
-                st->vel[1] += AS_I32(D_8007736C);
-                st->vel[2] += AS_I32(D_80077370);
+                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
+                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
               }
             }
             st->life--;
@@ -2280,7 +2280,7 @@ void Level17_UpdateActors(void) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, 0, 0);
-        func_8003CAC4(st[1]);
+        TallyFlightTarget(st[1]);
         reward = g_pfnLevelOverlayInitHook(st[0] + 0x158, actor);
         if (reward != 0) {
           reward->unk48 = 1;
@@ -2342,7 +2342,7 @@ void Level17_UpdateActors(void) {
         if (reward != 0) {
           reward->unk48 = 1;
         }
-        func_8003CAC4(st->tally);
+        TallyFlightTarget(st->tally);
         st->unk14 = 0;
         st->unk1C = 0x15E;
         st->heading = StepAndLerpAngle8(
@@ -2397,7 +2397,7 @@ void Level17_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (D_80075794 != 0) {
+        if (g_nActorAnimDone != 0) {
           actor->unk48 = 2;
           ANIM_RESET(actor, 2);
         }
@@ -2419,7 +2419,7 @@ void Level17_UpdateActors(void) {
     case 0x154: {
       TargetState *st = actor->state;
 
-      if (g_anWorldPersistentFlags[D_8007595C] == 0 && st->helper == 0) {
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
         st->helper = g_pfnLevelOverlayInitHook(st->helperType + 0x158, actor);
         actor->unk44 = -actor->unk3C << 6;
       }
@@ -2439,7 +2439,7 @@ void Level17_UpdateActors(void) {
           SubtractVector(svT, &actor->posX, &spy->posX);
           if (VectorLength(svT, 1) < 2500 &&
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
-            func_8003CAC4(st->sound);
+            TallyFlightTarget(st->sound);
             if (st->helper != 0) {
               st->helper->unk48 = 1;
             } else {
@@ -2460,7 +2460,7 @@ void Level17_UpdateActors(void) {
 
       switch (actor->unk48) {
       case 0:
-        if (g_anWorldPersistentFlags[D_8007595C] != 0) {
+        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           DespawnActorRecord(actor);
           break;
         }
@@ -2520,7 +2520,7 @@ void Level17_UpdateActors(void) {
     case 0x161: {
       TargetState *st = actor->state;
 
-      if (g_anWorldPersistentFlags[D_8007595C] == 0 && st->helper == 0) {
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
         st->helper = g_pfnLevelOverlayInitHook(st->helperType + 0x158, actor);
       }
 
@@ -2536,7 +2536,7 @@ void Level17_UpdateActors(void) {
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
-            func_8003CAC4(st->sound);
+            TallyFlightTarget(st->sound);
             if (st->helper != 0) {
               st->helper->unk48 = 1;
             }
@@ -2598,22 +2598,22 @@ void Level17_UpdateActors(void) {
       if (st->icon[0] == 0) {
         D_80075908 = st->time;
         D_80075840 = st->time;
-        D_800758F4 = 0;
+        g_nFlightRunClock = 0;
         D_80075900 = 0;
         D_800770F8[0] = 0;
-        D_80078630[0] = 0;
+        g_anFlightTargetTally[0] = 0;
         D_800770F8[1] = 0;
-        D_80078630[1] = 0;
+        g_anFlightTargetTally[1] = 0;
         D_800770F8[2] = 0;
-        D_80078630[2] = 0;
+        g_anFlightTargetTally[2] = 0;
         D_800770F8[3] = 0;
-        D_80078630[3] = 0;
+        g_anFlightTargetTally[3] = 0;
         D_80078614 = -1;
         D_80078610 = -1;
         D_8007860C = -1;
-        D_80078608 = -1;
+        g_anFlightTallyActiveSlots = -1;
         D_800757C4 = -1;
-        D_800758F8 = -1;
+        g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelOverlayInitHook(0x147, actor);
@@ -2631,7 +2631,7 @@ void Level17_UpdateActors(void) {
         st->digit[3]->posX = 0x1C4;
         st->digit[3]->posY = 0x1E;
 
-        if (g_anWorldPersistentFlags[D_8007595C] != 0) {
+        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelOverlayInitHook(0x147, actor);
             st->digit[i]->unk50 = 0xFF;
@@ -2681,8 +2681,8 @@ void Level17_UpdateActors(void) {
         }
       }
 
-      if (g_anWorldPersistentFlags[D_8007595C] != 0) {
-        t = D_800758F4;
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        t = g_nFlightRunClock;
       } else {
         t = D_80075840;
       }
@@ -2692,19 +2692,19 @@ void Level17_UpdateActors(void) {
       prevMin = t / 60;
       prevTenth = t / 6;
 
-      if (D_80078630[0] + D_80078630[1] + D_80078630[2] + D_80078630[3] !=
+      if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
         if (D_800756A0 == 0 && g_nSpyroStateFlags < 8 &&
-            g_anWorldPersistentFlags[D_8007595C] == 0) {
+            g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           D_80075908 -= g_nFrameStep;
           D_80075840 -= g_nFrameStep;
           if (D_80075908 < 0) {
             g_pfnLevelFallImpactCallback();
           }
         }
-        D_800758F4 += g_nFrameStep;
-        if (D_800758F4 > 0x8C9F) {
-          D_800758F4 = 0x8C9F;
+        g_nFlightRunClock += g_nFrameStep;
+        if (g_nFlightRunClock > 0x8C9F) {
+          g_nFlightRunClock = 0x8C9F;
         }
       } else {
         ChangeSpyroState(0x20);
@@ -2712,8 +2712,8 @@ void Level17_UpdateActors(void) {
         g_dwSpyroRequestMask = 0x80004000;
       }
 
-      if (g_anWorldPersistentFlags[D_8007595C] != 0) {
-        t = D_800758F4;
+      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        t = g_nFlightRunClock;
         i = t / 3600;
         if (i != 0) {
           st->digit[6]->type = i + 0x104;
@@ -2752,7 +2752,7 @@ void Level17_UpdateActors(void) {
         i = t / 6 - min * 10;
         st->digit[3]->type = i + 0x104;
 
-        if (g_anWorldPersistentFlags[D_8007595C] == 0) {
+        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           i = min;
           if (i < prevMin) {
             if (i < 6) {
@@ -2810,15 +2810,15 @@ void Level17_UpdateActors(void) {
           }
         }
       } else {
-        if (D_80078608 >= 0) {
-          D_800758F8 = D_80078608;
-          if (D_80078630[D_800758F8] != D_800770F8[D_800758F8]) {
-            int *cnt = D_80078630;
+        if (g_anFlightTallyActiveSlots >= 0) {
+          g_nFlightTallyShownClass = g_anFlightTallyActiveSlots;
+          if (g_anFlightTargetTally[g_nFlightTallyShownClass] != D_800770F8[g_nFlightTallyShownClass]) {
+            int *cnt = g_anFlightTargetTally;
             int x;
 
             for (i = 0, x = 0x1E; i < 8; i++) {
-              st->icon[i]->type = st->types[D_800758F8];
-              if (cnt[D_800758F8] < i + 1) {
+              st->icon[i]->type = st->types[g_nFlightTallyShownClass];
+              if (cnt[g_nFlightTallyShownClass] < i + 1) {
                 st->icon[i]->unk50 = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = 0;
@@ -2827,29 +2827,29 @@ void Level17_UpdateActors(void) {
               } else {
                 st->icon[i]->unk50 = 0xFF;
                 st->icon[i]->posX = x;
-                st->icon[i]->unk4F = D_800758F8 + 3;
+                st->icon[i]->unk4F = g_nFlightTallyShownClass + 3;
                 st->icon[i]->unk48 = 1;
               }
               x += 0x1E;
             }
 
-            D_800770F8[D_800758F8] = D_80078630[D_800758F8];
-            if (D_80078630[D_800758F8] == 8) {
+            D_800770F8[g_nFlightTallyShownClass] = g_anFlightTargetTally[g_nFlightTallyShownClass];
+            if (g_anFlightTargetTally[g_nFlightTallyShownClass] == 8) {
               for (i = 0; i < 8; i++) {
                 st->spent[i] = st->icon[i];
                 st->icon[i] = g_pfnLevelOverlayInitHook(st->types[0], actor);
               }
               st->timer = 0;
               st->count = 8;
-              D_800757C4 = D_800758F8;
+              D_800757C4 = g_nFlightTallyShownClass;
             }
           }
-          D_80078608 = D_8007860C;
+          g_anFlightTallyActiveSlots = D_8007860C;
           D_8007860C = D_80078610;
           D_80078610 = D_80078614;
           D_80078614 = -1;
         }
-        D_800758F8 = -1;
+        g_nFlightTallyShownClass = -1;
       }
 
       if (g_nGamestate == 7) {
@@ -2876,7 +2876,7 @@ void Level17_UpdateActors(void) {
     case 0x190:
     case 405:
     case 477:
-      if (D_80075794 == 0) {
+      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
