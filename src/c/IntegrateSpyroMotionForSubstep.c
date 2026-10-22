@@ -48,7 +48,6 @@ SDATA(g_pSpyroContactActor, 4);
 /* One view of the Spyro record from its world position (0x80078a58). */
 extern int g_anSpyroWorldPosBlock[];
 extern int g_anCameraPosBlock[];
-extern int g_anSpyroWorldPosZBlock[];
 extern short g_anCameraEulerYawBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_abSpyroAnimPrevBlock[];
@@ -80,7 +79,7 @@ extern int g_anSpyroDeathCamRecordBlock[];
 #define RAMP ((signed char *)g_abSpyroEulerRateRampSigned)
 
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(a, b, c, d)
+  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
 /* Opaque copy: the result is a fresh value to cse, so a block address stays
    in its register and later fields are addressed off it. */

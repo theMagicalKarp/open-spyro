@@ -13,5 +13,5 @@
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_EmitParticles)
     build/overlays/level_25_dream_weavers_dark_passage/c/Level25_EmitParticles.o(.text)
     . = 0x0000d69c ;
-    build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_Noop)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_Noop.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_OverlayEnd)
+    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_OverlayEnd.o(.text)

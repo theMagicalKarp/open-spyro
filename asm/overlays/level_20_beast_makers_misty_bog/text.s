@@ -13173,13 +13173,13 @@ glabel Level20_EmitParticles
 endlabel Level20_EmitParticles
 .endif
 
-.section .text.Level20_Noop, "ax"
-.ifndef HAVE_C_Level20_Noop
-nonmatching Level20_Noop, 0x8
+.section .text.Level20_OverlayEnd, "ax"
+.ifndef HAVE_C_Level20_OverlayEnd
+nonmatching Level20_OverlayEnd, 0x8
 
-glabel Level20_Noop
+glabel Level20_OverlayEnd
     /* C6F8 80087130 0800E003 */  jr         $ra
     /* C6FC 80087134 00000000 */   nop
-endlabel Level20_Noop
+endlabel Level20_OverlayEnd
 .endif
 

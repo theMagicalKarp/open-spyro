@@ -13,5 +13,5 @@
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_EmitParticles)
     build/overlays/level_20_beast_makers_misty_bog/c/Level20_EmitParticles.o(.text)
     . = 0x0000c6f8 ;
-    build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_Noop)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_Noop.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_OverlayEnd)
+    build/overlays/level_20_beast_makers_misty_bog/c/Level20_OverlayEnd.o(.text)

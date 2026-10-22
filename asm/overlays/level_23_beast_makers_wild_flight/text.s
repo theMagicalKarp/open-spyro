@@ -10511,13 +10511,13 @@ glabel Level23_EmitParticles
 endlabel Level23_EmitParticles
 .endif
 
-.section .text.Level23_Noop, "ax"
-.ifndef HAVE_C_Level23_Noop
-nonmatching Level23_Noop, 0x8
+.section .text.Level23_OverlayEnd, "ax"
+.ifndef HAVE_C_Level23_OverlayEnd
+nonmatching Level23_OverlayEnd, 0x8
 
-glabel Level23_Noop
+glabel Level23_OverlayEnd
     /* 9E0C 80084844 0800E003 */  jr         $ra
     /* 9E10 80084848 00000000 */   nop
-endlabel Level23_Noop
+endlabel Level23_OverlayEnd
 .endif
 

@@ -28,5 +28,5 @@
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_EmitParticles)
     build/overlays/level_11_peace_keepers_night_flight/c/Level11_EmitParticles.o(.text)
     . = 0x000091b8 ;
-    build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_Noop)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_Noop.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_OverlayEnd)
+    build/overlays/level_11_peace_keepers_night_flight/c/Level11_OverlayEnd.o(.text)

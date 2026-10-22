@@ -12337,13 +12337,13 @@ glabel Level34_EmitParticles
 endlabel Level34_EmitParticles
 .endif
 
-.section .text.Level34_Noop, "ax"
-.ifndef HAVE_C_Level34_Noop
-nonmatching Level34_Noop, 0x8
+.section .text.Level34_OverlayEnd, "ax"
+.ifndef HAVE_C_Level34_OverlayEnd
+nonmatching Level34_OverlayEnd, 0x8
 
-glabel Level34_Noop
+glabel Level34_OverlayEnd
     /* B82C 80086264 0800E003 */  jr         $ra
     /* B830 80086268 00000000 */   nop
-endlabel Level34_Noop
+endlabel Level34_OverlayEnd
 .endif
 

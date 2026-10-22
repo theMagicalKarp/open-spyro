@@ -25,5 +25,5 @@
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_EmitParticles)
     build/overlays/level_24_dream_weavers_home/c/Level24_EmitParticles.o(.text)
     . = 0x00011100 ;
-    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_Noop)
-    build/overlays/level_24_dream_weavers_home/c/Level24_Noop.o(.text)
+    build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_OverlayEnd)
+    build/overlays/level_24_dream_weavers_home/c/Level24_OverlayEnd.o(.text)

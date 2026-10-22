@@ -11,4 +11,4 @@ Level23_UpdateActors = 0x8007CFB4; // type:func size:0x5288
 Level23_SpawnActor = 0x8008223C; // type:func size:0xD18
 Level23_AdvanceEmitList = 0x80082F54; // type:func size:0xC58
 Level23_EmitParticles = 0x80083BAC; // type:func size:0xC98
-Level23_Noop = 0x80084844; // type:func size:0x8
+Level23_OverlayEnd = 0x80084844; // type:func size:0x8

@@ -25,5 +25,5 @@
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_EmitParticles)
     build/overlays/level_6_peace_keepers_home/c/Level6_EmitParticles.o(.text)
     . = 0x0001256c ;
-    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_Noop)
-    build/overlays/level_6_peace_keepers_home/c/Level6_Noop.o(.text)
+    build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_OverlayEnd)
+    build/overlays/level_6_peace_keepers_home/c/Level6_OverlayEnd.o(.text)

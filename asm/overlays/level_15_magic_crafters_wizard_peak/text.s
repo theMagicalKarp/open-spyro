@@ -16423,13 +16423,13 @@ glabel Level15_EmitParticles
 endlabel Level15_EmitParticles
 .endif
 
-.section .text.Level15_Noop, "ax"
-.ifndef HAVE_C_Level15_Noop
-nonmatching Level15_Noop, 0x8
+.section .text.Level15_OverlayEnd, "ax"
+.ifndef HAVE_C_Level15_OverlayEnd
+nonmatching Level15_OverlayEnd, 0x8
 
-glabel Level15_Noop
+glabel Level15_OverlayEnd
     /* FE68 8008A8A0 0800E003 */  jr         $ra
     /* FE6C 8008A8A4 00000000 */   nop
-endlabel Level15_Noop
+endlabel Level15_OverlayEnd
 .endif
 

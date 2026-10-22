@@ -36,6 +36,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 typedef struct Actor {
   void *state;         /* 0x00 per-type state block */
@@ -46,16 +47,16 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 */
   int unk1C;           /* 0x1C */
-  int unk20[5];        /* 0x20 */
-  short unk34;         /* 0x34 */
+  int mtx[5];        /* 0x20 */
+  short gridCell;         /* 0x34 */
   short type;          /* 0x36 */
   int unk38[3];        /* 0x38 */
-  unsigned char unk44; /* 0x44 */
-  unsigned char unk45;
-  unsigned char unk46;
+  unsigned char rotX; /* 0x44 */
+  unsigned char rotY;
+  unsigned char rotZ;
   unsigned char unk47;
-  unsigned char unk48;
-  unsigned char unk49; /* 0x49 */
+  unsigned char mode;
+  unsigned char subMode; /* 0x49 */
   unsigned char unk4A;
   unsigned char unk4B; /* 0x4B */
   unsigned char unk4C; /* 0x4C */
@@ -63,12 +64,12 @@ typedef struct Actor {
   unsigned char unk4E;
   unsigned char unk4F;
   unsigned char unk50; /* 0x50 */
-  unsigned char unk51;
-  unsigned char unk52; /* 0x52 */
+  unsigned char drawn;
+  unsigned char updateDist; /* 0x52 */
   unsigned char unk53;
-  unsigned char unk54;
+  unsigned char sfxSlot;
   unsigned char unk55;
-  unsigned char unk56; /* 0x56 owner pool index */
+  unsigned char poolIndex; /* 0x56 owner pool index */
   unsigned char unk57;
 } Actor; /* 0x58 */
 
@@ -146,16 +147,9 @@ extern int FindGroundHeightBelow(int *pos, int drop);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern int g_anSpyroVelocity[3];
-extern int g_nGemPickupSubstate;
-extern short g_anLaunchDirTable[]; /* launch-direction table, x */
-extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
-extern int g_anSpyroFirstContactPoint[3];
-extern int g_anSpyroFirstContactNormal[3];
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 extern unsigned short g_nCameraEulerPitch;  /* tracked world yaw (byte) */
-extern short g_nCameraEulerYaw;           /* tracked world pitch */
 extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);         /* ArcTan2 */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
@@ -167,7 +161,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
-  rec->unk56 = owner;
+  rec->poolIndex = owner;
 
   switch (type) {
   case 0xF: {
@@ -184,12 +178,12 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->unk11 = 0;
     st->unk12 = 0;
     st->unk13 = 0;
-    rec->unk49 = 2;
+    rec->subMode = 2;
     rec->unk50 = 0x18;
-    rec->unk52 = 0x10;
-    rec->unk44 = 0x20;
-    rec->unk45 = 0;
-    rec->unk46 = 0;
+    rec->updateDist = 0x10;
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
@@ -225,15 +219,15 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->owner = parent;
     GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
-    rec->unk45 = g_nCameraEulerPitch;
-    rec->unk46 = (g_nCameraEulerYaw + 0x400) >> 4;
+    rec->rotY = g_nCameraEulerPitch;
+    rec->rotZ = (g_nCameraEulerYaw + 0x400) >> 4;
     break;
   }
 
   case 0x22:
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
@@ -262,12 +256,12 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     }
     pos = &rec->posX;
     st->unk14 = 0xFF;
-    rec->unk49 = 2;
+    rec->subMode = 2;
     rec->unk50 = 0x18;
-    rec->unk52 = 0x40;
-    rec->unk44 = 0x20;
-    rec->unk45 = 0;
-    rec->unk46 = 0;
+    rec->updateDist = 0x40;
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
     CopyVector(pos, &parent->posX);
     HideActorRenderRecord(rec);
     rec->unk1C = -1;
@@ -346,9 +340,9 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->spinX = GetRandomU32() & 0xF;
     st->spinY = GetRandomU32() & 0xF;
     st->spinZ = GetRandomU32() & 0xF;
-    rec->unk44 += (unsigned char)st->spinX * 4;
-    rec->unk45 += (unsigned char)st->spinY * 4;
-    rec->unk46 += (unsigned char)st->spinZ * 4;
+    rec->rotX += (unsigned char)st->spinX * 4;
+    rec->rotY += (unsigned char)st->spinY * 4;
+    rec->rotZ += (unsigned char)st->spinZ * 4;
     st->unk10 = parent->posZ - 0x40;
     *(int *)&rec->unk4C = 0x1000000;
     rec->unk4B |= 0x80;
@@ -360,7 +354,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     InsertActorIntoSpatialGrid(rec);
-    rec->unk49 = 0;
+    rec->subMode = 0;
     st->unk00 = 0;
     st->unk08 = 0;
     st->unk06 = 0;
@@ -376,7 +370,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   case 0xEA:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
-    rec->unk46 = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], 0) + 0x40;
+    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], 0) + 0x40;
     InsertActorIntoSpatialGrid(rec);
     break;
 
@@ -425,7 +419,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
     rec->unk4C = 0;
     rec->unk4D = 0;
@@ -440,7 +434,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     dir[0] = g_anLaunchDirTable[i * 2];
     dir[1] = 0;
     dir[2] = g_anLaunchDirTableZ[i * 2];
-    RotateVectorByMatrix(parent->unk20, dir, dir);
+    RotateVectorByMatrix(parent->mtx, dir, dir);
     dir[0] -= 0x3F - (GetRandomU32() & 0x7F);
     dir[1] -= 0x3F - (GetRandomU32() & 0x7F);
     dir[2] -= 0x3F - (GetRandomU32() & 0x7F);
@@ -450,9 +444,9 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->vel[0] -= 0x7F - (GetRandomU32() & 0xFF);
     st->vel[1] -= 0x7F - (GetRandomU32() & 0xFF);
     st->vel[2] -= 0x7F - (GetRandomU32() & 0xFF);
-    rec->unk44 = GetRandomU32();
-    rec->unk45 = GetRandomU32();
-    rec->unk46 = GetRandomU32();
+    rec->rotX = GetRandomU32();
+    rec->rotY = GetRandomU32();
+    rec->rotZ = GetRandomU32();
     st->unk10 = GetRandomU32() & 0xF;
     st->unk11 = GetRandomU32() & 0xF;
     st->unk12 = GetRandomU32() & 0xF;
@@ -486,7 +480,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->unk08 = 0;
     rec->unk50 = 0;
     InsertActorIntoSpatialGrid(rec);
-    rec->unk51 = 0;
+    rec->drawn = 0;
     break;
   }
 
@@ -531,7 +525,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   case 0x1AA ... 0x1C3:
     InitActorRenderDefaults(rec);
     rec->unk50 = 0x20;
-    rec->unk52 = 0xFF;
+    rec->updateDist = 0xFF;
     HideActorRenderRecord(rec);
     break;
 

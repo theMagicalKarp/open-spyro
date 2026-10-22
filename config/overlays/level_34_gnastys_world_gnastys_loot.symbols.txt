@@ -6,4 +6,4 @@ Level34_UpdateActors = 0x8007AD4C; // type:func size:0x8944
 Level34_SpawnActor = 0x80083690; // type:func size:0xA6C
 Level34_AdvanceEmitList = 0x800840FC; // type:func size:0x1134
 Level34_EmitParticles = 0x80085230; // type:func size:0x1034
-Level34_Noop = 0x80086264; // type:func size:0x8
+Level34_OverlayEnd = 0x80086264; // type:func size:0x8

@@ -18624,13 +18624,13 @@ glabel Level14_EmitParticles
 endlabel Level14_EmitParticles
 .endif
 
-.section .text.Level14_Noop, "ax"
-.ifndef HAVE_C_Level14_Noop
-nonmatching Level14_Noop, 0x8
+.section .text.Level14_OverlayEnd, "ax"
+.ifndef HAVE_C_Level14_OverlayEnd
+nonmatching Level14_OverlayEnd, 0x8
 
-glabel Level14_Noop
+glabel Level14_OverlayEnd
     /* 11D04 8008C73C 0800E003 */  jr         $ra
     /* 11D08 8008C740 00000000 */   nop
-endlabel Level14_Noop
+endlabel Level14_OverlayEnd
 .endif
 

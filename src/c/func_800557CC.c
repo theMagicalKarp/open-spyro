@@ -73,8 +73,8 @@ void func_800557CC(int value, struct DigitActor *src) {
       d = value % 10;
       q = value / 10;
       prod = d + 0x104;
-      rec = (*(struct DigitActor * (*)(int, int))
-                 g_pfnLevelOverlayInitHook)(prod, 0);
+      rec =
+          (*(struct DigitActor * (*)(int, int)) g_pfnLevelSpawnActor)(prod, 0);
       rec->pos[0] = x;
       rec->pos[1] = y;
       z = src->pos[2];

@@ -1456,17 +1456,17 @@ dlabel g_anCameraParamMode9ScriptStick
     /* 5D220 8006CA20 00000000 */ .word 0x00000000
 enddlabel g_anCameraParamMode9ScriptStick
 
-nonmatching D_8006CA24
+nonmatching g_aCameraXformPresets
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8006CA24
+dlabel g_aCameraXformPresets
     /* 5D224 8006CA24 00080000 */ .word 0x00000800
     /* 5D228 8006CA28 40FFFFFF */ .word 0xFFFFFF40
     /* 5D22C 8006CA2C 000A0000 */ .word 0x00000A00
     /* 5D230 8006CA30 00000000 */ .word 0x00000000
     /* 5D234 8006CA34 00000000 */ .word 0x00000000
     /* 5D238 8006CA38 00000000 */ .word 0x00000000
-enddlabel D_8006CA24
+enddlabel g_aCameraXformPresets
 
 nonmatching g_anCameraParamLedgeGrabYawBelow
 
@@ -3548,9 +3548,9 @@ dlabel D_8006E308
     /* 5EB2C 8006E32C 00000000 */ .word 0x00000000
 enddlabel D_8006E308
 
-nonmatching D_8006E330
+nonmatching g_adwActorBurstColors
 
-dlabel D_8006E330
+dlabel g_adwActorBurstColors
     /* 5EB30 8006E330 36000000 */ .word 0x00000036
     /* 5EB34 8006E334 08000000 */ .word 0x00000008
     /* 5EB38 8006E338 2A000000 */ .word 0x0000002A
@@ -3593,7 +3593,7 @@ dlabel D_8006E330
     /* 5EBCC 8006E3CC EBFFFFFF */ .word 0xFFFFFFEB
     /* 5EBD0 8006E3D0 00000000 */ .word 0x00000000
     /* 5EBD4 8006E3D4 E2FFFFFF */ .word 0xFFFFFFE2
-enddlabel D_8006E330
+enddlabel g_adwActorBurstColors
 
 nonmatching D_8006E3D8
 
@@ -14250,11 +14250,11 @@ dlabel g_nCameraLosClear
     /* 65EB8 800756B8 00000000 */ .word 0x00000000
 enddlabel g_nCameraLosClear
 
-nonmatching g_pfnGamestate0LateHook
+nonmatching g_pfnLevelAdvanceEmitList
 
-dlabel g_pfnGamestate0LateHook
+dlabel g_pfnLevelAdvanceEmitList
     /* 65EBC 800756BC 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0LateHook
+enddlabel g_pfnLevelAdvanceEmitList
 
 nonmatching g_nLetterboxBarHeight
 
@@ -14428,11 +14428,11 @@ dlabel g_nPadSetMainModePending
     /* 65F30 80075730 00000000 */ .word 0x00000000
 enddlabel g_nPadSetMainModePending
 
-nonmatching g_pfnGamestate0EarlyHook
+nonmatching g_pfnLevelUpdateActors
 
-dlabel g_pfnGamestate0EarlyHook
+dlabel g_pfnLevelUpdateActors
     /* 65F34 80075734 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0EarlyHook
+enddlabel g_pfnLevelUpdateActors
 
 nonmatching g_pEmitListWriteCursor
 
@@ -14482,11 +14482,11 @@ dlabel g_nSfxVolume
     /* 65F54 80075754 00000000 */ .word 0x00000000
 enddlabel g_nSfxVolume
 
-nonmatching D_80075758
+nonmatching g_pThiefEggDrop
 
-dlabel D_80075758
+dlabel g_pThiefEggDrop
     /* 65F58 80075758 00000000 */ .word 0x00000000
-enddlabel D_80075758
+enddlabel g_pThiefEggDrop
 
 nonmatching g_nFadeProgress
 
@@ -14598,11 +14598,11 @@ dlabel g_nGamePaused
     /* 65F9C 8007579C 00000000 */ .word 0x00000000
 enddlabel g_nGamePaused
 
-nonmatching D_800757A0
+nonmatching g_pfnLevelBeginActorCutscene
 
-dlabel D_800757A0
+dlabel g_pfnLevelBeginActorCutscene
     /* 65FA0 800757A0 00000000 */ .word 0x00000000
-enddlabel D_800757A0
+enddlabel g_pfnLevelBeginActorCutscene
 
 nonmatching g_nOptionVibrationEnabled
 
@@ -14610,11 +14610,11 @@ dlabel g_nOptionVibrationEnabled
     /* 65FA4 800757A4 00000000 */ .word 0x00000000
 enddlabel g_nOptionVibrationEnabled
 
-nonmatching D_800757A8
+nonmatching g_pfnLevelHandleFlightResults
 
-dlabel D_800757A8
+dlabel g_pfnLevelHandleFlightResults
     /* 65FA8 800757A8 00000000 */ .word 0x00000000
-enddlabel D_800757A8
+enddlabel g_pfnLevelHandleFlightResults
 
 nonmatching D_800757AC
 

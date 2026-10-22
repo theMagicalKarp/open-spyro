@@ -16249,13 +16249,13 @@ glabel Level22_EmitParticles
 endlabel Level22_EmitParticles
 .endif
 
-.section .text.Level22_Noop, "ax"
-.ifndef HAVE_C_Level22_Noop
-nonmatching Level22_Noop, 0x8
+.section .text.Level22_OverlayEnd, "ax"
+.ifndef HAVE_C_Level22_OverlayEnd
+nonmatching Level22_OverlayEnd, 0x8
 
-glabel Level22_Noop
+glabel Level22_OverlayEnd
     /* FC64 8008A69C 0800E003 */  jr         $ra
     /* FC68 8008A6A0 00000000 */   nop
-endlabel Level22_Noop
+endlabel Level22_OverlayEnd
 .endif
 

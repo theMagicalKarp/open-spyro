@@ -13,5 +13,5 @@
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_EmitParticles)
     build/overlays/level_21_beast_makers_tree_tops/c/Level21_EmitParticles.o(.text)
     . = 0x0000ee10 ;
-    build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_Noop)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_Noop.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_OverlayEnd)
+    build/overlays/level_21_beast_makers_tree_tops/c/Level21_OverlayEnd.o(.text)

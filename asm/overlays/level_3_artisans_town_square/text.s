@@ -16312,13 +16312,13 @@ glabel Level3_EmitParticles
 endlabel Level3_EmitParticles
 .endif
 
-.section .text.Level3_Noop, "ax"
-.ifndef HAVE_C_Level3_Noop
-nonmatching Level3_Noop, 0x8
+.section .text.Level3_OverlayEnd, "ax"
+.ifndef HAVE_C_Level3_OverlayEnd
+nonmatching Level3_OverlayEnd, 0x8
 
-glabel Level3_Noop
+glabel Level3_OverlayEnd
     /* F494 80089ECC 0800E003 */  jr         $ra
     /* F498 80089ED0 00000000 */   nop
-endlabel Level3_Noop
+endlabel Level3_OverlayEnd
 .endif
 

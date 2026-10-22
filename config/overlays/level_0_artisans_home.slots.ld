@@ -25,5 +25,5 @@
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.Level0_EmitParticles)
     build/overlays/level_0_artisans_home/c/Level0_EmitParticles.o(.text)
     . = 0x0000dbe8 ;
-    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.Level0_Noop)
-    build/overlays/level_0_artisans_home/c/Level0_Noop.o(.text)
+    build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/text.o(.text.Level0_OverlayEnd)
+    build/overlays/level_0_artisans_home/c/Level0_OverlayEnd.o(.text)

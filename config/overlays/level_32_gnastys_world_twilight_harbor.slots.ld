@@ -13,5 +13,5 @@
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_EmitParticles)
     build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_EmitParticles.o(.text)
     . = 0x0000b5cc ;
-    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_Noop)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_Noop.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_OverlayEnd)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_OverlayEnd.o(.text)

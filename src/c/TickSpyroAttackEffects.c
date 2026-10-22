@@ -44,7 +44,7 @@ extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
 
 /* The particle spawner installed by the level overlay:
    (count, kind, world position, direction | NULL). */
-#define SPAWN ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)
+#define SPAWN ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)
 
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Flame breath: while the breath timer
@@ -93,8 +93,8 @@ void TickSpyroAttackEffects(int steps) {
     flame[2] = ((flame[0] >> 1) + (GetRandomU32() & 0x3f)) - 0x60;
     RotateVectorByMatrix(g_anSpyroBodyMtxBlock, flame, flame);
     AddVector(flame, flame, &g_anSpyroBodyMtxBlock[-13]);
-    ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
-        1, 0x1e, flame, 0);
+    ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(1, 0x1e, flame,
+                                                                0);
     g_abSpyroFxParticleRgba[0] = 0x90;
     g_abSpyroFxParticleRgba[1] = 0x20;
     g_abSpyroFxParticleRgba[2] = 0x10;
@@ -239,20 +239,18 @@ void TickSpyroAttackEffects(int steps) {
               dir[2] = 0;
               RotateVectorByMatrix(&pt[-0xd], dir, dir);
               dir[2] = 0;
-              ((void (*)(int, int, int *,
-                         int *))g_pfnLevelOverlayParticleSpawn)(1, 1, tip, dir);
+              ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+                  1, 1, tip, dir);
               if ((*((volatile int *)(&pt[-0xf]))) == 0) {
-                ((void (*)(int, int, int *,
-                           int *))g_pfnLevelOverlayParticleSpawn)(4, 0x4e, tip,
-                                                                  0);
+                ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+                    4, 0x4e, tip, 0);
               }
               __asm__("" : "=g"(hole) : "r"(mtx));
               dir[0] = 0x30;
               dir[1] = 0;
               dir[2] = 0;
               ApplyActiveGteRotation(dir, dir);
-              ((void (*)(int, int, int *,
-                         int *))g_pfnLevelOverlayParticleSpawn)(
+              ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                   ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
@@ -274,20 +272,19 @@ void TickSpyroAttackEffects(int steps) {
             AddVector(tip, tip, &mtx[-0x29]);
             ZeroVector(dir);
             if (g_nSpyroHornStrikeVariant != 0) {
-              ((void (*)(int, int, int *,
-                         int *))g_pfnLevelOverlayParticleSpawn)(1, 1, tip, dir);
+              ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+                  1, 1, tip, dir);
             } else {
-              ((void (*)(int, int, int *,
-                         int *))g_pfnLevelOverlayParticleSpawn)(1, 0, tip, dir);
+              ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+                  1, 0, tip, dir);
             }
             if (g_nSpyroHornStrikeVariant == 0) {
-              ((void (*)(int, int, int *,
-                         int *))g_pfnLevelOverlayParticleSpawn)(4, 0x4e, tip,
-                                                                0);
+              ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+                  4, 0x4e, tip, 0);
             }
             ApplyActiveGteRotation(&g_anSpyroHornStrikeEndBurstDirs[i * 3],
                                    dir);
-            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+            ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                 (g_nSpyroHornStrikeVariant * 5) + 5, 0x4f, tip, dir);
           }
         }

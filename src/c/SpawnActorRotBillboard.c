@@ -6,7 +6,7 @@ extern void RotateVectorByMatrix();
 extern void AddVector();
 extern unsigned int GetRandomU32();
 
-extern unsigned char D_80077108[];
+extern unsigned char g_aRotBillboards[];
 
 typedef struct RotBillboard {
   int pos[3];             /* 0x00: world position */
@@ -38,7 +38,7 @@ int SpawnActorRotBillboard(int *arg0, int *arg1) {
   int idx;
   idx = func_8005882C();
   if (idx >= 0) {
-    rec = (RotBillboard *)(idx * 24 + (int)D_80077108);
+    rec = (RotBillboard *)(idx * 24 + (int)g_aRotBillboards);
     rec->r = 0xFF;
     rec->g = 0xFF;
     rec->b = 0xFF;

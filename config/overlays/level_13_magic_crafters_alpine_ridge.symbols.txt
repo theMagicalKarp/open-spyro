@@ -6,4 +6,4 @@ Level13_UpdateActors = 0x8007BB00; // type:func size:0xE86C
 Level13_SpawnActor = 0x8008A36C; // type:func size:0xBE8
 Level13_AdvanceEmitList = 0x8008AF54; // type:func size:0x1A84
 Level13_EmitParticles = 0x8008C9D8; // type:func size:0x14E8
-Level13_Noop = 0x8008DEC0; // type:func size:0x8
+Level13_OverlayEnd = 0x8008DEC0; // type:func size:0x8

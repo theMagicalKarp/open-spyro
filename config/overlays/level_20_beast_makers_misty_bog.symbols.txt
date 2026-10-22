@@ -6,4 +6,4 @@ Level20_UpdateActors = 0x8007AFBC; // type:func size:0x975C
 Level20_SpawnActor = 0x80084718; // type:func size:0x96C
 Level20_AdvanceEmitList = 0x80085084; // type:func size:0x1148
 Level20_EmitParticles = 0x800861CC; // type:func size:0xF64
-Level20_Noop = 0x80087130; // type:func size:0x8
+Level20_OverlayEnd = 0x80087130; // type:func size:0x8

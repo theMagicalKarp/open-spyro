@@ -34,12 +34,12 @@ void TickGemPickupBurstEntity(int *actor) {
       burst[0] = GetRandomU32() & 3;
       burst[1] = GetRandomU32() & 3;
       burst[2] = 0x14;
-      ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+      ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
           1, 1, actor + 3, burst);
     }
   } else {
-    ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(
-        3, 0x46, actor + 3, 0x10);
+    ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(3, 0x46,
+                                                              actor + 3, 0x10);
     DespawnActorRecord(actor);
   }
 }

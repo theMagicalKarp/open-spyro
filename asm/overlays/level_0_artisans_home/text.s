@@ -14698,13 +14698,13 @@ glabel Level0_EmitParticles
 endlabel Level0_EmitParticles
 .endif
 
-.section .text.Level0_Noop, "ax"
-.ifndef HAVE_C_Level0_Noop
-nonmatching Level0_Noop, 0x8
+.section .text.Level0_OverlayEnd, "ax"
+.ifndef HAVE_C_Level0_OverlayEnd
+nonmatching Level0_OverlayEnd, 0x8
 
-glabel Level0_Noop
+glabel Level0_OverlayEnd
     /* DBE8 80088620 0800E003 */  jr         $ra
     /* DBEC 80088624 00000000 */   nop
-endlabel Level0_Noop
+endlabel Level0_OverlayEnd
 .endif
 

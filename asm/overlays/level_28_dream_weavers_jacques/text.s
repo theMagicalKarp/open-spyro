@@ -12276,13 +12276,13 @@ glabel Level28_EmitParticles
 endlabel Level28_EmitParticles
 .endif
 
-.section .text.Level28_Noop, "ax"
-.ifndef HAVE_C_Level28_Noop
-nonmatching Level28_Noop, 0x8
+.section .text.Level28_OverlayEnd, "ax"
+.ifndef HAVE_C_Level28_OverlayEnd
+nonmatching Level28_OverlayEnd, 0x8
 
-glabel Level28_Noop
+glabel Level28_OverlayEnd
     /* B910 80086348 0800E003 */  jr         $ra
     /* B914 8008634C 00000000 */   nop
-endlabel Level28_Noop
+endlabel Level28_OverlayEnd
 .endif
 

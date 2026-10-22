@@ -12109,13 +12109,13 @@ glabel Level32_EmitParticles
 endlabel Level32_EmitParticles
 .endif
 
-.section .text.Level32_Noop, "ax"
-.ifndef HAVE_C_Level32_Noop
-nonmatching Level32_Noop, 0x8
+.section .text.Level32_OverlayEnd, "ax"
+.ifndef HAVE_C_Level32_OverlayEnd
+nonmatching Level32_OverlayEnd, 0x8
 
-glabel Level32_Noop
+glabel Level32_OverlayEnd
     /* B5CC 80086004 0800E003 */  jr         $ra
     /* B5D0 80086008 00000000 */   nop
-endlabel Level32_Noop
+endlabel Level32_OverlayEnd
 .endif
 

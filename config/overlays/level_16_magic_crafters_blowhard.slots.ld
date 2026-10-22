@@ -13,5 +13,5 @@
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_EmitParticles)
     build/overlays/level_16_magic_crafters_blowhard/c/Level16_EmitParticles.o(.text)
     . = 0x0000ca64 ;
-    build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_Noop)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_Noop.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_OverlayEnd)
+    build/overlays/level_16_magic_crafters_blowhard/c/Level16_OverlayEnd.o(.text)

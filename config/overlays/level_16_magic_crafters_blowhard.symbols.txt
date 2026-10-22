@@ -6,4 +6,4 @@ Level16_UpdateActors = 0x8007AF28; // type:func size:0x8B8C
 Level16_SpawnActor = 0x80083AB4; // type:func size:0xD7C
 Level16_AdvanceEmitList = 0x80084830; // type:func size:0x1710
 Level16_EmitParticles = 0x80085F40; // type:func size:0x155C
-Level16_Noop = 0x8008749C; // type:func size:0x8
+Level16_OverlayEnd = 0x8008749C; // type:func size:0x8

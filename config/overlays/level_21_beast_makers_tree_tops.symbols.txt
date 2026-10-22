@@ -6,4 +6,4 @@ Level21_UpdateActors = 0x8007B698; // type:func size:0xB4A0
 Level21_SpawnActor = 0x80086B38; // type:func size:0x8C8
 Level21_AdvanceEmitList = 0x80087400; // type:func size:0x129C
 Level21_EmitParticles = 0x8008869C; // type:func size:0x11AC
-Level21_Noop = 0x80089848; // type:func size:0x8
+Level21_OverlayEnd = 0x80089848; // type:func size:0x8

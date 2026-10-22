@@ -6,4 +6,4 @@ Level2_UpdateActors = 0x8007AE40; // type:func size:0x7B20
 Level2_SpawnActor = 0x80082960; // type:func size:0x914
 Level2_AdvanceEmitList = 0x80083274; // type:func size:0x122C
 Level2_EmitParticles = 0x800844A0; // type:func size:0x10F4
-Level2_Noop = 0x80085594; // type:func size:0x8
+Level2_OverlayEnd = 0x80085594; // type:func size:0x8

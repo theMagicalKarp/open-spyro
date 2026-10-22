@@ -15356,13 +15356,13 @@ glabel Level21_EmitParticles
 endlabel Level21_EmitParticles
 .endif
 
-.section .text.Level21_Noop, "ax"
-.ifndef HAVE_C_Level21_Noop
-nonmatching Level21_Noop, 0x8
+.section .text.Level21_OverlayEnd, "ax"
+.ifndef HAVE_C_Level21_OverlayEnd
+nonmatching Level21_OverlayEnd, 0x8
 
-glabel Level21_Noop
+glabel Level21_OverlayEnd
     /* EE10 80089848 0800E003 */  jr         $ra
     /* EE14 8008984C 00000000 */   nop
-endlabel Level21_Noop
+endlabel Level21_OverlayEnd
 .endif
 

@@ -9668,13 +9668,13 @@ glabel Level11_EmitParticles
 endlabel Level11_EmitParticles
 .endif
 
-.section .text.Level11_Noop, "ax"
-.ifndef HAVE_C_Level11_Noop
-nonmatching Level11_Noop, 0x8
+.section .text.Level11_OverlayEnd, "ax"
+.ifndef HAVE_C_Level11_OverlayEnd
+nonmatching Level11_OverlayEnd, 0x8
 
-glabel Level11_Noop
+glabel Level11_OverlayEnd
     /* 91B8 80083BF0 0800E003 */  jr         $ra
     /* 91BC 80083BF4 00000000 */   nop
-endlabel Level11_Noop
+endlabel Level11_OverlayEnd
 .endif
 

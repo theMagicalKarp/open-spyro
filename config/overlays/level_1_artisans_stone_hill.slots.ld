@@ -25,5 +25,5 @@
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_EmitParticles)
     build/overlays/level_1_artisans_stone_hill/c/Level1_EmitParticles.o(.text)
     . = 0x0000f980 ;
-    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_Noop)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_Noop.o(.text)
+    build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_OverlayEnd)
+    build/overlays/level_1_artisans_stone_hill/c/Level1_OverlayEnd.o(.text)

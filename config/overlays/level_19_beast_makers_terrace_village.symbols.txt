@@ -6,4 +6,4 @@ Level19_UpdateActors = 0x8007B5DC; // type:func size:0x9080
 Level19_SpawnActor = 0x8008465C; // type:func size:0xD50
 Level19_AdvanceEmitList = 0x800853AC; // type:func size:0x132C
 Level19_EmitParticles = 0x800866D8; // type:func size:0x126C
-Level19_Noop = 0x80087944; // type:func size:0x8
+Level19_OverlayEnd = 0x80087944; // type:func size:0x8

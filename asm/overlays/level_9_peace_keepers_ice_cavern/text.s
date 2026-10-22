@@ -11831,13 +11831,13 @@ glabel Level9_EmitParticles
 endlabel Level9_EmitParticles
 .endif
 
-.section .text.Level9_Noop, "ax"
-.ifndef HAVE_C_Level9_Noop
-nonmatching Level9_Noop, 0x8
+.section .text.Level9_OverlayEnd, "ax"
+.ifndef HAVE_C_Level9_OverlayEnd
+nonmatching Level9_OverlayEnd, 0x8
 
-glabel Level9_Noop
+glabel Level9_OverlayEnd
     /* B828 80086260 0800E003 */  jr         $ra
     /* B82C 80086264 00000000 */   nop
-endlabel Level9_Noop
+endlabel Level9_OverlayEnd
 .endif
 

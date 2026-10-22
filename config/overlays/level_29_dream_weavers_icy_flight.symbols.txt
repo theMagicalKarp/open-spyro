@@ -11,4 +11,4 @@ Level29_UpdateActors = 0x8007CFB4; // type:func size:0x5074
 Level29_SpawnActor = 0x80082028; // type:func size:0xD6C
 Level29_AdvanceEmitList = 0x80082D94; // type:func size:0xDF8
 Level29_EmitParticles = 0x80083B8C; // type:func size:0xDA8
-Level29_Noop = 0x80084934; // type:func size:0x8
+Level29_OverlayEnd = 0x80084934; // type:func size:0x8

@@ -7,10 +7,10 @@
  * Identical body in ten level overlays.
  */
 
-extern void EndSaveMenuToWorld(void);
+#include "level_globals.h"
+#include "level_funcs.h"
+
 extern char *g_pLevelOverlayInitRecord;
-extern int g_nSpyroSwingEulerPrev1;
-extern unsigned char g_bSpyroSwingByteEuler1;
 
 void Level30_OnSaveMenuExit(void) {
   char *actor;

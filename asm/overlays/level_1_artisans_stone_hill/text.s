@@ -16671,13 +16671,13 @@ glabel Level1_EmitParticles
 endlabel Level1_EmitParticles
 .endif
 
-.section .text.Level1_Noop, "ax"
-.ifndef HAVE_C_Level1_Noop
-nonmatching Level1_Noop, 0x8
+.section .text.Level1_OverlayEnd, "ax"
+.ifndef HAVE_C_Level1_OverlayEnd
+nonmatching Level1_OverlayEnd, 0x8
 
-glabel Level1_Noop
+glabel Level1_OverlayEnd
     /* F980 8008A3B8 0800E003 */  jr         $ra
     /* F984 8008A3BC 00000000 */   nop
-endlabel Level1_Noop
+endlabel Level1_OverlayEnd
 .endif
 

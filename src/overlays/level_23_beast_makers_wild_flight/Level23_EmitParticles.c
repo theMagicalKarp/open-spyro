@@ -33,12 +33,13 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 typedef struct Emit {   /* one 0x20-byte emit-list record */
   unsigned char type;   /* 0x00 effect id */
   unsigned char cls;    /* 0x01 record class (stamped by the allocator) */
   unsigned char phase;  /* 0x02 */
-  unsigned char unk03;  /* 0x03 */
+  unsigned char visible;  /* 0x03 1 = drawn last frame (RasterizeEmitList); AdvanceEmitList frees it at 0 */
   union {
     struct {                     /* classes 2 / 3 / 6 -- spark */
       short pos[3];              /* 0x04 */
@@ -48,8 +49,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
       unsigned char fx;          /* 0x0F */
-      unsigned char unk10;       /* 0x10 */
-      unsigned char unk11;       /* 0x11 */
+      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
+      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
       short unk1E;               /* 0x1E */
@@ -79,27 +80,17 @@ typedef struct Actor {
   char pad18[8];
   short mat[9]; /* 0x20 3x3 rotation matrix */
   short pad32;  /* 0x32 */
-  short unk34;  /* 0x34 */
+  short gridCell;  /* 0x34 spatial-grid cell */
   short kind;   /* 0x36 */
 } Actor;
 
 extern void *AllocEmitListRecord(int cls);
 extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
 
-extern int g_nGamestate;            /* g_Gamestate */
-extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
 extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
-extern int g_nSpyroGroundHeightZ;
-extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
-extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
-extern unsigned char D_8006E439[];
-extern unsigned char D_8006E43A[];
-extern int g_anEmitStepOffsets[];            /* per-step offsets, stride 3 ints */
-extern int g_anEmitSlotOffsets[];            /* per-slot offsets, stride 3 ints */
-extern int D_8006E570[];
 
 void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
   int v0[3];
@@ -118,7 +109,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
@@ -128,15 +119,15 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0x1:
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
@@ -150,14 +141,14 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.g = 0x60;
       rec->u.spark.b = 0x60;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     case 0x2: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       v0[0] = (GetRandomU32() & 0x3F) - 0x20;
       v0[1] = (GetRandomU32() & 0x3F) - 0x20;
@@ -170,15 +161,15 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0x9: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)arg3);
       rec->u.spark.unk1E = 0;
@@ -202,32 +193,32 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
         rec->u.spark.b = 0x80;
       }
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0xA: {
       rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, g_anSpyroWorldPos);
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = 0xF;
       rec->u.spark.r = g_abEmitTrailColors[k];
-      rec->u.spark.g = D_8006E439[k];
-      rec->u.spark.b = D_8006E43A[k];
+      rec->u.spark.g = g_abEmitTrailColorsG[k];
+      rec->u.spark.b = g_abEmitTrailColorsB[k];
       rec->u.spark.fx = 0x2C;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       rec->u.spark.vel[0] = ((count - i) << 12) / 5;
       break;
     }
     case 0xC: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
-      rec->unk03 = 1;
-      rec->u.spark.unk11 = 4;
+      rec->visible = 1;
+      rec->u.spark.depthBias = 4;
       if (((Actor *)pos)->kind == 0x22) {
         CopyVector(v1, ((Actor *)pos)->pos);
       } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
@@ -236,11 +227,11 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
           AddVector(v1, v1, ((Actor *)pos)->pos);
         } else {
           rec->cls = 5;
-          rec->u.spark.unk11 = 0x16;
+          rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(arg3 >> 24) * 3]);
         }
       } else if (((Actor *)pos)->kind == 0x78) {
-        RotateVectorByMatrix((int *)((Actor *)pos)->mat, D_8006E570, v1);
+        RotateVectorByMatrix((int *)((Actor *)pos)->mat, g_anSparxEmitOffset, v1);
         AddVector(v1, v1, ((Actor *)pos)->pos);
       } else {
         RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitStepOffsets[i * 3], v1);
@@ -253,14 +244,14 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.fx = 0x2E;
       rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0x1A:
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       rec->u.spark.life = 0xC;
       rec->u.spark.seed = GetRandomU32();
@@ -269,8 +260,8 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.g = c;
       rec->u.spark.b = c;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     case 0x1B: {
       int w;
@@ -278,7 +269,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(6);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       rec->u.spark.life = ((arg3 >> 16) * 6) + 0xC;
       w = g_bSpyroPersistentEulerZ + (GetRandomU32() & 7) + 0x1D;
@@ -293,8 +284,8 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
         rec->u.spark.b = rec->u.spark.b + 0x10;
       }
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0x21: {
@@ -303,7 +294,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
-      rec->unk03 = 1;
+      rec->visible = 1;
       if (arg3 != 0) {
         v2[0] = 0x164;
         v2[1] = 0;
@@ -329,15 +320,15 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec->u.spark.g = 0x20;
       rec->u.spark.b = 0x20;
       rec->u.spark.fx = 0x2E;
-      rec->u.spark.unk11 = 4;
-      rec->u.spark.unk10 = 0;
+      rec->u.spark.depthBias = 4;
+      rec->u.spark.texIndex = 0;
       break;
     }
     case 0x42: {
       rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
-      rec->unk03 = 1;
+      rec->visible = 1;
       rec->u.dust.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
       rec->u.dust.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
       rec->u.dust.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
@@ -400,7 +391,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
-      rec->unk03 = 1;
+      rec->visible = 1;
       v3[0] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
       v3[1] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
       v3[2] = (((int)(GetRandomU32() & 0xFFF) - 0x800) * 16) >> 12;
@@ -449,7 +440,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.dust.pos, pos);
       t1 = GetRandomU32() & 0x3F;
       u1 = rec->u.dust.pos[0] - 0x20;
@@ -479,7 +470,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int arg3) {
       rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
-      rec->unk03 = 1;
+      rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.b, pos);
       AddVector(v3, pos, (int *)arg3);
       t4 = GetRandomU32() & 0x3F;

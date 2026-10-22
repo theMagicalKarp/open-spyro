@@ -13,5 +13,5 @@
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_EmitParticles)
     build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_EmitParticles.o(.text)
     . = 0x00013488 ;
-    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_Noop)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_Noop.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_OverlayEnd)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_OverlayEnd.o(.text)

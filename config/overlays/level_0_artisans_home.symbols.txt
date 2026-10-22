@@ -10,4 +10,4 @@ Level0_UpdateActors = 0x8007D9C8; // type:func size:0x7E04
 Level0_SpawnActor = 0x800857CC; // type:func size:0x968
 Level0_AdvanceEmitList = 0x80086134; // type:func size:0x12AC
 Level0_EmitParticles = 0x800873E0; // type:func size:0x1240
-Level0_Noop = 0x80088620; // type:func size:0x8
+Level0_OverlayEnd = 0x80088620; // type:func size:0x8

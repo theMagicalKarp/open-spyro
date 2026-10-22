@@ -12,20 +12,16 @@
  * 2-vblank pace loop and PutDispEnv/PutDrawEnv/DrawOTag submit.
  */
 
-extern void DrawSync();
-extern int VSync();
+#include "level_globals.h"
+#include "level_funcs.h"
+
 extern void MoveImage();
-extern void FillWord();  /* word fill */
 extern void DrawFullscreenTint();
-extern void EnqueuePendingSpritePrims();
 extern void RasterizeSpritePrimQueue(void);
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
-extern void PutDispEnv();
-extern void PutDrawEnv();
 extern void *LinkOTPrimitives();
-extern void DrawOTag();
 
 extern int g_nGamestate0fMode;
 extern unsigned char *g_pActiveFrameDrawEnv;
@@ -46,8 +42,6 @@ extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nFarPlaneDrawDistance;
 extern int D_80076DE4[];
-extern int g_nDeathRespawnPending;
-extern int g_nVsyncFramePaceAnchor;
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {

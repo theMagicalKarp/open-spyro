@@ -10,4 +10,4 @@ Level30_UpdateActors = 0x8007D938; // type:func size:0x5C30
 Level30_SpawnActor = 0x80083568; // type:func size:0x970
 Level30_AdvanceEmitList = 0x80083ED8; // type:func size:0xFC8
 Level30_EmitParticles = 0x80084EA0; // type:func size:0xE40
-Level30_Noop = 0x80085CE0; // type:func size:0x8
+Level30_OverlayEnd = 0x80085CE0; // type:func size:0x8

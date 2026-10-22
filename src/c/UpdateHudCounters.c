@@ -320,8 +320,8 @@ void UpdateHudCounters(void) {
       av[0] = g_nHudWorldEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
-      (*(void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(
-          0x10, 0x4D, av, 0);
+      (*(void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(0x10, 0x4D, av,
+                                                                 0);
     } else if (g_nHudWorldEggHoldTimer >= 9) {
       g_nHudWorldEggCachedCount += 1;
       g_nHudWorldEggHoldTimer = 0;
@@ -373,8 +373,7 @@ void UpdateHudCounters(void) {
       if (g_nHudLevelEggHoldTimer == 0) {
         i = 0;
         do {
-          (*(void (*)(int, int, unsigned char *,
-                      int))g_pfnLevelOverlayParticleSpawn)(
+          (*(void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
               1, 0xC, &g_abHudIconActorRecords[0x3C8],
               ((i + 6) << 24) + 0x8080);
           i += 1;

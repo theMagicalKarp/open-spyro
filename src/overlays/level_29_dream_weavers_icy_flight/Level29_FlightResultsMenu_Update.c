@@ -8,8 +8,8 @@
  * D_80078032 (+0x58 stride) spin their +0x32 angle byte. Once revealed
  * (timer >= 9): select/start (pad & 0x5000) toggles the cursor
  * (g_nPauseMenuCursor) with a blip; confirm (pad & 0x840) either dispatches the
- * cursor action (0 = restart flight via D_800757A8(1) +
- * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via D_800757A8(0) +
+ * cursor action (0 = restart flight via g_pfnLevelHandleFlightResults(1) +
+ * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via g_pfnLevelHandleFlightResults(0) +
  * BeginPauseToMenuTransition/BeginPauseToMenuTransition) or, when the course was
  * completed (collectible tallies g_anFlightTargetTally..3C >= 0x20 and the world
  * flag g_anWorldPersistentFlags[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
@@ -17,27 +17,19 @@
  * Identical body in the five flight-level overlays.
  */
 
+#include "level_globals.h"
+#include "level_funcs.h"
+
 extern void StopAllSoundExceptMask(int mask);
 extern void RotateLightVectorXZ(int step);
 extern void PlaySoundEffect();
-extern void LoadAndStartLevelFromCd(void);
-extern void BeginPauseToMenuTransition(void);
-extern void (*D_800757A8)();
+extern void (*g_pfnLevelHandleFlightResults)();
 
-extern int g_nPauseMenuIdleFrames;
-extern int g_nPauseMenuCursor;
-extern int g_nSubMenuCursor;
-extern int g_nSubMenuScrollOffset;
-extern int g_nActiveWorldIndex;
 extern unsigned char *g_pLevelSampleBankHeader;
 extern unsigned int g_dwPadPressed[];
 extern unsigned int g_dwHudBobSinePhase[];
-extern unsigned char D_80078032[];
 extern int g_anWorldPersistentFlags[];
 extern int g_anFlightTargetTally;
-extern int g_nFlightTargetTally1;
-extern int g_nFlightTargetTally2;
-extern int g_nFlightTargetTally3;
 
 void Level29_FlightResultsMenu_Update(void) {
   unsigned int *bob;
@@ -78,11 +70,11 @@ void Level29_FlightResultsMenu_Update(void) {
            g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
         case 0:
-          D_800757A8(1);
+          g_pfnLevelHandleFlightResults(1);
           LoadAndStartLevelFromCd();
           break;
         case 1:
-          D_800757A8(0);
+          g_pfnLevelHandleFlightResults(0);
           BeginPauseToMenuTransition();
           break;
         }

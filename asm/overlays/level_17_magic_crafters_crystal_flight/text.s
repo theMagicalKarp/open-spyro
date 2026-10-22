@@ -10183,13 +10183,13 @@ glabel Level17_EmitParticles
 endlabel Level17_EmitParticles
 .endif
 
-.section .text.Level17_Noop, "ax"
-.ifndef HAVE_C_Level17_Noop
-nonmatching Level17_Noop, 0x8
+.section .text.Level17_OverlayEnd, "ax"
+.ifndef HAVE_C_Level17_OverlayEnd
+nonmatching Level17_OverlayEnd, 0x8
 
-glabel Level17_Noop
+glabel Level17_OverlayEnd
     /* 9958 80084390 0800E003 */  jr         $ra
     /* 995C 80084394 00000000 */   nop
-endlabel Level17_Noop
+endlabel Level17_OverlayEnd
 .endif
 

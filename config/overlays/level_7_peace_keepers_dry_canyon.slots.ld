@@ -25,5 +25,5 @@
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_EmitParticles)
     build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_EmitParticles.o(.text)
     . = 0x00012bc8 ;
-    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_Noop)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_Noop.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_OverlayEnd)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_OverlayEnd.o(.text)

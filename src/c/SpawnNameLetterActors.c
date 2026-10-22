@@ -44,7 +44,7 @@ struct Actor {
    the text is the level name for the sign's own level id and the arc hangs off
    the sign's yaw (mirrored, and flipped through the origin, when the sign's
    +0x49 slot is non-zero); otherwise it is the balloonist's name laid out
-   facing Spyro. Letters are spawned through g_pfnLevelOverlayInitHook ('A'-'Z'
+   facing Spyro. Letters are spawned through g_pfnLevelSpawnActor ('A'-'Z'
    map to id 0x1AA.., anything else to 0x4C) and threaded onto a radial arc:
    each glyph sits one `spacing` step further round the ring, bent outward by
    `bend` and lifted by the cosine of its position ('L' actors get an extra
@@ -130,7 +130,7 @@ void SpawnNameLetterActors(struct Actor *sign, int named) {
           ch = 0x4c;
         }
         letter = (*(struct Actor * (*)(int, struct Actor *))
-                      g_pfnLevelOverlayInitHook)(ch, sign);
+                      g_pfnLevelSpawnActor)(ch, sign);
         REC(letter)->owner = sign;
         REC(letter)->count = len;
         REC(letter)->index = i;

@@ -119,10 +119,10 @@ void TickSpyroHornStrikeAttack(void) {
           AddVector(pos, pos, (int *)(((char *)strike) - 0x198));
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroHornStrikeVariant != 0) {
-            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+            ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                 1, 1, pos, vel);
           } else {
-            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+            ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                 1, 0, pos, vel);
           }
         }
@@ -133,10 +133,10 @@ void TickSpyroHornStrikeAttack(void) {
           AddVector(pos, pos, (int *)(((char *)mtx) - 0x1C8));
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroHornStrikeVariant != 0) {
-            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+            ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                 1, 1, pos, vel);
           } else {
-            ((void (*)(int, int, int *, int *))g_pfnLevelOverlayParticleSpawn)(
+            ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                 1, 0, pos, vel);
           }
         }

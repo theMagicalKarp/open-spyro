@@ -20,6 +20,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 /* Level27_AdvanceEmitList (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -67,13 +68,8 @@ extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 extern char *g_pActorListBase;
-extern int g_nSpyroDrawSuppressed;
-extern int g_nFrameStep;            /* per-frame step count */
 extern short g_anSineLut[];        /* sine table */
 extern short g_anCosineLut[];        /* cosine table */
-extern short g_nCameraEulerYaw;
-extern int g_nGemPickupTimer;
-extern int g_nSpyroState;
 extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 extern int g_nLevelReadyFlag;
 

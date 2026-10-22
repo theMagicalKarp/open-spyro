@@ -11,4 +11,4 @@ Level17_UpdateActors = 0x8007CFB4; // type:func size:0x4F58
 Level17_SpawnActor = 0x80081F0C; // type:func size:0xB94
 Level17_AdvanceEmitList = 0x80082AA0; // type:func size:0xC58
 Level17_EmitParticles = 0x800836F8; // type:func size:0xC98
-Level17_Noop = 0x80084390; // type:func size:0x8
+Level17_OverlayEnd = 0x80084390; // type:func size:0x8

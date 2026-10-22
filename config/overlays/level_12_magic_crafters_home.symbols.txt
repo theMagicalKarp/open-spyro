@@ -10,4 +10,4 @@ Level12_UpdateActors = 0x8007E398; // type:func size:0xCF28
 Level12_SpawnActor = 0x8008B2C0; // type:func size:0xBD8
 Level12_AdvanceEmitList = 0x8008BE98; // type:func size:0x1438
 Level12_EmitParticles = 0x8008D2D0; // type:func size:0x1338
-Level12_Noop = 0x8008E608; // type:func size:0x8
+Level12_OverlayEnd = 0x8008E608; // type:func size:0x8

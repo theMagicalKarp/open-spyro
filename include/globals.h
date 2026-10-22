@@ -553,7 +553,7 @@ extern int g_nActorPoolCapacity;             /* 0x800756a8 */
 extern int g_nLevelTransitionPhase;          /* 0x800756ac */
 extern int g_nLevelTransitionTallyActive;    /* 0x800756b0 */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
-extern void *g_pfnGamestate0LateHook;        /* 0x800756bc */
+extern void *g_pfnLevelAdvanceEmitList;        /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
 extern int g_nGemTallyIconCount;             /* 0x800756c8 */
 extern int g_nFrameStep;                     /* 0x800756cc */
@@ -575,7 +575,7 @@ extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720 */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
-extern void *g_pfnGamestate0EarlyHook;       /* 0x80075734 */
+extern void *g_pfnLevelUpdateActors;       /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern void *g_pActorPoolFreeHead;           /* 0x8007573c */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
@@ -644,10 +644,10 @@ extern int g_nPauseMenuTransitionFrames;     /* 0x800758b8 */
 extern int g_nScriptedMobCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
-extern void *g_pfnLevelOverlayInitHook;      /* 0x800758cc */
+extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
 extern byte g_abSaveOptionsBlock[6];         /* 0x800758d0 */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
-extern void *g_pfnLevelOverlayParticleSpawn; /* 0x800758e4 */
+extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
 extern int g_nSparxFoodCount;                /* 0x800758e8 */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
@@ -1072,6 +1072,11 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nGamestate0cCam{Yaw,Radius,Height}Goal   0x80077838/3c/40  (+0x4c..)
  *   g_pGamestate0cActor   0x8007784c  focus actor (BeginActorCutscene)
  *   g_pGamestate0cRecord  0x80077850  orbit-centre record / title-card OT seed
+ *   g_anGamestate0cSpyroFrom 0x80077800 (+ g_nGamestate0cSpyroFromY/Z views)  Spyro position the
+ *       cutscene lerps from; g_nGamestate0cSpyroToX/Y/Z 0x8007780c/10/14  the position it lerps to
+ *   g_nGamestate0cSpyroYawStart / Goal  0x80077818 / 1c  Spyro yaw (12-bit) turned across the cutscene
+ *   g_nGamestate0cCamEuler{Roll,Pitch,Yaw}Start 0x8007782c/30/34  camera euler saved at cutscene start
+ *   g_nGamestate0cRecordZStart / Goal   0x80077844 / 48  orbit-centre record z, lerped by cosine
  *
  * World / flight levels:
  *   g_nActiveWorldIndex           0x8007595c  g_nActiveLevelId / 10 - 1 (TickLevelTransitionStream)
@@ -1100,6 +1105,31 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nStaticMeshLodCutoff  0x800785b4  static-mesh LOD cutoff
  *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
  *   g_pLevelSoundIds        0x80076824  level sound id table
+ *
+ * Level-overlay hook slots, filled by ApplyPerLevelGlobalsTable on level entry.
+ * Every level installs the same-role overlay function into each slot
+ * (Level<N>_SpawnActor, Level<N>_UpdateActors, ...), so each slot is named for it:
+ *   g_pfnLevelSpawnActor          0x800758cc  Level<N>_SpawnActor(type, parent) -> Actor *
+ *   g_pfnLevelEmitParticles       0x800758e4  Level<N>_EmitParticles
+ *   g_pfnLevelUpdateActors        0x80075734  Level<N>_UpdateActors (gamestate-0 early hook)
+ *   g_pfnLevelAdvanceEmitList     0x800756bc  Level<N>_AdvanceEmitList (gamestate-0 late hook)
+ *   g_pfnLevelBeginActorCutscene  0x800757a0  Level<N>_BeginActorCutscene (6 homeworlds + 4 levels)
+ *   g_pfnLevelOnSaveMenuExit      0x800758a8  Level<N>_OnSaveMenuExit (same 10 levels)
+ *   g_pfnLevelHandleFlightResults 0x800757a8  Level<N>_HandleFlightResults (flight levels)
+ *
+ * Shared data the level overlays read (documentation only, same reasons):
+ *   g_aRotBillboards        0x80077108  0x18-byte rotating-billboard records (SpawnActorRotBillboard)
+ *   g_anRotBillboardOffset0..5 0x8006e57c + 0xC*i  int[3] spawn offsets passed to SpawnActorRotBillboard
+ *   g_aShakeRotOffsets      0x8006e638  byte x/y rotation offsets, one pair per two shake ticks
+ *   g_abEmitTrailColorsG/B  0x8006e439 / 0x8006e43a  green / blue views of g_abEmitTrailColors
+ *   g_anSparxEmitOffset     0x8006e570  int[3] EmitParticles offset for actor type 0x78 (Sparx)
+ *   g_adwActorBurstColors   0x8006e330  packed RGB per actor type for emit effect 0xC (CollectPickupActor)
+ *   g_aCameraXformPresets   0x8006ca24  0x18-byte spherical camera-coordinate presets
+ *   g_nSpyroMotionY         0x80078b68  scalar view of g_anSpyroMotionVec[1]
+ *   g_nSpyroRequestTargetZ  0x80078c58  g_anSpyroRequestTargetPos[2]
+ *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
+ *   g_pThiefEggDrop         0x80075758  egg dropped by a killed thief; collecting it sets g_nLevelEggCount = 3 (CollectPickupActor)
+ *   g_anRotBillboardOffsetsRand 0x8006e5c4  int[4][3] spawn offsets picked at random, after g_anRotBillboardOffset5
  */
 
 #endif /* OPEN_SPYRO_GLOBALS_H */

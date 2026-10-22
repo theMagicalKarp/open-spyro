@@ -30,8 +30,8 @@ glabel Credits_Update
     /* 50 8007AA88 6000B0AF */   sw        $s0, 0x60($sp)
     /* 54 8007AA8C 0780023C */  lui        $v0, %hi(D_80075768)
     /* 58 8007AA90 6857428C */  lw         $v0, %lo(D_80075768)($v0)
-    /* 5C 8007AA94 0880053C */  lui        $a1, %hi(Credits_Noop)
-    /* 60 8007AA98 38C3A524 */  addiu      $a1, $a1, %lo(Credits_Noop)
+    /* 5C 8007AA94 0880053C */  lui        $a1, %hi(Credits_OverlayEnd)
+    /* 60 8007AA98 38C3A524 */  addiu      $a1, $a1, %lo(Credits_OverlayEnd)
     /* 64 8007AA9C 1A004014 */  bnez       $v0, .L8007AB08
     /* 68 8007AAA0 00080624 */   addiu     $a2, $zero, 0x800
     /* 6C 8007AAA4 21200000 */  addu       $a0, $zero, $zero
@@ -1710,13 +1710,13 @@ glabel Credits_Draw
 endlabel Credits_Draw
 .endif
 
-.section .text.Credits_Noop, "ax"
-.ifndef HAVE_C_Credits_Noop
-nonmatching Credits_Noop, 0x8
+.section .text.Credits_OverlayEnd, "ax"
+.ifndef HAVE_C_Credits_OverlayEnd
+nonmatching Credits_OverlayEnd, 0x8
 
-glabel Credits_Noop
+glabel Credits_OverlayEnd
     /* 1900 8007C338 0800E003 */  jr         $ra
     /* 1904 8007C33C 00000000 */   nop
-endlabel Credits_Noop
+endlabel Credits_OverlayEnd
 .endif
 

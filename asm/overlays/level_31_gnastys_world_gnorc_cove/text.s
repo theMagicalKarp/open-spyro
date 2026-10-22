@@ -14248,13 +14248,13 @@ glabel Level31_EmitParticles
 endlabel Level31_EmitParticles
 .endif
 
-.section .text.Level31_Noop, "ax"
-.ifndef HAVE_C_Level31_Noop
-nonmatching Level31_Noop, 0x8
+.section .text.Level31_OverlayEnd, "ax"
+.ifndef HAVE_C_Level31_OverlayEnd
+nonmatching Level31_OverlayEnd, 0x8
 
-glabel Level31_Noop
+glabel Level31_OverlayEnd
     /* DC30 80088668 0800E003 */  jr         $ra
     /* DC34 8008866C 00000000 */   nop
-endlabel Level31_Noop
+endlabel Level31_OverlayEnd
 .endif
 

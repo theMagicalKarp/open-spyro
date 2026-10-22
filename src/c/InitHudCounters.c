@@ -27,8 +27,6 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void HideActorRenderRecord(int rec);
 extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 
-extern short g_anHudIconAnchorBlock[]; /* &g_abHudIconActorRecords[0x196] */
-
 void InitHudCounters(int layout_butterflies) {
   short *anchor;
   int *icon;

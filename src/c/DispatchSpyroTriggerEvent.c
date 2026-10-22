@@ -74,7 +74,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     break;
   case 5:
     FLAGS = (FLAGS & 0x3FF) | 0x8000;
-    ((void (*)(int, int))g_pfnLevelOverlayInitHook)(0xEA, 0);
+    ((void (*)(int, int))g_pfnLevelSpawnActor)(0xEA, 0);
     break;
   case 6:
     ready = g_anLevelReadyFlagBlock;

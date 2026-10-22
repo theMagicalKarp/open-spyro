@@ -38,6 +38,7 @@
  */
 
 #include "vecmath.h"
+#include "level_globals.h"
 
 #define HS(n) (*(short *)(rec + (n)))
 #define HU(n) (*(unsigned short *)(rec + (n)))
@@ -51,9 +52,6 @@ extern int abs(int n);
 extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
-extern int g_nSpyroDrawSuppressed;
-extern short g_nCameraEulerYaw;
-extern int g_nSpyroState;
 extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 extern int g_nLevelReadyFlag;
 

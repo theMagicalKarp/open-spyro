@@ -13441,13 +13441,13 @@ glabel Level16_EmitParticles
 endlabel Level16_EmitParticles
 .endif
 
-.section .text.Level16_Noop, "ax"
-.ifndef HAVE_C_Level16_Noop
-nonmatching Level16_Noop, 0x8
+.section .text.Level16_OverlayEnd, "ax"
+.ifndef HAVE_C_Level16_OverlayEnd
+nonmatching Level16_OverlayEnd, 0x8
 
-glabel Level16_Noop
+glabel Level16_OverlayEnd
     /* CA64 8008749C 0800E003 */  jr         $ra
     /* CA68 800874A0 00000000 */   nop
-endlabel Level16_Noop
+endlabel Level16_OverlayEnd
 .endif
 

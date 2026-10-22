@@ -6,4 +6,4 @@ Level25_UpdateActors = 0x8007B4F8; // type:func size:0x969C
 Level25_SpawnActor = 0x80084B94; // type:func size:0xC68
 Level25_AdvanceEmitList = 0x800857FC; // type:func size:0x153C
 Level25_EmitParticles = 0x80086D38; // type:func size:0x139C
-Level25_Noop = 0x800880D4; // type:func size:0x8
+Level25_OverlayEnd = 0x800880D4; // type:func size:0x8

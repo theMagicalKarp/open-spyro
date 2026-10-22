@@ -20,52 +20,28 @@
  * matching the original's map.
  */
 
+#include "level_globals.h"
+#include "level_funcs.h"
+
 extern void BuildRenderEntityLists(void);
 extern void ComposeFrameScene(void);
 extern void RasterizeEmitList(void);
 extern void DrawActors(void);
 extern void SetupFrameOT(void);
-extern void DrawSync();
-extern int VSync();
-extern void PutDispEnv();
-extern void PutDrawEnv();
 extern int LinkOTPrimitives();
-extern void DrawOTag();
-extern void StoreImage();     /* MoveImage */
-extern void LoadImage();
-extern void ConvertRGB15ToLuma8();     /* texture-page sync */
 extern void AddPrimToOT();
-extern void FillWord();
-extern void BuildTextSpriteChain();
-extern int strlen();      /* text glyph count */
-extern void sprintf();     /* format string */
-extern void EmitRadialShadedLine();
 extern void PlaySoundEffect();
-extern void EnqueuePendingSpritePrims();
 extern void RasterizeSpritePrimQueue();
-extern void *memcpy();
 
-extern int g_nPauseMenuTransitionFrames;     /* results frame counter */
 extern char *g_pActiveFrameDrawEnv;   /* active DRAWENV pair */
 extern char g_abFrameDrawEnv0[];  /* DRAWENV pair 0 */
 extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
 extern char *g_pRenderScratchRegionBase;
-extern int g_nPrimBufferOverflowFlag;
 extern char *g_pPrimBufferWriteCursor; /* prim write cursor */
 extern char *g_pPrimBufferLimit;
 extern char *g_pSpriteRecordBufferTop;
 extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
-extern int g_nDeathRespawnPending;
-extern int g_nVsyncFramePaceAnchor;
 extern int g_nVsyncFrameEndCount[];
-extern int g_nSubMenuCursor; /* reveal timer */
-extern int g_nPauseMenuCursor; /* menu cursor */
-extern int g_nPauseMenuIdleFrames; /* idle/blink counter */
-extern int g_nFlightResultsRevealStep; /* reveal sound step */
-extern int g_nFlightQuitFlag;
-extern int g_nFlightTimeBonus;
-extern int g_nActiveWorldIndex;              /* course index */
-extern int g_nFlightRunClock;              /* run clock */
 extern int (*g_pfnFlightTimeFormatter)();         /* time formatter */
 extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
@@ -75,26 +51,8 @@ extern char g_anMenuBackdropGrayClut[];           /* CLUT row */
 extern char g_pOtDepthBinHead0[];           /* OT depth bins */
 extern unsigned short g_anCosineLut[]; /* sine LUT */
 extern int g_anFlightTargetTally;              /* tally: class 0 */
-extern int g_nFlightTargetTally1;
-extern int g_nFlightTargetTally2;
-extern int g_nFlightTargetTally3;
 extern int g_anWorldPersistentFlags[];           /* per-course best time */
-extern unsigned char g_abWorldPerLevelByteTable[]; /* per-course claim flags */
-extern unsigned char D_80078681[];
-extern unsigned char D_80078682[];
-extern unsigned char D_80078683[];
-extern unsigned char D_80078684[];
-extern int g_anFlightCourseBonusTable[]; /* per-course bonus table rows */
-extern int D_8006E924[];
-extern int D_8006E928[];
-extern int D_8006E92C[];
-extern int D_8006E930[];
-extern char *D_8006E8C0[]; /* row title string tables */
-extern char *D_8006E8C4[];
-extern char *D_8006E8C8[];
-extern char *D_8006E8CC[];
 extern char g_anSpyroWorldPos[];
-
 
 static const char g_szTryAgain[12];
 

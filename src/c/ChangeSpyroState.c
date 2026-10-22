@@ -46,7 +46,7 @@ extern int g_anSpyroWorldPosBlock[];
 
 #define SFX(off) (((unsigned char *)g_pLevelSampleBankHeader)[off])
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelOverlayParticleSpawn)(a, b, c, d)
+  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
 /* Charge-speed latch: the first charge frame takes the carried speed, at
    least 0x1F80, as the speed target. */
@@ -547,7 +547,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroInputLockoutCountdown == 0) {
       PARTICLE_SPAWN(5, 0xA, 0, 0);
     }
-    ((void (*)(int, int))g_pfnLevelOverlayInitHook)(D_8006EA34[D_80075728], 0);
+    ((void (*)(int, int))g_pfnLevelSpawnActor)(D_8006EA34[D_80075728], 0);
     me = SPY;
     PlaySoundEffect(SFX(0x1D), me, 4, (unsigned char *)SPY + SPY_VOICE);
     PlaySoundEffect(SFX(0x1B), me, 4, (unsigned char *)SPY + SPY_VOICE);

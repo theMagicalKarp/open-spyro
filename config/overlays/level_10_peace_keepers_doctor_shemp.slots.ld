@@ -13,5 +13,5 @@
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_EmitParticles)
     build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_EmitParticles.o(.text)
     . = 0x0000c7d8 ;
-    build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_Noop)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_Noop.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_OverlayEnd)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_OverlayEnd.o(.text)
