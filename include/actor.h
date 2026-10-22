@@ -21,26 +21,26 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 damage flags */
   int unk1C;           /* 0x1C shadow distance */
-  int unk20[5];        /* 0x20 rotation matrix */
-  short unk34;         /* 0x34 collision region */
+  int mtx[5];          /* 0x20 rotation matrix (packed GTE, see RefreshActorDerivedState) */
+  short gridCell;      /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
   short type;          /* 0x36 actor class */
-  short unk38;         /* 0x38 floor distance */
+  short floorOffset;   /* 0x38 signed offset above the ground (SnapActorToGround) */
   unsigned char unk3A; /* 0x3A dropped flag */
   unsigned char unk3B; /* 0x3B */
-  unsigned char unk3C; /* 0x3C current animation */
-  unsigned char unk3D; /* 0x3D next animation */
-  unsigned char unk3E; /* 0x3E current frame */
-  unsigned char unk3F; /* 0x3F next frame */
-  unsigned char unk40; /* 0x40 frame progress */
-  unsigned char unk41; /* 0x41 progress per frame */
-  unsigned char unk42; /* 0x42 anim flags: bit 1 done, bit 0 new frame */
-  unsigned char unk43; /* 0x43 pod (actor group) */
-  unsigned char unk44; /* 0x44 rotation x */
-  unsigned char unk45; /* 0x45 rotation y */
-  unsigned char unk46; /* 0x46 rotation z */
+  unsigned char anim;  /* 0x3C current animation */
+  unsigned char nextAnim; /* 0x3D next animation */
+  unsigned char frame; /* 0x3E current frame */
+  unsigned char nextFrame; /* 0x3F next frame */
+  unsigned char frameProgress; /* 0x40 frame progress */
+  unsigned char frameRate; /* 0x41 progress per frame */
+  unsigned char animFlags; /* 0x42 bit 1 done (g_nActorAnimDone), bit 0 new frame */
+  unsigned char group; /* 0x43 activation group (BuildActiveActorList) */
+  unsigned char rotX;  /* 0x44 euler x (8-bit angle) */
+  unsigned char rotY;  /* 0x45 euler y */
+  unsigned char rotZ;  /* 0x46 euler z (yaw) */
   unsigned char unk47; /* 0x47 depth offset */
-  unsigned char unk48; /* 0x48 state; >= 0x80 means dormant */
-  unsigned char unk49; /* 0x49 sub-state */
+  unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
+  unsigned char subMode; /* 0x49 sub-state */
   unsigned char unk4A; /* 0x4A sector index */
   unsigned char unk4B; /* 0x4B renderer */
   unsigned char unk4C; /* 0x4C */
@@ -48,12 +48,12 @@ typedef struct Actor {
   unsigned char unk4E;
   unsigned char unk4F;
   unsigned char unk50; /* 0x50 render radius */
-  unsigned char unk51; /* 0x51 was drawn last frame */
-  unsigned char unk52; /* 0x52 update distance */
+  unsigned char drawn; /* 0x51 drawn last frame: always kept active */
+  unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char unk53;
-  unsigned char unk54; /* 0x54 sound channel */
+  unsigned char sfxSlot; /* 0x54 sound owner key (PlaySoundEffect) */
   unsigned char unk55; /* 0x55 sound distance */
-  unsigned char unk56; /* 0x56 actor index */
+  unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
   unsigned char unk57; /* 0x57 scale override */
 } Actor; /* 0x58 */
 
