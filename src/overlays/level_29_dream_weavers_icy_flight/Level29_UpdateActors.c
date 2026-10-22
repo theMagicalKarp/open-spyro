@@ -18,6 +18,7 @@
  */
 
 #include "actor.h"
+#include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
 
@@ -40,7 +41,6 @@
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
-extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
@@ -75,7 +75,6 @@ typedef struct Model {
 } Model;
 
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
-extern Actor *g_pLevelOverlayInitRecord;   /* Sparx, or null when absent */
 
 /* ==== Per-class state blocks ====
  *
@@ -178,25 +177,13 @@ typedef struct ChaserState {
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
 extern void BuildActiveActorList(void);
-extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
-extern int RandomSignedInRange(int a, int b);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int TickCountdownByFrameDelta(void *timer, int step);
 extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
-/* Particle spawn hook. The last argument is either a packed parameter word
- * or a pointer to a velocity vector, depending on the effect. */
-extern void (*g_pfnLevelEmitParticles)(int a, int effect, int *pos, void *c);
-
-/* Actor spawn hook: (type, parent) -> new actor. */
-extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
-
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
-extern Actor *g_pActorListBase;         /* level actor pool */
-extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 extern struct {
   short v;
 } g_nSfxOverridePitch;
@@ -206,11 +193,8 @@ extern struct {
 extern struct {
   int v;
 } g_nHudWorldEggRollRequest;
-extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
-extern int g_anLevelEggsRecovered[];
 
 extern void AimCameraStickTowardPoint(int *pos);
-extern void VectorToSVectorShr2(short *d, int *s);
 extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
@@ -297,10 +281,6 @@ typedef struct SpinState {
   unsigned char angle; /* 0x02 */
   unsigned char anim;  /* 0x03 0xFF == none */
 } SpinState;
-
-/* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
- * in the save-options block. */
-extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -417,14 +397,6 @@ typedef struct RespawnState {
   int period; /* 0x08 reload for ->timer */
 } RespawnState;
 
-/* Collision contact point, pickup counters and sound volume override. */
-extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int g_nCollisionResolvedZ;   /* ..z */
-
-/* 256-entry sine and cosine tables. */
-extern short g_anSineLut[];
-extern short g_anCosineLut[];
-
 /* Callees used by the collectible and fairy behaviours. */
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern int FindGroundHeightBelow(int *v, int k);
@@ -457,7 +429,6 @@ typedef struct WalkerState {
 } WalkerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -856,7 +827,6 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-extern int g_anWorldPersistentFlags[];  /* per-mode "time attack" flag */
 extern void TallyFlightTarget(int sound);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
@@ -870,9 +840,6 @@ typedef struct TallyState {
   short angle;  /* 0x0E */
   short phase;  /* 0x10 */
 } TallyState;
-
-extern short g_anSineLut[];  /* HUD slot layout rows, 64 shorts each */
-extern short g_anCosineLut[];
 
 /* Flight HUD controller (0x166): clock digits, the per-class tally icons,
  * icons being spent into a slot, and the four finish slots. */
@@ -889,9 +856,6 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-extern int g_anFlightTargetTally[];    /* tally collected, per class */
-extern Actor g_abHudIconActorRecords[];  /* the four HUD class icons */
-extern void (*g_pfnLevelFallImpactCallback)(void); /* out-of-time handler */
 extern void ChangeSpyroState(int a);
 
 /* ==== The function ==== */

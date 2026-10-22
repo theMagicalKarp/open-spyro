@@ -31,12 +31,12 @@
  */
 
 #include "actor.h"
+#include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
-extern Actor *g_apSaveMenuAnimActorList[]; /* live actor list, 0-terminated */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
 /* Model table entry, indexed by actor->type: sound ids and one header per
@@ -71,7 +71,6 @@ typedef struct Model {
 } Model;
 
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
-extern Actor *g_pLevelOverlayInitRecord;   /* Sparx, or null when absent */
 
 /* ==== Per-class state blocks ====
  *
@@ -174,27 +173,13 @@ typedef struct ChaserState {
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
 extern void BuildActiveActorList(void);
-extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
-extern int RandomSignedInRange(int a, int b);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int TickCountdownByFrameDelta(void *timer, int step);
 extern int WrapAddAngle8(int a, int b);
 extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
-/* Particle spawn hook. The last argument is either a packed parameter word
- * or a pointer to a velocity vector, depending on the effect. */
-extern void (*g_pfnLevelEmitParticles)(int a, int effect, int *pos, void *c);
-
-/* Actor spawn hook: (type, parent) -> new actor. */
-extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
-
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
-extern Actor *g_pActorListBase;         /* level actor pool */
-extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
-extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
-extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 extern struct {
   short v;
 } g_nSfxOverridePitch;
@@ -204,11 +189,8 @@ extern struct {
 extern struct {
   int v;
 } g_nHudWorldEggRollRequest;
-extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
-extern int g_anLevelEggsRecovered[];
 
 extern void AimCameraStickTowardPoint(int *pos);
-extern void VectorToSVectorShr2(short *d, int *s);
 extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
@@ -298,9 +280,7 @@ typedef struct SpinState {
 
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
-extern int D_800777F4;
 extern void ResetSpyroLinearMotion(void);
-extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -344,10 +324,6 @@ typedef struct LiftState {
 
 #define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
-/* Type 398: exit vortex. Surface-below flags and the level transition
- * globals. */
-extern unsigned char **g_pTriggerRegionTable; /* surface records, indexed by the above */
-
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
   int v[6];
@@ -383,7 +359,6 @@ extern CamObj g_anWorldToCameraRotMtx;
 
 extern Xform g_aCameraXformPresets[];
 
-extern void ComputeCameraToTargetAngle(int *out);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void UpdateCameraEulerAngles(void);
 
@@ -406,8 +381,6 @@ typedef struct PortalState {
   int unk14;        /* 0x14 published to SPY.u206 as a byte */
   int unk18;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
-
-extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion counters */
 
 /* Type 300: camera trigger volume. Live camera sphere and its template. */
 typedef struct Xform6 {
@@ -434,14 +407,6 @@ typedef struct RespawnState {
 } RespawnState;
 
 extern void StubRewardHook(int script, int a);
-
-/* Collision contact point, pickup counters and sound volume override. */
-extern int g_anCollisionResolvedPos;   /* collision contact point */
-extern int g_nCollisionResolvedZ;   /* ..z */
-
-/* 256-entry sine and cosine tables. */
-extern short g_anSineLut[];
-extern short g_anCosineLut[];
 
 /* Callees used by the collectible and fairy behaviours. */
 extern void UnpackWorldCollisionTri(int a, int *out);
@@ -475,7 +440,6 @@ typedef struct WalkerState {
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -844,7 +808,6 @@ extern int g_nCameraYaw;   /* camera spherical current */
 extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
 extern volatile unsigned char g_bSpyroOtBinBias;
-extern int g_anSpyroMotionVec; /* look-at offset */
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
@@ -1013,7 +976,6 @@ typedef struct L16Pod {
   int rotY;     /* 0x0C */
   int restZ;    /* 0x10 */
 } L16Pod;
-extern int D_8006E5C4[][3];
 
 /* Case 497 -- humming bell. */
 typedef struct L16Bell {
@@ -1123,8 +1085,6 @@ typedef struct CageState {
   int restZ;  /* 0x10 */
   int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
-extern Actor *D_80075758;
-extern int g_nCameraScriptStickRequestY[];
 extern void DivideVector3(int *d, int *s, int k);
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant
@@ -1266,8 +1226,6 @@ typedef struct L26Spinner {
   int timer;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
 } L26Spinner;
-extern int D_80075F38[][7]; /* voice table */
-extern int D_80075F44[][7]; /* its word 3 */
 
 /* Case 392 -- homing spark. */
 typedef struct L26Spark {
@@ -1366,7 +1324,6 @@ typedef struct L18Guard {
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
 } L18Guard;
-extern int g_anSpyroWorldPos; /* SPY.posX, absolute form (A295) */
 
 /* A NOTE-only scope: four NOTE luids and no code. It lengthens the lifetime
  * loop.c sees for any hoistable value live across it (cookbook A294). */
