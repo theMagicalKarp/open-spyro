@@ -19,7 +19,6 @@ extern int g_nGamestate0cSubstate;
 extern int g_nGamestate0cTimer;
 extern int g_nGamestate0cMenuCursor;
 extern char *g_pActorListBase;
-extern char *g_pGamestate0cRecord;
 extern int g_anCameraPos[];
 extern int g_nGamestate0cCamYawGoal;
 

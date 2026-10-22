@@ -48,7 +48,6 @@ typedef struct TrackState {
   int unk08;
 } TrackState;
 
-extern Actor *AllocActorRecordSlot(void);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

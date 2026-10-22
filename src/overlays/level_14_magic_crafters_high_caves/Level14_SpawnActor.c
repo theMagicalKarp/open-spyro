@@ -47,7 +47,6 @@ typedef struct AimState {
   int unk08;
 } AimState;
 
-extern Actor *AllocActorRecordSlot(void);
 
 extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];

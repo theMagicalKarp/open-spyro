@@ -29,7 +29,6 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-extern Actor *AllocActorRecordSlot(void);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;

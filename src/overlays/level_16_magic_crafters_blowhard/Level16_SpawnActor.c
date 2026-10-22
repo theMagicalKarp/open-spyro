@@ -57,7 +57,6 @@ typedef struct AimState {
   int unk08;
 } AimState;
 
-extern Actor *AllocActorRecordSlot(void);
 extern int g_anCameraPos;     /* turret aim target X */
 
 extern Actor *g_pActorListBase;

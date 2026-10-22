@@ -28,7 +28,6 @@ typedef struct SeekState {
   short unk14;
 } SeekState;
 
-extern Actor *AllocActorRecordSlot(void);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

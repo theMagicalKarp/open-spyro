@@ -40,7 +40,6 @@ typedef struct AimState {
   int unk0C;
 } AimState;
 
-extern Actor *AllocActorRecordSlot(void);
 extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 

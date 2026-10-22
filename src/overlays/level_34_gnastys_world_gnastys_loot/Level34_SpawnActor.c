@@ -17,7 +17,6 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-extern Actor *AllocActorRecordSlot(void);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;

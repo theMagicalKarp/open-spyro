@@ -53,7 +53,6 @@ typedef struct BatState {
   int unk10;           /* 0x10 */
 } BatState;
 
-extern Actor *AllocActorRecordSlot(void);
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

@@ -201,4 +201,9 @@ extern unsigned char *g_pGamestate0cActor;
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern int g_nCreditsGlyphCount;
+extern int g_nCreditsPageIndex;
+extern char *g_pCreditsGlyphPool;
+
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */

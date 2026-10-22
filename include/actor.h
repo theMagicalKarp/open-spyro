@@ -131,4 +131,8 @@ void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int 
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
+/* Hoisted: declared identically (bar parameter names) in every includer. */
+extern Actor *AllocActorRecordSlot(void);
+extern char *g_pGamestate0cRecord;
+
 #endif /* OPEN_SPYRO_ACTOR_H */

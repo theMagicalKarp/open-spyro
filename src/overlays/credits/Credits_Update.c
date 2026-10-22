@@ -235,17 +235,14 @@ typedef struct {
   int w[5];
 } Blk20;
 
-extern int g_nCreditsGlyphCount;
 extern int g_nReturningHomePhase;
 extern int g_nGamestate0fMode;
 extern char *g_pCreditsLineTable;
 extern char *g_pCreditsScratchBuf;
-extern int g_nCreditsPageIndex;
 extern char *g_pCreditsScrollHeader;
 extern int g_nCreditsLineCount;
 extern char *g_pCreditsLoadBuf;
 extern int g_nCreditsLastVisibleLine;
-extern char *g_pCreditsGlyphPool;
 extern int g_nScriptedMobCount;
 extern int g_nGenericCountdown;
 extern int g_nCreditsLoadSpan;

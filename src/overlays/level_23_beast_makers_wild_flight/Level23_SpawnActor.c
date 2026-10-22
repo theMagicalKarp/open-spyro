@@ -33,7 +33,6 @@
  * level_29.
  */
 
-extern Actor *AllocActorRecordSlot(void);
 extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
