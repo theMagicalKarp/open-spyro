@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Enter the pause menu gamestate (0x8002c420). param nonzero = paused from
    gameplay (stop SFX, reset the transition frames). Plays the menu-open sound,
@@ -9,7 +10,6 @@
 extern void StopAllSoundExceptMask(unsigned int mask);
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern void InitHudCounters(int mode);
-extern void UpdateHudCounters(void);
 
 void EnterPauseMenu(int param_1) {
   if (param_1 != 0) {

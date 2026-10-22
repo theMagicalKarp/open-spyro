@@ -1,8 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
-
-/* Held base at g_nSpyroBodyPitch: pitch at [0], roll at [-1]. */
-extern int g_anSpyroBodyPitchBlock[];
 
 /* Yaw written as a record member, so its in-struct load stays below the
    in-struct roll store (sched.c true_dependence, A230). */

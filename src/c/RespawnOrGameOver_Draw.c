@@ -1,32 +1,19 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern void BuildRenderEntityLists(void);
-extern void ComposeFrameScene(void);
-extern void RasterizeEmitList(void);
-extern void DrawActors(void);
-extern void SetupFrameOT(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void MoveImage(short *rect, unsigned int x, int y);
 extern void ClearImage(short *rect, unsigned int r, unsigned int g,
                        unsigned int b);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
-extern void RasterizePairedActor(void);
 extern void BuildTextSprites(unsigned char *str, int *pos, int *size, int flags,
                              int slot);
 extern void BuildCameraViewMatrix(void);
 extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
 
-/* Held-base alias for &g_nCameraEulerPitch (0x80076e1e): pitch stores plus
-   the view/world matrix call args at -0x3A/-0x4E. */
-extern short g_anCameraEulerPitchBlock[];
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 extern unsigned short g_anGameOverCameraEulerU[];
 extern unsigned char g_abFrameDrawEnvIsbgBlock[];

@@ -13,6 +13,7 @@
      pins the table base to $2 and the path to $3 with an empty barrier in
      the long arm, and the product `k` is its own local. */
 #include "globals.h"
+#include "main_shared.h"
 
 extern uint GetRandomU32(void);
 extern int LookupSine(uint angle_12_4);
@@ -33,14 +34,10 @@ extern uint PlaySoundEffect(uint sampleId, int *owner, uint mode,
 /* Held-base alias views (see config/symbol_addrs.txt). */
 extern int g_anSpyroFlameBreathTimerBlock[]; /* 0x80078768 */
 extern int g_anSpyroBodyMtxBlock[];          /* 0x80078a8c, -0x34 world pos */
-extern unsigned char g_abSpyroPersistentEulerBlock[]; /* 0x80078a64 */
 extern unsigned char
     g_abSpyroHornStrikeSegmentBlock[]; /* 0x80078761, +2 = ring row */
 extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[]; /* 0x80078762 */
 extern int g_anSpyroHornStrikeAnchorMtxBlock[];            /* 0x8007876c */
-
-extern unsigned char D_80078A78; /* layer-1 frame index */
-extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* 0x80078a7d */
 
 /* The particle spawner installed by the level overlay:
    (count, kind, world position, direction | NULL). */

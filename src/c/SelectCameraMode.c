@@ -1,14 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 
 extern int ComputeCameraToTargetAngle(int *pos);
-extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 extern int abs(int x);
-
-/* Held-base views of the camera record (from g_anCameraPos) and the Spyro
-   record (from g_anSpyroWorldPos): field addresses taken off one register. */
-extern int g_anCameraPosBlock[];
-extern int g_anSpyroWorldPosBlock[];
 
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C /* g_nCameraCurrentMode */

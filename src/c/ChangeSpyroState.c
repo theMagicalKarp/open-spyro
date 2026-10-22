@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -10,13 +11,9 @@ extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroWorldPosZ;    /* g_anSpyroWorldPos[2] */
 extern int g_nSpyroMotionZ;      /* g_anSpyroMotionVec[2] */
 extern int g_nSpyroCarryMotionZ; /* g_anSpyroCarryMotionVec[2] */
-extern int D_80075700;
-extern int D_80075728;
 extern int D_8006EA34[];
-extern int D_800756B4;
 extern int D_80075668;
 extern int D_80075724;
 extern int D_8007578C;
@@ -29,9 +26,6 @@ SDATA(D_80075724, 4);
 SDATA(D_8007578C, 4);
 SDATA(D_80075790, 4);
 SDATA(D_800757F0, 4);
-
-/* One view of the Spyro record from its world position (0x80078a58). */
-extern int g_anSpyroWorldPosBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE 0x1E          /* g_nSpyroState */

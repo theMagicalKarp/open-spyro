@@ -1,12 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern unsigned int VectorLength(int *vec, int include_z);
 extern void TurnSpyroTowardMoveTargetWithLean(int lean);
 extern int abs(int x);
-
-/* held-base view of g_nSpyroMoveTargetYaw (0x80078b24): [0] is the move-target
-   yaw, [0x14] (+0x50) is g_nSpyroBodyYaw. */
-extern int g_anSpyroMoveTargetYawBlock[];
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
    stick.  While the stick is engaged (pad word +0x10 set and the raw axes at

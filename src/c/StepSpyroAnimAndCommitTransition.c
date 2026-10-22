@@ -1,12 +1,10 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Advance Spyro's animation sub-frame timer by `step`; when a whole frame
    (0x10 sub-steps) elapses, advance the frame counter and, past the current
    animation's frame count, commit the pending state-transition animation
    (0x8003cbb8, 0x12C). Returns 1 when a transition was committed, else 0. */
-
-extern unsigned char g_abSpyroSubFrameTimerBlock[];
-extern unsigned char g_abSpyroStateTransitionMatrixBlock[45][45];
 
 int StepSpyroAnimAndCommitTransition(int step) {
   unsigned char *timer = g_abSpyroSubFrameTimerBlock;

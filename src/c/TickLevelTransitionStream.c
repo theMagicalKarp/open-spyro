@@ -1,8 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
-extern void RestartStalledCdRead(void);
-extern int FUN_80063bd8(); /* CdSync */
 extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
                              int marker);
 extern void StopAllSoundExceptMask(int mask);
@@ -10,8 +9,6 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 extern void RelocateLevelSampleBank(void *bank, int mode);
 extern void ApplyPerLevelGlobalsTable(void);
 extern void LoadImage(RECT *rect, void *data);
-extern int SetSpuTransferStartAddr(unsigned int addr);
-extern unsigned int WriteSpuRam(void *buf, unsigned int size);
 extern long GetSpuTransferStatus(int mode);
 extern void *UnpackWorldDataChunks(void *src, int mode);
 extern void *RelocateActorMeshHeader(void *header);
@@ -20,29 +17,18 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void BuildLoadedLevelRuntime(int full);
 extern void ChangeSpyroState(int state);
 extern void ComputeCameraToTargetAngle(int *pos);
-extern void ComputeCameraOrbitOffset(int *out);
 extern void UpdateCameraEulerAngles(void);
 extern void ActivateScriptedCameraView(int record);
 extern int abs(int x);
 
-extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
 extern char
-    *g_apWorldUnpackHeadBlock[]; /* [0] unpack head, [7] g_pWorkAreaTop */
-extern int g_anWorldTimAudioChunkOffsetBlock[];
+    *g_apWorldUnpackHeadBlock[];       /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
-extern void *g_apActorMeshTableBlock[];
 extern int g_anSpawnAnchorBlock[];
-extern int g_anCameraPosBlock[]; /* [0x14] spring yaw, [0x1A] camera yaw */
-extern int g_anSpyroWorldPosBlock[];
 extern int g_anSpyroWorldPosZBlock[]; /* 0x80078a60 */
 extern int g_anSpyroStateFlagsBlock[];
-extern int g_anCameraSpringYawBlock[];     /* [6] is g_nCameraYaw */
-extern int g_anSpyroDeathCamRecordBlock[]; /* 0x8006ebe4 */
 extern void *g_apDrawBufBBlock[];
-extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
-extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
 extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];
 
@@ -50,16 +36,13 @@ extern void *g_pSharedLoadBuffer; /* level splash image buffer */
 extern int D_80075670;
 extern int D_80075674;
 extern int D_8007577C;
-extern int D_80075838;
-extern int D_8007583C;
 extern int D_80075850;
 extern int D_80075854;
 extern int D_80075870;
 extern int D_80075874;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nActiveWorldIndex; /* current world index */
-extern int D_80076E24;
-extern int D_800776CC; /* level-intro deadline */
+extern int D_800776CC;          /* level-intro deadline */
 extern int D_8007A71C; /* splash size column of the level archive table */
 
 typedef struct {

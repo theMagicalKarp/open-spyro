@@ -1,18 +1,14 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern void RestartStalledCdRead(void);
-extern int FUN_80063bd8(); /* CdSync */
 extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
                              int marker);
 extern void CopyWords(void *dst, void *src, int byte_count);
-extern int SetSpuTransferStartAddr(unsigned int addr);
-extern unsigned int WriteSpuRam(void *buf, unsigned int size);
 extern unsigned int ReadSpuRam(void *buf, unsigned int size);
 extern long GetSpuTransferStatus(int mode);
 extern void *RelocateActorMeshHeader(void *header);
 extern void RelocateMobActorTable(void *table);
 
-extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
 extern char
     *g_apWorldUnpackHeadBlock[]; /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int
@@ -21,10 +17,8 @@ extern int
     g_anGemPickupStreamStateBlock[]; /* held-base view of the stream state */
 extern int
     g_anGemPickupSpuChunkBlock[]; /* held-base view of the SPU chunk index */
-extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
-extern void *g_apActorMeshTableBlock[];
-extern int D_80076760;    /* end of the unpack work area */
-extern char D_80077030[]; /* gem-pickup asset header copy */
+extern int D_80076760;            /* end of the unpack work area */
+extern char D_80077030[];         /* gem-pickup asset header copy */
 
 #define HEAD (g_apWorldUnpackHeadBlock[0])
 #define HDR (g_anGemPickupHeaderEndBlock[0])

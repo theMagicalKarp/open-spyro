@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
 
@@ -117,8 +118,6 @@ extern void SubtractVector(int *dst, int *a, int *b);
 extern int VectorLength(int *vec, int include_z);
 extern int ArcTan2(int y, int x, int high_precision);
 extern void AdvanceSpyroAnimFrame(int delta);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2(void);
 
 /* Held-base view of the gamestate-0xC block: [-1] substate, [0] timer,
    [13]/[15] the yaw and height starts also reachable as
@@ -140,13 +139,7 @@ extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
 extern int D_8006EA4C[]; /* entry points, 4 words per level */
 extern void (*g_pfnGamestate0cSubstateUpdate)(
-    void);                    /* handler for every other substate */
-extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
-
-/* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
-   SubtractVector argument share one base register while [1] and [2] stay
-   absolute — same split as g_anSpyroWorldPosBlock in Gamestate0D_Update. */
-extern int g_anCameraPosBlock[];
+    void); /* handler for every other substate */
 
 /* 20-byte block view for the counter handoff, which the original does as one
    struct assignment (lw/lw + sw/sw pairs), not five scalar copies. */

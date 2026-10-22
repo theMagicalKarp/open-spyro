@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Per-frame top-level update dispatcher (0x8003385C, 0x3f4).
 
@@ -16,7 +17,6 @@
    unknown pad type forces the pause menu). Every path ends in the SPU tick
    except the early returns. */
 extern void TickActiveSoundVoices(void);
-extern void TickCdMusicStream(void);
 extern void Gamestate01_Update(void);
 extern void PauseMenu_Update(void);
 extern void SubMenu_Update(void);
@@ -34,13 +34,9 @@ extern void func_8007AA50(void); /* credits overlay entry */
 extern void func_8007ABAC(void); /* titlescreen overlay entry */
 extern int CheckDeathPlane(void);
 extern void TickWorldChunkAnimations(int step);
-extern void TickSpyroGameplayFrame(void);
-extern void UpdateHudCounters(void);
 extern void ComputeBillboardBasisVectors(void);
-extern void UpdateCameraFrame(void);
 extern void EnterPauseMenu(int mode);
 extern void EnterInventoryMenu(int mode);
-extern void TickSpuPerFrame(void);
 
 void GamestateUpdate(void) {
   g_nGamePaused = 0;

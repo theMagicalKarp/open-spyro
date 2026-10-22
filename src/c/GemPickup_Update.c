@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Matching notes. Several accesses are spelled to control the scheduler's
@@ -19,16 +20,12 @@
      delay slot, and case 4's `done` doubles as the case-5 table pointer (two
      sets, so sched1 does not boost it above AdvanceSpyroAnimFrame). */
 
-extern void TickSpyroGameplayFrame(void);
-extern void UpdateCameraFrame(void);
 extern int SignedAngleDelta12(int a, int b);
 extern void ResetSpyroEntity(int mode);
 extern void StopAllSoundExceptMask(int mask);
 extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
                            void *marker);
 extern void AdvanceSpyroAnimFrame(int delta);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2(void);
 extern int FindWorldFloorBelowPoint(int *pos);
 extern void SampleSpyroShadowRingHeights(int mode);
 extern void *AllocActorRecordSlot(void);
@@ -38,9 +35,6 @@ extern void InsertActorIntoSpatialGrid(void *actor);
 extern void StopSoundVoiceByIndex(int voice, int mode);
 extern void DespawnActorRecord(void *actor);
 extern void CopyWords(void *dst, void *src, int byte_count);
-extern void TickSpuPerFrame(void);
-extern int SetSpuTransferStartAddr(unsigned int addr);
-extern unsigned int WriteSpuRam(void *buf, unsigned int size);
 extern long GetSpuTransferStatus(int mode);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
@@ -50,9 +44,6 @@ extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
 extern void TickGemPickupBurstEntity(void *actor);
 
-extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
-extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
-extern int g_anSpyroWorldPosBlock[];
 extern int g_nSpyroAnimPlayRate_blk[];
 extern int g_nSpyroGroundNormalX;  /* 0x80078afc — g_anSpyroGroundNormal[0] */
 extern int g_nSpyroGroundNormalY;  /* 0x80078b00 — g_anSpyroGroundNormal[1] */
@@ -64,9 +55,6 @@ extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
 extern char
     *volatile D_800761D0; /* volatile view of g_pLevelSampleBankEntries */
 extern void *g_apSampleBankEntriesBlock[];
-extern int g_nSfxOverrideFlags;
-extern short g_nSfxOverrideVolL;
-extern short g_nSfxOverrideVolR;
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */

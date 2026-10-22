@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void SubtractVector(int *dst, int *a, int *b);
 extern uint VectorLength(int *vec, int include_z);
-extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 extern uint GetRandomU32(void);
 extern void ActivateScriptedCameraView(int *view);
 extern void CopyVector(int *dst, int *src);

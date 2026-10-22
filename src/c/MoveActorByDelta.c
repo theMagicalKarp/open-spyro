@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Move an actor by a delta with contact/collision checks (0x80039228,
@@ -10,8 +11,6 @@ extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern void RefreshActorDerivedState(int *actor, int mode);
-
-extern int g_nActorFrameDelta;
 
 typedef struct {
   int x;

@@ -19,6 +19,7 @@
  *    wrapper the parked version carried is no longer needed.
  */
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern int abs(int);
@@ -31,8 +32,6 @@ extern int MoveActorAlongAngle(int *actor, int angle, int speed, int p3, int p4,
                                int p5);
 
 extern short g_anCosineLut[];
-extern int
-    g_nActorFrameDelta; /* active camera mode (3 = 1.5x, 4 = 2x turn rate) */
 
 /* Steers `actor` around a target point instead of straight at it: aims at the
    point `radius` away from `tgt` on the side the actor is already turning

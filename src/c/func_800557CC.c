@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern short g_anCosineLut[];           /* 0x8006cc78 */
-extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
+extern short g_anCosineLut[]; /* 0x8006cc78 */
 
 extern int LookupSine(unsigned int angle_12_4);
 extern int LookupCosine(unsigned int angle_12_4);

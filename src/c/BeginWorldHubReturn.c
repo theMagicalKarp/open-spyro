@@ -1,11 +1,5 @@
 #include "globals.h"
-
-/* Return to the current world's hub (0x8002c664): reset the level-transition /
-   CD-stream state, arm a scripted respawn back into the hub (camera mode
-   0x80000012, gamestate 1, tally + paused flags), tag the preserve-mob slot as
-   empty, and snap the target level id back to the world's hub id
-   ((active level / 10) * 10). */
-extern void InitLightVectorConstants(void);
+#include "main_shared.h"
 
 void BeginWorldHubReturn(void) {
   int hub;

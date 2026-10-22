@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Enter the credits gamestate (0x8002d228, gamestate 0xF): clear the whole
    VRAM framebuffer, silence all sound, optionally reload the actor mesh tables
@@ -9,8 +10,6 @@ extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
                        unsigned char b);
 extern int DrawSync(int mode);
 extern void StopAllSoundExceptMask(unsigned int mask);
-extern void TickSpuPerFrame(void);
-extern void LoadActorMeshTables(void);
 extern void ResetSpyroEntity(int param);
 extern int CdReadSyncSectors();
 extern int D_800757AC;

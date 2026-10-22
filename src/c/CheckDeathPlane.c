@@ -1,28 +1,21 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void SamplePadForDeathReplayFrame(void);
 extern void StopAllSoundExceptMask(int mask);
-extern void TickSpuPerFrame(void);
 extern void ClearImage(short *rect, int r, int g, int b);
 extern void DrawSync(int mode);
 extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
                               int marker);
 extern void TickWorldBundleLoadStream();
-extern void TickCdMusicStream(void);
-extern void BeginStoryIntro(void);
 extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
 extern void StartCdReadAsync(int lba, int dst, int count, int offset,
                              int marker);
 
 extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
-extern int D_8007A6E4;            /* level-load chunk size */
-extern int D_8007A6E0;            /* level-load byte offset */
 extern int D_8007A6D8;            /* async-read byte offset */
 extern int D_8007DDE8;            /* draw-buffer sentinel */
 extern int D_800778F0;            /* death-cutscene sample-bank record */
-extern int g_nSfxOverrideFlags;
-extern short g_nSfxOverrideVolL;
-extern short g_nSfxOverrideVolR;
 extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field

@@ -1,24 +1,13 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void *BuildTextSprites(char *str, int *pos, int *size, int a, int b);
 extern void DrawShadedMenuBox(int x, int y, int w, int h);
-extern void BuildRenderEntityLists(void);
-extern void ComposeFrameScene(void);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
-extern void SetupFrameOT(void);
-extern void DrawActors(void);
-extern void RasterizeEmitList(void);
-extern void DrawCinematicLetterbox(void);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
-extern int g_anSaveMenuBlock[];      /* [1] phase, [2] cursor, [4] x offset */
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = anchor */
+extern int g_anSaveMenuBlock[]; /* [1] phase, [2] cursor, [4] x offset */
 extern short g_anCosineLut[];
 typedef struct {
   short x, y, w, h;

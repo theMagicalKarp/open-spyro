@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void ApplyEulerRotation(signed char *euler, int *mtx, int flag);
-extern int g_anSpyroBodyPitchBlock[]; /* +0 pitch, [-12] g_anSpyroVelocity */
 
 /* 0x8003d978 (0x90) — build Spyro's world-space velocity: snapshot the body
    Euler angles (>> 4) into a byte triple, expand them into a rotation matrix

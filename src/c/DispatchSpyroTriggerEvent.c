@@ -1,9 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
-extern int g_nSpyroWorldPosZ;         /* g_anSpyroWorldPos[2] */
-extern int g_anLevelReadyFlagBlock[]; /* held-base view; world pos at -0x164 */
-extern int D_80075728;                /* orb-drop trigger parameter */
 extern unsigned int
     g_adwSpyroTriggerEventBlock[]; /* held-base view of the flags */
 

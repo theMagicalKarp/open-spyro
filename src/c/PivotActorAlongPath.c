@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Waypoint path-follow driver (0x80039e94, 0x2d8). Steers the actor
@@ -19,7 +20,6 @@ extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
                                  int flags);
 extern int abs(int);
 
-extern int g_nActorFrameDelta;
 extern void *g_apSaveMenuAnimActorListBlock[];
 
 #define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))

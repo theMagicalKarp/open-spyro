@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void InitSpu(void);
 extern void SetSpuCommonAttr(unsigned char *attr);
@@ -7,7 +8,6 @@ extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void SetSpuTransferMode(int mode);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
-extern int D_80076224_blk;           /* CD-DA mix volume */
 extern int D_80076228_blk;           /* sfx mix volume */
 extern short g_anSpuCommonVolAttr[]; /* g_abSpuCommonAttr + 0x4 (see alias) */
 

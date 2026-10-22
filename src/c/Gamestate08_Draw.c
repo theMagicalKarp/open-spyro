@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Draw for gamestate 8 (GS_GEM_PICKUP, 0x8001cfdc, 0x73c).
 
@@ -15,37 +16,22 @@
    2-vblank frame submit. */
 extern void ApplyEulerRotation(void *euler, void *mtx, void *viewMtx);
 extern void DrawGemPickupAuraStar(void);
-extern void BuildRenderEntityLists(void);
-extern void ComposeFrameScene(void);
-extern void SetupFrameOT(void);
-extern void DrawActors(void);
-extern void RasterizeEmitList(void);
 extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void DrawDragonRescuedBanner(void);
-extern void EnqueuePendingSpritePrims(void);
-extern void BuildActorDrawList(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void EmitActorDrawList(void);
-extern void RasterizeSpritePrimQueue(void);
 extern void DrawEntityDirectionalSpikes(void);
-extern void RasterizePairedActor(void);
 extern void DrawSpyroDropShadow(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void EmitSecondaryActorPrimitives(void);
-extern void DrawCinematicLetterbox(void);
 extern int LookupCosine(unsigned int angle_12_4);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
 extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
 extern void *g_apOtDepthBinBlock[];      /* 0x8006fcf4: OT head list,
                                             sprite prim queue at [2304] */
 extern short D_8006F3C0[];               /* gem-pickup timer scale curve */
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 void Gamestate08_Draw(void) {
   int unused[4];

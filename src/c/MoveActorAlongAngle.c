@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Guided-move step for a tracked actor (0x80039688, 0x288). Advances the
@@ -18,7 +19,6 @@ extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void RefreshActorDerivedState(int *actor, int mode);
 extern int abs(int);
 
-extern int g_nActorFrameDelta;
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 

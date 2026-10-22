@@ -1,22 +1,16 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern void BuildRenderEntityLists(void);
-extern void BuildActorDrawList(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void EmitActorDrawList(void);
 extern void RenderWorldChunks(int lod);
 extern void EmitStaticActorMeshList(int lod, int *viewMtx, int *worldMtx);
 extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
-extern void PutDrawEnv(void *env);
-extern void *LinkOTPrimitives(int depth_max);
-extern void DrawOTag(void *ot);
 
 extern int g_nFarPlaneDrawDistance; /* per-gamestate far-plane cull limit */
 extern int D_80076DE4[]; /* camera view matrix (worldToCam at -0x14) */
-extern int g_anVsyncFrameEndBlock[]; /* held-base alias: [-1] = pace anchor */
 
 /* Draw gamestate 0xE (GS_GEM_CUTSCENE): the collected gem shown in 3D with a
    g_nGenericCountdown fade-to-black. Copies the world fog color into both frame

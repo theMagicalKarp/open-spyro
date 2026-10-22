@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Leave the gem-pickup / dragon-rescue overlay back into the world
    (0x8002CB6C, gamestate 0): unblock gameplay, release the actor that owned
@@ -13,7 +14,6 @@
 extern void ResetSpyroEntity(int param);
 extern void ComputeCameraToTargetAngle(void *params);
 extern void CopyWords(void *dst, void *src, int count);
-extern void ResetCameraStateToTarget(void);
 extern void InitHudCounters(int mode);
 extern void HandleMusicCommand(int track, int cmd);
 

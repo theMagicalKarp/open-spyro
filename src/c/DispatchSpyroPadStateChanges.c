@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Map this frame's pad intent to Spyro state transitions (0x80040F68, 0x308).
@@ -12,14 +13,12 @@
    (0x8000), swim hold (0x800) and the charge-hold flag (0x2000). Returns 1
    when a transition was dispatched. */
 extern void ChangeSpyroState(int state);
-extern void ResetSpyroLinearMotion(void);
 extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
                            void *marker);
 
 extern int D_800756A0;
 extern int g_adwSpyroTriggerEventBlock[]; /* g_dwSpyroTriggerEventFlags */
 extern int g_anSpyroInputLockoutBlock[];  /* g_nSpyroInputLockoutCountdown */
-extern int g_anLevelReadyFlagBlock[];     /* g_nLevelReadyFlag */
 
 int DispatchSpyroPadStateChanges(int pad) {
   int *ev;

@@ -1,9 +1,5 @@
 #include "globals.h"
-
-/* array alias for the sub-frame accumulator at 0x80078a7c (see
-   config/symbol_addrs.txt) -- forces the held base register, matching the
-   original's single `a1` reuse across the load + both stores. */
-extern unsigned char g_abSpyroSubFrameTimerBlock[];
+#include "main_shared.h"
 
 /* 0x8003cb24: Adds delta to the sub-frame timer g_bSpyroSubFrameTimer. On
    overflow past 0xF, advances g_bSpyroAnimFrame by 1 within the current anim,

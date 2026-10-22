@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Reset all per-level / per-world progress state for a new game (0x80012604,
    376 bytes). Zeros the per-level gem/dragon/egg tallies and the visited/gem-%
@@ -6,9 +7,6 @@
    flags + per-level byte rows, then reinitializes the scalar inventory globals
    and FillWord-clears the spawn-anchor block and the level kill bitmaps. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-
-extern int D_80075838;
-extern int D_8007583C;
 
 void ResetLevelState(void) {
   int i;

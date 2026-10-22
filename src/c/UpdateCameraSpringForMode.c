@@ -1,24 +1,16 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
 extern int ComputeCameraToTargetAngle(int *pos);
-extern void LoadCameraTargetAnglesFromMode(void);
 extern void AdvanceCameraSpringStep(int column);
-extern void ComputeCameraOrbitOffset(int *out);
 extern void SnapCameraToTarget(void);
 extern void UpdateCameraEulerAngles(void);
 extern void UpdateCameraManualYawInput(void);
 extern void UpdateGameplayCamera(void);
 extern int abs(int x);
 
-extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
-extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
-
-/* Held-base views of the camera record (from g_anCameraPos) and the Spyro
-   record (from g_anSpyroWorldPos). */
-extern int g_anCameraPosBlock[];
-extern int g_anSpyroWorldPosBlock[];
 /* Register-base view of g_anCameraScriptStickIntegrator. */
 extern int g_anCameraScriptStickIntegratorBlock[];
 

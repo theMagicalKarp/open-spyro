@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Stop every software voice row owned by `owner` (0x800562a4). mode 1 stops
    unconditionally; mode 2 only stops rows whose flags halfword (+0x36) has
@@ -7,7 +8,6 @@
    idle (0x40), zeros +0x3C, resets the priority byte (+0x35) to 0xFF, and
    accumulates the voice bit into the pending hardware key-off mask. Records
    are 0x1C bytes, 24 voices. */
-extern unsigned int g_adwSpuPendingKeyOffBlock[];
 
 void StopSoundVoicesByOwner(int owner, int mode) {
   unsigned int kmask = 0;

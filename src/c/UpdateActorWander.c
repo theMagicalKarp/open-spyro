@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Wander/patrol behaviour step for an actor (0x80039AA8, 0x3ec).
@@ -24,9 +25,6 @@ extern int TurnActorYawTowardAngle(int *actor, int target, int step, int lim,
                                    int flag);
 extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
                                  int flags);
-
-extern int g_nActorFrameDelta;
-extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
 void UpdateActorWander(int *actor, unsigned char *p) {
   int unused[2];

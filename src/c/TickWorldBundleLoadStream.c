@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* 0x80014564, 1548 bytes — the world-bundle CD streaming state machine.
    Ticked from Initialize, PauseMenu_Update, GemCutscene_Update,
@@ -23,28 +24,16 @@
    World id indexes the per-world archive table (8-byte stride) and the
    per-world header-size table (4-byte stride). */
 
-extern void RestartStalledCdRead(void);
-extern int FUN_80063bd8(); /* CdSync */
 extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
                              int marker);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void LoadImage(RECT *rect, void *data);
-extern int SetSpuTransferStartAddr(unsigned int addr);
-extern unsigned int WriteSpuRam(void *buf, unsigned int size);
 extern long GetSpuTransferStatus(int mode);
 extern int *UnpackWorldDataChunks(int *src, int mode);
 extern int *RelocateActorMeshHeader(int *header);
 extern void InitActorRenderDefaults(int actor);
 
-extern int
-    g_anWorldTimAudioChunkOffsetBlock[]; /* held-base view of the chunk
-                                   scratch at g_nWorldTimAudioChunkOffset */
-extern int
-    g_anActorMeshOffsetBlock[]; /* held-base view of the mesh-offset list;
-                                   [-16] is g_nWorldDataExtChunkOffset */
-extern void *g_apActorMeshTableBlock[];
-extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
-extern void *g_apDrawBufBlock[];      /* held-base view of g_pDrawBufA */
+extern void *g_apDrawBufBlock[]; /* held-base view of g_pDrawBufA */
 extern void *volatile g_apPathTableBufferBlock[]; /* g_pPathTableBuffer, stored
                                           then reloaded through the same base */
 

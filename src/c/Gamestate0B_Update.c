@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void RotateLightVectorXZ(int steps);
@@ -10,8 +11,6 @@ extern int FindGroundHeightBelow(int *pos, int depth);
 extern void EncodeCachedVecToActorDirCode(void *actor);
 extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
 extern void AdvanceSpyroAnimFrame(int delta);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2(void);
 extern void TickSpyroAttackEffects(int steps);
 extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
                            void *marker);
@@ -24,18 +23,15 @@ extern int MemCardSync(int mode, int *cmd, int *result);
 extern void MemCardRead(int slot, char *name, void *buf, int offset, int size);
 extern void MemCardWrite(int slot, char *name, void *buf, int offset, int size);
 extern void BuildSaveGameBuffer(void *buf);
-extern int ComputeSaveGameChecksum(unsigned char *data);
 
 /* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
    keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
 extern int g_anSaveMenuBlock[];
-extern int g_anSpyroWorldPosBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern void *g_apSaveMenuAnimActorListBlock[];
 extern void *g_apRenderScratchPrimTopBlock[];
-extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
 extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
 extern char D_80010DB8[];                     /* memory card save file name */
 extern int D_80078D14;

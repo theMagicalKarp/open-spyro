@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void TickSpyroFrameForceJump(void);
-extern void UpdateCameraFrame(void);
 extern void AnimateGemTallyParticles(void);
 extern void TickLevelTransitionStream(int param_1);
 

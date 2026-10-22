@@ -1,17 +1,12 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
 extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int ComputeCameraToTargetAngle(int *pos);
-extern void ComputeCameraOrbitOffset(int *out);
-extern void ResetCameraStateToTarget(void);
-extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 extern int abs(int x);
-
-/* Held-base view of the camera record from g_anCameraPos. */
-extern int g_anCameraPosBlock[];
 
 #define CAM g_anCameraPosBlock
 #define CAM_EYE 0x03           /* g_anCameraEyeTarget */

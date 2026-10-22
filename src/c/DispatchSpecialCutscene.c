@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* World-hub special-cutscene dispatcher (0x8002d440). World 1: full story-intro
    restart — clear VRAM, silence sound, reload actor meshes, gamestate 0xD with
@@ -9,8 +10,6 @@ extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
                        unsigned char b);
 extern int DrawSync(int mode);
 extern void StopAllSoundExceptMask(unsigned int mask);
-extern void TickSpuPerFrame(void);
-extern void LoadActorMeshTables(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void InitNewGameState(void);
 extern void BeginCreditsSequence(int param);

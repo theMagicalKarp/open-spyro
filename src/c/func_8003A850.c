@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void CopyVector();
-extern void ScaleVector3Sat();
 extern void AddVector();
 extern void SubtractVector();
 extern void DivideVector3();

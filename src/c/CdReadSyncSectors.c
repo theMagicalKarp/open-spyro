@@ -1,12 +1,10 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern int CdControl();
 extern unsigned char *CdIntToPos();
 extern int CdRead();
-extern int FUN_80063bd8();
-extern void RestartStalledCdRead(void);
 extern void TickActiveSoundVoices(void);
-extern void TickCdMusicStream(void);
 
 extern unsigned char g_abCdlLocScratchBlock[36];
 

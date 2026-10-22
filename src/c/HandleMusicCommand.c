@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* CD-DA music command dispatcher (0x800567F4, 0x334). Called from
    TickCdMusicStream with the track index and one of four commands:
@@ -14,10 +15,6 @@
    command re-queues itself. */
 extern int CdControlBlocking(int cmd, char *param, char *result);
 extern char *CdIntToPos(int lba, char *loc);
-
-extern short
-    g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */
-extern int D_80076224_blk; /* CD-DA volume fade ceiling */
 
 extern unsigned int
     g_adwMusicStreamStatusBlock[]; /* alias of g_dwMusicStreamStatus */
