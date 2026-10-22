@@ -41,8 +41,8 @@ extern int D_80075854;
 extern int D_80075870;
 extern int D_80075874;
 extern int g_nLevelIntroParallaxCountdown;
-extern int g_nActiveWorldIndex; /* current world index */
-extern int D_800776CC;          /* level-intro deadline */
+extern int g_nActiveWorldIndex;     /* current world index */
+extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
 extern int D_8007A71C; /* splash size column of the level archive table */
 
 typedef struct {
@@ -337,9 +337,9 @@ void TickLevelTransitionStream(int full) {
   } break;
   case 13: {
     if (g_abLevelVisitedFlag[g_nLevelIntroIndex] == 0) {
-      D_800776CC = 0xA8C0;
+      g_nCdMusicStreamTimeout = 0xA8C0;
     } else {
-      D_800776CC = 0x7080;
+      g_nCdMusicStreamTimeout = 0x7080;
     }
     g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIntroIndex];
     g_abLevelVisitedFlag[g_nLevelIntroIndex] = 1;

@@ -10,7 +10,7 @@ extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
-extern char *volatile D_800761D0;
+extern char *volatile g_pActiveCutsceneSoundDef;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;
 extern short g_nSfxOverrideVolR;
@@ -30,14 +30,15 @@ void BeginGemCutscene(void) {
   }
 
   entry = g_CutsceneSoundDef;
-  D_800761D0 = (char *)entry;
-  *((int *)D_800761D0) = 0x1010;
-  *((int *)(D_800761D0 + 4)) = -1;
-  *((short *)(D_800761D0 + 8)) = 0x50;
-  *((short *)(D_800761D0 + 0xA)) = (&g_nWorldCutsceneSamplePitch)[world];
-  *((short *)(D_800761D0 + 0xC)) = 0;
-  *((short *)(D_800761D0 + 0xE)) = 0;
-  *((int *)(D_800761D0 + 0x10)) = 0;
+  g_pActiveCutsceneSoundDef = (char *)entry;
+  *((int *)g_pActiveCutsceneSoundDef) = 0x1010;
+  *((int *)(g_pActiveCutsceneSoundDef + 4)) = -1;
+  *((short *)(g_pActiveCutsceneSoundDef + 8)) = 0x50;
+  *((short *)(g_pActiveCutsceneSoundDef + 0xA)) =
+      (&g_nWorldCutsceneSamplePitch)[world];
+  *((short *)(g_pActiveCutsceneSoundDef + 0xC)) = 0;
+  *((short *)(g_pActiveCutsceneSoundDef + 0xE)) = 0;
+  *((int *)(g_pActiveCutsceneSoundDef + 0x10)) = 0;
   g_nSfxOverrideVolL = 0x3FFF;
   g_nSfxOverrideVolR = 0x3FFF;
   g_nSfxOverrideFlags = 1;

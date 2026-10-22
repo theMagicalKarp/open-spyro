@@ -507,8 +507,8 @@ typedef struct L33State169 {
 } L33State169;
 
 extern int g_nMotionTrailRibbonCount;      /* trail slots used this frame */
-extern int D_800772C8[];    /* trail lengths */
-extern L33Trail *D_80078658[]; /* trails */
+extern int g_anMotionTrailSliceCounts[];    /* trail lengths */
+extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
@@ -2662,9 +2662,9 @@ void Level33_UpdateActors(void) {
         if (g_nMotionTrailRibbonCount < 3) {
           int k = g_nMotionTrailRibbonCount;
 
-          D_800772C8[k] = st->h0A;
+          g_anMotionTrailSliceCounts[k] = st->h0A;
           g_nMotionTrailRibbonCount = k + 1;
-          D_80078658[k] = st->trail;
+          g_apMotionTrailSlices[k] = st->trail;
         }
         if (actor->mode == 1) {
           actor->mode = 2;

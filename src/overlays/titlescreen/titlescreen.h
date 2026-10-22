@@ -293,7 +293,7 @@ extern int g_nLevelReadyFlag;
 extern int g_bGemPickupSfxVoiceMarker;
 extern u_char D_8006F494[512];
 extern char *g_pRenderScratchRegionBase;
-extern int D_8007A6D8;
+extern int g_nTitleSceneSectorOffset;
 
 extern int GetRandomU32(void);
 extern void StopSoundVoiceByIndex(int, int);

@@ -60,11 +60,11 @@ extern int g_nCameraFloorSurfaceType;
    original's single `a1` reuse across the load + both stores. */
 extern unsigned char g_abSpyroSubFrameTimerBlock[];
 
-extern unsigned char D_80078A72;
+extern unsigned char g_bSpyroAnimLayer1Prev;
 
-extern unsigned char D_80078A78;
+extern unsigned char g_bSpyroAnimLayer1FramePrev;
 
-extern unsigned char D_80078A79;
+extern unsigned char g_bSpyroAnimLayer1Frame;
 
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* array alias for
    the substep accumulator at 0x80078a7d, see config/symbol_addrs.txt --
@@ -75,9 +75,9 @@ extern void IntegrateSpyroMotionForSubstep(int substep);
 
 extern void AdvanceSpyroSubstepState(void);
 
-extern int D_80078CB0;
+extern int g_nSpyroPitchSpringVel;
 
-extern int D_80078CB4;
+extern int g_nSpyroRollSpringVel;
 
 /* held-base view of g_nSpyroMoveTargetYaw (0x80078b24): [0] is the move-target
    yaw, [0x14] (+0x50) is g_nSpyroBodyYaw. */

@@ -12881,9 +12881,9 @@ dlabel D_80075264
     /* 65A67 80075267 */ .byte 0x02
 enddlabel D_80075264
 
-nonmatching D_80075268
+nonmatching g_abSpyroHornStrikeAnimTable
 
-dlabel D_80075268
+dlabel g_abSpyroHornStrikeAnimTable
     /* 65A68 80075268 */ .byte 0x00
     /* 65A69 80075269 */ .byte 0x07
     /* 65A6A 8007526A */ .byte 0x00
@@ -12896,7 +12896,7 @@ dlabel D_80075268
     /* 65A71 80075271 */ .byte 0x00
     /* 65A72 80075272 */ .byte 0x00
     /* 65A73 80075273 */ .byte 0x00
-enddlabel D_80075268
+enddlabel g_abSpyroHornStrikeAnimTable
 
 nonmatching g_abSpyroIdleDelayRandTable
 

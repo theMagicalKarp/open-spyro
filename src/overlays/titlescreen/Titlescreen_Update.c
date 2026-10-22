@@ -10,7 +10,7 @@
  * substate jump table (0x1C, jtbl_8007AA54) — both emitted by this object's
  * .rodata and slot-placed.
  *
- * The sprite-sheet CD read pins its CD handle to $a0 and the D_8007A6D8
+ * The sprite-sheet CD read pins its CD handle to $a0 and the g_nTitleSceneSectorOffset
  * argument to $a3. As pseudos, the handle's volatile load and the a3 load are
  * both birthing-boosted, and they crowd the `- 0x40000` constant and the
  * buffer pointer into one sched1 priority group, which hands $a1 to the
@@ -86,7 +86,7 @@ void Titlescreen_Update(void) {
         register int cd asm("$4");
         register int t asm("$7");
         cd = *((volatile int *) &g_nCdBaseLba.unk_0x00);
-        t = D_8007A6D8;
+        t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
                       t, 600);
         g_nGamestate0dMode.subState = 1;

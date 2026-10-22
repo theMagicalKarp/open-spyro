@@ -12,10 +12,10 @@ extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
 extern void StartCdReadAsync(int lba, int dst, int count, int offset,
                              int marker);
 
-extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
-extern int D_8007A6D8;            /* async-read byte offset */
-extern int g_abDrawBufPool;       /* draw-buffer sentinel */
-extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
+extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
+extern int g_nTitleSceneSectorOffset; /* async-read byte offset */
+extern int g_abDrawBufPool;           /* draw-buffer sentinel */
+extern int g_CutsceneSoundDef;        /* death-cutscene sample-bank record */
 extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field
@@ -100,7 +100,7 @@ int CheckDeathPlane(void) {
       D_80078D88 = 1;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
-        int offset = *(volatile int *)&D_8007A6D8;
+        int offset = *(volatile int *)&g_nTitleSceneSectorOffset;
         int dst =
             -0x40000 + (int)*(void *volatile *)&g_pRenderScratchRegionBase;
         StartCdReadAsync(lba, dst, 0x40000, offset, 600);

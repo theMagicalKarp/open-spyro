@@ -52,8 +52,8 @@ extern unsigned char D_8006F391[];
 extern unsigned char D_8006F398[]; /* substate-2 flicker euler pairs */
 extern unsigned char D_8006F399[];
 extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
-extern char
-    *volatile D_800761D0; /* volatile view of g_pLevelSampleBankEntries */
+extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
+                                                    g_pLevelSampleBankEntries */
 extern void *g_apSampleBankEntriesBlock[];
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,

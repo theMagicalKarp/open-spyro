@@ -24,10 +24,10 @@ extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void TickWorldBundleLoadStream(void);
 
-extern void *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
-extern int D_8007A6D4;            /* boot-splash chunk byte count */
-extern int D_8007A6D0;            /* boot-splash byte offset */
-extern int g_abDrawBufPool;       /* draw-buffer sentinel */
+extern void *g_pSharedLoadBuffer;    /* shared CD sector buffer pointer */
+extern int g_nAssetDirBootBlockSize; /* boot-splash chunk byte count */
+extern int g_anAssetDirectory;       /* boot-splash byte offset */
+extern int g_abDrawBufPool;          /* draw-buffer sentinel */
 extern int D_800785CC;
 
 extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
@@ -147,9 +147,9 @@ void Initialize(void) {
                         off3, k600);
     }
     {
-      int cnt4 = *(volatile int *)&D_8007A6D4;
-      int off4 = *(volatile int *)&D_8007A6D0;
-      dst = top - *(volatile int *)&D_8007A6D4;
+      int cnt4 = *(volatile int *)&g_nAssetDirBootBlockSize;
+      int off4 = *(volatile int *)&g_anAssetDirectory;
+      dst = top - *(volatile int *)&g_nAssetDirBootBlockSize;
       CdReadSyncSectors(lba[0], dst, cnt4, off4, k600);
     }
   }

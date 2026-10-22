@@ -45,8 +45,9 @@
 extern void FillWord(void *dst, unsigned int value, int byteCount);
 extern void SmoothSpyroByteEulerSpring(void);
 
-extern unsigned char D_80075268[]; /* state -> strike anim descriptor index */
-extern unsigned char D_80078A79;   /* anim layer 1 blend flag */
+extern unsigned char
+    g_abSpyroHornStrikeAnimTable[]; /* state -> strike anim descriptor index */
+extern unsigned char g_bSpyroAnimLayer1Frame; /* anim layer 1 blend flag */
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
 
 extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */
@@ -88,9 +89,8 @@ void TickSpyroHornStrikeAttack(void) {
         strike[0] = 1;
         g_nSpyroHornStrikeTimer = -1;
         g_nSpyroHornStrikeSwingPhase = 0;
-        g_nSpyroHornStrikeAnimRate =
-            g_abSpyroAnimDescTable[(D_80075268[g_nSpyroHornStrikeState] * 4) +
-                                   3];
+        g_nSpyroHornStrikeAnimRate = g_abSpyroAnimDescTable
+            [(g_abSpyroHornStrikeAnimTable[g_nSpyroHornStrikeState] * 4) + 3];
         g_bSpyroHornCollisionActive = 1;
         g_bSpyroHornStrikeSegmentIdx = 0;
         anchor[0] = 1;
@@ -145,7 +145,7 @@ void TickSpyroHornStrikeAttack(void) {
         timer[0] = -1;
         g_nSpyroHornStrikeSwingPhase = 2;
         g_abSpyroAnimLayer1SubstepBlock[0] = 4;
-        D_80078A79 = 0;
+        g_bSpyroAnimLayer1Frame = 0;
         g_bSpyroHornCollisionActive = 1;
         g_bSpyroHornStrikeSegmentIdx = 0;
         g_bSpyroHornStrikeAnchorMode = 1;
@@ -164,9 +164,8 @@ void TickSpyroHornStrikeAttack(void) {
           FillWord(((char *)live) - 0x78, 0, 8);
           g_nSpyroHornStrikeState = 0;
           g_anSpyroHornStrikeTimerBlock[0] = -1;
-          g_nSpyroHornStrikeAnimRate =
-              g_abSpyroAnimDescTable[(D_80075268[g_nSpyroHornStrikeState] * 4) +
-                                     3];
+          g_nSpyroHornStrikeAnimRate = g_abSpyroAnimDescTable
+              [(g_abSpyroHornStrikeAnimTable[g_nSpyroHornStrikeState] * 4) + 3];
           ZeroVector(&g_anSpyroHornStrikeTimerBlock[1]);
         }
       }

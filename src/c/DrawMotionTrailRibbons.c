@@ -12,8 +12,9 @@
    over the first three slices and collapses to 0 on the last-but-one; Gnasty's
    world (level 0x3f) quarters it and swaps red with green. */
 
-extern int D_800772C8[];   /* 0x800772c8: per-ribbon slice count */
-extern void *D_80078658[]; /* 0x80078658: per-ribbon slice list */
+extern int
+    g_anMotionTrailSliceCounts[];     /* 0x800772c8: per-ribbon slice count */
+extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */
 
 extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int flags);
 extern void SetDrawMode(void *prim, int dfe, int dtd, unsigned int tpage,
@@ -58,13 +59,13 @@ void DrawMotionTrailRibbons(void) {
 
   drawn = 0;
   for (i = 0; i < g_nMotionTrailRibbonCount; i++) {
-    pts = (TrailSlice *)D_80078658[i];
-    for (k = 0; k < D_800772C8[i]; k++) {
+    pts = (TrailSlice *)g_apMotionTrailSlices[i];
+    for (k = 0; k < g_anMotionTrailSliceCounts[i]; k++) {
       ProjectWorldPointGTE(&pts[k].sx, &pts[k].wx, 1);
     }
-    for (k = 0; k < D_800772C8[i] - 1; k++) {
+    for (k = 0; k < g_anMotionTrailSliceCounts[i] - 1; k++) {
       wide = 0x11170;
-      wide = -(k != D_800772C8[i] - 2) & wide;
+      wide = -(k != g_anMotionTrailSliceCounts[i] - 2) & wide;
       if (k < 3) {
         wide = (k * 0x271) << 5;
       }

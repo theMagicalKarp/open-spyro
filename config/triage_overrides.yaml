@@ -599,8 +599,8 @@ DampenSpyroFreeFallAttitude:
     its own single-set local (`out0`/`out1`), which restores the original's
     `addu a1,t0,a1` operand order instead of accumulating in place; the chain-1
     error shift is split (`<< 2` right after chain 0's spring update, `>> 4`
-    after the D_80078CB4 load) so sched1 cannot hoist it to the block head; and
-    the D_80078CB4 load is written ahead of the D_80078CB0 store.
+    after the g_nSpyroRollSpringVel load) so sched1 cannot hoist it to the block head; and
+    the g_nSpyroRollSpringVel load is written ahead of the g_nSpyroPitchSpringVel store.
 SteerActorAlongWaypoints:
   verdict: matched
   class: "F14 disjoint-reuse carrier + carrier-free yaw (A146/A151 family)"
@@ -1476,7 +1476,7 @@ TickCdMusicStream:
   verdict: parked
   class: "F-sched1 bubble-fill tie (CdSync==5 arm) + A164 la/sra group order"
   date: 2026-08-15
-  note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > D_800776CC (A120 load order, 4 insns)."
+  note: "257/256 (one over), 11 shape diffs, fresh decode. The B-i fold in the fade tail is fully retired by A200 + A201. Two levers recorded in the .wip: the {start,end} LBA pairs need TWO alias symbols (one symbol lets cse hoist sym+4 into a callee-saved base, +2 insns, and no barrier stops it), and the cooldown compare must be written g_nVblankTickCount > g_nCdMusicStreamTimeout (A120 load order, 4 insns)."
 
 TickActiveSoundVoices_2026_08_16:
   verdict: viable
@@ -2330,7 +2330,7 @@ Level0_BalloonistCutscene_Update:
 
 Titlescreen_Update:
   verdict: parked
-  class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the D_8007A6D8 a3 load stealing sched1's T-6"
+  class: "qty_sugg_compare live-range tie (a1 to the constant vs to the pointer), caused by the g_nTitleSceneSectorOffset a3 load stealing sched1's T-6"
   date: 2026-08-25
   note: >-
     8588 B, 7/2147 linked. FULL MECHANISM READ OFF `cc1 -dS` THIS SESSION (see
@@ -2340,7 +2340,7 @@ Titlescreen_Update:
     placed last, born last, has the shorter live range, and qty_sugg_compare
     (equal single a1 suggestions) hands IT a1. Arm 2 of the same expression
     matches because its block has no third boosted load; arm 1's is the
-    D_8007A6D8 a3 argument, whose arg copy always wins the T-4 LUID tie (
+    g_nTitleSceneSectorOffset a3 argument, whose arg copy always wins the T-4 LUID tie (
     expand_call emits arg copies a0..a3 in order). Proved by construction:
     passing a literal 0 for a3 reproduces the original's registers first build.
     Two levers reach the right registers and both cost more than they buy:
@@ -4877,7 +4877,7 @@ func_titlescreen_8007ABAC_2026_10_04:
   verdict: viable
   class: "MATCHED 2026-10-04 (CD-read arg loads pinned to $a0/$a3)"
   date: 2026-10-04
-  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the D_8007A6D8 argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
+  note: "8,588 B. `register int cd asm(\"$4\")` and `register int t asm(\"$7\")` for the handle and the g_nTitleSceneSectorOffset argument, set in that order: as hard-reg sets they are LUID-ordered stragglers instead of boosted pseudos, so the -0x40000 const keeps a1 and the block orders li 600 / cd / const / sw / ptr / a3. Pinning only one of them is 4 or 7; pinning off or a2 instead fails (cse rewrites + off as - a2)."
 func_level_18_8007E18C_2026_10_04_1:
   verdict: viable
   class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
@@ -4895,7 +4895,7 @@ func_level_13_8008AF54_2026_10_04:
   note: "Reload emits an input reload for a USE insn and final prints nothing for the USE, which gives a dead li at a block head. That fits 3 of the 4 extra sites (arm/label heads); 0x8008B79C is mid-block. Our burst (reg/v 76) never dies in the loop, so it gets no REG_DEAD and no USE. Our build does have combine USEs at labels for other regs (732, 738, 1405)."
 func_credits_8007AA50_2026_10_04_1:
   verdict: parked
-  class: "4 named clusters left (init movstr/header-load order, D_800761D0 width rotation, glyph digit/adv*3 reg ties, case-4 movstr a0 clobber)"
+  class: "4 named clusters left (init movstr/header-load order, g_pActiveCutsceneSoundDef width rotation, glyph digit/adv*3 reg ties, case-4 movstr a0 clobber)"
   date: 2026-10-04
   note: "252/123 -> 115/32 masked, length+frame exact, 1229/1372 linked words identical (was 587). Glyph pool and line table are struct arrays (HImode in-struct stores let scalar loads pass), POOL[i]/LINES[line] indexing (MULT-first address = giv-first addu), exactly one `for` loop (its combine USE pseudo is the frame's one 8-byte slot; padg removed), c = *s - 0x30 temp fixes the cur/upper priority, a `sector` local precomputes plain array call args, D_80076BB8 volatile. See the wip header LEFT A-D."
 Gamestate0C_Draw_2026_10_04_1:
@@ -5557,7 +5557,7 @@ func_credits_8007AA50_2026_10_13_1:
   verdict: parked
   class: "cluster A: sample-bank entry store/load order (A400 applies, not yet tuned)"
   date: 2026-10-13
-  note: "Struct view on the D_800761D0 entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
+  note: "Struct view on the g_pActiveCutsceneSoundDef entry stores + one-field views on DC/E8/EA moves D_800785E4's load ahead of the stores as in the original but hoists the a1/a2/a3 call-arg constants too (+1 insn, 106 masked). Needs per-store choice of which accesses are in-struct; wip unchanged."
 AllocEmitListRecord:
   verdict: wall
   class: "B6 hand-written asm (addi markers, jr through a saved ra copy)"

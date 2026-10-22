@@ -272,8 +272,8 @@ glabel LoadAssetDirectoryFromCd
     /* 2D38 80012538 21380000 */  addu       $a3, $zero, $zero
     /* 2D3C 8001253C 4059000C */  jal        CdReadSyncSectors
     /* 2D40 80012540 1000A2AF */   sw        $v0, 0x10($sp)
-    /* 2D44 80012544 0880043C */  lui        $a0, %hi(D_8007A6D0)
-    /* 2D48 80012548 D0A68424 */  addiu      $a0, $a0, %lo(D_8007A6D0)
+    /* 2D44 80012544 0880043C */  lui        $a0, %hi(g_anAssetDirectory)
+    /* 2D48 80012548 D0A68424 */  addiu      $a0, $a0, %lo(g_anAssetDirectory)
     /* 2D4C 8001254C 0180053C */  lui        $a1, %hi(g_pSharedLoadBuffer)
     /* 2D50 80012550 A013A58C */  lw         $a1, %lo(g_pSharedLoadBuffer)($a1)
     /* 2D54 80012554 565A000C */  jal        CopyWords
@@ -592,12 +592,12 @@ glabel Initialize
     /* 3194 80012994 4059000C */  jal        CdReadSyncSectors
     /* 3198 80012998 1000B0AF */   sw        $s0, 0x10($sp)
     /* 319C 8001299C 0000248E */  lw         $a0, 0x0($s1)
-    /* 31A0 800129A0 0880063C */  lui        $a2, %hi(D_8007A6D4)
-    /* 31A4 800129A4 D4A6C68C */  lw         $a2, %lo(D_8007A6D4)($a2)
-    /* 31A8 800129A8 0880073C */  lui        $a3, %hi(D_8007A6D0)
-    /* 31AC 800129AC D0A6E78C */  lw         $a3, %lo(D_8007A6D0)($a3)
-    /* 31B0 800129B0 0880023C */  lui        $v0, %hi(D_8007A6D4)
-    /* 31B4 800129B4 D4A6428C */  lw         $v0, %lo(D_8007A6D4)($v0)
+    /* 31A0 800129A0 0880063C */  lui        $a2, %hi(g_nAssetDirBootBlockSize)
+    /* 31A4 800129A4 D4A6C68C */  lw         $a2, %lo(g_nAssetDirBootBlockSize)($a2)
+    /* 31A8 800129A8 0880073C */  lui        $a3, %hi(g_anAssetDirectory)
+    /* 31AC 800129AC D0A6E78C */  lw         $a3, %lo(g_anAssetDirectory)($a3)
+    /* 31B0 800129B0 0880023C */  lui        $v0, %hi(g_nAssetDirBootBlockSize)
+    /* 31B4 800129B4 D4A6428C */  lw         $v0, %lo(g_nAssetDirBootBlockSize)($v0)
     /* 31B8 800129B8 1000B0AF */  sw         $s0, 0x10($sp)
     /* 31BC 800129BC 2398A202 */  subu       $s3, $s5, $v0
     /* 31C0 800129C0 4059000C */  jal        CdReadSyncSectors
@@ -4137,8 +4137,8 @@ glabel TickLevelTransitionStream
     /* 64E8 80015CE8 80700224 */   addiu     $v0, $zero, 0x7080
     /* 64EC 80015CEC C0A80234 */  ori        $v0, $zero, 0xA8C0
   .L80015CF0:
-    /* 64F0 80015CF0 0780013C */  lui        $at, %hi(D_800776CC)
-    /* 64F4 80015CF4 CC7622AC */  sw         $v0, %lo(D_800776CC)($at)
+    /* 64F0 80015CF0 0780013C */  lui        $at, %hi(g_nCdMusicStreamTimeout)
+    /* 64F4 80015CF4 CC7622AC */  sw         $v0, %lo(g_nCdMusicStreamTimeout)($at)
     /* 64F8 80015CF8 0780133C */  lui        $s3, %hi(g_nSpawnAnchorValid)
     /* 64FC 80015CFC 88787326 */  addiu      $s3, $s3, %lo(g_nSpawnAnchorValid)
     /* 6500 80015D00 21206002 */  addu       $a0, $s3, $zero
@@ -7859,21 +7859,21 @@ glabel DrawMotionTrailRibbons
     /* 9228 80018A28 32014018 */  blez       $v0, .L80018EF4
     /* 922C 80018A2C 2800A0AF */   sw        $zero, 0x28($sp)
     /* 9230 80018A30 B000A0AF */  sw         $zero, 0xB0($sp)
-    /* 9234 80018A34 0780093C */  lui        $t1, %hi(D_800772C8)
-    /* 9238 80018A38 C8722925 */  addiu      $t1, $t1, %lo(D_800772C8)
+    /* 9234 80018A34 0780093C */  lui        $t1, %hi(g_anMotionTrailSliceCounts)
+    /* 9238 80018A38 C8722925 */  addiu      $t1, $t1, %lo(g_anMotionTrailSliceCounts)
     /* 923C 80018A3C B800A9AF */  sw         $t1, 0xB8($sp)
   .L80018A40:
     /* 9240 80018A40 B800AA8F */  lw         $t2, 0xB8($sp)
     /* 9244 80018A44 B000A98F */  lw         $t1, 0xB0($sp)
     /* 9248 80018A48 0000428D */  lw         $v0, 0x0($t2)
-    /* 924C 80018A4C 0880013C */  lui        $at, %hi(D_80078658)
+    /* 924C 80018A4C 0880013C */  lui        $at, %hi(g_apMotionTrailSlices)
     /* 9250 80018A50 21082900 */  addu       $at, $at, $t1
-    /* 9254 80018A54 5886298C */  lw         $t1, %lo(D_80078658)($at)
+    /* 9254 80018A54 5886298C */  lw         $t1, %lo(g_apMotionTrailSlices)($at)
     /* 9258 80018A58 21B00000 */  addu       $s6, $zero, $zero
     /* 925C 80018A5C 0F004018 */  blez       $v0, .L80018A9C
     /* 9260 80018A60 7800A9AF */   sw        $t1, 0x78($sp)
-    /* 9264 80018A64 0780023C */  lui        $v0, %hi(D_800772C8)
-    /* 9268 80018A68 C8724224 */  addiu      $v0, $v0, %lo(D_800772C8)
+    /* 9264 80018A64 0780023C */  lui        $v0, %hi(g_anMotionTrailSliceCounts)
+    /* 9268 80018A68 C8724224 */  addiu      $v0, $v0, %lo(g_anMotionTrailSliceCounts)
     /* 926C 80018A6C B000AA8F */  lw         $t2, 0xB0($sp)
     /* 9270 80018A70 7800B08F */  lw         $s0, 0x78($sp)
     /* 9274 80018A74 21884201 */  addu       $s1, $t2, $v0
@@ -7889,8 +7889,8 @@ glabel DrawMotionTrailRibbons
     /* 9298 80018A98 1C001026 */   addiu     $s0, $s0, 0x1C
   .L80018A9C:
     /* 929C 80018A9C B800A98F */  lw         $t1, 0xB8($sp)
-    /* 92A0 80018AA0 0780033C */  lui        $v1, %hi(D_800772C8)
-    /* 92A4 80018AA4 C8726324 */  addiu      $v1, $v1, %lo(D_800772C8)
+    /* 92A0 80018AA0 0780033C */  lui        $v1, %hi(g_anMotionTrailSliceCounts)
+    /* 92A4 80018AA4 C8726324 */  addiu      $v1, $v1, %lo(g_anMotionTrailSliceCounts)
     /* 92A8 80018AA8 0000228D */  lw         $v0, 0x0($t1)
     /* 92AC 80018AAC 00000000 */  nop
     /* 92B0 80018AB0 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -8163,11 +8163,11 @@ glabel DrawMotionTrailRibbons
     /* 9690 80018E90 71024A25 */  addiu      $t2, $t2, 0x271
     /* 9694 80018E94 A800AAAF */  sw         $t2, 0xA8($sp)
     /* 9698 80018E98 80100900 */  sll        $v0, $t1, 2
-    /* 969C 80018E9C 0780013C */  lui        $at, %hi(D_800772C8)
+    /* 969C 80018E9C 0780013C */  lui        $at, %hi(g_anMotionTrailSliceCounts)
     /* 96A0 80018EA0 21082200 */  addu       $at, $at, $v0
-    /* 96A4 80018EA4 C872228C */  lw         $v0, %lo(D_800772C8)($at)
-    /* 96A8 80018EA8 0780033C */  lui        $v1, %hi(D_800772C8)
-    /* 96AC 80018EAC C8726324 */  addiu      $v1, $v1, %lo(D_800772C8)
+    /* 96A4 80018EA4 C872228C */  lw         $v0, %lo(g_anMotionTrailSliceCounts)($at)
+    /* 96A8 80018EA8 0780033C */  lui        $v1, %hi(g_anMotionTrailSliceCounts)
+    /* 96AC 80018EAC C8726324 */  addiu      $v1, $v1, %lo(g_anMotionTrailSliceCounts)
     /* 96B0 80018EB0 FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 96B4 80018EB4 2A10C202 */  slt        $v0, $s6, $v0
     /* 96B8 80018EB8 03FF4014 */  bnez       $v0, .L80018AC8
@@ -28979,8 +28979,8 @@ glabel TickCdMusicStream
     /* 1C55C 8002BD5C 00000000 */   nop
     /* 1C560 8002BD60 0780033C */  lui        $v1, %hi(g_nVblankTickCount)
     /* 1C564 8002BD64 C858638C */  lw         $v1, %lo(g_nVblankTickCount)($v1)
-    /* 1C568 8002BD68 0780023C */  lui        $v0, %hi(D_800776CC)
-    /* 1C56C 8002BD6C CC76428C */  lw         $v0, %lo(D_800776CC)($v0)
+    /* 1C568 8002BD68 0780023C */  lui        $v0, %hi(g_nCdMusicStreamTimeout)
+    /* 1C56C 8002BD6C CC76428C */  lw         $v0, %lo(g_nCdMusicStreamTimeout)($v0)
     /* 1C570 8002BD70 00000000 */  nop
     /* 1C574 8002BD74 2B104300 */  sltu       $v0, $v0, $v1
     /* 1C578 8002BD78 22004010 */  beqz       $v0, .L8002BE04
@@ -29014,8 +29014,8 @@ glabel TickCdMusicStream
     /* 1C5E8 8002BDE8 21082200 */  addu       $at, $at, $v0
     /* 1C5EC 8002BDEC 9CEF228C */  lw         $v0, %lo(g_nLevelMusicTrack)($at)
     /* 1C5F0 8002BDF0 80706324 */  addiu      $v1, $v1, 0x7080
-    /* 1C5F4 8002BDF4 0780013C */  lui        $at, %hi(D_800776CC)
-    /* 1C5F8 8002BDF8 CC7623AC */  sw         $v1, %lo(D_800776CC)($at)
+    /* 1C5F4 8002BDF4 0780013C */  lui        $at, %hi(g_nCdMusicStreamTimeout)
+    /* 1C5F8 8002BDF8 CC7623AC */  sw         $v1, %lo(g_nCdMusicStreamTimeout)($at)
     /* 1C5FC 8002BDFC 0780013C */  lui        $at, %hi(g_nCurrentMusicTrack)
     /* 1C600 8002BE00 B07422AC */  sw         $v0, %lo(g_nCurrentMusicTrack)($at)
   .L8002BE04:
@@ -37507,8 +37507,8 @@ glabel CheckDeathPlane
     /* 23FEC 800337EC 01001024 */  addiu      $s0, $zero, 0x1
     /* 23FF0 800337F0 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 23FF4 800337F4 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 23FF8 800337F8 0880073C */  lui        $a3, %hi(D_8007A6D8)
-    /* 23FFC 800337FC D8A6E78C */  lw         $a3, %lo(D_8007A6D8)($a3)
+    /* 23FF8 800337F8 0880073C */  lui        $a3, %hi(g_nTitleSceneSectorOffset)
+    /* 23FFC 800337FC D8A6E78C */  lw         $a3, %lo(g_nTitleSceneSectorOffset)($a3)
     /* 24000 80033800 58020224 */  addiu      $v0, $zero, 0x258
     /* 24004 80033804 1000A2AF */  sw         $v0, 0x10($sp)
     /* 24008 80033808 0880023C */  lui        $v0, %hi(g_pRenderScratchRegionBase)
@@ -49448,8 +49448,8 @@ glabel DampenSpyroFreeFallAttitude
     /* 2E25C 8003DA5C 0400A2AF */  sw         $v0, 0x4($sp)
   .L8003DA60:
     /* 2E260 8003DA60 0000A38F */  lw         $v1, 0x0($sp)
-    /* 2E264 8003DA64 0880053C */  lui        $a1, %hi(D_80078CB0)
-    /* 2E268 8003DA68 B08CA58C */  lw         $a1, %lo(D_80078CB0)($a1)
+    /* 2E264 8003DA64 0880053C */  lui        $a1, %hi(g_nSpyroPitchSpringVel)
+    /* 2E268 8003DA68 B08CA58C */  lw         $a1, %lo(g_nSpyroPitchSpringVel)($a1)
     /* 2E26C 8003DA6C 0400A48F */  lw         $a0, 0x4($sp)
     /* 2E270 8003DA70 80180300 */  sll        $v1, $v1, 2
     /* 2E274 8003DA74 03190300 */  sra        $v1, $v1, 4
@@ -49458,11 +49458,11 @@ glabel DampenSpyroFreeFallAttitude
     /* 2E280 8003DA80 23186200 */  subu       $v1, $v1, $v0
     /* 2E284 8003DA84 2128A300 */  addu       $a1, $a1, $v1
     /* 2E288 8003DA88 80200400 */  sll        $a0, $a0, 2
-    /* 2E28C 8003DA8C 0880033C */  lui        $v1, %hi(D_80078CB4)
-    /* 2E290 8003DA90 B48C638C */  lw         $v1, %lo(D_80078CB4)($v1)
+    /* 2E28C 8003DA8C 0880033C */  lui        $v1, %hi(g_nSpyroRollSpringVel)
+    /* 2E290 8003DA90 B48C638C */  lw         $v1, %lo(g_nSpyroRollSpringVel)($v1)
     /* 2E294 8003DA94 03210400 */  sra        $a0, $a0, 4
-    /* 2E298 8003DA98 0880013C */  lui        $at, %hi(D_80078CB0)
-    /* 2E29C 8003DA9C B08C25AC */  sw         $a1, %lo(D_80078CB0)($at)
+    /* 2E298 8003DA98 0880013C */  lui        $at, %hi(g_nSpyroPitchSpringVel)
+    /* 2E29C 8003DA9C B08C25AC */  sw         $a1, %lo(g_nSpyroPitchSpringVel)($at)
     /* 2E2A0 8003DAA0 83280500 */  sra        $a1, $a1, 2
     /* 2E2A4 8003DAA4 0000A5AF */  sw         $a1, 0x0($sp)
     /* 2E2A8 8003DAA8 21280501 */  addu       $a1, $t0, $a1
@@ -49470,8 +49470,8 @@ glabel DampenSpyroFreeFallAttitude
     /* 2E2B0 8003DAB0 83110200 */  sra        $v0, $v0, 6
     /* 2E2B4 8003DAB4 23208200 */  subu       $a0, $a0, $v0
     /* 2E2B8 8003DAB8 21186400 */  addu       $v1, $v1, $a0
-    /* 2E2BC 8003DABC 0880013C */  lui        $at, %hi(D_80078CB4)
-    /* 2E2C0 8003DAC0 B48C23AC */  sw         $v1, %lo(D_80078CB4)($at)
+    /* 2E2BC 8003DABC 0880013C */  lui        $at, %hi(g_nSpyroRollSpringVel)
+    /* 2E2C0 8003DAC0 B48C23AC */  sw         $v1, %lo(g_nSpyroRollSpringVel)($at)
     /* 2E2C4 8003DAC4 83180300 */  sra        $v1, $v1, 2
     /* 2E2C8 8003DAC8 0400A3AF */  sw         $v1, 0x4($sp)
     /* 2E2CC 8003DACC 2118E300 */  addu       $v1, $a3, $v1
@@ -49593,8 +49593,8 @@ glabel UpdateSpyroFlightAttitudeNearGround
     /* 2E474 8003DC74 2400A2AF */  sw         $v0, 0x24($sp)
   .L8003DC78:
     /* 2E478 8003DC78 2000A38F */  lw         $v1, 0x20($sp)
-    /* 2E47C 8003DC7C 0880053C */  lui        $a1, %hi(D_80078CB0)
-    /* 2E480 8003DC80 B08CA58C */  lw         $a1, %lo(D_80078CB0)($a1)
+    /* 2E47C 8003DC7C 0880053C */  lui        $a1, %hi(g_nSpyroPitchSpringVel)
+    /* 2E480 8003DC80 B08CA58C */  lw         $a1, %lo(g_nSpyroPitchSpringVel)($a1)
     /* 2E484 8003DC84 2400A48F */  lw         $a0, 0x24($sp)
     /* 2E488 8003DC88 80180300 */  sll        $v1, $v1, 2
     /* 2E48C 8003DC8C 03190300 */  sra        $v1, $v1, 4
@@ -49603,18 +49603,18 @@ glabel UpdateSpyroFlightAttitudeNearGround
     /* 2E498 8003DC98 23186200 */  subu       $v1, $v1, $v0
     /* 2E49C 8003DC9C 2128A300 */  addu       $a1, $a1, $v1
     /* 2E4A0 8003DCA0 80200400 */  sll        $a0, $a0, 2
-    /* 2E4A4 8003DCA4 0880033C */  lui        $v1, %hi(D_80078CB4)
-    /* 2E4A8 8003DCA8 B48C638C */  lw         $v1, %lo(D_80078CB4)($v1)
+    /* 2E4A4 8003DCA4 0880033C */  lui        $v1, %hi(g_nSpyroRollSpringVel)
+    /* 2E4A8 8003DCA8 B48C638C */  lw         $v1, %lo(g_nSpyroRollSpringVel)($v1)
     /* 2E4AC 8003DCAC 03210400 */  sra        $a0, $a0, 4
-    /* 2E4B0 8003DCB0 0880013C */  lui        $at, %hi(D_80078CB0)
-    /* 2E4B4 8003DCB4 B08C25AC */  sw         $a1, %lo(D_80078CB0)($at)
+    /* 2E4B0 8003DCB0 0880013C */  lui        $at, %hi(g_nSpyroPitchSpringVel)
+    /* 2E4B4 8003DCB4 B08C25AC */  sw         $a1, %lo(g_nSpyroPitchSpringVel)($at)
     /* 2E4B8 8003DCB8 00110300 */  sll        $v0, $v1, 4
     /* 2E4BC 8003DCBC 83110200 */  sra        $v0, $v0, 6
     /* 2E4C0 8003DCC0 23208200 */  subu       $a0, $a0, $v0
     /* 2E4C4 8003DCC4 21186400 */  addu       $v1, $v1, $a0
     /* 2E4C8 8003DCC8 83200500 */  sra        $a0, $a1, 2
-    /* 2E4CC 8003DCCC 0880013C */  lui        $at, %hi(D_80078CB4)
-    /* 2E4D0 8003DCD0 B48C23AC */  sw         $v1, %lo(D_80078CB4)($at)
+    /* 2E4CC 8003DCCC 0880013C */  lui        $at, %hi(g_nSpyroRollSpringVel)
+    /* 2E4D0 8003DCD0 B48C23AC */  sw         $v1, %lo(g_nSpyroRollSpringVel)($at)
     /* 2E4D4 8003DCD4 83180300 */  sra        $v1, $v1, 2
     /* 2E4D8 8003DCD8 2110C400 */  addu       $v0, $a2, $a0
     /* 2E4DC 8003DCDC FF0F4630 */  andi       $a2, $v0, 0xFFF
@@ -49756,8 +49756,8 @@ glabel AlignSpyroBodyToVelocity
     /* 2E6CC 8003DECC 1400A2AF */  sw         $v0, 0x14($sp)
   .L8003DED0:
     /* 2E6D0 8003DED0 1000A38F */  lw         $v1, 0x10($sp)
-    /* 2E6D4 8003DED4 0880053C */  lui        $a1, %hi(D_80078CB0)
-    /* 2E6D8 8003DED8 B08CA58C */  lw         $a1, %lo(D_80078CB0)($a1)
+    /* 2E6D4 8003DED4 0880053C */  lui        $a1, %hi(g_nSpyroPitchSpringVel)
+    /* 2E6D8 8003DED8 B08CA58C */  lw         $a1, %lo(g_nSpyroPitchSpringVel)($a1)
     /* 2E6DC 8003DEDC 1400A48F */  lw         $a0, 0x14($sp)
     /* 2E6E0 8003DEE0 80180300 */  sll        $v1, $v1, 2
     /* 2E6E4 8003DEE4 03190300 */  sra        $v1, $v1, 4
@@ -49766,11 +49766,11 @@ glabel AlignSpyroBodyToVelocity
     /* 2E6F0 8003DEF0 23186200 */  subu       $v1, $v1, $v0
     /* 2E6F4 8003DEF4 2128A300 */  addu       $a1, $a1, $v1
     /* 2E6F8 8003DEF8 80200400 */  sll        $a0, $a0, 2
-    /* 2E6FC 8003DEFC 0880033C */  lui        $v1, %hi(D_80078CB4)
-    /* 2E700 8003DF00 B48C638C */  lw         $v1, %lo(D_80078CB4)($v1)
+    /* 2E6FC 8003DEFC 0880033C */  lui        $v1, %hi(g_nSpyroRollSpringVel)
+    /* 2E700 8003DF00 B48C638C */  lw         $v1, %lo(g_nSpyroRollSpringVel)($v1)
     /* 2E704 8003DF04 03210400 */  sra        $a0, $a0, 4
-    /* 2E708 8003DF08 0880013C */  lui        $at, %hi(D_80078CB0)
-    /* 2E70C 8003DF0C B08C25AC */  sw         $a1, %lo(D_80078CB0)($at)
+    /* 2E708 8003DF08 0880013C */  lui        $at, %hi(g_nSpyroPitchSpringVel)
+    /* 2E70C 8003DF0C B08C25AC */  sw         $a1, %lo(g_nSpyroPitchSpringVel)($at)
     /* 2E710 8003DF10 83280500 */  sra        $a1, $a1, 2
     /* 2E714 8003DF14 1000A5AF */  sw         $a1, 0x10($sp)
     /* 2E718 8003DF18 2128E500 */  addu       $a1, $a3, $a1
@@ -49780,8 +49780,8 @@ glabel AlignSpyroBodyToVelocity
     /* 2E728 8003DF28 83110200 */  sra        $v0, $v0, 6
     /* 2E72C 8003DF2C 23208200 */  subu       $a0, $a0, $v0
     /* 2E730 8003DF30 21186400 */  addu       $v1, $v1, $a0
-    /* 2E734 8003DF34 0880013C */  lui        $at, %hi(D_80078CB4)
-    /* 2E738 8003DF38 B48C23AC */  sw         $v1, %lo(D_80078CB4)($at)
+    /* 2E734 8003DF34 0880013C */  lui        $at, %hi(g_nSpyroRollSpringVel)
+    /* 2E738 8003DF38 B48C23AC */  sw         $v1, %lo(g_nSpyroRollSpringVel)($at)
     /* 2E73C 8003DF3C 83180300 */  sra        $v1, $v1, 2
     /* 2E740 8003DF40 1400A3AF */  sw         $v1, 0x14($sp)
     /* 2E744 8003DF44 2118C300 */  addu       $v1, $a2, $v1
@@ -62146,8 +62146,8 @@ glabel TickSpyroAttackEffects
     /* 397F8 80048FF8 0707033C */  lui        $v1, (0x7070000 >> 16)
     /* 397FC 80048FFC 08004314 */  bne        $v0, $v1, .L80049020
     /* 39800 80049000 04000224 */   addiu     $v0, $zero, 0x4
-    /* 39804 80049004 0880033C */  lui        $v1, %hi(D_80078A78)
-    /* 39808 80049008 788A6390 */  lbu        $v1, %lo(D_80078A78)($v1)
+    /* 39804 80049004 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 39808 80049008 788A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1FramePrev)($v1)
     /* 3980C 8004900C 00000000 */  nop
     /* 39810 80049010 03006214 */  bne        $v1, $v0, .L80049020
     /* 39814 80049014 00000000 */   nop
@@ -62563,18 +62563,18 @@ glabel AdvanceSpyroAnimLayer1Frame
     /* 39DF8 800495F8 0000A3A0 */   sb        $v1, 0x0($a1)
     /* 39DFC 800495FC F0FF6224 */  addiu      $v0, $v1, -0x10
     /* 39E00 80049600 0000A2A0 */  sb         $v0, 0x0($a1)
-    /* 39E04 80049604 0880043C */  lui        $a0, %hi(D_80078A79)
-    /* 39E08 80049608 798A8490 */  lbu        $a0, %lo(D_80078A79)($a0)
-    /* 39E0C 8004960C 0880033C */  lui        $v1, %hi(D_80078A73)
-    /* 39E10 80049610 738A6390 */  lbu        $v1, %lo(D_80078A73)($v1)
+    /* 39E04 80049604 0880043C */  lui        $a0, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39E08 80049608 798A8490 */  lbu        $a0, %lo(g_bSpyroAnimLayer1Frame)($a0)
+    /* 39E0C 8004960C 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1Current)
+    /* 39E10 80049610 738A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1Current)($v1)
     /* 39E14 80049614 01008224 */  addiu      $v0, $a0, 0x1
-    /* 39E18 80049618 0880013C */  lui        $at, %hi(D_80078A72)
-    /* 39E1C 8004961C 728A23A0 */  sb         $v1, %lo(D_80078A72)($at)
+    /* 39E18 80049618 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Prev)
+    /* 39E1C 8004961C 728A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer1Prev)($at)
     /* 39E20 80049620 80180300 */  sll        $v1, $v1, 2
-    /* 39E24 80049624 0880013C */  lui        $at, %hi(D_80078A78)
-    /* 39E28 80049628 788A24A0 */  sb         $a0, %lo(D_80078A78)($at)
-    /* 39E2C 8004962C 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 39E30 80049630 798A22A0 */  sb         $v0, %lo(D_80078A79)($at)
+    /* 39E24 80049624 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 39E28 80049628 788A24A0 */  sb         $a0, %lo(g_bSpyroAnimLayer1FramePrev)($at)
+    /* 39E2C 8004962C 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39E30 80049630 798A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer1Frame)($at)
     /* 39E34 80049634 0780013C */  lui        $at, %hi(g_abSpyroAnimDescTable + 0x2)
     /* 39E38 80049638 21082300 */  addu       $at, $at, $v1
     /* 39E3C 8004963C A2C42390 */  lbu        $v1, %lo(g_abSpyroAnimDescTable + 0x2)($at)
@@ -62582,8 +62582,8 @@ glabel AdvanceSpyroAnimLayer1Frame
     /* 39E44 80049644 2B104300 */  sltu       $v0, $v0, $v1
     /* 39E48 80049648 03004014 */  bnez       $v0, .L80049658
     /* 39E4C 8004964C FFFF6224 */   addiu     $v0, $v1, -0x1
-    /* 39E50 80049650 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 39E54 80049654 798A22A0 */  sb         $v0, %lo(D_80078A79)($at)
+    /* 39E50 80049650 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39E54 80049654 798A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer1Frame)($at)
   .L80049658:
     /* 39E58 80049658 0800E003 */  jr         $ra
     /* 39E5C 8004965C 00000000 */   nop
@@ -62635,14 +62635,14 @@ glabel TickSpyroAnimLayer1
     /* 39EEC 800496EC 778AA590 */  lbu        $a1, %lo(g_bSpyroAnimFrame)($a1)
     /* 39EF0 800496F0 0880063C */  lui        $a2, %hi(g_bSpyroSubFrameTimer)
     /* 39EF4 800496F4 7C8AC690 */  lbu        $a2, %lo(g_bSpyroSubFrameTimer)($a2)
-    /* 39EF8 800496F8 0880013C */  lui        $at, %hi(D_80078A72)
-    /* 39EFC 800496FC 728A22A0 */  sb         $v0, %lo(D_80078A72)($at)
-    /* 39F00 80049700 0880013C */  lui        $at, %hi(D_80078A78)
-    /* 39F04 80049704 788A23A0 */  sb         $v1, %lo(D_80078A78)($at)
-    /* 39F08 80049708 0880013C */  lui        $at, %hi(D_80078A73)
-    /* 39F0C 8004970C 738A24A0 */  sb         $a0, %lo(D_80078A73)($at)
-    /* 39F10 80049710 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 39F14 80049714 798A25A0 */  sb         $a1, %lo(D_80078A79)($at)
+    /* 39EF8 800496F8 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Prev)
+    /* 39EFC 800496FC 728A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer1Prev)($at)
+    /* 39F00 80049700 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 39F04 80049704 788A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer1FramePrev)($at)
+    /* 39F08 80049708 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Current)
+    /* 39F0C 8004970C 738A24A0 */  sb         $a0, %lo(g_bSpyroAnimLayer1Current)($at)
+    /* 39F10 80049710 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39F14 80049714 798A25A0 */  sb         $a1, %lo(g_bSpyroAnimLayer1Frame)($at)
     /* 39F18 80049718 0880013C */  lui        $at, %hi(g_abSpyroAnimLayer1SubstepBlock)
     /* 39F1C 8004971C 7D8A26A0 */  sb         $a2, %lo(g_abSpyroAnimLayer1SubstepBlock)($at)
     /* 39F20 80049720 1B260108 */  j          .L8004986C
@@ -62668,34 +62668,34 @@ glabel TickSpyroAnimLayer1
     /* 39F68 80049768 02000224 */   addiu     $v0, $zero, 0x2
     /* 39F6C 8004976C 3F008214 */  bne        $a0, $v0, .L8004986C
     /* 39F70 80049770 00000000 */   nop
-    /* 39F74 80049774 0880023C */  lui        $v0, %hi(D_80078A73)
-    /* 39F78 80049778 738A4290 */  lbu        $v0, %lo(D_80078A73)($v0)
-    /* 39F7C 8004977C 0880033C */  lui        $v1, %hi(D_80078A79)
-    /* 39F80 80049780 798A6390 */  lbu        $v1, %lo(D_80078A79)($v1)
+    /* 39F74 80049774 0880023C */  lui        $v0, %hi(g_bSpyroAnimLayer1Current)
+    /* 39F78 80049778 738A4290 */  lbu        $v0, %lo(g_bSpyroAnimLayer1Current)($v0)
+    /* 39F7C 8004977C 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39F80 80049780 798A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1Frame)($v1)
     /* 39F84 80049784 000004AE */  sw         $a0, 0x0($s0)
-    /* 39F88 80049788 0880013C */  lui        $at, %hi(D_80078A72)
-    /* 39F8C 8004978C 728A22A0 */  sb         $v0, %lo(D_80078A72)($at)
-    /* 39F90 80049790 0880013C */  lui        $at, %hi(D_80078A78)
-    /* 39F94 80049794 788A23A0 */  sb         $v1, %lo(D_80078A78)($at)
-    /* 39F98 80049798 0780013C */  lui        $at, %hi(D_80075268)
+    /* 39F88 80049788 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Prev)
+    /* 39F8C 8004978C 728A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer1Prev)($at)
+    /* 39F90 80049790 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 39F94 80049794 788A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer1FramePrev)($at)
+    /* 39F98 80049798 0780013C */  lui        $at, %hi(g_abSpyroHornStrikeAnimTable)
     /* 39F9C 8004979C 21082700 */  addu       $at, $at, $a3
-    /* 39FA0 800497A0 68522390 */  lbu        $v1, %lo(D_80075268)($at)
+    /* 39FA0 800497A0 68522390 */  lbu        $v1, %lo(g_abSpyroHornStrikeAnimTable)($at)
     /* 39FA4 800497A4 04000224 */  addiu      $v0, $zero, 0x4
-    /* 39FA8 800497A8 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 39FAC 800497AC 798A20A0 */  sb         $zero, %lo(D_80078A79)($at)
+    /* 39FA8 800497A8 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39FAC 800497AC 798A20A0 */  sb         $zero, %lo(g_bSpyroAnimLayer1Frame)($at)
     /* 39FB0 800497B0 0880013C */  lui        $at, %hi(g_abSpyroAnimLayer1SubstepBlock)
     /* 39FB4 800497B4 7D8A22A0 */  sb         $v0, %lo(g_abSpyroAnimLayer1SubstepBlock)($at)
     /* 39FB8 800497B8 080007AE */  sw         $a3, 0x8($s0)
-    /* 39FBC 800497BC 0880013C */  lui        $at, %hi(D_80078A73)
-    /* 39FC0 800497C0 738A23A0 */  sb         $v1, %lo(D_80078A73)($at)
+    /* 39FBC 800497BC 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Current)
+    /* 39FC0 800497C0 738A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer1Current)($at)
     /* 39FC4 800497C4 1B260108 */  j          .L8004986C
     /* 39FC8 800497C8 00000000 */   nop
   .L800497CC:
     /* 39FCC 800497CC 000004AE */  sw         $a0, 0x0($s0)
-    /* 39FD0 800497D0 0880033C */  lui        $v1, %hi(D_80078A73)
-    /* 39FD4 800497D4 738A6390 */  lbu        $v1, %lo(D_80078A73)($v1)
-    /* 39FD8 800497D8 0880043C */  lui        $a0, %hi(D_80078A79)
-    /* 39FDC 800497DC 798A8490 */  lbu        $a0, %lo(D_80078A79)($a0)
+    /* 39FD0 800497D0 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1Current)
+    /* 39FD4 800497D4 738A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1Current)($v1)
+    /* 39FD8 800497D8 0880043C */  lui        $a0, %hi(g_bSpyroAnimLayer1Frame)
+    /* 39FDC 800497DC 798A8490 */  lbu        $a0, %lo(g_bSpyroAnimLayer1Frame)($a0)
     /* 39FE0 800497E0 0880053C */  lui        $a1, %hi(g_bSpyroAnimCurrent)
     /* 39FE4 800497E4 718AA590 */  lbu        $a1, %lo(g_bSpyroAnimCurrent)($a1)
     /* 39FE8 800497E8 0880063C */  lui        $a2, %hi(g_bSpyroAnimFrame)
@@ -62704,14 +62704,14 @@ glabel TickSpyroAnimLayer1
     /* 39FF4 800497F4 0880013C */  lui        $at, %hi(g_abSpyroAnimLayer1SubstepBlock)
     /* 39FF8 800497F8 7D8A22A0 */  sb         $v0, %lo(g_abSpyroAnimLayer1SubstepBlock)($at)
     /* 39FFC 800497FC 080007AE */  sw         $a3, 0x8($s0)
-    /* 3A000 80049800 0880013C */  lui        $at, %hi(D_80078A72)
-    /* 3A004 80049804 728A23A0 */  sb         $v1, %lo(D_80078A72)($at)
-    /* 3A008 80049808 0880013C */  lui        $at, %hi(D_80078A78)
-    /* 3A00C 8004980C 788A24A0 */  sb         $a0, %lo(D_80078A78)($at)
-    /* 3A010 80049810 0880013C */  lui        $at, %hi(D_80078A73)
-    /* 3A014 80049814 738A25A0 */  sb         $a1, %lo(D_80078A73)($at)
-    /* 3A018 80049818 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 3A01C 8004981C 798A26A0 */  sb         $a2, %lo(D_80078A79)($at)
+    /* 3A000 80049800 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Prev)
+    /* 3A004 80049804 728A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer1Prev)($at)
+    /* 3A008 80049808 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 3A00C 8004980C 788A24A0 */  sb         $a0, %lo(g_bSpyroAnimLayer1FramePrev)($at)
+    /* 3A010 80049810 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Current)
+    /* 3A014 80049814 738A25A0 */  sb         $a1, %lo(g_bSpyroAnimLayer1Current)($at)
+    /* 3A018 80049818 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 3A01C 8004981C 798A26A0 */  sb         $a2, %lo(g_bSpyroAnimLayer1Frame)($at)
     /* 3A020 80049820 1B260108 */  j          .L8004986C
     /* 3A024 80049824 00000000 */   nop
   .L80049828:
@@ -62893,9 +62893,9 @@ glabel TickSpyroHornStrikeAttack
     /* 3A284 80049A84 F88B22AC */  sw         $v0, %lo(g_nSpyroHornStrikeTimer)($at)
     /* 3A288 80049A88 0880013C */  lui        $at, %hi(g_anSpyroHornStrikeSwingPhaseBlock)
     /* 3A28C 80049A8C B88A20AC */  sw         $zero, %lo(g_anSpyroHornStrikeSwingPhaseBlock)($at)
-    /* 3A290 80049A90 0780013C */  lui        $at, %hi(D_80075268)
+    /* 3A290 80049A90 0780013C */  lui        $at, %hi(g_abSpyroHornStrikeAnimTable)
     /* 3A294 80049A94 21082300 */  addu       $at, $at, $v1
-    /* 3A298 80049A98 68522290 */  lbu        $v0, %lo(D_80075268)($at)
+    /* 3A298 80049A98 68522290 */  lbu        $v0, %lo(g_abSpyroHornStrikeAnimTable)($at)
     /* 3A29C 80049A9C 00000000 */  nop
     /* 3A2A0 80049AA0 80100200 */  sll        $v0, $v0, 2
     /* 3A2A4 80049AA4 0780013C */  lui        $at, %hi(g_abSpyroAnimDescTable + 0x3)
@@ -63041,8 +63041,8 @@ glabel TickSpyroHornStrikeAttack
     /* 3A4B0 80049CB0 0880013C */  lui        $at, %hi(g_abSpyroAnimLayer1SubstepBlock)
     /* 3A4B4 80049CB4 7D8A22A0 */  sb         $v0, %lo(g_abSpyroAnimLayer1SubstepBlock)($at)
     /* 3A4B8 80049CB8 01000224 */  addiu      $v0, $zero, 0x1
-    /* 3A4BC 80049CBC 0880013C */  lui        $at, %hi(D_80078A79)
-    /* 3A4C0 80049CC0 798A20A0 */  sb         $zero, %lo(D_80078A79)($at)
+    /* 3A4BC 80049CBC 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer1Frame)
+    /* 3A4C0 80049CC0 798A20A0 */  sb         $zero, %lo(g_bSpyroAnimLayer1Frame)($at)
     /* 3A4C4 80049CC4 0880013C */  lui        $at, %hi(g_bSpyroHornCollisionActive)
     /* 3A4C8 80049CC8 608722A0 */  sb         $v0, %lo(g_bSpyroHornCollisionActive)($at)
     /* 3A4CC 80049CCC 0880013C */  lui        $at, %hi(g_bSpyroHornStrikeSegmentIdx)
@@ -63087,8 +63087,8 @@ glabel TickSpyroHornStrikeAttack
     /* 3A55C 80049D5C 08000624 */  addiu      $a2, $zero, 0x8
     /* 3A560 80049D60 455A000C */  jal        FillWord
     /* 3A564 80049D64 000040A0 */   sb        $zero, 0x0($v0)
-    /* 3A568 80049D68 0780023C */  lui        $v0, %hi(D_80075268)
-    /* 3A56C 80049D6C 68524290 */  lbu        $v0, %lo(D_80075268)($v0)
+    /* 3A568 80049D68 0780023C */  lui        $v0, %hi(g_abSpyroHornStrikeAnimTable)
+    /* 3A56C 80049D6C 68524290 */  lbu        $v0, %lo(g_abSpyroHornStrikeAnimTable)($v0)
     /* 3A570 80049D70 FFFF0324 */  addiu      $v1, $zero, -0x1
     /* 3A574 80049D74 0880013C */  lui        $at, %hi(g_nSpyroHornStrikeState)
     /* 3A578 80049D78 F08B20AC */  sw         $zero, %lo(g_nSpyroHornStrikeState)($at)
@@ -63137,8 +63137,8 @@ endlabel TickSpyroHornStrikeAttack
 nonmatching AdvanceSpyroAnimLayer2Frame, 0x90
 
 glabel AdvanceSpyroAnimLayer2Frame
-    /* 3A5FC 80049DFC 0880053C */  lui        $a1, %hi(D_80078A7E)
-    /* 3A600 80049E00 7E8AA524 */  addiu      $a1, $a1, %lo(D_80078A7E)
+    /* 3A5FC 80049DFC 0880053C */  lui        $a1, %hi(g_bSpyroAnimLayer2Substep)
+    /* 3A600 80049E00 7E8AA524 */  addiu      $a1, $a1, %lo(g_bSpyroAnimLayer2Substep)
     /* 3A604 80049E04 0000A290 */  lbu        $v0, 0x0($a1)
     /* 3A608 80049E08 00000000 */  nop
     /* 3A60C 80049E0C 21184400 */  addu       $v1, $v0, $a0
@@ -63148,18 +63148,18 @@ glabel AdvanceSpyroAnimLayer2Frame
     /* 3A61C 80049E1C 0000A3A0 */   sb        $v1, 0x0($a1)
     /* 3A620 80049E20 F0FF6224 */  addiu      $v0, $v1, -0x10
     /* 3A624 80049E24 0000A2A0 */  sb         $v0, 0x0($a1)
-    /* 3A628 80049E28 0880033C */  lui        $v1, %hi(D_80078A7B)
-    /* 3A62C 80049E2C 7B8A6390 */  lbu        $v1, %lo(D_80078A7B)($v1)
-    /* 3A630 80049E30 0880043C */  lui        $a0, %hi(D_80078A75)
-    /* 3A634 80049E34 758A8490 */  lbu        $a0, %lo(D_80078A75)($a0)
+    /* 3A628 80049E28 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer2Frame)
+    /* 3A62C 80049E2C 7B8A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer2Frame)($v1)
+    /* 3A630 80049E30 0880043C */  lui        $a0, %hi(g_bSpyroAnimLayer2Current)
+    /* 3A634 80049E34 758A8490 */  lbu        $a0, %lo(g_bSpyroAnimLayer2Current)($a0)
     /* 3A638 80049E38 01006224 */  addiu      $v0, $v1, 0x1
-    /* 3A63C 80049E3C 0880013C */  lui        $at, %hi(D_80078A74)
-    /* 3A640 80049E40 748A24A0 */  sb         $a0, %lo(D_80078A74)($at)
+    /* 3A63C 80049E3C 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Prev)
+    /* 3A640 80049E40 748A24A0 */  sb         $a0, %lo(g_bSpyroAnimLayer2Prev)($at)
     /* 3A644 80049E44 80200400 */  sll        $a0, $a0, 2
-    /* 3A648 80049E48 0880013C */  lui        $at, %hi(D_80078A7A)
-    /* 3A64C 80049E4C 7A8A23A0 */  sb         $v1, %lo(D_80078A7A)($at)
-    /* 3A650 80049E50 0880013C */  lui        $at, %hi(D_80078A7B)
-    /* 3A654 80049E54 7B8A22A0 */  sb         $v0, %lo(D_80078A7B)($at)
+    /* 3A648 80049E48 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2FramePrev)
+    /* 3A64C 80049E4C 7A8A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer2FramePrev)($at)
+    /* 3A650 80049E50 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Frame)
+    /* 3A654 80049E54 7B8A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer2Frame)($at)
     /* 3A658 80049E58 0780013C */  lui        $at, %hi(g_abSpyroAnimDescTable + 0x1)
     /* 3A65C 80049E5C 21082400 */  addu       $at, $at, $a0
     /* 3A660 80049E60 A1C42390 */  lbu        $v1, %lo(g_abSpyroAnimDescTable + 0x1)($at)
@@ -63169,8 +63169,8 @@ glabel AdvanceSpyroAnimLayer2Frame
     /* 3A670 80049E70 0780013C */  lui        $at, %hi(g_abSpyroAnimDescTable)
     /* 3A674 80049E74 21082400 */  addu       $at, $at, $a0
     /* 3A678 80049E78 A0C42290 */  lbu        $v0, %lo(g_abSpyroAnimDescTable)($at)
-    /* 3A67C 80049E7C 0880013C */  lui        $at, %hi(D_80078A7B)
-    /* 3A680 80049E80 7B8A22A0 */  sb         $v0, %lo(D_80078A7B)($at)
+    /* 3A67C 80049E7C 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Frame)
+    /* 3A680 80049E80 7B8A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer2Frame)($at)
   .L80049E84:
     /* 3A684 80049E84 0800E003 */  jr         $ra
     /* 3A688 80049E88 00000000 */   nop
@@ -63206,16 +63206,16 @@ glabel TickSpyroAnimLayer2
     /* 3A6E0 80049EE0 778AA590 */  lbu        $a1, %lo(g_bSpyroAnimFrame)($a1)
     /* 3A6E4 80049EE4 0880063C */  lui        $a2, %hi(g_bSpyroSubFrameTimer)
     /* 3A6E8 80049EE8 7C8AC690 */  lbu        $a2, %lo(g_bSpyroSubFrameTimer)($a2)
-    /* 3A6EC 80049EEC 0880013C */  lui        $at, %hi(D_80078A74)
-    /* 3A6F0 80049EF0 748A22A0 */  sb         $v0, %lo(D_80078A74)($at)
-    /* 3A6F4 80049EF4 0880013C */  lui        $at, %hi(D_80078A7A)
-    /* 3A6F8 80049EF8 7A8A23A0 */  sb         $v1, %lo(D_80078A7A)($at)
-    /* 3A6FC 80049EFC 0880013C */  lui        $at, %hi(D_80078A75)
-    /* 3A700 80049F00 758A24A0 */  sb         $a0, %lo(D_80078A75)($at)
-    /* 3A704 80049F04 0880013C */  lui        $at, %hi(D_80078A7B)
-    /* 3A708 80049F08 7B8A25A0 */  sb         $a1, %lo(D_80078A7B)($at)
-    /* 3A70C 80049F0C 0880013C */  lui        $at, %hi(D_80078A7E)
-    /* 3A710 80049F10 7E8A26A0 */  sb         $a2, %lo(D_80078A7E)($at)
+    /* 3A6EC 80049EEC 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Prev)
+    /* 3A6F0 80049EF0 748A22A0 */  sb         $v0, %lo(g_bSpyroAnimLayer2Prev)($at)
+    /* 3A6F4 80049EF4 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2FramePrev)
+    /* 3A6F8 80049EF8 7A8A23A0 */  sb         $v1, %lo(g_bSpyroAnimLayer2FramePrev)($at)
+    /* 3A6FC 80049EFC 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Current)
+    /* 3A700 80049F00 758A24A0 */  sb         $a0, %lo(g_bSpyroAnimLayer2Current)($at)
+    /* 3A704 80049F04 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Frame)
+    /* 3A708 80049F08 7B8A25A0 */  sb         $a1, %lo(g_bSpyroAnimLayer2Frame)($at)
+    /* 3A70C 80049F0C 0880013C */  lui        $at, %hi(g_bSpyroAnimLayer2Substep)
+    /* 3A710 80049F10 7E8A26A0 */  sb         $a2, %lo(g_bSpyroAnimLayer2Substep)($at)
     /* 3A714 80049F14 CB270108 */  j          .L80049F2C
     /* 3A718 80049F18 00000000 */   nop
   .L80049F1C:
@@ -63774,15 +63774,15 @@ glabel TickSpyroGameplayFrame
     /* 3AECC 8004A6CC 80100200 */  sll        $v0, $v0, 2
     /* 3AED0 8004A6D0 21104300 */  addu       $v0, $v0, $v1
     /* 3AED4 8004A6D4 2400438C */  lw         $v1, 0x24($v0)
-    /* 3AED8 8004A6D8 0880023C */  lui        $v0, %hi(D_80078A72)
-    /* 3AEDC 8004A6DC 728A4290 */  lbu        $v0, %lo(D_80078A72)($v0)
+    /* 3AED8 8004A6D8 0880023C */  lui        $v0, %hi(g_bSpyroAnimLayer1Prev)
+    /* 3AEDC 8004A6DC 728A4290 */  lbu        $v0, %lo(g_bSpyroAnimLayer1Prev)($v0)
     /* 3AEE0 8004A6E0 0880073C */  lui        $a3, %hi(g_dwSpyroFootstepPrimarySfxKey)
     /* 3AEE4 8004A6E4 BC8CE724 */  addiu      $a3, $a3, %lo(g_dwSpyroFootstepPrimarySfxKey)
     /* 3AEE8 8004A6E8 80100200 */  sll        $v0, $v0, 2
     /* 3AEEC 8004A6EC 21284400 */  addu       $a1, $v0, $a0
     /* 3AEF0 8004A6F0 0000E3AC */  sw         $v1, 0x0($a3)
-    /* 3AEF4 8004A6F4 0880033C */  lui        $v1, %hi(D_80078A78)
-    /* 3AEF8 8004A6F8 788A6390 */  lbu        $v1, %lo(D_80078A78)($v1)
+    /* 3AEF4 8004A6F4 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 3AEF8 8004A6F8 788A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1FramePrev)($v1)
     /* 3AEFC 8004A6FC 3800A28C */  lw         $v0, 0x38($a1)
     /* 3AF00 8004A700 80180300 */  sll        $v1, $v1, 2
     /* 3AF04 8004A704 21106200 */  addu       $v0, $v1, $v0
@@ -63809,14 +63809,14 @@ glabel TickSpyroGameplayFrame
   .L8004A758:
     /* 3AF58 8004A758 FF7F053C */  lui        $a1, (0x7FFFFFFF >> 16)
     /* 3AF5C 8004A75C FFFFA534 */  ori        $a1, $a1, (0x7FFFFFFF & 0xFFFF)
-    /* 3AF60 8004A760 0880033C */  lui        $v1, %hi(D_80078A72)
-    /* 3AF64 8004A764 728A6390 */  lbu        $v1, %lo(D_80078A72)($v1)
+    /* 3AF60 8004A760 0880033C */  lui        $v1, %hi(g_bSpyroAnimLayer1Prev)
+    /* 3AF64 8004A764 728A6390 */  lbu        $v1, %lo(g_bSpyroAnimLayer1Prev)($v1)
     /* 3AF68 8004A768 0780023C */  lui        $v0, %hi(g_apActorMeshTable)
     /* 3AF6C 8004A76C 7863428C */  lw         $v0, %lo(g_apActorMeshTable)($v0)
     /* 3AF70 8004A770 80180300 */  sll        $v1, $v1, 2
     /* 3AF74 8004A774 21186200 */  addu       $v1, $v1, $v0
-    /* 3AF78 8004A778 0880023C */  lui        $v0, %hi(D_80078A78)
-    /* 3AF7C 8004A77C 788A4290 */  lbu        $v0, %lo(D_80078A78)($v0)
+    /* 3AF78 8004A778 0880023C */  lui        $v0, %hi(g_bSpyroAnimLayer1FramePrev)
+    /* 3AF7C 8004A77C 788A4290 */  lbu        $v0, %lo(g_bSpyroAnimLayer1FramePrev)($v0)
     /* 3AF80 8004A780 3800638C */  lw         $v1, 0x38($v1)
     /* 3AF84 8004A784 80100200 */  sll        $v0, $v0, 2
     /* 3AF88 8004A788 21104300 */  addu       $v0, $v0, $v1

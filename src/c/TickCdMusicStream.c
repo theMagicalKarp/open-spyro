@@ -12,7 +12,7 @@ extern int CdControlForce(unsigned char com, char *param);
 extern void SetSpuCommonAttr(unsigned int *attr);
 
 extern unsigned char D_800776BC[];
-extern unsigned int D_800776CC;
+extern unsigned int g_nCdMusicStreamTimeout;
 extern int D_8006F05C[];
 extern short g_nCdDaVolumeCurrent;
 extern short g_nSpuCommonCdVolumeR;
@@ -39,9 +39,10 @@ extern int
        view (A230: an in-struct store keeps the in-struct array read of the
        table below it).
    Earlier levers still load-bearing: the end-LBA half has its own symbol
-   (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount > D_800776CC)`
-   (A120 load order); the fade tail's held base + empty do/while(0) (A200)
-   and its per-arm "store the new volume" blocks (A201).
+   (g_anMusicTrackEndLbaTable); `if (g_nVblankTickCount >
+   g_nCdMusicStreamTimeout)` (A120 load order); the fade tail's held base +
+   empty do/while(0) (A200) and its per-arm "store the new volume" blocks
+   (A201).
    - the random-track table base is a block-local pointer (`base`): cse keeps
      the cheaper register, so the `la` is emitted with the index load and
      fills its load-delay bubble, as in the original. */
@@ -98,13 +99,13 @@ void TickCdMusicStream(void) {
     } else {
       if ((unsigned int)g_anMusicTrackEndLbaTable[g_nCurrentMusicTrack * 2] <
           g_dwCdMusicReadHead) {
-        if (g_nVblankTickCount > D_800776CC) {
+        if (g_nVblankTickCount > g_nCdMusicStreamTimeout) {
           pick = (int)GetRandomU32();
           {
             int *base = D_8006F05C;
             tbl = &base[g_nLevelIntroIndex * 3];
           }
-          D_800776CC = g_nVblankTickCount + 0x7080;
+          g_nCdMusicStreamTimeout = g_nVblankTickCount + 0x7080;
           g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[tbl[pick % 3]];
         }
         g_dwCdMusicReadHead = g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2];

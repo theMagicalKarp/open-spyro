@@ -754,8 +754,8 @@ typedef struct L24Trail {
   int age;    /* 0x18 */
 } L24Trail;   /* 0x1C */
 extern int g_nMotionTrailRibbonCount;         /* trail slots used this frame */
-extern int D_800772C8[];       /* trail lengths */
-extern L24Trail *D_80078658[]; /* trails */
+extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
+extern L24Trail *g_apMotionTrailSlices[]; /* trails */
 
 /* Type 104 state: a comet that leaves a fading trail and drops sparks. */
 typedef struct L24Comet {
@@ -1954,9 +1954,9 @@ void Level24_UpdateActors(void) {
         if (g_nMotionTrailRibbonCount < 3) {
           int k = g_nMotionTrailRibbonCount;
 
-          D_800772C8[k] = st->count;
+          g_anMotionTrailSliceCounts[k] = st->count;
           g_nMotionTrailRibbonCount = k + 1;
-          D_80078658[k] = st->trail;
+          g_apMotionTrailSlices[k] = st->trail;
         }
         if (actor->mode == 1) {
           actor->mode = 2;

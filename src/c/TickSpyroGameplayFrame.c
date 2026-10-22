@@ -31,8 +31,8 @@ extern unsigned int g_adwSpyroFootstepSfxBlock[];     /* 0x80078cbc */
 extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
 extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
 
-extern unsigned char D_80078A72; /* layer-1 anim index */
-extern unsigned char D_80078A78; /* layer-1 frame index */
+extern unsigned char g_bSpyroAnimLayer1Prev;      /* layer-1 anim index */
+extern unsigned char g_bSpyroAnimLayer1FramePrev; /* layer-1 frame index */
 
 /* One frame record of an anim's frame table: g_apActorMeshTable[anim] holds a
    pointer to the table at +0x38, stride 4 per frame (+0x24 = sfx key,
@@ -179,19 +179,22 @@ done:
                         0x24);
   footstep = g_adwSpyroFootstepSfxBlock;
   footstep[0] = key;
-  sfx[1] = *(unsigned char *)(FRAMEREC(D_80078A72 * 4 + (int)g_apActorMeshTable,
-                                       D_80078A78 * 4) +
+  sfx[1] = *(unsigned char *)(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 +
+                                           (int)g_apActorMeshTable,
+                                       g_bSpyroAnimLayer1FramePrev * 4) +
                               0x27);
   if ((sfx[1] != 0xFF) && (sfx[0] != sfx[1])) {
-    ptr = *(volatile int *)(D_80078A72 * 4 + (int)g_apActorMeshTable + 0x38);
-    rec = D_80078A78 * 4 + ptr;
+    ptr = *(volatile int *)(g_bSpyroAnimLayer1Prev * 4 +
+                            (int)g_apActorMeshTable + 0x38);
+    rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
     if (g_dwSpyroFootstepSecondarySfxKey != *(unsigned int *)(rec + 0x24)) {
       PlaySoundEffect(sfx[1], (unsigned char *)footstep - 0x264, 4,
                       (unsigned char *)footstep + 0x3C);
     }
   }
-  key2 = *(unsigned int *)(FRAMEREC(D_80078A72 * 4 + (int)g_apActorMeshTable,
-                                    D_80078A78 * 4) +
+  key2 = *(unsigned int *)(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 +
+                                        (int)g_apActorMeshTable,
+                                    g_bSpyroAnimLayer1FramePrev * 4) +
                            0x24);
   g_dwSpyroRequestMask &= 0x7FFFFFFF;
   g_dwSpyroFootstepSecondarySfxKey = key2;
