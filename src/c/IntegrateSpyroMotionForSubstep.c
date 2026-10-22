@@ -48,7 +48,6 @@ SDATA(g_pSpyroContactActor, 4);
 /* One view of the Spyro record from its world position (0x80078a58). */
 extern int g_anSpyroWorldPosBlock[];
 extern int g_anCameraPosBlock[];
-extern int g_anSpyroWorldPosZBlock[];
 extern short g_anCameraEulerYawBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_abSpyroAnimPrevBlock[];

@@ -48,7 +48,6 @@ extern int g_anHudFrameCycleBlock[];
    keeps in one register each; the plain sized decls in globals.h stay in use
    at the sites the original addresses absolutely (A240). */
 extern unsigned char g_abLevelTotalDragonsBlock[];
-extern unsigned char g_abLevelTotalEggsBlock[];
 extern int g_anLevelGemsBlock[];
 extern unsigned char g_abWorldTitleGlyphBlock[];
 /* menu label blobs that have no friendly name yet. */

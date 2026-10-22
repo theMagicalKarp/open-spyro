@@ -133,7 +133,6 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -141,11 +140,9 @@ extern int g_anSpyroVelocity[3];
 extern int g_nGemPickupSubstate;
 extern short g_anLaunchDirTable[]; /* launch-direction table, x */
 extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
-extern int g_anSpyroFirstContactPoint[3];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
-extern int g_anSpyroFirstContactNormal[3];
 
 Actor *Level12_SpawnActor(int type, Actor *parent) {
   Actor *rec;

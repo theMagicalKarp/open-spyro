@@ -9,7 +9,6 @@ extern int D_8007583C;
 extern short g_nCdDaVolumeCurrent;
 extern short D_80075F1A;
 extern int D_80076224_blk;
-extern int D_80076228;
 extern int D_80076228_blk[];
 
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of

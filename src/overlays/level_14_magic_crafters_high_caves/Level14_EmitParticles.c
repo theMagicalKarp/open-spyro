@@ -174,18 +174,15 @@ extern short g_anCosineLut[];        /* cosine table */
 extern short g_anSineLut[];        /* sine table */                 /* GetRandomU32 */
 
 extern Actor *g_pActorListBase;
-extern int g_anCameraPos[];          /* camera world position */
 extern short g_anCosineLut[];        /* cosine table */
 extern short g_anSineLut[];        /* sine table */
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;
 extern int g_nLevelReadyFlag;
-extern int g_nActiveLevelId;
 extern unsigned char g_abEmitTrailColors[];  /* trail colour table, stride 4 */
 extern unsigned char g_abEmitTrailColorsG[];
 extern unsigned char g_abEmitTrailColorsB[];

@@ -275,16 +275,11 @@ typedef struct LiftState {
 
 /* Type 398: exit vortex. Surface-below flags and the level transition
  * globals. */
-extern int g_nGroundSurfaceType;             /* index of the surface under the probe */
-extern unsigned char **g_pTriggerRegionTable; /* surface records, indexed by the above */
 extern int g_nCdStreamState;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nGamePaused;
 extern int g_nGamestate;
-extern int g_nScriptedMobViewYawSpin;
-extern int g_nScriptedMobViewPitchTilt;
-extern int g_nLevelIntroParallaxCountdown;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -318,12 +313,6 @@ typedef struct {
 } CamObj;
 extern CamObj g_anWorldToCameraRotMtx;
 #define CAM g_anWorldToCameraRotMtx
-
-extern Xform g_aCameraXformPresets[];
-
-extern void ComputeCameraToTargetAngle(int *out);
-extern void ComputeCameraOrbitOffset(int *out);
-extern void UpdateCameraEulerAngles(void);
 
 /* Vortex path: node count and current node, then the two anchor positions
  * whose midpoint Spyro is pulled toward. */
@@ -648,22 +637,13 @@ typedef struct DoorState {
   int restZ; /* 0x50 */
 } DoorState;
 
-extern short g_nCameraEulerYaw; /* camera yaw, as the balloonist reads it */
-extern int g_nCameraCurrentMode;   /* camera mode */
 extern int g_nCameraNextMode;
 
 extern int g_nSpyroState;   /* Spyro's state */
 extern int g_nSpyroStateFlags;
-extern int g_nSpyroStateTimer;
 extern int g_nSpyroAirborneFrames;
-extern int g_anSpyroMotionVec; /* look-at offset */
-extern int D_80078B68;
-extern int g_nSpyroMotionZ;
-extern int g_nSpyroMotionSpeed;
-extern int g_nSpyroWorldPosY;
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 extern int g_nSpyroSwingEulerPitchTarget;
 
 extern int g_dwSpyroRequestMask;         /* scripted camera control word */
@@ -806,7 +786,6 @@ typedef struct PatrolState {
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
@@ -877,7 +856,6 @@ typedef struct WispState {
 
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-extern int g_anRunningKillBitmap[];
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */ /* kill bitmap, one bit per pool actor */
 
 /* The anim bytes 0x3C..0x3F read as one word. */
@@ -1043,13 +1021,9 @@ typedef struct CaptainState {
   StubActorHook(a)
 
 /* from level_12 */
-extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the latch */
 /* from level_12 */
-extern int D_800777F4;
 /* from level_12 */
-extern int D_800777F8;
 /* from level_12 */
-extern void ResetSpyroLinearMotion(void);
 /* from level_12 */
 typedef struct L16Guard {
   PathData *path; /* 0x00 */
@@ -1073,15 +1047,10 @@ typedef struct CageState {
   int handle; /* 0x14 for SelectActorLodBand */
 } CageState;
 /* from level_12 */
-extern Actor *D_80075758;
 /* from level_12 */
-extern int g_nCameraScriptStickRequestY[];
 /* from level_12 */
-extern int g_nCameraScriptStickRequestX;
 /* from level_12 */
-extern void DivideVector3(int *d, int *s, int k);
 /* from level_12 */
-extern int g_anSpyroWorldPos; /* Spyro, as a plain symbol (the loop's spy carrier) */
 /* from level_12 */
 typedef struct L31Rock {
   int shake;  /* 0x00 shake timer, 0 = still */
@@ -1116,9 +1085,7 @@ typedef struct SwitchState {
   int idx;   /* 0x04 index into the actor pool at g_pActorListBase */
 } SwitchState;
 /* from level_10 */
-extern int D_80077AE8;            /* bit 0: switch sounds enabled */
 /* from level_10 */
-extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 /* from level_10 */
 typedef struct AnimState {
   int handle;  /* 0x00 */
@@ -1126,15 +1093,10 @@ typedef struct AnimState {
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
 /* from level_10 */
-extern unsigned char D_80078E7C; /* visited flag, read once */
 /* from level_10 */
-extern unsigned char D_8007A6A9;
 /* from level_10 */
-extern unsigned char D_8007A6AA;
 /* from level_10 */
-extern unsigned char D_8007A6AB;
 /* from level_10 */
-extern unsigned char D_8007A6AC;
 /* from level_10 */
 typedef struct SparkState {
   short vel[3];        /* 0x00 */
@@ -1251,7 +1213,6 @@ typedef struct PropAnimState {
   int primed; /* 0x08 */
 } PropAnimState;
 /* from level_10 */
-extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 /* from level_10 */
 typedef struct OrbitState {
   Actor *owner; /* 0x00 */
@@ -1311,49 +1272,29 @@ typedef struct BobState {
   int restZ; /* 0x00 */
 } BobState;
 /* from level_10 */
-extern int g_nWorldTreasureCollected;           /* gem total shown on the balloon */
 /* from level_10 */
-extern unsigned char D_800758D1; /* per-world "seen it" flags */
 /* from level_10 */
-extern unsigned char D_800758D2;
 /* from level_10 */
-extern unsigned char D_800758D3;
 /* from level_10 */
-extern unsigned char D_800758D4;
 /* from level_10 */
-extern unsigned char D_800758D5;
 /* from level_10 */
-extern int D_80077350;
 /* from level_10 */
-extern int g_nCameraSpringYaw;   /* camera spherical target */
 /* from level_10 */
-extern int g_nCameraYaw;   /* camera spherical current */
 /* from level_10 */
-extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 /* from level_10 */
-extern volatile unsigned char g_bSpyroOtBinBias;
 /* from level_10 */
-extern int g_anSpyroBodyMtx[]; /* wind basis matrix */
 /* from level_10 */
 extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
 /* from level_10 */
 extern signed char D_80078C5E; /* destination level */
 /* from level_10 */
-extern PortalDesc *volatile g_pGemPickupCamPathData;
 /* from level_10 */
-extern int g_nGemPickupCamPathMaxStep;
 /* from level_10 */
-extern int g_nGemPickupCamPathReverseFlag;
 /* from level_10 */
-extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 /* from level_10 */
-extern unsigned char D_80078E99;
 /* from level_10 */
-extern unsigned char D_80078E9A;
 /* from level_10 */
-extern unsigned char D_8007A6C7;
 /* from level_10 */
-extern unsigned char D_8007A6C8;
 /* from level_10 */
 typedef struct GuardState {
   PathData *path;  /* 0x00 patrol path */
@@ -1397,7 +1338,6 @@ typedef struct SpinnerState {
   int spin;  /* 0x10 */
 } SpinnerState;
 /* from level_10 */
-extern int PickupGroupHasLiveActor(int stage);
 /* from level_10 */
 typedef struct RimState {
   Actor *parent;  /* 0x00 */
@@ -1452,9 +1392,7 @@ typedef struct L16Boss {
   int unk74;          /* 0x74 */
 } L16Boss;
 /* from level_10 */
-extern int D_800778E8[]; /* hits taken */
 /* from level_10 */
-extern int D_800778EC[]; /* stage reached */
 /* from level_10 */
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
@@ -1489,7 +1427,6 @@ typedef struct PostState {
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;
 /* from level_10 */
-extern int g_nHitRumbleTimer;
 /* from level_10 */
 #define ENTER_POSE_B(a, n)                                                     \
   (a)->mode = (n);                                                            \
@@ -1605,7 +1542,6 @@ typedef struct ShempState {
   int timer2;          /* 0x44 */
 } ShempState;
 /* from level_10 */
-extern int D_80075850;
 /* from level_10 */
 typedef struct LookoutState {
   int heading;   /* 0x00 knock-back heading */
@@ -1694,7 +1630,6 @@ typedef struct L26Rot {
   }                                                                            \
   continue
 /* from level_25 */
-extern int g_nSpyroDrawSuppressed;
 /* from level_25 */
 typedef struct L25Grabber {
   int homeX;     /* 0x00 post it returns to */
@@ -1743,9 +1678,7 @@ typedef struct L25Shot {
   int init;            /* 0x18 1 = aim the barrel along the path */
 } L25Shot;
 /* from level_25 */
-extern short D_8006CBEC[];
 /* from level_25 */
-extern short D_8006CBEE[];
 /* from level_15 */
 typedef struct RearState {
   int timer;   /* 0x00 idle-hop countdown */
@@ -1827,7 +1760,6 @@ extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, i
 extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int *f);
 /* from level_15 */
-extern void ApplyEulerRotation(void *a, int *b, int c);
 /* from level_15 */
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
@@ -2012,7 +1944,6 @@ typedef struct SwoopState {
   int count;     /* 0x34 */
 } SwoopState;
 /* from level_8 */
-extern int g_dwActiveCameraOptions;
 /* from level_34 */
 typedef struct BoltFlight {
   int vel[3]; /* 0x00 */
@@ -2060,7 +1991,6 @@ typedef struct LootThiefState {
   int leg;        /* 0x44 */
 } LootThiefState;
 /* from level_34 */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -2081,9 +2011,7 @@ typedef struct CritterState {
   int lastVoice;    /* 0x24 */
 } CritterState;
 /* from level_34 */
-extern int g_nGnastyLootFallRefZCap;   /* level music cue */
 /* from level_34 */
-extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 /* from level_34 */
 typedef struct LootVortexState {
   short timer;          /* 0x00 */
@@ -2097,12 +2025,9 @@ typedef struct LootVortexState {
   int seen;             /* 0x2C index into g_nCurrentWorldId, 0 = none */
 } LootVortexState;
 /* from level_34 */
-extern int g_nGenericCountdown; /* HUD countdown */
 /* from level_34 */
-extern int *g_pPathTableHead;
 
 /* ==== Level 14 classes ==== */
-extern int g_nSpyroFrameMotionLength; /* Spyro speed */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
 
 /* Type 303. */

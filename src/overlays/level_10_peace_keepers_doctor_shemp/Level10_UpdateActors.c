@@ -191,14 +191,12 @@ extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
  * globals used when a behaviour plays a sound. */
 extern Actor *g_pActorListBase;         /* level actor pool */
 extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
-extern int D_80077AE8;            /* bit 0: switch sounds enabled */
 extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
 } g_nSfxOverridePitch;
-extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
  * shift, sine and cosine. */
@@ -229,13 +227,6 @@ typedef struct AnimState {
   int started; /* 0x04 one-shot init latch */
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
-
-extern unsigned char D_80078E7C; /* visited flag, read once */
-
-extern unsigned char D_8007A6A9;
-extern unsigned char D_8007A6AA;
-extern unsigned char D_8007A6AB;
-extern unsigned char D_8007A6AC;
 
 extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
 extern void SetWorldChunkAnimStep(int handle, int a, int b);
@@ -319,9 +310,6 @@ extern int g_nLevelEggCount; /* key collected */
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
 extern int g_nWorldDragonsRescued;
-extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the latch */
-extern int D_800777F4;
-extern int D_800777F8;
 extern void ResetSpyroLinearMotion(void);
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 
@@ -373,16 +361,11 @@ typedef struct LiftState {
 
 /* Type 398: exit vortex. Surface-below flags and the level transition
  * globals. */
-extern int g_nGroundSurfaceType;             /* index of the surface under the probe */
-extern unsigned char **g_pTriggerRegionTable; /* surface records, indexed by the above */
 extern int g_nCdStreamState;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nGamePaused;
 extern int g_nGamestate;
-extern int g_nScriptedMobViewYawSpin;
-extern int g_nScriptedMobViewPitchTilt;
-extern int g_nLevelIntroParallaxCountdown;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -416,12 +399,6 @@ typedef struct {
 } CamObj;
 extern CamObj g_anWorldToCameraRotMtx;
 #define CAM g_anWorldToCameraRotMtx
-
-extern Xform g_aCameraXformPresets[];
-
-extern void ComputeCameraToTargetAngle(int *out);
-extern void ComputeCameraOrbitOffset(int *out);
-extern void UpdateCameraEulerAngles(void);
 
 /* Vortex path: node count and current node, then the two anchor positions
  * whose midpoint Spyro is pulled toward. */
@@ -522,7 +499,6 @@ typedef struct WalkerState {
 } WalkerState;
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
-extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -579,7 +555,6 @@ typedef struct PatchRideState {
 } PatchRideState;
 
 extern int g_dwGamestateFrames; /* frame counter; the arm acts on every 4th frame */
-extern int CastRayWorldAndActors(int *a, int *b);
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
@@ -587,8 +562,6 @@ typedef struct PropAnimState {
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
-
-extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 
 /* Types 76/426..451: letters of a floating word, placed relative to their
  * parent actor. */
@@ -896,27 +869,10 @@ typedef struct DoorState {
   int restZ; /* 0x50 */
 } DoorState;
 
-/* ==== level_30 globals ====
- *
- * The hub's own state: which stage of the balloon sequence the world is in,
- * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-extern int g_nWorldTreasureCollected;           /* gem total shown on the balloon */
-extern unsigned char D_800758D1; /* per-world "seen it" flags */
-extern unsigned char D_800758D2;
-extern unsigned char D_800758D3;
-extern unsigned char D_800758D4;
-extern unsigned char D_800758D5;
-extern int D_80077350;
-
 extern short g_nCameraEulerYaw; /* camera yaw, as the balloonist reads it */
 extern int g_nCameraCurrentMode;   /* camera mode */
-extern int g_nCameraSpringYaw;   /* camera spherical target */
-extern int g_nCameraYaw;   /* camera spherical current */
 extern int g_nCameraNextMode;
-extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
-extern volatile unsigned char g_bSpyroOtBinBias;
-extern int g_anSpyroBodyMtx[]; /* wind basis matrix */
 extern int g_nSpyroState;   /* Spyro's state */
 extern int g_nSpyroStateFlags;
 extern int g_nSpyroStateTimer;
@@ -925,15 +881,12 @@ extern int g_anSpyroMotionVec; /* look-at offset */
 extern int D_80078B68;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroMotionSpeed;
-extern int g_nSpyroBodyYaw; /* camera yaw accumulator */
-extern int g_nSpyroWorldPosY;
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 extern int g_nSpyroSwingEulerPitchTarget;
 
 extern int g_dwSpyroRequestMask;         /* scripted camera control word */
-extern signed char D_80078C5E; /* destination level */
 extern struct {
   int x;
   int y;
@@ -941,15 +894,6 @@ extern struct {
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroRequestState; /* scripted camera mode */
-extern PortalDesc *volatile g_pGemPickupCamPathData;
-extern int g_nGemPickupCamPathMaxStep;
-extern int g_nGemPickupCamPathReverseFlag;
-
-extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
-extern unsigned char D_80078E99;
-extern unsigned char D_80078E9A;
-extern unsigned char D_8007A6C7;
-extern unsigned char D_8007A6C8;
 
 extern void ModifyWorldChunkAnimFlags(int ch, int vol, int a);
 extern void SetWorldChunkAnimStep(int ch, int n, int a);
@@ -1029,7 +973,6 @@ typedef struct SpinnerState {
   int spin;  /* 0x10 */
 } SpinnerState;
 
-extern int PickupGroupHasLiveActor(int stage);
 extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
                           int e, int f, int g);
 
@@ -1077,7 +1020,6 @@ typedef struct HelperState {
   Actor *owner; /* 0x04 */
   int beat;     /* 0x08 */
 } HelperState;
-extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
 
 /* Cases 152/153 -- sparking debris. */
 typedef struct DebrisFallState {
@@ -1099,7 +1041,6 @@ typedef struct L16Guard {
   int speed;      /* 0x20 knock-back speed */
   int knock;      /* 0x24 knock-back heading */
 } L16Guard;
-extern void StopSoundVoiceByIndex(int ch, int a);
 
 /* Case 312 -- cracking boulder. */
 typedef struct L16Boulder {
@@ -1113,9 +1054,7 @@ typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
   short vel[3]; /* 0x06 */
 } SmokeJet;
-extern SmokeJet D_8006E614[];
 extern int D_8006E52C[];
-extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -1163,9 +1102,6 @@ typedef struct L16Boss {
   char pad6C[0x8];
   int unk74;          /* 0x74 */
 } L16Boss;
-extern int D_800778E8[]; /* hits taken */
-extern int D_800778EC[]; /* stage reached */
-extern int CheckSpyroLineOfSightTo(int *pos);
 extern int IsPointInRotatedBox(int *a, int *b);
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
@@ -1233,7 +1169,6 @@ typedef struct PatrolState {
   int timer;      /* 0x10 */
 } PatrolState;
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
-extern int g_nHitRumbleTimer;
 /* Case 174 -- the cage that carries Spyro. */
 typedef struct CageState {
   int idx;    /* 0x00 index of its flyer in g_pActorListBase */

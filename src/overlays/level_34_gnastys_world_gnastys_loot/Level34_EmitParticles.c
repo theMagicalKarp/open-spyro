@@ -123,7 +123,6 @@ extern void *AllocEmitListRecord(int cls);
 extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */
 
 extern int g_nGamestate;            /* g_Gamestate */
-extern int g_anCameraPos[];          /* world anchor position */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
 extern unsigned char g_bSpyroPersistentEulerZ;

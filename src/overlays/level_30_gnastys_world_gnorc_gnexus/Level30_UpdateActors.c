@@ -207,14 +207,12 @@ extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
  * globals used when a behaviour plays a sound. */
 extern Actor *g_pActorListBase;         /* level actor pool */
 extern Actor *g_pActorPoolDynBase;         /* end of the level actor pool */
-extern int D_80077AE8;            /* bit 0: switch sounds enabled */
 extern unsigned char *g_pLevelSampleBankEntries; /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 extern int g_nSfxOverrideFlags;
 extern struct {
   short v;
 } g_nSfxOverridePitch;
-extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
 
 /* Egg sequence flags, then the vector library: copy, add, subtract, scale,
  * shift, sine and cosine. */
@@ -245,13 +243,6 @@ typedef struct AnimState {
   int started; /* 0x04 one-shot init latch */
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
-
-extern unsigned char D_80078E7C; /* visited flag, read once */
-
-extern unsigned char D_8007A6A9;
-extern unsigned char D_8007A6AA;
-extern unsigned char D_8007A6AB;
-extern unsigned char D_8007A6AC;
 
 extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
 extern void SetWorldChunkAnimStep(int handle, int a, int b);
@@ -335,9 +326,7 @@ extern int g_nLevelEggCount; /* key collected */
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
 extern int g_nWorldDragonsRescued;
-extern unsigned char g_abSaveOptionsBlock[]; /* save-options block; [1] is the latch */
 extern int D_800777F4;
-extern int D_800777F8;
 extern void ResetSpyroLinearMotion(void);
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 
@@ -470,8 +459,6 @@ extern int g_anLevelDragonsRescued[]; /* per-g_nLevelIntroIndex completion count
 typedef struct Xform6 {
   int w[6];
 } Xform6;
-extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
-extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
 /* Type 300 state block: activation box, mode flags, timer, linked actor. */
 typedef struct TriggerState {
@@ -537,7 +524,6 @@ typedef struct WalkerState {
   int unk14;      /* 0x14 likewise */
 } WalkerState;
 
-extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -594,17 +580,12 @@ typedef struct PatchRideState {
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
 
-extern int g_dwGamestateFrames; /* frame counter; the arm acts on every 4th frame */
-extern int CastRayWorldAndActors(int *a, int *b);
-
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
   int anim;   /* 0x00 handle for ModifyWorldChunkAnimFlags / B3F4 / B444 */
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
-
-extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 
 /* Types 76/426..451: letters of a floating word, placed relative to their
  * parent actor. */
@@ -932,7 +913,6 @@ extern int g_nCameraNextMode;
 extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
 extern volatile unsigned char g_bSpyroOtBinBias;
-extern int g_anSpyroBodyMtx[]; /* wind basis matrix */
 extern int g_nSpyroState;   /* Spyro's state */
 extern int g_nSpyroStateFlags;
 extern int g_nSpyroStateTimer;

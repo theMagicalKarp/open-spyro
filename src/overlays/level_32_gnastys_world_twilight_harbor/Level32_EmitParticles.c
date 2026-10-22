@@ -145,7 +145,6 @@ extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> shor
 extern int g_nGamestate;            /* g_Gamestate */
 extern int g_nSpyroHornStrikeVariant;
 extern int g_anSpyroWorldPos[];          /* Spyro world position */
-extern unsigned char g_bSpyroPersistentEulerZ;
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroMotionSpeed;

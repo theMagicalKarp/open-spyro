@@ -47,7 +47,6 @@ extern int abs(int n);
 extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
-extern char *g_pActorListBase;
 extern int g_nSpyroDrawSuppressed;
 extern int g_nFrameStep;            /* per-frame step count */
 extern short g_anSineLut[];        /* sine table */

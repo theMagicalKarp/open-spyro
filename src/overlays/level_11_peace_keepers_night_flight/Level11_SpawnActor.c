@@ -145,26 +145,14 @@ extern void InsertActorIntoSpatialGrid(Actor *rec);
 extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern int FindGroundHeightBelow(int *pos, int drop);
-extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 extern int g_nActiveWorldIndex;     /* active flight-race slot index */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern int g_anSpyroVelocity[3];
-extern int g_nGemPickupSubstate;
-extern short g_anLaunchDirTable[]; /* launch-direction table, x */
-extern short g_anLaunchDirTableZ[]; /* launch-direction table, z */
-extern int g_anSpyroFirstContactPoint[3];
-extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
-extern int g_nSpyroWorldPosZ;     /* g_anSpyroWorldPos[2] */
 extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
-extern int g_anSpyroFirstContactNormal[3];
-extern int g_nSpyroGroundHeightZ;     /* g_nSpyroGroundHeight */
-extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
-extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE

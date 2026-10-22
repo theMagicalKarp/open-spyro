@@ -285,8 +285,6 @@ typedef struct {
 extern CamObj g_anWorldToCameraRotMtx;
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
-
 /* Vortex path: node count and current node, then the two anchor positions
  * whose midpoint Spyro is pulled toward. */
 typedef struct PortalDesc {

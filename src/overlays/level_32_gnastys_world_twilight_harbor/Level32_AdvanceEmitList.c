@@ -72,9 +72,6 @@ extern int g_nGemPickupTimer;
 extern int g_nSpyroState;
 extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 extern int g_nLevelReadyFlag;
-extern void SVectorToVectorShl2(int *dst, short *src);
-extern char *g_pActorListBase;
-extern int g_anCameraPos[];
 
 void Level32_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
