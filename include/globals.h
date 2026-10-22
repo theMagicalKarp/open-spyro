@@ -1072,6 +1072,11 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nGamestate0cCam{Yaw,Radius,Height}Goal   0x80077838/3c/40  (+0x4c..)
  *   g_pGamestate0cActor   0x8007784c  focus actor (BeginActorCutscene)
  *   g_pGamestate0cRecord  0x80077850  orbit-centre record / title-card OT seed
+ *   g_anGamestate0cSpyroFrom 0x80077800 (+ g_nGamestate0cSpyroFromY/Z views)  Spyro position the
+ *       cutscene lerps from; g_nGamestate0cSpyroToX/Y/Z 0x8007780c/10/14  the position it lerps to
+ *   g_nGamestate0cSpyroYawStart / Goal  0x80077818 / 1c  Spyro yaw (12-bit) turned across the cutscene
+ *   g_nGamestate0cCamEuler{Roll,Pitch,Yaw}Start 0x8007782c/30/34  camera euler saved at cutscene start
+ *   g_nGamestate0cRecordZStart / Goal   0x80077844 / 48  orbit-centre record z, lerped by cosine
  *
  * World / flight levels:
  *   g_nActiveWorldIndex           0x8007595c  g_nActiveLevelId / 10 - 1 (TickLevelTransitionStream)

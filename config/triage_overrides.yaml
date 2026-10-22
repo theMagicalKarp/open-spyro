@@ -2950,7 +2950,7 @@ func_level_0_8007B020_2026_08_29:
     find_cross_jump merges as soon as `minimum` (2 for that path, 1 for the
     label-predecessor path) reaches 0, so differentiating any insn more than two
     back from the jump cannot stop a merge — which also rules out the untried
-    equal-address alias idea (`(&D_80077814)[1]` for D_80077818: byte-identical
+    equal-address alias idea (`(&g_nGamestate0cSpyroToZ)[1]` for g_nGamestate0cSpyroYawStart: byte-identical
     reloc, but the mismatch lands 4 insns back and a 3-insn tail still merges).
     POSITIVE result: a block-scoped `int k;` in the `t >= 0x48` branch makes
     arm3's accumulator a separate pseudo, it wins a0 instead of v0, the two

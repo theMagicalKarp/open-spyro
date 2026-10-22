@@ -8,8 +8,8 @@ extern int g_adwActorBurstColors[];
 
 /* 0x8003b9d4 (0xFC) — on picking up actor `a` (a fodder/pickup): record its
    kind byte in the gem-tally icon UV ring, bump the ring count, special-case
-   the egg-thief actor (g_pThiefEggDrop -> 3 eggs), notify the pickup handler, spawn
-   the level's particle burst for the kind, then queue the matching sound
+   the egg-thief actor (g_pThiefEggDrop -> 3 eggs), notify the pickup handler,
+   spawn the level's particle burst for the kind, then queue the matching sound
    effect for kinds 0x53..0x57. */
 void CollectPickupActor(unsigned char *a) {
   short kind;
