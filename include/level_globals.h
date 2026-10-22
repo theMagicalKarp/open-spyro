@@ -14,14 +14,17 @@ extern int D_8006E3E4[];
 extern void *g_dwBurstColorType15;
 extern void *g_dwBurstColorType14;
 extern int D_8006E52C[];
-extern char *D_8006E8C0[];                               /* row title string tables */
-extern char *D_8006E8C4[];
-extern char *D_8006E8C8[];
-extern char *D_8006E8CC[];
-extern int D_8006E924[];
-extern int D_8006E928[];
-extern int D_8006E92C[];
-extern int D_8006E930[];
+/* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
+ * values / claimed flags); _rN is row N of the same table, declared as its
+ * own symbol because the original addresses each row directly. */
+extern char *g_apFlightRowTitles[];                               /* row title string tables */
+extern char *g_apFlightRowTitles_r1[];
+extern char *g_apFlightRowTitles_r2[];
+extern char *g_apFlightRowTitles_r3[];
+extern int g_anFlightCourseBonusTable_r1[];
+extern int g_anFlightCourseBonusTable_r2[];
+extern int g_anFlightCourseBonusTable_r3[];
+extern int g_anFlightCourseBonusTable_r4[];
 extern unsigned char D_8006E998[];
 extern int g_anGamestate0cLandingX[];
 extern int g_anGamestate0cLandingY[];
@@ -56,13 +59,13 @@ extern int g_nGamestate0cCamEulerYawStart;
 extern int g_nGamestate0cRecordZStart;
 extern int g_nGamestate0cRecordZGoal;
 extern unsigned char D_80078032[];
-extern int D_8007860C;
-extern int D_80078610;
-extern int D_80078614;
-extern unsigned char D_80078681[];
-extern unsigned char D_80078682[];
-extern unsigned char D_80078683[];
-extern unsigned char D_80078684[];
+extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
+extern int g_anFlightTallyActiveSlots_e2;
+extern int g_anFlightTallyActiveSlots_e3;
+extern unsigned char g_abWorldPerLevelByteTable_r1[];
+extern unsigned char g_abWorldPerLevelByteTable_r2[];
+extern unsigned char g_abWorldPerLevelByteTable_r3[];
+extern unsigned char g_abWorldPerLevelByteTable_r4[];
 extern int g_nSpyroMotionY;
 extern int g_nSpyroRequestTargetZ;
 extern unsigned char g_abBalloonistDialoguePageStarts[]; /* dialogue page first line */

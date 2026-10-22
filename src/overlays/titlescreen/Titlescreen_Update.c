@@ -36,10 +36,10 @@ static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 #define START_DEMO(DEMO_TYPE)                                                  \
   g_nGamestate0dMode.menuState = 5;                                                      \
   g_nGamestate0dMode.demoType = DEMO_TYPE;                                           \
-  D_80078D14.unk_0x20 = g_nGamestate0dMode.file->header.clut[15];         \
-  D_80078D14.unk_0x14 = 1;                                              \
-  D_80078D14.unk_0x18 = g_nGamestate0dMode.cardPort << 4;                \
-  D_80078D14.unk_0x1c = g_nGamestate0dMode.selection;                           \
+  g_nSaveSlotLoaded_s.fileTag = g_nGamestate0dMode.file->header.clut[15];         \
+  g_nSaveSlotLoaded_s.loaded = 1;                                              \
+  g_nSaveSlotLoaded_s.cardPort = g_nGamestate0dMode.cardPort << 4;                \
+  g_nSaveSlotLoaded_s.slot = g_nGamestate0dMode.selection;                           \
   MemCardSync(0, (long *)&g_nGamestate0dMode.mcCmd,                    \
                 (long *)&g_nGamestate0dMode.mcResult);
 
@@ -124,7 +124,7 @@ void Titlescreen_Update(void) {
           TickActiveSoundVoices(); /* update sounds */
           TickCdMusicStream();
         }
-        func_8002BAB8(); /* crash-demo launch */
+        LaunchCrashDemo(); /* crash-demo launch */
       } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
         g_nGamestate0dMode.subState = 4;
         Titlescreen_PlayUiSound(7);
@@ -415,7 +415,7 @@ void Titlescreen_Update(void) {
             g_nGamestate0dMode.mode = Mode_0x02;
             g_nGamestate0dMode.menuState = 5;
             g_nGamestate0dMode.demoType = 0;
-            D_80078D14.unk_0x14 = 0;
+            g_nSaveSlotLoaded_s.loaded = 0;
           } else {
             RELOAD_MEMCARDS
           }
@@ -588,8 +588,8 @@ void Titlescreen_Update(void) {
           CopyWords(g_nGamestate0dMode.file, D_8006F494,
                         sizeof(D_8006F494));
 
-          D_80078D14.unk_0x20 = func_80017FD4();
-          g_nGamestate0dMode.file->header.clut[15] = D_80078D14.unk_0x20;
+          g_nSaveSlotLoaded_s.fileTag = ReadRootCounter2();
+          g_nGamestate0dMode.file->header.clut[15] = g_nSaveSlotLoaded_s.fileTag;
 
           /* reset game and create all 3 saves */
           mcs += sizeof(D_8006F494);

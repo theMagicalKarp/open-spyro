@@ -8,10 +8,10 @@
  * life and rides the cosine LUT after that. Then the standard sprite flush and
  * the simple (no pace loop) gamestate frame-submit tail. */
 
-extern unsigned char D_80010CF0[];
-extern unsigned char D_80010D0C[];
-extern unsigned char D_80010D28[];
-extern unsigned char D_80010D40[];
+extern unsigned char g_szInTheWorldOfDragons[];
+extern unsigned char g_szTheAdventureContinues[];
+extern unsigned char g_szTheAdventureBegins[];
+extern unsigned char g_szEnteringDemoMode[];
 
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a
@@ -49,21 +49,21 @@ void StoryIntro_Draw(void) {
     col[2] = 0x1600;
     if (g_nStoryIntroMessage == 0) {
       pos[0] = 0x5C;
-      BuildTextSprites(D_80010CF0, pos, col, 0x10, 0xB);
+      BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, 0xB);
       limit = 0xB8;
     } else if (g_nStoryIntroMessage == 1) {
       if (g_abLevelVisitedFlag[0] != 0) {
         pos[0] = 0x50;
-        BuildTextSprites(D_80010D0C, pos, col, 0x10, 0xB);
+        BuildTextSprites(g_szTheAdventureContinues, pos, col, 0x10, 0xB);
         limit = 0xBC;
       } else {
         pos[0] = 0x64;
-        BuildTextSprites(D_80010D28, pos, col, 0x10, 0xB);
+        BuildTextSprites(g_szTheAdventureBegins, pos, col, 0x10, 0xB);
         limit = 0xB6;
       }
     } else {
       pos[0] = 0x68;
-      BuildTextSprites(D_80010D40, pos, col, 0x10, 0xB);
+      BuildTextSprites(g_szEnteringDemoMode, pos, col, 0x10, 0xB);
       limit = 0xB2;
     }
 

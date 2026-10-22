@@ -380,27 +380,27 @@ void Level17_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80)
+      if (actor->cullRadius & 0x80)
         break;
 
       switch (actor->mode) {
       case 0: {
-        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->drawn) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
             st->heading = WrapAddAngle8(st->heading, r);
-            st->t12 = RandomIntInRange(60, 140);
+            st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
             st->vz = RandomSignedInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -413,12 +413,12 @@ void Level17_UpdateActors(void) {
 
           if (refHeight < 300) {
             st->vz = RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
@@ -426,7 +426,7 @@ void Level17_UpdateActors(void) {
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
-            st->t12 = RandomIntInRange(30, 80);
+            st->headingTimer = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -434,7 +434,7 @@ void Level17_UpdateActors(void) {
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
-            st->t12 = 40;
+            st->headingTimer = 40;
           }
         } else {
           DespawnActorRecord(actor);
@@ -454,9 +454,9 @@ void Level17_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
             st->vz = RandomSignedInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -469,12 +469,12 @@ void Level17_UpdateActors(void) {
 
           if (refHeight < 200) {
             st->vz = RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -806,7 +806,7 @@ void Level17_UpdateActors(void) {
 
           } else if (st->sub == 2) {
 
-            UnpackWorldCollisionTri(st->unk0C, acc[0]);
+            UnpackWorldCollisionTri(st->groundTri, acc[0]);
 
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -830,7 +830,7 @@ void Level17_UpdateActors(void) {
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
               st->sub = 2;
-              st->unk0C = colIndex;
+              st->groundTri = colIndex;
             }
           }
         }
@@ -1107,9 +1107,9 @@ void Level17_UpdateActors(void) {
           if (g != 0) {
             g->anchor = &actor->posX;
             st->fx->size = 0x40;
-            st->fx->unk14 = 0;
-            st->fx->unk18 = 0;
-            st->fx->unk1C = 0;
+            st->fx->offX = 0;
+            st->fx->offY = 0;
+            st->fx->offZ = 0;
             st->fx->r = 0xC0;
             st->fx->g = 0xC0;
             st->fx->b = 0x60;
@@ -1276,7 +1276,7 @@ void Level17_UpdateActors(void) {
         }
       } else {
 
-        actor->unk50 = 0x10;
+        actor->cullRadius = 0x10;
         if (st->timer <= 0) {
 
           svF[0] = -0x258;
@@ -1387,7 +1387,7 @@ void Level17_UpdateActors(void) {
 
           g_nLevelEggCount = 1;
           actor->scale = 0x40;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -1429,7 +1429,7 @@ void Level17_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -1686,7 +1686,7 @@ void Level17_UpdateActors(void) {
         actor->rotX = 0;
         actor->rotY = 0;
         actor->rotZ = 0xC0;
-        actor->unk50 = 0xFF;
+        actor->cullRadius = 0xFF;
         actor->unk47 = 0x20;
         actor->mode = 2;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
@@ -1816,16 +1816,16 @@ void Level17_UpdateActors(void) {
         g_anFlightTargetTally[2] = 0;
         g_anFlightTallyShown[3] = 0;
         g_anFlightTargetTally[3] = 0;
-        D_80078614 = -1;
-        D_80078610 = -1;
-        D_8007860C = -1;
+        g_anFlightTallyActiveSlots_e3 = -1;
+        g_anFlightTallyActiveSlots_e2 = -1;
+        g_anFlightTallyActiveSlots_e1 = -1;
         g_anFlightTallyActiveSlots = -1;
         g_nFlightTallySlot = -1;
         g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
-          st->digit[i]->unk50 = 0xFF;
+          st->digit[i]->cullRadius = 0xFF;
           st->digit[i]->unk47 = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
@@ -1842,7 +1842,7 @@ void Level17_UpdateActors(void) {
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
-            st->digit[i]->unk50 = 0xFF;
+            st->digit[i]->cullRadius = 0xFF;
             st->digit[i]->unk47 = 0x20;
             st->digit[i]->rotZ = 0;
           }
@@ -1882,7 +1882,7 @@ void Level17_UpdateActors(void) {
           g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
           g_abHudIconActorRecords[i].unk47 = 0x20;
-          g_abHudIconActorRecords[i].unk50 = 0xFF;
+          g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;
           g_abHudIconActorRecords[i].unk4F = i + 3;
@@ -1925,17 +1925,17 @@ void Level17_UpdateActors(void) {
         i = t / 3600;
         if (i != 0) {
           st->digit[6]->type = i + 0x104;
-          st->digit[4]->unk50 = 0xFF;
-          st->digit[5]->unk50 = 0xFF;
-          st->digit[6]->unk50 = 0xFF;
+          st->digit[4]->cullRadius = 0xFF;
+          st->digit[5]->cullRadius = 0xFF;
+          st->digit[6]->cullRadius = 0xFF;
         } else {
-          st->digit[4]->unk50 = 0;
-          st->digit[5]->unk50 = 0;
-          st->digit[6]->unk50 = 0;
+          st->digit[4]->cullRadius = 0;
+          st->digit[5]->cullRadius = 0;
+          st->digit[6]->cullRadius = 0;
         }
         i = t * 10 / 6 % 10;
         st->digit[7]->type = i + 0x104;
-        st->digit[7]->unk50 = 0xFF;
+        st->digit[7]->cullRadius = 0xFF;
       } else {
         t = g_nFlightTimeRemaining;
         if (t < 0) {
@@ -1947,9 +1947,9 @@ void Level17_UpdateActors(void) {
       if (i != 0) {
         i = i % 6;
         st->digit[0]->type = i + 0x104;
-        st->digit[0]->unk50 = 0xFF;
+        st->digit[0]->cullRadius = 0xFF;
       } else {
-        st->digit[0]->unk50 = 0;
+        st->digit[0]->cullRadius = 0;
       }
 
       {
@@ -2027,13 +2027,13 @@ void Level17_UpdateActors(void) {
             for (i = 0, x = 0x1E; i < 8; i++) {
               st->icon[i]->type = st->types[g_nFlightTallyShownClass];
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
-                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = 0;
                 st->icon[i]->rotZ = 0;
                 st->icon[i]->mode = 0;
               } else {
-                st->icon[i]->unk50 = 0xFF;
+                st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->unk4F = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = 1;
@@ -2052,10 +2052,10 @@ void Level17_UpdateActors(void) {
               g_nFlightTallySlot = g_nFlightTallyShownClass;
             }
           }
-          g_anFlightTallyActiveSlots = D_8007860C;
-          D_8007860C = D_80078610;
-          D_80078610 = D_80078614;
-          D_80078614 = -1;
+          g_anFlightTallyActiveSlots = g_anFlightTallyActiveSlots_e1;
+          g_anFlightTallyActiveSlots_e1 = g_anFlightTallyActiveSlots_e2;
+          g_anFlightTallyActiveSlots_e2 = g_anFlightTallyActiveSlots_e3;
+          g_anFlightTallyActiveSlots_e3 = -1;
         }
         g_nFlightTallyShownClass = -1;
       }
@@ -2063,18 +2063,18 @@ void Level17_UpdateActors(void) {
       if (g_nGamestate == 7) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
-            st->icon[i]->unk50 = 0;
+            st->icon[i]->cullRadius = 0;
           }
           if (st->spent[i] != 0) {
-            st->spent[i]->unk50 = 0;
+            st->spent[i]->cullRadius = 0;
           }
         }
         for (i = 0; i < 8; i++) {
           if (st->digit[i] != 0) {
-            st->digit[i]->unk50 = 0;
+            st->digit[i]->cullRadius = 0;
           }
           if (st->slot[i] != 0) {
-            st->slot[i]->unk50 = 0;
+            st->slot[i]->cullRadius = 0;
           }
         }
       }

@@ -6,7 +6,7 @@ extern void func_8005DEBC(void);
    display, re-inits the CD, clears the CD read callback, the VSync callback and
    pad comms, resets the GPU, then runs the libapi reset helper.
    (0x8002ba68, 80 bytes.) */
-void func_8002BA68(void) {
+void QuiesceHardwareForExec(void) {
   SetDispMask(0);
   CdInit();
   CdReadCallback(0);

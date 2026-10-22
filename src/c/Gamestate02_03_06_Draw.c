@@ -41,15 +41,15 @@ extern unsigned char g_abLevelTotalDragonsBlock[];
 extern int g_anLevelGemsBlock[];
 extern unsigned char g_abWorldTitleGlyphBlock[];
 /* menu label blobs that have no friendly name yet. */
-extern char D_80010B24[]; /* "QUIT GAME?"  */
-extern char D_80010B30[]; /* "SOUND FX"    */
-extern char D_80010B40[]; /* "MUSIC"       */
-extern char D_80010B50[]; /* "SOUND"       */
-extern char D_80010B60[]; /* "VIBRATION"   */
-extern char D_80010B6C[]; /* "CONTINUE"    */
-extern char D_80010B78[]; /* "INVENTORY"   */
-extern char D_80010B84[]; /* "EXIT LEVEL"  */
-extern char D_80010B90[]; /* "EXIT WORLD"  */
+extern char g_szQuitGamePrompt[]; /* "QUIT GAME?"  */
+extern char g_szSoundEffects[];   /* "SOUND FX"    */
+extern char g_szMusicVolume[];    /* "MUSIC"       */
+extern char g_szSpeakerSetup[];   /* "SOUND"       */
+extern char g_szVibration[];      /* "VIBRATION"   */
+extern char g_szContinue[];       /* "CONTINUE"    */
+extern char g_szInventory[];      /* "INVENTORY"   */
+extern char g_szExitLevel[];      /* "EXIT LEVEL"  */
+extern char g_szQuitGame[];       /* "EXIT WORLD"  */
 
 /* Draw for gamestates 2 (pause menu), 3 (inventory) and 6 (dialog overlay)
    — 0x8001a40c, 8840 bytes.
@@ -356,7 +356,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xb7;
         pos[1] = 0x77;
         pos[2] = 0x1100;
-        BuildTextSprites(D_80010B24, pos, styA, 0x12, 0xb);
+        BuildTextSprites(g_szQuitGamePrompt, pos, styA, 0x12, 0xb);
         pos[0] = 0xc0;
         pos[1] = 0x94;
         pos[2] = 0x1100;
@@ -393,7 +393,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x6b;
         pos[1] = 0x6c;
         pos[2] = 0x1400;
-        BuildTextSprites(D_80010B30, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szSoundEffects, pos, styB, 0x10, 0xb);
         if (g_nPauseMenuCursor == 0) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -401,7 +401,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x79;
         pos[1] = 0x7c;
         pos[2] = 0x1400;
-        BuildTextSprites(D_80010B40, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szMusicVolume, pos, styB, 0x10, 0xb);
         if (g_nPauseMenuCursor == 1) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -409,7 +409,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x6b;
         pos[1] = 0x8c;
         pos[2] = 0x1400;
-        BuildTextSprites(D_80010B50, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szSpeakerSetup, pos, styB, 0x10, 0xb);
         if (g_nPauseMenuCursor == 2) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 0xc;
@@ -418,7 +418,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xa3;
           pos[1] = 0x9c;
           pos[2] = 0x1400;
-          BuildTextSprites(D_80010B60, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szVibration, pos, styB, 0x10, 0xb);
           if (g_nPauseMenuCursor == 3) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -647,7 +647,7 @@ void Gamestate02_03_06_Draw(void) {
         styC[1] = 1;
         pos[1] = 0x6e;
         pos[2] = 0x1100;
-        BuildTextSprites(D_80010B6C, pos, styC, 0x12, 0xb);
+        BuildTextSprites(g_szContinue, pos, styC, 0x12, 0xb);
         if (g_nPauseMenuCursor == 0) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 8;
@@ -663,7 +663,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xbf;
         pos[1] = 0x92;
         pos[2] = 0x1100;
-        BuildTextSprites(D_80010B78, pos, styC, 0x12, 0xb);
+        BuildTextSprites(g_szInventory, pos, styC, 0x12, 0xb);
         if (g_nPauseMenuCursor == 2) {
           rec = (unsigned char *)g_pSpriteRecordWriteCursor;
           nGlyphs = 9;
@@ -682,7 +682,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xb7;
           pos[1] = 0xa4;
           pos[2] = 0x1100;
-          BuildTextSprites(D_80010B84, pos, styC, 0x12, 0xb);
+          BuildTextSprites(g_szExitLevel, pos, styC, 0x12, 0xb);
           if (g_nPauseMenuCursor == 3) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -692,7 +692,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xbf;
           pos[1] = 0xa4;
           pos[2] = 0x1100;
-          BuildTextSprites(D_80010B90, pos, styC, 0x12, 0xb);
+          BuildTextSprites(g_szQuitGame, pos, styC, 0x12, 0xb);
           if (g_nPauseMenuCursor == 3) {
             rec = (unsigned char *)g_pSpriteRecordWriteCursor;
             nGlyphs = 8;

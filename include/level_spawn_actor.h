@@ -7,63 +7,67 @@
 #ifndef OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 #define OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 
-/* Flame state block (types 0xE, 0xF, 0x53..0x57). */
-typedef struct FlameState {
-  int unk00;
-  int unk04;
-  int unk08;
-  unsigned char unk0C;
+/* Collectible drop (types 0xE, 0xF, 0x53..0x57: life statue, life orb,
+ * gems) — SpawnActor's view of UpdateActors' PickupState, with 0x0C split
+ * into two bytes. */
+typedef struct PickupDropState {
+  int velX;              /* 0x00 pop-out velocity */
+  int velY;              /* 0x04 */
+  int velZ;              /* 0x08 */
+  unsigned char unk0C;   /* 0x0C (PickupState: groundTri, a short) */
   unsigned char unk0D;
-  unsigned char unk0E;
-  unsigned char unk0F;
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  unsigned char unk14;
-} FlameState;
+  unsigned char sub;     /* 0x0E resting sub-state */
+  unsigned char timer;   /* 0x0F sparkle timer */
+  unsigned char bounces; /* 0x10 bounces left */
+  unsigned char pitch;   /* 0x11 ground-normal tilt */
+  unsigned char yaw;     /* 0x12 */
+  unsigned char roll;    /* 0x13 */
+  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
+} PickupDropState;
 
-/* Mortar-shot state block (type 0xFB). */
-typedef struct ShotState {
-  int vel[3];  /* 0x00 */
-  int unk0C;   /* 0x0C */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-} ShotState;
+/* Dragon-statue burst shard (type 0xFB), ticked by TickGemPickupBurstEntity:
+ * integrates vel with gravity while life runs and posZ stays above floorZ. */
+typedef struct BurstShardState {
+  int vel[3];          /* 0x00 */
+  int floorZ;          /* 0x0C the statue's height */
+  unsigned char spinX; /* 0x10 per-tick ->rotX/rotY/rotZ deltas */
+  unsigned char spinY;
+  unsigned char spinZ;
+  unsigned char life;  /* 0x13 ticks left */
+} BurstShardState;
 
-/* Beam/link state block (type 0x10). */
-typedef struct BeamState {
-  int unk00;
-  int anchor[3]; /* 0x04 */
-  unsigned char unk10;
-  unsigned char unk11;
-  unsigned char unk12;
-  unsigned char unk13;
-  short unk14;
-} BeamState;
+/* Butterfly (type 0x10) — SpawnActor's view of UpdateActors' ChaseState. */
+typedef struct ButterflyState {
+  int dir;                    /* 0x00 */
+  int anchor[3];              /* 0x04 flutter anchor */
+  unsigned char vz;           /* 0x10 vertical step */
+  unsigned char heading;      /* 0x11 */
+  unsigned char headingTimer; /* 0x12 */
+  unsigned char climbTimer;   /* 0x13 vertical-change timer */
+  short idleTimer;
+} ButterflyState;
 
-/* Spin state block (type 0x78). */
-typedef struct SpinState {
-  int unk00;
-  short unk04;
-  short unk06;
-  short unk08;
+/* Sparx (type 0x78) — SpawnActor's view of UpdateActors' FlierState. */
+typedef struct SparxState {
+  int timer;  /* 0x00 idle / fetch timer */
+  short vx;   /* 0x04 hover offset */
+  short vy;   /* 0x06 */
+  short vz;   /* 0x08 */
   short unk0A;
-  int unk0C;
-  int unk10;
-} SpinState;
+  int fx;     /* 0x0C glow node (FxNode *) */
+  int rider;  /* 0x10 actor being fetched (Actor *) */
+} SparxState;
 
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-typedef struct DebrisState {
+/* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
+ * per-level ranges) — UpdateActors' SparkState / TumbleState. */
+typedef struct FragmentState {
   short vel[3]; /* 0x00 */
   short spinX;  /* 0x06 */
   short spinY;  /* 0x08 */
   short spinZ;  /* 0x0A */
-  int unk0C;
-  int unk10;
-} DebrisState;
+  int life;     /* 0x0C ticks left */
+  int floorZ;   /* 0x10 retire height */
+} FragmentState;
 
 /* Thrown-shard state block (types 0x120..0x121). */
 typedef struct ShardState {

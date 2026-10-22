@@ -264,14 +264,16 @@ extern struct {
   int unk_0x21C;    /* 0x21C */
 } g_nCurrentMusicTrack;
 
-/* ---- fairy cutscene tail (this struct's field names are absolute byte
-   offsets within the larger unmatched structure) ---- */
-extern struct {
-  int unk_0x14;
-  int unk_0x18;
-  int unk_0x1c;
-  int unk_0x20;
-} D_80078D14;
+/* The memory-card save slot the game was loaded from (main 0x80078D14..0x20,
+ * read back by the save menu, Gamestate0B_Update), viewed as one record. */
+typedef struct SaveSlotInfo {
+  int loaded;   /* 0x14 g_nSaveSlotLoaded: a slot is known, saving is offered */
+  int cardPort; /* 0x18 memory-card port << 4 */
+  int slot;     /* 0x1C g_nSaveSlotIndex: slot within the save file */
+  int fileTag;  /* 0x20 g_nSaveFileTag: id stamped into the file header's
+                 * clut[15]; the save menu checks it before writing */
+} SaveSlotInfo;
+extern SaveSlotInfo g_nSaveSlotLoaded_s;
 
 /* camera rotation svec */
 extern struct {
@@ -305,7 +307,7 @@ extern void StopAllSoundExceptMask(int);
 extern void TickSpuPerFrame(void);
 extern void TickActiveSoundVoices(void);
 extern void TickCdMusicStream(void);
-extern void func_8002BAB8(void);
+extern void LaunchCrashDemo(void);
 extern void MemCardOpenSession(void);
 extern int MemCardSync(int, long *, long *);
 extern void MemCardLoad(int);
@@ -319,7 +321,7 @@ extern void BuildSaveGameBuffer(Struct_0x600 *);
 extern int func_80059594(Struct_0x600 *);
 extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
-extern int func_80017FD4(void);
+extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
 extern int func_80032AB0(void);
 extern void AdvanceGemCutsceneFrame(int);

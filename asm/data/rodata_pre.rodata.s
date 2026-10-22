@@ -715,365 +715,365 @@ enddlabel switchdataD_80010a88
     /* 12BC 80010ABC CC5C0180 */ .word .L80015CCC
 .endif
 
-.section .rodata.D_80010AC0, "a"
-nonmatching D_80010AC0
+.section .rodata.g_szDemoMode, "a"
+nonmatching g_szDemoMode
 
-dlabel D_80010AC0
+dlabel g_szDemoMode
     /* 12C0 80010AC0 */ .asciz "DEMO MODE"
     /* 44454D4F204D4F4445000000 */
 .align 2
-enddlabel D_80010AC0
+enddlabel g_szDemoMode
 
-.section .rodata.D_80010ACC, "a"
-nonmatching D_80010ACC
+.section .rodata.g_szReturningHome, "a"
+nonmatching g_szReturningHome
 
-dlabel D_80010ACC
+dlabel g_szReturningHome
     /* 12CC 80010ACC */ .asciz "RETURNING HOME..."
     /* 52455455524E494E4720484F4D452E2E2E000000 */
 .align 2
-enddlabel D_80010ACC
+enddlabel g_szReturningHome
 
-.section .rodata.D_80010AE0, "a"
-nonmatching D_80010AE0
+.section .rodata.g_szConfrontingFmt, "a"
+nonmatching g_szConfrontingFmt
 
-dlabel D_80010AE0
+dlabel g_szConfrontingFmt
     /* 12E0 80010AE0 */ .asciz "CONFRONTING %s..."
     /* 434F4E46524F4E54494E472025732E2E2E000000 */
 .align 2
-enddlabel D_80010AE0
+enddlabel g_szConfrontingFmt
 
-.section .rodata.D_80010AF4, "a"
-nonmatching D_80010AF4
+.section .rodata.g_szEnteringDotsFmt, "a"
+nonmatching g_szEnteringDotsFmt
 
-dlabel D_80010AF4
+dlabel g_szEnteringDotsFmt
     /* 12F4 80010AF4 */ .asciz "ENTERING %s..."
     /* 454E544552494E472025732E2E2E0000 */
 .align 2
-enddlabel D_80010AF4
+enddlabel g_szEnteringDotsFmt
 
-.section .rodata.D_80010B04, "a"
-nonmatching D_80010B04
+.section .rodata.g_szTreasureFound, "a"
+nonmatching g_szTreasureFound
 
-dlabel D_80010B04
+dlabel g_szTreasureFound
     /* 1304 80010B04 */ .asciz "TREASURE FOUND"
     /* 545245415355524520464F554E440000 */
 .align 2
-enddlabel D_80010B04
+enddlabel g_szTreasureFound
 
-.section .rodata.D_80010B14, "a"
-nonmatching D_80010B14
+.section .rodata.g_szTotalTreasure, "a"
+nonmatching g_szTotalTreasure
 
-dlabel D_80010B14
+dlabel g_szTotalTreasure
     /* 1314 80010B14 */ .asciz "TOTAL TREASURE"
     /* 544F54414C2054524541535552450000 */
 .align 2
-enddlabel D_80010B14
+enddlabel g_szTotalTreasure
 
-.section .rodata.D_80010B24, "a"
-nonmatching D_80010B24
+.section .rodata.g_szQuitGamePrompt, "a"
+nonmatching g_szQuitGamePrompt
 
-dlabel D_80010B24
+dlabel g_szQuitGamePrompt
     /* 1324 80010B24 */ .asciz "QUIT GAME?"
     /* 515549542047414D453F0000 */
 .align 2
-enddlabel D_80010B24
+enddlabel g_szQuitGamePrompt
 
-.section .rodata.D_80010B30, "a"
-nonmatching D_80010B30
+.section .rodata.g_szSoundEffects, "a"
+nonmatching g_szSoundEffects
 
-dlabel D_80010B30
+dlabel g_szSoundEffects
     /* 1330 80010B30 */ .asciz "SOUND EFFECTS"
     /* 534F554E442045464645435453000000 */
 .align 2
-enddlabel D_80010B30
+enddlabel g_szSoundEffects
 
-.section .rodata.D_80010B40, "a"
-nonmatching D_80010B40
+.section .rodata.g_szMusicVolume, "a"
+nonmatching g_szMusicVolume
 
-dlabel D_80010B40
+dlabel g_szMusicVolume
     /* 1340 80010B40 */ .asciz "MUSIC VOLUME"
     /* 4D5553494320564F4C554D4500000000 */
 .align 2
-enddlabel D_80010B40
+enddlabel g_szMusicVolume
 
-.section .rodata.D_80010B50, "a"
-nonmatching D_80010B50
+.section .rodata.g_szSpeakerSetup, "a"
+nonmatching g_szSpeakerSetup
 
-dlabel D_80010B50
+dlabel g_szSpeakerSetup
     /* 1350 80010B50 */ .asciz "SPEAKER SETUP"
     /* 535045414B4552205345545550000000 */
 .align 2
-enddlabel D_80010B50
+enddlabel g_szSpeakerSetup
 
-.section .rodata.D_80010B60, "a"
-nonmatching D_80010B60
+.section .rodata.g_szVibration, "a"
+nonmatching g_szVibration
 
-dlabel D_80010B60
+dlabel g_szVibration
     /* 1360 80010B60 */ .asciz "VIBRATION"
     /* 564942524154494F4E000000 */
 .align 2
-enddlabel D_80010B60
+enddlabel g_szVibration
 
-.section .rodata.D_80010B6C, "a"
-nonmatching D_80010B6C
+.section .rodata.g_szContinue, "a"
+nonmatching g_szContinue
 
-dlabel D_80010B6C
+dlabel g_szContinue
     /* 136C 80010B6C */ .asciz "CONTINUE"
     /* 434F4E54494E554500000000 */
 .align 2
-enddlabel D_80010B6C
+enddlabel g_szContinue
 
-.section .rodata.D_80010B78, "a"
-nonmatching D_80010B78
+.section .rodata.g_szInventory, "a"
+nonmatching g_szInventory
 
-dlabel D_80010B78
+dlabel g_szInventory
     /* 1378 80010B78 */ .asciz "INVENTORY"
     /* 494E56454E544F5259000000 */
 .align 2
-enddlabel D_80010B78
+enddlabel g_szInventory
 
-.section .rodata.D_80010B84, "a"
-nonmatching D_80010B84
+.section .rodata.g_szExitLevel, "a"
+nonmatching g_szExitLevel
 
-dlabel D_80010B84
+dlabel g_szExitLevel
     /* 1384 80010B84 */ .asciz "EXIT LEVEL"
     /* 45584954204C4556454C0000 */
 .align 2
-enddlabel D_80010B84
+enddlabel g_szExitLevel
 
-.section .rodata.D_80010B90, "a"
-nonmatching D_80010B90
+.section .rodata.g_szQuitGame, "a"
+nonmatching g_szQuitGame
 
-dlabel D_80010B90
+dlabel g_szQuitGame
     /* 1390 80010B90 */ .asciz "QUIT GAME"
     /* 515549542047414D45000000 */
 .align 2
-enddlabel D_80010B90
+enddlabel g_szQuitGame
 
-.section .rodata.D_80010B9C, "a"
-nonmatching D_80010B9C
+.section .rodata.g_szPressStart, "a"
+nonmatching g_szPressStart
 
-dlabel D_80010B9C
+dlabel g_szPressStart
     /* 139C 80010B9C */ .asciz "PRESS START"
     /* 505245535320535441525400 */
 .align 2
-enddlabel D_80010B9C
+enddlabel g_szPressStart
 
-.section .rodata.D_80010BA8, "a"
-nonmatching D_80010BA8
+.section .rodata.g_szHiSpyro, "a"
+nonmatching g_szHiSpyro
 
-dlabel D_80010BA8
+dlabel g_szHiSpyro
     /* 13A8 80010BA8 */ .asciz "HI SPYRO,"
     /* 484920535059524F2C000000 */
 .align 2
-enddlabel D_80010BA8
+enddlabel g_szHiSpyro
 
-.section .rodata.D_80010BB4, "a"
-nonmatching D_80010BB4
+.section .rodata.g_szSaveGame, "a"
+nonmatching g_szSaveGame
 
-dlabel D_80010BB4
+dlabel g_szSaveGame
     /* 13B4 80010BB4 */ .asciz "SAVE GAME"
     /* 534156452047414D45000000 */
 .align 2
-enddlabel D_80010BB4
+enddlabel g_szSaveGame
 
-.section .rodata.D_80010BC0, "a"
-nonmatching D_80010BC0
+.section .rodata.g_szReplayDragon, "a"
+nonmatching g_szReplayDragon
 
-dlabel D_80010BC0
+dlabel g_szReplayDragon
     /* 13C0 80010BC0 */ .asciz "REPLAY DRAGON"
     /* 5245504C415920445241474F4E000000 */
 .align 2
-enddlabel D_80010BC0
+enddlabel g_szReplayDragon
 
-.section .rodata.D_80010BD0, "a"
-nonmatching D_80010BD0
+.section .rodata.g_szNoSaveFile, "a"
+nonmatching g_szNoSaveFile
 
-dlabel D_80010BD0
+dlabel g_szNoSaveFile
     /* 13D0 80010BD0 */ .asciz "NO SAVE FILE"
     /* 4E4F20534156452046494C4500000000 */
 .align 2
-enddlabel D_80010BD0
+enddlabel g_szNoSaveFile
 
-.section .rodata.D_80010BE0, "a"
-nonmatching D_80010BE0
+.section .rodata.g_szPleaseRestartWith, "a"
+nonmatching g_szPleaseRestartWith
 
-dlabel D_80010BE0
+dlabel g_szPleaseRestartWith
     /* 13E0 80010BE0 */ .asciz "PLEASE RESTART WITH"
     /* 504C454153452052455354415254205749544800 */
 .align 2
-enddlabel D_80010BE0
+enddlabel g_szPleaseRestartWith
 
-.section .rodata.D_80010BF4, "a"
-nonmatching D_80010BF4
+.section .rodata.g_szAMemoryCardTo, "a"
+nonmatching g_szAMemoryCardTo
 
-dlabel D_80010BF4
+dlabel g_szAMemoryCardTo
     /* 13F4 80010BF4 */ .asciz "A MEMORY CARD TO"
     /* 41204D454D4F5259204341524420544F00000000 */
 .align 2
-enddlabel D_80010BF4
+enddlabel g_szAMemoryCardTo
 
-.section .rodata.D_80010C08, "a"
-nonmatching D_80010C08
+.section .rodata.g_szEnableGameSaves, "a"
+nonmatching g_szEnableGameSaves
 
-dlabel D_80010C08
+dlabel g_szEnableGameSaves
     /* 1408 80010C08 */ .asciz "ENABLE GAME SAVES."
     /* 454E41424C452047414D452053415645532E0000 */
 .align 2
-enddlabel D_80010C08
+enddlabel g_szEnableGameSaves
 
-.section .rodata.D_80010C1C, "a"
-nonmatching D_80010C1C
+.section .rodata.g_szSaving, "a"
+nonmatching g_szSaving
 
-dlabel D_80010C1C
+dlabel g_szSaving
     /* 141C 80010C1C */ .asciz "SAVING..."
     /* 534156494E472E2E2E000000 */
 .align 2
-enddlabel D_80010C1C
+enddlabel g_szSaving
 
-.section .rodata.D_80010C28, "a"
-nonmatching D_80010C28
+.section .rodata.g_szNoMemoryCard, "a"
+nonmatching g_szNoMemoryCard
 
-dlabel D_80010C28
+dlabel g_szNoMemoryCard
     /* 1428 80010C28 */ .asciz "NO MEMORY CARD"
     /* 4E4F204D454D4F525920434152440000 */
 .align 2
-enddlabel D_80010C28
+enddlabel g_szNoMemoryCard
 
-.section .rodata.D_80010C38, "a"
-nonmatching D_80010C38
+.section .rodata.g_szPleaseInsertThe, "a"
+nonmatching g_szPleaseInsertThe
 
-dlabel D_80010C38
+dlabel g_szPleaseInsertThe
     /* 1438 80010C38 */ .asciz "PLEASE INSERT THE"
     /* 504C4541534520494E5345525420544845000000 */
 .align 2
-enddlabel D_80010C38
+enddlabel g_szPleaseInsertThe
 
-.section .rodata.D_80010C4C, "a"
-nonmatching D_80010C4C
+.section .rodata.g_szMemoryCardWith, "a"
+nonmatching g_szMemoryCardWith
 
-dlabel D_80010C4C
+dlabel g_szMemoryCardWith
     /* 144C 80010C4C */ .asciz "MEMORY CARD WITH"
     /* 4D454D4F52592043415244205749544800000000 */
 .align 2
-enddlabel D_80010C4C
+enddlabel g_szMemoryCardWith
 
-.section .rodata.D_80010C60, "a"
-nonmatching D_80010C60
+.section .rodata.g_szThisGameSaveFile, "a"
+nonmatching g_szThisGameSaveFile
 
-dlabel D_80010C60
+dlabel g_szThisGameSaveFile
     /* 1460 80010C60 */ .asciz "THIS GAME SAVE FILE"
     /* 544849532047414D4520534156452046494C4500 */
 .align 2
-enddlabel D_80010C60
+enddlabel g_szThisGameSaveFile
 
-.section .rodata.D_80010C74, "a"
-nonmatching D_80010C74
+.section .rodata.g_szSaveError, "a"
+nonmatching g_szSaveError
 
-dlabel D_80010C74
+dlabel g_szSaveError
     /* 1474 80010C74 */ .asciz "SAVE ERROR"
     /* 53415645204552524F520000 */
 .align 2
-enddlabel D_80010C74
+enddlabel g_szSaveError
 
-.section .rodata.D_80010C80, "a"
-nonmatching D_80010C80
+.section .rodata.g_szPleaseCheckThat, "a"
+nonmatching g_szPleaseCheckThat
 
-dlabel D_80010C80
+dlabel g_szPleaseCheckThat
     /* 1480 80010C80 */ .asciz "PLEASE CHECK THAT"
     /* 504C4541534520434845434B2054484154000000 */
 .align 2
-enddlabel D_80010C80
+enddlabel g_szPleaseCheckThat
 
-.section .rodata.D_80010C94, "a"
-nonmatching D_80010C94
+.section .rodata.g_szTheMemoryCard, "a"
+nonmatching g_szTheMemoryCard
 
-dlabel D_80010C94
+dlabel g_szTheMemoryCard
     /* 1494 80010C94 */ .asciz "THE MEMORY CARD"
     /* 544845204D454D4F5259204341524400 */
 .align 2
-enddlabel D_80010C94
+enddlabel g_szTheMemoryCard
 
-.section .rodata.D_80010CA4, "a"
-nonmatching D_80010CA4
+.section .rodata.g_szIsStillInPlace, "a"
+nonmatching g_szIsStillInPlace
 
-dlabel D_80010CA4
+dlabel g_szIsStillInPlace
     /* 14A4 80010CA4 */ .asciz "IS STILL IN PLACE."
     /* 4953205354494C4C20494E20504C4143452E0000 */
 .align 2
-enddlabel D_80010CA4
+enddlabel g_szIsStillInPlace
 
-.section .rodata.D_80010CB8, "a"
-nonmatching D_80010CB8
+.section .rodata.g_szSaveFailed, "a"
+nonmatching g_szSaveFailed
 
-dlabel D_80010CB8
+dlabel g_szSaveFailed
     /* 14B8 80010CB8 */ .asciz "SAVE FAILED"
     /* 53415645204641494C454400 */
 .align 2
-enddlabel D_80010CB8
+enddlabel g_szSaveFailed
 
-.section .rodata.D_80010CC4, "a"
-nonmatching D_80010CC4
+.section .rodata.g_szGameSaved, "a"
+nonmatching g_szGameSaved
 
-dlabel D_80010CC4
+dlabel g_szGameSaved
     /* 14C4 80010CC4 */ .asciz "GAME SAVED"
     /* 47414D452053415645440000 */
 .align 2
-enddlabel D_80010CC4
+enddlabel g_szGameSaved
 
-.section .rodata.D_80010CD0, "a"
-nonmatching D_80010CD0
+.section .rodata.g_szEnteringWorldFmt, "a"
+nonmatching g_szEnteringWorldFmt
 
-dlabel D_80010CD0
+dlabel g_szEnteringWorldFmt
     /* 14D0 80010CD0 */ .asciz "ENTERING %s WORLD"
     /* 454E544552494E4720257320574F524C44000000 */
 .align 2
-enddlabel D_80010CD0
+enddlabel g_szEnteringWorldFmt
 
-.section .rodata.D_80010CE4, "a"
-nonmatching D_80010CE4
+.section .rodata.g_szEnteringFmt, "a"
+nonmatching g_szEnteringFmt
 
-dlabel D_80010CE4
+dlabel g_szEnteringFmt
     /* 14E4 80010CE4 */ .asciz "ENTERING %s"
     /* 454E544552494E4720257300 */
 .align 2
-enddlabel D_80010CE4
+enddlabel g_szEnteringFmt
 
-.section .rodata.D_80010CF0, "a"
-nonmatching D_80010CF0
+.section .rodata.g_szInTheWorldOfDragons, "a"
+nonmatching g_szInTheWorldOfDragons
 
-dlabel D_80010CF0
+dlabel g_szInTheWorldOfDragons
     /* 14F0 80010CF0 */ .asciz "IN THE WORLD OF DRAGONS..."
     /* 494E2054484520574F524C44204F4620445241474F4E532E2E2E0000 */
 .align 2
-enddlabel D_80010CF0
+enddlabel g_szInTheWorldOfDragons
 
-.section .rodata.D_80010D0C, "a"
-nonmatching D_80010D0C
+.section .rodata.g_szTheAdventureContinues, "a"
+nonmatching g_szTheAdventureContinues
 
-dlabel D_80010D0C
+dlabel g_szTheAdventureContinues
     /* 150C 80010D0C */ .asciz "THE ADVENTURE CONTINUES..."
     /* 54484520414456454E5455524520434F4E54494E5545532E2E2E0000 */
 .align 2
-enddlabel D_80010D0C
+enddlabel g_szTheAdventureContinues
 
-.section .rodata.D_80010D28, "a"
-nonmatching D_80010D28
+.section .rodata.g_szTheAdventureBegins, "a"
+nonmatching g_szTheAdventureBegins
 
-dlabel D_80010D28
+dlabel g_szTheAdventureBegins
     /* 1528 80010D28 */ .asciz "THE ADVENTURE BEGINS..."
     /* 54484520414456454E5455524520424547494E532E2E2E00 */
 .align 2
-enddlabel D_80010D28
+enddlabel g_szTheAdventureBegins
 
-.section .rodata.D_80010D40, "a"
-nonmatching D_80010D40
+.section .rodata.g_szEnteringDemoMode, "a"
+nonmatching g_szEnteringDemoMode
 
-dlabel D_80010D40
+dlabel g_szEnteringDemoMode
     /* 1540 80010D40 */ .asciz "ENTERING DEMO MODE..."
     /* 454E544552494E472044454D4F204D4F44452E2E2E000000 */
 .align 2
-enddlabel D_80010D40
+enddlabel g_szEnteringDemoMode
 
 .section .rodata.switchdataD_80010d58, "a"
 .ifndef HAVE_C_SaveLoadMenu_Draw
@@ -1091,37 +1091,37 @@ enddlabel switchdataD_80010d58
     /* 1574 80010D74 E0DF0180 */ .word .L8001DFE0
 .endif
 
-.section .rodata.D_80010D78, "a"
-nonmatching D_80010D78
+.section .rodata.g_szShuttingDownMsg, "a"
+nonmatching g_szShuttingDownMsg
 
-dlabel D_80010D78
+dlabel g_szShuttingDownMsg
     /* 1578 80010D78 */ .asciz "Shutting Down\n"
     /* 5368757474696E6720446F776E0A0000 */
 .align 2
-enddlabel D_80010D78
+enddlabel g_szShuttingDownMsg
 
-.section .rodata.D_80010D88, "a"
-nonmatching D_80010D88
+.section .rodata.g_szLaunchingCrashDemoMsg, "a"
+nonmatching g_szLaunchingCrashDemoMsg
 
-dlabel D_80010D88
+dlabel g_szLaunchingCrashDemoMsg
     /* 1588 80010D88 */ .asciz "Launching Crash Demo\n"
     /* 4C61756E6368696E672043726173682044656D6F0A000000 */
 .align 2
-enddlabel D_80010D88
+enddlabel g_szLaunchingCrashDemoMsg
 
-.section .rodata.D_80010DA0, "a"
-nonmatching D_80010DA0
+.section .rodata.g_szCrashDemoExePath, "a"
+nonmatching g_szCrashDemoExePath
 
-dlabel D_80010DA0
+dlabel g_szCrashDemoExePath
     /* 15A0 80010DA0 */ .asciz "cdrom:\\S0\\CRASH.EXE;1"
     /* 6364726F6D3A5C53305C43524153482E4558453B31000000 */
 .align 2
-enddlabel D_80010DA0
+enddlabel g_szCrashDemoExePath
 
-.section .rodata.D_80010DB8, "a"
-nonmatching D_80010DB8
+.section .rodata.g_szMemCardSaveName, "a"
+nonmatching g_szMemCardSaveName
 
-dlabel D_80010DB8
+dlabel g_szMemCardSaveName
     /* 15B8 80010DB8 */ .asciz "BASCUS-94228SPYRO"
     /* 4241534355532D3934323238535059524F000000 */
 .align 2
@@ -1129,7 +1129,7 @@ dlabel D_80010DB8
     /* 15CC 80010DCC */ .asciz ""
     /* 00000000 */
 .align 2
-enddlabel D_80010DB8
+enddlabel g_szMemCardSaveName
 
 .section .rodata.switchdataD_80010dd0, "a"
 .ifndef HAVE_C_PauseMenu_Update

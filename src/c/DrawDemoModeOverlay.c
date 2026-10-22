@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char D_80010AC0[];
+extern unsigned char g_szDemoMode[];
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *step, int a,
                               int b);
 
@@ -23,7 +23,7 @@ void DrawDemoModeOverlay(void) {
   local_28[0] = 199;
   local_28[1] = 200;
   local_28[2] = 0x1100;
-  BuildTextSprites(D_80010AC0, local_28, local_18, 0x12, 2);
+  BuildTextSprites(g_szDemoMode, local_28, local_18, 0x12, 2);
   iVar3 = (int)pvVar1 - 0x58;
   iVar2 = 0;
   if ((int)g_pSpriteRecordWriteCursor <= iVar3) {

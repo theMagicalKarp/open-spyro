@@ -12,7 +12,7 @@ extern int AbsAngleDelta12(int a, int b);
    come off one held base. */
 extern int g_abSpyroAnimPrevBlock[];
 extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
-extern int D_80078D14;
+extern int g_nSaveSlotLoaded;
 extern int D_80078D2C;
 extern unsigned int D_80078D30;
 extern int D_80078D34;
@@ -35,11 +35,12 @@ extern int D_80078D74;
 
 /* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,
    snapshotting the scene around the actor the player interacted with.  Freezes
-   gameplay, picks the initial cursor (0 when D_80078D14 is set, else 2), plays
-   the level's menu sound, resets Spyro and forces anim state 1, then captures
-   the yaw and distance from Spyro to the actor's pickup target, to the actor
-   itself, to the level-overlay init actor (when present) and to the camera into
-   the D_80078D2C..D70 scripted-camera block, and seeds the menu pan targets.
+   gameplay, picks the initial cursor (0 when g_nSaveSlotLoaded is set, else 2),
+   plays the level's menu sound, resets Spyro and forces anim state 1, then
+   captures the yaw and distance from Spyro to the actor's pickup target, to the
+   actor itself, to the level-overlay init actor (when present) and to the
+   camera into the D_80078D2C..D70 scripted-camera block, and seeds the menu pan
+   targets.
 
    The g_abSpyroAnimPrevBlock alias is an incomplete INT
    array reached by element index, and the empty do/while right after the
@@ -70,7 +71,7 @@ void BeginSaveMenuFromWorld(int actor) {
   g_nSaveMenuMode = 0;
   g_nSaveMenuAnimPhase = 0;
   g_nSaveMenuSubstate = 0;
-  if (D_80078D14 != 0) {
+  if (g_nSaveSlotLoaded != 0) {
     g_nSaveMenuCursor = 0;
   } else {
     g_nSaveMenuCursor = 2;

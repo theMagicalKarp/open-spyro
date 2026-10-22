@@ -582,7 +582,7 @@ void Level34_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
@@ -665,27 +665,27 @@ void Level34_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80)
+      if (actor->cullRadius & 0x80)
         break;
 
       switch (actor->mode) {
       case 0: {
-        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->drawn) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
             st->heading = WrapAddAngle8(st->heading, r);
-            st->t12 = RandomIntInRange(60, 140);
+            st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
             st->vz = RandomSignedInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -698,12 +698,12 @@ void Level34_UpdateActors(void) {
 
           if (refHeight < 300) {
             st->vz = RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
@@ -711,7 +711,7 @@ void Level34_UpdateActors(void) {
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
-            st->t12 = RandomIntInRange(30, 80);
+            st->headingTimer = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -719,7 +719,7 @@ void Level34_UpdateActors(void) {
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
-            st->t12 = 40;
+            st->headingTimer = 40;
           }
         } else {
           DespawnActorRecord(actor);
@@ -739,9 +739,9 @@ void Level34_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
             st->vz = RandomSignedInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -754,12 +754,12 @@ void Level34_UpdateActors(void) {
 
           if (refHeight < 200) {
             st->vz = RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -1416,9 +1416,9 @@ void Level34_UpdateActors(void) {
           if (fx != 0) {
             fx->anchor = &actor->posX;
             st->smoke->size = 0x40;
-            st->smoke->unk14 = 0;
-            st->smoke->unk18 = 0;
-            st->smoke->unk1C = 0;
+            st->smoke->offX = 0;
+            st->smoke->offY = 0;
+            st->smoke->offZ = 0;
             st->smoke->r = 0xC0;
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
@@ -1596,7 +1596,7 @@ void Level34_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -1744,7 +1744,7 @@ void Level34_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -1787,13 +1787,13 @@ void Level34_UpdateActors(void) {
 
       if (st->init == 0) {
         actor->frameRate = 0;
-        actor->unk50 = 0;
+        actor->cullRadius = 0;
         actor->drawn = 0;
         StopSoundVoicesByOwner(actor, 1);
         if (((GetWorldChunkAnimState(st->snd) >> 8) & 0xFF) > 0) {
           st->init = one;
           actor->frameRate = 0x10;
-          actor->unk50 = 0x40;
+          actor->cullRadius = 0x40;
           actor->updateDist = 0xFF;
           ZeroVector(st->look);
           actor->subMode = 0;
@@ -2131,7 +2131,7 @@ void Level34_UpdateActors(void) {
         RefreshActorDerivedState(actor, 4);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->attach].posX);
       }
-      if (actor->nextAnim == 0 && actor->unk50 != 0) {
+      if (actor->nextAnim == 0 && actor->cullRadius != 0) {
         if (actor->nextFrame == 2 && (GetRandomU32() & 3) == 0 &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
           PlayActorMeshVoice(actor, 6, 0);
@@ -2387,7 +2387,7 @@ void Level34_UpdateActors(void) {
             goto spark;
           }
           g_nLevelEggCount = one;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -2396,7 +2396,7 @@ void Level34_UpdateActors(void) {
           actor->subMode = 1;
           st->mode = one;
         }
-        if (st->spark != 0xFF && actor->unk50 != 0) {
+        if (st->spark != 0xFF && actor->cullRadius != 0) {
           RefreshActorDerivedState(actor, 4);
           RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->spark].pos);
           AddVector(g_aRotBillboards[st->spark].pos, g_aRotBillboards[st->spark].pos,
@@ -2404,7 +2404,7 @@ void Level34_UpdateActors(void) {
           if (g_aRotBillboards[st->spark].life < 5) {
             st->spark = 0xFF;
           }
-        } else if (st->timer >= 0xF8 && actor->unk50 != 0) {
+        } else if (st->timer >= 0xF8 && actor->cullRadius != 0) {
           int s = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
           if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -2421,7 +2421,7 @@ void Level34_UpdateActors(void) {
           break;
         }
         if (g_pActorListBase[st->key].mode < 0x7F) {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
           actor->unk1C = 0;
@@ -2450,7 +2450,7 @@ void Level34_UpdateActors(void) {
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
-          actor->unk50 = 0x18;
+          actor->cullRadius = 0x18;
           st->mode = 2;
           st->timer = 0;
           if (st->seen != 0) {
@@ -2477,7 +2477,7 @@ void Level34_UpdateActors(void) {
           st->timer = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;
-        actor->unk50 = 0x18;
+        actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
         g_nGameplayBlocked = one;
         if (st->timer < 0xC0) {
@@ -2530,7 +2530,7 @@ void Level34_UpdateActors(void) {
         }
         if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == 0x15 ||
                                     SPY.state == 2 || SPY.state == 3)) {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           g_nGameplayBlocked = 0;
           g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
@@ -2578,7 +2578,7 @@ void Level34_UpdateActors(void) {
       int i;
 
       st = (BreakState *)actor->state;
-      if (st->unk04 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
       if ((actor->flags & 0xB0000) == 0) {
@@ -2615,7 +2615,7 @@ void Level34_UpdateActors(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->unk10 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
@@ -2726,7 +2726,7 @@ void Level34_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -2993,14 +2993,14 @@ void Level34_UpdateActors(void) {
         if (actor->flags & 0x40000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & 0x10000) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
-          actor->unk50 = 0x7F;
+          actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
           goto hit;
@@ -3013,7 +3013,7 @@ void Level34_UpdateActors(void) {
       hit:
         if (actor->flags & 0xA0000) {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -3072,7 +3072,7 @@ void Level34_UpdateActors(void) {
         }
         } else {
           actor->subMode = 3;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -3190,7 +3190,7 @@ void Level34_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3210,7 +3210,7 @@ void Level34_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -3351,7 +3351,7 @@ void Level34_UpdateActors(void) {
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
-        st->lid->unk50 = 0x1A;
+        st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
         continue;
@@ -3445,7 +3445,7 @@ void Level34_UpdateActors(void) {
         st->vel[2] += 0xA0;
         st->timer = 0;
         actor->subMode = 2;
-        actor->unk50 = 0x20;
+        actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3590,7 +3590,7 @@ void Level34_UpdateActors(void) {
         }
         actor->subMode = 1;
         actor->updateDist = 0xFF;
-        actor->unk50 = 0x7F;
+        actor->cullRadius = 0x7F;
         continue;
 
       case 1:
@@ -3637,7 +3637,7 @@ void Level34_UpdateActors(void) {
           continue;
         }
         actor->subMode = 2;
-        actor->unk50 = 0x40;
+        actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
         st->path[1] = 1;
         st->timer = 0;

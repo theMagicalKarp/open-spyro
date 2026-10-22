@@ -1,8 +1,5 @@
 #include "globals.h"
 
-extern int g_nSpyroSwingEulerPitchTarget;
-extern int g_nCameraScriptStickRequestY;
-extern int g_nCameraScriptStickRequestX;
 extern int g_nSpyroSwingEulerPrev0;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nSpyroSwingEulerPrev2;

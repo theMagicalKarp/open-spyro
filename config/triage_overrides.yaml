@@ -1063,7 +1063,7 @@ func_80016FD0:
   verdict: matched
   class: "B6 RETIRED for $at temps: local `register ... asm(\"$1\")` pins put the swap temp in $at (A374); volatile asm keeps the lui below the loads"
   date: 2026-10-14
-func_80017FD4:
+ReadRootCounter2:
   verdict: matched
   class: "B2 RETIRED: $at named by a local register variable, base seeded through an empty asm so cse cannot fold it into the load"
   date: 2026-10-14
@@ -2669,7 +2669,7 @@ Level5_FlightResults_Draw:
     their bonus cell twice across a call under one base symbol, so cse
     value-numbered each pair into a pseudo that reload spilled to an 8-byte
     BLKmode slot; re-spelling ONE accumulate against a neighbouring column of
-    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == D_8006E924[k]) frees exactly
+    the same stride-5 row table (g_anFlightCourseBonusTable[k+1] == g_anFlightCourseBonusTable_r1[k]) frees exactly
     one slot at zero insn cost and gives the original's vars= 96, regs= 7/0.
     R1 (21 insns, the `la envBase` pair) re-root-caused off `cc1 -dR`: it is a
     sched2 PRIORITY decision, not the sched1 straggler LUID tie the old note

@@ -466,7 +466,7 @@
 <rect x="276.98" y="672.69" width="8.00" height="7.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PopMemCardEventHandler  ·  108 bytes  ·  library</title></rect>
 <rect x="284.98" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateLevelSampleBank  ·  104 bytes  ·  matched</title></rect>
 <rect x="292.69" y="672.69" width="7.70" height="7.38" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>SetWorldChunkAnimStep  ·  104 bytes  ·  handwritten</title></rect>
-<rect x="300.39" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8002BAB8  ·  104 bytes  ·  matched</title></rect>
+<rect x="300.39" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LaunchCrashDemo  ·  104 bytes  ·  matched</title></rect>
 <rect x="308.09" y="672.69" width="7.70" height="7.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorFacingSpyro  ·  104 bytes  ·  matched</title></rect>
 <rect x="220.98" y="680.07" width="7.31" height="7.78" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickActorFlameGlow  ·  104 bytes  ·  matched</title></rect>
 <rect x="220.98" y="687.85" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>__do_global_dtors  ·  104 bytes  ·  library</title></rect>
@@ -528,7 +528,7 @@
 <rect x="235.62" y="766.50" width="6.64" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapshotPadInputState  ·  84 bytes  ·  matched</title></rect>
 <rect x="242.26" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApplyActiveGteRotation  ·  80 bytes  ·  handwritten</title></rect>
 <rect x="249.04" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>GetWorldChunkAnimState  ·  80 bytes  ·  handwritten</title></rect>
-<rect x="255.82" y="694.38" width="6.78" height="6.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_8002BA68  ·  80 bytes  ·  matched</title></rect>
+<rect x="255.82" y="694.38" width="6.78" height="6.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>QuiesceHardwareForExec  ·  80 bytes  ·  matched</title></rect>
 <rect x="262.59" y="694.38" width="6.78" height="6.45" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InitDmaCallbackTable  ·  80 bytes  ·  library</title></rect>
 <rect x="269.37" y="694.38" width="6.78" height="6.45" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80061730  ·  80 bytes  ·  library</title></rect>
 <rect x="276.15" y="694.38" width="6.78" height="6.45" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>memchr  ·  80 bytes  ·  library</title></rect>
@@ -745,7 +745,7 @@
 <rect x="303.21" y="746.67" width="3.50" height="3.13" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_940  ·  20 bytes  ·  library</title></rect>
 <rect x="306.71" y="746.67" width="3.50" height="3.13" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_358  ·  20 bytes  ·  library</title></rect>
 <rect x="310.20" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ZeroVector  ·  16 bytes  ·  matched</title></rect>
-<rect x="313.00" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_80017FD4  ·  16 bytes  ·  matched</title></rect>
+<rect x="313.00" y="746.67" width="2.80" height="3.13" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReadRootCounter2  ·  16 bytes  ·  matched</title></rect>
 <rect x="289.23" y="749.80" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>EnterCriticalSection  ·  16 bytes  ·  library</title></rect>
 <rect x="289.23" y="752.75" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ExitCriticalSection  ·  16 bytes  ·  library</title></rect>
 <rect x="289.23" y="755.70" width="2.96" height="2.95" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8005df1c  ·  16 bytes  ·  library</title></rect>

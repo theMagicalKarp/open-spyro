@@ -53,7 +53,8 @@ typedef struct Actor {
   unsigned char unk4D;
   unsigned char unk4E;
   unsigned char unk4F;
-  unsigned char unk50; /* 0x50 render radius */
+  unsigned char cullRadius; /* 0x50 view-space cull bound >> 8 (BuildActorDrawList
+                            * loads it as the halfword with ->drawn) */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;

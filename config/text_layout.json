@@ -406,7 +406,7 @@
    "size": 176
   },
   {
-   "name": "func_80017FD4",
+   "name": "ReadRootCounter2",
    "vram": 2147581908,
    "size": 16
   },
@@ -621,12 +621,12 @@
    "size": 156
   },
   {
-   "name": "func_8002BA68",
+   "name": "QuiesceHardwareForExec",
    "vram": 2147662440,
    "size": 80
   },
   {
-   "name": "func_8002BAB8",
+   "name": "LaunchCrashDemo",
    "vram": 2147662520,
    "size": 104
   },
@@ -3686,241 +3686,241 @@
    "size": 56
   },
   {
-   "sym": "D_80010AC0",
+   "sym": "g_szDemoMode",
    "offset": 2752,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010ACC",
+   "sym": "g_szReturningHome",
    "offset": 2764,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010AE0",
+   "sym": "g_szConfrontingFmt",
    "offset": 2784,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010AF4",
+   "sym": "g_szEnteringDotsFmt",
    "offset": 2804,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B04",
+   "sym": "g_szTreasureFound",
    "offset": 2820,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B14",
+   "sym": "g_szTotalTreasure",
    "offset": 2836,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B24",
+   "sym": "g_szQuitGamePrompt",
    "offset": 2852,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B30",
+   "sym": "g_szSoundEffects",
    "offset": 2864,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B40",
+   "sym": "g_szMusicVolume",
    "offset": 2880,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B50",
+   "sym": "g_szSpeakerSetup",
    "offset": 2896,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010B60",
+   "sym": "g_szVibration",
    "offset": 2912,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B6C",
+   "sym": "g_szContinue",
    "offset": 2924,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B78",
+   "sym": "g_szInventory",
    "offset": 2936,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B84",
+   "sym": "g_szExitLevel",
    "offset": 2948,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B90",
+   "sym": "g_szQuitGame",
    "offset": 2960,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010B9C",
+   "sym": "g_szPressStart",
    "offset": 2972,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010BA8",
+   "sym": "g_szHiSpyro",
    "offset": 2984,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010BB4",
+   "sym": "g_szSaveGame",
    "offset": 2996,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010BC0",
+   "sym": "g_szReplayDragon",
    "offset": 3008,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010BD0",
+   "sym": "g_szNoSaveFile",
    "offset": 3024,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010BE0",
+   "sym": "g_szPleaseRestartWith",
    "offset": 3040,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010BF4",
+   "sym": "g_szAMemoryCardTo",
    "offset": 3060,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C08",
+   "sym": "g_szEnableGameSaves",
    "offset": 3080,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C1C",
+   "sym": "g_szSaving",
    "offset": 3100,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010C28",
+   "sym": "g_szNoMemoryCard",
    "offset": 3112,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010C38",
+   "sym": "g_szPleaseInsertThe",
    "offset": 3128,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C4C",
+   "sym": "g_szMemoryCardWith",
    "offset": 3148,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C60",
+   "sym": "g_szThisGameSaveFile",
    "offset": 3168,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C74",
+   "sym": "g_szSaveError",
    "offset": 3188,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010C80",
+   "sym": "g_szPleaseCheckThat",
    "offset": 3200,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010C94",
+   "sym": "g_szTheMemoryCard",
    "offset": 3220,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010CA4",
+   "sym": "g_szIsStillInPlace",
    "offset": 3236,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010CB8",
+   "sym": "g_szSaveFailed",
    "offset": 3256,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010CC4",
+   "sym": "g_szGameSaved",
    "offset": 3268,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010CD0",
+   "sym": "g_szEnteringWorldFmt",
    "offset": 3280,
    "owner": null,
    "size": 20
   },
   {
-   "sym": "D_80010CE4",
+   "sym": "g_szEnteringFmt",
    "offset": 3300,
    "owner": null,
    "size": 12
   },
   {
-   "sym": "D_80010CF0",
+   "sym": "g_szInTheWorldOfDragons",
    "offset": 3312,
    "owner": null,
    "size": 28
   },
   {
-   "sym": "D_80010D0C",
+   "sym": "g_szTheAdventureContinues",
    "offset": 3340,
    "owner": null,
    "size": 28
   },
   {
-   "sym": "D_80010D28",
+   "sym": "g_szTheAdventureBegins",
    "offset": 3368,
    "owner": null,
    "size": 24
   },
   {
-   "sym": "D_80010D40",
+   "sym": "g_szEnteringDemoMode",
    "offset": 3392,
    "owner": null,
    "size": 24
@@ -3932,25 +3932,25 @@
    "size": 32
   },
   {
-   "sym": "D_80010D78",
+   "sym": "g_szShuttingDownMsg",
    "offset": 3448,
    "owner": null,
    "size": 16
   },
   {
-   "sym": "D_80010D88",
+   "sym": "g_szLaunchingCrashDemoMsg",
    "offset": 3464,
    "owner": null,
    "size": 24
   },
   {
-   "sym": "D_80010DA0",
+   "sym": "g_szCrashDemoExePath",
    "offset": 3488,
    "owner": null,
    "size": 24
   },
   {
-   "sym": "D_80010DB8",
+   "sym": "g_szMemCardSaveName",
    "offset": 3512,
    "owner": null,
    "size": 24

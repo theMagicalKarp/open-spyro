@@ -382,28 +382,28 @@ void Level3_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
       switch (actor->mode) {
       case 0: {
-        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->drawn) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
             st->heading = WrapAddAngle8(st->heading, r);
-            st->t12 = RandomIntInRange(60, 140);
+            st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
             st->vz = RandomSignedInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -416,12 +416,12 @@ void Level3_UpdateActors(void) {
 
           if (refHeight < 300) {
             st->vz = RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
@@ -429,7 +429,7 @@ void Level3_UpdateActors(void) {
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
-            st->t12 = RandomIntInRange(30, 80);
+            st->headingTimer = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -437,7 +437,7 @@ void Level3_UpdateActors(void) {
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
-            st->t12 = 40;
+            st->headingTimer = 40;
           }
         } else {
           DespawnActorRecord(actor);
@@ -457,9 +457,9 @@ void Level3_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
             st->vz = RandomSignedInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -472,12 +472,12 @@ void Level3_UpdateActors(void) {
 
           if (refHeight < 200) {
             st->vz = RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -2046,7 +2046,7 @@ void Level3_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -2178,7 +2178,7 @@ void Level3_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -2220,9 +2220,9 @@ void Level3_UpdateActors(void) {
           if (fx != 0) {
             fx->anchor = &actor->posX;
             st->smoke->size = 0x40;
-            st->smoke->unk14 = 0;
-            st->smoke->unk18 = 0;
-            st->smoke->unk1C = 0;
+            st->smoke->offX = 0;
+            st->smoke->offY = 0;
+            st->smoke->offZ = 0;
             st->smoke->r = 0xC0;
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
@@ -2400,7 +2400,7 @@ void Level3_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -2515,7 +2515,7 @@ void Level3_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -2554,7 +2554,7 @@ void Level3_UpdateActors(void) {
       int i;
 
       st = (BreakState *)actor->state;
-      if (st->unk04 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
       if ((actor->flags & 0xB0000) == 0) {
@@ -2591,7 +2591,7 @@ void Level3_UpdateActors(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->unk10 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
@@ -2671,9 +2671,9 @@ void Level3_UpdateActors(void) {
       }
       continue;
 
-    /* Boss door (DoorState): swings open, rewards the player, then leaves. */
+    /* Crystal dragon statue (DragonStatueState): shakes, then counts the rescue when Spyro is close. */
     case 250: {
-      DoorState *st = actor->state;
+      DragonStatueState *st = actor->state;
       int *at;
 
       if (actor->mode == 0) {
@@ -2742,7 +2742,7 @@ void Level3_UpdateActors(void) {
             int facing;
 
             facing =
-                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->unk1C;
+                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->facing;
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, facing);
 
@@ -2828,7 +2828,7 @@ void Level3_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -3128,7 +3128,7 @@ void Level3_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3148,7 +3148,7 @@ void Level3_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -3330,7 +3330,7 @@ void Level3_UpdateActors(void) {
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
-        st->lid->unk50 = 0x1A;
+        st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
         continue;
@@ -3424,7 +3424,7 @@ void Level3_UpdateActors(void) {
         st->vel[2] += 0xA0;
         st->timer = 0;
         actor->subMode = 2;
-        actor->unk50 = 0x20;
+        actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3653,7 +3653,7 @@ void Level3_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->unk50 = 0;
+          st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
           st->passenger->unk47 = 5;
 
@@ -3686,7 +3686,7 @@ void Level3_UpdateActors(void) {
       } else {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
-          st->passenger->unk50 = 0x10;
+          st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = 0xFF;
         }
 

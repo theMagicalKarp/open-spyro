@@ -93,9 +93,9 @@ typedef struct PathState {
   int unk18;
   int heading; /* 0x1C */
   int unk20;   /* 0x20 */
-  int unk24;   /* 0x24 divisor, random 0x6E..0xA0 */
+  int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
   int unk28;   /* 0x28 clamped to <= 0x5A */
-  int unk2C;   /* 0x2C consecutive-success counter */
+  int successCount;   /* 0x2C consecutive-success counter */
   int unk30;   /* 0x30 */
 } PathState;
 
@@ -107,7 +107,7 @@ typedef struct PathState {
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
-  int unk04;           /* 0x04 republished into actor->soundRange every frame */
+  int soundRange;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
@@ -146,9 +146,9 @@ typedef struct ChaseState {
   int unk0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
-  unsigned char t12;     /* 0x12 heading-change timer */
-  unsigned char t13;     /* 0x13 vertical-change timer */
-  unsigned char t14;     /* 0x14 */
+  unsigned char headingTimer;     /* 0x12 heading-change timer */
+  unsigned char climbTimer;     /* 0x13 vertical-change timer */
+  unsigned char idleTimer;     /* 0x14 */
 } ChaseState;
 
 /* Sparx's state block, as seen by the actors that send him fetching. */
@@ -242,7 +242,7 @@ extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wa
  * doubles as the pickup origin once Sparx has fetched the item. */
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
-  short unk0C;         /* 0x0C */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
   unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */
@@ -271,7 +271,7 @@ typedef struct SpinState {
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
   int unk00; /* 0x00 */
-  int unk04; /* 0x04 */
+  int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
@@ -279,14 +279,14 @@ typedef struct BreakState {
 typedef struct RideState {
   int unk00[6]; /* 0x00 */
   int unk18;    /* 0x18 */
-  int unk1C;    /* 0x1C fallback heading when ->unk20 is unset */
-  int unk20;    /* 0x20 index into g_pActorListBase, -1 for none */
-  int unk24;    /* 0x24 script id handed to StubRewardHook, -1 for none */
+  int fallbackHeading;    /* 0x1C fallback heading when ->unk20 is unset */
+  int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
+  int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
   int unk28[7]; /* 0x28 */
-  int unk44;    /* 0x44 phase counter, 0 .. 0x100 */
-  int unk48;    /* 0x48 saved actor->rotX */
-  int unk4C;    /* 0x4C saved actor->rotY */
-  int unk50;    /* 0x50 saved actor->posZ */
+  int phase;    /* 0x44 phase counter, 0 .. 0x100 */
+  int savedRotX;    /* 0x48 saved actor->rotX */
+  int savedRotY;    /* 0x4C saved actor->rotY */
+  int savedPosZ;    /* 0x50 saved actor->posZ */
 } RideState;
 
 /* Shake table: x/y rotation offsets, one row per two ticks. */
@@ -300,15 +300,15 @@ extern AngPair g_aShakeRotOffsets[];
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 typedef struct LiftState {
-  Actor *unk00; /* 0x00 the spawned passenger, valid once ->mode is 1 */
-  int unk04;    /* 0x04 phase */
-  int unk08;    /* 0x08 saved actor->rotX */
-  int unk0C;    /* 0x0C saved actor->rotY */
-  int unk10;    /* 0x10 saved actor->posZ */
-  int unk14;    /* 0x14 mode; 1 selects the extra tick and the rearm */
+  Actor *passenger; /* 0x00 the spawned passenger, valid once ->mode is 1 */
+  int phase;    /* 0x04 phase */
+  int savedRotX;    /* 0x08 saved actor->rotX */
+  int savedRotY;    /* 0x0C saved actor->rotY */
+  int savedPosZ;    /* 0x10 saved actor->posZ */
+  int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
 } LiftState;
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
+#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -360,7 +360,7 @@ typedef struct PortalState {
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
   int unk14;        /* 0x14 published to SPY.u206 as a byte */
-  int unk18;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
+  int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
 /* Type 300: camera trigger volume. Live camera sphere and its template. */
@@ -372,8 +372,8 @@ extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
 /* Type 300 state block: activation box, mode flags, timer, linked actor. */
 typedef struct TriggerState {
-  int unk00; /* 0x00 vertical span; also the offset added to the target Z */
-  int unk04; /* 0x04 horizontal radius */
+  int spanZ; /* 0x00 vertical span; also the offset added to the target Z */
+  int radius; /* 0x04 horizontal radius */
   int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
               * bit4 also stamps actor->subMode */
   int timer; /* 0x0C */
@@ -432,9 +432,9 @@ typedef struct FxNode {
   unsigned char b;     /* 0x0E */
   unsigned char pad0F; /* 0x0F */
   int size;            /* 0x10 grows 0x20/frame, clamped at 0x400 */
-  int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 */
-  int unk1C;           /* 0x1C */
+  int offX;           /* 0x14 draw offset from *anchor (DrawWorldSparkleParticles) */
+  int offY;           /* 0x18 */
+  int offZ;           /* 0x1C */
 } FxNode;
 
 /* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
@@ -455,8 +455,8 @@ extern int StepAngle8Toward(int a, int b, int c);
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
 typedef struct FlockState {
-  int unk00;      /* 0x00 knockback angle */
-  int unk04;      /* 0x04 knockback speed */
+  int knockAngle;      /* 0x00 knockback angle */
+  int knockSpeed;      /* 0x04 knockback speed */
   PathData *path; /* 0x08 */
   int unk0C;
   int chainA;       /* 0x10 */
@@ -484,8 +484,8 @@ typedef struct PropAnimState {
  * parent actor. */
 typedef struct OrbitState {
   Actor *owner; /* 0x00 */
-  short unk04;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
-  short unk06;  /* 0x06 phase offset within the ring */
+  short ring;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
+  short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 
 /* Shift a vector left by n. */
@@ -614,7 +614,7 @@ typedef struct FollowState {
   int trackPos; /* 0x18 copy the parent's position each frame */
   int release;  /* 0x1C release countdown, 0 while held */
   int count;    /* 0x20 number of followers sharing this parent */
-  int unk24;    /* 0x24 */
+  int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
 /* Case 16 — the balloonist's gnorc: wanders until the balloonist is up, then
@@ -694,7 +694,7 @@ typedef struct WobbleState {
   int rotX;   /* 0x04 rest pose */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int unk10;  /* 0x10 */
+  int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
   int handle; /* 0x14 */
 } WobbleState;
 
@@ -772,11 +772,12 @@ typedef struct BobState {
   int restZ; /* 0x00 */
 } BobState;
 
-/* Case 250 — the boss-door gnorc: opens the door, then leaves the level. */
-typedef struct DoorState {
+/* Case 250 — crystal dragon statue: shakes through its rest pose, then
+ * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
+typedef struct DragonStatueState {
   char pad00[0x18];
   int unk18;   /* 0x18 */
-  int unk1C;   /* 0x1C */
+  int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
   char pad28[0x1C];
@@ -784,7 +785,7 @@ typedef struct DoorState {
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */
   int restZ; /* 0x50 */
-} DoorState;
+} DragonStatueState;
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
@@ -2233,7 +2234,7 @@ void Level32_UpdateActors(void) {
 
             st->pos[2] += 0x400;
 
-            if (st->unk24 != 0) {
+            if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, 4, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
@@ -2317,28 +2318,28 @@ void Level32_UpdateActors(void) {
         }
       }
 
-      if (actor->unk50 & 0x80) {
+      if (actor->cullRadius & 0x80) {
         break;
       }
 
       switch (actor->mode) {
       case 0: {
-        if (TickCountdownByFrameDelta(&st->t14, 2) == 0 || actor->drawn) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->t12, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
             }
 
             st->heading = WrapAddAngle8(st->heading, r);
-            st->t12 = RandomIntInRange(60, 140);
+            st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->t13, 1) != 0) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
             st->vz = RandomSignedInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (st->vz >= 128) {
@@ -2351,12 +2352,12 @@ void Level32_UpdateActors(void) {
 
           if (refHeight < 300) {
             st->vz = RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           if (1024 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(10, 25);
-            st->t13 = RandomIntInRange(80, 140);
+            st->climbTimer = RandomIntInRange(80, 140);
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
@@ -2364,7 +2365,7 @@ void Level32_UpdateActors(void) {
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
-            st->t12 = RandomIntInRange(30, 80);
+            st->headingTimer = RandomIntInRange(30, 80);
           }
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
@@ -2372,7 +2373,7 @@ void Level32_UpdateActors(void) {
                                       st->tgtY - actor->posY, 0);
 
             st->heading = angle;
-            st->t12 = 40;
+            st->headingTimer = 40;
           }
         } else {
           DespawnActorRecord(actor);
@@ -2392,9 +2393,9 @@ void Level32_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->t13, 1)) {
+          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
             st->vz = RandomSignedInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (st->vz >= 128) {
@@ -2407,12 +2408,12 @@ void Level32_UpdateActors(void) {
 
           if (refHeight < 200) {
             st->vz = RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
 
           if (1000 < refHeight && refHeight < 2048) {
             st->vz = -RandomIntInRange(5, 20);
-            st->t13 = RandomIntInRange(40, 80);
+            st->climbTimer = RandomIntInRange(40, 80);
           }
         }
         break;
@@ -3061,7 +3062,7 @@ void Level32_UpdateActors(void) {
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
                                0x80;
-                actor->unk50 = 0x20;
+                actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
@@ -3193,7 +3194,7 @@ void Level32_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
@@ -3235,9 +3236,9 @@ void Level32_UpdateActors(void) {
           if (fx != 0) {
             fx->anchor = &actor->posX;
             st->smoke->size = 0x40;
-            st->smoke->unk14 = 0;
-            st->smoke->unk18 = 0;
-            st->smoke->unk1C = 0;
+            st->smoke->offX = 0;
+            st->smoke->offY = 0;
+            st->smoke->offZ = 0;
             st->smoke->r = 0xC0;
             st->smoke->g = 0xC0;
             st->smoke->b = 0x60;
@@ -3415,7 +3416,7 @@ void Level32_UpdateActors(void) {
           }
         } else {
           /* Nobody in the basket: drift on the wind. */
-          actor->unk50 = 0x10;
+          actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
             svF[0] = -0x258;
@@ -3933,7 +3934,7 @@ void Level32_UpdateActors(void) {
 
         if (st->u38 == 0 && actor->nextFrame >= 5) {
           st->u38 = g_pfnLevelSpawnActor(0xB0, actor);
-          st->u38->unk50 = 0x28;
+          st->u38->cullRadius = 0x28;
           st->u38->updateDist = 0xFF;
         }
         if (st->u38 != 0 && st->u38 != (Actor *)-1 && st->u38->subMode == 0) {
@@ -4022,7 +4023,7 @@ void Level32_UpdateActors(void) {
         }
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
           actor->mode = 1;
-          actor->unk50 = 0;
+          actor->cullRadius = 0;
           actor->drawn = 0;
           continue;
         }
@@ -4104,7 +4105,7 @@ void Level32_UpdateActors(void) {
 
             g_nLevelEggCount = 1;
             actor->scale = 0x40;
-            actor->unk50 = 0;
+            actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->unk1C = 0;
@@ -4227,7 +4228,7 @@ void Level32_UpdateActors(void) {
       int i;
 
       st = (BreakState *)actor->state;
-      if (st->unk04 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
       if ((actor->flags & 0xB0000) == 0) {
@@ -4264,7 +4265,7 @@ void Level32_UpdateActors(void) {
     case 195: {
       WobbleState *st = actor->state;
 
-      if (st->unk10 != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
@@ -4389,9 +4390,9 @@ void Level32_UpdateActors(void) {
       continue;
     }
 
-    /* Boss door (DoorState): swings open, rewards the player, then leaves. */
+    /* Crystal dragon statue (DragonStatueState): shakes, then counts the rescue when Spyro is close. */
     case 250: {
-      DoorState *st = actor->state;
+      DragonStatueState *st = actor->state;
       int *at;
 
       if (actor->mode == 0) {
@@ -4460,7 +4461,7 @@ void Level32_UpdateActors(void) {
             int facing;
 
             facing =
-                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->unk1C;
+                st->partner != -1 ? g_pActorListBase[st->partner].rotZ : st->facing;
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, facing);
 
@@ -4545,7 +4546,7 @@ void Level32_UpdateActors(void) {
     case 269: {
       DebrisState *st = actor->state;
 
-      if (!(actor->unk50 & 0x80) && (actor->unk50 != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 
         if (st->life >= 1) {
 
@@ -4634,13 +4635,13 @@ void Level32_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
       SubtractVector(z256, &spy->posX, &actor->posX);
       distance = VectorLength(z256, 0);
-      if (distance < st->unk04 && z256[2] >= -0x3FF && z256[2] < st->unk00 &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->unk00)) {
+      if (distance < st->radius && z256[2] >= -0x3FF && z256[2] < st->spanZ &&
+          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
-        SPY.u200 = actor->posZ + st->unk00;
+        SPY.u200 = actor->posZ + st->spanZ;
         CopyVector(&spy->contact, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
@@ -4802,7 +4803,7 @@ void Level32_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
           st->prize->subMode = 4;
-          st->prize->unk50 = 0;
+          st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -4822,7 +4823,7 @@ void Level32_UpdateActors(void) {
       case 1: {
         int i;
 
-        st->prize->unk50 = 0x18;
+        st->prize->cullRadius = 0x18;
         CopyVector(&st->prize->posX, &actor->posX);
         st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
         st->prize->rotZ += g_nFrameStep * 2;
@@ -5056,38 +5057,38 @@ void Level32_UpdateActors(void) {
       int a;
       int b;
 
-      if (st->unk14 == 1) {
+      if (st->rideMode == 1) {
         SnapActorToGround(actor);
         EncodeCachedVecToActorDirCode(actor);
       }
 
       if (actor->mode == 0) {
-        st->unk04 += g_nFrameStep;
+        st->phase += g_nFrameStep;
 
-        if (st->unk04 >= 0x1E1) {
-          st->unk04 = 0;
-          actor->rotX = st->unk08;
-          actor->rotY = st->unk0C;
-          actor->posZ = st->unk10;
+        if (st->phase >= 0x1E1) {
+          st->phase = 0;
+          actor->rotX = st->savedRotX;
+          actor->rotY = st->savedRotY;
+          actor->posZ = st->savedPosZ;
           actor->mode = 1;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->unk00 = g_pfnLevelSpawnActor(0x1A6, actor);
-          st->unk00->rotX = actor->rotX;
-          st->unk00->rotY = actor->rotY;
-          st->unk00->rotZ = actor->rotZ;
-          st->unk00->frameRate = 0x10;
-          st->unk00->updateDist = 0;
-          st->unk00->unk50 = 0;
-          st->unk00->drawn = 0;
-          st->unk00->unk47 = 5;
+          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger->rotX = actor->rotX;
+          st->passenger->rotY = actor->rotY;
+          st->passenger->rotZ = actor->rotZ;
+          st->passenger->frameRate = 0x10;
+          st->passenger->updateDist = 0;
+          st->passenger->cullRadius = 0;
+          st->passenger->drawn = 0;
+          st->passenger->unk47 = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
-        } else if (st->unk04 >= 0x1A0) {
-          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->unk08;
-          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->unk0C;
+        } else if (st->phase >= 0x1A0) {
+          actor->rotX = g_aShakeRotOffsets[LIFT_STEP(st)].a + st->savedRotX;
+          actor->rotY = g_aShakeRotOffsets[LIFT_STEP(st)].b + st->savedRotY;
           a = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].a;
           b = (signed char)g_aShakeRotOffsets[LIFT_STEP(st)].b;
           if (a < 0) {
@@ -5096,30 +5097,30 @@ void Level32_UpdateActors(void) {
           if (b < 0) {
             b = -b;
           }
-          actor->posZ = st->unk10 + (a + b) * 6;
+          actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->sfxSlot == 0x7F) {
             PlayActorMeshVoice(actor, 1, 0);
           }
-        } else if (st->unk04 >= 0x19C) {
+        } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
-          st->unk08 = actor->rotX;
-          st->unk0C = actor->rotY;
-          st->unk10 = actor->posZ;
-          if (st->unk14 == 1) {
-            st->unk04 = 0;
+          st->savedRotX = actor->rotX;
+          st->savedRotY = actor->rotY;
+          st->savedPosZ = actor->posZ;
+          if (st->rideMode == 1) {
+            st->phase = 0;
           }
         }
       } else {
         if (actor->anim == 1) {
-          st->unk04 += g_nFrameStep;
-          st->unk00->unk50 = 0x10;
-          st->unk00->updateDist = 0xFF;
+          st->phase += g_nFrameStep;
+          st->passenger->cullRadius = 0x10;
+          st->passenger->updateDist = 0xFF;
         }
 
-        if (st->unk04 >= 0xE6) {
-          DespawnActorRecord(st->unk00);
-          st->unk04 = GetRandomU32() & 0xFF;
+        if (st->phase >= 0xE6) {
+          DespawnActorRecord(st->passenger);
+          st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->mode = 0;
@@ -5135,8 +5136,8 @@ void Level32_UpdateActors(void) {
       }
 
       rider = SpawnActorDeathDrop(actor, 5, 0, 0);
-      if (st->unk14 == 1) {
-        ((unsigned char *)rider->state)[0xE] = st->unk14;
+      if (st->rideMode == 1) {
+        ((unsigned char *)rider->state)[0xE] = st->rideMode;
       }
 
       actor->soundRange = 0x20;
@@ -5168,7 +5169,7 @@ void Level32_UpdateActors(void) {
       g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x18);
 
       if (actor->mode == 1) {
-        DespawnActorRecord(st->unk00);
+        DespawnActorRecord(st->passenger);
       }
 
       PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, 8,
