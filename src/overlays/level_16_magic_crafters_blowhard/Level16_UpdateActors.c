@@ -32,7 +32,7 @@
  *     and the `(flags & 0xA0000)` test sits after the common tail (`goto`).
  *   - Case 312's jitter is `+= (rand & 0xF) - 8` and the sum is written
  *     back through `ps[3]`; `x - 8 + r` reassociates differently.
- *   - `unk4C` is a word store (`*(int *)&actor->unk4C`), written before the
+ *   - `tint0` is a word store (`*(int *)&actor->tint0`), written before the
  *     unk49 store.
  *   - Case 38's spawn loop starts `for (i = 0, ang = rand & 0x3F; ...)`.
  *   - Case 497 splits its channel switch into `case 3: case 4:` and
@@ -2723,7 +2723,7 @@ void Level16_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -2951,7 +2951,7 @@ void Level16_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

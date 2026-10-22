@@ -4021,7 +4021,7 @@ void Level7_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -4241,7 +4241,7 @@ void Level7_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

@@ -2794,7 +2794,7 @@ void Level27_UpdateActors(void) {
                 ANIM_RESET(o, 1);
               }
               o->renderList = 0xA0;
-              *(int *)&o->unk4C = 0xA18618;
+              *(int *)&o->tint0 = 0xA18618;
             }
             a = (actor->rotZ + 0x40) & 0xFF;
             dd = (i % 3 - 1) * 800;
@@ -4028,7 +4028,7 @@ void Level27_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+        *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
         actor->subMode = 1;
         break;
 
@@ -4248,7 +4248,7 @@ void Level27_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (actor->subMode == 0) {
-          *(int *)&actor->unk4C = D_8006E52C[actor->dropKind];
+          *(int *)&actor->tint0 = D_8006E52C[actor->dropKind];
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }

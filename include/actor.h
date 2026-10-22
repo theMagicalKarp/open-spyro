@@ -49,10 +49,18 @@ typedef struct Actor {
                           * 0xFF = always drawn (BuildRenderEntityLists) */
   unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
                              * bucket: 0, < 0, > 0 (default 0x20) */
-  unsigned char unk4C; /* 0x4C */
-  unsigned char unk4D;
-  unsigned char unk4E;
-  unsigned char unk4F;
+  /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
+   * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. SelectActorLodBand
+   * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
+   * store, and the flame band raises c2 while lowering c0/c1. With 0x4C..0x4E
+   * zeroed, tintMode picks a preset instead: gem colours 1..5 (HUD icons set
+   * type - 0x52) and 0xB for HUD sprites. TickActorFlameGlow drives tint2 as a
+   * 0..0x60 glow on its own. These names describe the byte layout only; the
+   * renderer that reads them is hand-written asm and not decoded yet. */
+  unsigned char tint0; /* 0x4C */
+  unsigned char tint1; /* 0x4D */
+  unsigned char tint2; /* 0x4E */
+  unsigned char tintMode; /* 0x4F */
   unsigned char cullRadius; /* 0x50 view-space cull bound >> 8 (BuildActorDrawList
                             * loads it as the halfword with ->drawn) */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */

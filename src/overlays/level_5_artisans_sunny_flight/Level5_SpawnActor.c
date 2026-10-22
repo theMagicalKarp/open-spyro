@@ -73,10 +73,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
       CopyVector(&rec->posX, &parent->posX);
     }
     InsertActorIntoSpatialGrid(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 1;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 1;
     rec->renderList |= 0x80;
     break;
   }
@@ -169,26 +169,26 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeCachedVecToActorDirCode(rec);
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
     if (rec->type == 0xE) {
-      rec->unk4F = 0xC;
+      rec->tintMode = 0xC;
     }
     if (rec->type == 0x53) {
-      rec->unk4F = 1;
+      rec->tintMode = 1;
     }
     if (rec->type == 0x54) {
-      rec->unk4F = 2;
+      rec->tintMode = 2;
     }
     if (rec->type == 0x55) {
-      rec->unk4F = 3;
+      rec->tintMode = 3;
     }
     if (rec->type == 0x56) {
-      rec->unk4F = 4;
+      rec->tintMode = 4;
     }
     if (rec->type == 0x57) {
-      rec->unk4F = 5;
+      rec->tintMode = 5;
     }
     break;
   }
@@ -239,7 +239,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
-      *(int *)&rec->unk4C = 0xA18618;
+      *(int *)&rec->tint0 = 0xA18618;
       rec->renderList |= 0x80;
     }
     break;
@@ -361,10 +361,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     HideActorRenderRecord(rec);
-    rec->unk4F = 2;
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
+    rec->tintMode = 2;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
     *st = 0x40;
     break;
   }
@@ -381,10 +381,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
       }
       rec->cullRadius = 0x40;
       HideActorRenderRecord(rec);
-      rec->unk4C = 0;
-      rec->unk4D = 0;
-      rec->unk4E = 0;
-      rec->unk4F = 2;
+      rec->tint0 = 0;
+      rec->tint1 = 0;
+      rec->tint2 = 0;
+      rec->tintMode = 2;
     }
     break;
 
@@ -405,10 +405,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     } while (0);
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0xBF;
-    rec->unk4C = parent->unk4C;
-    rec->unk4D = parent->unk4D;
-    rec->unk4E = parent->unk4E;
-    rec->unk4F = parent->unk4F;
+    rec->tint0 = parent->tint0;
+    rec->tint1 = parent->tint1;
+    rec->tint2 = parent->tint2;
+    rec->tintMode = parent->tintMode;
     rec->cullRadius = parent->cullRadius;
     break;
   }
@@ -430,10 +430,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     } while (0);
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0xBF;
-    rec->unk4C = parent->unk4C;
-    rec->unk4D = parent->unk4D;
-    rec->unk4E = parent->unk4E;
-    rec->unk4F = parent->unk4F;
+    rec->tint0 = parent->tint0;
+    rec->tint1 = parent->tint1;
+    rec->tint2 = parent->tint2;
+    rec->tintMode = parent->tintMode;
     break;
   }
 
@@ -447,10 +447,10 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     rec->posZ = 0x1000;
     HideActorRenderRecord(rec);
     rec->unk47 = 0x20;
-    rec->unk4C = 0;
-    rec->unk4D = 0;
-    rec->unk4E = 0;
-    rec->unk4F = 0;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 0;
     break;
 
   case 0x190:

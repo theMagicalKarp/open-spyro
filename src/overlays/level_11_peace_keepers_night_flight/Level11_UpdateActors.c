@@ -1649,7 +1649,7 @@ void Level11_UpdateActors(void) {
         if (c >= 0x40) {
           c = 0x3F;
         }
-        *(int *)&actor->unk4C = (c << 6) | 0xA00000;
+        *(int *)&actor->tint0 = (c << 6) | 0xA00000;
       }
       break;
     }
@@ -1748,7 +1748,7 @@ void Level11_UpdateActors(void) {
           g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;
-          g_abHudIconActorRecords[i].unk4F = i + 3;
+          g_abHudIconActorRecords[i].tintMode = i + 3;
         }
       }
 
@@ -1892,13 +1892,13 @@ void Level11_UpdateActors(void) {
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
-                st->icon[i]->unk4F = 0;
+                st->icon[i]->tintMode = 0;
                 st->icon[i]->rotZ = 0;
                 st->icon[i]->mode = 0;
               } else {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
-                st->icon[i]->unk4F = g_nFlightTallyShownClass + 3;
+                st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = 1;
               }
               x += 0x1E;
