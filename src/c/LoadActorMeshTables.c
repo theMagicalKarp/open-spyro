@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* 0x8005b7d8, 264 bytes — load the actor-mesh directory from CD into the top of
    the boot-load region. CdReadSyncSectors pulls D_8007A714 bytes from sector
@@ -18,7 +19,6 @@ extern void CdReadSyncSectors(int lba, void *buf, int size, int sector,
                               int marker);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern int *RelocateActorMeshHeader(int *header);
-extern void InitActorMeshScratchRegions(int arg);
 
 void LoadActorMeshTables(void) {
   int *dir;

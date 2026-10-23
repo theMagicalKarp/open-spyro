@@ -16,8 +16,8 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

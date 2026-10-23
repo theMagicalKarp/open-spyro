@@ -39,6 +39,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_update_actors.h"
 
 /* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
 /* Parent-anchored tracker state block. */
@@ -51,9 +52,7 @@ typedef struct TrackState {
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 extern unsigned short g_nCameraEulerPitch;  /* tracked world yaw (byte) */
-extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);         /* ArcTan2 */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
   Actor *rec;

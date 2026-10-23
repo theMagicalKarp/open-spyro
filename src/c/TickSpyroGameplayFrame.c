@@ -1,14 +1,10 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void SnapshotPadInputState(unsigned int *dst, unsigned int *src);
 extern void AdvanceSpyroFrameMotion();
 extern void UpdateSpyroStateBehavior();
-extern void TickSpyroAnimStateMachine(void);
-extern void TickSpyroHornStrikeAttack(void);
-extern void TickSpyroAnimLayer1(void);
-extern void TickSpyroAnimLayer2GateTimer(void);
-extern void TickSpyroAnimLayer2(void);
 extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
 extern void MulMatrix0(int *a, int *b, int *out);
 extern void SampleSpyroShadowRingHeights(int mode);
@@ -20,19 +16,11 @@ extern unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
                                     unsigned int mode, unsigned char *pPlaying);
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
-extern int g_anSpyroPadSnapshotBlock[];               /* 0x80078c48 */
-extern unsigned char g_abSpyroPersistentEulerBlock[]; /* 0x80078a64 */
-extern int g_anSpyroWorldPosZBlock[];                 /* 0x80078a60 */
-extern int g_anSpyroStateFlagsBlock[];                /* 0x80078ad4 */
-extern int g_anSpyroDeathCamRecordBlock[];            /* 0x8006ebe4 */
-extern unsigned char g_abSpyroAnimPrevBlock[];        /* 0x80078a70 */
-extern unsigned int g_adwSpyroFootstepSfxBlock[];     /* 0x80078cbc */
-
-extern int g_nSpyroWorldPosY; /* 0x80078a5c — g_anSpyroWorldPos[1] */
-extern int g_nSpyroWorldPosZ; /* 0x80078a60 — g_anSpyroWorldPos[2] */
-
-extern unsigned char g_bSpyroAnimLayer1Prev;      /* layer-1 anim index */
-extern unsigned char g_bSpyroAnimLayer1FramePrev; /* layer-1 frame index */
+extern int g_anSpyroPadSnapshotBlock[];           /* 0x80078c48 */
+extern int g_anSpyroWorldPosZBlock[];             /* 0x80078a60 */
+extern int g_anSpyroStateFlagsBlock[];            /* 0x80078ad4 */
+extern unsigned char g_abSpyroAnimPrevBlock[];    /* 0x80078a70 */
+extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
 
 /* One frame record of an anim's frame table: g_apActorMeshTable[anim] holds a
    pointer to the table at +0x38, stride 4 per frame (+0x24 = sfx key,

@@ -19,9 +19,9 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "main_shared.h"
 
 extern void StopAllSoundExceptMask(int mask);
-extern void RotateLightVectorXZ(int step);
 extern void PlaySoundEffect();
 extern void (*g_pfnLevelHandleFlightResults)();
 

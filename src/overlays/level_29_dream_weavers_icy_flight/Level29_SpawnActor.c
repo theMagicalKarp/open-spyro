@@ -31,6 +31,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
 /* Aim/lob state block (type 0xE8). */
 typedef struct AimState {
@@ -41,7 +42,6 @@ typedef struct AimState {
 } AimState;
 
 extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

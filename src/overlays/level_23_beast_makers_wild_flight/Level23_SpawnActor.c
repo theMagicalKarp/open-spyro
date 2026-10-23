@@ -14,6 +14,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
 /* Level23_SpawnActor (0x8008223C, level_23_beast_makers_wild_flight
  * overlay, 0xd18 bytes).
@@ -33,7 +34,6 @@
  * level_29.
  */
 
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

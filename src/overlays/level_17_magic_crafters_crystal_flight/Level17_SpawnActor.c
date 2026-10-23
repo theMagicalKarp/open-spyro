@@ -14,6 +14,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
 /* Level17_SpawnActor (0x80081F0C, level_17_magic_crafters_crystal_flight
  * overlay, 0xb94 bytes).
@@ -29,7 +30,6 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* 0x8001e6b8: Draw routine for the story intro (gamestate 0xD). While substate
  * 2 is past frame 0x8C it lays out one of four message strings with
@@ -21,9 +22,6 @@ extern unsigned short g_anCosineLut[];
 
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *col, int adv,
                               int pal);
-extern void EnqueuePendingSpritePrims(void);
-extern void RasterizeSpritePrimQueue(void);
-extern void RasterizePairedActor(void);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 void StoryIntro_Draw(void) {
