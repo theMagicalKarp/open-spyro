@@ -21,6 +21,7 @@
 #include "level_funcs.h"
 #include "main_shared.h"
 #include "level_balloonist_cutscene.h"
+#include "level_flight_results.h"
 
 
 extern unsigned int g_dwHudBobSinePhase[];

@@ -221,7 +221,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int g_nHitRumbleTimer;
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough

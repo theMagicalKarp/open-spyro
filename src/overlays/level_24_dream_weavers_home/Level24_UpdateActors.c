@@ -48,7 +48,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -202,9 +201,7 @@ extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *ac
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
-extern void ComputeCameraOrbitOffset(int *out);
 /* from level_34 */
-extern void UpdateCameraEulerAngles(void);
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
@@ -743,7 +740,6 @@ typedef struct L24Trail {
   int u0C[3]; /* 0x0C */
   int age;    /* 0x18 */
 } L24Trail;   /* 0x1C */
-extern int g_nMotionTrailRibbonCount;         /* trail slots used this frame */
 extern L24Trail *g_apMotionTrailSlices[]; /* trails */
 
 /* Type 104 state: a comet that leaves a fading trail and drops sparks. */

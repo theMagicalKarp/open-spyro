@@ -22,9 +22,9 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "level_spawn_actor.h"
+#include "level_flight_results.h"
 
 extern char *g_pRenderScratchPrimTop;
-extern int g_anLevelGemsCollected[];
 extern int g_anFlightTargetTally;
 
 void Level11_HandleFlightResults(int reload) {

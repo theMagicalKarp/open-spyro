@@ -1686,4 +1686,26 @@ extern int FindFarthestPathPointFromSpyro(PathData *path);
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
 
+/* Declared identically by two or more *_UpdateActors.c files; hoisted here. */
+extern void ChangeSpyroState(int a);
+extern void ComputeCameraOrbitOffset(int *out);
+extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
+extern void StopSoundVoiceByIndex(int ch, int a);
+extern void TallyFlightTarget(int sound);
+extern void UpdateCameraEulerAngles(void);
+extern Xform g_aCameraXformPresets[];
+extern int g_anLevelKillBitmapTable[];
+extern volatile unsigned char g_bSpyroOtBinBias;
+extern int g_nCameraSpringYaw;
+extern int g_nCameraYaw;
+extern int g_nGemPickupCamPathMaxStep;
+extern int g_nGenericCountdown;
+extern int g_nGnastyLootFallRefZCap;
+extern int g_nHitRumbleTimer;
+extern int g_nMotionTrailRibbonCount;
+extern int g_nVblankTickCount;
+extern Xform *g_pCameraTargetParams;
+extern PortalDesc *volatile g_pGemPickupCamPathData;
+extern int *g_pPathTableHead;
+
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

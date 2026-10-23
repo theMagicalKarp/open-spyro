@@ -25,24 +25,15 @@
 #include "main_shared.h"
 #include "level_emit_particles.h"
 #include "level_spawn_actor.h"
+#include "level_flight_results.h"
 
-extern void AddPrimToOT();
 extern void PlaySoundEffect();
 
-extern char *g_pActiveFrameDrawEnv;   /* active DRAWENV pair */
-extern char g_abFrameDrawEnv0[];  /* DRAWENV pair 0 */
 extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
 extern char *g_pRenderScratchRegionBase;
-extern char *g_pPrimBufferWriteCursor; /* prim write cursor */
-extern char *g_pPrimBufferLimit;
-extern char *g_pSpriteRecordBufferTop;
 extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
-extern int g_nVsyncFrameEndCount[];
-extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
-extern char g_abHudIconActorRecords[];           /* HUD sprite records */
 extern char *g_apSpritePrimQueue[];          /* published record table */
-extern char g_anMenuBackdropGrayClut[];           /* CLUT row */
 extern char g_pOtDepthBinHead0[];           /* OT depth bins */
 extern int g_anFlightTargetTally;              /* tally: class 0 */
 

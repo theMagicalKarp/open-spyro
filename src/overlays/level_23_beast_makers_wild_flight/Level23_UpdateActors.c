@@ -207,9 +207,6 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-extern int g_nVblankTickCount;    /* frame counter */
-extern void TallyFlightTarget(int sound);
-extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
 /* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
  * swept phase. */
@@ -237,7 +234,6 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-extern void ChangeSpyroState(int a);
 
 /* ==== The function ==== */
 /* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or

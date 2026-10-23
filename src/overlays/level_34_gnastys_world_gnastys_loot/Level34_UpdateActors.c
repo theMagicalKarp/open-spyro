@@ -351,11 +351,8 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 
-extern int g_nGnastyLootFallRefZCap;   /* level music cue */
 extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 
-extern int g_nGenericCountdown; /* HUD countdown */
-extern int *g_pPathTableHead;
 
 /* ==== The function ==== */
 #define spy ((SpyroObj *)&g_anSpyroWorldPos)

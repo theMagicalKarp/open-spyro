@@ -73,10 +73,7 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
 
-extern void ComputeCameraOrbitOffset(int *out);
-extern void UpdateCameraEulerAngles(void);
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -182,18 +179,12 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern int g_nCameraSpringYaw;   /* camera spherical target */
-extern int g_nCameraYaw;   /* camera spherical current */
-extern Xform *g_pCameraTargetParams; /* active camera preset, or null */
 
-extern volatile unsigned char g_bSpyroOtBinBias;
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-extern PortalDesc *volatile g_pGemPickupCamPathData;
-extern int g_nGemPickupCamPathMaxStep;
 
 
 /* An animation change that also clears the finished flag. */

@@ -223,7 +223,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 #define sixteen 0x10
 /* ==== Level 16 classes ==== */
 
-extern void StopSoundVoiceByIndex(int ch, int a);
 
 extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 

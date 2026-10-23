@@ -28,7 +28,6 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
-extern int g_anLevelKillBitmapTable[];
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -351,13 +350,10 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
-extern int g_nGnastyLootFallRefZCap;   /* level music cue */
 /* from level_34 */
 extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 /* from level_34 */
-extern int g_nGenericCountdown; /* HUD countdown */
 /* from level_34 */
-extern int *g_pPathTableHead;
 /* from level_32 */
 /* from level_32 */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
@@ -495,7 +491,6 @@ typedef struct L33State169 {
   int u10;         /* 0x10 climb */
 } L33State169;
 
-extern int g_nMotionTrailRibbonCount;      /* trail slots used this frame */
 extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
