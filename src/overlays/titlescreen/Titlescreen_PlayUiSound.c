@@ -1,3 +1,4 @@
+#include "level_balloonist_cutscene.h"
 /* Titlescreen_PlayUiSound (0x8007AAD4, titlescreen overlay).
  *
  * Queue one of the title-screen UI sounds: point the SPU driver at the shared
@@ -40,7 +41,6 @@ extern SoundDef g_CutsceneSoundDef;   /* the shared cutscene sound definition */
 extern int g_anTitleSampleOffsets[];      /* title-screen SPU sample offset table */
 extern int g_bGemPickupSfxVoiceMarker;        /* dragon-cutscene sound voice */
 
-extern void PlaySoundEffect(int, void *, int, unsigned char *); /* PlaySound */
 
 void Titlescreen_PlayUiSound(int nSoundId) {
   g_pLevelSampleBankEntries.pSoundDef = &g_CutsceneSoundDef;

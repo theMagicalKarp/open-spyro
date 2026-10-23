@@ -39,6 +39,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_emit_particles.h"
 
 /* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
 /* Flung-critter state block (level_27 type 0xD7). */
@@ -55,7 +56,6 @@ typedef struct BatState {
 
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int RandomSignedInRange(int lo, int hi);
 

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Enter the story-intro gamestate (0x8002d170, gamestate 0xD): zero the
    0x5C-byte mode block, prime the SPU common attr (mask 0xC0, master volume
@@ -9,10 +10,8 @@
    g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the
    call. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void SetSpuCommonAttr(void *attr);
 extern void srand(unsigned int seed);
 extern int g_nSfxMixVolume_blk[];
-extern int g_nCdAudioVolume_blk;
 extern char *g_pStoryIntroStreamCursor;
 
 void BeginStoryIntro(void) {

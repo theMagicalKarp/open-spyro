@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
-extern int CallCdSync(int mode, unsigned char *result);
 extern int GetCdStatusByte(void);
 extern void HandleMusicCommand(int track, int cmd);
 extern void CdIntToPos(int lba, char *pos);
@@ -9,13 +9,10 @@ extern int CdPosToInt(unsigned char *pos);
 extern int CdControl(unsigned char com, char *param, char *result);
 extern int CdControlBlocking(unsigned char com, char *param, char *result);
 extern int CdControlForce(unsigned char com, char *param);
-extern void SetSpuCommonAttr(unsigned int *attr);
 
 extern unsigned char g_abCdSyncResult[];
 extern unsigned int g_nCdMusicStreamTimeout;
 extern int g_anLevelMusicPickTable[];
-extern short g_nCdDaVolumeCurrent;
-extern short g_nSpuCommonCdVolumeR;
 
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
    [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short

@@ -15,6 +15,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
 
 /* Level5_SpawnActor (0x8008249C, level_5_artisans_sunny_flight overlay,
  * 0xe94 bytes).
@@ -34,7 +35,6 @@
 
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 
 Actor *Level5_SpawnActor(int type, Actor *parent) {
   Actor *rec;

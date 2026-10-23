@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -20,17 +21,13 @@ extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
 extern int abs(int x);
 
-extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
-extern int g_nSpyroWorldPosY;
 extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
 extern int g_nSpyroVelocityZ;
 extern int g_nSpyroCarryMotionY;
 extern int g_nSpyroCarryMotionZ;
 extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
                                           velocity */
-extern int g_bSpyroJumpHoldForced;
 extern int g_nSpyroScriptedLiftBaseZ;
-extern int g_nSpyroMotionAux;
 extern int g_nSpyroScriptedLiftRise;
 extern int g_nSpyroScriptedLiftYaw;
 extern int g_pSpyroHomingTargetActor;
@@ -47,12 +44,8 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
 SDATA(g_pSpyroContactActor, 4);
 
 /* One view of the Spyro record from its world position (0x80078a58). */
-extern int g_anSpyroWorldPosBlock[];
-extern int g_anCameraPosBlock[];
-extern short g_anCameraEulerYawBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_abSpyroAnimPrevBlock[];
-extern int g_anSpyroDeathCamRecordBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */

@@ -16,6 +16,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_emit_particles.h"
 
 /* Barrel state block (types 0xCA / 0xCF; L31Barrel in the updater). */
 typedef struct SeekState {
@@ -30,7 +31,6 @@ typedef struct SeekState {
 
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 
 Actor *Level31_SpawnActor(int type, Actor *parent) {
   Actor *rec;

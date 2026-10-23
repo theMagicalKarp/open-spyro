@@ -40,10 +40,10 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "level_update_actors.h"
+#include "level_emit_particles.h"
 
 
 extern Actor *g_pActorListBase;
-extern volatile int g_anSpyroWorldPos[];
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 Actor *Level26_SpawnActor(int type, Actor *parent) {

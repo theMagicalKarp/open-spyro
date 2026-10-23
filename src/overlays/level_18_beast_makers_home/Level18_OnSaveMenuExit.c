@@ -9,8 +9,8 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "level_actors.h"
 
-extern char *g_pLevelOverlayInitRecord;
 
 void Level18_OnSaveMenuExit(void) {
   char *actor;

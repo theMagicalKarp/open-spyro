@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Mid-frame scene composer (0x80019698, 164 bytes): sequences the actor /
    sprite / effect passes of one frame — actor draw lists, a FillWord clear of
@@ -6,14 +7,10 @@
    (RasterizePairedActor + drop shadow) unless g_nSpyroDrawSuppressed; horn
    strike trails only while the horn collision is active; then the world
    particle emitters. */
-extern void BuildActorDrawList(void);
 extern void FillWord();
-extern void EmitActorDrawList(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void EmitSecondaryActorPrimitives(void);
-extern void RasterizeSpritePrimQueue(void);
 extern void DrawEntityDirectionalSpikes(void);
-extern void RasterizePairedActor(void);
 extern void DrawSpyroDropShadow(void);
 extern void DrawSpyroHornStrikeTrails(void);
 extern void DrawWorldParticleEmitters(void);

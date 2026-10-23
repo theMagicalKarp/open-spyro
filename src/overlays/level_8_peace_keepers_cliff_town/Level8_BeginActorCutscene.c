@@ -14,12 +14,12 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "actor.h"
+#include "level_emit_particles.h"
 
 extern int g_nGamestate0cSubstate;
 extern int g_nGamestate0cTimer;
 extern int g_nGamestate0cMenuCursor;
 extern char *g_pActorListBase;
-extern int g_anCameraPos[];
 extern int g_nGamestate0cCamYawGoal;
 
 /* The three position reads stay in byte-offset form: written as

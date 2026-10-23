@@ -45,10 +45,10 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_emit_particles.h"
 
 
 extern Actor *g_pActorListBase;
-extern volatile int g_anSpyroWorldPos[];
 
 Actor *Level6_SpawnActor(int type, Actor *parent) {
   Actor *rec;

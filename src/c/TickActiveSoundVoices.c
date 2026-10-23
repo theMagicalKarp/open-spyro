@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "spu.h"
 
 /* Matching notes (0x8005637C, 1144 B — the levers, so the shape is not lost):
@@ -74,10 +75,8 @@ typedef struct {
   /* 0x2E */ short nVolR;
 } SPUFARROW;
 
-extern SPUVOICEROW g_aSpuVoiceRows[];             /* the 24 mixer rows */
-extern unsigned short g_anCameraEulerYawBlock[];  /* camera euler yaw */
-extern int g_anSoundMasterVolumeBlock[];          /* g_nSoundMasterVolume */
-extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
+extern SPUVOICEROW g_aSpuVoiceRows[];    /* the 24 mixer rows */
+extern int g_anSoundMasterVolumeBlock[]; /* g_nSoundMasterVolume */
 
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;

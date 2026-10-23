@@ -32,6 +32,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
 
 /* Spin-and-run helper state block (type 0xE8; SpinRunState in the updater). */
 typedef struct AimState {
@@ -44,8 +45,6 @@ typedef struct AimState {
 extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
-extern unsigned char g_bSpyroPersistentEulerZ;  /* g_bSpyroBodyYaw (8-bit) */
 
 Actor *Level29_SpawnActor(int type, Actor *parent) {
   Actor *rec;

@@ -1,3 +1,4 @@
+#include "actor.h"
 #include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -135,7 +136,6 @@ extern int g_nGamestate0cCamHeightStart; /* camera height start (block +0x3c) */
 extern int g_nGamestate0cCamYawGoal;     /* camera yaw goal     (block +0x4c) */
 extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
 extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
-extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
 extern int g_anLevelEntryPoints[]; /* entry points, 4 words per level */
 extern void (*g_pfnGamestate0cSubstateUpdate)(

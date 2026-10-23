@@ -13,6 +13,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_spawn_actor.h"
+#include "level_emit_particles.h"
 
 /* Level11_SpawnActor (0x800819BC, level_11_peace_keepers_night_flight
  * overlay, 0x944 bytes).
@@ -79,7 +80,6 @@ extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedV
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
