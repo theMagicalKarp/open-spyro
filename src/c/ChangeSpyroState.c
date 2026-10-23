@@ -11,7 +11,7 @@ extern int abs(int x);
 extern unsigned short g_anCosineLut[];
 extern int g_nSpyroMotionZ;      /* g_anSpyroMotionVec[2] */
 extern int g_nSpyroCarryMotionZ; /* g_anSpyroCarryMotionVec[2] */
-extern int D_8006EA34[];
+extern int g_anOrbDropEnterSpawnType[];
 extern int g_nSpyroScriptedLiftBaseZ;
 extern int g_nSpyroScriptedLiftRise;
 extern int g_nSpyroScriptedLiftYaw;
@@ -549,7 +549,7 @@ void ChangeSpyroState(int state) {
       PARTICLE_SPAWN(5, 0xA, 0, 0);
     }
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
-        D_8006EA34[g_nSpyroOrbDropSpawnIndex], 0);
+        g_anOrbDropEnterSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
     me = SPY;
     PlaySoundEffect(SFX(0x1D), me, 4, (unsigned char *)SPY + SPY_VOICE);
     PlaySoundEffect(SFX(0x1B), me, 4, (unsigned char *)SPY + SPY_VOICE);

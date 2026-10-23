@@ -84,7 +84,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
@@ -201,8 +200,8 @@ extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 /* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {
-  int unk00;
-  int unk04;
+  int pad00;
+  int pad04;
   int pad08;
   int pad0C;
   Actor *helper;  /* 0x10 */

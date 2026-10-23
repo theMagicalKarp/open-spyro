@@ -45,12 +45,12 @@
 typedef struct BatState {
   short velX;          /* 0x00 */
   short velY;          /* 0x02 */
-  short unk04;
-  short unk06;
-  short unk08;
-  short unk0A;
-  int unk0C;           /* 0x0C */
-  int unk10;           /* 0x10 */
+  short velZ;          /* 0x04 */
+  short spinX;         /* 0x06 per-frame spin (ShardState.spin in the updater) */
+  short spinY;         /* 0x08 */
+  short spinZ;         /* 0x0A */
+  int life;            /* 0x0C */
+  int floor;           /* 0x10 */
 } BatState;
 
 
@@ -264,12 +264,12 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     dir = (parent->rotY + RandomIntInRange(-0xF, 0xF)) & 0xFF;
     st->velX = speed * g_anCosineLut[dir] >> 12;
     st->velY = speed * g_anSineLut[dir] >> 12;
-    st->unk04 = RandomIntInRange(0x64, 0x8C);
-    st->unk0C = RandomIntInRange(0x1E, 0x32);
-    st->unk06 = RandomSignedInRange(7, 0xC);
-    st->unk08 = RandomSignedInRange(7, 0xC);
-    st->unk0A = RandomSignedInRange(7, 0xC);
-    st->unk10 = parent->posZ - parent->floorOffset - 0x40;
+    st->velZ = RandomIntInRange(0x64, 0x8C);
+    st->life = RandomIntInRange(0x1E, 0x32);
+    st->spinX = RandomSignedInRange(7, 0xC);
+    st->spinY = RandomSignedInRange(7, 0xC);
+    st->spinZ = RandomSignedInRange(7, 0xC);
+    st->floor = parent->posZ - parent->floorOffset - 0x40;
     *(int *)&rec->tint0 = 0x1000000;
     rec->renderList |= 0x80;
     break;

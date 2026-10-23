@@ -17,15 +17,15 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-/* Homing-shot state block (types 0xCA / 0xCF). */
+/* Barrel state block (types 0xCA / 0xCF; L31Barrel in the updater). */
 typedef struct SeekState {
   short pad00;
-  short unk02;
-  Actor *owner; /* 0x04 */
+  short blast;  /* 0x02 blast pushed Spyro */
+  Actor *owner; /* 0x04 rider */
   int pad08;
-  int unk0C;
-  int unk10;
-  short unk14;
+  int sink;     /* 0x0C sink speed */
+  int link;     /* 0x10 index into g_pActorListBase, -1 = none */
+  short handle; /* 0x14 for SelectActorLodBand */
 } SeekState;
 
 
@@ -198,10 +198,10 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
-    st->unk0C = -0xC;
+    st->sink = -0xC;
     st->owner = parent;
-    st->unk02 = 0;
-    st->unk10 = -1;
+    st->blast = 0;
+    st->link = -1;
     rec->floorOffset = 0x1CD;
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0x10;
@@ -222,11 +222,11 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
-    st->unk0C = -0xC;
+    st->sink = -0xC;
     st->owner = parent;
-    st->unk02 = 0;
-    st->unk14 = 0;
-    st->unk10 = -1;
+    st->blast = 0;
+    st->handle = 0;
+    st->link = -1;
     rec->floorOffset = 0x1CD;
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0x90;

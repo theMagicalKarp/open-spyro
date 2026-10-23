@@ -3,7 +3,7 @@
 
 /* Per-speed-bucket turn-rate table at 0x8006c5f0; row stride 0x1a bytes, the
    lean-indexed rate short sits at +0xc (short[6]). */
-extern short D_8006C5F0[];
+extern short g_anSpyroTurnRateRows[];
 
 extern void IntegrateSpyroBodyEuler(int delta);
 
@@ -54,7 +54,7 @@ void TurnSpyroTowardMoveTargetWithLean(int bucket) {
     }
   } while (0);
 
-  base = D_8006C5F0;
+  base = g_anSpyroTurnRateRows;
   row = (short *)((char *)base + bucket * 0x1a);
   rate = row[g_nSpyroBodyYawStep + 6];
   if (rate >= delta || rate + 0x1000 <= delta) {

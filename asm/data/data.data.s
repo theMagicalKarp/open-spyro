@@ -911,9 +911,9 @@ dlabel g_anSpyroSlopeSpeedTargets
     /* 5CDCC 8006C5CC C0030000 */ .word 0x000003C0
 enddlabel g_anSpyroSlopeSpeedTargets
 
-nonmatching D_8006C5D0
+nonmatching g_anDpadDirectionYaw
 
-dlabel D_8006C5D0
+dlabel g_anDpadDirectionYaw
     /* 5CDD0 8006C5D0 */ .short 0x0000
     /* 5CDD2 8006C5D2 */ .short 0x0000
     /* 5CDD4 8006C5D4 */ .short 0x0C00
@@ -930,11 +930,11 @@ dlabel D_8006C5D0
     /* 5CDEA 8006C5EA */ .short 0x0400
     /* 5CDEC 8006C5EC */ .short 0x0800
     /* 5CDEE 8006C5EE */ .short 0x0000
-enddlabel D_8006C5D0
+enddlabel g_anDpadDirectionYaw
 
-nonmatching D_8006C5F0
+nonmatching g_anSpyroTurnRateRows
 
-dlabel D_8006C5F0
+dlabel g_anSpyroTurnRateRows
     /* 5CDF0 8006C5F0 */ .short 0xFFA6
     /* 5CDF2 8006C5F2 */ .short 0xFFB0
     /* 5CDF4 8006C5F4 */ .short 0xFFC0
@@ -1067,7 +1067,7 @@ dlabel D_8006C5F0
     /* 5CEF2 8006C6F2 */ .short 0x000C
     /* 5CEF4 8006C6F4 */ .short 0x000F
     /* 5CEF6 8006C6F6 */ .short 0x0000
-enddlabel D_8006C5F0
+enddlabel g_anSpyroTurnRateRows
 
 nonmatching g_abSpyroEulerRateRampUp
 
@@ -3533,9 +3533,9 @@ dlabel g_anSpyroShadowProbeOffsetTable
     /* 5EB04 8006E304 9CFEFFFF */ .word 0xFFFFFE9C
 enddlabel g_anSpyroShadowProbeOffsetTable
 
-nonmatching D_8006E308
+nonmatching g_anWorldSparkleShape
 
-dlabel D_8006E308
+dlabel g_anWorldSparkleShape
     /* 5EB08 8006E308 00000000 */ .word 0x00000000
     /* 5EB0C 8006E30C C4FFFFFF */ .word 0xFFFFFFC4
     /* 5EB10 8006E310 0C000000 */ .word 0x0000000C
@@ -3546,7 +3546,7 @@ dlabel D_8006E308
     /* 5EB24 8006E324 F8FFFFFF */ .word 0xFFFFFFF8
     /* 5EB28 8006E328 60000000 */ .word 0x00000060
     /* 5EB2C 8006E32C 00000000 */ .word 0x00000000
-enddlabel D_8006E308
+enddlabel g_anWorldSparkleShape
 
 nonmatching g_adwActorBurstColors
 
@@ -3955,16 +3955,16 @@ dlabel g_abHudButterflyRingXY
     /* 5EFDB 8006E7DB */ .byte 0x01
 enddlabel g_abHudButterflyRingXY
 
-nonmatching D_8006E7DC
+nonmatching g_anFlightBoundsCenter
 
-dlabel D_8006E7DC
+dlabel g_anFlightBoundsCenter
     /* 5EFDC 8006E7DC 00F80100 */ .word 0x0001F800
     /* 5EFE0 8006E7E0 00F80100 */ .word 0x0001F800
-enddlabel D_8006E7DC
+enddlabel g_anFlightBoundsCenter
 
-nonmatching D_8006E7E4
+nonmatching g_anFlightBoundsRadius
 
-dlabel D_8006E7E4
+dlabel g_anFlightBoundsRadius
     /* 5EFE4 8006E7E4 00760100 */ .word 0x00017600
     /* 5EFE8 8006E7E8 33270200 */ .word 0x00022733
     /* 5EFEC 8006E7EC 57BE0100 */ .word 0x0001BE57
@@ -4077,7 +4077,7 @@ dlabel D_8006E7E4
     /* 5F198 8006E998 54555356 */ .word 0x56535554
     /* 5F19C 8006E99C 55545654 */ .word 0x54565455
     /* 5F1A0 8006E9A0 55535455 */ .word 0x55545355
-enddlabel D_8006E7E4
+enddlabel g_anFlightBoundsRadius
 
 nonmatching g_anLevelDeathPlaneZTable
 
@@ -4120,21 +4120,21 @@ dlabel g_anLevelDeathPlaneZTable
     /* 5F230 8006EA30 00040000 */ .word 0x00000400
 enddlabel g_anLevelDeathPlaneZTable
 
-nonmatching D_8006EA34
+nonmatching g_anOrbDropEnterSpawnType
 
-dlabel D_8006EA34
+dlabel g_anOrbDropEnterSpawnType
     /* 5F234 8006EA34 DD010000 */ .word 0x000001DD
     /* 5F238 8006EA38 6B010000 */ .word 0x0000016B
     /* 5F23C 8006EA3C FB010000 */ .word 0x000001FB
-enddlabel D_8006EA34
+enddlabel g_anOrbDropEnterSpawnType
 
-nonmatching D_8006EA40
+nonmatching g_anOrbDropTimeoutSpawnType
 
-dlabel D_8006EA40
+dlabel g_anOrbDropTimeoutSpawnType
     /* 5F240 8006EA40 95010000 */ .word 0x00000195
     /* 5F244 8006EA44 6C010000 */ .word 0x0000016C
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
-enddlabel D_8006EA40
+enddlabel g_anOrbDropTimeoutSpawnType
 
 nonmatching g_anLevelEntryPoints
 
@@ -4603,9 +4603,9 @@ dlabel D_8006EFA0
     /* 5F858 8006F058 2F000000 */ .word 0x0000002F
 enddlabel D_8006EFA0
 
-nonmatching D_8006F05C
+nonmatching g_anLevelMusicPickTable
 
-dlabel D_8006F05C
+dlabel g_anLevelMusicPickTable
     /* 5F85C 8006F05C 00000000 */ .word 0x00000000
     /* 5F860 8006F060 00000000 */ .word 0x00000000
     /* 5F864 8006F064 00000000 */ .word 0x00000000
@@ -4663,12 +4663,12 @@ dlabel D_8006F05C
     /* 5F934 8006F134 12000000 */ .word 0x00000012
     /* 5F938 8006F138 12000000 */ .word 0x00000012
     /* 5F93C 8006F13C 12000000 */ .word 0x00000012
-enddlabel D_8006F05C
+enddlabel g_anLevelMusicPickTable
 
 .align 2
-nonmatching D_8006F140
+nonmatching g_anGameOverRespawnPosVirtualBase
 
-dlabel D_8006F140
+dlabel g_anGameOverRespawnPosVirtualBase
     /* 5F940 8006F140 */ .asciz "'"
     /* 27000000 */
 .align 2
@@ -4752,7 +4752,7 @@ dlabel D_8006F140
     /* 5F9F4 8006F1F4 22000000 */ .word 0x00000022
     /* 5F9F8 8006F1F8 22000000 */ .word 0x00000022
     /* 5F9FC 8006F1FC 22000000 */ .word 0x00000022
-enddlabel D_8006F140
+enddlabel g_anGameOverRespawnPosVirtualBase
 
 nonmatching g_anCdAudioBankBaseLba
 
@@ -12872,14 +12872,14 @@ dlabel D_80075254
     /* 65A60 80075260 00000000 */ .word 0x00000000
 enddlabel D_80075254
 
-nonmatching D_80075264
+nonmatching g_abSpyroHornStrikeTransitionModes
 
-dlabel D_80075264
+dlabel g_abSpyroHornStrikeTransitionModes
     /* 65A64 80075264 */ .byte 0x00
     /* 65A65 80075265 */ .byte 0x02
     /* 65A66 80075266 */ .byte 0x01
     /* 65A67 80075267 */ .byte 0x02
-enddlabel D_80075264
+enddlabel g_abSpyroHornStrikeTransitionModes
 
 nonmatching g_abSpyroHornStrikeAnimTable
 
@@ -14201,12 +14201,12 @@ dlabel g_pfnLevelFallImpactCallback
     /* 65E94 80075694 00000000 */ .word 0x00000000
 enddlabel g_pfnLevelFallImpactCallback
 
-nonmatching D_80075698
+nonmatching g_nLevelLoadUnreadWord
 
-dlabel D_80075698
+dlabel g_nLevelLoadUnreadWord
     /* 65E98 80075698 00000000 */ .word 0x00000000
     /* 65E9C 8007569C 00000000 */ .word 0x00000000
-enddlabel D_80075698
+enddlabel g_nLevelLoadUnreadWord
 
 nonmatching g_bDebugNoDepletion
 

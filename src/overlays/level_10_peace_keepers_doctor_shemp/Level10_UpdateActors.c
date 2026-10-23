@@ -63,7 +63,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 

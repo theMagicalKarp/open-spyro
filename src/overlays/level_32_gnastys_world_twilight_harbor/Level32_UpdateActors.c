@@ -90,7 +90,7 @@ typedef struct PathState {
   PathData *path; /* 0x0C */
   int pad10;
   int pad14;
-  int unk18;
+  int pad18;
   int heading; /* 0x1C */
   int pad20;   /* 0x20 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
@@ -1113,7 +1113,7 @@ typedef struct L9Ram {
   int pad0C;
   int timer;   /* 0x10 grazing timer */
   int pad14;   /* 0x14 */
-  int unk18;
+  int pad18;
   int pad1C;
   int hits;    /* 0x20 */
 } L9Ram;

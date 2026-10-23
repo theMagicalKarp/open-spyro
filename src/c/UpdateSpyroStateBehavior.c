@@ -13,7 +13,7 @@ extern void BuildSpyroVelocityFromBodyEuler(void);
 
 extern unsigned short g_anCosineLut[];
 extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
-extern int D_8006EA40[];
+extern int g_anOrbDropTimeoutSpawnType[];
 
 SDATA(g_bSpyroJumpHoldForced, 4);
 
@@ -980,7 +980,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_READY] = -1;
       ((void (*)(int, int))g_pfnLevelSpawnActor)(
-          D_8006EA40[g_nSpyroOrbDropSpawnIndex], 0);
+          g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & 0x40)) {

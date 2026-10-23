@@ -40,11 +40,11 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-/* Homing-shot state block (type 0x130). */
+/* Path-walker state block (type 0x130; L14State304 in the updater). */
 typedef struct AimState {
-  int unk00;
+  int path;     /* 0x00 waypoint path, inherited from the parent */
   Actor *owner; /* 0x04 */
-  int unk08;
+  int hold;     /* 0x08 first of the three words ZeroVector clears */
 } AimState;
 
 
@@ -357,8 +357,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
     st->owner = parent;
-    st->unk00 = pst->unk00;
-    ZeroVector(&st->unk08);
+    st->path = pst->path;
+    ZeroVector(&st->hold);
     rec->cullRadius = 0x20;
     InsertActorIntoSpatialGrid(rec);
     rec->groundCode = -1;

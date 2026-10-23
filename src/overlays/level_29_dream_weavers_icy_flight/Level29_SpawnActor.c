@@ -33,12 +33,12 @@
 #include "actor.h"
 #include "main_shared.h"
 
-/* Aim/lob state block (type 0xE8). */
+/* Spin-and-run helper state block (type 0xE8; SpinRunState in the updater). */
 typedef struct AimState {
-  int unk00;
-  int unk04;
-  int unk08;
-  int unk0C;
+  int heading;   /* 0x00 */
+  int zVel;      /* 0x04 */
+  int moveSpeed; /* 0x08 */
+  int timer;     /* 0x0C */
 } AimState;
 
 extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
@@ -207,12 +207,12 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     rec->posZ += 0x400;
     InsertActorIntoSpatialGrid(rec);
-    st->unk04 = 0xC8;
-    st->unk08 = 0x15E;
-    st->unk00 = StepAndLerpAngle8(
+    st->zVel = 0xC8;
+    st->moveSpeed = 0x15E;
+    st->heading = StepAndLerpAngle8(
         ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, 0),
         g_bSpyroPersistentEulerZ, 0x28, 0x40);
-    st->unk0C = 0x78;
+    st->timer = 0x78;
     break;
   }
 

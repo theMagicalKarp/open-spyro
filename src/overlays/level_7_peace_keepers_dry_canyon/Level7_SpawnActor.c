@@ -303,7 +303,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
       rec->rotZ = GetRandomU32();
       if ((int)(GetRandomU32() & 0xFFF) >= 0x800) {
         rec->rotY = (GetRandomU32() & 0x1C) - 0x10;
-        st->unk10 = 1;
+        st->mode = 1;
       }
     } else {
       if (st->vel[0] < -0x60) {
@@ -325,9 +325,9 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     st->spinX = (GetRandomU32() & 0x1F) - 0x10;
     st->spinY = (GetRandomU32() & 0x1F) - 0x10;
     st->spinZ = (GetRandomU32() & 0x1F) - 0x10;
-    st->unk0C = 0x32 - RandomIntInRange(0, 0x14);
-    st->unk0D = 0xA;
-    st->unk0E = 4;
+    st->life = 0x32 - RandomIntInRange(0, 0x14);
+    st->slow = 0xA;
+    st->sway = 4;
     break;
   }
 

@@ -27,7 +27,7 @@ extern void TickWorldBundleLoadStream(void);
 extern void *g_pSharedLoadBuffer;    /* shared CD sector buffer pointer */
 extern int g_nAssetDirBootBlockSize; /* boot-splash chunk byte count */
 extern int g_anAssetDirectory;       /* boot-splash byte offset */
-extern int D_800785CC;
+extern int g_nInitUnreadWord;
 
 extern void *g_apDrawBufBlock2[]; /* distinct alias, fade-out pass (A23) */
 extern int g_anCdBaseLbaBlock[];  /* alias of g_nCdBaseLba */
@@ -249,5 +249,5 @@ fade_out_splash:
   BeginStoryIntro();
   g_nFrameStep = 2;
   g_nFrameTicks = 0;
-  D_800785CC = 0x8000;
+  g_nInitUnreadWord = 0x8000;
 }

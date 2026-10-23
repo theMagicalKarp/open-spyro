@@ -20,8 +20,8 @@ extern int g_nCreditsLineCount;
 extern int g_pCreditsScrollHeader;
 extern int g_pCreditsScratchBuf;
 extern int *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
-extern int D_8007A95C;
-extern int D_8007A958;
+extern int g_nCreditsSceneByteSize;
+extern int g_nCreditsSceneSectorOffset;
 
 void BeginCreditsSequence(int param_1) {
   int unused[8];
@@ -51,8 +51,8 @@ void BeginCreditsSequence(int param_1) {
   }
   {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    int size = *(volatile int *)&D_8007A95C;
-    int offset = *(volatile int *)&D_8007A958;
+    int size = *(volatile int *)&g_nCreditsSceneByteSize;
+    int offset = *(volatile int *)&g_nCreditsSceneSectorOffset;
     int *dst = *(int *volatile *)&g_pSharedLoadBuffer;
     CdReadSyncSectors(lba, dst, size, offset, 0x258);
   }

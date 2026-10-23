@@ -4616,7 +4616,7 @@ void Level24_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;
@@ -4655,7 +4655,7 @@ void Level24_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;

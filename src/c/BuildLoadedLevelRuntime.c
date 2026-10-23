@@ -32,8 +32,8 @@ extern void srand(unsigned int seed);
 
 extern short g_anCosineLut[];
 extern int g_nLevelSpawnPosZ;
-extern int D_80075698;
-extern int D_8006F140[];
+extern int g_nLevelLoadUnreadWord;
+extern int g_anGameOverRespawnPosVirtualBase[];
 extern int g_anLevelSpawnPosZBlock[];
 extern int g_nLevelSpawnPosX;
 extern int g_nLevelSpawnPosY;
@@ -95,7 +95,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
   if (g_nActiveLevelId == 0x40) {
     g_nLevelEggCount = 0;
   }
-  D_80075698 = 0;
+  g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {
     g_nLevelStormFlag = 1;
   } else {
@@ -119,8 +119,9 @@ int BuildLoadedLevelRuntime(int fullSetup) {
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
           ((gidx = g_nGameOverLevelIntroIndex - 0x12,
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
-        CopyVector(g_anSpyroWorldPos,
-                   &D_8006F140[g_nGameOverLevelIntroIndex * 3]);
+        CopyVector(
+            g_anSpyroWorldPos,
+            &g_anGameOverRespawnPosVirtualBase[g_nGameOverLevelIntroIndex * 3]);
         yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIntroIndex];
       } else {
         CopyVector(g_anSpyroWorldPos, g_anLevelSpawnPos);

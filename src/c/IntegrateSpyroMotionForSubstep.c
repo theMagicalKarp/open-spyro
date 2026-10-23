@@ -35,8 +35,8 @@ extern int g_nSpyroScriptedLiftRise;
 extern int g_nSpyroScriptedLiftYaw;
 extern int g_pSpyroHomingTargetActor;
 extern int g_nSpyroScriptedLiftTurn;
-extern int D_8006E7DC[];
-extern int D_8006E7E4[];
+extern int g_anFlightBoundsCenter[];
+extern int g_anFlightBoundsRadius[];
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);
 SDATA(g_bSpyroJumpHoldForced, 4);
@@ -905,10 +905,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
           x = g_nActiveLevelId / 10 - 1;
           q = (int)v40;
-          SubtractVector((int *)q, D_8006E7DC + x * 3, sp + (0 - SPY_SPEED));
+          SubtractVector((int *)q, g_anFlightBoundsCenter + x * 3,
+                         sp + (0 - SPY_SPEED));
           RShiftVector3((int *)q, 4);
           y = VectorLength((int *)q, 0);
-          a = D_8006E7E4[x * 3] >> 4;
+          a = g_anFlightBoundsRadius[x * 3] >> 4;
           if (a < y) {
             z = y - a;
             ScaleVector3ByRatio((int *)q, y, z);

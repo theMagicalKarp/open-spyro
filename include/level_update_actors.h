@@ -612,7 +612,7 @@ typedef struct RoamState {
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
-  int unk14;           /* 0x14 4th argument to ComputeStepTowardPoint */
+  int speed;           /* 0x14 leg speed (ComputeStepTowardPoint speed) */
   int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
@@ -697,7 +697,7 @@ typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
-  int unk14;        /* 0x14 published to SPY.u206 as a byte */
+  int dest;         /* 0x14 destination, published to SPY.u206 as a byte (ExitState.dest) */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 

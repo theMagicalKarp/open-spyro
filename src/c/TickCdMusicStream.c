@@ -11,9 +11,9 @@ extern int CdControlBlocking(unsigned char com, char *param, char *result);
 extern int CdControlForce(unsigned char com, char *param);
 extern void SetSpuCommonAttr(unsigned int *attr);
 
-extern unsigned char D_800776BC[];
+extern unsigned char g_abCdSyncResult[];
 extern unsigned int g_nCdMusicStreamTimeout;
-extern int D_8006F05C[];
+extern int g_anLevelMusicPickTable[];
 extern short g_nCdDaVolumeCurrent;
 extern short g_nSpuCommonCdVolumeR;
 
@@ -66,7 +66,7 @@ void TickCdMusicStream(void) {
   int pick;
   int *tbl;
 
-  sync = CallCdSync(1, D_800776BC);
+  sync = CallCdSync(1, g_abCdSyncResult);
   cmd = g_nLastCdMusicCommand;
   if (cmd != 0) {
     switch ((unsigned int)cmd) {
@@ -102,7 +102,7 @@ void TickCdMusicStream(void) {
         if (g_nVblankTickCount > g_nCdMusicStreamTimeout) {
           pick = (int)GetRandomU32();
           {
-            int *base = D_8006F05C;
+            int *base = g_anLevelMusicPickTable;
             tbl = &base[g_nLevelIntroIndex * 3];
           }
           g_nCdMusicStreamTimeout = g_nVblankTickCount + 0x7080;

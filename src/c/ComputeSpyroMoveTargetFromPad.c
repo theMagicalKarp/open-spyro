@@ -4,7 +4,7 @@
 
 /* D-pad -> yaw table (16 entries, stride 2), indexed by the pad button nibble.
  */
-extern short D_8006C5D0[];
+extern short g_anDpadDirectionYaw[];
 
 /* 0x8003d3b8 (0x174) — convert this substep's pad input (g_pPadSubstepState)
    into a movement target. Analog stick (bytes +0x16/+0x17 centred on 0x7f):
@@ -58,8 +58,8 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
     dpad = (unsigned char *)g_pPadSubstepState;
     if ((*(unsigned int *)(dpad + 4) & 0xf000) != 0) {
       g_nSpyroSpeedTarget = speed;
-      g_nSpyroMoveTargetYaw =
-          *(short *)((char *)D_8006C5D0 + ((*(int *)(dpad + 4) >> 0xb) & 0x1e));
+      g_nSpyroMoveTargetYaw = *(short *)((char *)g_anDpadDirectionYaw +
+                                         ((*(int *)(dpad + 4) >> 0xb) & 0x1e));
       g_nSpyroMoveTargetYaw =
           (g_nSpyroMoveTargetYaw + g_nCameraEulerYaw) & 0xfff;
     } else {
