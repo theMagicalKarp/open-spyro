@@ -12,6 +12,7 @@
  * 2-vblank pace loop and PutDispEnv/PutDrawEnv/DrawOTag submit.
  */
 
+#include "credits.h"
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "actor.h"
@@ -73,22 +74,22 @@ void Credits_Draw(void) {
   }
   for (i = 0; i < g_nCreditsGlyphCount; i++) {
     {
-      char *rec;
+      CredGlyph *glyph;
       char *prim = g_pSpriteRecordWriteCursor - 0x58;
       g_pSpriteRecordWriteCursor = prim;
-      rec = g_pCreditsGlyphPool + i * 0x1C;
+      glyph = (CredGlyph *)(g_pCreditsGlyphPool + i * 0x1C);
       FillWord(prim, 0, 0x58);
-      SREC->posX = *(short *)(rec + 0x12);
-      SREC->posY = *(short *)(rec + 0x14);
-      SREC->posZ = *(short *)(rec + 0x16);
-      SREC->rotX = rec[5];
-      if (*(short *)(rec + 0x1A) == 0x115) {
+      SREC->posX = glyph->x;
+      SREC->posY = glyph->y;
+      SREC->posZ = glyph->z;
+      SREC->rotX = glyph->r;
+      if (glyph->glyph == 0x115) {
         SREC->rotX += 0x29;
         SREC->posZ = 0x1C00;
       }
-      SREC->rotY = rec[6];
-      SREC->rotZ = rec[7];
-      SREC->type = *(unsigned short *)(rec + 0x1A);
+      SREC->rotY = glyph->g;
+      SREC->rotZ = glyph->b;
+      SREC->type = (unsigned short)glyph->glyph;
       SREC->tintMode = 0xB;
       SREC->cullRadius = 0xFF;
       SREC->otBias = 0x7F;

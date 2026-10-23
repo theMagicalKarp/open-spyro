@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 
 extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
 extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
@@ -70,13 +71,13 @@ int CheckDeathPlane(void) {
           g_anDeathReplayFrameThreshold[g_nDeathTryIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;
         g_pLevelSampleBankEntries = &g_CutsceneSoundDef;
-        *(int *)(BANK + 0x0) = 0x262d0;
-        *(int *)(BANK + 0x4) = -1;
-        *(short *)(BANK + 0x8) = 0x50;
-        *(short *)(BANK + 0xa) = g_nWorldCutsceneSamplePitch;
-        *(short *)(BANK + 0xc) = 0;
-        *(short *)(BANK + 0xe) = 0;
-        *(int *)(BANK + 0x10) = 0;
+        SAMPLE_RAW(BANK, int, nSampleAddr) = 0x262d0;
+        SAMPLE_RAW(BANK, int, nLoopAddr) = -1;
+        SAMPLE_RAW(BANK, short, nVolume) = 0x50;
+        SAMPLE_RAW(BANK, short, nPitch) = g_nWorldCutsceneSamplePitch;
+        SAMPLE_RAW(BANK, short, nPitchSpread) = 0;
+        SAMPLE_RAW(BANK, short, nPitchStep) = 0;
+        SAMPLE_RAW(BANK, int, nPitchMode) = 0;
         g_nSfxOverrideFlags = 1;
         g_nSfxOverrideVolL = 0x3fff;
         g_nSfxOverrideVolR = 0x3fff;

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -333,8 +334,8 @@ void UpdateCameraSpringForMode(void) {
 
       LoadCameraTargetAnglesFromMode();
       pad = g_pPadSubstepState;
-      if (*(int *)pad == 3 &&
-          (*(unsigned int *)(pad + 0x14) & 0xFFFF0000) != 0x7F7F0000) {
+      if (((PadSubstep *)pad)->padType == 3 &&
+          (((PadSubstep *)pad)->analog & 0xFFFF0000) != 0x7F7F0000) {
         g_anCameraScriptStickIntegrator[0] += (pad[0x16] - 0x7F) >> 1;
         g_anCameraScriptStickIntegrator[1] += (0x7F - pad[0x17]) >> 1;
       } else {

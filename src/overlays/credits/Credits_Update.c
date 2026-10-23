@@ -211,10 +211,12 @@
  *     but makes src non-local and breaks allocation.
  */
 
+#include "sample_bank.h"
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "main_shared.h"
 #include "level_spawn_actor.h"
+#include "credits.h"
 
 extern void CdReadSyncSectors();
 extern void CopyWords();
@@ -275,30 +277,38 @@ typedef struct {
 extern Cd85D8 g_pDrawBufA_s;
 #define S g_pDrawBufA_s
 
-/* One 0xC-byte line record of the credits script (table at g_pCreditsLineTable). */
-typedef struct {
-  unsigned char *text;
-  short y;
-  short showTimer; /* countdown; expiry marks the line scrolled past */
-  short nextDelay; /* countdown before the next line starts */
-  short state; /* 1 = laid out, 2 = scrolled past */
-} CredLine;
 
-/* One 0x1C-byte glyph record of the credits text pool. */
-typedef struct {
-  int pad00;
-  unsigned char state; /* 0 free, 1 fly in, 2 settled, 3 fall out, 4 done */
-  unsigned char r, g, b;
-  unsigned char dr, dg, db;
-  unsigned char timer;
-  short dx, dy, dz;
-  short x, y, z;
-  short line;
-  short glyph;
-} CredGlyph;
 
 #define POOL ((CredGlyph *)g_pCreditsGlyphPool)
 #define LINES ((CredLine *)g_pCreditsLineTable)
+
+/* A credits page's text block: byte size, the base its line pointers are
+ * relative to, line count, then the CredLine table (+0xC). */
+typedef struct CredText {
+  int size;
+  int base;
+  int count;
+} CredText;
+/* Byte-offset read of a CredText field; a struct view reorders the loads. */
+#define CRED_TEXT(hdr, f) (*(int *)((char *)(hdr) + (int)&((CredText *)0)->f))
+
+/* The credits camera track (g_pCreditsScrollHeader): a frame clock, the
+ * offset of the page's text block in g_pPathTableBuffer, the key count, then
+ * one CamKey per two frames. CAM_KEY reads a field of the current key in the
+ * original's byte-offset form. */
+typedef struct CamKey {
+  int posX, posY, posZ;
+  int roll, pitch, yaw;
+} CamKey;
+typedef struct CamTrack {
+  int clock;     /* 0x00 frames since the page started */
+  int text;      /* 0x04 CredText offset in g_pPathTableBuffer */
+  int keyCount;  /* 0x08 */
+  CamKey key[1]; /* 0x0C one per two frames */
+} CamTrack;
+#define CAM_KEY_OFFSET(f) ((int)&((CamTrack *)0)->key[0].f)
+#define CAM_KEY(h, f) \
+  (*(int *)((char *)(h) + ((*(int *)h >> 1) * 3 << 3) + CAM_KEY_OFFSET(f)))
 
 void Credits_Update(void) {
   short rect0[4];
@@ -351,14 +361,14 @@ void Credits_Update(void) {
     {
     char *e4 = g_pPathTableBuffer;
     g_pLevelSampleBankEntries = g_CutsceneSoundDef;
-    *(int *)g_pLevelSampleBankEntries = 0x1010;
-    *(int *)(g_pLevelSampleBankEntries + 4) = -1;
-    *(short *)(g_pLevelSampleBankEntries + 8) = 0x50;
-    *(short *)(g_pLevelSampleBankEntries + 0xA) = 0x659;
-    *(short *)(g_pLevelSampleBankEntries + 0xC) = 0;
-    *(short *)(g_pLevelSampleBankEntries + 0xE) = 0;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nSampleAddr) = 0x1010;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nLoopAddr) = -1;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nVolume) = 0x50;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitch) = 0x659;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchSpread) = 0;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
     g_pCreditsScrollHeader = e4;
-    *(int *)(g_pLevelSampleBankEntries + 0x10) = 0;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = 0;
     g_nSfxOverrideFlags = 1;
     g_nSfxOverrideVolL = 0x3FFF;
     g_nSfxOverrideVolR = 0x3FFF;
@@ -367,13 +377,13 @@ void Credits_Update(void) {
     {
       char *hdr;
       char *shift;
-      hdr = g_pPathTableBuffer + *(int *)(g_pCreditsScrollHeader + 4);
+      hdr = g_pPathTableBuffer + ((CamTrack *)g_pCreditsScrollHeader)->text;
       {
       int sz;
       g_pCreditsLoadBuf = hdr;
-      sz = *(int *)hdr;
-      shift = g_pCreditsLineTable + *(int *)(hdr + 4) - 0xC;
-      g_nCreditsLineCount = *(int *)(hdr + 8);
+      sz = CRED_TEXT(hdr, size);
+      shift = g_pCreditsLineTable + CRED_TEXT(hdr, base) - 0xC;
+      g_nCreditsLineCount = CRED_TEXT(hdr, count);
       CopyWords(g_pCreditsLineTable, hdr + 0xC, sz - 0xC);
       }
       {
@@ -413,12 +423,12 @@ void Credits_Update(void) {
         }
         {
           char *h = g_pCreditsScrollHeader;
-          g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + 0xC);
-          g_nCameraPosY = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x10);
-          g_nCameraPosZ = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x14);
-          g_nCameraEulerRoll = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x18);
-          g_nCameraEulerPitch = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x1C);
-          g_nCameraEulerYaw = *(int *)(h + ((*(int *)h >> 1) * 3 << 3) + 0x20);
+          g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + CAM_KEY_OFFSET(posX));
+          g_nCameraPosY = CAM_KEY(h, posY);
+          g_nCameraPosZ = CAM_KEY(h, posZ);
+          g_nCameraEulerRoll = CAM_KEY(h, roll);
+          g_nCameraEulerPitch = CAM_KEY(h, pitch);
+          g_nCameraEulerYaw = CAM_KEY(h, yaw);
         }
       } else {
         g_nGamestate0fMode = gate + 1;
@@ -428,15 +438,15 @@ void Credits_Update(void) {
   if (g_nCreditsGlyphCount == 0) {
     if (g_nCreditsFirstVisibleLine >= g_nCreditsLineCount) {
       char *p;
-      *(short *)(g_pLevelSampleBankEntries + 8) -= 0xA;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, short, nVolume) -= 0xA;
       {
         int f = g_nReturningHomePhase;
         int w;
         p = g_pLevelSampleBankEntries;
-        w = *(short *)(p + 8);
+        w = SAMPLE_RAW(p, short, nVolume);
         g_nReturningHomePhase = f + g_nFrameStep;
         if (w < 0) {
-          *(short *)(p + 8) = 0;
+          SAMPLE_RAW(p, short, nVolume) = 0;
         }
       }
       g_nGenericCountdown = g_nReturningHomePhase;
