@@ -1,10 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
+#include "vecmath.h"
 
 extern int FindFreeRotBillboardSlot();
 extern void RefreshActorDerivedState();
-extern void RotateVectorByMatrix();
-extern void AddVector();
-extern unsigned int GetRandomU32();
 
 typedef struct RotBillboard {
   int pos[3];             /* 0x00: world position */

@@ -1,10 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "vecmath.h"
 
-extern int LookupSine(unsigned int angle_12_4);
-extern int LookupCosine(unsigned int angle_12_4);
-extern void LShiftVector3(int *vec, unsigned int bits);
-extern void RShiftVector3(int *vec, unsigned int bits);
 extern int strlen(char *s);
 
 /* The per-letter banner record hung off the actor's +0x00 pointer. */

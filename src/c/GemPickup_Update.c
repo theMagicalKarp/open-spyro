@@ -1,3 +1,4 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -23,17 +24,10 @@
 extern int SignedAngleDelta12(int a, int b);
 extern void ResetSpyroEntity(int mode);
 extern void StopAllSoundExceptMask(int mask);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
 extern void AdvanceSpyroAnimFrame(int delta);
 extern int FindWorldFloorBelowPoint(int *pos);
 extern void SampleSpyroShadowRingHeights(int mode);
-extern void *AllocActorRecordSlot(void);
-extern void InitActorRenderDefaults(void *actor);
-extern void EncodeCachedVecToActorDirCode(void *actor);
-extern void InsertActorIntoSpatialGrid(void *actor);
 extern void StopSoundVoiceByIndex(int voice, int mode);
-extern void DespawnActorRecord(void *actor);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
@@ -41,7 +35,6 @@ extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 extern void CommitHudCounterAnimState(int slot, int digits, int phase);
 extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
-extern void TickGemPickupBurstEntity(void *actor);
 
 extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
                                                     g_pLevelSampleBankEntries */

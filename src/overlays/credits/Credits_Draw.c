@@ -17,13 +17,13 @@
 #include "level_funcs.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
+#include "level_flight_results.h"
 
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
 
-extern unsigned char *g_pActiveFrameDrawEnv;
-extern unsigned char g_abFrameDrawEnv0[];
 extern unsigned char g_dwWorldFogColor;
 extern unsigned char g_bWorldFogColorG;
 extern unsigned char g_bWorldFogColorB;
@@ -33,11 +33,8 @@ extern unsigned char g_bFrameDrawEnv0BgB;
 extern unsigned char g_bFrameDrawEnv1BgR;
 extern unsigned char g_bFrameDrawEnv1BgG;
 extern unsigned char g_bFrameDrawEnv1BgB;
-extern char *g_pSpriteRecordWriteCursor;
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
-extern int g_apSpritePrimQueue[];
-extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {
   int i;

@@ -10,6 +10,7 @@
    pointer + count published to a global and its stored offsets rebased onto
    the chunk itself. */
 
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -19,11 +20,7 @@ extern void ResetPadFrameSubstepTable(unsigned int *pad);
 extern void ResetSpyroEntity();
 extern void ChangeSpyroState();
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void InsertActorIntoSpatialGrid(char *rec);
-extern void HideActorRenderRecord(char *rec);
 extern void FindGroundHeightBelow(int *pos, int range);
-extern void EncodeCachedVecToActorDirCode(char *rec);
-extern void DespawnActorRecord(char *rec);
 extern void ResetWorldParticleTables(void);
 extern void ResetWorldChunkAnimations(void);
 extern void InitHudCounters(int full);

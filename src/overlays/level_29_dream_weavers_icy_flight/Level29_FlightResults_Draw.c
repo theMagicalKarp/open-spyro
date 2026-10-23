@@ -26,8 +26,8 @@
 #include "level_emit_particles.h"
 #include "level_spawn_actor.h"
 #include "level_flight_results.h"
+#include "actor.h"
 
-extern void PlaySoundEffect();
 
 
 void Level29_FlightResults_Draw(void)

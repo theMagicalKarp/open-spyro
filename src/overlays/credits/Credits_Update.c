@@ -217,12 +217,12 @@
 #include "main_shared.h"
 #include "level_spawn_actor.h"
 #include "credits.h"
+#include "actor.h"
 
 extern void CdReadSyncSectors();
 extern void CopyWords();
 extern void StartCdReadAsync();
 extern char *UnpackWorldDataChunks();
-extern void PlaySoundEffect();
 extern int TickCountdownByFrameDelta();
 extern int RandomSignedInRange();
 extern void exit() __attribute__((noreturn));

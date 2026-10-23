@@ -1,15 +1,10 @@
 #include "globals.h"
 #include "sample_bank.h"
 #include "spu.h"
+#include "vecmath.h"
 
 extern int GetSoundVoiceStatusByOwner(unsigned char *owner,
                                       unsigned int sampleId);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, unsigned int bits);
-extern unsigned int VectorLength(int *vec, int includeZ);
-extern unsigned int GetRandomU32(void);
-extern int ArcTan2(int y, int x, int highPrecision);
-extern unsigned int AbsAngleDelta8(int a, int b);
 extern void ComputeVoicePanAndFalloff(short *vol, int dist,
                                       unsigned char bearing, unsigned int range,
                                       short *cached);

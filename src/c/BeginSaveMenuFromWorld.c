@@ -1,11 +1,10 @@
 #include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "vecmath.h"
 
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern void ResetSpyroEntity(int hard);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int AbsAngleDelta12(int a, int b);
 
 /* alias block as an INT array — +0 anim-prev byte, -6 words
    g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must

@@ -1,4 +1,5 @@
 #include "types.h"
+#include "vecmath.h"
 
 /* DrawActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
 
@@ -25,19 +26,11 @@ extern void FillWord(void *dst, unsigned int value, int byte_count);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern void SetTransMatrix(MATRIX *m);
 extern void MulMatrix(MATRIX *a, MATRIX *b);
-extern int LookupSine(unsigned int angle);
-extern int LookupCosine(unsigned int angle);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void AddVector(int *dst, int *a, int *b);
-extern void ZeroVector(int *v);
-extern void RShiftVector3(int *v, unsigned int bits);
-extern unsigned int VectorLength(int *v, int with_z);
 extern int CountLeadingZeros(int x);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           unsigned int t);
 extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int shift);
 extern void ApplyEulerRotation(unsigned char *euler, MATRIX *m, MATRIX *p);
-extern void RotateVectorByMatrix(MATRIX *m, int *src, int *dst);
 extern void EmitDynamicActorMeshFogged(unsigned int *color);
 extern void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx,
                                           MATRIX *outMtx);
