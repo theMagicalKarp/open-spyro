@@ -639,7 +639,7 @@ void Level20_UpdateActors(void) {
       if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
         case 0:
-          if (TickCountdownByFrameDelta(&st->unk14, 2) == 0 || actor->drawn != 0) {
+          if (TickCountdownByFrameDelta(&st->wanderTimer, 2) == 0 || actor->drawn != 0) {
             int moved;
             int blocked;
             int step;

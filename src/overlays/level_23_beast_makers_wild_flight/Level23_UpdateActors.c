@@ -304,11 +304,11 @@ typedef struct CyclerState {
   int tally;               /* 0x1C */
   int roll;                /* 0x20 */
   int rollVel;             /* 0x24 */
-  int unk28;               /* 0x28 */
+  int zVel;               /* 0x28 */
   int heading;             /* 0x2C */
-  int unk30;               /* 0x30 */
-  int unk34[3];            /* 0x34 */
-  int unk40;               /* 0x40 */
+  int moveSpeed;               /* 0x30 */
+  int legVec[3];            /* 0x34 */
+  int legStep;               /* 0x40 */
 } CyclerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -1388,8 +1388,8 @@ void Level23_UpdateActors(void) {
           reward->mode = 1;
         }
         TallyFlightTarget(st->tally);
-        st->unk28 = 0xC8;
-        st->unk30 = 0x15E;
+        st->zVel = 0xC8;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
@@ -1411,17 +1411,17 @@ void Level23_UpdateActors(void) {
       case 0: {
         int d;
 
-        if (st->unk40 == 0xFF) {
+        if (st->legStep == 0xFF) {
           st->path[1]++;
           if (st->path[1] >= st->path[0]) {
             st->path[1] = 0;
           }
-          st->unk40 = 0;
-          ZeroVector(st->unk34);
+          st->legStep = 0;
+          ZeroVector(st->legVec);
         }
         d = actor->rotZ;
         if (g_nSpyroStateFlags < 8 &&
-            TweenActorAlongPath(actor, st->path, st->unk34, &st->unk40, 0xA, 4) == 2) {
+            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, 4) == 2) {
           st->pathIdx = (st->pathIdx + 1) & 3;
           switch (st->pathIdx) {
           case 0:
@@ -1472,7 +1472,7 @@ void Level23_UpdateActors(void) {
         /* fall through */
       case 2:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (DriveActorTrackedMove(actor, &st->unk30, st->heading, &st->unk28, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);

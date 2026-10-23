@@ -3252,7 +3252,7 @@ void Level10_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         st->ang = actor->rotZ * 16;
-        d = SteerActorYawTowardSpyro(actor, &st->unk18, &st->ang, 0x20, 0x280, 1);
+        d = SteerActorYawTowardSpyro(actor, &st->turnDir, &st->ang, 0x20, 0x280, 1);
         if (ABS(d) < 0x80) {
           ANIM_GO(actor, 0);
         }

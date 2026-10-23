@@ -2670,7 +2670,7 @@ void Level9_UpdateActors(void) {
         z = FindGroundHeightBelow(&actor->posX, 0x1000);
         EncodeCachedVecToActorDirCode(actor);
         if (actor->posZ - z > 0x800) {
-          SpawnActorDeathDrop(actor, 2, 0, &st->unk14);
+          SpawnActorDeathDrop(actor, 2, 0, &st->dropPos);
           MarkActorCommittedKill(actor);
           actor->posZ -= 0x200;
           st->rest = 0;

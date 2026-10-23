@@ -1168,7 +1168,7 @@ typedef struct ShempState {
   int pad04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int pad14;           /* 0x14 */
-  int unk18;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
+  int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */

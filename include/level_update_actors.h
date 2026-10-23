@@ -805,7 +805,7 @@ typedef struct WanderState {
   unsigned char heading; /* 0x11 */
   unsigned char reTurn;  /* 0x12 frames until the next heading change */
   unsigned char reStep;  /* 0x13 frames until the next speed change */
-  unsigned char unk14;   /* 0x14 */
+  unsigned char wanderTimer;   /* 0x14 */
 } WanderState;
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
@@ -1046,7 +1046,7 @@ typedef struct L9Ram {
   int rest;    /* 0x08 rest countdown, knock-back height step */
   int unk0C;
   int timer;   /* 0x10 grazing timer */
-  int unk14;   /* 0x14 */
+  int dropPos;   /* 0x14 */
   int unk18;
   int unk1C;
   int hits;    /* 0x20 */
@@ -1636,7 +1636,7 @@ typedef struct ShempState {
   int unk04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
+  int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */

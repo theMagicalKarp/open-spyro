@@ -306,16 +306,16 @@ typedef struct BobberState {
   int phase;   /* 0x08 0..479 */
   int pad0C[2];
   int baseZ;   /* 0x14 */
-  int unk18;   /* 0x18 passed by address to DriveActorTrackedMove */
+  int zVel;   /* 0x18 passed by address to DriveActorTrackedMove */
   int heading; /* 0x1C */
-  int unk20;   /* 0x20 passed by address to DriveActorTrackedMove */
+  int moveSpeed;   /* 0x20 passed by address to DriveActorTrackedMove */
 } BobberState;
 
 /* Type 0xE8: the helper; spins and runs until it gets away or times out. */
 typedef struct SpinRunState {
   int heading; /* 0x00 */
-  int unk04;   /* 0x04 */
-  int unk08;   /* 0x08 */
+  int zVel;   /* 0x04 */
+  int moveSpeed;   /* 0x08 */
   int timer;   /* 0x0C */
 } SpinRunState;
 
@@ -1445,8 +1445,8 @@ void Level29_UpdateActors(void) {
         if (reward != 0) {
           reward->mode = 1;
         }
-        st->unk18 = 0x64;
-        st->unk20 = 0x15E;
+        st->zVel = 0x64;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
             SPY.bodyRotZ, 0x28, 0x40);
@@ -1482,7 +1482,7 @@ void Level29_UpdateActors(void) {
         /* fall through */
       case 2:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (DriveActorTrackedMove(actor, &st->unk20, st->heading, &st->unk18, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1555,7 +1555,7 @@ void Level29_UpdateActors(void) {
       SpinRunState *st = actor->state;
 
       actor->rotZ += 8;
-      if (DriveActorTrackedMove(actor, &st->unk08, st->heading, &st->unk04, 0xC,
+      if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                         0xC) == 3) {
         DespawnActorRecord(actor);
         continue;
