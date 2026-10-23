@@ -1,6 +1,9 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
+
+#define ACT ((Actor *)actor)
 
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
    Sibling of MoveActorAlongAngle, but the direction comes from the actor's dir
@@ -41,12 +44,8 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
-  newpos[0] =
-      actor[3] +
-      ((g_anCosineLut[*(unsigned char *)((char *)actor + 0x46)] * speed) >> 12);
-  newpos[1] =
-      actor[4] +
-      ((g_anSineLut[*(unsigned char *)((char *)actor + 0x46)] * speed) >> 12);
+  newpos[0] = actor[3] + ((g_anCosineLut[ACT->rotZ] * speed) >> 12);
+  newpos[1] = actor[4] + ((g_anSineLut[ACT->rotZ] * speed) >> 12);
   newpos[2] = actor[5];
   if (group != 0) {
     if (!(flags & 2)) {
@@ -78,7 +77,7 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
   if (flags & 0x10) {
-    floorz = ground + *(short *)((char *)actor + 0x38);
+    floorz = ground + ACT->floorOffset;
     step = floorz - actor[5];
     if (step > 0) {
       if (step >= 0x191) {
@@ -102,7 +101,7 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   actor[3] = newpos[0];
   actor[4] = newpos[1];
   if (flags & 4) {
-    snapz = ground + *(short *)((char *)actor + 0x38);
+    snapz = ground + ACT->floorOffset;
     d = snapz - actor[5];
     if (abs(d) >= 0x259) {
       if (d > 0) {

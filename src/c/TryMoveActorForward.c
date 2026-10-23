@@ -1,6 +1,9 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
+
+#define ACT ((Actor *)actor)
 
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
    position if nothing blocks it (0x8003bccc). Global pace g_nActorFrameDelta
@@ -64,14 +67,14 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
     ground = FindGroundHeightBelow(vec, 0x800);
   }
   if (flags & 0x10) {
-    d = ground - *(int *)(actor + 0x14);
+    d = ground - ACT->posZ;
     if (d > 0) {
       if (d >= 0xC9) {
         goto blocked;
       }
       goto gdone;
     }
-    if (*(int *)(actor + 0x14) - ground < 0xC9) {
+    if (ACT->posZ - ground < 0xC9) {
       goto gdone;
     }
   blocked:

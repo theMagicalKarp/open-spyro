@@ -1,4 +1,7 @@
+#include "actor_type.h"
 #include "globals.h"
+
+#define ACT ((Actor *)actor)
 
 /* Drive an actor's tracked move toward its target (0x80039910, 0x198).
    Picks the probe mode/distance from the actor's +0x3B flag byte, runs the
@@ -27,7 +30,7 @@ int DriveActorTrackedMove(int *actor, int *counter, int angle, int *timer,
   if (timer == 0 || *timer == 0xFFFF) {
     mode = 0x25;
   }
-  b = *((unsigned char *)actor + 0x3B);
+  b = ACT->probeDist;
   if (b == 0xFE) {
     mode = 1;
   } else if (b != 0) {
@@ -56,7 +59,7 @@ int DriveActorTrackedMove(int *actor, int *counter, int angle, int *timer,
       *timer = -0x104;
     }
     if (*timer <= 0) {
-      t = r4 + *(short *)((char *)actor + 0x38);
+      t = r4 + ACT->floorOffset;
       if (actor[5] < t) {
         actor[5] = t;
         ret = 3;

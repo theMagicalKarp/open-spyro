@@ -1,26 +1,26 @@
+#include "actor.h"
 #include "globals.h"
 
-/* Set the type byte (+0x48) to `a1` for every actor in the pickup group named
-   by actor `a0`'s +0x43 group index whose current type byte is < 0x80
+/* Set the mode byte (+0x48) to `value` for every actor in the pickup group
+   named by actor's group index (+0x43) whose current mode is < 0x80
    (0x8003b1e8). If that group index is out of range, apply the same guarded
    write to the passed actor itself. */
-void SetActorGroupState(int a0, int a1) {
+void SetActorGroupState(Actor *actor, int value) {
   unsigned short *ptr;
   int idx;
   int group;
 
-  group = *(unsigned char *)(a0 + 0x43);
+  group = actor->group;
   if (group >= g_nLevelPickupTableCount) {
-    if ((unsigned int)*(unsigned char *)(a0 + 0x48) < 0x80) {
-      *(unsigned char *)(a0 + 0x48) = a1;
+    if ((unsigned int)actor->mode < 0x80) {
+      actor->mode = value;
     }
   } else {
     ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
     do {
       idx = *ptr & 0x7FFF;
-      if ((unsigned int)((unsigned char *)g_pActorListBase)[idx * 0x58 + 0x48] <
-          0x80) {
-        ((unsigned char *)g_pActorListBase)[idx * 0x58 + 0x48] = a1;
+      if ((unsigned int)((Actor *)g_pActorListBase)[idx].mode < 0x80) {
+        ((Actor *)g_pActorListBase)[idx].mode = value;
       }
     } while ((short)*ptr++ >= 0);
   }

@@ -1,4 +1,7 @@
+#include "actor_type.h"
 #include "globals.h"
+
+#define ACT ((Actor *)actor)
 
 extern void SpawnFloatingDigitActors(void);
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
@@ -33,7 +36,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     int *gems;
     int w;
     int g;
-    if (*(int *)(actor + 0x14) >= 0x300) {
+    if (ACT->posZ >= 0x300) {
       SpawnFloatingDigitActors();
     }
     gems = &g_anLevelGemsCollected[g_nLevelIntroIndex];
