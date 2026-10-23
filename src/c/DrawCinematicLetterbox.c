@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void AddPrimToOT(int prim);
 
 /* Draw two stacked black POLY_F4 cinematic bars (top y=0..h, bottom
    y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by

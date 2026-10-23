@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Rebuilds the HUD sprite-record queue for the loading/inventory screen
@@ -17,9 +18,6 @@
    global symbol, not the flag pointer: cse rewrites each constant address
    relative to whichever register already holds a related one, which is what
    puts the original's held bases (and loop.c's hoist order) in place. */
-extern int sprintf(char *dst, char *fmt, int a, int b);
-extern void *BuildTextSpriteChain(char *text, int *rect, int width, int flags);
-extern void EmitTexturedQuad(byte *quad, byte *uv, int *color);
 
 extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 (quarter turn) */
 

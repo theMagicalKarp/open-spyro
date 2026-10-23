@@ -68,7 +68,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
@@ -352,11 +351,8 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 
-extern int g_nGnastyLootFallRefZCap;   /* level music cue */
 extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 
-extern int g_nGenericCountdown; /* HUD countdown */
-extern int *g_pPathTableHead;
 
 /* ==== The function ==== */
 #define spy ((SpyroObj *)&g_anSpyroWorldPos)

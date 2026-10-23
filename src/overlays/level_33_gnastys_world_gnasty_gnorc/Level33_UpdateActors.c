@@ -12,9 +12,9 @@
  *     constant 1 is a literal, so the SImode 1 group is hoisted into fp and
  *     the byte stores stay inline. `spyc` (case 181's headLook) is hoisted
  *     too. Case 21's pose 3 is ENTER_POSE_B (A285) and case 169's posY sine
- *     read uses the g_anSineLut alias, which keeps 3 and D_8006CBF8 out of
+ *     read uses the g_anSineLut alias, which keeps 3 and g_anSineLut_s out of
  *     loop.c's hoist set, as in the original.
- *   - `base = (char *)D_80078BBC` before the loop: the balloon-stage address
+ *   - `base = (char *)g_anLevelReadyFlagBlock` before the loop: the balloon-stage address
  *     is a spilled equivalence rematerialised at its two uses, while the
  *     stage itself is read through the scalar g_nLevelReadyFlag view.
  *   - Gnasty's camera blocks read the anchor path through a scalar view of
@@ -60,14 +60,13 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
 
 /* 256-entry sine and cosine tables. */
-extern short D_8006CBF8[];
+extern short g_anSineLut_s[];
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -351,13 +350,10 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
-extern int g_nGnastyLootFallRefZCap;   /* level music cue */
 /* from level_34 */
 extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 /* from level_34 */
-extern int g_nGenericCountdown; /* HUD countdown */
 /* from level_34 */
-extern int *g_pPathTableHead;
 /* from level_32 */
 /* from level_32 */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
@@ -495,7 +491,6 @@ typedef struct L33State169 {
   int u10;         /* 0x10 climb */
 } L33State169;
 
-extern int g_nMotionTrailRibbonCount;      /* trail slots used this frame */
 extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
@@ -505,7 +500,7 @@ extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 /* Type 159 state. */
 typedef struct L33State159 {
   FlyPath *path; /* 0x00 */
-  int u04;       /* 0x04 lane; indexes D_80075838 */
+  int u04;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int u08;       /* 0x08 slow-down timer */
   int u0C;       /* 0x0C */
   int u10;       /* 0x10 speed */
@@ -518,7 +513,7 @@ typedef struct L33State159 {
   int u60;       /* 0x60 partner actor index, -1 none */
 } L33State159;
 
-extern int D_80075838[]; /* laps per lane */
+extern int g_anLevelEscapeRunCount[]; /* laps per lane */
 
 /* Type 161 state (Gnasty Gnorc). */
 typedef struct GnastyState {
@@ -571,10 +566,9 @@ typedef struct GnastyState {
     }                                                                          \
   }
 
-extern int D_80077CC8[];         /* level flags */
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
-extern int g_nLevelReadyFlag; /* == D_80078BBC, scalar view */
+extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* ==== The function ==== */
 #define spy (&SPY)
@@ -627,7 +621,7 @@ void Level33_UpdateActors(void) {
   }
 
   actorList = g_apSaveMenuAnimActorList;
-  base = (char *)D_80078BBC;
+  base = (char *)g_anLevelReadyFlagBlock;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
@@ -1429,7 +1423,7 @@ void Level33_UpdateActors(void) {
             } else {
               ScaleVector3Sat(svI, svI, st->timer);
               AddVector(&actor->posX, (int *)st, svI);
-              actor->posZ += (short)(D_8006CBF8[st->timer * 4] / 12);
+              actor->posZ += (short)(g_anSineLut_s[st->timer * 4] / 12);
             }
           }
 
@@ -1453,7 +1447,7 @@ void Level33_UpdateActors(void) {
 
               v = ((unsigned short)g_anCosineLut[st->spin] << 16 >> 25) + (unsigned char)st->lean;
               actor->rotX = v;
-              v = ((unsigned short)D_8006CBF8[st->spin] << 16 >> 25) + (unsigned char)st->roll;
+              v = ((unsigned short)g_anSineLut_s[st->spin] << 16 >> 25) + (unsigned char)st->roll;
               actor->rotY = v;
               st->spin += g_nFrameStep * 2;
             } else if (actor->type == 15) {
@@ -1464,7 +1458,7 @@ void Level33_UpdateActors(void) {
 
               v = ((unsigned short)g_anCosineLut[st->spin] << 16 >> 23) + (unsigned char)st->lean;
               actor->rotX = v;
-              v = ((unsigned short)D_8006CBF8[st->spin] << 16 >> 23) + (unsigned char)st->roll;
+              v = ((unsigned short)g_anSineLut_s[st->spin] << 16 >> 23) + (unsigned char)st->roll;
               actor->rotY = v;
               st->spin += g_nFrameStep * 2;
             }
@@ -1593,12 +1587,12 @@ void Level33_UpdateActors(void) {
               svA[0] -=
                   (unsigned short)g_anCosineLut[st->gnorc->rotZ] << 16 >> 20;
               svA[1] -=
-                  (unsigned short)D_8006CBF8[st->gnorc->rotZ] << 16 >> 20;
+                  (unsigned short)g_anSineLut_s[st->gnorc->rotZ] << 16 >> 20;
             } else {
               svA[0] -=
                   (unsigned short)g_anCosineLut[st->gnorc->rotZ] << 16 >> 22;
               svA[1] -=
-                  (unsigned short)D_8006CBF8[st->gnorc->rotZ] << 16 >> 22;
+                  (unsigned short)g_anSineLut_s[st->gnorc->rotZ] << 16 >> 22;
             }
 
             if (high != 0) {
@@ -1924,7 +1918,7 @@ void Level33_UpdateActors(void) {
             st->path->dir = 1;
             st->u08 = 0x96;
           }
-          st->u08 -= D_80075838[st->u04] * 6;
+          st->u08 -= g_anLevelEscapeRunCount[st->u04] * 6;
           if (IsPointInRotatedBox(&SPY.posX, st->u28) != 0) {
             st->path->dir *= -1;
           }
@@ -1950,7 +1944,7 @@ void Level33_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (TickCountdownByFrameDelta(&st->u08, 4) != 0) {
-          int lo = 0xDC - D_80075838[st->u04] * 6;
+          int lo = 0xDC - g_anLevelEscapeRunCount[st->u04] * 6;
 
           st->u10 -= 0xA;
           if (st->u10 < lo) {
@@ -1978,9 +1972,9 @@ void Level33_UpdateActors(void) {
         }
         if ((st->path->dir == -1 && r == (st->u20 | 0x100)) ||
             (st->path->dir == 1 && r == (st->u24 | 0x100))) {
-          D_80075838[st->u04]++;
-          if (D_80075838[st->u04] >= 6) {
-            D_80075838[st->u04] = 5;
+          g_anLevelEscapeRunCount[st->u04]++;
+          if (g_anLevelEscapeRunCount[st->u04] >= 6) {
+            g_anLevelEscapeRunCount[st->u04] = 5;
           }
           ENTER_POSE(actor, 0);
         }
@@ -2073,7 +2067,7 @@ void Level33_UpdateActors(void) {
           st->u14 = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, 0);
           if (actor->dropKind != 0xFF) {
-            D_80077CC8[0] &= ~1;
+            g_anLevelKillBitmapTable[0xF0] &= ~1;
           }
           SpawnActorDeathDrop(actor, 4, 0, 0);
           ENTER_POSE(actor, 8);
@@ -2668,7 +2662,7 @@ void Level33_UpdateActors(void) {
 
       if (actor->subMode == 0) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
-        actor->rotY = (unsigned short)D_8006CBF8[st->angle] >> 7;
+        actor->rotY = (unsigned short)g_anSineLut_s[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
 
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x200) {
@@ -2733,7 +2727,7 @@ void Level33_UpdateActors(void) {
       if (actor->subMode == 0) {
         if (open) {
           actor->rotX = (unsigned short)g_anCosineLut[st->phase] >> 7;
-          actor->rotY = (unsigned short)D_8006CBF8[st->phase] >> 7;
+          actor->rotY = (unsigned short)g_anSineLut_s[st->phase] >> 7;
           st->phase += g_nFrameStep * 2;
         }
         if ((ApproxDist2D(&actor->posX, &SPY.posX) < 0x200 &&
@@ -2863,10 +2857,10 @@ void Level33_UpdateActors(void) {
           DivideVector3(v, v, 6);
           AddVector(v, v, &SPY.posX);
           v[2] += 0x100;
-          v[2] += (unsigned short)D_8006CBF8[(st->timer << 7) / 192] << 16 >> 19;
+          v[2] += (unsigned short)g_anSineLut_s[(st->timer << 7) / 192] << 16 >> 19;
           CopyVector(&actor->posX, v);
           g_nCameraScriptStickRequestY[0] =
-              (unsigned short)D_8006CBF8[(st->timer << 7) / 192] << 16 >> 19;
+              (unsigned short)g_anSineLut_s[(st->timer << 7) / 192] << 16 >> 19;
           if (st->timer < 0x40) {
             int r;
 
@@ -3341,10 +3335,10 @@ void Level33_UpdateActors(void) {
             c->subMode = (GetRandomU32() & 1) + 0x12;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
-            c->posY += (D_8006CBF8[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
+            c->posY += (g_anSineLut_s[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
             c->posZ += (GetRandomU32() & 0xFF) + 0x80;
             cs->vel[0] = g_anCosineLut[i * 16] / 32 + (GetRandomU32() & 0x1F) - 0xF;
-            cs->vel[1] = D_8006CBF8[i * 16] / 32 + (GetRandomU32() & 0x1F) - 0xF;
+            cs->vel[1] = g_anSineLut_s[i * 16] / 32 + (GetRandomU32() & 0x1F) - 0xF;
             cs->vel[2] = (GetRandomU32() & 0x3F) + 0x30;
             c->rotX = GetRandomU32();
             c->rotY = GetRandomU32();
@@ -3363,10 +3357,10 @@ void Level33_UpdateActors(void) {
             c->subMode = (GetRandomU32() & 3) + 0x19;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
-            c->posY += (D_8006CBF8[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
+            c->posY += (g_anSineLut_s[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
             c->posZ += (GetRandomU32() & 0xFF) + 0x80;
             cs->vel[0] = (short)(g_anCosineLut[(i << 8) / 12] / 56) + (GetRandomU32() & 0x1F) - 0xF;
-            cs->vel[1] = (short)(D_8006CBF8[(i << 8) / 12] / 56) + (GetRandomU32() & 0x1F) - 0xF;
+            cs->vel[1] = (short)(g_anSineLut_s[(i << 8) / 12] / 56) + (GetRandomU32() & 0x1F) - 0xF;
             cs->vel[2] = (GetRandomU32() & 0x7F) + 0x60;
             c->rotX = GetRandomU32();
             c->rotY = GetRandomU32();
@@ -3524,10 +3518,10 @@ void Level33_UpdateActors(void) {
           for (j = 0; j < 6; j++) {
             CopyVector(s480, &st->prize->posX);
             s480[0] += g_anCosineLut[j * 43] >> 6;
-            s480[1] += D_8006CBF8[j * 43] >> 6;
+            s480[1] += g_anSineLut_s[j * 43] >> 6;
             s480[2] += 0x28;
             col2[0] = g_anCosineLut[j * 43] >> 7;
-            col2[1] = D_8006CBF8[j * 43] >> 7;
+            col2[1] = g_anSineLut_s[j * 43] >> 7;
             col2[2] = 0x10;
             g_pfnLevelEmitParticles(1, 0, s480, col2);
           }
@@ -3616,10 +3610,10 @@ void Level33_UpdateActors(void) {
           bearing = ArcTan2(spy->posX - st->parent->posX,
                                   SPY.posY - st->parent->posY, 0);
           s448[0] = (g_anCosineLut[bearing] * 3) >> 4;
-          s448[1] = (D_8006CBF8[bearing] * 3) >> 4;
+          s448[1] = (g_anSineLut_s[bearing] * 3) >> 4;
           s448[2] = 0;
           s480[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          s480[1] = (unsigned short)D_8006CBF8[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          s480[1] = (unsigned short)g_anSineLut_s[(bearing + 0x40) & 0xFF] << 16 >> 21;
           s480[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);

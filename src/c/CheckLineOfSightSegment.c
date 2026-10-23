@@ -1,11 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void SubtractVector();
-extern int VectorLength();
-extern void ScaleVector3ByRatio();
-extern void CopyVector();
-extern void AddVector();
-extern int CastRayWorldAndActors();
 
 /* March a ray along the segment param_2 - param_1 in 0x400-unit steps, testing
    world/actor occlusion at each step; returns 1 if the whole segment is clear,

@@ -1,4 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
+#include "main_shared.h"
 #include "spu.h"
 
 /* Matching notes (0x8005637C, 1144 B — the levers, so the shape is not lost):
@@ -57,27 +59,14 @@ typedef struct {
   /* 0x18 */ char *pPlaying;
 } SPUVOICEROW;
 
-extern int GetSpuVoiceKeyStatus(unsigned int voiceBit);
-extern void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
-extern void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
-extern void ApplySpuVoiceAttr(unsigned int *attr);
-extern void ComputeVoicePanAndFalloff(short *vol, int dist,
-                                      unsigned char bearing, unsigned int range,
-                                      short *cached);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern unsigned int VectorLength(int *vec, int includeZ);
-extern int ArcTan2(int y, int x, int highPrecision);
-
 typedef struct {
   /* 0x00 */ char pad[0x2C];
   /* 0x2C */ short nVolL;
   /* 0x2E */ short nVolR;
 } SPUFARROW;
 
-extern SPUVOICEROW g_aSpuVoiceRows[];             /* the 24 mixer rows */
-extern unsigned short g_anCameraEulerYawBlock[];  /* camera euler yaw */
-extern int g_anSoundMasterVolumeBlock[];          /* g_nSoundMasterVolume */
-extern unsigned int g_adwSpuPendingKeyOffBlock[]; /* g_dwSpuPendingKeyOff */
+extern SPUVOICEROW g_aSpuVoiceRows[];    /* the 24 mixer rows */
+extern int g_anSoundMasterVolumeBlock[]; /* g_nSoundMasterVolume */
 
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;

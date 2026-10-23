@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern int g_nSpyroAnimLayer2Request;    /* layer-2 active-anim cancel flag */
 extern int g_nSpyroAnimLayer2GateFrames; /* layer-2 permissive-duration frame
                                             counter */
 

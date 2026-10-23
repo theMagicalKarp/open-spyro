@@ -22,37 +22,20 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "main_shared.h"
+#include "level_emit_particles.h"
+#include "level_spawn_actor.h"
+#include "level_flight_results.h"
 
-extern void BuildRenderEntityLists(void);
-extern void ComposeFrameScene(void);
-extern void RasterizeEmitList(void);
-extern void DrawActors(void);
-extern void SetupFrameOT(void);
-extern int LinkOTPrimitives();
-extern void AddPrimToOT();
 extern void PlaySoundEffect();
-extern void RasterizeSpritePrimQueue();
 
-extern char *g_pActiveFrameDrawEnv;   /* active DRAWENV pair */
-extern char g_abFrameDrawEnv0[];  /* DRAWENV pair 0 */
 extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
 extern char *g_pRenderScratchRegionBase;
-extern char *g_pPrimBufferWriteCursor; /* prim write cursor */
-extern char *g_pPrimBufferLimit;
-extern char *g_pSpriteRecordBufferTop;
 extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
-extern int g_nVsyncFrameEndCount[];
-extern int (*g_pfnFlightTimeFormatter)();         /* time formatter */
-extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
-extern char g_abHudIconActorRecords[];           /* HUD sprite records */
 extern char *g_apSpritePrimQueue[];          /* published record table */
-extern char g_anMenuBackdropGrayClut[];           /* CLUT row */
 extern char g_pOtDepthBinHead0[];           /* OT depth bins */
-extern unsigned short g_anCosineLut[]; /* sine LUT */
 extern int g_anFlightTargetTally;              /* tally: class 0 */
-extern int g_anWorldPersistentFlags[];           /* per-course best time */
-extern char g_anSpyroWorldPos[];
 
 void Level29_FlightResults_Draw(void)
 {

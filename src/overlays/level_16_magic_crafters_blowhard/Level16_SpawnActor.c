@@ -40,21 +40,22 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-/* Whirlwind state block (type 0x25). */
+/* Rim-rider state block (type 0x25; Level16_UpdateActors views it as
+ * RimState). */
 typedef struct WindState {
-  Actor *owner; /* 0x00 */
-  short unk04;
-  short unk06;
-  int unk08;
-  int unk0C;
-  unsigned char unk10;
+  Actor *owner;       /* 0x00 */
+  short reach;        /* 0x04 */
+  short range;        /* 0x06 */
+  int seenXY;         /* 0x08 Spyro's last-seen x/y >> 4 (two shorts) */
+  int child;          /* 0x0C type 0x27 helper actor */
+  unsigned char mode; /* 0x10 */
 } WindState;
 
-/* Turret-shot state block (type 0x27). */
+/* Rim-rider helper state block (type 0x27; HelperState in the updater). */
 typedef struct AimState {
-  int unk00;
+  int timer;    /* 0x00 */
   Actor *owner; /* 0x04 */
-  int unk08;
+  int beat;     /* 0x08 */
 } AimState;
 
 extern int g_anCameraPos;     /* turret aim target X */
@@ -160,21 +161,21 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       switch (parent->mode)
       {
         case 0x48:
-          st->unk10 = 1;
-          st->unk04 = 0x40;
-          st->unk06 = 0xE00;
+          st->mode = 1;
+          st->reach = 0x40;
+          st->range = 0xE00;
           break;
 
         case 0x52:
-          st->unk10 = 2;
-          st->unk04 = 0x100;
-          st->unk06 = 0x2000;
+          st->mode = 2;
+          st->reach = 0x100;
+          st->range = 0x2000;
           break;
 
         case 0x5C:
-          st->unk10 = 3;
-          st->unk04 = 0x140;
-          st->unk06 = 0x2000;
+          st->mode = 3;
+          st->reach = 0x140;
+          st->range = 0x2000;
           break;
 
       }
@@ -183,7 +184,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> new_var2);
       rec->posZ = parent->posZ;
       st->owner = parent;
-      st->unk0C = 0;
+      st->child = 0;
       rec->mode = 0;
       anim = g_apActorMeshTable[rec->type][0xE][0xC];
       rec->nextAnim = 0;
@@ -275,9 +276,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InsertActorIntoSpatialGrid(rec);
       rec->rotZ = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, 0);
       rec->posZ -= 0x400;
-      st->unk00 = 0x40;
+      st->timer = 0x40;
       st->owner = parent;
-      st->unk08 = 1;
+      st->beat = 1;
       break;
     }
 

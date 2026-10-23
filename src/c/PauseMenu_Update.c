@@ -1,25 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
-
-extern void UpdateHudCounters(void);
-extern void RotateLightVectorXZ(int step);
-extern int PlaySoundEffect(unsigned int id, void *owner, unsigned int mode,
-                           void *pos);
-extern void StopAllSoundExceptMask(int mask);
-extern void TickSpuPerFrame(void);
-extern int ClearImage(RECT *rect, int r, int g, int b);
-extern int DrawSync(int mode);
-extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
-                              int marker);
-extern void TickWorldBundleLoadStream(void);
-extern void TickCdMusicStream(void);
-extern void BeginGemCutscene(void);
-extern void BeginStoryIntro(void);
-extern void EnterInventoryMenu(int fromMenu);
-extern void ExitPauseMenuToGame(int playSfx);
-extern void SetSpuCommonAttr(void *attr);
-extern int CdMix(void *vol);
-extern void BeginPauseToMenuTransition(void);
 
 extern void *g_pSharedLoadBuffer;       /* asset-directory buffer pointer */
 extern int g_nLevelLoadByteOffset;      /* level-load byte offset */

@@ -1,10 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern int CdInit(void);
-extern void CdReadCallback(void *callback);
 extern void CdReadCompleteCallback();
-extern void CdRead(int count, void *dst, unsigned int mode);
 
 /* 0x800163e4: watchdog-driven CD stall recovery. If a stall marker is armed
    and has exceeded the watchdog tick threshold, resets the CD subsystem,

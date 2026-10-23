@@ -29,6 +29,7 @@
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
+extern unsigned char g_abLevelVisitedFlag[];
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -107,12 +108,12 @@ typedef struct PathData {
 /* Type 10: path patroller. */
 typedef struct PathState {
   int pad00;
-  int unk04;
+  int pad04;
   int pad08;
   PathData *path; /* 0x0C */
   int pad10;
-  int unk14;
-  int unk18;
+  int pad14;
+  int pad18;
   int heading; /* 0x1C */
   int pad20;   /* 0x20 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
@@ -133,7 +134,7 @@ typedef struct RoamState {
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
-  int unk14;           /* 0x14 4th argument to ComputeStepTowardPoint */
+  int pad14;           /* 0x14 4th argument to ComputeStepTowardPoint */
   int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
@@ -175,7 +176,7 @@ typedef struct ChaseState {
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
-  int unk04;
+  int pad04;
   int pad08;
   int pad0C;
   Actor *owner; /* 0x10 actor being fetched, or null */
@@ -235,7 +236,7 @@ typedef struct SparkState {
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
   int life;   /* 0x00 */
-  int unk04;  /* 0x04 */
+  int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
 } DebrisState;
 
@@ -329,7 +330,6 @@ typedef struct LiftState {
   int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
 } LiftState;
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -376,7 +376,7 @@ typedef struct PortalDesc {
   unsigned char index;    /* 0x01 */
   unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
-  int unk14;              /* 0x14 */
+  int pad14;              /* 0x14 */
   int posB[3];            /* 0x18 */
 } PortalDesc;
 
@@ -385,7 +385,7 @@ typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int pad10;        /* 0x10 */
-  int unk14;        /* 0x14 published to SPY.u206 as a byte */
+  int pad14;        /* 0x14 published to SPY.u206 as a byte */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
@@ -504,7 +504,7 @@ typedef struct PropAnimState {
  * parent actor. */
 typedef struct OrbitState {
   Actor *owner; /* 0x00 */
-  short ring;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
+  short ring;  /* 0x04 ring index; the arm always uses it as pad04 - 1 */
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 
@@ -812,11 +812,6 @@ typedef struct DragonStatueState {
  *
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-extern unsigned char D_800758D2;
-extern unsigned char D_800758D3;
-extern unsigned char D_800758D4;
-extern unsigned char D_800758D5;
-extern int D_80077350;
 
 extern int g_nCameraSpringYaw; /* camera spherical target */
 extern int g_nCameraYaw; /* camera spherical current */
@@ -833,10 +828,6 @@ extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
 extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
-extern unsigned char D_80078E99;
-extern unsigned char D_80078E9A;
-extern unsigned char D_8007A6C7;
-extern unsigned char D_8007A6C8;
 
 extern int WrapAngleDelta8(int a, int b);
 
@@ -2354,10 +2345,10 @@ void Level30_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
         g_nGamestate0cDialogPage = 0x1E;
         g_bWorldBalloonistState1 = two;
-        D_800758D2 = two;
-        D_800758D3 = 2;
-        D_800758D4 = 2;
-        D_800758D5 = 2;
+        g_abWorldBalloonistState[2] = two;
+        g_abWorldBalloonistState[3] = 2;
+        g_abWorldBalloonistState[4] = 2;
+        g_abWorldBalloonistState[5] = 2;
       }
       break;
 
@@ -2492,14 +2483,14 @@ void Level30_UpdateActors(void) {
           }
         }
 
-        if (D_80078E99 != 0) {
+        if (g_abLevelVisitedFlag[0x21] != 0) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
           if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
-        if (D_80078E9A != 0) {
+        if (g_abLevelVisitedFlag[0x22] != 0) {
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
           if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
@@ -2509,12 +2500,12 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && D_8007A6C7 != 0 &&
-          D_80077350 > 0) {
+      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && g_abLevelGemPercent[0x1F] != 0 &&
+          g_anLevelDragonsRescued[0x1E] > 0) {
         ModifyWorldChunkAnimFlags(0, 0xFC, 0);
       }
 
-      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && D_8007A6C8 != 0) {
+      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && g_abLevelGemPercent[0x20] != 0) {
         ModifyWorldChunkAnimFlags(1, 0xFC, 0);
       }
 

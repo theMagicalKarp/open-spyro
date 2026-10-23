@@ -1,22 +1,15 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void StopSoundVoicesByOwner(int *owner, int mask);
-extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
-extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroMotionZ;      /* g_anSpyroMotionVec[2] */
-extern int g_nSpyroCarryMotionZ; /* g_anSpyroCarryMotionVec[2] */
-extern int D_8006EA34[];
-extern int g_nSpyroScriptedLiftBaseZ;
-extern int g_nSpyroScriptedLiftRise;
-extern int g_nSpyroScriptedLiftYaw;
+extern int g_nSpyroMotionZ; /* g_anSpyroMotionVec[2] */
+extern int g_anOrbDropEnterSpawnType[];
 extern void *g_pSpyroHomingTargetActor;
-extern int g_nSpyroScriptedLiftTurn;
 
 /* State 17 (scripted lift toward g_anSpyroRequestTargetPos): the start Z, the
    rise to cover, the starting yaw and the yaw turn to the scripted camera
@@ -396,7 +389,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroBodyYawStep = 0;
     g_nSpyroPitchRateAccum = 0;
     g_nSpyroTurnRateAccum = 0;
-    D_80075700 = 0;
+    g_nSpyroMotionAux = 0;
     if (g_nSpyroMotionZ > 0) {
       g_nSpyroMotionZ = 0;
     }
@@ -549,7 +542,7 @@ void ChangeSpyroState(int state) {
       PARTICLE_SPAWN(5, 0xA, 0, 0);
     }
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
-        D_8006EA34[g_nSpyroOrbDropSpawnIndex], 0);
+        g_anOrbDropEnterSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
     me = SPY;
     PlaySoundEffect(SFX(0x1D), me, 4, (unsigned char *)SPY + SPY_VOICE);
     PlaySoundEffect(SFX(0x1B), me, 4, (unsigned char *)SPY + SPY_VOICE);
@@ -597,7 +590,7 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
-    D_80075700 = 0;
+    g_nSpyroMotionAux = 0;
     PlaySoundEffect(SFX(5), SPY, 4, (unsigned char *)SPY + SPY_VOICE + 1);
     break;
   }

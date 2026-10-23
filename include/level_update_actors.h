@@ -612,7 +612,7 @@ typedef struct RoamState {
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
   int timer;           /* 0x0C */
   int sub;             /* 0x10 sub-state inside mode 2 */
-  int unk14;           /* 0x14 4th argument to ComputeStepTowardPoint */
+  int speed;           /* 0x14 leg speed (ComputeStepTowardPoint speed) */
   int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
 } RoamState;
@@ -697,7 +697,7 @@ typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
-  int unk14;        /* 0x14 published to SPY.u206 as a byte */
+  int dest;         /* 0x14 destination, published to SPY.u206 as a byte (ExitState.dest) */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
@@ -1685,5 +1685,27 @@ extern int FindFarthestPathPointFromSpyro(PathData *path);
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
+
+/* Declared identically by two or more *_UpdateActors.c files; hoisted here. */
+extern void ChangeSpyroState(int a);
+extern void ComputeCameraOrbitOffset(int *out);
+extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
+extern void StopSoundVoiceByIndex(int ch, int a);
+extern void TallyFlightTarget(int sound);
+extern void UpdateCameraEulerAngles(void);
+extern Xform g_aCameraXformPresets[];
+extern int g_anLevelKillBitmapTable[];
+extern volatile unsigned char g_bSpyroOtBinBias;
+extern int g_nCameraSpringYaw;
+extern int g_nCameraYaw;
+extern int g_nGemPickupCamPathMaxStep;
+extern int g_nGenericCountdown;
+extern int g_nGnastyLootFallRefZCap;
+extern int g_nHitRumbleTimer;
+extern int g_nMotionTrailRibbonCount;
+extern int g_nVblankTickCount;
+extern Xform *g_pCameraTargetParams;
+extern PortalDesc *volatile g_pGemPickupCamPathData;
+extern int *g_pPathTableHead;
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

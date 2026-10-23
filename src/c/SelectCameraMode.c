@@ -1,8 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 
-extern int ComputeCameraToTargetAngle(int *pos);
 extern int abs(int x);
 
 #define CAM g_anCameraPosBlock

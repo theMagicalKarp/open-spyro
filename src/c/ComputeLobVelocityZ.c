@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern unsigned int VectorLength(int *vec, int include_z);
 
 int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity,
                         int *pOutTime) {

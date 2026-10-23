@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -6,9 +7,6 @@
    transfer, return to gamestate 0 and re-init lighting, then force all five HUD
    counters visible with roll phase 0xd. When leaving from gameplay (param != 0)
    resume the current music track. */
-extern void LoadImage(RECT *rect, unsigned int src);
-extern int DrawSync(int mode);
-extern int HandleMusicCommand(int track, int cmd);
 
 void ExitPauseMenuToGame(int param_1) {
   RECT rect;

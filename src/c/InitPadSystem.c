@@ -1,11 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void PadInitDirect(unsigned char *report1, unsigned char *report2);
-extern void ResetPadStickCalibrationDefaults(int pad);
-extern void FinalizePadCalibration(unsigned int *pad);
-extern void PadStartCom(void);
-extern void PollPadAndDistributeInput(void);
-extern void InstallVSyncCallback(unsigned int cb);
 
 /* Bring up the controller subsystem at boot: init the BIOS pad driver with the
    two raw report buffers, seed both pads' stick calibration, clear the rumble

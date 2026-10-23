@@ -15,6 +15,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
 
 /* Level23_SpawnActor (0x8008223C, level_23_beast_makers_wild_flight
  * overlay, 0xd18 bytes).
@@ -36,7 +37,6 @@
 
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE

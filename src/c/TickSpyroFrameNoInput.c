@@ -1,13 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SnapshotPadInputState();
-extern void ZeroVector();
-extern void RShiftVector3();
-extern void CopyVector();
-extern void AddVector();
-extern void ApplyEulerRotation();
-extern void MulMatrix0();
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */

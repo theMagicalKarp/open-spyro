@@ -1,4 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
+#include "main_shared.h"
 
 /* Gamestate 0x0F updater (0x800333dc) — the credits/return-home transition.
    Spins the light vector each frame. Mode 0x63 arms the CD stream and picks
@@ -6,8 +8,6 @@
    otherwise Gnasty's Loot (0x3C), or Dream Weavers home (0xA) once every
    treasure (0x36B0 gems) is collected; then clears the scripted-cutscene
    state and advances to mode 0x64, which streams the level transition. */
-extern void RotateLightVectorXZ();
-extern void TickLevelTransitionStream();
 
 void Gamestate0F_Update(void) {
   RotateLightVectorXZ(3);

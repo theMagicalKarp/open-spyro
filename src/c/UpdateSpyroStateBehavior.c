@@ -1,19 +1,11 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int DispatchSpyroPadStateChanges(int mask);
-extern int DispatchSpyroChargeStateChanges(void);
-extern void ChangeSpyroState(int state);
-extern void RestartSpyroAnimWithState(int state);
-extern void CycleSpyroIdleAnim(void);
-extern void TriggerRespawnOrGameOver(void);
-extern void BuildSpyroVelocityFromBodyEuler(void);
-
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
-extern int D_8006EA40[];
+extern int g_anOrbDropTimeoutSpawnType[];
 
 SDATA(g_bSpyroJumpHoldForced, 4);
 
@@ -648,7 +640,7 @@ void UpdateSpyroStateBehavior(void) {
         g_nSpyroStateFlags = 1;
       } else if (pad & 4) {
         g_nSpyroStateFlags = 2;
-        D_80075700 = d;
+        g_nSpyroMotionAux = d;
       }
       break;
     }
@@ -980,7 +972,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_READY] = -1;
       ((void (*)(int, int))g_pfnLevelSpawnActor)(
-          D_8006EA40[g_nSpyroOrbDropSpawnIndex], 0);
+          g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & 0x40)) {
@@ -1016,7 +1008,7 @@ void UpdateSpyroStateBehavior(void) {
           g_nSpyroStateFlags = 1;
         } else if (pad & 4) {
           g_nSpyroStateFlags = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1058,7 +1050,7 @@ void UpdateSpyroStateBehavior(void) {
           SPY[SPY_FLAGS] = 1;
         } else if (pad & 4) {
           SPY[SPY_FLAGS] = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1102,7 +1094,7 @@ void UpdateSpyroStateBehavior(void) {
           SPY[SPY_FLAGS] = 1;
         } else if (pad & 4) {
           SPY[SPY_FLAGS] = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1130,10 +1122,10 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & 0x40) {
-      if (D_80075700 >= 10 || g_nSpyroAirborneFrames != 0) {
+      if (g_nSpyroMotionAux >= 10 || g_nSpyroAirborneFrames != 0) {
         goto jump;
       }
-      D_80075700 += g_nFrameStep;
+      g_nSpyroMotionAux += g_nFrameStep;
     }
     if (g_dwPadReleased & 0x40) {
     jump: {

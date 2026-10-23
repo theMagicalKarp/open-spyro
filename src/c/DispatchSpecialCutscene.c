@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,13 +8,6 @@
    level 0xA. World 2: credits without a mesh reload. World 3: credits with a
    mesh reload, seeding g_nCreditsPageIndex = 0xA so BeginCreditsSequence keeps
    it. */
-extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
-                       unsigned char b);
-extern int DrawSync(int mode);
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void BeginCreditsSequence(int param);
-extern int g_anGamestate0dBlock[]; /* alias of g_nGamestate0dMode */
 extern int g_nCreditsPageIndex;
 
 void DispatchSpecialCutscene(void) {

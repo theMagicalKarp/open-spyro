@@ -20,13 +20,10 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "main_shared.h"
+#include "level_balloonist_cutscene.h"
+#include "level_flight_results.h"
 
-extern void StopAllSoundExceptMask(int mask);
-extern void PlaySoundEffect();
-extern void (*g_pfnLevelHandleFlightResults)();
 
-extern unsigned char *g_pLevelSampleBankHeader;
-extern unsigned int g_dwPadPressed[];
 extern unsigned int g_dwHudBobSinePhase[];
 extern int g_anWorldPersistentFlags[];
 extern int g_anFlightTargetTally;

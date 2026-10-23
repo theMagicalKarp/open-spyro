@@ -8,6 +8,7 @@
 #include "vecmath.h"
 
 #define VOL(x) (*(volatile __typeof__(x) *)&(x))
+#include "funcs.h"
 #include "globals.h"
 
 /* HUD init for entering a gameplay-with-HUD state (0x80054600, 0x388).
@@ -23,9 +24,6 @@
    With `layout_butterflies` set it also clears the world-egg roll request and
    lays the sparx-food butterflies out around icon record 10's screen position
    (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring offsets. */
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void HideActorRenderRecord(int rec);
-extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 
 void InitHudCounters(int layout_butterflies) {
   short *anchor;

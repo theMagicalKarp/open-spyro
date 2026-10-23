@@ -1,21 +1,10 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SamplePadForDeathReplayFrame(void);
-extern void StopAllSoundExceptMask(int mask);
-extern void ClearImage(short *rect, int r, int g, int b);
-extern void DrawSync(int mode);
-extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
-                              int marker);
-extern void TickWorldBundleLoadStream();
-extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
-extern void StartCdReadAsync(int lba, int dst, int count, int offset,
-                             int marker);
 
 extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
 extern int g_nTitleSceneSectorOffset; /* async-read byte offset */
 extern int g_CutsceneSoundDef;        /* death-cutscene sample-bank record */
-extern int D_80078D88;
 
 /* The sample-bank stores go through the reloaded global pointer each field
    (the original never proves it points at &g_CutsceneSoundDef); a volatile read
@@ -96,7 +85,7 @@ int CheckDeathPlane(void) {
       } else {
         *(int *)g_pPathTableHead = 0x490;
       }
-      D_80078D88 = 1;
+      g_nTitleSubState = 1;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
         int offset = *(volatile int *)&g_nTitleSceneSectorOffset;

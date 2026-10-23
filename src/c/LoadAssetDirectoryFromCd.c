@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 
-extern int CdReadSyncSectors();
-extern void CopyWords();
 extern int *g_pSharedLoadBuffer;          /* shared CD sector buffer pointer */
 extern int g_anAssetDirectory[];          /* boot asset directory table */
 extern volatile int g_anCdBaseLbaBlock[]; /* alias of g_nCdBaseLba */

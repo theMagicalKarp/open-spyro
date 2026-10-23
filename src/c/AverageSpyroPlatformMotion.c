@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -6,8 +7,6 @@
    previous frame's vertices, averages the three deltas into the pending
    platform impulse, and suppresses the camera spring when the platform
    moved far enough. */
-
-extern void UnpackWorldCollisionTri(int chunkId, int *verts);
 
 extern int g_anSpyroGroundChunkBlock[];
 

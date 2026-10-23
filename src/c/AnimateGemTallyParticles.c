@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -20,8 +21,6 @@
    scaled phase. Past 0x93 the particle retires, and every third one plays the
    bank's 0x2f sample as it lands. */
 extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + quarter turn */
-extern int PlaySoundEffect(unsigned int id, int owner, unsigned int mode,
-                           void *pos);
 
 typedef struct {
   short x;              /* 0x00 */

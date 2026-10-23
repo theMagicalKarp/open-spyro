@@ -1,13 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SubtractVector(int *dst, int *a, int *b);
-extern uint VectorLength(int *vec, int include_z);
-extern uint GetRandomU32(void);
-extern void ActivateScriptedCameraView(int *view);
-extern void CopyVector(int *dst, int *src);
-extern int ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
    camera position 0xc4 below it are reached through one held base register. */
@@ -15,17 +8,18 @@ extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
 
-extern int D_8006EB24[]; /* 3 scripted-camera records, stride 0x38 */
+extern int g_anScriptedCameraPresetRecords[]; /* 3 scripted-camera records,
+                                                 stride 0x38 */
 
 /* Camera updater for mode 0x8000000e (scripted vantage triplet). While the
    level-load state machine is finished (g_nCdStreamState < 0) it just re-picks
    the per-state camera mode, unless Spyro is in one of the states that own the
    camera themselves. Otherwise it retires the active record when the player has
    walked past its range (field 0x34) or left its screen window (projected
-   y > 0xf0), draws one of the three ROM records at D_8006EB24 (avoiding an
-   immediate repeat) and re-seats Spyro's body angles from it. Records whose
-   type field (0x30) is 1 also refresh the camera euler angles.
-   (0x800377a8, 632 bytes.) */
+   y > 0xf0), draws one of the three ROM records at
+   g_anScriptedCameraPresetRecords (avoiding an immediate repeat) and re-seats
+   Spyro's body angles from it. Records whose type field (0x30) is 1 also
+   refresh the camera euler angles. (0x800377a8, 632 bytes.) */
 void UpdateScriptedCameraView(void) {
   int delta[3];
   int dist;
@@ -58,10 +52,10 @@ void UpdateScriptedCameraView(void) {
     if (n != 0 || g_nCameraCurrentMode != 0x8000000e) {
       n = GetRandomU32() & 0xfff;
       n = (n * 3) >> 12;
-      if (VIEW == &D_8006EB24[n * 0xe]) {
+      if (VIEW == &g_anScriptedCameraPresetRecords[n * 0xe]) {
         n = (n + 1) % 3;
       }
-      ActivateScriptedCameraView(&D_8006EB24[n * 0xe]);
+      ActivateScriptedCameraView(&g_anScriptedCameraPresetRecords[n * 0xe]);
       CopyVector(g_anSpyroWorldPos, VIEW);
       *(volatile int *)&g_nSpyroBodyPitch = *(volatile int *)&VIEW[3];
       *(volatile int *)&g_nSpyroBodyRoll = *(volatile int *)&VIEW[4];

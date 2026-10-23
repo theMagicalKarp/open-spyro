@@ -15,14 +15,11 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "actor.h"
+#include "main_shared.h"
 
-extern void MoveImage();
-extern void DrawFullscreenTint();
-extern void RasterizeSpritePrimQueue(void);
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
-extern void *LinkOTPrimitives();
 
 extern int g_nGamestate0fMode;
 extern unsigned char *g_pActiveFrameDrawEnv;
@@ -41,8 +38,6 @@ extern char *g_pSpriteRecordWriteCursor;
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
-extern int g_nFarPlaneDrawDistance;
-extern int g_anCameraViewMtx[];
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {

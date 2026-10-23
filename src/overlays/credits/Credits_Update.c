@@ -213,23 +213,17 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "main_shared.h"
+#include "level_spawn_actor.h"
 
 extern void CdReadSyncSectors();
 extern void CopyWords();
 extern void StartCdReadAsync();
-extern void RestartStalledCdRead();
 extern char *UnpackWorldDataChunks();
-extern void MoveImage();
-extern void SetSpuTransferStartAddr();
-extern void WriteSpuRam();
-extern int GetSpuTransferStatus();
 extern void PlaySoundEffect();
-extern void RotateLightVectorXZ();
 extern int TickCountdownByFrameDelta();
 extern int RandomSignedInRange();
-extern int RandomIntInRange();
 extern void exit() __attribute__((noreturn));
-extern int CallCdSync();
 
 typedef struct {
   int w[5];

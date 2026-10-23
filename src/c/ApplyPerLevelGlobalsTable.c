@@ -6,9 +6,9 @@ extern void *g_pfnLevelBeginActorCutscene;
 extern void *g_pfnLevelHandleFlightResults;
 extern void *g_pfnLevelOnSaveMenuExit;
 extern void *g_pfnFlightTimeFormatter;
-extern void *g_pfnGamestate0cSubstateDraw;
 
 #include "level_entry_points.h"
+#include "main_shared.h"
 
 void ApplyPerLevelGlobalsTable(void) {
   switch (g_nActiveLevelId) {

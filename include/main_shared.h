@@ -49,9 +49,9 @@ extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
 extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 
-extern int D_80075838;
+extern int g_anLevelEscapeRunCount;
 
-extern int D_8007583C;
+extern int g_nLevelEscapeRunCountLane1;
 
 extern int g_nCameraFloorSurfaceType;
 
@@ -110,7 +110,7 @@ extern short g_anCameraEulerPitchBlock[];
 
 extern void ResetCameraStateToTarget(void);
 
-extern int D_80075700;
+extern int g_nSpyroMotionAux;
 
 extern int ComputeSaveGameChecksum(unsigned char *data);
 
@@ -238,5 +238,66 @@ extern void *g_apRenderScratchPrimTopBlock[];
 extern void *g_apSaveMenuAnimActorListBlock[];
 extern char g_szContinue[];       /* "CONTINUE"    */
 extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
+
+/* Declared identically by two or more main files; hoisted here. */
+extern char *g_apWorldUnpackHeadBlock[];
+extern char *volatile g_pActiveCutsceneSoundDef;
+extern int CdInit(void);
+extern int g_anGamestate0dBlock[];
+extern int g_anGemPickupBlock[];
+extern int g_anSpyroBodyMtxBlock[];
+extern int g_anSpyroPadSnapshotBlock[];
+extern int g_anSpyroSlopeGravityVec[];
+extern int g_anSpyroStateFlagsBlock[];
+extern int g_anSpyroWorldPosZBlock[];
+extern int g_anStoryIntroTimerBlock[];
+extern int g_anWorldRenderMeshBlock[];
+extern int g_nCameraNextMode_blk[];
+extern int g_nFarPlaneDrawDistance;
+extern int g_nLevelSpawnPosZ;
+extern int g_nSaveMenuCameraFromZ;
+extern int g_nSaveMenuCameraToAngle;
+extern int g_nSaveMenuCameraToDist;
+extern int g_nSaveMenuCameraToZ;
+extern int g_nSaveMenuDragonFromZ;
+extern int g_nSaveMenuDragonToAngle;
+extern int g_nSaveMenuDragonToDist;
+extern int g_nSaveMenuDragonToZ;
+extern int g_nSaveMenuOverlayFromAngle;
+extern int g_nSaveMenuOverlayToAngle;
+extern int g_nSaveMenuOverlayToDist;
+extern int g_nSaveMenuSpyroToYaw;
+extern int g_nSaveSlotLoaded;
+extern int g_nSpyroAnimLayer2Request;
+extern int g_nSpyroAnimPlayRate_blk[];
+extern int g_nSpyroCarryMotionZ;
+extern int g_nSpyroScriptedLiftBaseZ;
+extern int g_nSpyroScriptedLiftRise;
+extern int g_nSpyroScriptedLiftTurn;
+extern int g_nSpyroScriptedLiftYaw;
+extern int g_nSpyroVelocityZ;
+extern int g_nTitleSubState;
+extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
+extern unsigned char g_abSpyroHornStrikeAnimTable[];
+extern unsigned char g_bSpyroAnimLayer1Current;
+extern unsigned char g_bSpyroAnimLayer2Current;
+extern unsigned char g_bSpyroAnimLayer2Frame;
+extern unsigned char g_bSpyroAnimLayer2FramePrev;
+extern unsigned char g_bSpyroAnimLayer2Prev;
+extern unsigned int g_adwPadHeldBlock[];
+extern unsigned int g_adwPadPressedBlock[];
+extern void *g_apOtDepthBinBlock[];
+extern void *g_pfnGamestate0cSubstateDraw;
+extern void BuildSecondaryActorDrawList(void);
+extern void ClearPadHistoryRing(void);
+extern void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
+extern void DrawEntityDirectionalSpikes(void);
+extern void DrawSpyroDropShadow(void);
+extern void EmitSecondaryActorPrimitives(void);
+extern void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
+extern void NudgeSpyroFromWallProbes(void);
+extern void SetSpuKeyMask(int on, unsigned int voices);
+extern void TriggerRespawnOrGameOver(void);
+extern void srand(unsigned int seed);
 
 #endif /* OPEN_SPYRO_MAIN_SHARED_H */

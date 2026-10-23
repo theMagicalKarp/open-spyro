@@ -48,7 +48,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -202,9 +201,7 @@ extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *ac
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
-extern void ComputeCameraOrbitOffset(int *out);
 /* from level_34 */
-extern void UpdateCameraEulerAngles(void);
 /* from level_34 */
 /* from level_34 */
 /* from level_34 */
@@ -5078,7 +5075,7 @@ void Level6_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;
@@ -5117,7 +5114,7 @@ void Level6_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;

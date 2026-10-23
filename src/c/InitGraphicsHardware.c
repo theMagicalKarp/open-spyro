@@ -1,12 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void SetDispMask();
-extern void ResetGraph();
-extern void SetGraphDebug();
-extern void InitDefaultDrawEnv();
-extern void InitDefaultDispEnv();
-extern void ClearImage();
-extern void DrawSync();
 
 /* 0x800122a8 — one-time GPU bring-up: reset the GPU, build both frames'
    draw/disp environments (double-buffered halves of the 512x512 VRAM

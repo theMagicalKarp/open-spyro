@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -16,27 +17,8 @@
    Start/Select buttons open the pause and inventory menus (a disconnected or
    unknown pad type forces the pause menu). Every path ends in the SPU tick
    except the early returns. */
-extern void TickActiveSoundVoices(void);
-extern void Gamestate01_Update(void);
-extern void PauseMenu_Update(void);
-extern void SubMenu_Update(void);
-extern void RespawnOrGameOver_Update(void);
-extern void Gamestate06_Update(void);
-extern void GemPickup_Update(void);
-extern void CameraSettle_Update(void);
-extern void SpyroStateDelay_Update(void);
-extern void Gamestate0B_Update(void);
-extern void Gamestate0C_Update(void);
-extern void Gamestate0D_Update(void);
-extern void GemCutscene_Update(void);
-extern void Gamestate0F_Update(void);
 extern void Credits_Update(void);     /* credits overlay entry (0x8007AA50) */
 extern void Titlescreen_Update(void); /* titlescreen overlay entry */
-extern int CheckDeathPlane(void);
-extern void TickWorldChunkAnimations(int step);
-extern void ComputeBillboardBasisVectors(void);
-extern void EnterPauseMenu(int mode);
-extern void EnterInventoryMenu(int mode);
 
 void GamestateUpdate(void) {
   g_nGamePaused = 0;

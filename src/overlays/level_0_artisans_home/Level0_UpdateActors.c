@@ -20,6 +20,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+extern unsigned char g_abLevelVisitedFlag[];
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -37,8 +38,7 @@
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
-extern int D_80077AE8;            /* bit 0: switch sounds enabled */
-extern unsigned short D_80073094[]; /* indexed by the switch's bit position */
+extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -46,12 +46,7 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
                           int c, int d, int e, int f, int g, int h, int i,
                           int j);
 
-extern unsigned char D_80078E7C; /* visited flag, read once */
 
-extern unsigned char D_8007A6A9;
-extern unsigned char D_8007A6AA;
-extern unsigned char D_8007A6AB;
-extern unsigned char D_8007A6AC;
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -70,10 +65,7 @@ extern unsigned char D_8007A6AC;
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
 
-extern void ComputeCameraOrbitOffset(int *out);
-extern void UpdateCameraEulerAngles(void);
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -83,7 +75,6 @@ extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 /* Glow node owned by Sparx; follows its anchor position. */
 
 
-extern unsigned char D_80078E7D; /* set once the prop has been unlocked */
 
 /* Shift a vector left by n. */
 
@@ -566,7 +557,7 @@ void Level0_UpdateActors(void) {
     /* Pressure switch (SwitchState). */
     case 18: {
       SwitchState *st = (SwitchState *)actor->state;
-      int active = D_80077AE8 & 1;
+      int active = g_anLevelKillBitmapTable[0x78] & 1;
 
       switch (actor->subMode) {
       case 0: {
@@ -613,7 +604,7 @@ void Level0_UpdateActors(void) {
           g_nSfxOverrideFlags = 2;
           g_nSfxOverridePitch.v =
               SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
-              D_80073094[st->shift];
+              g_anSwitchSfxPitchOffsets[st->shift];
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, 8,
                         &actor->sfxSlot);
         }
@@ -772,7 +763,7 @@ void Level0_UpdateActors(void) {
       int marker;
 
       if (st->started == 0) {
-        if (D_80078E7C != 0) {
+        if (g_abLevelVisitedFlag[4] != 0) {
           ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
           SetWorldChunkAnimStep(st->handle, 0x3B, 0);
         }
@@ -783,7 +774,7 @@ void Level0_UpdateActors(void) {
 
       switch (marker) {
       case 0:
-        if (D_8007A6A9 || D_8007A6AA || D_8007A6AB || D_8007A6AC) {
+        if (g_abLevelGemPercent[1] || g_abLevelGemPercent[2] || g_abLevelGemPercent[3] || g_abLevelGemPercent[4]) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
           if (g_pActorListBase[st->idx].mode >= 0x80 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -2401,7 +2392,7 @@ void Level0_UpdateActors(void) {
 
               st->count =
                   ComputeStepTowardPoint((int *)(st->path + offA),
-                                (int *)(st->path + offB), st->vel, st->unk14);
+                                (int *)(st->path + offB), st->vel, st->speed);
             }
           }
 
@@ -2809,7 +2800,7 @@ void Level0_UpdateActors(void) {
 
       /* First tick: if already unlocked, skip to the finished state. */
       if (st->primed == 0) {
-        if (D_80078E7D != 0) {
+        if (g_abLevelVisitedFlag[5] != 0) {
           ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
           SetWorldChunkAnimStep(st->anim, 0x77, 0);
           actor->mode = 0x63;
@@ -2968,7 +2959,7 @@ void Level0_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;
@@ -3007,7 +2998,7 @@ void Level0_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;

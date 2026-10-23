@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
-
-extern void SetDrawMode(int p, int dfe, int dtd, unsigned int tpage,
-                        unsigned char *clip);
-extern void AddPrimToOT(int prim);
 
 /* Submit a semi-transparent fullscreen POLY_F4 (rect (0,8)-(512,232)) of color
    (r,g,b), blend mode `abr` (tpage bits 5..6), into the active OT slot

@@ -1,46 +1,29 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
-                             int marker);
-extern void StopAllSoundExceptMask(int mask);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void RelocateLevelSampleBank(void *bank, int mode);
-extern void ApplyPerLevelGlobalsTable(void);
-extern void LoadImage(RECT *rect, void *data);
-extern void *UnpackWorldDataChunks(void *src, int mode);
-extern void *RelocateActorMeshHeader(void *header);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void BuildLoadedLevelRuntime(int full);
-extern void ChangeSpyroState(int state);
-extern void ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
-extern void ActivateScriptedCameraView(int record);
 extern int abs(int x);
 
-extern char
-    *g_apWorldUnpackHeadBlock[];       /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern int g_anSpyroWorldPosZBlock[];  /* 0x80078a60 */
-extern int g_anSpyroStateFlagsBlock[];
 extern void *g_apDrawBufBBlock[];
 extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];
 
 extern void *g_pSharedLoadBuffer; /* level splash image buffer */
-extern int D_80075670;
-extern int D_80075674;
-extern int D_8007577C;
-extern int D_80075850;
+extern int g_nLevelUnreadScratchA;
+extern int g_nLevelUnreadScratchB;
+extern int g_bLevelUseShortReleaseAnim;
+extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelBossDefeated; /* cleared on level load */
-extern int D_80075870;
-extern int D_80075874;
+extern int g_anLevelRunnerArrived;
+extern int g_nLevelRunnerArrivedGoal1;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nActiveWorldIndex;     /* current world index */
 extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
-extern int D_8007A71C; /* splash size column of the level archive table */
+extern int
+    g_nLevelSplashByteSize; /* splash size column of the level archive table */
 
 typedef struct {
   int w[5];
@@ -59,7 +42,7 @@ typedef struct {
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 #define DRAWBUF_B (g_apDrawBufBBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
-#define LEVEL_SPLASH_SIZE(i) ((&D_8007A71C)[(i) * 4])
+#define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
 #define MOB_ENTRY(i) ((int *)(&g_apScriptedMobEntries)[i])
 
@@ -452,15 +435,15 @@ void TickLevelTransitionStream(int full) {
         *(Words5 *)&g_nWorldCollisionTriCount;
     g_nScriptedRespawnFlag = 0;
     g_nScriptedMobTag = 0;
-    D_80075870 = 0;
-    D_80075874 = 0;
-    D_80075838 = 0;
-    D_8007583C = 0;
-    D_80075670 = 0;
-    D_80075674 = 0;
-    D_8007577C = 0;
+    g_anLevelRunnerArrived = 0;
+    g_nLevelRunnerArrivedGoal1 = 0;
+    g_anLevelEscapeRunCount = 0;
+    g_nLevelEscapeRunCountLane1 = 0;
+    g_nLevelUnreadScratchA = 0;
+    g_nLevelUnreadScratchB = 0;
+    g_bLevelUseShortReleaseAnim = 0;
     g_bLevelBossDefeated = 0;
-    D_80075850 = 0;
+    g_bLevelPhasedBossKilled = 0;
     g_nCreditsReturnLevelId = -1;
     g_nCdStreamState = -1;
   } break;

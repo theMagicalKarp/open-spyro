@@ -1,17 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void DrawLevelTransitionOverlay(void);
-extern void SetTransMatrix(MATRIX *m);
-extern int LookupSine(unsigned int angle);
-extern int LookupCosine(unsigned int angle);
-extern void MulMatrix(MATRIX *a, MATRIX *b);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern int
     g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */

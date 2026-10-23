@@ -911,9 +911,9 @@ dlabel g_anSpyroSlopeSpeedTargets
     /* 5CDCC 8006C5CC C0030000 */ .word 0x000003C0
 enddlabel g_anSpyroSlopeSpeedTargets
 
-nonmatching D_8006C5D0
+nonmatching g_anDpadDirectionYaw
 
-dlabel D_8006C5D0
+dlabel g_anDpadDirectionYaw
     /* 5CDD0 8006C5D0 */ .short 0x0000
     /* 5CDD2 8006C5D2 */ .short 0x0000
     /* 5CDD4 8006C5D4 */ .short 0x0C00
@@ -930,11 +930,11 @@ dlabel D_8006C5D0
     /* 5CDEA 8006C5EA */ .short 0x0400
     /* 5CDEC 8006C5EC */ .short 0x0800
     /* 5CDEE 8006C5EE */ .short 0x0000
-enddlabel D_8006C5D0
+enddlabel g_anDpadDirectionYaw
 
-nonmatching D_8006C5F0
+nonmatching g_anSpyroTurnRateRows
 
-dlabel D_8006C5F0
+dlabel g_anSpyroTurnRateRows
     /* 5CDF0 8006C5F0 */ .short 0xFFA6
     /* 5CDF2 8006C5F2 */ .short 0xFFB0
     /* 5CDF4 8006C5F4 */ .short 0xFFC0
@@ -1067,7 +1067,7 @@ dlabel D_8006C5F0
     /* 5CEF2 8006C6F2 */ .short 0x000C
     /* 5CEF4 8006C6F4 */ .short 0x000F
     /* 5CEF6 8006C6F6 */ .short 0x0000
-enddlabel D_8006C5F0
+enddlabel g_anSpyroTurnRateRows
 
 nonmatching g_abSpyroEulerRateRampUp
 
@@ -3533,9 +3533,9 @@ dlabel g_anSpyroShadowProbeOffsetTable
     /* 5EB04 8006E304 9CFEFFFF */ .word 0xFFFFFE9C
 enddlabel g_anSpyroShadowProbeOffsetTable
 
-nonmatching D_8006E308
+nonmatching g_anWorldSparkleShape
 
-dlabel D_8006E308
+dlabel g_anWorldSparkleShape
     /* 5EB08 8006E308 00000000 */ .word 0x00000000
     /* 5EB0C 8006E30C C4FFFFFF */ .word 0xFFFFFFC4
     /* 5EB10 8006E310 0C000000 */ .word 0x0000000C
@@ -3546,7 +3546,7 @@ dlabel D_8006E308
     /* 5EB24 8006E324 F8FFFFFF */ .word 0xFFFFFFF8
     /* 5EB28 8006E328 60000000 */ .word 0x00000060
     /* 5EB2C 8006E32C 00000000 */ .word 0x00000000
-enddlabel D_8006E308
+enddlabel g_anWorldSparkleShape
 
 nonmatching g_adwActorBurstColors
 
@@ -3955,16 +3955,16 @@ dlabel g_abHudButterflyRingXY
     /* 5EFDB 8006E7DB */ .byte 0x01
 enddlabel g_abHudButterflyRingXY
 
-nonmatching D_8006E7DC
+nonmatching g_anFlightBoundsCenter
 
-dlabel D_8006E7DC
+dlabel g_anFlightBoundsCenter
     /* 5EFDC 8006E7DC 00F80100 */ .word 0x0001F800
     /* 5EFE0 8006E7E0 00F80100 */ .word 0x0001F800
-enddlabel D_8006E7DC
+enddlabel g_anFlightBoundsCenter
 
-nonmatching D_8006E7E4
+nonmatching g_anFlightBoundsRadius
 
-dlabel D_8006E7E4
+dlabel g_anFlightBoundsRadius
     /* 5EFE4 8006E7E4 00760100 */ .word 0x00017600
     /* 5EFE8 8006E7E8 33270200 */ .word 0x00022733
     /* 5EFEC 8006E7EC 57BE0100 */ .word 0x0001BE57
@@ -4077,7 +4077,7 @@ dlabel D_8006E7E4
     /* 5F198 8006E998 54555356 */ .word 0x56535554
     /* 5F19C 8006E99C 55545654 */ .word 0x54565455
     /* 5F1A0 8006E9A0 55535455 */ .word 0x55545355
-enddlabel D_8006E7E4
+enddlabel g_anFlightBoundsRadius
 
 nonmatching g_anLevelDeathPlaneZTable
 
@@ -4120,21 +4120,21 @@ dlabel g_anLevelDeathPlaneZTable
     /* 5F230 8006EA30 00040000 */ .word 0x00000400
 enddlabel g_anLevelDeathPlaneZTable
 
-nonmatching D_8006EA34
+nonmatching g_anOrbDropEnterSpawnType
 
-dlabel D_8006EA34
+dlabel g_anOrbDropEnterSpawnType
     /* 5F234 8006EA34 DD010000 */ .word 0x000001DD
     /* 5F238 8006EA38 6B010000 */ .word 0x0000016B
     /* 5F23C 8006EA3C FB010000 */ .word 0x000001FB
-enddlabel D_8006EA34
+enddlabel g_anOrbDropEnterSpawnType
 
-nonmatching D_8006EA40
+nonmatching g_anOrbDropTimeoutSpawnType
 
-dlabel D_8006EA40
+dlabel g_anOrbDropTimeoutSpawnType
     /* 5F240 8006EA40 95010000 */ .word 0x00000195
     /* 5F244 8006EA44 6C010000 */ .word 0x0000016C
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
-enddlabel D_8006EA40
+enddlabel g_anOrbDropTimeoutSpawnType
 
 nonmatching g_anLevelEntryPoints
 
@@ -4195,9 +4195,9 @@ dlabel g_anLevelEntryPoints
     /* 5F320 8006EB20 7AE70000 */ .word 0x0000E77A
 enddlabel g_anLevelEntryPoints
 
-nonmatching D_8006EB24
+nonmatching g_anScriptedCameraPresetRecords
 
-dlabel D_8006EB24
+dlabel g_anScriptedCameraPresetRecords
     /* 5F324 8006EB24 C63E0100 */ .word 0x00013EC6
     /* 5F328 8006EB28 5DFD0000 */ .word 0x0000FD5D
     /* 5F32C 8006EB2C 02800000 */ .word 0x00008002
@@ -4246,7 +4246,7 @@ dlabel D_8006EB24
     /* 5F3D8 8006EBD8 00000000 */ .word 0x00000000
     /* 5F3DC 8006EBDC 00000000 */ .word 0x00000000
     /* 5F3E0 8006EBE0 00000000 */ .word 0x00000000
-enddlabel D_8006EB24
+enddlabel g_anScriptedCameraPresetRecords
 
 nonmatching g_anSpyroDeathCamRecordBlock
 
@@ -4603,9 +4603,9 @@ dlabel D_8006EFA0
     /* 5F858 8006F058 2F000000 */ .word 0x0000002F
 enddlabel D_8006EFA0
 
-nonmatching D_8006F05C
+nonmatching g_anLevelMusicPickTable
 
-dlabel D_8006F05C
+dlabel g_anLevelMusicPickTable
     /* 5F85C 8006F05C 00000000 */ .word 0x00000000
     /* 5F860 8006F060 00000000 */ .word 0x00000000
     /* 5F864 8006F064 00000000 */ .word 0x00000000
@@ -4663,12 +4663,12 @@ dlabel D_8006F05C
     /* 5F934 8006F134 12000000 */ .word 0x00000012
     /* 5F938 8006F138 12000000 */ .word 0x00000012
     /* 5F93C 8006F13C 12000000 */ .word 0x00000012
-enddlabel D_8006F05C
+enddlabel g_anLevelMusicPickTable
 
 .align 2
-nonmatching D_8006F140
+nonmatching g_anGameOverRespawnPosVirtualBase
 
-dlabel D_8006F140
+dlabel g_anGameOverRespawnPosVirtualBase
     /* 5F940 8006F140 */ .asciz "'"
     /* 27000000 */
 .align 2
@@ -4752,7 +4752,7 @@ dlabel D_8006F140
     /* 5F9F4 8006F1F4 22000000 */ .word 0x00000022
     /* 5F9F8 8006F1F8 22000000 */ .word 0x00000022
     /* 5F9FC 8006F1FC 22000000 */ .word 0x00000022
-enddlabel D_8006F140
+enddlabel g_anGameOverRespawnPosVirtualBase
 
 nonmatching g_anCdAudioBankBaseLba
 
@@ -5981,10 +5981,10 @@ dlabel g_apBalloonistDialogueLines
     /* 60270 8006FA70 08020180 */ .word 0x80010208
 enddlabel g_apBalloonistDialogueLines
 
-nonmatching D_8006FA74
+nonmatching g_abTitleSlideInCurve
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8006FA74
+dlabel g_abTitleSlideInCurve
     /* 60274 8006FA74 00081019 */ .word 0x19100800
     /* 60278 8006FA78 222C3641 */ .word 0x41362C22
     /* 6027C 8006FA7C 4C586572 */ .word 0x7265584C
@@ -6113,7 +6113,7 @@ dlabel D_8006FA74
     /* 60468 8006FC68 FF0F00B0 */ .word 0xB0000FFF
     /* 6046C 8006FC6C 1E00A07C */ .word 0x7CA0001E
     /* 60470 8006FC70 FF0F0000 */ .word 0x00000FFF
-enddlabel D_8006FA74
+enddlabel g_abTitleSlideInCurve
 
 nonmatching D_8006FC74
 
@@ -9626,10 +9626,10 @@ dlabel g_anCheatCodeSequences
     /* 63890 80073090 00000000 */ .word 0x00000000
 enddlabel g_anCheatCodeSequences
 
-nonmatching D_80073094
+nonmatching g_anSwitchSfxPitchOffsets
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80073094
+dlabel g_anSwitchSfxPitchOffsets
     /* 63894 80073094 00008000 */ .word 0x00800000
     /* 63898 80073098 00018001 */ .word 0x01800100
     /* 6389C 8007309C 00028002 */ .word 0x02800200
@@ -9640,7 +9640,7 @@ dlabel D_80073094
     /* 638B0 800730B0 00000000 */ .word 0x00000000
     /* 638B4 800730B4 00000000 */ .word 0x00000000
     /* 638B8 800730B8 00000000 */ .word 0x00000000
-enddlabel D_80073094
+enddlabel g_anSwitchSfxPitchOffsets
 
 nonmatching g_nSnCrtInitFlag
 
@@ -12872,14 +12872,14 @@ dlabel D_80075254
     /* 65A60 80075260 00000000 */ .word 0x00000000
 enddlabel D_80075254
 
-nonmatching D_80075264
+nonmatching g_abSpyroHornStrikeTransitionModes
 
-dlabel D_80075264
+dlabel g_abSpyroHornStrikeTransitionModes
     /* 65A64 80075264 */ .byte 0x00
     /* 65A65 80075265 */ .byte 0x02
     /* 65A66 80075266 */ .byte 0x01
     /* 65A67 80075267 */ .byte 0x02
-enddlabel D_80075264
+enddlabel g_abSpyroHornStrikeTransitionModes
 
 nonmatching g_abSpyroHornStrikeAnimTable
 
@@ -14141,17 +14141,17 @@ dlabel g_nCurrentWorldId
     /* 65E6C 8007566C 00000000 */ .word 0x00000000
 enddlabel g_nCurrentWorldId
 
-nonmatching D_80075670
+nonmatching g_nLevelUnreadScratchA
 
-dlabel D_80075670
+dlabel g_nLevelUnreadScratchA
     /* 65E70 80075670 00000000 */ .word 0x00000000
-enddlabel D_80075670
+enddlabel g_nLevelUnreadScratchA
 
-nonmatching D_80075674
+nonmatching g_nLevelUnreadScratchB
 
-dlabel D_80075674
+dlabel g_nLevelUnreadScratchB
     /* 65E74 80075674 00000000 */ .word 0x00000000
-enddlabel D_80075674
+enddlabel g_nLevelUnreadScratchB
 
 nonmatching g_nGnastyLootFallRefZCap
 
@@ -14201,18 +14201,18 @@ dlabel g_pfnLevelFallImpactCallback
     /* 65E94 80075694 00000000 */ .word 0x00000000
 enddlabel g_pfnLevelFallImpactCallback
 
-nonmatching D_80075698
+nonmatching g_nLevelLoadUnreadWord
 
-dlabel D_80075698
+dlabel g_nLevelLoadUnreadWord
     /* 65E98 80075698 00000000 */ .word 0x00000000
     /* 65E9C 8007569C 00000000 */ .word 0x00000000
-enddlabel D_80075698
+enddlabel g_nLevelLoadUnreadWord
 
-nonmatching D_800756A0
+nonmatching g_bDebugNoDepletion
 
-dlabel D_800756A0
+dlabel g_bDebugNoDepletion
     /* 65EA0 800756A0 00000000 */ .word 0x00000000
-enddlabel D_800756A0
+enddlabel g_bDebugNoDepletion
 
 nonmatching g_nActorPoolLiveCount
 
@@ -14349,11 +14349,11 @@ dlabel g_pSpriteRecordBufferTop
     /* 65EFC 800756FC 00000000 */ .word 0x00000000
 enddlabel g_pSpriteRecordBufferTop
 
-nonmatching D_80075700
+nonmatching g_nSpyroMotionAux
 
-dlabel D_80075700
+dlabel g_nSpyroMotionAux
     /* 65F00 80075700 00000000 */ .word 0x00000000
-enddlabel D_80075700
+enddlabel g_nSpyroMotionAux
 
 nonmatching g_nGamestate0fMode
 
@@ -14537,11 +14537,11 @@ dlabel g_pActorSpatialGridBase
     /* 65F78 80075778 00000000 */ .word 0x00000000
 enddlabel g_pActorSpatialGridBase
 
-nonmatching D_8007577C
+nonmatching g_bLevelUseShortReleaseAnim
 
-dlabel D_8007577C
+dlabel g_bLevelUseShortReleaseAnim
     /* 65F7C 8007577C 00000000 */ .word 0x00000000
-enddlabel D_8007577C
+enddlabel g_bLevelUseShortReleaseAnim
 
 nonmatching g_pPrimBufferLimit
 

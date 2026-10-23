@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -14,18 +15,6 @@
    records; the rest of 7 is the return-to-gameplay frame with the secondary
    actor pass. Every arm ends in the shared letterbox check and the standard
    2-vblank frame submit. */
-extern void ApplyEulerRotation(void *euler, void *mtx, void *viewMtx);
-extern void DrawGemPickupAuraStar(void);
-extern void DrawDragonRescuedBanner(void);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void DrawEntityDirectionalSpikes(void);
-extern void DrawSpyroDropShadow(void);
-extern void BuildSecondaryActorDrawList(void);
-extern void EmitSecondaryActorPrimitives(void);
-extern int LookupCosine(unsigned int angle_12_4);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern void *g_apOtDepthBinBlock[];     /* 0x8006fcf4: OT head list,
                                            sprite prim queue at [2304] */

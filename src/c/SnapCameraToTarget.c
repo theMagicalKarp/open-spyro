@@ -1,8 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "sdata.h"
 #include "vecmath.h"
-
-extern int ComputeCameraToTargetAngle(int *pos);
 
 SDATA(g_nCameraLosClear, 4);
 

@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void ResetPadStickCalibrationDefaults(unsigned char *cal);
 
 /* 0x80053790, 432 bytes — validate and bake the pad-stick calibration block.
    Each of the four axes needs its recorded neutral (+0x20) at least 0x30 away

@@ -1,14 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
-                             int marker);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern unsigned int ReadSpuRam(void *buf, unsigned int size);
-extern void *RelocateActorMeshHeader(void *header);
-
-extern char
-    *g_apWorldUnpackHeadBlock[]; /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int
     g_anGemPickupHeaderEndBlock[]; /* held-base view of the header-end offset */
 extern int

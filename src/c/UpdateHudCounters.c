@@ -11,6 +11,7 @@
      beside the re-read instead of below the cosine load.
    - Roll-phase/hold-timer stores go through one-field struct views (A426)
      and the butterfly ring is a byte-offset walk (A179/A35). */
+#include "funcs.h"
 #include "globals.h"
 
 /* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
@@ -24,12 +25,6 @@
    g_anHudRollOutStepTable).  Between the lives and world-egg machines it lays
    the sparx-food butterflies out around their ring, and it closes by converting
    every 20 butterflies into an extra life (capped at 99). */
-
-extern void SetHudCounterDigits(int nFirstSlot, int nSlots, int nValue,
-                                int bCommit);
-extern void CommitHudCounterAnimState(int nFirstSlot, int nSlots, int nPhase);
-extern void OffsetHudIconRollAxis(int nFirstSlot, int nSlots, int nOffset);
-extern void OffsetHudDigitRollAxis(int nFirstSlot, int nSlots, int nOffset);
 
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 

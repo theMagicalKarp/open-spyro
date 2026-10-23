@@ -12,25 +12,12 @@ extern int AbsAngleDelta12(int a, int b);
    g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must
    come off one held base. */
 extern int g_abSpyroAnimPrevBlock[];
-extern int g_nSaveSlotLoaded;
 extern int g_nSaveMenuDragonFromAngle;
 extern unsigned int g_nSaveMenuDragonFromDist;
-extern int g_nSaveMenuDragonFromZ;
-extern int g_nSaveMenuDragonToAngle;
-extern int g_nSaveMenuDragonToDist;
-extern int g_nSaveMenuDragonToZ;
-extern int g_nSaveMenuOverlayFromAngle;
 extern unsigned int g_nSaveMenuOverlayFromDist;
-extern int g_nSaveMenuOverlayToAngle;
-extern int g_nSaveMenuOverlayToDist;
 extern int g_nSaveMenuCameraFromAngle;
 extern unsigned int g_nSaveMenuCameraFromDist;
-extern int g_nSaveMenuCameraFromZ;
-extern int g_nSaveMenuCameraToAngle;
-extern int g_nSaveMenuCameraToDist;
-extern int g_nSaveMenuCameraToZ;
 extern int g_nSaveMenuSpyroFromYaw;
-extern int g_nSaveMenuSpyroToYaw;
 extern int g_pSaveMenuDragonActor;
 
 /* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,

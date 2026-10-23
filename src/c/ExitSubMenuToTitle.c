@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void LoadImage(RECT *rect, void *data);
-extern int DrawSync(int mode);
-extern void HandleMusicCommand(int track, int cmd);
 
 /* Tear down a sub-menu and return to the title: blit the saved framebuffer
    region back from VRAM scratch, reset gamestate to 0, re-prime lighting, clear

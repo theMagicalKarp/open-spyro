@@ -1,10 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void CopyVector();
-extern void AddVector();
-extern void SubtractVector();
-extern void DivideVector3();
 
 /* 0x8003a850 — clamp the record's step counter (byte +2) from byte +3,
    then rebuild its offset vector: copy, scale by half the counter, add the

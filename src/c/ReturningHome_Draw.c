@@ -1,12 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void *BuildTextSprites(unsigned char *str, int *pos, int *size, int a,
-                              int b);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 

@@ -175,8 +175,8 @@ typedef struct {
 extern Struct_0x10 *g_pPathTableHead;
 
 /* ---- misc main-EXE state the overlay touches ---- */
-extern u_char D_8006FA74[16];
-extern u_char D_8006FA84[16];
+extern u_char g_abTitleSlideInCurve[16];
+extern u_char g_abTitleSlideOutCurve[16];
 extern int g_nGenericCountdown;
 
 /* frame double-buffer: draw-env @0 (r0/g0/b0 @+0x19), disp-env @0x5C */
@@ -291,7 +291,7 @@ extern int g_nSparxFoodCount;
 extern int g_nLevelReadyFlagStash;
 extern int g_nLevelReadyFlag;
 extern int g_bGemPickupSfxVoiceMarker;
-extern u_char D_8006F494[512];
+extern u_char g_abSaveFileHeaderTemplate[512];
 extern char *g_pRenderScratchRegionBase;
 extern int g_nTitleSceneSectorOffset;
 

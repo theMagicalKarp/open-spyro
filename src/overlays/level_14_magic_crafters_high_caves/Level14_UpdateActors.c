@@ -96,12 +96,12 @@ typedef struct PathData {
 /* Type 10: path patroller. */
 typedef struct PathState {
   int pad00;
-  int unk04;
+  int pad04;
   int pad08;
   PathData *path; /* 0x0C */
   int loops;   /* 0x10 nonzero: wrap at the path ends instead of turning back */
   int pad14;
-  int unk18;
+  int pad18;
   int heading; /* 0x1C */
   int pad20;   /* 0x20 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
@@ -125,7 +125,7 @@ typedef struct ChaseState {
   int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
   int tgtX;              /* 0x04 */
   int tgtY;              /* 0x08 */
-  int unk0C;             /* 0x0C */
+  int pad0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
   unsigned char headingTimer;     /* 0x12 heading-change timer */
@@ -136,9 +136,9 @@ typedef struct ChaseState {
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
-  int unk04;
+  int pad04;
   int pad08;
-  int unk0C;
+  int pad0C;
   Actor *owner; /* 0x10 actor being fetched, or null */
 } ChaserState;
 
@@ -175,7 +175,7 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
   int life;   /* 0x00 */
-  int unk04;  /* 0x04 */
+  int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
 } DebrisState;
 
@@ -224,7 +224,6 @@ typedef struct LiftState {
   int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
 } LiftState;
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -274,7 +273,7 @@ typedef struct PortalDesc {
 typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
-  int unk10;        /* 0x10 */
+  int pad10;        /* 0x10 */
   int pad14;        /* 0x14 published to SPY.u206 as a byte */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
@@ -772,9 +771,9 @@ typedef struct VillagerState {
 /* The leader a mode-3 villager watches. */
 typedef struct LeaderState {
   int mode;               /* 0x00 */
-  int unk04[2];
+  int pad04[2];
   unsigned char *script;  /* 0x0C */
-  int unk10[4];
+  int pad10[4];
   int cue;                /* 0x20 */
 } LeaderState;
 
@@ -1076,7 +1075,7 @@ typedef struct FlockState {
   int knockAngle;      /* 0x00 knockback angle */
   int knockSpeed;      /* 0x04 knockback speed */
   PathData *path; /* 0x08 */
-  int unk0C;
+  int pad0C;
   int chainA;       /* 0x10 */
   int chainB;       /* 0x14 */
   int slots[16][3]; /* 0x18 */
@@ -1096,7 +1095,7 @@ typedef struct PropAnimState {
 /* from level_10 */
 typedef struct OrbitState {
   Actor *owner; /* 0x00 */
-  short ring;  /* 0x04 ring index; the arm always uses it as unk04 - 1 */
+  short ring;  /* 0x04 ring index; the arm always uses it as pad04 - 1 */
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 /* from level_10 */
@@ -1143,7 +1142,7 @@ typedef struct WardenState {
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -1345,7 +1344,7 @@ typedef struct L9Yak {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown after a charge */
-  int unk0C;
+  int pad0C;
   int timer;   /* 0x10 grazing timer */
 } L9Yak;
 /* from level_10 */
@@ -1353,10 +1352,10 @@ typedef struct L9Ram {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown, knock-back height step */
-  int unk0C;
+  int pad0C;
   int timer;   /* 0x10 grazing timer */
   int pad14;   /* 0x14 */
-  int unk18;
+  int pad18;
   int pad1C;
   int hits;    /* 0x20 */
 } L9Ram;
@@ -1405,7 +1404,7 @@ typedef struct GuardState370 {
 /* from level_10 */
 typedef struct ShempState {
   int ang;             /* 0x00 heading << 4 */
-  int unk04[3];        /* 0x04 */
+  int pad04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int pad14;           /* 0x14 */
   int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
@@ -1458,7 +1457,7 @@ typedef struct L26Bob {
   int partner;        /* 0x00 index into g_pActorListBase */
   unsigned int phase; /* 0x04 */
   int pad08;
-  int unk0C;
+  int pad0C;
   int baseZ;          /* 0x10 */
   int big;            /* 0x14 */
 } L26Bob;
@@ -1796,7 +1795,7 @@ typedef struct RunnerState {
   PathData *pathB; /* 0x04 */
   int knockTimer;  /* 0x08 */
   int knockSpeed;  /* 0x0C */
-  int unk10;
+  int pad10;
   int heading;     /* 0x14 knockback heading */
   int timer;       /* 0x18 */
   int mode;        /* 0x1C */

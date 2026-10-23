@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void StopAllSoundExceptMask();
-extern void ResetSpyroEntity();
-extern void RestartSpyroAnimWithState();
 
 /* Level-select (cheat menu) pad handler (0x8002d580, 0x290 bytes).
  * Square/Triangle/Circle/Cross/L1/R1/L2 pick a slot 0-6; R2 (0x1000) steps

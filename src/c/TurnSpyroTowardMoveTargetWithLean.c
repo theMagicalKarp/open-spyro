@@ -1,11 +1,10 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
 /* Per-speed-bucket turn-rate table at 0x8006c5f0; row stride 0x1a bytes, the
    lean-indexed rate short sits at +0xc (short[6]). */
-extern short D_8006C5F0[];
-
-extern void IntegrateSpyroBodyEuler(int delta);
+extern short g_anSpyroTurnRateRows[];
 
 /* 0x8003d6d0, 368 B: Steers Spyro's body yaw toward the move-target yaw using a
    lean accumulator g_nSpyroBodyYawStep (clamped -6..+6). Picks the turn rate
@@ -54,7 +53,7 @@ void TurnSpyroTowardMoveTargetWithLean(int bucket) {
     }
   } while (0);
 
-  base = D_8006C5F0;
+  base = g_anSpyroTurnRateRows;
   row = (short *)((char *)base + bucket * 0x1a);
   rate = row[g_nSpyroBodyYawStep + 6];
   if (rate >= delta || rate + 0x1000 <= delta) {

@@ -1,3 +1,5 @@
+#include "globals.h"
+#include "funcs.h"
 /* Titlescreen_EmitSpriteQuad (0x8007CD38, titlescreen overlay).
  *
  * Emit one textured quad (POLY_FT4) for a title-screen UI sprite: position it
@@ -38,11 +40,9 @@ typedef struct {
   unsigned char nV;      /* 0x7 */
 } TitlescreenSprite;
 
-extern POLY_FT4 *g_pPrimBufferWriteCursor;            /* primitive allocation pointer */
 extern unsigned int g_adwTitleSelectColors[];       /* selection color words (P_CODEs) */
 extern TitlescreenSprite g_aTitlescreenSprites[];  /* title-screen sprite table */
 
-extern void AddPrimToOT(POLY_FT4 *);  /* submit primitive to the OT */
 
 void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   POLY_FT4 *p;

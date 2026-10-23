@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -11,14 +12,6 @@
    track (command 8).
 
    Shares its tail with EndSaveMenuToWorld. */
-extern void ResetSpyroEntity(int param);
-extern void ComputeCameraToTargetAngle(void *params);
-extern void CopyWords(void *dst, void *src, int count);
-extern void InitHudCounters(int mode);
-extern void HandleMusicCommand(int track, int cmd);
-
-extern int
-    g_anSpyroPadSnapshotBlock[]; /* alias of g_nSpyroPadSnapshotCountdown */
 
 void EndGemPickupToWorld(void) {
   int **cam;

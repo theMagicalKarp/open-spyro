@@ -1,12 +1,12 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void ChangeSpyroState(int state);
 extern int abs(int x);
 
-extern int D_800756A0;
+extern int g_bDebugNoDepletion;
 
 SDATA(g_pSpyroContactActor, 4);
 
@@ -53,7 +53,7 @@ int DispatchSpyroChargeStateChanges(void) {
     break;
   case 6:
     if (lock[0] == 0 && lock[1] >= 0) {
-      if (D_800756A0 == 0) {
+      if (g_bDebugNoDepletion == 0) {
         lock[1]--;
       }
       lock[0] = 0x5A;
@@ -98,7 +98,7 @@ int DispatchSpyroChargeStateChanges(void) {
       goto hold;
     }
     ResetSpyroLinearMotion();
-    if (D_800756A0 == 0) {
+    if (g_bDebugNoDepletion == 0) {
       (*ready)--;
     }
     if (g_nSpyroInputLockoutCountdown < 0x5A) {

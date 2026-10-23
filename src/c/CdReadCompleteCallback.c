@@ -1,7 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern int CdControl(int com, unsigned char *param, unsigned char *result);
-extern int CdRead(int count, void *buf, int mode);
 
 /* CD read-completion callback (registered via CdReadCallback). On CdlComplete
    (intr == 2) the read finished cleanly, so clear the in-flight flag and the

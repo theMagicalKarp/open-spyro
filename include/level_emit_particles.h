@@ -1,4 +1,5 @@
-/* level_emit_particles.h — declarations shared by the *_EmitParticles.c clones, declared once.
+/* level_emit_particles.h — declarations shared by the *_EmitParticles.c clones (and the
+ * SpawnActor / BeginActorCutscene clones that use the same names), declared once.
  *
  * Each item is spelled identically in every file that includes this header;
  * files that declare any of these names differently keep their own

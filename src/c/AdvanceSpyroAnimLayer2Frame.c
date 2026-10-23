@@ -1,9 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern unsigned char g_bSpyroAnimLayer2Prev;
-extern unsigned char g_bSpyroAnimLayer2Current;
-extern unsigned char g_bSpyroAnimLayer2FramePrev;
-extern unsigned char g_bSpyroAnimLayer2Frame;
 extern unsigned char g_bSpyroAnimLayer2Substep[]; /* layer-2 substep accumulator
    — incomplete array so the base address is materialized once and held (single
    `a1` across the load + both stores), matching the original. */

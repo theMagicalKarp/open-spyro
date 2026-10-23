@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,9 +8,6 @@
    Flight levels skip all HUD work; otherwise re-init the HUD counters, and on
    the param==0 re-entry path force all five counters visible with roll phase
    0xc, then refresh the counters. */
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
-extern void InitHudCounters(int mode);
 
 void EnterPauseMenu(int param_1) {
   if (param_1 != 0) {

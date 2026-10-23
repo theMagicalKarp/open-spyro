@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -6,8 +7,6 @@
    target is 0), wraps each delta to a signed 12-bit angle, then advances the
    two spring velocities (g_nSpyroPitchSpringVel/CB4) toward the deltas and
    steps the body euler angles by spring/4. */
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
 
 /* Scheduling levers: the pitch delta is written as four separate statements
    (stack read, global read, subtract, mask). The array read must come FIRST in

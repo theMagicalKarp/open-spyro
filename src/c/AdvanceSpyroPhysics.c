@@ -23,12 +23,10 @@ extern void *DispatchActorContactAtSphere(int *pos, int radius,
 extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int abs(int x);
 
-extern int D_80075948;
+extern int g_nSpyroScriptedAlignFrames;
 
-SDATA(D_80075948, 4);
+SDATA(g_nSpyroScriptedAlignFrames, 4);
 SDATA(g_pSpyroContactActor, 4);
-
-extern int g_nCameraNextMode_blk[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE 0x1E          /* g_nSpyroState */
@@ -241,7 +239,7 @@ int AdvanceSpyroPhysics(void) {
         }
         lock = m | 0x2000;
         if (abs(a) < 0x10) {
-          if (D_80075948 >= 0x1E) {
+          if (g_nSpyroScriptedAlignFrames >= 0x1E) {
             ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
             if (g_nSpyroSpeedTarget != 0) {
               int side;
@@ -311,9 +309,9 @@ int AdvanceSpyroPhysics(void) {
               g_nSpyroPadSnapshotCountdown = 2;
             }
           }
-          D_80075948 += g_nFrameStep;
+          g_nSpyroScriptedAlignFrames += g_nFrameStep;
         } else {
-          D_80075948 = 0;
+          g_nSpyroScriptedAlignFrames = 0;
           *rq2 = lock;
           if (g_nSpyroPadSnapshotCountdown < 2) {
             g_nSpyroPadSnapshotCountdown = 2;

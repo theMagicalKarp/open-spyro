@@ -2216,7 +2216,7 @@
    "size": 48
   },
   {
-   "name": "func_8005DEBC",
+   "name": "CallLibapiSysSlot10",
    "vram": 2147868348,
    "size": 48
   },
@@ -3206,7 +3206,7 @@
    "size": 64
   },
   {
-   "name": "func_8006635C",
+   "name": "RunMemCardInfoOp",
    "vram": 2147902300,
    "size": 604
   },

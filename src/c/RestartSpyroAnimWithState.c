@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void ChangeSpyroState(int state);
 
 /* 0x8003fdc8 (0x78) — switch Spyro to `state` and restart his animation from
    that state's default clip: frame 1, sub-frame timer and anim mode cleared,

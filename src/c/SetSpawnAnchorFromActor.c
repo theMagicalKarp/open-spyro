@@ -1,13 +1,13 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */
-extern int g_nLevelSpawnPosZ;        /* g_anLevelSpawnPos[2] (see alias) */
-extern int D_8007788C;
-extern int D_80077890;
-extern int D_80077894;
+extern int g_nSpawnAnchorDragonsRescued;
+extern int g_nSpawnAnchorGemsCollected;
+extern int g_nSpawnAnchorReserved;
 extern int g_nLevelProgress; /* live level progress word */
 extern int
     g_nLevelProgressCheckpoint; /* g_nLevelProgress at the last checkpoint */
@@ -45,10 +45,10 @@ void SetSpawnAnchorFromActor(unsigned char *actor, int yaw) {
   new_var = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   {
     t = *new_var;
-    *((volatile int *)(&D_8007788C)) = t;
+    *((volatile int *)(&g_nSpawnAnchorDragonsRescued)) = t;
     t = g_anLevelGemsCollected[g_nLevelIntroIndex];
-    *(&D_80077894) = 0;
-    *((volatile int *)(&D_80077890)) = t;
+    *(&g_nSpawnAnchorReserved) = 0;
+    *((volatile int *)(&g_nSpawnAnchorGemsCollected)) = t;
   }
   CopyWords(dst, &g_anLevelSpawnYawBlock[-11], 0x20);
   src = &g_anLevelSpawnYawBlock[-11];

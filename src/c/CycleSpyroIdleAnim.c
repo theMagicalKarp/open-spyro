@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Advance Spyro's idle-anim sequence cursor to the next state whose animation
@@ -6,7 +7,6 @@
    g_abSpyroStateAnimIndexMap into g_apActorMeshTable (+0x38 per anim slot);
    if the walk comes back around to the starting cursor with nothing loaded,
    just rearms the idle timeout (0x2710) instead. */
-extern void ChangeSpyroState(int state);
 
 void CycleSpyroIdleAnim(void) {
   int *seq;

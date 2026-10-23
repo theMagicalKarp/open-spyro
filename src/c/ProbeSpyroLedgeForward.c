@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Probe for a grabbable ledge ahead of Spyro (0x8003e218, 0x100). Cast a ray
@@ -6,13 +7,6 @@
    steep enough (arctan of z vs horizontal length >= 0x17) latch the
    ledge-grab flag (+0x80 past the body matrix) and stash the contact normal
    (+0x84). */
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern void AddVector(int *dst, int *a, int *b);
-extern void ApplyActiveGteRotation(int *src, int *dst);
-extern int CastRayWorldAndActors(int *from, int *to);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int flag);
-extern void CopyVector(int *dst, int *src);
 
 extern int g_anSpyroBodyMtx[];
 extern int g_anCollisionProbeVec[];

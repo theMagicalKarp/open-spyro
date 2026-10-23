@@ -1,10 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 
-extern void AdvanceSpyroAnimLayer1Frame(int amount);
-
 extern int g_anSpyroHornStrikeSwingPhaseBlock[];
-extern int D_80078AC0;
-extern unsigned char D_80075264[][2];
+extern int g_nSpyroHornStrikeLayer1State;
+extern unsigned char g_abSpyroHornStrikeTransitionModes[][2];
 extern unsigned char g_abSpyroHornStrikeAnimTable[];
 extern unsigned char g_bSpyroAnimLayer1Prev;
 extern unsigned char g_bSpyroAnimLayer1Current;
@@ -56,7 +55,8 @@ void TickSpyroAnimLayer1(void) {
         AdvanceSpyroAnimLayer1Frame(g_nSpyroHornStrikeAnimRate);
       }
     } else {
-      mode = D_80075264[D_80078AC0][state];
+      mode = g_abSpyroHornStrikeTransitionModes[g_nSpyroHornStrikeLayer1State]
+                                               [state];
       switch (mode) {
       case 2:
         oldAnim = *(volatile byte *)&g_bSpyroAnimLayer1Current;

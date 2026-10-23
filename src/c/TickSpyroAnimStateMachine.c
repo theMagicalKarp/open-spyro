@@ -1,14 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern void AdvanceSpyroAnimFrame(int delta);
-extern int StepSpyroAnimAndCommitTransition(int step);
-extern void ApplySpyroStateTransition(void);
-extern int PlaySoundEffect(unsigned int id, void *owner, unsigned int mode,
-                           void *pos);
-
 extern unsigned char g_abSpyroAnimPrevBlock[];
-extern unsigned char g_abSpyroStateTransitionMatrixBlock[45][45];
 
 /* 0x8003d194 (0x224): per-frame Spyro animation state-machine tick, routed on
    g_nSpyroAnimMode. Modes 1/2/6 and 5 run the sub-frame timer at +2/+4 and

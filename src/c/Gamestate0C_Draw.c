@@ -1,3 +1,4 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -35,12 +36,9 @@ extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern char g_szEnteringWorldFmt[];   /* "%s" */
 extern char g_szEnteringFmt[];        /* "%s" (level form) */
-extern void *g_pGamestate0cRecord;    /* OT bin head seed for the title card */
 extern int g_nGamestate0cTimer[];     /* transition fade counter */
 extern int g_nGamestate0cCardVariant; /* transition card variant */
-extern void *g_pfnGamestate0cSubstateDraw; /* substate draw handler */
 extern unsigned short g_anCosineLut[];
-extern void *g_apOtDepthBinBlock[]; /* alias @0x8006fcf4: head/tail pair */
 
 void Gamestate0C_Draw(void) {
   int pos[3];

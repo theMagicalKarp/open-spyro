@@ -1,7 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern int WrapAngleDelta8(int a, int b);
-extern int WrapAddAngle8(int a, int b);
 
 /* Interpolate byte angle `b` toward `a` by the byte fraction `c`/256: take the
    shortest signed delta (a - b), scale it by c, and wrap the scaled step back

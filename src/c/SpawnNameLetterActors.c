@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern int ArcTan2(int y, int x, int high_precision);
 extern int LookupSine(unsigned int angle_12_4);
@@ -6,12 +7,9 @@ extern int LookupCosine(unsigned int angle_12_4);
 extern void ZeroVector(int *vec);
 extern void AddVector(int *dst, int *a, int *b);
 extern void SubtractVector(int *dst, int *a, int *b);
-extern void ScaleVector3Sat(int *dst, int *src, int scale);
 extern void LShiftVector3(int *vec, unsigned int bits);
 extern void RShiftVector3(int *vec, unsigned int bits);
 extern int strlen(char *s);
-
-extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] as its own symbol */
 
 /* The per-letter banner record hung off the actor's +0x00 pointer. */
 struct NameRec {

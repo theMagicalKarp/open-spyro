@@ -576,7 +576,7 @@ typedef struct L21Runner {
   int volB[6];         /* 0x4C trigger box */
   int camDone;         /* 0x64 */
 } L21Runner;
-extern int D_80075870[]; /* per-goal "runner arrived" flags */
+extern int g_anLevelRunnerArrived[]; /* per-goal "runner arrived" flags */
 extern int g_nSpawnAnchorValid[];
 #define RUN_FLAGS(p) (*(int *)((p) + ((p)[1] << 4) + 0x14))
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))
@@ -3596,7 +3596,7 @@ void Level21_UpdateActors(void) {
           actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                        SPY.posY - actor->posY, 0);
           st->camTimer = 0;
-          if (D_80075870[st->mode] != 0) {
+          if (g_anLevelRunnerArrived[st->mode] != 0) {
             CopyVector(&actor->posX,
                           (int *)(st->path + (st->path[0] * 16 - 8)));
             ENTER_POSE(actor, 3);
@@ -3618,7 +3618,7 @@ void Level21_UpdateActors(void) {
           actor->group = 0xFF;
           actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                        SPY.posY - actor->posY, 0);
-          if (D_80075870[st->mode] != 0) {
+          if (g_anLevelRunnerArrived[st->mode] != 0) {
             CopyVector(&actor->posX, PATH_PT(st->home, 0));
             SnapActorToGround(actor);
             ENTER_POSE(actor, 3);
@@ -3697,16 +3697,16 @@ void Level21_UpdateActors(void) {
         if (st->mode == 0 && r == 0x11C &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
             ABS2(SPY_DZ(actor)) < 0x898) {
-          D_80075870[st->mode] = 1;
+          g_anLevelRunnerArrived[st->mode] = 1;
         }
         if (st->mode == 1 && r == 0x10A &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1D4C &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
-          D_80075870[st->mode] = 1;
+          g_anLevelRunnerArrived[st->mode] = 1;
         }
         if (r == 0x100) {
           if (st->mode == 1) {
-            if (D_80075870[1] == 0) {
+            if (g_anLevelRunnerArrived[1] == 0) {
               st->path = st->home;
               st->path[1] = 0;
               actor->mode = 4;
@@ -3715,7 +3715,7 @@ void Level21_UpdateActors(void) {
             actor->mode = 10;
             continue;
           } else if (st->mode == 0) {
-            if (D_80075870[0] != 0) {
+            if (g_anLevelRunnerArrived[0] != 0) {
               actor->mode = 3;
               continue;
             }
@@ -3828,7 +3828,7 @@ void Level21_UpdateActors(void) {
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path[0] - 1 : 0;
-        if (r == 0x103 && st->mode == 0 && D_80075870[0] == 0) {
+        if (r == 0x103 && st->mode == 0 && g_anLevelRunnerArrived[0] == 0) {
           st->path[1] = st->path[0] - 1;
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));

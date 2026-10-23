@@ -1,8 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void ApplyEulerRotation();
-extern void SubtractVector();
-extern void RotateVectorByMatrix();
 
 /* 0x8003bed8 — classify the actor's position relative to Spyro into a
    quadrant mask: compute actor(+0xC) - Spyro (optionally un-rotated by the

@@ -1,7 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void ResetPadFrameSubstepTable(void *param_1);
 
 /* End-of-frame pad snapshot: toggles the reverse-input flag, copies the 0xA4
    bytes of committed pad state into the snapshot buffer, then resets the

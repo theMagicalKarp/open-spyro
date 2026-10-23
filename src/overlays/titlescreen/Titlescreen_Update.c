@@ -585,14 +585,14 @@ void Titlescreen_Update(void) {
           char *mcs = (char *)g_nGamestate0dMode.file;
 
           /* copy over the header/icons */
-          CopyWords(g_nGamestate0dMode.file, D_8006F494,
-                        sizeof(D_8006F494));
+          CopyWords(g_nGamestate0dMode.file, g_abSaveFileHeaderTemplate,
+                        sizeof(g_abSaveFileHeaderTemplate));
 
           g_nSaveSlotLoaded_s.fileTag = ReadRootCounter2();
           g_nGamestate0dMode.file->header.clut[15] = g_nSaveSlotLoaded_s.fileTag;
 
           /* reset game and create all 3 saves */
-          mcs += sizeof(D_8006F494);
+          mcs += sizeof(g_abSaveFileHeaderTemplate);
           InitNewGameState();
           for (i = 0; i < 3; ++i) {
             BuildSaveGameBuffer((Struct_0x600 *)(mcs + i * sizeof(Struct_0x600)));

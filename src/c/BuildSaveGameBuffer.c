@@ -1,8 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void CopyWords(void *dst, void *src, int byte_count);
 
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
    game state into a 0x600-byte buffer (options bytes, per-world tables,
@@ -32,8 +30,8 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   *(unsigned int *)(buf + 4) = g_dwActiveCameraOptions;
   start = buf;
   buf[8] = g_nSoundMonoMixFlag;
-  buf[9] = D_80075838;
-  buf[0xA] = D_8007583C;
+  buf[9] = g_anLevelEscapeRunCount;
+  buf[0xA] = g_nLevelEscapeRunCountLane1;
   buf[0xB] = g_nExtraLives;
   CopyWords(buf + 0x10, g_anWorldPersistentFlags, 0x14);
   w = 0;

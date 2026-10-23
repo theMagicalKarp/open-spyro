@@ -1,14 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
-
-extern void SnapshotPadInputState(uint *dst, uint *src);
-extern void SelectCameraMode(void);
-extern void UpdateScriptedCameraView(void);
-extern void UpdateLedgeGrabCamera(void);
-extern void UpdateGemPickupPathCamera(void);
-extern void UpdateCameraSpringForMode(void);
-extern int FindWorldFloorBelowPoint(uint *pos);
 
 extern int g_nWorldFloorSurfaceType;
 extern int g_apScriptedCameraViewBlock;

@@ -1,4 +1,5 @@
-/* level_balloonist_cutscene.h — declarations shared by the *_BalloonistCutscene_Update.c / _Draw.c clones, declared once.
+/* level_balloonist_cutscene.h — declarations shared by the *_BalloonistCutscene_Update.c / _Draw.c clones
+ * (also included by the flight-results clones for the same names), declared once.
  *
  * Each item is spelled identically in every file that includes this header;
  * files that declare any of these names differently keep their own

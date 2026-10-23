@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -12,11 +13,8 @@
    lockout; the remaining bits (0xFC00) are independent modifiers — headbutt
    (0x8000), swim hold (0x800) and the charge-hold flag (0x2000). Returns 1
    when a transition was dispatched. */
-extern void ChangeSpyroState(int state);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
 
-extern int D_800756A0;
+extern int g_bDebugNoDepletion;
 extern int g_adwSpyroTriggerEventBlock[]; /* g_dwSpyroTriggerEventFlags */
 extern int g_anSpyroInputLockoutBlock[];  /* g_nSpyroInputLockoutCountdown */
 
@@ -42,7 +40,7 @@ int DispatchSpyroPadStateChanges(int pad) {
   pad &= ev[0];
 
   if ((pad & 0x5F1) && g_nLevelReadyFlag >= 0) {
-    if (D_800756A0 == 0) {
+    if (g_bDebugNoDepletion == 0) {
       g_nLevelReadyFlag = g_nLevelReadyFlag - 1;
     }
     if (pad & 0x10) {
@@ -64,7 +62,7 @@ int DispatchSpyroPadStateChanges(int pad) {
       ChangeSpyroState(0x16);
     } else if (pad & 0x400) {
       ChangeSpyroState(0x1D);
-      if (*(int *)g_pSpyroOrbDropTriggerData != 0 && D_800756A0 == 0) {
+      if (*(int *)g_pSpyroOrbDropTriggerData != 0 && g_bDebugNoDepletion == 0) {
         g_nLevelReadyFlag = -1;
       }
     } else {
@@ -82,7 +80,7 @@ int DispatchSpyroPadStateChanges(int pad) {
     ready = g_anLevelReadyFlagBlock;
     if (ready[0] >= 0) {
       ResetSpyroLinearMotion();
-      if (D_800756A0 == 0) {
+      if (g_bDebugNoDepletion == 0) {
         ready[0] = ready[0] - 1;
       }
       if (g_nSpyroInputLockoutCountdown < 0x5A) {

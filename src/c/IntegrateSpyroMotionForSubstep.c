@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -9,7 +10,6 @@ extern int TurnSpyroTowardMoveTargetWithLean(int lean);
 extern void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
 extern void BuildSpyroVelocityFromBodyEuler(void);
 extern void IntegrateSpyroBodyEuler(int delta);
-extern void NudgeSpyroFromWallProbes(void);
 extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
 extern void ScaleVector3Shifted(int *vec, int num, int shift);
 extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
@@ -20,23 +20,13 @@ extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
 extern int abs(int x);
 
-extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
-extern int g_nSpyroWorldPosY;
 extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
-extern int g_nSpyroVelocityZ;
 extern int g_nSpyroCarryMotionY;
-extern int g_nSpyroCarryMotionZ;
 extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
                                           velocity */
-extern int g_bSpyroJumpHoldForced;
-extern int g_nSpyroScriptedLiftBaseZ;
-extern int D_80075700;
-extern int g_nSpyroScriptedLiftRise;
-extern int g_nSpyroScriptedLiftYaw;
 extern int g_pSpyroHomingTargetActor;
-extern int g_nSpyroScriptedLiftTurn;
-extern int D_8006E7DC[];
-extern int D_8006E7E4[];
+extern int g_anFlightBoundsCenter[];
+extern int g_anFlightBoundsRadius[];
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);
 SDATA(g_bSpyroJumpHoldForced, 4);
@@ -47,12 +37,7 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
 SDATA(g_pSpyroContactActor, 4);
 
 /* One view of the Spyro record from its world position (0x80078a58). */
-extern int g_anSpyroWorldPosBlock[];
-extern int g_anCameraPosBlock[];
-extern short g_anCameraEulerYawBlock[];
-extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_abSpyroAnimPrevBlock[];
-extern int g_anSpyroDeathCamRecordBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */
@@ -771,26 +756,26 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           y = 0x7F - PADB[0x17];
         } else {
           if (PADW[1] & 0x1000) {
-            D_80075700 += 0x10;
-            if (D_80075700 >= 0x80) {
-              D_80075700 = 0x7F;
+            g_nSpyroMotionAux += 0x10;
+            if (g_nSpyroMotionAux >= 0x80) {
+              g_nSpyroMotionAux = 0x7F;
             }
           } else if (PADW[1] & 0x4000) {
-            D_80075700 -= 0x10;
-            if (D_80075700 < -0x7F) {
-              D_80075700 = -0x7F;
+            g_nSpyroMotionAux -= 0x10;
+            if (g_nSpyroMotionAux < -0x7F) {
+              g_nSpyroMotionAux = -0x7F;
             }
           } else {
-            x = -D_80075700;
+            x = -g_nSpyroMotionAux;
             if (x > 0x20) {
               x = 0x20;
             }
             if (x < -0x20) {
               x = -0x20;
             }
-            D_80075700 += x;
+            g_nSpyroMotionAux += x;
           }
-          y = D_80075700;
+          y = g_nSpyroMotionAux;
           if (PADW[1] & 0x2000) {
             g_nSpyroTurnRateAccum += 0x10;
             if (g_nSpyroTurnRateAccum >= 0x80) {
@@ -905,10 +890,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
           x = g_nActiveLevelId / 10 - 1;
           q = (int)v40;
-          SubtractVector((int *)q, D_8006E7DC + x * 3, sp + (0 - SPY_SPEED));
+          SubtractVector((int *)q, g_anFlightBoundsCenter + x * 3,
+                         sp + (0 - SPY_SPEED));
           RShiftVector3((int *)q, 4);
           y = VectorLength((int *)q, 0);
-          a = D_8006E7E4[x * 3] >> 4;
+          a = g_anFlightBoundsRadius[x * 3] >> 4;
           if (a < y) {
             z = y - a;
             ScaleVector3ByRatio((int *)q, y, z);
@@ -970,7 +956,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (SPY[SPY_SPEED] < 0x1E00 && g_nSpyroGlideBankingFlag == 0) {
           g_nSpyroStateFlags = 0;
           g_nSpyroTurnRateAccum = 0;
-          D_80075700 = 0;
+          g_nSpyroMotionAux = 0;
         }
         BuildSpyroVelocityFromBodyEuler();
         break;
@@ -987,7 +973,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           if (x > 0x800) {
             x -= 0x1000;
           }
-          dz = D_80075700 - g_nSpyroWorldPosZ;
+          dz = g_nSpyroMotionAux - g_nSpyroWorldPosZ;
           x += (dz - (g_anSpyroMotionVec[2] >> 5)) >> 2;
           if (x > 0x1E) {
             x = 0x1E;
@@ -1005,7 +991,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
               g_nSpyroStateFlags = 0;
               gb[0] = 0;
               g_nSpyroTurnRateAccum = 0;
-              D_80075700 = 0;
+              g_nSpyroMotionAux = 0;
             }
             g_nSpyroBodyPitch = 0;
           } else {
@@ -1077,7 +1063,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             g_nSpyroBodyRoll < 0x400) {
           g_nSpyroStateFlags = 0;
           g_nSpyroTurnRateAccum = 0;
-          D_80075700 = 0;
+          g_nSpyroMotionAux = 0;
         }
         BuildSpyroVelocityFromBodyEuler();
         break;

@@ -62,10 +62,7 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern Xform g_aCameraXformPresets[];
 
-extern void ComputeCameraOrbitOffset(int *out);
-extern void UpdateCameraEulerAngles(void);
 
 extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
@@ -190,7 +187,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
   ANIM_ADVANCE(a, n);                                                          \
   continue
 
-extern void StopSoundVoiceByIndex(int ch, int a);
 
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
@@ -5376,7 +5372,7 @@ void Level13_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;
@@ -5415,7 +5411,7 @@ void Level13_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->unk14;
+          SPY.u206 = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
           CAM.sim.v[0] += SPY.u11C;

@@ -1,53 +1,19 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern void TickGemCutsceneActorAnims(void **actors, int mode);
-extern int SignedAngleDelta12(int a, int b);
-extern void TrackEntityYawTowardSpyro(void *actor, int step, int deadzone,
-                                      int snap);
-extern int FindGroundHeightBelow(int *pos, int depth);
-extern void EncodeCachedVecToActorDirCode(void *actor);
-extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
-extern void AdvanceSpyroAnimFrame(int delta);
-extern void TickSpyroAttackEffects(int steps);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
-extern void EndSaveMenuToWorld(void);
-extern void BeginGemPickupOverlay(void *actor);
-extern void MemCardOpenSession(void);
-extern void MemCardCloseSession(void);
-extern void MemCardLoad(int slot);
-extern int MemCardSync(int mode, int *cmd, int *result);
-extern void MemCardRead(int slot, char *name, void *buf, int offset, int size);
-extern void MemCardWrite(int slot, char *name, void *buf, int offset, int size);
-extern void BuildSaveGameBuffer(void *buf);
 
 /* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
    keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
-extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
 extern char g_szMemCardSaveName[];            /* memory card save file name */
-extern int g_nSaveSlotLoaded;
 extern int g_nSaveSlotIndex;
 extern int g_nSaveFileTag;
 extern int g_nSaveMenuDragonFromDist;
-extern int g_nSaveMenuDragonFromZ;
-extern int g_nSaveMenuDragonToAngle;
-extern int g_nSaveMenuDragonToDist;
-extern int g_nSaveMenuDragonToZ;
-extern int g_nSaveMenuOverlayFromAngle;
 extern int g_nSaveMenuOverlayFromDist;
-extern int g_nSaveMenuOverlayToAngle;
-extern int g_nSaveMenuOverlayToDist;
 extern int g_nSaveMenuCameraFromDist;
-extern int g_nSaveMenuCameraFromZ;
-extern int g_nSaveMenuCameraToAngle;
-extern int g_nSaveMenuCameraToDist;
-extern int g_nSaveMenuCameraToZ;
-extern int g_nSaveMenuSpyroToYaw;
 extern int *volatile g_pSaveMenuDragonActor; /* the rescued dragon's actor */
 
 #define SM g_anSaveMenuBlock

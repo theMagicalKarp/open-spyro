@@ -71,7 +71,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->unk04 - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
@@ -191,9 +190,9 @@ extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
 /* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {
-  int unk00;
-  int unk04;
-  int unk08;
+  int pad00;
+  int pad04;
+  int pad08;
   int pad0C;
   Actor *helper;  /* 0x10 */
   int helperType; /* 0x14, spawned as helperType + 0x158 */
@@ -210,8 +209,6 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-extern void TallyFlightTarget(int sound);
-extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 
 /* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
  * swept phase. */
@@ -239,7 +236,6 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-extern void ChangeSpyroState(int a);
 
 /* ==== The function ==== */
 /* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or
@@ -1827,7 +1823,7 @@ void Level29_UpdateActors(void) {
           int off;
 
           for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
-            *(int *)((char *)D_8006E3E4 + off) = src[0x21];
+            *(int *)((char *)g_anFlightHudClassWords + off) = src[0x21];
             src++;
             off += 4;
           }
@@ -1860,7 +1856,7 @@ void Level29_UpdateActors(void) {
 
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
-        if (D_800756A0 == 0 && g_nSpyroStateFlags < 8 &&
+        if (g_bDebugNoDepletion == 0 && g_nSpyroStateFlags < 8 &&
             g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;

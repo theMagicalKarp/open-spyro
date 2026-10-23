@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void AddPrimToOT(int prim);
 
 /* Emit a textured POLY_FT4 quad (0x8001919c): rect (x,y,w,h)=param_1[0..3],
    UV+CLUT=param_2[0..1], RGB=param_3[0..2] (or default 0x80). Chains via

@@ -43,7 +43,6 @@ extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
 extern void TickGemPickupBurstEntity(void *actor);
 
-extern int g_nSpyroAnimPlayRate_blk[];
 extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
 extern int g_nSpyroGroundNormalY; /* 0x80078b00 — g_anSpyroGroundNormal[1] */
 extern unsigned char
@@ -59,7 +58,6 @@ extern void *g_apSampleBankEntriesBlock[];
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
-extern int g_anGemPickupBlock[];
 extern int g_anHudDragonCachedCountBlock[];
 
 #define GB g_anGemPickupBlock

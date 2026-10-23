@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -9,12 +10,6 @@
    block, retarget the dynamic camera params (yaw re-biased to Spyro's body yaw
    and wrapped to 12 bits), restore the flame-breath timer, reset the camera and
    the HUD (all five counters hidden), and re-issue the current music track. */
-
-extern void ResetSpyroEntity(int mode);
-extern void ComputeCameraToTargetAngle(void *params);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void InitHudCounters(int mode);
-extern void HandleMusicCommand(int track, int cmd);
 
 extern int g_anSpyroSwingTargetBlock[];       /* alias of
                                                  g_nSpyroSwingEulerPitchTarget */

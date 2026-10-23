@@ -1,10 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
-
-extern void UpdateCameraEulerAngles(void);
-extern int ComputeCameraToTargetAngle(int *pos);
 
 SDATA(g_nCameraManualYawInput, 4);
 

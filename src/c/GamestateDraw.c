@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -16,23 +17,8 @@
    then the fullscreen tint while the generic countdown runs and the cinematic
    letterbox while gameplay is blocked. Ends with the standard 2-vblank frame
    submit. */
-extern void Gamestate01_09_Draw(void);
-extern void Gamestate02_03_06_Draw(void);
-extern void RespawnOrGameOver_Draw(void);
-extern void Gamestate08_Draw(void);
-extern void Gamestate0A_Draw(void);
-extern void SaveLoadMenu_Draw(void);
-extern void Gamestate0C_Draw(void);
-extern void StoryIntro_Draw(void);
 extern void Titlescreen_Draw(void); /* titlescreen overlay draw */
-extern void GemCutscene_Draw(void);
-extern void Credits_Draw(void); /* credits overlay draw */
-extern void ReturningHome_Draw(void);
-extern void DrawDemoModeOverlay(void);
-extern void DrawMotionTrailRibbons(void);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
+extern void Credits_Draw(void);     /* credits overlay draw */
 
 void GamestateDraw(void) {
   char *env;

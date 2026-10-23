@@ -17,10 +17,10 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
 
 
 extern Actor *g_pActorListBase;
-extern int g_anSpyroWorldPos[];
 
 Actor *Level34_SpawnActor(int type, Actor *parent) {
   Actor *rec;

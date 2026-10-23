@@ -168,7 +168,7 @@ typedef struct ShardState {
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
-  int unk10;          /* 0x10 */
+  int pad10;          /* 0x10 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
@@ -203,7 +203,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 /* ==== Level 16 classes ==== */
 
-extern void StopSoundVoiceByIndex(int ch, int a);
 
 extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
