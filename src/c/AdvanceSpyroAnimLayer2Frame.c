@@ -29,10 +29,8 @@ void AdvanceSpyroAnimLayer2Frame(int param_1) {
     g_bSpyroAnimLayer2FramePrev = frame;
     g_bSpyroAnimLayer2Frame = newFrame;
 
-    if (newFrame ==
-        *(unsigned char *)((char *)g_abSpyroAnimDescTable + off + 1)) {
-      g_bSpyroAnimLayer2Frame =
-          *(unsigned char *)((char *)g_abSpyroAnimDescTable + off);
+    if (newFrame == g_abSpyroAnimDescTable[off + 1]) {
+      g_bSpyroAnimLayer2Frame = g_abSpyroAnimDescTable[off];
     }
   }
 }
