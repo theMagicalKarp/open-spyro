@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 
 /* Walk pickup group `a0`'s actor-id list (0x8003b5f4); for every actor whose
@@ -15,7 +16,7 @@ void OrPickupGroupActorFlags(int a0, int a1) {
     do {
       idx = *ptr & 0x7FFF;
       if ((unsigned int)base[idx * 0x58 + 0x48] < 0x80) {
-        *(int *)(base + idx * 0x58 + 0x18) |= a1;
+        ((Actor *)(base + idx * 0x58))->flags |= a1;
       }
     } while ((short)*ptr++ >= 0);
   }

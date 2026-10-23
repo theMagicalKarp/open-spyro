@@ -242,7 +242,7 @@ void ChangeSpyroState(int state) {
       int *from = me;
 
       do {
-        if (actor[0x48] < 0x7F && *(int *)(actor + 8) != 0) {
+        if (actor[0x48] < 0x7F && ((Actor *)actor)->collision != 0) {
           int a;
           int da;
 

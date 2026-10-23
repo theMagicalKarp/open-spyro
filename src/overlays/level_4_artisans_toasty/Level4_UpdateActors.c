@@ -25,7 +25,7 @@
  *     and the range test in QImode (`(unsigned char)(c - 13) >= 3`), which
  *     keeps the original's `andi` on the compare and the raw lbu reg in the
  *     range test.
- *   - Case 9: the posZ read is a scalar `*(int *)((char *)actor + 0x14)` so it
+ *   - Case 9: the posZ read is the non-struct `ACTOR_RAW(actor, int, posZ)` so it
  *     stays below the g_dwSpyroTriggerEventFlags store, and the level/tens stores sit before
  *     the 0x80000012 store (sched1 LUID order of the two hoisted constants).
  *   - Case 314: `limit = 10` after the first call; `mate->rotZ` copied before
@@ -1005,7 +1005,7 @@ void Level4_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {

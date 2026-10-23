@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -77,16 +78,16 @@ void BeginSaveMenuFromWorld(int actor) {
   rec = (char *)(*(int *)(owner + 4) * 88 + (int)g_pActorListBase);
   {
     register int ry asm("$2");
-    ry = *(int *)(rec + 0x10);
-    g_nSaveMenuSpyroToYaw =
-        ArcTan2(*(int *)(rec + 0xC) - g_abSpyroAnimPrevBlock[-6], ry - py, 1);
+    ry = ACTOR_RAW(rec, int, posY);
+    g_nSaveMenuSpyroToYaw = ArcTan2(
+        ACTOR_RAW(rec, int, posX) - g_abSpyroAnimPrevBlock[-6], ry - py, 1);
   }
   g_nSaveMenuDragonFromAngle =
-      ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
-              *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
+      ArcTan2(ACTOR_RAW(actor, int, posX) - g_abSpyroAnimPrevBlock[-6],
+              ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
   g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
-  z = *(int *)(actor + 0x14);
+  z = ACTOR_RAW(actor, int, posZ);
   yw = g_nSaveMenuSpyroToYaw;
   g_nSaveMenuDragonToDist = 0x480;
   g_nSaveMenuDragonFromZ = z;

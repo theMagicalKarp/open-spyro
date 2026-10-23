@@ -61,7 +61,7 @@ void Gamestate08_Draw(void) {
     q = &g_apOtDepthBinBlock[2304];
     id = act[0x48];
     while (id != 0xFF) {
-      if (*(short *)(act + 0x36) == 0xFB && id < 0x80) {
+      if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
       act += 0x58;
@@ -102,7 +102,7 @@ void Gamestate08_Draw(void) {
     act = (unsigned char *)g_pActorListBase;
     id = act[0x48];
     while (id != 0xFF) {
-      if (*(short *)(act + 0x36) == 0xFB && id < 0x80) {
+      if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
       act += 0x58;
