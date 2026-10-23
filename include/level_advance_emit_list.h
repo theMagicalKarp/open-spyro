@@ -31,4 +31,14 @@ extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world positi
 
 extern int g_nLevelReadyFlag;
 
+/* Field access on the current emit record `rec` (0x20 bytes, layout varies
+ * by class; see each file's field map). These stay byte-offset accessors on
+ * purpose: every field must be an address giv off `rec` so loop.c folds them
+ * onto one base register, which a struct view does not reproduce. */
+#define HS(n) (*(short *)(rec + (n)))          /* s16 field at +n */
+#define HU(n) (*(unsigned short *)(rec + (n))) /* u16 field at +n */
+#define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
+#define POS ((short *)(rec + 4))               /* tail point, svector */
+#define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
+
 #endif /* OPEN_SPYRO_LEVEL_ADVANCE_EMIT_LIST_H */
