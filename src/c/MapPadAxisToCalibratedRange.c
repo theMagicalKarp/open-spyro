@@ -1,43 +1,41 @@
 #include "globals.h"
+#include "pad.h"
 
 /* 0x80053940: maps 4 raw 8-bit analog stick axes into the calibrated
-   0..0xff range using per-axis calibration bytes at +0x2c/+0x30 and per-axis
-   u16 scale factors at +0x34/+0x3c (see FinalizePadCalibration). */
-void MapPadAxisToCalibratedRange(unsigned char *param_1, int param_2) {
+   0..0xff range: outside the dead zone [deadLow, deadHigh] the deflection is
+   scaled by the axis' Q7 gain away from center 0x7f (see
+   FinalizePadCalibration, which fills the PadState tables). */
+void MapPadAxisToCalibratedRange(unsigned char *axes, int cal) {
   int i;
-  unsigned char *calib;
+  PadState *calib;
   unsigned int raw, hi, lo;
   int v;
 
-  calib = (unsigned char *)param_2;
+  calib = (PadState *)cal;
   for (i = 0; i < 4; i++) {
-    unsigned char *row = i + (unsigned char *)param_2;
-    raw = param_1[0];
-    hi = row[0x2c];
+    raw = axes[0];
+    hi = calib->deadHigh[i];
     if (raw > hi) {
-      int shifted =
-          (((int)(raw - hi)) * *(unsigned short *)(calib + i * 2 + 0x34)) >> 7;
+      int shifted = (((int)(raw - hi)) * calib->scaleHigh[i]) >> 7;
       v = shifted + 0x7f;
       if (v >= 0x100) {
-        param_1[0] = 0xff;
+        axes[0] = 0xff;
       } else {
-        param_1[0] = (unsigned char)v;
+        axes[0] = (unsigned char)v;
       }
     } else {
-      lo = row[0x30];
+      lo = calib->deadLow[i];
       if (raw < lo) {
-        v = 0x7f -
-            (((int)(lo - raw) * *(unsigned short *)(calib + i * 2 + 0x3c)) >>
-             7);
+        v = 0x7f - (((int)(lo - raw) * calib->scaleLow[i]) >> 7);
         if (v < 0) {
-          param_1[0] = 0;
+          axes[0] = 0;
         } else {
-          param_1[0] = (unsigned char)v;
+          axes[0] = (unsigned char)v;
         }
       } else {
-        param_1[0] = 0x7f;
+        axes[0] = 0x7f;
       }
     }
-    param_1 += 1;
+    axes += 1;
   }
 }
