@@ -1,5 +1,9 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
+
+/* The sprite record being written (Actor layout). */
+#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 extern void DrawSync(int mode);
 extern int VSync(int mode);
@@ -127,22 +131,17 @@ void RespawnOrGameOver_Draw(void) {
           g_pSpriteRecordWriteCursor = rec;
           FillWord(rec, 0, 0x58);
           if (t < 0x18) {
-            *(int *)((char *)g_pSpriteRecordWriteCursor + 0x14) =
-                *(short *)(t * 2 + (int)ramp);
+            SREC->posZ = *(short *)(t * 2 + (int)ramp);
           } else {
-            *(int *)((char *)g_pSpriteRecordWriteCursor + 0x14) = 0x400;
+            SREC->posZ = 0x400;
           }
-          *(short *)((char *)g_pSpriteRecordWriteCursor + 0x36) =
-              g_abGameOverGlyphs[i] + 0x169;
-          *(int *)((char *)g_pSpriteRecordWriteCursor + 0xC) =
-              *(short *)((char *)g_anGameOverLetterPosXY + k);
-          *(int *)((char *)g_pSpriteRecordWriteCursor + 0x10) =
-              *(short *)((char *)g_anGameOverLetterPosXY + k + 2);
-          *(unsigned char *)((char *)g_pSpriteRecordWriteCursor + 0x46) =
-              g_abGameOverLetterAngle[i];
-          *(unsigned char *)((char *)g_pSpriteRecordWriteCursor + 0x47) = 4;
-          *(unsigned char *)((char *)g_pSpriteRecordWriteCursor + 0x4F) = 0xB;
-          *(unsigned char *)((char *)g_pSpriteRecordWriteCursor + 0x50) = 0x20;
+          SREC->type = g_abGameOverGlyphs[i] + 0x169;
+          SREC->posX = *(short *)((char *)g_anGameOverLetterPosXY + k);
+          SREC->posY = *(short *)((char *)g_anGameOverLetterPosXY + k + 2);
+          SREC->rotZ = g_abGameOverLetterAngle[i];
+          SREC->otBias = 4;
+          SREC->tintMode = 0xB;
+          SREC->cullRadius = 0x20;
         }
         i += 1;
         k += 4;
