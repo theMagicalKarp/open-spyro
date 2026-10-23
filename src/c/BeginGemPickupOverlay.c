@@ -1,10 +1,9 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern int PlaySoundEffect(unsigned int id, int owner, unsigned int flags,
                            unsigned char *pos);
-
-extern int g_anGemPickupBlock[]; /* held-base alias @ g_nGemPickupSubstate */
 
 /* Begins the dragon-rescue statue cutscene overlay (GS_GEM_PICKUP): seeds the
    cutscene substate/timer globals, bumps both dragon counters (per-level +

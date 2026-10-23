@@ -33,11 +33,9 @@ extern uint PlaySoundEffect(uint sampleId, int *owner, uint mode,
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 extern int g_anSpyroFlameBreathTimerBlock[]; /* 0x80078768 */
-extern int g_anSpyroBodyMtxBlock[];          /* 0x80078a8c, -0x34 world pos */
 extern unsigned char
-    g_abSpyroHornStrikeSegmentBlock[]; /* 0x80078761, +2 = ring row */
-extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[]; /* 0x80078762 */
-extern int g_anSpyroHornStrikeAnchorMtxBlock[];            /* 0x8007876c */
+    g_abSpyroHornStrikeSegmentBlock[];          /* 0x80078761, +2 = ring row */
+extern int g_anSpyroHornStrikeAnchorMtxBlock[]; /* 0x8007876c */
 
 /* The particle spawner installed by the level overlay:
    (count, kind, world position, direction | NULL). */

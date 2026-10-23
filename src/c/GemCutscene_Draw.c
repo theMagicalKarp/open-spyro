@@ -8,8 +8,6 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern int g_nFarPlaneDrawDistance; /* per-gamestate far-plane cull limit */
-
 /* Draw gamestate 0xE (GS_GEM_CUTSCENE): the collected gem shown in 3D with a
    g_nGenericCountdown fade-to-black. Copies the world fog color into both frame
    DRAWENVs, renders the actor + world passes, tints, then the standard 2-vblank

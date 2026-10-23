@@ -5,18 +5,12 @@
 
 extern void StopSoundVoicesByOwner(int *owner, int mask);
 extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
-extern void NudgeSpyroFromWallProbes(void);
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroMotionZ;      /* g_anSpyroMotionVec[2] */
-extern int g_nSpyroCarryMotionZ; /* g_anSpyroCarryMotionVec[2] */
+extern int g_nSpyroMotionZ; /* g_anSpyroMotionVec[2] */
 extern int g_anOrbDropEnterSpawnType[];
-extern int g_nSpyroScriptedLiftBaseZ;
-extern int g_nSpyroScriptedLiftRise;
-extern int g_nSpyroScriptedLiftYaw;
 extern void *g_pSpyroHomingTargetActor;
-extern int g_nSpyroScriptedLiftTurn;
 
 /* State 17 (scripted lift toward g_anSpyroRequestTargetPos): the start Z, the
    rise to cover, the starting yaw and the yaw turn to the scripted camera

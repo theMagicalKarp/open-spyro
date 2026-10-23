@@ -19,12 +19,8 @@ extern void UpdateCameraEulerAngles(void);
 extern void ActivateScriptedCameraView(int record);
 extern int abs(int x);
 
-extern char
-    *g_apWorldUnpackHeadBlock[];       /* [0] unpack head, [7] g_pWorkAreaTop */
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern int g_anSpyroWorldPosZBlock[];  /* 0x80078a60 */
-extern int g_anSpyroStateFlagsBlock[];
 extern void *g_apDrawBufBBlock[];
 extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];

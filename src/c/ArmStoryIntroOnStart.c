@@ -1,8 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern int
-    g_anGamestate0dBlock[]; /* 0x80078d78 — gamestate-0xD context block */
-extern int g_nTitleSubState;
 extern int MemCardSync(int mode, int *result, int *extra);
 
 /* On START (pad bit 0x10): arm the story-intro flow — set the gamestate-0xD

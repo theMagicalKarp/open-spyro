@@ -17,7 +17,6 @@
 #include "actor.h"
 #include "main_shared.h"
 
-extern void MoveImage();
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
@@ -39,7 +38,6 @@ extern char *g_pSpriteRecordWriteCursor;
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
-extern int g_nFarPlaneDrawDistance;
 extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {

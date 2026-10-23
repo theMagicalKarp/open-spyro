@@ -28,8 +28,6 @@ extern int g_nSpyroScriptedAlignFrames;
 SDATA(g_nSpyroScriptedAlignFrames, 4);
 SDATA(g_pSpyroContactActor, 4);
 
-extern int g_nCameraNextMode_blk[];
-
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE 0x1E          /* g_nSpyroState */
 #define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */

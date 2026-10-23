@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "pad.h"
 
 /* Pad sampler for the death-replay stream (0x800539fc, 0x26C). While the
@@ -10,9 +11,7 @@
    stick-active flag, fans the held state out to the 4 pad substep-ring
    slots, refreshes the input-idle flags and forces a 2-tick frame.
    Returns 2 (the tick count). */
-extern void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
 
-extern unsigned int g_adwPadHeldBlock[]; /* g_dwPadHeld as an array view */
 extern unsigned char
     g_abPadAnalogCalibratedBlock[]; /* calibrated-stick bytes */
 

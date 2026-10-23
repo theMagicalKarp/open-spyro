@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern int CastRayWorldAndActors();
@@ -7,7 +8,6 @@ extern int abs(int n);
 /* shared-base view of g_anSpyroBodyMtx (0x80078a8c): the matrix arg, the
    world position at -0x34 (g_anSpyroWorldPos) and the airborne counter at
    +0x68 (g_nSpyroAirborneFrames) are all reached off one held register. */
-extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroAirborneFramesBlock[];
 
 /* 0x8003e758 (436 bytes) — snap Spyro onto the floor directly below: cast a

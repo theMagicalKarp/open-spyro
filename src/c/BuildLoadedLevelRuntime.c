@@ -28,10 +28,8 @@ extern void ResetWorldParticleTables(void);
 extern void ResetWorldChunkAnimations(void);
 extern void InitHudCounters(int full);
 extern int HandleMusicCommand(int track, int arg);
-extern void srand(unsigned int seed);
 
 extern short g_anCosineLut[];
-extern int g_nLevelSpawnPosZ;
 extern int g_nLevelLoadUnreadWord;
 extern int g_anGameOverRespawnPosVirtualBase[];
 extern int g_anLevelSpawnPosZBlock[];

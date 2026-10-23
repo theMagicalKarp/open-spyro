@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Enter the inventory / sub-menu gamestate (0x8002c714). param nonzero = opened
    from gameplay (stop SFX first, reset the pause transition frames). Plays the
@@ -8,7 +9,6 @@
    ring. */
 extern void StopAllSoundExceptMask(unsigned int mask);
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
-extern void ClearPadHistoryRing(void);
 
 void EnterInventoryMenu(int param_1) {
   if (param_1 != 0) {

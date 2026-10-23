@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "pad.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
@@ -16,10 +17,8 @@ extern int PadInfoMode(int socket, int term, int offs);
 extern int PadSetMainMode(int socket, int offs, int lock);
 extern void ResetPadStickCalibrationDefaults(int block);
 extern int FinalizePadCalibration(unsigned int *block);
-extern void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
 
-extern int g_anPadTypeBlock[];           /* g_nPadType as an array view */
-extern unsigned int g_adwPadHeldBlock[]; /* g_dwPadHeld as an array view */
+extern int g_anPadTypeBlock[]; /* g_nPadType as an array view */
 
 void PollPadAndDistributeInput(void) {
   unsigned char cal[4];

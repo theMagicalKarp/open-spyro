@@ -9,16 +9,12 @@ extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
 extern void MulMatrix0(int *a, int *b, int *out);
 extern void SampleSpyroShadowRingHeights(int mode);
 extern void TickSpyroAttackEffects(int steps);
-extern void TriggerRespawnOrGameOver(void);
 extern void ActivateScriptedCameraView(int record);
 extern void ChangeSpyroState();
 extern unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
                                     unsigned int mode, unsigned char *pPlaying);
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
-extern int g_anSpyroPadSnapshotBlock[];           /* 0x80078c48 */
-extern int g_anSpyroWorldPosZBlock[];             /* 0x80078a60 */
-extern int g_anSpyroStateFlagsBlock[];            /* 0x80078ad4 */
 extern unsigned char g_abSpyroAnimPrevBlock[];    /* 0x80078a70 */
 extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
 

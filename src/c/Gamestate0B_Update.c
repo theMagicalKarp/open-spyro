@@ -27,27 +27,13 @@ extern void BuildSaveGameBuffer(void *buf);
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
    keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
-extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
 extern char g_szMemCardSaveName[];            /* memory card save file name */
-extern int g_nSaveSlotLoaded;
 extern int g_nSaveSlotIndex;
 extern int g_nSaveFileTag;
 extern int g_nSaveMenuDragonFromDist;
-extern int g_nSaveMenuDragonFromZ;
-extern int g_nSaveMenuDragonToAngle;
-extern int g_nSaveMenuDragonToDist;
-extern int g_nSaveMenuDragonToZ;
-extern int g_nSaveMenuOverlayFromAngle;
 extern int g_nSaveMenuOverlayFromDist;
-extern int g_nSaveMenuOverlayToAngle;
-extern int g_nSaveMenuOverlayToDist;
 extern int g_nSaveMenuCameraFromDist;
-extern int g_nSaveMenuCameraFromZ;
-extern int g_nSaveMenuCameraToAngle;
-extern int g_nSaveMenuCameraToDist;
-extern int g_nSaveMenuCameraToZ;
-extern int g_nSaveMenuSpyroToYaw;
 extern int *volatile g_pSaveMenuDragonActor; /* the rescued dragon's actor */
 
 #define SM g_anSaveMenuBlock

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Record the newly pressed buttons in the pad-history ring and scan it
    against the cheat-code sequence table (0x8002d8ec, 0x188). For each of
@@ -7,7 +8,6 @@
    cheat effect and clears the ring. Only active while the CD stream is
    idle. */
 extern void ApplyCheatCodeEffect(int code);
-extern void ClearPadHistoryRing(void);
 void CheckCheatCodeMatch(void) {
   int pad[2];
   int idx;

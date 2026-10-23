@@ -4,7 +4,6 @@
 
 extern void InitSpu(void);
 extern void ApplySpuVoiceAttr(int *attr);
-extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void SetSpuTransferMode(int mode);
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 

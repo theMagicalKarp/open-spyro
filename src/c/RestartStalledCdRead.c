@@ -1,7 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern int CdInit(void);
 extern void CdReadCallback(void *callback);
 extern void CdReadCompleteCallback();
 extern void CdRead(int count, void *dst, unsigned int mode);

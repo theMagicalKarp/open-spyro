@@ -11,7 +11,6 @@ extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
-extern char *volatile g_pActiveCutsceneSoundDef;
 
 void BeginGemCutscene(void) {
   register int world;

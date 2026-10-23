@@ -1,8 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char g_bSpyroAnimLayer1Current;
-
 /* 0x800495d8 */
 void AdvanceSpyroAnimLayer1Frame(int param_1) {
   unsigned char *sub_ptr = g_abSpyroAnimLayer1SubstepBlock;

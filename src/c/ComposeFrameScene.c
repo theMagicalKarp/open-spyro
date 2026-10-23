@@ -8,10 +8,6 @@
    strike trails only while the horn collision is active; then the world
    particle emitters. */
 extern void FillWord();
-extern void BuildSecondaryActorDrawList(void);
-extern void EmitSecondaryActorPrimitives(void);
-extern void DrawEntityDirectionalSpikes(void);
-extern void DrawSpyroDropShadow(void);
 extern void DrawSpyroHornStrikeTrails(void);
 extern void DrawWorldParticleEmitters(void);
 

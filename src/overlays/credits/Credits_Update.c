@@ -220,7 +220,6 @@ extern void CdReadSyncSectors();
 extern void CopyWords();
 extern void StartCdReadAsync();
 extern char *UnpackWorldDataChunks();
-extern void MoveImage();
 extern void PlaySoundEffect();
 extern int TickCountdownByFrameDelta();
 extern int RandomSignedInRange();

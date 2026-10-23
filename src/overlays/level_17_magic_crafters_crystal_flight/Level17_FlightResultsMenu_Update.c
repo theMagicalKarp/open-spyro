@@ -22,7 +22,6 @@
 #include "main_shared.h"
 #include "level_balloonist_cutscene.h"
 
-extern void (*g_pfnLevelHandleFlightResults)();
 
 extern unsigned int g_dwHudBobSinePhase[];
 extern int g_anWorldPersistentFlags[];

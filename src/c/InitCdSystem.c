@@ -1,6 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 
-extern int CdInit(void);
 extern int CdControl(unsigned char cmd, unsigned char *param,
                      unsigned char *result);
 extern int CdReadCallback(unsigned int cb);

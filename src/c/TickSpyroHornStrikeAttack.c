@@ -46,16 +46,11 @@
 extern void FillWord(void *dst, unsigned int value, int byteCount);
 extern void SmoothSpyroByteEulerSpring(void);
 
-extern unsigned char
-    g_abSpyroHornStrikeAnimTable[]; /* state -> strike anim descriptor index */
-extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
-
 extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */
 extern int g_anSpyroHornStrikeTimerBlock[]; /* g_nSpyroHornStrikeTimer */
 extern int g_anSpyroComposedBodyMtxBlock[]; /* g_anSpyroComposedBodyMtx */
 extern int
     g_anSpyroHornStrikeTipOffsets2[]; /* g_anSpyroHornStrikeTipOffsets+0xC */
-extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
 extern unsigned char g_abSpyroHornCollisionActiveBlock[];
 
 /* NOTE: the function body below is decomp-permuter output, spliced in

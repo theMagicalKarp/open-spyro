@@ -30,7 +30,6 @@ extern void *g_pSharedLoadBuffer;  /* default draw-buffer base */
 extern int g_anDeathTryLevelIds[]; /* per-try first level table */
 
 extern int g_anStoryIntroMessageBlock[]; /* held-base view of the message id */
-extern int g_anStoryIntroTimerBlock[];   /* held-base view of the intro timer */
 
 void Gamestate0D_Update(void) {
   VECTOR delta;

@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void SyncSoundVoicesWithHardware(void);
-extern void SetSpuKeyMask(int on, unsigned int voices);
 
 extern int
     g_anSpuPendingKeyOnBlock[]; /* shared-base view of g_dwSpuPendingKeyOn */

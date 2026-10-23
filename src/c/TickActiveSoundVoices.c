@@ -62,9 +62,6 @@ extern int GetSpuVoiceKeyStatus(unsigned int voiceBit);
 extern void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
 extern void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
 extern void ApplySpuVoiceAttr(unsigned int *attr);
-extern void ComputeVoicePanAndFalloff(short *vol, int dist,
-                                      unsigned char bearing, unsigned int range,
-                                      short *cached);
 extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int includeZ);
 extern int ArcTan2(int y, int x, int highPrecision);

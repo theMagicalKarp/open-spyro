@@ -1,12 +1,11 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void DampenSpyroFreeFallAttitude(void);
 extern void UpdateSpyroFlightAttitudeNearGround(void);
 extern void AlignSpyroBodyToVelocity(void);
 
 /* register-form (held-base) views of the clamped / incremented globals */
-extern int g_nSpyroAnimPlayRate_blk[];
-extern int g_nCameraNextMode_blk[];
 extern int g_nSpyroGravityStep_blk[];
 extern int g_nSpyroStateTimer_blk[];
 

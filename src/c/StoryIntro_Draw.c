@@ -17,7 +17,6 @@ extern unsigned char g_szEnteringDemoMode[];
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a
    4-byte `extern int` cannot do (sdata cost 1 wins the tie, §B-i rule 2). */
-extern int g_anStoryIntroTimerBlock[];
 extern unsigned short g_anCosineLut[];
 
 extern void *BuildTextSprites(unsigned char *str, int *pos, int *col, int adv,

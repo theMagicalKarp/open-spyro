@@ -8,11 +8,9 @@ extern int DispatchSpyroChargeStateChanges(void);
 extern void ChangeSpyroState(int state);
 extern void RestartSpyroAnimWithState(int state);
 extern void CycleSpyroIdleAnim(void);
-extern void TriggerRespawnOrGameOver(void);
 extern void BuildSpyroVelocityFromBodyEuler(void);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroVelocityZ; /* g_anSpyroVelocity[2] */
 extern int g_anOrbDropTimeoutSpawnType[];
 
 SDATA(g_bSpyroJumpHoldForced, 4);

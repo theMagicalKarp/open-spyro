@@ -38,7 +38,6 @@ extern char *g_pPrimBufferLimit;
 extern char *g_pSpriteRecordBufferTop;
 extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
 extern int g_nVsyncFrameEndCount[];
-extern int (*g_pfnFlightTimeFormatter)();         /* time formatter */
 extern unsigned char *g_pLevelSampleBankHeader;   /* sample bank header */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
 extern char g_abHudIconActorRecords[];           /* HUD sprite records */

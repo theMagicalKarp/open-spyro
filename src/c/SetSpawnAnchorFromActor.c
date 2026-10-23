@@ -1,10 +1,10 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */
-extern int g_nLevelSpawnPosZ;        /* g_anLevelSpawnPos[2] (see alias) */
 extern int g_nSpawnAnchorDragonsRescued;
 extern int g_nSpawnAnchorGemsCollected;
 extern int g_nSpawnAnchorReserved;

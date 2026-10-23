@@ -206,4 +206,9 @@ extern int g_nCreditsGlyphCount;
 extern int g_nCreditsPageIndex;
 extern char *g_pCreditsGlyphPool;
 
+/* Declared identically by two or more overlay files; hoisted here. */
+extern void MoveImage();
+extern int (*g_pfnFlightTimeFormatter)();
+extern void (*g_pfnLevelHandleFlightResults)();
+
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */

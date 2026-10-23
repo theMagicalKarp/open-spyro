@@ -10,7 +10,6 @@
    g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the
    call. */
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void srand(unsigned int seed);
 extern int g_nSfxMixVolume_blk[];
 extern char *g_pStoryIntroStreamCursor;
 

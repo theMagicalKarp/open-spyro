@@ -10,7 +10,6 @@ extern int TurnSpyroTowardMoveTargetWithLean(int lean);
 extern void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
 extern void BuildSpyroVelocityFromBodyEuler(void);
 extern void IntegrateSpyroBodyEuler(int delta);
-extern void NudgeSpyroFromWallProbes(void);
 extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
 extern void ScaleVector3Shifted(int *vec, int num, int shift);
 extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
@@ -22,16 +21,10 @@ extern void ActivateScriptedCameraView(int *record);
 extern int abs(int x);
 
 extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
-extern int g_nSpyroVelocityZ;
 extern int g_nSpyroCarryMotionY;
-extern int g_nSpyroCarryMotionZ;
 extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
                                           velocity */
-extern int g_nSpyroScriptedLiftBaseZ;
-extern int g_nSpyroScriptedLiftRise;
-extern int g_nSpyroScriptedLiftYaw;
 extern int g_pSpyroHomingTargetActor;
-extern int g_nSpyroScriptedLiftTurn;
 extern int g_anFlightBoundsCenter[];
 extern int g_anFlightBoundsRadius[];
 
@@ -44,7 +37,6 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
 SDATA(g_pSpyroContactActor, 4);
 
 /* One view of the Spyro record from its world position (0x80078a58). */
-extern unsigned int g_adwPadPressedBlock[];
 extern unsigned char g_abSpyroAnimPrevBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
