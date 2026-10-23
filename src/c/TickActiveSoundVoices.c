@@ -47,19 +47,6 @@
    folds the row's pitch step into its running pitch and pushes voice + volume
    + pitch through ApplySpuVoiceAttr. */
 typedef struct {
-  /* 0x00 */ unsigned char *pOwner;
-  /* 0x04 */ short nVolL;
-  /* 0x06 */ short nVolR;
-  /* 0x08 */ int nPitch;
-  /* 0x0C */ unsigned char pad0C;
-  /* 0x0D */ unsigned char nSampleId;
-  /* 0x0E */ unsigned short nFlags;
-  /* 0x10 */ short anPanCache[2];
-  /* 0x14 */ int nPitchStep;
-  /* 0x18 */ char *pPlaying;
-} SPUVOICEROW;
-
-typedef struct {
   /* 0x00 */ char pad[0x2C];
   /* 0x2C */ short nVolL;
   /* 0x2E */ short nVolR;

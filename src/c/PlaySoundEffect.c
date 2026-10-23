@@ -15,7 +15,7 @@ extern void ComputeVoicePanAndFalloff(short *vol, int dist,
                                       short *cached);
 extern void ApplySpuVoiceAttr(unsigned int *attr);
 
-/* One of the 24 software mixer rows at 0x80075F30 (stride 0x1C). */
+/* SPUVOICEROW with the fields this function re-reads made volatile. */
 typedef struct {
   /* 0x00 */ unsigned char *pOwner;
   /* 0x04 */ volatile short nVolL;
@@ -27,9 +27,9 @@ typedef struct {
   /* 0x10 */ volatile short anPanCache[2];
   /* 0x14 */ int nPitchStep;
   /* 0x18 */ unsigned char *pPlaying;
-} SPUVOICEROW;
+} SPUVOICEROW_V;
 
-extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
+extern SPUVOICEROW_V g_aSpuVoiceRows[]; /* the 24 mixer rows */
 extern int g_nSfxOverrideFlags[]; /* one-shot override flags: 1 = vol pair, 2 =
                                      pitch */
 

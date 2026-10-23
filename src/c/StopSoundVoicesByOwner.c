@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 /* Stop every software voice row owned by `owner` (0x800562a4). mode 1 stops
    unconditionally; mode 2 only stops rows whose flags halfword (+0x36) has
@@ -31,8 +32,8 @@ top:
       *ps = 0;
       *pf = idle;
       *po = 0;
-      *(int *)((char *)g_abSpuCommonAttr + off + 0x3C) = 0;
-      *(unsigned char *)((char *)g_abSpuCommonAttr + off + 0x35) = ff;
+      VOICE_ROW_RAW(off, int, nPitchStep) = 0;
+      VOICE_ROW_RAW(off, unsigned char, nSampleId) = ff;
     }
   }
   po = (int *)((char *)po + 0x1C);
