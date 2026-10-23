@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "pad.h"
 
 /* Pad sampler for the death-replay stream (0x800539fc, 0x26C). While the
    death sequence is recording (g_nDeathState == 2) it samples the real
@@ -64,14 +65,14 @@ int SamplePadForDeathReplayFrame(void) {
   p = &heldp[0x14];
   off = 0;
   do {
-    *(unsigned int *)((char *)g_anPadSubstepRing + off + 4) = heldp[0];
-    *(unsigned int *)((char *)g_anPadSubstepRing + off + 8) = heldp[-2];
-    *(unsigned int *)((char *)g_anPadSubstepRing + off + 0xC) = heldp[-1];
-    *(unsigned int *)((char *)g_anPadSubstepRing + off) = heldp[1];
+    PAD_SUBSTEP(off)->held = heldp[0];
+    PAD_SUBSTEP(off)->pressed = heldp[-2];
+    PAD_SUBSTEP(off)->released = heldp[-1];
+    PAD_SUBSTEP(off)->padType = heldp[1];
     i += 1;
     *p = heldp[3];
     p += 6;
-    *(unsigned int *)((char *)g_anPadSubstepRing + off + 0x10) = heldp[2];
+    PAD_SUBSTEP(off)->stickActive = heldp[2];
     off += 0x18;
   } while (i < 4);
   g_nPadAllInputIdleFlag = 1;
