@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 
 extern void RefreshActorDerivedState(unsigned char *actor, int n);
@@ -15,17 +16,16 @@ void CollectPickupActor(unsigned char *a) {
   short kind;
   int pad[4];
 
-  g_abGemTallyIconUvTable[g_nGemTallyIconCount & 0x1F] =
-      *(unsigned short *)(a + 0x36);
+  g_abGemTallyIconUvTable[g_nGemTallyIconCount & 0x1F] = ((Actor *)a)->type;
   g_nGemTallyIconCount += 1;
   if (a == g_pThiefEggDrop) {
     g_nLevelEggCount = 3;
   }
   RefreshActorDerivedState(a, 4);
   ((void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
-      6, 0xC, a, g_adwActorBurstColors[*(short *)(a + 0x36)]);
+      6, 0xC, a, g_adwActorBurstColors[((Actor *)a)->type]);
 
-  kind = *(short *)(a + 0x36);
+  kind = ((Actor *)a)->type;
   if (kind == 0x53) {
     CommitActorKillGems(1, a);
   } else if (kind == 0x54) {

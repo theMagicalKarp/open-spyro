@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -207,9 +208,9 @@ void Gamestate0C_Update(void) {
                 13);
       cam = g_anCameraPosBlock;
 
-      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
+      cam[0] = ((Actor *)g_pGamestate0cRecord)->posX +
                ((LookupCosine(yaw) * radius) >> 12);
-      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
+      g_anCameraPos[1] = ((Actor *)g_pGamestate0cRecord)->posY +
                          ((LookupSine(yaw) * radius) >> 12);
       g_anCameraPos[2] =
           g_nGamestate0cCamHeightStart +
@@ -270,32 +271,30 @@ void Gamestate0C_Update(void) {
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
       lvl = g_anGamestate0cTimerBlock[4];
-      *(char *)((char *)g_pGamestate0cRecord + 0x46) =
+      ((Actor *)g_pGamestate0cRecord)->rotZ =
           (char)g_anLevelEntryPoints[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos,
                  (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] =
-          *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) + 0x80;
+          ((Actor *)g_pGamestate0cRecord)->rotZ + 0x80;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       g_anGamestate0cTimerBlock[19] =
-          ((*(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) << 4) +
-           0x390) &
-          0xFFF;
+          ((((Actor *)g_pGamestate0cRecord)->rotZ << 4) + 0x390) & 0xFFF;
 
       cam = g_anCameraPosBlock;
-      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
+      cam[0] = ((Actor *)g_pGamestate0cRecord)->posX +
                ((LookupCosine(g_anGamestate0cTimerBlock[19]) *
                  g_anGamestate0cTimerBlock[20]) >>
                 12);
-      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
+      g_anCameraPos[1] = ((Actor *)g_pGamestate0cRecord)->posY +
                          ((LookupSine(g_anGamestate0cTimerBlock[19]) *
                            g_anGamestate0cTimerBlock[20]) >>
                           12);
-      g_anCameraPos[2] = *(int *)((char *)g_pGamestate0cRecord + 0x14) + 0x200;
+      g_anCameraPos[2] = ((Actor *)g_pGamestate0cRecord)->posZ + 0x200;
 
       SubtractVector(&settle.vx,
                      (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC), cam);
@@ -309,7 +308,7 @@ void Gamestate0C_Update(void) {
          needs no nop. Left inline in the [13] store, the scheduler hoists
          g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
          costs one. */
-      face = *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46);
+      face = ((Actor *)g_pGamestate0cRecord)->rotZ;
       g_anGamestate0cTimerBlock[21] = g_anCameraPos[2];
       g_anGamestate0cTimerBlock[15] = g_anCameraPos[2] - 0xFCE;
       g_anGamestate0cTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "sample_bank.h"
 
 extern int GetSoundVoiceStatusByOwner(unsigned char *owner,
                                       unsigned int sampleId);
@@ -54,17 +55,6 @@ typedef struct {
   /* 0x3A */ unsigned short adsr1;
   /* 0x3C */ unsigned short adsr2;
 } SPUVOICEATTR;
-
-/* One entry of the per-level sample bank (stride 0x14). */
-typedef struct {
-  /* 0x00 */ unsigned int nSampleAddr;
-  /* 0x04 */ unsigned int nLoopAddr;
-  /* 0x08 */ unsigned short pad08;
-  /* 0x0A */ unsigned short nPitch;
-  /* 0x0C */ unsigned short nPitchSpread;
-  /* 0x0E */ unsigned short nPitchStep;
-  /* 0x10 */ int nPitchMode;
-} SAMPLEENTRY;
 
 extern SPUVOICEROW g_aSpuVoiceRows[];   /* the 24 mixer rows */
 extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
