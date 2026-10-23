@@ -1,7 +1,6 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
-
-extern int abs(int n);
 
 extern short g_anCosineLut[];
 

@@ -1,7 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
-
-extern int abs(int n);
+#include "main_shared.h"
 
 /* Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
  * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):

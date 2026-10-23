@@ -4,8 +4,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int abs(int x);
-
 SDATA(g_pSpyroContactActor, 4);
 
 /* Charge-state trigger dispatcher (0x80041270, 744 bytes), called from the

@@ -15,8 +15,6 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-extern int abs(int);
-
 #define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))
 #define ACTOR_TURNSTATE(a) (*(unsigned char *)((char *)(a) + 0x49))
 

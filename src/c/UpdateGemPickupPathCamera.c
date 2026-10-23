@@ -1,7 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
-
-extern int abs(int);
+#include "main_shared.h"
 
 /* The path block is re-read from the global on every use (the overlay can
    swap it out under us). */

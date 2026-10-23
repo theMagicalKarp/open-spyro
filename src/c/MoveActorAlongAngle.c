@@ -19,7 +19,6 @@ extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void RefreshActorDerivedState(int *actor, int mode);
-extern int abs(int);
 
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */

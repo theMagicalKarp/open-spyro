@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Camera-to-target angle solver (0x80033f08, 0x290). Builds the anchor→
@@ -11,7 +12,6 @@
    and returns 1; otherwise commits the plain yaw (or spring yaw) and
    returns 0. Tail publishes the draft roll and the wrapped pitch/yaw
    biases against the euler camera state. */
-extern int abs(int);
 
 int ComputeCameraToTargetAngle(int *target) {
   int vec[3];

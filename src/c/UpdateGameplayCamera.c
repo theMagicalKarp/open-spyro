@@ -5,7 +5,6 @@
 
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int ComputeCameraToTargetAngle(int *pos);
-extern int abs(int x);
 
 #define CAM g_anCameraPosBlock
 #define CAM_EYE 0x03           /* g_anCameraEyeTarget */

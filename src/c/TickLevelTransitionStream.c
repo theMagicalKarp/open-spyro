@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern int abs(int x);
-
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
 extern short g_anCosineLut[];
