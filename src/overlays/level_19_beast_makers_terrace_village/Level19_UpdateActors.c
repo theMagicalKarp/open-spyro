@@ -40,16 +40,9 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-/* Step a countdown timer; non-zero when it fires. */
-
-/* Mark an item collected; the second argument is the actor or its id. */
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -64,11 +57,7 @@
 
 extern int GetGroundTriggerRegionType(void);
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* Shift a vector left by n. */
 
 #define ABS2(x) ((x) > 0 ? (x) : -(x))
 
@@ -157,7 +146,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -169,7 +157,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
     g_nActorAnimDone = 0;                                                            \
     ANIM_RESET(a, n);                                                          \
   }
-
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -212,9 +199,7 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 /* Case 402: cannon ball path header { count, cur }, points at +8. */
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-/* from level_7 */
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-/* from level_18 */
 typedef struct L18Drum {
   int chan;   /* 0x00 voice channel */
   int wait;   /* 0x04 */
@@ -227,8 +212,6 @@ typedef struct L18Drum {
   int reload; /* 0x20 */
   int voice;  /* 0x24 */
 } L18Drum;
-/* from level_18 */
-/* from level_18 */
 typedef struct L18Ram {
   char pad00[0xC];
   PathData *path; /* 0x0C */

@@ -48,10 +48,6 @@
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
-/* Step a countdown timer; non-zero when it fires. */
-
-/* Mark an item collected; the second argument is the actor or its id. */
-
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -76,8 +72,6 @@ extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
-
-/* Shift a vector left by n. */
 
 /* ==== Helper macros ====
  *

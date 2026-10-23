@@ -33,13 +33,9 @@
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
-/* Step a countdown timer; non-zero when it fires. */
-
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
 extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
-
-/* Mark an item collected; the second argument is the actor or its id. */
 
 
 
@@ -69,8 +65,6 @@ extern int GetGroundTriggerRegionType(void);
 /* Glow node owned by Sparx; follows its anchor position. */
 
 
-
-/* Shift a vector left by n. */
 
 /* ==== Helper macros ====
  *

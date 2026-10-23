@@ -111,6 +111,8 @@ typedef struct AngPair {
 
 extern AngPair g_aShakeRotOffsets[];
 
+/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
+ * child actor; breaks into fragments when damaged. */
 typedef struct LiftState {
   Actor *passenger; /* 0x00 the spawned passenger, valid once ->mode is 1 */
   int phase;    /* 0x04 phase */
@@ -120,6 +122,7 @@ typedef struct LiftState {
   int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
 } LiftState;
 
+/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
   int v[6];
 } Xform;
@@ -172,6 +175,7 @@ extern int CheckLineOfSightSegment(int *a, int *b);
 
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
+/* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
   int kind;            /* 0x00 */
   void *desc;          /* 0x04 */
@@ -468,7 +472,6 @@ typedef struct L26Spark {
   int timer;  /* 0x0C */
 } L26Spark;
 
-/* from level_3 */
 typedef struct BounceState {
   short vx;           /* 0x00 */
   short vy;           /* 0x02 */
@@ -482,7 +485,6 @@ typedef struct BounceState {
   int mode;           /* 0x10 */
 } BounceState;
 
-/* from level_8 */
 typedef struct SwoopState {
   int speed;     /* 0x00 */
   int heading;   /* 0x04 */
@@ -498,14 +500,12 @@ typedef struct SwoopState {
   int count;     /* 0x34 */
 } SwoopState;
 
-/* from level_25 */
 typedef struct L26Critter {
   char pad00[0x38];
   int knock; /* 0x38 knock-back heading */
   int speed; /* 0x3C knock-back speed */
 } L26Critter;
 
-/* from level_7 */
 typedef struct L7State184 {
   int link;    /* 0x00 handed to the spawned bolt */
   int flag;    /* 0x04 */
@@ -515,7 +515,6 @@ typedef struct L7State184 {
   int timer;   /* 0x14 */
 } L7State184;
 
-/* from level_7 */
 typedef struct L7State183 {
   int link;    /* 0x00 */
   int u04;     /* 0x04 */
@@ -525,7 +524,6 @@ typedef struct L7State183 {
   int u14;     /* 0x14 */
 } L7State183;
 
-/* from level_7 */
 typedef struct L7State186 {
   int home[3];   /* 0x00 */
   void *path;    /* 0x0C */
@@ -541,7 +539,6 @@ typedef struct L7State186 {
   int spawned;   /* 0x34 */
 } L7State186;
 
-/* from level_7 */
 typedef struct L7State197 {
   int vel[3];         /* 0x00 */
   short u0C;          /* 0x0C */
@@ -565,6 +562,7 @@ typedef struct PathState {
   int startDelay; /* 0x30 random 6..0x28 countdown before walking */
 } PathState;
 
+/* Type 286: ambient sound source; mode 2 also coasts along a path. */
 typedef struct RoamState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
   int soundRange;           /* 0x04 republished into actor->soundRange every frame */
@@ -638,6 +636,8 @@ typedef struct SpinState {
   unsigned char anim;  /* 0x03 0xFF == none */
 } SpinState;
 
+/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
+ * saves a checkpoint and starts the rescue. */
 typedef struct RideState {
   int unk00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
@@ -1033,7 +1033,6 @@ typedef struct {
   int z;
 } CamLook;
 
-/* from level_15 */
 typedef struct RearState {
   int timer;   /* 0x00 idle-hop countdown */
   int t04;     /* 0x04 */
@@ -1042,7 +1041,6 @@ typedef struct RearState {
   int spin;    /* 0x10 per-frame yaw while tumbling */
 } RearState;
 
-/* from level_15 */
 typedef struct SentryState {
   int homeX;      /* 0x00 post */
   int homeY;      /* 0x04 */
@@ -1059,7 +1057,6 @@ typedef struct SentryState {
   int *alert;     /* 0x30 shared by the sentries of one group */
 } SentryState;
 
-/* from level_15 */
 typedef struct {
   void *v;
 } PtrV;
@@ -1079,7 +1076,6 @@ typedef struct WispState {
   int timer;     /* 0x04 lifetime */
 } WispState;
 
-/* from level_15 */
 typedef struct TetherState {
   int timer;   /* 0x00 */
   int speed;   /* 0x04 knockback speed */
@@ -1089,13 +1085,11 @@ typedef struct TetherState {
   int mode;    /* 0x14 */
 } TetherState;
 
-/* from level_15 */
 typedef struct LeadState {
   PathData *path; /* 0x00 */
   int moving;     /* 0x04 */
 } LeadState;
 
-/* from level_15 */
 typedef struct KeeperState {
   int timer;   /* 0x00 knockback timer */
   int heading; /* 0x04 knockback heading */
@@ -1106,7 +1100,6 @@ typedef struct KeeperState {
   int baseY;   /* 0x18 */
 } KeeperState;
 
-/* from level_15 */
 typedef struct SentinelState {
   int timer;        /* 0x00 */
   int count;        /* 0x04 bolts fired this volley */
@@ -1120,7 +1113,6 @@ typedef struct SentinelState {
   int knockSpeed;   /* 0x24 */
 } SentinelState;
 
-/* from level_15 */
 typedef struct ChainState {
   int pad00[3];
   int link;  /* 0x0C next in chain */
@@ -1128,15 +1120,12 @@ typedef struct ChainState {
   int stop;  /* 0x18 path node where it waits */
 } ChainState;
 
-/* from level_15 */
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int f);
 
-/* from level_15 */
 extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int *f);
 
-/* from level_25 */
 typedef struct L25Shot {
   int link;            /* 0x00 index of the actor it wakes on arrival */
   int vel[3];          /* 0x04 */
@@ -1145,7 +1134,6 @@ typedef struct L25Shot {
   int init;            /* 0x18 1 = aim the barrel along the path */
 } L25Shot;
 
-/* from level_8 */
 typedef struct CatapultState {
   int angle;     /* 0x00 0..0x120 */
   int vel;       /* 0x04 */
@@ -1154,7 +1142,6 @@ typedef struct CatapultState {
   int timer;     /* 0x10 */
 } CatapultState;
 
-/* from level_8 */
 typedef struct FlightState {
   int pos[3];          /* 0x00 landing point */
   unsigned char pad0C[2];
@@ -1163,7 +1150,6 @@ typedef struct FlightState {
   unsigned char mode;  /* 0x10 */
 } FlightState;
 
-/* from level_31 */
 typedef struct L31Critter {
   char pad00[0x20];
   int speed; /* 0x20 knock-back speed */
@@ -1216,7 +1202,6 @@ typedef struct LookoutState {
   int wait;      /* 0x2C */
 } LookoutState;
 
-/* from level_8 */
 typedef struct RunnerState {
   PathData *pathA; /* 0x00 */
   PathData *pathB; /* 0x04 */
@@ -1233,6 +1218,9 @@ typedef struct RunnerState {
   int cried;       /* 0x30 */
 } RunnerState;
 
+/* Type 270: villager. Chats when Spyro faces it up close (mode 0), turns to
+ * face a friend (mode 1), waits on a partner (mode 2) or watches a leader
+ * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 typedef struct VillagerState {
   unsigned char *path; /* 0x00 wander path { count, cur }, points at +8 */
   int snd;             /* 0x04 voice handle, -1 = none */
@@ -1351,13 +1339,11 @@ typedef struct CaptainState {
   int timer2;          /* 0x3C */
 } CaptainState;
 
-/* from level_34 */
 typedef struct BoltFlight {
   int vel[3]; /* 0x00 */
   int timer;  /* 0x0C */
 } BoltFlight;
 
-/* from level_34 */
 typedef struct Debris {
   short vx;            /* 0x00 */
   short vy;            /* 0x02 */
@@ -1371,7 +1357,6 @@ typedef struct Debris {
   int life;            /* 0x0C */
 } Debris;
 
-/* from level_34 */
 typedef struct FlyPath {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
@@ -1379,7 +1364,6 @@ typedef struct FlyPath {
   short dir;           /* 0x06 +1 forward, -1 back */
 } FlyPath;
 
-/* from level_34 */
 typedef struct LootThiefState {
   FlyPath *path;  /* 0x00 escape path */
   int onRing;     /* 0x04 */
@@ -1399,7 +1383,6 @@ typedef struct LootThiefState {
   int leg;        /* 0x44 */
 } LootThiefState;
 
-/* from level_34 */
 typedef struct CritterState {
   FlyPath *path;    /* 0x00 */
   int attach;       /* 0x04 actor it rides, 0 = none */
@@ -1413,7 +1396,6 @@ typedef struct CritterState {
   int lastVoice;    /* 0x24 */
 } CritterState;
 
-/* from level_34 */
 typedef struct LootVortexState {
   short timer;          /* 0x00 */
   unsigned char phase;  /* 0x02 */
@@ -1426,7 +1408,6 @@ typedef struct LootVortexState {
   int seen;             /* 0x2C index into g_nCurrentWorldId, 0 = none */
 } LootVortexState;
 
-/* from level_25 */
 typedef struct L26Lobber {
   int timer;   /* 0x00 */
   int heading; /* 0x04 knock-back heading */
@@ -1434,13 +1415,11 @@ typedef struct L26Lobber {
   int reload;  /* 0x0C */
 } L26Lobber;
 
-/* from level_25 */
 typedef struct L26Sink {
   int partner; /* 0x00 index into g_pActorListBase */
   int depth;   /* 0x04 */
 } L26Sink;
 
-/* from level_25 */
 typedef struct L26Bob {
   int partner;        /* 0x00 index into g_pActorListBase */
   unsigned int phase; /* 0x04 */
@@ -1450,7 +1429,6 @@ typedef struct L26Bob {
   int big;            /* 0x14 */
 } L26Bob;
 
-/* from level_25 */
 typedef struct L26Rider {
   int partner; /* 0x00 index into g_pActorListBase */
   int speed;   /* 0x04 */
@@ -1458,7 +1436,6 @@ typedef struct L26Rider {
   int heading; /* 0x0C */
 } L26Rider;
 
-/* from level_25 */
 typedef struct L26Escort {
   int leader;     /* 0x00 index into g_pActorListBase */
   int partner;    /* 0x04 index into g_pActorListBase, -1 = none */
@@ -1469,7 +1446,6 @@ typedef struct L26Escort {
   int speed;      /* 0x20 */
 } L26Escort;
 
-/* from level_25 */
 typedef struct L26Guard {
   int home[3];    /* 0x00 */
   int timer;      /* 0x0C */
@@ -1483,12 +1459,10 @@ typedef struct L26Guard {
   int sndTimer;   /* 0x2C */
 } L26Guard;
 
-/* from level_25 */
 typedef struct L26Rot {
   unsigned char r[3];
 } L26Rot;
 
-/* from level_31 */
 typedef struct L31Hatch {
   int pad00;
   int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
@@ -1496,7 +1470,6 @@ typedef struct L31Hatch {
   int handle;   /* 0x0C for SelectActorLodBand */
 } L31Hatch;
 
-/* from level_31 */
 typedef struct L31Mount {
   int rider; /* 0x00 index into g_pActorListBase, -1 = none */
   int init;  /* 0x04 */
@@ -1505,7 +1478,6 @@ typedef struct L31Mount {
   int lift;  /* 0x10 */
 } L31Mount;
 
-/* from level_31 */
 typedef struct L31Carrier {
   int hatch;   /* 0x00 index of its hatch in g_pActorListBase */
   Actor *held; /* 0x04 carried occupant */
@@ -1515,7 +1487,6 @@ typedef struct L31Carrier {
   int lift;    /* 0x14 */
 } L31Carrier;
 
-/* from level_31 */
 typedef struct L31Barrel {
   short timer;  /* 0x00 */
   short blast;  /* 0x02 blast pushed Spyro */
@@ -1526,7 +1497,6 @@ typedef struct L31Barrel {
   short handle; /* 0x14 for SelectActorLodBand */
 } L31Barrel;
 
-/* from level_31 */
 typedef struct L31Debris {
   int vx;    /* 0x00 */
   int vy;    /* 0x04 */
@@ -1537,7 +1507,6 @@ typedef struct L31Debris {
   unsigned char spinZ; /* 0x12 */
 } L31Debris;
 
-/* from level_31 */
 typedef struct L31Thrower {
   int held;  /* 0x00 index of the carried actor in g_pActorListBase, -1 = none */
   int duck;  /* 0x04 Spyro charged: duck instead of throwing */
@@ -1547,7 +1516,6 @@ typedef struct L31Thrower {
   int lift;  /* 0x14 */
 } L31Thrower;
 
-/* from level_3 */
 typedef struct WardState {
   int homeX;      /* 0x00 post */
   int homeY;      /* 0x04 */
@@ -1566,7 +1534,6 @@ typedef struct WardState {
   int camDone;    /* 0x44 */
 } WardState;
 
-/* from level_3 */
 typedef struct Follower {
   PathData *path;    /* 0x00 */
   short hold;        /* 0x04 */
@@ -1580,7 +1547,6 @@ typedef struct Follower {
   int timer;         /* 0x20 */
 } Follower;
 
-/* from level_3 */
 typedef struct GrazerState {
   char pad00[0x20];
   int speed; /* 0x20 knock-back speed */
@@ -1607,7 +1573,6 @@ typedef struct ShempState {
   int timer2;          /* 0x44 */
 } ShempState;
 
-/* from level_25 */
 typedef struct L25Grabber {
   int homeX;     /* 0x00 post it returns to */
   int homeY;     /* 0x04 */
@@ -1622,7 +1587,6 @@ typedef struct L25Grabber {
   int fleeStep;  /* 0x30 */
 } L25Grabber;
 
-/* from level_25 */
 typedef struct L25Sentry {
   int speed; /* 0x00 retreat speed (case 54) */
   int step;  /* 0x04 */
@@ -1631,7 +1595,6 @@ typedef struct L25Sentry {
   int timer; /* 0x10 */
 } L25Sentry;
 
-/* from level_25 */
 typedef struct L25Lantern {
   int held;    /* 0x00 */
   int timer;   /* 0x04 */

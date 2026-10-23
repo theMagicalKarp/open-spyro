@@ -32,16 +32,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-/* Step a countdown timer; non-zero when it fires. */
-
-/* Mark an item collected; the second argument is the actor or its id. */
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -61,10 +54,7 @@
 
 extern int GetGroundTriggerRegionType(void);
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
-
-/* Shift a vector left by n. */
 
 /* ==== Helper macros ====
  *
@@ -166,7 +156,6 @@ extern volatile unsigned char
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -189,7 +178,6 @@ extern volatile unsigned char
   continue
 
 /* ==== Level 16 classes ==== */
-
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -231,19 +219,12 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-
 /* ==== level_10 per-class state blocks ==== */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
-/* from level_7 */
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-/* from level_7 */
-/* from level_7 */
-/* from level_7 */
-/* from level_34 */
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-/* from level_34 */
 #define ANIM_QUEUE(a, n)                                                       \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -254,28 +235,17 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     StubActorHook(a);                                                          \
   }                                                                            \
   continue
-/* from level_34 */
-/* from level_34 */
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
-/* from level_34 */
 #define RESET_IDLE(a)                                                          \
   (a)->mode = 0;                                                              \
   ANIM_RESET(a, 0);                                                            \
   continue
-/* from level_34 */
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
-/* from level_34 */
 #define SPY_FACING(a)                                                          \
   AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
                                              (a)->posY - spy->posY, 0))
-/* from level_34 */
 #define ANIM_GO8(a, n)                                                         \
   if ((a)->nextAnim != (n)) {                                                     \
     g_nActorAnimDone = 0;                                                            \
@@ -287,12 +257,10 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-/* from level_34 */
 #define ANIM_RETIME(a)                                                         \
   if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
     (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
   }
-/* from level_34 */
 #define ANIM_JUMP(a, n, f)                                                     \
   g_nActorAnimDone = 0;                                                              \
   (a)->frameProgress = sixteen;                                                        \
@@ -302,20 +270,10 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = (f);                                                            \
   StubActorHook(a)
-/* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
-/* from level_34 */
-/* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
-/* from level_34 */
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_31 */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
@@ -330,13 +288,10 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-/* from level_25 */
-/* from level_25 */
 #define L25_UNLINK(st)                                                         \
   if ((st)->link >= 0) {                                                       \
     g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \
   }
-/* from level_25 */
 #define L25_DROP(st)                                                           \
   *(st)->slot = 0;                                                             \
   L25_UNLINK(st)
@@ -416,7 +371,6 @@ typedef struct L20State403 {
   int u2C[3];    /* 0x2C */
   int u38;       /* 0x38 stun timer */
 } L20State403;
-
 
 /* Type 476 state. */
 typedef struct L20State476 {

@@ -23,16 +23,9 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-/* Step a countdown timer; non-zero when it fires. */
-
-/* Mark an item collected; the second argument is the actor or its id. */
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -45,13 +38,9 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-
 extern int GetGroundTriggerRegionType(void);
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
-
-/* Shift a vector left by n. */
 
 /* ==== Helper macros ====
  *
@@ -145,7 +134,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -158,7 +146,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
     ANIM_RESET(a, n);                                                          \
   }
 
-
 /* Case 328 -- floor-snapped marker. */
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
@@ -170,37 +157,10 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 /* ==== Level 7 classes ==== */
 
-/* from level_34 */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-/* from level_34 */
 #define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-/* from level_34 */
 #define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 typedef struct ExitState {
   PortalDesc *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
@@ -208,31 +168,6 @@ typedef struct ExitState {
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define ENTER_POSE4(a, n)                                                      \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim == (n)) {                                                     \
@@ -240,13 +175,8 @@ typedef struct ExitState {
   }                                                                            \
   ANIM_ADVANCE(a, n);                                                          \
   continue
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
-/* from level_34 */
 #define ANIM_BLEND(a, n)                                                       \
   if ((a)->anim != (n)) {                                                     \
     (a)->frameProgress = 8;                                                            \
@@ -257,9 +187,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define ENTER_POSE_B(a, n)                                                     \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -274,15 +201,8 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     StubActorHook(a);                                                          \
   }                                                                            \
   continue
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-/* from level_34 */
 #define ANIM_QUEUE(a, n)                                                       \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -293,28 +213,17 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     StubActorHook(a);                                                          \
   }                                                                            \
   continue
-/* from level_34 */
-/* from level_34 */
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
-/* from level_34 */
 #define RESET_IDLE(a)                                                          \
   (a)->mode = 0;                                                              \
   ANIM_RESET(a, 0);                                                            \
   continue
-/* from level_34 */
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
-/* from level_34 */
 #define SPY_FACING(a)                                                          \
   AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
                                              (a)->posY - spy->posY, 0))
-/* from level_34 */
 #define ANIM_GO8(a, n)                                                         \
   if ((a)->nextAnim != (n)) {                                                     \
     g_nActorAnimDone = 0;                                                            \
@@ -326,12 +235,10 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-/* from level_34 */
 #define ANIM_RETIME(a)                                                         \
   if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
     (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
   }
-/* from level_34 */
 #define ANIM_JUMP(a, n, f)                                                     \
   g_nActorAnimDone = 0;                                                              \
   (a)->frameProgress = sixteen;                                                        \
@@ -341,20 +248,10 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = (f);                                                            \
   StubActorHook(a)
-/* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
-/* from level_34 */
-/* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
-/* from level_34 */
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_31 */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
@@ -369,16 +266,11 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-/* from level_1 */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
-/* from level_10 */
-/* from level_25 */
-/* from level_25 */
 #define L25_UNLINK(st)                                                         \
   if ((st)->link >= 0) {                                                       \
     g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \
   }
-/* from level_25 */
 #define L25_DROP(st)                                                           \
   *(st)->slot = 0;                                                             \
   L25_UNLINK(st)

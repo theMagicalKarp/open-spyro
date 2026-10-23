@@ -36,16 +36,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-/* Step a countdown timer; non-zero when it fires. */
-
-/* Mark an item collected; the second argument is the actor or its id. */
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -57,7 +50,6 @@
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
@@ -67,11 +59,7 @@ extern short g_anSineLut_s[];
 
 extern int GetGroundTriggerRegionType(void);
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* Shift a vector left by n. */
 
 /* ==== Helper macros ====
  *
@@ -173,7 +161,6 @@ extern volatile unsigned char
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -196,7 +183,6 @@ extern volatile unsigned char
   continue
 
 /* ==== Level 16 classes ==== */
-
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -238,7 +224,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-
 /* ==== Level 26 classes ==== */
 
 #define sixteen 0x10
@@ -278,33 +263,19 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
  * whose header is { count, cur } and whose points follow at +8 (PATH_X). */
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-/* from level_34 */
-/* from level_34 */
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-/* from level_34 */
-/* from level_34 */
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
-/* from level_34 */
 #define RESET_IDLE(a)                                                          \
   (a)->mode = 0;                                                              \
   ANIM_RESET(a, 0);                                                            \
   continue
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
-/* from level_34 */
 #define SPY_FACING(a)                                                          \
   AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
                                              (a)->posY - spy->posY, 0))
-/* from level_34 */
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-/* from level_34 */
 #define ANIM_GO8(a, n)                                                         \
   if ((a)->nextAnim != (n)) {                                                     \
     g_nActorAnimDone = 0;                                                            \
@@ -316,12 +287,10 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-/* from level_34 */
 #define ANIM_RETIME(a)                                                         \
   if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
     (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
   }
-/* from level_34 */
 #define ANIM_JUMP(a, n, f)                                                     \
   g_nActorAnimDone = 0;                                                              \
   (a)->frameProgress = sixteen;                                                        \
@@ -331,23 +300,11 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = (f);                                                            \
   StubActorHook(a)
-/* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
-/* from level_34 */
-/* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
-/* from level_34 */
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_34 */
-/* from level_32 */
-/* from level_32 */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
-/* from level_32 */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
@@ -362,8 +319,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-/* from level_32 */
-/* from level_32 */
 typedef struct L32State145 {
   int u00;     /* 0x00 flags; bit 0 armed */
   int u04;     /* 0x04 knock-back speed */
@@ -381,7 +336,6 @@ typedef struct L32State145 {
   int u70;     /* 0x70 initialised */
   int u74;     /* 0x74 sink timer */
 } L32State145;
-/* from level_32 */
 typedef struct L32State147 {
   int u00;     /* 0x00 flags; bit 0 armed */
   void *u04;   /* 0x04 path */
@@ -401,8 +355,6 @@ typedef struct L32State147 {
   int u64[6];  /* 0x64 trigger box */
   int u7C;     /* 0x7C initialised */
 } L32State147;
-/* from level_32 */
-/* from level_32 */
 typedef struct L32State148 {
   int u00;              /* 0x00 flags; bit 0 armed */
   int u04;              /* 0x04 knock-back speed */
@@ -420,7 +372,6 @@ typedef struct L32State148 {
   int u5C[6];           /* 0x5C trigger box */
   int u74;              /* 0x74 initialised */
 } L32State148;
-/* from level_32 */
 typedef struct L32Lob {
   int u00;            /* 0x00 */
   short h4;           /* 0x04 */
@@ -432,19 +383,15 @@ typedef struct L32Lob {
   unsigned char bE;   /* 0x0E */
   unsigned char bF;   /* 0x0F */
 } L32Lob;
-/* from level_32 */
-/* from level_32 */
 typedef struct L32Shot {
   int vel[3]; /* 0x00 */
   short u0C;  /* 0x0C life timer */
   short u0E;  /* 0x0E long-reach timer */
 } L32Shot;
-/* from level_32 */
 typedef struct L32Timer {
   int u00; /* 0x00 */
   int u04; /* 0x04 re-arm timer */
 } L32Timer;
-/* from level_32 */
 typedef struct L32State236 {
   int u00[8]; /* 0x00 */
   int u20;    /* 0x20 knock-back speed */
@@ -452,7 +399,6 @@ typedef struct L32State236 {
   int u28;    /* 0x28 */
   int u2C;    /* 0x2C idle timer */
 } L32State236;
-/* from level_32 */
 
 /* ==== Level 33 classes ==== */
 
