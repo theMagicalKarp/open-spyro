@@ -595,7 +595,7 @@ void Titlescreen_Update(void) {
           mcs += sizeof(g_abSaveFileHeaderTemplate);
           InitNewGameState();
           for (i = 0; i < 3; ++i) {
-            BuildSaveGameBuffer((Struct_0x600 *)(mcs + i * sizeof(Struct_0x600)));
+            BuildSaveGameBuffer((SaveGameBuffer *)(mcs + i * sizeof(SaveGameBuffer)));
           }
           MemCardWrite(g_nGamestate0dMode.cardPort << 4, (char *)s_SaveFileName,
                         (unsigned long *)g_nGamestate0dMode.file, 0,

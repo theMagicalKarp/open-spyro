@@ -93,36 +93,8 @@ enum {
 /* top-level titlescreen modes */
 enum { Mode_0x00 = 0, Mode_0x01 = 1, Mode_0x02 = 2, Mode_0x03 = 3 };
 
-/* ---- save file: the 0x600-byte image BuildSaveGameBuffer packs ---- */
-#define TOTAL_LEVEL_COUNT 36
-
-typedef struct {
-  int worldFlags[5];         /* 0x00 */
-  u_char worldLevelBytes[5][5];   /* 0x14 */
-} Struct_0x30;              /* 0x30 */
-
-typedef struct {
-  u_char levelId;                     /* 0x00 */
-  u_char sfxVolume;                     /* 0x01 */
-  u_char musicVolume;                     /* 0x02 */
-  u_char vibration;                     /* 0x03 */
-  int cameraOptions;                        /* 0x04 */
-  u_char monoMix;                     /* 0x08 */
-  u_char unk_0x09;                     /* 0x09 */
-  u_char unk_0x0A;                     /* 0x0A */
-  u_char extraLives;                     /* 0x0B */
-  int unk_0x0C;                        /* 0x0C */
-  Struct_0x30 worlds;                /* 0x10 */
-  u_char levelVisited[TOTAL_LEVEL_COUNT];  /* 0x40 */
-  u_char levelGemPercent[TOTAL_LEVEL_COUNT];  /* 0x64 */
-  u_char levelDragons[TOTAL_LEVEL_COUNT];  /* 0x88 */
-  short levelGems[TOTAL_LEVEL_COUNT];   /* 0xAC */
-  u_char levelEggs[18];                 /* 0xF4 */
-  u_char balloonistState[6];                 /* 0x106 */
-  u_char killBitmaps[TOTAL_LEVEL_COUNT * 32]; /* 0x10C */
-  int checksum;                       /* 0x58C */
-  char pad[0x70];
-} Struct_0x600;
+/* ---- save file: the 0x600-byte image (save_game.h) ---- */
+#include "save_game.h"
 
 typedef struct {
   char magic[2];
@@ -136,7 +108,7 @@ typedef struct {
 
 typedef struct {
   Struct_0x200 header;    /* 0x000 */
-  Struct_0x600 saves[3]; /* 0x200, 3 x 0x600 */
+  SaveGameBuffer saves[3]; /* 0x200, 3 x 0x600 */
 } Struct_0x1A00;
 
 /* ---- titlescreen state (0x5C bytes) ---- */
@@ -159,7 +131,7 @@ typedef struct {
   int mcResult;    /* 0x44 */
   int anySaveUsed;           /* 0x48 some save slot has levelVisited[0] */
   Struct_0x1A00 *file; /* 0x4C */
-  Struct_0x600 *apSaves[3];   /* 0x50 */
+  SaveGameBuffer *apSaves[3];   /* 0x50 */
 } Struct_0x5C;
 
 extern Struct_0x5C g_nGamestate0dMode;
@@ -317,8 +289,8 @@ extern int MemCardCreateFile(int, char *, int);
 extern int MemCardFormat(int);
 extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
-extern void BuildSaveGameBuffer(Struct_0x600 *);
-extern int ApplySaveGameBuffer(Struct_0x600 *);
+extern void BuildSaveGameBuffer(SaveGameBuffer *);
+extern int ApplySaveGameBuffer(SaveGameBuffer *);
 extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
