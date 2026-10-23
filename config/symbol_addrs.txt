@@ -2496,3 +2496,5 @@ g_nLevelProgress = 0x800778E8; // type:data
 g_nLevelProgressCheckpoint = 0x800778EC; // type:data
 g_nCollisionProbeVecX = 0x80077368; // type:data allow_duplicated:True alias — scalar x view of g_anCollisionProbeVec (Level32 reflect blocks rematerialise the base)
 g_bLevelBossDefeated = 0x80075854; // type:data
+MemCardCreateFile = 0x80067718; // type:func size:0x564
+MemCardFormat = 0x80067B28; // type:func

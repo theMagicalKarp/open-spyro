@@ -5,4 +5,4 @@ Titlescreen_PlayUiSound = 0x8007AAD4; // type:func size:0xD8
 Titlescreen_Update = 0x8007ABAC; // type:func size:0x218C
 Titlescreen_EmitSpriteQuad = 0x8007CD38; // type:func size:0x1AC
 Titlescreen_Draw = 0x8007CEE4; // type:func size:0xF04
-func_titlescreen_8007DDE8 = 0x8007DDE8; // type:func size:0x8
+Titlescreen_Nop = 0x8007DDE8; // type:func size:0x8

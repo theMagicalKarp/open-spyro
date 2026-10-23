@@ -98381,11 +98381,11 @@ glabel MemCardSync
 endlabel MemCardSync
 .endif
 
-.section .text.func_80067718, "ax"
-.ifndef HAVE_C_func_80067718
-nonmatching func_80067718, 0x564
+.section .text.MemCardCreateFile, "ax"
+.ifndef HAVE_C_MemCardCreateFile
+nonmatching MemCardCreateFile, 0x564
 
-glabel func_80067718
+glabel MemCardCreateFile
     /* 57F18 80067718 B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 57F1C 8006771C 4000B2AF */  sw         $s2, 0x40($sp)
     /* 57F20 80067720 21908000 */  addu       $s2, $a0, $zero
@@ -98765,7 +98765,7 @@ glabel func_80067718
     /* 58470 80067C70 A000BD27 */  addiu      $sp, $sp, 0xA0
     /* 58474 80067C74 0800E003 */  jr         $ra
     /* 58478 80067C78 00000000 */   nop
-endlabel func_80067718
+endlabel MemCardCreateFile
 .endif
 
 .section .text.MapMemCardAccessCode, "ax"

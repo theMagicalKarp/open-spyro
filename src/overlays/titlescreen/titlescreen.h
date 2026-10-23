@@ -147,17 +147,17 @@ typedef struct {
   int animTimer;              /* 0x0C */
   int subState;             /* 0x10 */
   int selection;       /* 0x14 */
-  int unk_0x18;                 /* 0x18 */
+  int yesNoChoice;                 /* 0x18 load-confirm toggle: 0 yes, 1 no */
   int demoType;                 /* 0x1C */
   int savedSelection;/* 0x20 */
   int retryCount;        /* 0x24 */
   int cardPort;         /* 0x28 */
   int unk_0x2C;        /* 0x2C */
   int cardStatus[2];        /* 0x30 */
-  int unk_0x38[2];   /* 0x38 */
+  int needsFormat[2];   /* 0x38 per port: card reported McErrNotFormat */
   int mcCmd;    /* 0x40 */
   int mcResult;    /* 0x44 */
-  int unk_0x48;           /* 0x48 */
+  int anySaveUsed;           /* 0x48 some save slot has levelVisited[0] */
   Struct_0x1A00 *file; /* 0x4C */
   Struct_0x600 *apSaves[3];   /* 0x50 */
 } Struct_0x5C;
@@ -181,8 +181,8 @@ extern int g_nGenericCountdown;
 
 /* frame double-buffer: draw-env @0 (r0/g0/b0 @+0x19), disp-env @0x5C */
 typedef struct {
-  u_char unk_0x00[0x5C];
-  u_char unk_0x5C[0x14];
+  u_char drawEnv[0x5C]; /* DRAWENV */
+  u_char dispEnv[0x14]; /* DISPENV */
 } Struct_0x70;
 
 extern Struct_0x70 *g_pActiveFrameDrawEnv;
@@ -229,10 +229,10 @@ extern void DrawOTag(void *);
 #define PAD_LEFT (1 << 15)
 
 extern struct {
-  int unk_0x0; /* buttons pressed this frame */
-  int unk_0x4;
-  int unk_0x8;
-  int unk_0xC;
+  int pressed;  /* buttons pressed this frame */
+  int released; /* g_dwPadReleased */
+  int held;     /* g_dwPadHeld */
+  int padType;  /* g_nPadType */
 } g_dwPadPressed;
 
 /* ---- memory card error codes (PSY-Q libmcrd) ---- */
@@ -245,23 +245,23 @@ extern struct {
 
 /* ---- CD / music state ---- */
 extern struct {
-  int unk_0x00;         /* 0x00 */
-  int unk_0x04;         /* 0x04 */
-  int unk_0x08;         /* 0x08 CdlLOC */
-  void *unk_0x0C;        /* 0x0C */
+  int baseLba;         /* 0x00 g_nCdBaseLba */
+  int readSectorCount;/* 0x04 g_nCdReadSectorCount */
+  int cdlLoc;         /* 0x08 CdlLOC g_abCdlLocScratch */
+  void *readDst;        /* 0x0C g_pCdReadDstBuffer */
   char unk_0x10[24];     /* 0x10 CdlFILE */
-  volatile int unk_0x28;/* 0x28 */
+  volatile int readInFlight; /* 0x28 g_nCdReadInFlight */
 } g_nCdBaseLba;
 
 extern struct {
-  int unk_0x000;      /* 0x000 */
-  int unk_0x004;             /* 0x004 */
-  struct { int start, end; } unk_0x008[64]; /* 0x008 */
-  int unk_0x208;     /* 0x208 */
+  int track;      /* 0x000 g_nCurrentMusicTrack */
+  int streamStatus;             /* 0x004 g_dwMusicStreamStatus */
+  struct { int start, end; } trackLba[64]; /* 0x008 */
+  int readHead;     /* 0x208 g_dwCdMusicReadHead */
   char unk_0x20C[8];      /* 0x20C */
-  int unk_0x214;   /* 0x214 */
-  int unk_0x218;            /* 0x218 */
-  int unk_0x21C;    /* 0x21C */
+  int lastCommand;   /* 0x214 g_nLastCdMusicCommand */
+  int pendingCommand;            /* 0x218 g_nPendingMusicCommand */
+  int streamTimeout;    /* 0x21C g_nCdMusicStreamTimeout */
 } g_nCurrentMusicTrack;
 
 /* The memory-card save slot the game was loaded from (main 0x80078D14..0x20,
@@ -313,8 +313,8 @@ extern int MemCardSync(int, long *, long *);
 extern void MemCardLoad(int);
 extern void MemCardRead(int, char *, unsigned long *, int, int);
 extern void MemCardWrite(int, char *, unsigned long *, int, int);
-extern int func_80067718(int, char *, int);
-extern int func_80067B28(int);
+extern int MemCardCreateFile(int, char *, int);
+extern int MemCardFormat(int);
 extern void MemCardCloseSession(void);
 extern int ComputeSaveGameChecksum(u_char *);
 extern void BuildSaveGameBuffer(Struct_0x600 *);
