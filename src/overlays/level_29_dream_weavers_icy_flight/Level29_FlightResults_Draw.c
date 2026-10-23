@@ -35,7 +35,6 @@ extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
 extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
 extern char *g_apSpritePrimQueue[];          /* published record table */
 extern char g_pOtDepthBinHead0[];           /* OT depth bins */
-extern int g_anFlightTargetTally;              /* tally: class 0 */
 
 void Level29_FlightResults_Draw(void)
 {

@@ -230,17 +230,12 @@ typedef struct {
 } Blk20;
 
 extern int g_nReturningHomePhase;
-extern int g_nGamestate0fMode;
 extern char *g_pCreditsLineTable;
 extern char *g_pCreditsScratchBuf;
 extern char *g_pCreditsScrollHeader;
-extern int g_nCreditsLineCount;
 extern char *g_pCreditsLoadBuf;
-extern int g_nCreditsLastVisibleLine;
 extern int g_nScriptedMobCount;
-extern int g_nGenericCountdown;
 extern int g_nCreditsLoadSpan;
-extern int g_nCreditsFirstVisibleLine;
 extern char *volatile g_pLevelSampleBankEntries;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];

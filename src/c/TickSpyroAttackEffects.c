@@ -21,9 +21,6 @@ extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void ApplyActiveGteRotation(int *src, int *dst);
 extern void SVectorToVector(int *dst, short *src);
 extern void CopyVector(int *dst, int *src);
-extern void ZeroVector(int *vec);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask,
                                         int e, int f);

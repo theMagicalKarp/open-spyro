@@ -55,7 +55,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -436,7 +435,6 @@ typedef struct L18Guard {
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
 } L18Guard;
-extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
 
 /* Type 28 state. */
 typedef struct L20State28 {

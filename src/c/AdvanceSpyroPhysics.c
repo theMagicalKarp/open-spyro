@@ -20,7 +20,6 @@ extern void ComputeSpyroMoveTargetFromPad(int mag);
 extern void *DispatchActorContactAtSphere(int *pos, int radius,
                                           unsigned int *flags, int mask, int a4,
                                           int a5);
-extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int abs(int x);
 
 extern int g_nSpyroScriptedAlignFrames;

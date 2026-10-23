@@ -19,7 +19,6 @@ extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelBossDefeated; /* cleared on level load */
 extern int g_anLevelRunnerArrived;
 extern int g_nLevelRunnerArrivedGoal1;
-extern int g_nLevelIntroParallaxCountdown;
 extern int g_nActiveWorldIndex;     /* current world index */
 extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
 extern int

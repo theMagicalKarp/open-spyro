@@ -73,7 +73,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -351,7 +350,6 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 
-extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 
 
 /* ==== The function ==== */

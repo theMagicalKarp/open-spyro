@@ -8,10 +8,6 @@
    (g_nCreditsPageIndex only when it is not the level-select magic 0xA), then
    kick off the synchronous 0x258-sector credits asset read from the CD base
    LBA. */
-extern int g_nCreditsPageIndex;
-extern int g_nCreditsFirstVisibleLine;
-extern int g_nCreditsLastVisibleLine;
-extern int g_nCreditsLineCount;
 extern int g_pCreditsScrollHeader;
 extern int g_pCreditsScratchBuf;
 extern int *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */

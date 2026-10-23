@@ -49,7 +49,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 #define CAM g_anWorldToCameraRotMtx
 
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -661,7 +660,6 @@ typedef struct L28Rock {
   short timer2;         /* 0x0A */
   Actor *partner;       /* 0x0C the thrower */
 } L28Rock;
-extern int FindGroundHeightBelow(int *pos, int a);
 
 /* Type 150 state: Jacques. Hops between the stops of his path ring and
  * hands rocks (47) to throw. */

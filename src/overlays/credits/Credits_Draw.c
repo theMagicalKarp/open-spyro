@@ -21,7 +21,6 @@ extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
 
-extern int g_nGamestate0fMode;
 extern unsigned char *g_pActiveFrameDrawEnv;
 extern unsigned char g_abFrameDrawEnv0[];
 extern unsigned char g_dwWorldFogColor;
@@ -36,7 +35,6 @@ extern unsigned char g_bFrameDrawEnv1BgB;
 extern char *g_pSpriteRecordWriteCursor;
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
-extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nVsyncFrameEndCount[];
 

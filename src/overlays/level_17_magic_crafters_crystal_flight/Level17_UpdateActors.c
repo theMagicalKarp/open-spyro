@@ -75,7 +75,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(int *pos);
 
 /* Glow node owned by Sparx; follows its anchor position. */

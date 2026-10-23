@@ -20,7 +20,6 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
-extern unsigned char g_abLevelVisitedFlag[];
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -67,7 +66,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);

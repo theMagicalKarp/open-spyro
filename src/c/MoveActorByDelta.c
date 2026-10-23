@@ -9,7 +9,6 @@
    0 when the move was committed. */
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
-extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern void RefreshActorDerivedState(int *actor, int mode);
 
 typedef struct {

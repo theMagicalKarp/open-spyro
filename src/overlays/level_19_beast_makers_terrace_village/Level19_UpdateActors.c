@@ -65,7 +65,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -234,7 +233,6 @@ typedef struct L18Drum {
   int voice;  /* 0x24 */
 } L18Drum;
 /* from level_18 */
-extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
 /* from level_18 */
 typedef struct L18Ram {
   char pad00[0xC];

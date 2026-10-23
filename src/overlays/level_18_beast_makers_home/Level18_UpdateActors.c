@@ -75,7 +75,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -287,7 +286,6 @@ typedef struct L18Drum {
   int reload; /* 0x20 */
   int voice;  /* 0x24 */
 } L18Drum;
-extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
 
 /* Case 466 -- roaming ram. */
 typedef struct L18Ram {

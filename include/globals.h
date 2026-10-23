@@ -1158,4 +1158,14 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_pSaveMenuAnimActorList1 0x800700f8  g_apSaveMenuAnimActorList[1] (cleared on cutscene entry)
  */
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern int g_anSpyroSlopeGravityVec[];
+extern int g_anWorldRenderMeshBlock[];
+extern int g_bDebugNoDepletion;
+extern unsigned char g_bSpyroSwingByteEuler1;
+extern int g_nCreditsPageIndex;
+extern int g_nLevelIntroParallaxCountdown;
+extern int g_nSpyroSwingEulerPrev1;
+extern int g_nStaticMeshLodCutoff;
+
 #endif /* OPEN_SPYRO_GLOBALS_H */

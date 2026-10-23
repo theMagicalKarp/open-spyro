@@ -211,4 +211,28 @@ extern void MoveImage();
 extern int (*g_pfnFlightTimeFormatter)();
 extern void (*g_pfnLevelHandleFlightResults)();
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern void BuildActiveActorList(void);
+extern int CheckLineOfSightSegment(int *a, int *b);
+extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
+extern void CommitActorKillGems(int a, void *b);
+extern int FindGroundHeightBelow(int *pos, int depth);
+extern int IsPointInRotatedBox(int *a, int *b);
+extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
+extern int ReflectVectorOffNormal(int *v, int *n, int *out);
+extern void RefreshHudLevelGemCounter(void);
+extern void ResetSpyroEntity(int hard);
+extern void ResetSpyroLinearMotion(void);
+extern int StepAngle8Toward(int a, int b, int c);
+extern void StubRewardHook(int script, int a);
+extern void UnpackWorldCollisionTri(int a, int *out);
+extern int WrapAngleDelta8(int a, int b);
+extern unsigned char g_abLevelVisitedFlag[];
+extern int g_anLevelTriggerStateSlots[];
+extern int g_anRunningKillBitmap[];
+extern int g_anWorldPersistentFlags[];
+extern int g_nCurrentWorldId[];
+extern int g_nGamestate0fMode;
+extern int g_nGenericCountdown;
+
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */

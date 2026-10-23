@@ -65,7 +65,6 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
 extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -214,7 +213,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
 
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-extern int g_anRunningKillBitmap[];
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */ /* kill bitmap, one bit per pool actor */
 
 /* The anim bytes 0x3C..0x3F read as one word. */

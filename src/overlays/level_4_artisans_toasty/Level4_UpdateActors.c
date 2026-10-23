@@ -202,10 +202,8 @@ typedef struct ChaserState {
 
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
-extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
@@ -223,7 +221,6 @@ extern void AimCameraStickTowardPoint(int *pos, int dt);
 extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
-extern void CommitActorKillGems(int a, void *b);
 
 extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
                           int c, int d, int e, int f, int g, int h, int i,
@@ -272,7 +269,6 @@ typedef struct {
 } PtrU8;
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
-extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
 
 /* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
  * doubles as the pickup origin once Sparx has fetched the item. */
@@ -420,14 +416,9 @@ typedef struct RespawnState {
   int period; /* 0x08 reload for ->timer */
 } RespawnState;
 
-extern void StubRewardHook(int script, int a);
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void UnpackWorldCollisionTri(int a, int *out);
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
-extern int CheckLineOfSightSegment(int *a, int *b);
-extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 /* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
  * fairy cutscene when Spyro stands still on the pad. */
@@ -483,7 +474,6 @@ typedef struct FlierState {
 
 extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
-extern int StepAngle8Toward(int a, int b, int c);
 
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
@@ -829,11 +819,8 @@ extern struct {
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern int WrapAngleDelta8(int a, int b);
 
 /* ==== level_4 globals ==== */
-extern void RefreshHudLevelGemCounter(void);
-extern void ResetSpyroEntity(int a0);
 
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
  * takes Spyro out of the level when he drops into it. */

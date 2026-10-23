@@ -25,8 +25,6 @@
 
 
 extern unsigned int g_dwHudBobSinePhase[];
-extern int g_anWorldPersistentFlags[];
-extern int g_anFlightTargetTally;
 
 void Level29_FlightResultsMenu_Update(void) {
   unsigned int *bob;

@@ -1,7 +1,6 @@
 #include "globals.h"
 
 extern int g_nSpyroSwingEulerPrev0;
-extern int g_nSpyroSwingEulerPrev1;
 extern int g_nSpyroSwingEulerPrev2;
 extern int g_nSpyroSwingEulerSpringAccum0;
 extern int g_nSpyroSwingEulerSpringAccum1;

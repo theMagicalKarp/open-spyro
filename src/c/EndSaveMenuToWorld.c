@@ -11,10 +11,8 @@
    and wrapped to 12 bits), restore the flame-breath timer, reset the camera and
    the HUD (all five counters hidden), and re-issue the current music track. */
 
-extern int g_anSpyroSwingTargetBlock[];       /* alias of
-                                                 g_nSpyroSwingEulerPitchTarget */
-extern int g_nSpyroSwingEulerPrev1;           /* g_anSpyroSwingEulerPrev[1] */
-extern unsigned char g_bSpyroSwingByteEuler1; /* g_abSpyroSwingByteEuler[1] */
+extern int g_anSpyroSwingTargetBlock[]; /* alias of
+                                           g_nSpyroSwingEulerPitchTarget */
 
 void EndSaveMenuToWorld(void) {
   int *dyn;

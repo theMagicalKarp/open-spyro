@@ -3,8 +3,6 @@
 
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern void ResetSpyroEntity(int hard);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void SubtractVector(int *dst, int *a, int *b);
 extern unsigned int VectorLength(int *vec, int include_z);
 extern int AbsAngleDelta12(int a, int b);
 

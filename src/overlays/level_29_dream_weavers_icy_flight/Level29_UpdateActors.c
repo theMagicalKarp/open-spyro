@@ -76,7 +76,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(int *pos);
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
