@@ -1,6 +1,6 @@
 #include "globals.h"
 
-extern void func_8005DEBC(void);
+extern void CallLibapiSysSlot10(void);
 
 /* Brings the console hardware subsystems back to a known idle state: blanks the
    display, re-inits the CD, clears the CD read callback, the VSync callback and
@@ -13,5 +13,5 @@ void QuiesceHardwareForExec(void) {
   InstallVSyncCallback(0);
   PadStopCom();
   ResetGraph(3);
-  func_8005DEBC();
+  CallLibapiSysSlot10();
 }

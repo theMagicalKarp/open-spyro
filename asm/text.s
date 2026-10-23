@@ -28771,7 +28771,7 @@ glabel QuiesceHardwareForExec
     /* 1C294 8002BA94 00000000 */   nop
     /* 1C298 8002BA98 A97C010C */  jal        ResetGraph
     /* 1C29C 8002BA9C 03000424 */   addiu     $a0, $zero, 0x3
-    /* 1C2A0 8002BAA0 AF77010C */  jal        func_8005DEBC
+    /* 1C2A0 8002BAA0 AF77010C */  jal        CallLibapiSysSlot10
     /* 1C2A4 8002BAA4 00000000 */   nop
     /* 1C2A8 8002BAA8 1000BF8F */  lw         $ra, 0x10($sp)
     /* 1C2AC 8002BAAC 1800BD27 */  addiu      $sp, $sp, 0x18
@@ -36559,7 +36559,7 @@ glabel PollMemCardSyncRing
   .L80032A8C:
     /* 2328C 80032A8C 0880043C */  lui        $a0, %hi(g_nMemCardRingIndex)
     /* 23290 80032A90 A48D848C */  lw         $a0, %lo(g_nMemCardRingIndex)($a0)
-    /* 23294 80032A94 D798010C */  jal        func_8006635C
+    /* 23294 80032A94 D798010C */  jal        RunMemCardInfoOp
     /* 23298 80032A98 00210400 */   sll       $a0, $a0, 4
   .L80032A9C:
     /* 2329C 80032A9C 1400BF8F */  lw         $ra, 0x14($sp)
@@ -42129,8 +42129,8 @@ glabel UpdateScriptedCameraView
     /* 28118 80037918 C0101200 */  sll        $v0, $s2, 3
     /* 2811C 8003791C 23105200 */  subu       $v0, $v0, $s2
     /* 28120 80037920 C0100200 */  sll        $v0, $v0, 3
-    /* 28124 80037924 0780053C */  lui        $a1, %hi(D_8006EB24)
-    /* 28128 80037928 24EBA524 */  addiu      $a1, $a1, %lo(D_8006EB24)
+    /* 28124 80037924 0780053C */  lui        $a1, %hi(g_anScriptedCameraPresetRecords)
+    /* 28128 80037928 24EBA524 */  addiu      $a1, $a1, %lo(g_anScriptedCameraPresetRecords)
     /* 2812C 8003792C 0000038E */  lw         $v1, 0x0($s0)
     /* 28130 80037930 21104500 */  addu       $v0, $v0, $a1
     /* 28134 80037934 0A006214 */  bne        $v1, $v0, .L80037960
@@ -86255,11 +86255,11 @@ glabel FUN_8005de8c
 endlabel FUN_8005de8c
 .endif
 
-.section .text.func_8005DEBC, "ax"
-.ifndef HAVE_C_func_8005DEBC
-nonmatching func_8005DEBC, 0x30
+.section .text.CallLibapiSysSlot10, "ax"
+.ifndef HAVE_C_CallLibapiSysSlot10
+nonmatching CallLibapiSysSlot10, 0x30
 
-glabel func_8005DEBC
+glabel CallLibapiSysSlot10
     /* 4E6BC 8005DEBC 0780023C */  lui        $v0, %hi(g_pLibapiSysVtable)
     /* 4E6C0 8005DEC0 AC49428C */  lw         $v0, %lo(g_pLibapiSysVtable)($v0)
     /* 4E6C4 8005DEC4 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -86272,7 +86272,7 @@ glabel func_8005DEBC
     /* 4E6E0 8005DEE0 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 4E6E4 8005DEE4 0800E003 */  jr         $ra
     /* 4E6E8 8005DEE8 00000000 */   nop
-endlabel func_8005DEBC
+endlabel CallLibapiSysSlot10
 .endif
 
 .section .text.func_8005DEEC, "ax"
@@ -96928,11 +96928,11 @@ glabel MemCardCloseSession
 endlabel MemCardCloseSession
 .endif
 
-.section .text.func_8006635C, "ax"
-.ifndef HAVE_C_func_8006635C
-nonmatching func_8006635C, 0x25C
+.section .text.RunMemCardInfoOp, "ax"
+.ifndef HAVE_C_RunMemCardInfoOp
+nonmatching RunMemCardInfoOp, 0x25C
 
-glabel func_8006635C
+glabel RunMemCardInfoOp
     /* 56B5C 8006635C E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 56B60 80066360 0780033C */  lui        $v1, %hi(D_80075B50)
     /* 56B64 80066364 505B6324 */  addiu      $v1, $v1, %lo(D_80075B50)
@@ -97099,7 +97099,7 @@ glabel func_8006635C
     /* 56DAC 800665AC 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 56DB0 800665B0 0800E003 */  jr         $ra
     /* 56DB4 800665B4 00000000 */   nop
-endlabel func_8006635C
+endlabel RunMemCardInfoOp
 .endif
 
 .section .text.MemCardLoad, "ax"

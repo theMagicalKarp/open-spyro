@@ -9,7 +9,7 @@
  * guard (137) and roaming ram (466) are shared with level 18.
  *
  * Load-bearing source forms:
- *   - Carriers: `sixteen` (s7) and, at the loop top, `base = D_80078BBC` with
+ *   - Carriers: `sixteen` (s7) and, at the loop top, `base = g_anLevelReadyFlagBlock` with
  *     `spy = base - 0x164` (fp). Making `base` a loop-top movable is what
  *     keeps 5, 8 and g_apActorMeshTable out of loop.c's hoist set; case 28's pose-5
  *     and pose-8 sites are ENTER_POSE_B (A285).
@@ -392,7 +392,7 @@ typedef struct L18Guard {
   int speedOverride; /* 0x5C */
 } L18Guard;
 extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
-extern int g_nLevelReadyFlag; /* == D_80078BBC, scalar view */
+extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* Type 28 state. */
 typedef struct L20State28 {
@@ -494,7 +494,7 @@ void Level20_UpdateActors(void) {
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
     sixteen = 0x10;
-    base = (char *)D_80078BBC;
+    base = (char *)g_anLevelReadyFlagBlock;
     spy = (SpyroObj *)(base - 0x164);
 
     if (actor->mode >= 0x80) {
@@ -1723,7 +1723,7 @@ void Level20_UpdateActors(void) {
     case 120: {
       BalloonState *st = actor->state;
 
-      if (D_80078BBC[0] >= 2) {
+      if (g_anLevelReadyFlagBlock[0] >= 2) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -1738,7 +1738,7 @@ void Level20_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (D_80078BBC[0] >= 3) {
+      if (g_anLevelReadyFlagBlock[0] >= 3) {
         FxNode *fx = st->smoke;
 
         if (fx == 0) {
@@ -1767,7 +1767,7 @@ void Level20_UpdateActors(void) {
         st->smoke = 0;
       }
 
-      if (D_80078BBC[0] <= 0) {
+      if (g_anLevelReadyFlagBlock[0] <= 0) {
         if (st->gnorc != 0 && st->gnorc->type == 16) {
           st->gnorc->mode = 0;
         }
@@ -1777,7 +1777,7 @@ void Level20_UpdateActors(void) {
       }
 
       if (st->gnorc != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)D_80078BBC - 0x164)) >=
+          ApproxDist2D(&actor->posX, (int *)((char *)g_anLevelReadyFlagBlock - 0x164)) >=
               0x2001) {
         st->timer = 0;
       }
@@ -1859,7 +1859,7 @@ void Level20_UpdateActors(void) {
           }
 
           case 1:
-            D_80078BBC[0] += 1;
+            g_anLevelReadyFlagBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->gnorc);

@@ -29,6 +29,7 @@
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
+extern unsigned char g_abLevelVisitedFlag[];
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -811,11 +812,6 @@ typedef struct DragonStatueState {
  *
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-extern unsigned char D_800758D2;
-extern unsigned char D_800758D3;
-extern unsigned char D_800758D4;
-extern unsigned char D_800758D5;
-extern int D_80077350;
 
 extern int g_nCameraSpringYaw; /* camera spherical target */
 extern int g_nCameraYaw; /* camera spherical current */
@@ -832,10 +828,6 @@ extern int g_nGemPickupCamPathMaxStep;
 extern int g_nGemPickupCamPathReverseFlag;
 
 extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
-extern unsigned char D_80078E99;
-extern unsigned char D_80078E9A;
-extern unsigned char D_8007A6C7;
-extern unsigned char D_8007A6C8;
 
 extern int WrapAngleDelta8(int a, int b);
 
@@ -2353,10 +2345,10 @@ void Level30_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
         g_nGamestate0cDialogPage = 0x1E;
         g_bWorldBalloonistState1 = two;
-        D_800758D2 = two;
-        D_800758D3 = 2;
-        D_800758D4 = 2;
-        D_800758D5 = 2;
+        g_abWorldBalloonistState[2] = two;
+        g_abWorldBalloonistState[3] = 2;
+        g_abWorldBalloonistState[4] = 2;
+        g_abWorldBalloonistState[5] = 2;
       }
       break;
 
@@ -2491,14 +2483,14 @@ void Level30_UpdateActors(void) {
           }
         }
 
-        if (D_80078E99 != 0) {
+        if (g_abLevelVisitedFlag[0x21] != 0) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
           if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
-        if (D_80078E9A != 0) {
+        if (g_abLevelVisitedFlag[0x22] != 0) {
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
           if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
@@ -2508,12 +2500,12 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && D_8007A6C7 != 0 &&
-          D_80077350 > 0) {
+      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && g_abLevelGemPercent[0x1F] != 0 &&
+          g_anLevelDragonsRescued[0x1E] > 0) {
         ModifyWorldChunkAnimFlags(0, 0xFC, 0);
       }
 
-      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && D_8007A6C8 != 0) {
+      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && g_abLevelGemPercent[0x20] != 0) {
         ModifyWorldChunkAnimFlags(1, 0xFC, 0);
       }
 

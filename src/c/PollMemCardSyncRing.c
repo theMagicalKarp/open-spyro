@@ -4,8 +4,9 @@
 /* Poll the pending memcard sync (0x80032a20): MemCardSync(1, &ring[4],
    &ring[5]). When it reports "in progress" (return 1) commit the finished entry
    into the ring slot indexed by g_nMemCardRingIndex, flip that index (1 - it),
-   then hand the ring index (<<4) to the card-info op handler func_8006635C. */
-extern void func_8006635C();
+   then hand the ring index (<<4) to the card-info op handler RunMemCardInfoOp.
+ */
+extern void RunMemCardInfoOp();
 extern volatile int g_nMemCardRingIndex;
 extern volatile int g_anMemCardSyncRing[];
 
@@ -18,5 +19,5 @@ void PollMemCardSyncRing(void) {
     g_anMemCardSyncRing[g_nMemCardRingIndex] = g_anMemCardSyncRing[5];
     g_nMemCardRingIndex = r - g_nMemCardRingIndex;
   }
-  func_8006635C(g_nMemCardRingIndex << 4);
+  RunMemCardInfoOp(g_nMemCardRingIndex << 4);
 }

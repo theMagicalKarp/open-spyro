@@ -524,7 +524,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005de28` | DmaCallback | main | 48 | asm | lib |
 | `0x8005de58` | InstallVSyncCallback | main | 52 | asm | lib |
 | `0x8005de8c` | FUN_8005de8c | main | 48 | asm | lib |
-| `0x8005debc` | func_8005DEBC | main | 48 | asm | lib |
+| `0x8005debc` | CallLibapiSysSlot10 | main | 48 | asm | lib |
 | `0x8005deec` | func_8005DEEC | main | 48 | asm | lib |
 | `0x8005df1c` | FUN_8005df1c | main | 16 | asm | lib |
 | `0x8005df2c` | func_8005DF2C | main | 24 | asm | lib |
@@ -721,7 +721,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8006629c` | func_8006629C | main | 32 | asm | lib |
 | `0x800662bc` | MemCardOpenSession | main | 96 | asm | lib |
 | `0x8006631c` | MemCardCloseSession | main | 64 | asm | lib |
-| `0x8006635c` | func_8006635C | main | 604 | asm | lib |
+| `0x8006635c` | RunMemCardInfoOp | main | 604 | asm | lib |
 | `0x800665b8` | MemCardLoad | main | 124 | asm | lib |
 | `0x80066634` | func_80066634 | main | 2036 | asm | lib |
 | `0x80066e28` | MemCardRead | main | 268 | asm | lib |

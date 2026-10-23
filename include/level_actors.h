@@ -58,7 +58,7 @@ extern void VectorToSVectorShr2(short *d, int *s);
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int CastRayWorldAndActors(int *a, int *b);
 extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
-extern int D_80078BBC[]; /* balloon sequence stage (== SPY.u164) */
+extern int g_anLevelReadyFlagBlock[]; /* == g_nLevelReadyFlag; overlays read it as the balloon sequence stage (SPY.u164) */
 extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
 extern int PickupGroupHasLiveActor(int stage);

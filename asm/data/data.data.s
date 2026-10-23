@@ -4195,9 +4195,9 @@ dlabel g_anLevelEntryPoints
     /* 5F320 8006EB20 7AE70000 */ .word 0x0000E77A
 enddlabel g_anLevelEntryPoints
 
-nonmatching D_8006EB24
+nonmatching g_anScriptedCameraPresetRecords
 
-dlabel D_8006EB24
+dlabel g_anScriptedCameraPresetRecords
     /* 5F324 8006EB24 C63E0100 */ .word 0x00013EC6
     /* 5F328 8006EB28 5DFD0000 */ .word 0x0000FD5D
     /* 5F32C 8006EB2C 02800000 */ .word 0x00008002
@@ -4246,7 +4246,7 @@ dlabel D_8006EB24
     /* 5F3D8 8006EBD8 00000000 */ .word 0x00000000
     /* 5F3DC 8006EBDC 00000000 */ .word 0x00000000
     /* 5F3E0 8006EBE0 00000000 */ .word 0x00000000
-enddlabel D_8006EB24
+enddlabel g_anScriptedCameraPresetRecords
 
 nonmatching g_anSpyroDeathCamRecordBlock
 
@@ -9626,10 +9626,10 @@ dlabel g_anCheatCodeSequences
     /* 63890 80073090 00000000 */ .word 0x00000000
 enddlabel g_anCheatCodeSequences
 
-nonmatching D_80073094
+nonmatching g_anSwitchSfxPitchOffsets
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80073094
+dlabel g_anSwitchSfxPitchOffsets
     /* 63894 80073094 00008000 */ .word 0x00800000
     /* 63898 80073098 00018001 */ .word 0x01800100
     /* 6389C 8007309C 00028002 */ .word 0x02800200
@@ -9640,7 +9640,7 @@ dlabel D_80073094
     /* 638B0 800730B0 00000000 */ .word 0x00000000
     /* 638B4 800730B4 00000000 */ .word 0x00000000
     /* 638B8 800730B8 00000000 */ .word 0x00000000
-enddlabel D_80073094
+enddlabel g_anSwitchSfxPitchOffsets
 
 nonmatching g_nSnCrtInitFlag
 

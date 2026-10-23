@@ -1392,7 +1392,7 @@ MemCardFormat:
   note: >-
     0x80067b28, 152 B. Last residue was a single instruction — `addiu a1,sp,0x10`
     before the mask store vs in the jal delay slot. Fixed by declaring
-    D_80075B4C volatile, copied from src/c/func_8006635C.c which was already
+    D_80075B4C volatile, copied from src/c/RunMemCardInfoOp.c which was already
     matched and declares the same global volatile; `a |= b` vs `a = a | b`
     makes no difference (isolated by rebuild). Check matched neighbours for a
     global's volatility BEFORE theorising about scheduler ties: the luid/tie
@@ -4667,12 +4667,12 @@ Level25_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_31 arms"
   date: 2026-09-30
-  note: "38,556 B. 30 arms copied, 10 decoded (50/51/53/54/56/122/124/129/155/402). Carriers oneq+one each used once (case 9), 16 literal. Frame 0x2D0 needs a 4th reload phantom slot: case 402 indexes one table (D_8006CBF8[t*2-6]/[t*2-5]) instead of two symbols. Case 50 holds its vector in a pointer local; selects are if/else around the store."
+  note: "38,556 B. 30 arms copied, 10 decoded (50/51/53/54/56/122/124/129/155/402). Carriers oneq+one each used once (case 9), 16 literal. Frame 0x2D0 needs a 4th reload phantom slot: case 402 indexes one table (g_anSineLut_s[t*2-6]/[t*2-5]) instead of two symbols. Case 50 holds its vector in a pointer local; selects are if/else around the store."
 Level27_UpdateActors:
   verdict: parked
   class: "actor-update megafunction; loop exit test NOT duplicated (j into bottom test), source form unknown"
   date: 2026-09-30
-  note: "41,980 B. Seeded (build/l27w: 30 arms copied from l25/l26/l9/l31/l16/l0, arm 458 decoded; 134/135/136/142/203/204 still to write, m2c in arms/). Original enters the actor loop with `j` to a bottom test (no top copy) yet loop.c still hoists+spills 1/2/3/-1/D_8006CC78/D_8006CBF8/D_80076378 into t3. gcc 2.7.2 duplicate_loop_exit_test refuses only on CALL/CODE_LABEL/BLOCK/LOOP_BEG/LOOP_CONT notes or >20 insns in the exit code; while, for(;cond;), for(;;)+break, do{break}while(1), for(init;cond;incr) all duplicate; goto-into-do/while gives the shape but invalidates the loop (nothing hoisted)."
+  note: "41,980 B. Seeded (build/l27w: 30 arms copied from l25/l26/l9/l31/l16/l0, arm 458 decoded; 134/135/136/142/203/204 still to write, m2c in arms/). Original enters the actor loop with `j` to a bottom test (no top copy) yet loop.c still hoists+spills 1/2/3/-1/D_8006CC78/g_anSineLut_s/D_80076378 into t3. gcc 2.7.2 duplicate_loop_exit_test refuses only on CALL/CODE_LABEL/BLOCK/LOOP_BEG/LOOP_CONT notes or >20 insns in the exit code; while, for(;cond;), for(;;)+break, do{break}while(1), for(init;cond;incr) all duplicate; goto-into-do/while gives the shape but invalidates the loop (nothing hoisted)."
 Level24_UpdateActors:
   verdict: attempted
   class: "same non-duplicated loop exit test as Level27_UpdateActors"
@@ -4835,7 +4835,7 @@ func_level_27_8007B510_2026_10_03_2:
   note: "41,980 B. Supersedes the A293 'wall' entry above. Key knot: the whole-function reload register (t3) depended on case 203 reusing `len` for the push distance (cookbook A320)."
 func_level_14_8007B64C_2026_10_03:
   verdict: matched
-  class: "sched2 split-constant tie closed with a pointer local on the D_8006CBF8 read; template copy in field order"
+  class: "sched2 split-constant tie closed with a pointer local on the g_anSineLut_s read; template copy in field order"
   date: 2026-10-03
   note: "53,744 B. The masked diff hid a relocated-load permutation in two camera blocks (cookbook A319)."
 Level24_UpdateActors:
