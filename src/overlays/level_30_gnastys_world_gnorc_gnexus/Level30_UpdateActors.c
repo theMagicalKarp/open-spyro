@@ -441,7 +441,7 @@ typedef struct WalkerState {
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
   int pad10;      /* 0x10 passed by address to DriveActorTrackedMove */
-  int unk14;      /* 0x14 likewise */
+  int zVel;      /* 0x14 likewise */
 } WalkerState;
 
 /* Glow node owned by Sparx; follows its anchor position. */

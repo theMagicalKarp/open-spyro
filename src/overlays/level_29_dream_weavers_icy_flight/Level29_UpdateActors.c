@@ -260,7 +260,7 @@ typedef struct RollerState {
   int pad14;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
   int pad1C;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int unk20[3];        /* 0x20 */
+  int legVec[3];        /* 0x20 */
   int pad2C;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
@@ -291,8 +291,8 @@ typedef struct RiderState {
 /* Types 0x197/0x198: a smoking walker. */
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
-  int unk04;           /* 0x04 */
-  int unk08[3];        /* 0x08 */
+  int legStep;           /* 0x04 */
+  int legVec[3];        /* 0x08 */
   int timer;           /* 0x14 */
 } SmokerState;
 
@@ -2239,7 +2239,7 @@ void Level29_UpdateActors(void) {
         actor->mode = 1;
       }
       if (g_nSpyroStateFlags < 8) {
-        TweenActorAlongPath(actor, st->path, st->unk08, &st->unk04, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
         RefreshActorDerivedState(actor, 4);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
@@ -2275,7 +2275,7 @@ void Level29_UpdateActors(void) {
         actor->mode = 1;
       }
       if (g_nSpyroStateFlags < 8) {
-        TweenActorAlongPath(actor, st->path, st->unk08, &st->unk04, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
       }
       switch (actor->mode) {
       case 0:

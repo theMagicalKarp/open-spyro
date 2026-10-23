@@ -2734,7 +2734,7 @@ void Level8_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         actor->flags = 0;
-        actor->unk3B = 0x64;
+        actor->probeDist = 0x64;
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 5);

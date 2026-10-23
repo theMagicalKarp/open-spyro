@@ -1975,7 +1975,7 @@ void Level22_UpdateActors(void) {
           st->u3C = 0x50;
         }
         actor->updateDist = 0xFF;
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u30, 6, 0, 0);
         ANIM_GO(actor, 7);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -2334,7 +2334,7 @@ void Level22_UpdateActors(void) {
           st->u34 = 0x5A;
         }
         ANIM_GO(actor, 8);
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u2C, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320

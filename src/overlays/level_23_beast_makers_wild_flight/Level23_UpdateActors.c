@@ -256,11 +256,11 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int unk20[3];        /* 0x20 */
-  int unk2C;           /* 0x2C */
+  int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
+  int legVec[3];        /* 0x20 */
+  int legStep;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
@@ -290,7 +290,7 @@ typedef struct RiderState {
 /* Types 0x197/0x198: a smoking walker. */
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
-  int unk04;           /* 0x04 */
+  int legStep;           /* 0x04 */
   int pad08[3];        /* 0x08 */
   int timer;           /* 0x14 */
 } SmokerState;
@@ -1677,8 +1677,8 @@ void Level23_UpdateActors(void) {
           reward->mode = 1;
         }
         TallyFlightTarget(st->tally);
-        st->unk14 = 0;
-        st->unk1C = 0x15E;
+        st->zVel = 0;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
@@ -1701,9 +1701,9 @@ void Level23_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == 0xF || g_nActiveLevelId == 0x2D) {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
         } else {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0x16, 0);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }
         d = (actor->rotZ - d) & 0xFF;
         if (d > 0x80) {
@@ -1724,7 +1724,7 @@ void Level23_UpdateActors(void) {
         break;
       }
       case 1:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1737,7 +1737,7 @@ void Level23_UpdateActors(void) {
         }
         break;
       case 2:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);

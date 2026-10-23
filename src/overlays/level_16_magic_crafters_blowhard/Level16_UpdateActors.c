@@ -3232,7 +3232,7 @@ void Level16_UpdateActors(void) {
         g_dwSpyroRequestMask = 0x80010000;
         g_pScriptedCameraActor = actor;
       }
-      if (IsPointInRotatedBox(&SPY.posX, &st->unk74) != 0) {
+      if (IsPointInRotatedBox(&SPY.posX, &st->soundBox) != 0) {
         actor->soundRange = 0x10;
       }
       if (actor->flags & 0x90000) {
@@ -3309,7 +3309,7 @@ void Level16_UpdateActors(void) {
           st->started = 1;
           if (g_nLevelProgressCheckpoint[0] > 0) {
             actor->mode = 0x51;
-            st->unk60 = 0;
+            st->pathDone = 0;
             st->phase = 1;
             st->path = st->paths[3];
             if (g_pActorListBase[st->prev].dropKind != 0xFF &&
@@ -3437,10 +3437,10 @@ void Level16_UpdateActors(void) {
 
       case 0x51:
         if (dist < 0x2800 && st->floorZ == -1) {
-          if (st->unk60 == 0) {
+          if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
                               1) != 0) {
-              st->unk60 = 1;
+              st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = 0x52;
@@ -3474,7 +3474,7 @@ void Level16_UpdateActors(void) {
           if (g_nActorAnimDone != 0 && actor->anim == 6) {
             actor->mode = 0x53;
             st->wait = 0x6E;
-            st->unk60 = 0;
+            st->pathDone = 0;
             ANIM_SET(actor, 0);
           }
         }
@@ -3498,10 +3498,10 @@ void Level16_UpdateActors(void) {
 
       case 0x5B:
         if (dist < 0x2800 && st->floorZ == -1) {
-          if (st->unk60 == 0) {
+          if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
                               1) != 0) {
-              st->unk60 = 1;
+              st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = 0x5C;
@@ -3538,7 +3538,7 @@ void Level16_UpdateActors(void) {
             }
             if (g_nActorAnimDone != 0 && actor->anim == 6) {
               actor->mode = 0x5D;
-              st->unk60 = 0;
+              st->pathDone = 0;
               st->wait = 0x6E;
               ANIM_SET(actor, 0);
             }

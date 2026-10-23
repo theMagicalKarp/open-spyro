@@ -36,7 +36,8 @@ typedef struct Actor {
   unsigned char killGroup; /* 0x3A low 7 bits: kill group (< 0x20 a group bit,
                             * 0x7D/0x7E special; BuildLoadedLevelRuntime);
                             * bit 7 latches the death drop (SpawnActorDeathDrop) */
-  unsigned char unk3B; /* 0x3B */
+  unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
+                           * 0 default 0x12C, 0xFF none, 0xFE probe mode 1 */
   unsigned char anim;  /* 0x3C current animation */
   unsigned char nextAnim; /* 0x3D next animation */
   unsigned char frame; /* 0x3E current frame */

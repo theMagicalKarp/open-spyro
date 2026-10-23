@@ -99,7 +99,7 @@ typedef struct PathState {
   int unk04;
   int pad08;
   PathData *path; /* 0x0C */
-  int unk10;
+  int loops;   /* 0x10 nonzero: wrap at the path ends instead of turning back */
   int pad14;
   int unk18;
   int heading; /* 0x1C */
@@ -1059,7 +1059,7 @@ typedef struct WalkerState {
   int timer;      /* 0x04 */
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
-  int unk10;      /* 0x10 passed by address to DriveActorTrackedMove */
+  int moveSpeed;      /* 0x10 passed by address to DriveActorTrackedMove */
   int pad14;      /* 0x14 likewise */
 } WalkerState;
 /* from level_10 */
@@ -3251,9 +3251,9 @@ void Level14_UpdateActors(void) {
         pose0:
           ENTER_POSE4(actor, 0);
         walk:
-          if (st->path->cur == 0 && st->unk10 == 0) {
+          if (st->path->cur == 0 && st->loops == 0) {
             st->path->cur = 1;
-          } else if (st->path->cur == st->path->count - 1 && st->unk10 == 0) {
+          } else if (st->path->cur == st->path->count - 1 && st->loops == 0) {
             st->path->cur--;
           } else {
             int spyroAngle;

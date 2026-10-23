@@ -1402,9 +1402,9 @@ void Level15_UpdateActors(void) {
         pose0:
           ENTER_POSE4(actor, 0);
         walk:
-          if (st->path->cur == 0 && st->unk10 == 0) {
+          if (st->path->cur == 0 && st->loops == 0) {
             st->path->cur = 1;
-          } else if (st->path->cur == st->path->count - 1 && st->unk10 == 0) {
+          } else if (st->path->cur == st->path->count - 1 && st->loops == 0) {
             st->path->cur--;
           } else {
             int spyroAngle;
