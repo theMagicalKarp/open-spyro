@@ -11,7 +11,6 @@
    g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the
    call. */
 extern int g_nSfxMixVolume_blk[];
-extern char *g_pStoryIntroStreamCursor;
 
 void BeginStoryIntro(void) {
   int *blk;

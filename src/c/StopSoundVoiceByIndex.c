@@ -4,7 +4,6 @@
    bit, and when `mode` is 2 or 4 also tear down the voice's common-attr shadow
    record (voice*28 stride): free the sample-callback slot, reset the ADSR/mode
    fields, and mark it stopped. */
-extern unsigned int g_anSpuPendingKeyOffBlock[];
 
 void StopSoundVoiceByIndex(int index, int mode) {
   unsigned int voice = index & 0x7F;

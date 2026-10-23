@@ -34,10 +34,7 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern char g_szEnteringWorldFmt[];   /* "%s" */
-extern char g_szEnteringFmt[];        /* "%s" (level form) */
-extern int g_nGamestate0cTimer[];     /* transition fade counter */
-extern int g_nGamestate0cCardVariant; /* transition card variant */
+extern int g_nGamestate0cTimer[]; /* transition fade counter */
 extern unsigned short g_anCosineLut[];
 
 void Gamestate0C_Draw(void) {

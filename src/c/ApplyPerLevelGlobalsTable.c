@@ -2,10 +2,6 @@
 
 /* Per-level hook slots documented (not declared) in globals.h. */
 extern void *g_pfnGamestate0cSubstateUpdate;
-extern void *g_pfnLevelBeginActorCutscene;
-extern void *g_pfnLevelHandleFlightResults;
-extern void *g_pfnLevelOnSaveMenuExit;
-extern void *g_pfnFlightTimeFormatter;
 
 #include "level_entry_points.h"
 #include "main_shared.h"

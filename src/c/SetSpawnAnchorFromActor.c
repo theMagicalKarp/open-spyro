@@ -4,14 +4,6 @@
 
 extern void CopyWords(void *dst, void *src, int byte_count);
 
-extern int g_anLevelSpawnYawBlock[]; /* +0 spawn yaw (see alias) */
-extern int g_nSpawnAnchorDragonsRescued;
-extern int g_nSpawnAnchorGemsCollected;
-extern int g_nSpawnAnchorReserved;
-extern int g_nLevelProgress; /* live level progress word */
-extern int
-    g_nLevelProgressCheckpoint; /* g_nLevelProgress at the last checkpoint */
-
 /* 0x80059474 (0xF8) — latch `actor`'s position (+0xC) and facing as the
    level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
    the anchor valid, bias spawn Z up 0x164, snapshot the level's rescued/gem

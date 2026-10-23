@@ -7,8 +7,6 @@
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];
-extern int g_nSpyroMotionZ; /* g_anSpyroMotionVec[2] */
-extern int g_anOrbDropEnterSpawnType[];
 extern void *g_pSpyroHomingTargetActor;
 
 /* State 17 (scripted lift toward g_anSpyroRequestTargetPos): the start Z, the

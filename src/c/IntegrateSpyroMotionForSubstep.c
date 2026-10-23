@@ -20,13 +20,9 @@ extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
 extern int abs(int x);
 
-extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
-extern int g_nSpyroCarryMotionY;
 extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
                                           velocity */
 extern int g_pSpyroHomingTargetActor;
-extern int g_anFlightBoundsCenter[];
-extern int g_anFlightBoundsRadius[];
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);
 SDATA(g_bSpyroJumpHoldForced, 4);

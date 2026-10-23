@@ -65,8 +65,7 @@ typedef struct {
   /* 0x2E */ short nVolR;
 } SPUFARROW;
 
-extern SPUVOICEROW g_aSpuVoiceRows[];    /* the 24 mixer rows */
-extern int g_anSoundMasterVolumeBlock[]; /* g_nSoundMasterVolume */
+extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
 
 int TickActiveSoundVoices(void) {
   SPUVOICEATTR attr;

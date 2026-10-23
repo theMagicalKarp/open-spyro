@@ -24,11 +24,6 @@ extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 (quarter turn) */
 /* Distinct incomplete-array views of the five g_abHudCounterDisplayState
    bytes: each block loads its own flag at [0] and derives its record address
    off the same base. */
-extern byte g_abHudGemCounterBlock[];      /* +0: icon records at +0x44 */
-extern byte g_abHudGemRollBlock[];         /* +0: roll timer at +0xC */
-extern byte g_abHudDragonCounterBlock[];   /* +1: records at +0x1FB */
-extern byte g_abHudLivesCounterBlock[];    /* +2: records at +0x302 */
-extern byte g_abHudButterflyRingBlock[];   /* +2: butterfly quads at +0x4C2 */
 extern byte g_abHudWorldEggIconBlock[];    /* +3: egg quads at +0x461 */
 extern byte g_abHudLevelEggCounterBlock[]; /* +4: record at +0x408 */
 

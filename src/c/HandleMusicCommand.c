@@ -16,12 +16,6 @@
 extern int CdControlBlocking(int cmd, char *param, char *result);
 extern char *CdIntToPos(int lba, char *loc);
 
-extern unsigned int
-    g_adwMusicStreamStatusBlock[]; /* alias of g_dwMusicStreamStatus */
-extern unsigned int
-    g_adwMusicStopStatusBlock[]; /* alias of g_dwMusicStreamStatus (stop arm) */
-extern int g_anPendingMusicCommandBlock[]; /* alias of g_nPendingMusicCommand */
-
 void HandleMusicCommand(int track, int cmd) {
   unsigned int *status;
   unsigned int *stopStatus;

@@ -4,8 +4,6 @@
 
 extern void CdReadCompleteCallback(void);
 
-extern int
-    g_anMusicStreamBlock[]; /* shared-base view of g_dwMusicStreamStatus */
 extern signed char g_bCdMixLeftToRight;
 extern signed char g_bCdMixRightToRight;
 extern signed char g_bCdMixRightToLeft;

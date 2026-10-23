@@ -10,11 +10,6 @@
  * life and rides the cosine LUT after that. Then the standard sprite flush and
  * the simple (no pace loop) gamestate frame-submit tail. */
 
-extern unsigned char g_szInTheWorldOfDragons[];
-extern unsigned char g_szTheAdventureContinues[];
-extern unsigned char g_szTheAdventureBegins[];
-extern unsigned char g_szEnteringDemoMode[];
-
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a
    4-byte `extern int` cannot do (sdata cost 1 wins the tie, §B-i rule 2). */

@@ -3,8 +3,7 @@
 #include "main_shared.h"
 #include "spu.h"
 
-extern int g_nSfxMixVolume_blk;      /* sfx mix volume */
-extern short g_anSpuCommonVolAttr[]; /* g_abSpuCommonAttr + 0x4 (see alias) */
+extern int g_nSfxMixVolume_blk; /* sfx mix volume */
 
 /* 0x8005595c (0x11c) — top-level sound init (after SpuInit): reset the SPU,
    seed the common-attr block (master volume 0x3CCC L/R, CD volume 0x5000

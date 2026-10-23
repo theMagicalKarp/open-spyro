@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char g_abCdlLocScratchBlock[36];
-
 /* 0x80016500 — blocking CD sector read, StartCdReadAsync's synchronous twin.
    Spins until the drive is idle (no read in flight, CdSync == 2, music
    stream table built) while servicing the stall watchdog, sound voices and

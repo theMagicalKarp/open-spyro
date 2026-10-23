@@ -115,20 +115,11 @@
    [13]/[15] the yaw and height starts also reachable as
    g_nGamestate0cCamYawStart / g_nGamestate0cCamHeightStart, [25] the active
    level record. */
-extern int g_anGamestate0cTimerBlock[];
 /* Absolute alias of g_anGamestate0cTimerBlock[0]: the aim ramp reads the timer
    after the camera calls, where the original drops the held base and
    re-addresses it. */
 extern int g_nGamestate0cTimer;
 
-extern int g_nGamestate0cCamYawStart;    /* camera yaw start   (block +0x34) */
-extern int g_nGamestate0cCamRadiusStart; /* camera radius start (block +0x38) */
-extern int g_nGamestate0cCamHeightStart; /* camera height start (block +0x3c) */
-extern int g_nGamestate0cCamYawGoal;     /* camera yaw goal     (block +0x4c) */
-extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
-extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
-
-extern int g_anLevelEntryPoints[]; /* entry points, 4 words per level */
 extern void (*g_pfnGamestate0cSubstateUpdate)(
     void); /* handler for every other substate */
 

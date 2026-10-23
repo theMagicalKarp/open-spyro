@@ -16,9 +16,8 @@
    actor pass. Every arm ends in the shared letterbox check and the standard
    2-vblank frame submit. */
 
-extern void *g_apOtDepthBinBlock[];     /* 0x8006fcf4: OT head list,
-                                           sprite prim queue at [2304] */
-extern short g_anGemPickupScaleCurve[]; /* gem-pickup timer scale curve */
+extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4: OT head list,
+                                       sprite prim queue at [2304] */
 
 void Gamestate08_Draw(void) {
   int unused[4];

@@ -7,10 +7,6 @@
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* Game-over camera euler snapshot, read unsigned (lhu). */
-extern unsigned short g_anGameOverCameraEulerU[];
-extern unsigned char g_abFrameDrawEnvIsbgBlock[];
-extern unsigned char g_abGameOverGlyphs[]; /* GAMEOVER letter glyph indices */
-extern unsigned char g_szPressStart[];     /* "PRESS X..." prompt string */
 
 /* Draw for GS_GAME_OVER (5): three sub-modes driven by g_nGameplayDrawMode.
    Mode 0 = death fade-out: frame 0 renders one full gameplay frame then

@@ -7,7 +7,6 @@
 extern int abs(int x);
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
-extern int g_anCameraScriptStickIntegratorBlock[];
 
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C  /* g_nCameraCurrentMode */

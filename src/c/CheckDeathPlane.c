@@ -2,9 +2,8 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
-extern int g_nTitleSceneSectorOffset; /* async-read byte offset */
-extern int g_CutsceneSoundDef;        /* death-cutscene sample-bank record */
+extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
+extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
 
 /* The sample-bank stores go through the reloaded global pointer each field
    (the original never proves it points at &g_CutsceneSoundDef); a volatile read

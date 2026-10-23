@@ -15,7 +15,6 @@
    when a transition was dispatched. */
 
 extern int g_adwSpyroTriggerEventBlock[]; /* g_dwSpyroTriggerEventFlags */
-extern int g_anSpyroInputLockoutBlock[];  /* g_nSpyroInputLockoutCountdown */
 
 int DispatchSpyroPadStateChanges(int pad) {
   int *ev;

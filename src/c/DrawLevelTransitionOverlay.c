@@ -28,11 +28,7 @@
    The queue is flushed here rather than by the caller: clear the head slot,
    EnqueuePendingSpritePrims, then rasterize. */
 
-extern unsigned char g_szConfrontingFmt[];  /* "CONFRONTING %s..." */
-extern unsigned char g_szEnteringDotsFmt[]; /* "ENTERING %s..." */
-extern unsigned char g_szTreasureFound[];   /* "TREASURE FOUND" */
-extern unsigned char g_szTotalTreasure[];   /* "TOTAL TREASURE" */
-extern unsigned short g_anCosineLut[];      /* 0x8006cc78: g_anSineLut + 0x80 */
+extern unsigned short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 */
 
 typedef struct {
   short x;              /* 0x00 */

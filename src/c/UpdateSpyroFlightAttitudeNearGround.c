@@ -5,13 +5,11 @@
 /* Held base at g_nSpyroGroundSlope: the slope test, the first persistent-
    euler byte (-0xA4) and the three call-argument addresses (euler -0xA4, body
    matrix -0x7C, world position -0xB0) all come off one callee-saved reg. */
-extern int g_anSpyroGroundSlopeBlock[];
 #define SLOPE_BASE ((char *)g_anSpyroGroundSlopeBlock)
 
 /* Second view of g_anSpyroGroundNormal for the reads after the second
    LookupCosine/LookupSine pair: with one symbol cse relates every access to
    one `la` pseudo and holds it across the calls (A231). */
-extern int g_anSpyroGroundNormalPost[];
 
 /* 0x8003dae4 (0x360) — per-frame glide/flight attitude controller near the
    ground (g_nSpyroGroundSlope < 0x17; otherwise DampenSpyroFreeFallAttitude).

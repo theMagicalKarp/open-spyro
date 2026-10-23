@@ -4,9 +4,6 @@
 extern void RefreshActorDerivedState(unsigned char *actor, int n);
 extern void CommitActorKillGems(int id, unsigned char *actor);
 
-extern unsigned char *g_pThiefEggDrop;
-extern int g_adwActorBurstColors[];
-
 /* 0x8003b9d4 (0xFC) — on picking up actor `a` (a fodder/pickup): record its
    kind byte in the gem-tally icon UV ring, bump the ring count, special-case
    the egg-thief actor (g_pThiefEggDrop -> 3 eggs), notify the pickup handler,

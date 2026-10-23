@@ -29,11 +29,9 @@ typedef struct {
   /* 0x18 */ unsigned char *pPlaying;
 } SPUVOICEROW;
 
-extern SPUVOICEROW g_aSpuVoiceRows[];   /* the 24 mixer rows */
-extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
+extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
 extern int g_nSfxOverrideFlags[]; /* one-shot override flags: 1 = vol pair, 2 =
                                      pitch */
-extern unsigned short g_nSfxOverridePitch; /* override pitch */
 
 /* The one-shot override pair and the row volume fields it feeds are all
    volatile: the mixer reads the row back on the next tick, so every read and

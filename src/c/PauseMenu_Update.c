@@ -3,20 +3,13 @@
 #include "vecmath.h"
 
 extern void *g_pSharedLoadBuffer;       /* asset-directory buffer pointer */
-extern int g_nLevelLoadByteOffset;      /* level-load byte offset */
-extern int g_nLevelLoadChunkSize;       /* level-load chunk size */
 extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
 extern int g_nSfxMixVolume_blk;         /* SFX volume (0..0x3fff) */
 extern int
     g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
-extern int g_anSoundMonoMixFlagBlock[];
-extern short g_nCdDaVolumeCurrent;         /* SpuCommonAttr CD volume L */
-extern short g_nSpuCommonCdVolumeR;        /* SpuCommonAttr CD volume R */
-extern unsigned char g_bCdMixLeftToLeft;   /* CdMix attenuation L->L */
 extern unsigned char g_bCdMixLeftToRight;  /* L->R */
 extern unsigned char g_bCdMixRightToRight; /* R->R */
 extern unsigned char g_bCdMixRightToLeft;  /* R->L */
-extern int g_nFlightQuitFlag;              /* flight-level quit flag */
 
 #define SFX(off)                                                               \
   PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[off], 0, 0x10, 0)

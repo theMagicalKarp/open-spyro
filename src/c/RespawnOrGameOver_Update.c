@@ -21,9 +21,6 @@
 
 extern int g_anWorldRenderMeshBlock[]; /* 0x80078a40: [0] chunk count, [1] chunk
                                           array, fog colour bytes at [4] */
-extern volatile int g_anGameOverSceneBlock[]; /* g_nGameOverSceneByteSize */
-extern unsigned char
-    *g_apRenderScratchRegionBlock[]; /* g_pRenderScratchRegionBase */
 
 void RespawnOrGameOver_Update(void) {
   int unused[8];

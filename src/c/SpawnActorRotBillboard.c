@@ -6,8 +6,6 @@ extern void RotateVectorByMatrix();
 extern void AddVector();
 extern unsigned int GetRandomU32();
 
-extern unsigned char g_aRotBillboards[];
-
 typedef struct RotBillboard {
   int pos[3];             /* 0x00: world position */
   unsigned char life;     /* 0x0C: frames left; 0 = slot free */

@@ -1168,4 +1168,238 @@ extern int g_nLevelIntroParallaxCountdown;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nStaticMeshLodCutoff;
 
+/* Globals named after the one-time import, declared once here (by address). */
+extern unsigned char g_szDemoMode[]; /* 0x80010ac0 */
+extern unsigned char g_szConfrontingFmt[]; /* 0x80010ae0: "CONFRONTING %s..." */
+extern unsigned char g_szEnteringDotsFmt[]; /* 0x80010af4: "ENTERING %s..." */
+extern unsigned char g_szTreasureFound[]; /* 0x80010b04: "TREASURE FOUND" */
+extern unsigned char g_szTotalTreasure[]; /* 0x80010b14: "TOTAL TREASURE" */
+extern char g_szQuitGamePrompt[]; /* 0x80010b24: "QUIT GAME?" */
+extern char g_szSoundEffects[]; /* 0x80010b30: "SOUND FX" */
+extern char g_szMusicVolume[]; /* 0x80010b40: "MUSIC" */
+extern char g_szSpeakerSetup[]; /* 0x80010b50: "SOUND" */
+extern char g_szVibration[]; /* 0x80010b60: "VIBRATION" */
+extern char g_szInventory[]; /* 0x80010b78: "INVENTORY" */
+extern char g_szExitLevel[]; /* 0x80010b84: "EXIT LEVEL" */
+extern char g_szQuitGame[]; /* 0x80010b90: "EXIT WORLD" */
+extern unsigned char g_szPressStart[]; /* 0x80010b9c: "PRESS X..." prompt string */
+extern char g_szHiSpyro[]; /* 0x80010ba8 */
+extern char g_szSaveGame[]; /* 0x80010bb4 */
+extern char g_szReplayDragon[]; /* 0x80010bc0 */
+extern char g_szNoSaveFile[]; /* 0x80010bd0 */
+extern char g_szPleaseRestartWith[]; /* 0x80010be0 */
+extern char g_szAMemoryCardTo[]; /* 0x80010bf4 */
+extern char g_szEnableGameSaves[]; /* 0x80010c08 */
+extern char g_szSaving[]; /* 0x80010c1c */
+extern char g_szNoMemoryCard[]; /* 0x80010c28 */
+extern char g_szPleaseInsertThe[]; /* 0x80010c38 */
+extern char g_szMemoryCardWith[]; /* 0x80010c4c */
+extern char g_szThisGameSaveFile[]; /* 0x80010c60 */
+extern char g_szSaveError[]; /* 0x80010c74 */
+extern char g_szPleaseCheckThat[]; /* 0x80010c80 */
+extern char g_szTheMemoryCard[]; /* 0x80010c94 */
+extern char g_szIsStillInPlace[]; /* 0x80010ca4 */
+extern char g_szSaveFailed[]; /* 0x80010cb8 */
+extern char g_szGameSaved[]; /* 0x80010cc4 */
+extern char g_szEnteringWorldFmt[]; /* 0x80010cd0: "%s" */
+extern char g_szEnteringFmt[]; /* 0x80010ce4: "%s" (level form) */
+extern unsigned char g_szInTheWorldOfDragons[]; /* 0x80010cf0 */
+extern unsigned char g_szTheAdventureContinues[]; /* 0x80010d0c */
+extern unsigned char g_szTheAdventureBegins[]; /* 0x80010d28 */
+extern unsigned char g_szEnteringDemoMode[]; /* 0x80010d40 */
+extern char g_szShuttingDownMsg[]; /* 0x80010d78: "Shutting Down\n" */
+extern char g_szLaunchingCrashDemoMsg[]; /* 0x80010d88: "Launching Crash Demo\n" */
+extern char g_szCrashDemoExePath[]; /* 0x80010da0: "cdrom:\\S0\\CRASH.EXE;1" */
+extern char g_szMemCardSaveName[]; /* 0x80010db8: memory card save file name */
+extern unsigned char g_abSpyroStateCameraModeTable[]; /* 0x8006c588 */
+extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 */
+extern short g_anSpyroTurnRateRows[]; /* 0x8006c5f0 */
+extern int g_anSpyroHornStrikeTipOffsets2[]; /* 0x8006e244: g_anSpyroHornStrikeTipOffsets+0xC */
+extern int g_anWorldSparkleShape[]; /* 0x8006e308: 10-word table in .data (5 signed pairs) */
+extern int g_adwActorBurstColors[]; /* 0x8006e330 */
+extern int g_anFlightBoundsCenter[]; /* 0x8006e7dc */
+extern int g_anFlightBoundsRadius[]; /* 0x8006e7e4 */
+extern int g_anOrbDropEnterSpawnType[]; /* 0x8006ea34 */
+extern int g_anOrbDropTimeoutSpawnType[]; /* 0x8006ea40 */
+extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
+extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
+extern int g_anDeathTryLevelIds[]; /* 0x8006ee7c: per-try first level table */
+extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
+extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
+extern unsigned char g_abGameOverGlyphs[]; /* 0x8006f304: GAMEOVER letter glyph indices */
+extern unsigned char g_abGemPickupFlickerPairs1[]; /* 0x8006f390: substate-1 flicker euler pairs */
+extern unsigned char g_abGemPickupFlickerPairs1Y[]; /* 0x8006f391 */
+extern unsigned char g_abGemPickupFlickerPairs2[]; /* 0x8006f398: substate-2 flicker euler pairs */
+extern unsigned char g_abGemPickupFlickerPairs2Y[]; /* 0x8006f399 */
+extern short g_anGemPickupScaleCurve[]; /* 0x8006f3c0: gem-pickup timer scale curve */
+extern int g_anGemPickupIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
+extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414 */
+extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
+extern unsigned char g_abSpyroHornStrikeTransitionModes[][2]; /* 0x80075264 */
+extern unsigned char g_abSpyroHornStrikeAnimTable[]; /* 0x80075268 */
+extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
+extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c */
+extern int g_nLevelUnreadScratchA; /* 0x80075670 */
+extern int g_nLevelUnreadScratchB; /* 0x80075674 */
+extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
+extern unsigned char *g_pThiefEggDrop; /* 0x80075758 */
+extern int g_pCreditsScratchBuf; /* 0x80075768 */
+extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
+extern int g_nActorAnimDone; /* 0x80075794 */
+extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
+extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
+extern int g_pCreditsScrollHeader; /* 0x800757bc */
+extern int g_nWorldFloorSurfaceType; /* 0x80075844 */
+extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
+extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
+extern int g_anLevelRunnerArrived; /* 0x80075870 */
+extern int g_nLevelRunnerArrivedGoal1; /* 0x80075874 */
+extern void *g_pfnLevelOnSaveMenuExit; /* 0x800758a8 */
+extern void *g_pfnFlightTimeFormatter; /* 0x800758c4 */
+extern int g_nFlightQuitFlag; /* 0x80075900: flight-level quit flag */
+extern int g_nSpyroScriptedAlignFrames; /* 0x80075948 */
+extern int g_nActiveWorldIndex; /* 0x8007595c: current world index */
+extern short g_anSpuCommonVolAttr[]; /* 0x80075f0c: g_abSpuCommonAttr + 0x4 (see alias) */
+extern short g_nCdDaVolumeCurrent; /* 0x80075f18: SpuCommonAttr CD volume L */
+extern short g_nSpuCommonCdVolumeR; /* 0x80075f1a: SpuCommonAttr CD volume R */
+extern void *g_apSampleBankEntriesBlock[]; /* 0x800761d0 */
+extern char *volatile g_pActiveCutsceneSoundDef; /* 0x800761d0 */
+extern int g_anMusicFadeBlock[]; /* 0x800761d8 */
+extern unsigned short g_nSfxOverridePitch; /* 0x800761f4: override pitch */
+extern int g_anSoundMasterVolumeBlock[]; /* 0x8007622c: g_nSoundMasterVolume */
+extern int g_anSpuPendingKeyOnBlock[]; /* 0x80076238: shared-base view of g_dwSpuPendingKeyOn */
+extern unsigned int g_anSpuPendingKeyOffBlock[]; /* 0x8007623c */
+extern int g_anSoundMonoMixFlagBlock[]; /* 0x80076240 */
+extern void *g_apActorMeshTableBlock[]; /* 0x80076378 */
+extern int g_nWorldUnpackLimit; /* 0x80076760: end of the unpack work area */
+extern unsigned char g_abCdlLocScratchBlock[36]; /* 0x80076b98 */
+extern short g_anCameraEulerYawBlock[]; /* 0x80076e20: g_nCameraEulerYaw, held-base view */
+extern int g_anCameraSpringPitchBlock[]; /* 0x80076e4c */
+extern int g_anCameraPitchBlock[]; /* 0x80076e64: g_nCameraPitch */
+extern int g_anCameraSpringDeltaStateBlock[]; /* 0x80076e78 */
+extern int g_nCameraSpringYawDelta; /* 0x80076e78 */
+extern int g_nCameraSpringPitchDelta; /* 0x80076e7c */
+extern int g_anCameraScriptStickIntegratorBlock[]; /* 0x80076eac */
+extern int *g_pScriptedCameraView; /* 0x80076ebc */
+extern unsigned char g_abFrameDrawEnvIsbgBlock[]; /* 0x80076ef8 */
+extern char g_abGemPickupAssetHeader[]; /* 0x80077030: gem-pickup asset header copy */
+extern int g_anGemPickupHeaderEndBlock[]; /* 0x8007703c: held-base view of the header-end offset */
+extern int g_anGemPickupStreamStateBlock[]; /* 0x8007705c: held-base view of the stream state */
+extern int g_anGemPickupSpuChunkBlock[]; /* 0x80077060: held-base view of the SPU chunk index */
+extern unsigned char g_aRotBillboards[]; /* 0x80077108 */
+extern int g_anMotionTrailSliceCounts[]; /* 0x800772c8: per-ribbon slice count */
+extern int g_anPadTypeBlock[]; /* 0x80077384: g_nPadType as an array view */
+extern unsigned char g_abPadAnalogCalibratedBlock[]; /* 0x8007738c: calibrated-stick bytes */
+extern int g_anLevelGemsBlock[]; /* 0x80077420 */
+extern unsigned int g_adwMusicStopStatusBlock[]; /* 0x800774b4: alias of g_dwMusicStreamStatus (stop arm) */
+extern unsigned int g_adwMusicStreamBlock[]; /* 0x800774b4 */
+extern unsigned int g_adwMusicStreamStatusBlock[]; /* 0x800774b4: alias of g_dwMusicStreamStatus */
+extern int g_anMusicStreamBlock[]; /* 0x800774b4: shared-base view of g_dwMusicStreamStatus */
+extern int g_anMusicTrackLbaTablePost[]; /* 0x800774b8: g_anMusicTrackLbaTable, post-call view */
+extern int g_anMusicTrackEndLbaTable[]; /* 0x800774bc */
+extern unsigned char g_abCdSyncResult[]; /* 0x800776bc */
+extern int g_anPendingMusicCommandBlock[]; /* 0x800776c8: alias of g_nPendingMusicCommand */
+extern unsigned char g_bCdMixLeftToLeft; /* 0x800776d0: CdMix attenuation L->L */
+extern int g_anGamestate0cTimerBlock[]; /* 0x800777ec */
+extern int g_nGamestate0cCardVariant; /* 0x800777fc: transition card variant */
+extern int g_nGamestate0cCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
+extern int g_nGamestate0cCamRadiusStart; /* 0x80077824: camera radius start (block +0x38) */
+extern int g_nGamestate0cCamHeightStart; /* 0x80077828: camera height start (block +0x3c) */
+extern int g_nGamestate0cCamYawGoal; /* 0x80077838: camera yaw goal     (block +0x4c) */
+extern int g_nGamestate0cCamRadiusGoal; /* 0x8007783c: camera radius goal  (block +0x50) */
+extern int g_nGamestate0cCamHeightGoal; /* 0x80077840: camera height goal  (block +0x54) */
+extern int g_nSpawnAnchorDragonsRescued; /* 0x8007788c */
+extern int g_nSpawnAnchorGemsCollected; /* 0x80077890 */
+extern int g_nSpawnAnchorReserved; /* 0x80077894 */
+extern int g_nLevelSpawnPosX; /* 0x800778d8 */
+extern int g_nLevelSpawnPosY; /* 0x800778dc */
+extern int g_anLevelSpawnPosZBlock[]; /* 0x800778e0 */
+extern int g_anLevelSpawnYawBlock[]; /* 0x800778e4: +0 spawn yaw (see alias) */
+extern int g_nLevelProgress; /* 0x800778e8: live level progress word */
+extern int g_nLevelProgressCheckpoint; /* 0x800778ec: g_nLevelProgress at the last checkpoint */
+extern byte g_abHudGemCounterBlock[]; /* 0x80077fa8: +0: icon records at +0x44 */
+extern byte g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
+extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
+extern byte g_abHudButterflyRingBlock[]; /* 0x80077faa: +2: butterfly quads at +0x4C2 */
+extern byte g_abHudLivesCounterBlock[]; /* 0x80077faa: +2: records at +0x302 */
+extern unsigned char g_abHudGemRollPhaseBlock[]; /* 0x80077fad */
+extern int g_anHudWorldEggTimerBlock[]; /* 0x80077fc0 */
+extern int g_anHudLevelEggTimerBlock[]; /* 0x80077fc4 */
+extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
+extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
+extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8 */
+extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
+extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */
+extern int g_anWorldAnimColor0CountBlock[]; /* 0x80078570 */
+extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
+extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
+extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
+extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
+extern int g_nInitUnreadWord; /* 0x800785cc */
+extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
+extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
+extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */
+extern unsigned char *g_apRenderScratchRegionBlock[]; /* 0x800785e8: g_pRenderScratchRegionBase */
+extern int g_anFlightTallyActiveSlots[]; /* 0x80078608 */
+extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */
+extern unsigned char g_abSpyroHornCollisionActiveBlock[]; /* 0x80078760 */
+extern unsigned char g_abSpyroHornStrikeSegmentBlock[]; /* 0x80078761, +2 = ring row */
+extern int g_anSpyroFlameBreathTimerBlock[]; /* 0x80078768 */
+extern int g_anSpyroHornStrikeAnchorMtxBlock[]; /* 0x8007876c */
+extern unsigned char g_bSpyroAnimLayer1Prev; /* 0x80078a72 */
+extern unsigned char g_bSpyroAnimLayer1Current; /* 0x80078a73 */
+extern unsigned char g_bSpyroAnimLayer1FramePrev; /* 0x80078a78 */
+extern unsigned char g_bSpyroAnimLayer1Frame; /* 0x80078a79 */
+extern int g_anSpyroHornStrikeSwingPhaseBlock[]; /* 0x80078ab8 */
+extern int g_nSpyroHornStrikeLayer1State; /* 0x80078ac0 */
+extern int g_nSpyroAnimLayer2Phase; /* 0x80078ac4: 0 = tracking the primary anim */
+extern int g_nSpyroAnimLayer2Rate; /* 0x80078ac8: frame advance per tick */
+extern int g_nSpyroAnimLayer2Active; /* 0x80078acc: layer-2 anim now playing */
+extern int g_anSpyroGroundNormalPost[]; /* 0x80078afc */
+extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
+extern int g_nSpyroGroundNormalY; /* 0x80078b00 — g_anSpyroGroundNormal[1] */
+extern int g_anSpyroGroundSlopeBlock[]; /* 0x80078b08 */
+extern int g_anSpyroWallSlideBlock[]; /* 0x80078b0c */
+extern int g_anSpyroSpeedBlock[]; /* 0x80078b20 */
+extern int g_nSpyroSlopeGravityStep; /* 0x80078b30: last slope-gravity step length */
+extern int g_nSpyroCarryMotionY; /* 0x80078b44 */
+extern int g_nSpyroVelocityY; /* 0x80078b50: g_anSpyroVelocity[1] */
+extern int g_nSpyroMotionZ; /* 0x80078b6c: g_anSpyroMotionVec[2] */
+extern int g_anSpyroInputLockoutBlock[]; /* 0x80078bb8: g_nSpyroInputLockoutCountdown */
+extern int g_anSpyroHornStrikeStateBlock[]; /* 0x80078bf0: g_nSpyroHornStrikeState */
+extern int g_anSpyroHornStrikeTimerBlock[]; /* 0x80078bf8: g_nSpyroHornStrikeTimer */
+extern int g_anSpyroSwingTargetBlock[]; /* 0x80078bfc */
+extern int g_anCameraScriptStickRequestXBlock[]; /* 0x80078c04 */
+extern int g_nSpyroSwingEulerPrev0; /* 0x80078c08 */
+extern int g_nSpyroSwingEulerPrev2; /* 0x80078c10 */
+extern int g_nSpyroSwingEulerSpringAccum0; /* 0x80078c14 */
+extern int g_nSpyroSwingEulerSpringAccum1; /* 0x80078c18 */
+extern int g_nSpyroSwingEulerSpringAccum2; /* 0x80078c1c */
+extern int g_anSpyroComposedBodyMtxBlock[]; /* 0x80078c20: g_anSpyroComposedBodyMtx */
+extern int g_nSpyroAnimLayer2GateFrames; /* 0x80078c44 */
+extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
+extern int g_anSpyroGroundChunkBlock[]; /* 0x80078ccc */
+extern int g_nSaveSlotIndex; /* 0x80078d1c */
+extern int g_nSaveFileTag; /* 0x80078d20 */
+extern int g_nSaveMenuDragonFromAngle; /* 0x80078d2c */
+extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
+extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
+extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
+extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
+extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */
+extern char *g_pStoryIntroStreamCursor; /* 0x80078dc4 */
+extern int g_nAssetDirBootBlockSize; /* 0x8007a6d4: boot-splash chunk byte count */
+extern int g_nTitleSceneSectorOffset; /* 0x8007a6d8: async-read byte offset */
+extern int g_nLevelLoadByteOffset; /* 0x8007a6e0: level-load byte offset */
+extern int g_nLevelLoadChunkSize; /* 0x8007a6e4: level-load chunk size */
+extern int g_anWorldArchiveOffsetBlock[]; /* 0x8007a6e8: alias, held across the reads */
+extern volatile int g_anGameOverSceneBlock[]; /* 0x8007a70c: g_nGameOverSceneByteSize */
+extern int g_nActorMeshDirSectorOffset; /* 0x8007a710 */
+extern int g_nActorMeshDirByteSize[4]; /* 0x8007a714 */
+extern int g_nLevelSplashByteSize; /* 0x8007a71c: splash size column of the level archive table */
+extern int g_nCreditsSceneSectorOffset; /* 0x8007a958 */
+extern int g_nCreditsSceneByteSize; /* 0x8007a95c */
+extern int g_anSpyroShadowRingIndexBlock[]; /* 0x8007aa30 */
+extern int g_anSpyroShadowHidden[1]; /* 0x8007aa34 */
+
 #endif /* OPEN_SPYRO_GLOBALS_H */

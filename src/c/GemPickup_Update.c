@@ -43,22 +43,11 @@ extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
 extern void TickGemPickupBurstEntity(void *actor);
 
-extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
-extern int g_nSpyroGroundNormalY; /* 0x80078b00 — g_anSpyroGroundNormal[1] */
-extern unsigned char
-    g_abGemPickupFlickerPairs1[]; /* substate-1 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs1Y[];
-extern unsigned char
-    g_abGemPickupFlickerPairs2[]; /* substate-2 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs2Y[];
-extern int g_anGemPickupIconRestPos[]; /* HUD icon rest positions, 3 x vec3 */
 extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
                                                     g_pLevelSampleBankEntries */
-extern void *g_apSampleBankEntriesBlock[];
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
-extern int g_anHudDragonCachedCountBlock[];
 
 #define GB g_anGemPickupBlock
 #define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])

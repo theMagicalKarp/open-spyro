@@ -12,9 +12,6 @@
    slots, refreshes the input-idle flags and forces a 2-tick frame.
    Returns 2 (the tick count). */
 
-extern unsigned char
-    g_abPadAnalogCalibratedBlock[]; /* calibrated-stick bytes */
-
 int SamplePadForDeathReplayFrame(void) {
   int frame;
   unsigned int held;

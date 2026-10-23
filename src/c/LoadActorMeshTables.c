@@ -10,7 +10,6 @@
    non-empty entry relocates a mesh header and stores the resolved pointer at
    g_apActorMeshTable[slot]. */
 
-extern int g_nActorMeshDirSectorOffset;
 extern int
     g_nActorMeshDirByteSize[4]; /* sized alias: keeps the directory-header
                       address in a register instead of folding to lui/lw %lo */

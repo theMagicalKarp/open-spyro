@@ -1,8 +1,5 @@
 #include "globals.h"
 
-extern int
-    g_anWorldSparkleShape[]; /* 10-word table in .data (5 signed pairs) */
-
 /* The world sparkle table: 16 records of 0x24 bytes (+0 kind, +4 shape
    table, +0x20 age). */
 #define T g_abWorldSparkleParticleTable

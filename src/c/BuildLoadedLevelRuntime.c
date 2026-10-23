@@ -30,18 +30,6 @@ extern void InitHudCounters(int full);
 extern int HandleMusicCommand(int track, int arg);
 
 extern short g_anCosineLut[];
-extern int g_nLevelLoadUnreadWord;
-extern int g_anGameOverRespawnPosVirtualBase[];
-extern int g_anLevelSpawnPosZBlock[];
-extern int g_nLevelSpawnPosX;
-extern int g_nLevelSpawnPosY;
-extern int g_anWorldAnimMeshKeyframeCountBlock[];
-extern int g_anWorldAnimUvCycleCountBlock[];
-extern int g_anWorldAnimColor2CountBlock[];
-extern int g_anWorldAnimColor0CountBlock[];
-extern int g_anWorldAnimVertexMorphCountBlock[];
-extern int g_anWorldAnimColor3CountBlock[];
-extern int g_anWorldAnimColor1CountBlock[];
 
 struct CameraParamBlock {
   int w[6];

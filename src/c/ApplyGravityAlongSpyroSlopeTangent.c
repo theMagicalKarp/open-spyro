@@ -9,7 +9,6 @@
    zero-length normal (free fall). */
 
 extern int g_anSpyroGroundNormal[];
-extern int g_nSpyroSlopeGravityStep; /* last slope-gravity step length */
 
 void ApplyGravityAlongSpyroSlopeTangent(void) {
   int vec[3];

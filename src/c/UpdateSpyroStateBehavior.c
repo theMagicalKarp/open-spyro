@@ -5,7 +5,6 @@
 #include "vecmath.h"
 
 extern unsigned short g_anCosineLut[];
-extern int g_anOrbDropTimeoutSpawnType[];
 
 SDATA(g_bSpyroJumpHoldForced, 4);
 

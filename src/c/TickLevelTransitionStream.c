@@ -7,22 +7,10 @@ extern int abs(int x);
 
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
                                           [4] g_dwWorldFogColor */
-extern void *g_apDrawBufBBlock[];
 extern short g_anCosineLut[];
-extern unsigned char g_abSpyroStateCameraModeTable[];
 
-extern void *g_pSharedLoadBuffer; /* level splash image buffer */
-extern int g_nLevelUnreadScratchA;
-extern int g_nLevelUnreadScratchB;
-extern int g_bLevelUseShortReleaseAnim;
-extern int g_bLevelPhasedBossKilled;
-extern int g_bLevelBossDefeated; /* cleared on level load */
-extern int g_anLevelRunnerArrived;
-extern int g_nLevelRunnerArrivedGoal1;
-extern int g_nActiveWorldIndex;     /* current world index */
+extern void *g_pSharedLoadBuffer;   /* level splash image buffer */
 extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
-extern int
-    g_nLevelSplashByteSize; /* splash size column of the level archive table */
 
 typedef struct {
   int w[5];

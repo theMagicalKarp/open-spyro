@@ -4,8 +4,7 @@
 #include "vecmath.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
-extern unsigned char g_abSpyroAnimPrevBlock[];    /* 0x80078a70 */
-extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
+extern unsigned char g_abSpyroAnimPrevBlock[]; /* 0x80078a70 */
 
 /* One frame record of an anim's frame table: g_apActorMeshTable[anim] holds a
    pointer to the table at +0x38, stride 4 per frame (+0x24 = sfx key,

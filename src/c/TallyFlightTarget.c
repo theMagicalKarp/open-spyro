@@ -1,7 +1,6 @@
 #include "globals.h"
 
 extern int g_anFlightTargetTally[];
-extern int g_anFlightTallyActiveSlots[];
 
 /* Bumps the per-id usage counter g_anFlightTargetTally[id] and registers `id`
    into the 4-slot active table g_anFlightTallyActiveSlots (claiming the first

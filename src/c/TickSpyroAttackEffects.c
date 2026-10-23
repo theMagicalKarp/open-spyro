@@ -29,10 +29,6 @@ extern uint PlaySoundEffect(uint sampleId, int *owner, uint mode,
                             void *pPlaying);
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
-extern int g_anSpyroFlameBreathTimerBlock[]; /* 0x80078768 */
-extern unsigned char
-    g_abSpyroHornStrikeSegmentBlock[];          /* 0x80078761, +2 = ring row */
-extern int g_anSpyroHornStrikeAnchorMtxBlock[]; /* 0x8007876c */
 
 /* The particle spawner installed by the level overlay:
    (count, kind, world position, direction | NULL). */

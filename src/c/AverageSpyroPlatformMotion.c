@@ -8,8 +8,6 @@
    platform impulse, and suppresses the camera spring when the platform
    moved far enough. */
 
-extern int g_anSpyroGroundChunkBlock[];
-
 void AverageSpyroPlatformMotion(void) {
   int tri[10];
   int avg[3];

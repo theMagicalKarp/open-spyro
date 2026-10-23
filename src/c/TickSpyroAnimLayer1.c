@@ -1,14 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
 
-extern int g_anSpyroHornStrikeSwingPhaseBlock[];
-extern int g_nSpyroHornStrikeLayer1State;
-extern unsigned char g_abSpyroHornStrikeTransitionModes[][2];
-extern unsigned char g_abSpyroHornStrikeAnimTable[];
-extern unsigned char g_bSpyroAnimLayer1Prev;
-extern unsigned char g_bSpyroAnimLayer1Current;
-extern unsigned char g_bSpyroAnimLayer1FramePrev;
-extern unsigned char g_bSpyroAnimLayer1Frame;
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock;
 
 /* 0x80049660 — per-frame layer-1 (horn-strike overlay) anim driver: phase 0
