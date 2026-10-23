@@ -3850,7 +3850,7 @@ void Level20_UpdateActors(void) {
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
                             0x15E, 0, 0, 0x15) != 0 ||
-              *(int *)((char *)spy + 0x170) != 0) {
+              spy->triggerEventId != 0) {
             actor->mode = 2;
             continue;
           }

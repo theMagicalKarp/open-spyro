@@ -235,7 +235,9 @@ typedef struct {
   int u128;                       /* 0x128 */
   char pad12C[0x38];
   int u164;                       /* 0x164 */
-  char pad168[0x14];
+  char pad168[0x8];
+  int triggerEventId;             /* 0x170 g_nSpyroTriggerCurrentEventId */
+  char pad174[0x8];
   int contact;                    /* 0x17C */
   char pad180[0x24];
   int headLook;                   /* 0x1A4 */
