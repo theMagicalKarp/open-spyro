@@ -1,23 +1,18 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "vecmath.h"
 
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern void ResetSpyroEntity(int hard);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int AbsAngleDelta12(int a, int b);
 
 /* alias block as an INT array — +0 anim-prev byte, -6 words
    g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must
    come off one held base. */
 extern int g_abSpyroAnimPrevBlock[];
-extern int g_nSaveMenuDragonFromAngle;
 extern unsigned int g_nSaveMenuDragonFromDist;
 extern unsigned int g_nSaveMenuOverlayFromDist;
-extern int g_nSaveMenuCameraFromAngle;
 extern unsigned int g_nSaveMenuCameraFromDist;
-extern int g_nSaveMenuSpyroFromYaw;
 extern int g_pSaveMenuDragonActor;
 
 /* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,
@@ -82,16 +77,16 @@ void BeginSaveMenuFromWorld(int actor) {
   rec = (char *)(*(int *)(owner + 4) * 88 + (int)g_pActorListBase);
   {
     register int ry asm("$2");
-    ry = *(int *)(rec + 0x10);
-    g_nSaveMenuSpyroToYaw =
-        ArcTan2(*(int *)(rec + 0xC) - g_abSpyroAnimPrevBlock[-6], ry - py, 1);
+    ry = ACTOR_RAW(rec, int, posY);
+    g_nSaveMenuSpyroToYaw = ArcTan2(
+        ACTOR_RAW(rec, int, posX) - g_abSpyroAnimPrevBlock[-6], ry - py, 1);
   }
   g_nSaveMenuDragonFromAngle =
-      ArcTan2(*(int *)(actor + 0xC) - g_abSpyroAnimPrevBlock[-6],
-              *(int *)(actor + 0x10) - g_nSpyroWorldPosY, 1);
+      ArcTan2(ACTOR_RAW(actor, int, posX) - g_abSpyroAnimPrevBlock[-6],
+              ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
   g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
-  z = *(int *)(actor + 0x14);
+  z = ACTOR_RAW(actor, int, posZ);
   yw = g_nSaveMenuSpyroToYaw;
   g_nSaveMenuDragonToDist = 0x480;
   g_nSaveMenuDragonFromZ = z;

@@ -1,8 +1,5 @@
 #include "globals.h"
 
-extern char g_szShuttingDownMsg[];       /* "Shutting Down\n" */
-extern char g_szLaunchingCrashDemoMsg[]; /* "Launching Crash Demo\n" */
-extern char g_szCrashDemoExePath[];      /* "cdrom:\\S0\\CRASH.EXE;1" */
 extern void QuiesceHardwareForExec(void);
 
 /* Tears the running game down and chain-loads the crash/demo executable: logs

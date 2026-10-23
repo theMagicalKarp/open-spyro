@@ -66,9 +66,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -86,10 +83,8 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -224,7 +219,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 /* ==== Level 16 classes ==== */
 
 
-extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -341,7 +335,7 @@ void Level16_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {

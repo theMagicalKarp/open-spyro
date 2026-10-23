@@ -45,9 +45,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -68,10 +65,8 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut_s[];
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -202,7 +197,6 @@ extern volatile unsigned char
 
 /* ==== Level 16 classes ==== */
 
-extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -244,8 +238,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-extern int SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 
 /* ==== Level 26 classes ==== */
 
@@ -342,7 +334,6 @@ extern int SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
 /* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
 /* from level_34 */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -351,7 +342,6 @@ extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
 /* from level_34 */
-extern int g_nCurrentWorldId[]; /* per-flag "seen" latches */
 /* from level_34 */
 /* from level_34 */
 /* from level_32 */
@@ -373,7 +363,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     continue;                                                                  \
   }
 /* from level_32 */
-extern int g_anCameraPos[]; /* camera position */
 /* from level_32 */
 typedef struct L32State145 {
   int u00;     /* 0x00 flags; bit 0 armed */

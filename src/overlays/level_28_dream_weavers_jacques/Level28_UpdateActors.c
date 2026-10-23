@@ -40,9 +40,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -56,10 +53,8 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -284,8 +279,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
   }                                                                            \
   continue
 /* from level_34 */
-extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 /* from level_34 */
 /* from level_34 */
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
@@ -469,7 +462,6 @@ typedef struct L20State403 {
   int u38;       /* 0x38 stun timer */
 } L20State403;
 
-extern int g_anCameraPos[]; /* camera position */
 
 /* Type 476 state. */
 typedef struct L20State476 {
@@ -668,7 +660,6 @@ typedef struct L28Rock {
   short timer2;         /* 0x0A */
   Actor *partner;       /* 0x0C the thrower */
 } L28Rock;
-extern int FindGroundHeightBelow(int *pos, int a);
 
 /* Type 150 state: Jacques. Hops between the stops of his path ring and
  * hands rocks (47) to throw. */
@@ -861,7 +852,7 @@ void Level28_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {

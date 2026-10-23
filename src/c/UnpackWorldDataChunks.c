@@ -23,6 +23,22 @@ extern int *g_apScriptedMobEntries[];            /* 0x80078640 */
 extern void *g_apMobEntryTable[];                /* 0x80076278 */
 extern int g_nLevelSampleBankCount;              /* 0x80076234 */
 
+/* The world collision header (g_pWorldCollisionHeader). Its table fields
+ * hold bundle-relative offsets that the unpack below makes absolute; the
+ * world probes then read them (FindWorldFloorBelowPoint). COLL_HDR keeps
+ * the original's byte-offset access: an `int *` index (`h[2]`) gives a
+ * different address RTL and the function stops matching. */
+typedef struct WorldCollisionHeader {
+  int pad00[2];
+  int xIndex;  /* 0x08 X-axis cell index (ushorts) */
+  int yzIndex; /* 0x0C combined Y/Z cell index (ushorts) */
+  int tris;    /* 0x10 triangle records, stride 0xC */
+  int surface; /* 0x14 per-triangle surface-type bytes */
+  int table18; /* 0x18 */
+} WorldCollisionHeader;
+#define COLL_HDR(h, field)                                                     \
+  (*(int *)((char *)(h) + (int)&((WorldCollisionHeader *)0)->field))
+
 /* 0x80012d58 — walk the loaded world bundle as a chain of size-prefixed
    sections (word 0 of each section links to the next), publish each
    section's table pointer + count globals and patch the relative offsets in
@@ -161,27 +177,27 @@ void *UnpackWorldDataChunks(int *p, int flag) {
         {
           int *h = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          *(int *)((char *)h + 8) = (int)p + *(int *)((char *)h + 8);
+          COLL_HDR(h, xIndex) = (int)p + COLL_HDR(h, xIndex);
         }
         {
           int *h = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          *(int *)((char *)h + 12) = (int)p + *(int *)((char *)h + 12);
+          COLL_HDR(h, yzIndex) = (int)p + COLL_HDR(h, yzIndex);
         }
         {
           int *h = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          *(int *)((char *)h + 16) = (int)p + *(int *)((char *)h + 16);
+          COLL_HDR(h, tris) = (int)p + COLL_HDR(h, tris);
         }
         {
           int *h = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          *(int *)((char *)h + 20) = (int)p + *(int *)((char *)h + 20);
+          COLL_HDR(h, surface) = (int)p + COLL_HDR(h, surface);
         }
         {
           int *h = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          *(int *)((char *)h + 24) = (int)p + *(int *)((char *)h + 24);
+          COLL_HDR(h, table18) = (int)p + COLL_HDR(h, table18);
         }
         p = (int *)((char *)base + *base);
       }

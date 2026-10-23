@@ -12,4 +12,7 @@ extern int g_nGamestate0cMenuCursor;
 extern int g_nGamestate0cSubstate;
 extern int g_nGamestate0cTimer;
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern char *g_pActorListBase;
+
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_CUTSCENE_H */

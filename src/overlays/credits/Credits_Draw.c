@@ -12,18 +12,18 @@
  * 2-vblank pace loop and PutDispEnv/PutDrawEnv/DrawOTag submit.
  */
 
+#include "credits.h"
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "actor.h"
 #include "main_shared.h"
+#include "level_emit_particles.h"
+#include "level_flight_results.h"
 
 extern void FillBlock16();
 extern void RenderWorldChunks();
 extern void EmitStaticActorMeshList();
 
-extern int g_nGamestate0fMode;
-extern unsigned char *g_pActiveFrameDrawEnv;
-extern unsigned char g_abFrameDrawEnv0[];
 extern unsigned char g_dwWorldFogColor;
 extern unsigned char g_bWorldFogColorG;
 extern unsigned char g_bWorldFogColorB;
@@ -33,12 +33,8 @@ extern unsigned char g_bFrameDrawEnv0BgB;
 extern unsigned char g_bFrameDrawEnv1BgR;
 extern unsigned char g_bFrameDrawEnv1BgG;
 extern unsigned char g_bFrameDrawEnv1BgB;
-extern char *g_pSpriteRecordWriteCursor;
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
-extern int g_nGenericCountdown;
-extern int g_apSpritePrimQueue[];
-extern int g_nVsyncFrameEndCount[];
 
 void Credits_Draw(void) {
   int i;
@@ -75,22 +71,22 @@ void Credits_Draw(void) {
   }
   for (i = 0; i < g_nCreditsGlyphCount; i++) {
     {
-      char *rec;
+      CredGlyph *glyph;
       char *prim = g_pSpriteRecordWriteCursor - 0x58;
       g_pSpriteRecordWriteCursor = prim;
-      rec = g_pCreditsGlyphPool + i * 0x1C;
+      glyph = (CredGlyph *)(g_pCreditsGlyphPool + i * 0x1C);
       FillWord(prim, 0, 0x58);
-      SREC->posX = *(short *)(rec + 0x12);
-      SREC->posY = *(short *)(rec + 0x14);
-      SREC->posZ = *(short *)(rec + 0x16);
-      SREC->rotX = rec[5];
-      if (*(short *)(rec + 0x1A) == 0x115) {
+      SREC->posX = glyph->x;
+      SREC->posY = glyph->y;
+      SREC->posZ = glyph->z;
+      SREC->rotX = glyph->r;
+      if (glyph->glyph == 0x115) {
         SREC->rotX += 0x29;
         SREC->posZ = 0x1C00;
       }
-      SREC->rotY = rec[6];
-      SREC->rotZ = rec[7];
-      SREC->type = *(unsigned short *)(rec + 0x1A);
+      SREC->rotY = glyph->g;
+      SREC->rotZ = glyph->b;
+      SREC->type = (unsigned short)glyph->glyph;
       SREC->tintMode = 0xB;
       SREC->cullRadius = 0xFF;
       SREC->otBias = 0x7F;

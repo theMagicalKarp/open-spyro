@@ -1,7 +1,7 @@
 #include "globals.h"
+#include "main_shared.h"
+#include "vecmath.h"
 
-extern void SubtractVector(int *dst, int *a, int *b);
-extern unsigned int VectorLength(int *vec, int include_z);
 extern void SteerActorTowardPoint(unsigned char *pos, int *wp, int speed, int a,
                                   int b, int c);
 

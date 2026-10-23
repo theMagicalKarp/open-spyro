@@ -19,22 +19,10 @@ extern short g_anCosineLut[];
 extern int g_adwHudBobSinePhaseBlock[];
 /* Same block seen from g_nHudFrameCycleMod9 (0x80077fe8): [0x14b] is
    &g_anLevelSpriteTexWordPairs[2]. */
-extern int g_anHudFrameCycleBlock[];
 /* Held-base (incomplete-array) views of four tables the inventory row loop
    keeps in one register each; the plain sized decls in globals.h stay in use
    at the sites the original addresses absolutely (A240). */
-extern unsigned char g_abLevelTotalDragonsBlock[];
-extern int g_anLevelGemsBlock[];
-extern unsigned char g_abWorldTitleGlyphBlock[];
 /* menu label blobs that have no friendly name yet. */
-extern char g_szQuitGamePrompt[]; /* "QUIT GAME?"  */
-extern char g_szSoundEffects[];   /* "SOUND FX"    */
-extern char g_szMusicVolume[];    /* "MUSIC"       */
-extern char g_szSpeakerSetup[];   /* "SOUND"       */
-extern char g_szVibration[];      /* "VIBRATION"   */
-extern char g_szInventory[];      /* "INVENTORY"   */
-extern char g_szExitLevel[];      /* "EXIT LEVEL"  */
-extern char g_szQuitGame[];       /* "EXIT WORLD"  */
 
 /* Draw for gamestates 2 (pause menu), 3 (inventory) and 6 (dialog overlay)
    — 0x8001a40c, 8840 bytes.

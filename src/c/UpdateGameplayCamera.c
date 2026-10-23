@@ -3,7 +3,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int ComputeCameraToTargetAngle(int *pos);
 extern int abs(int x);

@@ -1,12 +1,5 @@
 #include "globals.h"
 
-extern int g_nSpyroSwingEulerPrev0;
-extern int g_nSpyroSwingEulerPrev1;
-extern int g_nSpyroSwingEulerPrev2;
-extern int g_nSpyroSwingEulerSpringAccum0;
-extern int g_nSpyroSwingEulerSpringAccum1;
-extern int g_nSpyroSwingEulerSpringAccum2;
-
 /* 0x80049880: critically-damped spring that carries Spyro's three swing euler
    angles toward their targets and publishes them as byte angles. Per axis: the
    12-bit signed error drives a velocity accumulator (error*128 minus the

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad.h"
 
 extern int abs(int x);
 
@@ -19,8 +20,8 @@ void ApplyPadInputToSpyroBodyYaw(void) {
   int tgt;
 
   pad = (unsigned char *)g_pPadSubstepState;
-  if ((*(int *)(pad + 0x10) != 0) &&
-      ((*(unsigned int *)(pad + 0x14) & 0xFFFF0000) != 0x7F7F0000)) {
+  if ((((PadSubstep *)pad)->stickActive != 0) &&
+      ((((PadSubstep *)pad)->analog & 0xFFFF0000) != 0x7F7F0000)) {
     vec[0] = pad[0x16] - 0x7F;
     vec[1] = pad[0x17] - 0x7F;
     vec[2] = 0;

@@ -1,3 +1,4 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -23,17 +24,10 @@
 extern int SignedAngleDelta12(int a, int b);
 extern void ResetSpyroEntity(int mode);
 extern void StopAllSoundExceptMask(int mask);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
 extern void AdvanceSpyroAnimFrame(int delta);
 extern int FindWorldFloorBelowPoint(int *pos);
 extern void SampleSpyroShadowRingHeights(int mode);
-extern void *AllocActorRecordSlot(void);
-extern void InitActorRenderDefaults(void *actor);
-extern void EncodeCachedVecToActorDirCode(void *actor);
-extern void InsertActorIntoSpatialGrid(void *actor);
 extern void StopSoundVoiceByIndex(int voice, int mode);
-extern void DespawnActorRecord(void *actor);
 extern void CopyWords(void *dst, void *src, int byte_count);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
@@ -41,24 +35,12 @@ extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
 extern void CommitHudCounterAnimState(int slot, int digits, int phase);
 extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
-extern void TickGemPickupBurstEntity(void *actor);
 
-extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
-extern int g_nSpyroGroundNormalY; /* 0x80078b00 — g_anSpyroGroundNormal[1] */
-extern unsigned char
-    g_abGemPickupFlickerPairs1[]; /* substate-1 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs1Y[];
-extern unsigned char
-    g_abGemPickupFlickerPairs2[]; /* substate-2 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs2Y[];
-extern int g_anGemPickupIconRestPos[]; /* HUD icon rest positions, 3 x vec3 */
 extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
                                                     g_pLevelSampleBankEntries */
-extern void *g_apSampleBankEntriesBlock[];
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
-extern int g_anHudDragonCachedCountBlock[];
 
 #define GB g_anGemPickupBlock
 #define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])

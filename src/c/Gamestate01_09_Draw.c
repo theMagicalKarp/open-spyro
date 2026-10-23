@@ -2,9 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern int
-    g_nLevelIntroParallaxCountdown; /* level-intro camera parallax countdown */
-
 /* Draw gamestates 1 and 9 (level intro / world arrival): copies the world
    fog color into both frame DRAWENVs, clears the OT bins, draws the
    transition gem tally when active, Spyro, then the static world mesh —

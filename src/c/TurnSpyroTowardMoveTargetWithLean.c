@@ -4,7 +4,6 @@
 
 /* Per-speed-bucket turn-rate table at 0x8006c5f0; row stride 0x1a bytes, the
    lean-indexed rate short sits at +0xc (short[6]). */
-extern short g_anSpyroTurnRateRows[];
 
 /* 0x8003d6d0, 368 B: Steers Spyro's body yaw toward the move-target yaw using a
    lean accumulator g_nSpyroBodyYawStep (clamped -6..+6). Picks the turn rate

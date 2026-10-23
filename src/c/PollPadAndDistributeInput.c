@@ -12,8 +12,6 @@
    maintains the sticky idle flags and fans the sample out into the current
    g_nFrameTicks slot of the 4-record substep ring. */
 
-extern int g_anPadTypeBlock[]; /* g_nPadType as an array view */
-
 void PollPadAndDistributeInput(void) {
   unsigned char cal[4];
   int padState;

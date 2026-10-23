@@ -14,9 +14,7 @@
    (0x8000), swim hold (0x800) and the charge-hold flag (0x2000). Returns 1
    when a transition was dispatched. */
 
-extern int g_bDebugNoDepletion;
 extern int g_adwSpyroTriggerEventBlock[]; /* g_dwSpyroTriggerEventFlags */
-extern int g_anSpyroInputLockoutBlock[];  /* g_nSpyroInputLockoutCountdown */
 
 int DispatchSpyroPadStateChanges(int pad) {
   int *ev;

@@ -13,8 +13,6 @@
    biases against the euler camera state. */
 extern int abs(int);
 
-extern int g_anCameraPitchBlock[]; /* g_nCameraPitch */
-
 int ComputeCameraToTargetAngle(int *target) {
   int vec[3];
   int yaw;

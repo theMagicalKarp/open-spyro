@@ -54,9 +54,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -74,10 +71,8 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(int *pos);
 
-extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -306,7 +301,6 @@ typedef struct CyclerState {
   int legStep;               /* 0x40 */
 } CyclerState;
 
-extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 void Level23_UpdateActors(void) {
   Actor **actorList;

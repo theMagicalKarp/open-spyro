@@ -6,8 +6,6 @@
    in 1.19.12 fixed point: x = dist*cos(pitch)*cos(yaw), y =
    -dist*cos(pitch)*sin(yaw), z = dist*sin(pitch). */
 
-extern int g_anCameraSpringPitchBlock[];
-
 void ComputeCameraOrbitOffset(int *out) {
   int cx;
   int cy;

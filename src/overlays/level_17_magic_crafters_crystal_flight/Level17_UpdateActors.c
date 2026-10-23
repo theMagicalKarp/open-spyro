@@ -55,9 +55,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -75,7 +72,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(int *pos);
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -258,7 +254,7 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-extern void TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
+extern int TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
                           int c, int d);
 
 /* Types 0x1E1..0x1E3: the walker's embers. */

@@ -41,9 +41,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -62,10 +59,8 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -195,7 +190,6 @@ extern volatile unsigned char
 
 /* ==== Level 16 classes ==== */
 
-extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -237,8 +231,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 
 /* ==== level_10 per-class state blocks ==== */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
@@ -313,7 +305,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
 /* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
 /* from level_34 */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -391,7 +382,6 @@ typedef struct L18Guard {
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
 } L18Guard;
-extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
 extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* Type 28 state. */
@@ -427,7 +417,6 @@ typedef struct L20State403 {
   int u38;       /* 0x38 stun timer */
 } L20State403;
 
-extern int g_anCameraPos[]; /* camera position */
 
 /* Type 476 state. */
 typedef struct L20State476 {
@@ -558,7 +547,7 @@ void Level20_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {

@@ -1,10 +1,10 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "pad.h"
 #include "vecmath.h"
 
 /* D-pad -> yaw table (16 entries, stride 2), indexed by the pad button nibble.
  */
-extern short g_anDpadDirectionYaw[];
 
 /* 0x8003d3b8 (0x174) — convert this substep's pad input (g_pPadSubstepState)
    into a movement target. Analog stick (bytes +0x16/+0x17 centred on 0x7f):
@@ -32,8 +32,8 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
   int dy;
 
   pad = (unsigned char *)g_pPadSubstepState;
-  if (*(int *)(pad + 0x10) != 0 &&
-      (*(unsigned int *)(pad + 0x14) & 0xffff0000) != 0x7f7f0000) {
+  if (((PadSubstep *)pad)->stickActive != 0 &&
+      (((PadSubstep *)pad)->analog & 0xffff0000) != 0x7f7f0000) {
     k = 0x7f;
     yaw = ArcTan2(k - pad[0x17], k - pad[0x16], 1);
     target = (volatile int *)g_anSpyroMoveTargetYawBlock;
@@ -56,7 +56,7 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
     }
   } else {
     dpad = (unsigned char *)g_pPadSubstepState;
-    if ((*(unsigned int *)(dpad + 4) & 0xf000) != 0) {
+    if ((((PadSubstep *)dpad)->held & 0xf000) != 0) {
       g_nSpyroSpeedTarget = speed;
       g_nSpyroMoveTargetYaw = *(short *)((char *)g_anDpadDirectionYaw +
                                          ((*(int *)(dpad + 4) >> 0xb) & 0x1e));

@@ -22,4 +22,7 @@ extern char *g_pPrimBufferLimit;
 extern char *g_pPrimBufferWriteCursor;
 extern char *g_pSpriteRecordBufferTop;
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern int g_anFlightTargetTally;
+
 #endif /* OPEN_SPYRO_LEVEL_FLIGHT_RESULTS_H */

@@ -52,9 +52,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -75,10 +72,8 @@ extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, 
 
 
 
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -210,7 +205,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 /* ==== Level 16 classes ==== */
 
-extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -252,8 +246,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-extern int SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 
 /* ==== Shared classes (from level 26) ==== */
 
@@ -287,7 +279,6 @@ typedef struct L18Drum {
   int reload; /* 0x20 */
   int voice;  /* 0x24 */
 } L18Drum;
-extern int g_anLevelTriggerStateSlots[]; /* per-channel busy flags */
 
 /* Case 466 -- roaming ram. */
 typedef struct L18Ram {

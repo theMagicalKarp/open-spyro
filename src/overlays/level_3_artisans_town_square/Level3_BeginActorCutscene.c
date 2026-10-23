@@ -17,9 +17,8 @@
 #include "level_emit_particles.h"
 #include "level_actor_cutscene.h"
 
-extern char *g_pActorListBase;
 
-/* The three position reads stay in byte-offset form: written as
+/* The three position reads go through ACTOR_RAW: written as
  * actor->posX/posY/posZ (or through &actor->posX) sched1 reorders them
  * against the global stores and the function stops matching. */
 void Level3_BeginActorCutscene(Actor *actor) {
@@ -40,13 +39,13 @@ void Level3_BeginActorCutscene(Actor *actor) {
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
   g_pGamestate0cRecord = g_pActorListBase + count * 0x58;
-  g_nGamestate0cCamYawStart = ArcTan2(pos[0] - *(int *)((char *)actor + 0xC),
-                             g_nCameraPosY - *(int *)((char *)actor + 0x10), 1);
+  g_nGamestate0cCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
+                             g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);
   g_nGamestate0cCamRadiusStart = VectorLength(vec, 0);
   g_nGamestate0cCamHeightStart = g_nCameraPosZ;
   b = actor->rotZ;
   g_nGamestate0cCamRadiusGoal = 0x52E;
   g_nGamestate0cCamYawGoal = ((b << 4) - 0x312) & 0xFFF;
-  g_nGamestate0cCamHeightGoal = *(int *)((char *)actor + 0x14) + 0x58F;
+  g_nGamestate0cCamHeightGoal = ACTOR_RAW(actor, int, posZ) + 0x58F;
 }

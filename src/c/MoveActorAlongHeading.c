@@ -19,7 +19,6 @@
    was committed. */
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         int *actor, int c);
-extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int FindGroundHeightBelow(int *pt, int z);
 extern void EncodeCachedVecToActorDirCode(int *actor);
 extern void RefreshActorDerivedState(int *actor, int mode);

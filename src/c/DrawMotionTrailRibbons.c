@@ -13,10 +13,6 @@
    over the first three slices and collapses to 0 on the last-but-one; Gnasty's
    world (level 0x3f) quarters it and swaps red with green. */
 
-extern int
-    g_anMotionTrailSliceCounts[];     /* 0x800772c8: per-ribbon slice count */
-extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */
-
 typedef struct {  /* 0x1c */
   int wx, wy, wz; /* 0x00 world position */
   int sx, sy;     /* 0x0c projected screen position */

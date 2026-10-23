@@ -5,10 +5,7 @@
 extern int abs(int x);
 
 /* Held-base view of g_anCameraSpringDeltaState. */
-extern int g_anCameraSpringDeltaStateBlock[];
 /* Scalar view of g_anCameraSpringDeltaState[0]. */
-extern int g_nCameraSpringYawDelta;
-extern int g_nCameraSpringPitchDelta;
 
 SDATA(g_nCameraLosClear, 4);
 SDATA(g_nCameraManualYawInput, 4);

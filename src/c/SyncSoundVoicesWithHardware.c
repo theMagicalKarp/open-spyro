@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spu.h"
 
 /* Reconcile software voice rows with the SPU (0x80056e3c): probe all 24
    hardware voice key states into a stack buffer; for any voice the hardware
@@ -23,11 +24,8 @@ void SyncSoundVoicesWithHardware(void) {
     int state = *p;
     if (state == one) {
       int mask = state << i;
-      if ((*(volatile unsigned short *)((char *)g_abSpuCommonAttr + off +
-                                        0x36) &
-           0xC1) == 0) {
-        *(volatile unsigned short *)((char *)g_abSpuCommonAttr + off + 0x36) =
-            idle;
+      if ((VOICE_ROW_RAW(off, volatile unsigned short, nFlags) & 0xC1) == 0) {
+        VOICE_ROW_RAW(off, volatile unsigned short, nFlags) = idle;
         *pending |= mask;
       }
     }

@@ -81,4 +81,14 @@ typedef struct Actor {
                         * packs it into the draw word) */
 } Actor; /* 0x58 */
 
+/* Byte offset of an Actor field. */
+#define ACTOR_OFFSET(field) ((int)&((Actor *)0)->field)
+
+/* An Actor field accessed as a plain byte-offset memory reference rather
+ * than a struct member. Same address and width as `actor->field`, but gcc
+ * 2.7 does not mark it in-struct, so the scheduler and cse keep it ordered
+ * against scalar global stores; a few matched functions need that order.
+ * Use it only where `actor->field` was measured to change the output. */
+#define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
+
 #endif /* OPEN_SPYRO_ACTOR_TYPE_H */

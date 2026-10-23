@@ -2,7 +2,6 @@
 
 /* held-base view of g_nSpyroSpeedTarget (0x80078b20): [0] is the target,
    [0x14] (+0x50) is g_nSpyroMotionSpeed. */
-extern int g_anSpyroSpeedBlock[];
 
 /* 0x8003d92c (76 bytes) — move the motion speed one substep toward the target:
    accelerate by `accel` while under it, decelerate by `decel` while over it,

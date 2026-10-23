@@ -6,8 +6,6 @@
 
 extern int abs(int x);
 
-extern int g_bDebugNoDepletion;
-
 SDATA(g_pSpyroContactActor, 4);
 
 /* Charge-state trigger dispatcher (0x80041270, 744 bytes), called from the

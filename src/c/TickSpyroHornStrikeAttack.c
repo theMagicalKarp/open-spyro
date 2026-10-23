@@ -45,13 +45,6 @@
    Every non-cancelled frame ends by ticking the strike timer, and the frame
    always finishes in SmoothSpyroByteEulerSpring. */
 
-extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */
-extern int g_anSpyroHornStrikeTimerBlock[]; /* g_nSpyroHornStrikeTimer */
-extern int g_anSpyroComposedBodyMtxBlock[]; /* g_anSpyroComposedBodyMtx */
-extern int
-    g_anSpyroHornStrikeTipOffsets2[]; /* g_anSpyroHornStrikeTipOffsets+0xC */
-extern unsigned char g_abSpyroHornCollisionActiveBlock[];
-
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
    gain only. It reads worse than the hand-written form it replaced and

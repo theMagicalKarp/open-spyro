@@ -2,14 +2,10 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern void *g_pSharedLoadBuffer;    /* shared CD sector buffer pointer */
-extern int g_nAssetDirBootBlockSize; /* boot-splash chunk byte count */
-extern int g_anAssetDirectory;       /* boot-splash byte offset */
-extern int g_nInitUnreadWord;
+extern void *g_pSharedLoadBuffer; /* shared CD sector buffer pointer */
+extern int g_anAssetDirectory;    /* boot-splash byte offset */
 
-extern void *g_apDrawBufBlock2[]; /* distinct alias, fade-out pass (A23) */
-extern int g_anCdBaseLbaBlock[];  /* alias of g_nCdBaseLba */
-extern int g_anWorldArchiveOffsetBlock[]; /* alias, held across the reads */
+extern int g_anCdBaseLbaBlock[]; /* alias of g_nCdBaseLba */
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
    SPU, pad, sound engine, CD and GTE, publishes both draw buffers, then runs

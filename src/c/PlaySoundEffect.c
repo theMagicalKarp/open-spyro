@@ -1,21 +1,16 @@
 #include "globals.h"
 #include "sample_bank.h"
 #include "spu.h"
+#include "vecmath.h"
 
 extern int GetSoundVoiceStatusByOwner(unsigned char *owner,
                                       unsigned int sampleId);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern void RShiftVector3(int *vec, unsigned int bits);
-extern unsigned int VectorLength(int *vec, int includeZ);
-extern unsigned int GetRandomU32(void);
-extern int ArcTan2(int y, int x, int highPrecision);
-extern unsigned int AbsAngleDelta8(int a, int b);
 extern void ComputeVoicePanAndFalloff(short *vol, int dist,
                                       unsigned char bearing, unsigned int range,
                                       short *cached);
 extern void ApplySpuVoiceAttr(unsigned int *attr);
 
-/* One of the 24 software mixer rows at 0x80075F30 (stride 0x1C). */
+/* SPUVOICEROW with the fields this function re-reads made volatile. */
 typedef struct {
   /* 0x00 */ unsigned char *pOwner;
   /* 0x04 */ volatile short nVolL;
@@ -27,13 +22,11 @@ typedef struct {
   /* 0x10 */ volatile short anPanCache[2];
   /* 0x14 */ int nPitchStep;
   /* 0x18 */ unsigned char *pPlaying;
-} SPUVOICEROW;
+} SPUVOICEROW_V;
 
-extern SPUVOICEROW g_aSpuVoiceRows[];   /* the 24 mixer rows */
-extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */
+extern SPUVOICEROW_V g_aSpuVoiceRows[]; /* the 24 mixer rows */
 extern int g_nSfxOverrideFlags[]; /* one-shot override flags: 1 = vol pair, 2 =
                                      pitch */
-extern unsigned short g_nSfxOverridePitch; /* override pitch */
 
 /* The one-shot override pair and the row volume fields it feeds are all
    volatile: the mixer reads the row back on the next tick, so every read and

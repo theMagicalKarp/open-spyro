@@ -135,10 +135,8 @@ typedef struct ChaserState {
 
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
-extern void BuildActiveActorList(void);
 
 /* Step a countdown timer; non-zero when it fires. */
-extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level actor pool, switch flags, and the sound tables and override
  * globals used when a behaviour plays a sound. */
@@ -153,14 +151,9 @@ extern struct {
 } g_nHudWorldEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos);
-extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
-extern void CommitActorKillGems(int a, void *b);
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
@@ -182,7 +175,6 @@ typedef struct {
 typedef struct {
   unsigned char *v;
 } PtrU8;
-extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
 
 /* g_aRotBillboards records (SpawnActorRotBillboard) used as sparkles around items. */
 typedef struct RotBillboard {
@@ -195,7 +187,6 @@ extern RotBillboard g_aRotBillboards[];
 
 /* Type 187: talking dragon. Dragon count, dialogue selection, and the latch
  * in the save-options block. */
-extern void ResetSpyroLinearMotion(void);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
@@ -268,16 +259,10 @@ typedef struct PortalDesc {
   int posB[3];            /* 0x18 */
 } PortalDesc;
 
-extern void StubRewardHook(int script, int a);
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void UnpackWorldCollisionTri(int a, int *out);
-extern int FindGroundHeightBelow(int *v, int k);
 extern int GetGroundTriggerRegionType(void);
-extern int CheckLineOfSightSegment(int *a, int *b);
-extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -296,7 +281,6 @@ typedef struct FxNode {
 
 extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
-extern int StepAngle8Toward(int a, int b, int c);
 
 /* Shift a vector left by n. */
 
@@ -547,11 +531,8 @@ extern struct {
 } g_anSpyroRequestVelocity; /* scripted camera look-at */
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
-extern int WrapAngleDelta8(int a, int b);
 
 /* ==== Globals shared with level 4 ==== */
-extern void RefreshHudLevelGemCounter(void);
-extern void ResetSpyroEntity(int a0);
 
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
  * takes Spyro out of the level when he drops into it. */
@@ -783,7 +764,7 @@ void Level2_UpdateActors(void) {
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
-            g_nSpyroRequestTargetZ = *(int *)((char *)actor + 0x14) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector((int *)(base + 0x174), &actor->posX);
 
             if (depth < drop) {

@@ -7,10 +7,6 @@
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
    keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
-extern unsigned char g_bSpyroSwingByteEuler1; /* 0x80078a69 */
-extern char g_szMemCardSaveName[];            /* memory card save file name */
-extern int g_nSaveSlotIndex;
-extern int g_nSaveFileTag;
 extern int g_nSaveMenuDragonFromDist;
 extern int g_nSaveMenuOverlayFromDist;
 extern int g_nSaveMenuCameraFromDist;

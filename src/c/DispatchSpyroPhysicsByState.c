@@ -1,21 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern void AverageSpyroPlatformMotion(void);
-extern void AdvanceSpyroPhysics(void);
-extern void ProbeSpyroGroundContact(void);
-extern void StepSpyroOntoLocalFloor(void);
-extern void ProbeSpyroLedgeForward(void);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int LookupCosine(int angle);
-extern int LookupSine(int angle);
-extern int IntegerSqrt(int n);
-extern void CopyVector(int *dst, int *src);
-extern void RShiftVector3(int *vec, int shift);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern int CollideSphereWithWorldAndActors(int *pos, int radius, int height);
-extern int FindGroundHeightBelow(int *pos, int depth);
-extern int GetRandomU32(void);
 extern int abs(int x);
 
 #define SPY g_anSpyroWorldPosBlock

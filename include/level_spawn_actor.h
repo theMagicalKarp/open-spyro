@@ -94,4 +94,12 @@ extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern int g_anFlightTargetTally;
+extern char *g_apSpritePrimQueue[];
+extern int g_dwHudBobSinePhase;
+extern char g_pOtDepthBinHead0[];
+extern char *g_pRenderScratchRegionBase;
+extern char *g_pSpriteRecordWriteCursor;
+
 #endif /* OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H */

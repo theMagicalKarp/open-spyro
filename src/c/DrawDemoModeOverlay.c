@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char g_szDemoMode[];
-
 /* Build the "DEMO MODE" text overlay (0x80018908) via BuildTextSprites, then
    phase-pulse each glyph's alpha (+0x46) from the sine LUT indexed by the
    vblank tick, and hand the records to the sprite queue via

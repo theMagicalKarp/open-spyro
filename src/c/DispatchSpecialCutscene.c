@@ -8,7 +8,6 @@
    level 0xA. World 2: credits without a mesh reload. World 3: credits with a
    mesh reload, seeding g_nCreditsPageIndex = 0xA so BeginCreditsSequence keeps
    it. */
-extern int g_nCreditsPageIndex;
 
 void DispatchSpecialCutscene(void) {
   RECT rect;

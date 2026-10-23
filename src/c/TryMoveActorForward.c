@@ -14,7 +14,6 @@
    ground height differs from the actor's cached Z by >= 0xC9. Returns 1 on
    contact block, 2 on world collision / ground-step reject, 0 on commit. */
 extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int flag);
-extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
                                         int actor, int flag);
 extern int FindGroundHeightBelow(int *pt, int z);

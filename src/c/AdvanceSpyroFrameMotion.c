@@ -1,10 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern void DispatchSpyroPhysicsByState(void);
-extern int FindGroundHeightBelow(int *pos, int maxDown);
-extern void DispatchSpyroTriggerEvent(int surface, int kind);
 
 /* shared-base view of g_dwSpyroRequestMask (0x80078c4c): the mask read and
    the FindGroundHeightBelow position arg (-0x1F4 = g_anSpyroWorldPos) are

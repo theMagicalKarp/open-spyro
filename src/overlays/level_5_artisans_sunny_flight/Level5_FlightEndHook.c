@@ -11,7 +11,6 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 
-extern int g_anFlightTargetTally;
 
 void Level5_FlightEndHook(void) {
   if (g_nGamestate != 7) {

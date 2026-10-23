@@ -300,4 +300,22 @@ extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void TriggerRespawnOrGameOver(void);
 extern void srand(unsigned int seed);
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern void AddVector(int *dst, int *a, int *b);
+extern int ArcTan2(int y, int x, int high_precision);
+extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
+extern void SubtractVector(int *dst, int *a, int *b);
+extern void ZeroVector(int *vec);
+extern int g_anFlightTargetTally;
+extern int g_bDebugNoDepletion;
+extern unsigned char g_bSpyroSwingByteEuler1;
+extern int g_nCreditsFirstVisibleLine;
+extern int g_nCreditsLastVisibleLine;
+extern int g_nCreditsLineCount;
+extern int g_nCreditsPageIndex;
+extern int g_nGamestate0fMode;
+extern int g_nGenericCountdown;
+extern int g_nLevelIntroParallaxCountdown;
+extern int g_nStaticMeshLodCutoff;
+
 #endif /* OPEN_SPYRO_MAIN_SHARED_H */

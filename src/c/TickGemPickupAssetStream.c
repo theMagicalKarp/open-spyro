@@ -2,15 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern int
-    g_anGemPickupHeaderEndBlock[]; /* held-base view of the header-end offset */
-extern int
-    g_anGemPickupStreamStateBlock[]; /* held-base view of the stream state */
-extern int
-    g_anGemPickupSpuChunkBlock[]; /* held-base view of the SPU chunk index */
-extern int g_nWorldUnpackLimit;   /* end of the unpack work area */
-extern char g_abGemPickupAssetHeader[]; /* gem-pickup asset header copy */
-
 #define HEAD (g_apWorldUnpackHeadBlock[0])
 #define HDR (g_anGemPickupHeaderEndBlock[0])
 #define CHUNK (g_anGemPickupSpuChunkBlock[0])

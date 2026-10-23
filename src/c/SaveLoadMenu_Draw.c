@@ -7,24 +7,6 @@ typedef struct {
   short x, y, w, h;
 } MenuBox;
 extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
-extern char g_szHiSpyro[];
-extern char g_szSaveGame[];
-extern char g_szReplayDragon[];
-extern char g_szNoSaveFile[];
-extern char g_szPleaseRestartWith[];
-extern char g_szAMemoryCardTo[];
-extern char g_szEnableGameSaves[];
-extern char g_szSaving[];
-extern char g_szNoMemoryCard[];
-extern char g_szPleaseInsertThe[];
-extern char g_szMemoryCardWith[];
-extern char g_szThisGameSaveFile[];
-extern char g_szSaveError[];
-extern char g_szPleaseCheckThat[];
-extern char g_szTheMemoryCard[];
-extern char g_szIsStillInPlace[];
-extern char g_szSaveFailed[];
-extern char g_szGameSaved[];
 
 #define SM g_anSaveMenuBlock
 

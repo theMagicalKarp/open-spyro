@@ -69,4 +69,13 @@ extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
 extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
 extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 
+/* Engine helpers every actor family calls; parameter names follow the main definitions. */
+extern int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask, Actor *actor, int flag);
+extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
+extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int p6, int p7, int blockA, int blockB, int p10, int p11, int flags);
+extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
+extern void SVectorToVectorShl2(int *d, int *s);
+extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
+extern int g_anCameraPos[];
+
 #endif /* OPEN_SPYRO_LEVEL_ACTORS_H */

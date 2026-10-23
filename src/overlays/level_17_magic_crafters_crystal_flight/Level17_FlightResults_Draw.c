@@ -26,16 +26,9 @@
 #include "level_emit_particles.h"
 #include "level_spawn_actor.h"
 #include "level_flight_results.h"
+#include "actor.h"
 
-extern void PlaySoundEffect();
 
-extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
-extern char *g_pRenderScratchRegionBase;
-extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
-extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
-extern char *g_apSpritePrimQueue[];          /* published record table */
-extern char g_pOtDepthBinHead0[];           /* OT depth bins */
-extern int g_anFlightTargetTally;              /* tally: class 0 */
 
 static const char g_szTryAgain[12];
 

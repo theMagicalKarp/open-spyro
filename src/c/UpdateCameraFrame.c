@@ -3,9 +3,7 @@
 #include "main_shared.h"
 #include "sdata.h"
 
-extern int g_nWorldFloorSurfaceType;
 extern int g_apScriptedCameraViewBlock;
-extern int g_nStaticMeshLodCutoff;
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
 

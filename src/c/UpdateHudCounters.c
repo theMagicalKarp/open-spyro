@@ -33,12 +33,8 @@ extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
    on the plain absolute symbol, which is the per-site A240 split. */
 extern unsigned char g_adwHudBobSinePhaseBlock[];   /* 0x80077fe4 */
 extern unsigned char g_anHudLevelGemCachedBlock[];  /* 0x80077fc8 */
-extern unsigned char g_abHudGemRollPhaseBlock[];    /* 0x80077fad */
 extern unsigned char g_abHudWorldEggIconBlock[];    /* 0x80077fab, state[3] */
 extern unsigned char g_abHudLevelEggCounterBlock[]; /* 0x80077fac, state[4] */
-extern int g_anHudButterflyCachedBlock[];           /* 0x80077fe0 */
-extern int g_anHudWorldEggTimerBlock[];             /* 0x80077fc0 */
-extern int g_anHudLevelEggTimerBlock[];             /* 0x80077fc4 */
 
 /* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
 #define FIELDW(sym) (((struct { int v; } *)&(sym))->v)

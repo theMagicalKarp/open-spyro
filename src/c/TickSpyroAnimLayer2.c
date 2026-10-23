@@ -2,9 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern int g_nSpyroAnimLayer2Phase;  /* 0 = tracking the primary anim */
-extern int g_nSpyroAnimLayer2Rate;   /* frame advance per tick */
-extern int g_nSpyroAnimLayer2Active; /* layer-2 anim now playing */
 extern unsigned char g_bSpyroAnimLayer2Substep;
 
 /* 0x80049e8c — per-frame layer-2 anim driver: while the gate counter is

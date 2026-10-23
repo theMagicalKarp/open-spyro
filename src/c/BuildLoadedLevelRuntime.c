@@ -10,6 +10,7 @@
    pointer + count published to a global and its stored offsets rebased onto
    the chunk itself. */
 
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -19,29 +20,13 @@ extern void ResetPadFrameSubstepTable(unsigned int *pad);
 extern void ResetSpyroEntity();
 extern void ChangeSpyroState();
 extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void InsertActorIntoSpatialGrid(char *rec);
-extern void HideActorRenderRecord(char *rec);
 extern void FindGroundHeightBelow(int *pos, int range);
-extern void EncodeCachedVecToActorDirCode(char *rec);
-extern void DespawnActorRecord(char *rec);
 extern void ResetWorldParticleTables(void);
 extern void ResetWorldChunkAnimations(void);
 extern void InitHudCounters(int full);
 extern int HandleMusicCommand(int track, int arg);
 
 extern short g_anCosineLut[];
-extern int g_nLevelLoadUnreadWord;
-extern int g_anGameOverRespawnPosVirtualBase[];
-extern int g_anLevelSpawnPosZBlock[];
-extern int g_nLevelSpawnPosX;
-extern int g_nLevelSpawnPosY;
-extern int g_anWorldAnimMeshKeyframeCountBlock[];
-extern int g_anWorldAnimUvCycleCountBlock[];
-extern int g_anWorldAnimColor2CountBlock[];
-extern int g_anWorldAnimColor0CountBlock[];
-extern int g_anWorldAnimVertexMorphCountBlock[];
-extern int g_anWorldAnimColor3CountBlock[];
-extern int g_anWorldAnimColor1CountBlock[];
 
 struct CameraParamBlock {
   int w[6];

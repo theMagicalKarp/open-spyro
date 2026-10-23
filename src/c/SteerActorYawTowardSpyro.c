@@ -20,8 +20,6 @@
 extern void StubActorHook(int *actor, int a, int b);
 extern int abs(int);
 
-extern int g_nActorAnimDone;
-
 int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
                              int thresh, int animId) {
   int ret;
