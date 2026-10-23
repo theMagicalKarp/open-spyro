@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -50,21 +51,21 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
 
       ch = *pszText;
       if (ch >= '0' && ch <= '9') {
-        *(short *)(CURSOR_P + 0x36) = ch + 0xD4;
+        ((Actor *)CURSOR_P)->type = ch + 0xD4;
       } else if (ch >= 'A' && ch <= 'Z') {
-        *(short *)(CURSOR_P + 0x36) = ch + 0x169;
+        ((Actor *)CURSOR_P)->type = ch + 0x169;
       } else if ((unsigned char)ch == '/') {
-        *(short *)(CURSOR + 0x36) = 0x115;
+        ((Actor *)CURSOR)->type = 0x115;
       } else if ((unsigned char)ch == '?') {
-        *(short *)(CURSOR + 0x36) = 0x116;
+        ((Actor *)CURSOR)->type = 0x116;
       } else if ((unsigned char)ch == '%') {
-        *(short *)(CURSOR + 0x36) = 0x110;
+        ((Actor *)CURSOR)->type = 0x110;
       } else if ((unsigned char)ch == '^') {
-        *(short *)(CURSOR + 0x36) = 0x141;
+        ((Actor *)CURSOR)->type = 0x141;
       } else if ((unsigned char)ch == '+') {
-        *(short *)(CURSOR + 0x36) = 0x13D;
+        ((Actor *)CURSOR)->type = 0x13D;
       } else {
-        *(short *)(CURSOR_P + 0x36) = 0x147;
+        ((Actor *)CURSOR_P)->type = 0x147;
       }
 
       CURSOR[0x47] = 0x7F;

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "pad.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
    InitPadSystem via InstallVSyncCallback. Ticks the vblank/CD watchdog
@@ -203,11 +204,11 @@ void PollPadAndDistributeInput(void) {
       int slot = g_nFrameTicks * 0x18;
       int *analog;
       int *ring = (int *)&g_adwPadHeldBlock[2];
-      *(int *)((char *)g_anPadSubstepRing + slot) = padType;
-      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 4) = buttons;
-      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 8) = pressed;
-      *(unsigned int *)((char *)g_anPadSubstepRing + slot + 0xC) = released;
-      *(int *)((char *)g_anPadSubstepRing + slot + 0x10) = ring[0];
+      PAD_SUBSTEP(slot)->padType = padType;
+      PAD_SUBSTEP(slot)->held = buttons;
+      PAD_SUBSTEP(slot)->pressed = pressed;
+      PAD_SUBSTEP(slot)->released = released;
+      PAD_SUBSTEP(slot)->stickActive = ring[0];
       analog = &ring[18];
       *(unsigned int *)((char *)analog + slot) = g_dwPadAnalogCalibrated;
     }

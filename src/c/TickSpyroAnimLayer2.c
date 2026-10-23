@@ -2,10 +2,11 @@
 
 extern void AdvanceSpyroAnimLayer2Frame(int amount);
 
-extern int D_80078AC4;
-extern int D_80078AC8;
-extern int D_80078ACC;
-extern int D_80078C40;
+extern int g_nSpyroAnimLayer2Phase;  /* 0 = tracking the primary anim */
+extern int g_nSpyroAnimLayer2Rate;   /* frame advance per tick */
+extern int g_nSpyroAnimLayer2Active; /* layer-2 anim now playing */
+extern int
+    g_nSpyroAnimLayer2Request; /* requested layer-2 anim; 0 = mirror primary */
 extern unsigned char g_bSpyroAnimLayer2Prev;
 extern unsigned char g_bSpyroAnimLayer2Current;
 extern unsigned char g_bSpyroAnimLayer2FramePrev;
@@ -22,9 +23,9 @@ void TickSpyroAnimLayer2(void) {
   unsigned char frame;
   unsigned char sub;
 
-  if (D_80078AC4 == 0) {
-    if (D_80078C40 == D_80078ACC) {
-      if (D_80078C40 == 0) {
+  if (g_nSpyroAnimLayer2Phase == 0) {
+    if (g_nSpyroAnimLayer2Request == g_nSpyroAnimLayer2Active) {
+      if (g_nSpyroAnimLayer2Request == 0) {
         /* volatile accesses pin the original's load-all-then-store-all
            schedule (the -g3 scheduler otherwise pairs each store with
            its load). */
@@ -39,7 +40,7 @@ void TickSpyroAnimLayer2(void) {
         *(volatile unsigned char *)&g_bSpyroAnimLayer2Frame = frame;
         *(volatile unsigned char *)&g_bSpyroAnimLayer2Substep = sub;
       } else {
-        AdvanceSpyroAnimLayer2Frame(D_80078AC8);
+        AdvanceSpyroAnimLayer2Frame(g_nSpyroAnimLayer2Rate);
       }
     }
   }

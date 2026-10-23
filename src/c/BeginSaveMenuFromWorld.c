@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern void ResetSpyroEntity(int hard);
@@ -11,7 +12,6 @@ extern int AbsAngleDelta12(int a, int b);
    g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must
    come off one held base. */
 extern int g_abSpyroAnimPrevBlock[];
-extern int g_nSpyroWorldPosY; /* scalar alias — g_anSpyroWorldPos[1] */
 extern int g_nSaveSlotLoaded;
 extern int g_nSaveMenuDragonFromAngle;
 extern unsigned int g_nSaveMenuDragonFromDist;

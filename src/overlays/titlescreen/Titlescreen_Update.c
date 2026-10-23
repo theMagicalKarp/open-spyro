@@ -52,7 +52,7 @@ void Titlescreen_Update(void) {
   if (g_pPathTableHead->introFrame < 1100) {
     g_nGamestate0dMode.idleFrames = 0;
     if (g_nGamestate0dMode.subState == 2 && g_pPathTableHead->introFrame >= 300 &&
-        (g_dwPadPressed.unk_0x8 & (PAD_START | PAD_CROSS)) != 0) {
+        (g_dwPadPressed.held & (PAD_START | PAD_CROSS)) != 0) {
       StopSoundVoiceByIndex(g_bGemPickupSfxVoiceMarker, 4); /* StopSound(voice) */
       g_pPathTableHead->introFrame = 1170;
     }
@@ -77,15 +77,15 @@ void Titlescreen_Update(void) {
     if (g_nGamestate0dMode.subState < 2) {
       /* kick out while we're still loading from the CD */
       RestartStalledCdRead();
-      if (g_nCdBaseLba.unk_0x28 != 0 || CallCdSync(1, 0) != 2 ||
-          (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0)
+      if (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
+          (g_nCurrentMusicTrack.streamStatus & 0x40) == 0)
         break;
 
       if (g_nGamestate0dMode.subState == 0) {
         /* kick off loading titlescreen data from the CD */
         register int cd asm("$4");
         register int t asm("$7");
-        cd = *((volatile int *) &g_nCdBaseLba.unk_0x00);
+        cd = *((volatile int *) &g_nCdBaseLba.baseLba);
         t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
                       t, 600);
@@ -93,8 +93,8 @@ void Titlescreen_Update(void) {
       } else if (g_nGamestate0dMode.subState == 1) {
         /* once loaded, initialize music and upload the sprite sheet to vram */
         RECT rc;
-        g_nCurrentMusicTrack.unk_0x000 = 20;
-        g_nCurrentMusicTrack.unk_0x21C = 155520000;
+        g_nCurrentMusicTrack.track = 20;
+        g_nCurrentMusicTrack.streamTimeout = 155520000;
         HandleMusicCommand(20, 1);
         setRECT(&rc, 512, 256, 512, 256);
         LoadImage(&rc, g_pRenderScratchRegionBase - 0x40000);
@@ -113,19 +113,19 @@ void Titlescreen_Update(void) {
       }
     } else if (g_nGamestate0dMode.subState == 3) {
       /* ready for button inputs or to time out to show the demo */
-      if ((g_dwPadPressed.unk_0x8 & (PAD_L1 | PAD_TRIANGLE)) ==
+      if ((g_dwPadPressed.held & (PAD_L1 | PAD_TRIANGLE)) ==
           (PAD_L1 | PAD_TRIANGLE)) {
         StopAllSoundExceptMask(0); /* stop all sounds */
         Titlescreen_PlayUiSound(9);
         TickSpuPerFrame();
-        while (g_nCdBaseLba.unk_0x28 != 0 || CallCdSync(1, 0) != 2 ||
-               (g_nCurrentMusicTrack.unk_0x004 & 0x40) == 0) {
+        while (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
+               (g_nCurrentMusicTrack.streamStatus & 0x40) == 0) {
           RestartStalledCdRead();
           TickActiveSoundVoices(); /* update sounds */
           TickCdMusicStream();
         }
         LaunchCrashDemo(); /* crash-demo launch */
-      } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+      } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
         g_nGamestate0dMode.subState = 4;
         Titlescreen_PlayUiSound(7);
       } else if (g_nGamestate0dMode.idleFrames >= 990) {
@@ -183,9 +183,9 @@ void Titlescreen_Update(void) {
           g_nGamestate0dMode.cardStatus[0] = McErrNone;
         if (g_nGamestate0dMode.cardStatus[0] == McErrNotFormat) {
           g_nGamestate0dMode.cardStatus[0] = McErrNone;
-          g_nGamestate0dMode.unk_0x38[0] = 1;
+          g_nGamestate0dMode.needsFormat[0] = 1;
         } else
-          g_nGamestate0dMode.unk_0x38[0] = 0;
+          g_nGamestate0dMode.needsFormat[0] = 0;
 
         /* now go and ping port B */
         MemCardLoad(0x10 /* port B card 0 */);
@@ -198,9 +198,9 @@ void Titlescreen_Update(void) {
           g_nGamestate0dMode.cardStatus[1] = McErrNone;
         if (g_nGamestate0dMode.cardStatus[1] == McErrNotFormat) {
           g_nGamestate0dMode.cardStatus[1] = McErrNone;
-          g_nGamestate0dMode.unk_0x38[1] = 1;
+          g_nGamestate0dMode.needsFormat[1] = 1;
         } else {
-          g_nGamestate0dMode.unk_0x38[1] = 0;
+          g_nGamestate0dMode.needsFormat[1] = 0;
         }
 
         /* figure out what screen to go to for our A/B memcard states */
@@ -210,7 +210,7 @@ void Titlescreen_Update(void) {
           g_nGamestate0dMode.subState = SubState_0x0F;
           g_nGamestate0dMode.selection = 0;
         } else if (g_nGamestate0dMode.cardStatus[0] == McErrNone &&
-                   !g_nGamestate0dMode.unk_0x38[0]) {
+                   !g_nGamestate0dMode.needsFormat[0]) {
           /* port A is valid and doesn't need formatting: select it */
           g_nGamestate0dMode.cardPort = 0;
           g_nGamestate0dMode.subState = SubState_0x01;
@@ -218,7 +218,7 @@ void Titlescreen_Update(void) {
           g_nGamestate0dMode.retryCount = 0;
           g_nGamestate0dMode.selection = 0;
         } else if (g_nGamestate0dMode.cardStatus[1] == McErrNone &&
-                   !g_nGamestate0dMode.unk_0x38[1]) {
+                   !g_nGamestate0dMode.needsFormat[1]) {
           /* port B is valid and doesn't need formatting: select it */
           g_nGamestate0dMode.cardPort = 1;
           g_nGamestate0dMode.subState = SubState_0x01;
@@ -226,13 +226,13 @@ void Titlescreen_Update(void) {
           g_nGamestate0dMode.retryCount = 0;
           g_nGamestate0dMode.selection = 0;
         } else if (g_nGamestate0dMode.cardStatus[0] == McErrNone &&
-                   g_nGamestate0dMode.unk_0x38[0]) {
+                   g_nGamestate0dMode.needsFormat[0]) {
           /* port A is valid but needs a format, ask if that's ok */
           g_nGamestate0dMode.cardPort = 0;
           g_nGamestate0dMode.subState = SubState_0x05;
           g_nGamestate0dMode.selection = 0;
         } else if (g_nGamestate0dMode.cardStatus[1] == McErrNone &&
-                   g_nGamestate0dMode.unk_0x38[1]) {
+                   g_nGamestate0dMode.needsFormat[1]) {
           /* port B is valid but needs a format, ask if that's ok */
           g_nGamestate0dMode.cardPort = 1;
           g_nGamestate0dMode.subState = SubState_0x05;
@@ -334,9 +334,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nGamestate0dMode.selection == 0) {
             g_nGamestate0dMode.subState = SubState_0x04;
             Titlescreen_PlayUiSound(3);
@@ -370,9 +370,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nGamestate0dMode.selection == 0) {
             g_nGamestate0dMode.subState = SubState_0x04;
             Titlescreen_PlayUiSound(3);
@@ -407,9 +407,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nGamestate0dMode.selection == 0) {
             InitNewGameState();
             g_nGamestate0dMode.mode = Mode_0x02;
@@ -441,9 +441,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nGamestate0dMode.selection == 0) {
             if (g_nGamestate0dMode.subState == SubState_0x05) {
               g_nGamestate0dMode.subState = SubState_0x06;
@@ -466,7 +466,7 @@ void Titlescreen_Update(void) {
     case SubState_0x07: {
       if (g_nGamestate0dMode.animTimer >= 2) {
         g_nGamestate0dMode.mcResult =
-            func_80067B28(g_nGamestate0dMode.cardPort << 4);
+            MemCardFormat(g_nGamestate0dMode.cardPort << 4);
         if (g_nGamestate0dMode.mcResult == McErrNone) {
           g_nGamestate0dMode.cardStatus[g_nGamestate0dMode.cardPort] = McErrNone;
           g_nGamestate0dMode.subState = SubState_0x08;
@@ -493,7 +493,7 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           Titlescreen_PlayUiSound(1);
           g_nGamestate0dMode.subState = SubState_0x01;
           g_nGamestate0dMode.menuState = 0;
@@ -517,9 +517,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nGamestate0dMode.selection == 0) {
             /* retry format */
             g_nGamestate0dMode.subState = SubState_0x07;
@@ -552,9 +552,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nGamestate0dMode.selection == 0) {
             g_nGamestate0dMode.subState = SubState_0x0B;
             g_nGamestate0dMode.menuState = 0;
@@ -578,7 +578,7 @@ void Titlescreen_Update(void) {
         g_nGamestate0dMode.menuState = 1; /* ok ... */
       } else if (g_nGamestate0dMode.menuState == 1) {
         if (g_nGamestate0dMode.retryCount == 0) {
-          g_nGamestate0dMode.mcResult = func_80067718(
+          g_nGamestate0dMode.mcResult = MemCardCreateFile(
               g_nGamestate0dMode.cardPort << 4, (char *)s_SaveFileName, 1);
         }
         if (g_nGamestate0dMode.mcResult == McErrNone) {
@@ -692,7 +692,7 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           Titlescreen_PlayUiSound(3);
           g_nGamestate0dMode.subState = SubState_0x03;
           g_nGamestate0dMode.selection = 0;
@@ -717,9 +717,9 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nGamestate0dMode.selection == 0) {
             g_nGamestate0dMode.subState = SubState_0x0B;
             g_nGamestate0dMode.menuState = 0;
@@ -752,11 +752,11 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (g_dwPadPressed.unk_0x0 & (PAD_LEFT | PAD_RIGHT)) {
+        if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_CROSS | PAD_START)) {
+        } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           g_nGamestate0dMode.cardPort = g_nGamestate0dMode.selection;
-          if (g_nGamestate0dMode.unk_0x38[g_nGamestate0dMode.selection]) {
+          if (g_nGamestate0dMode.needsFormat[g_nGamestate0dMode.selection]) {
             g_nGamestate0dMode.subState = SubState_0x05;
             g_nGamestate0dMode.selection = 0;
           } else {
@@ -797,9 +797,9 @@ void Titlescreen_Update(void) {
     if (!g_nGamestate0dMode.apSaves[0]->levelVisited[0] &&
         !g_nGamestate0dMode.apSaves[1]->levelVisited[0] &&
         !g_nGamestate0dMode.apSaves[2]->levelVisited[0]) {
-      g_nGamestate0dMode.unk_0x48 = 0;
+      g_nGamestate0dMode.anySaveUsed = 0;
     } else {
-      g_nGamestate0dMode.unk_0x48 = 1;
+      g_nGamestate0dMode.anySaveUsed = 1;
     }
 
     if (g_nGamestate0dMode.menuState == 0) {
@@ -814,7 +814,7 @@ void Titlescreen_Update(void) {
         } else {
           g_nGamestate0dMode.selection = 0;
         }
-      } else if (g_nGamestate0dMode.unk_0x48) {
+      } else if (g_nGamestate0dMode.anySaveUsed) {
         g_nGamestate0dMode.menuState = 3;
         if (g_nGamestate0dMode.apSaves[0]->levelVisited[0]) {
           g_nGamestate0dMode.selection = 0;
@@ -829,28 +829,28 @@ void Titlescreen_Update(void) {
       }
     } else if (g_nGamestate0dMode.menuState == 1) {
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (g_dwPadPressed.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
+        if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
           Titlescreen_PlayUiSound(9);
           g_nGamestate0dMode.menuState = 4;
           g_nGamestate0dMode.selection = 0;
-        } else if (g_dwPadPressed.unk_0x0 & PAD_LEFT) {
+        } else if (g_dwPadPressed.pressed & PAD_LEFT) {
           g_nGamestate0dMode.animTimer = 16;
           g_nGamestate0dMode.selection -= 1;
           if (g_nGamestate0dMode.selection < 0)
             g_nGamestate0dMode.selection = 2;
           Titlescreen_PlayUiSound(0);
-        } else if (g_dwPadPressed.unk_0x0 & PAD_RIGHT) {
+        } else if (g_dwPadPressed.pressed & PAD_RIGHT) {
           g_nGamestate0dMode.animTimer = 16;
           g_nGamestate0dMode.selection += 1;
           if (g_nGamestate0dMode.selection > 2)
             g_nGamestate0dMode.selection = 0;
           Titlescreen_PlayUiSound(0);
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]
                   ->levelVisited[0]) {
             Titlescreen_PlayUiSound(3);
             g_nGamestate0dMode.menuState = 2;
-            g_nGamestate0dMode.unk_0x18 = 1;
+            g_nGamestate0dMode.yesNoChoice = 1;
           } else {
             InitNewGameState();
             START_DEMO(0)
@@ -859,13 +859,13 @@ void Titlescreen_Update(void) {
       }
     } else if (g_nGamestate0dMode.menuState == 2) {
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if ((g_dwPadPressed.unk_0x0 & (PAD_RIGHT | PAD_LEFT))) {
+        if ((g_dwPadPressed.pressed & (PAD_RIGHT | PAD_LEFT))) {
           g_nGamestate0dMode.animTimer = 16;
-          g_nGamestate0dMode.unk_0x18 = 1 - g_nGamestate0dMode.unk_0x18;
+          g_nGamestate0dMode.yesNoChoice = 1 - g_nGamestate0dMode.yesNoChoice;
           Titlescreen_PlayUiSound(0);
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
-          if (g_nGamestate0dMode.unk_0x18 == 1 ||
-              (g_dwPadPressed.unk_0x0 & PAD_TRIANGLE) != 0) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
+          if (g_nGamestate0dMode.yesNoChoice == 1 ||
+              (g_dwPadPressed.pressed & PAD_TRIANGLE) != 0) {
             g_nGamestate0dMode.menuState = 1;
             Titlescreen_PlayUiSound(4);
           } else {
@@ -876,11 +876,11 @@ void Titlescreen_Update(void) {
       }
     } else if (g_nGamestate0dMode.menuState == 3) {
       if (g_nGamestate0dMode.animTimer >= 8) {
-        if (g_dwPadPressed.unk_0x0 & (PAD_DOWN | PAD_TRIANGLE)) {
+        if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
           Titlescreen_PlayUiSound(9);
           g_nGamestate0dMode.menuState = 4;
           g_nGamestate0dMode.selection = 1;
-        } else if (g_dwPadPressed.unk_0x0 & PAD_LEFT) {
+        } else if (g_dwPadPressed.pressed & PAD_LEFT) {
           int i;
           for (i = g_nGamestate0dMode.selection - 1; i >= 0; --i) {
             if (g_nGamestate0dMode.apSaves[i]->levelVisited[0]) {
@@ -892,7 +892,7 @@ void Titlescreen_Update(void) {
             g_nGamestate0dMode.selection = i;
             Titlescreen_PlayUiSound(0);
           }
-        } else if (g_dwPadPressed.unk_0x0 & PAD_RIGHT) {
+        } else if (g_dwPadPressed.pressed & PAD_RIGHT) {
           int i;
           for (i = g_nGamestate0dMode.selection + 1; i < 3; ++i) {
             if (g_nGamestate0dMode.apSaves[i]->levelVisited[0]) {
@@ -904,7 +904,7 @@ void Titlescreen_Update(void) {
             g_nGamestate0dMode.selection = i;
             Titlescreen_PlayUiSound(0);
           }
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_START | PAD_CROSS)) {
+        } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           g_nLevelReadyFlag = 3;
           g_nSparxFoodCount = 0;
           g_nLevelReadyFlagStash = -1;
@@ -916,10 +916,10 @@ void Titlescreen_Update(void) {
       if (g_nGamestate0dMode.animTimer >= 8) {
         if (ArmStoryIntroOnStart()) {
           /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_RIGHT | PAD_LEFT)) {
+        } else if (g_dwPadPressed.pressed & (PAD_RIGHT | PAD_LEFT)) {
           SWAP_MENU_SELECTION
-        } else if (g_dwPadPressed.unk_0x0 & (PAD_UP | PAD_START | PAD_CROSS)) {
-          if (g_nGamestate0dMode.selection == 1 && !g_nGamestate0dMode.unk_0x48) {
+        } else if (g_dwPadPressed.pressed & (PAD_UP | PAD_START | PAD_CROSS)) {
+          if (g_nGamestate0dMode.selection == 1 && !g_nGamestate0dMode.anySaveUsed) {
             g_nGamestate0dMode.animTimer = 16;
             Titlescreen_PlayUiSound(4);
           } else {
@@ -954,7 +954,7 @@ void Titlescreen_Update(void) {
   }
 
   RotateLightVectorXZ(3); /* SpecularUpdate */
-  if (g_dwPadPressed.unk_0xC >= 2 && (u_short)g_dwPadPressed.unk_0x8 != 0) {
+  if (g_dwPadPressed.padType >= 2 && (u_short)g_dwPadPressed.held != 0) {
     g_nGamestate0dMode.idleFrames = 0;
   } else {
     g_nGamestate0dMode.idleFrames++;

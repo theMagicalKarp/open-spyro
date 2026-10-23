@@ -8,8 +8,9 @@ extern int g_nLevelSpawnPosZ;        /* g_anLevelSpawnPos[2] (see alias) */
 extern int D_8007788C;
 extern int D_80077890;
 extern int D_80077894;
-extern int D_800778E8;
-extern int D_800778EC;
+extern int g_nLevelProgress; /* live level progress word */
+extern int
+    g_nLevelProgressCheckpoint; /* g_nLevelProgress at the last checkpoint */
 
 /* 0x80059474 (0xF8) — latch `actor`'s position (+0xC) and facing as the
    level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
@@ -59,5 +60,5 @@ void SetSpawnAnchorFromActor(unsigned char *actor, int yaw) {
     i += 1;
     dst += 1;
   } while (i < 8);
-  D_800778EC = D_800778E8;
+  g_nLevelProgressCheckpoint = g_nLevelProgress;
 }

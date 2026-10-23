@@ -1,5 +1,9 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
+
+/* The sprite record being written (Actor layout). */
+#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
    (2324 b), drawn by Gamestate01_09_Draw.
@@ -250,14 +254,12 @@ void DrawLevelTransitionOverlay(void) {
         SPR->y = 0xc6 - PARTICLES[i].y;
         SPR->scale = 0x1000;
         SPR->r = PARTICLES[i].driftx;
-        *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45) =
-            PARTICLES[i].drifty;
-        *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46) =
-            PARTICLES[i].spin;
-        *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47) = 0x7f;
-        *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f) =
+        SREC->rotY = PARTICLES[i].drifty;
+        SREC->rotZ = PARTICLES[i].spin;
+        SREC->otBias = 0x7f;
+        SREC->tintMode =
             *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x36) - 0x52;
-        *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50) = 0xff;
+        SREC->cullRadius = 0xff;
       }
       i++;
     } while (i < 0x20);
@@ -280,10 +282,10 @@ void DrawLevelTransitionOverlay(void) {
       y += 0xc;
     }
     spr->y = y;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46) = 0xb0;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47) = 0x7f;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f) = 0xb;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50) = 0xff;
+    SREC->rotZ = 0xb0;
+    SREC->otBias = 0x7f;
+    SREC->tintMode = 0xb;
+    SREC->cullRadius = 0xff;
   }
 
   g_apSpritePrimQueue[0] = 0;

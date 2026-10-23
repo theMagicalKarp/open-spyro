@@ -256,11 +256,11 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int unk20[3];        /* 0x20 */
-  int unk2C;           /* 0x2C */
+  int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
+  int legVec[3];        /* 0x20 */
+  int legStep;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
@@ -290,7 +290,7 @@ typedef struct RiderState {
 /* Types 0x197/0x198: a smoking walker. */
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
-  int unk04;           /* 0x04 */
+  int legStep;           /* 0x04 */
   int pad08[3];        /* 0x08 */
   int timer;           /* 0x14 */
 } SmokerState;
@@ -304,11 +304,11 @@ typedef struct CyclerState {
   int tally;               /* 0x1C */
   int roll;                /* 0x20 */
   int rollVel;             /* 0x24 */
-  int unk28;               /* 0x28 */
+  int zVel;               /* 0x28 */
   int heading;             /* 0x2C */
-  int unk30;               /* 0x30 */
-  int unk34[3];            /* 0x34 */
-  int unk40;               /* 0x40 */
+  int moveSpeed;               /* 0x30 */
+  int legVec[3];            /* 0x34 */
+  int legStep;               /* 0x40 */
 } CyclerState;
 
 extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
@@ -1388,8 +1388,8 @@ void Level23_UpdateActors(void) {
           reward->mode = 1;
         }
         TallyFlightTarget(st->tally);
-        st->unk28 = 0xC8;
-        st->unk30 = 0x15E;
+        st->zVel = 0xC8;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
@@ -1411,17 +1411,17 @@ void Level23_UpdateActors(void) {
       case 0: {
         int d;
 
-        if (st->unk40 == 0xFF) {
+        if (st->legStep == 0xFF) {
           st->path[1]++;
           if (st->path[1] >= st->path[0]) {
             st->path[1] = 0;
           }
-          st->unk40 = 0;
-          ZeroVector(st->unk34);
+          st->legStep = 0;
+          ZeroVector(st->legVec);
         }
         d = actor->rotZ;
         if (g_nSpyroStateFlags < 8 &&
-            TweenActorAlongPath(actor, st->path, st->unk34, &st->unk40, 0xA, 4) == 2) {
+            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, 4) == 2) {
           st->pathIdx = (st->pathIdx + 1) & 3;
           switch (st->pathIdx) {
           case 0:
@@ -1472,7 +1472,7 @@ void Level23_UpdateActors(void) {
         /* fall through */
       case 2:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (DriveActorTrackedMove(actor, &st->unk30, st->heading, &st->unk28, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1677,8 +1677,8 @@ void Level23_UpdateActors(void) {
           reward->mode = 1;
         }
         TallyFlightTarget(st->tally);
-        st->unk14 = 0;
-        st->unk1C = 0x15E;
+        st->zVel = 0;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
@@ -1701,9 +1701,9 @@ void Level23_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == 0xF || g_nActiveLevelId == 0x2D) {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
         } else {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0x16, 0);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }
         d = (actor->rotZ - d) & 0xFF;
         if (d > 0x80) {
@@ -1724,7 +1724,7 @@ void Level23_UpdateActors(void) {
         break;
       }
       case 1:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1737,7 +1737,7 @@ void Level23_UpdateActors(void) {
         }
         break;
       case 2:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1776,7 +1776,7 @@ void Level23_UpdateActors(void) {
         actor->rotY = 0;
         actor->rotZ = 0xC0;
         actor->cullRadius = 0xFF;
-        actor->unk47 = 0x20;
+        actor->otBias = 0x20;
         actor->mode = 2;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
         break;
@@ -1915,7 +1915,7 @@ void Level23_UpdateActors(void) {
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
           st->digit[i]->cullRadius = 0xFF;
-          st->digit[i]->unk47 = 0x20;
+          st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
         }
@@ -1932,7 +1932,7 @@ void Level23_UpdateActors(void) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
             st->digit[i]->cullRadius = 0xFF;
-            st->digit[i]->unk47 = 0x20;
+            st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
           }
           st->digit[4]->posX = 0x180;
@@ -1970,7 +1970,7 @@ void Level23_UpdateActors(void) {
           HideActorRenderRecord(&g_abHudIconActorRecords[i]);
           g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
-          g_abHudIconActorRecords[i].unk47 = 0x20;
+          g_abHudIconActorRecords[i].otBias = 0x20;
           g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;

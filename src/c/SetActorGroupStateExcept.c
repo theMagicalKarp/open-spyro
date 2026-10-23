@@ -1,28 +1,29 @@
+#include "actor.h"
 #include "globals.h"
 
-/* Set the type byte (+0x48) to `a1` for every actor in the pickup group named
-   by actor `a0`'s +0x43 group index whose current type byte is < 0x80 and not
-   equal to `a2` (0x8003b47c). Out-of-range group index applies the same guarded
-   write to the passed actor itself. */
-void SetActorGroupStateExcept(int a0, int a1, int a2) {
+/* Set the mode byte (+0x48) to `value` for every actor in the pickup group
+   named by actor's group index (+0x43) whose current mode is < 0x80 and not
+   equal to `match` (0x8003b47c). Out-of-range group index applies the same
+   guarded write to the passed actor itself. */
+void SetActorGroupStateExcept(Actor *actor, int value, int match) {
   unsigned short *ptr;
   int idx;
   int group;
   unsigned int type;
 
-  group = *(unsigned char *)(a0 + 0x43);
+  group = actor->group;
   if (group >= g_nLevelPickupTableCount) {
-    type = *(unsigned char *)(a0 + 0x48);
-    if (type < 0x80 && type != a2) {
-      *(unsigned char *)(a0 + 0x48) = a1;
+    type = actor->mode;
+    if (type < 0x80 && type != match) {
+      actor->mode = value;
     }
   } else {
     ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
     do {
       idx = *ptr & 0x7FFF;
-      type = ((unsigned char *)g_pActorListBase)[idx * 0x58 + 0x48];
-      if (type < 0x80 && type != a2) {
-        ((unsigned char *)g_pActorListBase)[idx * 0x58 + 0x48] = a1;
+      type = ((Actor *)g_pActorListBase)[idx].mode;
+      if (type < 0x80 && type != match) {
+        ((Actor *)g_pActorListBase)[idx].mode = value;
       }
     } while ((short)*ptr++ >= 0);
   }

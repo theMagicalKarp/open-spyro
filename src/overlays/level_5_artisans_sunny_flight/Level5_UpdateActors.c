@@ -253,11 +253,11 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int unk14;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
-  int unk1C;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int unk20[3];        /* 0x20 */
-  int unk2C;           /* 0x2C */
+  int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
+  int legVec[3];        /* 0x20 */
+  int legStep;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
@@ -287,8 +287,8 @@ typedef struct RiderState {
 /* Types 0x197/0x198: a smoking walker. */
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
-  int unk04;           /* 0x04 */
-  int unk08[3];        /* 0x08 */
+  int legStep;           /* 0x04 */
+  int legVec[3];        /* 0x08 */
   int timer;           /* 0x14 */
 } SmokerState;
 
@@ -1604,8 +1604,8 @@ void Level5_UpdateActors(void) {
           reward->mode = 1;
         }
         TallyFlightTarget(st->tally);
-        st->unk14 = 0;
-        st->unk1C = 0x15E;
+        st->zVel = 0;
+        st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x28, 0x40);
@@ -1628,9 +1628,9 @@ void Level5_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == 0xF || g_nActiveLevelId == 0x2D) {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
         } else {
-          TweenActorAlongPath(actor, st->path, st->unk20, &st->unk2C, 0x16, 0);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }
         d = (actor->rotZ - d) & 0xFF;
         if (d > 0x80) {
@@ -1651,7 +1651,7 @@ void Level5_UpdateActors(void) {
         break;
       }
       case 1:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1664,7 +1664,7 @@ void Level5_UpdateActors(void) {
         }
         break;
       case 2:
-        if (DriveActorTrackedMove(actor, &st->unk1C, st->heading, &st->unk14, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
@@ -1703,7 +1703,7 @@ void Level5_UpdateActors(void) {
         actor->rotY = 0;
         actor->rotZ = 0xC0;
         actor->cullRadius = 0xFF;
-        actor->unk47 = 0x20;
+        actor->otBias = 0x20;
         actor->mode = 2;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
         break;
@@ -1842,7 +1842,7 @@ void Level5_UpdateActors(void) {
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
           st->digit[i]->cullRadius = 0xFF;
-          st->digit[i]->unk47 = 0x20;
+          st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
         }
@@ -1859,7 +1859,7 @@ void Level5_UpdateActors(void) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
             st->digit[i]->cullRadius = 0xFF;
-            st->digit[i]->unk47 = 0x20;
+            st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
           }
           st->digit[4]->posX = 0x180;
@@ -1897,7 +1897,7 @@ void Level5_UpdateActors(void) {
           HideActorRenderRecord(&g_abHudIconActorRecords[i]);
           g_abHudIconActorRecords[i].posY = y;
           y += 0x14;
-          g_abHudIconActorRecords[i].unk47 = 0x20;
+          g_abHudIconActorRecords[i].otBias = 0x20;
           g_abHudIconActorRecords[i].cullRadius = 0xFF;
           g_abHudIconActorRecords[i].posX = 0x3C;
           g_abHudIconActorRecords[i].posZ = 0x1000;
@@ -2293,7 +2293,7 @@ void Level5_UpdateActors(void) {
         actor->mode = 1;
       }
       if (g_nSpyroStateFlags < 8) {
-        TweenActorAlongPath(actor, st->path, st->unk08, &st->unk04, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
         RefreshActorDerivedState(actor, 4);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
@@ -2329,7 +2329,7 @@ void Level5_UpdateActors(void) {
         actor->mode = 1;
       }
       if (g_nSpyroStateFlags < 8) {
-        TweenActorAlongPath(actor, st->path, st->unk08, &st->unk04, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
       }
       switch (actor->mode) {
       case 0:

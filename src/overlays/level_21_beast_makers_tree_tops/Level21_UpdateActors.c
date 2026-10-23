@@ -816,7 +816,7 @@ void Level21_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -837,7 +837,7 @@ void Level21_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -1525,7 +1525,7 @@ void Level21_UpdateActors(void) {
           st->u3C = 0x50;
         }
         actor->updateDist = 0xFF;
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u30, 6, 0, 0);
         ANIM_GO(actor, 7);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -1884,7 +1884,7 @@ void Level21_UpdateActors(void) {
           st->u34 = 0x5A;
         }
         ANIM_GO(actor, 8);
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u2C, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
@@ -4346,10 +4346,7 @@ void Level21_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case 390: {
       L26Spinner *st = actor->state;
-      int pitch = *(unsigned short *)(g_pLevelSampleBankEntries +
-                                      g_apActorMeshTable[actor->type]->m_Sounds[1] *
-                                          20 +
-                                      0xA);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
@@ -4609,7 +4606,7 @@ void Level21_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

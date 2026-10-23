@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -23,8 +24,8 @@
    Once the timer passes 0x100 and the CD stream has reached state 0xA the
    handoff runs: the world counters are copied over in one block, substate
    advances to 5 with the timer reset, and Spyro plus the camera are parked on
-   the entry point taken from D_8006EA4C (one 16-byte entry per level, the
-   fourth word holding the facing byte). Every path falls through to the
+   the entry point taken from g_anLevelEntryPoints (one 16-byte entry per level,
+   the fourth word holding the facing byte). Every path falls through to the
    shared anim tick.
 
    MATCHED at 338/338 instructions.
@@ -136,7 +137,7 @@ extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
 extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
 extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
-extern int D_8006EA4C[]; /* entry points, 4 words per level */
+extern int g_anLevelEntryPoints[]; /* entry points, 4 words per level */
 extern void (*g_pfnGamestate0cSubstateUpdate)(
     void); /* handler for every other substate */
 
@@ -207,9 +208,9 @@ void Gamestate0C_Update(void) {
                 13);
       cam = g_anCameraPosBlock;
 
-      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
+      cam[0] = ((Actor *)g_pGamestate0cRecord)->posX +
                ((LookupCosine(yaw) * radius) >> 12);
-      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
+      g_anCameraPos[1] = ((Actor *)g_pGamestate0cRecord)->posY +
                          ((LookupSine(yaw) * radius) >> 12);
       g_anCameraPos[2] =
           g_nGamestate0cCamHeightStart +
@@ -259,7 +260,7 @@ void Gamestate0C_Update(void) {
       g_anGamestate0cTimerBlock[-1] = 5;
       g_anGamestate0cTimerBlock[0] = 0;
       CopyVector((int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC),
-                 &D_8006EA4C[g_anGamestate0cTimerBlock[4] * 4]);
+                 &g_anLevelEntryPoints[g_anGamestate0cTimerBlock[4] * 4]);
 
       /* Read in its own statement rather than inline in the index below. This
          is the one read of this field that expand does NOT force_reg — it comes
@@ -270,32 +271,30 @@ void Gamestate0C_Update(void) {
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
       lvl = g_anGamestate0cTimerBlock[4];
-      *(char *)((char *)g_pGamestate0cRecord + 0x46) =
-          (char)D_8006EA4C[lvl * 4 + 3];
+      ((Actor *)g_pGamestate0cRecord)->rotZ =
+          (char)g_anLevelEntryPoints[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos,
                  (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] =
-          *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) + 0x80;
+          ((Actor *)g_pGamestate0cRecord)->rotZ + 0x80;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       g_anGamestate0cTimerBlock[19] =
-          ((*(unsigned char *)((char *)g_pGamestate0cRecord + 0x46) << 4) +
-           0x390) &
-          0xFFF;
+          ((((Actor *)g_pGamestate0cRecord)->rotZ << 4) + 0x390) & 0xFFF;
 
       cam = g_anCameraPosBlock;
-      cam[0] = *(int *)((char *)g_pGamestate0cRecord + 0xC) +
+      cam[0] = ((Actor *)g_pGamestate0cRecord)->posX +
                ((LookupCosine(g_anGamestate0cTimerBlock[19]) *
                  g_anGamestate0cTimerBlock[20]) >>
                 12);
-      g_anCameraPos[1] = *(int *)((char *)g_pGamestate0cRecord + 0x10) +
+      g_anCameraPos[1] = ((Actor *)g_pGamestate0cRecord)->posY +
                          ((LookupSine(g_anGamestate0cTimerBlock[19]) *
                            g_anGamestate0cTimerBlock[20]) >>
                           12);
-      g_anCameraPos[2] = *(int *)((char *)g_pGamestate0cRecord + 0x14) + 0x200;
+      g_anCameraPos[2] = ((Actor *)g_pGamestate0cRecord)->posZ + 0x200;
 
       SubtractVector(&settle.vx,
                      (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC), cam);
@@ -309,7 +308,7 @@ void Gamestate0C_Update(void) {
          needs no nop. Left inline in the [13] store, the scheduler hoists
          g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
          costs one. */
-      face = *(unsigned char *)((char *)g_pGamestate0cRecord + 0x46);
+      face = ((Actor *)g_pGamestate0cRecord)->rotZ;
       g_anGamestate0cTimerBlock[21] = g_anCameraPos[2];
       g_anGamestate0cTimerBlock[15] = g_anCameraPos[2] - 0xFCE;
       g_anGamestate0cTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;

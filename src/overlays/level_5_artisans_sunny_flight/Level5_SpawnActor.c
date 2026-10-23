@@ -14,6 +14,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
 /* Level5_SpawnActor (0x8008249C, level_5_artisans_sunny_flight overlay,
  * 0xe94 bytes).
@@ -31,7 +32,6 @@
  * Sunny Flight carries the full flight arm set shared with levels 11/17/23/29.
  */
 
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
@@ -445,7 +445,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = 0;
     rec->posZ = 0x1000;
     HideActorRenderRecord(rec);
-    rec->unk47 = 0x20;
+    rec->otBias = 0x20;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

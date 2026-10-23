@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Inventory sub-menu per-frame update (0x8002eb2c, 0x2c4). Advances the
    HUD bob phase / frame-cycle counters and the pause-menu idle timer,
@@ -6,7 +7,6 @@
    done) either runs level-select input or the normal sub-menu: cheat
    detection, up/down scrolling between visited levels (0x1C0 fixed-step
    scroll with cursor wrap), and pause/exit pad handling. */
-extern void RotateLightVectorXZ(int mode);
 extern void HandleLevelSelectInput(void);
 extern void CheckCheatCodeMatch(void);
 extern void PlaySoundEffect(int sample, int a, int b, int c);

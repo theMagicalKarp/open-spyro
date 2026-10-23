@@ -532,7 +532,7 @@ void Level25_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -553,7 +553,7 @@ void Level25_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -3912,7 +3912,7 @@ void Level25_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

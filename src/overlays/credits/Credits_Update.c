@@ -290,8 +290,8 @@ extern Cd85D8 g_pDrawBufA_s;
 typedef struct {
   unsigned char *text;
   short y;
-  short unk6;
-  short unk8;
+  short showTimer; /* countdown; expiry marks the line scrolled past */
+  short nextDelay; /* countdown before the next line starts */
   short state; /* 1 = laid out, 2 = scrolled past */
 } CredLine;
 
@@ -470,15 +470,15 @@ void Credits_Update(void) {
     if (last >= line) {
       do {
         int cur = -1;
-        if (TickCountdownByFrameDelta(&LINES[line].unk6, 2) != 0) {
+        if (TickCountdownByFrameDelta(&LINES[line].showTimer, 2) != 0) {
           LINES[line].state = 2;
-          if (LINES[line].unk8 == 0 && line == g_nCreditsFirstVisibleLine) {
+          if (LINES[line].nextDelay == 0 && line == g_nCreditsFirstVisibleLine) {
             g_nCreditsFirstVisibleLine = line + 1;
           }
         }
         if (LINES[0].state == 0) {
           cur = 0;
-        } else if (TickCountdownByFrameDelta(&LINES[line].unk8, 2) != 0 &&
+        } else if (TickCountdownByFrameDelta(&LINES[line].nextDelay, 2) != 0 &&
                    LINES[line + 1].state == 0 &&
                    line < g_nCreditsLineCount - 1) {
           cur = line + 1;

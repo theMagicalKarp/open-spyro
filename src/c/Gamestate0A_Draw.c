@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 
 extern void LoadImage(RECT *rect, short *pix);
@@ -110,15 +111,18 @@ void Gamestate0A_Draw(void) {
     if (i < 4) {
       goto quad;
     }
-    *(int *)(p + 0x28) = 0x3000000;
-    p[0x2F] = lineCode;
-    *(short *)(p + 0x30) = 0;
-    *(short *)(p + 0x32) = 0xE7;
-    *(short *)(p + 0x34) = 0x200;
-    *(short *)(p + 0x36) = 0xE7;
-    p[0x2C] = 0;
-    p[0x2D] = 0;
-    p[0x2E] = 0;
+    /* a full-width line at y = 0xE7, packed right after the last quad */
+#define LINE ((LineF2 *)(p + 0x28))
+    LINE->tag = 0x3000000;
+    LINE->code = lineCode;
+    LINE->x0 = 0;
+    LINE->y0 = 0xE7;
+    LINE->x1 = 0x200;
+    LINE->y1 = 0xE7;
+    LINE->r0 = 0;
+    LINE->g0 = 0;
+    LINE->b0 = 0;
+#undef LINE
     AddPrimToOTSlot((int)next, slot);
     g_pPrimBufferWriteCursor = p + 0x38;
     break;

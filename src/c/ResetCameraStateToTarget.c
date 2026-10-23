@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Snap the spring camera to its per-mode target (0x80034358, 0x128).
    Loads the target angles for the current mode, copies all six target
@@ -6,14 +7,10 @@
    collision/stuck counters, recomputes the eye position (orbit offset +
    anchor), seats the smoothed position on it, refreshes the euler angles,
    and clears any camera shake. */
-extern void LoadCameraTargetAnglesFromMode(void);
-extern void ComputeCameraOrbitOffset(int *out);
 extern void AddVector();
 extern void CopyVector(int *dst, int *src);
 extern int ComputeCameraToTargetAngle(int *pos);
 extern void UpdateCameraEulerAngles(void);
-
-extern int g_anCameraSpringYawBlock[];
 
 /* The spring-block base is taken twice (`springBase = (springAlias = ...)`)
    on purpose: one pseudo alone is copy-propagated into the prologue and the

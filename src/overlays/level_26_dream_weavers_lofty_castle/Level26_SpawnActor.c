@@ -39,12 +39,12 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_update_actors.h"
 
 
 extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
-extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);         /* ArcTan2 */
 
 Actor *Level26_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -330,7 +330,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
 
   case 0x188:
     InitActorRenderDefaults(rec);
-    rec->unk47 = 5;
+    rec->otBias = 5;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {

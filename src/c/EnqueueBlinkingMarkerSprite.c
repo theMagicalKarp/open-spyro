@@ -1,5 +1,8 @@
+#include "actor.h"
 #include "globals.h"
 #include "vecmath.h"
+
+#define SPR ((Actor *)g_pSpriteRecordWriteCursor)
 
 extern void FillWord(void *dst, unsigned int value, int byte_count);
 
@@ -14,15 +17,15 @@ void EnqueueBlinkingMarkerSprite(int *param_1, int param_2, int param_3) {
     g_pSpriteRecordWriteCursor =
         (void *)((int)g_pSpriteRecordWriteCursor - 0x58);
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-    dst = (int *)((int)g_pSpriteRecordWriteCursor + 0xc);
-    *(short *)((int)g_pSpriteRecordWriteCursor + 0x36) = 0x105;
+    dst = &SPR->posX;
+    SPR->type = 0x105;
     CopyVector(dst, param_1);
     if (param_3 < 2) {
-      *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x44) = 0x40;
-      *(char *)((int)g_pSpriteRecordWriteCursor + 0x46) = param_3 << 7;
+      SPR->rotX = 0x40;
+      SPR->rotZ = param_3 << 7;
     }
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47) = 0x7f;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f) = 0xb;
-    *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50) = 0xff;
+    SPR->otBias = 0x7f;
+    SPR->tintMode = 0xb;
+    SPR->cullRadius = 0xff;
   }
 }

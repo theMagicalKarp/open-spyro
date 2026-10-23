@@ -1011,7 +1011,7 @@ void Level24_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -1032,7 +1032,7 @@ void Level24_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -3147,7 +3147,7 @@ void Level24_UpdateActors(void) {
                                                   actor->posY - g_nSpyroWorldPosY, 0),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         st->spin = RandomSignedInRange(8, 0xE);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -4731,7 +4731,7 @@ void Level24_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

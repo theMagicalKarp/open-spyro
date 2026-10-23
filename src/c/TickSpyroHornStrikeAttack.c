@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "vecmath.h"
 
 /* Horn-strike swing driver (0x800499c0, 1084 bytes).
@@ -47,7 +48,6 @@ extern void SmoothSpyroByteEulerSpring(void);
 
 extern unsigned char
     g_abSpyroHornStrikeAnimTable[]; /* state -> strike anim descriptor index */
-extern unsigned char g_bSpyroAnimLayer1Frame; /* anim layer 1 blend flag */
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
 
 extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */

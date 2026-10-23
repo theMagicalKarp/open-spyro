@@ -1,4 +1,7 @@
+#include "actor_type.h"
 #include "globals.h"
+
+#define ACT ((Actor *)actor)
 
 /* Steer actor `actor` toward world point `target` and advance it (0x8003bad0).
    Computes the target yaw/pitch from the delta vector, wraps each 8-bit euler
@@ -37,7 +40,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
   yaw = ArcTan2(dv[0], dv[1], 0);
   pitch = ArcTan2(VectorLength(dv, 0), dv[2], 0);
 
-  heading = *(unsigned char *)(actor + 0x46);
+  heading = ACT->rotZ;
   yaw = (yaw - heading) & 0xFF;
   if (yaw >= 0x80) {
     yaw -= 0x100;
@@ -49,7 +52,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
     yaw = yawLim;
   }
 
-  pitch = (pitch - *(unsigned char *)(actor + 0x45)) & 0xFF;
+  pitch = (pitch - ACT->rotY) & 0xFF;
   if (pitch >= 0x80) {
     pitch -= 0x100;
   }
@@ -60,8 +63,8 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
     pitch = pitchLim;
   }
 
-  *(unsigned char *)(actor + 0x46) = heading + yaw;
-  *(unsigned char *)(actor + 0x45) = *(unsigned char *)(actor + 0x45) + pitch;
+  ACT->rotZ = heading + yaw;
+  ACT->rotY = ACT->rotY + pitch;
   ApplyEulerRotation((unsigned char *)(actor + 0x44), mtx, 0);
   dv[0] = speed;
   dv[1] = 0;

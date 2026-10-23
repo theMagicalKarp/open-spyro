@@ -1,8 +1,8 @@
 #include "globals.h"
+#include "main_shared.h"
 
 extern void FillBlock16(void *dst, int value, int count);
 extern void RenderWorldChunks(int mode);
-extern int g_nCameraFloorSurfaceType;
 extern int g_nStaticMeshLodCutoff;
 extern int g_nFarPlaneDrawDistance; /* far-plane draw distance */
 

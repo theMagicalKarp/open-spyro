@@ -68,7 +68,7 @@
 <rect x="73.04" y="456.00" width="28.34" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RespawnOrGameOver_Draw  ·  1444 bytes  ·  matched</title></rect>
 <rect x="101.38" y="456.00" width="28.19" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004E60C  ·  1436 bytes  ·  handwritten</title></rect>
 <rect x="129.57" y="456.00" width="27.79" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdProcessInterrupt  ·  1416 bytes  ·  library</title></rect>
-<rect x="157.36" y="456.00" width="27.09" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80067718  ·  1380 bytes  ·  library</title></rect>
+<rect x="157.36" y="456.00" width="27.09" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardCreateFile  ·  1380 bytes  ·  library</title></rect>
 <rect x="184.45" y="456.00" width="26.54" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0C_Update  ·  1352 bytes  ·  matched</title></rect>
 <rect x="210.99" y="456.00" width="26.46" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroDropShadow  ·  1348 bytes  ·  handwritten</title></rect>
 <rect x="237.44" y="456.00" width="26.38" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawMotionTrailRibbons  ·  1344 bytes  ·  matched</title></rect>
@@ -1229,7 +1229,7 @@
 <rect x="1122.27" y="1109.20" width="54.49" height="31.01" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Titlescreen_Draw  ·  3844 bytes  ·  matched</title></rect>
 <rect x="1176.76" y="1109.20" width="9.24" height="20.36" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Titlescreen_EmitSpriteQuad  ·  428 bytes  ·  matched</title></rect>
 <rect x="1176.76" y="1129.56" width="9.24" height="10.27" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Titlescreen_PlayUiSound  ·  216 bytes  ·  matched</title></rect>
-<rect x="1176.76" y="1139.83" width="9.24" height="0.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>func_titlescreen_8007DDE8  ·  8 bytes  ·  matched</title></rect>
+<rect x="1176.76" y="1139.83" width="9.24" height="0.38" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Titlescreen_Nop  ·  8 bytes  ·  matched</title></rect>
 <rect x="1122.27" y="1144.21" width="63.73" height="49.79" fill="none" stroke="#30363d" stroke-width="1"/>
 <rect x="1122.27" y="1144.21" width="63.73" height="16.00" fill="#161b22"/>
 <text x="1126.27" y="1156.21" fill="#e6edf3" font-size="11" font-weight="600">cr…</text>

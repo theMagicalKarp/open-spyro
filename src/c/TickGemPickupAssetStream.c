@@ -15,8 +15,8 @@ extern int
     g_anGemPickupStreamStateBlock[]; /* held-base view of the stream state */
 extern int
     g_anGemPickupSpuChunkBlock[]; /* held-base view of the SPU chunk index */
-extern int D_80076760;            /* end of the unpack work area */
-extern char D_80077030[];         /* gem-pickup asset header copy */
+extern int g_nWorldUnpackLimit;   /* end of the unpack work area */
+extern char g_abGemPickupAssetHeader[]; /* gem-pickup asset header copy */
 
 #define HEAD (g_apWorldUnpackHeadBlock[0])
 #define HDR (g_anGemPickupHeaderEndBlock[0])
@@ -58,7 +58,7 @@ void TickGemPickupAssetStream(void) {
 
   switch (g_nGemPickupStreamState) {
   case 0:
-    avail = D_80076760 - (int)g_pWorldUnpackHead;
+    avail = g_nWorldUnpackLimit - (int)g_pWorldUnpackHead;
     size = DRAGON_ASSET_SIZE(g_nGemPickupTypeSnapshot);
     if (avail >= size) {
       g_nGemPickupReadByteCount = size;
@@ -75,7 +75,7 @@ void TickGemPickupAssetStream(void) {
     g_nGemPickupStreamState++;
     return;
   case 1:
-    CopyWords(D_80077030, HEAD, 0x24);
+    CopyWords(g_abGemPickupAssetHeader, HEAD, 0x24);
     if (g_nGemPickupSplitFlag == 0) {
       g_pGemPickupCameraPath = HEAD + g_nGemPickupCameraPathOffset;
       g_nGemPickupCameraPathCount = g_nGemPickupCameraPathSize / 24;

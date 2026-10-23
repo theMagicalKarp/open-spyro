@@ -595,15 +595,15 @@ typedef struct PathState {
   int unk04;
   int unk08;
   PathData *path;      /* 0x0C */
-  int unk10;
+  int loops;   /* 0x10 nonzero: wrap at the path ends instead of turning back */
   int unk14;
   int unk18;
   int heading; /* 0x1C */
-  int unk20;   /* 0x20 */
+  int speed;   /* 0x20 walk speed; ramps +0xA up to stepDivisor, knockback 0xC8/0x190 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
-  int unk28;   /* 0x28 clamped to <= 0x5A */
+  int travelTimer; /* 0x28 leg countdown, (dist / stepDivisor) / 2 clamped to <= 0x5A */
   int successCount;   /* 0x2C consecutive-success counter */
-  int unk30;   /* 0x30 */
+  int startDelay; /* 0x30 random 6..0x28 countdown before walking */
 } PathState;
 
 typedef struct RoamState {
@@ -747,8 +747,8 @@ typedef struct WalkerState {
   int timer;           /* 0x04 */
   int tgtIdx;          /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;         /* 0x0C */
-  int unk10;           /* 0x10 passed by address to DriveActorTrackedMove */
-  int unk14;           /* 0x14 likewise */
+  int moveSpeed;           /* 0x10 passed by address to DriveActorTrackedMove */
+  int zVel;           /* 0x14 likewise */
 } WalkerState;
 
 /* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
@@ -805,7 +805,7 @@ typedef struct WanderState {
   unsigned char heading; /* 0x11 */
   unsigned char reTurn;  /* 0x12 frames until the next heading change */
   unsigned char reStep;  /* 0x13 frames until the next speed change */
-  unsigned char unk14;   /* 0x14 */
+  unsigned char wanderTimer;   /* 0x14 */
 } WanderState;
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
@@ -950,11 +950,11 @@ typedef struct L16Boss {
   char pad54[0x4];
   int started;        /* 0x58 */
   char pad5C[0x4];
-  int unk60;          /* 0x60 on the path */
+  int pathDone;          /* 0x60 on the path */
   int prev;           /* 0x64 index into g_pActorListBase of the previous stage's gate */
   int wait;           /* 0x68 */
   char pad6C[0x8];
-  int unk74;          /* 0x74 */
+  int soundBox;          /* 0x74 */
 } L16Boss;
 
 /* Case 412 -- wandering critter. */
@@ -1046,7 +1046,7 @@ typedef struct L9Ram {
   int rest;    /* 0x08 rest countdown, knock-back height step */
   int unk0C;
   int timer;   /* 0x10 grazing timer */
-  int unk14;   /* 0x14 */
+  int dropPos;   /* 0x14 */
   int unk18;
   int unk1C;
   int hits;    /* 0x20 */
@@ -1636,7 +1636,7 @@ typedef struct ShempState {
   int unk04[3];        /* 0x04 */
   int timer;           /* 0x10 */
   int unk14;           /* 0x14 */
-  int unk18;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
+  int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */

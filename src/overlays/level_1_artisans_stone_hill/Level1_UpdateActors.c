@@ -409,9 +409,9 @@ void Level1_UpdateActors(void) {
                                     actor->posY - spy->posY, 0);
 
         if ((actor->flags & 0x10000) != 0) {
-          st->unk20 = 0xC8;
+          st->speed = 0xC8;
         } else {
-          st->unk20 = 0x190;
+          st->speed = 0x190;
         }
 
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -437,7 +437,7 @@ void Level1_UpdateActors(void) {
               if (other->group == actor->group && other->mode == 0) {
                 if (ost->path->cur == st->path->cur) {
                   other->mode = 1;
-                  ost->unk30 = RandomIntInRange(6, 0x28);
+                  ost->startDelay = RandomIntInRange(6, 0x28);
                 }
               }
             }
@@ -493,13 +493,13 @@ void Level1_UpdateActors(void) {
         angle2 &= 0xFF;
         st->heading = angle2;
         st->stepDivisor = RandomIntInRange(0x6E, 0xA0);
-        st->unk20 = 0;
+        st->speed = 0;
         distance = ApproxDist2D(&actor->posX,
                                  (int *)&st->path->nodes[st->path->cur]);
-        st->unk28 = (distance / st->stepDivisor) >> 1;
+        st->travelTimer = (distance / st->stepDivisor) >> 1;
 
-        if (st->unk28 >= 0x5B) {
-          st->unk28 = 0x5A;
+        if (st->travelTimer >= 0x5B) {
+          st->travelTimer = 0x5A;
         }
 
         actor->mode = 2;
@@ -509,12 +509,12 @@ void Level1_UpdateActors(void) {
         int distance = ApproxDist2D(&actor->posX,
                                      (int *)&st->path->nodes[st->path->cur]);
 
-        if (TickCountdownByFrameDelta(&st->unk30, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->startDelay, 4) == 0) {
           break;
         }
 
-        if (st->unk20 < st->stepDivisor) {
-          st->unk20 += 0xA;
+        if (st->speed < st->stepDivisor) {
+          st->speed += 0xA;
         }
 
         if (actor->nextAnim != 1) {
@@ -522,7 +522,7 @@ void Level1_UpdateActors(void) {
           ANIM_ADVANCE(actor, 1);
         }
 
-        if (TickCountdownByFrameDelta(&st->unk28, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->travelTimer, 4) != 0) {
           int angleDelta;
           int turn;
 
@@ -546,7 +546,7 @@ void Level1_UpdateActors(void) {
         }
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
-          if (MoveActorAlongHeading(actor, st->unk20, 0x12C, 0x12C, 0x15) != 0) {
+          if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, 0x15) != 0) {
             st->successCount++;
           } else {
             st->successCount = 0;
@@ -568,9 +568,9 @@ void Level1_UpdateActors(void) {
       }
 
       case 3: {
-        if (st->unk20 >= 0x10) {
-          st->unk20 -= 0xF;
-          MoveActorAlongAngle(actor, st->heading, st->unk20, 0, 0x2BC, 5);
+        if (st->speed >= 0x10) {
+          st->speed -= 0xF;
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
         }
 
         if (g_nActorAnimDone != 0) {
@@ -674,7 +674,7 @@ void Level1_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -701,7 +701,7 @@ void Level1_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -884,7 +884,7 @@ void Level1_UpdateActors(void) {
 
       if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
         st->egg = g_pfnLevelSpawnActor(0x22, actor);
-        st->egg->unk47 = 0;
+        st->egg->otBias = 0;
         *(Actor **)st->egg->state = actor;
       }
 
@@ -914,7 +914,7 @@ void Level1_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        actor->unk47 = 2;
+        actor->otBias = 2;
         if (st->mode == 0) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
@@ -1083,7 +1083,7 @@ void Level1_UpdateActors(void) {
       }
 
       case 2:
-        actor->unk47 = 0;
+        actor->otBias = 0;
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                     st->path->nodes[st->path->cur].y - actor->posY,
@@ -1180,7 +1180,7 @@ void Level1_UpdateActors(void) {
           g_dwSpyroRequestMask = 0x80002000;
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
             st->egg->mode = 1;
-            st->egg->unk47 = 4;
+            st->egg->otBias = 4;
             st->egg = 0;
           }
         }
@@ -3937,7 +3937,7 @@ void Level1_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

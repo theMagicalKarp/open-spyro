@@ -1,4 +1,6 @@
 #include "globals.h"
+#include "sample_bank.h"
+#include "spu.h"
 
 extern int GetSoundVoiceStatusByOwner(unsigned char *owner,
                                       unsigned int sampleId);
@@ -26,45 +28,6 @@ typedef struct {
   /* 0x14 */ int nPitchStep;
   /* 0x18 */ unsigned char *pPlaying;
 } SPUVOICEROW;
-
-/* PSY-Q SpuVoiceAttr (0x40) — only voice/mask/volume/pitch/addr are written. */
-typedef struct {
-  /* 0x00 */ unsigned int voice;
-  /* 0x04 */ unsigned int mask;
-  /* 0x08 */ short volL;
-  /* 0x0A */ short volR;
-  /* 0x0C */ short volmodeL;
-  /* 0x0E */ short volmodeR;
-  /* 0x10 */ short volxL;
-  /* 0x12 */ short volxR;
-  /* 0x14 */ unsigned short pitch;
-  /* 0x16 */ unsigned short note;
-  /* 0x18 */ unsigned short sample_note;
-  /* 0x1A */ short envx;
-  /* 0x1C */ unsigned int addr;
-  /* 0x20 */ unsigned int loop_addr;
-  /* 0x24 */ int a_mode;
-  /* 0x28 */ int s_mode;
-  /* 0x2C */ int r_mode;
-  /* 0x30 */ unsigned short ar;
-  /* 0x32 */ unsigned short dr;
-  /* 0x34 */ unsigned short sr;
-  /* 0x36 */ unsigned short rr;
-  /* 0x38 */ unsigned short sl;
-  /* 0x3A */ unsigned short adsr1;
-  /* 0x3C */ unsigned short adsr2;
-} SPUVOICEATTR;
-
-/* One entry of the per-level sample bank (stride 0x14). */
-typedef struct {
-  /* 0x00 */ unsigned int nSampleAddr;
-  /* 0x04 */ unsigned int nLoopAddr;
-  /* 0x08 */ unsigned short pad08;
-  /* 0x0A */ unsigned short nPitch;
-  /* 0x0C */ unsigned short nPitchSpread;
-  /* 0x0E */ unsigned short nPitchStep;
-  /* 0x10 */ int nPitchMode;
-} SAMPLEENTRY;
 
 extern SPUVOICEROW g_aSpuVoiceRows[];   /* the 24 mixer rows */
 extern short g_anCameraEulerYawBlock[]; /* g_nCameraEulerYaw, held-base view */

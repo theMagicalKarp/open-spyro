@@ -1348,13 +1348,13 @@ func_80038FC8_2026_08_14:
     constant), not of a copy of an already-live value.
 
 # --- libmcrd file-op block (0x80067718..0x80067c7c) — ONE 1380 B label, four functions ---
-# `glabel func_80067718` ... `endlabel` covers all four; the siblings have no
-# glabel of their own, so HAVE_C_func_80067718 suppresses the whole block and
+# `glabel MemCardCreateFile` ... `endlabel` covers all four; the siblings have no
+# glabel of their own, so HAVE_C_MemCardCreateFile suppresses the whole block and
 # all four must be C before ANY of them can be committed. asmdiff needs explicit
 # ranges for the siblings, diffs misalign if an earlier one is the wrong length,
 # and the linker rejects an overlong candidate with "cannot move location
 # counter backwards" rather than a byte diff.
-func_80067718:
+MemCardCreateFile:
   verdict: matched
   class: "matched 2026-08-14-1 (A20 is TWO base locals, not one; address-taken `result` for the 0x30(sp) slot; pointer local for the spin base)"
   date: 2026-08-14
@@ -1377,15 +1377,15 @@ func_80067948:
   class: "matched 2026-08-14-1 (for(;;) not do/while: the loop construct decides which side of the top label a hoisted invariant lands on)"
   date: 2026-08-14
   note: >-
-    0x80067948, 480 B. Same shape as func_80067718 minus the exists-check.
+    0x80067948, 480 B. Same shape as MemCardCreateFile minus the exists-check.
     After porting the p/q split it came down to one insn: loop.c inserts
     movables immediately before NOTE_INSN_LOOP_BEG, and do/while puts that note
     AFTER the loop's top label, so the hoisted `li s2,2` landed inside the loop
     (our back-edge targeted the li, the original's targeted `jal erase`).
     Rewriting `do {...} while (result == 3 || tries < 0x10)` as the same
-    for(;;) + break ladder as func_80067718 matched it outright. New dial,
+    for(;;) + break ladder as MemCardCreateFile matched it outright. New dial,
     applies to any loop whose invariant hoist lands one insn late.
-func_80067B28:
+MemCardFormat:
   verdict: matched
   class: "matched 2026-08-14-1 (declaration volatility: `volatile int D_80075B4C` pins the arg setup ahead of the mask store)"
   date: 2026-08-14
@@ -1403,7 +1403,7 @@ func_80067BC0:
   date: 2026-08-14
   note: >-
     0x80067bc0, 188 B. Three levers: the `return 0` stub is the same
-    out-of-line-before-the-loop idiom as `busy:` in func_80067718; `fill = 0xFF`
+    out-of-line-before-the-loop idiom as `busy:` in MemCardCreateFile; `fill = 0xFF`
     as a named local emits the li at its source position ahead of the induction
     -variable inits instead of being hoisted to the END of the preheader; and
     `while (++i < 0xF)` puts the increment in the BRANCH delay slot (dbr pulls
@@ -4742,7 +4742,7 @@ Level32_UpdateActors:
   verdict: viable
   class: "MATCHED 2026-10-02 (actor-update clone recipe, 7 new arms)"
   date: 2026-10-02
-  note: "33,452 B MATCHED in one session. Base frame level_10 (same s7=16/fp=spy carriers). The tree tool missed cases 16 (beq v1,s7) and 250 (beq v1,t1) and lumped 329 into 323; check every beq against a carrier register. Last knots: A285 for the 3/4 hoist groups, absolute D_80077368 + g_anCollisionProbeVec alias in the reflect blocks, A200 for spy->posY folds."
+  note: "33,452 B MATCHED in one session. Base frame level_10 (same s7=16/fp=spy carriers). The tree tool missed cases 16 (beq v1,s7) and 250 (beq v1,t1) and lumped 329 into 323; check every beq against a carrier register. Last knots: A285 for the 3/4 hoist groups, absolute g_nCollisionProbeVecX + g_anCollisionProbeVec alias in the reflect blocks, A200 for spy->posY folds."
 Level12_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_0/1/8/9/15/25/26/31 arms"

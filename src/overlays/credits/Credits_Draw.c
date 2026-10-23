@@ -14,6 +14,7 @@
 
 #include "level_globals.h"
 #include "level_funcs.h"
+#include "actor.h"
 
 extern void MoveImage();
 extern void DrawFullscreenTint();
@@ -36,6 +37,8 @@ extern unsigned char g_bFrameDrawEnv1BgR;
 extern unsigned char g_bFrameDrawEnv1BgG;
 extern unsigned char g_bFrameDrawEnv1BgB;
 extern char *g_pSpriteRecordWriteCursor;
+/* The sprite record being written (Actor layout). */
+#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 extern int g_nGenericCountdown;
 extern int g_apSpritePrimQueue[];
 extern int g_nFarPlaneDrawDistance;
@@ -82,20 +85,20 @@ void Credits_Draw(void) {
       g_pSpriteRecordWriteCursor = prim;
       rec = g_pCreditsGlyphPool + i * 0x1C;
       FillWord(prim, 0, 0x58);
-      *(int *)(g_pSpriteRecordWriteCursor + 0xC) = *(short *)(rec + 0x12);
-      *(int *)(g_pSpriteRecordWriteCursor + 0x10) = *(short *)(rec + 0x14);
-      *(int *)(g_pSpriteRecordWriteCursor + 0x14) = *(short *)(rec + 0x16);
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x44) = rec[5];
+      SREC->posX = *(short *)(rec + 0x12);
+      SREC->posY = *(short *)(rec + 0x14);
+      SREC->posZ = *(short *)(rec + 0x16);
+      SREC->rotX = rec[5];
       if (*(short *)(rec + 0x1A) == 0x115) {
-        *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x44) += 0x29;
-        *(int *)(g_pSpriteRecordWriteCursor + 0x14) = 0x1C00;
+        SREC->rotX += 0x29;
+        SREC->posZ = 0x1C00;
       }
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x45) = rec[6];
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x46) = rec[7];
-      *(unsigned short *)(g_pSpriteRecordWriteCursor + 0x36) = *(unsigned short *)(rec + 0x1A);
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x4F) = 0xB;
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x50) = 0xFF;
-      *(unsigned char *)(g_pSpriteRecordWriteCursor + 0x47) = 0x7F;
+      SREC->rotY = rec[6];
+      SREC->rotZ = rec[7];
+      SREC->type = *(unsigned short *)(rec + 0x1A);
+      SREC->tintMode = 0xB;
+      SREC->cullRadius = 0xFF;
+      SREC->otBias = 0x7F;
     }
   }
   {

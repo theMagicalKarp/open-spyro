@@ -4,7 +4,7 @@
 D_80075B54 = 0x80075B54;
 g_nCdAudioVolume = 0x80076224;
 g_nSfxMixVolume = 0x80076228;
-D_80076EBC = 0x80076EBC;
+g_pScriptedCameraView = 0x80076EBC;
 g_anGamestate0cTimerBlock = 0x800777EC;
 D_80078A60 = 0x80078A60;
 LevelId4_UpdateActors = 0x8007ACA8;

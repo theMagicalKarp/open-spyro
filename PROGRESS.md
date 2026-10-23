@@ -730,7 +730,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800671f0` | func_800671F0 | main | 1060 | asm | lib |
 | `0x80067614` | func_80067614 | main | 20 | asm | lib |
 | `0x80067628` | MemCardSync | main | 240 | asm | lib |
-| `0x80067718` | func_80067718 | main | 1380 | asm | lib |
+| `0x80067718` | MemCardCreateFile | main | 1380 | asm | lib |
 | `0x80067c7c` | MapMemCardAccessCode | main | 88 | asm | lib |
 | `0x80067cd4` | func_80067CD4 | main | 160 | asm | lib |
 | `0x80067d74` | FormatMemCardPath | main | 92 | asm | lib |
@@ -1007,7 +1007,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8007d9c8` | Level0_UpdateActors | ovl/level_0_artisans_home | 32260 | matched | game |
 | `0x8007da54` | Level3_UpdateActors | ovl/level_3_artisans_town_square | 38992 | matched | game |
 | `0x8007da78` | Level1_UpdateActors | ovl/level_1_artisans_stone_hill | 40116 | matched | game |
-| `0x8007dde8` | func_titlescreen_8007DDE8 | ovl/titlescreen | 8 | matched | game |
+| `0x8007dde8` | Titlescreen_Nop | ovl/titlescreen | 8 | matched | game |
 | `0x8007e18c` | Level18_UpdateActors | ovl/level_18_beast_makers_home | 40292 | matched | game |
 | `0x8007e240` | Level7_UpdateActors | ovl/level_7_peace_keepers_dry_canyon | 49808 | matched | game |
 | `0x8007e240` | Level8_UpdateActors | ovl/level_8_peace_keepers_cliff_town | 43336 | matched | game |

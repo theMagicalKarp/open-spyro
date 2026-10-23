@@ -441,7 +441,7 @@ typedef struct WalkerState {
   int tgtIdx;     /* 0x08 index into g_pActorListBase, -1 when unclaimed */
   int heading;    /* 0x0C */
   int pad10;      /* 0x10 passed by address to DriveActorTrackedMove */
-  int unk14;      /* 0x14 likewise */
+  int zVel;      /* 0x14 likewise */
 } WalkerState;
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -646,7 +646,7 @@ typedef struct WanderState {
   unsigned char heading; /* 0x11 */
   unsigned char reTurn;  /* 0x12 frames until the next heading change */
   unsigned char reStep;  /* 0x13 frames until the next speed change */
-  unsigned char unk14;   /* 0x14 */
+  unsigned char wanderTimer;   /* 0x14 */
 } WanderState;
 
 /* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
@@ -1021,7 +1021,7 @@ void Level30_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -1042,7 +1042,7 @@ void Level30_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -1098,7 +1098,7 @@ void Level30_UpdateActors(void) {
       if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
         case 0:
-          if (TickCountdownByFrameDelta(&st->unk14, 2) == 0 || actor->drawn != 0) {
+          if (TickCountdownByFrameDelta(&st->wanderTimer, 2) == 0 || actor->drawn != 0) {
             int moved;
             int blocked;
             int step;

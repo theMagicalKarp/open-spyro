@@ -1,6 +1,9 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
+
+#define ACT ((Actor *)actor)
 
 /* Guided-move step for a tracked actor (0x80039688, 0x288). Advances the
    actor's cached position (+0xC/+0x10) along `angle` by `speed` (scaled
@@ -65,7 +68,7 @@ int MoveActorAlongAngle(int *actor, int angle, int speed, int group, int radius,
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
   if (flags & 0x10) {
-    floorz = ground + *(short *)((char *)actor + 0x38);
+    floorz = ground + ACT->floorOffset;
     step = floorz - actor[5];
     if (step > 0) {
       if (step >= 0xC9) {
@@ -82,7 +85,7 @@ commit:
   actor[3] = newpos[0];
   actor[4] = newpos[1];
   if (flags & 4) {
-    d = (ground + *(short *)((char *)actor + 0x38)) - actor[5];
+    d = (ground + ACT->floorOffset) - actor[5];
     newpos[2] += 0x400;
     if (abs(d) >= 0x259) {
       if (d > 0) {
@@ -91,7 +94,7 @@ commit:
         actor[5] = actor[5] - 0xFA;
       }
     } else {
-      actor[5] = ground + *(short *)((char *)actor + 0x38);
+      actor[5] = ground + ACT->floorOffset;
     }
   }
   if (flags & 0x54) {

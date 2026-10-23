@@ -413,7 +413,7 @@ void Level7_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -434,7 +434,7 @@ void Level7_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -617,7 +617,7 @@ void Level7_UpdateActors(void) {
 
       if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
         st->egg = g_pfnLevelSpawnActor(0x22, actor);
-        st->egg->unk47 = 0;
+        st->egg->otBias = 0;
         *(Actor **)st->egg->state = actor;
       }
 
@@ -647,7 +647,7 @@ void Level7_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        actor->unk47 = 2;
+        actor->otBias = 2;
         if (st->mode == 0) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
@@ -816,7 +816,7 @@ void Level7_UpdateActors(void) {
       }
 
       case 2:
-        actor->unk47 = 0;
+        actor->otBias = 0;
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                     st->path->nodes[st->path->cur].y - actor->posY,
@@ -913,7 +913,7 @@ void Level7_UpdateActors(void) {
           g_dwSpyroRequestMask = 0x80002000;
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
             st->egg->mode = 1;
-            st->egg->unk47 = 4;
+            st->egg->otBias = 4;
             st->egg = 0;
           }
         }
@@ -4417,10 +4417,7 @@ void Level7_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case 390: {
       L26Spinner *st = actor->state;
-      int pitch = *(unsigned short *)(g_pLevelSampleBankEntries +
-                                      g_apActorMeshTable[actor->type]->m_Sounds[1] *
-                                          20 +
-                                      0xA);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
@@ -4628,7 +4625,7 @@ void Level7_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

@@ -35,7 +35,7 @@ extern int g_pSaveMenuAnimActorList1;
 extern int g_abGamestate0cActorSnapshot[];
 extern int D_800756A0;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
-extern int *D_800769F8[];
+extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
 extern int g_nLevelEggsRecovered1;
 extern int g_nLevelEggsRecovered7;
 extern int g_nLevelEggsRecovered8;
@@ -58,7 +58,7 @@ extern int g_nGamestate0cCamEulerPitchStart;
 extern int g_nGamestate0cCamEulerYawStart;
 extern int g_nGamestate0cRecordZStart;
 extern int g_nGamestate0cRecordZGoal;
-extern unsigned char D_80078032[];
+extern unsigned char g_abHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
 extern int g_anFlightTallyActiveSlots_e3;

@@ -18,8 +18,8 @@ struct DigitActor {
   char pad04[8];       /* 0x04 */
   int pos[3];          /* 0x0c */
   char pad18[0x2c];    /* 0x18 */
-  unsigned char unk44; /* 0x44 */
-  unsigned char unk45; /* 0x45 */
+  unsigned char rotX;  /* 0x44 */
+  unsigned char rotY;  /* 0x45 */
   unsigned char yaw;   /* 0x46 coarse camera yaw */
 };
 
@@ -79,8 +79,8 @@ void SpawnFloatingDigitActors(int value, struct DigitActor *src) {
       rec->pos[1] = y;
       z = src->pos[2];
       prod = d * place;
-      rec->unk44 = 0;
-      rec->unk45 = 0;
+      rec->rotX = 0;
+      rec->rotY = 0;
       rec->pos[2] = z;
       st = rec->digit;
       rec->yaw = ((struct { unsigned short v; } *)&g_nCameraEulerYaw)->v >> 4;

@@ -53,11 +53,6 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 
-#define HS(n) (*(short *)(rec + (n)))
-#define HU(n) (*(unsigned short *)(rec + (n)))
-#define W(n) (*(int *)(rec + (n)))
-#define POS ((short *)(rec + 4))
-#define VEL ((short *)(rec + 0x18))
 
 void Level4_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

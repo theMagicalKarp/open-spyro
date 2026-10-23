@@ -1615,9 +1615,9 @@ dlabel g_anFogFullScreenTriPairSxy
     /* 5D3A0 8006CBA0 0000F000 */ .word 0x00F00000
 enddlabel g_anFogFullScreenTriPairSxy
 
-nonmatching D_8006CBA4
+nonmatching g_anTweenBlendWeights4
 
-dlabel D_8006CBA4
+dlabel g_anTweenBlendWeights4
     /* 5D3A4 8006CBA4 */ .short 0x00CD
     /* 5D3A6 8006CBA6 */ .short 0x0333
     /* 5D3A8 8006CBA8 */ .short 0x0199
@@ -1626,11 +1626,11 @@ dlabel D_8006CBA4
     /* 5D3AE 8006CBAE */ .short 0x0199
     /* 5D3B0 8006CBB0 */ .short 0x0333
     /* 5D3B2 8006CBB2 */ .short 0x00CD
-enddlabel D_8006CBA4
+enddlabel g_anTweenBlendWeights4
 
-nonmatching D_8006CBB4
+nonmatching g_anTweenBlendWeights6
 
-dlabel D_8006CBB4
+dlabel g_anTweenBlendWeights6
     /* 5D3B4 8006CBB4 */ .short 0x0092
     /* 5D3B6 8006CBB6 */ .short 0x036E
     /* 5D3B8 8006CBB8 */ .short 0x0125
@@ -1643,11 +1643,11 @@ dlabel D_8006CBB4
     /* 5D3C6 8006CBC6 */ .short 0x0125
     /* 5D3C8 8006CBC8 */ .short 0x036E
     /* 5D3CA 8006CBCA */ .short 0x0092
-enddlabel D_8006CBB4
+enddlabel g_anTweenBlendWeights6
 
-nonmatching D_8006CBCC
+nonmatching g_anTweenBlendWeights8
 
-dlabel D_8006CBCC
+dlabel g_anTweenBlendWeights8
     /* 5D3CC 8006CBCC */ .short 0x0072
     /* 5D3CE 8006CBCE */ .short 0x038E
     /* 5D3D0 8006CBD0 */ .short 0x00E4
@@ -1670,7 +1670,7 @@ dlabel D_8006CBCC
     /* 5D3F2 8006CBF2 */ .short 0x0152
     /* 5D3F4 8006CBF4 */ .short 0x00E1
     /* 5D3F6 8006CBF6 */ .short 0x0000
-enddlabel D_8006CBCC
+enddlabel g_anTweenBlendWeights8
 
 nonmatching g_anSineLut
 
@@ -4136,9 +4136,9 @@ dlabel D_8006EA40
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
 enddlabel D_8006EA40
 
-nonmatching D_8006EA4C
+nonmatching g_anLevelEntryPoints
 
-dlabel D_8006EA4C
+dlabel g_anLevelEntryPoints
     /* 5F24C 8006EA4C 004C0100 */ .word 0x00014C00
     /* 5F250 8006EA50 45B40000 */ .word 0x0000B445
     /* 5F254 8006EA54 AA440000 */ .word 0x000044AA
@@ -4193,7 +4193,7 @@ dlabel D_8006EA4C
     /* 5F318 8006EB18 1BDD0100 */ .word 0x0001DD1B
     /* 5F31C 8006EB1C 043C0200 */ .word 0x00023C04
     /* 5F320 8006EB20 7AE70000 */ .word 0x0000E77A
-enddlabel D_8006EA4C
+enddlabel g_anLevelEntryPoints
 
 nonmatching D_8006EB24
 
@@ -4452,14 +4452,14 @@ dlabel D_8006EE70
     /* 5F678 8006EE78 00080000 */ .word 0x00000800
 enddlabel D_8006EE70
 
-nonmatching D_8006EE7C
+nonmatching g_anDeathTryLevelIds
 
-dlabel D_8006EE7C
+dlabel g_anDeathTryLevelIds
     /* 5F67C 8006EE7C 0B000000 */ .word 0x0000000B
     /* 5F680 8006EE80 18000000 */ .word 0x00000018
     /* 5F684 8006EE84 37000000 */ .word 0x00000037
     /* 5F688 8006EE88 21000000 */ .word 0x00000021
-enddlabel D_8006EE7C
+enddlabel g_anDeathTryLevelIds
 
 nonmatching g_anDeathReplayFrameThreshold
 
@@ -4871,9 +4871,9 @@ dlabel g_anGameOverRevealScaleRamp
     /* 5FB02 8006F302 */ .short 0x0414
 enddlabel g_anGameOverRevealScaleRamp
 
-nonmatching D_8006F304
+nonmatching g_abGameOverGlyphs
 
-dlabel D_8006F304
+dlabel g_abGameOverGlyphs
     /* 5FB04 8006F304 */ .byte 0x47
     /* 5FB05 8006F305 */ .byte 0x41
     /* 5FB06 8006F306 */ .byte 0x4D
@@ -4886,7 +4886,7 @@ dlabel D_8006F304
     /* 5FB0D 8006F30D */ .byte 0x00
     /* 5FB0E 8006F30E */ .byte 0x00
     /* 5FB0F 8006F30F */ .byte 0x00
-enddlabel D_8006F304
+enddlabel g_abGameOverGlyphs
 
 nonmatching g_anMenuBackdropGrayClut
 
@@ -4909,11 +4909,11 @@ dlabel g_anMenuBackdropGrayClut
     /* 5FB4C 8006F34C DE7BFF7F */ .word 0x7FFF7BDE
 enddlabel g_anMenuBackdropGrayClut
 
-nonmatching D_8006F350
+nonmatching g_aSaveMenuBoxes
 
-dlabel D_8006F350
+dlabel g_aSaveMenuBoxes
     /* 5FB50 8006F350 */ .short 0x0028
-enddlabel D_8006F350
+enddlabel g_aSaveMenuBoxes
 
 nonmatching D_8006F352
 
@@ -4961,15 +4961,15 @@ dlabel D_8006F356
     /* 5FB8E 8006F38E */ .short 0x007E
 enddlabel D_8006F356
 
-nonmatching D_8006F390
+nonmatching g_abGemPickupFlickerPairs1
 
-dlabel D_8006F390
+dlabel g_abGemPickupFlickerPairs1
     /* 5FB90 8006F390 */ .byte 0x01
-enddlabel D_8006F390
+enddlabel g_abGemPickupFlickerPairs1
 
-nonmatching D_8006F391
+nonmatching g_abGemPickupFlickerPairs1Y
 
-dlabel D_8006F391
+dlabel g_abGemPickupFlickerPairs1Y
     /* 5FB91 8006F391 */ .byte 0x00
     /* 5FB92 8006F392 */ .byte 0xFF
     /* 5FB93 8006F393 */ .byte 0x00
@@ -4977,17 +4977,17 @@ dlabel D_8006F391
     /* 5FB95 8006F395 */ .byte 0xFF
     /* 5FB96 8006F396 */ .byte 0x00
     /* 5FB97 8006F397 */ .byte 0x01
-enddlabel D_8006F391
+enddlabel g_abGemPickupFlickerPairs1Y
 
-nonmatching D_8006F398
+nonmatching g_abGemPickupFlickerPairs2
 
-dlabel D_8006F398
+dlabel g_abGemPickupFlickerPairs2
     /* 5FB98 8006F398 */ .byte 0x01
-enddlabel D_8006F398
+enddlabel g_abGemPickupFlickerPairs2
 
-nonmatching D_8006F399
+nonmatching g_abGemPickupFlickerPairs2Y
 
-dlabel D_8006F399
+dlabel g_abGemPickupFlickerPairs2Y
     /* 5FB99 8006F399 */ .byte 0x01
     /* 5FB9A 8006F39A */ .byte 0xFF
     /* 5FB9B 8006F39B */ .byte 0xFF
@@ -5027,11 +5027,11 @@ dlabel D_8006F399
     /* 5FBBD 8006F3BD */ .byte 0xFE
     /* 5FBBE 8006F3BE */ .byte 0x48
     /* 5FBBF 8006F3BF */ .byte 0x05
-enddlabel D_8006F399
+enddlabel g_abGemPickupFlickerPairs2Y
 
-nonmatching D_8006F3C0
+nonmatching g_anGemPickupScaleCurve
 
-dlabel D_8006F3C0
+dlabel g_anGemPickupScaleCurve
     /* 5FBC0 8006F3C0 */ .short 0x0EF6
     /* 5FBC2 8006F3C2 */ .short 0x0DE9
     /* 5FBC4 8006F3C4 */ .short 0x0CE1
@@ -5056,11 +5056,11 @@ dlabel D_8006F3C0
     /* 5FBEA 8006F3EA */ .short 0x0040
     /* 5FBEC 8006F3EC */ .short 0x0030
     /* 5FBEE 8006F3EE */ .short 0x0030
-enddlabel D_8006F3C0
+enddlabel g_anGemPickupScaleCurve
 
-nonmatching D_8006F3F0
+nonmatching g_anGemPickupIconRestPos
 
-dlabel D_8006F3F0
+dlabel g_anGemPickupIconRestPos
     /* 5FBF0 8006F3F0 00010000 */ .word 0x00000100
     /* 5FBF4 8006F3F4 07000000 */ .word 0x00000007
     /* 5FBF8 8006F3F8 70080000 */ .word 0x00000870
@@ -5070,7 +5070,7 @@ dlabel D_8006F3F0
     /* 5FC08 8006F408 DA000000 */ .word 0x000000DA
     /* 5FC0C 8006F40C 16000000 */ .word 0x00000016
     /* 5FC10 8006F410 A0050000 */ .word 0x000005A0
-enddlabel D_8006F3F0
+enddlabel g_anGemPickupIconRestPos
 
 nonmatching g_abLevelTotalDragonsTable
 
@@ -12926,9 +12926,9 @@ dlabel D_8007527D
     /* 65A7F 8007527F */ .byte 0x00
 enddlabel D_8007527D
 
-nonmatching D_80075280
+nonmatching g_anTweenBlendWeights2
 
-dlabel D_80075280
+dlabel g_anTweenBlendWeights2
     /* 65A80 80075280 */ .short 0x0155
     /* 65A82 80075282 */ .short 0x02AB
     /* 65A84 80075284 */ .short 0x02AB
@@ -12937,7 +12937,7 @@ dlabel D_80075280
     /* 65A8A 8007528A */ .short 0x4C00
     /* 65A8C 8007528C */ .short 0x20C0
     /* 65A8E 8007528E */ .short 0x4C20
-enddlabel D_80075280
+enddlabel g_anTweenBlendWeights2
 
 .align 2
 nonmatching D_80075290

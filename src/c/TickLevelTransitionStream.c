@@ -34,7 +34,7 @@ extern int D_80075670;
 extern int D_80075674;
 extern int D_8007577C;
 extern int D_80075850;
-extern int D_80075854;
+extern int g_bLevelBossDefeated; /* cleared on level load */
 extern int D_80075870;
 extern int D_80075874;
 extern int g_nLevelIntroParallaxCountdown;
@@ -459,7 +459,7 @@ void TickLevelTransitionStream(int full) {
     D_80075670 = 0;
     D_80075674 = 0;
     D_8007577C = 0;
-    D_80075854 = 0;
+    g_bLevelBossDefeated = 0;
     D_80075850 = 0;
     g_nCreditsReturnLevelId = -1;
     g_nCdStreamState = -1;

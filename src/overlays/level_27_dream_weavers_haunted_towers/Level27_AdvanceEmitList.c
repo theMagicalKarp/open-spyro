@@ -55,11 +55,6 @@
  * what the original does (`addiu $t0,$sp,0x40; sw $t0,0x70($sp)`).
  */
 
-#define HS(n) (*(short *)(rec + (n)))
-#define HU(n) (*(unsigned short *)(rec + (n)))
-#define W(n) (*(int *)(rec + (n)))
-#define POS ((short *)(rec + 4))
-#define VEL ((short *)(rec + 0x18))
 
 void Level27_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

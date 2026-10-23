@@ -1,4 +1,7 @@
+#include "actor_type.h"
 #include "globals.h"
+
+#define ACT ((Actor *)actor)
 
 extern unsigned int VectorLength(int *vec, int include_z);
 
@@ -11,11 +14,11 @@ int MeasureOffsetToPathPoint(unsigned char *actor, unsigned char *path,
   int idx;
 
   idx = path[1];
-  v[0] = *(int *)((idx << 4) + path + 8) - *(int *)(actor + 0xc);
+  v[0] = *(int *)((idx << 4) + path + 8) - ACT->posX;
   idx = path[1];
-  v[1] = *(int *)((idx << 4) + path + 0xc) - *(int *)(actor + 0x10);
+  v[1] = *(int *)((idx << 4) + path + 0xc) - ACT->posY;
   idx = path[1];
-  v[2] = *(int *)((idx << 4) + path + 0x10) - *(int *)(actor + 0x14);
+  v[2] = *(int *)((idx << 4) + path + 0x10) - ACT->posZ;
 
   return (int)VectorLength(v, 1) / divisor;
 }

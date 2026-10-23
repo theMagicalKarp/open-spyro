@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 #include "sdata.h"
 
 extern void SnapshotPadInputState(uint *dst, uint *src);
@@ -10,7 +11,6 @@ extern void UpdateCameraSpringForMode(void);
 extern int FindWorldFloorBelowPoint(uint *pos);
 
 extern int g_nWorldFloorSurfaceType;
-extern int g_nCameraFloorSurfaceType;
 extern int g_apScriptedCameraViewBlock;
 extern int g_nStaticMeshLodCutoff;
 

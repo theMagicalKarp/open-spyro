@@ -40,18 +40,18 @@ int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
 
   ret = 0;
   if (legs >= 9) {
-    tbl = D_8006CBCC;
+    tbl = g_anTweenBlendWeights8;
     lim = 7;
   } else if (legs >= 7) {
-    tbl = D_8006CBB4;
+    tbl = g_anTweenBlendWeights6;
     lim = 5;
   } else {
     lim = 1;
     if (legs >= 5) {
-      tbl = D_8006CBA4;
+      tbl = g_anTweenBlendWeights4;
       lim = 3;
     } else {
-      tbl = D_80075280;
+      tbl = g_anTweenBlendWeights2;
     }
   }
 

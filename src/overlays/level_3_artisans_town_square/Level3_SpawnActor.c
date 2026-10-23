@@ -273,7 +273,7 @@ Actor *Level3_SpawnActor(int type, Actor *parent) {
 
   case 0x188:
     InitActorRenderDefaults(rec);
-    rec->unk47 = 5;
+    rec->otBias = 5;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {

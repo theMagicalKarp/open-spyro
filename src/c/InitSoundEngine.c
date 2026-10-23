@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 extern void InitSpu(void);
 extern void ApplySpuVoiceAttr(int *attr);
@@ -18,7 +19,7 @@ extern short g_anSpuCommonVolAttr[]; /* g_abSpuCommonAttr + 0x4 (see alias) */
    voice-state block at common+0x28. */
 void InitSoundEngine(void) {
   int pad[2];
-  int a[16];
+  SPUVOICEATTR a;
   unsigned char *common;
   int cd;
 
@@ -36,20 +37,20 @@ void InitSoundEngine(void) {
   g_nMusicVolumeFadeTarget = -1;
   SetSpuCommonAttr(common);
 
-  a[1] = 0xFF13;
-  *(short *)((char *)a + 0x8) = 0x2FFF;
-  *(short *)((char *)a + 0xA) = 0x2FFF;
-  *(short *)((char *)a + 0x14) = 0x400;
-  a[9] = 1;
-  a[10] = 1;
-  a[11] = 3;
-  a[0] = 0xFFFFFF;
-  *(short *)((char *)a + 0x30) = 0;
-  *(short *)((char *)a + 0x32) = 0;
-  *(short *)((char *)a + 0x34) = 0;
-  *(short *)((char *)a + 0x36) = 0;
-  *(short *)((char *)a + 0x38) = 0xF;
-  ApplySpuVoiceAttr(a);
+  a.mask = 0xFF13;
+  a.volL = 0x2FFF;
+  a.volR = 0x2FFF;
+  a.pitch = 0x400;
+  a.a_mode = 1;
+  a.s_mode = 1;
+  a.r_mode = 3;
+  a.voice = 0xFFFFFF;
+  a.ar = 0;
+  a.dr = 0;
+  a.sr = 0;
+  a.rr = 0;
+  a.sl = 0xF;
+  ApplySpuVoiceAttr((int *)&a);
 
   SetSpuKeyMask(0, 0xFFFFFF);
   SetSpuTransferMode(0);

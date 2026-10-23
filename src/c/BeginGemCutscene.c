@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "main_shared.h"
 
 /* Enter the gem-cutscene gamestate (0x8002d338, gamestate 0xE): reset the
    generic countdown fade and the path-table head, raise the storm flag when
@@ -11,9 +12,6 @@ extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
 extern char *volatile g_pActiveCutsceneSoundDef;
-extern int g_nSfxOverrideFlags;
-extern short g_nSfxOverrideVolL;
-extern short g_nSfxOverrideVolR;
 
 void BeginGemCutscene(void) {
   register int world;

@@ -17,13 +17,13 @@ void BlendVectorPairByMode(int *out, unsigned char *rec, int idx, int *vecA,
 
   sel = rec[2];
   if (sel == 2) {
-    tbl = D_80075280;
+    tbl = g_anTweenBlendWeights2;
   } else if (sel == 4) {
-    tbl = D_8006CBA4;
+    tbl = g_anTweenBlendWeights4;
   } else {
-    tbl = D_8006CBCC;
+    tbl = g_anTweenBlendWeights8;
     if (sel == 6) {
-      tbl = D_8006CBB4;
+      tbl = g_anTweenBlendWeights6;
     }
   }
 

@@ -1161,7 +1161,7 @@ void Level27_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -1182,7 +1182,7 @@ void Level27_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -4430,10 +4430,7 @@ void Level27_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case 390: {
       L26Spinner *st = actor->state;
-      int pitch = *(unsigned short *)(g_pLevelSampleBankEntries +
-                                      g_apActorMeshTable[actor->type]->m_Sounds[1] *
-                                          20 +
-                                      0xA);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
@@ -4693,7 +4690,7 @@ void Level27_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

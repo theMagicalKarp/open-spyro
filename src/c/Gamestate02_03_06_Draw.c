@@ -1,5 +1,12 @@
+#include "actor.h"
 #include "globals.h"
 #include "main_shared.h"
+
+/* The sprite record being written (Actor layout). */
+#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
+/* Position stores stay as raw int casts: SREC->posX (MEM_IN_STRUCT_P) and an
+   int-array view both let sched move them past the neighbouring global loads
+   (cookbook A357); only the raw cast keeps the original order. */
 
 extern void DrawSync(int mode);
 extern int VSync(int mode);
@@ -495,12 +502,9 @@ void Gamestate02_03_06_Draw(void) {
                 *((unsigned char *)((int)rp + 0x46)) = 0;
               }
               phase4 += 0xc;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
-                  0x7f;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
-                  0xb;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
-                  0xff;
+              SREC->otBias = 0x7f;
+              SREC->tintMode = 0xb;
+              SREC->cullRadius = 0xff;
               x += 0xa;
               i++;
             } while (i < g_nSfxVolume);
@@ -549,12 +553,9 @@ void Gamestate02_03_06_Draw(void) {
                 *((unsigned char *)((int)rp + 0x46)) = 0;
               }
               phase6 += 0xc;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) =
-                  0x7f;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) =
-                  0xb;
-              *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) =
-                  0xff;
+              SREC->otBias = 0x7f;
+              SREC->tintMode = 0xb;
+              SREC->cullRadius = 0xff;
               x += 0xa;
               i++;
             } while (i < g_nMusicVolume);
@@ -755,23 +756,22 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
+      SREC->type = 0x1d7;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
+      SREC->rotY =
           ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
               << 0x10 >>
           0x19;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          g_adwHudBobSinePhaseBlock[0];
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      SREC->rotZ = g_adwHudBobSinePhaseBlock[0];
+      SREC->otBias = 0x7f;
+      SREC->tintMode = 0xb;
+      SREC->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+      SREC->type = 0x1fa;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x12c;
       if (g_nWorldDragonsRescued >= 0xa) {
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x111;
@@ -781,12 +781,11 @@ void Gamestate02_03_06_Draw(void) {
         bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
-        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-            ((unsigned short *)g_anCosineLut)[bob] >> 8;
+        SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      SREC->otBias = 0x7f;
+      SREC->tintMode = 0xb;
+      SREC->cullRadius = 0xff;
       {
         int x3;
         x3 = 0x24;
@@ -879,7 +878,7 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1d7;
+      SREC->type = 0x1d7;
       {
         int bF = bias + 0x15a;
         *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
@@ -890,15 +889,14 @@ void Gamestate02_03_06_Draw(void) {
       pp = pos;
       bp = buf;
       *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x45)) =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
-          0x19;
+      SREC->rotY = ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase]
+                       << 0x10 >>
+                   0x19;
       __asm__ volatile("");
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-          g_dwHudBobSinePhase;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      SREC->rotZ = g_dwHudBobSinePhase;
+      SREC->otBias = 0x7f;
+      SREC->tintMode = 0xb;
+      SREC->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
@@ -910,18 +908,17 @@ void Gamestate02_03_06_Draw(void) {
         {
           register int fr asm("$2");
           fr = g_nPauseMenuTransitionFrames;
-          *((short *)((int)g_pSpriteRecordWriteCursor + 0x36)) = 0x1fa;
+          SREC->type = 0x1fa;
           bob = (fr * 0x10 & 0x1f0) >> 1;
         }
         *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
-        *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x46)) =
-            ((unsigned short *)g_anCosineLut)[bob] >> 8;
+        SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x47)) = 0x7f;
+      SREC->otBias = 0x7f;
       i = 0;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x4f)) = 0xb;
+      SREC->tintMode = 0xb;
       y = 0x7b;
-      *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x50)) = 0xff;
+      SREC->cullRadius = 0xff;
       do {
         if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + i] != 0) {
           int bA, bB, bC, bD, bE;
@@ -1014,7 +1011,7 @@ void Gamestate02_03_06_Draw(void) {
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
             BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
-            *((unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x44)) = 0x29;
+            SREC->rotX = 0x29;
           }
           if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
             rec -= 0x58;

@@ -329,7 +329,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
 
   case 0x188:
     InitActorRenderDefaults(rec);
-    rec->unk47 = 5;
+    rec->otBias = 5;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {
@@ -345,7 +345,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     rec->posY = 0x28;
     rec->posZ = 0x1000;
     HideActorRenderRecord(rec);
-    rec->unk47 = 0x20;
+    rec->otBias = 0x20;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

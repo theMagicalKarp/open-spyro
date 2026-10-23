@@ -6,7 +6,7 @@ extern void *g_pActorListBase; /* 0x80075828 */
 extern int g_anCameraPos[];    /* 0x80076df8 */
 extern short
     g_nCameraEulerRoll[]; /* 0x80076e1c: [0] roll, [1] pitch, [2] yaw */
-extern char *D_8007637C[];
+extern char *g_apActorMeshTable_1[];
 
 /* 0x8002bfe0 — per-tick gem-cutscene pose update (1088 b, leaf). Reads the
    current path node (timer>>1, stride 0x18) into the camera pos/euler
@@ -38,7 +38,8 @@ void AdvanceGemCutsceneFrame(int timer) {
   i = 0;
   if (path[3] > 0) {
     do {
-      type = *(unsigned char *)(*(char **)(D_8007637C[i] + 0x38) + 0xC);
+      type =
+          *(unsigned char *)(*(char **)(g_apActorMeshTable_1[i] + 0x38) + 0xC);
       if (type == 0x10) {
         int t = *(int *)g_pPathTableHead;
         seg = t >> 3;

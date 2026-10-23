@@ -281,12 +281,12 @@ void Titlescreen_Draw(void) {
       Titlescreen_EmitSpriteQuad(g_nGamestate0dMode.selection * 80 + 140, 38,
                             Sprite_0x09, Color_0x00);
       Titlescreen_EmitSpriteQuad(128, 88, Sprite_0x3E,
-                            (g_nGamestate0dMode.unk_0x18 == 0 &&
+                            (g_nGamestate0dMode.yesNoChoice == 0 &&
                              ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
       Titlescreen_EmitSpriteQuad(256, 88, Sprite_0x36,
-                            (g_nGamestate0dMode.unk_0x18 == 1 &&
+                            (g_nGamestate0dMode.yesNoChoice == 1 &&
                              ((g_nGamestate0dMode.animTimer & 0xF) < 8))
                                 ? Color_0x01
                                 : Color_0x00);
@@ -358,7 +358,7 @@ void Titlescreen_Draw(void) {
 
   g_nVsyncFramePaceAnchor.post = VSync(-1);
 
-  PutDispEnv(&g_pActiveFrameDrawEnv->unk_0x5C);
-  PutDrawEnv(&g_pActiveFrameDrawEnv->unk_0x00);
+  PutDispEnv(&g_pActiveFrameDrawEnv->dispEnv);
+  PutDrawEnv(&g_pActiveFrameDrawEnv->drawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

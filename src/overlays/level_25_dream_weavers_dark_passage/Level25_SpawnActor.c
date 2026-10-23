@@ -24,6 +24,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "main_shared.h"
 
 /* Level25_SpawnActor (0x80084B94, level_25_dream_weavers_dark_passage
  * overlay, 0xc68 bytes).
@@ -73,7 +74,6 @@ typedef struct TrackState {
 
 extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
-extern int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 extern int abs(int n);
 extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 

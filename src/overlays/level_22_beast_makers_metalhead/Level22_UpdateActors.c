@@ -653,7 +653,7 @@ typedef struct L22Boss {
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int D_80075854; /* boss defeated */
+extern int g_bLevelBossDefeated; /* boss defeated */
 
 /* ==== The function ==== */
 #define spy (&SPY)
@@ -894,7 +894,7 @@ void Level22_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
                 st->count;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
@@ -915,7 +915,7 @@ void Level22_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
           }
         }
@@ -1504,7 +1504,7 @@ void Level22_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(3, 0xFC, 0);
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
-          D_80075854 = 1;
+          g_bLevelBossDefeated = 1;
           DespawnActorRecord(actor);
           continue;
         }
@@ -1975,7 +1975,7 @@ void Level22_UpdateActors(void) {
           st->u3C = 0x50;
         }
         actor->updateDist = 0xFF;
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u30, 6, 0, 0);
         ANIM_GO(actor, 7);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -2334,7 +2334,7 @@ void Level22_UpdateActors(void) {
           st->u34 = 0x5A;
         }
         ANIM_GO(actor, 8);
-        actor->unk3B = 0xFF;
+        actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->u2C, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
@@ -2559,7 +2559,7 @@ void Level22_UpdateActors(void) {
             b->baseZ = st->kids[i]->posZ - 0x2EE;
             st->kids[i]->posZ += b->z;
             st->kids[i]->rotZ = i * 0x3C;
-            st->kids[i]->unk47 = 6;
+            st->kids[i]->otBias = 6;
             st->kids[i]->subMode = RandomSignedInRange(10, 0x12);
           }
         }
@@ -4784,7 +4784,7 @@ void Level22_UpdateActors(void) {
           st->passenger->updateDist = 0;
           st->passenger->cullRadius = 0;
           st->passenger->drawn = 0;
-          st->passenger->unk47 = 5;
+          st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, 0, 0);
         } else if (st->phase >= 0x1A0) {

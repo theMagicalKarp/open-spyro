@@ -1,4 +1,8 @@
+#include "actor_type.h"
 #include "globals.h"
+
+/* Icon record at byte offset `o` (slot * 0x58) in the HUD record array. */
+#define ICON(o) ((Actor *)((char *)g_abHudIconActorRecords + (o)))
 
 /* Shift the position of `count` consecutive HUD icon actors by `delta`,
    starting at icon slot `base`. Rest poses live in a 12-byte-per-record table
@@ -9,7 +13,6 @@ void OffsetHudIconRollAxis(int base, int count, int delta) {
   for (i = 0; i < count; i++) {
     int o1 = (base + i) * 12;
     int o2 = (base + i) * 88;
-    *(int *)((char *)g_abHudIconActorRecords + o2 + 0x10) =
-        *(int *)((char *)g_anHudIconRestPos + o1 + 4) + delta;
+    ICON(o2)->posY = *(int *)((char *)g_anHudIconRestPos + o1 + 4) + delta;
   }
 }
