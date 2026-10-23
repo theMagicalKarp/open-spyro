@@ -1,9 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void RotateVectorByMatrix();
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern int FindGroundHeightBelow(int *pt, int range);
 
 /* the matrix symbol itself as an incomplete array: the matrix pointer, the
    -0x34 (== -13 words) g_anSpyroWorldPos AddVector argument and the +0x13C

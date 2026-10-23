@@ -12,21 +12,9 @@
    - Slot age/state bytes are givs off the anchor block, the arc-path select
      pins the table base to $2 and the path to $3 with an empty barrier in
      the long arm, and the product `k` is its own local. */
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern uint GetRandomU32(void);
-extern int LookupSine(uint angle_12_4);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern void ApplyActiveGteRotation(int *src, int *dst);
-extern void SVectorToVector(int *dst, short *src);
-extern void CopyVector(int *dst, int *src);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask,
-                                        int e, int f);
-extern int CastRayWorldAndActors(int *from, int *to);
-extern uint PlaySoundEffect(uint sampleId, int *owner, uint mode,
-                            void *pPlaying);
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 

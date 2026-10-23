@@ -1,3 +1,4 @@
+#include "funcs.h"
 /* 0x8003A420 (size 0x300): actor waypoint-follow step. Steers an actor toward
  * its current waypoint (wp[1] index into a 0x10-byte table at wp+8), clamps the
  * per-frame turn to +/-maxTurn, moves by the (matrix-rotated) capped speed,
@@ -12,20 +13,6 @@
  * (A160). */
 
 extern int abs(int);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void ApplyEulerRotation(unsigned int *eul, unsigned int *mtx,
-                               unsigned int *unused);
-extern void RotateVectorByMatrix(int *mtx, int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern void RShiftVector3(int *vec, unsigned int n);
-extern int DispatchActorContactAtSphere(int *p, int r, int c, int d, int actor,
-                                        int f);
-extern int FindGroundHeightBelow(int *p, int z);
-extern void EncodeCachedVecToActorDirCode(int actor);
-extern void RefreshActorDerivedState(char *actor, int mode);
 
 int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
                             int cap, int contactRadius, int maxTurn,

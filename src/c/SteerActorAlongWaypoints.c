@@ -1,17 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 
-extern void SubtractVector();
-extern unsigned int VectorLength();
-extern int ArcTan2(int y, int x, int high_precision);
 extern int abs(int n);
-extern void ApplyEulerRotation();
-extern void RotateVectorByMatrix();
-extern void AddVector();
-extern void DispatchActorContactAtSphere();
-extern int FindGroundHeightBelow();
-extern void CopyVector();
-extern void EncodeCachedVecToActorDirCode(char *actor);
-extern void RefreshActorDerivedState();
 
 /* Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
  * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):

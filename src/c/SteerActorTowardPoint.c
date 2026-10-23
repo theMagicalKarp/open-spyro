@@ -1,4 +1,5 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 
 #define ACT ((Actor *)actor)
@@ -10,19 +11,6 @@
    new facing. With a nonzero `radius` it resolves sphere collision (snapping
    to g_anCollisionResolvedPos) and dispatches contact callbacks; returns 1 if
    the move was blocked/adjusted, else 0. */
-extern void SubtractVector(int *dst, int *a, int *b);
-extern int ArcTan2(int y, int x, int high_precision);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int flag);
-extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-extern void AddVector(int *dst, int *a, int *b);
-extern void CopyVector(int *dst, int *src);
-extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
-                                        int actor, int flag);
-extern void RefreshActorDerivedState(int actor, int n);
-extern int ProbeActorGroundHeight(int actor);
-extern void EncodeCachedVecToActorDirCode(int actor);
 
 int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
                           int pitchLim, int radius) {

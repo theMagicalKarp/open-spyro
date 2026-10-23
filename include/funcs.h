@@ -110,8 +110,7 @@ int LookupCosine(int angle);
 int CountLeadingZeros(int x);
 
 /* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *param_1, low to high byte) onto the base 3x3 rotation matrix in param_3 (or identity if param_3 is NULL). Uses GTE rtv0 with the sine LUT at DAT_8006cc78 and cosine LUT at DAT_8006cbf8 to multiply axis-by-axis. Writes the composed matrix (5 packed words) to param_2. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ApplyEulerRotation(uint *param_1, uint *param_2, uint *param_3);
+void ApplyEulerRotation(unsigned char *euler, int *mtx, int *base);
 
 /* 0x80017048: Rotates the 3-vector at param_2 by the 3x3 rotation matrix at param_1 using GTE rtir. The Y and Z components are negated on both input and output (PSX screen-up coord convention). Result written to param_3. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
@@ -633,15 +632,13 @@ int CastRayWorldAndActors(int *start, int *end);
 int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 
 /* 0x8004d5ec: Finds the highest world+actor triangle below a point within search distance. Args: position (vec3), max-search-down. Iterates 4-cell actor grid + world chunk index, testing each candidate triangle for XY-containment and reading its Y at the projected point. Tracks highest hit so far in DAT_1f800020. On result writes _DAT_80076b80..b88 (hit point), _DAT_80077368..70 (normal), _DAT_800757e4 (actor or NULL=world), _DAT_80075808 (triangle), _DAT_80075718 (per-triangle surface-type byte). Return value (via DAT_80076b88 + v0) is the ground Y the caller uses for foot height. Callers: AdvanceSpyroFrameMotion (per-frame foot probe via _DAT_80078af8), DispatchSpyroPhysicsByState (swim/state-0xf air probes), IntegrateSpyroMotionForSubstep, Gamestate0B_Update, level-loader FUN_8001364c. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined FindGroundHeightBelow(uint *param_1, int param_2);
+int FindGroundHeightBelow(int *pos, int depth);
 
 /* 0x8004df24: FindWorldFloorBelowPoint — lightweight world-only ground-height probe at a point. Differs from FindGroundHeightBelow (8004d5ec): - World chunks only (no actor grid scan). - First-hit early-exit: scans Z-chunks downward one at a time from the input Z chunk; stops as soon as any world triangle satisfying (X,Y)-containment + Y &lt; input.Y is found. - Writes only to _DAT_80075844 (per-tri surface-type byte); does NOT touch the shared hit-point / hit-normal globals. - Assumes ground Y > 0 — sentinel iVar19==0 doubles as "no hit yet". Returns floor Y (in world units, &lt;&lt; 4 of grid units), or 0 + _DAT_80075844 = -1 on no-hit. Callers: - UpdateCameraFrame (camera-vs-floor — what's the world geometry directly under the camera target). - GemPickup_Update (snap gem-display pose to local floor). World data layout: same as the other M07 probes — chunk header at _DAT_800785d4: +0x8 = X-axis ushort index, +0xc = Y/Z combined ushort index, +0x10 = triangle records (stride 0xc, 14-bit grid-quantized vertices), +0x14 = per-triangle surface-type byte array. */
 int FindWorldFloorBelowPoint(uint *param_1);
 
 /* 0x8004e3c8: Actor-only sphere overlap dispatcher (no world). Args: sphere center, radius, ?, ?, exclude-actor-ptr. Walks the 4-cell actor grid at _DAT_80075778+0x1000 (no world chunk iteration). For each actor whose bounding sphere overlaps, dispatches via jumptable &UNK_8004e5b8 indexed by the actor's type byte at puVar1+2 — runs the per-actor-type contact handler (damage application, pickup trigger, push/bounce, etc). Callers: AdvanceSpyroPhysics (per-substep actor-interaction sweep) and FUN_80048d10 (post-tick actor pose finalize). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 DispatchActorContactAtSphere(uint *param_1, int param_2, undefined4 param_3, undefined4 param_4, int param_5);
+int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask, Actor *actor, int flag);
 
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &DAT_8006fcf4. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at _DAT_800757b0. param_1 = actor mesh index into _DAT_80078a4c table (or -1 to walk the flat list at _DAT_80078a44..+_DAT_80078a40*4). param_2/param_3 = camera rot/translate matrices. Called once at the end of DrawActors, and by Gamestate01_09/04_05/GemCutscene_Draw. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

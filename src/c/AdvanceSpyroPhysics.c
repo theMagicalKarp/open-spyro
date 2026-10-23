@@ -10,16 +10,12 @@
      loop), one variable `p` for contacted+nudge (set twice, never a
      movable), a non-sdata WS block so cse keeps `b + 4`, and an array-free
      `*q` suspend RMW (MEM_IN_STRUCT_P decides sched2 aliasing). */
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void ChangeSpyroState(int state);
-extern void ComputeSpyroMoveTargetFromPad(int mag);
-extern void *DispatchActorContactAtSphere(int *pos, int radius,
-                                          unsigned int *flags, int mask, int a4,
-                                          int a5);
 extern int abs(int x);
 
 SDATA(g_nSpyroScriptedAlignFrames, 4);
