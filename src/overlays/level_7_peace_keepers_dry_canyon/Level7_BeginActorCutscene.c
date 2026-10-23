@@ -17,7 +17,6 @@
 #include "level_emit_particles.h"
 #include "level_actor_cutscene.h"
 
-extern char *g_pActorListBase;
 
 /* The three position reads stay in byte-offset form: written as
  * actor->posX/posY/posZ (or through &actor->posX) sched1 reorders them

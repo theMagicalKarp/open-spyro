@@ -25,7 +25,6 @@
 #include "level_flight_results.h"
 
 extern char *g_pRenderScratchPrimTop;
-extern int g_anFlightTargetTally;
 
 void Level29_HandleFlightResults(int reload) {
   int i;

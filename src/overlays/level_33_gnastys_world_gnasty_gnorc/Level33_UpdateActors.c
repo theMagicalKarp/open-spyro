@@ -341,7 +341,6 @@ extern int SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
 /* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
 /* from level_34 */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -371,7 +370,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     continue;                                                                  \
   }
 /* from level_32 */
-extern int g_anCameraPos[]; /* camera position */
 /* from level_32 */
 typedef struct L32State145 {
   int u00;     /* 0x00 flags; bit 0 armed */

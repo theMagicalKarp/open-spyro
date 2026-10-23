@@ -160,7 +160,6 @@ extern struct {
 } g_nHudWorldEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos);
-extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -658,7 +657,6 @@ typedef struct PatrolState {
   int timer;      /* 0x10 */
 } PatrolState;
 
-extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;

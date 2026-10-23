@@ -344,7 +344,6 @@ extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */
 
 /* Type 177: treasure thief. Flies a ring with two spurs (pathA/pathB),
  * running laps away from Spyro; knocked out it bursts into loot. */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))

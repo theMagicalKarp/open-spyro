@@ -29,12 +29,6 @@
 
 extern void PlaySoundEffect();
 
-extern char *g_pRenderScratchPrimTop[]; /* level image base; [-2] = g_pRenderScratchRegionBase */
-extern char *g_pRenderScratchRegionBase;
-extern char *g_pSpriteRecordWriteCursor; /* sprite record cursor */
-extern int g_dwHudBobSinePhase;              /* backdrop bob phase */
-extern char *g_apSpritePrimQueue[];          /* published record table */
-extern char g_pOtDepthBinHead0[];           /* OT depth bins */
 
 void Level5_FlightResults_Draw(void)
 {

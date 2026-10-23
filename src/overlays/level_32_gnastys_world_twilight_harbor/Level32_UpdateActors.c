@@ -177,7 +177,6 @@ extern struct {
 } g_nHudWorldEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos);
-extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
@@ -1118,7 +1117,6 @@ typedef struct L9Thrower {
   int p28;        /* 0x28 */
   int throwT;     /* 0x2C */
 } L9Thrower;
-extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
 
 /* ==== level_10 per-class state blocks ==== */
 /* Type 370: Doctor Shemp's guard. */
@@ -1891,7 +1889,6 @@ typedef struct L25Lantern {
 
 /* ==== Level 32 classes ==== */
 
-extern int g_anCameraPos[]; /* camera position */
 
 /* Type 145 state. */
 typedef struct L32State145 {

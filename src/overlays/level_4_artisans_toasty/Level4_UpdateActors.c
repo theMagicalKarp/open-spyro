@@ -218,7 +218,6 @@ extern struct {
 } g_nHudWorldEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos, int dt);
-extern void SVectorToVectorShl2(int *d, int *s);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 

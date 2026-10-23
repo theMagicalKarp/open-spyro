@@ -69,4 +69,9 @@ extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
 extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
 extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
+extern void SVectorToVectorShl2(int *d, int *s);
+extern int g_anCameraPos[];
+
 #endif /* OPEN_SPYRO_LEVEL_ACTORS_H */

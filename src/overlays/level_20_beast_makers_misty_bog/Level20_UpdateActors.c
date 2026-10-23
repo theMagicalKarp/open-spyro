@@ -312,7 +312,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
 /* from level_34 */
 #define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
 /* from level_34 */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 /* from level_34 */
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 /* from level_34 */
@@ -425,7 +424,6 @@ typedef struct L20State403 {
   int u38;       /* 0x38 stun timer */
 } L20State403;
 
-extern int g_anCameraPos[]; /* camera position */
 
 /* Type 476 state. */
 typedef struct L20State476 {

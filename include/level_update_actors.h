@@ -1708,4 +1708,8 @@ extern Xform *g_pCameraTargetParams;
 extern PortalDesc *volatile g_pGemPickupCamPathData;
 extern int *g_pPathTableHead;
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
+extern int g_anCameraPos[];
+
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

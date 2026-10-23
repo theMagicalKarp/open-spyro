@@ -468,7 +468,6 @@ typedef struct L20State403 {
   int u38;       /* 0x38 stun timer */
 } L20State403;
 
-extern int g_anCameraPos[]; /* camera position */
 
 /* Type 476 state. */
 typedef struct L20State476 {

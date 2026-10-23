@@ -92,4 +92,7 @@ extern char *g_apBalloonistNames[];          /* per-world balloonist names */
 
 extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
 
+/* Declared identically (by type) in two or more including files; hoisted here. */
+extern unsigned int g_dwHudBobSinePhase[];
+
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */

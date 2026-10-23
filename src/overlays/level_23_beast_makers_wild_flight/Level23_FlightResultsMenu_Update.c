@@ -24,7 +24,6 @@
 #include "level_flight_results.h"
 
 
-extern unsigned int g_dwHudBobSinePhase[];
 
 void Level23_FlightResultsMenu_Update(void) {
   unsigned int *bob;
