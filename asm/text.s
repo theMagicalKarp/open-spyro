@@ -45792,25 +45792,25 @@ glabel BlendVectorPairByMode
     /* 2B138 8003A938 02000224 */  addiu      $v0, $zero, 0x2
     /* 2B13C 8003A93C 05006214 */  bne        $v1, $v0, .L8003A954
     /* 2B140 8003A940 21908000 */   addu      $s2, $a0, $zero
-    /* 2B144 8003A944 0780053C */  lui        $a1, %hi(D_80075280)
-    /* 2B148 8003A948 8052A524 */  addiu      $a1, $a1, %lo(D_80075280)
+    /* 2B144 8003A944 0780053C */  lui        $a1, %hi(g_anTweenBlendWeights2)
+    /* 2B148 8003A948 8052A524 */  addiu      $a1, $a1, %lo(g_anTweenBlendWeights2)
     /* 2B14C 8003A94C 63EA0008 */  j          .L8003A98C
     /* 2B150 8003A950 1000A427 */   addiu     $a0, $sp, 0x10
   .L8003A954:
     /* 2B154 8003A954 04000224 */  addiu      $v0, $zero, 0x4
     /* 2B158 8003A958 05006214 */  bne        $v1, $v0, .L8003A970
     /* 2B15C 8003A95C 06000224 */   addiu     $v0, $zero, 0x6
-    /* 2B160 8003A960 0780053C */  lui        $a1, %hi(D_8006CBA4)
-    /* 2B164 8003A964 A4CBA524 */  addiu      $a1, $a1, %lo(D_8006CBA4)
+    /* 2B160 8003A960 0780053C */  lui        $a1, %hi(g_anTweenBlendWeights4)
+    /* 2B164 8003A964 A4CBA524 */  addiu      $a1, $a1, %lo(g_anTweenBlendWeights4)
     /* 2B168 8003A968 63EA0008 */  j          .L8003A98C
     /* 2B16C 8003A96C 1000A427 */   addiu     $a0, $sp, 0x10
   .L8003A970:
-    /* 2B170 8003A970 0780053C */  lui        $a1, %hi(D_8006CBCC)
-    /* 2B174 8003A974 CCCBA524 */  addiu      $a1, $a1, %lo(D_8006CBCC)
+    /* 2B170 8003A970 0780053C */  lui        $a1, %hi(g_anTweenBlendWeights8)
+    /* 2B174 8003A974 CCCBA524 */  addiu      $a1, $a1, %lo(g_anTweenBlendWeights8)
     /* 2B178 8003A978 03006214 */  bne        $v1, $v0, .L8003A988
     /* 2B17C 8003A97C 00000000 */   nop
-    /* 2B180 8003A980 0780053C */  lui        $a1, %hi(D_8006CBB4)
-    /* 2B184 8003A984 B4CBA524 */  addiu      $a1, $a1, %lo(D_8006CBB4)
+    /* 2B180 8003A980 0780053C */  lui        $a1, %hi(g_anTweenBlendWeights6)
+    /* 2B184 8003A984 B4CBA524 */  addiu      $a1, $a1, %lo(g_anTweenBlendWeights6)
   .L8003A988:
     /* 2B188 8003A988 1000A427 */  addiu      $a0, $sp, 0x10
   .L8003A98C:
@@ -47530,28 +47530,28 @@ glabel TweenActorAlongPath
     /* 2C800 8003C000 0900822A */  slti       $v0, $s4, 0x9
     /* 2C804 8003C004 05004014 */  bnez       $v0, .L8003C01C
     /* 2C808 8003C008 3800B2AF */   sw        $s2, 0x38($sp)
-    /* 2C80C 8003C00C 0780123C */  lui        $s2, %hi(D_8006CBCC)
-    /* 2C810 8003C010 CCCB5226 */  addiu      $s2, $s2, %lo(D_8006CBCC)
+    /* 2C80C 8003C00C 0780123C */  lui        $s2, %hi(g_anTweenBlendWeights8)
+    /* 2C810 8003C010 CCCB5226 */  addiu      $s2, $s2, %lo(g_anTweenBlendWeights8)
     /* 2C814 8003C014 16F00008 */  j          .L8003C058
     /* 2C818 8003C018 07000424 */   addiu     $a0, $zero, 0x7
   .L8003C01C:
     /* 2C81C 8003C01C 0700822A */  slti       $v0, $s4, 0x7
     /* 2C820 8003C020 05004014 */  bnez       $v0, .L8003C038
     /* 2C824 8003C024 0500822A */   slti      $v0, $s4, 0x5
-    /* 2C828 8003C028 0780123C */  lui        $s2, %hi(D_8006CBB4)
-    /* 2C82C 8003C02C B4CB5226 */  addiu      $s2, $s2, %lo(D_8006CBB4)
+    /* 2C828 8003C028 0780123C */  lui        $s2, %hi(g_anTweenBlendWeights6)
+    /* 2C82C 8003C02C B4CB5226 */  addiu      $s2, $s2, %lo(g_anTweenBlendWeights6)
     /* 2C830 8003C030 16F00008 */  j          .L8003C058
     /* 2C834 8003C034 05000424 */   addiu     $a0, $zero, 0x5
   .L8003C038:
     /* 2C838 8003C038 05004014 */  bnez       $v0, .L8003C050
     /* 2C83C 8003C03C 01000424 */   addiu     $a0, $zero, 0x1
-    /* 2C840 8003C040 0780123C */  lui        $s2, %hi(D_8006CBA4)
-    /* 2C844 8003C044 A4CB5226 */  addiu      $s2, $s2, %lo(D_8006CBA4)
+    /* 2C840 8003C040 0780123C */  lui        $s2, %hi(g_anTweenBlendWeights4)
+    /* 2C844 8003C044 A4CB5226 */  addiu      $s2, $s2, %lo(g_anTweenBlendWeights4)
     /* 2C848 8003C048 16F00008 */  j          .L8003C058
     /* 2C84C 8003C04C 03000424 */   addiu     $a0, $zero, 0x3
   .L8003C050:
-    /* 2C850 8003C050 0780123C */  lui        $s2, %hi(D_80075280)
-    /* 2C854 8003C054 80525226 */  addiu      $s2, $s2, %lo(D_80075280)
+    /* 2C850 8003C050 0780123C */  lui        $s2, %hi(g_anTweenBlendWeights2)
+    /* 2C854 8003C054 80525226 */  addiu      $s2, $s2, %lo(g_anTweenBlendWeights2)
   .L8003C058:
     /* 2C858 8003C058 01000592 */  lbu        $a1, 0x1($s0)
     /* 2C85C 8003C05C 0000238E */  lw         $v1, 0x0($s1)

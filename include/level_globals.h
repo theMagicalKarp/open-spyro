@@ -58,7 +58,7 @@ extern int g_nGamestate0cCamEulerPitchStart;
 extern int g_nGamestate0cCamEulerYawStart;
 extern int g_nGamestate0cRecordZStart;
 extern int g_nGamestate0cRecordZGoal;
-extern unsigned char D_80078032[];
+extern unsigned char g_abHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
 extern int g_anFlightTallyActiveSlots_e3;

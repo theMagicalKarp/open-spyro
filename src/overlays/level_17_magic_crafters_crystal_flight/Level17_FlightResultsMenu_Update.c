@@ -5,7 +5,7 @@
  * scrolls the HUD bob phase (g_dwHudBobSinePhase) and sun vector (RotateLightVectorXZ),
  * then runs the retry/exit menu. g_nSubMenuScrollOffset paces g_nSubMenuCursor (menu reveal
  * timer, +1 every 5 ticks, capped 9); four HUD sprite records at
- * D_80078032 (+0x58 stride) spin their +0x32 angle byte. Once revealed
+ * g_abHudIconActorRecords_rotZ (+0x58 stride) spin their +0x32 angle byte. Once revealed
  * (timer >= 9): select/start (pad & 0x5000) toggles the cursor
  * (g_nPauseMenuCursor) with a blip; confirm (pad & 0x840) either dispatches the
  * cursor action (0 = restart flight via g_pfnLevelHandleFlightResults(1) +
@@ -51,7 +51,7 @@ void Level17_FlightResultsMenu_Update(void) {
     g_nSubMenuScrollOffset = 0;
   }
   i = 0;
-  rec = D_80078032;
+  rec = g_abHudIconActorRecords_rotZ;
   do {
     *rec += 8;
     i += 1;

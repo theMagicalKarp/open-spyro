@@ -1615,9 +1615,9 @@ dlabel g_anFogFullScreenTriPairSxy
     /* 5D3A0 8006CBA0 0000F000 */ .word 0x00F00000
 enddlabel g_anFogFullScreenTriPairSxy
 
-nonmatching D_8006CBA4
+nonmatching g_anTweenBlendWeights4
 
-dlabel D_8006CBA4
+dlabel g_anTweenBlendWeights4
     /* 5D3A4 8006CBA4 */ .short 0x00CD
     /* 5D3A6 8006CBA6 */ .short 0x0333
     /* 5D3A8 8006CBA8 */ .short 0x0199
@@ -1626,11 +1626,11 @@ dlabel D_8006CBA4
     /* 5D3AE 8006CBAE */ .short 0x0199
     /* 5D3B0 8006CBB0 */ .short 0x0333
     /* 5D3B2 8006CBB2 */ .short 0x00CD
-enddlabel D_8006CBA4
+enddlabel g_anTweenBlendWeights4
 
-nonmatching D_8006CBB4
+nonmatching g_anTweenBlendWeights6
 
-dlabel D_8006CBB4
+dlabel g_anTweenBlendWeights6
     /* 5D3B4 8006CBB4 */ .short 0x0092
     /* 5D3B6 8006CBB6 */ .short 0x036E
     /* 5D3B8 8006CBB8 */ .short 0x0125
@@ -1643,11 +1643,11 @@ dlabel D_8006CBB4
     /* 5D3C6 8006CBC6 */ .short 0x0125
     /* 5D3C8 8006CBC8 */ .short 0x036E
     /* 5D3CA 8006CBCA */ .short 0x0092
-enddlabel D_8006CBB4
+enddlabel g_anTweenBlendWeights6
 
-nonmatching D_8006CBCC
+nonmatching g_anTweenBlendWeights8
 
-dlabel D_8006CBCC
+dlabel g_anTweenBlendWeights8
     /* 5D3CC 8006CBCC */ .short 0x0072
     /* 5D3CE 8006CBCE */ .short 0x038E
     /* 5D3D0 8006CBD0 */ .short 0x00E4
@@ -1670,7 +1670,7 @@ dlabel D_8006CBCC
     /* 5D3F2 8006CBF2 */ .short 0x0152
     /* 5D3F4 8006CBF4 */ .short 0x00E1
     /* 5D3F6 8006CBF6 */ .short 0x0000
-enddlabel D_8006CBCC
+enddlabel g_anTweenBlendWeights8
 
 nonmatching g_anSineLut
 
@@ -12926,9 +12926,9 @@ dlabel D_8007527D
     /* 65A7F 8007527F */ .byte 0x00
 enddlabel D_8007527D
 
-nonmatching D_80075280
+nonmatching g_anTweenBlendWeights2
 
-dlabel D_80075280
+dlabel g_anTweenBlendWeights2
     /* 65A80 80075280 */ .short 0x0155
     /* 65A82 80075282 */ .short 0x02AB
     /* 65A84 80075284 */ .short 0x02AB
@@ -12937,7 +12937,7 @@ dlabel D_80075280
     /* 65A8A 8007528A */ .short 0x4C00
     /* 65A8C 8007528C */ .short 0x20C0
     /* 65A8E 8007528E */ .short 0x4C20
-enddlabel D_80075280
+enddlabel g_anTweenBlendWeights2
 
 .align 2
 nonmatching D_80075290

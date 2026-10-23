@@ -9,8 +9,8 @@ extern void CopyVector(int *dst, int *src);
 extern int ComputeCameraToTargetAngle(int *pos);
 extern void UpdateCameraEulerAngles(void);
 
-/* The active scripted-camera record pointer (D_80076EBC) and the camera
-   position 0xc4 below it are reached through one held base register. */
+/* The active scripted-camera record pointer (g_pScriptedCameraView) and the
+   camera position 0xc4 below it are reached through one held base register. */
 extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])

@@ -1,13 +1,13 @@
 #include "globals.h"
 #include "vecmath.h"
 
-/* The active scripted-camera record pointer (D_80076EBC) and the camera
-   position 0xc4 below it are reached through one held base register. */
+/* The active scripted-camera record pointer (g_pScriptedCameraView) and the
+   camera position 0xc4 below it are reached through one held base register. */
 extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
-extern int
-    *D_80076EBC; /* the same pointer, absolute form for the post-call re-read */
+extern int *g_pScriptedCameraView; /* the same pointer, absolute form for the
+                                      post-call re-read */
 
 /* The camera's euler angles: three consecutive shorts from g_nCameraEulerRoll.
  */
@@ -33,7 +33,7 @@ void ActivateScriptedCameraView(int *view) {
   CopyVector(CAMPOS, view + 6);
   ZeroVector(g_anSpyroVelocity);
   g_anSpyroVelocity[2] = -0x2300;
-  rec = D_80076EBC;
+  rec = g_pScriptedCameraView;
   CAMERA_EULER.roll = rec[9];
   CAMERA_EULER.pitch = rec[10];
   g_nCameraCurrentMode = 0x8000000e;
