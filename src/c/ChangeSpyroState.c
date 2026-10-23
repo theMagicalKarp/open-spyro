@@ -396,7 +396,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroBodyYawStep = 0;
     g_nSpyroPitchRateAccum = 0;
     g_nSpyroTurnRateAccum = 0;
-    D_80075700 = 0;
+    g_nSpyroMotionAux = 0;
     if (g_nSpyroMotionZ > 0) {
       g_nSpyroMotionZ = 0;
     }
@@ -597,7 +597,7 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
-    D_80075700 = 0;
+    g_nSpyroMotionAux = 0;
     PlaySoundEffect(SFX(5), SPY, 4, (unsigned char *)SPY + SPY_VOICE + 1);
     break;
   }

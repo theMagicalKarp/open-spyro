@@ -248,7 +248,7 @@ extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c
                           int d);
 
 /* ==== level_10 per-class state blocks ==== */
-extern int D_80075850;
+extern int g_bLevelPhasedBossKilled;
 extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
@@ -3222,7 +3222,7 @@ void Level10_UpdateActors(void) {
       actor->flags = 0;
       if (st->init == 0) {
         st->init = 1;
-        if (D_80075850 != 0 && actor->dropKind == 0xFF) {
+        if (g_bLevelPhasedBossKilled != 0 && actor->dropKind == 0xFF) {
           found = 0;
           j = st->chain;
           while (!found) {
@@ -3586,7 +3586,7 @@ void Level10_UpdateActors(void) {
       case 45:
         ANIM_GO(actor, 3);
         if (g_nActorAnimDone != 0) {
-          D_80075850 = 1;
+          g_bLevelPhasedBossKilled = 1;
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
           actor->floorOffset = 0;

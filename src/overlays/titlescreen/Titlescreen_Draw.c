@@ -35,7 +35,7 @@ void Titlescreen_Draw(void) {
     if (g_nGamestate0dMode.subState == 2) {
       /* spyro landed, logo incoming */
       if (g_pPathTableHead->introFrame >= 1170)
-        Titlescreen_EmitSpriteQuad(128, D_8006FA74[g_nGamestate0dMode.animTimer] - 128,
+        Titlescreen_EmitSpriteQuad(128, g_abTitleSlideInCurve[g_nGamestate0dMode.animTimer] - 128,
                               Sprite_0x00, Color_0x00);
     } else if (g_nGamestate0dMode.subState == 3) {
       Titlescreen_EmitSpriteQuad(128, 0, Sprite_0x00, 0);
@@ -43,12 +43,12 @@ void Titlescreen_Draw(void) {
                             ((g_nGamestate0dMode.animTimer & 0xF) < 8) * 2);
     } else if (g_nGamestate0dMode.subState == 4) {
       if (g_nGamestate0dMode.animTimer < 16) {
-        Titlescreen_EmitSpriteQuad(128, D_8006FA84[g_nGamestate0dMode.animTimer] - 128,
+        Titlescreen_EmitSpriteQuad(128, g_abTitleSlideOutCurve[g_nGamestate0dMode.animTimer] - 128,
                               Sprite_0x00, Color_0x00);
       } else {
-        Titlescreen_EmitSpriteQuad(108, D_8006FA74[g_nGamestate0dMode.animTimer - 16] - 119,
+        Titlescreen_EmitSpriteQuad(108, g_abTitleSlideInCurve[g_nGamestate0dMode.animTimer - 16] - 119,
                               Sprite_0x01, Color_0x00);
-        Titlescreen_EmitSpriteQuad(255, D_8006FA74[g_nGamestate0dMode.animTimer - 16] - 119,
+        Titlescreen_EmitSpriteQuad(255, g_abTitleSlideInCurve[g_nGamestate0dMode.animTimer - 16] - 119,
                               -Sprite_0x01, Color_0x00);
       }
     }
@@ -260,9 +260,9 @@ void Titlescreen_Draw(void) {
         }
       }
     } else {
-      Titlescreen_EmitSpriteQuad(108, D_8006FA84[g_nGamestate0dMode.animTimer] - 119,
+      Titlescreen_EmitSpriteQuad(108, g_abTitleSlideOutCurve[g_nGamestate0dMode.animTimer] - 119,
                             Sprite_0x01, Color_0x00);
-      Titlescreen_EmitSpriteQuad(255, D_8006FA84[g_nGamestate0dMode.animTimer] - 119,
+      Titlescreen_EmitSpriteQuad(255, g_abTitleSlideOutCurve[g_nGamestate0dMode.animTimer] - 119,
                             -Sprite_0x01, Color_0x00);
     }
 

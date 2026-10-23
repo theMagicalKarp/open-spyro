@@ -445,7 +445,7 @@ typedef struct L20State476 {
   int u38;      /* 0x38 */
 } L20State476;
 
-extern int D_8007577C;
+extern int g_bLevelUseShortReleaseAnim;
 
 /* ==== The function ==== */
 void Level20_UpdateActors(void) {
@@ -4011,7 +4011,7 @@ void Level20_UpdateActors(void) {
             actor->mode = 0xD;
             continue;
           }
-          if (D_8007577C != 0) {
+          if (g_bLevelUseShortReleaseAnim != 0) {
             actor->mode = 0xE;
             continue;
           }
@@ -4051,7 +4051,7 @@ void Level20_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          D_8007577C = 1;
+          g_bLevelUseShortReleaseAnim = 1;
           actor->mode = 2;
           continue;
         }

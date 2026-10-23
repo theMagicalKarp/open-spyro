@@ -64,8 +64,8 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   g_nOptionVibrationEnabled = buf[3];
   g_dwActiveCameraOptions = cam;
   g_nSoundMonoMixFlag = buf[8];
-  D_80075838 = buf[9];
-  D_8007583C = buf[0xA];
+  g_anLevelEscapeRunCount = buf[9];
+  g_nLevelEscapeRunCountLane1 = buf[0xA];
   g_nExtraLives = buf[0xB];
   lives = g_nExtraLives;
   start = buf;

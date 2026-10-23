@@ -78,8 +78,8 @@ void ResetLevelState(void) {
   g_nLevelEggCount = 0;
   g_nSparxFoodCount = 0;
   g_nLevelReadyFlagStash = -1;
-  D_80075838 = 0;
-  D_8007583C = 0;
+  g_anLevelEscapeRunCount = 0;
+  g_nLevelEscapeRunCountLane1 = 0;
   FillWord(anchor, v, 0x68);
   FillWord(g_anLevelKillBitmapTable, 0, 0x480);
 }

@@ -148,7 +148,7 @@ int BuildLoadedLevelRuntime(int fullSetup) {
       g_nSpyroBodyPitch = 0;
       g_nSpyroPitchRateAccum = 0;
       g_nSpyroTurnRateAccum = 0;
-      D_80075700 = 0;
+      g_nSpyroMotionAux = 0;
       g_nSpyroWorldPosZ -= 0x400;
     }
   } else {

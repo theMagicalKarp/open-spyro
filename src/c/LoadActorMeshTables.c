@@ -2,15 +2,17 @@
 #include "main_shared.h"
 
 /* 0x8005b7d8, 264 bytes — load the actor-mesh directory from CD into the top of
-   the boot-load region. CdReadSyncSectors pulls D_8007A714 bytes from sector
-   D_8007A710 into a buffer just under 0x80200000 - g_nCrt0StackSize; the first
-   word gives the payload size, which is copied down to a fresh g_pWorkAreaTop.
-   Up to 64 directory entries are then walked: each non-empty entry relocates a
-   mesh header and stores the resolved pointer at g_apActorMeshTable[slot]. */
+   the boot-load region. CdReadSyncSectors pulls g_nActorMeshDirByteSize bytes
+   from sector g_nActorMeshDirSectorOffset into a buffer just under 0x80200000 -
+   g_nCrt0StackSize; the first word gives the payload size, which is copied down
+   to a fresh g_pWorkAreaTop. Up to 64 directory entries are then walked: each
+   non-empty entry relocates a mesh header and stores the resolved pointer at
+   g_apActorMeshTable[slot]. */
 
-extern int D_8007A710;
-extern int D_8007A714[4]; /* sized alias: keeps the directory-header address in
-                             a register instead of folding to lui/lw %lo */
+extern int g_nActorMeshDirSectorOffset;
+extern int
+    g_nActorMeshDirByteSize[4]; /* sized alias: keeps the directory-header
+                      address in a register instead of folding to lui/lw %lo */
 
 extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
                                            g_apActorMeshTable */
@@ -34,12 +36,12 @@ void LoadActorMeshTables(void) {
   i = 0;
   table = g_apActorMeshTableBlock;
   top = 0x80200000;
-  hdr = D_8007A714;
+  hdr = g_nActorMeshDirByteSize;
   lba = *(volatile int *)&g_nCdBaseLba;
   nbytes = *(volatile int *)hdr;
   size = *hdr;
   dir = (int *)(top - size - size - g_nCrt0StackSize);
-  CdReadSyncSectors(lba, dir, nbytes, D_8007A710, 0x258);
+  CdReadSyncSectors(lba, dir, nbytes, g_nActorMeshDirSectorOffset, 0x258);
 
   chunk = dir[0];
   g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - chunk);

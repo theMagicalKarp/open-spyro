@@ -49,9 +49,9 @@ extern int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
 extern int g_nSpyroWorldPosZ; /* g_anSpyroWorldPos[2] */
 
-extern int D_80075838;
+extern int g_anLevelEscapeRunCount;
 
-extern int D_8007583C;
+extern int g_nLevelEscapeRunCountLane1;
 
 extern int g_nCameraFloorSurfaceType;
 
@@ -110,7 +110,7 @@ extern short g_anCameraEulerPitchBlock[];
 
 extern void ResetCameraStateToTarget(void);
 
-extern int D_80075700;
+extern int g_nSpyroMotionAux;
 
 extern int ComputeSaveGameChecksum(unsigned char *data);
 

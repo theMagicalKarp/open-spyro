@@ -505,7 +505,7 @@ extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 /* Type 159 state. */
 typedef struct L33State159 {
   FlyPath *path; /* 0x00 */
-  int u04;       /* 0x04 lane; indexes D_80075838 */
+  int u04;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int u08;       /* 0x08 slow-down timer */
   int u0C;       /* 0x0C */
   int u10;       /* 0x10 speed */
@@ -518,7 +518,7 @@ typedef struct L33State159 {
   int u60;       /* 0x60 partner actor index, -1 none */
 } L33State159;
 
-extern int D_80075838[]; /* laps per lane */
+extern int g_anLevelEscapeRunCount[]; /* laps per lane */
 
 /* Type 161 state (Gnasty Gnorc). */
 typedef struct GnastyState {
@@ -1924,7 +1924,7 @@ void Level33_UpdateActors(void) {
             st->path->dir = 1;
             st->u08 = 0x96;
           }
-          st->u08 -= D_80075838[st->u04] * 6;
+          st->u08 -= g_anLevelEscapeRunCount[st->u04] * 6;
           if (IsPointInRotatedBox(&SPY.posX, st->u28) != 0) {
             st->path->dir *= -1;
           }
@@ -1950,7 +1950,7 @@ void Level33_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (TickCountdownByFrameDelta(&st->u08, 4) != 0) {
-          int lo = 0xDC - D_80075838[st->u04] * 6;
+          int lo = 0xDC - g_anLevelEscapeRunCount[st->u04] * 6;
 
           st->u10 -= 0xA;
           if (st->u10 < lo) {
@@ -1978,9 +1978,9 @@ void Level33_UpdateActors(void) {
         }
         if ((st->path->dir == -1 && r == (st->u20 | 0x100)) ||
             (st->path->dir == 1 && r == (st->u24 | 0x100))) {
-          D_80075838[st->u04]++;
-          if (D_80075838[st->u04] >= 6) {
-            D_80075838[st->u04] = 5;
+          g_anLevelEscapeRunCount[st->u04]++;
+          if (g_anLevelEscapeRunCount[st->u04] >= 6) {
+            g_anLevelEscapeRunCount[st->u04] = 5;
           }
           ENTER_POSE(actor, 0);
         }

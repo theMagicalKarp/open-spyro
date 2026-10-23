@@ -5981,10 +5981,10 @@ dlabel g_apBalloonistDialogueLines
     /* 60270 8006FA70 08020180 */ .word 0x80010208
 enddlabel g_apBalloonistDialogueLines
 
-nonmatching D_8006FA74
+nonmatching g_abTitleSlideInCurve
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8006FA74
+dlabel g_abTitleSlideInCurve
     /* 60274 8006FA74 00081019 */ .word 0x19100800
     /* 60278 8006FA78 222C3641 */ .word 0x41362C22
     /* 6027C 8006FA7C 4C586572 */ .word 0x7265584C
@@ -6113,7 +6113,7 @@ dlabel D_8006FA74
     /* 60468 8006FC68 FF0F00B0 */ .word 0xB0000FFF
     /* 6046C 8006FC6C 1E00A07C */ .word 0x7CA0001E
     /* 60470 8006FC70 FF0F0000 */ .word 0x00000FFF
-enddlabel D_8006FA74
+enddlabel g_abTitleSlideInCurve
 
 nonmatching D_8006FC74
 
@@ -14141,17 +14141,17 @@ dlabel g_nCurrentWorldId
     /* 65E6C 8007566C 00000000 */ .word 0x00000000
 enddlabel g_nCurrentWorldId
 
-nonmatching D_80075670
+nonmatching g_nLevelUnreadScratchA
 
-dlabel D_80075670
+dlabel g_nLevelUnreadScratchA
     /* 65E70 80075670 00000000 */ .word 0x00000000
-enddlabel D_80075670
+enddlabel g_nLevelUnreadScratchA
 
-nonmatching D_80075674
+nonmatching g_nLevelUnreadScratchB
 
-dlabel D_80075674
+dlabel g_nLevelUnreadScratchB
     /* 65E74 80075674 00000000 */ .word 0x00000000
-enddlabel D_80075674
+enddlabel g_nLevelUnreadScratchB
 
 nonmatching g_nGnastyLootFallRefZCap
 
@@ -14208,11 +14208,11 @@ dlabel D_80075698
     /* 65E9C 8007569C 00000000 */ .word 0x00000000
 enddlabel D_80075698
 
-nonmatching D_800756A0
+nonmatching g_bDebugNoDepletion
 
-dlabel D_800756A0
+dlabel g_bDebugNoDepletion
     /* 65EA0 800756A0 00000000 */ .word 0x00000000
-enddlabel D_800756A0
+enddlabel g_bDebugNoDepletion
 
 nonmatching g_nActorPoolLiveCount
 
@@ -14349,11 +14349,11 @@ dlabel g_pSpriteRecordBufferTop
     /* 65EFC 800756FC 00000000 */ .word 0x00000000
 enddlabel g_pSpriteRecordBufferTop
 
-nonmatching D_80075700
+nonmatching g_nSpyroMotionAux
 
-dlabel D_80075700
+dlabel g_nSpyroMotionAux
     /* 65F00 80075700 00000000 */ .word 0x00000000
-enddlabel D_80075700
+enddlabel g_nSpyroMotionAux
 
 nonmatching g_nGamestate0fMode
 
@@ -14537,11 +14537,11 @@ dlabel g_pActorSpatialGridBase
     /* 65F78 80075778 00000000 */ .word 0x00000000
 enddlabel g_pActorSpatialGridBase
 
-nonmatching D_8007577C
+nonmatching g_bLevelUseShortReleaseAnim
 
-dlabel D_8007577C
+dlabel g_bLevelUseShortReleaseAnim
     /* 65F7C 8007577C 00000000 */ .word 0x00000000
-enddlabel D_8007577C
+enddlabel g_bLevelUseShortReleaseAnim
 
 nonmatching g_pPrimBufferLimit
 

@@ -10,7 +10,7 @@
 #define OPEN_SPYRO_LEVEL_GLOBALS_H
 
 extern int g_anSparkleGlowDesc;
-extern int D_8006E3E4[];
+extern int g_anFlightHudClassWords[];
 extern void *g_dwBurstColorType15;
 extern void *g_dwBurstColorType14;
 extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
@@ -33,7 +33,7 @@ extern char *g_apLevelNameByWorldRow[];                               /* level n
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
 extern int g_pSaveMenuAnimActorList1;
 extern int g_abGamestate0cActorSnapshot[];
-extern int D_800756A0;
+extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
 extern int g_nLevelEggsRecovered1;

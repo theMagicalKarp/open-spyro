@@ -1721,7 +1721,7 @@ void Level11_UpdateActors(void) {
           int off;
 
           for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
-            *(int *)((char *)D_8006E3E4 + off) = src[0x21];
+            *(int *)((char *)g_anFlightHudClassWords + off) = src[0x21];
             src++;
             off += 4;
           }
@@ -1754,7 +1754,7 @@ void Level11_UpdateActors(void) {
 
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
-        if (D_800756A0 == 0 && g_nSpyroStateFlags < 8 &&
+        if (g_bDebugNoDepletion == 0 && g_nSpyroStateFlags < 8 &&
             g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;

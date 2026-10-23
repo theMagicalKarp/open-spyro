@@ -648,7 +648,7 @@ void UpdateSpyroStateBehavior(void) {
         g_nSpyroStateFlags = 1;
       } else if (pad & 4) {
         g_nSpyroStateFlags = 2;
-        D_80075700 = d;
+        g_nSpyroMotionAux = d;
       }
       break;
     }
@@ -1016,7 +1016,7 @@ void UpdateSpyroStateBehavior(void) {
           g_nSpyroStateFlags = 1;
         } else if (pad & 4) {
           g_nSpyroStateFlags = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1058,7 +1058,7 @@ void UpdateSpyroStateBehavior(void) {
           SPY[SPY_FLAGS] = 1;
         } else if (pad & 4) {
           SPY[SPY_FLAGS] = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1102,7 +1102,7 @@ void UpdateSpyroStateBehavior(void) {
           SPY[SPY_FLAGS] = 1;
         } else if (pad & 4) {
           SPY[SPY_FLAGS] = 2;
-          D_80075700 = d;
+          g_nSpyroMotionAux = d;
         }
       }
     }
@@ -1130,10 +1130,10 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & 0x40) {
-      if (D_80075700 >= 10 || g_nSpyroAirborneFrames != 0) {
+      if (g_nSpyroMotionAux >= 10 || g_nSpyroAirborneFrames != 0) {
         goto jump;
       }
-      D_80075700 += g_nFrameStep;
+      g_nSpyroMotionAux += g_nFrameStep;
     }
     if (g_dwPadReleased & 0x40) {
     jump: {

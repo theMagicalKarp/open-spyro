@@ -30,17 +30,18 @@ extern short g_anCosineLut[];
 extern unsigned char g_abSpyroStateCameraModeTable[];
 
 extern void *g_pSharedLoadBuffer; /* level splash image buffer */
-extern int D_80075670;
-extern int D_80075674;
-extern int D_8007577C;
-extern int D_80075850;
+extern int g_nLevelUnreadScratchA;
+extern int g_nLevelUnreadScratchB;
+extern int g_bLevelUseShortReleaseAnim;
+extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelBossDefeated; /* cleared on level load */
-extern int D_80075870;
-extern int D_80075874;
+extern int g_anLevelRunnerArrived;
+extern int g_nLevelRunnerArrivedGoal1;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nActiveWorldIndex;     /* current world index */
 extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
-extern int D_8007A71C; /* splash size column of the level archive table */
+extern int
+    g_nLevelSplashByteSize; /* splash size column of the level archive table */
 
 typedef struct {
   int w[5];
@@ -59,7 +60,7 @@ typedef struct {
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 #define DRAWBUF_B (g_apDrawBufBBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
-#define LEVEL_SPLASH_SIZE(i) ((&D_8007A71C)[(i) * 4])
+#define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
 #define MOB_ENTRY(i) ((int *)(&g_apScriptedMobEntries)[i])
 
@@ -452,15 +453,15 @@ void TickLevelTransitionStream(int full) {
         *(Words5 *)&g_nWorldCollisionTriCount;
     g_nScriptedRespawnFlag = 0;
     g_nScriptedMobTag = 0;
-    D_80075870 = 0;
-    D_80075874 = 0;
-    D_80075838 = 0;
-    D_8007583C = 0;
-    D_80075670 = 0;
-    D_80075674 = 0;
-    D_8007577C = 0;
+    g_anLevelRunnerArrived = 0;
+    g_nLevelRunnerArrivedGoal1 = 0;
+    g_anLevelEscapeRunCount = 0;
+    g_nLevelEscapeRunCountLane1 = 0;
+    g_nLevelUnreadScratchA = 0;
+    g_nLevelUnreadScratchB = 0;
+    g_bLevelUseShortReleaseAnim = 0;
     g_bLevelBossDefeated = 0;
-    D_80075850 = 0;
+    g_bLevelPhasedBossKilled = 0;
     g_nCreditsReturnLevelId = -1;
     g_nCdStreamState = -1;
   } break;
