@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,26 +8,6 @@
 /* Position stores stay as raw int casts: SREC->posX (MEM_IN_STRUCT_P) and an
    int-array view both let sched move them past the neighbouring global loads
    (cookbook A357); only the raw cast keeps the original order. */
-
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
-extern void StoreImage(RECT *r, void *dst);
-extern void LoadImage(RECT *r, void *src);
-extern void ConvertRGB15ToLuma8(void *buf, int count);
-extern void AddPrimToOT(int prim);
-extern void SetDrawMode(int prim, int dfe, int dtd, unsigned int tpage,
-                        RECT *tw);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
-extern void EmitTexturedQuad(short *rect, int *uv, int *rgb);
-extern void EnqueueBlinkingMarkerSprite(int *pos, unsigned int phase, int dir);
-extern void *BuildTextSpriteChain(char *text, int *pos, int step, int flags);
-extern void *BuildTextSprites(char *text, int *pos, int *style, int step,
-                              int flags);
-extern int ComputeInventoryProgressPercent(void);
-extern int strlen(char *s);
-extern int sprintf(char *buf, char *fmt, ...);
 
 /* Held-base alias for g_pRenderScratchPrimTop (0x800785f0);
    [-2] is g_pRenderScratchRegionBase. */

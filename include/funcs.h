@@ -391,8 +391,7 @@ void CameraSettle_Update(void);
 void SpyroStateDelay_Update(void);
 
 /* 0x8002e12c: g_Gamestate==2 handler. Pause menu input loop: reads g_dwPadButtons (bits 0x10/0x40/0x1000/0x2000/0x4000/0x8000), moves g_nPauseMenuCursor, plays SFX from DAT_800761d4+0x2d..0x2e on every move/select. Sub-mode in g_nPauseMenuSubstate (0=top, 1=options, 2=quit). Cases adjust SFX/music/vibration volumes and quit-to-title. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined PauseMenu_Update(void);
+void PauseMenu_Update(void);
 
 /* 0x8002eb2c: Gamestate 3 (inventory sub-menu) update. Ticks HUD bob/cycle clocks + RotateLightVectorXZ; after 4 transition frames: if g_nLevelSelectModeActive routes everything to HandleLevelSelectInput; else runs CheckCheatCodeMatch, then horizontal world scrolling — L1/R1-style presses (0x8000/0x2000) start a +/-0x40-per-frame slide of g_nSubMenuScrollOffset toward +/-0x1c0 where g_nSubMenuCursor steps and the offset flips sign (gated on the neighbor world's home-level g_abLevelVisitedFlag via the +/-6 virtual base); 0x810 buttons re-enter the pause menu (EnterPauseMenu(0)), 0x140 exits via ExitSubMenuToTitle. */
 void SubMenu_Update(void);
@@ -407,8 +406,7 @@ void Gamestate06_Update(void);
 void GemPickup_Update(void);
 
 /* 0x800314b4: [inferred] g_Gamestate==0xB handler. Not yet decompiled in detail. Generic name retained. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined Gamestate0B_Update(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined1 *param_4);
+void Gamestate0B_Update(void);
 
 /* 0x800324d8: [inferred] g_Gamestate==0xC handler. Not yet decompiled in detail. Generic name retained. */
 void Gamestate0C_Update(void);
@@ -1203,8 +1201,7 @@ undefined WriteChar(byte param_1);
 long write(long param_1, void *param_2, long param_3);
 
 /* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to param_1 from format string param_2 with varargs starting at param_3. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and FUN_80063830 (memcpy-like byte copy). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-int sprintf(int param_1, byte *param_2, uint param_3, undefined4 param_4);
+int sprintf(char *buf, char *fmt, ...);
 
 /* 0x80063830: libc memmove: overlap-safe byte copy. Picks ascending vs descending direction by comparing src<dst. Called from sprintf's %s/%c padding paths. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

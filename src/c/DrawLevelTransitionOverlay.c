@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -32,13 +33,6 @@ extern unsigned char g_szEnteringDotsFmt[]; /* "ENTERING %s..." */
 extern unsigned char g_szTreasureFound[];   /* "TREASURE FOUND" */
 extern unsigned char g_szTotalTreasure[];   /* "TOTAL TREASURE" */
 extern unsigned short g_anCosineLut[];      /* 0x8006cc78: g_anSineLut + 0x80 */
-
-extern void *BuildTextSprites(unsigned char *str, int *pos, int *step, int a,
-                              int b);
-extern void *BuildTextSpriteChain(unsigned char *str, int *pos, int a, int b);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern int sprintf();
-extern int strlen();
 
 typedef struct {
   short x;              /* 0x00 */

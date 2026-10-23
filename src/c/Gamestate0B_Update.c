@@ -1,27 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern void TickGemCutsceneActorAnims(void **actors, int mode);
-extern int SignedAngleDelta12(int a, int b);
-extern void TrackEntityYawTowardSpyro(void *actor, int step, int deadzone,
-                                      int snap);
-extern int FindGroundHeightBelow(int *pos, int depth);
-extern void EncodeCachedVecToActorDirCode(void *actor);
-extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
-extern void AdvanceSpyroAnimFrame(int delta);
-extern void TickSpyroAttackEffects(int steps);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
-extern void EndSaveMenuToWorld(void);
-extern void BeginGemPickupOverlay(void *actor);
-extern void MemCardOpenSession(void);
-extern void MemCardCloseSession(void);
-extern void MemCardLoad(int slot);
-extern int MemCardSync(int mode, int *cmd, int *result);
-extern void MemCardRead(int slot, char *name, void *buf, int offset, int size);
-extern void MemCardWrite(int slot, char *name, void *buf, int offset, int size);
-extern void BuildSaveGameBuffer(void *buf);
 
 /* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
