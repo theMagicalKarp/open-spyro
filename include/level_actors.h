@@ -41,6 +41,11 @@ extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 extern Actor *g_pLevelOverlayInitRecord;                     /* Sparx, or null when absent */
 extern unsigned char *g_pLevelSampleBankEntries;             /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader;              /* sound id table */
+/* Sample-bank entry pitch (u16 at +0xA of the 0x14-byte entry; full layout
+ * in PlaySoundEffect.c SAMPLEENTRY). Kept as byte arithmetic on purpose: it
+ * is the access form every cloned call site was matched with. */
+#define SAMPLE_PITCH(id) \
+  (*(unsigned short *)(g_pLevelSampleBankEntries + (id) * 20 + 0xA))
 extern Actor *g_pScriptedCameraActor;
 extern int *g_pSpyroRequestCameraAnchor;                     /* SPY.pCamAnchor, absolute form */
 extern unsigned char **g_pTriggerRegionTable;                /* surface records, indexed by the above */

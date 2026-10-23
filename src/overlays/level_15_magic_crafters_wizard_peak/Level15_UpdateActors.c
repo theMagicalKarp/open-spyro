@@ -4218,10 +4218,7 @@ void Level15_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case 390: {
       L26Spinner *st = actor->state;
-      int pitch = *(unsigned short *)(g_pLevelSampleBankEntries +
-                                      g_apActorMeshTable[actor->type]->m_Sounds[1] *
-                                          20 +
-                                      0xA);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 

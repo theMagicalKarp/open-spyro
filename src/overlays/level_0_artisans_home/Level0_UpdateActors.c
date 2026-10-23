@@ -612,7 +612,7 @@ void Level0_UpdateActors(void) {
         if ((actor->mode & 1) == 0) {
           g_nSfxOverrideFlags = 2;
           g_nSfxOverridePitch.v =
-              *(unsigned short *)(g_pLevelSampleBankEntries + g_pLevelSampleBankHeader[0x37] * 20 + 0xA) +
+              SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
               D_80073094[st->shift];
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, 8,
                         &actor->sfxSlot);
