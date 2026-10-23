@@ -1,8 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void StopAllSoundExceptMask(int mask);
-extern void ResetSpyroEntity(int param);
-extern void ChangeSpyroState(int state);
 
 /* Leave gameplay for the pause/menu gamestate (0xA): kill all sound, reset the
    pause-menu frame timers, and park Spyro in his idle state. */

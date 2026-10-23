@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void DampenSpyroFreeFallAttitude(void);
-extern void UpdateSpyroFlightAttitudeNearGround(void);
-extern void AlignSpyroBodyToVelocity(void);
 
 /* register-form (held-base) views of the clamped / incremented globals */
 extern int g_nSpyroGravityStep_blk[];

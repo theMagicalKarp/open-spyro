@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,11 +8,6 @@
    done) either runs level-select input or the normal sub-menu: cheat
    detection, up/down scrolling between visited levels (0x1C0 fixed-step
    scroll with cursor wrap), and pause/exit pad handling. */
-extern void HandleLevelSelectInput(void);
-extern void CheckCheatCodeMatch(void);
-extern void PlaySoundEffect(int sample, int a, int b, int c);
-extern void EnterPauseMenu(int mode);
-extern void ExitSubMenuToTitle(void);
 
 extern unsigned int g_adwHudBobSinePhaseBlock[]; /* g_dwHudBobSinePhase */
 

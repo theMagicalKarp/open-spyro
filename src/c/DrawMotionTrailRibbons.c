@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -15,11 +16,6 @@
 extern int
     g_anMotionTrailSliceCounts[];     /* 0x800772c8: per-ribbon slice count */
 extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */
-
-extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int flags);
-extern void SetDrawMode(void *prim, int dfe, int dtd, unsigned int tpage,
-                        void *clip);
-extern void AddPrimToOTSlot(void *prim, int slot);
 
 typedef struct {  /* 0x1c */
   int wx, wy, wz; /* 0x00 world position */

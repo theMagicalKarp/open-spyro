@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -43,8 +44,6 @@
 
    Every non-cancelled frame ends by ticking the strike timer, and the frame
    always finishes in SmoothSpyroByteEulerSpring. */
-extern void FillWord(void *dst, unsigned int value, int byteCount);
-extern void SmoothSpyroByteEulerSpring(void);
 
 extern int g_anSpyroHornStrikeStateBlock[]; /* g_nSpyroHornStrikeState */
 extern int g_anSpyroHornStrikeTimerBlock[]; /* g_nSpyroHornStrikeTimer */

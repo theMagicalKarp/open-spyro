@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -23,14 +24,6 @@
 
    World id indexes the per-world archive table (8-byte stride) and the
    per-world header-size table (4-byte stride). */
-
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
-                             int marker);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void LoadImage(RECT *rect, void *data);
-extern int *UnpackWorldDataChunks(int *src, int mode);
-extern int *RelocateActorMeshHeader(int *header);
-extern void InitActorRenderDefaults(int actor);
 
 extern void *volatile g_apPathTableBufferBlock[]; /* g_pPathTableBuffer, stored
                                           then reloaded through the same base */

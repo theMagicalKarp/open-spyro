@@ -1,11 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "spu.h"
-
-extern void InitSpu(void);
-extern void ApplySpuVoiceAttr(int *attr);
-extern void SetSpuTransferMode(int mode);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 extern int g_nSfxMixVolume_blk;      /* sfx mix volume */
 extern short g_anSpuCommonVolAttr[]; /* g_abSpuCommonAttr + 0x4 (see alias) */

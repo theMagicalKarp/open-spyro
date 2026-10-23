@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,7 +8,6 @@
    otherwise Gnasty's Loot (0x3C), or Dream Weavers home (0xA) once every
    treasure (0x36B0 gems) is collected; then clears the scripted-cutscene
    state and advances to mode 0x64, which streams the level transition. */
-extern void TickLevelTransitionStream();
 
 void Gamestate0F_Update(void) {
   RotateLightVectorXZ(3);

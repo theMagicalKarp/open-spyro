@@ -1,20 +1,10 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
-
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
-extern void MoveImage(short *rect, unsigned int x, int y);
-extern void ClearImage(short *rect, unsigned int r, unsigned int g,
-                       unsigned int b);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void BuildTextSprites(unsigned char *str, int *pos, int *size, int flags,
-                             int slot);
-extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
 
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 extern unsigned short g_anGameOverCameraEulerU[];

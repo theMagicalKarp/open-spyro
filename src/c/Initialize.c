@@ -1,28 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void InitGraphicsHardware(void);
-extern void SpuInit(void);
-extern void InitPadSystem(void);
-extern void InitSoundEngine(void);
-extern void InitCdSystem(void);
-extern void BuildAudioTrackTable(void);
-extern void InitGeom(void);
-extern void SetGeomOffset(int x, int y);
-extern void SetGeomScreen(int h);
-extern int VSync(int mode);
-extern void SetDispMask(int on);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void AddBiasToColorRuns(void *dst, void *src, int bias);
-extern void LoadImage(short *rect, void *data);
-extern void DrawSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
-extern void ClearImage(short *rect, int r, int g, int b);
-extern void LoadAssetDirectoryFromCd(void);
-extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
-                              int marker);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void TickWorldBundleLoadStream(void);
 
 extern void *g_pSharedLoadBuffer;    /* shared CD sector buffer pointer */
 extern int g_nAssetDirBootBlockSize; /* boot-splash chunk byte count */

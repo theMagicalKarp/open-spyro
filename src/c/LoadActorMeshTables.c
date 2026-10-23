@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -16,11 +17,6 @@ extern int
 
 extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
                                            g_apActorMeshTable */
-
-extern void CdReadSyncSectors(int lba, void *buf, int size, int sector,
-                              int marker);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern int *RelocateActorMeshHeader(int *header);
 
 void LoadActorMeshTables(void) {
   int *dir;

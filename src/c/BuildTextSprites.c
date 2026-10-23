@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 /* Emit a glyph-sprite chain for a UI string, tracking per-glyph kerning: per
    non-space byte allocate a 0x58-byte SPRT slot at g_pSpriteRecordWriteCursor

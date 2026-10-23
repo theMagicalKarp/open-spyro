@@ -1,14 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
-
-extern int DispatchSpyroPadStateChanges(int mask);
-extern int DispatchSpyroChargeStateChanges(void);
-extern void ChangeSpyroState(int state);
-extern void RestartSpyroAnimWithState(int state);
-extern void CycleSpyroIdleAnim(void);
-extern void BuildSpyroVelocityFromBodyEuler(void);
 
 extern unsigned short g_anCosineLut[];
 extern int g_anOrbDropTimeoutSpawnType[];

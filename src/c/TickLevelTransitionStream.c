@@ -1,22 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
-                             int marker);
-extern void StopAllSoundExceptMask(int mask);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void RelocateLevelSampleBank(void *bank, int mode);
-extern void ApplyPerLevelGlobalsTable(void);
-extern void LoadImage(RECT *rect, void *data);
-extern void *UnpackWorldDataChunks(void *src, int mode);
-extern void *RelocateActorMeshHeader(void *header);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void BuildLoadedLevelRuntime(int full);
-extern void ChangeSpyroState(int state);
-extern void ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
-extern void ActivateScriptedCameraView(int record);
 extern int abs(int x);
 
 extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,

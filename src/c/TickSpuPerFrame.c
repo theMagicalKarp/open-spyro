@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SyncSoundVoicesWithHardware(void);
 
 extern int
     g_anSpuPendingKeyOnBlock[]; /* shared-base view of g_dwSpuPendingKeyOn */

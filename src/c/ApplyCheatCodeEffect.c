@@ -1,10 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Apply a matched cheat code (0x8002d810). 2 = jump to the credits (remembering
    the level to return to); 3 = unlock: mark levels 0..0x1F visited and set all
    six save-options slots to 2, then play the confirm sound; 4 = 99 lives. */
-extern void BeginCreditsSequence(int param);
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 
 void ApplyCheatCodeEffect(int code) {
   unsigned char val;

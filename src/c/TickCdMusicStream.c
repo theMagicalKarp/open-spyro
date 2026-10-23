@@ -1,14 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern int GetCdStatusByte(void);
-extern void HandleMusicCommand(int track, int cmd);
-extern void CdIntToPos(int lba, char *pos);
-extern int CdPosToInt(unsigned char *pos);
-extern int CdControl(unsigned char com, char *param, char *result);
-extern int CdControlBlocking(unsigned char com, char *param, char *result);
-extern int CdControlForce(unsigned char com, char *param);
 
 extern unsigned char g_abCdSyncResult[];
 extern unsigned int g_nCdMusicStreamTimeout;

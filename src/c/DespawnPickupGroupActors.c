@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void DespawnActorRecord();
 
 /* Walk pickup group `a0`'s actor-id list (0x8003b688) and despawn every actor
    whose type byte (+0x48) is < 0x80. The call clobbers the id load, so the

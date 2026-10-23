@@ -18,18 +18,12 @@
  *    depth above it gives the same bytes. Once `face` wins s1 the deadzone
  *    wrapper the parked version carried is no longer needed.
  */
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
 extern int abs(int);
-extern int WrapAngleDelta8(int from, int to);
-extern int WrapAddAngle8(int angle, int step);
-extern int TurnActorYawTowardAngle(int *actor, int angle, int p2, int p3,
-                                   int p4);
-extern int MoveActorAlongHeading(int *actor, int speed, int p2, int p3, int p4);
-extern int MoveActorAlongAngle(int *actor, int angle, int speed, int p3, int p4,
-                               int p5);
 
 extern short g_anCosineLut[];
 

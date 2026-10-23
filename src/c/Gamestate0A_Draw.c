@@ -1,14 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
 #include "main_shared.h"
-
-extern void LoadImage(RECT *rect, short *pix);
-extern void DrawSync(int mode);
-extern void AddPrimToOTSlot(int prim, int slot);
-extern unsigned long long ComputeDepthCuedColor();
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
 
 /* Draw gamestate 0xA (pause -> world-map transition, 0x8001c694, 0x3a4).
    Phase 0: re-darken the frozen gray backdrop by re-loading the CLUT ramp

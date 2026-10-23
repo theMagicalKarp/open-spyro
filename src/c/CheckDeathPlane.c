@@ -1,16 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SamplePadForDeathReplayFrame(void);
-extern void StopAllSoundExceptMask(int mask);
-extern void ClearImage(short *rect, int r, int g, int b);
-extern void DrawSync(int mode);
-extern void CdReadSyncSectors(int lba, void *dst, int count, int offset,
-                              int marker);
-extern void TickWorldBundleLoadStream();
-extern int PlaySoundEffect(int id, int actor, int vol, void *marker);
-extern void StartCdReadAsync(int lba, int dst, int count, int offset,
-                             int marker);
 
 extern void *g_pSharedLoadBuffer;     /* asset-directory buffer pointer */
 extern int g_nTitleSceneSectorOffset; /* async-read byte offset */

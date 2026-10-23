@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,9 +8,6 @@
    (RasterizePairedActor + drop shadow) unless g_nSpyroDrawSuppressed; horn
    strike trails only while the horn collision is active; then the world
    particle emitters. */
-extern void FillWord();
-extern void DrawSpyroHornStrikeTrails(void);
-extern void DrawWorldParticleEmitters(void);
 
 void ComposeFrameScene(void) {
   BuildActorDrawList();

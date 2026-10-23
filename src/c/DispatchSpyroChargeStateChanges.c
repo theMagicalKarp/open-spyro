@@ -1,9 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void ChangeSpyroState(int state);
 extern int abs(int x);
 
 extern int g_bDebugNoDepletion;

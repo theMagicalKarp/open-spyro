@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -13,10 +14,6 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-extern int TurnActorYawTowardAngle(int *actor, int ang, int step, int lim,
-                                   int mode);
-extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
-                                 int flags);
 extern int abs(int);
 
 #define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))

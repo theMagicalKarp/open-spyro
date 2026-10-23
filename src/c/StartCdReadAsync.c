@@ -1,8 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern int CdControl();
-extern unsigned char *CdIntToPos();
-extern int CdRead();
 
 /* 0x80016698 — fire an async CD sector read without waiting: set 2x speed
    (CdlSetmode 0x80), seek to lbaBase + offset/0x800, then CdRead

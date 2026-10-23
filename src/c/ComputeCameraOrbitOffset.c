@@ -1,11 +1,10 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Compute the camera's orbit offset vector from the spring parameters
    (0x80034204, 0xF4). out = spherical-to-cartesian of (pitch, yaw, distance)
    in 1.19.12 fixed point: x = dist*cos(pitch)*cos(yaw), y =
    -dist*cos(pitch)*sin(yaw), z = dist*sin(pitch). */
-extern int LookupCosine(unsigned int angle);
-extern int LookupSine(unsigned int angle);
 
 extern int g_anCameraSpringPitchBlock[];
 

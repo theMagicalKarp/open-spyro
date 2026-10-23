@@ -1,13 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 
 extern int abs(int);
-extern void SubtractVector();
-extern int VectorLength();
-extern void ScaleVector3ByRatio();
-extern void SetVector3Magnitude();
-extern void AddVector();
-extern int ComputeCameraToTargetAngle();
-extern void UpdateCameraEulerAngles();
 
 /* The path block is re-read from the global on every use (the overlay can
    swap it out under us). */

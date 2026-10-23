@@ -1,9 +1,8 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 
 #define ACT ((Actor *)actor)
-
-extern unsigned int VectorLength(int *vec, int include_z);
 
 /* 0x8003a79c: builds a 3-component offset vector (path[idx].field - actor.field
    for fields +8/+0xc/+0x10 vs +0xc/+0x10/+0x14, idx = path[1], stride 0x10)

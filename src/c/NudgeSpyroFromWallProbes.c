@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -9,7 +10,6 @@
    Allocation: sinTab is a `$18` register local (as a pseudo, its `la` is a
    3-ref cse temp that ranks last) and `pto` a `$20` one, set before `cosp`. */
 
-extern int CastRayWorldAndActors(int *from, int *to);
 extern short g_anCosineLut[];
 
 /* 0x8003e90c (0x15c) — probe four rays around Spyro (at angles 0x20 +

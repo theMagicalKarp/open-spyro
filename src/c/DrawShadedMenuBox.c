@@ -1,10 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
-
-extern void SetDrawMode(int p, int dfe, int dtd, unsigned int tpage,
-                        unsigned char *clip);
-extern void AddPrimToOT(int prim);
-extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 
 /* Draw a menu rectangle (0x8001860c): semi-transparent POLY_F4 fill from
    (left,top) to (right,bottom) plus four EmitRadialShadedLine

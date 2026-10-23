@@ -1,7 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern int WrapAngleDelta8(int a, int b);
-extern int WrapAddAngle8(int a, int b);
 
 /* Step byte angle `b` toward `a` by at most `c`: if the shortest signed delta
    (b - a) is larger in magnitude than the limit `c`, move `b` by `c` in the

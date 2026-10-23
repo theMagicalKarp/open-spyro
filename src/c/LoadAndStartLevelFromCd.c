@@ -1,10 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern void CdReadSyncSectors(int lba, void *dst, int size, int offset,
-                              int stall);
-extern void BuildLoadedLevelRuntime();
-extern void RestartSpyroAnimWithState();
 
 /* 0x800144c8: loads + starts a level from CD. Silences sound, resolves the
    level's archive LBA (base + per-level offset table, stride 0x10), syncs

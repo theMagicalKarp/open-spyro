@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -11,20 +12,6 @@
    each frame, and hands off either to the gem cutscene (title path) or back to
    the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
-extern void StopAllSoundExceptMask(int owner_key);
-extern void ResetSpyroEntity(int mode);
-extern void TickWorldBundleLoadStream(void);
-extern void TickLevelTransitionStream(int mode);
-extern void CopyVector(VECTOR *dst, VECTOR *src);
-extern void SubtractVector(VECTOR *dst, VECTOR *a, VECTOR *b);
-extern int VectorLength(VECTOR *v, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
-extern int LookupCosine(unsigned int angle_12_4);
-extern int LookupSine(unsigned int angle_12_4);
-extern void AdvanceSpyroAnimFrame(char layer_mask);
-extern void ClearImage(RECT *rect, unsigned int r, unsigned int g,
-                       unsigned int b);
-extern int DrawSync(int mode);
 
 extern void *g_pSharedLoadBuffer;  /* default draw-buffer base */
 extern int g_anDeathTryLevelIds[]; /* per-try first level table */

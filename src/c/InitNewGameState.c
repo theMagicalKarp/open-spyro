@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void ResetLevelState(void);
 
 /* Seed a fresh game: default level, vibration on, default camera options, then
    wipe per-level state. */

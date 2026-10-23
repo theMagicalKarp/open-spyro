@@ -1,11 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void AdvanceSpyroAnimFrame(int delta);
-extern int StepSpyroAnimAndCommitTransition(int step);
-extern void ApplySpyroStateTransition(void);
-extern int PlaySoundEffect(unsigned int id, void *owner, unsigned int mode,
-                           void *pos);
 
 extern unsigned char g_abSpyroAnimPrevBlock[];
 

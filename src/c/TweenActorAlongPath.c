@@ -1,13 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SubtractVector();
-extern void CopyVector();
-extern void AddVector();
-extern void RShiftVector3();
-extern int VectorLength();
-extern int ArcTan2_8bit(int y, int x);
-extern void RefreshActorDerivedState();
 
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at

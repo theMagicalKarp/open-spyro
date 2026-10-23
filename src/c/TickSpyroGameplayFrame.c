@@ -1,18 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern void SnapshotPadInputState(unsigned int *dst, unsigned int *src);
-extern void AdvanceSpyroFrameMotion();
-extern void UpdateSpyroStateBehavior();
-extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int *scale);
-extern void MulMatrix0(int *a, int *b, int *out);
-extern void SampleSpyroShadowRingHeights(int mode);
-extern void TickSpyroAttackEffects(int steps);
-extern void ActivateScriptedCameraView(int record);
-extern void ChangeSpyroState();
-extern unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
-                                    unsigned int mode, unsigned char *pPlaying);
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 extern unsigned char g_abSpyroAnimPrevBlock[];    /* 0x80078a70 */

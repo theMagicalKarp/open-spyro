@@ -1,11 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void *BuildTextSprites(char *str, int *pos, int *size, int a, int b);
-extern void DrawShadedMenuBox(int x, int y, int w, int h);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern short g_anCosineLut[];
 typedef struct {

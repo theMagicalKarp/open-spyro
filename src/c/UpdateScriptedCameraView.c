@@ -1,13 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void SubtractVector(int *dst, int *a, int *b);
-extern uint VectorLength(int *vec, int include_z);
-extern uint GetRandomU32(void);
-extern void ActivateScriptedCameraView(int *view);
-extern void CopyVector(int *dst, int *src);
-extern int ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
    camera position 0xc4 below it are reached through one held base register. */

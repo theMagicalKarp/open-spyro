@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 #define VREAD(sym) (*(void *volatile *)&(sym))
 

@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,8 +8,6 @@
    sub-menu scroll state, switches to gamestate 3, seats the cursor on the
    current world (level intro index / 6), then clears the cheat-code pad-history
    ring. */
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 
 void EnterInventoryMenu(int param_1) {
   if (param_1 != 0) {

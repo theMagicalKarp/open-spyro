@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -5,9 +6,6 @@
    camera, counting idle frames. At 0x20 frames the counter wraps and bumps
    the transition counter (the second wrap returns to the world hub); at
    exactly 0x10 frames with no transition pending, kick Spyro to state 0xF. */
-extern void TickSpyroFrameNoInput(void);
-extern void BeginWorldHubReturn(void);
-extern void ChangeSpyroState();
 
 void SpyroStateDelay_Update(void) {
   int frames;

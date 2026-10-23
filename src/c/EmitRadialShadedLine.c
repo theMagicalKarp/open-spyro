@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
-
-extern void AddPrimToOT(unsigned char *prim);
 
 extern int g_anLightSweepAngleBlock[];
 

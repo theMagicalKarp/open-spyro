@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern int MemCardSync(int mode, int *result, int *extra);
 
 /* On START (pad bit 0x10): arm the story-intro flow — set the gamestate-0xD
    mode (block field 0) to 1, clear its scratch flag (g_nTitleSubState) and the

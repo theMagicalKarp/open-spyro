@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void AdvanceSpyroAnimLayer2Frame(int amount);
 
 extern int g_nSpyroAnimLayer2Phase;  /* 0 = tracking the primary anim */
 extern int g_nSpyroAnimLayer2Rate;   /* frame advance per tick */

@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void AdvanceSpyroAnimLayer1Frame(int amount);
 
 extern int g_anSpyroHornStrikeSwingPhaseBlock[];
 extern int g_nSpyroHornStrikeLayer1State;

@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,10 +8,6 @@
    collision/stuck counters, recomputes the eye position (orbit offset +
    anchor), seats the smoothed position on it, refreshes the euler angles,
    and clears any camera shake. */
-extern void AddVector();
-extern void CopyVector(int *dst, int *src);
-extern int ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
 
 /* The spring-block base is taken twice (`springBase = (springAlias = ...)`)
    on purpose: one pseudo alone is copy-propagated into the prologue and the

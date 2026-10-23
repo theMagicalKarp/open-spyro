@@ -1,8 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned int VectorLength(int *vec, int include_z);
-extern void TurnSpyroTowardMoveTargetWithLean(int lean);
 extern int abs(int x);
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog

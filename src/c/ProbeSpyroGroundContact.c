@@ -1,14 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void ZeroVector(int *vec);
-extern void CopyVector(int *dst, int *src);
-extern void AddVector(int *dst, int *a, int *b);
-extern uint VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void RotateVectorByMatrix(int *mtx, int *dst, int *src);
-extern void ApplyActiveGteRotation(int *dst, int *src);
-extern int CastRayWorldAndActors(int *start, int *end);
-extern void UnpackWorldCollisionTri(int chunk, int *verts);
 
 /* The whole Spyro ground/collision state block hangs off one base register:
    [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,

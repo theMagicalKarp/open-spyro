@@ -1,3 +1,4 @@
+#include "funcs.h"
 /* globals declared locally: the two entry tables are indexed as arrays and
    the counts that are re-read through held pointers are incomplete arrays
    (globals.h types them as scalars), so the pointer access keeps its
@@ -21,8 +22,6 @@ extern int g_nScriptedMobCount;                  /* 0x800758bc */
 extern int *g_apScriptedMobEntries[];            /* 0x80078640 */
 extern void *g_apMobEntryTable[];                /* 0x80076278 */
 extern int g_nLevelSampleBankCount;              /* 0x80076234 */
-
-extern void RelocateLevelSampleBank(char *bank, int mode);
 
 /* 0x80012d58 — walk the loaded world bundle as a chain of size-prefixed
    sections (word 0 of each section links to the next), publish each

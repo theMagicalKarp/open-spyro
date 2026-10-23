@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -17,18 +18,6 @@
    through the loop counter `i`: cse merges the two reads in every non-volatile
    form, and a single-set destination would be boosted to max priority by
    sched.c's birthing_insn_p and sink below the second base's `la`. */
-extern void StopAllSoundExceptMask(int owner_key);
-extern void EndRespawnToGameplay(void);
-extern void LoadAndStartLevelFromCd(void);
-extern void CdReadSyncSectors(int lba, void *dst, int byte_count,
-                              int sector_offset, int marker);
-extern void ResetSpyroEntity(int mode);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern int LookupCosine(unsigned int angle_12_4);
-extern int LookupSine(unsigned int angle_12_4);
-extern void AdvanceSpyroAnimFrame(char layer_mask);
-extern void TickLevelTransitionStream(int mode);
-extern void RestartSpyroAnimWithState(void *state);
 
 extern int g_anWorldRenderMeshBlock[]; /* 0x80078a40: [0] chunk count, [1] chunk
                                           array, fog colour bytes at [4] */

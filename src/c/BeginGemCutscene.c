@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,7 +8,6 @@
    g_CutsceneSoundDef (sample 0x1010, per-world pitch from
    g_nWorldCutsceneSamplePitch) and trigger it via PlaySoundEffect with the
    gem-pickup voice marker. */
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */

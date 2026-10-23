@@ -1,8 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void CopyWords(void *dst, void *src, int byte_count);
 
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
    game state into a 0x600-byte buffer (options bytes, per-world tables,

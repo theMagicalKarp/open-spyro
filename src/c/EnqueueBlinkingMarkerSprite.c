@@ -1,10 +1,9 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
 #define SPR ((Actor *)g_pSpriteRecordWriteCursor)
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 /* Push a blinking SPRT_16 marker onto the front of the sprite queue
    (0x80018534): g_pSpriteRecordWriteCursor bumps down 0x58 bytes. Gated by

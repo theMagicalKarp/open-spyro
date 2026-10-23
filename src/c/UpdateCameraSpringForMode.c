@@ -1,12 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int ComputeCameraToTargetAngle(int *pos);
-extern void UpdateCameraEulerAngles(void);
-extern void UpdateCameraManualYawInput(void);
-extern void UpdateGameplayCamera(void);
 extern int abs(int x);
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */

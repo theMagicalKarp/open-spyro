@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,7 +8,6 @@
    cursor that many entries, and compares; on a full match applies the
    cheat effect and clears the ring. Only active while the CD stream is
    idle. */
-extern void ApplyCheatCodeEffect(int code);
 void CheckCheatCodeMatch(void) {
   int pad[2];
   int idx;

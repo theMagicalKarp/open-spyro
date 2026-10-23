@@ -1,8 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern void FillBlock16(void *dst, int value, int count);
-extern void RenderWorldChunks(int mode);
 extern int g_nStaticMeshLodCutoff;
 
 /* 0x8002b9cc (0x9c) — render stage 1: clear the ordering-table depth bins,

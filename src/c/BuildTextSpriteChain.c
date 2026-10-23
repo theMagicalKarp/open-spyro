@@ -1,8 +1,7 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
-
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 /* The queue tail is re-read from the global at every field access. */
 #define CURSOR (*(unsigned char *volatile *)&g_pSpriteRecordWriteCursor)

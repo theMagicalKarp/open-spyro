@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -6,7 +7,6 @@
    byte tables, resets the save-options block, clears the per-world persistent
    flags + per-level byte rows, then reinitializes the scalar inventory globals
    and FillWord-clears the spawn-anchor block and the level kill bitmaps. */
-extern void FillWord(void *dst, unsigned int value, int byte_count);
 
 void ResetLevelState(void) {
   int i;

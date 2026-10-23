@@ -1,11 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 
-extern void RotateVectorByMatrix(int *mtx, int *in, int *out);
-extern void AddVector(int *dst, int *a, int *b);
-extern void SubtractVector(int *dst, int *a, int *b);
 extern void TransposePackedMatrix(int *out, int *mtx);
-extern unsigned int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
 
 extern int g_anCameraScriptStickRequestXBlock[];
 

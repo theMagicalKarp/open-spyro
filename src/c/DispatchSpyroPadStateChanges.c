@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -12,9 +13,6 @@
    lockout; the remaining bits (0xFC00) are independent modifiers — headbutt
    (0x8000), swim hold (0x800) and the charge-hold flag (0x2000). Returns 1
    when a transition was dispatched. */
-extern void ChangeSpyroState(int state);
-extern int PlaySoundEffect(unsigned int sample, int owner, unsigned int mode,
-                           void *marker);
 
 extern int g_bDebugNoDepletion;
 extern int g_adwSpyroTriggerEventBlock[]; /* g_dwSpyroTriggerEventFlags */

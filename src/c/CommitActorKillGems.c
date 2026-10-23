@@ -1,10 +1,10 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 
 #define ACT ((Actor *)actor)
 
 extern void SpawnFloatingDigitActors(void);
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
 
 struct Actor58 {
   char _pad[0x58];

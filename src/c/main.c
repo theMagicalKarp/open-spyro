@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "sdata.h"
-
-extern void Initialize(void);
-extern void GamestateUpdate(void);
-extern void GamestateDraw(void);
 
 SDATA(g_nInGameTick, 4);
 SDATA(g_nFrameTicks, 4);

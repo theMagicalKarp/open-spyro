@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -10,7 +11,6 @@
    and returns 1; otherwise commits the plain yaw (or spring yaw) and
    returns 0. Tail publishes the draft roll and the wrapped pitch/yaw
    biases against the euler camera state. */
-extern int RefineSqrtEstimate(int *v, int len, int mode);
 extern int abs(int);
 
 extern int g_anCameraPitchBlock[]; /* g_nCameraPitch */

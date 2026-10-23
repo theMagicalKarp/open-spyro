@@ -1,10 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern int CdControl(unsigned char cmd, unsigned char *param,
-                     unsigned char *result);
-extern int CdReadCallback(unsigned int cb);
-extern int CdMix(unsigned char *atv);
 extern void CdReadCompleteCallback(void);
 
 extern int

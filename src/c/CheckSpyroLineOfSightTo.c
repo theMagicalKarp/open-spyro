@@ -1,12 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void SubtractVector();
-extern int VectorLength();
-extern void RefineSqrtEstimate();
-extern void ScaleVector3ByRatio();
-extern void CopyVector();
-extern void AddVector();
-extern int CastRayWorldAndActors();
 
 /* Ray-march occlusion probe from Spyro toward param_1 (0x80038250): like
    CheckLineOfSightSegment but sources the start point from g_anSpyroWorldPos

@@ -1,8 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern int CastRayWorldAndActors();
 extern int abs(int n);
 
 /* shared-base view of g_anSpyroBodyMtx (0x80078a8c): the matrix arg, the

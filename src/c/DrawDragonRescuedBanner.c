@@ -1,7 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern int strlen(char *s);
-extern void *BuildTextSpriteChain(char *text, int *pos, int height, int flags);
 
 /* 0x80018728 (0x150) — draw the dragon-rescue banner: "RESCUED" plus the
    freed dragon's name (g_apDragonNames[actor->id at +0x38]) as two

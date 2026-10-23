@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* Reconcile software voice rows with the SPU (0x80056e3c): probe all 24
@@ -5,7 +6,6 @@
    reports keyed-on (1) whose software flags halfword (+0x36, stride 0x1C)
    has neither active (0x1) nor idle (0x40) set, mark the row idle and OR the
    voice bit into the pending hardware key-off mask. */
-extern void GetAllSpuVoiceKeyStatus();
 
 void SyncSoundVoicesWithHardware(void) {
   unsigned char status[24];

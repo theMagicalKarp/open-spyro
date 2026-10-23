@@ -1,5 +1,6 @@
 #include "actor.h"
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -109,16 +110,6 @@
    (the difference times one is usually the whole residue), then place a
    do/while dial on whichever arm folds, then look for reads expand never
    force_regs. */
-extern void TickLevelTransitionStream(int mode);
-extern int LookupSine(unsigned int angle_12_4);
-extern int LookupCosine(unsigned int angle_12_4);
-extern int AbsAngleDelta12(int a, int b);
-extern int SignedAngleDelta12(int a, int b);
-extern void CopyVector(int *dst, int *src);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern int VectorLength(int *vec, int include_z);
-extern int ArcTan2(int y, int x, int high_precision);
-extern void AdvanceSpyroAnimFrame(int delta);
 
 /* Held-base view of the gamestate-0xC block: [-1] substate, [0] timer,
    [13]/[15] the yaw and height starts also reachable as

@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void HandleMusicCommand(int a, int b);
 
 /* 0x80056b28 (0x15c) — stop every active software voice whose bit is NOT set
    in `mask` (low 24 bits). Each stopped voice is accumulated into the pending

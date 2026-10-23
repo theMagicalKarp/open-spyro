@@ -1,10 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void StopSoundVoicesByOwner(int *owner, int mask);
-extern void PlaySoundEffect(int sfx, int *pos, int flags, unsigned char *voice);
 extern int abs(int x);
 
 extern unsigned short g_anCosineLut[];

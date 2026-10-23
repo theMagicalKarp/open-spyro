@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "spu.h"
@@ -57,14 +58,6 @@ typedef struct {
   /* 0x14 */ int nPitchStep;
   /* 0x18 */ char *pPlaying;
 } SPUVOICEROW;
-
-extern int GetSpuVoiceKeyStatus(unsigned int voiceBit);
-extern void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
-extern void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
-extern void ApplySpuVoiceAttr(unsigned int *attr);
-extern void SubtractVector(int *dst, int *a, int *b);
-extern unsigned int VectorLength(int *vec, int includeZ);
-extern int ArcTan2(int y, int x, int highPrecision);
 
 typedef struct {
   /* 0x00 */ char pad[0x2C];

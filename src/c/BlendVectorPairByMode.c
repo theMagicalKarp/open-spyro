@@ -1,8 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void AddVector();
-extern void RShiftVector3();
 
 /* 0x8003a920 — blend two vectors by a per-mode weight pair: pick the
    weight table from the record's mode byte (+2), scale vecA/vecB by the

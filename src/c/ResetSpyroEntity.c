@@ -1,9 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
-
-extern void StopSoundVoicesByOwner(void *owner, int mask);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void ChangeSpyroState(int state);
 
 /* 0x8004ac24 (0x214): resets Spyro's entity record. Leaving a looping-sfx
    state stops Spyro's voices (state 7 just clears the fx alpha). With

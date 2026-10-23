@@ -1,7 +1,6 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern int g_nSfxMixVolume_blk[];
 

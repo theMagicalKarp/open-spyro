@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -7,12 +8,6 @@
    (g_nCreditsPageIndex only when it is not the level-select magic 0xA), then
    kick off the synchronous 0x258-sector credits asset read from the CD base
    LBA. */
-extern void ClearImage(RECT *rect, unsigned char r, unsigned char g,
-                       unsigned char b);
-extern int DrawSync(int mode);
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern void ResetSpyroEntity(int param);
-extern int CdReadSyncSectors();
 extern int g_nCreditsPageIndex;
 extern int g_nCreditsFirstVisibleLine;
 extern int g_nCreditsLastVisibleLine;
