@@ -45,6 +45,7 @@
  */
 
 #include "actor.h"
+#include "model.h"
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
@@ -70,59 +71,16 @@
  * dispatches. */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
-/* Model table entry, indexed by actor->type: sound ids and one header per
- * animation. */
-typedef struct AnimationHeader {
-  short m_NumFrames;                /* 0x00 */
-  unsigned short m_NumColors;       /* 0x02 */
-  unsigned char m_IsSpyroAnimation; /* 0x04 */
-  unsigned char m_Scale;
-  unsigned char m_ShortEncodeShift;
-  unsigned char m_Radius;
-  unsigned char m_VertCountHigh; /* 0x08 */
-  unsigned char m_VertCountLow;
-  unsigned char m_Padding2;
-  unsigned char m_DepthScale;
-  unsigned char m_ProgressPerTick; /* 0x0C -- the byte TYPE_DESC reads */
-  unsigned char m_Padding3;
-  unsigned short m_Padding4;
-  void *m_AnimationVertices; /* 0x10 */
-  void *m_Faces;
-  void *m_Colors;
-  void *m_LpFaces;
-  void *m_LpColors; /* 0x20 */
-} AnimationHeader;
-
-typedef struct Model {
-  int m_NumAnimations;              /* 0x00 */
-  unsigned char m_Sounds[16];       /* 0x04 */
-  void *m_CollisionModels[8];       /* 0x14 */
-  void *m_Data;                     /* 0x34 */
-  AnimationHeader *m_Animations[1]; /* 0x38 */
-} Model;
-
+/* Model table entry, indexed by actor->type (model.h). */
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 /* ==== Per-class state blocks ====
  *
  * Every actor class keeps its private state behind actor->state. The blocks
  * below sit next to the globals and callees their case needs.
- *
- * Waypoint path used by the path-following classes (10, 114, 339): node
- * count, current node, then 0x10-byte nodes that begin with a position. */
-typedef struct PathData {
-  unsigned char count; /* 0x00 */
-  unsigned char cur;   /* 0x01 */
-  char pad02[4];
-  short reversed; /* 0x06 */
-  struct {
-    int x;
-    int y;
-    int z;
-    int pad0C;
-  } nodes[1]; /* 0x08 */
-} PathData;
+ */
 
+/* PathData (waypoint paths) lives in actor_type.h. */
 /* Type 10: path patroller. */
 typedef struct PathState {
   int pad00;
