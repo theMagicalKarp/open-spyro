@@ -180,9 +180,6 @@ extern void AimCameraStickTowardPoint(int *pos);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
  * exit vortex flag is set and its linked actor is dormant. */
@@ -405,7 +402,6 @@ typedef struct WalkerState {
   int pad14;      /* 0x14 likewise */
 } WalkerState;
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -1077,8 +1073,6 @@ typedef struct L9Bird {
   int height;  /* 0x18 */
   int call;    /* 0x1C */
 } L9Bird;
-extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 
 /* Case 198 -- charging yak. */
 typedef struct L9Yak {

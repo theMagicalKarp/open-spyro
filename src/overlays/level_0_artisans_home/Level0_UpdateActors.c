@@ -41,9 +41,6 @@ extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bi
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 
@@ -68,7 +65,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 extern int GetGroundTriggerRegionType(void);
 
-extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 

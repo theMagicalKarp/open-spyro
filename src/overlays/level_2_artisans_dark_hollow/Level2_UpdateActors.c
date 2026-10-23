@@ -154,9 +154,6 @@ extern void AimCameraStickTowardPoint(int *pos);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
@@ -266,7 +263,6 @@ typedef struct PortalDesc {
 /* Callees used by the collectible and fairy behaviours. */
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {

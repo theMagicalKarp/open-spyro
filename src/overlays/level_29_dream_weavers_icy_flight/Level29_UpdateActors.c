@@ -56,9 +56,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -78,7 +75,6 @@ extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading,
 
 extern int GetGroundTriggerRegionType(int *pos);
 
-extern void TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -260,7 +256,7 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-extern void TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
+extern int TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
                           int c, int d);
 
 /* Types 0x1E1..0x1E3: the walker's embers. */
@@ -291,7 +287,6 @@ typedef struct SmokerState {
   int timer;           /* 0x14 */
 } SmokerState;
 
-extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Type 0xA3: a bobbing walker; when hit it pays out, releases an 0xE8
  * helper and runs off. */

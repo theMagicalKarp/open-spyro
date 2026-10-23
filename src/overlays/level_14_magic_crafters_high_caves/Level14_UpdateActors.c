@@ -163,9 +163,6 @@ extern void AimCameraStickTowardPoint(int *pos);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 /* Types 260..269: floating digits. Same bounce, different layout. */
@@ -283,7 +280,6 @@ extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 /* Callees used by the collectible and fairy behaviours. */
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
@@ -611,7 +607,6 @@ typedef struct SmokeJet {
   short vel[3]; /* 0x06 */
 } SmokeJet;
 extern SmokeJet g_aSmokeJetEmitters[];
-extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -1320,8 +1315,6 @@ typedef struct L9Bird {
   int call;    /* 0x1C */
 } L9Bird;
 /* from level_10 */
-extern void SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 /* from level_10 */
 typedef struct L9Yak {
   int heading; /* 0x00 knock-back heading */

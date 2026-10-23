@@ -202,9 +202,6 @@ extern void AimCameraStickTowardPoint(int *pos, int dt);
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern void SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
  * exit vortex flag is set and its linked actor is dormant. */

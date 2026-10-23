@@ -45,9 +45,6 @@
 
 /* Mark an item collected; the second argument is the actor or its id. */
 
-extern int SteerActorAroundPoint(Actor *actor, int *target, int a, int heading, int b,
-                          int c, int d, int e, int f, int g, int h, int i,
-                          int j);
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -70,7 +67,6 @@ extern short g_anSineLut_s[];
 
 extern int GetGroundTriggerRegionType(void);
 
-extern int TrackEntityYawTowardSpyro(Actor *actor, int a, int b, int c);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -201,7 +197,6 @@ extern volatile unsigned char
 
 /* ==== Level 16 classes ==== */
 
-extern int DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *actor, int d);
 
 /* Case 328 -- floor-snapped marker. */
 
@@ -243,8 +238,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 
 /* ==== Level 9 classes ==== */
 
-extern int SteerActorTowardPoint(Actor *actor, int *target, int a, int b, int c,
-                          int d);
 
 /* ==== Level 26 classes ==== */
 
