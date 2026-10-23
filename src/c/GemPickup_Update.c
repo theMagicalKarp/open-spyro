@@ -44,13 +44,15 @@ extern void TickGemPickupAssetStream(void);
 extern void TickGemPickupBurstEntity(void *actor);
 
 extern int g_nSpyroAnimPlayRate_blk[];
-extern int g_nSpyroGroundNormalX;  /* 0x80078afc — g_anSpyroGroundNormal[0] */
-extern int g_nSpyroGroundNormalY;  /* 0x80078b00 — g_anSpyroGroundNormal[1] */
-extern unsigned char D_8006F390[]; /* substate-1 flicker euler pairs */
-extern unsigned char D_8006F391[];
-extern unsigned char D_8006F398[]; /* substate-2 flicker euler pairs */
-extern unsigned char D_8006F399[];
-extern int D_8006F3F0[]; /* HUD icon rest positions, 3 x vec3 */
+extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
+extern int g_nSpyroGroundNormalY; /* 0x80078b00 — g_anSpyroGroundNormal[1] */
+extern unsigned char
+    g_abGemPickupFlickerPairs1[]; /* substate-1 flicker euler pairs */
+extern unsigned char g_abGemPickupFlickerPairs1Y[];
+extern unsigned char
+    g_abGemPickupFlickerPairs2[]; /* substate-2 flicker euler pairs */
+extern unsigned char g_abGemPickupFlickerPairs2Y[];
+extern int g_anGemPickupIconRestPos[]; /* HUD icon rest positions, 3 x vec3 */
 extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
                                                     g_pLevelSampleBankEntries */
 extern void *g_apSampleBankEntriesBlock[];
@@ -228,12 +230,12 @@ void GemPickup_Update(void) {
     {
       char *s = SRC;
 
-      U8(s, 0x44) = D_8006F390[U8(s, 0x49) * 2];
+      U8(s, 0x44) = g_abGemPickupFlickerPairs1[U8(s, 0x49) * 2];
     }
     {
       char *s = SRC;
 
-      U8(s, 0x45) = D_8006F391[U8(s, 0x49) * 2];
+      U8(s, 0x45) = g_abGemPickupFlickerPairs1Y[U8(s, 0x49) * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -436,12 +438,12 @@ void GemPickup_Update(void) {
     {
       char *s = SRC;
 
-      U8(s, 0x44) = D_8006F398[U8(s, 0x49) * 2];
+      U8(s, 0x44) = g_abGemPickupFlickerPairs2[U8(s, 0x49) * 2];
     }
     {
       char *s = SRC;
 
-      U8(s, 0x45) = D_8006F399[U8(s, 0x49) * 2];
+      U8(s, 0x45) = g_abGemPickupFlickerPairs2Y[U8(s, 0x49) * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -674,7 +676,7 @@ void GemPickup_Update(void) {
     TickSpyroAnimLayer2();
   roll_in:
     CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + k),
-               (int *)((char *)D_8006F3F0 + off));
+               (int *)((char *)g_anGemPickupIconRestPos + off));
     if (g_nGemPickupTimer < 0x19) {
       *icon += (((short *)done)[g_nGemPickupTimer >> 1] * 3) >> 1;
     } else {
@@ -743,7 +745,7 @@ void GemPickup_Update(void) {
       off = 0;
     roll_out:
       CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + j),
-                 (int *)((char *)D_8006F3F0 + off));
+                 (int *)((char *)g_anGemPickupIconRestPos + off));
       j += 0x58;
       off += 0xC;
       n++;

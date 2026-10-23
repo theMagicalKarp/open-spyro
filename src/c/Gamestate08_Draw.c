@@ -27,9 +27,9 @@ extern void DrawSync(int mode);
 extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
-extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4: OT head list,
-                                       sprite prim queue at [2304] */
-extern short D_8006F3C0[];          /* gem-pickup timer scale curve */
+extern void *g_apOtDepthBinBlock[];     /* 0x8006fcf4: OT head list,
+                                           sprite prim queue at [2304] */
+extern short g_anGemPickupScaleCurve[]; /* gem-pickup timer scale curve */
 
 void Gamestate08_Draw(void) {
   int unused[4];
@@ -159,7 +159,7 @@ void Gamestate08_Draw(void) {
     if (g_anActorDrawList[0] != 0) {
       short *dl = (short *)g_anActorDrawList;
       int scale;
-      scale = D_8006F3C0[*(volatile int *)&g_nGemPickupTimer];
+      scale = g_anGemPickupScaleCurve[*(volatile int *)&g_nGemPickupTimer];
       dl[0x0E] = (dl[0x0E] * scale) >> 12;
       dl[0x0F] = (dl[0x0F] * scale) >> 12;
       dl[0x10] = (dl[0x10] * scale) >> 12;

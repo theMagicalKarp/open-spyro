@@ -11,7 +11,7 @@ extern short g_anCosineLut[];
 typedef struct {
   short x, y, w, h;
 } MenuBox;
-extern MenuBox D_8006F350[]; /* per-substate menu box */
+extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
 extern char g_szHiSpyro[];
 extern char g_szSaveGame[];
 extern char g_szReplayDragon[];
@@ -56,10 +56,11 @@ void SaveLoadMenu_Draw(void) {
     g_pSpriteRecordWriteCursor = g_pSpriteRecordBufferTop;
   }
   if (g_nSaveMenuMode == 1) {
-    DrawShadedMenuBox(g_nSaveMenuXOffset + D_8006F350[g_nSaveMenuSubstate].x,
-                      g_nSaveMenuXOffset + D_8006F350[g_nSaveMenuSubstate].y,
-                      D_8006F350[g_nSaveMenuSubstate].w,
-                      D_8006F350[g_nSaveMenuSubstate].h);
+    DrawShadedMenuBox(
+        g_nSaveMenuXOffset + g_aSaveMenuBoxes[g_nSaveMenuSubstate].x,
+        g_nSaveMenuXOffset + g_aSaveMenuBoxes[g_nSaveMenuSubstate].y,
+        g_aSaveMenuBoxes[g_nSaveMenuSubstate].w,
+        g_aSaveMenuBoxes[g_nSaveMenuSubstate].h);
     size[0] = 0x10;
     size[2] = 0x1400;
     size[1] = 1;

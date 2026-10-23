@@ -26,7 +26,8 @@ extern int g_nSpyroVelocityY; /* g_anSpyroVelocity[1] */
 extern int g_nSpyroVelocityZ;
 extern int g_nSpyroCarryMotionY;
 extern int g_nSpyroCarryMotionZ;
-extern int D_80078B34[];
+extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
+                                          velocity */
 extern int g_bSpyroJumpHoldForced;
 extern int g_nSpyroScriptedLiftBaseZ;
 extern int D_80075700;
@@ -60,7 +61,7 @@ extern int g_anSpyroDeathCamRecordBlock[];
 #define SPY_NUDGE 0x2E          /* g_anSpyroWallSlideNudgeAccum */
 #define SPY_CLIFF 0x31          /* g_nSpyroCliffEdgeHint */
 #define SPY_SPEED_TARGET 0x32   /* g_nSpyroSpeedTarget */
-#define SPY_PLATFORM 0x37       /* D_80078B34 */
+#define SPY_PLATFORM 0x37       /* g_anSpyroSlopeGravityVec */
 #define SPY_CARRY 0x3A          /* g_anSpyroCarryMotionVec */
 #define SPY_VELOCITY 0x3D       /* g_anSpyroVelocity */
 #define SPY_VELOCITY_FP6 0x40   /* g_anSpyroVelocityFp6 */
@@ -154,7 +155,7 @@ static inline int *Opaque(int *p) {
   if (g_nSpyroCliffEdgeHint != 0 || g_nSpyroAirborneFrames != 0) {             \
     g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;                          \
   } else {                                                                     \
-    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);               \
+    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, g_anSpyroSlopeGravityVec); \
   }
 
 #define CLAMP_FALL_SPEED()                                                     \
@@ -339,7 +340,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (cb[0] != 0 || g_nSpyroAirborneFrames != 0) {
         g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
       } else {
-        AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+        AddVector(g_anSpyroVelocity, g_anSpyroVelocity,
+                  g_anSpyroSlopeGravityVec);
       }
     }
     break;
@@ -370,7 +372,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
     }
     BuildSpyroVelocityFromBodyEuler();
-    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+    AddVector(g_anSpyroVelocity, g_anSpyroVelocity, g_anSpyroSlopeGravityVec);
     break;
   }
   case 3: {
@@ -431,7 +433,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         g_nSpyroVelocityZ = g_anSpyroMotionVec[2] - 0xC0;
       } else {
         AddVector(ab + (SPY_VELOCITY - SPY_AIRBORNE),
-                  ab + (SPY_VELOCITY - SPY_AIRBORNE), D_80078B34);
+                  ab + (SPY_VELOCITY - SPY_AIRBORNE), g_anSpyroSlopeGravityVec);
       }
     }
     break;
@@ -695,7 +697,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_nSpyroCliffEdgeHint != 0) {
         g_nSpyroVelocityZ -= 0xC0;
       } else {
-        AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+        AddVector(g_anSpyroVelocity, g_anSpyroVelocity,
+                  g_anSpyroSlopeGravityVec);
       }
     }
     break;
@@ -1482,7 +1485,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       ScaleVector3ByRatio(carry, l, 0x2300);
       g_nSpyroMotionSpeed = 0x2300;
     }
-    AddVector(carry + 3, carry, D_80078B34);
+    AddVector(carry + 3, carry, g_anSpyroSlopeGravityVec);
     break;
   }
   case 20: {
@@ -1617,7 +1620,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroCliffEdgeHint != 0) {
       ob[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;
     } else {
-      AddVector(g_anSpyroVelocity, g_anSpyroVelocity, D_80078B34);
+      AddVector(g_anSpyroVelocity, g_anSpyroVelocity, g_anSpyroSlopeGravityVec);
     }
     break;
   }

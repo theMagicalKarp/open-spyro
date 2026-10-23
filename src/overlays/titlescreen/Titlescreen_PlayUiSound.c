@@ -37,14 +37,14 @@ typedef struct {
 
 extern SpuDriver g_pLevelSampleBankEntries;  /* the SPU driver state */
 extern SoundDef g_CutsceneSoundDef;   /* the shared cutscene sound definition */
-extern int D_8006FA94[];      /* title-screen SPU sample offset table */
+extern int g_anTitleSampleOffsets[];      /* title-screen SPU sample offset table */
 extern int g_bGemPickupSfxVoiceMarker;        /* dragon-cutscene sound voice */
 
 extern void PlaySoundEffect(int, void *, int, unsigned char *); /* PlaySound */
 
 void Titlescreen_PlayUiSound(int nSoundId) {
   g_pLevelSampleBankEntries.pSoundDef = &g_CutsceneSoundDef;
-  g_pLevelSampleBankEntries.pSoundDef->nAddr = D_8006FA94[nSoundId] + 0x1010;
+  g_pLevelSampleBankEntries.pSoundDef->nAddr = g_anTitleSampleOffsets[nSoundId] + 0x1010;
   g_pLevelSampleBankEntries.pSoundDef->nLoopAddr = -1;
   g_pLevelSampleBankEntries.pSoundDef->nVolume = 0x50;
   g_pLevelSampleBankEntries.pSoundDef->nPitch = 0x800;

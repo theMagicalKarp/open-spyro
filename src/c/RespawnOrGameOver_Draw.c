@@ -15,8 +15,8 @@ extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 extern unsigned short g_anGameOverCameraEulerU[];
 extern unsigned char g_abFrameDrawEnvIsbgBlock[];
-extern unsigned char D_8006F304[];     /* GAMEOVER letter glyph indices */
-extern unsigned char g_szPressStart[]; /* "PRESS X..." prompt string */
+extern unsigned char g_abGameOverGlyphs[]; /* GAMEOVER letter glyph indices */
+extern unsigned char g_szPressStart[];     /* "PRESS X..." prompt string */
 
 /* Draw for GS_GAME_OVER (5): three sub-modes driven by g_nGameplayDrawMode.
    Mode 0 = death fade-out: frame 0 renders one full gameplay frame then
@@ -133,7 +133,7 @@ void RespawnOrGameOver_Draw(void) {
             *(int *)((char *)g_pSpriteRecordWriteCursor + 0x14) = 0x400;
           }
           *(short *)((char *)g_pSpriteRecordWriteCursor + 0x36) =
-              D_8006F304[i] + 0x169;
+              g_abGameOverGlyphs[i] + 0x169;
           *(int *)((char *)g_pSpriteRecordWriteCursor + 0xC) =
               *(short *)((char *)g_anGameOverLetterPosXY + k);
           *(int *)((char *)g_pSpriteRecordWriteCursor + 0x10) =

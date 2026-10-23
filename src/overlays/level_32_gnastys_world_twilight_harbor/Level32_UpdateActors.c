@@ -14,7 +14,7 @@
  *     empty do/while(0) between the two calls, which shortens the 3/4 group
  *     lifetimes below loop.c's threshold (A285) with identical output.
  *   - The collision-normal reflect blocks (cases 14/67/260/310/458) read
- *     D_80077368 as a plain extern and pass g_anCollisionProbeVec (same
+ *     g_nCollisionProbeVecX as a plain extern and pass g_anCollisionProbeVec (same
  *     address) to the second call, so the base is rematerialised (A23/A240).
  *   - Cases 156/176 open with an empty do/while(0) so cse keeps spy->posY
  *     fp-relative instead of folding it to g_nSpyroWorldPosY.
@@ -218,7 +218,7 @@ typedef struct DebrisState {
 } DebrisState;
 
 /* Surface normal produced by the collision probes. */
-extern int D_80077368;
+extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {
@@ -2573,14 +2573,14 @@ void Level32_UpdateActors(void) {
         int along;
         register int push asm("$7");
 
-        SetVector3Magnitude(&D_80077368, 0x1000);
-        along = (st->vel[0] * D_80077368) + (st->vel[1] * g_nCollisionProbeVecY) +
+        SetVector3Magnitude(&g_nCollisionProbeVecX, 0x1000);
+        along = (st->vel[0] * g_nCollisionProbeVecX) + (st->vel[1] * g_nCollisionProbeVecY) +
                 (st->vel[2] * g_nCollisionProbeVecZ);
         push = along >> 11;
 
         if (push < 0) {
           ScaleVector3ByRatio(g_anCollisionProbeVec, 0x1000, (along >> 13) - push);
-          st->vel[0] += D_80077368;
+          st->vel[0] += g_nCollisionProbeVecX;
           st->vel[1] += AS_I32(g_nCollisionProbeVecY);
           st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
         }
@@ -2704,9 +2704,9 @@ void Level32_UpdateActors(void) {
           {
 
             st->lean = -ArcTan2_8bit(
-                IntegerSqrt((D_80077368 * D_80077368) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
+                IntegerSqrt((g_nCollisionProbeVecX * g_nCollisionProbeVecX) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
                 g_nCollisionProbeVecY);
-            st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, D_80077368);
+            st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, g_nCollisionProbeVecX);
           }
 
           if (st->lean != 0 || st->roll != 0) {
@@ -2725,10 +2725,10 @@ void Level32_UpdateActors(void) {
               {
 
                 st->lean =
-                    -ArcTan2_8bit(IntegerSqrt((D_80077368 * D_80077368) +
+                    -ArcTan2_8bit(IntegerSqrt((g_nCollisionProbeVecX * g_nCollisionProbeVecX) +
                                                  (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
                                    g_nCollisionProbeVecY);
-                st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, D_80077368);
+                st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, g_nCollisionProbeVecX);
               }
             }
           } else if (st->mode == 2) {
@@ -2823,7 +2823,7 @@ void Level32_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svH, &D_80077368);
+            CopyVector(svH, &g_nCollisionProbeVecX);
             CopyVector(at, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -4559,15 +4559,15 @@ void Level32_UpdateActors(void) {
               actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              SetVector3Magnitude(&D_80077368, 0x1000);
+              SetVector3Magnitude(&g_nCollisionProbeVecX, 0x1000);
 
-              dot = (st->vel[0] * D_80077368 + st->vel[1] * g_nCollisionProbeVecY +
+              dot = (st->vel[0] * g_nCollisionProbeVecX + st->vel[1] * g_nCollisionProbeVecY +
                      st->vel[2] * g_nCollisionProbeVecZ) >>
                     11;
 
               if (dot < 0) {
                 ScaleVector3ByRatio(g_anCollisionProbeVec, 0x1000, -dot);
-                st->vel[0] += D_80077368;
+                st->vel[0] += g_nCollisionProbeVecX;
                 st->vel[1] += AS_I32(g_nCollisionProbeVecY);
                 st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
               }
@@ -4697,14 +4697,14 @@ void Level32_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
           int along;
 
-          SetVector3Magnitude(&D_80077368, 0x1000);
-          along = (st->vel[0] * D_80077368) + (st->vel[1] * g_nCollisionProbeVecY) +
+          SetVector3Magnitude(&g_nCollisionProbeVecX, 0x1000);
+          along = (st->vel[0] * g_nCollisionProbeVecX) + (st->vel[1] * g_nCollisionProbeVecY) +
                   (st->vel[2] * g_nCollisionProbeVecZ);
           i = along >> 11;
 
           if (i < 0) {
             ScaleVector3ByRatio(g_anCollisionProbeVec, 0x1000, (along >> 13) - i);
-            st->vel[0] += D_80077368;
+            st->vel[0] += g_nCollisionProbeVecX;
             st->vel[1] += AS_I32(g_nCollisionProbeVecY);
             st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
           }
@@ -5273,14 +5273,14 @@ void Level32_UpdateActors(void) {
         int along;
         register int push asm("$7");
 
-        SetVector3Magnitude(&D_80077368, 0x1000);
-        along = (st->vel[0] * D_80077368) + (st->vel[1] * g_nCollisionProbeVecY) +
+        SetVector3Magnitude(&g_nCollisionProbeVecX, 0x1000);
+        along = (st->vel[0] * g_nCollisionProbeVecX) + (st->vel[1] * g_nCollisionProbeVecY) +
                 (st->vel[2] * g_nCollisionProbeVecZ);
         push = along >> 11;
 
         if (push < 0) {
           ScaleVector3ByRatio(g_anCollisionProbeVec, 0x1000, (along >> 13) - push);
-          st->vel[0] += D_80077368;
+          st->vel[0] += g_nCollisionProbeVecX;
           st->vel[1] += AS_I32(g_nCollisionProbeVecY);
           st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
         }

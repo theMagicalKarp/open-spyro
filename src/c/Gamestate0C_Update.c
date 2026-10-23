@@ -23,8 +23,8 @@
    Once the timer passes 0x100 and the CD stream has reached state 0xA the
    handoff runs: the world counters are copied over in one block, substate
    advances to 5 with the timer reset, and Spyro plus the camera are parked on
-   the entry point taken from D_8006EA4C (one 16-byte entry per level, the
-   fourth word holding the facing byte). Every path falls through to the
+   the entry point taken from g_anLevelEntryPoints (one 16-byte entry per level,
+   the fourth word holding the facing byte). Every path falls through to the
    shared anim tick.
 
    MATCHED at 338/338 instructions.
@@ -136,7 +136,7 @@ extern int g_nGamestate0cCamRadiusGoal;  /* camera radius goal  (block +0x50) */
 extern int g_nGamestate0cCamHeightGoal;  /* camera height goal  (block +0x54) */
 extern void *g_pGamestate0cRecord;       /* active level record (block +0x64) */
 
-extern int D_8006EA4C[]; /* entry points, 4 words per level */
+extern int g_anLevelEntryPoints[]; /* entry points, 4 words per level */
 extern void (*g_pfnGamestate0cSubstateUpdate)(
     void); /* handler for every other substate */
 
@@ -259,7 +259,7 @@ void Gamestate0C_Update(void) {
       g_anGamestate0cTimerBlock[-1] = 5;
       g_anGamestate0cTimerBlock[0] = 0;
       CopyVector((int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC),
-                 &D_8006EA4C[g_anGamestate0cTimerBlock[4] * 4]);
+                 &g_anLevelEntryPoints[g_anGamestate0cTimerBlock[4] * 4]);
 
       /* Read in its own statement rather than inline in the index below. This
          is the one read of this field that expand does NOT force_reg — it comes
@@ -271,7 +271,7 @@ void Gamestate0C_Update(void) {
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
       lvl = g_anGamestate0cTimerBlock[4];
       *(char *)((char *)g_pGamestate0cRecord + 0x46) =
-          (char)D_8006EA4C[lvl * 4 + 3];
+          (char)g_anLevelEntryPoints[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos,
                  (int *)((char *)g_anGamestate0cTimerBlock[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;

@@ -38,7 +38,7 @@
  *   - Case 497 splits its channel switch into `case 3: case 4:` and
  *     `case 5: case 7:` with identical bodies (jump.c merges them); the
  *     compare tree needs 5 as its own node. One `r` serves cases 1 and 2.
- *   - The boss counters are `extern int D_800778E8[]` / `D_800778EC[]`
+ *   - The boss counters are `extern int g_nLevelProgress[]` / `g_nLevelProgressCheckpoint[]`
  *     (held base for the increment and the first two stage reads).
  *   - Case 37's rim offset is `tbl[i] << 16 >> 19` (a plain `>> 3` is
  *     narrowed to lhu/sll/sra); case 9 holds `&g_nSpyroWorldPosZ` in a local.
@@ -230,8 +230,8 @@ extern void DispatchActorContactAtSphere(int *pos, int a, int b, int c, Actor *a
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int D_800778E8[]; /* hits taken */
-extern int D_800778EC[]; /* stage reached */
+extern int g_nLevelProgress[]; /* hits taken */
+extern int g_nLevelProgressCheckpoint[]; /* stage reached */
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
                          int d);
 
@@ -3252,7 +3252,7 @@ void Level16_UpdateActors(void) {
           case 0x5B:
           case 0x5C:
           case 0x5D:
-            D_800778E8[0] += 1;
+            g_nLevelProgress[0] += 1;
             if (st->minion != 0) {
               StopSoundVoicesByOwner(st->minion, 1);
               DespawnActorRecord(st->minion);
@@ -3294,7 +3294,7 @@ void Level16_UpdateActors(void) {
       st->floorZ = -1;
     settled:
       if (st->started == 0) {
-        if (D_800778EC[0] == 0) {
+        if (g_nLevelProgressCheckpoint[0] == 0) {
           if (TickCountdownByFrameDelta(&st->delay, 4) != 0) {
             g_nGameplayBlocked = 0;
             st->started = 1;
@@ -3307,7 +3307,7 @@ void Level16_UpdateActors(void) {
           int *as = a->state;
 
           st->started = 1;
-          if (D_800778EC[0] > 0) {
+          if (g_nLevelProgressCheckpoint[0] > 0) {
             actor->mode = 0x51;
             st->unk60 = 0;
             st->phase = 1;
@@ -3322,7 +3322,7 @@ void Level16_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(0, 0xFC, 0);
             st->chan = -1;
           }
-          if (D_800778EC[0] >= 2) {
+          if (g_nLevelProgressCheckpoint[0] >= 2) {
             actor->mode = 0x5B;
             st->path = st->paths[4];
             a = &g_pActorListBase[st->prev];
@@ -3336,7 +3336,7 @@ void Level16_UpdateActors(void) {
           }
           CopyVector(&actor->posX, &st->path->nodes[0].x);
           st->floorZ = actor->posZ + 0x578;
-          if (D_800778EC[0] == 3) {
+          if (g_nLevelProgressCheckpoint[0] == 3) {
             DespawnActorRecord(actor);
             continue;
           }

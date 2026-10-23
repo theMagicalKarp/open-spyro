@@ -653,7 +653,7 @@ typedef struct L22Boss {
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int D_80075854; /* boss defeated */
+extern int g_bLevelBossDefeated; /* boss defeated */
 
 /* ==== The function ==== */
 #define spy (&SPY)
@@ -1504,7 +1504,7 @@ void Level22_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(3, 0xFC, 0);
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
-          D_80075854 = 1;
+          g_bLevelBossDefeated = 1;
           DespawnActorRecord(actor);
           continue;
         }

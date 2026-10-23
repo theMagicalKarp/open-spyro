@@ -26,8 +26,8 @@ extern void ClearImage(RECT *rect, unsigned int r, unsigned int g,
                        unsigned int b);
 extern int DrawSync(int mode);
 
-extern void *g_pSharedLoadBuffer; /* default draw-buffer base */
-extern int D_8006EE7C[];          /* per-try first level table */
+extern void *g_pSharedLoadBuffer;  /* default draw-buffer base */
+extern int g_anDeathTryLevelIds[]; /* per-try first level table */
 
 extern int g_anStoryIntroMessageBlock[]; /* held-base view of the message id */
 extern int g_anStoryIntroTimerBlock[];   /* held-base view of the intro timer */
@@ -58,7 +58,7 @@ void Gamestate0D_Update(void) {
         g_nCdStreamState = 1;
         g_nScriptedMobTag = 0;
         g_nScriptedRespawnFlag = 0;
-        g_nActiveLevelId = D_8006EE7C[g_nDeathTryIndex];
+        g_nActiveLevelId = g_anDeathTryLevelIds[g_nDeathTryIndex];
         g_nCurrentLevelId = g_nActiveLevelId;
       }
       g_nCameraEulerYaw = 0x400;

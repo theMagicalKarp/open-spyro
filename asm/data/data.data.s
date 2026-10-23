@@ -4136,9 +4136,9 @@ dlabel D_8006EA40
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
 enddlabel D_8006EA40
 
-nonmatching D_8006EA4C
+nonmatching g_anLevelEntryPoints
 
-dlabel D_8006EA4C
+dlabel g_anLevelEntryPoints
     /* 5F24C 8006EA4C 004C0100 */ .word 0x00014C00
     /* 5F250 8006EA50 45B40000 */ .word 0x0000B445
     /* 5F254 8006EA54 AA440000 */ .word 0x000044AA
@@ -4193,7 +4193,7 @@ dlabel D_8006EA4C
     /* 5F318 8006EB18 1BDD0100 */ .word 0x0001DD1B
     /* 5F31C 8006EB1C 043C0200 */ .word 0x00023C04
     /* 5F320 8006EB20 7AE70000 */ .word 0x0000E77A
-enddlabel D_8006EA4C
+enddlabel g_anLevelEntryPoints
 
 nonmatching D_8006EB24
 
@@ -4452,14 +4452,14 @@ dlabel D_8006EE70
     /* 5F678 8006EE78 00080000 */ .word 0x00000800
 enddlabel D_8006EE70
 
-nonmatching D_8006EE7C
+nonmatching g_anDeathTryLevelIds
 
-dlabel D_8006EE7C
+dlabel g_anDeathTryLevelIds
     /* 5F67C 8006EE7C 0B000000 */ .word 0x0000000B
     /* 5F680 8006EE80 18000000 */ .word 0x00000018
     /* 5F684 8006EE84 37000000 */ .word 0x00000037
     /* 5F688 8006EE88 21000000 */ .word 0x00000021
-enddlabel D_8006EE7C
+enddlabel g_anDeathTryLevelIds
 
 nonmatching g_anDeathReplayFrameThreshold
 
@@ -4871,9 +4871,9 @@ dlabel g_anGameOverRevealScaleRamp
     /* 5FB02 8006F302 */ .short 0x0414
 enddlabel g_anGameOverRevealScaleRamp
 
-nonmatching D_8006F304
+nonmatching g_abGameOverGlyphs
 
-dlabel D_8006F304
+dlabel g_abGameOverGlyphs
     /* 5FB04 8006F304 */ .byte 0x47
     /* 5FB05 8006F305 */ .byte 0x41
     /* 5FB06 8006F306 */ .byte 0x4D
@@ -4886,7 +4886,7 @@ dlabel D_8006F304
     /* 5FB0D 8006F30D */ .byte 0x00
     /* 5FB0E 8006F30E */ .byte 0x00
     /* 5FB0F 8006F30F */ .byte 0x00
-enddlabel D_8006F304
+enddlabel g_abGameOverGlyphs
 
 nonmatching g_anMenuBackdropGrayClut
 
@@ -4909,11 +4909,11 @@ dlabel g_anMenuBackdropGrayClut
     /* 5FB4C 8006F34C DE7BFF7F */ .word 0x7FFF7BDE
 enddlabel g_anMenuBackdropGrayClut
 
-nonmatching D_8006F350
+nonmatching g_aSaveMenuBoxes
 
-dlabel D_8006F350
+dlabel g_aSaveMenuBoxes
     /* 5FB50 8006F350 */ .short 0x0028
-enddlabel D_8006F350
+enddlabel g_aSaveMenuBoxes
 
 nonmatching D_8006F352
 
@@ -4961,15 +4961,15 @@ dlabel D_8006F356
     /* 5FB8E 8006F38E */ .short 0x007E
 enddlabel D_8006F356
 
-nonmatching D_8006F390
+nonmatching g_abGemPickupFlickerPairs1
 
-dlabel D_8006F390
+dlabel g_abGemPickupFlickerPairs1
     /* 5FB90 8006F390 */ .byte 0x01
-enddlabel D_8006F390
+enddlabel g_abGemPickupFlickerPairs1
 
-nonmatching D_8006F391
+nonmatching g_abGemPickupFlickerPairs1Y
 
-dlabel D_8006F391
+dlabel g_abGemPickupFlickerPairs1Y
     /* 5FB91 8006F391 */ .byte 0x00
     /* 5FB92 8006F392 */ .byte 0xFF
     /* 5FB93 8006F393 */ .byte 0x00
@@ -4977,17 +4977,17 @@ dlabel D_8006F391
     /* 5FB95 8006F395 */ .byte 0xFF
     /* 5FB96 8006F396 */ .byte 0x00
     /* 5FB97 8006F397 */ .byte 0x01
-enddlabel D_8006F391
+enddlabel g_abGemPickupFlickerPairs1Y
 
-nonmatching D_8006F398
+nonmatching g_abGemPickupFlickerPairs2
 
-dlabel D_8006F398
+dlabel g_abGemPickupFlickerPairs2
     /* 5FB98 8006F398 */ .byte 0x01
-enddlabel D_8006F398
+enddlabel g_abGemPickupFlickerPairs2
 
-nonmatching D_8006F399
+nonmatching g_abGemPickupFlickerPairs2Y
 
-dlabel D_8006F399
+dlabel g_abGemPickupFlickerPairs2Y
     /* 5FB99 8006F399 */ .byte 0x01
     /* 5FB9A 8006F39A */ .byte 0xFF
     /* 5FB9B 8006F39B */ .byte 0xFF
@@ -5027,11 +5027,11 @@ dlabel D_8006F399
     /* 5FBBD 8006F3BD */ .byte 0xFE
     /* 5FBBE 8006F3BE */ .byte 0x48
     /* 5FBBF 8006F3BF */ .byte 0x05
-enddlabel D_8006F399
+enddlabel g_abGemPickupFlickerPairs2Y
 
-nonmatching D_8006F3C0
+nonmatching g_anGemPickupScaleCurve
 
-dlabel D_8006F3C0
+dlabel g_anGemPickupScaleCurve
     /* 5FBC0 8006F3C0 */ .short 0x0EF6
     /* 5FBC2 8006F3C2 */ .short 0x0DE9
     /* 5FBC4 8006F3C4 */ .short 0x0CE1
@@ -5056,11 +5056,11 @@ dlabel D_8006F3C0
     /* 5FBEA 8006F3EA */ .short 0x0040
     /* 5FBEC 8006F3EC */ .short 0x0030
     /* 5FBEE 8006F3EE */ .short 0x0030
-enddlabel D_8006F3C0
+enddlabel g_anGemPickupScaleCurve
 
-nonmatching D_8006F3F0
+nonmatching g_anGemPickupIconRestPos
 
-dlabel D_8006F3F0
+dlabel g_anGemPickupIconRestPos
     /* 5FBF0 8006F3F0 00010000 */ .word 0x00000100
     /* 5FBF4 8006F3F4 07000000 */ .word 0x00000007
     /* 5FBF8 8006F3F8 70080000 */ .word 0x00000870
@@ -5070,7 +5070,7 @@ dlabel D_8006F3F0
     /* 5FC08 8006F408 DA000000 */ .word 0x000000DA
     /* 5FC0C 8006F40C 16000000 */ .word 0x00000016
     /* 5FC10 8006F410 A0050000 */ .word 0x000005A0
-enddlabel D_8006F3F0
+enddlabel g_anGemPickupIconRestPos
 
 nonmatching g_abLevelTotalDragonsTable
 

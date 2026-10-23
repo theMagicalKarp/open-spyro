@@ -39,8 +39,8 @@ typedef struct {
 } TitlescreenSprite;
 
 extern POLY_FT4 *g_pPrimBufferWriteCursor;            /* primitive allocation pointer */
-extern unsigned int D_8006FABC[];       /* selection color words (P_CODEs) */
-extern TitlescreenSprite D_8006FACC[];  /* title-screen sprite table */
+extern unsigned int g_adwTitleSelectColors[];       /* selection color words (P_CODEs) */
+extern TitlescreenSprite g_aTitlescreenSprites[];  /* title-screen sprite table */
 
 extern void AddPrimToOT(POLY_FT4 *);  /* submit primitive to the OT */
 
@@ -55,22 +55,22 @@ void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
 
   p = g_pPrimBufferWriteCursor;
   p->tag = 0x09000000;
-  ((unsigned int *)p)[1] = D_8006FABC[nColorId];
+  ((unsigned int *)p)[1] = g_adwTitleSelectColors[nColorId];
 
   /* setXY4(p, nX, nY, w + nX, nY, nX, h + nY, w + nX, h + nY) */
   p->x0 = nX, p->y0 = nY,
-  p->x1 = D_8006FACC[nSprite].nW + nX, p->y1 = nY,
-  p->x2 = nX, p->y2 = D_8006FACC[nSprite].nH + nY,
-  p->x3 = D_8006FACC[nSprite].nW + nX, p->y3 = D_8006FACC[nSprite].nH + nY;
+  p->x1 = g_aTitlescreenSprites[nSprite].nW + nX, p->y1 = nY,
+  p->x2 = nX, p->y2 = g_aTitlescreenSprites[nSprite].nH + nY,
+  p->x3 = g_aTitlescreenSprites[nSprite].nW + nX, p->y3 = g_aTitlescreenSprites[nSprite].nH + nY;
 
   /* setUVWH2(p, u, v, w, h): u3=u1, v3=v2 reuse the computed corners */
-  p->u0 = D_8006FACC[nSprite].nU, p->v0 = D_8006FACC[nSprite].nV,
-  p->u1 = p->u0 + D_8006FACC[nSprite].nW, p->v1 = p->v0,
-  p->u2 = p->u0, p->v2 = p->v0 + D_8006FACC[nSprite].nH,
+  p->u0 = g_aTitlescreenSprites[nSprite].nU, p->v0 = g_aTitlescreenSprites[nSprite].nV,
+  p->u1 = p->u0 + g_aTitlescreenSprites[nSprite].nW, p->v1 = p->v0,
+  p->u2 = p->u0, p->v2 = p->v0 + g_aTitlescreenSprites[nSprite].nH,
   p->u3 = p->u1, p->v3 = p->v2;
 
-  p->tpage = D_8006FACC[nSprite].nTpage;
-  p->clut = D_8006FACC[nSprite].nClut;
+  p->tpage = g_aTitlescreenSprites[nSprite].nTpage;
+  p->clut = g_aTitlescreenSprites[nSprite].nClut;
 
   AddPrimToOT(p);
 

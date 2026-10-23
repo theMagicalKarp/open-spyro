@@ -1,6 +1,7 @@
 #include "globals.h"
 
-extern int D_80078B34[];
+extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
+                                          velocity */
 extern void CopyVector();
 extern void SetVector3Magnitude();
 extern void ZeroVector();
@@ -12,12 +13,12 @@ void ApplyGravityAlongSpyroSlopeNormal(void) {
   VECTOR zero;
   int step;
 
-  CopyVector(D_80078B34, D_80078B34 - 0xE);
+  CopyVector(g_anSpyroSlopeGravityVec, g_anSpyroSlopeGravityVec - 0xE);
   step = g_nSpyroGravityStep;
   if (step < 0) {
     step = -step;
   }
-  SetVector3Magnitude(D_80078B34, step);
+  SetVector3Magnitude(g_anSpyroSlopeGravityVec, step);
   ZeroVector(&zero);
-  SubtractVector(D_80078B34, &zero, D_80078B34);
+  SubtractVector(g_anSpyroSlopeGravityVec, &zero, g_anSpyroSlopeGravityVec);
 }
