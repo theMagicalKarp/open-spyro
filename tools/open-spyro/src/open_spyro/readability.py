@@ -53,7 +53,7 @@ _ANON_DATA = re.compile(
 _M2C = re.compile(r"\b(?:temp_[a-z0-9_]+|var_[a-z0-9_]+|sp[0-9A-F]{2,3}|arg[0-9])\b")
 _RAW = re.compile(
     r"\*\s*\(\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?"
-    r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(?\s*"
+    r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(\s*"
     r"(?:\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*)?[A-Za-z_]\w*\s*\+"
 )
 _EXTERN = re.compile(r"^extern\b", re.M)
