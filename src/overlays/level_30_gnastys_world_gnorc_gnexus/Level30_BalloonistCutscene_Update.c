@@ -668,15 +668,15 @@ void Level30_BalloonistCutscene_Update(void)
         {
           bank = (int *) 0x801FE000;
         }
-        CopyWords(bank, D_800769F8[0], 0x4000);
-        step = ((int) bank) - ((int) D_800769F8[0]);
-        D_800769F8[0] = bank;
-        D_800769F8[0][14] = D_800769F8[0][14] + step;
-        slot = (int *) D_800769F8[0][14];
+        CopyWords(bank, g_apActorMeshTable_1A0[0], 0x4000);
+        step = ((int) bank) - ((int) g_apActorMeshTable_1A0[0]);
+        g_apActorMeshTable_1A0[0] = bank;
+        g_apActorMeshTable_1A0[0][14] = g_apActorMeshTable_1A0[0][14] + step;
+        slot = (int *) g_apActorMeshTable_1A0[0][14];
         slot[5] = slot[5] + step;
-        slot = (int *) D_800769F8[0][14];
+        slot = (int *) g_apActorMeshTable_1A0[0][14];
         slot[6] = slot[6] + step;
-        slot = (int *) D_800769F8[0][14];
+        slot = (int *) g_apActorMeshTable_1A0[0][14];
         slot[9] = slot[9] + step;
       }
         break;

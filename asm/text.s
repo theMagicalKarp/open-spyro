@@ -2794,8 +2794,8 @@ glabel TickWorldBundleLoadStream
     /* 514C 8001494C 11004018 */  blez       $v0, .L80014994
     /* 5150 80014950 21806000 */   addu      $s0, $v1, $zero
     /* 5154 80014954 21906000 */  addu       $s2, $v1, $zero
-    /* 5158 80014958 0780113C */  lui        $s1, %hi(D_8007637C)
-    /* 515C 8001495C 7C633126 */  addiu      $s1, $s1, %lo(D_8007637C)
+    /* 5158 80014958 0780113C */  lui        $s1, %hi(g_apActorMeshTable_1)
+    /* 515C 8001495C 7C633126 */  addiu      $s1, $s1, %lo(g_apActorMeshTable_1)
   .L80014960:
     /* 5160 80014960 0000048E */  lw         $a0, 0x0($s0)
     /* 5164 80014964 04001026 */  addiu      $s0, $s0, 0x4
@@ -29240,9 +29240,9 @@ glabel AdvanceGemCutsceneFrame
     /* 1C91C 8002C11C 21580000 */  addu       $t3, $zero, $zero
     /* 1C920 8002C120 21480000 */  addu       $t1, $zero, $zero
   .L8002C124:
-    /* 1C924 8002C124 0780013C */  lui        $at, %hi(D_8007637C)
+    /* 1C924 8002C124 0780013C */  lui        $at, %hi(g_apActorMeshTable_1)
     /* 1C928 8002C128 21082B00 */  addu       $at, $at, $t3
-    /* 1C92C 8002C12C 7C63228C */  lw         $v0, %lo(D_8007637C)($at)
+    /* 1C92C 8002C12C 7C63228C */  lw         $v0, %lo(g_apActorMeshTable_1)($at)
     /* 1C930 8002C130 00000000 */  nop
     /* 1C934 8002C134 3800428C */  lw         $v0, 0x38($v0)
     /* 1C938 8002C138 00000000 */  nop

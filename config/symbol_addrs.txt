@@ -2504,3 +2504,5 @@ g_anTweenBlendWeights6 = 0x8006CBB4; // type:data — (short, short) weight pair
 g_anTweenBlendWeights8 = 0x8006CBCC; // type:data — (short, short) weight pairs for a 8-step leg cross-fade (BlendVectorPairByMode / TweenActorAlongPath)
 g_pScriptedCameraView = 0x80076EBC; // type:data allow_duplicated:True alias — scalar form of g_apScriptedCameraViewBlock[0], the active scripted-camera record
 g_abHudIconActorRecords_rotZ = 0x80078032; // type:data — view of g_abHudIconActorRecords[0].rotZ (+0x46), walked at 0x58 stride
+g_apActorMeshTable_1A0 = 0x800769F8; // type:data — view of g_apActorMeshTable[0x1A0]; the balloonist cutscenes copy that model (0x4000 bytes) to a safe bank and relocate its pointers
+g_apActorMeshTable_1 = 0x8007637C; // type:data — view of g_apActorMeshTable[1] (AdvanceGemCutsceneFrame)

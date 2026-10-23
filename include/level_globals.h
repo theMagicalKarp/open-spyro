@@ -35,7 +35,7 @@ extern int g_pSaveMenuAnimActorList1;
 extern int g_abGamestate0cActorSnapshot[];
 extern int D_800756A0;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
-extern int *D_800769F8[];
+extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
 extern int g_nLevelEggsRecovered1;
 extern int g_nLevelEggsRecovered7;
 extern int g_nLevelEggsRecovered8;
