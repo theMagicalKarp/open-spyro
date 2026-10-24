@@ -48,7 +48,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int SelectActorLodBand(Actor *actor, int handle);
 void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *offset);
-Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
+Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 void SetActorGroupState(Actor *actor, int a);
 void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
                              int distLim, int zLim, int xyLim, int angLim);

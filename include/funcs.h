@@ -2070,7 +2070,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius, int s
 int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 /* 0x8003abc0: Spawn the drop (gem/item/debris) a broken or flamed actor leaves. */
-Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
+Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 
 /* 0x8003b0dc: True when any actor of pickup group `group` has type byte (+0x48) < 0x80. */
 int PickupGroupHasLiveActor(int a0);
