@@ -274,8 +274,6 @@ typedef struct ExitState {
   *(st)->slot = 0;                                                             \
   L25_UNLINK(st)
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int f);
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
 #define RESET_IDLE(a)                                                          \

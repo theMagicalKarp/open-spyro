@@ -12,6 +12,14 @@
 struct Actor;
 extern struct Actor *g_pActorListBase;
 
+/* Actor-record lifecycle (main, actor.h spells them with the typedef). */
+extern struct Actor *AllocActorRecordSlot(void);
+extern void InitActorRenderDefaults(struct Actor *actor);
+extern void InsertActorIntoSpatialGrid(struct Actor *actor);
+extern void HideActorRenderRecord(struct Actor *actor);
+extern void EncodeCachedVecToActorDirCode(struct Actor *actor);
+extern void DespawnActorRecord(struct Actor *actor);
+
 /* Collectible drop (types 0xE, 0xF, 0x53..0x57: life statue, life orb,
  * gems) — SpawnActor's view of UpdateActors' PickupState, with 0x0C split
  * into two bytes. */
