@@ -1649,6 +1649,16 @@ extern int g_nCameraActiveTargetRoll;
 extern int g_nCameraActiveTargetPitchBias;
 extern int g_nCameraActiveTargetYawBias;
 
+/* Main globals read by a single UpdateActors clone. */
+extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
+extern int g_bLevelBossDefeated; /* boss defeated */
+extern int g_bLevelPhasedBossKilled;
+extern int g_bLevelUseShortReleaseAnim;
+extern int g_dwActiveCameraOptions;
+extern int g_nGemPickupCamPathReverseFlag;
+extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
+
 /* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's
  * per-class display words). The flight UpdateActors clones fill it with a
  * byte-offset induction variable next to the source pointer; an int index

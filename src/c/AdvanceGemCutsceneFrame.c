@@ -1,14 +1,9 @@
+#include "globals.h"
 #include "model.h"
 
-/* globals declared locally: the camera euler trio is written as one short[3]
-   (array store, so the loop guard load stays below it — globals.h types the
-   three as scalars). */
-extern void *g_pPathTableHead; /* 0x80075680 */
-extern void *g_pActorListBase; /* 0x80075828 */
-extern int g_anCameraPos[];    /* 0x80076df8 */
-extern short
-    g_nCameraEulerRoll[]; /* 0x80076e1c: [0] roll, [1] pitch, [2] yaw */
-extern char *g_apActorMeshTable_1[];
+/* The camera euler trio is written as one short[3]
+   (g_anCameraEulerRollBlock: array store, so the loop guard load stays below
+   it — globals.h types the three as scalars). */
 
 /* 0x8002bfe0 — per-tick gem-cutscene pose update (1088 b, leaf). Reads the
    current path node (timer>>1, stride 0x18) into the camera pos/euler
@@ -33,9 +28,9 @@ void AdvanceGemCutsceneFrame(int timer) {
   g_anCameraPos[0] = ((int *)path[4])[(path[0] >> 1) * 6];
   g_anCameraPos[1] = ((int *)path[4])[(path[0] >> 1) * 6 + 1];
   g_anCameraPos[2] = ((int *)path[4])[(path[0] >> 1) * 6 + 2];
-  g_nCameraEulerRoll[0] = ((int *)path[4])[(path[0] >> 1) * 6 + 3];
-  g_nCameraEulerRoll[1] = ((int *)path[4])[(path[0] >> 1) * 6 + 4];
-  g_nCameraEulerRoll[2] = ((int *)path[4])[(path[0] >> 1) * 6 + 5];
+  g_anCameraEulerRollBlock[0] = ((int *)path[4])[(path[0] >> 1) * 6 + 3];
+  g_anCameraEulerRollBlock[1] = ((int *)path[4])[(path[0] >> 1) * 6 + 4];
+  g_anCameraEulerRollBlock[2] = ((int *)path[4])[(path[0] >> 1) * 6 + 5];
 
   i = 0;
   if (path[3] > 0) {

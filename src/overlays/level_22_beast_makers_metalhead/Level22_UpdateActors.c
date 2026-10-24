@@ -45,7 +45,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
 
 /* ==== Helper macros ====
@@ -133,7 +132,6 @@ typedef struct ShardState {
   int life;      /* 0x0C */
   int floor;     /* 0x10 */
 } ShardState;
-
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -532,7 +530,6 @@ typedef struct L22Boss {
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int g_bLevelBossDefeated; /* boss defeated */
 
 /* ==== The function ==== */
 #define spy (&SPY)

@@ -144,11 +144,9 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
 /* ==== Globals shared with level 4 ==== */
-
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -191,7 +189,6 @@ typedef struct ShardState {
 #define sixteen 0x10
 
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
@@ -373,7 +370,6 @@ typedef struct L14State305 {
 #define PATH_CUR(p) (&(p)->nodes[(p)->cur].x)
 #define NODE_PT(p) ((int *)((char *)(p) + ((p)->cur << 4) + 8))
 
-extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
 typedef struct Cam5 {
   int w[5];
 } Cam5;

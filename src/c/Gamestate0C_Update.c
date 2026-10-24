@@ -115,12 +115,9 @@
    [13]/[15] the yaw and height starts also reachable as
    g_nGamestate0cCamYawStart / g_nGamestate0cCamHeightStart, [25] the active
    level record. */
-/* Absolute alias of g_anGamestate0cTimerBlock[0]: the aim ramp reads the timer
-   after the camera calls, where the original drops the held base and
-   re-addresses it. */
-
-extern void (*g_pfnGamestate0cSubstateUpdate)(
-    void); /* handler for every other substate */
+/* g_nGamestate0cTimer is the absolute alias of g_anGamestate0cTimerBlock[0]:
+   the aim ramp reads the timer after the camera calls, where the original
+   drops the held base and re-addresses it. */
 
 /* 20-byte block view for the counter handoff, which the original does as one
    struct assignment (lw/lw + sw/sw pairs), not five scalar copies. */
@@ -295,7 +292,7 @@ void Gamestate0C_Update(void) {
       g_anGamestate0cTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
-    g_pfnGamestate0cSubstateUpdate();
+    (*(void (*)(void))g_pfnGamestate0cSubstateUpdate)();
   }
 
   AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);

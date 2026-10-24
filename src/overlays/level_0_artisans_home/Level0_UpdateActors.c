@@ -28,18 +28,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-/* Level actor pool, switch flags, and the sound tables and override
- * globals used when a behaviour plays a sound. */
-extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
-
-
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -57,13 +48,7 @@ extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bi
 
 #define CAM g_anWorldToCameraRotMtx
 
-
-
-
-
 /* Glow node owned by Sparx; follows its anchor position. */
-
-
 
 /* ==== Helper macros ====
  *

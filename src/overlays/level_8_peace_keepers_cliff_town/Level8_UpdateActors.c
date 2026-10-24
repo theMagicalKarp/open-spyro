@@ -38,12 +38,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -60,8 +57,6 @@
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
-
-
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -160,9 +155,7 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -188,7 +181,6 @@ typedef struct ExitState {
 /* ==== Level 16 classes ==== */
 
 /* Case 328 -- floor-snapped marker. */
-
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -224,7 +216,6 @@ typedef struct ExitState {
   continue
 
 /* ==== Level 9 classes ==== */
-
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
@@ -264,8 +255,6 @@ typedef struct ExitState {
 
 /* Type 218: catapult. Charging it winds it up; when it swings it flings the
  * linked actor along an arc. */
-
-extern int g_dwActiveCameraOptions;
 
 /* ==== The function ==== */
 void Level8_UpdateActors(void) {

@@ -1244,6 +1244,7 @@ extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c */
 extern int g_nLevelUnreadScratchA; /* 0x80075670 */
 extern int g_nLevelUnreadScratchB; /* 0x80075674 */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
+extern void *g_pfnGamestate0cSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern unsigned char *g_pThiefEggDrop; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
@@ -1275,9 +1276,12 @@ extern int g_anSpuPendingKeyOnBlock[]; /* 0x80076238: shared-base view of g_dwSp
 extern unsigned int g_anSpuPendingKeyOffBlock[]; /* 0x8007623c */
 extern int g_anSoundMonoMixFlagBlock[]; /* 0x80076240 */
 extern void *g_apActorMeshTableBlock[]; /* 0x80076378 */
+extern char *g_apActorMeshTable_1[]; /* 0x8007637c: &g_apActorMeshTable[1] (AdvanceGemCutsceneFrame walks types 1..) */
 extern int g_nWorldUnpackLimit; /* 0x80076760: end of the unpack work area */
 extern volatile int g_anCdBaseLbaBlock[]; /* 0x80076b90: held-base view of g_nCdBaseLba */
 extern unsigned char g_abCdlLocScratchBlock[36]; /* 0x80076b98 */
+extern short g_anCameraEulerRollBlock[]; /* 0x80076e1c: camera euler trio as an array ([0] roll, [1] pitch, [2] yaw) */
+extern short g_anCameraEulerPitchBlock[]; /* 0x80076e1e: held-base view of g_nCameraEulerPitch */
 extern short g_anCameraEulerYawBlock[]; /* 0x80076e20: g_nCameraEulerYaw, held-base view */
 extern int g_anCameraSpringPitchBlock[]; /* 0x80076e4c */
 extern int g_anCameraPitchBlock[]; /* 0x80076e64: g_nCameraPitch */

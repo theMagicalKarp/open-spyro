@@ -39,12 +39,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -56,12 +53,9 @@
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
-
-
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -160,9 +154,7 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -188,7 +180,6 @@ typedef struct ExitState {
 /* ==== Level 16 classes ==== */
 
 /* Case 328 -- floor-snapped marker. */
-
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -225,9 +216,7 @@ typedef struct ExitState {
 
 /* ==== Level 9 classes ==== */
 
-
 /* ==== level_10 per-class state blocks ==== */
-extern int g_bLevelPhasedBossKilled;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 /* ==== The function ==== */

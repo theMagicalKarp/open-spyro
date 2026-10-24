@@ -1,8 +1,5 @@
 #include "globals.h"
 
-/* Per-level hook slots documented (not declared) in globals.h. */
-extern void *g_pfnGamestate0cSubstateUpdate;
-
 #include "level_entry_points.h"
 #include "main_shared.h"
 

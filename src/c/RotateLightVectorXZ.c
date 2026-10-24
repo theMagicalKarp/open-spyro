@@ -1,8 +1,9 @@
 #include "globals.h"
 
-/* Sized-array alias of g_nLightSweepAngle: a bare 4-byte extern int is sdata
-   cost 1, so both halves of the accumulator RMW fold to $at absolutes; the
-   sized view holds one base register for the pair (A22 / B-i rule 2). */
+/* g_anLightSweepAngleBlock (globals.h) is an array alias of
+   g_nLightSweepAngle: through the bare 4-byte extern int (sdata cost 1) both
+   halves of the accumulator RMW fold to $at absolutes; the array view holds
+   one base register for the pair (A22 / B-i rule 2). */
 extern volatile int g_nLightSweepAngle;
 
 /* 0x80058cc0: spins the primary light direction vector around the world Y
