@@ -211,7 +211,7 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     StubActorHook(a);                                                          \
   }
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \
@@ -2657,7 +2657,7 @@ void Level8_UpdateActors(void) {
           break;
         }
         if (st->angle != 0) {
-          FlightState *fs;
+          EnemyState *fs;
           int n;
           int step;
           int z;
@@ -2677,10 +2677,10 @@ void Level8_UpdateActors(void) {
           SubtractVector(y256, y256, &t->posX);
           DivideVector3(y256, y256, n);
           y256[2] = 0xB4;
-          CopyVector(fs->pos, y256);
-          fs->unk0E = 0;
-          fs->unk0F = 0;
-          fs->mode = 3;
+          CopyVector(fs->vel, y256);
+          fs->mode = 0;
+          fs->timer = 0;
+          fs->bounce = 3;
           t->subMode = 2;
           t->cullRadius = 0x18;
           t->updateDist = 0x40;

@@ -1144,14 +1144,6 @@ typedef struct CatapultState {
   int timer;     /* 0x10 */
 } CatapultState;
 
-typedef struct FlightState {
-  int pos[3];          /* 0x00 landing point */
-  unsigned char pad0C[2];
-  unsigned char unk0E; /* 0x0E */
-  unsigned char unk0F; /* 0x0F */
-  unsigned char mode;  /* 0x10 */
-} FlightState;
-
 typedef struct L31Critter {
   char pad00[0x20];
   int speed; /* 0x20 knock-back speed */

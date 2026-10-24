@@ -141,11 +141,11 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
       short pad[3];              /* 0x12 */
       unsigned char owner;       /* 0x18 actor index into the pool */
-      unsigned char unk19;       /* 0x19 */
-      unsigned char unk1A;       /* 0x1A */
+      unsigned char node;        /* 0x19 patrol node index (ghost 0x1D) */
+      unsigned char waypoint;    /* 0x1A waypoint index (ghost 0x1D) */
       unsigned char pad1B;       /* 0x1B */
       short pad1C;               /* 0x1C */
-      short unk1E;               /* 0x1E */
+      short flags;               /* 0x1E sub-state bits: 8 trail, 1 orbit, 0 patrol */
     } tether;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
@@ -561,9 +561,9 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       u3 = rec->u.tether.pos[2] - 0x3F;
       rec->u.tether.pos[2] = u3 + t3;
       rec->u.tether.owner = (Actor *)effectArg - g_pActorListBase;
-      rec->u.tether.unk19 = owner[15];
-      rec->u.tether.unk1A = 0;
-      rec->u.tether.unk1E = 0;
+      rec->u.tether.node = owner[15];
+      rec->u.tether.waypoint = 0;
+      rec->u.tether.flags = 0;
       rec->u.tether.life = (GetRandomU32() & 0xF) + 0x30;
       rec->u.tether.seed = (GetRandomU32() & 7) + 0x1E;
       rec->u.tether.fx = 0x2E;
@@ -948,7 +948,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
