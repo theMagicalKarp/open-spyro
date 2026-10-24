@@ -2142,4 +2142,32 @@ void BurstActorWithSound(Actor *actor, int a);
  * at them; `arg` lands in GTE RBK and seeds the spark colour. */
 void BurstActorIntoSparks(void *actor, int arg);
 
+/* 0x80016fd0: Transpose the packed 3x3 short matrix at src into dst (three
+ * halfword-field swaps; the 5th word passes through). */
+void TransposePackedMatrix(unsigned int *dst, unsigned int *src);
+
+/* 0x80016490: CD read-completion callback (CdReadCallback): on CdlComplete
+ * clears the in-flight + watchdog state, otherwise re-seeks and re-issues the
+ * read. */
+void CdReadCompleteCallback(unsigned char intr);
+
+/* 0x8002ba68: Blank the display and reset CD, callbacks, pads and GPU before
+ * handing the machine to another executable (LaunchCrashDemo). */
+void QuiesceHardwareForExec(void);
+
+/* 0x8005debc (SDK): call slot 0x10 of the libapi system vtable
+ * (g_pLibapiSysVtable); QuiesceHardwareForExec's final reset step. */
+void CallLibapiSysSlot10(void);
+
+/* 0x8006635c (SDK): memory-card info op handler; PollMemCardSyncRing passes
+ * the sync-ring index << 4. */
+void RunMemCardInfoOp(int op);
+
+/* Overlay entry points GamestateUpdate / GamestateDraw dispatch to (linked
+ * against the titlescreen and credits overlays). */
+void Titlescreen_Update(void);
+void Titlescreen_Draw(void);
+void Credits_Update(void);
+void Credits_Draw(void);
+
 #endif /* OPEN_SPYRO_FUNCS_H */

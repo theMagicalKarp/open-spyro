@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern void CdReadCompleteCallback(void);
-
 extern signed char g_bCdMixLeftToRight;
 extern signed char g_bCdMixRightToRight;
 extern signed char g_bCdMixRightToLeft;

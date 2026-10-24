@@ -17,8 +17,6 @@
    then the fullscreen tint while the generic countdown runs and the cinematic
    letterbox while gameplay is blocked. Ends with the standard 2-vblank frame
    submit. */
-extern void Titlescreen_Draw(void); /* titlescreen overlay draw */
-extern void Credits_Draw(void);     /* credits overlay draw */
 
 void GamestateDraw(void) {
   char *env;

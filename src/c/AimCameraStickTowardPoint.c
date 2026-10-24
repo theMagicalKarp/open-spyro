@@ -1,8 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
 
-extern void TransposePackedMatrix(int *out, int *mtx);
-
 /* 0x8003c85c (0x138) — derive scripted-camera stick requests that steer the
    view toward `target`: project a probe point ahead of Spyro through his body
    matrix, take the offset to the target back into body space, then convert
