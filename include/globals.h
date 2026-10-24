@@ -591,7 +591,7 @@ extern void *g_pActorSpatialGridBase;        /* 0x80075778 */
 extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDeathRespawnPending;           /* 0x80075784 */
 extern short g_nSpyroIdleAnimTimeout;        /* 0x80075788 */
-extern void *g_pActorDeferredTriStackTop;    /* 0x80075798 */
+extern int *g_pActorDeferredTriStackTop;     /* 0x80075798 */
 extern int g_nGamePaused;                    /* 0x8007579c */
 extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
@@ -896,7 +896,7 @@ extern void *g_pWorkAreaTop;                            /* 0x800785fc */
 extern int g_nLevelArchiveBaseLba;                      /* 0x80078600 */
 extern int g_nLevelArchiveByteSize;                     /* 0x80078604 */
 extern int g_anWorldPersistentFlags[6];                 /* 0x80078618 */
-extern void *g_apScriptedMobEntries;                    /* 0x80078640 */
+extern struct ScriptedMob *g_apScriptedMobEntries[];     /* 0x80078640 (scripted_mob.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
 extern byte g_abWorldPerLevelByteTable[30];             /* 0x80078680 */
 extern byte g_abPadRawReport[34];                       /* 0x800786a0 */

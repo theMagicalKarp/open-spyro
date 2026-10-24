@@ -11,7 +11,7 @@ typedef struct {
   unsigned int v;
 } TriggerFlags;
 
-#define ENT (((int **)&g_apScriptedMobEntries)[mob])
+#define ENT (((int **)g_apScriptedMobEntries)[mob])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
 /* Moby record reached through g_pActorListBase (0x58 bytes). */
