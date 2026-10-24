@@ -1260,7 +1260,7 @@ int CdControlForce(unsigned char com, char *param);
 
 /* 0x80063eac: libcd CdControlB: same 3-retry CdlSetloc + command pattern as CdControl, but on success also CdSync(0, result) waits for completion (status 2 = CdlComplete). Returns true only if both the command issue and the post-command sync succeed. The blocking variant used when the caller wants the command finished before returning. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-bool CdControlBlocking(byte param_1, undefined1 *param_2, undefined1 *param_3);
+int CdControlBlocking(int com, char *param, char *result);
 
 /* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO mixer registers via index-2/index-3 register switching. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1284,7 +1284,7 @@ undefined FUN_80064074(int param_1);
 
 /* 0x80064094: libcd CdIntToPos: converts a signed sector LBA to a 3-byte BCD CdlLOC (minute, second, frame). +0x96 = 150-sector lead-in offset; /0x4b = /75 frames per second; /0x3c = /60 seconds per minute. Each MSF component is BCD-encoded via the `(x + (x/10)*6)` trick so the result can be written directly to the libcd command FIFO. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined CdIntToPos(int param_1, char *param_2);
+char *CdIntToPos(int lba, char *loc);
 
 /* 0x80064198: libcd CdPosToInt: 3-byte BCD CdlLOC (M:S:F) -> signed LBA. Inverse of CdIntToPos. Decodes each BCD byte as (hi*10 + lo), recombines minutes*60*75 + seconds*75 + frames - 150 (lead-in offset). */
 int CdPosToInt(unsigned char *pos);
