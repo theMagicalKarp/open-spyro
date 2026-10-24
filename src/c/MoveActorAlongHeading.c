@@ -1,9 +1,8 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-#define ACT ((Actor *)actor)
 
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
    Sibling of MoveActorAlongAngle, but the direction comes from the actor's dir
@@ -17,16 +16,11 @@
    probe-normal slope reject within 0x17 of vertical (bit 6). Returns 1
    on actor contact, 2 on world/step/slope rejection, 0 when the move
    was committed. */
-extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
-                                        int *actor, int c);
-extern int FindGroundHeightBelow(int *pt, int z);
-extern void EncodeCachedVecToActorDirCode(int *actor);
-extern void RefreshActorDerivedState(int *actor, int mode);
 
 extern short g_anSineLut[];
 extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
-int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
+int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
                           int flags) {
   int newpos[3];
   int ground;
@@ -42,9 +36,9 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
   } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
-  newpos[0] = actor[3] + ((g_anCosineLut[ACT->rotZ] * speed) >> 12);
-  newpos[1] = actor[4] + ((g_anSineLut[ACT->rotZ] * speed) >> 12);
-  newpos[2] = actor[5];
+  newpos[0] = actor->posX + ((g_anCosineLut[actor->rotZ] * speed) >> 12);
+  newpos[1] = actor->posY + ((g_anSineLut[actor->rotZ] * speed) >> 12);
+  newpos[2] = actor->posZ;
   if (group != 0) {
     if (!(flags & 2)) {
       if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
@@ -75,13 +69,13 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
   if (flags & 0x10) {
-    floorz = ground + ACT->floorOffset;
-    step = floorz - actor[5];
+    floorz = ground + actor->floorOffset;
+    step = floorz - actor->posZ;
     if (step > 0) {
       if (step >= 0x191) {
         goto blocked;
       }
-    } else if (actor[5] - floorz >= 0x191) {
+    } else if (actor->posZ - floorz >= 0x191) {
       goto blocked;
     }
   }
@@ -96,19 +90,19 @@ int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
       return 2;
     }
   }
-  actor[3] = newpos[0];
-  actor[4] = newpos[1];
+  actor->posX = newpos[0];
+  actor->posY = newpos[1];
   if (flags & 4) {
-    snapz = ground + ACT->floorOffset;
-    d = snapz - actor[5];
+    snapz = ground + actor->floorOffset;
+    d = snapz - actor->posZ;
     if (abs(d) >= 0x259) {
       if (d > 0) {
-        actor[5] = actor[5] + 0xFA;
+        actor->posZ = actor->posZ + 0xFA;
       } else {
-        actor[5] = actor[5] - 0xFA;
+        actor->posZ = actor->posZ - 0xFA;
       }
     } else {
-      actor[5] = snapz;
+      actor->posZ = snapz;
     }
   }
   if (flags & 0x54) {
