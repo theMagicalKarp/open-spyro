@@ -57,7 +57,7 @@ void RelocateMobActorTable(void *table);
 int RelocateActorMeshHeader(int *table);
 
 /* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pPathTableBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). param_1 = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nLevelStormFlag for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(&gt;&gt;4) : read path-table head; gamestate 5 (game over, levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIntroIndex; g_nScriptedRespawnFlag keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(0x20)=fly, zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamMode2Front ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) death restore: g_anDeathReplaySpawnTable[g_nDeathTryIndex*4], g_nDeathRespawnPending=1, g_pDeathReplayCursor (replay mode zero-fills 0x80600000). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anRunningKillBitmap (despawn/hide). (14) snapshot running -&gt; committed bitmap. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pLevelOverlayInitRecord = (*g_pfnLevelSpawnActor)(0x78,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
-int BuildLoadedLevelRuntime(int fullSetup);
+void BuildLoadedLevelRuntime(int fullSetup);
 
 /* 0x800144c8: Synchronous level load + start. Used by LevelIntro_Update once the "ENTERING WORLD" intro fade reaches its load point. Steps: (1) StopAllSoundExceptMask(0) — stop all SFX and music; (2) compute level archive offset = DAT_80078600 + (*(int*)&DAT_8007a720[level_intro_idx*0x10]) where level_intro_idx = DAT_80075964 — DAT_8007a720 is a per-level descriptor table (0x10-byte entries, first int = level's byte offset within the archive); (3) CdReadSyncSectors(LBA=DAT_80076b90, dst=DAT_800785e4, count=DAT_80078604, offset=level_off, marker=600) blocks the whole load; (4) FUN_8001364c(1, dst, count, level_off) = the level-loader-meat (unpacks the world data into RAM); (5) RestartSpyroAnimWithState(audio_initialized ? 0x20 : 0, dst, count, level_off); (6) g_nLevelReadyFlag = 3 — signals LevelIntro_Update that the load completed. */
 void LoadAndStartLevelFromCd(void);
@@ -204,7 +204,7 @@ void AddBiasToColorRuns(void *dst, void *src, int bias);
 /* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at DAT_80075710 (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from param_2 and advances *param_2 by param_3 between glyphs. Sibling of BuildTextSprites. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
 
-void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3, int param_4, int param_5);
+void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 
 /* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each endpoint's RGB is tinted by the angular distance between its screen-relative angle (vs (256,120)) and a reference angle in DAT_800770f4 — radial-light effect for menu borders. Called by Gamestate02_03_06_Draw and DrawShadedMenuBox. */
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
@@ -429,7 +429,7 @@ void GamestateUpdate(void);
 void BuildCameraViewMatrix(void);
 
 /* 0x80033e40: Line-of-sight segment test. Marches from param_1 toward param_2 in 0x400-length steps (segment length / 0x400 iterations) and calls FUN_8004ae38 (world collision query) at each step. Returns 1 if every step is clear, 0 on the first hit. Shared by UpdateGameplayCamera for camera occlusion tests; M07 will likely reuse for projectile and entity LOS. */
-unsigned int CheckLineOfSightSegment(int *param_1, int *param_2, unsigned int param_3, int *param_4);
+int CheckLineOfSightSegment(int *from, int *to);
 
 int ComputeCameraToTargetAngle(int *target);
 
@@ -740,7 +740,7 @@ void UpdateHudCounters(void);
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls FUN_8005ba60 (sound channel reset), seeds master volume + CD-DA mix words at DAT_80075f08..DAT_80076240, then FUN_8005cc58 / FUN_8005c7ac / FUN_8005c7d4 / FUN_8005cb7c (sound-bank registration), FillWord(DAT_80075f30, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);
 
-void PlaySoundEffect(int a, Actor *actor, int b, void *c);
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops one SPU voice by index. param_1 = voice index (low 7 bits, 0..23). Sets bit param_1 of _DAT_8007623c (pending hardware-keyoff mask), then if param_2 is 2 or 4: resets the table row at &DAT_80075f30 + (idx*0x1c) — writes 0x7f to the busy-marker via the writeback pointer at +0x18, zeros owner-key +0x00 + writeback ptr +0x18 + interp delta +0x14, sets flags ushort +0x0e=0x40 (idle), sets byte +0x0d=0xff (alignment). The 24-entry × 0x1c table at &DAT_80075f30 holds per-voice runtime state. Sole caller: GemPickup_Update. */
 void StopSoundVoiceByIndex(int index, int mode);
@@ -884,7 +884,7 @@ undefined InstallSpuDmaCallback(void);
 
 /* 0x8005c7ac: Apply SPU voice attr struct to all selected voices and flush. Thin wrapper for FUN_8005cfec(attr, 0, 0x17, 0): iterates voice indices 0..23, writes attr fields (volume/pitch/ADSR/sample-addr/mode) into the voice register shadow at PTR_VOICE_00_LEFT_RIGHT_80073554 for each voice whose bit is set in attr[0] (voice select mask), then issues hardware flush via FUN_8005c720. Equivalent to PSY-Q SpuSetVoiceAttr. Callers: InitSoundEngine, PlaySoundEffect, TickActiveSoundVoices. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ApplySpuVoiceAttr(uint *param_1);
+void ApplySpuVoiceAttr(unsigned int *attr);
 
 /* 0x8005c7d4: PSY-Q SpuSetKey-equivalent voice key-on / key-off applier. param_1 = 0 (keyoff) or 1 (keyon); param_2 = 24-bit voice mask (low 16 + high 8). Dispatches by SPU-state callback-mode flag at +0x10 bit 0: SYNC path writes SPU registers +0x188/+0x18a (KON lo/hi) or +0x18c/+0x18e (KOFF lo/hi) directly and updates the live key-mask DAT_800730ec; DEFERRED path (called from event-callback context) queues into shadow registers _DAT_800777a8/aa (KON) or _DAT_800777ac/ae (KOFF), accumulates into DAT_80073114, and sets pending-flush bit DAT_80073118 |= 1. Sole caller: TickSpuPerFrame (drains _DAT_80076238 pending-keyon + _DAT_8007623c pending-keyoff masks). */
 void SetSpuKeyMask(int on, unsigned int voices);

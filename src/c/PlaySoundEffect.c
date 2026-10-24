@@ -1,14 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "sample_bank.h"
 #include "spu.h"
 #include "vecmath.h"
-
-extern int GetSoundVoiceStatusByOwner(unsigned char *owner,
-                                      unsigned int sampleId);
-extern void ComputeVoicePanAndFalloff(short *vol, int dist,
-                                      unsigned char bearing, unsigned int range,
-                                      short *cached);
-extern void ApplySpuVoiceAttr(unsigned int *attr);
 
 /* SPUVOICEROW with the fields this function re-reads made volatile. */
 typedef struct {
@@ -43,9 +37,9 @@ extern volatile unsigned short
    `owner`. `mode` is the row's flag group: 4 = flat volume, 8 = 3D positional,
    0x10 = caller-supplied pan. Modes 4 and 8 refuse to double-trigger a sample
    the owner is already playing, and mode 8 additionally drops the sound when
-   the camera is outside the owner's audible range (owner+0x55 << 10, default
-   0x4000) — reporting 0x7F ("finished") through `pPlaying` so the caller stops
-   waiting on it.
+   the camera is outside the owner's audible range (owner->soundRange << 10,
+   default 0x4000) — reporting 0x7F ("finished") through `pPlaying` so the
+   caller stops waiting on it.
 
    The chosen row is stamped with owner/sample/flags and a pitch that may be
    randomized around the bank entry's nominal value (nPitchMode 0 = centred
@@ -58,7 +52,7 @@ extern volatile unsigned short
    `pPlaying` receives the row index (or 0x7F when the sound was dropped); rows
    whose bank entry has a loop address are marked 0x100 so the mixer knows they
    will not end on their own. (0x80055A78, 1928 bytes.) */
-unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
                              unsigned int mode, unsigned char *pPlaying) {
   SPUVOICEATTR attr;
   int delta[3];
@@ -81,10 +75,10 @@ unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
     if (GetSoundVoiceStatusByOwner(owner, sampleId) == 2) {
       return 0;
     }
-    SubtractVector(delta, (int *)(owner + 0xC), (int *)(cam - 0x14));
+    SubtractVector(delta, &owner->posX, (int *)(cam - 0x14));
     RShiftVector3(delta, 4);
     dist = VectorLength(delta, 1) * 16;
-    range = owner[0x55] << 10;
+    range = owner->soundRange << 10;
     if (range == 0) {
       range = 0x4000;
     }
@@ -113,7 +107,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, unsigned char *owner,
   if (voice >= 0) {
     if (voice != 0x18) {
       g_aSpuVoiceRows[voice].nFlags = mode | 1;
-      g_aSpuVoiceRows[voice].pOwner = owner;
+      g_aSpuVoiceRows[voice].pOwner = (unsigned char *)owner;
       g_aSpuVoiceRows[voice].nSampleId = sampleId;
       {
         int *ovr = g_nSfxOverrideFlags;

@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -24,16 +25,6 @@
    address so cse keeps it as a held base; the empty volatile asm keeps the
    g_pGamestate0cRecord load ahead of it.
 */
-extern int sprintf();
-extern int strlen(const char *s);
-extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
-                              int flags);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern int ComputeDepthCuedColor(unsigned int fog, unsigned int color, int t);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
-
 extern int g_nGamestate0cTimer[]; /* transition fade counter */
 
 void Gamestate0C_Draw(void) {

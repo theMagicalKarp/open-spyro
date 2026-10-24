@@ -22,7 +22,7 @@ int GetSoundVoiceStatusByOwner(Actor *actor, int a);
 void HideActorRenderRecord(Actor *actor);
 void InitActorRenderDefaults(Actor *actor);
 void InsertActorIntoSpatialGrid(Actor *actor);
-void PlaySoundEffect(int a, Actor *actor, int b, void *c);
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 void StopSoundVoicesByOwner(Actor *actor, int mode);
 void TickGemCutsceneActorAnims(struct Actor **list, int mode);
 void TickGemPickupBurstEntity(Actor *actor);
