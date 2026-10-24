@@ -28,8 +28,6 @@
    The queue is flushed here rather than by the caller: clear the head slot,
    EnqueuePendingSpritePrims, then rasterize. */
 
-extern unsigned short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 */
-
 typedef struct {
   short x;              /* 0x00 */
   short y;              /* 0x02 */
@@ -106,7 +104,7 @@ void DrawLevelTransitionOverlay(void) {
     BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
     glyph -= 0x58;
     if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
-      unsigned short *lut = g_anCosineLut;
+      unsigned short *lut = (unsigned short *)g_anCosineLut;
       int wave = 0;
       do {
         glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
@@ -164,7 +162,10 @@ void DrawLevelTransitionOverlay(void) {
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         do {
           glyph[0x46] =
-              g_anCosineLut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+              ((unsigned short *)
+                   g_anCosineLut)[(g_nLevelTransitionPhase * 2 + wave) &
+                                  0xff] >>
+              7;
           glyph -= 0x58;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
@@ -222,7 +223,7 @@ void DrawLevelTransitionOverlay(void) {
       BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, 2);
       glyph -= 0x58;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
-        unsigned short *lut = g_anCosineLut;
+        unsigned short *lut = (unsigned short *)g_anCosineLut;
         int wave = 0;
         do {
           glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;

@@ -23,8 +23,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern short g_anCosineLut[];
-
 /* Steers `actor` around a target point instead of straight at it: aims at the
    point `radius` away from `tgt` on the side the actor is already turning
    toward, and drives the walk with that heading. Returns the residual angle

@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern short g_anCosineLut[];
 typedef struct {
   short x, y, w, h;
 } MenuBox;

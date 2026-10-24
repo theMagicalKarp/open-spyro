@@ -26,8 +26,6 @@ extern void ResetWorldChunkAnimations(void);
 extern void InitHudCounters(int full);
 extern int HandleMusicCommand(int track, int arg);
 
-extern short g_anCosineLut[];
-
 struct CameraParamBlock {
   int w[6];
 };

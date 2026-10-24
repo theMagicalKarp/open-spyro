@@ -13,7 +13,6 @@
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a
    4-byte `extern int` cannot do (sdata cost 1 wins the tie, §B-i rule 2). */
-extern unsigned short g_anCosineLut[];
 
 void StoryIntro_Draw(void) {
   int pos[4];
@@ -66,7 +65,7 @@ void StoryIntro_Draw(void) {
     if (rec >= (int)g_pSpriteRecordWriteCursor) {
       i = 0;
       tp = g_anStoryIntroTimerBlock;
-      cosp = g_anCosineLut;
+      cosp = (unsigned short *)g_anCosineLut;
       alpha = rec + 0x46;
       phase = 0;
       do {

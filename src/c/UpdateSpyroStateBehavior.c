@@ -4,8 +4,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern unsigned short g_anCosineLut[];
-
 SDATA(g_bSpyroJumpHoldForced, 4);
 
 #define SPY g_anSpyroWorldPosBlock
@@ -72,7 +70,7 @@ static inline int OpaqueInt(int p) {
     a = g_abSpyroPersistentEuler[2];                                           \
     v[2] = 0;                                                                  \
     for (i = 0; i < 4; i++) {                                                  \
-      v[0] = (short)g_anCosineLut[a] >> 7;                                     \
+      v[0] = (short)(unsigned short)g_anCosineLut[a] >> 7;                     \
       v[1] = (short)((unsigned short *)g_anSineLut)[a] >> 7;                   \
       PARTICLE_SPAWN(1, 0x21, v, 0);                                           \
       a = (a + 0x40) & 0xFF;                                                   \

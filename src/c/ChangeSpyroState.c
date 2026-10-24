@@ -4,7 +4,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern unsigned short g_anCosineLut[];
 extern void *g_pSpyroHomingTargetActor;
 
 /* State 17 (scripted lift toward g_anSpyroRequestTargetPos): the start Z, the
@@ -281,7 +280,7 @@ void ChangeSpyroState(int state) {
     ang = GetRandomU32() & 0x3F;
     for (i = 0; i < 4; i++) {
       v[0] = 0;
-      v[1] = (short)g_anCosineLut[ang] >> 7;
+      v[1] = (short)(unsigned short)g_anCosineLut[ang] >> 7;
       v[2] = (short)g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
       PARTICLE_SPAWN(1, 0x21, v, 1);

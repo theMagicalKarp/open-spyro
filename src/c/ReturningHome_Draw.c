@@ -3,8 +3,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 */
-
 /* Draw gamestate 0xF's post-credits "RETURNING HOME..." card with the animated
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),
    then the standard sprite-queue rasterize + frame-flush tail (0x8001eb80). */
@@ -35,7 +33,9 @@ void ReturningHome_Draw(void) {
   if ((int)g_pSpriteRecordWriteCursor <= glyph) {
     do {
       ((Actor *)glyph)->rotZ =
-          g_anCosineLut[(g_nReturningHomePhase * 2 + phase) & 0xff] >> 7;
+          ((unsigned short *)
+               g_anCosineLut)[(g_nReturningHomePhase * 2 + phase) & 0xff] >>
+          7;
       glyph -= sizeof(Actor);
       phase += 0xc;
     } while ((int)g_pSpriteRecordWriteCursor <= glyph);

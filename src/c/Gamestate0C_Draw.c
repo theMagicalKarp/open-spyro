@@ -35,7 +35,6 @@ extern int VSync(int mode);
 extern DISPENV *PutDispEnv(DISPENV *env);
 
 extern int g_nGamestate0cTimer[]; /* transition fade counter */
-extern unsigned short g_anCosineLut[];
 
 void Gamestate0C_Draw(void) {
   int pos[3];
@@ -90,7 +89,7 @@ void Gamestate0C_Draw(void) {
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
         int *fade = g_nGamestate0cTimer;
-        unsigned short *cos = g_anCosineLut;
+        unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
           rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
           rec -= 0x58;

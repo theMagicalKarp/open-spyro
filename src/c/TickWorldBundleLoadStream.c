@@ -25,9 +25,6 @@
    World id indexes the per-world archive table (8-byte stride) and the
    per-world header-size table (4-byte stride). */
 
-extern void *volatile g_apPathTableBufferBlock[]; /* g_pPathTableBuffer, stored
-                                          then reloaded through the same base */
-
 struct SECTION4HDR {
   int a;
   int b;

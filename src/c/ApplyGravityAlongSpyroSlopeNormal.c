@@ -1,9 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
 
-extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
-                                          velocity */
-
 /* Rebuild Spyro's gravity vector: copy the slope normal, scale it to the
    (unsigned) per-tick gravity step, then negate it into place (0x8003e1ac). */
 void ApplyGravityAlongSpyroSlopeNormal(void) {
