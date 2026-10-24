@@ -25,7 +25,6 @@
    address so cse keeps it as a held base; the empty volatile asm keeps the
    g_pGamestate0cRecord load ahead of it.
 */
-extern int g_nGamestate0cTimer[]; /* transition fade counter */
 
 void Gamestate0C_Draw(void) {
   int pos[3];
@@ -79,7 +78,7 @@ void Gamestate0C_Draw(void) {
       rec -= 0x58;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-        int *fade = g_nGamestate0cTimer;
+        int *fade = g_anGamestate0cTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
           rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
@@ -99,9 +98,9 @@ void Gamestate0C_Draw(void) {
       if (g_nGamestate0cSubstate < 6) {
         g_dwActorMeshFadeColor = 0x401010;
         if (g_nGamestate0cSubstate == 4) {
-          g_nFadeProgress = g_nGamestate0cTimer[0] * 0x10;
+          g_nFadeProgress = g_anGamestate0cTimerBlock[0] * 0x10;
         } else {
-          g_nFadeProgress = (0x100 - g_nGamestate0cTimer[0]) * 0x10;
+          g_nFadeProgress = (0x100 - g_anGamestate0cTimerBlock[0]) * 0x10;
         }
         if (g_nFadeProgress < 0) {
           *(volatile int *)&g_nFadeProgress = 0;

@@ -1314,6 +1314,7 @@ extern unsigned char g_bCdMixRightToLeft; /* 0x800776d3: CdMix attenuation R->L 
 extern int g_anWorldMeshIndexCountBlock[]; /* 0x80077788: held-base view of g_nWorldMeshIndexCount */
 extern unsigned char g_abCollisionHeaderBytes[]; /* 0x80077790: 3 header bytes copied from the collision-tri section */
 extern int g_anGamestate0cTimerBlock[]; /* 0x800777ec */
+extern int g_nGamestate0cTimer; /* 0x800777ec: gamestate 0xC transition timer (array view g_anGamestate0cTimerBlock) */
 extern int g_nGamestate0cCardVariant; /* 0x800777fc: transition card variant */
 extern int g_nGamestate0cCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
 extern int g_nGamestate0cCamRadiusStart; /* 0x80077824: camera radius start (block +0x38) */
@@ -1330,6 +1331,7 @@ extern int g_anLevelSpawnPosZBlock[]; /* 0x800778e0 */
 extern int g_anLevelSpawnYawBlock[]; /* 0x800778e4: +0 spawn yaw (see alias) */
 extern int g_nLevelProgress; /* 0x800778e8: live level progress word */
 extern int g_nLevelProgressCheckpoint; /* 0x800778ec: g_nLevelProgress at the last checkpoint */
+extern int g_CutsceneSoundDef[]; /* 0x800778f0: shared cutscene sample-bank record (death / gem cutscenes) */
 extern byte g_abHudGemCounterBlock[]; /* 0x80077fa8: +0: icon records at +0x44 */
 extern byte g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
 extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
@@ -1370,13 +1372,16 @@ extern int g_anSpyroHornStrikeAnchorMtxBlock[]; /* 0x8007876c */
 extern unsigned char g_abSpyroAnimPrevBlock[]; /* 0x80078a70: Spyro-record view (+0 anim-prev byte, -0x18 world pos) */
 extern unsigned char g_bSpyroAnimLayer1Prev; /* 0x80078a72 */
 extern unsigned char g_bSpyroAnimLayer1Current; /* 0x80078a73 */
+extern unsigned char g_bSpyroAnimFrame_blk[]; /* 0x80078a77: held-base view of g_bSpyroAnimFrame */
 extern unsigned char g_bSpyroAnimLayer1FramePrev; /* 0x80078a78 */
 extern unsigned char g_bSpyroAnimLayer1Frame; /* 0x80078a79 */
+extern unsigned int g_adwSpyroTriggerEventBlock[]; /* 0x80078a84: held-base view of g_dwSpyroTriggerEventFlags */
 extern int g_anSpyroHornStrikeSwingPhaseBlock[]; /* 0x80078ab8 */
 extern int g_nSpyroHornStrikeLayer1State; /* 0x80078ac0 */
 extern int g_nSpyroAnimLayer2Phase; /* 0x80078ac4: 0 = tracking the primary anim */
 extern int g_nSpyroAnimLayer2Rate; /* 0x80078ac8: frame advance per tick */
 extern int g_nSpyroAnimLayer2Active; /* 0x80078acc: layer-2 anim now playing */
+extern int g_nSpyroStateTimer_blk[]; /* 0x80078ad8: held-base view of g_nSpyroStateTimer (clamp/increment sites) */
 extern int g_anSpyroAirborneFramesBlock[]; /* 0x80078af4: held-base view of g_nSpyroAirborneFrames */
 extern int g_anSpyroGroundNormalPost[]; /* 0x80078afc */
 extern int g_nSpyroGroundNormalX; /* 0x80078afc — g_anSpyroGroundNormal[0] */
@@ -1388,6 +1393,7 @@ extern int g_nSpyroSlopeGravityStep; /* 0x80078b30: last slope-gravity step leng
 extern int g_nSpyroCarryMotionY; /* 0x80078b44 */
 extern int g_nSpyroVelocityY; /* 0x80078b50: g_anSpyroVelocity[1] */
 extern int g_nSpyroMotionZ; /* 0x80078b6c: g_anSpyroMotionVec[2] */
+extern int g_nSpyroGravityStep_blk[]; /* 0x80078ba4: held-base view of g_nSpyroGravityStep (clamp/increment sites) */
 extern int g_anSpyroInputLockoutBlock[]; /* 0x80078bb8: g_nSpyroInputLockoutCountdown */
 extern int g_anSpyroHornStrikeStateBlock[]; /* 0x80078bf0: g_nSpyroHornStrikeState */
 extern int g_anSpyroHornStrikeTimerBlock[]; /* 0x80078bf8: g_nSpyroHornStrikeTimer */

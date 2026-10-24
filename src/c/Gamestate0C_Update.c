@@ -118,7 +118,6 @@
 /* Absolute alias of g_anGamestate0cTimerBlock[0]: the aim ramp reads the timer
    after the camera calls, where the original drops the held base and
    re-addresses it. */
-extern int g_nGamestate0cTimer;
 
 extern void (*g_pfnGamestate0cSubstateUpdate)(
     void); /* handler for every other substate */

@@ -4,7 +4,7 @@
  * only scrolls the double-height framebuffer: DrawSync/VSync, then MoveImage
  * (MoveImage) of the 512x224 strip at y=8 (front env active) or y=0xF8
  * to the opposite half, and a final DrawSync. Otherwise draws a full frame:
- * copies the fade color bytes (g_dwWorldFogColor..52) into both frame DRAWENVs,
+ * copies the fog colour (g_dwWorldFogColor) into both frame DRAWENV backgrounds,
  * builds one 0x58-byte sprite prim per credits line (records at g_pCreditsGlyphPool,
  * 0x1C stride; prim cursor g_pSpriteRecordWriteCursor grows downward; record type 0x115 gets
  * a +0x29 glyph offset and depth 0x1C00), submits the pending sprite queue,
@@ -13,6 +13,7 @@
  */
 
 #include "credits.h"
+#include "fog_color.h"
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "actor.h"
@@ -21,15 +22,6 @@
 #include "level_flight_results.h"
 
 
-extern unsigned char g_dwWorldFogColor;
-extern unsigned char g_bWorldFogColorG;
-extern unsigned char g_bWorldFogColorB;
-extern unsigned char g_bFrameDrawEnv0BgR;
-extern unsigned char g_bFrameDrawEnv0BgG;
-extern unsigned char g_bFrameDrawEnv0BgB;
-extern unsigned char g_bFrameDrawEnv1BgR;
-extern unsigned char g_bFrameDrawEnv1BgG;
-extern unsigned char g_bFrameDrawEnv1BgB;
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
@@ -56,15 +48,15 @@ void Credits_Draw(void) {
     return;
   }
   {
-    int r = g_dwWorldFogColor;
-    int g = g_bWorldFogColorG;
-    int b = g_bWorldFogColorB;
-    g_bFrameDrawEnv0BgR = r;
-    g_bFrameDrawEnv0BgG = g;
-    g_bFrameDrawEnv0BgB = b;
-    g_bFrameDrawEnv1BgR = r;
-    g_bFrameDrawEnv1BgG = g;
-    g_bFrameDrawEnv1BgB = b;
+    int r = g_dwWorldFogColor.r;
+    int g = g_dwWorldFogColor.g;
+    int b = g_dwWorldFogColor.b;
+    g_bFrameDrawEnv0BgR.r = r;
+    g_bFrameDrawEnv0BgR.g = g;
+    g_bFrameDrawEnv0BgR.b = b;
+    g_bFrameDrawEnv1BgR.r = r;
+    g_bFrameDrawEnv1BgR.g = g;
+    g_bFrameDrawEnv1BgR.b = b;
   }
   for (i = 0; i < g_nCreditsGlyphCount; i++) {
     {
