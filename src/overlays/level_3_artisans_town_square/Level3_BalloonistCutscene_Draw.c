@@ -28,7 +28,6 @@
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
 
-extern int g_pGamestate0cRecord;              /* pending OT node */
 
 static const char g_szGoTo[12];
 
@@ -218,7 +217,7 @@ void Level3_BalloonistCutscene_Draw(void) {
       } while (*node != 0);
     }
     node[1] = 0;
-    node[0] = g_pGamestate0cRecord;
+    node[0] = (int)g_pGamestate0cRecord;
     ComposeFrameScene();
   }
   SetupFrameOT();

@@ -168,7 +168,6 @@ typedef struct Actor {
   char pad4A[0xE];      /* 0x4A -- the pool stride is 0x58 */
 } Actor;
 
-extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 extern Actor *g_pActorListBase;
 
