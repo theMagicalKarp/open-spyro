@@ -23,9 +23,6 @@
    - the mesh colour is read through a plain (non-struct) MEM so it is not
      hoisted above the preceding scalar stores. */
 
-/* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
-extern short g_anCameraEulerPitchBlock[];
-
 /* One projected ring point: screen x/y plus the OT depth term. */
 typedef struct ScreenPt {
   int x;

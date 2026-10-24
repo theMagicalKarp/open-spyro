@@ -2,9 +2,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern unsigned int
-    g_adwSpyroTriggerEventBlock[]; /* held-base view of the flags */
-
 /* One-field record view: an aggregate access lets sched hoist the flags
    load above the scalar data-pointer store. */
 typedef struct {

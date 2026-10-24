@@ -54,7 +54,6 @@
 #include "level_advance_emit_list.h"
 
 
-extern void SVectorToVector(int *dst, short *src);
 
 void Level9_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

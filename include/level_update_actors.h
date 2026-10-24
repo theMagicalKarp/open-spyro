@@ -16,6 +16,7 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
 extern int GetGroundTriggerRegionType();
+extern int g_nLevelReadyFlag; /* scalar form; the array users go through g_anLevelReadyFlagBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
 extern volatile unsigned char g_bSpyroPersistentEulerZ;
@@ -35,7 +36,7 @@ typedef struct ChaseState {
   int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
   int tgtX;              /* 0x04 */
   int tgtY;              /* 0x08 */
-  int unk0C;             /* 0x0C */
+  int pad0C;             /* 0x0C */
   unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
   unsigned char heading; /* 0x11 */
   unsigned char headingTimer;     /* 0x12 heading-change timer */
@@ -46,9 +47,9 @@ typedef struct ChaseState {
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
-  int unk04;
-  int unk08;
-  int unk0C;
+  int pad04;
+  int pad08;
+  int pad0C;
   Actor *owner; /* 0x10 actor being fetched, or null */
 } ChaserState;
 
@@ -77,7 +78,7 @@ extern void CommitActorKillGems(int a, void *b);
 /* Types 260..269: floating digits. Same bounce, different layout. */
 typedef struct DebrisState {
   int life;   /* 0x00 */
-  int unk04;  /* 0x04 */
+  int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
 } DebrisState;
 
@@ -106,7 +107,7 @@ extern void ResetSpyroLinearMotion(void);
 
 /* Type 194: wooden chest. Breaks into fragments when damaged. */
 typedef struct BreakState {
-  int unk00; /* 0x00 */
+  int pad00; /* 0x00 */
   int snapToGround; /* 0x04 nonzero: re-snap to the floor every frame */
 } BreakState;
 
@@ -169,7 +170,7 @@ typedef struct PortalDesc {
   unsigned char index;    /* 0x01 */
   unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
-  int unk14;              /* 0x14 */
+  int pad14;              /* 0x14 */
   int posB[3];            /* 0x18 */
 } PortalDesc;
 
@@ -203,6 +204,7 @@ extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
 
 extern int StepAngle8Toward(int a, int b, int c);
+extern int ApproachAngle8(int target, int cur, int step, int lim);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
  * or the floor runs out. */
@@ -381,9 +383,9 @@ extern void ResetSpyroEntity(int a0);
 /* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
  * takes Spyro out of the level when he drops into it. */
 typedef struct DropState {
-  int unk00;
+  int pad00;
   int tick; /* 0x04 sparkle counter */
-  int unk08;
+  int pad08;
   int depth; /* 0x0C drop depth that triggers the exit, 0 = 0x2000 */
 } DropState;
 
@@ -556,13 +558,13 @@ typedef struct L7State197 {
 
 /* Type 10: path patroller. */
 typedef struct PathState {
-  int unk00;
-  int unk04;
-  int unk08;
+  int pad00;
+  int pad04;
+  int pad08;
   PathData *path;      /* 0x0C */
   int loops;   /* 0x10 nonzero: wrap at the path ends instead of turning back */
-  int unk14;
-  int unk18;
+  int pad14;
+  int pad18;
   int heading; /* 0x1C */
   int speed;   /* 0x20 walk speed; ramps +0xA up to stepDivisor, knockback 0xC8/0x190 */
   int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
@@ -648,12 +650,12 @@ typedef struct SpinState {
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
 typedef struct RideState {
-  int unk00[6]; /* 0x00 */
+  int pad00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
   int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
-  int unk28[7]; /* 0x28 */
+  int pad28[7]; /* 0x28 */
   int phase;    /* 0x44 phase counter, 0 .. 0x100 */
   int savedRotX;    /* 0x48 saved actor->rotX */
   int savedRotY;    /* 0x4C saved actor->rotY */
@@ -664,7 +666,7 @@ typedef struct RideState {
 typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
-  int unk10;        /* 0x10 */
+  int pad10;        /* 0x10 */
   int dest;         /* 0x14 destination, published to SPY.requestYaw as a byte (ExitState.dest) */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
@@ -736,7 +738,7 @@ typedef struct FlockState {
   int knockAngle;           /* 0x00 knockback angle */
   int knockSpeed;           /* 0x04 knockback speed */
   PathData *path;      /* 0x08 */
-  int unk0C;
+  int pad0C;
   int chainA;       /* 0x10 */
   int chainB;       /* 0x14 */
   int slots[16][3]; /* 0x18 */
@@ -825,11 +827,11 @@ typedef struct GuardState {
 
 /* Case 335 -- lunging enemy. */
 typedef struct LungeState {
-  int unk00;
+  int pad00;
   int guard;     /* 0x04 */
   int home[3];   /* 0x08 */
   int target[3]; /* 0x14 */
-  int unk20[3];  /* 0x20 */
+  int pad20[3];  /* 0x20 */
   int anim;      /* 0x2C animation base */
   int hits;      /* 0x30 */
   int heading;   /* 0x34 -1 until first set */
@@ -1010,7 +1012,7 @@ typedef struct L9Yak {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown after a charge */
-  int unk0C;
+  int pad0C;
   int timer;   /* 0x10 grazing timer */
 } L9Yak;
 
@@ -1019,11 +1021,11 @@ typedef struct L9Ram {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown, knock-back height step */
-  int unk0C;
+  int pad0C;
   int timer;   /* 0x10 grazing timer */
   int dropPos;   /* 0x14 */
-  int unk18;
-  int unk1C;
+  int pad18;
+  int pad1C;
   int hits;    /* 0x20 */
 } L9Ram;
 
@@ -1068,7 +1070,7 @@ typedef struct SentryState {
   int retarget;   /* 0x1C */
   int camStage;   /* 0x20 */
   int camDist;    /* 0x24 */
-  int unk28;      /* 0x28 */
+  int pad28;      /* 0x28 */
   int camTimer;   /* 0x2C */
   int *alert;     /* 0x30 shared by the sentries of one group */
 } SentryState;
@@ -1179,7 +1181,7 @@ typedef struct GuardState370 {
   int lift;           /* 0x08 */
   int heading;        /* 0x0C */
   int speed;          /* 0x10 */
-  int unk14;          /* 0x14 */
+  int pad14;          /* 0x14 */
   int range;          /* 0x18 sight range, in 1024s */
   int accel;          /* 0x1C */
   int turn;           /* 0x20 */
@@ -1215,11 +1217,11 @@ typedef struct RunnerState {
   PathData *pathB; /* 0x04 */
   int knockTimer;  /* 0x08 */
   int knockSpeed;  /* 0x0C */
-  int unk10;
+  int pad10;
   int heading;     /* 0x14 knockback heading */
   int timer;       /* 0x18 */
   int mode;        /* 0x1C */
-  int unk20;
+  int pad20;
   int which;       /* 0x24 path in use, 1 or 2 */
   int range;       /* 0x28 in 1024s */
   int node;        /* 0x2C trigger node on either path */
@@ -1257,9 +1259,9 @@ typedef struct VillagerState {
 /* The leader a mode-3 villager watches. */
 typedef struct LeaderState {
   int mode;               /* 0x00 */
-  int unk04[2];
+  int pad04[2];
   unsigned char *script;  /* 0x0C */
-  int unk10[4];
+  int pad10[4];
   int cue;                /* 0x20 */
 } LeaderState;
 
@@ -1297,7 +1299,7 @@ typedef struct CrookState {
 
 /* Type 315: falling block. */
 typedef struct FallState {
-  int unk00;
+  int pad00;
   int live;    /* 0x04 */
   int heading; /* 0x08 */
   int timer;   /* 0x0C */
@@ -1313,7 +1315,7 @@ typedef struct SorcererState {
   int target;          /* 0x08 actor index */
   unsigned char *path; /* 0x0C { count, cur }, points at +8 */
   int mode;            /* 0x10 */
-  int unk14;
+  int pad14;
   int range;           /* 0x18 */
   int angry;           /* 0x1C */
   int sub;             /* 0x20 */
@@ -1340,7 +1342,7 @@ typedef struct CaptainState {
   int partner;         /* 0x20 actor index, -1 = none */
   int camTimer;        /* 0x24 */
   int step;            /* 0x28 */
-  int unk2C;
+  int pad2C;
   int timer;           /* 0x30 */
   int posed;           /* 0x34 */
   int range;           /* 0x38 in 1024ths */
@@ -1431,8 +1433,8 @@ typedef struct L26Sink {
 typedef struct L26Bob {
   int partner;        /* 0x00 index into g_pActorListBase */
   unsigned int phase; /* 0x04 */
-  int unk08;
-  int unk0C;
+  int pad08;
+  int pad0C;
   int baseZ;          /* 0x10 */
   int big;            /* 0x14 */
 } L26Bob;
@@ -1546,7 +1548,7 @@ typedef struct Follower {
   PathData *path;    /* 0x00 */
   short hold;        /* 0x04 */
   short vz;          /* 0x06 */
-  short unk08;       /* 0x08 */
+  short pad08;       /* 0x08 */
   signed char spinX; /* 0x0A */
   signed char spinY; /* 0x0B */
   int pathDist;      /* 0x0C */
@@ -1566,9 +1568,9 @@ typedef struct GrazerState {
 /* Type 371: Doctor Shemp. */
 typedef struct ShempState {
   int ang;             /* 0x00 heading << 4 */
-  int unk04[3];        /* 0x04 */
+  int pad04[3];        /* 0x04 */
   int timer;           /* 0x10 */
-  int unk14;           /* 0x14 */
+  int pad14;           /* 0x14 */
   int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C 0..2 */
   unsigned char *path; /* 0x20 byte 0 = node count */
@@ -1646,5 +1648,22 @@ extern int g_nCameraActiveTargetDistance;
 extern int g_nCameraActiveTargetRoll;
 extern int g_nCameraActiveTargetPitchBias;
 extern int g_nCameraActiveTargetYawBias;
+
+/* Main globals read by a single UpdateActors clone. */
+extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
+extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
+extern int g_bLevelBossDefeated; /* boss defeated */
+extern int g_bLevelPhasedBossKilled;
+extern int g_bLevelUseShortReleaseAnim;
+extern int g_dwActiveCameraOptions;
+extern int g_nGemPickupCamPathReverseFlag;
+extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
+
+/* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's
+ * per-class display words). The flight UpdateActors clones fill it with a
+ * byte-offset induction variable next to the source pointer; an int index
+ * gives loop.c a different giv set. */
+#define FLIGHT_HUD_CLASS_WORD(off) \
+  (*(int *)((char *)g_anFlightHudClassWords + (off)))
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

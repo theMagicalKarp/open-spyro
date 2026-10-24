@@ -4,9 +4,6 @@
 #include "model.h"
 #include "vecmath.h"
 
-/* Held-base alias views (see config/symbol_addrs.txt). */
-extern unsigned char g_abSpyroAnimPrevBlock[]; /* 0x80078a70 */
-
 /* `mesh` is Spyro's model plus anim * 4, so ANIM_SLOT reads that anim's
    header pointer (Model.m_Animations[anim]); a frame record is the header plus
    frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key

@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "save_game.h"
 
-extern int g_nSfxMixVolume_blk[];
-
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
    BuildSaveGameBuffer.  Unpacks a 0x600-byte save buffer back into live game
    state (options bytes, scaled SPU/CD volumes, per-world tables, per-level

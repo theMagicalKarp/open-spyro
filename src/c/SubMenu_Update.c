@@ -9,8 +9,6 @@
    detection, up/down scrolling between visited levels (0x1C0 fixed-step
    scroll with cursor wrap), and pause/exit pad handling. */
 
-extern unsigned int g_adwHudBobSinePhaseBlock[]; /* g_dwHudBobSinePhase */
-
 void SubMenu_Update(void) {
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
   g_adwHudBobSinePhaseBlock[0] =

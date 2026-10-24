@@ -21,9 +21,16 @@
 
 /* Distinct incomplete-array views of the five g_abHudCounterDisplayState
    bytes: each block loads its own flag at [0] and derives its record address
-   off the same base. */
-extern byte g_abHudWorldEggIconBlock[];    /* +3: egg quads at +0x461 */
-extern byte g_abHudLevelEggCounterBlock[]; /* +4: record at +0x408 */
+   off the same base. The HUD words below are read off those same bases;
+   naming the scalar globals instead re-materializes their addresses. */
+#define GEM_HOLD_TIMER                                                         \
+  (*(int *)&g_abHudGemRollBlock[0xC]) /* g_nHudLevelGemHoldTimer */
+#define BUTTERFLY_COUNT                                                        \
+  (*(int *)&g_abHudButterflyRingBlock[0x36]) /* g_nHudButterflyCachedCount */
+#define EGG_COUNT                                                              \
+  (*(int *)&g_abHudWorldEggIconBlock[0x29]) /* g_nHudWorldEggCachedCount */
+#define FRAME_CYCLE                                                            \
+  (*(int *)&g_abHudWorldEggIconBlock[0x3D]) /* g_nHudFrameCycleMod9 */
 
 void EnqueueLoadingScreenSprites(void) {
   void **slot;
@@ -77,8 +84,8 @@ void EnqueueLoadingScreenSprites(void) {
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
           rec[0x46] =
-              ((unsigned short *)g_anCosineLut)
-                  [(*(int *)(g_abHudGemRollBlock + 0xC) * 4 + phase) & 0xFF] >>
+              ((unsigned short *)
+                   g_anCosineLut)[(GEM_HOLD_TIMER * 4 + phase) & 0xFF] >>
               7;
           *slot = rec;
           slot += 1;
@@ -138,7 +145,7 @@ void EnqueueLoadingScreenSprites(void) {
         EmitTexturedQuad(g_abHudButterflyRingBlock + 0x4C2 + i * 8,
                          g_abHudButterflyRingBlock + 0x562, scratch);
         i += 1;
-      } while (i < *(int *)(g_abHudButterflyRingBlock + 0x36));
+      } while (i < BUTTERFLY_COUNT);
     }
   }
 
@@ -148,11 +155,11 @@ void EnqueueLoadingScreenSprites(void) {
     if (g_nHudWorldEggCachedCount > 0) {
       do {
         quad = g_abHudWorldEggIconBlock + 0x461 + i * 8;
-        step = *(int *)(g_abHudWorldEggIconBlock + 0x3D) + i;
+        step = FRAME_CYCLE + i;
         EmitTexturedQuad(
             quad, (step % 9) * 8 + (g_abHudWorldEggIconBlock + 0x569), 0);
         i += 1;
-      } while (i < *(int *)(g_abHudWorldEggIconBlock + 0x29));
+      } while (i < EGG_COUNT);
     }
   }
 }

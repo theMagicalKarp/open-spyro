@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern unsigned int g_nCdMusicStreamTimeout;
-
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
    [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short
    pair sits at -0x2C0. */

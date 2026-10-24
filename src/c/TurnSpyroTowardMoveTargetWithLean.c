@@ -20,7 +20,7 @@
    nested do/while(0) around the arm's target read weights that ref by 3 --
    6 refs / 6 insns == the body read's 4 / 4 -- and the tie falls to the lower
    allocno number, which is the target read. */
-void TurnSpyroTowardMoveTargetWithLean(int bucket) {
+int TurnSpyroTowardMoveTargetWithLean(int bucket) {
   int delta;
   int rate;
   int targetYaw;
@@ -69,5 +69,5 @@ void TurnSpyroTowardMoveTargetWithLean(int bucket) {
     g_nSpyroBodyYawStep = 0;
   }
   IntegrateSpyroBodyEuler(rate);
-  AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw);
+  return AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw);
 }

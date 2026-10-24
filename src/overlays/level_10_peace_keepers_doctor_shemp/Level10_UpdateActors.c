@@ -39,12 +39,9 @@
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
@@ -56,12 +53,9 @@
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
-
-
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -160,10 +154,7 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
-
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -189,7 +180,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 /* ==== Level 16 classes ==== */
 
 /* Case 328 -- floor-snapped marker. */
-
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -226,9 +216,7 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 /* ==== Level 9 classes ==== */
 
-
 /* ==== level_10 per-class state blocks ==== */
-extern int g_bLevelPhasedBossKilled;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 /* ==== The function ==== */
@@ -1435,7 +1423,7 @@ void Level10_UpdateActors(void) {
     case 120: {
       BalloonState *st = actor->state;
 
-      if (g_nLevelReadyFlag[0] >= 2) {
+      if (g_anLevelReadyFlagBlock[0] >= 2) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -1450,7 +1438,7 @@ void Level10_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (g_nLevelReadyFlag[0] >= 3) {
+      if (g_anLevelReadyFlagBlock[0] >= 3) {
         FxNode *fx = st->smoke;
 
         if (fx == 0) {
@@ -1479,7 +1467,7 @@ void Level10_UpdateActors(void) {
         st->smoke = 0;
       }
 
-      if (g_nLevelReadyFlag[0] <= 0) {
+      if (g_anLevelReadyFlagBlock[0] <= 0) {
         if (st->gnorc != 0 && st->gnorc->type == 16) {
           st->gnorc->mode = 0;
         }
@@ -1489,7 +1477,7 @@ void Level10_UpdateActors(void) {
       }
 
       if (st->gnorc != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)g_nLevelReadyFlag - 0x164)) >=
+          ApproxDist2D(&actor->posX, (int *)((char *)g_anLevelReadyFlagBlock - 0x164)) >=
               0x2001) {
         st->timer = 0;
       }
@@ -1571,7 +1559,7 @@ void Level10_UpdateActors(void) {
           }
 
           case 1:
-            g_nLevelReadyFlag[0] += 1;
+            g_anLevelReadyFlagBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->gnorc);

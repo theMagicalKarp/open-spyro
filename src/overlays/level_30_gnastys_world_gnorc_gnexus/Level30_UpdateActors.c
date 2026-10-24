@@ -64,7 +64,6 @@
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
-
 #define AS_I32(sym) (((I32 *)&(sym))->v)
 
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
@@ -172,12 +171,6 @@ typedef struct ExitState {
  *
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
-
-extern int g_nGemPickupCamPathReverseFlag;
-
-extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
 
 /* ==== The function ==== */
 void Level30_UpdateActors(void) {

@@ -8,7 +8,6 @@
    g_CutsceneSoundDef (sample 0x1010, per-world pitch from
    g_nWorldCutsceneSamplePitch) and trigger it via PlaySoundEffect with the
    gem-pickup voice marker. */
-extern int g_CutsceneSoundDef[];
 /* volatile alias of g_pLevelSampleBankEntries — the entry writes below reload
    the pointer global before every store */
 

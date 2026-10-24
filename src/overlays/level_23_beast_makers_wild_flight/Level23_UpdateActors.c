@@ -167,7 +167,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 
 /* ==== Flight-level classes ==== */
@@ -1937,7 +1936,7 @@ void Level23_UpdateActors(void) {
           int off;
 
           for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
-            *(int *)((char *)g_anFlightHudClassWords + off) = src[0x21];
+            FLIGHT_HUD_CLASS_WORD(off) = src[0x21];
             src++;
             off += 4;
           }

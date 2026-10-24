@@ -3,7 +3,6 @@
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
    camera position 0xc4 below it are reached through one held base register. */
-extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
 

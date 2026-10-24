@@ -17,8 +17,6 @@
    on actor contact, 2 on world/step/slope rejection, 0 when the move
    was committed. */
 
-extern short g_anSineLut[];
-
 int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
                           int flags) {
   int newpos[3];

@@ -2,9 +2,8 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* register-form (held-base) views of the clamped / incremented globals */
-extern int g_nSpyroGravityStep_blk[];
-extern int g_nSpyroStateTimer_blk[];
+/* g_nSpyroGravityStep_blk / g_nSpyroStateTimer_blk (globals.h) are the
+   register-form (held-base) views of the clamped / incremented globals. */
 
 /* 0x8004888c (0x310): per-substep Spyro state advance. Runs the state's
    attitude controller (free-fall damping for state 6, velocity alignment for

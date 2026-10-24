@@ -52,7 +52,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-
 /* Glow node owned by Sparx; follows its anchor position. */
 
 /* ==== Helper macros ====
@@ -150,7 +149,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
 /* An animation change that also clears the finished flag. */
@@ -177,7 +175,6 @@ typedef struct ExitState {
 /* ==== Level 16 classes ==== */
 
 /* Case 328 -- floor-snapped marker. */
-
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -331,7 +328,6 @@ typedef struct L18Guard {
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
 } L18Guard;
-extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* Type 28 state. */
 typedef struct L20State28 {
@@ -381,8 +377,6 @@ typedef struct L20State476 {
   int u34;      /* 0x34 grab cool-down */
   int u38;      /* 0x38 */
 } L20State476;
-
-extern int g_bLevelUseShortReleaseAnim;
 
 /* ==== The function ==== */
 void Level20_UpdateActors(void) {

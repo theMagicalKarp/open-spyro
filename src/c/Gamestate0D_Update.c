@@ -13,8 +13,6 @@
    the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
 
-extern void *g_pSharedLoadBuffer; /* default draw-buffer base */
-
 void Gamestate0D_Update(void) {
   VECTOR delta;
   RECT clear;

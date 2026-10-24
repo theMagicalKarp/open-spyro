@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "sdata.h"
 
-extern int g_apScriptedCameraViewBlock;
-
 SDATA(g_nCameraSpringReengageCountdown, 4);
 
 /* Per-frame camera driver (0x80037bd4, 708 bytes): latches look-around
@@ -67,7 +65,7 @@ void UpdateCameraFrame(void) {
       if (g_nCameraFloorSurfaceType >= g_nStaticMeshLodCutoff) {
         g_nCameraFloorSurfaceType = -1;
       }
-      g_apScriptedCameraViewBlock = 0;
+      g_apScriptedCameraViewBlock[0] = 0;
     }
   }
   if (g_bSpyroPadSnapshotReverseFlag != 0) {

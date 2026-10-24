@@ -1,9 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char
-    g_bSpyroAnimFrame_blk[]; /* held-base view of g_bSpyroAnimFrame */
-
 /* 0x8003cce4 (0x4b0): applies the pending Spyro state change. The restart
    style comes from the transition matrix entry for (prev state, state):
    most styles swap in the new state's default anim (g_abSpyroStateAnimIndexMap)

@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "vecmath.h"
 
-extern int g_anLightSweepAngleBlock[];
-
 /* 0x8001844c (0xE8) - build a LINE_G2 prim between two screen points,
    shading each endpoint by its angular distance from the light-sweep
    angle (radial highlight), then queue it and bump the prim cursor.

@@ -20,6 +20,14 @@ typedef struct PadSubstep {
 /* Ring entry at byte offset `off` (tick * 0x18). */
 #define PAD_SUBSTEP(off) ((PadSubstep *)((char *)g_anPadSubstepRing + (off)))
 
+/* Byte offset of a PadSubstep field, and the field read as `type` through a
+ * byte pointer to an entry: same address as the member, without the
+ * in-struct MEM flag (or with a different width/signedness) where the matched
+ * code needs that (ComputeSpyroMoveTargetFromPad, PollPadAndDistributeInput). */
+#define PAD_SUBSTEP_OFFSET(field) ((int)&((PadSubstep *)0)->field)
+#define PAD_SUBSTEP_RAW(p, type, field) \
+  (*(type *)((char *)(p) + PAD_SUBSTEP_OFFSET(field)))
+
 /* One controller's live state + stick calibration block: pad 1 at
  * g_dwPadPressed (0x80077378), pad 2 mirrored at g_dwPad2Buttons
  * (0x800776d8). The head words are the per-frame pad globals

@@ -3,6 +3,14 @@
 #include "globals.h"
 #include "main_shared.h"
 
+/* The "GAME OVER" letter screen position at byte offset `k` (letter * 4) of
+   g_anGameOverLetterPosXY; the draw loop steps k by 4 alongside the letter
+   index. */
+typedef struct LetterPos {
+  short x, y;
+} LetterPos;
+#define LETTER_POS(k) ((LetterPos *)((char *)g_anGameOverLetterPosXY + (k)))
+
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
@@ -122,8 +130,8 @@ void RespawnOrGameOver_Draw(void) {
             SREC->posZ = 0x400;
           }
           SREC->type = g_abGameOverGlyphs[i] + 0x169;
-          SREC->posX = *(short *)((char *)g_anGameOverLetterPosXY + k);
-          SREC->posY = *(short *)((char *)g_anGameOverLetterPosXY + k + 2);
+          SREC->posX = LETTER_POS(k)->x;
+          SREC->posY = LETTER_POS(k)->y;
           SREC->rotZ = g_abGameOverLetterAngle[i];
           SREC->otBias = 4;
           SREC->tintMode = 0xB;

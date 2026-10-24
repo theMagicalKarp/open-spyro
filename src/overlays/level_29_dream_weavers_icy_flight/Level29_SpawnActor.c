@@ -42,7 +42,6 @@ typedef struct AimState {
   int timer;     /* 0x0C */
 } AimState;
 
-extern int StepAndLerpAngle8(int yaw, unsigned char pitch, int speed, int lift);
 
 
 Actor *Level29_SpawnActor(int type, Actor *parent) {

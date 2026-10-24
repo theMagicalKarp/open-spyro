@@ -14,8 +14,6 @@
    snaps/eases Z toward floor+0x38-offset (bit 2). Returns 1 on actor
    contact, 2 on world/step rejection, 0 when the move was committed. */
 
-extern short g_anSineLut[];
-
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
                         int radius, int flags) {
   int newpos[3];

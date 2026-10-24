@@ -3,9 +3,6 @@
 #include "main_shared.h"
 #include "sample_bank.h"
 
-extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
-extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
-
 /* The sample-bank stores go through the reloaded global pointer each field
    (the original never proves it points at &g_CutsceneSoundDef); a volatile read
    of the pointer defeats gcc's constant-propagation of the just-assigned
@@ -70,7 +67,7 @@ int CheckDeathPlane(void) {
       if ((int)g_dwGamestateFrames >=
           g_anDeathReplayFrameThreshold[g_nDeathTryIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;
-        g_pLevelSampleBankEntries = &g_CutsceneSoundDef;
+        g_pLevelSampleBankEntries = g_CutsceneSoundDef;
         SAMPLE_RAW(BANK, int, nSampleAddr) = 0x262d0;
         SAMPLE_RAW(BANK, int, nLoopAddr) = -1;
         SAMPLE_RAW(BANK, short, nVolume) = 0x50;

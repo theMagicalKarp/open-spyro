@@ -1,14 +1,16 @@
 #include "funcs.h"
 #include "globals.h"
 
-/* the matrix symbol itself as an incomplete array: the matrix pointer, the
-   -0x34 (== -13 words) g_anSpyroWorldPos AddVector argument and the +0x13C
-   (== +0x4F words) trigger read all come off one held base. */
-extern int g_anSpyroBodyMtx[];
-/* shared-base view of g_nSpyroShadowRingIndex (0x8007aa30): the index RMW plus
-   the -0x18 no-ground-flag and -0x20 height byte rings. */
-/* sized-array alias of g_nSpyroShadowHiddenFlag (0x8007aa34) — see A134: only
-   an array lvalue keeps the death-plane table load below this store. */
+/* Views this function reads through (declared in globals.h):
+   g_anSpyroBodyMtx — the matrix pointer, the -0x34 (== -13 words)
+     g_anSpyroWorldPos AddVector argument and the +0x13C (== +0x4F words)
+     trigger read all come off one held base;
+   g_anSpyroShadowRingIndexBlock — shared-base view of g_nSpyroShadowRingIndex
+     (0x8007aa30): the index RMW plus the -0x18 no-ground-flag and -0x20 height
+     byte rings;
+   g_anSpyroShadowHidden[1] — sized-array alias of g_nSpyroShadowHiddenFlag
+     (0x8007aa34), see A134: only an array lvalue keeps the death-plane table
+     load below this store. */
 
 /* 0x80049fac (596 bytes) — per-tick Spyro shadow-ring sampler. Computes the
    shadow centre ((0,0,-0x164) through the body matrix + world pos) into

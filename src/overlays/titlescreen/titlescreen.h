@@ -94,6 +94,7 @@ enum {
 enum { Mode_0x00 = 0, Mode_0x01 = 1, Mode_0x02 = 2, Mode_0x03 = 3 };
 
 /* ---- save file: the 0x600-byte image (save_game.h) ---- */
+#include "fog_color.h"
 #include "save_game.h"
 
 typedef struct {
@@ -158,13 +159,6 @@ typedef struct {
 } Struct_0x70;
 
 extern Struct_0x70 *g_pActiveFrameDrawEnv;
-/* background-color bytes of the two frame buffers' draw-env (r0,g0,b0) */
-typedef struct {
-  u_char r, g, b;
-} Struct_0x03;
-extern Struct_0x03 g_bFrameDrawEnv0BgR;
-extern Struct_0x03 g_bFrameDrawEnv1BgR;
-extern Struct_0x03 g_dwWorldFogColor;
 
 extern struct {
   int post; /* 0x80075950 */

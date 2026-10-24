@@ -63,8 +63,8 @@ void Level23_HandleFlightResults(int reload) {
     if (g_abWorldPerLevelByteTable_r4[idx] == 0) {
       int off;
       g_anLevelGemsCollected[g_nLevelIntroIndex] +=
-          *(int *)((char *)g_anFlightCourseBonusTable_r4 + (off = idx << 2));
-      g_nWorldTreasureCollected += *(int *)((char *)g_anFlightCourseBonusTable_r4 + off);
+          COURSE_ALL_CLEAR_BONUS(off = idx << 2);
+      g_nWorldTreasureCollected += COURSE_ALL_CLEAR_BONUS(off);
       g_nGemTallyIconCount += 0xC;
       g_abWorldPerLevelByteTable_r4[idx] = 1;
     }

@@ -506,10 +506,10 @@ void ComputeSpyroMoveTargetFromPad(int speed);
 void IntegrateSpyroBodyEuler(int rate);
 
 /* 0x8003d6d0: Steers Spyro's body yaw (DAT_80078b74) toward the move target yaw (DAT_80078b24) using a lean accumulator (DAT_80078ba0, range -6..+6). Picks turn rate from the 2D lookup table at &DAT_8006c5fc + param_1 * 0x1a + lean * 2 (param_1 selects speed bucket). Resets lean when target is overshot or the desired delta falls inside the table-indexed band. Always finishes by calling IntegrateSpyroBodyEuler with the chosen angular delta and reports the new |delta| via AbsAngleDelta12. */
-void TurnSpyroTowardMoveTargetWithLean(int bucket);
+int TurnSpyroTowardMoveTargetWithLean(int bucket);
 
 /* 0x8003d840: When the analog stick is past the inner deadzone (button bit and not centered at 0x7f7f) but its magnitude is &lt; 0x60, smooths Spyro's body yaw (DAT_80078b74) partway toward the move target yaw (DAT_80078b24) proportional to stick magnitude. Large delta (&gt; 0x100) sets the snap-flag DAT_80078ad4 = 1. Always follows with TurnSpyroTowardMoveTargetWithLean(0). */
-void ApplyPadInputToSpyroBodyYaw(void);
+int ApplyPadInputToSpyroBodyYaw(void);
 
 /* 0x8003d92c: Accelerate/decelerate current speed (DAT_80078b70) toward the target speed (DAT_80078b20) using two separate ramps: +param_1 per frame when below target, -param_2 per frame when at-or-above. Clamps to the target on overshoot. The split rates let walking states use a softer brake than throttle. */
 void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
@@ -736,6 +736,9 @@ void InitHudCounters(int layout_butterflies);
 
 /* 0x80054988: Per-frame HUD update. Ticks the five digit-counter state machines in g_abHudCounterDisplayState (0=level gems vs g_anLevelGemsCollected[g_nLevelIntroIndex], 1=dragons rescued, 2=extra lives + sparx food, 3=world-egg tally vs g_nWorldEggsRecovered — forced visible while g_nHudWorldEggRollRequest is set (overlay-written balloonist flag), 4=current-level eggs vs g_nLevelEggCount). Each machine: state 1 roll-in (g_anHudRollInStepTable), state 2 hold + count-up toward the live value (g_nHud*HoldTimer pacing, sparkle bursts via g_pfnLevelEmitParticles), state 3 roll-out (g_anHudRollOutStepTable); counter 0 adds state 4 = level-complete highlight when cached == g_anLevelTotalGemsTable[level]. Animates icon bob/tint bytes inside g_abHudIconActorRecords from g_anSineLut, lays out one butterfly sprite per food unit into g_anHudSpriteRects, and rolls g_nSparxFoodCount over into +1 extra life at 20. Callers: GamestateUpdate, PauseMenu_Update, EnterPauseMenu. */
 void UpdateHudCounters(void);
+
+/* 0x800557cc: Spawns one floating digit actor (id 0x104 + digit) per decimal digit of value, least significant first, walking away from src along the camera yaw (CommitActorKillGems, for kills worth gems above z 0x300). */
+void SpawnFloatingDigitActors(int value, Actor *src);
 
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls FUN_8005ba60 (sound channel reset), seeds master volume + CD-DA mix words at DAT_80075f08..DAT_80076240, then FUN_8005cc58 / FUN_8005c7ac / FUN_8005c7d4 / FUN_8005cb7c (sound-bank registration), FillWord(DAT_80075f30, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);

@@ -10,6 +10,7 @@
 extern void AddSVector(short *dst, short *src, short *delta);
 
 extern void SVectorToVectorShl2(int *dst, short *src);
+extern void SVectorToVector(int *dst, short *src);
 
 extern void VectorToSVectorShr2(short *dst, int *src);
 

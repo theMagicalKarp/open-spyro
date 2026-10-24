@@ -1,25 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
-
-extern void ChangeSpyroState(int state);
-extern void ComputeSpyroMoveTargetFromPad(int mag);
-extern int ApplyPadInputToSpyroBodyYaw(void);
-extern int TurnSpyroTowardMoveTargetWithLean(int lean);
-extern void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
-extern void BuildSpyroVelocityFromBodyEuler(void);
-extern void IntegrateSpyroBodyEuler(int delta);
-extern void RotateSpyroBodyTowardKnockbackDir(int rate, int lean);
-extern void ScaleVector3Shifted(int *vec, int num, int shift);
-extern void LerpVectorGTE(int *dst, int *a, int *b, int t);
-extern void AccumulateAnimRootMotionDelta(int frame, int *out, int anim,
-                                          int sub);
-extern int CheckLineOfSightSegment(int *from, int *to);
-extern int FindGroundHeightBelow(int *pt, int depth);
-extern void ActivateScriptedCameraView(int *record);
-
-extern int g_pSpyroHomingTargetActor;
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);
 SDATA(g_bSpyroJumpHoldForced, 4);
@@ -30,7 +13,6 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
 SDATA(g_pSpyroContactActor, 4);
 
 /* One view of the Spyro record from its world position (0x80078a58). */
-extern unsigned char g_abSpyroAnimPrevBlock[];
 
 #define SPY g_anSpyroWorldPosBlock
 #define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */

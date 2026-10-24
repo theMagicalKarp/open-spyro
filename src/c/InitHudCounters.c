@@ -10,6 +10,7 @@
 #define VOL(x) (*(volatile __typeof__(x) *)&(x))
 #include "funcs.h"
 #include "globals.h"
+#include "hud.h"
 
 /* HUD init for entering a gameplay-with-HUD state (0x80054600, 0x388).
 
@@ -58,13 +59,13 @@ void InitHudCounters(int layout_butterflies) {
 icon_slot:
   HideActorRenderRecord((int)rec);
 
-  CopyVector(pos, (int *)(((char *)g_anHudIconRestPos) + vec));
+  CopyVector(pos, HUD_REST_POS(vec));
   pos = (int *)(((char *)pos) + 0x58);
   rec += 0x58;
-  g_abHudIconActorRecords[off + 0x47] = 0x20;
-  g_abHudIconActorRecords[off + 0x50] = white;
-  g_abHudIconActorRecords[off + 0x49] = white;
-  g_abHudIconActorRecords[off + 0x4F] = 0x0B;
+  HUD_ICON(off)->otBias = 0x20;
+  HUD_ICON(off)->cullRadius = white;
+  HUD_ICON(off)->subMode = white;
+  HUD_ICON(off)->tintMode = 0x0B;
   off += 0x58;
   i += 1;
   vec += 0xC;
@@ -74,23 +75,23 @@ icon_slot:
   FillWord(g_anHudSpriteRects, 0, 0x100);
   rect = 0;
   do {
-    *((short *)(((char *)g_anHudSpriteRects) + rect)) =
-        *((short *)(((char *)g_anHudDigitRestRects) + rect));
-    *((short *)((((char *)g_anHudSpriteRects) + rect) + 2)) =
-        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 2));
-    *((short *)((((char *)g_anHudSpriteRects) + rect) + 4)) =
-        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 4));
-    *((short *)((((char *)g_anHudSpriteRects) + rect) + 6)) =
-        *((short *)((((char *)g_anHudDigitRestRects) + rect) + 6));
+    HUD_RECT(g_anHudSpriteRects, rect)->x =
+        HUD_RECT(g_anHudDigitRestRects, rect)->x;
+    HUD_RECT(g_anHudSpriteRects, rect)->y =
+        HUD_RECT(g_anHudDigitRestRects, rect)->y;
+    HUD_RECT(g_anHudSpriteRects, rect)->w =
+        HUD_RECT(g_anHudDigitRestRects, rect)->w;
+    HUD_RECT(g_anHudSpriteRects, rect)->h =
+        HUD_RECT(g_anHudDigitRestRects, rect)->h;
     rect += 8;
   } while (rect < 0x60);
-  anchor = (short *)&g_abHudIconActorRecords[0x196];
+  anchor = &HUD_ICON(4 * 0x58)->type;
   idx = VOL(g_nLevelIntroIndex);
   VOL(anchor[0]) = 0x1D7;
-  VOL(*(short *)&g_abHudIconActorRecords[0x29E]) = 0x1FA;
-  VOL(*(short *)&g_abHudIconActorRecords[0x3A6]) = 0x3A;
-  VOL(*(short *)&g_abHudIconActorRecords[0x3FE]) = 0xAD;
-  VOL(g_abHudIconActorRecords[0x40E]) = 0x40;
+  VOL(HUD_ICON(7 * 0x58)->type) = 0x1FA;
+  VOL(HUD_ICON(10 * 0x58)->type) = 0x3A;
+  VOL(HUD_ICON(11 * 0x58)->type) = 0xAD;
+  VOL(HUD_ICON(11 * 0x58)->rotZ) = 0x40;
   VOL(g_abHudCounterDisplayState[0]) = 1;
   VOL(g_abHudCounterDisplayState[1]) = 1;
   VOL(g_abHudCounterDisplayState[2]) = 1;

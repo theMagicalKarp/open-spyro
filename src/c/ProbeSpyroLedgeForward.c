@@ -8,9 +8,6 @@
    ledge-grab flag (+0x80 past the body matrix) and stash the contact normal
    (+0x84). */
 
-extern int g_anSpyroBodyMtx[];
-extern int g_anCollisionProbeVec[];
-
 void ProbeSpyroLedgeForward(void) {
   int from[4];
   int to[3];

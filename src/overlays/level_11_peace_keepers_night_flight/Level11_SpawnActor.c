@@ -11,6 +11,7 @@
  */
 
 #include "vecmath.h"
+#include "actor_type.h"
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "level_emit_particles.h"
@@ -28,51 +29,6 @@
  * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
-
-typedef struct Actor {
-  void *state;         /* 0x00 per-type state block */
-  int pad04;           /* 0x04 */
-  int collision;           /* 0x08 */
-  int posX;            /* 0x0C */
-  int posY;            /* 0x10 */
-  int posZ;            /* 0x14 */
-  int flags;           /* 0x18 */
-  int groundCode;      /* 0x1C packed ground contact (see actor.h) */
-  int mtx[5];        /* 0x20 */
-  short gridCell;         /* 0x34 */
-  short type;          /* 0x36 */
-  int pad38;           /* 0x38 */
-  unsigned char anim; /* 0x3C */
-  unsigned char nextAnim;
-  unsigned char frame;
-  unsigned char nextFrame;
-  unsigned char frameProgress; /* 0x40 */
-  unsigned char frameRate;
-  unsigned char animFlags;
-  unsigned char group;
-  signed char rotX;   /* 0x44 */
-  signed char rotY;
-  signed char rotZ;
-  unsigned char otBias;
-  unsigned char mode;
-  unsigned char subMode; /* 0x49 */
-  unsigned char visZone;
-  unsigned char renderList; /* 0x4B */
-  unsigned char tint0; /* 0x4C tint word (see actor.h) */
-  unsigned char tint1;
-  unsigned char tint2;
-  unsigned char tintMode;
-  unsigned char cullRadius; /* 0x50 */
-  unsigned char drawn;
-  unsigned char updateDist; /* 0x52 */
-  unsigned char dropKind;
-  unsigned char sfxSlot;
-  unsigned char soundRange;
-  unsigned char poolIndex; /* 0x56 owner pool index */
-  unsigned char scale;
-} Actor; /* 0x58 */
-
-
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
@@ -321,12 +277,12 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     {
       int dx;
       int dy;
-      int dz;
+      int dz; /* the original copies the euler bytes with lb */
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = parent->rotX;
-      dy = parent->rotY;
-      dz = parent->rotZ;
+      dx = (signed char)parent->rotX;
+      dy = (signed char)parent->rotY;
+      dz = (signed char)parent->rotZ;
       do {
       rec->rotX = dx;
       rec->rotY = dy;
@@ -349,9 +305,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       int dz;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
-      dx = parent->rotX;
-      dy = parent->rotY;
-      dz = parent->rotZ;
+      dx = (signed char)parent->rotX;
+      dy = (signed char)parent->rotY;
+      dz = (signed char)parent->rotZ;
       rec->rotX = dx;
       rec->rotY = dy;
       rec->rotZ = dz;

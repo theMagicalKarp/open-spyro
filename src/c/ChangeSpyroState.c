@@ -4,8 +4,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern void *g_pSpyroHomingTargetActor;
-
 /* State 17 (scripted lift toward g_anSpyroRequestTargetPos): the start Z, the
    rise to cover, the starting yaw and the yaw turn to the scripted camera
    actor's heading, spread over the rise by IntegrateSpyroMotionForSubstep.

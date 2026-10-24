@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "types.h"
 
-extern void *g_pSharedLoadBuffer;
-
 /* 0x800331ac — GS_GEM_CUTSCENE (0xE) per-tick handler: on first entry (timer
    0, hub world) clear the screen, stream the cutscene bundle in synchronously
    and re-seed via BeginGemCutscene; per tick advance the cutscene timer toward

@@ -27,8 +27,8 @@ typedef struct PickupDropState {
   int velX;              /* 0x00 pop-out velocity */
   int velY;              /* 0x04 */
   int velZ;              /* 0x08 */
-  unsigned char unk0C;   /* 0x0C (PickupState: groundTri, a short) */
-  unsigned char unk0D;
+  unsigned char pad0C;   /* 0x0C (PickupState: groundTri, a short) */
+  unsigned char pad0D;
   unsigned char sub;     /* 0x0E resting sub-state */
   unsigned char timer;   /* 0x0F sparkle timer */
   unsigned char bounces; /* 0x10 bounces left */
@@ -66,7 +66,7 @@ typedef struct SparxState {
   short vx;   /* 0x04 hover offset */
   short vy;   /* 0x06 */
   short vz;   /* 0x08 */
-  short unk0A;
+  short pad0A;
   int fx;     /* 0x0C glow node (FxNode *) */
   int rider;  /* 0x10 actor being fetched (Actor *) */
 } SparxState;
@@ -106,6 +106,8 @@ extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
+extern int RandomSignedInRange(int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;
