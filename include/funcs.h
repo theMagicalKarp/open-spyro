@@ -1913,13 +1913,16 @@ void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
 
 /* 0x8003851c: Plays the voice sample named in the actor's mesh record (g_apActorMeshTable[actor->type] + arg1, byte 4) keyed to arg2, or to the actor's own +0x54 slot after stopping its previous voices. */
-void PlayActorMeshVoice(Actor *actor, int a, int b);
+void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
 int TurnActorYawTowardAngle(Actor *actor, int heading, int a, int b, int c);
 
 /* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
-int SpawnActorRotBillboard(Actor *actor, int *tbl);
+/* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
+int FindFreeRotBillboardSlot(void);
+
+int SpawnActorRotBillboard(Actor *actor, int *offset);
 
 /* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (+0x43), or on a0 alone when the group index is out of range. */
 void SetActorGroupState(Actor *actor, int value);
@@ -1952,7 +1955,7 @@ int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
 int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
 
 /* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
-void UpdateActorWander(Actor *actor, void *st);
+void UpdateActorWander(Actor *actor, WanderBlock *wb);
 
 /* 0x8003a9ec: Nudges the actor's LOD band and points its mesh-table entry (+0x4C) at the matching VRAM page; returns the band. */
 int SelectActorLodBand(Actor *actor, int handle);
@@ -1967,7 +1970,7 @@ void SetActorGroupStateExcept(Actor *actor, int value, int match);
 int TryMoveActorForward(Actor *actor, int a, int b, int c, int d);
 
 /* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte waypoints from +8), wrapping the index forward or back, and steers toward the current waypoint with speed dist>>4 capped. */
-void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int d, int e);
+void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 
 /* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the shortest delta. */
 int LerpAngle8(int a, int b, unsigned char c);
@@ -2041,7 +2044,7 @@ void StubRewardHook(void);
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
-void StubActorHook(Actor *actor);
+void StubActorHook(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */

@@ -1,9 +1,7 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern int FindFreeRotBillboardSlot();
-extern void RefreshActorDerivedState();
 
 typedef struct RotBillboard {
   int pos[3];             /* 0x00: world position */
@@ -20,7 +18,7 @@ typedef struct RotBillboard {
 
 /* 0x8003aaec — allocate a particle record (24-byte stride table at
    0x80077108), seed its color to white, rotate the spawn offset by the
-   actor's matrix into the record, add the actor anchor (+0xC), then fill
+   actor's matrix into the record, add the actor position, then fill
    the lifetime/phase bytes. Returns the record index (or the negative
    allocation failure). */
 /* PARKED 2026-07-08 at 86.8% (7/53 insns): correct logic + store order;
@@ -30,7 +28,7 @@ typedef struct RotBillboard {
    all const-prop back to byte-identical per-use v0 materialization
    (InitActorRenderDefaults constant-sb scheduling class). Permuter
    candidate. */
-int SpawnActorRotBillboard(int *actor, int *offset) {
+int SpawnActorRotBillboard(Actor *actor, int *offset) {
   RotBillboard *rec;
   int idx;
   idx = FindFreeRotBillboardSlot();
@@ -41,8 +39,8 @@ int SpawnActorRotBillboard(int *actor, int *offset) {
     rec->b = 0xFF;
 
     RefreshActorDerivedState(actor, 4);
-    RotateVectorByMatrix(actor + 8, offset, rec->pos);
-    AddVector(rec->pos, rec->pos, actor + 3);
+    RotateVectorByMatrix(actor->mtx, offset, rec->pos);
+    AddVector(rec->pos, rec->pos, &actor->posX);
     rec->angle = GetRandomU32();
 
     rec->angVel = 3;

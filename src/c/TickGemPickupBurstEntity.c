@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -7,27 +8,25 @@
    position/velocity (gravity -6 clamped at -0x80), fades the RGB bytes,
    and spawns a sparkle every other tick; otherwise emits the pop particle
    and despawns the actor. */
-extern void DespawnActorRecord(int *actor);
-
-void TickGemPickupBurstEntity(int *actor) {
+void TickGemPickupBurstEntity(Actor *actor) {
   int burst[3];
   int *rec;
   int t;
   int b;
 
-  rec = (int *)actor[0];
-  if (*((unsigned char *)rec + 0x13) != 0 && actor[5] > rec[3]) {
-    actor[3] += rec[0];
-    actor[4] += rec[1];
+  rec = (int *)actor->state;
+  if (*((unsigned char *)rec + 0x13) != 0 && actor->posZ > rec[3]) {
+    actor->posX += rec[0];
+    actor->posY += rec[1];
     t = rec[2] - 6;
     rec[2] = t;
     if (t < -0x80) {
       rec[2] = -0x80;
     }
-    actor[5] += rec[2];
-    *((unsigned char *)actor + 0x44) += *((unsigned char *)rec + 0x10);
-    *((unsigned char *)actor + 0x45) += *((unsigned char *)rec + 0x11);
-    *((unsigned char *)actor + 0x46) += *((unsigned char *)rec + 0x12);
+    actor->posZ += rec[2];
+    actor->rotX += *((unsigned char *)rec + 0x10);
+    actor->rotY += *((unsigned char *)rec + 0x11);
+    actor->rotZ += *((unsigned char *)rec + 0x12);
     b = *((unsigned char *)rec + 0x13) - 1;
     *((unsigned char *)rec + 0x13) = b;
     if ((b & 1) == 0) {
@@ -35,11 +34,11 @@ void TickGemPickupBurstEntity(int *actor) {
       burst[1] = GetRandomU32() & 3;
       burst[2] = 0x14;
       ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-          1, 1, actor + 3, burst);
+          1, 1, &actor->posX, burst);
     }
   } else {
-    ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(3, 0x46,
-                                                              actor + 3, 0x10);
+    ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
+        3, 0x46, &actor->posX, 0x10);
     DespawnActorRecord(actor);
   }
 }
