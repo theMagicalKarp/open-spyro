@@ -34,6 +34,7 @@
  */
 
 #include "vecmath.h"
+#include "actor_type.h"
 #include "level_globals.h"
 #include "level_emit_particles.h"
 
@@ -134,19 +135,6 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
   } u;
 } Emit;
 
-typedef struct Actor {
-  int *owner;   /* 0x00 */
-  char pad04[8];
-  int pos[3];   /* 0x0C */
-  char pad18[8];
-  short mat[9]; /* 0x20 3x3 rotation matrix */
-  short pad32;  /* 0x32 */
-  short gridCell;  /* 0x34 spatial-grid cell */
-  short kind;   /* 0x36 */
-  char pad38[0x11];
-  unsigned char flag49; /* 0x49 */
-} Actor;
-
 void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int v1[3];
@@ -227,12 +215,12 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       int *owner;
       int t1, t2, t3;
       int u1, u2, u3;
-      owner = ((Actor *)pos)->owner;
+      owner = ((Actor *)pos)->state;
       rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      VectorToSVectorShr2(rec->u.plume.pos, ((Actor *)pos)->pos);
+      VectorToSVectorShr2(rec->u.plume.pos, &((Actor *)pos)->posX);
       t1 = GetRandomU32() & 0x7E;
       u1 = rec->u.plume.pos[0] - 0x3F;
       rec->u.plume.pos[0] = u1 + t1;
@@ -241,13 +229,13 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.pos[1] = u2 + t2;
       t3 = GetRandomU32() & 0x1FF;
       u3 = rec->u.plume.pos[2] - 0x100;
-      rec->u.plume.src = ((Actor *)pos)->pos;
+      rec->u.plume.src = &((Actor *)pos)->posX;
       rec->u.plume.pos[2] = u3 + t3;
       rec->u.plume.maxRadius = owner[1];
       rec->u.plume.rise = owner[0] >> 6;
       rec->u.plume.life = 0x20;
       rec->u.plume.seed = 0x14;
-      if (((Actor *)pos)->flag49 != 0) {
+      if (((Actor *)pos)->subMode != 0) {
         switch (GetRandomU32() & 7) {
         case 0:
           rec->u.plume.r = 0x80;
@@ -358,23 +346,23 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       rec->u.spark.depthBias = 4;
-      if (((Actor *)pos)->kind == 0x22) {
-        CopyVector(v1, ((Actor *)pos)->pos);
-      } else if (((Actor *)pos)->kind == 0xAD || ((Actor *)pos)->kind == 0xB5) {
+      if (((Actor *)pos)->type == 0x22) {
+        CopyVector(v1, &((Actor *)pos)->posX);
+      } else if (((Actor *)pos)->type == 0xAD || ((Actor *)pos)->type == 0xB5) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
-          AddVector(v1, v1, ((Actor *)pos)->pos);
+          RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          AddVector(v1, v1, &((Actor *)pos)->posX);
         } else {
           rec->cls = 5;
           rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
-      } else if (((Actor *)pos)->kind == 0x78) {
-        RotateVectorByMatrix((int *)((Actor *)pos)->mat, g_anSparxEmitOffset, v1);
-        AddVector(v1, v1, ((Actor *)pos)->pos);
+      } else if (((Actor *)pos)->type == 0x78) {
+        RotateVectorByMatrix(((Actor *)pos)->mtx, g_anSparxEmitOffset, v1);
+        AddVector(v1, v1, &((Actor *)pos)->posX);
       } else {
-        RotateVectorByMatrix((int *)((Actor *)pos)->mat, &g_anEmitStepOffsets[i * 3], v1);
-        AddVector(v1, v1, ((Actor *)pos)->pos);
+        RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitStepOffsets[i * 3], v1);
+        AddVector(v1, v1, &((Actor *)pos)->posX);
       }
       VectorToSVectorShr2(rec->u.spark.pos, v1);
       rec->u.spark.g = effectArg >> 8;

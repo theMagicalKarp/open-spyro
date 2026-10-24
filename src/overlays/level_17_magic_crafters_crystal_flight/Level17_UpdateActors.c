@@ -167,7 +167,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 
 /* ==== Flight-level classes ==== */

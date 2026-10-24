@@ -331,7 +331,6 @@ typedef struct L18Guard {
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
 } L18Guard;
-extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* Type 28 state. */
 typedef struct L20State28 {

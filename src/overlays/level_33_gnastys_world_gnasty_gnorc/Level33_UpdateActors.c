@@ -497,7 +497,6 @@ typedef struct GnastyState {
 
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
-extern int g_nLevelReadyFlag; /* == g_anLevelReadyFlagBlock, scalar view */
 
 /* ==== The function ==== */
 #define spy (&SPY)

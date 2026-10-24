@@ -1,47 +1,32 @@
+#include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern int strlen(char *s);
-
-/* The per-letter banner record hung off the actor's +0x00 pointer. */
+/* The per-letter banner record hung off a letter actor's ->state pointer (a
+   sign actor's ->state holds its level id instead). */
 struct NameRec {
   void *owner; /* 0x00 */
   short count; /* 0x04 */
   short index; /* 0x06 */
 };
 
-struct Actor {
-  struct NameRec *rec; /* 0x00 (the sign actor reads [0] as its level id) */
-  char pad04[8];
-  int pos[3]; /* 0x0c */
-  char pad18[0x1e];
-  short kind;         /* 0x36 */
-  short yaw16;        /* 0x38 */
-  char pad3a[0xc];    /* 0x3a */
-  unsigned char yaw;  /* 0x46 */
-  char pad47;         /* 0x47 */
-  unsigned char skin; /* 0x48 */
-  unsigned char slot; /* 0x49 */
-  char pad4a[5];      /* 0x4a */
-  unsigned char mode; /* 0x4f */
-};
-
-/* The banner record pointer is re-read before every field store (the original
-   never proves the letter actor's +0 stays put across them). */
-#define REC(p) (*(struct NameRec *volatile *)&(p)->rec)
+/* The banner record pointer (->state) is re-read before every field store
+   (the original never proves the letter actor's +0 stays put across them). */
+#define REC(p) (*(struct NameRec *volatile *)&(p)->state)
 
 /* Spells a name out in floating letter actors around `sign`. With `named` set
    the text is the level name for the sign's own level id and the arc hangs off
    the sign's yaw (mirrored, and flipped through the origin, when the sign's
-   +0x49 slot is non-zero); otherwise it is the balloonist's name laid out
+   ->subMode is non-zero); otherwise it is the balloonist's name laid out
    facing Spyro. Letters are spawned through g_pfnLevelSpawnActor ('A'-'Z'
    map to id 0x1AA.., anything else to 0x4C) and threaded onto a radial arc:
    each glyph sits one `spacing` step further round the ring, bent outward by
    `bend` and lifted by the cosine of its position ('L' actors get an extra
    0x100 of height). Spaces advance the cursor without spawning.
    (0x8003c358, 908 bytes.) */
-void SpawnNameLetterActors(struct Actor *sign, int named) {
+void SpawnNameLetterActors(Actor *sign, int named) {
   /* Four 16-byte (VECTOR-shaped) slots at sp+0x10/0x20/0x30/0x40, plus 8 bytes
      of tail slack the original's frame reserves and never touches. */
   int radial[4];
@@ -59,16 +44,16 @@ void SpawnNameLetterActors(struct Actor *sign, int named) {
   int n;
   int i;
   char *p;
-  struct Actor *letter;
+  Actor *letter;
   int *pos;
 
   if (named != 0) {
-    name = g_apLevelNameStrings[*(int *)sign->rec];
-    yaw = sign->yaw;
+    name = g_apLevelNameStrings[*(int *)sign->state];
+    yaw = sign->rotZ;
   } else {
     name = g_apBalloonistNames[0];
-    yaw = ArcTan2(g_anSpyroWorldPos[0] - sign->pos[0],
-                  g_nSpyroWorldPosY - sign->pos[1], 0);
+    yaw = ArcTan2(g_anSpyroWorldPos[0] - sign->posX,
+                  g_nSpyroWorldPosY - sign->posY, 0);
   }
   a = yaw & 0xff;
   ang = a * 16;
@@ -82,10 +67,10 @@ void SpawnNameLetterActors(struct Actor *sign, int named) {
   spacing[2] = 0;
 
   if (named != 0) {
-    if (sign->slot == 0) {
-      yaw = sign->yaw - 0x80;
+    if (sign->subMode == 0) {
+      yaw = sign->rotZ - 0x80;
     } else {
-      yaw = sign->yaw;
+      yaw = sign->rotZ;
       ZeroVector(cursor);
       SubtractVector(radial, cursor, radial);
       SubtractVector(spacing, cursor, spacing);
@@ -120,35 +105,34 @@ void SpawnNameLetterActors(struct Actor *sign, int named) {
         } else {
           ch = 0x4c;
         }
-        letter = (*(struct Actor * (*)(int, struct Actor *))
-                      g_pfnLevelSpawnActor)(ch, sign);
+        letter = (*(Actor * (*)(int, Actor *)) g_pfnLevelSpawnActor)(ch, sign);
         REC(letter)->owner = sign;
         REC(letter)->count = len;
         REC(letter)->index = i;
 
         t = step & 0xff;
         t = t * 16;
-        letter->pos[0] = radial[0] * LookupCosine(t);
-        letter->pos[1] = radial[1] * LookupCosine(t);
-        letter->pos[2] = 0;
+        letter->posX = radial[0] * LookupCosine(t);
+        letter->posY = radial[1] * LookupCosine(t);
+        letter->posZ = 0;
 
-        pos = letter->pos;
+        pos = &letter->posX;
         SubtractVector(pos, pos, bend);
         RShiftVector3(pos, 0xa);
         AddVector(pos, pos, radial);
-        AddVector(pos, pos, sign->pos);
+        AddVector(pos, pos, &sign->posX);
         SubtractVector(pos, pos, cursor);
 
         pos[2] = pos[2] + ((LookupCosine(t) * 3) >> 3);
-        if (letter->kind == 0x4c) {
+        if (letter->type == 0x4c) {
           pos[2] = pos[2] + 0x100;
         }
-        letter->yaw = yaw;
-        letter->yaw16 = yaw & 0xff;
-        skin = sign->slot;
-        letter->slot = i * 8;
-        letter->mode = 2;
-        letter->skin = skin;
+        letter->rotZ = yaw;
+        letter->floorOffset = yaw & 0xff;
+        skin = sign->subMode;
+        letter->subMode = i * 8;
+        letter->tintMode = 2;
+        letter->mode = skin;
       }
       SubtractVector(cursor, cursor, spacing);
       step -= 4;

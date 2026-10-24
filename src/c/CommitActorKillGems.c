@@ -35,7 +35,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     int w;
     int g;
     if (ACT->posZ >= 0x300) {
-      SpawnFloatingDigitActors(value, (struct DigitActor *)actor);
+      SpawnFloatingDigitActors(value, ACT);
     }
     gems = &g_anLevelGemsCollected[g_nLevelIntroIndex];
     w = g_nWorldTreasureCollected + value;

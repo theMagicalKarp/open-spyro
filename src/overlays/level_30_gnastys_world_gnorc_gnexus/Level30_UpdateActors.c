@@ -173,7 +173,6 @@ typedef struct ExitState {
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
 
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 extern int g_nGemPickupCamPathReverseFlag;
 

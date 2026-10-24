@@ -16,6 +16,7 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
 extern int GetGroundTriggerRegionType();
+extern int g_nLevelReadyFlag; /* scalar form; the array users go through g_anLevelReadyFlagBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
 extern volatile unsigned char g_bSpyroPersistentEulerZ;

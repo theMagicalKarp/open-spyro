@@ -133,7 +133,6 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -2545,7 +2544,7 @@ void Level21_UpdateActors(void) {
     case 120: {
       BalloonState *st = actor->state;
 
-      if (g_nLevelReadyFlag[0] >= 2) {
+      if (g_anLevelReadyFlagBlock[0] >= 2) {
         f232[0] = 0;
         f232[1] = 0x64;
         f232[2] = 0;
@@ -2560,7 +2559,7 @@ void Level21_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, f232, 0);
       }
 
-      if (g_nLevelReadyFlag[0] >= 3) {
+      if (g_anLevelReadyFlagBlock[0] >= 3) {
         FxNode *fx = st->smoke;
 
         if (fx == 0) {
@@ -2589,7 +2588,7 @@ void Level21_UpdateActors(void) {
         st->smoke = 0;
       }
 
-      if (g_nLevelReadyFlag[0] <= 0) {
+      if (g_anLevelReadyFlagBlock[0] <= 0) {
         if (st->gnorc != 0 && st->gnorc->type == 16) {
           st->gnorc->mode = 0;
         }
@@ -2599,7 +2598,7 @@ void Level21_UpdateActors(void) {
       }
 
       if (st->gnorc != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)g_nLevelReadyFlag - 0x164)) >=
+          ApproxDist2D(&actor->posX, (int *)((char *)g_anLevelReadyFlagBlock - 0x164)) >=
               0x2001) {
         st->timer = 0;
       }
@@ -2681,7 +2680,7 @@ void Level21_UpdateActors(void) {
           }
 
           case 1:
-            g_nLevelReadyFlag[0] += 1;
+            g_anLevelReadyFlagBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->gnorc);

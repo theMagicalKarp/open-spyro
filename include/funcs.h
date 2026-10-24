@@ -738,8 +738,7 @@ void InitHudCounters(int layout_butterflies);
 void UpdateHudCounters(void);
 
 /* 0x800557cc: Spawns one floating digit actor (id 0x104 + digit) per decimal digit of value, least significant first, walking away from src along the camera yaw (CommitActorKillGems, for kills worth gems above z 0x300). */
-struct DigitActor;
-void SpawnFloatingDigitActors(int value, struct DigitActor *src);
+void SpawnFloatingDigitActors(int value, Actor *src);
 
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls FUN_8005ba60 (sound channel reset), seeds master volume + CD-DA mix words at DAT_80075f08..DAT_80076240, then FUN_8005cc58 / FUN_8005c7ac / FUN_8005c7d4 / FUN_8005cb7c (sound-bank registration), FillWord(DAT_80075f30, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);
