@@ -1,27 +1,8 @@
 #include "funcs.h"
-/* globals declared locally: the two entry tables are indexed as arrays and
-   the counts that are re-read through held pointers are incomplete arrays
-   (globals.h types them as scalars), so the pointer access keeps its
-   register base instead of folding to the sdata absolute form. */
-extern void *g_pWorldMeshHeaderArray; /* 0x800785c0 */
-extern int g_nWorldMeshCount[];       /* 0x800785c8 */
-extern void *g_pWorldMeshVertexData;  /* 0x800785c4 */
-extern void *g_pWorldChunkArray;      /* 0x800785a8 */
-extern int g_nWorldChunkCount;        /* 0x800785ac */
-extern int g_pStaticMeshLodTable;
-extern int g_nStaticMeshLodCutoff[];
-extern void *g_pWorldMeshIndexTable; /* 0x8007778c */
-extern int g_nWorldMeshIndexCount[]; /* 0x80077788 */
-extern void *g_pTriggerRegionTable;  /* 0x800785b8 */
-extern int g_anTriggerRegionCount[];
-extern void *g_pWorldCollisionHeader;            /* 0x800785d4 */
-extern unsigned char g_abCollisionHeaderBytes[]; /* collision header bytes */
-extern void *g_pWorldCollisionTriArray;          /* 0x80077784 */
-extern int g_nWorldCollisionTriCount;            /* 0x80077780 */
-extern int g_nScriptedMobCount;                  /* 0x800758bc */
-extern int *g_apScriptedMobEntries[];            /* 0x80078640 */
-extern void *g_apMobEntryTable[];                /* 0x80076278 */
-extern int g_nLevelSampleBankCount;              /* 0x80076234 */
+#include "globals.h"
+/* The section counts that are re-read through held pointers go through
+   incomplete-array views (g_an...Block, globals.h) so the pointer access keeps
+   its register base instead of folding to the absolute form. */
 
 /* The world collision header (g_pWorldCollisionHeader). Its table fields
  * hold bundle-relative offsets that the unpack below makes absolute; the
@@ -70,7 +51,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
   p++;
   n1 = *p;
   p++;
-  pm = g_nWorldMeshCount;
+  pm = g_anWorldMeshCountBlock;
   g_pWorldMeshHeaderArray = p;
   *pm = n1;
   p += n1 * 4;
@@ -106,9 +87,9 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       p++;
       i = 0;
       {
-        int *pn = g_nStaticMeshLodCutoff;
+        int *pn = g_anStaticMeshLodCutoffBlock;
 
-        g_pStaticMeshLodTable = (int)p;
+        g_pStaticMeshLodTable = p;
         *pn = n3;
         if (n3 > 0) {
           do {
@@ -124,7 +105,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       n4 = *p;
       p++;
       {
-        int *pi = g_nWorldMeshIndexCount;
+        int *pi = g_anWorldMeshIndexCountBlock;
 
         g_pWorldMeshIndexTable = p;
         *pi = n4;
@@ -142,7 +123,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
         }
       }
     } else {
-      g_nStaticMeshLodCutoff[0] = 0;
+      g_anStaticMeshLodCutoffBlock[0] = 0;
       g_pStaticMeshLodTable = 0;
       g_pWorldMeshIndexTable = 0;
     }

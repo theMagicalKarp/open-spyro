@@ -106,6 +106,8 @@ extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
 
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
+extern int RandomSignedInRange(int a, int b);
+extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;

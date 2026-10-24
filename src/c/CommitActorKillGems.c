@@ -4,8 +4,6 @@
 
 #define ACT ((Actor *)actor)
 
-extern void SpawnFloatingDigitActors(void);
-
 struct Actor58 {
   char _pad[0x58];
 };
@@ -37,7 +35,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     int w;
     int g;
     if (ACT->posZ >= 0x300) {
-      SpawnFloatingDigitActors();
+      SpawnFloatingDigitActors(value, (struct DigitActor *)actor);
     }
     gems = &g_anLevelGemsCollected[g_nLevelIntroIndex];
     w = g_nWorldTreasureCollected + value;

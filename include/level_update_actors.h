@@ -203,6 +203,7 @@ extern FxNode *AllocWorldSparkle(void);
 extern void ClearWord(FxNode *node);
 
 extern int StepAngle8Toward(int a, int b, int c);
+extern int ApproachAngle8(int target, int cur, int step, int lim);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
  * or the floor runs out. */

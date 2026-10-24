@@ -695,7 +695,7 @@ extern int g_anGemPickupAuraStarMtx[5];                 /* 0x80076258 */
 extern int g_nGemPickupAuraStarRadius;                  /* 0x8007626c */
 extern byte g_abGemPickupAuraStarEuler[3];              /* 0x80076270 */
 extern byte g_bGemPickupAuraStarColor;                  /* 0x80076273 */
-extern void *g_apMobEntryTable;                         /* 0x80076278 */
+extern void *g_apMobEntryTable[];                       /* 0x80076278: mob id -> entry (UnpackWorldDataChunks) */
 extern void *g_apActorMeshTable;                        /* 0x80076378 */
 extern void *g_pGemPickupStatueModelData;               /* 0x80076b70 */
 extern void *g_pGemPickupMirrorModelData;               /* 0x80076b74 */
@@ -1311,6 +1311,8 @@ extern unsigned char g_bCdMixLeftToLeft; /* 0x800776d0: CdMix attenuation L->L *
 extern unsigned char g_bCdMixLeftToRight; /* 0x800776d1: CdMix attenuation L->R */
 extern unsigned char g_bCdMixRightToRight; /* 0x800776d2: CdMix attenuation R->R */
 extern unsigned char g_bCdMixRightToLeft; /* 0x800776d3: CdMix attenuation R->L */
+extern int g_anWorldMeshIndexCountBlock[]; /* 0x80077788: held-base view of g_nWorldMeshIndexCount */
+extern unsigned char g_abCollisionHeaderBytes[]; /* 0x80077790: 3 header bytes copied from the collision-tri section */
 extern int g_anGamestate0cTimerBlock[]; /* 0x800777ec */
 extern int g_nGamestate0cCardVariant; /* 0x800777fc: transition card variant */
 extern int g_nGamestate0cCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
@@ -1350,6 +1352,10 @@ extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
 extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
 extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
 extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
+extern void *g_pStaticMeshLodTable; /* 0x800785b0: relocated mesh-index LOD table (count g_nStaticMeshLodCutoff) */
+extern int g_anStaticMeshLodCutoffBlock[]; /* 0x800785b4: held-base view of g_nStaticMeshLodCutoff */
+extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
+extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
 extern int g_nInitUnreadWord; /* 0x800785cc */
 extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
 extern void *g_apDrawBufBBlock[]; /* 0x800785dc */

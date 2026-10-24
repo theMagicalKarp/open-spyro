@@ -335,7 +335,6 @@ typedef struct L32State147 {
   int u64[6];  /* 0x64 trigger box */
   int u7C;     /* 0x7C initialised */
 } L32State147;
-extern int ApproachAngle8(int a, int b, int c, int d);
 
 /* Type 148 state. */
 typedef struct L32State148 {

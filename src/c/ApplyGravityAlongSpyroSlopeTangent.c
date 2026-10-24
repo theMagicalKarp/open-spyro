@@ -8,8 +8,6 @@
    vector from it, recording the step in g_nSpyroSlopeGravityStep. No-op on a
    zero-length normal (free fall). */
 
-extern int g_anSpyroGroundNormal[];
-
 void ApplyGravityAlongSpyroSlopeTangent(void) {
   int vec[3];
   int *p;

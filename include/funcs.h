@@ -737,6 +737,10 @@ void InitHudCounters(int layout_butterflies);
 /* 0x80054988: Per-frame HUD update. Ticks the five digit-counter state machines in g_abHudCounterDisplayState (0=level gems vs g_anLevelGemsCollected[g_nLevelIntroIndex], 1=dragons rescued, 2=extra lives + sparx food, 3=world-egg tally vs g_nWorldEggsRecovered — forced visible while g_nHudWorldEggRollRequest is set (overlay-written balloonist flag), 4=current-level eggs vs g_nLevelEggCount). Each machine: state 1 roll-in (g_anHudRollInStepTable), state 2 hold + count-up toward the live value (g_nHud*HoldTimer pacing, sparkle bursts via g_pfnLevelEmitParticles), state 3 roll-out (g_anHudRollOutStepTable); counter 0 adds state 4 = level-complete highlight when cached == g_anLevelTotalGemsTable[level]. Animates icon bob/tint bytes inside g_abHudIconActorRecords from g_anSineLut, lays out one butterfly sprite per food unit into g_anHudSpriteRects, and rolls g_nSparxFoodCount over into +1 extra life at 20. Callers: GamestateUpdate, PauseMenu_Update, EnterPauseMenu. */
 void UpdateHudCounters(void);
 
+/* 0x800557cc: Spawns one floating digit actor (id 0x104 + digit) per decimal digit of value, least significant first, walking away from src along the camera yaw (CommitActorKillGems, for kills worth gems above z 0x300). */
+struct DigitActor;
+void SpawnFloatingDigitActors(int value, struct DigitActor *src);
+
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls FUN_8005ba60 (sound channel reset), seeds master volume + CD-DA mix words at DAT_80075f08..DAT_80076240, then FUN_8005cc58 / FUN_8005c7ac / FUN_8005c7d4 / FUN_8005cb7c (sound-bank registration), FillWord(DAT_80075f30, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);
 

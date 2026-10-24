@@ -56,7 +56,6 @@ typedef struct BatState {
 
 
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
-extern int RandomSignedInRange(int lo, int hi);
 
 Actor *Level27_SpawnActor(int type, Actor *parent) {
   Actor *rec;
