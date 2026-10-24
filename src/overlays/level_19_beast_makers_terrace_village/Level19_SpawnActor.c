@@ -52,7 +52,6 @@ typedef struct TrackState {
 } TrackState;
 
 
-extern Actor *g_pActorListBase;
 extern unsigned short g_nCameraEulerPitch;  /* tracked world yaw (byte) */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {

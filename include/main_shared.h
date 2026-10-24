@@ -193,7 +193,7 @@ extern void LoadCameraTargetAnglesFromMode(void);
 
 extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 
-extern void ScaleVector3Sat();
+extern void ScaleVector3Sat(int *dst, int *src, int scale);
 
 extern unsigned int g_adwSpuPendingKeyOffBlock[];
 

@@ -18,7 +18,6 @@
 #include "actor.h"
 
 
-extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 

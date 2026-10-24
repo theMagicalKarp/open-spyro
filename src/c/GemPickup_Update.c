@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -21,23 +22,8 @@
      delay slot, and case 4's `done` doubles as the case-5 table pointer (two
      sets, so sched1 does not boost it above AdvanceSpyroAnimFrame). */
 
-extern int SignedAngleDelta12(int a, int b);
-extern void ResetSpyroEntity(int mode);
-extern void StopAllSoundExceptMask(int mask);
-extern void AdvanceSpyroAnimFrame(int delta);
-extern int FindWorldFloorBelowPoint(int *pos);
-extern void SampleSpyroShadowRingHeights(int mode);
-extern void StopSoundVoiceByIndex(int voice, int mode);
-extern void CopyWords(void *dst, void *src, int byte_count);
 extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
                                           int t);
-extern void SetHudCounterDigits(int slot, int digits, int value, int flag);
-extern void CommitHudCounterAnimState(int slot, int digits, int phase);
-extern void EndGemPickupToWorld(void);
-extern void TickGemPickupAssetStream(void);
-
-extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
-                                                    g_pLevelSampleBankEntries */
 
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */

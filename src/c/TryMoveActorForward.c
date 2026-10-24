@@ -1,9 +1,8 @@
 #include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-#define ACT ((Actor *)actor)
 
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
    position if nothing blocks it (0x8003bccc). Global pace g_nActorFrameDelta
@@ -13,14 +12,8 @@
    2/4 (0x14) probe the ground below, bit 4 also rejects a commit when the
    ground height differs from the actor's cached Z by >= 0xC9. Returns 1 on
    contact block, 2 on world collision / ground-step reject, 0 on commit. */
-extern void ApplyEulerRotation(unsigned char *euler, int *mtx, int flag);
-extern int DispatchActorContactAtSphere(int *pos, int r, int a, int b,
-                                        int actor, int flag);
-extern int FindGroundHeightBelow(int *pt, int z);
-extern void RefreshActorDerivedState(int actor, int n);
-extern void EncodeCachedVecToActorDirCode(int actor);
 
-int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
+int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
                         int flags) {
   int mtx[8];
   int vec[3];
@@ -32,12 +25,12 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
   } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
-  ApplyEulerRotation((unsigned char *)(actor + 0x44), mtx, 0);
+  ApplyEulerRotation(&actor->rotX, (MATRIX *)mtx, 0);
   vec[0] = speed;
   vec[2] = 0;
   vec[1] = 0;
   RotateVectorByMatrix(mtx, vec, vec);
-  AddVector(vec, vec, (int *)(actor + 0xC));
+  AddVector(vec, vec, &actor->posX);
 
   if (flags & 1) {
     d = vec[2] + 0x12C;
@@ -66,21 +59,21 @@ int TryMoveActorForward(int actor, int speed, int contactR, int collideR,
     ground = FindGroundHeightBelow(vec, 0x800);
   }
   if (flags & 0x10) {
-    d = ground - ACT->posZ;
+    d = ground - actor->posZ;
     if (d > 0) {
       if (d >= 0xC9) {
         goto blocked;
       }
       goto gdone;
     }
-    if (ACT->posZ - ground < 0xC9) {
+    if (actor->posZ - ground < 0xC9) {
       goto gdone;
     }
   blocked:
     return 2;
   }
 gdone:
-  CopyVector((int *)(actor + 0xC), vec);
+  CopyVector(&actor->posX, vec);
   EncodeCachedVecToActorDirCode(actor);
   RefreshActorDerivedState(actor, 2);
   return 0;

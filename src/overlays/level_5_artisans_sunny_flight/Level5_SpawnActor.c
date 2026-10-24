@@ -34,7 +34,6 @@
  */
 
 
-extern Actor *g_pActorListBase;
 
 Actor *Level5_SpawnActor(int type, Actor *parent) {
   Actor *rec;

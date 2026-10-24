@@ -1,9 +1,6 @@
 #include "vecmath.h"
 
-typedef unsigned char byte;
-extern byte g_abSpyroPersistentEuler[3];
-extern int g_anSpyroMotionVec[3];
-extern int g_nSpyroBodyYaw;
+#include "globals.h"
 void RotateSpyroBodyTowardKnockbackDir(int step, int band) {
   int ret;
   int yaw;

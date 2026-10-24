@@ -60,7 +60,6 @@ typedef struct AimState {
 
 extern int g_anCameraPos;     /* turret aim target X */
 
-extern Actor *g_pActorListBase;
 extern int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 

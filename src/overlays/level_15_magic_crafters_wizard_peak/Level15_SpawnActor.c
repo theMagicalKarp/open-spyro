@@ -19,7 +19,6 @@
 
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
-extern Actor *g_pActorListBase;
 extern volatile int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 

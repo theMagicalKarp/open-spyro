@@ -150,7 +150,7 @@ typedef struct ShardState {
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
+extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -194,7 +194,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define sixteen 0x10
@@ -526,17 +525,17 @@ void Level13_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.u164 >= 0) {
+            if (SPY.readyFlag >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
 
               PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.readyFlag = 1;
 
               DespawnActorRecord(actor);
               break;
@@ -2439,7 +2438,7 @@ void Level13_UpdateActors(void) {
               svF[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, svF, svF);
+            RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
             AddVector(svF, svF, &SPY.posX);
             at = &actor->posX;
             SubtractVector(svF, svF, at);
@@ -2462,7 +2461,7 @@ void Level13_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -2817,14 +2816,14 @@ void Level13_UpdateActors(void) {
                 g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
-              int *look = &SPY.u208;
+              int *look = &SPY.requestVelX;
 
               g_nSpyroRequestState = 3;
-              CopyVector(look, &SPY.u10C);
+              CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || g_nSpyroRequestVelocityY != 0) {
+              if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }
@@ -5321,22 +5320,22 @@ void Level13_UpdateActors(void) {
       case 1: {
         SPY.controlFlags =
             (0x80000000 | 0x2000 | 0x4000 | 0x100 | 0x40 | 0x4 | 0x2 | 0x1);
-        SPY.u248 = actor->subMode;
+        SPY.camPathReverse = actor->subMode;
         SPY.pPortal = st->desc;
-        SPY.u244 = 0x60;
-        SPY.u218 = 5;
-        SPY.u027 = 0x7F;
+        SPY.camPathMaxStep = 0x60;
+        SPY.requestState = 5;
+        SPY.otBinBias = 0x7F;
 
         p = st->desc;
         AddVector(x368, p->posA, p->posB);
         RShiftVector3(x368, 1);
 
-        SubtractVector(&SPY.u208, x368, &SPY.posX);
-        AddVector(&SPY.u208, &SPY.u208, st->offset);
+        SubtractVector(&SPY.requestVelX, x368, &SPY.posX);
+        AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
-        mag = VectorLength(&SPY.u208, 1);
+        mag = VectorLength(&SPY.requestVelX, 1);
         if (mag > 128) {
-          ScaleVector3ByRatio(&SPY.u208, mag, 128);
+          ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {
           if (actor->subMode != 0) {
             progressed = (st->desc->index < (st->desc->count - 1));
@@ -5353,19 +5352,19 @@ void Level13_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
           CAM.nextMode = (0x80000000 | 0x10 | 0x2);
-          SPY.u218 = 0xF;
+          SPY.requestState = 0xF;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->dest;
+          SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
-          CAM.sim.v[0] += SPY.u11C;
+          CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.u11C += g_nScriptedMobViewYawSpin;
-          SPY.bodyRotZ = SPY.u11C >> 4;
+          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
@@ -5385,9 +5384,9 @@ void Level13_UpdateActors(void) {
       case 2: {
         SPY.controlFlags = 0x80000000 | 0x4000 | 0x2000 | 0x100;
         SPY.pPortal = st->desc;
-        SPY.u244 = 0x60;
-        SPY.u218 = 0xF;
-        SPY.u027 = 0x7F;
+        SPY.camPathMaxStep = 0x60;
+        SPY.requestState = 0xF;
+        SPY.otBinBias = 0x7F;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
@@ -5398,13 +5397,13 @@ void Level13_UpdateActors(void) {
           g_nLevelTransitionPhase = 0;
           g_nGamestate = 1;
           g_nGamePaused = 1;
-          SPY.u206 = st->dest;
+          SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
-          CAM.sim.v[0] += SPY.u11C;
+          CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.u11C += g_nScriptedMobViewYawSpin;
-          SPY.bodyRotZ = SPY.u11C >> 4;
+          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);

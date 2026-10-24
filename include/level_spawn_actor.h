@@ -7,6 +7,11 @@
 #ifndef OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 #define OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 
+/* The level actor pool, by struct tag so files that carry their own Actor
+ * view (A400) can include this header too. */
+struct Actor;
+extern struct Actor *g_pActorListBase;
+
 /* Collectible drop (types 0xE, 0xF, 0x53..0x57: life statue, life orb,
  * gems) — SpawnActor's view of UpdateActors' PickupState, with 0x0C split
  * into two bytes. */

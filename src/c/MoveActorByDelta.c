@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -8,8 +9,8 @@
    during the checks. Returns 1 on actor contact, 2 on world collision,
    0 when the move was committed. */
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
-                                        int *actor, int c);
-extern void RefreshActorDerivedState(int *actor, int mode);
+                                        Actor *actor, int c);
+extern void RefreshActorDerivedState(Actor *actor, int mode);
 
 typedef struct {
   int x;
@@ -17,7 +18,10 @@ typedef struct {
   int z;
 } DeltaVec;
 
-int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
+/* The delta stays a by-value struct: all three words are homed together,
+   which the in-place scaling below relies on (three int parameters would
+   only home the one whose address is taken). */
+int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
                      int flags) {
   int newpos[4];
   int half[4];
@@ -34,7 +38,7 @@ int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
   } else if (g_nActorFrameDelta == 4) {
     LShiftVector3((int *)&delta, 1);
   }
-  AddVector(newpos, actor + 3, (int *)&delta);
+  AddVector(newpos, &actor->posX, (int *)&delta);
   if (flags & 1) {
     t = newpos[2] + 0x12C;
     newpos[2] = t + radius;
@@ -53,7 +57,7 @@ int MoveActorByDelta(int *actor, DeltaVec delta, int group, int radius,
     t = newpos[2] - 0x12C;
     newpos[2] = t - radius;
   }
-  CopyVector(actor + 3, newpos);
+  CopyVector(&actor->posX, newpos);
   RefreshActorDerivedState(actor, 2);
   return 0;
 }

@@ -110,7 +110,7 @@ int LookupCosine(int angle);
 int CountLeadingZeros(int x);
 
 /* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *param_1, low to high byte) onto the base 3x3 rotation matrix in param_3 (or identity if param_3 is NULL). Uses GTE rtv0 with the sine LUT at DAT_8006cc78 and cosine LUT at DAT_8006cbf8 to multiply axis-by-axis. Writes the composed matrix (5 packed words) to param_2. */
-void ApplyEulerRotation(unsigned char *euler, int *mtx, int *base);
+void ApplyEulerRotation(unsigned char *euler, MATRIX *mtx, MATRIX *base);
 
 /* 0x80017048: Rotates the 3-vector at param_2 by the 3x3 rotation matrix at param_1 using GTE rtir. The Y and Z components are negated on both input and output (PSX screen-up coord convention). Result written to param_3. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
@@ -193,7 +193,7 @@ void UnpackWorldCollisionTri(int chunk, int *verts);
 
 /* 0x80017e54: GTE depth-cue color computation. Interpolates the input RGB (param_1, packed 24-bit) toward a far color (param_2, packed as three 12-bit channels: R=bits 0-7, G=bits 4-15 masked, B=bits 12-23 masked) by IR0 factor (param_3, 0..0x1000). Returns the depth-cued RGB color in the low 32 bits, with the far-blue channel echoed in bits 32-39 (probably an artifact of the caller's unpack pattern at Gamestate0C_Draw where it stores all three output bytes into the backdrop color slots). Implementation: gte_ldRGB + gte_ldIR0 + gte_ldfcdir + gte_dpcs + gte_stRGB2. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-ulonglong ComputeDepthCuedColor(undefined4 param_1, uint param_2, undefined4 param_3);
+unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color, int t);
 
 /* 0x80017e98: Convert a buffer of RGB15 pixels (two per 32-bit word) to packed 8-bit luminance bytes. Luma = (4*R + G*(1/16+1/32) + B/1024) &gt;&gt; 3. param_2 = end-offset in bytes. */
 void ConvertRGB15ToLuma8(void *buf, int count);
@@ -635,14 +635,14 @@ int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 int FindGroundHeightBelow(int *pos, int depth);
 
 /* 0x8004df24: FindWorldFloorBelowPoint — lightweight world-only ground-height probe at a point. Differs from FindGroundHeightBelow (8004d5ec): - World chunks only (no actor grid scan). - First-hit early-exit: scans Z-chunks downward one at a time from the input Z chunk; stops as soon as any world triangle satisfying (X,Y)-containment + Y &lt; input.Y is found. - Writes only to _DAT_80075844 (per-tri surface-type byte); does NOT touch the shared hit-point / hit-normal globals. - Assumes ground Y > 0 — sentinel iVar19==0 doubles as "no hit yet". Returns floor Y (in world units, &lt;&lt; 4 of grid units), or 0 + _DAT_80075844 = -1 on no-hit. Callers: - UpdateCameraFrame (camera-vs-floor — what's the world geometry directly under the camera target). - GemPickup_Update (snap gem-display pose to local floor). World data layout: same as the other M07 probes — chunk header at _DAT_800785d4: +0x8 = X-axis ushort index, +0xc = Y/Z combined ushort index, +0x10 = triangle records (stride 0xc, 14-bit grid-quantized vertices), +0x14 = per-triangle surface-type byte array. */
-int FindWorldFloorBelowPoint(uint *param_1);
+int FindWorldFloorBelowPoint(int *pos);
 
 /* 0x8004e3c8: Actor-only sphere overlap dispatcher (no world). Args: sphere center, radius, ?, ?, exclude-actor-ptr. Walks the 4-cell actor grid at _DAT_80075778+0x1000 (no world chunk iteration). For each actor whose bounding sphere overlaps, dispatches via jumptable &UNK_8004e5b8 indexed by the actor's type byte at puVar1+2 — runs the per-actor-type contact handler (damage application, pickup trigger, push/bounce, etc). Callers: AdvanceSpyroPhysics (per-substep actor-interaction sweep) and FUN_80048d10 (post-tick actor pose finalize). */
 int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask, Actor *actor, int flag);
 
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &DAT_8006fcf4. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at _DAT_800757b0. param_1 = actor mesh index into _DAT_80078a4c table (or -1 to walk the flat list at _DAT_80078a44..+_DAT_80078a40*4). param_2/param_3 = camera rot/translate matrices. Called once at the end of DrawActors, and by Gamestate01_09/04_05/GemCutscene_Draw. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined8 EmitStaticActorMeshList(int param_1, undefined4 *param_2, undefined4 *param_3);
+void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
 
 /* 0x8004f000: Fog-cued sibling of EmitStaticActorMeshList. Same two-stage pattern but uses pre-loaded global view matrix (&DAT_80076de4..df4) + model matrix (&DAT_80076dd0..de0), and applies per-vertex depth cueing via gte_dpcs_b using _DAT_800757d4 fog RGB and _g_nFadeProgress. Cued colors are written to scratch buffer &DAT_800724f4 and fed back into the F3/F4 emit loop. Callers: Gamestate0A_Draw (world hub) + Gamestate0C_Draw (post-level treasure summary). */
 void EmitStaticActorMeshListFogged(void);

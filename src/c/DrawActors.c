@@ -1,3 +1,6 @@
+#include "funcs.h"
+#include "globals.h"
+#include "scripted_mob.h"
 #include "types.h"
 #include "vecmath.h"
 
@@ -22,62 +25,10 @@
 
 extern int abs(int x);
 
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void CopyWords(void *dst, void *src, int byte_count);
-extern void SetTransMatrix(MATRIX *m);
-extern void MulMatrix(MATRIX *a, MATRIX *b);
-extern int CountLeadingZeros(int x);
-extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
-                                          unsigned int t);
-extern void ProjectWorldPointGTE(int *dst, int *src, unsigned int shift);
-extern void ApplyEulerRotation(unsigned char *euler, MATRIX *m, MATRIX *p);
-extern void EmitDynamicActorMeshFogged(unsigned int *color);
 extern void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx,
                                           MATRIX *outMtx);
 extern void EmitDynamicActorMeshFogShaded(int *mesh, MATRIX *viewMtx,
                                           MATRIX *outMtx);
-extern void EmitStaticActorMeshList(int lod, MATRIX *viewMtx, MATRIX *worldMtx);
-
-/* One scripted-mob mesh header; only the tint word at +0x10 is read here. */
-typedef struct ScriptedMobMesh {
-  int pad00;
-  int pad04;
-  int pad08;
-  int pad0C;
-  unsigned int color; /* +0x10 */
-} ScriptedMobMesh;
-
-/* A scripted "mob" billboard: a convex ring of world-space points that gets
-   projected to screen space and stroked as an outline. */
-typedef struct ScriptedMob {
-  ScriptedMobMesh *pMesh; /* +0x00 */
-  int nPoints;            /* +0x04 */
-  int nx;                 /* +0x08 */
-  int ny;                 /* +0x0c */
-  int nz;                 /* +0x10 */
-  int nGateIndex;         /* +0x14 */
-  int pad18;
-  int pad1C;
-  int pts[8][3]; /* +0x20 */
-} ScriptedMob;
-
-extern int g_nScriptedMobViewYawSpin;
-extern int g_nScriptedMobViewPitchTilt;
-extern int g_nScriptedMobCount;
-extern ScriptedMob *g_apScriptedMobEntries[];
-extern short g_nCameraEulerRoll;
-extern short g_nCameraEulerPitch;
-extern short g_nCameraEulerYaw;
-extern int g_anCameraPos[3];
-extern int g_nVblankTickCount;
-extern int g_nLevelStormFlag;
-extern unsigned int g_dwWorldFogColor;
-extern int g_nActorMeshOtDepthBin;
-extern int g_anActorDeferredTriStack[64];
-extern int *g_pActorDeferredTriStackTop;
-extern int g_anActorScissorRect[4];
-extern int g_nFadeProgress;
-extern unsigned int g_dwActorMeshFadeColor;
 
 /* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
 extern short g_anCameraEulerPitchBlock[];
@@ -106,8 +57,7 @@ extern ScreenPt g_aMobRingScreenPts[];   /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)g_aMobRingScreenPts + ko))
 extern int
-    g_nCameraFloorSurfaceType[];   /* [-0x10] view mtx, [-0x15] world mtx */
-extern int g_nStaticMeshLodCutoff; /* static-mesh LOD cutoff */
+    g_nCameraFloorSurfaceType[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
 /* Render stage 4: draw the scripted-mob billboards, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the

@@ -19,7 +19,6 @@
 #include "level_emit_particles.h"
 
 
-extern Actor *g_pActorListBase;
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 
 Actor *Level12_SpawnActor(int type, Actor *parent) {

@@ -29,7 +29,7 @@ typedef struct {
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
 #define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
-#define MOB_ENTRY(i) ((int *)(&g_apScriptedMobEntries)[i])
+#define MOB_ENTRY(i) ((int *)g_apScriptedMobEntries[i])
 
 /* 0x80015370 (0x1074): the level-transition loader. Each tick (once the
    drive is idle past the first two stages) it runs one stage: preserve the
@@ -70,7 +70,7 @@ void TickLevelTransitionStream(int full) {
     if (g_nPreserveMobIdx >= 0) {
       char *rec;
 
-      rec = *(char **)(&g_apScriptedMobEntries)[g_nPreserveMobIdx];
+      rec = *(char **)g_apScriptedMobEntries[g_nPreserveMobIdx];
       src = rec + 0x14;
       size = *(int *)src + 0x400;
       p = (int *)((char *)g_pRenderScratchRegionBase - size);

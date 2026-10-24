@@ -18,7 +18,7 @@
  *   - The frame is laid out in first-use order with shared slots (svF for
  *     cases 14 and 109, s496 for 312/329/392, s512 for 329/76).
  *   - Struct-versus-scalar spellings decide memory dependences (cookbook
- *     A302): SPY.state, SPY.u11C/u128, SPY.bodyRotZ, g_anCollisionContactPoint[2].
+ *     A302): SPY.state, SPY.bodyYaw/frameMotionLength, SPY.bodyRotZ, g_anCollisionContactPoint[2].
  *   - Case 109's turn-and-walk idiom reuses `h` and `d`, and its node
  *     searches use `&p->nodes[i].x` (loop.c makes the 8 + 16*i giv) with
  *     `st->cur->cur = i` (one fewer st ref decides st vs which, s5/s4).
@@ -191,7 +191,6 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
   }
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define sixteen 0x10
@@ -249,8 +248,6 @@ typedef struct ExitState {
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 #define ENTER_POSE_B(a, n)                                                     \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -285,8 +282,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int f);
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int *f);
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
 #define RESET_IDLE(a)                                                          \
@@ -687,17 +682,17 @@ void Level14_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.u164 >= 0) {
+            if (SPY.readyFlag >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
 
               PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.readyFlag = 1;
 
               DespawnActorRecord(actor);
               break;
@@ -1922,7 +1917,7 @@ void Level14_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0) {
+              if (SPY.airborneFrames == 0) {
 
                 int res = CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX);
 
@@ -2048,7 +2043,7 @@ void Level14_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0 && st->count < 3) {
+              if (SPY.airborneFrames == 0 && st->count < 3) {
 
                 ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
@@ -2715,7 +2710,7 @@ void Level14_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 1024 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
+          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -2756,7 +2751,7 @@ void Level14_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 0x400 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
+          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -2825,7 +2820,7 @@ void Level14_UpdateActors(void) {
       FlierState *st = (FlierState *)actor->state;
       char pitchAngle;
 
-      if (SPY.u164 >= 2) {
+      if (SPY.readyFlag >= 2) {
 
         svA[0] = 0;
         svA[1] = 0x64;
@@ -2842,7 +2837,7 @@ void Level14_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svA, 0);
       }
 
-      if (SPY.u164 >= 3) {
+      if (SPY.readyFlag >= 3) {
         if (st->fx == 0) {
           FxNode *g = AllocWorldSparkle();
           st->fx = g;
@@ -2871,7 +2866,7 @@ void Level14_UpdateActors(void) {
         }
       }
 
-      if (SPY.u164 <= 0) {
+      if (SPY.readyFlag <= 0) {
         Actor *target = st->rider;
         if (target != 0 && target->type == 16) {
           target->mode = 0;
@@ -2952,7 +2947,7 @@ void Level14_UpdateActors(void) {
           break;
         }
         case 1: {
-          SPY.u164++;
+          SPY.readyFlag++;
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
           actor->subMode++;
           DespawnActorRecord(st->rider);
@@ -3035,7 +3030,7 @@ void Level14_UpdateActors(void) {
         } else {
           st->timer -= g_nFrameStep;
           if (CAM.state == 3) {
-            svA[0] = st->vx + (SPY.u118 >> 2);
+            svA[0] = st->vx + (SPY.motionSpeed >> 2);
             svA[1] = st->vy;
             svA[2] = st->vz;
             if (svA[2] < 0x64)
@@ -3049,7 +3044,7 @@ void Level14_UpdateActors(void) {
             svA[1] = st->vy;
             svA[2] = st->vz;
           }
-          RotateVectorByMatrix(&SPY.u034, svA, svA);
+          RotateVectorByMatrix(&SPY.bodyMtx, svA, svA);
           AddVector(svA, svA, &SPY.posX);
           SubtractVector(svA, svA, &actor->posX);
           RShiftVector3(svA, 2);
@@ -3068,7 +3063,7 @@ void Level14_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, 0);
         }
 
-        switch (SPY.u164) {
+        switch (SPY.readyFlag) {
         case 1:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {
@@ -3624,24 +3619,24 @@ void Level14_UpdateActors(void) {
               BeginGemPickupOverlay(actor);
               ZeroVector(&SPY.headLook);
               SPY.controlFlags = 0x80002147;
-              if (SPY.u09C != 0) {
-                SPY.u218 = 6;
-                SPY.u208 = SPY.u10C >> 8;
-                SPY.u20C = SPY.u110 >> 8;
-                if (SPY.u114 > 0) {
-                  SPY.u210 = 0;
+              if (SPY.airborneFrames != 0) {
+                SPY.requestState = 6;
+                SPY.requestVelX = SPY.motionX >> 8;
+                SPY.requestVelY = SPY.motionY >> 8;
+                if (SPY.motionZ > 0) {
+                  SPY.requestVelZ = 0;
                 } else {
-                  SPY.u210 = SPY.u114 >> 6;
+                  SPY.requestVelZ = SPY.motionZ >> 6;
                 }
               } else {
-                SPY.u218 = 3;
-                CopyVector(&SPY.u208, &SPY.u10C);
-                RShiftVector3(&SPY.u208, 6);
-                SPY.u210 = 0;
-                if (SPY.u208 != 0 || SPY.u20C != 0) {
-                  ScaleVector3ByRatio(&SPY.u208, VectorLength(&SPY.u208, 0), 0x60);
+                SPY.requestState = 3;
+                CopyVector(&SPY.requestVelX, &SPY.motionX);
+                RShiftVector3(&SPY.requestVelX, 6);
+                SPY.requestVelZ = 0;
+                if (SPY.requestVelX != 0 || SPY.requestVelY != 0) {
+                  ScaleVector3ByRatio(&SPY.requestVelX, VectorLength(&SPY.requestVelX, 0), 0x60);
                 }
-                SPY.u210 = 0;
+                SPY.requestVelZ = 0;
               }
             }
           }
@@ -4320,8 +4315,8 @@ void Level14_UpdateActors(void) {
         continue;
       }
       if (actor->flags & 0x80000) {
-        st->heading = SPY.u11C;
-        st->speed = SPY.u128 >> 5;
+        st->heading = SPY.bodyYaw;
+        st->speed = SPY.frameMotionLength >> 5;
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 2);

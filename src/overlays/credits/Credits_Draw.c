@@ -20,9 +20,6 @@
 #include "level_emit_particles.h"
 #include "level_flight_results.h"
 
-extern void FillBlock16();
-extern void RenderWorldChunks();
-extern void EmitStaticActorMeshList();
 
 extern unsigned char g_dwWorldFogColor;
 extern unsigned char g_bWorldFogColorG;
