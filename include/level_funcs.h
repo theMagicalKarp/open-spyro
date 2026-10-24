@@ -78,4 +78,17 @@ extern int VectorLength(int *vec, int flag);
 extern int VSync();
 extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
 
+/* Level/asset streaming helpers the credits overlay drives directly. */
+extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int marker);
+extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
+extern char *UnpackWorldDataChunks(int *p, int flag);
+extern void CopyWords(void *dst, void *src, int len);
+extern int TickCountdownByFrameDelta(void *timer, int step);
+extern int RandomSignedInRange(int a, int b);
+
+/* World/OT render entry points the credits backdrop calls. */
+extern void FillBlock16(void *dst, int value, int count);
+extern void RenderWorldChunks(int lod);
+extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
+
 #endif /* OPEN_SPYRO_LEVEL_FUNCS_H */
