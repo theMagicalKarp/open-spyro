@@ -6,7 +6,6 @@
    into the ring slot indexed by g_nMemCardRingIndex, flip that index (1 - it),
    then hand the ring index (<<4) to the card-info op handler RunMemCardInfoOp.
  */
-extern void RunMemCardInfoOp();
 
 void PollMemCardSyncRing(void) {
   int r = MemCardSync(1, &g_anMemCardSyncRing[4], &g_anMemCardSyncRing[5]);

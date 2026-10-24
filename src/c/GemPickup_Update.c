@@ -22,9 +22,6 @@
      delay slot, and case 4's `done` doubles as the case-5 table pointer (two
      sets, so sched1 does not boost it above AdvanceSpyroAnimFrame). */
 
-extern unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
-                                          int t);
-
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
 

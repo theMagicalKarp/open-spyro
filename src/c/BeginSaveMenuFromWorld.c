@@ -1,10 +1,7 @@
-#include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern int PlaySoundEffect(unsigned int sample, int a, unsigned int b, void *c);
-extern void ResetSpyroEntity(int hard);
 
 /* alias block as an INT array — +0 anim-prev byte, -6 words
    g_anSpyroWorldPos[0], -4 words g_anSpyroWorldPos[2]; the whole block must
@@ -37,7 +34,7 @@ extern int g_pSaveMenuDragonActor;
    `$2` register local: as a pseudo it is the subu's first dying input and
    local-alloc ties the ArcTan2 y argument to it; as a hard register the tie
    falls to posY, which then lands in $a1 as in the original. */
-void BeginSaveMenuFromWorld(int actor) {
+void BeginSaveMenuFromWorld(Actor *actor) {
   int vec[3];
   int owner;
   char *rec;
@@ -47,7 +44,7 @@ void BeginSaveMenuFromWorld(int actor) {
   int z;
   int yw;
 
-  owner = *(int *)actor;
+  owner = ACTOR_RAW(actor, int, state); /* actor->state moves the load (A400) */
   g_nGamestate = 0xB;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
@@ -59,7 +56,7 @@ void BeginSaveMenuFromWorld(int actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
-  g_pSaveMenuDragonActor = actor;
+  g_pSaveMenuDragonActor = (int)actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
   PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2C], 0, 0x10,
                   0);
@@ -85,7 +82,7 @@ void BeginSaveMenuFromWorld(int actor) {
   g_nSaveMenuDragonFromAngle =
       ArcTan2(ACTOR_RAW(actor, int, posX) - g_abSpyroAnimPrevBlock[-6],
               ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
-  SubtractVector(vec, &((Actor *)actor)->posX, &g_abSpyroAnimPrevBlock[-6]);
+  SubtractVector(vec, &actor->posX, &g_abSpyroAnimPrevBlock[-6]);
   g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
   z = ACTOR_RAW(actor, int, posZ);
   yw = g_nSaveMenuSpyroToYaw;

@@ -1,9 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern int g_nSpyroAnimLayer2GateFrames; /* layer-2 permissive-duration frame
-                                            counter */
-
 /* Layer-2 anim gate timer. The per-anim blockage table at
    g_abSpyroAnimDescTable+0xB8 marks anims that hand the bodypart to the primary
    layer; if neither the previous nor the current Spyro anim blocks layer 2, the

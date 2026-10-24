@@ -1,37 +1,14 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned int GetRandomU32(void);
-extern int ApproxDist2D(int *a, int *b);
-extern int FindGroundHeightBelow(int *pt, int z);
-extern int VectorLength(int *vec, int include_z);
-extern signed char ArcTan2_8bit(int a, int b);
-extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
-                                        int *actor, int c);
-extern void PlayActorMeshVoice(void *rec, int a, int b);
-extern void DivideVector3(int *dst, int *src, int n);
-
-/* The tumbling sub-record hung off an actor's +0x00 pointer. */
+/* The tumbling sub-record hung off the drop's ->state pointer. */
 struct Debris {
   int vel[3];                        /* 0x00 */
   char pad0c[2];                     /* 0x0c */
   unsigned char live;                /* 0x0e */
   char pad0f[2];                     /* 0x0f */
   unsigned char spinX, spinY, spinZ; /* 0x11 */
-};
-
-struct Actor {
-  struct Debris *debris; /* 0x00 */
-  char pad04[8];         /* 0x04 */
-  int pos[3];            /* 0x0c */
-  char pad18[0x20];      /* 0x18 */
-  short zbase;           /* 0x38 */
-  unsigned char flags;   /* 0x3a */
-  char pad3b[0xe];       /* 0x3b */
-  unsigned char state;   /* 0x49 */
-  char pad4a[8];         /* 0x4a */
-  unsigned char alpha;   /* 0x52 */
-  unsigned char kind;    /* 0x53 */
 };
 
 /* Spawn the drop that a broken/flamed actor leaves behind (0x8003abc0,
@@ -51,11 +28,10 @@ struct Actor {
    landing spot for ground and a walkable slope, integrates the ballistic arc at
    10 units of gravity per frame to count the flight time, and divides the
    offset by that count to get the launch velocity. */
-struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
-                                  int *alt) {
+Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
   int land[4];   /* sp+0x18 */
   int throw_[4]; /* sp+0x28 */
-  struct Actor *rec;
+  Actor *rec;
   int vz;
   struct Debris *dbg;
   int ang;
@@ -67,12 +43,12 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
   int d;
   int e;
 
-  id = src->kind & 0x7f;
+  id = src->dropKind & 0x7f;
   if ((unsigned int)(id - 1) < 0x7e) {
-    if (src->flags & 0x80) {
+    if (src->killGroup & 0x80) {
       return 0;
     }
-    src->flags |= 0x80;
+    src->killGroup |= 0x80;
   } else {
     int roll;
     id = 0xf;
@@ -101,25 +77,25 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
   if (id == 0xe) {
     rec = (*(struct Actor * (*)(int, struct Actor *))
                g_pfnLevelSpawnActor)(0xe, src);
-    dbg = rec->debris;
+    dbg = (struct Debris *)rec->state;
     dbg->live = 1;
     return rec;
   }
 
   rec = (*(struct Actor * (*)(int, struct Actor *)) g_pfnLevelSpawnActor)(id,
                                                                           src);
-  dbg = rec->debris;
+  dbg = (struct Debris *)rec->state;
 
   if (kind == 0) {
-    CopyVector(throw_, src->pos);
+    CopyVector(throw_, &src->posX);
     vz = 0x8c;
   } else if (kind == 6) {
-    CopyVector(throw_, src->pos);
+    CopyVector(throw_, &src->posX);
     vz = 0x12c;
     throw_[0] -= 0x100 - (int)(GetRandomU32() & 0x1ff);
     throw_[1] -= 0x100 - (int)(GetRandomU32() & 0x1ff);
   } else if (kind == 1) {
-    CopyVector(throw_, src->pos);
+    CopyVector(throw_, &src->posX);
     vz = 0x8c;
     throw_[0] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
     throw_[1] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
@@ -129,27 +105,28 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
   } else if (kind == 3 || kind == 4) {
     if ((kind == 4 || g_nSpyroState == 0xb || g_nSpyroState == 0x18 ||
          g_nSpyroState == 0x14 || g_nSpyroState == 0x2c) &&
-        (kind == 4 || (ApproxDist2D(rec->pos, g_anSpyroWorldPos) < 0x800 &&
-                       (d = rec->pos[2] - rec->zbase, e = d - g_nSpyroWorldPosZ,
-                        e > 0 ? e < 0x400 : g_nSpyroWorldPosZ - d < 0x400)))) {
-      int *p = rec->pos;
-      CopyVector(p, src->pos);
-      rec->pos[2] += 0x100;
+        (kind == 4 ||
+         (ApproxDist2D(&rec->posX, g_anSpyroWorldPos) < 0x800 &&
+          (d = rec->posZ - rec->floorOffset, e = d - g_nSpyroWorldPosZ,
+           e > 0 ? e < 0x400 : g_nSpyroWorldPosZ - d < 0x400)))) {
+      int *p = &rec->posX;
+      CopyVector(p, &src->posX);
+      rec->posZ += 0x100;
       CopyVector(dbg->vel, p);
       dbg->spinX = GetRandomU32() & 0xe;
       dbg->spinY = GetRandomU32() & 0xe;
       dbg->spinZ = GetRandomU32() & 0xe;
-      rec->state = 3;
-      rec->alpha = 0xff;
+      rec->subMode = 3;
+      rec->updateDist = 0xff;
       return rec;
     }
-    CopyVector(throw_, src->pos);
+    CopyVector(throw_, &src->posX);
     vz = 0x8c;
     throw_[0] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
     throw_[1] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
   } else if (kind == 5) {
-    CopyVector(rec->pos, src->pos);
-    rec->pos[2] += 0x100;
+    CopyVector(&rec->posX, &src->posX);
+    rec->posZ += 0x100;
     ZeroVector(dbg->vel);
     return rec;
   }
@@ -157,18 +134,18 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
   if (hint != 0) {
     CopyVector(land, hint);
   } else {
-    CopyVector(land, src->pos);
+    CopyVector(land, &src->posX);
     land[2] += 0x100;
   }
 
   throw_[2] += 0x400;
   hit = FindGroundHeightBelow(throw_, 0x800);
   throw_[2] -= 0x400;
-  ang = ArcTan2_8bit(g_anCollisionProbeVec[2],
-                     VectorLength(g_anCollisionProbeVec, 0));
+  ang = (signed char)ArcTan2_8bit(g_anCollisionProbeVec[2],
+                                  VectorLength(g_anCollisionProbeVec, 0));
   if (hit == 0 || ang >= 0x18 ||
       DispatchActorContactAtSphere(throw_, 0xc8, 0, 0, 0, 0) != 0) {
-    CopyVector(throw_, src->pos);
+    CopyVector(throw_, &src->posX);
   }
   n = 0;
 
@@ -180,7 +157,7 @@ struct Actor *SpawnActorDeathDrop(struct Actor *src, int kind, int *hint,
     n += 1;
   }
 
-  CopyVector(rec->pos, land);
+  CopyVector(&rec->posX, land);
   SubtractVector(throw_, throw_, land);
   DivideVector3(throw_, throw_, n);
   throw_[2] = vz;

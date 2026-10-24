@@ -17,8 +17,6 @@
    Start/Select buttons open the pause and inventory menus (a disconnected or
    unknown pad type forces the pause menu). Every path ends in the SPU tick
    except the early returns. */
-extern void Credits_Update(void);     /* credits overlay entry (0x8007AA50) */
-extern void Titlescreen_Update(void); /* titlescreen overlay entry */
 
 void GamestateUpdate(void) {
   g_nGamePaused = 0;

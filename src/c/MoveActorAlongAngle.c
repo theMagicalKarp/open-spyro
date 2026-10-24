@@ -15,7 +15,6 @@
    contact, 2 on world/step rejection, 0 when the move was committed. */
 
 extern short g_anSineLut[];
-extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
                         int radius, int flags) {

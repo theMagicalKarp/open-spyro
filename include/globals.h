@@ -351,6 +351,7 @@ extern int g_anCameraParamScriptedTarget[6];                 /* 0x8006cb5c */
 extern int g_anCameraParamModeC_ScriptedFollow[6];           /* 0x8006cb74 */
 extern int g_anFogFullScreenTriPairSxy[6];                   /* 0x8006cb8c */
 extern short g_anSineLut[321];                               /* 0x8006cbf8 */
+extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 (quarter turn); a distinct symbol so cse cannot derive the sine base from it */
 extern void *g_apWorldChunkQuadCornerVertPtrs[4];            /* 0x8006cf48 */
 extern void *g_apWorldChunkSubQuadVertPtrs[16];              /* 0x8006cf58 */
 extern int g_anWorldChunkQuadSubdiv2EdgeTris[12];            /* 0x8006cf98 */

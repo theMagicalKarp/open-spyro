@@ -13,7 +13,6 @@
    [-2] is g_pRenderScratchRegionBase. */
 /* Held-base view of g_nVsyncFrameEndCount; [-1] = g_nVsyncFramePaceAnchor. */
 /* cosine view of the sine LUT (g_anSineLut + 0x80). */
-extern short g_anCosineLut[];
 /* Held-base alias for g_dwHudBobSinePhase (0x80077fe4): [1] is the mod-9 HUD
    frame counter and [0x14c] is &g_anLevelSpriteTexWordPairs[2]. */
 extern int g_adwHudBobSinePhaseBlock[];

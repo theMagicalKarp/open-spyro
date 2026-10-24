@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void CallLibapiSysSlot10(void);
 
 /* Brings the console hardware subsystems back to a known idle state: blanks the
    display, re-inits the CD, clears the CD read callback, the VSync callback and

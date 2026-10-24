@@ -5,7 +5,6 @@
    sized view holds one base register for the pair (A22 / B-i rule 2). */
 extern volatile int g_anLightSweepAngleBlock[8];
 extern volatile int g_nLightSweepAngle;
-extern short g_anCosineLut[];
 
 /* 0x80058cc0: spins the primary light direction vector around the world Y
    axis. Advances the byte angle accumulator g_nLightSweepAngle by `step`

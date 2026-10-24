@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -24,18 +25,7 @@
    address so cse keeps it as a held base; the empty volatile asm keeps the
    g_pGamestate0cRecord load ahead of it.
 */
-extern int sprintf();
-extern int strlen(const char *s);
-extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
-                              int flags);
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern int ComputeDepthCuedColor(unsigned int fog, unsigned int color, int t);
-extern void DrawSync(int mode);
-extern int VSync(int mode);
-extern DISPENV *PutDispEnv(DISPENV *env);
-
 extern int g_nGamestate0cTimer[]; /* transition fade counter */
-extern unsigned short g_anCosineLut[];
 
 void Gamestate0C_Draw(void) {
   int pos[3];
@@ -90,7 +80,7 @@ void Gamestate0C_Draw(void) {
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
         int *fade = g_nGamestate0cTimer;
-        unsigned short *cos = g_anCosineLut;
+        unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
           rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
           rec -= 0x58;

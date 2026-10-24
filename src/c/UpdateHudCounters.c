@@ -26,8 +26,6 @@
    the sparx-food butterflies out around their ring, and it closes by converting
    every 20 butterflies into an extra life (capped at 99). */
 
-extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
-
 /* Held-base views (A20/A22/A25).  The original materializes ONE base per group
    and reaches the neighbours off it; every other site of the same address stays
    on the plain absolute symbol, which is the per-site A240 split. */

@@ -2,7 +2,7 @@
    meat" (3708 b). Builds every piece of per-level runtime state out of the
    bundle the CD stream just dropped in g_pPathTableBuffer. Callers:
    LoadAndStartLevelFromCd and TickLevelTransitionStream (case 0xd);
-   param_1 == 0 is the light path (no chunk-anim reset, no overlay hook).
+   fullSetup == 0 is the light path (no chunk-anim reset, no overlay hook).
 
    The bundle is a chain of self-sizing chunks: word 0 is the chunk's total
    byte size, word 1 the entry count, and the entries follow. Everything after
@@ -10,23 +10,10 @@
    pointer + count published to a global and its stored offsets rebased onto
    the chunk itself. */
 
-#include "actor.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
-
-extern void StopAllSoundExceptMask(unsigned int mask);
-extern void ResetPadFrameSubstepTable(unsigned int *pad);
-extern void ResetSpyroEntity();
-extern void ChangeSpyroState();
-extern void FillWord(void *dst, unsigned int value, int byte_count);
-extern void FindGroundHeightBelow(int *pos, int range);
-extern void ResetWorldParticleTables(void);
-extern void ResetWorldChunkAnimations(void);
-extern void InitHudCounters(int full);
-extern int HandleMusicCommand(int track, int arg);
-
-extern short g_anCosineLut[];
 
 struct CameraParamBlock {
   int w[6];
@@ -34,7 +21,7 @@ struct CameraParamBlock {
 
 /* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
    alloc hands `tb` a1, as in the original. */
-int BuildLoadedLevelRuntime(int fullSetup) {
+void BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int pad[8];
   int dyaw;
@@ -512,5 +499,5 @@ sprites:
         (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
     InitHudCounters(1);
   }
-  return HandleMusicCommand(g_nCurrentMusicTrack, 1);
+  HandleMusicCommand(g_nCurrentMusicTrack, 1);
 }

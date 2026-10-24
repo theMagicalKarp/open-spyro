@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -13,8 +14,6 @@
    CdlReadS at the track LBA (fresh track) or at the saved read head (resume).
    On a successful ReadS the fade ramps back up to g_nCdAudioVolume_blk; a
    rejected command re-queues itself. */
-extern int CdControlBlocking(int cmd, char *param, char *result);
-extern char *CdIntToPos(int lba, char *loc);
 
 void HandleMusicCommand(int track, int cmd) {
   unsigned int *status;

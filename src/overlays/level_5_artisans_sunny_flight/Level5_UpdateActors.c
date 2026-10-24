@@ -66,7 +66,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int GetGroundTriggerRegionType(int *pos);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -166,7 +165,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 
@@ -246,8 +244,6 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-extern int TweenActorAlongPath(Actor *actor, unsigned char *path, int *a, int *b,
-                          int c, int d);
 
 /* Types 0x1E1..0x1E3: the walker's embers. */
 typedef struct EmberState {

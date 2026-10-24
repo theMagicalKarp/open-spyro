@@ -72,7 +72,6 @@
 #define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int GetGroundTriggerRegionType(void);
 
 /* ==== Helper macros ====
  *
@@ -174,7 +173,6 @@ typedef struct ExitState {
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
 
-extern volatile unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 extern int g_nGemPickupCamPathReverseFlag;

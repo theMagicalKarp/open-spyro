@@ -22,7 +22,7 @@ int GetSoundVoiceStatusByOwner(Actor *actor, int a);
 void HideActorRenderRecord(Actor *actor);
 void InitActorRenderDefaults(Actor *actor);
 void InsertActorIntoSpatialGrid(Actor *actor);
-void PlaySoundEffect(int a, Actor *actor, int b, void *c);
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 void StopSoundVoicesByOwner(Actor *actor, int mode);
 void TickGemCutsceneActorAnims(struct Actor **list, int mode);
 void TickGemPickupBurstEntity(Actor *actor);
@@ -30,13 +30,13 @@ void TickGemPickupBurstEntity(Actor *actor);
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not
  * yet named. */
 void BeginSaveMenuFromWorld(Actor *actor);
-void StubActorHook(Actor *actor);
+void StubActorHook(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int a);
 void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
-void PlayActorMeshVoice(Actor *actor, int a, int b);
+void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 void BurstActorWithSound(Actor *actor, int a);
 int TurnActorYawTowardAngle(Actor *actor, int heading, int a, int b, int c);
 int SteerActorYawTowardSpyro(Actor *actor, int *a, int *b, int c, int d, int e);
@@ -44,11 +44,11 @@ int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int a, int b, int c);
 int MoveActorAlongHeading(Actor *actor, int a, int b, int c, int d);
 int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
 int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
-void UpdateActorWander(Actor *actor, void *st);
+void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int SelectActorLodBand(Actor *actor, int handle);
 void TickActorFlameGlow(Actor *actor);
-int SpawnActorRotBillboard(Actor *actor, int *tbl);
-Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
+int SpawnActorRotBillboard(Actor *actor, int *offset);
+Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 void SetActorGroupState(Actor *actor, int a);
 void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
                              int distLim, int zLim, int xyLim, int angLim);
@@ -59,7 +59,7 @@ void MarkActorCommittedKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
 int TryMoveActorForward(Actor *actor, int a, int b, int c, int d);
 void SpawnNameLetterActors(Actor *actor, int mode);
-void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int d, int e);
+void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
 

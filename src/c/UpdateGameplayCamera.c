@@ -1,10 +1,8 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
-
-extern int CheckLineOfSightSegment(int *from, int *to);
-extern int ComputeCameraToTargetAngle(int *pos);
 
 #define CAM g_anCameraPosBlock
 #define CAM_EYE 0x03           /* g_anCameraEyeTarget */

@@ -57,7 +57,7 @@ void RelocateMobActorTable(void *table);
 int RelocateActorMeshHeader(int *table);
 
 /* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pPathTableBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). param_1 = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nLevelStormFlag for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(&gt;&gt;4) : read path-table head; gamestate 5 (game over, levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIntroIndex; g_nScriptedRespawnFlag keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(0x20)=fly, zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamMode2Front ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) death restore: g_anDeathReplaySpawnTable[g_nDeathTryIndex*4], g_nDeathRespawnPending=1, g_pDeathReplayCursor (replay mode zero-fills 0x80600000). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anRunningKillBitmap (despawn/hide). (14) snapshot running -&gt; committed bitmap. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pLevelOverlayInitRecord = (*g_pfnLevelSpawnActor)(0x78,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
-int BuildLoadedLevelRuntime(int fullSetup);
+void BuildLoadedLevelRuntime(int fullSetup);
 
 /* 0x800144c8: Synchronous level load + start. Used by LevelIntro_Update once the "ENTERING WORLD" intro fade reaches its load point. Steps: (1) StopAllSoundExceptMask(0) — stop all SFX and music; (2) compute level archive offset = DAT_80078600 + (*(int*)&DAT_8007a720[level_intro_idx*0x10]) where level_intro_idx = DAT_80075964 — DAT_8007a720 is a per-level descriptor table (0x10-byte entries, first int = level's byte offset within the archive); (3) CdReadSyncSectors(LBA=DAT_80076b90, dst=DAT_800785e4, count=DAT_80078604, offset=level_off, marker=600) blocks the whole load; (4) FUN_8001364c(1, dst, count, level_off) = the level-loader-meat (unpacks the world data into RAM); (5) RestartSpyroAnimWithState(audio_initialized ? 0x20 : 0, dst, count, level_off); (6) g_nLevelReadyFlag = 3 — signals LevelIntro_Update that the load completed. */
 void LoadAndStartLevelFromCd(void);
@@ -204,7 +204,7 @@ void AddBiasToColorRuns(void *dst, void *src, int bias);
 /* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at DAT_80075710 (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from param_2 and advances *param_2 by param_3 between glyphs. Sibling of BuildTextSprites. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
 
-void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3, int param_4, int param_5);
+void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 
 /* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each endpoint's RGB is tinted by the angular distance between its screen-relative angle (vs (256,120)) and a reference angle in DAT_800770f4 — radial-light effect for menu borders. Called by Gamestate02_03_06_Draw and DrawShadedMenuBox. */
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
@@ -429,7 +429,7 @@ void GamestateUpdate(void);
 void BuildCameraViewMatrix(void);
 
 /* 0x80033e40: Line-of-sight segment test. Marches from param_1 toward param_2 in 0x400-length steps (segment length / 0x400 iterations) and calls FUN_8004ae38 (world collision query) at each step. Returns 1 if every step is clear, 0 on the first hit. Shared by UpdateGameplayCamera for camera occlusion tests; M07 will likely reuse for projectile and entity LOS. */
-unsigned int CheckLineOfSightSegment(int *param_1, int *param_2, unsigned int param_3, int *param_4);
+int CheckLineOfSightSegment(int *from, int *to);
 
 int ComputeCameraToTargetAngle(int *target);
 
@@ -740,7 +740,7 @@ void UpdateHudCounters(void);
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls FUN_8005ba60 (sound channel reset), seeds master volume + CD-DA mix words at DAT_80075f08..DAT_80076240, then FUN_8005cc58 / FUN_8005c7ac / FUN_8005c7d4 / FUN_8005cb7c (sound-bank registration), FillWord(DAT_80075f30, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);
 
-void PlaySoundEffect(int a, Actor *actor, int b, void *c);
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops one SPU voice by index. param_1 = voice index (low 7 bits, 0..23). Sets bit param_1 of _DAT_8007623c (pending hardware-keyoff mask), then if param_2 is 2 or 4: resets the table row at &DAT_80075f30 + (idx*0x1c) — writes 0x7f to the busy-marker via the writeback pointer at +0x18, zeros owner-key +0x00 + writeback ptr +0x18 + interp delta +0x14, sets flags ushort +0x0e=0x40 (idle), sets byte +0x0d=0xff (alignment). The 24-entry × 0x1c table at &DAT_80075f30 holds per-voice runtime state. Sole caller: GemPickup_Update. */
 void StopSoundVoiceByIndex(int index, int mode);
@@ -884,7 +884,7 @@ undefined InstallSpuDmaCallback(void);
 
 /* 0x8005c7ac: Apply SPU voice attr struct to all selected voices and flush. Thin wrapper for FUN_8005cfec(attr, 0, 0x17, 0): iterates voice indices 0..23, writes attr fields (volume/pitch/ADSR/sample-addr/mode) into the voice register shadow at PTR_VOICE_00_LEFT_RIGHT_80073554 for each voice whose bit is set in attr[0] (voice select mask), then issues hardware flush via FUN_8005c720. Equivalent to PSY-Q SpuSetVoiceAttr. Callers: InitSoundEngine, PlaySoundEffect, TickActiveSoundVoices. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ApplySpuVoiceAttr(uint *param_1);
+void ApplySpuVoiceAttr(unsigned int *attr);
 
 /* 0x8005c7d4: PSY-Q SpuSetKey-equivalent voice key-on / key-off applier. param_1 = 0 (keyoff) or 1 (keyon); param_2 = 24-bit voice mask (low 16 + high 8). Dispatches by SPU-state callback-mode flag at +0x10 bit 0: SYNC path writes SPU registers +0x188/+0x18a (KON lo/hi) or +0x18c/+0x18e (KOFF lo/hi) directly and updates the live key-mask DAT_800730ec; DEFERRED path (called from event-callback context) queues into shadow registers _DAT_800777a8/aa (KON) or _DAT_800777ac/ae (KOFF), accumulates into DAT_80073114, and sets pending-flush bit DAT_80073118 |= 1. Sole caller: TickSpuPerFrame (drains _DAT_80076238 pending-keyon + _DAT_8007623c pending-keyoff masks). */
 void SetSpuKeyMask(int on, unsigned int voices);
@@ -1260,7 +1260,7 @@ int CdControlForce(unsigned char com, char *param);
 
 /* 0x80063eac: libcd CdControlB: same 3-retry CdlSetloc + command pattern as CdControl, but on success also CdSync(0, result) waits for completion (status 2 = CdlComplete). Returns true only if both the command issue and the post-command sync succeed. The blocking variant used when the caller wants the command finished before returning. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-bool CdControlBlocking(byte param_1, undefined1 *param_2, undefined1 *param_3);
+int CdControlBlocking(int com, char *param, char *result);
 
 /* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO mixer registers via index-2/index-3 register switching. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1284,7 +1284,7 @@ undefined FUN_80064074(int param_1);
 
 /* 0x80064094: libcd CdIntToPos: converts a signed sector LBA to a 3-byte BCD CdlLOC (minute, second, frame). +0x96 = 150-sector lead-in offset; /0x4b = /75 frames per second; /0x3c = /60 seconds per minute. Each MSF component is BCD-encoded via the `(x + (x/10)*6)` trick so the result can be written directly to the libcd command FIFO. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined CdIntToPos(int param_1, char *param_2);
+char *CdIntToPos(int lba, char *loc);
 
 /* 0x80064198: libcd CdPosToInt: 3-byte BCD CdlLOC (M:S:F) -> signed LBA. Inverse of CdIntToPos. Decodes each BCD byte as (hi*10 + lo), recombines minutes*60*75 + seconds*75 + frames - 150 (lead-in offset). */
 int CdPosToInt(unsigned char *pos);
@@ -1913,13 +1913,16 @@ void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
 
 /* 0x8003851c: Plays the voice sample named in the actor's mesh record (g_apActorMeshTable[actor->type] + arg1, byte 4) keyed to arg2, or to the actor's own +0x54 slot after stopping its previous voices. */
-void PlayActorMeshVoice(Actor *actor, int a, int b);
+void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
 int TurnActorYawTowardAngle(Actor *actor, int heading, int a, int b, int c);
 
 /* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
-int SpawnActorRotBillboard(Actor *actor, int *tbl);
+/* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
+int FindFreeRotBillboardSlot(void);
+
+int SpawnActorRotBillboard(Actor *actor, int *offset);
 
 /* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (+0x43), or on a0 alone when the group index is out of range. */
 void SetActorGroupState(Actor *actor, int value);
@@ -1952,7 +1955,7 @@ int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
 int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
 
 /* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
-void UpdateActorWander(Actor *actor, void *st);
+void UpdateActorWander(Actor *actor, WanderBlock *wb);
 
 /* 0x8003a9ec: Nudges the actor's LOD band and points its mesh-table entry (+0x4C) at the matching VRAM page; returns the band. */
 int SelectActorLodBand(Actor *actor, int handle);
@@ -1967,7 +1970,7 @@ void SetActorGroupStateExcept(Actor *actor, int value, int match);
 int TryMoveActorForward(Actor *actor, int a, int b, int c, int d);
 
 /* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte waypoints from +8), wrapping the index forward or back, and steers toward the current waypoint with speed dist>>4 capped. */
-void FollowActorWaypointPath(Actor *actor, void *path, int a, int b, int c, int d, int e);
+void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 
 /* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the shortest delta. */
 int LerpAngle8(int a, int b, unsigned char c);
@@ -2041,7 +2044,7 @@ void StubRewardHook(void);
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
-void StubActorHook(Actor *actor);
+void StubActorHook(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */
@@ -2067,7 +2070,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius, int s
 int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 /* 0x8003abc0: Spawn the drop (gem/item/debris) a broken or flamed actor leaves. */
-Actor *SpawnActorDeathDrop(Actor *actor, int a, int b, void *c);
+Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 
 /* 0x8003b0dc: True when any actor of pickup group `group` has type byte (+0x48) < 0x80. */
 int PickupGroupHasLiveActor(int a0);
@@ -2138,5 +2141,33 @@ void BurstActorWithSound(Actor *actor, int a);
  * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
  * at them; `arg` lands in GTE RBK and seeds the spark colour. */
 void BurstActorIntoSparks(void *actor, int arg);
+
+/* 0x80016fd0: Transpose the packed 3x3 short matrix at src into dst (three
+ * halfword-field swaps; the 5th word passes through). */
+void TransposePackedMatrix(unsigned int *dst, unsigned int *src);
+
+/* 0x80016490: CD read-completion callback (CdReadCallback): on CdlComplete
+ * clears the in-flight + watchdog state, otherwise re-seeks and re-issues the
+ * read. */
+void CdReadCompleteCallback(unsigned char intr);
+
+/* 0x8002ba68: Blank the display and reset CD, callbacks, pads and GPU before
+ * handing the machine to another executable (LaunchCrashDemo). */
+void QuiesceHardwareForExec(void);
+
+/* 0x8005debc (SDK): call slot 0x10 of the libapi system vtable
+ * (g_pLibapiSysVtable); QuiesceHardwareForExec's final reset step. */
+void CallLibapiSysSlot10(void);
+
+/* 0x8006635c (SDK): memory-card info op handler; PollMemCardSyncRing passes
+ * the sync-ring index << 4. */
+void RunMemCardInfoOp(int op);
+
+/* Overlay entry points GamestateUpdate / GamestateDraw dispatch to (linked
+ * against the titlescreen and credits overlays). */
+void Titlescreen_Update(void);
+void Titlescreen_Draw(void);
+void Credits_Update(void);
+void Credits_Draw(void);
 
 #endif /* OPEN_SPYRO_FUNCS_H */

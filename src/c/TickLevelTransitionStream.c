@@ -3,10 +3,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern int g_anWorldRenderMeshBlock[]; /* [0] chunk count, [1] chunk array,
-                                          [4] g_dwWorldFogColor */
-extern short g_anCosineLut[];
-
 extern void *g_pSharedLoadBuffer;   /* level splash image buffer */
 extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
 

@@ -19,9 +19,6 @@
    form, and a single-set destination would be boosted to max priority by
    sched.c's birthing_insn_p and sink below the second base's `la`. */
 
-extern int g_anWorldRenderMeshBlock[]; /* 0x80078a40: [0] chunk count, [1] chunk
-                                          array, fog colour bytes at [4] */
-
 void RespawnOrGameOver_Update(void) {
   int unused[8];
   int mode;

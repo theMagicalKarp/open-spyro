@@ -13,6 +13,13 @@
  * dispatches. */
 extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
+/* Ground-trigger region type under a probe point. Unprototyped on purpose:
+ * some clones pass the point, others call it bare with $a0 already holding it. */
+extern int GetGroundTriggerRegionType();
+
+/* Spyro's persistent euler Z byte, re-read on every access. */
+extern volatile unsigned char g_bSpyroPersistentEulerZ;
+
 /* Model table entry, indexed by actor->type (model.h). */
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
@@ -947,6 +954,13 @@ typedef struct PostPath {
   short dir; /* 0x06 walking direction, +1 or -1 */
   PostPoint pts[2]; /* 0x08 */
 } PostPath;
+
+/* Index of the path point nearest the actor (written to *idx). */
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
+
+/* Path tweens used by the patrol/post classes. */
+extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
+                               int d);
 
 typedef struct PostState {
   PostPath *path; /* 0x00 */

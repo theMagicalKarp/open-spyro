@@ -6,8 +6,6 @@
 extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
-extern int *g_pScriptedCameraView; /* the same pointer, absolute form for the
-                                      post-call re-read */
 
 /* The camera's euler angles: three consecutive shorts from g_nCameraEulerRoll.
  */

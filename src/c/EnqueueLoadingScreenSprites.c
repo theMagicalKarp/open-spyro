@@ -19,8 +19,6 @@
    relative to whichever register already holds a related one, which is what
    puts the original's held bases (and loop.c's hoist order) in place. */
 
-extern unsigned short g_anCosineLut[]; /* g_anSineLut + 0x80 (quarter turn) */
-
 /* Distinct incomplete-array views of the five g_abHudCounterDisplayState
    bytes: each block loads its own flag at [0] and derives its record address
    off the same base. */
@@ -79,8 +77,8 @@ void EnqueueLoadingScreenSprites(void) {
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
           rec[0x46] =
-              g_anCosineLut[(*(int *)(g_abHudGemRollBlock + 0xC) * 4 + phase) &
-                            0xFF] >>
+              ((unsigned short *)g_anCosineLut)
+                  [(*(int *)(g_abHudGemRollBlock + 0xC) * 4 + phase) & 0xFF] >>
               7;
           *slot = rec;
           slot += 1;
@@ -129,8 +127,9 @@ void EnqueueLoadingScreenSprites(void) {
     if (g_nHudButterflyCachedCount > 0) {
       do {
         shade =
-            ((short)
-                 g_anCosineLut[(g_nLightSweepAngle - ((i << 8) / 20)) & 0xFF] >>
+            ((short)((unsigned short *)
+                         g_anCosineLut)[(g_nLightSweepAngle - ((i << 8) / 20)) &
+                                        0xFF] >>
              7) +
             0x80;
         scratch[0] = shade;

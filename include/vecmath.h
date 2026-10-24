@@ -20,6 +20,9 @@ int LookupCosine(int angle);
 int ArcTan2(int x, int y, int mode);
 int ArcTan2_8bit(int x, int y);
 
+/* libc abs (gcc expands it inline). */
+int abs(int x);
+
 /* Shortest angle deltas: absolute and signed, 8- and 12-bit. */
 int AbsAngleDelta8(int a, int b);
 int AbsAngleDelta12(int a, int b);

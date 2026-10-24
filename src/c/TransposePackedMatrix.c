@@ -1,3 +1,4 @@
+#include "funcs.h"
 #include "globals.h"
 
 /* 0x80016fd0, 120 bytes -- transpose the packed 3x3 short matrix at src into
