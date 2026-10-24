@@ -9,7 +9,7 @@
 
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
-  int unk04;           /* 0x04 */
+  int pad04;           /* 0x04 */
   int collision;       /* 0x08 collision record; < 0 (a KSEG0 pointer) when the
                         * actor can be hit, 0 / >= 0 when not (overlay target
                         * scans skip those) */
@@ -112,7 +112,7 @@ typedef struct PathData {
 typedef struct WanderBlock {
   int homeX;                     /* 0x00 home point */
   int homeY;                     /* 0x04 */
-  int unk08;                     /* 0x08 */
+  int pad08;                     /* 0x08 */
   unsigned char speed;           /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
   unsigned char turnRate;        /* 0x0D */
   unsigned char contact;         /* 0x0E move contact group, also the probe radius */
