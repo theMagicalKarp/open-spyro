@@ -1,10 +1,9 @@
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern void CopyWords(void *dst, void *src, int byte_count);
-
-/* 0x80059474 (0xF8) — latch `actor`'s position (+0xC) and facing as the
+/* 0x80059474 (0xF8) — latch `actor`'s position and facing as the
    level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
    the anchor valid, bias spawn Z up 0x164, snapshot the level's rescued/gem
    tallies into the persistence block, merge the pending block into the
@@ -22,14 +21,14 @@ extern void CopyWords(void *dst, void *src, int byte_count);
      arg copy schedules ahead of it. Assigning `src` before the call — in any
      position, including at the call itself — always emits the addiu first. */
 
-void SetSpawnAnchorFromActor(unsigned char *actor, int yaw) {
+void SetSpawnAnchorFromActor(Actor *actor, int yaw) {
   int *new_var;
   int *dst;
   int *src;
   int i;
   int t;
   g_anLevelSpawnYawBlock[0] = (yaw << 4) & 0xFFF;
-  CopyVector((int *)(&g_anLevelSpawnYawBlock[-3]), (int *)(actor + 0xC));
+  CopyVector((int *)(&g_anLevelSpawnYawBlock[-3]), &actor->posX);
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = &g_anLevelSpawnYawBlock[-19];

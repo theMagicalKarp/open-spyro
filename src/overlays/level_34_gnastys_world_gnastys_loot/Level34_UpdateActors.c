@@ -66,7 +66,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -167,8 +166,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -200,8 +197,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -278,7 +273,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 /* Type 218: catapult. Charging it winds it up; when it swings it flings the
  * linked actor along an arc. */
 
-extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */ /* kill bitmap, one bit per pool actor */
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)

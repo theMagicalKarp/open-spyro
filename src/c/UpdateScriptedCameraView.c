@@ -8,9 +8,6 @@ extern int *g_apScriptedCameraViewBlock[];
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
 
-extern int g_anScriptedCameraPresetRecords[]; /* 3 scripted-camera records,
-                                                 stride 0x38 */
-
 /* Camera updater for mode 0x8000000e (scripted vantage triplet). While the
    level-load state machine is finished (g_nCdStreamState < 0) it just re-picks
    the per-state camera mode, unless Spyro is in one of the states that own the

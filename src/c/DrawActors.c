@@ -23,13 +23,6 @@
    - the mesh colour is read through a plain (non-struct) MEM so it is not
      hoisted above the preceding scalar stores. */
 
-extern int abs(int x);
-
-extern void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx,
-                                          MATRIX *outMtx);
-extern void EmitDynamicActorMeshFogShaded(int *mesh, MATRIX *viewMtx,
-                                          MATRIX *outMtx);
-
 /* Held-base alias for &g_nCameraEulerPitch (0x80076e1e). */
 extern short g_anCameraEulerPitchBlock[];
 

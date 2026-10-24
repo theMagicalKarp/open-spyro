@@ -1,6 +1,5 @@
+#include "funcs.h"
 #include "globals.h"
-
-extern void QuiesceHardwareForExec(void);
 
 /* Tears the running game down and chain-loads the crash/demo executable: logs
    "Shutting Down", quiesces the hardware (QuiesceHardwareForExec), deinits and

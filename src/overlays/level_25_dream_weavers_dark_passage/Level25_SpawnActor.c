@@ -73,8 +73,6 @@ typedef struct TrackState {
 } TrackState;
 
 
-extern int abs(int n);
-extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
 Actor *Level25_SpawnActor(int type, Actor *parent) {
   Actor *rec;

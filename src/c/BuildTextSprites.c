@@ -4,19 +4,19 @@
 
 /* Emit a glyph-sprite chain for a UI string, tracking per-glyph kerning: per
    non-space byte allocate a 0x58-byte SPRT slot at g_pSpriteRecordWriteCursor
-   (queue tail, grows down), copy the pen from *param_2, map the byte to a font
+   (queue tail, grows down), copy the pen from *pos, map the byte to a font
    tile ('0'-'9', 'A'-'Z', and specials '!',',','?','.') and advance the pen by
-   the digit-advance param_4 after digits / '!'/'?', else by the glyph width
-   param_3->unk0. Spaces advance the pen by 3/4 of the glyph width.
+   the digit-advance spacing after digits / '!'/'?', else by the glyph width
+   attr->unk0. Spaces advance the pen by 3/4 of the glyph width.
    (0x800181ac, 0x2a0 bytes.) */
 /* Three things in the body below are load-bearing; do not "clean" them up.
    1. The do/while(0) nests are a ref-count dial (A238). global.c weights
       REG_N_REFS by loop depth, and the three long-lived pseudos here race for
-      s0: flag 15 refs/109 insns (1.65) beats param_1 14/118 (1.42) beats
-      param_2 13/118 (1.32), where the original wants param_2 -> s0,
-      param_1 -> s1, flag -> s2. The 2-deep nest on `param_1 += 1;` takes
-      param_1 to 16 refs and the 6-deep nest on `*param_2 = adv;` takes param_2
-      to 19; 5 is not enough (the pair ties and the lower allocno, param_1,
+      s0: flag 15 refs/109 insns (1.65) beats text 14/118 (1.42) beats
+      pos 13/118 (1.32), where the original wants pos -> s0,
+      text -> s1, flag -> s2. The 2-deep nest on `text += 1;` takes
+      text to 16 refs and the 6-deep nest on `*pos = adv;` takes pos
+      to 19; 5 is not enough (the pair ties and the lower allocno, text,
       wins).
    2. The pen advance is stored once PER ARM through a block-scoped `adv`
       (A201). A shared carrier is a global allocno and can only reach v1; the
@@ -32,13 +32,13 @@
       `li a2,0x58` sink to the `jal FillWord` delay slot instead of filling the
       load-delay hole. */
 
-void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
-                       int param_4, int param_5) {
+void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
+                       int flags) {
   unsigned char bVar1;
   int iVar1;
   int ch;
   int flag;
-  bVar1 = *param_1;
+  bVar1 = *text;
   flag = 1;
   while (bVar1 != 0) {
     if ((bVar1 & 0xFF) != 0x20) {
@@ -50,18 +50,17 @@ void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
       CopyVector(
           (int *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
                   0xc),
-          param_2);
-      bVar1 = *param_1;
+          pos);
+      bVar1 = *text;
       if ((bVar1 == 0x21) || (bVar1 == 0x3f)) {
         flag = 1;
       }
       if (flag == 0) {
         void *r = *((void *volatile *)(&g_pSpriteRecordWriteCursor));
-        *((int *)(((int)r) + 0x10)) =
-            (*((int *)(((int)r) + 0x10))) + param_3[1];
-        *((int *)(((int)r) + 0x14)) = param_3[2];
+        *((int *)(((int)r) + 0x10)) = (*((int *)(((int)r) + 0x10))) + attr[1];
+        *((int *)(((int)r) + 0x14)) = attr[2];
       }
-      ch = *param_1;
+      ch = *text;
       if (((unsigned int)(ch - 0x30)) < 10) {
         *((unsigned short *)(((int)(*(&g_pSpriteRecordWriteCursor))) + 0x36)) =
             ch + 0xd4;
@@ -88,26 +87,26 @@ void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
         void *r = *((void *volatile *)(&g_pSpriteRecordWriteCursor));
         *((unsigned short *)(((int)r) + 0x36)) = 0x4c;
         *((int *)(((int)r) + 0x10)) =
-            (*((int *)(((int)r) + 0x10))) - ((param_3[0] * 2) / 3);
+            (*((int *)(((int)r) + 0x10))) - ((attr[0] * 2) / 3);
       }
       *((unsigned char
              *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
                 0x47)) = 0x7f;
       *((unsigned char
              *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x4f)) = param_5;
+                0x4f)) = flags;
       *((unsigned char
              *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
                 0x50)) = 0xff;
       if (flag != 0) {
-        int adv = (*param_2) + param_4;
+        int adv = (*pos) + spacing;
         do {
           do {
             do {
               do {
                 do {
                   do {
-                    *param_2 = adv;
+                    *pos = adv;
                   } while (0);
                 } while (0);
               } while (0);
@@ -115,14 +114,14 @@ void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
           } while (0);
         } while (0);
       } else {
-        int adv = (*param_2) + param_3[0];
+        int adv = (*pos) + attr[0];
         do {
           do {
             do {
               do {
                 do {
                   do {
-                    *param_2 = adv;
+                    *pos = adv;
                   } while (0);
                 } while (0);
               } while (0);
@@ -131,23 +130,23 @@ void *BuildTextSprites(unsigned char *param_1, int *param_2, int *param_3,
         } while (0);
       }
       {
-        int t = (*param_1) - 0x30;
+        int t = (*text) - 0x30;
         flag = ((unsigned int)t) < 10;
       }
     } else {
-      iVar1 = param_3[0] * 3;
+      iVar1 = attr[0] * 3;
       flag = 1;
       if (iVar1 < 0) {
         iVar1 += 3;
       }
-      *param_2 += iVar1 >> 2;
+      *pos += iVar1 >> 2;
     }
     do {
       do {
-        param_1 += 1;
+        text += 1;
       } while (0);
     } while (0);
-    bVar1 = *param_1;
+    bVar1 = *text;
   }
 
   return *((void *volatile *)(&g_pSpriteRecordWriteCursor));

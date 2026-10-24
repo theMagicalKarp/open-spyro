@@ -54,7 +54,6 @@ extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
 #define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int GetGroundTriggerRegionType(void);
 
 /* ==== Helper macros ====
  *
@@ -151,16 +150,12 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
 /* ==== Globals shared with level 4 ==== */
 
-extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e, int f, int g);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \

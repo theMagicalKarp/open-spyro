@@ -91,7 +91,6 @@
 #define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int GetGroundTriggerRegionType(void);
 
 /* ==== Helper macros ====
  *
@@ -188,8 +187,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 

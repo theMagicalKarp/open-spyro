@@ -58,7 +58,6 @@
 #define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int GetGroundTriggerRegionType(void);
 
 /* ==== Helper macros ====
  *
@@ -145,15 +144,11 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
 /* ==== Globals shared with level 4 ==== */
 
-extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e, int f, int g);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -197,7 +192,6 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
 
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */ /* kill bitmap, one bit per pool actor */
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
@@ -280,8 +274,6 @@ typedef struct ExitState {
   *(st)->slot = 0;                                                             \
   L25_UNLINK(st)
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int f);
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
 #define RESET_IDLE(a)                                                          \

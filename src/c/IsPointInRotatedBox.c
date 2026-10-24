@@ -2,8 +2,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern short g_anCosineLut[];
-
 /* 0x80038c4c (0x108) — rotate the XY delta between `pos` and record `rec`
    into the record's frame using its yaw angle (+0x14, sine-LUT index), and
    return whether the rotated point lies inside the record's box extents

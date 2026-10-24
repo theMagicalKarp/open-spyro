@@ -19,8 +19,6 @@ extern int CheckLineOfSightSegment(int *from, int *to);
 extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
 
-extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
-                                          velocity */
 extern int g_pSpyroHomingTargetActor;
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);

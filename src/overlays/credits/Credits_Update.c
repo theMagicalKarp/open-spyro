@@ -226,12 +226,7 @@ typedef struct {
 } Blk20;
 
 extern int g_nReturningHomePhase;
-extern char *g_pCreditsLineTable;
-extern char *g_pCreditsScratchBuf;
-extern char *g_pCreditsScrollHeader;
-extern char *g_pCreditsLoadBuf;
 extern int g_nScriptedMobCount;
-extern int g_nCreditsLoadSpan;
 extern char *volatile g_pLevelSampleBankEntries;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
@@ -254,8 +249,6 @@ extern char *g_pDrawBufB_blk[];
 extern char *g_pPathTableBuffer;
 extern int g_nLevelArchiveBaseLba;
 extern volatile int g_nLevelArchiveByteSize;
-extern int g_anCreditsPageSectors[];
-extern char Credits_OverlayEnd[];
 
 typedef struct {
   char *d8;
@@ -270,8 +263,6 @@ typedef struct {
 } Cd85D8;
 extern Cd85D8 g_pDrawBufA_s;
 #define S g_pDrawBufA_s
-
-
 
 #define POOL ((CredGlyph *)g_pCreditsGlyphPool)
 #define LINES ((CredLine *)g_pCreditsLineTable)

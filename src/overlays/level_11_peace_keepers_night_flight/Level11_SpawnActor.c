@@ -72,12 +72,6 @@ typedef struct Actor {
   unsigned char scale;
 } Actor; /* 0x58 */
 
-extern Actor *AllocActorRecordSlot(void);
-extern void InitActorRenderDefaults(Actor *rec);
-extern void InsertActorIntoSpatialGrid(Actor *rec);
-extern void HideActorRenderRecord(Actor *rec);
-extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
-extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 
 
 /* NOTE: the function body below is decomp-permuter output, spliced in

@@ -81,7 +81,6 @@
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
 
-extern unsigned char *g_pGamestate0cRecord;
 
 void Level18_BalloonistCutscene_Update(void)
 {

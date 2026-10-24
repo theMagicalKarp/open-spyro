@@ -10,13 +10,6 @@
    non-empty entry relocates a mesh header and stores the resolved pointer at
    g_apActorMeshTable[slot]. */
 
-extern int
-    g_nActorMeshDirByteSize[4]; /* sized alias: keeps the directory-header
-                      address in a register instead of folding to lui/lw %lo */
-
-extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
-                                           g_apActorMeshTable */
-
 void LoadActorMeshTables(void) {
   int *dir;
   int top;

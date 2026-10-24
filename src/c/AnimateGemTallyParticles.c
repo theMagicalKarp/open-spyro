@@ -20,7 +20,6 @@
    (< 0x60) and fall (< 0x93), each indexing the LUT through a /3 of the
    scaled phase. Past 0x93 the particle retires, and every third one plays the
    bank's 0x2f sample as it lands. */
-extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + quarter turn */
 
 typedef struct {
   short x;              /* 0x00 */

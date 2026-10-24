@@ -18,7 +18,6 @@
    was committed. */
 
 extern short g_anSineLut[];
-extern short g_anCosineLut[]; /* g_anSineLut + 0x80 */
 
 int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
                           int flags) {

@@ -1,4 +1,4 @@
-#include "actor_type.h"
+#include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
@@ -15,14 +15,7 @@
    backwards-ish heading. Otherwise chase Spyro when he is inside 0x44C (or
    inside chaseRadius), else walk back home once past the leash, else just
    tick the two cooldowns down. */
-extern int RandomIntInRange(int lo, int hi);
-extern int WrapAddAngle8(int angle, int step);
-extern int TurnActorYawTowardAngle(int *actor, int target, int step, int lim,
-                                   int flag);
-extern int MoveActorAlongHeading(int *actor, int speed, int group, int radius,
-                                 int flags);
-
-void UpdateActorWander(int *actor, WanderBlock *wb) {
+void UpdateActorWander(Actor *actor, WanderBlock *wb) {
   int unused[2];
   int *spyro;
   int turn;
@@ -99,10 +92,10 @@ void UpdateActorWander(int *actor, WanderBlock *wb) {
     }
   } else {
     spyro = g_anSpyroWorldPos;
-    dist = ApproxDist2D(actor + 3, spyro);
+    dist = ApproxDist2D(&actor->posX, spyro);
     if (dist < 0x44C && wb->chasing == 0) {
       wb->heading =
-          ArcTan2(actor[3] - spyro[0], actor[4] - g_nSpyroWorldPosY, 0);
+          ArcTan2(actor->posX - spyro[0], actor->posY - g_nSpyroWorldPosY, 0);
       wb->heading = WrapAddAngle8(wb->heading, RandomIntInRange(-0x3C, 0x3C));
       wb->repickTimer = RandomIntInRange(wb->repickMin, wb->repickMax);
       wb->chasing = 1;
@@ -110,16 +103,17 @@ void UpdateActorWander(int *actor, WanderBlock *wb) {
     }
     if (wb->chaseRadius != 0 && wb->chasing == 0 && wb->chaseCooldown == 0 &&
         dist < (int)(wb->chaseRadius << 10)) {
-      wb->heading = ArcTan2(actor[3] - g_anSpyroWorldPos[0],
-                            actor[4] - g_nSpyroWorldPosY, 0);
+      wb->heading = ArcTan2(actor->posX - g_anSpyroWorldPos[0],
+                            actor->posY - g_nSpyroWorldPosY, 0);
       wb->heading = WrapAddAngle8(wb->heading, RandomIntInRange(-0x30, 0x30));
       wb->repickTimer = RandomIntInRange(wb->repickMin, wb->repickMax);
       wb->chasing = 1;
       return;
     }
-    home = ApproxDist2D(actor + 3, &wb->homeX);
+    home = ApproxDist2D(&actor->posX, &wb->homeX);
     if ((int)(wb->leash << 10) < home) {
-      wb->heading = ArcTan2(wb->homeX - actor[3], wb->homeY - actor[4], 0);
+      wb->heading =
+          ArcTan2(wb->homeX - actor->posX, wb->homeY - actor->posY, 0);
       wb->chasing = 0;
       wb->chaseCooldown = 0x14;
       wb->repickTimer = home / (int)wb->speed;

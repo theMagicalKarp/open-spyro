@@ -70,7 +70,6 @@
 #define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
-extern int GetGroundTriggerRegionType(void);
 
 /* ==== Helper macros ====
  *
@@ -161,16 +160,12 @@ typedef struct ShardState {
  * The hub's own state: which stage of the balloon sequence the world is in,
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
 /* ==== Globals shared with level 4 ==== */
 
-extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e, int f, int g);
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
@@ -194,7 +189,6 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
     StubActorHook(a);                                                          \
   }
 
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant

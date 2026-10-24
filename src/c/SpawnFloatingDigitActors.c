@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern short g_anCosineLut[]; /* 0x8006cc78 */
-
 /* The per-digit sub-record hung off a digit actor's +0x00 pointer. */
 struct Digit {
   char pad00[4];
