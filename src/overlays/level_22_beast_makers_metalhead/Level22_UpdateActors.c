@@ -137,7 +137,7 @@ typedef struct ShardState {
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
+extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -811,17 +811,17 @@ void Level22_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.u164 >= 0) {
+            if (SPY.readyFlag >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
 
               PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.readyFlag = 1;
 
               DespawnActorRecord(actor);
               break;
@@ -2228,9 +2228,9 @@ void Level22_UpdateActors(void) {
                   << 4;
 
           spy->damageFlags |= 0x86;
-          spy->u208 = (LookupCosine(a) * 0x6E) >> 12;
-          spy->u20C = (LookupSine(a) * 0x6E) >> 12;
-          spy->u210 = 0x28;
+          spy->requestVelX = (LookupCosine(a) * 0x6E) >> 12;
+          spy->requestVelY = (LookupSine(a) * 0x6E) >> 12;
+          spy->requestVelZ = 0x28;
           st->u2C = ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, 0);
           st->u30 = 0xF0;
@@ -2711,7 +2711,7 @@ void Level22_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0) {
+              if (SPY.airborneFrames == 0) {
 
                 int res = CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX);
 
@@ -2837,7 +2837,7 @@ void Level22_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0 && st->count < 3) {
+              if (SPY.airborneFrames == 0 && st->count < 3) {
 
                 ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
@@ -3019,7 +3019,7 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 1024 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
+          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -3060,7 +3060,7 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 0x400 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.u080 > 0) {
+          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -3370,7 +3370,7 @@ void Level22_UpdateActors(void) {
               g296[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, g296, g296);
+            RotateVectorByMatrix(&SPY.bodyMtx, g296, g296);
             AddVector(g296, g296, &SPY.posX);
             at = &actor->posX;
             SubtractVector(g296, g296, at);
@@ -3393,7 +3393,7 @@ void Level22_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -3966,14 +3966,14 @@ void Level22_UpdateActors(void) {
                 g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
-              int *look = &SPY.u208;
+              int *look = &SPY.requestVelX;
 
               g_nSpyroRequestState = 3;
-              CopyVector(look, &SPY.u10C);
+              CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || g_nSpyroRequestVelocityY != 0) {
+              if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }
@@ -4101,7 +4101,7 @@ void Level22_UpdateActors(void) {
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
-        SPY.u200 = actor->posZ + st->spanZ;
+        SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(&SPY.contact, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
@@ -4985,7 +4985,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case 10:
-        if (SPY.u09C != 0) {
+        if (SPY.airborneFrames != 0) {
           break;
         }
         ANIM_GO(actor, 1);

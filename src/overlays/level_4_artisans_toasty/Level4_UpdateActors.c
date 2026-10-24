@@ -190,7 +190,7 @@ typedef struct ExitState {
 
 extern volatile unsigned char
     g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
+extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 
 /* ==== level_4 globals ==== */
@@ -477,17 +477,17 @@ void Level4_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.u164 >= 0) {
+            if (SPY.readyFlag >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
 
               PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
-              SPY.u164 = 1;
+              SPY.readyFlag = 1;
 
               DespawnActorRecord(actor);
               break;
@@ -1647,7 +1647,7 @@ void Level4_UpdateActors(void) {
               svF[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, svF, svF);
+            RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
             AddVector(svF, svF, &SPY.posX);
             at = &actor->posX;
             SubtractVector(svF, svF, at);
@@ -1670,7 +1670,7 @@ void Level4_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -2000,14 +2000,14 @@ void Level4_UpdateActors(void) {
                 g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
-              int *look = &SPY.u208;
+              int *look = &SPY.requestVelX;
 
               g_nSpyroRequestState = 3;
-              CopyVector(look, &SPY.u10C);
+              CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || g_anSpyroRequestVelocity.y != 0) {
+              if (SPY.requestVelX != 0 || g_anSpyroRequestVelocity.y != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }

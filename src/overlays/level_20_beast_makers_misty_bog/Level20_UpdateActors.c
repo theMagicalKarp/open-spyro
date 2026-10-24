@@ -540,7 +540,7 @@ void Level20_UpdateActors(void) {
       do {
       } while (0);
       st = actor->state;
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
@@ -1904,7 +1904,7 @@ void Level20_UpdateActors(void) {
               svF[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, svF, svF);
+            RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
             AddVector(svF, svF, &SPY.posX);
             at = &actor->posX;
             SubtractVector(svF, svF, at);
@@ -1927,7 +1927,7 @@ void Level20_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -2585,14 +2585,14 @@ void Level20_UpdateActors(void) {
                 g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
-              int *look = &SPY.u208;
+              int *look = &SPY.requestVelX;
 
               g_nSpyroRequestState = 3;
-              CopyVector(look, &SPY.u10C);
+              CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || g_nSpyroRequestVelocityY != 0) {
+              if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }
@@ -3720,7 +3720,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case 10:
-        if (SPY.u09C != 0) {
+        if (SPY.airborneFrames != 0) {
           break;
         }
         ANIM_GO(actor, 1);

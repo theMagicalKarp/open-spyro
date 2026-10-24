@@ -214,27 +214,27 @@ typedef struct {
   char pad00C[0x2];
   unsigned char bodyRotZ;         /* 0x00E */
   char pad00F[0x18];
-  unsigned char u027;             /* 0x027 */
+  unsigned char otBinBias;        /* 0x027 g_bSpyroOtBinBias */
   char pad028[0x4];
   int damageFlags;                /* 0x02C */
   char pad030[0x4];
-  int u034;                       /* 0x034 */
+  int bodyMtx;                    /* 0x034 g_anSpyroBodyMtx[0] */
   char pad038[0x40];
   int state;                      /* 0x078 */
   char pad07C[0x4];
-  int u080;                       /* 0x080 */
+  int stateTimer;                 /* 0x080 g_nSpyroStateTimer */
   char pad084[0x18];
-  int u09C;                       /* 0x09C */
+  int airborneFrames;             /* 0x09C g_nSpyroAirborneFrames */
   char pad0A0[0x6C];
-  int u10C;                       /* 0x10C */
-  int u110;                       /* 0x110 */
-  int u114;                       /* 0x114 */
-  int u118;                       /* 0x118 */
-  int u11C;                       /* 0x11C */
+  int motionX;                    /* 0x10C g_anSpyroMotionVec[0] */
+  int motionY;                    /* 0x110 g_nSpyroMotionY */
+  int motionZ;                    /* 0x114 g_nSpyroMotionZ */
+  int motionSpeed;                /* 0x118 g_nSpyroMotionSpeed */
+  int bodyYaw;                    /* 0x11C g_nSpyroBodyYaw */
   char pad120[0x8];
-  int u128;                       /* 0x128 */
+  int frameMotionLength;          /* 0x128 g_nSpyroFrameMotionLength */
   char pad12C[0x38];
-  int u164;                       /* 0x164 */
+  int readyFlag;                  /* 0x164 g_nLevelReadyFlag; overlays read it as the balloon sequence stage */
   char pad168[0x8];
   int triggerEventId;             /* 0x170 g_nSpyroTriggerCurrentEventId */
   char pad174[0x8];
@@ -244,22 +244,22 @@ typedef struct {
   char pad1A8[0x4C];
   int controlFlags;               /* 0x1F4 */
   char pad1F8[0x8];
-  int u200;                       /* 0x200 */
+  int requestTargetZ;             /* 0x200 g_nSpyroRequestTargetZ */
   char pad204[0x2];
-  unsigned char u206;             /* 0x206 */
+  unsigned char requestYaw;       /* 0x206 g_bSpyroRequestYaw */
   char pad207[0x1];
-  int u208;                       /* 0x208 */
-  int u20C;                       /* 0x20C */
-  int u210;                       /* 0x210 */
+  int requestVelX;                /* 0x208 g_anSpyroRequestVelocity[0] */
+  int requestVelY;                /* 0x20C g_nSpyroRequestVelocityY */
+  int requestVelZ;                /* 0x210 g_nSpyroRequestVelocityZ */
   char pad214[0x4];
-  int u218;                       /* 0x218 */
+  int requestState;               /* 0x218 g_nSpyroRequestState */
   int *pCamAnchor;                /* 0x21C */
   void *pCamTarget;               /* 0x220 */
   Actor *pScriptedActor;          /* 0x224 */
   char pad228[0x18];
   PortalDesc *pPortal;            /* 0x240 */
-  int u244;                       /* 0x244 */
-  int u248;                       /* 0x248 */
+  int camPathMaxStep;             /* 0x244 g_nGemPickupCamPathMaxStep */
+  int camPathReverse;             /* 0x248 g_nGemPickupCamPathReverseFlag */
 } SpyroObj;
 
 extern SpyroObj g_anSpyroWorldPosBlock;
@@ -658,7 +658,7 @@ typedef struct PortalState {
   PortalDesc *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int unk10;        /* 0x10 */
-  int dest;         /* 0x14 destination, published to SPY.u206 as a byte (ExitState.dest) */
+  int dest;         /* 0x14 destination, published to SPY.requestYaw as a byte (ExitState.dest) */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 

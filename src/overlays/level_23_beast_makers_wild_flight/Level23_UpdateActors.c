@@ -169,7 +169,7 @@ typedef struct ExitState {
 } ExitState;
 
 extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
+extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 
 /* ==== Flight-level classes ==== */
@@ -352,17 +352,17 @@ void Level23_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.u164 >= 0) {
+            if (SPY.readyFlag >= 0) {
               g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
 
               PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
 
-              SPY.u164 = one;
+              SPY.readyFlag = one;
 
               DespawnActorRecord(actor);
               break;
@@ -843,7 +843,7 @@ void Level23_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0) {
+              if (SPY.airborneFrames == 0) {
 
                 int res = CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX);
 
@@ -974,7 +974,7 @@ void Level23_UpdateActors(void) {
 
             if (g_pLevelOverlayInitRecord != 0) {
 
-              if (SPY.u09C == 0 && st->count < 3) {
+              if (SPY.airborneFrames == 0 && st->count < 3) {
 
                 ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
 
@@ -1101,7 +1101,7 @@ void Level23_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (SPY.u164 >= 3) {
+      if (SPY.readyFlag >= 3) {
         if (st->fx == 0) {
           FxNode *g = AllocWorldSparkle();
           st->fx = g;
@@ -1130,7 +1130,7 @@ void Level23_UpdateActors(void) {
         }
       }
 
-      if (SPY.u164 <= 0) {
+      if (SPY.readyFlag <= 0) {
         Actor *target = st->rider;
         if (target != 0 && target->type == 16) {
           target->mode = 0;
@@ -1211,7 +1211,7 @@ void Level23_UpdateActors(void) {
           break;
         }
         case 1: {
-          SPY.u164++;
+          SPY.readyFlag++;
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
           actor->subMode++;
           DespawnActorRecord(st->rider);
@@ -1294,7 +1294,7 @@ void Level23_UpdateActors(void) {
         } else {
           st->timer -= g_nFrameStep;
           if (CAM.state == 3) {
-            svF[0] = st->vx + (SPY.u118 >> 2);
+            svF[0] = st->vx + (SPY.motionSpeed >> 2);
             svF[1] = st->vy;
             svF[2] = st->vz;
             if (svF[2] < 0x64)
@@ -1308,7 +1308,7 @@ void Level23_UpdateActors(void) {
             svF[1] = st->vy;
             svF[2] = st->vz;
           }
-          RotateVectorByMatrix(&SPY.u034, svF, svF);
+          RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
           AddVector(svF, svF, &SPY.posX);
           SubtractVector(svF, svF, &actor->posX);
           RShiftVector3(svF, 2);
@@ -1327,7 +1327,7 @@ void Level23_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, 0);
         }
 
-        switch (SPY.u164) {
+        switch (SPY.readyFlag) {
         case 1:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {

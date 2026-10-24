@@ -1684,7 +1684,7 @@ void Level33_UpdateActors(void) {
               svF[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, svF, svF);
+            RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
             AddVector(svF, svF, &SPY.posX);
             at = &actor->posX;
             SubtractVector(svF, svF, at);
@@ -1707,7 +1707,7 @@ void Level33_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;

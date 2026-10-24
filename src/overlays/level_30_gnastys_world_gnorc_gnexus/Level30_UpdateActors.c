@@ -175,7 +175,7 @@ typedef struct ExitState {
  * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
 
 extern volatile unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form (A240) */
-extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.u164) */
+extern int g_nLevelReadyFlag; /* balloon sequence stage (== SPY.readyFlag) */
 
 extern int g_nGemPickupCamPathReverseFlag;
 
@@ -400,7 +400,7 @@ void Level30_UpdateActors(void) {
       do {
       } while (0);
       st = actor->state;
-      if (SPY.u164 < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
@@ -1338,7 +1338,7 @@ void Level30_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (SPY.u164 >= 3) {
+      if (SPY.readyFlag >= 3) {
         FxNode *fx = st->smoke;
 
         if (fx == 0) {
@@ -1367,7 +1367,7 @@ void Level30_UpdateActors(void) {
         st->smoke = 0;
       }
 
-      if (SPY.u164 <= 0) {
+      if (SPY.readyFlag <= 0) {
         if (st->gnorc != 0 && st->gnorc->type == 16) {
           st->gnorc->mode = 0;
         }
@@ -1557,7 +1557,7 @@ void Level30_UpdateActors(void) {
               svF[2] = st->drift[2];
             }
 
-            RotateVectorByMatrix(&SPY.u034, svF, svF);
+            RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
             AddVector(svF, svF, &SPY.posX);
             at = &actor->posX;
             SubtractVector(svF, svF, at);
@@ -1580,7 +1580,7 @@ void Level30_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.u164) {
+          switch (SPY.readyFlag) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -2057,14 +2057,14 @@ void Level30_UpdateActors(void) {
                 g_nSpyroRequestVelocityZ = g_nSpyroMotionZ >> 6;
               }
             } else {
-              int *look = &SPY.u208;
+              int *look = &SPY.requestVelX;
 
               g_nSpyroRequestState = 3;
-              CopyVector(look, &SPY.u10C);
+              CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
 
-              if (SPY.u208 != 0 || g_anSpyroRequestVelocity.y != 0) {
+              if (SPY.requestVelX != 0 || g_anSpyroRequestVelocity.y != 0) {
                 ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
                 goto clear_c68;
               }
@@ -2484,7 +2484,7 @@ void Level30_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = 0;
           AS_I32(g_nCameraNextMode) = 0x80000012;
-          SPY.u218 = 0xF;
+          SPY.requestState = 0xF;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
