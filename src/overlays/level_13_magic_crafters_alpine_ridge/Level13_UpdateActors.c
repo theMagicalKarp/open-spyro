@@ -194,7 +194,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define sixteen 0x10

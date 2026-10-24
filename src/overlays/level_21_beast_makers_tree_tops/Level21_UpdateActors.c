@@ -181,8 +181,6 @@ typedef struct ExitState {
   }                                                                            \
   ANIM_ADVANCE(a, n);                                                          \
   continue
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 #define ANIM_BLEND(a, n)                                                       \
   if ((a)->anim != (n)) {                                                     \
     (a)->frameProgress = 8;                                                            \
@@ -272,7 +270,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define L25_UNLINK(st)                                                         \
   if ((st)->link >= 0) {                                                       \
     g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \

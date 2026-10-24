@@ -1627,5 +1627,10 @@ extern int *g_pPathTableHead;
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
 extern int g_anCameraPos[];
+extern int g_nCameraActiveTargetPitch;
+extern int g_nCameraActiveTargetDistance;
+extern int g_nCameraActiveTargetRoll;
+extern int g_nCameraActiveTargetPitchBias;
+extern int g_nCameraActiveTargetYawBias;
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

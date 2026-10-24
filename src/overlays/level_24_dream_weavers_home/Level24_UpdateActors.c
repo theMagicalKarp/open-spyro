@@ -266,7 +266,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define L25_UNLINK(st)                                                         \
   if ((st)->link >= 0) {                                                       \
     g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \

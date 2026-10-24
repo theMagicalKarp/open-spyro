@@ -200,8 +200,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.u164) */
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */

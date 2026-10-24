@@ -79,7 +79,6 @@ extern void HideActorRenderRecord(Actor *rec);
 extern void EncodeCachedVecToActorDirCode(Actor *rec);          /* EncodeCachedVecToActorDir */
 extern void DespawnActorRecord(Actor *rec);          /* ReleaseActorRecordSlot */
 
-extern Actor *g_pActorListBase;
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE

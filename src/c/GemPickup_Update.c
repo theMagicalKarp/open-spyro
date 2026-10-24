@@ -36,9 +36,6 @@ extern void CommitHudCounterAnimState(int slot, int digits, int phase);
 extern void EndGemPickupToWorld(void);
 extern void TickGemPickupAssetStream(void);
 
-extern char *volatile g_pActiveCutsceneSoundDef; /* volatile view of
-                                                    g_pLevelSampleBankEntries */
-
 /* The gem-pickup state record at 0x80077058: [0] substate, [1] stream state,
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
 

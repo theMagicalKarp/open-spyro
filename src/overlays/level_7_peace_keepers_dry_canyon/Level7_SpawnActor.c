@@ -19,7 +19,6 @@
 #include "level_emit_particles.h"
 
 
-extern Actor *g_pActorListBase;
 
 Actor *Level7_SpawnActor(int type, Actor *parent) {
   Actor *rec;

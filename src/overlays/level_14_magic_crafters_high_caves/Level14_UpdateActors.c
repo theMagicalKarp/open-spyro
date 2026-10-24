@@ -191,7 +191,6 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
   }
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define sixteen 0x10
@@ -249,8 +248,6 @@ typedef struct ExitState {
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */
 } ExitState;
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 #define ENTER_POSE_B(a, n)                                                     \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -285,8 +282,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 #define AS_PTRV(sym) (((PtrV *)&(sym))->v)
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int f);
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int *f);
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
 #define RESET_IDLE(a)                                                          \

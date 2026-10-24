@@ -187,8 +187,6 @@ extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, in
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -226,7 +224,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 /* ==== Level 9 classes ==== */
 
 /* ==== level_10 per-class state blocks ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
@@ -241,10 +238,6 @@ extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraA
     StubActorHook(a);                                                          \
   }                                                                            \
   continue
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int f);
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int *f);
 #define FACE4(a, h, s, t)                                                      \
   ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
 #define RESET_IDLE(a)                                                          \

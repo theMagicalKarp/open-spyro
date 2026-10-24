@@ -30,7 +30,6 @@ typedef struct SeekState {
 } SeekState;
 
 
-extern Actor *g_pActorListBase;
 
 Actor *Level31_SpawnActor(int type, Actor *parent) {
   Actor *rec;

@@ -181,8 +181,6 @@ extern volatile unsigned char
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -220,7 +218,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 /* ==== Level 9 classes ==== */
 
 /* ==== level_10 per-class state blocks ==== */
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)

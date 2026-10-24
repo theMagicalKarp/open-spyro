@@ -55,7 +55,6 @@ typedef struct BatState {
 } BatState;
 
 
-extern Actor *g_pActorListBase;
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
 extern int RandomSignedInRange(int lo, int hi);
 

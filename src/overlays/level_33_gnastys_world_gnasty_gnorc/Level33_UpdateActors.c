@@ -186,8 +186,6 @@ extern volatile unsigned char
 
 /* Case 328 -- floor-snapped marker. */
 
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
@@ -304,7 +302,6 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int
 #define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 #define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-extern int g_nCameraActiveTargetPitch, g_nCameraActiveTargetDistance, g_nCameraActiveTargetRoll, g_nCameraActiveTargetPitchBias, g_nCameraActiveTargetYawBias;
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \

@@ -73,7 +73,6 @@ typedef struct TrackState {
 } TrackState;
 
 
-extern Actor *g_pActorListBase;
 extern int abs(int n);
 extern void GetActorAttachPoint(Actor *parent, int slot, int *dst);
 
