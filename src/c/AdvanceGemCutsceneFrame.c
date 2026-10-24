@@ -1,3 +1,5 @@
+#include "model.h"
+
 /* globals declared locally: the camera euler trio is written as one short[3]
    (array store, so the loop guard load stays below it — globals.h types the
    three as scalars). */
@@ -38,8 +40,9 @@ void AdvanceGemCutsceneFrame(int timer) {
   i = 0;
   if (path[3] > 0) {
     do {
-      type =
-          *(unsigned char *)(*(char **)(g_apActorMeshTable_1[i] + 0x38) + 0xC);
+      type = ((Model *)g_apActorMeshTable_1[i])
+                 ->m_Animations[0]
+                 ->m_ProgressPerTick;
       if (type == 0x10) {
         int t = *(int *)g_pPathTableHead;
         seg = t >> 3;

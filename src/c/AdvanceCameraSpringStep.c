@@ -2,8 +2,6 @@
 #include "main_shared.h"
 #include "sdata.h"
 
-extern int abs(int x);
-
 /* Held-base view of g_anCameraSpringDeltaState. */
 /* Scalar view of g_anCameraSpringDeltaState[0]. */
 

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "pad.h"
 
 /* 0x80053790, 432 bytes — validate and bake the pad-stick calibration block.
    Each of the four axes needs its recorded neutral (+0x20) at least 0x30 away
@@ -52,8 +53,9 @@ int FinalizePadCalibration(unsigned char *cal) {
   ok = 1;
   for (i = 0; i < 4;) {
     p = cal + i;
-    mid = p[0x20];
-    if (mid + 0x30 >= p[0x28] || (i += 1, p[0x24] >= mid - 0x30)) {
+    mid = p[PAD_STATE_OFFSET(stickNeutral)];
+    if (mid + 0x30 >= p[PAD_STATE_OFFSET(stickHigh)] ||
+        (i += 1, p[PAD_STATE_OFFSET(stickLow)] >= mid - 0x30)) {
       ResetPadStickCalibrationDefaults(cal);
       ok = 0;
       break;
@@ -70,28 +72,30 @@ int FinalizePadCalibration(unsigned char *cal) {
       } while (0);
     } while (0);
     q = cal + axis * 2;
-    p[0x2C] = p[0x20] + 0x30;
-    hi = p[0x28];
-    hi = num1 / (hi - *(volatile unsigned char *)&p[0x2C]);
-    p[0x30] = p[0x20] - 0x30;
-    *(short *)(q + 0x34) = hi;
-    *(short *)(q + 0x3C) =
-        num2 / (*(volatile unsigned char *)&p[0x30] - p[0x24]);
+    p[PAD_STATE_OFFSET(deadHigh)] = p[PAD_STATE_OFFSET(stickNeutral)] + 0x30;
+    hi = p[PAD_STATE_OFFSET(stickHigh)];
+    hi =
+        num1 / (hi - *(volatile unsigned char *)&p[PAD_STATE_OFFSET(deadHigh)]);
+    p[PAD_STATE_OFFSET(deadLow)] = p[PAD_STATE_OFFSET(stickNeutral)] - 0x30;
+    PAD_STATE_RAW(q, short, scaleHigh) = hi;
+    PAD_STATE_RAW(q, short, scaleLow) =
+        num2 / (*(volatile unsigned char *)&p[PAD_STATE_OFFSET(deadLow)] -
+                p[PAD_STATE_OFFSET(stickLow)]);
     axis += 1;
   } while (axis < 4);
 
   neutral = 0x7F;
   j = 3;
   fill = cal + 3;
-  *(int *)(cal + 0x00) = 0;
-  *(int *)(cal + 0x04) = 0;
-  *(int *)(cal + 0x08) = 0;
-  *(int *)(cal + 0x18) = 1;
-  *(int *)(cal + 0x1C) = 1;
+  PAD_STATE_RAW(cal, int, pressed) = 0;
+  PAD_STATE_RAW(cal, int, released) = 0;
+  PAD_STATE_RAW(cal, int, held) = 0;
+  PAD_STATE_RAW(cal, int, allInputIdle) = 1;
+  PAD_STATE_RAW(cal, int, directionalIdle) = 1;
   do {
     do {
       do {
-        fill[0x14] = neutral;
+        fill[PAD_STATE_OFFSET(analog)] = neutral;
         fill -= 1;
       } while (0);
     } while (0);
@@ -103,15 +107,15 @@ int FinalizePadCalibration(unsigned char *cal) {
   do {
     j = 3;
     fill2 = rec + 3;
-    *(volatile int *)(rec + 0x4C) = 0;
-    *(volatile int *)(rec + 0x50) = 0;
-    *(volatile int *)(rec + 0x48) = 0;
+    PAD_STATE_RAW(rec, volatile int, ring[0].pressed) = 0;
+    PAD_STATE_RAW(rec, volatile int, ring[0].released) = 0;
+    PAD_STATE_RAW(rec, volatile int, ring[0].held) = 0;
     do {
-      fill2[0x58] = neutral2;
+      fill2[PAD_STATE_OFFSET(ring[0].analog)] = neutral2;
       fill2 -= 1;
     } while (--j >= 0);
-    k += 0x18;
-    rec += 0x18;
+    k += sizeof(PadSubstep);
+    rec += sizeof(PadSubstep);
   } while (k < 0x60);
 
   return ok;

@@ -318,4 +318,7 @@ extern int g_nGenericCountdown;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nStaticMeshLodCutoff;
 
+/* C library. */
+extern int abs(int x);
+
 #endif /* OPEN_SPYRO_MAIN_SHARED_H */

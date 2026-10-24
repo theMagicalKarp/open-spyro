@@ -1,12 +1,13 @@
 #include "funcs.h"
 #include "globals.h"
+#include "model.h"
 
 /* Advance Spyro's idle-anim sequence cursor to the next state whose animation
    mesh is actually loaded, then enter that state (0x80041558, 280 bytes).
    Walks g_anSpyroIdleAnimStateSeq (wrapping at 9) via
-   g_abSpyroStateAnimIndexMap into g_apActorMeshTable (+0x38 per anim slot);
-   if the walk comes back around to the starting cursor with nothing loaded,
-   just rearms the idle timeout (0x2710) instead. */
+   g_abSpyroStateAnimIndexMap into Spyro's model (g_apActorMeshTable[0])
+   animations; if the walk comes back around to the starting cursor with nothing
+   loaded, just rearms the idle timeout (0x2710) instead. */
 
 void CycleSpyroIdleAnim(void) {
   int *seq;
@@ -28,15 +29,15 @@ void CycleSpyroIdleAnim(void) {
     }
     cur = g_nSpyroIdleAnimSeqCursor;
     if (cur == start) {
-      if (*(int *)(mesh + *(unsigned char *)(seq[cur] + (int)map) * 4 + 0x38) ==
-          0) {
+      if (((Model *)mesh)
+              ->m_Animations[*(unsigned char *)(seq[cur] + (int)map)] == 0) {
         g_nSpyroIdleAnimTimeout = timeout;
         return;
       }
       break;
     }
-    if (*(int *)(mesh + *(unsigned char *)(seq[cur] + (int)map) * 4 + 0x38) !=
-        0) {
+    if (((Model *)mesh)
+            ->m_Animations[*(unsigned char *)(seq[cur] + (int)map)] != 0) {
       break;
     }
   }

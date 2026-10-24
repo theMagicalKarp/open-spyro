@@ -1,4 +1,5 @@
 #include "funcs.h"
+#include "main_shared.h"
 /* 0x8003A420 (size 0x300): actor waypoint-follow step. Steers an actor toward
  * its current waypoint (wp[1] index into a 0x10-byte table at wp+8), clamps the
  * per-frame turn to +/-maxTurn, moves by the (matrix-rotated) capped speed,
@@ -11,8 +12,6 @@
  * last SubtractVector so ret's range overlaps arriveDist's and it takes a fresh
  * callee-saved (s4) instead of sharing arriveDist's s1.  `abs()` is the builtin
  * (A160). */
-
-extern int abs(int);
 
 int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
                             int cap, int contactRadius, int maxTurn,

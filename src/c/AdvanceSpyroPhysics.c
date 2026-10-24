@@ -16,8 +16,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int abs(int x);
-
 SDATA(g_nSpyroScriptedAlignFrames, 4);
 SDATA(g_pSpyroContactActor, 4);
 

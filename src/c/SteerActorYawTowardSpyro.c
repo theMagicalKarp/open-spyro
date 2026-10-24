@@ -18,7 +18,6 @@
    a global allocno assigned after local-alloc has already given v0 to the
    constant. */
 extern void StubActorHook(int *actor, int a, int b);
-extern int abs(int);
 
 int SteerActorYawTowardSpyro(int *actor, int *dirp, int *yawp, int speed,
                              int thresh, int animId) {

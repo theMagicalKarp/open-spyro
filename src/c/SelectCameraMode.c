@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "sdata.h"
 
-extern int abs(int x);
-
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C /* g_nCameraCurrentMode */
 #define CAM_NEXT_MODE 0x26    /* g_nCameraNextMode */

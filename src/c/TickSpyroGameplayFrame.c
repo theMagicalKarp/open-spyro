@@ -1,16 +1,23 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "model.h"
 #include "vecmath.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 extern unsigned char g_abSpyroAnimPrevBlock[]; /* 0x80078a70 */
 
-/* One frame record of an anim's frame table: g_apActorMeshTable[anim] holds a
-   pointer to the table at +0x38, stride 4 per frame (+0x24 = sfx key,
-   +0x27 = sfx id).  The frame-table pointer is re-read per use — the original
-   never keeps it live across the sfx-id test. */
-#define FRAMEREC(mesh, frame) ((frame) + *(volatile int *)((mesh) + 0x38))
+/* `mesh` is Spyro's model plus anim * 4, so ANIM_SLOT reads that anim's
+   header pointer (Model.m_Animations[anim]); a frame record is the header plus
+   frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key
+   and its top byte the sfx id.  The header pointer is re-read per use
+   (volatile) — the original never keeps it live across the sfx-id test. */
+#define ANIM_SLOT(mesh) (*(volatile int *)((mesh) + MODEL_OFFSET(m_Animations)))
+#define FRAMEREC(mesh, frame) ((frame) + ANIM_SLOT(mesh))
+#define FRAME_KEY(rec)                                                         \
+  (*(unsigned int *)((rec) + ANIM_HEADER_OFFSET(m_FrameWords)))
+#define FRAME_SFX(rec)                                                         \
+  (*(unsigned char *)((rec) + ANIM_HEADER_OFFSET(m_FrameWords) + 3))
 
 /* 0x8004a200 (1516 bytes) — the in-level gameplay tick: snapshot the pad,
    integrate a frame of motion, run the state behaviour + the per-substep
@@ -137,37 +144,32 @@ done:
   animBlock = g_abSpyroAnimPrevBlock;
   mesh = animBlock[0] * 4 + (int)g_apActorMeshTable;
   frame = g_bSpyroFramePrev * 4;
-  sfx[0] = *(unsigned char *)(FRAMEREC(mesh, frame) + 0x27);
+  sfx[0] = FRAME_SFX(FRAMEREC(mesh, frame));
   if (sfx[0] != 0xFF) {
-    ptr = *(volatile int *)(mesh + 0x38);
+    ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
-    if (g_dwSpyroFootstepPrimarySfxKey != *(unsigned int *)(rec + 0x24)) {
+    if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
       PlaySoundEffect(sfx[0], animBlock - 0x18, 4, animBlock + 0x288);
     }
   }
-  key =
-      *(unsigned int *)(FRAMEREC(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable,
-                                 g_bSpyroFramePrev * 4) +
-                        0x24);
+  key = FRAME_KEY(FRAMEREC(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable,
+                           g_bSpyroFramePrev * 4));
   footstep = g_adwSpyroFootstepSfxBlock;
   footstep[0] = key;
-  sfx[1] = *(unsigned char *)(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 +
-                                           (int)g_apActorMeshTable,
-                                       g_bSpyroAnimLayer1FramePrev * 4) +
-                              0x27);
+  sfx[1] =
+      FRAME_SFX(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable,
+                         g_bSpyroAnimLayer1FramePrev * 4));
   if ((sfx[1] != 0xFF) && (sfx[0] != sfx[1])) {
-    ptr = *(volatile int *)(g_bSpyroAnimLayer1Prev * 4 +
-                            (int)g_apActorMeshTable + 0x38);
+    ptr = ANIM_SLOT(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable);
     rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
-    if (g_dwSpyroFootstepSecondarySfxKey != *(unsigned int *)(rec + 0x24)) {
+    if (g_dwSpyroFootstepSecondarySfxKey != FRAME_KEY(rec)) {
       PlaySoundEffect(sfx[1], (unsigned char *)footstep - 0x264, 4,
                       (unsigned char *)footstep + 0x3C);
     }
   }
-  key2 = *(unsigned int *)(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 +
-                                        (int)g_apActorMeshTable,
-                                    g_bSpyroAnimLayer1FramePrev * 4) +
-                           0x24);
+  key2 =
+      FRAME_KEY(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable,
+                         g_bSpyroAnimLayer1FramePrev * 4));
   g_dwSpyroRequestMask &= 0x7FFFFFFF;
   g_dwSpyroFootstepSecondarySfxKey = key2;
   if (g_bSpyroPadSnapshotReverseFlag != 0) {

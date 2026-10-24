@@ -18,7 +18,6 @@ extern void AccumulateAnimRootMotionDelta(int frame, int *out, int anim,
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int FindGroundHeightBelow(int *pt, int depth);
 extern void ActivateScriptedCameraView(int *record);
-extern int abs(int x);
 
 extern int g_anSpyroSlopeGravityVec[]; /* slope-gravity step vector, added to
                                           velocity */

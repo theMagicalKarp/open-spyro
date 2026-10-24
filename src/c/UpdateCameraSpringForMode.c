@@ -5,8 +5,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int abs(int x);
-
 /* Register-base view of g_anCameraScriptStickIntegrator. */
 
 #define CAM g_anCameraPosBlock

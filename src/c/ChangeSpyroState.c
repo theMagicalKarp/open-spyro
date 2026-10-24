@@ -4,8 +4,6 @@
 #include "sdata.h"
 #include "vecmath.h"
 
-extern int abs(int x);
-
 extern unsigned short g_anCosineLut[];
 extern void *g_pSpyroHomingTargetActor;
 

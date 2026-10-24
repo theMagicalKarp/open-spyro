@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "pad.h"
 
-extern int abs(int x);
-
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
    stick.  While the stick is engaged (pad word +0x10 set and the raw axes at
    +0x16/+0x17 not both centred at 0x7f) and its magnitude is under 0x60, step

@@ -61,8 +61,8 @@ void BeginSaveMenuFromWorld(int actor) {
   }
   g_pSaveMenuDragonActor = actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
-                  0, 0x10, 0);
+  PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2C], 0, 0x10,
+                  0);
   ResetSpyroEntity(1);
   yaw = g_nSpyroBodyYaw;
   *(unsigned char *)g_abSpyroAnimPrevBlock = 1;
@@ -74,6 +74,7 @@ void BeginSaveMenuFromWorld(int actor) {
   *(volatile unsigned char *)&g_bSpyroAnimFrame = 1;
   *(volatile unsigned char *)&g_bSpyroSubFrameTimer = 0;
   g_nSaveMenuSpyroFromYaw = yaw;
+  /* state word 1 is the pool index of the actor the dragon refers to */
   rec = (char *)(*(int *)(owner + 4) * 88 + (int)g_pActorListBase);
   {
     register int ry asm("$2");
@@ -84,7 +85,7 @@ void BeginSaveMenuFromWorld(int actor) {
   g_nSaveMenuDragonFromAngle =
       ArcTan2(ACTOR_RAW(actor, int, posX) - g_abSpyroAnimPrevBlock[-6],
               ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
-  SubtractVector(vec, (int *)(actor + 0xC), &g_abSpyroAnimPrevBlock[-6]);
+  SubtractVector(vec, &((Actor *)actor)->posX, &g_abSpyroAnimPrevBlock[-6]);
   g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
   z = ACTOR_RAW(actor, int, posZ);
   yw = g_nSaveMenuSpyroToYaw;
@@ -96,10 +97,8 @@ void BeginSaveMenuFromWorld(int actor) {
   g_nSaveMenuDragonToZ = g_abSpyroAnimPrevBlock[-4] + 0x170;
   if (g_pLevelOverlayInitRecord != 0) {
     g_nSaveMenuOverlayFromAngle = ArcTan2(
-        *(int *)((char *)g_pLevelOverlayInitRecord + 0xC) -
-            g_abSpyroAnimPrevBlock[-6],
-        *(int *)((char *)g_pLevelOverlayInitRecord + 0x10) - g_nSpyroWorldPosY,
-        1);
+        ((Actor *)g_pLevelOverlayInitRecord)->posX - g_abSpyroAnimPrevBlock[-6],
+        ((Actor *)g_pLevelOverlayInitRecord)->posY - g_nSpyroWorldPosY, 1);
     SubtractVector(vec, (int *)((char *)g_pLevelOverlayInitRecord + 0xC),
                    &g_abSpyroAnimPrevBlock[-6]);
     g_nSaveMenuOverlayFromDist = VectorLength(vec, 0);

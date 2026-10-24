@@ -13,8 +13,8 @@ void EnterInventoryMenu(int param_1) {
   if (param_1 != 0) {
     StopAllSoundExceptMask(0);
   }
-  PlaySoundEffect(*(unsigned char *)((char *)g_pLevelSampleBankHeader + 0x2C),
-                  0, 0x10, 0);
+  PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2C], 0, 0x10,
+                  0);
   g_nSubMenuScrollOffset = 0;
   g_nSubMenuScrollDelta = 0;
   g_nGamestate = 3;

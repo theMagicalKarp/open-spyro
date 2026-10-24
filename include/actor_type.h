@@ -91,4 +91,47 @@ typedef struct Actor {
  * Use it only where `actor->field` was measured to change the output. */
 #define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
 
+/* Waypoint path used by the path-following classes (10, 114, 339) and
+ * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,
+ * direction, then 0x10-byte nodes that begin with a position. */
+typedef struct PathData {
+  unsigned char count; /* 0x00 */
+  unsigned char cur;   /* 0x01 */
+  char pad02[4];
+  short reversed;      /* 0x06 -1: walk forward (wrap to 0), else backward */
+  struct {
+    int x;
+    int y;
+    int z;
+    int speed; /* > 0 overrides the follow speed at this node */
+  } nodes[1];          /* 0x08 */
+} PathData;
+
+/* UpdateActorWander's behaviour block (the head of the wandering classes'
+ * state, e.g. level 32 type 236). Radii are stored >> 10. */
+typedef struct WanderBlock {
+  int homeX;                     /* 0x00 home point */
+  int homeY;                     /* 0x04 */
+  int unk08;                     /* 0x08 */
+  unsigned char speed;           /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
+  unsigned char turnRate;        /* 0x0D */
+  unsigned char contact;         /* 0x0E move contact group, also the probe radius */
+  unsigned char repickMin;       /* 0x0F re-pick countdown range */
+  unsigned char repickMax;       /* 0x10 */
+  unsigned char jitterMin;       /* 0x11 heading jitter range */
+  unsigned char jitterMax;       /* 0x12 */
+  unsigned char leash;           /* 0x13 walk home once farther than this */
+  unsigned char weaveAmp;        /* 0x14 0 = no weave */
+  unsigned char weaveRate;       /* 0x15 */
+  unsigned char pad16;           /* 0x16 */
+  unsigned char repickTimer;     /* 0x17 frames to the next heading jitter */
+  unsigned char heading;         /* 0x18 8-bit angle */
+  unsigned char weaveDir;        /* 0x19 +1 / -1 */
+  unsigned char chaseRadius;     /* 0x1A 0 = only the fixed 0x44C range */
+  unsigned char chasing;         /* 0x1B */
+  unsigned char chaseCooldown;   /* 0x1C set after a wall bump or a walk home */
+  unsigned char contactCooldown; /* 0x1D moves ignore the contact group while set */
+  short weave;                   /* 0x1E current weave offset */
+} WanderBlock; /* 0x20 */
+
 #endif /* OPEN_SPYRO_ACTOR_TYPE_H */

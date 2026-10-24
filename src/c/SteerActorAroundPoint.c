@@ -23,8 +23,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern int abs(int);
-
 extern short g_anCosineLut[];
 
 /* Steers `actor` around a target point instead of straight at it: aims at the
