@@ -59,7 +59,6 @@ extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bi
 
 
 
-extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */

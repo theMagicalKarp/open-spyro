@@ -58,7 +58,6 @@
 
 
 
-extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -149,8 +148,6 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -192,7 +189,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 #define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
@@ -201,7 +197,6 @@ extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
-extern unsigned char g_bSpyroPersistentEulerZ; /* SPY.bodyRotZ, absolute form */ /* kill bitmap, one bit per pool actor */
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)

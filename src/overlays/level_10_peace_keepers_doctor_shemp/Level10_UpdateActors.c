@@ -61,7 +61,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -161,8 +160,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -208,7 +205,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
     (a)->nextFrame = 0;                                                            \
     StubActorHook(a);                                                          \
   }
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
  * block there, so the `unk3D = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough

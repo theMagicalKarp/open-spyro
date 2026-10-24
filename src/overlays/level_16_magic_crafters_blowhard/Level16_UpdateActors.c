@@ -79,7 +79,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int GetGroundTriggerRegionType(void);
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -180,8 +179,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -218,8 +215,6 @@ extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 extern int g_nLevelProgress[]; /* hits taken */
 extern int g_nLevelProgressCheckpoint[]; /* stage reached */
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 
 /* ==== The function ==== */
 void Level16_UpdateActors(void) {

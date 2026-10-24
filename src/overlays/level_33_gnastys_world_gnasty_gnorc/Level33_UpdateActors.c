@@ -57,7 +57,6 @@
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut_s[];
 
-extern int GetGroundTriggerRegionType(void);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -156,8 +155,6 @@ typedef struct ExitState {
   int preset;         /* 0x18 */
 } ExitState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 

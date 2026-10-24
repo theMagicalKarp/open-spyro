@@ -46,7 +46,6 @@
 
 #define CAM g_anWorldToCameraRotMtx
 
-extern int GetGroundTriggerRegionType(void);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -136,8 +135,6 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-extern volatile unsigned char
-    g_bSpyroPersistentEulerZ;          /* SPY.bodyRotZ, absolute form (A240) */
 extern int g_nLevelReadyFlag[]; /* balloon sequence stage (== SPY.readyFlag) */
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -183,8 +180,6 @@ typedef struct ExitState {
   }                                                                            \
   ANIM_ADVANCE(a, n);                                                          \
   continue
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                         int d);
 #define ANIM_BLEND(a, n)                                                       \
   if ((a)->anim != (n)) {                                                     \
     (a)->frameProgress = 8;                                                            \

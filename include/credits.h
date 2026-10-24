@@ -26,4 +26,14 @@ typedef struct CredGlyph {
   short glyph;
 } CredGlyph;
 
+/* Credits-sequence globals (main .sdata/.bss slots the credits overlay owns). */
+extern char Credits_OverlayEnd[];    /* end of the overlay image: glyph pool, then
+                                      * line table (+0xAF0) and scratch (+0x2800) */
+extern char *g_pCreditsLineTable;    /* 0x80075708: relocated CredLine table */
+extern char *g_pCreditsScratchBuf;   /* 0x80075768: CD page scratch / draw buffers */
+extern char *g_pCreditsScrollHeader; /* 0x800757bc: camera/scroll track (CamTrack) */
+extern char *g_pCreditsLoadBuf;      /* 0x800757ec: CD read target for the next page */
+extern int g_nCreditsLoadSpan;       /* 0x80075958: byte span of the page's second read */
+extern int g_anCreditsPageSectors[]; /* 0x8007a960: per-page sector offsets, 2 words/page */
+
 #endif /* OPEN_SPYRO_CREDITS_H */
