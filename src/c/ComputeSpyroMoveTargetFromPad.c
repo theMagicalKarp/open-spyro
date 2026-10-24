@@ -3,6 +3,12 @@
 #include "pad.h"
 #include "vecmath.h"
 
+/* The D-pad direction yaw for byte offset `off` = (held >> 12) * 2 of
+   g_anDpadDirectionYaw (the original scales the D-pad bits with one shift
+   and mask, srl 11 / andi 0x1e). */
+#define DPAD_DIRECTION_YAW(off)                                                \
+  (*(short *)((char *)g_anDpadDirectionYaw + (off)))
+
 /* D-pad -> yaw table (16 entries, stride 2), indexed by the pad button nibble.
  */
 
@@ -58,8 +64,8 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
     dpad = (unsigned char *)g_pPadSubstepState;
     if ((((PadSubstep *)dpad)->held & 0xf000) != 0) {
       g_nSpyroSpeedTarget = speed;
-      g_nSpyroMoveTargetYaw = *(short *)((char *)g_anDpadDirectionYaw +
-                                         ((*(int *)(dpad + 4) >> 0xb) & 0x1e));
+      g_nSpyroMoveTargetYaw =
+          DPAD_DIRECTION_YAW((PAD_SUBSTEP_RAW(dpad, int, held) >> 0xb) & 0x1e);
       g_nSpyroMoveTargetYaw =
           (g_nSpyroMoveTargetYaw + g_nCameraEulerYaw) & 0xfff;
     } else {

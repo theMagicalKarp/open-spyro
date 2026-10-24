@@ -1,8 +1,6 @@
 #include "actor_type.h"
 #include "globals.h"
-
-/* Icon record at byte offset `o` (slot * 0x58) in the HUD record array. */
-#define ICON(o) ((Actor *)((char *)g_abHudIconActorRecords + (o)))
+#include "hud.h"
 
 /* Commit the digit-roll animation state byte (+0x46 of each 0x58-byte HUD
    icon record) for `count` slots starting at `slot` (0x800544a8). A slot
@@ -22,15 +20,16 @@ void CommitHudCounterAnimState(int slot, int count, int state) {
   end = count + slot;
 top:
   o1 = (slot * 11) << 3;
-  if (ICON(o1)->rotZ != 0 || (target = ICON(o1)->type, cur = ICON(o1)->subMode,
-                              cur != target - 0x104)) {
-    ICON(o1)->rotZ = state;
+  if (HUD_ICON(o1)->rotZ != 0 ||
+      (target = HUD_ICON(o1)->type, cur = HUD_ICON(o1)->subMode,
+       cur != target - 0x104)) {
+    HUD_ICON(o1)->rotZ = state;
   }
   o2 = (slot * 11) << 3;
-  cur2 = ICON(o2)->subMode;
+  cur2 = HUD_ICON(o2)->subMode;
   if (cur2 != ff && state == commit) {
-    ICON(o2)->type = cur2 + 0x104;
-    ICON(o2)->cullRadius = ff;
+    HUD_ICON(o2)->type = cur2 + 0x104;
+    HUD_ICON(o2)->cullRadius = ff;
   }
   slot += 1;
   if (slot < end) {

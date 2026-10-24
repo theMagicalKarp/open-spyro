@@ -25,4 +25,12 @@ extern char *g_pSpriteRecordBufferTop;
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;
 
+/* The all-clear bonus of the course whose 5-word bonus row starts at byte
+ * offset `off` (course * 5 * 4) of g_anFlightCourseBonusTable: word [4] of
+ * the row, read through the _r4 view. The byte offset is shared by the two
+ * reads (the original's $at-indexed %hi/%lo loads); indexing the view as an
+ * int array materializes the address instead (HandleFlightResults). */
+#define COURSE_ALL_CLEAR_BONUS(off) \
+  (*(int *)((char *)g_anFlightCourseBonusTable_r4 + (off)))
+
 #endif /* OPEN_SPYRO_LEVEL_FLIGHT_RESULTS_H */

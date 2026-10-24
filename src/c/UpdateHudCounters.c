@@ -13,6 +13,7 @@
      and the butterfly ring is a byte-offset walk (A179/A35). */
 #include "funcs.h"
 #include "globals.h"
+#include "hud.h"
 
 /* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
    icon anchors, then runs five independent roll-animation state machines (one
@@ -47,7 +48,6 @@
 
 /* the sprite-rect walk is a BYTE offset off the array, which keeps one
    scaled index register and the field constant in %lo(sym+K) (A179/A35) */
-#define RECT(off) (*(short *)((char *)g_anHudSpriteRects + (off)))
 
 #define EGG_STATE (g_abHudWorldEggIconBlock[0])
 #define LEGG_STATE (g_abHudLevelEggCounterBlock[0])
@@ -258,14 +258,14 @@ void UpdateHudCounters(void) {
     do {
       k = n * 8 + 0x60;
       j = n * 2;
-      RECT(k) =
+      HUD_RECT(g_anHudSpriteRects, k)->x =
           (g_anHudButterflyCachedBlock[0xE2] + g_abHudButterflyRingXY[j]) -
           0x1D;
-      RECT(k + 2) =
+      HUD_RECT(g_anHudSpriteRects, k)->y =
           (g_anHudButterflyCachedBlock[0xE3] + g_abHudButterflyRingXY[j + 1]) -
           0x1C;
-      RECT(k + 4) = 8;
-      RECT(k + 6) = 8;
+      HUD_RECT(g_anHudSpriteRects, k)->w = 8;
+      HUD_RECT(g_anHudSpriteRects, k)->h = 8;
       n += 1;
     } while (n < g_anHudButterflyCachedBlock[0]);
   }

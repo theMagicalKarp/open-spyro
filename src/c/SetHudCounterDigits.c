@@ -1,8 +1,6 @@
 #include "actor_type.h"
 #include "globals.h"
-
-/* Icon record at byte offset `o` (slot * 0x58) in the HUD record array. */
-#define ICON(o) ((Actor *)((char *)g_abHudIconActorRecords + (o)))
+#include "hud.h"
 
 /* 0x800542e4 (0x11c) — write `value` into the HUD counter as decimal digits,
    one 0x58-byte icon record per slot starting at `slot`, most significant
@@ -35,17 +33,17 @@ void SetHudCounterDigits(int slot, int count, int value, int icon) {
       p -= 1;
       if (icon == 0) {
         int off = (slot * 11) << 3;
-        ICON(off)->subMode = *p;
+        HUD_ICON(off)->subMode = *p;
       } else {
         int off = (slot * 11) << 3;
         int digit = *p;
-        ICON(off)->cullRadius = ff;
-        ICON(off)->type = digit + 0x104;
+        HUD_ICON(off)->cullRadius = ff;
+        HUD_ICON(off)->type = digit + 0x104;
       }
     } else {
       if (icon != 0) {
         int off = (slot * 11) << 3;
-        ICON(off)->cullRadius = 0;
+        HUD_ICON(off)->cullRadius = 0;
       }
     }
     i += 1;

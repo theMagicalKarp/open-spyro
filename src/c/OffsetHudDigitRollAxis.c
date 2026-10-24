@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "hud.h"
 
 /* Shift the Y origin of `count` consecutive HUD digit sprites by `delta`,
    starting at digit slot `base`. Each HUD rect record is 8 bytes (4 shorts);
@@ -9,7 +10,7 @@ void OffsetHudDigitRollAxis(int base, int count, int delta) {
   int i;
   for (i = 0; i < count; i++) {
     int off = (base + i) << 3;
-    *(short *)((char *)g_anHudSpriteRects + off + 2) =
-        *(unsigned short *)((char *)g_anHudDigitRestRects + off + 2) + delta;
+    HUD_RECT(g_anHudSpriteRects, off)->y =
+        (unsigned short)HUD_RECT(g_anHudDigitRestRects, off)->y + delta;
   }
 }
