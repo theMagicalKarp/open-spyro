@@ -8,8 +8,8 @@
    +0x16/+0x17 not both centred at 0x7f) and its magnitude is under 0x60, step
    the target yaw toward the body yaw by (magnitude * wrapped delta) >> 9; a
    delta past 0x100 also raises the snap flag.  Always followed by a lean
-   update. */
-void ApplyPadInputToSpyroBodyYaw(void) {
+   update, whose remaining |yaw delta| it returns. */
+int ApplyPadInputToSpyroBodyYaw(void) {
   int vec[3];
   unsigned char *pad;
   int mag;
@@ -39,5 +39,5 @@ void ApplyPadInputToSpyroBodyYaw(void) {
       g_anSpyroMoveTargetYawBlock[0] = (yaw + ((mag * delta) >> 9)) & 0xFFF;
     }
   }
-  TurnSpyroTowardMoveTargetWithLean(0);
+  return TurnSpyroTowardMoveTargetWithLean(0);
 }

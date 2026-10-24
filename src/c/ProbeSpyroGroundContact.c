@@ -5,7 +5,6 @@
    [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,
    [0x2d] ground-run flag, [0x76] ground chunk id, [0x77..] chunk verts, and the
    body matrix / world position sit at -0x68 / -0x9c below it. */
-extern int g_anSpyroAirborneFramesBlock[0x200];
 #define BLK g_anSpyroAirborneFramesBlock
 #define MTX (&BLK[-0x1a]) /* g_anSpyroBodyMtx */
 #define POS (&BLK[-0x27]) /* g_anSpyroWorldPos */

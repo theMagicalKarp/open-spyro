@@ -3,7 +3,6 @@
 /* Sized-array alias of g_nLightSweepAngle: a bare 4-byte extern int is sdata
    cost 1, so both halves of the accumulator RMW fold to $at absolutes; the
    sized view holds one base register for the pair (A22 / B-i rule 2). */
-extern volatile int g_anLightSweepAngleBlock[8];
 extern volatile int g_nLightSweepAngle;
 
 /* 0x80058cc0: spins the primary light direction vector around the world Y

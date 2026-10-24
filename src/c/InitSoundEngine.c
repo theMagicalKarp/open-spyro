@@ -3,8 +3,6 @@
 #include "main_shared.h"
 #include "spu.h"
 
-extern int g_nSfxMixVolume_blk; /* sfx mix volume */
-
 /* 0x8005595c (0x11c) — top-level sound init (after SpuInit): reset the SPU,
    seed the common-attr block (master volume 0x3CCC L/R, CD volume 0x5000
    L/R) + the master/mix volume globals, push it, silence all 24 voices with
@@ -20,7 +18,7 @@ void InitSoundEngine(void) {
   InitSpu();
   common = g_abSpuCommonAttr;
   *(int *)common = 0xC3;
-  g_nSfxMixVolume_blk = 0x3FFF;
+  g_nSfxMixVolume_blk[0] = 0x3FFF;
   g_nSoundMasterVolume = 0x1000;
   g_anSpuCommonVolAttr[0] = 0x3CCC;
   g_anSpuCommonVolAttr[1] = 0x3CCC;

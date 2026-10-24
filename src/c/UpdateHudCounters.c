@@ -29,16 +29,12 @@
 /* Held-base views (A20/A22/A25).  The original materializes ONE base per group
    and reaches the neighbours off it; every other site of the same address stays
    on the plain absolute symbol, which is the per-site A240 split. */
-extern unsigned char g_adwHudBobSinePhaseBlock[];   /* 0x80077fe4 */
-extern unsigned char g_anHudLevelGemCachedBlock[];  /* 0x80077fc8 */
-extern unsigned char g_abHudWorldEggIconBlock[];    /* 0x80077fab, state[3] */
-extern unsigned char g_abHudLevelEggCounterBlock[]; /* 0x80077fac, state[4] */
 
 /* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
 #define FIELDW(sym) (((struct { int v; } *)&(sym))->v)
 #define FIELD(sym) (((struct { unsigned char v; } *)&(sym))->v)
 
-#define HUD g_adwHudBobSinePhaseBlock
+#define HUD ((unsigned char *)g_adwHudBobSinePhaseBlock)
 #define BOB (*(unsigned int *)&HUD[0])
 #define GEM_STATE (HUD[-0x3C])
 #define GEM_PHASE (HUD[-0x37])
@@ -46,8 +42,8 @@ extern unsigned char g_abHudLevelEggCounterBlock[]; /* 0x80077fac, state[4] */
 #define GEM_CACHED (*(int *)&HUD[-0x1C])
 
 /* the gem cached-count base reaches the roll phase at -0x1B */
-#define GEMCACHE (*(int *)&g_anHudLevelGemCachedBlock[0])
-#define GEMCACHE_PHASE (g_anHudLevelGemCachedBlock[-0x1B])
+#define GEMCACHE (g_anHudLevelGemCachedBlock[0])
+#define GEMCACHE_PHASE (((unsigned char *)g_anHudLevelGemCachedBlock)[-0x1B])
 
 /* the sprite-rect walk is a BYTE offset off the array, which keeps one
    scaled index register and the field constant in %lo(sym+K) (A179/A35) */

@@ -4,7 +4,6 @@
 /* Refresh the HUD level-gem counters (0x80054578): caches the collected
    count for the current level intro index and re-derives the displayed
    digits and the counter state bytes that sit just below the cache. */
-extern int g_anHudLevelGemCachedBlock[];
 
 void RefreshHudLevelGemCounter(void) {
   int *pc = g_anHudLevelGemCachedBlock;

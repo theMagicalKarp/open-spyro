@@ -506,10 +506,10 @@ void ComputeSpyroMoveTargetFromPad(int speed);
 void IntegrateSpyroBodyEuler(int rate);
 
 /* 0x8003d6d0: Steers Spyro's body yaw (DAT_80078b74) toward the move target yaw (DAT_80078b24) using a lean accumulator (DAT_80078ba0, range -6..+6). Picks turn rate from the 2D lookup table at &DAT_8006c5fc + param_1 * 0x1a + lean * 2 (param_1 selects speed bucket). Resets lean when target is overshot or the desired delta falls inside the table-indexed band. Always finishes by calling IntegrateSpyroBodyEuler with the chosen angular delta and reports the new |delta| via AbsAngleDelta12. */
-void TurnSpyroTowardMoveTargetWithLean(int bucket);
+int TurnSpyroTowardMoveTargetWithLean(int bucket);
 
 /* 0x8003d840: When the analog stick is past the inner deadzone (button bit and not centered at 0x7f7f) but its magnitude is &lt; 0x60, smooths Spyro's body yaw (DAT_80078b74) partway toward the move target yaw (DAT_80078b24) proportional to stick magnitude. Large delta (&gt; 0x100) sets the snap-flag DAT_80078ad4 = 1. Always follows with TurnSpyroTowardMoveTargetWithLean(0). */
-void ApplyPadInputToSpyroBodyYaw(void);
+int ApplyPadInputToSpyroBodyYaw(void);
 
 /* 0x8003d92c: Accelerate/decelerate current speed (DAT_80078b70) toward the target speed (DAT_80078b20) using two separate ramps: +param_1 per frame when below target, -param_2 per frame when at-or-above. Clamps to the target on overshoot. The split rates let walking states use a softer brake than throttle. */
 void AdvanceSpyroSpeedTowardTarget(int accel, int decel);

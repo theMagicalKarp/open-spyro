@@ -22,8 +22,6 @@
 /* Distinct incomplete-array views of the five g_abHudCounterDisplayState
    bytes: each block loads its own flag at [0] and derives its record address
    off the same base. */
-extern byte g_abHudWorldEggIconBlock[];    /* +3: egg quads at +0x461 */
-extern byte g_abHudLevelEggCounterBlock[]; /* +4: record at +0x408 */
 
 void EnqueueLoadingScreenSprites(void) {
   void **slot;

@@ -3,9 +3,6 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-extern void *g_pSharedLoadBuffer;   /* level splash image buffer */
-extern int g_nCdMusicStreamTimeout; /* level-intro deadline */
-
 typedef struct {
   int w[5];
 } Words5;

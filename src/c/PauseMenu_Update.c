@@ -2,14 +2,9 @@
 #include "globals.h"
 #include "vecmath.h"
 
-extern void *g_pSharedLoadBuffer;       /* asset-directory buffer pointer */
 extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
-extern int g_nSfxMixVolume_blk;         /* SFX volume (0..0x3fff) */
 extern int
     g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
-extern unsigned char g_bCdMixLeftToRight;  /* L->R */
-extern unsigned char g_bCdMixRightToRight; /* R->R */
-extern unsigned char g_bCdMixRightToLeft;  /* R->L */
 
 #define SFX(off)                                                               \
   PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[off], 0, 0x10, 0)
@@ -124,8 +119,8 @@ void PauseMenu_Update(void) {
         SFX(0x2E);
         g_nSfxVolume++;
       }
-      g_nSfxMixVolume_blk = g_nSfxVolume * 0x3FFF / 10;
-      g_nSoundMasterVolume = (g_nSfxMixVolume_blk << 12) / 0x3FFF;
+      g_nSfxMixVolume_blk[0] = g_nSfxVolume * 0x3FFF / 10;
+      g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / 0x3FFF;
       return;
     case 1:
       if ((g_dwPadPressed & 0x8000) && g_nMusicVolume > 0) {

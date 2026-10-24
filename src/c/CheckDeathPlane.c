@@ -3,8 +3,7 @@
 #include "main_shared.h"
 #include "sample_bank.h"
 
-extern void *g_pSharedLoadBuffer; /* asset-directory buffer pointer */
-extern int g_CutsceneSoundDef;    /* death-cutscene sample-bank record */
+extern int g_CutsceneSoundDef; /* death-cutscene sample-bank record */
 
 /* The sample-bank stores go through the reloaded global pointer each field
    (the original never proves it points at &g_CutsceneSoundDef); a volatile read

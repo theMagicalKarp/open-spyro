@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern unsigned char g_abSpyroAnimPrevBlock[];
-
 /* 0x8003d194 (0x224): per-frame Spyro animation state-machine tick, routed on
    g_nSpyroAnimMode. Modes 1/2/6 and 5 run the sub-frame timer at +2/+4 and
    drop back to mode 0 on overflow; 3/10 step a pending transition when the

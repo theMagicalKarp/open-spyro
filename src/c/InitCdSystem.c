@@ -2,10 +2,6 @@
 #include "globals.h"
 #include "main_shared.h"
 
-extern signed char g_bCdMixLeftToRight;
-extern signed char g_bCdMixRightToRight;
-extern signed char g_bCdMixRightToLeft;
-
 /* Bring up the CD subsystem at boot: init the drive, set double-speed read
    mode (CdlSetmode 0x80), install the async read callback, then prime the
    music-stream status word and the CdMix attenuator buffer (0x7F,0,0x7F,0).

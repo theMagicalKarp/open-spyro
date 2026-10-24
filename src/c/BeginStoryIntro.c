@@ -10,7 +10,6 @@
    SetSpuCommonAttr argument address the attr block 0x320 below
    g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the
    call. */
-extern int g_nSfxMixVolume_blk[];
 
 void BeginStoryIntro(void) {
   int *blk;
