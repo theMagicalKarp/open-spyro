@@ -183,7 +183,7 @@ void Level14_AdvanceEmitList(int step) {
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
-          int *owner = **(int ***)(rec + 0x18);
+          int *owner = *(int **)W(0x18);
 
           if (owner[5] == 1) {
             owner[5] = 2;
@@ -358,7 +358,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
 
     case 0xB:
-      AddSVector(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;

@@ -2070,7 +2070,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius, int s
 
 /* 0x8003a420: Ground-walking path follow: clamped turn, matrix-rotated move,
  * ground contact, waypoint advance. */
-int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
+int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 /* 0x8003abc0: Spawn the drop (gem/item/debris) a broken or flamed actor leaves. */
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);

@@ -41,4 +41,10 @@ typedef struct Model {
 #define MODEL_OFFSET(field) ((int)&((Model *)0)->field)
 #define ANIM_HEADER_OFFSET(field) ((int)&((AnimationHeader *)0)->field)
 
+/* A Model / AnimationHeader field read as a plain byte-offset reference from
+ * any pointer or int (the ACTOR_RAW form, for the same reasons). */
+#define MODEL_RAW(m, type, field) (*(type *)((char *)(m) + MODEL_OFFSET(field)))
+#define ANIM_HEADER_RAW(a, type, field) \
+  (*(type *)((char *)(a) + ANIM_HEADER_OFFSET(field)))
+
 #endif /* OPEN_SPYRO_MODEL_H */

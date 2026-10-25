@@ -22,6 +22,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "actor_type.h"
 
 /* Level27_AdvanceEmitList (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -132,7 +133,7 @@ void Level27_AdvanceEmitList(int step) {
       int amp;
       int z;
 
-      CopyVector(p, *(int **)(rec + 0x18));
+      CopyVector(p, (int *)W(0x18));
       z = p[2] + HS(0x1E) * 0x40;
       amp = rec[0x2] * 0x40;
       ang = amp;
@@ -201,7 +202,7 @@ void Level27_AdvanceEmitList(int step) {
       break;
 
     case 0xb:  /* <- Level10_AdvanceEmitList */
-      AddSVector(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
@@ -436,9 +437,9 @@ void Level27_AdvanceEmitList(int step) {
         if (len < 0x401) {
           rec[0x1A]++;
           if (rec[0x1A] >= *(unsigned char *)wp) {
-            actor[0x49] = 1;
+            ((Actor *)actor)->subMode = 1;
             HS(0x1E) = (GetRandomU32() & 6) + 1;
-            VectorToSVectorShr2(VEL, (int *)(actor + 0xC));
+            VectorToSVectorShr2(VEL, &((Actor *)actor)->posX);
             spin = GetRandomU32() & 0x7F;
             rec[0x2] = 0;
             HU(0x1C) += spin;

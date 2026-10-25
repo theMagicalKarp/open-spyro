@@ -8,6 +8,8 @@
 #ifndef OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 #define OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 
+#include "actor_type.h"
+
 extern void CopyWords(void *dst, void *src, int len);
 
 extern void ApplyEulerRotation(int *a, int *b, int c);
@@ -98,5 +100,11 @@ extern unsigned int g_dwHudBobSinePhase[];
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */
 extern unsigned char *g_pGamestate0cRecord;
+
+/* The two cutscene actor pointers seen as Actor records: the focus actor
+ * (g_pGamestate0cActor, set by BeginActorCutscene) and the orbit-centre
+ * record above (the actor at the path end, or g_abGamestate0cActorSnapshot). */
+#define CUTSCENE_ACTOR ((Actor *)g_pGamestate0cActor)
+#define CUTSCENE_RECORD ((Actor *)g_pGamestate0cRecord)
 
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */

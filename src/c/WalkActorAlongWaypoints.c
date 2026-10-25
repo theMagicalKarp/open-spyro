@@ -1,7 +1,7 @@
 #include "funcs.h"
 #include "main_shared.h"
 /* 0x8003A420 (size 0x300): actor waypoint-follow step. Steers an actor toward
- * its current waypoint (wp[1] index into a 0x10-byte table at wp+8), clamps the
+ * its current waypoint (path->nodes[path->cur]), clamps the
  * per-frame turn to +/-maxTurn, moves by the (matrix-rotated) capped speed,
  * resolves ground contact, then advances to the next waypoint when close
  * enough.
@@ -13,7 +13,7 @@
  * callee-saved (s4) instead of sharing arriveDist's s1.  `abs()` is the builtin
  * (A160). */
 
-int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
+int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
                             int cap, int contactRadius, int maxTurn,
                             int stallAngle, int *smoothVel) {
   unsigned char eul[3];
@@ -25,14 +25,14 @@ int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
   int absv;
   int ret;
 
-  SubtractVector(vec, (int *)(wp + ((wp[1] << 4) + 8)), (int *)(actor + 0xC));
+  SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, 0), vec[2], 0);
   if ((int)VectorLength(vec, 0) < arriveDist) {
-    eul[2] = actor[0x46];
+    eul[2] = actor->rotZ;
   } else {
     delta = ArcTan2(vec[0], vec[1], 0);
-    base = actor[0x46];
+    base = actor->rotZ;
     delta = (delta - base) & 0xFF;
     if (delta >= 0x81) {
       delta -= 0x100;
@@ -48,7 +48,7 @@ int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
       delta = maxTurn;
     }
     eul[2] = base + delta;
-    actor[0x46] = base + delta;
+    actor->rotZ = base + delta;
   }
   len = VectorLength(vec, 1);
   if (len < cap) {
@@ -64,9 +64,9 @@ int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
     CopyVector(vec, smoothVel);
     RShiftVector3(vec, 2);
     SubtractVector(smoothVel, smoothVel, vec);
-    AddVector(vec, (int *)(actor + 0xC), smoothVel);
+    AddVector(vec, &actor->posX, smoothVel);
   } else {
-    AddVector(vec, (int *)(actor + 0xC), vec);
+    AddVector(vec, &actor->posX, vec);
   }
   if (contactRadius != 0) {
     DispatchActorContactAtSphere(vec, contactRadius, 0, 0, (int)actor, 0);
@@ -81,18 +81,18 @@ int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist,
       vec[2] -= 0x400;
     }
   }
-  CopyVector((int *)(actor + 0xC), vec);
+  CopyVector(&actor->posX, vec);
   EncodeCachedVecToActorDirCode((int)actor);
   RefreshActorDerivedState(actor, 2);
   ret = 0;
-  SubtractVector(vec, (int *)(wp + ((wp[1] << 4) + 8)), (int *)(actor + 0xC));
+  SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   if ((int)VectorLength(vec, 1) < arriveDist) {
-    actor[0x49] = 0;
-    wp[1] = wp[1] + 1;
-    if ((wp[1] & 0xFF) == wp[0]) {
-      wp[1] = 0;
+    actor->subMode = 0;
+    path->cur = path->cur + 1;
+    if ((path->cur & 0xFF) == path->count) {
+      path->cur = 0;
     }
-    ret = wp[1] + 0x100;
+    ret = path->cur + 0x100;
   }
   return ret;
 }

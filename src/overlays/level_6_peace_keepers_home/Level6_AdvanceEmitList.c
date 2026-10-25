@@ -125,7 +125,7 @@ void Level6_AdvanceEmitList(int step) {
       break;
 
     case 0xB:
-      AddSVector(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;

@@ -1,7 +1,9 @@
 #include "actor.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud.h"
 #include "main_shared.h"
+#include "model.h"
 #include "vecmath.h"
 
 /* Matching notes. Several accesses are spelled to control the scheduler's
@@ -40,6 +42,18 @@ struct SampleBankEntry {
   int w4;
 };
 #define SBE ((struct SampleBankEntry *)g_apSampleBankEntriesBlock[0])
+/* One 0x18-byte key of the gem-pickup camera path (g_pGemPickupCameraPath). */
+typedef struct CamPathKey {
+  int x, y, z;
+  int roll, pitch, yaw;
+} CamPathKey;
+/* A key field as a plain byte-offset int reference; the struct member form
+ * reschedules the six camera stores. */
+#define CAM_KEY_RAW(p, field)                                                  \
+  (*(int *)((char *)(p) + (int)&((CamPathKey *)0)->field))
+
+/* The first AnimationHeader of a Model. */
+#define FIRST_ANIM(m) MODEL_RAW(m, int, m_Animations[0])
 #define W32(p, off) (*(int *)((char *)(p) + (off)))
 #define H16(p, off) (*(short *)((char *)(p) + (off)))
 #define U8(p, off) (*(unsigned char *)((char *)(p) + (off)))
@@ -51,7 +65,8 @@ struct SampleBankEntry {
 /* Frames between keyframes of a mesh's animation for its frame-rate code. */
 #define FRAME_STEP(model, step)                                                \
   {                                                                            \
-    int rate = U8(W32(model, 0x38), 0xC);                                      \
+    int rate =                                                                 \
+        ANIM_HEADER_RAW(FIRST_ANIM(model), unsigned char, m_ProgressPerTick);  \
                                                                                \
     if (rate == 0x10) {                                                        \
       step = 8;                                                                \
@@ -113,15 +128,15 @@ void GemPickup_Update(void) {
       g_nGemPickupSubstate = 1;
       *(int *)i = 0;
       g_nGemPickupFullscreenTintLevel = 0xFF;
-      W32(SRC, 0x14) -= 0x78;
+      ACTOR_RAW(SRC, int, posZ) -= 0x78;
       {
         char *src = SRC;
 
         g_nGemPickupOrbitStartYaw =
-            ArcTan2(g_anSpyroWorldPos[0] - W32(src, 0xC),
-                    g_nSpyroWorldPosY - W32(src, 0x10), 1);
+            ArcTan2(g_anSpyroWorldPos[0] - ACTOR_RAW(src, int, posX),
+                    g_nSpyroWorldPosY - ACTOR_RAW(src, int, posY), 1);
       }
-      SubtractVector(vec, g_anSpyroWorldPos, (int *)(SRC + 0xC));
+      SubtractVector(vec, g_anSpyroWorldPos, &((Actor *)SRC)->posX);
       g_nGemPickupOrbitStartRadius = VectorLength(vec, 0);
       {
         char *src = SRC;
@@ -129,20 +144,21 @@ void GemPickup_Update(void) {
         g_dwGemPickupOrbitTargetYaw = W32(REC(src), 0x28);
         g_nGemPickupOrbitTargetRadius = W32(REC(src), 0x2c);
         g_nGemPickupCameraStartYaw =
-            ArcTan2(*(int *)(int)g_anCameraPos - W32(src, 0xC),
-                    g_anCameraPos[1] - W32(src, 0x10), 1);
+            ArcTan2(*(int *)(int)g_anCameraPos - ACTOR_RAW(src, int, posX),
+                    g_anCameraPos[1] - ACTOR_RAW(src, int, posY), 1);
       }
-      SubtractVector(vec, g_anCameraPos, (int *)(SRC + 0xC));
+      SubtractVector(vec, g_anCameraPos, &((Actor *)SRC)->posX);
       g_nGemPickupCameraStartRadius = VectorLength(vec, 0);
       g_nGemPickupCameraStartZ = g_anCameraPos[2];
       {
         char *src = SRC;
 
         rec = REC(src);
-        g_nGemPickupCameraTargetYaw = ArcTan2(W32(rec, 0) - W32(src, 0xC),
-                                              W32(rec, 4) - W32(src, 0x10), 1);
+        g_nGemPickupCameraTargetYaw =
+            ArcTan2(W32(rec, 0) - ACTOR_RAW(src, int, posX),
+                    W32(rec, 4) - ACTOR_RAW(src, int, posY), 1);
       }
-      SubtractVector(vec, rec, (int *)(SRC + 0xC));
+      SubtractVector(vec, rec, &((Actor *)SRC)->posX);
       g_nGemPickupCameraTargetRadius = VectorLength(vec, 0);
       g_nGemPickupCameraTargetZ = W32(rec, 8);
       g_nGemPickupSweepDurationFrames =
@@ -165,7 +181,7 @@ void GemPickup_Update(void) {
       g_bSpyroSubFrameTimer = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      StopAllSoundExceptMask(1 << U8(SRC, 0x54));
+      StopAllSoundExceptMask(1 << ACTOR_RAW(SRC, unsigned char, sfxSlot));
       PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &GB[11]);
     }
   } break;
@@ -188,17 +204,20 @@ void GemPickup_Update(void) {
     {
       char *s = SRC;
 
-      U8(s, 0x49) = (U8(s, 0x49) + 1) & 3;
+      ACTOR_RAW(s, unsigned char, subMode) =
+          (ACTOR_RAW(s, unsigned char, subMode) + 1) & 3;
     }
     {
       char *s = SRC;
 
-      U8(s, 0x44) = g_abGemPickupFlickerPairs1[U8(s, 0x49) * 2];
+      ACTOR_RAW(s, unsigned char, rotX) =
+          g_abGemPickupFlickerPairs1[ACTOR_RAW(s, unsigned char, subMode) * 2];
     }
     {
       char *s = SRC;
 
-      U8(s, 0x45) = g_abGemPickupFlickerPairs1Y[U8(s, 0x49) * 2];
+      ACTOR_RAW(s, unsigned char, rotY) =
+          g_abGemPickupFlickerPairs1Y[ACTOR_RAW(s, unsigned char, subMode) * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -226,8 +245,10 @@ void GemPickup_Update(void) {
              0x1000)) >>
            12);
       CopyVector(vec, g_anSpyroWorldPos);
-      g_anSpyroWorldPos[0] = W32(SRC, 0xC) + ((LookupCosine(a) * d) >> 12);
-      g_nSpyroWorldPosY = W32(SRC, 0x10) + ((LookupSine(a) * d) >> 12);
+      g_anSpyroWorldPos[0] =
+          ACTOR_RAW(SRC, int, posX) + ((LookupCosine(a) * d) >> 12);
+      g_nSpyroWorldPosY =
+          ACTOR_RAW(SRC, int, posY) + ((LookupSine(a) * d) >> 12);
       SubtractVector(vec, g_anSpyroWorldPos, vec);
       {
         int dir = ArcTan2(vec[0], vec[1], 0);
@@ -260,8 +281,10 @@ void GemPickup_Update(void) {
           (((g_nGemPickupCameraTargetRadius - g_nGemPickupCameraStartRadius) *
             t) >>
            13);
-      g_anCameraPos[0] = W32(SRC, 0xC) + ((LookupCosine(a) * d) >> 12);
-      g_anCameraPos[1] = W32(SRC, 0x10) + ((LookupSine(a) * d) >> 12);
+      g_anCameraPos[0] =
+          ACTOR_RAW(SRC, int, posX) + ((LookupCosine(a) * d) >> 12);
+      g_anCameraPos[1] =
+          ACTOR_RAW(SRC, int, posY) + ((LookupSine(a) * d) >> 12);
       g_anCameraPos[2] =
           g_nGemPickupCameraStartZ +
           (((g_nGemPickupCameraTargetZ - g_nGemPickupCameraStartZ) * t) >> 13);
@@ -279,15 +302,15 @@ void GemPickup_Update(void) {
       }
     } else if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames + 0x20) {
       if (g_nGemPickupTimer - g_nFrameStep < g_nGemPickupSweepDurationFrames) {
-        g_anSpyroWorldPos[0] =
-            W32(SRC, 0xC) + ((LookupCosine(g_dwGemPickupOrbitTargetYaw) *
-                              g_nGemPickupOrbitTargetRadius) >>
-                             12);
+        g_anSpyroWorldPos[0] = ACTOR_RAW(SRC, int, posX) +
+                               ((LookupCosine(g_dwGemPickupOrbitTargetYaw) *
+                                 g_nGemPickupOrbitTargetRadius) >>
+                                12);
         {
           int s = LookupSine(g_dwGemPickupOrbitTargetYaw) *
                   g_nGemPickupOrbitTargetRadius;
           char *src = SRC;
-          int y = W32(src, 0x10);
+          int y = ACTOR_RAW(src, int, posY);
 
           g_nGemPickupOrbitStartYaw = g_abSpyroPersistentEuler[2] << 4;
           g_dwGemPickupOrbitTargetYaw =
@@ -320,7 +343,7 @@ void GemPickup_Update(void) {
     }
     if (g_nGemPickupSubstate == 1) {
 
-      AddVector(vec, g_anSpyroWorldPos, (int *)(SRC + 0xC));
+      AddVector(vec, g_anSpyroWorldPos, &((Actor *)SRC)->posX);
       RShiftVector3(vec, 1);
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nGemPickupTimer < 0x10) {
@@ -396,17 +419,20 @@ void GemPickup_Update(void) {
   case 2: {
     char *s = SRC;
 
-    U8(s, 0x49) = (U8(s, 0x49) + 1) & 3;
+    ACTOR_RAW(s, unsigned char, subMode) =
+        (ACTOR_RAW(s, unsigned char, subMode) + 1) & 3;
   }
     {
       char *s = SRC;
 
-      U8(s, 0x44) = g_abGemPickupFlickerPairs2[U8(s, 0x49) * 2];
+      ACTOR_RAW(s, unsigned char, rotX) =
+          g_abGemPickupFlickerPairs2[ACTOR_RAW(s, unsigned char, subMode) * 2];
     }
     {
       char *s = SRC;
 
-      U8(s, 0x45) = g_abGemPickupFlickerPairs2Y[U8(s, 0x49) * 2];
+      ACTOR_RAW(s, unsigned char, rotY) =
+          g_abGemPickupFlickerPairs2Y[ACTOR_RAW(s, unsigned char, subMode) * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -432,49 +458,51 @@ void GemPickup_Update(void) {
         __asm__("" : "=r"(five) : "0"(5));
         GB[24] = (int)AllocActorRecordSlot();
         InitActorRenderDefaults((void *)GB[24]);
-        H16(STATUE, 0x36) = 0x1FE;
-        CopyVector((int *)(GB[24] + 0xC), (int *)(SRC + 0xC));
+        ACTOR_RAW(STATUE, short, type) = 0x1FE;
+        CopyVector(&((Actor *)GB[24])->posX, &((Actor *)SRC)->posX);
         {
           char *s = SRC;
           char *t = STATUE;
 
-          U8(t, 0x46) = U8(s, 0x46);
+          ACTOR_RAW(t, unsigned char, rotZ) = ACTOR_RAW(s, unsigned char, rotZ);
         }
-        U8(STATUE, 0x57) = 0x60;
-        U8(STATUE, 0x47) = five;
-        W32(STATUE, 0x1C) = -1;
-        W32(STATUE, 0x14) += 0x400;
-        FindWorldFloorBelowPoint((int *)(GB[24] + 0xC));
-        W32(STATUE, 0x14) -= 0x400;
+        ACTOR_RAW(STATUE, unsigned char, scale) = 0x60;
+        ACTOR_RAW(STATUE, unsigned char, otBias) = five;
+        ACTOR_RAW(STATUE, int, groundCode) = -1;
+        ACTOR_RAW(STATUE, int, posZ) += 0x400;
+        FindWorldFloorBelowPoint(&((Actor *)GB[24])->posX);
+        ACTOR_RAW(STATUE, int, posZ) -= 0x400;
         EncodeCachedVecToActorDirCode((void *)GB[24]);
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pGemPickupSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pGemPickupSpyroMirrorActor);
-        H16(MIRROR, 0x36) = 0x1FF;
-        CopyVector((int *)(MIRROR + 0xC), g_anSpyroWorldPos);
-        U8(MIRROR, 0x47) = five;
+        ACTOR_RAW(MIRROR, short, type) = 0x1FF;
+        CopyVector(&((Actor *)MIRROR)->posX, g_anSpyroWorldPos);
+        ACTOR_RAW(MIRROR, unsigned char, otBias) = five;
         InsertActorIntoSpatialGrid(MIRROR);
         StopSoundVoiceByIndex(GB[11], 4);
         PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
-        W32(SRC, 0x14) += 0x78;
+        ACTOR_RAW(SRC, int, posZ) += 0x78;
         DespawnActorRecord(SRC);
       }
     }
     break;
   case 3:
     if (GB[5] < 0x18) {
-      U8(STATUE, 0x57) = 0x60 - GB[5] * 3;
+      ACTOR_RAW(STATUE, unsigned char, scale) = 0x60 - GB[5] * 3;
       {
         char *s = SRC;
         int turn;
 
-        turn =
-            SignedAngleDelta8(W32(REC(s), 0x30) >> 4, U8(s, 0x46)) * GB[5] / 24;
+        turn = SignedAngleDelta8(W32(REC(s), 0x30) >> 4,
+                                 ACTOR_RAW(s, unsigned char, rotZ)) *
+               GB[5] / 24;
         {
           char *s2 = SRC;
           char *t = STATUE;
 
-          U8(t, 0x46) = U8(s2, 0x46) + turn;
+          ACTOR_RAW(t, unsigned char, rotZ) =
+              ACTOR_RAW(s2, unsigned char, rotZ) + turn;
         }
       }
     } else {
@@ -484,11 +512,11 @@ void GemPickup_Update(void) {
       g_nGemPickupSubstate = 4;
       GB[5] = 0;
       t = STATUE;
-      U8(t, 0x46) = W32(REC(s), 0x30) >> 4;
-      U8(STATUE, 0x57) = 0;
-      U8(MIRROR, 0x44) = g_abSpyroPersistentEuler[0];
-      U8(MIRROR, 0x45) = g_abSpyroPersistentEuler[1];
-      U8(MIRROR, 0x46) = g_abSpyroPersistentEuler[2];
+      ACTOR_RAW(t, unsigned char, rotZ) = W32(REC(s), 0x30) >> 4;
+      ACTOR_RAW(STATUE, unsigned char, scale) = 0;
+      ACTOR_RAW(MIRROR, unsigned char, rotX) = g_abSpyroPersistentEuler[0];
+      ACTOR_RAW(MIRROR, unsigned char, rotY) = g_abSpyroPersistentEuler[1];
+      ACTOR_RAW(MIRROR, unsigned char, rotZ) = g_abSpyroPersistentEuler[2];
     }
     break;
   case 4: {
@@ -522,45 +550,51 @@ void GemPickup_Update(void) {
         int *p = (int *)((g_nGemPickupTimer >> 1) * 0x18 +
                          (int)g_pGemPickupCameraPath);
 
-        g_anCameraPos[0] = W32(p, 0);
-        g_anCameraPos[1] = W32(p, 4);
-        g_anCameraPos[2] = W32(p, 8);
-        g_nCameraEulerRoll = W32(p, 0xC);
-        g_nCameraEulerPitch = W32(p, 0x10);
-        g_nCameraEulerYaw = W32(p, 0x14);
+        g_anCameraPos[0] = CAM_KEY_RAW(p, x);
+        g_anCameraPos[1] = CAM_KEY_RAW(p, y);
+        g_anCameraPos[2] = CAM_KEY_RAW(p, z);
+        g_nCameraEulerRoll = CAM_KEY_RAW(p, roll);
+        g_nCameraEulerPitch = CAM_KEY_RAW(p, pitch);
+        g_nCameraEulerYaw = CAM_KEY_RAW(p, yaw);
       }
       FRAME_STEP(g_pGemPickupStatueModelData, step);
-      U8(STATUE, 0x3E) = GB[5] / step;
+      ACTOR_RAW(STATUE, unsigned char, frame) = GB[5] / step;
       {
         char *p = STATUE;
 
-        U8(p, 0x3F) = U8(p, 0x3E) + 1;
+        ACTOR_RAW(p, unsigned char, nextFrame) =
+            ACTOR_RAW(p, unsigned char, frame) + 1;
       }
-      U8(STATUE, 0x40) = (GB[5] % step << 6) / step;
+      ACTOR_RAW(STATUE, unsigned char, frameProgress) =
+          (GB[5] % step << 6) / step;
       {
-        short n = H16(W32(g_pGemPickupStatueModelData, 0x38), 0);
+        short n = ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupStatueModelData),
+                                  short, m_NumFrames);
         char *p = STATUE;
 
-        if (U8(p, 0x3F) >= n) {
-          U8(p, 0x3E) = n - 1;
-          U8(STATUE, 0x40) = 0;
+        if (ACTOR_RAW(p, unsigned char, nextFrame) >= n) {
+          ACTOR_RAW(p, unsigned char, frame) = n - 1;
+          ACTOR_RAW(STATUE, unsigned char, frameProgress) = 0;
         }
       }
       FRAME_STEP(g_pGemPickupMirrorModelData, step);
-      U8(MIRROR, 0x3E) = GB[5] / step;
+      ACTOR_RAW(MIRROR, unsigned char, frame) = GB[5] / step;
       {
         char *p = MIRROR;
 
-        U8(p, 0x3F) = U8(p, 0x3E) + 1;
+        ACTOR_RAW(p, unsigned char, nextFrame) =
+            ACTOR_RAW(p, unsigned char, frame) + 1;
       }
-      U8(MIRROR, 0x40) = (GB[5] % step << 6) / step;
+      ACTOR_RAW(MIRROR, unsigned char, frameProgress) =
+          (GB[5] % step << 6) / step;
       {
-        short n = H16(W32(g_pGemPickupMirrorModelData, 0x38), 0);
+        short n = ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupMirrorModelData),
+                                  short, m_NumFrames);
         char *p = MIRROR;
 
-        if (U8(p, 0x3F) >= n) {
-          U8(p, 0x3E) = n - 1;
-          U8(MIRROR, 0x40) = 0;
+        if (ACTOR_RAW(p, unsigned char, nextFrame) >= n) {
+          ACTOR_RAW(p, unsigned char, frame) = n - 1;
+          ACTOR_RAW(MIRROR, unsigned char, frameProgress) = 0;
         }
       }
       if (g_dwPadPressed & 0x40) {
@@ -580,16 +614,22 @@ void GemPickup_Update(void) {
       g_nGemPickupTimer = 0;
       p = (int *)(g_nGemPickupCameraPathCount * 0x18 +
                   (int)g_pGemPickupCameraPath);
-      g_anCameraPos[0] = W32(p, -0x18);
-      g_anCameraPos[1] = W32(p, -0x14);
-      g_anCameraPos[2] = W32(p, -0x10);
-      g_nCameraEulerRoll = W32(p, -0xC);
-      g_nCameraEulerPitch = W32(p, -8);
-      g_nCameraEulerYaw = W32(p, -4);
-      U8(STATUE, 0x3E) = U8(W32(g_pGemPickupStatueModelData, 0x38), 0) - 1;
-      U8(STATUE, 0x40) = 0;
-      U8(MIRROR, 0x3E) = U8(W32(g_pGemPickupMirrorModelData, 0x38), 0) - 1;
-      U8(MIRROR, 0x40) = 0;
+      g_anCameraPos[0] = CAM_KEY_RAW((CamPathKey *)p - 1, x);
+      g_anCameraPos[1] = CAM_KEY_RAW((CamPathKey *)p - 1, y);
+      g_anCameraPos[2] = CAM_KEY_RAW((CamPathKey *)p - 1, z);
+      g_nCameraEulerRoll = CAM_KEY_RAW((CamPathKey *)p - 1, roll);
+      g_nCameraEulerPitch = CAM_KEY_RAW((CamPathKey *)p - 1, pitch);
+      g_nCameraEulerYaw = CAM_KEY_RAW((CamPathKey *)p - 1, yaw);
+      ACTOR_RAW(STATUE, unsigned char, frame) =
+          ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupStatueModelData),
+                          unsigned char, m_NumFrames) -
+          1;
+      ACTOR_RAW(STATUE, unsigned char, frameProgress) = 0;
+      ACTOR_RAW(MIRROR, unsigned char, frame) =
+          ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupMirrorModelData),
+                          unsigned char, m_NumFrames) -
+          1;
+      ACTOR_RAW(MIRROR, unsigned char, frameProgress) = 0;
       g_bSpyroAnimPrev = 0;
       g_bSpyroAnimCurrent = 0;
       g_bSpyroFramePrev = 0;
@@ -620,25 +660,29 @@ void GemPickup_Update(void) {
     int k;
     int off;
 
-    for (i = 0; i < H16(W32(g_pGemPickupStatueModelData, 0x38), 2); i++) {
+    for (i = 0; i < ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupStatueModelData),
+                                    short, m_NumColors);
+         i++) {
       unsigned int c = ComputeDepthCuedColor(
-          ((int *)W32(W32(g_pGemPickupStatueModelData, 0x38), 0x18))[i],
+          ((int *)ANIM_HEADER_RAW(FIRST_ANIM(g_pGemPickupStatueModelData), int,
+                                  m_Colors))[i],
           0xFFFFFF, 0x200);
-      int *dst =
-          (int *)(i * 4 + W32(W32(g_pGemPickupStatueModelData, 0x38), 0x18));
+      int *dst = (int *)(i * 4 + ANIM_HEADER_RAW(
+                                     FIRST_ANIM(g_pGemPickupStatueModelData),
+                                     int, m_Colors));
 
       *dst = c;
     }
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = (int *)(g_abHudIconActorRecords + 0x1C8);
+    icon = &HUD_ICON(5 * 0x58)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
   roll_in:
-    CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + k),
+    CopyVector(&HUD_ICON(5 * 0x58 + k)->posX,
                (int *)((char *)g_anGemPickupIconRestPos + off));
     if (g_nGemPickupTimer < 0x19) {
       *icon += (((short *)done)[g_nGemPickupTimer >> 1] * 3) >> 1;
@@ -656,7 +700,7 @@ void GemPickup_Update(void) {
       g_nGemPickupSubstate = 6;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
-      CopyVector((int *)ang, (int *)((char *)g_pGemPickupStatueActor + 0xC));
+      CopyVector((int *)ang, &((Actor *)g_pGemPickupStatueActor)->posX);
       ((int *)ang)[2] += 0x40;
       ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(0x20, 0x18,
                                                                 (int *)ang, 0);
@@ -703,11 +747,11 @@ void GemPickup_Update(void) {
       int off;
 
       n = 0;
-      icon = (int *)(g_abHudIconActorRecords + 0x1C8);
+      icon = &HUD_ICON(5 * 0x58)->posY;
       j = 0;
       off = 0;
     roll_out:
-      CopyVector((int *)(g_abHudIconActorRecords + 0x1C4 + j),
+      CopyVector(&HUD_ICON(5 * 0x58 + j)->posX,
                  (int *)((char *)g_anGemPickupIconRestPos + off));
       j += 0x58;
       off += 0xC;
@@ -741,8 +785,9 @@ void GemPickup_Update(void) {
   {
     char *actor = g_pActorListBase;
 
-    while (U8(actor, 0x48) != 0xFF) {
-      if (H16(actor, 0x36) == 0xFB && U8(actor, 0x48) < 0x80) {
+    while (ACTOR_RAW(actor, unsigned char, mode) != 0xFF) {
+      if (ACTOR_RAW(actor, short, type) == 0xFB &&
+          ACTOR_RAW(actor, unsigned char, mode) < 0x80) {
         TickGemPickupBurstEntity(actor);
       }
       actor += 0x58;

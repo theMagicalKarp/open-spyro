@@ -144,7 +144,7 @@ void Level24_AdvanceEmitList(int step) {
       int amp;
       int z;
 
-      CopyVector(p, *(int **)(rec + 0x18));
+      CopyVector(p, (int *)W(0x18));
       z = p[2] + HS(0x1E) * 0x40;
       amp = rec[0x2] * 0x40;
       ang = amp;
@@ -193,7 +193,7 @@ void Level24_AdvanceEmitList(int step) {
       break;
 
     case 0xB:
-      AddSVector(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;

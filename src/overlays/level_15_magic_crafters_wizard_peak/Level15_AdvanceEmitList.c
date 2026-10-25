@@ -180,7 +180,7 @@ void Level15_AdvanceEmitList(int step) {
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, 1);
         if (len < 0x401 || rec[0x2] >= 0x41) {
-          int *owner = **(int ***)(rec + 0x18);
+          int *owner = *(int **)W(0x18);
 
           if (owner[5] == 1) {
             owner[5] = 2;
@@ -264,7 +264,7 @@ void Level15_AdvanceEmitList(int step) {
       int amp;
       int z;
 
-      CopyVector(p, *(int **)(rec + 0x18));
+      CopyVector(p, (int *)W(0x18));
       z = p[2] + HS(0x1E) * 0x40;
       amp = rec[0x2] * 0x40;
       ang = amp;
@@ -332,7 +332,7 @@ void Level15_AdvanceEmitList(int step) {
       break;
 
     case 0xb:  /* <- Level10_AdvanceEmitList */
-      AddSVector(POS, POS, (short *)(rec + 0x12));
+      AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
