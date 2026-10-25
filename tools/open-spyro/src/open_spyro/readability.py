@@ -13,10 +13,10 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
               including the file's own function
   anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views
   m2c_local   m2c scaffolding locals (``temp_*``, ``var_*``, ``spXX``, ``argN``)
-  raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``), or any
-              byte-cast base plus a field-sized constant (``(char *)p + 0x44``,
-              however parenthesized) outside a ``#define`` — a struct waiting
-              to be recovered.  A named accessor macro is not counted.
+  raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``) or any
+              byte-cast base plus a field-sized constant (``(char *)p + 0x44``),
+              however parenthesized — a struct waiting to be recovered.  Sites
+              inside a ``#define`` (a named accessor) are not counted.
   extern      file-local ``extern`` declarations (header-able duplicates)
 
 Matching scaffolding (``asm`` barriers, register pins, ``do {} while (0)``) is
@@ -53,9 +53,9 @@ _ANON_DATA = re.compile(
 )
 _M2C = re.compile(r"\b(?:temp_[a-z0-9_]+|var_[a-z0-9_]+|sp[0-9A-F]{2,3}|arg[0-9])\b")
 _RAW = re.compile(
-    r"\*\s*\(\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?"
-    r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(\s*"
-    r"(?:\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*)?[A-Za-z_]\w*\s*\+"
+    r"\*\s*\(+\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?"
+    r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(+\s*"
+    r"(?:\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*)?[A-Za-z_]\w*\s*\)?\s*\+"
 )
 # A byte-cast base plus a constant field offset (< 0x400), however parenthesized:
 # ``*((unsigned char *)(((char *)p) + 0x46))``, ``(DISPENV *)((char *)env + 0x5c)``.
@@ -75,8 +75,8 @@ def _strip_comments(text: str) -> str:
 
 def _raw_offsets(code: str) -> int:
     """Distinct raw-offset sites, keyed by the position of their ``+``."""
-    sites = {m.end() - 1 for m in _RAW.finditer(code)}
     body = _DEFINE.sub(lambda m: re.sub(r"[^\n]", " ", m.group()), code)
+    sites = {m.end() - 1 for m in _RAW.finditer(body)}
     sites |= {m.start(1) for m in _BYTE_OFF.finditer(body)}
     return len(sites)
 
