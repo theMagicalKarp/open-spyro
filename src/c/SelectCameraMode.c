@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
 
@@ -43,7 +44,7 @@ void SelectCameraMode(void) {
   if (mode == 0x80000009) {
     if (g_dwActiveCameraOptions & 0x10) {
       if (g_nSpyroState == 0 || g_nSpyroState == 0xD) {
-        if (!(g_dwPadHeld & 0x10)) {
+        if (!(g_dwPadHeld & PAD_TRIANGLE)) {
           g_nCameraNextMode = 0x80000010;
           g_nCameraPassiveModeHoldTimer = 0x2D;
           g_nSpyroSwingEulerPitchTarget = 0;
@@ -52,7 +53,7 @@ void SelectCameraMode(void) {
         }
         goto done;
       }
-    } else if ((g_dwPadHeld & 0x10) && g_nSpyroState == 0) {
+    } else if ((g_dwPadHeld & PAD_TRIANGLE) && g_nSpyroState == 0) {
       goto done;
     }
     {

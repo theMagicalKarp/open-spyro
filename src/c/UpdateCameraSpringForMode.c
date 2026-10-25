@@ -333,14 +333,14 @@ void UpdateCameraSpringForMode(void) {
         g_anCameraScriptStickIntegrator[0] += (pad[0x16] - 0x7F) >> 1;
         g_anCameraScriptStickIntegrator[1] += (0x7F - pad[0x17]) >> 1;
       } else {
-        if (g_dwPadHeld & 0x8000) {
+        if (g_dwPadHeld & PAD_LEFT) {
           STICK[0] -= 0x30;
-        } else if (g_dwPadHeld & 0x2000) {
+        } else if (g_dwPadHeld & PAD_RIGHT) {
           STICK[0] += 0x30;
         }
-        if (g_dwPadHeld & 0x1000) {
+        if (g_dwPadHeld & PAD_UP) {
           STICK[1] += 0x30;
-        } else if (g_dwPadHeld & 0x4000) {
+        } else if (g_dwPadHeld & PAD_DOWN) {
           STICK[1] -= 0x30;
         }
       }

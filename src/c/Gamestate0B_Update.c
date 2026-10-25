@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "sample_bank.h"
 #include "vecmath.h"
 
@@ -176,20 +177,20 @@ void Gamestate0B_Update(void) {
     ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     switch (SM[3]) {
     case 0:
-      if (g_dwPadPressed & 0x4000) {
+      if (g_dwPadPressed & PAD_DOWN) {
         PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (++g_nSaveMenuCursor >= 3) {
           g_nSaveMenuCursor = 0;
         }
-      } else if (g_dwPadPressed & 0x1000) {
+      } else if (g_dwPadPressed & PAD_UP) {
         PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (--g_nSaveMenuCursor < 0) {
           g_nSaveMenuCursor = 2;
         }
       }
-      if (SM[1] >= 8 && (g_dwPadPressed & 0x40)) {
+      if (SM[1] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         if (g_nSaveMenuCursor == 0) {
           SM[1] = 0;
@@ -221,7 +222,7 @@ void Gamestate0B_Update(void) {
       }
       break;
     case 1:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & 0x40)) {
+      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 0;
@@ -312,7 +313,7 @@ void Gamestate0B_Update(void) {
     case 3:
     case 4:
     case 5:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & 0x40)) {
+      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 6;
@@ -338,7 +339,7 @@ void Gamestate0B_Update(void) {
       }
       break;
     case 7:
-      if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & 0x40)) {
+      if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         MemCardCloseSession();
         EndSaveMenuToWorld();
         PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);

@@ -179,7 +179,7 @@ void PollPadAndDistributeInput(void) {
       }
       g_dwPadAnalogCalibrated = *(unsigned int *)cal;
       if (g_nPadAllInputIdleFlag != 0) {
-        if ((g_dwPadHeld & 0xF000) != 0 ||
+        if ((g_dwPadHeld & PAD_DPAD) != 0 ||
             (padType == 3 && (cal[2] != 0x7F || cal[3] != cal[2]))) {
           g_nPadDirectionalIdleFlag = 0;
         }

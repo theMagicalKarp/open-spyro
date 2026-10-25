@@ -35,6 +35,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -548,7 +549,7 @@ void Level30_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -576,7 +577,7 @@ void Level30_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -600,7 +601,7 @@ void Level30_UpdateActors(void) {
         } else {
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;

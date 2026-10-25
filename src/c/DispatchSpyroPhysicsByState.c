@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "spyro_block.h"
 
 typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
@@ -63,7 +64,7 @@ void DispatchSpyroPhysicsByState(void) {
   case 41:
   case 42:
   case 43:
-    if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & 0x10)) {
+    if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & PAD_TRIANGLE)) {
       g_nCameraNextMode = 0x80000009;
     }
     AverageSpyroPlatformMotion();

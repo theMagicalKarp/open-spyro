@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 
 /* 0x8002edf0 (1492 bytes) — update for gamestate 5 (GS_GAME_OVER).
 
@@ -142,7 +143,7 @@ void RespawnOrGameOver_Update(void) {
     if (g_nCdStreamState < 0xb) {
       TickLevelTransitionStream(1);
     } else if ((g_nGameplayDrawFrame >= 0x169) &&
-               ((g_dwPadHeld & 0x800) != 0)) {
+               ((g_dwPadHeld & PAD_START) != 0)) {
       RestartSpyroAnimWithState(0);
       g_nGameplayDrawMode = 2;
       g_nGameplayDrawFrame = 0;

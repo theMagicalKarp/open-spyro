@@ -23,6 +23,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 
 /* Level5_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -385,7 +386,7 @@ void Level5_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -411,7 +412,7 @@ void Level5_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -433,7 +434,7 @@ void Level5_UpdateActors(void) {
         } else {
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -1835,7 +1836,7 @@ void Level5_UpdateActors(void) {
                  st->slot[3] != 0) {
         int s = st->slot[0]->mode;
 
-        if (s == 4 || (g_dwPadPressed & 0x40)) {
+        if (s == 4 || (g_dwPadPressed & PAD_CROSS)) {
           g_pfnLevelFallImpactCallback();
         } else if (s == 1) {
           for (i = 0; i < 4; i++) {

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "pad_buttons.h"
 #include "sample_bank.h"
 #include "vecmath.h"
 
@@ -107,15 +108,15 @@ void PauseMenu_Update(void) {
         g_nPauseMenuCursor = c - 2;
       }
     }
-    if (g_dwPadPressed & 0x10) {
+    if (g_dwPadPressed & PAD_TRIANGLE) {
       goto back;
     }
     switch (g_nPauseMenuCursor) {
     case 0:
-      if ((g_dwPadPressed & 0x8000) && g_nSfxVolume > 0) {
+      if ((g_dwPadPressed & PAD_LEFT) && g_nSfxVolume > 0) {
         SFX(0x2E);
         g_nSfxVolume--;
-      } else if ((g_dwPadPressed & 0x2000) && g_nSfxVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nSfxVolume < 10) {
         SFX(0x2E);
         g_nSfxVolume++;
       }
@@ -123,10 +124,10 @@ void PauseMenu_Update(void) {
       g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / 0x3FFF;
       return;
     case 1:
-      if ((g_dwPadPressed & 0x8000) && g_nMusicVolume > 0) {
+      if ((g_dwPadPressed & PAD_LEFT) && g_nMusicVolume > 0) {
         SFX(0x2E);
         g_nMusicVolume--;
-      } else if ((g_dwPadPressed & 0x2000) && g_nMusicVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nMusicVolume < 10) {
         SFX(0x2E);
         g_nMusicVolume++;
       }
@@ -144,7 +145,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 2:
-      if (g_dwPadPressed & 0xA040) {
+      if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
         SFX(0x2E);
         if ((*g_anSoundMonoMixFlagBlock = 1 - *g_anSoundMonoMixFlagBlock) !=
             0) {
@@ -163,7 +164,7 @@ void PauseMenu_Update(void) {
       return;
     case 3:
       if (g_nPadIsDualshockFlag) {
-        if (g_dwPadPressed & 0xA040) {
+        if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
           SFX(0x2E);
           g_nOptionVibrationEnabled = 1 - g_nOptionVibrationEnabled;
           if (g_nOptionVibrationEnabled && g_nVibrationLevel < 10) {
@@ -175,7 +176,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 4:
-      if (g_dwPadPressed & 0xA040) {
+      if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
         SFX(0x2E);
         if (g_dwActiveCameraOptions == 2) {
           g_dwActiveCameraOptions = 0x52;
@@ -185,7 +186,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 5:
-      if (g_dwPadPressed & 0x40) {
+      if (g_dwPadPressed & PAD_CROSS) {
       back:
         SFX(0x2E);
         g_nPauseMenuSubstate = 0;
@@ -210,7 +211,7 @@ void PauseMenu_Update(void) {
       g_nPauseMenuCursor = last;
     }
   }
-  if (!(g_dwPadPressed & 0x840)) {
+  if (!(g_dwPadPressed & (PAD_CROSS | PAD_START))) {
     return;
   }
   switch (g_nPauseMenuCursor) {

@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -80,7 +81,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -88,15 +89,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -128,7 +129,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -136,15 +137,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -163,7 +164,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -171,15 +172,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -226,7 +227,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -234,15 +235,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -290,13 +291,13 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & 0x40)) {
+    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_anSpyroMotionVec[2] < 0) {
       g_nSpyroStateFlags = 1;
     }
-    if (g_nSpyroStateFlags == 0 && !(g_dwPadHeld & 0x40) &&
+    if (g_nSpyroStateFlags == 0 && !(g_dwPadHeld & PAD_CROSS) &&
         g_bSpyroJumpHoldForced == 0) {
       g_nSpyroStateFlags = 2;
     }
@@ -313,7 +314,7 @@ void UpdateSpyroStateBehavior(void) {
       }
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       g_nSpyroMotionSpeed = 0x1F80;
       break;
@@ -331,12 +332,12 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       if (g_nSpyroGravityEnableFlag != 0 && g_nSpyroStateTimer < 4) {
         ChangeSpyroState(5);
         break;
       }
-      if ((g_dwPadPressed & 0x40) && g_nSpyroStateFlags == 0) {
+      if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroStateFlags == 0) {
         if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {
           if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
             ChangeSpyroState(32);
@@ -424,7 +425,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 4) {
+    if (g_dwPadHeld & PAD_L1) {
       break;
     }
     if (g_nSpyroStateTimer < 0x15) {
@@ -442,7 +443,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 8) {
+    if (g_dwPadHeld & PAD_R1) {
       break;
     }
     if (g_nSpyroStateTimer < 0x15) {
@@ -456,7 +457,8 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroChargeStateChanges()) {
       break;
     }
-    if ((g_dwPadHeld & 0xC0) == 0xC0 && g_nSpyroGroundSlope < 0xC) {
+    if ((g_dwPadHeld & (PAD_CROSS | PAD_SQUARE)) == 0xC0 &&
+        g_nSpyroGroundSlope < 0xC) {
       ChangeSpyroState(20);
       g_nSpyroVelocityZ += 0xDC0;
       g_nSpyroAirborneFrames++;
@@ -470,7 +472,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (!(g_dwPadHeld & 0x80)) {
+    if (!(g_dwPadHeld & PAD_SQUARE)) {
       ChangeSpyroState(2);
       g_nSpyroStateTimer = g_nSpyroPrevStateTimer * 2;
       break;
@@ -518,7 +520,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -526,15 +528,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -606,11 +608,11 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & 0x10)) {
+    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(16);
       break;
     }
@@ -661,7 +663,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -670,15 +672,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -733,7 +735,7 @@ void UpdateSpyroStateBehavior(void) {
       }
       ResetSpyroLinearMotion();
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
         ChangeSpyroState(15);
       }
@@ -744,11 +746,11 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if ((g_dwPadHeld & 0x40) && g_nSpyroStateTimer < 4) {
+    if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroStateTimer < 4) {
       ChangeSpyroState(5);
       break;
     }
-    if ((g_dwPadHeld & 0x80) && g_nSpyroMotionSpeed > 0x1F00) {
+    if ((g_dwPadHeld & PAD_SQUARE) && g_nSpyroMotionSpeed > 0x1F00) {
       ChangeSpyroState(20);
       break;
     }
@@ -773,7 +775,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case 20:
-    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & 0x40)) {
+    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (!(g_nSpyroStateFlags & 0x40) && DispatchSpyroChargeStateChanges()) {
@@ -809,7 +811,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -817,15 +819,15 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(11);
       break;
     }
-    if (g_dwPadPressed & 4) {
+    if (g_dwPadPressed & PAD_L1) {
       ChangeSpyroState(9);
       break;
     }
-    if (g_dwPadPressed & 8) {
+    if (g_dwPadPressed & PAD_R1) {
       ChangeSpyroState(10);
       break;
     }
@@ -852,11 +854,11 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       break;
     }
-    if (g_dwPadPressed & 0x10) {
+    if (g_dwPadPressed & PAD_TRIANGLE) {
       ChangeSpyroState(16);
       break;
     }
@@ -874,10 +876,10 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer >= 4) {
       g_nSpyroGravityEnableFlag = 0;
     }
-    if ((g_dwPadHeld & 0x40) && g_nSpyroGravityEnableFlag != 0) {
+    if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroGravityEnableFlag != 0) {
       g_nSpyroGravityEnableFlag = 0;
       g_nSpyroVelocityZ += 0xDC0;
-    } else if ((g_dwPadPressed & 0x40) && g_nSpyroGroundRunFlag == 0) {
+    } else if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroGroundRunFlag == 0) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_nSpyroGroundSlope >= 0x17 && g_nScriptedRespawnFlag == 0) {
@@ -938,7 +940,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
-    if (g_dwPadPressed & 0x40) {
+    if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(5);
       break;
     }
@@ -966,7 +968,7 @@ void UpdateSpyroStateBehavior(void) {
           g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
       break;
     }
-    if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & 0x40)) {
+    if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & PAD_CROSS)) {
       ChangeSpyroState(5);
     }
     break;
@@ -983,7 +985,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
       ChangeSpyroState(6);
-    } else if (g_anSpyroMotionVec[2] > 0x800 || (g_dwPadPressed & 0x40)) {
+    } else if (g_anSpyroMotionVec[2] > 0x800 || (g_dwPadPressed & PAD_CROSS)) {
       ChangeSpyroState(33);
     } else if (g_anSpyroMotionVec[2] < -0x1000) {
       ChangeSpyroState(34);
@@ -1006,11 +1008,11 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nFlightLevelActive != 0) {
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & 0x10)) {
+    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(16);
     }
     break;
@@ -1048,11 +1050,11 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nFlightLevelActive != 0) {
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & 0x10)) {
+    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(16);
     }
     break;
@@ -1069,7 +1071,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
       ChangeSpyroState(6);
-    } else if (g_dwPadPressed & 0x40) {
+    } else if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(33);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
       ChangeSpyroState(32);
@@ -1092,11 +1094,11 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nFlightLevelActive != 0) {
       break;
     }
-    if (g_dwPadHeld & 0x80) {
+    if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(20);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & 0x10)) {
+    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(16);
     }
     break;
@@ -1112,13 +1114,13 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0x8400)) {
       break;
     }
-    if (g_dwPadHeld & 0x40) {
+    if (g_dwPadHeld & PAD_CROSS) {
       if (g_nSpyroMotionAux >= 10 || g_nSpyroAirborneFrames != 0) {
         goto jump;
       }
       g_nSpyroMotionAux += g_nFrameStep;
     }
-    if (g_dwPadReleased & 0x40) {
+    if (g_dwPadReleased & PAD_CROSS) {
     jump: {
       int *vz;
 
@@ -1140,7 +1142,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateTimer >= 0xF &&
-        !(*(volatile unsigned int *)&g_dwPadHeld & 0x80)) {
+        !(*(volatile unsigned int *)&g_dwPadHeld & PAD_SQUARE)) {
       ChangeSpyroState(11);
       break;
     }

@@ -5,6 +5,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "model.h"
+#include "pad_buttons.h"
 #include "sample_bank.h"
 #include "vecmath.h"
 
@@ -598,7 +599,7 @@ void GemPickup_Update(void) {
           ACTOR_RAW(MIRROR, unsigned char, frameProgress) = 0;
         }
       }
-      if (g_dwPadPressed & 0x40) {
+      if (g_dwPadPressed & PAD_CROSS) {
         if (W32(REC(SRC), 0x34) != 0) {
           if (g_nGemPickupPadHoldTimer == 0) {
             g_nGemPickupPadHoldTimer = 1;

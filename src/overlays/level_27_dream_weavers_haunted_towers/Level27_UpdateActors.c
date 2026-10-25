@@ -33,6 +33,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -590,7 +591,7 @@ void Level27_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -616,7 +617,7 @@ void Level27_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -638,7 +639,7 @@ void Level27_UpdateActors(void) {
         } else {
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;

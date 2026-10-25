@@ -73,7 +73,7 @@ int SamplePadForDeathReplayFrame(void) {
   } while (i < 4);
   g_nPadAllInputIdleFlag = 1;
   g_nPadDirectionalIdleFlag = 1;
-  if ((g_dwPadHeld & 0xF000) != 0 ||
+  if ((g_dwPadHeld & PAD_DPAD) != 0 ||
       (g_dwPadAnalogCalibrated & 0xFFFF0000) != 0x7F7F0000) {
     g_nPadDirectionalIdleFlag = 0;
   }

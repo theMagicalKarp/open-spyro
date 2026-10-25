@@ -39,6 +39,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -555,7 +556,7 @@ void Level18_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -583,7 +584,7 @@ void Level18_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -607,7 +608,7 @@ void Level18_UpdateActors(void) {
         } else {
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -2090,7 +2091,7 @@ void Level18_UpdateActors(void) {
       }
 
       case 2:
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           st->shake = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;
