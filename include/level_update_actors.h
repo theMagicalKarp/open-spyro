@@ -683,7 +683,8 @@ typedef struct PortalState {
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
-/* Type 300: camera trigger volume. Live camera sphere and its template. */
+/* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
+ * template that camera is seeded from. */
 typedef struct Xform6 {
   int w[6];
 } Xform6;
@@ -692,15 +693,22 @@ extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 
 extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
-/* Type 300 state block: activation box, mode flags, timer, linked actor. */
-typedef struct TriggerState {
-  int spanZ; /* 0x00 vertical span; also the offset added to the target Z */
+/* Type 300 (whirlwind) state block. While Spyro is inside the cylinder it
+ * posts SPYRO_EV_LIFT with a request to rise to actor->posZ + spanZ (the LIFT
+ * state carries him up, then he glides) and plays SFX_WHIRLWIND. An
+ * owner-gated one stays off until its linked actor (key picked up, dragon
+ * freed, gem taken) says so. */
+typedef struct WhirlwindState {
+  int spanZ; /* 0x00 height; Spyro is lifted to posZ + spanZ */
   int radius; /* 0x04 horizontal radius */
-  int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
+  int flags; /* 0x08 bit0 target camera (else the front spring camera),
+              * bit1 idle (wakes 0xB4 frames after Spyro comes near),
+              * bit2 woken (idles again 0x78 frames after a lift),
+              * bit3 owner-gated,
               * bit4 also stamps actor->subMode */
-  int timer; /* 0x0C */
-  int idx;   /* 0x10 index into the actor pool at g_pActorListBase */
-} TriggerState;
+  int timer; /* 0x0C wake / idle countdown */
+  int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
+} WhirlwindState;
 
 /* Type 323: respawner. Revives dormant actors of one class out of view. */
 typedef struct RespawnState {

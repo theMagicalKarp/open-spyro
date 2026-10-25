@@ -532,7 +532,7 @@ void Level20_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
             g_pfnLevelSpawnActor(0x190, actor);
             st->timer = 0xA;
             actor->mode = 0xA;
@@ -2955,7 +2955,7 @@ void Level20_UpdateActors(void) {
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
             Actor *o = g_pfnLevelSpawnActor(0x190, actor);
 
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
             o->scale = 0x34;
             st->coolDown = 0xA;
             actor->mode = 0x1E;

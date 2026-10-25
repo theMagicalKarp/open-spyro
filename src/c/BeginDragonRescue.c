@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "sample_bank.h"
 #include "vecmath.h"
@@ -66,6 +67,7 @@ void BeginDragonRescue(Actor *actor) {
   }
   CopyVector(g_anDragonRescueAuraStarAnchor, &actor->posX);
   g_anDragonRescueAuraStarAnchor[2] += 0x40;
-  PlaySoundEffect(LEVEL_SFX(0x30), (Actor *)&g_anDragonRescueBlock[0x1a], 0x10,
+  PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_START),
+                  (Actor *)&g_anDragonRescueBlock[0x1a], 0x10,
                   &((Actor *)g_anDragonRescueBlock[0x1a])->sfxSlot);
 }

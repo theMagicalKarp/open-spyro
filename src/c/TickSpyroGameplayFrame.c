@@ -43,7 +43,7 @@ void TickSpyroGameplayFrame(void) {
   int *bodyMtx;
   int *composedMtx;
   int *pos;
-  int *stateFlags;
+  int *fallFrames;
   int *camRecord;
   unsigned char *animBlock;
   unsigned int *footstep;
@@ -144,13 +144,13 @@ void TickSpyroGameplayFrame(void) {
     } else {
       goto done;
     }
-    stateFlags = g_anSpyroStateFlagsBlock;
-    if (stateFlags[0] == 0) {
+    fallFrames = g_anSpyroSubstateBlock;
+    if (fallFrames[0] == 0) {
       camRecord = g_anSpyroDeathCamRecordBlock;
       CopyVector(camRecord, g_anCameraPos);
       ActivateScriptedCameraView((int)(camRecord - (0x18 / 4)));
     }
-    stateFlags[0] += g_nFrameStep;
+    fallFrames[0] += g_nFrameStep;
   }
 done:
   animBlock = g_abSpyroAnimPrevBlock;

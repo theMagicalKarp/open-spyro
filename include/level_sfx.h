@@ -7,12 +7,27 @@
 
 enum LevelSfx {
   SFX_REWARD = 0,         /* extra life collected, gem-tally burst, cheat accepted */
+  SFX_CHARGE = 4,         /* charge entry; the loop StopSoundVoicesByOwner ends on exit */
+  SFX_SUPERCHARGE = 5,    /* supercharge entry */
+  SFX_SPLASH = 0x1D,      /* Spyro enters a hazard; actors touch surface-0 ground (with a ripple spawn) */
   SFX_ACTOR_BURST = 0x26, /* BurstActorWithSound */
   SFX_MENU_OPEN = 0x2C,   /* pause / inventory / save menu opens */
   SFX_MENU_MOVE = 0x2D,   /* menu cursor moves */
   SFX_MENU_SELECT = 0x2E, /* menu choice confirmed or menu closed */
-  SFX_GEM_BOUNCE = 0x2F,  /* dropped gem bounces; gem-tally particle lands */
+  SFX_GEM_BOUNCE = 0x2F,  /* dropped gem bounces; gem-tally particle lands; Sparx hands over a pickup */
+  /* The dragon rescue (DragonRescue_Update substates in brackets). */
+  SFX_RESCUE_START = 0x30,  /* statue touched (BeginDragonRescue) */
+  SFX_RESCUE_STATUE = 0x31, /* [2] the statue and Spyro's stand-in spawn */
+  SFX_RESCUE_SWEEP = 0x32,  /* [0 -> 1] Spyro is swept round the statue */
+  SFX_RESCUE_FADE = 0x33,   /* [6 -> 7] fade back to the world */
+  SFX_RESCUE_DEPART = 0x34, /* [5 -> 6] the dragon leaves in a particle burst */
+  SFX_RESCUE_COUNT = 0x35,  /* [6] the HUD dragon counter rolls one */
+  SFX_WHIRLWIND = 0x36,     /* type 300 whirlwind every frame it is awake; level 14's type 109 carrier */
+  SFX_SEQUENCE_TONE = 0x37, /* pitched up per step: type 13 followers released in turn;
+                             * level 0's type 18 switches take its pitch */
   SFX_MENU_PAGE = 0x38,   /* inventory scrolls to another world */
+  SFX_SPYRO_HURT_PINNED = 0x3A, /* SPYRO_ST_HURT_PINNED entry */
+  SFX_SPYRO_HURT = 0x3B,        /* SPYRO_ST_HURT / KNOCKBACK entry */
 };
 
 #endif /* OPEN_SPYRO_LEVEL_SFX_H */

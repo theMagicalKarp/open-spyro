@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "hud.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "model.h"
@@ -83,7 +84,7 @@ typedef struct CamPathKey {
     }                                                                          \
   }
 
-/* 0x8002f3e4 (0x20d0): the dragon-rescue (dragon rescue) gamestate. Substates:
+/* 0x8002f3e4 (0x20d0): the dragon-rescue gamestate (GS 8). Substates:
    0 the aura star swells while Spyro keeps playing, 1 Spyro is swept round
    the statue and the camera eases in, 2 waits for the dragon assets and
    spawns the statue and Spyro's stand-in, 3 the statue turns to face its
@@ -185,7 +186,7 @@ void DragonRescue_Update(void) {
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
       StopAllSoundExceptMask(1 << ACTOR_RAW(SRC, unsigned char, sfxSlot));
-      PlaySoundEffect(LEVEL_SFX(0x32), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, 0x10, &GB[11]);
     }
   } break;
   case 1:
@@ -494,7 +495,7 @@ void DragonRescue_Update(void) {
         ACTOR_RAW(MIRROR, unsigned char, otBias) = five;
         InsertActorIntoSpatialGrid(MIRROR);
         StopSoundVoiceByIndex(GB[11], 4);
-        PlaySoundEffect(LEVEL_SFX(0x31), 0, 0x10, &GB[11]);
+        PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_STATUE), 0, 0x10, &GB[11]);
         ACTOR_RAW(SRC, int, posZ) += 0x78;
         DespawnActorRecord(SRC);
       }
@@ -722,7 +723,7 @@ void DragonRescue_Update(void) {
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
-      PlaySoundEffect(LEVEL_SFX(0x34), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_DEPART), 0, 0x10, &GB[11]);
     }
   } break;
   case 6:
@@ -738,7 +739,7 @@ void DragonRescue_Update(void) {
         g_anHudDragonCachedCountBlock[0]++;
       }
       if (g_bHudDragonRollPhase == 0) {
-        PlaySoundEffect(LEVEL_SFX(0x35), 0, 0x10,
+        PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_COUNT), 0, 0x10,
                         &g_bDragonRescueSfxVoiceMarker);
       }
     }
@@ -747,7 +748,7 @@ void DragonRescue_Update(void) {
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      PlaySoundEffect(LEVEL_SFX(0x33), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_FADE), 0, 0x10, &GB[11]);
     }
     break;
   case 7: {

@@ -1082,7 +1082,7 @@ void Level23_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
             st->target = 0;
-            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
+            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[SFX_GEM_BOUNCE])) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
@@ -1287,7 +1287,7 @@ void Level23_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1539,7 +1539,7 @@ void Level23_UpdateActors(void) {
       case 1:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1552,7 +1552,7 @@ void Level23_UpdateActors(void) {
       case 2:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;

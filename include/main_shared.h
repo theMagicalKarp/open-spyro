@@ -252,7 +252,7 @@ extern int g_anDragonRescueBlock[];
 extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroPadSnapshotBlock[];
 extern int g_anSpyroSlopeGravityVec[];
-extern int g_anSpyroStateFlagsBlock[];
+extern int g_anSpyroSubstateBlock[];
 extern int g_anSpyroWorldPosZBlock[];
 extern int g_anStoryIntroTimerBlock[];
 extern int g_anWorldRenderMeshBlock[];

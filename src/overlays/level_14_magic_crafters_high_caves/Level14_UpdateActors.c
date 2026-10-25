@@ -434,9 +434,9 @@ void Level14_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
             continue;
           }
@@ -455,8 +455,8 @@ void Level14_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
           }
         }
       }
@@ -2099,7 +2099,7 @@ void Level14_UpdateActors(void) {
         if (st->mode & 0x10) {
           int done = 1;
 
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x36], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, 8, &actor->sfxSlot);
           if (actor->drawn == 0) {
             CopyVector(&actor->posX, &SPY.posX);
             actor->posZ += 0x400;
@@ -2772,7 +2772,7 @@ void Level14_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
             st->target = 0;
-            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
+            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[SFX_GEM_BOUNCE])) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;

@@ -1070,7 +1070,7 @@ void Level11_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
             st->target = 0;
-            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
+            if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[SFX_GEM_BOUNCE])) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;

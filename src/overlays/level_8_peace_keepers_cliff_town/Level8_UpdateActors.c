@@ -351,9 +351,9 @@ void Level8_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
             continue;
           }
@@ -372,8 +372,8 @@ void Level8_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
           }
         }
       }
@@ -3566,13 +3566,13 @@ void Level8_UpdateActors(void) {
       break;
     }
 
-    /* Camera trigger volume (TriggerState). */
-    case 300: {
-      TriggerState *st;
+    /* Whirlwind (WhirlwindState): lifts Spyro to its top (SPYRO_EV_LIFT). */
+    case ACTOR_TYPE_WHIRLWIND: {
+      WhirlwindState *st;
       SpyroObj *spyro;
       int distance;
       int flags;
-      st = (TriggerState *)actor->state;
+      st = (WhirlwindState *)actor->state;
       if (st->flags & 8) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
@@ -3602,7 +3602,7 @@ void Level8_UpdateActors(void) {
       }
       if (flags & 0x10)
         actor->subMode = 1;
-      PlaySoundEffect(g_pLevelSampleBankHeader[54], actor, 8, &actor->sfxSlot);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, 8, &actor->sfxSlot);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
       SubtractVector(y320, &spy->posX, &actor->posX);

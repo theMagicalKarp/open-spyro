@@ -316,16 +316,16 @@ void TickLevelTransitionStream(int full) {
     BuildLoadedLevelRuntime(full);
     if (g_nPortalTransitionActive != 0) {
       if (g_nFlightLevelActive != 0) {
-        g_anSpyroStateFlagsBlock[0] = 10;
+        g_anSpyroSubstateBlock[0] = 10;
         ComputeCameraToTargetAngle(g_anCameraPos);
         g_nCameraYaw += g_nSpyroBodyYaw;
-        CopyVector(&g_anSpyroStateFlagsBlock[-31], &g_anSpawnAnchorBlock[0x14]);
+        CopyVector(&g_anSpyroSubstateBlock[-31], &g_anSpawnAnchorBlock[0x14]);
         *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         g_nSpyroBodyYaw = (g_nLevelSpawnYaw & 0xFF) << 4;
         g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
         ComputeCameraOrbitOffset(g_anCameraPos);
-        AddVector(g_anCameraPos, g_anCameraPos, &g_anSpyroStateFlagsBlock[-31]);
+        AddVector(g_anCameraPos, g_anCameraPos, &g_anSpyroSubstateBlock[-31]);
         UpdateCameraEulerAngles();
         CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
         ActivateScriptedCameraView(
