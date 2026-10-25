@@ -66,15 +66,15 @@ void Gamestate0B_Update(void) {
       TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
       FindGroundHeightBelow(ACT + 3, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
-      if (g_pLevelOverlayInitRecord != 0) {
+      if (g_pSparxActor != 0) {
         a = LERP_ANGLE(g_nSaveMenuOverlayToAngle, g_nSaveMenuOverlayFromAngle,
                        t);
         d = g_nSaveMenuOverlayFromDist +
             (((g_nSaveMenuOverlayToDist - g_nSaveMenuOverlayFromDist) * t) >>
              13);
-        ((int *)g_pLevelOverlayInitRecord)[3] =
+        ((int *)g_pSparxActor)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
-        ((int *)g_pLevelOverlayInitRecord)[4] =
+        ((int *)g_pSparxActor)[4] =
             g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
       a = LERP_ANGLE(SM[24], SM[21], t);
@@ -144,10 +144,10 @@ void Gamestate0B_Update(void) {
         ((unsigned char *)ACT)[0x46] = ArcTan2(
             g_anSpyroWorldPos[0] - act[3], g_anSpyroWorldPos[1] - act[4], 0);
       }
-      if (g_pLevelOverlayInitRecord != 0) {
-        ((int *)g_pLevelOverlayInitRecord)[3] =
+      if (g_pSparxActor != 0) {
+        ((int *)g_pSparxActor)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(SM[19]) * SM[20]) >> 12);
-        ((int *)g_pLevelOverlayInitRecord)[4] =
+        ((int *)g_pSparxActor)[4] =
             g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
       }
       g_anCameraPos[0] =

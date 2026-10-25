@@ -93,7 +93,7 @@ int DispatchSpyroChargeStateChanges(void) {
     changed = 1;
   }
   if (hi & 0x400) {
-    OPAQUE_COPY(ready, &g_nLevelReadyFlag);
+    OPAQUE_COPY(ready, &g_nSparxHealth);
     if (*ready < 0) {
       goto hold;
     }

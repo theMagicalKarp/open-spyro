@@ -32,5 +32,5 @@ void LoadAndStartLevelFromCd(void) {
     RestartSpyroAnimWithState(0);
   }
 
-  g_nLevelReadyFlag = 3;
+  g_nSparxHealth = 3;
 }

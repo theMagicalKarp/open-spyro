@@ -361,7 +361,7 @@ void Level13_AdvanceEmitList(int step) {
     case 0xa:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == 0x1D && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         goto expire;
       } else {

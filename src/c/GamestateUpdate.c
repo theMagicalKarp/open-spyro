@@ -100,7 +100,7 @@ void GamestateUpdate(void) {
     }
 
     if (g_nGamestate == GS_GAMEPLAY && g_nGameplayBlocked == 0 &&
-        g_nLevelReadyFlag >= 0 && g_nCameraCurrentMode != 0x8000000E) {
+        g_nSparxHealth >= 0 && g_nCameraCurrentMode != 0x8000000E) {
       if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {
         EnterPauseMenu(1);
       } else if (g_dwPadPressed & PAD_SELECT) {

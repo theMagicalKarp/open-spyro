@@ -81,7 +81,7 @@ void RespawnOrGameOver_Update(void) {
         g_bSpyroAnimFrame = 1;
         g_nExtraLives = 4;
         g_nSparxFoodCount = 0;
-        g_nLevelReadyFlag = 3;
+        g_nSparxHealth = 3;
         g_nScriptedRespawnFlag = 0;
         g_nScriptedMobTag = 0;
         g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;

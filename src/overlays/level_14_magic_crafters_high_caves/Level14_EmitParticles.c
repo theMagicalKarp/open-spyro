@@ -486,7 +486,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (effectArg == 1 || (effectArg == 0 && g_nLevelReadyFlag >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nSparxHealth >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;

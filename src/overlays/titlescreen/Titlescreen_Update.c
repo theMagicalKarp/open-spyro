@@ -905,9 +905,9 @@ void Titlescreen_Update(void) {
             Titlescreen_PlayUiSound(0);
           }
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
-          g_nLevelReadyFlag = 3;
+          g_nSparxHealth = 3;
           g_nSparxFoodCount = 0;
-          g_nLevelReadyFlagStash = -1;
+          g_nSparxHealthStash = -1;
           ApplySaveGameBuffer(g_nGamestate0dMode.apSaves[g_nGamestate0dMode.selection]);
           START_DEMO(1)
         }

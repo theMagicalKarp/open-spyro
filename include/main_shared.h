@@ -142,7 +142,7 @@ extern void RasterizePairedActor(void);
 
 extern void ResetSpyroLinearMotion(void);
 
-extern int g_anLevelReadyFlagBlock[];     /* g_nLevelReadyFlag */
+extern int g_anSparxHealthBlock[];     /* g_nSparxHealth */
 
 extern void EnqueuePendingSpritePrims(void);
 

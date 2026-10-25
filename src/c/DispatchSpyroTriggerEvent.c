@@ -73,7 +73,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     ((void (*)(int, int))g_pfnLevelSpawnActor)(0xEA, 0);
     break;
   case 6:
-    ready = g_anLevelReadyFlagBlock;
+    ready = g_anSparxHealthBlock;
     if (*ready < 0) {
       break;
     }

@@ -119,14 +119,14 @@ void Level3_BalloonistCutscene_Update(void)
         cn = LookupSine(((t << 11) / 96) - 0x400) + 0x1000;
         if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
-          if (g_pLevelOverlayInitRecord != 0)
+          if (g_pSparxActor != 0)
           {
-            ACTOR_RAW(g_pLevelOverlayInitRecord, unsigned char, cullRadius) = 0;
-            ACTOR_RAW(g_pLevelOverlayInitRecord, unsigned char, drawn) = 0;
-            if (((int **) g_pLevelOverlayInitRecord)[0][3] != 0)
+            ACTOR_RAW(g_pSparxActor, unsigned char, cullRadius) = 0;
+            ACTOR_RAW(g_pSparxActor, unsigned char, drawn) = 0;
+            if (((int **) g_pSparxActor)[0][3] != 0)
             {
-              ClearWord(((int **) g_pLevelOverlayInitRecord)[0][3]);
-              ((int **) g_pLevelOverlayInitRecord)[0][3] = 0;
+              ClearWord(((int **) g_pSparxActor)[0][3]);
+              ((int **) g_pSparxActor)[0][3] = 0;
             }
           }
           g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;

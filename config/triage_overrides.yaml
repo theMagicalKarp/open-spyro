@@ -4792,7 +4792,7 @@ func_level_33_8007AD64_2026_10_03:
   verdict: viable
   class: "MATCHED 2026-10-03 (actor-update clone recipe, 6 new arms incl. Gnasty Gnorc)"
   date: 2026-10-03
-  note: "33,216 B. Base frame level_25 (fp=1 carrier; one/oneq left unused). Tree tool missed case 329 (beq v1,v0 after 0x149). Knots: loop.c hoist set (ENTER_POSE_B + g_anSineLut alias keep 3/CBF8 inline; pre-loop base = D_80078BBC), scalar g_nLevelReadyFlag reads, A297/A302 alias-class spellings in Gnasty's camera blocks, split 159 loop update (i -= dir; i = (i + count) % count) for register order."
+  note: "33,216 B. Base frame level_25 (fp=1 carrier; one/oneq left unused). Tree tool missed case 329 (beq v1,v0 after 0x149). Knots: loop.c hoist set (ENTER_POSE_B + g_anSineLut alias keep 3/CBF8 inline; pre-loop base = D_80078BBC), scalar g_nSparxHealth reads, A297/A302 alias-class spellings in Gnasty's camera blocks, split 159 loop update (i -= dir; i = (i + count) % count) for register order."
 func_level_20_8007AFBC_2026_10_03:
   verdict: viable
   class: "MATCHED 2026-10-03 (actor-update clone recipe, 4 new arms + level_18's 137/466)"

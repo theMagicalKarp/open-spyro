@@ -563,7 +563,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nLevelReadyFlag < 0) {
+    if (g_nSparxHealth < 0) {
       ChangeSpyroState(30);
       break;
     }
@@ -574,7 +574,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nLevelReadyFlag < 0) {
+    if (g_nSparxHealth < 0) {
       ChangeSpyroState(30);
       break;
     }
@@ -583,7 +583,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x30) {
       break;
     }
-    if (g_nLevelReadyFlag < 0) {
+    if (g_nSparxHealth < 0) {
       ChangeSpyroState(30);
       break;
     }
@@ -917,7 +917,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nLevelReadyFlag < 0) {
+    if (g_nSparxHealth < 0) {
       ChangeSpyroState(30);
       break;
     }
@@ -956,11 +956,11 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFBF9)) {
       break;
     }
-    if (SPY[SPY_LEVEL_READY] < 0) {
+    if (SPY[SPY_SPARX_HEALTH] < 0) {
       break;
     }
     if (g_nSpyroStateTimer > 0x3C) {
-      SPY[SPY_LEVEL_READY] = -1;
+      SPY[SPY_SPARX_HEALTH] = -1;
       ((void (*)(int, int))g_pfnLevelSpawnActor)(
           g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
       break;

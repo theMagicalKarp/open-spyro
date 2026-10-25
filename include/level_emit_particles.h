@@ -22,7 +22,7 @@ extern int g_anSpyroWorldPos[];          /* Spyro world position */
 
 extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at -0x34) */
 
-extern int g_nLevelReadyFlag;
+extern int g_nSparxHealth;
 
 extern unsigned char g_bSpyroPersistentEulerZ;
 

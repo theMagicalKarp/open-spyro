@@ -29,12 +29,12 @@ void ResetSpyroEntity(int full) {
     euler[0] = g_abSpyroPersistentEuler[0];
     euler[1] = g_abSpyroPersistentEuler[1];
     euler[2] = g_abSpyroPersistentEuler[2];
-    ready = g_nLevelReadyFlag;
+    ready = g_nSparxHealth;
     FillWord(g_anSpyroWorldPos, 0, 0x2A4);
     CopyVector(g_anSpyroWorldPos, pos);
     g_bSpyroOtBinBias = 4;
     g_bSpyroAnimFrame = 1;
-    g_nLevelReadyFlag = ready;
+    g_nSparxHealth = ready;
     g_nSpyroGroundChunkId = -1;
     g_abSpyroPersistentEuler[0] = euler[0];
     g_abSpyroPersistentEuler[1] = euler[1];

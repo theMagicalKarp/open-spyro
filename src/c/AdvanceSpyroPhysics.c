@@ -136,7 +136,7 @@ int AdvanceSpyroPhysics(void) {
     unsigned int *rq;
     unsigned int *rq2;
 
-    if ((g_dwSpyroRequestMask & 0x100) && SPY[SPY_LEVEL_READY] >= 0 &&
+    if ((g_dwSpyroRequestMask & 0x100) && SPY[SPY_SPARX_HEALTH] >= 0 &&
         SPY[SPY_STATE] != SPY[SPY_REQUEST_STATE]) {
       ChangeSpyroState(SPY[SPY_REQUEST_STATE]);
       SPY[SPY_AIRBORNE] = 1;

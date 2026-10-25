@@ -611,7 +611,7 @@ extern void *g_pLevelPickupTableEntries;     /* 0x800757f8 */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern void *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
-extern int g_nLevelReadyFlagStash;           /* 0x8007580c */
+extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nWorldEggsRecovered;            /* 0x80075810 */
 extern int g_nSpyroDrawSuppressed;           /* 0x80075814 */
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
@@ -635,7 +635,7 @@ extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
 extern void *g_pActorPoolDynBase;            /* 0x80075890 */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
-extern void *g_pLevelOverlayInitRecord;      /* 0x80075898 */
+extern void *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroFlameBreathTimerSave;     /* 0x800758a4 */
 extern int g_nScriptedMobTag;                /* 0x800758ac */
@@ -975,7 +975,7 @@ extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
-extern int g_nLevelReadyFlag;                           /* 0x80078bbc */
+extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroBreathTimer;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */

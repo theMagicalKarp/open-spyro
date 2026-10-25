@@ -9,7 +9,7 @@
  * guard (137) and roaming ram (466) are shared with level 18.
  *
  * Load-bearing source forms:
- *   - Carriers: `sixteen` (s7) and, at the loop top, `base = g_anLevelReadyFlagBlock` with
+ *   - Carriers: `sixteen` (s7) and, at the loop top, `base = g_anSparxHealthBlock` with
  *     `spy = base - 0x164` (fp). Making `base` a loop-top movable is what
  *     keeps 5, 8 and g_apActorMeshTable out of loop.c's hoist set; case 28's pose-5
  *     and pose-8 sites are ENTER_POSE_B (A285).
@@ -150,7 +150,7 @@ void Level20_UpdateActors(void) {
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
     sixteen = 0x10;
-    base = (char *)g_anLevelReadyFlagBlock;
+    base = (char *)g_anSparxHealthBlock;
     spy = (SpyroObj *)(base - 0x164);
 
     if (actor->mode >= 0x80) {
@@ -248,32 +248,32 @@ void Level20_UpdateActors(void) {
       break;
     }
 
-    /* Balloonist's gnorc (WanderState): wanders around the pad until the
-     * balloonist is ready, then walks into the flight cutscene. */
+    /* Butterfly (WanderState): flutters about its spawn point. Near a hurt
+     * Spyro it becomes Sparx when Sparx is gone, else Sparx comes to eat it. */
     case 16: {
       WanderState *st;
 
       EBB_BREAK();
       st = actor->state;
-      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
         if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
-          if (g_pLevelOverlayInitRecord == 0) {
-            if (g_nLevelReadyFlag >= 0) {
-              Actor *puff = g_pfnLevelSpawnActor(0x78, actor);
+          if (g_pSparxActor == 0) {
+            if (g_nSparxHealth >= 0) {
+              Actor *sparx = g_pfnLevelSpawnActor(0x78, actor);
 
-              g_pLevelOverlayInitRecord = puff;
-              PlayActorMeshVoice(puff, 0, 0);
-              g_nLevelReadyFlag = 1;
+              g_pSparxActor = sparx;
+              PlayActorMeshVoice(sparx, 0, 0);
+              g_nSparxHealth = 1;
               DespawnActorRecord(actor);
               continue;
             }
-          } else if (g_pLevelOverlayInitRecord->subMode != 0x63) {
-            BalloonState *bal = g_pLevelOverlayInitRecord->state;
+          } else if (g_pSparxActor->subMode != 0x63) {
+            SparxState *sparx = g_pSparxActor->state;
 
-            if (bal->gnorc == 0) {
+            if (sparx->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0)) <
@@ -282,9 +282,9 @@ void Level20_UpdateActors(void) {
               } else {
                 st->turn = -1;
               }
-              g_pLevelOverlayInitRecord->subMode = 0;
-              bal->gnorc = actor;
-              bal->timer = RandomIntInRange(0x96, 0xD2);
+              g_pSparxActor->subMode = 0;
+              sparx->target = actor;
+              sparx->timer = RandomIntInRange(0x96, 0xD2);
               actor->mode = 1;
             }
           }
@@ -366,7 +366,7 @@ void Level20_UpdateActors(void) {
                                       st->turn * 8),
                         8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-          if (g_pLevelOverlayInitRecord == 0 || g_pLevelOverlayInitRecord->subMode == 0x63) {
+          if (g_pSparxActor == 0 || g_pSparxActor->subMode == 0x63) {
             actor->mode = 0;
             break;
           }
@@ -933,22 +933,22 @@ void Level20_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pLevelOverlayInitRecord != 0 && g_nSpyroAirborneFrames == 0 &&
-                CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX) != 0) {
+            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+                CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX) != 0) {
               {
-                BalloonState *bal = g_pLevelOverlayInitRecord->state;
+                SparxState *sparx = g_pSparxActor->state;
 
-                if (bal->gnorc == 0) {
+                if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
-                          g_pLevelOverlayInitRecord,
-                          g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0]) == 0) {
+                          g_pSparxActor,
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
                     g_nSfxOverrideFlags = 1;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pLevelOverlayInitRecord->subMode = 4;
-                  bal->gnorc = actor;
+                  g_pSparxActor->subMode = 4;
+                  sparx->target = actor;
                 }
               }
               goto enemy_pose;
@@ -1056,22 +1056,22 @@ void Level20_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pLevelOverlayInitRecord != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 st->bounce < 3) {
               {
-                BalloonState *bal = g_pLevelOverlayInitRecord->state;
+                SparxState *sparx = g_pSparxActor->state;
 
-                if (bal->gnorc == 0) {
+                if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
-                          g_pLevelOverlayInitRecord,
-                          g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0]) == 0) {
+                          g_pSparxActor,
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
                     g_nSfxOverrideFlags = 1;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pLevelOverlayInitRecord->subMode = 4;
-                  bal->gnorc = actor;
+                  g_pSparxActor->subMode = 4;
+                  sparx->target = actor;
                 }
               }
               goto enemy_pose;
@@ -1083,7 +1083,7 @@ void Level20_UpdateActors(void) {
           goto enemy_pose;
 
         case 3:
-          /* Carried by the balloonist: pulled toward Spyro, then dropped. */
+          /* Fetched by Sparx: pulled toward Spyro, then collected. */
           if (st->timer >= 0x20) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
@@ -1142,11 +1142,11 @@ void Level20_UpdateActors(void) {
           if ((st->timer >= 0x21 && toSpyro < 0x200 &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
               (actor->subMode == 3 && st->timer >= 0x41)) {
-            if (g_pLevelOverlayInitRecord != 0) {
-              BalloonState *bal = g_pLevelOverlayInitRecord->state;
+            if (g_pSparxActor != 0) {
+              SparxState *sparx = g_pSparxActor->state;
 
-              if (bal->gnorc == actor) {
-                bal->gnorc = 0;
+              if (sparx->target == actor) {
+                sparx->target = 0;
               }
             }
 
@@ -1367,12 +1367,12 @@ void Level20_UpdateActors(void) {
       break;
     }
 
-    /* The balloonist (BalloonState): smokes, waits for his gnorc, then flies
-     * Spyro out once the world is finished. */
+    /* Sparx (SparxState): hovers beside Spyro, glows by health, catches
+     * butterflies (health + 1) and fetches nearby pickups. Despawns at 0. */
     case 120: {
-      BalloonState *st = actor->state;
+      SparxState *st = actor->state;
 
-      if (g_anLevelReadyFlagBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= 2) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -1387,73 +1387,73 @@ void Level20_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (g_anLevelReadyFlagBlock[0] >= 3) {
-        FxNode *fx = st->smoke;
+      if (g_anSparxHealthBlock[0] >= 3) {
+        FxNode *fx = st->glow;
 
         if (fx == 0) {
           fx = AllocWorldSparkle();
-          st->smoke = fx;
+          st->glow = fx;
           if (fx != 0) {
             fx->anchor = &actor->posX;
-            st->smoke->size = 0x40;
-            st->smoke->offX = 0;
-            st->smoke->offY = 0;
-            st->smoke->offZ = 0;
-            st->smoke->r = 0xC0;
-            st->smoke->g = 0xC0;
-            st->smoke->b = 0x60;
-            st->smoke->kind = 9;
-            st->smoke->desc = &g_anSparkleGlowDesc;
+            st->glow->size = 0x40;
+            st->glow->offX = 0;
+            st->glow->offY = 0;
+            st->glow->offZ = 0;
+            st->glow->r = 0xC0;
+            st->glow->g = 0xC0;
+            st->glow->b = 0x60;
+            st->glow->kind = 9;
+            st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
           fx->size += 0x20;
-          if (st->smoke->size >= 0x401) {
-            st->smoke->size = 0x400;
+          if (st->glow->size >= 0x401) {
+            st->glow->size = 0x400;
           }
         }
-      } else if (st->smoke != 0) {
-        ClearWord(st->smoke);
-        st->smoke = 0;
+      } else if (st->glow != 0) {
+        ClearWord(st->glow);
+        st->glow = 0;
       }
 
-      if (g_anLevelReadyFlagBlock[0] <= 0) {
-        if (st->gnorc != 0 && st->gnorc->type == 16) {
-          st->gnorc->mode = 0;
+      if (g_anSparxHealthBlock[0] <= 0) {
+        if (st->target != 0 && st->target->type == 16) {
+          st->target->mode = 0;
         }
-        g_pLevelOverlayInitRecord = 0;
+        g_pSparxActor = 0;
         DespawnActorRecord(actor);
         continue;
       }
 
-      if (st->gnorc != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)g_anLevelReadyFlagBlock - 0x164)) >=
+      if (st->target != 0 &&
+          ApproxDist2D(&actor->posX, (int *)((char *)g_anSparxHealthBlock - 0x164)) >=
               0x2001) {
         st->timer = 0;
       }
 
       if (actor->subMode != 0x63) {
-        if (st->gnorc != 0) {
+        if (st->target != 0) {
           switch (actor->subMode) {
           case 0: {
-            /* Reeling the gnorc in. */
-            EnemyState *ge = st->gnorc->state;
+            /* Closing in on the butterfly. */
+            EnemyState *ge = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
             int limit;
 
-            CopyVector(svA, &st->gnorc->posX);
+            CopyVector(svA, &st->target->posX);
 
             if (high == 0) {
               svA[0] -=
-                  (unsigned short)g_anCosineLut[st->gnorc->rotZ] << 16 >> 20;
+                  (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 20;
               svA[1] -=
-                  (unsigned short)g_anSineLut[st->gnorc->rotZ] << 16 >> 20;
+                  (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 20;
             } else {
               svA[0] -=
-                  (unsigned short)g_anCosineLut[st->gnorc->rotZ] << 16 >> 22;
+                  (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 22;
               svA[1] -=
-                  (unsigned short)g_anSineLut[st->gnorc->rotZ] << 16 >> 22;
+                  (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 22;
             }
 
             if (high != 0) {
@@ -1508,10 +1508,10 @@ void Level20_UpdateActors(void) {
           }
 
           case 1:
-            g_anLevelReadyFlagBlock[0] += 1;
+            g_anSparxHealthBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
             actor->subMode += 1;
-            DespawnActorRecord(st->gnorc);
+            DespawnActorRecord(st->target);
             break;
 
           case 2:
@@ -1520,17 +1520,17 @@ void Level20_UpdateActors(void) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim - 1);
               }
-              st->gnorc = 0;
+              st->target = 0;
               actor->subMode = 0;
             }
             break;
 
           case 4: {
-            /* Hauling an enemy up to the basket. */
-            EnemyState *ge = st->gnorc->state;
+            /* Fetching a pickup: once close it homes in on Spyro. */
+            EnemyState *ge = st->target->state;
             int dist;
 
-            SubtractVector(svJ, &st->gnorc->posX, &actor->posX);
+            SubtractVector(svJ, &st->target->posX, &actor->posX);
             dist = VectorLength(svJ, 1);
 
             if (dist < 0x200) {
@@ -1538,17 +1538,17 @@ void Level20_UpdateActors(void) {
               ge->lean = GetRandomU32() & 0xE;
               ge->roll = GetRandomU32() & 0xE;
               ge->spin = GetRandomU32() & 0xE;
-              CopyVector((int *)ge, &st->gnorc->posX);
-              st->gnorc->subMode = 3;
+              CopyVector((int *)ge, &st->target->posX);
+              st->target->subMode = 3;
 
-              if (st->gnorc->type == 14) {
+              if (st->target->type == 14) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
-              } else if (st->gnorc->type == 15) {
+              } else if (st->target->type == 15) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
+                g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->target->type]);
               }
-              st->gnorc = 0;
+              st->target = 0;
               EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
@@ -1574,7 +1574,7 @@ void Level20_UpdateActors(void) {
           }
           }
         } else {
-          /* Nobody in the basket: drift on the wind. */
+          /* No target: hover at a jittered offset beside Spyro. */
           actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
@@ -1633,7 +1633,7 @@ void Level20_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
           }
 
-          switch (SPY.readyFlag) {
+          switch (SPY.sparxHealth) {
           case 1:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -2379,7 +2379,7 @@ void Level20_UpdateActors(void) {
       break;
     }
 
-    /* Sparkling shard: one puff per frame. */
+    /* Sparkling shard: one sparx per frame. */
     case 309: {
       ShardState *st = actor->state;
 
@@ -2865,8 +2865,8 @@ void Level20_UpdateActors(void) {
         if (st->tether != 0) {
           DespawnActorRecord(st->tether);
           st->tether = 0;
-          if (g_pLevelOverlayInitRecord != 0 && st->holdsSpyro != 0) {
-            g_pLevelOverlayInitRecord->subMode = 0;
+          if (g_pSparxActor != 0 && st->holdsSpyro != 0) {
+            g_pSparxActor->subMode = 0;
           }
         }
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -3648,7 +3648,7 @@ void Level20_UpdateActors(void) {
           v = actor->rotZ + 0x80;
           g_bSpyroPersistentEulerZ = v;
           g_nSpyroBodyYaw = (v & 0xFF) << 4;
-          if (g_nLevelReadyFlag == 0) {
+          if (g_nSparxHealth == 0) {
             spy->damageFlags |= 7;
             actor->mode = 0xD;
             continue;

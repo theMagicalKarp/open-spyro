@@ -88,12 +88,11 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuDragonToAngle = yw;
   EBB_BREAK();
   g_nSaveMenuDragonToZ = SPY_PREV[-4] + 0x170;
-  if (g_pLevelOverlayInitRecord != 0) {
-    g_nSaveMenuOverlayFromAngle = ArcTan2(
-        ((Actor *)g_pLevelOverlayInitRecord)->posX - SPY_PREV[-6],
-        ((Actor *)g_pLevelOverlayInitRecord)->posY - g_nSpyroWorldPosY, 1);
-    SubtractVector(vec, &((Actor *)g_pLevelOverlayInitRecord)->posX,
-                   &SPY_PREV[-6]);
+  if (g_pSparxActor != 0) {
+    g_nSaveMenuOverlayFromAngle =
+        ArcTan2(((Actor *)g_pSparxActor)->posX - SPY_PREV[-6],
+                ((Actor *)g_pSparxActor)->posY - g_nSpyroWorldPosY, 1);
+    SubtractVector(vec, &((Actor *)g_pSparxActor)->posX, &SPY_PREV[-6]);
     g_nSaveMenuOverlayFromDist = VectorLength(vec, 0);
     g_nSaveMenuOverlayToDist = 0x600;
     g_nSaveMenuOverlayToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;

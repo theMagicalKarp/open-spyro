@@ -100,7 +100,7 @@ void TickSpyroGameplayFrame(void) {
   SampleSpyroShadowRingHeights(1);
   TickSpyroAttackEffects(g_nFrameStep);
   g_dwSpyroTriggerEventFlags = 0;
-  if (g_nLevelReadyFlag < 0) {
+  if (g_nSparxHealth < 0) {
     switch (g_nSpyroState) {
     case 0x1D:
       if (g_nSpyroBreathTimer == 0x240) {

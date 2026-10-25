@@ -36,12 +36,12 @@ int DispatchSpyroPadStateChanges(int pad) {
   ev = g_adwSpyroTriggerEventBlock;
   pad &= ev[0];
 
-  if ((pad & 0x5F1) && g_nLevelReadyFlag >= 0) {
+  if ((pad & 0x5F1) && g_nSparxHealth >= 0) {
     if (g_bDebugNoDepletion == 0) {
-      g_nLevelReadyFlag = g_nLevelReadyFlag - 1;
+      g_nSparxHealth = g_nSparxHealth - 1;
     }
     if (pad & 0x10) {
-      if (g_nLevelReadyFlag < 0) {
+      if (g_nSparxHealth < 0) {
         next = 0x1F;
       } else {
         next = 0x19;
@@ -59,7 +59,7 @@ int DispatchSpyroPadStateChanges(int pad) {
     } else if (pad & 0x400) {
       ChangeSpyroState(0x1D);
       if (*(int *)g_pSpyroOrbDropTriggerData != 0 && g_bDebugNoDepletion == 0) {
-        g_nLevelReadyFlag = -1;
+        g_nSparxHealth = -1;
       }
     } else {
       ChangeSpyroState(0xE);
@@ -73,7 +73,7 @@ int DispatchSpyroPadStateChanges(int pad) {
 
   held = pad & 0xFC00;
   if (pad & 0x400) {
-    ready = g_anLevelReadyFlagBlock;
+    ready = g_anSparxHealthBlock;
     if (ready[0] >= 0) {
       ResetSpyroLinearMotion();
       if (g_bDebugNoDepletion == 0) {

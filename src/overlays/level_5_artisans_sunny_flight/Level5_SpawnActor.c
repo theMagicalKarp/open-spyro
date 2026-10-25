@@ -198,11 +198,11 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     rec->subMode = 0;
     st->timer = 0;
-    st->vz = 0;
-    st->vy = 0;
-    st->vx = 0;
-    st->fx = 0;
-    st->rider = 0;
+    st->drift[2] = 0;
+    st->drift[1] = 0;
+    st->drift[0] = 0;
+    st->glow = 0;
+    st->target = 0;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }

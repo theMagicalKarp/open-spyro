@@ -7,6 +7,7 @@
 #ifndef OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 #define OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 
+#include "actor_states.h"
 #include "model.h"
 
 /* The update list, and the per-actor values the loop publishes before it
@@ -16,7 +17,7 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
 extern int GetGroundTriggerRegionType();
-extern int g_nLevelReadyFlag; /* scalar form; the array users go through g_anLevelReadyFlagBlock */
+extern int g_nSparxHealth; /* scalar form; the array users go through g_anSparxHealthBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
 extern volatile unsigned char g_bSpyroPersistentEulerZ;
@@ -243,7 +244,7 @@ typedef struct {
   char pad120[0x8];
   int frameMotionLength;          /* 0x128 g_nSpyroFrameMotionLength */
   char pad12C[0x38];
-  int readyFlag;                  /* 0x164 g_nLevelReadyFlag; overlays read it as the balloon sequence stage */
+  int sparxHealth;                  /* 0x164 g_nSparxHealth */
   char pad168[0x8];
   int triggerEventId;             /* 0x170 g_nSpyroTriggerCurrentEventId */
   char pad174[0x8];
@@ -297,16 +298,6 @@ typedef struct PlateState {
   int step;    /* 0x20 */
   int locked;  /* 0x24 */
 } PlateState;
-
-/* Case 120 — the balloonist himself: owns the smoke emitter and the gnorc he
- * is waiting on. */
-typedef struct BalloonState {
-  int timer;      /* 0x00 puff countdown */
-  short drift[3]; /* 0x04 wind drift, x/y/z */
-  char pad0A[0x2];
-  FxNode *smoke; /* 0x0C particle emitter */
-  Actor *gnorc;  /* 0x10 */
-} BalloonState;
 
 /* Case 173 — ambient flyer: circles, and pops when Spyro reaches it. */
 typedef struct FlyState {
@@ -721,17 +712,6 @@ typedef struct WalkerState {
   int zVel;           /* 0x14 likewise */
 } WalkerState;
 
-/* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
- * fetching. */
-typedef struct FlierState {
-  int timer;    /* 0x00 idle / fetch timer */
-  short vx;     /* 0x04 */
-  short vy;     /* 0x06 */
-  short vz;     /* 0x08 */
-  FxNode *fx;   /* 0x0C */
-  Actor *rider; /* 0x10 */
-} FlierState;
-
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
 typedef struct FlockState {
@@ -766,8 +746,8 @@ typedef struct OrbitState {
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 
-/* Case 16 — the balloonist's gnorc: wanders until the balloonist is up, then
- * hands itself to the flight cutscene. */
+/* Case 16 — butterfly: flutters near its spawn point until Sparx eats it
+ * (or it turns into Sparx when Spyro has none). */
 typedef struct WanderState {
   int turn;              /* 0x00 turn direction, +1 / -1 */
   int home[3];           /* 0x04 spawn position it stays near */

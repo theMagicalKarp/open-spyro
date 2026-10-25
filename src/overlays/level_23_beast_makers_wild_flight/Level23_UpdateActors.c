@@ -160,7 +160,7 @@ void Level23_UpdateActors(void) {
 
   actorList = g_apSaveMenuAnimActorList;
   sh6 = 6;
-  base = (char *)&g_nLevelReadyFlag;
+  base = (char *)&g_nSparxHealth;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
@@ -180,23 +180,23 @@ void Level23_UpdateActors(void) {
     case 16: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.readyFlag < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
-          if (g_pLevelOverlayInitRecord == 0) {
-            if (SPY.readyFlag >= 0) {
-              g_pLevelOverlayInitRecord = g_pfnLevelSpawnActor(120, actor);
+          if (g_pSparxActor == 0) {
+            if (SPY.sparxHealth >= 0) {
+              g_pSparxActor = g_pfnLevelSpawnActor(120, actor);
 
-              PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.readyFlag = one;
+              SPY.sparxHealth = one;
 
               DespawnActorRecord(actor);
               break;
             }
-          } else if (g_pLevelOverlayInitRecord->subMode != 99) {
-            ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
+          } else if (g_pSparxActor->subMode != 99) {
+            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
             if (cs->owner == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
@@ -207,7 +207,7 @@ void Level23_UpdateActors(void) {
                 st->dir = -1;
               }
 
-              g_pLevelOverlayInitRecord->subMode = 0;
+              g_pSparxActor->subMode = 0;
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
@@ -286,7 +286,7 @@ void Level23_UpdateActors(void) {
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-        if (g_pLevelOverlayInitRecord == 0 || g_pLevelOverlayInitRecord->subMode == 99) {
+        if (g_pSparxActor == 0 || g_pSparxActor->subMode == 99) {
           actor->mode = 0;
         } else {
           int refHeight;
@@ -669,25 +669,25 @@ void Level23_UpdateActors(void) {
 
           if (ABS2(zDist) < 512) {
 
-            if (g_pLevelOverlayInitRecord != 0) {
+            if (g_pSparxActor != 0) {
 
               if (SPY.airborneFrames == 0) {
 
-                int res = CheckLineOfSightSegment(&g_pLevelOverlayInitRecord->posX, &actor->posX);
+                int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
+                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
                   if (cs->owner == 0) {
-                    if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
-                                       g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
+                    if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
+                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
                       g_nSfxOverrideFlags = 1;
                       g_nSfxOverrideVolR = 0x2000;
                       g_nSfxOverrideVolL = 0x2000;
-                      PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
+                      PlayActorMeshVoice(g_pSparxActor, 0, 0);
                     }
 
-                    g_pLevelOverlayInitRecord->subMode = 4;
+                    g_pSparxActor->subMode = 4;
                     cs->owner = actor;
                   }
                 }
@@ -800,22 +800,22 @@ void Level23_UpdateActors(void) {
 
           if (ABS2(zDist) < 512) {
 
-            if (g_pLevelOverlayInitRecord != 0) {
+            if (g_pSparxActor != 0) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
+                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
                 if (cs->owner == 0) {
-                  if (!GetSoundVoiceStatusByOwner(g_pLevelOverlayInitRecord,
-                                     g_apActorMeshTable[g_pLevelOverlayInitRecord->type]->m_Sounds[0])) {
+                  if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
+                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
                     g_nSfxOverrideFlags = 1;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pLevelOverlayInitRecord, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
 
-                  g_pLevelOverlayInitRecord->subMode = 4;
+                  g_pSparxActor->subMode = 4;
                   cs->owner = actor;
                 }
               }
@@ -871,8 +871,8 @@ void Level23_UpdateActors(void) {
            ((SPY.posZ - actor->posZ) < 512)) ||
           (actor->subMode == 3 && st->timer > 64)) {
 
-        if (g_pLevelOverlayInitRecord != 0) {
-          ChaserState *cs = (ChaserState *)g_pLevelOverlayInitRecord->state;
+        if (g_pSparxActor != 0) {
+          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
           if (cs->owner == actor) {
             cs->owner = 0;
@@ -907,9 +907,9 @@ void Level23_UpdateActors(void) {
       break;
     }
 
-    /* Sparx (FlierState). */
+    /* Sparx (SparxState). */
     case 120: {
-      FlierState *st = (FlierState *)actor->state;
+      SparxState *st = (SparxState *)actor->state;
       char pitchAngle;
 
       if (*(int *)base >= 2) {
@@ -929,56 +929,56 @@ void Level23_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, 0x42, svF, 0);
       }
 
-      if (SPY.readyFlag >= 3) {
-        if (st->fx == 0) {
+      if (SPY.sparxHealth >= 3) {
+        if (st->glow == 0) {
           FxNode *g = AllocWorldSparkle();
-          st->fx = g;
+          st->glow = g;
           if (g != 0) {
             g->anchor = &actor->posX;
-            st->fx->size = 0x40;
-            st->fx->offX = 0;
-            st->fx->offY = 0;
-            st->fx->offZ = 0;
-            st->fx->r = 0xC0;
-            st->fx->g = 0xC0;
-            st->fx->b = 0x60;
-            st->fx->kind = 9;
-            st->fx->desc = &g_anSparkleGlowDesc;
+            st->glow->size = 0x40;
+            st->glow->offX = 0;
+            st->glow->offY = 0;
+            st->glow->offZ = 0;
+            st->glow->r = 0xC0;
+            st->glow->g = 0xC0;
+            st->glow->b = 0x60;
+            st->glow->kind = 9;
+            st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
-          st->fx->size += 0x20;
-          if (st->fx->size > 0x400) {
-            st->fx->size = 0x400;
+          st->glow->size += 0x20;
+          if (st->glow->size > 0x400) {
+            st->glow->size = 0x400;
           }
         }
       } else {
-        if (st->fx != 0) {
-          ClearWord(st->fx);
-          st->fx = 0;
+        if (st->glow != 0) {
+          ClearWord(st->glow);
+          st->glow = 0;
         }
       }
 
-      if (SPY.readyFlag <= 0) {
-        Actor *target = st->rider;
+      if (SPY.sparxHealth <= 0) {
+        Actor *target = st->target;
         if (target != 0 && target->type == 16) {
           target->mode = 0;
         }
-        g_pLevelOverlayInitRecord = 0;
+        g_pSparxActor = 0;
         DespawnActorRecord(actor);
         break;
       }
 
-      if (st->rider != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 8192) {
+      if (st->target != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 8192) {
         st->timer = 0;
       }
 
       if (actor->subMode == 99)
         break;
 
-      if (st->rider != 0) {
+      if (st->target != 0) {
         switch (actor->subMode) {
         case 0: {
-          Actor *target = st->rider;
+          Actor *target = st->target;
           ChaseState *bp = target->state;
           int isPickupAnimPhase = actor->nextAnim & 1;
           int dist;
@@ -986,11 +986,11 @@ void Level23_UpdateActors(void) {
 
           CopyVector(svA, &target->posX);
           if (isPickupAnimPhase == 0) {
-            svA[0] -= g_anCosineLut[st->rider->rotZ] >> 4;
-            svA[1] -= g_anSineLut[st->rider->rotZ] >> 4;
+            svA[0] -= g_anCosineLut[st->target->rotZ] >> 4;
+            svA[1] -= g_anSineLut[st->target->rotZ] >> 4;
           } else {
-            svA[0] -= g_anCosineLut[st->rider->rotZ] >> 6;
-            svA[1] -= g_anSineLut[st->rider->rotZ] >> 6;
+            svA[0] -= g_anCosineLut[st->target->rotZ] >> 6;
+            svA[1] -= g_anSineLut[st->target->rotZ] >> 6;
           }
 
           if (isPickupAnimPhase) {
@@ -1039,10 +1039,10 @@ void Level23_UpdateActors(void) {
           break;
         }
         case 1: {
-          SPY.readyFlag++;
+          SPY.sparxHealth++;
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
           actor->subMode++;
-          DespawnActorRecord(st->rider);
+          DespawnActorRecord(st->target);
           break;
         }
         case 2: {
@@ -1051,16 +1051,16 @@ void Level23_UpdateActors(void) {
               g_nActorAnimDone = 0;
               ANIM_ADVANCE(actor, actor->nextAnim - 1);
             }
-            st->rider = 0;
+            st->target = 0;
             actor->subMode = 0;
           }
           break;
         }
         case 4: {
-          PickupState *cp = st->rider->state;
+          PickupState *cp = st->target->state;
           int dist;
 
-          SubtractVector(svJ, &st->rider->posX, &actor->posX);
+          SubtractVector(svJ, &st->target->posX, &actor->posX);
           dist = VectorLength(svJ, 1);
 
           if (dist < 512) {
@@ -1069,17 +1069,17 @@ void Level23_UpdateActors(void) {
             cp->yaw = GetRandomU32() & 0xE;
             cp->roll = GetRandomU32() & 0xE;
 
-            CopyVector(cp->vel, &st->rider->posX);
-            st->rider->subMode = 3;
+            CopyVector(cp->vel, &st->target->posX);
+            st->target->subMode = 3;
 
-            if (st->rider->type == 14)
+            if (st->target->type == 14)
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
-            else if (st->rider->type == 15)
+            else if (st->target->type == 15)
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
-              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->rider->type]);
+              g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
-            st->rider = 0;
+            st->target = 0;
             if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[0x2F])) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
@@ -1115,26 +1115,26 @@ void Level23_UpdateActors(void) {
           } else {
             svF[2] = (GetRandomU32() & 0x1FF) - 0xC8;
           }
-          st->vx = svF[0];
-          st->vy = svF[1];
-          st->vz = svF[2];
+          st->drift[0] = svF[0];
+          st->drift[1] = svF[1];
+          st->drift[2] = svF[2];
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
           if (CAM.state == 3) {
-            svF[0] = st->vx + (SPY.motionSpeed >> 2);
-            svF[1] = st->vy;
-            svF[2] = st->vz;
+            svF[0] = st->drift[0] + (SPY.motionSpeed >> 2);
+            svF[1] = st->drift[1];
+            svF[2] = st->drift[2];
             if (svF[2] < 0x64)
               svF[2] = 0x64;
           } else {
             if (CAM.state == 0x80000009)
-              svF[0] = st->vx - 512;
+              svF[0] = st->drift[0] - 512;
             else {
-              svF[0] = st->vx;
+              svF[0] = st->drift[0];
             }
-            svF[1] = st->vy;
-            svF[2] = st->vz;
+            svF[1] = st->drift[1];
+            svF[2] = st->drift[2];
           }
           RotateVectorByMatrix(&SPY.bodyMtx, svF, svF);
           AddVector(svF, svF, &SPY.posX);
@@ -1155,7 +1155,7 @@ void Level23_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, 0);
         }
 
-        switch (SPY.readyFlag) {
+        switch (SPY.sparxHealth) {
         case 1:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {

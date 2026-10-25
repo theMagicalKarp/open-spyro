@@ -400,8 +400,8 @@ glabel ResetLevelState
     /* 2EDC 800126DC 88788424 */  addiu      $a0, $a0, %lo(g_nSpawnAnchorValid)
     /* 2EE0 800126E0 21280000 */  addu       $a1, $zero, $zero
     /* 2EE4 800126E4 03000224 */  addiu      $v0, $zero, 0x3
-    /* 2EE8 800126E8 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 2EEC 800126EC BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 2EE8 800126E8 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 2EEC 800126EC BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 2EF0 800126F0 04000224 */  addiu      $v0, $zero, 0x4
     /* 2EF4 800126F4 0780013C */  lui        $at, %hi(g_nExtraLives)
     /* 2EF8 800126F8 2C5822AC */  sw         $v0, %lo(g_nExtraLives)($at)
@@ -420,8 +420,8 @@ glabel ResetLevelState
     /* 2F2C 8001272C 305820AC */  sw         $zero, %lo(g_nLevelEggCount)($at)
     /* 2F30 80012730 0780013C */  lui        $at, %hi(g_nSparxFoodCount)
     /* 2F34 80012734 E85820AC */  sw         $zero, %lo(g_nSparxFoodCount)($at)
-    /* 2F38 80012738 0780013C */  lui        $at, %hi(g_nLevelReadyFlagStash)
-    /* 2F3C 8001273C 0C5822AC */  sw         $v0, %lo(g_nLevelReadyFlagStash)($at)
+    /* 2F38 80012738 0780013C */  lui        $at, %hi(g_nSparxHealthStash)
+    /* 2F3C 8001273C 0C5822AC */  sw         $v0, %lo(g_nSparxHealthStash)($at)
     /* 2F40 80012740 0780013C */  lui        $at, %hi(g_anLevelEscapeRunCount)
     /* 2F44 80012744 385820AC */  sw         $zero, %lo(g_anLevelEscapeRunCount)($at)
     /* 2F48 80012748 0780013C */  lui        $at, %hi(g_nLevelEscapeRunCountLane1)
@@ -1549,10 +1549,10 @@ glabel BuildLoadedLevelRuntime
     /* 3F14 80013714 00000000 */  nop
     /* 3F18 80013718 05004014 */  bnez       $v0, .L80013730
     /* 3F1C 8001371C 00000000 */   nop
-    /* 3F20 80013720 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 3F24 80013724 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
-    /* 3F28 80013728 0780013C */  lui        $at, %hi(g_nLevelReadyFlagStash)
-    /* 3F2C 8001372C 0C5822AC */  sw         $v0, %lo(g_nLevelReadyFlagStash)($at)
+    /* 3F20 80013720 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 3F24 80013724 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
+    /* 3F28 80013728 0780013C */  lui        $at, %hi(g_nSparxHealthStash)
+    /* 3F2C 8001372C 0C5822AC */  sw         $v0, %lo(g_nSparxHealthStash)($at)
   .L80013730:
     /* 3F30 80013730 0780053C */  lui        $a1, %hi(g_nSpawnAnchorValid)
     /* 3F34 80013734 8878A524 */  addiu      $a1, $a1, %lo(g_nSpawnAnchorValid)
@@ -1645,10 +1645,10 @@ glabel BuildLoadedLevelRuntime
     /* 4084 80013884 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 4088 80013888 668A22A0 */  sb         $v0, %lo(g_abSpyroPersistentEuler + 0x2)($at)
   .L8001388C:
-    /* 408C 8001388C 0780023C */  lui        $v0, %hi(g_nLevelReadyFlagStash)
-    /* 4090 80013890 0C58428C */  lw         $v0, %lo(g_nLevelReadyFlagStash)($v0)
-    /* 4094 80013894 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 4098 80013898 BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 408C 8001388C 0780023C */  lui        $v0, %hi(g_nSparxHealthStash)
+    /* 4090 80013890 0C58428C */  lw         $v0, %lo(g_nSparxHealthStash)($v0)
+    /* 4094 80013894 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 4098 80013898 BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 409C 8001389C 0780023C */  lui        $v0, %hi(g_nGamestate)
     /* 40A0 800138A0 D857428C */  lw         $v0, %lo(g_nGamestate)($v0)
     /* 40A4 800138A4 0C001124 */  addiu      $s1, $zero, 0xC
@@ -2456,8 +2456,8 @@ glabel BuildLoadedLevelRuntime
     /* 4C74 80014474 00000000 */  nop
     /* 4C78 80014478 09F84000 */  jalr       $v0
     /* 4C7C 8001447C 21280000 */   addu      $a1, $zero, $zero
-    /* 4C80 80014480 0780013C */  lui        $at, %hi(g_pLevelOverlayInitRecord)
-    /* 4C84 80014484 985822AC */  sw         $v0, %lo(g_pLevelOverlayInitRecord)($at)
+    /* 4C80 80014480 0780013C */  lui        $at, %hi(g_pSparxActor)
+    /* 4C84 80014484 985822AC */  sw         $v0, %lo(g_pSparxActor)($at)
     /* 4C88 80014488 8051010C */  jal        InitHudCounters
     /* 4C8C 8001448C 01000424 */   addiu     $a0, $zero, 0x1
   .L80014490:
@@ -2517,8 +2517,8 @@ glabel LoadAndStartLevelFromCd
     /* 4D40 80014540 72FF000C */  jal        RestartSpyroAnimWithState
     /* 4D44 80014544 00000000 */   nop
     /* 4D48 80014548 03000224 */  addiu      $v0, $zero, 0x3
-    /* 4D4C 8001454C 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 4D50 80014550 BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 4D4C 8001454C 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 4D50 80014550 BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 4D54 80014554 3800BF8F */  lw         $ra, 0x38($sp)
     /* 4D58 80014558 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 4D5C 8001455C 0800E003 */  jr         $ra
@@ -30226,8 +30226,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D684 8002CE84 0880013C */  lui        $at, %hi(g_nSaveMenuDragonToAngle)
     /* 1D688 8002CE88 388D24AC */  sw         $a0, %lo(g_nSaveMenuDragonToAngle)($at)
     /* 1D68C 8002CE8C F0FF228E */  lw         $v0, -0x10($s1)
-    /* 1D690 8002CE90 0780053C */  lui        $a1, %hi(g_pLevelOverlayInitRecord)
-    /* 1D694 8002CE94 9858A58C */  lw         $a1, %lo(g_pLevelOverlayInitRecord)($a1)
+    /* 1D690 8002CE90 0780053C */  lui        $a1, %hi(g_pSparxActor)
+    /* 1D694 8002CE94 9858A58C */  lw         $a1, %lo(g_pSparxActor)($a1)
     /* 1D698 8002CE98 70014224 */  addiu      $v0, $v0, 0x170
     /* 1D69C 8002CE9C 0880013C */  lui        $at, %hi(g_nSaveMenuDragonToZ)
     /* 1D6A0 8002CEA0 408D22AC */  sw         $v0, %lo(g_nSaveMenuDragonToZ)($at)
@@ -30243,8 +30243,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D6C8 8002CEC8 AD5A000C */  jal        ArcTan2
     /* 1D6CC 8002CECC 23284500 */   subu      $a1, $v0, $a1
     /* 1D6D0 8002CED0 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 1D6D4 8002CED4 0780053C */  lui        $a1, %hi(g_pLevelOverlayInitRecord)
-    /* 1D6D8 8002CED8 9858A58C */  lw         $a1, %lo(g_pLevelOverlayInitRecord)($a1)
+    /* 1D6D4 8002CED4 0780053C */  lui        $a1, %hi(g_pSparxActor)
+    /* 1D6D8 8002CED8 9858A58C */  lw         $a1, %lo(g_pSparxActor)($a1)
     /* 1D6DC 8002CEDC 21304002 */  addu       $a2, $s2, $zero
     /* 1D6E0 8002CEE0 0880013C */  lui        $at, %hi(g_nSaveMenuOverlayFromAngle)
     /* 1D6E4 8002CEE4 448D22AC */  sw         $v0, %lo(g_nSaveMenuOverlayFromAngle)($at)
@@ -32627,8 +32627,8 @@ glabel RespawnOrGameOver_Update
     /* 1F81C 8002F01C 03000224 */  addiu      $v0, $zero, 0x3
     /* 1F820 8002F020 0780013C */  lui        $at, %hi(g_nSparxFoodCount)
     /* 1F824 8002F024 E85820AC */  sw         $zero, %lo(g_nSparxFoodCount)($at)
-    /* 1F828 8002F028 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 1F82C 8002F02C BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 1F828 8002F028 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 1F82C 8002F02C BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 1F830 8002F030 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 1F834 8002F034 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
     /* 1F838 8002F038 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
@@ -35253,8 +35253,8 @@ glabel Gamestate0B_Update
     /* 21F14 80031714 748D848C */  lw         $a0, %lo(g_pSaveMenuDragonActor)($a0)
     /* 21F18 80031718 F44C010C */  jal        EncodeCachedVecToActorDirCode
     /* 21F1C 8003171C 00000000 */   nop
-    /* 21F20 80031720 0780023C */  lui        $v0, %hi(g_pLevelOverlayInitRecord)
-    /* 21F24 80031724 9858428C */  lw         $v0, %lo(g_pLevelOverlayInitRecord)($v0)
+    /* 21F20 80031720 0780023C */  lui        $v0, %hi(g_pSparxActor)
+    /* 21F24 80031724 9858428C */  lw         $v0, %lo(g_pSparxActor)($v0)
     /* 21F28 80031728 00000000 */  nop
     /* 21F2C 8003172C 3C004010 */  beqz       $v0, .L80031820
     /* 21F30 80031730 00000000 */   nop
@@ -35303,8 +35303,8 @@ glabel Gamestate0B_Update
     /* 21FD4 800317D4 21200002 */  addu       $a0, $s0, $zero
     /* 21FD8 800317D8 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
     /* 21FDC 800317DC 588A428C */  lw         $v0, %lo(g_anSpyroWorldPos)($v0)
-    /* 21FE0 800317E0 0780033C */  lui        $v1, %hi(g_pLevelOverlayInitRecord)
-    /* 21FE4 800317E4 9858638C */  lw         $v1, %lo(g_pLevelOverlayInitRecord)($v1)
+    /* 21FE0 800317E0 0780033C */  lui        $v1, %hi(g_pSparxActor)
+    /* 21FE4 800317E4 9858638C */  lw         $v1, %lo(g_pSparxActor)($v1)
     /* 21FE8 800317E8 12400000 */  mflo       $t0
     /* 21FEC 800317EC 032B0800 */  sra        $a1, $t0, 12
     /* 21FF0 800317F0 21104500 */  addu       $v0, $v0, $a1
@@ -35313,8 +35313,8 @@ glabel Gamestate0B_Update
     /* 21FFC 800317FC 18005200 */  mult       $v0, $s2
     /* 22000 80031800 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosY)
     /* 22004 80031804 5C8A428C */  lw         $v0, %lo(g_nSpyroWorldPosY)($v0)
-    /* 22008 80031808 0780033C */  lui        $v1, %hi(g_pLevelOverlayInitRecord)
-    /* 2200C 8003180C 9858638C */  lw         $v1, %lo(g_pLevelOverlayInitRecord)($v1)
+    /* 22008 80031808 0780033C */  lui        $v1, %hi(g_pSparxActor)
+    /* 2200C 8003180C 9858638C */  lw         $v1, %lo(g_pSparxActor)($v1)
     /* 22010 80031810 12400000 */  mflo       $t0
     /* 22014 80031814 03230800 */  sra        $a0, $t0, 12
     /* 22018 80031818 21104400 */  addu       $v0, $v0, $a0
@@ -35604,8 +35604,8 @@ glabel Gamestate0B_Update
     /* 22468 80031C68 748D638C */  lw         $v1, %lo(g_pSaveMenuDragonActor)($v1)
     /* 2246C 80031C6C 00000000 */  nop
     /* 22470 80031C70 460062A0 */  sb         $v0, 0x46($v1)
-    /* 22474 80031C74 0780023C */  lui        $v0, %hi(g_pLevelOverlayInitRecord)
-    /* 22478 80031C78 9858428C */  lw         $v0, %lo(g_pLevelOverlayInitRecord)($v0)
+    /* 22474 80031C74 0780023C */  lui        $v0, %hi(g_pSparxActor)
+    /* 22478 80031C78 9858428C */  lw         $v0, %lo(g_pSparxActor)($v0)
     /* 2247C 80031C7C 00000000 */  nop
     /* 22480 80031C80 1B004010 */  beqz       $v0, .L80031CF0
     /* 22484 80031C84 00000000 */   nop
@@ -35616,8 +35616,8 @@ glabel Gamestate0B_Update
     /* 22498 80031C98 00000000 */  nop
     /* 2249C 80031C9C 18004300 */  mult       $v0, $v1
     /* 224A0 80031CA0 0000028E */  lw         $v0, 0x0($s0)
-    /* 224A4 80031CA4 0780033C */  lui        $v1, %hi(g_pLevelOverlayInitRecord)
-    /* 224A8 80031CA8 9858638C */  lw         $v1, %lo(g_pLevelOverlayInitRecord)($v1)
+    /* 224A4 80031CA4 0780033C */  lui        $v1, %hi(g_pSparxActor)
+    /* 224A8 80031CA8 9858638C */  lw         $v1, %lo(g_pSparxActor)($v1)
     /* 224AC 80031CAC 12400000 */  mflo       $t0
     /* 224B0 80031CB0 03230800 */  sra        $a0, $t0, 12
     /* 224B4 80031CB4 21104400 */  addu       $v0, $v0, $a0
@@ -35629,8 +35629,8 @@ glabel Gamestate0B_Update
     /* 224CC 80031CCC 00000000 */  nop
     /* 224D0 80031CD0 18004300 */  mult       $v0, $v1
     /* 224D4 80031CD4 0400028E */  lw         $v0, 0x4($s0)
-    /* 224D8 80031CD8 0780033C */  lui        $v1, %hi(g_pLevelOverlayInitRecord)
-    /* 224DC 80031CDC 9858638C */  lw         $v1, %lo(g_pLevelOverlayInitRecord)($v1)
+    /* 224D8 80031CD8 0780033C */  lui        $v1, %hi(g_pSparxActor)
+    /* 224DC 80031CDC 9858638C */  lw         $v1, %lo(g_pSparxActor)($v1)
     /* 224E0 80031CE0 12400000 */  mflo       $t0
     /* 224E4 80031CE4 03230800 */  sra        $a0, $t0, 12
     /* 224E8 80031CE8 21104400 */  addu       $v0, $v0, $a0
@@ -37776,8 +37776,8 @@ glabel GamestateUpdate
     /* 243AC 80033BAC 00000000 */  nop
     /* 243B0 80033BB0 1F004014 */  bnez       $v0, .L80033C30
     /* 243B4 80033BB4 00000000 */   nop
-    /* 243B8 80033BB8 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 243BC 80033BBC BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 243B8 80033BB8 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 243BC 80033BBC BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 243C0 80033BC0 00000000 */  nop
     /* 243C4 80033BC4 1A004004 */  bltz       $v0, .L80033C30
     /* 243C8 80033BC8 0080033C */   lui       $v1, (0x8000000E >> 16)
@@ -46040,8 +46040,8 @@ glabel SpawnActorDeathDrop
     /* 2B45C 8003AC5C 22EB0008 */  j          .L8003AC88
     /* 2B460 8003AC60 0E001024 */   addiu     $s0, $zero, 0xE
   .L8003AC64:
-    /* 2B464 8003AC64 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 2B468 8003AC68 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 2B464 8003AC64 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 2B468 8003AC68 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 2B46C 8003AC6C 00000000 */  nop
     /* 2B470 8003AC70 03004228 */  slti       $v0, $v0, 0x3
     /* 2B474 8003AC74 04004010 */  beqz       $v0, .L8003AC88
@@ -46054,13 +46054,13 @@ glabel SpawnActorDeathDrop
   .L8003AC8C:
     /* 2B48C 8003AC8C 24000216 */  bne        $s0, $v0, .L8003AD20
     /* 2B490 8003AC90 0E000224 */   addiu     $v0, $zero, 0xE
-    /* 2B494 8003AC94 0780023C */  lui        $v0, %hi(g_pLevelOverlayInitRecord)
-    /* 2B498 8003AC98 9858428C */  lw         $v0, %lo(g_pLevelOverlayInitRecord)($v0)
+    /* 2B494 8003AC94 0780023C */  lui        $v0, %hi(g_pSparxActor)
+    /* 2B498 8003AC98 9858428C */  lw         $v0, %lo(g_pSparxActor)($v0)
     /* 2B49C 8003AC9C 00000000 */  nop
     /* 2B4A0 8003ACA0 08004014 */  bnez       $v0, .L8003ACC4
     /* 2B4A4 8003ACA4 10000424 */   addiu     $a0, $zero, 0x10
-    /* 2B4A8 8003ACA8 0880103C */  lui        $s0, %hi(g_nLevelReadyFlag)
-    /* 2B4AC 8003ACAC BC8B1026 */  addiu      $s0, $s0, %lo(g_nLevelReadyFlag)
+    /* 2B4A8 8003ACA8 0880103C */  lui        $s0, %hi(g_nSparxHealth)
+    /* 2B4AC 8003ACAC BC8B1026 */  addiu      $s0, $s0, %lo(g_nSparxHealth)
     /* 2B4B0 8003ACB0 0000028E */  lw         $v0, 0x0($s0)
     /* 2B4B4 8003ACB4 00000000 */  nop
     /* 2B4B8 8003ACB8 09004104 */  bgez       $v0, .L8003ACE0
@@ -46087,8 +46087,8 @@ glabel SpawnActorDeathDrop
     /* 2B504 8003AD04 21300000 */   addu      $a2, $zero, $zero
     /* 2B508 8003AD08 01000224 */  addiu      $v0, $zero, 0x1
     /* 2B50C 8003AD0C 000002AE */  sw         $v0, 0x0($s0)
-    /* 2B510 8003AD10 0780013C */  lui        $at, %hi(g_pLevelOverlayInitRecord)
-    /* 2B514 8003AD14 985832AC */  sw         $s2, %lo(g_pLevelOverlayInitRecord)($at)
+    /* 2B510 8003AD10 0780013C */  lui        $at, %hi(g_pSparxActor)
+    /* 2B514 8003AD14 985832AC */  sw         $s2, %lo(g_pSparxActor)($at)
     /* 2B518 8003AD18 2BEC0008 */  j          .L8003B0AC
     /* 2B51C 8003AD1C 21104002 */   addu      $v0, $s2, $zero
   .L8003AD20:
@@ -53233,8 +53233,8 @@ glabel DispatchSpyroPadStateChanges
     /* 317DC 80040FDC F1058230 */  andi       $v0, $a0, 0x5F1
     /* 317E0 80040FE0 4F004010 */  beqz       $v0, .L80041120
     /* 317E4 80040FE4 00000000 */   nop
-    /* 317E8 80040FE8 0880033C */  lui        $v1, %hi(g_nLevelReadyFlag)
-    /* 317EC 80040FEC BC8B638C */  lw         $v1, %lo(g_nLevelReadyFlag)($v1)
+    /* 317E8 80040FE8 0880033C */  lui        $v1, %hi(g_nSparxHealth)
+    /* 317EC 80040FEC BC8B638C */  lw         $v1, %lo(g_nSparxHealth)($v1)
     /* 317F0 80040FF0 00000000 */  nop
     /* 317F4 80040FF4 4B006004 */  bltz       $v1, .L80041124
     /* 317F8 80040FF8 00048230 */   andi      $v0, $a0, 0x400
@@ -53244,14 +53244,14 @@ glabel DispatchSpyroPadStateChanges
     /* 31808 80041008 05004014 */  bnez       $v0, .L80041020
     /* 3180C 8004100C 10008230 */   andi      $v0, $a0, 0x10
     /* 31810 80041010 FFFF6224 */  addiu      $v0, $v1, -0x1
-    /* 31814 80041014 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 31818 80041018 BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 31814 80041014 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 31818 80041018 BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 3181C 8004101C 10008230 */  andi       $v0, $a0, 0x10
   .L80041020:
     /* 31820 80041020 08004010 */  beqz       $v0, .L80041044
     /* 31824 80041024 20008230 */   andi      $v0, $a0, 0x20
-    /* 31828 80041028 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 3182C 8004102C BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 31828 80041028 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 3182C 8004102C BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 31830 80041030 00000000 */  nop
     /* 31834 80041034 2E004104 */  bgez       $v0, .L800410F0
     /* 31838 80041038 19000424 */   addiu     $a0, $zero, 0x19
@@ -53301,8 +53301,8 @@ glabel DispatchSpyroPadStateChanges
     /* 318D4 800410D4 00000000 */  nop
     /* 318D8 800410D8 07004014 */  bnez       $v0, .L800410F8
     /* 318DC 800410DC FFFF0224 */   addiu     $v0, $zero, -0x1
-    /* 318E0 800410E0 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 318E4 800410E4 BC8B22AC */  sw         $v0, %lo(g_nLevelReadyFlag)($at)
+    /* 318E0 800410E0 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 318E4 800410E4 BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 318E8 800410E8 3E040108 */  j          .L800410F8
     /* 318EC 800410EC 00000000 */   nop
   .L800410F0:
@@ -53325,8 +53325,8 @@ glabel DispatchSpyroPadStateChanges
   .L80041124:
     /* 31924 80041124 1D004010 */  beqz       $v0, .L8004119C
     /* 31928 80041128 00FC9130 */   andi      $s1, $a0, 0xFC00
-    /* 3192C 8004112C 0880103C */  lui        $s0, %hi(g_nLevelReadyFlag)
-    /* 31930 80041130 BC8B1026 */  addiu      $s0, $s0, %lo(g_nLevelReadyFlag)
+    /* 3192C 8004112C 0880103C */  lui        $s0, %hi(g_nSparxHealth)
+    /* 31930 80041130 BC8B1026 */  addiu      $s0, $s0, %lo(g_nSparxHealth)
     /* 31934 80041134 0000028E */  lw         $v0, 0x0($s0)
     /* 31938 80041138 00000000 */  nop
     /* 3193C 8004113C 16004004 */  bltz       $v0, .L80041198
@@ -53582,8 +53582,8 @@ glabel DispatchSpyroChargeStateChanges
   .L80041498:
     /* 31C98 80041498 1E004010 */  beqz       $v0, .L80041514
     /* 31C9C 8004149C 00206232 */   andi      $v0, $s3, 0x2000
-    /* 31CA0 800414A0 0880103C */  lui        $s0, %hi(g_nLevelReadyFlag)
-    /* 31CA4 800414A4 BC8B1026 */  addiu      $s0, $s0, %lo(g_nLevelReadyFlag)
+    /* 31CA0 800414A0 0880103C */  lui        $s0, %hi(g_nSparxHealth)
+    /* 31CA4 800414A4 BC8B1026 */  addiu      $s0, $s0, %lo(g_nSparxHealth)
     /* 31CA8 800414A8 0000028E */  lw         $v0, 0x0($s0)
     /* 31CAC 800414AC 00000000 */  nop
     /* 31CB0 800414B0 18004004 */  bltz       $v0, .L80041514
@@ -54903,8 +54903,8 @@ glabel UpdateSpyroStateBehavior
     /* 32FE0 800427E0 18004228 */  slti       $v0, $v0, 0x18
     /* 32FE4 800427E4 F8054014 */  bnez       $v0, .L80043FC8
     /* 32FE8 800427E8 00000000 */   nop
-    /* 32FEC 800427EC 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 32FF0 800427F0 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 32FEC 800427EC 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 32FF0 800427F0 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 32FF4 800427F4 00000000 */  nop
     /* 32FF8 800427F8 57034104 */  bgez       $v0, .L80043558
     /* 32FFC 800427FC 00000000 */   nop
@@ -54917,8 +54917,8 @@ glabel UpdateSpyroStateBehavior
     /* 33014 80042814 18004228 */  slti       $v0, $v0, 0x18
     /* 33018 80042818 EB054014 */  bnez       $v0, .L80043FC8
     /* 3301C 8004281C 00000000 */   nop
-    /* 33020 80042820 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 33024 80042824 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 33020 80042820 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 33024 80042824 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 33028 80042828 00000000 */  nop
     /* 3302C 8004282C 4A034104 */  bgez       $v0, .L80043558
     /* 33030 80042830 00000000 */   nop
@@ -54931,8 +54931,8 @@ glabel UpdateSpyroStateBehavior
     /* 33048 80042848 30004228 */  slti       $v0, $v0, 0x30
     /* 3304C 8004284C DE054014 */  bnez       $v0, .L80043FC8
     /* 33050 80042850 00000000 */   nop
-    /* 33054 80042854 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 33058 80042858 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 33054 80042854 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 33058 80042858 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 3305C 8004285C 00000000 */  nop
     /* 33060 80042860 3D034104 */  bgez       $v0, .L80043558
     /* 33064 80042864 00000000 */   nop
@@ -55813,8 +55813,8 @@ glabel UpdateSpyroStateBehavior
     /* 33D30 80043530 18004228 */  slti       $v0, $v0, 0x18
     /* 33D34 80043534 A4024014 */  bnez       $v0, .L80043FC8
     /* 33D38 80043538 00000000 */   nop
-    /* 33D3C 8004353C 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 33D40 80043540 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 33D3C 8004353C 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 33D40 80043540 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 33D44 80043544 00000000 */  nop
     /* 33D48 80043548 03004104 */  bgez       $v0, .L80043558
     /* 33D4C 8004354C 00000000 */   nop
@@ -55885,8 +55885,8 @@ glabel UpdateSpyroStateBehavior
     /* 33E40 80043640 F9FB0434 */   ori       $a0, $zero, 0xFBF9
     /* 33E44 80043644 60024014 */  bnez       $v0, .L80043FC8
     /* 33E48 80043648 00000000 */   nop
-    /* 33E4C 8004364C 0880043C */  lui        $a0, %hi(g_nLevelReadyFlag)
-    /* 33E50 80043650 BC8B8424 */  addiu      $a0, $a0, %lo(g_nLevelReadyFlag)
+    /* 33E4C 8004364C 0880043C */  lui        $a0, %hi(g_nSparxHealth)
+    /* 33E50 80043650 BC8B8424 */  addiu      $a0, $a0, %lo(g_nSparxHealth)
     /* 33E54 80043654 0000828C */  lw         $v0, 0x0($a0)
     /* 33E58 80043658 00000000 */  nop
     /* 33E5C 8004365C 5A024004 */  bltz       $v0, .L80043FC8
@@ -61486,8 +61486,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38EC4 800486C4 0000A4AC */  sw         $a0, 0x0($a1)
     /* 38EC8 800486C8 0880023C */  lui        $v0, %hi(g_nSpyroTriggerEntryZ)
     /* 38ECC 800486CC CC8B428C */  lw         $v0, %lo(g_nSpyroTriggerEntryZ)($v0)
-    /* 38ED0 800486D0 0880033C */  lui        $v1, %hi(g_nLevelReadyFlag)
-    /* 38ED4 800486D4 BC8B638C */  lw         $v1, %lo(g_nLevelReadyFlag)($v1)
+    /* 38ED0 800486D0 0880033C */  lui        $v1, %hi(g_nSparxHealth)
+    /* 38ED4 800486D4 BC8B638C */  lw         $v1, %lo(g_nSparxHealth)($v1)
     /* 38ED8 800486D8 64014224 */  addiu      $v0, $v0, 0x164
     /* 38EDC 800486DC 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
     /* 38EE0 800486E0 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
@@ -63576,8 +63576,8 @@ glabel TickSpyroGameplayFrame
     /* 3ABF0 8004A3F0 CC56848C */  lw         $a0, %lo(g_nFrameStep)($a0)
     /* 3ABF4 8004A3F4 4423010C */  jal        TickSpyroAttackEffects
     /* 3ABF8 8004A3F8 00000000 */   nop
-    /* 3ABFC 8004A3FC 0880023C */  lui        $v0, %hi(g_nLevelReadyFlag)
-    /* 3AC00 8004A400 BC8B428C */  lw         $v0, %lo(g_nLevelReadyFlag)($v0)
+    /* 3ABFC 8004A3FC 0880023C */  lui        $v0, %hi(g_nSparxHealth)
+    /* 3AC00 8004A400 BC8B428C */  lw         $v0, %lo(g_nSparxHealth)($v0)
     /* 3AC04 8004A404 0880013C */  lui        $at, %hi(g_dwSpyroTriggerEventFlags)
     /* 3AC08 8004A408 848A20AC */  sw         $zero, %lo(g_dwSpyroTriggerEventFlags)($at)
     /* 3AC0C 8004A40C 36004104 */  bgez       $v0, .L8004A4E8
@@ -64196,8 +64196,8 @@ glabel ResetSpyroEntity
     /* 3B4B0 8004ACB0 658A6390 */  lbu        $v1, %lo(g_abSpyroPersistentEuler + 0x1)($v1)
     /* 3B4B4 8004ACB4 0880063C */  lui        $a2, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 3B4B8 8004ACB8 668AC690 */  lbu        $a2, %lo(g_abSpyroPersistentEuler + 0x2)($a2)
-    /* 3B4BC 8004ACBC 0880113C */  lui        $s1, %hi(g_nLevelReadyFlag)
-    /* 3B4C0 8004ACC0 BC8B318E */  lw         $s1, %lo(g_nLevelReadyFlag)($s1)
+    /* 3B4BC 8004ACBC 0880113C */  lui        $s1, %hi(g_nSparxHealth)
+    /* 3B4C0 8004ACC0 BC8B318E */  lw         $s1, %lo(g_nSparxHealth)($s1)
     /* 3B4C4 8004ACC4 21280000 */  addu       $a1, $zero, $zero
     /* 3B4C8 8004ACC8 2200A6A3 */  sb         $a2, 0x22($sp)
     /* 3B4CC 8004ACCC A4020624 */  addiu      $a2, $zero, 0x2A4
@@ -64217,8 +64217,8 @@ glabel ResetSpyroEntity
     /* 3B504 8004AD04 0880013C */  lui        $at, %hi(g_bSpyroAnimFrame)
     /* 3B508 8004AD08 778A22A0 */  sb         $v0, %lo(g_bSpyroAnimFrame)($at)
     /* 3B50C 8004AD0C FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 3B510 8004AD10 0880013C */  lui        $at, %hi(g_nLevelReadyFlag)
-    /* 3B514 8004AD14 BC8B31AC */  sw         $s1, %lo(g_nLevelReadyFlag)($at)
+    /* 3B510 8004AD10 0880013C */  lui        $at, %hi(g_nSparxHealth)
+    /* 3B514 8004AD14 BC8B31AC */  sw         $s1, %lo(g_nSparxHealth)($at)
     /* 3B518 8004AD18 0880013C */  lui        $at, %hi(g_nSpyroGroundChunkId)
     /* 3B51C 8004AD1C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundChunkId)($at)
     /* 3B520 8004AD20 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler)
@@ -78112,8 +78112,8 @@ glabel DispatchSpyroTriggerEvent
     /* 478E4 800570E4 DA5C0108 */  j          .L80057368
     /* 478E8 800570E8 00000000 */   nop
   jlabel .L800570EC
-    /* 478EC 800570EC 0880053C */  lui        $a1, %hi(g_nLevelReadyFlag)
-    /* 478F0 800570F0 BC8BA524 */  addiu      $a1, $a1, %lo(g_nLevelReadyFlag)
+    /* 478EC 800570EC 0880053C */  lui        $a1, %hi(g_nSparxHealth)
+    /* 478F0 800570F0 BC8BA524 */  addiu      $a1, $a1, %lo(g_nSparxHealth)
     /* 478F4 800570F4 0000A28C */  lw         $v0, 0x0($a1)
     /* 478F8 800570F8 00000000 */  nop
     /* 478FC 800570FC 9A004004 */  bltz       $v0, .L80057368

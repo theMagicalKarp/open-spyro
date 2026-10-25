@@ -74,7 +74,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   ResetPadFrameSubstepTable(&g_dwPadPressed);
   if (g_nFlightLevelActive == 0) {
-    g_nLevelReadyFlagStash = g_nLevelReadyFlag;
+    g_nSparxHealthStash = g_nSparxHealth;
   }
   if (g_anSpawnAnchorBlock[0] != 0) {
     CopyVector(g_anSpyroWorldPos, g_anSpawnAnchorBlock + 20);
@@ -101,7 +101,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
       g_abSpyroPersistentEuler[2] = yaw;
     }
   }
-  g_nLevelReadyFlag = g_nLevelReadyFlagStash;
+  g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
     g_nSpyroPadSnapshotCountdown = 0xC;
@@ -501,8 +501,7 @@ sprites:
   ((int *)g_pEmitListBase)[0x800] = -1;
   ResetWorldParticleTables();
   if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
-    g_pLevelOverlayInitRecord =
-        (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
+    g_pSparxActor = (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
     InitHudCounters(1);
   }
   HandleMusicCommand(g_nCurrentMusicTrack, 1);

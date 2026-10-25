@@ -30,7 +30,7 @@ extern unsigned char *g_apSaveMenuAnimActorList[];
 
 extern void (*g_pfnLevelAdvanceEmitList)(int);
 
-extern unsigned char *g_pLevelOverlayInitRecord;
+extern unsigned char *g_pSparxActor;
 
 extern void (*g_pfnLevelOnSaveMenuExit)();
 

@@ -68,7 +68,7 @@ void ResetLevelState(void) {
 
   anchor = &g_nSpawnAnchorValid;
   v = 0;
-  g_nLevelReadyFlag = 3;
+  g_nSparxHealth = 3;
   g_nExtraLives = 4;
   g_nWorldTreasureCollected = 0;
   g_nWorldDragonsRescued = 0;
@@ -77,7 +77,7 @@ void ResetLevelState(void) {
   g_nGemTallyIconCount = 0;
   g_nLevelEggCount = 0;
   g_nSparxFoodCount = 0;
-  g_nLevelReadyFlagStash = -1;
+  g_nSparxHealthStash = -1;
   g_anLevelEscapeRunCount = 0;
   g_nLevelEscapeRunCountLane1 = 0;
   FillWord(anchor, v, 0x68);
