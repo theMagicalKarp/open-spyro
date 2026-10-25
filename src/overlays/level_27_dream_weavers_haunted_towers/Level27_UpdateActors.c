@@ -1916,7 +1916,7 @@ void Level27_UpdateActors(void) {
         }
       }
       if (st->kind == 1) {
-        st->u18 = SelectActorLodBand(actor, st->u18);
+        st->lodHandle = SelectActorLodBand(actor, st->lodHandle);
       }
       actor->flags = 0;
       for (i = 0; i < 4; i++) {
@@ -2685,7 +2685,7 @@ void Level27_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, 0),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->u10C = 0x28;
+        st->zSpeed = 0x28;
         ENTER_POSE(actor, 4);
       }
       if (st->all1.on == 0 &&
@@ -2796,7 +2796,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u10C, 0xA, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xA, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x18);

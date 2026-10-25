@@ -124,7 +124,7 @@ typedef struct L20State28 {
   void *path;  /* 0x00 */
   int partner; /* 0x04 index into g_pActorListBase */
   int knockSpeed;     /* 0x08 knock-back speed */
-  int u0C;     /* 0x0C */
+  int knockZSpeed;     /* 0x0C */
   int knockHeading;     /* 0x10 knock-back heading */
   int timer;   /* 0x14 */
   int mode;    /* 0x18 0 guard, 1 patrol, 2 lookout */
@@ -138,7 +138,7 @@ typedef struct L20State403 {
   FlyPath *path; /* 0x04 */
   int knockHeading;       /* 0x08 knock-back heading */
   int knockSpeed;       /* 0x0C knock-back speed */
-  int u10;       /* 0x10 */
+  int knockZSpeed;       /* 0x10 */
   int u14;       /* 0x14 */
   int roamTimer;       /* 0x18 roam timer */
   int hopSpeed;       /* 0x1C hop speed */
@@ -158,11 +158,11 @@ typedef struct L20State476 {
   int u1C;      /* 0x1C */
   int knockHeading;      /* 0x20 knock-back heading */
   int knockSpeed;      /* 0x24 knock-back speed */
-  int u28;      /* 0x28 */
+  int knockZSpeed;      /* 0x28 */
   int *held;    /* 0x2C shared "Spyro is held" latch */
   int hasSpyro;      /* 0x30 has Spyro */
   int grabCoolDown;      /* 0x34 grab cool-down */
-  int u38;      /* 0x38 */
+  int voice;      /* 0x38 */
 } L20State476;
 
 /* Type 57 state (boulder and its shards). */
@@ -192,16 +192,16 @@ typedef struct BoulderThrowerState {
   int heading;         /* 0x30 heading */
   int speed;         /* 0x34 speed */
   int u38;         /* 0x38 */
-  int u3C;         /* 0x3C */
+  int zSpeed;         /* 0x3C */
   Actor *rock;     /* 0x40 boulder being carried */
   int sightRange;         /* 0x44 sight range */
   int throwRange;         /* 0x48 throw range */
-  int u4C[3];      /* 0x4C trigger box */
-  int u58;         /* 0x58 */
+  int box0[3];      /* 0x4C trigger box */
+  int box0HalfWidth;         /* 0x58 */
   int u5C[2];      /* 0x5C */
-  int u64[6];      /* 0x64 trigger box */
+  int box1[6];      /* 0x64 trigger box */
   int u7C;         /* 0x7C */
-  int u80;         /* 0x80 */
+  int orbitRadius;         /* 0x80 */
   int u84;         /* 0x84 */
   int u88;         /* 0x88 */
   int *u8C;        /* 0x8C */
@@ -222,10 +222,10 @@ typedef struct GatekeeperState {
   int u20[3];      /* 0x20 */
   int heading;         /* 0x2C heading */
   int speed;         /* 0x30 speed */
-  int u34;         /* 0x34 */
+  int zSpeed;         /* 0x34 */
   FlyPath *path;   /* 0x38 */
-  int u3C[6];      /* 0x3C trigger box */
-  int u54[6];      /* 0x54 trigger box */
+  int box0[6];      /* 0x3C trigger box */
+  int box1[6];      /* 0x54 trigger box */
   int u6C;         /* 0x6C */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
@@ -315,7 +315,7 @@ typedef struct MetalheadState {
   int seen;             /* 0x44 */
   int init;             /* 0x48 */
   int camTimer;         /* 0x4C */
-  int u50;              /* 0x50 */
+  int lodHandle;              /* 0x50 */
 } MetalheadState;
 
 /* Type 47 state: a thrown rock, carried by its partner until released. */
@@ -341,8 +341,8 @@ typedef struct JacquesState {
   unsigned char pad13;
   int idx;                 /* 0x14 current stop */
   int init;                /* 0x18 */
-  int u1C[3];              /* 0x1C */
-  int u28[3];              /* 0x28 */
+  int prevLeg[3];              /* 0x1C */
+  int legStep[3];              /* 0x28 */
   int timer;               /* 0x34 */
   int u38;                 /* 0x38 */
   Actor *u3C;              /* 0x3C */
@@ -382,8 +382,8 @@ typedef struct PathWalkerState {
   int mode;            /* 0x04 0..6; 3 = carried, 6 = absent */
   PathData *path;      /* 0x08 */
   int next;            /* 0x0C state to enter after the turn, 0x63 = done */
-  int u10[3];          /* 0x10 */
-  int u1C[5];          /* 0x1C */
+  int prevLeg[3];          /* 0x10 */
+  int legStep[5];          /* 0x1C */
   int sound;           /* 0x30 */
   int period;          /* 0x34 */
   int timer;           /* 0x38 */
@@ -504,7 +504,7 @@ typedef struct BreakableWallState {
   Actor *part[4]; /* 0x00 */
   int kind;       /* 0x10 1 = only a flame-charge breaks it */
   int init;       /* 0x14 */
-  int u18;        /* 0x18 */
+  int lodHandle;        /* 0x18 */
 } BreakableWallState;
 
 /* Type 134 state: a rock thrower. */
@@ -564,7 +564,7 @@ typedef struct FenceCaptainState {
   int hit[7];          /* 0x0E8 */
   int heading;         /* 0x104 */
   int speed;           /* 0x108 */
-  int u10C;            /* 0x10C */
+  int zSpeed;            /* 0x10C */
   TriggerBox reset;        /* 0x110 */
   int timer;           /* 0x128 */
   int stage;           /* 0x12C */
@@ -578,16 +578,16 @@ typedef struct L32State145 {
   int flags;     /* 0x00 flags; bit 0 armed */
   int knockSpeed;     /* 0x04 knock-back speed */
   int knockHeading;     /* 0x08 knock-back heading */
-  int u0C;     /* 0x0C */
+  int knockZSpeed;     /* 0x0C */
   int shotTimer;     /* 0x10 shot timer */
   int u14;     /* 0x14 */
   int shotReload;     /* 0x18 shot timer reload */
   void *path;   /* 0x1C path */
   int u20;     /* 0x20 */
-  int u24;     /* 0x24 */
-  int u28[6];  /* 0x28 trigger box */
-  int u40[6];  /* 0x40 trigger box */
-  int u58[6];  /* 0x58 trigger box */
+  int countdown;     /* 0x24 */
+  int box0[6];  /* 0x28 trigger box */
+  int box1[6];  /* 0x40 trigger box */
+  int box2[6];  /* 0x58 trigger box */
   int initialised;     /* 0x70 initialised */
   int sinkTimer;     /* 0x74 sink timer */
 } L32State145;
@@ -598,7 +598,7 @@ typedef struct L32State147 {
   void *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
-  int u10;     /* 0x10 */
+  int knockZSpeed;     /* 0x10 */
   int u14;     /* 0x14 */
   int yawToSpyro;     /* 0x18 yaw toward Spyro */
   int yawLimitA;     /* 0x1C yaw limit (0xFF none) */
@@ -607,9 +607,9 @@ typedef struct L32State147 {
   int sweepRate;     /* 0x28 sweep rate */
   int sweepYaw;     /* 0x2C sweep yaw << 4 */
   int timer;     /* 0x30 timer */
-  int u34[6];  /* 0x34 trigger box */
-  int u4C[6];  /* 0x4C trigger box */
-  int u64[6];  /* 0x64 trigger box */
+  int box0[6];  /* 0x34 trigger box */
+  int box1[6];  /* 0x4C trigger box */
+  int box2[6];  /* 0x64 trigger box */
   int initialised;     /* 0x7C initialised */
 } L32State147;
 
@@ -618,8 +618,8 @@ typedef struct L32State148 {
   int flags;              /* 0x00 flags; bit 0 armed */
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
-  int u0C;              /* 0x0C */
-  int u10[6];           /* 0x10 trigger box */
+  int knockZSpeed;              /* 0x0C */
+  int box0[6];           /* 0x10 trigger box */
   unsigned char *targetPath;   /* 0x28 target path: count, index, points */
   void *path;            /* 0x2C path */
   int timer;              /* 0x30 timer */
@@ -627,8 +627,8 @@ typedef struct L32State148 {
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
   int u3C;              /* 0x3C */
   int aimRange;              /* 0x40 aim-at-path range */
-  int u44[6];           /* 0x44 trigger box */
-  int u5C[6];           /* 0x5C trigger box */
+  int box1[6];           /* 0x44 trigger box */
+  int box2[6];           /* 0x5C trigger box */
   int initialised;              /* 0x74 initialised */
 } L32State148;
 

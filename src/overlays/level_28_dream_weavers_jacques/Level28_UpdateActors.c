@@ -1967,7 +1967,7 @@ void Level28_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
           st->next = 3;
-          st->u1C[0] = 0xFF;
+          st->legStep[0] = 0xFF;
           ENTER_POSE(actor, 1);
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
@@ -2026,10 +2026,10 @@ void Level28_UpdateActors(void) {
             st->call = (int)GetRandomU32() % 32 + 100;
             PlayActorMeshVoice(actor, (int)GetRandomU32() % 3 + 2, 0);
           }
-          TweenActorAlongPath(actor, st->path, st->u10, st->u1C, sixteen, 0);
+          TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 0);
           continue;
         }
-        if (TweenActorAlongPath(actor, st->path, st->u10, st->u1C, 0x16, 0) != 0) {
+        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 0x16, 0) != 0) {
           ENTER_POSE(actor, 2);
         }
         continue;
@@ -2154,7 +2154,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case 99:
-        if (TweenActorAlongPath(actor, st->path, st->u10, st->u1C, sixteen, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 4) == 2) {
           st->rideMode = 0;
           actor->rotY = 0;
           ((int *)g_pActorListBase[st->rider].state)[16] = one;
@@ -2264,10 +2264,10 @@ void Level28_UpdateActors(void) {
           g_dwSpyroRequestMask = 0x80002000;
         }
         if (st->path->cur != st->stops[st->idx]) {
-          TweenActorAlongPath(actor, st->path, st->u1C, st->u28, 8, 4);
+          TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 8, 4);
           continue;
         }
-        ZeroVector(st->u1C);
+        ZeroVector(st->prevLeg);
         actor->rotY = 0;
         switch (st->path->cur) {
         case 3:

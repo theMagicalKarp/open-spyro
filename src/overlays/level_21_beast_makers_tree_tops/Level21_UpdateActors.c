@@ -794,7 +794,7 @@ void Level21_UpdateActors(void) {
 
         if (f & 0x40000) {
           st->speed = 0;
-          st->u3C = 0x28;
+          st->zSpeed = 0x28;
         } else {
           if (f == 0x20000) {
             st->speed = 0x15E;
@@ -805,7 +805,7 @@ void Level21_UpdateActors(void) {
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
           if (actor->mode != 0x2B) {
-            st->u3C = 0x1E;
+            st->zSpeed = 0x1E;
           }
         }
         actor->flags = 0;
@@ -850,13 +850,13 @@ void Level21_UpdateActors(void) {
 
       if (st->flags == 2) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u4C) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT((unsigned char *)st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u64) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT((unsigned char *)st->path, 1));
@@ -898,8 +898,8 @@ void Level21_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
-        if (st->u58 != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u4C) != 0) {
+        if (st->box0HalfWidth != 0 &&
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
         pose5:
           ENTER_POSE(actor, 5);
         }
@@ -913,7 +913,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case 3:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u3C, 0xC, 0xA) ==
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 3 &&
             st->speed == 0 && st->u94 == 0) {
           PlayActorMeshVoice(actor, 0, 0);
@@ -978,7 +978,7 @@ void Level21_UpdateActors(void) {
         if (actor->subMode == 0) {
           break;
         }
-        st->u80 = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
+        st->orbitRadius = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
         actor->mode = 0x29;
         continue;
 
@@ -986,7 +986,7 @@ void Level21_UpdateActors(void) {
         int h = g_pActorListBase[st->partner].rotZ;
 
         ANIM_GO(actor, 5);
-        if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->u80, h, 4,
+        if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->orbitRadius, h, 4,
                           0x64, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0) < 6) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
@@ -1006,14 +1006,14 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   SPY.posY - actor->posY, 0);
           st->speed = 0x15E;
-          st->u3C = d >> 7;
+          st->zSpeed = d >> 7;
           if (d < 0x1800 ||
               (d < 0x2800 && !(SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E9
                                                  : -SPY_DZ(actor) < 0x3E9))) {
-            st->u3C = 0;
+            st->zSpeed = 0;
           }
-          if (st->u3C >= 0x6F) {
-            st->u3C = 0x6E;
+          if (st->zSpeed >= 0x6F) {
+            st->zSpeed = 0x6E;
           }
           st->u84 = RandomSignedInRange(8, 0xF);
           st->u88 = RandomSignedInRange(8, 0xF);
@@ -1042,9 +1042,9 @@ void Level21_UpdateActors(void) {
         int r;
 
         CopyVector(f136, &actor->posX);
-        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u3C, 0, 0x12);
+        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
         if (r == 3) {
-          st->u3C = 0x50;
+          st->zSpeed = 0x50;
         }
         actor->updateDist = 0xFF;
         actor->probeDist = 0xFF;
@@ -1066,7 +1066,7 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(actor->posX - g_anSpyroWorldPos,
                                   actor->posY - g_nSpyroWorldPosY, 0);
           st->speed = 0xDC;
-          st->u3C = 0x3C;
+          st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, 4, 0, 0);
           ENTER_POSE(actor, 3);
         }
@@ -1123,7 +1123,7 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
                                   0);
           st->speed = 0x5A;
-          st->u3C = 0x78;
+          st->zSpeed = 0x78;
           p->subMode = 2;
           actor->mode++;
           break;
@@ -1146,7 +1146,7 @@ void Level21_UpdateActors(void) {
         GetActorAttachPoint(p, 1, f184);
         AddVector(f152, f168, f184);
         RShiftVector3(f152, 1);
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u3C, 0, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
         if (actor->posZ < f152[2]) {
           CopyVector(&actor->posX, f152);
           actor->mode++;
@@ -1173,7 +1173,7 @@ void Level21_UpdateActors(void) {
                                   spy->posY - actor->posY, 0);
           st->speed = 0x1C2;
           st->timer = 0xB4;
-          st->u3C = 0;
+          st->zSpeed = 0;
           actor->mode = 0x2B;
         }
         break;
@@ -1192,7 +1192,7 @@ void Level21_UpdateActors(void) {
       if ((f & 0xD0000) && actor->mode != 5) {
         if (f & 0x40000) {
           st->speed = 0;
-          st->u34 = 0x28;
+          st->zSpeed = 0x28;
         } else {
           st->speed = 0xF0;
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -1200,7 +1200,7 @@ void Level21_UpdateActors(void) {
                                   spy->bodyRotZ, 0x20, 0x40);
         }
         if (actor->mode != 0x2B) {
-          st->u34 = 0x1E;
+          st->zSpeed = 0x1E;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, 1, 0, 0);
@@ -1233,13 +1233,13 @@ void Level21_UpdateActors(void) {
 
       if (st->mode == 2) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u3C) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT((unsigned char *)st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u54) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT((unsigned char *)st->path, 1));
@@ -1321,7 +1321,7 @@ void Level21_UpdateActors(void) {
       }
 
       case 5:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u34, 0xE, 0xA);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x34);
@@ -1400,10 +1400,10 @@ void Level21_UpdateActors(void) {
         int r;
 
         CopyVector(f136, &actor->posX);
-        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u34, 0, 0x12);
+        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
         actor->updateDist = 0xFF;
         if (r == 3) {
-          st->u34 = 0x5A;
+          st->zSpeed = 0x5A;
         }
         ANIM_GO(actor, 8);
         actor->probeDist = 0xFF;
@@ -1423,7 +1423,7 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, 0);
           st->speed = 0xF0;
-          st->u34 = 0x3C;
+          st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, 4, 0, 0);
           ENTER_POSE(actor, 5);
         }
@@ -1490,7 +1490,7 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
                                   0);
           st->speed = 0x5A;
-          st->u34 = 0x78;
+          st->zSpeed = 0x78;
           p->subMode = 2;
           actor->mode++;
           break;
@@ -1513,7 +1513,7 @@ void Level21_UpdateActors(void) {
         GetActorAttachPoint(p, 1, f248);
         AddVector(f216, f168, f248);
         RShiftVector3(f216, 1);
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->u34, 0, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
         if (actor->posZ < f216[2]) {
           CopyVector(&actor->posX, f216);
           actor->mode++;
@@ -1540,7 +1540,7 @@ void Level21_UpdateActors(void) {
                                   spy->posY - actor->posY, 0);
           st->speed = 0x1F4;
           st->timer = 0xB4;
-          st->u34 = 0;
+          st->zSpeed = 0;
           actor->mode = 0x2B;
         }
         break;

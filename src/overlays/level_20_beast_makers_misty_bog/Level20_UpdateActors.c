@@ -417,10 +417,10 @@ void Level20_UpdateActors(void) {
       if ((actor->flags & 0xA0000) && actor->mode != 5) {
         if (actor->flags & 0x80000) {
           st->knockSpeed = 0;
-          st->u0C = 0x104;
+          st->knockZSpeed = 0x104;
         } else {
           st->knockSpeed = 0x190;
-          st->u0C = 0xAA;
+          st->knockZSpeed = 0xAA;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
@@ -521,7 +521,7 @@ void Level20_UpdateActors(void) {
       }
 
       case 5: {
-        int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, sixteen);
+        int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
 
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
@@ -2856,7 +2856,7 @@ void Level20_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->u10 = 0x64;
+        st->knockZSpeed = 0x64;
         if (actor->flags & 0x10000) {
           st->knockSpeed = 0xF0;
         } else {
@@ -2943,7 +2943,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case 2:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u10, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -3472,7 +3472,7 @@ void Level20_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->u28 = 0xF0;
+        st->knockZSpeed = 0xF0;
         if (actor->mode != 0) {
           *st->held = 0;
         }
@@ -3484,7 +3484,7 @@ void Level20_UpdateActors(void) {
       actor->flags = 0;
       if (actor->nextAnim == 1 &&
           GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[2]) == 0) {
-        PlayActorMeshVoice(actor, 2, (int)&st->u38);
+        PlayActorMeshVoice(actor, 2, (int)&st->voice);
       }
 
       switch (actor->mode) {
@@ -3597,7 +3597,7 @@ void Level20_UpdateActors(void) {
       case 4:
         actor->rotX += 4;
         actor->rotY += 4;
-        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u28, 0xC, 0xE) == 3) {
+        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == 3) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);

@@ -128,7 +128,7 @@ typedef struct L6Cannon {
   int timer;   /* 0x18 */
   int camFlag; /* 0x1C */
   int init;    /* 0x20 */
-  int u24;     /* 0x24 */
+  int voice;     /* 0x24 */
 } L6Cannon;
 
 /* Types 214/216 state: a Peace Keeper soldier (kind picks the behaviour). */
@@ -3354,7 +3354,7 @@ void Level6_UpdateActors(void) {
 
       case 1:
         st->timer = 0x3C;
-        PlayActorMeshVoice(actor, 0, (int)&st->u24);
+        PlayActorMeshVoice(actor, 0, (int)&st->voice);
         actor->mode = 2;
         continue;
 

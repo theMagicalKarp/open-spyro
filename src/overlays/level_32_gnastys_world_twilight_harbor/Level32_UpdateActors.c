@@ -1608,7 +1608,7 @@ void Level32_UpdateActors(void) {
         if (actor->flags & 0x20000) {
           st->knockSpeed = 0x154;
         }
-        st->u0C = 0x82;
+        st->knockZSpeed = 0x82;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
@@ -1622,8 +1622,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u40) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->u58) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1632,7 +1632,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (st->flags == 1 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u28) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1643,7 +1643,7 @@ void Level32_UpdateActors(void) {
                                         actor->posY - g_anCameraPos[1], 0)) <
                 0x28 &&
             actor->posZ - actor->floorOffset - SPY.posZ < -0xC8 &&
-            TickCountdownByFrameDelta(&st->u24, 4) != 0) {
+            TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
           st->u14 = 0;
           st->shotTimer = st->shotReload;
           ENTER_POSE_B(actor, 3);
@@ -1691,7 +1691,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -1745,7 +1745,7 @@ void Level32_UpdateActors(void) {
           actor->mode != 0x14) {
         StopSoundVoicesByOwner(actor, 1);
         st->knockSpeed = 0xC8;
-        st->u10 = 0x104;
+        st->knockZSpeed = 0x104;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
@@ -1759,8 +1759,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u4C) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->u64) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1769,7 +1769,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (st->flags == 1 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u34) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1859,7 +1859,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u10, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -1915,7 +1915,7 @@ void Level32_UpdateActors(void) {
 
         StopSoundVoicesByOwner(actor, 1);
         st->knockSpeed = 0x12C;
-        st->u0C = 0x104;
+        st->knockZSpeed = 0x104;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
@@ -1934,8 +1934,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u44) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->u5C) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
+                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1944,7 +1944,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         if (st->flags == 1 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u10) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1988,7 +1988,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;

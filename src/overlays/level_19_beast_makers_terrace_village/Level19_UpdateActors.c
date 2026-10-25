@@ -122,11 +122,11 @@ typedef struct L19State35 {
   int u18;     /* 0x18 */
   void *path;  /* 0x1C */
   int range;   /* 0x20 in 1024s; the next link for a followed actor */
-  int u24;     /* 0x24 */
+  int countdown;     /* 0x24 */
   int link;    /* 0x28 actor index, -1 for none */
   short spinX; /* 0x2C */
   short spinY; /* 0x2E */
-  int u30[3];  /* 0x30 */
+  int box[3];  /* 0x30 */
 } L19State35;
 
 /* Type 343 state. */
@@ -781,7 +781,7 @@ void Level19_UpdateActors(void) {
       case 0:
         ANIM_GO(actor, 0);
         if (st->mode == one &&
-            (IsPointInRotatedBox((int *)spy, st->u30) != 0 || d < st->range << 10) &&
+            (IsPointInRotatedBox((int *)spy, st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
             SetActorGroupStateExcept(actor, 0xA, 3);
@@ -797,7 +797,7 @@ void Level19_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
-            ABS2(SPY_DZ(actor)) < 0x320 && TickCountdownByFrameDelta(&st->u24, 4) != 0) {
+            ABS2(SPY_DZ(actor)) < 0x320 && TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
           ENTER_POSE(actor, 5);
         }
         break;

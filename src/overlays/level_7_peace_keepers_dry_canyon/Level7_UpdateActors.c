@@ -2746,8 +2746,8 @@ void Level7_UpdateActors(void) {
           c = g_pfnLevelSpawnActor(0xC5, actor);
           cs = c->state;
           c->rotZ = actor->rotZ;
-          cs->u0C = 0x88;
-          cs->u0E = 0x1E;
+          cs->countdown0 = 0x88;
+          cs->countdown1 = 0x1E;
           RefreshActorDerivedState(actor, 4);
           GetActorAttachPoint(actor, 0, &c->posX);
           CopyVector(v, &SPY.posX);
@@ -3091,7 +3091,7 @@ void Level7_UpdateActors(void) {
         s328[0] = 0;
         s328[1] = 0;
         s328[2] = 0;
-        fade = TickCountdownByFrameDelta(&st->u0E, 2) ? 0x12C : 0;
+        fade = TickCountdownByFrameDelta(&st->countdown1, 2) ? 0x12C : 0;
         g_pfnLevelEmitParticles(1, 1, &actor->posX, s328);
         if (MoveActorByDelta(actor, st->vel[0], st->vel[1], st->vel[2], fade,
                           0x12C, one) != 0) {
@@ -3104,7 +3104,7 @@ void Level7_UpdateActors(void) {
           g_nSpyroRequestVelocityZ = 0x50;
           g_nSpyroRequestVelocityY = (-st->vel[1] * 3) >> 2;
           actor->mode = 1;
-        } else if (TickCountdownByFrameDelta(&st->u0C, 2) != 0) {
+        } else if (TickCountdownByFrameDelta(&st->countdown0, 2) != 0) {
           actor->mode = 1;
         }
         break;

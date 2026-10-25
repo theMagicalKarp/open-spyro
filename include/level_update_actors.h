@@ -552,8 +552,8 @@ typedef struct L7State186 {
 
 typedef struct L7State197 {
   int vel[3];         /* 0x00 */
-  short u0C;          /* 0x0C */
-  short u0E;          /* 0x0E */
+  short countdown0;          /* 0x0C */
+  short countdown1;          /* 0x0E */
 } L7State197;
 
 /* Type 10: path patroller. */

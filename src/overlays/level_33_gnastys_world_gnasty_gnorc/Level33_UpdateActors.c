@@ -160,7 +160,7 @@ typedef struct L33State159 {
   int vSpeed;       /* 0x1C vertical speed */
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
-  int u28[14];   /* 0x28 trigger box */
+  int box[14];   /* 0x28 trigger box */
   int partner;       /* 0x60 partner actor index, -1 none */
 } L33State159;
 
@@ -194,7 +194,7 @@ typedef struct GnastyState {
   int seen;                 /* 0xC4 */
   unsigned char *home;      /* 0xC8 */
   int camTimer;             /* 0xCC */
-  int uD0;                  /* 0xD0 */
+  int voice;                  /* 0xD0 */
   int drop[3];              /* 0xD4 key actors dropped while hit */
   L33Trail trails[3][150];  /* 0xE0 one per live bomb */
 } GnastyState;
@@ -1564,7 +1564,7 @@ void Level33_UpdateActors(void) {
             st->slowTimer = 0x96;
           }
           st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
-          if (IsPointInRotatedBox(&SPY.posX, st->u28) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, st->box) != 0) {
             st->path->dir *= -1;
           }
           if (st->path->dir == -1) {
@@ -1878,7 +1878,7 @@ void Level33_UpdateActors(void) {
           q->h06 = 0xA0;
           q->h08 = n - 1;
           st->throws++;
-          PlayActorMeshVoice(actor, 0, (int)&st->uD0);
+          PlayActorMeshVoice(actor, 0, (int)&st->voice);
           if (st->phase == 2 && st->throws >= 2) {
             actor->mode = 5;
             continue;
