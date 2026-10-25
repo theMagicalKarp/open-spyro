@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* g_nSpyroGravityStep_blk / g_nSpyroStateTimer_blk (globals.h) are the
    register-form (held-base) views of the clamped / incremented globals. */
@@ -16,10 +17,10 @@ void AdvanceSpyroSubstepState(void) {
   unsigned char frame;
 
   switch (g_nSpyroState) {
-  case 6:
+  case SPYRO_ST_FALL:
     DampenSpyroFreeFallAttitude();
     break;
-  case 1:
+  case SPYRO_ST_WALK:
     UpdateSpyroFlightAttitudeNearGround();
     if (g_nSpyroMotionSpeed != 0) {
       if (g_nSpyroWallSlideContributedFlag) {
@@ -45,7 +46,7 @@ void AdvanceSpyroSubstepState(void) {
       }
     }
     break;
-  case 5:
+  case SPYRO_ST_JUMP:
     UpdateSpyroFlightAttitudeNearGround();
     if (g_nSpyroAnimMode == 0) {
       if (g_nSpyroSubstate == 0) {
@@ -64,13 +65,13 @@ void AdvanceSpyroSubstepState(void) {
       }
     }
     break;
-  case 11:
+  case SPYRO_ST_CHARGE:
     UpdateSpyroFlightAttitudeNearGround();
     if ((g_nSpyroSubstate & 1) && g_nSpyroContactedActorFlag != 0) {
       g_nSpyroMotionSpeed = 0xA00;
     }
     break;
-  case 19:
+  case SPYRO_ST_SLIDE:
     UpdateSpyroFlightAttitudeNearGround();
     p = g_nSpyroAnimPlayRate_blk;
     *p = (g_nSpyroMotionSpeed >> 11) + 3;
@@ -81,10 +82,10 @@ void AdvanceSpyroSubstepState(void) {
       *p = 12;
     }
     break;
-  case 20:
+  case SPYRO_ST_CHARGE_AIR:
     AlignSpyroBodyToVelocity();
     break;
-  case 21:
+  case SPYRO_ST_JOG:
     UpdateSpyroFlightAttitudeNearGround();
     p = g_nSpyroAnimPlayRate_blk;
     *p = ((g_nSpyroMotionSpeed - 0x640) >> 9) + 6;
@@ -95,44 +96,44 @@ void AdvanceSpyroSubstepState(void) {
       *p = 16;
     }
     break;
-  case 44:
+  case SPYRO_ST_SUPERCHARGE:
     if (g_nSpyroAirborneFrames != 0) {
       break;
     }
-  case 0:
-  case 2:
-  case 3:
-  case 4:
-  case 7:
-  case 8:
-  case 9:
-  case 10:
-  case 12:
-  case 13:
-  case 14:
-  case 16:
-  case 17:
-  case 18:
-  case 22:
-  case 25:
-  case 26:
-  case 27:
-  case 28:
-  case 29:
-  case 30:
-  case 31:
-  case 35:
-  case 36:
-  case 37:
-  case 38:
-  case 39:
-  case 40:
-  case 41:
-  case 42:
-  case 43:
+  case SPYRO_ST_IDLE:
+  case SPYRO_ST_RUN:
+  case SPYRO_ST_STOP:
+  case SPYRO_ST_TURN_AROUND:
+  case SPYRO_ST_HURT_TINT:
+  case SPYRO_ST_08:
+  case SPYRO_ST_SIDESTEP_L1:
+  case SPYRO_ST_SIDESTEP_R1:
+  case SPYRO_ST_CHARGE_BONK:
+  case SPYRO_ST_TEETER:
+  case SPYRO_ST_HURT:
+  case SPYRO_ST_GLIDE_DROP:
+  case SPYRO_ST_LIFT:
+  case SPYRO_ST_FIDGET_0:
+  case SPYRO_ST_KNOCKBACK:
+  case SPYRO_ST_HURT_PINNED:
+  case SPYRO_ST_SCRIPTED_WALK:
+  case SPYRO_ST_HURT_LONG:
+  case SPYRO_ST_KNOCKBACK_2:
+  case SPYRO_ST_HAZARD:
+  case SPYRO_ST_DEATH:
+  case SPYRO_ST_DEATH_PINNED:
+  case SPYRO_ST_SCRIPTED_HOLD:
+  case SPYRO_ST_FIDGET_1:
+  case SPYRO_ST_FIDGET_2:
+  case SPYRO_ST_FIDGET_3:
+  case SPYRO_ST_FIDGET_4:
+  case SPYRO_ST_FIDGET_5:
+  case SPYRO_ST_FIDGET_6:
+  case SPYRO_ST_FIDGET_7:
+  case SPYRO_ST_FIDGET_8:
     UpdateSpyroFlightAttitudeNearGround();
     break;
-  case 24:
+  case SPYRO_ST_SUPERCHARGE_AIR:
     AlignSpyroBodyToVelocity();
     p = g_nSpyroGravityStep_blk;
     *p += 12;

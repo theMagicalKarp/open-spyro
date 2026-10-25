@@ -61477,8 +61477,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38EA4 800486A4 F8210108 */  j          .L800487E0
     /* 38EA8 800486A8 00000000 */   nop
   jlabel .L800486AC
-    /* 38EAC 800486AC 0880053C */  lui        $a1, %hi(g_nSpyroBreathTimer)
-    /* 38EB0 800486B0 C08BA524 */  addiu      $a1, $a1, %lo(g_nSpyroBreathTimer)
+    /* 38EAC 800486AC 0880053C */  lui        $a1, %hi(g_nSpyroHazardSinkDepth)
+    /* 38EB0 800486B0 C08BA524 */  addiu      $a1, $a1, %lo(g_nSpyroHazardSinkDepth)
     /* 38EB4 800486B4 0000A28C */  lw         $v0, 0x0($a1)
     /* 38EB8 800486B8 00000000 */  nop
     /* 38EBC 800486BC 13004010 */  beqz       $v0, .L8004870C
@@ -61569,8 +61569,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38FF4 800487F4 00000000 */   nop
     /* 38FF8 800487F8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
     /* 38FFC 800487FC 608A428C */  lw         $v0, %lo(g_nSpyroWorldPosZ)($v0)
-    /* 39000 80048800 0880033C */  lui        $v1, %hi(g_nSpyroBreathTimer)
-    /* 39004 80048804 C08B638C */  lw         $v1, %lo(g_nSpyroBreathTimer)($v1)
+    /* 39000 80048800 0880033C */  lui        $v1, %hi(g_nSpyroHazardSinkDepth)
+    /* 39004 80048804 C08B638C */  lw         $v1, %lo(g_nSpyroHazardSinkDepth)($v1)
     /* 39008 80048808 0880043C */  lui        $a0, %hi(g_nSpyroGroundHeightZ)
     /* 3900C 8004880C F88A848C */  lw         $a0, %lo(g_nSpyroGroundHeightZ)($a0)
     /* 39010 80048810 23104300 */  subu       $v0, $v0, $v1
@@ -61578,8 +61578,8 @@ glabel DispatchSpyroPhysicsByState
     /* 39018 80048818 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
     /* 3901C 8004881C 05008010 */  beqz       $a0, .L80048834
     /* 39020 80048820 00000000 */   nop
-    /* 39024 80048824 0880013C */  lui        $at, %hi(g_nSpyroSwimWaterFloorZ)
-    /* 39028 80048828 888A24AC */  sw         $a0, %lo(g_nSpyroSwimWaterFloorZ)($at)
+    /* 39024 80048824 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)
+    /* 39028 80048828 888A24AC */  sw         $a0, %lo(g_nSpyroHazardFloorZ)($at)
     /* 3902C 8004882C 1C220108 */  j          .L80048870
     /* 39030 80048830 00000000 */   nop
   .L80048834:
@@ -61592,13 +61592,13 @@ glabel DispatchSpyroPhysicsByState
     /* 3904C 8004884C 00084224 */  addiu      $v0, $v0, 0x800
     /* 39050 80048850 7B35010C */  jal        FindGroundHeightBelow
     /* 39054 80048854 1800A2AF */   sw        $v0, 0x18($sp)
-    /* 39058 80048858 0880013C */  lui        $at, %hi(g_nSpyroSwimWaterFloorZ)
-    /* 3905C 8004885C 888A22AC */  sw         $v0, %lo(g_nSpyroSwimWaterFloorZ)($at)
+    /* 39058 80048858 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)
+    /* 3905C 8004885C 888A22AC */  sw         $v0, %lo(g_nSpyroHazardFloorZ)($at)
     /* 39060 80048860 1C220108 */  j          .L80048870
     /* 39064 80048864 00000000 */   nop
   .L80048868:
-    /* 39068 80048868 0880013C */  lui        $at, %hi(g_nSpyroSwimWaterFloorZ)
-    /* 3906C 8004886C 888A20AC */  sw         $zero, %lo(g_nSpyroSwimWaterFloorZ)($at)
+    /* 39068 80048868 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)
+    /* 3906C 8004886C 888A20AC */  sw         $zero, %lo(g_nSpyroHazardFloorZ)($at)
   .L80048870:
     /* 39070 80048870 8C00BF8F */  lw         $ra, 0x8C($sp)
     /* 39074 80048874 8800B28F */  lw         $s2, 0x88($sp)
@@ -63489,18 +63489,18 @@ glabel TickSpyroGameplayFrame
     /* 3AAA8 8004A2A8 1D000224 */  addiu      $v0, $zero, 0x1D
     /* 3AAAC 8004A2AC 0A006214 */  bne        $v1, $v0, .L8004A2D8
     /* 3AAB0 8004A2B0 00000000 */   nop
-    /* 3AAB4 8004A2B4 0880023C */  lui        $v0, %hi(g_nSpyroBreathTimer)
-    /* 3AAB8 8004A2B8 C08B428C */  lw         $v0, %lo(g_nSpyroBreathTimer)($v0)
+    /* 3AAB4 8004A2B4 0880023C */  lui        $v0, %hi(g_nSpyroHazardSinkDepth)
+    /* 3AAB8 8004A2B8 C08B428C */  lw         $v0, %lo(g_nSpyroHazardSinkDepth)($v0)
     /* 3AABC 8004A2BC 00000000 */  nop
     /* 3AAC0 8004A2C0 0700401C */  bgtz       $v0, .L8004A2E0
     /* 3AAC4 8004A2C4 01000224 */   addiu     $v0, $zero, 0x1
-    /* 3AAC8 8004A2C8 0880013C */  lui        $at, %hi(g_nSpyroBreathTimer)
-    /* 3AACC 8004A2CC C08B22AC */  sw         $v0, %lo(g_nSpyroBreathTimer)($at)
+    /* 3AAC8 8004A2C8 0880013C */  lui        $at, %hi(g_nSpyroHazardSinkDepth)
+    /* 3AACC 8004A2CC C08B22AC */  sw         $v0, %lo(g_nSpyroHazardSinkDepth)($at)
     /* 3AAD0 8004A2D0 B8280108 */  j          .L8004A2E0
     /* 3AAD4 8004A2D4 00000000 */   nop
   .L8004A2D8:
-    /* 3AAD8 8004A2D8 0880013C */  lui        $at, %hi(g_nSpyroBreathTimer)
-    /* 3AADC 8004A2DC C08B20AC */  sw         $zero, %lo(g_nSpyroBreathTimer)($at)
+    /* 3AAD8 8004A2D8 0880013C */  lui        $at, %hi(g_nSpyroHazardSinkDepth)
+    /* 3AADC 8004A2DC C08B20AC */  sw         $zero, %lo(g_nSpyroHazardSinkDepth)($at)
   .L8004A2E0:
     /* 3AAE0 8004A2E0 0880023C */  lui        $v0, %hi(g_dwSpyroRequestMask)
     /* 3AAE4 8004A2E4 4C8C428C */  lw         $v0, %lo(g_dwSpyroRequestMask)($v0)
@@ -63601,8 +63601,8 @@ glabel TickSpyroGameplayFrame
     /* 3AC50 8004A450 8E290108 */  j          .L8004A638
     /* 3AC54 8004A454 00000000 */   nop
   .L8004A458:
-    /* 3AC58 8004A458 0880033C */  lui        $v1, %hi(g_nSpyroBreathTimer)
-    /* 3AC5C 8004A45C C08B638C */  lw         $v1, %lo(g_nSpyroBreathTimer)($v1)
+    /* 3AC58 8004A458 0880033C */  lui        $v1, %hi(g_nSpyroHazardSinkDepth)
+    /* 3AC5C 8004A45C C08B638C */  lw         $v1, %lo(g_nSpyroHazardSinkDepth)($v1)
     /* 3AC60 8004A460 00000000 */  nop
     /* 3AC64 8004A464 74006214 */  bne        $v1, $v0, .L8004A638
     /* 3AC68 8004A468 00000000 */   nop
@@ -64263,16 +64263,16 @@ glabel ResetSpyroEntity
     /* 3B5B8 8004ADB8 808A20AC */  sw         $zero, %lo(g_abSpyroFxParticleRgba)($at)
     /* 3B5BC 8004ADBC 0880013C */  lui        $at, %hi(g_dwSpyroTriggerEventFlags)
     /* 3B5C0 8004ADC0 848A20AC */  sw         $zero, %lo(g_dwSpyroTriggerEventFlags)($at)
-    /* 3B5C4 8004ADC4 0880013C */  lui        $at, %hi(g_nSpyroSwimWaterFloorZ)
-    /* 3B5C8 8004ADC8 888A20AC */  sw         $zero, %lo(g_nSpyroSwimWaterFloorZ)($at)
+    /* 3B5C4 8004ADC4 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)
+    /* 3B5C8 8004ADC8 888A20AC */  sw         $zero, %lo(g_nSpyroHazardFloorZ)($at)
     /* 3B5CC 8004ADCC 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
     /* 3B5D0 8004ADD0 A48C20AC */  sw         $zero, %lo(g_nSpyroFallTrackingFlag)($at)
     /* 3B5D4 8004ADD4 0880013C */  lui        $at, %hi(g_nSpyroChargeHoldFlag)
     /* 3B5D8 8004ADD8 A88C20AC */  sw         $zero, %lo(g_nSpyroChargeHoldFlag)($at)
     /* 3B5DC 8004ADDC 0880013C */  lui        $at, %hi(g_nSpyroGlideBankingFlag)
     /* 3B5E0 8004ADE0 AC8C20AC */  sw         $zero, %lo(g_nSpyroGlideBankingFlag)($at)
-    /* 3B5E4 8004ADE4 0880013C */  lui        $at, %hi(g_nSpyroBreathTimer)
-    /* 3B5E8 8004ADE8 C08B20AC */  sw         $zero, %lo(g_nSpyroBreathTimer)($at)
+    /* 3B5E4 8004ADE4 0880013C */  lui        $at, %hi(g_nSpyroHazardSinkDepth)
+    /* 3B5E8 8004ADE8 C08B20AC */  sw         $zero, %lo(g_nSpyroHazardSinkDepth)($at)
     /* 3B5EC 8004ADEC 0880013C */  lui        $at, %hi(g_nSpyroSuperflameTimer)
     /* 3B5F0 8004ADF0 688720AC */  sw         $zero, %lo(g_nSpyroSuperflameTimer)($at)
     /* 3B5F4 8004ADF4 00190300 */  sll        $v1, $v1, 4

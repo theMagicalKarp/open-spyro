@@ -14,13 +14,13 @@ void ResetSpyroEntity(int full) {
   int health;
 
   switch (g_nSpyroState) {
-  case 11:
-  case 15:
-  case 32:
-  case 44:
+  case SPYRO_ST_CHARGE:
+  case SPYRO_ST_GLIDE:
+  case SPYRO_ST_FLY:
+  case SPYRO_ST_SUPERCHARGE:
     StopSoundVoicesByOwner(g_anSpyroWorldPos, 2);
     break;
-  case 7:
+  case SPYRO_ST_HURT_TINT:
     g_abSpyroFxParticleRgba[3] = 0;
     break;
   }
@@ -52,11 +52,11 @@ void ResetSpyroEntity(int full) {
     g_nSpyroFirstContactChunkId = 0xFF;
     *(int *)g_abSpyroFxParticleRgba = 0;
     g_dwSpyroTriggerEventFlags = 0;
-    g_nSpyroSwimWaterFloorZ = 0;
+    g_nSpyroHazardFloorZ = 0;
     g_nSpyroFallTrackingFlag = 0;
     g_nSpyroChargeHoldFlag = 0;
     g_nSpyroGlideBankingFlag = 0;
-    g_nSpyroBreathTimer = 0;
+    g_nSpyroHazardSinkDepth = 0;
     g_nSpyroSuperflameTimer = 0;
     g_nSpyroBodyPitch = g_abSpyroPersistentEuler[0] << 4;
     g_nSpyroBodyRoll = g_abSpyroPersistentEuler[1] << 4;

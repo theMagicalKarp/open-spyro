@@ -934,7 +934,7 @@ extern byte g_bSpyroSubFrameTimer;                      /* 0x80078a7c */
 extern byte g_bSpyroOtBinBias;                          /* 0x80078a7f */
 extern byte g_abSpyroFxParticleRgba[4];                 /* 0x80078a80 */
 extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
-extern int g_nSpyroSwimWaterFloorZ;                     /* 0x80078a88 */
+extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */
 extern int g_nSpyroAnimMode;                            /* 0x80078aac */
 extern int g_nSpyroAnimPlayRate;                        /* 0x80078ab0 */
@@ -976,7 +976,7 @@ extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
-extern int g_nSpyroBreathTimer;                         /* 0x80078bc0 */
+extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */
 extern int g_nSpyroTriggerEntryZ;                       /* 0x80078bcc */

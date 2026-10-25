@@ -37,7 +37,7 @@
 #define SPY_BODY_YAW_STEP  0x52 /* g_nSpyroBodyYawStep */
 #define SPY_LOCKOUT        0x58 /* g_nSpyroInputLockoutCountdown */
 #define SPY_SPARX_HEALTH    0x59 /* g_nSparxHealth */
-#define SPY_BREATH_TIMER   0x5A /* g_nSpyroBreathTimer */
+#define SPY_HAZARD_SINK    0x5A /* g_nSpyroHazardSinkDepth */
 #define SPY_FIRST_POINT    0x5F /* g_anSpyroFirstContactPoint */
 #define SPY_FIRST_NORMAL   0x62 /* g_anSpyroFirstContactNormal */
 #define SPY_SCRIPTED_MOVE  0x65 /* g_nSpyroScriptedMoveMode */
