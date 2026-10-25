@@ -3899,14 +3899,14 @@ void Level24_UpdateActors(void) {
 
           CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyYaw += g_nPortalViewYawSpin;
           SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
-          g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
+          g_nLevelIntroParallaxCountdown = g_nPortalViewPitchTilt;
           if (st->cameraPreset >= 0) {
             CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {
@@ -3938,14 +3938,14 @@ void Level24_UpdateActors(void) {
 
           CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyYaw += g_nPortalViewYawSpin;
           SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
-          g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
+          g_nLevelIntroParallaxCountdown = g_nPortalViewPitchTilt;
           if (st->cameraPreset >= 0) {
             CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {

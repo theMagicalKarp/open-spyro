@@ -14512,11 +14512,11 @@ dlabel g_pCreditsScratchBuf
     /* 65F68 80075768 00000000 */ .word 0x00000000
 enddlabel g_pCreditsScratchBuf
 
-nonmatching g_nPreserveMobIdx
+nonmatching g_nEnteredPortalIdx
 
-dlabel g_nPreserveMobIdx
+dlabel g_nEnteredPortalIdx
     /* 65F6C 8007576C 00000000 */ .word 0x00000000
-enddlabel g_nPreserveMobIdx
+enddlabel g_nEnteredPortalIdx
 
 nonmatching D_80075770
 

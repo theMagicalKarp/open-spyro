@@ -30,14 +30,14 @@ void Gamestate0D_Update(void) {
       } else if (g_nStoryIntroMessage == 1) {
         g_nFlightLevelActive = 0;
         g_nCdStreamState = 1;
-        g_nScriptedMobTag = 0;
+        g_nReturnPortalLevelId = 0;
         g_nScriptedRespawnFlag = 0;
         g_nCurrentLevelId = g_nActiveLevelId;
       } else if (g_nStoryIntroMessage == 2) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
         g_nCdStreamState = 1;
-        g_nScriptedMobTag = 0;
+        g_nReturnPortalLevelId = 0;
         g_nScriptedRespawnFlag = 0;
         g_nActiveLevelId = g_anDeathTryLevelIds[g_nDeathTryIndex];
         g_nCurrentLevelId = g_nActiveLevelId;

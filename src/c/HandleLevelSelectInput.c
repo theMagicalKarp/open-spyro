@@ -62,8 +62,8 @@ void HandleLevelSelectInput(void) {
         } else {
           StopAllSoundExceptMask(0);
           InitLightVectorConstants();
-          g_nScriptedMobTag = 0;
-          g_nPreserveMobIdx = -1;
+          g_nReturnPortalLevelId = 0;
+          g_nEnteredPortalIdx = -1;
           ResetSpyroEntity(0);
           RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;

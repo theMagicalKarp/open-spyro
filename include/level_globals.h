@@ -161,11 +161,11 @@ extern int g_nLevelTransitionTallyActive;
 extern int g_nPauseMenuCursor;                           /* menu cursor */
 extern int g_nPauseMenuIdleFrames;                       /* idle/blink counter */
 extern int g_nPauseMenuTransitionFrames;                 /* results frame counter */
-extern int g_nPreserveMobIdx;
+extern int g_nEnteredPortalIdx;
 extern int g_nPrimBufferOverflowFlag;
-extern int g_nScriptedMobTag;
-extern int g_nScriptedMobViewPitchTilt;
-extern int g_nScriptedMobViewYawSpin;
+extern int g_nReturnPortalLevelId;
+extern int g_nPortalViewPitchTilt;
+extern int g_nPortalViewYawSpin;
 extern int g_nScriptedRespawnFlag;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */
@@ -239,7 +239,7 @@ extern int g_nGenericCountdown;
 /* World / level CD-stream chunk bookkeeping and credits-sequence state
  * (main .bss; the credits overlay reads them). */
 extern int g_nReturningHomePhase;
-extern int g_nScriptedMobCount;
+extern int g_nPortalCount;
 extern int g_nWorldTimAudioChunkSize;
 extern int g_nWorldBundleChunkOffset;
 extern int g_nWorldBundleChunkSize;

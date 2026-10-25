@@ -84,13 +84,13 @@ void RespawnOrGameOver_Update(void) {
         g_nSparxFoodCount = 0;
         g_nSparxHealth = 3;
         g_nScriptedRespawnFlag = 0;
-        g_nScriptedMobTag = 0;
+        g_nReturnPortalLevelId = 0;
         g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
         if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
           g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;
           g_nCdStreamState = 2;
-          g_nPreserveMobIdx = -1;
+          g_nEnteredPortalIdx = -1;
         } else {
           g_nCdStreamState = 0xb;
         }

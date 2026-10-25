@@ -82,7 +82,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     CopyVector(g_anSpyroWorldPos, g_anSpawnAnchorBlock + 20);
     yaw = g_nLevelSpawnYaw >> 4;
     g_abSpyroPersistentEuler[2] = yaw;
-  } else if (g_nScriptedMobTag == 0) {
+  } else if (g_nReturnPortalLevelId == 0) {
     g_anLevelSpawnPos[0] = p[0];
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];

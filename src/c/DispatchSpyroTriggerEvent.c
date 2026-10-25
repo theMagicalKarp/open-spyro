@@ -9,7 +9,7 @@ typedef struct {
   unsigned int v;
 } TriggerFlags;
 
-#define ENT (((int **)g_apScriptedMobEntries)[mob])
+#define ENT (((int **)g_apPortals)[mob])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
 /* Moby record reached through g_pActorListBase (0x58 bytes). */
@@ -85,9 +85,9 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     one = 1;
     g_nScriptedRespawnFlag = one;
     mob = data[1];
-    g_nPreserveMobIdx = mob;
+    g_nEnteredPortalIdx = mob;
     if (g_nActiveLevelId % 10 != 0) {
-      g_nScriptedMobTag = g_nActiveLevelId;
+      g_nReturnPortalLevelId = g_nActiveLevelId;
     }
     SubtractVector(tmp, (int *)((char *)ready - 0x164), ENT + 0xB);
     d = -tmp[0] * ENT[2] - tmp[1] * ENT[3] - tmp[2] * ENT[4];

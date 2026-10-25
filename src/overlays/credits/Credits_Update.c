@@ -337,7 +337,7 @@ void Credits_Update(void) {
       g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
       S.l600 = g_nLevelArchiveChunkOffset;
       S.h604 = g_nLevelArchiveChunkSize_n;
-      g_nScriptedMobCount = 0;
+      g_nPortalCount = 0;
       CdReadSyncSectors(g_nCdBaseLba[0], src, S.h604,
                     S.l600 + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
     }
@@ -752,7 +752,7 @@ void Credits_Update(void) {
           break;
         }
         case 3:
-          g_nPreserveMobIdx = 0;
+          g_nEnteredPortalIdx = 0;
           break;
         case 4: {
           short rect[4];

@@ -249,13 +249,13 @@ void Level31_UpdateActors(void) {
               if (yaw < -0x200) {
                 g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
                 g_nCdStreamState = 0;
-                g_nPreserveMobIdx = -1;
+                g_nEnteredPortalIdx = -1;
                 g_nScriptedRespawnFlag = 1;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
                 g_nGamePaused = 1;
-                g_nScriptedMobTag = g_nActiveLevelId;
+                g_nReturnPortalLevelId = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;

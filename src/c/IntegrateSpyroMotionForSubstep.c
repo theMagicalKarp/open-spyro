@@ -1202,7 +1202,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           (g_nSpyroBodyYaw + g_nSpyroBodyYawStep) >> 4;
       g_nSpyroBodyYaw += g_nSpyroBodyYawStep;
       if (g_nSpyroStateFlags == 8) {
-        if (g_nScriptedMobTag == 0) {
+        if (g_nReturnPortalLevelId == 0) {
           g_nSpyroBodyYawStep =
               ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) & 0xFFF;
           if (g_nSpyroBodyYawStep > 0x800) {

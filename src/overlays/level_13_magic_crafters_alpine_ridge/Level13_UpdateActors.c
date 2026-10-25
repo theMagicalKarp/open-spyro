@@ -231,13 +231,13 @@ void Level13_UpdateActors(void) {
               if (yaw < -0x200) {
                 g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
                 g_nCdStreamState = 0;
-                g_nPreserveMobIdx = -1;
+                g_nEnteredPortalIdx = -1;
                 g_nScriptedRespawnFlag = 1;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
                 g_nGamePaused = 1;
-                g_nScriptedMobTag = g_nActiveLevelId;
+                g_nReturnPortalLevelId = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
@@ -5213,14 +5213,14 @@ void Level13_UpdateActors(void) {
 
           CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyYaw += g_nPortalViewYawSpin;
           SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
-          g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
+          g_nLevelIntroParallaxCountdown = g_nPortalViewPitchTilt;
           if (st->cameraPreset >= 0) {
             CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {
@@ -5252,14 +5252,14 @@ void Level13_UpdateActors(void) {
 
           CAM.sim.v[0] += SPY.bodyYaw;
 
-          SPY.bodyYaw += g_nScriptedMobViewYawSpin;
+          SPY.bodyYaw += g_nPortalViewYawSpin;
           SPY.bodyRotZ = SPY.bodyYaw >> 4;
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
           UpdateCameraEulerAngles();
-          g_nLevelIntroParallaxCountdown = g_nScriptedMobViewPitchTilt;
+          g_nLevelIntroParallaxCountdown = g_nPortalViewPitchTilt;
           if (st->cameraPreset >= 0) {
             CAM.preset = &g_aCameraXformPresets[st->cameraPreset];
           } else {

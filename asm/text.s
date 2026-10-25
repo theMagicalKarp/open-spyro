@@ -1078,12 +1078,12 @@ glabel UnpackWorldDataChunks
   .L80013094:
     /* 3894 80013094 0000C28C */  lw         $v0, 0x0($a2)
     /* 3898 80013098 0400C624 */  addiu      $a2, $a2, 0x4
-    /* 389C 8001309C 0780013C */  lui        $at, %hi(g_nScriptedMobCount)
-    /* 38A0 800130A0 BC5822AC */  sw         $v0, %lo(g_nScriptedMobCount)($at)
+    /* 389C 8001309C 0780013C */  lui        $at, %hi(g_nPortalCount)
+    /* 38A0 800130A0 BC5822AC */  sw         $v0, %lo(g_nPortalCount)($at)
     /* 38A4 800130A4 3F004018 */  blez       $v0, .L800131A4
     /* 38A8 800130A8 21380000 */   addu      $a3, $zero, $zero
-    /* 38AC 800130AC 0880053C */  lui        $a1, %hi(g_apScriptedMobEntries)
-    /* 38B0 800130B0 4086A524 */  addiu      $a1, $a1, %lo(g_apScriptedMobEntries)
+    /* 38AC 800130AC 0880053C */  lui        $a1, %hi(g_apPortals)
+    /* 38B0 800130B0 4086A524 */  addiu      $a1, $a1, %lo(g_apPortals)
   .L800130B4:
     /* 38B4 800130B4 0000A6AC */  sw         $a2, 0x0($a1)
     /* 38B8 800130B8 0400C38C */  lw         $v1, 0x4($a2)
@@ -1141,8 +1141,8 @@ glabel UnpackWorldDataChunks
     /* 3980 80013180 0400A524 */  addiu      $a1, $a1, 0x4
     /* 3984 80013184 0100E724 */  addiu      $a3, $a3, 0x1
     /* 3988 80013188 0000038E */  lw         $v1, 0x0($s0)
-    /* 398C 8001318C 0780023C */  lui        $v0, %hi(g_nScriptedMobCount)
-    /* 3990 80013190 BC58428C */  lw         $v0, %lo(g_nScriptedMobCount)($v0)
+    /* 398C 8001318C 0780023C */  lui        $v0, %hi(g_nPortalCount)
+    /* 3990 80013190 BC58428C */  lw         $v0, %lo(g_nPortalCount)($v0)
     /* 3994 80013194 00000000 */  nop
     /* 3998 80013198 2A10E200 */  slt        $v0, $a3, $v0
     /* 399C 8001319C C5FF4014 */  bnez       $v0, .L800130B4
@@ -1569,8 +1569,8 @@ glabel BuildLoadedLevelRuntime
     /* 3F60 80013760 214E0008 */  j          .L80013884
     /* 3F64 80013764 03110200 */   sra       $v0, $v0, 4
   .L80013768:
-    /* 3F68 80013768 0780023C */  lui        $v0, %hi(g_nScriptedMobTag)
-    /* 3F6C 8001376C AC58428C */  lw         $v0, %lo(g_nScriptedMobTag)($v0)
+    /* 3F68 80013768 0780023C */  lui        $v0, %hi(g_nReturnPortalLevelId)
+    /* 3F6C 8001376C AC58428C */  lw         $v0, %lo(g_nReturnPortalLevelId)($v0)
     /* 3F70 80013770 00000000 */  nop
     /* 3F74 80013774 45004014 */  bnez       $v0, .L8001388C
     /* 3F78 80013778 00000000 */   nop
@@ -3541,14 +3541,14 @@ glabel TickLevelTransitionStream
   jlabel .L80015420
     /* 5C20 80015420 CA5A010C */  jal        StopAllSoundExceptMask
     /* 5C24 80015424 21200000 */   addu      $a0, $zero, $zero
-    /* 5C28 80015428 0780023C */  lui        $v0, %hi(g_nPreserveMobIdx)
-    /* 5C2C 8001542C 6C57428C */  lw         $v0, %lo(g_nPreserveMobIdx)($v0)
+    /* 5C28 80015428 0780023C */  lui        $v0, %hi(g_nEnteredPortalIdx)
+    /* 5C2C 8001542C 6C57428C */  lw         $v0, %lo(g_nEnteredPortalIdx)($v0)
     /* 5C30 80015430 00000000 */  nop
     /* 5C34 80015434 2C004004 */  bltz       $v0, .L800154E8
     /* 5C38 80015438 80100200 */   sll       $v0, $v0, 2
-    /* 5C3C 8001543C 0880013C */  lui        $at, %hi(g_apScriptedMobEntries)
+    /* 5C3C 8001543C 0880013C */  lui        $at, %hi(g_apPortals)
     /* 5C40 80015440 21082200 */  addu       $at, $at, $v0
-    /* 5C44 80015444 4086228C */  lw         $v0, %lo(g_apScriptedMobEntries)($at)
+    /* 5C44 80015444 4086228C */  lw         $v0, %lo(g_apPortals)($at)
     /* 5C48 80015448 00000000 */  nop
     /* 5C4C 8001544C 0000458C */  lw         $a1, 0x0($v0)
     /* 5C50 80015450 0880033C */  lui        $v1, %hi(g_pRenderScratchRegionBase)
@@ -3756,8 +3756,8 @@ glabel TickLevelTransitionStream
     /* 5F54 80015754 21386700 */   addu      $a3, $v1, $a3
     /* 5F58 80015758 0780023C */  lui        $v0, %hi(g_nCdStreamState)
     /* 5F5C 8001575C 6458428C */  lw         $v0, %lo(g_nCdStreamState)($v0)
-    /* 5F60 80015760 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 5F64 80015764 6C5720AC */  sw         $zero, %lo(g_nPreserveMobIdx)($at)
+    /* 5F60 80015760 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 5F64 80015764 6C5720AC */  sw         $zero, %lo(g_nEnteredPortalIdx)($at)
     /* 5F68 80015768 ED580008 */  j          .L800163B4
     /* 5F6C 8001576C 01004224 */   addiu     $v0, $v0, 0x1
   jlabel .L80015770
@@ -3769,20 +3769,20 @@ glabel TickLevelTransitionStream
     /* 5F84 80015784 0880103C */  lui        $s0, %hi(g_pDrawBufB)
     /* 5F88 80015788 DC851026 */  addiu      $s0, $s0, %lo(g_pDrawBufB)
     /* 5F8C 8001578C 1E00A2A7 */  sh         $v0, 0x1E($sp)
-    /* 5F90 80015790 0780023C */  lui        $v0, %hi(g_nPreserveMobIdx)
-    /* 5F94 80015794 6C57428C */  lw         $v0, %lo(g_nPreserveMobIdx)($v0)
+    /* 5F90 80015790 0780023C */  lui        $v0, %hi(g_nEnteredPortalIdx)
+    /* 5F94 80015794 6C57428C */  lw         $v0, %lo(g_nEnteredPortalIdx)($v0)
     /* 5F98 80015798 0000038E */  lw         $v1, 0x0($s0)
     /* 5F9C 8001579C 802C0200 */  sll        $a1, $v0, 18
     /* 5FA0 800157A0 21286500 */  addu       $a1, $v1, $a1
     /* 5FA4 800157A4 00120200 */  sll        $v0, $v0, 8
     /* 5FA8 800157A8 8A7E010C */  jal        LoadImage
     /* 5FAC 800157AC 1A00A2A7 */   sh        $v0, 0x1A($sp)
-    /* 5FB0 800157B0 0780023C */  lui        $v0, %hi(g_nPreserveMobIdx)
-    /* 5FB4 800157B4 6C57428C */  lw         $v0, %lo(g_nPreserveMobIdx)($v0)
+    /* 5FB0 800157B0 0780023C */  lui        $v0, %hi(g_nEnteredPortalIdx)
+    /* 5FB4 800157B4 6C57428C */  lw         $v0, %lo(g_nEnteredPortalIdx)($v0)
     /* 5FB8 800157B8 02000324 */  addiu      $v1, $zero, 0x2
     /* 5FBC 800157BC 01004224 */  addiu      $v0, $v0, 0x1
-    /* 5FC0 800157C0 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 5FC4 800157C4 6C5722AC */  sw         $v0, %lo(g_nPreserveMobIdx)($at)
+    /* 5FC0 800157C0 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 5FC4 800157C4 6C5722AC */  sw         $v0, %lo(g_nEnteredPortalIdx)($at)
     /* 5FC8 800157C8 FC024314 */  bne        $v0, $v1, .L800163BC
     /* 5FCC 800157CC F8FF063C */   lui       $a2, (0xFFF80000 >> 16)
     /* 5FD0 800157D0 0800073C */  lui        $a3, (0x80000 >> 16)
@@ -3876,20 +3876,20 @@ glabel TickLevelTransitionStream
     /* 6120 80015920 0C000224 */  addiu      $v0, $zero, 0xC
     /* 6124 80015924 35006210 */  beq        $v1, $v0, .L800159FC
     /* 6128 80015928 00000000 */   nop
-    /* 612C 8001592C 0780033C */  lui        $v1, %hi(g_nScriptedMobTag)
-    /* 6130 80015930 AC58638C */  lw         $v1, %lo(g_nScriptedMobTag)($v1)
+    /* 612C 8001592C 0780033C */  lui        $v1, %hi(g_nReturnPortalLevelId)
+    /* 6130 80015930 AC58638C */  lw         $v1, %lo(g_nReturnPortalLevelId)($v1)
     /* 6134 80015934 00000000 */  nop
     /* 6138 80015938 24006010 */  beqz       $v1, .L800159CC
     /* 613C 8001593C 00000000 */   nop
-    /* 6140 80015940 0780023C */  lui        $v0, %hi(g_nScriptedMobCount)
-    /* 6144 80015944 BC58428C */  lw         $v0, %lo(g_nScriptedMobCount)($v0)
+    /* 6140 80015940 0780023C */  lui        $v0, %hi(g_nPortalCount)
+    /* 6144 80015944 BC58428C */  lw         $v0, %lo(g_nPortalCount)($v0)
     /* 6148 80015948 00000000 */  nop
     /* 614C 8001594C 2B004018 */  blez       $v0, .L800159FC
     /* 6150 80015950 21800000 */   addu      $s0, $zero, $zero
     /* 6154 80015954 21306000 */  addu       $a2, $v1, $zero
     /* 6158 80015958 21284000 */  addu       $a1, $v0, $zero
-    /* 615C 8001595C 0880043C */  lui        $a0, %hi(g_apScriptedMobEntries)
-    /* 6160 80015960 40868424 */  addiu      $a0, $a0, %lo(g_apScriptedMobEntries)
+    /* 615C 8001595C 0880043C */  lui        $a0, %hi(g_apPortals)
+    /* 6160 80015960 40868424 */  addiu      $a0, $a0, %lo(g_apPortals)
   .L80015964:
     /* 6164 80015964 0000838C */  lw         $v1, 0x0($a0)
     /* 6168 80015968 00000000 */  nop
@@ -4074,8 +4074,8 @@ glabel TickLevelTransitionStream
     /* 6404 80015C04 00000000 */  nop
     /* 6408 80015C08 EC014014 */  bnez       $v0, .L800163BC
     /* 640C 80015C0C 00000000 */   nop
-    /* 6410 80015C10 0780023C */  lui        $v0, %hi(g_nScriptedMobTag)
-    /* 6414 80015C14 AC58428C */  lw         $v0, %lo(g_nScriptedMobTag)($v0)
+    /* 6410 80015C10 0780023C */  lui        $v0, %hi(g_nReturnPortalLevelId)
+    /* 6414 80015C14 AC58428C */  lw         $v0, %lo(g_nReturnPortalLevelId)($v0)
     /* 6418 80015C18 00000000 */  nop
     /* 641C 80015C1C 16004010 */  beqz       $v0, .L80015C78
     /* 6420 80015C20 00000000 */   nop
@@ -4251,13 +4251,13 @@ glabel TickLevelTransitionStream
     /* 66AC 80015EAC B1580008 */  j          .L800162C4
     /* 66B0 80015EB0 09000224 */   addiu     $v0, $zero, 0x9
   .L80015EB4:
-    /* 66B4 80015EB4 0780023C */  lui        $v0, %hi(g_nScriptedMobTag)
-    /* 66B8 80015EB8 AC58428C */  lw         $v0, %lo(g_nScriptedMobTag)($v0)
+    /* 66B4 80015EB4 0780023C */  lui        $v0, %hi(g_nReturnPortalLevelId)
+    /* 66B8 80015EB8 AC58428C */  lw         $v0, %lo(g_nReturnPortalLevelId)($v0)
     /* 66BC 80015EBC 00000000 */  nop
     /* 66C0 80015EC0 81004010 */  beqz       $v0, .L800160C8
     /* 66C4 80015EC4 00000000 */   nop
-    /* 66C8 80015EC8 0780023C */  lui        $v0, %hi(g_nScriptedMobCount)
-    /* 66CC 80015ECC BC58428C */  lw         $v0, %lo(g_nScriptedMobCount)($v0)
+    /* 66C8 80015EC8 0780023C */  lui        $v0, %hi(g_nPortalCount)
+    /* 66CC 80015ECC BC58428C */  lw         $v0, %lo(g_nPortalCount)($v0)
     /* 66D0 80015ED0 00000000 */  nop
     /* 66D4 80015ED4 0F014018 */  blez       $v0, .L80016314
     /* 66D8 80015ED8 21800000 */   addu      $s0, $zero, $zero
@@ -4269,11 +4269,11 @@ glabel TickLevelTransitionStream
     /* 66F0 80015EF0 50009326 */  addiu      $s3, $s4, 0x50
     /* 66F4 80015EF4 80101000 */  sll        $v0, $s0, 2
   .L80015EF8:
-    /* 66F8 80015EF8 0880013C */  lui        $at, %hi(g_apScriptedMobEntries)
+    /* 66F8 80015EF8 0880013C */  lui        $at, %hi(g_apPortals)
     /* 66FC 80015EFC 21082200 */  addu       $at, $at, $v0
-    /* 6700 80015F00 4086248C */  lw         $a0, %lo(g_apScriptedMobEntries)($at)
-    /* 6704 80015F04 0780023C */  lui        $v0, %hi(g_nScriptedMobTag)
-    /* 6708 80015F08 AC58428C */  lw         $v0, %lo(g_nScriptedMobTag)($v0)
+    /* 6700 80015F00 4086248C */  lw         $a0, %lo(g_apPortals)($at)
+    /* 6704 80015F04 0780023C */  lui        $v0, %hi(g_nReturnPortalLevelId)
+    /* 6708 80015F08 AC58428C */  lw         $v0, %lo(g_nReturnPortalLevelId)($v0)
     /* 670C 80015F0C 1C00838C */  lw         $v1, 0x1C($a0)
     /* 6710 80015F10 00000000 */  nop
     /* 6714 80015F14 64006214 */  bne        $v1, $v0, .L800160A8
@@ -4371,17 +4371,17 @@ glabel TickLevelTransitionStream
     /* 687C 8001607C F2FE4392 */  lbu        $v1, -0x10E($s2)
     /* 6880 80016080 7F000224 */  addiu      $v0, $zero, 0x7F
     /* 6884 80016084 0BFF42A2 */  sb         $v0, -0xF5($s2)
-    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nScriptedMobViewPitchTilt)
-    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nScriptedMobViewPitchTilt)($at)
+    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
+    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nPortalViewPitchTilt)($at)
     /* 6890 80016090 2318A302 */  subu       $v1, $s5, $v1
     /* 6894 80016094 00190300 */  sll        $v1, $v1, 4
-    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nScriptedMobViewYawSpin)
-    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nScriptedMobViewYawSpin)($at)
+    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
+    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nPortalViewYawSpin)($at)
     /* 68A0 800160A0 C5580008 */  j          .L80016314
     /* 68A4 800160A4 00000000 */   nop
   .L800160A8:
-    /* 68A8 800160A8 0780023C */  lui        $v0, %hi(g_nScriptedMobCount)
-    /* 68AC 800160AC BC58428C */  lw         $v0, %lo(g_nScriptedMobCount)($v0)
+    /* 68A8 800160A8 0780023C */  lui        $v0, %hi(g_nPortalCount)
+    /* 68AC 800160AC BC58428C */  lw         $v0, %lo(g_nPortalCount)($v0)
     /* 68B0 800160B0 00000000 */  nop
     /* 68B4 800160B4 2A100202 */  slt        $v0, $s0, $v0
     /* 68B8 800160B8 8FFF4014 */  bnez       $v0, .L80015EF8
@@ -4559,8 +4559,8 @@ glabel TickLevelTransitionStream
     /* 6B50 80016350 FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 6B54 80016354 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 6B58 80016358 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
-    /* 6B5C 8001635C 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 6B60 80016360 AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
+    /* 6B5C 8001635C 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 6B60 80016360 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 6B64 80016364 0780013C */  lui        $at, %hi(g_anLevelRunnerArrived)
     /* 6B68 80016368 705820AC */  sw         $zero, %lo(g_anLevelRunnerArrived)($at)
     /* 6B6C 8001636C 0780013C */  lui        $at, %hi(g_nLevelRunnerArrivedGoal1)
@@ -29637,11 +29637,11 @@ glabel BeginWorldHubReturn
     /* 1CEA0 8002C6A0 0780013C */  lui        $at, %hi(g_nCameraNextMode)
     /* 1CEA4 8002C6A4 906E23AC */  sw         $v1, %lo(g_nCameraNextMode)($at)
     /* 1CEA8 8002C6A8 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 1CEAC 8002C6AC 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 1CEB0 8002C6B0 6C5722AC */  sw         $v0, %lo(g_nPreserveMobIdx)($at)
+    /* 1CEAC 8002C6AC 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 1CEB0 8002C6B0 6C5722AC */  sw         $v0, %lo(g_nEnteredPortalIdx)($at)
     /* 1CEB4 8002C6B4 01000224 */  addiu      $v0, $zero, 0x1
-    /* 1CEB8 8002C6B8 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 1CEBC 8002C6BC AC5824AC */  sw         $a0, %lo(g_nScriptedMobTag)($at)
+    /* 1CEB8 8002C6B8 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 1CEBC 8002C6BC AC5824AC */  sw         $a0, %lo(g_nReturnPortalLevelId)($at)
     /* 1CEC0 8002C6C0 C3270400 */  sra        $a0, $a0, 31
     /* 1CEC4 8002C6C4 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1CEC8 8002C6C8 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
@@ -30884,10 +30884,10 @@ glabel HandleLevelSelectInput
     /* 1DF80 8002D780 1F63010C */  jal        InitLightVectorConstants
     /* 1DF84 8002D784 00000000 */   nop
     /* 1DF88 8002D788 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 1DF8C 8002D78C 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 1DF90 8002D790 AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
-    /* 1DF94 8002D794 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 1DF98 8002D798 6C5722AC */  sw         $v0, %lo(g_nPreserveMobIdx)($at)
+    /* 1DF8C 8002D78C 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 1DF90 8002D790 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
+    /* 1DF94 8002D794 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 1DF98 8002D798 6C5722AC */  sw         $v0, %lo(g_nEnteredPortalIdx)($at)
     /* 1DF9C 8002D79C 092B010C */  jal        ResetSpyroEntity
     /* 1DFA0 8002D7A0 21200000 */   addu      $a0, $zero, $zero
     /* 1DFA4 8002D7A4 72FF000C */  jal        RestartSpyroAnimWithState
@@ -32631,8 +32631,8 @@ glabel RespawnOrGameOver_Update
     /* 1F82C 8002F02C BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
     /* 1F830 8002F030 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 1F834 8002F034 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
-    /* 1F838 8002F038 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 1F83C 8002F03C AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
+    /* 1F838 8002F038 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 1F83C 8002F03C AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 1F840 8002F040 0780013C */  lui        $at, %hi(g_nGameOverLevelIntroIndex)
     /* 1F844 8002F044 E85723AC */  sw         $v1, %lo(g_nGameOverLevelIntroIndex)($at)
     /* 1F848 8002F048 455A000C */  jal        FillWord
@@ -32657,8 +32657,8 @@ glabel RespawnOrGameOver_Update
     /* 1F894 8002F094 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 1F898 8002F098 645822AC */  sw         $v0, %lo(g_nCdStreamState)($at)
     /* 1F89C 8002F09C FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 1F8A0 8002F0A0 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 1F8A4 8002F0A4 6C5722AC */  sw         $v0, %lo(g_nPreserveMobIdx)($at)
+    /* 1F8A0 8002F0A0 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 1F8A4 8002F0A4 6C5722AC */  sw         $v0, %lo(g_nEnteredPortalIdx)($at)
     /* 1F8A8 8002F0A8 D4BC0008 */  j          .L8002F350
     /* 1F8AC 8002F0AC 01000224 */   addiu     $v0, $zero, 0x1
   .L8002F0B0:
@@ -36651,8 +36651,8 @@ glabel Gamestate0D_Update
     /* 233AC 80032BAC 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
     /* 233B0 80032BB0 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 233B4 80032BB4 645830AC */  sw         $s0, %lo(g_nCdStreamState)($at)
-    /* 233B8 80032BB8 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 233BC 80032BBC AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
+    /* 233B8 80032BB8 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 233BC 80032BBC AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 233C0 80032BC0 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 233C4 80032BC4 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
     /* 233C8 80032BC8 09CB0008 */  j          .L80032C24
@@ -36673,8 +36673,8 @@ glabel Gamestate0D_Update
     /* 23400 80032C00 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
     /* 23404 80032C04 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 23408 80032C08 645830AC */  sw         $s0, %lo(g_nCdStreamState)($at)
-    /* 2340C 80032C0C 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 23410 80032C10 AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
+    /* 2340C 80032C0C 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 23410 80032C10 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 23414 80032C14 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 23418 80032C18 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
     /* 2341C 80032C1C 0780013C */  lui        $at, %hi(g_nActiveLevelId)
@@ -37263,8 +37263,8 @@ glabel Gamestate0F_Update
   .L80033468:
     /* 23C68 80033468 0780023C */  lui        $v0, %hi(g_nGamestate0fMode)
     /* 23C6C 8003346C 0457428C */  lw         $v0, %lo(g_nGamestate0fMode)($v0)
-    /* 23C70 80033470 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 23C74 80033474 AC5820AC */  sw         $zero, %lo(g_nScriptedMobTag)($at)
+    /* 23C70 80033470 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 23C74 80033474 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 23C78 80033478 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 23C7C 8003347C D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
     /* 23C80 80033480 0780013C */  lui        $at, %hi(g_nReturningHomePhase)
@@ -42206,8 +42206,8 @@ glabel UpdateLevelTransitionCamera
     /* 28220 80037A20 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28224 80037A24 0880043C */  lui        $a0, %hi(g_nSpyroBodyYaw)
     /* 28228 80037A28 748B848C */  lw         $a0, %lo(g_nSpyroBodyYaw)($a0)
-    /* 2822C 80037A2C 0780033C */  lui        $v1, %hi(g_nScriptedMobTag)
-    /* 28230 80037A30 AC58638C */  lw         $v1, %lo(g_nScriptedMobTag)($v1)
+    /* 2822C 80037A2C 0780033C */  lui        $v1, %hi(g_nReturnPortalLevelId)
+    /* 28230 80037A30 AC58638C */  lw         $v1, %lo(g_nReturnPortalLevelId)($v1)
     /* 28234 80037A34 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
     /* 28238 80037A38 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 2823C 80037A3C 1C00BFAF */  sw         $ra, 0x1C($sp)
@@ -59194,8 +59194,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36DC0 800465C0 748B23AC */  sw         $v1, %lo(g_nSpyroBodyYaw)($at)
     /* 36DC4 800465C4 32008214 */  bne        $a0, $v0, .L80046690
     /* 36DC8 800465C8 09000224 */   addiu     $v0, $zero, 0x9
-    /* 36DCC 800465CC 0780023C */  lui        $v0, %hi(g_nScriptedMobTag)
-    /* 36DD0 800465D0 AC58428C */  lw         $v0, %lo(g_nScriptedMobTag)($v0)
+    /* 36DCC 800465CC 0780023C */  lui        $v0, %hi(g_nReturnPortalLevelId)
+    /* 36DD0 800465D0 AC58428C */  lw         $v0, %lo(g_nReturnPortalLevelId)($v0)
     /* 36DD4 800465D4 00000000 */  nop
     /* 36DD8 800465D8 27004014 */  bnez       $v0, .L80046678
     /* 36DDC 800465DC 00000000 */   nop
@@ -70830,10 +70830,10 @@ endlabel func_80050710
 nonmatching DrawActors, 0x141C
 
 glabel DrawActors
-    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nScriptedMobViewYawSpin)
-    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nScriptedMobViewYawSpin)($v0)
-    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nScriptedMobViewPitchTilt)
-    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nScriptedMobViewPitchTilt)($v1)
+    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalViewYawSpin)
+    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalViewYawSpin)($v0)
+    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalViewPitchTilt)
+    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nPortalViewPitchTilt)($v1)
     /* 413E0 80050BE0 60FEBD27 */  addiu      $sp, $sp, -0x1A0
     /* 413E4 80050BE4 9C01BFAF */  sw         $ra, 0x19C($sp)
     /* 413E8 80050BE8 9801BEAF */  sw         $fp, 0x198($sp)
@@ -70849,24 +70849,24 @@ glabel DrawActors
     /* 41410 80050C10 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 41414 80050C14 02006324 */  addiu      $v1, $v1, 0x2
     /* 41418 80050C18 FF0F6330 */  andi       $v1, $v1, 0xFFF
-    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nScriptedMobViewYawSpin)
-    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nScriptedMobViewYawSpin)($at)
+    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
+    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nPortalViewYawSpin)($at)
     /* 41424 80050C24 01086228 */  slti       $v0, $v1, 0x801
-    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nScriptedMobViewPitchTilt)
-    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nScriptedMobViewPitchTilt)($at)
+    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
+    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nPortalViewPitchTilt)($at)
     /* 41430 80050C30 03004014 */  bnez       $v0, .L80050C40
     /* 41434 80050C34 00F06224 */   addiu     $v0, $v1, -0x1000
-    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nScriptedMobViewPitchTilt)
-    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nScriptedMobViewPitchTilt)($at)
+    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
+    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
   .L80050C40:
-    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nScriptedMobViewPitchTilt)
-    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nScriptedMobViewPitchTilt)($v0)
+    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nPortalViewPitchTilt)
+    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nPortalViewPitchTilt)($v0)
     /* 41448 80050C48 00000000 */  nop
     /* 4144C 80050C4C 81004228 */  slti       $v0, $v0, 0x81
     /* 41450 80050C50 03004014 */  bnez       $v0, .L80050C60
     /* 41454 80050C54 80000224 */   addiu     $v0, $zero, 0x80
-    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nScriptedMobViewPitchTilt)
-    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nScriptedMobViewPitchTilt)($at)
+    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
+    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
   .L80050C60:
     /* 41460 80050C60 1000A427 */  addiu      $a0, $sp, 0x10
     /* 41464 80050C64 21280000 */  addu       $a1, $zero, $zero
@@ -70877,27 +70877,27 @@ glabel DrawActors
     /* 41478 80050C78 0780103C */  lui        $s0, %hi(g_nCameraEulerPitch)
     /* 4147C 80050C7C 1E6E1026 */  addiu      $s0, $s0, %lo(g_nCameraEulerPitch)
     /* 41480 80050C80 00000286 */  lh         $v0, 0x0($s0)
-    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nScriptedMobViewPitchTilt)
-    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nScriptedMobViewPitchTilt)($a0)
+    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
+    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
     /* 4148C 80050C8C 00101124 */  addiu      $s1, $zero, 0x1000
     /* 41490 80050C90 1000B1A7 */  sh         $s1, 0x10($sp)
     /* 41494 80050C94 2C5B000C */  jal        LookupCosine
     /* 41498 80050C98 23204400 */   subu      $a0, $v0, $a0
     /* 4149C 80050C9C 00000386 */  lh         $v1, 0x0($s0)
-    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nScriptedMobViewPitchTilt)
-    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nScriptedMobViewPitchTilt)($a0)
+    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
+    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
     /* 414A8 80050CA8 1800A2A7 */  sh         $v0, 0x18($sp)
     /* 414AC 80050CAC 165B000C */  jal        LookupSine
     /* 414B0 80050CB0 23206400 */   subu      $a0, $v1, $a0
     /* 414B4 80050CB4 00000386 */  lh         $v1, 0x0($s0)
-    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nScriptedMobViewPitchTilt)
-    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nScriptedMobViewPitchTilt)($a0)
+    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
+    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
     /* 414C0 80050CC0 1E00A2A7 */  sh         $v0, 0x1E($sp)
     /* 414C4 80050CC4 165B000C */  jal        LookupSine
     /* 414C8 80050CC8 23206400 */   subu      $a0, $v1, $a0
     /* 414CC 80050CCC 00000386 */  lh         $v1, 0x0($s0)
-    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nScriptedMobViewPitchTilt)
-    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nScriptedMobViewPitchTilt)($a0)
+    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
+    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
     /* 414D8 80050CD8 23100200 */  negu       $v0, $v0
     /* 414DC 80050CDC 1A00A2A7 */  sh         $v0, 0x1A($sp)
     /* 414E0 80050CE0 2C5B000C */  jal        LookupCosine
@@ -70910,21 +70910,21 @@ glabel DrawActors
     /* 414FC 80050CFC 2000A2A7 */   sh        $v0, 0x20($sp)
     /* 41500 80050D00 0780023C */  lui        $v0, %hi(g_nCameraEulerYaw)
     /* 41504 80050D04 206E4284 */  lh         $v0, %lo(g_nCameraEulerYaw)($v0)
-    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nScriptedMobViewYawSpin)
-    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nScriptedMobViewYawSpin)($a0)
+    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
+    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
     /* 41510 80050D10 2C5B000C */  jal        LookupCosine
     /* 41514 80050D14 21204400 */   addu      $a0, $v0, $a0
     /* 41518 80050D18 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4151C 80050D1C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nScriptedMobViewYawSpin)
-    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nScriptedMobViewYawSpin)($a0)
+    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
+    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
     /* 41528 80050D28 3000A2A7 */  sh         $v0, 0x30($sp)
     /* 4152C 80050D2C 165B000C */  jal        LookupSine
     /* 41530 80050D30 21206400 */   addu      $a0, $v1, $a0
     /* 41534 80050D34 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 41538 80050D38 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nScriptedMobViewYawSpin)
-    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nScriptedMobViewYawSpin)($a0)
+    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
+    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
     /* 41544 80050D44 23100200 */  negu       $v0, $v0
     /* 41548 80050D48 3C00A2A7 */  sh         $v0, 0x3C($sp)
     /* 4154C 80050D4C 3800B1A7 */  sh         $s1, 0x38($sp)
@@ -70932,8 +70932,8 @@ glabel DrawActors
     /* 41554 80050D54 21206400 */   addu      $a0, $v1, $a0
     /* 41558 80050D58 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4155C 80050D5C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nScriptedMobViewYawSpin)
-    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nScriptedMobViewYawSpin)($a0)
+    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
+    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
     /* 41568 80050D68 3400A2A7 */  sh         $v0, 0x34($sp)
     /* 4156C 80050D6C 2C5B000C */  jal        LookupCosine
     /* 41570 80050D70 21206400 */   addu      $a0, $v1, $a0
@@ -71000,15 +71000,15 @@ glabel DrawActors
     /* 4165C 80050E5C 00000000 */   nop
     /* 41660 80050E60 FF014224 */  addiu      $v0, $v0, 0x1FF
   .L80050E64:
-    /* 41664 80050E64 0780033C */  lui        $v1, %hi(g_nScriptedMobCount)
-    /* 41668 80050E68 BC58638C */  lw         $v1, %lo(g_nScriptedMobCount)($v1)
+    /* 41664 80050E64 0780033C */  lui        $v1, %hi(g_nPortalCount)
+    /* 41668 80050E68 BC58638C */  lw         $v1, %lo(g_nPortalCount)($v1)
     /* 4166C 80050E6C 43120200 */  sra        $v0, $v0, 9
     /* 41670 80050E70 0801A0AF */  sw         $zero, 0x108($sp)
     /* 41674 80050E74 44046018 */  blez       $v1, .L80051F88
     /* 41678 80050E78 3A00A2A7 */   sh        $v0, 0x3A($sp)
     /* 4167C 80050E7C 5000AC27 */  addiu      $t4, $sp, 0x50
-    /* 41680 80050E80 0880153C */  lui        $s5, %hi(g_apScriptedMobEntries)
-    /* 41684 80050E84 4086B526 */  addiu      $s5, $s5, %lo(g_apScriptedMobEntries)
+    /* 41680 80050E80 0880153C */  lui        $s5, %hi(g_apPortals)
+    /* 41684 80050E84 4086B526 */  addiu      $s5, $s5, %lo(g_apPortals)
     /* 41688 80050E88 4001ACAF */  sw         $t4, 0x140($sp)
     /* 4168C 80050E8C 7001A0AF */  sw         $zero, 0x170($sp)
   .L80050E90:
@@ -71747,8 +71747,8 @@ glabel DrawActors
     /* 4210C 8005190C 985722AC */  sw         $v0, %lo(g_pActorDeferredTriStackTop)($at)
     /* 42110 80051910 3C006018 */  blez       $v1, .L80051A04
     /* 42114 80051914 21980000 */   addu      $s3, $zero, $zero
-    /* 42118 80051918 0880023C */  lui        $v0, %hi(g_apScriptedMobEntries)
-    /* 4211C 8005191C 40864224 */  addiu      $v0, $v0, %lo(g_apScriptedMobEntries)
+    /* 42118 80051918 0880023C */  lui        $v0, %hi(g_apPortals)
+    /* 4211C 8005191C 40864224 */  addiu      $v0, $v0, %lo(g_apPortals)
     /* 42120 80051920 7001AC8F */  lw         $t4, 0x170($sp)
     /* 42124 80051924 0880053C */  lui        $a1, %hi(g_aMobRingScreenPts)
     /* 42128 80051928 D88DA524 */  addiu      $a1, $a1, %lo(g_aMobRingScreenPts)
@@ -72011,9 +72011,9 @@ glabel DrawActors
     /* 424DC 80051CDC 0801AC8F */  lw         $t4, 0x108($sp)
     /* 424E0 80051CE0 00000000 */  nop
     /* 424E4 80051CE4 80100C00 */  sll        $v0, $t4, 2
-    /* 424E8 80051CE8 0880013C */  lui        $at, %hi(g_apScriptedMobEntries)
+    /* 424E8 80051CE8 0880013C */  lui        $at, %hi(g_apPortals)
     /* 424EC 80051CEC 21082200 */  addu       $at, $at, $v0
-    /* 424F0 80051CF0 4086228C */  lw         $v0, %lo(g_apScriptedMobEntries)($at)
+    /* 424F0 80051CF0 4086228C */  lw         $v0, %lo(g_apPortals)($at)
     /* 424F4 80051CF4 00000000 */  nop
     /* 424F8 80051CF8 0400428C */  lw         $v0, 0x4($v0)
     /* 424FC 80051CFC 01005226 */  addiu      $s2, $s2, 0x1
@@ -72185,8 +72185,8 @@ glabel DrawActors
     /* 42764 80051F64 04008C25 */  addiu      $t4, $t4, 0x4
     /* 42768 80051F68 7001ACAF */  sw         $t4, 0x170($sp)
     /* 4276C 80051F6C 0801AC8F */  lw         $t4, 0x108($sp)
-    /* 42770 80051F70 0780023C */  lui        $v0, %hi(g_nScriptedMobCount)
-    /* 42774 80051F74 BC58428C */  lw         $v0, %lo(g_nScriptedMobCount)($v0)
+    /* 42770 80051F70 0780023C */  lui        $v0, %hi(g_nPortalCount)
+    /* 42774 80051F74 BC58428C */  lw         $v0, %lo(g_nPortalCount)($v0)
     /* 42778 80051F78 01008C25 */  addiu      $t4, $t4, 0x1
     /* 4277C 80051F7C 2A108201 */  slt        $v0, $t4, $v0
     /* 42780 80051F80 C3FB4014 */  bnez       $v0, .L80050E90
@@ -78140,8 +78140,8 @@ glabel DispatchSpyroTriggerEvent
     /* 4794C 8005714C 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
     /* 47950 80057150 D05631AC */  sw         $s1, %lo(g_nScriptedRespawnFlag)($at)
     /* 47954 80057154 C3170400 */  sra        $v0, $a0, 31
-    /* 47958 80057158 0780013C */  lui        $at, %hi(g_nPreserveMobIdx)
-    /* 4795C 8005715C 6C5726AC */  sw         $a2, %lo(g_nPreserveMobIdx)($at)
+    /* 47958 80057158 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
+    /* 4795C 8005715C 6C5726AC */  sw         $a2, %lo(g_nEnteredPortalIdx)($at)
     /* 47960 80057160 10380000 */  mfhi       $a3
     /* 47964 80057164 83180700 */  sra        $v1, $a3, 2
     /* 47968 80057168 23186200 */  subu       $v1, $v1, $v0
@@ -78150,12 +78150,12 @@ glabel DispatchSpyroTriggerEvent
     /* 47974 80057174 40100200 */  sll        $v0, $v0, 1
     /* 47978 80057178 03008210 */  beq        $a0, $v0, .L80057188
     /* 4797C 8005717C 00000000 */   nop
-    /* 47980 80057180 0780013C */  lui        $at, %hi(g_nScriptedMobTag)
-    /* 47984 80057184 AC5824AC */  sw         $a0, %lo(g_nScriptedMobTag)($at)
+    /* 47980 80057180 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
+    /* 47984 80057184 AC5824AC */  sw         $a0, %lo(g_nReturnPortalLevelId)($at)
   .L80057188:
     /* 47988 80057188 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 4798C 8005718C 0880033C */  lui        $v1, %hi(g_apScriptedMobEntries)
-    /* 47990 80057190 40866324 */  addiu      $v1, $v1, %lo(g_apScriptedMobEntries)
+    /* 4798C 8005718C 0880033C */  lui        $v1, %hi(g_apPortals)
+    /* 47990 80057190 40866324 */  addiu      $v1, $v1, %lo(g_apPortals)
     /* 47994 80057194 80100600 */  sll        $v0, $a2, 2
     /* 47998 80057198 21804300 */  addu       $s0, $v0, $v1
     /* 4799C 8005719C 0000068E */  lw         $a2, 0x0($s0)

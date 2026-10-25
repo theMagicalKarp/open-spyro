@@ -24,7 +24,7 @@ void Gamestate0F_Update(void) {
         g_nCurrentLevelId = 0x3C;
       }
     }
-    g_nScriptedMobTag = 0;
+    g_nReturnPortalLevelId = 0;
     g_nScriptedRespawnFlag = 0;
     g_nReturningHomePhase = 0;
     g_nGamestate0fMode += 1;

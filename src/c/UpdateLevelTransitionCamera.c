@@ -19,7 +19,7 @@ void UpdateLevelTransitionCamera(void) {
 
   g_pCameraAnchorPos = g_anSpyroWorldPos;
   g_nCameraTargetYawBiasFromMode = yaw;
-  if (g_nScriptedMobTag != 0) {
+  if (g_nReturnPortalLevelId != 0) {
     if (g_nCdStreamState >= 10) {
       g_pCameraTargetParams = g_anCameraParamMode2Reverse;
     } else {

@@ -9,8 +9,8 @@ void BeginWorldHubReturn(void) {
   g_nCdStreamState = 0;
   g_nLevelTransitionPhase = 0;
   g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
-  g_nPreserveMobIdx = -1;
-  g_nScriptedMobTag = g_nActiveLevelId;
+  g_nEnteredPortalIdx = -1;
+  g_nReturnPortalLevelId = g_nActiveLevelId;
   g_nGamestate = GS_LEVEL_LOAD;
   g_nScriptedRespawnFlag = 1;
   g_nLevelTransitionTallyActive = 1;

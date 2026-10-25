@@ -587,7 +587,7 @@ extern int g_nSfxVolume;                     /* 0x80075754 */
 extern int g_nFadeProgress;                  /* 0x8007575c */
 extern int g_nFrameTicks;                    /* 0x80075760 */
 extern int g_nVibrationLevel;                /* 0x80075764 */
-extern int g_nPreserveMobIdx;                /* 0x8007576c */
+extern int g_nEnteredPortalIdx;                /* 0x8007576c: g_apPortals index of the portal just entered (exit trigger data[1]); -1 none. TickLevelTransitionStream also counts its two texture pages in it */
 extern void *g_pActorSpatialGridBase;        /* 0x80075778 */
 extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDeathRespawnPending;           /* 0x80075784 */
@@ -623,7 +623,7 @@ extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelEggCount;                 /* 0x80075830 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
-extern int g_nScriptedMobViewYawSpin;        /* 0x80075858 */
+extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawActors) */
 extern void *g_pDeathReplayCursor;           /* 0x8007585c */
 extern int g_nWorldTreasureCollected;        /* 0x80075860 */
 extern int g_nCdStreamState;                 /* 0x80075864 */
@@ -638,11 +638,11 @@ extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
 extern void *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroFlameBreathTimerSave;     /* 0x800758a4 */
-extern int g_nScriptedMobTag;                /* 0x800758ac */
+extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
 extern int g_nCurrentLevelId;                /* 0x800758b4 */
 extern int g_nPauseMenuTransitionFrames;     /* 0x800758b8 */
-extern int g_nScriptedMobCount;              /* 0x800758bc */
+extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
@@ -652,7 +652,7 @@ extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
-extern int g_nScriptedMobViewPitchTilt;      /* 0x800758fc */
+extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern uint g_dwActiveCameraOptions;         /* 0x80075914 */
@@ -897,7 +897,7 @@ extern void *g_pWorkAreaTop;                            /* 0x800785fc */
 extern int g_nLevelArchiveBaseLba;                      /* 0x80078600 */
 extern int g_nLevelArchiveByteSize;                     /* 0x80078604 */
 extern int g_anWorldPersistentFlags[6];                 /* 0x80078618 */
-extern struct ScriptedMob *g_apScriptedMobEntries[];     /* 0x80078640 (scripted_mob.h) */
+extern struct Portal *g_apPortals[];     /* 0x80078640 (portal.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
 extern byte g_abWorldPerLevelByteTable[30];             /* 0x80078680 */
 extern byte g_abPadRawReport[34];                       /* 0x800786a0 */
