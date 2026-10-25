@@ -58,7 +58,7 @@ void ChangeSpyroState(int state) {
     StopSoundVoicesByOwner(g_anSpyroWorldPos, 2);
     break;
   case SPYRO_ST_HURT_TINT:
-    g_abSpyroFxParticleRgba[3] = 0;
+    g_abSpyroTintRgba[3] = 0;
     /* FALLTHROUGH */
   case SPYRO_ST_HURT:
   case SPYRO_ST_KNOCKBACK:

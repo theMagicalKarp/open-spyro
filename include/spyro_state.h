@@ -18,7 +18,7 @@ typedef enum SpyroState
   SPYRO_ST_TURN_AROUND = 4,   /* reversing at speed (heading off by > 0x500) */
   SPYRO_ST_JUMP = 5,          /* Cross */
   SPYRO_ST_FALL = 6,          /* airborne >= 4 frames or on a too-steep slope */
-  SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20; exit clears g_abSpyroFxParticleRgba alpha */
+  SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20: flashes white/dark (g_abSpyroTintRgba) for 10 frames; exit clears the tint */
   SPYRO_ST_08 = 8,            /* reached only as g_nSpyroRequestState (level 14 type 109 sets it at its path end); after 0x14 frames snaps yaw to g_nSpyroMoveTargetYaw, negates pitch/roll, then idles or walks */
   SPYRO_ST_SIDESTEP_L1 = 9,   /* L1 */
   SPYRO_ST_SIDESTEP_R1 = 10,  /* R1 */

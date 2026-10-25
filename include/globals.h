@@ -932,7 +932,7 @@ extern byte g_bSpyroFramePrev;                          /* 0x80078a76 */
 extern byte g_bSpyroAnimFrame;                          /* 0x80078a77 */
 extern byte g_bSpyroSubFrameTimer;                      /* 0x80078a7c */
 extern byte g_bSpyroOtBinBias;                          /* 0x80078a7f */
-extern byte g_abSpyroFxParticleRgba[4];                 /* 0x80078a80 */
+extern byte g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model tint (alpha 0 = none): the superflame's red glow, the SPYRO_ST_HURT_TINT white/dark flash */
 extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
 extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */

@@ -29,7 +29,7 @@
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Superflame glow: while
    g_nSpyroSuperflameTimer runs, spawn one particle per frame at a random offset
-   in Spyro's body frame and pulse his red tint (g_abSpyroFxParticleRgba; the
+   in Spyro's body frame and pulse his red tint (g_abSpyroTintRgba; the
    alpha follows a sine, and blinks off for part of every 24-frame cycle once
    the timer is under 0x78, warning that the power-up is running out).
    (2) Flame breath: arm this frame's flame slots through the ring permutation,
@@ -76,20 +76,20 @@ void TickSpyroAttackEffects(int steps) {
     AddVector(flame, flame, &g_anSpyroBodyMtxBlock[-13]);
     ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(1, 0x1e, flame,
                                                                 0);
-    g_abSpyroFxParticleRgba[0] = 0x90;
-    g_abSpyroFxParticleRgba[1] = 0x20;
-    g_abSpyroFxParticleRgba[2] = 0x10;
+    g_abSpyroTintRgba[0] = 0x90;
+    g_abSpyroTintRgba[1] = 0x20;
+    g_abSpyroTintRgba[2] = 0x10;
     if ((g_anSpyroSuperflameTimerBlock[0] < 0x78) &&
         ((g_anSpyroSuperflameTimerBlock[0] % 24) >= 0xe)) {
-      g_abSpyroFxParticleRgba[3] = 0;
+      g_abSpyroTintRgba[3] = 0;
     } else {
-      g_abSpyroFxParticleRgba[3] =
+      g_abSpyroTintRgba[3] =
           (LookupSine(g_nSpyroSuperflameTimer << 7) / 256) - 0x28;
     }
     g_anSpyroSuperflameTimerBlock[0] -= g_nFrameStep;
     if (g_anSpyroSuperflameTimerBlock[0] <= 0) {
       g_anSpyroSuperflameTimerBlock[0] = 0;
-      g_abSpyroFxParticleRgba[3] = 0;
+      g_abSpyroTintRgba[3] = 0;
     }
   }
   if (g_bSpyroFlameActive != 0) {

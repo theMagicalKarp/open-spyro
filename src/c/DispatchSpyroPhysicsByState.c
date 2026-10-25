@@ -147,18 +147,18 @@ void DispatchSpyroPhysicsByState(void) {
     ApplyGravityAlongSpyroSlopeNormal();
     frame = g_bSpyroAnimFrame;
     if (frame < 10) {
-      g_abSpyroFxParticleRgba[3] = 0xFF;
+      g_abSpyroTintRgba[3] = 0xFF;
       if (frame & 1) {
-        g_abSpyroFxParticleRgba[2] = 0xFF;
-        g_abSpyroFxParticleRgba[1] = 0xFF;
-        g_abSpyroFxParticleRgba[0] = 0xFF;
+        g_abSpyroTintRgba[2] = 0xFF;
+        g_abSpyroTintRgba[1] = 0xFF;
+        g_abSpyroTintRgba[0] = 0xFF;
       } else {
-        g_abSpyroFxParticleRgba[2] = 0x40;
-        g_abSpyroFxParticleRgba[1] = 0x40;
-        g_abSpyroFxParticleRgba[0] = 0x40;
+        g_abSpyroTintRgba[2] = 0x40;
+        g_abSpyroTintRgba[1] = 0x40;
+        g_abSpyroTintRgba[0] = 0x40;
       }
     } else {
-      g_abSpyroFxParticleRgba[3] = 0;
+      g_abSpyroTintRgba[3] = 0;
     }
   } break;
   case SPYRO_ST_HURT_PINNED:

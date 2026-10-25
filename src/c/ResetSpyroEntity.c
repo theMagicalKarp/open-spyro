@@ -21,7 +21,7 @@ void ResetSpyroEntity(int full) {
     StopSoundVoicesByOwner(g_anSpyroWorldPos, 2);
     break;
   case SPYRO_ST_HURT_TINT:
-    g_abSpyroFxParticleRgba[3] = 0;
+    g_abSpyroTintRgba[3] = 0;
     break;
   }
 
@@ -50,7 +50,7 @@ void ResetSpyroEntity(int full) {
   } else {
     g_nSpyroGroundChunkId = -1;
     g_nSpyroFirstContactChunkId = 0xFF;
-    *(int *)g_abSpyroFxParticleRgba = 0;
+    *(int *)g_abSpyroTintRgba = 0;
     g_dwSpyroTriggerEventFlags = 0;
     g_nSpyroHazardFloorZ = 0;
     g_nSpyroFlightMode = 0;

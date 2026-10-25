@@ -50643,8 +50643,8 @@ glabel ChangeSpyroState
     /* 2F2CC 8003EACC C8FA0008 */  j          .L8003EB20
     /* 2F2D0 8003EAD0 2D00A22E */   sltiu     $v0, $s5, 0x2D
   jlabel .L8003EAD4
-    /* 2F2D4 8003EAD4 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 2F2D8 8003EAD8 838A20A0 */  sb         $zero, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 2F2D4 8003EAD4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 2F2D8 8003EAD8 838A20A0 */  sb         $zero, %lo(g_abSpyroTintRgba + 0x3)($at)
   jlabel .L8003EADC
     /* 2F2DC 8003EADC 0880053C */  lui        $a1, %hi(g_anSpyroWorldPos)
     /* 2F2E0 8003EAE0 588AA524 */  addiu      $a1, $a1, %lo(g_anSpyroWorldPos)
@@ -60908,31 +60908,31 @@ glabel DispatchSpyroPhysicsByState
     /* 3867C 80047E7C 0A00822C */  sltiu      $v0, $a0, 0xA
     /* 38680 80047E80 16004010 */  beqz       $v0, .L80047EDC
     /* 38684 80047E84 FF000324 */   addiu     $v1, $zero, 0xFF
-    /* 38688 80047E88 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 3868C 80047E8C 838A23A0 */  sb         $v1, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 38688 80047E88 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 3868C 80047E8C 838A23A0 */  sb         $v1, %lo(g_abSpyroTintRgba + 0x3)($at)
     /* 38690 80047E90 01008230 */  andi       $v0, $a0, 0x1
     /* 38694 80047E94 09004010 */  beqz       $v0, .L80047EBC
     /* 38698 80047E98 40000224 */   addiu     $v0, $zero, 0x40
-    /* 3869C 80047E9C 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x2)
-    /* 386A0 80047EA0 828A23A0 */  sb         $v1, %lo(g_abSpyroFxParticleRgba + 0x2)($at)
-    /* 386A4 80047EA4 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x1)
-    /* 386A8 80047EA8 818A23A0 */  sb         $v1, %lo(g_abSpyroFxParticleRgba + 0x1)($at)
-    /* 386AC 80047EAC 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba)
-    /* 386B0 80047EB0 808A23A0 */  sb         $v1, %lo(g_abSpyroFxParticleRgba)($at)
+    /* 3869C 80047E9C 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x2)
+    /* 386A0 80047EA0 828A23A0 */  sb         $v1, %lo(g_abSpyroTintRgba + 0x2)($at)
+    /* 386A4 80047EA4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x1)
+    /* 386A8 80047EA8 818A23A0 */  sb         $v1, %lo(g_abSpyroTintRgba + 0x1)($at)
+    /* 386AC 80047EAC 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
+    /* 386B0 80047EB0 808A23A0 */  sb         $v1, %lo(g_abSpyroTintRgba)($at)
     /* 386B4 80047EB4 F8210108 */  j          .L800487E0
     /* 386B8 80047EB8 00000000 */   nop
   .L80047EBC:
-    /* 386BC 80047EBC 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x2)
-    /* 386C0 80047EC0 828A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba + 0x2)($at)
-    /* 386C4 80047EC4 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x1)
-    /* 386C8 80047EC8 818A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba + 0x1)($at)
-    /* 386CC 80047ECC 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba)
-    /* 386D0 80047ED0 808A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba)($at)
+    /* 386BC 80047EBC 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x2)
+    /* 386C0 80047EC0 828A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba + 0x2)($at)
+    /* 386C4 80047EC4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x1)
+    /* 386C8 80047EC8 818A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba + 0x1)($at)
+    /* 386CC 80047ECC 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
+    /* 386D0 80047ED0 808A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba)($at)
     /* 386D4 80047ED4 F8210108 */  j          .L800487E0
     /* 386D8 80047ED8 00000000 */   nop
   .L80047EDC:
-    /* 386DC 80047EDC 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 386E0 80047EE0 838A20A0 */  sb         $zero, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 386DC 80047EDC 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 386E0 80047EE0 838A20A0 */  sb         $zero, %lo(g_abSpyroTintRgba + 0x3)($at)
     /* 386E4 80047EE4 F8210108 */  j          .L800487E0
     /* 386E8 80047EE8 00000000 */   nop
   jlabel .L80047EEC
@@ -62001,15 +62001,15 @@ glabel TickSpyroAttackEffects
     /* 395D8 80048DD8 09F84000 */  jalr       $v0
     /* 395DC 80048DDC 21380000 */   addu      $a3, $zero, $zero
     /* 395E0 80048DE0 90000224 */  addiu      $v0, $zero, 0x90
-    /* 395E4 80048DE4 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba)
-    /* 395E8 80048DE8 808A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba)($at)
+    /* 395E4 80048DE4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
+    /* 395E8 80048DE8 808A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba)($at)
     /* 395EC 80048DEC 20000224 */  addiu      $v0, $zero, 0x20
-    /* 395F0 80048DF0 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x1)
-    /* 395F4 80048DF4 818A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba + 0x1)($at)
+    /* 395F0 80048DF0 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x1)
+    /* 395F4 80048DF4 818A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba + 0x1)($at)
     /* 395F8 80048DF8 0000248E */  lw         $a0, 0x0($s1)
     /* 395FC 80048DFC 10000224 */  addiu      $v0, $zero, 0x10
-    /* 39600 80048E00 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x2)
-    /* 39604 80048E04 828A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba + 0x2)($at)
+    /* 39600 80048E00 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x2)
+    /* 39604 80048E04 828A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba + 0x2)($at)
     /* 39608 80048E08 78008228 */  slti       $v0, $a0, 0x78
     /* 3960C 80048E0C 12004010 */  beqz       $v0, .L80048E58
     /* 39610 80048E10 AA2A023C */   lui       $v0, (0x2AAAAAAB >> 16)
@@ -62026,8 +62026,8 @@ glabel TickSpyroAttackEffects
     /* 3963C 80048E3C 0E004228 */  slti       $v0, $v0, 0xE
     /* 39640 80048E40 05004014 */  bnez       $v0, .L80048E58
     /* 39644 80048E44 00000000 */   nop
-    /* 39648 80048E48 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 3964C 80048E4C 838A20A0 */  sb         $zero, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 39648 80048E48 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 3964C 80048E4C 838A20A0 */  sb         $zero, %lo(g_abSpyroTintRgba + 0x3)($at)
     /* 39650 80048E50 A1230108 */  j          .L80048E84
     /* 39654 80048E54 00000000 */   nop
   .L80048E58:
@@ -62041,8 +62041,8 @@ glabel TickSpyroAttackEffects
   .L80048E74:
     /* 39674 80048E74 03120200 */  sra        $v0, $v0, 8
     /* 39678 80048E78 D8FF4224 */  addiu      $v0, $v0, -0x28
-    /* 3967C 80048E7C 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 39680 80048E80 838A22A0 */  sb         $v0, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 3967C 80048E7C 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 39680 80048E80 838A22A0 */  sb         $v0, %lo(g_abSpyroTintRgba + 0x3)($at)
   .L80048E84:
     /* 39684 80048E84 0880043C */  lui        $a0, %hi(g_nSpyroSuperflameTimer)
     /* 39688 80048E88 68878424 */  addiu      $a0, $a0, %lo(g_nSpyroSuperflameTimer)
@@ -62054,8 +62054,8 @@ glabel TickSpyroAttackEffects
     /* 396A0 80048EA0 0400401C */  bgtz       $v0, .L80048EB4
     /* 396A4 80048EA4 000082AC */   sw        $v0, 0x0($a0)
     /* 396A8 80048EA8 000080AC */  sw         $zero, 0x0($a0)
-    /* 396AC 80048EAC 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 396B0 80048EB0 838A20A0 */  sb         $zero, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 396AC 80048EAC 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 396B0 80048EB0 838A20A0 */  sb         $zero, %lo(g_abSpyroTintRgba + 0x3)($at)
   .L80048EB4:
     /* 396B4 80048EB4 0880023C */  lui        $v0, %hi(g_bSpyroFlameActive)
     /* 396B8 80048EB8 60874290 */  lbu        $v0, %lo(g_bSpyroFlameActive)($v0)
@@ -64180,8 +64180,8 @@ glabel ResetSpyroEntity
     /* 3B478 8004AC78 222B0108 */  j          .L8004AC88
     /* 3B47C 8004AC7C 00000000 */   nop
   jlabel .L8004AC80
-    /* 3B480 8004AC80 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba + 0x3)
-    /* 3B484 8004AC84 838A20A0 */  sb         $zero, %lo(g_abSpyroFxParticleRgba + 0x3)($at)
+    /* 3B480 8004AC80 0880013C */  lui        $at, %hi(g_abSpyroTintRgba + 0x3)
+    /* 3B484 8004AC84 838A20A0 */  sb         $zero, %lo(g_abSpyroTintRgba + 0x3)($at)
   jlabel .L8004AC88
     /* 3B488 8004AC88 40000012 */  beqz       $s0, .L8004AD8C
     /* 3B48C 8004AC8C 1000A427 */   addiu     $a0, $sp, 0x10
@@ -64259,8 +64259,8 @@ glabel ResetSpyroEntity
     /* 3B5A8 8004ADA8 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
     /* 3B5AC 8004ADAC 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 3B5B0 8004ADB0 658A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x1)($v0)
-    /* 3B5B4 8004ADB4 0880013C */  lui        $at, %hi(g_abSpyroFxParticleRgba)
-    /* 3B5B8 8004ADB8 808A20AC */  sw         $zero, %lo(g_abSpyroFxParticleRgba)($at)
+    /* 3B5B4 8004ADB4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
+    /* 3B5B8 8004ADB8 808A20AC */  sw         $zero, %lo(g_abSpyroTintRgba)($at)
     /* 3B5BC 8004ADBC 0880013C */  lui        $at, %hi(g_dwSpyroTriggerEventFlags)
     /* 3B5C0 8004ADC0 848A20AC */  sw         $zero, %lo(g_dwSpyroTriggerEventFlags)($at)
     /* 3B5C4 8004ADC4 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)

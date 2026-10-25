@@ -530,6 +530,9 @@ typedef struct L7State184 {
   int timer;   /* 0x14 */
 } L7State184;
 
+/* Type 183, the bolt level 7's type 184 spawns at frame 0x11 of its mode 1.
+ * Nothing in case 184 enters mode 1, and Level7_UpdateActors has no arm for
+ * type 183, so these fields are write-only here and keep raw names. */
 typedef struct L7State183 {
   int link;    /* 0x00 */
   int u04;     /* 0x04 */
