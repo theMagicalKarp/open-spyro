@@ -12,7 +12,9 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
   anon_func   placeholder function name (``func_<ADDR>``, ``func_<seg>_<ADDR>``, ``FUN_``),
               including the file's own function
   anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views
-  m2c_local   m2c scaffolding locals (``temp_*``, ``var_*``, ``spXX``, ``argN``)
+  m2c_local   decompiler / permuter scaffolding locals (m2c ``temp_*``, ``var_*``,
+              ``spXX``, ``argN``; Ghidra ``iVar1``, ``param_1``, ``local_10``;
+              permuter ``new_var``)
   raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``) or any
               byte- or int-cast base plus a field-sized constant (``(char *)p + 0x44``),
               however parenthesized, or a pointer cast of one (``(int *)(p + 0xC)``) —
@@ -52,7 +54,10 @@ _ANON_DATA = re.compile(
     r"(?<![A-Za-z0-9_])(?:D_[0-9A-F]{8}|DAT_[0-9a-fA-F]{8}|unk_?[0-9A-Fa-fx]+)"
     r"(?:_[A-Za-z0-9]+)?\b"
 )
-_M2C = re.compile(r"\b(?:temp_[a-z0-9_]+|var_[a-z0-9_]+|sp[0-9A-F]{2,3}|arg[0-9])\b")
+_M2C = re.compile(
+    r"\b(?:temp_[a-z0-9_]+|var_[a-z0-9_]+|sp[0-9A-F]{2,3}|arg[0-9]"
+    r"|new_var[0-9]*|[a-z]{1,3}Var[0-9]+|param_[0-9]+|local_[0-9a-f]+)\b"
+)
 _RAW = re.compile(
     r"\*\s*\(+\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?"
     r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(+\s*"
