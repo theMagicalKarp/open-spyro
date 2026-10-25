@@ -15,7 +15,8 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
   m2c_local   m2c scaffolding locals (``temp_*``, ``var_*``, ``spXX``, ``argN``)
   raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``) or any
               byte- or int-cast base plus a field-sized constant (``(char *)p + 0x44``),
-              however parenthesized — a struct waiting to be recovered.  Sites
+              however parenthesized, or a pointer cast of one (``(int *)(p + 0xC)``) —
+              a struct waiting to be recovered.  Sites
               inside a ``#define`` (a named accessor) are not counted.
   extern      file-local ``extern`` declarations (header-able duplicates)
 
@@ -64,6 +65,12 @@ _BYTE_OFF = re.compile(
     r"\(\s*(?:(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*|int|u32|unsigned\s+int)\s*\)\s*\(?\s*[A-Za-z_]\w*"
     r"(?:->\w+)?\s*\)?\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\b"
 )
+# A pointer cast of ``base + constant`` (``(int *)(actor + 0xC)``,
+# ``(DISPENV *)(env + 0x5c)``, ``(int **)(rec + 0x18)``): a field's address.
+_PTR_OFF = re.compile(
+    r"\(\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?(?:int|short|char|long|void|[us](?:8|16|32)"
+    r"|[A-Z]\w*)\s*\*+\s*\)\s*\(\s*[A-Za-z_]\w*\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\s*\)"
+)
 _DEFINE = re.compile(r"^[ \t]*#[ \t]*define\b.*?(?<!\\)$", re.M | re.S)
 _EXTERN = re.compile(r"^extern\b", re.M)
 _ASM = re.compile(r"\b(?:__)?asm(?:__)?\s*(?:volatile\s*|__volatile__\s*)?\(")
@@ -79,6 +86,7 @@ def _raw_offsets(code: str) -> int:
     body = _DEFINE.sub(lambda m: re.sub(r"[^\n]", " ", m.group()), code)
     sites = {m.end() - 1 for m in _RAW.finditer(body)}
     sites |= {m.start(1) for m in _BYTE_OFF.finditer(body)}
+    sites |= {m.start(1) for m in _PTR_OFF.finditer(body)}
     return len(sites)
 
 
