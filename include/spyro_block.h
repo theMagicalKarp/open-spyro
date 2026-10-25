@@ -13,7 +13,7 @@
 
 #define SPY_TRIGGER_FLAGS  0x0B /* g_dwSpyroTriggerEventFlags */
 #define SPY_STATE          0x1E /* g_nSpyroState */
-#define SPY_SUBSTATE    0x1F /* g_nSpyroSubstate */
+#define SPY_SUBSTATE       0x1F /* g_nSpyroSubstate */
 #define SPY_CONTACTED      0x22 /* g_nSpyroContactedActorFlag */
 #define SPY_PREV_POS       0x23 /* g_anSpyroPrevWorldPos */
 #define SPY_PROBE_SUSPEND  0x26 /* g_nSpyroGroundProbeSuspendFlag */
@@ -53,11 +53,16 @@
 /* Byte offsets into the same block, for the byte-wide globals. */
 #define SPYB_EULER       0x0C /* g_abSpyroPersistentEuler (x, y, z bytes) */
 #define SPYB_EULER_Z     0x0E /* g_bSpyroPersistentEulerZ */
+#define SPYB_ANIM_PREV   0x18 /* g_bSpyroAnimPrev (g_abSpyroAnimPrevBlock points here) */
 #define SPYB_ANIM_CURRENT 0x19 /* g_bSpyroAnimCurrent */
 #define SPYB_ANIM_FRAME  0x1F /* g_bSpyroAnimFrame */
 #define SPYB_SUB_FRAME_TIMER 0x24 /* g_bSpyroSubFrameTimer */
 #define SPYB_OT_BIN_BIAS 0x27 /* g_bSpyroOtBinBias */
 #define SPYB_BODY_MTX    0x34 /* g_anSpyroBodyMtx */
 #define SPYB_VOICE_MARKER 0x2A0 /* g_bSpyroSfxVoiceMarker */
+
+/* Byte offset b of the block, from a pointer p to its anim-prev byte
+ * (g_abSpyroAnimPrevBlock); b = 0 is the block base (g_anSpyroWorldPos). */
+#define SPY_FROM_ANIM_PREV(p, b) ((p) + ((b) - SPYB_ANIM_PREV))
 
 #endif /* OPEN_SPYRO_SPYRO_BLOCK_H */

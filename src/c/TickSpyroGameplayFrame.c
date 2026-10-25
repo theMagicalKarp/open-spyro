@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "model.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -161,7 +162,8 @@ done:
     ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
     if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[0], animBlock - 0x18, 4, animBlock + 0x288);
+      PlaySoundEffect(sfx[0], SPY_FROM_ANIM_PREV(animBlock, 0), 4,
+                      SPY_FROM_ANIM_PREV(animBlock, SPYB_VOICE_MARKER));
     }
   }
   key = FRAME_KEY(FRAMEREC(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable,

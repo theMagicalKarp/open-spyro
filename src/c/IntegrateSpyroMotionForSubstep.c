@@ -1153,9 +1153,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           AccumulateAnimRootMotionDelta(k, p70, ap[1], ap[7]);
           LerpVectorGTE(p60, p60, p70, mix << 8);
         }
-        RotateVectorByMatrix((int *)(ap + 0x1C), p60, p60);
-        AddVector(p60, p60, (int *)(ap - 0x18));
-        CopyVector(p70, (int *)(ap + 0xE8));
+        RotateVectorByMatrix((int *)SPY_FROM_ANIM_PREV(ap, SPYB_BODY_MTX), p60,
+                             p60);
+        AddVector(p60, p60, (int *)SPY_FROM_ANIM_PREV(ap, 0));
+        CopyVector(p70, (int *)SPY_FROM_ANIM_PREV(ap, SPY_VELOCITY_FP6 * 4));
         RShiftVector3(p70, 6);
         AddVector(p60, p60, p70);
         PARTICLE_SPAWN(1, 0x1A, p60, n);
