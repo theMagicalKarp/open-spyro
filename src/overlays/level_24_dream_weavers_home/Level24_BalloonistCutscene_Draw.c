@@ -128,7 +128,7 @@ void Level24_BalloonistCutscene_Draw(void) {
         if (g_nGamestate0cSubstate[2] == 0) {
           for (greetPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= 0x58, greetPhase += 1) {
-            rec[0x46] = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
+            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
           }
         }
         slot = 1;
@@ -141,7 +141,7 @@ void Level24_BalloonistCutscene_Draw(void) {
             if (g_nGamestate0cSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                    rec -= 0x58, rosterPhase += 1) {
-                rec[0x46] = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
+                ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
               }
             }
             slot += 1;
@@ -179,7 +179,7 @@ void Level24_BalloonistCutscene_Draw(void) {
         if (g_nGamestate0cSubstate[2] == 0) {
           for (promptPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= 0x58, promptPhase += 1) {
-            rec[0x46] = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
+            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
           }
         }
         askPos[0] = 0x80;
@@ -194,7 +194,7 @@ void Level24_BalloonistCutscene_Draw(void) {
         if (g_nGamestate0cSubstate[2] == 1) {
           for (namePhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= 0x58, namePhase += 1) {
-            rec[0x46] = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
+            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
           }
         }
       }
