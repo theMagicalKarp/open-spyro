@@ -241,7 +241,7 @@ void ChangeSpyroState(int state) {
           int a;
           int da;
 
-          SubtractVector(d, (int *)(actor + 0xC), from);
+          SubtractVector(d, &((Actor *)actor)->posX, from);
           a = (ArcTan2(d[0], d[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
           if (a > 0x800) {
             a -= 0x1000;

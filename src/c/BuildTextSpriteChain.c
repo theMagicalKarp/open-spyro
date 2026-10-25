@@ -46,7 +46,7 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
       rec = CURSOR - 0x58;
       CURSOR_P = rec;
       FillWord(rec, 0, 0x58);
-      CopyVector((int *)(CURSOR + 0xC), pPen);
+      CopyVector(&((Actor *)CURSOR)->posX, pPen);
 
       ch = *pszText;
       if (ch >= '0' && ch <= '9') {

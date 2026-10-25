@@ -249,7 +249,7 @@ void DrawLevelTransitionOverlay(void) {
         SREC->rotZ = PARTICLES[i].spin;
         SREC->otBias = 0x7f;
         SREC->tintMode =
-            *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x36) - 0x52;
+            ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) - 0x52;
         SREC->cullRadius = 0xff;
       }
       i++;

@@ -48,7 +48,7 @@ void Level15_AdvanceEmitList(int step) {
   int *dir;
   int step4;
 
-  if (rec[1] == 0xFF) {
+  if (CLASS == 0xFF) {
     return;
   }
 
@@ -67,8 +67,8 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xC] -= step4;
       rec[0xD] -= step4;
       rec[0xE] -= step4;
-      rec[0x2] += step;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE += step;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -83,8 +83,8 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xC] -= step4;
       rec[0xD] -= step4;
       rec[0xE] -= step4;
-      rec[0x2] += step;
-      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+      AGE += step;
+      if (AGE >= 0x18 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -99,8 +99,8 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xC] -= step4;
       rec[0xD] -= step4;
       rec[0xE] -= step4;
-      rec[0x2] += step;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE += step;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -123,7 +123,7 @@ void Level15_AdvanceEmitList(int step) {
        */
       SVectorToVectorShl2(pt, POS);
       if (HU(0x1E) & 8) {
-        if (rec[0x2] >= 0x30) {
+        if (AGE >= 0x30) {
           FreeEmitListRecord(rec);
           break;
         }
@@ -144,8 +144,8 @@ void Level15_AdvanceEmitList(int step) {
         pt[2] -= HS(0x1C);
         goto commit;
       } else if (HU(0x1E) & 1) {
-        if (rec[0x2] >= 0x30) {
-          rec[0x2] = 0;
+        if (AGE >= 0x30) {
+          AGE = 0;
           HS(0x18) = (GetRandomU32() & 6) - 3;
           HS(0x1A) = (GetRandomU32() & 6) - 3;
           HU(0x1C) = 0;
@@ -154,16 +154,16 @@ void Level15_AdvanceEmitList(int step) {
         } else {
           SVectorToVectorShl2(dv, VEL);
           if (HU(0x1E) & 2) {
-            dv[0] += (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
+            dv[0] += (AGE * LookupCosine(AGE << 7)) >> 7;
           } else {
-            dv[0] -= (rec[0x2] * LookupCosine(rec[0x2] << 7)) >> 7;
+            dv[0] -= (AGE * LookupCosine(AGE << 7)) >> 7;
           }
           if (HU(0x1E) & 4) {
-            dv[1] += (rec[0x2] * LookupSine(rec[0x2] << 7)) >> 7;
+            dv[1] += (AGE * LookupSine(AGE << 7)) >> 7;
           } else {
-            dv[1] -= (rec[0x2] * LookupSine(rec[0x2] << 7)) >> 7;
+            dv[1] -= (AGE * LookupSine(AGE << 7)) >> 7;
           }
-          dv[2] += rec[0x2] << 5;
+          dv[2] += AGE << 5;
           SubtractVector(dir, dir, pt);
           len = VectorLength(dir, 1);
           if (len >= 0x81) {
@@ -174,12 +174,12 @@ void Level15_AdvanceEmitList(int step) {
         }
       } else {
         CopyVector(dir, (int *)(W(0x18) + 0xC));
-        dv[0] += LookupCosine(rec[0x2] << 7) >> 2;
-        dv[1] += LookupSine(rec[0x2] << 7) >> 2;
-        dv[2] += LookupCosine((rec[0x2] << 7) + 0x200) >> 2;
+        dv[0] += LookupCosine(AGE << 7) >> 2;
+        dv[1] += LookupSine(AGE << 7) >> 2;
+        dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, 1);
-        if (len < 0x401 || rec[0x2] >= 0x41) {
+        if (len < 0x401 || AGE >= 0x41) {
           int *owner = *(int **)W(0x18);
 
           if (owner[5] == 1) {
@@ -189,7 +189,7 @@ void Level15_AdvanceEmitList(int step) {
           HS(0x1E) = (GetRandomU32() & 6) + 1;
           VectorToSVectorShr2(VEL, (int *)(W(0x18) + 0xC));
           spin = GetRandomU32() & 0x7F;
-          rec[0x2] = 0;
+          AGE = 0;
           HU(0x1C) += spin;
           goto measure;
         }
@@ -198,22 +198,22 @@ void Level15_AdvanceEmitList(int step) {
       }
     commit:
       VectorToSVectorShr2(POS, pt);
-      rec[0x2]++;
+      AGE++;
     measure:
       SubtractVector(dv, pt, g_anCameraPos);
       near = abs(dv[0]) + abs(dv[1]);
       len = near + abs(dv[2]);
-      if (rec[0x1] == 3) {
+      if (CLASS == 3) {
         if (len >= 0x3001) {
           rec[0xC] = 0xFF;
           rec[0xD] = 0xFF;
           rec[0xE] = 0xFF;
           rec[0xA] = 4;
-          rec[0x1] = 0;
+          CLASS = 0;
           rec[0xF] = 0x40;
         }
       } else if (len < 0x2800) {
-        rec[0x1] = 3;
+        CLASS = 3;
         rec[0xC] = 0x80;
         rec[0xD] = 0x80;
         rec[0xE] = 0x80;
@@ -235,7 +235,7 @@ void Level15_AdvanceEmitList(int step) {
 
       /* The short spawn drift: the record walks along its own jittered
        * velocity, plus a quarter of the record velocity vector. */
-      if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
+      if (AGE >= 0x30 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         SVectorToVectorShl2(qa, POS);
@@ -253,7 +253,7 @@ void Level15_AdvanceEmitList(int step) {
         RShiftVector3(qb, 2);
         AddVector(qa, qa, qb);
         VectorToSVectorShr2(POS, qa);
-        rec[0x2]++;
+        AGE++;
       }
       break;
     }
@@ -266,7 +266,7 @@ void Level15_AdvanceEmitList(int step) {
 
       CopyVector(p, (int *)W(0x18));
       z = p[2] + HS(0x1E) * 0x40;
-      amp = rec[0x2] * 0x40;
+      amp = AGE * 0x40;
       ang = amp;
       if (HS(0x1C) < amp) {
         amp = HS(0x1C);
@@ -274,11 +274,11 @@ void Level15_AdvanceEmitList(int step) {
       p[0] += (amp * LookupCosine(ang)) >> 12;
       p[1] += (amp * LookupSine(ang)) >> 12;
       p[2] = HS(0x8) * 4 + 0x40;
-      if (z < p[2] || rec[0x2] >= 0xC9) {
+      if (z < p[2] || AGE >= 0xC9) {
         FreeEmitListRecord(rec);
       } else {
         VectorToSVectorShr2(POS, p);
-        rec[0x2]++;
+        AGE++;
       }
       break;
     }
@@ -286,19 +286,19 @@ void Level15_AdvanceEmitList(int step) {
     case 0x7:  /* <- Level12_AdvanceEmitList */
       /* The rune orbit: it rises and falls on a triangular ramp keyed to the
        * age byte and drifts by its own per-axis velocity words. */
-      if (rec[0x2] >= 0x19 || rec[0x3] == 0) {
+      if (AGE >= 0x19 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         rec[0xB] += rec[0x1E];
-        if (rec[0x2] >= 0xD) {
-          rec[0xA] = (0x18 - rec[0x2]) * 4;
+        if (AGE >= 0xD) {
+          rec[0xA] = (0x18 - AGE) * 4;
         } else {
-          rec[0xA] = rec[0x2] * 4;
+          rec[0xA] = AGE * 4;
         }
         HU(0x4) += HU(0x18);
         HU(0x6) += HU(0x1A);
         HU(0x8) += HU(0x1C);
-        rec[0x2]++;
+        AGE++;
       }
       break;
 
@@ -309,8 +309,8 @@ void Level15_AdvanceEmitList(int step) {
       }
       HS(0x1E) = 1 - HU(0x1E);
       rec[0xA] += step * 2;
-      rec[0x2] += step;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE += step;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -336,7 +336,7 @@ void Level15_AdvanceEmitList(int step) {
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
-      if (rec[0xC] == 0 || rec[0x3] == 0) {
+      if (rec[0xC] == 0 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -353,7 +353,7 @@ void Level15_AdvanceEmitList(int step) {
       if (rec[0xE] != 0) {
         rec[0xE] -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || rec[0x3] == 0) {
+      if ((W(0xC) & 0xFFFFFF) == 0 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -426,8 +426,8 @@ void Level15_AdvanceEmitList(int step) {
         c = 0;
       }
       rec[0xE] = c;
-      rec[0x2] += step;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE += step;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -458,8 +458,8 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xA) += d[0];
       HU(0xC) += d[1];
       HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x8 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x8 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -472,11 +472,11 @@ void Level15_AdvanceEmitList(int step) {
       int r;
 
       for (i = 0; i < step; i++) {
-        if (rec[0x2] & 1) {
+        if (AGE & 1) {
           HU(0x4) += HU(0x10);
           HU(0x6) += HU(0x12);
           HU(0x8) += HU(0x14);
-          if (rec[0x2] & 2) {
+          if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
@@ -494,9 +494,9 @@ void Level15_AdvanceEmitList(int step) {
             HU(0x14) = j;
           }
         }
-        rec[0x2]++;
+        AGE++;
       }
-      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+      if (AGE >= 0x18 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -522,14 +522,14 @@ void Level15_AdvanceEmitList(int step) {
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
-      if (rec[0x2] & 1) {
+      if (AGE & 1) {
         d[2]--;
       }
       HU(0xA) += d[0];
       HU(0xC) += d[1];
       HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
@@ -563,8 +563,8 @@ void Level15_AdvanceEmitList(int step) {
       int j;
       int r;
 
-      rec[0x2]++;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
@@ -604,8 +604,8 @@ void Level15_AdvanceEmitList(int step) {
       int j;
       int r;
 
-      rec[0x2]++;
-      if (rec[0x2] >= 0x30 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x30 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
@@ -663,8 +663,8 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xA) += d[0];
       HU(0xC) += d[1];
       HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x20) {
+      AGE++;
+      if (AGE >= 0x20) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -676,8 +676,8 @@ void Level15_AdvanceEmitList(int step) {
       int k;
       int r;
 
-      rec[0x2]++;
-      if (rec[0x2] >= 0x28 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x28 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
@@ -721,8 +721,8 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xA) += d[0];
       HU(0xC) += d[1];
       HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x18 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x18 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
         rec[0x10] -= 3;
@@ -750,8 +750,8 @@ void Level15_AdvanceEmitList(int step) {
       HU(0xA) += d[0];
       HU(0xC) += d[1];
       HU(0xE) += d[2];
-      rec[0x2]++;
-      if (rec[0x2] >= 0x20 || rec[0x3] == 0) {
+      AGE++;
+      if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -762,5 +762,5 @@ void Level15_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (rec[1] != 0xFF);
+  } while (CLASS != 0xFF);
 }

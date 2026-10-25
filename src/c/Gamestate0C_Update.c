@@ -196,8 +196,7 @@ void Gamestate0C_Update(void) {
             ease) >>
            13);
 
-      SubtractVector(&delta.vx, (int *)((char *)g_pGamestate0cRecord + 0xC),
-                     cam);
+      SubtractVector(&delta.vx, &((Actor *)g_pGamestate0cRecord)->posX, cam);
       delta.vz += 0x200;
 
       if (g_nGamestate0cTimer < 0x40) {

@@ -3773,7 +3773,7 @@ void Level27_UpdateActors(void) {
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
-        CopyVector(&SPY.contact, &actor->posX);
+        CopyVector(SPY.firstContactPoint, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
         } else {
