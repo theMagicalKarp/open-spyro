@@ -108,6 +108,21 @@ typedef enum SpyroState
 #define SPYRO_RQ_SCRIPTED_WALK 0x20000 /* g_nSpyroScriptedMoveMode = 1, walk */
 #define SPYRO_RQ_PENDING 0x80000000
 
+/* g_nSpyroSubstate (SpyroObj word 0x1F): a per-state phase that
+ * ChangeSpyroState resets on entry; most states use small values of their own
+ * (jump: 0 rising with Cross held, 1 descending, 2 Cross released; glide/fly:
+ * 1/2 from R1/L1, 3 a flight-level crash check). The values shared across
+ * states: */
+#define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
+#define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
+/* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
+ * path tweens while one runs. */
+#define SPYRO_SUB_SCRIPTED 8
+#define SPYRO_SUB_GLIDE_HOLD 8        /* frozen, turning to g_abSpyroRequestEuler (no-input / forced-jump frames) */
+#define SPYRO_SUB_GLIDE_TO_TARGET 9   /* no-clip glide to the hand-off point, then LEVEL_GLIDE_HANDOFF */
+#define SPYRO_SUB_GLIDE_ARRIVE 10     /* level-entry glide under GS_ARRIVAL_CAMERA, banks down to the ground */
+#define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (camera mode 12) */
+
 /* Trigger-region record types (byte 0 of a g_pTriggerRegionTable record),
  * dispatched by DispatchSpyroTriggerEvent. */
 enum TriggerRegionType {

@@ -268,9 +268,9 @@ int AdvanceSpyroPhysics(void) {
                   }
                   g_dwSpyroRequestMask |= SPYRO_RQ_FORCE_STATE;
                   if (side) {
-                    g_nSpyroStateFlags = 1;
+                    g_nSpyroSubstate = 1;
                   } else {
-                    g_nSpyroStateFlags = 2;
+                    g_nSpyroSubstate = 2;
                   }
                 }
               } else {

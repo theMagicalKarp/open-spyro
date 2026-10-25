@@ -219,7 +219,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_FALL_TRACKING] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
-        if (g_nSpyroStateFlags == 3 &&
+        if (g_nSpyroSubstate == 3 &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
           ((void (*)(void))g_pfnLevelFallImpactCallback)();
         }
@@ -243,7 +243,8 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_WALL_SLIDE] == 0) {
       ProbeSpyroLedgeForward();
     }
-    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) && g_nSpyroStateFlags == 9) {
+    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) &&
+        g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
       g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
     }
     break;
@@ -274,7 +275,7 @@ void DispatchSpyroPhysicsByState(void) {
   case 24:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_STATE_FLAGS] & 0x40) {
+    if (SPY[SPY_SUBSTATE] & SPYRO_SUB_SUPERCHARGE) {
       CopyVector(dust, &SPY[0]);
       dust[0] += (GetRandomU32() & 0xFE) - 0x7F;
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;

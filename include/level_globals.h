@@ -186,7 +186,7 @@ extern int g_nSpyroPadSnapshotCountdown;
 extern int g_nSpyroRequestState;                         /* scripted camera mode */
 extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroState;                                /* Spyro's state */
-extern int g_nSpyroStateFlags;
+extern int g_nSpyroSubstate;
 extern int g_nSpyroStateTimer;
 extern int g_nSpyroSwingEulerPitchTarget;
 extern int g_nSpyroSwingEulerPrev1;

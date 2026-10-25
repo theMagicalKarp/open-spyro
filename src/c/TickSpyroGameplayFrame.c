@@ -124,8 +124,8 @@ void TickSpyroGameplayFrame(void) {
       }
       break;
     }
-  } else if ((g_nSpyroWorldPosZ < 0x400) || ((g_nSpyroState == SPYRO_ST_FALL) &&
-                                             (g_nSpyroStateFlags >= 0x79))) {
+  } else if ((g_nSpyroWorldPosZ < 0x400) ||
+             ((g_nSpyroState == SPYRO_ST_FALL) && (g_nSpyroSubstate >= 0x79))) {
     TriggerRespawnOrGameOver();
   } else {
     pos = g_anSpyroWorldPosZBlock;

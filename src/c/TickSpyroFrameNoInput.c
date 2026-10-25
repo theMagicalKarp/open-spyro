@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */
@@ -26,8 +27,8 @@ void TickSpyroFrameNoInput(void) {
   g_bSpyroPadSnapshotReverseFlag = 0;
   SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
   sblock = g_anSpyroStateBlock;
-  if (sblock[0] == 0xF) {
-    g_nSpyroStateFlags = 8;
+  if (sblock[0] == SPYRO_ST_GLIDE) {
+    g_nSpyroSubstate = SPYRO_SUB_GLIDE_HOLD;
   }
   if (g_nSpyroPadSnapshotCountdown <= 0) {
     g_nSpyroPadSnapshotCountdown = 1;

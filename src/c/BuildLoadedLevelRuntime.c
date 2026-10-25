@@ -116,7 +116,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
     ChangeSpyroState(SPYRO_ST_FLY);
     if (g_nPortalTransitionActive == 0) {
-      g_nSpyroStateFlags = 0;
+      g_nSpyroSubstate = 0;
       g_abSpyroPersistentEuler[0] = 0;
       g_abSpyroPersistentEuler[1] = 0;
       g_nSpyroBodyRoll = 0;

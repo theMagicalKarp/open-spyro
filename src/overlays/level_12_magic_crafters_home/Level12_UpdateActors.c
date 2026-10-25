@@ -3119,7 +3119,7 @@ void Level12_UpdateActors(void) {
             break;
           }
           if ((SPY.state == SPYRO_ST_SUPERCHARGE || SPY.state == SPYRO_ST_SUPERCHARGE_AIR ||
-               (SPY.state == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) &&
+               (SPY.state == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) &&
               g_nActiveLevelId == 0x1E && marker < 2) {
             break;
           }
@@ -4305,7 +4305,7 @@ void Level12_UpdateActors(void) {
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
             g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
-            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

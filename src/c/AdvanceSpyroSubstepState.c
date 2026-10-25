@@ -48,7 +48,7 @@ void AdvanceSpyroSubstepState(void) {
   case 5:
     UpdateSpyroFlightAttitudeNearGround();
     if (g_nSpyroAnimMode == 0) {
-      if (g_nSpyroStateFlags == 0) {
+      if (g_nSpyroSubstate == 0) {
         frame = g_bSpyroAnimFrame;
         if (frame < 3) {
           g_nSpyroAnimPlayRate = 4;
@@ -66,7 +66,7 @@ void AdvanceSpyroSubstepState(void) {
     break;
   case 11:
     UpdateSpyroFlightAttitudeNearGround();
-    if ((g_nSpyroStateFlags & 1) && g_nSpyroContactedActorFlag != 0) {
+    if ((g_nSpyroSubstate & 1) && g_nSpyroContactedActorFlag != 0) {
       g_nSpyroMotionSpeed = 0xA00;
     }
     break;

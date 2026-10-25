@@ -1749,21 +1749,21 @@ void Level30_UpdateActors(void) {
       if (st->started == 0) {
         if (g_bAmbienceChannelMask != 0) {
           ModifyWorldChunkAnimFlags(0, 0xFC, 0);
-          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x21] != 0) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
-          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x22] != 0) {
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
-          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
           }
         }

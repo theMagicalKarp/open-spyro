@@ -1731,7 +1731,7 @@ void Level5_UpdateActors(void) {
 
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
-        if (g_bDebugNoDepletion == 0 && g_nSpyroStateFlags < 8 &&
+        if (g_bDebugNoDepletion == 0 && g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
             g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;
@@ -1745,7 +1745,7 @@ void Level5_UpdateActors(void) {
         }
       } else {
         ChangeSpyroState(SPYRO_ST_FLY);
-        g_nSpyroStateFlags = 3;
+        g_nSpyroSubstate = 3;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 
@@ -2105,7 +2105,7 @@ void Level5_UpdateActors(void) {
         st->timer = 0x14;
         actor->mode = 1;
       }
-      if (g_nSpyroStateFlags < 8) {
+      if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
         RefreshActorDerivedState(actor, 4);
         if ((g_dwGamestateFrames & 3) == 0) {
@@ -2141,7 +2141,7 @@ void Level5_UpdateActors(void) {
         st->timer = 0xF;
         actor->mode = 1;
       }
-      if (g_nSpyroStateFlags < 8) {
+      if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
       }
       switch (actor->mode) {

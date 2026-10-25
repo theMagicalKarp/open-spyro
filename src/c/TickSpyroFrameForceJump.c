@@ -27,10 +27,10 @@ void TickSpyroFrameForceJump(void) {
   g_bSpyroPadSnapshotReverseFlag = 0;
   SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
   sblock = g_anSpyroStateBlock;
-  if (sblock[0] != 0xF) {
+  if (sblock[0] != SPYRO_ST_GLIDE) {
     ChangeSpyroState(SPYRO_ST_GLIDE);
   }
-  g_nSpyroStateFlags = 8;
+  g_nSpyroSubstate = SPYRO_SUB_GLIDE_HOLD;
   if (g_nSpyroPadSnapshotCountdown <= 0) {
     g_nSpyroPadSnapshotCountdown = 1;
   }

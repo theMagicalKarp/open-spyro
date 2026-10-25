@@ -13,7 +13,7 @@
 
 #define SPY_TRIGGER_FLAGS  0x0B /* g_dwSpyroTriggerEventFlags */
 #define SPY_STATE          0x1E /* g_nSpyroState */
-#define SPY_STATE_FLAGS    0x1F /* g_nSpyroStateFlags */
+#define SPY_SUBSTATE    0x1F /* g_nSpyroSubstate */
 #define SPY_CONTACTED      0x22 /* g_nSpyroContactedActorFlag */
 #define SPY_PREV_POS       0x23 /* g_anSpyroPrevWorldPos */
 #define SPY_PROBE_SUSPEND  0x26 /* g_nSpyroGroundProbeSuspendFlag */

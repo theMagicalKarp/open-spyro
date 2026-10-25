@@ -84,7 +84,7 @@ void Level5_HandleFlightResults(int reload) {
       i += 1;
     } while (i < g_nGemTallyIconCount);
   }
-  g_nSpyroStateFlags = 0;
+  g_nSpyroSubstate = 0;
   if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
     g_nCameraNextMode = g_abSpyroStateCameraMode[g_nSpyroState];
   }

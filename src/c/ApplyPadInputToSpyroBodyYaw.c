@@ -34,7 +34,7 @@ int ApplyPadInputToSpyroBodyYaw(void) {
         delta -= 0x1000;
       }
       if (abs(delta) > 0x100) {
-        g_nSpyroStateFlags = 1;
+        g_nSpyroSubstate = 1;
       }
       g_anSpyroMoveTargetYawBlock[0] = (yaw + ((mag * delta) >> 9)) & 0xFFF;
     }

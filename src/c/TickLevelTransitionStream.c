@@ -348,7 +348,7 @@ void TickLevelTransitionStream(int full) {
                 *(PortalActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
-            PE_WORD(SPY_STATE_FLAGS) = 9;
+            PE_WORD(SPY_SUBSTATE) = 9;
             ComputeCameraToTargetAngle(cam);
             g_anCameraSpringYawBlock[6] = g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
             if (actor->reverse != 0) {
@@ -403,7 +403,7 @@ void TickLevelTransitionStream(int full) {
           AddVector(g_anCameraPos, g_anCameraPos, pos);
           UpdateCameraEulerAngles();
           g_nCameraNextMode = g_abSpyroStateCameraModeTable[g_nSpyroState];
-          g_nSpyroStateFlags = 0xB;
+          g_nSpyroSubstate = SPYRO_SUB_GLIDE_ENTER;
           g_nGamestate = GS_GAMEPLAY;
           g_bSpyroOtBinBias = 4;
         } else {
@@ -412,12 +412,12 @@ void TickLevelTransitionStream(int full) {
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
           ActivateScriptedCameraView(
               (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
-          g_nSpyroStateFlags = 0xA;
+          g_nSpyroSubstate = SPYRO_SUB_GLIDE_ARRIVE;
           g_nGamestate = GS_ARRIVAL_CAMERA;
         }
       }
     } else if (g_nFlightLevelActive != 0) {
-      g_nSpyroStateFlags = 0;
+      g_nSpyroSubstate = 0;
     } else if (g_nGamestate != GS_ACTOR_CUTSCENE) {
       ChangeSpyroState(SPYRO_ST_IDLE);
     }
