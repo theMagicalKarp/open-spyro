@@ -702,8 +702,8 @@ void Level28_UpdateActors(void) {
         TickActorFlameGlow(actor);
       }
       if (actor->mode != 4 &&
-          ((actor->type == 0x2D && (actor->flags & 0xA0000)) ||
-           (actor->type == 0x2E && (actor->flags & 0x90000)))) {
+          ((actor->type == 0x2D && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
+           (actor->type == 0x2E && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
         st->knock = 0x190;
         st->lift = 0xAA;
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -1947,7 +1947,7 @@ void Level28_UpdateActors(void) {
           ENTER_POSE(actor, 2);
         }
       }
-      if ((actor->flags & 0xB0000) &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) &&
           (actor->mode < 8 || actor->mode == 0x63)) {
         actor->flags = 0;
         if (st->mode == 3) {
@@ -2187,7 +2187,7 @@ void Level28_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(7, 0xFC, 0);
         ModifyWorldChunkAnimFlags(8, 0xFC, 0);
       }
-      if ((actor->flags & 0x90000) && actor->mode != 3 && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3 && actor->mode != 6) {
         actor->flags = 0;
         switch (st->path->cur) {
         case 11:
@@ -2305,14 +2305,14 @@ void Level28_UpdateActors(void) {
     case 160: {
       L26Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         EBB_BREAK();
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             st->speed = 0x8C;
           } else {
             st->speed = 0xFA;
@@ -2410,7 +2410,7 @@ void Level28_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -2440,7 +2440,7 @@ void Level28_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2616,7 +2616,7 @@ void Level28_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2684,7 +2684,7 @@ void Level28_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2712,7 +2712,7 @@ void Level28_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3111,7 +3111,7 @@ void Level28_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3190,7 +3190,7 @@ void Level28_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3359,7 +3359,7 @@ void Level28_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

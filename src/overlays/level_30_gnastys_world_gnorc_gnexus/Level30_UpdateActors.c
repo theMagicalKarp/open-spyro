@@ -1631,7 +1631,7 @@ void Level30_UpdateActors(void) {
         SnapActorToGround(actor);
       }
 
-      if (actor->flags & 0xB0000) {
+      if (actor->flags & ACTOR_HITS_SPYRO) {
         int i;
 
         actor->soundRange = 0x20;
@@ -1701,7 +1701,7 @@ void Level30_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -1729,7 +1729,7 @@ void Level30_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -1794,11 +1794,11 @@ void Level30_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->speed = 0xC8;
         } else {
           st->speed = 0x190;

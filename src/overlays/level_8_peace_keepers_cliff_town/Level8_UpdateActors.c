@@ -535,9 +535,9 @@ void Level8_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & 0xB0000) != 0 && actor->mode != 10) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 10) {
         st->knock = 0x96;
-        if ((actor->flags & 0x20000) != 0) {
+        if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knock = 0xE1;
         }
         st->heading = StepAndLerpAngle8(
@@ -2310,7 +2310,7 @@ void Level8_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2378,7 +2378,7 @@ void Level8_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2406,7 +2406,7 @@ void Level8_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2456,7 +2456,7 @@ void Level8_UpdateActors(void) {
     case 218: {
       CatapultState *st = actor->state;
 
-      if (actor->flags & 0x10000) {
+      if (actor->flags & ACTOR_HIT_FLAME) {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
         int a = AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                               ArcTan2(actor->posX - spy->posX,
@@ -2551,7 +2551,7 @@ void Level8_UpdateActors(void) {
       int r;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & 0xA0000) && actor->mode != 5) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 5) {
         st->knockTimer = 0x190;
         st->knockSpeed = 0xAA;
         st->heading = StepAndLerpAngle8(
@@ -2687,7 +2687,7 @@ void Level8_UpdateActors(void) {
       if (st->link != -1) {
         link = &g_pActorListBase[st->link];
       }
-      if ((actor->flags & 0x90000) && actor->mode != 7) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 7) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
@@ -2863,7 +2863,7 @@ void Level8_UpdateActors(void) {
     case 230: {
       SwoopState *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
@@ -2873,7 +2873,7 @@ void Level8_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           int i;
 
           for (i = 0; i < 7; i++) {
@@ -3146,11 +3146,11 @@ void Level8_UpdateActors(void) {
     case 238: {
       L31Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 5 && actor->mode != 6) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 5 && actor->mode != 6) {
         st->knock = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (!(actor->flags & 0x10000)) {
+        if (!(actor->flags & ACTOR_HIT_FLAME)) {
           st->speed = 0x190;
         } else {
           st->speed = 0;
@@ -3817,7 +3817,7 @@ void Level8_UpdateActors(void) {
           actor->posZ = st->restZ;
         }
       }
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
         actor->soundRange = 0x20;
@@ -3843,7 +3843,7 @@ void Level8_UpdateActors(void) {
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
-        if ((actor->flags & 0x30000) && st->shake == 0) {
+        if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3879,7 +3879,7 @@ void Level8_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (!(actor->flags & 0x10000)) {
+        if (!(actor->flags & ACTOR_HIT_FLAME)) {
           continue;
         }
         actor->subMode = 1;
@@ -4076,7 +4076,7 @@ void Level8_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

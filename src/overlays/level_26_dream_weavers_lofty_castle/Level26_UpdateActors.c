@@ -677,7 +677,7 @@ void Level26_UpdateActors(void) {
     case 52: {
       L26Lobber *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode != 2) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         SpawnActorDeathDrop(actor, 1, 0, 0);
@@ -765,7 +765,7 @@ void Level26_UpdateActors(void) {
     case 61: {
       L26Sink *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == 0) {
         st->depth = 0;
         g_pActorListBase[st->partner].mode = 1;
         PlayActorMeshVoice(&g_pActorListBase[st->partner], 0, 0);
@@ -805,14 +805,14 @@ void Level26_UpdateActors(void) {
       int ang;
       int a;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->speed = (spy->motionSpeed >> 6) + 0x1C2;
           st->lift = 0x50;
-        } else if (actor->flags & 0x20000) {
+        } else if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0x1F4;
           st->lift = 0x20;
         } else {
@@ -2054,13 +2054,13 @@ void Level26_UpdateActors(void) {
     case 160: {
       L26Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             st->speed = 0x8C;
           } else {
             st->speed = 0xFA;
@@ -2158,7 +2158,7 @@ void Level26_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -2188,7 +2188,7 @@ void Level26_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2364,7 +2364,7 @@ void Level26_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2432,7 +2432,7 @@ void Level26_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2460,7 +2460,7 @@ void Level26_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2682,7 +2682,7 @@ void Level26_UpdateActors(void) {
     case 296: {
       L26Bob *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
         actor->mode = 1;
         ANIM_RESET(actor, 1);
         continue;
@@ -2728,7 +2728,7 @@ void Level26_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if (actor->mode < 2) {
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           g_pActorListBase[st->partner].flags |= actor->flags;
           st->speed = (SPY.motionSpeed >> 6) + 0x1C2;
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -2987,7 +2987,7 @@ void Level26_UpdateActors(void) {
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
-        } else if (actor->flags & 0x10000) {
+        } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -3001,7 +3001,7 @@ void Level26_UpdateActors(void) {
         break;
 
       hit:
-        if (actor->flags & 0xA0000) {
+        if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = 3;
           actor->cullRadius = 0;
           actor->drawn = 0;
@@ -3199,7 +3199,7 @@ void Level26_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3278,7 +3278,7 @@ void Level26_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3397,7 +3397,7 @@ void Level26_UpdateActors(void) {
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
-      if ((actor->flags & 0x90000) == 0x10000) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == 0x10000) {
         actor->updateDist = 0xFF;
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
                       &actor->sfxSlot);
@@ -3416,7 +3416,7 @@ void Level26_UpdateActors(void) {
         continue;
       }
       if (st->timer == 0 || --st->timer == 0) {
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->timer = 0x10;
           st->speed += 0x64;
         }
@@ -3434,7 +3434,7 @@ void Level26_UpdateActors(void) {
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
-      if (st->speed > 0xE0 || (actor->flags & 0x80000)) {
+      if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = 1;
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 2; i++) {
@@ -3634,7 +3634,7 @@ void Level26_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

@@ -1192,7 +1192,7 @@ void Level23_UpdateActors(void) {
     case 0xA2: {
       CyclerState *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
         Actor *reward;
         int i;
 
@@ -1423,7 +1423,7 @@ void Level23_UpdateActors(void) {
       int *st = actor->state;
       int i;
 
-      if (actor->flags & 0xB0000) {
+      if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, 0, 0);
@@ -1481,7 +1481,7 @@ void Level23_UpdateActors(void) {
         st->ready = 1;
       }
 
-      if ((actor->flags & 0x90000) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
         Actor *reward;
         int i;
 

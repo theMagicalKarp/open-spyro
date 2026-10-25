@@ -522,9 +522,9 @@ void Level6_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & 0xB0000) != 0 && actor->mode != 10) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 10) {
         st->knock = 0x96;
-        if ((actor->flags & 0x20000) != 0) {
+        if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knock = 0xE1;
         }
         st->heading = StepAndLerpAngle8(
@@ -2237,12 +2237,12 @@ void Level6_UpdateActors(void) {
     case 146: {
       int *st = actor->state;
 
-      if ((actor->flags & 0x10000) && actor->mode < 2) {
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < 2) {
         actor->mode = 2;
         ANIM_RESET(actor, 2);
         continue;
       }
-      if ((actor->flags & 0x80000) && actor->mode < 2) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < 2) {
         if (st[0] != 0) {
           if (TickCountdownByFrameDelta(st, 4) != 0) {
             actor->mode = 2;
@@ -2337,7 +2337,7 @@ void Level6_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -2367,7 +2367,7 @@ void Level6_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2583,13 +2583,13 @@ void Level6_UpdateActors(void) {
     case 193: {
       L26Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             st->speed = 0xC8;
           } else {
             st->speed = 0x190;
@@ -2633,7 +2633,7 @@ void Level6_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2701,7 +2701,7 @@ void Level6_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2729,7 +2729,7 @@ void Level6_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2752,7 +2752,7 @@ void Level6_UpdateActors(void) {
           g_pActorListBase[st->link].collision != 0) {
         actor->flags = 0;
       }
-      if ((actor->flags & 0xB0000) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
         actor->flags = 0;
         if (actor->mode != 0xB || actor->cullRadius != 0) {
           st->knockDir = StepAndLerpAngle8(
@@ -3318,7 +3318,7 @@ void Level6_UpdateActors(void) {
             a = 0x2C;
             b = 0x4B;
           }
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             actor->flags = 0;
             g304[0] = -0x3E8;
             g304[1] = 0;
@@ -4016,7 +4016,7 @@ void Level6_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -4095,7 +4095,7 @@ void Level6_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -4353,7 +4353,7 @@ void Level6_UpdateActors(void) {
           actor->posZ = st->restZ;
         }
       }
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
         actor->soundRange = 0x20;
@@ -4379,7 +4379,7 @@ void Level6_UpdateActors(void) {
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
-        if ((actor->flags & 0x30000) && st->shake == 0) {
+        if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -4524,7 +4524,7 @@ void Level6_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

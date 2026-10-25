@@ -201,9 +201,9 @@ void TickSpyroAttackEffects(int steps) {
               CopyVector(dir, &pt[i * 3]);
             }
             CopyVector(&pt[i * 3], tip);
-            mask = 0x10000;
+            mask = ACTOR_HIT_FLAME;
             if ((*((volatile int *)(&pt[-0xf]))) != 0) {
-              mask = 0x90000;
+              mask = ACTOR_HIT_FLAME | ACTOR_HIT_SUPER;
             }
             if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0, 0) != 0) ||
                 (CastRayWorldAndActors(dir, tip) != 0)) {

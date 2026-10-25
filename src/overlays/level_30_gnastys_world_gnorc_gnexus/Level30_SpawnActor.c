@@ -205,7 +205,7 @@ Actor *Level30_SpawnActor(int type, Actor *parent) {
     st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
     st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;
     st->vel[2] = LookupSine(pitch) >> 5;
-    if (parent->flags & 0x20000) {
+    if (parent->flags & ACTOR_HIT_CHARGE) {
       st->vel[0] += g_anSpyroVelocity[0] >> 6;
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;

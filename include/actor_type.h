@@ -82,6 +82,13 @@ typedef struct Actor {
                         * packs it into the draw word) */
 } Actor; /* 0x58 */
 
+/* Actor.flags hit bits that Spyro's attacks raise through
+ * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
+#define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
+#define ACTOR_HIT_CHARGE 0x20000 /* a charge (SPYRO_ST_CHARGE) */
+#define ACTOR_HIT_SUPER 0x80000  /* a supercharge; a superflame breath adds it to FLAME */
+#define ACTOR_HITS_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
+
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
  * ever drifts from it; it emits nothing.) */

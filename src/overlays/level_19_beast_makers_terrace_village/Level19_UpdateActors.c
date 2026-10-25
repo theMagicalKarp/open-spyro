@@ -755,7 +755,7 @@ void Level19_UpdateActors(void) {
         d = VectorLength(v, 0);
       }
       TickActorFlameGlow(actor);
-      if (actor->flags & 0xA0000 && actor->mode != 3) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != 3) {
         int i;
 
         st->turn = 0xE6;
@@ -1931,7 +1931,7 @@ void Level19_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -1999,7 +1999,7 @@ void Level19_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2027,7 +2027,7 @@ void Level19_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2429,7 +2429,7 @@ void Level19_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2508,7 +2508,7 @@ void Level19_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -2665,7 +2665,7 @@ void Level19_UpdateActors(void) {
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
-      if ((actor->flags & 0x90000) == 0x10000) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == 0x10000) {
         actor->updateDist = 0xFF;
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
                       &actor->sfxSlot);
@@ -2684,7 +2684,7 @@ void Level19_UpdateActors(void) {
         continue;
       }
       if (st->timer == 0 || --st->timer == 0) {
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->timer = 0x10;
           st->speed += 0x64;
         }
@@ -2702,7 +2702,7 @@ void Level19_UpdateActors(void) {
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
-      if (st->speed > 0xE0 || (actor->flags & 0x80000)) {
+      if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = 1;
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 2; i++) {
@@ -2850,7 +2850,7 @@ void Level19_UpdateActors(void) {
           actor->posZ = st->restZ;
         }
       }
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2876,7 +2876,7 @@ void Level19_UpdateActors(void) {
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
-        if ((actor->flags & 0x30000) && st->shake == 0) {
+        if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2912,7 +2912,7 @@ void Level19_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (!(actor->flags & 0x10000)) {
+        if (!(actor->flags & ACTOR_HIT_FLAME)) {
           continue;
         }
         actor->subMode = 1;
@@ -3094,7 +3094,7 @@ void Level19_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 
@@ -3243,14 +3243,14 @@ void Level19_UpdateActors(void) {
     case 461: {
       WarDrumState *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && (unsigned int)(actor->mode - 3) >= 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         st->lift = 0x46;
         st->life = 0x32;
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->speed = 0x96;
         } else {
           st->speed = 0x12C;
@@ -3336,7 +3336,7 @@ void Level19_UpdateActors(void) {
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
           st->lift = 0x32;
-          if (actor->flags & 0x20000) {
+          if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x46;
             st->lift += 0x32;
           }
@@ -3473,7 +3473,7 @@ void Level19_UpdateActors(void) {
       L19State467 *st = actor->state;
       int i;
 
-      if (actor->flags & 0x90000 && ApproxDist2D(&actor->posX, spy) < 0xE10 &&
+      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, spy) < 0xE10 &&
           actor->mode != 6) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;

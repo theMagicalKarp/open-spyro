@@ -1874,7 +1874,7 @@ void Level16_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -1942,7 +1942,7 @@ void Level16_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -1970,7 +1970,7 @@ void Level16_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2196,12 +2196,12 @@ void Level16_UpdateActors(void) {
 
       if (actor->mode != 2) {
         g_pfnLevelEmitParticles(1, 0x41, actor, 0);
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->speed = 0xDC;
           st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, 0),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x60);
-          if (actor->flags & 0x20000) {
+          if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x8C;
           }
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
@@ -2615,7 +2615,7 @@ void Level16_UpdateActors(void) {
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
-        } else if (actor->flags & 0x10000) {
+        } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -2629,7 +2629,7 @@ void Level16_UpdateActors(void) {
         break;
 
       hit:
-        if (actor->flags & 0xA0000) {
+        if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = 3;
           actor->cullRadius = 0;
           actor->drawn = 0;
@@ -2835,7 +2835,7 @@ void Level16_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2914,7 +2914,7 @@ void Level16_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3127,7 +3127,7 @@ void Level16_UpdateActors(void) {
       if (IsPointInRotatedBox(&SPY.posX, &st->soundBox) != 0) {
         actor->soundRange = 0x10;
       }
-      if (actor->flags & 0x90000) {
+      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) {
         int v[3];
 
         actor->flags = 0;
@@ -3472,7 +3472,7 @@ void Level16_UpdateActors(void) {
       L16Bell *st = actor->state;
       int r;
 
-      if ((actor->flags & 0x90000) && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
         StopSoundVoiceByIndex(actor->sfxSlot, 4);
         SpawnActorDeathDrop(actor, 4, 0, 0);
         MarkActorCommittedKill(actor);

@@ -166,12 +166,12 @@ void Level0_UpdateActors(void) {
     case 10: {
       PathState *st = (PathState *)actor->state;
 
-      if ((actor->flags & 0xB0000) != 0 && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 3) {
         actor->flags = 0;
         st->heading = ArcTan2(actor->posX - SPY.posX,
                                     actor->posY - SPY.posY, 0);
 
-        if ((actor->flags & 0x10000) != 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) != 0) {
           st->speed = 0xC8;
         } else {
           st->speed = 0x190;
@@ -1372,12 +1372,12 @@ void Level0_UpdateActors(void) {
       WalkerState *st = (WalkerState *)actor->state;
       int distance;
 
-      if ((actor->flags & 0xB0000) != 0 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 &&
           (unsigned int)(actor->mode - 7) >= 3) {
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
 
-        if ((actor->flags & 0x20000) != 0) {
+        if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->moveSpeed = 0x190;
           st->zVel = 0x46;
           st->heading = StepAndLerpAngle8(
@@ -2078,7 +2078,7 @@ void Level0_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2551,7 +2551,7 @@ void Level0_UpdateActors(void) {
         actor->frameRate = poseBase + RandomIntInRange(-4, 4);
       }
 
-      if ((actor->flags & 0x10000) != 0 && actor->nextAnim == 0) {
+      if ((actor->flags & ACTOR_HIT_FLAME) != 0 && actor->nextAnim == 0) {
         if (actor->anim != 1) {
           g_nActorAnimDone = 0;
           ANIM_RESET(actor, 1);
@@ -2575,7 +2575,7 @@ void Level0_UpdateActors(void) {
     case 339: {
       FlockState *st = actor->state;
 
-      if ((actor->flags & 0xB0000) != 0 && actor->mode < 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode < 4) {
         while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= ACTOR_MODE_DORMANT) {
           st->chainA = *(int *)g_pActorListBase[st->chainA].state;
         }
@@ -3078,7 +3078,7 @@ void Level0_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

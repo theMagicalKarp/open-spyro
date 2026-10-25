@@ -1801,7 +1801,7 @@ void Level31_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -1831,7 +1831,7 @@ void Level31_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2007,7 +2007,7 @@ void Level31_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2075,7 +2075,7 @@ void Level31_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2103,7 +2103,7 @@ void Level31_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2120,14 +2120,14 @@ void Level31_UpdateActors(void) {
     case 199: {
       L31Mount *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         ((int *)g_pActorListBase[st->rider].state)[4] = -1;
         st->rider = -1;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x78;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0xF0;
         } else {
           st->speed = 0x78;
@@ -2204,7 +2204,7 @@ void Level31_UpdateActors(void) {
     case 200: {
       L31Carrier *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode != 3) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
@@ -2301,7 +2301,7 @@ void Level31_UpdateActors(void) {
       int thrown = 0;
 
       TickActorFlameGlow(actor);
-      if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & 0x10000)) {
+      if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & ACTOR_HIT_FLAME)) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
@@ -2501,10 +2501,10 @@ void Level31_UpdateActors(void) {
     case 202: {
       L31Barrel *st = actor->state;
 
-      if ((actor->flags & 0xA0000) &&
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
           (unsigned int)(actor->mode - 2) >= 2) {
         actor->mode = 2;
-      } else if ((actor->flags & 0x10000) && actor->mode == 0) {
+      } else if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
         st->timer = 0x3C;
         actor->mode = 1;
         ANIM_RESET(actor, 1);
@@ -2700,7 +2700,7 @@ void Level31_UpdateActors(void) {
       unsigned char s;
 
       st->handle = SelectActorLodBand(actor, st->handle);
-      if ((actor->flags & 0x20000) &&
+      if ((actor->flags & ACTOR_HIT_CHARGE) &&
           (unsigned char)(actor->mode - 2) >= 2 && actor->mode != 4) {
         if (st->link < 0 || g_pActorListBase[st->link].type != 0xC9) {
           Actor *best;
@@ -2763,7 +2763,7 @@ void Level31_UpdateActors(void) {
                                         best->posY - actor->posY, 0);
           }
         }
-      } else if ((actor->flags & 0x80000) &&
+      } else if ((actor->flags & ACTOR_HIT_SUPER) &&
                  (unsigned char)(actor->mode - 2) >= 2 && actor->mode != 4) {
         actor->mode = 2;
       }
@@ -2979,11 +2979,11 @@ void Level31_UpdateActors(void) {
     case 236: {
       L31Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->speed = 0xC8;
         } else {
           st->speed = 0x190;
@@ -3522,7 +3522,7 @@ void Level31_UpdateActors(void) {
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
-        } else if (actor->flags & 0x10000) {
+        } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -3536,7 +3536,7 @@ void Level31_UpdateActors(void) {
         break;
 
       hit:
-        if (actor->flags & 0xA0000) {
+        if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = 3;
           actor->cullRadius = 0;
           actor->drawn = 0;
@@ -3734,7 +3734,7 @@ void Level31_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3813,7 +3813,7 @@ void Level31_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3956,7 +3956,7 @@ void Level31_UpdateActors(void) {
           actor->posZ = st->restZ;
         }
       }
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
         actor->soundRange = 0x20;
@@ -3982,7 +3982,7 @@ void Level31_UpdateActors(void) {
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
-        if ((actor->flags & 0x30000) && st->shake == 0) {
+        if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -4075,7 +4075,7 @@ void Level31_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

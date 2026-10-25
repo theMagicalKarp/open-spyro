@@ -674,7 +674,7 @@ void Level24_UpdateActors(void) {
             b = 0x41;
           }
           TickCountdownByFrameDelta(&st->timer, 4);
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             int h;
 
             actor->flags = 0;
@@ -910,11 +910,11 @@ void Level24_UpdateActors(void) {
       if (dist < 0x32C8) {
         dist = VectorLength(g104, 0);
       }
-      if ((actor->flags & 0xB0000) && actor->mode != 3 &&
-          (st->kind != 1 || !(actor->flags & 0x20000))) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3 &&
+          (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
         st->lift = 0;
         st->knock = 0xC8;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knock = 0x15E;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
@@ -2187,7 +2187,7 @@ void Level24_UpdateActors(void) {
           ENTER_POSE(actor, 2);
         }
       }
-      if ((actor->flags & 0xB0000) &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) &&
           (actor->mode < 8 || actor->mode == 0x63)) {
         actor->flags = 0;
         if (st->mode == 3) {
@@ -2414,12 +2414,12 @@ void Level24_UpdateActors(void) {
       L24Guard2 *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & 0xA0000) && actor->mode != 3 &&
-          (st->kind != 1 || !(actor->flags & 0x20000))) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 3 &&
+          (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
         StopSoundVoicesByOwner(actor, 1);
         st->lift = 0x96;
         st->knock = 0x118;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knock = 0x17C;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
@@ -2697,13 +2697,13 @@ void Level24_UpdateActors(void) {
     case 160: {
       L26Critter *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
-          if (actor->flags & 0x10000) {
+          if (actor->flags & ACTOR_HIT_FLAME) {
             st->speed = 0x8C;
           } else {
             st->speed = 0xFA;
@@ -2853,7 +2853,7 @@ void Level24_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2921,7 +2921,7 @@ void Level24_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2949,7 +2949,7 @@ void Level24_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3456,7 +3456,7 @@ void Level24_UpdateActors(void) {
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
-        } else if (actor->flags & 0x10000) {
+        } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -3470,7 +3470,7 @@ void Level24_UpdateActors(void) {
         break;
 
       hit:
-        if (actor->flags & 0xA0000) {
+        if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = 3;
           actor->cullRadius = 0;
           actor->drawn = 0;
@@ -3668,7 +3668,7 @@ void Level24_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3747,7 +3747,7 @@ void Level24_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -4061,7 +4061,7 @@ void Level24_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

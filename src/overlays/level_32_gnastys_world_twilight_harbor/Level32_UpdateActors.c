@@ -1604,11 +1604,11 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o100, 0);
       }
 
-      if ((actor->flags & 0xB0000) && actor->mode != 4 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4 &&
           actor->mode != 0x14) {
         StopSoundVoicesByOwner(actor, 1);
         st->knockSpeed = 0xDC;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x154;
         }
         st->knockZSpeed = 0x82;
@@ -1744,7 +1744,7 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o120, 0);
       }
 
-      if ((actor->flags & 0x90000) && actor->mode != 4 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
           actor->mode != 0x14) {
         StopSoundVoicesByOwner(actor, 1);
         st->knockSpeed = 0xC8;
@@ -1912,7 +1912,7 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o130, 0);
       }
 
-      if ((actor->flags & 0x90000) && actor->mode != 4 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
           actor->mode != 0x14) {
         Actor *c;
 
@@ -2144,7 +2144,7 @@ void Level32_UpdateActors(void) {
     case 171: {
       L32Timer *st = actor->state;
 
-      if (actor->flags & 0x10000) {
+      if (actor->flags & ACTOR_HIT_FLAME) {
         PlayActorMeshVoice(actor, 0, &actor->sfxSlot);
         if (st->rearmTimer == 0) {
           ModifyWorldChunkAnimFlags(0, 0xFC, 0);
@@ -2314,7 +2314,7 @@ void Level32_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2382,7 +2382,7 @@ void Level32_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2410,7 +2410,7 @@ void Level32_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2426,11 +2426,11 @@ void Level32_UpdateActors(void) {
     case 236: {
       L32State236 *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0),
                                 spy->bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->knockSpeed = 0xC8;
         } else {
           st->knockSpeed = 0x190;
@@ -2878,7 +2878,7 @@ void Level32_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2957,7 +2957,7 @@ void Level32_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3096,7 +3096,7 @@ void Level32_UpdateActors(void) {
           actor->posZ = st->restZ;
         }
       }
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
         actor->soundRange = 0x20;
@@ -3122,7 +3122,7 @@ void Level32_UpdateActors(void) {
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
-        if ((actor->flags & 0x30000) && st->shake == 0) {
+        if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3215,7 +3215,7 @@ void Level32_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

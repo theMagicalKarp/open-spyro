@@ -1524,7 +1524,7 @@ void Level33_UpdateActors(void) {
 
       if (actor->flags != 0 && actor->mode != 2) {
         st->knockSpeed = 0xFA;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x145;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -1688,7 +1688,7 @@ void Level33_UpdateActors(void) {
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
       TickActorFlameGlow(actor);
 
-      if (actor->flags & 0x10000) {
+      if (actor->flags & ACTOR_HIT_FLAME) {
         if (st->phase == 2 &&
             ApproxDist2D(&actor->posX,
                           PATH_END(st->path)) < 0xBB8 &&
@@ -2593,7 +2593,7 @@ void Level33_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2661,7 +2661,7 @@ void Level33_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2689,7 +2689,7 @@ void Level33_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2876,7 +2876,7 @@ void Level33_UpdateActors(void) {
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
-        } else if (actor->flags & 0x10000) {
+        } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -2890,7 +2890,7 @@ void Level33_UpdateActors(void) {
         break;
 
       hit:
-        if (actor->flags & 0xA0000) {
+        if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = 3;
           actor->cullRadius = 0;
           actor->drawn = 0;
@@ -3061,7 +3061,7 @@ void Level33_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3140,7 +3140,7 @@ void Level33_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {

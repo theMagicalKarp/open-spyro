@@ -392,7 +392,7 @@ void Level3_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 4 && actor->mode != 5 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4 && actor->mode != 5 &&
           actor->mode != 9) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -400,10 +400,10 @@ void Level3_UpdateActors(void) {
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         st->spin = 2;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0xFA;
         }
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           actor->mode = 9;
           { int na; { int nb; } }
           { int na; { int nb; } }
@@ -552,7 +552,7 @@ void Level3_UpdateActors(void) {
         ENTER_POSE(actor, 0);
 
       case 4:
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           goto pose9;
         }
         if (g_nActorAnimDone != 0) {
@@ -571,7 +571,7 @@ void Level3_UpdateActors(void) {
         break;
 
       case 5:
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
         pose9:
           ANIM_QUEUE(actor, 9);
         }
@@ -667,9 +667,9 @@ void Level3_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & 0xB0000) != 0 && actor->mode != 10) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 10) {
         st->knock = 0x96;
-        if ((actor->flags & 0x20000) != 0) {
+        if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knock = 0xE1;
         }
         st->heading = StepAndLerpAngle8(
@@ -2446,7 +2446,7 @@ void Level3_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2514,7 +2514,7 @@ void Level3_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -2542,7 +2542,7 @@ void Level3_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3009,7 +3009,7 @@ void Level3_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3088,7 +3088,7 @@ void Level3_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -3206,7 +3206,7 @@ void Level3_UpdateActors(void) {
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
 
-      if ((actor->flags & 0x90000) == 0x10000) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == 0x10000) {
         actor->updateDist = 0xFF;
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
                       &actor->sfxSlot);
@@ -3225,7 +3225,7 @@ void Level3_UpdateActors(void) {
         continue;
       }
       if (st->timer == 0 || --st->timer == 0) {
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->timer = 0x10;
           st->speed += 0x64;
         }
@@ -3243,7 +3243,7 @@ void Level3_UpdateActors(void) {
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
-      if (st->speed > 0xE0 || (actor->flags & 0x80000)) {
+      if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = 1;
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 2; i++) {
@@ -3365,7 +3365,7 @@ void Level3_UpdateActors(void) {
     case 395: {
       Follower *st = actor->state;
 
-      if (actor->mode != 3 && (actor->flags & 0xB0000)) {
+      if (actor->mode != 3 && (actor->flags & ACTOR_HITS_SPYRO)) {
         st->vz = 0xC8;
         st->spinX = RandomIntInRange(-10, 10);
         st->spinY = RandomIntInRange(-10, 10);
@@ -3455,7 +3455,7 @@ void Level3_UpdateActors(void) {
 
       SnapActorToGround(actor);
       EncodeCachedVecToActorDirCode(actor);
-      if ((actor->flags & 0xB0000) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -3592,7 +3592,7 @@ void Level3_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 

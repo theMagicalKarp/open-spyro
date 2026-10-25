@@ -8,7 +8,7 @@
    breaks the type-146 prop at once) and SelectActorLodBand pushes the shade
    band out for the same flag, so +0x4E reads as a scorch glow (likely). */
 void TickActorFlameGlow(char *e) {
-  if (((Actor *)e)->flags & 0x10000) {
+  if (((Actor *)e)->flags & ACTOR_HIT_FLAME) {
     int v = (unsigned char)ACTOR_RAW(e, unsigned char, tint2) + 0x18;
     ACTOR_RAW(e, unsigned char, tint2) = v;
     if ((unsigned char)v >= 0x61) {

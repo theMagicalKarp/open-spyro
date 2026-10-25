@@ -537,8 +537,8 @@ void Level5_UpdateActors(void) {
     case 0x4E: {
       RiderState *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode != 1) {
-        if (actor->flags & 0x80000) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->timer = 0xA;
         } else {
           st->timer = 0;
@@ -1351,7 +1351,7 @@ void Level5_UpdateActors(void) {
       int *st = actor->state;
       int i;
 
-      if (actor->flags & 0xB0000) {
+      if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, 0, 0);
@@ -1409,7 +1409,7 @@ void Level5_UpdateActors(void) {
         st->ready = 1;
       }
 
-      if ((actor->flags & 0x90000) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
         Actor *reward;
         int i;
 
@@ -2101,7 +2101,7 @@ void Level5_UpdateActors(void) {
       int svZ[3];
       int i;
 
-      if ((actor->flags & 0x80000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
         st->timer = 0x14;
         actor->mode = 1;
       }
@@ -2137,7 +2137,7 @@ void Level5_UpdateActors(void) {
       SmokerState *st = actor->state;
       int i;
 
-      if ((actor->flags & 0x80000) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
         st->timer = 0xF;
         actor->mode = 1;
       }

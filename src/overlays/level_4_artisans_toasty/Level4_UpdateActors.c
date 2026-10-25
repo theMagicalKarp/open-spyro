@@ -1673,7 +1673,7 @@ void Level4_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -1741,7 +1741,7 @@ void Level4_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -1769,7 +1769,7 @@ void Level4_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2203,7 +2203,7 @@ void Level4_UpdateActors(void) {
       GuardState *st = actor->state;
       unsigned char c;
 
-      if ((actor->flags & 0x90000) && (unsigned char)((c = actor->mode) - 10) >= 10 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (unsigned char)((c = actor->mode) - 10) >= 10 &&
           c != 0x62) {
         actor->mode = 10;
         continue;
@@ -2452,7 +2452,7 @@ void Level4_UpdateActors(void) {
       dist = ApproxDist2D(pos, &spy->posX);
       EBB_BREAK();
 
-      if ((actor->flags & 0x90000) && (c = actor->mode) != 4 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (c = actor->mode) != 4 &&
           (unsigned char)(c - 13) >= 3) {
         if (st->hits == 0) {
           SpawnActorDeathDrop(actor, 1, 0, 0);
@@ -2696,13 +2696,13 @@ void Level4_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 7) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 7) {
         SetActorGroupSubstate(actor, 1);
         st->angle = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x190;
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0x1F4;
         }
         st->spin = RandomIntInRange(2, 5);

@@ -1666,7 +1666,7 @@ void Level10_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -1696,7 +1696,7 @@ void Level10_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -1872,7 +1872,7 @@ void Level10_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -1940,7 +1940,7 @@ void Level10_UpdateActors(void) {
         }
       }
 
-      if (actor->flags & 0xA0000) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
         actor->soundRange = 0x20;
@@ -1968,7 +1968,7 @@ void Level10_UpdateActors(void) {
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
 
-        if ((actor->flags & 0x10000) && st->phase == 0) {
+        if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -1985,7 +1985,7 @@ void Level10_UpdateActors(void) {
     case 205: {
       int *st = actor->state;
 
-      if ((actor->flags & 0xA0000) && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
         ENTER_POSE(actor, 1);
       }
       if (*st >= 0) {
@@ -2512,7 +2512,7 @@ void Level10_UpdateActors(void) {
           actor->subMode = 1;
           actor->updateDist = 0x10;
         }
-        if (actor->flags & 0xB0000) {
+        if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2591,7 +2591,7 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->flags & 0x80000) {
+        if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = 2;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
@@ -2700,7 +2700,7 @@ void Level10_UpdateActors(void) {
       EBB_BREAK();
       TickActorFlameGlow(actor);
       if (actor->mode != 1 && actor->mode != 3 && actor->flags != 0 &&
-          ((actor->flags & 0x20000) ||
+          ((actor->flags & ACTOR_HIT_CHARGE) ||
            AbsAngleDelta8(actor->rotZ,
                          ArcTan2(spy->posX - actor->posX,
                                        spy->posY - actor->posY, 0)) >= 0x55)) {
@@ -3043,7 +3043,7 @@ void Level10_UpdateActors(void) {
         SPY.pScriptedActor = actor;
         g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
       }
-      if (actor->mode < 0x28 && (actor->flags & 0x90000)) {
+      if (actor->mode < 0x28 && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))) {
         actor->flags = 0;
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
@@ -3465,7 +3465,7 @@ void Level10_UpdateActors(void) {
       if (st->link != -1) {
         link = &g_pActorListBase[st->link];
       }
-      if ((actor->flags & 0x90000) && actor->mode != 7) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 7) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;

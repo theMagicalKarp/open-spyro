@@ -1315,7 +1315,7 @@ void Level2_UpdateActors(void) {
     case 115: {
       GuardPairState *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
@@ -1744,7 +1744,7 @@ void Level2_UpdateActors(void) {
     case 129:
       switch (actor->mode) {
       case 0:
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           ENTER_POSE(actor, 1);
         }
         break;
@@ -1759,7 +1759,7 @@ void Level2_UpdateActors(void) {
 
     /* Type 157: starts its sound and animation when hit, then settles. */
     case 157:
-      if ((actor->flags & 0x10000) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
         ModifyWorldChunkAnimFlags(*(int *)actor->state, 0xFC, 0);
         actor->mode = 1;
         ANIM_RESET(actor, 1);
@@ -1776,7 +1776,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & 0xB0000) && actor->mode != 2 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2 &&
           (actor->flags != 0x10000 || st->flag == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
@@ -1994,7 +1994,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & 0x90000) && actor->mode != 1 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1 &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
                                       spy->posY - actor->posY, 0)) >= 0x47) {
@@ -2228,7 +2228,7 @@ void Level2_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -2258,7 +2258,7 @@ void Level2_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2434,7 +2434,7 @@ void Level2_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2959,13 +2959,13 @@ void Level2_UpdateActors(void) {
     case 412: {
       HopState *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         EBB_BREAK();
         actor->flags = 0;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->time = 0x96;
         } else {
           st->time = 0x12C;
@@ -3089,7 +3089,7 @@ void Level2_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 
