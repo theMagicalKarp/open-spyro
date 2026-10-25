@@ -8,6 +8,8 @@
 #ifndef OPEN_SPYRO_PAD_H
 #define OPEN_SPYRO_PAD_H
 
+#include "pad_buttons.h"
+
 typedef struct PadSubstep {
   int padType;           /* 0x00 g_nPadType */
   unsigned int held;     /* 0x04 g_dwPadHeld */

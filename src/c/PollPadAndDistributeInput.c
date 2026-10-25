@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "pad.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
@@ -120,37 +121,39 @@ void PollPadAndDistributeInput(void) {
       *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
       MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
       if (g_abPadRawReport[1] == 0x53) {
-        /* the Saturn remap accumulator deliberately reuses `pressed`: the
-           original serves both from one register (their ranges are disjoint,
-           A196), and a separate local rotates the whole function. */
-        pressed = buttons & ~0x9E;
-        if (buttons & 0x80) {
-          pressed |= 2;
+        /* the Saturn-pad face/shoulder remap accumulator deliberately reuses
+           `pressed`: the original serves both from one register (their ranges
+           are disjoint, A196), and a separate local rotates the whole function.
+         */
+        pressed =
+            buttons & ~(PAD_SQUARE | PAD_TRIANGLE | PAD_R1 | PAD_L1 | PAD_R2);
+        if (buttons & PAD_SQUARE) {
+          pressed |= PAD_R2;
         }
-        if (buttons & 0x10) {
-          pressed |= 8;
+        if (buttons & PAD_TRIANGLE) {
+          pressed |= PAD_R1;
         }
-        if (buttons & 8) {
-          pressed |= 0x10;
+        if (buttons & PAD_R1) {
+          pressed |= PAD_TRIANGLE;
         }
-        if (buttons & 2) {
-          pressed |= 4;
+        if (buttons & PAD_R2) {
+          pressed |= PAD_L1;
         }
-        if (buttons & 4) {
-          pressed |= 0x80;
+        if (buttons & PAD_L1) {
+          pressed |= PAD_SQUARE;
         }
         buttons = pressed;
       }
-      if ((buttons & 0xF000) == 0) {
+      if ((buttons & PAD_DPAD) == 0) {
         if (cal[2] >= 0xC1) {
-          buttons |= 0x2000;
+          buttons |= PAD_RIGHT;
         } else if (cal[2] < 0x40) {
-          buttons |= 0x8000;
+          buttons |= PAD_LEFT;
         }
         if (cal[3] >= 0xC1) {
-          buttons |= 0x4000;
+          buttons |= PAD_DOWN;
         } else if (cal[3] < 0x40) {
-          buttons |= 0x1000;
+          buttons |= PAD_UP;
         }
         if (cal[2] != 0x7F || cal[3] != cal[2]) {
           g_nPadStickActiveFlag = 1;
@@ -167,8 +170,7 @@ void PollPadAndDistributeInput(void) {
       g_nPadType = padType;
       g_adwPadHeldBlock[0] = buttons;
       if (g_nFrameTicks != 0) {
-        do {
-        } while (0);
+        EBB_BREAK();
         g_adwPadHeldBlock[-2] |= pressed;
         g_adwPadHeldBlock[-1] |= released;
       } else {
@@ -179,7 +181,7 @@ void PollPadAndDistributeInput(void) {
       }
       g_dwPadAnalogCalibrated = *(unsigned int *)cal;
       if (g_nPadAllInputIdleFlag != 0) {
-        if ((g_dwPadHeld & 0xF000) != 0 ||
+        if ((g_dwPadHeld & PAD_DPAD) != 0 ||
             (padType == 3 && (cal[2] != 0x7F || cal[3] != cal[2]))) {
           g_nPadDirectionalIdleFlag = 0;
         }

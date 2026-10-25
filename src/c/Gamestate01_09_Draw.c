@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -12,7 +13,7 @@ void Gamestate01_09_Draw(void) {
   int r;
   int g;
   int b;
-  int iVar1;
+  int v;
   MATRIX m1;
   MATRIX m2;
   MATRIX *p2;
@@ -40,60 +41,60 @@ void Gamestate01_09_Draw(void) {
       FillWord(&m1, 0, 0x20);
       SetTransMatrix(&m1);
       m1.m[0][0] = 0x1000;
-      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] -
-                           g_nLevelIntroParallaxCountdown);
-      m1.m[1][1] = iVar1;
-      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] -
-                         g_nLevelIntroParallaxCountdown);
-      m1.m[2][1] = iVar1;
-      iVar1 = LookupSine(g_anCameraEulerPitchBlock[0] -
-                         g_nLevelIntroParallaxCountdown);
-      m1.m[1][2] = -iVar1;
-      iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0] -
-                           g_nLevelIntroParallaxCountdown);
-      m1.m[2][2] = iVar1;
+      v = LookupCosine(g_anCameraEulerPitchBlock[0] -
+                       g_nLevelIntroParallaxCountdown);
+      m1.m[1][1] = v;
+      v = LookupSine(g_anCameraEulerPitchBlock[0] -
+                     g_nLevelIntroParallaxCountdown);
+      m1.m[2][1] = v;
+      v = LookupSine(g_anCameraEulerPitchBlock[0] -
+                     g_nLevelIntroParallaxCountdown);
+      m1.m[1][2] = -v;
+      v = LookupCosine(g_anCameraEulerPitchBlock[0] -
+                       g_nLevelIntroParallaxCountdown);
+      m1.m[2][2] = v;
 
       p2 = &m2;
       FillWord(p2, 0, 0x20);
-      iVar1 = LookupCosine(g_nCameraEulerYaw);
-      m2.m[0][0] = iVar1;
-      iVar1 = LookupSine(g_nCameraEulerYaw);
-      m2.m[2][0] = -iVar1;
+      v = LookupCosine(g_nCameraEulerYaw);
+      m2.m[0][0] = v;
+      v = LookupSine(g_nCameraEulerYaw);
+      m2.m[2][0] = -v;
       m2.m[1][1] = 0x1000;
-      iVar1 = LookupSine(g_nCameraEulerYaw);
-      m2.m[0][2] = iVar1;
-      iVar1 = LookupCosine(g_nCameraEulerYaw);
-      m2.m[2][2] = iVar1;
+      v = LookupSine(g_nCameraEulerYaw);
+      m2.m[0][2] = v;
+      v = LookupCosine(g_nCameraEulerYaw);
+      m2.m[2][2] = v;
       MulMatrix(&m1, p2);
 
       FillWord(p2, 0, 0x20);
-      iVar1 = LookupCosine(g_nCameraEulerRoll);
-      m2.m[0][0] = iVar1;
-      iVar1 = LookupSine(g_nCameraEulerRoll);
-      m2.m[1][0] = -iVar1;
-      iVar1 = LookupSine(g_nCameraEulerRoll);
-      m2.m[0][1] = iVar1;
-      iVar1 = LookupCosine(g_nCameraEulerRoll);
-      m2.m[1][1] = iVar1;
+      v = LookupCosine(g_nCameraEulerRoll);
+      m2.m[0][0] = v;
+      v = LookupSine(g_nCameraEulerRoll);
+      m2.m[1][0] = -v;
+      v = LookupSine(g_nCameraEulerRoll);
+      m2.m[0][1] = v;
+      v = LookupCosine(g_nCameraEulerRoll);
+      m2.m[1][1] = v;
       m2.m[2][2] = 0x1000;
       MulMatrix(&m1, p2);
 
       CopyWords(p2, &m1, 0x14);
-      iVar1 = m1.m[1][0] * 0x140;
-      if (iVar1 < 0) {
-        iVar1 += 0x1ff;
+      v = m1.m[1][0] * 0x140;
+      if (v < 0) {
+        v += 0x1ff;
       }
-      m2.m[1][0] = iVar1 >> 9;
-      iVar1 = m1.m[1][1] * 0x140;
-      if (iVar1 < 0) {
-        iVar1 += 0x1ff;
+      m2.m[1][0] = v >> 9;
+      v = m1.m[1][1] * 0x140;
+      if (v < 0) {
+        v += 0x1ff;
       }
-      m2.m[1][1] = iVar1 >> 9;
-      iVar1 = m1.m[1][2] * 0x140;
-      if (iVar1 < 0) {
-        iVar1 += 0x1ff;
+      m2.m[1][1] = v >> 9;
+      v = m1.m[1][2] * 0x140;
+      if (v < 0) {
+        v += 0x1ff;
       }
-      m2.m[1][2] = iVar1 >> 9;
+      m2.m[1][2] = v >> 9;
       EmitStaticActorMeshList(-1, &m1, p2);
     } else {
       EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
@@ -113,7 +114,7 @@ void Gamestate01_09_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

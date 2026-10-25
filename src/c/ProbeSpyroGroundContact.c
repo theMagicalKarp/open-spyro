@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "match_asm.h"
 
 /* The whole Spyro ground/collision state block hangs off one base register:
    [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,
@@ -95,8 +96,7 @@ void ProbeSpyroGroundContact(void) {
            first probe's slope test is spelled as the plain scalar
            g_nSpyroGroundSlope precisely because there the original DOES
            fold. */
-        do {
-        } while (0);
+        EBB_BREAK();
         if (g_anSpyroAirborneFramesBlock[5] < 0x21) {
           g_anSpyroAirborneFramesBlock[0] = 0;
           g_anSpyroAirborneFramesBlock[0x2d] =

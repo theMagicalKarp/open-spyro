@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 
 /* 0x8003d194 (0x224): per-frame Spyro animation state-machine tick, routed on
    g_nSpyroAnimMode. Modes 1/2/6 and 5 run the sub-frame timer at +2/+4 and
@@ -51,8 +52,7 @@ void TickSpyroAnimStateMachine(void) {
     if (StepSpyroAnimAndCommitTransition(
             g_abSpyroAnimDescTable[*prev * 4 + 3]) != 0) {
       if (*prev == 0x1A) {
-        PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x1B],
-                        prev - 0x18, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(0x1B), prev - 0x18, 0x10, 0);
       }
       g_nSpyroAnimMode = 0;
     }

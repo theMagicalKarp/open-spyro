@@ -40,58 +40,9 @@
 #include "actor_type.h"
 #include "level_globals.h"
 #include "level_emit_particles.h"
+#include "emit_record.h"
+#include "gamestate.h"
 
-typedef struct Emit {   /* one 0x20-byte emit-list record */
-  unsigned char type;   /* 0x00 effect id */
-  unsigned char cls;    /* 0x01 record class (stamped by the allocator) */
-  unsigned char phase;  /* 0x02 */
-  unsigned char visible;  /* 0x03 1 = drawn last frame (RasterizeEmitList); AdvanceEmitList frees it at 0 */
-  union {
-    struct {                     /* classes 2 / 3 / 6 -- spark */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pad[3];              /* 0x12 */
-      short vel[3];              /* 0x18 */
-      short toggle;               /* 0x1E phase toggle (AdvanceEmitList flips it 0<->1) */
-    } spark;
-    struct {                     /* class 0 -- dust mote */
-      unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      short vel[3];              /* 0x10 */
-    } dust;
-    struct {                     /* class 2 -- haze puff (word velocity) */
-      unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pad[3];              /* 0x12 */
-      int vel;                   /* 0x18 */
-    } puff;
-    struct {                     /* classes 1 / 4 -- streak */
-      unsigned short a[3];       /* 0x04 head */
-      unsigned short b[3];       /* 0x0A tail */
-      unsigned char c0[4];       /* 0x10 head colour */
-      unsigned char c1[4];       /* 0x14 tail colour */
-    } line;
-  } u;
-} Emit;
 
 void Level33_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
@@ -134,7 +85,7 @@ void Level33_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      if (g_nGamestate == 8) {
+      if (g_nGamestate == GS_GEM_PICKUP) {
         rec->u.spark.life = 8;
       } else {
         rec->u.spark.life = 0x10;

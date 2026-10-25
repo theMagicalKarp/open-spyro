@@ -27,13 +27,13 @@
  *   - Case 312's shake uses the literal `0x78 - timer` with the ABS2 form of
  *     the height bob (level 0's form); separate dx/dy locals put the index
  *     chain in the wrong register. Case 495's settle test also needs ABS2.
- *   - Case 312 case 1 stores unk49 before unk52/unk50 (so the `li t1,2`
+ *   - Case 312 case 1 stores subMode before updateDist/cullRadius (so the `li t1,2`
  *     reload leads the block and reorg shares it with the second branch),
  *     and the `(flags & 0xA0000)` test sits after the common tail (`goto`).
  *   - Case 312's jitter is `+= (rand & 0xF) - 8` and the sum is written
  *     back through `ps[3]`; `x - 8 + r` reassociates differently.
  *   - `tint0` is a word store (`*(int *)&actor->tint0`), written before the
- *     unk49 store.
+ *     subMode store.
  *   - Case 38's spawn loop starts `for (i = 0, ang = rand & 0x3F; ...)`.
  *   - Case 497 splits its channel switch into `case 3: case 4:` and
  *     `case 5: case 7:` with identical bodies (jump.c merges them); the
@@ -49,24 +49,15 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
+#include "level_update_actors_macros.h"
+#include "gamestate.h"
+#include "match_asm.h"
+#include "pad_buttons.h"
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
-
-#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
@@ -77,9 +68,6 @@
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
-#define CAM g_anWorldToCameraRotMtx
-
-
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -87,20 +75,7 @@
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -137,77 +112,10 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
-
-#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
-
-/* An animation change that also clears the finished flag. */
-#define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_ADVANCE(a, n);                                                        \
-  }
-#define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_RESET(a, n);                                                          \
-  }
-
-/* ENTER_POSE with the already-there test first. */
-#define ENTER_POSE4(a, n)                                                      \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim == (n)) {                                                     \
-    continue;                                                                  \
-  }                                                                            \
-  ANIM_ADVANCE(a, n);                                                          \
-  continue
 
 /* The ANIM/ENTER_POSE macros' frame-progress constant. */
 #define sixteen 0x10
 /* ==== Level 16 classes ==== */
-
 
 
 /* Case 328 -- floor-snapped marker. */
@@ -339,7 +247,7 @@ void Level16_UpdateActors(void) {
                 g_nScriptedRespawnFlag = 1;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
-                g_nGamestate = 1;
+                g_nGamestate = GS_LEVEL_LOAD;
                 g_nGamePaused = 1;
                 g_nScriptedMobTag = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
@@ -683,7 +591,7 @@ void Level16_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -711,7 +619,7 @@ void Level16_UpdateActors(void) {
           st->phase = 0;
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -735,7 +643,7 @@ void Level16_UpdateActors(void) {
         } else {
           actor->mode += 1;
         }
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           actor->mode = 5;
         }
         break;
@@ -1747,8 +1655,7 @@ void Level16_UpdateActors(void) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
               st->gnorc = 0;
-              do {
-              } while (0);
+              EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
                 g_nSfxOverrideFlags = 1;
@@ -1781,8 +1688,7 @@ void Level16_UpdateActors(void) {
             svG[1] = (GetRandomU32() & 0x310) - 0x188;
             svG[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
-            do {
-            } while (0);
+            EBB_BREAK();
             st->drift[0] = svG[0];
             st->drift[1] = svG[1];
             st->drift[2] = svG[2];
@@ -1791,8 +1697,7 @@ void Level16_UpdateActors(void) {
             int *at;
 
             st->timer -= g_nFrameStep;
-            do {
-            } while (0);
+            EBB_BREAK();
 
             if (g_nCameraCurrentMode == 3) {
               svG[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
@@ -2572,7 +2477,7 @@ void Level16_UpdateActors(void) {
         SPY.pScriptedActor = actor;
         SPY.damageFlags |= 0x800;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
-        CopyVector(&SPY.contact, &actor->posX);
+        CopyVector(SPY.firstContactPoint, &actor->posX);
         if (st->flags & 1) {
           spyro->controlFlags |= 0x8000;
         } else {

@@ -28,21 +28,15 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
+#include "level_update_actors_macros.h"
+#include "gamestate.h"
+#include "match_asm.h"
+#include "pad_buttons.h"
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
-
-#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
@@ -52,7 +46,6 @@
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
-#define CAM g_anWorldToCameraRotMtx
 
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut_s[];
@@ -63,20 +56,7 @@ extern short g_anSineLut_s[];
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -113,71 +93,6 @@ extern short g_anSineLut_s[];
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
-
-#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
-/* An animation change that also clears the finished flag. */
-#define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_ADVANCE(a, n);                                                        \
-  }
-#define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_RESET(a, n);                                                          \
-  }
-
-/* ENTER_POSE with the already-there test first. */
-#define ENTER_POSE4(a, n)                                                      \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim == (n)) {                                                     \
-    continue;                                                                  \
-  }                                                                            \
-  ANIM_ADVANCE(a, n);                                                          \
-  continue
 
 /* ==== Level 16 classes ==== */
 
@@ -187,35 +102,6 @@ typedef struct ExitState {
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
 
-/* An animation change at half speed, keyed on the current animation. */
-#define ANIM_BLEND(a, n)                                                       \
-  if ((a)->anim != (n)) {                                                     \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }
-/* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
- * (merged again after loop.c). Keeps the constant's lifetime short enough
- * that loop.c does not hoist it (see case 115). */
-#define ENTER_POSE_B(a, n)                                                     \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    do {                                                                       \
-    } while (0);                                                               \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }                                                                            \
-  continue
 
 /* ==== Level 9 classes ==== */
 
@@ -225,181 +111,19 @@ typedef struct ExitState {
 
 /* ==== Classes shared with level 31 ==== */
 
-/* Set the state byte and queue animation `n` without promoting the current
- * one, then move on to the next actor. */
-#define ANIM_QUEUE(a, n)                                                       \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->nextAnim = (n);                                                          \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }                                                                            \
-  continue
 
 /* ==== Level 25 classes ==== */
 
 /* Case 50 -- grabber. Only one grabber at a time may hold Spyro; the shared
  * slot names the holder. */
 
-/* Clear the partner's "held" bit. */
-#define L25_UNLINK(st)                                                         \
-  if ((st)->link >= 0) {                                                       \
-    g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \
-  }
-
-/* Give up the shared slot. */
-#define L25_DROP(st)                                                           \
-  *(st)->slot = 0;                                                             \
-  L25_UNLINK(st)
-
-/* Case 402 -- cannon ball: fired from a barrel, then flown along a path
- * whose header is { count, cur } and whose points follow at +8 (PATH_X). */
-#define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-
-#define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
-#define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-#define FACE4(a, h, s, t)                                                      \
-  ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
-#define RESET_IDLE(a)                                                          \
-  (a)->mode = 0;                                                              \
-  ANIM_RESET(a, 0);                                                            \
-  continue
-#define ANIM_WORD(a) (*(int *)&(a)->anim)
-#define SPY_FACING(a)                                                          \
-  AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
-                                             (a)->posY - spy->posY, 0))
-#define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-#define ANIM_GO8(a, n)                                                         \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }
-#define ANIM_RETIME(a)                                                         \
-  if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
-    (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
-  }
-#define ANIM_JUMP(a, n, f)                                                     \
-  g_nActorAnimDone = 0;                                                              \
-  (a)->frameProgress = sixteen;                                                        \
-  (a)->frameRate = sixteen;                                                        \
-  (a)->anim = (a)->nextAnim;                                                     \
-  (a)->nextAnim = (n);                                                            \
-  (a)->frame = (a)->nextFrame;                                                     \
-  (a)->nextFrame = (f);                                                            \
-  StubActorHook(a)
-#define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
-#define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-#define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
-#define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-#define BARREL_BURST(a, st)                                                    \
-  {                                                                            \
-    Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
-    Actor *w_;                                                                 \
-                                                                               \
-    StopSoundVoicesByOwner(a, 1);                                                       \
-    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, 8, &sp_->sfxSlot);    \
-    w_ = (st)->rider;                                                          \
-    if (w_ != 0 && w_->type == 0x9A && w_->mode == 2) {                       \
-      w_->subMode = 1;                                                           \
-    }                                                                          \
-    DespawnActorRecord(a);                                                          \
-    continue;                                                                  \
-  }
-typedef struct L32State145 {
-  int u00;     /* 0x00 flags; bit 0 armed */
-  int u04;     /* 0x04 knock-back speed */
-  int u08;     /* 0x08 knock-back heading */
-  int u0C;     /* 0x0C */
-  int u10;     /* 0x10 shot timer */
-  int u14;     /* 0x14 */
-  int u18;     /* 0x18 shot timer reload */
-  void *u1C;   /* 0x1C path */
-  int u20;     /* 0x20 */
-  int u24;     /* 0x24 */
-  int u28[6];  /* 0x28 trigger box */
-  int u40[6];  /* 0x40 trigger box */
-  int u58[6];  /* 0x58 trigger box */
-  int u70;     /* 0x70 initialised */
-  int u74;     /* 0x74 sink timer */
-} L32State145;
-typedef struct L32State147 {
-  int u00;     /* 0x00 flags; bit 0 armed */
-  void *u04;   /* 0x04 path */
-  int u08;     /* 0x08 knock-back speed */
-  int u0C;     /* 0x0C knock-back heading */
-  int u10;     /* 0x10 */
-  int u14;     /* 0x14 */
-  int u18;     /* 0x18 yaw toward Spyro */
-  int u1C;     /* 0x1C yaw limit (0xFF none) */
-  int u20;     /* 0x20 yaw limit (0xFF none) */
-  int u24;     /* 0x24 */
-  int u28;     /* 0x28 sweep rate */
-  int u2C;     /* 0x2C sweep yaw << 4 */
-  int u30;     /* 0x30 timer */
-  int u34[6];  /* 0x34 trigger box */
-  int u4C[6];  /* 0x4C trigger box */
-  int u64[6];  /* 0x64 trigger box */
-  int u7C;     /* 0x7C initialised */
-} L32State147;
-typedef struct L32State148 {
-  int u00;              /* 0x00 flags; bit 0 armed */
-  int u04;              /* 0x04 knock-back speed */
-  int u08;              /* 0x08 knock-back heading */
-  int u0C;              /* 0x0C */
-  int u10[6];           /* 0x10 trigger box */
-  unsigned char *u28;   /* 0x28 target path: count, index, points */
-  void *u2C;            /* 0x2C path */
-  int u30;              /* 0x30 timer */
-  int u34;              /* 0x34 throw timer */
-  Actor *u38;           /* 0x38 held lob (type 176), -1 once thrown */
-  int u3C;              /* 0x3C */
-  int u40;              /* 0x40 aim-at-path range */
-  int u44[6];           /* 0x44 trigger box */
-  int u5C[6];           /* 0x5C trigger box */
-  int u74;              /* 0x74 initialised */
-} L32State148;
-typedef struct L32Lob {
-  int u00;            /* 0x00 */
-  short h4;           /* 0x04 */
-  short h6;           /* 0x06 */
-  short h8;           /* 0x08 */
-  short hA;           /* 0x0A */
-  unsigned char bC;   /* 0x0C */
-  unsigned char bD;   /* 0x0D */
-  unsigned char bE;   /* 0x0E */
-  unsigned char bF;   /* 0x0F */
-} L32Lob;
-typedef struct L32Shot {
-  int vel[3]; /* 0x00 */
-  short u0C;  /* 0x0C life timer */
-  short u0E;  /* 0x0E long-reach timer */
-} L32Shot;
-typedef struct L32Timer {
-  int u00; /* 0x00 */
-  int u04; /* 0x04 re-arm timer */
-} L32Timer;
-typedef struct L32State236 {
-  int u00[8]; /* 0x00 */
-  int u20;    /* 0x20 knock-back speed */
-  int u24;    /* 0x24 knock-back heading */
-  int u28;    /* 0x28 */
-  int u2C;    /* 0x2C idle timer */
-} L32State236;
 
 /* ==== Level 33 classes ==== */
 
 /* Type 143 state. */
 typedef struct L33State143 {
-  int u00; /* 0x00 radius */
-  int u04; /* 0x04 timer */
+  int radius; /* 0x00 radius */
+  int timer; /* 0x04 timer */
 } L33State143;
 
 /* Type 169's trail point. */
@@ -416,30 +140,28 @@ typedef struct L33State169 {
   short h06;       /* 0x06 life timer */
   short h08;       /* 0x08 landing delay */
   short h0A;       /* 0x0A trail length */
-  int u0C;         /* 0x0C speed */
-  int u10;         /* 0x10 climb */
+  int speed;         /* 0x0C speed */
+  int climb;         /* 0x10 climb */
 } L33State169;
 
 extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
-#define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-#define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 #define FLY_FLAGS(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x14))
 
 /* Type 159 state. */
 typedef struct L33State159 {
   FlyPath *path; /* 0x00 */
-  int u04;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
-  int u08;       /* 0x08 slow-down timer */
+  int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
+  int slowTimer;       /* 0x08 slow-down timer */
   int u0C;       /* 0x0C */
-  int u10;       /* 0x10 speed */
-  int u14;       /* 0x14 knock-back heading */
-  int u18;       /* 0x18 knock-back speed */
-  int u1C;       /* 0x1C vertical speed */
-  int u20;       /* 0x20 end node going back */
-  int u24;       /* 0x24 end node going forward */
-  int u28[14];   /* 0x28 trigger box */
-  int u60;       /* 0x60 partner actor index, -1 none */
+  int speed;       /* 0x10 speed */
+  int knockHeading;       /* 0x14 knock-back heading */
+  int knockSpeed;       /* 0x18 knock-back speed */
+  int vSpeed;       /* 0x1C vertical speed */
+  int endNodeBack;       /* 0x20 end node going back */
+  int endNodeFwd;       /* 0x24 end node going forward */
+  int box[14];   /* 0x28 trigger box */
+  int partner;       /* 0x60 partner actor index, -1 none */
 } L33State159;
 
 extern int g_anLevelEscapeRunCount[]; /* laps per lane */
@@ -451,13 +173,13 @@ typedef struct GnastyState {
   FlyPath *path3;           /* 0x08 camera reference path */
   int u0C;                  /* 0x0C */
   int u10;                  /* 0x10 */
-  int u14;                  /* 0x14 knock-back heading */
-  int u18;                  /* 0x18 speed */
-  int u1C;                  /* 0x1C vertical speed */
-  int u20;                  /* 0x20 queued jump speed */
+  int knockHeading;                  /* 0x14 knock-back heading */
+  int speed;                  /* 0x18 speed */
+  int vSpeed;                  /* 0x1C vertical speed */
+  int queuedJumpSpeed;                  /* 0x20 queued jump speed */
   int u24[12];              /* 0x24 */
   int u54;                  /* 0x54 */
-  int u58;                  /* 0x58 timer */
+  int stateTimer;                  /* 0x58 timer */
   int phase;                /* 0x5C fight phase */
   int timer;                /* 0x60 throw timer */
   int u64;                  /* 0x64 */
@@ -472,7 +194,7 @@ typedef struct GnastyState {
   int seen;                 /* 0xC4 */
   unsigned char *home;      /* 0xC8 */
   int camTimer;             /* 0xCC */
-  int uD0;                  /* 0xD0 */
+  int voice;                  /* 0xD0 */
   int drop[3];              /* 0xD4 key actors dropped while hit */
   L33Trail trails[3][150];  /* 0xE0 one per live bomb */
 } GnastyState;
@@ -483,11 +205,11 @@ typedef struct GnastyState {
     int h_ = ProbeActorGroundHeightRaised(a, 0xBB8);                                          \
     int z_;                                                                    \
                                                                                \
-    (st)->u1C -= 0x19;                                                         \
-    if ((st)->u1C < -0x190) {                                                  \
-      (st)->u1C = -0x190;                                                      \
+    (st)->vSpeed -= 0x19;                                                         \
+    if ((st)->vSpeed < -0x190) {                                                  \
+      (st)->vSpeed = -0x190;                                                      \
     }                                                                          \
-    z_ = (a)->posZ + (st)->u1C;                                                \
+    z_ = (a)->posZ + (st)->vSpeed;                                                \
     if (z_ < h_) {                                                             \
       (a)->posZ = h_;                                                          \
     } else {                                                                   \
@@ -893,7 +615,7 @@ void Level33_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -919,7 +641,7 @@ void Level33_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -941,7 +663,7 @@ void Level33_UpdateActors(void) {
         } else {
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -1356,11 +1078,9 @@ void Level33_UpdateActors(void) {
           }
 
           actor->rotX += (unsigned char)(st->lean - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotY += (unsigned char)(st->roll - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotZ += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
@@ -1616,8 +1336,7 @@ void Level33_UpdateActors(void) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
               st->gnorc = 0;
-              do {
-              } while (0);
+              EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
                 g_nSfxOverrideFlags = 1;
@@ -1650,8 +1369,7 @@ void Level33_UpdateActors(void) {
             svF[1] = (GetRandomU32() & 0x310) - 0x188;
             svF[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
-            do {
-            } while (0);
+            EBB_BREAK();
             st->drift[0] = svF[0];
             st->drift[1] = svF[1];
             st->drift[2] = svF[2];
@@ -1660,8 +1378,7 @@ void Level33_UpdateActors(void) {
             int *at;
 
             st->timer -= g_nFrameStep;
-            do {
-            } while (0);
+            EBB_BREAK();
 
             if (g_nCameraCurrentMode == 3) {
               svF[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
@@ -1737,22 +1454,22 @@ void Level33_UpdateActors(void) {
     case 143: {
       L33State143 *st = actor->state;
 
-      st->u00 += dt * 14;
-      actor->scale = 0xBB80 / st->u00;
+      st->radius += dt * 14;
+      actor->scale = 0xBB80 / st->radius;
       if (actor->scale < 5) {
         actor->scale = 5;
       }
       if (actor->scale >= 0x80) {
         actor->scale = 0x7F;
       }
-      if (st->u04 != 0) {
-        RaiseSpyroTriggerInRadius(&actor->posX, st->u00, 7);
+      if (st->timer != 0) {
+        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, 7);
       }
       if (actor->nextAnim == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (TickCountdownByFrameDelta(&st->u04, 4) != 0) {
+      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
         ANIM_SET(actor, 1);
       }
       continue;
@@ -1803,22 +1520,22 @@ void Level33_UpdateActors(void) {
       }
 
       if (actor->flags != 0 && actor->mode != 2) {
-        st->u18 = 0xFA;
+        st->knockSpeed = 0xFA;
         if (actor->flags & 0x20000) {
-          st->u18 = 0x145;
+          st->knockSpeed = 0x145;
         }
-        st->u14 = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->u1C = 0x28;
+        st->vSpeed = 0x28;
         ENTER_POSE(actor, 2);
       }
       actor->flags = 0;
 
-      if (st->u04 == 1 && actor->cullRadius == 0 &&
+      if (st->lane == 1 && actor->cullRadius == 0 &&
           ((GetWorldChunkAnimState(4) >> 8) & 0xFF) > 0) {
         actor->cullRadius = 0x28;
-        g_pActorListBase[st->u60].cullRadius = 0x28;
+        g_pActorListBase[st->partner].cullRadius = 0x28;
       }
 
       if (actor->nextAnim == 0 && actor->cullRadius != 0) {
@@ -1838,22 +1555,22 @@ void Level33_UpdateActors(void) {
         if (dist < 0x1964 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
                                : -SPY_DZ(actor) < 0x578)) {
-          st->u10 = 0x12C;
-          if (st->u04 == 0) {
+          st->speed = 0x12C;
+          if (st->lane == 0) {
             st->path->dir = 1;
-            st->u08 = 0x6E;
+            st->slowTimer = 0x6E;
           } else {
             st->path->dir = 1;
-            st->u08 = 0x96;
+            st->slowTimer = 0x96;
           }
-          st->u08 -= g_anLevelEscapeRunCount[st->u04] * 6;
-          if (IsPointInRotatedBox(&SPY.posX, st->u28) != 0) {
+          st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
+          if (IsPointInRotatedBox(&SPY.posX, st->box) != 0) {
             st->path->dir *= -1;
           }
           if (st->path->dir == -1) {
-            st->path->cur = st->u20;
+            st->path->cur = st->endNodeBack;
           } else {
-            st->path->cur = st->u24;
+            st->path->cur = st->endNodeFwd;
           }
           ENTER_POSE(actor, 1);
         }
@@ -1871,38 +1588,38 @@ void Level33_UpdateActors(void) {
                         PATH_PT((unsigned char *)st->path, st->path->cur));
           SnapActorToGround(actor);
         }
-        if (TickCountdownByFrameDelta(&st->u08, 4) != 0) {
-          int lo = 0xDC - g_anLevelEscapeRunCount[st->u04] * 6;
+        if (TickCountdownByFrameDelta(&st->slowTimer, 4) != 0) {
+          int lo = 0xDC - g_anLevelEscapeRunCount[st->lane] * 6;
 
-          st->u10 -= 0xA;
-          if (st->u10 < lo) {
-            st->u10 = lo;
+          st->speed -= 0xA;
+          if (st->speed < lo) {
+            st->speed = lo;
           }
         }
-        spd = st->u10;
+        spd = st->speed;
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, 1);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->u1C -= 0x1E;
-        if (st->u1C < -0x190) {
-          st->u1C = -0x190;
+        st->vSpeed -= 0x1E;
+        if (st->vSpeed < -0x190) {
+          st->vSpeed = -0x190;
         }
-        z = actor->posZ + st->u1C;
+        z = actor->posZ + st->vSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
           actor->posZ = z;
         }
         if ((r & 0x100) && (FLY_FLAGS(st->path, st->path->cur) & 3) == 1) {
-          st->u1C = 0x12C;
+          st->vSpeed = 0x12C;
         }
-        if ((st->path->dir == -1 && r == (st->u20 | 0x100)) ||
-            (st->path->dir == 1 && r == (st->u24 | 0x100))) {
-          g_anLevelEscapeRunCount[st->u04]++;
-          if (g_anLevelEscapeRunCount[st->u04] >= 6) {
-            g_anLevelEscapeRunCount[st->u04] = 5;
+        if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
+            (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
+          g_anLevelEscapeRunCount[st->lane]++;
+          if (g_anLevelEscapeRunCount[st->lane] >= 6) {
+            g_anLevelEscapeRunCount[st->lane] = 5;
           }
           ENTER_POSE(actor, 0);
         }
@@ -1939,7 +1656,7 @@ void Level33_UpdateActors(void) {
       }
 
       case 2:
-        DriveActorTrackedMove(actor, &st->u18, st->u14, &st->u1C, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->vSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x20);
@@ -1949,11 +1666,11 @@ void Level33_UpdateActors(void) {
         break;
       }
 
-      if (actor->mode != 2 && st->u60 != -1) {
+      if (actor->mode != 2 && st->partner != -1) {
         RefreshActorDerivedState(actor, 4);
-        GetActorAttachPoint(actor, 0, &g_pActorListBase[st->u60].posX);
-        ProbeActorGroundHeight(&g_pActorListBase[st->u60]);
-        EncodeCachedVecToActorDirCode(&g_pActorListBase[st->u60]);
+        GetActorAttachPoint(actor, 0, &g_pActorListBase[st->partner].posX);
+        ProbeActorGroundHeight(&g_pActorListBase[st->partner]);
+        EncodeCachedVecToActorDirCode(&g_pActorListBase[st->partner]);
       }
       RefreshActorDerivedState(actor, 1);
       continue;
@@ -1978,8 +1695,8 @@ void Level33_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
           g_pActorListBase[st->key].subMode = 1;
           st->camTimer = 0xA0;
-          st->u1C = 0;
-          st->u20 = 0;
+          st->vSpeed = 0;
+          st->queuedJumpSpeed = 0;
           st->u6C = 0;
           st->phase++;
           t = st->path;
@@ -1991,8 +1708,8 @@ void Level33_UpdateActors(void) {
                                  PATH_END(st->path)) < 0xBB8 &&
                    actor->mode != 8) {
           st->phase = 4;
-          st->u18 = 0xD2;
-          st->u14 = ArcTan2(actor->posX - SPY.posX,
+          st->speed = 0xD2;
+          st->knockHeading = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, 0);
           if (actor->dropKind != 0xFF) {
             g_anLevelKillBitmapTable[0xF0] &= ~1;
@@ -2148,20 +1865,20 @@ void Level33_UpdateActors(void) {
           o160[2] = FindGroundHeightBelow(o160, 0x1000);
           SubtractVector(o150, o160, &o->posX);
           n = VectorLength(o150, 0) / spd;
-          q->u0C = spd;
+          q->speed = spd;
           if (n <= 0) {
             n = 1;
           }
-          q->u10 = (o160[2] - o->posZ) / n;
-          if (q->u10 < -0x1F4) {
-            q->u10 = -0x1F4;
+          q->climb = (o160[2] - o->posZ) / n;
+          if (q->climb < -0x1F4) {
+            q->climb = -0x1F4;
           }
           q->trail = st->trails[st->throws % 3];
           q->h0A = 0;
           q->h06 = 0xA0;
           q->h08 = n - 1;
           st->throws++;
-          PlayActorMeshVoice(actor, 0, (int)&st->uD0);
+          PlayActorMeshVoice(actor, 0, (int)&st->voice);
           if (st->phase == 2 && st->throws >= 2) {
             actor->mode = 5;
             continue;
@@ -2204,9 +1921,9 @@ void Level33_UpdateActors(void) {
         int r;
 
         ANIM_GO(actor, 1);
-        if (st->u20 != 0) {
-          st->u1C = st->u20;
-          st->u20 = 0;
+        if (st->queuedJumpSpeed != 0) {
+          st->vSpeed = st->queuedJumpSpeed;
+          st->queuedJumpSpeed = 0;
         }
         i = st->path->cur;
         spd = 0x13B;
@@ -2215,7 +1932,7 @@ void Level33_UpdateActors(void) {
         }
         if (i >= 0xE) {
           far = 0x1964;
-          if (st->u18 >= 0x10F) {
+          if (st->speed >= 0x10F) {
             far = 0x1F40;
           }
           spd = 0xEB;
@@ -2228,7 +1945,7 @@ void Level33_UpdateActors(void) {
             spd = 0x122;
           }
         }
-        st->u18 = spd;
+        st->speed = spd;
         r = PivotActorAlongPath(actor, st->path, 0x200, spd, 0, 7, 0x28, 0xFF, 0);
         GNASTY_FALL(actor, st);
         if (r == 0x101 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
@@ -2242,7 +1959,7 @@ void Level33_UpdateActors(void) {
             actor->mode = 2;
             continue;
           }
-          st->u58 = 0xC8;
+          st->stateTimer = 0xC8;
           actor->mode = 0x15;
           continue;
         }
@@ -2258,7 +1975,7 @@ void Level33_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 1);
         }
-        if (TickCountdownByFrameDelta(&st->u58, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) == 0) {
           TurnActorYawTowardAngle(
               actor,
               ArcTan2(
@@ -2269,11 +1986,11 @@ void Level33_UpdateActors(void) {
                   0),
               6, 0, 0);
           h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-          st->u1C -= 0x19;
-          if (st->u1C < -0x190) {
-            st->u1C = -0x190;
+          st->vSpeed -= 0x19;
+          if (st->vSpeed < -0x190) {
+            st->vSpeed = -0x190;
           }
-          z = actor->posZ + st->u1C;
+          z = actor->posZ + st->vSpeed;
           if (z < h) {
             actor->posZ = h;
             ANIM_GO(actor, 1);
@@ -2282,9 +1999,9 @@ void Level33_UpdateActors(void) {
           }
           break;
         }
-        if (st->u20 != 0) {
-          st->u1C = st->u20;
-          st->u20 = 0;
+        if (st->queuedJumpSpeed != 0) {
+          st->vSpeed = st->queuedJumpSpeed;
+          st->queuedJumpSpeed = 0;
         }
         spd = 0x104;
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
@@ -2306,13 +2023,13 @@ void Level33_UpdateActors(void) {
         if (r & 0x100) {
           switch (FLY_FLAGS(st->path, st->path->cur) & 3) {
           case 1:
-            st->u20 = 0xDC;
+            st->queuedJumpSpeed = 0xDC;
             break;
           case 2:
-            st->u20 = 0x10E;
+            st->queuedJumpSpeed = 0x10E;
             break;
           case 3:
-            st->u20 = 0x140;
+            st->queuedJumpSpeed = 0x140;
             break;
           }
         }
@@ -2321,7 +2038,7 @@ void Level33_UpdateActors(void) {
 
       case 7:
         if (g_nActorAnimDone != 0) {
-          st->u58 = 0;
+          st->stateTimer = 0;
           ANIM_GO(actor, 1);
           actor->mode = 6;
           continue;
@@ -2331,7 +2048,7 @@ void Level33_UpdateActors(void) {
       case 8:
         g_nCameraScriptStickRequestY[19] = g_dwSpyroRequestMask | 0x80002000;
         g_nGameplayBlocked = 1;
-        DriveActorTrackedMove(actor, &st->u18, st->u14, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, 0xC, 0);
         if (st->drop[0] != -1 && actor->nextFrame >= 6) {
           g_pActorListBase[st->drop[0]].subMode = 1;
           st->drop[0] = -1;
@@ -2359,7 +2076,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
-          st->u58 = 0x3C;
+          st->stateTimer = 0x3C;
           actor->mode = 9;
           continue;
         }
@@ -2367,18 +2084,18 @@ void Level33_UpdateActors(void) {
 
       case 9:
         g_dwSpyroRequestMask |= 0x80002000;
-        TickCountdownByFrameDelta(&st->u58, 4);
-        if (st->u58 < 0x10) {
-          g_nGenericCountdown = sixteen - st->u58;
+        TickCountdownByFrameDelta(&st->stateTimer, 4);
+        if (st->stateTimer < 0x10) {
+          g_nGenericCountdown = sixteen - st->stateTimer;
           if (g_nGenericCountdown >= 0x10) {
             g_nGenericCountdown = 0xF;
           }
         }
-        if (st->u58 == 0) {
+        if (st->stateTimer == 0) {
           g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
-          g_nGamestate = 0xE;
+          g_nGamestate = GS_GEM_CUTSCENE;
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
           g_nSpyroDrawSuppressed = 0;
@@ -2424,11 +2141,11 @@ void Level33_UpdateActors(void) {
         int z;
 
         ANIM_GO(actor, 0);
-        st->u1C -= 0x19;
-        if (st->u1C < -0x190) {
-          st->u1C = -0x190;
+        st->vSpeed -= 0x19;
+        if (st->vSpeed < -0x190) {
+          st->vSpeed = -0x190;
         }
-        z = actor->posZ + st->u1C;
+        z = actor->posZ + st->vSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
@@ -2460,7 +2177,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case 20:
-        if (TickCountdownByFrameDelta(&st->u58, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) != 0) {
           actor->mode = 5;
           continue;
         }
@@ -2473,7 +2190,7 @@ void Level33_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 6, 0, 0) != 0) {
           ANIM_GO(actor, 0);
         }
-        if (TickCountdownByFrameDelta(&st->u58, 4) != 0 && SPY_DZ(actor) < 0 &&
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) != 0 && SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x251C) {
           actor->mode = 5;
           continue;
@@ -2509,14 +2226,14 @@ void Level33_UpdateActors(void) {
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 0;
-            o->rotY = ArcTan2(st->u0C, st->u10, 0);
+            o->rotY = ArcTan2(st->speed, st->climb, 0);
             o->rotZ = actor->rotZ;
             o->cullRadius = 0x50;
             st->h04 = 0;
           }
-          actor->posX += (st->u0C * g_anCosineLut[actor->rotZ]) >> 12;
-          actor->posY += (st->u0C * g_anSineLut[actor->rotZ]) >> 12;
-          actor->posZ += st->u10;
+          actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
+          actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
+          actor->posZ += st->climb;
           if (TickCountdownByFrameDelta(&st->h06, 2) != 0) {
             actor->mode = 1;
           }
@@ -2533,9 +2250,9 @@ void Level33_UpdateActors(void) {
             Actor *o = g_pfnLevelSpawnActor(0x8F, actor);
             L33State143 *p = o->state;
 
-            p->u00 = 0x190;
-            p->u04 = 0x12;
-            o->scale = 0xBB80 / p->u00;
+            p->radius = 0x190;
+            p->timer = 0x12;
+            o->scale = 0xBB80 / p->radius;
             if (o->scale < 5) {
               o->scale = 5;
             }
@@ -2763,7 +2480,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case 2:
-        if (g_dwPadPressed & 0x40) {
+        if (g_dwPadPressed & PAD_CROSS) {
           st->timer = 0xD2;
         }
         g_dwSpyroRequestMask = 0x80002000;

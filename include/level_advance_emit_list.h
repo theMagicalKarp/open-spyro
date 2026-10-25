@@ -30,12 +30,18 @@ extern int g_anCameraPos[];
 
 extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 
+/* g_anSpyroWorldPos reached through the lockout counter's held base. */
+#define SPYRO_POS_VIA_LOCKOUT (g_nSpyroInputLockoutCountdown - 0x58)
+
 extern int g_nLevelReadyFlag;
 
 /* Field access on the current emit record `rec` (0x20 bytes, layout varies
  * by class; see each file's field map). These stay byte-offset accessors on
  * purpose: every field must be an address giv off `rec` so loop.c folds them
  * onto one base register, which a struct view does not reproduce. */
+#define CLASS rec[0x1]                         /* class; 0xFF ends the list */
+#define AGE rec[0x2]                           /* frames lived */
+#define ALIVE rec[0x3]                         /* 0 = kill at the next tick */
 #define HS(n) (*(short *)(rec + (n)))          /* s16 field at +n */
 #define HU(n) (*(unsigned short *)(rec + (n))) /* u16 field at +n */
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */

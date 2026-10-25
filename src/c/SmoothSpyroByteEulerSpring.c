@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 /* 0x80049880: critically-damped spring that carries Spyro's three swing euler
    angles toward their targets and publishes them as byte angles. Per axis: the
@@ -105,8 +106,7 @@ void SmoothSpyroByteEulerSpring(void) {
   } while (0);
   g_abSpyroSwingByteEuler[0] = g_nSpyroSwingEulerPrev0 >> 4;
   g_abSpyroSwingByteEuler[1] = g_nSpyroSwingEulerPrev1 >> 4;
-  do {
-  } while (0);
+  EBB_BREAK();
   acc2 = g_nSpyroSwingEulerSpringAccum2;
   {
     int f2;

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "match_asm.h"
 
 #define VREAD(sym) (*(void *volatile *)&(sym))
 
@@ -14,8 +15,7 @@ void InitActorMeshScratchRegions(int split) {
 
   top = g_pWorkAreaTop;
   g_pEmitListBuffer = top - 0x2000;
-  do {
-  } while (0);
+  EBB_BREAK();
   g_pRenderScratchOtBase = top - 0x6000;
   top -= 0x6008;
   g_pRenderScratchPrimTop = top;
@@ -29,7 +29,7 @@ void InitActorMeshScratchRegions(int split) {
   g_pRenderScratchPrimBase1 = top;
   top += size;
   g_pRenderScratchRegionBase = top;
-  __asm__ volatile("");
+  SCHED_FENCE();
   g_pFramePrimBufferBase0 = VREAD(g_pRenderScratchRegionBase);
   g_pFramePrimBufferBase1 = VREAD(g_pRenderScratchPrimBase1);
   g_pFrameOtMergedChainSlot1 = g_pFrameOtMergedChainSlot0 =

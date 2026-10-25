@@ -16,6 +16,7 @@
 #include "actor.h"
 #include "level_emit_particles.h"
 #include "level_actor_cutscene.h"
+#include "gamestate.h"
 
 
 /* The three position reads go through ACTOR_RAW: written as
@@ -29,7 +30,7 @@ void Level12_BeginActorCutscene(Actor *actor) {
   int b;
 
   p = actor->state;
-  g_nGamestate = 0xC;
+  g_nGamestate = GS_ACTOR_CUTSCENE;
   g_nGamestate0cSubstate = 0;
   g_nGamestate0cTimer = 0;
   g_nGamestate0cMenuCursor = 0;
@@ -38,7 +39,7 @@ void Level12_BeginActorCutscene(Actor *actor) {
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
-  g_pGamestate0cRecord = g_pActorListBase + count * 0x58;
+  g_pGamestate0cRecord = g_pActorListBase + count * ACTOR_SIZE;
   g_nGamestate0cCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);

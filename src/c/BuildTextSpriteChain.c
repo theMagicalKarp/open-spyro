@@ -28,8 +28,9 @@
        `sh`s into the shared tail). The six equality arms keep the volatile
        read and DO get merged, which is what the original has.
      - the FillWord argument is the LOCAL `rec`, not a reload, so the
-       allocation is `rec = CURSOR - 0x58; CURSOR_P = rec;` as two statements;
-       the embedded assignment form routes the value through v0 (+3 insns).
+       allocation is `rec = CURSOR - ACTOR_SIZE; CURSOR_P = rec;` as two
+   statements; the embedded assignment form routes the value through v0 (+3
+   insns).
      - the range tests are on an `int ch = *pszText;` (a0, unmasked) and the six
        equality tests on `(unsigned char)ch`, which is what emits the single
        `andi v1,a0,0xFF` shared by the whole ladder.
@@ -43,10 +44,10 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
 
   while (*pszText != 0) {
     if (*pszText != ' ') {
-      rec = CURSOR - 0x58;
+      rec = CURSOR - ACTOR_SIZE;
       CURSOR_P = rec;
       FillWord(rec, 0, 0x58);
-      CopyVector((int *)(CURSOR + 0xC), pPen);
+      CopyVector(&((Actor *)CURSOR)->posX, pPen);
 
       ch = *pszText;
       if (ch >= '0' && ch <= '9') {
@@ -67,9 +68,9 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
         ((Actor *)CURSOR_P)->type = 0x147;
       }
 
-      CURSOR[0x47] = 0x7F;
-      CURSOR[0x4F] = nPalette;
-      CURSOR[0x50] = 0xFF;
+      ACTOR_RAW(CURSOR, unsigned char, otBias) = 0x7F;
+      ACTOR_RAW(CURSOR, unsigned char, tintMode) = nPalette;
+      ACTOR_RAW(CURSOR, unsigned char, cullRadius) = 0xFF;
     }
     *pPen += nAdvance;
     pszText++;

@@ -1,17 +1,8 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
-
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_STATE 0x1E         /* g_nSpyroState */
-#define SPY_STATE_FLAGS 0x1F   /* g_nSpyroStateFlags */
-#define SPY_GROUND_SLOPE 0x2C  /* g_nSpyroGroundSlope */
-#define SPY_WALL_SLIDE 0x2D    /* g_nSpyroWallSlideContributedFlag */
-#define SPY_CARRY_MOTION 0x3A  /* g_anSpyroCarryMotionVec */
-#define SPY_VELOCITY 0x3D      /* g_anSpyroVelocity */
-#define SPY_MOTION 0x43        /* g_anSpyroMotionVec */
-#define SPY_BREATH_TIMER 0x5A  /* g_nSpyroBreathTimer */
-#define SPY_FALL_TRACKING 0x93 /* g_nSpyroFallTrackingFlag */
+#include "pad_buttons.h"
+#include "spyro_block.h"
 
 typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
 
@@ -73,7 +64,7 @@ void DispatchSpyroPhysicsByState(void) {
   case 41:
   case 42:
   case 43:
-    if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & 0x10)) {
+    if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & PAD_TRIANGLE)) {
       g_nCameraNextMode = 0x80000009;
     }
     AverageSpyroPlatformMotion();
@@ -272,7 +263,7 @@ void DispatchSpyroPhysicsByState(void) {
     break;
   case 19:
     AdvanceSpyroPhysics();
-    CopyVector(&SPY[SPY_CARRY_MOTION], &SPY[SPY_MOTION]);
+    CopyVector(&SPY[SPY_CARRY], &SPY[SPY_MOTION]);
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();

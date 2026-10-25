@@ -116,11 +116,11 @@ int TickActiveSoundVoices(void) {
       pVol = &g_aSpuVoiceRows[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
       owner = g_aSpuVoiceRows[i].pOwner;
-      range = owner[0x55] << 10;
+      range = ACTOR_RAW(owner, unsigned char, soundRange) << 10;
       if (range == 0) {
         range = 0x4000;
       }
-      SubtractVector(vec, (int *)(owner + 0xC), g_anCameraPos);
+      SubtractVector(vec, &((Actor *)owner)->posX, g_anCameraPos);
       dist = VectorLength(vec, 1);
       if (dist >= range) {
         far = (SPUFARROW *)((char *)g_aSpuVoiceRows - 0x28 + i * 0x1C);

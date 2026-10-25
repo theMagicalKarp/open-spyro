@@ -8,7 +8,7 @@ extern unsigned char g_bSpyroAnimLayer2Substep[]; /* layer-2 substep accumulator
 /* 0x80049dfc — layer-2 sibling of AdvanceSpyroAnimLayer1Frame: accumulate
    sub-frame steps; every 0x10 substeps advance the layer-2 anim frame,
    looping back to the anim's start frame at its loop point. */
-void AdvanceSpyroAnimLayer2Frame(int param_1) {
+void AdvanceSpyroAnimLayer2Frame(int step) {
   unsigned char *sub_ptr = g_bSpyroAnimLayer2Substep;
   int sum;
   int off;
@@ -16,7 +16,7 @@ void AdvanceSpyroAnimLayer2Frame(int param_1) {
   unsigned char anim;
   unsigned char newFrame;
 
-  sum = *sub_ptr + param_1;
+  sum = *sub_ptr + step;
   *sub_ptr = sum;
   if ((unsigned char)sum >= 0x10) {
     *sub_ptr = sum - 0x10;

@@ -7,7 +7,7 @@
 /* Steer actor `actor` toward world point `target` and advance it (0x8003bad0).
    Computes the target yaw/pitch from the delta vector, wraps each 8-bit euler
    delta to signed and clamps it to +/-yawLim / +/-pitchLim, applies the turn to
-   the euler bytes (+0x45/+0x46), then moves the actor `speed` units along its
+   rotY/rotZ, then moves the actor `speed` units along its
    new facing. With a nonzero `radius` it resolves sphere collision (snapping
    to g_anCollisionResolvedPos) and dispatches contact callbacks; returns 1 if
    the move was blocked/adjusted, else 0. */
@@ -23,7 +23,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
   int heading;
 
   moved = 0;
-  pos = (int *)(actor + 0xC);
+  pos = &ACT->posX;
   SubtractVector(dv, target, pos);
   yaw = ArcTan2(dv[0], dv[1], 0);
   pitch = ArcTan2(VectorLength(dv, 0), dv[2], 0);
@@ -53,7 +53,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim,
 
   ACT->rotZ = heading + yaw;
   ACT->rotY = ACT->rotY + pitch;
-  ApplyEulerRotation((unsigned char *)(actor + 0x44), mtx, 0);
+  ApplyEulerRotation(&ACT->rotX, mtx, 0);
   dv[0] = speed;
   dv[1] = 0;
   dv[2] = 0;

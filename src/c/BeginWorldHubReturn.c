@@ -10,7 +10,7 @@ void BeginWorldHubReturn(void) {
   g_nCameraNextMode = 0x80000012;
   g_nPreserveMobIdx = -1;
   g_nScriptedMobTag = g_nActiveLevelId;
-  g_nGamestate = 1;
+  g_nGamestate = GS_LEVEL_LOAD;
   g_nScriptedRespawnFlag = 1;
   g_nLevelTransitionTallyActive = 1;
   g_nGamePaused = 1;

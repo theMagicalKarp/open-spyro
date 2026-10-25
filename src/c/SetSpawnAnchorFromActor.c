@@ -22,7 +22,7 @@
      position, including at the call itself — always emits the addiu first. */
 
 void SetSpawnAnchorFromActor(Actor *actor, int yaw) {
-  int *new_var;
+  int *rescued;
   int *dst;
   int *src;
   int i;
@@ -33,9 +33,9 @@ void SetSpawnAnchorFromActor(Actor *actor, int yaw) {
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = &g_anLevelSpawnYawBlock[-19];
   *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
-  new_var = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
+  rescued = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
   {
-    t = *new_var;
+    t = *rescued;
     *((volatile int *)(&g_nSpawnAnchorDragonsRescued)) = t;
     t = g_anLevelGemsCollected[g_nLevelIntroIndex];
     *(&g_nSpawnAnchorReserved) = 0;

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
@@ -17,8 +18,8 @@
    load (the original's load-delay nop); `ret++` precedes the cursor test so
    reorg puts it in the branch delay slot; the divisor is a `$6` register
    local (the original's a2). */
-int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
-                        int *step, int legs, int flags) {
+int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
+                        int legs, int flags) {
   int dir[4];
   int blend[4];
   short *tbl;
@@ -48,21 +49,20 @@ int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
     }
   }
 
-  idx = path[1];
-  do {
-  } while (0);
+  idx = path->cur;
+  EBB_BREAK();
   t = *step;
   if (t >= legs) {
-    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     CopyVector(prev, dir);
     ret++;
-    if (++path[1] >= path[0]) {
-      path[1] = 0;
+    if (++path->cur >= path->count) {
+      path->cur = 0;
       ret++;
     }
     *step = 0;
   } else if (lim < t) {
-    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     n = *step - 1;
     span = legs - n;
     dir[0] = dir[0] / span;
@@ -70,7 +70,7 @@ int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
     dir[2] = dir[2] / span;
     *step = *step + 1;
   } else {
-    SubtractVector(dir, path + (idx * 0x10 + 8), actor + 0xc);
+    SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     n = *step - 1;
     span = legs - n;
     dir[0] = dir[0] / span;
@@ -86,10 +86,10 @@ int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev,
   if (!(flags & 4)) {
     dir[2] = 0;
   }
-  actor[0x46] = ArcTan2_8bit(dir[0], dir[1]);
+  actor->rotZ = ArcTan2_8bit(dir[0], dir[1]);
   x = ArcTan2_8bit(dir[2], VectorLength(dir, 0));
-  pos = (int *)(actor + 0xc);
-  actor[0x45] = -x + 0x40;
+  pos = &actor->posX;
+  actor->rotY = -x + 0x40;
   AddVector(pos, pos, dir);
   RefreshActorDerivedState(actor, 2);
   return ret;

@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 register void *ra asm("$31");
 
@@ -14,7 +15,7 @@ void AddPrimToOT(unsigned int prim) {
   register int *slot asm("$3");
   register unsigned char *tail asm("$1");
 
-  __asm__("" : "=r"(slot) : "0"(&g_pOtActiveDepthSlot));
+  OPAQUE_COPY(slot, &g_pOtActiveDepthSlot);
   slot = *(int **)slot;
   tail = (unsigned char *)slot[0];
   slot[0] = prim;

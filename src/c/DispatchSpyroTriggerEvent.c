@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 /* One-field record view: an aggregate access lets sched hoist the flags
@@ -49,7 +50,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     } else if (event == 2) {
       g_pSpyroOrbDropTriggerData = data;
       FLAGS = (FLAGS & 0x3FF) | 0x400;
-      __asm__ volatile("");
+      SCHED_FENCE();
       g_nSpyroTriggerEntryZ = g_nSpyroGroundHeightZ;
       g_nSpyroOrbDropSpawnIndex = data[1];
     }

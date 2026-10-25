@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "model.h"
 
@@ -55,11 +56,16 @@ void AdvanceGemCutsceneFrame(int timer) {
         seg = t >> 1;
         frac = (t & 1) << 5;
       }
-      ((char *)g_pActorListBase)[i * 0x58 + 0x3C] = seg / 60;
-      ((char *)g_pActorListBase)[i * 0x58 + 0x3E] = seg % 60;
-      ((char *)g_pActorListBase)[i * 0x58 + 0x3D] = (seg + 1) / 60;
-      ((char *)g_pActorListBase)[i * 0x58 + 0x3F] = (seg + 1) % 60;
-      ((char *)g_pActorListBase)[i * 0x58 + 0x40] = frac;
+      ((char *)g_pActorListBase)[i * ACTOR_SIZE + ACTOR_OFFSET(anim)] =
+          seg / 60;
+      ((char *)g_pActorListBase)[i * ACTOR_SIZE + ACTOR_OFFSET(frame)] =
+          seg % 60;
+      ((char *)g_pActorListBase)[i * ACTOR_SIZE + ACTOR_OFFSET(nextAnim)] =
+          (seg + 1) / 60;
+      ((char *)g_pActorListBase)[i * ACTOR_SIZE + ACTOR_OFFSET(nextFrame)] =
+          (seg + 1) % 60;
+      ((char *)g_pActorListBase)[i * ACTOR_SIZE + ACTOR_OFFSET(frameProgress)] =
+          frac;
       hdr = (int *)g_pPathTableHead;
       a[0] = (((int **)hdr)[i + 5][seg] & 0x3FF00000) >> 12;
       a[1] = (((int **)hdr)[i + 5][seg] & 0xFFC00) >> 2;

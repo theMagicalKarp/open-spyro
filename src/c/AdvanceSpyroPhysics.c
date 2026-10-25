@@ -13,37 +13,19 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 SDATA(g_nSpyroScriptedAlignFrames, 4);
 SDATA(g_pSpyroContactActor, 4);
 
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_STATE 0x1E          /* g_nSpyroState */
-#define SPY_STATE_FLAGS 0x1F    /* g_nSpyroStateFlags */
-#define SPY_TRIGGER_FLAGS 0x0B  /* g_dwSpyroTriggerEventFlags */
-#define SPY_CONTACTED 0x22      /* g_nSpyroContactedActorFlag */
-#define SPY_PREV_POS 0x23       /* g_anSpyroPrevWorldPos */
-#define SPY_PROBE_SUSPEND 0x26  /* g_nSpyroGroundProbeSuspendFlag */
-#define SPY_AIRBORNE 0x27       /* g_nSpyroAirborneFrames */
-#define SPY_WALL_SLIDE 0x2D     /* g_nSpyroWallSlideContributedFlag */
-#define SPY_NUDGE 0x2E          /* g_anSpyroWallSlideNudgeAccum */
-#define SPY_VELOCITY 0x3D       /* g_anSpyroVelocity */
-#define SPY_VELOCITY_FP6 0x40   /* g_anSpyroVelocityFp6 */
-#define SPY_MOTION 0x43         /* g_anSpyroMotionVec */
-#define SPY_IMPULSE 0x4B        /* g_anSpyroPendingImpulse */
-#define SPY_LEVEL_READY 0x59    /* g_nLevelReadyFlag */
-#define SPY_FIRST_POINT 0x5F    /* g_anSpyroFirstContactPoint */
-#define SPY_FIRST_NORMAL 0x62   /* g_anSpyroFirstContactNormal */
-#define SPY_REQUEST 0x7D        /* g_dwSpyroRequestMask */
-#define SPY_REQUEST_STATE 0x86  /* g_nSpyroRequestState */
-#define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
 #define REQ g_adwSpyroRequestMaskBlock
 #define WS g_anSpyroWallSlideBlock
 
 #define ACTOR_YAW(a) (((unsigned char *)(a))[0x46])
-#define ACTOR_POS(a) ((int *)((unsigned char *)(a) + 0xC))
+#define ACTOR_POS(a) (&ACTOR_RAW(a, int, posX))
 
 /* Pull `pos` back to at most 0x140 from `from`. */
 #define LIMIT_STEP(pos, from)                                                  \
@@ -270,7 +252,7 @@ int AdvanceSpyroPhysics(void) {
                   t = h - 0x40;
                 }
                 a = t << 4;
-                __asm__ volatile("");
+                SCHED_FENCE();
                 a = (a - g_nSpyroMoveTargetYaw) & 0xFFF;
                 if (a > 0x800) {
                   a -= 0x1000;

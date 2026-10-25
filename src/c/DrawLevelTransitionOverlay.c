@@ -102,13 +102,14 @@ void DrawLevelTransitionOverlay(void) {
     step[1] = 1;
     step[2] = 0x1400;
     BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
-    glyph -= 0x58;
+    glyph -= ACTOR_SIZE;
     if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
       unsigned short *lut = (unsigned short *)g_anCosineLut;
       int wave = 0;
       do {
-        glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
-        glyph -= 0x58;
+        ACTOR_RAW(glyph, unsigned char, rotZ) =
+            lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+        glyph -= ACTOR_SIZE;
         wave += 0xc;
       } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
     }
@@ -157,16 +158,16 @@ void DrawLevelTransitionOverlay(void) {
       char *glyph = g_pSpriteRecordWriteCursor;
       int wave;
       BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
-      glyph -= 0x58;
+      glyph -= ACTOR_SIZE;
       wave = 0;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         do {
-          glyph[0x46] =
+          ACTOR_RAW(glyph, unsigned char, rotZ) =
               ((unsigned short *)
                    g_anCosineLut)[(g_nLevelTransitionPhase * 2 + wave) &
                                   0xff] >>
               7;
-          glyph -= 0x58;
+          glyph -= ACTOR_SIZE;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
       }
@@ -221,13 +222,14 @@ void DrawLevelTransitionOverlay(void) {
     {
       char *glyph = g_pSpriteRecordWriteCursor;
       BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, 2);
-      glyph -= 0x58;
+      glyph -= ACTOR_SIZE;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         unsigned short *lut = (unsigned short *)g_anCosineLut;
         int wave = 0;
         do {
-          glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
-          glyph -= 0x58;
+          ACTOR_RAW(glyph, unsigned char, rotZ) =
+              lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+          glyph -= ACTOR_SIZE;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
       }
@@ -237,7 +239,7 @@ void DrawLevelTransitionOverlay(void) {
     do {
       if (PARTICLES[i].live != 0) {
         g_pSpriteRecordWriteCursor =
-            (void *)((int)g_pSpriteRecordWriteCursor - 0x58);
+            (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
         FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
         SPR->uv = g_abGemTallyIconUvTable[i];
         gx = PARTICLES[i].x + 0x140;
@@ -249,14 +251,14 @@ void DrawLevelTransitionOverlay(void) {
         SREC->rotZ = PARTICLES[i].spin;
         SREC->otBias = 0x7f;
         SREC->tintMode =
-            *(unsigned char *)((int)g_pSpriteRecordWriteCursor + 0x36) - 0x52;
+            ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) - 0x52;
         SREC->cullRadius = 0xff;
       }
       i++;
     } while (i < 0x20);
 
     g_pSpriteRecordWriteCursor =
-        (void *)((int)g_pSpriteRecordWriteCursor - 0x58);
+        (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
     spr = g_pSpriteRecordWriteCursor;
     spr->uv = 0x1d9;

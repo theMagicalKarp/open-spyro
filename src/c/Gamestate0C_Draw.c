@@ -1,7 +1,9 @@
 #include "actor.h"
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* Draw handler for gamestate 0xC — the level-transition title card
    (0x8001E24C, 0x46c).
@@ -44,13 +46,12 @@ void Gamestate0C_Draw(void) {
         register void *h asm("$2");
 
         h = g_pGamestate0cRecord;
-        __asm__ volatile("" : : "r"(h));
-        __asm__("" : "=r"(ot) : "0"(g_apOtDepthBinBlock));
+        KEEP_IN_REG(h);
+        OPAQUE_COPY(ot, g_apOtDepthBinBlock);
         ot[1] = 0;
         ot[0] = h;
       }
-      do {
-      } while (0);
+      EBB_BREAK();
 
       variant = *(volatile int *)&g_nGamestate0cCardVariant;
       if (variant < 5) {
@@ -75,14 +76,15 @@ void Gamestate0C_Draw(void) {
       rec = (char *)g_pSpriteRecordWriteCursor;
       BuildTextSprites(buf, pos, attr, 0x10, 2);
 
-      rec -= 0x58;
+      rec -= ACTOR_SIZE;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
         int *fade = g_anGamestate0cTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
-          rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
-          rec -= 0x58;
+          ACTOR_RAW(rec, unsigned char, rotZ) =
+              cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          rec -= ACTOR_SIZE;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
       }
@@ -141,7 +143,7 @@ void Gamestate0C_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

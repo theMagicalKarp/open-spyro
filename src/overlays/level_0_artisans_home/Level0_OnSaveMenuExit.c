@@ -10,6 +10,7 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "level_actors.h"
+#include "actor_type.h"
 
 
 void Level0_OnSaveMenuExit(void) {
@@ -20,6 +21,6 @@ void Level0_OnSaveMenuExit(void) {
   g_nSpyroSwingEulerPrev1 = 0;
   g_bSpyroSwingByteEuler1 = 0;
   if (actor != 0) {
-    actor[0x50] = 0x10;
+    ACTOR_RAW(actor, unsigned char, cullRadius) = 0x10;
   }
 }

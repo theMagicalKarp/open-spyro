@@ -210,7 +210,7 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 
 /* 0x80018534: Pushes a sprite16 onto the front of the sprite queue (DAT_80075710 bumps down 0x58 bytes). Gated by (param_2 & 0x1f) < 0x10 so the sprite blinks for half of every 32-frame cycle; param_3 < 2 selects tile U=0 vs U=0x80. Used as a selection marker in Gamestate02_03_06_Draw. */
-void EnqueueBlinkingMarkerSprite(int *param_1, int param_2, int param_3);
+void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile);
 
 /* 0x8001860c: Draws a menu rectangle: semi-transparent POLY_F4 fill at (param_1,param_3)..(param_2,param_4) plus four EmitRadialShadedLine borders. Called by SaveLoadMenu_Draw. */
 void DrawShadedMenuBox(int left, int right, int top, int bottom);
@@ -234,7 +234,7 @@ void DrawCinematicLetterbox(void);
 void DrawFullscreenTint(int slot, int r, int g, int b);
 
 /* 0x8001919c: Emits a textured POLY_FT4 quad: rect (x,y,w,h)=param_1[0..3] shorts, UV+CLUT=param_2[0..1], RGB color=param_3[0..2] or default 0x80,0x80,0x80. Calls AddPrimToOT and advances DAT_800757b0 by 0x28 bytes. */
-void EmitTexturedQuad(short *param_1, unsigned int *param_2, unsigned int *param_3);
+void EmitTexturedQuad(short *rect, unsigned int *uv, unsigned int *rgb);
 
 /* 0x80019300: Pre-audio "loading screen" sprite builder. When g_nAudioInitialized == 0, appends sprite entries into the DAT_800720f4 request queue: optional "%d %d" file-progress text (when DAT_80077fa8 == 4), three banner-sprite groups gated by DAT_80077fa9 / fa, fb / fac, and an "additional" sprite at DAT_800783b4. After the queue is built, the trailing block runs unconditionally to animate the load-bar icons in DAT_8007846c / DAT_8007840c using the sine LUT at DAT_8006cc78 indexed by DAT_800770f4 (icon counts in DAT_80077fe0 / DAT_80077fd4). */
 void EnqueueLoadingScreenSprites(void);
@@ -305,7 +305,7 @@ void TickWorldChunkAnimations(int step);
 /* 0x8002b4ac: Sibling of TickWorldChunkAnimations that snaps every world chunk-anim table to its current keyframe state without advancing time (no delay decrement, no RLE walk). Same 6 tables: copies the current-keyframe full-mesh blob (0xa8 + 0x10), applies the current UV rotation pattern, writes the current step-index byte to each color-cycle target byte (+0x18..+0x1b), and rebuilds the packed-XY triangle anchors at DAT_800785d4+0x10 from the source triplet. Used by the level-loader (FUN_8001364c) to seed all world animations to their initial keyframe before gameplay begins. */
 void ResetWorldChunkAnimations(void);
 
-/* 0x8002b9cc: Frame OT/depth setup. Memcopies an empty OT into DAT_8006fcf4 (size 0x1c00), then picks the draw-distance constant DAT_800785d0 by context: In-level (DAT_80076e24 &lt; DAT_800785b4): 0x28000 (far draw distance, OT slot = current LOD). Cutscene story-intro / gem-cutscene (GS_STORY_INTRO or GS_GEM_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter range). Then calls FUN_800258f0 to publish the chosen OT range. */
+/* 0x8002b9cc: Frame OT/depth setup. Memcopies an empty OT into DAT_8006fcf4 (size 0x1c00), then picks the draw-distance constant DAT_800785d0 by context: In-level (DAT_80076e24 &lt; DAT_800785b4): 0x28000 (far draw distance, OT slot = current LOD). Cutscene story-intro / gem-cutscene (GS_TITLE story intro or GS_GEM_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter range). Then calls FUN_800258f0 to publish the chosen OT range. */
 void SetupFrameOT(void);
 
 /* 0x8002bb20: Returns the "X%" completion percentage shown in the inventory header (Gamestate 3). Formula: (g_nWorldTreasureCollected*50 + g_nWorldDragonsRescued*6000 + g_nWorldEggsRecovered*10000) / 12000 — i.e. 12000 gems = 50%, 80 dragons = 40%, 12 eggs = 10%, Spyro 1's exact 100% split. When treasure exceeds 12000 (Gnasty's Loot's extra 2000), switches to 100 + (treasure-12000)/100, giving the famous 120% cap. */
@@ -318,10 +318,10 @@ void TickCdMusicStream(void);
 void AdvanceGemCutsceneFrame(int timer);
 
 /* 0x8002c420: Enters GS_PAUSE_MENU: g_nGamestate=2, zeros pause-menu cursor/substate/idle frames, plays the menu-open sfx (sample id from g_pLevelSampleBankHeader+0x2c). param nonzero = entered from gameplay/sub-menu (StopAllSoundExceptMask(0) first, resets transition frames); param 0 = re-entry path that forces all 5 HUD counters visible with roll phase 0xc. Flight levels skip the HUD work. */
-void EnterPauseMenu(int param_1);
+void EnterPauseMenu(int fromGameplay);
 
 /* 0x8002c534: Exits pause menu back to gameplay: g_Gamestate=0, restores pause-snapshot framebuffer from _DAT_800785f0-0x1c200 via LoadImage, repaints HUD palette indices to {3,…,0xd}, releases memcard slot. */
-void ExitPauseMenuToGame(int param_1);
+void ExitPauseMenuToGame(int resumeMusic);
 
 /* 0x8002c618: Begins the pause→world-map curtain animation: g_Gamestate=10 (GS_MENU_TRANSITION), zeros pause idle frames, kicks ChangeSpyroState(NULL,…) to freeze the player. */
 void BeginPauseToMenuTransition(void);
@@ -330,12 +330,12 @@ void BeginPauseToMenuTransition(void);
 void BeginWorldHubReturn(void);
 
 /* 0x8002c714: Enters GS_INVENTORY (g_Gamestate=3); seeds g_nSubMenuCursor to g_nCurrentLevelId/6 so the cursor lands on the active world row; zeros scroll state and clears the pad-history ring. */
-void EnterInventoryMenu(int param_1);
+void EnterInventoryMenu(int fromGameplay);
 
 /* 0x8002c7bc: Exits the sub-menu back to title (g_Gamestate=0); restores the title snapshot framebuffer from _DAT_800785f0-0x1c200, zeros all five HUD palette indices, releases memcard slot 8. */
 void ExitSubMenuToTitle(void);
 
-/* 0x8002c85c: Player death dispatch: if g_nExtraLives (DAT_8007582c) > 0 decrement and go to g_Gamestate=4 (GS_IN_LEVEL, respawn); else g_Gamestate=5 (GS_GAME_OVER). Resets g_nGameplayDrawMode/Frame to 0 so the frame counter restarts cleanly. */
+/* 0x8002c85c: Player death dispatch: if g_nExtraLives (DAT_8007582c) > 0 decrement and go to g_Gamestate=4 (GS_RESPAWN); else g_Gamestate=5 (GS_GAME_OVER). Resets g_nGameplayDrawMode/Frame to 0 so the frame counter restarts cleanly. */
 void TriggerRespawnOrGameOver(void);
 
 /* 0x8002c8a4: Sets g_Gamestate=0 (gameplay) and restores HUD palette indices to defaults; ends the respawn (state 4) and game-over restart (state 5) paths of RespawnOrGameOver_Update — its only two callers. */
@@ -353,11 +353,11 @@ void EndGemPickupToWorld(void);
 /* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay: g_nGamestate=0, resets Spyro (ResetSpyroEntity) + camera mode 0, snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by g_nCameraTargetYawBiasFromMode, and points g_pCameraTargetParams at it so the world-return camera eases from the menu pose instead of a canned table. Re-inits HUD counters, restores music track. Mirrors EndGemPickupToWorld. */
 void EndSaveMenuToWorld(void);
 
-/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_Gamestate=13 (GS_STORY_INTRO). FillWord zeros 0x5c bytes starting at g_nGamestate0dMode, resets sfx/music volume to 10, primes the title-CD anchor at DAT_80078dc4 to the CD buffer end-2000, and kicks the libpress audio start at FUN_8006275c(0x159). */
+/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_Gamestate=13 (GS_TITLE, story-intro mode). FillWord zeros 0x5c bytes starting at g_nGamestate0dMode, resets sfx/music volume to 10, primes the title-CD anchor at DAT_80078dc4 to the CD buffer end-2000, and kicks the libpress audio start at FUN_8006275c(0x159). */
 void BeginStoryIntro(void);
 
 /* 0x8002d228: Begins the credits sequence: g_Gamestate=15 (GS_CREDITS), g_nGamestate0fMode=-1. Clears the screen to black, calls ChangeSpyroState(1,…) to freeze the player, loads the credits image via CdReadAndCopyToRam. param_1 nonzero (post-game variant) also runs FUN_8005b7d8 (audio reset) and marks DAT_800757ac=10 (post-game flag). */
-void BeginCreditsSequence(int param_1);
+void BeginCreditsSequence(int reloadMeshes);
 
 /* 0x8002d338: Begins the 3D gem-cutscene model render (g_Gamestate=14 = GS_GEM_CUTSCENE). Builds a 0x10-byte intro packet at &DAT_800778f0 keyed off DAT_8007566c (cutscene id), with sound bank id from &DAT_8006ee6c[id], and sets sfx/music vols to max (0x3fff). */
 void BeginGemCutscene(void);
@@ -377,7 +377,7 @@ void ApplyCheatCodeEffect(int code);
 /* 0x8002d8ec: Cheat-code matcher: appends g_dwPadPressed to the 16-slot g_anPadHistoryRing (index g_nPadHistoryIndex); for each of the 8 sequences in g_anCheatCodeSequences (stride 0x40 = 16 ints, 0-terminated) compares the last len presses of the ring; on match calls ApplyCheatCodeEffect(slot) + ClearPadHistoryRing. Only runs while g_nCdStreamState < 0 (no stream in flight). Called from SubMenu_Update (inventory screen). */
 void CheckCheatCodeMatch(void);
 
-/* 0x8002da74: Update half of the level-transition gem tally (sole caller Gamestate01_Update; was misread as a GS_LOGO_SPLASH fire ring). At phase 0 computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records at g_pGemTallyParticleRecords (reused g_apSecondaryEntityList storage). Advances g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max 32) with randomized arc params, then flies each through three sine arcs (age 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive. DrawLevelTransitionOverlay renders one gem sprite per alive record. */
+/* 0x8002da74: Update half of the level-transition gem tally (sole caller Gamestate01_Update; was misread as a logo-splash fire ring). At phase 0 computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records at g_pGemTallyParticleRecords (reused g_apSecondaryEntityList storage). Advances g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max 32) with randomized arc params, then flies each through three sine arcs (age 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive. DrawLevelTransitionOverlay renders one gem sprite per alive record. */
 void AnimateGemTallyParticles(void);
 
 /* 0x8002df9c: [inferred] g_Gamestate==1 handler. Brief: calls FUN_8004a7ec, FUN_80037bd4, FUN_8002da74; conditionally calls FUN_80015370 when DAT_80075864<0xb or DAT_800756b0==0. Role unclear — kept generic name pending more context. */
@@ -401,7 +401,7 @@ void RespawnOrGameOver_Update(void);
 /* 0x8002f3c4: Gamestate 6 handler — intentionally empty (calls the no-op substate stub). NO in-EXE writer ever sets g_nGamestate=6 (full setter map audited sweep 45: 1=HandleLevelSelectInput/BeginWorldHubReturn/portal, 2=EnterPauseMenu, 3=EnterInventoryMenu, 4/5=TriggerRespawnOrGameOver, 7=PauseMenu_Update overlay handoff, 8=BeginGemPickupOverlay, 9=TickLevelTransitionStream, 0xA=BeginPauseToMenuTransition, 0xD=BeginStoryIntro/DispatchSpecialCutscene, 0xE=CheckDeathPlane, 0xF=BeginCreditsSequence) — state 6 is entered only by overlay code poking g_nGamestate by absolute address. Its Draw path (Gamestate02_03_06_Draw) renders just the grayscale frozen-scene backdrop + whatever sprites the overlay enqueued: an overlay-rendered menu/dialog state (balloonist dialogue is the prime candidate; confirm when overlay disassembly lands). */
 void Gamestate06_Update(void);
 
-/* 0x8002f3e4: g_Gamestate==8 (GS_GEM_PICKUP) handler. 8-state submachine via g_nGemPickupSubstate (0..7) and g_nGemPickupTimer drives the gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 + LookupSine/Cosine, spawns icons DAT_800770b8/bc, plays sfx bank DAT_800761d4+0x31..0x35. Substate 7 ends via EndGemPickupToWorld back to GS_DEFAULT. */
+/* 0x8002f3e4: g_Gamestate==8 (GS_GEM_PICKUP) handler. 8-state submachine via g_nGemPickupSubstate (0..7) and g_nGemPickupTimer drives the gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 + LookupSine/Cosine, spawns icons DAT_800770b8/bc, plays sfx bank DAT_800761d4+0x31..0x35. Substate 7 ends via EndGemPickupToWorld back to GS_GAMEPLAY. */
 void GemPickup_Update(void);
 
 /* 0x800314b4: [inferred] g_Gamestate==0xB handler. Not yet decompiled in detail. Generic name retained. */
@@ -454,7 +454,7 @@ void SnapCameraToTarget(void);
 /* 0x80034ce8: Per-frame 6-axis camera spring step. param_1 = tuning-set COLUMN (0..5) into g_anCameraSpringDriveGains (K0) / g_anCameraSpringDampingGains (K1) / g_anCameraSpringSnapThresholds: callers pass min(4, (g_nCameraStuckFrames+1)>>1) (collision-stuck stiffness escalation), 5 for scripted modes (mode 9 script-stick; mode 0xa with g_dwSpyroRequestMask & 0x1000), 0 from UpdateLedgeGrabCamera and the mode-6 settle loop. For each axis (Yaw, Pitch, Distance, Roll, PitchBias, YawBias): g_anCameraSpringDeltaState[axis] += (K0*delta - K1*accum) >> 8, snaps to 0/±0x100 below threshold (g_nCameraSnapped), then adds (accum >> 8) to the matching g_nCameraSpring* angle. Yaw uses g_nCameraManualYawInput as drive override (R1/L1 rotate); mode 6 (latched gem-grab) zeros all drives. Clamps: ±0x800 in headbash state (0xf/0xb) and passive-camera reengage; ±0x2000 with option bit 0x40 in modes 9/3. */
 void AdvanceCameraSpringStep(int column);
 
-/* 0x800357a4: Per-frame camera-mode arbiter. Holds/clears the sentinel modes against g_dwSpyroRequestMask bits (0x200 mode 0xa transition, 0x400 mode 0xb gem-pickup path, 0x8000 mode 7 scripted target, 0x10000 mode 0xc scripted follow) and otherwise falls back to g_abSpyroStateCameraMode[g_nSpyroState]. Mode 9 (free-look, option 0x10 passive): exits to mode 0x80000010 with g_nCameraPassiveModeHoldTimer = 0x2d when L1 (held bit 0x10 in g_dwPadHeld) releases in Spyro state 0/0xd. Modes 0x10/0x11 persist while g_nCameraPassiveModeHoldTimer &gt; 0 and the state-table mode is 0/4. Passive-idle recenter: when mode 0 with passive camera and Spyro near the screen anchor (projected |x−0x100| ≤ 0x40, |y−0x78| ≤ 0x28, depth ≤ 0x1400 via ProjectWorldPointGTEUnscaled), re-enters mode 0x10; a generic mode change with passive idle instead enters mode 0x80000011 with timer 8 + g_nCameraSpringReengageCountdown 0x5a. On mode-0xb entry seeds the path index (0 forward / count−1 reverse) in g_pGemPickupCamPathData per g_nGemPickupCamPathReverseFlag. On commit re-snaps the spring state to the recomputed g_nCameraYaw/Pitch/Distance (modes 2/0xe too); entering mode 9 zeros g_anCameraScriptStickIntegrator and clears g_nCameraCollisionRetries if LOS is clear. */
+/* 0x800357a4: Per-frame camera-mode arbiter. Holds/clears the sentinel modes against g_dwSpyroRequestMask bits (0x200 mode 0xa transition, 0x400 mode 0xb gem-pickup path, 0x8000 mode 7 scripted target, 0x10000 mode 0xc scripted follow) and otherwise falls back to g_abSpyroStateCameraMode[g_nSpyroState]. Mode 9 (free-look, option 0x10 passive): exits to mode 0x80000010 with g_nCameraPassiveModeHoldTimer = 0x2d when Triangle (PAD_TRIANGLE, held bit 0x10 in g_dwPadHeld) releases in Spyro state 0/0xd. Modes 0x10/0x11 persist while g_nCameraPassiveModeHoldTimer &gt; 0 and the state-table mode is 0/4. Passive-idle recenter: when mode 0 with passive camera and Spyro near the screen anchor (projected |x−0x100| ≤ 0x40, |y−0x78| ≤ 0x28, depth ≤ 0x1400 via ProjectWorldPointGTEUnscaled), re-enters mode 0x10; a generic mode change with passive idle instead enters mode 0x80000011 with timer 8 + g_nCameraSpringReengageCountdown 0x5a. On mode-0xb entry seeds the path index (0 forward / count−1 reverse) in g_pGemPickupCamPathData per g_nGemPickupCamPathReverseFlag. On commit re-snaps the spring state to the recomputed g_nCameraYaw/Pitch/Distance (modes 2/0xe too); entering mode 9 zeros g_anCameraScriptStickIntegrator and clears g_nCameraCollisionRetries if LOS is clear. */
 void SelectCameraMode(void);
 
 /* 0x80035f58: Reads R1/L1 camera-rotate input bits at _DAT_80077380 (bits 0/1) and writes ±0x400 to g_nCameraManualYawInput — the yaw-drive override consumed by AdvanceCameraSpringStep. Suppressed when (_DAT_80078c4c & 0x1000) is set or when g_nCameraStuckFrames != 0. Called by UpdateCameraSpringForMode for modes that allow manual camera rotation; the rotation-blocked modes (0x80000009 free-look, 0x80000012 ledge, 0x8000000b gem-grab, 0x8000000e, mode 3) zero g_nCameraManualYawInput directly instead. */
@@ -590,7 +590,7 @@ void AdvanceSpyroFrameMotion(void);
 void TickSpyroAttackEffects(int steps);
 
 /* 0x800495d8: Anim-layer-1 sub-frame advance: DAT_80078a7d += param_1; on overflow >= 0x10 wraps and advances DAT_80078a79 (frame) by 1, snapshots DAT_80078a73 → DAT_80078a72 and DAT_80078a79 → DAT_80078a78. Caps frame at &DAT_8006c4a2[DAT_80078a73 * 4] (per-anim length). Layer-1 byte set is the horn-strike anim overlay (vs layer-0 g_bSpyro* primary body anim). */
-void AdvanceSpyroAnimLayer1Frame(int param_1);
+void AdvanceSpyroAnimLayer1Frame(int step);
 
 /* 0x80049660: Per-tick anim-layer-1 state machine — tracks horn-strike anim overlay. _DAT_80078ab8 = layer mode (0=play, 1=mid-blend +2/tick, 2=hard-switch +4/tick). When mode=0 and _DAT_80078bf0 (horn-strike state) matches _DAT_80078ac0 (last seen): if bf0=0 snapshots primary g_bSpyro* into layer-1 byte set (a72/73/78/79/7d), else AdvanceSpyroAnimLayer1Frame(_DAT_80078abc rate). On state mismatch reads &DAT_80075264[bf0+ac0*2] transition byte (1=blend, 2=hard) and starts that mode. Modes 1/2 finish when DAT_80078a7d > 0xf → AdvanceSpyroAnimLayer1Frame(0) + mode=0. */
 void TickSpyroAnimLayer1(void);
@@ -602,7 +602,7 @@ void SmoothSpyroByteEulerSpring(void);
 void TickSpyroHornStrikeAttack(void);
 
 /* 0x80049dfc: Anim-layer-2 sub-frame advance: DAT_80078a7e += param_1; on overflow >= 0x10 wraps and advances DAT_80078a7b (frame), snapshots DAT_80078a75 → DAT_80078a74 and DAT_80078a7b → DAT_80078a7a. Wraps to &DAT_8006c4a0[anim*4] (start frame) when frame hits &DAT_8006c4a1[anim*4] (end+1). Layer-2 byte set at DAT_80078a74/75/7a/7b/7e. */
-void AdvanceSpyroAnimLayer2Frame(int param_1);
+void AdvanceSpyroAnimLayer2Frame(int step);
 
 /* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to TickSpyroAnimLayer1 but for the second overlay). Only ticks when _DAT_80078ac4 == 0 (layer-2 enabled) AND _DAT_80078c40 == _DAT_80078acc (state stable). If _DAT_80078c40 == 0 snapshots primary g_bSpyro* into layer-2 byte set (a74/75/7a/7b/7e); else AdvanceSpyroAnimLayer2Frame(_DAT_80078ac8 rate). _DAT_80078c40 is forcibly zeroed by TickSpyroAnimLayer2GateTimer when primary anims block layer 2. */
 void TickSpyroAnimLayer2(void);
@@ -702,7 +702,7 @@ void EncodeCachedVecToActorDirCode(Actor *actor);
 void ResetPadFrameSubstepTable(int *base);
 
 /* 0x80053708: Snapshots the live pad input state (0xa4 words, head + 4-record per-substep table) from src=param_1 into dst=param_2 and then re-inits param_1 via ResetPadFrameSubstepTable so the next frame starts fresh. Toggles parity byte DAT_80075944 (frame double-buffer index 0/1). Called by per-frame ticks: TickSpyroFrameForceJump, TickSpyroFrameNoInput, TickSpyroGameplayFrame, UpdateCameraFrame. */
-void SnapshotPadInputState(void *param_1, void *param_2);
+void SnapshotPadInputState(void *snapshot, void *live);
 
 /* 0x8005375c: Writes the default uncalibrated 4-axis stick bounds at param_1[0x20..0x2b]: each axis gets +0x20=0x7f (neutral), +0x24=0 (low), +0x28=0xff (high) for axes 0..3. Used as the fallback when FinalizePadCalibration detects the controller's reported range is too narrow to trust. Callers: FinalizePadCalibration (fallback path), PollPadAndDistributeInput (init), InitPadSystem. */
 void ResetPadStickCalibrationDefaults(unsigned char *cal);
@@ -1985,7 +1985,7 @@ int StepAndLerpAngle8(int a, int b, int c, int d);
 int IsActorFacingSpyro(int *e, int threshold);
 
 /* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point; the Spyro-sourced sibling of CheckLineOfSightSegment. */
-unsigned int CheckSpyroLineOfSightTo(int *param_1);
+unsigned int CheckSpyroLineOfSightTo(int *target);
 
 /* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records from +8) to the actor's position; returns the 2D distance, index via out_index. */
 int FindNearestPathPointToActor(int *ref, unsigned char *list, int *out_index);
@@ -2070,7 +2070,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius, int s
 
 /* 0x8003a420: Ground-walking path follow: clamped turn, matrix-rotated move,
  * ground contact, waypoint advance. */
-int WalkActorAlongWaypoints(char *actor, unsigned char *wp, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
+int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 /* 0x8003abc0: Spawn the drop (gem/item/debris) a broken or flamed actor leaves. */
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
@@ -2088,7 +2088,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim, int pit
 
 /* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
-int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev, int *step, int legs, int flags);
+int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 /* 0x8003c358: Spell a level or balloonist name in floating letter actors around a sign. */
 void SpawnNameLetterActors(Actor *actor, int mode);

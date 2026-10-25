@@ -247,8 +247,8 @@ typedef struct {
   char pad168[0x8];
   int triggerEventId;             /* 0x170 g_nSpyroTriggerCurrentEventId */
   char pad174[0x8];
-  int contact;                    /* 0x17C */
-  char pad180[0x24];
+  int firstContactPoint[3];       /* 0x17C g_anSpyroFirstContactPoint */
+  char pad188[0x1C];
   int headLook;                   /* 0x1A4 */
   char pad1A8[0x4C];
   int controlFlags;               /* 0x1F4 */
@@ -552,8 +552,8 @@ typedef struct L7State186 {
 
 typedef struct L7State197 {
   int vel[3];         /* 0x00 */
-  short u0C;          /* 0x0C */
-  short u0E;          /* 0x0E */
+  short countdown0;          /* 0x0C */
+  short countdown1;          /* 0x0E */
 } L7State197;
 
 /* Type 10: path patroller. */

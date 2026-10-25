@@ -1,28 +1,24 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
+#include "pad_buttons.h"
 #include "sdata.h"
+#include "spyro_block.h"
 
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C /* g_nCameraCurrentMode */
 #define CAM_NEXT_MODE 0x26    /* g_nCameraNextMode */
 #define CAM_ANCHOR 0x2A       /* g_pCameraAnchorPos */
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_SPEED 0x46         /* g_nSpyroMotionSpeed */
-#define SPY_SCRIPTED_MOVE 0x65 /* g_nSpyroScriptedMoveMode */
-#define SPY_REQUEST 0x7D       /* g_dwSpyroRequestMask */
 
 #define STATE_MODE() ((&g_abSpyroStateCameraMode)[g_nSpyroState])
-
-typedef struct {
-  int v[6];
-} CameraAngles;
 
 /* Re-sync the spring set to the angles recomputed from the eye position. */
 #define REBASE()                                                               \
   {                                                                            \
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);                 \
-    __asm__ volatile("");                                                      \
+    SCHED_FENCE();                                                             \
     *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;     \
   }
 
@@ -48,7 +44,7 @@ void SelectCameraMode(void) {
   if (mode == 0x80000009) {
     if (g_dwActiveCameraOptions & 0x10) {
       if (g_nSpyroState == 0 || g_nSpyroState == 0xD) {
-        if (!(g_dwPadHeld & 0x10)) {
+        if (!(g_dwPadHeld & PAD_TRIANGLE)) {
           g_nCameraNextMode = 0x80000010;
           g_nCameraPassiveModeHoldTimer = 0x2D;
           g_nSpyroSwingEulerPitchTarget = 0;
@@ -57,7 +53,7 @@ void SelectCameraMode(void) {
         }
         goto done;
       }
-    } else if ((g_dwPadHeld & 0x10) && g_nSpyroState == 0) {
+    } else if ((g_dwPadHeld & PAD_TRIANGLE) && g_nSpyroState == 0) {
       goto done;
     }
     {
@@ -73,7 +69,7 @@ void SelectCameraMode(void) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
-      __asm__ volatile("");
+      SCHED_FENCE();
       opts = g_dwActiveCameraOptions;
       *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
       if (((opts & 0x10) || g_nCameraLookAroundActive) &&

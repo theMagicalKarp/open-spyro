@@ -27,5 +27,5 @@ void DrawFullscreenTint(int abr, int r, int g, int b) {
   prim->poly.g0 = g;
   prim->poly.b0 = b;
   AddPrimToOT((int)&prim->poly);
-  g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
+  g_pPrimBufferWriteCursor = prim + 1;
 }

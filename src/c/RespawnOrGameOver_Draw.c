@@ -1,7 +1,9 @@
 #include "actor.h"
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* The "GAME OVER" letter screen position at byte offset `k` (letter * 4) of
    g_anGameOverLetterPosXY; the draw loop steps k by 4 alongside the letter
@@ -31,7 +33,7 @@ typedef struct LetterPos {
 static inline unsigned char *Opaque(unsigned char *p) {
   unsigned char *q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
 
@@ -62,7 +64,7 @@ void RespawnOrGameOver_Draw(void) {
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
-      PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+      PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       DrawSync(0);
@@ -87,7 +89,7 @@ void RespawnOrGameOver_Draw(void) {
       }
       DrawSync(0);
       VSync(0);
-      PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+      PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {
@@ -121,7 +123,7 @@ void RespawnOrGameOver_Draw(void) {
         d = g_abGameOverLetterDelay[i] + 0x3C;
         t = g_nGameplayDrawFrame - d;
         if (t >= 0) {
-          rec = (char *)g_pSpriteRecordWriteCursor - 0x58;
+          rec = (char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
           g_pSpriteRecordWriteCursor = rec;
           FillWord(rec, 0, 0x58);
           if (t < 0x18) {
@@ -156,8 +158,8 @@ void RespawnOrGameOver_Draw(void) {
           i += 1;
           st = sbase[((g_nGameplayDrawFrame * 4) + sk) & 0xFF];
           sk += 0xC;
-          sc[0x46] = (st * 3) >> 9;
-          sc += 0x58;
+          ACTOR_RAW(sc, unsigned char, rotZ) = (st * 3) >> 9;
+          sc += ACTOR_SIZE;
         } while (i < 0xA);
       }
       q = g_apSpritePrimQueue;
@@ -182,7 +184,7 @@ void RespawnOrGameOver_Draw(void) {
     }
     DrawSync(0);
     VSync(0);
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
   } else {
@@ -207,7 +209,7 @@ void RespawnOrGameOver_Draw(void) {
       }
       DrawSync(0);
       VSync(0);
-      PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+      PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
       if (g_nGameplayDrawFrame == 0xF) {

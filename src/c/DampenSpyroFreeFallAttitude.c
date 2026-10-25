@@ -23,7 +23,7 @@ void DampenSpyroFreeFallAttitude(void) {
   int k0;
   int k1;
   int pad[2];
-  int new_var;
+  int rollVel;
   int out0;
   int out1;
   e[0] = 0;
@@ -45,13 +45,13 @@ void DampenSpyroFreeFallAttitude(void) {
   d0 = d0 - ((k0 << 4) >> 6);
   k0 = k0 + d0;
   d1 = e[1] << 2;
-  new_var = g_nSpyroRollSpringVel;
+  rollVel = g_nSpyroRollSpringVel;
   d1 = d1 >> 4;
   g_nSpyroPitchSpringVel = k0;
   k0 = k0 >> 2;
   e[0] = k0;
   out0 = pitch + k0;
-  k1 = new_var;
+  k1 = rollVel;
   d1 = d1 - ((k1 << 4) >> 6);
   k1 = k1 + d1;
   g_nSpyroRollSpringVel = k1;

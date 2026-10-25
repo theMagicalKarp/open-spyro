@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 
 /* Refill the null-terminated sprite/HUD primitive request queue (0x80018880):
@@ -18,8 +19,7 @@ void EnqueuePendingSpritePrims(void) {
   if (g_pSpriteRecordWriteCursor != g_pSpriteRecordBufferTop) {
     do {
       *p = g_pSpriteRecordWriteCursor;
-      g_pSpriteRecordWriteCursor =
-          (void *)((int)g_pSpriteRecordWriteCursor + 0x58);
+      g_pSpriteRecordWriteCursor = (Actor *)g_pSpriteRecordWriteCursor + 1;
       p = p + 1;
     } while (g_pSpriteRecordWriteCursor != g_pSpriteRecordBufferTop);
   }

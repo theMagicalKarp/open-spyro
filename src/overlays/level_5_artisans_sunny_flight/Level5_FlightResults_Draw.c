@@ -27,6 +27,13 @@
 #include "level_spawn_actor.h"
 #include "level_flight_results.h"
 #include "actor.h"
+#include "gpu_prim.h"
+#include "frame_db.h"
+
+/* The backdrop quad being built at p, read back through volatile accesses
+ * (see the match notes), and the TILE bar that follows the last quad. */
+#define QUAD ((volatile PolyFT4 *) p)
+#define TILE ((Tile *) ((PolyFT4 *) p + 1))
 
 
 
@@ -65,7 +72,7 @@ void Level5_FlightResults_Draw(void)
     envBase = g_abFrameDrawEnv0;
     } while (0);
     do {
-    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     img = g_pRenderScratchPrimTop;
     } while (0);
     img2 = img - 2;
@@ -73,7 +80,7 @@ void Level5_FlightResults_Draw(void)
     DrawOTag(LinkOTPrimitives(0x800));
     DrawSync(0);
     VSync(0);
-    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     rect.x = 0x200;
     rect.y = 0;
     rect.w = 0x100;
@@ -172,43 +179,44 @@ void Level5_FlightResults_Draw(void)
     register unsigned short ch asm("$6");
     register unsigned char bq asm("$5");
     register unsigned char cq asm("$6");
-    *((volatile int *) p) = 0x9000000;
-    *((volatile unsigned char *) (p + 0x7)) = 0x2C;
-    *((volatile unsigned char *) (p + 0x4)) = 0x4C;
-    *((volatile unsigned char *) (p + 0x5)) = 0x80;
-    *((volatile short *) (p + 0x8)) = xx;
-    *((volatile short *) (p + 0xA)) = 8;
-    a = *((volatile unsigned short *) (p + 0x8));
-    bh = *((volatile unsigned short *) (p + 0xA));
-    ch = *((volatile unsigned short *) (p + 0x8));
-    d = *((volatile unsigned short *) (p + 0xA));
-    *((volatile short *) (p + 0x10)) = a + 0x80;
-    a = *((volatile unsigned short *) (p + 0x8));
-    *((volatile short *) (p + 0x1A)) = d + 0xDF;
-    d = *((volatile unsigned short *) (p + 0xA));
+    QUAD->tag = 0x9000000;
+    QUAD->code = 0x2C;
+    QUAD->r0 = 0x4C;
+    QUAD->g0 = 0x80;
+    QUAD->x0 = xx;
+    QUAD->y0 = 8;
+    a = (unsigned short)QUAD->x0;
+    bh = (unsigned short)QUAD->y0;
+    ch = (unsigned short)QUAD->x0;
+    d = (unsigned short)QUAD->y0;
+    QUAD->x1 = a + 0x80;
+    a = (unsigned short)QUAD->x0;
+    QUAD->y2 = d + 0xDF;
+    d = (unsigned short)QUAD->y0;
     i += 1;
-    *((volatile unsigned char *) (p + 0xD)) = 0;
-    *((volatile short *) (p + 0x12)) = bh;
-    bq = *((volatile unsigned char *) (p + 0xD));
+    QUAD->v0 = 0;
+    QUAD->y1 = bh;
+    bq = QUAD->v0;
     b = 0x40;
-    *((volatile unsigned char *) (p + 0xC)) = 0;
-    *((volatile short *) (p + 0x18)) = ch;
-    cq = *((volatile unsigned char *) (p + 0xC));
-    *((volatile short *) (p + 0x20)) = a + 0x80;
-    a = *((volatile unsigned char *) (p + 0xC));
-    *((volatile short *) (p + 0x22)) = d + 0xDF;
-    d = *((volatile unsigned char *) (p + 0xD));
-    *((volatile unsigned char *) (p + 0x6)) = b;
-    *((volatile unsigned char *) (p + 0x15)) = bq;
-    *((volatile unsigned char *) (p + 0x1C)) = cq;
-    *((volatile unsigned char *) (p + 0x14)) = a + 0x80U;
-    a = *((volatile unsigned char *) (p + 0xC));
-    *((volatile unsigned char *) (p + 0x1D)) = d - 0x21;
-    d = *((volatile unsigned char *) (p + 0xD));
-    *((volatile unsigned char *) (p + 0x24)) = a + 0x80U;
-    *((volatile unsigned char *) (p + 0x25)) = d - 0x21;
-    *((short *) (p + 0xE)) = 0x3820;
-    *((short *) (p + 0x16)) = tp;
+    QUAD->u0 = 0;
+    QUAD->x2 = ch;
+    cq = QUAD->u0;
+    QUAD->x3 = a + 0x80;
+    a = QUAD->u0;
+    QUAD->y3 = d + 0xDF;
+    d = QUAD->v0;
+    QUAD->b0 = b;
+    QUAD->v1 = bq;
+    QUAD->u2 = cq;
+    QUAD->u1 = a + 0x80U;
+    a = QUAD->u0;
+    QUAD->v2 = d - 0x21;
+    d = QUAD->v0;
+    QUAD->u3 = a + 0x80U;
+    QUAD->v3 = d - 0x21;
+    /* Plain stores, so the tpage store fills the jal delay slot. */
+    ((PolyFT4 *) p)->clut = 0x3820;
+    ((PolyFT4 *) p)->tpage = tp;
     AddPrimToOT(p);
     }
     }
@@ -218,15 +226,15 @@ void Level5_FlightResults_Draw(void)
     {
       goto quad;
     }
-    *((int *) (p + 0x28)) = 0x3000000;
-    *((unsigned char *) (p + 0x2F)) = b;
-    *((short *) (p + 0x30)) = 0;
-    *((short *) (p + 0x32)) = 0xE7;
-    *((short *) (p + 0x34)) = 0x200;
-    *((short *) (p + 0x36)) = 0xE7;
-    *((unsigned char *) (p + 0x2C)) = 0;
-    *((unsigned char *) (p + 0x2D)) = 0;
-    *((unsigned char *) (p + 0x2E)) = 0;
+    TILE->tag = 0x3000000;
+    TILE->code = b;
+    TILE->x0 = 0;
+    TILE->y0 = 0xE7;
+    TILE->w = 0x200;
+    TILE->h = 0xE7;
+    TILE->r0 = 0;
+    TILE->g0 = 0;
+    TILE->b0 = 0;
     AddPrimToOT(next);
     g_pPrimBufferWriteCursor = p + 0x38;
     if (g_nSubMenuCursor < 0x64)
@@ -255,21 +263,21 @@ void Level5_FlightResults_Draw(void)
       pos[1] = 0x1E;
       pos[2] = 0xC00;
       BuildTextSpriteChain(buf, pos, 0x18, 0xB);
-      fp = g_pSpriteRecordWriteCursor - 0x58;
+      fp = g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       g_pSpriteRecordWriteCursor = fp;
       FillWord(fp, 0, 0x58);
       {
         char *r = g_pSpriteRecordWriteCursor;
-        *((short *) (r + 0x36)) = 0x1D7;
-        *((int *) (r + 0xC)) = 0x1CC;
-        *((int *) (r + 0x10)) = 0x28;
-        *((int *) (r + 0x14)) = 0xC00;
-        *((unsigned char *) (r + 0x45)) = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
+        ACTOR_RAW(r, short, type) = 0x1D7;
+        ACTOR_RAW(r, int, posX) = 0x1CC;
+        ACTOR_RAW(r, int, posY) = 0x28;
+        ACTOR_RAW(r, int, posZ) = 0xC00;
+        ACTOR_RAW(r, unsigned char, rotY) = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
       }
-      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x46)) = g_dwHudBobSinePhase;
-      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x47)) = 0x7F;
-      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x4F)) = 0xB;
-      *((unsigned char *) (((char *) g_pSpriteRecordWriteCursor) + 0x50)) = 0xFF;
+      ((Actor *) g_pSpriteRecordWriteCursor)->rotZ = g_dwHudBobSinePhase;
+      ((Actor *) g_pSpriteRecordWriteCursor)->otBias = 0x7F;
+      ((Actor *) g_pSpriteRecordWriteCursor)->tintMode = 0xB;
+      ((Actor *) g_pSpriteRecordWriteCursor)->cullRadius = 0xFF;
       EmitRadialShadedLine(0x3C, 0x2E, 0x1C4, 0x2E);
       pos[0] = 0x64;
       pos[1] = 0x3C;
@@ -553,9 +561,9 @@ void Level5_FlightResults_Draw(void)
             do
             {
               i += 1;
-              *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+              ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             }
             while (i < count);
           }
@@ -572,7 +580,7 @@ void Level5_FlightResults_Draw(void)
 
         do { do { slot += 1; } while (0); } while (0);
         i += 1;
-        r += 0x58;
+        r += ACTOR_SIZE;
         if (i < 4)
         {
           goto pub;
@@ -625,9 +633,9 @@ void Level5_FlightResults_Draw(void)
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           }
           while (i < count);
         }
@@ -660,9 +668,9 @@ void Level5_FlightResults_Draw(void)
           do
           {
             i += 1;
-            *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           }
           while (i < count);
         }
@@ -684,9 +692,9 @@ void Level5_FlightResults_Draw(void)
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += 0x58;
+          rec += ACTOR_SIZE;
         }
         while (i < count);
       }
@@ -737,9 +745,9 @@ void Level5_FlightResults_Draw(void)
         do
         {
           i += 1;
-          *((unsigned char *) (rec + 0x46)) = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += 0x58;
+          rec += ACTOR_SIZE;
         }
         while (i < count);
       }
@@ -773,6 +781,6 @@ void Level5_FlightResults_Draw(void)
     }
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   g_nPauseMenuTransitionFrames += 1;
 }

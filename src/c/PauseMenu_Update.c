@@ -1,13 +1,14 @@
 #include "funcs.h"
 #include "globals.h"
+#include "pad_buttons.h"
+#include "sample_bank.h"
 #include "vecmath.h"
 
 extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
 extern int
     g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 
-#define SFX(off)                                                               \
-  PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[off], 0, 0x10, 0)
+#define SFX(off) PlaySoundEffect(LEVEL_SFX(off), 0, 0x10, 0)
 
 /* 0x8002e12c (0xa00): GS_PAUSE_MENU tick. Substate 0 is the main pause menu
    (resume / options / inventory / quit), 1 the options page (SFX and music
@@ -34,21 +35,21 @@ void PauseMenu_Update(void) {
   }
 
   pad = g_dwPadPressed;
-  if (pad & 0x100) {
+  if (pad & PAD_SELECT) {
     EnterInventoryMenu(0);
     return;
   }
 
   if (g_nPauseMenuSubstate == 2) {
-    if (pad & 0xA000) {
+    if (pad & (PAD_RIGHT | PAD_LEFT)) {
       SFX(0x2E);
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
       return;
     }
-    if (!(pad & 0x50)) {
+    if (!(pad & (PAD_TRIANGLE | PAD_CROSS))) {
       return;
     }
-    if (g_nPauseMenuCursor == 1 || (pad & 0x10)) {
+    if (g_nPauseMenuCursor == 1 || (pad & PAD_TRIANGLE)) {
       SFX(0x2D);
       g_nPauseMenuSubstate = 0;
       g_nPauseMenuCursor = 3;
@@ -86,7 +87,7 @@ void PauseMenu_Update(void) {
   }
 
   if (g_nPauseMenuSubstate == 1) {
-    if (pad & 0x4000) {
+    if (pad & PAD_DOWN) {
       SFX(0x2D);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
@@ -96,7 +97,7 @@ void PauseMenu_Update(void) {
       } else if (c + 1 == 3 && !g_nPadIsDualshockFlag) {
         g_nPauseMenuCursor = c + 2;
       }
-    } else if (pad & 0x1000) {
+    } else if (pad & PAD_UP) {
       SFX(0x2D);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
@@ -107,15 +108,15 @@ void PauseMenu_Update(void) {
         g_nPauseMenuCursor = c - 2;
       }
     }
-    if (g_dwPadPressed & 0x10) {
+    if (g_dwPadPressed & PAD_TRIANGLE) {
       goto back;
     }
     switch (g_nPauseMenuCursor) {
     case 0:
-      if ((g_dwPadPressed & 0x8000) && g_nSfxVolume > 0) {
+      if ((g_dwPadPressed & PAD_LEFT) && g_nSfxVolume > 0) {
         SFX(0x2E);
         g_nSfxVolume--;
-      } else if ((g_dwPadPressed & 0x2000) && g_nSfxVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nSfxVolume < 10) {
         SFX(0x2E);
         g_nSfxVolume++;
       }
@@ -123,10 +124,10 @@ void PauseMenu_Update(void) {
       g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / 0x3FFF;
       return;
     case 1:
-      if ((g_dwPadPressed & 0x8000) && g_nMusicVolume > 0) {
+      if ((g_dwPadPressed & PAD_LEFT) && g_nMusicVolume > 0) {
         SFX(0x2E);
         g_nMusicVolume--;
-      } else if ((g_dwPadPressed & 0x2000) && g_nMusicVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nMusicVolume < 10) {
         SFX(0x2E);
         g_nMusicVolume++;
       }
@@ -144,7 +145,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 2:
-      if (g_dwPadPressed & 0xA040) {
+      if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
         SFX(0x2E);
         if ((*g_anSoundMonoMixFlagBlock = 1 - *g_anSoundMonoMixFlagBlock) !=
             0) {
@@ -163,7 +164,7 @@ void PauseMenu_Update(void) {
       return;
     case 3:
       if (g_nPadIsDualshockFlag) {
-        if (g_dwPadPressed & 0xA040) {
+        if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
           SFX(0x2E);
           g_nOptionVibrationEnabled = 1 - g_nOptionVibrationEnabled;
           if (g_nOptionVibrationEnabled && g_nVibrationLevel < 10) {
@@ -175,7 +176,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 4:
-      if (g_dwPadPressed & 0xA040) {
+      if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
         SFX(0x2E);
         if (g_dwActiveCameraOptions == 2) {
           g_dwActiveCameraOptions = 0x52;
@@ -185,7 +186,7 @@ void PauseMenu_Update(void) {
       }
       return;
     case 5:
-      if (g_dwPadPressed & 0x40) {
+      if (g_dwPadPressed & PAD_CROSS) {
       back:
         SFX(0x2E);
         g_nPauseMenuSubstate = 0;
@@ -197,20 +198,20 @@ void PauseMenu_Update(void) {
   }
 
   last = 3;
-  if (pad & 0x4000) {
+  if (pad & PAD_DOWN) {
     SFX(0x2D);
     g_nPauseMenuIdleFrames = 0;
     if (last < ++g_nPauseMenuCursor) {
       g_nPauseMenuCursor = 0;
     }
-  } else if (pad & 0x1000) {
+  } else if (pad & PAD_UP) {
     SFX(0x2D);
     g_nPauseMenuIdleFrames = 0;
     if (--g_nPauseMenuCursor < 0) {
       g_nPauseMenuCursor = last;
     }
   }
-  if (!(g_dwPadPressed & 0x840)) {
+  if (!(g_dwPadPressed & (PAD_CROSS | PAD_START))) {
     return;
   }
   switch (g_nPauseMenuCursor) {
@@ -236,7 +237,7 @@ void PauseMenu_Update(void) {
     ZeroVector(&g_nSpyroSwingEulerPitchTarget);
     g_nSpyroScriptedMoveMode = 0;
     if (g_nFlightLevelActive) {
-      g_nGamestate = 7;
+      g_nGamestate = GS_OVERLAY_HOOK;
       g_nPauseMenuCursor = 0;
       g_nPauseMenuIdleFrames = 0;
       g_nFlightQuitFlag = 1;

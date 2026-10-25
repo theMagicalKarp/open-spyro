@@ -2,14 +2,14 @@
 #include "main_shared.h"
 
 /* 0x800495d8 */
-void AdvanceSpyroAnimLayer1Frame(int param_1) {
+void AdvanceSpyroAnimLayer1Frame(int step) {
   unsigned char *sub_ptr = g_abSpyroAnimLayer1SubstepBlock;
   unsigned char frame;
   unsigned char anim;
   unsigned char newFrame;
   unsigned char len;
 
-  *sub_ptr = *sub_ptr + param_1;
+  *sub_ptr = *sub_ptr + step;
   if (*sub_ptr >= 0x10) {
     *sub_ptr = *sub_ptr - 0x10;
 

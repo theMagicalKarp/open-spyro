@@ -1235,12 +1235,12 @@ extern unsigned char g_abGemPickupFlickerPairs2[]; /* 0x8006f398: substate-2 fli
 extern unsigned char g_abGemPickupFlickerPairs2Y[]; /* 0x8006f399 */
 extern short g_anGemPickupScaleCurve[]; /* 0x8006f3c0: gem-pickup timer scale curve */
 extern int g_anGemPickupIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
-extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414 */
+extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view; the sized decl stays in use where the original addresses it absolutely (A240) */
 extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroHornStrikeTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroHornStrikeAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
-extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c */
+extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
 extern int g_nLevelUnreadScratchA; /* 0x80075670 */
 extern int g_nLevelUnreadScratchB; /* 0x80075674 */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
@@ -1301,7 +1301,7 @@ extern unsigned char g_aRotBillboards[]; /* 0x80077108 */
 extern int g_anMotionTrailSliceCounts[]; /* 0x800772c8: per-ribbon slice count */
 extern int g_anPadTypeBlock[]; /* 0x80077384: g_nPadType as an array view */
 extern unsigned char g_abPadAnalogCalibratedBlock[]; /* 0x8007738c: calibrated-stick bytes */
-extern int g_anLevelGemsBlock[]; /* 0x80077420 */
+extern int g_anLevelGemsBlock[]; /* 0x80077420: held-base view (A240) */
 extern unsigned int g_adwMusicStopStatusBlock[]; /* 0x800774b4: alias of g_dwMusicStreamStatus (stop arm) */
 extern unsigned int g_adwMusicStreamBlock[]; /* 0x800774b4 */
 extern unsigned int g_adwMusicStreamStatusBlock[]; /* 0x800774b4: alias of g_dwMusicStreamStatus */
@@ -1349,8 +1349,8 @@ extern int g_anHudLevelEggTimerBlock[]; /* 0x80077fc4 */
 extern int g_anHudLevelGemCachedBlock[]; /* 0x80077fc8: held-base view of the cached level gem count */
 extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
-extern int g_adwHudBobSinePhaseBlock[]; /* 0x80077fe4: held-base view of g_dwHudBobSinePhase */
-extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8 */
+extern int g_adwHudBobSinePhaseBlock[]; /* 0x80077fe4: held-base view of g_dwHudBobSinePhase; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
+extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */
 extern int g_anWorldAnimColor0CountBlock[]; /* 0x80078570 */

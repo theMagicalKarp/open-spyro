@@ -22,6 +22,11 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "flight_actor_states.h"
+#include "level_update_actors_macros.h"
+#include "gamestate.h"
+#include "match_asm.h"
+#include "pad_buttons.h"
 
 /* Level29_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -40,23 +45,9 @@
  *   The function      update-list preamble, then the per-class dispatch
  */
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
 
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
-
-#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
@@ -67,9 +58,6 @@
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
-#define CAM g_anWorldToCameraRotMtx
-
-
 
 /* Glow node owned by Sparx; follows its anchor position. */
 
@@ -77,20 +65,7 @@
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -127,154 +102,11 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  int centre[3];         /* 0x04 pad centre */
-  int apex[3];           /* 0x0A (short-aligned) rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];        /* 0x00 */
-  signed char spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  char pad09[0x3];
-  int life;  /* 0x0C */
-  int floor; /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
-
 
 /* ==== Flight-level classes ==== */
 
-/* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
- * sound to play when Spyro flies through. */
-typedef struct TargetState {
-  int pad00;
-  int pad04;
-  int pad08;
-  int pad0C;
-  Actor *helper;  /* 0x10 */
-  int helperType; /* 0x14, spawned as helperType + 0x158 */
-  int sound;      /* 0x18 */
-} TargetState;
-
-/* Particle burst shards spawned by the 0x161 target. */
-typedef struct BurstState {
-  int posX, posY, posZ; /* 0x00 velocity */
-  signed char spinX;    /* 0x0C */
-  signed char spinY;
-  signed char spinZ;
-  char pad0F;
-  int life;             /* 0x10 */
-} BurstState;
-
-
-/* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
- * swept phase. */
-typedef struct TallyState {
-  int x;        /* 0x00 pivot */
-  int y;        /* 0x04 */
-  int z;        /* 0x08 */
-  short radius; /* 0x0C */
-  short angle;  /* 0x0E */
-  short phase;  /* 0x10 */
-} TallyState;
-
-/* Flight HUD controller (0x166): clock digits, the per-class tally icons,
- * icons being spent into a slot, and the four finish slots. */
-typedef struct HudState {
-  int time;         /* 0x00 starting clock, in ticks */
-  Actor *digit[8];  /* 0x04 clock digits; 4..7 only in time attack */
-  Actor *icon[8];   /* 0x24 tally row */
-  Actor *spent[8];  /* 0x44 a completed row flying to its slot */
-  Actor *slot[4];   /* 0x64 finish slots */
-  int types[4];     /* 0x74 icon actor type per class */
-  int pad84[4];     /* 0x84 */
-  int timer;        /* 0x94 */
-  int count;        /* 0x98 icons still to spend */
-  int hurry;        /* 0x9C under a minute left */
-} HudState;
-
 
 /* ==== The function ==== */
-/* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or
- * it hits something. */
-typedef struct DriftState {
-  int vel[3]; /* 0x00 */
-  int timer;  /* 0x0C */
-} DriftState;
-
-/* Type 0x134: a path walker that rolls with its turns and, when flamed,
- * spawns its reward and three embers and runs off. */
-typedef struct RollerState {
-  unsigned char *path; /* 0x00 [0]=node count, [1]=nearest node */
-  int reward;          /* 0x04 reward actor type - 0x158 */
-  int tally;           /* 0x08 */
-  int roll;            /* 0x0C */
-  int rollVel;         /* 0x10 */
-  int pad14;           /* 0x14 passed by address to DriveActorTrackedMove */
-  int heading;         /* 0x18 */
-  int pad1C;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int legVec[3];        /* 0x20 */
-  int pad2C;           /* 0x2C */
-  int ready;           /* 0x30 nearest node found */
-} RollerState;
-
-
-/* Types 0x1E1..0x1E3: the walker's embers. */
-typedef struct EmberState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 */
-  int life;      /* 0x0C */
-} EmberState;
-
-/* Type 0x4E: a rider that sits on its host actor; when hit it pays out,
- * bursts and retires. */
-typedef struct Rot3 {
-  unsigned char r[3];
-} Rot3;
-
-typedef struct RiderState {
-  int reward; /* 0x00 reward actor type - 0x158 */
-  int tally;  /* 0x04 */
-  int host;   /* 0x08 index into the actor array */
-  int timer;  /* 0x0C */
-} RiderState;
-
-/* Types 0x197/0x198: a smoking walker. */
-typedef struct SmokerState {
-  unsigned char *path; /* 0x00 */
-  int legStep;           /* 0x04 */
-  int legVec[3];        /* 0x08 */
-  int timer;           /* 0x14 */
-} SmokerState;
 
 
 /* Type 0xA3: a bobbing walker; when hit it pays out, releases an 0xE8
@@ -562,7 +394,7 @@ void Level29_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -588,7 +420,7 @@ void Level29_UpdateActors(void) {
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -610,7 +442,7 @@ void Level29_UpdateActors(void) {
         } else {
           actor->mode = actor->mode + 1;
         }
-        if ((g_dwPadPressed & 0x40) != 0) {
+        if ((g_dwPadPressed & PAD_CROSS) != 0) {
           actor->mode = 5;
         }
         break;
@@ -655,8 +487,7 @@ void Level29_UpdateActors(void) {
           if (dot < 0) {
             int *nrm;
 
-            do {
-            } while (0);
+            EBB_BREAK();
             nrm = &g_anCollisionProbeVec;
 
             ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));
@@ -828,8 +659,7 @@ void Level29_UpdateActors(void) {
         CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
-        do {
-        } while (0);
+        EBB_BREAK();
         st->pitch = -ArcTan2_8bit(
             IntegerSqrt((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
             nrm[1]);
@@ -851,8 +681,7 @@ void Level29_UpdateActors(void) {
             if (actor->type >= 83) {
               int *nrm = &g_anCollisionProbeVec;
 
-              do {
-              } while (0);
+              EBB_BREAK();
               st->pitch = -ArcTan2_8bit(
                   IntegerSqrt((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
                   nrm[1]);
@@ -1595,8 +1424,7 @@ void Level29_UpdateActors(void) {
               if (dot < 0) {
                 int *nrm;
 
-                do {
-                } while (0);
+                EBB_BREAK();
                 nrm = &g_anCollisionProbeVec;
 
                 ScaleVector3ByRatio(nrm, 0x1000, -dot);
@@ -1656,7 +1484,7 @@ void Level29_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == 0) {
+        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
                         &actor->sfxSlot);
         }
@@ -1676,8 +1504,7 @@ void Level29_UpdateActors(void) {
           DespawnActorRecord(actor);
           break;
         }
-        do {
-        } while (0);
+        EBB_BREAK();
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
@@ -1946,7 +1773,7 @@ void Level29_UpdateActors(void) {
                  st->slot[3] != 0) {
         int s = st->slot[0]->mode;
 
-        if (s == 4 || (g_dwPadPressed & 0x40)) {
+        if (s == 4 || (g_dwPadPressed & PAD_CROSS)) {
           g_pfnLevelFallImpactCallback();
         } else if (s == 1) {
           for (i = 0; i < 4; i++) {
@@ -1997,7 +1824,7 @@ void Level29_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
       }
 
-      if (g_nGamestate == 7) {
+      if (g_nGamestate == GS_OVERLAY_HOOK) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
             st->icon[i]->cullRadius = 0;
@@ -2061,8 +1888,7 @@ void Level29_UpdateActors(void) {
           if (dot < 0) {
             int *nrm;
 
-            do {
-            } while (0);
+            EBB_BREAK();
             nrm = &g_anCollisionProbeVec;
 
             ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));

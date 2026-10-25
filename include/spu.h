@@ -47,6 +47,9 @@ typedef struct SpuVoiceRow {
   /* 0x18 */ char *pPlaying;
 } SPUVOICEROW;
 
+/* g_aSpuVoiceRows (the 24 mixer rows) is declared per file: PlaySoundEffect
+ * needs a view with volatile pan-cache fields. */
+
 /* Field `field` of the voice row at byte offset `off` (voice * 0x1C), in
  * the byte-offset form from g_abSpuCommonAttr the sound-stop paths use. */
 #define VOICE_ROW_OFFSET(field) (0x28 + (int)&((SPUVOICEROW *)0)->field)

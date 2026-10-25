@@ -61,7 +61,7 @@ int CheckDeathPlane(void) {
         TickWorldBundleLoadStream();
         TickCdMusicStream();
       }
-      g_nGamestate = 0xe;
+      g_nGamestate = GS_GEM_CUTSCENE;
       g_nGenericCountdown = 0xf;
       BeginStoryIntro();
       if ((int)g_dwGamestateFrames >=

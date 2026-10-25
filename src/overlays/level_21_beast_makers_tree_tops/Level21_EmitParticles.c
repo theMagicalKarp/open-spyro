@@ -22,7 +22,7 @@
  * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x9, 0xA, 0xC, 0x15, 0x18, 0x19, 0x21, 0x42, 0x46, 0x47, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
  *
  * Arm 0x18 is the family's one per-variant knob: `fx = 0x2E` must be a plain
- * literal, `depthBias`/`unk18` must be written after it, and the 0x30 carrier must
+ * literal, `depthBias`/`lift` must be written after it, and the 0x30 carrier must
  * be MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
  * Here that carrier is `v` (arm 0x15's local promoted to function scope).
  */
@@ -31,103 +31,9 @@
 #include "actor_type.h"
 #include "level_globals.h"
 #include "level_emit_particles.h"
+#include "emit_record.h"
+#include "gamestate.h"
 
-typedef struct Emit {   /* one 0x20-byte emit-list record */
-  unsigned char type;   /* 0x00 effect id */
-  unsigned char cls;    /* 0x01 record class (stamped by the allocator) */
-  unsigned char phase;  /* 0x02 */
-  unsigned char visible;  /* 0x03 1 = drawn last frame (RasterizeEmitList); AdvanceEmitList frees it at 0 */
-  union {
-    struct {                     /* classes 2 / 3 / 6 -- spark */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pad[3];              /* 0x12 */
-      short vel[3];              /* 0x18 */
-      short toggle;               /* 0x1E phase toggle (AdvanceEmitList flips it 0<->1) */
-    } spark;
-    struct {                     /* class 0 -- dust mote */
-      unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      short vel[3];              /* 0x10 */
-    } dust;
-    struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pos2[3];             /* 0x12 */
-      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
-      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
-    } ribbon;
-    struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pos2[3];             /* 0x12 */
-      short lift;               /* 0x18 fire-jet height lift (scaled by segment and heat) */
-      short radius;               /* 0x1A fire-jet ring radius */
-      unsigned char angle;       /* 0x1C fire-jet spin angle (LUT index, += step*8) */
-      unsigned char segment;       /* 0x1D fire-jet segment index */
-    } band;
-    struct {                     /* class 0 -- smear (2nd point at 0x10) */
-      short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      short pos2[3];             /* 0x10 */
-      short pad16;               /* 0x16 */
-      unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
-      unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
-    } smear;
-    struct {                     /* class 3 -- actor-tracking plume */
-      unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
-      unsigned char r;           /* 0x0C */
-      unsigned char g;           /* 0x0D */
-      unsigned char b;           /* 0x0E */
-      unsigned char fx;          /* 0x0F */
-      unsigned char texIndex;       /* 0x10 sub-record (texture) index */
-      unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pad[3];              /* 0x12 */
-      int *src;                  /* 0x18 the actor position it tracks */
-      short maxRadius;               /* 0x1C orbit radius cap (orbiting spark 0x6) */
-      short rise;               /* 0x1E rise limit in 0x40 units (orbiting spark 0x6); zeroed elsewhere */
-    } plume;
-    struct {                     /* classes 1 / 4 -- streak */
-      unsigned short a[3];       /* 0x04 head */
-      unsigned short b[3];       /* 0x0A tail */
-      unsigned char c0[4];       /* 0x10 head colour */
-      unsigned char c1[4];       /* 0x14 tail colour */
-    } line;
-  } u;
-} Emit;
 
 void Level21_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
@@ -171,7 +77,7 @@ void Level21_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      if (g_nGamestate == 8) {
+      if (g_nGamestate == GS_GEM_PICKUP) {
         rec->u.spark.life = 8;
       } else {
         rec->u.spark.life = 0x10;
@@ -750,7 +656,7 @@ void Level21_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
@@ -758,7 +664,7 @@ void Level21_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

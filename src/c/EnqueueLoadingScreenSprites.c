@@ -63,12 +63,12 @@ void EnqueueLoadingScreenSprites(void) {
       i = (gems[0] == 4) * 4;
       gems += 0x44;
       if (i < 5) {
-        gems += i * 0x58;
+        gems += i * ACTOR_SIZE;
         do {
           *slot = gems;
           slot += 1;
           i += 1;
-          gems += 0x58;
+          gems += ACTOR_SIZE;
         } while (i < 5);
       }
       digits = g_abHudGemRollBlock;
@@ -80,16 +80,16 @@ void EnqueueLoadingScreenSprites(void) {
         rect[1] = 0x24;
         rect[2] = 0xB40;
         BuildTextSpriteChain((char *)scratch, rect, 0x1C, 0xB);
-        rec -= 0x58;
+        rec -= ACTOR_SIZE;
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-          rec[0x46] =
+          ACTOR_RAW(rec, unsigned char, rotZ) =
               ((unsigned short *)
                    g_anCosineLut)[(GEM_HOLD_TIMER * 4 + phase) & 0xFF] >>
               7;
           *slot = rec;
           slot += 1;
-          rec -= 0x58;
+          rec -= ACTOR_SIZE;
           phase += 0xC;
         }
       }
@@ -102,7 +102,7 @@ void EnqueueLoadingScreenSprites(void) {
       *slot = dragons;
       slot += 1;
       i += 1;
-      dragons += 0x58;
+      dragons += ACTOR_SIZE;
       if (i < 3) {
         goto dragon_slot;
       }
@@ -115,7 +115,7 @@ void EnqueueLoadingScreenSprites(void) {
       *slot = lives;
       slot += 1;
       i += 1;
-      lives += 0x58;
+      lives += ACTOR_SIZE;
       if (i < 3) {
         goto life_slot;
       }

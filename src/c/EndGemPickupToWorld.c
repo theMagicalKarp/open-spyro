@@ -22,12 +22,12 @@ void EndGemPickupToWorld(void) {
   int timer;
 
   id = ((int *)(*(void **)g_pGemPickupSourceActor))[8];
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
-    rec = (unsigned char *)g_pActorListBase + id * 0x58;
-    rec[0x3C] = 0;
-    rec[0x48] = 1;
+    rec = (unsigned char *)g_pActorListBase + id * ACTOR_SIZE;
+    ACTOR_RAW(rec, unsigned char, anim) = 0;
+    ACTOR_RAW(rec, unsigned char, mode) = 1;
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;

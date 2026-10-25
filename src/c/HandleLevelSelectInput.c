@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 
 /* Level-select (cheat menu) pad handler (0x8002d580, 0x290 bytes).
  * Square/Triangle/Circle/Cross/L1/R1/L2 pick a slot 0-6; R2 (0x1000) steps
@@ -17,28 +18,28 @@ void HandleLevelSelectInput(void) {
   if (pad != 0) {
     sel = -1;
     switch (pad) {
-    case 0x20:
+    case PAD_CIRCLE:
       sel = 0;
       break;
-    case 0x40:
+    case PAD_CROSS:
       sel = 1;
       break;
-    case 0x80:
+    case PAD_SQUARE:
       sel = 2;
       break;
-    case 0x10:
+    case PAD_TRIANGLE:
       sel = 3;
       break;
-    case 0x2000:
+    case PAD_RIGHT:
       sel = 4;
       break;
-    case 0x4000:
+    case PAD_DOWN:
       sel = 5;
       break;
-    case 0x8000:
+    case PAD_LEFT:
       sel = 6;
       break;
-    case 0x1000:
+    case PAD_UP:
       g_nCurrentLevelId = g_nActiveLevelId + 1;
       if (g_nCurrentLevelId % 10 >= 6) {
         g_nCurrentLevelId = (g_nCurrentLevelId / 10 + 1) * 10;
@@ -63,7 +64,7 @@ void HandleLevelSelectInput(void) {
           g_nPreserveMobIdx = -1;
           ResetSpyroEntity(0);
           RestartSpyroAnimWithState(0xF);
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nCdStreamState = 1;
           g_nScriptedRespawnFlag = 0;
           g_nLevelTransitionTallyActive = 0;

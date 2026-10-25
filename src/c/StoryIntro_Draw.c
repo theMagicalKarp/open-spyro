@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -61,7 +62,7 @@ void StoryIntro_Draw(void) {
           ((limit - g_anStoryIntroTimerBlock[0]) >> 1) * 0x58;
     }
 
-    rec -= 0x58;
+    rec -= ACTOR_SIZE;
     if (rec >= (int)g_pSpriteRecordWriteCursor) {
       i = 0;
       tp = g_anStoryIntroTimerBlock;
@@ -80,7 +81,7 @@ void StoryIntro_Draw(void) {
         phase += 0xC;
         i += 1;
         alpha -= 0x58;
-        rec -= 0x58;
+        rec -= ACTOR_SIZE;
       } while (rec >= (int)g_pSpriteRecordWriteCursor);
     }
   }
@@ -106,7 +107,7 @@ void StoryIntro_Draw(void) {
 
   DrawSync(0);
   VSync(0);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

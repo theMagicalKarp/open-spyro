@@ -9,6 +9,18 @@
    frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key
    and its top byte the sfx id.  The header pointer is re-read per use
    (volatile) — the original never keeps it live across the sfx-id test. */
+/* Byte distances from the held euler base (g_abSpyroPersistentEuler,
+   0x80078a64) to the two matrices it builds: g_anSpyroBodyMtx (0x80078a8c)
+   and g_anSpyroComposedBodyMtx (0x80078c20). */
+#define EULER_TO_BODY_MTX 0x28
+#define EULER_TO_COMPOSED_MTX 0x1BC
+
+/* ...and from the held footstep-key base (g_adwSpyroFootstepSfxBlock,
+   0x80078cbc) back to g_anSpyroWorldPos (the sound owner) and on to
+   g_bSpyroSfxVoiceMarker. */
+#define FOOTSTEP_TO_SPYRO_POS 0x264
+#define FOOTSTEP_TO_VOICE_MARKER 0x3C
+
 #define ANIM_SLOT(mesh) (*(volatile int *)((mesh) + MODEL_OFFSET(m_Animations)))
 #define FRAMEREC(mesh, frame) ((frame) + ANIM_SLOT(mesh))
 #define FRAME_KEY(rec)                                                         \
@@ -77,12 +89,12 @@ void TickSpyroGameplayFrame(void) {
     TickSpyroAnimLayer2();
   }
   euler = g_abSpyroPersistentEulerBlock;
-  bodyMtx = (int *)(euler + 0x28);
+  bodyMtx = (int *)(euler + EULER_TO_BODY_MTX);
   euler[0] = g_nSpyroBodyPitch >> 4;
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
   g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
   ApplyEulerRotation(euler, bodyMtx, 0);
-  composedMtx = (int *)(euler + 0x1BC);
+  composedMtx = (int *)(euler + EULER_TO_COMPOSED_MTX);
   ApplyEulerRotation(euler + 4, composedMtx, 0);
   MulMatrix0(bodyMtx, composedMtx, composedMtx);
   SampleSpyroShadowRingHeights(1);
@@ -160,8 +172,8 @@ done:
     ptr = ANIM_SLOT(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable);
     rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
     if (g_dwSpyroFootstepSecondarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[1], (unsigned char *)footstep - 0x264, 4,
-                      (unsigned char *)footstep + 0x3C);
+      PlaySoundEffect(sfx[1], (unsigned char *)footstep - FOOTSTEP_TO_SPYRO_POS,
+                      4, (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
     }
   }
   key2 =

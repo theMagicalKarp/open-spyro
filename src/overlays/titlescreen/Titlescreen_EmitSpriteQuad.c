@@ -1,8 +1,9 @@
 #include "globals.h"
 #include "funcs.h"
+#include "gpu_prim.h"
 /* Titlescreen_EmitSpriteQuad (0x8007CD38, titlescreen overlay).
  *
- * Emit one textured quad (POLY_FT4) for a title-screen UI sprite: position it
+ * Emit one textured quad (PolyFT4) for a title-screen UI sprite: position it
  * at (nX, nY) sized from the sprite table, tint it from the selection-color
  * table, submit it to the ordering table, and bump the primitive allocator. A
  * negative sprite id draws the sprite horizontally mirrored (the U coordinates
@@ -14,22 +15,6 @@
  * Verified byte-identical inside the relinked titlescreen.ovl.
  */
 
-typedef struct {
-  unsigned int tag;               /* 0x0 */
-  unsigned char r0, g0, b0, code; /* 0x4 */
-  short x0, y0;                   /* 0x8 */
-  unsigned char u0, v0;           /* 0xC */
-  unsigned short clut;            /* 0xE */
-  short x1, y1;                   /* 0x10 */
-  unsigned char u1, v1;           /* 0x14 */
-  unsigned short tpage;           /* 0x16 */
-  short x2, y2;                   /* 0x18 */
-  unsigned char u2, v2;           /* 0x1C */
-  unsigned short pad1;            /* 0x1E */
-  short x3, y3;                   /* 0x20 */
-  unsigned char u3, v3;           /* 0x24 */
-  unsigned short pad2;            /* 0x26 */
-} POLY_FT4;                       /* sizeof 0x28 */
 
 typedef struct {
   unsigned short nTpage; /* 0x0 */
@@ -45,7 +30,7 @@ extern TitlescreenSprite g_aTitlescreenSprites[];  /* title-screen sprite table 
 
 
 void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
-  POLY_FT4 *p;
+  PolyFT4 *p;
   int bMirrored = 0;
 
   if (nSprite < 0) {

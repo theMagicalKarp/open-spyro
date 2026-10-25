@@ -1,6 +1,9 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
+#include "sample_bank.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
@@ -12,7 +15,6 @@
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 #define ACT g_pSaveMenuDragonActor
 #define FLD(p, off) (*(int *)((char *)(p) + (off)))
-#define SAMPLE(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
 /* Eases an angle from `from` toward `to` by t/0x2000 along the short arc. */
 #define LERP_ANGLE(to, from, t)                                                \
@@ -44,12 +46,13 @@ void Gamestate0B_Update(void) {
       unsigned char *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * 0x58;
-      if (actor[0x48] == 2) {
-        actor[0x49] += g_nFrameStep;
-        if (actor[0x49] >= 0x30) {
-          actor[0x48] = 0;
-          actor[0x3C] = 0;
+      actor =
+          (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * ACTOR_SIZE;
+      if (ACTOR_RAW(actor, unsigned char, mode) == 2) {
+        ACTOR_RAW(actor, unsigned char, subMode) += g_nFrameStep;
+        if (ACTOR_RAW(actor, unsigned char, subMode) >= 0x30) {
+          ACTOR_RAW(actor, unsigned char, mode) = 0;
+          ACTOR_RAW(actor, unsigned char, anim) = 0;
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);
@@ -118,7 +121,7 @@ void Gamestate0B_Update(void) {
         g_abSpyroPersistentEuler[2] =
             (SM[27] - ((AbsAngleDelta12(SM[28], SM[27]) * t) >> 13)) >> 4;
       }
-      ApplyEulerRotation(SPYB + 0xC, (int *)(SPYB + 0x34), 0);
+      ApplyEulerRotation(SPYB + SPYB_EULER, (int *)(SPYB + SPYB_BODY_MTX), 0);
       g_bSpyroSwingByteEuler1 = (unsigned int)t >> 9;
       AdvanceSpyroAnimFrame(0x10);
       TickSpyroAnimLayer1();
@@ -154,14 +157,14 @@ void Gamestate0B_Update(void) {
       {
         int sn = LookupSine(g_nSaveMenuCameraToAngle);
 
-        SPYB[0x24] = 4;
-        SPYB[0x19] = 0;
-        SPYB[0x1F] = 0;
+        SPYB[SPYB_SUB_FRAME_TIMER] = 4;
+        SPYB[SPYB_ANIM_CURRENT] = 0;
+        SPYB[SPYB_ANIM_FRAME] = 0;
         g_anSpyroWorldPosBlock[0x16] = 4;
         SM[0] = 1;
         SM[1] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
-        SPYB[0xE] = g_nSaveMenuSpyroToYaw >> 4;
+        SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
         g_anCameraPos[1] =
             g_anSpyroWorldPos[1] + ((sn * g_nSaveMenuCameraToDist) >> 12);
       }
@@ -175,21 +178,21 @@ void Gamestate0B_Update(void) {
     ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     switch (SM[3]) {
     case 0:
-      if (g_dwPadPressed & 0x4000) {
-        PlaySoundEffect(SAMPLE(0x2D), 0, 0x10, 0);
+      if (g_dwPadPressed & PAD_DOWN) {
+        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (++g_nSaveMenuCursor >= 3) {
           g_nSaveMenuCursor = 0;
         }
-      } else if (g_dwPadPressed & 0x1000) {
-        PlaySoundEffect(SAMPLE(0x2D), 0, 0x10, 0);
+      } else if (g_dwPadPressed & PAD_UP) {
+        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (--g_nSaveMenuCursor < 0) {
           g_nSaveMenuCursor = 2;
         }
       }
-      if (SM[1] >= 8 && (g_dwPadPressed & 0x40)) {
-        PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+      if (SM[1] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
+        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         if (g_nSaveMenuCursor == 0) {
           SM[1] = 0;
           if (g_nSaveSlotLoaded != 0) {
@@ -201,11 +204,12 @@ void Gamestate0B_Update(void) {
           unsigned char *actor;
           int *path;
 
-          actor = (unsigned char *)g_pActorListBase + *(int *)ACT[0] * 0x58;
+          actor =
+              (unsigned char *)g_pActorListBase + *(int *)ACT[0] * ACTOR_SIZE;
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();
-            actor[0x48] = 2;
+            ACTOR_RAW(actor, unsigned char, mode) = 2;
             ((int *)actor)[2] = 0;
             ((short *)actor)[0x1A] = -1;
             BeginGemPickupOverlay(actor);
@@ -214,13 +218,13 @@ void Gamestate0B_Update(void) {
           }
         } else {
           EndSaveMenuToWorld();
-          PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         }
       }
       break;
     case 1:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & 0x40)) {
-        PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
+        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 0;
         g_nSaveMenuCursor = 2;
@@ -310,36 +314,36 @@ void Gamestate0B_Update(void) {
     case 3:
     case 4:
     case 5:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & 0x40)) {
-        PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
+        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 6;
         g_nSaveMenuCursor = 0;
       }
       break;
     case 6:
-      if (g_adwPadPressedBlock[0] & 0x5000) {
-        PlaySoundEffect(SAMPLE(0x2D), 0, 0x10, 0);
+      if (g_adwPadPressedBlock[0] & (PAD_UP | PAD_DOWN)) {
+        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         SM[2] = 1 - SM[2];
       }
-      if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & 0x40)) {
+      if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
         MemCardCloseSession();
         if (g_nSaveMenuCursor == 0) {
-          PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
           SM[1] = 0;
           g_nSaveMenuSubstate = 2;
           g_nSaveMenuCursor = 0;
         } else {
           EndSaveMenuToWorld();
-          PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
         }
       }
       break;
     case 7:
-      if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & 0x40)) {
+      if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         MemCardCloseSession();
         EndSaveMenuToWorld();
-        PlaySoundEffect(SAMPLE(0x2E), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
       }
       break;
     }

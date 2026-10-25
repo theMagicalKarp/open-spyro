@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "vecmath.h"
 
 /* Horn-strike swing driver (0x800499c0, 1084 bytes).
@@ -72,7 +73,7 @@ void TickSpyroHornStrikeAttack(void) {
     case 0:
       anchor = g_abSpyroHornStrikeAnchorModeBlock;
       anchor[0] = 0;
-      if ((g_dwPadPressed & 0x20) && (g_bSpyroHornCollisionActive == 0)) {
+      if ((g_dwPadPressed & PAD_CIRCLE) && (g_bSpyroHornCollisionActive == 0)) {
         strike[0] = 1;
         g_nSpyroHornStrikeTimer = -1;
         g_nSpyroHornStrikeSwingPhase = 0;
@@ -127,7 +128,7 @@ void TickSpyroHornStrikeAttack(void) {
                 1, 0, pos, vel);
           }
         }
-      } else if ((g_dwPadPressed & 0x20) &&
+      } else if ((g_dwPadPressed & PAD_CIRCLE) &&
                  ((timer = g_anSpyroHornStrikeTimerBlock)[0] >= 0x2C)) {
         timer[0] = -1;
         g_nSpyroHornStrikeSwingPhase = 2;

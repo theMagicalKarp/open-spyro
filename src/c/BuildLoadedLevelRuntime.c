@@ -13,6 +13,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 struct CameraParamBlock {
@@ -42,7 +43,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   int bit;
   int tb;
   int row;
-  short *new_var;
+  short *sinp;
   int tbit;
   int sh;
   int *pk;
@@ -84,8 +85,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];
     g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
-    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != 0xC)) {
-      if (((g_nGamestate == 5) &&
+    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != GS_ACTOR_CUTSCENE)) {
+      if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
           ((gidx = g_nGameOverLevelIntroIndex - 0x12,
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
@@ -101,7 +102,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   }
   g_nLevelReadyFlag = g_nLevelReadyFlagStash;
-  if (g_nGamestate != 0xC) {
+  if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
     g_nSpyroPadSnapshotCountdown = 0xC;
   }
@@ -128,10 +129,10 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     if (g_nScriptedRespawnFlag != 0) {
       g_anLevelSpawnPosZBlock[0] +=
           g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
-      new_var = &g_anSineLut[g_nLevelSpawnYaw];
+      sinp = &g_anSineLut[g_nLevelSpawnYaw];
       radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
       g_nLevelSpawnPosX -= radial;
-      radial = (*new_var) >> 2;
+      radial = (*sinp) >> 2;
       g_nLevelSpawnPosY -= radial;
     }
   }
@@ -142,7 +143,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   g_nGenericCountdown = 0;
   if (g_nScriptedRespawnFlag == 0) {
-    if (g_nGamestate == 0xC) {
+    if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
     }
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
@@ -156,8 +157,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     ResetCameraStateToTarget();
     g_nGenericCountdown = 0x20;
   }
-  if (g_nGamestate != 0xC) {
-    g_nGamestate = 0;
+  if (g_nGamestate != GS_ACTOR_CUTSCENE) {
+    g_nGamestate = GS_GAMEPLAY;
     g_nGamePaused = 1;
     g_nGameplayBlocked = 0;
     g_nLetterboxBarHeight = 0;
@@ -325,7 +326,7 @@ sprites:
   p++;
   g_pActorListBase = p;
   p = (int *)(((char *)base) + (*base));
-  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * 0x58);
+  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * ACTOR_SIZE);
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
   ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
   g_nActorPoolLiveCount = 0;
@@ -395,18 +396,20 @@ sprites:
   mask = 0;
   i = 0;
   rec = (char *)g_pActorListBase;
-  if (((unsigned char)rec[0x48]) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
     do {
-      r = (char *)((i * 0x58) + ((int)rec));
-      if (((int *)(&g_apActorMeshTable))[*((short *)(r + 0x36))] < 0) {
+      r = (char *)((i * ACTOR_SIZE) + ((int)rec));
+      if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * 0x58)) + 0xC));
+      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * ACTOR_SIZE)) +
+                              ACTOR_OFFSET(posX)));
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) + (i * 0x58));
+      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) +
+                                    (i * ACTOR_SIZE));
       type =
           *((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) + 0x3A));
       if (((unsigned int)(type & 0x7F)) < 0x20) {
@@ -425,11 +428,12 @@ sprites:
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + ACTOR_OFFSET(mode)]) !=
+             0xFF);
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
-  if (((unsigned char)rec[0x48]) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
     do {
       register int sh2 asm("$5");
       register int tbl asm("$3");
@@ -442,20 +446,21 @@ sprites:
       b3 = 1 << sh2;
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
-          r = (char *)((i * 0x58) + ((int)rec));
-          if (((*((unsigned char *)(r + 0x3A))) & 0x7F) == 0x7D) {
+          r = (char *)((i * ACTOR_SIZE) + ((int)rec));
+          if ((ACTOR_RAW(r, unsigned char, killGroup) & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
-            r[0x53] = 0xFF;
+            ACTOR_RAW(r, unsigned char, dropKind) = 0xFF;
           }
         } else {
           {
             register int k3 asm("$3");
             register int k4 asm("$4");
 
-            __asm__("" : "=r"(k3));
-            __asm__("" : "=r"(k4));
-            tb = (*((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) +
+            REG_RESERVE(k3);
+            REG_RESERVE(k4);
+            tb = (*((unsigned char *)(((i * ACTOR_SIZE) +
+                                       ((int)g_pActorListBase)) +
                                       0x3A))) &
                  0x7F;
             if (tb < 0x20) {
@@ -467,15 +472,16 @@ sprites:
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            (((char *)g_pActorListBase) + (i * 0x58))[0x53] = 0xFF;
+            (((char *)g_pActorListBase) + (i * ACTOR_SIZE))[0x53] = 0xFF;
           } else {
-            DespawnActorRecord(((char *)g_pActorListBase) + (i * 0x58));
+            DespawnActorRecord(((char *)g_pActorListBase) + (i * ACTOR_SIZE));
           }
         }
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + ACTOR_OFFSET(mode)]) !=
+             0xFF);
   }
   i = 0;
   do {

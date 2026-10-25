@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "pad_buttons.h"
 #include "sdata.h"
 
 SDATA(g_nCameraManualYawInput, 4);
@@ -14,9 +15,9 @@ void UpdateCameraManualYawInput(void) {
   if (g_nCameraStuckFrames != 0) {
     return;
   }
-  if (g_dwPadHeld & 2) {
+  if (g_dwPadHeld & PAD_R2) {
     g_nCameraManualYawInput = -0x400;
-  } else if (g_dwPadHeld & 1) {
+  } else if (g_dwPadHeld & PAD_L2) {
     g_nCameraManualYawInput = 0x400;
   }
 }

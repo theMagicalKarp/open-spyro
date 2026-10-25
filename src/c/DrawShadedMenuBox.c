@@ -25,7 +25,7 @@ void DrawShadedMenuBox(int left, int right, int top, int bottom) {
   prim->poly.g0 = 0x70;
   prim->poly.b0 = 0x70;
   AddPrimToOT((int)&prim->poly);
-  g_pPrimBufferWriteCursor = (void *)((int)prim + 0x24);
+  g_pPrimBufferWriteCursor = prim + 1;
   EmitRadialShadedLine(left, top, right, top);
   EmitRadialShadedLine(right, top, right, bottom);
   EmitRadialShadedLine(right, bottom, left, bottom);

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "sample_bank.h"
 
 /* Apply a matched cheat code (0x8002d810). 2 = jump to the credits (remembering
    the level to return to); 3 = unlock: mark levels 0..0x1F visited and set all
@@ -14,7 +15,7 @@ void ApplyCheatCodeEffect(int code) {
   case 2:
     g_nCreditsReturnLevelId = g_nActiveLevelId;
     BeginCreditsSequence(0);
-    PlaySoundEffect(*(unsigned char *)g_pLevelSampleBankHeader, 0, 0x10, 0);
+    PlaySoundEffect(LEVEL_SFX(0), 0, 0x10, 0);
     break;
   case 3:
     val = 1;
@@ -33,7 +34,7 @@ void ApplyCheatCodeEffect(int code) {
       n -= 1;
       q -= 1;
     } while (n >= 0);
-    PlaySoundEffect(*(unsigned char *)g_pLevelSampleBankHeader, 0, 0x10, 0);
+    PlaySoundEffect(LEVEL_SFX(0), 0, 0x10, 0);
     break;
   case 4:
     g_nExtraLives = 0x63;

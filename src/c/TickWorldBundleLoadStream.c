@@ -41,7 +41,7 @@ void TickWorldBundleLoadStream(void) {
   int pad[4];
   int state;
   int extSize;
-  int new_var;
+  int archiveOff;
   int i;
   int def;
   int *unpacked;
@@ -64,8 +64,8 @@ void TickWorldBundleLoadStream(void) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int world = *((volatile int *)(&g_nCurrentWorldId));
     void *dst = *((void *volatile *)(&g_pDrawBufA));
-    new_var = (&g_nWorldArchiveOffset)[world * 2];
-    StartCdReadAsync(lba, dst, 0x800, new_var, 0x258);
+    archiveOff = (&g_nWorldArchiveOffset)[world * 2];
+    StartCdReadAsync(lba, dst, 0x800, archiveOff, 0x258);
     g_nCdStreamState = 1;
   } else if (state == 1) {
     int lba;
@@ -205,10 +205,10 @@ void TickWorldBundleLoadStream(void) {
     if (((int *)g_pPathTableHead)[3] > 0) {
       def = 0x20;
     actor_loop:
-      InitActorRenderDefaults(((int)g_pActorListBase) + (i * 0x58));
+      InitActorRenderDefaults(((int)g_pActorListBase) + (i * ACTOR_SIZE));
 
-      actor = (unsigned char *)((i * 0x58) + ((int)g_pActorListBase));
-      actor[0x50] = def;
+      actor = (unsigned char *)((i * ACTOR_SIZE) + ((int)g_pActorListBase));
+      ACTOR_RAW(actor, unsigned char, cullRadius) = def;
       ((short *)actor)[0x1B] = i + 1;
       i += 1;
       if (i < ((int *)g_pPathTableHead)[3]) {

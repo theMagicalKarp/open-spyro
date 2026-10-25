@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -14,7 +15,7 @@ extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
 #define WAVE(rec, n, phase)                                                    \
   for (i = 0; i < (n); i++) {                                                  \
     (rec)[0x46] = (g_anCosineLut[((phase) * 4 + i * 0xC) & 0xFF] * 3) >> 9;    \
-    (rec) += 0x58;                                                             \
+    (rec) += ACTOR_SIZE;                                                       \
   }
 
 /* 0x8001d718 (0xb34): draws the memory-card save/load menu: the substate's
@@ -211,7 +212,7 @@ void SaveLoadMenu_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

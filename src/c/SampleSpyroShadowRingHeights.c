@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "match_asm.h"
 
 /* Views this function reads through (declared in globals.h):
    g_anSpyroBodyMtx — the matrix pointer, the -0x34 (== -13 words)
@@ -46,8 +47,7 @@ void SampleSpyroShadowRingHeights(int probe) {
      basic block, so the held matrix base below has no constant equivalence and
      the +0x13C read keeps the `lw v0,0x13C(s0)` register form instead of
      folding to an absolute address (see the cookbook's B-i fold). */
-  do {
-  } while (0);
+  EBB_BREAK();
   g_anSpyroShadowHidden[0] = 0;
   if ((g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] >= gz) ||
       (g_anSpyroBodyMtx[0x4F] != 0)) {
@@ -65,6 +65,7 @@ void SampleSpyroShadowRingHeights(int probe) {
     v[2] -= 0x200;
     if (((unsigned int)((v[2] - ground) + 0x80)) >= 0x100) {
       char *flags = (char *)ring - 0x18;
+      /* index + base, in that order: flags[i] swaps the addu operands */
       *((unsigned char *)(g_nSpyroShadowRingIndex + (int)flags)) = 1;
     } else {
       char *flags = (char *)ring - 0x18;

@@ -15,6 +15,8 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
+#include "sample_bank.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 
@@ -177,7 +179,7 @@ void TickSpyroAttackEffects(int steps) {
             tbl = g_anSpyroHornStrikeArcPathsShort;
           } else {
             k = (i - 4) * count;
-            __asm__ volatile("");
+            SCHED_FENCE();
             tbl = g_anSpyroHornStrikeArcPathsLong;
           }
           path = (short *)(k * 8 + (int)tbl);
@@ -230,10 +232,7 @@ void TickSpyroAttackEffects(int steps) {
                   ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
-                PlaySoundEffect(
-                    *((unsigned char *)(((int)g_pLevelSampleBankHeader) +
-                                        0x28)),
-                    wp, 4, 0);
+                PlaySoundEffect(LEVEL_SFX(0x28), wp, 4, 0);
                 sfxDone = 1;
               }
             }

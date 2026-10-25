@@ -1,13 +1,19 @@
+#include "actor_type.h"
 #include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
+
+/* The sprite-record cursor as an Actor, read through a volatile view or
+   plainly (see note 3 below). */
+#define CURSOR_V ((Actor *)*(void *volatile *)&g_pSpriteRecordWriteCursor)
+#define CURSOR ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* Emit a glyph-sprite chain for a UI string, tracking per-glyph kerning: per
    non-space byte allocate a 0x58-byte SPRT slot at g_pSpriteRecordWriteCursor
    (queue tail, grows down), copy the pen from *pos, map the byte to a font
    tile ('0'-'9', 'A'-'Z', and specials '!',',','?','.') and advance the pen by
    the digit-advance spacing after digits / '!'/'?', else by the glyph width
-   attr->unk0. Spaces advance the pen by 3/4 of the glyph width.
+   attr[0]. Spaces advance the pen by 3/4 of the glyph width.
    (0x800181ac, 0x2a0 bytes.) */
 /* Three things in the body below are load-bearing; do not "clean" them up.
    1. The do/while(0) nests are a ref-count dial (A238). global.c weights
@@ -34,70 +40,48 @@
 
 void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
                        int flags) {
-  unsigned char bVar1;
-  int iVar1;
+  unsigned char c;
+  int w3;
   int ch;
   int flag;
-  bVar1 = *text;
+  c = *text;
   flag = 1;
-  while (bVar1 != 0) {
-    if ((bVar1 & 0xFF) != 0x20) {
-      void *rec =
-          (void *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) -
-                   0x58);
+  while (c != 0) {
+    if ((c & 0xFF) != 0x20) {
+      Actor *rec = CURSOR_V - 1;
       g_pSpriteRecordWriteCursor = rec;
       FillWord(rec, 0, 0x58);
-      CopyVector(
-          (int *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0xc),
-          pos);
-      bVar1 = *text;
-      if ((bVar1 == 0x21) || (bVar1 == 0x3f)) {
+      CopyVector(&CURSOR_V->posX, pos);
+      c = *text;
+      if ((c == 0x21) || (c == 0x3f)) {
         flag = 1;
       }
       if (flag == 0) {
-        void *r = *((void *volatile *)(&g_pSpriteRecordWriteCursor));
-        *((int *)(((int)r) + 0x10)) = (*((int *)(((int)r) + 0x10))) + attr[1];
-        *((int *)(((int)r) + 0x14)) = attr[2];
+        Actor *r = CURSOR_V;
+        r->posY = (r->posY) + attr[1];
+        r->posZ = attr[2];
       }
       ch = *text;
       if (((unsigned int)(ch - 0x30)) < 10) {
-        *((unsigned short *)(((int)(*(&g_pSpriteRecordWriteCursor))) + 0x36)) =
-            ch + 0xd4;
+        CURSOR->type = ch + 0xd4;
       } else if (((unsigned int)(ch - 0x41)) < 0x1a) {
-        *((unsigned short *)(((int)(*(&g_pSpriteRecordWriteCursor))) + 0x36)) =
-            ch + 0x169;
+        CURSOR->type = ch + 0x169;
       } else if ((ch & 0xFF) == 0x21) {
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = 0x4b;
+        CURSOR_V->type = 0x4b;
       } else if ((ch & 0xFF) == 0x2c) {
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = 0x4c;
+        CURSOR_V->type = 0x4c;
       } else if ((ch & 0xFF) == 0x3f) {
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = 0x116;
+        CURSOR_V->type = 0x116;
       } else if ((ch & 0xFF) == 0x2e) {
-        *((unsigned short
-               *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                  0x36)) = 0x147;
+        CURSOR_V->type = 0x147;
       } else {
-        void *r = *((void *volatile *)(&g_pSpriteRecordWriteCursor));
-        *((unsigned short *)(((int)r) + 0x36)) = 0x4c;
-        *((int *)(((int)r) + 0x10)) =
-            (*((int *)(((int)r) + 0x10))) - ((attr[0] * 2) / 3);
+        Actor *r = CURSOR_V;
+        r->type = 0x4c;
+        r->posY = (r->posY) - ((attr[0] * 2) / 3);
       }
-      *((unsigned char
-             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x47)) = 0x7f;
-      *((unsigned char
-             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x4f)) = flags;
-      *((unsigned char
-             *)(((int)(*((void *volatile *)(&g_pSpriteRecordWriteCursor)))) +
-                0x50)) = 0xff;
+      CURSOR_V->otBias = 0x7f;
+      CURSOR_V->tintMode = flags;
+      CURSOR_V->cullRadius = 0xff;
       if (flag != 0) {
         int adv = (*pos) + spacing;
         do {
@@ -134,19 +118,19 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
         flag = ((unsigned int)t) < 10;
       }
     } else {
-      iVar1 = attr[0] * 3;
+      w3 = attr[0] * 3;
       flag = 1;
-      if (iVar1 < 0) {
-        iVar1 += 3;
+      if (w3 < 0) {
+        w3 += 3;
       }
-      *pos += iVar1 >> 2;
+      *pos += w3 >> 2;
     }
     do {
       do {
         text += 1;
       } while (0);
     } while (0);
-    bVar1 = *text;
+    c = *text;
   }
 
   return *((void *volatile *)(&g_pSpriteRecordWriteCursor));

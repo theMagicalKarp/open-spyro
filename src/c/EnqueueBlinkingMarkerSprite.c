@@ -7,21 +7,21 @@
 
 /* Push a blinking SPRT_16 marker onto the front of the sprite queue
    (0x80018534): g_pSpriteRecordWriteCursor bumps down 0x58 bytes. Gated by
-   (param_2 & 0x1f) < 0x10 so it shows for half of each 32-frame cycle;
-   param_3 < 2 selects tile U=0 vs U=0x80. */
-void EnqueueBlinkingMarkerSprite(int *param_1, int param_2, int param_3) {
+   (frame & 0x1f) < 0x10 so it shows for half of each 32-frame cycle;
+   tile < 2 selects tile U=0 vs U=0x80. */
+void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile) {
   int *dst;
 
-  if ((param_2 & 0x1f) < 0x10) {
+  if ((frame & 0x1f) < 0x10) {
     g_pSpriteRecordWriteCursor =
-        (void *)((int)g_pSpriteRecordWriteCursor - 0x58);
+        (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
     dst = &SPR->posX;
     SPR->type = 0x105;
-    CopyVector(dst, param_1);
-    if (param_3 < 2) {
+    CopyVector(dst, pos);
+    if (tile < 2) {
       SPR->rotX = 0x40;
-      SPR->rotZ = param_3 << 7;
+      SPR->rotZ = tile << 7;
     }
     SPR->otBias = 0x7f;
     SPR->tintMode = 0xb;

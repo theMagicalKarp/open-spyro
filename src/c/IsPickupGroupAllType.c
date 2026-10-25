@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 
 /* Scan pickup group `a0`'s actor-id list (0x8003b160). Each entry is a u16:
@@ -19,7 +20,7 @@ int IsPickupGroupAllType(int a0, int a1) {
   do {
     id = *ptr;
     idx = id & 0x7FFF;
-    if (base[idx * 0x58 + 0x48] != a1) {
+    if (base[idx * ACTOR_SIZE + ACTOR_OFFSET(mode)] != a1) {
       return 0;
     }
     ptr++;

@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* The per-digit sub-record hung off a digit actor's ->state pointer. */
 struct Digit {
@@ -80,9 +81,9 @@ void SpawnFloatingDigitActors(int value, Actor *src) {
       sx = g_anSineLut[a];
       cx = g_anCosineLut[a];
       rot[2] -= 0x10;
-      __asm__ volatile("");
-      __asm__("" : "=r"(sx) : "0"(sx));
-      __asm__("" : "=r"(cx) : "0"(cx));
+      SCHED_FENCE();
+      OPAQUE(sx);
+      OPAQUE(cx);
       x -= sx >> 4;
       y += cx >> 4;
     } while (value != 0);

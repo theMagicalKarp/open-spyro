@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 /* held-base view of g_nSpyroSpeedTarget (0x80078b20): [0] is the target,
    [0x14] (+0x50) is g_nSpyroMotionSpeed. */
@@ -21,8 +22,7 @@ void AdvanceSpyroSpeedTowardTarget(int accel, int decel) {
   int down;
 
   target = g_anSpyroSpeedBlock[0];
-  do {
-  } while (0);
+  EBB_BREAK();
   speed = g_anSpyroSpeedBlock[0x14];
   if (speed < target) {
     do {

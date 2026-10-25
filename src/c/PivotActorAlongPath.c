@@ -15,8 +15,8 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-#define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))
-#define ACTOR_TURNSTATE(a) (*(unsigned char *)((char *)(a) + 0x49))
+#define ACTOR_YAW(a) ACTOR_RAW(a, unsigned char, rotZ)
+#define ACTOR_TURNSTATE(a) ACTOR_RAW(a, unsigned char, subMode)
 
 /* Turn the actor's yaw toward `ang`, at most `step` per frame. */
 #define TurnActorTowardAngle(actor, ang, step, lim)                            \
@@ -83,8 +83,9 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
        mid-turn (state 1), defer to it. */
     list = g_apSaveMenuAnimActorListBlock;
     while ((peer = (unsigned char *)(*(list++))) != 0) {
-      if (peer[0x43] == kind && (unsigned int)peer[0x48] < 0x80 &&
-          peer[0x49] == 1) {
+      if (ACTOR_RAW(peer, unsigned char, group) == kind &&
+          (unsigned int)ACTOR_RAW(peer, unsigned char, mode) < 0x80 &&
+          ACTOR_RAW(peer, unsigned char, subMode) == 1) {
         break;
       }
     }

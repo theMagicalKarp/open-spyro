@@ -1,8 +1,11 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "pad.h"
 #include "sdata.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
@@ -14,9 +17,6 @@
 #define CAM_TARGET_PARAMS 0x2C /* g_pCameraTargetParams */
 #define CAM_SUPPRESS 0x32      /* g_nCameraSpringSuppressFlag */
 #define STICK g_anCameraScriptStickIntegratorBlock
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_MOTION 0x43   /* g_anSpyroMotionVec */
-#define SPY_BODY_YAW 0x47 /* g_nSpyroBodyYaw */
 
 /* Offsets from the stuck-frames field (the function's held base `s`). */
 #define S_POS (-0x28) /* g_anCameraPos */
@@ -29,13 +29,9 @@
 #define S_TARGET_PARAMS 0x04
 #define S_INVERTED 0x08
 
-typedef struct {
-  int v[6];
-} CameraAngles;
-
 /* World x/y of a scripted camera actor. */
-#define ACTOR_X(a) (*(int *)((char *)(a) + 0xC))
-#define ACTOR_Y(a) (*(int *)((char *)(a) + 0x10))
+#define ACTOR_X(a) ACTOR_RAW(a, int, posX)
+#define ACTOR_Y(a) ACTOR_RAW(a, int, posY)
 
 SDATA(g_nCameraLosClear, 4);
 SDATA(g_nCameraManualYawInput, 4);
@@ -88,7 +84,7 @@ void UpdateCameraSpringForMode(void) {
       CAM[CAM_CURRENT_MODE] == 0xF) {
     CAM[CAM_CURRENT_MODE] = 0;
   }
-  __asm__("" : "=r"(s) : "0"(&CAM[CAM_STUCK_FRAMES]));
+  OPAQUE_COPY(s, &CAM[CAM_STUCK_FRAMES]);
   column = (*s + 1) >> 1;
   if (column >= 5) {
     column = 4;
@@ -337,18 +333,18 @@ void UpdateCameraSpringForMode(void) {
         g_anCameraScriptStickIntegrator[0] += (pad[0x16] - 0x7F) >> 1;
         g_anCameraScriptStickIntegrator[1] += (0x7F - pad[0x17]) >> 1;
       } else {
-        if (g_dwPadHeld & 0x8000) {
+        if (g_dwPadHeld & PAD_LEFT) {
           STICK[0] -= 0x30;
-        } else if (g_dwPadHeld & 0x2000) {
+        } else if (g_dwPadHeld & PAD_RIGHT) {
           STICK[0] += 0x30;
         }
-        if (g_dwPadHeld & 0x1000) {
+        if (g_dwPadHeld & PAD_UP) {
           STICK[1] += 0x30;
-        } else if (g_dwPadHeld & 0x4000) {
+        } else if (g_dwPadHeld & PAD_DOWN) {
           STICK[1] -= 0x30;
         }
       }
-      __asm__("" : "=r"(ig) : "0"(STICK));
+      OPAQUE_COPY(ig, STICK);
       if (ig[0] < -0x400) {
         ig[0] = -0x400;
       }
@@ -419,7 +415,7 @@ void UpdateCameraSpringForMode(void) {
     y = ACTOR_Y(actor);
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraTargetYawBiasFromMode = actor[0x46] << 4;
+    g_nCameraTargetYawBiasFromMode = ACTOR_RAW(actor, unsigned char, rotZ) << 4;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;

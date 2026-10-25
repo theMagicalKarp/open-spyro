@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 #include "vecmath.h"
 
 /* Begins the dragon-rescue statue cutscene overlay (GS_GEM_PICKUP): seeds the
@@ -42,7 +43,7 @@ void BeginGemPickupOverlay(Actor *actor) {
       st[0xe] = 0x10;
     }
   }
-  g_nGamestate = 8;
+  g_nGamestate = GS_GEM_PICKUP;
   world = g_nWorldDragonsRescued;
   g_nHudDragonCachedCount = world;
   dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
@@ -65,8 +66,6 @@ void BeginGemPickupOverlay(Actor *actor) {
   }
   CopyVector(g_anGemPickupAuraStarAnchor, &actor->posX);
   g_anGemPickupAuraStarAnchor[2] += 0x40;
-  PlaySoundEffect(
-      *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x30)),
-      (Actor *)&g_anGemPickupBlock[0x1a], 0x10,
-      &((Actor *)g_anGemPickupBlock[0x1a])->sfxSlot);
+  PlaySoundEffect(LEVEL_SFX(0x30), (Actor *)&g_anGemPickupBlock[0x1a], 0x10,
+                  &((Actor *)g_anGemPickupBlock[0x1a])->sfxSlot);
 }

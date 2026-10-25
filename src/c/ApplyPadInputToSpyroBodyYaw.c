@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "pad.h"
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
@@ -26,8 +27,7 @@ int ApplyPadInputToSpyroBodyYaw(void) {
     mag = VectorLength(vec, 0);
     if (mag < 0x60) {
       tgt = g_anSpyroMoveTargetYawBlock[0];
-      do {
-      } while (0);
+      EBB_BREAK();
       yaw = g_anSpyroMoveTargetYawBlock[0x14];
       delta = (tgt - yaw) & 0xFFF;
       if (delta > 0x800) {

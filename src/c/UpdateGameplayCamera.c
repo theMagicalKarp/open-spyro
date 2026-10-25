@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -14,10 +15,6 @@
 #define CAM_SNAPPED 0x29       /* g_nCameraSnapped */
 #define CAM_ANCHOR 0x2A        /* g_pCameraAnchorPos */
 #define CAM_TARGET_PARAMS 0x2C /* g_pCameraTargetParams */
-
-typedef struct {
-  int v[6];
-} CameraAngles;
 
 SDATA(g_nCameraLosClear, 4);
 

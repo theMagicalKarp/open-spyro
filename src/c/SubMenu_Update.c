@@ -1,6 +1,8 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
+#include "sample_bank.h"
 
 /* Inventory sub-menu per-frame update (0x8002eb2c, 0x2c4). Advances the
    HUD bob phase / frame-cycle counters and the pause-menu idle timer,
@@ -26,20 +28,16 @@ void SubMenu_Update(void) {
   if (g_nSubMenuScrollOffset == 0) {
     if (g_nSubMenuCursor > 0) {
       if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
-        if (g_dwPadHeld & 0x8000) {
-          PlaySoundEffect(
-              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
-              0, 0x10, 0);
+        if (g_dwPadHeld & PAD_LEFT) {
+          PlaySoundEffect(LEVEL_SFX(0x38), 0, 0x10, 0);
           g_nSubMenuScrollDelta = 0x40;
         }
       }
     }
     if (g_nSubMenuCursor < 5) {
       if (g_abLevelVisitedFlag[(g_nSubMenuCursor * 6) + 6] != 0) {
-        if (g_dwPadHeld & 0x2000) {
-          PlaySoundEffect(
-              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
-              0, 0x10, 0);
+        if (g_dwPadHeld & PAD_RIGHT) {
+          PlaySoundEffect(LEVEL_SFX(0x38), 0, 0x10, 0);
           g_nSubMenuScrollDelta = -0x40;
         }
       }
@@ -59,9 +57,9 @@ void SubMenu_Update(void) {
       g_nSubMenuCursor -= 1;
     }
   }
-  if (g_dwPadPressed & 0x810) {
+  if (g_dwPadPressed & (PAD_TRIANGLE | PAD_START)) {
     EnterPauseMenu(0);
-  } else if (g_dwPadPressed & 0x140) {
+  } else if (g_dwPadPressed & (PAD_CROSS | PAD_SELECT)) {
     if (g_nLevelSelectModeActive == 0) {
       ExitSubMenuToTitle();
     }

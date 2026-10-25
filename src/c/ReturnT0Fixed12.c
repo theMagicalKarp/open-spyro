@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 /* 0x80017294, 8 bytes -- tail of a GTE helper: return the value the
    caller left in $t0, scaled down by 12 fractional bits.
@@ -9,6 +10,6 @@
 unsigned int ReturnT0Fixed12(void) {
   register unsigned int t0 asm("$8");
 
-  __asm__("" : "=r"(t0));
+  REG_RESERVE(t0);
   return t0 >> 12;
 }

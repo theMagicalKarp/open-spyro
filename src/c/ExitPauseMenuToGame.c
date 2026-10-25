@@ -8,7 +8,7 @@
    counters visible with roll phase 0xd. When leaving from gameplay (param != 0)
    resume the current music track. */
 
-void ExitPauseMenuToGame(int param_1) {
+void ExitPauseMenuToGame(int resumeMusic) {
   RECT rect;
 
   rect.x = 0x200;
@@ -17,7 +17,7 @@ void ExitPauseMenuToGame(int param_1) {
   rect.h = 0xE1;
   LoadImage(&rect, (unsigned int)g_pRenderScratchPrimTop + 0xFFFE3E00);
   DrawSync(0);
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
   g_abHudCounterDisplayState[0] = 3;
   g_abHudCounterDisplayState[1] = 3;
@@ -29,7 +29,7 @@ void ExitPauseMenuToGame(int param_1) {
   g_bHudLivesRollPhase = 0xD;
   g_bHudWorldEggRollPhase = 0xD;
   g_bHudLevelEggRollPhase = 0xD;
-  if (param_1 != 0) {
+  if (resumeMusic != 0) {
     HandleMusicCommand(g_nCurrentMusicTrack, 8);
   }
 }

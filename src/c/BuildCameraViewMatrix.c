@@ -6,61 +6,61 @@
    order). Writes the full matrix to the view-matrix slot (0x80076de4) and a
    Y-row-scaled (*0x140>>9) copy to g_anWorldToCameraRotMtx (0x80033c50). */
 void BuildCameraViewMatrix(void) {
-  int iVar1;
-  MATRIX local_50;
-  MATRIX local_30;
+  int v;
+  MATRIX view;
+  MATRIX axis;
 
-  FillWord(&local_50, 0, 0x20);
-  SetTransMatrix(&local_50);
-  local_50.m[0][0] = 0x1000;
-  iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0]);
-  local_50.m[1][1] = iVar1;
-  iVar1 = LookupSine(g_anCameraEulerPitchBlock[0]);
-  local_50.m[2][1] = iVar1;
-  iVar1 = LookupSine(g_anCameraEulerPitchBlock[0]);
-  local_50.m[1][2] = -iVar1;
-  iVar1 = LookupCosine(g_anCameraEulerPitchBlock[0]);
-  local_50.m[2][2] = iVar1;
+  FillWord(&view, 0, 0x20);
+  SetTransMatrix(&view);
+  view.m[0][0] = 0x1000;
+  v = LookupCosine(g_anCameraEulerPitchBlock[0]);
+  view.m[1][1] = v;
+  v = LookupSine(g_anCameraEulerPitchBlock[0]);
+  view.m[2][1] = v;
+  v = LookupSine(g_anCameraEulerPitchBlock[0]);
+  view.m[1][2] = -v;
+  v = LookupCosine(g_anCameraEulerPitchBlock[0]);
+  view.m[2][2] = v;
 
-  FillWord(&local_30, 0, 0x20);
-  iVar1 = LookupCosine(g_nCameraEulerYaw);
-  local_30.m[0][0] = iVar1;
-  iVar1 = LookupSine(g_nCameraEulerYaw);
-  local_30.m[2][0] = -iVar1;
-  local_30.m[1][1] = 0x1000;
-  iVar1 = LookupSine(g_nCameraEulerYaw);
-  local_30.m[0][2] = iVar1;
-  iVar1 = LookupCosine(g_nCameraEulerYaw);
-  local_30.m[2][2] = iVar1;
-  MulMatrix(&local_50, &local_30);
+  FillWord(&axis, 0, 0x20);
+  v = LookupCosine(g_nCameraEulerYaw);
+  axis.m[0][0] = v;
+  v = LookupSine(g_nCameraEulerYaw);
+  axis.m[2][0] = -v;
+  axis.m[1][1] = 0x1000;
+  v = LookupSine(g_nCameraEulerYaw);
+  axis.m[0][2] = v;
+  v = LookupCosine(g_nCameraEulerYaw);
+  axis.m[2][2] = v;
+  MulMatrix(&view, &axis);
 
-  FillWord(&local_30, 0, 0x20);
-  iVar1 = LookupCosine(g_nCameraEulerRoll);
-  local_30.m[0][0] = iVar1;
-  iVar1 = LookupSine(g_nCameraEulerRoll);
-  local_30.m[1][0] = -iVar1;
-  iVar1 = LookupSine(g_nCameraEulerRoll);
-  local_30.m[0][1] = iVar1;
-  iVar1 = LookupCosine(g_nCameraEulerRoll);
-  local_30.m[1][1] = iVar1;
-  local_30.m[2][2] = 0x1000;
-  MulMatrix(&local_50, &local_30);
+  FillWord(&axis, 0, 0x20);
+  v = LookupCosine(g_nCameraEulerRoll);
+  axis.m[0][0] = v;
+  v = LookupSine(g_nCameraEulerRoll);
+  axis.m[1][0] = -v;
+  v = LookupSine(g_nCameraEulerRoll);
+  axis.m[0][1] = v;
+  v = LookupCosine(g_nCameraEulerRoll);
+  axis.m[1][1] = v;
+  axis.m[2][2] = 0x1000;
+  MulMatrix(&view, &axis);
 
-  CopyWords((char *)g_anCameraEulerPitchBlock - 0x3a, &local_50, 0x14);
-  iVar1 = local_50.m[1][0] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  CopyWords((char *)g_anCameraEulerPitchBlock - 0x3a, &view, 0x14);
+  v = view.m[1][0] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  local_50.m[1][0] = iVar1 >> 9;
-  iVar1 = local_50.m[1][1] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  view.m[1][0] = v >> 9;
+  v = view.m[1][1] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  local_50.m[1][1] = iVar1 >> 9;
-  iVar1 = local_50.m[1][2] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  view.m[1][1] = v >> 9;
+  v = view.m[1][2] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  local_50.m[1][2] = iVar1 >> 9;
-  CopyWords((char *)g_anCameraEulerPitchBlock - 0x4e, &local_50, 0x14);
+  view.m[1][2] = v >> 9;
+  CopyWords((char *)g_anCameraEulerPitchBlock - 0x4e, &view, 0x14);
 }

@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -31,11 +32,11 @@ void GamestateDraw(void) {
 
   env = (char *)&g_abFrameDrawEnv0;
   if ((char *)g_pActiveFrameDrawEnv == env) {
-    env += 0x84;
+    env += sizeof(FrameDB);
   }
-  otbase = *(void **)(env + 0x74);
-  otslot = *(int **)(env + 0x78);
-  cursor = *(char **)(env + 0x70);
+  otbase = FRAME_DB(env)->otDepthBinBase;
+  otslot = FRAME_DB(env)->otMergedChainSlot;
+  cursor = FRAME_DB(env)->primBufferBase;
   g_pActiveFrameDrawEnv = (DRAWENV *)env;
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = cursor;
@@ -47,40 +48,40 @@ void GamestateDraw(void) {
   g_pSpriteRecordWriteCursor = limit;
   BuildCameraViewMatrix();
 
-  if (g_nGamestate != 0) {
-    if (g_nGamestate == 1) {
+  if (g_nGamestate != GS_GAMEPLAY) {
+    if (g_nGamestate == GS_LEVEL_LOAD) {
       Gamestate01_09_Draw();
-    } else if (g_nGamestate == 2) {
+    } else if (g_nGamestate == GS_PAUSE_MENU) {
       Gamestate02_03_06_Draw();
-    } else if (g_nGamestate == 3) {
+    } else if (g_nGamestate == GS_INVENTORY) {
       Gamestate02_03_06_Draw();
-    } else if (g_nGamestate == 4) {
+    } else if (g_nGamestate == GS_RESPAWN) {
       RespawnOrGameOver_Draw();
-    } else if (g_nGamestate == 5) {
+    } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Draw();
-    } else if (g_nGamestate == 6) {
+    } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
       Gamestate02_03_06_Draw();
-    } else if (g_nGamestate == 7) {
+    } else if (g_nGamestate == GS_OVERLAY_HOOK) {
       (*(void (*)())g_pfnGamestate7DrawHook)();
-    } else if (g_nGamestate == 8) {
+    } else if (g_nGamestate == GS_GEM_PICKUP) {
       Gamestate08_Draw();
-    } else if (g_nGamestate == 9) {
+    } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
       Gamestate01_09_Draw();
-    } else if (g_nGamestate == 0xA) {
+    } else if (g_nGamestate == GS_MENU_TRANSITION) {
       Gamestate0A_Draw();
-    } else if (g_nGamestate == 0xB) {
+    } else if (g_nGamestate == GS_SAVE_MENU) {
       SaveLoadMenu_Draw();
-    } else if (g_nGamestate == 0xC) {
+    } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       Gamestate0C_Draw();
-    } else if (g_nGamestate == 0xD) {
+    } else if (g_nGamestate == GS_TITLE) {
       if (g_nGamestate0dMode == 3) {
         StoryIntro_Draw();
       } else {
         Titlescreen_Draw();
       }
-    } else if (g_nGamestate == 0xE) {
+    } else if (g_nGamestate == GS_GEM_CUTSCENE) {
       GemCutscene_Draw();
-    } else if (g_nGamestate == 0xF) {
+    } else if (g_nGamestate == GS_CREDITS) {
       if (g_nGamestate0fMode < 0x63) {
         Credits_Draw();
       } else {
@@ -130,7 +131,7 @@ void GamestateDraw(void) {
       } while (g_nVsyncFrameEndCount - end[-1] < 2);
     }
     g_nVsyncFramePaceAnchor = VSync(-1);
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
   }

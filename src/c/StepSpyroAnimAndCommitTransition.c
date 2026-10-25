@@ -15,12 +15,12 @@ int StepSpyroAnimAndCommitTransition(int step) {
   int prev;
   int sum;
   unsigned char *idx;
-  int new_var;
+  int wrap;
   sum = timer[0] + step;
   timer[0] = sum;
-  new_var = 0x10;
-  if (((unsigned int)(sum & 0xFF)) >= new_var) {
-    timer[0] = sum - new_var;
+  wrap = 0x10;
+  if (((unsigned int)(sum & 0xFF)) >= wrap) {
+    timer[0] = sum - wrap;
     do {
       frame = g_bSpyroAnimFrame;
       cur = g_bSpyroAnimCurrent;

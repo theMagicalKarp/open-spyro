@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 /* 0x800229e8, 68 bytes -- store the value in $v0 through the pointer the
    caller left in $at, then restore ra/fp/sp/gp/s7-s0 from
@@ -29,7 +30,7 @@ void StoreAndRestoreStaticRegs(void) {
 
   __asm__("" : "=r"(at), "=r"(v0));
   *at = v0;
-  __asm__("" : "=r"(at) : "0"(g_anStaticRegSaveArea));
+  OPAQUE_COPY(at, g_anStaticRegSaveArea);
   rr_ra = at[11];
   rr_fp = at[10];
   rr_sp = at[9];
@@ -42,5 +43,5 @@ void StoreAndRestoreStaticRegs(void) {
   rr_s2 = at[2];
   rr_s1 = at[1];
   rr_s0 = at[0];
-  __asm__ volatile("");
+  SCHED_FENCE();
 }

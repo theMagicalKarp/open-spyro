@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "types.h"
 
 /* 0x800331ac — GS_GEM_CUTSCENE (0xE) per-tick handler: on first entry (timer
@@ -52,7 +53,7 @@ void GemCutscene_Update(void) {
     if (g_nGenericCountdown >= 0x10) {
       g_nGenericCountdown = 0xF;
     }
-    if (g_nCurrentWorldId == 1 && (g_dwPadHeld & 0x840)) {
+    if (g_nCurrentWorldId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
       p = (int *)g_pPathTableHead;
       cur = p[0];
       if (cur >= 0xF1 && cur < (p[2] << 1) - 0x20) {

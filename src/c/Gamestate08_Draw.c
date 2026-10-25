@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -56,13 +57,13 @@ void Gamestate08_Draw(void) {
     *ot = 0;
     act = (unsigned char *)g_pActorListBase;
     q = &g_apOtDepthBinBlock[2304];
-    id = act[0x48];
+    id = ACTOR_RAW(act, unsigned char, mode);
     while (id != 0xFF) {
       if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
-      act += 0x58;
-      id = act[0x48];
+      act += ACTOR_SIZE;
+      id = ACTOR_RAW(act, unsigned char, mode);
     }
     *q = 0;
     DrawDragonRescuedBanner();
@@ -97,13 +98,13 @@ void Gamestate08_Draw(void) {
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
     act = (unsigned char *)g_pActorListBase;
-    id = act[0x48];
+    id = ACTOR_RAW(act, unsigned char, mode);
     while (id != 0xFF) {
       if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
-      act += 0x58;
-      id = act[0x48];
+      act += ACTOR_SIZE;
+      id = ACTOR_RAW(act, unsigned char, mode);
     }
     *q = 0;
     if (g_nGemPickupTimer < 0x3C) {
@@ -134,7 +135,7 @@ void Gamestate08_Draw(void) {
     icon = &g_abHudIconActorRecords[0x1B8];
   icon5:
     *q++ = icon;
-    icon += 0x58;
+    icon += ACTOR_SIZE;
     i += 1;
     if (i < 3) {
       goto icon5;
@@ -175,7 +176,7 @@ void Gamestate08_Draw(void) {
     icon = &g_abHudIconActorRecords[0x1B8];
   icon6:
     *q++ = icon;
-    icon += 0x58;
+    icon += ACTOR_SIZE;
     i += 1;
     if (i < 3) {
       goto icon6;
@@ -200,7 +201,7 @@ void Gamestate08_Draw(void) {
       icon = &g_abHudIconActorRecords[0x1B8];
     icon7:
       *q++ = icon;
-      icon += 0x58;
+      icon += ACTOR_SIZE;
       i += 1;
       if (i < 3) {
         goto icon7;
@@ -247,7 +248,7 @@ void Gamestate08_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

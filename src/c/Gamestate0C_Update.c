@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
 
@@ -145,8 +146,7 @@ void Gamestate0C_Update(void) {
      cannot fold its accesses to absolute. Deleting it costs ~12 instructions
      and the fourth callee-saved register. Header has the pass-by-pass evidence.
    */
-  do {
-  } while (0);
+  EBB_BREAK();
 
   if (g_anGamestate0cTimerBlock[-1] == 4) {
     if (g_nCdStreamState < 0xA) {
@@ -196,8 +196,7 @@ void Gamestate0C_Update(void) {
             ease) >>
            13);
 
-      SubtractVector(&delta.vx, (int *)((char *)g_pGamestate0cRecord + 0xC),
-                     cam);
+      SubtractVector(&delta.vx, &((Actor *)g_pGamestate0cRecord)->posX, cam);
       delta.vz += 0x200;
 
       if (g_nGamestate0cTimer < 0x40) {
@@ -229,8 +228,7 @@ void Gamestate0C_Update(void) {
       /* LOAD-BEARING — see the dial before the substate test above. This one
          does the same job for the handoff arm, which is where the base folds
          hardest (13 of the 14). */
-      do {
-      } while (0);
+      EBB_BREAK();
 
       *(WORLDCOUNTERS *)&g_nWorldRenderMeshChunkCount =
           *(WORLDCOUNTERS *)&g_nWorldCollisionTriCount;

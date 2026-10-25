@@ -80,6 +80,8 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
+#include "gamestate.h"
+#include "match_asm.h"
 
 
 void Level18_BalloonistCutscene_Update(void)
@@ -119,8 +121,8 @@ void Level18_BalloonistCutscene_Update(void)
         {
           if (g_pLevelOverlayInitRecord != 0)
           {
-            g_pLevelOverlayInitRecord[0x50] = 0;
-            g_pLevelOverlayInitRecord[0x51] = 0;
+            ACTOR_RAW(g_pLevelOverlayInitRecord, unsigned char, cullRadius) = 0;
+            ACTOR_RAW(g_pLevelOverlayInitRecord, unsigned char, drawn) = 0;
             if (((int **) g_pLevelOverlayInitRecord)[0][3] != 0)
             {
               ClearWord(((int **) g_pLevelOverlayInitRecord)[0][3]);
@@ -136,8 +138,8 @@ void Level18_BalloonistCutscene_Update(void)
           *((int *) ((char *) g_anGamestate0cSpyroFrom + 12)) = 0x4A0;
           g_nGamestate0cSpyroToY = 0;
           g_nGamestate0cSpyroToZ = 0x164;
-          RotateVectorByMatrix(g_pGamestate0cActor + 0x20, &g_anGamestate0cSpyroFrom[3], &g_anGamestate0cSpyroFrom[3]);
-          AddVector(&g_anGamestate0cSpyroFrom[3], &g_anGamestate0cSpyroFrom[3], (int *) (g_pGamestate0cActor + 0xC));
+          RotateVectorByMatrix(CUTSCENE_ACTOR->mtx, &g_anGamestate0cSpyroFrom[3], &g_anGamestate0cSpyroFrom[3]);
+          AddVector(&g_anGamestate0cSpyroFrom[3], &g_anGamestate0cSpyroFrom[3], &CUTSCENE_ACTOR->posX);
           g_nGamestate0cSpyroYawStart = g_bSpyroPersistentEulerZ * 0x10;
           SubtractVector(vecA, &g_anGamestate0cSpyroFrom[3], g_anGamestate0cSpyroFrom);
           g_nGamestate0cSpyroYawGoal = ArcTan2(vecA[0], vecA[1], 1);
@@ -185,7 +187,7 @@ void Level18_BalloonistCutscene_Update(void)
             int m;
             int n;
             g_nGamestate0cSpyroYawStart = g_bSpyroPersistentEulerZ * 0x10;
-            n = g_pGamestate0cActor[0x46];
+            n = ACTOR_RAW(g_pGamestate0cActor, unsigned char, rotZ);
             m = g_bSpyroAnimFrame;
             g_bSpyroAnimCurrent = 3;
             g_bSpyroFramePrev = m;
@@ -197,14 +199,14 @@ void Level18_BalloonistCutscene_Update(void)
           if (((g_nGamestate0cSpyroYawGoal - g_nGamestate0cSpyroYawStart) & 0xFFF) < 0x801)
           {
             int k; k = g_nGamestate0cSpyroYawStart + ((AbsAngleDelta12(g_nGamestate0cSpyroYawGoal, g_nGamestate0cSpyroYawStart) * sn) >> 13);
-            do { } while (0);
+            EBB_BREAK();
             g_bSpyroPersistentEulerZ = k >> 4;
             g_nSpyroAnimPlayRate = 8;
           }
           else
           {
             int k; k = g_nGamestate0cSpyroYawStart - ((AbsAngleDelta12(g_nGamestate0cSpyroYawGoal, g_nGamestate0cSpyroYawStart) * sn) >> 13);
-            do { } while (0);
+            EBB_BREAK();
             g_bSpyroPersistentEulerZ = k >> 4;
             g_nSpyroAnimPlayRate = 8;
           }
@@ -224,14 +226,14 @@ void Level18_BalloonistCutscene_Update(void)
           yaw = g_nGamestate0cCamYawGoal[-6] - ((AbsAngleDelta12(g_nGamestate0cCamYawGoal[0], g_nGamestate0cCamYawGoal[-6]) * cn) >> 13);
         }
         cz = g_nGamestate0cCamRadiusStart + (((g_nGamestate0cCamRadiusGoal - g_nGamestate0cCamRadiusStart) * cn) >> 13);
-        g_anCameraPos[0] = ((int *) (g_pGamestate0cActor + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
-        g_nCameraPosY = ((int *) (g_pGamestate0cActor + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ACTOR_RAW(CUTSCENE_ACTOR, int, posX) + ((LookupCosine(yaw) * cz) >> 12);
+        g_nCameraPosY = ACTOR_RAW(CUTSCENE_ACTOR, int, posY) + ((LookupSine(yaw) * cz) >> 12);
         vecA[0] = 0x220;
         vecA[2] = 0x340;
         vecA[1] = 0;
         g_nCameraPosZ = g_nGamestate0cCamHeightStart + (((g_nGamestate0cCamHeightGoal - g_nGamestate0cCamHeightStart) * cn) >> 13);
-        RotateVectorByMatrix(g_pGamestate0cActor + 0x20, vecA, vecA);
-        AddVector(vecA, vecA, (int *) (g_pGamestate0cActor + 0xC));
+        RotateVectorByMatrix(CUTSCENE_ACTOR->mtx, vecA, vecA);
+        AddVector(vecA, vecA, &CUTSCENE_ACTOR->posX);
         SubtractVector(vecA, vecA, g_anCameraPos);
         if (g_anGamestate0cTimerBlock_s < 0x20)
         {
@@ -253,8 +255,8 @@ void Level18_BalloonistCutscene_Update(void)
       }
       else
       {
-        g_anCameraPos[0] = ((int *) (g_pGamestate0cActor + 0xC))[0] + ((LookupCosine(g_nGamestate0cCamYawGoal_s) * g_nGamestate0cCamRadiusGoal) >> 12);
-        g_nCameraPosY = ((int *) (g_pGamestate0cActor + 0x10))[0] + ((LookupSine(g_nGamestate0cCamYawGoal_s) * g_nGamestate0cCamRadiusGoal) >> 12);
+        g_anCameraPos[0] = ACTOR_RAW(CUTSCENE_ACTOR, int, posX) + ((LookupCosine(g_nGamestate0cCamYawGoal_s) * g_nGamestate0cCamRadiusGoal) >> 12);
+        g_nCameraPosY = ACTOR_RAW(CUTSCENE_ACTOR, int, posY) + ((LookupSine(g_nGamestate0cCamYawGoal_s) * g_nGamestate0cCamRadiusGoal) >> 12);
         g_nCameraPosZ = g_nGamestate0cCamHeightGoal;
         CopyVector(g_anSpyroWorldPos, &g_nGamestate0cTimer[8]);
         n = g_bSpyroAnimFrame;
@@ -499,22 +501,22 @@ void Level18_BalloonistCutscene_Update(void)
         cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
         if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
-          g_pGamestate0cRecord[0x4A] = 0xFF;
-          g_nGamestate0cCamYawStart = ArcTan2(g_anCameraPos[0] - ((int *) (g_pGamestate0cRecord + 0xC))[0], g_nCameraPosY - ((int *) (g_pGamestate0cRecord + 0x10))[0], 1);
-          SubtractVector(vecB, g_anCameraPos, (int *) (g_pGamestate0cRecord + 0xC));
+          ACTOR_RAW(g_pGamestate0cRecord, unsigned char, visZone) = 0xFF;
+          g_nGamestate0cCamYawStart = ArcTan2(g_anCameraPos[0] - ACTOR_RAW(CUTSCENE_RECORD, int, posX), g_nCameraPosY - ACTOR_RAW(CUTSCENE_RECORD, int, posY), 1);
+          SubtractVector(vecB, g_anCameraPos, &CUTSCENE_RECORD->posX);
           g_nGamestate0cCamRadiusStart = VectorLength(vecB, 0);
           g_nGamestate0cCamHeightStart = g_nCameraPosZ;
           g_nGamestate0cCamEulerRollStart = g_nCameraEulerRoll;
           g_nGamestate0cCamEulerPitchStart = g_nCameraEulerPitch;
           g_nGamestate0cCamEulerYawStart = g_nCameraEulerYaw;
-          n = g_pGamestate0cRecord[0x46];
+          n = ACTOR_RAW(g_pGamestate0cRecord, unsigned char, rotZ);
           g_nGamestate0cCamRadiusGoal = 0xE00;
           g_nGamestate0cCamYawGoal_s = ((n * 0x10) - 0x480) & 0xFFF;
-          g_nGamestate0cCamHeightGoal = ((int *) (g_pGamestate0cRecord + 0x14))[0] + 0x200;
-          g_nGamestate0cRecordZStart = ((int *) (g_pGamestate0cRecord + 0x14))[0];
-          g_nGamestate0cRecordZGoal = ((int *) (g_pGamestate0cActor + 0x14))[0] + 0x488;
+          g_nGamestate0cCamHeightGoal = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x200;
+          g_nGamestate0cRecordZStart = ACTOR_RAW(CUTSCENE_RECORD, int, posZ);
+          g_nGamestate0cRecordZGoal = ACTOR_RAW(CUTSCENE_ACTOR, int, posZ) + 0x488;
           CopyVector(&g_nGamestate0cTimer[5], g_anSpyroWorldPos);
-          CopyVector(&g_nGamestate0cTimer[8], g_pGamestate0cActor + 0xC);
+          CopyVector(&g_nGamestate0cTimer[8], &CUTSCENE_ACTOR->posX);
           {
             int m;
           m = g_bSpyroAnimFrame;
@@ -542,7 +544,7 @@ void Level18_BalloonistCutscene_Update(void)
             g_anGamestate0cSpyroFrom[0] = g_nGamestate0cTimer[8];
             g_nGamestate0cSpyroFromY = g_nGamestate0cSpyroToY;
             g_nGamestate0cSpyroFromZ = g_nGamestate0cSpyroFromZ + 0x325;
-            CopyVector(&g_nGamestate0cTimer[8], g_pGamestate0cRecord + 0xC);
+            CopyVector(&g_nGamestate0cTimer[8], &CUTSCENE_RECORD->posX);
             {
               int m;
             m = g_bSpyroAnimFrame;
@@ -571,15 +573,15 @@ void Level18_BalloonistCutscene_Update(void)
           yaw = g_nGamestate0cCamYawGoal[-6] - ((AbsAngleDelta12(g_nGamestate0cCamYawGoal[0], g_nGamestate0cCamYawGoal[-6]) * cn) >> 13);
         }
         cz = g_nGamestate0cCamRadiusStart + (((g_nGamestate0cCamRadiusGoal - g_nGamestate0cCamRadiusStart) * cn) >> 13);
-        g_anCameraPos[0] = ((int *) (g_pGamestate0cRecord + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
-        g_nCameraPosY = ((int *) (g_pGamestate0cRecord + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ACTOR_RAW(CUTSCENE_RECORD, int, posX) + ((LookupCosine(yaw) * cz) >> 12);
+        g_nCameraPosY = ACTOR_RAW(CUTSCENE_RECORD, int, posY) + ((LookupSine(yaw) * cz) >> 12);
         g_nCameraPosZ = g_nGamestate0cCamHeightStart + (((g_nGamestate0cCamHeightGoal - g_nGamestate0cCamHeightStart) * cn) >> 13);
-        SubtractVector(vecB, (int *) (g_pGamestate0cRecord + 0xC), g_anCameraPos);
+        SubtractVector(vecB, &CUTSCENE_RECORD->posX, g_anCameraPos);
         ang[1] = ArcTan2(VectorLength(vecB, 0), -vecB[2], 1);
         ang[2] = ArcTan2(vecB[0], vecB[1], 1);
         g_nCameraEulerPitch = (g_nGamestate0cCamEulerPitchStart + ((SignedAngleDelta12(ang[1], g_nGamestate0cCamEulerPitchStart) * cn) >> 13)) & 0xFFF;
         g_nCameraEulerYaw = (g_nGamestate0cCamEulerYawStart + ((SignedAngleDelta12(ang[2], g_nGamestate0cCamEulerYawStart) * cn) >> 13)) & 0xFFF;
-        ((int *) (g_pGamestate0cRecord + 0x14))[0] = g_nGamestate0cRecordZStart + (((g_nGamestate0cRecordZGoal - g_nGamestate0cRecordZStart) * cn) >> 13);
+        ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = g_nGamestate0cRecordZStart + (((g_nGamestate0cRecordZGoal - g_nGamestate0cRecordZStart) * cn) >> 13);
       }
       else
       {
@@ -604,13 +606,13 @@ void Level18_BalloonistCutscene_Update(void)
       {
         if (g_nGamestate0cTimer[0] == g_nFrameStep)
         {
-          z = ((int *) (g_pGamestate0cRecord + 0x14))[0];
+          z = ACTOR_RAW(CUTSCENE_RECORD, int, posZ);
           k = g_bSpyroAnimFrame;
           g_nGamestate0cCamHeightStart = g_nCameraPosZ;
           g_anSpyroWorldPos[0] = g_nGamestate0cSpyroToX;
           g_nSpyroWorldPosY = g_nGamestate0cSpyroToY;
           g_nGamestate0cRecordZStart = z;
-          yaw = ((int *) (g_pGamestate0cRecord + 0x14))[0];
+          yaw = ACTOR_RAW(CUTSCENE_RECORD, int, posZ);
           g_bSpyroFramePrev = k;
           g_nSpyroAnimPlayRate = 4;
           g_bSpyroAnimCurrent = 0;
@@ -623,26 +625,26 @@ void Level18_BalloonistCutscene_Update(void)
         t = g_nGamestate0cTimer[0];
         if (t < 0x40)
         {
-          ((int *) (g_pGamestate0cRecord + 0x14))[0] = g_nGamestate0cRecordZStart + (((LookupSine((t << 4) + 0xC00) + 0x1000) * 3) >> 2);
+          ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = g_nGamestate0cRecordZStart + (((LookupSine((t << 4) + 0xC00) + 0x1000) * 3) >> 2);
         }
         else
         {
-          ((int *) (g_pGamestate0cRecord + 0x14))[0] = ((int *) (g_pGamestate0cRecord + 0x14))[0] + (g_nFrameStep * 0x4B);
+          ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + (g_nFrameStep * 0x4B);
           g_nCameraPosZ = g_nGamestate0cCamHeightStart + (((LookupSine((g_nGamestate0cTimer[0] << 4) + 0x800) + 0x1000) * 3) >> 2);
         }
-        SubtractVector(vecC, (int *) (g_pGamestate0cRecord + 0xC), g_anCameraPos);
+        SubtractVector(vecC, &CUTSCENE_RECORD->posX, g_anCameraPos);
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecC, 0), -vecC[2], 1);
         g_nCameraEulerYaw = ArcTan2(vecC[0], vecC[1], 1);
-        g_nSpyroWorldPosZ = ((int *) (g_pGamestate0cRecord + 0x14))[0] + 0x2D4;
-        g_bSpyroPersistentEulerZ = g_pGamestate0cRecord[0x46] + 0x80;
+        g_nSpyroWorldPosZ = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x2D4;
+        g_bSpyroPersistentEulerZ = ACTOR_RAW(g_pGamestate0cRecord, unsigned char, rotZ) + 0x80;
       }
       else
       {
-        g_nGamestate0cCamYawStart = ArcTan2(g_anCameraPos[0] - ((int *) (g_pGamestate0cRecord + 0xC))[0], g_nCameraPosY - ((int *) (g_pGamestate0cRecord + 0x10))[0], 1);
-        SubtractVector(vecC, g_anCameraPos, (int *) (g_pGamestate0cRecord + 0xC));
+        g_nGamestate0cCamYawStart = ArcTan2(g_anCameraPos[0] - ACTOR_RAW(CUTSCENE_RECORD, int, posX), g_nCameraPosY - ACTOR_RAW(CUTSCENE_RECORD, int, posY), 1);
+        SubtractVector(vecC, g_anCameraPos, &CUTSCENE_RECORD->posX);
         g_nGamestate0cCamRadiusStart = VectorLength(vecC, 0);
         g_nGamestate0cCamHeightStart = g_nCameraPosZ;
-        n = g_pGamestate0cRecord[0x46];
+        n = ACTOR_RAW(g_pGamestate0cRecord, unsigned char, rotZ);
         g_nGamestate0cCamRadiusGoal = 0x800;
         g_nCdStreamState = 0;
         g_nPreserveMobIdx = -1;
@@ -651,7 +653,7 @@ void Level18_BalloonistCutscene_Update(void)
         g_nGamestate0cCamYawGoal_s = ((n * 0x10) + 0x390) & 0xFFF;
         {
           int m;
-        m = ((int *) (g_pGamestate0cRecord + 0x14))[0];
+        m = ACTOR_RAW(CUTSCENE_RECORD, int, posZ);
         g_nGamestate0cSubstate[0] = 4;
         g_nGamestate0cTimer[0] = 0;
         g_nGamestate0cCamHeightGoal = m + 0x200;
@@ -705,10 +707,10 @@ void Level18_BalloonistCutscene_Update(void)
           yaw = g_nGamestate0cCamYawGoal_s - ((AbsAngleDelta12(g_nGamestate0cCamYawStart, g_nGamestate0cCamYawGoal_s) * cn) >> 13);
         }
         cz = g_nGamestate0cCamRadiusGoal + (((g_nGamestate0cCamRadiusStart - g_nGamestate0cCamRadiusGoal) * cn) >> 13);
-        g_anCameraPos[0] = ((int *) (g_pGamestate0cRecord + 0xC))[0] + ((LookupCosine(yaw) * cz) >> 12);
-        g_nCameraPosY = ((int *) (g_pGamestate0cRecord + 0x10))[0] + ((LookupSine(yaw) * cz) >> 12);
+        g_anCameraPos[0] = ACTOR_RAW(CUTSCENE_RECORD, int, posX) + ((LookupCosine(yaw) * cz) >> 12);
+        g_nCameraPosY = ACTOR_RAW(CUTSCENE_RECORD, int, posY) + ((LookupSine(yaw) * cz) >> 12);
         g_nCameraPosZ = g_nGamestate0cCamHeightGoal + (((g_nGamestate0cCamHeightStart - g_nGamestate0cCamHeightGoal) * cn) >> 13);
-        SubtractVector(vecD, (int *) (g_pGamestate0cRecord + 0xC), g_anCameraPos);
+        SubtractVector(vecD, &CUTSCENE_RECORD->posX, g_anCameraPos);
         vecD[2] += 0x200; vecD[2] -= cn >> 4;
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecD, 0), -vecD[2], 1);
         g_nCameraEulerYaw = ArcTan2(vecD[0], vecD[1], 1);
@@ -736,37 +738,34 @@ void Level18_BalloonistCutscene_Update(void)
         if (t == n)
         {
           int z;
-          z = ((int *) (g_pGamestate0cRecord + 0x14))[0];
+          z = ACTOR_RAW(CUTSCENE_RECORD, int, posZ);
           g_nGamestate0cCamHeightStart = g_nCameraPosZ;
           g_nGamestate0cRecordZStart = z;
         }
         k = g_nGamestate0cTimer[0];
         if (k < 0x40)
         {
-          ((int *) (g_pGamestate0cRecord + 0x14))[0] = ((int *) (g_pGamestate0cRecord + 0x14))[0] - (n * 0x4B);
+          ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) - (n * 0x4B);
           g_nCameraPosZ = g_nGamestate0cCamHeightStart + ((LookupSine((-g_nGamestate0cTimer[0]) << 4) * 3) >> 2);
         }
         else
         {
-          do
-          {
-          }
-          while (0);
+          EBB_BREAK();
           if ((k - n) < 0x40)
           {
-            g_nGamestate0cRecordZStart = ((int *) (g_pGamestate0cRecord + 0x14))[0] - 0x4B;
+            g_nGamestate0cRecordZStart = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) - 0x4B;
           }
-          ((int *) (g_pGamestate0cRecord + 0x14))[0] = g_nGamestate0cRecordZStart + ((LookupSine(0x400 - (t << 4)) * 3) >> 2);
+          ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = g_nGamestate0cRecordZStart + ((LookupSine(0x400 - (t << 4)) * 3) >> 2);
           if (k < 0x40) /* L9: dead; cse2 folds it */
           {
             g_nGamestate0cRecordZStart = 0;
           }
         }
-        SubtractVector(vecE, (int *) (g_pGamestate0cRecord + 0xC), g_anCameraPos);
+        SubtractVector(vecE, &CUTSCENE_RECORD->posX, g_anCameraPos);
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecE, 0), -vecE[2], 1);
         g_nCameraEulerYaw = ArcTan2(vecE[0], vecE[1], 1);
-        g_nSpyroWorldPosZ = ((int *) (g_pGamestate0cRecord + 0x14))[0] + 0x2D4;
-        g_bSpyroPersistentEulerZ = g_pGamestate0cRecord[0x46] + 0x80;
+        g_nSpyroWorldPosZ = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x2D4;
+        g_bSpyroPersistentEulerZ = ACTOR_RAW(g_pGamestate0cRecord, unsigned char, rotZ) + 0x80;
       }
       else
       {
@@ -776,9 +775,9 @@ void Level18_BalloonistCutscene_Update(void)
         {
           int m;
           int k;
-        m = g_nGamestate0cCardVariant * 8;
-        g_nGamestate0cTimer[8] = *((int *) (((char *) g_anGamestate0cLandingX) + m));
-        k = *((int *) (((char *) g_anGamestate0cLandingY) + m));
+        m = g_nGamestate0cCardVariant * 2;
+        g_nGamestate0cTimer[8] = g_anGamestate0cLandingX[m];
+        k = g_anGamestate0cLandingY[m];
         g_nGamestate0cSpyroToZ = g_nSpyroWorldPosZ;
         g_nGamestate0cSpyroToY = k;
         g_nGamestate0cSpyroToZ = FindGroundHeightBelow(&g_nGamestate0cTimer[8], 0x10000) + 0x164;
@@ -808,7 +807,7 @@ void Level18_BalloonistCutscene_Update(void)
         SampleSpyroShadowRingHeights(1);
         if (g_nGamestate0cTimer[0] >= 0x20)
         {
-          ((int *) (g_pGamestate0cRecord + 0x14))[0] = ((int *) (g_pGamestate0cRecord + 0x14))[0] + (g_nGamestate0cTimer[0] * g_nFrameStep);
+          ACTOR_RAW(CUTSCENE_RECORD, int, posZ) = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + (g_nGamestate0cTimer[0] * g_nFrameStep);
         }
       }
       else
@@ -826,7 +825,7 @@ void Level18_BalloonistCutscene_Update(void)
         g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
         ResetCameraStateToTarget();
         InitHudCounters(0);
-        g_nGamestate = 0;
+        g_nGamestate = GS_GAMEPLAY;
         g_nGamePaused = 1;
         g_nGameplayBlocked = 0;
         InitLightVectorConstants();

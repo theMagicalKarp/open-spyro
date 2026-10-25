@@ -235,4 +235,15 @@ extern int g_nCurrentWorldId[];
 extern int g_nGamestate0fMode;
 extern int g_nGenericCountdown;
 
+
+/* World / level CD-stream chunk bookkeeping and credits-sequence state
+ * (main .bss; the credits overlay reads them). */
+extern int g_nReturningHomePhase;
+extern int g_nScriptedMobCount;
+extern int g_nWorldTimAudioChunkSize;
+extern int g_nWorldBundleChunkOffset;
+extern int g_nWorldBundleChunkSize;
+extern int g_nLevelArchiveChunkOffset;
+extern int g_nLevelArchiveBaseLba;
+
 #endif /* OPEN_SPYRO_LEVEL_GLOBALS_H */
