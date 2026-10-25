@@ -2688,7 +2688,7 @@ void Level27_UpdateActors(void) {
         st->zSpeed = 0x28;
         ENTER_POSE(actor, 4);
       }
-      if (st->all1.on == 0 &&
+      if (st->all1.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all1.z > 0 ? g_nSpyroWorldPosZ - st->all1.z < 0x7D0
                                        : st->all1.z - g_nSpyroWorldPosZ < 0x7D0) &&
           IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all1) != 0) {
@@ -2696,7 +2696,7 @@ void Level27_UpdateActors(void) {
           st->hit[i] = 1;
         }
       }
-      if (st->all2.on == 0 &&
+      if (st->all2.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all2.z > 0 ? g_nSpyroWorldPosZ - st->all2.z < 0x7D0
                                        : st->all2.z - g_nSpyroWorldPosZ < 0x7D0) &&
           IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all2) != 0) {
@@ -2706,7 +2706,7 @@ void Level27_UpdateActors(void) {
       }
       TickCountdownByFrameDelta(&st->timer, 4);
       for (i = 0; i < 7; i++) {
-        if (st->hit[i] == 0 && st->box[i].on != 0 &&
+        if (st->hit[i] == 0 && st->box[i].halfWidth != 0 &&
             (g_nSpyroWorldPosZ - st->box[i].z > 0
                  ? g_nSpyroWorldPosZ - st->box[i].z < 0x7D0
                  : st->box[i].z - g_nSpyroWorldPosZ < 0x7D0) &&
@@ -2714,7 +2714,7 @@ void Level27_UpdateActors(void) {
           st->hit[i] = 1;
         }
       }
-      if (st->reset.on != 0 &&
+      if (st->reset.halfWidth != 0 &&
           IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->reset) != 0) {
         st->cur = 0;
         for (i = 0; i < 7; i++) {

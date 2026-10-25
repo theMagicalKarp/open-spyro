@@ -915,9 +915,9 @@ void Level21_UpdateActors(void) {
       case 3:
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 3 &&
-            st->speed == 0 && st->u94 == 0) {
+            st->speed == 0 && st->landSoundPlayed == 0) {
           PlayActorMeshVoice(actor, 0, 0);
-          st->u94 = 1;
+          st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
@@ -1100,7 +1100,7 @@ void Level21_UpdateActors(void) {
       }
 
       case 50:
-        if (st->u14 != 0) {
+        if (st->partnerSignal != 0) {
           actor->cullRadius = 0x28;
           actor->mode++;
         }
@@ -1467,7 +1467,7 @@ void Level21_UpdateActors(void) {
         ENTER_POSE(actor, 2);
 
       case 50:
-        if (st->u14 != 0) {
+        if (st->partnerSignal != 0) {
           actor->cullRadius = 0x28;
           actor->mode++;
         }

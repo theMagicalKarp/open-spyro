@@ -184,7 +184,7 @@ typedef struct BoulderThrowerState {
   int u08;         /* 0x08 */
   int sound;         /* 0x0C sound handle */
   int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
+  int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int u18[3];      /* 0x18 */
   FlyPath *path;   /* 0x24 */
   int flags;         /* 0x28 flags */
@@ -206,7 +206,7 @@ typedef struct BoulderThrowerState {
   int u88;         /* 0x88 */
   int *u8C;        /* 0x8C */
   int u90;         /* 0x90 */
-  int u94;         /* 0x94 */
+  int landSoundPlayed;         /* 0x94 */
 } BoulderThrowerState;
 
 /* Type 101 state (gatekeeper). */
@@ -216,7 +216,7 @@ typedef struct GatekeeperState {
   int u08;         /* 0x08 */
   int sound;         /* 0x0C sound handle */
   int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
+  int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int mode;        /* 0x18 */
   int timer;         /* 0x1C timer */
   int u20[3];      /* 0x20 */
@@ -543,14 +543,15 @@ typedef struct FenceGuardPieceState {
   short lift; /* 0x04 */
 } FenceGuardPieceState;
 
-/* A trigger box for IsPointInRotatedBox. */
+/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
+ * own frame, and that frame's yaw. A zero half-width marks an unused box. */
 typedef struct TriggerBox {
-  int u00; /* 0x00 */
-  int u04; /* 0x04 */
-  int z;   /* 0x08 */
-  int on;  /* 0x0C */
-  int u10; /* 0x10 */
-  int u14; /* 0x14 */
+  int x;         /* 0x00 */
+  int y;         /* 0x04 */
+  int z;         /* 0x08 */
+  int halfWidth; /* 0x0C 0 = unused */
+  int halfDepth; /* 0x10 */
+  int yaw;       /* 0x14 sine-LUT index */
 } TriggerBox;
 
 /* Type 204 state: the fence-guard captain. Wakes the guards (203) whose
