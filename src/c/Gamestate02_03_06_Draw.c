@@ -1,26 +1,27 @@
 #include "actor.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
-/* Position stores stay as raw int casts: SREC->posX (MEM_IN_STRUCT_P) and an
-   int-array view both let sched move them past the neighbouring global loads
-   (cookbook A357); only the raw cast keeps the original order. */
 
-/* Held-base alias for g_pRenderScratchPrimTop (0x800785f0);
-   [-2] is g_pRenderScratchRegionBase. */
-/* Held-base view of g_nVsyncFrameEndCount; [-1] = g_nVsyncFramePaceAnchor. */
-/* cosine view of the sine LUT (g_anSineLut + 0x80). */
-/* Held-base alias for g_dwHudBobSinePhase (0x80077fe4): [1] is the mod-9 HUD
-   frame counter and [0x14c] is &g_anLevelSpriteTexWordPairs[2]. */
-/* Same block seen from g_nHudFrameCycleMod9 (0x80077fe8): [0x14b] is
-   &g_anLevelSpriteTexWordPairs[2]. */
-/* Held-base (incomplete-array) views of four tables the inventory row loop
-   keeps in one register each; the plain sized decls in globals.h stay in use
-   at the sites the original addresses absolutely (A240). */
-/* menu label blobs that have no friendly name yet. */
+/* The backdrop quad being built at p, read back through volatile accesses,
+ * and the TILE bar that follows the last quad. */
+#define QUAD ((volatile PolyFT4 *)p)
+#define TILE ((Tile *)((PolyFT4 *)p + 1))
+
+/* What follows the last backdrop quad: the TILE bar, then the menu box. */
+typedef struct BackdropTail {
+  PolyFT4 quad;   /* 0x00 */
+  Tile bar;       /* 0x28 */
+  ModePolyF4 box; /* 0x38 */
+} BackdropTail;
+
+/* Position stores go through ACTOR_RAW: SREC->posX (MEM_IN_STRUCT_P) and an
+   int-array view both let sched move them past the neighbouring global loads
+   (cookbook A357); only the byte-offset form keeps the original order. */
 
 /* Draw for gamestates 2 (pause menu), 3 (inventory) and 6 (dialog overlay)
    — 0x8001a40c, 8840 bytes.
@@ -46,12 +47,6 @@
      `$2` pin to get the original's la/sll and load/store order.
    - The second marker test is nested so `pa = pos` sits in the guard block,
      where reorg moves it into the branch delay slot. */
-typedef struct {
-  int tag;
-  unsigned char r0, g0, b0, code;
-  short x0, y0, x1, y1, x2, y2, x3, y3;
-} PolyF4;
-
 void Gamestate02_03_06_Draw(void) {
   RECT rect;          /* sp18 */
   char buf[0x20];     /* sp20 */
@@ -135,7 +130,7 @@ void Gamestate02_03_06_Draw(void) {
     DrawSync(0);
     g_nVsyncFramePaceAnchor = VSync(-1);
   } else {
-    void *prim;
+    BackdropTail *prim;
     int i;
     int h;
     char *env;
@@ -192,43 +187,44 @@ void Gamestate02_03_06_Draw(void) {
       register unsigned short ch asm("$6");
       register unsigned char bq asm("$5");
       register unsigned char cq asm("$6");
-      *((volatile int *)p) = 0x9000000;
-      *((volatile unsigned char *)(p + 0x7)) = 0x2C;
-      *((volatile unsigned char *)(p + 0x4)) = 0x4C;
-      *((volatile unsigned char *)(p + 0x5)) = 0x80;
-      *((volatile short *)(p + 0x8)) = xx;
-      *((volatile short *)(p + 0xA)) = 8;
-      a = *((volatile unsigned short *)(p + 0x8));
-      bh = *((volatile unsigned short *)(p + 0xA));
-      ch = *((volatile unsigned short *)(p + 0x8));
-      d = *((volatile unsigned short *)(p + 0xA));
-      *((volatile short *)(p + 0x10)) = a + 0x80;
-      a = *((volatile unsigned short *)(p + 0x8));
-      *((volatile short *)(p + 0x1A)) = d + 0xDF;
-      d = *((volatile unsigned short *)(p + 0xA));
+      QUAD->tag = 0x9000000;
+      QUAD->code = 0x2C;
+      QUAD->r0 = 0x4C;
+      QUAD->g0 = 0x80;
+      QUAD->x0 = xx;
+      QUAD->y0 = 8;
+      a = (unsigned short)QUAD->x0;
+      bh = (unsigned short)QUAD->y0;
+      ch = (unsigned short)QUAD->x0;
+      d = (unsigned short)QUAD->y0;
+      QUAD->x1 = a + 0x80;
+      a = (unsigned short)QUAD->x0;
+      QUAD->y2 = d + 0xDF;
+      d = (unsigned short)QUAD->y0;
       i += 1;
-      *((volatile unsigned char *)(p + 0xD)) = 0;
-      *((volatile short *)(p + 0x12)) = bh;
-      bq = *((volatile unsigned char *)(p + 0xD));
+      QUAD->v0 = 0;
+      QUAD->y1 = bh;
+      bq = QUAD->v0;
       b = 0x40;
-      *((volatile unsigned char *)(p + 0xC)) = 0;
-      *((volatile short *)(p + 0x18)) = ch;
-      cq = *((volatile unsigned char *)(p + 0xC));
-      *((volatile short *)(p + 0x20)) = a + 0x80;
-      a = *((volatile unsigned char *)(p + 0xC));
-      *((volatile short *)(p + 0x22)) = d + 0xDF;
-      d = *((volatile unsigned char *)(p + 0xD));
-      *((volatile unsigned char *)(p + 0x6)) = b;
-      *((volatile unsigned char *)(p + 0x15)) = bq;
-      *((volatile unsigned char *)(p + 0x1C)) = cq;
-      *((volatile unsigned char *)(p + 0x14)) = a + 0x80U;
-      a = *((volatile unsigned char *)(p + 0xC));
-      *((volatile unsigned char *)(p + 0x1D)) = d - 0x21;
-      d = *((volatile unsigned char *)(p + 0xD));
-      *((volatile unsigned char *)(p + 0x24)) = a + 0x80U;
-      *((volatile unsigned char *)(p + 0x25)) = d - 0x21;
-      *((short *)(p + 0xE)) = 0x3820;
-      *((short *)(p + 0x16)) = tp;
+      QUAD->u0 = 0;
+      QUAD->x2 = ch;
+      cq = QUAD->u0;
+      QUAD->x3 = a + 0x80;
+      a = QUAD->u0;
+      QUAD->y3 = d + 0xDF;
+      d = QUAD->v0;
+      QUAD->b0 = b;
+      QUAD->v1 = bq;
+      QUAD->u2 = cq;
+      QUAD->u1 = a + 0x80U;
+      a = QUAD->u0;
+      QUAD->v2 = d - 0x21;
+      d = QUAD->v0;
+      QUAD->u3 = a + 0x80U;
+      QUAD->v3 = d - 0x21;
+      /* Plain stores, so the tpage store fills the jal delay slot. */
+      ((PolyFT4 *)p)->clut = 0x3820;
+      ((PolyFT4 *)p)->tpage = tp;
       AddPrimToOT((int)p);
     }
   }
@@ -237,18 +233,18 @@ void Gamestate02_03_06_Draw(void) {
     if (i < 4) {
       goto quad;
     }
-    *((int *)(p + 0x28)) = 0x3000000;
-    *((unsigned char *)(p + 0x2F)) = b;
-    *((short *)(p + 0x30)) = 0;
-    *((short *)(p + 0x32)) = 0xE7;
-    *((short *)(p + 0x34)) = 0x200;
-    *((short *)(p + 0x36)) = 0xE7;
-    *((unsigned char *)(p + 0x2C)) = 0;
-    *((unsigned char *)(p + 0x2D)) = 0;
-    *((unsigned char *)(p + 0x2E)) = 0;
+    TILE->tag = 0x3000000;
+    TILE->code = b;
+    TILE->x0 = 0;
+    TILE->y0 = 0xE7;
+    TILE->w = 0x200;
+    TILE->h = 0xE7;
+    TILE->r0 = 0;
+    TILE->g0 = 0;
+    TILE->b0 = 0;
     AddPrimToOT((int)next);
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
-    prim = p;
+    prim = (BackdropTail *)p;
     h = b;
     if (g_nGamestate == 2) {
       unsigned char *rec;
@@ -256,48 +252,48 @@ void Gamestate02_03_06_Draw(void) {
       short *lut1, *lut2, *lut3, *lut4, *lut6, *lut7, *lut8, *lut9;
       unsigned char nGlyphs;
       int cur;
-      char *rp;
+      Actor *rp;
       int n1, n2, n3, n4, n5, n6;
       int phase;
       int v;
       int phase1, v1, phase2, v2, phase3, v3, phase4, phase5, v4, phase6,
           phase7, v5, phase8, v6, phase9, v7, phase10, v8;
       int y;
-      void *box = (void *)((int)prim + 0x38);
+      void *box = &prim->box;
       SetDrawMode((int)box, 1, 0, 0x40, (RECT *)0);
       AddPrimToOT((int)box);
       {
         int k;
         k = 0x5000000;
-        *((int *)((int)prim + 0x44)) = k;
+        prim->box.poly.tag = k;
         k = 0x2a;
-        *((unsigned char *)((int)prim + 0x4b)) = k;
+        prim->box.poly.code = k;
         k = 0x43;
-        *((unsigned char *)((int)prim + 0x48)) = h;
-        *((unsigned char *)((int)prim + 0x49)) = h;
-        *((unsigned char *)((int)prim + 0x4a)) = h;
-        ((PolyF4 *)((int)prim + 0x44))->y0 = k;
-        ((PolyF4 *)((int)prim + 0x44))->y1 = k;
+        prim->box.poly.r0 = h;
+        prim->box.poly.g0 = h;
+        prim->box.poly.b0 = h;
+        prim->box.poly.y0 = k;
+        prim->box.poly.y1 = k;
       }
-      box = (void *)((int)prim + 0x44);
+      box = &prim->box.poly;
       if (g_nPauseMenuSubstate == 1) {
-        ((PolyF4 *)((int)prim + 0x44))->x0 = 0x54;
-        ((PolyF4 *)((int)prim + 0x44))->x1 = 0x1ac;
+        prim->box.poly.x0 = 0x54;
+        prim->box.poly.x1 = 0x1ac;
         rows = g_nPadIsDualshockFlag != 0;
         y = rows * 0x10 + 0xb6;
-        ((PolyF4 *)((int)prim + 0x44))->y2 = y;
-        ((PolyF4 *)((int)prim + 0x44))->y3 = y;
+        prim->box.poly.y2 = y;
+        prim->box.poly.y3 = y;
       } else {
         rows = 1;
-        ((PolyF4 *)((int)prim + 0x44))->x0 = 0x8c;
-        ((PolyF4 *)((int)prim + 0x44))->x1 = 0x174;
-        ((PolyF4 *)((int)prim + 0x44))->y2 = 0xb0;
-        ((PolyF4 *)((int)prim + 0x44))->y3 = 0xb0;
+        prim->box.poly.x0 = 0x8c;
+        prim->box.poly.x1 = 0x174;
+        prim->box.poly.y2 = 0xb0;
+        prim->box.poly.y3 = 0xb0;
       }
-      *((short *)((int)box + 0x10)) = *((unsigned short *)((int)box + 8));
-      *((short *)((int)box + 0x14)) = *((unsigned short *)((int)box + 0xc));
+      ((PolyF4 *)box)->x2 = ((PolyF4 *)box)->x0;
+      ((PolyF4 *)box)->x3 = ((PolyF4 *)box)->x1;
       AddPrimToOT((int)box);
-      g_pPrimBufferWriteCursor = (void *)((int)box + 0x18);
+      g_pPrimBufferWriteCursor = (PolyF4 *)box + 1;
       EmitRadialShadedLine(0xe0, 0x61, 0x120, 0x61);
       if (g_nPauseMenuSubstate == 1) {
         EmitRadialShadedLine(0x54, 0x43, 0x1ac, 0x43);
@@ -454,19 +450,19 @@ void Gamestate02_03_06_Draw(void) {
               g_pSpriteRecordWriteCursor =
                   (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-              rp = (char *)g_pSpriteRecordWriteCursor;
+              rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
-              *((short *)((int)rp + 0x36)) = 0x1b2;
-              *((int *)((int)rp + 0x10)) = 0x6d;
-              *((int *)((int)rp + 0xc)) = x;
-              *((int *)((int)rp + 0x14)) = 0x1400;
+              rp->type = 0x1b2;
+              rp->posY = 0x6d;
+              rp->posX = x;
+              rp->posZ = 0x1400;
               if (cur == 0) {
-                *((unsigned char *)((int)rp + 0x46)) =
+                rp->rotZ =
                     lut4[(g_nPauseMenuTransitionFrames * 8 + phase4) & 0xff] *
                         3 >>
                     9;
               } else {
-                *((unsigned char *)((int)rp + 0x46)) = 0;
+                rp->rotZ = 0;
               }
               phase4 += 0xc;
               SREC->otBias = 0x7f;
@@ -505,19 +501,19 @@ void Gamestate02_03_06_Draw(void) {
               g_pSpriteRecordWriteCursor =
                   (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-              rp = (char *)g_pSpriteRecordWriteCursor;
+              rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
-              *((short *)((int)rp + 0x36)) = 0x1b2;
-              *((int *)((int)rp + 0x10)) = 0x7d;
-              *((int *)((int)rp + 0x14)) = 0x1400;
-              *((int *)((int)rp + 0xc)) = x;
+              rp->type = 0x1b2;
+              rp->posY = 0x7d;
+              rp->posZ = 0x1400;
+              rp->posX = x;
               if (cur == 1) {
-                *((unsigned char *)((int)rp + 0x46)) =
+                rp->rotZ =
                     lut6[(g_nPauseMenuTransitionFrames * 8 + phase6) & 0xff] *
                         3 >>
                     9;
               } else {
-                *((unsigned char *)((int)rp + 0x46)) = 0;
+                rp->rotZ = 0;
               }
               phase6 += 0xc;
               SREC->otBias = 0x7f;
@@ -678,7 +674,7 @@ void Gamestate02_03_06_Draw(void) {
         }
       }
     } else if (g_nGamestate == 3) {
-      void *prim3;
+      ModePolyF4 *prim3;
       unsigned char *rec;
       int n;
       int phase;
@@ -724,9 +720,9 @@ void Gamestate02_03_06_Draw(void) {
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1d7;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x2e;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x2e;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x2e;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0xc00;
       SREC->rotY =
           ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
               << 0x10 >>
@@ -739,15 +735,15 @@ void Gamestate02_03_06_Draw(void) {
           (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1fa;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x12c;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x12c;
       if (g_nWorldDragonsRescued >= 0xa) {
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) = 0x111;
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x111;
       }
       {
         int bob;
         bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x2e;
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x2e;
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0x780;
         SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       SREC->otBias = 0x7f;
@@ -787,21 +783,21 @@ void Gamestate02_03_06_Draw(void) {
       prim3 = g_pPrimBufferWriteCursor;
       SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
       AddPrimToOT((int)prim3);
-      *((int *)((int)prim3 + 0xc)) = 0x5000000;
-      *((unsigned char *)((int)prim3 + 0x13)) = 0x2a;
-      *((unsigned char *)((int)prim3 + 0x10)) = 0x60;
-      *((unsigned char *)((int)prim3 + 0x11)) = 0x60;
-      *((unsigned char *)((int)prim3 + 0x12)) = 0x60;
-      *((short *)((int)prim3 + 0x14)) = 0x40;
-      *((short *)((int)prim3 + 0x16)) = 0x46;
-      *((short *)((int)prim3 + 0x18)) = 0x1c0;
-      *((short *)((int)prim3 + 0x1a)) = 0x46;
-      *((short *)((int)prim3 + 0x1c)) = 0x40;
-      *((short *)((int)prim3 + 0x1e)) = 0x47;
-      *((short *)((int)prim3 + 0x20)) = 0x1c0;
-      *((short *)((int)prim3 + 0x22)) = 0x47;
-      AddPrimToOT((int)prim3 + 0xc);
-      g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
+      prim3->poly.tag = 0x5000000;
+      prim3->poly.code = 0x2a;
+      prim3->poly.r0 = 0x60;
+      prim3->poly.g0 = 0x60;
+      prim3->poly.b0 = 0x60;
+      prim3->poly.x0 = 0x40;
+      prim3->poly.y0 = 0x46;
+      prim3->poly.x1 = 0x1c0;
+      prim3->poly.y1 = 0x46;
+      prim3->poly.x2 = 0x40;
+      prim3->poly.y2 = 0x47;
+      prim3->poly.x3 = 0x1c0;
+      prim3->poly.y3 = 0x47;
+      AddPrimToOT((int)&prim3->poly);
+      g_pPrimBufferWriteCursor = prim3 + 1;
       EmitRadialShadedLine(0x40, 0x47, 0x1c0, 0x47);
       if (g_nSubMenuCursor > 0 &&
           g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
@@ -848,14 +844,14 @@ void Gamestate02_03_06_Draw(void) {
       SREC->type = 0x1d7;
       {
         int bF = bias + 0x15a;
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =
             g_nSubMenuScrollOffset + bF;
       }
       __asm__ volatile("");
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6c;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x6c;
       pp = pos;
       bp = buf;
-      *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0xc00;
+      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0xc00;
       SREC->rotY = ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase]
                        << 0x10 >>
                    0x19;
@@ -869,16 +865,16 @@ void Gamestate02_03_06_Draw(void) {
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       {
         int bob;
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0xc)) =
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =
             g_nSubMenuScrollOffset + 0x1d1;
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0x10)) = 0x6e;
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x6e;
         {
           register int fr asm("$2");
           fr = g_nPauseMenuTransitionFrames;
           SREC->type = 0x1fa;
           bob = (fr * 0x10 & 0x1f0) >> 1;
         }
-        *((int *)((int)g_pSpriteRecordWriteCursor + 0x14)) = 0x780;
+        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0x780;
         SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       SREC->otBias = 0x7f;
@@ -897,23 +893,23 @@ void Gamestate02_03_06_Draw(void) {
           prim3 = g_pPrimBufferWriteCursor;
           SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
           AddPrimToOT((int)prim3);
-          pf = (int)prim3 + 0xc;
-          *((int *)((int)prim3 + 0xc)) = 0x5000000;
-          *((unsigned char *)((int)prim3 + 0x13)) = 0x2a;
-          *((unsigned char *)((int)prim3 + 0x10)) = 0x28;
-          *((unsigned char *)((int)prim3 + 0x11)) = 0x28;
-          *((unsigned char *)((int)prim3 + 0x12)) = 0x28;
+          pf = (int)&prim3->poly;
+          prim3->poly.tag = 0x5000000;
+          prim3->poly.code = 0x2a;
+          prim3->poly.r0 = 0x28;
+          prim3->poly.g0 = 0x28;
+          prim3->poly.b0 = 0x28;
           sc = g_nSubMenuScrollOffset;
-          *((short *)((int)prim3 + 0x16)) = y - 0xa;
-          *((short *)((int)prim3 + 0x1a)) = y - 0xa;
-          *((short *)((int)prim3 + 0x1e)) = y + 9;
-          *((short *)((int)prim3 + 0x22)) = y + 9;
-          *((short *)((int)prim3 + 0x14)) = sc;
-          *((short *)((int)prim3 + 0x18)) = sc + 0x1ff;
-          *((short *)((int)prim3 + 0x1c)) = sc;
-          *((short *)((int)prim3 + 0x20)) = sc + 0x1ff;
+          prim3->poly.y0 = y - 0xa;
+          prim3->poly.y1 = y - 0xa;
+          prim3->poly.y2 = y + 9;
+          prim3->poly.y3 = y + 9;
+          prim3->poly.x0 = sc;
+          prim3->poly.x1 = sc + 0x1ff;
+          prim3->poly.x2 = sc;
+          prim3->poly.x3 = sc + 0x1ff;
           AddPrimToOT(pf);
-          g_pPrimBufferWriteCursor = (void *)((int)prim3 + 0x24);
+          g_pPrimBufferWriteCursor = prim3 + 1;
           EmitRadialShadedLine(g_nSubMenuScrollOffset + 0x70, y - 0xb,
                                g_nSubMenuScrollOffset + 0xd0, y - 0xb);
           bA = bias + 0x13a;
