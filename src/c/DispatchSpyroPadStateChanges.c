@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 #include "vecmath.h"
 
 /* Map this frame's pad intent to Spyro state transitions (0x80040F68, 0x308).
@@ -47,8 +48,7 @@ int DispatchSpyroPadStateChanges(int pad) {
       }
       ChangeSpyroState(next);
     } else if (pad & 0x20) {
-      PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x1F],
-                      (int)&ev[-0xB], 4, (char *)ev + 0x274);
+      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-0xB], 4, (char *)ev + 0x274);
       ChangeSpyroState(7);
     } else if (pad & 0x40) {
       ChangeSpyroState(0x1B);

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "sample_bank.h"
 #include "vecmath.h"
 
 /* 0x8002da74 — level-transition gem tally sparkle animation (1320 b).
@@ -84,7 +85,7 @@ void AnimateGemTallyParticles(void) {
       PARTICLES[i].signy = (GetRandomU32() & 2) - 1;
       PARTICLES[i].spinv = (GetRandomU32() & 0xF) - 8;
       if ((g_nLevelTransitionPhase & 7) == 0) {
-        PlaySoundEffect(*(unsigned char *)g_pLevelSampleBankHeader, 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(0), 0, 0x10, 0);
       }
     }
     if (PARTICLES[i].live == 0) {
@@ -120,8 +121,7 @@ void AnimateGemTallyParticles(void) {
     } else {
       PARTICLES[i].live = 0;
       if (i % 3 == 0) {
-        PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2F], 0,
-                        0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(0x2F), 0, 0x10, 0);
       }
     }
   }

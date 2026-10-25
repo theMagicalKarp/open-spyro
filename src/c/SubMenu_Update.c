@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 
 /* Inventory sub-menu per-frame update (0x8002eb2c, 0x2c4). Advances the
    HUD bob phase / frame-cycle counters and the pause-menu idle timer,
@@ -27,9 +28,7 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor > 0) {
       if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         if (g_dwPadHeld & 0x8000) {
-          PlaySoundEffect(
-              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
-              0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(0x38), 0, 0x10, 0);
           g_nSubMenuScrollDelta = 0x40;
         }
       }
@@ -37,9 +36,7 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor < 5) {
       if (g_abLevelVisitedFlag[(g_nSubMenuCursor * 6) + 6] != 0) {
         if (g_dwPadHeld & 0x2000) {
-          PlaySoundEffect(
-              *((unsigned char *)(((char *)g_pLevelSampleBankHeader) + 0x38)),
-              0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(0x38), 0, 0x10, 0);
           g_nSubMenuScrollDelta = -0x40;
         }
       }

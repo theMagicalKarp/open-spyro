@@ -2088,7 +2088,7 @@ int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim, int pit
 
 /* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
-int TweenActorAlongPath(unsigned char *actor, unsigned char *path, int *prev, int *step, int legs, int flags);
+int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 /* 0x8003c358: Spell a level or balloonist name in floating letter actors around a sign. */
 void SpawnNameLetterActors(Actor *actor, int mode);

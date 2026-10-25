@@ -116,7 +116,7 @@ int TickActiveSoundVoices(void) {
       pVol = &g_aSpuVoiceRows[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
       owner = g_aSpuVoiceRows[i].pOwner;
-      range = owner[0x55] << 10;
+      range = ACTOR_RAW(owner, unsigned char, soundRange) << 10;
       if (range == 0) {
         range = 0x4000;
       }

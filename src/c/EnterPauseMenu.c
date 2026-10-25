@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 
 /* Enter the pause menu gamestate (0x8002c420). param nonzero = paused from
    gameplay (stop SFX, reset the transition frames). Plays the menu-open sound,
@@ -13,8 +14,7 @@ void EnterPauseMenu(int fromGameplay) {
   if (fromGameplay != 0) {
     StopAllSoundExceptMask(0);
   }
-  PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2C], 0, 0x10,
-                  0);
+  PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
   g_nGamestate = 2;
   g_nPauseMenuCursor = 0;
   g_nPauseMenuSubstate = 0;

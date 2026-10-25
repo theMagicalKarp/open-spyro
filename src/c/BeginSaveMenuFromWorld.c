@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 #include "spyro_block.h"
 #include "vecmath.h"
 
@@ -55,8 +56,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   }
   g_pSaveMenuDragonActor = (int *)actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(((unsigned char *)g_pLevelSampleBankHeader)[0x2C], 0, 0x10,
-                  0);
+  PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
   ResetSpyroEntity(1);
   yaw = g_nSpyroBodyYaw;
   g_abSpyroAnimPrevBlock[0] = 1;

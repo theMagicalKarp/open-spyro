@@ -208,7 +208,7 @@ void TickWorldBundleLoadStream(void) {
       InitActorRenderDefaults(((int)g_pActorListBase) + (i * 0x58));
 
       actor = (unsigned char *)((i * 0x58) + ((int)g_pActorListBase));
-      actor[0x50] = def;
+      ACTOR_RAW(actor, unsigned char, cullRadius) = def;
       ((short *)actor)[0x1B] = i + 1;
       i += 1;
       if (i < ((int *)g_pPathTableHead)[3]) {

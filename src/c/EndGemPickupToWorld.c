@@ -26,8 +26,8 @@ void EndGemPickupToWorld(void) {
   g_nGameplayBlocked = 0;
   if (id != -1) {
     rec = (unsigned char *)g_pActorListBase + id * 0x58;
-    rec[0x3C] = 0;
-    rec[0x48] = 1;
+    ACTOR_RAW(rec, unsigned char, anim) = 0;
+    ACTOR_RAW(rec, unsigned char, mode) = 1;
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;

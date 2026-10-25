@@ -12,10 +12,10 @@ int ClassifyActorQuadrantVsSpyro(unsigned char *actor) {
   int mask;
 
   mask = 0xF;
-  if (actor[0x46] != 0) {
+  if (ACTOR_RAW(actor, unsigned char, rotZ) != 0) {
     euler[0] = 0;
     euler[1] = 0;
-    euler[2] = -actor[0x46];
+    euler[2] = -ACTOR_RAW(actor, unsigned char, rotZ);
     ApplyEulerRotation(euler, mtx, 0);
     SubtractVector(delta, actor + 0xC, g_anSpyroWorldPos);
     RotateVectorByMatrix(mtx, delta, delta);

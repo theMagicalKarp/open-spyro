@@ -15,6 +15,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sample_bank.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 
@@ -230,10 +231,7 @@ void TickSpyroAttackEffects(int steps) {
                   ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
-                PlaySoundEffect(
-                    *((unsigned char *)(((int)g_pLevelSampleBankHeader) +
-                                        0x28)),
-                    wp, 4, 0);
+                PlaySoundEffect(LEVEL_SFX(0x28), wp, 4, 0);
                 sfxDone = 1;
               }
             }

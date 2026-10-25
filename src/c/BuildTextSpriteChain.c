@@ -67,9 +67,9 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
         ((Actor *)CURSOR_P)->type = 0x147;
       }
 
-      CURSOR[0x47] = 0x7F;
-      CURSOR[0x4F] = nPalette;
-      CURSOR[0x50] = 0xFF;
+      ACTOR_RAW(CURSOR, unsigned char, otBias) = 0x7F;
+      ACTOR_RAW(CURSOR, unsigned char, tintMode) = nPalette;
+      ACTOR_RAW(CURSOR, unsigned char, cullRadius) = 0xFF;
     }
     *pPen += nAdvance;
     pszText++;

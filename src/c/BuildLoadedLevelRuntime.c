@@ -395,10 +395,10 @@ sprites:
   mask = 0;
   i = 0;
   rec = (char *)g_pActorListBase;
-  if (((unsigned char)rec[0x48]) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
     do {
       r = (char *)((i * 0x58) + ((int)rec));
-      if (((int *)(&g_apActorMeshTable))[*((short *)(r + 0x36))] < 0) {
+      if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
@@ -429,7 +429,7 @@ sprites:
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
-  if (((unsigned char)rec[0x48]) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
     do {
       register int sh2 asm("$5");
       register int tbl asm("$3");
@@ -443,10 +443,10 @@ sprites:
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
           r = (char *)((i * 0x58) + ((int)rec));
-          if (((*((unsigned char *)(r + 0x3A))) & 0x7F) == 0x7D) {
+          if ((ACTOR_RAW(r, unsigned char, killGroup) & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
-            r[0x53] = 0xFF;
+            ACTOR_RAW(r, unsigned char, dropKind) = 0xFF;
           }
         } else {
           {

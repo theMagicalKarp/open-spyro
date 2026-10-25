@@ -350,7 +350,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v1 = lut1[(g_nPauseMenuTransitionFrames * 8 + phase1) & 0xff];
             phase1 += 0xc;
-            rec[0x46] = v1 * 3 >> 9;
+            ACTOR_RAW(rec, unsigned char, rotZ) = v1 * 3 >> 9;
             rec += 0x58;
           } while (i < n1);
         }
@@ -419,7 +419,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v2 = lut2[(g_nPauseMenuTransitionFrames * 8 + phase2) & 0xff];
             phase2 += 0xc;
-            rec[0x46] = v2 * 3 >> 9;
+            ACTOR_RAW(rec, unsigned char, rotZ) = v2 * 3 >> 9;
             rec += 0x58;
           } while (i < n2);
         }
@@ -437,7 +437,7 @@ void Gamestate02_03_06_Draw(void) {
               v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) &
                                  0xff];
               phase3 += 0xc;
-              rec[0x46] = v3 * 3 >> 9;
+              ACTOR_RAW(rec, unsigned char, rotZ) = v3 * 3 >> 9;
               rec += 0x58;
             } while (i < 3);
           }
@@ -488,7 +488,7 @@ void Gamestate02_03_06_Draw(void) {
               v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) &
                                  0xff];
               phase5 += 0xc;
-              rec[0x46] = v4 * 3 >> 9;
+              ACTOR_RAW(rec, unsigned char, rotZ) = v4 * 3 >> 9;
               rec += 0x58;
             } while (i < 3);
           }
@@ -545,7 +545,7 @@ void Gamestate02_03_06_Draw(void) {
               i++;
               v5 = lut7[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
               phase7 += 0xc;
-              rec[0x46] = v5 * 3 >> 9;
+              ACTOR_RAW(rec, unsigned char, rotZ) = v5 * 3 >> 9;
               rec += 0x58;
             } while (i < n3);
           }
@@ -571,7 +571,7 @@ void Gamestate02_03_06_Draw(void) {
                 i++;
                 v6 = lut8[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
                 phase8 += 0xc;
-                rec[0x46] = v6 * 3 >> 9;
+                ACTOR_RAW(rec, unsigned char, rotZ) = v6 * 3 >> 9;
                 rec += 0x58;
               } while (i < n4);
             }
@@ -597,7 +597,7 @@ void Gamestate02_03_06_Draw(void) {
               i++;
               v7 = lut9[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
               phase9 += 0xc;
-              rec[0x46] = v7 * 3 >> 9;
+              ACTOR_RAW(rec, unsigned char, rotZ) = v7 * 3 >> 9;
               rec += 0x58;
             } while (i < n5);
           }
@@ -669,7 +669,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v8 = lut3[(g_nPauseMenuTransitionFrames * 8 + phase10) & 0xff];
             phase10 += 0xc;
-            rec[0x46] = v8 * 3 >> 9;
+            ACTOR_RAW(rec, unsigned char, rotZ) = v8 * 3 >> 9;
             rec += 0x58;
           } while (i < n6);
         }
@@ -832,7 +832,7 @@ void Gamestate02_03_06_Draw(void) {
       phase = 0;
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
         i++;
-        rec[0x46] =
+        ACTOR_RAW(rec, unsigned char, rotZ) =
             g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
                 3 >>
             9;
@@ -982,11 +982,12 @@ void Gamestate02_03_06_Draw(void) {
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                rec[0x46] = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 +
-                                           phase * 0xc) &
-                                          0xff] *
-                                3 >>
-                            9;
+                ACTOR_RAW(rec, unsigned char, rotZ) =
+                    g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 +
+                                   phase * 0xc) &
+                                  0xff] *
+                        3 >>
+                    9;
                 rec -= 0x58;
                 phase++;
               } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);

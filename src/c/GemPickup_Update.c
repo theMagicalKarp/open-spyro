@@ -4,6 +4,7 @@
 #include "hud.h"
 #include "main_shared.h"
 #include "model.h"
+#include "sample_bank.h"
 #include "vecmath.h"
 
 /* Matching notes. Several accesses are spelled to control the scheduler's
@@ -60,7 +61,6 @@ typedef struct CamPathKey {
 #define REC(p) (*(int **)(p))
 #define SRCS (((struct { char *volatile p; } *)&g_pGemPickupSourceActor)->p)
 #define OTY ((int)g_dwGemPickupOrbitTargetYaw)
-#define SAMPLE(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
 /* Frames between keyframes of a mesh's animation for its frame-rate code. */
 #define FRAME_STEP(model, step)                                                \
@@ -182,7 +182,7 @@ void GemPickup_Update(void) {
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
       StopAllSoundExceptMask(1 << ACTOR_RAW(SRC, unsigned char, sfxSlot));
-      PlaySoundEffect(SAMPLE(0x32), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(0x32), 0, 0x10, &GB[11]);
     }
   } break;
   case 1:
@@ -481,7 +481,7 @@ void GemPickup_Update(void) {
         ACTOR_RAW(MIRROR, unsigned char, otBias) = five;
         InsertActorIntoSpatialGrid(MIRROR);
         StopSoundVoiceByIndex(GB[11], 4);
-        PlaySoundEffect(SAMPLE(0x31), 0, 0x10, &GB[11]);
+        PlaySoundEffect(LEVEL_SFX(0x31), 0, 0x10, &GB[11]);
         ACTOR_RAW(SRC, int, posZ) += 0x78;
         DespawnActorRecord(SRC);
       }
@@ -707,7 +707,7 @@ void GemPickup_Update(void) {
       CopyVector(g_anGemPickupAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
-      PlaySoundEffect(SAMPLE(0x34), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(0x34), 0, 0x10, &GB[11]);
     }
   } break;
   case 6:
@@ -723,7 +723,7 @@ void GemPickup_Update(void) {
         g_anHudDragonCachedCountBlock[0]++;
       }
       if (g_bHudDragonRollPhase == 0) {
-        PlaySoundEffect(SAMPLE(0x35), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+        PlaySoundEffect(LEVEL_SFX(0x35), 0, 0x10, &g_bGemPickupSfxVoiceMarker);
       }
     }
     if (GB[5] >= 0x60 && g_nGemPickupStreamState == 6) {
@@ -731,7 +731,7 @@ void GemPickup_Update(void) {
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      PlaySoundEffect(SAMPLE(0x33), 0, 0x10, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(0x33), 0, 0x10, &GB[11]);
     }
     break;
   case 7: {

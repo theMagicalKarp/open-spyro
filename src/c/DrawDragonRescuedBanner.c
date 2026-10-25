@@ -35,7 +35,8 @@ void DrawDragonRescuedBanner(void) {
     unsigned short *lut = (unsigned short *)g_anSineLut + 64;
     do {
       int idx = (*timer * 2 + phase) & 0xFF;
-      rec[0x46] = *(unsigned short *)((idx << 1) + (int)lut) >> 7;
+      ACTOR_RAW(rec, unsigned char, rotZ) =
+          *(unsigned short *)((idx << 1) + (int)lut) >> 7;
       rec -= 0x58;
       phase += 0xC;
     } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);

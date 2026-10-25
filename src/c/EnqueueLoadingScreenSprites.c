@@ -83,7 +83,7 @@ void EnqueueLoadingScreenSprites(void) {
         rec -= 0x58;
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-          rec[0x46] =
+          ACTOR_RAW(rec, unsigned char, rotZ) =
               ((unsigned short *)
                    g_anCosineLut)[(GEM_HOLD_TIMER * 4 + phase) & 0xFF] >>
               7;

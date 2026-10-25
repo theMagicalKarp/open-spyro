@@ -157,7 +157,7 @@ void RespawnOrGameOver_Draw(void) {
           i += 1;
           st = sbase[((g_nGameplayDrawFrame * 4) + sk) & 0xFF];
           sk += 0xC;
-          sc[0x46] = (st * 3) >> 9;
+          ACTOR_RAW(sc, unsigned char, rotZ) = (st * 3) >> 9;
           sc += 0x58;
         } while (i < 0xA);
       }

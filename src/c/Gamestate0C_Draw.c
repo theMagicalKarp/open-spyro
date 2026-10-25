@@ -82,7 +82,8 @@ void Gamestate0C_Draw(void) {
         int *fade = g_anGamestate0cTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
-          rec[0x46] = cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          ACTOR_RAW(rec, unsigned char, rotZ) =
+              cos[(*fade * 2 + phase) & 0xFF] >> 7;
           rec -= 0x58;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);

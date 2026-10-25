@@ -107,7 +107,8 @@ void DrawLevelTransitionOverlay(void) {
       unsigned short *lut = (unsigned short *)g_anCosineLut;
       int wave = 0;
       do {
-        glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+        ACTOR_RAW(glyph, unsigned char, rotZ) =
+            lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
         glyph -= 0x58;
         wave += 0xc;
       } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
@@ -161,7 +162,7 @@ void DrawLevelTransitionOverlay(void) {
       wave = 0;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         do {
-          glyph[0x46] =
+          ACTOR_RAW(glyph, unsigned char, rotZ) =
               ((unsigned short *)
                    g_anCosineLut)[(g_nLevelTransitionPhase * 2 + wave) &
                                   0xff] >>
@@ -226,7 +227,8 @@ void DrawLevelTransitionOverlay(void) {
         unsigned short *lut = (unsigned short *)g_anCosineLut;
         int wave = 0;
         do {
-          glyph[0x46] = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+          ACTOR_RAW(glyph, unsigned char, rotZ) =
+              lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
           glyph -= 0x58;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
