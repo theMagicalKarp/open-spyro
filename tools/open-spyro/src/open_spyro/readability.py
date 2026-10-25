@@ -13,9 +13,10 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
               including the file's own function
   anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views
   m2c_local   m2c scaffolding locals (``temp_*``, ``var_*``, ``spXX``, ``argN``)
-  raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``, also with a
-              ``(char *)p`` byte cast on the base) — a struct
-              waiting to be recovered
+  raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``), or any
+              byte-cast base plus a field-sized constant (``(char *)p + 0x44``,
+              however parenthesized) outside a ``#define`` — a struct waiting
+              to be recovered.  A named accessor macro is not counted.
   extern      file-local ``extern`` declarations (header-able duplicates)
 
 Matching scaffolding (``asm`` barriers, register pins, ``do {} while (0)``) is
@@ -56,6 +57,13 @@ _RAW = re.compile(
     r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(\s*"
     r"(?:\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*)?[A-Za-z_]\w*\s*\+"
 )
+# A byte-cast base plus a constant field offset (< 0x400), however parenthesized:
+# ``*((unsigned char *)(((char *)p) + 0x46))``, ``(DISPENV *)((char *)env + 0x5c)``.
+_BYTE_OFF = re.compile(
+    r"\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*\(?\s*[A-Za-z_]\w*"
+    r"(?:->\w+)?\s*\)?\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\b"
+)
+_DEFINE = re.compile(r"^[ \t]*#[ \t]*define\b.*?(?<!\\)$", re.M | re.S)
 _EXTERN = re.compile(r"^extern\b", re.M)
 _ASM = re.compile(r"\b(?:__)?asm(?:__)?\s*(?:volatile\s*|__volatile__\s*)?\(")
 _COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
@@ -63,6 +71,14 @@ _COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
 
 def _strip_comments(text: str) -> str:
     return _COMMENT.sub(" ", text)
+
+
+def _raw_offsets(code: str) -> int:
+    """Distinct raw-offset sites, keyed by the position of their ``+``."""
+    sites = {m.end() - 1 for m in _RAW.finditer(code)}
+    body = _DEFINE.sub(lambda m: re.sub(r"[^\n]", " ", m.group()), code)
+    sites |= {m.start(1) for m in _BYTE_OFF.finditer(body)}
+    return len(sites)
 
 
 def scan(root: Path) -> list[dict]:
@@ -81,7 +97,7 @@ def scan(root: Path) -> list[dict]:
             "anon_func": len(anon_f),
             "anon_data": len(anon_d),
             "m2c_local": len(set(_M2C.findall(code))),
-            "raw_offset": len(_RAW.findall(code)),
+            "raw_offset": _raw_offsets(code),
             "extern": len(_EXTERN.findall(code)),
         }
         seg = rel.parts[2] if rel.parts[1] == "overlays" else "main"
