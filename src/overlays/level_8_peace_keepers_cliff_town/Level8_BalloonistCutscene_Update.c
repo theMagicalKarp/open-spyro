@@ -775,9 +775,9 @@ void Level8_BalloonistCutscene_Update(void)
         {
           int m;
           int k;
-        m = g_nGamestate0cCardVariant * 8;
-        g_nGamestate0cTimer[8] = *((int *) (((char *) g_anGamestate0cLandingX) + m));
-        k = *((int *) (((char *) g_anGamestate0cLandingY) + m));
+        m = g_nGamestate0cCardVariant * 2;
+        g_nGamestate0cTimer[8] = g_anGamestate0cLandingX[m];
+        k = g_anGamestate0cLandingY[m];
         g_nGamestate0cSpyroToZ = g_nSpyroWorldPosZ;
         g_nGamestate0cSpyroToY = k;
         g_nGamestate0cSpyroToZ = FindGroundHeightBelow(&g_nGamestate0cTimer[8], 0x10000) + 0x164;

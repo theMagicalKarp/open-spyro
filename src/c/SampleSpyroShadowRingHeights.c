@@ -65,6 +65,7 @@ void SampleSpyroShadowRingHeights(int probe) {
     v[2] -= 0x200;
     if (((unsigned int)((v[2] - ground) + 0x80)) >= 0x100) {
       char *flags = (char *)ring - 0x18;
+      /* index + base, in that order: flags[i] swaps the addu operands */
       *((unsigned char *)(g_nSpyroShadowRingIndex + (int)flags)) = 1;
     } else {
       char *flags = (char *)ring - 0x18;
