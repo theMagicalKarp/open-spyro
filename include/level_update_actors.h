@@ -165,16 +165,17 @@ typedef struct {
 
 extern CamObj g_anWorldToCameraRotMtx;
 
-/* Vortex path: node count and current node, then the two anchor positions
- * whose midpoint Spyro is pulled toward. */
-typedef struct PortalDesc {
+/* A hub portal's path (type 398's desc; g_pPortalCamPathData): node count
+ * and current node, then the two anchor positions whose midpoint Spyro is
+ * pulled toward while UpdatePortalPathCamera walks the camera along it. */
+typedef struct PortalCamPath {
   unsigned char count;    /* 0x00 */
   unsigned char index;    /* 0x01 */
   unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
   int pad14;              /* 0x14 */
   int posB[3];            /* 0x18 */
-} PortalDesc;
+} PortalCamPath;
 
 extern void StubRewardHook(int script, int a);
 
@@ -268,7 +269,7 @@ typedef struct {
   void *pCamTarget;               /* 0x220 */
   Actor *pScriptedActor;          /* 0x224 */
   char pad228[0x18];
-  PortalDesc *pPortal;            /* 0x240 */
+  PortalCamPath *pPortalCamPath;  /* 0x240 g_pPortalCamPathData */
   int camPathMaxStep;             /* 0x244 g_nPortalCamPathMaxStep */
   int camPathReverse;             /* 0x248 g_nPortalCamPathReverseFlag */
 } SpyroObj;
@@ -663,7 +664,7 @@ typedef struct RideState {
 
 /* Type 398 state block. */
 typedef struct PortalState {
-  PortalDesc *desc; /* 0x00 */
+  PortalCamPath *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int pad10;        /* 0x10 */
   int dest;         /* 0x14 destination, published to SPY.requestYaw as a byte (ExitState.dest) */
@@ -1626,7 +1627,7 @@ extern int g_nHitRumbleTimer;
 extern int g_nMotionTrailRibbonCount;
 extern int g_nVblankTickCount;
 extern Xform *g_pCameraTargetParams;
-extern PortalDesc *volatile g_pPortalCamPathData;
+extern PortalCamPath *volatile g_pPortalCamPathData;
 extern int *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */

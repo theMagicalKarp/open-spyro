@@ -15,7 +15,7 @@
  *   - Case 398's head is written in source order and pinned by memory
  *     dependences, not scheduling luck: a do/while(0) after the g_nPortalCamPathReverseFlag
  *     store, g_bSpyroOtBinBias and g_pPortalCamPathData volatile (their stores keep order),
- *     the call's portal re-read through `*(PortalDesc **)st` (not in_struct,
+ *     the call's portal re-read through `*(PortalCamPath **)st` (not in_struct,
  *     so it depends on the C98 store), and the SPY base held in `cf`.
  *   - Operand order via statement splits: `st->phase += dt` (not a tick
  *     temp), `bearing = arm << 1;` then the subtract, `y + x` of two
@@ -2360,7 +2360,7 @@ void Level30_UpdateActors(void) {
       case 1: {
         register int *m asm("$16") = svM;
         int *cf = &SPY.requestMask;
-        PortalDesc *portal;
+        PortalCamPath *portal;
         int *aim;
         int span;
 
@@ -2373,7 +2373,7 @@ void Level30_UpdateActors(void) {
         g_bSpyroOtBinBias = 0x7F;
         g_pPortalCamPathData = portal;
         {
-          PortalDesc *pd = *(PortalDesc **)st;
+          PortalCamPath *pd = *(PortalCamPath **)st;
 
           AddVector(m, pd->posA, pd->posB);
         }

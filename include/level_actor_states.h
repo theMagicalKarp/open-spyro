@@ -45,7 +45,7 @@ typedef struct ShardState {
 /* Case 398 — the level-exit vortex: drives the scripted camera and hands the
  * game over to the world map. */
 typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
+  PortalCamPath *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
   int pad10;          /* 0x10 */
   int dest;           /* 0x14 */

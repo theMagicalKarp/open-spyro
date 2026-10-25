@@ -3407,7 +3407,7 @@ void Level18_UpdateActors(void) {
       case 1: {
         register int *m asm("$16");
         int *cf = &SPY.requestMask;
-        PortalDesc *portal;
+        PortalCamPath *portal;
         int *aim;
         int span;
 
@@ -3420,7 +3420,7 @@ void Level18_UpdateActors(void) {
         SPY.otBinBias = 0x7F;
         g_pPortalCamPathData = portal;
         {
-          PortalDesc *pd = *(PortalDesc **)st;
+          PortalCamPath *pd = *(PortalCamPath **)st;
 
           AddVector(m, pd->posA, pd->posB);
         }

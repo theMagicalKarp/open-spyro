@@ -2865,7 +2865,7 @@ void Level0_UpdateActors(void) {
     /* Exit vortex (PortalState). */
     case 398: {
       PortalState *st = actor->state;
-      PortalDesc *p;
+      PortalCamPath *p;
       int mag;
       short progressed;
       switch (actor->mode) {
@@ -2877,7 +2877,7 @@ void Level0_UpdateActors(void) {
              SPYRO_RQ_FORCE_STATE | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z |
              SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
         SPY.camPathReverse = actor->subMode;
-        SPY.pPortal = st->desc;
+        SPY.pPortalCamPath = st->desc;
         SPY.camPathMaxStep = 0x60;
         SPY.requestState = SPYRO_ST_JUMP;
         SPY.otBinBias = 0x7F;
@@ -2939,7 +2939,7 @@ void Level0_UpdateActors(void) {
       }
       case 2: {
         SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
-        SPY.pPortal = st->desc;
+        SPY.pPortalCamPath = st->desc;
         SPY.camPathMaxStep = 0x60;
         SPY.requestState = SPYRO_ST_GLIDE;
         SPY.otBinBias = 0x7F;
