@@ -14,7 +14,7 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
   anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views
   m2c_local   m2c scaffolding locals (``temp_*``, ``var_*``, ``spXX``, ``argN``)
   raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``) or any
-              byte-cast base plus a field-sized constant (``(char *)p + 0x44``),
+              byte- or int-cast base plus a field-sized constant (``(char *)p + 0x44``),
               however parenthesized — a struct waiting to be recovered.  Sites
               inside a ``#define`` (a named accessor) are not counted.
   extern      file-local ``extern`` declarations (header-able duplicates)
@@ -57,10 +57,11 @@ _RAW = re.compile(
     r"(?:int|short|char|long|s8|u8|s16|u16|s32|u32)\s*\*\s*\)\s*\(+\s*"
     r"(?:\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*)?[A-Za-z_]\w*\s*\)?\s*\+"
 )
-# A byte-cast base plus a constant field offset (< 0x400), however parenthesized:
-# ``*((unsigned char *)(((char *)p) + 0x46))``, ``(DISPENV *)((char *)env + 0x5c)``.
+# A byte- or int-cast base plus a constant field offset (< 0x400), however
+# parenthesized: ``*((unsigned char *)(((char *)p) + 0x46))``,
+# ``(DISPENV *)((char *)env + 0x5c)``, ``(int)rec + 0x13``.
 _BYTE_OFF = re.compile(
-    r"\(\s*(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*\s*\)\s*\(?\s*[A-Za-z_]\w*"
+    r"\(\s*(?:(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*|int|u32|unsigned\s+int)\s*\)\s*\(?\s*[A-Za-z_]\w*"
     r"(?:->\w+)?\s*\)?\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\b"
 )
 _DEFINE = re.compile(r"^[ \t]*#[ \t]*define\b.*?(?<!\\)$", re.M | re.S)
