@@ -27,6 +27,7 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
+#include "level_update_actors_macros.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -34,45 +35,17 @@
  * below sit next to the globals and callees their case needs.
  */
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 /* Surface normal produced by the collision probes. */
 extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
 
-#define AS_I32(sym) (((I32 *)&(sym))->v)
-
-#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-
-#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
-
-#define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
 
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -110,31 +83,8 @@ extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
  * that uses it. */
 
 
-#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
 /* ==== Globals shared with level 4 ==== */
 
-
-/* An animation change that also clears the finished flag. */
-#define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_ADVANCE(a, n);                                                        \
-  }
-#define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_RESET(a, n);                                                          \
-  }
-
-/* ENTER_POSE with the already-there test first. */
-#define ENTER_POSE4(a, n)                                                      \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim == (n)) {                                                     \
-    continue;                                                                  \
-  }                                                                            \
-  ANIM_ADVANCE(a, n);                                                          \
-  continue
 
 /* ==== Level 16 classes ==== */
 
@@ -144,113 +94,11 @@ extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
 /* ENTER_POSE with the already-there test first. */
 /* ==== Level 2 classes ==== */
 
-/* An animation change at half speed, keyed on the current animation. */
-#define ANIM_BLEND(a, n)                                                       \
-  if ((a)->anim != (n)) {                                                     \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }
-/* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `nextAnim = n` store takes its own copy of the constant
- * (merged again after loop.c). Keeps the constant's lifetime short enough
- * that loop.c does not hoist it (see case 115). */
-#define ENTER_POSE_B(a, n)                                                     \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    do {                                                                       \
-    } while (0);                                                               \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }                                                                            \
-  continue
 
 /* ==== Level 9 classes ==== */
 
 /* ==== level_10 per-class state blocks ==== */
-#define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
-#define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-#define AS_PTRV(sym) (((PtrV *)&(sym))->v)
-#define ANIM_QUEUE(a, n)                                                       \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->nextAnim = (n);                                                          \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }                                                                            \
-  continue
-#define FACE4(a, h, s, t)                                                      \
-  ((int (*)(Actor *, int, int, int))TurnActorYawTowardAngle)(a, h, s, t)
-#define RESET_IDLE(a)                                                          \
-  (a)->mode = 0;                                                              \
-  ANIM_RESET(a, 0);                                                            \
-  continue
-#define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-#define ANIM_WORD(a) (*(int *)&(a)->anim)
-#define SPY_FACING(a)                                                          \
-  AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
-                                             (a)->posY - spy->posY, 0))
-#define ANIM_GO8(a, n)                                                         \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }
-#define ANIM_RETIME(a)                                                         \
-  if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
-    (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
-  }
-#define ANIM_JUMP(a, n, f)                                                     \
-  g_nActorAnimDone = 0;                                                              \
-  (a)->frameProgress = sixteen;                                                        \
-  (a)->frameRate = sixteen;                                                        \
-  (a)->anim = (a)->nextAnim;                                                     \
-  (a)->nextAnim = (n);                                                            \
-  (a)->frame = (a)->nextFrame;                                                     \
-  (a)->nextFrame = (f);                                                            \
-  StubActorHook(a)
-#define FLY_Z(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x10))
-#define FP_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
-#define FP_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
-#define FP_PT(p, i) ((int *)((char *)(p) + ((i) << 4) + 0x8))
-#define BARREL_BURST(a, st)                                                    \
-  {                                                                            \
-    Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
-    Actor *w_;                                                                 \
-                                                                               \
-    StopSoundVoicesByOwner(a, 1);                                                       \
-    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, 8, &sp_->sfxSlot);    \
-    w_ = (st)->rider;                                                          \
-    if (w_ != 0 && w_->type == 0x9A && w_->mode == 2) {                       \
-      w_->subMode = 1;                                                           \
-    }                                                                          \
-    DespawnActorRecord(a);                                                          \
-    continue;                                                                  \
-  }
-#define L25_UNLINK(st)                                                         \
-  if ((st)->link >= 0) {                                                       \
-    g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \
-  }
-#define L25_DROP(st)                                                           \
-  *(st)->slot = 0;                                                             \
-  L25_UNLINK(st)
 
 /* ==== Level 32 classes ==== */
 

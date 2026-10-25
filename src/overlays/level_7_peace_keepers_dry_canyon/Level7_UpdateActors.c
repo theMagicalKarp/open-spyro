@@ -31,23 +31,14 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
+#include "level_update_actors_macros.h"
 
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-#define CAM g_anWorldToCameraRotMtx
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -55,21 +46,7 @@
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
-#define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -105,22 +82,6 @@
  * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
-
-
-#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
-
-/* An animation change that also clears the finished flag. */
-#define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_ADVANCE(a, n);                                                        \
-  }
-#define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_RESET(a, n);                                                          \
-  }
 
 
 /* Case 328 -- floor-snapped marker. */

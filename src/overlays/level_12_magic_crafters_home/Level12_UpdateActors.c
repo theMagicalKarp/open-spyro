@@ -33,28 +33,14 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
+#include "level_update_actors_macros.h"
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
-
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
  * child actor; breaks into fragments when damaged. */
 
-#define LIFT_STEP(st) (((st)->phase - 0x1A0) >> 1)
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-#define CAM g_anWorldToCameraRotMtx
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -63,20 +49,7 @@
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
@@ -114,66 +87,18 @@
  * that uses it. */
 
 
-#define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
-
-
-/* An animation change that also clears the finished flag. */
-#define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_ADVANCE(a, n);                                                        \
-  }
-#define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    ANIM_RESET(a, n);                                                          \
-  }
-
-/* ENTER_POSE with the already-there test first. */
-#define ENTER_POSE4(a, n)                                                      \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim == (n)) {                                                     \
-    continue;                                                                  \
-  }                                                                            \
-  ANIM_ADVANCE(a, n);                                                          \
-  continue
-
-
 /* Case 328 -- floor-snapped marker. */
 
-/* An animation change at half speed, keyed on the current animation. */
-#define ANIM_BLEND(a, n)                                                       \
-  if ((a)->anim != (n)) {                                                     \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
-  }
 
 /* ==== Camera and Spyro globals used by the camera arms ==== */
-#define CAM_LOOK (*(CamLook *)&g_anSpyroRequestVelocity)
 
 #define sixteen 0x10
 
-#define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
-
-
-/* The anim bytes 0x3C..0x3F read as one word. */
-#define ANIM_WORD(a) (*(int *)&(a)->anim)
 
 /* Type 270: villager. Chats when Spyro faces it up close (mode 0), turns to
  * face a friend (mode 1), waits on a partner (mode 2) or watches a leader
  * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 
-/* Spyro's facing delta to an actor. */
-#define SPY_FACING(a)                                                          \
-  AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
-                                             (a)->posY - spy->posY, 0))
-/* An actor's height above Spyro. */
-#define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
 
 /* ==== The function ==== */
 void Level12_UpdateActors(void) {

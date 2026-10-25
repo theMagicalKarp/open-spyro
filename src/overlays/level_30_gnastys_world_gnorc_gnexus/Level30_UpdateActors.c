@@ -32,6 +32,7 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
+#include "level_update_actors_macros.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -56,40 +57,13 @@
  * below sit next to the globals and callees their case needs.
  */
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
-
-/* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
-  (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
-#define AS_I32(sym) (((I32 *)&(sym))->v)
-
-#define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-
-#define CAM g_anWorldToCameraRotMtx
 
 /* Callees used by the collectible and fairy behaviours. */
 
 /* ==== Helper macros ====
  *
  * Absolute value. The two forms differ only at zero; both occur. */
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#define ABS2(x) ((x) > 0 ? (x) : -(x))
 
-/* Animation state: current/next animation (0x3C/0x3D), current/next frame
- * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
- *
- * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
-  (a)->frame = 0;                                                              \
-  (a)->nextFrame = 1;
 
 /* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
 #define ANIM_ADVANCE(a, next)                                                  \
