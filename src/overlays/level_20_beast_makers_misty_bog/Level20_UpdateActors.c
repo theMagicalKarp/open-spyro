@@ -416,12 +416,12 @@ void Level20_UpdateActors(void) {
       EBB_BREAK();
       if ((actor->flags & 0xA0000) && actor->mode != 5) {
         if (actor->flags & 0x80000) {
-          st->u08 = 0;
+          st->knockSpeed = 0;
           st->u0C = 0x104;
         } else {
-          st->u08 = 0x190;
+          st->knockSpeed = 0x190;
           st->u0C = 0xAA;
-          st->u10 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         }
@@ -521,7 +521,7 @@ void Level20_UpdateActors(void) {
       }
 
       case 5: {
-        int r = DriveActorTrackedMove(actor, &st->u08, st->u10, &st->u0C, 0xC, sixteen);
+        int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, sixteen);
 
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
@@ -2852,20 +2852,20 @@ void Level20_UpdateActors(void) {
           actor->mode != 0x1E) {
         EBB_BREAK();
         actor->flags = 0;
-        st->u38 = 0x50;
-        st->u08 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->stunTimer = 0x50;
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->u10 = 0x64;
         if (actor->flags & 0x10000) {
-          st->u0C = 0xF0;
+          st->knockSpeed = 0xF0;
         } else {
-          st->u0C = 0x140;
+          st->knockSpeed = 0x140;
         }
         if (st->tether != 0) {
           DespawnActorRecord(st->tether);
           st->tether = 0;
-          if (g_pLevelOverlayInitRecord != 0 && st->u28 != 0) {
+          if (g_pLevelOverlayInitRecord != 0 && st->holdsSpyro != 0) {
             g_pLevelOverlayInitRecord->subMode = 0;
           }
         }
@@ -2876,7 +2876,7 @@ void Level20_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        if (dist < 0x2000 && TickCountdownByFrameDelta(&st->u24, 4) != 0 &&
+        if (dist < 0x2000 && TickCountdownByFrameDelta(&st->coolDown, 4) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x5DC
                                : -SPY_DZ(actor) < 0x5DC) &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
@@ -2910,7 +2910,7 @@ void Level20_UpdateActors(void) {
         }
         if (st->mode == 0) {
           if (dist > 0x2000) {
-            if (TickCountdownByFrameDelta(&st->u18, 4) != 0) {
+            if (TickCountdownByFrameDelta(&st->roamTimer, 4) != 0) {
               FlyPath *p = st->path;
               int c = p->cur;
 
@@ -2943,7 +2943,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case 2:
-        DriveActorTrackedMove(actor, &st->u0C, st->u08, &st->u10, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u10, 0xC, sixteen);
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -2953,12 +2953,12 @@ void Level20_UpdateActors(void) {
 
             PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
             o->scale = 0x34;
-            st->u24 = 0xA;
+            st->coolDown = 0xA;
             actor->mode = 0x1E;
             continue;
           }
         }
-        if (TickCountdownByFrameDelta(&st->u38, 4) != 0 || g_nActorAnimDone != 0) {
+        if (TickCountdownByFrameDelta(&st->stunTimer, 4) != 0 || g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
@@ -2968,7 +2968,7 @@ void Level20_UpdateActors(void) {
 
       case 4:
         actor->rotZ += 5;
-        if (TickCountdownByFrameDelta(&st->u18, 4) != 0 && g_nActorAnimDone != 0) {
+        if (TickCountdownByFrameDelta(&st->roamTimer, 4) != 0 && g_nActorAnimDone != 0) {
           ENTER_POSE(actor, 0);
         }
         break;
@@ -2986,7 +2986,7 @@ void Level20_UpdateActors(void) {
                               0),
                 3, 2, 1) != 0 &&
             g_nActorAnimDone != 0) {
-          st->u1C = ApproxDist2D(&actor->posX,
+          st->hopSpeed = ApproxDist2D(&actor->posX,
                                   PATH_PT((unsigned char *)st->path,
                                           st->path->cur)) /
                     0x14;
@@ -2995,9 +2995,9 @@ void Level20_UpdateActors(void) {
         break;
 
       case 11:
-        MoveActorAlongHeading(actor, st->u1C, 0, 0, 5);
+        MoveActorAlongHeading(actor, st->hopSpeed, 0, 0, 5);
         if (g_nActorAnimDone != 0) {
-          st->u18 = RandomIntInRange(0x28, 0x5A);
+          st->roamTimer = RandomIntInRange(0x28, 0x5A);
           ENTER_POSE(actor, 0);
         }
         break;
@@ -3054,14 +3054,14 @@ void Level20_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(st->tether);
           st->tether = 0;
-          st->u24 = 0xB4;
+          st->coolDown = 0xB4;
           ENTER_POSE(actor, 0);
         }
         break;
       }
 
       case 30:
-        if (TickCountdownByFrameDelta(&st->u24, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->coolDown, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -3465,11 +3465,11 @@ void Level20_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, 1, 0, 0);
         MarkActorCommittedKill(actor);
-        st->u24 = 0x15E;
+        st->knockSpeed = 0x15E;
         if (actor->mode >= 0xA) {
           g_nSpyroDrawSuppressed = 0;
         }
-        st->u20 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->u28 = 0xF0;
@@ -3491,14 +3491,14 @@ void Level20_UpdateActors(void) {
       case 0:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (d0 > 0x2C00) {
-          st->u14 = 0;
+          st->grabChance = 0;
           ANIM_GO(actor, 0);
         }
-        if (TickCountdownByFrameDelta(&st->u18, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           int k;
           int r;
 
-          if (st->u14 == 0) {
+          if (st->grabChance == 0) {
             if (actor->nextAnim == 0 && actor->nextFrame >= 0xF) {
               actor->frame = 0;
               actor->nextFrame = 1;
@@ -3508,12 +3508,12 @@ void Level20_UpdateActors(void) {
             g_nActorAnimDone = 0;
             ANIM_ADVANCE(actor, 1);
           }
-          if (st->u14 == 0 && d0 < 0x2400) {
-            st->u14 = RandomIntInRange(0, 0x3F) + 0x50;
+          if (st->grabChance == 0 && d0 < 0x2400) {
+            st->grabChance = RandomIntInRange(0, 0x3F) + 0x50;
           }
-          k = st->u14 - (d0 >> 6);
+          k = st->grabChance - (d0 >> 6);
           r = GetRandomU32() & 0xFF;
-          if (TickCountdownByFrameDelta(&st->u34, 4) != 0 && *st->held == 0 && r < k &&
+          if (TickCountdownByFrameDelta(&st->grabCoolDown, 4) != 0 && *st->held == 0 && r < k &&
               AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                             ArcTan2(actor->posX - g_anCameraPos[0],
                                           actor->posY - g_anCameraPos[1], 0)) <
@@ -3522,13 +3522,13 @@ void Level20_UpdateActors(void) {
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
                                  : -SPY_DZ(actor) < 0x578)) {
             *st->held = 1;
-            st->u18 = sixteen;
+            st->timer = sixteen;
             StopSoundVoicesByOwner(actor, 1);
             actor->mode = 1;
             continue;
           }
           if (*st->held != 0) {
-            st->u34 = 0x3C;
+            st->grabCoolDown = 0x3C;
           }
         }
         break;
@@ -3541,7 +3541,7 @@ void Level20_UpdateActors(void) {
         } else {
           ANIM_GO(actor, 3);
         }
-        if (TickCountdownByFrameDelta(&st->u18, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           Actor **lp;
           Actor *o;
 
@@ -3568,7 +3568,7 @@ void Level20_UpdateActors(void) {
             }
           }
           if (d1 < 0x44C) {
-            st->u30 = 0;
+            st->hasSpyro = 0;
             actor->mode = 0xA;
             continue;
           }
@@ -3589,7 +3589,7 @@ void Level20_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
           *st->held = 0;
-          st->u18 = 0x78;
+          st->timer = 0x78;
           ENTER_POSE(actor, 0);
         }
         break;
@@ -3597,7 +3597,7 @@ void Level20_UpdateActors(void) {
       case 4:
         actor->rotX += 4;
         actor->rotY += 4;
-        if (DriveActorTrackedMove(actor, &st->u24, st->u20, &st->u28, 0xC, 0xE) == 3) {
+        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u28, 0xC, 0xE) == 3) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);
@@ -3623,9 +3623,9 @@ void Level20_UpdateActors(void) {
         if (dd < 0x190) {
           g_nSpyroDrawSuppressed = 1;
         }
-        if (st->u30 == 0) {
+        if (st->hasSpyro == 0) {
           if (dd < lim) {
-            st->u30 = 1;
+            st->hasSpyro = 1;
             actor->posX = spy->posX;
             actor->posY = SPY.posY;
           } else {

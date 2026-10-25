@@ -1604,12 +1604,12 @@ void Level32_UpdateActors(void) {
       if ((actor->flags & 0xB0000) && actor->mode != 4 &&
           actor->mode != 0x14) {
         StopSoundVoicesByOwner(actor, 1);
-        st->u04 = 0xDC;
+        st->knockSpeed = 0xDC;
         if (actor->flags & 0x20000) {
-          st->u04 = 0x154;
+          st->knockSpeed = 0x154;
         }
         st->u0C = 0x82;
-        st->u08 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
@@ -1619,25 +1619,25 @@ void Level32_UpdateActors(void) {
         ENTER_POSE(actor, 4);
       }
 
-      if (st->u70 == 0) {
-        st->u70 = 1;
+      if (st->initialised == 0) {
+        st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u40) != 0 ||
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u40) != 0 ||
                              IsPointInRotatedBox((int *)spy, st->u58) != 0)) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
       }
 
       switch (actor->mode) {
       case 0:
-        if (st->u00 == 1 &&
+        if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u28) != 0) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (TickCountdownByFrameDelta(&st->u10, 4) != 0 && dist < 0x1388 &&
+        if (TickCountdownByFrameDelta(&st->shotTimer, 4) != 0 && dist < 0x1388 &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], 0)) <
@@ -1645,7 +1645,7 @@ void Level32_UpdateActors(void) {
             actor->posZ - actor->floorOffset - SPY.posZ < -0xC8 &&
             TickCountdownByFrameDelta(&st->u24, 4) != 0) {
           st->u14 = 0;
-          st->u10 = st->u18;
+          st->shotTimer = st->shotReload;
           ENTER_POSE_B(actor, 3);
         }
         ANIM_GO(actor, 0);
@@ -1656,7 +1656,7 @@ void Level32_UpdateActors(void) {
           actor->mode = 0;
           continue;
         }
-        if (PivotActorAlongPath(actor, st->u1C, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           actor->mode = 0xA;
         }
@@ -1691,7 +1691,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->u04, st->u08, &st->u0C, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, sixteen);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -1701,7 +1701,7 @@ void Level32_UpdateActors(void) {
 
             PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
             o->otBias = 0xFE;
-            st->u74 = 0xA;
+            st->sinkTimer = 0xA;
             actor->mode = 0x14;
             continue;
           }
@@ -1720,7 +1720,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 20:
-        if (TickCountdownByFrameDelta(&st->u74, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->sinkTimer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1744,9 +1744,9 @@ void Level32_UpdateActors(void) {
       if ((actor->flags & 0x90000) && actor->mode != 4 &&
           actor->mode != 0x14) {
         StopSoundVoicesByOwner(actor, 1);
-        st->u08 = 0xC8;
+        st->knockSpeed = 0xC8;
         st->u10 = 0x104;
-        st->u0C = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
@@ -1756,27 +1756,27 @@ void Level32_UpdateActors(void) {
         ENTER_POSE(actor, 4);
       }
 
-      if (st->u7C == 0) {
-        st->u7C = 1;
+      if (st->initialised == 0) {
+        st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u4C) != 0 ||
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u4C) != 0 ||
                              IsPointInRotatedBox((int *)spy, st->u64) != 0)) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
       }
 
       switch (actor->mode) {
       case 0:
-        if (st->u00 == 1 &&
+        if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u34) != 0) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->u00 != 1 && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
-          st->u18 = actor->rotZ;
-          st->u2C = actor->rotZ << 4;
+        if (st->flags != 1 && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
+          st->yawToSpyro = actor->rotZ;
+          st->sweepYaw = actor->rotZ << 4;
           actor->subMode = 0;
           ENTER_POSE_B(actor, 3);
         }
@@ -1784,7 +1784,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 2:
-        if (PivotActorAlongPath(actor, st->u04, 0x100, 0xA0, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           actor->mode = 0;
         }
@@ -1801,22 +1801,22 @@ void Level32_UpdateActors(void) {
           }
           t = ApproachAngle8(ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
-                            st->u18, 5, 3);
-          st->u18 = t;
-          if (st->u1C != 0xFF && ((st->u1C - t) & 0xFF) > 0xF0) {
-            st->u18 = st->u1C;
+                            st->yawToSpyro, 5, 3);
+          st->yawToSpyro = t;
+          if (st->yawLimitA != 0xFF && ((st->yawLimitA - t) & 0xFF) > 0xF0) {
+            st->yawToSpyro = st->yawLimitA;
           }
-          if (st->u20 != 0xFF &&
-              (unsigned)(((st->u20 - st->u18) & 0xFF) - 0x29) < 0x57) {
-            st->u18 = st->u20;
+          if (st->yawLimitB != 0xFF &&
+              (unsigned)(((st->yawLimitB - st->yawToSpyro) & 0xFF) - 0x29) < 0x57) {
+            st->yawToSpyro = st->yawLimitB;
           }
-          st->u2C += st->u28;
-          d = WrapAngleDelta8(st->u18, st->u2C >> 4);
-          if (TickCountdownByFrameDelta(&st->u30, 4) != 0 && ABS(d) > 0x1A &&
-              ((d < 0 && st->u28 < 0) || (d > 0 && st->u28 > 0))) {
+          st->sweepYaw += st->sweepRate;
+          d = WrapAngleDelta8(st->yawToSpyro, st->sweepYaw >> 4);
+          if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && ABS(d) > 0x1A &&
+              ((d < 0 && st->sweepRate < 0) || (d > 0 && st->sweepRate > 0))) {
             actor->subMode = 1;
           }
-          actor->rotZ = st->u2C >> 4;
+          actor->rotZ = st->sweepYaw >> 4;
           if (g_dwGamestateFrames & 1) {
             Actor *o = g_pfnLevelSpawnActor(0x9C, actor);
             unsigned char i = actor->rotZ - 5;
@@ -1850,16 +1850,16 @@ void Level32_UpdateActors(void) {
               actor->nextFrame = 0;
               StubActorHook(actor);
             }
-            st->u30 = 0x1E;
+            st->timer = 0x1E;
             actor->subMode = 0;
-            st->u28 = -st->u28;
+            st->sweepRate = -st->sweepRate;
           }
           continue;
         }
         continue;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->u08, st->u0C, &st->u10, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u10, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -1869,7 +1869,7 @@ void Level32_UpdateActors(void) {
 
             PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
             o->otBias = 0xFE;
-            st->u30 = 0xA;
+            st->timer = 0xA;
             actor->mode = 0x14;
             continue;
           }
@@ -1888,7 +1888,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 20:
-        if (TickCountdownByFrameDelta(&st->u30, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1914,52 +1914,52 @@ void Level32_UpdateActors(void) {
         Actor *c;
 
         StopSoundVoicesByOwner(actor, 1);
-        st->u04 = 0x12C;
+        st->knockSpeed = 0x12C;
         st->u0C = 0x104;
-        st->u08 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
-        c = st->u38;
+        c = st->heldLob;
         if (c != 0 && c != (Actor *)-1 && c->type == 0xB0 && c->subMode == 0 &&
             c->mode < 0x80) {
           c->subMode = 1;
-          st->u38->mode = 2;
+          st->heldLob->mode = 2;
         }
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 4);
       }
 
-      if (st->u74 == 0) {
-        st->u74 = 1;
+      if (st->initialised == 0) {
+        st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->u00 == 1 && (IsPointInRotatedBox((int *)spy, st->u44) != 0 ||
+        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->u44) != 0 ||
                              IsPointInRotatedBox((int *)spy, st->u5C) != 0)) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
       }
 
       switch (actor->mode) {
       case 0:
-        if (st->u00 == 1 &&
+        if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->u10) != 0) {
-          st->u00 &= ~1;
+          st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (TickCountdownByFrameDelta(&st->u30, 4) != 0 && dist < 0x9C4 &&
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && dist < 0x9C4 &&
             ABS2(SPY_DZ(actor)) < 0x258) {
           ENTER_POSE_B(actor, 3);
         }
-        if (st->u00 != 1 && dist > 0x9C4 && TickCountdownByFrameDelta(&st->u34, 4) != 0) {
-          if (st->u40 < dist) {
-            unsigned char *p = st->u28;
+        if (st->flags != 1 && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
+          if (st->aimRange < dist) {
+            unsigned char *p = st->targetPath;
 
             p[1] = (p[1] + p[0] + 1) % p[0];
           }
-          st->u38 = 0;
+          st->heldLob = 0;
           ENTER_POSE(actor, 5);
         }
         if (g_nActorAnimDone != 0) {
@@ -1972,7 +1972,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case 2:
-        if (PivotActorAlongPath(actor, st->u2C, 0x100, 0xAA, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           actor->mode = 0xA;
           continue;
@@ -1982,13 +1982,13 @@ void Level32_UpdateActors(void) {
       case 3:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
-          st->u30 = 0x64;
+          st->timer = 0x64;
           ENTER_POSE(actor, 0);
         }
         break;
 
       case 4:
-        DriveActorTrackedMove(actor, &st->u04, st->u08, &st->u0C, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->u0C, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -1998,7 +1998,7 @@ void Level32_UpdateActors(void) {
 
             PlaySoundEffect(g_pLevelSampleBankHeader[0x1D], actor, 8, &actor->sfxSlot);
             o->otBias = 0xFE;
-            st->u30 = 0xA;
+            st->timer = 0xA;
             actor->mode = 0x14;
             continue;
           }
@@ -2012,20 +2012,20 @@ void Level32_UpdateActors(void) {
         break;
 
       case 5: {
-        unsigned char *p = st->u28;
+        unsigned char *p = st->targetPath;
 
-        if (st->u38 == 0 && actor->nextFrame >= 5) {
-          st->u38 = g_pfnLevelSpawnActor(0xB0, actor);
-          st->u38->cullRadius = 0x28;
-          st->u38->updateDist = 0xFF;
+        if (st->heldLob == 0 && actor->nextFrame >= 5) {
+          st->heldLob = g_pfnLevelSpawnActor(0xB0, actor);
+          st->heldLob->cullRadius = 0x28;
+          st->heldLob->updateDist = 0xFF;
         }
-        if (st->u38 != 0 && st->u38 != (Actor *)-1 && st->u38->subMode == 0) {
+        if (st->heldLob != 0 && st->heldLob != (Actor *)-1 && st->heldLob->subMode == 0) {
           RefreshActorDerivedState(actor, 4);
-          GetActorAttachPoint(actor, 0, &st->u38->posX);
+          GetActorAttachPoint(actor, 0, &st->heldLob->posX);
           if (actor->nextFrame >= 0xA) {
-            LobState *q = st->u38->state;
+            LobState *q = st->heldLob->state;
 
-            if (st->u40 < dist) {
+            if (st->aimRange < dist) {
               CopyVector(o150, PATH_PT(p, p[1]));
             } else {
               RandomIntInRange(-0xA, 0xA);
@@ -2035,9 +2035,9 @@ void Level32_UpdateActors(void) {
             }
             q->h8 = -6;
             q->h4 = 0x104;
-            q->h6 = ComputeLobVelocityZ(&st->u38->posX, o150, 0x104, q->h8, (int *)q);
+            q->h6 = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->h8, (int *)q);
             if (q->u00 == 0) {
-              st->u38->mode = 2;
+              st->heldLob->mode = 2;
             }
             q->bD = RandomSignedInRange(7, 0xF);
             q->bE = RandomSignedInRange(7, 0xF);
@@ -2045,12 +2045,12 @@ void Level32_UpdateActors(void) {
             q->hA = 0x8C;
             q->bC = ArcTan2(o150[0] - actor->posX, o150[1] - actor->posY,
                                   0);
-            st->u38->subMode = 1;
-            st->u38 = (Actor *)-1;
+            st->heldLob->subMode = 1;
+            st->heldLob = (Actor *)-1;
           }
         }
         if (g_nActorAnimDone != 0) {
-          st->u34 = 0x3C;
+          st->throwTimer = 0x3C;
           ENTER_POSE(actor, 0);
         }
         break;
@@ -2063,7 +2063,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case 20:
-        if (TickCountdownByFrameDelta(&st->u30, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2084,7 +2084,7 @@ void Level32_UpdateActors(void) {
         int high = 0x384;
 
         EBB_BREAK();
-        if (st->u0E != 0) {
+        if (st->longReachTimer != 0) {
           high = 0x640;
           reach = 0x1F4;
           if (AbsAngleDelta8(actor->rotZ,
@@ -2093,7 +2093,7 @@ void Level32_UpdateActors(void) {
             reach = 0x708;
           }
         }
-        TickCountdownByFrameDelta(&st->u0E, 2);
+        TickCountdownByFrameDelta(&st->longReachTimer, 2);
         CopyVector(o140, &actor->posX);
         AddVector(&actor->posX, &actor->posX, st->vel);
         if (actor->posX < 0 || actor->posY < 0 ||
@@ -2118,7 +2118,7 @@ void Level32_UpdateActors(void) {
           actor->mode = 1;
           continue;
         }
-        if (TickCountdownByFrameDelta(&st->u0C, 2) != 0) {
+        if (TickCountdownByFrameDelta(&st->life, 2) != 0) {
           DespawnActorRecord(actor);
         }
         continue;
@@ -2143,15 +2143,15 @@ void Level32_UpdateActors(void) {
 
       if (actor->flags & 0x10000) {
         PlayActorMeshVoice(actor, 0, &actor->sfxSlot);
-        if (st->u04 == 0) {
+        if (st->rearmTimer == 0) {
           ModifyWorldChunkAnimFlags(0, 0xFC, 0);
-          st->u04 = 0x50;
+          st->rearmTimer = 0x50;
           actor->mode = 1;
           ANIM_RESET(actor, 1);
           continue;
         }
       }
-      if (TickCountdownByFrameDelta(&st->u04, 4) != 0 && g_nActorAnimDone != 0) {
+      if (TickCountdownByFrameDelta(&st->rearmTimer, 4) != 0 && g_nActorAnimDone != 0) {
         StopSoundVoicesByOwner(actor, 1);
         actor->mode = 0;
         ANIM_RESET(actor, 0);
@@ -2424,13 +2424,13 @@ void Level32_UpdateActors(void) {
       L32State236 *st = actor->state;
 
       if ((actor->flags & 0xB0000) && actor->mode != 1) {
-        st->u24 = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0),
                                 spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & 0x10000) {
-          st->u20 = 0xC8;
+          st->knockSpeed = 0xC8;
         } else {
-          st->u20 = 0x190;
+          st->knockSpeed = 0x190;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -2441,15 +2441,15 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case 0:
         UpdateActorWander(actor, st);
-        if (TickCountdownByFrameDelta(&st->u2C, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->idleTimer, 4) != 0) {
           ENTER_POSE(actor, 2);
         }
         break;
 
       case 1:
-        if (st->u20 >= 0x10) {
-          st->u20 -= 0xF;
-          MoveActorAlongAngle(actor, st->u24, st->u20, 0, 0x1F4, 5);
+        if (st->knockSpeed >= 0x10) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, 5);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
@@ -2461,7 +2461,7 @@ void Level32_UpdateActors(void) {
 
       case 2:
         if (g_nActorAnimDone != 0) {
-          st->u2C = RandomIntInRange(0x5A, 0x12C);
+          st->idleTimer = RandomIntInRange(0x5A, 0x12C);
           ENTER_POSE(actor, 0);
         }
         break;

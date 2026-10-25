@@ -122,8 +122,8 @@ extern short g_anSineLut_s[];
 
 /* Type 143 state. */
 typedef struct L33State143 {
-  int u00; /* 0x00 radius */
-  int u04; /* 0x04 timer */
+  int radius; /* 0x00 radius */
+  int timer; /* 0x04 timer */
 } L33State143;
 
 /* Type 169's trail point. */
@@ -140,8 +140,8 @@ typedef struct L33State169 {
   short h06;       /* 0x06 life timer */
   short h08;       /* 0x08 landing delay */
   short h0A;       /* 0x0A trail length */
-  int u0C;         /* 0x0C speed */
-  int u10;         /* 0x10 climb */
+  int speed;         /* 0x0C speed */
+  int climb;         /* 0x10 climb */
 } L33State169;
 
 extern L33Trail *g_apMotionTrailSlices[]; /* trails */
@@ -151,17 +151,17 @@ extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 /* Type 159 state. */
 typedef struct L33State159 {
   FlyPath *path; /* 0x00 */
-  int u04;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
-  int u08;       /* 0x08 slow-down timer */
+  int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
+  int slowTimer;       /* 0x08 slow-down timer */
   int u0C;       /* 0x0C */
-  int u10;       /* 0x10 speed */
-  int u14;       /* 0x14 knock-back heading */
-  int u18;       /* 0x18 knock-back speed */
-  int u1C;       /* 0x1C vertical speed */
-  int u20;       /* 0x20 end node going back */
-  int u24;       /* 0x24 end node going forward */
+  int speed;       /* 0x10 speed */
+  int knockHeading;       /* 0x14 knock-back heading */
+  int knockSpeed;       /* 0x18 knock-back speed */
+  int vSpeed;       /* 0x1C vertical speed */
+  int endNodeBack;       /* 0x20 end node going back */
+  int endNodeFwd;       /* 0x24 end node going forward */
   int u28[14];   /* 0x28 trigger box */
-  int u60;       /* 0x60 partner actor index, -1 none */
+  int partner;       /* 0x60 partner actor index, -1 none */
 } L33State159;
 
 extern int g_anLevelEscapeRunCount[]; /* laps per lane */
@@ -173,13 +173,13 @@ typedef struct GnastyState {
   FlyPath *path3;           /* 0x08 camera reference path */
   int u0C;                  /* 0x0C */
   int u10;                  /* 0x10 */
-  int u14;                  /* 0x14 knock-back heading */
-  int u18;                  /* 0x18 speed */
-  int u1C;                  /* 0x1C vertical speed */
-  int u20;                  /* 0x20 queued jump speed */
+  int knockHeading;                  /* 0x14 knock-back heading */
+  int speed;                  /* 0x18 speed */
+  int vSpeed;                  /* 0x1C vertical speed */
+  int queuedJumpSpeed;                  /* 0x20 queued jump speed */
   int u24[12];              /* 0x24 */
   int u54;                  /* 0x54 */
-  int u58;                  /* 0x58 timer */
+  int stateTimer;                  /* 0x58 timer */
   int phase;                /* 0x5C fight phase */
   int timer;                /* 0x60 throw timer */
   int u64;                  /* 0x64 */
@@ -205,11 +205,11 @@ typedef struct GnastyState {
     int h_ = ProbeActorGroundHeightRaised(a, 0xBB8);                                          \
     int z_;                                                                    \
                                                                                \
-    (st)->u1C -= 0x19;                                                         \
-    if ((st)->u1C < -0x190) {                                                  \
-      (st)->u1C = -0x190;                                                      \
+    (st)->vSpeed -= 0x19;                                                         \
+    if ((st)->vSpeed < -0x190) {                                                  \
+      (st)->vSpeed = -0x190;                                                      \
     }                                                                          \
-    z_ = (a)->posZ + (st)->u1C;                                                \
+    z_ = (a)->posZ + (st)->vSpeed;                                                \
     if (z_ < h_) {                                                             \
       (a)->posZ = h_;                                                          \
     } else {                                                                   \
@@ -1454,22 +1454,22 @@ void Level33_UpdateActors(void) {
     case 143: {
       L33State143 *st = actor->state;
 
-      st->u00 += dt * 14;
-      actor->scale = 0xBB80 / st->u00;
+      st->radius += dt * 14;
+      actor->scale = 0xBB80 / st->radius;
       if (actor->scale < 5) {
         actor->scale = 5;
       }
       if (actor->scale >= 0x80) {
         actor->scale = 0x7F;
       }
-      if (st->u04 != 0) {
-        RaiseSpyroTriggerInRadius(&actor->posX, st->u00, 7);
+      if (st->timer != 0) {
+        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, 7);
       }
       if (actor->nextAnim == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (TickCountdownByFrameDelta(&st->u04, 4) != 0) {
+      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
         ANIM_SET(actor, 1);
       }
       continue;
@@ -1520,22 +1520,22 @@ void Level33_UpdateActors(void) {
       }
 
       if (actor->flags != 0 && actor->mode != 2) {
-        st->u18 = 0xFA;
+        st->knockSpeed = 0xFA;
         if (actor->flags & 0x20000) {
-          st->u18 = 0x145;
+          st->knockSpeed = 0x145;
         }
-        st->u14 = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->u1C = 0x28;
+        st->vSpeed = 0x28;
         ENTER_POSE(actor, 2);
       }
       actor->flags = 0;
 
-      if (st->u04 == 1 && actor->cullRadius == 0 &&
+      if (st->lane == 1 && actor->cullRadius == 0 &&
           ((GetWorldChunkAnimState(4) >> 8) & 0xFF) > 0) {
         actor->cullRadius = 0x28;
-        g_pActorListBase[st->u60].cullRadius = 0x28;
+        g_pActorListBase[st->partner].cullRadius = 0x28;
       }
 
       if (actor->nextAnim == 0 && actor->cullRadius != 0) {
@@ -1555,22 +1555,22 @@ void Level33_UpdateActors(void) {
         if (dist < 0x1964 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
                                : -SPY_DZ(actor) < 0x578)) {
-          st->u10 = 0x12C;
-          if (st->u04 == 0) {
+          st->speed = 0x12C;
+          if (st->lane == 0) {
             st->path->dir = 1;
-            st->u08 = 0x6E;
+            st->slowTimer = 0x6E;
           } else {
             st->path->dir = 1;
-            st->u08 = 0x96;
+            st->slowTimer = 0x96;
           }
-          st->u08 -= g_anLevelEscapeRunCount[st->u04] * 6;
+          st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
           if (IsPointInRotatedBox(&SPY.posX, st->u28) != 0) {
             st->path->dir *= -1;
           }
           if (st->path->dir == -1) {
-            st->path->cur = st->u20;
+            st->path->cur = st->endNodeBack;
           } else {
-            st->path->cur = st->u24;
+            st->path->cur = st->endNodeFwd;
           }
           ENTER_POSE(actor, 1);
         }
@@ -1588,38 +1588,38 @@ void Level33_UpdateActors(void) {
                         PATH_PT((unsigned char *)st->path, st->path->cur));
           SnapActorToGround(actor);
         }
-        if (TickCountdownByFrameDelta(&st->u08, 4) != 0) {
-          int lo = 0xDC - g_anLevelEscapeRunCount[st->u04] * 6;
+        if (TickCountdownByFrameDelta(&st->slowTimer, 4) != 0) {
+          int lo = 0xDC - g_anLevelEscapeRunCount[st->lane] * 6;
 
-          st->u10 -= 0xA;
-          if (st->u10 < lo) {
-            st->u10 = lo;
+          st->speed -= 0xA;
+          if (st->speed < lo) {
+            st->speed = lo;
           }
         }
-        spd = st->u10;
+        spd = st->speed;
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, 1);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->u1C -= 0x1E;
-        if (st->u1C < -0x190) {
-          st->u1C = -0x190;
+        st->vSpeed -= 0x1E;
+        if (st->vSpeed < -0x190) {
+          st->vSpeed = -0x190;
         }
-        z = actor->posZ + st->u1C;
+        z = actor->posZ + st->vSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
           actor->posZ = z;
         }
         if ((r & 0x100) && (FLY_FLAGS(st->path, st->path->cur) & 3) == 1) {
-          st->u1C = 0x12C;
+          st->vSpeed = 0x12C;
         }
-        if ((st->path->dir == -1 && r == (st->u20 | 0x100)) ||
-            (st->path->dir == 1 && r == (st->u24 | 0x100))) {
-          g_anLevelEscapeRunCount[st->u04]++;
-          if (g_anLevelEscapeRunCount[st->u04] >= 6) {
-            g_anLevelEscapeRunCount[st->u04] = 5;
+        if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
+            (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
+          g_anLevelEscapeRunCount[st->lane]++;
+          if (g_anLevelEscapeRunCount[st->lane] >= 6) {
+            g_anLevelEscapeRunCount[st->lane] = 5;
           }
           ENTER_POSE(actor, 0);
         }
@@ -1656,7 +1656,7 @@ void Level33_UpdateActors(void) {
       }
 
       case 2:
-        DriveActorTrackedMove(actor, &st->u18, st->u14, &st->u1C, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->vSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x20);
@@ -1666,11 +1666,11 @@ void Level33_UpdateActors(void) {
         break;
       }
 
-      if (actor->mode != 2 && st->u60 != -1) {
+      if (actor->mode != 2 && st->partner != -1) {
         RefreshActorDerivedState(actor, 4);
-        GetActorAttachPoint(actor, 0, &g_pActorListBase[st->u60].posX);
-        ProbeActorGroundHeight(&g_pActorListBase[st->u60]);
-        EncodeCachedVecToActorDirCode(&g_pActorListBase[st->u60]);
+        GetActorAttachPoint(actor, 0, &g_pActorListBase[st->partner].posX);
+        ProbeActorGroundHeight(&g_pActorListBase[st->partner]);
+        EncodeCachedVecToActorDirCode(&g_pActorListBase[st->partner]);
       }
       RefreshActorDerivedState(actor, 1);
       continue;
@@ -1695,8 +1695,8 @@ void Level33_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
           g_pActorListBase[st->key].subMode = 1;
           st->camTimer = 0xA0;
-          st->u1C = 0;
-          st->u20 = 0;
+          st->vSpeed = 0;
+          st->queuedJumpSpeed = 0;
           st->u6C = 0;
           st->phase++;
           t = st->path;
@@ -1708,8 +1708,8 @@ void Level33_UpdateActors(void) {
                                  PATH_END(st->path)) < 0xBB8 &&
                    actor->mode != 8) {
           st->phase = 4;
-          st->u18 = 0xD2;
-          st->u14 = ArcTan2(actor->posX - SPY.posX,
+          st->speed = 0xD2;
+          st->knockHeading = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, 0);
           if (actor->dropKind != 0xFF) {
             g_anLevelKillBitmapTable[0xF0] &= ~1;
@@ -1865,13 +1865,13 @@ void Level33_UpdateActors(void) {
           o160[2] = FindGroundHeightBelow(o160, 0x1000);
           SubtractVector(o150, o160, &o->posX);
           n = VectorLength(o150, 0) / spd;
-          q->u0C = spd;
+          q->speed = spd;
           if (n <= 0) {
             n = 1;
           }
-          q->u10 = (o160[2] - o->posZ) / n;
-          if (q->u10 < -0x1F4) {
-            q->u10 = -0x1F4;
+          q->climb = (o160[2] - o->posZ) / n;
+          if (q->climb < -0x1F4) {
+            q->climb = -0x1F4;
           }
           q->trail = st->trails[st->throws % 3];
           q->h0A = 0;
@@ -1921,9 +1921,9 @@ void Level33_UpdateActors(void) {
         int r;
 
         ANIM_GO(actor, 1);
-        if (st->u20 != 0) {
-          st->u1C = st->u20;
-          st->u20 = 0;
+        if (st->queuedJumpSpeed != 0) {
+          st->vSpeed = st->queuedJumpSpeed;
+          st->queuedJumpSpeed = 0;
         }
         i = st->path->cur;
         spd = 0x13B;
@@ -1932,7 +1932,7 @@ void Level33_UpdateActors(void) {
         }
         if (i >= 0xE) {
           far = 0x1964;
-          if (st->u18 >= 0x10F) {
+          if (st->speed >= 0x10F) {
             far = 0x1F40;
           }
           spd = 0xEB;
@@ -1945,7 +1945,7 @@ void Level33_UpdateActors(void) {
             spd = 0x122;
           }
         }
-        st->u18 = spd;
+        st->speed = spd;
         r = PivotActorAlongPath(actor, st->path, 0x200, spd, 0, 7, 0x28, 0xFF, 0);
         GNASTY_FALL(actor, st);
         if (r == 0x101 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
@@ -1959,7 +1959,7 @@ void Level33_UpdateActors(void) {
             actor->mode = 2;
             continue;
           }
-          st->u58 = 0xC8;
+          st->stateTimer = 0xC8;
           actor->mode = 0x15;
           continue;
         }
@@ -1975,7 +1975,7 @@ void Level33_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 1);
         }
-        if (TickCountdownByFrameDelta(&st->u58, 4) == 0) {
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) == 0) {
           TurnActorYawTowardAngle(
               actor,
               ArcTan2(
@@ -1986,11 +1986,11 @@ void Level33_UpdateActors(void) {
                   0),
               6, 0, 0);
           h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-          st->u1C -= 0x19;
-          if (st->u1C < -0x190) {
-            st->u1C = -0x190;
+          st->vSpeed -= 0x19;
+          if (st->vSpeed < -0x190) {
+            st->vSpeed = -0x190;
           }
-          z = actor->posZ + st->u1C;
+          z = actor->posZ + st->vSpeed;
           if (z < h) {
             actor->posZ = h;
             ANIM_GO(actor, 1);
@@ -1999,9 +1999,9 @@ void Level33_UpdateActors(void) {
           }
           break;
         }
-        if (st->u20 != 0) {
-          st->u1C = st->u20;
-          st->u20 = 0;
+        if (st->queuedJumpSpeed != 0) {
+          st->vSpeed = st->queuedJumpSpeed;
+          st->queuedJumpSpeed = 0;
         }
         spd = 0x104;
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
@@ -2023,13 +2023,13 @@ void Level33_UpdateActors(void) {
         if (r & 0x100) {
           switch (FLY_FLAGS(st->path, st->path->cur) & 3) {
           case 1:
-            st->u20 = 0xDC;
+            st->queuedJumpSpeed = 0xDC;
             break;
           case 2:
-            st->u20 = 0x10E;
+            st->queuedJumpSpeed = 0x10E;
             break;
           case 3:
-            st->u20 = 0x140;
+            st->queuedJumpSpeed = 0x140;
             break;
           }
         }
@@ -2038,7 +2038,7 @@ void Level33_UpdateActors(void) {
 
       case 7:
         if (g_nActorAnimDone != 0) {
-          st->u58 = 0;
+          st->stateTimer = 0;
           ANIM_GO(actor, 1);
           actor->mode = 6;
           continue;
@@ -2048,7 +2048,7 @@ void Level33_UpdateActors(void) {
       case 8:
         g_nCameraScriptStickRequestY[19] = g_dwSpyroRequestMask | 0x80002000;
         g_nGameplayBlocked = 1;
-        DriveActorTrackedMove(actor, &st->u18, st->u14, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, 0xC, 0);
         if (st->drop[0] != -1 && actor->nextFrame >= 6) {
           g_pActorListBase[st->drop[0]].subMode = 1;
           st->drop[0] = -1;
@@ -2076,7 +2076,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           RefreshActorDerivedState(actor, 4);
           BurstActorWithSound(actor, 0x40);
-          st->u58 = 0x3C;
+          st->stateTimer = 0x3C;
           actor->mode = 9;
           continue;
         }
@@ -2084,14 +2084,14 @@ void Level33_UpdateActors(void) {
 
       case 9:
         g_dwSpyroRequestMask |= 0x80002000;
-        TickCountdownByFrameDelta(&st->u58, 4);
-        if (st->u58 < 0x10) {
-          g_nGenericCountdown = sixteen - st->u58;
+        TickCountdownByFrameDelta(&st->stateTimer, 4);
+        if (st->stateTimer < 0x10) {
+          g_nGenericCountdown = sixteen - st->stateTimer;
           if (g_nGenericCountdown >= 0x10) {
             g_nGenericCountdown = 0xF;
           }
         }
-        if (st->u58 == 0) {
+        if (st->stateTimer == 0) {
           g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
@@ -2141,11 +2141,11 @@ void Level33_UpdateActors(void) {
         int z;
 
         ANIM_GO(actor, 0);
-        st->u1C -= 0x19;
-        if (st->u1C < -0x190) {
-          st->u1C = -0x190;
+        st->vSpeed -= 0x19;
+        if (st->vSpeed < -0x190) {
+          st->vSpeed = -0x190;
         }
-        z = actor->posZ + st->u1C;
+        z = actor->posZ + st->vSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
@@ -2177,7 +2177,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case 20:
-        if (TickCountdownByFrameDelta(&st->u58, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) != 0) {
           actor->mode = 5;
           continue;
         }
@@ -2190,7 +2190,7 @@ void Level33_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 6, 0, 0) != 0) {
           ANIM_GO(actor, 0);
         }
-        if (TickCountdownByFrameDelta(&st->u58, 4) != 0 && SPY_DZ(actor) < 0 &&
+        if (TickCountdownByFrameDelta(&st->stateTimer, 4) != 0 && SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x251C) {
           actor->mode = 5;
           continue;
@@ -2226,14 +2226,14 @@ void Level33_UpdateActors(void) {
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 0;
-            o->rotY = ArcTan2(st->u0C, st->u10, 0);
+            o->rotY = ArcTan2(st->speed, st->climb, 0);
             o->rotZ = actor->rotZ;
             o->cullRadius = 0x50;
             st->h04 = 0;
           }
-          actor->posX += (st->u0C * g_anCosineLut[actor->rotZ]) >> 12;
-          actor->posY += (st->u0C * g_anSineLut[actor->rotZ]) >> 12;
-          actor->posZ += st->u10;
+          actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
+          actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
+          actor->posZ += st->climb;
           if (TickCountdownByFrameDelta(&st->h06, 2) != 0) {
             actor->mode = 1;
           }
@@ -2250,9 +2250,9 @@ void Level33_UpdateActors(void) {
             Actor *o = g_pfnLevelSpawnActor(0x8F, actor);
             L33State143 *p = o->state;
 
-            p->u00 = 0x190;
-            p->u04 = 0x12;
-            o->scale = 0xBB80 / p->u00;
+            p->radius = 0x190;
+            p->timer = 0x12;
+            o->scale = 0xBB80 / p->radius;
             if (o->scale < 5) {
               o->scale = 5;
             }
