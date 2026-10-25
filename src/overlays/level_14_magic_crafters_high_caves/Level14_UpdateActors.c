@@ -40,6 +40,7 @@
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -607,8 +608,7 @@ void Level14_UpdateActors(void) {
     case 33: {
       ThiefState *st;
 
-      do {
-      } while (0);
+      EBB_BREAK();
       st = actor->state;
 
       if ((actor->flags & 0xB0000) != 0 && actor->mode != 10) {
@@ -2084,8 +2084,7 @@ void Level14_UpdateActors(void) {
               ++st->cur->cur >= st->cur->count) {
             st->cur->cur = st->cur->count - 2;
             st->mode = (st->mode & ~8) | 0xC0;
-            do {
-            } while (0);
+            EBB_BREAK();
             g_nSpyroRequestState = 8;
             g_nSpyroMoveTargetYaw = 0x290;
           }

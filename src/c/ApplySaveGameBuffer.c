@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "save_game.h"
 
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
@@ -106,8 +107,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     g_nWorldDragonsRescued = wd + d;
     c = i < 0x12;
     t = wt + g;
-    do {
-    } while (0);
+    EBB_BREAK();
     *gems = g;
     g_nWorldTreasureCollected = t;
     if (c) {

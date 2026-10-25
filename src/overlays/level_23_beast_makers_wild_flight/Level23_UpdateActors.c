@@ -23,6 +23,7 @@
 #include "flight_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 /* Level23_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -1570,8 +1571,7 @@ void Level23_UpdateActors(void) {
           DespawnActorRecord(actor);
           break;
         }
-        do {
-        } while (0);
+        EBB_BREAK();
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),

@@ -42,6 +42,7 @@
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -1298,11 +1299,9 @@ void Level19_UpdateActors(void) {
           }
 
           actor->rotX += (unsigned char)(st->lean - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotY += (unsigned char)(st->roll - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotZ += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
@@ -1481,8 +1480,7 @@ void Level19_UpdateActors(void) {
                                       spy->posY - rider->posY, 0);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
-          do {
-          } while (0);
+          EBB_BREAK();
           CopyVector(st->from, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
@@ -1748,8 +1746,7 @@ void Level19_UpdateActors(void) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
               st->gnorc = 0;
-              do {
-              } while (0);
+              EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
                 g_nSfxOverrideFlags = 1;
@@ -1782,8 +1779,7 @@ void Level19_UpdateActors(void) {
             svF[1] = (GetRandomU32() & 0x310) - 0x188;
             svF[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
-            do {
-            } while (0);
+            EBB_BREAK();
             st->drift[0] = svF[0];
             st->drift[1] = svF[1];
             st->drift[2] = svF[2];
@@ -1792,8 +1788,7 @@ void Level19_UpdateActors(void) {
             int *at;
 
             st->timer -= g_nFrameStep;
-            do {
-            } while (0);
+            EBB_BREAK();
 
             if (g_nCameraCurrentMode == 3) {
               svF[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);

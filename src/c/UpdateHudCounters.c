@@ -76,8 +76,7 @@ void UpdateHudCounters(void) {
   q = t / 9;
   __asm__("" : : "r"(q));
   q9 = q * 9;
-  do {
-  } while (0);
+  EBB_BREAK();
   idx = g_dwHudBobSinePhase;
   g_nHudFrameCycleMod9 = t - q9;
   SCHED_FENCE();

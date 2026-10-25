@@ -276,8 +276,7 @@ void Level14_AdvanceEmitList(int step) {
        * (class byte 3) once it closes inside 0x2800. */
       KEEP_IN_REG(burst);
       SVectorToVectorShl2(p, POS);
-      do {
-      } while (0);
+      EBB_BREAK();
       if (ALIVE == 0) {
         goto expire;
       } else {

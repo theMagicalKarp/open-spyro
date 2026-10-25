@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sample_bank.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -60,8 +61,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   ResetSpyroEntity(1);
   yaw = g_nSpyroBodyYaw;
   g_abSpyroAnimPrevBlock[0] = 1;
-  do {
-  } while (0);
+  EBB_BREAK();
   py = g_nSpyroWorldPosY;
   *(volatile unsigned char *)&g_bSpyroAnimCurrent = 1;
   *(volatile unsigned char *)&g_bSpyroFramePrev = 0;
@@ -86,8 +86,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuDragonToDist = 0x480;
   g_nSaveMenuDragonFromZ = z;
   g_nSaveMenuDragonToAngle = yw;
-  do {
-  } while (0);
+  EBB_BREAK();
   g_nSaveMenuDragonToZ = SPY_PREV[-4] + 0x170;
   if (g_pLevelOverlayInitRecord != 0) {
     g_nSaveMenuOverlayFromAngle = ArcTan2(

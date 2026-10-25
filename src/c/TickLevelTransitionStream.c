@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 typedef struct {
@@ -122,8 +123,7 @@ void TickLevelTransitionStream(int full) {
       int size = LEVEL_SPLASH_SIZE(intro);
       int off = LEVEL_SPLASH_OFFSET(intro);
 
-      do {
-      } while (0);
+      EBB_BREAK();
       StartCdReadAsync(lba, dst, size, off, 0x258);
     }
     g_nCdStreamState++;
@@ -337,8 +337,7 @@ void TickLevelTransitionStream(int full) {
             yaw = *pe;
             actor =
                 *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
-            do {
-            } while (0);
+            EBB_BREAK();
             ChangeSpyroState(0xF);
             *(int *)(pe + 0x6E) = 9;
             ComputeCameraToTargetAngle(cam);

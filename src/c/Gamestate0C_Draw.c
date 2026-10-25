@@ -51,8 +51,7 @@ void Gamestate0C_Draw(void) {
         ot[1] = 0;
         ot[0] = h;
       }
-      do {
-      } while (0);
+      EBB_BREAK();
 
       variant = *(volatile int *)&g_nGamestate0cCardVariant;
       if (variant < 5) {

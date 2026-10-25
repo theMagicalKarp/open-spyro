@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
@@ -49,8 +50,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   }
 
   idx = path->cur;
-  do {
-  } while (0);
+  EBB_BREAK();
   t = *step;
   if (t >= legs) {
     SubtractVector(dir, &path->nodes[idx].x, &actor->posX);

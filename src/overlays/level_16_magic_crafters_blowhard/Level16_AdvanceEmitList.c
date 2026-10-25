@@ -43,6 +43,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
+#include "match_asm.h"
 
 
 void Level16_AdvanceEmitList(int step) {
@@ -168,8 +169,7 @@ void Level16_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * ACTOR_SIZE + ACTOR_OFFSET(posX)));
-        do {
-        } while (0);
+        EBB_BREAK();
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;

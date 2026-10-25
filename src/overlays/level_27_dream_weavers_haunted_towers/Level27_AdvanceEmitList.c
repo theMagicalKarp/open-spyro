@@ -23,6 +23,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
+#include "match_asm.h"
 
 /* Level27_AdvanceEmitList (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -370,8 +371,7 @@ void Level27_AdvanceEmitList(int step) {
        * and re-arms itself as a trail.
        */
       SVectorToVectorShl2(pt, POS);
-      do {
-      } while (0);
+      EBB_BREAK();
       if (HU(0x1E) & 8) {
         if (AGE >= 0x18) {
           FreeEmitListRecord(rec);

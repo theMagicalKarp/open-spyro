@@ -25,6 +25,7 @@
 #include "flight_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 /* Level29_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -485,8 +486,7 @@ void Level29_UpdateActors(void) {
           if (dot < 0) {
             int *nrm;
 
-            do {
-            } while (0);
+            EBB_BREAK();
             nrm = &g_anCollisionProbeVec;
 
             ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));
@@ -658,8 +658,7 @@ void Level29_UpdateActors(void) {
         CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
-        do {
-        } while (0);
+        EBB_BREAK();
         st->pitch = -ArcTan2_8bit(
             IntegerSqrt((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
             nrm[1]);
@@ -681,8 +680,7 @@ void Level29_UpdateActors(void) {
             if (actor->type >= 83) {
               int *nrm = &g_anCollisionProbeVec;
 
-              do {
-              } while (0);
+              EBB_BREAK();
               st->pitch = -ArcTan2_8bit(
                   IntegerSqrt((nrm[0] * nrm[0]) + (nrm[2] * nrm[2])),
                   nrm[1]);
@@ -1425,8 +1423,7 @@ void Level29_UpdateActors(void) {
               if (dot < 0) {
                 int *nrm;
 
-                do {
-                } while (0);
+                EBB_BREAK();
                 nrm = &g_anCollisionProbeVec;
 
                 ScaleVector3ByRatio(nrm, 0x1000, -dot);
@@ -1506,8 +1503,7 @@ void Level29_UpdateActors(void) {
           DespawnActorRecord(actor);
           break;
         }
-        do {
-        } while (0);
+        EBB_BREAK();
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
@@ -1891,8 +1887,7 @@ void Level29_UpdateActors(void) {
           if (dot < 0) {
             int *nrm;
 
-            do {
-            } while (0);
+            EBB_BREAK();
             nrm = &g_anCollisionProbeVec;
 
             ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 /* Yaw written as a record member, so its in-struct load stays below the
@@ -29,8 +30,7 @@ void IntegrateSpyroBodyEuler(int rate) {
 
   cp = LookupCosine(g_anSpyroBodyPitchBlock[0]);
   pitch = g_anSpyroBodyPitchBlock[0];
-  do {
-  } while (0);
+  EBB_BREAK();
   sp = LookupSine(pitch);
   cr = LookupCosine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
   if (cr == 0) {

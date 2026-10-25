@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "pad.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
@@ -167,8 +168,7 @@ void PollPadAndDistributeInput(void) {
       g_nPadType = padType;
       g_adwPadHeldBlock[0] = buttons;
       if (g_nFrameTicks != 0) {
-        do {
-        } while (0);
+        EBB_BREAK();
         g_adwPadHeldBlock[-2] |= pressed;
         g_adwPadHeldBlock[-1] |= released;
       } else {

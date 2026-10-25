@@ -218,6 +218,7 @@
 #include "level_spawn_actor.h"
 #include "credits.h"
 #include "actor.h"
+#include "match_asm.h"
 
 extern void exit() __attribute__((noreturn));
 
@@ -588,8 +589,7 @@ void Credits_Update(void) {
               }
             } else {
               upper = 1;
-              do {
-              } while (0);
+              EBB_BREAK();
               c = (st.adv * 3) / 4;
               st.x = st.x + c;
             }

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
@@ -109,8 +110,7 @@ void TickCdMusicStream(void) {
 
   target = g_anMusicFadeBlock[0];
   if (target >= 0) {
-    do {
-    } while (0);
+    EBB_BREAK();
     step = g_anMusicFadeBlock[0x16];
     vol = *(short *)&g_anMusicFadeBlock[-0xB0];
     vol = vol + step;

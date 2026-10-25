@@ -81,6 +81,7 @@
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 
 void Level24_BalloonistCutscene_Update(void)
@@ -198,14 +199,14 @@ void Level24_BalloonistCutscene_Update(void)
           if (((g_nGamestate0cSpyroYawGoal - g_nGamestate0cSpyroYawStart) & 0xFFF) < 0x801)
           {
             int k; k = g_nGamestate0cSpyroYawStart + ((AbsAngleDelta12(g_nGamestate0cSpyroYawGoal, g_nGamestate0cSpyroYawStart) * sn) >> 13);
-            do { } while (0);
+            EBB_BREAK();
             g_bSpyroPersistentEulerZ = k >> 4;
             g_nSpyroAnimPlayRate = 8;
           }
           else
           {
             int k; k = g_nGamestate0cSpyroYawStart - ((AbsAngleDelta12(g_nGamestate0cSpyroYawGoal, g_nGamestate0cSpyroYawStart) * sn) >> 13);
-            do { } while (0);
+            EBB_BREAK();
             g_bSpyroPersistentEulerZ = k >> 4;
             g_nSpyroAnimPlayRate = 8;
           }
@@ -749,10 +750,7 @@ void Level24_BalloonistCutscene_Update(void)
         }
         else
         {
-          do
-          {
-          }
-          while (0);
+          EBB_BREAK();
           if ((k - n) < 0x40)
           {
             g_nGamestate0cRecordZStart = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) - 0x4B;

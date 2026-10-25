@@ -32,6 +32,7 @@
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -2870,8 +2871,7 @@ void Level22_UpdateActors(void) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
               st->gnorc = 0;
-              do {
-              } while (0);
+              EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
                 g_nSfxOverrideFlags = 1;
@@ -2904,8 +2904,7 @@ void Level22_UpdateActors(void) {
             g296[1] = (GetRandomU32() & 0x310) - 0x188;
             g296[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
-            do {
-            } while (0);
+            EBB_BREAK();
             st->drift[0] = g296[0];
             st->drift[1] = g296[1];
             st->drift[2] = g296[2];
@@ -2914,8 +2913,7 @@ void Level22_UpdateActors(void) {
             int *at;
 
             st->timer -= g_nFrameStep;
-            do {
-            } while (0);
+            EBB_BREAK();
 
             if (g_nCameraCurrentMode == 3) {
               g296[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
@@ -4427,8 +4425,7 @@ void Level22_UpdateActors(void) {
       RoamingRamState *st = actor->state;
 
       if ((actor->flags & 0xF0000) && actor->mode != 3) {
-        do {
-        } while (0);
+        EBB_BREAK();
         if (actor->flags & 0x40000) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,

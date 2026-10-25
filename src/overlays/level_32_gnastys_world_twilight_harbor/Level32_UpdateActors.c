@@ -29,6 +29,7 @@
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
+#include "match_asm.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -1026,11 +1027,9 @@ void Level32_UpdateActors(void) {
           }
 
           actor->rotX += (unsigned char)(st->lean - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotY += (unsigned char)(st->roll - 7);
-          do {
-          } while (0);
+          EBB_BREAK();
           actor->rotZ += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
@@ -1210,8 +1209,7 @@ void Level32_UpdateActors(void) {
                                       spy->posY - rider->posY, 0);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
-          do {
-          } while (0);
+          EBB_BREAK();
           CopyVector(st->from, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
@@ -1477,8 +1475,7 @@ void Level32_UpdateActors(void) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->gnorc->type]);
               }
               st->gnorc = 0;
-              do {
-              } while (0);
+              EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
                 g_nSfxOverrideFlags = 1;
@@ -1511,8 +1508,7 @@ void Level32_UpdateActors(void) {
             svF[1] = (GetRandomU32() & 0x310) - 0x188;
             svF[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
-            do {
-            } while (0);
+            EBB_BREAK();
             st->drift[0] = svF[0];
             st->drift[1] = svF[1];
             st->drift[2] = svF[2];
@@ -1521,8 +1517,7 @@ void Level32_UpdateActors(void) {
             int *at;
 
             st->timer -= g_nFrameStep;
-            do {
-            } while (0);
+            EBB_BREAK();
 
             if (g_nCameraCurrentMode == 3) {
               svF[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
@@ -1618,8 +1613,7 @@ void Level32_UpdateActors(void) {
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         SpawnActorDeathDrop(actor, 3, 0, 0);
-        do {
-        } while (0);
+        EBB_BREAK();
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 4);
       }
@@ -1756,8 +1750,7 @@ void Level32_UpdateActors(void) {
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         SpawnActorDeathDrop(actor, 3, 0, 0);
-        do {
-        } while (0);
+        EBB_BREAK();
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 4);
       }
@@ -2089,8 +2082,7 @@ void Level32_UpdateActors(void) {
         int reach = 0x12C;
         int high = 0x384;
 
-        do {
-        } while (0);
+        EBB_BREAK();
         if (st->u0E != 0) {
           high = 0x640;
           reach = 0x1F4;
@@ -2258,8 +2250,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case 1:
-        do {
-        } while (0);
+        EBB_BREAK();
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, 0x86) != 0) {
           int n;
           int x;

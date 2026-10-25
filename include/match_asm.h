@@ -1,4 +1,4 @@
-/* match_asm.h — the zero-code inline-asm idioms the matched C uses to steer
+/* match_asm.h — the zero-code idioms (empty asm statements and empty loops) the matched C uses to steer
  * gcc 2.7.2's optimizers.
  *
  * Each macro expands to an empty asm statement: no instruction is emitted,
@@ -23,5 +23,10 @@
 
 /* A384: v is born here with no defined value (a register reservation). */
 #define REG_RESERVE(v) __asm__("" : "=r"(v))
+
+/* A200 / A232: an empty loop. Its loop notes end cse's extended basic block
+ * (so a held base is not folded back into absolute addresses) and split the
+ * scheduler's basic block (nothing moves across it). */
+#define EBB_BREAK() do { } while (0)
 
 #endif /* OPEN_SPYRO_MATCH_ASM_H */
