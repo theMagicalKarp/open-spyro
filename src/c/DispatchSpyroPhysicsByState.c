@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -66,7 +67,7 @@ void DispatchSpyroPhysicsByState(void) {
   case 42:
   case 43:
     if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & PAD_TRIANGLE)) {
-      g_nCameraNextMode = 0x80000009;
+      g_nCameraNextMode = (CAM_HELD | CAM_MODE_FREE_LOOK);
     }
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();

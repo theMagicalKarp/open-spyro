@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
@@ -62,7 +63,7 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
 
 #define PASSIVE_HOLD()                                                         \
   (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&          \
-   g_nCameraCurrentMode == 0x80000011)
+   g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_PASSIVE_SETTLE))
 
 /* Per-frame 6-axis camera spring step (0x80034ce8, 2748 bytes). `column` picks
    the tuning set (0..5) in the drive / damping / snap tables (one 6-entry row
@@ -91,7 +92,7 @@ void AdvanceCameraSpringStep(int column) {
                g_nCameraSpringSuppressFlag == 0) {
       delta = 0;
       g_anCameraSpringDeltaState[0] = 0;
-    } else if (g_nCameraCurrentMode == 6) {
+    } else if (g_nCameraCurrentMode == CAM_MODE_HAZARD) {
       delta = 0;
     } else {
       ANGLE_DELTA(g_nCameraTargetYaw, g_nCameraSpringYaw);
@@ -109,13 +110,14 @@ void AdvanceCameraSpringStep(int column) {
     }
   }
   if ((g_dwActiveCameraOptions & 0x40) && g_nCameraCollisionRetries == 0 &&
-      (g_nCameraCurrentMode == 0x80000009 || g_nCameraCurrentMode == 3)) {
+      (g_nCameraCurrentMode == 0x80000009 ||
+       g_nCameraCurrentMode == CAM_MODE_CHARGE)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, 0x2000);
   }
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
       g_nCameraSpringReengageCountdown == 0 && g_nCameraLosClear != 0 &&
       g_nCameraSpringSuppressFlag == 0 &&
-      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == 0x80000000)) {
+      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == CAM_HELD)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, 0x800);
   }
   APPLY(0);
@@ -127,7 +129,7 @@ void AdvanceCameraSpringStep(int column) {
       g_nCameraCollisionRetries == 0) {
     delta = 0;
     g_anCameraSpringDeltaState[1] = 0;
-  } else if (g_nCameraCurrentMode == 6) {
+  } else if (g_nCameraCurrentMode == CAM_MODE_HAZARD) {
   hold:
     delta = 0;
   } else {
@@ -141,7 +143,7 @@ void AdvanceCameraSpringStep(int column) {
   }
   APPLY(1);
 
-  if (PASSIVE_HOLD() || g_nCameraCurrentMode == 6) {
+  if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     delta = g_nCameraTargetDistance - g_nCameraSpringDistance;
@@ -150,7 +152,7 @@ void AdvanceCameraSpringStep(int column) {
   SPRING(2);
   APPLY(2);
 
-  if (PASSIVE_HOLD() || g_nCameraCurrentMode == 6) {
+  if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetRoll, g_nCameraSpringRoll);
@@ -159,7 +161,7 @@ void AdvanceCameraSpringStep(int column) {
   SPRING(3);
   APPLY(3);
 
-  if (PASSIVE_HOLD() || g_nCameraCurrentMode == 6) {
+  if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetPitchBias, g_nCameraSpringPitchBias);
@@ -168,7 +170,7 @@ void AdvanceCameraSpringStep(int column) {
   SPRING(4);
   APPLY(4);
 
-  if (PASSIVE_HOLD() || g_nCameraCurrentMode == 6) {
+  if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetYawBias, g_nCameraSpringYawBias);

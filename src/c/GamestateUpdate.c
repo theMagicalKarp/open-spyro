@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -100,7 +101,8 @@ void GamestateUpdate(void) {
     }
 
     if (g_nGamestate == GS_GAMEPLAY && g_nGameplayBlocked == 0 &&
-        g_nSparxHealth >= 0 && g_nCameraCurrentMode != 0x8000000E) {
+        g_nSparxHealth >= 0 &&
+        g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {
         EnterPauseMenu(1);
       } else if (g_dwPadPressed & PAD_SELECT) {

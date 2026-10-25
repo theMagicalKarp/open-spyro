@@ -82,6 +82,7 @@
 #include "level_balloonist_cutscene.h"
 #include "gamestate.h"
 #include "match_asm.h"
+#include "camera.h"
 
 
 void Level18_BalloonistCutscene_Update(void)
@@ -816,8 +817,8 @@ void Level18_BalloonistCutscene_Update(void)
         ResetSpyroEntity(1);
         g_nSpyroPadSnapshotCountdown = 0x10;
         *((int *) ((char *) g_pCameraAnchorPos)) = (int) g_anSpyroWorldPos;
-        g_nCameraCurrentMode = 0;
-        g_nCameraNextMode = 0;
+        g_nCameraCurrentMode = CAM_MODE_STAND;
+        g_nCameraNextMode = CAM_MODE_STAND;
         g_pCameraTargetParams = (int) g_anCameraDynamicTargetParams;
         g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
         ComputeCameraToTargetAngle(&g_pCameraAnchorPos[-0x2A]);

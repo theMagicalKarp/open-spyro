@@ -10,6 +10,7 @@
      loop), one variable `p` for contacted+nudge (set twice, never a
      movable), a non-sdata WS block so cse keeps `b + 4`, and an array-free
      `*q` suspend RMW (MEM_IN_STRUCT_P decides sched2 aliasing). */
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -298,7 +299,7 @@ int AdvanceSpyroPhysics(void) {
         g_anCameraLatchedAnchorPos[2] += 0x200;
         g_nCameraTargetYawBiasFromMode = ACTOR_YAW(g_pScriptedCameraActor) << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
-        g_nCameraNextMode = 0x8000000A;
+        g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST_0A);
         g_nSpyroMoveTargetYaw = keepYaw;
         g_dwSpyroRequestMask |= 0x200;
       } else if (m & 0x8000) {

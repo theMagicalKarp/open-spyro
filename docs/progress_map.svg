@@ -181,7 +181,7 @@
 <rect x="100.19" y="695.90" width="15.71" height="16.00" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>WriteSpuRamPio  ·  460 bytes  ·  library</title></rect>
 <rect x="100.19" y="711.91" width="15.71" height="15.86" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildTextSpriteChain  ·  456 bytes  ·  matched</title></rect>
 <rect x="100.19" y="727.77" width="15.71" height="15.31" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemCutscene_Draw  ·  440 bytes  ·  matched</title></rect>
-<rect x="100.19" y="743.08" width="15.71" height="15.17" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateLedgeGrabCamera  ·  436 bytes  ·  matched</title></rect>
+<rect x="100.19" y="743.08" width="15.71" height="15.17" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateLevelTransitionCamera  ·  436 bytes  ·  matched</title></rect>
 <rect x="100.19" y="758.25" width="15.71" height="15.17" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepSpyroOntoLocalFloor  ·  436 bytes  ·  matched</title></rect>
 <rect x="115.90" y="563.29" width="16.05" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RelocateMobActorTable  ·  432 bytes  ·  matched</title></rect>
 <rect x="131.95" y="563.29" width="16.05" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>FinalizePadCalibration  ·  432 bytes  ·  matched</title></rect>

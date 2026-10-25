@@ -42198,11 +42198,11 @@ glabel UpdateScriptedCameraView
 endlabel UpdateScriptedCameraView
 .endif
 
-.section .text.UpdateLedgeGrabCamera, "ax"
-.ifndef HAVE_C_UpdateLedgeGrabCamera
-nonmatching UpdateLedgeGrabCamera, 0x1B4
+.section .text.UpdateLevelTransitionCamera, "ax"
+.ifndef HAVE_C_UpdateLevelTransitionCamera
+nonmatching UpdateLevelTransitionCamera, 0x1B4
 
-glabel UpdateLedgeGrabCamera
+glabel UpdateLevelTransitionCamera
     /* 28220 80037A20 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 28224 80037A24 0880043C */  lui        $a0, %hi(g_nSpyroBodyYaw)
     /* 28228 80037A28 748B848C */  lw         $a0, %lo(g_nSpyroBodyYaw)($a0)
@@ -42229,8 +42229,8 @@ glabel UpdateLedgeGrabCamera
     /* 2827C 80037A7C B6DE0008 */  j          .L80037AD8
     /* 28280 80037A80 00000000 */   nop
   .L80037A84:
-    /* 28284 80037A84 0780023C */  lui        $v0, %hi(g_anCameraParamLedgeGrabStreaming)
-    /* 28288 80037A88 54CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamLedgeGrabStreaming)
+    /* 28284 80037A84 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionStreaming)
+    /* 28288 80037A88 54CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionStreaming)
     /* 2828C 80037A8C B6DE0008 */  j          .L80037AD8
     /* 28290 80037A90 00000000 */   nop
   .L80037A94:
@@ -42245,13 +42245,13 @@ glabel UpdateLedgeGrabCamera
     /* 282B4 80037AB4 2A108200 */  slt        $v0, $a0, $v0
     /* 282B8 80037AB8 05004010 */  beqz       $v0, .L80037AD0
     /* 282BC 80037ABC 00000000 */   nop
-    /* 282C0 80037AC0 0780023C */  lui        $v0, %hi(g_anCameraParamLedgeGrabYawBelow)
-    /* 282C4 80037AC4 3CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamLedgeGrabYawBelow)
+    /* 282C0 80037AC0 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionYawBelow)
+    /* 282C4 80037AC4 3CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionYawBelow)
     /* 282C8 80037AC8 B6DE0008 */  j          .L80037AD8
     /* 282CC 80037ACC 00000000 */   nop
   .L80037AD0:
-    /* 282D0 80037AD0 0780023C */  lui        $v0, %hi(g_anCameraParamLedgeGrabYawAbove)
-    /* 282D4 80037AD4 6CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamLedgeGrabYawAbove)
+    /* 282D0 80037AD0 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionYawAbove)
+    /* 282D4 80037AD4 6CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionYawAbove)
   .L80037AD8:
     /* 282D8 80037AD8 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 282DC 80037ADC A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
@@ -42319,7 +42319,7 @@ glabel UpdateLedgeGrabCamera
     /* 283C8 80037BC8 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 283CC 80037BCC 0800E003 */  jr         $ra
     /* 283D0 80037BD0 00000000 */   nop
-endlabel UpdateLedgeGrabCamera
+endlabel UpdateLevelTransitionCamera
 .endif
 
 .section .text.UpdateCameraFrame, "ax"
@@ -42396,7 +42396,7 @@ glabel UpdateCameraFrame
     /* 284C4 80037CC4 12004234 */  ori        $v0, $v0, (0x80000012 & 0xFFFF)
     /* 284C8 80037CC8 05006214 */  bne        $v1, $v0, .L80037CE0
     /* 284CC 80037CCC 0080023C */   lui       $v0, (0x8000000B >> 16)
-    /* 284D0 80037CD0 88DE000C */  jal        UpdateLedgeGrabCamera
+    /* 284D0 80037CD0 88DE000C */  jal        UpdateLevelTransitionCamera
     /* 284D4 80037CD4 00000000 */   nop
     /* 284D8 80037CD8 97DF0008 */  j          .L80037E5C
     /* 284DC 80037CDC 00000000 */   nop

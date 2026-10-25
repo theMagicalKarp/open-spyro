@@ -43,6 +43,7 @@
 #include "match_asm.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
+#include "camera.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -335,7 +336,7 @@ void Level14_UpdateActors(void) {
                 g_nGamePaused = 1;
                 g_nScriptedMobTag = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
-                g_nCameraNextMode = 0x80000012;
+                g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
                 g_nSpyroFallTrackingFlag = 0;

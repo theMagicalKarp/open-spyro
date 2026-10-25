@@ -1468,38 +1468,38 @@ dlabel g_aCameraXformPresets
     /* 5D238 8006CA38 00000000 */ .word 0x00000000
 enddlabel g_aCameraXformPresets
 
-nonmatching g_anCameraParamLedgeGrabYawBelow
+nonmatching g_anCameraParamTransitionYawBelow
 
-dlabel g_anCameraParamLedgeGrabYawBelow
+dlabel g_anCameraParamTransitionYawBelow
     /* 5D23C 8006CA3C 00040000 */ .word 0x00000400
     /* 5D240 8006CA40 40FFFFFF */ .word 0xFFFFFF40
     /* 5D244 8006CA44 000B0000 */ .word 0x00000B00
     /* 5D248 8006CA48 00000000 */ .word 0x00000000
     /* 5D24C 8006CA4C 30000000 */ .word 0x00000030
     /* 5D250 8006CA50 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabYawBelow
+enddlabel g_anCameraParamTransitionYawBelow
 
-nonmatching g_anCameraParamLedgeGrabStreaming
+nonmatching g_anCameraParamTransitionStreaming
 
-dlabel g_anCameraParamLedgeGrabStreaming
+dlabel g_anCameraParamTransitionStreaming
     /* 5D254 8006CA54 00000000 */ .word 0x00000000
     /* 5D258 8006CA58 40FFFFFF */ .word 0xFFFFFF40
     /* 5D25C 8006CA5C 000C0000 */ .word 0x00000C00
     /* 5D260 8006CA60 00000000 */ .word 0x00000000
     /* 5D264 8006CA64 60000000 */ .word 0x00000060
     /* 5D268 8006CA68 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabStreaming
+enddlabel g_anCameraParamTransitionStreaming
 
-nonmatching g_anCameraParamLedgeGrabYawAbove
+nonmatching g_anCameraParamTransitionYawAbove
 
-dlabel g_anCameraParamLedgeGrabYawAbove
+dlabel g_anCameraParamTransitionYawAbove
     /* 5D26C 8006CA6C 000C0000 */ .word 0x00000C00
     /* 5D270 8006CA70 40FFFFFF */ .word 0xFFFFFF40
     /* 5D274 8006CA74 000B0000 */ .word 0x00000B00
     /* 5D278 8006CA78 00000000 */ .word 0x00000000
     /* 5D27C 8006CA7C 30000000 */ .word 0x00000030
     /* 5D280 8006CA80 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabYawAbove
+enddlabel g_anCameraParamTransitionYawAbove
 
 nonmatching g_anCameraMode12Params
 

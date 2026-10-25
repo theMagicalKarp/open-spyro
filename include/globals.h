@@ -341,9 +341,9 @@ extern int g_anCameraParamMode3[6];                          /* 0x8006c994 */
 extern int g_anCameraParamMode4Front[6];                     /* 0x8006c9ac */
 extern int g_anCameraParamMode4Reverse[6];                   /* 0x8006c9dc */
 extern int g_anCameraParamMode9ScriptStick[6];               /* 0x8006ca0c */
-extern int g_anCameraParamLedgeGrabYawBelow[6];              /* 0x8006ca3c */
-extern int g_anCameraParamLedgeGrabStreaming[6];             /* 0x8006ca54 */
-extern int g_anCameraParamLedgeGrabYawAbove[6];              /* 0x8006ca6c */
+extern int g_anCameraParamTransitionYawBelow[6];              /* 0x8006ca3c */
+extern int g_anCameraParamTransitionStreaming[6];             /* 0x8006ca54 */
+extern int g_anCameraParamTransitionYawAbove[6];              /* 0x8006ca6c */
 extern int g_anCameraMode12Params[6];                        /* 0x8006ca84 */
 extern int g_anCameraStuckReseatParams[30];                  /* 0x8006cab4 */
 extern int g_anCameraParamEnemyLock[6];                      /* 0x8006cb2c */

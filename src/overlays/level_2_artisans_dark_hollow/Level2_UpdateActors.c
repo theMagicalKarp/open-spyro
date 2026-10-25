@@ -52,6 +52,7 @@
 #include "match_asm.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
+#include "camera.h"
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
@@ -254,7 +255,7 @@ void Level2_UpdateActors(void) {
                 g_nGamePaused = 1;
                 g_nScriptedMobTag = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
-                g_nCameraNextMode = 0x80000012;
+                g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
                 g_nSpyroFallTrackingFlag = 0;
@@ -1655,7 +1656,7 @@ void Level2_UpdateActors(void) {
           if (st->timer <= 0) {
             svF[0] = -0x258;
             svF[1] = (GetRandomU32() & 0x310) - 0x188;
-            svF[2] = g_nCameraCurrentMode == 3 ? (GetRandomU32() & 0x7F) + 0x64
+            svF[2] = g_nCameraCurrentMode == CAM_MODE_CHARGE ? (GetRandomU32() & 0x7F) + 0x64
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
             EBB_BREAK();
             st->drift[0] = svF[0];
@@ -1668,7 +1669,7 @@ void Level2_UpdateActors(void) {
             st->timer -= g_nFrameStep;
             EBB_BREAK();
 
-            if (g_nCameraCurrentMode == 3) {
+            if (g_nCameraCurrentMode == CAM_MODE_CHARGE) {
               svF[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
               svF[1] = st->drift[1];
               svF[2] = st->drift[2];
@@ -1676,7 +1677,7 @@ void Level2_UpdateActors(void) {
                 svF[2] = 0x64;
               }
             } else {
-              if (g_nCameraCurrentMode == 0x80000009) {
+              if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
                 svF[0] = st->drift[0] - 0x200;
               } else {
                 svF[0] = st->drift[0];

@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "globals.h"
 #include "vecmath.h"
 
@@ -33,7 +34,7 @@ void ActivateScriptedCameraView(int *view) {
   rec = g_pScriptedCameraView;
   CAMERA_EULER.roll = rec[9];
   CAMERA_EULER.pitch = rec[10];
-  g_nCameraCurrentMode = 0x8000000e;
-  g_nCameraNextMode = 0x8000000e;
+  g_nCameraCurrentMode = (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE);
+  g_nCameraNextMode = (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE);
   CAMERA_EULER.yaw = rec[11];
 }

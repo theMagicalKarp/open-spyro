@@ -42,11 +42,11 @@ void SelectCameraMode(void) {
   int table;
   unsigned int opts;
 
-  if (mode == 0x80000009) {
+  if (mode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
     if (g_dwActiveCameraOptions & 0x10) {
       if (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) {
         if (!(g_dwPadHeld & PAD_TRIANGLE)) {
-          g_nCameraNextMode = 0x80000010;
+          g_nCameraNextMode = (CAM_HELD | CAM_MODE_PASSIVE);
           g_nCameraPassiveModeHoldTimer = 0x2D;
           g_nSpyroSwingEulerPitchTarget = 0;
           g_nCameraScriptStickRequestY = 0;
@@ -65,7 +65,7 @@ void SelectCameraMode(void) {
       g_nCameraScriptStickRequestX = 0;
       *nextp = t;
     }
-  } else if (mode == 0x8000000A) {
+  } else if (mode == (CAM_HELD | CAM_MODE_REQUEST_0A)) {
     if (!(SPY[SPY_REQUEST] & 0x200)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
@@ -75,13 +75,13 @@ void SelectCameraMode(void) {
       *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
       if (((opts & 0x10) || g_nCameraLookAroundActive) &&
           CAM[CAM_NEXT_MODE] == 0 && g_nCameraSpringSuppressFlag == 0) {
-        CAM[CAM_NEXT_MODE] = 0x80000010;
+        CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE);
         goto hold;
       }
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
       REBASE();
     }
-  } else if (mode == 0x80000007) {
+  } else if (mode == (CAM_HELD | CAM_MODE_SCRIPTED_TARGET)) {
     if (!(SPY[SPY_REQUEST] & 0x8000)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
@@ -89,7 +89,7 @@ void SelectCameraMode(void) {
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
       REBASE();
     }
-  } else if (mode == 0x8000000C) {
+  } else if (mode == (CAM_HELD | CAM_MODE_SCRIPTED_FOLLOW)) {
     if (!(SPY[SPY_REQUEST] & 0x10000)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
@@ -97,7 +97,7 @@ void SelectCameraMode(void) {
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
       REBASE();
     }
-  } else if (mode == 0x8000000B) {
+  } else if (mode == (CAM_HELD | CAM_MODE_GEM_PATH)) {
     if (!(SPY[SPY_REQUEST] & 0x400)) {
       table = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
@@ -110,7 +110,7 @@ void SelectCameraMode(void) {
         ((unsigned char *)g_pGemPickupCamPathData)[1] = 0;
       }
     }
-  } else if (mode == 0x80000010) {
+  } else if (mode == (CAM_HELD | CAM_MODE_PASSIVE)) {
   passive:
     table = STATE_MODE();
     if (table == 0 || table == 4) {
@@ -120,9 +120,9 @@ void SelectCameraMode(void) {
     } else {
       *nextp = table;
     }
-  } else if (mode == 0x80000011) {
+  } else if (mode == (CAM_HELD | CAM_MODE_PASSIVE_SETTLE)) {
     goto passive;
-  } else if (mode == 0x80000000) {
+  } else if (mode == CAM_HELD) {
     if (SPY[SPY_SPEED] > 0x400) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
     } else {
@@ -141,13 +141,13 @@ void SelectCameraMode(void) {
     pt[0] -= 0x100;
     pt[1] -= 0x78;
     if (abs(pt[0]) > 0x40 || abs(pt[1]) > 0x28 || (unsigned)pt[2] > 0x1400) {
-      g_nCameraNextMode = 0x80000010;
+      g_nCameraNextMode = (CAM_HELD | CAM_MODE_PASSIVE);
     hold:
       g_nCameraPassiveModeHoldTimer = 0x2D;
     }
   } else {
     if (*(int **)&CAM[CAM_ANCHOR] != g_anSpyroWorldPos &&
-        CAM[CAM_CURRENT_MODE] != 6) {
+        CAM[CAM_CURRENT_MODE] != CAM_MODE_HAZARD) {
       *(int **)&CAM[CAM_ANCHOR] = g_anSpyroWorldPos;
       REBASE();
     }
@@ -156,18 +156,19 @@ done:
   if (CAM[CAM_NEXT_MODE] != g_nCameraCurrentMode) {
     if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
         SPY[SPY_SCRIPTED_MOVE] == 0 && g_nCameraSpringSuppressFlag == 0 &&
-        (CAM[CAM_NEXT_MODE] == 0 || CAM[CAM_NEXT_MODE] == 0x80000000) &&
+        (CAM[CAM_NEXT_MODE] == 0 || CAM[CAM_NEXT_MODE] == CAM_HELD) &&
         g_nCameraCurrentMode != 0x80000011 &&
         *(int **)&CAM[CAM_ANCHOR] == SPY) {
       g_nCameraPassiveModeHoldTimer = 8;
-      CAM[CAM_NEXT_MODE] = 0x80000011;
+      CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE_SETTLE);
       g_nCameraSpringReengageCountdown = 0x5A;
     } else if (CAM[CAM_CURRENT_MODE] == 2 ||
-               CAM[CAM_CURRENT_MODE] == 0x8000000E) {
+               CAM[CAM_CURRENT_MODE] ==
+                   (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       REBASE();
     }
     g_nCameraCurrentMode = g_nCameraNextMode;
-    if (g_nCameraCurrentMode == 0x80000009) {
+    if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
       if (g_nCameraLosClear != 0) {
         g_nCameraCollisionRetries = 0;
       }

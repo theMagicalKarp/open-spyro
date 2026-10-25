@@ -2377,7 +2377,7 @@ TickLevelTransitionStream:
   date: 2026-08-24
   note: "4212 B; jr through switchdataD_80010a88 at 0x80015418. 55 jals, otherwise clean."
 
-UpdateLedgeGrabCamera:
+UpdateLevelTransitionCamera:
   verdict: matched
   class: "B1 retired (SDATA gp-relative declaration)"
   date: 2026-10-09

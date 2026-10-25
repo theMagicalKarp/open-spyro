@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -70,7 +71,7 @@ void HandleLevelSelectInput(void) {
           g_nScriptedRespawnFlag = 0;
           g_nLevelTransitionTallyActive = 0;
           g_nGamePaused = 1;
-          g_nCameraNextMode = 0x80000012;
+          g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
         }
         g_nLevelSelectModeActive = 0;
         return;

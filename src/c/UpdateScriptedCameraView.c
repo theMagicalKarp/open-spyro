@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -48,7 +49,8 @@ void UpdateScriptedCameraView(void) {
         }
       }
     }
-    if (n != 0 || g_nCameraCurrentMode != 0x8000000e) {
+    if (n != 0 ||
+        g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       n = GetRandomU32() & 0xfff;
       n = (n * 3) >> 12;
       if (VIEW == &g_anScriptedCameraPresetRecords[n * 0xe]) {

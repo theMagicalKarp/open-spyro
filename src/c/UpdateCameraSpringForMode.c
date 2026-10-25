@@ -82,8 +82,8 @@ void UpdateCameraSpringForMode(void) {
   int i;
 
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
-      CAM[CAM_CURRENT_MODE] == 0xF) {
-    CAM[CAM_CURRENT_MODE] = 0;
+      CAM[CAM_CURRENT_MODE] == CAM_MODE_BONK) {
+    CAM[CAM_CURRENT_MODE] = CAM_MODE_STAND;
   }
   OPAQUE_COPY(s, &CAM[CAM_STUCK_FRAMES]);
   column = (*s + 1) >> 1;
@@ -475,7 +475,8 @@ void UpdateCameraSpringForMode(void) {
       g_nCameraCurrentMode != 0x80000007 &&
       g_nCameraCurrentMode != 0x80000012 &&
       g_nCameraCurrentMode != 0x8000000B &&
-      g_nCameraCurrentMode != 0x8000000E && g_nCameraCurrentMode != 3) {
+      g_nCameraCurrentMode != 0x8000000E &&
+      g_nCameraCurrentMode != CAM_MODE_CHARGE) {
     UpdateCameraManualYawInput();
   } else {
     g_nCameraManualYawInput = 0;
@@ -483,7 +484,7 @@ void UpdateCameraSpringForMode(void) {
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
       g_nCameraLosClear && g_nCameraSpringReengageCountdown &&
       CAM[CAM_SUPPRESS] == 0 && g_nCameraManualYawInput == 0 &&
-      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == 0x80000000)) {
+      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == CAM_HELD)) {
     CopyVector(&CAM[3], CAM);
     g_anCameraSpringDeltaState[0] = 0;
     g_anCameraSpringDeltaState[1] = 0;

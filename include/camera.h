@@ -17,4 +17,30 @@ typedef struct CameraAngles {
   int yawBias;   /* 0x14 */
 } CameraAngles;
 
+/* g_nCameraCurrentMode / g_nCameraNextMode. Modes 0..6 and 0xF are the
+ * per-Spyro-state picks (g_abSpyroStateCameraModeTable, by SpyroState); the
+ * rest are entered by request bits, scripts and transitions. CAM_HELD marks a
+ * mode SelectCameraMode keeps until its own exit condition instead of
+ * re-reading the state table. */
+enum CameraMode {
+  CAM_MODE_STAND = 0,             /* idle, teeter, hurt */
+  CAM_MODE_MOVE = 1,              /* walk/run/jog, jump, slide, lift */
+  CAM_MODE_SIDESTEP = 2,          /* sidestep, knockback (Mode2Front/Reverse) */
+  CAM_MODE_CHARGE = 3,            /* the charge states */
+  CAM_MODE_FALL = 4,
+  CAM_MODE_GLIDE = 5,             /* glide and flight (Mode5 bias pair) */
+  CAM_MODE_HAZARD = 6,
+  CAM_MODE_SCRIPTED_TARGET = 7,   /* g_dwSpyroRequestMask 0x8000 */
+  CAM_MODE_FREE_LOOK = 9,         /* Triangle held while idle */
+  CAM_MODE_REQUEST_0A = 0xA,      /* g_dwSpyroRequestMask 0x200 */
+  CAM_MODE_GEM_PATH = 0xB,        /* UpdateGemPickupPathCamera; mask 0x400 */
+  CAM_MODE_SCRIPTED_FOLLOW = 0xC, /* g_dwSpyroRequestMask 0x10000 */
+  CAM_MODE_SCRIPTED_VANTAGE = 0xE, /* UpdateScriptedCameraView */
+  CAM_MODE_BONK = 0xF,            /* SPYRO_ST_CHARGE_BONK */
+  CAM_MODE_PASSIVE = 0x10,        /* passive-camera option, hold timer */
+  CAM_MODE_PASSIVE_SETTLE = 0x11, /* passive re-engage after a mode change */
+  CAM_MODE_LEVEL_TRANSITION = 0x12, /* UpdateLevelTransitionCamera */
+};
+#define CAM_HELD 0x80000000
+
 #endif /* OPEN_SPYRO_CAMERA_H */

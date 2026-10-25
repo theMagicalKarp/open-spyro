@@ -10,6 +10,7 @@
    pointer + count published to a global and its stored offsets rebased onto
    the chunk itself. */
 
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -150,8 +151,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
         *((struct CameraParamBlock *)g_anCameraParamMode2Front);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraCurrentMode = 0;
-    g_nCameraNextMode = 0;
+    g_nCameraCurrentMode = CAM_MODE_STAND;
+    g_nCameraNextMode = CAM_MODE_STAND;
     g_anCameraActiveTargetParams[2] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;

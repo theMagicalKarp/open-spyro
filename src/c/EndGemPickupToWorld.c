@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -36,8 +37,8 @@ void EndGemPickupToWorld(void) {
   cam[0] = &snap[-0x7C];
   timer = g_nSpyroFlameBreathTimerSave;
   dyn = g_anCameraDynamicTargetParams;
-  g_nCameraCurrentMode = 0;
-  g_nCameraNextMode = 0;
+  g_nCameraCurrentMode = CAM_MODE_STAND;
+  g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
   g_nSpyroFlameBreathTimer = timer;
   g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;

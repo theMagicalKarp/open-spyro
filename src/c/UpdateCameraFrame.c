@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -24,7 +25,7 @@ void UpdateCameraFrame(void) {
     SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
   }
   if (g_nSpyroScriptedMoveMode != 0) {
-    g_nCameraNextMode = 0;
+    g_nCameraNextMode = CAM_MODE_STAND;
     g_nCameraSpringReengageCountdown = 0;
   } else {
     int *next;
@@ -35,12 +36,12 @@ void UpdateCameraFrame(void) {
     }
   }
   SelectCameraMode();
-  if (g_nCameraCurrentMode == 0x8000000E) {
+  if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
     UpdateScriptedCameraView();
-  } else if (g_nCameraCurrentMode == 0x80000012) {
-    UpdateLedgeGrabCamera();
+  } else if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_LEVEL_TRANSITION)) {
+    UpdateLevelTransitionCamera();
   } else {
-    if (g_nCameraCurrentMode == 0x8000000B) {
+    if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_GEM_PATH)) {
       UpdateGemPickupPathCamera();
     } else {
       UpdateCameraSpringForMode();

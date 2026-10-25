@@ -24,6 +24,7 @@
 #include "level_spawn_actor.h"
 #include "level_flight_results.h"
 #include "gamestate.h"
+#include "camera.h"
 
 extern char *g_pRenderScratchPrimTop;
 
@@ -84,7 +85,7 @@ void Level29_HandleFlightResults(int reload) {
     } while (i < g_nGemTallyIconCount);
   }
   g_nSpyroStateFlags = 0;
-  if (g_nCameraCurrentMode == 0x8000000E) {
+  if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
     g_nCameraNextMode = g_abSpyroStateCameraMode[g_nSpyroState];
   }
 }
