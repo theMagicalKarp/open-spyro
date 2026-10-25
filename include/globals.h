@@ -330,7 +330,7 @@ extern int g_anSpyroWallNudgeAngleByProbeMask[16];           /* 0x8006c714 */
 extern short g_anCameraSpringDriveGains[36];                 /* 0x8006c754 */
 extern short g_anCameraSpringDampingGains[36];               /* 0x8006c79c */
 extern short g_anCameraSpringSnapThresholds[36];             /* 0x8006c7e4 */
-extern int g_anCameraAutoRotateRates[36];                    /* 0x8006c82c */
+extern int g_anCameraEscapeOffsets[36];                    /* 0x8006c82c */
 extern int g_anCameraDynamicTargetParams[6];                 /* 0x8006c8bc */
 extern int g_anCameraParamDefault[6];                        /* 0x8006c8d4 */
 extern int g_anCameraParamMode2Front[6];                     /* 0x8006c934 */

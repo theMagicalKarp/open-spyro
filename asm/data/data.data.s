@@ -1257,9 +1257,9 @@ dlabel g_anCameraSpringSnapThresholds
     /* 5D02A 8006C82A */ .short 0x0180
 enddlabel g_anCameraSpringSnapThresholds
 
-nonmatching g_anCameraAutoRotateRates
+nonmatching g_anCameraEscapeOffsets
 
-dlabel g_anCameraAutoRotateRates
+dlabel g_anCameraEscapeOffsets
     /* 5D02C 8006C82C 80000000 */ .word 0x00000080
     /* 5D030 8006C830 00000000 */ .word 0x00000000
     /* 5D034 8006C834 00000000 */ .word 0x00000000
@@ -1296,7 +1296,7 @@ dlabel g_anCameraAutoRotateRates
     /* 5D0B0 8006C8B0 00000000 */ .word 0x00000000
     /* 5D0B4 8006C8B4 00000000 */ .word 0x00000000
     /* 5D0B8 8006C8B8 00000000 */ .word 0x00000000
-enddlabel g_anCameraAutoRotateRates
+enddlabel g_anCameraEscapeOffsets
 
 nonmatching g_anCameraDynamicTargetParams
 

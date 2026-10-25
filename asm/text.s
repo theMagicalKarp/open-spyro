@@ -38715,25 +38715,25 @@ glabel UpdateGameplayCamera
     /* 25080 80034880 21900000 */  addu       $s2, $zero, $zero
   .L80034884:
     /* 25084 80034884 1800028E */  lw         $v0, 0x18($s0)
-    /* 25088 80034888 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates)
+    /* 25088 80034888 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets)
     /* 2508C 8003488C 21083200 */  addu       $at, $at, $s2
-    /* 25090 80034890 2CC8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates)($at)
+    /* 25090 80034890 2CC8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets)($at)
     /* 25094 80034894 00000000 */  nop
     /* 25098 80034898 21104300 */  addu       $v0, $v0, $v1
     /* 2509C 8003489C FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 250A0 800348A0 000002AE */  sw         $v0, 0x0($s0)
     /* 250A4 800348A4 1C00028E */  lw         $v0, 0x1C($s0)
-    /* 250A8 800348A8 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x4)
+    /* 250A8 800348A8 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x4)
     /* 250AC 800348AC 21083200 */  addu       $at, $at, $s2
-    /* 250B0 800348B0 30C8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates + 0x4)($at)
+    /* 250B0 800348B0 30C8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets + 0x4)($at)
     /* 250B4 800348B4 00000000 */  nop
     /* 250B8 800348B8 21104300 */  addu       $v0, $v0, $v1
     /* 250BC 800348BC FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 250C0 800348C0 040002AE */  sw         $v0, 0x4($s0)
     /* 250C4 800348C4 2000028E */  lw         $v0, 0x20($s0)
-    /* 250C8 800348C8 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x8)
+    /* 250C8 800348C8 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x8)
     /* 250CC 800348CC 21083200 */  addu       $at, $at, $s2
-    /* 250D0 800348D0 34C8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates + 0x8)($at)
+    /* 250D0 800348D0 34C8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets + 0x8)($at)
     /* 250D4 800348D4 21206002 */  addu       $a0, $s3, $zero
     /* 250D8 800348D8 21104300 */  addu       $v0, $v0, $v1
     /* 250DC 800348DC 81D0000C */  jal        ComputeCameraOrbitOffset
@@ -38776,25 +38776,25 @@ glabel UpdateGameplayCamera
     /* 25168 80034968 01004230 */  andi       $v0, $v0, 0x1
     /* 2516C 8003496C 2B004010 */  beqz       $v0, .L80034A1C
     /* 25170 80034970 21206002 */   addu      $a0, $s3, $zero
-    /* 25174 80034974 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates)
+    /* 25174 80034974 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets)
     /* 25178 80034978 21083200 */  addu       $at, $at, $s2
-    /* 2517C 8003497C 2CC8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates)($at)
+    /* 2517C 8003497C 2CC8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets)($at)
     /* 25180 80034980 1800028E */  lw         $v0, 0x18($s0)
     /* 25184 80034984 40180300 */  sll        $v1, $v1, 1
     /* 25188 80034988 21104300 */  addu       $v0, $v0, $v1
     /* 2518C 8003498C FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 25190 80034990 000002AE */  sw         $v0, 0x0($s0)
-    /* 25194 80034994 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x4)
+    /* 25194 80034994 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x4)
     /* 25198 80034998 21083200 */  addu       $at, $at, $s2
-    /* 2519C 8003499C 30C8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates + 0x4)($at)
+    /* 2519C 8003499C 30C8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets + 0x4)($at)
     /* 251A0 800349A0 1C00028E */  lw         $v0, 0x1C($s0)
     /* 251A4 800349A4 40180300 */  sll        $v1, $v1, 1
     /* 251A8 800349A8 21104300 */  addu       $v0, $v0, $v1
     /* 251AC 800349AC FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 251B0 800349B0 040002AE */  sw         $v0, 0x4($s0)
-    /* 251B4 800349B4 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x8)
+    /* 251B4 800349B4 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x8)
     /* 251B8 800349B8 21083200 */  addu       $at, $at, $s2
-    /* 251BC 800349BC 34C8228C */  lw         $v0, %lo(g_anCameraAutoRotateRates + 0x8)($at)
+    /* 251BC 800349BC 34C8228C */  lw         $v0, %lo(g_anCameraEscapeOffsets + 0x8)($at)
     /* 251C0 800349C0 2000038E */  lw         $v1, 0x20($s0)
     /* 251C4 800349C4 40100200 */  sll        $v0, $v0, 1
     /* 251C8 800349C8 21186200 */  addu       $v1, $v1, $v0
@@ -38835,25 +38835,25 @@ glabel UpdateGameplayCamera
     /* 2524C 80034A4C 01004230 */  andi       $v0, $v0, 0x1
     /* 25250 80034A50 2B004010 */  beqz       $v0, .L80034B00
     /* 25254 80034A54 21206002 */   addu      $a0, $s3, $zero
-    /* 25258 80034A58 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates)
+    /* 25258 80034A58 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets)
     /* 2525C 80034A5C 21083200 */  addu       $at, $at, $s2
-    /* 25260 80034A60 2CC8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates)($at)
+    /* 25260 80034A60 2CC8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets)($at)
     /* 25264 80034A64 1800028E */  lw         $v0, 0x18($s0)
     /* 25268 80034A68 80180300 */  sll        $v1, $v1, 2
     /* 2526C 80034A6C 21104300 */  addu       $v0, $v0, $v1
     /* 25270 80034A70 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 25274 80034A74 000002AE */  sw         $v0, 0x0($s0)
-    /* 25278 80034A78 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x4)
+    /* 25278 80034A78 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x4)
     /* 2527C 80034A7C 21083200 */  addu       $at, $at, $s2
-    /* 25280 80034A80 30C8238C */  lw         $v1, %lo(g_anCameraAutoRotateRates + 0x4)($at)
+    /* 25280 80034A80 30C8238C */  lw         $v1, %lo(g_anCameraEscapeOffsets + 0x4)($at)
     /* 25284 80034A84 1C00028E */  lw         $v0, 0x1C($s0)
     /* 25288 80034A88 80180300 */  sll        $v1, $v1, 2
     /* 2528C 80034A8C 21104300 */  addu       $v0, $v0, $v1
     /* 25290 80034A90 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 25294 80034A94 040002AE */  sw         $v0, 0x4($s0)
-    /* 25298 80034A98 0780013C */  lui        $at, %hi(g_anCameraAutoRotateRates + 0x8)
+    /* 25298 80034A98 0780013C */  lui        $at, %hi(g_anCameraEscapeOffsets + 0x8)
     /* 2529C 80034A9C 21083200 */  addu       $at, $at, $s2
-    /* 252A0 80034AA0 34C8228C */  lw         $v0, %lo(g_anCameraAutoRotateRates + 0x8)($at)
+    /* 252A0 80034AA0 34C8228C */  lw         $v0, %lo(g_anCameraEscapeOffsets + 0x8)($at)
     /* 252A4 80034AA4 2000038E */  lw         $v1, 0x20($s0)
     /* 252A8 80034AA8 80100200 */  sll        $v0, $v0, 2
     /* 252AC 80034AAC 21186200 */  addu       $v1, $v1, $v0
