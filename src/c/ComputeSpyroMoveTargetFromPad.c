@@ -62,7 +62,7 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
     }
   } else {
     dpad = (unsigned char *)g_pPadSubstepState;
-    if ((((PadSubstep *)dpad)->held & 0xf000) != 0) {
+    if ((((PadSubstep *)dpad)->held & PAD_DPAD) != 0) {
       g_nSpyroSpeedTarget = speed;
       g_nSpyroMoveTargetYaw =
           DPAD_DIRECTION_YAW((PAD_SUBSTEP_RAW(dpad, int, held) >> 0xb) & 0x1e);

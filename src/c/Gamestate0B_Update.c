@@ -321,11 +321,11 @@ void Gamestate0B_Update(void) {
       }
       break;
     case 6:
-      if (g_adwPadPressedBlock[0] & 0x5000) {
+      if (g_adwPadPressedBlock[0] & (PAD_UP | PAD_DOWN)) {
         PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
         SM[2] = 1 - SM[2];
       }
-      if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & 0x40)) {
+      if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
         MemCardCloseSession();
         if (g_nSaveMenuCursor == 0) {
           PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
