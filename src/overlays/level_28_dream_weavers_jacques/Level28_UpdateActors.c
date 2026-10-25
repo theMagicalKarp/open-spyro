@@ -271,7 +271,7 @@ void Level28_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 
@@ -3246,7 +3246,7 @@ void Level28_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case 331:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = 1;

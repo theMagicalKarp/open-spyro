@@ -39,7 +39,8 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
   }
 
 /* Spyro state transition (0x8003ea68, 4960 bytes). Runs the exit side of the
-   old state (stop the charge/glide loops, play the landing or splash sound),
+   old state (stop the charge/glide/fly loops, play the hurt states' exit
+   sounds),
    then the entry setup of the new one: motion carry-over, gravity step and
    enable, speed targets and sounds, the charge homing-target search
    (SPYRO_ST_CHARGE), the dizzy stars (SPYRO_ST_CHARGE_BONK) and the

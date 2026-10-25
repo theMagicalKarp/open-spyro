@@ -272,7 +272,7 @@ void Level8_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 
@@ -529,7 +529,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Egg thief (ThiefState). */
-    case 33: {
+    case ACTOR_TYPE_EGG_THIEF: {
       ThiefState *st;
 
       EBB_BREAK();
@@ -3408,7 +3408,7 @@ void Level8_UpdateActors(void) {
 
     /* Ambient sound source (AmbientSoundState): plays random ambient sounds;
      * mode 2 also steps it along a waypoint path. */
-    case 286: {
+    case ACTOR_TYPE_AMBIENT_SOUND: {
       AmbientSoundState *st = actor->state;
       int voice = -1;
 
@@ -3727,9 +3727,9 @@ void Level8_UpdateActors(void) {
       continue;
     }
 
-    /* Respawn warden (WardenState): puts its group back once Spyro has left. */
-    case 323: {
-      WardenState *st = actor->state;
+    /* Respawner (RespawnState): puts its type's dormant actors back once Spyro is far away. */
+    case ACTOR_TYPE_RESPAWNER: {
+      RespawnState *st = actor->state;
 
       CopyVector(&actor->posX, &SPY.posX);
 
@@ -3739,7 +3739,7 @@ void Level8_UpdateActors(void) {
         st->timer = st->period;
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
-          if (scan->type == st->group && scan->mode >= ACTOR_MODE_DORMANT &&
+          if (scan->type == st->type && scan->mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
@@ -3756,7 +3756,7 @@ void Level8_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case 332:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT + 1:      switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = 1;

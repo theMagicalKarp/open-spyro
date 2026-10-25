@@ -355,14 +355,6 @@ typedef struct AmbientSoundState {
   int left;       /* 0x24 frames left on this leg */
 } AmbientSoundState;
 
-/* Case 323 — the respawn warden: puts every dormant actor of its group back
- * once Spyro is far enough away. */
-typedef struct WardenState {
-  int group;  /* 0x00 */
-  int timer;  /* 0x04 */
-  int period; /* 0x08 */
-} WardenState;
-
 /* Case 250 — crystal dragon statue: shakes through its rest pose, then
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
@@ -710,7 +702,9 @@ typedef struct WhirlwindState {
   int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
 } WhirlwindState;
 
-/* Type 323: respawner. Revives dormant actors of one class out of view. */
+/* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
+ * each dormant actor of `type` farther than 0x6000 from him back at its home
+ * position (the first words of its state block). */
 typedef struct RespawnState {
   int type;   /* 0x00 the actor type this manager owns */
   int timer;  /* 0x04 */

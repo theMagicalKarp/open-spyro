@@ -271,7 +271,7 @@ void Level26_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 
@@ -3158,9 +3158,9 @@ void Level26_UpdateActors(void) {
       break;
     }
 
-    /* Respawn warden (WardenState): puts its group back once Spyro has left. */
-    case 323: {
-      WardenState *st = actor->state;
+    /* Respawner (RespawnState): puts its type's dormant actors back once Spyro is far away. */
+    case ACTOR_TYPE_RESPAWNER: {
+      RespawnState *st = actor->state;
 
       CopyVector(&actor->posX, &SPY.posX);
 
@@ -3170,7 +3170,7 @@ void Level26_UpdateActors(void) {
         st->timer = st->period;
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
-          if (scan->type == st->group && scan->mode >= ACTOR_MODE_DORMANT &&
+          if (scan->type == st->type && scan->mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
@@ -3334,7 +3334,7 @@ void Level26_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case 331:
+    case ACTOR_TYPE_CHECKPOINT:
       switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {

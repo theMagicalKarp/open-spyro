@@ -14,21 +14,20 @@ struct Debris {
 
 /* Spawn the drop that a broken/flamed actor leaves behind (0x8003abc0,
    1308 bytes).  `src` is the actor that died; `kind` selects how the drop is
-   thrown.  Actors whose id byte is in 1..0x7e drop a fixed item and are
-   latched so they only ever drop once; everything else rolls a gem colour
-   (0xf normal, 0xe on a 2-in-25 roll, 0x10 for the "extra life" band while the
-   level is still loading).  The 0x10 case doubles as the one-shot key/egg
-   record: while none is registered yet and g_nSparxHealth is non-negative
-   the drop is built as id 0x78 instead, seeded by PlayActorMeshVoice, latched
-   into g_pSparxActor and the flag knocked down to 1. Otherwise a
-   record is allocated through g_pfnLevelSpawnActor and thrown: kinds 0/2/6
-   land on the source (or `alt`) position with a small XY jitter, kind 1 and any
-   kind-3/4 that fails its Spyro proximity test scatter over a wider XY box,
-   kind 5 drops in place with zero velocity, and kinds 3/4 that pass attach
-   straight onto the source with a random tumble.  The thrown path probes the
-   landing spot for ground and a walkable slope, integrates the ballistic arc at
-   10 units of gravity per frame to count the flight time, and divides the
-   offset by that count to get the launch velocity. */
+   thrown.  An actor whose dropKind (low 7 bits) is 1..0x7e drops that actor
+   type, once (killGroup bit 7 latches it).  Any other actor rolls: 2 in 25
+   an extra life (ACTOR_TYPE_EXTRA_LIFE); else, while g_nSparxHealth < 3,
+   10 in 25 a butterfly (ACTOR_TYPE_BUTTERFLY), or Sparx himself when he is
+   gone (no g_pSparxActor) and the health is not negative; else a Sparx food
+   (ACTOR_TYPE_SPARX_FOOD).  Extra lives, butterflies and Sparx are returned
+   as spawned.  Anything else is thrown: kinds 0/2/6 land on the source (or
+   `alt`) position with a small XY jitter, kind 1 and any kind-3/4 that fails
+   its Spyro proximity test scatter over a wider XY box, kind 5 drops in place
+   with zero velocity, and kinds 3/4 that pass attach straight onto the source
+   with a random tumble.  The thrown path probes the landing spot for ground
+   and a walkable slope, integrates the ballistic arc at 10 units of gravity
+   per frame to count the flight time, and divides the offset by that count to
+   get the launch velocity. */
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
   int land[4];   /* sp+0x18 */
   int throw_[4]; /* sp+0x28 */
@@ -52,16 +51,16 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     src->killGroup |= 0x80;
   } else {
     int roll;
-    id = 0xf;
+    id = ACTOR_TYPE_SPARX_FOOD;
     roll = (int)(((GetRandomU32() & 0xfff) * 25) >> 10);
     if (roll < 2) {
-      id = 0xe;
+      id = ACTOR_TYPE_EXTRA_LIFE;
     } else if (g_nSparxHealth < 3 && roll < 0xc) {
-      id = 0x10;
+      id = ACTOR_TYPE_BUTTERFLY;
     }
   }
 
-  if (id == 0x10) {
+  if (id == ACTOR_TYPE_BUTTERFLY) {
     if (g_pSparxActor != 0 || g_anSparxHealthBlock[0] < 0) {
       rec = (*(struct Actor * (*)(int, struct Actor *))
                  g_pfnLevelSpawnActor)(ACTOR_TYPE_BUTTERFLY, src);
@@ -75,7 +74,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     return rec;
   }
 
-  if (id == 0xe) {
+  if (id == ACTOR_TYPE_EXTRA_LIFE) {
     rec = (*(struct Actor * (*)(int, struct Actor *))
                g_pfnLevelSpawnActor)(ACTOR_TYPE_EXTRA_LIFE, src);
     dbg = (struct Debris *)rec->state;

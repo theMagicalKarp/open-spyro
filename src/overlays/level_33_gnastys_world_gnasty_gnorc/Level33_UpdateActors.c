@@ -296,7 +296,7 @@ void Level33_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 

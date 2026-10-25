@@ -289,7 +289,7 @@ void Level34_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 
@@ -2546,7 +2546,7 @@ void Level34_UpdateActors(void) {
 
     /* Ambient sound source (AmbientSoundState): plays random ambient sounds;
      * mode 2 also steps it along a waypoint path. */
-    case 286: {
+    case ACTOR_TYPE_AMBIENT_SOUND: {
       AmbientSoundState *st = actor->state;
       int voice = -1;
 

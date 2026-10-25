@@ -2297,7 +2297,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Ambient sound source (AmbientSoundBytesState). */
-    case 286: {
+    case ACTOR_TYPE_AMBIENT_SOUND: {
       AmbientSoundBytesState *st = actor->state;
       int snd;
 
@@ -2467,7 +2467,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Respawner (RespawnState). */
-    case 323: {
+    case ACTOR_TYPE_RESPAWNER: {
       RespawnState *st = actor->state;
       Actor *p;
 
@@ -2505,7 +2505,7 @@ void Level0_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case 331: {
+    case ACTOR_TYPE_CHECKPOINT: {
       switch (actor->mode) {
       case 0: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
