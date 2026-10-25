@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "funcs.h"
 #include "globals.h"
 #include "vecmath.h"
@@ -10,25 +11,25 @@
    and despawns the actor. */
 void TickGemPickupBurstEntity(Actor *actor) {
   int burst[3];
-  int *rec;
+  BurstShardState *rec;
   int t;
   int b;
 
-  rec = (int *)actor->state;
-  if (*((unsigned char *)rec + 0x13) != 0 && actor->posZ > rec[3]) {
-    actor->posX += rec[0];
-    actor->posY += rec[1];
-    t = rec[2] - 6;
-    rec[2] = t;
+  rec = actor->state;
+  if (rec->life != 0 && actor->posZ > rec->floorZ) {
+    actor->posX += rec->vel[0];
+    actor->posY += rec->vel[1];
+    t = rec->vel[2] - 6;
+    rec->vel[2] = t;
     if (t < -0x80) {
-      rec[2] = -0x80;
+      rec->vel[2] = -0x80;
     }
-    actor->posZ += rec[2];
-    actor->rotX += *((unsigned char *)rec + 0x10);
-    actor->rotY += *((unsigned char *)rec + 0x11);
-    actor->rotZ += *((unsigned char *)rec + 0x12);
-    b = *((unsigned char *)rec + 0x13) - 1;
-    *((unsigned char *)rec + 0x13) = b;
+    actor->posZ += rec->vel[2];
+    actor->rotX += rec->spinX;
+    actor->rotY += rec->spinY;
+    actor->rotZ += rec->spinZ;
+    b = rec->life - 1;
+    rec->life = b;
     if ((b & 1) == 0) {
       burst[0] = GetRandomU32() & 3;
       burst[1] = GetRandomU32() & 3;

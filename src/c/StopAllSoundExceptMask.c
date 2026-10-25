@@ -1,14 +1,16 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 /* 0x80056b28 (0x15c) — stop every active software voice whose bit is NOT set
    in `mask` (low 24 bits). Each stopped voice is accumulated into the pending
    hardware key-off word; mode-4 (one-shot) and mode-8 (owner-attached) rows
-   also silence the owner's live sample byte (+0x2A0 / +0x54). The row is then
-   parked idle exactly like StopSoundVoicesByOwner (flags 0x40, owner and
-   sample pointer cleared, priority 0xFF). Finally the pending key-on word is
-   dropped and the music engine is told to stop (command 4). */
+   also silence the owner's live sample byte (owner byte +0x2A0 / Actor
+   sfxSlot). The row is then parked idle exactly like StopSoundVoicesByOwner
+   (flags 0x40, owner and sample pointer cleared, priority 0xFF). Finally the
+   pending key-on word is dropped and the music engine is told to stop (command
+   4). */
 /* The row bit is computed BETWEEN the two guards rather than inside the body:
    it is what reorg puts in the second beqz's delay slot, and it can only get
    there from the guard block. Written inside the body it never reaches the
@@ -37,8 +39,7 @@ void StopAllSoundExceptMask(int mask) {
   sil = 0x7F;
   off = 0;
 top:
-  if (((*((unsigned short *)((((char *)g_abSpuCommonAttr) + off) + 0x36))) &
-       0x83) != 0) {
+  if (((VOICE_ROW_RAW(off, unsigned short, nFlags)) & 0x83) != 0) {
     int o;
     int m;
     int v2;
@@ -49,15 +50,13 @@ top:
       new_var = (i & 0x7F) * 0x1C;
       *keyoff |= bit;
       o = new_var;
-      m = (*((unsigned short *)((((char *)g_abSpuCommonAttr) + o) + 0x36))) &
-          0x1C;
+      m = (VOICE_ROW_RAW(o, unsigned short, nFlags)) & 0x1C;
       if (m == eight) {
         goto mode8;
       }
       if (m < 9) {
         if (m == 4) {
-          owner =
-              *((unsigned char **)((((char *)g_abSpuCommonAttr) + o) + 0x28));
+          owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
           if (owner != 0) {
             owner[0x2A0] = sil;
           }
@@ -65,7 +64,7 @@ top:
       }
       goto park;
     mode8:
-      owner = *((unsigned char **)((((char *)g_abSpuCommonAttr) + o) + 0x28));
+      owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
 
       if (owner != 0) {
         owner[0x54] = sil;
@@ -74,10 +73,10 @@ top:
       v2 = i & 0x7F;
 
       o2 = v2 * 0x1C;
-      *((unsigned short *)((((char *)g_abSpuCommonAttr) + o2) + 0x36)) = 0x40;
-      *((int *)((((char *)g_abSpuCommonAttr) + o2) + 0x28)) = 0;
-      *((int *)((((char *)g_abSpuCommonAttr) + o2) + 0x40)) = 0;
-      *((unsigned char *)((((char *)g_abSpuCommonAttr) + o2) + 0x35)) = 0xFF;
+      VOICE_ROW_RAW(o2, unsigned short, nFlags) = 0x40;
+      VOICE_ROW_RAW(o2, int, pOwner) = 0;
+      VOICE_ROW_RAW(o2, int, pPlaying) = 0;
+      VOICE_ROW_RAW(o2, unsigned char, nSampleId) = 0xFF;
     }
   }
 

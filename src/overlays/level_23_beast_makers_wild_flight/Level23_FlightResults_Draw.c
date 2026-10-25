@@ -28,6 +28,7 @@
 #include "level_flight_results.h"
 #include "actor.h"
 #include "gpu_prim.h"
+#include "frame_db.h"
 
 /* The backdrop quad being built at p, read back through volatile accesses
  * (see the match notes), and the TILE bar that follows the last quad. */
@@ -73,7 +74,7 @@ void Level23_FlightResults_Draw(void)
     envBase = g_abFrameDrawEnv0;
     } while (0);
     do {
-    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     img = g_pRenderScratchPrimTop;
     } while (0);
     img2 = img - 2;
@@ -81,7 +82,7 @@ void Level23_FlightResults_Draw(void)
     DrawOTag(LinkOTPrimitives(0x800));
     DrawSync(0);
     VSync(0);
-    PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     rect.x = 0x200;
     rect.y = 0;
     rect.w = 0x100;
@@ -782,7 +783,7 @@ void Level23_FlightResults_Draw(void)
     }
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   g_nPauseMenuTransitionFrames += 1;
 }
 

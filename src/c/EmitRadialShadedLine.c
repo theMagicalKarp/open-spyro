@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "vecmath.h"
 
 /* 0x8001844c (0xE8) - build a LINE_G2 prim between two screen points,
@@ -15,7 +16,7 @@
    that local-alloc drops, so global-alloc puts it on a fifth callee-saved and
    the function overflows its slot. */
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
-  unsigned char *prim;
+  LineG2 *prim;
   int shade0;
   int shade;
   int full;
@@ -24,12 +25,12 @@ void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
   int dy;
 
   prim = g_pPrimBufferWriteCursor;
-  *((unsigned int *)prim) = 0x04000000;
-  prim[7] = 0x50;
-  *((short *)(prim + 0x8)) = x0;
-  *((short *)(prim + 0xA)) = y0;
-  *((short *)(prim + 0x10)) = x1;
-  *((short *)(prim + 0x12)) = y1;
+  prim->tag = 0x04000000;
+  prim->code = 0x50;
+  prim->x0 = x0;
+  prim->y0 = y0;
+  prim->x1 = x1;
+  prim->y1 = y1;
 
   shade = x0 - 0x100;
   shade0 = AbsAngleDelta8(ArcTan2_8bit(shade, y0 - 0x78),
@@ -38,17 +39,17 @@ void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
   dy = y1 - 0x78;
   full = 0x80;
   shade0 = full - shade0;
-  prim[4] = shade0 + 0x60;
-  prim[5] = shade0 + 0x60;
-  prim[6] = shade0;
+  prim->r0 = shade0 + 0x60;
+  prim->g0 = shade0 + 0x60;
+  prim->b0 = shade0;
 
   shade1 =
       full - AbsAngleDelta8(ArcTan2_8bit(dx, dy), g_anLightSweepAngleBlock[0]);
   shade = shade1 + 0x60;
-  prim[0xC] = shade;
-  prim[0xD] = shade;
-  prim[0xE] = shade1;
+  prim->r1 = shade;
+  prim->g1 = shade;
+  prim->b1 = shade1;
 
-  AddPrimToOT(prim);
-  g_pPrimBufferWriteCursor = prim + 0x14;
+  AddPrimToOT((int)prim);
+  g_pPrimBufferWriteCursor = prim + 1;
 }

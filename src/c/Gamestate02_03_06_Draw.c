@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
@@ -85,7 +86,7 @@ void Gamestate02_03_06_Draw(void) {
       envBase = &g_abFrameDrawEnv0;
     } while (0);
     do {
-      PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+      PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       img = (void **)g_apRenderScratchPrimTopBlock;
     } while (0);
     __asm__ volatile("" : : "r"(k18));
@@ -94,7 +95,7 @@ void Gamestate02_03_06_Draw(void) {
     DrawOTag(LinkOTPrimitives(0x800));
     DrawSync(0);
     VSync(0);
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     rect.x = 0x200;
     rect.y = 0;
     rect.w = 0x100;
@@ -1056,7 +1057,7 @@ void Gamestate02_03_06_Draw(void) {
       } while (g_nVsyncFrameEndCount - end[-1] < 2);
     }
     g_nVsyncFramePaceAnchor = VSync(-1);
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   }
   __asm__ volatile(""
                    :

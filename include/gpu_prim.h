@@ -60,6 +60,17 @@ typedef struct Tile {
   short w, h;               /* 0x0C */
 } Tile;                     /* 0x10 */
 
+/* Gouraud-shaded line (GPU code 0x50, +2 semi-transparent). */
+typedef struct LineG2 {
+  unsigned int tag;         /* 0x00 */
+  unsigned char r0, g0, b0; /* 0x04 */
+  unsigned char code;       /* 0x07 */
+  short x0, y0;             /* 0x08 */
+  unsigned char r1, g1, b1; /* 0x0C */
+  unsigned char pad0F;      /* 0x0F */
+  short x1, y1;             /* 0x10 */
+} LineG2;                   /* 0x14 */
+
 /* A draw-mode packet followed by the quad it applies to. */
 typedef struct ModePolyF4 {
   DrMode mode;  /* 0x00 */

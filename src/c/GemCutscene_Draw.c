@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -49,7 +50,7 @@ void GemCutscene_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   ot = (int *)LinkOTPrimitives(0x800);
   DrawOTag(ot);

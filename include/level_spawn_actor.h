@@ -7,6 +7,8 @@
 #ifndef OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 #define OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 
+#include "actor_states.h"
+
 /* The level actor pool, by struct tag so files that carry their own Actor
  * view (A400) can include this header too. */
 struct Actor;
@@ -37,17 +39,6 @@ typedef struct PickupDropState {
   unsigned char roll;    /* 0x13 */
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
-
-/* Dragon-statue burst shard (type 0xFB), ticked by TickGemPickupBurstEntity:
- * integrates vel with gravity while life runs and posZ stays above floorZ. */
-typedef struct BurstShardState {
-  int vel[3];          /* 0x00 */
-  int floorZ;          /* 0x0C the statue's height */
-  unsigned char spinX; /* 0x10 per-tick ->rotX/rotY/rotZ deltas */
-  unsigned char spinY;
-  unsigned char spinZ;
-  unsigned char life;  /* 0x13 ticks left */
-} BurstShardState;
 
 /* Butterfly (type 0x10) — SpawnActor's view of UpdateActors' ChaseState. */
 typedef struct ButterflyState {

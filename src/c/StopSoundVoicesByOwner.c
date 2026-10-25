@@ -2,13 +2,14 @@
 #include "main_shared.h"
 #include "spu.h"
 
+extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
+
 /* Stop every software voice row owned by `owner` (0x800562a4). mode 1 stops
-   unconditionally; mode 2 only stops rows whose flags halfword (+0x36) has
-   bit 0x100 set. A stopped row silences its live sample byte (0x7F), clears
-   the sample pointer (+0x40) and owner word (+0x28), parks the flags at
-   idle (0x40), zeros +0x3C, resets the priority byte (+0x35) to 0xFF, and
-   accumulates the voice bit into the pending hardware key-off mask. Records
-   are 0x1C bytes, 24 voices. */
+   unconditionally; mode 2 only stops rows whose nFlags has bit 0x100 set. A
+   stopped row silences its live sample byte (0x7F), clears pPlaying and
+   pOwner, parks nFlags at idle (0x40), zeros nPitchStep, resets nSampleId to
+   0xFF, and accumulates the voice bit into the pending hardware key-off mask.
+   24 rows of g_aSpuVoiceRows, walked as three field pointers. */
 
 void StopSoundVoicesByOwner(int owner, int mode) {
   unsigned int kmask = 0;
@@ -18,9 +19,9 @@ void StopSoundVoicesByOwner(int owner, int mode) {
   int silence = 0x7F;
   int idle = 0x40;
   int ff = 0xFF;
-  int *po = (int *)((char *)g_abSpuCommonAttr + 0x28);
-  unsigned short *pf = (unsigned short *)((char *)po + 0xE);
-  unsigned char **ps = (unsigned char **)((char *)po + 0x18);
+  int *po = (int *)&g_aSpuVoiceRows[0].pOwner;
+  unsigned short *pf = &g_aSpuVoiceRows[0].nFlags;
+  unsigned char **ps = (unsigned char **)&g_aSpuVoiceRows[0].pPlaying;
   int off = 0;
 top:
   if (*po == owner) {
@@ -36,9 +37,9 @@ top:
       VOICE_ROW_RAW(off, unsigned char, nSampleId) = ff;
     }
   }
-  po = (int *)((char *)po + 0x1C);
-  pf = (unsigned short *)((char *)pf + 0x1C);
-  ps = (unsigned char **)((char *)ps + 0x1C);
+  po = (int *)((SPUVOICEROW *)po + 1);
+  pf = (unsigned short *)((SPUVOICEROW *)pf + 1);
+  ps = (unsigned char **)((SPUVOICEROW *)ps + 1);
   i += 1;
   off += 0x1C;
   if (i < 24) {

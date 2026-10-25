@@ -20,6 +20,7 @@
 #include "main_shared.h"
 #include "level_emit_particles.h"
 #include "level_flight_results.h"
+#include "frame_db.h"
 
 
 /* The sprite record being written (Actor layout). */
@@ -117,7 +118,7 @@ void Credits_Draw(void) {
     }
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv(g_pActiveFrameDrawEnv + 0x5C);
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
   DrawOTag(LinkOTPrimitives(0x800));
 }

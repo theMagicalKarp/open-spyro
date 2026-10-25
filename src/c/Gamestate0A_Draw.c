@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
@@ -57,7 +58,7 @@ void Gamestate0A_Draw(void) {
 
     env = &g_abFrameDrawEnv0;
     if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
-      env = (DRAWENV *)((char *)env + 0x84);
+      env = &FRAME_DB(env)[1].draw;
     }
     i = 0;
     PutDrawEnv(env);
@@ -132,7 +133,7 @@ void Gamestate0A_Draw(void) {
       g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
       g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
       g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
-      env = (DRAWENV *)((char *)env + 0x84);
+      env = &FRAME_DB(env)[1].draw;
     } else {
       g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
       g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
@@ -159,5 +160,5 @@ void Gamestate0A_Draw(void) {
     } while (g_nVsyncFrameEndCount - end[-1] < 2);
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
-  PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5C));
+  PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
 }

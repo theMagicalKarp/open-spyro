@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -31,11 +32,11 @@ void GamestateDraw(void) {
 
   env = (char *)&g_abFrameDrawEnv0;
   if ((char *)g_pActiveFrameDrawEnv == env) {
-    env += 0x84;
+    env += sizeof(FrameDB);
   }
-  otbase = *(void **)(env + 0x74);
-  otslot = *(int **)(env + 0x78);
-  cursor = *(char **)(env + 0x70);
+  otbase = FRAME_DB(env)->otDepthBinBase;
+  otslot = FRAME_DB(env)->otMergedChainSlot;
+  cursor = FRAME_DB(env)->primBufferBase;
   g_pActiveFrameDrawEnv = (DRAWENV *)env;
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = cursor;
@@ -130,7 +131,7 @@ void GamestateDraw(void) {
       } while (g_nVsyncFrameEndCount - end[-1] < 2);
     }
     g_nVsyncFramePaceAnchor = VSync(-1);
-    PutDispEnv((DISPENV *)((char *)g_pActiveFrameDrawEnv + 0x5c));
+    PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
   }
