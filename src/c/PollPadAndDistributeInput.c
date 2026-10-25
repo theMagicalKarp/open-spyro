@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad.h"
+#include "pad_buttons.h"
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
    InitPadSystem via InstallVSyncCallback. Ticks the vblank/CD watchdog
@@ -185,7 +186,8 @@ void PollPadAndDistributeInput(void) {
             (padType == 3 && (cal[2] != 0x7F || cal[3] != cal[2]))) {
           g_nPadDirectionalIdleFlag = 0;
         }
-        if (g_nPadDirectionalIdleFlag == 0 || (g_dwPadHeld & 0xF0FF) != 0) {
+        if (g_nPadDirectionalIdleFlag == 0 ||
+            (g_dwPadHeld & (PAD_DPAD | 0x00FF)) != 0) {
           g_nPadAllInputIdleFlag = 0;
         }
       }

@@ -155,7 +155,7 @@ void Level20_UpdateActors(void) {
     base = (char *)g_anSparxHealthBlock;
     spy = (SpyroObj *)(base - 0x164);
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -1200,7 +1200,7 @@ void Level20_UpdateActors(void) {
         continue;
 
       case 1:
-        if (trigger->mode >= 0x80) {
+        if (trigger->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = 2;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
@@ -2760,7 +2760,7 @@ void Level20_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+          if (a == actor || a->mode >= ACTOR_MODE_DORMANT || a->collision == 0 ||
               a->collision >= 0) {
             continue;
           }

@@ -189,7 +189,7 @@ void Level34_UpdateActors(void) {
     oneq = 1;
     one = 1;
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -299,14 +299,14 @@ void Level34_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -319,7 +319,7 @@ void Level34_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -371,12 +371,12 @@ void Level34_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -2136,7 +2136,7 @@ void Level34_UpdateActors(void) {
         }
         if ((ApproxDist2D(&actor->posX, &SPY.posX) < 0x200 &&
              ABS2(SPY_DZ(actor)) < 0x200 && open) ||
-            (g_pActorListBase[st->key].mode >= 0x80 &&
+            (g_pActorListBase[st->key].mode >= ACTOR_MODE_DORMANT &&
              g_pActorListBase[st->key].type == 0xB1)) {
           int i;
           int c;
@@ -3178,7 +3178,7 @@ void Level34_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+          if (a == actor || a->mode >= ACTOR_MODE_DORMANT || a->collision == 0 ||
               a->collision >= 0) {
             continue;
           }
@@ -3344,7 +3344,7 @@ void Level34_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        if (st->link >= 0 && g_pActorListBase[st->link].mode >= 0x80) {
+        if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
         }

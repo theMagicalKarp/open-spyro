@@ -107,7 +107,7 @@ void Level0_UpdateActors(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -726,7 +726,7 @@ void Level0_UpdateActors(void) {
       case 0:
         if (g_abLevelGemPercent[1] || g_abLevelGemPercent[2] || g_abLevelGemPercent[3] || g_abLevelGemPercent[4]) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
-          if (g_pActorListBase[st->idx].mode >= 0x80 &&
+          if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
             ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
             actor->soundRange = 0x30;
@@ -1392,7 +1392,7 @@ void Level0_UpdateActors(void) {
         ENTER_POSE(actor, 7);
       }
 
-      if (st->tgtIdx >= 0 && g_pActorListBase[st->tgtIdx].mode >= 0x80) {
+      if (st->tgtIdx >= 0 && g_pActorListBase[st->tgtIdx].mode >= ACTOR_MODE_DORMANT) {
         st->tgtIdx = -1;
       }
 
@@ -2410,7 +2410,7 @@ void Level0_UpdateActors(void) {
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
-          if (g_pActorListBase[st->idx].mode < 0x80)
+          if (g_pActorListBase[st->idx].mode < ACTOR_MODE_DORMANT)
             break;
         } else {
           break;
@@ -2478,7 +2478,7 @@ void Level0_UpdateActors(void) {
         if (p->type != st->type) {
           continue;
         }
-        if (p->mode < 0x80) {
+        if (p->mode < ACTOR_MODE_DORMANT) {
           continue;
         }
         if (ApproxDist2D(&SPY.posX, p->state) < 0x6001) {
@@ -2572,7 +2572,7 @@ void Level0_UpdateActors(void) {
       FlockState *st = actor->state;
 
       if ((actor->flags & 0xB0000) != 0 && actor->mode < 4) {
-        while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= 0x80) {
+        while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= ACTOR_MODE_DORMANT) {
           st->chainA = *(int *)g_pActorListBase[st->chainA].state;
         }
 
@@ -2594,7 +2594,7 @@ void Level0_UpdateActors(void) {
             Actor *p = &g_pActorListBase[st->chainB];
             int *link = p->state;
 
-            if (p->mode < 0x80) {
+            if (p->mode < ACTOR_MODE_DORMANT) {
               CopyVector(&p->posX, &actor->posX);
               st->slots[n][0] = actor->posX + (LookupCosine(n * 0x555) >> 2);
               st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);

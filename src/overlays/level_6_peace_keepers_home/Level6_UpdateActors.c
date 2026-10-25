@@ -205,7 +205,7 @@ void Level6_UpdateActors(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -270,14 +270,14 @@ void Level6_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -290,7 +290,7 @@ void Level6_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -342,12 +342,12 @@ void Level6_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -3081,7 +3081,7 @@ void Level6_UpdateActors(void) {
                                     a->posY - actor->posY, 0),
                       4, 0, 0);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
-          if (b->mode < 0x80) {
+          if (b->mode < ACTOR_MODE_DORMANT) {
             ((int *)b->state)[10] = 0xB4;
             if (b->nextAnim != 8) {
               ANIM_ADVANCE(b, 8);
@@ -3149,7 +3149,7 @@ void Level6_UpdateActors(void) {
           }
           break;
         }
-        if (actor->type == 0xD8 && a->mode >= 0x80) {
+        if (actor->type == 0xD8 && a->mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 1;
           actor->mode = 0xB;
           ANIM_RESET(actor, 0xB);
@@ -3307,7 +3307,7 @@ void Level6_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        if (p->mode >= 0x80 || (p->nextAnim == 3 && p->nextFrame >= 0x15)) {
+        if (p->mode >= ACTOR_MODE_DORMANT || (p->nextAnim == 3 && p->nextFrame >= 0x15)) {
           int range = 0x4E2;
           int a = 0x20;
           int b = 0x5A;
@@ -3418,7 +3418,7 @@ void Level6_UpdateActors(void) {
         bestScore = 0x7530;
         actor->flags = 0;
         for (q = g_pActorListBase; q < g_pActorPoolDynBase; q++) {
-          if (q == actor || q->mode >= 0x80 || q->type == ACTOR_TYPE_DRAGON_STATUE ||
+          if (q == actor || q->mode >= ACTOR_MODE_DORMANT || q->type == ACTOR_TYPE_DRAGON_STATUE ||
               q->type == 0x6E || q->type == 0xE1) {
             continue;
           }
@@ -3986,7 +3986,7 @@ void Level6_UpdateActors(void) {
         st->timer = st->period;
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
-          if (scan->type == st->group && scan->mode >= 0x80 &&
+          if (scan->type == st->group && scan->mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);

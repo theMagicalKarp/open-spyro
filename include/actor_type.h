@@ -48,7 +48,8 @@ typedef struct Actor {
                         * bins at (MAC3 >> 6) - otBias, clamped >= 0. Default 4
                         * (InitActorRenderDefaults), 0x20 HUD/screen actors,
                         * 0x7F sprite records, 0xFE (-2) pushes it one bin pair deeper */
-  unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
+  unsigned char mode;  /* 0x48 behaviour state; >= ACTOR_MODE_DORMANT dormant,
+                          ACTOR_MODE_END ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
   unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
@@ -84,6 +85,11 @@ typedef struct Actor {
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
  * ever drifts from it; it emits nothing.) */
+/* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
+ * the pool ends at the first record whose mode is 0xFF. */
+#define ACTOR_MODE_DORMANT 0x80
+#define ACTOR_MODE_END 0xFF
+
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 

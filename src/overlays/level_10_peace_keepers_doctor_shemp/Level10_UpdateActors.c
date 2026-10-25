@@ -156,7 +156,7 @@ void Level10_UpdateActors(void) {
     sixteen = 0x10;
     spy = (SpyroObj *)&g_anSpyroWorldPos;
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -267,14 +267,14 @@ void Level10_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -293,7 +293,7 @@ void Level10_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -345,7 +345,7 @@ void Level10_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
@@ -356,7 +356,7 @@ void Level10_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1134,7 +1134,7 @@ void Level10_UpdateActors(void) {
         continue;
 
       case 1:
-        if (trigger->mode >= 0x80) {
+        if (trigger->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = 2;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
@@ -1987,7 +1987,7 @@ void Level10_UpdateActors(void) {
         ENTER_POSE(actor, 1);
       }
       if (*st >= 0) {
-        if (g_pActorListBase[*st].mode >= 0x80) {
+        if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
           *st = -1;
         } else {
           CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
@@ -2350,7 +2350,7 @@ void Level10_UpdateActors(void) {
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
-          if (g_pActorListBase[st->idx].mode < 0x80)
+          if (g_pActorListBase[st->idx].mode < ACTOR_MODE_DORMANT)
             break;
         } else {
           break;
@@ -2716,7 +2716,7 @@ void Level10_UpdateActors(void) {
       case 0:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->mode == 0) {
-          if (st->guard != -1 && g_pActorListBase[st->guard].mode >= 0x80) {
+          if (st->guard != -1 && g_pActorListBase[st->guard].mode >= ACTOR_MODE_DORMANT) {
             actor->mode = 8;
             continue;
           }

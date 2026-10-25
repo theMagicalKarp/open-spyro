@@ -157,7 +157,7 @@ void Level12_UpdateActors(void) {
     one = 1;
     spy = (SpyroObj *)&g_anSpyroWorldPos;
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -234,14 +234,14 @@ void Level12_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -254,7 +254,7 @@ void Level12_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -306,12 +306,12 @@ void Level12_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1879,7 +1879,7 @@ void Level12_UpdateActors(void) {
         break;
 
       case 1:
-        if (trigger->mode >= 0x80) {
+        if (trigger->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = 2;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
@@ -3006,7 +3006,7 @@ void Level12_UpdateActors(void) {
           word = idx >> 5;
           bit = idx & 0x1F;
           if ((g_anRunningKillBitmap[word] & (one << bit)) &&
-              (pair->mode >= 0x80 || pair->dropKind == 0xFF)) {
+              (pair->mode >= ACTOR_MODE_DORMANT || pair->dropKind == 0xFF)) {
             pairGone = 1;
           }
         }
@@ -3015,7 +3015,7 @@ void Level12_UpdateActors(void) {
         }
         if (gone) {
           if (st->mode == 2 && pairGone) {
-            if (g_pActorListBase[st->link].mode < 0x80) {
+            if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               DespawnActorRecord(&g_pActorListBase[st->link]);
             }
             ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
@@ -3140,14 +3140,14 @@ void Level12_UpdateActors(void) {
         } else if (st->mode == 2) {
           if (actor->subMode == 0 &&
               (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3400 ||
-               g_pActorListBase[st->link].mode >= 0x80)) {
+               g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
             ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
             actor->subMode = 1;
             st->timer = 0x46;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2) {
             g_pActorListBase[st->link].subMode = 1;
           }
-          if ((g_pActorListBase[st->link].nextAnim == 3 || g_pActorListBase[st->link].mode >= 0x80) &&
+          if ((g_pActorListBase[st->link].nextAnim == 3 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
                   (st->fleeDist << 10) + 0x7D0) {
             actor->mode = 0x5A;
@@ -3468,7 +3468,7 @@ void Level12_UpdateActors(void) {
             ANIM_GO(actor, 1);
             PivotActorAlongPath(actor, st->path, 0x100, 0x48, 0xC8, 3, 8,
                           actor->group, 5);
-            if (TickCountdownByFrameDelta(&st->timer, 4) && p->mode < 0x80 &&
+            if (TickCountdownByFrameDelta(&st->timer, 4) && p->mode < ACTOR_MODE_DORMANT &&
                 ApproxDist2D(&actor->posX, &p->posX) < 0x8FC) {
               st->timer = 0x5A;
               st->sub = one;
@@ -4507,7 +4507,7 @@ void Level12_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+          if (a == actor || a->mode >= ACTOR_MODE_DORMANT || a->collision == 0 ||
               a->collision >= 0) {
             continue;
           }

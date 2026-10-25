@@ -172,7 +172,7 @@ void Level16_UpdateActors(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -283,14 +283,14 @@ void Level16_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -303,7 +303,7 @@ void Level16_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -355,12 +355,12 @@ void Level16_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -2446,7 +2446,7 @@ void Level16_UpdateActors(void) {
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
-          if (g_pActorListBase[st->idx].mode < 0x80)
+          if (g_pActorListBase[st->idx].mode < ACTOR_MODE_DORMANT)
             break;
         } else {
           break;
@@ -3200,7 +3200,7 @@ void Level16_UpdateActors(void) {
             st->phase = 1;
             st->path = st->paths[3];
             if (g_pActorListBase[st->prev].dropKind != 0xFF &&
-                g_pActorListBase[st->prev].mode < 0x80) {
+                g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, 1, 0, 0);
               MarkActorCommittedKill(a);
               DespawnActorRecord(a);
@@ -3214,7 +3214,7 @@ void Level16_UpdateActors(void) {
             st->path = st->paths[4];
             a = &g_pActorListBase[st->prev];
             as = a->state;
-            if (a->dropKind != 0xFF && a->mode < 0x80) {
+            if (a->dropKind != 0xFF && a->mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, 1, 0, 0);
               MarkActorCommittedKill(a);
               DespawnActorRecord(a);

@@ -787,9 +787,9 @@ void GemPickup_Update(void) {
   {
     char *actor = g_pActorListBase;
 
-    while (ACTOR_RAW(actor, unsigned char, mode) != 0xFF) {
+    while (ACTOR_RAW(actor, unsigned char, mode) != ACTOR_MODE_END) {
       if (ACTOR_RAW(actor, short, type) == ACTOR_TYPE_STATUE_SHARD &&
-          ACTOR_RAW(actor, unsigned char, mode) < 0x80) {
+          ACTOR_RAW(actor, unsigned char, mode) < ACTOR_MODE_DORMANT) {
         TickGemPickupBurstEntity(actor);
       }
       actor += ACTOR_SIZE;

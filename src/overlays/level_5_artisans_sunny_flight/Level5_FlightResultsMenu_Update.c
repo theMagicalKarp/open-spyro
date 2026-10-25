@@ -79,7 +79,7 @@ void Level5_FlightResultsMenu_Update(void) {
         PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
       }
     }
-  } else if (g_dwPadPressed[0] & 0x840) {
+  } else if (g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) {
     g_nSubMenuCursor = 9;
     g_nSubMenuScrollOffset = 0;
     PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);

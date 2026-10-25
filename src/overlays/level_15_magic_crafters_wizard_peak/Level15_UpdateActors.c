@@ -169,7 +169,7 @@ void Level15_UpdateActors(void) {
     one = 1;
     spy = (SpyroObj *)(base - 8);
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -1354,7 +1354,7 @@ void Level15_UpdateActors(void) {
           actor->nextFrame = 1;
         }
         RefreshActorDerivedState(actor, 1);
-        if (g_pActorListBase[st->owner].mode >= 0x80) {
+        if (g_pActorListBase[st->owner].mode >= ACTOR_MODE_DORMANT) {
           st->mode = 2;
         }
         continue;
@@ -1398,7 +1398,7 @@ void Level15_UpdateActors(void) {
           ENTER_POSE(actor, 1);
         }
         if (st->link >= 0) {
-          if (g_pActorListBase[st->link].mode < 0x80) {
+          if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
             LeadState *ls = g_pActorListBase[st->link].state;
 
             if (ls->moving == 1) {
@@ -1435,7 +1435,7 @@ void Level15_UpdateActors(void) {
           ENTER_POSE(actor, 3);
         }
         if (st->mode >= 5) {
-          if (g_pActorListBase[st->link].mode >= 0x80) {
+          if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
             st->mode = 0;
             ENTER_POSE(actor, 0);
           }
@@ -1514,7 +1514,7 @@ void Level15_UpdateActors(void) {
 
       case 8:
         if (st->mode >= 5 && st->link >= 0) {
-          if (g_pActorListBase[st->link].mode >= 0x80) {
+          if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
             st->mode = 0;
             ENTER_POSE(actor, 0);
           }
@@ -2032,7 +2032,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case 1:
-        if (trigger->mode >= 0x80) {
+        if (trigger->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = 2;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
@@ -3072,7 +3072,7 @@ void Level15_UpdateActors(void) {
         if (d < 0x1000) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         } else if (st->mode == 0 && st->link >= 0) {
-          if (g_pActorListBase[st->link].mode < 0x80) {
+          if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
             ENTER_POSE(actor, 3);
           }
           st->link = -1;
@@ -3115,7 +3115,7 @@ void Level15_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           ENTER_POSE(actor, 0);
         }
-        if (g_pActorListBase[st->link].mode >= 0x80) {
+        if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           st->link = -1;
           ENTER_POSE(actor, 0);
         }
@@ -3200,7 +3200,7 @@ void Level15_UpdateActors(void) {
         while (st->link >= 0) {
           ChainState *cs = g_pActorListBase[st->link].state;
 
-          if (g_pActorListBase[st->link].mode < 0x80) {
+          if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
             g_pfnLevelEmitParticles(5, 4, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
           }
           st->timer = 0x20;
@@ -3284,7 +3284,7 @@ void Level15_UpdateActors(void) {
         if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x80, 0x300, 8, 0x10, 0) ==
             0x100) {
           if (st->link >= 0) {
-            if (g_pActorListBase[st->link].mode < 0x80) {
+            if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
               st->flags = (st->flags & ~2) | 5;
               ENTER_POSE(actor, 5);
@@ -3298,7 +3298,7 @@ void Level15_UpdateActors(void) {
         if (st->link >= 0) {
           if (st->path->cur >=
               ((ChainState *)g_pActorListBase[st->link].state)->stop) {
-            if (g_pActorListBase[st->link].mode < 0x80) {
+            if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
               ENTER_POSE(actor, 5);
             }
@@ -3660,7 +3660,7 @@ void Level15_UpdateActors(void) {
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
-          if (g_pActorListBase[st->idx].mode < 0x80)
+          if (g_pActorListBase[st->idx].mode < ACTOR_MODE_DORMANT)
             break;
         } else {
           break;
@@ -3837,7 +3837,7 @@ void Level15_UpdateActors(void) {
         st->timer = st->period;
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
-          if (scan->type == st->group && scan->mode >= 0x80 &&
+          if (scan->type == st->group && scan->mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
@@ -4126,7 +4126,7 @@ void Level15_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+          if (a == actor || a->mode >= ACTOR_MODE_DORMANT || a->collision == 0 ||
               a->collision >= 0) {
             continue;
           }

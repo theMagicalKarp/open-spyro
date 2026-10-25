@@ -255,7 +255,7 @@ void Level14_UpdateActors(void) {
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 
@@ -366,14 +366,14 @@ void Level14_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= 0x80 || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
           Actor *scan;
           int self;
 
           parent->dropKind = actor->dropKind;
           DespawnActorRecord(actor);
 
-          if (parent->mode < 0x80) {
+          if (parent->mode < ACTOR_MODE_DORMANT) {
             DespawnActorRecord(parent);
           }
 
@@ -386,7 +386,7 @@ void Level14_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < 0x80 && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -438,12 +438,12 @@ void Level14_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= 0x80) {
+        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = 9;
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < 0x80 && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -2903,7 +2903,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if ((st->link == -1 || g_pActorListBase[st->link].mode >= 0x80) &&
+        if ((st->link == -1 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
             st->cool == 0 && g_nSpyroFlameBreathTimer == 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < range &&
             ABS2(SPY_DZ(actor)) < 0x7D0 &&
@@ -3030,7 +3030,7 @@ void Level14_UpdateActors(void) {
 
         g_nGameplayBlocked = 0;
         dz = st->home[2] - actor->posZ;
-        if (st->link != -1 && g_pActorListBase[st->link].mode < 0x80) {
+        if (st->link != -1 && g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
           TurnActorYawTowardAngle(actor,
                         ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, 0),
@@ -3082,7 +3082,7 @@ void Level14_UpdateActors(void) {
                 0xFF;
 
         ANIM_GO(actor, 2);
-        if (actor->subMode != 0 || g_pActorListBase[st->link].mode >= 0x80) {
+        if (actor->subMode != 0 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 0;
           st->alert = 0;
           ANIM_GO(actor, 0);
@@ -3710,7 +3710,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
         if (st->target >= 0) {
-          if (g_pActorListBase[st->target].mode >= 0x80) {
+          if (g_pActorListBase[st->target].mode >= ACTOR_MODE_DORMANT) {
             st->target = -1;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             ENTER_POSE(actor, 2);
@@ -4054,7 +4054,7 @@ void Level14_UpdateActors(void) {
           ENTER_POSE(actor, 2);
           continue;
         }
-        if (st->target >= 0 && g_pActorListBase[st->target].mode < 0x80 &&
+        if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
           ((int *)st->link->state)[1] &= ~1;
           g_pActorListBase[st->target].flags |= 1;
@@ -4640,7 +4640,7 @@ void Level14_UpdateActors(void) {
         if (p->type != st->type) {
           continue;
         }
-        if (p->mode < 0x80) {
+        if (p->mode < ACTOR_MODE_DORMANT) {
           continue;
         }
         if (ApproxDist2D(&SPY.posX, p->state) < 0x6001) {
@@ -4971,7 +4971,7 @@ void Level14_UpdateActors(void) {
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
           int d;
 
-          if (a == actor || a->mode >= 0x80 || a->collision == 0 ||
+          if (a == actor || a->mode >= ACTOR_MODE_DORMANT || a->collision == 0 ||
               a->collision >= 0) {
             continue;
           }

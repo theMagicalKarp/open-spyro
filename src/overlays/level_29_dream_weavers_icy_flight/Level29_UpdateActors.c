@@ -174,7 +174,7 @@ void Level29_UpdateActors(void) {
     one = 1;
     spy = (SpyroObj *)(base - 0x164);
 
-    if (actor->mode >= 0x80) {
+    if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
     }
 

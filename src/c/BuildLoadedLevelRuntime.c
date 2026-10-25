@@ -398,7 +398,7 @@ sprites:
   mask = 0;
   i = 0;
   rec = (char *)g_pActorListBase;
-  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
     do {
       r = (char *)((i * ACTOR_SIZE) + ((int)rec));
       if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
@@ -435,7 +435,7 @@ sprites:
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
-  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
     do {
       register int sh2 asm("$5");
       register int tbl asm("$3");

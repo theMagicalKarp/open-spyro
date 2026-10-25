@@ -83,6 +83,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "camera.h"
+#include "pad_buttons.h"
 
 
 void Level18_BalloonistCutscene_Update(void)
@@ -283,7 +284,7 @@ void Level18_BalloonistCutscene_Update(void)
         t = g_nGamestate0cDialogPage[0];
         if (t < 0x1E)
       {
-        if ((g_dwPadPressed[0] & 0x6840) && (g_anGamestate0cTimerBlock_s >= 0x51))
+        if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START | PAD_RIGHT | PAD_DOWN)) && (g_anGamestate0cTimerBlock_s >= 0x51))
         {
           n = t % 6;
           if (n == 0)
@@ -367,7 +368,7 @@ void Level18_BalloonistCutscene_Update(void)
           }
         }
 
-        if (g_dwPadPressed[0] & 0x1000)
+        if (g_dwPadPressed[0] & PAD_UP)
         {
           g_nGamestate0cMenuCursor[0] = g_nGamestate0cMenuCursor[0] - 1;
           if (g_nGamestate0cMenuCursor[0] < 0)
@@ -378,7 +379,7 @@ void Level18_BalloonistCutscene_Update(void)
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
         else
-          if (g_dwPadPressed[0] & 0x4000)
+          if (g_dwPadPressed[0] & PAD_DOWN)
         {
           g_nGamestate0cMenuCursor[0] = g_nGamestate0cMenuCursor[0] + 1;
           if (g_nGamestate0cMenuCursor[0] >= i)
@@ -388,7 +389,7 @@ void Level18_BalloonistCutscene_Update(void)
           g_nGamestate0cTimer[0] = 0x20;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
-        if ((g_dwPadPressed[0] & 0x840) == 0)
+        if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) == 0)
         {
           return;
         }
@@ -414,13 +415,13 @@ void Level18_BalloonistCutscene_Update(void)
       else
         if (((unsigned int) (t - 0x1F)) < 2)
       {
-        if (g_dwPadPressed[0] & 0x5000)
+        if (g_dwPadPressed[0] & (PAD_UP | PAD_DOWN))
         {
           g_anGamestate0cTimerBlock_s = 0x20;
           g_nGamestate0cMenuCursor_s = 1 - g_nGamestate0cMenuCursor_s;
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
         }
-        if ((g_dwPadPressed[0] & 0x840) == 0)
+        if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) == 0)
         {
           return;
         }
@@ -450,7 +451,7 @@ void Level18_BalloonistCutscene_Update(void)
         }
       }
       else
-        if ((g_dwPadPressed[0] & 0x6840) && (g_nGamestate0cDialogPage[-2] >= 0x51))
+        if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START | PAD_RIGHT | PAD_DOWN)) && (g_nGamestate0cDialogPage[-2] >= 0x51))
       {
         if ((t == 0x24) || (t == 0x26))
         {
