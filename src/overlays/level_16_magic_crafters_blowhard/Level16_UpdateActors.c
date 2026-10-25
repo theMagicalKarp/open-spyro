@@ -27,13 +27,13 @@
  *   - Case 312's shake uses the literal `0x78 - timer` with the ABS2 form of
  *     the height bob (level 0's form); separate dx/dy locals put the index
  *     chain in the wrong register. Case 495's settle test also needs ABS2.
- *   - Case 312 case 1 stores unk49 before unk52/unk50 (so the `li t1,2`
+ *   - Case 312 case 1 stores subMode before updateDist/cullRadius (so the `li t1,2`
  *     reload leads the block and reorg shares it with the second branch),
  *     and the `(flags & 0xA0000)` test sits after the common tail (`goto`).
  *   - Case 312's jitter is `+= (rand & 0xF) - 8` and the sum is written
  *     back through `ps[3]`; `x - 8 + r` reassociates differently.
  *   - `tint0` is a word store (`*(int *)&actor->tint0`), written before the
- *     unk49 store.
+ *     subMode store.
  *   - Case 38's spawn loop starts `for (i = 0, ang = rand & 0x3F; ...)`.
  *   - Case 497 splits its channel switch into `case 3: case 4:` and
  *     `case 5: case 7:` with identical bodies (jump.c merges them); the

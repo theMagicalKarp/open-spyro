@@ -14,7 +14,7 @@
  *     dvz, speed, spark. The steps read must precede every cs store after
  *     the timer (it aliases them), and the count store ahead of dvz keeps
  *     the speed constant out of the slot the call's a2 = 800 needs, so the
- *     second unk46 index stays in a2.
+ *     second rotZ index stays in a2.
  */
 
 #include "actor.h"

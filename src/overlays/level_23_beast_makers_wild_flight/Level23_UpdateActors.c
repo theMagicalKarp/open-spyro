@@ -12,7 +12,7 @@
  *     4 x life 92 x threshold 14 falls short, so the 0x1DE arm carries two
  *     empty scopes between its uses: each block note adds two luids of
  *     lifetime (92 -> 96), and the group moves. No code is emitted for them.
- *   - 0x183's retire block stores unk57 after unk1C.
+ *   - 0x183's retire block stores scale after groundCode.
  */
 
 #include "actor.h"

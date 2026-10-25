@@ -26,7 +26,7 @@ void StopAllSoundExceptMask(int mask) {
   int i;
   int off;
   int one;
-  int new_var;
+  int rowOff;
   int bit;
   int eight;
   int sil;
@@ -47,9 +47,9 @@ top:
     unsigned char *owner;
     bit = one << i;
     if (((mask >> i) & 1) != 0) {
-      new_var = (i & 0x7F) * 0x1C;
+      rowOff = (i & 0x7F) * 0x1C;
       *keyoff |= bit;
-      o = new_var;
+      o = rowOff;
       m = (VOICE_ROW_RAW(o, unsigned short, nFlags)) & 0x1C;
       if (m == eight) {
         goto mode8;

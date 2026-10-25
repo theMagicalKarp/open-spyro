@@ -9,7 +9,7 @@
    kick off the synchronous 0x258-sector credits asset read from the CD base
    LBA. */
 
-void BeginCreditsSequence(int param_1) {
+void BeginCreditsSequence(int reloadMeshes) {
   int unused[8];
   RECT rect;
   rect.w = 0x200;
@@ -20,7 +20,7 @@ void BeginCreditsSequence(int param_1) {
   DrawSync(0);
   StopAllSoundExceptMask(0);
   TickSpuPerFrame();
-  if (param_1 != 0) {
+  if (reloadMeshes != 0) {
     LoadActorMeshTables();
   }
   ResetSpyroEntity(1);

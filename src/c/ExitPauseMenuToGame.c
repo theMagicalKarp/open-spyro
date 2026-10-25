@@ -8,7 +8,7 @@
    counters visible with roll phase 0xd. When leaving from gameplay (param != 0)
    resume the current music track. */
 
-void ExitPauseMenuToGame(int param_1) {
+void ExitPauseMenuToGame(int resumeMusic) {
   RECT rect;
 
   rect.x = 0x200;
@@ -29,7 +29,7 @@ void ExitPauseMenuToGame(int param_1) {
   g_bHudLivesRollPhase = 0xD;
   g_bHudWorldEggRollPhase = 0xD;
   g_bHudLevelEggRollPhase = 0xD;
-  if (param_1 != 0) {
+  if (resumeMusic != 0) {
     HandleMusicCommand(g_nCurrentMusicTrack, 8);
   }
 }

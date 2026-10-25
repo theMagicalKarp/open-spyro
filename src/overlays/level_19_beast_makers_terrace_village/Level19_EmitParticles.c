@@ -25,7 +25,7 @@
  * effectArg-scaled random offset on the spawn point, life = phase * 4, and a
  * three-axis (rand & 0xE) - 7 velocity).
  * Arm 0x18 is the family's per-variant knob: `fx = 0x2E` must be a plain
- * literal, `depthBias`/`unk18` written after it, and the 0x30 carrier must be
+ * literal, `depthBias`/`lift` written after it, and the 0x30 carrier must be
  * MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
  * Here that carrier is `v`.
  */
@@ -760,7 +760,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
@@ -768,7 +768,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

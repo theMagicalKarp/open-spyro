@@ -22,7 +22,7 @@
  * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x9, 0xA, 0xC, 0x10, 0x11, 0x18, 0x21, 0x42, 0x46, 0x47, 0x4A, 0x4D, 0x4E, 0x4F, 0x50.
  *
  * Arm 0x18 is the family's one per-variant knob: `fx = 0x2E` must be a plain
- * literal, `depthBias`/`unk18` must be written after it, and the 0x30 carrier must
+ * literal, `depthBias`/`lift` must be written after it, and the 0x30 carrier must
  * be MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
  * Here that carrier is `ta` (arm 0x21's local promoted to function scope, because this variant has no 0x15).
  */
@@ -726,7 +726,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
@@ -734,7 +734,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

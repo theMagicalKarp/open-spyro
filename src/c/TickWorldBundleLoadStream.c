@@ -41,7 +41,7 @@ void TickWorldBundleLoadStream(void) {
   int pad[4];
   int state;
   int extSize;
-  int new_var;
+  int archiveOff;
   int i;
   int def;
   int *unpacked;
@@ -64,8 +64,8 @@ void TickWorldBundleLoadStream(void) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int world = *((volatile int *)(&g_nCurrentWorldId));
     void *dst = *((void *volatile *)(&g_pDrawBufA));
-    new_var = (&g_nWorldArchiveOffset)[world * 2];
-    StartCdReadAsync(lba, dst, 0x800, new_var, 0x258);
+    archiveOff = (&g_nWorldArchiveOffset)[world * 2];
+    StartCdReadAsync(lba, dst, 0x800, archiveOff, 0x258);
     g_nCdStreamState = 1;
   } else if (state == 1) {
     int lba;

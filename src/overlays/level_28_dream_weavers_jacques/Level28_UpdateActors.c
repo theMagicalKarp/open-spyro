@@ -14,7 +14,7 @@
  *     absolute spy (`spy = &g_anSpyroWorldPos` in s7), assigned in that order at
  *     the loop top. The scratch arrays are declared in the original's slot
  *     order and named by sp offset (g056..g512).
- *   - Case 110 is level 9's (`if (d > 0xA00) unk48 = 1; break;`) so it
+ *   - Case 110 is level 9's (`if (d > 0xA00) mode = 1; break;`) so it
  *     cross-jumps into case 331; case 160's hit block opens with an empty
  *     do/while(0) (A200).
  *   - Case 47 writes its states 1 and 2 as two identical cases, and the

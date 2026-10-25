@@ -23,7 +23,7 @@
  *   - Case 392's |dx| + |dy| goes through `d` (ABS2 form) and its tests are
  *     written positively; case 62 splits its knock-back test into two
  *     remove blocks and puts the out-of-range ENTER_POSE last.
- *   - Case 421 stores `st->unk14` (known to be 1) rather than a literal.
+ *   - Case 421 stores `st->rideMode` (known to be 1) rather than a literal.
  *   - Case 298 copies the parent's rotation bytes as one 3-byte struct (lb).
  *   - Case 390 addresses the voice table as `g_anSpuVoiceRowPitch[k][0]` and its word 3
  *     through `g_anSpuVoiceRowPitchStep[k][0]`.
@@ -212,7 +212,7 @@ typedef struct ExitState {
     StubActorHook(a);                                                          \
   }
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \

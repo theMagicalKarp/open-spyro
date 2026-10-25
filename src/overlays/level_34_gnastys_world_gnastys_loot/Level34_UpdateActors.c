@@ -14,7 +14,7 @@
  *     (scalar MEMs do not alias the state block), and every array used from
  *     case 181 on is declared in a block that opens at case 181, so the
  *     scalars get their slots first (312..324) as in the original frame.
- *   - Case 181: `r = g_bSpyroPersistentEulerZ + K; unk46 = r + ...` keeps the constant on
+ *   - Case 181: `r = g_bSpyroPersistentEulerZ + K; rotZ = r + ...` keeps the constant on
  *     g_bSpyroPersistentEulerZ (fold would move it); the spark loop is goto-built so
  *     loop.c does not hoist 0x1000000; a NULL actor to PlaySoundEffect.
  *   - Case 177's knockback spawn loop is a `for`; case 2 uses `++st->laps`.
@@ -212,7 +212,7 @@ typedef struct ExitState {
     StubActorHook(a);                                                          \
   }
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \

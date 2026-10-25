@@ -943,7 +943,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

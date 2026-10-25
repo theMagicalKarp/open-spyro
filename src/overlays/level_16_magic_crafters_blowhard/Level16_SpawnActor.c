@@ -11,7 +11,7 @@
  *    it must be a SEPARATE local per shift site: one local feeding two shifts
  *    stays in a register and degrades both to `srav`.
  * 2. The arm-0x25 tail needed the `g_apActorMeshTable[type][0xE][0xC]` lookup hoisted
- *    into an `anim` temp above the four `rec->unk3C..3F = 0` stores (which are
+ *    into an `anim` temp above the four `rec->anim..nextFrame = 0` stores (which are
  *    themselves in original order 3D, 3C, 3F, 3E), so the load chain schedules
  *    ahead of the store batch and `sb anim,65(rec)` still lands in the `j`
  *    delay slot.
@@ -73,8 +73,8 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;
   int owner;
-  int new_var;
-  int new_var2;
+  int shiftX;
+  int shiftY;
   rec = AllocActorRecordSlot();
   rec->type = type;
   if ((parent == 0) || (((unsigned int) (owner = parent - g_pActorListBase)) >= 0x100))
@@ -149,8 +149,8 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       WindState *st = rec->state;
       int probe[3];
       int anim;
-      new_var = 2;
-      new_var2 = 2;
+      shiftX = 2;
+      shiftY = 2;
       InitActorRenderDefaults(rec);
       rec->groundCode = -1;
       CopyVector(probe, &rec->posX);
@@ -179,8 +179,8 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
       }
 
-      rec->posX = parent->posX + (g_anCosineLut[parent->rotZ] >> new_var);
-      rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> new_var2);
+      rec->posX = parent->posX + (g_anCosineLut[parent->rotZ] >> shiftX);
+      rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> shiftY);
       rec->posZ = parent->posZ;
       st->owner = parent;
       st->child = 0;

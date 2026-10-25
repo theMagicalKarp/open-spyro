@@ -36,7 +36,7 @@
  *     and 5. Three separate copies push the constant-4 movable over loop.c's
  *     threshold and 4 gets hoisted (li t1,4 everywhere).
  *   - Case 234 is a fade-out prop placed between 195 and 250; it tests the
- *     loop head's cse'd `unk42 & 2` (the a0 the head computes).
+ *     loop head's cse'd `animFlags & 2` (the a0 the head computes).
  *   - The camera look-at pair C60/C64 is one struct (in_struct stores keep
  *     the sine-table loads below them); C68 is a separate scalar.
  *   - Case 120 reads the stage global through `extern int g_anLevelReadyFlagBlock[]`.

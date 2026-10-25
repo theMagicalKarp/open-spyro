@@ -27,7 +27,7 @@
  *     around the store; the range tests in cases 51 and 53 are written
  *     positively (ABS2 form).
  *   - Case 110's first state is written like case 331's (`< 0xA01 -> break;
- *     unk48 = 1; continue`) so the two call tails cross-jump.
+ *     mode = 1; continue`) so the two call tails cross-jump.
  */
 
 #include "actor.h"
@@ -212,7 +212,7 @@ typedef struct ExitState {
     StubActorHook(a);                                                          \
   }
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \

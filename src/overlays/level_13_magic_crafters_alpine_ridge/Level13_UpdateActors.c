@@ -22,7 +22,7 @@
  *     the literal folds to a shift-and-mask at the tree level.
  *   - Cases 33 and 271 use the function-level base; cases 312 and 76 pass
  *     &spy->posX where they hold Spyro's position.
- *   - Case 253's state 1 dispatches its mode with a switch; its unk43 test
+ *   - Case 253's state 1 dispatches its mode with a switch; its group test
  *     puts the 0xFF branch last.
  */
 

@@ -28,7 +28,7 @@
  * reads must be UNSIGNED (`(unsigned short)`): a signed short feeding a LEFT
  * shift comes out `lh; sll` (cookbook B13) and the original has `lhu`.
  *
- * Arm 0x18's store order is load-bearing: `depthBias = 8` and `unk18 = i * 32`
+ * Arm 0x18's store order is load-bearing: `depthBias = 8` and `lift = i * 32`
  * are written AFTER `fx = 0x2E` -- see the note at the end.
  */
 
@@ -642,10 +642,10 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
  * load-bearing and are the per-variant knobs for the rest of this family:
  *
  *  - Arm 0x18 (cookbook A220): `fx = 0x2E` is a PLAIN LITERAL, and
- *    `depthBias = 8` / `unk18 = i * 32` are written AFTER it.  Reload emits the
+ *    `depthBias = 8` / `lift = i * 32` are written AFTER it.  Reload emits the
  *    `li t0,46` immediately before the fx store, so the `li` inherits the
  *    store's LUID and sched2 emits stragglers in LUID order; moving the store
- *    up moves the store too.  depthBias/unk18 are the escape because their
+ *    up moves the store too.  depthBias/lift are the escape because their
  *    producers are chained to `li v0,48` by v0 reuse, so their stores stay put
  *    however the statements are ordered.
  *  - The 0x30 carrier must be MULTI-SET or `li v0,48` is birthing-boosted and

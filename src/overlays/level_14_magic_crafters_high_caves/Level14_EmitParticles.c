@@ -23,9 +23,9 @@
  *     `table[w] >> sh` (the B13 lever -- see Level27_EmitParticles's header).
  *   - Arms 0x45 and 0x49 are the same effect with two record layouts: 0x45 is
  *     a `dust` mote that keeps the emitter argument as an INT at +0x18 with a
- *     zero int at +0x1C (new `src`/`unk1C` fields on the dust struct), 0x49 is
+ *     zero int at +0x1C (new `src`/`waypoint` fields on the dust struct), 0x49 is
  *     a `track` record that copies its own position into `vel[]` at +0x18 and
- *     carries `owner = rand()` / `unk1F = (rand() & 0x1F) + 0x20`.  Both end
+ *     carries `owner = rand()` / `orbitRadius = (rand() & 0x1F) + 0x20`.  Both end
  *     in the SAME eight-way `switch (rand() & 7)` colour block (the level_25
  *     arm-0x42 palette) and `fx = 0x40`; gcc cross-jumps the two switches into
  *     one, which is why arm 0x45's table points into arm 0x49's body.
@@ -971,7 +971,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
@@ -979,7 +979,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

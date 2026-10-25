@@ -875,7 +875,7 @@ void Level16_EmitParticles(int count, int type, int *pos, int effectArg) {
 }
 
 /* Arm 0x18 still carries the family's A220 knob unchanged (plain-literal
- * `fx = 0x2E` with `depthBias`/`unk18` written below it, and arm 0x15's `v`
+ * `fx = 0x2E` with `depthBias`/`lift` written below it, and arm 0x15's `v`
  * promoted to function scope as the multi-set 0x30 carrier); see the emit-
  * SPAWN generator section in the cookbook's G.
  */

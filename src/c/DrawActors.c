@@ -70,7 +70,7 @@ void DrawActors(void) {
   unsigned char euler[3]; /* sp+0x90 */
   MATRIX eulerMtx;        /* sp+0x98 */
   unsigned int color;
-  int iVar1;
+  int v;
   int i;
   int j;
   int k;
@@ -106,59 +106,55 @@ void DrawActors(void) {
   FillWord(&viewMtx, 0, 0x20);
   SetTransMatrix(&viewMtx);
   viewMtx.m[0][0] = 0x1000;
-  iVar1 =
-      LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
-  viewMtx.m[1][1] = iVar1;
-  iVar1 =
-      LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
-  viewMtx.m[2][1] = iVar1;
-  iVar1 =
-      LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
-  viewMtx.m[1][2] = -iVar1;
-  iVar1 =
-      LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
-  viewMtx.m[2][2] = iVar1;
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[1][1] = v;
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[2][1] = v;
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[1][2] = -v;
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  viewMtx.m[2][2] = v;
 
   FillWord(&outMtx, 0, 0x20);
-  iVar1 = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
-  outMtx.m[0][0] = iVar1;
-  iVar1 = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
-  outMtx.m[2][0] = -iVar1;
+  v = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[0][0] = v;
+  v = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[2][0] = -v;
   outMtx.m[1][1] = 0x1000;
-  iVar1 = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
-  outMtx.m[0][2] = iVar1;
-  iVar1 = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
-  outMtx.m[2][2] = iVar1;
+  v = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[0][2] = v;
+  v = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  outMtx.m[2][2] = v;
   MulMatrix(&viewMtx, &outMtx);
 
   FillWord(&outMtx, 0, 0x20);
-  iVar1 = LookupCosine(g_nCameraEulerRoll);
-  outMtx.m[0][0] = iVar1;
-  iVar1 = LookupSine(g_nCameraEulerRoll);
-  outMtx.m[1][0] = -iVar1;
-  iVar1 = LookupSine(g_nCameraEulerRoll);
-  outMtx.m[0][1] = iVar1;
-  iVar1 = LookupCosine(g_nCameraEulerRoll);
-  outMtx.m[1][1] = iVar1;
+  v = LookupCosine(g_nCameraEulerRoll);
+  outMtx.m[0][0] = v;
+  v = LookupSine(g_nCameraEulerRoll);
+  outMtx.m[1][0] = -v;
+  v = LookupSine(g_nCameraEulerRoll);
+  outMtx.m[0][1] = v;
+  v = LookupCosine(g_nCameraEulerRoll);
+  outMtx.m[1][1] = v;
   outMtx.m[2][2] = 0x1000;
   MulMatrix(&viewMtx, &outMtx);
 
   CopyWords(&outMtx, &viewMtx, 0x14);
-  iVar1 = viewMtx.m[1][0] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  v = viewMtx.m[1][0] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  outMtx.m[1][0] = iVar1 >> 9;
-  iVar1 = viewMtx.m[1][1] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  outMtx.m[1][0] = v >> 9;
+  v = viewMtx.m[1][1] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  outMtx.m[1][1] = iVar1 >> 9;
-  iVar1 = viewMtx.m[1][2] * 0x140;
-  if (iVar1 < 0) {
-    iVar1 += 0x1ff;
+  outMtx.m[1][1] = v >> 9;
+  v = viewMtx.m[1][2] * 0x140;
+  if (v < 0) {
+    v += 0x1ff;
   }
-  outMtx.m[1][2] = iVar1 >> 9;
+  outMtx.m[1][2] = v >> 9;
 
   for (i = 0; i < g_nScriptedMobCount; i++) {
     if (g_apScriptedMobEntries[i]->nGateIndex < 0 ||

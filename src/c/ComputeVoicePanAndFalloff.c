@@ -13,24 +13,24 @@
    Two things are load-bearing: `pad` sizes the 0x20 frame (A127 — without it
    the frame is 0x10 and the 5th argument reloads from 0x20(sp) instead of
    0x30(sp)), and the wrap arm must negate the PARAMETER and mask the COPY
-   (`new_var`), not the other way round — that is what puts a2/v1 in the
+   (`panv`), not the other way round — that is what puts a2/v1 in the
    original's roles across the beqz and j delay slots. */
 
 void ComputeVoicePanAndFalloff(short *out, int vol, int pan, unsigned int range,
                                short *base) {
   int pad[4];
   unsigned int lo;
-  unsigned char new_var;
+  unsigned char panv;
   int gainL;
   int gainR;
   short bL;
   short bR;
   short cur;
-  new_var = (int)pan;
+  panv = (int)pan;
   if (range != 0) {
     if (((unsigned int)((pan - 0x40) & 0xFF)) < 0x80) {
       gainL = (-pan) & 0xFF;
-      gainR = new_var & 0xFF;
+      gainR = panv & 0xFF;
     } else {
       gainL = (pan + 0x80) & 0xFF;
       gainR = (0x80 - pan) & 0xFF;

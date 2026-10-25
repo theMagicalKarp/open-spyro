@@ -28,7 +28,7 @@
  *     out of the loop, so each constant's fate depends on the ones before it.
  *     Here 2, 13 and the two table addresses are hoisted (and spilled: they
  *     come back as `li/lui t1`), while 3 and 4 must stay inline. Case 115
- *     uses ENTER_POSE_B, whose empty loop gives the `unk3D = n` store its own
+ *     uses ENTER_POSE_B, whose empty loop gives the `nextAnim = n` store its own
  *     copy of the constant; without it the 3 and 4 groups live long enough
  *     to be hoisted.
  *   - Stack layout: `idx[2]` (BLKmode, so it gets its slot at declaration)
@@ -36,7 +36,7 @@
  *     borrows case 76's first vector.
  *   - `do { } while (0);` barriers at the head of cases 165/166 and in 412's
  *     hit block keep cse from folding `spy` into the absolute address.
- *   - Case 165 has two `unk48 = 3; continue;` tails (jump.c merges them);
+ *   - Case 165 has two `mode = 3; continue;` tails (jump.c merges them);
  *     one shared tail changes the register choice for the `sel` store.
  */
 
@@ -190,7 +190,7 @@ typedef struct ShardState {
 
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \

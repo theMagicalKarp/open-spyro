@@ -25,7 +25,7 @@
  * Word-identical (bar branch displacements) to Level2_EmitParticles,
  * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles.
  *
- * Arm 0x18's store order is load-bearing: `depthBias = 8` and `unk18 = i * 32`
+ * Arm 0x18's store order is load-bearing: `depthBias = 8` and `lift = i * 32`
  * are written AFTER `fx = 0x2E` -- see the note at the end.
  */
 
@@ -633,12 +633,12 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
  *    spill register, which is t0 -- what the original has.  (The old note's
  *    "find something that puts a0..a3 into regs_someone_prefers[]" was chasing
  *    a register that is never allocated at all.)
- *  - `depthBias = 8` and `unk18 = i * 32` must be written AFTER the fx store.
+ *  - `depthBias = 8` and `lift = i * 32` must be written AFTER the fx store.
  *    Reload emits the `li t0,46` immediately before the store, so the `li`
  *    inherits the store's LUID, and sched2 emits low-priority stragglers in
  *    LUID order -- the `li` can never precede a straggler from an earlier
  *    source statement.  Moving the fx store up moves the store too (equal
- *    priority stores also come out in source order).  depthBias/unk18 are the way
+ *    priority stores also come out in source order).  depthBias/lift are the way
  *    out because their `li v0,8` / `sll v0,i,5` producers are chained to
  *    `li v0,48` by v0 reuse, so sched2 holds those stores in place however the
  *    statements are ordered.  See cookbook A220.

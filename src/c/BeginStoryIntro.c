@@ -13,7 +13,7 @@
 
 void BeginStoryIntro(void) {
   int *blk;
-  int new_var;
+  int back;
   int vol;
   g_nGamestate = 0xD;
   FillWord(&g_nGamestate0dMode, 0, 0x5C);
@@ -24,9 +24,9 @@ void BeginStoryIntro(void) {
   g_nSfxVolume = 0xA;
   *((short *)(&g_abSpuCommonAttr[0x10])) = vol;
   *((short *)(&g_abSpuCommonAttr[0x12])) = vol;
-  new_var = 200;
+  back = 200;
   g_nMusicVolume = 0xA;
-  blk[-new_var] = (short)0xC0;
+  blk[-back] = (short)0xC0;
   g_pStoryIntroStreamCursor = ((char *)g_pRenderScratchRegionBase) - 0x2000;
   SetSpuCommonAttr(blk - 200);
   g_nLevelStormFlag = 0;

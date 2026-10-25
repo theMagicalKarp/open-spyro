@@ -17,7 +17,7 @@ void StepSpyroOntoLocalFloor(void) {
   int down[3];
   int fore[3];
   int aft[3];
-  int new_var;
+  int idx;
   int *mtx;
   int *pos;
   down[0] = 0;
@@ -37,7 +37,7 @@ void StepSpyroOntoLocalFloor(void) {
   AddVector(down, pos, down);
   if ((CastRayWorldAndActors(fore, aft) != 0) &&
       (g_anCollisionProbeVec[2] > 0)) {
-    new_var = 26;
+    idx = 26;
     SubtractVector(down, g_anCollisionResolvedPos, down);
     if (((!down) && (!down)) && (!down)) {
     }
@@ -51,7 +51,7 @@ void StepSpyroOntoLocalFloor(void) {
       down[2] = 0;
     }
     AddVector(pos, pos, down);
-    mtx[new_var] = 0;
+    mtx[idx] = 0;
   } else {
     int *air = g_anSpyroAirborneFramesBlock;
     air[0] += 1;

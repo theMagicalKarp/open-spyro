@@ -25,7 +25,7 @@
  *   - Spawn-type selects are if/else around whole calls or stores (cases 154,
  *     200, 236) so jump.c merges the tails the way the original does.
  *   - Case 110's first state is written like case 331's (`< 0xA01 -> break;
- *     unk48 = 1; continue`) so the two call tails cross-jump.
+ *     mode = 1; continue`) so the two call tails cross-jump.
  *   - Case 401 ends its hit path in an if/else with the shared `flags = 0`
  *     (as case 195), so case 195 keeps its own tail.
  */
@@ -211,7 +211,7 @@ typedef struct ExitState {
     StubActorHook(a);                                                          \
   }
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
- * block there, so the `unk3D = n` store takes its own copy of the constant
+ * block there, so the `nextAnim = n` store takes its own copy of the constant
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \

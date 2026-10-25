@@ -25,7 +25,7 @@
  * Word-identical (bar branch displacements) to Level2_EmitParticles,
  * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles.
  *
- * Arm 0x18's store order is load-bearing: `depthBias = 8` and `unk18 = i * 32`
+ * Arm 0x18's store order is load-bearing: `depthBias = 8` and `lift = i * 32`
  * are written AFTER `fx = 0x2E`, which is what puts the fx constant's reload
  * (`li t0,46`) ahead of them in LUID order -- see the note at the end.
  */
@@ -721,7 +721,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int effectArg) {
  * order), so the store then lands four slots early instead.  The two are one
  * dial with two ends and neither end alone reaches the original.
  *
- * What breaks the tie is that `depthBias = 8` / `unk18 = i * 32` are NOT free
+ * What breaks the tie is that `depthBias = 8` / `lift = i * 32` are NOT free
  * stragglers: their `li v0,8` / `sll v0,i,5` producers are chained to
  * `li v0,48` by v0 reuse, so sched2 keeps that chain (and its stores) in the
  * same relative slots no matter where the statements sit in the source.
@@ -729,7 +729,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int effectArg) {
  * LUIDs above the `li t0,46` -- putting the reload third in the straggler
  * sequence, exactly where the original has it -- while their stores stay put.
  * Measured: fx at each of source positions 0..7 gives 5,5,8,10,9,8,7,5 and
- * never both ends at once; moving depthBias/unk18 below fx gives MATCH.
+ * never both ends at once; moving depthBias/lift below fx gives MATCH.
  *
  * The `v` promotion (arm 0x15's block local carrying 0x30) is still required
  * and still load-bearing, and `fx = 0x2E` must stay a PLAIN LITERAL: a carrier

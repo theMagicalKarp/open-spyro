@@ -42,7 +42,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   int bit;
   int tb;
   int row;
-  short *new_var;
+  short *sinp;
   int tbit;
   int sh;
   int *pk;
@@ -128,10 +128,10 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     if (g_nScriptedRespawnFlag != 0) {
       g_anLevelSpawnPosZBlock[0] +=
           g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
-      new_var = &g_anSineLut[g_nLevelSpawnYaw];
+      sinp = &g_anSineLut[g_nLevelSpawnYaw];
       radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
       g_nLevelSpawnPosX -= radial;
-      radial = (*new_var) >> 2;
+      radial = (*sinp) >> 2;
       g_nLevelSpawnPosY -= radial;
     }
   }
