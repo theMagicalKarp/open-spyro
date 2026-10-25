@@ -1234,18 +1234,18 @@ void Level11_UpdateActors(void) {
       continue;
     }
 
-    /* Floating digits (DebrisState). */
-    case 260:
-    case 261:
-    case 262:
-    case 263:
-    case 264:
-    case 265:
-    case 266:
-    case 267:
-    case 268:
-    case 269: {
-      DebrisState *st = actor->state;
+    /* Floating digits (GemDigitState). */
+    case ACTOR_TYPE_GEM_DIGIT_0:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 1:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 2:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 3:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 4:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 5:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 6:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 7:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 8:
+    case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
+      GemDigitState *st = actor->state;
 
       if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
 

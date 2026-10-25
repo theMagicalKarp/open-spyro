@@ -76,12 +76,13 @@ extern void SVectorToVectorShl2(int *d, int *s);
 
 extern void CommitActorKillGems(int a, void *b);
 
-/* Types 260..269: floating digits. Same bounce, different layout. */
-typedef struct DebrisState {
+/* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
+ * SpawnFloatingDigitActors when a kill pays out gems. */
+typedef struct GemDigitState {
   int life;   /* 0x00 */
   int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
-} DebrisState;
+} GemDigitState;
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
@@ -786,13 +787,14 @@ typedef struct ChargeState {
   int rest; /* 0x2C frames before the next charge */
 } ChargeState;
 
-/* Cases 260..269 — the thrown projectile: flies until it lands. */
-typedef struct ShotState30 {
+/* Cases 260..269 — the floating gem-value digits again, with the z velocity
+ * split out (the view two clones were matched with). */
+typedef struct GemDigitStateZ {
   int life; /* 0x00 */
   char pad04[0x4];
   int vel[2]; /* 0x08 */
   int velZ;   /* 0x10 */
-} ShotState30;
+} GemDigitStateZ;
 
 /* Case 416 — the bobbing platform. */
 typedef struct BobState {
