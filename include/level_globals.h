@@ -232,7 +232,7 @@ extern int g_anLevelTriggerStateSlots[];
 extern int g_anRunningKillBitmap[];
 extern int g_anWorldPersistentFlags[];
 extern int g_nCurrentWorldId[];
-extern int g_nGamestate0fMode;
+extern int g_nCreditsMode;
 extern int g_nGenericCountdown;
 
 

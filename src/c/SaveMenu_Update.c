@@ -28,7 +28,7 @@
    "save game?" menu: the cursor, the three memory card stages (load the
    directory, write the save, read it back and verify the checksum) and the
    result screens, ending in EndSaveMenuToWorld. */
-void Gamestate0B_Update(void) {
+void SaveMenu_Update(void) {
   int vec[3];
   short ang[3];
   int t;

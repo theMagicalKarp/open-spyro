@@ -37,7 +37,7 @@ typedef struct {
   unsigned short pad2;
 } POLY_FT4;
 
-void Gamestate0A_Draw(void) {
+void MenuTransition_Draw(void) {
   POLY_FT4 *q;
   RECT rect;
   int color;

@@ -35,7 +35,7 @@ extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
-   absolute — same split as g_anSpyroWorldPosBlock in Gamestate0D_Update. */
+   absolute — same split as g_anSpyroWorldPosBlock in Title_Update. */
 extern int g_anCameraPosBlock[];
 
 /* Held-base views of the Spyro record, the request mask and the camera's
@@ -247,7 +247,7 @@ extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 extern char *g_apWorldUnpackHeadBlock[];
 extern char *volatile g_pActiveCutsceneSoundDef;
 extern int CdInit(void);
-extern int g_anGamestate0dBlock[];
+extern int g_anTitleModeBlock[];
 extern int g_anDragonRescueBlock[];
 extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroPadSnapshotBlock[];
@@ -317,7 +317,7 @@ extern int g_nCreditsFirstVisibleLine;
 extern int g_nCreditsLastVisibleLine;
 extern int g_nCreditsLineCount;
 extern int g_nCreditsPageIndex;
-extern int g_nGamestate0fMode;
+extern int g_nCreditsMode;
 extern int g_nGenericCountdown;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nStaticMeshLodCutoff;

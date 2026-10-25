@@ -1162,7 +1162,7 @@ enddlabel switchdataD_80010de8
 .endif
 
 .section .rodata.switchdataD_80010e08, "a"
-.ifndef HAVE_C_Gamestate0B_Update
+.ifndef HAVE_C_SaveMenu_Update
 nonmatching switchdataD_80010e08
 
 dlabel switchdataD_80010e08

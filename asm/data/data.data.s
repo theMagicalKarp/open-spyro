@@ -14355,11 +14355,11 @@ dlabel g_nSpyroMotionAux
     /* 65F00 80075700 00000000 */ .word 0x00000000
 enddlabel g_nSpyroMotionAux
 
-nonmatching g_nGamestate0fMode
+nonmatching g_nCreditsMode
 
-dlabel g_nGamestate0fMode
+dlabel g_nCreditsMode
     /* 65F04 80075704 00000000 */ .word 0x00000000
-enddlabel g_nGamestate0fMode
+enddlabel g_nCreditsMode
 
 nonmatching g_pCreditsLineTable
 

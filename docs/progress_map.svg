@@ -33,7 +33,7 @@
 <rect x="269.92" y="260.33" width="45.88" height="50.61" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizeSpritePrimQueue  ·  4248 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="310.94" width="53.40" height="43.41" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CollideSphereWithWorldAndActors  ·  4240 bytes  ·  handwritten</title></rect>
 <rect x="67.40" y="310.94" width="53.05" height="43.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickLevelTransitionStream  ·  4212 bytes  ·  matched</title></rect>
-<rect x="120.44" y="310.94" width="52.04" height="43.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0B_Update  ·  4132 bytes  ·  matched</title></rect>
+<rect x="120.44" y="310.94" width="52.04" height="43.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SaveMenu_Update  ·  4132 bytes  ·  matched</title></rect>
 <rect x="172.48" y="310.94" width="50.63" height="43.41" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CastRayWorldAndActors  ·  4020 bytes  ·  handwritten</title></rect>
 <rect x="223.11" y="310.94" width="46.70" height="43.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildLoadedLevelRuntime  ·  3708 bytes  ·  matched</title></rect>
 <rect x="269.81" y="310.94" width="45.99" height="43.41" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateHudCounters  ·  3652 bytes  ·  matched</title></rect>
@@ -53,10 +53,10 @@
 <rect x="220.43" y="391.48" width="32.71" height="34.02" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80066634  ·  2036 bytes  ·  library</title></rect>
 <rect x="253.14" y="391.48" width="31.68" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectCameraMode  ·  1972 bytes  ·  matched</title></rect>
 <rect x="284.82" y="391.48" width="30.98" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PlaySoundEffect  ·  1928 bytes  ·  matched</title></rect>
-<rect x="14.00" y="425.50" width="33.20" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate08_Draw  ·  1852 bytes  ·  matched</title></rect>
+<rect x="14.00" y="425.50" width="33.20" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Draw  ·  1852 bytes  ·  matched</title></rect>
 <rect x="47.20" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004CEDC  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroHornStrikeTrails  ·  1808 bytes  ·  handwritten</title></rect>
-<rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0D_Update  ·  1700 bytes  ·  matched</title></rect>
+<rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Title_Update  ·  1700 bytes  ·  matched</title></rect>
 <rect x="142.49" y="425.50" width="29.97" height="30.49" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FormatAndWrite  ·  1672 bytes  ·  library</title></rect>
 <rect x="172.46" y="425.50" width="29.76" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollPadAndDistributeInput  ·  1660 bytes  ·  matched</title></rect>
 <rect x="202.22" y="425.50" width="28.68" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildActorDrawList  ·  1600 bytes  ·  handwritten</title></rect>
@@ -99,8 +99,8 @@
 <rect x="39.50" y="506.88" width="22.90" height="23.29" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawWorldSparkleParticles  ·  976 bytes  ·  handwritten</title></rect>
 <rect x="39.50" y="530.17" width="22.90" height="23.20" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitDynamicActorMeshFogShaded  ·  972 bytes  ·  handwritten</title></rect>
 <rect x="39.50" y="553.37" width="22.90" height="23.01" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>FindWorldFloorBelowPoint  ·  964 bytes  ·  handwritten</title></rect>
-<rect x="39.50" y="576.38" width="22.90" height="22.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate01_09_Draw  ·  956 bytes  ·  matched</title></rect>
-<rect x="39.50" y="599.19" width="22.90" height="22.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0A_Draw  ·  932 bytes  ·  matched</title></rect>
+<rect x="39.50" y="576.38" width="22.90" height="22.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LevelTransition_Draw  ·  956 bytes  ·  matched</title></rect>
+<rect x="39.50" y="599.19" width="22.90" height="22.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MenuTransition_Draw  ·  932 bytes  ·  matched</title></rect>
 <rect x="39.50" y="621.44" width="22.90" height="21.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueueLoadingScreenSprites  ·  920 bytes  ·  matched</title></rect>
 <rect x="39.50" y="643.39" width="22.90" height="21.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TweenActorAlongPath  ·  920 bytes  ·  matched</title></rect>
 <rect x="39.50" y="665.35" width="22.90" height="21.86" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSpuCommonAttr  ·  916 bytes  ·  library</title></rect>
@@ -267,7 +267,7 @@
 <rect x="142.94" y="749.69" width="11.79" height="11.86" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildRenderEntityLists  ·  256 bytes  ·  handwritten</title></rect>
 <rect x="142.94" y="761.55" width="11.79" height="11.86" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_8006570c  ·  256 bytes  ·  library</title></rect>
 <rect x="154.74" y="603.97" width="11.90" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CollectPickupActor  ·  252 bytes  ·  matched</title></rect>
-<rect x="166.63" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0F_Update  ·  248 bytes  ·  matched</title></rect>
+<rect x="166.63" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CreditsSequence_Update  ·  248 bytes  ·  matched</title></rect>
 <rect x="178.34" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyGravityAlongSpyroSlopeTangent  ·  248 bytes  ·  matched</title></rect>
 <rect x="190.04" y="603.97" width="11.71" height="11.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetSpawnAnchorFromActor  ·  248 bytes  ·  matched</title></rect>
 <rect x="201.75" y="603.97" width="11.71" height="11.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InitSpuSubsystem  ·  248 bytes  ·  library</title></rect>
@@ -482,7 +482,7 @@
 <rect x="220.98" y="765.64" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_160  ·  104 bytes  ·  library</title></rect>
 <rect x="228.29" y="680.07" width="7.32" height="7.47" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>IntegerSqrt  ·  100 bytes  ·  handwritten</title></rect>
 <rect x="235.60" y="680.07" width="7.32" height="7.47" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ModifyWorldChunkAnimFlags  ·  100 bytes  ·  handwritten</title></rect>
-<rect x="242.92" y="680.07" width="7.32" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate01_Update  ·  100 bytes  ·  matched</title></rect>
+<rect x="242.92" y="680.07" width="7.32" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LevelLoad_Update  ·  100 bytes  ·  matched</title></rect>
 <rect x="250.24" y="680.07" width="7.32" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapCameraToTarget  ·  100 bytes  ·  matched</title></rect>
 <rect x="257.56" y="680.07" width="7.32" height="7.47" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetPadFrameSubstepTable  ·  100 bytes  ·  matched</title></rect>
 <rect x="264.87" y="680.07" width="7.32" height="7.47" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetGraphDebug  ·  100 bytes  ·  library</title></rect>
@@ -659,7 +659,7 @@
 <rect x="283.15" y="728.00" width="4.08" height="4.29" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SpuInit  ·  32 bytes  ·  matched</title></rect>
 <rect x="287.23" y="728.00" width="4.08" height="4.29" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AbsAngleDelta8  ·  32 bytes  ·  handwritten</title></rect>
 <rect x="291.31" y="728.00" width="4.08" height="4.29" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AbsAngleDelta12  ·  32 bytes  ·  handwritten</title></rect>
-<rect x="295.39" y="728.00" width="4.08" height="4.29" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate06_Update  ·  32 bytes  ·  matched</title></rect>
+<rect x="295.39" y="728.00" width="4.08" height="4.29" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OverlayScreen_Update  ·  32 bytes  ·  matched</title></rect>
 <rect x="299.47" y="728.00" width="4.08" height="4.29" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InitSpu  ·  32 bytes  ·  library</title></rect>
 <rect x="303.55" y="728.00" width="4.08" height="4.29" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetLineF3  ·  32 bytes  ·  library</title></rect>
 <rect x="307.64" y="728.00" width="4.08" height="4.29" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005EF54  ·  32 bytes  ·  library</title></rect>

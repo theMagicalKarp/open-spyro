@@ -10,7 +10,7 @@
    (0xF): snapshot the pad, ChangeSpyroState(SPYRO_ST_GLIDE) unless already
    there, disable charge via the state flags, then the same substep-integrate /
    position-step / finalize / anim-tick / body-matrix-rebuild sequence as
-   TickSpyroFrameNoInput. Called from Gamestate01_Update (post-level-load
+   TickSpyroFrameNoInput. Called from LevelLoad_Update (post-level-load
    intro). */
 void TickSpyroFrameForceJump(void) {
   int i;

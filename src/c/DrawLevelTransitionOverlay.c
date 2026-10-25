@@ -7,7 +7,7 @@
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
-   (2324 b), drawn by Gamestate01_09_Draw.
+   (2324 b), drawn by LevelTransition_Draw.
 
    The banner line is built from g_nCurrentLevelId: level 0 of a world is
    "RETURNING HOME...", the boss level (4) of a world and the Gnasty fight

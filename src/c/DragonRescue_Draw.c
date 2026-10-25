@@ -17,7 +17,7 @@
    secondary actor pass. Every arm ends in the shared letterbox check and the
    standard 2-vblank frame submit. */
 
-void Gamestate08_Draw(void) {
+void DragonRescue_Draw(void) {
   int unused[4];
   unsigned char *icon;
 

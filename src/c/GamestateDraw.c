@@ -50,7 +50,7 @@ void GamestateDraw(void) {
 
   if (g_nGamestate != GS_GAMEPLAY) {
     if (g_nGamestate == GS_LEVEL_LOAD) {
-      Gamestate01_09_Draw();
+      LevelTransition_Draw();
     } else if (g_nGamestate == GS_PAUSE_MENU) {
       Gamestate02_03_06_Draw();
     } else if (g_nGamestate == GS_INVENTORY) {
@@ -64,17 +64,17 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
       (*(void (*)())g_pfnGamestate7DrawHook)();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
-      Gamestate08_Draw();
+      DragonRescue_Draw();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
-      Gamestate01_09_Draw();
+      LevelTransition_Draw();
     } else if (g_nGamestate == GS_MENU_TRANSITION) {
-      Gamestate0A_Draw();
+      MenuTransition_Draw();
     } else if (g_nGamestate == GS_SAVE_MENU) {
       SaveLoadMenu_Draw();
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       ActorCutscene_Draw();
     } else if (g_nGamestate == GS_TITLE) {
-      if (g_nGamestate0dMode == 3) {
+      if (g_nTitleMode == 3) {
         StoryIntro_Draw();
       } else {
         Titlescreen_Draw();
@@ -82,7 +82,7 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_GEM_CUTSCENE) {
       GemCutscene_Draw();
     } else if (g_nGamestate == GS_CREDITS) {
-      if (g_nGamestate0fMode < 0x63) {
+      if (g_nCreditsMode < 0x63) {
         Credits_Draw();
       } else {
         ReturningHome_Draw();

@@ -491,7 +491,7 @@
    "size": 2324
   },
   {
-   "name": "Gamestate01_09_Draw",
+   "name": "LevelTransition_Draw",
    "vram": 2147590224,
    "size": 956
   },
@@ -501,7 +501,7 @@
    "size": 8840
   },
   {
-   "name": "Gamestate0A_Draw",
+   "name": "MenuTransition_Draw",
    "vram": 2147600020,
    "size": 932
   },
@@ -511,7 +511,7 @@
    "size": 1444
   },
   {
-   "name": "Gamestate08_Draw",
+   "name": "DragonRescue_Draw",
    "vram": 2147602396,
    "size": 1852
   },
@@ -761,7 +761,7 @@
    "size": 1320
   },
   {
-   "name": "Gamestate01_Update",
+   "name": "LevelLoad_Update",
    "vram": 2147671964,
    "size": 100
   },
@@ -791,7 +791,7 @@
    "size": 1492
   },
   {
-   "name": "Gamestate06_Update",
+   "name": "OverlayScreen_Update",
    "vram": 2147677124,
    "size": 32
   },
@@ -801,7 +801,7 @@
    "size": 8400
   },
   {
-   "name": "Gamestate0B_Update",
+   "name": "SaveMenu_Update",
    "vram": 2147685556,
    "size": 4132
   },
@@ -821,7 +821,7 @@
    "size": 88
   },
   {
-   "name": "Gamestate0D_Update",
+   "name": "Title_Update",
    "vram": 2147691272,
    "size": 1700
   },
@@ -831,7 +831,7 @@
    "size": 560
   },
   {
-   "name": "Gamestate0F_Update",
+   "name": "CreditsSequence_Update",
    "vram": 2147693532,
    "size": 248
   },
@@ -3970,7 +3970,7 @@
   {
    "sym": "switchdataD_80010e08",
    "offset": 3592,
-   "owner": "Gamestate0B_Update",
+   "owner": "SaveMenu_Update",
    "size": 32
   },
   {

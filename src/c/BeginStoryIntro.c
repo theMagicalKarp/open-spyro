@@ -16,7 +16,7 @@ void BeginStoryIntro(void) {
   int back;
   int vol;
   g_nGamestate = GS_TITLE;
-  FillWord(&g_nGamestate0dMode, 0, 0x5C);
+  FillWord(&g_nTitleMode, 0, 0x5C);
   blk = g_nSfxMixVolume_blk;
   blk[0] = 0x3FFF;
   vol = 0x5000;

@@ -2432,7 +2432,7 @@ EnqueueLoadingScreenSprites:
     inline volatile cast-deref is a no-op (40/230 unchanged) and an explicit
     pre-loop pointer local overflows the slot. Residues 2 and 3 are unchanged.
 
-Gamestate0A_Draw:
+MenuTransition_Draw:
   verdict: parked
   class: "sched2 loop-head exchange: `li a1,0x3FF` vs the `i++`, one priority group"
   date: 2026-08-24

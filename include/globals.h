@@ -567,7 +567,7 @@ extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
 extern void *g_pSpriteRecordBufferTop;       /* 0x800756fc */
-extern int g_nGamestate0fMode;               /* 0x80075704 */
+extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nGameplayBlocked;               /* 0x8007570c */
 extern void *g_pSpriteRecordWriteCursor;     /* 0x80075710 */
 extern int g_nDeathState;                    /* 0x80075714 */
@@ -1019,7 +1019,7 @@ extern int g_nSaveMenuCursor;                           /* 0x80078d08 */
 extern int g_nSaveMenuSubstate;                         /* 0x80078d0c */
 extern int g_nSaveMenuXOffset;                          /* 0x80078d10 */
 extern int g_nSaveSlotSelected;                         /* 0x80078d18 */
-extern int g_nGamestate0dMode;                          /* 0x80078d78 */
+extern int g_nTitleMode;                          /* 0x80078d78 */
 extern int g_nStoryIntroSubstate;                       /* 0x80078d7c */
 extern int g_nStoryIntroTimer;                          /* 0x80078d80 */
 extern int g_nStoryIntroMessage;                        /* 0x80078d94 */

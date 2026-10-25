@@ -9418,11 +9418,11 @@ glabel DrawLevelTransitionOverlay
 endlabel DrawLevelTransitionOverlay
 .endif
 
-.section .text.Gamestate01_09_Draw, "ax"
-.ifndef HAVE_C_Gamestate01_09_Draw
-nonmatching Gamestate01_09_Draw, 0x3BC
+.section .text.LevelTransition_Draw, "ax"
+.ifndef HAVE_C_LevelTransition_Draw
+nonmatching LevelTransition_Draw, 0x3BC
 
-glabel Gamestate01_09_Draw
+glabel LevelTransition_Draw
     /* A850 8001A050 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* A854 8001A054 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
     /* A858 8001A058 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
@@ -9673,7 +9673,7 @@ glabel Gamestate01_09_Draw
     /* AC00 8001A400 6000BD27 */  addiu      $sp, $sp, 0x60
     /* AC04 8001A404 0800E003 */  jr         $ra
     /* AC08 8001A408 00000000 */   nop
-endlabel Gamestate01_09_Draw
+endlabel LevelTransition_Draw
 .endif
 
 .section .text.Gamestate02_03_06_Draw, "ax"
@@ -11980,11 +11980,11 @@ glabel Gamestate02_03_06_Draw
 endlabel Gamestate02_03_06_Draw
 .endif
 
-.section .text.Gamestate0A_Draw, "ax"
-.ifndef HAVE_C_Gamestate0A_Draw
-nonmatching Gamestate0A_Draw, 0x3A4
+.section .text.MenuTransition_Draw, "ax"
+.ifndef HAVE_C_MenuTransition_Draw
+nonmatching MenuTransition_Draw, 0x3A4
 
-glabel Gamestate0A_Draw
+glabel MenuTransition_Draw
     /* CE94 8001C694 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* CE98 8001C698 0100033C */  lui        $v1, (0x1C000 >> 16)
     /* CE9C 8001C69C 0880023C */  lui        $v0, %hi(g_pRenderScratchRegionBase)
@@ -12228,7 +12228,7 @@ glabel Gamestate0A_Draw
     /* D22C 8001CA2C 3000BD27 */  addiu      $sp, $sp, 0x30
     /* D230 8001CA30 0800E003 */  jr         $ra
     /* D234 8001CA34 00000000 */   nop
-endlabel Gamestate0A_Draw
+endlabel MenuTransition_Draw
 .endif
 
 .section .text.RespawnOrGameOver_Draw, "ax"
@@ -12617,11 +12617,11 @@ glabel RespawnOrGameOver_Draw
 endlabel RespawnOrGameOver_Draw
 .endif
 
-.section .text.Gamestate08_Draw, "ax"
-.ifndef HAVE_C_Gamestate08_Draw
-nonmatching Gamestate08_Draw, 0x73C
+.section .text.DragonRescue_Draw, "ax"
+.ifndef HAVE_C_DragonRescue_Draw
+nonmatching DragonRescue_Draw, 0x73C
 
-glabel Gamestate08_Draw
+glabel DragonRescue_Draw
     /* D7DC 8001CFDC D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* D7E0 8001CFE0 0780053C */  lui        $a1, %hi(g_nDragonRescueAuraStarEnabled)
     /* D7E4 8001CFE4 4862A524 */  addiu      $a1, $a1, %lo(g_nDragonRescueAuraStarEnabled)
@@ -13116,7 +13116,7 @@ glabel Gamestate08_Draw
     /* DF0C 8001D70C 2800BD27 */  addiu      $sp, $sp, 0x28
     /* DF10 8001D710 0800E003 */  jr         $ra
     /* DF14 8001D714 00000000 */   nop
-endlabel Gamestate08_Draw
+endlabel DragonRescue_Draw
 .endif
 
 .section .text.SaveLoadMenu_Draw, "ax"
@@ -14729,7 +14729,7 @@ glabel GamestateDraw
   .L8001EE68:
     /* F668 8001EE68 05006214 */  bne        $v1, $v0, .L8001EE80
     /* F66C 8001EE6C 09000224 */   addiu     $v0, $zero, 0x9
-    /* F670 8001EE70 F773000C */  jal        Gamestate08_Draw
+    /* F670 8001EE70 F773000C */  jal        DragonRescue_Draw
     /* F674 8001EE74 00000000 */   nop
     /* F678 8001EE78 517C0008 */  j          .L8001F144
     /* F67C 8001EE7C 00000000 */   nop
@@ -14737,7 +14737,7 @@ glabel GamestateDraw
     /* F680 8001EE80 05006214 */  bne        $v1, $v0, .L8001EE98
     /* F684 8001EE84 0A000224 */   addiu     $v0, $zero, 0xA
   .L8001EE88:
-    /* F688 8001EE88 1468000C */  jal        Gamestate01_09_Draw
+    /* F688 8001EE88 1468000C */  jal        LevelTransition_Draw
     /* F68C 8001EE8C 00000000 */   nop
     /* F690 8001EE90 517C0008 */  j          .L8001F144
     /* F694 8001EE94 00000000 */   nop
@@ -14747,7 +14747,7 @@ glabel GamestateDraw
     /* F6A0 8001EEA0 00000000 */  nop
     /* F6A4 8001EEA4 05006214 */  bne        $v1, $v0, .L8001EEBC
     /* F6A8 8001EEA8 0B000224 */   addiu     $v0, $zero, 0xB
-    /* F6AC 8001EEAC A571000C */  jal        Gamestate0A_Draw
+    /* F6AC 8001EEAC A571000C */  jal        MenuTransition_Draw
     /* F6B0 8001EEB0 00000000 */   nop
     /* F6B4 8001EEB4 517C0008 */  j          .L8001F144
     /* F6B8 8001EEB8 00000000 */   nop
@@ -14768,8 +14768,8 @@ glabel GamestateDraw
   .L8001EEEC:
     /* F6EC 8001EEEC 0E006214 */  bne        $v1, $v0, .L8001EF28
     /* F6F0 8001EEF0 0E000224 */   addiu     $v0, $zero, 0xE
-    /* F6F4 8001EEF4 0880033C */  lui        $v1, %hi(g_nGamestate0dMode)
-    /* F6F8 8001EEF8 788D638C */  lw         $v1, %lo(g_nGamestate0dMode)($v1)
+    /* F6F4 8001EEF4 0880033C */  lui        $v1, %hi(g_nTitleMode)
+    /* F6F8 8001EEF8 788D638C */  lw         $v1, %lo(g_nTitleMode)($v1)
     /* F6FC 8001EEFC 03000224 */  addiu      $v0, $zero, 0x3
     /* F700 8001EF00 05006214 */  bne        $v1, $v0, .L8001EF18
     /* F704 8001EF04 00000000 */   nop
@@ -14792,8 +14792,8 @@ glabel GamestateDraw
   .L8001EF40:
     /* F740 8001EF40 80006214 */  bne        $v1, $v0, .L8001F144
     /* F744 8001EF44 00000000 */   nop
-    /* F748 8001EF48 0780023C */  lui        $v0, %hi(g_nGamestate0fMode)
-    /* F74C 8001EF4C 0457428C */  lw         $v0, %lo(g_nGamestate0fMode)($v0)
+    /* F748 8001EF48 0780023C */  lui        $v0, %hi(g_nCreditsMode)
+    /* F74C 8001EF4C 0457428C */  lw         $v0, %lo(g_nCreditsMode)($v0)
     /* F750 8001EF50 00000000 */  nop
     /* F754 8001EF54 63004228 */  slti       $v0, $v0, 0x63
     /* F758 8001EF58 05004010 */  beqz       $v0, .L8001EF70
@@ -30429,8 +30429,8 @@ nonmatching BeginStoryIntro, 0xB8
 
 glabel BeginStoryIntro
     /* 1D970 8002D170 E8FFBD27 */  addiu      $sp, $sp, -0x18
-    /* 1D974 8002D174 0880043C */  lui        $a0, %hi(g_nGamestate0dMode)
-    /* 1D978 8002D178 788D8424 */  addiu      $a0, $a0, %lo(g_nGamestate0dMode)
+    /* 1D974 8002D174 0880043C */  lui        $a0, %hi(g_nTitleMode)
+    /* 1D978 8002D178 788D8424 */  addiu      $a0, $a0, %lo(g_nTitleMode)
     /* 1D97C 8002D17C 0D000224 */  addiu      $v0, $zero, 0xD
     /* 1D980 8002D180 21280000 */  addu       $a1, $zero, $zero
     /* 1D984 8002D184 1000BFAF */  sw         $ra, 0x10($sp)
@@ -30516,8 +30516,8 @@ glabel BeginCreditsSequence
     /* 1DAA0 8002D2A0 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1DAA4 8002D2A4 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
     /* 1DAA8 8002D2A8 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 1DAAC 8002D2AC 0780013C */  lui        $at, %hi(g_nGamestate0fMode)
-    /* 1DAB0 8002D2B0 045722AC */  sw         $v0, %lo(g_nGamestate0fMode)($at)
+    /* 1DAAC 8002D2AC 0780013C */  lui        $at, %hi(g_nCreditsMode)
+    /* 1DAB0 8002D2B0 045722AC */  sw         $v0, %lo(g_nCreditsMode)($at)
     /* 1DAB4 8002D2B4 0A000224 */  addiu      $v0, $zero, 0xA
     /* 1DAB8 8002D2B8 0780013C */  lui        $at, %hi(g_nCreditsFirstVisibleLine)
     /* 1DABC 8002D2BC 685920AC */  sw         $zero, %lo(g_nCreditsFirstVisibleLine)($at)
@@ -30662,8 +30662,8 @@ glabel DispatchSpecialCutscene
     /* 1DCA0 8002D4A0 00000000 */   nop
     /* 1DCA4 8002D4A4 F66D010C */  jal        LoadActorMeshTables
     /* 1DCA8 8002D4A8 00000000 */   nop
-    /* 1DCAC 8002D4AC 0880103C */  lui        $s0, %hi(g_nGamestate0dMode)
-    /* 1DCB0 8002D4B0 788D1026 */  addiu      $s0, $s0, %lo(g_nGamestate0dMode)
+    /* 1DCAC 8002D4AC 0880103C */  lui        $s0, %hi(g_nTitleMode)
+    /* 1DCB0 8002D4B0 788D1026 */  addiu      $s0, $s0, %lo(g_nTitleMode)
     /* 1DCB4 8002D4B4 21200002 */  addu       $a0, $s0, $zero
     /* 1DCB8 8002D4B8 21280000 */  addu       $a1, $zero, $zero
     /* 1DCBC 8002D4BC 0D000224 */  addiu      $v0, $zero, 0xD
@@ -31463,11 +31463,11 @@ glabel AnimateGemTallyParticles
 endlabel AnimateGemTallyParticles
 .endif
 
-.section .text.Gamestate01_Update, "ax"
-.ifndef HAVE_C_Gamestate01_Update
-nonmatching Gamestate01_Update, 0x64
+.section .text.LevelLoad_Update, "ax"
+.ifndef HAVE_C_LevelLoad_Update
+nonmatching LevelLoad_Update, 0x64
 
-glabel Gamestate01_Update
+glabel LevelLoad_Update
     /* 1E79C 8002DF9C E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1E7A0 8002DFA0 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1E7A4 8002DFA4 FB29010C */  jal        TickSpyroFrameForceJump
@@ -31495,7 +31495,7 @@ glabel Gamestate01_Update
     /* 1E7F4 8002DFF4 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 1E7F8 8002DFF8 0800E003 */  jr         $ra
     /* 1E7FC 8002DFFC 00000000 */   nop
-endlabel Gamestate01_Update
+endlabel LevelLoad_Update
 .endif
 
 .section .text.CameraSettle_Update, "ax"
@@ -32873,11 +32873,11 @@ glabel RespawnOrGameOver_Update
 endlabel RespawnOrGameOver_Update
 .endif
 
-.section .text.Gamestate06_Update, "ax"
-.ifndef HAVE_C_Gamestate06_Update
-nonmatching Gamestate06_Update, 0x20
+.section .text.OverlayScreen_Update, "ax"
+.ifndef HAVE_C_OverlayScreen_Update
+nonmatching OverlayScreen_Update, 0x20
 
-glabel Gamestate06_Update
+glabel OverlayScreen_Update
     /* 1FBC4 8002F3C4 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1FBC8 8002F3C8 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1FBCC 8002F3CC 47B2000C */  jal        Gamestate06SubstateStub_Noop
@@ -32886,7 +32886,7 @@ glabel Gamestate06_Update
     /* 1FBD8 8002F3D8 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 1FBDC 8002F3DC 0800E003 */  jr         $ra
     /* 1FBE0 8002F3E0 00000000 */   nop
-endlabel Gamestate06_Update
+endlabel OverlayScreen_Update
 .endif
 
 .section .text.DragonRescue_Update, "ax"
@@ -35089,11 +35089,11 @@ glabel DragonRescue_Update
 endlabel DragonRescue_Update
 .endif
 
-.section .text.Gamestate0B_Update, "ax"
-.ifndef HAVE_C_Gamestate0B_Update
-nonmatching Gamestate0B_Update, 0x1024
+.section .text.SaveMenu_Update, "ax"
+.ifndef HAVE_C_SaveMenu_Update
+nonmatching SaveMenu_Update, 0x1024
 
-glabel Gamestate0B_Update
+glabel SaveMenu_Update
     /* 21CB4 800314B4 B8FFBD27 */  addiu      $sp, $sp, -0x48
     /* 21CB8 800314B8 3400B1AF */  sw         $s1, 0x34($sp)
     /* 21CBC 800314BC 0880113C */  lui        $s1, %hi(g_nSaveMenuAnimPhase)
@@ -36168,7 +36168,7 @@ glabel Gamestate0B_Update
     /* 22CCC 800324CC 4800BD27 */  addiu      $sp, $sp, 0x48
     /* 22CD0 800324D0 0800E003 */  jr         $ra
     /* 22CD4 800324D4 00000000 */   nop
-endlabel Gamestate0B_Update
+endlabel SaveMenu_Update
 .endif
 
 .section .text.ActorCutscene_Update, "ax"
@@ -36581,8 +36581,8 @@ glabel ArmStoryIntroOnStart
     /* 232BC 80032ABC 10004230 */  andi       $v0, $v0, 0x10
     /* 232C0 80032AC0 0D004010 */  beqz       $v0, .L80032AF8
     /* 232C4 80032AC4 1000BFAF */   sw        $ra, 0x10($sp)
-    /* 232C8 80032AC8 0880063C */  lui        $a2, %hi(g_nGamestate0dMode)
-    /* 232CC 80032ACC 788DC624 */  addiu      $a2, $a2, %lo(g_nGamestate0dMode)
+    /* 232C8 80032AC8 0880063C */  lui        $a2, %hi(g_nTitleMode)
+    /* 232CC 80032ACC 788DC624 */  addiu      $a2, $a2, %lo(g_nTitleMode)
     /* 232D0 80032AD0 01000224 */  addiu      $v0, $zero, 0x1
     /* 232D4 80032AD4 21200000 */  addu       $a0, $zero, $zero
     /* 232D8 80032AD8 4000C524 */  addiu      $a1, $a2, 0x40
@@ -36601,14 +36601,14 @@ glabel ArmStoryIntroOnStart
 endlabel ArmStoryIntroOnStart
 .endif
 
-.section .text.Gamestate0D_Update, "ax"
-.ifndef HAVE_C_Gamestate0D_Update
-nonmatching Gamestate0D_Update, 0x6A4
+.section .text.Title_Update, "ax"
+.ifndef HAVE_C_Title_Update
+nonmatching Title_Update, 0x6A4
 
-glabel Gamestate0D_Update
+glabel Title_Update
     /* 23308 80032B08 C8FFBD27 */  addiu      $sp, $sp, -0x38
-    /* 2330C 80032B0C 0880033C */  lui        $v1, %hi(g_nGamestate0dMode)
-    /* 23310 80032B10 788D638C */  lw         $v1, %lo(g_nGamestate0dMode)($v1)
+    /* 2330C 80032B0C 0880033C */  lui        $v1, %hi(g_nTitleMode)
+    /* 23310 80032B10 788D638C */  lw         $v1, %lo(g_nTitleMode)($v1)
     /* 23314 80032B14 03000224 */  addiu      $v0, $zero, 0x3
     /* 23318 80032B18 3400BFAF */  sw         $ra, 0x34($sp)
     /* 2331C 80032B1C 3000B2AF */  sw         $s2, 0x30($sp)
@@ -37056,7 +37056,7 @@ glabel Gamestate0D_Update
     /* 239A0 800331A0 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 239A4 800331A4 0800E003 */  jr         $ra
     /* 239A8 800331A8 00000000 */   nop
-endlabel Gamestate0D_Update
+endlabel Title_Update
 .endif
 
 .section .text.GemCutscene_Update, "ax"
@@ -37217,17 +37217,17 @@ glabel GemCutscene_Update
 endlabel GemCutscene_Update
 .endif
 
-.section .text.Gamestate0F_Update, "ax"
-.ifndef HAVE_C_Gamestate0F_Update
-nonmatching Gamestate0F_Update, 0xF8
+.section .text.CreditsSequence_Update, "ax"
+.ifndef HAVE_C_CreditsSequence_Update
+nonmatching CreditsSequence_Update, 0xF8
 
-glabel Gamestate0F_Update
+glabel CreditsSequence_Update
     /* 23BDC 800333DC E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 23BE0 800333E0 1000BFAF */  sw         $ra, 0x10($sp)
     /* 23BE4 800333E4 3063010C */  jal        RotateLightVectorXZ
     /* 23BE8 800333E8 03000424 */   addiu     $a0, $zero, 0x3
-    /* 23BEC 800333EC 0780033C */  lui        $v1, %hi(g_nGamestate0fMode)
-    /* 23BF0 800333F0 0457638C */  lw         $v1, %lo(g_nGamestate0fMode)($v1)
+    /* 23BEC 800333EC 0780033C */  lui        $v1, %hi(g_nCreditsMode)
+    /* 23BF0 800333F0 0457638C */  lw         $v1, %lo(g_nCreditsMode)($v1)
     /* 23BF4 800333F4 63000224 */  addiu      $v0, $zero, 0x63
     /* 23BF8 800333F8 05006210 */  beq        $v1, $v0, .L80033410
     /* 23BFC 800333FC 64000224 */   addiu     $v0, $zero, 0x64
@@ -37261,8 +37261,8 @@ glabel Gamestate0F_Update
     /* 23C60 80033460 0780013C */  lui        $at, %hi(g_nCurrentLevelId)
     /* 23C64 80033464 B45822AC */  sw         $v0, %lo(g_nCurrentLevelId)($at)
   .L80033468:
-    /* 23C68 80033468 0780023C */  lui        $v0, %hi(g_nGamestate0fMode)
-    /* 23C6C 8003346C 0457428C */  lw         $v0, %lo(g_nGamestate0fMode)($v0)
+    /* 23C68 80033468 0780023C */  lui        $v0, %hi(g_nCreditsMode)
+    /* 23C6C 8003346C 0457428C */  lw         $v0, %lo(g_nCreditsMode)($v0)
     /* 23C70 80033470 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 23C74 80033474 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 23C78 80033478 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
@@ -37270,8 +37270,8 @@ glabel Gamestate0F_Update
     /* 23C80 80033480 0780013C */  lui        $at, %hi(g_nReturningHomePhase)
     /* 23C84 80033484 F85620AC */  sw         $zero, %lo(g_nReturningHomePhase)($at)
     /* 23C88 80033488 01004224 */  addiu      $v0, $v0, 0x1
-    /* 23C8C 8003348C 0780013C */  lui        $at, %hi(g_nGamestate0fMode)
-    /* 23C90 80033490 045722AC */  sw         $v0, %lo(g_nGamestate0fMode)($at)
+    /* 23C8C 8003348C 0780013C */  lui        $at, %hi(g_nCreditsMode)
+    /* 23C90 80033490 045722AC */  sw         $v0, %lo(g_nCreditsMode)($at)
     /* 23C94 80033494 31CD0008 */  j          .L800334C4
     /* 23C98 80033498 00000000 */   nop
   .L8003349C:
@@ -37290,7 +37290,7 @@ glabel Gamestate0F_Update
     /* 23CC8 800334C8 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 23CCC 800334CC 0800E003 */  jr         $ra
     /* 23CD0 800334D0 00000000 */   nop
-endlabel Gamestate0F_Update
+endlabel CreditsSequence_Update
 .endif
 
 .section .text.CheckDeathPlane, "ax"
@@ -37558,7 +37558,7 @@ glabel GamestateUpdate
     /* 24094 80033894 01000224 */   addiu     $v0, $zero, 0x1
     /* 24098 80033898 05006214 */  bne        $v1, $v0, .L800338B0
     /* 2409C 8003389C 02000224 */   addiu     $v0, $zero, 0x2
-    /* 240A0 800338A0 E7B7000C */  jal        Gamestate01_Update
+    /* 240A0 800338A0 E7B7000C */  jal        LevelLoad_Update
     /* 240A4 800338A4 00000000 */   nop
     /* 240A8 800338A8 0CCF0008 */  j          .L80033C30
     /* 240AC 800338AC 00000000 */   nop
@@ -37589,7 +37589,7 @@ glabel GamestateUpdate
   .L80033900:
     /* 24100 80033900 05006214 */  bne        $v1, $v0, .L80033918
     /* 24104 80033904 07000224 */   addiu     $v0, $zero, 0x7
-    /* 24108 80033908 F1BC000C */  jal        Gamestate06_Update
+    /* 24108 80033908 F1BC000C */  jal        OverlayScreen_Update
     /* 2410C 8003390C 00000000 */   nop
     /* 24110 80033910 0CCF0008 */  j          .L80033C30
     /* 24114 80033914 00000000 */   nop
@@ -37630,7 +37630,7 @@ glabel GamestateUpdate
   .L80033990:
     /* 24190 80033990 05006214 */  bne        $v1, $v0, .L800339A8
     /* 24194 80033994 0C000224 */   addiu     $v0, $zero, 0xC
-    /* 24198 80033998 2DC5000C */  jal        Gamestate0B_Update
+    /* 24198 80033998 2DC5000C */  jal        SaveMenu_Update
     /* 2419C 8003399C 00000000 */   nop
     /* 241A0 800339A0 0CCF0008 */  j          .L80033C30
     /* 241A4 800339A4 00000000 */   nop
@@ -37644,8 +37644,8 @@ glabel GamestateUpdate
   .L800339C0:
     /* 241C0 800339C0 0E006214 */  bne        $v1, $v0, .L800339FC
     /* 241C4 800339C4 0E000224 */   addiu     $v0, $zero, 0xE
-    /* 241C8 800339C8 0880033C */  lui        $v1, %hi(g_nGamestate0dMode)
-    /* 241CC 800339CC 788D638C */  lw         $v1, %lo(g_nGamestate0dMode)($v1)
+    /* 241C8 800339C8 0880033C */  lui        $v1, %hi(g_nTitleMode)
+    /* 241CC 800339CC 788D638C */  lw         $v1, %lo(g_nTitleMode)($v1)
     /* 241D0 800339D0 03000224 */  addiu      $v0, $zero, 0x3
     /* 241D4 800339D4 05006210 */  beq        $v1, $v0, .L800339EC
     /* 241D8 800339D8 00000000 */   nop
@@ -37654,7 +37654,7 @@ glabel GamestateUpdate
     /* 241E4 800339E4 0CCF0008 */  j          .L80033C30
     /* 241E8 800339E8 00000000 */   nop
   .L800339EC:
-    /* 241EC 800339EC C2CA000C */  jal        Gamestate0D_Update
+    /* 241EC 800339EC C2CA000C */  jal        Title_Update
     /* 241F0 800339F0 00000000 */   nop
     /* 241F4 800339F4 0CCF0008 */  j          .L80033C30
     /* 241F8 800339F8 00000000 */   nop
@@ -37668,13 +37668,13 @@ glabel GamestateUpdate
   .L80033A14:
     /* 24214 80033A14 86006214 */  bne        $v1, $v0, .L80033C30
     /* 24218 80033A18 00000000 */   nop
-    /* 2421C 80033A1C 0780023C */  lui        $v0, %hi(g_nGamestate0fMode)
-    /* 24220 80033A20 0457428C */  lw         $v0, %lo(g_nGamestate0fMode)($v0)
+    /* 2421C 80033A1C 0780023C */  lui        $v0, %hi(g_nCreditsMode)
+    /* 24220 80033A20 0457428C */  lw         $v0, %lo(g_nCreditsMode)($v0)
     /* 24224 80033A24 00000000 */  nop
     /* 24228 80033A28 63004228 */  slti       $v0, $v0, 0x63
     /* 2422C 80033A2C 05004014 */  bnez       $v0, .L80033A44
     /* 24230 80033A30 00000000 */   nop
-    /* 24234 80033A34 F7CC000C */  jal        Gamestate0F_Update
+    /* 24234 80033A34 F7CC000C */  jal        CreditsSequence_Update
     /* 24238 80033A38 00000000 */   nop
     /* 2423C 80033A3C 0CCF0008 */  j          .L80033C30
     /* 24240 80033A40 00000000 */   nop
