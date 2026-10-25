@@ -14,6 +14,7 @@
      the long arm, and the product `k` is its own local. */
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sample_bank.h"
@@ -232,7 +233,7 @@ void TickSpyroAttackEffects(int steps) {
                   ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
-                PlaySoundEffect(LEVEL_SFX(0x28), wp, 4, 0);
+                PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), wp, 4, 0);
                 sfxDone = 1;
               }
             }

@@ -10,10 +10,17 @@ enum LevelSfx {
   SFX_CHARGE = 4,         /* charge entry; the loop StopSoundVoicesByOwner ends on exit */
   SFX_SUPERCHARGE = 5,    /* supercharge entry */
   SFX_SPLASH = 0x1D,      /* Spyro enters a hazard; actors touch surface-0 ground (with a ripple spawn) */
+  /* Flight levels (types 0x154 targets, 0x159..0x15B time bonuses, 0x166 HUD). */
+  SFX_FLIGHT_CLOCK = 0x21,      /* the clock passes a whole unit under 10 */
+  SFX_FLIGHT_TIME_ADDED = 0x22, /* a time bonus reaches the HUD clock */
+  SFX_FLIGHT_COLLECT = 0x23,    /* target flown through / time bonus taken */
+  SFX_FLIGHT_TALLY = 0x24,      /* a collected target moves into the HUD tally */
+  SFX_FLIGHT_HURRY = 0x25,      /* per-tenth tick once the clock is low */
   SFX_ACTOR_BURST = 0x26, /* BurstActorWithSound */
   SFX_MENU_OPEN = 0x2C,   /* pause / inventory / save menu opens */
   SFX_MENU_MOVE = 0x2D,   /* menu cursor moves */
   SFX_MENU_SELECT = 0x2E, /* menu choice confirmed or menu closed */
+  SFX_ATTACK_HIT = 0x28,  /* a TickSpyroAttackEffects arc tip hits an actor or the world */
   SFX_GEM_BOUNCE = 0x2F,  /* dropped gem bounces; gem-tally particle lands; Sparx hands over a pickup */
   /* The dragon rescue (DragonRescue_Update substates in brackets). */
   SFX_RESCUE_START = 0x30,  /* statue touched (BeginDragonRescue) */

@@ -52,7 +52,7 @@ typedef struct TrackState {
 } TrackState;
 
 
-extern unsigned short g_nCameraEulerPitch;  /* tracked world yaw (byte) */
+extern unsigned short g_nCameraEulerPitch;  /* unsigned view (lhu); globals.h has it short */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
   Actor *rec;

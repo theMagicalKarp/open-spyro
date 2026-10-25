@@ -1522,7 +1522,7 @@ void Level29_UpdateActors(void) {
         actor->cullRadius = 0xFF;
         actor->otBias = 0x20;
         actor->mode = 2;
-        PlaySoundEffect(g_pLevelSampleBankHeader[0x23], actor, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, 0x10, 0);
         break;
       case 2: {
         int d;
@@ -1549,7 +1549,7 @@ void Level29_UpdateActors(void) {
       case 3:
         if (TickCountdownByFrameDelta(st, 4) != 0) {
           g_nFlightTimeRemaining += (actor->type - 0x158) * 60;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x22], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, 0x10, 0);
           DespawnActorRecord(actor);
         }
         break;
@@ -1735,13 +1735,13 @@ void Level29_UpdateActors(void) {
               st->hurry = 0;
             }
             if (i < 10) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x21], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, 0x10, 0);
             }
           }
           if (st->hurry != 0) {
             i = t / 6;
             if (i < prevTenth) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x25], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_HURRY], actor, 0x10, 0);
             }
           }
         }
@@ -1752,7 +1752,7 @@ void Level29_UpdateActors(void) {
           st->count--;
           st->spent[st->count]->mode = 2;
           st->timer = 0x10;
-          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[0x24], actor, 0x10, 0);
+          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -1768,7 +1768,7 @@ void Level29_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->spent[i] = 0;
-            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[0x24], actor, 0x10, 0);
+            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&

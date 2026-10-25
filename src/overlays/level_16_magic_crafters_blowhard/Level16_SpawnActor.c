@@ -58,7 +58,7 @@ typedef struct AimState {
   int beat;     /* 0x08 */
 } AimState;
 
-extern int g_anCameraPos;     /* turret aim target X */
+extern int g_anCameraPos;     /* scalar view of camera X: the spawned prop turns to face the camera */
 
 extern int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
