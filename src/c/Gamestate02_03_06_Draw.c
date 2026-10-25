@@ -351,7 +351,7 @@ void Gamestate02_03_06_Draw(void) {
             v1 = lut1[(g_nPauseMenuTransitionFrames * 8 + phase1) & 0xff];
             phase1 += 0xc;
             ACTOR_RAW(rec, unsigned char, rotZ) = v1 * 3 >> 9;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           } while (i < n1);
         }
       } else if (g_nPauseMenuSubstate == 1) {
@@ -420,7 +420,7 @@ void Gamestate02_03_06_Draw(void) {
             v2 = lut2[(g_nPauseMenuTransitionFrames * 8 + phase2) & 0xff];
             phase2 += 0xc;
             ACTOR_RAW(rec, unsigned char, rotZ) = v2 * 3 >> 9;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           } while (i < n2);
         }
         if (g_nSfxVolume == 0) {
@@ -438,7 +438,7 @@ void Gamestate02_03_06_Draw(void) {
                                  0xff];
               phase3 += 0xc;
               ACTOR_RAW(rec, unsigned char, rotZ) = v3 * 3 >> 9;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             } while (i < 3);
           }
         } else {
@@ -449,7 +449,7 @@ void Gamestate02_03_06_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor =
-                  (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+                  (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
@@ -489,7 +489,7 @@ void Gamestate02_03_06_Draw(void) {
                                  0xff];
               phase5 += 0xc;
               ACTOR_RAW(rec, unsigned char, rotZ) = v4 * 3 >> 9;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             } while (i < 3);
           }
         } else {
@@ -500,7 +500,7 @@ void Gamestate02_03_06_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor =
-                  (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+                  (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
@@ -546,7 +546,7 @@ void Gamestate02_03_06_Draw(void) {
               v5 = lut7[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
               phase7 += 0xc;
               ACTOR_RAW(rec, unsigned char, rotZ) = v5 * 3 >> 9;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             } while (i < n3);
           }
         }
@@ -572,7 +572,7 @@ void Gamestate02_03_06_Draw(void) {
                 v6 = lut8[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
                 phase8 += 0xc;
                 ACTOR_RAW(rec, unsigned char, rotZ) = v6 * 3 >> 9;
-                rec += 0x58;
+                rec += ACTOR_SIZE;
               } while (i < n4);
             }
           }
@@ -598,7 +598,7 @@ void Gamestate02_03_06_Draw(void) {
               v7 = lut9[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
               phase9 += 0xc;
               ACTOR_RAW(rec, unsigned char, rotZ) = v7 * 3 >> 9;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             } while (i < n5);
           }
         }
@@ -670,7 +670,7 @@ void Gamestate02_03_06_Draw(void) {
             v8 = lut3[(g_nPauseMenuTransitionFrames * 8 + phase10) & 0xff];
             phase10 += 0xc;
             ACTOR_RAW(rec, unsigned char, rotZ) = v8 * 3 >> 9;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           } while (i < n6);
         }
       }
@@ -718,7 +718,7 @@ void Gamestate02_03_06_Draw(void) {
       sprintf(buf, fmt, g_nWorldDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
       g_pSpriteRecordWriteCursor =
-          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+          (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1d7;
       ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x2e;
@@ -733,7 +733,7 @@ void Gamestate02_03_06_Draw(void) {
       SREC->tintMode = 0xb;
       SREC->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor =
-          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+          (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1fa;
       ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x12c;
@@ -837,10 +837,10 @@ void Gamestate02_03_06_Draw(void) {
                 3 >>
             9;
         phase += 0xc;
-        rec += 0x58;
+        rec += ACTOR_SIZE;
       }
       g_pSpriteRecordWriteCursor =
-          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+          (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1d7;
       {
@@ -862,7 +862,7 @@ void Gamestate02_03_06_Draw(void) {
       SREC->tintMode = 0xb;
       SREC->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor =
-          (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+          (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       {
         int bob;
@@ -978,7 +978,7 @@ void Gamestate02_03_06_Draw(void) {
             SREC->rotX = 0x29;
           }
           if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
-            rec -= 0x58;
+            rec -= ACTOR_SIZE;
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
@@ -988,7 +988,7 @@ void Gamestate02_03_06_Draw(void) {
                                   0xff] *
                         3 >>
                     9;
-                rec -= 0x58;
+                rec -= ACTOR_SIZE;
                 phase++;
               } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
             }

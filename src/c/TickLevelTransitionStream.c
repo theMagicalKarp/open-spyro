@@ -334,7 +334,8 @@ void TickLevelTransitionStream(int full) {
             MobActor *actor;
 
             yaw = *pe;
-            actor = *(MobActor **)((char *)g_pActorListBase + e[6] * 0x58);
+            actor =
+                *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             do {
             } while (0);
             ChangeSpyroState(0xF);

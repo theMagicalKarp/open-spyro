@@ -61,12 +61,12 @@ icon_slot:
 
   CopyVector(pos, HUD_REST_POS(vec));
   pos += sizeof(Actor) / sizeof(int);
-  rec += 0x58;
+  rec += ACTOR_SIZE;
   HUD_ICON(off)->otBias = 0x20;
   HUD_ICON(off)->cullRadius = white;
   HUD_ICON(off)->subMode = white;
   HUD_ICON(off)->tintMode = 0x0B;
-  off += 0x58;
+  off += ACTOR_SIZE;
   i += 1;
   vec += 0xC;
   if (i < 12) {
@@ -85,13 +85,13 @@ icon_slot:
         HUD_RECT(g_anHudDigitRestRects, rect)->h;
     rect += 8;
   } while (rect < 0x60);
-  anchor = &HUD_ICON(4 * 0x58)->type;
+  anchor = &HUD_ICON(4 * ACTOR_SIZE)->type;
   idx = VOL(g_nLevelIntroIndex);
   VOL(anchor[0]) = 0x1D7;
-  VOL(HUD_ICON(7 * 0x58)->type) = 0x1FA;
-  VOL(HUD_ICON(10 * 0x58)->type) = 0x3A;
-  VOL(HUD_ICON(11 * 0x58)->type) = 0xAD;
-  VOL(HUD_ICON(11 * 0x58)->rotZ) = 0x40;
+  VOL(HUD_ICON(7 * ACTOR_SIZE)->type) = 0x1FA;
+  VOL(HUD_ICON(10 * ACTOR_SIZE)->type) = 0x3A;
+  VOL(HUD_ICON(11 * ACTOR_SIZE)->type) = 0xAD;
+  VOL(HUD_ICON(11 * ACTOR_SIZE)->rotZ) = 0x40;
   VOL(g_abHudCounterDisplayState[0]) = 1;
   VOL(g_abHudCounterDisplayState[1]) = 1;
   VOL(g_abHudCounterDisplayState[2]) = 1;
@@ -127,7 +127,7 @@ icon_slot:
     i = 0;
     count = g_nSparxFoodCount;
     if (count > 0) {
-      icon = &HUD_ICON(10 * 0x58)->posX;
+      icon = &HUD_ICON(10 * ACTOR_SIZE)->posX;
       size = 8;
       ring = 0;
       dst = 0x60;

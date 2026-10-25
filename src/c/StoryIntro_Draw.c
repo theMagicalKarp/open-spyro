@@ -62,7 +62,7 @@ void StoryIntro_Draw(void) {
           ((limit - g_anStoryIntroTimerBlock[0]) >> 1) * 0x58;
     }
 
-    rec -= 0x58;
+    rec -= ACTOR_SIZE;
     if (rec >= (int)g_pSpriteRecordWriteCursor) {
       i = 0;
       tp = g_anStoryIntroTimerBlock;
@@ -81,7 +81,7 @@ void StoryIntro_Draw(void) {
         phase += 0xC;
         i += 1;
         alpha -= 0x58;
-        rec -= 0x58;
+        rec -= ACTOR_SIZE;
       } while (rec >= (int)g_pSpriteRecordWriteCursor);
     }
   }

@@ -28,8 +28,9 @@
        `sh`s into the shared tail). The six equality arms keep the volatile
        read and DO get merged, which is what the original has.
      - the FillWord argument is the LOCAL `rec`, not a reload, so the
-       allocation is `rec = CURSOR - 0x58; CURSOR_P = rec;` as two statements;
-       the embedded assignment form routes the value through v0 (+3 insns).
+       allocation is `rec = CURSOR - ACTOR_SIZE; CURSOR_P = rec;` as two
+   statements; the embedded assignment form routes the value through v0 (+3
+   insns).
      - the range tests are on an `int ch = *pszText;` (a0, unmasked) and the six
        equality tests on `(unsigned char)ch`, which is what emits the single
        `andi v1,a0,0xFF` shared by the whole ladder.
@@ -43,7 +44,7 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
 
   while (*pszText != 0) {
     if (*pszText != ' ') {
-      rec = CURSOR - 0x58;
+      rec = CURSOR - ACTOR_SIZE;
       CURSOR_P = rec;
       FillWord(rec, 0, 0x58);
       CopyVector(&((Actor *)CURSOR)->posX, pPen);

@@ -62,7 +62,7 @@ void Gamestate08_Draw(void) {
       if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
-      act += 0x58;
+      act += ACTOR_SIZE;
       id = ACTOR_RAW(act, unsigned char, mode);
     }
     *q = 0;
@@ -103,7 +103,7 @@ void Gamestate08_Draw(void) {
       if (((Actor *)act)->type == 0xFB && id < 0x80) {
         *q++ = act;
       }
-      act += 0x58;
+      act += ACTOR_SIZE;
       id = ACTOR_RAW(act, unsigned char, mode);
     }
     *q = 0;
@@ -135,7 +135,7 @@ void Gamestate08_Draw(void) {
     icon = &g_abHudIconActorRecords[0x1B8];
   icon5:
     *q++ = icon;
-    icon += 0x58;
+    icon += ACTOR_SIZE;
     i += 1;
     if (i < 3) {
       goto icon5;
@@ -176,7 +176,7 @@ void Gamestate08_Draw(void) {
     icon = &g_abHudIconActorRecords[0x1B8];
   icon6:
     *q++ = icon;
-    icon += 0x58;
+    icon += ACTOR_SIZE;
     i += 1;
     if (i < 3) {
       goto icon6;
@@ -201,7 +201,7 @@ void Gamestate08_Draw(void) {
       icon = &g_abHudIconActorRecords[0x1B8];
     icon7:
       *q++ = icon;
-      icon += 0x58;
+      icon += ACTOR_SIZE;
       i += 1;
       if (i < 3) {
         goto icon7;

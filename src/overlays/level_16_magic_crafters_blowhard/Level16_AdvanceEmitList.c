@@ -42,6 +42,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "actor_type.h"
 
 
 void Level16_AdvanceEmitList(int step) {
@@ -166,7 +167,7 @@ void Level16_AdvanceEmitList(int step) {
       if (ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * 0x58 + 0xC));
+        CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * ACTOR_SIZE + 0xC));
         do {
         } while (0);
         v[0] += LookupCosine(AGE << 7) >> 1;
@@ -232,7 +233,7 @@ void Level16_AdvanceEmitList(int step) {
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(w, g_nSpyroInputLockoutCountdown - 0x58);
+        CopyVector(w, SPYRO_POS_VIA_LOCKOUT);
         w[0] += LookupCosine(HS(0x18)) >> 4;
         w[1] += LookupSine(HS(0x18)) >> 4;
         w[2] += 0x100;

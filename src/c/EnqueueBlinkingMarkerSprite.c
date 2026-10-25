@@ -14,7 +14,7 @@ void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile) {
 
   if ((frame & 0x1f) < 0x10) {
     g_pSpriteRecordWriteCursor =
-        (void *)((int)g_pSpriteRecordWriteCursor - 0x58);
+        (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
     dst = &SPR->posX;
     SPR->type = 0x105;

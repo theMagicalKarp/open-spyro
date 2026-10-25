@@ -15,7 +15,7 @@ extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
 #define WAVE(rec, n, phase)                                                    \
   for (i = 0; i < (n); i++) {                                                  \
     (rec)[0x46] = (g_anCosineLut[((phase) * 4 + i * 0xC) & 0xFF] * 3) >> 9;    \
-    (rec) += 0x58;                                                             \
+    (rec) += ACTOR_SIZE;                                                       \
   }
 
 /* 0x8001d718 (0xb34): draws the memory-card save/load menu: the substate's

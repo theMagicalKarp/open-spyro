@@ -263,7 +263,7 @@ void Level29_FlightResults_Draw(void)
       pos[1] = 0x1E;
       pos[2] = 0xC00;
       BuildTextSpriteChain(buf, pos, 0x18, 0xB);
-      fp = g_pSpriteRecordWriteCursor - 0x58;
+      fp = g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       g_pSpriteRecordWriteCursor = fp;
       FillWord(fp, 0, 0x58);
       {
@@ -563,7 +563,7 @@ void Level29_FlightResults_Draw(void)
               i += 1;
               ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
-              rec += 0x58;
+              rec += ACTOR_SIZE;
             }
             while (i < count);
           }
@@ -580,7 +580,7 @@ void Level29_FlightResults_Draw(void)
 
         do { do { slot += 1; } while (0); } while (0);
         i += 1;
-        r += 0x58;
+        r += ACTOR_SIZE;
         if (i < 4)
         {
           goto pub;
@@ -635,7 +635,7 @@ void Level29_FlightResults_Draw(void)
             i += 1;
             ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           }
           while (i < count);
         }
@@ -670,7 +670,7 @@ void Level29_FlightResults_Draw(void)
             i += 1;
             ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += 0x58;
+            rec += ACTOR_SIZE;
           }
           while (i < count);
         }
@@ -694,7 +694,7 @@ void Level29_FlightResults_Draw(void)
           i += 1;
           ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += 0x58;
+          rec += ACTOR_SIZE;
         }
         while (i < count);
       }
@@ -747,7 +747,7 @@ void Level29_FlightResults_Draw(void)
           i += 1;
           ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += 0x58;
+          rec += ACTOR_SIZE;
         }
         while (i < count);
       }

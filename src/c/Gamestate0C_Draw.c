@@ -76,7 +76,7 @@ void Gamestate0C_Draw(void) {
       rec = (char *)g_pSpriteRecordWriteCursor;
       BuildTextSprites(buf, pos, attr, 0x10, 2);
 
-      rec -= 0x58;
+      rec -= ACTOR_SIZE;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
         int *fade = g_anGamestate0cTimerBlock;
@@ -84,7 +84,7 @@ void Gamestate0C_Draw(void) {
         do {
           ACTOR_RAW(rec, unsigned char, rotZ) =
               cos[(*fade * 2 + phase) & 0xFF] >> 7;
-          rec -= 0x58;
+          rec -= ACTOR_SIZE;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
       }

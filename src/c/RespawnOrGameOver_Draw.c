@@ -122,7 +122,7 @@ void RespawnOrGameOver_Draw(void) {
         d = g_abGameOverLetterDelay[i] + 0x3C;
         t = g_nGameplayDrawFrame - d;
         if (t >= 0) {
-          rec = (char *)g_pSpriteRecordWriteCursor - 0x58;
+          rec = (char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
           g_pSpriteRecordWriteCursor = rec;
           FillWord(rec, 0, 0x58);
           if (t < 0x18) {
@@ -158,7 +158,7 @@ void RespawnOrGameOver_Draw(void) {
           st = sbase[((g_nGameplayDrawFrame * 4) + sk) & 0xFF];
           sk += 0xC;
           ACTOR_RAW(sc, unsigned char, rotZ) = (st * 3) >> 9;
-          sc += 0x58;
+          sc += ACTOR_SIZE;
         } while (i < 0xA);
       }
       q = g_apSpritePrimQueue;

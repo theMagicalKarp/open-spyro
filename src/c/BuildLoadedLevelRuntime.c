@@ -325,7 +325,7 @@ sprites:
   p++;
   g_pActorListBase = p;
   p = (int *)(((char *)base) + (*base));
-  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * 0x58);
+  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * ACTOR_SIZE);
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
   ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
   g_nActorPoolLiveCount = 0;
@@ -397,16 +397,18 @@ sprites:
   rec = (char *)g_pActorListBase;
   if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
     do {
-      r = (char *)((i * 0x58) + ((int)rec));
+      r = (char *)((i * ACTOR_SIZE) + ((int)rec));
       if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * 0x58)) + 0xC));
+      CopyVector(
+          pos, (int *)((((char *)g_pActorListBase) + (i * ACTOR_SIZE)) + 0xC));
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) + (i * 0x58));
+      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) +
+                                    (i * ACTOR_SIZE));
       type =
           *((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) + 0x3A));
       if (((unsigned int)(type & 0x7F)) < 0x20) {
@@ -425,7 +427,7 @@ sprites:
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + 0x48]) != 0xFF);
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
@@ -442,7 +444,7 @@ sprites:
       b3 = 1 << sh2;
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
-          r = (char *)((i * 0x58) + ((int)rec));
+          r = (char *)((i * ACTOR_SIZE) + ((int)rec));
           if ((ACTOR_RAW(r, unsigned char, killGroup) & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
@@ -455,7 +457,8 @@ sprites:
 
             __asm__("" : "=r"(k3));
             __asm__("" : "=r"(k4));
-            tb = (*((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) +
+            tb = (*((unsigned char *)(((i * ACTOR_SIZE) +
+                                       ((int)g_pActorListBase)) +
                                       0x3A))) &
                  0x7F;
             if (tb < 0x20) {
@@ -467,15 +470,15 @@ sprites:
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            (((char *)g_pActorListBase) + (i * 0x58))[0x53] = 0xFF;
+            (((char *)g_pActorListBase) + (i * ACTOR_SIZE))[0x53] = 0xFF;
           } else {
-            DespawnActorRecord(((char *)g_pActorListBase) + (i * 0x58));
+            DespawnActorRecord(((char *)g_pActorListBase) + (i * ACTOR_SIZE));
           }
         }
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * 0x58) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + 0x48]) != 0xFF);
   }
   i = 0;
   do {

@@ -81,6 +81,12 @@ typedef struct Actor {
                         * packs it into the draw word) */
 } Actor; /* 0x58 */
 
+/* Size of one actor record: the stride of the actor pool, the sprite-record
+ * queue and the HUD icon table. (The typedef fails to compile if the struct
+ * ever drifts from it; it emits nothing.) */
+#define ACTOR_SIZE 0x58
+typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
+
 /* Byte offset of an Actor field. */
 #define ACTOR_OFFSET(field) ((int)&((Actor *)0)->field)
 

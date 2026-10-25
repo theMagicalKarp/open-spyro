@@ -67,8 +67,8 @@ void Level8_BalloonistCutscene_Draw(void) {
       titleColor[1] = 1;
       titleColor[2] = 0x1400;
       BuildTextSprites(title, titlePos, titleColor, 0x12, 0xB);
-      for (cursor -= 0x58, titlePhase = 0; cursor >= g_pSpriteRecordWriteCursor;
-           cursor -= 0x58, titlePhase += 1) {
+      for (cursor -= ACTOR_SIZE, titlePhase = 0; cursor >= g_pSpriteRecordWriteCursor;
+           cursor -= ACTOR_SIZE, titlePhase += 1) {
         ((unsigned char *)cursor)[0x46] =
             g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + titlePhase * 0xC) & 0xFF] >> 8;
       }
@@ -90,13 +90,13 @@ void Level8_BalloonistCutscene_Draw(void) {
           line += 1;
         }
         if (g_nGamestate0cSubstate[1] < 0x50) {
-          limit = pageCursor - g_nGamestate0cSubstate[1] * 0x58;
+          limit = pageCursor - g_nGamestate0cSubstate[1] * ACTOR_SIZE;
           if (limit >= g_pSpriteRecordWriteCursor) {
             g_pSpriteRecordWriteCursor = limit;
           }
         }
-        for (pageCursor -= 0x58, pagePhase = 0; pageCursor >= g_pSpriteRecordWriteCursor;
-             pageCursor -= 0x58, pagePhase += 1) {
+        for (pageCursor -= ACTOR_SIZE, pagePhase = 0; pageCursor >= g_pSpriteRecordWriteCursor;
+             pageCursor -= ACTOR_SIZE, pagePhase += 1) {
           ((unsigned char *)pageCursor)[0x46] =
               g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + pagePhase * 0xC) & 0xFF] >> 8;
         }
@@ -121,13 +121,13 @@ void Level8_BalloonistCutscene_Draw(void) {
           BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuColor, 0x10, 0xB);
         }
         menuPos[0] = 0x110;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
         menuPos[1] += 0x14;
         BuildTextSprites("STAY HERE", menuPos, menuColor, 0x10, 0xB);
         menuPos[1] += 0xF;
         if (g_nGamestate0cSubstate[2] == 0) {
           for (greetPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= 0x58, greetPhase += 1) {
+               rec -= ACTOR_SIZE, greetPhase += 1) {
             ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
           }
         }
@@ -135,12 +135,12 @@ void Level8_BalloonistCutscene_Draw(void) {
         for (world = 0; world < 6; world++) {
           if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == 2) {
             menuPos[0] = 0x110;
-            rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+            rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
             BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);
             menuPos[1] += 0xF;
             if (g_nGamestate0cSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-                   rec -= 0x58, rosterPhase += 1) {
+                   rec -= ACTOR_SIZE, rosterPhase += 1) {
                 ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
               }
             }
@@ -172,18 +172,18 @@ void Level8_BalloonistCutscene_Draw(void) {
           BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, 0xB);
         }
         askPos[0] = 0x80;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
         askPos[1] += 0x19;
         BuildTextSprites("STAY HERE", askPos, askColor, 0x12, 0xB);
         askPos[1] += 0x13;
         if (g_nGamestate0cSubstate[2] == 0) {
           for (promptPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= 0x58, promptPhase += 1) {
+               rec -= ACTOR_SIZE, promptPhase += 1) {
             ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
           }
         }
         askPos[0] = 0x80;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - 0x58;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
         if (g_nGamestate0cSubstate[3] == 0x1F) {
           sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
@@ -193,7 +193,7 @@ void Level8_BalloonistCutscene_Draw(void) {
         BuildTextSprites(dest, askPos, askColor, 0x12, 0xB);
         if (g_nGamestate0cSubstate[2] == 1) {
           for (namePhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= 0x58, namePhase += 1) {
+               rec -= ACTOR_SIZE, namePhase += 1) {
             ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nGamestate0cSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
           }
         }

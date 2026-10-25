@@ -191,7 +191,7 @@ void Level27_AdvanceEmitList(int step) {
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
+        CopyVector(v, SPYRO_POS_VIA_LOCKOUT);
         v[0] += LookupCosine(HS(0x18)) >> 4;
         v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;
@@ -423,10 +423,10 @@ void Level27_AdvanceEmitList(int step) {
         }
       } else {
         idx = rec[0x19];
-        actor = g_pActorListBase + rec[0x18] * 0x58;
+        actor = g_pActorListBase + rec[0x18] * ACTOR_SIZE;
         node = (int *)(idx * 4 + *(int *)actor);
         wp = (char *)node[1];
-        actor = g_pActorListBase + node[8] * 0x58;
+        actor = g_pActorListBase + node[8] * ACTOR_SIZE;
         SVectorToVectorShl2(hold, POS);
         CopyVector(aim, (int *)(wp + (rec[0x1A] * 0x10 + 8)));
         dv[0] += LookupCosine(AGE << 7) >> 2;

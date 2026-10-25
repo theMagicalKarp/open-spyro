@@ -44,7 +44,8 @@ void Gamestate0B_Update(void) {
       unsigned char *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * 0x58;
+      actor =
+          (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * ACTOR_SIZE;
       if (ACTOR_RAW(actor, unsigned char, mode) == 2) {
         ACTOR_RAW(actor, unsigned char, subMode) += g_nFrameStep;
         if (ACTOR_RAW(actor, unsigned char, subMode) >= 0x30) {
@@ -201,7 +202,8 @@ void Gamestate0B_Update(void) {
           unsigned char *actor;
           int *path;
 
-          actor = (unsigned char *)g_pActorListBase + *(int *)ACT[0] * 0x58;
+          actor =
+              (unsigned char *)g_pActorListBase + *(int *)ACT[0] * ACTOR_SIZE;
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();

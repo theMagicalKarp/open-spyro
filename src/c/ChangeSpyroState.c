@@ -259,7 +259,7 @@ void ChangeSpyroState(int state) {
           }
         }
       next:
-        actor += 0x58;
+        actor += ACTOR_SIZE;
       } while (actor < (unsigned char *)g_pActorPoolDynBase);
     }
     break;

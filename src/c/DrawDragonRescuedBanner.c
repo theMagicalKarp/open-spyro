@@ -29,7 +29,7 @@ void DrawDragonRescuedBanner(void) {
   BuildTextSpriteChain(name, pos, 0x1A, 2);
 
   phase = 0;
-  rec -= 0x58;
+  rec -= ACTOR_SIZE;
   if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
     int *timer = &g_nGemPickupSecondaryTimer;
     unsigned short *lut = (unsigned short *)g_anSineLut + 64;
@@ -37,7 +37,7 @@ void DrawDragonRescuedBanner(void) {
       int idx = (*timer * 2 + phase) & 0xFF;
       ACTOR_RAW(rec, unsigned char, rotZ) =
           *(unsigned short *)((idx << 1) + (int)lut) >> 7;
-      rec -= 0x58;
+      rec -= ACTOR_SIZE;
       phase += 0xC;
     } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
   }

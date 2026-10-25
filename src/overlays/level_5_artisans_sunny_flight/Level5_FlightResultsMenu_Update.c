@@ -49,7 +49,7 @@ void Level5_FlightResultsMenu_Update(void) {
   do {
     *rec += 8;
     i += 1;
-    rec += 0x58;
+    rec += ACTOR_SIZE;
   } while (i < 4);
   if (g_nSubMenuCursor >= 9) {
     unsigned int *pad = g_dwPadPressed;

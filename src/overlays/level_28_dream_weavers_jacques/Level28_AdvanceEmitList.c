@@ -156,7 +156,7 @@ void Level28_AdvanceEmitList(int step) {
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(v, g_nSpyroInputLockoutCountdown - 0x58);
+        CopyVector(v, SPYRO_POS_VIA_LOCKOUT);
         v[0] += LookupCosine(HS(0x18)) >> 4;
         v[1] += LookupSine(HS(0x18)) >> 4;
         v[2] += 0x100;

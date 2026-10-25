@@ -38,7 +38,7 @@ void Level12_BeginActorCutscene(Actor *actor) {
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
-  g_pGamestate0cRecord = g_pActorListBase + count * 0x58;
+  g_pGamestate0cRecord = g_pActorListBase + count * ACTOR_SIZE;
   g_nGamestate0cCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);

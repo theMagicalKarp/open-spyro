@@ -676,13 +676,13 @@ void GemPickup_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = &HUD_ICON(5 * 0x58)->posY;
+    icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
   roll_in:
-    CopyVector(&HUD_ICON(5 * 0x58 + k)->posX,
+    CopyVector(&HUD_ICON(5 * ACTOR_SIZE + k)->posX,
                (int *)((char *)g_anGemPickupIconRestPos + off));
     if (g_nGemPickupTimer < 0x19) {
       *icon += (((short *)done)[g_nGemPickupTimer >> 1] * 3) >> 1;
@@ -690,7 +690,7 @@ void GemPickup_Update(void) {
       *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
     }
     icon += 0x16;
-    k += 0x58;
+    k += ACTOR_SIZE;
     i++;
     off += 0xC;
     if (i < 3) {
@@ -747,13 +747,13 @@ void GemPickup_Update(void) {
       int off;
 
       n = 0;
-      icon = &HUD_ICON(5 * 0x58)->posY;
+      icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
       j = 0;
       off = 0;
     roll_out:
-      CopyVector(&HUD_ICON(5 * 0x58 + j)->posX,
+      CopyVector(&HUD_ICON(5 * ACTOR_SIZE + j)->posX,
                  (int *)((char *)g_anGemPickupIconRestPos + off));
-      j += 0x58;
+      j += ACTOR_SIZE;
       off += 0xC;
       n++;
       *icon += (0x11 - g_nGemPickupTimer) * 3;
@@ -790,7 +790,7 @@ void GemPickup_Update(void) {
           ACTOR_RAW(actor, unsigned char, mode) < 0x80) {
         TickGemPickupBurstEntity(actor);
       }
-      actor += 0x58;
+      actor += ACTOR_SIZE;
     }
   }
 }

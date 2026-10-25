@@ -34,7 +34,10 @@ int DispatchSpyroChargeStateChanges(void) {
   flags &= g_dwSpyroTriggerEventFlags;
   switch (flags & 6) {
   case 2:
-    SubtractVector(d, (int *)g_pSpyroContactActor + 3, lock - 0x58);
+    SubtractVector(
+        d, (int *)g_pSpyroContactActor + 3,
+        lock -
+            0x58); /* g_anSpyroWorldPos, 0x58 words below the lockout counter */
     angle = (ArcTan2(d[0], d[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
     if (angle > 0x800) {
       angle -= 0x1000;
