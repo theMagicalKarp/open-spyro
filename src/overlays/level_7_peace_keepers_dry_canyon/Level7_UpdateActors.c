@@ -212,7 +212,7 @@ void Level7_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -3100,7 +3100,7 @@ void Level7_UpdateActors(void) {
         } else if (ApproxDist2D(&actor->posX, spy) < 0xC8 &&
                    ABS2(SPY_DZ(actor)) < 0x384) {
           g_nCameraScriptStickRequestY[19] = 0x80000047;
-          SPY.damageFlags |= 5;
+          SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
           g_anSpyroRequestVelocity.x = (-st->vel[0] * 3) >> 2;
           g_nSpyroRequestVelocityZ = 0x50;
           g_nSpyroRequestVelocityY = (-st->vel[1] * 3) >> 2;
@@ -3369,7 +3369,7 @@ void Level7_UpdateActors(void) {
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) < 0x28 &&
             ABS2(actor->posZ - actor->floorOffset - spy->posZ) < 0x258) {
-          SPY.damageFlags |= 1;
+          SPY.triggerEvents |= SPYRO_EV_HIT;
           *st->alert = 0;
           actor->mode = 2;
           continue;

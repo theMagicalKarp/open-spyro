@@ -60,4 +60,31 @@ typedef enum SpyroState
 
 #define SPYRO_STATE_COUNT 45 /* rows/columns of g_abSpyroStateTransitionAnimMatrix */
 
+/* g_dwSpyroTriggerEventFlags bits (SpyroObj.triggerEvents): raised by actors
+ * and the collision probes during the frame, consumed by
+ * DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges. The hit
+ * bits each pick a hurt state and cost one g_nSparxHealth; the two contact
+ * bits only matter while charging (CONTACT_FRONT bonks when the contact actor
+ * is ahead, CONTACT bonks anyway, both together hurt). */
+#define SPYRO_EV_HIT 0x0001           /* SPYRO_ST_HURT */
+#define SPYRO_EV_CONTACT_FRONT 0x0002
+#define SPYRO_EV_CONTACT 0x0004
+#define SPYRO_EV_CHARGE_HIT 0x0006    /* both contact bits: hurts a charge */
+#define SPYRO_EV_HIT_PINNED 0x0010    /* SPYRO_ST_HURT_PINNED / DEATH_PINNED */
+#define SPYRO_EV_HIT_TINT 0x0020      /* SPYRO_ST_HURT_TINT */
+#define SPYRO_EV_HIT_LONG 0x0040      /* SPYRO_ST_HURT_LONG */
+#define SPYRO_EV_KNOCKBACK_2 0x0080   /* SPYRO_ST_KNOCKBACK_2 */
+#define SPYRO_EV_KNOCKBACK 0x0100     /* SPYRO_ST_KNOCKBACK */
+#define SPYRO_EV_HAZARD 0x0400        /* SPYRO_ST_HAZARD */
+#define SPYRO_EV_LIFT 0x0800          /* SPYRO_ST_LIFT while raised */
+#define SPYRO_EV_CHARGE_HOLD 0x2000   /* latches g_nSpyroChargeHoldFlag */
+#define SPYRO_EV_REBOUND 0x8000       /* bounce off g_anSpyroFirstContactNormal */
+#define SPYRO_EV_HITS 0x01F1        /* every hit bit (HIT, PINNED .. KNOCKBACK) */
+
+/* Masks the states pass to DispatchSpyroPadStateChanges: everything but the
+ * charge-contact pair; also no hazard; and the supercharge's only two. */
+#define SPYRO_EV_MASK_DEFAULT 0xFFF9
+#define SPYRO_EV_MASK_NO_HAZARD 0xFBF9
+#define SPYRO_EV_MASK_SUPERCHARGE (SPYRO_EV_HAZARD | SPYRO_EV_REBOUND)
+
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */

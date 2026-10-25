@@ -105,7 +105,7 @@ extern unsigned char g_bSpyroSubFrameTimer;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_dwGamestateFrames;                          /* frame counter; the arm acts on every 4th frame */
 extern int g_dwSpyroRequestMask;                         /* scripted camera control word */
-extern int g_dwSpyroTriggerEventFlags;                   /* SPY.damageFlags, absolute form */
+extern int g_dwSpyroTriggerEventFlags;                   /* SPY.triggerEvents, absolute form */
 extern int g_nActiveLevelId;                             /* active level id */
 extern int g_nActiveWorldIndex;                          /* course index */
 extern int g_nActorAnimDone;                             /* current actor's animation finished */

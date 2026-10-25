@@ -226,7 +226,7 @@ typedef struct {
   char pad00F[0x18];
   unsigned char otBinBias;        /* 0x027 g_bSpyroOtBinBias */
   char pad028[0x4];
-  int damageFlags;                /* 0x02C */
+  int triggerEvents;                /* 0x02C */
   char pad030[0x4];
   int bodyMtx;                    /* 0x034 g_anSpyroBodyMtx[0] */
   char pad038[0x40];

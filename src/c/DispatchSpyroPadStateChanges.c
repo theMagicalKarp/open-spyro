@@ -33,36 +33,36 @@ int DispatchSpyroPadStateChanges(int pad) {
     return 0;
   }
   if (g_nSpyroInputLockoutCountdown != 0) {
-    pad &= ~0x1F1;
+    pad &= ~SPYRO_EV_HITS;
     if (g_anSpyroMotionVec[2] > 0) {
-      pad &= ~0x400;
+      pad &= ~SPYRO_EV_HAZARD;
     }
   }
   ev = g_adwSpyroTriggerEventBlock;
   pad &= ev[0];
 
-  if ((pad & 0x5F1) && g_nSparxHealth >= 0) {
+  if ((pad & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) && g_nSparxHealth >= 0) {
     if (g_bDebugNoDepletion == 0) {
       g_nSparxHealth = g_nSparxHealth - 1;
     }
-    if (pad & 0x10) {
+    if (pad & SPYRO_EV_HIT_PINNED) {
       if (g_nSparxHealth < 0) {
         next = SPYRO_ST_DEATH_PINNED;
       } else {
         next = SPYRO_ST_HURT_PINNED;
       }
       ChangeSpyroState(next);
-    } else if (pad & 0x20) {
+    } else if (pad & SPYRO_EV_HIT_TINT) {
       PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-SPY_TRIGGER_FLAGS], 4,
                       (char *)ev + (SPYB_VOICE_MARKER - SPY_TRIGGER_FLAGS * 4));
       ChangeSpyroState(SPYRO_ST_HURT_TINT);
-    } else if (pad & 0x40) {
+    } else if (pad & SPYRO_EV_HIT_LONG) {
       ChangeSpyroState(SPYRO_ST_HURT_LONG);
-    } else if (pad & 0x80) {
+    } else if (pad & SPYRO_EV_KNOCKBACK_2) {
       ChangeSpyroState(SPYRO_ST_KNOCKBACK_2);
-    } else if (pad & 0x100) {
+    } else if (pad & SPYRO_EV_KNOCKBACK) {
       ChangeSpyroState(SPYRO_ST_KNOCKBACK);
-    } else if (pad & 0x400) {
+    } else if (pad & SPYRO_EV_HAZARD) {
       ChangeSpyroState(SPYRO_ST_HAZARD);
       if (*(int *)g_pSpyroOrbDropTriggerData != 0 && g_bDebugNoDepletion == 0) {
         g_nSparxHealth = -1;
@@ -78,7 +78,7 @@ int DispatchSpyroPadStateChanges(int pad) {
   }
 
   held = pad & 0xFC00;
-  if (pad & 0x400) {
+  if (pad & SPYRO_EV_HAZARD) {
     ready = g_anSparxHealthBlock;
     if (ready[0] >= 0) {
       ResetSpyroLinearMotion();
@@ -93,13 +93,13 @@ int DispatchSpyroPadStateChanges(int pad) {
     ret = 1;
   }
 
-  if (held & 0x8000) {
+  if (held & SPYRO_EV_REBOUND) {
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
     CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
     ret = 1;
   }
-  if (held & 0x800) {
+  if (held & SPYRO_EV_LIFT) {
     if (g_nSpyroState != SPYRO_ST_LIFT) {
       ChangeSpyroState(SPYRO_ST_LIFT);
       ret = 1;
@@ -108,7 +108,7 @@ int DispatchSpyroPadStateChanges(int pad) {
     ChangeSpyroState(SPYRO_ST_GLIDE);
   }
   if (g_nSpyroState != SPYRO_ST_SUPERCHARGE) {
-    if (held & 0x2000) {
+    if (held & SPYRO_EV_CHARGE_HOLD) {
       g_nSpyroChargeHoldFlag = 1;
     } else {
       g_nSpyroChargeHoldFlag = 0;

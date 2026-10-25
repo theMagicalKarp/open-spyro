@@ -1836,7 +1836,7 @@ void Level18_UpdateActors(void) {
             if (st->cam == 0) {
               st->cam = 1;
               st->timer2 = 0xDC;
-              SPY.damageFlags |= 0x86;
+              SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
               g_anSpyroRequestVelocity.x = LookupCosine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityY = LookupSine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityZ = 0x32;
@@ -2724,7 +2724,7 @@ void Level18_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {

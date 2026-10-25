@@ -33,11 +33,11 @@ int DispatchSpyroChargeStateChanges(void) {
   }
   OPAQUE_COPY(lock, &g_nSpyroInputLockoutCountdown);
   if (lock[0] != 0) {
-    flags = 0xFE0E;
+    flags = 0xFFFF & ~SPYRO_EV_HITS;
   }
   flags &= g_dwSpyroTriggerEventFlags;
-  switch (flags & 6) {
-  case 2:
+  switch (flags & SPYRO_EV_CHARGE_HIT) {
+  case SPYRO_EV_CONTACT_FRONT:
     SubtractVector(
         d, (int *)g_pSpyroContactActor + 3,
         lock -
@@ -50,32 +50,32 @@ int DispatchSpyroChargeStateChanges(void) {
       break;
     }
     /* FALLTHROUGH */
-  case 4:
+  case SPYRO_EV_CONTACT:
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     changed = 1;
     break;
-  case 6:
+  case SPYRO_EV_CHARGE_HIT:
     if (lock[0] == 0 && lock[1] >= 0) {
       if (g_bDebugNoDepletion == 0) {
         lock[1]--;
       }
       lock[0] = 0x5A;
-      if (flags & 0x10) {
+      if (flags & SPYRO_EV_HIT_PINNED) {
         state = SPYRO_ST_HURT_PINNED;
         if (lock[1] < 0) {
           state = SPYRO_ST_DEATH_PINNED;
         }
-      } else if (flags & 0x20) {
+      } else if (flags & SPYRO_EV_HIT_TINT) {
         state = SPYRO_ST_HURT_TINT;
-      } else if (flags & 0x40) {
+      } else if (flags & SPYRO_EV_HIT_LONG) {
         state = SPYRO_ST_HURT_LONG;
-      } else if (flags & 0x80) {
+      } else if (flags & SPYRO_EV_KNOCKBACK_2) {
         state = SPYRO_ST_KNOCKBACK_2;
-      } else if (flags & 0x100) {
+      } else if (flags & SPYRO_EV_KNOCKBACK) {
         state = SPYRO_ST_KNOCKBACK;
       } else {
         state = SPYRO_ST_HURT;
-        if (flags & 0x400) {
+        if (flags & SPYRO_EV_HAZARD) {
           state = SPYRO_ST_HAZARD;
         }
       }
@@ -85,17 +85,17 @@ int DispatchSpyroChargeStateChanges(void) {
     break;
   }
   hi = flags & 0xFC00;
-  if (flags & 0x8000) {
+  if (flags & SPYRO_EV_REBOUND) {
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
     CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
     changed = 1;
   }
-  if ((flags & 0x800) && g_nSpyroState != SPYRO_ST_LIFT) {
+  if ((flags & SPYRO_EV_LIFT) && g_nSpyroState != SPYRO_ST_LIFT) {
     ChangeSpyroState(SPYRO_ST_LIFT);
     changed = 1;
   }
-  if (hi & 0x400) {
+  if (hi & SPYRO_EV_HAZARD) {
     OPAQUE_COPY(ready, &g_nSparxHealth);
     if (*ready < 0) {
       goto hold;
@@ -111,7 +111,7 @@ int DispatchSpyroChargeStateChanges(void) {
     changed = 1;
   }
 hold:
-  if (hi & 0x2000) {
+  if (hi & SPYRO_EV_CHARGE_HOLD) {
     g_nSpyroChargeHoldFlag = 1;
   } else {
     g_nSpyroChargeHoldFlag = 0;

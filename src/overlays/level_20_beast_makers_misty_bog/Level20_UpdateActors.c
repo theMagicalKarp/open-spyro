@@ -214,7 +214,7 @@ void Level20_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -1931,7 +1931,7 @@ void Level20_UpdateActors(void) {
             if (st->cam == 0) {
               st->cam = 1;
               st->timer2 = 0xDC;
-              SPY.damageFlags |= 0x86;
+              SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
               g_anSpyroRequestVelocity.x = LookupCosine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityY = LookupSine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityZ = 0x32;
@@ -3042,7 +3042,7 @@ void Level20_UpdateActors(void) {
           st->tether->cullRadius = 0x20;
         }
         if (actor->nextFrame >= 4 && dist < 0xC80) {
-          SPY.damageFlags |= 7;
+          SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         }
         actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                      spy->posY - actor->posY, 0);
@@ -3650,7 +3650,7 @@ void Level20_UpdateActors(void) {
           g_bSpyroPersistentEulerZ = v;
           g_nSpyroBodyYaw = (v & 0xFF) << 4;
           if (g_nSparxHealth == 0) {
-            spy->damageFlags |= 7;
+            spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
             actor->mode = 0xD;
             continue;
           }
@@ -3679,7 +3679,7 @@ void Level20_UpdateActors(void) {
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x29) {
             g_nSpyroDrawSuppressed = 0;
-            SPY.damageFlags = 0x86;
+            SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
                 actor->posX + ((g_anCosineLut[actor->rotZ] * 0x4B) >> 10);
             SPY.posY =
@@ -3703,7 +3703,7 @@ void Level20_UpdateActors(void) {
       case 13:
         g_dwSpyroRequestMask = 0x80002000;
         ANIM_GO(actor, 8);
-        g_dwSpyroTriggerEventFlags |= 7;
+        g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         break;
 
       case 14:
@@ -3711,7 +3711,7 @@ void Level20_UpdateActors(void) {
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x10) {
             g_nSpyroDrawSuppressed = 0;
-            SPY.damageFlags = 0x86;
+            SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
                 actor->posX + ((g_anCosineLut[actor->rotZ] * 0x4B) >> 10);
             SPY.posY =

@@ -222,7 +222,7 @@ void Level21_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -1060,7 +1060,7 @@ void Level21_UpdateActors(void) {
                                 st->heading, 0x20)
                   << 4;
 
-          g_dwSpyroTriggerEventFlags |= 0x86;
+          g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           g_anSpyroRequestVelocity.x = (LookupCosine(a) * 0x6E) >> 12;
           g_nSpyroRequestVelocityY = (LookupSine(a) * 0x6E) >> 12;
           CAM_LOOK.z = 0x28;
@@ -1308,7 +1308,7 @@ void Level21_UpdateActors(void) {
             r = 0xDAC;
           }
           if (d < r && SPY_DZ(actor) < -0xC8) {
-            g_dwSpyroTriggerEventFlags |= 0x86;
+            g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             g_anSpyroRequestVelocity.x = (LookupCosine(actor->rotZ << 4) * 0x8C) >> 12;
             g_nSpyroRequestVelocityY = (LookupSine(actor->rotZ << 4) * 0x8C) >> 12;
             g_nSpyroRequestVelocityZ = 0x46;
@@ -1417,7 +1417,7 @@ void Level21_UpdateActors(void) {
                                 st->heading, 0x20)
                   << 4;
 
-          spy->damageFlags |= 0x86;
+          spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           spy->requestVelX = (LookupCosine(a) * 0x6E) >> 12;
           spy->requestVelY = (LookupSine(a) * 0x6E) >> 12;
           spy->requestVelZ = 0x28;
@@ -3527,7 +3527,7 @@ void Level21_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {

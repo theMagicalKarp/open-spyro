@@ -230,7 +230,7 @@ void Level26_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -2850,7 +2850,7 @@ void Level26_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {

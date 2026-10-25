@@ -15,7 +15,7 @@
  *   - Case 203's fence projection reuses `len` for the push distance, which
  *     keeps t2 in use and puts the whole function's constant reloads in t3;
  *     its state-3 exits share one ENTER_POSE through a goto, and the hit
- *     flags are set through SPY.damageFlags.
+ *     flags are set through SPY.triggerEvents.
  *   - Case 204 calls GetActorAttachPoint through a copy of `actor` made before
  *     the frame-parity test, and its path-node draw loop reloads st->path
  *     through a local at the bottom.
@@ -230,7 +230,7 @@ void Level27_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -2657,7 +2657,7 @@ void Level27_UpdateActors(void) {
             (DZ203(actor) > 0 ? DZ203(actor) < 0x320
                                : -DZ203(actor) < 0x320) &&
             actor->nextFrame >= 0x2D && actor->nextFrame < 0x33) {
-          SPY.damageFlags |= 0x16;
+          SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT_PINNED);
         }
         break;
       }
@@ -3073,7 +3073,7 @@ void Level27_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(SPY.firstContactPoint, &actor->posX);
         if (st->flags & 1) {

@@ -217,7 +217,7 @@ void Level13_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -2959,7 +2959,7 @@ void Level13_UpdateActors(void) {
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 0x25 && actor->nextFrame < 0x29 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0xED8 &&
               ABS2(SPY_DZ(actor)) < 0x384) {
-            SPY.damageFlags |= 0x13;
+            SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT_FRONT | SPYRO_EV_HIT_PINNED);
           }
           break;
 
@@ -2998,7 +2998,7 @@ void Level13_UpdateActors(void) {
         if (st->camTimer == 0 && actor->nextFrame >= 6) {
           int *v = w296;
 
-          SPY.damageFlags |= 5;
+          SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
           SubtractVector(v, &SPY.posX, &actor->posX);
           ScaleVector3ByRatio(v, VectorLength(v, 0), 0x8C);
           g_dwSpyroRequestMask = 0x80000047;

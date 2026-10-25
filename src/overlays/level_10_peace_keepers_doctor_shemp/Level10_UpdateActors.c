@@ -215,7 +215,7 @@ void Level10_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -2380,7 +2380,7 @@ void Level10_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {
@@ -2872,7 +2872,7 @@ void Level10_UpdateActors(void) {
                                         spy->posY - actor->posY, 0)) < 0x14 &&
             spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {
           spy->requestVelZ = 0x6E;
-          spy->damageFlags = 0x86;
+          spy->triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           spy->requestVelX = 0;
           spy->requestVelY = 0;
           actor->mode = 5;
@@ -3006,7 +3006,7 @@ void Level10_UpdateActors(void) {
           spy->requestVelZ = 0x6E;
           spy->requestVelX = 0;
           spy->requestVelY = 0;
-          spy->damageFlags = 0x86;
+          spy->triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
         }
         break;
       }
@@ -3159,7 +3159,7 @@ void Level10_UpdateActors(void) {
             ApproxDist2D(&actor->posX, &spy->posX) < 0x189C &&
             actor->posZ - actor->floorOffset - SPY.posZ < -300 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
-          SPY.damageFlags |= 0x13;
+          SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT_FRONT | SPYRO_EV_HIT_PINNED);
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0xA0;
@@ -3247,7 +3247,7 @@ void Level10_UpdateActors(void) {
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1194 &&
             actor->posZ - actor->floorOffset - SPY.posZ < -300 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
-          SPY.damageFlags |= 0x13;
+          SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT_FRONT | SPYRO_EV_HIT_PINNED);
         }
         if (g_nActorAnimDone != 0) {
           actor->mode = sixteen;
@@ -3327,7 +3327,7 @@ void Level10_UpdateActors(void) {
               ApproxDist2D(&actor->posX, &spy->posX) < 0x13EC && d < 0x320 &&
               actor->posZ - actor->floorOffset - SPY.posZ < -300 &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
-            SPY.damageFlags |= 0x107;
+            SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT | SPYRO_EV_KNOCKBACK);
             g_anSpyroRequestVelocity.x = (g_anSineLut[actor->rotZ] * 0x2D) >> 11;
             g_nSpyroRequestVelocityY = -(g_anCosineLut[actor->rotZ] * 0x5A) >> 12;
             CAM_LOOK.z = 0x14;

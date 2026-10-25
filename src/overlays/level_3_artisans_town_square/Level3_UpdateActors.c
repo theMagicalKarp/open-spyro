@@ -19,7 +19,7 @@
  *     and the animation reset; they only add NOTE insns.
  *   - Case 23 writes its camera-lock test out twice (patrol mode and the
  *     chase state); cross-jumping shares the tails the way the original does.
- *   - Case 23 sets SPY.damageFlags through the struct, after the heading
+ *   - Case 23 sets SPY.triggerEvents through the struct, after the heading
  *     index: the in-struct store stays behind the actor load.
  *   - Case 234 tests the head's g_nActorAnimDone value (still in a register) and
  *     sits after case 195; case 502 keeps its despawn at the bottom so it
@@ -200,7 +200,7 @@ void Level3_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -427,7 +427,7 @@ void Level3_UpdateActors(void) {
         int a;
 
         a = (actor->rotZ + 0x20) & 0xFF;
-        SPY.damageFlags |= 0x80;
+        SPY.triggerEvents |= SPYRO_EV_KNOCKBACK_2;
         g_anSpyroRequestVelocity.x = (g_anCosineLut[a] * 5) >> 8;
         g_nSpyroRequestVelocityZ = 0x78;
         g_nSpyroRequestVelocityY = (g_anSineLut[a] * 5) >> 8;

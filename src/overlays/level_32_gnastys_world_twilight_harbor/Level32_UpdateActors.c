@@ -220,7 +220,7 @@ void Level32_UpdateActors(void) {
             }
             g_dwSpyroRequestMask = 0x80008000;
             g_pScriptedCameraActor = actor;
-            g_dwSpyroTriggerEventFlags |= 0x800;
+            g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
@@ -2112,7 +2112,7 @@ void Level32_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, spy) < reach &&
             ABS2(SPY_DZ(actor)) < high) {
           AS_I32(g_dwSpyroRequestMask) = 0x80000047;
-          SPY.damageFlags |= 0x86;
+          SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           g_anSpyroRequestVelocity.x = (st->vel[0] * 2) >> 3;
           g_nSpyroRequestVelocityZ = 0x28;
           g_nSpyroRequestVelocityY = (st->vel[1] * 2) >> 3;
@@ -2721,7 +2721,7 @@ void Level32_UpdateActors(void) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
-        SPY.damageFlags |= 0x800;
+        SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {
