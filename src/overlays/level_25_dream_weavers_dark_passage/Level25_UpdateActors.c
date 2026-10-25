@@ -1785,12 +1785,12 @@ void Level25_UpdateActors(void) {
       break;
     }
 
-    /* Dragon-pad fairy (PoleState). */
-    case 110: {
-      PoleState *st = (PoleState *)actor->state;
+    /* Save-prompt host (SaveHostState). */
+    case ACTOR_TYPE_SAVE_HOST: {
+      SaveHostState *st = (SaveHostState *)actor->state;
 
-      Actor *tgtA = &g_pActorListBase[st->idxA];
-      Actor *tgtB = &g_pActorListBase[st->idxB];
+      Actor *tgtA = &g_pActorListBase[st->armer];
+      Actor *tgtB = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
       case 0: {
@@ -1819,8 +1819,8 @@ void Level25_UpdateActors(void) {
 
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
             if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 2048) {
-              if (st->flag24 == 0 || tgtB->mode == 1) {
-                st->flag24 = 0;
+              if (st->prompted == 0 || tgtB->mode == 1) {
+                st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0) -
@@ -1849,7 +1849,7 @@ void Level25_UpdateActors(void) {
         } else {
           actor->mode = 4;
           st->timer = 0;
-          st->t20 = 30;
+          st->wanderTimer = 30;
         }
         break;
       }
@@ -1864,7 +1864,7 @@ void Level25_UpdateActors(void) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
-            st->flag24 = 1;
+            st->prompted = 1;
             BeginSaveMenuFromWorld(actor);
             break;
           }
@@ -1874,23 +1874,23 @@ void Level25_UpdateActors(void) {
             (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > 0xC00)) {
           actor->mode = 6;
         } else {
-          st->t20--;
-          if (st->t20 == 0) {
+          st->wanderTimer--;
+          if (st->wanderTimer == 0) {
             int baseDistance = (GetRandomU32() & 0x3F) + 0x140;
             char finalAngle = (ArcTan2(SPY.posX - tgtB->posX,
                                              SPY.posY - tgtB->posY, 0) +
                                (GetRandomU32() & 0xF) - 8);
 
-            CopyVector(st->tgt, &tgtB->posX);
+            CopyVector(st->wanderTo, &tgtB->posX);
 
             actor->mode = 5;
 
-            st->tgt[0] -= (LookupCosine(finalAngle * 0x10) * baseDistance) >> 12;
-            st->tgt[1] -= (LookupSine(finalAngle * 0x10) * baseDistance) >> 12;
+            st->wanderTo[0] -= (LookupCosine(finalAngle * 0x10) * baseDistance) >> 12;
+            st->wanderTo[1] -= (LookupSine(finalAngle * 0x10) * baseDistance) >> 12;
 
-            st->angle = ArcTan2(SPY.posX - st->tgt[0],
-                                      SPY.posY - st->tgt[1], 0);
-            st->t20 = 0;
+            st->faceYaw = ArcTan2(SPY.posX - st->wanderTo[0],
+                                      SPY.posY - st->wanderTo[1], 0);
+            st->wanderTimer = 0;
           }
         }
         break;
@@ -1905,7 +1905,7 @@ void Level25_UpdateActors(void) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
-            st->flag24 = 1;
+            st->prompted = 1;
             BeginSaveMenuFromWorld(actor);
             break;
           }
@@ -1920,15 +1920,15 @@ void Level25_UpdateActors(void) {
           int cosDelta;
           int totalWeight;
 
-          st->t20++;
+          st->wanderTimer++;
 
-          SubtractVector(s168, st->tgt, &actor->posX);
+          SubtractVector(s168, st->wanderTo, &actor->posX);
 
-          angleDiff = SignedAngleDelta8(st->angle, actor->rotZ);
+          angleDiff = SignedAngleDelta8(st->faceYaw, actor->rotZ);
 
-          cosWeight1 = LookupCosine((st->t20 - 1) << 7);
-          cosDelta = cosWeight1 - LookupCosine(st->t20 << 7);
-          totalWeight = LookupCosine((st->t20 - 1) << 7) + 0x1000;
+          cosWeight1 = LookupCosine((st->wanderTimer - 1) << 7);
+          cosDelta = cosWeight1 - LookupCosine(st->wanderTimer << 7);
+          totalWeight = LookupCosine((st->wanderTimer - 1) << 7) + 0x1000;
 
           actor->posX += (s168[0] * cosDelta) / totalWeight;
           actor->posY += ((s168[1] * cosDelta) / totalWeight);
@@ -1937,9 +1937,9 @@ void Level25_UpdateActors(void) {
           FindGroundHeightBelow(&actor->posX, 0x1000);
           EncodeCachedVecToActorDirCode(actor);
 
-          if (st->t20 == 0x10) {
+          if (st->wanderTimer == 0x10) {
             actor->mode = 4;
-            st->t20 = (GetRandomU32() & 0x1F) + 0x1E;
+            st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
 

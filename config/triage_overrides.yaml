@@ -4415,7 +4415,7 @@ func_8002CCC8_2026_09_22:
   note: >-
     31 -> 16/217 on the B23 hoist lever: `yaw` load above the byte-store block,
     knot 2 closed by batch-reading actor+0x14/g_nSaveMenuSpyroToYaw into locals above
-    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuDragonToZ = ...`.
+    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuHostToZ = ...`.
     posY above the barrier (3 positions) = 20; in-place `py = rec[0x10] - py`
     byte-identical. Next: -dl on the ArcTan2 block.
 

@@ -12,14 +12,14 @@
 #define SPY_PREV ((int *)g_abSpyroAnimPrevBlock)
 
 /* 0x8002ccc8 (868 bytes) — enter the save-menu gamestate (0xB) from the world,
-   snapshotting the scene around the actor the player interacted with.  Freezes
-   gameplay, picks the initial cursor (0 when g_nSaveSlotLoaded is set, else 2),
-   plays the level's menu sound, resets Spyro and forces anim state 1, then
-   captures the yaw and distance from Spyro to the actor's pickup target, to the
-   actor itself, to the level-overlay init actor (when present) and to the
-   camera into the g_nSaveMenu*From/To keyframe block (0x80078D2C..0x80078D74:
-   polar angle/distance/z about Spyro for the dragon, the overlay record and
-   the camera, plus Spyro's from/to yaw), and seeds the menu pan targets.
+   snapshotting the scene around the save host (type 110) Spyro stopped beside.
+   Freezes gameplay, picks the initial cursor (0 when g_nSaveSlotLoaded is set,
+   else 2), plays the level's menu sound, resets Spyro and forces anim state 1,
+   then captures the yaw and distance from Spyro to the host's anchor actor, to
+   the host itself, to Sparx (when present) and to the camera into the
+   g_nSaveMenu*From/To keyframe block (0x80078D2C..0x80078D74: polar
+   angle/distance/z about Spyro for the host, Sparx and the camera, plus Spyro's
+   from/to yaw), and seeds the menu pan targets.
 
    The SPY_PREV alias is an incomplete INT
    array reached by element index, and the empty do/while right after the
@@ -27,8 +27,8 @@
    accesses stay off the held base (A200).  Everything the original emits above
    that store (the yaw load) is computed above it in source (A253), and the
    four byte stores below it are volatile so their order is pinned.  The second
-   barrier keeps the -16 read below the batch-read g_nSaveMenuDragonFromZ /
-   g_nSaveMenuDragonToAngle stores. `rec` is built in int arithmetic so the addu
+   barrier keeps the -16 read below the batch-read g_nSaveMenuHostFromZ /
+   g_nSaveMenuHostToAngle stores. `rec` is built in int arithmetic so the addu
    keeps idx*88 as its first operand (A149).  The rec+0x10 read goes through a
    `$2` register local: as a pseudo it is the subu's first dying input and
    local-alloc ties the ArcTan2 y argument to it; as a hard register the tie
@@ -55,7 +55,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
-  g_pSaveMenuDragonActor = (int *)actor;
+  g_pSaveMenuHostActor = (int *)actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
   PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
   ResetSpyroEntity(1);
@@ -68,7 +68,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   *(volatile unsigned char *)&g_bSpyroAnimFrame = 1;
   *(volatile unsigned char *)&g_bSpyroSubFrameTimer = 0;
   g_nSaveMenuSpyroFromYaw = yaw;
-  /* state word 1 is the pool index of the actor the dragon refers to; the
+  /* state word 1 is the pool index of the host's anchor actor; the
      int add before the cast is load-bearing (((int *)owner)[1] reorders cse) */
   rec = (char *)(*(int *)(owner + 4) * sizeof(Actor) + (int)g_pActorListBase);
   {
@@ -77,26 +77,26 @@ void BeginSaveMenuFromWorld(Actor *actor) {
     g_nSaveMenuSpyroToYaw =
         ArcTan2(ACTOR_RAW(rec, int, posX) - SPY_PREV[-6], ry - py, 1);
   }
-  g_nSaveMenuDragonFromAngle =
+  g_nSaveMenuHostFromAngle =
       ArcTan2(ACTOR_RAW(actor, int, posX) - SPY_PREV[-6],
               ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, &actor->posX, &SPY_PREV[-6]);
-  g_nSaveMenuDragonFromDist = VectorLength(vec, 0);
+  g_nSaveMenuHostFromDist = VectorLength(vec, 0);
   z = ACTOR_RAW(actor, int, posZ);
   yw = g_nSaveMenuSpyroToYaw;
-  g_nSaveMenuDragonToDist = 0x480;
-  g_nSaveMenuDragonFromZ = z;
-  g_nSaveMenuDragonToAngle = yw;
+  g_nSaveMenuHostToDist = 0x480;
+  g_nSaveMenuHostFromZ = z;
+  g_nSaveMenuHostToAngle = yw;
   EBB_BREAK();
-  g_nSaveMenuDragonToZ = SPY_PREV[-4] + 0x170;
+  g_nSaveMenuHostToZ = SPY_PREV[-4] + 0x170;
   if (g_pSparxActor != 0) {
-    g_nSaveMenuOverlayFromAngle =
+    g_nSaveMenuSparxFromAngle =
         ArcTan2(((Actor *)g_pSparxActor)->posX - SPY_PREV[-6],
                 ((Actor *)g_pSparxActor)->posY - g_nSpyroWorldPosY, 1);
     SubtractVector(vec, &((Actor *)g_pSparxActor)->posX, &SPY_PREV[-6]);
-    g_nSaveMenuOverlayFromDist = VectorLength(vec, 0);
-    g_nSaveMenuOverlayToDist = 0x600;
-    g_nSaveMenuOverlayToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;
+    g_nSaveMenuSparxFromDist = VectorLength(vec, 0);
+    g_nSaveMenuSparxToDist = 0x600;
+    g_nSaveMenuSparxToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;
   }
   g_nSaveMenuCameraFromAngle = ArcTan2(g_anCameraPos[0] - SPY_PREV[-6],
                                        g_anCameraPos[1] - g_nSpyroWorldPosY, 1);

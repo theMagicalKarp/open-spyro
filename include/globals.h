@@ -1414,13 +1414,13 @@ extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
 extern int g_anSpyroGroundChunkBlock[]; /* 0x80078ccc */
 extern int g_nSaveSlotIndex; /* 0x80078d1c */
 extern int g_nSaveFileTag; /* 0x80078d20 */
-extern int g_nSaveMenuDragonFromAngle; /* 0x80078d2c */
-extern int g_nSaveMenuDragonFromDist; /* 0x80078d30 */
-extern int g_nSaveMenuOverlayFromDist; /* 0x80078d48 */
+extern int g_nSaveMenuHostFromAngle; /* 0x80078d2c */
+extern int g_nSaveMenuHostFromDist; /* 0x80078d30 */
+extern int g_nSaveMenuSparxFromDist; /* 0x80078d48 */
 extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
 extern int g_nSaveMenuCameraFromDist; /* 0x80078d58 */
 extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
-extern int *volatile g_pSaveMenuDragonActor; /* 0x80078d74: dragon the save menu pans from */
+extern int *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
 extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */

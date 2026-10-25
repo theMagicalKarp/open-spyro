@@ -1762,12 +1762,11 @@ void Level8_UpdateActors(void) {
       break;
     }
 
-    /* Lift plate (PlateState): rises once its trigger actor is gone, waits,
-     * then drops back. */
-    case 110: {
-      PlateState *st = actor->state;
-      Actor *trigger = &g_pActorListBase[st->trigger];
-      Actor *rider = &g_pActorListBase[st->rider];
+    /* Save-prompt host (SaveHostState). */
+    case ACTOR_TYPE_SAVE_HOST: {
+      SaveHostState *st = actor->state;
+      Actor *trigger = &g_pActorListBase[st->armer];
+      Actor *rider = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
       case 0:
@@ -1795,10 +1794,10 @@ void Level8_UpdateActors(void) {
             int drop = height - SPY.posZ;
 
             if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
-              if (st->locked == 0 || rider->mode == 1) {
+              if (st->prompted == 0 || rider->mode == 1) {
                 int *at = &actor->posX;
 
-                st->locked = 0;
+                st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
@@ -1824,7 +1823,7 @@ void Level8_UpdateActors(void) {
         } else {
           actor->mode = 4;
           st->timer = 0;
-          st->step = 0x1E;
+          st->wanderTimer = 0x1E;
         }
         break;
 
@@ -1843,7 +1842,7 @@ void Level8_UpdateActors(void) {
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
-          st->locked = 1;
+          st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
         }
@@ -1856,23 +1855,23 @@ void Level8_UpdateActors(void) {
           break;
         }
 
-        st->step -= 1;
-        if (st->step == 0) {
+        st->wanderTimer -= 1;
+        if (st->wanderTimer == 0) {
           int reach = (GetRandomU32() & 0x3F) + 0x140;
           int bearing = ArcTan2(spy->posX - rider->posX,
                                       spy->posY - rider->posY, 0);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
           EBB_BREAK();
-          CopyVector(st->from, &rider->posX);
+          CopyVector(st->wanderTo, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
           actor->mode = 5;
-          st->from[0] -= (LookupCosine(aim) * reach) >> 12;
-          st->from[1] -= (LookupSine(aim) * reach) >> 12;
-          st->yaw = ArcTan2(spy->posX - st->from[0],
-                                  spy->posY - st->from[1], 0);
-          st->step = 0;
+          st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
+          st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
+          st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
+                                  spy->posY - st->wanderTo[1], 0);
+          st->wanderTimer = 0;
         }
         break;
       }
@@ -1891,7 +1890,7 @@ void Level8_UpdateActors(void) {
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
-          st->locked = 1;
+          st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
         }
@@ -1909,21 +1908,21 @@ void Level8_UpdateActors(void) {
           int wSpan;
           int wDen;
 
-          st->step += 1;
-          SubtractVector(svF, st->from, here);
-          turn = SignedAngleDelta8(st->yaw, actor->rotZ);
-          w0 = LookupCosine((st->step - 1) << 7);
-          wSpan = w0 - LookupCosine(st->step << 7);
-          wDen = LookupCosine((st->step - 1) << 7) + 0x1000;
+          st->wanderTimer += 1;
+          SubtractVector(svF, st->wanderTo, here);
+          turn = SignedAngleDelta8(st->faceYaw, actor->rotZ);
+          w0 = LookupCosine((st->wanderTimer - 1) << 7);
+          wSpan = w0 - LookupCosine(st->wanderTimer << 7);
+          wDen = LookupCosine((st->wanderTimer - 1) << 7) + 0x1000;
           actor->posX += (svF[0] * wSpan) / wDen;
           actor->posY += (svF[1] * wSpan) / wDen;
           actor->rotZ += (turn * wSpan) / wDen;
           FindGroundHeightBelow(here, 0x1000);
           EncodeCachedVecToActorDirCode(actor);
 
-          if (st->step == 0x10) {
+          if (st->wanderTimer == 0x10) {
             actor->mode = 4;
-            st->step = (GetRandomU32() & 0x1F) + 0x1E;
+            st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
         break;

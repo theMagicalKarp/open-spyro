@@ -6,14 +6,14 @@
 #include "spyro_block.h"
 #include "vecmath.h"
 
-/* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
+/* The save-menu record at 0x80078d00: [0] mode, [1] phase,
    [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
-   keyframes for the dragon (+0x2C/+0x38), the overlay record (+0x44/+0x4C),
+   keyframes for the save host (+0x2C/+0x38), Sparx (+0x44/+0x4C),
    the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
 
 #define SM g_anSaveMenuBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
-#define ACT g_pSaveMenuDragonActor
+#define ACT g_pSaveMenuHostActor
 #define FLD(p, off) (*(int *)((char *)(p) + (off)))
 
 /* Eases an angle from `from` toward `to` by t/0x2000 along the short arc. */
@@ -22,10 +22,11 @@
        ? (from) + ((AbsAngleDelta12((to), (from)) * (t)) >> 13)                \
        : (from) - ((AbsAngleDelta12((to), (from)) * (t)) >> 13))
 
-/* 0x800314b4 (0x1024): the dragon-rescue save prompt. Mode 0 swings the
-   rescued dragon, the overlay record and the camera from their start to their
+/* 0x800314b4 (0x1024): the save prompt a save host (type 110) opens.
+   Mode 0 swings the host, Sparx and the camera from their start to their
    end keyframes over 0x40 frames (easing on a sine), then mode 1 runs the
-   "save game?" menu: the cursor, the three memory card stages (load the
+   "save game?" menu: the cursor (0 save, 1 replay the rescue of the
+   host's dragon, 2 leave), the three memory card stages (load the
    directory, write the save, read it back and verify the checksum) and the
    result screens, ending in EndSaveMenuToWorld. */
 void SaveMenu_Update(void) {
@@ -56,22 +57,20 @@ void SaveMenu_Update(void) {
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);
-      d = g_nSaveMenuDragonFromDist +
-          (((g_nSaveMenuDragonToDist - g_nSaveMenuDragonFromDist) * t) >> 13);
+      d = g_nSaveMenuHostFromDist +
+          (((g_nSaveMenuHostToDist - g_nSaveMenuHostFromDist) * t) >> 13);
       FLD(ACT, 0xc) = g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
       FLD(ACT, 0x10) = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       FLD(ACT, 0x14) =
-          g_nSaveMenuDragonFromZ +
-          (((g_nSaveMenuDragonToZ - g_nSaveMenuDragonFromZ) * t) >> 13);
+          g_nSaveMenuHostFromZ +
+          (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
       TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
       FindGroundHeightBelow(ACT + 3, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
       if (g_pSparxActor != 0) {
-        a = LERP_ANGLE(g_nSaveMenuOverlayToAngle, g_nSaveMenuOverlayFromAngle,
-                       t);
-        d = g_nSaveMenuOverlayFromDist +
-            (((g_nSaveMenuOverlayToDist - g_nSaveMenuOverlayFromDist) * t) >>
-             13);
+        a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
+        d = g_nSaveMenuSparxFromDist +
+            (((g_nSaveMenuSparxToDist - g_nSaveMenuSparxFromDist) * t) >> 13);
         ((int *)g_pSparxActor)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
         ((int *)g_pSparxActor)[4] =
@@ -131,13 +130,12 @@ void SaveMenu_Update(void) {
     } else {
       FLD(ACT, 0xc) =
           g_anSpyroWorldPos[0] +
-          ((LookupCosine(g_nSaveMenuDragonToAngle) * g_nSaveMenuDragonToDist) >>
+          ((LookupCosine(g_nSaveMenuHostToAngle) * g_nSaveMenuHostToDist) >>
            12);
       FLD(ACT, 0x10) =
           g_anSpyroWorldPos[1] +
-          ((LookupSine(g_nSaveMenuDragonToAngle) * g_nSaveMenuDragonToDist) >>
-           12);
-      FLD(ACT, 0x14) = g_nSaveMenuDragonToZ;
+          ((LookupSine(g_nSaveMenuHostToAngle) * g_nSaveMenuHostToDist) >> 12);
+      FLD(ACT, 0x14) = g_nSaveMenuHostToZ;
       {
         int *act = ACT;
 

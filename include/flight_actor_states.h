@@ -43,15 +43,6 @@ typedef struct ShardState {
   int floor; /* 0x10 */
 } ShardState;
 
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalCamPath *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
 /* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {

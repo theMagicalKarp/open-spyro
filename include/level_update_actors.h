@@ -296,17 +296,23 @@ typedef struct FollowState {
   int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
-/* Case 110 — the lift plate that rises when its trigger actor is cleared. */
-typedef struct PlateState {
-  int trigger; /* 0x00 actor index that arms the plate */
-  int rider;   /* 0x04 actor index carried on top */
-  int timer;   /* 0x08 */
-  int baseZ;   /* 0x0C rest height */
-  int from[3]; /* 0x10 interpolation start */
-  int yaw;     /* 0x1C */
-  int step;    /* 0x20 */
-  int locked;  /* 0x24 */
-} PlateState;
+/* Type 110 (ACTOR_TYPE_SAVE_HOST): the save-prompt host. Waits until Spyro
+ * is away from its anchor, then until its arming actor goes dormant; pops in
+ * beside Spyro (particles, spin, shrink from scale 0x60), then hovers on a
+ * cosine bob, wandering around the anchor actor. When Spyro stands idle at
+ * the anchor it calls BeginSaveMenuFromWorld (the save menu pans this actor
+ * around Spyro); it leaves when Spyro moves away. */
+typedef struct SaveHostState {
+  int armer;       /* 0x00 actor index of the dragon whose rescue (dormant, mode >= 0x80)
+                    arms the host; save-menu option 1 replays that rescue */
+  int anchor;      /* 0x04 actor index the host hovers around and Spyro stands at */
+  int timer;       /* 0x08 pop-in delay, then the bob phase */
+  int baseZ;       /* 0x0C bob centre height */
+  int wanderTo[3]; /* 0x10 next hover point near the anchor */
+  int faceYaw;     /* 0x1C bearing from the hover point to Spyro */
+  int wanderTimer; /* 0x20 frames until the next wander */
+  int prompted;    /* 0x24 the save menu was opened from this visit */
+} SaveHostState;
 
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
  * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
@@ -662,12 +668,18 @@ typedef struct RideState {
   int savedPosZ;    /* 0x50 saved actor->posZ */
 } RideState;
 
-/* Type 398 state block. */
+/* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
+ * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
+ * Spyro enters the portal region (mode 1, subMode = which side he came from,
+ * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
+ * homes Spyro on the midpoint of the path's posA/posB (plus offset)
+ * along the portal camera path; mode 2 glides him along it. When the camera
+ * sphere touches a TRIGGER_PORTAL region it starts the level load. */
 typedef struct PortalState {
-  PortalCamPath *desc; /* 0x00 */
+  PortalCamPath *desc; /* 0x00 the portal's camera path */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int pad10;        /* 0x10 */
-  int dest;         /* 0x14 destination, published to SPY.requestYaw as a byte (ExitState.dest) */
+  int dest;         /* 0x14 destination yaw, published to SPY.requestYaw */
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
@@ -697,18 +709,6 @@ typedef struct RespawnState {
   int period; /* 0x08 reload for ->timer */
 } RespawnState;
 
-/* Type 110: dragon-pad fairy. Appears near her pad, hovers, and starts the
- * fairy cutscene when Spyro stands still on the pad. */
-typedef struct PoleState {
-  int idxA;   /* 0x00 the actor that arms this one */
-  int idxB;   /* 0x04 the actor it reaches for */
-  int timer;  /* 0x08 */
-  int baseZ;  /* 0x0C rest height, restored each cycle */
-  int tgt[3]; /* 0x10 */
-  int angle;  /* 0x1C */
-  int t20;    /* 0x20 */
-  int flag24; /* 0x24 */
-} PoleState;
 
 /* Type 114: path-following enemy that runs from Spyro and can be knocked
  * back. */
