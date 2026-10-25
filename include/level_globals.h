@@ -140,7 +140,7 @@ extern int g_nFlightTimeRemaining;                       /* time remaining */
 extern int g_nFrameStep;                                 /* frame delta in ticks */
 extern int g_nGamePaused;
 extern int g_nGameplayBlocked;
-extern int g_nGamestate;                                 /* g_Gamestate */
+extern int g_nGamestate;                                 /* g_nGamestate */
 extern int g_nActorCutsceneCamHeightGoal;
 extern int g_nActorCutsceneCamHeightStart;
 extern int g_nActorCutsceneCamRadiusGoal;

@@ -239,7 +239,7 @@ extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
 extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
 extern void *g_apRenderScratchPrimTopBlock[]; /* held-base alias of g_pRenderScratchPrimTop;
                                               * [-2] is g_pRenderScratchRegionBase */
-extern void *g_apSaveMenuAnimActorListBlock[];
+extern void *g_apActiveActorListBlock[];
 extern char g_szContinue[];       /* "CONTINUE"    */
 extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 
