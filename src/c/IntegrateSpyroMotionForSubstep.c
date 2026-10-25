@@ -1222,7 +1222,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       } else if (g_nSpyroStateFlags == 9) {
         BuildSpyroVelocityFromBodyEuler();
         g_nSpyroVelocityZ = 0;
-        g_dwSpyroRequestMask = 0x80004000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
         if (g_nSpyroPadSnapshotCountdown <= 0) {
           g_nSpyroPadSnapshotCountdown = 1;
         }

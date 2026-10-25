@@ -252,7 +252,7 @@ typedef struct {
   char pad188[0x1C];
   int headLook;                   /* 0x1A4 */
   char pad1A8[0x4C];
-  int controlFlags;               /* 0x1F4 */
+  int requestMask;               /* 0x1F4 g_dwSpyroRequestMask (SPYRO_RQ_*) */
   char pad1F8[0x8];
   int requestTargetZ;             /* 0x200 g_nSpyroRequestTargetZ */
   char pad204[0x2];

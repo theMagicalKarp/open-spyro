@@ -796,7 +796,7 @@ void Level12_UpdateActors(void) {
 
       case 10:
         if (st->egg != 0) {
-          g_dwSpyroRequestMask = 0x80002000;
+          g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
             st->egg->mode = 1;
             st->egg->otBias = 4;
@@ -1127,7 +1127,7 @@ void Level12_UpdateActors(void) {
       unsigned int phase = actor->mode;
 
       if (phase != 0 && phase < 5) {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -2481,7 +2481,7 @@ void Level12_UpdateActors(void) {
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0)) < 0x30) {
-            spy->controlFlags = 0x80002000;
+            spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
             actor->subMode = 2;
@@ -2503,7 +2503,7 @@ void Level12_UpdateActors(void) {
         if (g_dwPadPressed & PAD_CROSS) {
           st->shake = 0xD2;
         }
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         fly->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nGameplayBlocked = 1;
@@ -2626,7 +2626,7 @@ void Level12_UpdateActors(void) {
                                              g_nSpyroWorldPosY - actor->posY, 0)) <
                      0x28) {
         actor->mode = 0;
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
@@ -2876,7 +2876,7 @@ void Level12_UpdateActors(void) {
             actor->posZ = st->restZ;
             BeginGemPickupOverlay(actor);
             ZeroVector(&SPY.headLook);
-            g_dwSpyroRequestMask = 0x80002147;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
@@ -2905,7 +2905,7 @@ void Level12_UpdateActors(void) {
         }
 
       } else {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
       }
 
       break;
@@ -3060,7 +3060,7 @@ void Level12_UpdateActors(void) {
                                         actor->posY - SPY.posY, 0)) < 0x20) {
           g_pSpyroRequestCameraAnchor = &spy->posX;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_dwSpyroRequestMask = 0x80000200;
+          g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
           g_nCameraActiveTargetDistance = 0xC00;
           g_nCameraActiveTargetPitch = 0x80;
           g_nCameraActiveTargetPitchBias = -0xB0;
@@ -4593,7 +4593,7 @@ void Level12_UpdateActors(void) {
       short progressed;
       switch (actor->mode) {
       case 1: {
-        SPY.controlFlags =
+        SPY.requestMask =
             (0x80000000 | 0x2000 | 0x4000 | 0x100 | 0x40 | 0x4 | 0x2 | 0x1);
         SPY.camPathReverse = actor->subMode;
         SPY.pPortal = st->desc;
@@ -4652,12 +4652,12 @@ void Level12_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }
       case 2: {
-        SPY.controlFlags = 0x80000000 | 0x4000 | 0x2000 | 0x100;
+        SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
         SPY.pPortal = st->desc;
         SPY.camPathMaxStep = 0x60;
         SPY.requestState = 0xF;
@@ -4691,7 +4691,7 @@ void Level12_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }

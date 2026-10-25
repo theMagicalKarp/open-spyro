@@ -574,7 +574,7 @@ void Level0_UpdateActors(void) {
       st = (ShotState *)actor->state;
 
       if (actor->mode != 0 && actor->mode < 5) {
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -2039,7 +2039,7 @@ void Level0_UpdateActors(void) {
                                              SPY.posY - actor->posY, 0)) <
                      0x28) {
         actor->mode = 0;
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&SPY.headLook);
         g_pfnLevelBeginActorCutscene(actor);
@@ -2197,7 +2197,7 @@ void Level0_UpdateActors(void) {
               actor->posZ = st->savedPosZ;
               BeginGemPickupOverlay(actor);
               ZeroVector(&SPY.headLook);
-              SPY.controlFlags = 0x80002147;
+              SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
               if (SPY.airborneFrames != 0) {
                 SPY.requestState = 6;
                 SPY.requestVelX = SPY.motionX >> 8;
@@ -2221,7 +2221,7 @@ void Level0_UpdateActors(void) {
           }
         }
       } else {
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
       }
       break;
     }
@@ -2439,18 +2439,18 @@ void Level0_UpdateActors(void) {
       if (distance < st->radius && svK[2] >= -0x3FF && svK[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
-        spyro->controlFlags = 0x80000000;
+        spyro->requestMask = SPYRO_RQ_PENDING;
         SPY.pScriptedActor = actor;
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(SPY.firstContactPoint, &actor->posX);
         if (st->flags & 1) {
-          spyro->controlFlags |= 0x8000;
+          spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
           SPY.pCamAnchor = &SPY.posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
-          spyro->controlFlags |= 0x200;
+          spyro->requestMask |= SPYRO_RQ_CAMERA;
           g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = 0x78;
@@ -2869,7 +2869,7 @@ void Level0_UpdateActors(void) {
       case 1: {
         int vec[3];
 
-        SPY.controlFlags =
+        SPY.requestMask =
             (0x80000000 | 0x2000 | 0x4000 | 0x100 | 0x40 | 0x4 | 0x2 | 0x1);
         SPY.camPathReverse = actor->subMode;
         SPY.pPortal = st->desc;
@@ -2928,12 +2928,12 @@ void Level0_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }
       case 2: {
-        SPY.controlFlags = 0x80000000 | 0x4000 | 0x2000 | 0x100;
+        SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
         SPY.pPortal = st->desc;
         SPY.camPathMaxStep = 0x60;
         SPY.requestState = 0xF;
@@ -2967,7 +2967,7 @@ void Level0_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }

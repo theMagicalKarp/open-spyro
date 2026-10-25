@@ -450,7 +450,7 @@ void UpdateCameraSpringForMode(void) {
     } else {
       REBASE_ALL(&s[S_POS]);
     }
-    if (g_dwSpyroRequestMask & 0x1000) {
+    if (g_dwSpyroRequestMask & SPYRO_RQ_LOCK_ON) {
       column = 5;
     }
     break;

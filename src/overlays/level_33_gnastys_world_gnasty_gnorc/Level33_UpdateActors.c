@@ -556,7 +556,7 @@ void Level33_UpdateActors(void) {
       st = (ShotState *)actor->state;
 
       if (actor->mode != 0 && actor->mode < 5) {
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -1729,7 +1729,7 @@ void Level33_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->camTimer, 4) != 0 && dist < 0x4000 &&
             (CheckSpyroLineOfSightTo(o140) != 0 || dist < 0x3000)) {
-          g_dwSpyroRequestMask = 0x80010000;
+          g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
           g_pScriptedCameraActor = actor;
         }
       }
@@ -1765,7 +1765,7 @@ void Level33_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
           int *anc;
 
-          g_dwSpyroRequestMask |= 0x80002200;
+          g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
           anc = PATH_END(*(FlyPath **)((char *)st + 4));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
@@ -1788,7 +1788,7 @@ void Level33_UpdateActors(void) {
         AddVector(PATH_PT((unsigned char *)st->path, 0), &actor->posX,
                       &SPY.posX);
         RShiftVector3(PATH_PT((unsigned char *)st->path, 0), 1);
-        g_dwSpyroRequestMask = 0x80002200;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
         anc = (int *)((char *)*(FlyPath **)st + 8);
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
         *(int *)&g_anCameraActiveTargetParams = -ca << 4;
@@ -2085,7 +2085,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case 9:
-        g_dwSpyroRequestMask |= 0x80002000;
+        g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         TickCountdownByFrameDelta(&st->stateTimer, 4);
         if (st->stateTimer < 0x10) {
           g_nGenericCountdown = sixteen - st->stateTimer;
@@ -2451,7 +2451,7 @@ void Level33_UpdateActors(void) {
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,
                                         0)) < 0x30) {
-          g_dwSpyroRequestMask = 0x80002000;
+          g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           ResetSpyroLinearMotion();
           ZeroVector(&spyc->headLook);
           actor->subMode = 2;
@@ -2485,7 +2485,7 @@ void Level33_UpdateActors(void) {
         if (g_dwPadPressed & PAD_CROSS) {
           st->timer = 0xD2;
         }
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
         g_nGameplayBlocked = 1;

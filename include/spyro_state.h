@@ -87,4 +87,25 @@ typedef enum SpyroState
 #define SPYRO_EV_MASK_NO_HAZARD 0xFBF9
 #define SPYRO_EV_MASK_SUPERCHARGE (SPYRO_EV_HAZARD | SPYRO_EV_REBOUND)
 
+/* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
+ * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
+ * SPYRO_RQ_PENDING is set. */
+#define SPYRO_RQ_VEL_X 0x00001         /* drive X toward g_anSpyroRequestTargetPos */
+#define SPYRO_RQ_VEL_Y 0x00002
+#define SPYRO_RQ_VEL_Z 0x00004
+#define SPYRO_RQ_PITCH 0x00008         /* take g_abSpyroRequestEuler[0] */
+#define SPYRO_RQ_ROLL 0x00010          /* [1] */
+#define SPYRO_RQ_YAW 0x00020           /* [2] */
+#define SPYRO_RQ_RAW_VELOCITY 0x00040  /* VEL_* take g_anSpyroRequestVelocity */
+#define SPYRO_RQ_FORCE_STATE 0x00100   /* g_nSpyroRequestState; no state update */
+#define SPYRO_RQ_CAMERA 0x00200        /* CAM_MODE_REQUEST on the request anchor */
+#define SPYRO_RQ_GEM_PATH_CAMERA 0x00400 /* CAM_MODE_GEM_PATH */
+#define SPYRO_RQ_LOCK_ON 0x01000       /* face g_pScriptedCameraActor (EnemyLock params) */
+#define SPYRO_RQ_FREEZE_INPUT 0x02000  /* replay the pad snapshot */
+#define SPYRO_RQ_NO_CLIP 0x04000       /* no ground probes, raw velocity */
+#define SPYRO_RQ_TARGET_CAMERA 0x08000 /* CAM_MODE_SCRIPTED_TARGET */
+#define SPYRO_RQ_FOLLOW_CAMERA 0x10000 /* CAM_MODE_SCRIPTED_FOLLOW */
+#define SPYRO_RQ_SCRIPTED_WALK 0x20000 /* g_nSpyroScriptedMoveMode = 1, walk */
+#define SPYRO_RQ_PENDING 0x80000000
+
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */

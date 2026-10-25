@@ -243,7 +243,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_WALL_SLIDE] == 0) {
       ProbeSpyroLedgeForward();
     }
-    if ((g_dwSpyroRequestMask & 0x4000) && g_nSpyroStateFlags == 9) {
+    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) && g_nSpyroStateFlags == 9) {
       g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
     }
     break;

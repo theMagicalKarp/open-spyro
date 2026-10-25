@@ -4662,7 +4662,7 @@ Level18_UpdateActors:
   verdict: parked
   class: "actor-update megafunction; all arms written, frame exact"
   date: 2026-09-29
-  note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.controlFlags. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group. 2026-09-30: ENTER_POSE_B in 137 and a multi-set `sx = 16` stand-in both leave the output byte-identical (40 li t1,16)."
+  note: "Loop.c hoists the constant 16 (ANIM stores, S=43 L=70 at thr 11) while the original keeps it inline and instead hoists &SPY.requestMask. With arm 137 stubbed every other arm matches. Open: the source form that keeps 137's 16 sites out of the hoist group. 2026-09-30: ENTER_POSE_B in 137 and a multi-set `sx = 16` stand-in both leave the output byte-identical (40 li t1,16)."
 Level25_UpdateActors:
   verdict: matched
   class: "actor-update megafunction, seeded from level_26/level_9/level_16/level_31 arms"
@@ -4780,7 +4780,7 @@ Level18_UpdateActors:
   note: "Rescored at 78% arm coverage with level_12/13 matched; not reopened. Try the level_34 lever: a spilled loop-top carrier that adds one early hoist and lowers the threshold for the 16 group."
 func_level_18_8007E18C_2026_10_02:
   verdict: parked
-  class: "loop.c hoist threshold: the 16 group (S43 L70) is hoisted, orig keeps 16 inline and hoists &SPY.controlFlags instead"
+  class: "loop.c hoist threshold: the 16 group (S43 L70) is hoisted, orig keeps 16 inline and hoists &SPY.requestMask instead"
   date: 2026-10-02
   note: "40,292 B, all arms written, masked 393 (-14). Re-measured: per-arm 16 counts equal orig; leader is c110 st->timer = 0x10. A multi-set var for 16 in arm 137 does nothing (cse makes a constant pseudo per site). A303 loop-top carrier cannot work: any extra move before insn 527 un-hoists D_80076378 (S15 L60 needs thr >= 22). New dial found: each moved_once movable doubles insn_count (loop.c:1611). Details in build/l18w/NOTES.md."
 Level14_UpdateActors:
@@ -4870,7 +4870,7 @@ func_level_24_8007E3C0_2026_10_04:
   note: "43,620 B. Swept the 24 orders of {dvz, speed, count, spark} after `timer; steps` (the steps read aliases every cs store): any order with count first (cdvk/cdkv/cvdk/ckdv) is masked 0. With count ahead of dvz the boosted speed `li 800` no longer takes the lh-dvz stall slot, so a2 = 800 lands there in sched1 and the second unk46 index keeps a2."
 func_level_18_8007E18C_2026_10_04:
   verdict: parked
-  class: "loop.c hoist threshold: 16 group (S43 L70) moves at thr 11 / count 19548; orig needs a second insn_count doubling (or 16 S*L < 1777) plus a much larger &SPY.controlFlags group"
+  class: "loop.c hoist threshold: 16 group (S43 L70) moves at thr 11 / count 19548; orig needs a second insn_count doubling (or 16 S*L < 1777) plus a much larger &SPY.requestMask group"
   date: 2026-10-04
   note: "40,292 B. Swapped in level_20's matched case 137: masked 393 -> 357, still -13 length, hoist set unchanged. do/while(0) is a phony loop (no moved_once). The case-13 scans' two inner-moved 13s combine into one outer group (one doubling); splitting them would stop 16 from moving. Details in build/l18w/NOTES.md."
 func_titlescreen_8007ABAC_2026_10_04:
@@ -4882,7 +4882,7 @@ func_level_18_8007E18C_2026_10_04_1:
   verdict: viable
   class: "MATCHED 2026-10-04 (loop.c hoist set: two invisible extra moves drop the threshold to 5 before the 16 group)"
   date: 2026-10-04
-  note: "40,292 B. Orig hoists &D_80076DF8 (CAM.posX, remat'd as lui a0/addiu a0 in 398) and &SPY.controlFlags; both are only used as memory bases or argument values, so their remats are invisible. NOTE-only scopes stretch the camera group (case 398 state 1, +4 luids), D_80076378 (case 390, +8) and the controlFlags group (case 398 state 2, +80). Case 34 reads SPY.state so its controlFlags store leads the group. Then 16 (S43 L70) stays put at thr 5. Also: level_20's case 137, struct-field stores in 398 state 1, ((SpyroObj *)&D_80078A58) reads in 312, and case 190's dialogue slots."
+  note: "40,292 B. Orig hoists &D_80076DF8 (CAM.posX, remat'd as lui a0/addiu a0 in 398) and &SPY.requestMask; both are only used as memory bases or argument values, so their remats are invisible. NOTE-only scopes stretch the camera group (case 398 state 1, +4 luids), D_80076378 (case 390, +8) and the requestMask group (case 398 state 2, +80). Case 34 reads SPY.state so its requestMask store leads the group. Then 16 (S43 L70) stays put at thr 5. Also: level_20's case 137, struct-field stores in 398 state 1, ((SpyroObj *)&D_80078A58) reads in 312, and case 190's dialogue slots."
 func_level_5_8007B68C_2026_10_04:
   verdict: parked
   class: "R5 sched2 store/store hole (unchanged) + Rd; new lead: the original's lui/ori pairs are UNSPLIT reload-made `li`s"

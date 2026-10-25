@@ -213,7 +213,7 @@ void Level20_UpdateActors(void) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
-            g_dwSpyroRequestMask = 0x80008000;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
@@ -594,7 +594,7 @@ void Level20_UpdateActors(void) {
       unsigned int phase = actor->mode;
 
       if (phase != 0 && phase < 5) {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -1702,7 +1702,7 @@ void Level20_UpdateActors(void) {
         if (st->camDist < d) {
           st->camDist = d;
         }
-        SPY.controlFlags = 0x80000200;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -ArcTan2(spy->posX - actor->posX,
                                          SPY.posY - actor->posY, 0) *
                           16;
@@ -1939,7 +1939,7 @@ void Level20_UpdateActors(void) {
             } else if (st->cam == 1) {
               st->cam = 2;
               st->timer3 = 0x1E;
-              SPY.controlFlags |= 0x80000200;
+              SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
               g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
@@ -2279,7 +2279,7 @@ void Level20_UpdateActors(void) {
             actor->posZ = st->restZ;
             BeginGemPickupOverlay(actor);
             ZeroVector(&SPY.headLook);
-            g_dwSpyroRequestMask = 0x80002147;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
@@ -2308,7 +2308,7 @@ void Level20_UpdateActors(void) {
         }
 
       } else {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
       }
 
       break;
@@ -3642,7 +3642,7 @@ void Level20_UpdateActors(void) {
             }
           }
         }
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (actor->nextFrame >= 0xD) {
           SPY.posX = actor->posX;
           g_nSpyroDrawSuppressed = 1;
@@ -3669,7 +3669,7 @@ void Level20_UpdateActors(void) {
         spy->posX = actor->posX;
         spy->posY = actor->posY;
         g_nSpyroDrawSuppressed = 1;
-        spy->controlFlags = 0x80002000;
+        spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nActorAnimDone != 0) {
           actor->mode++;
         }
@@ -3691,7 +3691,7 @@ void Level20_UpdateActors(void) {
             g_anSpyroRequestVelocity.x = A408[0];
             g_nSpyroRequestVelocityY = A408[1];
           } else {
-            g_dwSpyroRequestMask = 0x80002000;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3702,7 +3702,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case 13:
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ANIM_GO(actor, 8);
         g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         break;
@@ -3723,7 +3723,7 @@ void Level20_UpdateActors(void) {
             g_anSpyroRequestVelocity.x = A376[0];
             g_nSpyroRequestVelocityY = A376[1];
           } else {
-            g_dwSpyroRequestMask = 0x80002000;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           }
         }
         if (g_nActorAnimDone != 0) {

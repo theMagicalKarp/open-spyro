@@ -30,11 +30,11 @@ enum CameraMode {
   CAM_MODE_FALL = 4,
   CAM_MODE_GLIDE = 5,             /* glide and flight (Mode5 bias pair) */
   CAM_MODE_HAZARD = 6,
-  CAM_MODE_SCRIPTED_TARGET = 7,   /* g_dwSpyroRequestMask 0x8000 */
+  CAM_MODE_SCRIPTED_TARGET = 7,   /* SPYRO_RQ_TARGET_CAMERA */
   CAM_MODE_FREE_LOOK = 9,         /* Triangle held while idle */
-  CAM_MODE_REQUEST_0A = 0xA,      /* g_dwSpyroRequestMask 0x200 */
-  CAM_MODE_GEM_PATH = 0xB,        /* UpdateGemPickupPathCamera; mask 0x400 */
-  CAM_MODE_SCRIPTED_FOLLOW = 0xC, /* g_dwSpyroRequestMask 0x10000 */
+  CAM_MODE_REQUEST = 0xA,         /* SPYRO_RQ_CAMERA: request anchor + params */
+  CAM_MODE_GEM_PATH = 0xB,        /* UpdateGemPickupPathCamera; SPYRO_RQ_GEM_PATH_CAMERA */
+  CAM_MODE_SCRIPTED_FOLLOW = 0xC, /* SPYRO_RQ_FOLLOW_CAMERA */
   CAM_MODE_SCRIPTED_VANTAGE = 0xE, /* UpdateScriptedCameraView */
   CAM_MODE_BONK = 0xF,            /* SPYRO_ST_CHARGE_BONK */
   CAM_MODE_PASSIVE = 0x10,        /* passive-camera option, hold timer */

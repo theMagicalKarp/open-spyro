@@ -313,7 +313,7 @@ void Level14_UpdateActors(void) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
-            g_dwSpyroRequestMask = 0x80008000;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
@@ -926,7 +926,7 @@ void Level14_UpdateActors(void) {
 
       case 10:
         if (st->egg != 0) {
-          g_dwSpyroRequestMask = 0x80002000;
+          g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
             st->egg->mode = 1;
             st->egg->otBias = 4;
@@ -1257,7 +1257,7 @@ void Level14_UpdateActors(void) {
       unsigned int phase = actor->mode;
 
       if (phase != 0 && phase < 5) {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -1941,7 +1941,7 @@ void Level14_UpdateActors(void) {
       case 0:
         if (st->mode & 0x80) {
           if (g_nSpyroAirborneFrames != 0) {
-            g_dwSpyroRequestMask = 0x80000200;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
             if (g_nSpyroState == SPYRO_ST_08) {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
@@ -2929,7 +2929,7 @@ void Level14_UpdateActors(void) {
         x288[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[2] -= 0x17C;
         dz = x288[2] - actor->posZ;
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         CopyVector(st->cam, &SPY.posX);
         st->cam[0] += (g_anCosineLut[SPY.bodyRotZ] * 0x4B) >> 10;
         st->cam[1] += (*(nv = &g_anSineLut[SPY.bodyRotZ]) * 0x4B) >> 10;
@@ -2941,7 +2941,7 @@ void Level14_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[3] = 0;
         g_anCameraActiveTargetParams.w[4] = 0;
         g_anCameraActiveTargetParams.w[5] = 0;
-        SPY.controlFlags |= 0x80000200;
+        SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
         case 0:
@@ -3400,7 +3400,7 @@ void Level14_UpdateActors(void) {
               actor->posZ = st->savedPosZ;
               BeginGemPickupOverlay(actor);
               ZeroVector(&SPY.headLook);
-              SPY.controlFlags = 0x80002147;
+              SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
               if (SPY.airborneFrames != 0) {
                 SPY.requestState = 6;
                 SPY.requestVelX = SPY.motionX >> 8;
@@ -3424,7 +3424,7 @@ void Level14_UpdateActors(void) {
           }
         }
       } else {
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
       }
       break;
     }

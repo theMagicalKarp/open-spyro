@@ -12,15 +12,15 @@
  *
  * Load-bearing source forms:
  *   - loop.c's hoist set. The original hoists &g_anCameraPos (the camera
- *     position, CAM.posX) and &SPY.controlFlags but keeps 16 inline. Every
+ *     position, CAM.posX) and &SPY.requestMask but keeps 16 inline. Every
  *     group moved before the 16 group lowers loop.c's threshold by 3, and 16
  *     only stays put at threshold 5. The extra moves are invisible in the
  *     output: both addresses are only used as memory bases or argument
  *     values, so reload rematerialises them at each use. Three LUID_PAD
  *     sites stretch member lifetimes until those groups move: the camera
  *     group in case 398 (state 1), g_apActorMeshTable in case 390, and
- *     controlFlags in case 398 (state 2). Case 34 reads Spyro's state as
- *     SPY.state, so its controlFlags store leads that group early.
+ *     requestMask in case 398 (state 2). Case 34 reads Spyro's state as
+ *     SPY.state, so its requestMask store leads that group early.
  *   - Case 398 state 1 writes SPY.camPathReverse/camPathMaxStep/requestState/otBinBias as struct fields.
  *     They then alias the st->portal load and keep the original's store
  *     order. The m = svR register pin is assigned after the camPathReverse store.
@@ -492,7 +492,7 @@ void Level18_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         {
-          int *cf = &SPY.controlFlags;
+          int *cf = &SPY.requestMask;
 
           *cf = 0x80002000;
         }
@@ -1607,7 +1607,7 @@ void Level18_UpdateActors(void) {
         if (st->camDist < d) {
           st->camDist = d;
         }
-        SPY.controlFlags = 0x80000200;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -ArcTan2(spy->posX - actor->posX,
                                          SPY.posY - actor->posY, 0) *
                           16;
@@ -1844,7 +1844,7 @@ void Level18_UpdateActors(void) {
             } else if (st->cam == 1) {
               st->cam = 2;
               st->timer3 = 0x1E;
-              SPY.controlFlags |= 0x80000200;
+              SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
               g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
@@ -2074,7 +2074,7 @@ void Level18_UpdateActors(void) {
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0)) < 0x30) {
-            spy->controlFlags = 0x80002000;
+            spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
             actor->subMode = 2;
@@ -2096,7 +2096,7 @@ void Level18_UpdateActors(void) {
         if (g_dwPadPressed & PAD_CROSS) {
           st->shake = 0xD2;
         }
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         fly->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nGameplayBlocked = 1;
@@ -2217,7 +2217,7 @@ void Level18_UpdateActors(void) {
                                              SPY.posY - actor->posY, 0)) <
                      0x28) {
         actor->mode = 0;
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&SPY.headLook);
         g_pfnLevelBeginActorCutscene(actor);
@@ -2468,7 +2468,7 @@ void Level18_UpdateActors(void) {
             actor->posZ = st->restZ;
             BeginGemPickupOverlay(actor);
             ZeroVector(&SPY.headLook);
-            g_dwSpyroRequestMask = 0x80002147;
+            g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
               g_nSpyroRequestState = 6;
@@ -2497,7 +2497,7 @@ void Level18_UpdateActors(void) {
         }
 
       } else {
-        g_dwSpyroRequestMask = 0x80002000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
       }
 
       break;
@@ -2723,18 +2723,18 @@ void Level18_UpdateActors(void) {
       if (distance < st->radius && svM[2] >= -0x3FF && svM[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
-        spyro->controlFlags = 0x80000000;
+        spyro->requestMask = SPYRO_RQ_PENDING;
         SPY.pScriptedActor = actor;
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
         if (st->flags & 1) {
-          spyro->controlFlags |= 0x8000;
+          spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
           SPY.pCamAnchor = &spy->posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
-          spyro->controlFlags |= 0x200;
+          spyro->requestMask |= SPYRO_RQ_CAMERA;
           g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = 0x78;
@@ -3404,7 +3404,7 @@ void Level18_UpdateActors(void) {
       switch (actor->mode) {
       case 1: {
         register int *m asm("$16");
-        int *cf = &SPY.controlFlags;
+        int *cf = &SPY.requestMask;
         PortalDesc *portal;
         int *aim;
         int span;
@@ -3478,13 +3478,13 @@ void Level18_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }
 
       case 2:
-        SPY.controlFlags = 0x80006100;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
         LUID_PAD5 LUID_PAD5
         LUID_PAD5 LUID_PAD5
         g_nGemPickupCamPathMaxStep = 0x60;
@@ -3523,7 +3523,7 @@ void Level18_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.controlFlags |= 0x400;
+          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
         }
         break;
       }

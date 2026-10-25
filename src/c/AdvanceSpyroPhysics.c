@@ -138,39 +138,40 @@ int AdvanceSpyroPhysics(void) {
     unsigned int *rq;
     unsigned int *rq2;
 
-    if ((g_dwSpyroRequestMask & 0x100) && SPY[SPY_SPARX_HEALTH] >= 0 &&
+    if ((g_dwSpyroRequestMask & SPYRO_RQ_FORCE_STATE) &&
+        SPY[SPY_SPARX_HEALTH] >= 0 &&
         SPY[SPY_STATE] != SPY[SPY_REQUEST_STATE]) {
       ChangeSpyroState(SPY[SPY_REQUEST_STATE]);
       SPY[SPY_AIRBORNE] = 1;
     }
     rq = REQ;
     m = *rq;
-    if (m & 7) {
-      if (m & 0x40) {
-        if (m & 1) {
+    if (m & (SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z)) {
+      if (m & SPYRO_RQ_RAW_VELOCITY) {
+        if (m & SPYRO_RQ_VEL_X) {
           g_anSpyroVelocityFp6[0] = g_anSpyroRequestVelocity[0] << 6;
           g_anSpyroVelocity[0] = g_anSpyroVelocityFp6[0] / g_nFrameStep;
         }
-        if (m & 2) {
+        if (m & SPYRO_RQ_VEL_Y) {
           g_anSpyroVelocityFp6[1] = g_anSpyroRequestVelocity[1] << 6;
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
-        if (m & 4) {
+        if (m & SPYRO_RQ_VEL_Z) {
           g_anSpyroVelocityFp6[2] = g_anSpyroRequestVelocity[2] << 6;
           g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
       } else {
-        if (m & 1) {
+        if (m & SPYRO_RQ_VEL_X) {
           g_anSpyroVelocityFp6[0] =
               (g_anSpyroRequestTargetPos[0] - g_anSpyroWorldPos[0]) << 6;
           g_anSpyroVelocity[0] = g_anSpyroVelocityFp6[0] / g_nFrameStep;
         }
-        if (m & 2) {
+        if (m & SPYRO_RQ_VEL_Y) {
           g_anSpyroVelocityFp6[1] =
               (g_anSpyroRequestTargetPos[1] - g_nSpyroWorldPosY) << 6;
           g_anSpyroVelocity[1] = g_anSpyroVelocityFp6[1] / g_nFrameStep;
         }
-        if (m & 4) {
+        if (m & SPYRO_RQ_VEL_Z) {
           g_anSpyroVelocityFp6[2] =
               (g_anSpyroRequestTargetPos[2] - g_nSpyroWorldPosZ) << 6;
           g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
@@ -180,28 +181,28 @@ int AdvanceSpyroPhysics(void) {
     }
     rq2 = REQ;
     t = *rq2;
-    if (t & 8) {
+    if (t & SPYRO_RQ_PITCH) {
       g_abSpyroPersistentEuler[0] = g_abSpyroRequestEuler[0];
       g_nSpyroBodyPitch = g_abSpyroRequestEuler[0] << 4;
     }
     m = t;
-    if (m & 0x10) {
+    if (m & SPYRO_RQ_ROLL) {
       g_abSpyroPersistentEuler[1] = g_abSpyroRequestEuler[1];
       g_nSpyroBodyRoll = g_abSpyroRequestEuler[1] << 4;
     }
-    if (m & 0x20) {
+    if (m & SPYRO_RQ_YAW) {
       g_abSpyroPersistentEuler[2] = g_abSpyroRequestEuler[2];
       g_nSpyroBodyYaw = g_abSpyroRequestEuler[2] << 4;
     }
-    if (g_nCameraNextMode_blk[0] != 0x80000009) {
-      if (m & 0x200) {
+    if (g_nCameraNextMode_blk[0] != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
+      if (m & SPYRO_RQ_CAMERA) {
         g_nCameraTargetYawBiasFromMode = 0;
-        g_nCameraNextMode_blk[0] = 0x8000000A;
+        g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_REQUEST);
         g_pCameraAnchorPos = g_pSpyroRequestCameraAnchor;
         g_pCameraTargetParams = g_pSpyroRequestCameraTargetParams;
-      } else if (m & 0x400) {
-        g_nCameraNextMode_blk[0] = 0x8000000B;
-      } else if (m & 0x1000) {
+      } else if (m & SPYRO_RQ_GEM_PATH_CAMERA) {
+        g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_GEM_PATH);
+      } else if (m & SPYRO_RQ_LOCK_ON) {
         int keepYaw = g_nSpyroMoveTargetYaw;
         int a;
         unsigned int lock;
@@ -211,7 +212,7 @@ int AdvanceSpyroPhysics(void) {
         if (a > 0x80) {
           a -= 0x100;
         }
-        lock = m | 0x2000;
+        lock = m | SPYRO_RQ_FREEZE_INPUT;
         if (abs(a) < 0x10) {
           if (g_nSpyroScriptedAlignFrames >= 0x1E) {
             ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
@@ -265,7 +266,7 @@ int AdvanceSpyroPhysics(void) {
                   if (g_nSpyroState != SPYRO_ST_SCRIPTED_WALK) {
                     ChangeSpyroState(SPYRO_ST_SCRIPTED_WALK);
                   }
-                  g_dwSpyroRequestMask |= 0x100;
+                  g_dwSpyroRequestMask |= SPYRO_RQ_FORCE_STATE;
                   if (side) {
                     g_nSpyroStateFlags = 1;
                   } else {
@@ -299,20 +300,20 @@ int AdvanceSpyroPhysics(void) {
         g_anCameraLatchedAnchorPos[2] += 0x200;
         g_nCameraTargetYawBiasFromMode = ACTOR_YAW(g_pScriptedCameraActor) << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
-        g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST_0A);
+        g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);
         g_nSpyroMoveTargetYaw = keepYaw;
-        g_dwSpyroRequestMask |= 0x200;
-      } else if (m & 0x8000) {
-        g_nCameraNextMode_blk[0] = 0x80000007;
+        g_dwSpyroRequestMask |= SPYRO_RQ_CAMERA;
+      } else if (m & SPYRO_RQ_TARGET_CAMERA) {
+        g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_SCRIPTED_TARGET);
       } else {
-        register unsigned int r asm("$2") = t & 0x10000;
+        register unsigned int r asm("$2") = t & SPYRO_RQ_FOLLOW_CAMERA;
 
         if (r) {
-          g_nCameraNextMode_blk[0] = 0x8000000C;
+          g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_SCRIPTED_FOLLOW);
         }
       }
     }
-    if (g_dwSpyroRequestMask & 0x20000) {
+    if (g_dwSpyroRequestMask & SPYRO_RQ_SCRIPTED_WALK) {
       g_nSpyroScriptedMoveMode = 1;
       ChangeSpyroState(SPYRO_ST_WALK);
     }
@@ -320,7 +321,7 @@ int AdvanceSpyroPhysics(void) {
     SPY[SPY_REQUEST] = 0;
   }
   RShiftVector3(g_anSpyroVelocityFp6, 6);
-  if (g_dwSpyroRequestMask & 0x4000) {
+  if (g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) {
     AddVector(g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6,
               g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6, g_anSpyroVelocityFp6);
   } else {

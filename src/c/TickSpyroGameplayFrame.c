@@ -56,7 +56,7 @@ void TickSpyroGameplayFrame(void) {
   int sfx[2];     /* per-slot sfx id, kept in the frame across the sfx calls */
   int pad[2];     /* frame slack */
 
-  if (((g_dwSpyroRequestMask & 0x2000) != 0) ||
+  if (((g_dwSpyroRequestMask & SPYRO_RQ_FREEZE_INPUT) != 0) ||
       (g_nSpyroScriptedMoveMode != 0)) {
     if (g_nSpyroPadSnapshotCountdown < 2) {
       g_nSpyroPadSnapshotCountdown = 2;
@@ -76,7 +76,7 @@ void TickSpyroGameplayFrame(void) {
   } else {
     g_nSpyroBreathTimer = 0;
   }
-  if (((g_dwSpyroRequestMask & 0x100) == 0) &&
+  if (((g_dwSpyroRequestMask & SPYRO_RQ_FORCE_STATE) == 0) &&
       (g_nSpyroScriptedMoveMode == 0)) {
     UpdateSpyroStateBehavior();
   }

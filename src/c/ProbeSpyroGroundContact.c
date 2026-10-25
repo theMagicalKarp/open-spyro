@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 
 /* The whole Spyro ground/collision state block hangs off one base register:
    [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,
@@ -28,7 +29,7 @@ void ProbeSpyroGroundContact(void) {
   }
   g_nSpyroGroundSlope = 0;
   g_anSpyroAirborneFramesBlock[0xa] = 0;
-  if ((g_dwSpyroRequestMask & 0x4000) == 0) {
+  if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) == 0) {
     down[0] = 0;
     out[0] = 0;
     down[1] = 0;

@@ -323,7 +323,7 @@ void Level11_UpdateActors(void) {
       st = (ShotState *)actor->state;
 
       if (actor->mode != 0 && actor->mode < 5) {
-        SPY.controlFlags = 0x80002000;
+        SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
@@ -1635,7 +1635,7 @@ void Level11_UpdateActors(void) {
       } else {
         ChangeSpyroState(SPYRO_ST_FLY);
         g_nSpyroStateFlags = 3;
-        g_dwSpyroRequestMask = 0x80004000;
+        g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {

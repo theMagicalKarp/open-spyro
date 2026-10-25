@@ -65,8 +65,8 @@ void SelectCameraMode(void) {
       g_nCameraScriptStickRequestX = 0;
       *nextp = t;
     }
-  } else if (mode == (CAM_HELD | CAM_MODE_REQUEST_0A)) {
-    if (!(SPY[SPY_REQUEST] & 0x200)) {
+  } else if (mode == (CAM_HELD | CAM_MODE_REQUEST)) {
+    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_CAMERA)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
@@ -82,7 +82,7 @@ void SelectCameraMode(void) {
       REBASE();
     }
   } else if (mode == (CAM_HELD | CAM_MODE_SCRIPTED_TARGET)) {
-    if (!(SPY[SPY_REQUEST] & 0x8000)) {
+    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_TARGET_CAMERA)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       REBASE();
@@ -90,7 +90,7 @@ void SelectCameraMode(void) {
       REBASE();
     }
   } else if (mode == (CAM_HELD | CAM_MODE_SCRIPTED_FOLLOW)) {
-    if (!(SPY[SPY_REQUEST] & 0x10000)) {
+    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_FOLLOW_CAMERA)) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       REBASE();
@@ -98,7 +98,7 @@ void SelectCameraMode(void) {
       REBASE();
     }
   } else if (mode == (CAM_HELD | CAM_MODE_GEM_PATH)) {
-    if (!(SPY[SPY_REQUEST] & 0x400)) {
+    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_GEM_PATH_CAMERA)) {
       table = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       *nextp = table;
