@@ -13,8 +13,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = LevelId0_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = LevelId0_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = LevelId0_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = LevelId0_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = LevelId0_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = LevelId0_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = LevelId0_BalloonistCutscene_Draw;
     break;
   case 1:
     g_pDrawBufA = LevelId1_OverlayEnd;
@@ -66,8 +66,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level0_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level0_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level0_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level0_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level0_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level0_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level0_BalloonistCutscene_Draw;
     break;
   case 11:
     g_pDrawBufA = Level1_OverlayEnd;
@@ -77,8 +77,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level1_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level1_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level1_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level1_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level1_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level1_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level1_BalloonistCutscene_Draw;
     break;
   case 12:
     g_pDrawBufA = Level2_OverlayEnd;
@@ -95,8 +95,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level3_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level3_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level3_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level3_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level3_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level3_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level3_BalloonistCutscene_Draw;
     break;
   case 14:
     g_pDrawBufA = Level4_OverlayEnd;
@@ -125,8 +125,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level6_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level6_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level6_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level6_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level6_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level6_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level6_BalloonistCutscene_Draw;
     break;
   case 21:
     g_pDrawBufA = Level7_OverlayEnd;
@@ -136,8 +136,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level7_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level7_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level7_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level7_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level7_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level7_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level7_BalloonistCutscene_Draw;
     break;
   case 22:
     g_pDrawBufA = Level8_OverlayEnd;
@@ -147,8 +147,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level8_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level8_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level8_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level8_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level8_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level8_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level8_BalloonistCutscene_Draw;
     break;
   case 23:
     g_pDrawBufA = Level9_OverlayEnd;
@@ -184,8 +184,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level12_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level12_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level12_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level12_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level12_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level12_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level12_BalloonistCutscene_Draw;
     break;
   case 31:
     g_pDrawBufA = Level13_OverlayEnd;
@@ -235,8 +235,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level18_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level18_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level18_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level18_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level18_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level18_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level18_BalloonistCutscene_Draw;
     break;
   case 41:
     g_pDrawBufA = Level19_OverlayEnd;
@@ -286,8 +286,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level24_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level24_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level24_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level24_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level24_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level24_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level24_BalloonistCutscene_Draw;
     break;
   case 51:
     g_pDrawBufA = Level25_OverlayEnd;
@@ -337,8 +337,8 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelAdvanceEmitList = Level30_AdvanceEmitList;
     g_pfnLevelBeginActorCutscene = Level30_BeginActorCutscene;
     g_pfnLevelOnSaveMenuExit = Level30_OnSaveMenuExit;
-    g_pfnGamestate0cSubstateUpdate = Level30_BalloonistCutscene_Update;
-    g_pfnGamestate0cSubstateDraw = Level30_BalloonistCutscene_Draw;
+    g_pfnActorCutsceneSubstateUpdate = Level30_BalloonistCutscene_Update;
+    g_pfnActorCutsceneSubstateDraw = Level30_BalloonistCutscene_Draw;
     break;
   case 61:
     g_pDrawBufA = Level31_OverlayEnd;

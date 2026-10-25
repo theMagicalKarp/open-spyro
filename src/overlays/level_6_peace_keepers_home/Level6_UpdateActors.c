@@ -2558,21 +2558,21 @@ void Level6_UpdateActors(void) {
 
         if (g_nWorldTreasureCollected < 0x4B0) {
           if (g_abWorldBalloonistState[2] == 0) {
-            g_nGamestate0cDialogPage = 6;
+            g_nActorCutsceneDialogPage = 6;
             g_abWorldBalloonistState[2] = 1;
           } else {
-            g_nGamestate0cDialogPage = 8;
+            g_nActorCutsceneDialogPage = 8;
           }
         } else if (g_abWorldBalloonistState[2] < 2) {
           if (g_abWorldBalloonistState[2] == 0) {
-            g_nGamestate0cDialogPage = 9;
+            g_nActorCutsceneDialogPage = 9;
           } else {
-            g_nGamestate0cDialogPage = 0xA;
+            g_nActorCutsceneDialogPage = 0xA;
           }
           g_abWorldBalloonistState[2] = 2;
         } else {
-          g_nGamestate0cDialogPage = 0x1E;
-          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
+          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

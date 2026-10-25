@@ -2228,21 +2228,21 @@ void Level18_UpdateActors(void) {
         g_abWorldBalloonistState[3] = 2;
         if (g_nWorldDragonsRescued < 0x32) {
           if (g_abWorldBalloonistState[4] == 0) {
-            g_nGamestate0cDialogPage = 0x12;
+            g_nActorCutsceneDialogPage = 0x12;
             g_abWorldBalloonistState[4] = 1;
           } else {
-            g_nGamestate0cDialogPage = 0x14;
+            g_nActorCutsceneDialogPage = 0x14;
           }
         } else if (g_abWorldBalloonistState[4] < 2) {
           if (g_abWorldBalloonistState[4] == 0) {
-            g_nGamestate0cDialogPage = 0x15;
+            g_nActorCutsceneDialogPage = 0x15;
           } else {
-            g_nGamestate0cDialogPage = 0x16;
+            g_nActorCutsceneDialogPage = 0x16;
           }
           g_abWorldBalloonistState[4] = 2;
         } else {
-          g_nGamestate0cDialogPage = 0x1E;
-          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
+          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

@@ -14464,11 +14464,11 @@ dlabel g_nMusicVolume
     /* 65F48 80075748 00000000 */ .word 0x00000000
 enddlabel g_nMusicVolume
 
-nonmatching g_pfnGamestate0cSubstateUpdate
+nonmatching g_pfnActorCutsceneSubstateUpdate
 
-dlabel g_pfnGamestate0cSubstateUpdate
+dlabel g_pfnActorCutsceneSubstateUpdate
     /* 65F4C 8007574C 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0cSubstateUpdate
+enddlabel g_pfnActorCutsceneSubstateUpdate
 
 nonmatching g_nWorldDragonsRescued
 

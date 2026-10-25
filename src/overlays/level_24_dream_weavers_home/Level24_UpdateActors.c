@@ -2823,21 +2823,21 @@ void Level24_UpdateActors(void) {
 
         if (g_nWorldTreasureCollected < 0x1770) {
           if (g_abWorldBalloonistState[5] == 0) {
-            g_nGamestate0cDialogPage = 0x18;
+            g_nActorCutsceneDialogPage = 0x18;
             g_abWorldBalloonistState[5] = 1;
           } else {
-            g_nGamestate0cDialogPage = 0x1A;
+            g_nActorCutsceneDialogPage = 0x1A;
           }
         } else if (g_abWorldBalloonistState[5] < 2) {
           if (g_abWorldBalloonistState[5] == 0) {
-            g_nGamestate0cDialogPage = 0x1B;
+            g_nActorCutsceneDialogPage = 0x1B;
           } else {
-            g_nGamestate0cDialogPage = 0x1C;
+            g_nActorCutsceneDialogPage = 0x1C;
           }
           g_abWorldBalloonistState[5] = 2;
         } else {
-          g_nGamestate0cDialogPage = 0x1E;
-          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
+          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

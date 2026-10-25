@@ -72,7 +72,7 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_SAVE_MENU) {
       SaveLoadMenu_Draw();
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
-      Gamestate0C_Draw();
+      ActorCutscene_Draw();
     } else if (g_nGamestate == GS_TITLE) {
       if (g_nGamestate0dMode == 3) {
         StoryIntro_Draw();

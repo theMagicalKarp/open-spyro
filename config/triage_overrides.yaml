@@ -2154,7 +2154,7 @@ SteerActorYawTowardSpyro:
     both per-arm `move a0,s0` copies into the shared tail (7/152). Every
     use-site nesting depth is bit-identical — the dial saturates. Park stays on
     the 4/152 multi-set body.
-Gamestate0C_Update:
+ActorCutscene_Update:
   verdict: matched
   class: "matched 2026-08-22 (B-i held-base fold retired: cse2 is what folds a held base, and two empty do/while dials stop it)"
   date: 2026-08-22
@@ -2173,7 +2173,7 @@ Gamestate0C_Update:
     CONSTANT_ADDRESS_P, so an address that reaches it already constant can never
     become base+offset. Isolated on a 6-line test case, only offset 0 keeps the
     base; every nonzero offset folds, negative as well as positive. THE FIX,
-    four levers, 352 -> 338. (1) read g_pGamestate0cRecord directly at every use in both
+    four levers, 352 -> 338. (1) read g_pActorCutsceneRecord directly at every use in both
     arms — the original reloads it into a caller-saved temp each time because
     every use is behind a jal, and a `rec` local emitted it twice and cost a
     callee-saved register; direct reads reproduce all 7. (2)/(3) two empty
@@ -2181,7 +2181,7 @@ Gamestate0C_Update:
     statement of the handoff arm — the established §B-i ebb break, not a new
     tool; new here is only that this function needs TWO, at those exact points:
     352 -> 340, 14
-    %hi(g_anGamestate0cTimerBlock) -> 4, and the frame returns to 0x50 with s0-s3. Placement is
+    %hi(g_anActorCutsceneTimerBlock) -> 4, and the frame returns to 0x50 with s0-s3. Placement is
     exact — the same dial before the approach arm gives 354. (4) two named
     locals, `lvl` and `face`, a SEPARATE mechanism: their reads were never
     force_reg'd by expand at all (address inline in the MEM), so they never
@@ -2189,7 +2189,7 @@ Gamestate0C_Update:
     statement puts it back on the force_reg path. Spelling the access
     differently does not work — A[i + 3], (&A[i])[3] and *(A + i + 3) parse to
     one tree and give byte-identical output. `face` additionally pins the
-    g_pGamestate0cRecord load ahead of the g_anCameraPos reads so the latter fills its
+    g_pActorCutsceneRecord load ahead of the g_anCameraPos reads so the latter fills its
     shadow and the lbu needs no nop. RETIRED BY MECHANISM, all previously
     measured as no-ops or regressions: block-scoped pointer local
     (const-propagates), sizing the array, source reordering, naming the
@@ -2199,10 +2199,10 @@ Gamestate0C_Update:
     found the do/while dial blind (147 improving candidates, 3970 -> 2400) and it
     was worth ~12 insns with no explanation until the rtl dump; its best
     candidate still overshot to 6 SHORT, so permuter score is not this repo's
-    metric — always re-measure with open-spyro diff. SIBLING: Gamestate0C_Draw
+    metric — always re-measure with open-spyro diff. SIBLING: ActorCutscene_Draw
     is parked on the same fold over the same block and its permuter run produced
     nothing, which now reads as expected rather than discouraging. Try, in
-    order: count its %hi(g_anGamestate0cTimerBlock) against the original (difference times one
+    order: count its %hi(g_anActorCutsceneTimerBlock) against the original (difference times one
     is usually the whole residue), place a dial on whichever arm folds, then
     look for reads expand never force_regs.
 
@@ -2950,7 +2950,7 @@ func_level_0_8007B020_2026_08_29:
     find_cross_jump merges as soon as `minimum` (2 for that path, 1 for the
     label-predecessor path) reaches 0, so differentiating any insn more than two
     back from the jump cannot stop a merge — which also rules out the untried
-    equal-address alias idea (`(&g_nGamestate0cSpyroToZ)[1]` for g_nGamestate0cSpyroYawStart: byte-identical
+    equal-address alias idea (`(&g_nActorCutsceneSpyroToZ)[1]` for g_nActorCutsceneSpyroYawStart: byte-identical
     reloc, but the mismatch lands 4 insns back and a 3-insn tail still merges).
     POSITIVE result: a block-scoped `int k;` in the `t >= 0x48` branch makes
     arm3's accumulator a separate pseudo, it wins a0 instead of v0, the two
@@ -3543,14 +3543,14 @@ Level0_BalloonistCutscene_Update:
   note: >-
     8,096 B, head of the ×10 balloonist UPDATE family (80,960 B). Took it from
     230 mismatches / 114 regions / offset -12 to 161 / 85 / +6 with four
-    one-line levers: per-site scalar aliases for g_nGamestate0cDialogPage / g_nGamestate0cCamYawGoal /
-    g_anGamestate0cTimerBlock / g_nGamestate0cMenuCursor (the §B16 register-form lever run in reverse — a
+    one-line levers: per-site scalar aliases for g_nActorCutsceneDialogPage / g_nActorCutsceneCamYawGoal /
+    g_anActorCutsceneTimerBlock / g_nActorCutsceneMenuCursor (the §B16 register-form lever run in reverse — a
     plain `extern int X;` DECL is always `lui %hi / lw %lo`), a real symbol for
     D_80076E1E instead of a cast-deref macro, hoisting the D_800758D0 scan
     loop's compare constant into a shared local, and spelling the five-arm
     submode chain as `if (k == N && g == 0) ... else if`. Still parked: R1
     (unchanged, -7 for ~1,850 insns), R6 (11 sites, the original holds
-    `s0 = &g_nGamestate0cDialogPage` across arms and uses -4/-8 offsets — A200 barrier
+    `s0 = &g_nActorCutsceneDialogPage` across arms and uses -4/-8 offsets — A200 barrier
     untried) and R3.
 Level13_AdvanceEmitList:
   verdict: parked
@@ -3804,7 +3804,7 @@ Level5_FlightResults_Draw:
     new tool** -- closing the swap still leaves R5, and R5 gates the whole
     x5 payoff. Next probe for R5 is a `-dR` sched2 dump of its block.
 
-Gamestate0C_Draw:
+ActorCutscene_Draw:
   verdict: parked
   class: "A200 corollary: held-base-vs-store-order (no loop-note-free cse ebb-break)"
   date: 2026-09-10
@@ -3812,7 +3812,7 @@ Gamestate0C_Draw:
     277/283 -> 279/283, length-exact and linking. Moved the A200 barrier BELOW
     both OT bin-head stores and flipped the source order to the original's
     (tail +4 first, head +0 second): that buys the original's ORDER and keeps
-    the load-delay nop after the following `lw g_nGamestate0cCardVariant`, at the price of the
+    the load-delay nop after the following `lw g_nActorCutsceneCardVariant`, at the price of the
     held base (ours `lui $at; sw %lo` twice, orig `la v1,sym; sw 4(v1); sw
     0(v1)` -- both four insns, so a pure form residue). The trade is now
     exhaustive: barrier between = held base + wrong order (6); barrier below =
@@ -3975,12 +3975,12 @@ Level0_BalloonistCutscene_Update:
     plus a block-local k in the outer else and an empty do/while at the else
     head leaves t at `t << 4` and k at `k - n`. KA: `yaw += 0x2D4;
     D_80078A60 = yaw;` makes yaw two-set, which removes sched1's birthing boost
-    on the re-read, shortens the g_pGamestate0cRecord pointer's life by one insn and wins
+    on the re-read, shortens the g_pActorCutsceneRecord pointer's life by one insn and wins
     it a1 over z. Found via a PERM_RANDOMIZE-restricted permuter hint
     (`t = ...; yaw = t;`), then cleaned to the in-place form. Siblings
     level_6/12/18/24/30 and 1/3/7/8 sed-clone with no source change beyond the
-    name; each overlay's undefined_syms needs the head's g_anGamestate0cTimerBlock_s /
-    g_nGamestate0cMenuCursor_s / g_nGamestate0cDialogPage_s / g_nGamestate0cCamYawGoal_s aliases and D_80076E1E.
+    name; each overlay's undefined_syms needs the head's g_anActorCutsceneTimerBlock_s /
+    g_nActorCutsceneMenuCursor_s / g_nActorCutsceneDialogPage_s / g_nActorCutsceneCamYawGoal_s aliases and D_80076E1E.
 Level5_FlightResults_Draw:
   verdict: parked
   class: "R5 sched2 store/store load-block hole (re-traced 2026-09-14, unchanged)"
@@ -4108,7 +4108,7 @@ Gamestate0C_Draw_2026_09_15:
     propagation or reg_equiv substitution removes first.
     One genuinely useful side result: `depth 0 / no trailing barrier` scores
     270/283 (one insn short — the head store fills the load-delay slot after
-    `lw g_nGamestate0cCardVariant`) while `depth 1 / no trailing barrier` scores 4, i.e. a
+    `lw g_nActorCutsceneCardVariant`) while `depth 1 / no trailing barrier` scores 4, i.e. a
     dummy `do { } while (0);` wrapped AROUND the two stores preserves that
     `nop` exactly as the trailing empty barrier does. The two are
     interchangeable for the nop; neither buys the base.

@@ -291,7 +291,7 @@ extern unsigned char g_bSpyroAnimLayer2Prev;
 extern unsigned int g_adwPadHeldBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern void *g_apOtDepthBinBlock[];
-extern void *g_pfnGamestate0cSubstateDraw;
+extern void *g_pfnActorCutsceneSubstateDraw;
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);
 extern void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);

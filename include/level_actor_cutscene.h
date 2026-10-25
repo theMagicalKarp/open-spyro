@@ -7,10 +7,10 @@
 #define OPEN_SPYRO_LEVEL_ACTOR_CUTSCENE_H
 
 /* Declared identically by two or more *_BeginActorCutscene.c files; hoisted here. */
-extern int g_nGamestate0cCamYawGoal;
-extern int g_nGamestate0cMenuCursor;
-extern int g_nGamestate0cSubstate;
-extern int g_nGamestate0cTimer;
+extern int g_nActorCutsceneCamYawGoal;
+extern int g_nActorCutsceneMenuCursor;
+extern int g_nActorCutsceneSubstate;
+extern int g_nActorCutsceneTimer;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern char *g_pActorListBase;

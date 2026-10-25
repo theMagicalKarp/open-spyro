@@ -2635,21 +2635,21 @@ void Level12_UpdateActors(void) {
 
         if (g_nWorldEggsRecovered < 5) {
           if (g_abWorldBalloonistState[3] == 0) {
-            g_nGamestate0cDialogPage = 0xC;
+            g_nActorCutsceneDialogPage = 0xC;
             g_abWorldBalloonistState[3] = 1;
           } else {
-            g_nGamestate0cDialogPage = 0xE;
+            g_nActorCutsceneDialogPage = 0xE;
           }
         } else if (g_abWorldBalloonistState[3] < 2) {
           if (g_abWorldBalloonistState[3] == 0) {
-            g_nGamestate0cDialogPage = 0xF;
+            g_nActorCutsceneDialogPage = 0xF;
           } else {
-            g_nGamestate0cDialogPage = 0x10;
+            g_nActorCutsceneDialogPage = 0x10;
           }
           g_abWorldBalloonistState[3] = 2;
         } else {
-          g_nGamestate0cDialogPage = 0x1E;
-          g_nGamestate0cDialogVariant = (int)GetRandomU32() % 3;
+          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
       break;

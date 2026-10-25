@@ -49,7 +49,7 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_SAVE_MENU) {
       Gamestate0B_Update();
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
-      Gamestate0C_Update();
+      ActorCutscene_Update();
     } else if (g_nGamestate == GS_TITLE) {
       if (g_nGamestate0dMode != 3) {
         Titlescreen_Update();

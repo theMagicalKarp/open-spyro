@@ -830,7 +830,7 @@ extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
 extern void *g_pWorldMeshIndexTable;                    /* 0x8007778c */
 extern int g_anCameraLatchedAnchorPos[3];               /* 0x80077798 */
 extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
-extern int g_nGamestate0cSubstate;                      /* 0x800777e8 */
+extern int g_nActorCutsceneSubstate;                      /* 0x800777e8 */
 extern int g_anCollisionContactPoint[3];                /* 0x80077858 */
 extern int g_nSpawnAnchorValid;                         /* 0x80077888 */
 extern int g_anRunningKillBitmap[8];                    /* 0x80077898 */
@@ -1067,17 +1067,17 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nSfxOverrideFlags  0x800761dc  1 = volume pair, 2 = pitch
  *   g_nSfxOverrideVolL/R 0x800761e8/ea, g_nSfxOverridePitch 0x800761f4
  *
- * Gamestate 0xC block (base 0x800777ec = g_nGamestate0cTimer; level-transition
+ * Gamestate 0xC block (base 0x800777ec = g_nActorCutsceneTimer; level-transition
  * fly-in and the balloonist/actor cutscene share it):
- *   g_nGamestate0cCam{Yaw,Radius,Height}Start  0x80077820/24/28  (+0x34..)
- *   g_nGamestate0cCam{Yaw,Radius,Height}Goal   0x80077838/3c/40  (+0x4c..)
- *   g_pGamestate0cActor   0x8007784c  focus actor (BeginActorCutscene)
- *   g_pGamestate0cRecord  0x80077850  orbit-centre record / title-card OT seed
- *   g_anGamestate0cSpyroFrom 0x80077800 (+ g_nGamestate0cSpyroFromY/Z views)  Spyro position the
- *       cutscene lerps from; g_nGamestate0cSpyroToX/Y/Z 0x8007780c/10/14  the position it lerps to
- *   g_nGamestate0cSpyroYawStart / Goal  0x80077818 / 1c  Spyro yaw (12-bit) turned across the cutscene
- *   g_nGamestate0cCamEuler{Roll,Pitch,Yaw}Start 0x8007782c/30/34  camera euler saved at cutscene start
- *   g_nGamestate0cRecordZStart / Goal   0x80077844 / 48  orbit-centre record z, lerped by cosine
+ *   g_nActorCutsceneCam{Yaw,Radius,Height}Start  0x80077820/24/28  (+0x34..)
+ *   g_nActorCutsceneCam{Yaw,Radius,Height}Goal   0x80077838/3c/40  (+0x4c..)
+ *   g_pActorCutsceneActor   0x8007784c  focus actor (BeginActorCutscene)
+ *   g_pActorCutsceneRecord  0x80077850  orbit-centre record / title-card OT seed
+ *   g_anActorCutsceneSpyroFrom 0x80077800 (+ g_nActorCutsceneSpyroFromY/Z views)  Spyro position the
+ *       cutscene lerps from; g_nActorCutsceneSpyroToX/Y/Z 0x8007780c/10/14  the position it lerps to
+ *   g_nActorCutsceneSpyroYawStart / Goal  0x80077818 / 1c  Spyro yaw (12-bit) turned across the cutscene
+ *   g_nActorCutsceneCamEuler{Roll,Pitch,Yaw}Start 0x8007782c/30/34  camera euler saved at cutscene start
+ *   g_nActorCutsceneRecordZStart / Goal   0x80077844 / 48  orbit-centre record z, lerped by cosine
  *
  * World / flight levels:
  *   g_nActiveWorldIndex           0x8007595c  g_nActiveLevelId / 10 - 1 (TickLevelTransitionStream)
@@ -1094,8 +1094,8 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_abEmitTrailColors     0x8006e438  EmitParticles trail colours, stride 4
  *   g_anLaunchDirTable(Z)   0x8006f3a0 / 0x8006f3a2  SpawnActor launch-direction shorts (x / z view)
  *   g_aSpuVoiceRows         0x80075f30  the 24 sound mixer rows (PlaySoundEffect)
- *   g_nGamestate0cCardVariant 0x800777fc  title-card variant (Gamestate0C_Draw)
- *   g_pfnGamestate0cSubstateUpdate / Draw 0x8007574c / 0x800758d8  per-level handlers for the other 0xC substates (ApplyPerLevelGlobalsTable)
+ *   g_nActorCutsceneCardVariant 0x800777fc  title-card variant (ActorCutscene_Draw)
+ *   g_pfnActorCutsceneSubstateUpdate / Draw 0x8007574c / 0x800758d8  per-level handlers for the other 0xC substates (ApplyPerLevelGlobalsTable)
  *   g_nFlightTallySlot 0x800757c4, g_anFlightTallyShown 0x800770f8, g_nFlightTimeBonus 0x80075908,
  *   g_anFlightCourseBonusTable 0x8006e920, g_pfnFlightTimeFormatter 0x800758c4,
  *   g_nFlightTimeRemaining 0x80075840, g_nFlightQuitFlag 0x80075900  flight-level results/HUD state
@@ -1142,13 +1142,13 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *       g_anCameraActiveTargetParams[1..5]; word order from LoadCameraTargetAnglesFromMode
  *
  * Gamestate 0xC dialogue state (BalloonistCutscene_Update, the six homeworld overlays + UpdateActors):
- *   g_anGamestate0cTimerBlock 0x800777ec  incomplete-array view of g_nGamestate0cTimer (held base, Gamestate0C_Update)
- *   g_nGamestate0cMenuCursor  0x800777f0  highlighted entry of the dialogue page/roster menu (wraps)
- *   g_nGamestate0cDialogPage  0x800777f4  dialogue page id the substate-1 menu shows (0x1E/0x1F, 0x21..0x26, ...)
- *   g_nGamestate0cDialogVariant 0x800777f8  line variant within the page (UpdateActors picks 0..2 at random)
- *   g_abGamestate0cActorSnapshot 0x80071e9c  0x58-byte copy of the focus actor taken at lift-off (substate 3)
- *   g_anGamestate0cLandingX / Y 0x8006eadc / 0x8006eae0  per-card-variant landing x / y (stride 8), copied to
- *       g_nGamestate0cSpyroToX / Y before the descend substate
+ *   g_anActorCutsceneTimerBlock 0x800777ec  incomplete-array view of g_nActorCutsceneTimer (held base, ActorCutscene_Update)
+ *   g_nActorCutsceneMenuCursor  0x800777f0  highlighted entry of the dialogue page/roster menu (wraps)
+ *   g_nActorCutsceneDialogPage  0x800777f4  dialogue page id the substate-1 menu shows (0x1E/0x1F, 0x21..0x26, ...)
+ *   g_nActorCutsceneDialogVariant 0x800777f8  line variant within the page (UpdateActors picks 0..2 at random)
+ *   g_abActorCutsceneActorSnapshot 0x80071e9c  0x58-byte copy of the focus actor taken at lift-off (substate 3)
+ *   g_anActorCutsceneLandingX / Y 0x8006eadc / 0x8006eae0  per-card-variant landing x / y (stride 8), copied to
+ *       g_nActorCutsceneSpyroToX / Y before the descend substate
  *   g_bWorldBalloonistState1 0x800758d1  g_abWorldBalloonistState[1] (scalar view)
  *   g_nLevelEggsRecovered1/7/8/12/15 0x80076fec..0x80077024  g_anLevelEggsRecovered[n] views; a zero one
  *       (or < 2 for [12]) unlocks hint pages 0x21..0x25
@@ -1244,7 +1244,7 @@ extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (
 extern int g_nLevelUnreadScratchA; /* 0x80075670 */
 extern int g_nLevelUnreadScratchB; /* 0x80075674 */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
-extern void *g_pfnGamestate0cSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
+extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
@@ -1317,15 +1317,15 @@ extern unsigned char g_bCdMixRightToRight; /* 0x800776d2: CdMix attenuation R->R
 extern unsigned char g_bCdMixRightToLeft; /* 0x800776d3: CdMix attenuation R->L */
 extern int g_anWorldMeshIndexCountBlock[]; /* 0x80077788: held-base view of g_nWorldMeshIndexCount */
 extern unsigned char g_abCollisionHeaderBytes[]; /* 0x80077790: 3 header bytes copied from the collision-tri section */
-extern int g_anGamestate0cTimerBlock[]; /* 0x800777ec */
-extern int g_nGamestate0cTimer; /* 0x800777ec: gamestate 0xC transition timer (array view g_anGamestate0cTimerBlock) */
-extern int g_nGamestate0cCardVariant; /* 0x800777fc: transition card variant */
-extern int g_nGamestate0cCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
-extern int g_nGamestate0cCamRadiusStart; /* 0x80077824: camera radius start (block +0x38) */
-extern int g_nGamestate0cCamHeightStart; /* 0x80077828: camera height start (block +0x3c) */
-extern int g_nGamestate0cCamYawGoal; /* 0x80077838: camera yaw goal     (block +0x4c) */
-extern int g_nGamestate0cCamRadiusGoal; /* 0x8007783c: camera radius goal  (block +0x50) */
-extern int g_nGamestate0cCamHeightGoal; /* 0x80077840: camera height goal  (block +0x54) */
+extern int g_anActorCutsceneTimerBlock[]; /* 0x800777ec */
+extern int g_nActorCutsceneTimer; /* 0x800777ec: gamestate 0xC transition timer (array view g_anActorCutsceneTimerBlock) */
+extern int g_nActorCutsceneCardVariant; /* 0x800777fc: transition card variant */
+extern int g_nActorCutsceneCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
+extern int g_nActorCutsceneCamRadiusStart; /* 0x80077824: camera radius start (block +0x38) */
+extern int g_nActorCutsceneCamHeightStart; /* 0x80077828: camera height start (block +0x3c) */
+extern int g_nActorCutsceneCamYawGoal; /* 0x80077838: camera yaw goal     (block +0x4c) */
+extern int g_nActorCutsceneCamRadiusGoal; /* 0x8007783c: camera radius goal  (block +0x50) */
+extern int g_nActorCutsceneCamHeightGoal; /* 0x80077840: camera height goal  (block +0x54) */
 extern int g_nSpawnAnchorDragonsRescued; /* 0x8007788c */
 extern int g_nSpawnAnchorGemsCollected; /* 0x80077890 */
 extern int g_nSpawnAnchorReserved; /* 0x80077894 */

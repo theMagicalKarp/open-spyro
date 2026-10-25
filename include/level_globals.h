@@ -26,13 +26,13 @@ extern int g_anFlightCourseBonusTable_r2[];
 extern int g_anFlightCourseBonusTable_r3[];
 extern int g_anFlightCourseBonusTable_r4[];
 extern unsigned char g_abGemTallyIconGlyphs[];
-extern int g_anGamestate0cLandingX[];
-extern int g_anGamestate0cLandingY[];
+extern int g_anActorCutsceneLandingX[];
+extern int g_anActorCutsceneLandingY[];
 extern char *g_apWorldNameByLevelTens[];                               /* world names */
 extern char *g_apLevelNameByWorldRow[];                               /* level names */
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
 extern int g_pSaveMenuAnimActorList1;
-extern int g_abGamestate0cActorSnapshot[];
+extern int g_abActorCutsceneActorSnapshot[];
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
@@ -41,23 +41,23 @@ extern int g_nLevelEggsRecovered7;
 extern int g_nLevelEggsRecovered8;
 extern int g_nLevelEggsRecovered12;
 extern int g_nLevelEggsRecovered15;
-extern int g_anGamestate0cTimerBlock_s;
-extern int g_nGamestate0cMenuCursor_s;
-extern int g_nGamestate0cDialogPage_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
-extern int g_nGamestate0cDialogVariant;
-extern int g_anGamestate0cSpyroFrom[];
-extern int g_nGamestate0cSpyroFromY;
-extern int g_nGamestate0cSpyroFromZ;
-extern int g_nGamestate0cSpyroToX;
-extern int g_nGamestate0cSpyroToY;
-extern int g_nGamestate0cSpyroToZ;
-extern int g_nGamestate0cSpyroYawStart;
-extern int g_nGamestate0cSpyroYawGoal;
-extern int g_nGamestate0cCamEulerRollStart;
-extern int g_nGamestate0cCamEulerPitchStart;
-extern int g_nGamestate0cCamEulerYawStart;
-extern int g_nGamestate0cRecordZStart;
-extern int g_nGamestate0cRecordZGoal;
+extern int g_anActorCutsceneTimerBlock_s;
+extern int g_nActorCutsceneMenuCursor_s;
+extern int g_nActorCutsceneDialogPage_s;                                 /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
+extern int g_nActorCutsceneDialogVariant;
+extern int g_anActorCutsceneSpyroFrom[];
+extern int g_nActorCutsceneSpyroFromY;
+extern int g_nActorCutsceneSpyroFromZ;
+extern int g_nActorCutsceneSpyroToX;
+extern int g_nActorCutsceneSpyroToY;
+extern int g_nActorCutsceneSpyroToZ;
+extern int g_nActorCutsceneSpyroYawStart;
+extern int g_nActorCutsceneSpyroYawGoal;
+extern int g_nActorCutsceneCamEulerRollStart;
+extern int g_nActorCutsceneCamEulerPitchStart;
+extern int g_nActorCutsceneCamEulerYawStart;
+extern int g_nActorCutsceneRecordZStart;
+extern int g_nActorCutsceneRecordZGoal;
 extern unsigned char g_abHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
@@ -141,13 +141,13 @@ extern int g_nFrameStep;                                 /* frame delta in ticks
 extern int g_nGamePaused;
 extern int g_nGameplayBlocked;
 extern int g_nGamestate;                                 /* g_Gamestate */
-extern int g_nGamestate0cCamHeightGoal;
-extern int g_nGamestate0cCamHeightStart;
-extern int g_nGamestate0cCamRadiusGoal;
-extern int g_nGamestate0cCamRadiusStart;
-extern int g_nGamestate0cCamYawGoal_s;                   /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
-extern int g_nGamestate0cCamYawStart;
-extern int g_nGamestate0cCardVariant;
+extern int g_nActorCutsceneCamHeightGoal;
+extern int g_nActorCutsceneCamHeightStart;
+extern int g_nActorCutsceneCamRadiusGoal;
+extern int g_nActorCutsceneCamRadiusStart;
+extern int g_nActorCutsceneCamYawGoal_s;                   /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
+extern int g_nActorCutsceneCamYawStart;
+extern int g_nActorCutsceneCardVariant;
 extern int g_nDragonRescueSubstate;
 extern int g_nDragonRescueTimer;
 extern int g_nGemTallyIconCount;
@@ -197,7 +197,7 @@ extern int g_nVsyncFramePaceAnchor;
 extern int g_nWorldDragonsRescued;
 extern int g_nWorldEggsRecovered;
 extern int g_nWorldTreasureCollected;                    /* gem total shown on the balloon */
-extern unsigned char *g_pGamestate0cActor;
+extern unsigned char *g_pActorCutsceneActor;
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 

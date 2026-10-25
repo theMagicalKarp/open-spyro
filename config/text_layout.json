@@ -521,7 +521,7 @@
    "size": 2868
   },
   {
-   "name": "Gamestate0C_Draw",
+   "name": "ActorCutscene_Draw",
    "vram": 2147607116,
    "size": 1132
   },
@@ -806,7 +806,7 @@
    "size": 4132
   },
   {
-   "name": "Gamestate0C_Update",
+   "name": "ActorCutscene_Update",
    "vram": 2147689688,
    "size": 1352
   },

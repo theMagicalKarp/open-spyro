@@ -186,7 +186,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | matched | game |
 | `0x8001cfdc` | Gamestate08_Draw | main | 1852 | matched | game |
 | `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | matched | game |
-| `0x8001e24c` | Gamestate0C_Draw | main | 1132 | matched | game |
+| `0x8001e24c` | ActorCutscene_Draw | main | 1132 | matched | game |
 | `0x8001e6b8` | StoryIntro_Draw | main | 784 | matched | game |
 | `0x8001e9c8` | GemCutscene_Draw | main | 440 | matched | game |
 | `0x8001eb80` | ReturningHome_Draw | main | 476 | matched | game |
@@ -243,7 +243,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002f3c4` | Gamestate06_Update | main | 32 | matched | game |
 | `0x8002f3e4` | DragonRescue_Update | main | 8400 | matched | game |
 | `0x800314b4` | Gamestate0B_Update | main | 4132 | matched | game |
-| `0x800324d8` | Gamestate0C_Update | main | 1352 | matched | game |
+| `0x800324d8` | ActorCutscene_Update | main | 1352 | matched | game |
 | `0x80032a20` | PollMemCardSyncRing | main | 144 | matched | game |
 | `0x80032ab0` | ArmStoryIntroOnStart | main | 88 | matched | game |
 | `0x80032b08` | Gamestate0D_Update | main | 1700 | matched | game |

@@ -69,7 +69,7 @@
 <rect x="101.38" y="456.00" width="28.19" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004E60C  ·  1436 bytes  ·  handwritten</title></rect>
 <rect x="129.57" y="456.00" width="27.79" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdProcessInterrupt  ·  1416 bytes  ·  library</title></rect>
 <rect x="157.36" y="456.00" width="27.09" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardCreateFile  ·  1380 bytes  ·  library</title></rect>
-<rect x="184.45" y="456.00" width="26.54" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0C_Update  ·  1352 bytes  ·  matched</title></rect>
+<rect x="184.45" y="456.00" width="26.54" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActorCutscene_Update  ·  1352 bytes  ·  matched</title></rect>
 <rect x="210.99" y="456.00" width="26.46" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroDropShadow  ·  1348 bytes  ·  handwritten</title></rect>
 <rect x="237.44" y="456.00" width="26.38" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawMotionTrailRibbons  ·  1344 bytes  ·  matched</title></rect>
 <rect x="263.82" y="456.00" width="26.07" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Initialize  ·  1328 bytes  ·  matched</title></rect>
@@ -85,7 +85,7 @@
 <rect x="14.00" y="697.61" width="25.50" height="25.72" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplySpyroStateTransition  ·  1200 bytes  ·  matched</title></rect>
 <rect x="14.00" y="723.34" width="25.50" height="25.55" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PutDispEnv  ·  1192 bytes  ·  library</title></rect>
 <rect x="14.00" y="748.89" width="25.50" height="24.52" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickActiveSoundVoices  ·  1144 bytes  ·  matched</title></rect>
-<rect x="39.50" y="483.85" width="26.87" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate0C_Draw  ·  1132 bytes  ·  matched</title></rect>
+<rect x="39.50" y="483.85" width="26.87" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActorCutscene_Draw  ·  1132 bytes  ·  matched</title></rect>
 <rect x="66.37" y="483.85" width="26.40" height="23.03" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitStaticActorMeshList  ·  1112 bytes  ·  handwritten</title></rect>
 <rect x="92.77" y="483.85" width="25.83" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceGemCutsceneFrame  ·  1088 bytes  ·  matched</title></rect>
 <rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroHornStrikeAttack  ·  1084 bytes  ·  matched</title></rect>

@@ -65,6 +65,6 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern Actor *AllocActorRecordSlot(void);
-extern char *g_pGamestate0cRecord;
+extern char *g_pActorCutsceneRecord;
 
 #endif /* OPEN_SPYRO_ACTOR_H */
