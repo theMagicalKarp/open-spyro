@@ -83,7 +83,7 @@ void RespawnOrGameOver_Update(void) {
         g_nExtraLives = 4;
         g_nSparxFoodCount = 0;
         g_nSparxHealth = 3;
-        g_nScriptedRespawnFlag = 0;
+        g_nPortalTransitionActive = 0;
         g_nReturnPortalLevelId = 0;
         g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);

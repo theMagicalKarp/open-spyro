@@ -170,9 +170,10 @@ void Level1_UpdateActors(void) {
     g_nActorFrameDelta = dt;
 
     switch (actor->type) {
-    /* Exit drop (DropState). */
-    case 9: {
-      DropState *st = actor->state;
+    /* Level-exit whirlwind (ExitWhirlState): shows its name as the camera nears,
+     * lifts Spyro, and once he is high above it starts the return to the hub. */
+    case ACTOR_TYPE_LEVEL_EXIT: {
+      ExitWhirlState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
@@ -233,7 +234,7 @@ void Level1_UpdateActors(void) {
                 g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
                 g_nCdStreamState = 0;
                 g_nEnteredPortalIdx = -1;
-                g_nScriptedRespawnFlag = 1;
+                g_nPortalTransitionActive = 1;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
@@ -3916,7 +3917,7 @@ void Level1_UpdateActors(void) {
         continue;
       }
 
-      if (st->parent->type == 9) {
+      if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->parent->posX, &spy->posX) < 0x400) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];

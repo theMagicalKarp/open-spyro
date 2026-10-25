@@ -478,7 +478,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
-        g_nScriptedRespawnFlag == 0) {
+        g_nPortalTransitionActive == 0) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
@@ -780,7 +780,7 @@ void UpdateSpyroStateBehavior(void) {
     if (!(g_nSpyroStateFlags & 0x40) && DispatchSpyroChargeStateChanges()) {
       break;
     }
-    if (g_nSpyroGroundSlope >= 0x17 && g_nScriptedRespawnFlag == 0 &&
+    if (g_nSpyroGroundSlope >= 0x17 && g_nPortalTransitionActive == 0 &&
         g_anSpyroVelocity[0] * g_anSpyroGroundNormal[0] +
                 g_anSpyroVelocity[1] * g_anSpyroGroundNormal[1] <
             0) {
@@ -789,7 +789,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
-        g_nScriptedRespawnFlag == 0) {
+        g_nPortalTransitionActive == 0) {
       BuildSpyroVelocityFromBodyEuler();
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
@@ -881,7 +881,7 @@ void UpdateSpyroStateBehavior(void) {
     } else if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroGroundRunFlag == 0) {
       g_nSpyroJumpHoldLatch = 1;
     }
-    if (g_nSpyroGroundSlope >= 0x17 && g_nScriptedRespawnFlag == 0) {
+    if (g_nSpyroGroundSlope >= 0x17 && g_nPortalTransitionActive == 0) {
       t = g_anSpyroVelocity[0] * g_anSpyroGroundNormal[0] +
           g_anSpyroVelocity[1] * g_anSpyroGroundNormal[1];
       if (t < 0) {
@@ -895,7 +895,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     t = (g_nSpyroFrameMotionLength << 12) / t;
     if (g_nSpyroContactedActorFlag == 0 && t < 0x800 &&
-        g_nScriptedRespawnFlag == 0) {
+        g_nPortalTransitionActive == 0) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
@@ -1147,7 +1147,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
-        g_nScriptedRespawnFlag == 0) {
+        g_nPortalTransitionActive == 0) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }

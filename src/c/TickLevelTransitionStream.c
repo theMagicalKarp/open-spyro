@@ -276,7 +276,7 @@ void TickLevelTransitionStream(int full) {
   case 12: {
     int d;
 
-    if (g_nScriptedRespawnFlag == 0) {
+    if (g_nPortalTransitionActive == 0) {
       g_nCdStreamState++;
       break;
     }
@@ -314,7 +314,7 @@ void TickLevelTransitionStream(int full) {
     g_nGemTallyIconCount = 0;
     g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIntroIndex];
     BuildLoadedLevelRuntime(full);
-    if (g_nScriptedRespawnFlag != 0) {
+    if (g_nPortalTransitionActive != 0) {
       if (g_nFlightLevelActive != 0) {
         g_anSpyroStateFlagsBlock[0] = 10;
         ComputeCameraToTargetAngle(g_anCameraPos);
@@ -423,7 +423,7 @@ void TickLevelTransitionStream(int full) {
     }
     *(Words5 *)&g_nWorldRenderMeshChunkCount =
         *(Words5 *)&g_nWorldCollisionTriCount;
-    g_nScriptedRespawnFlag = 0;
+    g_nPortalTransitionActive = 0;
     g_nReturnPortalLevelId = 0;
     g_anLevelRunnerArrived = 0;
     g_nLevelRunnerArrivedGoal1 = 0;

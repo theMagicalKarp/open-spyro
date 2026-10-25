@@ -68,7 +68,7 @@ void HandleLevelSelectInput(void) {
           RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;
           g_nCdStreamState = 1;
-          g_nScriptedRespawnFlag = 0;
+          g_nPortalTransitionActive = 0;
           g_nLevelTransitionTallyActive = 0;
           g_nGamePaused = 1;
           g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);

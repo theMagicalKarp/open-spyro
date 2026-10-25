@@ -83,7 +83,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       break;
     }
     one = 1;
-    g_nScriptedRespawnFlag = one;
+    g_nPortalTransitionActive = one;
     mob = data[1];
     g_nEnteredPortalIdx = mob;
     if (g_nActiveLevelId % 10 != 0) {

@@ -265,9 +265,10 @@ void Level14_UpdateActors(void) {
     g_nActorFrameDelta = dt;
 
     switch (actor->type) {
-    /* Exit drop (DropState). */
-    case 9: {
-      DropState *st = actor->state;
+    /* Level-exit whirlwind (ExitWhirlState): shows its name as the camera nears,
+     * lifts Spyro, and once he is high above it starts the return to the hub. */
+    case ACTOR_TYPE_LEVEL_EXIT: {
+      ExitWhirlState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
@@ -329,7 +330,7 @@ void Level14_UpdateActors(void) {
                 g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
                 g_nCdStreamState = 0;
                 g_nEnteredPortalIdx = -1;
-                g_nScriptedRespawnFlag = one;
+                g_nPortalTransitionActive = one;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
@@ -5081,7 +5082,7 @@ void Level14_UpdateActors(void) {
 
       if (st->owner->mode == 0 || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
-      } else if (st->owner->type == 9) {
+      } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->owner->posX, &SPY.posX) < 0x400) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];

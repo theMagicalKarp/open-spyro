@@ -4603,7 +4603,7 @@ void Level6_UpdateActors(void) {
         continue;
       }
 
-      if (st->parent->type == 9) {
+      if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->parent->posX, &SPY.posX) < 0x400) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];

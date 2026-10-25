@@ -1575,8 +1575,8 @@ glabel BuildLoadedLevelRuntime
     /* 3F74 80013774 45004014 */  bnez       $v0, .L8001388C
     /* 3F78 80013778 00000000 */   nop
     /* 3F7C 8001377C 0000028E */  lw         $v0, 0x0($s0)
-    /* 3F80 80013780 0780033C */  lui        $v1, %hi(g_nScriptedRespawnFlag)
-    /* 3F84 80013784 D056638C */  lw         $v1, %lo(g_nScriptedRespawnFlag)($v1)
+    /* 3F80 80013780 0780033C */  lui        $v1, %hi(g_nPortalTransitionActive)
+    /* 3F84 80013784 D056638C */  lw         $v1, %lo(g_nPortalTransitionActive)($v1)
     /* 3F88 80013788 0780013C */  lui        $at, %hi(g_anLevelSpawnPos)
     /* 3F8C 8001378C D87822AC */  sw         $v0, %lo(g_anLevelSpawnPos)($at)
     /* 3F90 80013790 0400028E */  lw         $v0, 0x4($s0)
@@ -1686,8 +1686,8 @@ glabel BuildLoadedLevelRuntime
     /* 4120 80013920 B08B23AC */  sw         $v1, %lo(g_nSpyroFloorReferenceZ)($at)
     /* 4124 80013924 9AFA000C */  jal        ChangeSpyroState
     /* 4128 80013928 20000424 */   addiu     $a0, $zero, 0x20
-    /* 412C 8001392C 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 4130 80013930 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 412C 8001392C 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 4130 80013930 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 4134 80013934 00000000 */  nop
     /* 4138 80013938 42004014 */  bnez       $v0, .L80013A44
     /* 413C 8001393C 00000000 */   nop
@@ -1715,8 +1715,8 @@ glabel BuildLoadedLevelRuntime
     /* 4194 80013994 914E0008 */  j          .L80013A44
     /* 4198 80013998 00000000 */   nop
   .L8001399C:
-    /* 419C 8001399C 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 41A0 800139A0 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 419C 8001399C 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 41A0 800139A0 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 41A4 800139A4 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 41A8 800139A8 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
     /* 41AC 800139AC 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
@@ -1770,8 +1770,8 @@ glabel BuildLoadedLevelRuntime
     /* 4268 80013A68 0780013C */  lui        $at, %hi(g_nGnastyLootFallRefZCap)
     /* 426C 80013A6C 785622AC */  sw         $v0, %lo(g_nGnastyLootFallRefZCap)($at)
   .L80013A70:
-    /* 4270 80013A70 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 4274 80013A74 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 4270 80013A70 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 4274 80013A74 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 4278 80013A78 0780013C */  lui        $at, %hi(g_nGenericCountdown)
     /* 427C 80013A7C 185920AC */  sw         $zero, %lo(g_nGenericCountdown)($at)
     /* 4280 80013A80 2C004014 */  bnez       $v0, .L80013B34
@@ -4059,8 +4059,8 @@ glabel TickLevelTransitionStream
     /* 63D0 80015BD0 ED580008 */  j          .L800163B4
     /* 63D4 80015BD4 01004224 */   addiu     $v0, $v0, 0x1
   jlabel .L80015BD8
-    /* 63D8 80015BD8 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 63DC 80015BDC D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 63D8 80015BD8 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 63DC 80015BDC D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 63E0 80015BE0 00000000 */  nop
     /* 63E4 80015BE4 05004014 */  bnez       $v0, .L80015BFC
     /* 63E8 80015BE8 00000000 */   nop
@@ -4172,8 +4172,8 @@ glabel TickLevelTransitionStream
     /* 6570 80015D70 7C5822AC */  sw         $v0, %lo(g_nLevelGemsAtEntry)($at)
     /* 6574 80015D74 934D000C */  jal        BuildLoadedLevelRuntime
     /* 6578 80015D78 21200002 */   addu      $a0, $s0, $zero
-    /* 657C 80015D7C 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 6580 80015D80 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 657C 80015D7C 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 6580 80015D80 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 6584 80015D84 00000000 */  nop
     /* 6588 80015D88 52014010 */  beqz       $v0, .L800162D4
     /* 658C 80015D8C 00000000 */   nop
@@ -4557,8 +4557,8 @@ glabel TickLevelTransitionStream
     /* 6B48 80016348 00000000 */  nop
     /* 6B4C 8001634C 100082AC */  sw         $v0, 0x10($a0)
     /* 6B50 80016350 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 6B54 80016354 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 6B58 80016358 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 6B54 80016354 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 6B58 80016358 D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 6B5C 8001635C 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 6B60 80016360 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 6B64 80016364 0780013C */  lui        $at, %hi(g_anLevelRunnerArrived)
@@ -29645,8 +29645,8 @@ glabel BeginWorldHubReturn
     /* 1CEC0 8002C6C0 C3270400 */  sra        $a0, $a0, 31
     /* 1CEC4 8002C6C4 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1CEC8 8002C6C8 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
-    /* 1CECC 8002C6CC 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 1CED0 8002C6D0 D05622AC */  sw         $v0, %lo(g_nScriptedRespawnFlag)($at)
+    /* 1CECC 8002C6CC 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 1CED0 8002C6D0 D05622AC */  sw         $v0, %lo(g_nPortalTransitionActive)($at)
     /* 1CED4 8002C6D4 0780013C */  lui        $at, %hi(g_nLevelTransitionTallyActive)
     /* 1CED8 8002C6D8 B05622AC */  sw         $v0, %lo(g_nLevelTransitionTallyActive)($at)
     /* 1CEDC 8002C6DC 0780013C */  lui        $at, %hi(g_nGamePaused)
@@ -30899,8 +30899,8 @@ glabel HandleLevelSelectInput
     /* 1DFBC 8002D7BC D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
     /* 1DFC0 8002D7C0 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 1DFC4 8002D7C4 645822AC */  sw         $v0, %lo(g_nCdStreamState)($at)
-    /* 1DFC8 8002D7C8 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 1DFCC 8002D7CC D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 1DFC8 8002D7C8 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 1DFCC 8002D7CC D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 1DFD0 8002D7D0 0780013C */  lui        $at, %hi(g_nLevelTransitionTallyActive)
     /* 1DFD4 8002D7D4 B05620AC */  sw         $zero, %lo(g_nLevelTransitionTallyActive)($at)
     /* 1DFD8 8002D7D8 0780013C */  lui        $at, %hi(g_nGamePaused)
@@ -32629,8 +32629,8 @@ glabel RespawnOrGameOver_Update
     /* 1F824 8002F024 E85820AC */  sw         $zero, %lo(g_nSparxFoodCount)($at)
     /* 1F828 8002F028 0880013C */  lui        $at, %hi(g_nSparxHealth)
     /* 1F82C 8002F02C BC8B22AC */  sw         $v0, %lo(g_nSparxHealth)($at)
-    /* 1F830 8002F030 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 1F834 8002F034 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 1F830 8002F030 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 1F834 8002F034 D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 1F838 8002F038 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 1F83C 8002F03C AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
     /* 1F840 8002F040 0780013C */  lui        $at, %hi(g_nGameOverLevelIntroIndex)
@@ -36653,8 +36653,8 @@ glabel Gamestate0D_Update
     /* 233B4 80032BB4 645830AC */  sw         $s0, %lo(g_nCdStreamState)($at)
     /* 233B8 80032BB8 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 233BC 80032BBC AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
-    /* 233C0 80032BC0 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 233C4 80032BC4 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 233C0 80032BC0 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 233C4 80032BC4 D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 233C8 80032BC8 09CB0008 */  j          .L80032C24
     /* 233CC 80032BCC 00000000 */   nop
   .L80032BD0:
@@ -36675,8 +36675,8 @@ glabel Gamestate0D_Update
     /* 23408 80032C08 645830AC */  sw         $s0, %lo(g_nCdStreamState)($at)
     /* 2340C 80032C0C 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 23410 80032C10 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
-    /* 23414 80032C14 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 23418 80032C18 D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 23414 80032C14 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 23418 80032C18 D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 2341C 80032C1C 0780013C */  lui        $at, %hi(g_nActiveLevelId)
     /* 23420 80032C20 6C5922AC */  sw         $v0, %lo(g_nActiveLevelId)($at)
   .L80032C24:
@@ -37265,8 +37265,8 @@ glabel Gamestate0F_Update
     /* 23C6C 8003346C 0457428C */  lw         $v0, %lo(g_nGamestate0fMode)($v0)
     /* 23C70 80033470 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 23C74 80033474 AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
-    /* 23C78 80033478 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 23C7C 8003347C D05620AC */  sw         $zero, %lo(g_nScriptedRespawnFlag)($at)
+    /* 23C78 80033478 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 23C7C 8003347C D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 23C80 80033480 0780013C */  lui        $at, %hi(g_nReturningHomePhase)
     /* 23C84 80033484 F85620AC */  sw         $zero, %lo(g_nReturningHomePhase)($at)
     /* 23C88 80033488 01004224 */  addiu      $v0, $v0, 0x1
@@ -54735,8 +54735,8 @@ glabel UpdateSpyroStateBehavior
     /* 32D64 80042564 2A104300 */  slt        $v0, $v0, $v1
     /* 32D68 80042568 06004010 */  beqz       $v0, .L80042584
     /* 32D6C 8004256C 00000000 */   nop
-    /* 32D70 80042570 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 32D74 80042574 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 32D70 80042570 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 32D74 80042574 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 32D78 80042578 00000000 */  nop
     /* 32D7C 8004257C 90064010 */  beqz       $v0, .L80043FC0
     /* 32D80 80042580 0C000424 */   addiu     $a0, $zero, 0xC
@@ -55432,8 +55432,8 @@ glabel UpdateSpyroStateBehavior
     /* 33788 80042F88 17004228 */  slti       $v0, $v0, 0x17
     /* 3378C 80042F8C 17004014 */  bnez       $v0, .L80042FEC
     /* 33790 80042F90 00000000 */   nop
-    /* 33794 80042F94 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 33798 80042F98 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 33794 80042F94 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 33798 80042F98 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 3379C 80042F9C 00000000 */  nop
     /* 337A0 80042FA0 12004014 */  bnez       $v0, .L80042FEC
     /* 337A4 80042FA4 00000000 */   nop
@@ -55473,8 +55473,8 @@ glabel UpdateSpyroStateBehavior
     /* 33828 80043028 2A104300 */  slt        $v0, $v0, $v1
     /* 3382C 8004302C 0A004010 */  beqz       $v0, .L80043058
     /* 33830 80043030 00000000 */   nop
-    /* 33834 80043034 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 33838 80043038 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 33834 80043034 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 33838 80043038 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 3383C 8004303C 00000000 */  nop
     /* 33840 80043040 05004014 */  bnez       $v0, .L80043058
     /* 33844 80043044 00000000 */   nop
@@ -55713,8 +55713,8 @@ glabel UpdateSpyroStateBehavior
     /* 33BB8 800433B8 17004228 */  slti       $v0, $v0, 0x17
     /* 33BBC 800433BC 17004014 */  bnez       $v0, .L8004341C
     /* 33BC0 800433C0 00000000 */   nop
-    /* 33BC4 800433C4 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 33BC8 800433C8 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 33BC4 800433C4 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 33BC8 800433C8 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 33BCC 800433CC 00000000 */  nop
     /* 33BD0 800433D0 12004014 */  bnez       $v0, .L8004341C
     /* 33BD4 800433D4 00000000 */   nop
@@ -55767,8 +55767,8 @@ glabel UpdateSpyroStateBehavior
     /* 33C80 80043480 00088228 */   slti      $v0, $a0, 0x800
     /* 33C84 80043484 06004010 */  beqz       $v0, .L800434A0
     /* 33C88 80043488 00000000 */   nop
-    /* 33C8C 8004348C 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 33C90 80043490 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 33C8C 8004348C 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 33C90 80043490 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 33C94 80043494 00000000 */  nop
     /* 33C98 80043498 C9024010 */  beqz       $v0, .L80043FC0
     /* 33C9C 8004349C 0C000424 */   addiu     $a0, $zero, 0xC
@@ -56522,8 +56522,8 @@ glabel UpdateSpyroStateBehavior
     /* 34784 80043F84 2A104300 */  slt        $v0, $v0, $v1
     /* 34788 80043F88 06004010 */  beqz       $v0, .L80043FA4
     /* 3478C 80043F8C 00000000 */   nop
-    /* 34790 80043F90 0780023C */  lui        $v0, %hi(g_nScriptedRespawnFlag)
-    /* 34794 80043F94 D056428C */  lw         $v0, %lo(g_nScriptedRespawnFlag)($v0)
+    /* 34790 80043F90 0780023C */  lui        $v0, %hi(g_nPortalTransitionActive)
+    /* 34794 80043F94 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 34798 80043F98 00000000 */  nop
     /* 3479C 80043F9C 08004010 */  beqz       $v0, .L80043FC0
     /* 347A0 80043FA0 0C000424 */   addiu     $a0, $zero, 0xC
@@ -78137,8 +78137,8 @@ glabel DispatchSpyroTriggerEvent
     /* 47940 80057140 18008200 */  mult       $a0, $v0
     /* 47944 80057144 0400C68C */  lw         $a2, 0x4($a2)
     /* 47948 80057148 01001124 */  addiu      $s1, $zero, 0x1
-    /* 4794C 8005714C 0780013C */  lui        $at, %hi(g_nScriptedRespawnFlag)
-    /* 47950 80057150 D05631AC */  sw         $s1, %lo(g_nScriptedRespawnFlag)($at)
+    /* 4794C 8005714C 0780013C */  lui        $at, %hi(g_nPortalTransitionActive)
+    /* 47950 80057150 D05631AC */  sw         $s1, %lo(g_nPortalTransitionActive)($at)
     /* 47954 80057154 C3170400 */  sra        $v0, $a0, 31
     /* 47958 80057158 0780013C */  lui        $at, %hi(g_nEnteredPortalIdx)
     /* 4795C 8005715C 6C5726AC */  sw         $a2, %lo(g_nEnteredPortalIdx)($at)

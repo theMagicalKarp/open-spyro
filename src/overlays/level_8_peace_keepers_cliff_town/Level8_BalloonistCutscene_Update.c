@@ -650,7 +650,7 @@ void Level8_BalloonistCutscene_Update(void)
         g_nGamestate0cCamRadiusGoal = 0x800;
         g_nCdStreamState = 0;
         g_nEnteredPortalIdx = -1;
-        g_nScriptedRespawnFlag = 0;
+        g_nPortalTransitionActive = 0;
         g_nReturnPortalLevelId = 0;
         g_nGamestate0cCamYawGoal_s = ((n * 0x10) + 0x390) & 0xFFF;
         {

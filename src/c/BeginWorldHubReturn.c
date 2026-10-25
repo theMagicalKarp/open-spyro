@@ -12,7 +12,7 @@ void BeginWorldHubReturn(void) {
   g_nEnteredPortalIdx = -1;
   g_nReturnPortalLevelId = g_nActiveLevelId;
   g_nGamestate = GS_LEVEL_LOAD;
-  g_nScriptedRespawnFlag = 1;
+  g_nPortalTransitionActive = 1;
   g_nLevelTransitionTallyActive = 1;
   g_nGamePaused = 1;
   g_nCurrentLevelId = hub;

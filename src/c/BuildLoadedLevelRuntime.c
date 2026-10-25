@@ -87,7 +87,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];
     g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
-    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != GS_ACTOR_CUTSCENE)) {
+    if ((g_nPortalTransitionActive == 0) &&
+        (g_nGamestate != GS_ACTOR_CUTSCENE)) {
       if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
           ((gidx = g_nGameOverLevelIntroIndex - 0x12,
@@ -114,7 +115,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
     ChangeSpyroState(SPYRO_ST_FLY);
-    if (g_nScriptedRespawnFlag == 0) {
+    if (g_nPortalTransitionActive == 0) {
       g_nSpyroStateFlags = 0;
       g_abSpyroPersistentEuler[0] = 0;
       g_abSpyroPersistentEuler[1] = 0;
@@ -128,7 +129,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   } else {
     g_nFlightLevelActive = 0;
     g_nSpyroFallTrackingFlag = 0;
-    if (g_nScriptedRespawnFlag != 0) {
+    if (g_nPortalTransitionActive != 0) {
       g_anLevelSpawnPosZBlock[0] +=
           g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
       sinp = &g_anSineLut[g_nLevelSpawnYaw];
@@ -144,7 +145,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nGnastyLootFallRefZCap = 0x4638;
   }
   g_nGenericCountdown = 0;
-  if (g_nScriptedRespawnFlag == 0) {
+  if (g_nPortalTransitionActive == 0) {
     if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
     }

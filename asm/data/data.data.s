@@ -14280,11 +14280,11 @@ dlabel g_nFrameStep
     /* 65ECC 800756CC 00000000 */ .word 0x00000000
 enddlabel g_nFrameStep
 
-nonmatching g_nScriptedRespawnFlag
+nonmatching g_nPortalTransitionActive
 
-dlabel g_nScriptedRespawnFlag
+dlabel g_nPortalTransitionActive
     /* 65ED0 800756D0 00000000 */ .word 0x00000000
-enddlabel g_nScriptedRespawnFlag
+enddlabel g_nPortalTransitionActive
 
 nonmatching g_nSubMenuScrollDelta
 

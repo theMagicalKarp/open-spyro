@@ -378,14 +378,15 @@ extern void RefreshHudLevelGemCounter(void);
 
 extern void ResetSpyroEntity(int a0);
 
-/* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
- * takes Spyro out of the level when he drops into it. */
-typedef struct DropState {
+/* Case 9 -- level-exit whirlwind: shows its name letters near the camera,
+ * sparkles, lifts Spyro (SPYRO_EV_LIFT toward its z + 0x4000) and, once he
+ * is above `depth` with the camera tilted up, starts the hub return. */
+typedef struct ExitWhirlState {
   int pad00;
   int tick; /* 0x04 sparkle counter */
   int pad08;
-  int depth; /* 0x0C drop depth that triggers the exit, 0 = 0x2000 */
-} DropState;
+  int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
+} ExitWhirlState;
 
 extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
                           int e, int f, int g);

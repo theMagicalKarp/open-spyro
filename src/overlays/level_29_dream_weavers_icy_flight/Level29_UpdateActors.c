@@ -2136,7 +2136,7 @@ void Level29_UpdateActors(void) {
 
       if (st->owner->mode == 0 || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
-      } else if (st->owner->type == 9) {
+      } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];

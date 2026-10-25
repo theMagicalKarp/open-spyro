@@ -166,7 +166,7 @@ extern int g_nPrimBufferOverflowFlag;
 extern int g_nReturnPortalLevelId;
 extern int g_nPortalViewPitchTilt;
 extern int g_nPortalViewYawSpin;
-extern int g_nScriptedRespawnFlag;
+extern int g_nPortalTransitionActive;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */
 extern short g_nSfxOverrideVolR;
