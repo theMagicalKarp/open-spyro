@@ -30,6 +30,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -103,38 +104,6 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -165,13 +134,6 @@ typedef struct ShardState {
 #define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
 #define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
 #define ENTER_POSE4(a, n)                                                      \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim == (n)) {                                                     \
@@ -277,252 +239,18 @@ typedef struct ExitState {
   L25_UNLINK(st)
 
 /* ==== Level 21 classes ==== */
-typedef struct L18Ram {
-  char pad00[0xC];
-  PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
-  int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
-  int mode;       /* 0x1C */
-  int partner;    /* 0x20 index into g_pActorListBase */
-  int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
-  int p2C;        /* 0x2C */
-  char pad30[0x14];
-  int call;       /* 0x44 */
-} L18Ram;
 
-/* Case 137 -- guard. */
-typedef struct L18Guard {
-  int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
-  int vec[3];        /* 0x04 home point */
-  int timer;         /* 0x10 */
-  int range;         /* 0x14 sight range >> 10 */
-  PathData *path;    /* 0x18 */
-  int pad1C;         /* 0x1C */
-  int knock;         /* 0x20 knock-back heading */
-  int speed;         /* 0x24 */
-  int turn;          /* 0x28 */
-  int timer2;        /* 0x2C */
-  int cam;           /* 0x30 camera phase */
-  int camDist;       /* 0x34 */
-  int pad38;         /* 0x38 */
-  int timer3;        /* 0x3C */
-  int *flag;         /* 0x40 shared alert flag */
-  int dist2;         /* 0x44 */
-  int target;        /* 0x48 index into g_pActorListBase */
-  int filter;        /* 0x4C type it drives before it */
-  int charging;      /* 0x50 */
-  int init;          /* 0x54 */
-  int lurk;          /* 0x58 */
-  int speedOverride; /* 0x5C */
-} L18Guard;
-
-/* Type 28 state. */
-typedef struct L20State28 {
-  void *path;  /* 0x00 */
-  int partner; /* 0x04 index into g_pActorListBase */
-  int u08;     /* 0x08 knock-back speed */
-  int u0C;     /* 0x0C */
-  int u10;     /* 0x10 knock-back heading */
-  int timer;   /* 0x14 */
-  int mode;    /* 0x18 0 guard, 1 patrol, 2 lookout */
-  int hit;     /* 0x1C */
-  int range;   /* 0x20 sight range (< 0x20: in units of 0x400) */
-} L20State28;
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 
-/* Type 403 state. */
-typedef struct L20State403 {
-  int mode;      /* 0x00 0 roams its path */
-  FlyPath *path; /* 0x04 */
-  int u08;       /* 0x08 knock-back heading */
-  int u0C;       /* 0x0C knock-back speed */
-  int u10;       /* 0x10 */
-  int u14;       /* 0x14 */
-  int u18;       /* 0x18 roam timer */
-  int u1C;       /* 0x1C hop speed */
-  Actor *tether; /* 0x20 */
-  int u24;       /* 0x24 cool-down */
-  int u28;       /* 0x28 holds Spyro */
-  int u2C[3];    /* 0x2C */
-  int u38;       /* 0x38 stun timer */
-} L20State403;
 
-/* Type 476 state. */
-typedef struct L20State476 {
-  int u00[2];   /* 0x00 */
-  int home[3];  /* 0x08 drop-off point */
-  int u14;      /* 0x14 grab chance */
-  int u18;      /* 0x18 timer */
-  int u1C;      /* 0x1C */
-  int u20;      /* 0x20 knock-back heading */
-  int u24;      /* 0x24 knock-back speed */
-  int u28;      /* 0x28 */
-  int *held;    /* 0x2C shared "Spyro is held" latch */
-  int u30;      /* 0x30 has Spyro */
-  int u34;      /* 0x34 grab cool-down */
-  int u38;      /* 0x38 */
-} L20State476;
-
-/* Type 57 state (boulder and its shards). */
-typedef struct L21Rock {
-  short vx;                /* 0x00 */
-  short vy;                /* 0x02 */
-  short vz;                /* 0x04 */
-  short u06;               /* 0x06 */
-  short u08;               /* 0x08 */
-  short life;              /* 0x0A */
-  unsigned char spin[3];   /* 0x0C */
-  unsigned char heading;   /* 0x0F */
-} L21Rock;
-
-/* Type 100 state (boulder thrower). */
-typedef struct L21State100 {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
-  int u0C;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
-  int u18[3];      /* 0x18 */
-  FlyPath *path;   /* 0x24 */
-  int u28;         /* 0x28 flags */
-  int u2C;         /* 0x2C timer */
-  int u30;         /* 0x30 heading */
-  int u34;         /* 0x34 speed */
-  int u38;         /* 0x38 */
-  int u3C;         /* 0x3C */
-  Actor *rock;     /* 0x40 boulder being carried */
-  int u44;         /* 0x44 sight range */
-  int u48;         /* 0x48 throw range */
-  int u4C[3];      /* 0x4C trigger box */
-  int u58;         /* 0x58 */
-  int u5C[2];      /* 0x5C */
-  int u64[6];      /* 0x64 trigger box */
-  int u7C;         /* 0x7C */
-  int u80;         /* 0x80 */
-  int u84;         /* 0x84 */
-  int u88;         /* 0x88 */
-  int *u8C;        /* 0x8C */
-  int u90;         /* 0x90 */
-  int u94;         /* 0x94 */
-} L21State100;
-
-/* Type 101 state (gatekeeper). */
-typedef struct L21State101 {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
-  int u0C;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
-  int mode;        /* 0x18 */
-  int u1C;         /* 0x1C timer */
-  int u20[3];      /* 0x20 */
-  int u2C;         /* 0x2C heading */
-  int u30;         /* 0x30 speed */
-  int u34;         /* 0x34 */
-  FlyPath *path;   /* 0x38 */
-  int u3C[6];      /* 0x3C trigger box */
-  int u54[6];      /* 0x54 trigger box */
-  int u6C;         /* 0x6C */
-  int idx;         /* 0x70 next key */
-  int range[2];    /* 0x74 release range per key (units of 0x400) */
-  int keys[2];     /* 0x7C key actor indices, -1 released */
-  int count;       /* 0x84 */
-  int *u88;        /* 0x88 */
-  int u8C;         /* 0x8C */
-  int u90;         /* 0x90 facing to test, -1 any */
-} L21State101;
-
-/* Type 293/294 state (path runner): runs its path ahead of Spyro, leads
- * him to a goal, and jumps or scatters when struck. */
-typedef struct L21Runner {
-  int speed;           /* 0x00 flee speed */
-  unsigned char *path; /* 0x04 current path: [0] count, [1] cur, nodes at +8 */
-  unsigned char *home; /* 0x08 home path */
-  int knock;           /* 0x0C knock-back speed */
-  int knockAng;        /* 0x10 knock-back heading */
-  int lift;            /* 0x14 vertical speed */
-  int target;          /* 0x18 index into g_pActorListBase, -1 none */
-  int pathInit;        /* 0x1C */
-  int camTimer;        /* 0x20 */
-  unsigned int mode;   /* 0x24 0/1 = which goal flag it drives */
-  int range;           /* 0x28 */
-  int timer;           /* 0x2C */
-  int init;            /* 0x30 */
-  int volA[6];         /* 0x34 trigger box */
-  int volB[6];         /* 0x4C trigger box */
-  int camDone;         /* 0x64 */
-} L21Runner;
 #define RUN_FLAGS(p) (*(int *)((p) + ((p)[1] << 4) + 0x14))
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))
 
 /* ==== Level 22 classes ==== */
 
-/* Type 82 state: a thrown shot. */
-typedef struct L22Shot {
-  int vel[3];             /* 0x00 */
-  short timer;            /* 0x0C */
-  unsigned char heading;  /* 0x0E */
-  unsigned char mode;     /* 0x0F 1 = spent, just times out */
-} L22Shot;
 
-/* Type 210 state: a bobbing platform. */
-typedef struct L22Bob {
-  int z;      /* 0x00 phase */
-  int u04;    /* 0x04 */
-  int period; /* 0x08 */
-  int baseZ;  /* 0x0C */
-} L22Bob;
-
-/* Type 70 state: a lobbed bolt. */
-typedef struct L22Bolt {
-  int speed;     /* 0x00 */
-  int vz;        /* 0x04 */
-  int dvz;       /* 0x08 gravity */
-  int u0C;       /* 0x0C */
-  short timer;   /* 0x10 */
-  short heading; /* 0x12 */
-} L22Bolt;
-
-/* Type 65 state: a pod that raises a ring of bobbing platforms (210) and
- * lobs shots (82) at its partner's target. */
-typedef struct L22Pod {
-  int timer;      /* 0x00 */
-  int period;     /* 0x04 */
-  int u08;        /* 0x08 */
-  int u0C;        /* 0x0C */
-  int *counter;   /* 0x10 shared live-pod count */
-  int initCount;  /* 0x14 */
-  int init;       /* 0x18 */
-  int partner;    /* 0x1C index into g_pActorListBase */
-  int shotTimer;  /* 0x20 */
-  Actor *kids[4]; /* 0x24 */
-} L22Pod;
-
-/* Type 48 state: Metalhead. Three phases, each ending in a run along the
- * path to the next arena spot. */
-typedef struct L22Boss {
-  int phase;            /* 0x00 */
-  unsigned char *path;  /* 0x04 */
-  int timer;            /* 0x08 attack cooldown */
-  int timer2;           /* 0x0C */
-  int pathEnd[2];       /* 0x10 per-phase last path node */
-  int range[2];         /* 0x18 per-phase stomp range (units of 0x400) */
-  int choice;           /* 0x20 0 none, 1 stomp, 2 shots, 3 bolt */
-  int shots;            /* 0x24 */
-  int count;            /* 0x28 */
-  int aim[3];           /* 0x2C */
-  int hand[3];          /* 0x38 */
-  int seen;             /* 0x44 */
-  int init;             /* 0x48 */
-  int camTimer;         /* 0x4C */
-  int u50;              /* 0x50 */
-} L22Boss;
 /* An animation change that keeps the current animation (no 3C/3E promotion). */
 #define ANIM_THEN(a, n)                                                        \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -536,87 +264,6 @@ typedef struct L22Boss {
 
 /* ==== Level 28 classes ==== */
 
-/* Type 47 state: a thrown rock, carried by its partner until released. */
-typedef struct L28Rock {
-  unsigned char timer;  /* 0x00 */
-  unsigned char spinX;  /* 0x01 */
-  unsigned char spinY;  /* 0x02 */
-  unsigned char mode;   /* 0x03 1 = held, 0x63 = idle */
-  short speed;          /* 0x04 */
-  short u06;            /* 0x06 */
-  short vz;             /* 0x08 */
-  short timer2;         /* 0x0A */
-  Actor *partner;       /* 0x0C the thrower */
-} L28Rock;
-
-/* Type 150 state: Jacques. Hops between the stops of his path ring and
- * hands rocks (47) to throw. */
-typedef struct L28Boss {
-  PathData *path;          /* 0x00 */
-  int u04;                 /* 0x04 */
-  int u08;                 /* 0x08 */
-  unsigned char stops[7];  /* 0x0C path nodes he rests at */
-  unsigned char pad13;
-  int idx;                 /* 0x14 current stop */
-  int init;                /* 0x18 */
-  int u1C[3];              /* 0x1C */
-  int u28[3];              /* 0x28 */
-  int timer;               /* 0x34 */
-  int u38;                 /* 0x38 */
-  Actor *u3C;              /* 0x3C */
-  int u40;                 /* 0x40 */
-  Actor *child;            /* 0x44 rock in hand */
-  int u48;                 /* 0x48 */
-  int u4C;                 /* 0x4C */
-  int u50;                 /* 0x50 */
-  int u54;                 /* 0x54 */
-} L28Boss;
-
-/* Types 45/46 state: a charging ram (45 is the bigger one). */
-typedef struct L28Ram {
-  int init;     /* 0x00 */
-  int mode;     /* 0x04 nonzero = starts awake */
-  int knock;    /* 0x08 knock-back speed */
-  int lift;     /* 0x0C */
-  int u10;      /* 0x10 */
-  int heading;  /* 0x14 */
-  int u18;      /* 0x18 */
-  int u1C;      /* 0x1C */
-  int u20;      /* 0x20 */
-  int home[3];  /* 0x24 */
-  int timer3;   /* 0x30 */
-  int timer2;   /* 0x34 */
-  int charged;  /* 0x38 */
-  int u3C;      /* 0x3C */
-  int saved;    /* 0x40 state to return to */
-  int heavy;    /* 0x44 */
-  int timer;    /* 0x48 cooldown */
-} L28Ram;
-
-/* Type 126 state: a path walker that can carry a rider and sings while
- * it rests. */
-typedef struct L28Walker {
-  int init;            /* 0x00 */
-  int mode;            /* 0x04 0..6; 3 = carried, 6 = absent */
-  PathData *path;      /* 0x08 */
-  int next;            /* 0x0C state to enter after the turn, 0x63 = done */
-  int u10[3];          /* 0x10 */
-  int u1C[5];          /* 0x1C */
-  int sound;           /* 0x30 */
-  int period;          /* 0x34 */
-  int timer;           /* 0x38 */
-  int u3C;             /* 0x3C */
-  int startCur;        /* 0x40 */
-  int partner;         /* 0x44 index into g_pActorListBase */
-  int flag;            /* 0x48 */
-  int u4C;             /* 0x4C */
-  int rideMode;        /* 0x50 1 = held, 2 = thrown */
-  int rider;           /* 0x54 index into g_pActorListBase */
-  int speed;           /* 0x58 */
-  int vz;              /* 0x5C */
-  int dvz;             /* 0x60 */
-  int call;            /* 0x64 */
-} L28Walker;
 
 /* ==== The function ==== */
 #undef sixteen
@@ -1183,7 +830,7 @@ void Level28_UpdateActors(void) {
      * one (shorter reach, only a charge or a flame-charge hurts it). */
     case 45:
     case 46: {
-      L28Ram *st = actor->state;
+      ChargingRamState *st = actor->state;
       int range = 0x708;
       int dist;
 
@@ -1364,7 +1011,7 @@ void Level28_UpdateActors(void) {
     /* Type 47: a rock. Rides between its thrower's hands, is thrown at
      * Spyro's feet and smashes on landing. */
     case 47: {
-      L28Rock *st = actor->state;
+      CarriedRockState *st = actor->state;
 
       if (st->mode != 0x63) {
         RefreshActorDerivedState(actor, 5);
@@ -2447,7 +2094,7 @@ void Level28_UpdateActors(void) {
      * its path, sings its tune while it rests, and can be carried and
      * thrown by its rider. */
     case 126: {
-      L28Walker *st = actor->state;
+      PathWalkerState *st = actor->state;
 
       if (st->init == 0) {
         st->init = one;
@@ -2684,7 +2331,7 @@ void Level28_UpdateActors(void) {
     /* Type 150: Jacques. Hops from stop to stop around his path ring,
      * throwing rocks (47) when Spyro looks at him from afar. */
     case 150: {
-      L28Boss *st = actor->state;
+      JacquesState *st = actor->state;
 
       if (st->init == 0) {
         actor->updateDist = 0x20;
@@ -2761,8 +2408,8 @@ void Level28_UpdateActors(void) {
         if (actor->nextFrame == 0 && st->child == 0) {
           st->child = g_pfnLevelSpawnActor(0x2F, actor);
           st->child->groundCode = -1;
-          ((L28Rock *)st->child->state)->partner = actor;
-          ((L28Rock *)st->child->state)->mode = 1;
+          ((CarriedRockState *)st->child->state)->partner = actor;
+          ((CarriedRockState *)st->child->state)->mode = 1;
         }
         continue;
 

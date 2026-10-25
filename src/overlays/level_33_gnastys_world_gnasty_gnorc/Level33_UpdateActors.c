@@ -28,6 +28,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -112,48 +113,6 @@ extern short g_anSineLut_s[];
  * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
-
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
 
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -313,86 +272,6 @@ typedef struct ExitState {
     DespawnActorRecord(a);                                                          \
     continue;                                                                  \
   }
-typedef struct L32State145 {
-  int u00;     /* 0x00 flags; bit 0 armed */
-  int u04;     /* 0x04 knock-back speed */
-  int u08;     /* 0x08 knock-back heading */
-  int u0C;     /* 0x0C */
-  int u10;     /* 0x10 shot timer */
-  int u14;     /* 0x14 */
-  int u18;     /* 0x18 shot timer reload */
-  void *u1C;   /* 0x1C path */
-  int u20;     /* 0x20 */
-  int u24;     /* 0x24 */
-  int u28[6];  /* 0x28 trigger box */
-  int u40[6];  /* 0x40 trigger box */
-  int u58[6];  /* 0x58 trigger box */
-  int u70;     /* 0x70 initialised */
-  int u74;     /* 0x74 sink timer */
-} L32State145;
-typedef struct L32State147 {
-  int u00;     /* 0x00 flags; bit 0 armed */
-  void *u04;   /* 0x04 path */
-  int u08;     /* 0x08 knock-back speed */
-  int u0C;     /* 0x0C knock-back heading */
-  int u10;     /* 0x10 */
-  int u14;     /* 0x14 */
-  int u18;     /* 0x18 yaw toward Spyro */
-  int u1C;     /* 0x1C yaw limit (0xFF none) */
-  int u20;     /* 0x20 yaw limit (0xFF none) */
-  int u24;     /* 0x24 */
-  int u28;     /* 0x28 sweep rate */
-  int u2C;     /* 0x2C sweep yaw << 4 */
-  int u30;     /* 0x30 timer */
-  int u34[6];  /* 0x34 trigger box */
-  int u4C[6];  /* 0x4C trigger box */
-  int u64[6];  /* 0x64 trigger box */
-  int u7C;     /* 0x7C initialised */
-} L32State147;
-typedef struct L32State148 {
-  int u00;              /* 0x00 flags; bit 0 armed */
-  int u04;              /* 0x04 knock-back speed */
-  int u08;              /* 0x08 knock-back heading */
-  int u0C;              /* 0x0C */
-  int u10[6];           /* 0x10 trigger box */
-  unsigned char *u28;   /* 0x28 target path: count, index, points */
-  void *u2C;            /* 0x2C path */
-  int u30;              /* 0x30 timer */
-  int u34;              /* 0x34 throw timer */
-  Actor *u38;           /* 0x38 held lob (type 176), -1 once thrown */
-  int u3C;              /* 0x3C */
-  int u40;              /* 0x40 aim-at-path range */
-  int u44[6];           /* 0x44 trigger box */
-  int u5C[6];           /* 0x5C trigger box */
-  int u74;              /* 0x74 initialised */
-} L32State148;
-typedef struct L32Lob {
-  int u00;            /* 0x00 */
-  short h4;           /* 0x04 */
-  short h6;           /* 0x06 */
-  short h8;           /* 0x08 */
-  short hA;           /* 0x0A */
-  unsigned char bC;   /* 0x0C */
-  unsigned char bD;   /* 0x0D */
-  unsigned char bE;   /* 0x0E */
-  unsigned char bF;   /* 0x0F */
-} L32Lob;
-typedef struct L32Shot {
-  int vel[3]; /* 0x00 */
-  short u0C;  /* 0x0C life timer */
-  short u0E;  /* 0x0E long-reach timer */
-} L32Shot;
-typedef struct L32Timer {
-  int u00; /* 0x00 */
-  int u04; /* 0x04 re-arm timer */
-} L32Timer;
-typedef struct L32State236 {
-  int u00[8]; /* 0x00 */
-  int u20;    /* 0x20 knock-back speed */
-  int u24;    /* 0x24 knock-back heading */
-  int u28;    /* 0x28 */
-  int u2C;    /* 0x2C idle timer */
-} L32State236;
 
 /* ==== Level 33 classes ==== */
 

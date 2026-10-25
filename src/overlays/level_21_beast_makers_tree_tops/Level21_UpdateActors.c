@@ -28,6 +28,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -101,38 +102,6 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -163,13 +132,6 @@ typedef struct ShardState {
 #define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
 #define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
 #define ENTER_POSE4(a, n)                                                      \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim == (n)) {                                                     \
@@ -275,187 +237,12 @@ typedef struct ExitState {
   L25_UNLINK(st)
 
 /* ==== Level 21 classes ==== */
-typedef struct L18Ram {
-  char pad00[0xC];
-  PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
-  int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
-  int mode;       /* 0x1C */
-  int partner;    /* 0x20 index into g_pActorListBase */
-  int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
-  int p2C;        /* 0x2C */
-  char pad30[0x14];
-  int call;       /* 0x44 */
-} L18Ram;
 
-/* Case 137 -- guard. */
-typedef struct L18Guard {
-  int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
-  int vec[3];        /* 0x04 home point */
-  int timer;         /* 0x10 */
-  int range;         /* 0x14 sight range >> 10 */
-  PathData *path;    /* 0x18 */
-  int pad1C;         /* 0x1C */
-  int knock;         /* 0x20 knock-back heading */
-  int speed;         /* 0x24 */
-  int turn;          /* 0x28 */
-  int timer2;        /* 0x2C */
-  int cam;           /* 0x30 camera phase */
-  int camDist;       /* 0x34 */
-  int pad38;         /* 0x38 */
-  int timer3;        /* 0x3C */
-  int *flag;         /* 0x40 shared alert flag */
-  int dist2;         /* 0x44 */
-  int target;        /* 0x48 index into g_pActorListBase */
-  int filter;        /* 0x4C type it drives before it */
-  int charging;      /* 0x50 */
-  int init;          /* 0x54 */
-  int lurk;          /* 0x58 */
-  int speedOverride; /* 0x5C */
-} L18Guard;
-
-/* Type 28 state. */
-typedef struct L20State28 {
-  void *path;  /* 0x00 */
-  int partner; /* 0x04 index into g_pActorListBase */
-  int u08;     /* 0x08 knock-back speed */
-  int u0C;     /* 0x0C */
-  int u10;     /* 0x10 knock-back heading */
-  int timer;   /* 0x14 */
-  int mode;    /* 0x18 0 guard, 1 patrol, 2 lookout */
-  int hit;     /* 0x1C */
-  int range;   /* 0x20 sight range (< 0x20: in units of 0x400) */
-} L20State28;
 
 #define FLY_X(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x8))
 #define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 
-/* Type 403 state. */
-typedef struct L20State403 {
-  int mode;      /* 0x00 0 roams its path */
-  FlyPath *path; /* 0x04 */
-  int u08;       /* 0x08 knock-back heading */
-  int u0C;       /* 0x0C knock-back speed */
-  int u10;       /* 0x10 */
-  int u14;       /* 0x14 */
-  int u18;       /* 0x18 roam timer */
-  int u1C;       /* 0x1C hop speed */
-  Actor *tether; /* 0x20 */
-  int u24;       /* 0x24 cool-down */
-  int u28;       /* 0x28 holds Spyro */
-  int u2C[3];    /* 0x2C */
-  int u38;       /* 0x38 stun timer */
-} L20State403;
 
-/* Type 476 state. */
-typedef struct L20State476 {
-  int u00[2];   /* 0x00 */
-  int home[3];  /* 0x08 drop-off point */
-  int u14;      /* 0x14 grab chance */
-  int u18;      /* 0x18 timer */
-  int u1C;      /* 0x1C */
-  int u20;      /* 0x20 knock-back heading */
-  int u24;      /* 0x24 knock-back speed */
-  int u28;      /* 0x28 */
-  int *held;    /* 0x2C shared "Spyro is held" latch */
-  int u30;      /* 0x30 has Spyro */
-  int u34;      /* 0x34 grab cool-down */
-  int u38;      /* 0x38 */
-} L20State476;
-
-/* Type 57 state (boulder and its shards). */
-typedef struct L21Rock {
-  short vx;                /* 0x00 */
-  short vy;                /* 0x02 */
-  short vz;                /* 0x04 */
-  short u06;               /* 0x06 */
-  short u08;               /* 0x08 */
-  short life;              /* 0x0A */
-  unsigned char spin[3];   /* 0x0C */
-  unsigned char heading;   /* 0x0F */
-} L21Rock;
-
-/* Type 100 state (boulder thrower). */
-typedef struct L21State100 {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
-  int u0C;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
-  int u18[3];      /* 0x18 */
-  FlyPath *path;   /* 0x24 */
-  int u28;         /* 0x28 flags */
-  int u2C;         /* 0x2C timer */
-  int u30;         /* 0x30 heading */
-  int u34;         /* 0x34 speed */
-  int u38;         /* 0x38 */
-  int u3C;         /* 0x3C */
-  Actor *rock;     /* 0x40 boulder being carried */
-  int u44;         /* 0x44 sight range */
-  int u48;         /* 0x48 throw range */
-  int u4C[3];      /* 0x4C trigger box */
-  int u58;         /* 0x58 */
-  int u5C[2];      /* 0x5C */
-  int u64[6];      /* 0x64 trigger box */
-  int u7C;         /* 0x7C */
-  int u80;         /* 0x80 */
-  int u84;         /* 0x84 */
-  int u88;         /* 0x88 */
-  int *u8C;        /* 0x8C */
-  int u90;         /* 0x90 */
-  int u94;         /* 0x94 */
-} L21State100;
-
-/* Type 101 state (gatekeeper). */
-typedef struct L21State101 {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
-  int u0C;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
-  int u14;         /* 0x14 */
-  int mode;        /* 0x18 */
-  int u1C;         /* 0x1C timer */
-  int u20[3];      /* 0x20 */
-  int u2C;         /* 0x2C heading */
-  int u30;         /* 0x30 speed */
-  int u34;         /* 0x34 */
-  FlyPath *path;   /* 0x38 */
-  int u3C[6];      /* 0x3C trigger box */
-  int u54[6];      /* 0x54 trigger box */
-  int u6C;         /* 0x6C */
-  int idx;         /* 0x70 next key */
-  int range[2];    /* 0x74 release range per key (units of 0x400) */
-  int keys[2];     /* 0x7C key actor indices, -1 released */
-  int count;       /* 0x84 */
-  int *u88;        /* 0x88 */
-  int u8C;         /* 0x8C */
-  int u90;         /* 0x90 facing to test, -1 any */
-} L21State101;
-
-/* Type 293/294 state (path runner): runs its path ahead of Spyro, leads
- * him to a goal, and jumps or scatters when struck. */
-typedef struct L21Runner {
-  int speed;           /* 0x00 flee speed */
-  unsigned char *path; /* 0x04 current path: [0] count, [1] cur, nodes at +8 */
-  unsigned char *home; /* 0x08 home path */
-  int knock;           /* 0x0C knock-back speed */
-  int knockAng;        /* 0x10 knock-back heading */
-  int lift;            /* 0x14 vertical speed */
-  int target;          /* 0x18 index into g_pActorListBase, -1 none */
-  int pathInit;        /* 0x1C */
-  int camTimer;        /* 0x20 */
-  unsigned int mode;   /* 0x24 0/1 = which goal flag it drives */
-  int range;           /* 0x28 */
-  int timer;           /* 0x2C */
-  int init;            /* 0x30 */
-  int volA[6];         /* 0x34 trigger box */
-  int volB[6];         /* 0x4C trigger box */
-  int camDone;         /* 0x64 */
-} L21Runner;
 extern int g_anLevelRunnerArrived[]; /* per-goal "runner arrived" flags */
 extern int g_nSpawnAnchorValid[];
 #define RUN_FLAGS(p) (*(int *)((p) + ((p)[1] << 4) + 0x14))
@@ -1021,7 +808,7 @@ void Level21_UpdateActors(void) {
     /* Type 57: boulder. Rolls down to the floor and bursts into shards
      * (more type-57 actors in state 1) that bounce off the scenery. */
     case 57: {
-      L21Rock *st = actor->state;
+      BoulderState *st = actor->state;
 
       switch (actor->mode) {
       case 0: {
@@ -1063,7 +850,7 @@ void Level21_UpdateActors(void) {
         }
         for (n = 0; n < 8; n++) {
           Actor *o;
-          L21Rock *q;
+          BoulderState *q;
 
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -1139,7 +926,7 @@ void Level21_UpdateActors(void) {
     /* Type 100 (and 102): boulder thrower. Patrols its path, picks up a
      * boulder (57) and hurls it, rides its partner, and charges Spyro. */
     case 100: {
-      L21State100 *st = actor->state;
+      BoulderThrowerState *st = actor->state;
       int f;
 
       if (actor->type == 0x66) {
@@ -1171,7 +958,7 @@ void Level21_UpdateActors(void) {
         if (c != 0 && c->subMode == 0) {
           c->subMode = 2;
           {
-            L21Rock *r = c->state;
+            BoulderState *r = c->state;
 
             st->rock = 0;
             r->heading = st->u30;
@@ -1297,7 +1084,7 @@ void Level21_UpdateActors(void) {
           st->rock->rotZ = ArcTan2(spy->posX - st->rock->posX,
                                           spy->posY - st->rock->posY, 0);
           if (actor->nextFrame >= 0x10) {
-            L21Rock *q = st->rock->state;
+            BoulderState *q = st->rock->state;
 
             q->life = 0;
             q->vx = (g_anCosineLut[st->rock->rotZ] * 0x4B) >> 10;
@@ -1544,7 +1331,7 @@ void Level21_UpdateActors(void) {
     /* Type 101: gatekeeper. Guards a run of keys (g_pActorListBase actors) and
      * releases them as Spyro approaches; rides its partner and charges. */
     case 101: {
-      L21State101 *st = actor->state;
+      GatekeeperState *st = actor->state;
       int f = actor->flags;
 
       if ((f & 0xD0000) && actor->mode != 5) {
@@ -3426,7 +3213,7 @@ void Level21_UpdateActors(void) {
      * its goal flag on arrival; struck, it is knocked away. */
     case 293:
     case 294: {
-      L21Runner *st = actor->state;
+      PathRunnerState *st = actor->state;
 
       if ((actor->flags & 0xB0000) && actor->mode >= 3 &&
           actor->mode != 4) {
@@ -4679,7 +4466,7 @@ void Level21_UpdateActors(void) {
      * charges down its path once he is close, and is knocked back by hits
      * or by its partner. */
     case 453: {
-      L18Ram *st = actor->state;
+      RoamingRamState *st = actor->state;
 
       if ((actor->flags & 0xF0000) && actor->mode != 2) {
         if (actor->flags & 0x40000) {

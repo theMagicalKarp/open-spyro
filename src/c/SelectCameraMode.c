@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -13,10 +14,6 @@
 #define SPY_REQUEST 0x7D       /* g_dwSpyroRequestMask */
 
 #define STATE_MODE() ((&g_abSpyroStateCameraMode)[g_nSpyroState])
-
-typedef struct {
-  int v[6];
-} CameraAngles;
 
 /* Re-sync the spring set to the angles recomputed from the eye position. */
 #define REBASE()                                                               \

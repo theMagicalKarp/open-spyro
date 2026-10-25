@@ -15,8 +15,8 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-#define ACTOR_YAW(a) (*(unsigned char *)((char *)(a) + 0x46))
-#define ACTOR_TURNSTATE(a) (*(unsigned char *)((char *)(a) + 0x49))
+#define ACTOR_YAW(a) ACTOR_RAW(a, unsigned char, rotZ)
+#define ACTOR_TURNSTATE(a) ACTOR_RAW(a, unsigned char, subMode)
 
 /* Turn the actor's yaw toward `ang`, at most `step` per frame. */
 #define TurnActorTowardAngle(actor, ang, step, lim)                            \

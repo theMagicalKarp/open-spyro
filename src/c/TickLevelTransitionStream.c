@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -6,9 +7,6 @@
 typedef struct {
   int w[5];
 } Words5;
-typedef struct {
-  int w[6];
-} Words6;
 typedef struct {
   int *path;
   int pad[3];
@@ -312,7 +310,7 @@ void TickLevelTransitionStream(int full) {
         ComputeCameraToTargetAngle(g_anCameraPos);
         g_nCameraYaw += g_nSpyroBodyYaw;
         CopyVector(&g_anSpyroStateFlagsBlock[-31], &g_anSpawnAnchorBlock[0x14]);
-        *(Words6 *)&g_nCameraSpringYaw = *(Words6 *)&g_nCameraYaw;
+        *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         g_nSpyroBodyYaw = (g_nLevelSpawnYaw & 0xFF) << 4;
         g_nCameraSpringYaw -= SPYB[0xE] << 4;
@@ -354,7 +352,7 @@ void TickLevelTransitionStream(int full) {
               *pe = ArcTan2(actor->path[2] - actor->path[6],
                             actor->path[3] - actor->path[7], 0);
             }
-            *(Words6 *)spring = *(Words6 *)(spring + 6);
+            *(CameraAngles *)spring = *(CameraAngles *)(spring + 6);
             *pyaw = *((unsigned char *)pyaw - 0x10E) << 4;
             *spring -= *((unsigned char *)pyaw - 0x10E) << 4;
             ComputeCameraOrbitOffset(cam);
@@ -376,7 +374,7 @@ void TickLevelTransitionStream(int full) {
         yawp = (int *)(SPYB + 0x11C);
         pos = (int *)SPYB;
         g_nCameraYaw += *yawp;
-        *(Words6 *)&g_nCameraSpringYaw = *(Words6 *)&g_nCameraYaw;
+        *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         *yawp = (g_nLevelSpawnYaw & 0xFF) << 4;
         g_nCameraSpringYaw -= SPYB[0xE] << 4;

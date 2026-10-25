@@ -37,6 +37,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -112,37 +113,6 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -232,13 +202,6 @@ typedef struct ShardState {
   StubActorHook(a)
 
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
 #define ENTER_POSE_B(a, n)                                                     \
   (a)->mode = (n);                                                            \
   if ((a)->nextAnim != (n)) {                                                     \
@@ -335,20 +298,6 @@ typedef struct L14State301 {
   int count;  /* 0x0C bolts fired */
 } L14State301;
 
-/* Type 227. */
-typedef struct L14State227 {
-  int home[3];    /* 0x00 */
-  int timer;      /* 0x0C */
-  int cam[3];     /* 0x10 camera anchor */
-  int pad1C;      /* 0x1C */
-  int kind;       /* 0x20 */
-  int count;      /* 0x24 */
-  PathData *path; /* 0x28 */
-  int cool;       /* 0x2C */
-  int alert;      /* 0x30 */
-  int link;       /* 0x34 pool index, -1 = none */
-  int heading;    /* 0x38 -1 = unset */
-} L14State227;
 
 /* Type 305. */
 typedef struct L14State305 {

@@ -49,6 +49,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -61,7 +62,6 @@
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -78,7 +78,6 @@
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
-
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -137,48 +136,6 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -207,7 +164,6 @@ typedef struct ExitState {
 /* The ANIM/ENTER_POSE macros' frame-progress constant. */
 #define sixteen 0x10
 /* ==== Level 16 classes ==== */
-
 
 
 /* Case 328 -- floor-snapped marker. */

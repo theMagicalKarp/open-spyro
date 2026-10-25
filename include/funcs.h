@@ -210,7 +210,7 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 
 /* 0x80018534: Pushes a sprite16 onto the front of the sprite queue (DAT_80075710 bumps down 0x58 bytes). Gated by (param_2 & 0x1f) < 0x10 so the sprite blinks for half of every 32-frame cycle; param_3 < 2 selects tile U=0 vs U=0x80. Used as a selection marker in Gamestate02_03_06_Draw. */
-void EnqueueBlinkingMarkerSprite(int *param_1, int param_2, int param_3);
+void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile);
 
 /* 0x8001860c: Draws a menu rectangle: semi-transparent POLY_F4 fill at (param_1,param_3)..(param_2,param_4) plus four EmitRadialShadedLine borders. Called by SaveLoadMenu_Draw. */
 void DrawShadedMenuBox(int left, int right, int top, int bottom);
@@ -234,7 +234,7 @@ void DrawCinematicLetterbox(void);
 void DrawFullscreenTint(int slot, int r, int g, int b);
 
 /* 0x8001919c: Emits a textured POLY_FT4 quad: rect (x,y,w,h)=param_1[0..3] shorts, UV+CLUT=param_2[0..1], RGB color=param_3[0..2] or default 0x80,0x80,0x80. Calls AddPrimToOT and advances DAT_800757b0 by 0x28 bytes. */
-void EmitTexturedQuad(short *param_1, unsigned int *param_2, unsigned int *param_3);
+void EmitTexturedQuad(short *rect, unsigned int *uv, unsigned int *rgb);
 
 /* 0x80019300: Pre-audio "loading screen" sprite builder. When g_nAudioInitialized == 0, appends sprite entries into the DAT_800720f4 request queue: optional "%d %d" file-progress text (when DAT_80077fa8 == 4), three banner-sprite groups gated by DAT_80077fa9 / fa, fb / fac, and an "additional" sprite at DAT_800783b4. After the queue is built, the trailing block runs unconditionally to animate the load-bar icons in DAT_8007846c / DAT_8007840c using the sine LUT at DAT_8006cc78 indexed by DAT_800770f4 (icon counts in DAT_80077fe0 / DAT_80077fd4). */
 void EnqueueLoadingScreenSprites(void);
@@ -318,10 +318,10 @@ void TickCdMusicStream(void);
 void AdvanceGemCutsceneFrame(int timer);
 
 /* 0x8002c420: Enters GS_PAUSE_MENU: g_nGamestate=2, zeros pause-menu cursor/substate/idle frames, plays the menu-open sfx (sample id from g_pLevelSampleBankHeader+0x2c). param nonzero = entered from gameplay/sub-menu (StopAllSoundExceptMask(0) first, resets transition frames); param 0 = re-entry path that forces all 5 HUD counters visible with roll phase 0xc. Flight levels skip the HUD work. */
-void EnterPauseMenu(int param_1);
+void EnterPauseMenu(int fromGameplay);
 
 /* 0x8002c534: Exits pause menu back to gameplay: g_Gamestate=0, restores pause-snapshot framebuffer from _DAT_800785f0-0x1c200 via LoadImage, repaints HUD palette indices to {3,…,0xd}, releases memcard slot. */
-void ExitPauseMenuToGame(int param_1);
+void ExitPauseMenuToGame(int resumeMusic);
 
 /* 0x8002c618: Begins the pause→world-map curtain animation: g_Gamestate=10 (GS_MENU_TRANSITION), zeros pause idle frames, kicks ChangeSpyroState(NULL,…) to freeze the player. */
 void BeginPauseToMenuTransition(void);
@@ -330,7 +330,7 @@ void BeginPauseToMenuTransition(void);
 void BeginWorldHubReturn(void);
 
 /* 0x8002c714: Enters GS_INVENTORY (g_Gamestate=3); seeds g_nSubMenuCursor to g_nCurrentLevelId/6 so the cursor lands on the active world row; zeros scroll state and clears the pad-history ring. */
-void EnterInventoryMenu(int param_1);
+void EnterInventoryMenu(int fromGameplay);
 
 /* 0x8002c7bc: Exits the sub-menu back to title (g_Gamestate=0); restores the title snapshot framebuffer from _DAT_800785f0-0x1c200, zeros all five HUD palette indices, releases memcard slot 8. */
 void ExitSubMenuToTitle(void);
@@ -357,7 +357,7 @@ void EndSaveMenuToWorld(void);
 void BeginStoryIntro(void);
 
 /* 0x8002d228: Begins the credits sequence: g_Gamestate=15 (GS_CREDITS), g_nGamestate0fMode=-1. Clears the screen to black, calls ChangeSpyroState(1,…) to freeze the player, loads the credits image via CdReadAndCopyToRam. param_1 nonzero (post-game variant) also runs FUN_8005b7d8 (audio reset) and marks DAT_800757ac=10 (post-game flag). */
-void BeginCreditsSequence(int param_1);
+void BeginCreditsSequence(int reloadMeshes);
 
 /* 0x8002d338: Begins the 3D gem-cutscene model render (g_Gamestate=14 = GS_GEM_CUTSCENE). Builds a 0x10-byte intro packet at &DAT_800778f0 keyed off DAT_8007566c (cutscene id), with sound bank id from &DAT_8006ee6c[id], and sets sfx/music vols to max (0x3fff). */
 void BeginGemCutscene(void);
@@ -590,7 +590,7 @@ void AdvanceSpyroFrameMotion(void);
 void TickSpyroAttackEffects(int steps);
 
 /* 0x800495d8: Anim-layer-1 sub-frame advance: DAT_80078a7d += param_1; on overflow >= 0x10 wraps and advances DAT_80078a79 (frame) by 1, snapshots DAT_80078a73 → DAT_80078a72 and DAT_80078a79 → DAT_80078a78. Caps frame at &DAT_8006c4a2[DAT_80078a73 * 4] (per-anim length). Layer-1 byte set is the horn-strike anim overlay (vs layer-0 g_bSpyro* primary body anim). */
-void AdvanceSpyroAnimLayer1Frame(int param_1);
+void AdvanceSpyroAnimLayer1Frame(int step);
 
 /* 0x80049660: Per-tick anim-layer-1 state machine — tracks horn-strike anim overlay. _DAT_80078ab8 = layer mode (0=play, 1=mid-blend +2/tick, 2=hard-switch +4/tick). When mode=0 and _DAT_80078bf0 (horn-strike state) matches _DAT_80078ac0 (last seen): if bf0=0 snapshots primary g_bSpyro* into layer-1 byte set (a72/73/78/79/7d), else AdvanceSpyroAnimLayer1Frame(_DAT_80078abc rate). On state mismatch reads &DAT_80075264[bf0+ac0*2] transition byte (1=blend, 2=hard) and starts that mode. Modes 1/2 finish when DAT_80078a7d > 0xf → AdvanceSpyroAnimLayer1Frame(0) + mode=0. */
 void TickSpyroAnimLayer1(void);
@@ -602,7 +602,7 @@ void SmoothSpyroByteEulerSpring(void);
 void TickSpyroHornStrikeAttack(void);
 
 /* 0x80049dfc: Anim-layer-2 sub-frame advance: DAT_80078a7e += param_1; on overflow >= 0x10 wraps and advances DAT_80078a7b (frame), snapshots DAT_80078a75 → DAT_80078a74 and DAT_80078a7b → DAT_80078a7a. Wraps to &DAT_8006c4a0[anim*4] (start frame) when frame hits &DAT_8006c4a1[anim*4] (end+1). Layer-2 byte set at DAT_80078a74/75/7a/7b/7e. */
-void AdvanceSpyroAnimLayer2Frame(int param_1);
+void AdvanceSpyroAnimLayer2Frame(int step);
 
 /* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to TickSpyroAnimLayer1 but for the second overlay). Only ticks when _DAT_80078ac4 == 0 (layer-2 enabled) AND _DAT_80078c40 == _DAT_80078acc (state stable). If _DAT_80078c40 == 0 snapshots primary g_bSpyro* into layer-2 byte set (a74/75/7a/7b/7e); else AdvanceSpyroAnimLayer2Frame(_DAT_80078ac8 rate). _DAT_80078c40 is forcibly zeroed by TickSpyroAnimLayer2GateTimer when primary anims block layer 2. */
 void TickSpyroAnimLayer2(void);
@@ -702,7 +702,7 @@ void EncodeCachedVecToActorDirCode(Actor *actor);
 void ResetPadFrameSubstepTable(int *base);
 
 /* 0x80053708: Snapshots the live pad input state (0xa4 words, head + 4-record per-substep table) from src=param_1 into dst=param_2 and then re-inits param_1 via ResetPadFrameSubstepTable so the next frame starts fresh. Toggles parity byte DAT_80075944 (frame double-buffer index 0/1). Called by per-frame ticks: TickSpyroFrameForceJump, TickSpyroFrameNoInput, TickSpyroGameplayFrame, UpdateCameraFrame. */
-void SnapshotPadInputState(void *param_1, void *param_2);
+void SnapshotPadInputState(void *snapshot, void *live);
 
 /* 0x8005375c: Writes the default uncalibrated 4-axis stick bounds at param_1[0x20..0x2b]: each axis gets +0x20=0x7f (neutral), +0x24=0 (low), +0x28=0xff (high) for axes 0..3. Used as the fallback when FinalizePadCalibration detects the controller's reported range is too narrow to trust. Callers: FinalizePadCalibration (fallback path), PollPadAndDistributeInput (init), InitPadSystem. */
 void ResetPadStickCalibrationDefaults(unsigned char *cal);
@@ -1985,7 +1985,7 @@ int StepAndLerpAngle8(int a, int b, int c, int d);
 int IsActorFacingSpyro(int *e, int threshold);
 
 /* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point; the Spyro-sourced sibling of CheckLineOfSightSegment. */
-unsigned int CheckSpyroLineOfSightTo(int *param_1);
+unsigned int CheckSpyroLineOfSightTo(int *target);
 
 /* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records from +8) to the actor's position; returns the 2D distance, index via out_index. */
 int FindNearestPathPointToActor(int *ref, unsigned char *list, int *out_index);

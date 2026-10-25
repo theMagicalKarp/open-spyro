@@ -35,6 +35,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
@@ -47,7 +48,6 @@
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
-
 
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -65,9 +65,6 @@
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 
 #define CAM g_anWorldToCameraRotMtx
-
-
-
 
 
 /* Glow node owned by Sparx; follows its anchor position. */
@@ -124,49 +121,6 @@
  * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
-
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
-/* Case 398 — the level-exit vortex: drives the scripted camera and hands the
- * game over to the world map. */
-typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
-  int centre[3];      /* 0x04 */
-  int pad10;          /* 0x10 */
-  int dest;           /* 0x14 */
-  int preset;         /* 0x18 */
-} ExitState;
-
 
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
@@ -254,61 +208,6 @@ typedef struct ExitState {
   }                                                                            \
   continue
 
-/* Case 461 -- war drum. */
-typedef struct L18Drum {
-  int chan;   /* 0x00 voice channel */
-  int wait;   /* 0x04 */
-  int beat;   /* 0x08 */
-  int fade;   /* 0x0C */
-  int knock;  /* 0x10 knock-back heading */
-  int speed;  /* 0x14 */
-  int lift;   /* 0x18 */
-  int life;   /* 0x1C */
-  int reload; /* 0x20 */
-  int voice;  /* 0x24 */
-} L18Drum;
-
-/* Case 466 -- roaming ram. */
-typedef struct L18Ram {
-  char pad00[0xC];
-  PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
-  int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
-  int mode;       /* 0x1C */
-  int partner;    /* 0x20 index into g_pActorListBase */
-  int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
-  int p2C;        /* 0x2C */
-  char pad30[0x14];
-  int call;       /* 0x44 */
-} L18Ram;
-
-/* Case 137 -- guard. */
-typedef struct L18Guard {
-  int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
-  int vec[3];        /* 0x04 home point */
-  int timer;         /* 0x10 */
-  int range;         /* 0x14 sight range >> 10 */
-  PathData *path;    /* 0x18 */
-  int pad1C;         /* 0x1C */
-  int knock;         /* 0x20 knock-back heading */
-  int speed;         /* 0x24 */
-  int turn;          /* 0x28 */
-  int timer2;        /* 0x2C */
-  int cam;           /* 0x30 camera phase */
-  int camDist;       /* 0x34 */
-  int pad38;         /* 0x38 */
-  int timer3;        /* 0x3C */
-  int *flag;         /* 0x40 shared alert flag */
-  int dist2;         /* 0x44 */
-  int target;        /* 0x48 index into g_pActorListBase */
-  int filter;        /* 0x4C type it drives before it */
-  int charging;      /* 0x50 */
-  int init;          /* 0x54 */
-  int lurk;          /* 0x58 */
-  int speedOverride; /* 0x5C */
-} L18Guard;
 
 /* A NOTE-only scope: four NOTE luids and no code. It lengthens the lifetime
  * loop.c sees for any hoistable value live across it (cookbook A294). */
@@ -3971,7 +3870,7 @@ void Level18_UpdateActors(void) {
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
     case 461: {
-      L18Drum *st = actor->state;
+      WarDrumState *st = actor->state;
 
       if ((actor->flags & 0xB0000) && (unsigned int)(actor->mode - 3) >= 2) {
         actor->flags = 0;
@@ -4051,7 +3950,7 @@ void Level18_UpdateActors(void) {
      * charges down its path once he is close, and is knocked back by hits
      * or by its partner. */
     case 466: {
-      L18Ram *st = actor->state;
+      RoamingRamState *st = actor->state;
 
       if ((actor->flags & 0xF0000) && actor->mode != 3) {
         do {

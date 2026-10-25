@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -29,13 +30,9 @@
 #define S_TARGET_PARAMS 0x04
 #define S_INVERTED 0x08
 
-typedef struct {
-  int v[6];
-} CameraAngles;
-
 /* World x/y of a scripted camera actor. */
-#define ACTOR_X(a) (*(int *)((char *)(a) + 0xC))
-#define ACTOR_Y(a) (*(int *)((char *)(a) + 0x10))
+#define ACTOR_X(a) ACTOR_RAW(a, int, posX)
+#define ACTOR_Y(a) ACTOR_RAW(a, int, posY)
 
 SDATA(g_nCameraLosClear, 4);
 SDATA(g_nCameraManualYawInput, 4);

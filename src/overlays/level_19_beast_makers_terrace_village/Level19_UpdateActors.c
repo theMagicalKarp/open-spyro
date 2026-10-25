@@ -39,6 +39,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -107,38 +108,6 @@
  * block below is the ->state record of one actor class, named after the case
  * that uses it. */
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
-  int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} VortexState;
-
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
-  unsigned char timer;  /* 0x0F */
-  unsigned char bounce; /* 0x10 remaining knock-back bounces */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 
 #define g_nSpyroRequestVelocityY g_anSpyroRequestVelocity.y
 
@@ -196,32 +165,6 @@ typedef struct ShardState {
 #define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
 
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
-typedef struct L18Drum {
-  int chan;   /* 0x00 voice channel */
-  int wait;   /* 0x04 */
-  int beat;   /* 0x08 */
-  int fade;   /* 0x0C */
-  int knock;  /* 0x10 knock-back heading */
-  int speed;  /* 0x14 */
-  int lift;   /* 0x18 */
-  int life;   /* 0x1C */
-  int reload; /* 0x20 */
-  int voice;  /* 0x24 */
-} L18Drum;
-typedef struct L18Ram {
-  char pad00[0xC];
-  PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
-  int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
-  int mode;       /* 0x1C */
-  int partner;    /* 0x20 index into g_pActorListBase */
-  int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
-  int p2C;        /* 0x2C */
-  char pad30[0x14];
-  int call;       /* 0x44 */
-} L18Ram;
 
 /* ==== Level 19 classes ==== */
 
@@ -3364,7 +3307,7 @@ void Level19_UpdateActors(void) {
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
     case 461: {
-      L18Drum *st = actor->state;
+      WarDrumState *st = actor->state;
 
       if ((actor->flags & 0xB0000) && (unsigned int)(actor->mode - 3) >= 2) {
         actor->flags = 0;
@@ -3444,7 +3387,7 @@ void Level19_UpdateActors(void) {
      * charges down its path once he is close, and is knocked back by hits
      * or by its partner. */
     case 466: {
-      L18Ram *st = actor->state;
+      RoamingRamState *st = actor->state;
 
       if ((actor->flags & 0xF0000) && actor->mode != 3) {
         if (actor->flags & 0x40000) {
