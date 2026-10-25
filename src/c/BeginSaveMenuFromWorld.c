@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sample_bank.h"
@@ -57,7 +58,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   }
   g_pSaveMenuHostActor = (int *)actor;
   g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
-  PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
+  PlaySoundEffect(LEVEL_SFX(SFX_MENU_OPEN), 0, 0x10, 0);
   ResetSpyroEntity(1);
   yaw = g_nSpyroBodyYaw;
   g_abSpyroAnimPrevBlock[0] = 1;

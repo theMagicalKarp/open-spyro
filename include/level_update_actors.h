@@ -796,7 +796,8 @@ typedef struct GemDigitStateZ {
   int velZ;   /* 0x10 */
 } GemDigitStateZ;
 
-/* Case 416 — the bobbing platform. */
+/* Type 416 (ACTOR_TYPE_BALLOON): bobs on a sine about its rest height. It
+ * appears only in levels that have a balloonist cutscene. */
 typedef struct BobState {
   int restZ; /* 0x00 */
 } BobState;

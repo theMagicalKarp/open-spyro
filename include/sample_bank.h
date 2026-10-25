@@ -26,8 +26,8 @@ typedef struct {
   (*(type *)((char *)(entry) + SAMPLE_OFFSET(field)))
 
 /* Sound id `i` of the level's sound-id table (g_pLevelSampleBankHeader, one
- * byte per sound slot; RelocateLevelSampleBank installs it). Slot 0x2C is
- * the menu-open sound, slot 0 the cheat-confirm jingle. */
+ * byte per sound slot; RelocateLevelSampleBank installs it). Named slots:
+ * level_sfx.h. */
 #define LEVEL_SFX(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
 #endif /* OPEN_SPYRO_SAMPLE_BANK_H */

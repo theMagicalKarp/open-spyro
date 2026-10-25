@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
@@ -177,20 +178,20 @@ void SaveMenu_Update(void) {
     switch (SM[3]) {
     case 0:
       if (g_dwPadPressed & PAD_DOWN) {
-        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (++g_nSaveMenuCursor >= 3) {
           g_nSaveMenuCursor = 0;
         }
       } else if (g_dwPadPressed & PAD_UP) {
-        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, 0x10, 0);
         g_nSaveMenuAnimPhase = 0;
         if (--g_nSaveMenuCursor < 0) {
           g_nSaveMenuCursor = 2;
         }
       }
       if (SM[1] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
-        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
         if (g_nSaveMenuCursor == 0) {
           SM[1] = 0;
           if (g_nSaveSlotLoaded != 0) {
@@ -216,13 +217,13 @@ void SaveMenu_Update(void) {
           }
         } else {
           EndSaveMenuToWorld();
-          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
         }
       }
       break;
     case 1:
       if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
-        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 0;
         g_nSaveMenuCursor = 2;
@@ -313,7 +314,7 @@ void SaveMenu_Update(void) {
     case 4:
     case 5:
       if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
-        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
         SM[1] = 0;
         g_nSaveMenuSubstate = 6;
         g_nSaveMenuCursor = 0;
@@ -321,19 +322,19 @@ void SaveMenu_Update(void) {
       break;
     case 6:
       if (g_adwPadPressedBlock[0] & (PAD_UP | PAD_DOWN)) {
-        PlaySoundEffect(LEVEL_SFX(0x2D), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, 0x10, 0);
         SM[2] = 1 - SM[2];
       }
       if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
         MemCardCloseSession();
         if (g_nSaveMenuCursor == 0) {
-          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
           SM[1] = 0;
           g_nSaveMenuSubstate = 2;
           g_nSaveMenuCursor = 0;
         } else {
           EndSaveMenuToWorld();
-          PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
         }
       }
       break;
@@ -341,7 +342,7 @@ void SaveMenu_Update(void) {
       if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         MemCardCloseSession();
         EndSaveMenuToWorld();
-        PlaySoundEffect(LEVEL_SFX(0x2E), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, 0x10, 0);
       }
       break;
     }

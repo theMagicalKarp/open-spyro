@@ -29,6 +29,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 #include "camera.h"
+#include "level_sfx.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -1603,7 +1604,7 @@ void Level6_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
 
             if (ReflectVectorOffNormal((int *)st, g208, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1723,7 +1724,7 @@ void Level6_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               RefreshActorDerivedState(actor, 4);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)8);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x10);
@@ -1736,7 +1737,7 @@ void Level6_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               g_nSparxFoodCount += 1;
               DespawnActorRecord(actor);
             } else {
@@ -2077,7 +2078,7 @@ void Level6_UpdateActors(void) {
 
           case 1:
             g_anSparxHealthBlock[0] += 1;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
@@ -2119,11 +2120,11 @@ void Level6_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
               }
             } else {
               int lim = 0x136;
@@ -2287,7 +2288,7 @@ void Level6_UpdateActors(void) {
           if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
             int i;
 
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
@@ -4389,8 +4390,8 @@ void Level6_UpdateActors(void) {
       break;
     }
 
-    /* Balloon: bobs about its start height. */
-    case 416: {
+    /* Balloon: bobs about its rest height. */
+    case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
       if (actor->mode == 0) {

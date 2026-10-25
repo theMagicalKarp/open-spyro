@@ -25,6 +25,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 #include "camera.h"
+#include "level_sfx.h"
 
 
 /* Type 286: ambient sound source (AmbientSoundState) with the path seen as
@@ -1054,7 +1055,7 @@ void Level0_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
 
               if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
@@ -1158,7 +1159,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
           RefreshActorDerivedState(actor, 4);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)0x10);
@@ -1171,7 +1172,7 @@ void Level0_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
           g_nSparxFoodCount++;
 
           DespawnActorRecord(actor);
@@ -1818,7 +1819,7 @@ void Level0_UpdateActors(void) {
         }
         case 1: {
           SPY.sparxHealth++;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
           actor->subMode++;
           DespawnActorRecord(st->target);
           break;
@@ -1862,7 +1863,7 @@ void Level0_UpdateActors(void) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
             }
           } else {
             int dcheck = 310;
@@ -1985,7 +1986,7 @@ void Level0_UpdateActors(void) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
           RefreshActorDerivedState(actor, 4);
 
           for (i = 0; i < 6; i++) {
@@ -2980,8 +2981,8 @@ void Level0_UpdateActors(void) {
       break;
     }
 
-    /* Balloon: bobs about its start height. */
-    case 416: {
+    /* Balloon: bobs about its rest height. */
+    case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
       if (actor->mode == 0) {

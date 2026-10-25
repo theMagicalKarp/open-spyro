@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "sample_bank.h"
 
@@ -14,7 +15,7 @@ void EnterInventoryMenu(int fromGameplay) {
   if (fromGameplay != 0) {
     StopAllSoundExceptMask(0);
   }
-  PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
+  PlaySoundEffect(LEVEL_SFX(SFX_MENU_OPEN), 0, 0x10, 0);
   g_nSubMenuScrollOffset = 0;
   g_nSubMenuScrollDelta = 0;
   g_nGamestate = GS_INVENTORY;
