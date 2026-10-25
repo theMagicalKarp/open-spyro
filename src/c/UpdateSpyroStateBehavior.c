@@ -9,9 +9,6 @@
 
 SDATA(g_bSpyroJumpHoldForced, 4);
 
-#define SPY_ANIM_CURRENT 0x19 /* g_bSpyroAnimCurrent (byte offset) */
-#define SPY_ANIM_FRAME 0x1F   /* g_bSpyroAnimFrame (byte offset) */
-
 /* Opaque copy: the result is a fresh value to cse, so a block address stays
    in its register and later fields are addressed off it. */
 static inline int *Opaque(int *p) {
@@ -700,10 +697,10 @@ void UpdateSpyroStateBehavior(void) {
       if (g_nSpyroPadSnapshotCountdown == 0) {
         unsigned char *b = (unsigned char *)air;
 
-        if (b[SPY_ANIM_CURRENT - 4 * SPY_AIRBORNE] ==
+        if (b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE] ==
                 g_abSpyroStateAnimIndexMap[g_nSpyroState] &&
-            b[SPY_ANIM_FRAME - 4 * SPY_AIRBORNE] >=
-                g_abSpyroAnimDescTable[b[SPY_ANIM_CURRENT - 4 * SPY_AIRBORNE] *
+            b[SPYB_ANIM_FRAME - 4 * SPY_AIRBORNE] >=
+                g_abSpyroAnimDescTable[b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE] *
                                            4 +
                                        1] -
                     1) {

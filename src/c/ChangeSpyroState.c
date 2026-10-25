@@ -19,8 +19,6 @@ SDATA(g_nSpyroScriptedLiftYaw, 4);
 SDATA(g_pSpyroHomingTargetActor, 4);
 SDATA(g_nSpyroScriptedLiftTurn, 4);
 
-#define SPY_VOICE 0x2A0 /* g_bSpyroSfxVoiceMarker (byte offset) */
-
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
   ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
@@ -64,11 +62,11 @@ void ChangeSpyroState(int state) {
   case 27:
   case 28:
     PlaySoundEffect(LEVEL_SFX(0x1B), g_anSpyroWorldPos, 4,
-                    (unsigned char *)g_anSpyroWorldPos + SPY_VOICE);
+                    (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   case 25:
     PlaySoundEffect(LEVEL_SFX(0x20), g_anSpyroWorldPos, 4,
-                    (unsigned char *)g_anSpyroWorldPos + SPY_VOICE);
+                    (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   }
   switch (state) {
@@ -211,7 +209,8 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
-    PlaySoundEffect(LEVEL_SFX(4), me, 4, (unsigned char *)SPY + SPY_VOICE + 1);
+    PlaySoundEffect(LEVEL_SFX(4), me, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     g_pSpyroHomingTargetActor = 0;
     {
       int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
@@ -334,7 +333,8 @@ void ChangeSpyroState(int state) {
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
-    PlaySoundEffect(LEVEL_SFX(0x3B), SPY, 4, (unsigned char *)SPY + SPY_VOICE);
+    PlaySoundEffect(LEVEL_SFX(0x3B), SPY, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER);
     break;
   }
   case 25:
@@ -346,7 +346,8 @@ void ChangeSpyroState(int state) {
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
-    PlaySoundEffect(LEVEL_SFX(0x3A), SPY, 4, (unsigned char *)SPY + SPY_VOICE);
+    PlaySoundEffect(LEVEL_SFX(0x3A), SPY, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER);
     break;
   case 27:
     SPY[SPY_STATE_FLAGS] = 0;
@@ -512,7 +513,8 @@ void ChangeSpyroState(int state) {
     }
     g_nSpyroGravityEnableFlag = 1;
     PARTICLE_SPAWN(5, 0xA, 0, 0);
-    PlaySoundEffect(LEVEL_SFX(0x3B), SPY, 4, (unsigned char *)SPY + SPY_VOICE);
+    PlaySoundEffect(LEVEL_SFX(0x3B), SPY, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -530,8 +532,10 @@ void ChangeSpyroState(int state) {
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
         g_anOrbDropEnterSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
     me = SPY;
-    PlaySoundEffect(LEVEL_SFX(0x1D), me, 4, (unsigned char *)SPY + SPY_VOICE);
-    PlaySoundEffect(LEVEL_SFX(0x1B), me, 4, (unsigned char *)SPY + SPY_VOICE);
+    PlaySoundEffect(LEVEL_SFX(0x1D), me, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER);
+    PlaySoundEffect(LEVEL_SFX(0x1B), me, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -577,7 +581,8 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
     g_nSpyroMotionAux = 0;
-    PlaySoundEffect(LEVEL_SFX(5), SPY, 4, (unsigned char *)SPY + SPY_VOICE + 1);
+    PlaySoundEffect(LEVEL_SFX(5), SPY, 4,
+                    (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     break;
   }
   {

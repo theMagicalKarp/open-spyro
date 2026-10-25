@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 typedef struct {
@@ -17,6 +18,12 @@ typedef struct {
 #define MESH g_anWorldRenderMeshBlock
 #define CAM g_anCameraPosBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
+
+/* Offsets from the held Spyro pointers below: pe is the euler-Z byte, pyaw
+   the body-yaw word; both reach the rest of the block relative to themselves.
+ */
+#define PE_TO(word) ((word) * 4 - SPYB_EULER_Z)
+#define PYAW_BACK_TO(byte) (SPY_BODY_YAW * 4 - (byte))
 #define DRAWBUF_B (g_apDrawBufBBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
 #define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
@@ -314,7 +321,7 @@ void TickLevelTransitionStream(int full) {
         *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         g_nSpyroBodyYaw = (g_nLevelSpawnYaw & 0xFF) << 4;
-        g_nCameraSpringYaw -= SPYB[0xE] << 4;
+        g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
         ComputeCameraOrbitOffset(g_anCameraPos);
         AddVector(g_anCameraPos, g_anCameraPos, &g_anSpyroStateFlagsBlock[-31]);
         UpdateCameraEulerAngles();
@@ -325,8 +332,8 @@ void TickLevelTransitionStream(int full) {
       } else if (g_nScriptedMobTag != 0) {
         for (i = 0; i < g_nScriptedMobCount; i++) {
           int *e = MOB_ENTRY(i);
-          unsigned char *pe = SPYB + 0xE;
-          int *pyaw = (int *)(SPYB + 0x11C);
+          unsigned char *pe = SPYB + SPYB_EULER_Z;
+          int *pyaw = (int *)(SPYB + SPY_BODY_YAW * 4);
           int *cam = CAM;
           int *spring = CAM + 0x14;
 
@@ -339,30 +346,35 @@ void TickLevelTransitionStream(int full) {
                 *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             EBB_BREAK();
             ChangeSpyroState(0xF);
-            *(int *)(pe + 0x6E) = 9;
+            *(int *)(pe + PE_TO(SPY_STATE_FLAGS)) = 9;
             ComputeCameraToTargetAngle(cam);
-            g_anCameraSpringYawBlock[6] = g_nCameraYaw + *(int *)(pe + 0x10E);
+            g_anCameraSpringYawBlock[6] =
+                g_nCameraYaw + *(int *)(pe + PE_TO(SPY_BODY_YAW));
             if (actor->reverse != 0) {
-              CopyVector((int *)(pe - 0xE), actor->path + 2);
-              CopyVector((int *)(pe + 0x1EA), actor->path + 6);
+              CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 2);
+              CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
+                         actor->path + 6);
               *pe = ArcTan2(actor->path[6] - actor->path[2],
                             actor->path[7] - actor->path[3], 0);
             } else {
-              CopyVector((int *)(pe - 0xE), actor->path + 6);
-              CopyVector((int *)(pe + 0x1EA), actor->path + 2);
+              CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 6);
+              CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
+                         actor->path + 2);
               *pe = ArcTan2(actor->path[2] - actor->path[6],
                             actor->path[3] - actor->path[7], 0);
             }
             *(CameraAngles *)spring = *(CameraAngles *)(spring + 6);
-            *pyaw = *((unsigned char *)pyaw - 0x10E) << 4;
-            *spring -= *((unsigned char *)pyaw - 0x10E) << 4;
+            *pyaw = *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)) << 4;
+            *spring -= *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z))
+                       << 4;
             ComputeCameraOrbitOffset(cam);
-            AddVector(cam, cam, (int *)((char *)pyaw - 0x11C));
+            AddVector(cam, cam, (int *)((char *)pyaw - PYAW_BACK_TO(0)));
             UpdateCameraEulerAngles();
-            *((unsigned char *)pyaw - 0xF5) = 0x7F;
+            *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_OT_BIN_BIAS)) = 0x7F;
             g_nScriptedMobViewPitchTilt = 0;
-            g_nScriptedMobViewYawSpin = (yaw - *((unsigned char *)pyaw - 0x10E))
-                                        << 4;
+            g_nScriptedMobViewYawSpin =
+                (yaw - *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)))
+                << 4;
             break;
           }
         }
@@ -372,13 +384,13 @@ void TickLevelTransitionStream(int full) {
 
         ChangeSpyroState(0xF);
         ComputeCameraToTargetAngle(g_anCameraPos);
-        yawp = (int *)(SPYB + 0x11C);
+        yawp = (int *)(SPYB + SPY_BODY_YAW * 4);
         pos = (int *)SPYB;
         g_nCameraYaw += *yawp;
         *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         *yawp = (g_nLevelSpawnYaw & 0xFF) << 4;
-        g_nCameraSpringYaw -= SPYB[0xE] << 4;
+        g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
         CopyVector(pos, &g_anSpawnAnchorBlock[0x14]);
         ComputeCameraOrbitOffset(g_anCameraPos);
         ZeroVector(yawp - 4);

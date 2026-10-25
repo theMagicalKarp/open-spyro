@@ -43,10 +43,21 @@
 #define SPY_SCRIPTED_MOVE  0x65 /* g_nSpyroScriptedMoveMode */
 #define SPY_COUNTDOWN      0x7C /* g_nSpyroPadSnapshotCountdown */
 #define SPY_REQUEST        0x7D /* g_dwSpyroRequestMask */
+#define SPY_REQUEST_TARGET 0x7E /* g_anSpyroRequestTargetPos */
 #define SPY_REQUEST_STATE  0x86 /* g_nSpyroRequestState */
 #define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
 #define SPY_FALL_TRACKING  0x93 /* g_nSpyroFallTrackingFlag */
 #define SPY_CHARGE_HOLD    0x94 /* g_nSpyroChargeHoldFlag */
 #define SPY_GLIDE_BANK     0x95 /* g_nSpyroGlideBankingFlag */
+
+/* Byte offsets into the same block, for the byte-wide globals. */
+#define SPYB_EULER       0x0C /* g_abSpyroPersistentEuler (x, y, z bytes) */
+#define SPYB_EULER_Z     0x0E /* g_bSpyroPersistentEulerZ */
+#define SPYB_ANIM_CURRENT 0x19 /* g_bSpyroAnimCurrent */
+#define SPYB_ANIM_FRAME  0x1F /* g_bSpyroAnimFrame */
+#define SPYB_SUB_FRAME_TIMER 0x24 /* g_bSpyroSubFrameTimer */
+#define SPYB_OT_BIN_BIAS 0x27 /* g_bSpyroOtBinBias */
+#define SPYB_BODY_MTX    0x34 /* g_anSpyroBodyMtx */
+#define SPYB_VOICE_MARKER 0x2A0 /* g_bSpyroSfxVoiceMarker */
 
 #endif /* OPEN_SPYRO_SPYRO_BLOCK_H */

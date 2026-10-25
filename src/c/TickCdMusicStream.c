@@ -4,6 +4,10 @@
 #include "match_asm.h"
 #include "vecmath.h"
 
+/* The CdlLOC bytes at 0x800776c1 reached from the music-stream block's
+   held base, as the original addresses it. */
+#define CD_MUSIC_POS ((unsigned char *)g_adwMusicStreamBlock + 0x20D)
+
 /* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
    [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short
    pair sits at -0x2C0. */
@@ -98,7 +102,7 @@ void TickCdMusicStream(void) {
         CdControl(0x1B, pos, 0);
       } else {
         if (GetCdStatusByte() == 0x11) {
-          r = CdPosToInt((unsigned char *)g_adwMusicStreamBlock + 0x20D);
+          r = CdPosToInt(CD_MUSIC_POS);
           if (r > 0) {
             g_dwCdMusicReadHead = r;
           }

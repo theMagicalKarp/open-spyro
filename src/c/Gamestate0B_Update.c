@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* The save-menu / dragon-cutscene record at 0x80078d00: [0] mode, [1] phase,
@@ -120,7 +121,7 @@ void Gamestate0B_Update(void) {
         g_abSpyroPersistentEuler[2] =
             (SM[27] - ((AbsAngleDelta12(SM[28], SM[27]) * t) >> 13)) >> 4;
       }
-      ApplyEulerRotation(SPYB + 0xC, (int *)(SPYB + 0x34), 0);
+      ApplyEulerRotation(SPYB + SPYB_EULER, (int *)(SPYB + SPYB_BODY_MTX), 0);
       g_bSpyroSwingByteEuler1 = (unsigned int)t >> 9;
       AdvanceSpyroAnimFrame(0x10);
       TickSpyroAnimLayer1();
@@ -156,14 +157,14 @@ void Gamestate0B_Update(void) {
       {
         int sn = LookupSine(g_nSaveMenuCameraToAngle);
 
-        SPYB[0x24] = 4;
-        SPYB[0x19] = 0;
-        SPYB[0x1F] = 0;
+        SPYB[SPYB_SUB_FRAME_TIMER] = 4;
+        SPYB[SPYB_ANIM_CURRENT] = 0;
+        SPYB[SPYB_ANIM_FRAME] = 0;
         g_anSpyroWorldPosBlock[0x16] = 4;
         SM[0] = 1;
         SM[1] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
-        SPYB[0xE] = g_nSaveMenuSpyroToYaw >> 4;
+        SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
         g_anCameraPos[1] =
             g_anSpyroWorldPos[1] + ((sn * g_nSaveMenuCameraToDist) >> 12);
       }
