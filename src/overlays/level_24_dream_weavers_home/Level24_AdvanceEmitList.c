@@ -72,7 +72,7 @@
  * and adds 0x6 (the orbiting spark, which reads a world point through the
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
  * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nGemPickupTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *
@@ -270,8 +270,8 @@ void Level24_AdvanceEmitList(int step) {
       }
       rec[0x1C] += g_nFrameStep * 8;
       heat = 0x3F;
-      if (g_nGemPickupTimer < 0x40) {
-        heat = g_nGemPickupTimer;
+      if (g_nDragonRescueTimer < 0x40) {
+        heat = g_nDragonRescueTimer;
       }
       HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;

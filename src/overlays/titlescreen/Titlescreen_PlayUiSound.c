@@ -39,7 +39,7 @@ typedef struct {
 extern SpuDriver g_pLevelSampleBankEntries;  /* the SPU driver state */
 extern SoundDef g_CutsceneSoundDef;   /* the shared cutscene sound definition */
 extern int g_anTitleSampleOffsets[];      /* title-screen SPU sample offset table */
-extern int g_bGemPickupSfxVoiceMarker;        /* dragon-cutscene sound voice */
+extern int g_bDragonRescueSfxVoiceMarker;        /* dragon-cutscene sound voice */
 
 
 void Titlescreen_PlayUiSound(int nSoundId) {
@@ -54,5 +54,5 @@ void Titlescreen_PlayUiSound(int nSoundId) {
   g_pLevelSampleBankEntries.nNextSoundOverrideFlags = 1;
   g_pLevelSampleBankEntries.nVolumeOverrideLeft = 0x3FFF;
   g_pLevelSampleBankEntries.nVolumeOverrideRight = 0x3FFF;
-  PlaySoundEffect(0, 0, 16, (unsigned char *)&g_bGemPickupSfxVoiceMarker);
+  PlaySoundEffect(0, 0, 16, (unsigned char *)&g_bDragonRescueSfxVoiceMarker);
 }

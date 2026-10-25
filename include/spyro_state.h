@@ -99,7 +99,7 @@ typedef enum SpyroState
 #define SPYRO_RQ_RAW_VELOCITY 0x00040  /* VEL_* take g_anSpyroRequestVelocity */
 #define SPYRO_RQ_FORCE_STATE 0x00100   /* g_nSpyroRequestState; no state update */
 #define SPYRO_RQ_CAMERA 0x00200        /* CAM_MODE_REQUEST on the request anchor */
-#define SPYRO_RQ_GEM_PATH_CAMERA 0x00400 /* CAM_MODE_GEM_PATH */
+#define SPYRO_RQ_PORTAL_PATH_CAMERA 0x00400 /* CAM_MODE_PORTAL_PATH */
 #define SPYRO_RQ_LOCK_ON 0x01000       /* face g_pScriptedCameraActor (EnemyLock params) */
 #define SPYRO_RQ_FREEZE_INPUT 0x02000  /* replay the pad snapshot */
 #define SPYRO_RQ_NO_CLIP 0x04000       /* no ground probes, raw velocity */

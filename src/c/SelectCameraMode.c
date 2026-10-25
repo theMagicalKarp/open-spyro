@@ -97,17 +97,17 @@ void SelectCameraMode(void) {
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
       REBASE();
     }
-  } else if (mode == (CAM_HELD | CAM_MODE_GEM_PATH)) {
-    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_GEM_PATH_CAMERA)) {
+  } else if (mode == (CAM_HELD | CAM_MODE_PORTAL_PATH)) {
+    if (!(SPY[SPY_REQUEST] & SPYRO_RQ_PORTAL_PATH_CAMERA)) {
       table = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       *nextp = table;
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
-      if (g_nGemPickupCamPathReverseFlag != 0) {
-        ((unsigned char *)g_pGemPickupCamPathData)[1] =
-            ((unsigned char *)g_pGemPickupCamPathData)[0] - 1;
+      if (g_nPortalCamPathReverseFlag != 0) {
+        ((unsigned char *)g_pPortalCamPathData)[1] =
+            ((unsigned char *)g_pPortalCamPathData)[0] - 1;
       } else {
-        ((unsigned char *)g_pGemPickupCamPathData)[1] = 0;
+        ((unsigned char *)g_pPortalCamPathData)[1] = 0;
       }
     }
   } else if (mode == (CAM_HELD | CAM_MODE_PASSIVE)) {

@@ -148,8 +148,8 @@ extern int g_nGamestate0cCamRadiusStart;
 extern int g_nGamestate0cCamYawGoal_s;                   /* same address, scalar DECL -> absolute lui/%lo form (B16 per-site) */
 extern int g_nGamestate0cCamYawStart;
 extern int g_nGamestate0cCardVariant;
-extern int g_nGemPickupSubstate;
-extern int g_nGemPickupTimer;
+extern int g_nDragonRescueSubstate;
+extern int g_nDragonRescueTimer;
 extern int g_nGemTallyIconCount;
 extern int g_nGroundSurfaceType;                         /* index of the surface under the probe */
 extern int g_nLastCollisionHitChunkId;                   /* collision triangle index */

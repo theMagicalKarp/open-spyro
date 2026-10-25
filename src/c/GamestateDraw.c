@@ -63,7 +63,7 @@ void GamestateDraw(void) {
       Gamestate02_03_06_Draw();
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
       (*(void (*)())g_pfnGamestate7DrawHook)();
-    } else if (g_nGamestate == GS_GEM_PICKUP) {
+    } else if (g_nGamestate == GS_DRAGON_RESCUE) {
       Gamestate08_Draw();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
       Gamestate01_09_Draw();

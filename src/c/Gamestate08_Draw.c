@@ -3,38 +3,39 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Draw for gamestate 8 (GS_GEM_PICKUP, 0x8001cfdc, 0x73c).
+/* Draw for gamestate 8 (GS_DRAGON_RESCUE, 0x8001cfdc, 0x73c).
 
-   The dragon-rescue presentation, one arm per g_nGemPickupSubstate. Substate 0
-   is still an ordinary gameplay frame; 1-3 hand-build the OT head list from the
-   rescuing actor (plus the statue once the statue arm is live) and sweep the
-   actor pool for the 0xfb marker actors that go into the sprite queue; 4 does
-   the same around the statue + Spyro mirror pair and shows the name banner for
-   the first second; 5 pins the statue and three HUD icon records, scaling the
-   draw-list's two vector triples by the timer curve (and by a cosine sweep once
-   the timer passes 8); 6 and the first sixteen frames of 7 draw only the icon
-   records; the rest of 7 is the return-to-gameplay frame with the secondary
-   actor pass. Every arm ends in the shared letterbox check and the standard
-   2-vblank frame submit. */
+   The dragon-rescue presentation, one arm per g_nDragonRescueSubstate. Substate
+   0 is still an ordinary gameplay frame; 1-3 hand-build the OT head list from
+   the rescuing actor (plus the statue once the statue arm is live) and sweep
+   the actor pool for the 0xfb marker actors that go into the sprite queue; 4
+   does the same around the statue + Spyro mirror pair and shows the name banner
+   for the first second; 5 pins the statue and three HUD icon records, scaling
+   the draw-list's two vector triples by the timer curve (and by a cosine sweep
+   once the timer passes 8); 6 and the first sixteen frames of 7 draw only the
+   icon records; the rest of 7 is the return-to-gameplay frame with the
+   secondary actor pass. Every arm ends in the shared letterbox check and the
+   standard 2-vblank frame submit. */
 
 void Gamestate08_Draw(void) {
   int unused[4];
   unsigned char *icon;
 
-  if (g_anGemPickupAuraStarBlock[0] != 0) {
-    ApplyEulerRotation(&g_anGemPickupAuraStarBlock[10],
-                       &g_anGemPickupAuraStarBlock[4], g_anWorldToCameraRotMtx);
-    DrawGemPickupAuraStar();
+  if (g_anDragonRescueAuraStarBlock[0] != 0) {
+    ApplyEulerRotation(&g_anDragonRescueAuraStarBlock[10],
+                       &g_anDragonRescueAuraStarBlock[4],
+                       g_anWorldToCameraRotMtx);
+    DrawDragonRescueAuraStar();
   }
 
-  if (g_nGemPickupSubstate == 0) {
+  if (g_nDragonRescueSubstate == 0) {
     BuildRenderEntityLists();
     ComposeFrameScene();
     SetupFrameOT();
     DrawActors();
     RasterizeEmitList();
     {
-      int tint = g_nGemPickupFullscreenTintLevel;
+      int tint = g_nDragonRescueFullscreenTintLevel;
       if (tint != 0) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
@@ -42,17 +43,17 @@ void Gamestate08_Draw(void) {
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nGemPickupSubstate < 4) {
+  } else if (g_nDragonRescueSubstate < 4) {
     unsigned char *act;
     unsigned char id;
     void **ot;
     void **q;
     ot = g_apOtDepthBinBlock;
-    if (((unsigned char *)g_pGemPickupSourceActor)[0x48] < 0x80) {
-      *ot++ = g_pGemPickupSourceActor;
+    if (((unsigned char *)g_pDragonRescueSourceActor)[0x48] < 0x80) {
+      *ot++ = g_pDragonRescueSourceActor;
     }
-    if (g_nGemPickupSubstate == 3) {
-      *ot++ = g_pGemPickupStatueActor;
+    if (g_nDragonRescueSubstate == 3) {
+      *ot++ = g_pDragonRescueStatueActor;
     }
     *ot = 0;
     act = (unsigned char *)g_pActorListBase;
@@ -79,7 +80,7 @@ void Gamestate08_Draw(void) {
     DrawActors();
     RasterizeEmitList();
     {
-      int tint = g_nGemPickupFullscreenTintLevel;
+      int tint = g_nDragonRescueFullscreenTintLevel;
       if (tint != 0) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
@@ -87,14 +88,14 @@ void Gamestate08_Draw(void) {
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nGemPickupSubstate == 4) {
+  } else if (g_nDragonRescueSubstate == 4) {
     unsigned char *act;
     unsigned char id;
     void **ot;
     void **q;
     ot = g_apOtDepthBinBlock;
-    *ot++ = g_pGemPickupStatueActor;
-    *ot++ = g_pGemPickupSpyroMirrorActor;
+    *ot++ = g_pDragonRescueStatueActor;
+    *ot++ = g_pDragonRescueSpyroMirrorActor;
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
     act = (unsigned char *)g_pActorListBase;
@@ -107,7 +108,7 @@ void Gamestate08_Draw(void) {
       id = ACTOR_RAW(act, unsigned char, mode);
     }
     *q = 0;
-    if (g_nGemPickupTimer < 0x3C) {
+    if (g_nDragonRescueTimer < 0x3C) {
       DrawDragonRescuedBanner();
       EnqueuePendingSpritePrims();
     }
@@ -123,13 +124,13 @@ void Gamestate08_Draw(void) {
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nGemPickupSubstate == 5) {
+  } else if (g_nDragonRescueSubstate == 5) {
     void **ot;
     void **q;
     int i;
     ot = g_apOtDepthBinBlock;
     i = 0;
-    *ot++ = g_pGemPickupStatueActor;
+    *ot++ = g_pDragonRescueStatueActor;
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
     icon = &g_abHudIconActorRecords[0x1B8];
@@ -145,12 +146,13 @@ void Gamestate08_Draw(void) {
     if (g_anActorDrawList[0] != 0) {
       short *dl = (short *)g_anActorDrawList;
       int scale;
-      scale = g_anGemPickupScaleCurve[*(volatile int *)&g_nGemPickupTimer];
+      scale =
+          g_anDragonRescueScaleCurve[*(volatile int *)&g_nDragonRescueTimer];
       dl[0x0E] = (dl[0x0E] * scale) >> 12;
       dl[0x0F] = (dl[0x0F] * scale) >> 12;
       dl[0x10] = (dl[0x10] * scale) >> 12;
-      if (g_nGemPickupTimer >= 9) {
-        scale = LookupCosine((g_nGemPickupTimer - 8) * 42);
+      if (g_nDragonRescueTimer >= 9) {
+        scale = LookupCosine((g_nDragonRescueTimer - 8) * 42);
         dl[0x11] = (dl[0x11] * scale) >> 12;
         dl[0x12] = (dl[0x12] * scale) >> 12;
         dl[0x13] = (dl[0x13] * scale) >> 12;
@@ -167,7 +169,7 @@ void Gamestate08_Draw(void) {
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nGemPickupSubstate == 6) {
+  } else if (g_nDragonRescueSubstate == 6) {
     unsigned char *icon;
     void **q;
     int i;
@@ -192,8 +194,8 @@ void Gamestate08_Draw(void) {
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nGemPickupSubstate == 7) {
-    if (g_nGemPickupTimer < 0x10) {
+  } else if (g_nDragonRescueSubstate == 7) {
+    if (g_nDragonRescueTimer < 0x10) {
       int i;
       void **q;
       i = 0;
@@ -228,7 +230,7 @@ void Gamestate08_Draw(void) {
       DrawCinematicLetterbox();
     }
     {
-      int tint = g_nGemPickupFullscreenTintLevel;
+      int tint = g_nDragonRescueFullscreenTintLevel;
       if (tint != 0) {
         DrawFullscreenTint(1, tint, tint, tint);
       }

@@ -231,7 +231,7 @@ extern void SnapCameraToTarget(void);
 extern int g_abDrawBufPool;          /* draw-buffer sentinel */
 extern unsigned int g_adwSpyroRequestMaskBlock[];
 extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
-extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
+extern int g_anDragonRescueAuraStarBlock[]; /* 0x80076248 aura-star state block */
 extern int g_anSaveMenuBlock[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anSpyroStateBlock[];
@@ -248,7 +248,7 @@ extern char *g_apWorldUnpackHeadBlock[];
 extern char *volatile g_pActiveCutsceneSoundDef;
 extern int CdInit(void);
 extern int g_anGamestate0dBlock[];
-extern int g_anGemPickupBlock[];
+extern int g_anDragonRescueBlock[];
 extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroPadSnapshotBlock[];
 extern int g_anSpyroSlopeGravityVec[];

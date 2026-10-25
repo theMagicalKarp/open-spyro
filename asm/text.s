@@ -2940,11 +2940,11 @@ glabel TickWorldBundleLoadStream
 endlabel TickWorldBundleLoadStream
 .endif
 
-.section .text.TickGemPickupAssetStream, "ax"
-.ifndef HAVE_C_TickGemPickupAssetStream
-nonmatching TickGemPickupAssetStream, 0x800
+.section .text.TickDragonRescueAssetStream, "ax"
+.ifndef HAVE_C_TickDragonRescueAssetStream
+nonmatching TickDragonRescueAssetStream, 0x800
 
-glabel TickGemPickupAssetStream
+glabel TickDragonRescueAssetStream
     /* 5370 80014B70 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 5374 80014B74 5400BFAF */  sw         $ra, 0x54($sp)
     /* 5378 80014B78 5000B4AF */  sw         $s4, 0x50($sp)
@@ -2970,8 +2970,8 @@ glabel TickGemPickupAssetStream
     /* 53C8 80014BC8 40004230 */  andi       $v0, $v0, 0x40
     /* 53CC 80014BCC DF014010 */  beqz       $v0, .L8001534C
     /* 53D0 80014BD0 00000000 */   nop
-    /* 53D4 80014BD4 0780033C */  lui        $v1, %hi(g_nGemPickupStreamState)
-    /* 53D8 80014BD8 5C70638C */  lw         $v1, %lo(g_nGemPickupStreamState)($v1)
+    /* 53D4 80014BD4 0780033C */  lui        $v1, %hi(g_nDragonRescueStreamState)
+    /* 53D8 80014BD8 5C70638C */  lw         $v1, %lo(g_nDragonRescueStreamState)($v1)
     /* 53DC 80014BDC 00000000 */  nop
     /* 53E0 80014BE0 0600622C */  sltiu      $v0, $v1, 0x6
     /* 53E4 80014BE4 D9014010 */  beqz       $v0, .L8001534C
@@ -2983,8 +2983,8 @@ glabel TickGemPickupAssetStream
     /* 53FC 80014BFC 08004000 */  jr         $v0
     /* 5400 80014C00 00000000 */   nop
   jlabel .L80014C04
-    /* 5404 80014C04 0780023C */  lui        $v0, %hi(g_nGemPickupTypeSnapshot)
-    /* 5408 80014C08 5470428C */  lw         $v0, %lo(g_nGemPickupTypeSnapshot)($v0)
+    /* 5404 80014C04 0780023C */  lui        $v0, %hi(g_nDragonRescueTypeSnapshot)
+    /* 5408 80014C08 5470428C */  lw         $v0, %lo(g_nDragonRescueTypeSnapshot)($v0)
     /* 540C 80014C0C 0780043C */  lui        $a0, %hi(g_nWorldUnpackLimit)
     /* 5410 80014C10 6067848C */  lw         $a0, %lo(g_nWorldUnpackLimit)($a0)
     /* 5414 80014C14 0880033C */  lui        $v1, %hi(g_pWorldUnpackHead)
@@ -2997,10 +2997,10 @@ glabel TickGemPickupAssetStream
     /* 5430 80014C30 2A108500 */  slt        $v0, $a0, $a1
     /* 5434 80014C34 07004014 */  bnez       $v0, .L80014C54
     /* 5438 80014C38 21108000 */   addu      $v0, $a0, $zero
-    /* 543C 80014C3C 0780013C */  lui        $at, %hi(g_nGemPickupReadByteCount)
-    /* 5440 80014C40 687025AC */  sw         $a1, %lo(g_nGemPickupReadByteCount)($at)
-    /* 5444 80014C44 0780013C */  lui        $at, %hi(g_nGemPickupSplitFlag)
-    /* 5448 80014C48 647020AC */  sw         $zero, %lo(g_nGemPickupSplitFlag)($at)
+    /* 543C 80014C3C 0780013C */  lui        $at, %hi(g_nDragonRescueReadByteCount)
+    /* 5440 80014C40 687025AC */  sw         $a1, %lo(g_nDragonRescueReadByteCount)($at)
+    /* 5444 80014C44 0780013C */  lui        $at, %hi(g_nDragonRescueSplitFlag)
+    /* 5448 80014C48 647020AC */  sw         $zero, %lo(g_nDragonRescueSplitFlag)($at)
     /* 544C 80014C4C 1F530008 */  j          .L80014C7C
     /* 5450 80014C50 00000000 */   nop
   .L80014C54:
@@ -3010,20 +3010,20 @@ glabel TickGemPickupAssetStream
   .L80014C60:
     /* 5460 80014C60 C3120200 */  sra        $v0, $v0, 11
     /* 5464 80014C64 C0120200 */  sll        $v0, $v0, 11
-    /* 5468 80014C68 0780013C */  lui        $at, %hi(g_nGemPickupReadByteCount)
-    /* 546C 80014C6C 687022AC */  sw         $v0, %lo(g_nGemPickupReadByteCount)($at)
+    /* 5468 80014C68 0780013C */  lui        $at, %hi(g_nDragonRescueReadByteCount)
+    /* 546C 80014C6C 687022AC */  sw         $v0, %lo(g_nDragonRescueReadByteCount)($at)
     /* 5470 80014C70 01000224 */  addiu      $v0, $zero, 0x1
-    /* 5474 80014C74 0780013C */  lui        $at, %hi(g_nGemPickupSplitFlag)
-    /* 5478 80014C78 647022AC */  sw         $v0, %lo(g_nGemPickupSplitFlag)($at)
+    /* 5474 80014C74 0780013C */  lui        $at, %hi(g_nDragonRescueSplitFlag)
+    /* 5478 80014C78 647022AC */  sw         $v0, %lo(g_nDragonRescueSplitFlag)($at)
   .L80014C7C:
     /* 547C 80014C7C 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5480 80014C80 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 5484 80014C84 0880053C */  lui        $a1, %hi(g_pWorldUnpackHead)
     /* 5488 80014C88 E085A58C */  lw         $a1, %lo(g_pWorldUnpackHead)($a1)
-    /* 548C 80014C8C 0780063C */  lui        $a2, %hi(g_nGemPickupReadByteCount)
-    /* 5490 80014C90 6870C68C */  lw         $a2, %lo(g_nGemPickupReadByteCount)($a2)
-    /* 5494 80014C94 0780023C */  lui        $v0, %hi(g_nGemPickupTypeSnapshot)
-    /* 5498 80014C98 5470428C */  lw         $v0, %lo(g_nGemPickupTypeSnapshot)($v0)
+    /* 548C 80014C8C 0780063C */  lui        $a2, %hi(g_nDragonRescueReadByteCount)
+    /* 5490 80014C90 6870C68C */  lw         $a2, %lo(g_nDragonRescueReadByteCount)($a2)
+    /* 5494 80014C94 0780023C */  lui        $v0, %hi(g_nDragonRescueTypeSnapshot)
+    /* 5498 80014C98 5470428C */  lw         $v0, %lo(g_nDragonRescueTypeSnapshot)($v0)
     /* 549C 80014C9C 0780033C */  lui        $v1, %hi(g_nLevelIndex)
     /* 54A0 80014CA0 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 54A4 80014CA4 C0100200 */  sll        $v0, $v0, 3
@@ -3041,63 +3041,63 @@ glabel TickGemPickupAssetStream
     /* 54D4 80014CD4 02540008 */  j          .L80015008
     /* 54D8 80014CD8 00000000 */   nop
   jlabel .L80014CDC
-    /* 54DC 80014CDC 0780043C */  lui        $a0, %hi(g_abGemPickupAssetHeader)
-    /* 54E0 80014CE0 30708424 */  addiu      $a0, $a0, %lo(g_abGemPickupAssetHeader)
+    /* 54DC 80014CDC 0780043C */  lui        $a0, %hi(g_abDragonRescueAssetHeader)
+    /* 54E0 80014CE0 30708424 */  addiu      $a0, $a0, %lo(g_abDragonRescueAssetHeader)
     /* 54E4 80014CE4 0880103C */  lui        $s0, %hi(g_pWorldUnpackHead)
     /* 54E8 80014CE8 E0851026 */  addiu      $s0, $s0, %lo(g_pWorldUnpackHead)
     /* 54EC 80014CEC 0000058E */  lw         $a1, 0x0($s0)
     /* 54F0 80014CF0 565A000C */  jal        CopyWords
     /* 54F4 80014CF4 24000624 */   addiu     $a2, $zero, 0x24
-    /* 54F8 80014CF8 0780023C */  lui        $v0, %hi(g_nGemPickupSplitFlag)
-    /* 54FC 80014CFC 6470428C */  lw         $v0, %lo(g_nGemPickupSplitFlag)($v0)
+    /* 54F8 80014CF8 0780023C */  lui        $v0, %hi(g_nDragonRescueSplitFlag)
+    /* 54FC 80014CFC 6470428C */  lw         $v0, %lo(g_nDragonRescueSplitFlag)($v0)
     /* 5500 80014D00 00000000 */  nop
     /* 5504 80014D04 23004014 */  bnez       $v0, .L80014D94
     /* 5508 80014D08 AA2A023C */   lui       $v0, (0x2AAAAAAB >> 16)
-    /* 550C 80014D0C 0780053C */  lui        $a1, %hi(g_nGemPickupCameraPathSize)
-    /* 5510 80014D10 5070A58C */  lw         $a1, %lo(g_nGemPickupCameraPathSize)($a1)
+    /* 550C 80014D0C 0780053C */  lui        $a1, %hi(g_nDragonRescueCameraPathSize)
+    /* 5510 80014D10 5070A58C */  lw         $a1, %lo(g_nDragonRescueCameraPathSize)($a1)
     /* 5514 80014D14 ABAA4234 */  ori        $v0, $v0, (0x2AAAAAAB & 0xFFFF)
     /* 5518 80014D18 1800A200 */  mult       $a1, $v0
-    /* 551C 80014D1C 0780043C */  lui        $a0, %hi(g_nGemPickupHeaderEndOffset)
-    /* 5520 80014D20 3C70848C */  lw         $a0, %lo(g_nGemPickupHeaderEndOffset)($a0)
-    /* 5524 80014D24 0780033C */  lui        $v1, %hi(g_nGemPickupCameraPathOffset)
-    /* 5528 80014D28 4C70638C */  lw         $v1, %lo(g_nGemPickupCameraPathOffset)($v1)
+    /* 551C 80014D1C 0780043C */  lui        $a0, %hi(g_nDragonRescueHeaderEndOffset)
+    /* 5520 80014D20 3C70848C */  lw         $a0, %lo(g_nDragonRescueHeaderEndOffset)($a0)
+    /* 5524 80014D24 0780033C */  lui        $v1, %hi(g_nDragonRescueCameraPathOffset)
+    /* 5528 80014D28 4C70638C */  lw         $v1, %lo(g_nDragonRescueCameraPathOffset)($v1)
     /* 552C 80014D2C 0000028E */  lw         $v0, 0x0($s0)
     /* 5530 80014D30 C32F0500 */  sra        $a1, $a1, 31
     /* 5534 80014D34 21204400 */  addu       $a0, $v0, $a0
     /* 5538 80014D38 21104300 */  addu       $v0, $v0, $v1
-    /* 553C 80014D3C 0780013C */  lui        $at, %hi(g_pGemPickupCameraPath)
-    /* 5540 80014D40 787022AC */  sw         $v0, %lo(g_pGemPickupCameraPath)($at)
+    /* 553C 80014D3C 0780013C */  lui        $at, %hi(g_pDragonRescueCameraPath)
+    /* 5540 80014D40 787022AC */  sw         $v0, %lo(g_pDragonRescueCameraPath)($at)
     /* 5544 80014D44 10480000 */  mfhi       $t1
     /* 5548 80014D48 83100900 */  sra        $v0, $t1, 2
     /* 554C 80014D4C 23104500 */  subu       $v0, $v0, $a1
-    /* 5550 80014D50 0780013C */  lui        $at, %hi(g_nGemPickupCameraPathCount)
-    /* 5554 80014D54 7C7022AC */  sw         $v0, %lo(g_nGemPickupCameraPathCount)($at)
+    /* 5550 80014D50 0780013C */  lui        $at, %hi(g_nDragonRescueCameraPathCount)
+    /* 5554 80014D54 7C7022AC */  sw         $v0, %lo(g_nDragonRescueCameraPathCount)($at)
     /* 5558 80014D58 F84C000C */  jal        RelocateActorMeshHeader
     /* 555C 80014D5C 00000000 */   nop
     /* 5560 80014D60 0000038E */  lw         $v1, 0x0($s0)
-    /* 5564 80014D64 0780043C */  lui        $a0, %hi(g_nGemPickupMirrorMeshOffset)
-    /* 5568 80014D68 4470848C */  lw         $a0, %lo(g_nGemPickupMirrorMeshOffset)($a0)
-    /* 556C 80014D6C 0780013C */  lui        $at, %hi(g_pGemPickupStatueModelData)
-    /* 5570 80014D70 706B22AC */  sw         $v0, %lo(g_pGemPickupStatueModelData)($at)
+    /* 5564 80014D64 0780043C */  lui        $a0, %hi(g_nDragonRescueMirrorMeshOffset)
+    /* 5568 80014D68 4470848C */  lw         $a0, %lo(g_nDragonRescueMirrorMeshOffset)($a0)
+    /* 556C 80014D6C 0780013C */  lui        $at, %hi(g_pDragonRescueStatueModelData)
+    /* 5570 80014D70 706B22AC */  sw         $v0, %lo(g_pDragonRescueStatueModelData)($at)
     /* 5574 80014D74 F84C000C */  jal        RelocateActorMeshHeader
     /* 5578 80014D78 21206400 */   addu      $a0, $v1, $a0
-    /* 557C 80014D7C 0780013C */  lui        $at, %hi(g_pGemPickupMirrorModelData)
-    /* 5580 80014D80 746B22AC */  sw         $v0, %lo(g_pGemPickupMirrorModelData)($at)
-    /* 5584 80014D84 0780013C */  lui        $at, %hi(g_nGemPickupSpuChunkIndex)
-    /* 5588 80014D88 607020AC */  sw         $zero, %lo(g_nGemPickupSpuChunkIndex)($at)
+    /* 557C 80014D7C 0780013C */  lui        $at, %hi(g_pDragonRescueMirrorModelData)
+    /* 5580 80014D80 746B22AC */  sw         $v0, %lo(g_pDragonRescueMirrorModelData)($at)
+    /* 5584 80014D84 0780013C */  lui        $at, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 5588 80014D88 607020AC */  sw         $zero, %lo(g_nDragonRescueSpuChunkIndex)($at)
     /* 558C 80014D8C CD540008 */  j          .L80015334
     /* 5590 80014D90 00000000 */   nop
   .L80014D94:
-    /* 5594 80014D94 0780023C */  lui        $v0, %hi(g_nGemPickupAudioSampleSize)
-    /* 5598 80014D98 3870428C */  lw         $v0, %lo(g_nGemPickupAudioSampleSize)($v0)
+    /* 5594 80014D94 0780023C */  lui        $v0, %hi(g_nDragonRescueAudioSampleSize)
+    /* 5598 80014D98 3870428C */  lw         $v0, %lo(g_nDragonRescueAudioSampleSize)($v0)
     /* 559C 80014D9C 0800043C */  lui        $a0, (0x80000 >> 16)
     /* 55A0 80014DA0 C972010C */  jal        SetSpuTransferStartAddr
     /* 55A4 80014DA4 23208200 */   subu      $a0, $a0, $v0
     /* 55A8 80014DA8 0000028E */  lw         $v0, 0x0($s0)
-    /* 55AC 80014DAC 0780043C */  lui        $a0, %hi(g_nGemPickupAudioSampleOffset)
-    /* 55B0 80014DB0 3470848C */  lw         $a0, %lo(g_nGemPickupAudioSampleOffset)($a0)
-    /* 55B4 80014DB4 0780053C */  lui        $a1, %hi(g_nGemPickupAudioSampleSize)
-    /* 55B8 80014DB8 3870A58C */  lw         $a1, %lo(g_nGemPickupAudioSampleSize)($a1)
+    /* 55AC 80014DAC 0780043C */  lui        $a0, %hi(g_nDragonRescueAudioSampleOffset)
+    /* 55B0 80014DB0 3470848C */  lw         $a0, %lo(g_nDragonRescueAudioSampleOffset)($a0)
+    /* 55B4 80014DB4 0780053C */  lui        $a1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 55B8 80014DB8 3870A58C */  lw         $a1, %lo(g_nDragonRescueAudioSampleSize)($a1)
     /* 55BC 80014DBC B172010C */  jal        WriteSpuRam
     /* 55C0 80014DC0 21204400 */   addu      $a0, $v0, $a0
   .L80014DC4:
@@ -3107,28 +3107,28 @@ glabel TickGemPickupAssetStream
     /* 55D0 80014DD0 00000000 */   nop
     /* 55D4 80014DD4 0880113C */  lui        $s1, %hi(g_pWorldUnpackHead)
     /* 55D8 80014DD8 E0853126 */  addiu      $s1, $s1, %lo(g_pWorldUnpackHead)
-    /* 55DC 80014DDC 0780103C */  lui        $s0, %hi(g_nGemPickupHeaderEndOffset)
-    /* 55E0 80014DE0 3C701026 */  addiu      $s0, $s0, %lo(g_nGemPickupHeaderEndOffset)
+    /* 55DC 80014DDC 0780103C */  lui        $s0, %hi(g_nDragonRescueHeaderEndOffset)
+    /* 55E0 80014DE0 3C701026 */  addiu      $s0, $s0, %lo(g_nDragonRescueHeaderEndOffset)
     /* 55E4 80014DE4 0000248E */  lw         $a0, 0x0($s1)
     /* 55E8 80014DE8 0000028E */  lw         $v0, 0x0($s0)
-    /* 55EC 80014DEC 0780063C */  lui        $a2, %hi(g_nGemPickupReadByteCount)
-    /* 55F0 80014DF0 6870C68C */  lw         $a2, %lo(g_nGemPickupReadByteCount)($a2)
+    /* 55EC 80014DEC 0780063C */  lui        $a2, %hi(g_nDragonRescueReadByteCount)
+    /* 55F0 80014DF0 6870C68C */  lw         $a2, %lo(g_nDragonRescueReadByteCount)($a2)
     /* 55F4 80014DF4 21288200 */  addu       $a1, $a0, $v0
     /* 55F8 80014DF8 565A000C */  jal        CopyWords
     /* 55FC 80014DFC 2330C200 */   subu      $a2, $a2, $v0
     /* 5600 80014E00 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5604 80014E04 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 5608 80014E08 0000258E */  lw         $a1, 0x0($s1)
-    /* 560C 80014E0C 0780083C */  lui        $t0, %hi(g_nGemPickupReadByteCount)
-    /* 5610 80014E10 6870088D */  lw         $t0, %lo(g_nGemPickupReadByteCount)($t0)
+    /* 560C 80014E0C 0780083C */  lui        $t0, %hi(g_nDragonRescueReadByteCount)
+    /* 5610 80014E10 6870088D */  lw         $t0, %lo(g_nDragonRescueReadByteCount)($t0)
     /* 5614 80014E14 0000028E */  lw         $v0, 0x0($s0)
     /* 5618 80014E18 0780033C */  lui        $v1, %hi(g_nLevelIndex)
     /* 561C 80014E1C 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 5620 80014E20 2128A800 */  addu       $a1, $a1, $t0
     /* 5624 80014E24 2328A200 */  subu       $a1, $a1, $v0
     /* 5628 80014E28 00190300 */  sll        $v1, $v1, 4
-    /* 562C 80014E2C 0780023C */  lui        $v0, %hi(g_nGemPickupTypeSnapshot)
-    /* 5630 80014E30 5470428C */  lw         $v0, %lo(g_nGemPickupTypeSnapshot)($v0)
+    /* 562C 80014E2C 0780023C */  lui        $v0, %hi(g_nDragonRescueTypeSnapshot)
+    /* 5630 80014E30 5470428C */  lw         $v0, %lo(g_nDragonRescueTypeSnapshot)($v0)
     /* 5634 80014E34 0880013C */  lui        $at, %hi(g_nLevelArchiveOffset)
     /* 5638 80014E38 21082300 */  addu       $at, $at, $v1
     /* 563C 80014E3C 20A7238C */  lw         $v1, %lo(g_nLevelArchiveOffset)($at)
@@ -3148,22 +3148,22 @@ glabel TickGemPickupAssetStream
     /* 5674 80014E74 CD540008 */  j          .L80015334
     /* 5678 80014E78 00000000 */   nop
   jlabel .L80014E7C
-    /* 567C 80014E7C 0780023C */  lui        $v0, %hi(g_nGemPickupSubstate)
-    /* 5680 80014E80 5870428C */  lw         $v0, %lo(g_nGemPickupSubstate)($v0)
+    /* 567C 80014E7C 0780023C */  lui        $v0, %hi(g_nDragonRescueSubstate)
+    /* 5680 80014E80 5870428C */  lw         $v0, %lo(g_nDragonRescueSubstate)($v0)
     /* 5684 80014E84 00000000 */  nop
     /* 5688 80014E88 02004228 */  slti       $v0, $v0, 0x2
     /* 568C 80014E8C 2F014014 */  bnez       $v0, .L8001534C
     /* 5690 80014E90 00000000 */   nop
-    /* 5694 80014E94 0780023C */  lui        $v0, %hi(g_nGemPickupSplitFlag)
-    /* 5698 80014E98 6470428C */  lw         $v0, %lo(g_nGemPickupSplitFlag)($v0)
+    /* 5694 80014E94 0780023C */  lui        $v0, %hi(g_nDragonRescueSplitFlag)
+    /* 5698 80014E98 6470428C */  lw         $v0, %lo(g_nDragonRescueSplitFlag)($v0)
     /* 569C 80014E9C 00000000 */  nop
     /* 56A0 80014EA0 61004014 */  bnez       $v0, .L80015028
     /* 56A4 80014EA4 AA2A023C */   lui       $v0, (0x2AAAAAAB >> 16)
     /* 56A8 80014EA8 0800023C */  lui        $v0, (0x80000 >> 16)
-    /* 56AC 80014EAC 0780043C */  lui        $a0, %hi(g_nGemPickupSpuChunkIndex)
-    /* 56B0 80014EB0 6070848C */  lw         $a0, %lo(g_nGemPickupSpuChunkIndex)($a0)
-    /* 56B4 80014EB4 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleSize)
-    /* 56B8 80014EB8 3870638C */  lw         $v1, %lo(g_nGemPickupAudioSampleSize)($v1)
+    /* 56AC 80014EAC 0780043C */  lui        $a0, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 56B0 80014EB0 6070848C */  lw         $a0, %lo(g_nDragonRescueSpuChunkIndex)($a0)
+    /* 56B4 80014EB4 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 56B8 80014EB8 3870638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleSize)($v1)
     /* 56BC 80014EBC C0230400 */  sll        $a0, $a0, 15
     /* 56C0 80014EC0 21208200 */  addu       $a0, $a0, $v0
     /* 56C4 80014EC4 C972010C */  jal        SetSpuTransferStartAddr
@@ -3182,10 +3182,10 @@ glabel TickGemPickupAssetStream
     /* 56F4 80014EF4 0780123C */  lui        $s2, %hi(g_pFramePrimBufferBase0)
     /* 56F8 80014EF8 506F528E */  lw         $s2, %lo(g_pFramePrimBufferBase0)($s2)
   .L80014EFC:
-    /* 56FC 80014EFC 0780023C */  lui        $v0, %hi(g_nGemPickupSpuChunkIndex)
-    /* 5700 80014F00 6070428C */  lw         $v0, %lo(g_nGemPickupSpuChunkIndex)($v0)
-    /* 5704 80014F04 0780043C */  lui        $a0, %hi(g_nGemPickupAudioSampleSize)
-    /* 5708 80014F08 3870848C */  lw         $a0, %lo(g_nGemPickupAudioSampleSize)($a0)
+    /* 56FC 80014EFC 0780023C */  lui        $v0, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 5700 80014F00 6070428C */  lw         $v0, %lo(g_nDragonRescueSpuChunkIndex)($v0)
+    /* 5704 80014F04 0780043C */  lui        $a0, %hi(g_nDragonRescueAudioSampleSize)
+    /* 5708 80014F08 3870848C */  lw         $a0, %lo(g_nDragonRescueAudioSampleSize)($a0)
     /* 570C 80014F0C C0130200 */  sll        $v0, $v0, 15
     /* 5710 80014F10 21104300 */  addu       $v0, $v0, $v1
     /* 5714 80014F14 2A108200 */  slt        $v0, $a0, $v0
@@ -3207,11 +3207,11 @@ glabel TickGemPickupAssetStream
     /* 5748 80014F48 21200000 */   addu      $a0, $zero, $zero
     /* 574C 80014F4C FDFF4010 */  beqz       $v0, .L80014F44
     /* 5750 80014F50 0800023C */   lui       $v0, (0x80000 >> 16)
-    /* 5754 80014F54 0780103C */  lui        $s0, %hi(g_nGemPickupSpuChunkIndex)
-    /* 5758 80014F58 60701026 */  addiu      $s0, $s0, %lo(g_nGemPickupSpuChunkIndex)
+    /* 5754 80014F54 0780103C */  lui        $s0, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 5758 80014F58 60701026 */  addiu      $s0, $s0, %lo(g_nDragonRescueSpuChunkIndex)
     /* 575C 80014F5C 0000048E */  lw         $a0, 0x0($s0)
-    /* 5760 80014F60 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleSize)
-    /* 5764 80014F64 3870638C */  lw         $v1, %lo(g_nGemPickupAudioSampleSize)($v1)
+    /* 5760 80014F60 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 5764 80014F64 3870638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleSize)($v1)
     /* 5768 80014F68 C0230400 */  sll        $a0, $a0, 15
     /* 576C 80014F6C 21208200 */  addu       $a0, $a0, $v0
     /* 5770 80014F70 C972010C */  jal        SetSpuTransferStartAddr
@@ -3219,8 +3219,8 @@ glabel TickGemPickupAssetStream
     /* 5778 80014F78 21282002 */  addu       $a1, $s1, $zero
     /* 577C 80014F7C 0880023C */  lui        $v0, %hi(g_pWorldUnpackHead)
     /* 5780 80014F80 E085428C */  lw         $v0, %lo(g_pWorldUnpackHead)($v0)
-    /* 5784 80014F84 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleOffset)
-    /* 5788 80014F88 3470638C */  lw         $v1, %lo(g_nGemPickupAudioSampleOffset)($v1)
+    /* 5784 80014F84 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleOffset)
+    /* 5788 80014F88 3470638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleOffset)($v1)
     /* 578C 80014F8C 0000048E */  lw         $a0, 0x0($s0)
     /* 5790 80014F90 21104300 */  addu       $v0, $v0, $v1
     /* 5794 80014F94 C0230400 */  sll        $a0, $a0, 15
@@ -3234,92 +3234,92 @@ glabel TickGemPickupAssetStream
     /* 57B0 80014FB0 21302002 */  addu       $a2, $s1, $zero
     /* 57B4 80014FB4 0880023C */  lui        $v0, %hi(g_pWorldUnpackHead)
     /* 57B8 80014FB8 E085428C */  lw         $v0, %lo(g_pWorldUnpackHead)($v0)
-    /* 57BC 80014FBC 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleOffset)
-    /* 57C0 80014FC0 3470638C */  lw         $v1, %lo(g_nGemPickupAudioSampleOffset)($v1)
-    /* 57C4 80014FC4 0780043C */  lui        $a0, %hi(g_nGemPickupSpuChunkIndex)
-    /* 57C8 80014FC8 6070848C */  lw         $a0, %lo(g_nGemPickupSpuChunkIndex)($a0)
+    /* 57BC 80014FBC 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleOffset)
+    /* 57C0 80014FC0 3470638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleOffset)($v1)
+    /* 57C4 80014FC4 0780043C */  lui        $a0, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 57C8 80014FC8 6070848C */  lw         $a0, %lo(g_nDragonRescueSpuChunkIndex)($a0)
     /* 57CC 80014FCC 21104300 */  addu       $v0, $v0, $v1
     /* 57D0 80014FD0 C0230400 */  sll        $a0, $a0, 15
     /* 57D4 80014FD4 565A000C */  jal        CopyWords
     /* 57D8 80014FD8 21204400 */   addu      $a0, $v0, $a0
-    /* 57DC 80014FDC 0780023C */  lui        $v0, %hi(g_nGemPickupSpuChunkIndex)
-    /* 57E0 80014FE0 6070428C */  lw         $v0, %lo(g_nGemPickupSpuChunkIndex)($v0)
-    /* 57E4 80014FE4 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleSize)
-    /* 57E8 80014FE8 3870638C */  lw         $v1, %lo(g_nGemPickupAudioSampleSize)($v1)
+    /* 57DC 80014FDC 0780023C */  lui        $v0, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 57E0 80014FE0 6070428C */  lw         $v0, %lo(g_nDragonRescueSpuChunkIndex)($v0)
+    /* 57E4 80014FE4 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 57E8 80014FE8 3870638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleSize)($v1)
     /* 57EC 80014FEC 01004224 */  addiu      $v0, $v0, 0x1
-    /* 57F0 80014FF0 0780013C */  lui        $at, %hi(g_nGemPickupSpuChunkIndex)
-    /* 57F4 80014FF4 607022AC */  sw         $v0, %lo(g_nGemPickupSpuChunkIndex)($at)
+    /* 57F0 80014FF0 0780013C */  lui        $at, %hi(g_nDragonRescueSpuChunkIndex)
+    /* 57F4 80014FF4 607022AC */  sw         $v0, %lo(g_nDragonRescueSpuChunkIndex)($at)
     /* 57F8 80014FF8 C0130200 */  sll        $v0, $v0, 15
     /* 57FC 80014FFC 2A104300 */  slt        $v0, $v0, $v1
     /* 5800 80015000 D2004014 */  bnez       $v0, .L8001534C
     /* 5804 80015004 00000000 */   nop
   .L80015008:
-    /* 5808 80015008 0780023C */  lui        $v0, %hi(g_nGemPickupStreamState)
-    /* 580C 8001500C 5C70428C */  lw         $v0, %lo(g_nGemPickupStreamState)($v0)
+    /* 5808 80015008 0780023C */  lui        $v0, %hi(g_nDragonRescueStreamState)
+    /* 580C 8001500C 5C70428C */  lw         $v0, %lo(g_nDragonRescueStreamState)($v0)
     /* 5810 80015010 00000000 */  nop
     /* 5814 80015014 01004224 */  addiu      $v0, $v0, 0x1
-    /* 5818 80015018 0780013C */  lui        $at, %hi(g_nGemPickupStreamState)
-    /* 581C 8001501C 5C7022AC */  sw         $v0, %lo(g_nGemPickupStreamState)($at)
+    /* 5818 80015018 0780013C */  lui        $at, %hi(g_nDragonRescueStreamState)
+    /* 581C 8001501C 5C7022AC */  sw         $v0, %lo(g_nDragonRescueStreamState)($at)
     /* 5820 80015020 D3540008 */  j          .L8001534C
     /* 5824 80015024 00000000 */   nop
   .L80015028:
-    /* 5828 80015028 0780053C */  lui        $a1, %hi(g_nGemPickupCameraPathSize)
-    /* 582C 8001502C 5070A58C */  lw         $a1, %lo(g_nGemPickupCameraPathSize)($a1)
+    /* 5828 80015028 0780053C */  lui        $a1, %hi(g_nDragonRescueCameraPathSize)
+    /* 582C 8001502C 5070A58C */  lw         $a1, %lo(g_nDragonRescueCameraPathSize)($a1)
     /* 5830 80015030 ABAA4234 */  ori        $v0, $v0, (0x2AAAAAAB & 0xFFFF)
     /* 5834 80015034 1800A200 */  mult       $a1, $v0
     /* 5838 80015038 0880103C */  lui        $s0, %hi(g_pWorldUnpackHead)
     /* 583C 8001503C E0851026 */  addiu      $s0, $s0, %lo(g_pWorldUnpackHead)
     /* 5840 80015040 0000048E */  lw         $a0, 0x0($s0)
-    /* 5844 80015044 0780033C */  lui        $v1, %hi(g_nGemPickupCameraPathOffset)
-    /* 5848 80015048 4C70638C */  lw         $v1, %lo(g_nGemPickupCameraPathOffset)($v1)
+    /* 5844 80015044 0780033C */  lui        $v1, %hi(g_nDragonRescueCameraPathOffset)
+    /* 5848 80015048 4C70638C */  lw         $v1, %lo(g_nDragonRescueCameraPathOffset)($v1)
     /* 584C 8001504C 00000000 */  nop
     /* 5850 80015050 21188300 */  addu       $v1, $a0, $v1
-    /* 5854 80015054 0780023C */  lui        $v0, %hi(g_nGemPickupHeaderEndOffset)
-    /* 5858 80015058 3C70428C */  lw         $v0, %lo(g_nGemPickupHeaderEndOffset)($v0)
+    /* 5854 80015054 0780023C */  lui        $v0, %hi(g_nDragonRescueHeaderEndOffset)
+    /* 5858 80015058 3C70428C */  lw         $v0, %lo(g_nDragonRescueHeaderEndOffset)($v0)
     /* 585C 8001505C C32F0500 */  sra        $a1, $a1, 31
     /* 5860 80015060 23186200 */  subu       $v1, $v1, $v0
-    /* 5864 80015064 0780013C */  lui        $at, %hi(g_pGemPickupCameraPath)
-    /* 5868 80015068 787023AC */  sw         $v1, %lo(g_pGemPickupCameraPath)($at)
+    /* 5864 80015064 0780013C */  lui        $at, %hi(g_pDragonRescueCameraPath)
+    /* 5868 80015068 787023AC */  sw         $v1, %lo(g_pDragonRescueCameraPath)($at)
     /* 586C 8001506C 10480000 */  mfhi       $t1
     /* 5870 80015070 83100900 */  sra        $v0, $t1, 2
     /* 5874 80015074 23104500 */  subu       $v0, $v0, $a1
-    /* 5878 80015078 0780013C */  lui        $at, %hi(g_nGemPickupCameraPathCount)
-    /* 587C 8001507C 7C7022AC */  sw         $v0, %lo(g_nGemPickupCameraPathCount)($at)
+    /* 5878 80015078 0780013C */  lui        $at, %hi(g_nDragonRescueCameraPathCount)
+    /* 587C 8001507C 7C7022AC */  sw         $v0, %lo(g_nDragonRescueCameraPathCount)($at)
     /* 5880 80015080 F84C000C */  jal        RelocateActorMeshHeader
     /* 5884 80015084 00000000 */   nop
-    /* 5888 80015088 0780013C */  lui        $at, %hi(g_pGemPickupStatueModelData)
-    /* 588C 8001508C 706B22AC */  sw         $v0, %lo(g_pGemPickupStatueModelData)($at)
+    /* 5888 80015088 0780013C */  lui        $at, %hi(g_pDragonRescueStatueModelData)
+    /* 588C 8001508C 706B22AC */  sw         $v0, %lo(g_pDragonRescueStatueModelData)($at)
     /* 5890 80015090 0000048E */  lw         $a0, 0x0($s0)
-    /* 5894 80015094 0780023C */  lui        $v0, %hi(g_nGemPickupMirrorMeshOffset)
-    /* 5898 80015098 4470428C */  lw         $v0, %lo(g_nGemPickupMirrorMeshOffset)($v0)
-    /* 589C 8001509C 0780033C */  lui        $v1, %hi(g_nGemPickupHeaderEndOffset)
-    /* 58A0 800150A0 3C70638C */  lw         $v1, %lo(g_nGemPickupHeaderEndOffset)($v1)
+    /* 5894 80015094 0780023C */  lui        $v0, %hi(g_nDragonRescueMirrorMeshOffset)
+    /* 5898 80015098 4470428C */  lw         $v0, %lo(g_nDragonRescueMirrorMeshOffset)($v0)
+    /* 589C 8001509C 0780033C */  lui        $v1, %hi(g_nDragonRescueHeaderEndOffset)
+    /* 58A0 800150A0 3C70638C */  lw         $v1, %lo(g_nDragonRescueHeaderEndOffset)($v1)
     /* 58A4 800150A4 21208200 */  addu       $a0, $a0, $v0
     /* 58A8 800150A8 F84C000C */  jal        RelocateActorMeshHeader
     /* 58AC 800150AC 23208300 */   subu      $a0, $a0, $v1
-    /* 58B0 800150B0 0780033C */  lui        $v1, %hi(g_nGemPickupStreamState)
-    /* 58B4 800150B4 5C70638C */  lw         $v1, %lo(g_nGemPickupStreamState)($v1)
-    /* 58B8 800150B8 0780013C */  lui        $at, %hi(g_pGemPickupMirrorModelData)
-    /* 58BC 800150BC 746B22AC */  sw         $v0, %lo(g_pGemPickupMirrorModelData)($at)
+    /* 58B0 800150B0 0780033C */  lui        $v1, %hi(g_nDragonRescueStreamState)
+    /* 58B4 800150B4 5C70638C */  lw         $v1, %lo(g_nDragonRescueStreamState)($v1)
+    /* 58B8 800150B8 0780013C */  lui        $at, %hi(g_pDragonRescueMirrorModelData)
+    /* 58BC 800150BC 746B22AC */  sw         $v0, %lo(g_pDragonRescueMirrorModelData)($at)
     /* 58C0 800150C0 01006324 */  addiu      $v1, $v1, 0x1
-    /* 58C4 800150C4 0780013C */  lui        $at, %hi(g_nGemPickupStreamState)
-    /* 58C8 800150C8 5C7023AC */  sw         $v1, %lo(g_nGemPickupStreamState)($at)
+    /* 58C4 800150C4 0780013C */  lui        $at, %hi(g_nDragonRescueStreamState)
+    /* 58C8 800150C8 5C7023AC */  sw         $v1, %lo(g_nDragonRescueStreamState)($at)
     /* 58CC 800150CC D3540008 */  j          .L8001534C
     /* 58D0 800150D0 00000000 */   nop
   jlabel .L800150D4
-    /* 58D4 800150D4 0780023C */  lui        $v0, %hi(g_nGemPickupSubstate)
-    /* 58D8 800150D8 5870428C */  lw         $v0, %lo(g_nGemPickupSubstate)($v0)
+    /* 58D4 800150D4 0780023C */  lui        $v0, %hi(g_nDragonRescueSubstate)
+    /* 58D8 800150D8 5870428C */  lw         $v0, %lo(g_nDragonRescueSubstate)($v0)
     /* 58DC 800150DC 00000000 */  nop
     /* 58E0 800150E0 06004228 */  slti       $v0, $v0, 0x6
     /* 58E4 800150E4 99004014 */  bnez       $v0, .L8001534C
     /* 58E8 800150E8 01000224 */   addiu     $v0, $zero, 0x1
-    /* 58EC 800150EC 0780033C */  lui        $v1, %hi(g_nGemPickupSplitFlag)
-    /* 58F0 800150F0 6470638C */  lw         $v1, %lo(g_nGemPickupSplitFlag)($v1)
+    /* 58EC 800150EC 0780033C */  lui        $v1, %hi(g_nDragonRescueSplitFlag)
+    /* 58F0 800150F0 6470638C */  lw         $v1, %lo(g_nDragonRescueSplitFlag)($v1)
     /* 58F4 800150F4 00000000 */  nop
     /* 58F8 800150F8 8E006214 */  bne        $v1, $v0, .L80015334
     /* 58FC 800150FC 00000000 */   nop
-    /* 5900 80015100 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleSize)
-    /* 5904 80015104 3870638C */  lw         $v1, %lo(g_nGemPickupAudioSampleSize)($v1)
+    /* 5900 80015100 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 5904 80015104 3870638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleSize)($v1)
     /* 5908 80015108 00000000 */  nop
     /* 590C 8001510C 0F186224 */  addiu      $v0, $v1, 0x180F
     /* 5910 80015110 03004104 */  bgez       $v0, .L80015120
@@ -3331,8 +3331,8 @@ glabel TickGemPickupAssetStream
     /* 5924 80015124 0780063C */  lui        $a2, %hi(g_nWorldTimAudioChunkSize)
     /* 5928 80015128 046CC68C */  lw         $a2, %lo(g_nWorldTimAudioChunkSize)($a2)
     /* 592C 8001512C 1000033C */  lui        $v1, (0x100000 >> 16)
-    /* 5930 80015130 0780013C */  lui        $at, %hi(g_nGemPickupReadByteCount)
-    /* 5934 80015134 687028AC */  sw         $t0, %lo(g_nGemPickupReadByteCount)($at)
+    /* 5930 80015130 0780013C */  lui        $at, %hi(g_nDragonRescueReadByteCount)
+    /* 5934 80015134 687028AC */  sw         $t0, %lo(g_nDragonRescueReadByteCount)($at)
     /* 5938 80015138 23106600 */  subu       $v0, $v1, $a2
     /* 593C 8001513C 2A104800 */  slt        $v0, $v0, $t0
     /* 5940 80015140 15004010 */  beqz       $v0, .L80015198
@@ -3358,26 +3358,26 @@ glabel TickGemPickupAssetStream
     /* 5990 80015190 CD540008 */  j          .L80015334
     /* 5994 80015194 00000000 */   nop
   .L80015198:
-    /* 5998 80015198 0780013C */  lui        $at, %hi(g_nGemPickupSplitFlag)
-    /* 599C 8001519C 647020AC */  sw         $zero, %lo(g_nGemPickupSplitFlag)($at)
+    /* 5998 80015198 0780013C */  lui        $at, %hi(g_nDragonRescueSplitFlag)
+    /* 599C 8001519C 647020AC */  sw         $zero, %lo(g_nDragonRescueSplitFlag)($at)
     /* 59A0 800151A0 CD540008 */  j          .L80015334
     /* 59A4 800151A4 00000000 */   nop
   jlabel .L800151A8
-    /* 59A8 800151A8 0780033C */  lui        $v1, %hi(g_nGemPickupSplitFlag)
-    /* 59AC 800151AC 6470638C */  lw         $v1, %lo(g_nGemPickupSplitFlag)($v1)
+    /* 59A8 800151A8 0780033C */  lui        $v1, %hi(g_nDragonRescueSplitFlag)
+    /* 59AC 800151AC 6470638C */  lw         $v1, %lo(g_nDragonRescueSplitFlag)($v1)
     /* 59B0 800151B0 01000224 */  addiu      $v0, $zero, 0x1
     /* 59B4 800151B4 14006214 */  bne        $v1, $v0, .L80015208
     /* 59B8 800151B8 0800023C */   lui       $v0, (0x81010 >> 16)
-    /* 59BC 800151BC 0780043C */  lui        $a0, %hi(g_nGemPickupReadByteCount)
-    /* 59C0 800151C0 6870848C */  lw         $a0, %lo(g_nGemPickupReadByteCount)($a0)
+    /* 59BC 800151BC 0780043C */  lui        $a0, %hi(g_nDragonRescueReadByteCount)
+    /* 59C0 800151C0 6870848C */  lw         $a0, %lo(g_nDragonRescueReadByteCount)($a0)
     /* 59C4 800151C4 10104234 */  ori        $v0, $v0, (0x81010 & 0xFFFF)
     /* 59C8 800151C8 C972010C */  jal        SetSpuTransferStartAddr
     /* 59CC 800151CC 23204400 */   subu      $a0, $v0, $a0
     /* 59D0 800151D0 F0FF033C */  lui        $v1, (0xFFF00000 >> 16)
     /* 59D4 800151D4 0880043C */  lui        $a0, %hi(g_pWorldUnpackHead)
     /* 59D8 800151D8 E085848C */  lw         $a0, %lo(g_pWorldUnpackHead)($a0)
-    /* 59DC 800151DC 0780053C */  lui        $a1, %hi(g_nGemPickupReadByteCount)
-    /* 59E0 800151E0 6870A58C */  lw         $a1, %lo(g_nGemPickupReadByteCount)($a1)
+    /* 59DC 800151DC 0780053C */  lui        $a1, %hi(g_nDragonRescueReadByteCount)
+    /* 59E0 800151E0 6870A58C */  lw         $a1, %lo(g_nDragonRescueReadByteCount)($a1)
     /* 59E4 800151E4 0780023C */  lui        $v0, %hi(g_nWorldTimAudioChunkSize)
     /* 59E8 800151E8 046C428C */  lw         $v0, %lo(g_nWorldTimAudioChunkSize)($v0)
     /* 59EC 800151EC 2128A300 */  addu       $a1, $a1, $v1
@@ -3469,8 +3469,8 @@ glabel TickGemPickupAssetStream
     /* 5B2C 8001532C EDFF4014 */  bnez       $v0, .L800152E4
     /* 5B30 80015330 02005226 */   addiu     $s2, $s2, 0x2
   .L80015334:
-    /* 5B34 80015334 0780033C */  lui        $v1, %hi(g_nGemPickupStreamState)
-    /* 5B38 80015338 5C706324 */  addiu      $v1, $v1, %lo(g_nGemPickupStreamState)
+    /* 5B34 80015334 0780033C */  lui        $v1, %hi(g_nDragonRescueStreamState)
+    /* 5B38 80015338 5C706324 */  addiu      $v1, $v1, %lo(g_nDragonRescueStreamState)
     /* 5B3C 8001533C 0000628C */  lw         $v0, 0x0($v1)
     /* 5B40 80015340 00000000 */  nop
     /* 5B44 80015344 01004224 */  addiu      $v0, $v0, 0x1
@@ -3485,7 +3485,7 @@ glabel TickGemPickupAssetStream
     /* 5B64 80015364 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 5B68 80015368 0800E003 */  jr         $ra
     /* 5B6C 8001536C 00000000 */   nop
-endlabel TickGemPickupAssetStream
+endlabel TickDragonRescueAssetStream
 .endif
 
 .section .text.TickLevelTransitionStream, "ax"
@@ -7624,8 +7624,8 @@ endlabel DrawShadedMenuBox
 nonmatching DrawDragonRescuedBanner, 0x150
 
 glabel DrawDragonRescuedBanner
-    /* 8F28 80018728 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 8F2C 8001872C C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 8F28 80018728 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 8F2C 8001872C C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 8F30 80018730 C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 8F34 80018734 3000BFAF */  sw         $ra, 0x30($sp)
     /* 8F38 80018738 2C00B3AF */  sw         $s3, 0x2C($sp)
@@ -7679,8 +7679,8 @@ glabel DrawDragonRescuedBanner
     /* 8FF8 800187F8 2A106202 */  slt        $v0, $s3, $v0
     /* 8FFC 800187FC 16004014 */  bnez       $v0, .L80018858
     /* 9000 80018800 21180000 */   addu      $v1, $zero, $zero
-    /* 9004 80018804 0780053C */  lui        $a1, %hi(g_nGemPickupSecondaryTimer)
-    /* 9008 80018808 8070A524 */  addiu      $a1, $a1, %lo(g_nGemPickupSecondaryTimer)
+    /* 9004 80018804 0780053C */  lui        $a1, %hi(g_nDragonRescueSecondaryTimer)
+    /* 9008 80018808 8070A524 */  addiu      $a1, $a1, %lo(g_nDragonRescueSecondaryTimer)
     /* 900C 8001880C 0780043C */  lui        $a0, %hi(g_anCosineLut)
     /* 9010 80018810 78CC8424 */  addiu      $a0, $a0, %lo(g_anCosineLut)
   .L80018814:
@@ -12623,8 +12623,8 @@ nonmatching Gamestate08_Draw, 0x73C
 
 glabel Gamestate08_Draw
     /* D7DC 8001CFDC D8FFBD27 */  addiu      $sp, $sp, -0x28
-    /* D7E0 8001CFE0 0780053C */  lui        $a1, %hi(g_nGemPickupAuraStarEnabled)
-    /* D7E4 8001CFE4 4862A524 */  addiu      $a1, $a1, %lo(g_nGemPickupAuraStarEnabled)
+    /* D7E0 8001CFE0 0780053C */  lui        $a1, %hi(g_nDragonRescueAuraStarEnabled)
+    /* D7E4 8001CFE4 4862A524 */  addiu      $a1, $a1, %lo(g_nDragonRescueAuraStarEnabled)
     /* D7E8 8001CFE8 2400BFAF */  sw         $ra, 0x24($sp)
     /* D7EC 8001CFEC 2000B0AF */  sw         $s0, 0x20($sp)
     /* D7F0 8001CFF0 0000A28C */  lw         $v0, 0x0($a1)
@@ -12635,11 +12635,11 @@ glabel Gamestate08_Draw
     /* D804 8001D004 D06DC624 */  addiu      $a2, $a2, %lo(g_anWorldToCameraRotMtx)
     /* D808 8001D008 4B5B000C */  jal        ApplyEulerRotation
     /* D80C 8001D00C 1000A524 */   addiu     $a1, $a1, 0x10
-    /* D810 8001D010 1962010C */  jal        DrawGemPickupAuraStar
+    /* D810 8001D010 1962010C */  jal        DrawDragonRescueAuraStar
     /* D814 8001D014 00000000 */   nop
   .L8001D018:
-    /* D818 8001D018 0780043C */  lui        $a0, %hi(g_nGemPickupSubstate)
-    /* D81C 8001D01C 5870848C */  lw         $a0, %lo(g_nGemPickupSubstate)($a0)
+    /* D818 8001D018 0780043C */  lui        $a0, %hi(g_nDragonRescueSubstate)
+    /* D81C 8001D01C 5870848C */  lw         $a0, %lo(g_nDragonRescueSubstate)($a0)
     /* D820 8001D020 00000000 */  nop
     /* D824 8001D024 15008014 */  bnez       $a0, .L8001D07C
     /* D828 8001D028 04008228 */   slti      $v0, $a0, 0x4
@@ -12653,8 +12653,8 @@ glabel Gamestate08_Draw
     /* D848 8001D048 00000000 */   nop
     /* D84C 8001D04C F25C010C */  jal        RasterizeEmitList
     /* D850 8001D050 00000000 */   nop
-    /* D854 8001D054 0780053C */  lui        $a1, %hi(g_nGemPickupFullscreenTintLevel)
-    /* D858 8001D058 7470A58C */  lw         $a1, %lo(g_nGemPickupFullscreenTintLevel)($a1)
+    /* D854 8001D054 0780053C */  lui        $a1, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* D858 8001D058 7470A58C */  lw         $a1, %lo(g_nDragonRescueFullscreenTintLevel)($a1)
     /* D85C 8001D05C 00000000 */  nop
     /* D860 8001D060 1D01A010 */  beqz       $a1, .L8001D4D8
     /* D864 8001D064 01000424 */   addiu     $a0, $zero, 0x1
@@ -12666,8 +12666,8 @@ glabel Gamestate08_Draw
   .L8001D07C:
     /* D87C 8001D07C 52004010 */  beqz       $v0, .L8001D1C8
     /* D880 8001D080 04000224 */   addiu     $v0, $zero, 0x4
-    /* D884 8001D084 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* D888 8001D088 C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* D884 8001D084 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* D888 8001D088 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* D88C 8001D08C 00000000 */  nop
     /* D890 8001D090 4800A290 */  lbu        $v0, 0x48($a1)
     /* D894 8001D094 0780033C */  lui        $v1, %hi(g_pOtDepthBinHead0)
@@ -12680,8 +12680,8 @@ glabel Gamestate08_Draw
   .L8001D0B0:
     /* D8B0 8001D0B0 06008214 */  bne        $a0, $v0, .L8001D0CC
     /* D8B4 8001D0B4 00000000 */   nop
-    /* D8B8 8001D0B8 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* D8BC 8001D0BC B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* D8B8 8001D0B8 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* D8BC 8001D0BC B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* D8C0 8001D0C0 00000000 */  nop
     /* D8C4 8001D0C4 000062AC */  sw         $v0, 0x0($v1)
     /* D8C8 8001D0C8 04006324 */  addiu      $v1, $v1, 0x4
@@ -12742,8 +12742,8 @@ glabel Gamestate08_Draw
     /* D994 8001D194 00000000 */   nop
     /* D998 8001D198 F25C010C */  jal        RasterizeEmitList
     /* D99C 8001D19C 00000000 */   nop
-    /* D9A0 8001D1A0 0780053C */  lui        $a1, %hi(g_nGemPickupFullscreenTintLevel)
-    /* D9A4 8001D1A4 7470A58C */  lw         $a1, %lo(g_nGemPickupFullscreenTintLevel)($a1)
+    /* D9A0 8001D1A0 0780053C */  lui        $a1, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* D9A4 8001D1A4 7470A58C */  lw         $a1, %lo(g_nDragonRescueFullscreenTintLevel)($a1)
     /* D9A8 8001D1A8 00000000 */  nop
     /* D9AC 8001D1AC CA00A010 */  beqz       $a1, .L8001D4D8
     /* D9B0 8001D1B0 01000424 */   addiu     $a0, $zero, 0x1
@@ -12755,13 +12755,13 @@ glabel Gamestate08_Draw
   .L8001D1C8:
     /* D9C8 8001D1C8 3F008214 */  bne        $a0, $v0, .L8001D2C8
     /* D9CC 8001D1CC 05000224 */   addiu     $v0, $zero, 0x5
-    /* D9D0 8001D1D0 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* D9D4 8001D1D4 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* D9D0 8001D1D0 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* D9D4 8001D1D4 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* D9D8 8001D1D8 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
     /* D9DC 8001D1DC F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
     /* D9E0 8001D1E0 000043AC */  sw         $v1, 0x0($v0)
-    /* D9E4 8001D1E4 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* D9E8 8001D1E8 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* D9E4 8001D1E4 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* D9E8 8001D1E8 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* D9EC 8001D1EC 04004224 */  addiu      $v0, $v0, 0x4
     /* D9F0 8001D1F0 000043AC */  sw         $v1, 0x0($v0)
     /* D9F4 8001D1F4 04004224 */  addiu      $v0, $v0, 0x4
@@ -12795,8 +12795,8 @@ glabel Gamestate08_Draw
     /* DA5C 8001D25C 5800A524 */   addiu     $a1, $a1, 0x58
   .L8001D260:
     /* DA60 8001D260 0000C0AC */  sw         $zero, 0x0($a2)
-    /* DA64 8001D264 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* DA68 8001D268 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* DA64 8001D264 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* DA68 8001D268 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* DA6C 8001D26C 00000000 */  nop
     /* DA70 8001D270 3C004228 */  slti       $v0, $v0, 0x3C
     /* DA74 8001D274 05004010 */  beqz       $v0, .L8001D28C
@@ -12827,8 +12827,8 @@ glabel Gamestate08_Draw
     /* DAD0 8001D2D0 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
     /* DAD4 8001D2D4 F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
     /* DAD8 8001D2D8 21280000 */  addu       $a1, $zero, $zero
-    /* DADC 8001D2DC 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* DAE0 8001D2E0 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* DADC 8001D2DC 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* DAE0 8001D2E0 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* DAE4 8001D2E4 0880043C */  lui        $a0, %hi(D_800781A4)
     /* DAE8 8001D2E8 A4818424 */  addiu      $a0, $a0, %lo(D_800781A4)
     /* DAEC 8001D2EC 000043AC */  sw         $v1, 0x0($v0)
@@ -12849,13 +12849,13 @@ glabel Gamestate08_Draw
     /* DB24 8001D324 00000000 */  nop
     /* DB28 8001D328 43004010 */  beqz       $v0, .L8001D438
     /* DB2C 8001D32C 00000000 */   nop
-    /* DB30 8001D330 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* DB34 8001D334 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* DB30 8001D330 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* DB34 8001D334 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* DB38 8001D338 00000000 */  nop
     /* DB3C 8001D33C 40100200 */  sll        $v0, $v0, 1
-    /* DB40 8001D340 0780013C */  lui        $at, %hi(g_anGemPickupScaleCurve)
+    /* DB40 8001D340 0780013C */  lui        $at, %hi(g_anDragonRescueScaleCurve)
     /* DB44 8001D344 21082200 */  addu       $at, $at, $v0
-    /* DB48 8001D348 C0F32484 */  lh         $a0, %lo(g_anGemPickupScaleCurve)($at)
+    /* DB48 8001D348 C0F32484 */  lh         $a0, %lo(g_anDragonRescueScaleCurve)($at)
     /* DB4C 8001D34C 0780023C */  lui        $v0, %hi(g_anActorDrawList + 0x1C)
     /* DB50 8001D350 10134284 */  lh         $v0, %lo(g_anActorDrawList + 0x1C)($v0)
     /* DB54 8001D354 00000000 */  nop
@@ -12874,8 +12874,8 @@ glabel Gamestate08_Draw
     /* DB88 8001D388 0780013C */  lui        $at, %hi(g_anActorDrawList + 0x1C)
     /* DB8C 8001D38C 101322A4 */  sh         $v0, %lo(g_anActorDrawList + 0x1C)($at)
     /* DB90 8001D390 03130300 */  sra        $v0, $v1, 12
-    /* DB94 8001D394 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* DB98 8001D398 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* DB94 8001D394 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* DB98 8001D398 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* DB9C 8001D39C 0780013C */  lui        $at, %hi(g_anActorDrawList + 0x1E)
     /* DBA0 8001D3A0 121322A4 */  sh         $v0, %lo(g_anActorDrawList + 0x1E)($at)
     /* DBA4 8001D3A4 12200000 */  mflo       $a0
@@ -12979,8 +12979,8 @@ glabel Gamestate08_Draw
   .L8001D510:
     /* DD10 8001D510 4C008214 */  bne        $a0, $v0, .L8001D644
     /* DD14 8001D514 00000000 */   nop
-    /* DD18 8001D518 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* DD1C 8001D51C 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* DD18 8001D518 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* DD1C 8001D51C 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* DD20 8001D520 00000000 */  nop
     /* DD24 8001D524 10004228 */  slti       $v0, $v0, 0x10
     /* DD28 8001D528 15004010 */  beqz       $v0, .L8001D580
@@ -13051,8 +13051,8 @@ glabel Gamestate08_Draw
     /* DE1C 8001D61C CC63000C */  jal        DrawCinematicLetterbox
     /* DE20 8001D620 00000000 */   nop
   .L8001D624:
-    /* DE24 8001D624 0780053C */  lui        $a1, %hi(g_nGemPickupFullscreenTintLevel)
-    /* DE28 8001D628 7470A58C */  lw         $a1, %lo(g_nGemPickupFullscreenTintLevel)($a1)
+    /* DE24 8001D624 0780053C */  lui        $a1, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* DE28 8001D628 7470A58C */  lw         $a1, %lo(g_nDragonRescueFullscreenTintLevel)($a1)
     /* DE2C 8001D62C 00000000 */  nop
     /* DE30 8001D630 0400A010 */  beqz       $a1, .L8001D644
     /* DE34 8001D634 01000424 */   addiu     $a0, $zero, 0x1
@@ -29850,11 +29850,11 @@ glabel Gamestate06SubstateStub_Noop
 endlabel Gamestate06SubstateStub_Noop
 .endif
 
-.section .text.BeginGemPickupOverlay, "ax"
-.ifndef HAVE_C_BeginGemPickupOverlay
-nonmatching BeginGemPickupOverlay, 0x248
+.section .text.BeginDragonRescue, "ax"
+.ifndef HAVE_C_BeginDragonRescue
+nonmatching BeginDragonRescue, 0x248
 
-glabel BeginGemPickupOverlay
+glabel BeginDragonRescue
     /* 1D124 8002C924 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 1D128 8002C928 21388000 */  addu       $a3, $a0, $zero
     /* 1D12C 8002C92C 0780023C */  lui        $v0, %hi(g_nActiveLevelId)
@@ -29933,8 +29933,8 @@ glabel BeginGemPickupOverlay
     /* 1D240 8002CA40 0780023C */  lui        $v0, %hi(g_anLevelDragonsRescued)
     /* 1D244 8002CA44 D8724224 */  addiu      $v0, $v0, %lo(g_anLevelDragonsRescued)
     /* 1D248 8002CA48 01000424 */  addiu      $a0, $zero, 0x1
-    /* 1D24C 8002CA4C 0780103C */  lui        $s0, %hi(g_nGemPickupSubstate)
-    /* 1D250 8002CA50 58701026 */  addiu      $s0, $s0, %lo(g_nGemPickupSubstate)
+    /* 1D24C 8002CA4C 0780103C */  lui        $s0, %hi(g_nDragonRescueSubstate)
+    /* 1D250 8002CA50 58701026 */  addiu      $s0, $s0, %lo(g_nDragonRescueSubstate)
     /* 1D254 8002CA54 0780033C */  lui        $v1, %hi(g_nLevelIndex)
     /* 1D258 8002CA58 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 1D25C 8002CA5C 0780053C */  lui        $a1, %hi(g_nWorldDragonsRescued)
@@ -29951,23 +29951,23 @@ glabel BeginGemPickupOverlay
     /* 1D288 8002CA88 01004224 */  addiu      $v0, $v0, 0x1
     /* 1D28C 8002CA8C 000062AC */  sw         $v0, 0x0($v1)
     /* 1D290 8002CA90 000000AE */  sw         $zero, 0x0($s0)
-    /* 1D294 8002CA94 0780013C */  lui        $at, %hi(g_nGemPickupStreamState)
-    /* 1D298 8002CA98 5C7020AC */  sw         $zero, %lo(g_nGemPickupStreamState)($at)
-    /* 1D29C 8002CA9C 0780013C */  lui        $at, %hi(g_nGemPickupTimer)
-    /* 1D2A0 8002CAA0 6C7020AC */  sw         $zero, %lo(g_nGemPickupTimer)($at)
-    /* 1D2A4 8002CAA4 0780013C */  lui        $at, %hi(g_nGemPickupSecondaryTimer)
-    /* 1D2A8 8002CAA8 807020AC */  sw         $zero, %lo(g_nGemPickupSecondaryTimer)($at)
-    /* 1D2AC 8002CAAC 0780013C */  lui        $at, %hi(g_nGemPickupPadHoldTimer)
-    /* 1D2B0 8002CAB0 8C7020AC */  sw         $zero, %lo(g_nGemPickupPadHoldTimer)($at)
-    /* 1D2B4 8002CAB4 0780013C */  lui        $at, %hi(g_nGemPickupAudioFiredFlag)
-    /* 1D2B8 8002CAB8 887020AC */  sw         $zero, %lo(g_nGemPickupAudioFiredFlag)($at)
+    /* 1D294 8002CA94 0780013C */  lui        $at, %hi(g_nDragonRescueStreamState)
+    /* 1D298 8002CA98 5C7020AC */  sw         $zero, %lo(g_nDragonRescueStreamState)($at)
+    /* 1D29C 8002CA9C 0780013C */  lui        $at, %hi(g_nDragonRescueTimer)
+    /* 1D2A0 8002CAA0 6C7020AC */  sw         $zero, %lo(g_nDragonRescueTimer)($at)
+    /* 1D2A4 8002CAA4 0780013C */  lui        $at, %hi(g_nDragonRescueSecondaryTimer)
+    /* 1D2A8 8002CAA8 807020AC */  sw         $zero, %lo(g_nDragonRescueSecondaryTimer)($at)
+    /* 1D2AC 8002CAAC 0780013C */  lui        $at, %hi(g_nDragonRescuePadHoldTimer)
+    /* 1D2B0 8002CAB0 8C7020AC */  sw         $zero, %lo(g_nDragonRescuePadHoldTimer)($at)
+    /* 1D2B4 8002CAB4 0780013C */  lui        $at, %hi(g_nDragonRescueAudioFiredFlag)
+    /* 1D2B8 8002CAB8 887020AC */  sw         $zero, %lo(g_nDragonRescueAudioFiredFlag)($at)
     /* 1D2BC 8002CABC 680007AE */  sw         $a3, 0x68($s0)
     /* 1D2C0 8002CAC0 1800C28C */  lw         $v0, 0x18($a2)
     /* 1D2C4 8002CAC4 0100A524 */  addiu      $a1, $a1, 0x1
     /* 1D2C8 8002CAC8 0780013C */  lui        $at, %hi(g_nWorldDragonsRescued)
     /* 1D2CC 8002CACC 505725AC */  sw         $a1, %lo(g_nWorldDragonsRescued)($at)
-    /* 1D2D0 8002CAD0 0780013C */  lui        $at, %hi(g_nGemPickupTypeSnapshot)
-    /* 1D2D4 8002CAD4 547022AC */  sw         $v0, %lo(g_nGemPickupTypeSnapshot)($at)
+    /* 1D2D0 8002CAD0 0780013C */  lui        $at, %hi(g_nDragonRescueTypeSnapshot)
+    /* 1D2D4 8002CAD4 547022AC */  sw         $v0, %lo(g_nDragonRescueTypeSnapshot)($at)
     /* 1D2D8 8002CAD8 2000C38C */  lw         $v1, 0x20($a2)
     /* 1D2DC 8002CADC FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 1D2E0 8002CAE0 0B006210 */  beq        $v1, $v0, .L8002CB10
@@ -29983,19 +29983,19 @@ glabel BeginGemPickupOverlay
     /* 1D308 8002CB08 01000324 */  addiu      $v1, $zero, 0x1
     /* 1D30C 8002CB0C 3C0043A0 */  sb         $v1, 0x3C($v0)
   .L8002CB10:
-    /* 1D310 8002CB10 0780043C */  lui        $a0, %hi(g_anGemPickupAuraStarAnchor)
-    /* 1D314 8002CB14 4C628424 */  addiu      $a0, $a0, %lo(g_anGemPickupAuraStarAnchor)
+    /* 1D310 8002CB10 0780043C */  lui        $a0, %hi(g_anDragonRescueAuraStarAnchor)
+    /* 1D314 8002CB14 4C628424 */  addiu      $a0, $a0, %lo(g_anDragonRescueAuraStarAnchor)
     /* 1D318 8002CB18 C05D000C */  jal        CopyVector
     /* 1D31C 8002CB1C 0C00E524 */   addiu     $a1, $a3, 0xC
     /* 1D320 8002CB20 21282002 */  addu       $a1, $s1, $zero
     /* 1D324 8002CB24 10000624 */  addiu      $a2, $zero, 0x10
-    /* 1D328 8002CB28 0780023C */  lui        $v0, %hi(g_anGemPickupAuraStarAnchor + 0x8)
-    /* 1D32C 8002CB2C 5462428C */  lw         $v0, %lo(g_anGemPickupAuraStarAnchor + 0x8)($v0)
+    /* 1D328 8002CB28 0780023C */  lui        $v0, %hi(g_anDragonRescueAuraStarAnchor + 0x8)
+    /* 1D32C 8002CB2C 5462428C */  lw         $v0, %lo(g_anDragonRescueAuraStarAnchor + 0x8)($v0)
     /* 1D330 8002CB30 0780033C */  lui        $v1, %hi(g_pLevelSampleBankHeader)
     /* 1D334 8002CB34 D461638C */  lw         $v1, %lo(g_pLevelSampleBankHeader)($v1)
     /* 1D338 8002CB38 40004224 */  addiu      $v0, $v0, 0x40
-    /* 1D33C 8002CB3C 0780013C */  lui        $at, %hi(g_anGemPickupAuraStarAnchor + 0x8)
-    /* 1D340 8002CB40 546222AC */  sw         $v0, %lo(g_anGemPickupAuraStarAnchor + 0x8)($at)
+    /* 1D33C 8002CB3C 0780013C */  lui        $at, %hi(g_anDragonRescueAuraStarAnchor + 0x8)
+    /* 1D340 8002CB40 546222AC */  sw         $v0, %lo(g_anDragonRescueAuraStarAnchor + 0x8)($at)
     /* 1D344 8002CB44 6800078E */  lw         $a3, 0x68($s0)
     /* 1D348 8002CB48 30006490 */  lbu        $a0, 0x30($v1)
     /* 1D34C 8002CB4C 9E56010C */  jal        PlaySoundEffect
@@ -30006,16 +30006,16 @@ glabel BeginGemPickupOverlay
     /* 1D360 8002CB60 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 1D364 8002CB64 0800E003 */  jr         $ra
     /* 1D368 8002CB68 00000000 */   nop
-endlabel BeginGemPickupOverlay
+endlabel BeginDragonRescue
 .endif
 
-.section .text.EndGemPickupToWorld, "ax"
-.ifndef HAVE_C_EndGemPickupToWorld
-nonmatching EndGemPickupToWorld, 0x15C
+.section .text.EndDragonRescueToWorld, "ax"
+.ifndef HAVE_C_EndDragonRescueToWorld
+nonmatching EndDragonRescueToWorld, 0x15C
 
-glabel EndGemPickupToWorld
-    /* 1D36C 8002CB6C 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 1D370 8002CB70 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+glabel EndDragonRescueToWorld
+    /* 1D36C 8002CB6C 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 1D370 8002CB70 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 1D374 8002CB74 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 1D378 8002CB78 1800BFAF */  sw         $ra, 0x18($sp)
     /* 1D37C 8002CB7C 1400B1AF */  sw         $s1, 0x14($sp)
@@ -30102,7 +30102,7 @@ glabel EndGemPickupToWorld
     /* 1D4BC 8002CCBC 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 1D4C0 8002CCC0 0800E003 */  jr         $ra
     /* 1D4C4 8002CCC4 00000000 */   nop
-endlabel EndGemPickupToWorld
+endlabel EndDragonRescueToWorld
 .endif
 
 .section .text.BeginSaveMenuFromWorld, "ax"
@@ -30607,8 +30607,8 @@ glabel BeginGemCutscene
     /* 1DBE4 8002D3E4 0C0040A4 */  sh         $zero, 0xC($v0)
     /* 1DBE8 8002D3E8 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 1DBEC 8002D3EC D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
-    /* 1DBF0 8002D3F0 0780073C */  lui        $a3, %hi(g_bGemPickupSfxVoiceMarker)
-    /* 1DBF4 8002D3F4 8470E724 */  addiu      $a3, $a3, %lo(g_bGemPickupSfxVoiceMarker)
+    /* 1DBF0 8002D3F0 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
+    /* 1DBF4 8002D3F4 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
     /* 1DBF8 8002D3F8 0E0040A4 */  sh         $zero, 0xE($v0)
     /* 1DBFC 8002D3FC 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 1DC00 8002D400 D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
@@ -32889,14 +32889,14 @@ glabel Gamestate06_Update
 endlabel Gamestate06_Update
 .endif
 
-.section .text.GemPickup_Update, "ax"
-.ifndef HAVE_C_GemPickup_Update
-nonmatching GemPickup_Update, 0x20D0
+.section .text.DragonRescue_Update, "ax"
+.ifndef HAVE_C_DragonRescue_Update
+nonmatching DragonRescue_Update, 0x20D0
 
-glabel GemPickup_Update
+glabel DragonRescue_Update
     /* 1FBE4 8002F3E4 90FFBD27 */  addiu      $sp, $sp, -0x70
-    /* 1FBE8 8002F3E8 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 1FBEC 8002F3EC 6C706324 */  addiu      $v1, $v1, %lo(g_nGemPickupTimer)
+    /* 1FBE8 8002F3E8 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 1FBEC 8002F3EC 6C706324 */  addiu      $v1, $v1, %lo(g_nDragonRescueTimer)
     /* 1FBF0 8002F3F0 6C00BFAF */  sw         $ra, 0x6C($sp)
     /* 1FBF4 8002F3F4 6800B4AF */  sw         $s4, 0x68($sp)
     /* 1FBF8 8002F3F8 6400B3AF */  sw         $s3, 0x64($sp)
@@ -32909,13 +32909,13 @@ glabel GemPickup_Update
     /* 1FC14 8002F414 00000000 */  nop
     /* 1FC18 8002F418 21104400 */  addu       $v0, $v0, $a0
     /* 1FC1C 8002F41C 000062AC */  sw         $v0, 0x0($v1)
-    /* 1FC20 8002F420 0780023C */  lui        $v0, %hi(g_nGemPickupSecondaryTimer)
-    /* 1FC24 8002F424 8070428C */  lw         $v0, %lo(g_nGemPickupSecondaryTimer)($v0)
-    /* 1FC28 8002F428 0780033C */  lui        $v1, %hi(g_nGemPickupSubstate)
-    /* 1FC2C 8002F42C 5870638C */  lw         $v1, %lo(g_nGemPickupSubstate)($v1)
+    /* 1FC20 8002F420 0780023C */  lui        $v0, %hi(g_nDragonRescueSecondaryTimer)
+    /* 1FC24 8002F424 8070428C */  lw         $v0, %lo(g_nDragonRescueSecondaryTimer)($v0)
+    /* 1FC28 8002F428 0780033C */  lui        $v1, %hi(g_nDragonRescueSubstate)
+    /* 1FC2C 8002F42C 5870638C */  lw         $v1, %lo(g_nDragonRescueSubstate)($v1)
     /* 1FC30 8002F430 21104400 */  addu       $v0, $v0, $a0
-    /* 1FC34 8002F434 0780013C */  lui        $at, %hi(g_nGemPickupSecondaryTimer)
-    /* 1FC38 8002F438 807022AC */  sw         $v0, %lo(g_nGemPickupSecondaryTimer)($at)
+    /* 1FC34 8002F434 0780013C */  lui        $at, %hi(g_nDragonRescueSecondaryTimer)
+    /* 1FC38 8002F438 807022AC */  sw         $v0, %lo(g_nDragonRescueSecondaryTimer)($at)
     /* 1FC3C 8002F43C 0800622C */  sltiu      $v0, $v1, 0x8
     /* 1FC40 8002F440 ED074010 */  beqz       $v0, .L800313F8
     /* 1FC44 8002F444 80100300 */   sll       $v0, $v1, 2
@@ -32939,40 +32939,40 @@ glabel GemPickup_Update
     /* 1FC88 8002F488 00000000 */   nop
     /* 1FC8C 8002F48C F5DE000C */  jal        UpdateCameraFrame
     /* 1FC90 8002F490 00000000 */   nop
-    /* 1FC94 8002F494 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 1FC98 8002F498 6C70848C */  lw         $a0, %lo(g_nGemPickupTimer)($a0)
+    /* 1FC94 8002F494 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 1FC98 8002F498 6C70848C */  lw         $a0, %lo(g_nDragonRescueTimer)($a0)
     /* 1FC9C 8002F49C 0780033C */  lui        $v1, %hi(g_nFrameStep)
     /* 1FCA0 8002F4A0 CC56638C */  lw         $v1, %lo(g_nFrameStep)($v1)
     /* 1FCA4 8002F4A4 03110400 */  sra        $v0, $a0, 4
     /* 1FCA8 8002F4A8 02004224 */  addiu      $v0, $v0, 0x2
     /* 1FCAC 8002F4AC 18004300 */  mult       $v0, $v1
     /* 1FCB0 8002F4B0 01000224 */  addiu      $v0, $zero, 0x1
-    /* 1FCB4 8002F4B4 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarEnabled)
-    /* 1FCB8 8002F4B8 486222AC */  sw         $v0, %lo(g_nGemPickupAuraStarEnabled)($at)
+    /* 1FCB4 8002F4B4 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarEnabled)
+    /* 1FCB8 8002F4B8 486222AC */  sw         $v0, %lo(g_nDragonRescueAuraStarEnabled)($at)
     /* 1FCBC 8002F4BC 80100400 */  sll        $v0, $a0, 2
     /* 1FCC0 8002F4C0 40004224 */  addiu      $v0, $v0, 0x40
-    /* 1FCC4 8002F4C4 0780013C */  lui        $at, %hi(g_bGemPickupAuraStarColor)
-    /* 1FCC8 8002F4C8 736222A0 */  sb         $v0, %lo(g_bGemPickupAuraStarColor)($at)
-    /* 1FCCC 8002F4CC 0780023C */  lui        $v0, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 1FCD0 8002F4D0 72624290 */  lbu        $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($v0)
+    /* 1FCC4 8002F4C4 0780013C */  lui        $at, %hi(g_bDragonRescueAuraStarColor)
+    /* 1FCC8 8002F4C8 736222A0 */  sb         $v0, %lo(g_bDragonRescueAuraStarColor)($at)
+    /* 1FCCC 8002F4CC 0780023C */  lui        $v0, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 1FCD0 8002F4D0 72624290 */  lbu        $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($v0)
     /* 1FCD4 8002F4D4 00190400 */  sll        $v1, $a0, 4
-    /* 1FCD8 8002F4D8 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarRadius)
-    /* 1FCDC 8002F4DC 6C6223AC */  sw         $v1, %lo(g_nGemPickupAuraStarRadius)($at)
+    /* 1FCD8 8002F4D8 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarRadius)
+    /* 1FCDC 8002F4DC 6C6223AC */  sw         $v1, %lo(g_nDragonRescueAuraStarRadius)($at)
     /* 1FCE0 8002F4E0 12400000 */  mflo       $t0
     /* 1FCE4 8002F4E4 21104800 */  addu       $v0, $v0, $t0
-    /* 1FCE8 8002F4E8 0780013C */  lui        $at, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 1FCEC 8002F4EC 726222A0 */  sb         $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($at)
+    /* 1FCE8 8002F4E8 0780013C */  lui        $at, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 1FCEC 8002F4EC 726222A0 */  sb         $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($at)
     /* 1FCF0 8002F4F0 21008228 */  slti       $v0, $a0, 0x21
     /* 1FCF4 8002F4F4 06004014 */  bnez       $v0, .L8002F510
     /* 1FCF8 8002F4F8 E0FF8224 */   addiu     $v0, $a0, -0x20
     /* 1FCFC 8002F4FC 00110200 */  sll        $v0, $v0, 4
-    /* 1FD00 8002F500 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 1FD04 8002F504 747022AC */  sw         $v0, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 1FD00 8002F500 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 1FD04 8002F504 747022AC */  sw         $v0, %lo(g_nDragonRescueFullscreenTintLevel)($at)
     /* 1FD08 8002F508 46BD0008 */  j          .L8002F518
     /* 1FD0C 8002F50C 00000000 */   nop
   .L8002F510:
-    /* 1FD10 8002F510 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 1FD14 8002F514 747020AC */  sw         $zero, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 1FD10 8002F510 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 1FD14 8002F514 747020AC */  sw         $zero, %lo(g_nDragonRescueFullscreenTintLevel)($at)
   .L8002F518:
     /* 1FD18 8002F518 0780023C */  lui        $v0, %hi(g_nPulseRumbleTimer)
     /* 1FD1C 8002F51C D057428C */  lw         $v0, %lo(g_nPulseRumbleTimer)($v0)
@@ -32983,8 +32983,8 @@ glabel GemPickup_Update
     /* 1FD30 8002F530 0780013C */  lui        $at, %hi(g_nPulseRumbleTimer)
     /* 1FD34 8002F534 D05722AC */  sw         $v0, %lo(g_nPulseRumbleTimer)($at)
   .L8002F538:
-    /* 1FD38 8002F538 0780113C */  lui        $s1, %hi(g_nGemPickupTimer)
-    /* 1FD3C 8002F53C 6C703126 */  addiu      $s1, $s1, %lo(g_nGemPickupTimer)
+    /* 1FD38 8002F538 0780113C */  lui        $s1, %hi(g_nDragonRescueTimer)
+    /* 1FD3C 8002F53C 6C703126 */  addiu      $s1, $s1, %lo(g_nDragonRescueTimer)
     /* 1FD40 8002F540 0000228E */  lw         $v0, 0x0($s1)
     /* 1FD44 8002F544 46000324 */  addiu      $v1, $zero, 0x46
     /* 1FD48 8002F548 0780013C */  lui        $at, %hi(g_nPulseRumbleAmount)
@@ -32993,21 +32993,21 @@ glabel GemPickup_Update
     /* 1FD54 8002F554 A8074014 */  bnez       $v0, .L800313F8
     /* 1FD58 8002F558 FF000224 */   addiu     $v0, $zero, 0xFF
     /* 1FD5C 8002F55C 01001224 */  addiu      $s2, $zero, 0x1
-    /* 1FD60 8002F560 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 1FD64 8002F564 587032AC */  sw         $s2, %lo(g_nGemPickupSubstate)($at)
+    /* 1FD60 8002F560 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 1FD64 8002F564 587032AC */  sw         $s2, %lo(g_nDragonRescueSubstate)($at)
     /* 1FD68 8002F568 000020AE */  sw         $zero, 0x0($s1)
-    /* 1FD6C 8002F56C 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 1FD70 8002F570 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 1FD6C 8002F56C 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 1FD70 8002F570 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 1FD74 8002F574 01000624 */  addiu      $a2, $zero, 0x1
-    /* 1FD78 8002F578 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 1FD7C 8002F57C 747022AC */  sw         $v0, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 1FD78 8002F578 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 1FD7C 8002F57C 747022AC */  sw         $v0, %lo(g_nDragonRescueFullscreenTintLevel)($at)
     /* 1FD80 8002F580 1400628C */  lw         $v0, 0x14($v1)
     /* 1FD84 8002F584 0880103C */  lui        $s0, %hi(g_anSpyroWorldPos)
     /* 1FD88 8002F588 588A1026 */  addiu      $s0, $s0, %lo(g_anSpyroWorldPos)
     /* 1FD8C 8002F58C 88FF4224 */  addiu      $v0, $v0, -0x78
     /* 1FD90 8002F590 140062AC */  sw         $v0, 0x14($v1)
-    /* 1FD94 8002F594 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 1FD98 8002F598 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 1FD94 8002F594 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 1FD98 8002F598 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 1FD9C 8002F59C 0000078E */  lw         $a3, 0x0($s0)
     /* 1FDA0 8002F5A0 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosY)
     /* 1FDA4 8002F5A4 5C8A638C */  lw         $v1, %lo(g_nSpyroWorldPosY)($v1)
@@ -33017,32 +33017,32 @@ glabel GemPickup_Update
     /* 1FDB4 8002F5B4 AD5A000C */  jal        ArcTan2
     /* 1FDB8 8002F5B8 23286500 */   subu      $a1, $v1, $a1
     /* 1FDBC 8002F5BC 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 1FDC0 8002F5C0 0780063C */  lui        $a2, %hi(g_pGemPickupSourceActor)
-    /* 1FDC4 8002F5C4 C070C68C */  lw         $a2, %lo(g_pGemPickupSourceActor)($a2)
+    /* 1FDC0 8002F5C0 0780063C */  lui        $a2, %hi(g_pDragonRescueSourceActor)
+    /* 1FDC4 8002F5C4 C070C68C */  lw         $a2, %lo(g_pDragonRescueSourceActor)($a2)
     /* 1FDC8 8002F5C8 21280002 */  addu       $a1, $s0, $zero
-    /* 1FDCC 8002F5CC 0780013C */  lui        $at, %hi(g_nGemPickupOrbitStartYaw)
-    /* 1FDD0 8002F5D0 907022AC */  sw         $v0, %lo(g_nGemPickupOrbitStartYaw)($at)
+    /* 1FDCC 8002F5CC 0780013C */  lui        $at, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 1FDD0 8002F5D0 907022AC */  sw         $v0, %lo(g_nDragonRescueOrbitStartYaw)($at)
     /* 1FDD4 8002F5D4 E35D000C */  jal        SubtractVector
     /* 1FDD8 8002F5D8 0C00C624 */   addiu     $a2, $a2, 0xC
     /* 1FDDC 8002F5DC 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1FDE0 8002F5E0 7F5C000C */  jal        VectorLength
     /* 1FDE4 8002F5E4 21280000 */   addu      $a1, $zero, $zero
-    /* 1FDE8 8002F5E8 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 1FDEC 8002F5EC C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
-    /* 1FDF0 8002F5F0 0780013C */  lui        $at, %hi(g_nGemPickupOrbitStartRadius)
-    /* 1FDF4 8002F5F4 947022AC */  sw         $v0, %lo(g_nGemPickupOrbitStartRadius)($at)
+    /* 1FDE8 8002F5E8 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 1FDEC 8002F5EC C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
+    /* 1FDF0 8002F5F0 0780013C */  lui        $at, %hi(g_nDragonRescueOrbitStartRadius)
+    /* 1FDF4 8002F5F4 947022AC */  sw         $v0, %lo(g_nDragonRescueOrbitStartRadius)($at)
     /* 1FDF8 8002F5F8 0000628C */  lw         $v0, 0x0($v1)
     /* 1FDFC 8002F5FC 00000000 */  nop
     /* 1FE00 8002F600 2800428C */  lw         $v0, 0x28($v0)
-    /* 1FE04 8002F604 0780013C */  lui        $at, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 1FE08 8002F608 987022AC */  sw         $v0, %lo(g_dwGemPickupOrbitTargetYaw)($at)
+    /* 1FE04 8002F604 0780013C */  lui        $at, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 1FE08 8002F608 987022AC */  sw         $v0, %lo(g_dwDragonRescueOrbitTargetYaw)($at)
     /* 1FE0C 8002F60C 0000628C */  lw         $v0, 0x0($v1)
     /* 1FE10 8002F610 01000624 */  addiu      $a2, $zero, 0x1
     /* 1FE14 8002F614 2C00428C */  lw         $v0, 0x2C($v0)
     /* 1FE18 8002F618 0780103C */  lui        $s0, %hi(g_anCameraPos)
     /* 1FE1C 8002F61C F86D1026 */  addiu      $s0, $s0, %lo(g_anCameraPos)
-    /* 1FE20 8002F620 0780013C */  lui        $at, %hi(g_nGemPickupOrbitTargetRadius)
-    /* 1FE24 8002F624 9C7022AC */  sw         $v0, %lo(g_nGemPickupOrbitTargetRadius)($at)
+    /* 1FE20 8002F620 0780013C */  lui        $at, %hi(g_nDragonRescueOrbitTargetRadius)
+    /* 1FE24 8002F624 9C7022AC */  sw         $v0, %lo(g_nDragonRescueOrbitTargetRadius)($at)
     /* 1FE28 8002F628 0000078E */  lw         $a3, 0x0($s0)
     /* 1FE2C 8002F62C 0C00648C */  lw         $a0, 0xC($v1)
     /* 1FE30 8002F630 0780023C */  lui        $v0, %hi(g_anCameraPos + 0x4)
@@ -33052,11 +33052,11 @@ glabel GemPickup_Update
     /* 1FE40 8002F640 AD5A000C */  jal        ArcTan2
     /* 1FE44 8002F644 23284500 */   subu      $a1, $v0, $a1
     /* 1FE48 8002F648 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 1FE4C 8002F64C 0780063C */  lui        $a2, %hi(g_pGemPickupSourceActor)
-    /* 1FE50 8002F650 C070C68C */  lw         $a2, %lo(g_pGemPickupSourceActor)($a2)
+    /* 1FE4C 8002F64C 0780063C */  lui        $a2, %hi(g_pDragonRescueSourceActor)
+    /* 1FE50 8002F650 C070C68C */  lw         $a2, %lo(g_pDragonRescueSourceActor)($a2)
     /* 1FE54 8002F654 21280002 */  addu       $a1, $s0, $zero
-    /* 1FE58 8002F658 0780013C */  lui        $at, %hi(g_nGemPickupCameraStartYaw)
-    /* 1FE5C 8002F65C A07022AC */  sw         $v0, %lo(g_nGemPickupCameraStartYaw)($at)
+    /* 1FE58 8002F658 0780013C */  lui        $at, %hi(g_nDragonRescueCameraStartYaw)
+    /* 1FE5C 8002F65C A07022AC */  sw         $v0, %lo(g_nDragonRescueCameraStartYaw)($at)
     /* 1FE60 8002F660 E35D000C */  jal        SubtractVector
     /* 1FE64 8002F664 0C00C624 */   addiu     $a2, $a2, 0xC
     /* 1FE68 8002F668 1000A427 */  addiu      $a0, $sp, 0x10
@@ -33064,13 +33064,13 @@ glabel GemPickup_Update
     /* 1FE70 8002F670 21280000 */   addu      $a1, $zero, $zero
     /* 1FE74 8002F674 0780043C */  lui        $a0, %hi(g_anCameraPos + 0x8)
     /* 1FE78 8002F678 006E848C */  lw         $a0, %lo(g_anCameraPos + 0x8)($a0)
-    /* 1FE7C 8002F67C 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 1FE80 8002F680 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 1FE7C 8002F67C 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 1FE80 8002F680 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 1FE84 8002F684 01000624 */  addiu      $a2, $zero, 0x1
-    /* 1FE88 8002F688 0780013C */  lui        $at, %hi(g_nGemPickupCameraStartRadius)
-    /* 1FE8C 8002F68C A47022AC */  sw         $v0, %lo(g_nGemPickupCameraStartRadius)($at)
-    /* 1FE90 8002F690 0780013C */  lui        $at, %hi(g_nGemPickupCameraStartZ)
-    /* 1FE94 8002F694 A87024AC */  sw         $a0, %lo(g_nGemPickupCameraStartZ)($at)
+    /* 1FE88 8002F688 0780013C */  lui        $at, %hi(g_nDragonRescueCameraStartRadius)
+    /* 1FE8C 8002F68C A47022AC */  sw         $v0, %lo(g_nDragonRescueCameraStartRadius)($at)
+    /* 1FE90 8002F690 0780013C */  lui        $at, %hi(g_nDragonRescueCameraStartZ)
+    /* 1FE94 8002F694 A87024AC */  sw         $a0, %lo(g_nDragonRescueCameraStartZ)($at)
     /* 1FE98 8002F698 0000708C */  lw         $s0, 0x0($v1)
     /* 1FE9C 8002F69C 0C00648C */  lw         $a0, 0xC($v1)
     /* 1FEA0 8002F6A0 1000658C */  lw         $a1, 0x10($v1)
@@ -33080,45 +33080,45 @@ glabel GemPickup_Update
     /* 1FEB0 8002F6B0 AD5A000C */  jal        ArcTan2
     /* 1FEB4 8002F6B4 23284500 */   subu      $a1, $v0, $a1
     /* 1FEB8 8002F6B8 1000A427 */  addiu      $a0, $sp, 0x10
-    /* 1FEBC 8002F6BC 0780063C */  lui        $a2, %hi(g_pGemPickupSourceActor)
-    /* 1FEC0 8002F6C0 C070C68C */  lw         $a2, %lo(g_pGemPickupSourceActor)($a2)
+    /* 1FEBC 8002F6BC 0780063C */  lui        $a2, %hi(g_pDragonRescueSourceActor)
+    /* 1FEC0 8002F6C0 C070C68C */  lw         $a2, %lo(g_pDragonRescueSourceActor)($a2)
     /* 1FEC4 8002F6C4 21280002 */  addu       $a1, $s0, $zero
-    /* 1FEC8 8002F6C8 0780013C */  lui        $at, %hi(g_nGemPickupCameraTargetYaw)
-    /* 1FECC 8002F6CC AC7022AC */  sw         $v0, %lo(g_nGemPickupCameraTargetYaw)($at)
+    /* 1FEC8 8002F6C8 0780013C */  lui        $at, %hi(g_nDragonRescueCameraTargetYaw)
+    /* 1FECC 8002F6CC AC7022AC */  sw         $v0, %lo(g_nDragonRescueCameraTargetYaw)($at)
     /* 1FED0 8002F6D0 E35D000C */  jal        SubtractVector
     /* 1FED4 8002F6D4 0C00C624 */   addiu     $a2, $a2, 0xC
     /* 1FED8 8002F6D8 1000A427 */  addiu      $a0, $sp, 0x10
     /* 1FEDC 8002F6DC 7F5C000C */  jal        VectorLength
     /* 1FEE0 8002F6E0 21280000 */   addu      $a1, $zero, $zero
-    /* 1FEE4 8002F6E4 0780013C */  lui        $at, %hi(g_nGemPickupCameraTargetRadius)
-    /* 1FEE8 8002F6E8 B07022AC */  sw         $v0, %lo(g_nGemPickupCameraTargetRadius)($at)
+    /* 1FEE4 8002F6E4 0780013C */  lui        $at, %hi(g_nDragonRescueCameraTargetRadius)
+    /* 1FEE8 8002F6E8 B07022AC */  sw         $v0, %lo(g_nDragonRescueCameraTargetRadius)($at)
     /* 1FEEC 8002F6EC 0800028E */  lw         $v0, 0x8($s0)
-    /* 1FEF0 8002F6F0 0780043C */  lui        $a0, %hi(g_nGemPickupOrbitStartYaw)
-    /* 1FEF4 8002F6F4 9070848C */  lw         $a0, %lo(g_nGemPickupOrbitStartYaw)($a0)
-    /* 1FEF8 8002F6F8 0780053C */  lui        $a1, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 1FEFC 8002F6FC 9870A58C */  lw         $a1, %lo(g_dwGemPickupOrbitTargetYaw)($a1)
-    /* 1FF00 8002F700 0780013C */  lui        $at, %hi(g_nGemPickupCameraTargetZ)
-    /* 1FF04 8002F704 B47022AC */  sw         $v0, %lo(g_nGemPickupCameraTargetZ)($at)
+    /* 1FEF0 8002F6F0 0780043C */  lui        $a0, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 1FEF4 8002F6F4 9070848C */  lw         $a0, %lo(g_nDragonRescueOrbitStartYaw)($a0)
+    /* 1FEF8 8002F6F8 0780053C */  lui        $a1, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 1FEFC 8002F6FC 9870A58C */  lw         $a1, %lo(g_dwDragonRescueOrbitTargetYaw)($a1)
+    /* 1FF00 8002F700 0780013C */  lui        $at, %hi(g_nDragonRescueCameraTargetZ)
+    /* 1FF04 8002F704 B47022AC */  sw         $v0, %lo(g_nDragonRescueCameraTargetZ)($at)
     /* 1FF08 8002F708 4A5E000C */  jal        AbsAngleDelta12
     /* 1FF0C 8002F70C 00000000 */   nop
     /* 1FF10 8002F710 03110200 */  sra        $v0, $v0, 4
     /* 1FF14 8002F714 28004224 */  addiu      $v0, $v0, 0x28
-    /* 1FF18 8002F718 0780013C */  lui        $at, %hi(g_nGemPickupSweepDurationFrames)
-    /* 1FF1C 8002F71C 707022AC */  sw         $v0, %lo(g_nGemPickupSweepDurationFrames)($at)
+    /* 1FF18 8002F718 0780013C */  lui        $at, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 1FF1C 8002F71C 707022AC */  sw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($at)
     /* 1FF20 8002F720 40004228 */  slti       $v0, $v0, 0x40
     /* 1FF24 8002F724 03004010 */  beqz       $v0, .L8002F734
     /* 1FF28 8002F728 40000224 */   addiu     $v0, $zero, 0x40
-    /* 1FF2C 8002F72C 0780013C */  lui        $at, %hi(g_nGemPickupSweepDurationFrames)
-    /* 1FF30 8002F730 707022AC */  sw         $v0, %lo(g_nGemPickupSweepDurationFrames)($at)
+    /* 1FF2C 8002F72C 0780013C */  lui        $at, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 1FF30 8002F730 707022AC */  sw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($at)
   .L8002F734:
-    /* 1FF34 8002F734 0780023C */  lui        $v0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 1FF38 8002F738 7070428C */  lw         $v0, %lo(g_nGemPickupSweepDurationFrames)($v0)
+    /* 1FF34 8002F734 0780023C */  lui        $v0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 1FF38 8002F738 7070428C */  lw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($v0)
     /* 1FF3C 8002F73C 00000000 */  nop
     /* 1FF40 8002F740 81004228 */  slti       $v0, $v0, 0x81
     /* 1FF44 8002F744 03004014 */  bnez       $v0, .L8002F754
     /* 1FF48 8002F748 80000224 */   addiu     $v0, $zero, 0x80
-    /* 1FF4C 8002F74C 0780013C */  lui        $at, %hi(g_nGemPickupSweepDurationFrames)
-    /* 1FF50 8002F750 707022AC */  sw         $v0, %lo(g_nGemPickupSweepDurationFrames)($at)
+    /* 1FF4C 8002F74C 0780013C */  lui        $at, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 1FF50 8002F750 707022AC */  sw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($at)
   .L8002F754:
     /* 1FF54 8002F754 0880023C */  lui        $v0, %hi(g_nSpyroFlameBreathTimer)
     /* 1FF58 8002F758 6887428C */  lw         $v0, %lo(g_nSpyroFlameBreathTimer)($v0)
@@ -33143,8 +33143,8 @@ glabel GemPickup_Update
     /* 1FFA4 8002F7A4 0780013C */  lui        $at, %hi(g_pEmitListWriteCursor)
     /* 1FFA8 8002F7A8 385723AC */  sw         $v1, %lo(g_pEmitListWriteCursor)($at)
     /* 1FFAC 8002F7AC 010062A0 */  sb         $v0, 0x1($v1)
-    /* 1FFB0 8002F7B0 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 1FFB4 8002F7B4 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 1FFB0 8002F7B0 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 1FFB4 8002F7B4 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 1FFB8 8002F7B8 00000000 */  nop
     /* 1FFBC 8002F7BC 54004490 */  lbu        $a0, 0x54($v0)
     /* 1FFC0 8002F7C0 CA5A010C */  jal        StopAllSoundExceptMask
@@ -33157,8 +33157,8 @@ glabel GemPickup_Update
     /* 1FFDC 8002F7DC A8C40008 */  j          .L800312A0
     /* 1FFE0 8002F7E0 10000624 */   addiu     $a2, $zero, 0x10
   jlabel .L8002F7E4
-    /* 1FFE4 8002F7E4 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 1FFE8 8002F7E8 6C70848C */  lw         $a0, %lo(g_nGemPickupTimer)($a0)
+    /* 1FFE4 8002F7E4 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 1FFE8 8002F7E8 6C70848C */  lw         $a0, %lo(g_nDragonRescueTimer)($a0)
     /* 1FFEC 8002F7EC 00000000 */  nop
     /* 1FFF0 8002F7F0 20008228 */  slti       $v0, $a0, 0x20
     /* 1FFF4 8002F7F4 19004010 */  beqz       $v0, .L8002F85C
@@ -33170,71 +33170,71 @@ glabel GemPickup_Update
     /* 2000C 8002F80C 02004224 */  addiu      $v0, $v0, 0x2
     /* 20010 8002F810 18004400 */  mult       $v0, $a0
     /* 20014 8002F814 01000224 */  addiu      $v0, $zero, 0x1
-    /* 20018 8002F818 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarEnabled)
-    /* 2001C 8002F81C 486222AC */  sw         $v0, %lo(g_nGemPickupAuraStarEnabled)($at)
+    /* 20018 8002F818 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarEnabled)
+    /* 2001C 8002F81C 486222AC */  sw         $v0, %lo(g_nDragonRescueAuraStarEnabled)($at)
     /* 20020 8002F820 80100300 */  sll        $v0, $v1, 2
     /* 20024 8002F824 40004224 */  addiu      $v0, $v0, 0x40
-    /* 20028 8002F828 0780013C */  lui        $at, %hi(g_bGemPickupAuraStarColor)
-    /* 2002C 8002F82C 736222A0 */  sb         $v0, %lo(g_bGemPickupAuraStarColor)($at)
-    /* 20030 8002F830 0780023C */  lui        $v0, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 20034 8002F834 72624290 */  lbu        $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($v0)
+    /* 20028 8002F828 0780013C */  lui        $at, %hi(g_bDragonRescueAuraStarColor)
+    /* 2002C 8002F82C 736222A0 */  sb         $v0, %lo(g_bDragonRescueAuraStarColor)($at)
+    /* 20030 8002F830 0780023C */  lui        $v0, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 20034 8002F834 72624290 */  lbu        $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($v0)
     /* 20038 8002F838 00190300 */  sll        $v1, $v1, 4
-    /* 2003C 8002F83C 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarRadius)
-    /* 20040 8002F840 6C6223AC */  sw         $v1, %lo(g_nGemPickupAuraStarRadius)($at)
+    /* 2003C 8002F83C 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarRadius)
+    /* 20040 8002F840 6C6223AC */  sw         $v1, %lo(g_nDragonRescueAuraStarRadius)($at)
     /* 20044 8002F844 12400000 */  mflo       $t0
     /* 20048 8002F848 21104800 */  addu       $v0, $v0, $t0
-    /* 2004C 8002F84C 0780013C */  lui        $at, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 20050 8002F850 726222A0 */  sb         $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($at)
+    /* 2004C 8002F84C 0780013C */  lui        $at, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 20050 8002F850 726222A0 */  sb         $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($at)
     /* 20054 8002F854 19BE0008 */  j          .L8002F864
     /* 20058 8002F858 00000000 */   nop
   .L8002F85C:
-    /* 2005C 8002F85C 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarEnabled)
-    /* 20060 8002F860 486220AC */  sw         $zero, %lo(g_nGemPickupAuraStarEnabled)($at)
+    /* 2005C 8002F85C 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarEnabled)
+    /* 20060 8002F860 486220AC */  sw         $zero, %lo(g_nDragonRescueAuraStarEnabled)($at)
   .L8002F864:
-    /* 20064 8002F864 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 20068 8002F868 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 20064 8002F864 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 20068 8002F868 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 2006C 8002F86C 00000000 */  nop
     /* 20070 8002F870 08006228 */  slti       $v0, $v1, 0x8
     /* 20074 8002F874 07004010 */  beqz       $v0, .L8002F894
     /* 20078 8002F878 08000224 */   addiu     $v0, $zero, 0x8
     /* 2007C 8002F87C 23104300 */  subu       $v0, $v0, $v1
     /* 20080 8002F880 40110200 */  sll        $v0, $v0, 5
-    /* 20084 8002F884 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 20088 8002F888 747022AC */  sw         $v0, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 20084 8002F884 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 20088 8002F888 747022AC */  sw         $v0, %lo(g_nDragonRescueFullscreenTintLevel)($at)
     /* 2008C 8002F88C 27BE0008 */  j          .L8002F89C
     /* 20090 8002F890 00000000 */   nop
   .L8002F894:
-    /* 20094 8002F894 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 20098 8002F898 747020AC */  sw         $zero, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 20094 8002F894 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 20098 8002F898 747020AC */  sw         $zero, %lo(g_nDragonRescueFullscreenTintLevel)($at)
   .L8002F89C:
-    /* 2009C 8002F89C 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 200A0 8002F8A0 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 2009C 8002F89C 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 200A0 8002F8A0 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 200A4 8002F8A4 00000000 */  nop
     /* 200A8 8002F8A8 49006290 */  lbu        $v0, 0x49($v1)
     /* 200AC 8002F8AC 00000000 */  nop
     /* 200B0 8002F8B0 01004224 */  addiu      $v0, $v0, 0x1
     /* 200B4 8002F8B4 03004230 */  andi       $v0, $v0, 0x3
     /* 200B8 8002F8B8 490062A0 */  sb         $v0, 0x49($v1)
-    /* 200BC 8002F8BC 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 200C0 8002F8C0 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 200BC 8002F8BC 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 200C0 8002F8C0 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 200C4 8002F8C4 00000000 */  nop
     /* 200C8 8002F8C8 49006290 */  lbu        $v0, 0x49($v1)
     /* 200CC 8002F8CC 00000000 */  nop
     /* 200D0 8002F8D0 40100200 */  sll        $v0, $v0, 1
-    /* 200D4 8002F8D4 0780013C */  lui        $at, %hi(g_abGemPickupFlickerPairs1)
+    /* 200D4 8002F8D4 0780013C */  lui        $at, %hi(g_abDragonRescueFlickerPairs1)
     /* 200D8 8002F8D8 21082200 */  addu       $at, $at, $v0
-    /* 200DC 8002F8DC 90F32290 */  lbu        $v0, %lo(g_abGemPickupFlickerPairs1)($at)
+    /* 200DC 8002F8DC 90F32290 */  lbu        $v0, %lo(g_abDragonRescueFlickerPairs1)($at)
     /* 200E0 8002F8E0 00000000 */  nop
     /* 200E4 8002F8E4 440062A0 */  sb         $v0, 0x44($v1)
-    /* 200E8 8002F8E8 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 200EC 8002F8EC C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 200E8 8002F8E8 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 200EC 8002F8EC C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 200F0 8002F8F0 00000000 */  nop
     /* 200F4 8002F8F4 49006290 */  lbu        $v0, 0x49($v1)
     /* 200F8 8002F8F8 00000000 */  nop
     /* 200FC 8002F8FC 40100200 */  sll        $v0, $v0, 1
-    /* 20100 8002F900 0780013C */  lui        $at, %hi(g_abGemPickupFlickerPairs1Y)
+    /* 20100 8002F900 0780013C */  lui        $at, %hi(g_abDragonRescueFlickerPairs1Y)
     /* 20104 8002F904 21082200 */  addu       $at, $at, $v0
-    /* 20108 8002F908 91F32290 */  lbu        $v0, %lo(g_abGemPickupFlickerPairs1Y)($at)
+    /* 20108 8002F908 91F32290 */  lbu        $v0, %lo(g_abDragonRescueFlickerPairs1Y)($at)
     /* 2010C 8002F90C 00000000 */  nop
     /* 20110 8002F910 450062A0 */  sb         $v0, 0x45($v1)
     /* 20114 8002F914 0780023C */  lui        $v0, %hi(g_nPulseRumbleTimer)
@@ -33246,8 +33246,8 @@ glabel GemPickup_Update
     /* 2012C 8002F92C 0780013C */  lui        $at, %hi(g_nPulseRumbleTimer)
     /* 20130 8002F930 D05722AC */  sw         $v0, %lo(g_nPulseRumbleTimer)($at)
   .L8002F934:
-    /* 20134 8002F934 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* 20138 8002F938 C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* 20134 8002F934 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* 20138 8002F938 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* 2013C 8002F93C 0780023C */  lui        $v0, %hi(g_pfnLevelSpawnActor)
     /* 20140 8002F940 CC58428C */  lw         $v0, %lo(g_pfnLevelSpawnActor)($v0)
     /* 20144 8002F944 46000324 */  addiu      $v1, $zero, 0x46
@@ -33255,10 +33255,10 @@ glabel GemPickup_Update
     /* 2014C 8002F94C 4C5823AC */  sw         $v1, %lo(g_nPulseRumbleAmount)($at)
     /* 20150 8002F950 09F84000 */  jalr       $v0
     /* 20154 8002F954 FB000424 */   addiu     $a0, $zero, 0xFB
-    /* 20158 8002F958 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 2015C 8002F95C 6C70848C */  lw         $a0, %lo(g_nGemPickupTimer)($a0)
-    /* 20160 8002F960 0780033C */  lui        $v1, %hi(g_nGemPickupSweepDurationFrames)
-    /* 20164 8002F964 7070638C */  lw         $v1, %lo(g_nGemPickupSweepDurationFrames)($v1)
+    /* 20158 8002F958 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 2015C 8002F95C 6C70848C */  lw         $a0, %lo(g_nDragonRescueTimer)($a0)
+    /* 20160 8002F960 0780033C */  lui        $v1, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 20164 8002F964 7070638C */  lw         $v1, %lo(g_nDragonRescueSweepDurationFrames)($v1)
     /* 20168 8002F968 00000000 */  nop
     /* 2016C 8002F96C 2A108300 */  slt        $v0, $a0, $v1
     /* 20170 8002F970 FE004010 */  beqz       $v0, .L8002FD6C
@@ -33279,10 +33279,10 @@ glabel GemPickup_Update
     /* 201A4 8002F9A4 12200000 */  mflo       $a0
     /* 201A8 8002F9A8 165B000C */  jal        LookupSine
     /* 201AC 8002F9AC 00FC8424 */   addiu     $a0, $a0, -0x400
-    /* 201B0 8002F9B0 0780043C */  lui        $a0, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 201B4 8002F9B4 9870848C */  lw         $a0, %lo(g_dwGemPickupOrbitTargetYaw)($a0)
-    /* 201B8 8002F9B8 0780053C */  lui        $a1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 201BC 8002F9BC 9070A58C */  lw         $a1, %lo(g_nGemPickupOrbitStartYaw)($a1)
+    /* 201B0 8002F9B0 0780043C */  lui        $a0, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 201B4 8002F9B4 9870848C */  lw         $a0, %lo(g_dwDragonRescueOrbitTargetYaw)($a0)
+    /* 201B8 8002F9B8 0780053C */  lui        $a1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 201BC 8002F9BC 9070A58C */  lw         $a1, %lo(g_nDragonRescueOrbitStartYaw)($a1)
     /* 201C0 8002F9C0 00105324 */  addiu      $s3, $v0, 0x1000
     /* 201C4 8002F9C4 23108500 */  subu       $v0, $a0, $a1
     /* 201C8 8002F9C8 FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -33292,8 +33292,8 @@ glabel GemPickup_Update
     /* 201D8 8002F9D8 4A5E000C */  jal        AbsAngleDelta12
     /* 201DC 8002F9DC 00000000 */   nop
     /* 201E0 8002F9E0 18005300 */  mult       $v0, $s3
-    /* 201E4 8002F9E4 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 201E8 8002F9E8 9070638C */  lw         $v1, %lo(g_nGemPickupOrbitStartYaw)($v1)
+    /* 201E4 8002F9E4 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 201E8 8002F9E8 9070638C */  lw         $v1, %lo(g_nDragonRescueOrbitStartYaw)($v1)
     /* 201EC 8002F9EC 12400000 */  mflo       $t0
     /* 201F0 8002F9F0 43130800 */  sra        $v0, $t0, 13
     /* 201F4 8002F9F4 87BE0008 */  j          .L8002FA1C
@@ -33302,16 +33302,16 @@ glabel GemPickup_Update
     /* 201FC 8002F9FC 4A5E000C */  jal        AbsAngleDelta12
     /* 20200 8002FA00 00000000 */   nop
     /* 20204 8002FA04 18005300 */  mult       $v0, $s3
-    /* 20208 8002FA08 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 2020C 8002FA0C 9070638C */  lw         $v1, %lo(g_nGemPickupOrbitStartYaw)($v1)
+    /* 20208 8002FA08 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 2020C 8002FA0C 9070638C */  lw         $v1, %lo(g_nDragonRescueOrbitStartYaw)($v1)
     /* 20210 8002FA10 12400000 */  mflo       $t0
     /* 20214 8002FA14 43130800 */  sra        $v0, $t0, 13
     /* 20218 8002FA18 23886200 */  subu       $s1, $v1, $v0
   .L8002FA1C:
-    /* 2021C 8002FA1C 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 20220 8002FA20 6C70848C */  lw         $a0, %lo(g_nGemPickupTimer)($a0)
-    /* 20224 8002FA24 0780023C */  lui        $v0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 20228 8002FA28 7070428C */  lw         $v0, %lo(g_nGemPickupSweepDurationFrames)($v0)
+    /* 2021C 8002FA1C 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 20220 8002FA20 6C70848C */  lw         $a0, %lo(g_nDragonRescueTimer)($a0)
+    /* 20224 8002FA24 0780023C */  lui        $v0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 20228 8002FA28 7070428C */  lw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($v0)
     /* 2022C 8002FA2C 80220400 */  sll        $a0, $a0, 10
     /* 20230 8002FA30 1A008200 */  div        $zero, $a0, $v0
     /* 20234 8002FA34 02004014 */  bnez       $v0, .L8002FA40
@@ -33328,10 +33328,10 @@ glabel GemPickup_Update
     /* 20258 8002FA58 12200000 */  mflo       $a0
     /* 2025C 8002FA5C 165B000C */  jal        LookupSine
     /* 20260 8002FA60 00FC8424 */   addiu     $a0, $a0, -0x400
-    /* 20264 8002FA64 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitTargetRadius)
-    /* 20268 8002FA68 9C70638C */  lw         $v1, %lo(g_nGemPickupOrbitTargetRadius)($v1)
-    /* 2026C 8002FA6C 0780063C */  lui        $a2, %hi(g_nGemPickupOrbitStartRadius)
-    /* 20270 8002FA70 9470C68C */  lw         $a2, %lo(g_nGemPickupOrbitStartRadius)($a2)
+    /* 20264 8002FA64 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitTargetRadius)
+    /* 20268 8002FA68 9C70638C */  lw         $v1, %lo(g_nDragonRescueOrbitTargetRadius)($v1)
+    /* 2026C 8002FA6C 0780063C */  lui        $a2, %hi(g_nDragonRescueOrbitStartRadius)
+    /* 20270 8002FA70 9470C68C */  lw         $a2, %lo(g_nDragonRescueOrbitStartRadius)($a2)
     /* 20274 8002FA74 00104224 */  addiu      $v0, $v0, 0x1000
     /* 20278 8002FA78 23186600 */  subu       $v1, $v1, $a2
     /* 2027C 8002FA7C 18006200 */  mult       $v1, $v0
@@ -33346,8 +33346,8 @@ glabel GemPickup_Update
     /* 202A0 8002FAA0 2C5B000C */  jal        LookupCosine
     /* 202A4 8002FAA4 21202002 */   addu      $a0, $s1, $zero
     /* 202A8 8002FAA8 18005200 */  mult       $v0, $s2
-    /* 202AC 8002FAAC 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 202B0 8002FAB0 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 202AC 8002FAAC 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 202B0 8002FAB0 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 202B4 8002FAB4 21202002 */  addu       $a0, $s1, $zero
     /* 202B8 8002FAB8 0C00428C */  lw         $v0, 0xC($v0)
     /* 202BC 8002FABC 12400000 */  mflo       $t0
@@ -33358,8 +33358,8 @@ glabel GemPickup_Update
     /* 202D0 8002FAD0 18005200 */  mult       $v0, $s2
     /* 202D4 8002FAD4 1000A427 */  addiu      $a0, $sp, 0x10
     /* 202D8 8002FAD8 21280002 */  addu       $a1, $s0, $zero
-    /* 202DC 8002FADC 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 202E0 8002FAE0 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 202DC 8002FADC 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 202E0 8002FAE0 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 202E4 8002FAE4 00000000 */  nop
     /* 202E8 8002FAE8 1000428C */  lw         $v0, 0x10($v0)
     /* 202EC 8002FAEC 12400000 */  mflo       $t0
@@ -33426,8 +33426,8 @@ glabel GemPickup_Update
     /* 203D0 8002FBD0 10000224 */   addiu     $v0, $zero, 0x10
     /* 203D4 8002FBD4 000062AC */  sw         $v0, 0x0($v1)
   .L8002FBD8:
-    /* 203D8 8002FBD8 0780103C */  lui        $s0, %hi(g_nGemPickupCameraTargetYaw)
-    /* 203DC 8002FBDC AC701026 */  addiu      $s0, $s0, %lo(g_nGemPickupCameraTargetYaw)
+    /* 203D8 8002FBD8 0780103C */  lui        $s0, %hi(g_nDragonRescueCameraTargetYaw)
+    /* 203DC 8002FBDC AC701026 */  addiu      $s0, $s0, %lo(g_nDragonRescueCameraTargetYaw)
     /* 203E0 8002FBE0 0000048E */  lw         $a0, 0x0($s0)
     /* 203E4 8002FBE4 F4FF058E */  lw         $a1, -0xC($s0)
     /* 203E8 8002FBE8 00000000 */  nop
@@ -33453,10 +33453,10 @@ glabel GemPickup_Update
     /* 20434 8002FC34 43130800 */  sra        $v0, $t0, 13
     /* 20438 8002FC38 23886200 */  subu       $s1, $v1, $v0
   .L8002FC3C:
-    /* 2043C 8002FC3C 0780023C */  lui        $v0, %hi(g_nGemPickupCameraTargetRadius)
-    /* 20440 8002FC40 B070428C */  lw         $v0, %lo(g_nGemPickupCameraTargetRadius)($v0)
-    /* 20444 8002FC44 0780033C */  lui        $v1, %hi(g_nGemPickupCameraStartRadius)
-    /* 20448 8002FC48 A470638C */  lw         $v1, %lo(g_nGemPickupCameraStartRadius)($v1)
+    /* 2043C 8002FC3C 0780023C */  lui        $v0, %hi(g_nDragonRescueCameraTargetRadius)
+    /* 20440 8002FC40 B070428C */  lw         $v0, %lo(g_nDragonRescueCameraTargetRadius)($v0)
+    /* 20444 8002FC44 0780033C */  lui        $v1, %hi(g_nDragonRescueCameraStartRadius)
+    /* 20448 8002FC48 A470638C */  lw         $v1, %lo(g_nDragonRescueCameraStartRadius)($v1)
     /* 2044C 8002FC4C 00000000 */  nop
     /* 20450 8002FC50 23104300 */  subu       $v0, $v0, $v1
     /* 20454 8002FC54 18005300 */  mult       $v0, $s3
@@ -33466,8 +33466,8 @@ glabel GemPickup_Update
     /* 20464 8002FC64 2C5B000C */  jal        LookupCosine
     /* 20468 8002FC68 21906200 */   addu      $s2, $v1, $v0
     /* 2046C 8002FC6C 18005200 */  mult       $v0, $s2
-    /* 20470 8002FC70 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 20474 8002FC74 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 20470 8002FC70 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 20474 8002FC74 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 20478 8002FC78 00000000 */  nop
     /* 2047C 8002FC7C 0C00428C */  lw         $v0, 0xC($v0)
     /* 20480 8002FC80 12180000 */  mflo       $v1
@@ -33478,16 +33478,16 @@ glabel GemPickup_Update
     /* 20494 8002FC94 165B000C */  jal        LookupSine
     /* 20498 8002FC98 21202002 */   addu      $a0, $s1, $zero
     /* 2049C 8002FC9C 18005200 */  mult       $v0, $s2
-    /* 204A0 8002FCA0 0780023C */  lui        $v0, %hi(g_nGemPickupCameraTargetZ)
-    /* 204A4 8002FCA4 B470428C */  lw         $v0, %lo(g_nGemPickupCameraTargetZ)($v0)
-    /* 204A8 8002FCA8 0780043C */  lui        $a0, %hi(g_nGemPickupCameraStartZ)
-    /* 204AC 8002FCAC A870848C */  lw         $a0, %lo(g_nGemPickupCameraStartZ)($a0)
+    /* 204A0 8002FCA0 0780023C */  lui        $v0, %hi(g_nDragonRescueCameraTargetZ)
+    /* 204A4 8002FCA4 B470428C */  lw         $v0, %lo(g_nDragonRescueCameraTargetZ)($v0)
+    /* 204A8 8002FCA8 0780043C */  lui        $a0, %hi(g_nDragonRescueCameraStartZ)
+    /* 204AC 8002FCAC A870848C */  lw         $a0, %lo(g_nDragonRescueCameraStartZ)($a0)
     /* 204B0 8002FCB0 12180000 */  mflo       $v1
     /* 204B4 8002FCB4 23104400 */  subu       $v0, $v0, $a0
     /* 204B8 8002FCB8 00000000 */  nop
     /* 204BC 8002FCBC 18005300 */  mult       $v0, $s3
-    /* 204C0 8002FCC0 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 204C4 8002FCC4 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 204C0 8002FCC0 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 204C4 8002FCC4 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 204C8 8002FCC8 00000000 */  nop
     /* 204CC 8002FCCC 1000428C */  lw         $v0, 0x10($v0)
     /* 204D0 8002FCD0 031B0300 */  sra        $v1, $v1, 12
@@ -33497,12 +33497,12 @@ glabel GemPickup_Update
     /* 204E0 8002FCE0 12480000 */  mflo       $t1
     /* 204E4 8002FCE4 43130900 */  sra        $v0, $t1, 13
     /* 204E8 8002FCE8 21208200 */  addu       $a0, $a0, $v0
-    /* 204EC 8002FCEC 0780023C */  lui        $v0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 204F0 8002FCF0 7070428C */  lw         $v0, %lo(g_nGemPickupSweepDurationFrames)($v0)
+    /* 204EC 8002FCEC 0780023C */  lui        $v0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 204F0 8002FCF0 7070428C */  lw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($v0)
     /* 204F4 8002FCF4 0780013C */  lui        $at, %hi(g_anCameraPos + 0x8)
     /* 204F8 8002FCF8 006E24AC */  sw         $a0, %lo(g_anCameraPos + 0x8)($at)
-    /* 204FC 8002FCFC 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 20500 8002FD00 6C70848C */  lw         $a0, %lo(g_nGemPickupTimer)($a0)
+    /* 204FC 8002FCFC 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 20500 8002FD00 6C70848C */  lw         $a0, %lo(g_nDragonRescueTimer)($a0)
     /* 20504 8002FD04 F0FF4324 */  addiu      $v1, $v0, -0x10
     /* 20508 8002FD08 2A108300 */  slt        $v0, $a0, $v1
     /* 2050C 8002FD0C 9A004014 */  bnez       $v0, .L8002FF78
@@ -33540,18 +33540,18 @@ glabel GemPickup_Update
     /* 20588 8002FD88 2A104300 */  slt        $v0, $v0, $v1
     /* 2058C 8002FD8C 32004010 */  beqz       $v0, .L8002FE58
     /* 20590 8002FD90 00000000 */   nop
-    /* 20594 8002FD94 0780043C */  lui        $a0, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 20598 8002FD98 9870848C */  lw         $a0, %lo(g_dwGemPickupOrbitTargetYaw)($a0)
+    /* 20594 8002FD94 0780043C */  lui        $a0, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 20598 8002FD98 9870848C */  lw         $a0, %lo(g_dwDragonRescueOrbitTargetYaw)($a0)
     /* 2059C 8002FD9C 2C5B000C */  jal        LookupCosine
     /* 205A0 8002FDA0 00000000 */   nop
-    /* 205A4 8002FDA4 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitTargetRadius)
-    /* 205A8 8002FDA8 9C70638C */  lw         $v1, %lo(g_nGemPickupOrbitTargetRadius)($v1)
+    /* 205A4 8002FDA4 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitTargetRadius)
+    /* 205A8 8002FDA8 9C70638C */  lw         $v1, %lo(g_nDragonRescueOrbitTargetRadius)($v1)
     /* 205AC 8002FDAC 00000000 */  nop
     /* 205B0 8002FDB0 18004300 */  mult       $v0, $v1
-    /* 205B4 8002FDB4 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 205B8 8002FDB8 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
-    /* 205BC 8002FDBC 0780043C */  lui        $a0, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 205C0 8002FDC0 9870848C */  lw         $a0, %lo(g_dwGemPickupOrbitTargetYaw)($a0)
+    /* 205B4 8002FDB4 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 205B8 8002FDB8 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
+    /* 205BC 8002FDBC 0780043C */  lui        $a0, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 205C0 8002FDC0 9870848C */  lw         $a0, %lo(g_dwDragonRescueOrbitTargetYaw)($a0)
     /* 205C4 8002FDC4 0C00428C */  lw         $v0, 0xC($v0)
     /* 205C8 8002FDC8 12400000 */  mflo       $t0
     /* 205CC 8002FDCC 031B0800 */  sra        $v1, $t0, 12
@@ -33560,25 +33560,25 @@ glabel GemPickup_Update
     /* 205D8 8002FDD8 588A22AC */  sw         $v0, %lo(g_anSpyroWorldPos)($at)
     /* 205DC 8002FDDC 165B000C */  jal        LookupSine
     /* 205E0 8002FDE0 00000000 */   nop
-    /* 205E4 8002FDE4 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitTargetRadius)
-    /* 205E8 8002FDE8 9C70638C */  lw         $v1, %lo(g_nGemPickupOrbitTargetRadius)($v1)
+    /* 205E4 8002FDE4 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitTargetRadius)
+    /* 205E8 8002FDE8 9C70638C */  lw         $v1, %lo(g_nDragonRescueOrbitTargetRadius)($v1)
     /* 205EC 8002FDEC 00000000 */  nop
     /* 205F0 8002FDF0 18004300 */  mult       $v0, $v1
-    /* 205F4 8002FDF4 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* 205F8 8002FDF8 C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* 205F4 8002FDF4 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* 205F8 8002FDF8 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* 205FC 8002FDFC 00000000 */  nop
     /* 20600 8002FE00 1000A48C */  lw         $a0, 0x10($a1)
     /* 20604 8002FE04 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 20608 8002FE08 668A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x2)($v0)
-    /* 2060C 8002FE0C 0780033C */  lui        $v1, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 20610 8002FE10 9870638C */  lw         $v1, %lo(g_dwGemPickupOrbitTargetYaw)($v1)
+    /* 2060C 8002FE0C 0780033C */  lui        $v1, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 20610 8002FE10 9870638C */  lw         $v1, %lo(g_dwDragonRescueOrbitTargetYaw)($v1)
     /* 20614 8002FE14 00110200 */  sll        $v0, $v0, 4
     /* 20618 8002FE18 00086324 */  addiu      $v1, $v1, 0x800
     /* 2061C 8002FE1C FF0F6330 */  andi       $v1, $v1, 0xFFF
-    /* 20620 8002FE20 0780013C */  lui        $at, %hi(g_nGemPickupOrbitStartYaw)
-    /* 20624 8002FE24 907022AC */  sw         $v0, %lo(g_nGemPickupOrbitStartYaw)($at)
-    /* 20628 8002FE28 0780013C */  lui        $at, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 2062C 8002FE2C 987023AC */  sw         $v1, %lo(g_dwGemPickupOrbitTargetYaw)($at)
+    /* 20620 8002FE20 0780013C */  lui        $at, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 20624 8002FE24 907022AC */  sw         $v0, %lo(g_nDragonRescueOrbitStartYaw)($at)
+    /* 20628 8002FE28 0780013C */  lui        $at, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 2062C 8002FE2C 987023AC */  sw         $v1, %lo(g_dwDragonRescueOrbitTargetYaw)($at)
     /* 20630 8002FE30 12400000 */  mflo       $t0
     /* 20634 8002FE34 03130800 */  sra        $v0, $t0, 12
     /* 20638 8002FE38 21208200 */  addu       $a0, $a0, $v0
@@ -33590,10 +33590,10 @@ glabel GemPickup_Update
     /* 20650 8002FE50 C05D000C */  jal        CopyVector
     /* 20654 8002FE54 00000000 */   nop
   .L8002FE58:
-    /* 20658 8002FE58 0780043C */  lui        $a0, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 2065C 8002FE5C 9870848C */  lw         $a0, %lo(g_dwGemPickupOrbitTargetYaw)($a0)
-    /* 20660 8002FE60 0780053C */  lui        $a1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 20664 8002FE64 9070A58C */  lw         $a1, %lo(g_nGemPickupOrbitStartYaw)($a1)
+    /* 20658 8002FE58 0780043C */  lui        $a0, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 2065C 8002FE5C 9870848C */  lw         $a0, %lo(g_dwDragonRescueOrbitTargetYaw)($a0)
+    /* 20660 8002FE60 0780053C */  lui        $a1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 20664 8002FE64 9070A58C */  lw         $a1, %lo(g_nDragonRescueOrbitStartYaw)($a1)
     /* 20668 8002FE68 00000000 */  nop
     /* 2066C 8002FE6C 23108500 */  subu       $v0, $a0, $a1
     /* 20670 8002FE70 FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -33602,10 +33602,10 @@ glabel GemPickup_Update
     /* 2067C 8002FE7C 00000000 */   nop
     /* 20680 8002FE80 4A5E000C */  jal        AbsAngleDelta12
     /* 20684 8002FE84 00000000 */   nop
-    /* 20688 8002FE88 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 2068C 8002FE8C 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
-    /* 20690 8002FE90 0780043C */  lui        $a0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 20694 8002FE94 7070848C */  lw         $a0, %lo(g_nGemPickupSweepDurationFrames)($a0)
+    /* 20688 8002FE88 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 2068C 8002FE8C 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
+    /* 20690 8002FE90 0780043C */  lui        $a0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 20694 8002FE94 7070848C */  lw         $a0, %lo(g_nDragonRescueSweepDurationFrames)($a0)
     /* 20698 8002FE98 00000000 */  nop
     /* 2069C 8002FE9C 23186400 */  subu       $v1, $v1, $a0
     /* 206A0 8002FEA0 18004300 */  mult       $v0, $v1
@@ -33614,18 +33614,18 @@ glabel GemPickup_Update
     /* 206AC 8002FEAC 00000000 */   nop
     /* 206B0 8002FEB0 1F004224 */  addiu      $v0, $v0, 0x1F
   .L8002FEB4:
-    /* 206B4 8002FEB4 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 206B8 8002FEB8 9070638C */  lw         $v1, %lo(g_nGemPickupOrbitStartYaw)($v1)
+    /* 206B4 8002FEB4 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 206B8 8002FEB8 9070638C */  lw         $v1, %lo(g_nDragonRescueOrbitStartYaw)($v1)
     /* 206BC 8002FEBC 43110200 */  sra        $v0, $v0, 5
     /* 206C0 8002FEC0 C3BF0008 */  j          .L8002FF0C
     /* 206C4 8002FEC4 21886200 */   addu      $s1, $v1, $v0
   .L8002FEC8:
     /* 206C8 8002FEC8 4A5E000C */  jal        AbsAngleDelta12
     /* 206CC 8002FECC 00000000 */   nop
-    /* 206D0 8002FED0 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 206D4 8002FED4 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
-    /* 206D8 8002FED8 0780043C */  lui        $a0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 206DC 8002FEDC 7070848C */  lw         $a0, %lo(g_nGemPickupSweepDurationFrames)($a0)
+    /* 206D0 8002FED0 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 206D4 8002FED4 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
+    /* 206D8 8002FED8 0780043C */  lui        $a0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 206DC 8002FEDC 7070848C */  lw         $a0, %lo(g_nDragonRescueSweepDurationFrames)($a0)
     /* 206E0 8002FEE0 00000000 */  nop
     /* 206E4 8002FEE4 23186400 */  subu       $v1, $v1, $a0
     /* 206E8 8002FEE8 18004300 */  mult       $v0, $v1
@@ -33634,8 +33634,8 @@ glabel GemPickup_Update
     /* 206F4 8002FEF4 00000000 */   nop
     /* 206F8 8002FEF8 1F004224 */  addiu      $v0, $v0, 0x1F
   .L8002FEFC:
-    /* 206FC 8002FEFC 0780033C */  lui        $v1, %hi(g_nGemPickupOrbitStartYaw)
-    /* 20700 8002FF00 9070638C */  lw         $v1, %lo(g_nGemPickupOrbitStartYaw)($v1)
+    /* 206FC 8002FEFC 0780033C */  lui        $v1, %hi(g_nDragonRescueOrbitStartYaw)
+    /* 20700 8002FF00 9070638C */  lw         $v1, %lo(g_nDragonRescueOrbitStartYaw)($v1)
     /* 20704 8002FF04 43110200 */  sra        $v0, $v0, 5
     /* 20708 8002FF08 23886200 */  subu       $s1, $v1, $v0
   .L8002FF0C:
@@ -33648,16 +33648,16 @@ glabel GemPickup_Update
     /* 20724 8002FF24 DEBF0008 */  j          .L8002FF78
     /* 20728 8002FF28 00000000 */   nop
   .L8002FF2C:
-    /* 2072C 8002FF2C 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 20730 8002FF30 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
+    /* 2072C 8002FF2C 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 20730 8002FF30 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
     /* 20734 8002FF34 04000224 */  addiu      $v0, $zero, 0x4
     /* 20738 8002FF38 0880013C */  lui        $at, %hi(g_bSpyroSubFrameTimer)
     /* 2073C 8002FF3C 7C8A22A0 */  sb         $v0, %lo(g_bSpyroSubFrameTimer)($at)
-    /* 20740 8002FF40 0780023C */  lui        $v0, %hi(g_dwGemPickupOrbitTargetYaw)
-    /* 20744 8002FF44 9870428C */  lw         $v0, %lo(g_dwGemPickupOrbitTargetYaw)($v0)
+    /* 20740 8002FF40 0780023C */  lui        $v0, %hi(g_dwDragonRescueOrbitTargetYaw)
+    /* 20744 8002FF44 9870428C */  lw         $v0, %lo(g_dwDragonRescueOrbitTargetYaw)($v0)
     /* 20748 8002FF48 04000324 */  addiu      $v1, $zero, 0x4
-    /* 2074C 8002FF4C 0780013C */  lui        $at, %hi(g_nGemPickupTimer)
-    /* 20750 8002FF50 6C7020AC */  sw         $zero, %lo(g_nGemPickupTimer)($at)
+    /* 2074C 8002FF4C 0780013C */  lui        $at, %hi(g_nDragonRescueTimer)
+    /* 20750 8002FF50 6C7020AC */  sw         $zero, %lo(g_nDragonRescueTimer)($at)
     /* 20754 8002FF54 0880013C */  lui        $at, %hi(g_bSpyroAnimCurrent)
     /* 20758 8002FF58 718A20A0 */  sb         $zero, %lo(g_bSpyroAnimCurrent)($at)
     /* 2075C 8002FF5C 0880013C */  lui        $at, %hi(g_bSpyroAnimFrame)
@@ -33668,13 +33668,13 @@ glabel GemPickup_Update
     /* 20770 8002FF70 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 20774 8002FF74 668A22A0 */  sb         $v0, %lo(g_abSpyroPersistentEuler + 0x2)($at)
   .L8002FF78:
-    /* 20778 8002FF78 0780033C */  lui        $v1, %hi(g_nGemPickupSubstate)
-    /* 2077C 8002FF7C 5870638C */  lw         $v1, %lo(g_nGemPickupSubstate)($v1)
+    /* 20778 8002FF78 0780033C */  lui        $v1, %hi(g_nDragonRescueSubstate)
+    /* 2077C 8002FF7C 5870638C */  lw         $v1, %lo(g_nDragonRescueSubstate)($v1)
     /* 20780 8002FF80 01000224 */  addiu      $v0, $zero, 0x1
     /* 20784 8002FF84 B4006214 */  bne        $v1, $v0, .L80030258
     /* 20788 8002FF88 1000A427 */   addiu     $a0, $sp, 0x10
-    /* 2078C 8002FF8C 0780063C */  lui        $a2, %hi(g_pGemPickupSourceActor)
-    /* 20790 8002FF90 C070C68C */  lw         $a2, %lo(g_pGemPickupSourceActor)($a2)
+    /* 2078C 8002FF8C 0780063C */  lui        $a2, %hi(g_pDragonRescueSourceActor)
+    /* 20790 8002FF90 C070C68C */  lw         $a2, %lo(g_pDragonRescueSourceActor)($a2)
     /* 20794 8002FF94 0880053C */  lui        $a1, %hi(g_anSpyroWorldPos)
     /* 20798 8002FF98 588AA524 */  addiu      $a1, $a1, %lo(g_anSpyroWorldPos)
     /* 2079C 8002FF9C D65D000C */  jal        AddVector
@@ -33687,8 +33687,8 @@ glabel GemPickup_Update
     /* 207B8 8002FFB8 F86DC624 */  addiu      $a2, $a2, %lo(g_anCameraPos)
     /* 207BC 8002FFBC E35D000C */  jal        SubtractVector
     /* 207C0 8002FFC0 21288000 */   addu      $a1, $a0, $zero
-    /* 207C4 8002FFC4 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 207C8 8002FFC8 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 207C4 8002FFC4 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 207C8 8002FFC8 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 207CC 8002FFCC 00000000 */  nop
     /* 207D0 8002FFD0 10006228 */  slti       $v0, $v1, 0x10
     /* 207D4 8002FFD4 3E004010 */  beqz       $v0, .L800300D0
@@ -33711,8 +33711,8 @@ glabel GemPickup_Update
     /* 20818 80030018 1C6EA584 */  lh         $a1, %lo(g_nCameraEulerRoll)($a1)
     /* 2081C 8003001C 5B5E000C */  jal        SignedAngleDelta12
     /* 20820 80030020 2400A2A7 */   sh        $v0, 0x24($sp)
-    /* 20824 80030024 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 20828 80030028 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 20824 80030024 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 20828 80030028 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 2082C 8003002C 00000000 */  nop
     /* 20830 80030030 18004300 */  mult       $v0, $v1
     /* 20834 80030034 2200A487 */  lh         $a0, 0x22($sp)
@@ -33728,8 +33728,8 @@ glabel GemPickup_Update
     /* 2085C 8003005C 1C6E22A4 */  sh         $v0, %lo(g_nCameraEulerRoll)($at)
     /* 20860 80030060 5B5E000C */  jal        SignedAngleDelta12
     /* 20864 80030064 00000000 */   nop
-    /* 20868 80030068 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 2086C 8003006C 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 20868 80030068 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 2086C 8003006C 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 20870 80030070 00000000 */  nop
     /* 20874 80030074 18004300 */  mult       $v0, $v1
     /* 20878 80030078 2400A487 */  lh         $a0, 0x24($sp)
@@ -33745,8 +33745,8 @@ glabel GemPickup_Update
     /* 208A0 800300A0 1E6E22A4 */  sh         $v0, %lo(g_nCameraEulerPitch)($at)
     /* 208A4 800300A4 5B5E000C */  jal        SignedAngleDelta12
     /* 208A8 800300A8 00000000 */   nop
-    /* 208AC 800300AC 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 208B0 800300B0 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 208AC 800300AC 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 208B0 800300B0 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 208B4 800300B4 00000000 */  nop
     /* 208B8 800300B8 18004300 */  mult       $v0, $v1
     /* 208BC 800300BC 0780023C */  lui        $v0, %hi(g_nCameraEulerYaw)
@@ -33755,8 +33755,8 @@ glabel GemPickup_Update
     /* 208C8 800300C8 92C00008 */  j          .L80030248
     /* 208CC 800300CC 03190800 */   sra       $v1, $t0, 4
   .L800300D0:
-    /* 208D0 800300D0 0780023C */  lui        $v0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 208D4 800300D4 7070428C */  lw         $v0, %lo(g_nGemPickupSweepDurationFrames)($v0)
+    /* 208D0 800300D0 0780023C */  lui        $v0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 208D4 800300D4 7070428C */  lw         $v0, %lo(g_nDragonRescueSweepDurationFrames)($v0)
     /* 208D8 800300D8 00000000 */  nop
     /* 208DC 800300DC E0FF4224 */  addiu      $v0, $v0, -0x20
     /* 208E0 800300E0 2A106200 */  slt        $v0, $v1, $v0
@@ -33780,8 +33780,8 @@ glabel GemPickup_Update
     /* 20928 80030128 94C00008 */  j          .L80030250
     /* 2092C 8003012C 00000000 */   nop
   .L80030130:
-    /* 20930 80030130 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 20934 80030134 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 20930 80030130 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 20934 80030134 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 20938 80030138 1000A427 */  addiu      $a0, $sp, 0x10
     /* 2093C 8003013C 0000508C */  lw         $s0, 0x0($v0)
     /* 20940 80030140 7F5C000C */  jal        VectorLength
@@ -33801,10 +33801,10 @@ glabel GemPickup_Update
     /* 20978 80030178 2000A587 */  lh         $a1, 0x20($sp)
     /* 2097C 8003017C 5B5E000C */  jal        SignedAngleDelta12
     /* 20980 80030180 00000000 */   nop
-    /* 20984 80030184 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 20988 80030188 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
-    /* 2098C 8003018C 0780043C */  lui        $a0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 20990 80030190 7070848C */  lw         $a0, %lo(g_nGemPickupSweepDurationFrames)($a0)
+    /* 20984 80030184 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 20988 80030188 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
+    /* 2098C 8003018C 0780043C */  lui        $a0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 20990 80030190 7070848C */  lw         $a0, %lo(g_nDragonRescueSweepDurationFrames)($a0)
     /* 20994 80030194 00000000 */  nop
     /* 20998 80030198 23186400 */  subu       $v1, $v1, $a0
     /* 2099C 8003019C 20006324 */  addiu      $v1, $v1, 0x20
@@ -33820,10 +33820,10 @@ glabel GemPickup_Update
     /* 209C4 800301C4 1000048E */  lw         $a0, 0x10($s0)
     /* 209C8 800301C8 5B5E000C */  jal        SignedAngleDelta12
     /* 209CC 800301CC 00000000 */   nop
-    /* 209D0 800301D0 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 209D4 800301D4 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
-    /* 209D8 800301D8 0780043C */  lui        $a0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 209DC 800301DC 7070848C */  lw         $a0, %lo(g_nGemPickupSweepDurationFrames)($a0)
+    /* 209D0 800301D0 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 209D4 800301D4 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
+    /* 209D8 800301D8 0780043C */  lui        $a0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 209DC 800301DC 7070848C */  lw         $a0, %lo(g_nDragonRescueSweepDurationFrames)($a0)
     /* 209E0 800301E0 00000000 */  nop
     /* 209E4 800301E4 23186400 */  subu       $v1, $v1, $a0
     /* 209E8 800301E8 20006324 */  addiu      $v1, $v1, 0x20
@@ -33839,10 +33839,10 @@ glabel GemPickup_Update
     /* 20A10 80030210 1400048E */  lw         $a0, 0x14($s0)
     /* 20A14 80030214 5B5E000C */  jal        SignedAngleDelta12
     /* 20A18 80030218 00000000 */   nop
-    /* 20A1C 8003021C 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 20A20 80030220 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
-    /* 20A24 80030224 0780043C */  lui        $a0, %hi(g_nGemPickupSweepDurationFrames)
-    /* 20A28 80030228 7070848C */  lw         $a0, %lo(g_nGemPickupSweepDurationFrames)($a0)
+    /* 20A1C 8003021C 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 20A20 80030220 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
+    /* 20A24 80030224 0780043C */  lui        $a0, %hi(g_nDragonRescueSweepDurationFrames)
+    /* 20A28 80030228 7070848C */  lw         $a0, %lo(g_nDragonRescueSweepDurationFrames)($a0)
     /* 20A2C 8003022C 00000000 */  nop
     /* 20A30 80030230 23186400 */  subu       $v1, $v1, $a0
     /* 20A34 80030234 20006324 */  addiu      $v1, $v1, 0x20
@@ -33952,34 +33952,34 @@ glabel GemPickup_Update
     /* 20BC8 800303C8 FEC40008 */  j          .L800313F8
     /* 20BCC 800303CC 00000000 */   nop
   jlabel .L800303D0
-    /* 20BD0 800303D0 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20BD4 800303D4 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20BD0 800303D0 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20BD4 800303D4 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20BD8 800303D8 00000000 */  nop
     /* 20BDC 800303DC 49006290 */  lbu        $v0, 0x49($v1)
     /* 20BE0 800303E0 00000000 */  nop
     /* 20BE4 800303E4 01004224 */  addiu      $v0, $v0, 0x1
     /* 20BE8 800303E8 03004230 */  andi       $v0, $v0, 0x3
     /* 20BEC 800303EC 490062A0 */  sb         $v0, 0x49($v1)
-    /* 20BF0 800303F0 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20BF4 800303F4 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20BF0 800303F0 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20BF4 800303F4 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20BF8 800303F8 00000000 */  nop
     /* 20BFC 800303FC 49006290 */  lbu        $v0, 0x49($v1)
     /* 20C00 80030400 00000000 */  nop
     /* 20C04 80030404 40100200 */  sll        $v0, $v0, 1
-    /* 20C08 80030408 0780013C */  lui        $at, %hi(g_abGemPickupFlickerPairs2)
+    /* 20C08 80030408 0780013C */  lui        $at, %hi(g_abDragonRescueFlickerPairs2)
     /* 20C0C 8003040C 21082200 */  addu       $at, $at, $v0
-    /* 20C10 80030410 98F32290 */  lbu        $v0, %lo(g_abGemPickupFlickerPairs2)($at)
+    /* 20C10 80030410 98F32290 */  lbu        $v0, %lo(g_abDragonRescueFlickerPairs2)($at)
     /* 20C14 80030414 00000000 */  nop
     /* 20C18 80030418 440062A0 */  sb         $v0, 0x44($v1)
-    /* 20C1C 8003041C 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20C20 80030420 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20C1C 8003041C 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20C20 80030420 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20C24 80030424 00000000 */  nop
     /* 20C28 80030428 49006290 */  lbu        $v0, 0x49($v1)
     /* 20C2C 8003042C 00000000 */  nop
     /* 20C30 80030430 40100200 */  sll        $v0, $v0, 1
-    /* 20C34 80030434 0780013C */  lui        $at, %hi(g_abGemPickupFlickerPairs2Y)
+    /* 20C34 80030434 0780013C */  lui        $at, %hi(g_abDragonRescueFlickerPairs2Y)
     /* 20C38 80030438 21082200 */  addu       $at, $at, $v0
-    /* 20C3C 8003043C 99F32290 */  lbu        $v0, %lo(g_abGemPickupFlickerPairs2Y)($at)
+    /* 20C3C 8003043C 99F32290 */  lbu        $v0, %lo(g_abDragonRescueFlickerPairs2Y)($at)
     /* 20C40 80030440 00000000 */  nop
     /* 20C44 80030444 450062A0 */  sb         $v0, 0x45($v1)
     /* 20C48 80030448 0780023C */  lui        $v0, %hi(g_nPulseRumbleTimer)
@@ -33991,8 +33991,8 @@ glabel GemPickup_Update
     /* 20C60 80030460 0780013C */  lui        $at, %hi(g_nPulseRumbleTimer)
     /* 20C64 80030464 D05722AC */  sw         $v0, %lo(g_nPulseRumbleTimer)($at)
   .L80030468:
-    /* 20C68 80030468 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* 20C6C 8003046C C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* 20C68 80030468 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* 20C6C 8003046C C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* 20C70 80030470 0780033C */  lui        $v1, %hi(g_pfnLevelSpawnActor)
     /* 20C74 80030474 CC58638C */  lw         $v1, %lo(g_pfnLevelSpawnActor)($v1)
     /* 20C78 80030478 46000224 */  addiu      $v0, $zero, 0x46
@@ -34000,14 +34000,14 @@ glabel GemPickup_Update
     /* 20C80 80030480 4C5822AC */  sw         $v0, %lo(g_nPulseRumbleAmount)($at)
     /* 20C84 80030484 09F86000 */  jalr       $v1
     /* 20C88 80030488 FB000424 */   addiu     $a0, $zero, 0xFB
-    /* 20C8C 8003048C 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* 20C90 80030490 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* 20C8C 8003048C 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* 20C90 80030490 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* 20C94 80030494 00000000 */  nop
     /* 20C98 80030498 10004228 */  slti       $v0, $v0, 0x10
     /* 20C9C 8003049C 07004014 */  bnez       $v0, .L800304BC
     /* 20CA0 800304A0 00000000 */   nop
-    /* 20CA4 800304A4 0780023C */  lui        $v0, %hi(g_nGemPickupStreamState)
-    /* 20CA8 800304A8 5C70428C */  lw         $v0, %lo(g_nGemPickupStreamState)($v0)
+    /* 20CA4 800304A4 0780023C */  lui        $v0, %hi(g_nDragonRescueStreamState)
+    /* 20CA8 800304A8 5C70428C */  lw         $v0, %lo(g_nDragonRescueStreamState)($v0)
     /* 20CAC 800304AC 00000000 */  nop
     /* 20CB0 800304B0 03004228 */  slti       $v0, $v0, 0x3
     /* 20CB4 800304B4 0B004010 */  beqz       $v0, .L800304E4
@@ -34025,14 +34025,14 @@ glabel GemPickup_Update
     /* 20CE0 800304E0 00000000 */   nop
   .L800304E4:
     /* 20CE4 800304E4 03000224 */  addiu      $v0, $zero, 0x3
-    /* 20CE8 800304E8 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 20CEC 800304EC 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
-    /* 20CF0 800304F0 0780013C */  lui        $at, %hi(g_nGemPickupTimer)
-    /* 20CF4 800304F4 6C7020AC */  sw         $zero, %lo(g_nGemPickupTimer)($at)
+    /* 20CE8 800304E8 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 20CEC 800304EC 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
+    /* 20CF0 800304F0 0780013C */  lui        $at, %hi(g_nDragonRescueTimer)
+    /* 20CF4 800304F4 6C7020AC */  sw         $zero, %lo(g_nDragonRescueTimer)($at)
     /* 20CF8 800304F8 FB000424 */  addiu      $a0, $zero, 0xFB
   .L800304FC:
-    /* 20CFC 800304FC 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* 20D00 80030500 C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* 20CFC 800304FC 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* 20D00 80030500 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* 20D04 80030504 0780023C */  lui        $v0, %hi(g_pfnLevelSpawnActor)
     /* 20D08 80030508 CC58428C */  lw         $v0, %lo(g_pfnLevelSpawnActor)($v0)
     /* 20D0C 8003050C 00000000 */  nop
@@ -34044,41 +34044,41 @@ glabel GemPickup_Update
     /* 20D24 80030524 3149010C */  jal        AllocActorRecordSlot
     /* 20D28 80030528 05001124 */   addiu     $s1, $zero, 0x5
     /* 20D2C 8003052C 21204000 */  addu       $a0, $v0, $zero
-    /* 20D30 80030530 0780103C */  lui        $s0, %hi(g_pGemPickupStatueActor)
-    /* 20D34 80030534 B8701026 */  addiu      $s0, $s0, %lo(g_pGemPickupStatueActor)
+    /* 20D30 80030530 0780103C */  lui        $s0, %hi(g_pDragonRescueStatueActor)
+    /* 20D34 80030534 B8701026 */  addiu      $s0, $s0, %lo(g_pDragonRescueStatueActor)
     /* 20D38 80030538 C8E9000C */  jal        InitActorRenderDefaults
     /* 20D3C 8003053C 000004AE */   sw        $a0, 0x0($s0)
-    /* 20D40 80030540 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20D44 80030544 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20D40 80030540 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20D44 80030544 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20D48 80030548 FE010224 */  addiu      $v0, $zero, 0x1FE
     /* 20D4C 8003054C 360062A4 */  sh         $v0, 0x36($v1)
     /* 20D50 80030550 0000048E */  lw         $a0, 0x0($s0)
-    /* 20D54 80030554 0780053C */  lui        $a1, %hi(g_pGemPickupSourceActor)
-    /* 20D58 80030558 C070A58C */  lw         $a1, %lo(g_pGemPickupSourceActor)($a1)
+    /* 20D54 80030554 0780053C */  lui        $a1, %hi(g_pDragonRescueSourceActor)
+    /* 20D58 80030558 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* 20D5C 8003055C 0C008424 */  addiu      $a0, $a0, 0xC
     /* 20D60 80030560 C05D000C */  jal        CopyVector
     /* 20D64 80030564 0C00A524 */   addiu     $a1, $a1, 0xC
-    /* 20D68 80030568 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 20D6C 8003056C C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
-    /* 20D70 80030570 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20D74 80030574 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20D68 80030568 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 20D6C 8003056C C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
+    /* 20D70 80030570 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20D74 80030574 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20D78 80030578 46004290 */  lbu        $v0, 0x46($v0)
     /* 20D7C 8003057C 00000000 */  nop
     /* 20D80 80030580 460062A0 */  sb         $v0, 0x46($v1)
-    /* 20D84 80030584 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20D88 80030588 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20D84 80030584 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20D88 80030588 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20D8C 8003058C 60000224 */  addiu      $v0, $zero, 0x60
     /* 20D90 80030590 570062A0 */  sb         $v0, 0x57($v1)
-    /* 20D94 80030594 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* 20D98 80030598 B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* 20D94 80030594 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* 20D98 80030598 B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* 20D9C 8003059C 00000000 */  nop
     /* 20DA0 800305A0 470051A0 */  sb         $s1, 0x47($v0)
-    /* 20DA4 800305A4 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20DA8 800305A8 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20DA4 800305A4 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20DA8 800305A8 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20DAC 800305AC FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 20DB0 800305B0 1C0062AC */  sw         $v0, 0x1C($v1)
-    /* 20DB4 800305B4 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20DB8 800305B8 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20DB4 800305B4 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20DB8 800305B8 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20DBC 800305BC 00000000 */  nop
     /* 20DC0 800305C0 1400628C */  lw         $v0, 0x14($v1)
     /* 20DC4 800305C4 00000000 */  nop
@@ -34087,8 +34087,8 @@ glabel GemPickup_Update
     /* 20DD0 800305D0 0000048E */  lw         $a0, 0x0($s0)
     /* 20DD4 800305D4 C937010C */  jal        FindWorldFloorBelowPoint
     /* 20DD8 800305D8 0C008424 */   addiu     $a0, $a0, 0xC
-    /* 20DDC 800305DC 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20DE0 800305E0 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20DDC 800305DC 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20DE0 800305E0 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20DE4 800305E4 00000000 */  nop
     /* 20DE8 800305E8 1400628C */  lw         $v0, 0x14($v1)
     /* 20DEC 800305EC 00000000 */  nop
@@ -34103,26 +34103,26 @@ glabel GemPickup_Update
     /* 20E10 80030610 3149010C */  jal        AllocActorRecordSlot
     /* 20E14 80030614 00000000 */   nop
     /* 20E18 80030618 21204000 */  addu       $a0, $v0, $zero
-    /* 20E1C 8003061C 0780013C */  lui        $at, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20E20 80030620 BC7024AC */  sw         $a0, %lo(g_pGemPickupSpyroMirrorActor)($at)
+    /* 20E1C 8003061C 0780013C */  lui        $at, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20E20 80030620 BC7024AC */  sw         $a0, %lo(g_pDragonRescueSpyroMirrorActor)($at)
     /* 20E24 80030624 C8E9000C */  jal        InitActorRenderDefaults
     /* 20E28 80030628 00000000 */   nop
-    /* 20E2C 8003062C 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20E30 80030630 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 20E2C 8003062C 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20E30 80030630 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 20E34 80030634 FF010224 */  addiu      $v0, $zero, 0x1FF
     /* 20E38 80030638 360062A4 */  sh         $v0, 0x36($v1)
-    /* 20E3C 8003063C 0780043C */  lui        $a0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20E40 80030640 BC70848C */  lw         $a0, %lo(g_pGemPickupSpyroMirrorActor)($a0)
+    /* 20E3C 8003063C 0780043C */  lui        $a0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20E40 80030640 BC70848C */  lw         $a0, %lo(g_pDragonRescueSpyroMirrorActor)($a0)
     /* 20E44 80030644 0880053C */  lui        $a1, %hi(g_anSpyroWorldPos)
     /* 20E48 80030648 588AA524 */  addiu      $a1, $a1, %lo(g_anSpyroWorldPos)
     /* 20E4C 8003064C C05D000C */  jal        CopyVector
     /* 20E50 80030650 0C008424 */   addiu     $a0, $a0, 0xC
-    /* 20E54 80030654 0780023C */  lui        $v0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20E58 80030658 BC70428C */  lw         $v0, %lo(g_pGemPickupSpyroMirrorActor)($v0)
+    /* 20E54 80030654 0780023C */  lui        $v0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20E58 80030658 BC70428C */  lw         $v0, %lo(g_pDragonRescueSpyroMirrorActor)($v0)
     /* 20E5C 8003065C 00000000 */  nop
     /* 20E60 80030660 470051A0 */  sb         $s1, 0x47($v0)
-    /* 20E64 80030664 0780043C */  lui        $a0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20E68 80030668 BC70848C */  lw         $a0, %lo(g_pGemPickupSpyroMirrorActor)($a0)
+    /* 20E64 80030664 0780043C */  lui        $a0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20E68 80030668 BC70848C */  lw         $a0, %lo(g_pDragonRescueSpyroMirrorActor)($a0)
     /* 20E6C 8003066C AA49010C */  jal        InsertActorIntoSpatialGrid
     /* 20E70 80030670 00000000 */   nop
     /* 20E74 80030674 CCFF048E */  lw         $a0, -0x34($s0)
@@ -34136,22 +34136,22 @@ glabel GemPickup_Update
     /* 20E94 80030694 31004490 */  lbu        $a0, 0x31($v0)
     /* 20E98 80030698 9E56010C */  jal        PlaySoundEffect
     /* 20E9C 8003069C 21380002 */   addu      $a3, $s0, $zero
-    /* 20EA0 800306A0 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20EA4 800306A4 C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20EA0 800306A0 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20EA4 800306A4 C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20EA8 800306A8 00000000 */  nop
     /* 20EAC 800306AC 1400628C */  lw         $v0, 0x14($v1)
     /* 20EB0 800306B0 00000000 */  nop
     /* 20EB4 800306B4 78004224 */  addiu      $v0, $v0, 0x78
     /* 20EB8 800306B8 140062AC */  sw         $v0, 0x14($v1)
-    /* 20EBC 800306BC 0780043C */  lui        $a0, %hi(g_pGemPickupSourceActor)
-    /* 20EC0 800306C0 C070848C */  lw         $a0, %lo(g_pGemPickupSourceActor)($a0)
+    /* 20EBC 800306BC 0780043C */  lui        $a0, %hi(g_pDragonRescueSourceActor)
+    /* 20EC0 800306C0 C070848C */  lw         $a0, %lo(g_pDragonRescueSourceActor)($a0)
     /* 20EC4 800306C4 5A49010C */  jal        DespawnActorRecord
     /* 20EC8 800306C8 00000000 */   nop
     /* 20ECC 800306CC FEC40008 */  j          .L800313F8
     /* 20ED0 800306D0 00000000 */   nop
   jlabel .L800306D4
-    /* 20ED4 800306D4 0780103C */  lui        $s0, %hi(g_nGemPickupTimer)
-    /* 20ED8 800306D8 6C701026 */  addiu      $s0, $s0, %lo(g_nGemPickupTimer)
+    /* 20ED4 800306D4 0780103C */  lui        $s0, %hi(g_nDragonRescueTimer)
+    /* 20ED8 800306D8 6C701026 */  addiu      $s0, $s0, %lo(g_nDragonRescueTimer)
     /* 20EDC 800306DC 0000048E */  lw         $a0, 0x0($s0)
     /* 20EE0 800306E0 00000000 */  nop
     /* 20EE4 800306E4 18008228 */  slti       $v0, $a0, 0x18
@@ -34159,12 +34159,12 @@ glabel GemPickup_Update
     /* 20EEC 800306EC 40180400 */   sll       $v1, $a0, 1
     /* 20EF0 800306F0 21186400 */  addu       $v1, $v1, $a0
     /* 20EF4 800306F4 60000224 */  addiu      $v0, $zero, 0x60
-    /* 20EF8 800306F8 0780043C */  lui        $a0, %hi(g_pGemPickupStatueActor)
-    /* 20EFC 800306FC B870848C */  lw         $a0, %lo(g_pGemPickupStatueActor)($a0)
+    /* 20EF8 800306F8 0780043C */  lui        $a0, %hi(g_pDragonRescueStatueActor)
+    /* 20EFC 800306FC B870848C */  lw         $a0, %lo(g_pDragonRescueStatueActor)($a0)
     /* 20F00 80030700 23104300 */  subu       $v0, $v0, $v1
     /* 20F04 80030704 570082A0 */  sb         $v0, 0x57($a0)
-    /* 20F08 80030708 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20F0C 8003070C C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20F08 80030708 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20F0C 8003070C C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20F10 80030710 00000000 */  nop
     /* 20F14 80030714 0000628C */  lw         $v0, 0x0($v1)
     /* 20F18 80030718 00000000 */  nop
@@ -34179,71 +34179,71 @@ glabel GemPickup_Update
     /* 20F3C 8003073C AA2A033C */  lui        $v1, (0x2AAAAAAB >> 16)
     /* 20F40 80030740 ABAA6334 */  ori        $v1, $v1, (0x2AAAAAAB & 0xFFFF)
     /* 20F44 80030744 18004300 */  mult       $v0, $v1
-    /* 20F48 80030748 0780043C */  lui        $a0, %hi(g_pGemPickupSourceActor)
-    /* 20F4C 8003074C C070848C */  lw         $a0, %lo(g_pGemPickupSourceActor)($a0)
+    /* 20F48 80030748 0780043C */  lui        $a0, %hi(g_pDragonRescueSourceActor)
+    /* 20F4C 8003074C C070848C */  lw         $a0, %lo(g_pDragonRescueSourceActor)($a0)
     /* 20F50 80030750 C3170200 */  sra        $v0, $v0, 31
     /* 20F54 80030754 10400000 */  mfhi       $t0
     /* 20F58 80030758 83180800 */  sra        $v1, $t0, 2
     /* 20F5C 8003075C 23186200 */  subu       $v1, $v1, $v0
     /* 20F60 80030760 46008290 */  lbu        $v0, 0x46($a0)
-    /* 20F64 80030764 0780043C */  lui        $a0, %hi(g_pGemPickupStatueActor)
-    /* 20F68 80030768 B870848C */  lw         $a0, %lo(g_pGemPickupStatueActor)($a0)
+    /* 20F64 80030764 0780043C */  lui        $a0, %hi(g_pDragonRescueStatueActor)
+    /* 20F68 80030768 B870848C */  lw         $a0, %lo(g_pDragonRescueStatueActor)($a0)
     /* 20F6C 8003076C 21104300 */  addu       $v0, $v0, $v1
     /* 20F70 80030770 FEC40008 */  j          .L800313F8
     /* 20F74 80030774 460082A0 */   sb        $v0, 0x46($a0)
   .L80030778:
-    /* 20F78 80030778 0780033C */  lui        $v1, %hi(g_pGemPickupSourceActor)
-    /* 20F7C 8003077C C070638C */  lw         $v1, %lo(g_pGemPickupSourceActor)($v1)
+    /* 20F78 80030778 0780033C */  lui        $v1, %hi(g_pDragonRescueSourceActor)
+    /* 20F7C 8003077C C070638C */  lw         $v1, %lo(g_pDragonRescueSourceActor)($v1)
     /* 20F80 80030780 04000224 */  addiu      $v0, $zero, 0x4
-    /* 20F84 80030784 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 20F88 80030788 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
+    /* 20F84 80030784 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 20F88 80030788 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
     /* 20F8C 8003078C 000000AE */  sw         $zero, 0x0($s0)
     /* 20F90 80030790 0000628C */  lw         $v0, 0x0($v1)
     /* 20F94 80030794 00000000 */  nop
     /* 20F98 80030798 3000428C */  lw         $v0, 0x30($v0)
-    /* 20F9C 8003079C 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 20FA0 800307A0 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 20F9C 8003079C 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 20FA0 800307A0 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 20FA4 800307A4 03110200 */  sra        $v0, $v0, 4
     /* 20FA8 800307A8 460062A0 */  sb         $v0, 0x46($v1)
-    /* 20FAC 800307AC 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* 20FB0 800307B0 B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* 20FAC 800307AC 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* 20FB0 800307B0 B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* 20FB4 800307B4 00000000 */  nop
     /* 20FB8 800307B8 570040A0 */  sb         $zero, 0x57($v0)
-    /* 20FBC 800307BC 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20FC0 800307C0 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 20FBC 800307BC 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20FC0 800307C0 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 20FC4 800307C4 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler)
     /* 20FC8 800307C8 648A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler)($v0)
     /* 20FCC 800307CC 00000000 */  nop
     /* 20FD0 800307D0 440062A0 */  sb         $v0, 0x44($v1)
-    /* 20FD4 800307D4 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20FD8 800307D8 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 20FD4 800307D4 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20FD8 800307D8 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 20FDC 800307DC 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 20FE0 800307E0 658A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x1)($v0)
     /* 20FE4 800307E4 00000000 */  nop
     /* 20FE8 800307E8 450062A0 */  sb         $v0, 0x45($v1)
-    /* 20FEC 800307EC 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 20FF0 800307F0 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 20FEC 800307EC 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 20FF0 800307F0 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 20FF4 800307F4 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 20FF8 800307F8 668A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x2)($v0)
     /* 20FFC 800307FC FEC40008 */  j          .L800313F8
     /* 21000 80030800 460062A0 */   sb        $v0, 0x46($v1)
   jlabel .L80030804
-    /* 21004 80030804 0780133C */  lui        $s3, %hi(g_nGemPickupTimer)
-    /* 21008 80030808 6C707326 */  addiu      $s3, $s3, %lo(g_nGemPickupTimer)
-    /* 2100C 8003080C 0780023C */  lui        $v0, %hi(g_nGemPickupCameraPathCount)
-    /* 21010 80030810 7C70428C */  lw         $v0, %lo(g_nGemPickupCameraPathCount)($v0)
+    /* 21004 80030804 0780133C */  lui        $s3, %hi(g_nDragonRescueTimer)
+    /* 21008 80030808 6C707326 */  addiu      $s3, $s3, %lo(g_nDragonRescueTimer)
+    /* 2100C 8003080C 0780023C */  lui        $v0, %hi(g_nDragonRescueCameraPathCount)
+    /* 21010 80030810 7C70428C */  lw         $v0, %lo(g_nDragonRescueCameraPathCount)($v0)
     /* 21014 80030814 0000638E */  lw         $v1, 0x0($s3)
     /* 21018 80030818 40100200 */  sll        $v0, $v0, 1
     /* 2101C 8003081C 2A106200 */  slt        $v0, $v1, $v0
     /* 21020 80030820 42014010 */  beqz       $v0, .L80030D2C
     /* 21024 80030824 21A00000 */   addu      $s4, $zero, $zero
-    /* 21028 80030828 0780023C */  lui        $v0, %hi(g_nGemPickupAudioFiredFlag)
-    /* 2102C 8003082C 8870428C */  lw         $v0, %lo(g_nGemPickupAudioFiredFlag)($v0)
+    /* 21028 80030828 0780023C */  lui        $v0, %hi(g_nDragonRescueAudioFiredFlag)
+    /* 2102C 8003082C 8870428C */  lw         $v0, %lo(g_nDragonRescueAudioFiredFlag)($v0)
     /* 21030 80030830 00000000 */  nop
     /* 21034 80030834 51004014 */  bnez       $v0, .L8003097C
     /* 21038 80030838 00000000 */   nop
-    /* 2103C 8003083C 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 21040 80030840 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 2103C 8003083C 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 21040 80030840 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 21044 80030844 00000000 */  nop
     /* 21048 80030848 0000428C */  lw         $v0, 0x0($v0)
     /* 2104C 8003084C 00000000 */  nop
@@ -34259,8 +34259,8 @@ glabel GemPickup_Update
     /* 21074 80030874 565A000C */  jal        CopyWords
     /* 21078 80030878 14000624 */   addiu     $a2, $zero, 0x14
     /* 2107C 8003087C 0800023C */  lui        $v0, (0x80000 >> 16)
-    /* 21080 80030880 0780033C */  lui        $v1, %hi(g_nGemPickupAudioSampleSize)
-    /* 21084 80030884 3870638C */  lw         $v1, %lo(g_nGemPickupAudioSampleSize)($v1)
+    /* 21080 80030880 0780033C */  lui        $v1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 21084 80030884 3870638C */  lw         $v1, %lo(g_nDragonRescueAudioSampleSize)($v1)
     /* 21088 80030888 0780043C */  lui        $a0, %hi(g_pLevelSampleBankEntries)
     /* 2108C 8003088C D061848C */  lw         $a0, %lo(g_pLevelSampleBankEntries)($a0)
     /* 21090 80030890 23104300 */  subu       $v0, $v0, $v1
@@ -34273,8 +34273,8 @@ glabel GemPickup_Update
     /* 210AC 800308AC D061638C */  lw         $v1, %lo(g_pLevelSampleBankEntries)($v1)
     /* 210B0 800308B0 32000224 */  addiu      $v0, $zero, 0x32
     /* 210B4 800308B4 080062A4 */  sh         $v0, 0x8($v1)
-    /* 210B8 800308B8 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 210BC 800308BC C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 210B8 800308B8 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 210BC 800308BC C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 210C0 800308C0 00000000 */  nop
     /* 210C4 800308C4 0000428C */  lw         $v0, 0x0($v0)
     /* 210C8 800308C8 8D2F033C */  lui        $v1, (0x2F8DF18F >> 16)
@@ -34320,17 +34320,17 @@ glabel GemPickup_Update
     /* 21168 80030968 0000248E */  lw         $a0, 0x0($s1)
     /* 2116C 8003096C 565A000C */  jal        CopyWords
     /* 21170 80030970 14000624 */   addiu     $a2, $zero, 0x14
-    /* 21174 80030974 0780013C */  lui        $at, %hi(g_nGemPickupAudioFiredFlag)
-    /* 21178 80030978 887030AC */  sw         $s0, %lo(g_nGemPickupAudioFiredFlag)($at)
+    /* 21174 80030974 0780013C */  lui        $at, %hi(g_nDragonRescueAudioFiredFlag)
+    /* 21178 80030978 887030AC */  sw         $s0, %lo(g_nDragonRescueAudioFiredFlag)($at)
   .L8003097C:
-    /* 2117C 8003097C 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* 21180 80030980 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* 2117C 8003097C 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* 21180 80030980 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* 21184 80030984 00000000 */  nop
     /* 21188 80030988 43100200 */  sra        $v0, $v0, 1
     /* 2118C 8003098C 40180200 */  sll        $v1, $v0, 1
     /* 21190 80030990 21186200 */  addu       $v1, $v1, $v0
-    /* 21194 80030994 0780023C */  lui        $v0, %hi(g_pGemPickupCameraPath)
-    /* 21198 80030998 7870428C */  lw         $v0, %lo(g_pGemPickupCameraPath)($v0)
+    /* 21194 80030994 0780023C */  lui        $v0, %hi(g_pDragonRescueCameraPath)
+    /* 21198 80030998 7870428C */  lw         $v0, %lo(g_pDragonRescueCameraPath)($v0)
     /* 2119C 8003099C C0180300 */  sll        $v1, $v1, 3
     /* 211A0 800309A0 21186200 */  addu       $v1, $v1, $v0
     /* 211A4 800309A4 0000628C */  lw         $v0, 0x0($v1)
@@ -34349,8 +34349,8 @@ glabel GemPickup_Update
     /* 211D8 800309D8 0780013C */  lui        $at, %hi(g_nCameraEulerPitch)
     /* 211DC 800309DC 1E6E22A4 */  sh         $v0, %lo(g_nCameraEulerPitch)($at)
     /* 211E0 800309E0 1400628C */  lw         $v0, 0x14($v1)
-    /* 211E4 800309E4 0780033C */  lui        $v1, %hi(g_pGemPickupStatueModelData)
-    /* 211E8 800309E8 706B638C */  lw         $v1, %lo(g_pGemPickupStatueModelData)($v1)
+    /* 211E4 800309E4 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueModelData)
+    /* 211E8 800309E8 706B638C */  lw         $v1, %lo(g_pDragonRescueStatueModelData)($v1)
     /* 211EC 800309EC 0780013C */  lui        $at, %hi(g_nCameraEulerYaw)
     /* 211F0 800309F0 206E22A4 */  sh         $v0, %lo(g_nCameraEulerYaw)($at)
     /* 211F4 800309F4 3800628C */  lw         $v0, 0x38($v1)
@@ -34371,8 +34371,8 @@ glabel GemPickup_Update
     /* 21228 80030A28 02000524 */   addiu     $a1, $zero, 0x2
     /* 2122C 80030A2C 04000524 */  addiu      $a1, $zero, 0x4
   .L80030A30:
-    /* 21230 80030A30 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 21234 80030A34 6C708424 */  addiu      $a0, $a0, %lo(g_nGemPickupTimer)
+    /* 21230 80030A30 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 21234 80030A34 6C708424 */  addiu      $a0, $a0, %lo(g_nDragonRescueTimer)
     /* 21238 80030A38 0000828C */  lw         $v0, 0x0($a0)
     /* 2123C 80030A3C 00000000 */  nop
     /* 21240 80030A40 1A004500 */  div        $zero, $v0, $a1
@@ -34388,12 +34388,12 @@ glabel GemPickup_Update
     /* 21264 80030A64 0D000600 */  break      6
   .L80030A68:
     /* 21268 80030A68 12100000 */  mflo       $v0
-    /* 2126C 80030A6C 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 21270 80030A70 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 2126C 80030A6C 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 21270 80030A70 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 21274 80030A74 00000000 */  nop
     /* 21278 80030A78 3E0062A0 */  sb         $v0, 0x3E($v1)
-    /* 2127C 80030A7C 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 21280 80030A80 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 2127C 80030A7C 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 21280 80030A80 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 21284 80030A84 00000000 */  nop
     /* 21288 80030A88 3E006290 */  lbu        $v0, 0x3E($v1)
     /* 2128C 80030A8C 00000000 */  nop
@@ -34429,16 +34429,16 @@ glabel GemPickup_Update
     /* 212F8 80030AF8 0D000600 */  break      6
   .L80030AFC:
     /* 212FC 80030AFC 12180000 */  mflo       $v1
-    /* 21300 80030B00 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* 21304 80030B04 B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* 21300 80030B00 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* 21304 80030B04 B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* 21308 80030B08 00000000 */  nop
     /* 2130C 80030B0C 400043A0 */  sb         $v1, 0x40($v0)
-    /* 21310 80030B10 0780023C */  lui        $v0, %hi(g_pGemPickupStatueModelData)
-    /* 21314 80030B14 706B428C */  lw         $v0, %lo(g_pGemPickupStatueModelData)($v0)
+    /* 21310 80030B10 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueModelData)
+    /* 21314 80030B14 706B428C */  lw         $v0, %lo(g_pDragonRescueStatueModelData)($v0)
     /* 21318 80030B18 00000000 */  nop
     /* 2131C 80030B1C 3800428C */  lw         $v0, 0x38($v0)
-    /* 21320 80030B20 0780053C */  lui        $a1, %hi(g_pGemPickupStatueActor)
-    /* 21324 80030B24 B870A58C */  lw         $a1, %lo(g_pGemPickupStatueActor)($a1)
+    /* 21320 80030B20 0780053C */  lui        $a1, %hi(g_pDragonRescueStatueActor)
+    /* 21324 80030B24 B870A58C */  lw         $a1, %lo(g_pDragonRescueStatueActor)($a1)
     /* 21328 80030B28 00004384 */  lh         $v1, 0x0($v0)
     /* 2132C 80030B2C 3F00A290 */  lbu        $v0, 0x3F($a1)
     /* 21330 80030B30 00000000 */  nop
@@ -34447,13 +34447,13 @@ glabel GemPickup_Update
     /* 2133C 80030B3C 21206000 */   addu      $a0, $v1, $zero
     /* 21340 80030B40 FFFF8224 */  addiu      $v0, $a0, -0x1
     /* 21344 80030B44 3E00A2A0 */  sb         $v0, 0x3E($a1)
-    /* 21348 80030B48 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* 2134C 80030B4C B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* 21348 80030B48 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* 2134C 80030B4C B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* 21350 80030B50 00000000 */  nop
     /* 21354 80030B54 400040A0 */  sb         $zero, 0x40($v0)
   .L80030B58:
-    /* 21358 80030B58 0780023C */  lui        $v0, %hi(g_pGemPickupMirrorModelData)
-    /* 2135C 80030B5C 746B428C */  lw         $v0, %lo(g_pGemPickupMirrorModelData)($v0)
+    /* 21358 80030B58 0780023C */  lui        $v0, %hi(g_pDragonRescueMirrorModelData)
+    /* 2135C 80030B5C 746B428C */  lw         $v0, %lo(g_pDragonRescueMirrorModelData)($v0)
     /* 21360 80030B60 00000000 */  nop
     /* 21364 80030B64 3800428C */  lw         $v0, 0x38($v0)
     /* 21368 80030B68 00000000 */  nop
@@ -34473,8 +34473,8 @@ glabel GemPickup_Update
     /* 21398 80030B98 02000524 */   addiu     $a1, $zero, 0x2
     /* 2139C 80030B9C 04000524 */  addiu      $a1, $zero, 0x4
   .L80030BA0:
-    /* 213A0 80030BA0 0780043C */  lui        $a0, %hi(g_nGemPickupTimer)
-    /* 213A4 80030BA4 6C708424 */  addiu      $a0, $a0, %lo(g_nGemPickupTimer)
+    /* 213A0 80030BA0 0780043C */  lui        $a0, %hi(g_nDragonRescueTimer)
+    /* 213A4 80030BA4 6C708424 */  addiu      $a0, $a0, %lo(g_nDragonRescueTimer)
     /* 213A8 80030BA8 0000828C */  lw         $v0, 0x0($a0)
     /* 213AC 80030BAC 00000000 */  nop
     /* 213B0 80030BB0 1A004500 */  div        $zero, $v0, $a1
@@ -34490,12 +34490,12 @@ glabel GemPickup_Update
     /* 213D4 80030BD4 0D000600 */  break      6
   .L80030BD8:
     /* 213D8 80030BD8 12100000 */  mflo       $v0
-    /* 213DC 80030BDC 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 213E0 80030BE0 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 213DC 80030BDC 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 213E0 80030BE0 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 213E4 80030BE4 00000000 */  nop
     /* 213E8 80030BE8 3E0062A0 */  sb         $v0, 0x3E($v1)
-    /* 213EC 80030BEC 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 213F0 80030BF0 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 213EC 80030BEC 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 213F0 80030BF0 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 213F4 80030BF4 00000000 */  nop
     /* 213F8 80030BF8 3E006290 */  lbu        $v0, 0x3E($v1)
     /* 213FC 80030BFC 00000000 */  nop
@@ -34531,16 +34531,16 @@ glabel GemPickup_Update
     /* 21468 80030C68 0D000600 */  break      6
   .L80030C6C:
     /* 2146C 80030C6C 12180000 */  mflo       $v1
-    /* 21470 80030C70 0780023C */  lui        $v0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 21474 80030C74 BC70428C */  lw         $v0, %lo(g_pGemPickupSpyroMirrorActor)($v0)
+    /* 21470 80030C70 0780023C */  lui        $v0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 21474 80030C74 BC70428C */  lw         $v0, %lo(g_pDragonRescueSpyroMirrorActor)($v0)
     /* 21478 80030C78 00000000 */  nop
     /* 2147C 80030C7C 400043A0 */  sb         $v1, 0x40($v0)
-    /* 21480 80030C80 0780023C */  lui        $v0, %hi(g_pGemPickupMirrorModelData)
-    /* 21484 80030C84 746B428C */  lw         $v0, %lo(g_pGemPickupMirrorModelData)($v0)
+    /* 21480 80030C80 0780023C */  lui        $v0, %hi(g_pDragonRescueMirrorModelData)
+    /* 21484 80030C84 746B428C */  lw         $v0, %lo(g_pDragonRescueMirrorModelData)($v0)
     /* 21488 80030C88 00000000 */  nop
     /* 2148C 80030C8C 3800428C */  lw         $v0, 0x38($v0)
-    /* 21490 80030C90 0780053C */  lui        $a1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 21494 80030C94 BC70A58C */  lw         $a1, %lo(g_pGemPickupSpyroMirrorActor)($a1)
+    /* 21490 80030C90 0780053C */  lui        $a1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 21494 80030C94 BC70A58C */  lw         $a1, %lo(g_pDragonRescueSpyroMirrorActor)($a1)
     /* 21498 80030C98 00004384 */  lh         $v1, 0x0($v0)
     /* 2149C 80030C9C 3F00A290 */  lbu        $v0, 0x3F($a1)
     /* 214A0 80030CA0 00000000 */  nop
@@ -34549,8 +34549,8 @@ glabel GemPickup_Update
     /* 214AC 80030CAC 21206000 */   addu      $a0, $v1, $zero
     /* 214B0 80030CB0 FFFF8224 */  addiu      $v0, $a0, -0x1
     /* 214B4 80030CB4 3E00A2A0 */  sb         $v0, 0x3E($a1)
-    /* 214B8 80030CB8 0780023C */  lui        $v0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 214BC 80030CBC BC70428C */  lw         $v0, %lo(g_pGemPickupSpyroMirrorActor)($v0)
+    /* 214B8 80030CB8 0780023C */  lui        $v0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 214BC 80030CBC BC70428C */  lw         $v0, %lo(g_pDragonRescueSpyroMirrorActor)($v0)
     /* 214C0 80030CC0 00000000 */  nop
     /* 214C4 80030CC4 400040A0 */  sb         $zero, 0x40($v0)
   .L80030CC8:
@@ -34560,8 +34560,8 @@ glabel GemPickup_Update
     /* 214D4 80030CD4 40004230 */  andi       $v0, $v0, 0x40
     /* 214D8 80030CD8 14004010 */  beqz       $v0, .L80030D2C
     /* 214DC 80030CDC 00000000 */   nop
-    /* 214E0 80030CE0 0780023C */  lui        $v0, %hi(g_pGemPickupSourceActor)
-    /* 214E4 80030CE4 C070428C */  lw         $v0, %lo(g_pGemPickupSourceActor)($v0)
+    /* 214E0 80030CE0 0780023C */  lui        $v0, %hi(g_pDragonRescueSourceActor)
+    /* 214E4 80030CE4 C070428C */  lw         $v0, %lo(g_pDragonRescueSourceActor)($v0)
     /* 214E8 80030CE8 00000000 */  nop
     /* 214EC 80030CEC 0000428C */  lw         $v0, 0x0($v0)
     /* 214F0 80030CF0 00000000 */  nop
@@ -34569,13 +34569,13 @@ glabel GemPickup_Update
     /* 214F8 80030CF8 00000000 */  nop
     /* 214FC 80030CFC 0A004010 */  beqz       $v0, .L80030D28
     /* 21500 80030D00 00000000 */   nop
-    /* 21504 80030D04 0780023C */  lui        $v0, %hi(g_nGemPickupPadHoldTimer)
-    /* 21508 80030D08 8C70428C */  lw         $v0, %lo(g_nGemPickupPadHoldTimer)($v0)
+    /* 21504 80030D04 0780023C */  lui        $v0, %hi(g_nDragonRescuePadHoldTimer)
+    /* 21508 80030D08 8C70428C */  lw         $v0, %lo(g_nDragonRescuePadHoldTimer)($v0)
     /* 2150C 80030D0C 00000000 */  nop
     /* 21510 80030D10 06004014 */  bnez       $v0, .L80030D2C
     /* 21514 80030D14 01000224 */   addiu     $v0, $zero, 0x1
-    /* 21518 80030D18 0780013C */  lui        $at, %hi(g_nGemPickupPadHoldTimer)
-    /* 2151C 80030D1C 8C7022AC */  sw         $v0, %lo(g_nGemPickupPadHoldTimer)($at)
+    /* 21518 80030D18 0780013C */  lui        $at, %hi(g_nDragonRescuePadHoldTimer)
+    /* 2151C 80030D1C 8C7022AC */  sw         $v0, %lo(g_nDragonRescuePadHoldTimer)($at)
     /* 21520 80030D20 4BC30008 */  j          .L80030D2C
     /* 21524 80030D24 00000000 */   nop
   .L80030D28:
@@ -34583,26 +34583,26 @@ glabel GemPickup_Update
   .L80030D2C:
     /* 2152C 80030D2C 09008016 */  bnez       $s4, .L80030D54
     /* 21530 80030D30 00000000 */   nop
-    /* 21534 80030D34 0780023C */  lui        $v0, %hi(g_nGemPickupCameraPathCount)
-    /* 21538 80030D38 7C70428C */  lw         $v0, %lo(g_nGemPickupCameraPathCount)($v0)
-    /* 2153C 80030D3C 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 21540 80030D40 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 21534 80030D34 0780023C */  lui        $v0, %hi(g_nDragonRescueCameraPathCount)
+    /* 21538 80030D38 7C70428C */  lw         $v0, %lo(g_nDragonRescueCameraPathCount)($v0)
+    /* 2153C 80030D3C 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 21540 80030D40 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 21544 80030D44 40100200 */  sll        $v0, $v0, 1
     /* 21548 80030D48 2A186200 */  slt        $v1, $v1, $v0
     /* 2154C 80030D4C 68006014 */  bnez       $v1, .L80030EF0
     /* 21550 80030D50 00000000 */   nop
   .L80030D54:
-    /* 21554 80030D54 0780033C */  lui        $v1, %hi(g_nGemPickupCameraPathCount)
-    /* 21558 80030D58 7C70638C */  lw         $v1, %lo(g_nGemPickupCameraPathCount)($v1)
+    /* 21554 80030D54 0780033C */  lui        $v1, %hi(g_nDragonRescueCameraPathCount)
+    /* 21558 80030D58 7C70638C */  lw         $v1, %lo(g_nDragonRescueCameraPathCount)($v1)
     /* 2155C 80030D5C 05000224 */  addiu      $v0, $zero, 0x5
-    /* 21560 80030D60 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 21564 80030D64 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
-    /* 21568 80030D68 0780013C */  lui        $at, %hi(g_nGemPickupTimer)
-    /* 2156C 80030D6C 6C7020AC */  sw         $zero, %lo(g_nGemPickupTimer)($at)
+    /* 21560 80030D60 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 21564 80030D64 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
+    /* 21568 80030D68 0780013C */  lui        $at, %hi(g_nDragonRescueTimer)
+    /* 2156C 80030D6C 6C7020AC */  sw         $zero, %lo(g_nDragonRescueTimer)($at)
     /* 21570 80030D70 40100300 */  sll        $v0, $v1, 1
     /* 21574 80030D74 21104300 */  addu       $v0, $v0, $v1
-    /* 21578 80030D78 0780033C */  lui        $v1, %hi(g_pGemPickupCameraPath)
-    /* 2157C 80030D7C 7870638C */  lw         $v1, %lo(g_pGemPickupCameraPath)($v1)
+    /* 21578 80030D78 0780033C */  lui        $v1, %hi(g_pDragonRescueCameraPath)
+    /* 2157C 80030D7C 7870638C */  lw         $v1, %lo(g_pDragonRescueCameraPath)($v1)
     /* 21580 80030D80 C0100200 */  sll        $v0, $v0, 3
     /* 21584 80030D84 21104300 */  addu       $v0, $v0, $v1
     /* 21588 80030D88 E8FF438C */  lw         $v1, -0x18($v0)
@@ -34621,33 +34621,33 @@ glabel GemPickup_Update
     /* 215BC 80030DBC 0780013C */  lui        $at, %hi(g_nCameraEulerPitch)
     /* 215C0 80030DC0 1E6E23A4 */  sh         $v1, %lo(g_nCameraEulerPitch)($at)
     /* 215C4 80030DC4 FCFF428C */  lw         $v0, -0x4($v0)
-    /* 215C8 80030DC8 0780033C */  lui        $v1, %hi(g_pGemPickupStatueModelData)
-    /* 215CC 80030DCC 706B638C */  lw         $v1, %lo(g_pGemPickupStatueModelData)($v1)
+    /* 215C8 80030DC8 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueModelData)
+    /* 215CC 80030DCC 706B638C */  lw         $v1, %lo(g_pDragonRescueStatueModelData)($v1)
     /* 215D0 80030DD0 0780013C */  lui        $at, %hi(g_nCameraEulerYaw)
     /* 215D4 80030DD4 206E22A4 */  sh         $v0, %lo(g_nCameraEulerYaw)($at)
     /* 215D8 80030DD8 3800628C */  lw         $v0, 0x38($v1)
     /* 215DC 80030DDC 00000000 */  nop
     /* 215E0 80030DE0 00004290 */  lbu        $v0, 0x0($v0)
-    /* 215E4 80030DE4 0780033C */  lui        $v1, %hi(g_pGemPickupStatueActor)
-    /* 215E8 80030DE8 B870638C */  lw         $v1, %lo(g_pGemPickupStatueActor)($v1)
+    /* 215E4 80030DE4 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
+    /* 215E8 80030DE8 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
     /* 215EC 80030DEC FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 215F0 80030DF0 3E0062A0 */  sb         $v0, 0x3E($v1)
-    /* 215F4 80030DF4 0780023C */  lui        $v0, %hi(g_pGemPickupStatueActor)
-    /* 215F8 80030DF8 B870428C */  lw         $v0, %lo(g_pGemPickupStatueActor)($v0)
+    /* 215F4 80030DF4 0780023C */  lui        $v0, %hi(g_pDragonRescueStatueActor)
+    /* 215F8 80030DF8 B870428C */  lw         $v0, %lo(g_pDragonRescueStatueActor)($v0)
     /* 215FC 80030DFC 00000000 */  nop
     /* 21600 80030E00 400040A0 */  sb         $zero, 0x40($v0)
-    /* 21604 80030E04 0780023C */  lui        $v0, %hi(g_pGemPickupMirrorModelData)
-    /* 21608 80030E08 746B428C */  lw         $v0, %lo(g_pGemPickupMirrorModelData)($v0)
+    /* 21604 80030E04 0780023C */  lui        $v0, %hi(g_pDragonRescueMirrorModelData)
+    /* 21608 80030E08 746B428C */  lw         $v0, %lo(g_pDragonRescueMirrorModelData)($v0)
     /* 2160C 80030E0C 00000000 */  nop
     /* 21610 80030E10 3800428C */  lw         $v0, 0x38($v0)
     /* 21614 80030E14 00000000 */  nop
     /* 21618 80030E18 00004290 */  lbu        $v0, 0x0($v0)
-    /* 2161C 80030E1C 0780033C */  lui        $v1, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 21620 80030E20 BC70638C */  lw         $v1, %lo(g_pGemPickupSpyroMirrorActor)($v1)
+    /* 2161C 80030E1C 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 21620 80030E20 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
     /* 21624 80030E24 FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 21628 80030E28 3E0062A0 */  sb         $v0, 0x3E($v1)
-    /* 2162C 80030E2C 0780023C */  lui        $v0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 21630 80030E30 BC70428C */  lw         $v0, %lo(g_pGemPickupSpyroMirrorActor)($v0)
+    /* 2162C 80030E2C 0780023C */  lui        $v0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 21630 80030E30 BC70428C */  lw         $v0, %lo(g_pDragonRescueSpyroMirrorActor)($v0)
     /* 21634 80030E34 00000000 */  nop
     /* 21638 80030E38 400040A0 */  sb         $zero, 0x40($v0)
     /* 2163C 80030E3C 01000224 */  addiu      $v0, $zero, 0x1
@@ -34668,27 +34668,27 @@ glabel GemPickup_Update
     /* 21678 80030E78 00000000 */   nop
     /* 2167C 80030E7C A327010C */  jal        TickSpyroAnimLayer2
     /* 21680 80030E80 00000000 */   nop
-    /* 21684 80030E84 0780043C */  lui        $a0, %hi(g_bGemPickupSfxVoiceMarker)
-    /* 21688 80030E88 8470848C */  lw         $a0, %lo(g_bGemPickupSfxVoiceMarker)($a0)
+    /* 21684 80030E84 0780043C */  lui        $a0, %hi(g_bDragonRescueSfxVoiceMarker)
+    /* 21688 80030E88 8470848C */  lw         $a0, %lo(g_bDragonRescueSfxVoiceMarker)($a0)
     /* 2168C 80030E8C 8058010C */  jal        StopSoundVoiceByIndex
     /* 21690 80030E90 02000524 */   addiu     $a1, $zero, 0x2
     /* 21694 80030E94 B55B010C */  jal        TickSpuPerFrame
     /* 21698 80030E98 00000000 */   nop
-    /* 2169C 80030E9C 0780023C */  lui        $v0, %hi(g_nGemPickupSplitFlag)
-    /* 216A0 80030EA0 6470428C */  lw         $v0, %lo(g_nGemPickupSplitFlag)($v0)
+    /* 2169C 80030E9C 0780023C */  lui        $v0, %hi(g_nDragonRescueSplitFlag)
+    /* 216A0 80030EA0 6470428C */  lw         $v0, %lo(g_nDragonRescueSplitFlag)($v0)
     /* 216A4 80030EA4 00000000 */  nop
     /* 216A8 80030EA8 11004014 */  bnez       $v0, .L80030EF0
     /* 216AC 80030EAC 0800043C */   lui       $a0, (0x80000 >> 16)
-    /* 216B0 80030EB0 0780023C */  lui        $v0, %hi(g_nGemPickupAudioSampleSize)
-    /* 216B4 80030EB4 3870428C */  lw         $v0, %lo(g_nGemPickupAudioSampleSize)($v0)
+    /* 216B0 80030EB0 0780023C */  lui        $v0, %hi(g_nDragonRescueAudioSampleSize)
+    /* 216B4 80030EB4 3870428C */  lw         $v0, %lo(g_nDragonRescueAudioSampleSize)($v0)
     /* 216B8 80030EB8 C972010C */  jal        SetSpuTransferStartAddr
     /* 216BC 80030EBC 23208200 */   subu      $a0, $a0, $v0
     /* 216C0 80030EC0 0880023C */  lui        $v0, %hi(g_pWorldUnpackHead)
     /* 216C4 80030EC4 E085428C */  lw         $v0, %lo(g_pWorldUnpackHead)($v0)
-    /* 216C8 80030EC8 0780043C */  lui        $a0, %hi(g_nGemPickupAudioSampleOffset)
-    /* 216CC 80030ECC 3470848C */  lw         $a0, %lo(g_nGemPickupAudioSampleOffset)($a0)
-    /* 216D0 80030ED0 0780053C */  lui        $a1, %hi(g_nGemPickupAudioSampleSize)
-    /* 216D4 80030ED4 3870A58C */  lw         $a1, %lo(g_nGemPickupAudioSampleSize)($a1)
+    /* 216C8 80030EC8 0780043C */  lui        $a0, %hi(g_nDragonRescueAudioSampleOffset)
+    /* 216CC 80030ECC 3470848C */  lw         $a0, %lo(g_nDragonRescueAudioSampleOffset)($a0)
+    /* 216D0 80030ED0 0780053C */  lui        $a1, %hi(g_nDragonRescueAudioSampleSize)
+    /* 216D4 80030ED4 3870A58C */  lw         $a1, %lo(g_nDragonRescueAudioSampleSize)($a1)
     /* 216D8 80030ED8 B172010C */  jal        WriteSpuRam
     /* 216DC 80030EDC 21204400 */   addu      $a0, $v0, $a0
   .L80030EE0:
@@ -34697,8 +34697,8 @@ glabel GemPickup_Update
     /* 216E8 80030EE8 FDFF4010 */  beqz       $v0, .L80030EE0
     /* 216EC 80030EEC 00000000 */   nop
   .L80030EF0:
-    /* 216F0 80030EF0 0780043C */  lui        $a0, %hi(g_nGemPickupPadHoldTimer)
-    /* 216F4 80030EF4 8C708424 */  addiu      $a0, $a0, %lo(g_nGemPickupPadHoldTimer)
+    /* 216F0 80030EF0 0780043C */  lui        $a0, %hi(g_nDragonRescuePadHoldTimer)
+    /* 216F4 80030EF4 8C708424 */  addiu      $a0, $a0, %lo(g_nDragonRescuePadHoldTimer)
     /* 216F8 80030EF8 0000838C */  lw         $v1, 0x0($a0)
     /* 216FC 80030EFC 00000000 */  nop
     /* 21700 80030F00 3D016010 */  beqz       $v1, .L800313F8
@@ -34714,8 +34714,8 @@ glabel GemPickup_Update
     /* 21728 80030F28 FEC40008 */  j          .L800313F8
     /* 2172C 80030F2C 000080AC */   sw        $zero, 0x0($a0)
   jlabel .L80030F30
-    /* 21730 80030F30 0780033C */  lui        $v1, %hi(g_pGemPickupStatueModelData)
-    /* 21734 80030F34 706B638C */  lw         $v1, %lo(g_pGemPickupStatueModelData)($v1)
+    /* 21730 80030F30 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueModelData)
+    /* 21734 80030F34 706B638C */  lw         $v1, %lo(g_pDragonRescueStatueModelData)($v1)
     /* 21738 80030F38 00000000 */  nop
     /* 2173C 80030F3C 3800628C */  lw         $v0, 0x38($v1)
     /* 21740 80030F40 00000000 */  nop
@@ -34733,8 +34733,8 @@ glabel GemPickup_Update
     /* 2176C 80030F6C 0000448C */  lw         $a0, 0x0($v0)
     /* 21770 80030F70 955F000C */  jal        ComputeDepthCuedColor
     /* 21774 80030F74 00020624 */   addiu     $a2, $zero, 0x200
-    /* 21778 80030F78 0780033C */  lui        $v1, %hi(g_pGemPickupStatueModelData)
-    /* 2177C 80030F7C 706B638C */  lw         $v1, %lo(g_pGemPickupStatueModelData)($v1)
+    /* 21778 80030F78 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueModelData)
+    /* 2177C 80030F7C 706B638C */  lw         $v1, %lo(g_pDragonRescueStatueModelData)($v1)
     /* 21780 80030F80 00000000 */  nop
     /* 21784 80030F84 3800638C */  lw         $v1, 0x38($v1)
     /* 21788 80030F88 00000000 */  nop
@@ -34742,8 +34742,8 @@ glabel GemPickup_Update
     /* 21790 80030F90 00000000 */  nop
     /* 21794 80030F94 21800302 */  addu       $s0, $s0, $v1
     /* 21798 80030F98 000002AE */  sw         $v0, 0x0($s0)
-    /* 2179C 80030F9C 0780033C */  lui        $v1, %hi(g_pGemPickupStatueModelData)
-    /* 217A0 80030FA0 706B638C */  lw         $v1, %lo(g_pGemPickupStatueModelData)($v1)
+    /* 2179C 80030F9C 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueModelData)
+    /* 217A0 80030FA0 706B638C */  lw         $v1, %lo(g_pDragonRescueStatueModelData)($v1)
     /* 217A4 80030FA4 00000000 */  nop
     /* 217A8 80030FA8 3800628C */  lw         $v0, 0x38($v1)
     /* 217AC 80030FAC 00000000 */  nop
@@ -34771,12 +34771,12 @@ glabel GemPickup_Update
     /* 217FC 80030FFC 0880043C */  lui        $a0, %hi(D_800781B0)
     /* 21800 80031000 B0818424 */  addiu      $a0, $a0, %lo(D_800781B0)
     /* 21804 80031004 21206402 */  addu       $a0, $s3, $a0
-    /* 21808 80031008 0780053C */  lui        $a1, %hi(g_anGemPickupIconRestPos)
-    /* 2180C 8003100C F0F3A524 */  addiu      $a1, $a1, %lo(g_anGemPickupIconRestPos)
+    /* 21808 80031008 0780053C */  lui        $a1, %hi(g_anDragonRescueIconRestPos)
+    /* 2180C 8003100C F0F3A524 */  addiu      $a1, $a1, %lo(g_anDragonRescueIconRestPos)
     /* 21810 80031010 C05D000C */  jal        CopyVector
     /* 21814 80031014 21284502 */   addu      $a1, $s2, $a1
-    /* 21818 80031018 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 2181C 8003101C 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 21818 80031018 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 2181C 8003101C 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 21820 80031020 00000000 */  nop
     /* 21824 80031024 19006228 */  slti       $v0, $v1, 0x19
     /* 21828 80031028 0C004010 */  beqz       $v0, .L8003105C
@@ -34809,8 +34809,8 @@ glabel GemPickup_Update
     /* 2188C 8003108C 0300222A */  slti       $v0, $s1, 0x3
     /* 21890 80031090 DAFF4014 */  bnez       $v0, .L80030FFC
     /* 21894 80031094 0C005226 */   addiu     $s2, $s2, 0xC
-    /* 21898 80031098 0780113C */  lui        $s1, %hi(g_nGemPickupTimer)
-    /* 2189C 8003109C 6C703126 */  addiu      $s1, $s1, %lo(g_nGemPickupTimer)
+    /* 21898 80031098 0780113C */  lui        $s1, %hi(g_nDragonRescueTimer)
+    /* 2189C 8003109C 6C703126 */  addiu      $s1, $s1, %lo(g_nDragonRescueTimer)
     /* 218A0 800310A0 0000228E */  lw         $v0, 0x0($s1)
     /* 218A4 800310A4 00000000 */  nop
     /* 218A8 800310A8 19004228 */  slti       $v0, $v0, 0x19
@@ -34818,10 +34818,10 @@ glabel GemPickup_Update
     /* 218B0 800310B0 06000224 */   addiu     $v0, $zero, 0x6
     /* 218B4 800310B4 2000B027 */  addiu      $s0, $sp, 0x20
     /* 218B8 800310B8 21200002 */  addu       $a0, $s0, $zero
-    /* 218BC 800310BC 0780053C */  lui        $a1, %hi(g_pGemPickupStatueActor)
-    /* 218C0 800310C0 B870A58C */  lw         $a1, %lo(g_pGemPickupStatueActor)($a1)
-    /* 218C4 800310C4 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 218C8 800310C8 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
+    /* 218BC 800310BC 0780053C */  lui        $a1, %hi(g_pDragonRescueStatueActor)
+    /* 218C0 800310C0 B870A58C */  lw         $a1, %lo(g_pDragonRescueStatueActor)($a1)
+    /* 218C4 800310C4 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 218C8 800310C8 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
     /* 218CC 800310CC 000020AE */  sw         $zero, 0x0($s1)
     /* 218D0 800310D0 0780013C */  lui        $at, %hi(g_bHudDragonRollPhase)
     /* 218D4 800310D4 AE7F20A0 */  sb         $zero, %lo(g_bHudDragonRollPhase)($at)
@@ -34837,16 +34837,16 @@ glabel GemPickup_Update
     /* 218FC 800310FC 40004224 */  addiu      $v0, $v0, 0x40
     /* 21900 80031100 09F86000 */  jalr       $v1
     /* 21904 80031104 2800A2AF */   sw        $v0, 0x28($sp)
-    /* 21908 80031108 0780043C */  lui        $a0, %hi(g_anGemPickupAuraStarAnchor)
-    /* 2190C 8003110C 4C628424 */  addiu      $a0, $a0, %lo(g_anGemPickupAuraStarAnchor)
+    /* 21908 80031108 0780043C */  lui        $a0, %hi(g_anDragonRescueAuraStarAnchor)
+    /* 2190C 8003110C 4C628424 */  addiu      $a0, $a0, %lo(g_anDragonRescueAuraStarAnchor)
     /* 21910 80031110 C05D000C */  jal        CopyVector
     /* 21914 80031114 21280002 */   addu      $a1, $s0, $zero
-    /* 21918 80031118 0780043C */  lui        $a0, %hi(g_pGemPickupStatueActor)
-    /* 2191C 8003111C B870848C */  lw         $a0, %lo(g_pGemPickupStatueActor)($a0)
+    /* 21918 80031118 0780043C */  lui        $a0, %hi(g_pDragonRescueStatueActor)
+    /* 2191C 8003111C B870848C */  lw         $a0, %lo(g_pDragonRescueStatueActor)($a0)
     /* 21920 80031120 5A49010C */  jal        DespawnActorRecord
     /* 21924 80031124 00000000 */   nop
-    /* 21928 80031128 0780043C */  lui        $a0, %hi(g_pGemPickupSpyroMirrorActor)
-    /* 2192C 8003112C BC70848C */  lw         $a0, %lo(g_pGemPickupSpyroMirrorActor)($a0)
+    /* 21928 80031128 0780043C */  lui        $a0, %hi(g_pDragonRescueSpyroMirrorActor)
+    /* 2192C 8003112C BC70848C */  lw         $a0, %lo(g_pDragonRescueSpyroMirrorActor)($a0)
     /* 21930 80031130 5A49010C */  jal        DespawnActorRecord
     /* 21934 80031134 00000000 */   nop
     /* 21938 80031138 21280000 */  addu       $a1, $zero, $zero
@@ -34912,28 +34912,28 @@ glabel GemPickup_Update
     /* 21A1C 8003121C D461428C */  lw         $v0, %lo(g_pLevelSampleBankHeader)($v0)
     /* 21A20 80031220 00000000 */  nop
     /* 21A24 80031224 35004490 */  lbu        $a0, 0x35($v0)
-    /* 21A28 80031228 0780073C */  lui        $a3, %hi(g_bGemPickupSfxVoiceMarker)
-    /* 21A2C 8003122C 8470E724 */  addiu      $a3, $a3, %lo(g_bGemPickupSfxVoiceMarker)
+    /* 21A28 80031228 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
+    /* 21A2C 8003122C 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
     /* 21A30 80031230 9E56010C */  jal        PlaySoundEffect
     /* 21A34 80031234 10000624 */   addiu     $a2, $zero, 0x10
   .L80031238:
-    /* 21A38 80031238 0780073C */  lui        $a3, %hi(g_nGemPickupTimer)
-    /* 21A3C 8003123C 6C70E724 */  addiu      $a3, $a3, %lo(g_nGemPickupTimer)
+    /* 21A38 80031238 0780073C */  lui        $a3, %hi(g_nDragonRescueTimer)
+    /* 21A3C 8003123C 6C70E724 */  addiu      $a3, $a3, %lo(g_nDragonRescueTimer)
     /* 21A40 80031240 0000E28C */  lw         $v0, 0x0($a3)
     /* 21A44 80031244 00000000 */  nop
     /* 21A48 80031248 60004228 */  slti       $v0, $v0, 0x60
     /* 21A4C 8003124C 6A004014 */  bnez       $v0, .L800313F8
     /* 21A50 80031250 06000224 */   addiu     $v0, $zero, 0x6
-    /* 21A54 80031254 0780033C */  lui        $v1, %hi(g_nGemPickupStreamState)
-    /* 21A58 80031258 5C70638C */  lw         $v1, %lo(g_nGemPickupStreamState)($v1)
+    /* 21A54 80031254 0780033C */  lui        $v1, %hi(g_nDragonRescueStreamState)
+    /* 21A58 80031258 5C70638C */  lw         $v1, %lo(g_nDragonRescueStreamState)($v1)
     /* 21A5C 8003125C 00000000 */  nop
     /* 21A60 80031260 65006214 */  bne        $v1, $v0, .L800313F8
     /* 21A64 80031264 21280000 */   addu      $a1, $zero, $zero
     /* 21A68 80031268 0780033C */  lui        $v1, %hi(g_pEmitListBase)
     /* 21A6C 8003126C 2458638C */  lw         $v1, %lo(g_pEmitListBase)($v1)
     /* 21A70 80031270 07000224 */  addiu      $v0, $zero, 0x7
-    /* 21A74 80031274 0780013C */  lui        $at, %hi(g_nGemPickupSubstate)
-    /* 21A78 80031278 587022AC */  sw         $v0, %lo(g_nGemPickupSubstate)($at)
+    /* 21A74 80031274 0780013C */  lui        $at, %hi(g_nDragonRescueSubstate)
+    /* 21A78 80031278 587022AC */  sw         $v0, %lo(g_nDragonRescueSubstate)($at)
     /* 21A7C 8003127C FF000224 */  addiu      $v0, $zero, 0xFF
     /* 21A80 80031280 0000E0AC */  sw         $zero, 0x0($a3)
     /* 21A84 80031284 0780013C */  lui        $at, %hi(g_pEmitListWriteCursor)
@@ -34944,8 +34944,8 @@ glabel GemPickup_Update
     /* 21A98 80031298 10000624 */  addiu      $a2, $zero, 0x10
     /* 21A9C 8003129C 33004490 */  lbu        $a0, 0x33($v0)
   .L800312A0:
-    /* 21AA0 800312A0 0780073C */  lui        $a3, %hi(g_bGemPickupSfxVoiceMarker)
-    /* 21AA4 800312A4 8470E724 */  addiu      $a3, $a3, %lo(g_bGemPickupSfxVoiceMarker)
+    /* 21AA0 800312A0 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
+    /* 21AA4 800312A4 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
     /* 21AA8 800312A8 9E56010C */  jal        PlaySoundEffect
     /* 21AAC 800312AC 00000000 */   nop
     /* 21AB0 800312B0 FEC40008 */  j          .L800313F8
@@ -34959,8 +34959,8 @@ glabel GemPickup_Update
     /* 21ACC 800312CC 00000000 */   nop
     /* 21AD0 800312D0 A327010C */  jal        TickSpyroAnimLayer2
     /* 21AD4 800312D4 00000000 */   nop
-    /* 21AD8 800312D8 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* 21ADC 800312DC 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* 21AD8 800312D8 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* 21ADC 800312DC 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* 21AE0 800312E0 00000000 */  nop
     /* 21AE4 800312E4 10004228 */  slti       $v0, $v0, 0x10
     /* 21AE8 800312E8 22004010 */  beqz       $v0, .L80031374
@@ -34974,16 +34974,16 @@ glabel GemPickup_Update
     /* 21B04 80031304 0880043C */  lui        $a0, %hi(D_800781B0)
     /* 21B08 80031308 B0818424 */  addiu      $a0, $a0, %lo(D_800781B0)
     /* 21B0C 8003130C 21204402 */  addu       $a0, $s2, $a0
-    /* 21B10 80031310 0780053C */  lui        $a1, %hi(g_anGemPickupIconRestPos)
-    /* 21B14 80031314 F0F3A524 */  addiu      $a1, $a1, %lo(g_anGemPickupIconRestPos)
+    /* 21B10 80031310 0780053C */  lui        $a1, %hi(g_anDragonRescueIconRestPos)
+    /* 21B14 80031314 F0F3A524 */  addiu      $a1, $a1, %lo(g_anDragonRescueIconRestPos)
     /* 21B18 80031318 C05D000C */  jal        CopyVector
     /* 21B1C 8003131C 21282502 */   addu      $a1, $s1, $a1
     /* 21B20 80031320 58005226 */  addiu      $s2, $s2, 0x58
     /* 21B24 80031324 0C003126 */  addiu      $s1, $s1, 0xC
     /* 21B28 80031328 01007326 */  addiu      $s3, $s3, 0x1
     /* 21B2C 8003132C 11000424 */  addiu      $a0, $zero, 0x11
-    /* 21B30 80031330 0780023C */  lui        $v0, %hi(g_nGemPickupTimer)
-    /* 21B34 80031334 6C70428C */  lw         $v0, %lo(g_nGemPickupTimer)($v0)
+    /* 21B30 80031330 0780023C */  lui        $v0, %hi(g_nDragonRescueTimer)
+    /* 21B34 80031334 6C70428C */  lw         $v0, %lo(g_nDragonRescueTimer)($v0)
     /* 21B38 80031338 0000038E */  lw         $v1, 0x0($s0)
     /* 21B3C 8003133C 23208200 */  subu       $a0, $a0, $v0
     /* 21B40 80031340 40100400 */  sll        $v0, $a0, 1
@@ -34993,46 +34993,46 @@ glabel GemPickup_Update
     /* 21B50 80031350 0300622A */  slti       $v0, $s3, 0x3
     /* 21B54 80031354 EBFF4014 */  bnez       $v0, .L80031304
     /* 21B58 80031358 58001026 */   addiu     $s0, $s0, 0x58
-    /* 21B5C 8003135C 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 21B60 80031360 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 21B5C 8003135C 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 21B60 80031360 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 21B64 80031364 00000000 */  nop
     /* 21B68 80031368 10006228 */  slti       $v0, $v1, 0x10
     /* 21B6C 8003136C 06004014 */  bnez       $v0, .L80031388
     /* 21B70 80031370 00110300 */   sll       $v0, $v1, 4
   .L80031374:
-    /* 21B74 80031374 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 21B78 80031378 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 21B74 80031374 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 21B78 80031378 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 21B7C 8003137C 20000224 */  addiu      $v0, $zero, 0x20
     /* 21B80 80031380 23184300 */  subu       $v1, $v0, $v1
     /* 21B84 80031384 00110300 */  sll        $v0, $v1, 4
   .L80031388:
     /* 21B88 80031388 FFFF4224 */  addiu      $v0, $v0, -0x1
-    /* 21B8C 8003138C 0780043C */  lui        $a0, %hi(g_nGemPickupAuraStarEnabled)
-    /* 21B90 80031390 48628424 */  addiu      $a0, $a0, %lo(g_nGemPickupAuraStarEnabled)
-    /* 21B94 80031394 0780013C */  lui        $at, %hi(g_nGemPickupFullscreenTintLevel)
-    /* 21B98 80031398 747022AC */  sw         $v0, %lo(g_nGemPickupFullscreenTintLevel)($at)
+    /* 21B8C 8003138C 0780043C */  lui        $a0, %hi(g_nDragonRescueAuraStarEnabled)
+    /* 21B90 80031390 48628424 */  addiu      $a0, $a0, %lo(g_nDragonRescueAuraStarEnabled)
+    /* 21B94 80031394 0780013C */  lui        $at, %hi(g_nDragonRescueFullscreenTintLevel)
+    /* 21B98 80031398 747022AC */  sw         $v0, %lo(g_nDragonRescueFullscreenTintLevel)($at)
     /* 21B9C 8003139C 01000224 */  addiu      $v0, $zero, 0x1
     /* 21BA0 800313A0 000082AC */  sw         $v0, 0x0($a0)
     /* 21BA4 800313A4 C0100300 */  sll        $v0, $v1, 3
     /* 21BA8 800313A8 40004224 */  addiu      $v0, $v0, 0x40
-    /* 21BAC 800313AC 0780013C */  lui        $at, %hi(g_bGemPickupAuraStarColor)
-    /* 21BB0 800313B0 736222A0 */  sb         $v0, %lo(g_bGemPickupAuraStarColor)($at)
+    /* 21BAC 800313AC 0780013C */  lui        $at, %hi(g_bDragonRescueAuraStarColor)
+    /* 21BB0 800313B0 736222A0 */  sb         $v0, %lo(g_bDragonRescueAuraStarColor)($at)
     /* 21BB4 800313B4 80100300 */  sll        $v0, $v1, 2
     /* 21BB8 800313B8 21104300 */  addu       $v0, $v0, $v1
     /* 21BBC 800313BC 00110200 */  sll        $v0, $v0, 4
-    /* 21BC0 800313C0 0780013C */  lui        $at, %hi(g_nGemPickupAuraStarRadius)
-    /* 21BC4 800313C4 6C6222AC */  sw         $v0, %lo(g_nGemPickupAuraStarRadius)($at)
-    /* 21BC8 800313C8 0780023C */  lui        $v0, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 21BCC 800313CC 72624290 */  lbu        $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($v0)
-    /* 21BD0 800313D0 0780033C */  lui        $v1, %hi(g_nGemPickupTimer)
-    /* 21BD4 800313D4 6C70638C */  lw         $v1, %lo(g_nGemPickupTimer)($v1)
+    /* 21BC0 800313C0 0780013C */  lui        $at, %hi(g_nDragonRescueAuraStarRadius)
+    /* 21BC4 800313C4 6C6222AC */  sw         $v0, %lo(g_nDragonRescueAuraStarRadius)($at)
+    /* 21BC8 800313C8 0780023C */  lui        $v0, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 21BCC 800313CC 72624290 */  lbu        $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($v0)
+    /* 21BD0 800313D0 0780033C */  lui        $v1, %hi(g_nDragonRescueTimer)
+    /* 21BD4 800313D4 6C70638C */  lw         $v1, %lo(g_nDragonRescueTimer)($v1)
     /* 21BD8 800313D8 08004224 */  addiu      $v0, $v0, 0x8
     /* 21BDC 800313DC 20006328 */  slti       $v1, $v1, 0x20
-    /* 21BE0 800313E0 0780013C */  lui        $at, %hi(g_abGemPickupAuraStarEuler + 0x2)
-    /* 21BE4 800313E4 726222A0 */  sb         $v0, %lo(g_abGemPickupAuraStarEuler + 0x2)($at)
+    /* 21BE0 800313E0 0780013C */  lui        $at, %hi(g_abDragonRescueAuraStarEuler + 0x2)
+    /* 21BE4 800313E4 726222A0 */  sb         $v0, %lo(g_abDragonRescueAuraStarEuler + 0x2)($at)
     /* 21BE8 800313E8 03006014 */  bnez       $v1, .L800313F8
     /* 21BEC 800313EC 00000000 */   nop
-    /* 21BF0 800313F0 DBB2000C */  jal        EndGemPickupToWorld
+    /* 21BF0 800313F0 DBB2000C */  jal        EndDragonRescueToWorld
     /* 21BF4 800313F4 000080AC */   sw        $zero, 0x0($a0)
   .L800313F8:
     /* 21BF8 800313F8 0780043C */  lui        $a0, %hi(g_nFrameStep)
@@ -35042,12 +35042,12 @@ glabel GemPickup_Update
     /* 21C08 80031408 00000000 */  nop
     /* 21C0C 8003140C 09F84000 */  jalr       $v0
     /* 21C10 80031410 00000000 */   nop
-    /* 21C14 80031414 0780023C */  lui        $v0, %hi(g_nGemPickupSubstate)
-    /* 21C18 80031418 5870428C */  lw         $v0, %lo(g_nGemPickupSubstate)($v0)
+    /* 21C14 80031414 0780023C */  lui        $v0, %hi(g_nDragonRescueSubstate)
+    /* 21C18 80031418 5870428C */  lw         $v0, %lo(g_nDragonRescueSubstate)($v0)
     /* 21C1C 8003141C 00000000 */  nop
     /* 21C20 80031420 03004018 */  blez       $v0, .L80031430
     /* 21C24 80031424 00000000 */   nop
-    /* 21C28 80031428 DC52000C */  jal        TickGemPickupAssetStream
+    /* 21C28 80031428 DC52000C */  jal        TickDragonRescueAssetStream
     /* 21C2C 8003142C 00000000 */   nop
   .L80031430:
     /* 21C30 80031430 0780113C */  lui        $s1, %hi(g_pActorListBase)
@@ -35068,7 +35068,7 @@ glabel GemPickup_Update
     /* 21C68 80031468 8000422C */  sltiu      $v0, $v0, 0x80
     /* 21C6C 8003146C 03004010 */  beqz       $v0, .L8003147C
     /* 21C70 80031470 00000000 */   nop
-    /* 21C74 80031474 B9F1000C */  jal        TickGemPickupBurstEntity
+    /* 21C74 80031474 B9F1000C */  jal        TickStatueBurstShard
     /* 21C78 80031478 21202002 */   addu      $a0, $s1, $zero
   .L8003147C:
     /* 21C7C 8003147C 58001026 */  addiu      $s0, $s0, 0x58
@@ -35086,7 +35086,7 @@ glabel GemPickup_Update
     /* 21CA8 800314A8 7000BD27 */  addiu      $sp, $sp, 0x70
     /* 21CAC 800314AC 0800E003 */  jr         $ra
     /* 21CB0 800314B0 00000000 */   nop
-endlabel GemPickup_Update
+endlabel DragonRescue_Update
 .endif
 
 .section .text.Gamestate0B_Update, "ax"
@@ -35842,7 +35842,7 @@ glabel Gamestate0B_Update
     /* 22804 80032004 480082A0 */  sb         $v0, 0x48($a0)
     /* 22808 80032008 FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 2280C 8003200C 080080AC */  sw         $zero, 0x8($a0)
-    /* 22810 80032010 49B2000C */  jal        BeginGemPickupOverlay
+    /* 22810 80032010 49B2000C */  jal        BeginDragonRescue
     /* 22814 80032014 340082A4 */   sh        $v0, 0x34($a0)
     /* 22818 80032018 0780043C */  lui        $a0, %hi(g_nLevelIndex)
     /* 2281C 8003201C 6459848C */  lw         $a0, %lo(g_nLevelIndex)($a0)
@@ -37478,8 +37478,8 @@ glabel CheckDeathPlane
     /* 23F80 80033780 0C0040A4 */  sh         $zero, 0xC($v0)
     /* 23F84 80033784 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 23F88 80033788 D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
-    /* 23F8C 8003378C 0780073C */  lui        $a3, %hi(g_bGemPickupSfxVoiceMarker)
-    /* 23F90 80033790 8470E724 */  addiu      $a3, $a3, %lo(g_bGemPickupSfxVoiceMarker)
+    /* 23F8C 8003378C 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
+    /* 23F90 80033790 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
     /* 23F94 80033794 0E0040A4 */  sh         $zero, 0xE($v0)
     /* 23F98 80033798 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 23F9C 8003379C D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
@@ -37606,7 +37606,7 @@ glabel GamestateUpdate
   .L8003393C:
     /* 2413C 8003393C 05006214 */  bne        $v1, $v0, .L80033954
     /* 24140 80033940 09000224 */   addiu     $v0, $zero, 0x9
-    /* 24144 80033944 F9BC000C */  jal        GemPickup_Update
+    /* 24144 80033944 F9BC000C */  jal        DragonRescue_Update
     /* 24148 80033948 00000000 */   nop
     /* 2414C 8003394C 0CCF0008 */  j          .L80033C30
     /* 24150 80033950 00000000 */   nop
@@ -40014,13 +40014,13 @@ glabel SelectCameraMode
     /* 262F4 80035AF4 00000000 */  nop
     /* 262F8 80035AF8 B2004410 */  beq        $v0, $a0, .L80035DC4
     /* 262FC 80035AFC 00000000 */   nop
-    /* 26300 80035B00 0880023C */  lui        $v0, %hi(g_nGemPickupCamPathReverseFlag)
-    /* 26304 80035B04 A08C428C */  lw         $v0, %lo(g_nGemPickupCamPathReverseFlag)($v0)
+    /* 26300 80035B00 0880023C */  lui        $v0, %hi(g_nPortalCamPathReverseFlag)
+    /* 26304 80035B04 A08C428C */  lw         $v0, %lo(g_nPortalCamPathReverseFlag)($v0)
     /* 26308 80035B08 00000000 */  nop
     /* 2630C 80035B0C 09004010 */  beqz       $v0, .L80035B34
     /* 26310 80035B10 00000000 */   nop
-    /* 26314 80035B14 0880033C */  lui        $v1, %hi(g_pGemPickupCamPathData)
-    /* 26318 80035B18 988C638C */  lw         $v1, %lo(g_pGemPickupCamPathData)($v1)
+    /* 26314 80035B14 0880033C */  lui        $v1, %hi(g_pPortalCamPathData)
+    /* 26318 80035B18 988C638C */  lw         $v1, %lo(g_pPortalCamPathData)($v1)
     /* 2631C 80035B1C 00000000 */  nop
     /* 26320 80035B20 00006290 */  lbu        $v0, 0x0($v1)
     /* 26324 80035B24 00000000 */  nop
@@ -40028,8 +40028,8 @@ glabel SelectCameraMode
     /* 2632C 80035B2C 71D70008 */  j          .L80035DC4
     /* 26330 80035B30 010062A0 */   sb        $v0, 0x1($v1)
   .L80035B34:
-    /* 26334 80035B34 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 26338 80035B38 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 26334 80035B34 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 26338 80035B38 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 2633C 80035B3C 71D70008 */  j          .L80035DC4
     /* 26340 80035B40 010040A0 */   sb        $zero, 0x1($v0)
   .L80035B44:
@@ -41763,17 +41763,17 @@ glabel UpdateCameraSpringForMode
 endlabel UpdateCameraSpringForMode
 .endif
 
-.section .text.UpdateGemPickupPathCamera, "ax"
-.ifndef HAVE_C_UpdateGemPickupPathCamera
-nonmatching UpdateGemPickupPathCamera, 0x308
+.section .text.UpdatePortalPathCamera, "ax"
+.ifndef HAVE_C_UpdatePortalPathCamera
+nonmatching UpdatePortalPathCamera, 0x308
 
-glabel UpdateGemPickupPathCamera
+glabel UpdatePortalPathCamera
     /* 27C0C 8003740C A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 27C10 80037410 4000B0AF */  sw         $s0, 0x40($sp)
     /* 27C14 80037414 3000B027 */  addiu      $s0, $sp, 0x30
     /* 27C18 80037418 21200002 */  addu       $a0, $s0, $zero
-    /* 27C1C 8003741C 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 27C20 80037420 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 27C1C 8003741C 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 27C20 80037420 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 27C24 80037424 0780063C */  lui        $a2, %hi(g_anCameraPos)
     /* 27C28 80037428 F86DC624 */  addiu      $a2, $a2, %lo(g_anCameraPos)
     /* 27C2C 8003742C 5400BFAF */  sw         $ra, 0x54($sp)
@@ -41782,8 +41782,8 @@ glabel UpdateGemPickupPathCamera
     /* 27C38 80037438 4800B2AF */  sw         $s2, 0x48($sp)
     /* 27C3C 8003743C 4400B1AF */  sw         $s1, 0x44($sp)
     /* 27C40 80037440 01005390 */  lbu        $s3, 0x1($v0)
-    /* 27C44 80037444 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 27C48 80037448 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 27C44 80037444 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 27C48 80037448 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 27C4C 8003744C 00291300 */  sll        $a1, $s3, 4
     /* 27C50 80037450 0800A524 */  addiu      $a1, $a1, 0x8
     /* 27C54 80037454 E35D000C */  jal        SubtractVector
@@ -41795,13 +41795,13 @@ glabel UpdateGemPickupPathCamera
     /* 27C6C 8003746C 0002822A */  slti       $v0, $s4, 0x200
     /* 27C70 80037470 19004010 */  beqz       $v0, .L800374D8
     /* 27C74 80037474 00000000 */   nop
-    /* 27C78 80037478 0880023C */  lui        $v0, %hi(g_nGemPickupCamPathReverseFlag)
-    /* 27C7C 8003747C A08C428C */  lw         $v0, %lo(g_nGemPickupCamPathReverseFlag)($v0)
+    /* 27C78 80037478 0880023C */  lui        $v0, %hi(g_nPortalCamPathReverseFlag)
+    /* 27C7C 8003747C A08C428C */  lw         $v0, %lo(g_nPortalCamPathReverseFlag)($v0)
     /* 27C80 80037480 00000000 */  nop
     /* 27C84 80037484 0A004010 */  beqz       $v0, .L800374B0
     /* 27C88 80037488 00000000 */   nop
-    /* 27C8C 8003748C 0880033C */  lui        $v1, %hi(g_pGemPickupCamPathData)
-    /* 27C90 80037490 988C638C */  lw         $v1, %lo(g_pGemPickupCamPathData)($v1)
+    /* 27C8C 8003748C 0880033C */  lui        $v1, %hi(g_pPortalCamPathData)
+    /* 27C90 80037490 988C638C */  lw         $v1, %lo(g_pPortalCamPathData)($v1)
     /* 27C94 80037494 00000000 */  nop
     /* 27C98 80037498 01006290 */  lbu        $v0, 0x1($v1)
     /* 27C9C 8003749C 00000000 */  nop
@@ -41810,8 +41810,8 @@ glabel UpdateGemPickupPathCamera
     /* 27CA8 800374A8 36DD0008 */  j          .L800374D8
     /* 27CAC 800374AC 010062A0 */   sb        $v0, 0x1($v1)
   .L800374B0:
-    /* 27CB0 800374B0 0880033C */  lui        $v1, %hi(g_pGemPickupCamPathData)
-    /* 27CB4 800374B4 988C638C */  lw         $v1, %lo(g_pGemPickupCamPathData)($v1)
+    /* 27CB0 800374B0 0880033C */  lui        $v1, %hi(g_pPortalCamPathData)
+    /* 27CB4 800374B4 988C638C */  lw         $v1, %lo(g_pPortalCamPathData)($v1)
     /* 27CB8 800374B8 00000000 */  nop
     /* 27CBC 800374BC 00006290 */  lbu        $v0, 0x0($v1)
     /* 27CC0 800374C0 01006490 */  lbu        $a0, 0x1($v1)
@@ -41821,13 +41821,13 @@ glabel UpdateGemPickupPathCamera
     /* 27CD0 800374D0 01008224 */   addiu     $v0, $a0, 0x1
     /* 27CD4 800374D4 010062A0 */  sb         $v0, 0x1($v1)
   .L800374D8:
-    /* 27CD8 800374D8 0880023C */  lui        $v0, %hi(g_nGemPickupCamPathReverseFlag)
-    /* 27CDC 800374DC A08C428C */  lw         $v0, %lo(g_nGemPickupCamPathReverseFlag)($v0)
+    /* 27CD8 800374D8 0880023C */  lui        $v0, %hi(g_nPortalCamPathReverseFlag)
+    /* 27CDC 800374DC A08C428C */  lw         $v0, %lo(g_nPortalCamPathReverseFlag)($v0)
     /* 27CE0 800374E0 00000000 */  nop
     /* 27CE4 800374E4 09004010 */  beqz       $v0, .L8003750C
     /* 27CE8 800374E8 21800000 */   addu      $s0, $zero, $zero
-    /* 27CEC 800374EC 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 27CF0 800374F0 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 27CEC 800374EC 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 27CF0 800374F0 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 27CF4 800374F4 00000000 */  nop
     /* 27CF8 800374F8 00004290 */  lbu        $v0, 0x0($v0)
     /* 27CFC 800374FC 00000000 */  nop
@@ -41864,23 +41864,23 @@ glabel UpdateGemPickupPathCamera
     /* 27D6C 8003756C 21282002 */  addu       $a1, $s1, $zero
     /* 27D70 80037570 6E5D000C */  jal        ScaleVector3ByRatio
     /* 27D74 80037574 21300002 */   addu      $a2, $s0, $zero
-    /* 27D78 80037578 0880023C */  lui        $v0, %hi(g_nGemPickupCamPathReverseFlag)
-    /* 27D7C 8003757C A08C428C */  lw         $v0, %lo(g_nGemPickupCamPathReverseFlag)($v0)
+    /* 27D78 80037578 0880023C */  lui        $v0, %hi(g_nPortalCamPathReverseFlag)
+    /* 27D7C 8003757C A08C428C */  lw         $v0, %lo(g_nPortalCamPathReverseFlag)($v0)
     /* 27D80 80037580 00000000 */  nop
     /* 27D84 80037584 08004010 */  beqz       $v0, .L800375A8
     /* 27D88 80037588 21880002 */   addu      $s1, $s0, $zero
     /* 27D8C 8003758C 1000A427 */  addiu      $a0, $sp, 0x10
     /* 27D90 80037590 00311300 */  sll        $a2, $s3, 4
-    /* 27D94 80037594 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 27D98 80037598 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 27D94 80037594 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 27D98 80037598 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 27D9C 8003759C 0800C524 */  addiu      $a1, $a2, 0x8
     /* 27DA0 800375A0 70DD0008 */  j          .L800375C0
     /* 27DA4 800375A4 1800C624 */   addiu     $a2, $a2, 0x18
   .L800375A8:
     /* 27DA8 800375A8 1000A427 */  addiu      $a0, $sp, 0x10
     /* 27DAC 800375AC 00311300 */  sll        $a2, $s3, 4
-    /* 27DB0 800375B0 0880023C */  lui        $v0, %hi(g_pGemPickupCamPathData)
-    /* 27DB4 800375B4 988C428C */  lw         $v0, %lo(g_pGemPickupCamPathData)($v0)
+    /* 27DB0 800375B0 0880023C */  lui        $v0, %hi(g_pPortalCamPathData)
+    /* 27DB4 800375B4 988C428C */  lw         $v0, %lo(g_pPortalCamPathData)($v0)
     /* 27DB8 800375B8 0800C524 */  addiu      $a1, $a2, 0x8
     /* 27DBC 800375BC F8FFC624 */  addiu      $a2, $a2, -0x8
   .L800375C0:
@@ -41938,8 +41938,8 @@ glabel UpdateGemPickupPathCamera
     /* 27E78 80037678 A7DD0008 */  j          .L8003769C
     /* 27E7C 8003767C 03830200 */   sra       $s0, $v0, 12
   .L80037680:
-    /* 27E80 80037680 0880033C */  lui        $v1, %hi(g_nGemPickupCamPathMaxStep)
-    /* 27E84 80037684 9C8C638C */  lw         $v1, %lo(g_nGemPickupCamPathMaxStep)($v1)
+    /* 27E80 80037680 0880033C */  lui        $v1, %hi(g_nPortalCamPathMaxStep)
+    /* 27E84 80037684 9C8C638C */  lw         $v1, %lo(g_nPortalCamPathMaxStep)($v1)
     /* 27E88 80037688 21808002 */  addu       $s0, $s4, $zero
     /* 27E8C 8003768C 2A107000 */  slt        $v0, $v1, $s0
     /* 27E90 80037690 02004010 */  beqz       $v0, .L8003769C
@@ -41976,7 +41976,7 @@ glabel UpdateGemPickupPathCamera
     /* 27F08 80037708 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 27F0C 8003770C 0800E003 */  jr         $ra
     /* 27F10 80037710 00000000 */   nop
-endlabel UpdateGemPickupPathCamera
+endlabel UpdatePortalPathCamera
 .endif
 
 .section .text.ActivateScriptedCameraView, "ax"
@@ -42404,7 +42404,7 @@ glabel UpdateCameraFrame
     /* 284E0 80037CE0 0B004234 */  ori        $v0, $v0, (0x8000000B & 0xFFFF)
     /* 284E4 80037CE4 05006214 */  bne        $v1, $v0, .L80037CFC
     /* 284E8 80037CE8 00000000 */   nop
-    /* 284EC 80037CEC 03DD000C */  jal        UpdateGemPickupPathCamera
+    /* 284EC 80037CEC 03DD000C */  jal        UpdatePortalPathCamera
     /* 284F0 80037CF0 00000000 */   nop
     /* 284F4 80037CF4 41DF0008 */  j          .L80037D04
     /* 284F8 80037CF8 00000000 */   nop
@@ -48011,11 +48011,11 @@ glabel SpawnNameLetterActors
 endlabel SpawnNameLetterActors
 .endif
 
-.section .text.TickGemPickupBurstEntity, "ax"
-.ifndef HAVE_C_TickGemPickupBurstEntity
-nonmatching TickGemPickupBurstEntity, 0x178
+.section .text.TickStatueBurstShard, "ax"
+.ifndef HAVE_C_TickStatueBurstShard
+nonmatching TickStatueBurstShard, 0x178
 
-glabel TickGemPickupBurstEntity
+glabel TickStatueBurstShard
     /* 2CEE4 8003C6E4 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 2CEE8 8003C6E8 2000B0AF */  sw         $s0, 0x20($sp)
     /* 2CEEC 8003C6EC 21808000 */  addu       $s0, $a0, $zero
@@ -48113,7 +48113,7 @@ glabel TickGemPickupBurstEntity
     /* 2D050 8003C850 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 2D054 8003C854 0800E003 */  jr         $ra
     /* 2D058 8003C858 00000000 */   nop
-endlabel TickGemPickupBurstEntity
+endlabel TickStatueBurstShard
 .endif
 
 .section .text.AimCameraStickTowardPoint, "ax"
@@ -79734,13 +79734,13 @@ endlabel FindFreeRotBillboardSlot
 /* Handwritten function */
 .endif
 
-.section .text.DrawGemPickupAuraStar, "ax"
-.ifndef HAVE_C_DrawGemPickupAuraStar
-nonmatching DrawGemPickupAuraStar, 0x284
+.section .text.DrawDragonRescueAuraStar, "ax"
+.ifndef HAVE_C_DrawDragonRescueAuraStar
+nonmatching DrawDragonRescueAuraStar, 0x284
 
-glabel DrawGemPickupAuraStar
-    /* 49064 80058864 07800D3C */  lui        $t5, %hi(g_nGemPickupAuraStarEnabled)
-    /* 49068 80058868 4862AD25 */  addiu      $t5, $t5, %lo(g_nGemPickupAuraStarEnabled)
+glabel DrawDragonRescueAuraStar
+    /* 49064 80058864 07800D3C */  lui        $t5, %hi(g_nDragonRescueAuraStarEnabled)
+    /* 49068 80058868 4862AD25 */  addiu      $t5, $t5, %lo(g_nDragonRescueAuraStarEnabled)
     /* 4906C 8005886C 0780073C */  lui        $a3, %hi(g_anWorldToCameraRotMtx)
     /* 49070 80058870 D06DE724 */  addiu      $a3, $a3, %lo(g_anWorldToCameraRotMtx)
     /* 49074 80058874 0000E18C */  lw         $at, 0x0($a3)
@@ -79905,7 +79905,7 @@ glabel DrawGemPickupAuraStar
     /* 492DC 80058ADC 00002EAC */  sw         $t6, 0x0($at)
     /* 492E0 80058AE0 0800E003 */  jr         $ra
     /* 492E4 80058AE4 00000000 */   nop
-endlabel DrawGemPickupAuraStar
+endlabel DrawDragonRescueAuraStar
 .endif
 
 .section .text.AllocWorldSparkle, "ax"

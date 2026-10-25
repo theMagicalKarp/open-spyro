@@ -1985,7 +1985,7 @@ void Level14_UpdateActors(void) {
             h = 4;
           }
           g_bSpyroRequestYaw = SPY.bodyRotZ + h;
-          g_nSpyroRequestState = 0x11;
+          g_nSpyroRequestState = SPYRO_ST_LIFT;
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
@@ -2011,7 +2011,7 @@ void Level14_UpdateActors(void) {
             h = 3;
           }
           g_bSpyroRequestYaw = SPY.bodyRotZ + h;
-          g_nSpyroRequestState = 0x11;
+          g_nSpyroRequestState = SPYRO_ST_LIFT;
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
@@ -2089,7 +2089,7 @@ void Level14_UpdateActors(void) {
             st->cur->cur = st->cur->count - 2;
             st->mode = (st->mode & ~8) | 0xC0;
             EBB_BREAK();
-            g_nSpyroRequestState = 8;
+            g_nSpyroRequestState = SPYRO_ST_08;
             g_nSpyroMoveTargetYaw = 0x290;
           }
           continue;
@@ -3399,11 +3399,11 @@ void Level14_UpdateActors(void) {
               actor->rotX = st->savedRotX;
               actor->rotY = st->savedRotY;
               actor->posZ = st->savedPosZ;
-              BeginGemPickupOverlay(actor);
+              BeginDragonRescue(actor);
               ZeroVector(&SPY.headLook);
               SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
               if (SPY.airborneFrames != 0) {
-                SPY.requestState = 6;
+                SPY.requestState = SPYRO_ST_FALL;
                 SPY.requestVelX = SPY.motionX >> 8;
                 SPY.requestVelY = SPY.motionY >> 8;
                 if (SPY.motionZ > 0) {
@@ -3412,7 +3412,7 @@ void Level14_UpdateActors(void) {
                   SPY.requestVelZ = SPY.motionZ >> 6;
                 }
               } else {
-                SPY.requestState = 3;
+                SPY.requestState = SPYRO_ST_STOP;
                 CopyVector(&SPY.requestVelX, &SPY.motionX);
                 RShiftVector3(&SPY.requestVelX, 6);
                 SPY.requestVelZ = 0;
@@ -3432,7 +3432,7 @@ void Level14_UpdateActors(void) {
 
     /* Dragon fragment, updated out of line. */
     case ACTOR_TYPE_STATUE_SHARD:
-      TickGemPickupBurstEntity(actor);
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (DebrisState). */

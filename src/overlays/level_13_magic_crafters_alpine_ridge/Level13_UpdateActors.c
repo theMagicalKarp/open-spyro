@@ -2652,12 +2652,12 @@ void Level13_UpdateActors(void) {
             actor->rotX = st->rotX;
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
-            BeginGemPickupOverlay(actor);
+            BeginDragonRescue(actor);
             ZeroVector(&SPY.headLook);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
-              g_nSpyroRequestState = 6;
+              g_nSpyroRequestState = SPYRO_ST_FALL;
               g_anSpyroRequestVelocity.x = g_anSpyroMotionVec >> 8;
               g_nSpyroRequestVelocityY = g_nSpyroMotionY >> 8;
               if (g_nSpyroMotionZ > 0) {
@@ -2669,7 +2669,7 @@ void Level13_UpdateActors(void) {
             } else {
               int *look = &SPY.requestVelX;
 
-              g_nSpyroRequestState = 3;
+              g_nSpyroRequestState = SPYRO_ST_STOP;
               CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
@@ -2691,7 +2691,7 @@ void Level13_UpdateActors(void) {
 
     /* Dragon fragment, updated out of line. */
     case ACTOR_TYPE_STATUE_SHARD:
-      TickGemPickupBurstEntity(actor);
+      TickStatueBurstShard(actor);
       break;
 
     /* Type 253: guard captain (CaptainState). */
@@ -3005,7 +3005,7 @@ void Level13_UpdateActors(void) {
           ScaleVector3ByRatio(v, VectorLength(v, 0), 0x8C);
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY);
           g_nSpyroRequestVelocityZ = 0x19;
-          g_nSpyroRequestState = 6;
+          g_nSpyroRequestState = SPYRO_ST_FALL;
           g_anSpyroRequestVelocity.x = v[0];
           g_nSpyroRequestVelocityY = v[1];
           st->camTimer = 0x28;
@@ -5174,7 +5174,7 @@ void Level13_UpdateActors(void) {
         SPY.camPathReverse = actor->subMode;
         SPY.pPortal = st->desc;
         SPY.camPathMaxStep = 0x60;
-        SPY.requestState = 5;
+        SPY.requestState = SPYRO_ST_JUMP;
         SPY.otBinBias = 0x7F;
 
         p = st->desc;
@@ -5202,8 +5202,8 @@ void Level13_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
-          SPY.requestState = 0xF;
+          CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
+          SPY.requestState = SPYRO_ST_GLIDE;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
@@ -5228,7 +5228,7 @@ void Level13_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }
@@ -5236,13 +5236,13 @@ void Level13_UpdateActors(void) {
         SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
         SPY.pPortal = st->desc;
         SPY.camPathMaxStep = 0x60;
-        SPY.requestState = 0xF;
+        SPY.requestState = SPYRO_ST_GLIDE;
         SPY.otBinBias = 0x7F;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == 6) {
           actor->mode = 0;
-          CAM.nextMode = (0x80000000 | 0x10 | 0x2);
+          CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
@@ -5267,7 +5267,7 @@ void Level13_UpdateActors(void) {
             CAM.preset = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }

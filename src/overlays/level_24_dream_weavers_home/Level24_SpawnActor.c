@@ -23,7 +23,7 @@
  *    nudge the spawn point along it, and randomise the tumble rates. The
  *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
  *    +0x4B bit 7 flag.
- *  - 0xFB (dragon-statue burst shard, ticked by TickGemPickupBurstEntity): pick one of eight launch directions from
+ *  - 0xFB (dragon-statue burst shard, ticked by TickStatueBurstShard): pick one of eight launch directions from
  *    the g_anLaunchDirTable/g_anLaunchDirTableZ table, rotate it into the parent's orientation
  *    (RotateVectorByMatrix), jitter each component by
  *    +-0x3F, offset the spawn point along it (AddVector) and
@@ -253,9 +253,9 @@ Actor *Level24_SpawnActor(int type, Actor *parent) {
     rec->tint1 = 0;
     rec->tint2 = 0;
     rec->tintMode = 0xE;
-    if (g_nGemPickupSubstate == 3) {
+    if (g_nDragonRescueSubstate == 3) {
       rec->scale = 0x14;
-    } else if (g_nGemPickupSubstate == 1) {
+    } else if (g_nDragonRescueSubstate == 1) {
       rec->scale = 0x30;
     }
     i = GetRandomU32() & 7;

@@ -40,8 +40,8 @@ void GamestateUpdate(void) {
       Gamestate06_Update();
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
       (*(void (*)())g_pfnGamestate7Handler)();
-    } else if (g_nGamestate == GS_GEM_PICKUP) {
-      GemPickup_Update();
+    } else if (g_nGamestate == GS_DRAGON_RESCUE) {
+      DragonRescue_Update();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
       CameraSettle_Update();
     } else if (g_nGamestate == GS_MENU_TRANSITION) {

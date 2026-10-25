@@ -268,8 +268,8 @@ typedef struct {
   Actor *pScriptedActor;          /* 0x224 */
   char pad228[0x18];
   PortalDesc *pPortal;            /* 0x240 */
-  int camPathMaxStep;             /* 0x244 g_nGemPickupCamPathMaxStep */
-  int camPathReverse;             /* 0x248 g_nGemPickupCamPathReverseFlag */
+  int camPathMaxStep;             /* 0x244 g_nPortalCamPathMaxStep */
+  int camPathReverse;             /* 0x248 g_nPortalCamPathReverseFlag */
 } SpyroObj;
 
 extern SpyroObj g_anSpyroWorldPosBlock;
@@ -1618,14 +1618,14 @@ extern int g_anLevelKillBitmapTable[];
 extern volatile unsigned char g_bSpyroOtBinBias;
 extern int g_nCameraSpringYaw;
 extern int g_nCameraYaw;
-extern int g_nGemPickupCamPathMaxStep;
+extern int g_nPortalCamPathMaxStep;
 extern int g_nGenericCountdown;
 extern int g_nGnastyLootFallRefZCap;
 extern int g_nHitRumbleTimer;
 extern int g_nMotionTrailRibbonCount;
 extern int g_nVblankTickCount;
 extern Xform *g_pCameraTargetParams;
-extern PortalDesc *volatile g_pGemPickupCamPathData;
+extern PortalDesc *volatile g_pPortalCamPathData;
 extern int *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
@@ -1644,7 +1644,7 @@ extern int g_bLevelBossDefeated; /* boss defeated */
 extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelUseShortReleaseAnim;
 extern int g_dwActiveCameraOptions;
-extern int g_nGemPickupCamPathReverseFlag;
+extern int g_nPortalCamPathReverseFlag;
 extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
 
 /* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's

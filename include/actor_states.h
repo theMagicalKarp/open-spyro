@@ -5,7 +5,7 @@
 #ifndef OPEN_SPYRO_ACTOR_STATES_H
 #define OPEN_SPYRO_ACTOR_STATES_H
 
-/* Dragon-statue burst shard (type 0xFB), ticked by TickGemPickupBurstEntity:
+/* Dragon-statue burst shard (type 0xFB), ticked by TickStatueBurstShard:
  * integrates vel with gravity while life runs and posZ stays above floorZ. */
 typedef struct BurstShardState {
   int vel[3];          /* 0x00 */

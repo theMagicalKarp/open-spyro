@@ -689,16 +689,16 @@ extern int g_nLevelSampleBankCount;                     /* 0x80076234 */
 extern uint g_dwSpuPendingKeyOn;                        /* 0x80076238 */
 extern uint g_dwSpuPendingKeyOff;                       /* 0x8007623c */
 extern int g_nSoundMonoMixFlag;                         /* 0x80076240 */
-extern int g_nGemPickupAuraStarEnabled;                 /* 0x80076248 */
-extern int g_anGemPickupAuraStarAnchor[3];              /* 0x8007624c */
-extern int g_anGemPickupAuraStarMtx[5];                 /* 0x80076258 */
-extern int g_nGemPickupAuraStarRadius;                  /* 0x8007626c */
-extern byte g_abGemPickupAuraStarEuler[3];              /* 0x80076270 */
-extern byte g_bGemPickupAuraStarColor;                  /* 0x80076273 */
+extern int g_nDragonRescueAuraStarEnabled;                 /* 0x80076248 */
+extern int g_anDragonRescueAuraStarAnchor[3];              /* 0x8007624c */
+extern int g_anDragonRescueAuraStarMtx[5];                 /* 0x80076258 */
+extern int g_nDragonRescueAuraStarRadius;                  /* 0x8007626c */
+extern byte g_abDragonRescueAuraStarEuler[3];              /* 0x80076270 */
+extern byte g_bDragonRescueAuraStarColor;                  /* 0x80076273 */
 extern void *g_apMobEntryTable[];                       /* 0x80076278: mob id -> entry (UnpackWorldDataChunks) */
 extern void *g_apActorMeshTable;                        /* 0x80076378 */
-extern void *g_pGemPickupStatueModelData;               /* 0x80076b70 */
-extern void *g_pGemPickupMirrorModelData;               /* 0x80076b74 */
+extern void *g_pDragonRescueStatueModelData;               /* 0x80076b70 */
+extern void *g_pDragonRescueMirrorModelData;               /* 0x80076b74 */
 extern int g_anCollisionResolvedPos[3];                 /* 0x80076b80 */
 extern unsigned char g_nCollisionResolvedZ[];           /* FIXME: type/size unrecovered @ 0x80076b88 */
 extern int g_nCdBaseLba;                                /* 0x80076b90 */
@@ -766,40 +766,40 @@ extern void *g_pFramePrimBufferBase1;                   /* 0x80076fd4 */
 extern void *g_pFrameOtDepthBinBase1;                   /* 0x80076fd8 */
 extern void *g_pFrameOtMergedChainSlot1;                /* 0x80076fdc */
 extern int g_anLevelEggsRecovered[18];                  /* 0x80076fe8 */
-extern int g_nGemPickupAudioSampleOffset;               /* 0x80077034 */
-extern int g_nGemPickupAudioSampleSize;                 /* 0x80077038 */
-extern int g_nGemPickupHeaderEndOffset;                 /* 0x8007703c */
-extern int g_nGemPickupMirrorMeshOffset;                /* 0x80077044 */
-extern int g_nGemPickupCameraPathOffset;                /* 0x8007704c */
-extern int g_nGemPickupCameraPathSize;                  /* 0x80077050 */
-extern int g_nGemPickupTypeSnapshot;                    /* 0x80077054 */
-extern int g_nGemPickupSubstate;                        /* 0x80077058 */
-extern int g_nGemPickupStreamState;                     /* 0x8007705c */
-extern int g_nGemPickupSpuChunkIndex;                   /* 0x80077060 */
-extern int g_nGemPickupSplitFlag;                       /* 0x80077064 */
-extern int g_nGemPickupReadByteCount;                   /* 0x80077068 */
-extern int g_nGemPickupTimer;                           /* 0x8007706c */
-extern int g_nGemPickupSweepDurationFrames;             /* 0x80077070 */
-extern int g_nGemPickupFullscreenTintLevel;             /* 0x80077074 */
-extern void *g_pGemPickupCameraPath;                    /* 0x80077078 */
-extern int g_nGemPickupCameraPathCount;                 /* 0x8007707c */
-extern int g_nGemPickupSecondaryTimer;                  /* 0x80077080 */
-extern byte g_bGemPickupSfxVoiceMarker;                 /* 0x80077084 */
-extern int g_nGemPickupAudioFiredFlag;                  /* 0x80077088 */
-extern int g_nGemPickupPadHoldTimer;                    /* 0x8007708c */
-extern int g_nGemPickupOrbitStartYaw;                   /* 0x80077090 */
-extern int g_nGemPickupOrbitStartRadius;                /* 0x80077094 */
-extern uint g_dwGemPickupOrbitTargetYaw;                /* 0x80077098 */
-extern int g_nGemPickupOrbitTargetRadius;               /* 0x8007709c */
-extern int g_nGemPickupCameraStartYaw;                  /* 0x800770a0 */
-extern int g_nGemPickupCameraStartRadius;               /* 0x800770a4 */
-extern int g_nGemPickupCameraStartZ;                    /* 0x800770a8 */
-extern int g_nGemPickupCameraTargetYaw;                 /* 0x800770ac */
-extern int g_nGemPickupCameraTargetRadius;              /* 0x800770b0 */
-extern int g_nGemPickupCameraTargetZ;                   /* 0x800770b4 */
-extern void *g_pGemPickupStatueActor;                   /* 0x800770b8 */
-extern void *g_pGemPickupSpyroMirrorActor;              /* 0x800770bc */
-extern void *g_pGemPickupSourceActor;                   /* 0x800770c0 */
+extern int g_nDragonRescueAudioSampleOffset;               /* 0x80077034 */
+extern int g_nDragonRescueAudioSampleSize;                 /* 0x80077038 */
+extern int g_nDragonRescueHeaderEndOffset;                 /* 0x8007703c */
+extern int g_nDragonRescueMirrorMeshOffset;                /* 0x80077044 */
+extern int g_nDragonRescueCameraPathOffset;                /* 0x8007704c */
+extern int g_nDragonRescueCameraPathSize;                  /* 0x80077050 */
+extern int g_nDragonRescueTypeSnapshot;                    /* 0x80077054 */
+extern int g_nDragonRescueSubstate;                        /* 0x80077058 */
+extern int g_nDragonRescueStreamState;                     /* 0x8007705c */
+extern int g_nDragonRescueSpuChunkIndex;                   /* 0x80077060 */
+extern int g_nDragonRescueSplitFlag;                       /* 0x80077064 */
+extern int g_nDragonRescueReadByteCount;                   /* 0x80077068 */
+extern int g_nDragonRescueTimer;                           /* 0x8007706c */
+extern int g_nDragonRescueSweepDurationFrames;             /* 0x80077070 */
+extern int g_nDragonRescueFullscreenTintLevel;             /* 0x80077074 */
+extern void *g_pDragonRescueCameraPath;                    /* 0x80077078 */
+extern int g_nDragonRescueCameraPathCount;                 /* 0x8007707c */
+extern int g_nDragonRescueSecondaryTimer;                  /* 0x80077080 */
+extern byte g_bDragonRescueSfxVoiceMarker;                 /* 0x80077084 */
+extern int g_nDragonRescueAudioFiredFlag;                  /* 0x80077088 */
+extern int g_nDragonRescuePadHoldTimer;                    /* 0x8007708c */
+extern int g_nDragonRescueOrbitStartYaw;                   /* 0x80077090 */
+extern int g_nDragonRescueOrbitStartRadius;                /* 0x80077094 */
+extern uint g_dwDragonRescueOrbitTargetYaw;                /* 0x80077098 */
+extern int g_nDragonRescueOrbitTargetRadius;               /* 0x8007709c */
+extern int g_nDragonRescueCameraStartYaw;                  /* 0x800770a0 */
+extern int g_nDragonRescueCameraStartRadius;               /* 0x800770a4 */
+extern int g_nDragonRescueCameraStartZ;                    /* 0x800770a8 */
+extern int g_nDragonRescueCameraTargetYaw;                 /* 0x800770ac */
+extern int g_nDragonRescueCameraTargetRadius;              /* 0x800770b0 */
+extern int g_nDragonRescueCameraTargetZ;                   /* 0x800770b4 */
+extern void *g_pDragonRescueStatueActor;                   /* 0x800770b8 */
+extern void *g_pDragonRescueSpyroMirrorActor;              /* 0x800770bc */
+extern void *g_pDragonRescueSourceActor;                   /* 0x800770c0 */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
 extern byte g_abBillboardBasisVectors[18];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
@@ -1001,9 +1001,9 @@ extern int g_nSpyroRequestState;                        /* 0x80078c70 */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
 extern void *g_pScriptedCameraActor;                    /* 0x80078c7c */
-extern void *g_pGemPickupCamPathData;                   /* 0x80078c98 */
-extern int g_nGemPickupCamPathMaxStep;                  /* 0x80078c9c */
-extern int g_nGemPickupCamPathReverseFlag;              /* 0x80078ca0 */
+extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
+extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
+extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFallTrackingFlag;                    /* 0x80078ca4 */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
@@ -1229,12 +1229,12 @@ extern int g_anDeathTryLevelIds[]; /* 0x8006ee7c: per-try first level table */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
 extern unsigned char g_abGameOverGlyphs[]; /* 0x8006f304: GAMEOVER letter glyph indices */
-extern unsigned char g_abGemPickupFlickerPairs1[]; /* 0x8006f390: substate-1 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs1Y[]; /* 0x8006f391 */
-extern unsigned char g_abGemPickupFlickerPairs2[]; /* 0x8006f398: substate-2 flicker euler pairs */
-extern unsigned char g_abGemPickupFlickerPairs2Y[]; /* 0x8006f399 */
-extern short g_anGemPickupScaleCurve[]; /* 0x8006f3c0: gem-pickup timer scale curve */
-extern int g_anGemPickupIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
+extern unsigned char g_abDragonRescueFlickerPairs1[]; /* 0x8006f390: substate-1 flicker euler pairs */
+extern unsigned char g_abDragonRescueFlickerPairs1Y[]; /* 0x8006f391 */
+extern unsigned char g_abDragonRescueFlickerPairs2[]; /* 0x8006f398: substate-2 flicker euler pairs */
+extern unsigned char g_abDragonRescueFlickerPairs2Y[]; /* 0x8006f399 */
+extern short g_anDragonRescueScaleCurve[]; /* 0x8006f3c0: dragon-rescue timer scale curve */
+extern int g_anDragonRescueIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
 extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view; the sized decl stays in use where the original addresses it absolutely (A240) */
 extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroHornStrikeTransitionModes[][2]; /* 0x80075264 */
@@ -1292,10 +1292,10 @@ extern int g_anCameraScriptStickIntegratorBlock[]; /* 0x80076eac */
 extern int *g_pScriptedCameraView; /* 0x80076ebc */
 extern int *g_apScriptedCameraViewBlock[]; /* 0x80076ebc: held-base view of g_pScriptedCameraView */
 extern unsigned char g_abFrameDrawEnvIsbgBlock[]; /* 0x80076ef8 */
-extern char g_abGemPickupAssetHeader[]; /* 0x80077030: gem-pickup asset header copy */
-extern int g_anGemPickupHeaderEndBlock[]; /* 0x8007703c: held-base view of the header-end offset */
-extern int g_anGemPickupStreamStateBlock[]; /* 0x8007705c: held-base view of the stream state */
-extern int g_anGemPickupSpuChunkBlock[]; /* 0x80077060: held-base view of the SPU chunk index */
+extern char g_abDragonRescueAssetHeader[]; /* 0x80077030: dragon-rescue asset header copy */
+extern int g_anDragonRescueHeaderEndBlock[]; /* 0x8007703c: held-base view of the header-end offset */
+extern int g_anDragonRescueStreamStateBlock[]; /* 0x8007705c: held-base view of the stream state */
+extern int g_anDragonRescueSpuChunkBlock[]; /* 0x80077060: held-base view of the SPU chunk index */
 extern volatile int g_anLightSweepAngleBlock[]; /* 0x800770f4: held-base view of g_nLightSweepAngle */
 extern unsigned char g_aRotBillboards[]; /* 0x80077108 */
 extern int g_anMotionTrailSliceCounts[]; /* 0x800772c8: per-ribbon slice count */

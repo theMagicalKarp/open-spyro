@@ -100,7 +100,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | matched | game |
 | `0x800144c8` | LoadAndStartLevelFromCd | main | 156 | matched | game |
 | `0x80014564` | TickWorldBundleLoadStream | main | 1548 | matched | game |
-| `0x80014b70` | TickGemPickupAssetStream | main | 2048 | matched | game |
+| `0x80014b70` | TickDragonRescueAssetStream | main | 2048 | matched | game |
 | `0x80015370` | TickLevelTransitionStream | main | 4212 | matched | game |
 | `0x800163e4` | RestartStalledCdRead | main | 172 | matched | game |
 | `0x80016490` | CdReadCompleteCallback | main | 112 | matched | game |
@@ -221,8 +221,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002c8a4` | EndRespawnToGameplay | main | 112 | matched | game |
 | `0x8002c914` | StubRewardHook | main | 8 | matched | game |
 | `0x8002c91c` | Gamestate06SubstateStub_Noop | main | 8 | matched | game |
-| `0x8002c924` | BeginGemPickupOverlay | main | 584 | matched | game |
-| `0x8002cb6c` | EndGemPickupToWorld | main | 348 | matched | game |
+| `0x8002c924` | BeginDragonRescue | main | 584 | matched | game |
+| `0x8002cb6c` | EndDragonRescueToWorld | main | 348 | matched | game |
 | `0x8002ccc8` | BeginSaveMenuFromWorld | main | 868 | matched | game |
 | `0x8002d02c` | EndSaveMenuToWorld | main | 324 | matched | game |
 | `0x8002d170` | BeginStoryIntro | main | 184 | matched | game |
@@ -241,7 +241,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002eb2c` | SubMenu_Update | main | 708 | matched | game |
 | `0x8002edf0` | RespawnOrGameOver_Update | main | 1492 | matched | game |
 | `0x8002f3c4` | Gamestate06_Update | main | 32 | matched | game |
-| `0x8002f3e4` | GemPickup_Update | main | 8400 | matched | game |
+| `0x8002f3e4` | DragonRescue_Update | main | 8400 | matched | game |
 | `0x800314b4` | Gamestate0B_Update | main | 4132 | matched | game |
 | `0x800324d8` | Gamestate0C_Update | main | 1352 | matched | game |
 | `0x80032a20` | PollMemCardSyncRing | main | 144 | matched | game |
@@ -264,7 +264,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800357a4` | SelectCameraMode | main | 1972 | matched | game |
 | `0x80035f58` | UpdateCameraManualYawInput | main | 92 | matched | game |
 | `0x80035fb4` | UpdateCameraSpringForMode | main | 5208 | matched | game |
-| `0x8003740c` | UpdateGemPickupPathCamera | main | 776 | matched | game |
+| `0x8003740c` | UpdatePortalPathCamera | main | 776 | matched | game |
 | `0x80037714` | ActivateScriptedCameraView | main | 148 | matched | game |
 | `0x800377a8` | UpdateScriptedCameraView | main | 632 | matched | game |
 | `0x80037a20` | UpdateLevelTransitionCamera | main | 436 | matched | game |
@@ -330,7 +330,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003bed8` | ClassifyActorQuadrantVsSpyro | main | 232 | matched | game |
 | `0x8003bfc0` | TweenActorAlongPath | main | 920 | matched | game |
 | `0x8003c358` | SpawnNameLetterActors | main | 908 | matched | game |
-| `0x8003c6e4` | TickGemPickupBurstEntity | main | 376 | matched | game |
+| `0x8003c6e4` | TickStatueBurstShard | main | 376 | matched | game |
 | `0x8003c85c` | AimCameraStickTowardPoint | main | 312 | matched | game |
 | `0x8003c994` | FollowActorWaypointPath | main | 304 | matched | game |
 | `0x8003cac4` | TallyFlightTarget | main | 96 | matched | game |
@@ -449,7 +449,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800580f4` | DrawWorldSparkleParticles | main | 976 | asm | handwritten |
 | `0x800584c4` | DrawWorldRotatingBillboards | main | 872 | asm | handwritten |
 | `0x8005882c` | FindFreeRotBillboardSlot | main | 56 | asm | handwritten |
-| `0x80058864` | DrawGemPickupAuraStar | main | 644 | asm | handwritten |
+| `0x80058864` | DrawDragonRescueAuraStar | main | 644 | asm | handwritten |
 | `0x80058ae8` | AllocWorldSparkle | main | 120 | matched | game |
 | `0x80058b60` | ClearWord | main | 8 | matched | game |
 | `0x80058b68` | ResetWorldParticleTables | main | 64 | matched | game |

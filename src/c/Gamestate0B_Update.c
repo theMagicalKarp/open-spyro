@@ -212,7 +212,7 @@ void Gamestate0B_Update(void) {
             ACTOR_RAW(actor, unsigned char, mode) = 2;
             ((int *)actor)[2] = 0;
             ((short *)actor)[0x1A] = -1;
-            BeginGemPickupOverlay(actor);
+            BeginDragonRescue(actor);
             g_nWorldDragonsRescued--;
             g_anLevelDragonsRescued[g_nLevelIndex]--;
           }

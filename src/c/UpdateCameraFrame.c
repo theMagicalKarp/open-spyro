@@ -41,8 +41,8 @@ void UpdateCameraFrame(void) {
   } else if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_LEVEL_TRANSITION)) {
     UpdateLevelTransitionCamera();
   } else {
-    if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_GEM_PATH)) {
-      UpdateGemPickupPathCamera();
+    if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_PORTAL_PATH)) {
+      UpdatePortalPathCamera();
     } else {
       UpdateCameraSpringForMode();
     }

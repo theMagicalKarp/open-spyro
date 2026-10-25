@@ -13,8 +13,8 @@
  *     cross-jumps it instead). The g_nSpyroRequestVelocityZ clear is the reverse: a `goto`
  *     into the AF4 branch's copy.
  *   - Case 398's head is written in source order and pinned by memory
- *     dependences, not scheduling luck: a do/while(0) after the g_nGemPickupCamPathReverseFlag
- *     store, g_bSpyroOtBinBias and g_pGemPickupCamPathData volatile (their stores keep order),
+ *     dependences, not scheduling luck: a do/while(0) after the g_nPortalCamPathReverseFlag
+ *     store, g_bSpyroOtBinBias and g_pPortalCamPathData volatile (their stores keep order),
  *     the call's portal re-read through `*(PortalDesc **)st` (not in_struct,
  *     so it depends on the C98 store), and the SPY base held in `cf`.
  *   - Operand order via statement splits: `st->phase += dt` (not a tick
@@ -1962,12 +1962,12 @@ void Level30_UpdateActors(void) {
             actor->rotX = st->rotX;
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
-            BeginGemPickupOverlay(actor);
+            BeginDragonRescue(actor);
             ZeroVector(&SPY.headLook);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
-              g_nSpyroRequestState = 6;
+              g_nSpyroRequestState = SPYRO_ST_FALL;
               g_anSpyroRequestVelocity.x = g_anSpyroMotionVec >> 8;
               g_anSpyroRequestVelocity.y = g_nSpyroMotionY >> 8;
               if (g_nSpyroMotionZ > 0) {
@@ -1979,7 +1979,7 @@ void Level30_UpdateActors(void) {
             } else {
               int *look = &SPY.requestVelX;
 
-              g_nSpyroRequestState = 3;
+              g_nSpyroRequestState = SPYRO_ST_STOP;
               CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
@@ -2001,7 +2001,7 @@ void Level30_UpdateActors(void) {
 
     /* Gem: its own pickup update lives in the shared helper. */
     case ACTOR_TYPE_STATUE_SHARD:
-      TickGemPickupBurstEntity(actor);
+      TickStatueBurstShard(actor);
       break;
 
     /* Thrown projectile (ShotState30): flies until it lands. */
@@ -2364,13 +2364,13 @@ void Level30_UpdateActors(void) {
         int span;
 
         *cf = 0x80006147;
-        g_nGemPickupCamPathReverseFlag = actor->subMode;
+        g_nPortalCamPathReverseFlag = actor->subMode;
         EBB_BREAK();
         portal = st->portal;
-        g_nGemPickupCamPathMaxStep = 0x60;
-        g_nSpyroRequestState = 5;
+        g_nPortalCamPathMaxStep = 0x60;
+        g_nSpyroRequestState = SPYRO_ST_JUMP;
         g_bSpyroOtBinBias = 0x7F;
-        g_pGemPickupCamPathData = portal;
+        g_pPortalCamPathData = portal;
         {
           PortalDesc *pd = *(PortalDesc **)st;
 
@@ -2403,7 +2403,7 @@ void Level30_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = 0;
           AS_I32(g_nCameraNextMode) = 0x80000012;
-          SPY.requestState = 0xF;
+          SPY.requestState = SPYRO_ST_GLIDE;
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
@@ -2431,17 +2431,17 @@ void Level30_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }
 
       case 2:
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
-        g_nGemPickupCamPathMaxStep = 0x60;
-        g_nSpyroRequestState = 0xF;
+        g_nPortalCamPathMaxStep = 0x60;
+        g_nSpyroRequestState = SPYRO_ST_GLIDE;
         g_bSpyroOtBinBias = 0x7F;
-        g_pGemPickupCamPathData = st->portal;
+        g_pPortalCamPathData = st->portal;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
@@ -2474,7 +2474,7 @@ void Level30_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }

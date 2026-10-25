@@ -200,8 +200,8 @@ int AdvanceSpyroPhysics(void) {
         g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_REQUEST);
         g_pCameraAnchorPos = g_pSpyroRequestCameraAnchor;
         g_pCameraTargetParams = g_pSpyroRequestCameraTargetParams;
-      } else if (m & SPYRO_RQ_GEM_PATH_CAMERA) {
-        g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_GEM_PATH);
+      } else if (m & SPYRO_RQ_PORTAL_PATH_CAMERA) {
+        g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_PORTAL_PATH);
       } else if (m & SPYRO_RQ_LOCK_ON) {
         int keepYaw = g_nSpyroMoveTargetYaw;
         int a;

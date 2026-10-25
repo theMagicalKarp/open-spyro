@@ -53,7 +53,7 @@ void Titlescreen_Update(void) {
     g_nGamestate0dMode.idleFrames = 0;
     if (g_nGamestate0dMode.subState == 2 && g_pPathTableHead->introFrame >= 300 &&
         (g_dwPadPressed.held & (PAD_START | PAD_CROSS)) != 0) {
-      StopSoundVoiceByIndex(g_bGemPickupSfxVoiceMarker, 4); /* StopSound(voice) */
+      StopSoundVoiceByIndex(g_bDragonRescueSfxVoiceMarker, 4); /* StopSound(voice) */
       g_pPathTableHead->introFrame = 1170;
     }
   } else {

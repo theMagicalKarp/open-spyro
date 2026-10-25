@@ -21,7 +21,7 @@
 <rect x="145.59" y="114.00" width="100.31" height="82.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroMotionForSubstep  ·  15228 bytes  ·  matched</title></rect>
 <rect x="245.90" y="114.00" width="69.90" height="82.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateSpyroStateBehavior  ·  10612 bytes  ·  matched</title></rect>
 <rect x="14.00" y="196.99" width="76.29" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate02_03_06_Draw  ·  8840 bytes  ·  matched</title></rect>
-<rect x="90.29" y="196.99" width="72.49" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>GemPickup_Update  ·  8400 bytes  ·  matched</title></rect>
+<rect x="90.29" y="196.99" width="72.49" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Update  ·  8400 bytes  ·  matched</title></rect>
 <rect x="162.78" y="196.99" width="58.99" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitSecondaryActorPrimitives  ·  6836 bytes  ·  handwritten</title></rect>
 <rect x="221.77" y="196.99" width="49.09" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_800242B8  ·  5688 bytes  ·  handwritten</title></rect>
 <rect x="270.86" y="196.99" width="44.94" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraSpringForMode  ·  5208 bytes  ·  matched</title></rect>
@@ -48,7 +48,7 @@
 <rect x="51.34" y="391.48" width="36.12" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroAttackEffects  ·  2248 bytes  ·  matched</title></rect>
 <rect x="87.46" y="391.48" width="34.38" height="34.02" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>sprintf  ·  2140 bytes  ·  library</title></rect>
 <rect x="121.84" y="391.48" width="32.97" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateGameplayCamera  ·  2052 bytes  ·  matched</title></rect>
-<rect x="154.81" y="391.48" width="32.90" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickGemPickupAssetStream  ·  2048 bytes  ·  matched</title></rect>
+<rect x="154.81" y="391.48" width="32.90" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickDragonRescueAssetStream  ·  2048 bytes  ·  matched</title></rect>
 <rect x="187.71" y="391.48" width="32.71" height="34.02" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizePairedActor  ·  2036 bytes  ·  handwritten</title></rect>
 <rect x="220.43" y="391.48" width="32.71" height="34.02" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80066634  ·  2036 bytes  ·  library</title></rect>
 <rect x="253.14" y="391.48" width="31.68" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectCameraMode  ·  1972 bytes  ·  matched</title></rect>
@@ -118,7 +118,7 @@
 <rect x="214.11" y="506.88" width="20.42" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ProbeSpyroGroundContact  ·  784 bytes  ·  matched</title></rect>
 <rect x="234.53" y="506.88" width="20.42" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroSubstepState  ·  784 bytes  ·  matched</title></rect>
 <rect x="254.95" y="506.88" width="20.42" height="20.99" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BurstActorIntoSparks  ·  784 bytes  ·  handwritten</title></rect>
-<rect x="275.37" y="506.88" width="20.21" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateGemPickupPathCamera  ·  776 bytes  ·  matched</title></rect>
+<rect x="275.37" y="506.88" width="20.21" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdatePortalPathCamera  ·  776 bytes  ·  matched</title></rect>
 <rect x="295.59" y="506.88" width="20.21" height="20.99" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroPadStateChanges  ·  776 bytes  ·  matched</title></rect>
 <rect x="62.40" y="527.86" width="19.50" height="21.53" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>WalkActorAlongWaypoints  ·  768 bytes  ·  matched</title></rect>
 <rect x="62.40" y="549.39" width="19.50" height="21.08" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MoveActorAlongHeading  ·  752 bytes  ·  matched</title></rect>
@@ -140,7 +140,7 @@
 <rect x="180.95" y="527.86" width="19.57" height="18.32" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ControlSpuDmaTransfer  ·  656 bytes  ·  library</title></rect>
 <rect x="200.52" y="527.86" width="19.57" height="18.32" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetDrawEnv  ·  656 bytes  ·  library</title></rect>
 <rect x="220.09" y="527.86" width="19.33" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MoveActorAlongAngle  ·  648 bytes  ·  matched</title></rect>
-<rect x="239.43" y="527.86" width="19.21" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawGemPickupAuraStar  ·  644 bytes  ·  handwritten</title></rect>
+<rect x="239.43" y="527.86" width="19.21" height="18.32" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawDragonRescueAuraStar  ·  644 bytes  ·  handwritten</title></rect>
 <rect x="258.64" y="527.86" width="19.21" height="18.32" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80061470  ·  644 bytes  ·  library</title></rect>
 <rect x="277.85" y="527.86" width="19.09" height="18.32" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdSync  ·  640 bytes  ·  library</title></rect>
 <rect x="296.94" y="527.86" width="18.85" height="18.32" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateScriptedCameraView  ·  632 bytes  ·  matched</title></rect>
@@ -150,7 +150,7 @@
 <rect x="81.91" y="601.44" width="18.28" height="18.06" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80060FD8  ·  604 bytes  ·  library</title></rect>
 <rect x="81.91" y="619.50" width="18.28" height="18.06" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>RunMemCardInfoOp  ·  604 bytes  ·  library</title></rect>
 <rect x="81.91" y="637.56" width="18.28" height="17.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SampleSpyroShadowRingHeights  ·  596 bytes  ·  matched</title></rect>
-<rect x="81.91" y="655.38" width="18.28" height="17.46" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginGemPickupOverlay  ·  584 bytes  ·  matched</title></rect>
+<rect x="81.91" y="655.38" width="18.28" height="17.46" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BeginDragonRescue  ·  584 bytes  ·  matched</title></rect>
 <rect x="81.91" y="672.84" width="18.28" height="17.22" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DispatchActorContactAtSphere  ·  576 bytes  ·  handwritten</title></rect>
 <rect x="81.91" y="690.06" width="18.28" height="17.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80061234  ·  572 bytes  ·  library</title></rect>
 <rect x="81.91" y="707.16" width="18.28" height="16.86" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80069de0  ·  564 bytes  ·  library</title></rect>
@@ -200,7 +200,7 @@
 <rect x="115.90" y="592.60" width="14.52" height="14.60" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ResetGraph  ·  388 bytes  ·  library</title></rect>
 <rect x="115.90" y="607.21" width="14.52" height="14.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CommitActorKillGems  ·  384 bytes  ·  matched</title></rect>
 <rect x="115.90" y="621.66" width="14.52" height="14.15" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetLevelState  ·  376 bytes  ·  matched</title></rect>
-<rect x="115.90" y="635.81" width="14.52" height="14.15" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickGemPickupBurstEntity  ·  376 bytes  ·  matched</title></rect>
+<rect x="115.90" y="635.81" width="14.52" height="14.15" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickStatueBurstShard  ·  376 bytes  ·  matched</title></rect>
 <rect x="115.90" y="649.96" width="14.52" height="14.00" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ComputeSpyroMoveTargetFromPad  ·  372 bytes  ·  matched</title></rect>
 <rect x="115.90" y="663.96" width="14.52" height="14.00" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroFrameMotion  ·  372 bytes  ·  matched</title></rect>
 <rect x="115.90" y="677.96" width="14.52" height="13.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MoveActorByDelta  ·  368 bytes  ·  matched</title></rect>
@@ -210,7 +210,7 @@
 <rect x="115.90" y="733.07" width="14.52" height="13.70" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADSEQD_OBJ_1A0  ·  364 bytes  ·  library</title></rect>
 <rect x="115.90" y="746.77" width="14.52" height="13.40" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EmitTexturedQuad  ·  356 bytes  ·  matched</title></rect>
 <rect x="115.90" y="760.17" width="14.52" height="13.25" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadInitDirect  ·  352 bytes  ·  library</title></rect>
-<rect x="130.43" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EndGemPickupToWorld  ·  348 bytes  ·  matched</title></rect>
+<rect x="130.43" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EndDragonRescueToWorld  ·  348 bytes  ·  matched</title></rect>
 <rect x="144.31" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>NudgeSpyroFromWallProbes  ·  348 bytes  ·  matched</title></rect>
 <rect x="158.18" y="578.00" width="13.88" height="13.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StopAllSoundExceptMask  ·  348 bytes  ·  matched</title></rect>
 <rect x="172.06" y="578.00" width="13.88" height="13.71" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ResetGraphImpl  ·  348 bytes  ·  library</title></rect>

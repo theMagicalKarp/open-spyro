@@ -3,21 +3,21 @@
 #include "main_shared.h"
 
 #define HEAD (g_apWorldUnpackHeadBlock[0])
-#define HDR (g_anGemPickupHeaderEndBlock[0])
-#define CHUNK (g_anGemPickupSpuChunkBlock[0])
+#define HDR (g_anDragonRescueHeaderEndBlock[0])
+#define CHUNK (g_anDragonRescueSpuChunkBlock[0])
 
 #define DRAGON_ASSET_OFFSET(i) ((&g_nDragonAssetOffset)[(i) * 2])
 #define DRAGON_ASSET_SIZE(i) ((&g_nDragonAssetSize)[(i) * 2])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
 
-/* 0x80014b70 (0x800): streams the dragon-rescue (gem pickup) assets while the
-   pickup overlay runs. Each tick, once the drive is idle and the music
+/* 0x80014b70 (0x800): streams the dragon-rescue (dragon rescue) assets while
+   the pickup overlay runs. Each tick, once the drive is idle and the music
    stream table is built, it runs one stage: read the dragon asset (split in
    two when it does not fit the unpack area), relocate the statue/mirror
    models and camera path, upload the voice sample to SPU RAM in 32 KB
    chunks through the spare primitive buffer, then reload the level's
    TIM/audio tail and ext chunk and re-relocate the level's moby meshes. */
-void TickGemPickupAssetStream(void) {
+void TickDragonRescueAssetStream(void) {
   int pad[10];
   char *buf;
   int n;
@@ -40,68 +40,68 @@ void TickGemPickupAssetStream(void) {
     return;
   }
 
-  switch (g_nGemPickupStreamState) {
+  switch (g_nDragonRescueStreamState) {
   case 0:
     avail = g_nWorldUnpackLimit - (int)g_pWorldUnpackHead;
-    size = DRAGON_ASSET_SIZE(g_nGemPickupTypeSnapshot);
+    size = DRAGON_ASSET_SIZE(g_nDragonRescueTypeSnapshot);
     if (avail >= size) {
-      g_nGemPickupReadByteCount = size;
-      g_nGemPickupSplitFlag = 0;
+      g_nDragonRescueReadByteCount = size;
+      g_nDragonRescueSplitFlag = 0;
     } else {
-      g_nGemPickupReadByteCount = avail / 0x800 * 0x800;
-      g_nGemPickupSplitFlag = 1;
+      g_nDragonRescueReadByteCount = avail / 0x800 * 0x800;
+      g_nDragonRescueSplitFlag = 1;
     }
     StartCdReadAsync(g_nCdBaseLba, g_pWorldUnpackHead,
-                     g_nGemPickupReadByteCount,
-                     DRAGON_ASSET_OFFSET(g_nGemPickupTypeSnapshot) +
+                     g_nDragonRescueReadByteCount,
+                     DRAGON_ASSET_OFFSET(g_nDragonRescueTypeSnapshot) +
                          LEVEL_ARCHIVE_OFFSET(g_nLevelIndex),
                      600);
-    g_nGemPickupStreamState++;
+    g_nDragonRescueStreamState++;
     return;
   case 1:
-    CopyWords(g_abGemPickupAssetHeader, HEAD, 0x24);
-    if (g_nGemPickupSplitFlag == 0) {
-      g_pGemPickupCameraPath = HEAD + g_nGemPickupCameraPathOffset;
-      g_nGemPickupCameraPathCount = g_nGemPickupCameraPathSize / 24;
-      g_pGemPickupStatueModelData =
-          RelocateActorMeshHeader(HEAD + g_nGemPickupHeaderEndOffset);
-      g_pGemPickupMirrorModelData =
-          RelocateActorMeshHeader(HEAD + g_nGemPickupMirrorMeshOffset);
-      g_nGemPickupSpuChunkIndex = 0;
+    CopyWords(g_abDragonRescueAssetHeader, HEAD, 0x24);
+    if (g_nDragonRescueSplitFlag == 0) {
+      g_pDragonRescueCameraPath = HEAD + g_nDragonRescueCameraPathOffset;
+      g_nDragonRescueCameraPathCount = g_nDragonRescueCameraPathSize / 24;
+      g_pDragonRescueStatueModelData =
+          RelocateActorMeshHeader(HEAD + g_nDragonRescueHeaderEndOffset);
+      g_pDragonRescueMirrorModelData =
+          RelocateActorMeshHeader(HEAD + g_nDragonRescueMirrorMeshOffset);
+      g_nDragonRescueSpuChunkIndex = 0;
     } else {
-      SetSpuTransferStartAddr(0x80000 - g_nGemPickupAudioSampleSize);
-      WriteSpuRam(HEAD + g_nGemPickupAudioSampleOffset,
-                  g_nGemPickupAudioSampleSize);
+      SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
+      WriteSpuRam(HEAD + g_nDragonRescueAudioSampleOffset,
+                  g_nDragonRescueAudioSampleSize);
       while (GetSpuTransferStatus(0) == 0) {
       }
-      CopyWords(HEAD, HEAD + HDR, g_nGemPickupReadByteCount - HDR);
-      StartCdReadAsync(g_nCdBaseLba, HEAD + g_nGemPickupReadByteCount - HDR,
-                       DRAGON_ASSET_SIZE(g_nGemPickupTypeSnapshot) -
-                           g_nGemPickupReadByteCount,
-                       DRAGON_ASSET_OFFSET(g_nGemPickupTypeSnapshot) +
+      CopyWords(HEAD, HEAD + HDR, g_nDragonRescueReadByteCount - HDR);
+      StartCdReadAsync(g_nCdBaseLba, HEAD + g_nDragonRescueReadByteCount - HDR,
+                       DRAGON_ASSET_SIZE(g_nDragonRescueTypeSnapshot) -
+                           g_nDragonRescueReadByteCount,
+                       DRAGON_ASSET_OFFSET(g_nDragonRescueTypeSnapshot) +
                            LEVEL_ARCHIVE_OFFSET(g_nLevelIndex) +
-                           g_nGemPickupReadByteCount,
+                           g_nDragonRescueReadByteCount,
                        600);
     }
     break;
   case 2:
-    if (g_nGemPickupSubstate < 2) {
+    if (g_nDragonRescueSubstate < 2) {
       return;
     }
-    if (g_nGemPickupSplitFlag == 0) {
+    if (g_nDragonRescueSplitFlag == 0) {
       {
         register int top asm("$2") = 0x80000;
-        SetSpuTransferStartAddr(top + (g_nGemPickupSpuChunkIndex << 15) -
-                                g_nGemPickupAudioSampleSize);
+        SetSpuTransferStartAddr(top + (g_nDragonRescueSpuChunkIndex << 15) -
+                                g_nDragonRescueAudioSampleSize);
       }
       if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
         buf = g_pFramePrimBufferBase1;
       } else {
         buf = g_pFramePrimBufferBase0;
       }
-      if (g_nGemPickupAudioSampleSize <
-          (g_nGemPickupSpuChunkIndex << 15) + 0x8000) {
-        n = g_nGemPickupAudioSampleSize % 0x8000;
+      if (g_nDragonRescueAudioSampleSize <
+          (g_nDragonRescueSpuChunkIndex << 15) + 0x8000) {
+        n = g_nDragonRescueAudioSampleSize % 0x8000;
       } else {
         n = 0x8000;
       }
@@ -111,45 +111,47 @@ void TickGemPickupAssetStream(void) {
       {
         register int top asm("$2") = 0x80000;
         SetSpuTransferStartAddr(top + (CHUNK << 15) -
-                                g_nGemPickupAudioSampleSize);
+                                g_nDragonRescueAudioSampleSize);
       }
-      WriteSpuRam((char *)g_pWorldUnpackHead + g_nGemPickupAudioSampleOffset +
-                      (CHUNK << 15),
+      WriteSpuRam((char *)g_pWorldUnpackHead +
+                      g_nDragonRescueAudioSampleOffset + (CHUNK << 15),
                   n);
       while (GetSpuTransferStatus(0) == 0) {
       }
-      CopyWords((char *)g_pWorldUnpackHead + g_nGemPickupAudioSampleOffset +
-                    (g_nGemPickupSpuChunkIndex << 15),
+      CopyWords((char *)g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset +
+                    (g_nDragonRescueSpuChunkIndex << 15),
                 buf, n);
-      g_nGemPickupSpuChunkIndex++;
-      if ((g_nGemPickupSpuChunkIndex << 15) < g_nGemPickupAudioSampleSize) {
+      g_nDragonRescueSpuChunkIndex++;
+      if ((g_nDragonRescueSpuChunkIndex << 15) <
+          g_nDragonRescueAudioSampleSize) {
         return;
       }
-      g_nGemPickupStreamState++;
+      g_nDragonRescueStreamState++;
       return;
     }
     {
       char **h = g_apWorldUnpackHeadBlock;
       register char *p asm("$3");
 
-      p = *h + g_nGemPickupCameraPathOffset;
-      g_pGemPickupCameraPath = p - g_nGemPickupHeaderEndOffset;
-      g_nGemPickupCameraPathCount = g_nGemPickupCameraPathSize / 24;
-      g_pGemPickupStatueModelData = RelocateActorMeshHeader(*h);
-      g_pGemPickupMirrorModelData = RelocateActorMeshHeader(
-          *h + g_nGemPickupMirrorMeshOffset - g_nGemPickupHeaderEndOffset);
+      p = *h + g_nDragonRescueCameraPathOffset;
+      g_pDragonRescueCameraPath = p - g_nDragonRescueHeaderEndOffset;
+      g_nDragonRescueCameraPathCount = g_nDragonRescueCameraPathSize / 24;
+      g_pDragonRescueStatueModelData = RelocateActorMeshHeader(*h);
+      g_pDragonRescueMirrorModelData =
+          RelocateActorMeshHeader(*h + g_nDragonRescueMirrorMeshOffset -
+                                  g_nDragonRescueHeaderEndOffset);
     }
-    g_nGemPickupStreamState++;
+    g_nDragonRescueStreamState++;
     return;
   case 3:
-    if (g_nGemPickupSubstate < 6) {
+    if (g_nDragonRescueSubstate < 6) {
       return;
     }
-    if (g_nGemPickupSplitFlag != 1) {
+    if (g_nDragonRescueSplitFlag != 1) {
       break;
     }
-    t = (g_nGemPickupAudioSampleSize + 0x180F) / 0x800 * 0x800;
-    g_nGemPickupReadByteCount = t;
+    t = (g_nDragonRescueAudioSampleSize + 0x180F) / 0x800 * 0x800;
+    g_nDragonRescueReadByteCount = t;
     if (0x100000 - g_nWorldTimAudioChunkSize < t) {
       t -= 0x100000;
       {
@@ -162,14 +164,14 @@ void TickGemPickupAssetStream(void) {
                          off + LEVEL_ARCHIVE_OFFSET(intro) - t, 600);
       }
     } else {
-      g_nGemPickupSplitFlag = 0;
+      g_nDragonRescueSplitFlag = 0;
     }
     break;
   case 4:
-    if (g_nGemPickupSplitFlag == 1) {
-      SetSpuTransferStartAddr(0x81010 - g_nGemPickupReadByteCount);
+    if (g_nDragonRescueSplitFlag == 1) {
+      SetSpuTransferStartAddr(0x81010 - g_nDragonRescueReadByteCount);
       {
-        int len = g_nGemPickupReadByteCount - 0x100000;
+        int len = g_nDragonRescueReadByteCount - 0x100000;
 
         WriteSpuRam(g_pWorldUnpackHead, g_nWorldTimAudioChunkSize + len);
       }
@@ -210,5 +212,5 @@ void TickGemPickupAssetStream(void) {
   default:
     return;
   }
-  g_anGemPickupStreamStateBlock[0]++;
+  g_anDragonRescueStreamStateBlock[0]++;
 }

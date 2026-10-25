@@ -33,7 +33,7 @@ enum CameraMode {
   CAM_MODE_SCRIPTED_TARGET = 7,   /* SPYRO_RQ_TARGET_CAMERA */
   CAM_MODE_FREE_LOOK = 9,         /* Triangle held while idle */
   CAM_MODE_REQUEST = 0xA,         /* SPYRO_RQ_CAMERA: request anchor + params */
-  CAM_MODE_GEM_PATH = 0xB,        /* UpdateGemPickupPathCamera; SPYRO_RQ_GEM_PATH_CAMERA */
+  CAM_MODE_PORTAL_PATH = 0xB,        /* UpdatePortalPathCamera; SPYRO_RQ_PORTAL_PATH_CAMERA */
   CAM_MODE_SCRIPTED_FOLLOW = 0xC, /* SPYRO_RQ_FOLLOW_CAMERA */
   CAM_MODE_SCRIPTED_VANTAGE = 0xE, /* UpdateScriptedCameraView */
   CAM_MODE_BONK = 0xF,            /* SPYRO_ST_CHARGE_BONK */

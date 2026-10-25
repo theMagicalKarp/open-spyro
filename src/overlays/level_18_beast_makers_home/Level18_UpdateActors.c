@@ -2466,12 +2466,12 @@ void Level18_UpdateActors(void) {
             actor->rotX = st->rotX;
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
-            BeginGemPickupOverlay(actor);
+            BeginDragonRescue(actor);
             ZeroVector(&SPY.headLook);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
 
             if (g_nSpyroAirborneFrames != 0) {
-              g_nSpyroRequestState = 6;
+              g_nSpyroRequestState = SPYRO_ST_FALL;
               g_anSpyroRequestVelocity.x = g_anSpyroMotionVec >> 8;
               g_nSpyroRequestVelocityY = g_nSpyroMotionY >> 8;
               if (g_nSpyroMotionZ > 0) {
@@ -2483,7 +2483,7 @@ void Level18_UpdateActors(void) {
             } else {
               int *look = &SPY.requestVelX;
 
-              g_nSpyroRequestState = 3;
+              g_nSpyroRequestState = SPYRO_ST_STOP;
               CopyVector(look, &SPY.motionX);
               RShiftVector3(look, 6);
               g_nSpyroRequestVelocityZ = 0;
@@ -2505,7 +2505,7 @@ void Level18_UpdateActors(void) {
 
     /* Dragon fragment, updated out of line. */
     case ACTOR_TYPE_STATUE_SHARD:
-      TickGemPickupBurstEntity(actor);
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (DebrisState). */
@@ -3414,9 +3414,9 @@ void Level18_UpdateActors(void) {
         m = svR;
         portal = st->portal;
         SPY.camPathMaxStep = 0x60;
-        SPY.requestState = 5;
+        SPY.requestState = SPYRO_ST_JUMP;
         SPY.otBinBias = 0x7F;
-        g_pGemPickupCamPathData = portal;
+        g_pPortalCamPathData = portal;
         {
           PortalDesc *pd = *(PortalDesc **)st;
 
@@ -3449,7 +3449,7 @@ void Level18_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = 0;
           AS_I32(g_nCameraNextMode) = 0x80000012;
-          SPY.requestState = 0xF;
+          SPY.requestState = SPYRO_ST_GLIDE;
           g_nCdStreamState = 0;
           LUID_PAD
           g_nLevelTransitionTallyActive = 1;
@@ -3478,7 +3478,7 @@ void Level18_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }
@@ -3487,10 +3487,10 @@ void Level18_UpdateActors(void) {
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
         LUID_PAD5 LUID_PAD5
         LUID_PAD5 LUID_PAD5
-        g_nGemPickupCamPathMaxStep = 0x60;
-        g_nSpyroRequestState = 0xF;
+        g_nPortalCamPathMaxStep = 0x60;
+        g_nSpyroRequestState = SPYRO_ST_GLIDE;
         g_bSpyroOtBinBias = 0x7F;
-        g_pGemPickupCamPathData = st->portal;
+        g_pPortalCamPathData = st->portal;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
@@ -3523,7 +3523,7 @@ void Level18_UpdateActors(void) {
             g_pCameraTargetParams = 0;
           }
         } else {
-          SPY.requestMask |= SPYRO_RQ_GEM_PATH_CAMERA;
+          SPY.requestMask |= SPYRO_RQ_PORTAL_PATH_CAMERA;
         }
         break;
       }

@@ -320,7 +320,7 @@ DispatchSpyroChargeStateChanges:
   class: "B1 retired (SDATA gp-relative declaration)"
   date: 2026-10-09
   note: "Matched 2026-10-09-1 once include/sdata.h's SDATA() gave the TU its %gp_rel accesses."
-UpdateGemPickupPathCamera:
+UpdatePortalPathCamera:
   verdict: matched
   class: "matched 2026-08-11-1 (A160 abs() builtin + A187 cse canonical-copy live-range lever; the 2026-07-25 F4 'no source form reaches it' class is retired for the plain-copy case)"
   date: 2026-08-11
@@ -1447,11 +1447,11 @@ HandleHardwareInterrupt:
   class: "F1 two-register swap: g_pIStatReg pointer vs g_nIrqEnableMask value (local-alloc live-length tie)"
   date: 2026-08-15
   note: "10/122 LENGTH-EXACT, was 26/122. Three of four residues closed (pend/mask copy pair, separate stat temp, I_STAT-first tail guard, explicit bit=1 local). Probe: ptr 2 refs/8 insns beats enable 2 refs/10."
-BeginGemPickupOverlay:
+BeginDragonRescue:
   verdict: parked
   class: "F1 dragons-pointer vs literal-1 local-alloc priority (3 refs/7 vs 3 refs/6)"
   date: 2026-08-15
-  note: "9/146 LENGTH-EXACT, was 24/146. Closed by routing the five cutscene-state zeroes through the SAME alias symbol (ordering) and writing g_nGemPickupTypeSnapshot as g_anGemPickupBlock[-1] (A134 array lvalue blocks the actor-index load hoist)."
+  note: "9/146 LENGTH-EXACT, was 24/146. Closed by routing the five cutscene-state zeroes through the SAME alias symbol (ordering) and writing g_nDragonRescueTypeSnapshot as g_anDragonRescueBlock[-1] (A134 array lvalue blocks the actor-index load hoist)."
 ApplyPadInputToSpyroBodyYaw:
   verdict: viable
   class: "MATCHED 2026-08-15-1"
@@ -2242,7 +2242,7 @@ ApplySpyroStateTransition:
   date: 2026-08-23
   note: "1200 B, 299 insns. Screened clean of all other classes; B8 only."
 
-TickGemPickupAssetStream:
+TickDragonRescueAssetStream:
   verdict: wall
   class: "B8 .rodata switch jump table in MAIN (switchdataD_80010a70)"
   date: 2026-08-23
@@ -2898,7 +2898,7 @@ barrier_sweep_negative_2026_08_28:
     Mechanical do{}while(0) sweep (every contiguous 1-3 statement run, scored
     with the compile-only shape diff) run over SteerActorYawTowardSpyro (4/152),
     ApplySaveGameBuffer (6/180), IsPointInRotatedBox (6/66), func_8005FC6C (38 insns),
-    HandleHardwareInterrupt (10/122), BeginGemPickupOverlay (9/146),
+    HandleHardwareInterrupt (10/122), BeginDragonRescue (9/146),
     WalkActorAlongWaypoints (9/192), Level27_AdvanceEmitList's 0x1D arm and
     Level5_FlightResults_Draw (735 placements): no variant beat the baseline on any
     of them once confirmed against the LINKED diff. Consistent with the
@@ -3435,7 +3435,7 @@ WalkActorAlongWaypoints:
     v0 -- the probe's conflict list is three s-reg pointers and none of them
     prefers v0, so there is no allocno whose refs could be dialled up to take
     v0 first.
-BeginGemPickupOverlay:
+BeginDragonRescue:
   verdict: parked
   class: "local-alloc a0/a1 pair: the de-boost carrier and the world counter"
   date: 2026-08-31
@@ -3880,7 +3880,7 @@ SteerActorYawTowardSpyro:
     individually reachable and neither composes. The open question is unchanged
     and is NOT a ref-dial question.
 
-BeginGemPickupOverlay:
+BeginDragonRescue:
   verdict: parked
   class: "local-alloc qty_compare: the de-boost carrier must be `world + 1`"
   date: 2026-09-10
@@ -4076,7 +4076,7 @@ harvest_inventory_staleness_2026_09_15:
     `SetSpawnAnchorFromActor`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
-    ApplySaveGameBuffer 4/180, IsPointInRotatedBox 6/66, BeginGemPickupOverlay 7/146,
+    ApplySaveGameBuffer 4/180, IsPointInRotatedBox 6/66, BeginDragonRescue 7/146,
     func_8005FC6C 7/38, Titlescreen_Update 7/2147,
     WalkActorAlongWaypoints 9/192, Level27_AdvanceEmitList 9/1697,
     HandleHardwareInterrupt 10/122, CdDataSync 16/91. Best bytes-per-residue
@@ -5032,7 +5032,7 @@ ApplySpyroStateTransition:
   class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
   date: 2026-10-06
   note: "re-opened; the switch owner's .rodata fills its switchdataD_ slot. Screen for other walls (B1/B2/B6) as usual."
-TickGemPickupAssetStream:
+TickDragonRescueAssetStream:
   verdict: viable
   class: "B8 retired: main jump tables are slot-placed (rodata_pre sectionized)"
   date: 2026-10-06
@@ -5107,7 +5107,7 @@ ClipAndEmitFoggedActorTriangle:
   class: "B6 handwritten asm"
   date: 2026-10-07
   note: "212 B; 10 splat handwritten-instruction markers (addi). Not C."
-GemPickup_Update:
+DragonRescue_Update:
   verdict: parked
   class: "sched/regalloc tie residue: constant-set placement in long call blocks + timer-base hard-reg choice"
   date: 2026-10-07

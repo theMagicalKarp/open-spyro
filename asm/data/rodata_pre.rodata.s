@@ -680,7 +680,7 @@ dlabel D_80010000
 enddlabel D_80010000
 
 .section .rodata.switchdataD_80010a70, "a"
-.ifndef HAVE_C_TickGemPickupAssetStream
+.ifndef HAVE_C_TickDragonRescueAssetStream
 nonmatching switchdataD_80010a70
 
 dlabel switchdataD_80010a70
@@ -1146,7 +1146,7 @@ enddlabel switchdataD_80010dd0
 .endif
 
 .section .rodata.switchdataD_80010de8, "a"
-.ifndef HAVE_C_GemPickup_Update
+.ifndef HAVE_C_DragonRescue_Update
 nonmatching switchdataD_80010de8
 
 dlabel switchdataD_80010de8
