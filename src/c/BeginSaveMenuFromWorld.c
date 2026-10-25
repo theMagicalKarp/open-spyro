@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* g_abSpyroAnimPrevBlock as an INT array — +0 anim-prev byte, -6 words

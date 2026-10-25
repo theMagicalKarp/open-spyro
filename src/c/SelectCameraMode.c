@@ -3,15 +3,12 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
+#include "spyro_block.h"
 
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C /* g_nCameraCurrentMode */
 #define CAM_NEXT_MODE 0x26    /* g_nCameraNextMode */
 #define CAM_ANCHOR 0x2A       /* g_pCameraAnchorPos */
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_SPEED 0x46         /* g_nSpyroMotionSpeed */
-#define SPY_SCRIPTED_MOVE 0x65 /* g_nSpyroScriptedMoveMode */
-#define SPY_REQUEST 0x7D       /* g_dwSpyroRequestMask */
 
 #define STATE_MODE() ((&g_abSpyroStateCameraMode)[g_nSpyroState])
 

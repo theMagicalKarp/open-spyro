@@ -103,30 +103,6 @@
 
 /* ==== The function ==== */
 
-/* Type 0x134: a path walker that rolls with its turns and, when flamed,
- * spawns its reward and three embers and runs off. */
-typedef struct RollerState {
-  unsigned char *path; /* 0x00 [0]=node count, [1]=nearest node */
-  int reward;          /* 0x04 reward actor type - 0x158 */
-  int tally;           /* 0x08 */
-  int roll;            /* 0x0C */
-  int rollVel;         /* 0x10 */
-  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
-  int heading;         /* 0x18 */
-  int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
-  int legVec[3];        /* 0x20 */
-  int legStep;           /* 0x2C */
-  int ready;           /* 0x30 nearest node found */
-} RollerState;
-
-
-/* Types 0x197/0x198: a smoking walker. */
-typedef struct SmokerState {
-  unsigned char *path; /* 0x00 */
-  int legStep;           /* 0x04 */
-  int pad08[3];        /* 0x08 */
-  int timer;           /* 0x14 */
-} SmokerState;
 
 /* Type 0xA2: a roller that cycles over four paths. */
 typedef struct CyclerState {

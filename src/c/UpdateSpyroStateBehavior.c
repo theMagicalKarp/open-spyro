@@ -2,18 +2,11 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 SDATA(g_bSpyroJumpHoldForced, 4);
 
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_FLAGS 0x1F        /* g_nSpyroStateFlags */
-#define SPY_AIRBORNE 0x27     /* g_nSpyroAirborneFrames */
-#define SPY_CARRY 0x3A        /* g_anSpyroCarryMotionVec */
-#define SPY_VELOCITY 0x3D     /* g_anSpyroVelocity */
-#define SPY_READY 0x59        /* g_nLevelReadyFlag */
-#define SPY_COUNTDOWN 0x7C    /* g_nSpyroPadSnapshotCountdown */
-#define SPY_CHARGE_HOLD 0x94  /* g_nSpyroChargeHoldFlag */
 #define SPY_ANIM_CURRENT 0x19 /* g_bSpyroAnimCurrent (byte offset) */
 #define SPY_ANIM_FRAME 0x1F   /* g_bSpyroAnimFrame (byte offset) */
 
@@ -963,11 +956,11 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(0xFBF9)) {
       break;
     }
-    if (SPY[SPY_READY] < 0) {
+    if (SPY[SPY_LEVEL_READY] < 0) {
       break;
     }
     if (g_nSpyroStateTimer > 0x3C) {
-      SPY[SPY_READY] = -1;
+      SPY[SPY_LEVEL_READY] = -1;
       ((void (*)(int, int))g_pfnLevelSpawnActor)(
           g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
       break;
@@ -1035,7 +1028,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(6);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] < 0x600) {
       ChangeSpyroState(32);
-    } else if (SPY[SPY_FLAGS] == 0) {
+    } else if (SPY[SPY_STATE_FLAGS] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
@@ -1044,9 +1037,9 @@ void UpdateSpyroStateBehavior(void) {
         int pad = ((int *)g_pPadSubstepState)[1];
 
         if (pad & 8) {
-          SPY[SPY_FLAGS] = 1;
+          SPY[SPY_STATE_FLAGS] = 1;
         } else if (pad & 4) {
-          SPY[SPY_FLAGS] = 2;
+          SPY[SPY_STATE_FLAGS] = 2;
           g_nSpyroMotionAux = d;
         }
       }
@@ -1079,7 +1072,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(33);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
       ChangeSpyroState(32);
-    } else if (SPY[SPY_FLAGS] == 0) {
+    } else if (SPY[SPY_STATE_FLAGS] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
@@ -1088,9 +1081,9 @@ void UpdateSpyroStateBehavior(void) {
         int pad = ((int *)g_pPadSubstepState)[1];
 
         if (pad & 8) {
-          SPY[SPY_FLAGS] = 1;
+          SPY[SPY_STATE_FLAGS] = 1;
         } else if (pad & 4) {
-          SPY[SPY_FLAGS] = 2;
+          SPY[SPY_STATE_FLAGS] = 2;
           g_nSpyroMotionAux = d;
         }
       }

@@ -4,6 +4,7 @@
 #include "main_shared.h"
 #include "pad.h"
 #include "sdata.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
@@ -15,9 +16,6 @@
 #define CAM_TARGET_PARAMS 0x2C /* g_pCameraTargetParams */
 #define CAM_SUPPRESS 0x32      /* g_nCameraSpringSuppressFlag */
 #define STICK g_anCameraScriptStickIntegratorBlock
-#define SPY g_anSpyroWorldPosBlock
-#define SPY_MOTION 0x43   /* g_anSpyroMotionVec */
-#define SPY_BODY_YAW 0x47 /* g_nSpyroBodyYaw */
 
 /* Offsets from the stuck-frames field (the function's held base `s`). */
 #define S_POS (-0x28) /* g_anCameraPos */
