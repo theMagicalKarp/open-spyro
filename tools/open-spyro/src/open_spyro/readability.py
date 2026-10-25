@@ -62,8 +62,9 @@ _RAW = re.compile(
 # parenthesized: ``*((unsigned char *)(((char *)p) + 0x46))``,
 # ``(DISPENV *)((char *)env + 0x5c)``, ``(int)rec + 0x13``.
 _BYTE_OFF = re.compile(
-    r"\(\s*(?:(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*|int|u32|unsigned\s+int)\s*\)\s*\(?\s*[A-Za-z_]\w*"
-    r"(?:->\w+)?\s*\)?\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\b"
+    r"\(\s*(?:(?:unsigned\s+|signed\s+)?(?:char|u8|s8)\s*\*|int|u32|unsigned\s+int)\s*\)\s*"
+    r"(?:\(\s*[A-Za-z_]\w*(?:->\w+)?\s*\)|[A-Za-z_]\w*(?:->\w+)?\s*\)?)"
+    r"\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\b"
 )
 # A pointer cast of ``base + constant`` (``(int *)(actor + 0xC)``,
 # ``(DISPENV *)(env + 0x5c)``, ``(int **)(rec + 0x18)``): a field's address.
