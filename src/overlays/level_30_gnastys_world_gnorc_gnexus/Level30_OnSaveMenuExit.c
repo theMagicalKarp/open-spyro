@@ -1,9 +1,10 @@
 /* Level30_OnSaveMenuExit (0x8007AF4C, level_30_gnastys_world_gnorc_gnexus overlay).
  *
  * Level hook run when leaving the save menu back to the world: forwards to
- * EndSaveMenuToWorld (EndSaveMenuToWorld), clears the level's pending-action word
- * (g_nSpyroSwingEulerPrev1) and flag byte (g_bSpyroSwingByteEuler1), then if the tracked actor
- * (g_pSparxActor) exists, resets its +0x50 mode byte to 0x10.
+ * EndSaveMenuToWorld, zeroes the second swing-euler spring component
+ * (g_nSpyroSwingEulerPrev1 / g_bSpyroSwingByteEuler1, which EndSaveMenuToWorld
+ * had just seeded), and, when Sparx is present (g_pSparxActor), restores its
+ * cull radius to 0x10.
  * Identical body in ten level overlays.
  */
 
