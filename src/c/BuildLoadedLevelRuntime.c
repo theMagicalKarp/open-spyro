@@ -66,7 +66,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nMotionTrailRibbonCount = 0;
   root = p;
   if (g_nActiveLevelId == 0x40) {
-    g_nLevelEggCount = 0;
+    g_nLevelKeyState = 0;
   }
   g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {

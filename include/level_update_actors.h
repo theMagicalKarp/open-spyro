@@ -307,12 +307,14 @@ typedef struct PlateState {
   int locked;  /* 0x24 */
 } PlateState;
 
-/* Case 173 — ambient flyer: circles, and pops when Spyro reaches it. */
-typedef struct FlyState {
+/* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
+ * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
+ * flies it into its lock. */
+typedef struct KeyState {
   short timer;          /* 0x00 */
   unsigned char angle;  /* 0x02 */
-  unsigned char attach; /* 0x03 attached spark handle, 0xFF = none */
-} FlyState;
+  unsigned char attach; /* 0x03 attached spark billboard, 0xFF = none */
+} KeyState;
 
 /* Case 195 — the same chest with a wobble pose played before it breaks. */
 typedef struct WobbleState {
@@ -430,15 +432,17 @@ extern int CheckSpyroLineOfSightTo(int *pos);
 
 extern int IsPointInRotatedBox(int *a, int *b);
 
-/* Case 174 -- the cage that carries Spyro. */
-typedef struct CageState {
-  int idx;    /* 0x00 index of its flyer in g_pActorListBase */
-  int shake;  /* 0x04 shake timer, then ride timer */
+/* Case 174 -- the locked chest (ACTOR_TYPE_LOCKED_CHEST): with the key held,
+ * Spyro facing it up close freezes, the key flies into its lock, and it
+ * bursts into wood shards and drops its reward (g_pLockedChestReward). */
+typedef struct LockedChestState {
+  int idx;    /* 0x00 g_pActorListBase index of its key */
+  int shake;  /* 0x04 shake timer, then the key-flight timer */
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
   int handle; /* 0x14 for SelectActorLodBand */
-} CageState;
+} LockedChestState;
 
 extern void DivideVector3(int *d, int *s, int k);
 
@@ -639,13 +643,6 @@ typedef struct PickupState {
   unsigned char roll;  /* 0x13 */
   unsigned char anim;  /* 0x14 0xFF == none */
 } PickupState;
-
-/* Type 173: key. Rocks in place, sparkles, and is collected on contact. */
-typedef struct SpinState {
-  short timer;         /* 0x00 */
-  unsigned char angle; /* 0x02 */
-  unsigned char anim;  /* 0x03 0xFF == none */
-} SpinState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */

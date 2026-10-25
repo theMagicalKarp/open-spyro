@@ -38,7 +38,7 @@ void EnterPauseMenu(int fromGameplay) {
     g_bHudDragonRollPhase = 0xC;
     g_bHudLivesRollPhase = 0xC;
     g_bHudWorldEggRollPhase = 0xC;
-    g_bHudLevelEggRollPhase = 0xC;
+    g_bHudKeyRollPhase = 0xC;
   }
   UpdateHudCounters();
 }

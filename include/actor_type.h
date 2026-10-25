@@ -119,6 +119,8 @@ enum ActorType {
   ACTOR_TYPE_GEM_10 = 0x56,
   ACTOR_TYPE_GEM_25 = 0x57,
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
+  ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */

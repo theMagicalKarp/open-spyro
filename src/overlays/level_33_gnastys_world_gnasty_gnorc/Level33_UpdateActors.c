@@ -2303,9 +2303,9 @@ void Level33_UpdateActors(void) {
       continue;
     }
 
-    /* Ambient flyer (FlyState): circles its anchor and pops near Spyro. */
-    case 173: {
-      FlyState *st = actor->state;
+    /* Key (KeyState): rocks in place and sparkles; touching it picks it up. */
+    case ACTOR_TYPE_KEY: {
+      KeyState *st = actor->state;
 
       if (actor->subMode == 0) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
@@ -2326,7 +2326,7 @@ void Level33_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
             }
 
-            g_nLevelEggCount = 1;
+            g_nLevelKeyState = 1;
             actor->scale = 0x40;
             actor->cullRadius = 0;
             actor->updateDist = 0;
@@ -2395,7 +2395,7 @@ void Level33_UpdateActors(void) {
           if (i < 6) {
             goto spark;
           }
-          g_nLevelEggCount = 1;
+          g_nLevelKeyState = 1;
           actor->cullRadius = 0;
           actor->updateDist = 0xFF;
           actor->drawn = 0;
@@ -2440,7 +2440,7 @@ void Level33_UpdateActors(void) {
         }
         actor->subMode = 1;
         st->mode = 1;
-        g_nLevelEggCount = 1;
+        g_nLevelKeyState = 1;
         break;
       }
 
@@ -2560,7 +2560,7 @@ void Level33_UpdateActors(void) {
         g_nCameraScriptStickRequestY[1] = 0;
         g_nCameraScriptStickRequestY[0] = 0;
         g_nCameraScriptStickRequestY[-1] = 0;
-        g_nLevelEggCount = 0;
+        g_nLevelKeyState = 0;
         switch (st->snd) {
         case 0:
           g_nGnastyLootFallRefZCap = 0x563B;

@@ -75,7 +75,7 @@ void ResetLevelState(void) {
   g_nWorldEggsRecovered = 0;
   g_nLevelGemsAtEntry = 0;
   g_nGemTallyIconCount = 0;
-  g_nLevelEggCount = 0;
+  g_nLevelKeyState = 0;
   g_nSparxFoodCount = 0;
   g_nSparxHealthStash = -1;
   g_anLevelEscapeRunCount = 0;

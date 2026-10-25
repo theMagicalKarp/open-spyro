@@ -1296,14 +1296,14 @@ void Level23_UpdateActors(void) {
       RefreshActorDerivedState(actor, 1);
       break;
     }
-    /* Key (SpinState). */
-    case 173: {
-      SpinState *st;
+    /* Key (KeyState). */
+    case ACTOR_TYPE_KEY: {
+      KeyState *st;
       int dz;
       int ang;
       int i;
 
-      st = (SpinState *)actor->state;
+      st = (KeyState *)actor->state;
       if (actor->subMode != 0) {
         continue;
       }
@@ -1323,7 +1323,7 @@ void Level23_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, 0xC, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
           }
 
-          g_nLevelEggCount = 1;
+          g_nLevelKeyState = 1;
           actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
@@ -1334,18 +1334,18 @@ void Level23_UpdateActors(void) {
         }
       }
 
-      if (st->anim != 0xFF) {
+      if (st->attach != 0xFF) {
         RefreshActorDerivedState(actor, 4);
-        RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->anim].pos);
-        AddVector(g_aRotBillboards[st->anim].pos, g_aRotBillboards[st->anim].pos,
+        RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
+        AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
-        if (g_aRotBillboards[st->anim].life < 5) {
-          st->anim = 0xFF;
+        if (g_aRotBillboards[st->attach].life < 5) {
+          st->attach = 0xFF;
         }
       } else if (st->timer >= 0xF8) {
         ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
         if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
-          st->anim = ang;
+          st->attach = ang;
         }
         st->timer = (GetRandomU32() & 0x3F) + 0x18;
       }

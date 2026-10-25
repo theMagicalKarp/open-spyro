@@ -9,7 +9,7 @@
  * Level0_UpdateActors, level 4's Level4_UpdateActors, level 30's
  * Level30_UpdateActors); the level-2-only classes are the patrolling guard
  * pair (115), the hit reactors (129, 157), the post guard (165), the path
- * patroller (166), the cage that carries Spyro (174) and the wandering
+ * patroller (166), the locked chest (174) and the wandering
  * critter (412).
  *
  * Layout of this file:
@@ -2163,9 +2163,9 @@ void Level2_UpdateActors(void) {
       break;
     }
 
-    /* Ambient flyer (FlyState): circles its anchor and pops near Spyro. */
-    case 173: {
-      FlyState *st = actor->state;
+    /* Key (KeyState): rocks in place and sparkles; touching it picks it up. */
+    case ACTOR_TYPE_KEY: {
+      KeyState *st = actor->state;
 
       if (actor->subMode == 0) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
@@ -2186,7 +2186,7 @@ void Level2_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
             }
 
-            g_nLevelEggCount = 1;
+            g_nLevelKeyState = 1;
             actor->scale = 0x40;
             actor->cullRadius = 0;
             actor->updateDist = 0;
@@ -2221,12 +2221,12 @@ void Level2_UpdateActors(void) {
       break;
     }
 
-    /* Type 174: the cage that carries Spyro (CageState). Shakes when hit;
-     * once its flyer is freed, Spyro steps in and it lifts him up and away,
-     * bursting when the ride ends. */
-    case 174: {
-      CageState *st = actor->state;
-      Actor *fly = &g_pActorListBase[st->idx];
+    /* Type 174: the locked chest (LockedChestState). Shakes when hit; with
+     * the key held and Spyro facing it up close, the key flies into its lock
+     * and the chest bursts and drops its reward. */
+    case ACTOR_TYPE_LOCKED_CHEST: {
+      LockedChestState *st = actor->state;
+      Actor *key = &g_pActorListBase[st->idx];
 
       if (actor->flags & 0x80000) {
         actor->subMode = 2;
@@ -2268,18 +2268,18 @@ void Level2_UpdateActors(void) {
 
       switch (actor->subMode) {
       case 0:
-        if (g_nLevelEggCount == 0 || g_nLevelEggCount == 3) {
-          g_nLevelEggCount = 0;
+        if (g_nLevelKeyState == 0 || g_nLevelKeyState == 3) {
+          g_nLevelKeyState = 0;
           actor->updateDist = sixteen;
-          fly->updateDist = 0x40;
-          fly->cullRadius = 0x18;
+          key->updateDist = 0x40;
+          key->cullRadius = 0x18;
         } else {
-          g_nLevelEggCount = 1;
+          g_nLevelKeyState = 1;
           actor->subMode = 1;
-          fly->scale = 0x40;
-          fly->groundCode = 0;
-          fly->visZone = 0xFF;
-          fly->subMode = 2;
+          key->scale = 0x40;
+          key->groundCode = 0;
+          key->visZone = 0xFF;
+          key->subMode = 2;
         }
         break;
 
@@ -2287,7 +2287,7 @@ void Level2_UpdateActors(void) {
         int height;
         int drop;
 
-        if (g_nLevelEggCount == 1 &&
+        if (g_nLevelKeyState == 1 &&
             (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
              SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
@@ -2310,9 +2310,9 @@ void Level2_UpdateActors(void) {
               actor->rotY = st->rotY;
               actor->posZ = st->restZ;
             }
-            fly->rotX = 0;
-            fly->rotY = 0;
-            fly->rotZ = spy->bodyRotZ + 0x80;
+            key->rotX = 0;
+            key->rotY = 0;
+            key->rotZ = spy->bodyRotZ + 0x80;
           }
         }
         break;
@@ -2323,7 +2323,7 @@ void Level2_UpdateActors(void) {
           st->shake = 0xD2;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        fly->cullRadius = 0x18;
+        key->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nGameplayBlocked = 1;
 
@@ -2341,37 +2341,37 @@ void Level2_UpdateActors(void) {
           AddVector(svR, svR, &spy->posX);
           svR[2] += 0x100;
           svR[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
-          CopyVector(&fly->posX, svR);
+          CopyVector(&key->posX, svR);
           g_nCameraScriptStickRequestY[0] = g_anSineLut[(st->shake << 7) / 192] >> 3;
 
           if (st->shake < 0x40) {
             int rot;
 
-            fly->rotY = -st->shake;
+            key->rotY = -st->shake;
             rot = g_bSpyroPersistentEulerZ + 0x80;
-            fly->rotZ = rot + st->shake * 4;
+            key->rotZ = rot + st->shake * 4;
           } else if (st->shake < 0x80) {
             int rot;
 
-            fly->rotY = 0xC0;
+            key->rotY = 0xC0;
             rot = g_bSpyroPersistentEulerZ + 0x80;
 
-            fly->rotZ = rot + (st->shake - 0x40) * 3;
+            key->rotZ = rot + (st->shake - 0x40) * 3;
           } else {
             int turn = AbsAngleDelta8(actor->rotZ,
                                      (unsigned char)(g_bSpyroPersistentEulerZ + 0x40)) *
                        (st->shake - 0x80);
             int rot = g_bSpyroPersistentEulerZ + 0x40;
 
-            fly->rotZ = rot + turn / 64;
+            key->rotZ = rot + turn / 64;
           }
         } else if (st->shake < 0xD0) {
-          fly->rotZ = actor->rotZ;
+          key->rotZ = actor->rotZ;
           svS[0] = 0x200 - (st->shake - 0xC0) * 8;
           svS[1] = 0;
           svS[2] = 0x140;
           RotateVectorByMatrix(actor->mtx, svS, svS);
-          AddVector(&fly->posX, svS, &actor->posX);
+          AddVector(&key->posX, svS, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -2379,9 +2379,9 @@ void Level2_UpdateActors(void) {
               SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
 
-          fly->cullRadius = 0;
-          fly->updateDist = 0;
-          fly->drawn = 0;
+          key->cullRadius = 0;
+          key->updateDist = 0;
+          key->drawn = 0;
           g_nGameplayBlocked = 0;
           actor->soundRange = 0x20;
           PlayActorMeshVoice(actor, 0, 0);
@@ -2402,20 +2402,20 @@ void Level2_UpdateActors(void) {
           }
 
           g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
-          g_pThiefEggDrop = SpawnActorDeathDrop(actor, 1, 0, 0);
+          g_pLockedChestReward = SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
-          g_nLevelEggCount = 2;
+          g_nLevelKeyState = 2;
           g_nCameraScriptStickRequestX = 0;
           g_nCameraScriptStickRequestY[0] = 0;
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        RefreshActorDerivedState(fly, 4);
+        RefreshActorDerivedState(key, 4);
         if (st->shake % 4 < 2) {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)fly, (void *)0x8080);
+          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x8080);
         } else {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)fly, (void *)0x5008080);
+          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x5008080);
         }
         break;
       }

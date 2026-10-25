@@ -18,8 +18,8 @@
 
 /* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
    icon anchors, then runs five independent roll-animation state machines (one
-   per counter: level gems, dragons, lives+butterflies, world eggs, level eggs)
-   out of g_abHudCounterDisplayState[0..4].  Each machine is the same four
+   per counter: level gems, dragons, lives+butterflies, world eggs, the level
+   key) out of g_abHudCounterDisplayState[0..4].  Each machine is the same four
    states: 0 idle (watch the live value), 1 roll-in (14 steps off
    g_anHudRollInStepTable), 2 hold/ratchet (advance the cached count toward the
    live one, driving the digit glyphs through SetHudCounterDigits +
@@ -51,7 +51,7 @@
    scaled index register and the field constant in %lo(sym+K) (A179/A35) */
 
 #define EGG_STATE (g_abHudWorldEggIconBlock[0])
-#define LEGG_STATE (g_abHudLevelEggCounterBlock[0])
+#define KEY_STATE (g_abHudKeyCounterBlock[0])
 
 void UpdateHudCounters(void) {
   int nPhase;
@@ -325,33 +325,33 @@ void UpdateHudCounters(void) {
     break;
   }
 
-  /* --- counter 4: level eggs ------------------------------------------ */
-  if (*(volatile int *)&g_nLevelEggCount != 1) {
-    g_nHudLevelEggCachedCount = g_nLevelEggCount;
+  /* --- counter 4: the level key (g_nLevelKeyState) ------------------ */
+  if (*(volatile int *)&g_nLevelKeyState != 1) {
+    g_nHudKeyCachedState = g_nLevelKeyState;
   }
-  switch (LEGG_STATE) {
+  switch (KEY_STATE) {
   case 0:
-    if (g_nHudLevelEggCachedCount != g_nLevelEggCount) {
-      LEGG_STATE = 1;
-      g_bHudLevelEggRollPhase = 0;
+    if (g_nHudKeyCachedState != g_nLevelKeyState) {
+      KEY_STATE = 1;
+      g_bHudKeyRollPhase = 0;
     }
     break;
   case 1:
-    p = g_bHudLevelEggRollPhase;
+    p = g_bHudKeyRollPhase;
     if (p == 0xD) {
-      LEGG_STATE = 2;
-      g_nHudLevelEggHoldTimer = 0;
-      if (g_nHudLevelEggCachedCount == g_nLevelEggCount) {
-        g_nHudLevelEggHoldTimer = -0x28;
+      KEY_STATE = 2;
+      g_nHudKeyHoldTimer = 0;
+      if (g_nHudKeyCachedState == g_nLevelKeyState) {
+        g_nHudKeyHoldTimer = -0x28;
       }
     } else {
-      FIELD(g_bHudLevelEggRollPhase) = p + 1;
+      FIELD(g_bHudKeyRollPhase) = p + 1;
       OffsetHudIconRollAxis(0xB, 1, -g_anHudRollInStepTable[p]);
     }
     break;
   case 2:
-    if (g_nHudLevelEggCachedCount != g_nLevelEggCount) {
-      if (g_nHudLevelEggHoldTimer == 0) {
+    if (g_nHudKeyCachedState != g_nLevelKeyState) {
+      if (g_nHudKeyHoldTimer == 0) {
         i = 0;
         do {
           (*(void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
@@ -359,34 +359,34 @@ void UpdateHudCounters(void) {
               ((i + 6) << 24) + 0x8080);
           i += 1;
         } while (i < 6);
-      } else if (g_nHudLevelEggHoldTimer >= 0xC) {
+      } else if (g_nHudKeyHoldTimer >= 0xC) {
         g_abHudIconActorRecords[0x411] = 0x40;
-        g_nHudLevelEggHoldTimer = 0;
-        g_nHudLevelEggCachedCount = g_nLevelEggCount;
+        g_nHudKeyHoldTimer = 0;
+        g_nHudKeyCachedState = g_nLevelKeyState;
       }
-    } else if (g_nHudLevelEggHoldTimer == 0x14) {
-      LEGG_STATE = 3;
-      g_bHudLevelEggRollPhase = 0xD;
+    } else if (g_nHudKeyHoldTimer == 0x14) {
+      KEY_STATE = 3;
+      g_bHudKeyRollPhase = 0xD;
     }
-    g_anHudLevelEggTimerBlock[0] = g_anHudLevelEggTimerBlock[0] + 1;
+    g_anHudKeyTimerBlock[0] = g_anHudKeyTimerBlock[0] + 1;
     break;
   case 3:
-    if (g_nHudLevelEggCachedCount != g_nLevelEggCount) {
-      LEGG_STATE = 1;
-      g_bHudLevelEggRollPhase = 0;
-    } else if (g_bHudLevelEggRollPhase == 0) {
-      LEGG_STATE = 0;
+    if (g_nHudKeyCachedState != g_nLevelKeyState) {
+      KEY_STATE = 1;
+      g_bHudKeyRollPhase = 0;
+    } else if (g_bHudKeyRollPhase == 0) {
+      KEY_STATE = 0;
     } else {
       {
-        unsigned char t = g_bHudLevelEggRollPhase - 1;
-        FIELD(g_bHudLevelEggRollPhase) = t;
+        unsigned char t = g_bHudKeyRollPhase - 1;
+        FIELD(g_bHudKeyRollPhase) = t;
         OffsetHudIconRollAxis(0xB, 1, -g_anHudRollOutStepTable[t]);
       }
     }
     break;
   }
 
-  /* --- the level-egg icon spin, and butterflies -> extra lives --------- */
+  /* --- the key icon spin, and butterflies -> extra lives -------------- */
   g_abHudIconActorRecords[0x411] += 4;
   g_abHudIconActorRecords[0x40C] =
       (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x411]] >> 7;

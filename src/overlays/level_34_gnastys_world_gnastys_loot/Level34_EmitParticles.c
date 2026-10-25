@@ -168,7 +168,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &((Actor *)pos)->posX);
-      } else if (((Actor *)pos)->type == 0xAD || ((Actor *)pos)->type == 0xB5) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == 0xB5) {
         hi = effectArg >> 24;
         if (hi < 6) {
           RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[hi * 3], v1);

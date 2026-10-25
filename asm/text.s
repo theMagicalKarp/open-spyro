@@ -416,8 +416,8 @@ glabel ResetLevelState
     /* 2F1C 8001271C 7C5820AC */  sw         $zero, %lo(g_nLevelGemsAtEntry)($at)
     /* 2F20 80012720 0780013C */  lui        $at, %hi(g_nGemTallyIconCount)
     /* 2F24 80012724 C85620AC */  sw         $zero, %lo(g_nGemTallyIconCount)($at)
-    /* 2F28 80012728 0780013C */  lui        $at, %hi(g_nLevelEggCount)
-    /* 2F2C 8001272C 305820AC */  sw         $zero, %lo(g_nLevelEggCount)($at)
+    /* 2F28 80012728 0780013C */  lui        $at, %hi(g_nLevelKeyState)
+    /* 2F2C 8001272C 305820AC */  sw         $zero, %lo(g_nLevelKeyState)($at)
     /* 2F30 80012730 0780013C */  lui        $at, %hi(g_nSparxFoodCount)
     /* 2F34 80012734 E85820AC */  sw         $zero, %lo(g_nSparxFoodCount)($at)
     /* 2F38 80012738 0780013C */  lui        $at, %hi(g_nSparxHealthStash)
@@ -1520,8 +1520,8 @@ glabel BuildLoadedLevelRuntime
     /* 3EB0 800136B0 845620AC */  sw         $zero, %lo(g_nMotionTrailRibbonCount)($at)
     /* 3EB4 800136B4 03006214 */  bne        $v1, $v0, .L800136C4
     /* 3EB8 800136B8 21900002 */   addu      $s2, $s0, $zero
-    /* 3EBC 800136BC 0780013C */  lui        $at, %hi(g_nLevelEggCount)
-    /* 3EC0 800136C0 305820AC */  sw         $zero, %lo(g_nLevelEggCount)($at)
+    /* 3EBC 800136BC 0780013C */  lui        $at, %hi(g_nLevelKeyState)
+    /* 3EC0 800136C0 305820AC */  sw         $zero, %lo(g_nLevelKeyState)($at)
   .L800136C4:
     /* 3EC4 800136C4 0780013C */  lui        $at, %hi(g_nLevelLoadUnreadWord)
     /* 3EC8 800136C8 985620AC */  sw         $zero, %lo(g_nLevelLoadUnreadWord)($at)
@@ -4164,8 +4164,8 @@ glabel TickLevelTransitionStream
     /* 6550 80015D50 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
     /* 6554 80015D54 21082200 */  addu       $at, $at, $v0
     /* 6558 80015D58 2074228C */  lw         $v0, %lo(g_anLevelGemsCollected)($at)
-    /* 655C 80015D5C 0780013C */  lui        $at, %hi(g_nLevelEggCount)
-    /* 6560 80015D60 305820AC */  sw         $zero, %lo(g_nLevelEggCount)($at)
+    /* 655C 80015D5C 0780013C */  lui        $at, %hi(g_nLevelKeyState)
+    /* 6560 80015D60 305820AC */  sw         $zero, %lo(g_nLevelKeyState)($at)
     /* 6564 80015D64 0780013C */  lui        $at, %hi(g_nGemTallyIconCount)
     /* 6568 80015D68 C85620AC */  sw         $zero, %lo(g_nGemTallyIconCount)($at)
     /* 656C 80015D6C 0780013C */  lui        $at, %hi(g_nLevelGemsAtEntry)
@@ -8619,14 +8619,14 @@ glabel EnqueueLoadingScreenSprites
     /* 9CE8 800194E8 FBFF4014 */  bnez       $v0, .L800194D8
     /* 9CEC 800194EC 58006324 */   addiu     $v1, $v1, 0x58
   .L800194F0:
-    /* 9CF0 800194F0 0780043C */  lui        $a0, %hi(g_abHudLevelEggCounterBlock)
-    /* 9CF4 800194F4 AC7F8424 */  addiu      $a0, $a0, %lo(g_abHudLevelEggCounterBlock)
+    /* 9CF0 800194F0 0780043C */  lui        $a0, %hi(g_abHudKeyCounterBlock)
+    /* 9CF4 800194F4 AC7F8424 */  addiu      $a0, $a0, %lo(g_abHudKeyCounterBlock)
     /* 9CF8 800194F8 00008290 */  lbu        $v0, 0x0($a0)
     /* 9CFC 800194FC 00000000 */  nop
     /* 9D00 80019500 08004010 */  beqz       $v0, .L80019524
     /* 9D04 80019504 01000224 */   addiu     $v0, $zero, 0x1
-    /* 9D08 80019508 0780033C */  lui        $v1, %hi(g_nHudLevelEggCachedCount)
-    /* 9D0C 8001950C D87F638C */  lw         $v1, %lo(g_nHudLevelEggCachedCount)($v1)
+    /* 9D08 80019508 0780033C */  lui        $v1, %hi(g_nHudKeyCachedState)
+    /* 9D0C 8001950C D87F638C */  lw         $v1, %lo(g_nHudKeyCachedState)($v1)
     /* 9D10 80019510 00000000 */  nop
     /* 9D14 80019514 03006214 */  bne        $v1, $v0, .L80019524
     /* 9D18 80019518 08048224 */   addiu     $v0, $a0, 0x408
@@ -29496,8 +29496,8 @@ glabel EnterPauseMenu
     /* 1CCD8 8002C4D8 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 1CCDC 8002C4DC 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 1CCE0 8002C4E0 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 1CCE4 8002C4E4 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 1CCE8 8002C4E8 AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 1CCE4 8002C4E4 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 1CCE8 8002C4E8 AC7F22A0 */  sb         $v0, %lo(g_abHudKeyCounterBlock)($at)
     /* 1CCEC 8002C4EC 0C000224 */  addiu      $v0, $zero, 0xC
     /* 1CCF0 8002C4F0 0780013C */  lui        $at, %hi(g_bHudLevelGemRollPhase)
     /* 1CCF4 8002C4F4 AD7F22A0 */  sb         $v0, %lo(g_bHudLevelGemRollPhase)($at)
@@ -29507,8 +29507,8 @@ glabel EnterPauseMenu
     /* 1CD04 8002C504 AF7F22A0 */  sb         $v0, %lo(g_bHudLivesRollPhase)($at)
     /* 1CD08 8002C508 0780013C */  lui        $at, %hi(g_bHudWorldEggRollPhase)
     /* 1CD0C 8002C50C B07F22A0 */  sb         $v0, %lo(g_bHudWorldEggRollPhase)($at)
-    /* 1CD10 8002C510 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 1CD14 8002C514 B17F22A0 */  sb         $v0, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 1CD10 8002C510 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 1CD14 8002C514 B17F22A0 */  sb         $v0, %lo(g_bHudKeyRollPhase)($at)
   .L8002C518:
     /* 1CD18 8002C518 6252010C */  jal        UpdateHudCounters
     /* 1CD1C 8002C51C 00000000 */   nop
@@ -29559,8 +29559,8 @@ glabel ExitPauseMenuToGame
     /* 1CDAC 8002C5AC AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 1CDB0 8002C5B0 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 1CDB4 8002C5B4 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 1CDB8 8002C5B8 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 1CDBC 8002C5BC AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 1CDB8 8002C5B8 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 1CDBC 8002C5BC AC7F22A0 */  sb         $v0, %lo(g_abHudKeyCounterBlock)($at)
     /* 1CDC0 8002C5C0 0D000224 */  addiu      $v0, $zero, 0xD
     /* 1CDC4 8002C5C4 0780013C */  lui        $at, %hi(g_bHudLevelGemRollPhase)
     /* 1CDC8 8002C5C8 AD7F22A0 */  sb         $v0, %lo(g_bHudLevelGemRollPhase)($at)
@@ -29570,8 +29570,8 @@ glabel ExitPauseMenuToGame
     /* 1CDD8 8002C5D8 AF7F22A0 */  sb         $v0, %lo(g_bHudLivesRollPhase)($at)
     /* 1CDDC 8002C5DC 0780013C */  lui        $at, %hi(g_bHudWorldEggRollPhase)
     /* 1CDE0 8002C5E0 B07F22A0 */  sb         $v0, %lo(g_bHudWorldEggRollPhase)($at)
-    /* 1CDE4 8002C5E4 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 1CDE8 8002C5E8 B17F22A0 */  sb         $v0, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 1CDE4 8002C5E4 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 1CDE8 8002C5E8 B17F22A0 */  sb         $v0, %lo(g_bHudKeyRollPhase)($at)
     /* 1CDEC 8002C5EC 05000012 */  beqz       $s0, .L8002C604
     /* 1CDF0 8002C5F0 00000000 */   nop
     /* 1CDF4 8002C5F4 0780043C */  lui        $a0, %hi(g_nCurrentMusicTrack)
@@ -29755,8 +29755,8 @@ glabel ExitSubMenuToTitle
     /* 1D030 8002C830 AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
     /* 1D034 8002C834 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 1D038 8002C838 AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 1D03C 8002C83C 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 1D040 8002C840 AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 1D03C 8002C83C 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 1D040 8002C840 AC7F20A0 */  sb         $zero, %lo(g_abHudKeyCounterBlock)($at)
     /* 1D044 8002C844 FD59010C */  jal        HandleMusicCommand
     /* 1D048 8002C848 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D04C 8002C84C 1800BF8F */  lw         $ra, 0x18($sp)
@@ -30092,8 +30092,8 @@ glabel EndDragonRescueToWorld
     /* 1D494 8002CC94 AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
     /* 1D498 8002CC98 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 1D49C 8002CC9C AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 1D4A0 8002CCA0 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 1D4A4 8002CCA4 AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 1D4A0 8002CCA0 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 1D4A4 8002CCA4 AC7F20A0 */  sb         $zero, %lo(g_abHudKeyCounterBlock)($at)
     /* 1D4A8 8002CCA8 FD59010C */  jal        HandleMusicCommand
     /* 1D4AC 8002CCAC 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D4B0 8002CCB0 1800BF8F */  lw         $ra, 0x18($sp)
@@ -30410,8 +30410,8 @@ glabel EndSaveMenuToWorld
     /* 1D93C 8002D13C AA7F20A0 */  sb         $zero, %lo(g_abHudLivesCounterBlock)($at)
     /* 1D940 8002D140 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 1D944 8002D144 AB7F20A0 */  sb         $zero, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 1D948 8002D148 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 1D94C 8002D14C AC7F20A0 */  sb         $zero, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 1D948 8002D148 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 1D94C 8002D14C AC7F20A0 */  sb         $zero, %lo(g_abHudKeyCounterBlock)($at)
     /* 1D950 8002D150 FD59010C */  jal        HandleMusicCommand
     /* 1D954 8002D154 08000524 */   addiu     $a1, $zero, 0x8
     /* 1D958 8002D158 1800BF8F */  lw         $ra, 0x18($sp)
@@ -31619,8 +31619,8 @@ glabel PauseMenu_Update
     /* 1E96C 8002E16C BC7F20AC */  sw         $zero, %lo(g_nHudLivesHoldTimer)($at)
     /* 1E970 8002E170 0780013C */  lui        $at, %hi(g_nHudWorldEggHoldTimer)
     /* 1E974 8002E174 C07F20AC */  sw         $zero, %lo(g_nHudWorldEggHoldTimer)($at)
-    /* 1E978 8002E178 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
-    /* 1E97C 8002E17C C47F20AC */  sw         $zero, %lo(g_nHudLevelEggHoldTimer)($at)
+    /* 1E978 8002E178 0780013C */  lui        $at, %hi(g_nHudKeyHoldTimer)
+    /* 1E97C 8002E17C C47F20AC */  sw         $zero, %lo(g_nHudKeyHoldTimer)($at)
     /* 1E980 8002E180 01004224 */  addiu      $v0, $v0, 0x1
     /* 1E984 8002E184 0780013C */  lui        $at, %hi(g_nPauseMenuIdleFrames)
     /* 1E988 8002E188 8C5622AC */  sw         $v0, %lo(g_nPauseMenuIdleFrames)($at)
@@ -47080,16 +47080,16 @@ glabel CollectPickupActor
     /* 2C1FC 8003B9FC B87D23A0 */  sb         $v1, %lo(g_abGemTallyIconUvTable)($at)
     /* 2C200 8003BA00 0780023C */  lui        $v0, %hi(g_nGemTallyIconCount)
     /* 2C204 8003BA04 C856428C */  lw         $v0, %lo(g_nGemTallyIconCount)($v0)
-    /* 2C208 8003BA08 0780033C */  lui        $v1, %hi(g_pThiefEggDrop)
-    /* 2C20C 8003BA0C 5857638C */  lw         $v1, %lo(g_pThiefEggDrop)($v1)
+    /* 2C208 8003BA08 0780033C */  lui        $v1, %hi(g_pLockedChestReward)
+    /* 2C20C 8003BA0C 5857638C */  lw         $v1, %lo(g_pLockedChestReward)($v1)
     /* 2C210 8003BA10 01004224 */  addiu      $v0, $v0, 0x1
     /* 2C214 8003BA14 0780013C */  lui        $at, %hi(g_nGemTallyIconCount)
     /* 2C218 8003BA18 C85622AC */  sw         $v0, %lo(g_nGemTallyIconCount)($at)
     /* 2C21C 8003BA1C 04000316 */  bne        $s0, $v1, .L8003BA30
     /* 2C220 8003BA20 21200002 */   addu      $a0, $s0, $zero
     /* 2C224 8003BA24 03000224 */  addiu      $v0, $zero, 0x3
-    /* 2C228 8003BA28 0780013C */  lui        $at, %hi(g_nLevelEggCount)
-    /* 2C22C 8003BA2C 305822AC */  sw         $v0, %lo(g_nLevelEggCount)($at)
+    /* 2C228 8003BA28 0780013C */  lui        $at, %hi(g_nLevelKeyState)
+    /* 2C22C 8003BA2C 305822AC */  sw         $v0, %lo(g_nLevelKeyState)($at)
   .L8003BA30:
     /* 2C230 8003BA30 794A010C */  jal        RefreshActorDerivedState
     /* 2C234 8003BA34 04000524 */   addiu     $a1, $zero, 0x4
@@ -75186,14 +75186,14 @@ glabel InitHudCounters
     /* 44FB0 800547B0 AA7F22A0 */  sb         $v0, %lo(g_abHudLivesCounterBlock)($at)
     /* 44FB4 800547B4 0780013C */  lui        $at, %hi(g_abHudWorldEggIconBlock)
     /* 44FB8 800547B8 AB7F22A0 */  sb         $v0, %lo(g_abHudWorldEggIconBlock)($at)
-    /* 44FBC 800547BC 0780013C */  lui        $at, %hi(g_abHudLevelEggCounterBlock)
-    /* 44FC0 800547C0 AC7F22A0 */  sb         $v0, %lo(g_abHudLevelEggCounterBlock)($at)
+    /* 44FBC 800547BC 0780013C */  lui        $at, %hi(g_abHudKeyCounterBlock)
+    /* 44FC0 800547C0 AC7F22A0 */  sb         $v0, %lo(g_abHudKeyCounterBlock)($at)
     /* 44FC4 800547C4 0780023C */  lui        $v0, %hi(g_nWorldDragonsRescued)
     /* 44FC8 800547C8 5057428C */  lw         $v0, %lo(g_nWorldDragonsRescued)($v0)
     /* 44FCC 800547CC 0780083C */  lui        $t0, %hi(g_nWorldEggsRecovered)
     /* 44FD0 800547D0 1058088D */  lw         $t0, %lo(g_nWorldEggsRecovered)($t0)
-    /* 44FD4 800547D4 0780093C */  lui        $t1, %hi(g_nLevelEggCount)
-    /* 44FD8 800547D8 3058298D */  lw         $t1, %lo(g_nLevelEggCount)($t1)
+    /* 44FD4 800547D4 0780093C */  lui        $t1, %hi(g_nLevelKeyState)
+    /* 44FD8 800547D8 3058298D */  lw         $t1, %lo(g_nLevelKeyState)($t1)
     /* 44FDC 800547DC 07800A3C */  lui        $t2, %hi(g_nSparxFoodCount)
     /* 44FE0 800547E0 E8584A8D */  lw         $t2, %lo(g_nSparxFoodCount)($t2)
     /* 44FE4 800547E4 04000524 */  addiu      $a1, $zero, 0x4
@@ -75205,8 +75205,8 @@ glabel InitHudCounters
     /* 44FFC 800547FC AF7F20A0 */  sb         $zero, %lo(g_bHudLivesRollPhase)($at)
     /* 45000 80054800 0780013C */  lui        $at, %hi(g_bHudWorldEggRollPhase)
     /* 45004 80054804 B07F20A0 */  sb         $zero, %lo(g_bHudWorldEggRollPhase)($at)
-    /* 45008 80054808 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 4500C 8005480C B17F20A0 */  sb         $zero, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 45008 80054808 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 4500C 8005480C B17F20A0 */  sb         $zero, %lo(g_bHudKeyRollPhase)($at)
     /* 45010 80054810 0780013C */  lui        $at, %hi(g_nHudLevelGemHoldTimer)
     /* 45014 80054814 B47F20AC */  sw         $zero, %lo(g_nHudLevelGemHoldTimer)($at)
     /* 45018 80054818 0780013C */  lui        $at, %hi(g_nHudDragonHoldTimer)
@@ -75215,8 +75215,8 @@ glabel InitHudCounters
     /* 45024 80054824 BC7F20AC */  sw         $zero, %lo(g_nHudLivesHoldTimer)($at)
     /* 45028 80054828 0780013C */  lui        $at, %hi(g_nHudWorldEggHoldTimer)
     /* 4502C 8005482C C07F20AC */  sw         $zero, %lo(g_nHudWorldEggHoldTimer)($at)
-    /* 45030 80054830 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
-    /* 45034 80054834 C47F20AC */  sw         $zero, %lo(g_nHudLevelEggHoldTimer)($at)
+    /* 45030 80054830 0780013C */  lui        $at, %hi(g_nHudKeyHoldTimer)
+    /* 45034 80054834 C47F20AC */  sw         $zero, %lo(g_nHudKeyHoldTimer)($at)
     /* 45038 80054838 80180300 */  sll        $v1, $v1, 2
     /* 4503C 8005483C 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
     /* 45040 80054840 21082300 */  addu       $at, $at, $v1
@@ -75227,8 +75227,8 @@ glabel InitHudCounters
     /* 45054 80054854 CC7F22AC */  sw         $v0, %lo(g_nHudDragonCachedCount)($at)
     /* 45058 80054858 0780013C */  lui        $at, %hi(g_nHudWorldEggCachedCount)
     /* 4505C 8005485C D47F28AC */  sw         $t0, %lo(g_nHudWorldEggCachedCount)($at)
-    /* 45060 80054860 0780013C */  lui        $at, %hi(g_nHudLevelEggCachedCount)
-    /* 45064 80054864 D87F29AC */  sw         $t1, %lo(g_nHudLevelEggCachedCount)($at)
+    /* 45060 80054860 0780013C */  lui        $at, %hi(g_nHudKeyCachedState)
+    /* 45064 80054864 D87F29AC */  sw         $t1, %lo(g_nHudKeyCachedState)($at)
     /* 45068 80054868 0780013C */  lui        $at, %hi(g_nHudButterflyCachedCount)
     /* 4506C 8005486C E07F2AAC */  sw         $t2, %lo(g_nHudButterflyCachedCount)($at)
     /* 45070 80054870 0780013C */  lui        $at, %hi(g_nHudLivesCachedCount)
@@ -76079,16 +76079,16 @@ glabel UpdateHudCounters
     /* 45CA8 800554A8 1751010C */  jal        OffsetHudDigitRollAxis
     /* 45CAC 800554AC 23300600 */   negu      $a2, $a2
   .L800554B0:
-    /* 45CB0 800554B0 0780023C */  lui        $v0, %hi(g_nLevelEggCount)
-    /* 45CB4 800554B4 3058428C */  lw         $v0, %lo(g_nLevelEggCount)($v0)
+    /* 45CB0 800554B0 0780023C */  lui        $v0, %hi(g_nLevelKeyState)
+    /* 45CB4 800554B4 3058428C */  lw         $v0, %lo(g_nLevelKeyState)($v0)
     /* 45CB8 800554B8 01000424 */  addiu      $a0, $zero, 0x1
     /* 45CBC 800554BC 03004410 */  beq        $v0, $a0, .L800554CC
     /* 45CC0 800554C0 00000000 */   nop
-    /* 45CC4 800554C4 0780013C */  lui        $at, %hi(g_nHudLevelEggCachedCount)
-    /* 45CC8 800554C8 D87F22AC */  sw         $v0, %lo(g_nHudLevelEggCachedCount)($at)
+    /* 45CC4 800554C4 0780013C */  lui        $at, %hi(g_nHudKeyCachedState)
+    /* 45CC8 800554C8 D87F22AC */  sw         $v0, %lo(g_nHudKeyCachedState)($at)
   .L800554CC:
-    /* 45CCC 800554CC 0780063C */  lui        $a2, %hi(g_abHudLevelEggCounterBlock)
-    /* 45CD0 800554D0 AC7FC624 */  addiu      $a2, $a2, %lo(g_abHudLevelEggCounterBlock)
+    /* 45CCC 800554CC 0780063C */  lui        $a2, %hi(g_abHudKeyCounterBlock)
+    /* 45CD0 800554D0 AC7FC624 */  addiu      $a2, $a2, %lo(g_abHudKeyCounterBlock)
     /* 45CD4 800554D4 0000C390 */  lbu        $v1, 0x0($a2)
     /* 45CD8 800554D8 00000000 */  nop
     /* 45CDC 800554DC 17006410 */  beq        $v1, $a0, .L8005553C
@@ -76108,39 +76108,39 @@ glabel UpdateHudCounters
     /* 45D10 80055510 C3550108 */  j          .L8005570C
     /* 45D14 80055514 00000000 */   nop
   .L80055518:
-    /* 45D18 80055518 0780033C */  lui        $v1, %hi(g_nHudLevelEggCachedCount)
-    /* 45D1C 8005551C D87F638C */  lw         $v1, %lo(g_nHudLevelEggCachedCount)($v1)
-    /* 45D20 80055520 0780023C */  lui        $v0, %hi(g_nLevelEggCount)
-    /* 45D24 80055524 3058428C */  lw         $v0, %lo(g_nLevelEggCount)($v0)
+    /* 45D18 80055518 0780033C */  lui        $v1, %hi(g_nHudKeyCachedState)
+    /* 45D1C 8005551C D87F638C */  lw         $v1, %lo(g_nHudKeyCachedState)($v1)
+    /* 45D20 80055520 0780023C */  lui        $v0, %hi(g_nLevelKeyState)
+    /* 45D24 80055524 3058428C */  lw         $v0, %lo(g_nLevelKeyState)($v0)
     /* 45D28 80055528 00000000 */  nop
     /* 45D2C 8005552C 77006210 */  beq        $v1, $v0, .L8005570C
     /* 45D30 80055530 01000224 */   addiu     $v0, $zero, 0x1
     /* 45D34 80055534 AC550108 */  j          .L800556B0
     /* 45D38 80055538 00000000 */   nop
   .L8005553C:
-    /* 45D3C 8005553C 0780033C */  lui        $v1, %hi(g_bHudLevelEggRollPhase)
-    /* 45D40 80055540 B17F6390 */  lbu        $v1, %lo(g_bHudLevelEggRollPhase)($v1)
+    /* 45D3C 8005553C 0780033C */  lui        $v1, %hi(g_bHudKeyRollPhase)
+    /* 45D40 80055540 B17F6390 */  lbu        $v1, %lo(g_bHudKeyRollPhase)($v1)
     /* 45D44 80055544 0D000224 */  addiu      $v0, $zero, 0xD
     /* 45D48 80055548 FF006530 */  andi       $a1, $v1, 0xFF
     /* 45D4C 8005554C 0F00A214 */  bne        $a1, $v0, .L8005558C
     /* 45D50 80055550 01006224 */   addiu     $v0, $v1, 0x1
-    /* 45D54 80055554 0780043C */  lui        $a0, %hi(g_nHudLevelEggCachedCount)
-    /* 45D58 80055558 D87F848C */  lw         $a0, %lo(g_nHudLevelEggCachedCount)($a0)
-    /* 45D5C 8005555C 0780033C */  lui        $v1, %hi(g_nLevelEggCount)
-    /* 45D60 80055560 3058638C */  lw         $v1, %lo(g_nLevelEggCount)($v1)
+    /* 45D54 80055554 0780043C */  lui        $a0, %hi(g_nHudKeyCachedState)
+    /* 45D58 80055558 D87F848C */  lw         $a0, %lo(g_nHudKeyCachedState)($a0)
+    /* 45D5C 8005555C 0780033C */  lui        $v1, %hi(g_nLevelKeyState)
+    /* 45D60 80055560 3058638C */  lw         $v1, %lo(g_nLevelKeyState)($v1)
     /* 45D64 80055564 02000224 */  addiu      $v0, $zero, 0x2
     /* 45D68 80055568 0000C2A0 */  sb         $v0, 0x0($a2)
-    /* 45D6C 8005556C 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
-    /* 45D70 80055570 C47F20AC */  sw         $zero, %lo(g_nHudLevelEggHoldTimer)($at)
+    /* 45D6C 8005556C 0780013C */  lui        $at, %hi(g_nHudKeyHoldTimer)
+    /* 45D70 80055570 C47F20AC */  sw         $zero, %lo(g_nHudKeyHoldTimer)($at)
     /* 45D74 80055574 65008314 */  bne        $a0, $v1, .L8005570C
     /* 45D78 80055578 D8FF0224 */   addiu     $v0, $zero, -0x28
-    /* 45D7C 8005557C 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
-    /* 45D80 80055580 C47F22AC */  sw         $v0, %lo(g_nHudLevelEggHoldTimer)($at)
+    /* 45D7C 8005557C 0780013C */  lui        $at, %hi(g_nHudKeyHoldTimer)
+    /* 45D80 80055580 C47F22AC */  sw         $v0, %lo(g_nHudKeyHoldTimer)($at)
     /* 45D84 80055584 C3550108 */  j          .L8005570C
     /* 45D88 80055588 00000000 */   nop
   .L8005558C:
-    /* 45D8C 8005558C 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 45D90 80055590 B17F22A0 */  sb         $v0, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 45D8C 8005558C 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 45D90 80055590 B17F22A0 */  sb         $v0, %lo(g_bHudKeyRollPhase)($at)
     /* 45D94 80055594 40100500 */  sll        $v0, $a1, 1
     /* 45D98 80055598 0780013C */  lui        $at, %hi(g_anHudRollInStepTable)
     /* 45D9C 8005559C 21082200 */  addu       $at, $at, $v0
@@ -76148,15 +76148,15 @@ glabel UpdateHudCounters
     /* 45DA4 800555A4 C0550108 */  j          .L80055700
     /* 45DA8 800555A8 0B000424 */   addiu     $a0, $zero, 0xB
   .L800555AC:
-    /* 45DAC 800555AC 0780023C */  lui        $v0, %hi(g_nHudLevelEggCachedCount)
-    /* 45DB0 800555B0 D87F428C */  lw         $v0, %lo(g_nHudLevelEggCachedCount)($v0)
-    /* 45DB4 800555B4 0780033C */  lui        $v1, %hi(g_nLevelEggCount)
-    /* 45DB8 800555B8 3058638C */  lw         $v1, %lo(g_nLevelEggCount)($v1)
+    /* 45DAC 800555AC 0780023C */  lui        $v0, %hi(g_nHudKeyCachedState)
+    /* 45DB0 800555B0 D87F428C */  lw         $v0, %lo(g_nHudKeyCachedState)($v0)
+    /* 45DB4 800555B4 0780033C */  lui        $v1, %hi(g_nLevelKeyState)
+    /* 45DB8 800555B8 3058638C */  lw         $v1, %lo(g_nLevelKeyState)($v1)
     /* 45DBC 800555BC 00000000 */  nop
     /* 45DC0 800555C0 24004310 */  beq        $v0, $v1, .L80055654
     /* 45DC4 800555C4 14000224 */   addiu     $v0, $zero, 0x14
-    /* 45DC8 800555C8 0780023C */  lui        $v0, %hi(g_nHudLevelEggHoldTimer)
-    /* 45DCC 800555CC C47F428C */  lw         $v0, %lo(g_nHudLevelEggHoldTimer)($v0)
+    /* 45DC8 800555C8 0780023C */  lui        $v0, %hi(g_nHudKeyHoldTimer)
+    /* 45DCC 800555CC C47F428C */  lw         $v0, %lo(g_nHudKeyHoldTimer)($v0)
     /* 45DD0 800555D0 00000000 */  nop
     /* 45DD4 800555D4 15004014 */  bnez       $v0, .L8005562C
     /* 45DD8 800555D8 0C004228 */   slti      $v0, $v0, 0xC
@@ -76186,47 +76186,47 @@ glabel UpdateHudCounters
     /* 45E30 80055630 40000224 */   addiu     $v0, $zero, 0x40
     /* 45E34 80055634 0880013C */  lui        $at, %hi(D_800783FD)
     /* 45E38 80055638 FD8322A0 */  sb         $v0, %lo(D_800783FD)($at)
-    /* 45E3C 8005563C 0780013C */  lui        $at, %hi(g_nHudLevelEggHoldTimer)
-    /* 45E40 80055640 C47F20AC */  sw         $zero, %lo(g_nHudLevelEggHoldTimer)($at)
-    /* 45E44 80055644 0780013C */  lui        $at, %hi(g_nHudLevelEggCachedCount)
-    /* 45E48 80055648 D87F23AC */  sw         $v1, %lo(g_nHudLevelEggCachedCount)($at)
+    /* 45E3C 8005563C 0780013C */  lui        $at, %hi(g_nHudKeyHoldTimer)
+    /* 45E40 80055640 C47F20AC */  sw         $zero, %lo(g_nHudKeyHoldTimer)($at)
+    /* 45E44 80055644 0780013C */  lui        $at, %hi(g_nHudKeyCachedState)
+    /* 45E48 80055648 D87F23AC */  sw         $v1, %lo(g_nHudKeyCachedState)($at)
     /* 45E4C 8005564C 9E550108 */  j          .L80055678
     /* 45E50 80055650 00000000 */   nop
   .L80055654:
-    /* 45E54 80055654 0780033C */  lui        $v1, %hi(g_nHudLevelEggHoldTimer)
-    /* 45E58 80055658 C47F638C */  lw         $v1, %lo(g_nHudLevelEggHoldTimer)($v1)
+    /* 45E54 80055654 0780033C */  lui        $v1, %hi(g_nHudKeyHoldTimer)
+    /* 45E58 80055658 C47F638C */  lw         $v1, %lo(g_nHudKeyHoldTimer)($v1)
     /* 45E5C 8005565C 00000000 */  nop
     /* 45E60 80055660 05006214 */  bne        $v1, $v0, .L80055678
     /* 45E64 80055664 03000224 */   addiu     $v0, $zero, 0x3
     /* 45E68 80055668 0000C2A0 */  sb         $v0, 0x0($a2)
     /* 45E6C 8005566C 0D000224 */  addiu      $v0, $zero, 0xD
-    /* 45E70 80055670 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 45E74 80055674 B17F22A0 */  sb         $v0, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 45E70 80055670 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 45E74 80055674 B17F22A0 */  sb         $v0, %lo(g_bHudKeyRollPhase)($at)
   .L80055678:
-    /* 45E78 80055678 0780033C */  lui        $v1, %hi(g_nHudLevelEggHoldTimer)
-    /* 45E7C 8005567C C47F6324 */  addiu      $v1, $v1, %lo(g_nHudLevelEggHoldTimer)
+    /* 45E78 80055678 0780033C */  lui        $v1, %hi(g_nHudKeyHoldTimer)
+    /* 45E7C 8005567C C47F6324 */  addiu      $v1, $v1, %lo(g_nHudKeyHoldTimer)
     /* 45E80 80055680 0000628C */  lw         $v0, 0x0($v1)
     /* 45E84 80055684 00000000 */  nop
     /* 45E88 80055688 01004224 */  addiu      $v0, $v0, 0x1
     /* 45E8C 8005568C C3550108 */  j          .L8005570C
     /* 45E90 80055690 000062AC */   sw        $v0, 0x0($v1)
   .L80055694:
-    /* 45E94 80055694 0780033C */  lui        $v1, %hi(g_nHudLevelEggCachedCount)
-    /* 45E98 80055698 D87F638C */  lw         $v1, %lo(g_nHudLevelEggCachedCount)($v1)
-    /* 45E9C 8005569C 0780023C */  lui        $v0, %hi(g_nLevelEggCount)
-    /* 45EA0 800556A0 3058428C */  lw         $v0, %lo(g_nLevelEggCount)($v0)
+    /* 45E94 80055694 0780033C */  lui        $v1, %hi(g_nHudKeyCachedState)
+    /* 45E98 80055698 D87F638C */  lw         $v1, %lo(g_nHudKeyCachedState)($v1)
+    /* 45E9C 8005569C 0780023C */  lui        $v0, %hi(g_nLevelKeyState)
+    /* 45EA0 800556A0 3058428C */  lw         $v0, %lo(g_nLevelKeyState)($v0)
     /* 45EA4 800556A4 00000000 */  nop
     /* 45EA8 800556A8 06006210 */  beq        $v1, $v0, .L800556C4
     /* 45EAC 800556AC 01000224 */   addiu     $v0, $zero, 0x1
   .L800556B0:
     /* 45EB0 800556B0 0000C2A0 */  sb         $v0, 0x0($a2)
-    /* 45EB4 800556B4 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 45EB8 800556B8 B17F20A0 */  sb         $zero, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 45EB4 800556B4 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 45EB8 800556B8 B17F20A0 */  sb         $zero, %lo(g_bHudKeyRollPhase)($at)
     /* 45EBC 800556BC C3550108 */  j          .L8005570C
     /* 45EC0 800556C0 00000000 */   nop
   .L800556C4:
-    /* 45EC4 800556C4 0780023C */  lui        $v0, %hi(g_bHudLevelEggRollPhase)
-    /* 45EC8 800556C8 B17F4290 */  lbu        $v0, %lo(g_bHudLevelEggRollPhase)($v0)
+    /* 45EC4 800556C4 0780023C */  lui        $v0, %hi(g_bHudKeyRollPhase)
+    /* 45EC8 800556C8 B17F4290 */  lbu        $v0, %lo(g_bHudKeyRollPhase)($v0)
     /* 45ECC 800556CC 00000000 */  nop
     /* 45ED0 800556D0 03004014 */  bnez       $v0, .L800556E0
     /* 45ED4 800556D4 FFFF4224 */   addiu     $v0, $v0, -0x1
@@ -76234,8 +76234,8 @@ glabel UpdateHudCounters
     /* 45EDC 800556DC 0000C0A0 */   sb        $zero, 0x0($a2)
   .L800556E0:
     /* 45EE0 800556E0 0B000424 */  addiu      $a0, $zero, 0xB
-    /* 45EE4 800556E4 0780013C */  lui        $at, %hi(g_bHudLevelEggRollPhase)
-    /* 45EE8 800556E8 B17F22A0 */  sb         $v0, %lo(g_bHudLevelEggRollPhase)($at)
+    /* 45EE4 800556E4 0780013C */  lui        $at, %hi(g_bHudKeyRollPhase)
+    /* 45EE8 800556E8 B17F22A0 */  sb         $v0, %lo(g_bHudKeyRollPhase)($at)
     /* 45EEC 800556EC FF004230 */  andi       $v0, $v0, 0xFF
     /* 45EF0 800556F0 40100200 */  sll        $v0, $v0, 1
     /* 45EF4 800556F4 0780013C */  lui        $at, %hi(g_anHudRollOutStepTable)

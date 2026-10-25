@@ -620,7 +620,7 @@ extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
 extern void *g_pEmitListBase;                /* 0x80075824 */
 extern void *g_pActorListBase;               /* 0x80075828 */
 extern int g_nExtraLives;                    /* 0x8007582c */
-extern int g_nLevelEggCount;                 /* 0x80075830 */
+extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawActors) */
@@ -845,17 +845,17 @@ extern byte g_bHudLevelGemRollPhase;                    /* 0x80077fad */
 extern byte g_bHudDragonRollPhase;                      /* 0x80077fae */
 extern byte g_bHudLivesRollPhase;                       /* 0x80077faf */
 extern byte g_bHudWorldEggRollPhase;                    /* 0x80077fb0 */
-extern byte g_bHudLevelEggRollPhase;                    /* 0x80077fb1 */
+extern byte g_bHudKeyRollPhase;                    /* 0x80077fb1 */
 extern int g_nHudLevelGemHoldTimer;                     /* 0x80077fb4 */
 extern int g_nHudDragonHoldTimer;                       /* 0x80077fb8 */
 extern int g_nHudLivesHoldTimer;                        /* 0x80077fbc */
 extern int g_nHudWorldEggHoldTimer;                     /* 0x80077fc0 */
-extern int g_nHudLevelEggHoldTimer;                     /* 0x80077fc4 */
+extern int g_nHudKeyHoldTimer;                     /* 0x80077fc4 */
 extern int g_nHudLevelGemCachedCount;                   /* 0x80077fc8 */
 extern int g_nHudDragonCachedCount;                     /* 0x80077fcc */
 extern int g_nHudLivesCachedCount;                      /* 0x80077fd0 */
 extern int g_nHudWorldEggCachedCount;                   /* 0x80077fd4 */
-extern int g_nHudLevelEggCachedCount;                   /* 0x80077fd8 */
+extern int g_nHudKeyCachedState;                   /* 0x80077fd8 */
 extern int g_nHudWorldEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
 extern uint g_dwHudBobSinePhase;                        /* 0x80077fe4 */
@@ -1129,7 +1129,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nSpyroMotionY         0x80078b68  scalar view of g_anSpyroMotionVec[1]
  *   g_nSpyroRequestTargetZ  0x80078c58  g_anSpyroRequestTargetPos[2]
  *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
- *   g_pThiefEggDrop         0x80075758  egg dropped by a killed thief; collecting it sets g_nLevelEggCount = 3 (CollectPickupActor)
+ *   g_pLockedChestReward         0x80075758  reward the locked chest drops; collecting it sets g_nLevelKeyState = 3 (CollectPickupActor)
  *   g_anRotBillboardOffsetsRand 0x8006e5c4  int[4][3] spawn offsets picked at random, after g_anRotBillboardOffset5
  *   g_dwBurstColorType15 / Type14 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
  *       UpdateActors passes to emit effect 0xC for actor types 15 / 14 in place of g_adwActorBurstColors;
@@ -1245,7 +1245,7 @@ extern int g_nLevelUnreadScratchA; /* 0x80075670 */
 extern int g_nLevelUnreadScratchB; /* 0x80075674 */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
 extern void *g_pfnGamestate0cSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
-extern unsigned char *g_pThiefEggDrop; /* 0x80075758 */
+extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
 extern void *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
@@ -1342,10 +1342,10 @@ extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
 extern byte g_abHudButterflyRingBlock[]; /* 0x80077faa: +2: butterfly quads at +0x4C2 */
 extern byte g_abHudLivesCounterBlock[]; /* 0x80077faa: +2: records at +0x302 */
 extern unsigned char g_abHudWorldEggIconBlock[]; /* 0x80077fab: world-egg HUD state byte; its quads at +0x461 */
-extern unsigned char g_abHudLevelEggCounterBlock[]; /* 0x80077fac: level-egg HUD state byte; its record at +0x408 */
+extern unsigned char g_abHudKeyCounterBlock[]; /* 0x80077fac: level-key HUD state byte; its record at +0x408 */
 extern unsigned char g_abHudGemRollPhaseBlock[]; /* 0x80077fad */
 extern int g_anHudWorldEggTimerBlock[]; /* 0x80077fc0 */
-extern int g_anHudLevelEggTimerBlock[]; /* 0x80077fc4 */
+extern int g_anHudKeyTimerBlock[]; /* 0x80077fc4 */
 extern int g_anHudLevelGemCachedBlock[]; /* 0x80077fc8: held-base view of the cached level gem count */
 extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
