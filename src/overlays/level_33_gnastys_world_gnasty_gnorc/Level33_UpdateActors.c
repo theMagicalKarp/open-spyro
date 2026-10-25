@@ -186,7 +186,7 @@ typedef struct GnastyState {
   int timer;                /* 0x60 throw timer */
   int u64;                  /* 0x64 */
   int throws;               /* 0x68 bombs thrown */
-  int u6C;                  /* 0x6C */
+  int passedPt6;                  /* 0x6C latched on nearing path point 6 (mode 0xB once per phase) */
   int box70[6];             /* 0x70 trigger box */
   int box88[6];             /* 0x88 trigger box */
   int boxA0[6];             /* 0xA0 trigger box */
@@ -1699,7 +1699,7 @@ void Level33_UpdateActors(void) {
           st->camTimer = 0xA0;
           st->vSpeed = 0;
           st->queuedJumpSpeed = 0;
-          st->u6C = 0;
+          st->passedPt6 = 0;
           st->phase++;
           t = st->path;
           st->path = st->path2;
@@ -2015,10 +2015,10 @@ void Level33_UpdateActors(void) {
           actor->mode = 0xC;
           continue;
         }
-        if (st->u6C == 0 &&
+        if (st->passedPt6 == 0 &&
             ApproxDist2D(&actor->posX, PATH_PT((unsigned char *)st->path, 6)) <
                 0x258) {
-          st->u6C = 1;
+          st->passedPt6 = 1;
           actor->mode = 0xB;
           continue;
         }

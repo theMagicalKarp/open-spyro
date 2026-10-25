@@ -1646,7 +1646,7 @@ void Level32_UpdateActors(void) {
                 0x28 &&
             actor->posZ - actor->floorOffset - SPY.posZ < -0xC8 &&
             TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
-          st->u14 = 0;
+          st->shotGap = 0;
           st->shotTimer = st->shotReload;
           ENTER_POSE_B(actor, 3);
         }
@@ -1666,8 +1666,8 @@ void Level32_UpdateActors(void) {
 
       case 3:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        st->u14 += g_nFrameStep;
-        if ((unsigned)(actor->nextFrame - 0x10) < 0xA && st->u14 >= 4) {
+        st->shotGap += g_nFrameStep;
+        if ((unsigned)(actor->nextFrame - 0x10) < 0xA && st->shotGap >= 4) {
           Actor *o = g_pfnLevelSpawnActor(0x9C, actor);
           short *p = o->state;
 
@@ -1685,7 +1685,7 @@ void Level32_UpdateActors(void) {
           CopyVector((int *)p, o110);
           p[6] = 0x26;
           p[7] = 0;
-          st->u14 = 0;
+          st->shotGap = 0;
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, 0);
@@ -2038,7 +2038,7 @@ void Level32_UpdateActors(void) {
             q->h8 = -6;
             q->h4 = 0x104;
             q->h6 = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->h8, (int *)q);
-            if (q->u00 == 0) {
+            if (q->flightTime == 0) {
               st->heldLob->mode = 2;
             }
             q->bD = RandomSignedInRange(7, 0xF);

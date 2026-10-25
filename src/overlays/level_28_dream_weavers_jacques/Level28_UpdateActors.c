@@ -2210,7 +2210,7 @@ void Level28_UpdateActors(void) {
       case 0:
         TrackEntityYawTowardSpyro(actor, 0x10, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
-            st->u50 == 0) {
+            st->standGround == 0) {
           if (st->path->cur == 13) {
             ModifyWorldChunkAnimFlags(10, 0xFC, 0);
           }
@@ -2231,7 +2231,7 @@ void Level28_UpdateActors(void) {
       case 2:
         TrackEntityYawTowardSpyro(actor, 0x10, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
-            st->u50 == 0) {
+            st->standGround == 0) {
           if (st->path->cur == 13) {
             ModifyWorldChunkAnimFlags(10, 0xFC, 0);
           }
@@ -2261,7 +2261,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case 10:
-        if (st->u4C != 0) {
+        if (st->freezesSpyro != 0) {
           g_nGameplayBlocked = one;
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         }
@@ -2276,18 +2276,18 @@ void Level28_UpdateActors(void) {
         case 6:
         case 10:
         case 13:
-          st->u40 = one;
-          st->u50 = 0;
+          st->atStop = one;
+          st->standGround = 0;
           st->timer = 0;
-          st->u3C = &g_pActorListBase[38];
+          st->stopActor = &g_pActorListBase[38];
           break;
         case 0:
         case 7:
         case 11:
-          st->u40 = one;
-          st->u50 = one;
+          st->atStop = one;
+          st->standGround = one;
           st->timer = 0;
-          st->u3C = &g_pActorListBase[41];
+          st->stopActor = &g_pActorListBase[41];
           break;
         }
         st->timer = 0x8C;

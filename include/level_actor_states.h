@@ -184,9 +184,9 @@ typedef struct BoulderState {
 typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
+  int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int sound;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
+  int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int u18[3];      /* 0x18 */
   FlyPath *path;   /* 0x24 */
@@ -203,11 +203,11 @@ typedef struct BoulderThrowerState {
   int box0HalfWidth;         /* 0x58 */
   int u5C[2];      /* 0x5C */
   int box1[6];      /* 0x64 trigger box */
-  int u7C;         /* 0x7C */
+  int command;         /* 0x7C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int orbitRadius;         /* 0x80 */
-  int u84;         /* 0x84 */
-  int u88;         /* 0x88 */
-  int *u8C;        /* 0x8C */
+  int jitterA;         /* 0x84 random 8..15 on entering mode 0x2B; not read here */
+  int jitterB;         /* 0x88 likewise */
+  int *releaseFlag;        /* 0x8C cleared at the throw's release frame (0xE) */
   int u90;         /* 0x90 */
   int landSoundPlayed;         /* 0x94 */
 } BoulderThrowerState;
@@ -216,9 +216,9 @@ typedef struct BoulderThrowerState {
 typedef struct GatekeeperState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
-  int u08;         /* 0x08 */
+  int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int sound;         /* 0x0C sound handle */
-  int u10;         /* 0x10 */
+  int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int mode;        /* 0x18 */
   int timer;         /* 0x1C timer */
@@ -229,12 +229,12 @@ typedef struct GatekeeperState {
   FlyPath *path;   /* 0x38 */
   int box0[6];      /* 0x3C trigger box */
   int box1[6];      /* 0x54 trigger box */
-  int u6C;         /* 0x6C */
+  int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
   int keys[2];     /* 0x7C key actor indices, -1 released */
   int count;       /* 0x84 */
-  int *u88;        /* 0x88 */
+  int *releaseFlag;        /* 0x88 cleared at the throw's release frame (0xE) */
   int u8C;         /* 0x8C */
   int testFacing;         /* 0x90 facing to test, -1 any */
 } GatekeeperState;
@@ -271,7 +271,7 @@ typedef struct PodShotState {
 /* Type 210 state: a bobbing platform. */
 typedef struct BobbingPlatformState {
   int z;      /* 0x00 phase */
-  int u04;    /* 0x04 */
+  int spawned;    /* 0x04 set to 1 by the pod that spawns it; not read here */
   int period; /* 0x08 */
   int baseZ;  /* 0x0C */
 } BobbingPlatformState;
@@ -281,7 +281,7 @@ typedef struct LobbedBoltState {
   int speed;     /* 0x00 */
   int vz;        /* 0x04 */
   int dvz;       /* 0x08 gravity */
-  int u0C;       /* 0x0C */
+  int flightTime;       /* 0x0C frames to the target (ComputeLobVelocityZ out) */
   short timer;   /* 0x10 */
   short heading; /* 0x12 */
 } LobbedBoltState;
@@ -348,12 +348,12 @@ typedef struct JacquesState {
   int legStep[3];              /* 0x28 */
   int timer;               /* 0x34 */
   int u38;                 /* 0x38 */
-  Actor *u3C;              /* 0x3C */
-  int u40;                 /* 0x40 */
+  Actor *stopActor;              /* 0x3C level actor tied to the stop just reached (38 or 41) */
+  int atStop;                 /* 0x40 set on reaching each stop */
   Actor *child;            /* 0x44 rock in hand */
   int u48;                 /* 0x48 */
-  int u4C;                 /* 0x4C */
-  int u50;                 /* 0x50 */
+  int freezesSpyro;                 /* 0x4C level data: hops block gameplay and freeze Spyro's input */
+  int standGround;                 /* 0x50 1 at stops 0/7/11: does not hop away from a close Spyro */
   int u54;                 /* 0x54 */
 } JacquesState;
 
@@ -529,7 +529,7 @@ typedef struct RockThrowerState {
 
 /* Type 203 state: a guard that walks a fence segment. */
 typedef struct FenceGuardState {
-  int u00;    /* 0x00 */
+  int reactDelay;    /* 0x00 read by the fence's owner as its reaction timer */
   int onPath; /* 0x04 1 = keep to the segment in path */
   int wake;   /* 0x08 */
   int *path;  /* 0x0C segment ends at [2],[3] and [6],[7] */
@@ -584,7 +584,7 @@ typedef struct L32State145 {
   int knockHeading;     /* 0x08 knock-back heading */
   int knockZSpeed;     /* 0x0C */
   int shotTimer;     /* 0x10 shot timer */
-  int u14;     /* 0x14 */
+  int shotGap;     /* 0x14 frames since the last shot of a burst */
   int shotReload;     /* 0x18 shot timer reload */
   void *path;   /* 0x1C path */
   int u20;     /* 0x20 */
@@ -638,7 +638,7 @@ typedef struct L32State148 {
 
 /* State of the lob type 148 throws. */
 typedef struct LobState {
-  int u00;            /* 0x00 */
+  int flightTime;            /* 0x00 frames to the target (ComputeLobVelocityZ out) */
   short h4;           /* 0x04 */
   short h6;           /* 0x06 */
   short h8;           /* 0x08 */

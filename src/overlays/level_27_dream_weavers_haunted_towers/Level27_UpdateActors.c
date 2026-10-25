@@ -2736,7 +2736,7 @@ void Level27_UpdateActors(void) {
         if (st->timer == 0 && st->link[st->cur] != -1 &&
             st->hit[st->cur] != 0) {
           st->timer =
-              ((FenceGuardState *)g_pActorListBase[st->link[st->cur]].state)->u00;
+              ((FenceGuardState *)g_pActorListBase[st->link[st->cur]].state)->reactDelay;
           st->puff = 0x32;
           ENTER_POSE(actor, 1);
         }

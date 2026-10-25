@@ -870,7 +870,7 @@ void Level22_UpdateActors(void) {
           b->heading = st->phase + 2;
           b->dvz = -7;
           b->speed = (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) >> 8) + 0x190;
-          b->vz = ComputeLobVelocityZ(&o->posX, st->aim, b->speed, b->dvz, &b->u0C);
+          b->vz = ComputeLobVelocityZ(&o->posX, st->aim, b->speed, b->dvz, &b->flightTime);
         }
         if (actor->nextFrame < 3) {
           RefreshActorDerivedState(actor, 4);
@@ -1204,9 +1204,9 @@ void Level22_UpdateActors(void) {
       }
       actor->flags = 0;
 
-      if (st->u7C != 0) {
-        if (st->u7C == 1) {
-          st->u7C = 0;
+      if (st->command != 0) {
+        if (st->command == 1) {
+          st->command = 0;
           actor->mode = 0x28;
           continue;
         }
@@ -1222,7 +1222,7 @@ void Level22_UpdateActors(void) {
                                  0)) >= 0x40) {
           st->path->cur++;
         }
-        st->u7C = 0;
+        st->command = 0;
         actor->mode = 0x32;
         continue;
       }
@@ -1249,7 +1249,7 @@ void Level22_UpdateActors(void) {
         if (actor->subMode != 0) {
           ENTER_POSE(actor, actor->subMode);
         }
-        if (st->u10 != 0) {
+        if (st->idlePose2 != 0) {
           ENTER_POSE(actor, 2);
         }
         break;
@@ -1258,7 +1258,7 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        if (st->u08 != 0) {
+        if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 1);
           ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
         }
@@ -1394,8 +1394,8 @@ void Level22_UpdateActors(void) {
           if (st->zSpeed >= 0x6F) {
             st->zSpeed = 0x6E;
           }
-          st->u84 = RandomSignedInRange(8, 0xF);
-          st->u88 = RandomSignedInRange(8, 0xF);
+          st->jitterA = RandomSignedInRange(8, 0xF);
+          st->jitterB = RandomSignedInRange(8, 0xF);
           st->timer = 0xF0;
           actor->mode = 0x2B;
           continue;
@@ -1547,7 +1547,7 @@ void Level22_UpdateActors(void) {
           if (st->partner != -1) {
             ((int *)g_pActorListBase[st->partner].state)[5] = 1;
           }
-          *st->u8C = 0;
+          *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0);
           st->speed = 0x1C2;
@@ -1587,9 +1587,9 @@ void Level22_UpdateActors(void) {
         ENTER_POSE(actor, 5);
       }
 
-      if (st->u6C != 0) {
-        if (st->u6C == 1) {
-          st->u6C = 0;
+      if (st->command != 0) {
+        if (st->command == 1) {
+          st->command = 0;
           actor->mode = 0x28;
           continue;
         }
@@ -1605,7 +1605,7 @@ void Level22_UpdateActors(void) {
                                  0)) >= 0x40) {
           st->path->cur++;
         }
-        st->u6C = 0;
+        st->command = 0;
         actor->mode = 0x32;
         continue;
       }
@@ -1628,7 +1628,7 @@ void Level22_UpdateActors(void) {
 
       switch (actor->mode) {
       case 0:
-        if (actor->subMode == 0 && st->u10 == 0) {
+        if (actor->subMode == 0 && st->idlePose2 == 0) {
           break;
         }
         if (actor->type == 0xAA) {
@@ -1642,7 +1642,7 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        if (st->u08 != 0) {
+        if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 2);
           ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
         }
@@ -1914,7 +1914,7 @@ void Level22_UpdateActors(void) {
           if (st->partner != -1) {
             ((int *)g_pActorListBase[st->partner].state)[5] = 1;
           }
-          *st->u88 = 0;
+          *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0);
           st->speed = 0x1F4;
@@ -2005,7 +2005,7 @@ void Level22_UpdateActors(void) {
             b = st->kids[i]->state;
             CopyVector(&st->kids[i]->posX, &actor->posX);
             b->period = 0x3B6;
-            b->u04 = 1;
+            b->spawned = 1;
             b->z = i * (0x3B6 / n);
             b->baseZ = st->kids[i]->posZ - 0x2EE;
             st->kids[i]->posZ += b->z;
