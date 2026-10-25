@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sample_bank.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -52,7 +53,8 @@ int DispatchSpyroPadStateChanges(int pad) {
       }
       ChangeSpyroState(next);
     } else if (pad & 0x20) {
-      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-0xB], 4, (char *)ev + 0x274);
+      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-SPY_TRIGGER_FLAGS], 4,
+                      (char *)ev + (SPYB_VOICE_MARKER - SPY_TRIGGER_FLAGS * 4));
       ChangeSpyroState(SPYRO_ST_HURT_TINT);
     } else if (pad & 0x40) {
       ChangeSpyroState(SPYRO_ST_HURT_LONG);

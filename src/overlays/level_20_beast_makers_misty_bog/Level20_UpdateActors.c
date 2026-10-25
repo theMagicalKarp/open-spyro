@@ -216,7 +216,7 @@ void Level20_UpdateActors(void) {
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= 0x800;
             g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
-            CopyVector((int *)(base + 0x174), &actor->posX);
+            CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;

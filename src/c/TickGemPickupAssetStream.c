@@ -198,7 +198,7 @@ void TickGemPickupAssetStream(void) {
     i = 1;
     mesh = g_apActorMeshTableBlock;
     list = g_anActorMeshOffsetBlock;
-    slot = (short *)(list + 0x40) + 1;
+    slot = ACTOR_MESH_INDEX_LIST(list) + 1;
     for (; i < 0x40; i++) {
       if (list[i] <= 0) {
         break;

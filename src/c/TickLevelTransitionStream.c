@@ -24,6 +24,7 @@ typedef struct {
    the body-yaw word; both reach the rest of the block relative to themselves.
  */
 #define PE_TO(word) ((word) * 4 - SPYB_EULER_Z)
+#define PE_WORD(word) (*(int *)(pe + PE_TO(word)))
 #define PYAW_BACK_TO(byte) (SPY_BODY_YAW * 4 - (byte))
 #define DRAWBUF_B (g_apDrawBufBBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
@@ -248,7 +249,7 @@ void TickLevelTransitionStream(int full) {
     i = 1;
     mesh = g_apActorMeshTableBlock;
     list = g_anActorMeshOffsetBlock;
-    slot = (short *)(list + 0x40) + 1;
+    slot = ACTOR_MESH_INDEX_LIST(list) + 1;
     for (; i < 0x40; i++) {
       if (list[i] <= 0) {
         break;
@@ -347,10 +348,9 @@ void TickLevelTransitionStream(int full) {
                 *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
-            *(int *)(pe + PE_TO(SPY_STATE_FLAGS)) = 9;
+            PE_WORD(SPY_STATE_FLAGS) = 9;
             ComputeCameraToTargetAngle(cam);
-            g_anCameraSpringYawBlock[6] =
-                g_nCameraYaw + *(int *)(pe + PE_TO(SPY_BODY_YAW));
+            g_anCameraSpringYawBlock[6] = g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
             if (actor->reverse != 0) {
               CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 2);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
@@ -364,7 +364,7 @@ void TickLevelTransitionStream(int full) {
               *pe = ArcTan2(actor->path[2] - actor->path[6],
                             actor->path[3] - actor->path[7], 0);
             }
-            *(CameraAngles *)spring = *(CameraAngles *)(spring + 6);
+            *(CameraAngles *)spring = ((CameraAngles *)spring)[1];
             *pyaw = *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)) << 4;
             *spring -= *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z))
                        << 4;

@@ -13,6 +13,11 @@
      (0x8007aa34), see A134: only an array lvalue keeps the death-plane table
      load below this store. */
 
+/* arr[g_nSpyroShadowRingIndex], spelled index + base: the array form swaps
+   the addu operands. */
+#define RING_SLOT(arr)                                                         \
+  (*(unsigned char *)(g_nSpyroShadowRingIndex + (int)(arr)))
+
 /* 0x80049fac (596 bytes) — per-tick Spyro shadow-ring sampler. Computes the
    shadow centre ((0,0,-0x164) through the body matrix + world pos) into
    g_anSpyroShadowPos with Z = ground height, refreshes the shadow OT-bin
@@ -65,22 +70,21 @@ void SampleSpyroShadowRingHeights(int probe) {
     v[2] -= 0x200;
     if (((unsigned int)((v[2] - ground) + 0x80)) >= 0x100) {
       char *flags = (char *)ring - 0x18;
-      /* index + base, in that order: flags[i] swaps the addu operands */
-      *((unsigned char *)(g_nSpyroShadowRingIndex + (int)flags)) = 1;
+      RING_SLOT(flags) = 1;
     } else {
       char *flags = (char *)ring - 0x18;
       char *heights = (char *)ring - 0x20;
-      *((unsigned char *)(g_nSpyroShadowRingIndex + (int)flags)) = 0;
+      RING_SLOT(flags) = 0;
       d = (g_anSpyroShadowPos[2] - ground) * 0xC2;
-      *((unsigned char *)(g_nSpyroShadowRingIndex + (int)heights)) = d / 0x200;
+      RING_SLOT(heights) = d / 0x200;
       return;
     }
   } else {
     char *flags = (char *)ring - 0x18;
-    *((unsigned char *)(g_nSpyroShadowRingIndex + (int)flags)) = 0;
+    RING_SLOT(flags) = 0;
   }
   {
     char *heights = (char *)ring - 0x20;
-    *((unsigned char *)(g_nSpyroShadowRingIndex + (int)heights)) = 0;
+    RING_SLOT(heights) = 0;
   }
 }

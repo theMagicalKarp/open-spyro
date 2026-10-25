@@ -107,4 +107,10 @@ extern unsigned char *g_pGamestate0cRecord;
 #define CUTSCENE_ACTOR ((Actor *)g_pGamestate0cActor)
 #define CUTSCENE_RECORD ((Actor *)g_pGamestate0cRecord)
 
+/* g_nGamestate0cSpyroToX (From + 12), stored through a char * off the From
+ * base: not in-struct, so sched keeps the following load below it (lever L2
+ * in the Update clones), and the address shares From's lui. The plain
+ * scalar store costs an extra lui. */
+#define SPYRO_TO_X_VIA_FROM (*(int *)((char *)g_anGamestate0cSpyroFrom + 12))
+
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */

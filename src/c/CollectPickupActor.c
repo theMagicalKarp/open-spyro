@@ -20,15 +20,15 @@ void CollectPickupActor(Actor *a) {
       6, 0xC, a, g_adwActorBurstColors[a->type]);
 
   kind = a->type;
-  if (kind == 0x53) {
+  if (kind == ACTOR_TYPE_GEM_1) {
     CommitActorKillGems(1, (unsigned char *)a);
-  } else if (kind == 0x54) {
+  } else if (kind == ACTOR_TYPE_GEM_2) {
     CommitActorKillGems(2, (unsigned char *)a);
-  } else if (kind == 0x55) {
+  } else if (kind == ACTOR_TYPE_GEM_5) {
     CommitActorKillGems(5, (unsigned char *)a);
-  } else if (kind == 0x56) {
+  } else if (kind == ACTOR_TYPE_GEM_10) {
     CommitActorKillGems(0xA, (unsigned char *)a);
-  } else if (kind == 0x57) {
+  } else if (kind == ACTOR_TYPE_GEM_25) {
     CommitActorKillGems(0x19, (unsigned char *)a);
   }
 }

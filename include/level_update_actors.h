@@ -274,6 +274,13 @@ typedef struct {
 
 extern SpyroObj g_anSpyroWorldPosBlock;
 
+/* A SpyroObj field addressed off the UpdateActors clones' held base
+ * (`base = (char *)&g_nSpyroWorldPosZ`, i.e. SpyroObj + 8). The single folded
+ * constant keeps the original `base + N` address; `spy->field` instead makes
+ * gcc materialize the SpyroObj pointer and reallocates the whole loop. */
+#define SPY_HELD_FIELD(base, type, field)                                      \
+  ((type *)((char *)(base) + ((int)&((SpyroObj *)0)->field - 8)))
+
 /* Case 13 — tethered follower: rides a parent actor (by table index) and,
  * once released, re-points every other follower at the same parent. */
 typedef struct FollowState {

@@ -26,6 +26,9 @@ extern int
     g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
 
 extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
+/* Its 0x40 actor-mesh offsets are followed by their g_apActorMeshTable
+ * indices, one short each. */
+#define ACTOR_MESH_INDEX_LIST(list) ((short *)((list) + 0x40))
 
 extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
                                            g_apActorMeshTable */

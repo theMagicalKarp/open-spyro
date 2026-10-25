@@ -38,7 +38,7 @@
  *      an in_struct load at a varying address "cannot alias", so sched moves
  *      the load across the store.  Where the original keeps the load BELOW a
  *      store, spell the store so it CAN alias: array form `g_nGamestate0cTimer[0] = 0`
- *      (arm 1), `*((int *) ((char *) g_anGamestate0cSpyroFrom + 12)) = 0x4A0`, and
+ *      (arm 1), `SPYRO_TO_X_VIA_FROM = 0x4A0`, and
  *      `*((int *) ((char *) g_pCameraAnchorPos)) = ...` (the char* cast matters).
  *  L3  R1 cross-jump -- SOLVED, and not by registers.  Arm 3 (t >= 0x48) writes
  *      its `g_bSpyroPersistentEulerZ = k >> 4; g_nSpyroAnimPlayRate = 8;` tail INSIDE both branches,
@@ -135,7 +135,7 @@ void Level7_BalloonistCutscene_Update(void)
           g_bSpyroAnimCurrent = 1;
           g_bSpyroAnimFrame = 1;
           CopyVector(g_anGamestate0cSpyroFrom, &g_bSpyroAnimPrev[-0x18]);
-          *((int *) ((char *) g_anGamestate0cSpyroFrom + 12)) = 0x4A0;
+          SPYRO_TO_X_VIA_FROM = 0x4A0;
           g_nGamestate0cSpyroToY = 0;
           g_nGamestate0cSpyroToZ = 0x164;
           RotateVectorByMatrix(CUTSCENE_ACTOR->mtx, &g_anGamestate0cSpyroFrom[3], &g_anGamestate0cSpyroFrom[3]);
